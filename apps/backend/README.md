@@ -1,0 +1,504 @@
+# apps/backend
+
+NestJS REST API (OpenAPI-documented, plain REST — not tRPC): PostgreSQL +
+Drizzle ORM, shared-schema multi-tenancy enforced by Postgres Row-Level
+Security, billing webhook stubs, and the two API contracts the AI voice-to-
+invoice microservice depends on.
+
+See `docs/CZ-SK-Invoicing-SaaS-Blueprint.md` — §2 (tech stack), §3
+(architecture), §4 (multi-tenancy/RLS), §5 (billing), §6 (AI microservice
+contract), §9 (legal/liability audit-trail fields) — for the design this
+skeleton implements.
+
+## Status: scaffold, not a finished backend
+
+Real business logic (ARES enrichment, ISDOC/PDF generation, invoice
+numbering/issuance, real JWT verification, tenant signup bootstrap) is
+intentionally left as `TODO`-commented stubs that throw
+`NotImplementedException` (HTTP 501) — search for `TODO` across `src/`
+for the full list. What IS meaningfully real in this scaffold:
+
+- The Drizzle schema (`drizzle/schema.ts`) and RLS policy SQL
+  (`drizzle/rls-policies.sql`).
+- `src/tenancy/tenant-context.middleware.ts`'s `SET LOCAL`-via-reserved-
+  connection pattern — the actual multi-tenancy enforcement mechanism, not
+  just its shape.
+- `POST /api/v1/invoices/drafts` and `POST /api/v1/channel-links/verify` —
+  shaped to interoperate with the already-implemented
+  `apps/ai-service` caller (see "Known contract deviation" below), not with
+  a hypothetical shape.
+- `POST /api/v1/billing/stripe/webhook` — real `Stripe-Signature`
+  verification, event handling, and `subscription_events`-keyed
+  idempotency (`src/billing/`). See "Billing webhooks" below for what's
+  still a stub (GoPay's actual HTTP calls) and a known RLS-related gap
+  shared with `channel-links`.
+- `SubscriptionActiveGuard` / `@RequireActiveSubscription()`
+  (`src/billing/require-active-subscription.guard.ts`) — a real plan-
+  gating guard, applied to `InvoicesController.createDraft` as the
+  representative example (blueprint §5).
+- `src/recurring-invoices/` — real CRUD over `recurring_invoice_templates`
+  plus a real daily `@Cron` job that materializes due templates into actual
+  `invoices`/`invoice_line_items` rows. See "Recurring invoices" below for
+  what's genuinely implemented vs. deferred (invoice numbering).
+- `src/email/` + `POST /api/v1/invoices/:id/send` + `InvoiceRemindersCron` —
+  real Resend-backed invoice emailing and a daily overdue-payment-reminder
+  digest. See "Invoice emailing + overdue-payment reminders" below for what
+  is genuinely real vs. the one confidence caveat (an actual live send was
+  never exercised against a real Resend account/domain).
+- `src/bank-reconciliation/` — real CSV parsing, persistence, and an
+  auto-match algorithm against issued invoices (exact variable-symbol match,
+  or an amount+currency+due-date-window fallback), with real unit test
+  coverage for the matching logic. See "Bank reconciliation" below for the
+  exact CSV format, the matching algorithm's precision tradeoffs, and what's
+  explicitly NOT implemented (live PSD2/open-banking, MT940 parsing).
+
+## Known contract deviation (read this if wiring up apps/ai-service)
+
+This module's original scaffolding brief specified a flatter, camelCase
+`POST /api/v1/invoices/drafts` body (`counterpartyNameRaw`, `lineItems`,
+etc). By the time this backend was scaffolded, `apps/ai-service` already
+existed with a **real, working** call to a *different*, nested, snake_case
+shape (`apps/ai-service/app/pipeline/schemas.py::DraftInvoicePayload`,
+posted by `voice_to_invoice.py::create_draft_invoice`, explicitly documented
+there as "REAL", not a stub). This backend's DTOs
+(`src/invoices/dto/create-invoice-draft.dto.ts`,
+`src/channel-links/dto/verify-channel-link.dto.ts`) match that real,
+already-implemented shape instead — an interoperable contract beats a
+prettier hypothetical one. Full explanation in the doc comments on those two
+DTO files, including a second, smaller mismatch (`ai-service`'s bare
+`telegram`/`whatsapp` channel identifier vs. this backend's
+`ai_telegram`/`ai_whatsapp` `invoice_source` enum values, reconciled in
+`InvoicesService.createDraft`).
+
+`apps/ai-service`'s `enrich_with_ares()` also already expects an *implied*
+backend endpoint, `POST /api/v1/contacts/ares-lookup`, that didn't exist
+before this scaffold — see `ContactsController.aresLookup` (stubbed, 501)
+for the placeholder that makes that dependency visible.
+
+## Running
+
+From the monorepo root (after `pnpm install` — not yet run against this
+scaffold):
+
+```bash
+pnpm --filter @faktur/backend dev
+```
+
+Requires `DATABASE_URL` (see `.env.example` here and the root
+`../../.env.example`) pointing at a Postgres 16 instance —
+`docker compose up postgres` from the repo root starts one.
+
+## Migrations (Drizzle Kit)
+
+- `drizzle/schema.ts` is the source of truth for table shape.
+- `drizzle/rls-policies.sql` is hand-written raw SQL (RLS policies aren't
+  part of the generated Drizzle migration in this scaffold) — apply it once
+  after running migrations:
+  ```bash
+  psql "$DATABASE_URL" -f drizzle/rls-policies.sql
+  ```
+- Generate a migration from schema changes: `pnpm --filter @faktur/backend db:generate`
+- Apply migrations: `pnpm --filter @faktur/backend db:migrate`
+- Browse data: `pnpm --filter @faktur/backend db:studio`
+
+The app's own runtime DB connection must authenticate as a non-owner,
+`NOBYPASSRLS` role — see the long comment at the top of
+`drizzle/rls-policies.sql`. Migrations should run as a separate, more
+privileged role (not yet wired up here — see `drizzle.config.ts`'s TODO).
+
+## API docs
+
+Swagger UI is served at `/api/docs` once the app is running (see
+`src/main.ts`).
+
+## Billing webhooks (Stripe + GoPay, blueprint §5)
+
+### Required env vars
+
+See the root `.env.example` for the full list; the ones this module reads:
+
+| Var | Used for |
+|---|---|
+| `STRIPE_SECRET_KEY` | Constructing the `stripe` SDK client (`src/billing/stripe-client.provider.ts`) |
+| `STRIPE_WEBHOOK_SECRET` | Verifying `Stripe-Signature` via `stripe.webhooks.constructEvent` (`BillingService.verifyStripeSignature`) |
+| `GOPAY_CLIENT_ID` / `GOPAY_CLIENT_SECRET` | GoPay OAuth client-credentials token (TODO — not yet implemented, see `src/billing/gopay.client.ts`) |
+| `GOPAY_GOID` | GoPay merchant/GoID, needed once `GopayClient`'s real API calls are implemented |
+
+`GOPAY_WEBHOOK_SECRET` (present in `.env.example`) is currently unused by
+this module: unlike Stripe, GoPay's notification callback isn't signed —
+see "GoPay" below for why `GopayClient` calls back GoPay's API instead of
+verifying a signature.
+
+### Testing the Stripe webhook locally
+
+1. Install the [Stripe CLI](https://docs.stripe.com/stripe-cli) and log in
+   (`stripe login`).
+2. Run the backend (`pnpm --filter @faktur/backend dev`), default port 3000.
+3. Forward events to the local webhook endpoint:
+   ```bash
+   stripe listen --forward-to localhost:3000/api/v1/billing/stripe/webhook
+   ```
+   The CLI prints a `whsec_...` value on startup — put that in your local
+   `.env` as `STRIPE_WEBHOOK_SECRET` (it's a different secret per `listen`
+   session than your dashboard's registered webhook signing secret).
+4. In another terminal, fire a test event:
+   ```bash
+   stripe trigger checkout.session.completed
+   stripe trigger customer.subscription.updated
+   stripe trigger invoice.payment_failed
+   stripe trigger invoice.paid
+   ```
+5. To confirm idempotent handling (blueprint §5 / the Verification Plan's
+   item 5), resend the same event id twice — e.g. `stripe events resend
+   <evt_id>`, or replay from the Stripe Dashboard's webhook event log — and
+   confirm the second delivery logs "already recorded — skipping duplicate
+   delivery" rather than double-applying the tenant status change.
+
+Note: `stripe trigger` synthesizes an event against a *fictional* test
+customer/subscription — `checkout.session.completed` is the only one of
+these that carries a resolvable tenant id out of the box (via
+`metadata.tenantId`, which you'd set when creating a real Checkout
+Session; the CLI's synthetic event won't have it, so `BillingService`
+will log `tenant-not-resolved` and skip, which is expected without a real
+tenant/`stripe_customer_id` row in the DB to match against).
+
+### GoPay
+
+GoPay's notification callback does not sign its payload the way Stripe
+does — per blueprint §5 and GoPay's documented pattern, the callback only
+identifies *which* payment changed, and the receiver is expected to call
+back GoPay's API (`GET /api/payments/payment/{id}`, conceptually) to fetch
+the authoritative, trustworthy status before acting on it.
+`BillingService.handleGopayWebhook` implements that control flow (fetch
+status -> resolve tenant -> idempotency check -> apply -> mark processed)
+for real, but `src/billing/gopay.client.ts`'s actual HTTP call
+(`GopayClient.getPaymentStatus`) is a **TODO stub that throws** — its
+exact request/response shape (OAuth token endpoint, status field names,
+which field identifies the payer for our `tenants.gopay_payer_id`
+mapping) has **not** been verified against GoPay's live API reference
+(https://doc.gopay.com/) and should not be treated as a working
+integration until that verification happens.
+
+## Recurring invoices
+
+`src/recurring-invoices/` implements standing "issue an invoice like this
+every N weeks/months/quarters/years" templates
+(`recurringInvoiceTemplates` in `drizzle/schema.ts`):
+
+- `RecurringInvoicesController` / `RecurringInvoicesService` — real CRUD
+  under `POST/GET/PATCH /api/v1/recurring-invoices` plus
+  `POST /api/v1/recurring-invoices/:id/deactivate`. Deactivation is a soft
+  delete (`is_active = false`) — never a hard delete — because past
+  invoices generated from a template must keep their provenance even after
+  the standing arrangement is retired.
+- `RecurringInvoiceGenerationService` — a real `@nestjs/schedule` `@Cron`
+  job (`EVERY_DAY_AT_MIDNIGHT`, registered via `ScheduleModule.forRoot()`
+  in `AppModule`) that scans every tenant for due templates
+  (`is_active = true AND next_run_date <= today`) and, for each one,
+  creates a new `invoices` row (`status = 'draft'`,
+  `source = 'recurring'`) plus matching `invoice_line_items` rows from the
+  template's `line_items_snapshot`, then advances `next_run_date` by the
+  template's `frequency`/`interval_count`.
+- **Cross-tenant scan, without bypassing RLS wholesale**: the job needs
+  every tenant id before any single `app.current_tenant_id` can be set —
+  the same chicken-and-egg shape `TenantBillingRepository` already solves
+  for Stripe/GoPay lookups (see "Resolved" section below). Rather than
+  connecting as a BYPASSRLS/superuser role, it calls a new narrow
+  `SECURITY DEFINER` function, `list_tenant_ids()` (`drizzle/rls-policies.sql`),
+  that returns only tenant `id`s. Once a tenant id is in hand, everything
+  else — reading that tenant's due templates, writing the new invoice —
+  runs inside the same `sql.begin()` + `set_config('app.current_tenant_id',
+  ...)` transaction pattern as `TenantContextMiddleware`, so RLS is fully
+  enforced per tenant for the actual data access.
+- **Invoice numbering — deliberately deferred, not duplicated.**
+  `InvoicesController.issue` (the endpoint that would allocate a sequential
+  `invoice_number` from `invoice_number_sequences` at issue time, per
+  blueprint §6 step 8/9) is still a `NotImplementedException` TODO stub, and
+  `InvoicesService.createDraft` — the only other code path that creates an
+  `invoices` row — likewise never sets `invoiceNumber`. Since there is no
+  real numbering logic yet to reuse, `RecurringInvoiceGenerationService`
+  does not invent its own: a generated recurring invoice leaves
+  `invoice_number` unset, exactly like any other manually-created draft,
+  until a future `issue` implementation allocates one for all of them
+  alike.
+- `src/recurring-invoices/schedule.ts` — the pure date-advancement
+  (`advanceNextRunDate`) and due-template (`isTemplateDue`) logic, kept
+  free of any DB/Nest dependency specifically so it has real unit test
+  coverage (`schedule.spec.ts`) without a live database: weekly/monthly/
+  quarterly/yearly math across various `interval_count`s (including month-
+  end/leap-year overflow edge cases), and the "only active AND due
+  templates are picked up" filter.
+
+## Invoice emailing + overdue-payment reminders
+
+Two features built on the client-portal/reminder columns added to
+`invoices` (`publicToken`, `sentAt`, `lastReminderSentAt`, `reminderCount`)
+and a new `email` column on `contacts` (nullable — a contact with no email
+on file simply can't be emailed yet):
+
+- **`POST /api/v1/invoices/:id/send`** (`InvoicesController.send` /
+  `InvoicesService.sendInvoice`) — loads the invoice and its contact
+  through the caller's normal RLS-scoped `req.tenantDb` (never the public
+  `get_public_invoice_view` SECURITY DEFINER function, which exists only
+  for the no-auth client-portal view), computes the invoice total from its
+  `invoice_line_items` (`invoice-total.util.ts` — `invoices` itself has no
+  stored total column, see `get_public_invoice_view`'s comment in
+  `drizzle/rls-policies.sql`), sends it via `EmailService.sendInvoiceEmail`,
+  and stamps `sent_at`. Returns `400` if the invoice has no contact, or the
+  contact has no email on file.
+- **`InvoiceRemindersCron`** (`src/invoices/invoice-reminders.cron.ts`) — a
+  daily `@Cron("0 9 * * *")` digest (registered via the `ScheduleModule.forRoot()`
+  already set up in `AppModule` for `RecurringInvoiceGenerationService`, not
+  a second registration) that emails a reminder for every `status =
+  'issued'`, past-due invoice that was never reminded or was last reminded
+  7+ days ago (`isDueForReminder` in `invoice-reminders.util.ts` — a pure,
+  unit-tested predicate for that rule), then increments `reminder_count`
+  and stamps `last_reminder_sent_at`. One invoice/tenant failing (e.g. a
+  Resend outage) is logged and skipped, not allowed to abort the rest of
+  the day's sweep — it's simply retried on the next run since
+  `last_reminder_sent_at` was never updated.
+  - **Cross-tenant scan, without bypassing RLS wholesale**: reuses
+    `list_tenant_ids()` (`drizzle/rls-policies.sql`,
+    `InvoiceRemindersRepository.listAllTenantIds`) — the same SECURITY
+    DEFINER function `RecurringInvoiceGenerationService` already added for
+    this exact "daily job must scan every tenant" shape — rather than
+    adding a second, overlapping SQL function. Once a tenant id is in hand,
+    `findOverdueInvoicesForTenant` runs the real eligibility query inside
+    the usual `sql.begin()` + `set_config('app.current_tenant_id', ...)`
+    transaction, so RLS is fully enforced per tenant for the actual reads.
+- **`src/email/email.service.ts`** — a thin Resend wrapper
+  (`sendInvoiceEmail`/`sendPaymentReminderEmail`) rendering real, inline
+  HTML (invoice number, amount, due date, and a link to
+  `${NEXT_PUBLIC_SITE_URL}/i/${invoice.publicToken}` — the frontend's
+  client-portal route). **Confidence note**: `new Resend(apiKey)` and
+  `resend.emails.send({ from, to, subject, html })` were verified against
+  the real, published `resend@6.26.0` type declarations while writing this
+  file — not recalled from memory — but an actual live send was never
+  exercised against a real Resend account/domain in this task (no API key
+  available), so delivery behavior in practice is unconfirmed, the same
+  caveat this README already holds `GopayClient`'s HTTP calls to.
+
+### Required env vars
+
+`RESEND_API_KEY` and `EMAIL_FROM` (root `.env.example`) — both must be set
+for `EmailService.send` to actually deliver; if either is missing it throws
+immediately rather than silently no-op-ing.
+
+## Bank reconciliation (CSV import + auto-match)
+
+`src/bank-reconciliation/` implements bank-statement reconciliation against
+`bank_statement_imports`/`bank_transactions` (`drizzle/schema.ts`). This is
+an **MVP: CSV import + auto-match, NOT live PSD2/open-banking** — a real
+open-banking integration requires bank-specific certifications and is out of
+scope for this pass. `bank_statement_source` reserves an `mt940` enum value
+for the SWIFT MT940 statement format, but no MT940 parser is implemented
+here — only `source = 'csv'` is ever written by this module today.
+
+### Endpoints
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/v1/bank-reconciliation/import` | Multipart CSV upload (`file` field). Parses in-memory, discards the raw upload, persists one `bank_statement_imports` row + one `bank_transactions` row per line, then runs auto-match (see below) on every newly-created transaction. |
+| `GET /api/v1/bank-reconciliation/transactions?status=unmatched\|matched\|ignored` | Tenant-scoped list, optionally filtered by status. |
+| `POST /api/v1/bank-reconciliation/transactions/:id/match` | Manual override — body `{ "invoiceId": "<uuid>" }`. Links the transaction to a specific `status = 'issued'` invoice and marks it paid, same as an auto-match. For the leftovers the algorithm below correctly declined to guess on. |
+| `POST /api/v1/bank-reconciliation/transactions/:id/ignore` | Marks a transaction `ignored` (e.g. a transfer that isn't an invoice payment at all — a refund, a bank fee, an owner's own transfer between accounts). |
+
+### Expected CSV format
+
+There is no single "the" Czech bank CSV export — Fio, ČSOB, Komerční banka,
+and Raiffeisenbank all use different column names, order, and encoding — so
+this module defines its own plain, explicit format rather than one specific
+bank's, and documents it here:
+
+- **Encoding**: UTF-8 (a leading UTF-8 BOM, common from Windows-based
+  banking software, is stripped automatically).
+- **Header row required**, exactly these six column names (order does not
+  matter — columns are looked up by name, not position):
+
+  ```
+  date,amount,currency,variable_symbol,counterparty_account,counterparty_name
+  ```
+
+- **`date`** — `YYYY-MM-DD` (ISO 8601 calendar date, no time component).
+- **`amount`** — a plain decimal number, `.` as the decimal separator, no
+  thousands separators, no currency symbol. Positive for an incoming credit
+  (a payment received), negative for a debit — debits are imported like any
+  other row but will simply never match an invoice total (which is always
+  positive).
+- **`currency`** — a 3-letter ISO 4217 code (e.g. `CZK`, `EUR`).
+- **`variable_symbol`** — optional (blank allowed), up to 10 characters
+  (matches `invoices.variable_symbol`'s `varchar(10)`).
+- **`counterparty_account`** / **`counterparty_name`** — optional free text
+  (e.g. `"19-2000145399/0800"` / `"Novák Consulting s.r.o."`).
+- Fields containing a comma must be double-quoted (`"..."`), with embedded
+  quotes doubled (`""`) — standard RFC-4180-style quoting. Blank lines are
+  ignored.
+
+Example file:
+
+```csv
+date,amount,currency,variable_symbol,counterparty_account,counterparty_name
+2026-08-01,15000.00,CZK,1234567890,19-2000145399/0800,Novák Consulting s.r.o.
+2026-08-03,-450.50,CZK,,,
+2026-08-05,2500.00,EUR,2026080501,DE89370400440532013000,Musterfirma GmbH
+```
+
+The whole file is validated up front — if any row has an invalid date,
+amount, currency, or an over-long variable symbol, the entire import is
+rejected (HTTP 400, listing every bad row/line number) and nothing is
+persisted, rather than silently skipping bad rows or half-importing a
+statement.
+
+### Auto-match algorithm and its precision tradeoffs
+
+Implemented as a pure, DB-free function (`src/bank-reconciliation/matching.ts`
+`findInvoiceMatch`), unit-tested directly (`matching.spec.ts`) against
+hand-built candidate lists — no database or mocking required to exercise the
+whole decision table:
+
+1. **Exact variable-symbol match**: if the transaction has a
+   `variable_symbol` and exactly one `status = 'issued'` invoice for the
+   tenant has the same `variable_symbol`, match it — **without** also
+   requiring the amount to agree. This is a deliberate tradeoff: variable
+   symbols are the primary payment-identification mechanism in CZ/SK bank
+   transfers and are trusted on their own once uniquely resolved, so a
+   partial payment (transaction amount less than the invoice total) still
+   auto-matches and marks the invoice fully paid — a false positive this
+   MVP accepts rather than block on. If two or more issued invoices happen
+   to share the same variable symbol, the transaction is left `unmatched`
+   rather than picking one (logged as ambiguous).
+2. **Fallback — amount + currency + due-date window**: if there's no
+   variable-symbol match, look for `status = 'issued'` invoices with the
+   same currency, a due date within **±60 days** of the transaction date,
+   and a computed total (`invoices` has no stored total column — it's
+   summed from `invoice_line_items`, including VAT, same as
+   `invoice-total.util.ts`) equal to the transaction amount to the cent. If
+   exactly one candidate satisfies all three, match it. The ±60-day window
+   is a heuristic, not a guarantee: two unrelated invoices for the same
+   round amount (e.g. two 5000 CZK invoices with due dates three weeks
+   apart) can both legitimately fall inside it for the same payment — see
+   the ambiguous case below for what happens then.
+3. **Ambiguous or no match -> stays `unmatched`, never guessed.** Both the
+   variable-symbol and the amount/date-window paths return "ambiguous"
+   (rather than picking the first or an arbitrary candidate) whenever more
+   than one invoice ties, and a warning is logged naming the transaction and
+   import. This is the module's central design bias, and the reason the
+   endpoints expose a manual match/ignore override at all: **a false "paid"
+   mark on the wrong invoice is worse than a transaction that needs a
+   30-second human decision** — precision over recall, explicitly, per the
+   task this module was built against.
+
+What this tradeoff does NOT cover (known gaps, not silently swept under the
+rug): a genuine partial payment against a correct variable-symbol match is
+still marked fully "paid" (case 1 above); the amount/date fallback has no
+signal at all for an invoice with no `due_date` set (those invoices are
+simply never fallback-candidates, variable-symbol match remains their only
+path); and there's no reconciliation UI for "this transaction is a partial
+payment, apply it and leave the invoice open" — only the binary matched/
+unmatched/ignored states the schema defines.
+
+## Public API (tenant-managed API keys)
+
+A tenant can generate its own long-lived API keys (`src/api-keys/`) to call
+select endpoints programmatically — e.g. creating or listing invoices from
+an external system — without a human dashboard session.
+
+### Base URL and authentication
+
+```
+https://<your-deployment>/api
+Authorization: Bearer sk_live_<32 random characters>
+```
+
+Every request must carry the key as a standard bearer token. There is no
+separate API-key header — it goes in the same `Authorization` header a
+dashboard JWT would use.
+
+### Managing keys
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/v1/api-keys` | Generates a new key. Body: `{ "name": "My integration", "scopes": [] }`. **The full plaintext key is returned in this response only** — only its SHA-256 hash and a 12-character prefix (e.g. `sk_live_ab12`) are ever stored (`src/api-keys/api-key.util.ts::hashApiKey` — see that function's doc comment for why SHA-256 rather than bcrypt is the right choice for a high-entropy, machine-generated secret). If you lose the key, there is no way to retrieve it again — revoke it and generate a new one. |
+| `GET /api/v1/api-keys` | Lists your keys: `name`, `keyPrefix`, `scopes`, `lastUsedAt`, `createdAt`, `revokedAt`. Never returns the full key or its hash. |
+| `DELETE /api/v1/api-keys/:id` | Revokes a key (sets `revoked_at`). Soft-delete only, for audit purposes — a revoked key's name/prefix/usage history is preserved. |
+
+These three management endpoints require a dashboard JWT (`JwtAuthGuard`) —
+an API key cannot manage other API keys, including itself.
+
+### Example endpoints callable with an API key
+
+| Endpoint | What it does |
+|---|---|
+| `GET /api/v1/invoices` | List invoices for the key's own tenant. |
+| `POST /api/v1/invoices/drafts` | Create an invoice draft (see `CreateInvoiceDraftDto` for the body shape — the same contract `apps/ai-service` uses). |
+
+Both are wired up via `CombinedAuthGuard` (`src/auth/combined-auth.guard.ts`),
+which accepts EITHER a dashboard/AI-service JWT OR an API key on the same
+route — the rest of `InvoicesController` (`GET /:id`, `POST /:id/send`,
+`POST /:id/issue`) remains JWT-only. An API key resolves its tenant
+DIRECTLY from the key's own `tenant_id` column (`ApiKeysService.validateKey`,
+via the `find_active_api_key_by_hash` SECURITY DEFINER function in
+`drizzle/rls-policies.sql`) — no `tenant_memberships` lookup, since a key is
+tenant-scoped by definition, not tied to a human's set of memberships.
+
+### A note on how tenant context gets resolved for an API-key request
+
+This matters if you're reading the code, not for calling the API. Nest's
+request pipeline is middleware -> guards, and `TenantContextMiddleware`
+(which every `InvoicesController` route runs through) unconditionally
+verifies the bearer token as a JWT with no bypass for a differently-shaped
+credential — so a guard alone can never "catch" an API-key request in time.
+`ApiKeyOrJwtTenantContextMiddleware`
+(`src/api-keys/api-key-or-jwt-tenant-context.middleware.ts`) is registered
+ahead of `TenantContextMiddleware`, specifically for `InvoicesController`:
+it delegates to `TenantContextMiddleware` UNCHANGED for any non-API-key
+bearer token, and only steps in — resolving tenant context from the key's
+own `tenant_id` and opening the identical `sql.begin()`/`set_config(...)`
+transaction shape — when the token has the API-key format. See that file's
+doc comment, and the doc comments on `ApiKeyAuthGuard`/`CombinedAuthGuard`,
+for the full reasoning and an explicit note on the exact `req.user` shape
+assumed (`{ id, email, tenantId, role }`) in case the concurrently-developed
+JWT/tenant-membership resolution work changes that shape.
+
+## Resolved: resolving a tenant before it's "known" (billing)
+
+`TenantBillingRepository.findTenantIdByStripeCustomerId` /
+`findTenantIdByGopayPayerId` run the same category of query
+`ChannelLinksService.verify()` flags as unresolved for `channel_links`:
+looking a tenant up by an external id (`stripe_customer_id`,
+`gopay_payer_id`) necessarily happens *before* `app.current_tenant_id`
+can be set, but `tenants` has `FORCE ROW LEVEL SECURITY` keyed on exactly
+that setting — a plain pooled query with no tenant context matches zero
+rows against a real RLS-enabled database.
+
+Unlike `channel_links`, `tenants` holds real sensitive data (company
+details, IČO/DIČ, addresses, subscription status), so a blanket RLS
+exemption isn't an option here. Instead, both repository methods now call
+narrow `SECURITY DEFINER` Postgres functions —
+`find_tenant_id_by_stripe_customer_id` / `find_tenant_id_by_gopay_payer_id`
+in `drizzle/rls-policies.sql` — that run with the table owner's
+privileges but return only a single `uuid` for an exact external-id
+match; `tenants`' RLS stays fully enforced for every other query. See the
+"SECURITY DEFINER lookup functions" comment block in
+`drizzle/rls-policies.sql` for the full safety reasoning, and its
+"channel_links" comment block just above for why that table's fix (drop
+RLS from the whole table) does not apply here. Everything *downstream* of
+a resolved `tenantId` (the actual `tenants`/`subscription_events`
+writes) **is** also genuinely RLS-safe: it reuses
+`TenantContextMiddleware`'s `sql.begin` + `set_config(...)` pattern.
+`channel_links`' own analogous ordering problem remains open — see
+`ChannelLinksService.verify()`.
+
+## Key files
+
+| File | What it demonstrates |
+|---|---|
+| `drizzle/schema.ts` | Full multi-tenant schema (§4): `tenants`, `users` (extended with Auth.js's `name`/`emailVerified`/`image`), `tenantMemberships`, `contacts`, `invoices` (incl. §9 liability audit-trail fields `issuedByUserId`/`issuedAt`/`aiDraftReviewedAt`, and the client-portal/reminder fields `publicToken`/`sentAt`/`lastReminderSentAt`/`reminderCount`), `invoiceLineItems`, `invoiceNumberSequences`, `subscriptionPlans`, `subscriptionEvents`, `channelLinks`, `aresCache`, `tosVersions`, `tosAcceptances`. Plus, added for upcoming features: `accounts`/`sessions`/`verificationTokens` (Auth.js `@auth/drizzle-adapter` tables, user-level not tenant-scoped), `recurringInvoiceTemplates`, `expenses`, `apiKeys`, `bankStatementImports`/`bankTransactions`. |
+| `drizzle/rls-policies.sql` | `ENABLE/FORCE ROW LEVEL SECURITY` + `tenant_id = current_setting('app.current_tenant_id')::uuid` policy per tenant-scoped table (now including `recurringInvoiceTemplates`, `expenses`, `apiKeys`, `bankStatementImports`, `bankTransactions`), `NOBYPASSRLS` runtime-role note, the `tenants`/`channel_links` bootstrap edge cases called out explicitly rather than papered over, the Auth.js tables' "no tenant_id, not RLS'd" note, and three `SECURITY DEFINER` functions: `find_tenant_id_by_stripe_customer_id` / `find_tenant_id_by_gopay_payer_id` (pre-tenant-context billing lookups) and `get_public_invoice_view` (the no-auth client-portal invoice lookup by `invoices.publicToken`) — all following the same narrow-door-through-intact-RLS pattern. |
+| `src/tenancy/tenant-context.middleware.ts` | The enforcement mechanism itself: reserves one Postgres connection per request, opens a transaction, runs `set_config('app.current_tenant_id', ..., true)` (the parameterized equivalent of `SET LOCAL`), and hands a Drizzle instance bound to that same connection down as `req.tenantDb` — with a long comment on exactly why connection-pooling makes this non-optional. |
+| `src/auth/jwt-auth.guard.ts` | Placeholder guard (shape only) with TODOs describing the two real caller classes it needs to distinguish: dashboard users (per-user JWT) vs. the AI microservice (a single static scoped service credential). |
+| `src/invoices/invoices.controller.ts` | `POST /api/v1/invoices/drafts` — the AI microservice contract (§6): always `status = pending_review`, never allocates an invoice number, never auto-finalizes. |
+| `src/channel-links/channel-links.controller.ts` | `POST /api/v1/channel-links/verify` — the Telegram/WhatsApp account-linking lookup (§6 step 2), plus an explicit, unresolved TODO about the RLS-before-tenant-is-known ordering problem this endpoint runs into. |
+| `src/billing/billing.controller.ts` + `billing.service.ts` | `POST /api/v1/billing/{stripe,gopay}/webhook` — real Stripe signature verification and `subscription_events`-keyed idempotency (§5); GoPay's control flow is real but `gopay.client.ts`'s HTTP call is a TODO stub — see "Billing webhooks" above. |
+| `src/recurring-invoices/` | Real CRUD (`recurring-invoices.controller.ts`/`.service.ts`) over `recurringInvoiceTemplates` plus a real daily `@Cron` job (`recurring-invoice-generation.service.ts`) that materializes due templates into `invoices`/`invoice_line_items`, advancing `next_run_date` via the pure, unit-tested `schedule.ts` (`advanceNextRunDate`/`isTemplateDue`) — see "Recurring invoices" above, including how it scans all tenants without bypassing RLS (`list_tenant_ids()` in `drizzle/rls-policies.sql`) and why generated invoices leave `invoice_number` unset. |
+| `src/email/email.service.ts` + `src/invoices/invoice-reminders.cron.ts` | Real Resend-backed invoice emailing (`POST /api/v1/invoices/:id/send`) and a real daily overdue-payment-reminder digest — see "Invoice emailing + overdue-payment reminders" above, including the Resend API-shape confidence note and the pure, unit-tested `isDueForReminder`/`computeInvoiceTotal` helpers (`invoice-reminders.util.ts`, `invoice-total.util.ts`). |

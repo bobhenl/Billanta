@@ -1,0 +1,98 @@
+# ---------------------------------------------------------------------------
+# Initial CI skeleton for a pre-alpha scaffold.
+#
+# This repo is a brand-new pnpm/Turborepo monorepo: dependencies have not
+# been installed yet and (as of writing) no pnpm-lock.yaml has been committed.
+# Until that lockfile exists, the `pnpm install --frozen-lockfile` step below
+# will fail — that is expected at this stage, not a bug in this workflow.
+# Once dependencies are installed and the lockfile is committed, the Node/TS
+# jobs should start passing (modulo actual lint/build/test errors in the
+# code, which are being worked on separately).
+#
+# Assumptions made when writing this workflow (see also the PR description):
+#   - Node version: root package.json declares "engines": { "node": ">=20" }
+#     (same in apps/backend, apps/frontend, packages/cz-compliance), so this
+#     workflow pins Node 20.x.
+#   - Package manager: root package.json declares "packageManager":
+#     "pnpm@9.0.0", so pnpm/action-setup is pinned to version 9.
+#   - The cz-compliance package's actual npm name is "@faktur/cz-compliance"
+#     (per packages/cz-compliance/package.json), used for the
+#     `pnpm --filter` test step.
+#   - apps/ai-service has a pyproject.toml (no requirements.txt), so Python
+#     deps are installed via `pip install -e ".[dev]"`.
+#   - Python version: no version is pinned anywhere in the repo beyond
+#     `requires-python = ">=3.11"` in apps/ai-service/pyproject.toml; this
+#     workflow uses a current stable release (3.12) that satisfies that
+#     constraint.
+#   - apps/ai-service has no test suite yet, so the Python job only runs
+#     `python -m compileall app` as a minimal "does it at least parse"
+#     gate. Follow-up: add a real pytest job once tests exist (pytest and
+#     pytest-asyncio are already listed under the `dev` extra).
+# ---------------------------------------------------------------------------
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  node:
+    name: Node (lint, build, cz-compliance tests)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      # NOTE: this will fail until pnpm-lock.yaml is actually committed to
+      # the repo — expected at this pre-alpha stage, see header comment.
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (backend, frontend, cz-compliance)
+        run: pnpm turbo run lint
+
+      - name: Build (backend, frontend, cz-compliance)
+        run: pnpm turbo run build
+
+      - name: Test cz-compliance (vitest)
+        run: pnpm --filter @faktur/cz-compliance test
+
+  ai-service:
+    name: AI service (Python compile check)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/ai-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # apps/ai-service uses pyproject.toml (no requirements.txt / lockfile
+      # committed yet), so install the package with its dev extras.
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      # No test suite exists yet for apps/ai-service (follow-up: add a real
+      # pytest job once tests are written — pytest/pytest-asyncio are
+      # already declared under the "dev" extra in pyproject.toml). For now,
+      # this is a minimal correctness gate that just checks every module
+      # under app/ compiles.
+      - name: Compile check
+        run: python -m compileall app

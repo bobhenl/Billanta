@@ -1,0 +1,112 @@
+# Root Docker Compose for the Faktur monorepo.
+# App services (backend, frontend, ai-service) now have Dockerfiles — see
+# apps/*/Dockerfile — and are wired up below.
+# See docs/CZ-SK-Invoicing-SaaS-Blueprint.md §3 System Architecture and
+# §10 Phased MVP Roadmap.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - faktur
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - faktur
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - faktur
+
+  # --- App services ---
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # apps/backend's own default (main.ts / apps/backend/.env.example,
+      # PORT=3000) matches what the Caddyfile and apps/ai-service both
+      # already assume, so no PORT override is needed here.
+      # .env's own DATABASE_URL (`...@localhost:5432/...`) is correct for
+      # running apps/backend directly on the host against the
+      # port-mapped `postgres` container, but `localhost` inside THIS
+      # container means the backend container itself, not the `postgres`
+      # service — must address it by service name on the Docker network
+      # instead. Reuses the same credentials/db name already in `.env`
+      # rather than duplicating them.
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - faktur
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    networks:
+      - faktur
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: apps/ai-service/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # apps/ai-service/.env.example's own default (http://localhost:3000)
+      # is for running it standalone outside Docker; inside this network it
+      # must reach the backend by service name instead of localhost, but
+      # the port (3000) matches the backend's own default, so only the
+      # hostname changes here.
+      BACKEND_API_URL: http://backend:3000
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - faktur
+
+networks:
+  faktur:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  caddy_data:
+  caddy_config:

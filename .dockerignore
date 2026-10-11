@@ -1,0 +1,33 @@
+# Keeps Docker build contexts (root context, per apps/*/Dockerfile) small and
+# avoids invalidating layer caching with local build artifacts / secrets.
+# Mirrors the relevant parts of .gitignore.
+
+**/node_modules
+**/.pnpm-store
+**/.turbo
+**/dist
+**/build
+**/.next
+**/*.tsbuildinfo
+**/.eslintcache
+
+**/.env
+**/.env.*
+!**/.env.example
+
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/*.egg-info
+
+**/coverage
+**/.nyc_output
+
+.git
+.gitignore
+.claude
+docs

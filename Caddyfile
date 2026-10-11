@@ -1,0 +1,19 @@
+# Placeholder reverse-proxy config for local/dev use.
+# See docs/CZ-SK-Invoicing-SaaS-Blueprint.md §3 (System Architecture) for the
+# full routing plan and §10 Phase 0 for scope. Replace :80 with the real
+# domain + automatic HTTPS once deployed to the VPS.
+
+:80 {
+	# Next.js frontend (default route)
+	handle /ai-webhook/* {
+		reverse_proxy ai-service:8000
+	}
+
+	handle /api/* {
+		reverse_proxy backend:3000
+	}
+
+	handle {
+		reverse_proxy frontend:3000
+	}
+}

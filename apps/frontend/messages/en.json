@@ -1,0 +1,439 @@
+{
+  "app": {
+    "name": "Faktur",
+    "tagline": "Invoicing and accounting SaaS for Czech and Slovak businesses"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "expenses": "Expenses",
+    "bank": "Bank",
+    "contacts": "Contacts",
+    "settings": "Settings",
+    "billing": "Billing",
+    "primaryNavigation": "Primary navigation"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light mode",
+    "dark": "Dark mode"
+  },
+  "language": {
+    "label": "Language",
+    "cs": "Čeština",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "marketing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "login": "Log in",
+      "signup": "Sign up"
+    },
+    "hero": {
+      "title": "Invoicing for Czech and Slovak businesses, without the paperwork",
+      "subtitle": "Issue invoices by voice over Telegram or WhatsApp, export them to ISDOC, and stay confident everything matches ARES and current regulations.",
+      "cta": "Try it for free",
+      "secondaryCta": "See how it works"
+    },
+    "invoiceMockup": {
+      "status": "Paid",
+      "issuedTo": "Bill to",
+      "dueDate": "Due date",
+      "subtotal": "Subtotal",
+      "vat": "VAT 21%",
+      "total": "Total due",
+      "isdocTag": "ISDOC export",
+      "aresTag": "Verified via ARES"
+    },
+    "features": {
+      "title": "Everything you need to invoice, in one place",
+      "isdoc": {
+        "title": "ISDOC export",
+        "description": "Invoices in ISDOC format, ready for your accountant and the tax authorities — no manual re-entry."
+      },
+      "aiVoice": {
+        "title": "Invoice from a voice message",
+        "description": "Dictate an invoice over Telegram or WhatsApp and let AI prepare a draft for a quick review."
+      },
+      "compliance": {
+        "title": "ARES and regulatory compliance",
+        "description": "We verify customer details against the ARES registry, so your invoices never miss an IČO or DIČ."
+      },
+      "multilang": {
+        "title": "Czech, Slovak, and English",
+        "description": "The whole app and your invoices work in three languages from day one."
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "steps": {
+        "capture": {
+          "title": "Capture the invoice",
+          "description": "Create it manually, or just send a voice note over Telegram or WhatsApp."
+        },
+        "draft": {
+          "title": "AI drafts it, ARES verifies",
+          "description": "AI transcribes the details and looks up your customer in the ARES registry — you always review before anything becomes final."
+        },
+        "issue": {
+          "title": "Issue with ISDOC and a QR code",
+          "description": "Confirm the draft and Faktur generates a compliant ISDOC file plus a scannable payment QR code."
+        },
+        "getPaid": {
+          "title": "Get paid, automatically tracked",
+          "description": "Send it by email, share a payment link, and let overdue reminders and bank reconciliation do the rest."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Ready to simplify your invoicing?",
+      "subtitle": "Free to start, no credit card required.",
+      "cta": "Create your account"
+    },
+    "footer": {
+      "tagline": "Modern invoicing for Czech and Slovak businesses.",
+      "product": {
+        "title": "Product",
+        "features": "Features",
+        "pricing": "Pricing"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About"
+      },
+      "legal": {
+        "title": "Legal",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy"
+      },
+      "account": {
+        "title": "Account",
+        "login": "Log in",
+        "signup": "Sign up"
+      },
+      "copyright": "© {year} {name}. All rights reserved."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back. Here's a quick overview of your invoices and payments."
+  },
+  "invoices": {
+    "title": "Invoices",
+    "description": "All issued and in-progress invoices.",
+    "newInvoice": "New invoice",
+    "empty": "There are no invoices yet.",
+    "columns": {
+      "number": "Number",
+      "contact": "Contact",
+      "amount": "Amount",
+      "status": "Status",
+      "dueDate": "Due date"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_review": "Pending review",
+      "issued": "Issued",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    },
+    "aiDisclaimer": "Created from a voice message — please review all details before issuing.",
+    "unnumbered": "Number will be assigned when issued"
+  },
+  "publicInvoice": {
+    "title": "Invoice {number}",
+    "unnumbered": "Draft invoice",
+    "issueDateLabel": "Issue date",
+    "dueDateLabel": "Due date",
+    "variableSymbolLabel": "Variable symbol",
+    "lineItemsTitle": "Items",
+    "columns": {
+      "description": "Description",
+      "quantity": "Qty",
+      "unitPrice": "Unit price",
+      "vatRate": "VAT",
+      "lineTotal": "Total"
+    },
+    "subtotalLabel": "Subtotal",
+    "vatTotalLabel": "VAT total",
+    "totalLabel": "Total due",
+    "paymentTitle": "Pay this invoice",
+    "paymentInstructions": "Scan the QR code with your banking app to pre-fill an instant bank transfer.",
+    "paymentDisclaimer": "This is a standard Czech/Slovak instant bank-transfer QR code (SPAYD / \"QR Platba\"), not a card payment.",
+    "noBankAccount": "The issuer hasn't set up a bank account for online payment yet. Please contact them directly to arrange payment.",
+    "notFoundTitle": "Invoice not found",
+    "notFoundBody": "This link is invalid or has expired. Please contact the sender for a new one."
+  },
+  "expenses": {
+    "title": "Expenses",
+    "description": "An overview of incoming invoices and other costs.",
+    "newExpense": "New expense",
+    "empty": "There are no expenses yet.",
+    "columns": {
+      "date": "Date",
+      "supplier": "Supplier",
+      "description": "Description",
+      "amount": "Amount",
+      "vatRate": "VAT rate",
+      "category": "Category"
+    },
+    "uncategorized": "Uncategorized",
+    "form": {
+      "title": "New expense",
+      "description": "Record an incoming invoice or other cost.",
+      "supplierNameLabel": "Supplier",
+      "supplierNamePlaceholder": "Supplier name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "e.g. office supplies purchase",
+      "amountLabel": "Amount",
+      "vatRateLabel": "VAT rate (%)",
+      "currencyLabel": "Currency",
+      "expenseDateLabel": "Expense date",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "e.g. Office supplies",
+      "receiptFileUrlLabel": "Receipt link (optional)",
+      "receiptFileUrlPlaceholder": "https://…",
+      "receiptFileUrlHint": "File uploads aren't supported yet — paste a link to an already-uploaded receipt.",
+      "cancel": "Cancel",
+      "submit": "Save expense"
+    }
+  },
+  "bank": {
+    "title": "Bank",
+    "description": "Upload a bank statement (CSV) and reconcile incoming payments against issued invoices.",
+    "import": {
+      "label": "Import statement",
+      "selectFile": "Choose CSV file",
+      "noFileSelected": "No file selected",
+      "submit": "Upload and match",
+      "importing": "Uploading and matching…",
+      "formatHint": "Expected format: CSV with columns date, amount, currency, variable_symbol, counterparty_account, counterparty_name — see apps/backend/README.md.",
+      "success": "Imported {total} transaction(s), {matched} matched automatically.",
+      "invalidFile": "Please choose a .csv file.",
+      "parseError": "Couldn't process the file: {message}"
+    },
+    "empty": "There are no bank transactions yet. Upload a statement above.",
+    "filterLabel": "Show",
+    "filterAll": "All",
+    "columns": {
+      "date": "Date",
+      "amount": "Amount",
+      "variableSymbol": "Variable symbol",
+      "counterparty": "Counterparty",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "unmatched": "Unmatched",
+      "matched": "Matched",
+      "ignored": "Ignored"
+    },
+    "matchedWithInvoice": "Invoice {invoiceId}",
+    "matchAction": "Match",
+    "ignoreAction": "Ignore",
+    "matchForm": {
+      "invoiceIdPlaceholder": "Invoice ID",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "required": "Enter an invoice ID."
+    }
+  },
+  "contacts": {
+    "title": "Contacts",
+    "comingSoon": "Contact management is coming soon."
+  },
+  "settings": {
+    "title": "Settings",
+    "comingSoon": "Account settings are coming soon.",
+    "channels": {
+      "title": "Linked channels",
+      "description": "Link Telegram or WhatsApp to create invoices straight from a voice message.",
+      "back": "Back to settings",
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp",
+      "statusLinked": "Linked",
+      "statusNotLinked": "Not linked",
+      "linkedAs": "Linked as {handle}",
+      "whatsappComingSoon": "WhatsApp support is coming in a later phase (Telegram ships first).",
+      "linkAnother": "Link another Telegram account to this business.",
+      "linkTelegram": "Link Telegram",
+      "generating": "Generating code…",
+      "codeInstructions": "Open Telegram and either click the link below or send this code to the bot manually. The code is single-use and only valid for a short time.",
+      "openInTelegram": "Open in Telegram",
+      "copy": "Copy",
+      "copied": "Copied",
+      "expiresNote": "The code expires in 10 minutes."
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "description": "Generate keys to call the Faktur API from your own systems — e.g. to create or list invoices programmatically.",
+      "back": "Back to settings",
+      "empty": "No API keys yet.",
+      "columns": {
+        "name": "Name",
+        "prefix": "Key",
+        "lastUsed": "Last used",
+        "created": "Created",
+        "status": "Status"
+      },
+      "neverUsed": "Never used",
+      "statusActive": "Active",
+      "statusRevoked": "Revoked",
+      "revoke": "Revoke",
+      "revoking": "Revoking…",
+      "confirmRevoke": "Revoke this key? Anything using it will stop working immediately.",
+      "generate": {
+        "button": "Generate new key",
+        "title": "Generate a new API key",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Accounting system integration",
+        "nameHint": "A label to help you recognize this key later — not shown to anyone else.",
+        "cancel": "Cancel",
+        "submit": "Generate key",
+        "generating": "Generating…"
+      },
+      "reveal": {
+        "title": "Your new API key",
+        "warning": "Copy this key now — you won't be able to see it again. Only a short prefix is stored for identification.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "done": "Done"
+      },
+      "docsHint": "Use it as a bearer token: Authorization: Bearer <key>. See apps/backend/README.md for the full API reference."
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "comingSoon": "Subscription management is coming soon."
+  },
+  "auth": {
+    "signup": {
+      "title": "Create an account",
+      "subtitle": "Create your account and start invoicing in minutes.",
+      "companyNameLabel": "Company name",
+      "companyNamePlaceholder": "Acme Consulting s.r.o.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Choose a strong password",
+      "tosLabel": "I agree to the <tos>Terms of Service</tos>.",
+      "submit": "Create account",
+      "emailTakenError": "An account with this email already exists.",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "login": {
+      "title": "Log in",
+      "subtitle": "Welcome back — log in to your account.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Your password",
+      "submit": "Log in",
+      "orContinueWith": "or continue with",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithDiscord": "Continue with Discord",
+      "error": "Incorrect email or password.",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up"
+    }
+  },
+  "legal": {
+    "pendingReviewLabel": "Final legal wording pending review by an attorney.",
+    "terms": {
+      "title": "Terms of Service",
+      "intro": "This page summarizes what the Terms of Service (VOP) will cover. It is a structural overview, not binding legal text — the actual wording is still being drafted by an attorney with e-commerce/SaaS experience.",
+      "sections": {
+        "asIs": {
+          "title": "\"As-is\" disclaimer",
+          "summary": "This section will state that the software is provided as-is, without warranty of fitness for a particular purpose and without any guarantee that its output complies with current or future tax legislation."
+        },
+        "noAdvice": {
+          "title": "Not tax or legal advice",
+          "summary": "This section will clarify that Faktur is a document-generation and automation tool, not a tax advisor or accountant, and that nothing in the product constitutes tax or legal advice."
+        },
+        "userResponsibility": {
+          "title": "User responsibility for invoice content",
+          "summary": "This section will state that the issuing tenant is solely responsible for verifying all invoice data — amounts, VAT rates, counterparty details, and due dates — before issuing."
+        },
+        "aiDisclaimer": {
+          "title": "AI-drafted invoice disclaimer",
+          "summary": "This section will explain that voice-transcribed, AI-extracted invoice data is always a draft requiring human review, and that clicking \"Issue\" is the point at which the user assumes full responsibility for its content."
+        },
+        "aresDisclaimer": {
+          "title": "ARES registry data disclaimer",
+          "summary": "This section will state that counterparty data is fetched as-is from the public ARES registry and that the platform does not guarantee its accuracy or currency."
+        },
+        "liability": {
+          "title": "Limitation of liability",
+          "summary": "This section will limit or exclude liability for indirect damages — fines, penalties, tax reassessments — arising from invoice content, to the extent permitted under Czech law."
+        },
+        "governingLaw": {
+          "title": "Governing law & jurisdiction",
+          "summary": "This section will state that the contractual relationship is governed by Czech law and that disputes are resolved in Czech courts."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This page summarizes what the privacy policy will cover. It is a structural overview, not binding legal text — the actual wording is still being prepared by an attorney specializing in data protection.",
+      "sections": {
+        "dataCollected": {
+          "title": "What data we collect",
+          "summary": "This section will list the data we collect — tenant account and company details, contact details of counterparties, and the content of issued invoices."
+        },
+        "purpose": {
+          "title": "Why we process it",
+          "summary": "This section will explain that data is processed to deliver the service and to meet the legal obligation to retain accounting records for roughly 10 years."
+        },
+        "sharing": {
+          "title": "Who we share it with",
+          "summary": "This section will name the processors we share data with — Stripe and GoPay for subscription billing, OpenAI for voice-message transcription when the AI feature is used, and the public ARES registry when verifying counterparty details."
+        },
+        "rights": {
+          "title": "Your rights",
+          "summary": "This section will describe the right to access, export, and delete personal data, subject to the legal retention carve-out for accounting records."
+        },
+        "dataResidency": {
+          "title": "Where data is stored",
+          "summary": "This section will confirm that data is hosted within the EU and does not move outside the European legal framework."
+        }
+      }
+    }
+  },
+  "about": {
+    "title": "About Faktur",
+    "lead": "Faktur is an invoicing tool built on top of the open standards that already run Czech and Slovak invoicing — not around them.",
+    "whatTitle": "What Faktur does",
+    "whatBody": "Faktur issues invoices in the ISDOC format, pulls counterparty details straight from the ARES business registry, and keeps your numbering sequence and VAT rates consistent, so you're not stuck copying last month's spreadsheet template. You can also send a voice note over Telegram or WhatsApp and Faktur will turn it into a draft invoice ready for a quick check — it's only final once you confirm it yourself.",
+    "whoTitle": "Who it's for",
+    "whoBody": "We're building this for freelancers and small businesses in Czech Republic and Slovakia — people who invoice themselves between client meetings, not a finance department with its own IT staff.",
+    "whyTitle": "Why we built this",
+    "whyBody": "Invoicing always took us longer than it should have — looking up a company ID in ARES, tracking the next invoice number by hand, opening a laptop just to bill one line item on the way back from a client. We wanted something that handles that part and leaves us to decide only what actually matters: whether the invoice is right before it goes out."
+  },
+  "common": {
+    "comingSoonBody": "This section is under construction.",
+    "logOut": "Log out",
+    "accountMenu": "Account menu"
+  },
+  "municipalityPages": {
+    "regionLabel": "Region",
+    "districtLabel": "District",
+    "countryCz": "Czechia",
+    "countrySk": "Slovakia",
+    "breadcrumbBrowse": "Towns & municipalities",
+    "heading": "Invoicing software for {name}",
+    "lead": "Issue invoices, track VAT, and export to ISDOC — whether you do business in {name} or anywhere else in Czechia and Slovakia.",
+    "body": "Faktur issues invoices in the ISDOC format, pulls counterparty details straight from the ARES business registry, and keeps your numbering sequence and VAT rates consistent. Over Telegram or WhatsApp, just send a voice note and Faktur turns it into a draft invoice ready for a quick check — it's only final once you confirm it yourself.",
+    "localNote": "ISDOC, ARES, and VAT rates work the same way across all of Czechia and Slovakia — {district} included. Faktur doesn't need any local setup or a separate account.",
+    "cta": "Try it for free",
+    "browseCta": "View all towns and municipalities in {region}",
+    "indexTitle": "Invoicing software by town and municipality",
+    "indexLead": "Faktur works just as reliably for businesses anywhere in Czechia and Slovakia. Pick a region to find the page for your town or municipality.",
+    "indexCoverageNote": "Currently covering {count} towns and municipalities across Czechia and Slovakia.",
+    "regionMunicipalityCount": "{count} towns and municipalities",
+    "expandListLabel": "Show list",
+    "backToIndex": "Back to the town & municipality directory"
+  }
+}

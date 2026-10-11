@@ -1,0 +1,439 @@
+{
+  "app": {
+    "name": "Faktur",
+    "tagline": "Fakturační a účetní SaaS pro české a slovenské podnikatele"
+  },
+  "nav": {
+    "dashboard": "Přehled",
+    "invoices": "Faktury",
+    "expenses": "Výdaje",
+    "bank": "Banka",
+    "contacts": "Kontakty",
+    "settings": "Nastavení",
+    "billing": "Předplatné",
+    "primaryNavigation": "Hlavní navigace"
+  },
+  "theme": {
+    "toggle": "Přepnout motiv",
+    "light": "Světlý režim",
+    "dark": "Tmavý režim"
+  },
+  "language": {
+    "label": "Jazyk",
+    "cs": "Čeština",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "marketing": {
+    "nav": {
+      "features": "Funkce",
+      "pricing": "Ceník",
+      "login": "Přihlásit se",
+      "signup": "Registrace"
+    },
+    "hero": {
+      "title": "Fakturace pro české a slovenské podnikatele, bez papírování",
+      "subtitle": "Vystavujte faktury hlasem přes Telegram nebo WhatsApp, exportujte je do ISDOC a mějte jistotu, že vše odpovídá pravidlům ARES i platné legislativě.",
+      "cta": "Vyzkoušet zdarma",
+      "secondaryCta": "Zjistit více"
+    },
+    "invoiceMockup": {
+      "status": "Zaplaceno",
+      "issuedTo": "Odběratel",
+      "dueDate": "Splatnost",
+      "subtotal": "Mezisoučet",
+      "vat": "DPH 21 %",
+      "total": "Celkem k úhradě",
+      "isdocTag": "Export ISDOC",
+      "aresTag": "Ověřeno v ARES"
+    },
+    "features": {
+      "title": "Vše, co potřebujete k fakturaci, na jednom místě",
+      "isdoc": {
+        "title": "Export do ISDOC",
+        "description": "Faktury ve formátu ISDOC připravené pro účetní i státní správu, bez ručního přepisování."
+      },
+      "aiVoice": {
+        "title": "Faktura z hlasové zprávy",
+        "description": "Nadiktujte fakturu do Telegramu nebo WhatsAppu a nechte AI připravit koncept k rychlé kontrole."
+      },
+      "compliance": {
+        "title": "Soulad s ARES a legislativou",
+        "description": "Údaje o odběratelích ověřujeme proti ARES, takže na faktuře nikdy nechybí IČO ani DIČ."
+      },
+      "multilang": {
+        "title": "Čeština, slovenština i angličtina",
+        "description": "Celá aplikace i faktury fungují ve třech jazycích od prvního dne."
+      }
+    },
+    "howItWorks": {
+      "title": "Jak to funguje",
+      "steps": {
+        "capture": {
+          "title": "Zachyťte fakturu",
+          "description": "Vytvořte ji ručně, nebo jednoduše pošlete hlasovou zprávu přes Telegram nebo WhatsApp."
+        },
+        "draft": {
+          "title": "AI připraví návrh, ARES ověří",
+          "description": "AI přepíše detaily a vyhledá vašeho zákazníka v registru ARES — vy vždy vše zkontrolujete, než je cokoliv finální."
+        },
+        "issue": {
+          "title": "Vystavte s ISDOC a QR kódem",
+          "description": "Potvrďte návrh a Faktur vygeneruje ISDOC soubor podle normy a QR kód pro platbu."
+        },
+        "getPaid": {
+          "title": "Dostaňte zaplaceno, automaticky",
+          "description": "Pošlete fakturu e-mailem, sdílejte platební odkaz a nechte upomínky a párování plateb udělat zbytek."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Připraveni zjednodušit fakturaci?",
+      "subtitle": "Začněte zdarma, bez nutnosti platební karty.",
+      "cta": "Vytvořit účet"
+    },
+    "footer": {
+      "tagline": "Moderní fakturace pro české a slovenské firmy.",
+      "product": {
+        "title": "Produkt",
+        "features": "Funkce",
+        "pricing": "Ceník"
+      },
+      "company": {
+        "title": "Společnost",
+        "about": "O nás"
+      },
+      "legal": {
+        "title": "Právní informace",
+        "terms": "Obchodní podmínky",
+        "privacy": "Ochrana osobních údajů"
+      },
+      "account": {
+        "title": "Účet",
+        "login": "Přihlásit se",
+        "signup": "Registrovat se"
+      },
+      "copyright": "© {year} {name}. Všechna práva vyhrazena."
+    }
+  },
+  "dashboard": {
+    "title": "Přehled",
+    "welcome": "Vítejte zpět. Zde najdete rychlý přehled vašich faktur a plateb."
+  },
+  "invoices": {
+    "title": "Faktury",
+    "description": "Seznam všech vystavených i rozpracovaných faktur.",
+    "newInvoice": "Nová faktura",
+    "empty": "Zatím zde nejsou žádné faktury.",
+    "columns": {
+      "number": "Číslo",
+      "contact": "Odběratel",
+      "amount": "Částka",
+      "status": "Stav",
+      "dueDate": "Splatnost"
+    },
+    "status": {
+      "draft": "Koncept",
+      "pending_review": "Čeká na kontrolu",
+      "issued": "Vystaveno",
+      "paid": "Zaplaceno",
+      "cancelled": "Zrušeno"
+    },
+    "aiDisclaimer": "Vytvořeno z hlasové zprávy — zkontrolujte prosím všechny údaje před vystavením.",
+    "unnumbered": "Číslo bude přiděleno při vystavení"
+  },
+  "publicInvoice": {
+    "title": "Faktura {number}",
+    "unnumbered": "Koncept faktury",
+    "issueDateLabel": "Datum vystavení",
+    "dueDateLabel": "Datum splatnosti",
+    "variableSymbolLabel": "Variabilní symbol",
+    "lineItemsTitle": "Položky",
+    "columns": {
+      "description": "Popis",
+      "quantity": "Množství",
+      "unitPrice": "Cena za jednotku",
+      "vatRate": "DPH",
+      "lineTotal": "Celkem"
+    },
+    "subtotalLabel": "Mezisoučet",
+    "vatTotalLabel": "DPH celkem",
+    "totalLabel": "Celkem k úhradě",
+    "paymentTitle": "Uhradit fakturu",
+    "paymentInstructions": "Naskenujte QR kód v bankovní aplikaci a předvyplňte si okamžitý bankovní převod.",
+    "paymentDisclaimer": "Jde o standardní český/slovenský QR kód pro bankovní převod (SPAYD / „QR Platba“), nikoli o platbu kartou.",
+    "noBankAccount": "Vystavovatel zatím nemá nastavený bankovní účet pro online platbu. Ohledně úhrady ho prosím kontaktujte přímo.",
+    "notFoundTitle": "Faktura nenalezena",
+    "notFoundBody": "Tento odkaz je neplatný nebo již vypršel. Pro nový odkaz kontaktujte odesílatele."
+  },
+  "expenses": {
+    "title": "Výdaje",
+    "description": "Přehled přijatých faktur a dalších nákladů.",
+    "newExpense": "Nový výdaj",
+    "empty": "Zatím zde nejsou žádné výdaje.",
+    "columns": {
+      "date": "Datum",
+      "supplier": "Dodavatel",
+      "description": "Popis",
+      "amount": "Částka",
+      "vatRate": "Sazba DPH",
+      "category": "Kategorie"
+    },
+    "uncategorized": "Nezařazeno",
+    "form": {
+      "title": "Nový výdaj",
+      "description": "Zaznamenejte přijatou fakturu nebo jiný náklad.",
+      "supplierNameLabel": "Dodavatel",
+      "supplierNamePlaceholder": "Název dodavatele",
+      "descriptionLabel": "Popis",
+      "descriptionPlaceholder": "Např. nákup kancelářských potřeb",
+      "amountLabel": "Částka",
+      "vatRateLabel": "Sazba DPH (%)",
+      "currencyLabel": "Měna",
+      "expenseDateLabel": "Datum výdaje",
+      "categoryLabel": "Kategorie",
+      "categoryPlaceholder": "Např. Kancelářské potřeby",
+      "receiptFileUrlLabel": "Odkaz na doklad (nepovinné)",
+      "receiptFileUrlPlaceholder": "https://…",
+      "receiptFileUrlHint": "Nahrávání souborů zatím není podporováno — vložte odkaz na již nahraný doklad.",
+      "cancel": "Zrušit",
+      "submit": "Uložit výdaj"
+    }
+  },
+  "bank": {
+    "title": "Banka",
+    "description": "Nahrajte bankovní výpis (CSV) a spárujte příchozí platby s vystavenými fakturami.",
+    "import": {
+      "label": "Import výpisu",
+      "selectFile": "Vybrat CSV soubor",
+      "noFileSelected": "Nevybrán žádný soubor",
+      "submit": "Nahrát a spárovat",
+      "importing": "Nahrávám a párovám…",
+      "formatHint": "Očekávaný formát: CSV se sloupci date, amount, currency, variable_symbol, counterparty_account, counterparty_name — viz apps/backend/README.md.",
+      "success": "Naimportováno {total} transakcí, {matched} spárováno automaticky.",
+      "invalidFile": "Vyberte prosím soubor ve formátu .csv.",
+      "parseError": "Soubor se nepodařilo zpracovat: {message}"
+    },
+    "empty": "Zatím zde nejsou žádné bankovní transakce. Nahrajte výpis výše.",
+    "filterLabel": "Zobrazit",
+    "filterAll": "Vše",
+    "columns": {
+      "date": "Datum",
+      "amount": "Částka",
+      "variableSymbol": "Variabilní symbol",
+      "counterparty": "Protistrana",
+      "status": "Stav",
+      "actions": "Akce"
+    },
+    "status": {
+      "unmatched": "Nespárováno",
+      "matched": "Spárováno",
+      "ignored": "Ignorováno"
+    },
+    "matchedWithInvoice": "Faktura {invoiceId}",
+    "matchAction": "Spárovat",
+    "ignoreAction": "Ignorovat",
+    "matchForm": {
+      "invoiceIdPlaceholder": "ID faktury",
+      "confirm": "Potvrdit",
+      "cancel": "Zrušit",
+      "required": "Zadejte ID faktury."
+    }
+  },
+  "contacts": {
+    "title": "Kontakty",
+    "comingSoon": "Správa kontaktů bude brzy k dispozici."
+  },
+  "settings": {
+    "title": "Nastavení",
+    "comingSoon": "Nastavení účtu bude brzy k dispozici.",
+    "channels": {
+      "title": "Propojené kanály",
+      "description": "Propojte Telegram nebo WhatsApp a vytvářejte faktury přímo z hlasové zprávy.",
+      "back": "Zpět na nastavení",
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp",
+      "statusLinked": "Propojeno",
+      "statusNotLinked": "Nepropojeno",
+      "linkedAs": "Propojeno jako {handle}",
+      "whatsappComingSoon": "WhatsApp bude podporován v pozdější fázi (nejprve Telegram).",
+      "linkAnother": "Propojit další účet Telegramu s touto firmou.",
+      "linkTelegram": "Propojit Telegram",
+      "generating": "Generuji kód…",
+      "codeInstructions": "Otevřete si Telegram a buď klikněte na odkaz níže, nebo pošlete tento kód botovi ručně. Kód je jednorázový a platí jen po omezenou dobu.",
+      "openInTelegram": "Otevřít v Telegramu",
+      "copy": "Kopírovat",
+      "copied": "Zkopírováno",
+      "expiresNote": "Kód vyprší za 10 minut."
+    },
+    "apiKeys": {
+      "title": "API klíče",
+      "description": "Vygenerujte klíče pro volání API Faktur z vlastních systémů — např. pro programové vytváření nebo výpis faktur.",
+      "back": "Zpět na nastavení",
+      "empty": "Zatím žádné API klíče.",
+      "columns": {
+        "name": "Název",
+        "prefix": "Klíč",
+        "lastUsed": "Naposledy použit",
+        "created": "Vytvořen",
+        "status": "Stav"
+      },
+      "neverUsed": "Nikdy nepoužit",
+      "statusActive": "Aktivní",
+      "statusRevoked": "Zrušen",
+      "revoke": "Zrušit",
+      "revoking": "Ruším…",
+      "confirmRevoke": "Zrušit tento klíč? Vše, co ho používá, okamžitě přestane fungovat.",
+      "generate": {
+        "button": "Vygenerovat nový klíč",
+        "title": "Vygenerovat nový API klíč",
+        "nameLabel": "Název",
+        "namePlaceholder": "např. Integrace účetního systému",
+        "nameHint": "Popisek, podle kterého tento klíč později poznáte — nikde jinde se nezobrazuje.",
+        "cancel": "Zrušit",
+        "submit": "Vygenerovat klíč",
+        "generating": "Generuji…"
+      },
+      "reveal": {
+        "title": "Váš nový API klíč",
+        "warning": "Zkopírujte si tento klíč teď — znovu ho už neuvidíte. Ukládá se pouze krátký prefix pro identifikaci.",
+        "copy": "Kopírovat",
+        "copied": "Zkopírováno",
+        "done": "Hotovo"
+      },
+      "docsHint": "Použijte jej jako bearer token: Authorization: Bearer <klíč>. Úplnou dokumentaci API najdete v apps/backend/README.md."
+    }
+  },
+  "billing": {
+    "title": "Předplatné",
+    "comingSoon": "Správa předplatného bude brzy k dispozici."
+  },
+  "auth": {
+    "signup": {
+      "title": "Vytvořit účet",
+      "subtitle": "Založte si účet a začněte fakturovat během pár minut.",
+      "companyNameLabel": "Název společnosti",
+      "companyNamePlaceholder": "Novák Consulting s.r.o.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vas@email.cz",
+      "passwordLabel": "Heslo",
+      "passwordPlaceholder": "Zvolte silné heslo",
+      "tosLabel": "Souhlasím s <tos>obchodními podmínkami</tos>.",
+      "submit": "Vytvořit účet",
+      "emailTakenError": "Účet s tímto e-mailem již existuje.",
+      "genericError": "Něco se pokazilo. Zkuste to prosím znovu."
+    },
+    "login": {
+      "title": "Přihlásit se",
+      "subtitle": "Vítejte zpět — přihlaste se ke svému účtu.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vas@email.cz",
+      "passwordLabel": "Heslo",
+      "passwordPlaceholder": "Vaše heslo",
+      "submit": "Přihlásit se",
+      "orContinueWith": "nebo pokračovat přes",
+      "continueWithGoogle": "Pokračovat přes Google",
+      "continueWithDiscord": "Pokračovat přes Discord",
+      "error": "Nesprávný e-mail nebo heslo.",
+      "noAccount": "Nemáte účet?",
+      "signupLink": "Zaregistrujte se"
+    }
+  },
+  "legal": {
+    "pendingReviewLabel": "Finální právní znění čeká na revizi advokátem.",
+    "terms": {
+      "title": "Obchodní podmínky",
+      "intro": "Tato stránka shrnuje, co budou obchodní podmínky (VOP) upravovat. Jde o strukturální přehled, ne o závazný právní text — ten teprve připravuje advokát se specializací na e-commerce/SaaS.",
+      "sections": {
+        "asIs": {
+          "title": "Poskytnutí služby „tak, jak je“",
+          "summary": "Tato část bude popisovat, že software je poskytován bez záruky za konkrétní účel a bez garance, že jeho výstupy odpovídají aktuální ani budoucí daňové či účetní legislativě."
+        },
+        "noAdvice": {
+          "title": "Nejde o daňové ani právní poradenství",
+          "summary": "Tato část ujasní, že Faktur je nástroj pro tvorbu a automatizaci dokumentů, nikoli daňový poradce nebo účetní, a nic v aplikaci nepředstavuje daňové ani právní poradenství."
+        },
+        "userResponsibility": {
+          "title": "Odpovědnost za obsah faktury",
+          "summary": "Tato část stanoví, že za správnost všech údajů na faktuře — částek, sazeb DPH, údajů o odběrateli i splatnosti — odpovídá výhradně vystavující podnikatel, nikoli platforma."
+        },
+        "aiDisclaimer": {
+          "title": "Upozornění k AI návrhům faktur",
+          "summary": "Tato část vysvětlí, že faktury vytvořené z hlasové zprávy jsou vždy jen návrh vyžadující kontrolu a že kliknutím na „Vystavit“ přebírá odpovědnost za obsah uživatel, bez ohledu na to, jak návrh vznikl."
+        },
+        "aresDisclaimer": {
+          "title": "Data z registru ARES",
+          "summary": "Tato část uvede, že údaje o protistranách se načítají tak, jak jsou vedeny ve veřejném registru ARES, a že platforma neručí za jejich přesnost ani aktuálnost."
+        },
+        "liability": {
+          "title": "Omezení odpovědnosti",
+          "summary": "Tato část omezí nebo vyloučí odpovědnost za nepřímé škody (pokuty, penále, doměrky) vzniklé z obsahu faktur, v rozsahu, který dovoluje české právo."
+        },
+        "governingLaw": {
+          "title": "Rozhodné právo a soudní příslušnost",
+          "summary": "Tato část určí, že se smluvní vztah řídí českým právem a případné spory řeší české soudy."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Zásady ochrany osobních údajů",
+      "intro": "Tato stránka shrnuje, co budou zásady ochrany osobních údajů (GDPR) upravovat. Jde o strukturální přehled, ne o závazný právní text — ten teprve připravuje advokát se specializací na ochranu osobních údajů.",
+      "sections": {
+        "dataCollected": {
+          "title": "Jaké údaje shromažďujeme",
+          "summary": "Tato část vyjmenuje shromažďovaná data — přihlašovací a firemní údaje tenanta, kontaktní údaje odběratelů a obsah vystavených faktur."
+        },
+        "purpose": {
+          "title": "Účel zpracování",
+          "summary": "Tato část vysvětlí, že údaje zpracováváme za účelem poskytování služby a plnění zákonné povinnosti uchovávat účetní doklady po dobu přibližně 10 let."
+        },
+        "sharing": {
+          "title": "Komu údaje předáváme",
+          "summary": "Tato část popíše zpracovatele, se kterými údaje sdílíme — platební brány Stripe a GoPay pro fakturaci předplatného, OpenAI pro přepis hlasových zpráv při použití AI funkce a veřejný registr ARES při ověřování údajů o odběratelích."
+        },
+        "rights": {
+          "title": "Práva subjektu údajů",
+          "summary": "Tato část popíše právo na přístup, export a výmaz osobních údajů, s výjimkou dokladů, které musíme ze zákona uchovávat po dobu účetní archivace."
+        },
+        "dataResidency": {
+          "title": "Kde jsou data uložena",
+          "summary": "Tato část potvrdí, že data jsou hostována v rámci EU a nepřesouvají se mimo evropský právní rámec."
+        }
+      }
+    }
+  },
+  "about": {
+    "title": "O Faktur",
+    "lead": "Faktur je fakturační nástroj postavený nad otevřenými standardy, které v Česku a na Slovensku už fungují — ne vedle nich.",
+    "whatTitle": "Co Faktur dělá",
+    "whatBody": "Faktur vystavuje faktury ve formátu ISDOC, dotahuje údaje o odběratelích přímo z ARES a hlídá návaznost číselných řad i sazby DPH, takže se nemusíte spoléhat na kopírování starých šablon v Excelu. Přes Telegram nebo WhatsApp navíc stačí nadiktovat hlasovku a Faktur z ní připraví návrh faktury k rychlé kontrole — hotovo je ale až ve chvíli, kdy ji sami potvrdíte.",
+    "whoTitle": "Pro koho je Faktur",
+    "whoBody": "Stavíme ho pro OSVČ a malé firmy v Česku a na Slovensku — pro lidi, kteří fakturují sami sobě mezi schůzkami, ne pro účetní oddělení s vlastním IT.",
+    "whyTitle": "Proč jsme to postavili",
+    "whyBody": "Fakturace nám samotným vždycky zabírala víc času, než jsme čekali — hledání IČO v ARES, ruční hlídání číselné řady, otevírání notebooku jen kvůli jedné položce po cestě od klienta. Chtěli jsme nástroj, který tohle vezme na sebe a nechá nám prostor rozhodovat se jen o tom, co je opravdu na nás: jestli je faktura v pořádku, než ji pošleme."
+  },
+  "common": {
+    "comingSoonBody": "Tato sekce se připravuje.",
+    "logOut": "Odhlásit se",
+    "accountMenu": "Uživatelský účet"
+  },
+  "municipalityPages": {
+    "regionLabel": "Kraj",
+    "districtLabel": "Okres",
+    "countryCz": "Česko",
+    "countrySk": "Slovensko",
+    "breadcrumbBrowse": "Města a obce",
+    "heading": "Fakturační software pro {name}",
+    "lead": "Vystavujte faktury, hlídejte DPH a exportujte do ISDOC — ať podnikáte v {name} nebo kdekoli jinde v Česku a na Slovensku.",
+    "body": "Faktur vystavuje faktury ve formátu ISDOC, dotahuje údaje o odběratelích přímo z registru ARES a hlídá návaznost číselných řad i sazby DPH. Přes Telegram nebo WhatsApp stačí nadiktovat hlasovku a Faktur z ní připraví návrh faktury k rychlé kontrole — hotovo je až ve chvíli, kdy ji sami potvrdíte.",
+    "localNote": "ISDOC, ARES i sazby DPH platí stejně po celém Česku a na Slovensku — {district} nevyjímaje. Faktur nevyžaduje žádné místní nastavení ani nový účet navíc.",
+    "cta": "Vyzkoušet zdarma",
+    "browseCta": "Zobrazit všechna města a obce v {region}",
+    "indexTitle": "Fakturační software podle měst a obcí",
+    "indexLead": "Faktur funguje stejně spolehlivě pro podnikatele kdekoli v Česku a na Slovensku. Vyberte kraj a najděte stránku pro své město nebo obec.",
+    "indexCoverageNote": "Aktuálně {count} měst a obcí v Česku a na Slovensku.",
+    "regionMunicipalityCount": "{count} měst a obcí",
+    "expandListLabel": "Zobrazit seznam",
+    "backToIndex": "Zpět na přehled měst a obcí"
+  }
+}

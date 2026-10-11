@@ -1,0 +1,49 @@
+{
+  "name": "@faktur/frontend",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Next.js App Router dashboard for the CZ/SK invoicing SaaS — i18n (cs/sk/en) via next-intl, Tailwind CSS + shadcn/ui foundations. See blueprint §2 (tech stack), §6 (AI-draft review UX), §7 (i18n), §9 (legal/liability disclaimers).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "next-intl": "^3.22.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.2",
+    "class-variance-authority": "^0.7.0",
+    "lucide-react": "^0.436.0",
+    "next-themes": "^0.3.0",
+    "@faktur/cz-compliance": "workspace:*",
+    "qrcode": "^1.5.4",
+    "next-auth": "5.0.0-beta.25",
+    "@auth/drizzle-adapter": "^1.7.4",
+    "drizzle-orm": "^0.33.0",
+    "postgres": "^3.4.4",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.9.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/bcryptjs": "^2.4.6",
+    "tailwindcss": "^3.4.10",
+    "tailwindcss-animate": "^1.0.7",
+    "postcss": "^8.4.41",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,40 @@
+[project]
+name = "ai-service"
+version = "0.1.0"
+description = "Voice-to-invoice AI microservice (Telegram/WhatsApp -> Whisper -> GPT-4o extraction -> ARES enrichment -> backend draft API). See docs/CZ-SK-Invoicing-SaaS-Blueprint.md §6."
+requires-python = ">=3.11"
+readme = "README.md"
+
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.30,<1.0",
+    "httpx>=0.27,<1.0",
+    "pydantic>=2.7,<3.0",
+    "pydantic-settings>=2.3,<3.0",
+    "python-dotenv>=1.0,<2.0",
+    # openai: used by app/pipeline/voice_to_invoice.py for Whisper transcription
+    # (transcribe_audio) and GPT-4o structured extraction (extract_invoice_data).
+    # Both call sites are stubbed for now (see README "Real vs stubbed" section),
+    # so this is not imported yet, but is a required dep once implemented.
+    "openai>=1.30,<2.0",
+    # python-telegram-bot: NOT required for the webhook path itself (we parse
+    # Telegram's raw JSON update with our own Pydantic models in
+    # app/webhooks/telegram.py and call the Bot API directly via httpx for
+    # getFile/download), but useful later for higher-level helpers (e.g.
+    # sending the in-chat draft summary reply from blueprint §6 step 8).
+    "python-telegram-bot>=21.0,<22.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<9.0",
+    "pytest-asyncio>=0.23,<1.0",
+    "ruff>=0.5,<1.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]

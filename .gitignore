@@ -1,0 +1,59 @@
+# --- Node / pnpm / Turborepo ---
+node_modules/
+.pnpm-store/
+.turbo/
+dist/
+build/
+out/
+*.tsbuildinfo
+.npm/
+.eslintcache
+
+# --- Next.js ---
+.next/
+next-env.d.ts
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Python / FastAPI ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Postgres / data volumes (if bind-mounted locally) ---
+pgdata/
+redisdata/
+
+# --- Logs ---
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# --- Editors / OS ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Testing / coverage ---
+coverage/
+.nyc_output/
+
+# --- Misc secrets/keys ---
+*.pem
+*.key
+!Caddyfile

@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Considered light/dark palette for a CZ/SK invoicing & accounting product.
+ * One accent hue only ("ink teal", ~186°) used sparingly for primary
+ * actions, links, and small highlights (icon chips, focus rings) — chosen
+ * to read as precise/trustworthy (ledger-ink, stamp-of-approval) rather
+ * than the generic purple→blue SaaS gradient or neon-on-black look. All
+ * neutrals (background/card/secondary/muted/border) carry a slight cool
+ * blue-grey bias toward that same hue instead of pure grey, so the whole
+ * UI reads as one deliberate palette rather than "grey box + brand color."
+ * Status colors (warning = AI-draft/pending review, success = paid,
+ * destructive = cancelled) are unrelated to the accent on purpose — they
+ * need to stay legible and unambiguous, not "on-brand".
+ */
+@layer base {
+  :root {
+    --background: 210 25% 98%;
+    --foreground: 215 32% 13%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 32% 13%;
+
+    --primary: 186 83% 24%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 205 20% 95%;
+    --secondary-foreground: 215 32% 13%;
+
+    --muted: 205 20% 95%;
+    --muted-foreground: 215 14% 40%;
+
+    --accent: 186 45% 92%;
+    --accent-foreground: 186 83% 22%;
+
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 92% 42%;
+    --warning-foreground: 0 0% 100%;
+
+    --success: 142 55% 32%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 205 18% 88%;
+    --input: 205 18% 88%;
+    --ring: 186 83% 30%;
+
+    --radius: 0.5rem;
+  }
+
+  /*
+   * Dark palette lives in two places on purpose:
+   *  - the media query below is a pre-hydration / no-JS fallback that only
+   *    kicks in when the OS prefers dark AND no explicit theme class has
+   *    been applied yet (`:not(.light)`), so it never fights an explicit
+   *    choice.
+   *  - the `.dark` class block is the real source of truth once
+   *    `next-themes` (see components/theme-provider.tsx) sets `class="dark"`
+   *    on `<html>` per the user's stored/system preference.
+   * Keep both in sync if these values ever change.
+   */
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+      --background: 213 30% 8%;
+      --foreground: 205 20% 95%;
+
+      --card: 213 26% 11%;
+      --card-foreground: 205 20% 95%;
+
+      --primary: 186 65% 55%;
+      --primary-foreground: 213 30% 8%;
+
+      --secondary: 213 20% 16%;
+      --secondary-foreground: 205 20% 95%;
+
+      --muted: 213 20% 16%;
+      --muted-foreground: 210 14% 65%;
+
+      --accent: 186 40% 18%;
+      --accent-foreground: 186 70% 70%;
+
+      --destructive: 0 62% 50%;
+      --destructive-foreground: 0 0% 100%;
+
+      --warning: 38 85% 55%;
+      --warning-foreground: 222 25% 8%;
+
+      --success: 142 45% 45%;
+      --success-foreground: 0 0% 100%;
+
+      --border: 213 18% 20%;
+      --input: 213 18% 20%;
+      --ring: 186 60% 55%;
+    }
+  }
+
+  .dark {
+    --background: 213 30% 8%;
+    --foreground: 205 20% 95%;
+
+    --card: 213 26% 11%;
+    --card-foreground: 205 20% 95%;
+
+    --primary: 186 65% 55%;
+    --primary-foreground: 213 30% 8%;
+
+    --secondary: 213 20% 16%;
+    --secondary-foreground: 205 20% 95%;
+
+    --muted: 213 20% 16%;
+    --muted-foreground: 210 14% 65%;
+
+    --accent: 186 40% 18%;
+    --accent-foreground: 186 70% 70%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 85% 55%;
+    --warning-foreground: 222 25% 8%;
+
+    --success: 142 45% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 213 18% 20%;
+    --input: 213 18% 20%;
+    --ring: 186 60% 55%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -1,0 +1,666 @@
+/**
+ * Shared-schema, multi-tenant Postgres schema (blueprint §4).
+ *
+ * Every tenant-owned table carries a `tenantId` column and is protected by a
+ * Postgres Row-Level Security policy (see `rls-policies.sql`) rather than
+ * relying on application code to always remember `WHERE tenant_id = ...`.
+ * A handful of tables are deliberately NOT tenant-scoped — they're global
+ * catalog/reference data (see the comment on each) — and have no RLS policy.
+ *
+ * This file is the source of truth for `drizzle-kit generate`/`migrate`.
+ * RLS policies themselves live in `rls-policies.sql`, applied separately
+ * (Drizzle Kit has no first-class RLS DSL in the version pinned here).
+ */
+import { sql } from "drizzle-orm";
+import {
+  boolean,
+  integer,
+  jsonb,
+  numeric,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+export const tenantRoleEnum = pgEnum("tenant_role", [
+  "owner",
+  "admin",
+  "accountant",
+  "viewer",
+]);
+
+export const invoiceStatusEnum = pgEnum("invoice_status", [
+  "draft",
+  "pending_review",
+  "issued",
+  "paid",
+  "cancelled",
+]);
+
+// NOTE: the already-built `apps/ai-service` (see its `app/pipeline/schemas.py`
+// `Channel` enum) only knows about bare "telegram" / "whatsapp" as a
+// messaging channel identifier, not "ai_telegram" / "ai_whatsapp". The
+// mapping from one to the other happens in `InvoicesService.createDraft`
+// (backend-side), not here — see the comment there. Keeping the blueprint's
+// original `ai_telegram` / `ai_whatsapp` values in the DB enum so
+// `source` unambiguously distinguishes an AI-originated invoice from a
+// manually created or API-created one at the storage layer.
+// `"recurring"` added by the recurring-invoice-templates generation job
+// (src/recurring-invoices/recurring-invoice-generation.service.ts): the
+// daily `@Cron` scan materializes a real `invoices` row from a due
+// `recurring_invoice_templates` row, and that row's origin needs its own
+// `source` value distinct from `manual`/`api`/AI-originated — reusing e.g.
+// `api` would misrepresent an unattended scheduled job as an authenticated
+// API-key caller. NOTE for whichever task owns this schema file: this value
+// was added by the recurring-invoices build, not the original
+// schema-extension pass — flagging it explicitly per that task's brief.
+export const invoiceSourceEnum = pgEnum("invoice_source", [
+  "manual",
+  "ai_telegram",
+  "ai_whatsapp",
+  "api",
+  "recurring",
+]);
+
+export const channelTypeEnum = pgEnum("channel_type", ["telegram", "whatsapp"]);
+
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "trialing",
+  "active",
+  "past_due",
+  "canceled",
+]);
+
+export const billingProviderEnum = pgEnum("billing_provider", ["stripe", "gopay"]);
+
+export const recurringFrequencyEnum = pgEnum("recurring_frequency", [
+  "weekly",
+  "monthly",
+  "quarterly",
+  "yearly",
+]);
+
+export const bankStatementSourceEnum = pgEnum("bank_statement_source", ["csv", "mt940"]);
+
+export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
+  "unmatched",
+  "matched",
+  "ignored",
+]);
+
+// ---------------------------------------------------------------------------
+// tenants — the tenant root row itself. Not "tenant-scoped" in the tenant_id
+// sense (it IS the tenant); see rls-policies.sql for how it's still RLS'd
+// via its own `id`, and the bootstrap caveat noted there.
+// ---------------------------------------------------------------------------
+export const tenants = pgTable("tenants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  companyName: text("company_name").notNull(),
+  legalName: text("legal_name").notNull(),
+  ico: varchar("ico", { length: 8 }),
+  dic: varchar("dic", { length: 14 }),
+  dicVatPayer: boolean("dic_vat_payer").notNull().default(false),
+  addressStreet: text("address_street"),
+  addressCity: text("address_city"),
+  addressPostalCode: varchar("address_postal_code", { length: 10 }),
+  addressCountry: varchar("address_country", { length: 2 }).notNull().default("CZ"),
+  bankAccountNumber: text("bank_account_number"),
+  bankAccountBankCode: varchar("bank_account_bank_code", { length: 4 }),
+  bankAccountIban: text("bank_account_iban"),
+  defaultLocale: varchar("default_locale", { length: 5 }).notNull().default("cs"),
+  // FK declared with a lazy () => ... reference because subscriptionPlans is
+  // defined further down this file (Drizzle resolves these at query-build
+  // time, not at module-evaluation time, so forward references are fine).
+  subscriptionPlanId: uuid("subscription_plan_id").references(() => subscriptionPlans.id),
+  subscriptionStatus: subscriptionStatusEnum("subscription_status")
+    .notNull()
+    .default("trialing"),
+  stripeCustomerId: text("stripe_customer_id"),
+  gopayPayerId: text("gopay_payer_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// users — NOT tenant-scoped (no tenant_id): a user can belong to multiple
+// tenants via `tenant_memberships`. Auth.js/NextAuth (blueprint §2) owns the
+// session/credential flow; this table is just the identity record.
+//
+// `name`/`emailVerified`/`image` are the columns `@auth/drizzle-adapter`'s
+// standard Postgres adapter expects on the users table it manages (it reads
+// `emailVerified`, not `email_verified`, at the JS/TS property level — the
+// snake_case DB column name below is fine, Drizzle handles the mapping).
+// `passwordHash` stays: the adapter itself never reads or writes it — it's
+// only consulted by this app's own Credentials-provider logic — so it
+// coexists with the adapter-managed columns without conflict.
+// ---------------------------------------------------------------------------
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: varchar("email", { length: 320 }).notNull(),
+    // Nullable: a user who only ever signs in via Google OAuth has no
+    // local password hash.
+    passwordHash: text("password_hash"),
+    name: text("name"),
+    emailVerified: timestamp("email_verified", { withTimezone: true }),
+    image: text("image"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    emailUnique: uniqueIndex("users_email_unique").on(table.email),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// accounts / sessions / verification_tokens — Auth.js (`@auth/drizzle-
+// adapter`) tables, standard Postgres adapter shape. Like `users` above,
+// these are user-level identity data, NOT tenant-owned business data: a
+// single user's OAuth accounts/sessions aren't scoped to any one tenant (the
+// same user can hold memberships in several tenants via
+// `tenant_memberships`, which IS tenant-scoped and RLS'd). None of these
+// four tables carries a `tenant_id` column, and none has an RLS policy in
+// `rls-policies.sql` — same category of exemption as `users` itself
+// (identity-only, no tenant concept applies), NOT the same category as the
+// `channel_links` exemption (which does have a `tenant_id` but is exempted
+// for a chicken-and-egg bootstrap reason — see rls-policies.sql). See
+// rls-policies.sql's "Deliberately EXCLUDED" section for the matching note.
+// ---------------------------------------------------------------------------
+export const accounts = pgTable(
+  "accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("provider_account_id").notNull(),
+    refreshToken: text("refresh_token"),
+    accessToken: text("access_token"),
+    expiresAt: integer("expires_at"),
+    tokenType: text("token_type"),
+    scope: text("scope"),
+    idToken: text("id_token"),
+    sessionState: text("session_state"),
+  },
+  (table) => ({
+    providerAccountUnique: uniqueIndex("accounts_provider_provider_account_id_unique").on(
+      table.provider,
+      table.providerAccountId,
+    ),
+  }),
+);
+
+export const sessions = pgTable("sessions", {
+  sessionToken: text("session_token").primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { withTimezone: true }).notNull(),
+});
+
+export const verificationTokens = pgTable(
+  "verification_tokens",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { withTimezone: true }).notNull(),
+  },
+  (table) => ({
+    compositePk: primaryKey({ columns: [table.identifier, table.token] }),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// tenant_memberships — join table binding users to tenants with a role.
+// Tenant-scoped: RLS'd.
+// ---------------------------------------------------------------------------
+export const tenantMemberships = pgTable(
+  "tenant_memberships",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: tenantRoleEnum("role").notNull().default("viewer"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantUserUnique: uniqueIndex("tenant_memberships_tenant_user_unique").on(
+      table.tenantId,
+      table.userId,
+    ),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// contacts — tenant-scoped counterparties (customers/suppliers).
+// ---------------------------------------------------------------------------
+export const contacts = pgTable("contacts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  ico: varchar("ico", { length: 8 }),
+  dic: varchar("dic", { length: 14 }),
+  legalName: text("legal_name").notNull(),
+  // Added for the invoice-emailing / overdue-payment-reminder feature: both
+  // `EmailService.sendInvoiceEmail`/`sendPaymentReminderEmail` need a real
+  // recipient address, and neither the blueprint §4 representative schema
+  // nor the original `contacts` table had one. Nullable — a contact created
+  // without an email (e.g. from an AI voice draft, ARES lookup, or manual
+  // entry before the email is known) simply can't be emailed yet;
+  // `InvoicesService.sendInvoice`/`InvoiceRemindersCron` both check for this
+  // explicitly rather than assuming it's always set.
+  email: text("email"),
+  addressStreet: text("address_street"),
+  addressCity: text("address_city"),
+  addressPostalCode: varchar("address_postal_code", { length: 10 }),
+  addressCountry: varchar("address_country", { length: 2 }).notNull().default("CZ"),
+  aresVerifiedAt: timestamp("ares_verified_at", { withTimezone: true }),
+  // Nullable tri-state on purpose: null = "unknown/unverified", never
+  // defaulted to false — surfacing a confirmed false as unverified data
+  // would be worse than surfacing "needs verification" (blueprint §6 step 7,
+  // §1 ARES/ADISREG gap).
+  isVatPayer: boolean("is_vat_payer"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// invoices — tenant-scoped. Carries the liability audit-trail fields from
+// §9 (issuedByUserId/issuedAt/aiDraftReviewedAt) plus a few fields beyond the
+// §4 "representative schema" list that are needed to actually implement §6
+// step 8 ("storing raw transcript + extracted JSON + ARES match
+// confidence") and step 10 (needs_attention flag) — called out inline.
+// ---------------------------------------------------------------------------
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // onDelete: "restrict" (not "cascade") deliberately — §8 notes CZ/SK tax
+    // law requires ~10-year invoice retention; a tenant row must never be
+    // deletable in a way that silently cascades away financial records.
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "restrict" }),
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "restrict" }),
+    // Nullable: a draft (status = pending_review) has no number yet — CZ/SK
+    // law requires immutable sequential numbering allocated only at issue
+    // time (blueprint §6 step 8).
+    invoiceNumber: varchar("invoice_number", { length: 32 }),
+    variableSymbol: varchar("variable_symbol", { length: 10 }),
+    issueDate: timestamp("issue_date", { withTimezone: true, mode: "date" }),
+    dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
+    currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+    status: invoiceStatusEnum("status").notNull().default("draft"),
+    source: invoiceSourceEnum("source").notNull().default("manual"),
+    aiConfidenceScore: numeric("ai_confidence_score", { precision: 4, scale: 3 }),
+    // --- Liability audit trail (blueprint §9) ---
+    // The "Issue" button click is the legally significant moment a human
+    // takes responsibility for the invoice content — tracked independently
+    // from whenever an AI draft was originally produced.
+    issuedByUserId: uuid("issued_by_user_id").references(() => users.id),
+    issuedAt: timestamp("issued_at", { withTimezone: true }),
+    aiDraftReviewedAt: timestamp("ai_draft_reviewed_at", { withTimezone: true }),
+    // --- Additions beyond the §4 list, needed for §6 step 8/10 ---
+    // True if ARES lookup failed or extraction confidence was low; the
+    // draft is still created (never silently dropped), just flagged for a
+    // human to look at more carefully during review.
+    needsAttention: boolean("needs_attention").notNull().default(false),
+    // Verbatim { rawTranscript, extractedData, aresEnrichment } payload as
+    // received from the AI microservice, kept for audit purposes alongside
+    // the liability trail above — see InvoicesService.createDraft.
+    rawAiPayload: jsonb("raw_ai_payload"),
+    // --- Client-portal + email-reminder additions ---
+    // Shareable, unguessable id for the no-auth client-portal view (a client
+    // opens `/portal/invoices/:publicToken` without ever authenticating).
+    // Deliberately a SEPARATE random value from `id`, not `id` itself: `id`s
+    // are sequentially-ish generated uuids used internally in URLs/logs/FKs
+    // throughout the app, so treating `id` as the public secret would mean
+    // every internal reference doubles as a bearer credential. Looking an
+    // invoice up by this column requires bypassing RLS via a narrow
+    // SECURITY DEFINER function (see `get_public_invoice_view` in
+    // rls-policies.sql) since no tenant context exists yet at that point —
+    // same pattern as `find_tenant_id_by_stripe_customer_id`.
+    publicToken: uuid("public_token").notNull().defaultRandom(),
+    // Set when the invoice is actually emailed/delivered to the contact;
+    // null means "never sent" (e.g. still a draft, or issued but not yet
+    // dispatched). Distinct from `issuedAt` — an invoice can be issued
+    // (numbered, legally final) before it's sent.
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    lastReminderSentAt: timestamp("last_reminder_sent_at", { withTimezone: true }),
+    reminderCount: integer("reminder_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    // A given invoice number must be unique per tenant per (implied) year —
+    // enforced together with invoice_number_sequences at issuance time; this
+    // index guards against two concurrent issuances colliding.
+    tenantInvoiceNumberUnique: uniqueIndex("invoices_tenant_invoice_number_unique").on(
+      table.tenantId,
+      table.invoiceNumber,
+    ),
+    publicTokenUnique: uniqueIndex("invoices_public_token_unique").on(table.publicToken),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// invoice_line_items — tenant-scoped.
+// ---------------------------------------------------------------------------
+export const invoiceLineItems = pgTable("invoice_line_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  invoiceId: uuid("invoice_id")
+    .notNull()
+    .references(() => invoices.id, { onDelete: "cascade" }),
+  description: text("description").notNull(),
+  quantity: numeric("quantity", { precision: 12, scale: 3 }).notNull().default("1"),
+  unitPrice: numeric("unit_price", { precision: 14, scale: 2 }).notNull(),
+  vatRate: numeric("vat_rate", { precision: 5, scale: 2 }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// invoice_number_sequences — tenant-scoped. One row per (tenant, year);
+// legally required sequential numbering (blueprint §4, §6 step 8/9).
+// ---------------------------------------------------------------------------
+export const invoiceNumberSequences = pgTable(
+  "invoice_number_sequences",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "restrict" }),
+    year: integer("year").notNull(),
+    lastNumber: integer("last_number").notNull().default(0),
+  },
+  (table) => ({
+    tenantYearUnique: uniqueIndex("invoice_number_sequences_tenant_year_unique").on(
+      table.tenantId,
+      table.year,
+    ),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// subscription_plans — GLOBAL catalog table, not tenant-scoped, no RLS.
+// Prices stored as integer minor units (halere/cents) to avoid float
+// rounding issues.
+// ---------------------------------------------------------------------------
+export const subscriptionPlans = pgTable("subscription_plans", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  priceCzkMinor: integer("price_czk_minor").notNull(),
+  priceEurMinor: integer("price_eur_minor").notNull(),
+  // null = unlimited.
+  invoiceLimit: integer("invoice_limit"),
+  features: jsonb("features").notNull().default(sql`'{}'::jsonb`),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// subscription_events — tenant-scoped. Webhook idempotency log (blueprint
+// §5): every Stripe/GoPay event lands here, keyed by (provider,
+// provider_event_id), BEFORE any side effect is processed.
+// ---------------------------------------------------------------------------
+export const subscriptionEvents = pgTable(
+  "subscription_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    provider: billingProviderEnum("provider").notNull(),
+    providerEventId: text("provider_event_id").notNull(),
+    eventType: text("event_type").notNull(),
+    rawPayload: jsonb("raw_payload").notNull(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    providerEventUnique: uniqueIndex("subscription_events_provider_event_unique").on(
+      table.provider,
+      table.providerEventId,
+    ),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// channel_links — tenant-scoped. Binds a Telegram/WhatsApp external user id
+// to a tenant (blueprint §6 step 2).
+// ---------------------------------------------------------------------------
+export const channelLinks = pgTable(
+  "channel_links",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    channel: channelTypeEnum("channel").notNull(),
+    externalUserId: text("external_user_id"),
+    linkingToken: text("linking_token"),
+    isActive: boolean("is_active").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    channelExternalUserUnique: uniqueIndex(
+      "channel_links_channel_external_user_unique",
+    ).on(table.channel, table.externalUserId),
+    linkingTokenUnique: uniqueIndex("channel_links_linking_token_unique").on(
+      table.linkingToken,
+    ),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// ares_cache — GLOBAL, not tenant-scoped, no RLS. ARES registry data is
+// public and identical regardless of which tenant looked it up; caching it
+// per-tenant would just multiply redundant calls against ARES's undocumented
+// rate limit (blueprint §1 known gap, §6 step 7).
+// ---------------------------------------------------------------------------
+export const aresCache = pgTable("ares_cache", {
+  ico: varchar("ico", { length: 8 }).primaryKey(),
+  responsePayload: jsonb("response_payload").notNull(),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// tos_versions — GLOBAL, not tenant-scoped, no RLS. One row per published
+// VOP/ToS version (blueprint §9).
+// ---------------------------------------------------------------------------
+export const tosVersions = pgTable(
+  "tos_versions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    version: varchar("version", { length: 32 }).notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }).notNull().defaultNow(),
+    contentHash: text("content_hash").notNull(),
+  },
+  (table) => ({
+    versionUnique: uniqueIndex("tos_versions_version_unique").on(table.version),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// tos_acceptances — tenant-scoped. Liability evidence trail (blueprint §9):
+// every signup and every material VOP update requires a fresh, timestamped,
+// logged acceptance.
+// ---------------------------------------------------------------------------
+export const tosAcceptances = pgTable("tos_acceptances", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  tosVersionId: uuid("tos_version_id")
+    .notNull()
+    .references(() => tosVersions.id),
+  acceptedAt: timestamp("accepted_at", { withTimezone: true }).notNull().defaultNow(),
+  // Stored as text rather than the Postgres-native `inet` type for
+  // portability across Drizzle versions in this scaffold — swap to a native
+  // `inet` column later if IP-range querying is ever needed.
+  ipAddress: varchar("ip_address", { length: 45 }),
+});
+
+// ---------------------------------------------------------------------------
+// recurring_invoice_templates — tenant-scoped. A saved "issue an invoice
+// like this every N weeks/months/quarters/years" template; a scheduler job
+// (not implemented here) reads `is_active` templates whose `next_run_date`
+// has arrived and creates a real draft invoice from the snapshot.
+// ---------------------------------------------------------------------------
+export const recurringInvoiceTemplates = pgTable("recurring_invoice_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  // Restrict, not cascade: a contact with an active recurring template
+  // shouldn't be silently deletable out from under a standing billing
+  // arrangement — same reasoning as `invoices.contactId`, just without the
+  // 10-year legal-retention angle (this is a template, not an issued
+  // document).
+  contactId: uuid("contact_id")
+    .notNull()
+    .references(() => contacts.id, { onDelete: "restrict" }),
+  frequency: recurringFrequencyEnum("frequency").notNull(),
+  // e.g. frequency=monthly, intervalCount=2 => every 2 months.
+  intervalCount: integer("interval_count").notNull().default(1),
+  nextRunDate: timestamp("next_run_date", { withTimezone: true, mode: "date" }).notNull(),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  // Deliberate simplification vs. real relational `invoice_line_items`:
+  // templates aren't real invoices yet (no invoice_id to hang line items
+  // off), so the line-item shape is snapshotted as jsonb instead:
+  // Array<{ description, quantity, unitPrice, vatRate }>. The scheduler job
+  // that materializes a real invoice from this template is responsible for
+  // copying these into proper `invoice_line_items` rows.
+  lineItemsSnapshot: jsonb("line_items_snapshot").notNull().default(sql`'[]'::jsonb`),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// expenses — tenant-scoped incoming invoices / cost records. Like
+// `invoices`, these are real accounting documents subject to CZ/SK
+// retention requirements (blueprint §8), so `tenantId` uses `onDelete:
+// "restrict"` rather than "cascade" for the same reason `invoices` does.
+// ---------------------------------------------------------------------------
+export const expenses = pgTable("expenses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "restrict" }),
+  // Nullable + "set null" on delete: not every expense has a matched
+  // contact record (e.g. a one-off receipt from a supplier never entered as
+  // a contact), and losing the contact match later shouldn't take the
+  // expense record down with it — `supplierNameRaw` is the fallback.
+  supplierContactId: uuid("supplier_contact_id").references(() => contacts.id, {
+    onDelete: "set null",
+  }),
+  supplierNameRaw: text("supplier_name_raw"),
+  description: text("description").notNull(),
+  amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
+  vatRate: numeric("vat_rate", { precision: 5, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  expenseDate: timestamp("expense_date", { withTimezone: true, mode: "date" }).notNull(),
+  category: text("category"),
+  receiptFileUrl: text("receipt_file_url"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// api_keys — tenant-scoped credentials for the public API (blueprint-
+// adjacent, new surface). Only `key_prefix` (for UI identification, e.g.
+// "fk_live_ab12...") and a `key_hash` are ever stored — the plaintext key is
+// shown to the user exactly once at creation time and never persisted.
+// ---------------------------------------------------------------------------
+export const apiKeys = pgTable(
+  "api_keys",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    keyPrefix: text("key_prefix").notNull(),
+    keyHash: text("key_hash").notNull(),
+    // e.g. ['invoices:write', 'invoices:read'].
+    scopes: text("scopes").array().notNull().default(sql`'{}'::text[]`),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    // Soft-revocation: keys are marked revoked, never deleted, so a leaked/
+    // rotated key's audit trail (name, prefix, last use) survives revocation.
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (table) => ({
+    keyHashUnique: uniqueIndex("api_keys_key_hash_unique").on(table.keyHash),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// bank_statement_imports — tenant-scoped. One row per uploaded CSV/MT940
+// bank-statement file; `bank_transactions` rows below hang off it.
+// ---------------------------------------------------------------------------
+export const bankStatementImports = pgTable("bank_statement_imports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  filename: text("filename").notNull(),
+  source: bankStatementSourceEnum("source").notNull(),
+  importedAt: timestamp("imported_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// bank_transactions — tenant-scoped. Individual statement lines, optionally
+// reconciled against an issued invoice (`matchedInvoiceId`) for automated
+// payment tracking.
+// ---------------------------------------------------------------------------
+export const bankTransactions = pgTable("bank_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  importId: uuid("import_id")
+    .notNull()
+    .references(() => bankStatementImports.id, { onDelete: "cascade" }),
+  transactionDate: timestamp("transaction_date", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  variableSymbol: text("variable_symbol"),
+  counterpartyAccount: text("counterparty_account"),
+  counterpartyName: text("counterparty_name"),
+  // Nullable + "set null": an invoice being deleted/renumbered shouldn't
+  // take the underlying bank-statement row down with it — the transaction
+  // itself is a fact about the tenant's real bank account regardless of
+  // reconciliation state.
+  matchedInvoiceId: uuid("matched_invoice_id").references(() => invoices.id, {
+    onDelete: "set null",
+  }),
+  status: bankTransactionStatusEnum("status").notNull().default("unmatched"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
