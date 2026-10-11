@@ -1,0 +1,36 @@
+# Billanta on the shared VPS, appended to /etc/caddy/Caddyfile.
+# No domain yet: plain HTTP on the IP at :8090 (ufw allows 8090/tcp).
+# Once a domain points here, replace `http://:8090` with `billanta.com` (and
+# the Cloudflare tls block the other sites use), add HSTS, and update
+# NEXTAUTH_URL / NEXT_PUBLIC_SITE_URL.
+http://:8090 {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		Permissions-Policy "camera=(self), geolocation=(), microphone=(self)"
+		-Server
+	}
+
+	handle /ai-webhook/* {
+		reverse_proxy localhost:3112
+	}
+
+	# Same split as the repo's Caddyfile: /api/v1 and /api/docs are NestJS,
+	# the rest of /api (Auth.js, upload/download proxies) is Next.js.
+	handle /api/v1/* {
+		reverse_proxy localhost:3111 {
+			header_up -X-Guest-Ip
+		}
+	}
+
+	handle /api/docs* {
+		reverse_proxy localhost:3111
+	}
+
+	handle {
+		reverse_proxy localhost:3110
+	}
+}

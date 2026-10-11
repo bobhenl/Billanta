@@ -48,6 +48,7 @@
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenants FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON tenants;
 CREATE POLICY tenant_isolation ON tenants
   USING (id = current_setting('app.current_tenant_id', true)::uuid);
 
@@ -57,6 +58,7 @@ CREATE POLICY tenant_isolation ON tenants
 ALTER TABLE tenant_memberships ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_memberships FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON tenant_memberships;
 CREATE POLICY tenant_isolation ON tenant_memberships
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -67,6 +69,7 @@ CREATE POLICY tenant_isolation ON tenant_memberships
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contacts FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON contacts;
 CREATE POLICY tenant_isolation ON contacts
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -77,6 +80,7 @@ CREATE POLICY tenant_isolation ON contacts
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoices FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON invoices;
 CREATE POLICY tenant_isolation ON invoices
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -87,6 +91,7 @@ CREATE POLICY tenant_isolation ON invoices
 ALTER TABLE invoice_line_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoice_line_items FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON invoice_line_items;
 CREATE POLICY tenant_isolation ON invoice_line_items
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -97,6 +102,7 @@ CREATE POLICY tenant_isolation ON invoice_line_items
 ALTER TABLE invoice_number_sequences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoice_number_sequences FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON invoice_number_sequences;
 CREATE POLICY tenant_isolation ON invoice_number_sequences
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -107,6 +113,7 @@ CREATE POLICY tenant_isolation ON invoice_number_sequences
 ALTER TABLE subscription_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscription_events FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON subscription_events;
 CREATE POLICY tenant_isolation ON subscription_events
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -117,6 +124,7 @@ CREATE POLICY tenant_isolation ON subscription_events
 ALTER TABLE tos_acceptances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tos_acceptances FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON tos_acceptances;
 CREATE POLICY tenant_isolation ON tos_acceptances
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -127,6 +135,7 @@ CREATE POLICY tenant_isolation ON tos_acceptances
 ALTER TABLE recurring_invoice_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recurring_invoice_templates FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON recurring_invoice_templates;
 CREATE POLICY tenant_isolation ON recurring_invoice_templates
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -137,6 +146,7 @@ CREATE POLICY tenant_isolation ON recurring_invoice_templates
 ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE expenses FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON expenses;
 CREATE POLICY tenant_isolation ON expenses
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -147,6 +157,7 @@ CREATE POLICY tenant_isolation ON expenses
 ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE api_keys FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON api_keys;
 CREATE POLICY tenant_isolation ON api_keys
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -157,6 +168,7 @@ CREATE POLICY tenant_isolation ON api_keys
 ALTER TABLE bank_statement_imports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bank_statement_imports FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON bank_statement_imports;
 CREATE POLICY tenant_isolation ON bank_statement_imports
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -167,6 +179,7 @@ CREATE POLICY tenant_isolation ON bank_statement_imports
 ALTER TABLE bank_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bank_transactions FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON bank_transactions;
 CREATE POLICY tenant_isolation ON bank_transactions
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -175,6 +188,7 @@ CREATE POLICY tenant_isolation ON bank_transactions
 ALTER TABLE bank_connections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bank_connections FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON bank_connections;
 CREATE POLICY tenant_isolation ON bank_connections
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -183,6 +197,7 @@ CREATE POLICY tenant_isolation ON bank_connections
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON projects;
 CREATE POLICY tenant_isolation ON projects
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -190,6 +205,7 @@ CREATE POLICY tenant_isolation ON projects
 ALTER TABLE time_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE time_entries FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON time_entries;
 CREATE POLICY tenant_isolation ON time_entries
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -206,6 +222,7 @@ CREATE POLICY tenant_isolation ON time_entries
 ALTER TABLE backup_destinations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE backup_destinations FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON backup_destinations;
 CREATE POLICY tenant_isolation ON backup_destinations
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -213,6 +230,7 @@ CREATE POLICY tenant_isolation ON backup_destinations
 ALTER TABLE backup_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE backup_runs FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON backup_runs;
 CREATE POLICY tenant_isolation ON backup_runs
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -468,7 +486,7 @@ GRANT EXECUTE ON FUNCTION list_tenant_ids() TO faktur_app;
 -- database.
 -- Return type changed (amount_paid added) — CREATE OR REPLACE cannot do that.
 DROP FUNCTION IF EXISTS get_public_invoice_view(uuid);
-CREATE FUNCTION get_public_invoice_view(p_public_token uuid)
+CREATE OR REPLACE FUNCTION get_public_invoice_view(p_public_token uuid)
 RETURNS TABLE (
   id uuid,
   tenant_id uuid,
@@ -614,7 +632,7 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_supplier_info(uuid) TO faktur_app;
 -- Returns the owning tenant + whether this was the first view, so the
 -- backend can send the "customer opened the invoice" notification once.
 DROP FUNCTION IF EXISTS record_public_invoice_view(uuid);
-CREATE FUNCTION record_public_invoice_view(p_public_token uuid)
+CREATE OR REPLACE FUNCTION record_public_invoice_view(p_public_token uuid)
 RETURNS TABLE (tenant_id uuid, invoice_id uuid, invoice_number varchar(32), first_view boolean)
 LANGUAGE sql
 SECURITY DEFINER
@@ -669,7 +687,7 @@ GRANT EXECUTE ON FUNCTION record_public_invoice_view(uuid) TO faktur_app;
 --     and `EXECUTE` revoked from `PUBLIC`/granted only to `faktur_app` —
 --     identical hardening to every other function in this file.
 DROP FUNCTION IF EXISTS find_active_api_key_by_hash(text);
-CREATE FUNCTION find_active_api_key_by_hash(p_key_hash text)
+CREATE OR REPLACE FUNCTION find_active_api_key_by_hash(p_key_hash text)
 RETURNS TABLE (
   id uuid,
   tenant_id uuid,
@@ -824,6 +842,7 @@ GRANT EXECUTE ON FUNCTION list_tenant_memberships_for_user(uuid) TO faktur_app;
 ALTER TABLE invoice_templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoice_templates FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON invoice_templates;
 CREATE POLICY tenant_isolation ON invoice_templates
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -831,6 +850,7 @@ CREATE POLICY tenant_isolation ON invoice_templates
 ALTER TABLE tenant_invitations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_invitations FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON tenant_invitations;
 CREATE POLICY tenant_isolation ON tenant_invitations
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -903,6 +923,7 @@ GRANT EXECUTE ON FUNCTION accept_tenant_invitation(text, uuid) TO faktur_app;
 ALTER TABLE tenant_bank_accounts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_bank_accounts FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON tenant_bank_accounts;
 CREATE POLICY tenant_isolation ON tenant_bank_accounts
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -913,6 +934,7 @@ CREATE POLICY tenant_isolation ON tenant_bank_accounts
 ALTER TABLE invoice_attachments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoice_attachments FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON invoice_attachments;
 CREATE POLICY tenant_isolation ON invoice_attachments
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -920,6 +942,7 @@ CREATE POLICY tenant_isolation ON invoice_attachments
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications FORCE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS tenant_isolation ON notifications;
 CREATE POLICY tenant_isolation ON notifications
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
@@ -1030,7 +1053,7 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_qr_details(uuid) TO faktur_app;
 -- respond_to_public_quote: the second no-session WRITE — only for an issued
 -- quote that has no answer yet, and only the four client_response* columns.
 DROP FUNCTION IF EXISTS get_public_quote_response(uuid);
-CREATE FUNCTION get_public_quote_response(p_public_token uuid)
+CREATE OR REPLACE FUNCTION get_public_quote_response(p_public_token uuid)
 RETURNS TABLE (client_response varchar(16), client_responded_at timestamptz, client_response_name text)
 LANGUAGE sql
 STABLE
@@ -1047,7 +1070,7 @@ REVOKE ALL ON FUNCTION get_public_quote_response(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_quote_response(uuid) TO faktur_app;
 
 DROP FUNCTION IF EXISTS respond_to_public_quote(uuid, text, text, text);
-CREATE FUNCTION respond_to_public_quote(p_public_token uuid, p_response text, p_name text, p_note text)
+CREATE OR REPLACE FUNCTION respond_to_public_quote(p_public_token uuid, p_response text, p_name text, p_note text)
 RETURNS TABLE (tenant_id uuid, invoice_id uuid, invoice_number varchar(32))
 LANGUAGE sql
 SECURITY DEFINER
@@ -1079,7 +1102,7 @@ GRANT EXECUTE ON FUNCTION respond_to_public_quote(uuid, text, text, text) TO fak
 -- billing-provider ids and every other tenant column never leave here.
 -- ---------------------------------------------------------------------------
 DROP FUNCTION IF EXISTS get_public_profile(text);
-CREATE FUNCTION get_public_profile(p_slug text)
+CREATE OR REPLACE FUNCTION get_public_profile(p_slug text)
 RETURNS TABLE (
   company_name text,
   legal_name text,
@@ -1124,7 +1147,7 @@ REVOKE ALL ON FUNCTION get_public_profile(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_profile(text) TO faktur_app;
 
 DROP FUNCTION IF EXISTS get_public_profile_logo(text);
-CREATE FUNCTION get_public_profile_logo(p_slug text)
+CREATE OR REPLACE FUNCTION get_public_profile_logo(p_slug text)
 RETURNS TABLE (logo_data text, logo_mime varchar(32))
 LANGUAGE sql
 SECURITY DEFINER
@@ -1144,7 +1167,7 @@ GRANT EXECUTE ON FUNCTION get_public_profile_logo(text) TO faktur_app;
 -- Whether another company already holds the slug (the caller's own tenant
 -- can't see other rows through RLS). Returns only a boolean.
 DROP FUNCTION IF EXISTS public_profile_slug_taken(text, uuid);
-CREATE FUNCTION public_profile_slug_taken(p_slug text, p_tenant_id uuid)
+CREATE OR REPLACE FUNCTION public_profile_slug_taken(p_slug text, p_tenant_id uuid)
 RETURNS boolean
 LANGUAGE sql
 SECURITY DEFINER
@@ -1165,7 +1188,7 @@ GRANT EXECUTE ON FUNCTION public_profile_slug_taken(text, uuid) TO faktur_app;
 -- has RLS on with no policy, so only report_invoice_abuse() writes to it.
 -- ---------------------------------------------------------------------------
 DROP FUNCTION IF EXISTS report_invoice_abuse(uuid, text, text, text, text, integer);
-CREATE FUNCTION report_invoice_abuse(
+CREATE OR REPLACE FUNCTION report_invoice_abuse(
   p_public_token uuid,
   p_reason text,
   p_message text,
@@ -1214,7 +1237,7 @@ $$;
 REVOKE ALL ON FUNCTION report_invoice_abuse(uuid, text, text, text, text, integer) FROM PUBLIC;
 DROP FUNCTION IF EXISTS public_invoice_blocked(uuid);
 -- Whether the company behind a share link is suspended (portal shows a notice instead of the document).
-CREATE FUNCTION public_invoice_blocked(p_public_token uuid)
+CREATE OR REPLACE FUNCTION public_invoice_blocked(p_public_token uuid)
 RETURNS boolean
 LANGUAGE sql
 SECURITY DEFINER
@@ -1241,7 +1264,7 @@ GRANT EXECUTE ON FUNCTION public_invoice_blocked(uuid) TO faktur_app;
 -- the client already sees on its own /i/:public_token page; the public_token
 -- is returned so the portal can link to that page.
 DROP FUNCTION IF EXISTS get_client_portal(uuid);
-CREATE FUNCTION get_client_portal(p_portal_token uuid)
+CREATE OR REPLACE FUNCTION get_client_portal(p_portal_token uuid)
 RETURNS TABLE (customer_name text, company_name text)
 LANGUAGE sql
 SECURITY DEFINER
@@ -1256,7 +1279,7 @@ REVOKE ALL ON FUNCTION get_client_portal(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_client_portal(uuid) TO faktur_app;
 
 DROP FUNCTION IF EXISTS get_client_portal_documents(uuid);
-CREATE FUNCTION get_client_portal_documents(p_portal_token uuid)
+CREATE OR REPLACE FUNCTION get_client_portal_documents(p_portal_token uuid)
 RETURNS TABLE (
   public_token uuid,
   invoice_number varchar(32),
@@ -1316,7 +1339,7 @@ CREATE POLICY tenant_isolation ON card_payment_sessions
 -- the unguessable token, nothing for drafts or suspended companies. The
 -- encrypted key never leaves the backend (it is not part of any response).
 DROP FUNCTION IF EXISTS get_public_card_payment_target(uuid);
-CREATE FUNCTION get_public_card_payment_target(p_public_token uuid)
+CREATE OR REPLACE FUNCTION get_public_card_payment_target(p_public_token uuid)
 RETURNS TABLE (
   tenant_id uuid,
   invoice_id uuid,

@@ -1,0 +1,121 @@
+# Production compose for the VPS (shared with VoxelRank and TicketSmith).
+#
+# Differs from the root docker-compose.yml: no Caddy container (the host's
+# Caddy proxies to the loopback ports below, see deploy/Caddyfile.billanta),
+# no published Postgres/Redis ports, memory caps so Billanta cannot starve
+# the other apps, and rotated container logs. Images are built on a dev
+# machine and loaded on the VPS (deploy/deploy.sh); the 2-CPU box is too
+# small to run a Next.js build next to production traffic.
+#
+#   docker compose -f deploy/docker-compose.prod.yml --env-file .env up -d
+#   docker compose -f deploy/docker-compose.prod.yml --env-file .env run --rm migrate
+
+name: billanta
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 256m
+    logging: *logging
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--maxmemory", "48mb", "--maxmemory-policy", "allkeys-lru"]
+    mem_limit: 64m
+    logging: *logging
+    networks: [internal]
+
+  # One-off: `run --rm migrate` after every deploy. Runs as the superuser
+  # (owns the tables); the app itself connects as faktur_app.
+  migrate:
+    image: billanta-migrate:latest
+    profiles: [tools]
+    env_file: [../.env]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *logging
+    networks: [internal]
+
+  backend:
+    image: billanta-backend:latest
+    restart: unless-stopped
+    env_file: [../.env]
+    environment:
+      DATABASE_URL: postgres://faktur_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:3111:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    mem_limit: 384m
+    logging: *logging
+    networks: [internal]
+
+  frontend:
+    image: billanta-frontend:latest
+    restart: unless-stopped
+    env_file: [../.env]
+    environment:
+      DATABASE_URL: postgres://faktur_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      BACKEND_URL: http://backend:3000
+      AUTH_TRUST_HOST: "true"
+    ports:
+      - "127.0.0.1:3110:3000"
+    depends_on:
+      - backend
+    mem_limit: 384m
+    logging: *logging
+    networks: [internal]
+
+  # Voice/Telegram invoicing. Off until ANTHROPIC/OPENAI and TELEGRAM keys
+  # are in .env: `--profile ai up -d`.
+  ai-service:
+    image: billanta-ai:latest
+    profiles: [ai]
+    restart: unless-stopped
+    env_file: [../.env]
+    environment:
+      BACKEND_API_URL: http://backend:3000
+    ports:
+      - "127.0.0.1:3112:8000"
+    depends_on:
+      - backend
+    mem_limit: 256m
+    logging: *logging
+    networks: [internal]
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:

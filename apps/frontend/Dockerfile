@@ -3,8 +3,8 @@
 # Build context is the MONOREPO ROOT (root docker-compose.yml's
 # `build.context: .`) — this is a pnpm workspace, so `pnpm install` needs
 # the root manifest + lockfile + every member's package.json present even
-# though only @faktur/frontend gets built into this image (it has no
-# workspace dependency on @faktur/cz-compliance, unlike apps/backend).
+# though only @faktur/frontend and its workspace dependency
+# @faktur/cz-compliance get built into this image.
 #
 # Uses Next's `output: 'standalone'` (see next.config.mjs) so the runtime
 # image only needs the traced minimal server + its pruned node_modules
@@ -31,8 +31,20 @@ RUN pnpm install --frozen-lockfile --filter "@faktur/frontend..."
 # build
 # ---------------------------------------------------------------------------
 FROM deps AS build
+# NEXT_PUBLIC_* values are inlined into the client bundle at build time.
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_PROFILE_DOMAIN
+ARG NEXT_PUBLIC_CLARITY_ID
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL     NEXT_PUBLIC_PROFILE_DOMAIN=$NEXT_PUBLIC_PROFILE_DOMAIN     NEXT_PUBLIC_CLARITY_ID=$NEXT_PUBLIC_CLARITY_ID
+# lib/db.ts refuses to load without DATABASE_URL, and `next build` imports
+# every route while collecting page data. The pool is lazy, so a placeholder
+# is never dialled; it stays in this stage, not in the runtime image.
+ENV DATABASE_URL=postgres://build:build@127.0.0.1:1/build
+# The frontend imports @faktur/cz-compliance's build output, so it is
+# compiled first (as in apps/backend/Dockerfile).
+COPY packages/cz-compliance packages/cz-compliance
 COPY apps/frontend apps/frontend
-RUN pnpm --filter @faktur/frontend build
+RUN pnpm --filter @faktur/cz-compliance build && pnpm --filter @faktur/frontend build
 
 # ---------------------------------------------------------------------------
 # runtime — standalone server + static assets only. No manual node_modules

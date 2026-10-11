@@ -15,6 +15,9 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO faktur_app;
 -- The outbound e-mail log is append-only for the app (abuse audit trail).
 REVOKE UPDATE, DELETE ON outbound_emails FROM faktur_app;
 
+-- Same for the activity history (migration 0038 grants only SELECT, INSERT).
+REVOKE UPDATE, DELETE ON audit_log FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 

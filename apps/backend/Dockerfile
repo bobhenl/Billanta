@@ -44,6 +44,14 @@ COPY apps/backend apps/backend
 RUN pnpm --filter @faktur/cz-compliance build && pnpm --filter @faktur/backend build
 
 # ---------------------------------------------------------------------------
+# migrate — one-off job image (deploy/docker-compose.prod.yml `migrate`):
+# needs drizzle-kit (a devDependency) and psql, so it builds on `build`.
+# ---------------------------------------------------------------------------
+FROM build AS migrate
+RUN apk add --no-cache postgresql16-client && sed -i 's/$//' apps/backend/scripts/migrate.sh
+CMD ["sh", "apps/backend/scripts/migrate.sh"]
+
+# ---------------------------------------------------------------------------
 # prod-deps
 # ---------------------------------------------------------------------------
 FROM base AS prod-deps
