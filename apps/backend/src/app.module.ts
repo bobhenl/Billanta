@@ -4,6 +4,8 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { ApiKeyOrJwtTenantContextMiddleware } from "./api-keys/api-key-or-jwt-tenant-context.middleware";
 import { ApiKeysModule } from "./api-keys/api-keys.module";
 import { AuthModule } from "./auth/auth.module";
+import { BackupDestinationsController } from "./backup-destinations/backup-destinations.controller";
+import { BackupDestinationsModule } from "./backup-destinations/backup-destinations.module";
 import { BankReconciliationController } from "./bank-reconciliation/bank-reconciliation.controller";
 import { BankReconciliationModule } from "./bank-reconciliation/bank-reconciliation.module";
 import { BillingModule } from "./billing/billing.module";
@@ -63,6 +65,7 @@ import { TenantsModule } from "./tenants/tenants.module";
     PublicInvoicesModule,
     RecurringInvoicesModule,
     BankReconciliationModule,
+    BackupDestinationsModule,
   ],
 })
 export class AppModule implements NestModule {
@@ -99,6 +102,17 @@ export class AppModule implements NestModule {
     //     doc comment. Every read it does goes through a narrow SECURITY
     //     DEFINER SQL function keyed on the invoice's public_token, never
     //     `req.tenantDb`.
+    //   - GoogleDriveCallbackController (`src/backup-destinations/google-
+    //     drive-callback.controller.ts`, `GET /v1/backup-destinations/
+    //     google-drive/callback`): same pre-tenant-context shape again —
+    //     Google's OAuth redirect carries no bearer token. It's a
+    //     structurally SEPARATE controller class from
+    //     `BackupDestinationsController` specifically so it can never
+    //     accidentally end up on this list; tenant identity for that one
+    //     route comes from a signed `state` JWT instead (see that
+    //     controller's doc comment). `BackupDestinationsController` itself
+    //     IS included below — it's an ordinary tenant-scoped CRUD
+    //     controller like `ExpensesController`/`RecurringInvoicesController`.
     //
     // RecurringInvoicesController IS included below — it's an ordinary
     // tenant-scoped CRUD controller (templates a tenant manages), unlike
@@ -122,6 +136,7 @@ export class AppModule implements NestModule {
         ExpensesController,
         RecurringInvoicesController,
         BankReconciliationController,
+        BackupDestinationsController,
       );
 
     // InvoicesController: same tenant-context requirement as every

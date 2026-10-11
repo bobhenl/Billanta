@@ -27,7 +27,8 @@
     "drizzle-orm": "^0.33.0",
     "postgres": "^3.4.4",
     "bcryptjs": "^2.4.3",
-    "jose": "^5.9.6"
+    "jose": "^5.9.6",
+    "resend": "^6.26.0"
   },
   "devDependencies": {
     "typescript": "^5.5.4",

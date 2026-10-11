@@ -302,6 +302,64 @@
         "done": "Hotovo"
       },
       "docsHint": "Použijte jej jako bearer token: Authorization: Bearer <klíč>. Úplnou dokumentaci API najdete v apps/backend/README.md."
+    },
+    "backup": {
+      "title": "Zálohování dat",
+      "description": "Nastavte, kam se mají pravidelně exportovat data vaší firmy — do vlastního Google Disku, na webhook, který spravujete, nebo jako místní stažení.",
+      "back": "Zpět na nastavení",
+      "empty": "Zatím není nastaven žádný cíl zálohování.",
+      "columns": {
+        "type": "Typ",
+        "schedule": "Plán",
+        "lastRun": "Poslední běh",
+        "status": "Stav"
+      },
+      "typeGoogleDrive": "Google Disk",
+      "typeWebhook": "Webhook",
+      "typeLocal": "Místní stažení",
+      "scheduleDaily": "Denně",
+      "scheduleWeekly": "Týdně",
+      "scheduleManual": "Ručně",
+      "neverRun": "Ještě nikdy neproběhlo",
+      "statusActive": "Aktivní",
+      "statusInactive": "Neaktivní",
+      "lastRunSuccess": "Úspěch",
+      "lastRunFailed": "Selhalo",
+      "runNow": "Spustit nyní",
+      "runningNow": "Spouštím…",
+      "delete": "Smazat",
+      "deleting": "Mažu…",
+      "confirmDelete": "Smazat tento cíl zálohování? Historie běhů se smaže spolu s ním.",
+      "connectGoogleDrive": {
+        "button": "Připojit Google Disk",
+        "connecting": "Přesměrovávám na Google…",
+        "connectedBanner": "Google Disk byl úspěšně připojen.",
+        "errorBanner": "Připojení Google Disku se nezdařilo: {error}"
+      },
+      "addLocal": {
+        "button": "Přidat místní stažení",
+        "description": "Stažitelný soubor databáze SQLite s vašimi daty — není třeba nic nastavovat a lze jej spustit jen ručně (plán je vždy „Ručně“).",
+        "adding": "Přidávám…"
+      },
+      "addWebhook": {
+        "button": "Přidat webhook",
+        "title": "Přidat cíl webhooku",
+        "urlLabel": "URL webhooku",
+        "urlPlaceholder": "https://example.com/faktur-webhook",
+        "urlHint": "Data se na tuto adresu odešlou jako podepsaný JSON (hlavička X-Faktur-Signature).",
+        "scheduleLabel": "Plán",
+        "cancel": "Zrušit",
+        "submit": "Přidat",
+        "submitting": "Přidávám…"
+      },
+      "reveal": {
+        "title": "Podpisový tajný klíč webhooku",
+        "warning": "Zkopírujte si tento klíč teď — znovu ho už neuvidíte. Použijte ho k ověření hlavičky X-Faktur-Signature.",
+        "copy": "Kopírovat",
+        "copied": "Zkopírováno",
+        "done": "Hotovo"
+      },
+      "docsHint": "Podrobnosti o formátu exportu a ověření podpisu najdete v apps/backend/README.md."
     }
   },
   "billing": {
@@ -336,7 +394,33 @@
       "continueWithDiscord": "Pokračovat přes Discord",
       "error": "Nesprávný e-mail nebo heslo.",
       "noAccount": "Nemáte účet?",
-      "signupLink": "Zaregistrujte se"
+      "signupLink": "Zaregistrujte se",
+      "forgotPasswordLink": "Zapomněli jste heslo?"
+    },
+    "forgotPassword": {
+      "title": "Zapomněli jste heslo?",
+      "subtitle": "Zadejte svůj e-mail a pošleme vám odkaz pro obnovení hesla.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vas@email.cz",
+      "submit": "Odeslat odkaz pro obnovení",
+      "successMessage": "Pokud pro tento e-mail existuje účet, poslali jsme na něj odkaz pro obnovení hesla. Zkontrolujte si schránku (i složku se spamem).",
+      "backToLogin": "Zpět na přihlášení"
+    },
+    "resetPassword": {
+      "title": "Obnovení hesla",
+      "subtitle": "Zvolte si nové heslo ke svému účtu.",
+      "passwordLabel": "Nové heslo",
+      "passwordPlaceholder": "Zvolte silné heslo",
+      "confirmPasswordLabel": "Potvrzení nového hesla",
+      "confirmPasswordPlaceholder": "Zadejte heslo znovu",
+      "submit": "Obnovit heslo",
+      "mismatchError": "Hesla se neshodují.",
+      "invalidInputError": "Heslo musí mít alespoň 8 znaků.",
+      "invalidTokenError": "Tento odkaz pro obnovení hesla je neplatný nebo vypršel.",
+      "genericError": "Něco se pokazilo. Zkuste to prosím znovu.",
+      "successMessage": "Vaše heslo bylo úspěšně změněno. Nyní se můžete přihlásit novým heslem.",
+      "goToLogin": "Přejít na přihlášení",
+      "requestNewLink": "Vyžádat nový odkaz"
     }
   },
   "legal": {

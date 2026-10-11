@@ -172,6 +172,29 @@ CREATE POLICY tenant_isolation ON bank_transactions
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
 -- ---------------------------------------------------------------------------
+-- backup_destinations / backup_runs — tenant-scoped, per-tenant backup/
+-- export destinations (src/backup-destinations/). NOT the platform-wide
+-- apps/backup pg_dump sidecar — see that module's README section for the
+-- distinction. Same standard tenant_isolation policy as every other
+-- tenant-owned table above; `config_encrypted` additionally never holds a
+-- plaintext secret at rest (defense in depth beyond RLS alone — see
+-- src/backup-destinations/encryption.util.ts).
+-- ---------------------------------------------------------------------------
+ALTER TABLE backup_destinations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE backup_destinations FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON backup_destinations
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+ALTER TABLE backup_runs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE backup_runs FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON backup_runs
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- ---------------------------------------------------------------------------
 -- Deliberately EXCLUDED from RLS — global / catalog tables, no tenant_id:
 -- ---------------------------------------------------------------------------
 --   users              — identity only; tenant association lives in
@@ -313,6 +336,16 @@ GRANT EXECUTE ON FUNCTION find_tenant_id_by_gopay_payer_id(text) TO faktur_app;
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER lookup function — cross-tenant scheduled-job enumeration
 -- (RecurringInvoiceGenerationService)
+--
+-- REUSED (not duplicated) by `src/backup-destinations/backup-export.cron.ts`
+-- (BackupExportScheduler`'s hourly `@Cron` job) for the exact same "scan
+-- every tenant's active backup_destinations for due ones" shape — see that
+-- file's doc comment. Per this function's own closing note below, it is
+-- deliberately the only place in the app that enumerates every tenant at
+-- once; every consumer of it (this one, `InvoiceRemindersRepository`, and
+-- now `BackupExportScheduler`) still does everything else — the actual
+-- per-tenant reads/writes — through the normal `sql.begin()` +
+-- `set_config('app.current_tenant_id', ...)` pattern.
 -- ---------------------------------------------------------------------------
 -- Same chicken-and-egg shape as the two functions immediately above, for a
 -- different caller: `src/recurring-invoices/recurring-invoice-generation.

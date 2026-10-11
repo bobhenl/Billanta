@@ -97,6 +97,30 @@ export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
   "ignored",
 ]);
 
+// Per-tenant backup/export destinations (NOT the platform-wide `apps/backup`
+// pg_dump-to-founder's-Drive sidecar — see the "Per-tenant backup
+// destinations" section of README.md for the distinction between the two
+// "backup" features living in this codebase). A tenant OWNER can point their
+// own application-level data export at either their own Google Drive or a
+// webhook URL they control.
+// "local" added for the on-demand SQLite-file download destination
+// (`sqlite-export.service.ts`) — no OAuth token, no webhook URL, nothing to
+// authenticate against: the "destination" is just the tenant's own browser
+// download, so `configEncrypted`/`webhookUrl`/`googleDriveFolderId` are all
+// left null for a `local` row. Its `schedule` is constrained to `manual`
+// only — enforced at the DTO/service validation layer (see
+// `create-backup-destination.dto.ts` and
+// `BackupDestinationsService.update`), NOT here, since there's no clean way
+// to express "this enum value implies that other column can only hold one
+// value" as a column-level Postgres CHECK without a trigger.
+export const backupDestinationTypeEnum = pgEnum("backup_destination_type", [
+  "google_drive",
+  "webhook",
+  "local",
+]);
+
+export const backupScheduleEnum = pgEnum("backup_schedule", ["daily", "weekly", "manual"]);
+
 // ---------------------------------------------------------------------------
 // tenants — the tenant root row itself. Not "tenant-scoped" in the tenant_id
 // sense (it IS the tenant); see rls-policies.sql for how it's still RLS'd
@@ -663,4 +687,68 @@ export const bankTransactions = pgTable("bank_transactions", {
   }),
   status: bankTransactionStatusEnum("status").notNull().default("unmatched"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// backup_destinations — tenant-scoped, tenant-configurable APPLICATION-LEVEL
+// export destinations (`src/backup-destinations/`). NOT the platform-wide
+// `apps/backup` pg_dump-to-founder's-Drive sidecar (whole-database, admin-
+// only, ops/disaster-recovery) — see README.md's "Per-tenant backup
+// destinations" section for the full distinction between the two features.
+// Each row is one destination a tenant OWNER connected for THEIR OWN data
+// (queried through the normal RLS-scoped path, never a raw DB dump) to be
+// periodically exported to.
+// ---------------------------------------------------------------------------
+export const backupDestinations = pgTable("backup_destinations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  type: backupDestinationTypeEnum("type").notNull(),
+  schedule: backupScheduleEnum("schedule").notNull().default("weekly"),
+  isActive: boolean("is_active").notNull().default(true),
+  // Holds EITHER the Google Drive OAuth refresh token (type = google_drive)
+  // OR the webhook HMAC secret (type = webhook) — AES-256-GCM ciphertext
+  // (IV + auth tag + ciphertext, see `encryption.util.ts`), NEVER plaintext.
+  // Unlike `api_keys.key_hash` (one-way — only ever needs to be *verified*),
+  // this needs to be DECRYPTABLE later (a refresh token must be presented to
+  // Google again; a webhook secret must be used to compute an HMAC), so a
+  // one-way hash cannot substitute for encryption here — see that file's
+  // doc comment for the full reasoning and `BACKUP_CONFIG_ENCRYPTION_KEY`.
+  configEncrypted: text("config_encrypted"),
+  // NOT secret — the destination URL itself, only used when type = webhook.
+  webhookUrl: text("webhook_url"),
+  // NOT secret — only used when type = google_drive.
+  googleDriveFolderId: text("google_drive_folder_id"),
+  lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+  // e.g. "success", or an error message string when the last run failed —
+  // see `backup_runs` below for the full per-run history/audit trail this
+  // single column can't hold on its own.
+  lastRunStatus: text("last_run_status"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// backup_runs — tenant-scoped history log, one row per export attempt
+// (scheduled or manual "run now"), so a tenant can see their own export
+// history/troubleshoot a failure rather than only ever seeing the single
+// latest status on `backup_destinations.last_run_status`.
+// ---------------------------------------------------------------------------
+export const backupRuns = pgTable("backup_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  destinationId: uuid("destination_id")
+    .notNull()
+    .references(() => backupDestinations.id, { onDelete: "cascade" }),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  status: text("status").notNull(),
+  errorMessage: text("error_message"),
+  // How many invoices/contacts/etc. rows were included in the export bundle
+  // — for the tenant's own visibility, not enforced/validated against
+  // anything.
+  recordCount: integer("record_count"),
 });

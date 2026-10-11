@@ -101,6 +101,37 @@ services:
     networks:
       - faktur
 
+  # Nightly pg_dump -> Google Drive (rclone) sidecar. See apps/backup/README.md
+  # for the one-time `rclone config` setup this depends on, and
+  # docs/CZ-SK-Invoicing-SaaS-Blueprint.md §8 for the backup requirement this
+  # implements (nightly logical backup, off-VPS, 30-day retention, quarterly
+  # restore drills).
+  backup:
+    build:
+      context: .
+      dockerfile: apps/backup/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Same reasoning as `backend` above: reach Postgres by service name on
+      # the Docker network, not the host-facing localhost URL in .env.
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    volumes:
+      # rclone.conf holds Google Drive OAuth tokens once the founder runs
+      # `rclone config` on their own machine (browser OAuth consent can't
+      # happen inside this unattended container) -- read-only, never baked
+      # into the image, gitignored. Path matches rclone's own default
+      # config location (see apps/backup/Dockerfile's XDG_CONFIG_HOME).
+      - ./rclone.conf:/config/rclone/rclone.conf:ro
+      # Local staging copy of each dump, kept only for BACKUP_RETENTION_DAYS
+      # -- the durable off-VPS copy is the rclone upload, not this volume.
+      - backup_data:/backups
+    depends_on:
+      - postgres
+    networks:
+      - faktur
+
 networks:
   faktur:
     driver: bridge
@@ -110,3 +141,4 @@ volumes:
   redis_data:
   caddy_data:
   caddy_config:
+  backup_data:

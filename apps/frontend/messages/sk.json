@@ -302,6 +302,64 @@
         "done": "Hotovo"
       },
       "docsHint": "Použite ho ako bearer token: Authorization: Bearer <kľúč>. Úplnú dokumentáciu API nájdete v apps/backend/README.md."
+    },
+    "backup": {
+      "title": "Zálohovanie dát",
+      "description": "Nastavte, kam sa majú pravidelne exportovať dáta vašej firmy — na vlastný Disk Google, na webhook, ktorý spravujete, alebo ako miestne stiahnutie.",
+      "back": "Späť na nastavenia",
+      "empty": "Zatiaľ nie je nastavený žiadny cieľ zálohovania.",
+      "columns": {
+        "type": "Typ",
+        "schedule": "Plán",
+        "lastRun": "Posledný beh",
+        "status": "Stav"
+      },
+      "typeGoogleDrive": "Disk Google",
+      "typeWebhook": "Webhook",
+      "typeLocal": "Miestne stiahnutie",
+      "scheduleDaily": "Denne",
+      "scheduleWeekly": "Týždenne",
+      "scheduleManual": "Ručne",
+      "neverRun": "Ešte nikdy neprebehlo",
+      "statusActive": "Aktívny",
+      "statusInactive": "Neaktívny",
+      "lastRunSuccess": "Úspech",
+      "lastRunFailed": "Zlyhalo",
+      "runNow": "Spustiť teraz",
+      "runningNow": "Spúšťam…",
+      "delete": "Zmazať",
+      "deleting": "Mažem…",
+      "confirmDelete": "Zmazať tento cieľ zálohovania? História behov sa zmaže spolu s ním.",
+      "connectGoogleDrive": {
+        "button": "Pripojiť Disk Google",
+        "connecting": "Presmerúvam na Google…",
+        "connectedBanner": "Disk Google bol úspešne pripojený.",
+        "errorBanner": "Pripojenie Disku Google zlyhalo: {error}"
+      },
+      "addLocal": {
+        "button": "Pridať miestne stiahnutie",
+        "description": "Stiahnuteľný súbor databázy SQLite s vašimi dátami — nič netreba nastavovať a dá sa spustiť len ručne (plán je vždy „Ručne“).",
+        "adding": "Pridávam…"
+      },
+      "addWebhook": {
+        "button": "Pridať webhook",
+        "title": "Pridať cieľ webhooku",
+        "urlLabel": "URL webhooku",
+        "urlPlaceholder": "https://example.com/faktur-webhook",
+        "urlHint": "Dáta sa na túto adresu odošlú ako podpísaný JSON (hlavička X-Faktur-Signature).",
+        "scheduleLabel": "Plán",
+        "cancel": "Zrušiť",
+        "submit": "Pridať",
+        "submitting": "Pridávam…"
+      },
+      "reveal": {
+        "title": "Podpisový tajný kľúč webhooku",
+        "warning": "Skopírujte si tento kľúč teraz — znova ho už neuvidíte. Použite ho na overenie hlavičky X-Faktur-Signature.",
+        "copy": "Kopírovať",
+        "copied": "Skopírované",
+        "done": "Hotovo"
+      },
+      "docsHint": "Podrobnosti o formáte exportu a overení podpisu nájdete v apps/backend/README.md."
     }
   },
   "billing": {
@@ -336,7 +394,33 @@
       "continueWithDiscord": "Pokračovať cez Discord",
       "error": "Nesprávny e-mail alebo heslo.",
       "noAccount": "Nemáte účet?",
-      "signupLink": "Zaregistrujte sa"
+      "signupLink": "Zaregistrujte sa",
+      "forgotPasswordLink": "Zabudli ste heslo?"
+    },
+    "forgotPassword": {
+      "title": "Zabudli ste heslo?",
+      "subtitle": "Zadajte svoj e-mail a pošleme vám odkaz na obnovenie hesla.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vas@email.sk",
+      "submit": "Odoslať odkaz na obnovenie",
+      "successMessage": "Ak pre tento e-mail existuje účet, poslali sme naň odkaz na obnovenie hesla. Skontrolujte si schránku (aj priečinok so spamom).",
+      "backToLogin": "Späť na prihlásenie"
+    },
+    "resetPassword": {
+      "title": "Obnovenie hesla",
+      "subtitle": "Zvoľte si nové heslo k svojmu účtu.",
+      "passwordLabel": "Nové heslo",
+      "passwordPlaceholder": "Zvoľte silné heslo",
+      "confirmPasswordLabel": "Potvrdenie nového hesla",
+      "confirmPasswordPlaceholder": "Zadajte heslo znova",
+      "submit": "Obnoviť heslo",
+      "mismatchError": "Heslá sa nezhodujú.",
+      "invalidInputError": "Heslo musí mať aspoň 8 znakov.",
+      "invalidTokenError": "Tento odkaz na obnovenie hesla je neplatný alebo vypršal.",
+      "genericError": "Niečo sa pokazilo. Skúste to prosím znova.",
+      "successMessage": "Vaše heslo bolo úspešne zmenené. Teraz sa môžete prihlásiť novým heslom.",
+      "goToLogin": "Prejsť na prihlásenie",
+      "requestNewLink": "Vyžiadať nový odkaz"
     }
   },
   "legal": {

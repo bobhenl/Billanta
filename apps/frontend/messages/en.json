@@ -302,6 +302,64 @@
         "done": "Done"
       },
       "docsHint": "Use it as a bearer token: Authorization: Bearer <key>. See apps/backend/README.md for the full API reference."
+    },
+    "backup": {
+      "title": "Backup destinations",
+      "description": "Configure where your business's data gets periodically exported to — your own Google Drive, a webhook you control, or a local download.",
+      "back": "Back to settings",
+      "empty": "No backup destinations configured yet.",
+      "columns": {
+        "type": "Type",
+        "schedule": "Schedule",
+        "lastRun": "Last run",
+        "status": "Status"
+      },
+      "typeGoogleDrive": "Google Drive",
+      "typeWebhook": "Webhook",
+      "typeLocal": "Local download",
+      "scheduleDaily": "Daily",
+      "scheduleWeekly": "Weekly",
+      "scheduleManual": "Manual",
+      "neverRun": "Never run yet",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "lastRunSuccess": "Success",
+      "lastRunFailed": "Failed",
+      "runNow": "Run now",
+      "runningNow": "Running…",
+      "delete": "Delete",
+      "deleting": "Deleting…",
+      "confirmDelete": "Delete this backup destination? Its run history is deleted along with it.",
+      "connectGoogleDrive": {
+        "button": "Connect Google Drive",
+        "connecting": "Redirecting to Google…",
+        "connectedBanner": "Google Drive connected successfully.",
+        "errorBanner": "Google Drive connection failed: {error}"
+      },
+      "addLocal": {
+        "button": "Add local download",
+        "description": "A downloadable SQLite database file of your data — nothing to configure, and it can only be run on demand (schedule is always \"Manual\").",
+        "adding": "Adding…"
+      },
+      "addWebhook": {
+        "button": "Add webhook",
+        "title": "Add a webhook destination",
+        "urlLabel": "Webhook URL",
+        "urlPlaceholder": "https://example.com/faktur-webhook",
+        "urlHint": "Data is POSTed to this address as signed JSON (X-Faktur-Signature header).",
+        "scheduleLabel": "Schedule",
+        "cancel": "Cancel",
+        "submit": "Add",
+        "submitting": "Adding…"
+      },
+      "reveal": {
+        "title": "Webhook signing secret",
+        "warning": "Copy this secret now — you won't be able to see it again. Use it to verify the X-Faktur-Signature header.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "done": "Done"
+      },
+      "docsHint": "See apps/backend/README.md for the export format and signature verification details."
     }
   },
   "billing": {
@@ -336,7 +394,33 @@
       "continueWithDiscord": "Continue with Discord",
       "error": "Incorrect email or password.",
       "noAccount": "Don't have an account?",
-      "signupLink": "Sign up"
+      "signupLink": "Sign up",
+      "forgotPasswordLink": "Forgot password?"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we'll send you a link to reset your password.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "submit": "Send reset link",
+      "successMessage": "If an account exists for this email, we've sent a link to reset your password. Check your inbox (and your spam folder).",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "subtitle": "Choose a new password for your account.",
+      "passwordLabel": "New password",
+      "passwordPlaceholder": "Choose a strong password",
+      "confirmPasswordLabel": "Confirm new password",
+      "confirmPasswordPlaceholder": "Type it again",
+      "submit": "Reset password",
+      "mismatchError": "Passwords don't match.",
+      "invalidInputError": "Password must be at least 8 characters long.",
+      "invalidTokenError": "This reset link is invalid or has expired.",
+      "genericError": "Something went wrong. Please try again.",
+      "successMessage": "Your password has been reset. You can now log in with your new password.",
+      "goToLogin": "Go to login",
+      "requestNewLink": "Request a new reset link"
     }
   },
   "legal": {

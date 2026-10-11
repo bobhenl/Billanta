@@ -8,6 +8,20 @@
       "when": 1788979282246,
       "tag": "0000_aberrant_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788980298947,
+      "tag": "0001_milky_the_hand",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788982542067,
+      "tag": "0002_typical_shard",
+      "breakpoints": true
     }
   ]
 }

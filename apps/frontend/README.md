@@ -190,6 +190,42 @@ and §9 (legal/liability, versioned ToS acceptance):
   `POST /api/v1/channel-links` endpoint was never in the original backend
   scaffold (only the bot-side `verify` callback was).
 
+## Forgot / reset password
+
+Real (not mocked) flow closing the last gap in the auth story — Google/Discord
+OAuth login and email/password registration already worked; a user who
+forgot their password had no way back in until now.
+
+- **`(auth)/forgot-password`** — single email field. Submits to
+  `POST /api/auth/forgot-password`. That endpoint ALWAYS returns the same
+  generic success response, regardless of whether the email is registered
+  or belongs to an OAuth-only user with no local password — a deliberate
+  anti-enumeration measure, so the response can never be used to test which
+  emails have accounts. The email itself, when sent, contains a
+  `/reset-password?token=...` link.
+- **`(auth)/reset-password`** — reads `?token=` from the URL, collects a new
+  password + confirmation (client-side match check), submits to
+  `POST /api/auth/reset-password`. Shows a clear success state (link to
+  `/login`) or a clear invalid/expired-token state (link back to
+  `/forgot-password`) — the two failure modes ("no such token" vs "token
+  expired") are deliberately not distinguished in the response, same
+  anti-enumeration reasoning as above.
+- **Token storage** — reuses the existing Auth.js-adapter
+  `verification_tokens` table (`lib/auth-schema.ts`) rather than a new
+  table; only a SHA-256 hash of the token is stored (`identifier` = email,
+  1-hour expiry), the raw token only ever exists in the emailed link. The
+  token is single-use: the row is deleted immediately on a successful
+  reset, and expired rows are swept opportunistically on every
+  forgot-password request.
+- **Email delivery** — `lib/email.ts` wraps Resend, reusing the same
+  `RESEND_API_KEY`/`EMAIL_FROM` env vars the backend already uses for
+  invoice emails (see `apps/backend/README.md` / `apps/backend/src/email/`
+  for the shared setup notes — this frontend copy is a separate small
+  wrapper, not a shared module, for the same reason `lib/auth-schema.ts`
+  duplicates the backend's Auth.js tables instead of importing them).
+- **Login page** — has a "Forgot password?" link next to the password field
+  pointing at `/forgot-password`.
+
 ## Running
 
 From the monorepo root (pnpm workspaces + Turborepo):
@@ -227,6 +263,15 @@ app/[locale]/layout.tsx                              Root locale layout (NextInt
 app/[locale]/page.tsx                                Public marketing homepage (navbar, hero, features, footer)
 app/[locale]/(auth)/signup/page.tsx                  Signup page (server shell)
 app/[locale]/(auth)/signup/signup-form.tsx           Signup form + ToS gate (client component)
+app/[locale]/(auth)/login/page.tsx                   Login page (server shell)
+app/[locale]/(auth)/login/login-form.tsx             Login form incl. "Forgot password?" link (client component)
+app/[locale]/(auth)/forgot-password/page.tsx         Forgot-password page (server shell)
+app/[locale]/(auth)/forgot-password/forgot-password-form.tsx  Forgot-password form (client component)
+app/[locale]/(auth)/reset-password/page.tsx          Reset-password page (server shell, Suspense boundary)
+app/[locale]/(auth)/reset-password/reset-password-form.tsx    Reset-password form (client component)
+app/api/auth/forgot-password/route.ts                POST — issues a reset token + sends the reset email
+app/api/auth/reset-password/route.ts                 POST — verifies token + updates password_hash
+lib/email.ts                                         Resend wrapper for the password-reset email
 app/[locale]/legal/terms/page.tsx                    Placeholder Terms of Service page (structural, pending attorney review)
 app/[locale]/legal/privacy/page.tsx                  Placeholder Privacy Policy page (structural, pending attorney review)
 app/[locale]/about/page.tsx                          About page (real marketing copy, not a placeholder)

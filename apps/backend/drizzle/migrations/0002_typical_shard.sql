@@ -1,0 +1,1 @@
+ALTER TYPE "backup_destination_type" ADD VALUE 'local';

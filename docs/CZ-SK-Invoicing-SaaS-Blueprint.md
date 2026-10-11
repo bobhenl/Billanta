@@ -189,6 +189,7 @@ Pipeline (FastAPI service, fully separate from the backend/DB):
 - Tenant isolation enforced at the DB layer (RLS), not just app-layer filtering.
 - Caddy auto-TLS on all public endpoints; service-to-service traffic stays on the internal Docker network.
 - Nightly logical (`pg_dump`) + WAL point-in-time backups, pushed off-VPS to an EU object store, 30-day retention, **quarterly restore drills**.
+  - Implemented via an `apps/backup` rclone sidecar (see `apps/backup/README.md`), targeting **Google Drive** by default rather than the object store originally suggested above — more accessible for a solo founder. B2/Hetzner Object Storage (or S3) remain a drop-in alternative any time, since rclone is destination-agnostic — only the remote config changes, not the backup script.
 - EU-region VPS for data residency; documented DPA template for tenants (you're a data processor for their customers' data); export endpoint doubles as GDPR portability.
 - CZ/SK tax law requires ~10-year invoice retention — tenant deletion must anonymize PII but cannot destroy financial records outright; flag for legal review before implementing deletion flows.
 - AI microservice holds only a scoped token limited to draft-creation endpoints — never one capable of issuing invoices or reading other tenants' data.

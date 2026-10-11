@@ -51,6 +51,16 @@ for the full list. What IS meaningfully real in this scaffold:
   coverage for the matching logic. See "Bank reconciliation" below for the
   exact CSV format, the matching algorithm's precision tradeoffs, and what's
   explicitly NOT implemented (live PSD2/open-banking, MT940 parsing).
+- `src/backup-destinations/` — real per-tenant application-level data
+  export (CRUD, AES-256-GCM secret encryption, HMAC-signed webhook
+  delivery, a real hourly `@Cron` scheduler) plus a Google Drive OAuth/
+  upload integration written from documented API knowledge but not
+  exercised against live Google credentials, and an on-demand `local`
+  destination that generates a real, queryable SQLite database file
+  (`better-sqlite3`) instead of uploading anywhere, schedule-locked to
+  `manual`. See "Per-tenant backup destinations" below for the full
+  breakdown and the one confidence caveat, and for how this differs from
+  the platform-wide `apps/backup` pg_dump sidecar.
 
 ## Known contract deviation (read this if wiring up apps/ai-service)
 
@@ -397,6 +407,166 @@ path); and there's no reconciliation UI for "this transaction is a partial
 payment, apply it and leave the invoice open" — only the binary matched/
 unmatched/ignored states the schema defines.
 
+## Per-tenant backup destinations
+
+`src/backup-destinations/` implements a per-tenant, tenant-owner-configured
+data export — **NOT the same feature as `apps/backup`** (the platform-wide
+nightly `pg_dump` -> the founder's own Google Drive, via a `rclone` sidecar
+in `docker-compose.yml`). The two "backup" features in this codebase are
+deliberately different in every dimension that matters:
+
+| | `apps/backup` (platform-wide) | `src/backup-destinations/` (per-tenant) |
+|---|---|---|
+| Who configures it | The founder, via `.env`/`rclone.conf` | Each tenant OWNER, from their own Settings page |
+| Scope | The ENTIRE multi-tenant database (`pg_dump`) | Exactly one tenant's own data |
+| How it reads data | Raw Postgres dump, bypasses the application entirely | Normal RLS-scoped queries (`req.tenantDb`/per-tenant `sql.begin()`), exactly like any other tenant-facing endpoint |
+| Destination | The founder's own Google Drive, fixed | A destination each tenant connects themselves: their own Google Drive, a webhook URL they control, or an on-demand local SQLite download |
+| Purpose | Disaster recovery for the whole platform | A tenant's own data portability/export |
+
+If you're looking for the disaster-recovery pg_dump sidecar, see
+`apps/backup/README.md` instead — everything below is about the per-tenant
+feature.
+
+### What it does
+
+A tenant OWNER (see `OwnerOnlyGuard` — this is the one dashboard feature in
+this codebase restricted to the `owner` role rather than open to every
+tenant member) can connect a destination that periodically receives a JSON
+export of THEIR tenant's own `invoices` (with `invoice_line_items`),
+`contacts`, and `expenses` — queried through the exact same RLS-scoped
+`tenantDb` every other tenant-facing endpoint uses, never a raw DB
+connection. Three destination types:
+
+- **`webhook`** — a URL the tenant controls. The export bundle is POSTed
+  as JSON, signed with `X-Faktur-Signature: sha256=<hmac-hex>`
+  (`webhook-signing.util.ts`) computed over the exact request body with a
+  server-generated secret shown to the tenant exactly once at creation time
+  (same reveal-once UX as `POST /api/v1/api-keys`) — this is this app's own
+  Stripe/GoPay webhook-signature verification pattern
+  (`BillingService.verifyStripeSignature`), just in the SENDING direction:
+  here Faktur is the one signing an outbound payload for someone else to
+  verify.
+- **`google_drive`** — the tenant's own Google Drive, connected via a
+  SEPARATE OAuth consent flow from NextAuth's "Log in with Google"
+  (`GoogleDriveOAuthService`'s doc comment has the full explanation): it
+  requests the narrower `drive.file` scope (write access to files/folders
+  this app itself creates, not full Drive read access) with
+  `access_type=offline&prompt=consent` to obtain a refresh token for
+  unattended background access, reusing the same `GOOGLE_CLIENT_ID`/
+  `GOOGLE_CLIENT_SECRET` already configured for sign-in — no second
+  registered OAuth app needed.
+- **`local`** — an on-demand, real SQLite database file
+  (`sqlite-export.service.ts`, using `better-sqlite3`) the tenant downloads
+  directly through their browser — real tables (`invoices`,
+  `invoice_line_items`, `contacts`, `expenses`, plus a single-row
+  `export_metadata` header), populated via prepared statements, not a JSON
+  blob in a single column, so the tenant can open it with any ordinary
+  SQLite browser/tool and run real SQL against it. There is nothing to
+  configure and nothing to authenticate against — `configEncrypted`,
+  `webhookUrl`, and `googleDriveFolderId` are all left null for a `local`
+  row. **Schedule-locked to `manual`**: `daily`/`weekly` are rejected at
+  creation (`createBackupDestinationSchema`'s `.refine`) and at update
+  (`BackupDestinationsService.update` looks up the existing row's type,
+  since `type` isn't part of the update body) — there is no way to "push" a
+  file to a browser download on a timer, a tenant has to actually be present
+  to click download. The file is built in a temp file
+  (`os.tmpdir()` + `crypto.randomUUID()`), read back into a `Buffer`, and the
+  temp file is deleted immediately in a `finally` block (success or
+  failure) — this server never accumulates tenant export files on disk,
+  not even transiently.
+
+### Endpoints
+
+All under `JwtAuthGuard` + `OwnerOnlyGuard` except the OAuth callback:
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/v1/backup-destinations` | Creates a `webhook` (`{ type: "webhook", webhookUrl, schedule }`) or `local` (`{ type: "local", schedule: "manual" }`) destination. Returns the plaintext signing secret for `webhook` only (a `local` row has no secret at all). `type: "google_drive"` is rejected here (400) — see the OAuth flow below. `type: "local"` with `schedule` other than `"manual"` is rejected (400) — see "What it does" above. |
+| `GET /api/v1/backup-destinations` | Lists the tenant's destinations. Never returns `configEncrypted` or a decrypted secret. |
+| `GET /api/v1/backup-destinations/google-drive/authorize` | Redirects to Google's consent screen (see above). |
+| `PATCH /api/v1/backup-destinations/:id` | Updates `schedule`/`isActive`/`webhookUrl`/`googleDriveFolderId`. Rejects (400) setting `schedule` to `daily`/`weekly` on an existing `local` destination. |
+| `DELETE /api/v1/backup-destinations/:id` | Hard-deletes the destination (and, via `ON DELETE CASCADE`, its `backup_runs` history) — unlike `api_keys`' soft-revoke, there's no audit-retention requirement for a connection config. |
+| `GET /api/v1/backup-destinations/:id/runs` | Lists export run history (`backup_runs`) for one destination. |
+| `POST /api/v1/backup-destinations/:id/run-now` | Triggers an immediate export, using the exact same `ExportService.runDestinationExport` the scheduler calls — EXCEPT for a `type: "local"` destination, where this returns the generated SQLite file directly as the response body (`Content-Type: application/vnd.sqlite3`, `Content-Disposition: attachment`) instead of a JSON `backup_runs` row (`ExportService.runLocalDestinationExport`). A `backup_runs` row is still recorded either way. |
+| `GET /api/v1/backup-destinations/google-drive/callback` | Google's OAuth redirect target. A SEPARATE controller (`GoogleDriveCallbackController`), deliberately NOT behind `TenantContextMiddleware`/`JwtAuthGuard` — same "no bearer token on this request" shape as `ChannelLinksController`/`PublicInvoicesController`. Tenant identity comes from a short-lived, signed `state` JWT instead (see `GoogleDriveCallbackController`'s doc comment). |
+
+### Secret encryption — why AES-256-GCM, not a hash
+
+`backup_destinations.config_encrypted` holds either the Google Drive
+refresh token or the webhook HMAC secret. Unlike `api_keys.key_hash` (a
+one-way SHA-256 digest — an API key only ever needs to be *verified*), a
+refresh token must be presented back to Google and a webhook secret must be
+used as a literal HMAC key — both need to be **decrypted**, which a hash
+can never provide. `src/backup-destinations/encryption.util.ts` implements
+real AES-256-GCM (authenticated encryption — tampering is detected, not
+just theoretically prevented) keyed on `BACKUP_CONFIG_ENCRYPTION_KEY` (root
+`.env.example` — a 32-byte hex key, e.g. `openssl rand -hex 32`), with real
+round-trip/tamper-detection unit tests (`encryption.util.spec.ts`). Key
+rotation is NOT implemented — rotating the key would require re-encrypting
+every existing row, out of scope for this pass.
+
+### Scheduler — reuses `list_tenant_ids()`, doesn't invent a new cross-tenant path
+
+`BackupExportCron` (`backup-export.cron.ts`) runs hourly
+(`@Cron(CronExpression.EVERY_HOUR)`, via the `ScheduleModule.forRoot()`
+already registered once in `AppModule`) and, for each tenant, exports any
+`daily`/`weekly` destination that's due (`isBackupDue`,
+`backup-schedule.util.ts` — real, unit-tested pure predicate; `manual`
+destinations never run on a schedule, only via `run-now`). Per this
+feature's own spec, it reuses the exact cross-tenant-scan pattern
+`RecurringInvoiceGenerationService`/`InvoiceRemindersCron` already
+established rather than inventing a new one: `list_tenant_ids()`
+(`drizzle/rls-policies.sql`, a `SECURITY DEFINER` function) enumerates
+every tenant id, then each tenant's actual destinations/exports run inside
+the normal `sql.begin()` + `set_config('app.current_tenant_id', ...)`
+transaction — RLS fully enforced per tenant, no new SQL function added.
+
+### The most important property: exports never cross a tenant boundary
+
+`ExportService.buildExportBundle`/`runDestinationExport`
+(`export.service.ts`) take a `TenantDb` — the same RLS-scoped Drizzle
+instance (`req.tenantDb`, or a per-tenant `sql.begin()`-scoped instance for
+the cron path) every other tenant-facing endpoint in this codebase uses —
+and run plain `.select()` queries against `invoices`/`invoiceLineItems`/
+`contacts`/`expenses`/`tenants` with **no manual `WHERE tenant_id = ...`
+anywhere**. Postgres RLS (`tenant_isolation` policy, `FORCE ROW LEVEL
+SECURITY`, `drizzle/rls-policies.sql`) is what actually restricts every one
+of those queries to exactly the one tenant whose `app.current_tenant_id`
+is set on that transaction — the same mechanism, not a parallel
+reimplementation of it, that already protects every other tenant-facing
+read/write path in this app (`TenantContextMiddleware`,
+`RecurringInvoiceGenerationService`, `InvoiceRemindersRepository`). This
+was verified by tracing both call sites end to end: `BackupDestinationsController
+.runNow` passes `req.tenantDb` (populated only after
+`TenantContextMiddleware` has confirmed the caller is a member of that
+tenant); `BackupExportCron.runDueDestinationsForTenant` opens its own
+`sql.begin()` + `set_config(...)` per tenant id from `list_tenant_ids()`,
+mirroring `RecurringInvoiceGenerationService.generateForTenant` line for
+line. Neither path ever calls `DbService.db` (the shared, tenant-agnostic
+pool) for a tenant-scoped table, and neither ever passes a `tenantId`
+string into a query's `WHERE` clause instead of relying on RLS.
+
+### Confidence caveat — Google Drive/OAuth request shapes
+
+`google-drive.client.ts` and `google-drive-oauth.service.ts` implement
+Google's OAuth2 token endpoint and Drive v3 multipart upload against their
+long-standing, publicly documented contracts — this is stable, widely-used
+public API surface, not an obscure/undocumented one (contrast `GopayClient`
+below, which flags genuine contract uncertainty). That said, and in the
+same spirit of honesty this README already applies to `GopayClient` and
+the Resend integration: these calls were written from documented knowledge
+of the Google OAuth2/Drive v3 APIs, not exercised against a live Google
+Cloud project in this task (no credentials available) — confirm against
+https://developers.google.com/identity/protocols/oauth2 and
+https://developers.google.com/drive/api/reference/rest/v3/files/create
+before depending on this in production.
+
+### Required env vars
+
+`BACKUP_CONFIG_ENCRYPTION_KEY` (root `.env.example`) — see "Secret
+encryption" above. `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` (already
+present for NextAuth sign-in) are reused for the Drive OAuth flow.
+
 ## Public API (tenant-managed API keys)
 
 A tenant can generate its own long-lived API keys (`src/api-keys/`) to call
@@ -502,3 +672,4 @@ writes) **is** also genuinely RLS-safe: it reuses
 | `src/billing/billing.controller.ts` + `billing.service.ts` | `POST /api/v1/billing/{stripe,gopay}/webhook` — real Stripe signature verification and `subscription_events`-keyed idempotency (§5); GoPay's control flow is real but `gopay.client.ts`'s HTTP call is a TODO stub — see "Billing webhooks" above. |
 | `src/recurring-invoices/` | Real CRUD (`recurring-invoices.controller.ts`/`.service.ts`) over `recurringInvoiceTemplates` plus a real daily `@Cron` job (`recurring-invoice-generation.service.ts`) that materializes due templates into `invoices`/`invoice_line_items`, advancing `next_run_date` via the pure, unit-tested `schedule.ts` (`advanceNextRunDate`/`isTemplateDue`) — see "Recurring invoices" above, including how it scans all tenants without bypassing RLS (`list_tenant_ids()` in `drizzle/rls-policies.sql`) and why generated invoices leave `invoice_number` unset. |
 | `src/email/email.service.ts` + `src/invoices/invoice-reminders.cron.ts` | Real Resend-backed invoice emailing (`POST /api/v1/invoices/:id/send`) and a real daily overdue-payment-reminder digest — see "Invoice emailing + overdue-payment reminders" above, including the Resend API-shape confidence note and the pure, unit-tested `isDueForReminder`/`computeInvoiceTotal` helpers (`invoice-reminders.util.ts`, `invoice-total.util.ts`). |
+| `src/backup-destinations/` | Per-tenant backup/export destinations (`backup_destinations`/`backup_runs`) — real CRUD, AES-256-GCM secret encryption (`encryption.util.ts`, unit-tested), HMAC-SHA256 webhook signing (`webhook-signing.util.ts`, unit-tested), a real hourly `@Cron` scheduler reusing `list_tenant_ids()` (`backup-export.cron.ts`, `backup-schedule.util.ts` — unit-tested), a Google Drive OAuth/upload integration, and an on-demand `local` destination generating a real SQLite database file (`sqlite-export.service.ts`, `better-sqlite3`, unit-tested with a real generate-then-reopen-and-query round trip) instead of uploading anywhere, schedule-locked to `manual` — see "Per-tenant backup destinations" above for the full breakdown, the confidence caveat on the Google API shapes, and the table distinguishing this from the platform-wide `apps/backup` pg_dump sidecar. |
