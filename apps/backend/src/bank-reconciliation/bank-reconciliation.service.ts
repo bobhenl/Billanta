@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { eq, inArray } from "drizzle-orm";
+import { BadRequestException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
+import { desc, eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeInvoiceTotal } from "../invoices/invoice-total.util";
 import { InvoicesService } from "../invoices/invoices.service";
-import { parseBankStatementCsv } from "./csv-parser";
+import { NotificationsService } from "../notifications/notifications.service";
+import { parseBankStatementCsv, type ParsedBankTransactionRow } from "./csv-parser";
 import { findInvoiceMatch, type MatchCandidateInvoice } from "./matching";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -17,7 +18,10 @@ type InvoiceLineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 export class BankReconciliationService {
   private readonly logger = new Logger(BankReconciliationService.name);
 
-  constructor(private readonly invoicesService: InvoicesService) {}
+  constructor(
+    private readonly invoicesService: InvoicesService,
+    @Optional() private readonly notifications?: NotificationsService,
+  ) {}
 
   /**
    * Parses + persists every row of an uploaded CSV, then runs auto-match
@@ -28,28 +32,55 @@ export class BankReconciliationService {
    */
   async importCsv(db: TenantDb, tenantId: string, filename: string, fileContent: string) {
     const parsedRows = parseBankStatementCsv(fileContent);
+    const result = await this.persistAndMatch(db, tenantId, filename, "csv", parsedRows);
+    this.notifications?.notify(tenantId, "bank_import", {
+      title: `Výpis ${filename} naimportován`,
+      body: `${result.summary.total} pohybů, ${result.summary.matched} spárováno automaticky, ${result.summary.unmatched} čeká na vás.`,
+      link: "/bank",
+    });
+    return result;
+  }
 
+  /**
+   * Shared by the CSV import and the bank API sync: records one import,
+   * inserts its rows and auto-matches the new ones against issued invoices.
+   * Rows carrying an `externalId` already stored for this tenant are skipped
+   * (unique index), so overlapping sync windows are harmless.
+   */
+  async persistAndMatch(
+    db: TenantDb,
+    tenantId: string,
+    filename: string,
+    source: "csv" | "fio" | "psd2" | "paypal",
+    parsedRows: (ParsedBankTransactionRow & { externalId?: string; fee?: string | null })[],
+  ) {
     const [importRow] = await db
       .insert(schema.bankStatementImports)
-      .values({ tenantId, filename, source: "csv" })
+      .values({ tenantId, filename, source })
       .returning();
 
-    const insertedTransactions = await db
-      .insert(schema.bankTransactions)
-      .values(
-        parsedRows.map((row) => ({
-          tenantId,
-          importId: importRow.id,
-          transactionDate: row.transactionDate,
-          amount: row.amount,
-          currency: row.currency,
-          variableSymbol: row.variableSymbol,
-          counterpartyAccount: row.counterpartyAccount,
-          counterpartyName: row.counterpartyName,
-          status: "unmatched" as const,
-        })),
-      )
-      .returning();
+    const insertedTransactions =
+      parsedRows.length === 0
+        ? []
+        : await db
+            .insert(schema.bankTransactions)
+            .values(
+              parsedRows.map((row) => ({
+                tenantId,
+                importId: importRow.id,
+                transactionDate: row.transactionDate,
+                amount: row.amount,
+                currency: row.currency,
+                variableSymbol: row.variableSymbol,
+                counterpartyAccount: row.counterpartyAccount,
+                counterpartyName: row.counterpartyName,
+                externalId: row.externalId ?? null,
+                fee: row.fee ?? null,
+                status: "unmatched" as const,
+              })),
+            )
+            .onConflictDoNothing()
+            .returning();
 
     const matchCandidates = await this.loadMatchCandidates(db);
 
@@ -73,7 +104,7 @@ export class BankReconciliationService {
           .set({ matchedInvoiceId: outcome.invoiceId, status: "matched" })
           .where(eq(schema.bankTransactions.id, tx.id))
           .returning();
-        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId);
+        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, { amount: Number(tx.amount), currency: tx.currency, fee: tx.fee ? Number(tx.fee) : undefined });
         finalTransactions.push(updated);
         matchedCount++;
       } else {
@@ -105,10 +136,46 @@ export class BankReconciliationService {
     // RLS on `bank_transactions` already restricts this to the current
     // tenant — no manual `WHERE tenant_id = ...` needed (same pattern as
     // ContactsService.list / InvoicesService.list).
+    const order = [desc(schema.bankTransactions.transactionDate), desc(schema.bankTransactions.createdAt)];
     if (status) {
-      return db.select().from(schema.bankTransactions).where(eq(schema.bankTransactions.status, status));
+      return db.select().from(schema.bankTransactions).where(eq(schema.bankTransactions.status, status)).orderBy(...order);
     }
-    return db.select().from(schema.bankTransactions);
+    return db.select().from(schema.bankTransactions).orderBy(...order);
+  }
+
+  /** One transaction plus the statement import it came from. */
+  async findOne(db: TenantDb, transactionId: string) {
+    const [row] = await db
+      .select({ transaction: schema.bankTransactions, import: schema.bankStatementImports })
+      .from(schema.bankTransactions)
+      .innerJoin(schema.bankStatementImports, eq(schema.bankStatementImports.id, schema.bankTransactions.importId))
+      .where(eq(schema.bankTransactions.id, transactionId))
+      .limit(1);
+    if (!row) {
+      throw new NotFoundException("Bank transaction not found");
+    }
+    return { ...row.transaction, import: row.import };
+  }
+
+  /** Undo "ignore": put an ignored transaction back into the to-review pile. */
+  async restore(db: TenantDb, transactionId: string) {
+    const [current] = await db
+      .select({ status: schema.bankTransactions.status })
+      .from(schema.bankTransactions)
+      .where(eq(schema.bankTransactions.id, transactionId))
+      .limit(1);
+    if (!current) {
+      throw new NotFoundException("Bank transaction not found");
+    }
+    if (current.status !== "ignored") {
+      throw new BadRequestException("Only ignored transactions can be restored");
+    }
+    const [updated] = await db
+      .update(schema.bankTransactions)
+      .set({ status: "unmatched" })
+      .where(eq(schema.bankTransactions.id, transactionId))
+      .returning();
+    return updated;
   }
 
   /** Manual override for the leftovers auto-match couldn't (or shouldn't)
@@ -142,7 +209,7 @@ export class BankReconciliationService {
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
 
-    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId);
+    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, { amount: Number(transaction.amount), currency: transaction.currency, fee: transaction.fee ? Number(transaction.fee) : undefined });
 
     return updated;
   }

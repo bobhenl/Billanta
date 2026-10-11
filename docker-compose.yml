@@ -12,18 +12,27 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      # Password of the non-superuser runtime role `faktur_app`, created on
+      # the first start by docker/postgres/init/01-app-role.sh. The backend
+      # connects as that role so RLS applies; POSTGRES_USER is a superuser
+      # and would bypass every policy.
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
+    # Bound to loopback only: Docker-published ports skip the host firewall
+    # (ufw), so "5432:5432" would put Postgres on the public internet.
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     networks:
       - faktur
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    # Loopback only, same reason as postgres (Redis has no password here).
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -61,8 +70,10 @@ services:
       # container means the backend container itself, not the `postgres`
       # service — must address it by service name on the Docker network
       # instead. Reuses the same credentials/db name already in `.env`
-      # rather than duplicating them.
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      # Connects as the RLS-bound runtime role `faktur_app`, never as the
+      # POSTGRES_USER superuser (superusers bypass row-level security).
+      DATABASE_URL: postgres://faktur_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
     depends_on:
       - postgres
       - redis
@@ -76,6 +87,11 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    environment:
+      # Auth.js and the signup route query Postgres directly; same
+      # RLS-bound role as the backend, addressed by service name.
+      DATABASE_URL: postgres://faktur_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      BACKEND_URL: http://backend:3000
     depends_on:
       - backend
     networks:

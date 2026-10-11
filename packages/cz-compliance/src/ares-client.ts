@@ -191,3 +191,85 @@ export async function searchSubjects(
   const data = (await response.json()) as AresSearchResponse;
   return data.ekonomickeSubjekty ?? [];
 }
+
+const fold = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+
+/**
+ * Typeahead-friendly name search. ARES only matches whole words ("tom vejm"
+ * finds nothing, "Tom Vejmelka" does), so when the exact query is empty and the
+ * last word looks unfinished, ask ARES for the finished words only and keep the
+ * subjects that have a word starting with the unfinished one.
+ */
+export async function searchSubjectsTypeahead(
+  name: string,
+  options: { limit?: number } = {},
+): Promise<AresSubject[]> {
+  const limit = options.limit ?? 20;
+  const exact = await searchSubjects(name, { limit });
+  if (exact.length) return exact;
+
+  const words = name.trim().split(/\s+/);
+  const partial = fold(words.pop() ?? '');
+  if (!words.length || partial.length < 2) return [];
+  const pool = await searchSubjects(words.join(' '), { limit: 1000 });
+  return pool
+    .filter((s) => fold(s.obchodniJmeno).split(/[\s,.()-]+/).some((w) => w.startsWith(partial)))
+    .slice(0, limit);
+}
+
+/** One RÚIAN address from ARES `standardizovane-adresy/vyhledat`. */
+export interface AresStandardAddress {
+  street: string;
+  city: string;
+  postalCode: string;
+  /** e.g. "Jankovcova 1522/53, Holešovice, 17000 Praha 7" */
+  label: string;
+}
+
+interface AresStandardAddressRaw {
+  nazevUlice?: string;
+  nazevCastiObce?: string;
+  nazevObce?: string;
+  nazevMestskeCastiObvodu?: string;
+  cisloDomovni?: number;
+  cisloOrientacni?: number;
+  cisloOrientacniPismeno?: string;
+  typCisloDomovni?: number;
+  psc?: number;
+  textovaAdresa?: string;
+}
+
+/**
+ * Address typeahead over the Czech address register (RÚIAN via ARES).
+ * Free text such as "Jankovcova 15" or "Jankovcova, 17000". Too broad a
+ * query (> 1000 matches, e.g. a bare PSČ) comes back as an empty list.
+ */
+export async function searchAddresses(text: string, options: { limit?: number } = {}): Promise<AresStandardAddress[]> {
+  const url = `${ARES_BASE_URL.replace(/\/ekonomicke-subjekty$/, '')}/standardizovane-adresy/vyhledat`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json; charset=utf-8', Accept: 'application/json' },
+    body: JSON.stringify({ textovaAdresa: text.trim(), pocet: options.limit ?? 8, typStandardizaceAdresy: 'VYHOVUJICI_ADRESY' }),
+  });
+  if (response.status === 400 || response.status === 404) return [];
+  if (!response.ok) throw new AresApiError(`ARES address search failed with status ${response.status}`, response.status, url);
+  const data = (await response.json()) as { standardizovaneAdresy?: AresStandardAddressRaw[] };
+  return (data.standardizovaneAdresy ?? []).map((a) => {
+    const number =
+      a.cisloDomovni != null
+        ? `${a.typCisloDomovni === 2 ? 'č. ev. ' : ''}${a.cisloDomovni}${a.cisloOrientacni != null ? `/${a.cisloOrientacni}${a.cisloOrientacniPismeno ?? ''}` : ''}`
+        : '';
+    const streetName = a.nazevUlice || a.nazevCastiObce || a.nazevObce || '';
+    const psc = a.psc != null ? String(a.psc).padStart(5, '0') : '';
+    return {
+      street: [streetName, number].filter(Boolean).join(' '),
+      city: a.nazevMestskeCastiObvodu && a.nazevObce === 'Praha' ? a.nazevMestskeCastiObvodu : a.nazevObce ?? '',
+      postalCode: psc,
+      label: a.textovaAdresa ?? '',
+    };
+  });
+}

@@ -4,7 +4,7 @@
   "private": true,
   "description": "CZ/SK invoicing SaaS monorepo (Next.js frontend, NestJS backend, FastAPI AI microservice, cz-compliance shared library).",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19"
   },
   "packageManager": "pnpm@9.0.0",
   "scripts": {
@@ -14,5 +14,16 @@
   },
   "devDependencies": {
     "turbo": "^2.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "multer": "^2.4.0",
+      "proxy-addr": "^2.0.8",
+      "body-parser@<1.20.5": "^1.20.5",
+      "js-yaml@>=4 <4.3.2": "^4.3.2",
+      "lodash": "^4.18.0",
+      "postcss@<8.5.18": "^8.5.18",
+      "source-map-js": "^1.2.2"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { backupEncryptionSchema, sftpTargetSchema } from "./create-backup-destination.dto";
 
 /**
  * `PATCH /api/v1/backup-destinations/:id` body — every field optional.
@@ -28,6 +29,11 @@ export const updateBackupDestinationSchema = z.object({
   isActive: z.boolean().optional(),
   webhookUrl: z.string().url().optional(),
   googleDriveFolderId: z.string().min(1).optional(),
+  // sftp only; a new host/port forgets the pinned host key. Omitting the
+  // password keeps the stored credential.
+  sftp: sftpTargetSchema.partial().optional(),
+  // sftp and google_drive uploads.
+  encryption: backupEncryptionSchema.optional(),
 });
 
 export class UpdateBackupDestinationDto extends createZodDto(updateBackupDestinationSchema) {}

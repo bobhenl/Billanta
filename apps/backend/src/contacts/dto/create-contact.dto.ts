@@ -1,6 +1,9 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
+/** Colour label palette (Invoice Ninja / Fakturoid style tagging of customers). */
+export const CONTACT_COLORS = ["red", "orange", "amber", "green", "teal", "sky", "indigo", "violet", "pink", "slate"] as const;
+
 export const createContactSchema = z.object({
   legalName: z.string().min(1),
   ico: z
@@ -13,6 +16,19 @@ export const createContactSchema = z.object({
   // and overdue-reminder emails check for this explicitly rather than
   // assuming it's set.
   email: z.string().email().optional(),
+  // Filled in when the contact is created from an ARES hit (invoice form's
+  // customer search), so the invoice has a full address from the start.
+  addressStreet: z.string().nullish(),
+  addressCity: z.string().nullish(),
+  addressPostalCode: z.string().max(10).nullish(),
+  addressCountry: z.string().length(2).optional(),
+  isVatPayer: z.boolean().nullish(),
+  // Private individual — no IČO/DIČ expected.
+  isPerson: z.boolean().optional(),
+  aresVerified: z.boolean().optional(),
+  color: z.enum(CONTACT_COLORS).nullish(),
+  // Private, never printed on documents.
+  internalNote: z.string().max(4000).nullish(),
 });
 
 export class CreateContactDto extends createZodDto(createContactSchema) {}

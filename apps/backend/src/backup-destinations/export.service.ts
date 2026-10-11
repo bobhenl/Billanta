@@ -1,10 +1,13 @@
+import { publicUrlProblem } from "../integrations/public-url";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { ageEncrypt } from "./age.util";
 import { decryptSecret } from "./encryption.util";
 import { GoogleDriveClient } from "./google-drive.client";
+import { SftpBackupClient, type SftpSecret } from "./sftp.client";
 import { SqliteExportService } from "./sqlite-export.service";
 import { signWebhookPayload, WEBHOOK_SIGNATURE_HEADER } from "./webhook-signing.util";
 
@@ -80,6 +83,7 @@ export class ExportService {
     private readonly config: ConfigService,
     private readonly googleDriveClient: GoogleDriveClient,
     private readonly sqliteExportService: SqliteExportService,
+    private readonly sftpClient: SftpBackupClient,
   ) {}
 
   /**
@@ -184,12 +188,42 @@ export class ExportService {
               "GET /api/v1/backup-destinations/google-drive/authorize",
           );
         }
-        await this.googleDriveClient.uploadJsonFile(
+        const stamp = startedAt.toISOString().replace(/[:.]/g, "-");
+        const json = Buffer.from(JSON.stringify(bundle, null, 2));
+        const out = await ageEncrypt(json, this.encryptionOf(destination, encryptionKey));
+        await this.googleDriveClient.uploadFile(
           secret,
           destination.googleDriveFolderId,
-          `faktur-export-${tenantId}-${startedAt.toISOString().replace(/[:.]/g, "-")}.json`,
-          JSON.stringify(bundle, null, 2),
+          `billanta-zaloha-${stamp}.json${out.encrypted ? ".age" : ""}`,
+          Buffer.from(out.data),
+          out.encrypted ? "application/octet-stream" : "application/json",
         );
+      } else if (destination.type === "sftp") {
+        if (!secret || !destination.sftpHost || !destination.sftpUsername) {
+          throw new Error("SFTP destination is missing its host, user or credentials");
+        }
+        const credentials = JSON.parse(secret) as SftpSecret;
+        const sqlite = await this.sqliteExportService.buildSqliteFile(bundle);
+        const out = await ageEncrypt(sqlite, this.encryptionOf(destination, encryptionKey));
+        const stamp = startedAt.toISOString().replace(/[:.]/g, "-");
+        const { fingerprint } = await this.sftpClient.upload(
+          {
+            host: destination.sftpHost,
+            port: destination.sftpPort ?? 22,
+            username: destination.sftpUsername,
+            path: destination.sftpPath ?? "",
+            ...credentials,
+            fingerprint: destination.sftpHostFingerprint,
+          },
+          `billanta-zaloha-${stamp}.db${out.encrypted ? ".age" : ""}`,
+          Buffer.from(out.data),
+        );
+        if (fingerprint && fingerprint !== destination.sftpHostFingerprint) {
+          await db
+            .update(schema.backupDestinations)
+            .set({ sftpHostFingerprint: fingerprint })
+            .where(eq(schema.backupDestinations.id, destination.id));
+        }
       } else {
         // `type === "local"` destinations never reach this method — see
         // `runLocalDestinationExport` (there is no "upload" step for them,
@@ -215,6 +249,16 @@ export class ExportService {
     }
 
     return this.recordRunOutcome(db, tenantId, destination, { startedAt, status, errorMessage, recordCount });
+  }
+
+  /** The destination's age public key or (decrypted) passphrase, if any. */
+  private encryptionOf(destination: BackupDestinationRow, encryptionKey: string | undefined) {
+    return {
+      recipient: destination.encryptionRecipient,
+      passphrase: destination.encryptionPassphraseEncrypted
+        ? decryptSecret(destination.encryptionPassphraseEncrypted, encryptionKey)
+        : null,
+    };
   }
 
   /**
@@ -251,7 +295,7 @@ export class ExportService {
       recordCount = bundle.invoices.length + bundle.contacts.length + bundle.expenses.length;
 
       const buffer = await this.sqliteExportService.buildSqliteFile(bundle);
-      const filename = `faktur-backup-${tenantId}-${startedAt.toISOString().replace(/[:.]/g, "-")}.db`;
+      const filename = `billanta-backup-${tenantId}-${startedAt.toISOString().replace(/[:.]/g, "-")}.db`;
       file = { buffer, filename };
     } catch (err) {
       status = "failed";
@@ -325,6 +369,8 @@ export class ExportService {
    * reversed (this app is the sender here).
    */
   private async sendToWebhook(url: string, bundle: ExportBundle, secret: string): Promise<void> {
+    const problem = await publicUrlProblem(url);
+    if (problem) throw new Error(`Webhook destination refused: ${problem}`);
     const rawBody = JSON.stringify(bundle);
     const signature = signWebhookPayload(rawBody, secret);
 
@@ -335,6 +381,9 @@ export class ExportService {
         [WEBHOOK_SIGNATURE_HEADER]: signature,
       },
       body: rawBody,
+      // No redirects: a public URL must not bounce the backup to an internal host.
+      redirect: "manual",
+      signal: AbortSignal.timeout(30_000),
     });
 
     if (!response.ok) {

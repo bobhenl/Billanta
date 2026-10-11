@@ -67,6 +67,22 @@ export function hashApiKey(rawKey: string): string {
   return createHash("sha256").update(rawKey, "utf8").digest("hex");
 }
 
+/** Scope values a key can be created with. */
+export const API_KEY_SCOPES = ["read", "write"] as const;
+
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+/**
+ * Scope check for one request. A key with no scopes (every key created
+ * before scopes were enforced) keeps full access; otherwise a key without
+ * `write` (or a legacy `<resource>:write`) may only use safe methods.
+ */
+export function apiKeyAllowsMethod(scopes: readonly string[], method: string): boolean {
+  if (scopes.length === 0) return true;
+  if (scopes.some((scope) => scope === "write" || scope.endsWith(":write"))) return true;
+  return SAFE_METHODS.has(method.toUpperCase());
+}
+
 /** True if `token` has the shape of an API key rather than a JWT. */
 export function isApiKeyFormat(token: string): boolean {
   return token.startsWith(API_KEY_PREFIX);

@@ -1,14 +1,22 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { and, eq, isNull, lt, or, sql as dsql } from "drizzle-orm";
+import { and, eq, isNull, lt, ne, or, sql as dsql } from "drizzle-orm";
+import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
+import type { EmailCustomization } from "../email/email.service";
+import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
+import { templateValues } from "../tenants/template-vars";
+import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
-import { REMINDER_COOLDOWN_DAYS } from "./invoice-reminders.util";
 
 export interface OverdueInvoiceForReminder {
   invoice: typeof schema.invoices.$inferSelect;
   contactEmail: string | null;
+  /** The customer's portal token, when their portal is on. */
+  clientPortalToken?: string | null;
   lineItems: (typeof schema.invoiceLineItems.$inferSelect)[];
+  /** Settings → E-maily wording/sender for this tenant's reminder. */
+  custom?: EmailCustomization;
 }
 
 /**
@@ -82,16 +90,44 @@ export class InvoiceRemindersRepository {
     return this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
-      const cooldownCutoff = new Date(Date.now() - REMINDER_COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+      // Settings → Invoices: reminders can be switched off, spaced out and capped.
+      const [tenant] = await db
+        .select({
+          prefs: schema.tenants.invoiceFormPrefs,
+          emailPrefs: schema.tenants.emailPrefs,
+          companyName: schema.tenants.companyName,
+          email: schema.tenants.email,
+          // for Settings -> Proměnné in the reminder text
+          ico: schema.tenants.ico,
+          dic: schema.tenants.dic,
+          phone: schema.tenants.phone,
+          website: schema.tenants.website,
+          addressStreet: schema.tenants.addressStreet,
+          addressCity: schema.tenants.addressCity,
+          addressPostalCode: schema.tenants.addressPostalCode,
+          bankAccountNumber: schema.tenants.bankAccountNumber,
+          bankAccountBankCode: schema.tenants.bankAccountBankCode,
+          bankAccountIban: schema.tenants.bankAccountIban,
+          templateVars: schema.tenants.templateVars,
+        })
+        .from(schema.tenants)
+        .where(eq(schema.tenants.id, tenantId))
+        .limit(1);
+      const rules = reminderPrefsOf(tenant?.prefs);
+      if (!rules.enabled) return [];
+      const cooldownCutoff = new Date(Date.now() - rules.intervalDays * 24 * 60 * 60 * 1000);
 
       const rows = await db
-        .select({ invoice: schema.invoices, contactEmail: schema.contacts.email })
+        .select({ invoice: schema.invoices, contactEmail: schema.contacts.email, contactName: schema.contacts.legalName, contactIco: schema.contacts.ico, contactPortalToken: schema.contacts.portalToken })
         .from(schema.invoices)
         .leftJoin(schema.contacts, eq(schema.invoices.contactId, schema.contacts.id))
         .where(
           and(
             eq(schema.invoices.status, "issued"),
+            // History brought in from another system: its old system already did the chasing.
+            ne(schema.invoices.source, "import"),
             lt(schema.invoices.dueDate, new Date()),
+            lt(schema.invoices.reminderCount, rules.max),
             or(
               isNull(schema.invoices.lastReminderSentAt),
               lt(schema.invoices.lastReminderSentAt, cooldownCutoff),
@@ -105,17 +141,28 @@ export class InvoiceRemindersRepository {
           .select()
           .from(schema.invoiceLineItems)
           .where(eq(schema.invoiceLineItems.invoiceId, row.invoice.id));
-        results.push({ invoice: row.invoice, contactEmail: row.contactEmail, lineItems });
+        const vars = templateValues(tenant, row.invoice, row.contactName ? { legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken } : null);
+        const custom = emailCustomizationOf(emailPrefsOf(tenant?.emailPrefs), "reminder", tenant, row.contactName ?? undefined, vars);
+        results.push({ invoice: row.invoice, contactEmail: row.contactEmail, clientPortalToken: row.contactPortalToken, lineItems, custom });
       }
       return results;
     });
   }
 
-  /** Marks a reminder as sent — increments `reminder_count`, stamps `last_reminder_sent_at`. */
-  async recordReminderSent(tenantId: string, invoiceId: string): Promise<void> {
+  /** Throws when the tenant is suspended, paused or over today's e-mail cap (`abuse/sending-guard.ts`). */
+  async assertCanSend(tenantId: string): Promise<void> {
+    await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      await assertCanSendEmail(drizzleTx(tx, schema), tenantId);
+    });
+  }
+
+  /** Marks a reminder as sent — increments `reminder_count`, stamps `last_reminder_sent_at`, counts it towards the cap. */
+  async recordReminderSent(tenantId: string, invoiceId: string, recipient?: string): Promise<void> {
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
+      if (recipient) await recordEmailSent(db, tenantId, "reminder", recipient);
       await db
         .update(schema.invoices)
         .set({

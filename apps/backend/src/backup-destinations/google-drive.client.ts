@@ -87,22 +87,36 @@ export class GoogleDriveClient {
     filename: string,
     jsonContent: string,
   ): Promise<void> {
+    await this.uploadFile(refreshToken, folderId, filename, Buffer.from(jsonContent), "application/json");
+  }
+
+  /** Same multipart upload for any file, e.g. an age-encrypted backup. */
+  async uploadFile(
+    refreshToken: string,
+    folderId: string | null,
+    filename: string,
+    content: Buffer,
+    mimeType: string,
+  ): Promise<void> {
     const accessToken = await this.getAccessToken(refreshToken);
 
-    const metadata: Record<string, unknown> = { name: filename, mimeType: "application/json" };
+    const metadata: Record<string, unknown> = { name: filename, mimeType };
     if (folderId) {
       metadata.parents = [folderId];
     }
 
     const boundary = `faktur-${randomBytes(16).toString("hex")}`;
-    const body =
-      `--${boundary}\r\n` +
-      `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
-      `${JSON.stringify(metadata)}\r\n` +
-      `--${boundary}\r\n` +
-      `Content-Type: application/json\r\n\r\n` +
-      `${jsonContent}\r\n` +
-      `--${boundary}--`;
+    const body = Buffer.concat([
+      Buffer.from(
+        `--${boundary}\r\n` +
+          `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+          `${JSON.stringify(metadata)}\r\n` +
+          `--${boundary}\r\n` +
+          `Content-Type: ${mimeType}\r\n\r\n`,
+      ),
+      content,
+      Buffer.from(`\r\n--${boundary}--`),
+    ]);
 
     const response = await fetch(
       "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",

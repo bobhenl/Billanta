@@ -1,13 +1,13 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { API_KEY_SCOPES } from "../api-key.util";
 
 /** Body for `POST /api/v1/api-keys` — generate a new public-API key. */
 export const createApiKeySchema = z.object({
   name: z.string().min(1).max(255),
-  // e.g. ['invoices:write', 'invoices:read']. Stored verbatim on the row;
-  // enforcing scopes at request time is a documented TODO (see
-  // ApiKeyAuthGuard) — no endpoint in this pass reads `scopes` back yet.
-  scopes: z.array(z.string()).default([]),
+  // `["read"]` = read-only key (safe methods only); `[]` or `["write"]` =
+  // full access. Enforced per request by `apiKeyAllowsMethod`.
+  scopes: z.array(z.enum(API_KEY_SCOPES)).max(API_KEY_SCOPES.length).default([]),
 });
 
 export class CreateApiKeyDto extends createZodDto(createApiKeySchema) {}

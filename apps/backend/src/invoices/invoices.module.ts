@@ -4,6 +4,9 @@ import { AuthModule } from "../auth/auth.module";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { SubscriptionActiveGuard } from "../billing/require-active-subscription.guard";
 import { EmailModule } from "../email/email.module";
+import { InvoiceAttachmentsService } from "./invoice-attachments.service";
+import { InvoiceImportService } from "./invoice-import.service";
+import { InvoicePdfService } from "./invoice-pdf.service";
 import { InvoiceRemindersCron } from "./invoice-reminders.cron";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
 import { InvoicesController } from "./invoices.controller";
@@ -34,6 +37,9 @@ import { InvoicesService } from "./invoices.service";
   // imported somewhere in the app (see AppModule).
   providers: [
     InvoicesService,
+    InvoicePdfService,
+    InvoiceAttachmentsService,
+    InvoiceImportService,
     SubscriptionActiveGuard,
     InvoiceRemindersRepository,
     InvoiceRemindersCron,

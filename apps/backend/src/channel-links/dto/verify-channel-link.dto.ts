@@ -2,12 +2,12 @@ import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 
 /**
- * Body for `POST /api/v1/channel-links/verify` (blueprint §6 step 2).
+ * Body for `POST /api/v1/internal/channel-links/verify` (blueprint §6 step 2).
  *
  * Matches the shape already sent by the real, implemented caller —
  * `apps/ai-service/app/pipeline/voice_to_invoice.py::resolve_tenant()`:
  *
- *     POST /api/v1/channel-links/verify
+ *     POST /api/v1/internal/channel-links/verify
  *     Authorization: Bearer <BACKEND_SERVICE_JWT>
  *     { "channel": "telegram" | "whatsapp", "external_user_id": "<id>" }
  *

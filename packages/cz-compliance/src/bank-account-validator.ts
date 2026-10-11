@@ -117,3 +117,29 @@ export function isValidCzechBankAccount(accountNumber: string): boolean {
 
   return true;
 }
+
+/**
+ * Converts a Czech domestic account (`[prefix-]number/bankCode`) to its IBAN,
+ * so a supplier who only filled in the domestic number still gets a QR
+ * payment code. Ported from Faktorio's `normalizeAccountNumberForQrPayment`
+ * (upstream commit 6f8149b).
+ *
+ * BBAN = bankCode(4) + prefix(6, zero-padded) + number(10, zero-padded); the
+ * check digits are ISO 13616 mod-97 over BBAN + "CZ00" ("CZ" -> 12 35).
+ * Returns `null` when the input does not parse; the checksum is not
+ * validated here (use `isValidCzechBankAccount` for that).
+ */
+export function czechAccountToIban(accountNumber: string, bankCode?: string | null): string | null {
+  const compact = accountNumber.replace(/\s+/g, '');
+  const parsed = parseCzechBankAccount(bankCode && !compact.includes('/') ? `${compact}/${bankCode}` : compact);
+  if (!parsed) {
+    return null;
+  }
+
+  const bban = `${parsed.bankCode}${(parsed.prefix ?? '').padStart(6, '0')}${parsed.accountNumber.padStart(10, '0')}`;
+  let remainder = 0;
+  for (const digit of `${bban}123500`) {
+    remainder = (remainder * 10 + Number(digit)) % 97;
+  }
+  return `CZ${String(98 - remainder).padStart(2, '0')}${bban}`;
+}

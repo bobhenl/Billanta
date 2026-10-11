@@ -226,6 +226,81 @@ forgot their password had no way back in until now.
 - **Login page** — has a "Forgot password?" link next to the password field
   pointing at `/forgot-password`.
 
+## Wiring a dashboard page to the real backend (`lib/api-client.ts`)
+
+`(dashboard)/invoices/page.tsx` is the FIRST dashboard page wired to the
+real NestJS backend instead of in-file mock data — the template every other
+page under `(dashboard)/` (contacts, expenses, bank, billing, settings)
+should copy next, one at a time. This section documents the pattern; it
+does not rewire those other pages itself.
+
+**The problem this solves**: `apps/backend/src/tenancy/tenant-context.
+middleware.ts` requires a `X-Tenant-Id` header on every tenant-scoped
+request and verifies the caller belongs to that tenant via
+`tenant_memberships` — but nothing on the frontend previously had any way
+to know what a user's tenant id even IS. The frontend's own DB access
+(`lib/db.ts`) is scoped to the Auth.js-adapter tables only (`users`/
+`accounts`/`sessions`/`verification_tokens`); `tenant_memberships` is a
+backend-owned table the frontend can't query directly.
+
+**The fix, end to end:**
+
+1. **`GET /api/v1/me`** (`apps/backend/src/me/`) — a JWT-only backend
+   endpoint (no `X-Tenant-Id` required; that's the whole point, since
+   resolving the tenant is this endpoint's job) that returns:
+   ```json
+   {
+     "userId": "…",
+     "email": "…",
+     "tenants": [{ "id": "…", "companyName": "…", "role": "owner" }]
+   }
+   ```
+   It reads across the RLS boundary via a narrow `SECURITY DEFINER`
+   function, `list_tenant_memberships_for_user` (see
+   `apps/backend/drizzle/rls-policies.sql`), which returns ONLY
+   `tenant_id`/`company_name`/`role` for the given user id — never any
+   other `tenants` column.
+2. **`lib/api-client.ts`** — a server-only helper for Server Components /
+   Route Handlers. `resolveIdentity()` (wrapped in React's `cache()`, so
+   repeated calls within one request/render pass are deduped, not
+   re-fetched) reads the current NextAuth session (`auth()` from
+   `../auth.ts`), mints a backend JWT (`lib/backend-token.ts`), calls
+   `GET /api/v1/me`, and picks **`tenants[0].id`** as the active tenant.
+   `apiFetch<T>(path, init?)` then attaches both `Authorization: Bearer
+   <token>` and `X-Tenant-Id: <resolved id>` to a fetch against
+   `${BACKEND_URL}${path}` (same env var `lib/public-invoices.ts` already
+   uses) and throws on any non-2xx response.
+3. **Error handling** — `apiFetch`/`resolveIdentity` throw three distinct,
+   catchable error types instead of an opaque failure: `NotSignedInError`
+   (no session — redirect to `/login`), `NoTenantError` (signed in, zero
+   tenant memberships — an edge case that shouldn't happen given the
+   signup bootstrap flow, but handled instead of crashing), and `ApiError`
+   (any other non-2xx response, carrying `status`/`body` for
+   debuggability). `(dashboard)/invoices/page.tsx` shows the expected
+   `try`/`catch` shape for a Server Component page.
+
+**Why "just use `tenants[0]`" is fine for now**: there is no
+tenant-switcher UI, and every user today has exactly one tenant, created
+for them at signup by `bootstrap_tenant_for_user` (`drizzle/rls-
+policies.sql`) — there is no code path yet for a user to belong to a
+second tenant. This stops being correct the moment a "join/create a second
+tenant" or "invite a teammate" feature ships; at that point a real
+switcher (a persisted choice — e.g. a cookie — plus UI to change it) needs
+to replace the `tenants[0]` shortcut in `lib/api-client.ts`'s
+`resolveIdentity()`. That function is intentionally the ONLY place this
+assumption lives, so it's a one-place change later.
+
+**Copying this pattern to another page**: import `apiFetch` (and the three
+error classes) from `@/lib/api-client`, call it from an `async` Server
+Component with the real backend path (check the controller for the exact
+route + response shape — don't assume it matches whatever mock data the
+page currently has), and handle the same three error cases. Note the
+real `GET /api/v1/invoices` response is a bare array of raw `invoices` rows
+(no join to `contacts`, no computed total — see the comment on
+`BackendInvoice` in `(dashboard)/invoices/page.tsx`), which is narrower
+than the old mock shape; expect the same kind of adaptation for other
+pages rather than assuming the mock's shape was ever a real contract.
+
 ## Running
 
 From the monorepo root (pnpm workspaces + Turborepo):

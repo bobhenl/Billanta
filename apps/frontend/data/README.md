@@ -8,7 +8,7 @@ can be audited or refreshed later.
 
 ## Coverage
 
-- **9,124 municipalities total**: 6,234 in Czechia + 2,890 in Slovakia.
+- **9,041 municipalities total**: 6,151 in Czechia + 2,890 in Slovakia. (Parts of the statutory cities — Brno, Ostrava, Plzeň, … — and a few split villages came in as separate rows with the same name and district; they are merged into one entry with the averaged position.)
 - Czechia's real municipality count is commonly cited as ~6,254 (ČSÚ). This
   file has 6,234 — 107 municipalities (1.7%) from the raw source were
   **dropped rather than guessed** because their district could not be
@@ -96,7 +96,7 @@ open-data sources that mix in postal sub-delivery zones.
 `slug` is `name` ASCII-folded and hyphenated; when two municipalities share a
 name (common — e.g. there are two Czech villages called "Broumov"), the
 district name is appended, then the region, then a numeric suffix as a last
-resort. All 9,124 slugs are unique by construction — see
+resort. All 9,041 slugs are unique by construction — see
 `apps/frontend/lib/municipalities.ts`.
 
 ## Regenerating this file

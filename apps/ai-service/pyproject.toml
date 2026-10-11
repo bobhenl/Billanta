@@ -14,8 +14,6 @@ dependencies = [
     "python-dotenv>=1.0,<2.0",
     # openai: used by app/pipeline/voice_to_invoice.py for Whisper transcription
     # (transcribe_audio) and GPT-4o structured extraction (extract_invoice_data).
-    # Both call sites are stubbed for now (see README "Real vs stubbed" section),
-    # so this is not imported yet, but is a required dep once implemented.
     "openai>=1.30,<2.0",
     # python-telegram-bot: NOT required for the webhook path itself (we parse
     # Telegram's raw JSON update with our own Pydantic models in
@@ -38,3 +36,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

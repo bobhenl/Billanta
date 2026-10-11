@@ -1,7 +1,8 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { generateApiKey, hashApiKey } from "./api-key.util";
@@ -12,6 +13,7 @@ type TenantDb = PostgresJsDatabase<typeof schema>;
 export interface ValidatedApiKey {
   apiKeyId: string;
   tenantId: string;
+  scopes: string[];
 }
 
 /**
@@ -33,7 +35,10 @@ export interface ValidatedApiKey {
 export class ApiKeysService {
   private readonly logger = new Logger(ApiKeysService.name);
 
-  constructor(private readonly dbService: DbService) {}
+  constructor(
+    private readonly dbService: DbService,
+    @Optional() private readonly audit?: AuditService,
+  ) {}
 
   /**
    * Generates and persists a new key. Only `keyHash` (never reversible to
@@ -58,6 +63,7 @@ export class ApiKeysService {
         createdAt: schema.apiKeys.createdAt,
       });
 
+    await this.audit?.record(tenantDb, tenantId, { entityType: "api_key", entityId: row.id, entityLabel: `${row.name} (${row.keyPrefix}…)`, action: "created" });
     return { ...row, key: fullKey };
   }
 
@@ -89,12 +95,19 @@ export class ApiKeysService {
       .update(schema.apiKeys)
       .set({ revokedAt: new Date() })
       .where(and(eq(schema.apiKeys.id, id), isNull(schema.apiKeys.revokedAt)))
-      .returning({ id: schema.apiKeys.id, revokedAt: schema.apiKeys.revokedAt });
+      .returning({
+        id: schema.apiKeys.id,
+        revokedAt: schema.apiKeys.revokedAt,
+        tenantId: schema.apiKeys.tenantId,
+        name: schema.apiKeys.name,
+        keyPrefix: schema.apiKeys.keyPrefix,
+      });
 
     if (!row) {
       throw new NotFoundException("API key not found or already revoked");
     }
-    return row;
+    await this.audit?.record(tenantDb, row.tenantId, { entityType: "api_key", entityId: row.id, entityLabel: `${row.name} (${row.keyPrefix}…)`, action: "revoked" });
+    return { id: row.id, revokedAt: row.revokedAt };
   }
 
   /**
@@ -112,14 +125,14 @@ export class ApiKeysService {
    */
   async validateKey(rawKey: string): Promise<ValidatedApiKey | null> {
     const keyHash = hashApiKey(rawKey);
-    const rows = await this.dbService.db.execute<{ id: string; tenant_id: string }>(
+    const rows = await this.dbService.db.execute<{ id: string; tenant_id: string; scopes: string[] | null }>(
       sql`SELECT * FROM find_active_api_key_by_hash(${keyHash})`,
     );
     const row = rows[0];
     if (!row) {
       return null;
     }
-    return { apiKeyId: row.id, tenantId: row.tenant_id };
+    return { apiKeyId: row.id, tenantId: row.tenant_id, scopes: row.scopes ?? [] };
   }
 
   /**

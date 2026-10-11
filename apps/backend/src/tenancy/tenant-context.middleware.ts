@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { NextFunction, Request, Response } from "express";
 import * as schema from "../../drizzle/schema";
+import { AI_SERVICE_SCOPE } from "../auth/service-token.guard";
 import { verifyBearerToken } from "../auth/verify-bearer-token";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
@@ -46,6 +47,8 @@ export interface AuthenticatedUser {
    * likewise has no `tenant_memberships` row.
    */
   role: DashboardRole | "service";
+  /** Per-area overrides of the role's defaults (`tenant_memberships.permissions`), see permissions.ts. */
+  permissions?: unknown;
 }
 
 export interface TenantScopedRequest extends Request {
@@ -61,7 +64,6 @@ export interface TenantScopedRequest extends Request {
 }
 
 /** Literal scope claim identifying the AI microservice's service credential — see `verify-bearer-token.ts`. */
-const AI_SERVICE_SCOPE = "ai-service";
 
 /**
  * Enforces the multi-tenancy model from blueprint §4, refined per the
@@ -87,7 +89,7 @@ const AI_SERVICE_SCOPE = "ai-service";
  * and not backed by any `tenant_memberships` row. It carries a distinguishing
  * `scope: "ai-service"` claim (verified above, never forgeable without
  * `JWT_SECRET`) and separately resolves its target tenant out-of-band via
- * `POST /api/v1/channel-links/verify` (blueprint §6 step 2), supplying it
+ * `POST /api/v1/internal/channel-links/verify` (blueprint §6 step 2), supplying it
  * directly in the request body. Once step 1 has confirmed the bearer token
  * is genuinely that service credential — never a human token, never a
  * superuser/admin token — trusting its body-supplied `tenant_id` is safe by
@@ -163,7 +165,7 @@ export class TenantContextMiddleware implements NestMiddleware {
   /**
    * AI microservice path — see the class doc comment's "EXCEPTION" section.
    * `tenant_id` comes straight from the request body (already resolved by
-   * the caller via `POST /api/v1/channel-links/verify`); no
+   * the caller via `POST /api/v1/internal/channel-links/verify`); no
    * `tenant_memberships` row exists to check against for a service
    * credential.
    */
@@ -182,6 +184,8 @@ export class TenantContextMiddleware implements NestMiddleware {
 
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      // Who the audit log credits (audit_log column defaults).
+      await tx`SELECT set_config('app.current_actor', 'ai', true)`;
 
       req.user = { id: serviceSubject, email: serviceEmail, tenantId, role: "service" };
       req.tenantDb = drizzleTx(tx, schema);
@@ -222,10 +226,12 @@ export class TenantContextMiddleware implements NestMiddleware {
       // Tentative: see the class doc comment's step 2 for why setting this
       // BEFORE the membership check is safe.
       await tx`SELECT set_config('app.current_tenant_id', ${candidateTenantId}, true)`;
+      // Who the audit log credits (audit_log column defaults).
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true), set_config('app.current_actor', 'user', true)`;
 
       const membershipDb = drizzleTx(tx, schema);
       const [membership] = await membershipDb
-        .select({ role: schema.tenantMemberships.role })
+        .select({ role: schema.tenantMemberships.role, permissions: schema.tenantMemberships.permissions })
         .from(schema.tenantMemberships)
         .where(
           and(
@@ -242,7 +248,7 @@ export class TenantContextMiddleware implements NestMiddleware {
         );
       }
 
-      req.user = { id: userId, email, tenantId: candidateTenantId, role: membership.role };
+      req.user = { id: userId, email, tenantId: candidateTenantId, role: membership.role, permissions: membership.permissions };
       req.tenantDb = membershipDb;
 
       await new Promise<void>((resolve, reject) => {

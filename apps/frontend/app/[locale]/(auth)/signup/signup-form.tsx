@@ -4,15 +4,9 @@ import { type FormEvent, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { TOS_VERSION } from '@/lib/tos';
 
-/**
- * The specific ToS version this signup form gates on. Per blueprint §9,
- * every signup must log a fresh, timestamped acceptance tied to a specific
- * `tos_version_id` (the `tos_versions` / `tos_acceptances` audit tables) —
- * bumping this constant is how a future "material VOP update" would force
- * existing/new signups to re-accept the current version.
- */
-const TOS_VERSION = '1.0.0';
+// Signup gates on this exact ToS version (see lib/tos.ts).
 
 /**
  * Signup form — company name, email, password, and a required, NOT
@@ -60,6 +54,9 @@ export function SignupForm() {
       // blueprint §9 `tos_acceptances` audit fields — currently unused by
       // the backend, see this file's doc comment.
       tosVersionAccepted: TOS_VERSION,
+      // The same checkbox confirms the age (18+, see tosLabel); the route
+      // refuses a signup without it.
+      adultConfirmed: tosAccepted,
       acceptedAt: new Date().toISOString()
     };
 
@@ -72,13 +69,13 @@ export function SignupForm() {
 
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
-        setError(body?.error === 'email_taken' ? t('emailTakenError') : t('genericError'));
+        setError(body?.error === 'email_taken' ? t('emailTakenError') : response.status === 429 ? t('rateLimitedError') : t('genericError'));
         setSubmitting(false);
         return;
       }
 
-      // Auto sign-in right after registration, then send the user into the
-      // dashboard — avoids making them re-enter credentials they just typed.
+      // Auto sign-in right after registration, then a few setup questions
+      // (/welcome) — avoids making them re-enter credentials they just typed.
       const result = await signIn('credentials', { email, password, redirect: false });
       if (result?.error) {
         setError(t('genericError'));
@@ -86,7 +83,7 @@ export function SignupForm() {
         return;
       }
 
-      router.push('/dashboard');
+      router.push('/welcome');
     } catch {
       setError(t('genericError'));
       setSubmitting(false);
@@ -153,8 +150,9 @@ export function SignupForm() {
 
         {/* Required, non-preselected ToS acceptance checkbox — blueprint §9
             "signup gate". The submit button stays disabled until this is
-            checked; `t.rich` renders the `<tos>` tag from the message
-            catalog as a real link to the placeholder /legal/terms route. */}
+            checked; `t.rich` renders the `<tos>` and `<dpa>` tags from the
+            message catalog as links to /legal/terms and /legal/dpa. The
+            label also confirms the user signs up as a business (B2B only). */}
         <label htmlFor="tosAccepted" className="flex items-start gap-2 text-sm text-muted-foreground">
           <input
             id="tosAccepted"
@@ -175,6 +173,15 @@ export function SignupForm() {
                 >
                   {chunks}
                 </Link>
+              ),
+              dpa: (chunks) => (
+                <Link
+                  href="/legal/dpa"
+                  target="_blank"
+                  className="font-medium text-foreground underline underline-offset-2 hover:no-underline"
+                >
+                  {chunks}
+                </Link>
               )
             })}
           </span>
@@ -190,6 +197,13 @@ export function SignupForm() {
           {t('submit')}
         </button>
       </form>
+
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        {t('hasAccount')}{' '}
+        <Link href="/login" className="font-medium text-foreground underline underline-offset-2 hover:no-underline">
+          {t('loginLink')}
+        </Link>
+      </p>
     </div>
   );
 }

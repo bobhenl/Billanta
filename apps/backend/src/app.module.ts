@@ -1,27 +1,55 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ApiKeyOrJwtTenantContextMiddleware } from "./api-keys/api-key-or-jwt-tenant-context.middleware";
 import { ApiKeysModule } from "./api-keys/api-keys.module";
+import { ApiKeysController } from "./api-keys/api-keys.controller";
 import { AuthModule } from "./auth/auth.module";
 import { BackupDestinationsController } from "./backup-destinations/backup-destinations.controller";
 import { BackupDestinationsModule } from "./backup-destinations/backup-destinations.module";
 import { BankReconciliationController } from "./bank-reconciliation/bank-reconciliation.controller";
+import { BankConnectionsController } from "./bank-reconciliation/bank-connections.controller";
 import { BankReconciliationModule } from "./bank-reconciliation/bank-reconciliation.module";
 import { BillingModule } from "./billing/billing.module";
+import { ChannelLinksController } from "./channel-links/channel-links.controller";
 import { ChannelLinksModule } from "./channel-links/channel-links.module";
 import { ContactsController } from "./contacts/contacts.controller";
+import { AiController } from "./ai/ai.controller";
+import { AiModule } from "./ai/ai.module";
 import { ContactsModule } from "./contacts/contacts.module";
+import { DashboardController } from "./dashboard/dashboard.controller";
+import { DashboardModule } from "./dashboard/dashboard.module";
 import { DbModule } from "./db/db.module";
 import { EmailModule } from "./email/email.module";
 import { ExpensesController } from "./expenses/expenses.controller";
 import { ExpensesModule } from "./expenses/expenses.module";
+import { ExportsController } from "./exports/exports.controller";
+import { ExportsModule } from "./exports/exports.module";
+import { InvoiceTemplatesController } from "./invoice-templates/invoice-templates.controller";
+import { InvoiceTemplatesModule } from "./invoice-templates/invoice-templates.module";
+import { TimeTrackingController } from "./time-tracking/time-tracking.controller";
+import { TimeTrackingModule } from "./time-tracking/time-tracking.module";
+import { CardPaymentsModule } from "./card-payments/card-payments.module";
+import { CardPaymentsSettingsController } from "./card-payments/card-payments.controller";
 import { InvoicesController } from "./invoices/invoices.controller";
 import { InvoicesModule } from "./invoices/invoices.module";
+import { MeModule } from "./me/me.module";
+import { GuestInvoicesModule } from "./guest-invoices/guest-invoices.module";
 import { PublicInvoicesModule } from "./public-invoices/public-invoices.module";
+import { PublicProfilesModule } from "./public-profiles/public-profiles.module";
 import { RecurringInvoicesController } from "./recurring-invoices/recurring-invoices.controller";
 import { RecurringInvoicesModule } from "./recurring-invoices/recurring-invoices.module";
+import { TeamController } from "./team/team.controller";
+import { NotificationsController } from "./notifications/notifications.controller";
+import { NotificationsModule } from "./notifications/notifications.module";
+import { AuditModule } from "./audit/audit.module";
+import { AuditController } from "./audit/audit.controller";
+import { IntegrationsController } from "./integrations/integrations.controller";
+import { IntegrationsModule } from "./integrations/integrations.module";
+import { TeamModule } from "./team/team.module";
 import { TenantContextMiddleware } from "./tenancy/tenant-context.middleware";
+import { RoleAccessGuard } from "./tenancy/role-access.guard";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 
@@ -50,7 +78,14 @@ import { TenantsModule } from "./tenants/tenants.module";
     // `ApiKeysService` via this module's exports.
     ApiKeysModule,
     TenantsModule,
+    // Tenant-resolution bootstrap for the frontend (GET /api/v1/me) — see
+    // MeController's doc comment for why it's JWT-only, no
+    // TenantContextMiddleware. Imported here purely for its controller;
+    // nothing else depends on it.
+    MeModule,
     ContactsModule,
+    // Invoice pre-fill from free text (Anthropic), per-tenant AI mode/key.
+    AiModule,
     // EmailModule: invoice-emailing / overdue-payment-reminder feature —
     // InvoicesModule already imports it directly for DI (EmailService is
     // needed by InvoicesService.sendInvoice and InvoiceRemindersCron), but
@@ -63,10 +98,26 @@ import { TenantsModule } from "./tenants/tenants.module";
     ChannelLinksModule,
     BillingModule,
     PublicInvoicesModule,
+    PublicProfilesModule,
+    GuestInvoicesModule,
     RecurringInvoicesModule,
     BankReconciliationModule,
     BackupDestinationsModule,
+    // Team members + invitations (InvitationsController is pre-tenant, JWT-only).
+    TeamModule,
+    InvoiceTemplatesModule,
+    TimeTrackingModule,
+    // Card payments from the invoice link through the company's own Stripe.
+    CardPaymentsModule,
+    DashboardModule,
+    ExportsModule,
+    // Bell / browser / email notifications per member and event.
+    NotificationsModule,
+    AuditModule,
+    IntegrationsModule,
   ],
+  // Viewers are read-only and accountants stay out of company administration.
+  providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -78,13 +129,11 @@ export class AppModule implements NestModule {
     // fragile across Nest versions; listing controllers directly is not.
     //
     // Deliberately EXCLUDED:
-    //   - ChannelLinksController: `verify`'s whole point is resolving a
-    //     tenant that isn't known yet, and `channel_links` itself carries no
-    //     RLS policy at all (see the "Deliberately EXCLUDED" section of
-    //     `drizzle/rls-policies.sql` and the comment on
-    //     `ChannelLinksService.verify`) — so there is no RLS-scoped
-    //     `req.tenantDb` connection for this controller to use in the first
-    //     place, for either of its routes.
+    //   - ChannelLinksServiceController (`v1/internal/channel-links`):
+    //     `verify`/`activate` resolve a tenant that isn't known yet, guarded
+    //     by `ServiceTokenGuard` (AI-service scope only). The dashboard-facing
+    //     ChannelLinksController IS listed below so `req.user.tenantId` and
+    //     the role guard apply.
     //   - BillingController: webhooks authenticate via provider signature,
     //     not tenant JWT, and resolve their tenant from the event payload.
     //   - TenantsController's `POST /` (signup): no tenant exists yet, so
@@ -92,6 +141,14 @@ export class AppModule implements NestModule {
     //     TenantsController (`GET/PATCH /me`) is tenant-scoped — see the
     //     TODO on TenantsService.signup() for the real bootstrap path this
     //     implies.
+    //   - MeController (`GET /api/v1/me`, `src/me/`): same pre-tenant-
+    //     context shape as ChannelLinksController above — its entire job is
+    //     telling the caller which tenant(s) it may act as, so it cannot
+    //     require `X-Tenant-Id` up front. Never registered on this
+    //     middleware's `forRoutes(...)` list; see that controller's doc
+    //     comment and `list_tenant_memberships_for_user` in
+    //     `drizzle/rls-policies.sql` for how it safely reads across the RLS
+    //     boundary anyway.
     //   - PublicInvoicesController (client portal, `GET
     //     /api/v1/public/invoices/:token`): same shape as ChannelLinksController
     //     above — a client opening an emailed invoice link has no session, no
@@ -136,7 +193,17 @@ export class AppModule implements NestModule {
         ExpensesController,
         RecurringInvoicesController,
         BankReconciliationController,
+        BankConnectionsController,
         BackupDestinationsController,
+        TeamController,
+        DashboardController,
+        ExportsController,
+        NotificationsController,
+        IntegrationsController,
+        ApiKeysController,
+        ChannelLinksController,
+        CardPaymentsSettingsController,
+        AuditController,
       );
 
     // InvoicesController: same tenant-context requirement as every
@@ -154,6 +221,7 @@ export class AppModule implements NestModule {
     // verifies the bearer token as a JWT with no bypass hook for a
     // differently-shaped credential, so a guard alone can never be reached
     // for an API-key request on a route this middleware also covers.
-    consumer.apply(ApiKeyOrJwtTenantContextMiddleware).forRoutes(InvoicesController);
+    // AiController too: its invoice-suggestion route is public-API.
+    consumer.apply(ApiKeyOrJwtTenantContextMiddleware).forRoutes(InvoicesController, AiController, InvoiceTemplatesController, TimeTrackingController);
   }
 }

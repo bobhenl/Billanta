@@ -30,7 +30,7 @@ class LineItem(BaseModel):
     """
 
     description: str = Field(..., min_length=1)
-    quantity: Decimal = Field(default=Decimal("1"))
+    quantity: Decimal = Field(default=Decimal(1))
     unit_price: Decimal
     vat_rate: Decimal | None = Field(
         default=None,

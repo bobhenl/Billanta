@@ -1,15 +1,44 @@
-# Placeholder reverse-proxy config for local/dev use.
-# See docs/CZ-SK-Invoicing-SaaS-Blueprint.md §3 (System Architecture) for the
-# full routing plan and §10 Phase 0 for scope. Replace :80 with the real
-# domain + automatic HTTPS once deployed to the VPS.
+# Reverse proxy. Replace :80 with the real domain to get automatic HTTPS
+# once deployed to the VPS — see docs/CZ-SK-Invoicing-SaaS-Blueprint.md §3.
+#
+# Public company profiles on subdomains (NEXT_PUBLIC_PROFILE_DOMAIN):
+# serve `billanta.com, *.billanta.com` here, with a wildcard DNS record and
+# a wildcard certificate (needs the DNS-01 challenge, i.e. a caddy-dns
+# provider module). The frontend middleware rewrites <slug>.<domain>/ to
+# /<locale>/p/<slug>.
 
 :80 {
-	# Next.js frontend (default route)
+	encode zstd gzip
+
+	header {
+		# HSTS only takes effect over HTTPS; harmless on plain :80 in dev.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		Permissions-Policy "camera=(self), geolocation=(), microphone=(self)"
+		-Server
+	}
+
 	handle /ai-webhook/* {
 		reverse_proxy ai-service:8000
 	}
 
-	handle /api/* {
+	# The NestJS API is versioned under /api/v1 (+ Swagger at /api/docs).
+	# Everything else under /api — Auth.js (/api/auth) and the Next.js route
+	# handlers that proxy uploads/downloads (/api/files, /api/invoices/…) —
+	# belongs to the frontend.
+	handle /api/v1/* {
+		# X-Guest-Ip is how the Next.js guest-invoice proxy tells the backend
+		# the visitor's address (trusted from private IPs only). A client
+		# calling /api/v1 directly must not be able to set it and dodge the
+		# guest rate limits, so it is dropped here.
+		reverse_proxy backend:3000 {
+			header_up -X-Guest-Ip
+		}
+	}
+
+	handle /api/docs* {
 		reverse_proxy backend:3000
 	}
 

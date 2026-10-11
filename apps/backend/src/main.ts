@@ -3,8 +3,11 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AppModule } from "./app.module";
+import { assertProductionSecrets } from "./common/production-secrets";
 
 async function bootstrap() {
+  assertProductionSecrets();
+
   // `rawBody: true` makes `req.rawBody` available — required by the billing
   // webhook handlers (blueprint §5) to verify Stripe/GoPay signatures
   // against the exact bytes received, not the parsed-then-reserialized JSON
@@ -14,7 +17,7 @@ async function bootstrap() {
   // Feature controllers declare paths already prefixed with `v1/...`
   // (e.g. `v1/invoices`), so the effective route is `/api/v1/invoices`,
   // matching the exact paths `apps/ai-service` already calls
-  // (`/api/v1/invoices/drafts`, `/api/v1/channel-links/verify`).
+  // (`/api/v1/invoices/drafts`, `/api/v1/internal/channel-links/verify`).
   app.setGlobalPrefix("api");
 
   // Zod (not class-validator) is this project's request-validation choice

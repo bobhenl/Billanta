@@ -69,6 +69,13 @@ export class ExpensesService {
         expenseDate: dto.expenseDate,
         category: dto.category ?? null,
         receiptFileUrl: dto.receiptFileUrl ?? null,
+        documentNumber: dto.documentNumber ?? null,
+        variableSymbol: dto.variableSymbol ?? null,
+        supplierIco: dto.supplierIco ?? null,
+        supplierDic: dto.supplierDic ?? null,
+        dueDate: dto.dueDate ?? null,
+        paidAt: dto.paidAt ?? null,
+        note: dto.note ?? null,
       })
       .returning()
       .then(([expense]) => expense);
@@ -92,6 +99,13 @@ export class ExpensesService {
         ...(dto.expenseDate !== undefined && { expenseDate: dto.expenseDate }),
         ...(dto.category !== undefined && { category: dto.category }),
         ...(dto.receiptFileUrl !== undefined && { receiptFileUrl: dto.receiptFileUrl }),
+        ...(dto.documentNumber !== undefined && { documentNumber: dto.documentNumber }),
+        ...(dto.variableSymbol !== undefined && { variableSymbol: dto.variableSymbol }),
+        ...(dto.supplierIco !== undefined && { supplierIco: dto.supplierIco }),
+        ...(dto.supplierDic !== undefined && { supplierDic: dto.supplierDic }),
+        ...(dto.dueDate !== undefined && { dueDate: dto.dueDate }),
+        ...(dto.paidAt !== undefined && { paidAt: dto.paidAt }),
+        ...(dto.note !== undefined && { note: dto.note }),
       })
       .where(eq(schema.expenses.id, id))
       .returning();

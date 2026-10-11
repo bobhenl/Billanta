@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import { isDueForReminder } from "./invoice-reminders.util";
 
 const NOW = new Date("2026-09-09T09:00:00Z");
@@ -70,5 +71,28 @@ describe("isDueForReminder", () => {
     expect(isDueForReminder({ status: "issued", dueDate: null, lastReminderSentAt: null }, NOW)).toBe(
       false,
     );
+  });
+
+  it("stops once the tenant's maximum number of reminders was sent", () => {
+    const invoice = { status: "issued", dueDate: daysAgo(40), lastReminderSentAt: daysAgo(10), reminderCount: 3 };
+    expect(isDueForReminder(invoice, NOW, { intervalDays: 7, max: 3 })).toBe(false);
+    expect(isDueForReminder({ ...invoice, reminderCount: 2 }, NOW, { intervalDays: 7, max: 3 })).toBe(true);
+  });
+
+  it("uses the tenant's interval instead of the default 7 days", () => {
+    const invoice = { status: "issued", dueDate: daysAgo(40), lastReminderSentAt: daysAgo(10) };
+    expect(isDueForReminder(invoice, NOW, { intervalDays: 14, max: 5 })).toBe(false);
+    expect(isDueForReminder(invoice, NOW, { intervalDays: 3, max: 5 })).toBe(true);
+  });
+});
+
+describe("reminderPrefsOf", () => {
+  it("falls back to the defaults for missing or invalid values", () => {
+    expect(reminderPrefsOf(null)).toEqual({ enabled: true, intervalDays: 7, max: 3 });
+    expect(reminderPrefsOf({ remindersEnabled: false, reminderIntervalDays: 0, reminderMax: 4 })).toEqual({
+      enabled: false,
+      intervalDays: 7,
+      max: 4,
+    });
   });
 });

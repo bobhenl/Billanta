@@ -32,6 +32,19 @@ export const createExpenseSchema = z.object({
   // upload endpoint/flow instead of being accepted as free-text client
   // input, and probably validated as a URL pointing at that storage bucket.
   receiptFileUrl: z.string().min(1).nullish(),
+  // Details printed on the received invoice (typed in or read by AI).
+  documentNumber: z.string().max(64).nullish(),
+  variableSymbol: z.string().regex(/^\d{1,10}$/).nullish(),
+  supplierIco: z.string().regex(/^\d{8}$/).nullish(),
+  supplierDic: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z]{2}[0-9A-Z]{2,12}$/)
+    .nullish(),
+  dueDate: z.coerce.date().nullish(),
+  paidAt: z.coerce.date().nullish(),
+  note: z.string().max(2000).nullish(),
 });
 
 export class CreateExpenseDto extends createZodDto(createExpenseSchema) {}

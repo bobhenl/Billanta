@@ -7,23 +7,22 @@ import type { Config } from 'tailwindcss';
 // as one brand.
 const config: Config = {
   darkMode: ['class'],
-  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {
     container: {
       center: true,
-      padding: '1.5rem',
+      padding: '1rem',
       screens: {
         '2xl': '1280px'
       }
     },
     extend: {
       fontFamily: {
-        // Body/UI text stays Inter (loaded as the default font in
-        // app/[locale]/layout.tsx) — `display` is a distinct serif for
-        // marketing headlines only, loaded via next/font/google as the
-        // `--font-display` CSS variable in the same layout. Use as
-        // `font-display`.
-        display: ['var(--font-display)', 'Georgia', 'Cambria', 'Times New Roman', 'serif']
+        // One family everywhere (Inter, loaded in app/[locale]/layout.tsx as
+        // `--font-sans`). `font-display` stays as an alias for headline
+        // spots so call sites need not change; it only tightens tracking.
+        sans: ['var(--font-sans)', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['var(--font-sans)', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif']
       },
       colors: {
         border: 'hsl(var(--border))',

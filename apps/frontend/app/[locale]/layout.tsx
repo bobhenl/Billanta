@@ -1,29 +1,31 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Inter, Fraunces } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { hasLocale } from '@/i18n/has-locale';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SessionProvider } from '@/components/session-provider';
+import { ToastFromQuery, Toaster } from '@/components/toaster';
+import { Suspense } from 'react';
 import { SITE_URL } from '@/lib/site';
+import { OG_IMAGE } from '@/lib/seo';
 import '../globals.css';
 
-const inter = Inter({ subsets: ['latin', 'latin-ext'] });
+const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-sans', display: 'swap' });
 
-// Marketing-only display serif (headlines on the public homepage) — kept
-// separate from `inter`, the body/UI font used everywhere else including
-// the dashboard. Exposed as the `--font-display` CSS variable (see
-// `tailwind.config.ts`'s `fontFamily.display`) rather than a `.className`
-// so it never overrides Inter on `<body>`; components opt in with the
-// `font-display` utility class instead.
-const fraunces = Fraunces({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-display'
-});
+// Browser chrome (mobile address bar, PWA title bar) follows the page
+// ground in each scheme — the same two hexes as --background in globals.css.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f5f6fb' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0c14' }
+  ]
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -36,11 +38,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   // `app.name` (messages/{cs,sk,en}.json) is the single source of truth for
-  // the product's user-facing name in translated contexts — it's a
-  // provisional placeholder ("Faktur") pending a final branding/naming
-  // decision, so every translated surface must read it from here rather
-  // than hardcoding the literal string. See `lib/site.ts`'s `SITE_NAME` for
-  // the non-translated-context equivalent.
+  // the product's user-facing name in translated contexts; `lib/site.ts`'s
+  // `SITE_NAME` is the non-translated equivalent.
   const t = await getTranslations({ locale, namespace: 'app' });
 
   return {
@@ -59,11 +58,14 @@ export async function generateMetadata({
     openGraph: {
       siteName: t('name'),
       locale,
-      type: 'website'
+      type: 'website',
+      images: [OG_IMAGE]
     },
     twitter: {
       card: 'summary_large_image'
-    }
+    },
+    applicationName: t('name'),
+    formatDetection: { telephone: false }
   };
 }
 
@@ -91,7 +93,7 @@ export default async function LocaleLayout({
     // sets the dark/light class on <html> before hydration, which would
     // otherwise trip React's hydration mismatch warning for this attribute.
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${inter.className} ${fraunces.variable}`}>
+      <body className={`${inter.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NextIntlClientProvider messages={messages}>
             {/* Makes useSession() available to client components anywhere
@@ -99,6 +101,10 @@ export default async function LocaleLayout({
                 layout itself into a client component — see
                 session-provider.tsx's doc comment. */}
             <SessionProvider>{children}</SessionProvider>
+            <Toaster />
+            <Suspense fallback={null}>
+              <ToastFromQuery />
+            </Suspense>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

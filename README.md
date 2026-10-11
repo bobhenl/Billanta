@@ -1,6 +1,6 @@
 # Faktur
 
-A multi-tenant CZ/SK invoicing SaaS: Next.js dashboard, NestJS REST backend (Postgres + Drizzle + Row-Level Security), a Python/FastAPI AI voice-to-invoice microservice (Telegram/WhatsApp), and a shared `packages/cz-compliance` library (ARES lookup, ISDOC export, SPAYD QR, bank validation) ported from the MIT-licensed [Faktorio](https://github.com) project. Deployed via Docker Compose behind Caddy on a single Linux VPS.
+A multi-tenant CZ/SK invoicing SaaS: Next.js dashboard, NestJS REST backend (Postgres + Drizzle + Row-Level Security), a Python/FastAPI AI voice-to-invoice microservice (Telegram/WhatsApp), and a shared `packages/cz-compliance` library (ARES lookup, ISDOC export, SPAYD QR, bank validation) ported from the MIT-licensed [Faktorio](https://github.com/capaj/faktorio) (see `THIRD_PARTY_NOTICES.md`) project. Deployed via Docker Compose behind Caddy on a single Linux VPS.
 
 Full architecture, tech stack, multi-tenancy design, billing, AI pipeline, security/GDPR, legal/liability strategy, and phased roadmap: **[docs/CZ-SK-Invoicing-SaaS-Blueprint.md](docs/CZ-SK-Invoicing-SaaS-Blueprint.md)**.
 

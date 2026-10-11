@@ -20,15 +20,21 @@ export interface ReminderEligibilityInput {
   status: string;
   dueDate: Date | null;
   lastReminderSentAt: Date | null;
+  /** Reminders already sent; the sweep stops at the tenant's maximum. */
+  reminderCount?: number;
 }
 
-/** Matches the `interval '7 days'` cooldown in `rls-policies.sql` / the repository. */
+/** Default cooldown; tenants can change it in Settings → Invoices (`reminderPrefsOf`). */
 export const REMINDER_COOLDOWN_DAYS = 7;
 
 export function isDueForReminder(
   invoice: ReminderEligibilityInput,
   now: Date = new Date(),
+  rules: { intervalDays: number; max: number } = { intervalDays: REMINDER_COOLDOWN_DAYS, max: Infinity },
 ): boolean {
+  if ((invoice.reminderCount ?? 0) >= rules.max) {
+    return false;
+  }
   if (invoice.status !== "issued") {
     return false;
   }
@@ -38,6 +44,6 @@ export function isDueForReminder(
   if (invoice.lastReminderSentAt == null) {
     return true;
   }
-  const cooldownCutoff = new Date(now.getTime() - REMINDER_COOLDOWN_DAYS * 24 * 60 * 60 * 1000);
+  const cooldownCutoff = new Date(now.getTime() - rules.intervalDays * 24 * 60 * 60 * 1000);
   return invoice.lastReminderSentAt.getTime() < cooldownCutoff.getTime();
 }

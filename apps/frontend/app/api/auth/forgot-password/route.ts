@@ -34,6 +34,8 @@
 import { randomBytes, createHash } from 'node:crypto';
 import { eq, lt } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { clientIp } from '@/lib/client-ip';
+import { AUTH_LIMITS, allow } from '@/lib/rate-limit';
 import { db } from '@/lib/db';
 import { users, verificationTokens } from '@/lib/auth-schema';
 import { sendPasswordResetEmail } from '@/lib/email';
@@ -62,6 +64,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     // Still generic: malformed input gets the same response shape, just
     // skips the DB round-trip. This does NOT leak anything an attacker
     // couldn't already tell from the input they typed themselves.
+    return genericResponse();
+  }
+
+  // Throttled requests get the same generic answer, just without an email.
+  const ip = clientIp(request);
+  if ((ip && !allow(`forgot:ip:${ip}`, AUTH_LIMITS.forgotPerIp)) || !allow(`forgot:email:${email}`, AUTH_LIMITS.forgotPerEmail)) {
     return genericResponse();
   }
 

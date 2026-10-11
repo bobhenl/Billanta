@@ -21,19 +21,28 @@
 import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { clientIp } from "@/lib/client-ip";
 import { db } from "@/lib/db";
+import { AUTH_LIMITS, allow } from "@/lib/rate-limit";
 import { users } from "@/lib/auth-schema";
 
 const MIN_PASSWORD_LENGTH = 8;
 const BCRYPT_COST_FACTOR = 12;
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const ip = clientIp(request);
+  if (ip && !allow(`register:ip:${ip}`, AUTH_LIMITS.registerPerIp)) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   const body = await request.json().catch(() => null);
 
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : undefined;
   const password = typeof body?.password === "string" ? body.password : undefined;
   const companyName = typeof body?.companyName === "string" ? body.companyName.trim() : undefined;
   const tosVersionAccepted = typeof body?.tosVersionAccepted === "string" ? body.tosVersionAccepted : undefined;
+  // The signup checkbox confirms the user is 18+ and acts as a business;
+  // the service is not for children (COPPA / GDPR art. 8) or consumers.
+  const adultConfirmed = body?.adultConfirmed === true;
 
   if (
     !email ||
@@ -41,7 +50,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     !password ||
     password.length < MIN_PASSWORD_LENGTH ||
     !companyName ||
-    !tosVersionAccepted
+    !tosVersionAccepted ||
+    !adultConfirmed
   ) {
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });
   }
@@ -56,7 +66,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   // Best-effort only, per this app's other request-handling conventions —
   // not load-bearing for auth/authorization, just an audit-trail field.
   const ipAddress =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip") ?? null;
+    clientIp(request) || null;
 
   try {
     const { tenantId, userId } = await db.transaction(async (tx) => {

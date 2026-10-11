@@ -57,7 +57,7 @@ export function ResetPasswordForm() {
 
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
-        setError(body?.error === 'invalid_input' ? t('invalidInputError') : t('invalidTokenError'));
+        setError(body?.error === 'invalid_input' ? t('invalidInputError') : response.status === 429 ? t('rateLimitedError') : t('invalidTokenError'));
         setSubmitting(false);
         return;
       }

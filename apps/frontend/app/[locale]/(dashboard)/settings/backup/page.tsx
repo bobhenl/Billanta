@@ -1,61 +1,17 @@
-import { getTranslations } from 'next-intl/server';
-import { Link } from '@/i18n/navigation';
+import type { Metadata } from 'next';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { Link, redirect } from '@/i18n/navigation';
+import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
+import { Banner } from '@/components/banner';
 import {
   BackupDestinationsManager,
   type BackupDestinationListItem
 } from './backup-destinations-manager';
 
-/**
- * PLACEHOLDER DATA — TODO: replace with a real fetch to
- * `GET /api/v1/backup-destinations` (`apps/backend/src/backup-destinations/`)
- * once an authenticated frontend API client exists, same caveat as
- * `settings/api-keys/page.tsx`'s `MOCK_API_KEYS` / `settings/channels
- * /page.tsx`'s `MOCK_CHANNEL_LINKS` — this whole dashboard has no real
- * fetch wiring yet (no Auth.js session -> backend-JWT bridge for client
- * components), so every settings sub-page follows the same "mock the data,
- * wire the real network call later" pattern. Shape mirrors
- * `BackupDestinationsService.list`'s response exactly (never the encrypted
- * config blob or a decrypted secret).
- */
-const MOCK_DESTINATIONS: BackupDestinationListItem[] = [
-  {
-    id: 'dest-1',
-    type: 'google_drive',
-    schedule: 'weekly',
-    isActive: true,
-    webhookUrl: null,
-    googleDriveFolderId: null,
-    lastRunAt: '2026-09-07T03:00:00.000Z',
-    lastRunStatus: 'success',
-    createdAt: '2026-08-01T09:00:00.000Z'
-  },
-  {
-    id: 'dest-2',
-    type: 'webhook',
-    schedule: 'daily',
-    isActive: true,
-    webhookUrl: 'https://example.com/faktur-webhook',
-    googleDriveFolderId: null,
-    lastRunAt: '2026-09-09T04:00:00.000Z',
-    lastRunStatus: 'Webhook destination responded with HTTP 503',
-    createdAt: '2026-08-15T12:00:00.000Z'
-  },
-  {
-    id: 'dest-3',
-    // No config fields at all — see `BackupDestinationsManager`'s doc
-    // comment for `type: 'local'`: there is nothing to authenticate
-    // against, the "destination" is just this tenant's own browser
-    // download. `schedule` is always `'manual'` (server-enforced).
-    type: 'local',
-    schedule: 'manual',
-    isActive: true,
-    webhookUrl: null,
-    googleDriveFolderId: null,
-    lastRunAt: null,
-    lastRunStatus: null,
-    createdAt: '2026-09-09T10:00:00.000Z'
-  }
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('settings.backup');
+  return { title: t('title') };
+}
 
 interface BackupSettingsPageProps {
   searchParams: Promise<{ connected?: string; error?: string }>;
@@ -63,7 +19,19 @@ interface BackupSettingsPageProps {
 
 export default async function BackupSettingsPage({ searchParams }: BackupSettingsPageProps) {
   const t = await getTranslations('settings.backup');
+  const locale = await getLocale();
   const params = await searchParams;
+
+  // Backup destinations are owner-only on the backend (OwnerOnlyGuard): a
+  // 403 means "not the owner", anything else is a genuine load failure.
+  let destinations: BackupDestinationListItem[] = [];
+  let state: 'ok' | 'ownerOnly' | 'error' = 'ok';
+  try {
+    destinations = await apiFetch<BackupDestinationListItem[]>('/api/v1/backup-destinations');
+  } catch (error) {
+    if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
+    state = error instanceof ApiError && error.status === 403 ? 'ownerOnly' : 'error';
+  }
 
   return (
     <div>
@@ -80,20 +48,28 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
         with `?connected=google_drive` on success or `?error=...` if the
         tenant declined consent / Google reported an error — see that
         controller's `frontendSettingsUrl` helper. Rendering them is real,
-        working logic; only the destinations LIST below is still mocked.
+        working logic.
       */}
       {params.connected === 'google_drive' && (
-        <div className="mt-4 rounded-lg border border-success/40 bg-success/10 p-3 text-sm text-success">
+        <Banner tone="ok" className="mt-4">
           {t('connectGoogleDrive.connectedBanner')}
-        </div>
+        </Banner>
       )}
       {params.error && (
-        <div className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
-          {t('connectGoogleDrive.errorBanner', { error: params.error })}
-        </div>
+        <Banner tone="err" className="mt-4">
+          {params.error === 'google_drive_unavailable'
+            ? t('connectGoogleDrive.unavailable')
+            : t('connectGoogleDrive.errorBanner', { error: params.error })}
+        </Banner>
       )}
+      {state === 'ownerOnly' && (
+        <Banner tone="info" className="mt-4">
+          {t('ownerOnly')}
+        </Banner>
+      )}
+      {state === 'error' && <Banner tone="err" title={t('loadError')} className="mt-4" />}
 
-      <BackupDestinationsManager initialDestinations={MOCK_DESTINATIONS} />
+      {state === 'ok' && <BackupDestinationsManager initialDestinations={destinations} />}
 
       <p className="mt-4 text-xs text-muted-foreground">{t('docsHint')}</p>
     </div>

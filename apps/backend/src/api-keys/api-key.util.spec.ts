@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { API_KEY_PREFIX, generateApiKey, hashApiKey, isApiKeyFormat } from "./api-key.util";
+import { API_KEY_PREFIX, apiKeyAllowsMethod, generateApiKey, hashApiKey, isApiKeyFormat } from "./api-key.util";
 
 describe("hashApiKey", () => {
   it("produces a SHA-256 hex digest, not the plaintext key", () => {
@@ -69,5 +69,26 @@ describe("isApiKeyFormat", () => {
 
   it("rejects an empty string", () => {
     expect(isApiKeyFormat("")).toBe(false);
+  });
+});
+
+describe("apiKeyAllowsMethod", () => {
+  it("keeps full access for keys without scopes", () => {
+    expect(apiKeyAllowsMethod([], "POST")).toBe(true);
+    expect(apiKeyAllowsMethod([], "DELETE")).toBe(true);
+  });
+
+  it("limits read-only keys to safe methods", () => {
+    expect(apiKeyAllowsMethod(["read"], "GET")).toBe(true);
+    expect(apiKeyAllowsMethod(["read"], "head")).toBe(true);
+    expect(apiKeyAllowsMethod(["read"], "POST")).toBe(false);
+    expect(apiKeyAllowsMethod(["read"], "PATCH")).toBe(false);
+    expect(apiKeyAllowsMethod(["read"], "DELETE")).toBe(false);
+  });
+
+  it("allows writes with a write scope, including legacy resource scopes", () => {
+    expect(apiKeyAllowsMethod(["read", "write"], "POST")).toBe(true);
+    expect(apiKeyAllowsMethod(["invoices:write"], "PUT")).toBe(true);
+    expect(apiKeyAllowsMethod(["invoices:read"], "POST")).toBe(false);
   });
 });

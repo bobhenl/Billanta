@@ -41,6 +41,8 @@ export interface SpaydParams {
   dueDate?: Date;
   /** Recipient's identifier known to the payer's bank, rarely used. Encoded as RN. */
   recipientName?: string;
+  /** Embedded QR Faktura, already encoded with `qrInvoiceForSpayd`. Encoded as X-INV. */
+  invoice?: string;
 }
 
 /**
@@ -74,7 +76,7 @@ function formatDate(date: Date): string {
  * @throws {Error} if `iban` is missing/empty.
  */
 export function generateSpaydString(params: SpaydParams): string {
-  const { iban, bic, amount, currency, variableSymbol, constantSymbol, specificSymbol, message, dueDate, recipientName } =
+  const { iban, bic, amount, currency, variableSymbol, constantSymbol, specificSymbol, message, dueDate, recipientName, invoice } =
     params;
 
   if (!iban || iban.trim().length === 0) {
@@ -118,6 +120,10 @@ export function generateSpaydString(params: SpaydParams): string {
 
   if (message) {
     fields.push(`MSG:${escapeSpaydValue(message.slice(0, 60))}`);
+  }
+
+  if (invoice) {
+    fields.push(`X-INV:${invoice}`);
   }
 
   return fields.join('*');

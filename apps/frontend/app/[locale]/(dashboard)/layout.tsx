@@ -1,48 +1,97 @@
-import { getTranslations } from 'next-intl/server';
-import { Link } from '@/i18n/navigation';
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { auth } from '@/auth';
+import { Link, redirect } from '@/i18n/navigation';
+import { BrandMark } from '@/components/brand-mark';
+import { CommandPalette } from '@/components/command-palette';
 import { DashboardNav } from '@/components/dashboard-nav';
+import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
+import { NavProgress } from '@/components/nav-progress';
+import { NotificationBell } from '@/components/notification-bell';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UserMenu } from '@/components/user-menu';
+import { NOINDEX } from '@/lib/seo';
+import { fetchMyAccess, hiddenSections } from '@/lib/tenant';
+import { fetchMyCompanies } from '@/lib/api-client';
+
+// The signed-in app is never a search result (robots.ts also disallows it).
+export const metadata: Metadata = { robots: NOINDEX };
 
 /**
- * Shell layout for the authenticated dashboard area (route group so these
- * routes stay outside the marketing namespace without adding a URL
- * segment). No auth guard yet — TODO once Auth.js sessions exist
- * (blueprint §2), this layout is where the session check + tenant/plan
- * gating (blueprint §5) belongs.
+ * Shell for the signed-in dashboard (a route group, so no URL segment).
  *
- * Desktop: a top navbar (`DashboardNav`) instead of the previous
- * sidebar-only layout, plus theme/language controls and a user-menu
- * placeholder. Mobile (below `md`): the navbar's links are replaced by a
- * fixed bottom bar (`MobileBottomNav`) — `<main>` gets extra bottom padding
- * on small screens so content never renders underneath it.
+ * Desktop: one compact 56px bar — brand, section links, language, theme,
+ * account. Phones: the bar keeps only brand + account (Spotify-style), and
+ * the sections move to the fixed tab bar at the bottom (`MobileBottomNav`),
+ * whose "More" sheet also carries language and theme. `.pb-tabbar` keeps
+ * content clear of that bar.
  */
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  // Signed-in area: no session, no dashboard. (Each page's backend calls are
+  // independently authorised by the backend JWT; this is the UI gate.)
+  const session = await auth();
+  if (!session?.user) {
+    redirect({ href: '/login', locale: await getLocale() });
+  }
+
   const tApp = await getTranslations('app');
+  // The backend enforces access (RoleAccessGuard); the shell just leaves out
+  // what this member can't open or the company switched off, and tells a
+  // viewer up front that they can only look.
+  const [access, companies] = await Promise.all([fetchMyAccess().catch(() => null), fetchMyCompanies().catch(() => null)]);
+  const role = access?.role ?? null;
+  const hidden = hiddenSections(access);
+  // The Ctrl+K palette also drops create actions the member can't perform and switched-off modules.
+  const paletteHidden = [...hidden];
+  if (access) {
+    const p = access.permissions;
+    if (p.invoices !== 'write') paletteHidden.push('createInvoices');
+    if (p.expenses !== 'write' || !access.modules.expenses) paletteHidden.push('createExpenses');
+    if (p.contacts !== 'write') paletteHidden.push('createContacts');
+    if (!access.modules.quotes || p.invoices !== 'write') paletteHidden.push('quotes');
+    if (!access.modules.reports || p.reports === 'none') paletteHidden.push('exports');
+    if (!access.modules.ai) paletteHidden.push('ai');
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="container flex h-16 items-center justify-between gap-4">
-          <Link href="/dashboard" className="shrink-0 text-lg font-semibold tracking-tight">
+      <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="container flex h-14 items-center justify-between gap-3">
+          <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
+            <BrandMark />
             {tApp('name')}
           </Link>
 
-          <DashboardNav />
+          <DashboardNav hidden={hidden} />
 
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
-            <UserMenu />
+          <div className="flex items-center gap-1.5">
+            <CommandPalette hidden={paletteHidden} />
+            <NotificationBell />
+            <LanguageSwitcher className="hidden md:inline-flex" />
+            <ThemeToggle className="hidden md:inline-flex" />
+            <UserMenu
+              companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
+              activeId={companies?.active.id ?? null}
+            />
           </div>
         </div>
       </header>
 
-      <main className="container flex-1 overflow-x-auto py-8 pb-24 md:pb-8">{children}</main>
+      <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
+        {role === 'viewer' && (
+          <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
+        )}
+        {children}
+      </main>
 
-      <MobileBottomNav />
+      <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
+      <Suspense fallback={null}>
+        <NavProgress />
+      </Suspense>
+      <KeyboardShortcuts hidden={paletteHidden} />
     </div>
   );
 }

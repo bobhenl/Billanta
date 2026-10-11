@@ -23,7 +23,7 @@ for the full list. What IS meaningfully real in this scaffold:
 - `src/tenancy/tenant-context.middleware.ts`'s `SET LOCAL`-via-reserved-
   connection pattern — the actual multi-tenancy enforcement mechanism, not
   just its shape.
-- `POST /api/v1/invoices/drafts` and `POST /api/v1/channel-links/verify` —
+- `POST /api/v1/invoices/drafts` and `POST /api/v1/internal/channel-links/verify` —
   shaped to interoperate with the already-implemented
   `apps/ai-service` caller (see "Known contract deviation" below), not with
   a hypothetical shape.
@@ -407,6 +407,129 @@ path); and there's no reconciliation UI for "this transaction is a partial
 payment, apply it and leave the invoice open" — only the binary matched/
 unmatched/ignored states the schema defines.
 
+## Automatic bank sync (Fio API)
+
+`src/bank-reconciliation/bank-connections.*`, `fio-client.ts`, `bank-sync.cron.ts`.
+A tenant owner/admin stores a read-only Fio API token (64 chars, "Pouze
+sledovat účet") via `POST /api/v1/bank-reconciliation/connections`. It is
+encrypted with `AI_KEY_ENCRYPTION_KEY` (falls back to
+`BACKUP_CONFIG_ENCRYPTION_KEY`) and never returned.
+
+- `BankSyncCron` runs hourly over `list_tenant_ids()` and pulls
+  `periods/{token}/{from}/{to}/transactions.json` (first sync: last 30 days,
+  then from the last sync minus 3 days).
+- Only incoming payments are kept. Each row stores `external_id`
+  (`fio:<ID pohybu>`), and a partial unique index on
+  `(tenant_id, external_id)` makes overlapping windows harmless.
+- New rows go through the same `persistAndMatch` as the CSV import.
+- `POST .../connections/:id/sync` runs it on demand. Fio allows one request
+  per token every 30 s, and the endpoint answers 429 (`bank_sync_too_soon`)
+  before that.
+- `FIO_API_BASE_URL` overrides the API base, for a local mock in development.
+
+## PSD2 bank sync (Enable Banking)
+
+Other banks connect over PSD2 through [Enable Banking](https://enablebanking.com/docs/api/reference/),
+a licensed account-information aggregator (`enable-banking-client.ts`).
+GoCardless Bank Account Data, the usual free option, stopped accepting new
+accounts in July 2025, so it is not used.
+
+- Configure `ENABLE_BANKING_APP_ID` and the application's RSA private key
+  (`ENABLE_BANKING_PRIVATE_KEY` with `\n` escapes, or
+  `ENABLE_BANKING_PRIVATE_KEY_PATH`). Register
+  `${NEXT_PUBLIC_SITE_URL}/bank/psd2-callback` as the redirect URL in the
+  Enable Banking control panel, or set `ENABLE_BANKING_REDIRECT_URL`.
+  Without these, `GET .../connections/psd2` reports `available: false` and the
+  UI only offers Fio.
+- Each request is signed with an RS256 JWT (`kid` = application id).
+- Flow: `GET .../connections/psd2/banks?country=CZ` lists banks.
+  `POST .../psd2/start` stores a `pending` row with a random `auth_state` and
+  returns the bank URL. The bank redirects to `/bank/psd2-callback?code&state`,
+  and the page calls `POST .../psd2/complete`. That creates the session,
+  activates the row with the first account, and adds a row for every other
+  account in the same consent. `reconnectId` renews an expired consent on the
+  same row.
+- Consent lasts at most 180 days, or less when the bank caps it
+  (`maximum_consent_validity`). An expired or revoked consent sets
+  `status = 'expired'` and notifies the tenant.
+- PSD2 allows about 4 unattended reads a day per account. The hourly cron
+  therefore reads a PSD2 account only every 6 h, and the manual sync is
+  limited to one every 15 min (429 `bank_sync_too_soon`).
+- Only booked incoming payments are kept (`CRDT`/`BOOK`). `external_id` is
+  `psd2:<account uid>:<entry_reference>`, with a fingerprint as fallback. The
+  variable symbol is read from the remittance text (`/VS/…`, `VS: …`, or a
+  digits-only reference).
+- Deleting the last connection of a consent also deletes the session at
+  Enable Banking. Pending rows older than a day are removed by the cron.
+
+Banks without PSD2 access still use the CSV import.
+
+## PayPal sync (Transaction Search API)
+
+`POST .../connections/paypal` with `{clientId, secret, sandbox, label}`
+connects a PayPal business account (`paypal-client.ts`). The tenant creates
+a REST app at developer.paypal.com and enables **Transaction search** in its
+features. The credentials are checked with one reporting call (400
+`paypal_credentials_invalid` or `paypal_reporting_disabled`), then stored
+encrypted as JSON in `token_encrypted`.
+
+- The hourly cron reads `GET /v1/reporting/transactions` in windows of at
+  most 31 days (the API limit), 500 rows a page. The manual sync is limited
+  to one a minute. PayPal publishes transactions up to about 3 h late; the
+  3-day overlap of every sync picks them up.
+- Only completed received payments are kept: event codes `T00xx`, status
+  `S`, positive amount. `external_id` is `paypal:<transaction id>`, the
+  counterparty is the payer's e-mail and name, and the variable symbol comes
+  from `invoice_id`, `custom_field`, the subject or the note.
+- The fee PayPal kept goes to `bank_transactions.fee`. When the payment is
+  matched (automatically or by hand) and the fee is in the invoice currency,
+  it is added to `invoices.payment_fees`, the same column the manual "net
+  received" entry and Stripe card payments use.
+- `PAYPAL_API_BASE_URL` overrides the endpoint (local mock). Otherwise the
+  `sandbox` flag picks `api-m.sandbox.paypal.com` or `api-m.paypal.com`.
+
+## Card payments from the invoice link (Stripe Checkout)
+
+`src/card-payments/`. Each company connects its **own** Stripe account; the
+money never passes through the platform. This is unrelated to the platform's
+own subscription billing above (`STRIPE_SECRET_KEY`).
+
+- `PUT /api/v1/tenants/me/card-payments {secretKey}` takes a secret
+  (`sk_…`) or restricted (`rk_…`) key, verifies it against Stripe and stores it
+  encrypted (`AI_KEY_ENCRYPTION_KEY`, falls back to
+  `BACKUP_CONFIG_ENCRYPTION_KEY`). Only the last 4 characters are returned.
+  A restricted key needs write on Checkout Sessions and read on Payment
+  Intents, Charges and Balance.
+- `POST .../enabled {enabled}` toggles the button, `DELETE` forgets the key.
+- The public invoice view gets `cardPayment: true` for an issued invoice or
+  proforma with something left to pay. `POST /api/v1/public/invoices/:token/card-checkout`
+  creates a Checkout Session for the remaining amount and stores it in
+  `card_payment_sessions`.
+- No webhook is needed: on return the page calls `card-confirm`, and
+  `CardPaymentsCron` re-checks open sessions every 10 minutes (sessions expire
+  after 24 h). A paid session marks the invoice paid with Stripe's fee from the
+  balance transaction, once (`UPDATE … WHERE status = 'open'`).
+- Return URLs use `NEXT_PUBLIC_SITE_URL`.
+
+Testing needs a Stripe test-mode key and Stripe's test card `4242 4242 4242 4242`.
+
+## UBL / Peppol e-invoice export
+
+`GET /api/v1/invoices/:id/ubl` renders an issued invoice as UBL 2.1 in the
+Peppol BIS Billing 3.0 profile (EN 16931), built by
+`generateUblInvoiceXml` in `@faktur/cz-compliance` from the same input as the
+ISDOC export. Slovakia requires structured B2B e-invoices over Peppol from
+1 January 2027.
+
+- Only `document_type = invoice` (400 `ubl_invoice_only` otherwise).
+- Totals are recomputed from the lines so the EN 16931 sum rules hold; a
+  sub-unit difference to the stored total becomes `PayableRoundingAmount`.
+- VAT categories: `S`/`Z` for VAT payers, `AE` for reverse charge, `O` for
+  a supplier that isn't a VAT payer (then no VAT identifiers are written).
+- `EndpointID` comes from the VAT number (EAS 9929 CZ, 9950 SK, …). Parties
+  without one get none, and the access point has to supply it.
+- Sending over Peppol needs an access point and is not implemented.
+
 ## Per-tenant backup destinations
 
 `src/backup-destinations/` implements a per-tenant, tenant-owner-configured
@@ -455,6 +578,25 @@ connection. Three destination types:
   unattended background access, reusing the same `GOOGLE_CLIENT_ID`/
   `GOOGLE_CLIENT_SECRET` already configured for sign-in — no second
   registered OAuth app needed.
+- **`sftp`** — the tenant's own server, NAS or hosting over SFTP
+  (`sftp.client.ts`, `ssh2-sftp-client`). Each run uploads the same SQLite
+  file as `local` (`billanta-zaloha-<timestamp>.db`) into `sftp_path`,
+  creating the folder if needed. Without a password we generate an ed25519
+  key pair; the private half is stored encrypted in `configEncrypted`, the
+  public half (`sftp_public_key`) is shown for the tenant's
+  `authorized_keys`. The server's host key is pinned on the first upload
+  (`sftp_host_fingerprint`, `SHA256:…`); a different key later fails the run,
+  and changing host or port clears the pin. The host goes through the same
+  `publicUrlProblem` check as webhooks (internal addresses are refused in
+  production).
+- **File encryption (`sftp`, `google_drive`)** — optional, with
+  [age](https://age-encryption.org) (`age.util.ts`): either an `age1…`
+  public key (`encryption_recipient`, we can't decrypt) or a passphrase
+  (stored encrypted so scheduled runs can use it). Encrypted files get a
+  `.age` suffix and open with `age -d -i key.txt file.age` or
+  `age -d file.age`. `age-encryption` is ESM-only and is loaded with
+  `import()`, which the CommonJS build turns into `require()` — that needs
+  Node 20.19+ / 22.12+.
 - **`local`** — an on-demand, real SQLite database file
   (`sqlite-export.service.ts`, using `better-sqlite3`) the tenant downloads
   directly through their browser — real tables (`invoices`,
@@ -481,10 +623,10 @@ All under `JwtAuthGuard` + `OwnerOnlyGuard` except the OAuth callback:
 
 | Endpoint | What it does |
 |---|---|
-| `POST /api/v1/backup-destinations` | Creates a `webhook` (`{ type: "webhook", webhookUrl, schedule }`) or `local` (`{ type: "local", schedule: "manual" }`) destination. Returns the plaintext signing secret for `webhook` only (a `local` row has no secret at all). `type: "google_drive"` is rejected here (400) — see the OAuth flow below. `type: "local"` with `schedule` other than `"manual"` is rejected (400) — see "What it does" above. |
+| `POST /api/v1/backup-destinations` | Creates a `webhook` (`{ type: "webhook", webhookUrl, schedule }`), `sftp` (`{ type: "sftp", schedule, sftp: { host, port?, username, path?, password? } }`, answers with `sftpPublicKey` when no password is given) or `local` (`{ type: "local", schedule: "manual" }`) destination. Returns the plaintext signing secret for `webhook` only (a `local` row has no secret at all). `type: "google_drive"` is rejected here (400) — see the OAuth flow below. `type: "local"` with `schedule` other than `"manual"` is rejected (400) — see "What it does" above. |
 | `GET /api/v1/backup-destinations` | Lists the tenant's destinations. Never returns `configEncrypted` or a decrypted secret. |
 | `GET /api/v1/backup-destinations/google-drive/authorize` | Redirects to Google's consent screen (see above). |
-| `PATCH /api/v1/backup-destinations/:id` | Updates `schedule`/`isActive`/`webhookUrl`/`googleDriveFolderId`. Rejects (400) setting `schedule` to `daily`/`weekly` on an existing `local` destination. |
+| `PATCH /api/v1/backup-destinations/:id` | Updates `schedule`/`isActive`/`webhookUrl`/`googleDriveFolderId`, `sftp` (partial target) and `encryption` (`{ mode: "none" }`, `{ mode: "key", recipient }` or `{ mode: "passphrase", passphrase }`, `sftp`/`google_drive` only). Rejects (400) setting `schedule` to `daily`/`weekly` on an existing `local` destination. |
 | `DELETE /api/v1/backup-destinations/:id` | Hard-deletes the destination (and, via `ON DELETE CASCADE`, its `backup_runs` history) — unlike `api_keys`' soft-revoke, there's no audit-retention requirement for a connection config. |
 | `GET /api/v1/backup-destinations/:id/runs` | Lists export run history (`backup_runs`) for one destination. |
 | `POST /api/v1/backup-destinations/:id/run-now` | Triggers an immediate export, using the exact same `ExportService.runDestinationExport` the scheduler calls — EXCEPT for a `type: "local"` destination, where this returns the generated SQLite file directly as the response body (`Content-Type: application/vnd.sqlite3`, `Content-Disposition: attachment`) instead of a JSON `backup_runs` row (`ExportService.runLocalDestinationExport`). A `backup_runs` row is still recorded either way. |
@@ -668,7 +810,7 @@ writes) **is** also genuinely RLS-safe: it reuses
 | `src/tenancy/tenant-context.middleware.ts` | The enforcement mechanism itself: reserves one Postgres connection per request, opens a transaction, runs `set_config('app.current_tenant_id', ..., true)` (the parameterized equivalent of `SET LOCAL`), and hands a Drizzle instance bound to that same connection down as `req.tenantDb` — with a long comment on exactly why connection-pooling makes this non-optional. |
 | `src/auth/jwt-auth.guard.ts` | Placeholder guard (shape only) with TODOs describing the two real caller classes it needs to distinguish: dashboard users (per-user JWT) vs. the AI microservice (a single static scoped service credential). |
 | `src/invoices/invoices.controller.ts` | `POST /api/v1/invoices/drafts` — the AI microservice contract (§6): always `status = pending_review`, never allocates an invoice number, never auto-finalizes. |
-| `src/channel-links/channel-links.controller.ts` | `POST /api/v1/channel-links/verify` — the Telegram/WhatsApp account-linking lookup (§6 step 2), plus an explicit, unresolved TODO about the RLS-before-tenant-is-known ordering problem this endpoint runs into. |
+| `src/channel-links/channel-links.controller.ts` | `POST /api/v1/internal/channel-links/{verify,activate}` (AI-service scope only, `ServiceTokenGuard`) and the tenant-scoped `GET/POST/DELETE /api/v1/channel-links` for Settings → Kanály (owner/admin writes, 30-min single-use codes, max 5 pending). |
 | `src/billing/billing.controller.ts` + `billing.service.ts` | `POST /api/v1/billing/{stripe,gopay}/webhook` — real Stripe signature verification and `subscription_events`-keyed idempotency (§5); GoPay's control flow is real but `gopay.client.ts`'s HTTP call is a TODO stub — see "Billing webhooks" above. |
 | `src/recurring-invoices/` | Real CRUD (`recurring-invoices.controller.ts`/`.service.ts`) over `recurringInvoiceTemplates` plus a real daily `@Cron` job (`recurring-invoice-generation.service.ts`) that materializes due templates into `invoices`/`invoice_line_items`, advancing `next_run_date` via the pure, unit-tested `schedule.ts` (`advanceNextRunDate`/`isTemplateDue`) — see "Recurring invoices" above, including how it scans all tenants without bypassing RLS (`list_tenant_ids()` in `drizzle/rls-policies.sql`) and why generated invoices leave `invoice_number` unset. |
 | `src/email/email.service.ts` + `src/invoices/invoice-reminders.cron.ts` | Real Resend-backed invoice emailing (`POST /api/v1/invoices/:id/send`) and a real daily overdue-payment-reminder digest — see "Invoice emailing + overdue-payment reminders" above, including the Resend API-shape confidence note and the pure, unit-tested `isDueForReminder`/`computeInvoiceTotal` helpers (`invoice-reminders.util.ts`, `invoice-total.util.ts`). |

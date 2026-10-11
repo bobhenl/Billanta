@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import type { Request } from "express";
+import { apiKeyAllowsMethod } from "../api-keys/api-key.util";
 import { ApiKeysService } from "../api-keys/api-keys.service";
 import type { AuthenticatedUser } from "../tenancy/tenant-context.middleware";
 
@@ -93,6 +94,10 @@ export class ApiKeyAuthGuard implements CanActivate {
       // Unknown and revoked keys are indistinguishable here on purpose —
       // see find_active_api_key_by_hash's doc comment in rls-policies.sql.
       throw new UnauthorizedException("Invalid or revoked API key");
+    }
+
+    if (!apiKeyAllowsMethod(result.scopes, req.method)) {
+      throw new ForbiddenException("This API key is read-only");
     }
 
     const body = req.body as { tenantId?: string; tenant_id?: string } | undefined;

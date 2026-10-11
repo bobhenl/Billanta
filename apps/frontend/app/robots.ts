@@ -1,32 +1,59 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from '@/lib/site';
+import { sitemapShardUrls } from './sitemap';
 
 /**
- * Every route lives under `/[locale]/...` (see `i18n/routing.ts`,
- * `localePrefix: 'always'`), so each disallowed section needs a leading
- * locale wildcard segment to match under every locale prefix.
+ * Every route lives under `/[locale]/...` (`localePrefix: 'always'`), so
+ * each private section is disallowed under any locale prefix.
  *
- * Disallowed: the signed-in dashboard app — `(dashboard)/dashboard`,
- * `/invoices`, `/contacts`, `/settings`, `/billing` (route groups like
- * `(dashboard)` don't add a path segment, so these are real top-level
- * paths). There is no auth guard on these routes yet (see
- * apps/frontend/README.md), but they have no SEO value and shouldn't be
- * indexed regardless. There is no `/api` route in this Next.js app as of
- * this writing (the backend API is a separate service) — if one is added
- * later under `app`, it should be added here too.
+ * Private: the signed-in app (route groups add no path segment, so these
+ * are real top-level paths) and `/i/<token>` / `/c/<token>` — a client's private invoice or portal
+ * link, which also carries `noindex`. The auth forms are deliberately NOT
+ * disallowed: they are `noindex`, and a crawler has to be allowed to fetch
+ * a page to see that.
  *
- * Allowed explicitly: `/faktury-pro` and everything under it — the whole
- * point of this route is to be crawled and indexed.
+ * AI crawlers get their own group, as on VoxelRank (docs/seo-audit-2026-09
+ * §1.1 there): clean content paths are open so the product can be cited,
+ * query strings are closed. A crawler obeys only the most specific group
+ * that matches it and inherits nothing from `*`, so the private paths are
+ * repeated there.
  */
-const DISALLOWED_SECTIONS = ['dashboard', 'invoices', 'contacts', 'settings', 'billing'];
+const PRIVATE = [
+  'dashboard',
+  'invoices',
+  'expenses',
+  'bank',
+  'contacts',
+  'reports',
+  'settings',
+  'billing',
+  'time',
+  'invite',
+  'welcome',
+  'i/',
+  'c/'
+].map(
+  (section) => `/*/${section}`
+);
+
+const AI_CRAWLERS = [
+  'GPTBot',
+  'OAI-SearchBot',
+  'ClaudeBot',
+  'Claude-SearchBot',
+  'PerplexityBot',
+  'Google-Extended',
+  'Amazonbot',
+  'CCBot',
+  'meta-externalagent'
+];
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: ['/', '/faktury-pro', '/faktury-pro/*'],
-      disallow: DISALLOWED_SECTIONS.map((section) => `/*/${section}`)
-    },
-    sitemap: `${SITE_URL}/sitemap.xml`
+    rules: [
+      { userAgent: '*', allow: '/', disallow: ['/api/', ...PRIVATE] },
+      { userAgent: AI_CRAWLERS, allow: '/', disallow: ['/api/', ...PRIVATE, '/*?'] },
+      { userAgent: ['Bytespider', 'SemrushBot'], disallow: '/' }
+    ],
+    sitemap: sitemapShardUrls()
   };
 }

@@ -35,18 +35,45 @@ uvicorn app.main:app --reload
 
 | Function | Status |
 |---|---|
-| `resolve_tenant()` | **Real** — httpx POST to backend's `/api/v1/channel-links/verify` |
-| `download_media()` | Stub (`NotImplementedError`) — needs live bot/WhatsApp tokens |
-| `transcribe_audio()` | Stub (`NotImplementedError`) — needs OpenAI Whisper call + ffmpeg remux |
-| `extract_invoice_data()` | Stub (`NotImplementedError`) — needs GPT-4o structured-output call; the `ExtractedInvoiceDraft` schema it returns is real |
-| `enrich_with_ares()` | Stub (`NotImplementedError`) — targets an *implied*, not-yet-built backend endpoint `/api/v1/contacts/ares-lookup` |
+| `resolve_tenant()` | **Real** — httpx POST to backend's `/api/v1/internal/channel-links/verify` |
+| `download_media()` | **Real** — Telegram `getFile` + download, WhatsApp Graph API media resolution + download, Whisper/Telegram size-limit enforcement |
+| `transcribe_audio()` | **Real** — ffmpeg remux (subprocess) + OpenAI Whisper (`whisper-1`) via the `openai` SDK |
+| `extract_invoice_data()` | **Real** — GPT-4o structured-output call (`response_format={"type": "json_schema", "strict": true}`), Pydantic-validated into `ExtractedInvoiceDraft`, one retry on schema-validation failure |
+| `enrich_with_ares()` | **Real** — httpx POST to the backend's `/api/v1/contacts/ares-lookup` (built by a concurrent workstream); maps 200/404/409/error/network-failure into `AresEnrichment`, never asserting VAT-payer status outright |
 | `create_draft_invoice()` | **Real** — httpx POST to backend's `/api/v1/invoices/drafts` with scoped service JWT |
 | `orchestrate()` | **Real** — wires all steps together in §6 order, handles the unlinked-sender and needs-attention paths |
 | Telegram secret-token verification | **Real** — constant-time comparison |
+| Telegram webhook pipeline-error handling | **Real** — `PipelineError`s (oversized media, transcription/extraction/download failures) are caught and logged with a `user_message`; the webhook still 200s so Telegram doesn't retry-storm. Sending that message back to the chat via `sendMessage` is still TODO. |
 | WhatsApp `X-Hub-Signature-256` verification | **Real** — actual HMAC-SHA256 over the raw request body |
 | WhatsApp `GET` verification handshake | **Real** |
+| WhatsApp inbound message parsing (`entry -> changes -> value -> messages[]`) | Stub — Phase 6, gated on Meta Business verification; `download_media()`'s WhatsApp branch is ready for it |
+
+### Confidence: what's verified vs. what needs live credentials
+
+No real Telegram bot token, WhatsApp access token, OpenAI API key, or live backend exist in this environment, so none of the above "Real" external-call implementations have been exercised end-to-end. What *is* verified:
+
+- All four newly-implemented functions (`download_media`, `transcribe_audio`, `extract_invoice_data`, `enrich_with_ares`) are covered by `pytest` unit tests (`tests/`) with `httpx`/`openai`/`ffmpeg subprocess` fully mocked — request shapes, URL construction, size-limit math, retry-on-validation-failure logic, and every documented response-status mapping are asserted against.
+- `orchestrate()`'s step-10 "never drop a message" behavior (ARES failures/exceptions still produce a `needs_attention` draft) and the Telegram webhook's error-to-200-ack behavior are also unit-tested.
+- `python -m py_compile` / `python -m compileall app tests` and `ruff check` both pass.
+
+What is NOT verified (matches this repo's existing GoPay/Google-Drive-OAuth confidence-caveat pattern — code is correct per each API's published documentation, but unconfirmed against the real service):
+
+- Whether Telegram's/Meta's Graph API's real HTTP responses match the assumed shapes exactly.
+- Whether OpenAI's `whisper-1` and `gpt-4o` `strict: true` json_schema structured-output mode behave exactly as documented in production (model/API behavior can differ subtly from docs).
+- Whether the concurrently-developed backend `/api/v1/contacts/ares-lookup` endpoint's real response shape matches what `enrich_with_ares()` assumes (`legal_name`/`obchodni_jmeno`/`confidence`/`ico` keys) — worth a quick contract check once that endpoint lands.
+- Whether the `ffmpeg` binary added to the Dockerfile actually remuxes real Telegram/WhatsApp voice notes correctly (no `ffmpeg` binary available in this dev environment to test against).
 
 ## Dependencies
 
-See `pyproject.toml`: fastapi, uvicorn, httpx, pydantic v2, pydantic-settings, python-dotenv, plus `openai` and `python-telegram-bot` (listed as required future dependencies for the stubbed transcription/extraction calls and richer bot replies — not yet imported by any stub).
+See `pyproject.toml`: fastapi, uvicorn, httpx, pydantic v2, pydantic-settings, python-dotenv, `openai` (now actually used by `transcribe_audio()`/`extract_invoice_data()`), and `python-telegram-bot` (still unused — listed for future higher-level bot-reply helpers). The runtime container also needs the `ffmpeg` system binary (added to `Dockerfile`) for `transcribe_audio()`'s remux step — not a Python dependency, won't show up in `pyproject.toml`.
+
+## Testing
+
+```bash
+# from apps/ai-service, with the [dev] extra installed
+pip install -e ".[dev]"
+pytest
+```
+
+Every test mocks its external boundary (`httpx.AsyncClient`, `openai.AsyncOpenAI`, `asyncio.create_subprocess_exec`) — no real network calls, no real `ffmpeg` process, no live credentials needed to run the suite.
 

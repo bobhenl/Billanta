@@ -21,8 +21,10 @@ import { createHash } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { and, eq, gt } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { clientIp } from '@/lib/client-ip';
 import { db } from '@/lib/db';
-import { users, verificationTokens } from '@/lib/auth-schema';
+import { AUTH_LIMITS, allow } from '@/lib/rate-limit';
+import { sessions, users, verificationTokens } from '@/lib/auth-schema';
 
 // Same rule as `app/api/auth/register/route.ts`'s `MIN_PASSWORD_LENGTH` —
 // duplicated rather than imported since that route doesn't export it; keep
@@ -34,6 +36,10 @@ const INVALID_TOKEN_RESPONSE = () =>
   NextResponse.json({ error: 'invalid_or_expired_token' }, { status: 400 });
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const ip = clientIp(request);
+  if (ip && !allow(`reset:ip:${ip}`, AUTH_LIMITS.resetPerIp)) {
+    return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
+  }
   const body = await request.json().catch(() => null);
   const token = typeof body?.token === 'string' ? body.token : undefined;
   const password = typeof body?.password === 'string' ? body.password : undefined;
@@ -63,6 +69,11 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     await db.transaction(async (tx) => {
       await tx.update(users).set({ passwordHash, updatedAt: new Date() }).where(eq(users.email, tokenRow.identifier));
+
+      // A reset means the old password may be known to someone else: end
+      // every existing session of this account, on all devices.
+      const [user] = await tx.select({ id: users.id }).from(users).where(eq(users.email, tokenRow.identifier)).limit(1);
+      if (user) await tx.delete(sessions).where(eq(sessions.userId, user.id));
 
       // Delete by (identifier, token) — the composite primary key — not just
       // by token, so this stays correct even though `token` alone is also

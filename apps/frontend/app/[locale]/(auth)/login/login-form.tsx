@@ -4,10 +4,12 @@ import { type FormEvent, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { OAuthButton } from '@/components/oauth-button';
+import type { OAuthProviderId } from '@/lib/oauth-providers';
 
 /**
- * Login form — email/password via NextAuth's Credentials provider, plus
- * "Continue with Google" / "Continue with Discord" OAuth buttons. Mirrors
+ * Login form — email/password via NextAuth's Credentials provider, plus a
+ * "Continue with …" button for every configured OAuth provider. Mirrors
  * `(auth)/signup/signup-form.tsx`'s visual conventions (same card, input,
  * and button classes) so the two auth pages read as one consistent flow.
  *
@@ -17,7 +19,7 @@ import { Link, useRouter } from '@/i18n/navigation';
  * wrapper in `components/session-provider.tsx`) — NOT the `signIn` exported
  * from the root `auth.ts`, which is meant for server actions/route handlers.
  */
-export function LoginForm() {
+export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
   const t = useTranslations('auth.login');
   const router = useRouter();
 
@@ -101,28 +103,22 @@ export function LoginForm() {
         </button>
       </form>
 
-      <div className="mt-6 flex items-center gap-3 text-xs uppercase text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        {t('orContinueWith')}
-        <span className="h-px flex-1 bg-border" />
-      </div>
+      {/* Only providers with configured credentials (lib/oauth-providers.ts). */}
+      {providers.length > 0 && (
+        <>
+          <div className="mt-6 flex items-center gap-3 text-xs uppercase text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            {t('orContinueWith')}
+            <span className="h-px flex-1 bg-border" />
+          </div>
 
-      <div className="mt-4 flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-          className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          {t('continueWithGoogle')}
-        </button>
-        <button
-          type="button"
-          onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}
-          className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          {t('continueWithDiscord')}
-        </button>
-      </div>
+          <div className="mt-4 grid gap-2">
+            {providers.map((id) => (
+              <OAuthButton key={id} provider={id} label={t('continueWith', { provider: PROVIDER_NAMES[id] })} />
+            ))}
+          </div>
+        </>
+      )}
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {t('noAccount')}{' '}
@@ -133,3 +129,12 @@ export function LoginForm() {
     </div>
   );
 }
+
+const PROVIDER_NAMES: Record<OAuthProviderId, string> = {
+  google: 'Google',
+  'microsoft-entra-id': 'Microsoft',
+  apple: 'Apple',
+  seznam: 'Seznam',
+  discord: 'Discord',
+  github: 'GitHub'
+};

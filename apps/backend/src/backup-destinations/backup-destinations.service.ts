@@ -1,14 +1,16 @@
 import { randomBytes } from "node:crypto";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import type { CreateBackupDestinationDto } from "./dto/create-backup-destination.dto";
 import type { UpdateBackupDestinationDto } from "./dto/update-backup-destination.dto";
-import { encryptSecret } from "./encryption.util";
+import { publicUrlProblem } from "../integrations/public-url";
+import { decryptSecret, encryptSecret } from "./encryption.util";
+import { generateSftpKeyPair, type SftpSecret } from "./sftp.client";
 import { ExportService, type LocalExportResult } from "./export.service";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -30,6 +32,14 @@ const PUBLIC_DESTINATION_COLUMNS = {
   isActive: schema.backupDestinations.isActive,
   webhookUrl: schema.backupDestinations.webhookUrl,
   googleDriveFolderId: schema.backupDestinations.googleDriveFolderId,
+  sftpHost: schema.backupDestinations.sftpHost,
+  sftpPort: schema.backupDestinations.sftpPort,
+  sftpUsername: schema.backupDestinations.sftpUsername,
+  sftpPath: schema.backupDestinations.sftpPath,
+  sftpPublicKey: schema.backupDestinations.sftpPublicKey,
+  sftpHostFingerprint: schema.backupDestinations.sftpHostFingerprint,
+  encryptionRecipient: schema.backupDestinations.encryptionRecipient,
+  encryptionPassphrase: sql<boolean>`(${schema.backupDestinations.encryptionPassphraseEncrypted} is not null)`.as("encryption_passphrase"),
   lastRunAt: schema.backupDestinations.lastRunAt,
   lastRunStatus: schema.backupDestinations.lastRunStatus,
   createdAt: schema.backupDestinations.createdAt,
@@ -80,12 +90,35 @@ export class BackupDestinationsService {
    * on the write path.
    */
   async create(tenantDb: TenantDb, tenantId: string, dto: CreateBackupDestinationDto) {
+    if (dto.webhookUrl) await assertPublicWebhook(dto.webhookUrl);
     if (dto.type === "google_drive") {
       throw new BadRequestException(
         "Google Drive destinations are connected via GET /api/v1/backup-destinations/" +
           "google-drive/authorize, not this endpoint — there is no OAuth refresh token to " +
           "accept in a plain JSON body here.",
       );
+    }
+
+    if (dto.type === "sftp" && dto.sftp) {
+      await assertPublicSftpHost(dto.sftp.host);
+      // No password: our own key pair, the public half is shown to authorize.
+      const keys = dto.sftp.password ? null : generateSftpKeyPair();
+      const secret: SftpSecret = keys ? { privateKey: keys.privateKey } : { password: dto.sftp.password };
+      const [row] = await tenantDb
+        .insert(schema.backupDestinations)
+        .values({
+          tenantId,
+          type: "sftp",
+          schedule: dto.schedule,
+          sftpHost: dto.sftp.host,
+          sftpPort: dto.sftp.port,
+          sftpUsername: dto.sftp.username,
+          sftpPath: dto.sftp.path,
+          sftpPublicKey: keys?.publicKey ?? null,
+          configEncrypted: encryptSecret(JSON.stringify(secret), this.encryptionKey()),
+        })
+        .returning(PUBLIC_DESTINATION_COLUMNS);
+      return row;
     }
 
     if (dto.type === "local") {
@@ -155,8 +188,12 @@ export class BackupDestinationsService {
     };
     if (dto.schedule !== undefined) patch.schedule = dto.schedule;
     if (dto.isActive !== undefined) patch.isActive = dto.isActive;
-    if (dto.webhookUrl !== undefined) patch.webhookUrl = dto.webhookUrl;
+    if (dto.webhookUrl !== undefined) {
+      await assertPublicWebhook(dto.webhookUrl);
+      patch.webhookUrl = dto.webhookUrl;
+    }
     if (dto.googleDriveFolderId !== undefined) patch.googleDriveFolderId = dto.googleDriveFolderId;
+    if (dto.sftp || dto.encryption) await this.patchSftpAndEncryption(tenantDb, id, dto, patch);
 
     const [row] = await tenantDb
       .update(schema.backupDestinations)
@@ -276,7 +313,59 @@ export class BackupDestinationsService {
     });
   }
 
+  /** sftp target and file encryption — only for destinations that upload files. */
+  private async patchSftpAndEncryption(
+    tenantDb: TenantDb,
+    id: string,
+    dto: UpdateBackupDestinationDto,
+    patch: Partial<typeof schema.backupDestinations.$inferInsert>,
+  ) {
+    const [existing] = await tenantDb.select().from(schema.backupDestinations).where(eq(schema.backupDestinations.id, id)).limit(1);
+    if (!existing) throw new NotFoundException("Backup destination not found");
+
+    if (dto.encryption) {
+      if (existing.type !== "sftp" && existing.type !== "google_drive") {
+        throw new BadRequestException("Encryption is available for SFTP and Google Drive backups");
+      }
+      patch.encryptionRecipient = dto.encryption.mode === "key" ? dto.encryption.recipient : null;
+      patch.encryptionPassphraseEncrypted =
+        dto.encryption.mode === "passphrase" ? encryptSecret(dto.encryption.passphrase, this.encryptionKey()) : null;
+    }
+
+    if (dto.sftp) {
+      if (existing.type !== "sftp") throw new BadRequestException("Not an SFTP destination");
+      const s = dto.sftp;
+      if (s.host !== undefined) {
+        await assertPublicSftpHost(s.host);
+        patch.sftpHost = s.host;
+      }
+      if (s.port !== undefined) patch.sftpPort = s.port;
+      if (s.username !== undefined) patch.sftpUsername = s.username;
+      if (s.path !== undefined) patch.sftpPath = s.path;
+      // Another server: its host key is pinned again on the next run.
+      if ((s.host !== undefined && s.host !== existing.sftpHost) || (s.port !== undefined && s.port !== existing.sftpPort)) {
+        patch.sftpHostFingerprint = null;
+      }
+      if (s.password !== undefined) {
+        const old: SftpSecret = existing.configEncrypted ? JSON.parse(decryptSecret(existing.configEncrypted, this.encryptionKey())) : {};
+        patch.configEncrypted = encryptSecret(JSON.stringify({ ...old, password: s.password }), this.encryptionKey());
+      }
+    }
+  }
+
   private encryptionKey(): string | undefined {
     return this.config.get<string>("BACKUP_CONFIG_ENCRYPTION_KEY");
   }
+}
+
+/** Same rule as webhooks: the backup must not reach an internal host. */
+async function assertPublicSftpHost(host: string): Promise<void> {
+  const problem = await publicUrlProblem(`https://${host}`);
+  if (problem) throw new BadRequestException({ error: problem, message: "SFTP host must be a public address" });
+}
+
+/** The backup bundle holds every invoice and contact: only public https endpoints. */
+async function assertPublicWebhook(url: string): Promise<void> {
+  const problem = await publicUrlProblem(url);
+  if (problem) throw new BadRequestException({ error: problem, message: "Webhook URL must be a public https address" });
 }

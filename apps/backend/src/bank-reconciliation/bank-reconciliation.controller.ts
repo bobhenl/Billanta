@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Query,
   Req,
@@ -90,6 +91,18 @@ export class BankReconciliationController {
   @ApiOperation({ summary: "List bank transactions for the current tenant, optionally filtered by status" })
   list(@Req() req: TenantScopedRequest, @Query() query: ListBankTransactionsQueryDto) {
     return this.bankReconciliationService.list(req.tenantDb!, query.status);
+  }
+
+  @Get("transactions/:id")
+  @ApiOperation({ summary: "Get one bank transaction with its statement import" })
+  findOne(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.bankReconciliationService.findOne(req.tenantDb!, id);
+  }
+
+  @Post("transactions/:id/restore")
+  @ApiOperation({ summary: "Return an ignored bank transaction to the unmatched state" })
+  restore(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.bankReconciliationService.restore(req.tenantDb!, id);
   }
 
   @Post("transactions/:id/match")

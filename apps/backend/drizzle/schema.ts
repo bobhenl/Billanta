@@ -17,6 +17,7 @@ import {
   integer,
   jsonb,
   numeric,
+  type AnyPgColumn,
   pgEnum,
   pgTable,
   primaryKey,
@@ -69,9 +70,30 @@ export const invoiceSourceEnum = pgEnum("invoice_source", [
   "ai_whatsapp",
   "api",
   "recurring",
+  // Historical documents brought over from another invoicing system (CSV
+  // import, src/invoices/invoice-import.util.ts). Never emailed or reminded.
+  "import",
+]);
+
+// What kind of document an `invoices` row is. Quotes and proformas are not
+// tax documents; a credit note ("opravný daňový doklad") always points at
+// the invoice it corrects via `relatedInvoiceId`.
+export const documentTypeEnum = pgEnum("document_type", ["invoice", "proforma", "credit_note", "quote"]);
+
+export const paymentMethodEnum = pgEnum("payment_method", [
+  "bank_transfer",
+  "cash",
+  "card",
+  "cash_on_delivery",
+  "other",
 ]);
 
 export const channelTypeEnum = pgEnum("channel_type", ["telegram", "whatsapp"]);
+
+// How a tenant's AI features (invoice pre-fill from text) are powered:
+// `platform` = Billanta's own Anthropic key, `own` = the tenant's own key
+// (stored encrypted, see src/ai/), `off` = no AI calls at all.
+export const aiModeEnum = pgEnum("ai_mode", ["off", "platform", "own"]);
 
 export const subscriptionStatusEnum = pgEnum("subscription_status", [
   "trialing",
@@ -89,7 +111,7 @@ export const recurringFrequencyEnum = pgEnum("recurring_frequency", [
   "yearly",
 ]);
 
-export const bankStatementSourceEnum = pgEnum("bank_statement_source", ["csv", "mt940"]);
+export const bankStatementSourceEnum = pgEnum("bank_statement_source", ["csv", "mt940", "fio", "psd2", "paypal"]);
 
 export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
   "unmatched",
@@ -117,6 +139,8 @@ export const backupDestinationTypeEnum = pgEnum("backup_destination_type", [
   "google_drive",
   "webhook",
   "local",
+  // The company's own server over SFTP (SQLite file per run, see `sftp.client.ts`).
+  "sftp",
 ]);
 
 export const backupScheduleEnum = pgEnum("backup_schedule", ["daily", "weekly", "manual"]);
@@ -150,6 +174,52 @@ export const tenants = pgTable("tenants", {
     .default("trialing"),
   stripeCustomerId: text("stripe_customer_id"),
   gopayPayerId: text("gopay_payer_id"),
+  aiMode: aiModeEnum("ai_mode").notNull().default("platform"),
+  // AES-256-GCM `<iv>:<tag>:<ciphertext>` (backup-destinations/encryption.util);
+  // never returned by any endpoint — only `aiApiKeyLast4` is.
+  aiApiKeyEncrypted: text("ai_api_key_encrypted"),
+  aiApiKeyLast4: varchar("ai_api_key_last4", { length: 4 }),
+  // The company's OWN Stripe secret/restricted key for card payments from the
+  // invoice link (`card-payments` module), AES-256-GCM like the AI key; never returned.
+  stripeSecretKeyEncrypted: text("stripe_secret_key_encrypted"),
+  stripeAccountName: text("stripe_account_name"),
+  cardPaymentsEnabled: boolean("card_payments_enabled").notNull().default(false),
+  // --- Company profile & invoice defaults (Settings -> Company) ---
+  email: text("email"),
+  phone: varchar("phone", { length: 32 }),
+  website: text("website"),
+  // e.g. "Fyzická osoba zapsaná v živnostenském rejstříku" / "C 1234 vedená u MS v Praze".
+  registryNote: text("registry_note"),
+  bankAccountSwift: varchar("bank_account_swift", { length: 11 }),
+  defaultDueDays: integer("default_due_days").notNull().default(14),
+  defaultPaymentMethod: paymentMethodEnum("default_payment_method").notNull().default("bank_transfer"),
+  defaultNoteBelow: text("default_note_below"),
+  /** Company logo printed on documents: base64 PNG/JPEG (≤ 512 kB), never returned by GET /tenants/me. */
+  logoData: text("logo_data"),
+  logoMime: varchar("logo_mime", { length: 32 }),
+  // Which optional invoice-form fields start expanded, preset custom-field
+  // labels, default "issued by"/place — see `tenants/invoice-form-prefs.ts`.
+  invoiceFormPrefs: jsonb("invoice_form_prefs").notNull().default({}),
+  // Emails to customers: subject/text templates, sender name, reply-to,
+  // what to attach — see `tenants/email-prefs.ts`.
+  emailPrefs: jsonb("email_prefs").notNull().default({}),
+  // The company's own `{placeholders}` for emails and document notes — see `tenants/template-vars.ts`.
+  templateVars: jsonb("template_vars").notNull().default([]),
+  // Custom payment methods ({id,label,instructions}[]) offered in the invoice form.
+  paymentMethods: jsonb("payment_methods").notNull().default([]),
+  // Public business-card page at /p/<slug> — see `tenants/public-profile.ts`.
+  publicProfile: jsonb("public_profile").notNull().default({}),
+  // Dashboard sections the company switched off (`tenants/modules.ts`); missing = on.
+  enabledModules: jsonb("enabled_modules").notNull().default({}),
+  // Outgoing webhooks (Discord, Slack, or plain JSON) fired on the same events
+  // as member notifications — see `integrations/webhooks.ts`.
+  webhooks: jsonb("webhooks").notNull().default([]),
+  // Abuse protection (`abuse/sending-guard.ts`): a suspended company can't send
+  // and its share links show a notice; paused only blocks outgoing e-mail
+  // (set automatically after repeated recipient reports, cleared by the operator).
+  suspendedAt: timestamp("suspended_at", { withTimezone: true }),
+  suspensionReason: text("suspension_reason"),
+  emailPausedAt: timestamp("email_paused_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -261,6 +331,19 @@ export const tenantMemberships = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     role: tenantRoleEnum("role").notNull().default("viewer"),
+    // Per-area access overriding the role's defaults (null = role defaults),
+    // see src/tenancy/permissions.ts.
+    permissions: jsonb("permissions"),
+    // This person's own quick-action tiles on the dashboard (null = defaults),
+    // see src/dashboard/dashboard-tiles.ts for the shape.
+    dashboardTiles: jsonb("dashboard_tiles"),
+    // Which events reach this person and how (in-app/browser, email) —
+    // see src/notifications/notification-prefs.ts.
+    notificationPrefs: jsonb("notification_prefs").notNull().default({}),
+    // Secret of this person's read-only calendar (iCal) and RSS feeds
+    // (Settings → Integrace); null = feeds off. Resolved without a session
+    // through `find_feed_owner` in drizzle/rls-policies.sql.
+    feedToken: uuid("feed_token"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
@@ -268,6 +351,7 @@ export const tenantMemberships = pgTable(
       table.tenantId,
       table.userId,
     ),
+    feedTokenUnique: uniqueIndex("tenant_memberships_feed_token_unique").on(table.feedToken),
   }),
 );
 
@@ -301,6 +385,19 @@ export const contacts = pgTable("contacts", {
   // would be worse than surfacing "needs verification" (blueprint §6 step 7,
   // §1 ARES/ADISREG gap).
   isVatPayer: boolean("is_vat_payer"),
+  // Starred customers are listed first in the contacts list and offered as
+  // one-tap picks on a new invoice.
+  isStarred: boolean("is_starred").notNull().default(false),
+  // A private individual (no IČO/DIČ): the editor hides the company fields
+  // and the invoice never prints them for this customer.
+  isPerson: boolean("is_person").notNull().default(false),
+  // Colour label shown as a dot next to the customer everywhere (CONTACT_COLORS); null = none.
+  color: varchar("color", { length: 16 }),
+  // Private note about the customer (payment habits, contact person …); never printed or sent.
+  internalNote: text("internal_note"),
+  // Client portal link (/c/:portalToken) listing every issued document for this customer;
+  // null = no portal. Unique index in migration 0030.
+  portalToken: uuid("portal_token"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -312,6 +409,26 @@ export const contacts = pgTable("contacts", {
 // step 8 ("storing raw transcript + extracted JSON + ARES match
 // confidence") and step 10 (needs_attention flag) — called out inline.
 // ---------------------------------------------------------------------------
+/**
+ * Extra bank accounts besides the primary one on `tenants` (e.g. an EUR
+ * account for foreign invoices). Idea from faktorio (MIT, © Jiri Spac).
+ */
+export const tenantBankAccounts = pgTable("tenant_bank_accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "restrict" }),
+  label: text("label").notNull(),
+  accountNumber: text("account_number"),
+  bankCode: varchar("bank_code", { length: 4 }),
+  iban: text("iban"),
+  swift: varchar("swift", { length: 11 }),
+  /** When set, invoices in this currency use this account automatically. */
+  currency: varchar("currency", { length: 3 }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const invoices = pgTable(
   "invoices",
   {
@@ -369,6 +486,56 @@ export const invoices = pgTable(
     sentAt: timestamp("sent_at", { withTimezone: true }),
     lastReminderSentAt: timestamp("last_reminder_sent_at", { withTimezone: true }),
     reminderCount: integer("reminder_count").notNull().default(0),
+    // Client-portal link analytics (bumped by `record_public_invoice_view`).
+    publicViewCount: integer("public_view_count").notNull().default(0),
+    publicFirstViewedAt: timestamp("public_first_viewed_at", { withTimezone: true }),
+    publicLastViewedAt: timestamp("public_last_viewed_at", { withTimezone: true }),
+    // --- Document details (what competitors' invoice forms carry) ---
+    documentType: documentTypeEnum("document_type").notNull().default("invoice"),
+    // Credit note -> corrected invoice; invoice -> the proforma/quote it came from.
+    relatedInvoiceId: uuid("related_invoice_id").references((): AnyPgColumn => invoices.id, {
+      onDelete: "restrict",
+    }),
+    // DUZP (datum uskutečnění zdanitelného plnění). Null = same as issue date.
+    taxableSupplyDate: timestamp("taxable_supply_date", { withTimezone: true, mode: "date" }),
+    paymentMethod: paymentMethodEnum("payment_method").notNull().default("bank_transfer"),
+    // Custom method name / payment instructions printed instead of the built-in label.
+    paymentMethodLabel: text("payment_method_label"),
+    paymentInstructions: text("payment_instructions"),
+    constantSymbol: varchar("constant_symbol", { length: 4 }),
+    specificSymbol: varchar("specific_symbol", { length: 10 }),
+    orderNumber: varchar("order_number", { length: 64 }),
+    // Printed above / below the items; the internal note is never printed.
+    noteAbove: text("note_above"),
+    noteBelow: text("note_below"),
+    internalNote: text("internal_note"),
+    language: varchar("language", { length: 2 }).notNull().default("cs"),
+    // Přenesená daňová povinnost (§92a ZDPH): VAT is not charged on the invoice.
+    reverseCharge: boolean("reverse_charge").notNull().default(false),
+    /** CZK per 1 unit of `currency` (ČNB rate on the taxable supply date), set at issue; null for CZK. */
+    exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+    /** Account printed for payment; null = auto (matching currency, else the company's primary account). */
+    bankAccountId: uuid("bank_account_id").references(() => tenantBankAccounts.id, { onDelete: "set null" }),
+    // "Místo vystavení" and "Vystavil" (person) as printed on the document.
+    issuePlace: text("issue_place"),
+    issuedByName: text("issued_by_name"),
+    // Free label/value pairs printed in the document header (Invoice Ninja's
+    // custom fields): [{ label, value }].
+    customFields: jsonb("custom_fields").$type<{ label: string; value: string; kind?: "text" | "amount" | "percent" | "formula"; internal?: boolean }[]>().notNull().default([]),
+    // Quote accepted/rejected by the client from the portal link (Invoice
+    // Ninja's "approve quote"): 'accepted' | 'rejected', null = no answer yet.
+    clientResponse: varchar("client_response", { length: 16 }).$type<"accepted" | "rejected">(),
+    clientRespondedAt: timestamp("client_responded_at", { withTimezone: true }),
+    clientResponseName: text("client_response_name"),
+    clientResponseNote: text("client_response_note"),
+    // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
+    amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    // Kept by the payment provider (PayPal, Stripe, Wise…), in the invoice currency.
+    paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
+    // What actually landed on the account, in CZK; null = not recorded.
+    receivedCzk: numeric("received_czk", { precision: 14, scale: 2 }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -387,6 +554,45 @@ export const invoices = pgTable(
 // ---------------------------------------------------------------------------
 // invoice_line_items — tenant-scoped.
 // ---------------------------------------------------------------------------
+/**
+ * Files attached to an invoice (timesheet, contract, delivery note…), sent
+ * along with the invoice email and/or listed in the client portal. Stored
+ * base64 in the row like the logo — small files, no object store yet.
+ */
+export const invoiceAttachments = pgTable("invoice_attachments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  invoiceId: uuid("invoice_id")
+    .notNull()
+    .references(() => invoices.id, { onDelete: "cascade" }),
+  filename: varchar("filename", { length: 200 }).notNull(),
+  mime: varchar("mime", { length: 100 }).notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  data: text("data").notNull(),
+  sendWithEmail: boolean("send_with_email").notNull().default(true),
+  showInPortal: boolean("show_in_portal").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** In-app notification feed per member ("Faktura 2026-0004 byla zaplacena"). */
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  kind: varchar("kind", { length: 40 }).notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  body: text("body"),
+  link: varchar("link", { length: 300 }),
+  readAt: timestamp("read_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const invoiceLineItems = pgTable("invoice_line_items", {
   id: uuid("id").primaryKey().defaultRandom(),
   tenantId: uuid("tenant_id")
@@ -397,8 +603,15 @@ export const invoiceLineItems = pgTable("invoice_line_items", {
     .references(() => invoices.id, { onDelete: "cascade" }),
   description: text("description").notNull(),
   quantity: numeric("quantity", { precision: 12, scale: 3 }).notNull().default("1"),
-  unitPrice: numeric("unit_price", { precision: 14, scale: 2 }).notNull(),
+  // 4 decimals: a net price derived from a gross one ("prices incl. VAT")
+  // must sum back to the exact gross total.
+  unitPrice: numeric("unit_price", { precision: 14, scale: 4 }).notNull(),
   vatRate: numeric("vat_rate", { precision: 5, scale: 2 }),
+  // "ks", "hod", "m²"… free text, printed next to the quantity.
+  unit: varchar("unit", { length: 16 }),
+  // Item / product code (SKU, EAN, catalogue number), printed as its own column.
+  code: varchar("code", { length: 32 }),
+  discountPercent: numeric("discount_percent", { precision: 5, scale: 2 }).notNull().default("0"),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -414,12 +627,16 @@ export const invoiceNumberSequences = pgTable(
     tenantId: uuid("tenant_id")
       .notNull()
       .references(() => tenants.id, { onDelete: "restrict" }),
+    // One counter per document series: "" invoices, "ZF" proformas,
+    // "OD" credit notes, "NA" quotes (see invoice-numbering.util.ts).
+    series: varchar("series", { length: 8 }).notNull().default(""),
     year: integer("year").notNull(),
     lastNumber: integer("last_number").notNull().default(0),
   },
   (table) => ({
-    tenantYearUnique: uniqueIndex("invoice_number_sequences_tenant_year_unique").on(
+    tenantSeriesYearUnique: uniqueIndex("invoice_number_sequences_tenant_series_year_unique").on(
       table.tenantId,
+      table.series,
       table.year,
     ),
   }),
@@ -481,6 +698,8 @@ export const channelLinks = pgTable(
       .references(() => tenants.id, { onDelete: "cascade" }),
     channel: channelTypeEnum("channel").notNull(),
     externalUserId: text("external_user_id"),
+    // Shown in Settings → Kanály ("@username"), captured at activation.
+    externalDisplayName: text("external_display_name"),
     linkingToken: text("linking_token"),
     isActive: boolean("is_active").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -610,6 +829,18 @@ export const expenses = pgTable("expenses", {
   expenseDate: timestamp("expense_date", { withTimezone: true, mode: "date" }).notNull(),
   category: text("category"),
   receiptFileUrl: text("receipt_file_url"),
+  // The supplier's own document number and payment details as printed on
+  // the received invoice (typed in, or read by AI from a photo/PDF).
+  documentNumber: varchar("document_number", { length: 64 }),
+  variableSymbol: varchar("variable_symbol", { length: 10 }),
+  supplierIco: varchar("supplier_ico", { length: 8 }),
+  /** Supplier's DIČ — the VAT control statement (KH, B.2) lists received documents by it. */
+  supplierDic: varchar("supplier_dic", { length: 14 }),
+  /** CZK per 1 unit of `currency`; null for CZK (looked up from ČNB when missing). */
+  exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+  dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  note: text("note"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -686,6 +917,42 @@ export const bankTransactions = pgTable("bank_transactions", {
     onDelete: "set null",
   }),
   status: bankTransactionStatusEnum("status").notNull().default("unmatched"),
+  // Bank-side movement id (e.g. Fio "ID pohybu") for synced rows; unique per
+  // tenant so a re-sync of an overlapping period inserts nothing twice.
+  // Null for CSV imports.
+  externalId: text("external_id"),
+  /** Fee kept by the payment provider (PayPal), in `currency`. Null for bank rows. */
+  fee: numeric("fee", { precision: 14, scale: 2 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// bank_connections — tenant-scoped. Read-only bank API tokens (Fio for now)
+// that the hourly sync uses to pull incoming payments automatically. The
+// token is stored encrypted and never returned by the API.
+// ---------------------------------------------------------------------------
+export const bankConnections = pgTable("bank_connections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  provider: text("provider").$type<"fio" | "enable_banking" | "paypal">().notNull().default("fio"),
+  label: text("label"),
+  /** Fio API token, or PayPal `{clientId, secret, sandbox}` JSON (encrypted). Null for PSD2 connections. */
+  tokenEncrypted: text("token_encrypted"),
+  /** PSD2: `pending` until the bank redirects back, `expired` once consent runs out. */
+  status: text("status").$type<"pending" | "active" | "expired">().notNull().default("active"),
+  bankName: text("bank_name"),
+  bankCountry: varchar("bank_country", { length: 2 }),
+  /** PSD2: random value sent through the bank redirect, cleared once used. */
+  authState: text("auth_state"),
+  externalSessionId: text("external_session_id"),
+  externalAccountId: text("external_account_id"),
+  consentExpiresAt: timestamp("consent_expires_at", { withTimezone: true }),
+  accountNumber: text("account_number"),
+  enabled: boolean("enabled").notNull().default(true),
+  lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
+  lastError: text("last_error"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -720,6 +987,20 @@ export const backupDestinations = pgTable("backup_destinations", {
   webhookUrl: text("webhook_url"),
   // NOT secret — only used when type = google_drive.
   googleDriveFolderId: text("google_drive_folder_id"),
+  // type = sftp: where to upload. Auth is the generated key in
+  // `config_encrypted` (its public half below, to paste into authorized_keys)
+  // or a password stored there instead. The host key fingerprint is pinned on
+  // the first successful connection, later mismatches fail the run.
+  sftpHost: text("sftp_host"),
+  sftpPort: integer("sftp_port"),
+  sftpUsername: text("sftp_username"),
+  sftpPath: text("sftp_path"),
+  sftpPublicKey: text("sftp_public_key"),
+  sftpHostFingerprint: text("sftp_host_fingerprint"),
+  // Optional age encryption of uploaded files: a public key (`age1…`, only the
+  // company can decrypt) or a passphrase (AES-GCM encrypted like the secrets).
+  encryptionRecipient: text("encryption_recipient"),
+  encryptionPassphraseEncrypted: text("encryption_passphrase_encrypted"),
   lastRunAt: timestamp("last_run_at", { withTimezone: true }),
   // e.g. "success", or an error message string when the last run failed —
   // see `backup_runs` below for the full per-run history/audit trail this
@@ -752,3 +1033,163 @@ export const backupRuns = pgTable("backup_runs", {
   // anything.
   recordCount: integer("record_count"),
 });
+
+// ---------------------------------------------------------------------------
+// invoice_templates — tenant-scoped reusable invoice blueprints ("Monthly
+// retainer", "Website maintenance"…). Optional default customer; line items
+// snapshotted as jsonb like recurring_invoice_templates. Used from the
+// template gallery, dashboard tiles, `?template=` on the form, and bulk
+// invoicing (one draft per chosen customer).
+// ---------------------------------------------------------------------------
+export const invoiceTemplates = pgTable("invoice_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  // An emoji shown on the gallery card.
+  icon: varchar("icon", { length: 16 }),
+  contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+  documentType: documentTypeEnum("document_type").notNull().default("invoice"),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  dueInDays: integer("due_in_days"),
+  paymentMethod: paymentMethodEnum("payment_method").notNull().default("bank_transfer"),
+  noteAbove: text("note_above"),
+  noteBelow: text("note_below"),
+  // Array<{ description, quantity, unit, unitPrice, vatRate, discountPercent }>
+  lineItems: jsonb("line_items").notNull().default(sql`'[]'::jsonb`),
+  usageCount: integer("usage_count").notNull().default(0),
+  lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// tenant_invitations — tenant-scoped. An owner/admin invites someone (e.g.
+// their accountant) by email; only a sha256 of the emailed token is stored.
+// Accepting happens before the invitee has any membership, so it goes
+// through the SECURITY DEFINER `accept_tenant_invitation` (rls-policies.sql).
+// ---------------------------------------------------------------------------
+export const tenantInvitations = pgTable(
+  "tenant_invitations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    email: text("email").notNull(),
+    role: tenantRoleEnum("role").notNull().default("accountant"),
+    // Copied onto the membership when accepted.
+    permissions: jsonb("permissions"),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    invitedByUserId: uuid("invited_by_user_id").references(() => users.id, { onDelete: "set null" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tokenHashUnique: uniqueIndex("tenant_invitations_token_hash_unique").on(table.tokenHash),
+  }),
+);
+
+// ---------------------------------------------------------------------------
+// outbound_emails — one row per e-mail sent to a customer (invoice, reminder),
+// counted for the daily sending caps in `abuse/sending-guard.ts`. Tenant-scoped.
+// ---------------------------------------------------------------------------
+export const outboundEmails = pgTable("outbound_emails", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(),
+  recipient: text("recipient").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// abuse_reports — recipients flagging a document as fraudulent/unexpected via
+// the client portal. No app-role policy: written only by the SECURITY DEFINER
+// `report_invoice_abuse()`, reviewed by the operator.
+// ---------------------------------------------------------------------------
+export const abuseReports = pgTable("abuse_reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  invoiceId: uuid("invoice_id").notNull().references(() => invoices.id, { onDelete: "cascade" }),
+  reason: text("reason").notNull(),
+  message: text("message"),
+  reporterEmail: text("reporter_email"),
+  reporterBucket: text("reporter_bucket").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+});
+
+// ---------------------------------------------------------------------------
+// projects / time_entries — time tracking (Invoice Ninja's projects and
+// tasks, Fakturoid's timer). Tenant-scoped. A running timer is an entry
+// without `endedAt`; billed entries point at the invoice they went on.
+// ---------------------------------------------------------------------------
+export const projects = pgTable("projects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+  name: text("name").notNull(),
+  hourlyRate: numeric("hourly_rate", { precision: 14, scale: 2 }),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  color: varchar("color", { length: 16 }),
+  archived: boolean("archived").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** One Stripe Checkout attempt from the invoice link (`card-payments` module). */
+export const cardPaymentSessions = pgTable("card_payment_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  invoiceId: uuid("invoice_id").notNull().references(() => invoices.id, { onDelete: "cascade" }),
+  provider: varchar("provider", { length: 16 }).notNull().default("stripe"),
+  sessionId: text("session_id").notNull(),
+  amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).notNull(),
+  status: varchar("status", { length: 16 }).$type<"open" | "paid" | "expired">().notNull().default("open"),
+  /** Kept by Stripe, in the invoice currency (null when unknown). */
+  fee: numeric("fee", { precision: 14, scale: 2 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+});
+
+export const timeEntries = pgTable("time_entries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "set null" }),
+  contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  description: text("description").notNull().default(""),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+  minutes: integer("minutes").notNull().default(0),
+  // Overrides the project's rate; null = the project's.
+  hourlyRate: numeric("hourly_rate", { precision: 14, scale: 2 }),
+  billable: boolean("billable").notNull().default(true),
+  invoiceId: uuid("invoice_id").references(() => invoices.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** One audited change; see migrations/0038_audit_log.sql (append-only, actor from the request). */
+export type AuditChange = { field: string; from: unknown; to: unknown };
+
+export const auditLog = pgTable(
+  "audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+    // Filled by the column default from `app.current_user_id`; never set by the app.
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    actor: varchar("actor", { length: 40 }).notNull().default(sql`coalesce(nullif(current_setting('app.current_actor', true), ''), 'system')`),
+    entityType: varchar("entity_type", { length: 40 }).notNull(),
+    entityId: uuid("entity_id"),
+    entityLabel: text("entity_label"),
+    action: varchar("action", { length: 40 }).notNull(),
+    changes: jsonb("changes").$type<AuditChange[]>().notNull().default([]),
+    reason: text("reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  // Indexes (tenant + time, tenant + entity) live in the migration.
+);

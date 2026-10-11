@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { and, eq } from "drizzle-orm";
+import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { and, count, desc, eq, isNull, lt } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { channelLinks } from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
+import type { ActivateChannelLinkDto } from "./dto/activate-channel-link.dto";
 import type { CreateLinkingTokenDto } from "./dto/create-linking-token.dto";
 import type { VerifyChannelLinkDto } from "./dto/verify-channel-link.dto";
+
+/** How long a code from Settings → Kanály stays valid. */
+export const LINKING_TOKEN_TTL_MS = 30 * 60 * 1000;
+const MAX_PENDING_TOKENS = 5;
 
 @Injectable()
 export class ChannelLinksService {
@@ -68,39 +73,121 @@ export class ChannelLinksService {
     return { tenantId: link.tenantId };
   }
 
-  /**
-   * Dashboard-user-initiated: mint a short-lived, single-use linking token
-   * for the AUTHENTICATED tenant, to be embedded in a deep-link/code the
-   * user sends to the bot to prove ownership of the external account
-   * (blueprint §6 step 2). The row starts inactive (`is_active = false`,
-   * `external_user_id = null`) until a later activation step matches an
-   * inbound platform message carrying this token and flips `is_active` +
-   * fills in `external_user_id`. That activation step is NOT implemented
-   * anywhere yet (backend or ai-service — see the TODO in
-   * `apps/ai-service/app/webhooks/telegram.py`); this method only covers
-   * minting the token.
-   *
-   * `tenantId` MUST come from the verified JWT (`req.user.tenantId` in the
-   * controller), never from the request body — since `channel_links` carries
-   * no RLS policy (see `verify()`'s comment), there is no database-level
-   * backstop against inserting a row under the wrong tenant; the
-   * authenticated caller's own tenant id is the only thing enforcing that
-   * here. This also runs through `DbService.db` rather than `req.tenantDb`
-   * for the same reason `verify()` does — there is no RLS-scoped connection
-   * to use, because there is no RLS on this table.
-   */
-  async createLinkingToken(tenantId: string, dto: CreateLinkingTokenDto) {
-    const linkingToken = randomBytes(24).toString("base64url");
-
-    const [row] = await this.dbService.db
-      .insert(channelLinks)
-      .values({ tenantId, channel: dto.channel, linkingToken, isActive: false })
-      .returning({
+  /** Active links shown in Settings → Kanály. Never returns tokens. */
+  async list(tenantId: string) {
+    return this.dbService.db
+      .select({
         id: channelLinks.id,
         channel: channelLinks.channel,
-        linkingToken: channelLinks.linkingToken,
-      });
+        externalUserId: channelLinks.externalUserId,
+        displayName: channelLinks.externalDisplayName,
+        linkedAt: channelLinks.updatedAt,
+      })
+      .from(channelLinks)
+      .where(and(eq(channelLinks.tenantId, tenantId), eq(channelLinks.isActive, true)))
+      .orderBy(desc(channelLinks.updatedAt));
+  }
 
-    return row;
+  /**
+   * Mints a single-use linking token for the AUTHENTICATED tenant (`tenantId`
+   * comes from `TenantContextMiddleware`, never the body — `channel_links` has
+   * no RLS backstop). The row stays inactive until `activate()` consumes it.
+   * Tokens expire after `LINKING_TOKEN_TTL_MS`; expired pending rows are swept
+   * here, and at most `MAX_PENDING_TOKENS` may be pending per company.
+   */
+  async createLinkingToken(tenantId: string, dto: CreateLinkingTokenDto) {
+    const db = this.dbService.db;
+    const cutoff = new Date(Date.now() - LINKING_TOKEN_TTL_MS);
+    await db
+      .delete(channelLinks)
+      .where(and(eq(channelLinks.isActive, false), isNull(channelLinks.externalUserId), lt(channelLinks.createdAt, cutoff)));
+
+    const [{ pending }] = await db
+      .select({ pending: count() })
+      .from(channelLinks)
+      .where(and(eq(channelLinks.tenantId, tenantId), eq(channelLinks.isActive, false), isNull(channelLinks.externalUserId)));
+    if (pending >= MAX_PENDING_TOKENS) {
+      throw new HttpException("Too many pending linking codes, try again later", HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    const linkingToken = randomBytes(24).toString("base64url");
+    const [row] = await db
+      .insert(channelLinks)
+      .values({ tenantId, channel: dto.channel, linkingToken, isActive: false })
+      .returning({ id: channelLinks.id, channel: channelLinks.channel, linkingToken: channelLinks.linkingToken, createdAt: channelLinks.createdAt });
+
+    return {
+      id: row.id,
+      channel: row.channel,
+      linkingToken: row.linkingToken,
+      expiresAt: new Date(row.createdAt.getTime() + LINKING_TOKEN_TTL_MS).toISOString(),
+    };
+  }
+
+  /**
+   * Consumes a linking token the sender passed to the bot (`/start <token>`).
+   * The token must match the channel, be pending and unexpired; it is cleared
+   * on success so it can't be replayed. A sender already linked to ANOTHER
+   * company gets a 409 (one sender, one company — the unique index); linking
+   * again to the same company just drops the pending row.
+   */
+  async activate(dto: ActivateChannelLinkDto): Promise<{ tenantId: string; alreadyLinked: boolean }> {
+    const db = this.dbService.db;
+    const [pending] = await db
+      .select({ id: channelLinks.id, tenantId: channelLinks.tenantId, createdAt: channelLinks.createdAt })
+      .from(channelLinks)
+      .where(
+        and(
+          eq(channelLinks.linkingToken, dto.linking_token),
+          eq(channelLinks.channel, dto.channel),
+          eq(channelLinks.isActive, false),
+          isNull(channelLinks.externalUserId),
+        ),
+      )
+      .limit(1);
+    if (!pending || pending.createdAt.getTime() + LINKING_TOKEN_TTL_MS < Date.now()) {
+      throw new NotFoundException("Linking code is invalid or expired");
+    }
+
+    const [existing] = await db
+      .select({ id: channelLinks.id, tenantId: channelLinks.tenantId })
+      .from(channelLinks)
+      .where(and(eq(channelLinks.channel, dto.channel), eq(channelLinks.externalUserId, dto.external_user_id)))
+      .limit(1);
+    if (existing && existing.tenantId !== pending.tenantId) {
+      throw new ConflictException("This account is already linked to another company");
+    }
+    if (existing) {
+      await db.delete(channelLinks).where(eq(channelLinks.id, pending.id));
+      await db
+        .update(channelLinks)
+        .set({ isActive: true, externalDisplayName: dto.display_name ?? null, updatedAt: new Date() })
+        .where(eq(channelLinks.id, existing.id));
+      return { tenantId: pending.tenantId, alreadyLinked: true };
+    }
+
+    const updated = await db
+      .update(channelLinks)
+      .set({
+        externalUserId: dto.external_user_id,
+        externalDisplayName: dto.display_name ?? null,
+        isActive: true,
+        linkingToken: null,
+        updatedAt: new Date(),
+      })
+      // Re-check the token so two concurrent activations can't both win.
+      .where(and(eq(channelLinks.id, pending.id), eq(channelLinks.linkingToken, dto.linking_token)))
+      .returning({ id: channelLinks.id });
+    if (updated.length === 0) throw new NotFoundException("Linking code is invalid or expired");
+    return { tenantId: pending.tenantId, alreadyLinked: false };
+  }
+
+  /** Unlinks a chat; scoped to the caller's company. */
+  async remove(tenantId: string, id: string): Promise<void> {
+    const deleted = await this.dbService.db
+      .delete(channelLinks)
+      .where(and(eq(channelLinks.id, id), eq(channelLinks.tenantId, tenantId)))
+      .returning({ id: channelLinks.id });
+    if (deleted.length === 0) throw new NotFoundException("Channel link not found");
   }
 }

@@ -37,6 +37,13 @@ RUN pip install --no-cache-dir --upgrade pip \
 FROM python:3.12-slim AS runtime
 WORKDIR /app
 
+# ffmpeg: transcribe_audio() (app/pipeline/voice_to_invoice.py) shells out to
+# it to defensively remux voice notes to 16kHz mono WAV before sending them
+# to Whisper. Not a Python dependency - must be present as a system package.
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 

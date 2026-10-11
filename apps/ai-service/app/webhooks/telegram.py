@@ -10,13 +10,15 @@ from __future__ import annotations
 
 import hmac
 import logging
+import re
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
+from app.pipeline.errors import PipelineError
 from app.pipeline.schemas import Channel
-from app.pipeline.voice_to_invoice import orchestrate
+from app.pipeline.voice_to_invoice import activate_channel_link, orchestrate, send_telegram_message
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +97,42 @@ def _verify_secret_token(received: str | None) -> None:
         )
 
 
+# `/start <code>` from the Settings -> Kanály deep link. Codes are base64url.
+START_RE = re.compile(r"^/start(?:@\w+)?\s+([A-Za-z0-9_-]{16,128})\s*$")
+
+REPLIES = {
+    "linked": "Hotovo, tento chat je propojený s vaší firmou v Billantě. Pošlete hlasovou zprávu a připravím z ní koncept faktury.",
+    "already_linked": "Tento chat už je s vaší firmou propojený.",
+    "invalid": "Kód pro propojení je neplatný nebo vypršel. Vygenerujte nový v Nastavení → Kanály.",
+    "conflict": "Tento účet je už propojený s jinou firmou. Nejdřív ho tam odpojte v Nastavení → Kanály.",
+    "unlinked": "Tento chat zatím není propojený. V Billantě otevřete Nastavení → Kanály a klikněte na Propojit Telegram.",
+    "error": "Propojení se teď nepovedlo, zkuste to prosím za chvíli znovu.",
+}
+
+
+async def _handle_text(message: TelegramMessage) -> None:
+    """Route text commands. Only private chats may link: in a group every
+    member could then create invoices for the company."""
+    text = (message.text or "").strip()
+    match = START_RE.match(text)
+    if not match:
+        if text.startswith("/start"):
+            await send_telegram_message(message.chat.id, REPLIES["unlinked"])
+        return
+    if message.chat.type != "private" or message.from_ is None or message.from_.is_bot:
+        await send_telegram_message(message.chat.id, REPLIES["invalid"])
+        return
+    display = f"@{message.from_.username}" if message.from_.username else message.from_.first_name
+    try:
+        outcome = await activate_channel_link(
+            Channel.TELEGRAM, match.group(1), str(message.from_.id), display
+        )
+    except Exception:
+        logger.exception("telegram_webhook: channel activation failed")
+        outcome = "error"
+    await send_telegram_message(message.chat.id, REPLIES[outcome])
+
+
 @router.post("")
 async def telegram_webhook(
     request: Request,
@@ -114,10 +152,12 @@ async def telegram_webhook(
     body = await request.json()
     update = TelegramUpdate.model_validate(body)
 
+    if update.message is not None and update.message.text and update.message.voice is None:
+        await _handle_text(update.message)
+        return {"ok": True}
+
     if update.message is None or update.message.voice is None:
-        # Not a voice message (text command, sticker, etc.) - nothing for the
-        # AI pipeline to do. A real implementation would route text commands
-        # (e.g. /start <linking_token>) to the channel-linking flow here.
+        # Not a voice message (sticker, photo, etc.) - nothing to do.
         logger.debug("telegram_webhook: update %s has no voice message, ignoring", update.update_id)
         return {"ok": True}
 
@@ -126,17 +166,41 @@ async def telegram_webhook(
         update.message.from_.id if update.message.from_ else update.message.chat.id
     )
 
-    result = await orchestrate(
-        channel=Channel.TELEGRAM,
-        external_user_id=external_user_id,
-        file_id=voice.file_id,
-        mime_type=voice.mime_type or "audio/ogg",
-    )
+    try:
+        result = await orchestrate(
+            channel=Channel.TELEGRAM,
+            external_user_id=external_user_id,
+            file_id=voice.file_id,
+            mime_type=voice.mime_type or "audio/ogg",
+        )
+    except PipelineError as exc:
+        # A real (non-stub) pipeline step failed - e.g. oversized media,
+        # transcription/extraction failure, download error. `exc.user_message`
+        # is safe to relay to the end user; we still ack the webhook with 200
+        # so Telegram doesn't retry-storm us on a failure that won't resolve
+        # itself by resending the same update.
+        logger.warning(
+            "telegram_webhook: pipeline error for external_user_id=%s: %s",
+            external_user_id,
+            exc,
+        )
+        # TODO: send exc.user_message back to the chat via the Telegram Bot
+        # API (sendMessage) - not implemented here, this handler only
+        # acknowledges the webhook.
+        return {"ok": True}
+    except Exception:
+        # Unexpected failure (network blip, backend outage, etc.) - log with
+        # full traceback for diagnostics but still ack the webhook.
+        logger.exception(
+            "telegram_webhook: unexpected pipeline failure for external_user_id=%s",
+            external_user_id,
+        )
+        # TODO: send a generic failure message back to the chat via the
+        # Telegram Bot API (sendMessage) - not implemented here.
+        return {"ok": True}
 
     if result is None:
-        # TODO: send onboarding instructions back to the chat via the
-        # Telegram Bot API (sendMessage) - not implemented here, this
-        # handler only acknowledges the webhook.
+        await send_telegram_message(update.message.chat.id, REPLIES["unlinked"])
         logger.info("telegram_webhook: unresolved tenant for external_user_id=%s", external_user_id)
 
     return {"ok": True}

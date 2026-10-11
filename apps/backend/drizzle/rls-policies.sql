@@ -171,6 +171,29 @@ CREATE POLICY tenant_isolation ON bank_transactions
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
+-- bank_connections — encrypted bank API tokens for automatic sync.
+ALTER TABLE bank_connections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bank_connections FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON bank_connections
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- projects / time_entries — time tracking (migration 0029).
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE projects FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON projects
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+ALTER TABLE time_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE time_entries FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON time_entries
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
 -- ---------------------------------------------------------------------------
 -- backup_destinations / backup_runs — tenant-scoped, per-tenant backup/
 -- export destinations (src/backup-destinations/). NOT the platform-wide
@@ -235,7 +258,7 @@ CREATE POLICY tenant_isolation ON backup_runs
 -- this not-yet-authenticated external sender belong to?" — i.e. to resolve
 -- a tenant_id that ISN'T known yet. A tenant_id-keyed RLS policy here would
 -- make that resolution require already knowing the tenant_id it's supposed
--- to produce (`POST /api/v1/channel-links/verify` would need
+-- to produce (`POST /api/v1/internal/channel-links/verify` would need
 -- `app.current_tenant_id` set before it could look up... the tenant_id) —
 -- a chicken-and-egg deadlock, not a security boundary. Unlike
 -- invoices/contacts/etc., `channel_links` is a lookup/index table, not
@@ -443,7 +466,9 @@ GRANT EXECUTE ON FUNCTION list_tenant_ids() TO faktur_app;
 -- the JS-side value shape, not the underlying SQL type) — so the return
 -- type here is `timestamptz`, not `date`, to match what's actually in the
 -- database.
-CREATE OR REPLACE FUNCTION get_public_invoice_view(p_public_token uuid)
+-- Return type changed (amount_paid added) — CREATE OR REPLACE cannot do that.
+DROP FUNCTION IF EXISTS get_public_invoice_view(uuid);
+CREATE FUNCTION get_public_invoice_view(p_public_token uuid)
 RETURNS TABLE (
   id uuid,
   tenant_id uuid,
@@ -452,7 +477,11 @@ RETURNS TABLE (
   issue_date timestamptz,
   due_date timestamptz,
   currency varchar(3),
-  status text
+  status text,
+  amount_paid numeric,
+  payment_method text,
+  payment_method_label text,
+  payment_instructions text
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -466,7 +495,11 @@ AS $$
     issue_date,
     due_date,
     currency,
-    status::text
+    status::text,
+    amount_paid,
+    payment_method::text,
+    payment_method_label,
+    payment_instructions
   FROM invoices
   WHERE public_token = p_public_token
   LIMIT 1;
@@ -504,7 +537,7 @@ CREATE OR REPLACE FUNCTION get_public_invoice_line_items(p_public_token uuid)
 RETURNS TABLE (
   description text,
   quantity numeric(12,3),
-  unit_price numeric(14,2),
+  unit_price numeric(14,4),
   vat_rate numeric(5,2),
   sort_order integer
 )
@@ -550,19 +583,54 @@ LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+  -- The account the invoice is paid to: the one chosen on the invoice, else
+  -- an extra account in the invoice currency, else the primary one
+  -- (migration 0007, tenant_bank_accounts). Same resolution as the PDF.
   SELECT
     t.company_name,
-    t.bank_account_iban,
-    t.bank_account_number,
-    t.bank_account_bank_code
+    coalesce(a.iban, CASE WHEN a.id IS NULL THEN t.bank_account_iban END),
+    coalesce(a.account_number, CASE WHEN a.id IS NULL THEN t.bank_account_number END),
+    coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END)
   FROM tenants t
   JOIN invoices i ON i.tenant_id = t.id
+  LEFT JOIN LATERAL (
+    SELECT b.* FROM tenant_bank_accounts b
+    WHERE b.tenant_id = t.id
+      AND (b.id = i.bank_account_id OR (i.bank_account_id IS NULL AND b.currency = i.currency))
+    ORDER BY (b.id = i.bank_account_id) DESC, b.sort_order, b.created_at
+    LIMIT 1
+  ) a ON true
   WHERE i.public_token = p_public_token
   LIMIT 1;
 $$;
 
 REVOKE ALL ON FUNCTION get_public_invoice_supplier_info(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_invoice_supplier_info(uuid) TO faktur_app;
+
+-- record_public_invoice_view: the one WRITE reachable without a session —
+-- bumps the client-portal view counter (idea from faktorio's share-link
+-- stats, MIT © Jiri Spac). Touches only the three analytics columns, only
+-- for invoices past the draft stage, and returns nothing to the caller.
+-- Returns the owning tenant + whether this was the first view, so the
+-- backend can send the "customer opened the invoice" notification once.
+DROP FUNCTION IF EXISTS record_public_invoice_view(uuid);
+CREATE FUNCTION record_public_invoice_view(p_public_token uuid)
+RETURNS TABLE (tenant_id uuid, invoice_id uuid, invoice_number varchar(32), first_view boolean)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  UPDATE invoices
+  SET public_view_count = public_view_count + 1,
+      public_first_viewed_at = COALESCE(public_first_viewed_at, now()),
+      public_last_viewed_at = now()
+  WHERE public_token = p_public_token
+    AND status NOT IN ('draft', 'pending_review')
+  RETURNING tenant_id, id, invoice_number, public_view_count = 1;
+$$;
+
+REVOKE ALL ON FUNCTION record_public_invoice_view(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION record_public_invoice_view(uuid) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER lookup function — resolving a tenant by API key hash
@@ -600,16 +668,18 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_supplier_info(uuid) TO faktur_app;
 --   - `LANGUAGE sql`, a single static statement, `SET search_path = public`,
 --     and `EXECUTE` revoked from `PUBLIC`/granted only to `faktur_app` —
 --     identical hardening to every other function in this file.
-CREATE OR REPLACE FUNCTION find_active_api_key_by_hash(p_key_hash text)
+DROP FUNCTION IF EXISTS find_active_api_key_by_hash(text);
+CREATE FUNCTION find_active_api_key_by_hash(p_key_hash text)
 RETURNS TABLE (
   id uuid,
-  tenant_id uuid
+  tenant_id uuid,
+  scopes text[]
 )
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT id, tenant_id
+  SELECT id, tenant_id, scopes
   FROM api_keys
   WHERE key_hash = p_key_hash
     AND revoked_at IS NULL
@@ -687,3 +757,590 @@ $$;
 
 REVOKE ALL ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- SECURITY DEFINER lookup function — resolving a user's OWN tenant
+-- memberships BEFORE app.current_tenant_id is known (MeService, GET
+-- /api/v1/me)
+-- ---------------------------------------------------------------------------
+-- Same chicken-and-egg shape as every lookup function above, for a new
+-- caller: `GET /api/v1/me` (apps/backend/src/me/) is the frontend's ONLY
+-- way to discover which tenant(s) a signed-in user belongs to (see that
+-- controller's doc comment — the frontend has direct DB access to the
+-- Auth.js-adapter tables only, never `tenant_memberships`). Its entire job
+-- is producing the `X-Tenant-Id` value every other request will carry, so
+-- it necessarily runs BEFORE any `app.current_tenant_id` can be set.
+-- `tenant_memberships` has `FORCE ROW LEVEL SECURITY` with policy
+-- `tenant_id = current_setting('app.current_tenant_id', true)::uuid`
+-- (above), so a plain pooled SELECT filtered by `user_id` alone — with no
+-- tenant context set — would silently match ZERO rows, not "every
+-- membership this user actually has".
+--
+-- Fixed the same way as every function above: `tenant_memberships` and
+-- `tenants` both keep `ENABLE`/`FORCE ROW LEVEL SECURITY` fully intact;
+-- this narrow `SECURITY DEFINER` function opens exactly one purpose-built
+-- door through them:
+--   - filters by `user_id = p_user_id` ONLY — a caller can only ever see
+--     THEIR OWN memberships, never enumerate anyone else's by guessing a
+--     different id (the id passed in comes from a verified JWT `sub`
+--     claim in `MeController`, never client-supplied query input);
+--   - returns ONLY `tenant_id`, `company_name`, and `role` — never any
+--     other `tenants` column (IČO/DIČ, address, bank account,
+--     subscription status, Stripe/GoPay ids — the same sensitive-column
+--     exclusions `get_public_invoice_supplier_info` documents above) or
+--     any other `tenant_memberships` column (`id`, `created_at`);
+--   - `LANGUAGE sql` (not `plpgsql`) keeps the body a single static
+--     statement with a bound parameter — no injection surface, no
+--     procedural logic that could be coerced into doing more;
+--   - `SET search_path = public` pins name resolution against a hostile
+--     `search_path`;
+--   - `EXECUTE` is revoked from `PUBLIC` and granted only to `faktur_app`.
+CREATE OR REPLACE FUNCTION list_tenant_memberships_for_user(p_user_id uuid)
+RETURNS TABLE (
+  tenant_id uuid,
+  company_name text,
+  role text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    tm.tenant_id,
+    t.company_name,
+    tm.role::text
+  FROM tenant_memberships tm
+  JOIN tenants t ON t.id = tm.tenant_id
+  WHERE tm.user_id = p_user_id
+  ORDER BY tm.created_at, t.company_name;
+$$;
+
+REVOKE ALL ON FUNCTION list_tenant_memberships_for_user(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION list_tenant_memberships_for_user(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- invoice_templates / tenant_invitations (migration 0005)
+-- ---------------------------------------------------------------------------
+ALTER TABLE invoice_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invoice_templates FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON invoice_templates
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+ALTER TABLE tenant_invitations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenant_invitations FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON tenant_invitations
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- What the invite page shows before the invitee belongs to the tenant: the
+-- company name, role and invited email of ONE invitation, found by the
+-- sha256 of the token from the email link. Nothing else about the tenant.
+CREATE OR REPLACE FUNCTION get_tenant_invitation_preview(p_token_hash text)
+RETURNS TABLE (
+  company_name text,
+  role text,
+  email text,
+  expired boolean,
+  accepted boolean
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.company_name, i.role::text, i.email, i.expires_at < now(), i.accepted_at IS NOT NULL
+  FROM tenant_invitations i
+  JOIN tenants t ON t.id = i.tenant_id
+  WHERE i.token_hash = p_token_hash;
+$$;
+
+REVOKE ALL ON FUNCTION get_tenant_invitation_preview(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_tenant_invitation_preview(text) TO faktur_app;
+
+-- Accepting an invitation: the signed-in user (id from a verified JWT, never
+-- client input) must have the invited email address; the invitation must be
+-- unexpired and unused. Creates (or upgrades) the membership and marks the
+-- invitation used, returning the tenant id. Returns NULL when any check fails.
+CREATE OR REPLACE FUNCTION accept_tenant_invitation(p_token_hash text, p_user_id uuid)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  inv tenant_invitations%ROWTYPE;
+  user_email text;
+BEGIN
+  SELECT * INTO inv FROM tenant_invitations
+   WHERE token_hash = p_token_hash AND accepted_at IS NULL AND expires_at > now()
+   FOR UPDATE;
+  IF NOT FOUND THEN
+    RETURN NULL;
+  END IF;
+
+  SELECT email INTO user_email FROM users WHERE id = p_user_id;
+  IF user_email IS NULL OR lower(user_email) <> lower(inv.email) THEN
+    RETURN NULL;
+  END IF;
+
+  INSERT INTO tenant_memberships (tenant_id, user_id, role, permissions)
+  VALUES (inv.tenant_id, p_user_id, inv.role, inv.permissions)
+  ON CONFLICT (tenant_id, user_id) DO UPDATE SET role = EXCLUDED.role, permissions = EXCLUDED.permissions;
+
+  UPDATE tenant_invitations SET accepted_at = now() WHERE id = inv.id;
+  RETURN inv.tenant_id;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION accept_tenant_invitation(text, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION accept_tenant_invitation(text, uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- tenant_bank_accounts (migration 0007)
+-- ---------------------------------------------------------------------------
+ALTER TABLE tenant_bank_accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenant_bank_accounts FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON tenant_bank_accounts
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- ---------------------------------------------------------------------------
+-- invoice_attachments, notifications (migration 0014)
+-- ---------------------------------------------------------------------------
+ALTER TABLE invoice_attachments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invoice_attachments FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON invoice_attachments
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON notifications
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- Client portal: attachments the supplier chose to show (show_in_portal),
+-- keyed by the unguessable public_token like the other portal functions,
+-- never for drafts. The list omits the file body; the download takes both
+-- the token and the attachment id, so an id alone is useless.
+CREATE OR REPLACE FUNCTION get_public_invoice_attachments(p_public_token uuid)
+RETURNS TABLE (id uuid, filename varchar(200), mime varchar(100), size_bytes integer)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT a.id, a.filename, a.mime, a.size_bytes
+  FROM invoice_attachments a
+  JOIN invoices i ON i.id = a.invoice_id
+  WHERE i.public_token = p_public_token
+    AND i.status NOT IN ('draft', 'pending_review')
+    AND a.show_in_portal
+  ORDER BY a.created_at;
+$$;
+
+REVOKE ALL ON FUNCTION get_public_invoice_attachments(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_invoice_attachments(uuid) TO faktur_app;
+
+CREATE OR REPLACE FUNCTION get_public_invoice_attachment(p_public_token uuid, p_attachment_id uuid)
+RETURNS TABLE (filename varchar(200), mime varchar(100), data text)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT a.filename, a.mime, a.data
+  FROM invoice_attachments a
+  JOIN invoices i ON i.id = a.invoice_id
+  WHERE i.public_token = p_public_token
+    AND a.id = p_attachment_id
+    AND i.status NOT IN ('draft', 'pending_review')
+    AND a.show_in_portal
+  LIMIT 1;
+$$;
+
+REVOKE ALL ON FUNCTION get_public_invoice_attachment(uuid, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_invoice_attachment(uuid, uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- find_feed_owner: resolves a member's calendar/RSS feed secret
+-- (`tenant_memberships.feed_token`, Settings → Integrace) BEFORE any tenant
+-- context exists — calendar apps and RSS readers poll the URL without a
+-- session. Same chicken-and-egg shape as find_active_api_key_by_hash: returns
+-- only the ids the backend needs to open an RLS-scoped transaction for that
+-- tenant, and an unknown token (or one switched off = NULL) returns nothing.
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION find_feed_owner(p_token uuid)
+RETURNS TABLE (tenant_id uuid, user_id uuid)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT tenant_id, user_id FROM tenant_memberships WHERE feed_token = p_token LIMIT 1;
+$$;
+
+REVOKE ALL ON FUNCTION find_feed_owner(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION find_feed_owner(uuid) TO faktur_app;
+
+-- -- get_public_invoice_qr_details ------------------------------------------
+-- QR Faktura (SID) fields for the client-portal QR code: the same identifiers
+-- already printed on the invoice the client received (supplier and customer
+-- IČO/DIČ, DUZP, document kind, reverse charge, ČNB rate, order number), so
+-- the client's accounting software can import the invoice by scanning it.
+-- Nothing beyond what the PDF shows; same hardening as its siblings above.
+CREATE OR REPLACE FUNCTION get_public_invoice_qr_details(p_public_token uuid)
+RETURNS TABLE (
+  supplier_ico varchar,
+  supplier_dic varchar,
+  supplier_vat_payer boolean,
+  customer_ico varchar,
+  customer_dic varchar,
+  taxable_supply_date timestamptz,
+  document_type text,
+  reverse_charge boolean,
+  exchange_rate numeric,
+  order_number varchar
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    t.ico, t.dic, t.dic_vat_payer,
+    c.ico, c.dic,
+    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number
+  FROM invoices i
+  JOIN tenants t ON t.id = i.tenant_id
+  LEFT JOIN contacts c ON c.id = i.contact_id
+  WHERE i.public_token = p_public_token
+  LIMIT 1;
+$$;
+
+REVOKE ALL ON FUNCTION get_public_invoice_qr_details(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_invoice_qr_details(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Client answer to a quote from the portal (accept / reject)
+-- ---------------------------------------------------------------------------
+-- get_public_quote_response: read-only state for the portal's answer box.
+-- respond_to_public_quote: the second no-session WRITE — only for an issued
+-- quote that has no answer yet, and only the four client_response* columns.
+DROP FUNCTION IF EXISTS get_public_quote_response(uuid);
+CREATE FUNCTION get_public_quote_response(p_public_token uuid)
+RETURNS TABLE (client_response varchar(16), client_responded_at timestamptz, client_response_name text)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT client_response, client_responded_at, client_response_name
+  FROM invoices
+  WHERE public_token = p_public_token
+    AND document_type = 'quote'
+    AND status NOT IN ('draft', 'pending_review');
+$$;
+REVOKE ALL ON FUNCTION get_public_quote_response(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_quote_response(uuid) TO faktur_app;
+
+DROP FUNCTION IF EXISTS respond_to_public_quote(uuid, text, text, text);
+CREATE FUNCTION respond_to_public_quote(p_public_token uuid, p_response text, p_name text, p_note text)
+RETURNS TABLE (tenant_id uuid, invoice_id uuid, invoice_number varchar(32))
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  UPDATE invoices
+  SET client_response = p_response,
+      client_responded_at = now(),
+      client_response_name = left(p_name, 120),
+      client_response_note = left(p_note, 2000),
+      updated_at = now()
+  WHERE public_token = p_public_token
+    AND document_type = 'quote'
+    AND status = 'issued'
+    AND client_response IS NULL
+    AND p_response IN ('accepted', 'rejected')
+  RETURNING tenant_id, id, invoice_number;
+$$;
+REVOKE ALL ON FUNCTION respond_to_public_quote(uuid, text, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION respond_to_public_quote(uuid, text, text, text) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Public company profile (Settings → Veřejný profil, migration 0022):
+-- a small business-card page at /p/<slug> (or <slug>.<profile domain>).
+-- Read without a session, so — like the client-portal functions above —
+-- only through narrow SECURITY DEFINER functions keyed on the slug, and
+-- only while the owner has `public_profile.enabled = true`. Each contact
+-- column is returned only when its `show.<field>` flag is on; bank details,
+-- billing-provider ids and every other tenant column never leave here.
+-- ---------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS get_public_profile(text);
+CREATE FUNCTION get_public_profile(p_slug text)
+RETURNS TABLE (
+  company_name text,
+  legal_name text,
+  ico varchar(8),
+  dic varchar(14),
+  address_street text,
+  address_city text,
+  address_postal_code varchar(10),
+  address_country varchar(2),
+  email text,
+  phone varchar(32),
+  website text,
+  registry_note text,
+  has_logo boolean,
+  profile jsonb
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    t.company_name,
+    t.legal_name,
+    CASE WHEN coalesce((t.public_profile->'show'->>'ico')::boolean, true) THEN t.ico END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'ico')::boolean, true) THEN t.dic END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'address')::boolean, true) THEN t.address_street END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'address')::boolean, true) THEN t.address_city END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'address')::boolean, true) THEN t.address_postal_code END,
+    t.address_country,
+    CASE WHEN coalesce((t.public_profile->'show'->>'email')::boolean, true) THEN t.email END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'phone')::boolean, false) THEN t.phone END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'website')::boolean, true) THEN t.website END,
+    CASE WHEN coalesce((t.public_profile->'show'->>'ico')::boolean, true) THEN t.registry_note END,
+    t.logo_data IS NOT NULL AND coalesce((t.public_profile->'show'->>'logo')::boolean, true),
+    t.public_profile - 'show' - 'enabled'
+  FROM tenants t
+  WHERE lower(t.public_profile->>'slug') = lower(p_slug)
+    AND (t.public_profile->>'enabled')::boolean IS TRUE
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_public_profile(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_profile(text) TO faktur_app;
+
+DROP FUNCTION IF EXISTS get_public_profile_logo(text);
+CREATE FUNCTION get_public_profile_logo(p_slug text)
+RETURNS TABLE (logo_data text, logo_mime varchar(32))
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.logo_data, t.logo_mime
+  FROM tenants t
+  WHERE lower(t.public_profile->>'slug') = lower(p_slug)
+    AND (t.public_profile->>'enabled')::boolean IS TRUE
+    AND coalesce((t.public_profile->'show'->>'logo')::boolean, true)
+    AND t.logo_data IS NOT NULL
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_public_profile_logo(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_profile_logo(text) TO faktur_app;
+
+-- Whether another company already holds the slug (the caller's own tenant
+-- can't see other rows through RLS). Returns only a boolean.
+DROP FUNCTION IF EXISTS public_profile_slug_taken(text, uuid);
+CREATE FUNCTION public_profile_slug_taken(p_slug text, p_tenant_id uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM tenants t
+    WHERE lower(t.public_profile->>'slug') = lower(p_slug) AND t.id <> p_tenant_id
+  );
+$$;
+REVOKE ALL ON FUNCTION public_profile_slug_taken(text, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public_profile_slug_taken(text, uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Abuse protection (migration 0027): recipients reporting a document from the
+-- client portal, and the suspended-company check for share links.
+-- `outbound_emails` uses the standard tenant_isolation policy; `abuse_reports`
+-- has RLS on with no policy, so only report_invoice_abuse() writes to it.
+-- ---------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS report_invoice_abuse(uuid, text, text, text, text, integer);
+CREATE FUNCTION report_invoice_abuse(
+  p_public_token uuid,
+  p_reason text,
+  p_message text,
+  p_reporter_email text,
+  p_reporter_bucket text,
+  p_pause_threshold integer
+)
+RETURNS TABLE (tenant_id uuid, invoice_id uuid, invoice_number varchar(32), company_name text, reporters integer, paused boolean)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+#variable_conflict use_column
+DECLARE
+  v_invoice invoices%ROWTYPE;
+  v_reporters integer;
+  v_paused boolean := false;
+BEGIN
+  SELECT * INTO v_invoice FROM invoices i
+  WHERE i.public_token = p_public_token AND i.status NOT IN ('draft', 'pending_review')
+  LIMIT 1;
+  IF NOT FOUND THEN
+    RETURN;
+  END IF;
+
+  INSERT INTO abuse_reports (tenant_id, invoice_id, reason, message, reporter_email, reporter_bucket)
+  VALUES (v_invoice.tenant_id, v_invoice.id, p_reason, left(p_message, 2000), left(p_reporter_email, 200), p_reporter_bucket)
+  ON CONFLICT ("invoice_id", "reporter_bucket") DO NOTHING;
+
+  -- Distinct reporters across the company's documents in the last 7 days.
+  SELECT count(DISTINCT r.reporter_bucket)::integer INTO v_reporters
+  FROM abuse_reports r
+  WHERE r.tenant_id = v_invoice.tenant_id AND r.created_at > now() - interval '7 days' AND r.resolved_at IS NULL;
+
+  IF v_reporters >= p_pause_threshold THEN
+    UPDATE tenants t SET email_paused_at = coalesce(t.email_paused_at, now())
+    WHERE t.id = v_invoice.tenant_id;
+    v_paused := true;
+  END IF;
+
+  RETURN QUERY
+    SELECT v_invoice.tenant_id, v_invoice.id, v_invoice.invoice_number, t.company_name, v_reporters, v_paused
+    FROM tenants t WHERE t.id = v_invoice.tenant_id;
+END;
+$$;
+REVOKE ALL ON FUNCTION report_invoice_abuse(uuid, text, text, text, text, integer) FROM PUBLIC;
+DROP FUNCTION IF EXISTS public_invoice_blocked(uuid);
+-- Whether the company behind a share link is suspended (portal shows a notice instead of the document).
+CREATE FUNCTION public_invoice_blocked(p_public_token uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM invoices i JOIN tenants t ON t.id = i.tenant_id
+    WHERE i.public_token = p_public_token AND t.suspended_at IS NOT NULL
+  );
+$$;
+REVOKE ALL ON FUNCTION public_invoice_blocked(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION report_invoice_abuse(uuid, text, text, text, text, integer) TO faktur_app;
+GRANT EXECUTE ON FUNCTION public_invoice_blocked(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- SECURITY DEFINER read functions — per-customer client portal
+-- (apps/backend/src/public-invoices/client-portal.*), keyed by
+-- contacts.portal_token (Invoice Ninja's client portal)
+-- ---------------------------------------------------------------------------
+-- Same hardening as the per-invoice functions above: single static SELECT,
+-- exact match on an unguessable token, LANGUAGE sql, pinned search_path,
+-- EXECUTE only for faktur_app. Nothing is returned for a suspended company.
+-- Only documents past the draft stage are listed, and per document only what
+-- the client already sees on its own /i/:public_token page; the public_token
+-- is returned so the portal can link to that page.
+DROP FUNCTION IF EXISTS get_client_portal(uuid);
+CREATE FUNCTION get_client_portal(p_portal_token uuid)
+RETURNS TABLE (customer_name text, company_name text)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT c.legal_name, t.company_name
+  FROM contacts c JOIN tenants t ON t.id = c.tenant_id
+  WHERE c.portal_token = p_portal_token AND t.suspended_at IS NULL
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_client_portal(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_client_portal(uuid) TO faktur_app;
+
+DROP FUNCTION IF EXISTS get_client_portal_documents(uuid);
+CREATE FUNCTION get_client_portal_documents(p_portal_token uuid)
+RETURNS TABLE (
+  public_token uuid,
+  invoice_number varchar(32),
+  document_type text,
+  status text,
+  issue_date timestamptz,
+  due_date timestamptz,
+  currency varchar(3),
+  amount_paid numeric,
+  reverse_charge boolean,
+  client_response varchar(16),
+  line_items jsonb
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    i.public_token,
+    i.invoice_number,
+    i.document_type::text,
+    i.status::text,
+    i.issue_date,
+    i.due_date,
+    i.currency,
+    i.amount_paid,
+    i.reverse_charge,
+    i.client_response,
+    coalesce((
+      SELECT jsonb_agg(jsonb_build_object('quantity', li.quantity, 'unitPrice', li.unit_price, 'vatRate', li.vat_rate, 'discountPercent', li.discount_percent))
+      FROM invoice_line_items li WHERE li.invoice_id = i.id
+    ), '[]'::jsonb)
+  FROM contacts c
+  JOIN tenants t ON t.id = c.tenant_id AND t.suspended_at IS NULL
+  JOIN invoices i ON i.contact_id = c.id AND i.tenant_id = c.tenant_id
+  WHERE c.portal_token = p_portal_token
+    AND i.status NOT IN ('draft', 'pending_review')
+  ORDER BY i.issue_date DESC NULLS LAST, i.created_at DESC
+  LIMIT 500;
+$$;
+REVOKE ALL ON FUNCTION get_client_portal_documents(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_client_portal_documents(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- card_payment_sessions (migration 0033) + public card-payment lookup
+-- ---------------------------------------------------------------------------
+ALTER TABLE card_payment_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE card_payment_sessions FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON card_payment_sessions;
+CREATE POLICY tenant_isolation ON card_payment_sessions
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
+-- The public /i/:token page asks whether it may offer card payment and, when
+-- the payer clicks, which company (and Stripe key) the invoice belongs to.
+-- Same hardening as the other get_public_* functions: one static SELECT on
+-- the unguessable token, nothing for drafts or suspended companies. The
+-- encrypted key never leaves the backend (it is not part of any response).
+DROP FUNCTION IF EXISTS get_public_card_payment_target(uuid);
+CREATE FUNCTION get_public_card_payment_target(p_public_token uuid)
+RETURNS TABLE (
+  tenant_id uuid,
+  invoice_id uuid,
+  invoice_number text,
+  currency text,
+  status text,
+  document_type text,
+  amount_paid numeric,
+  company_name text,
+  stripe_secret_key_encrypted text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT i.tenant_id, i.id, i.invoice_number, i.currency::text, i.status::text, i.document_type::text,
+         i.amount_paid, t.company_name, t.stripe_secret_key_encrypted
+  FROM invoices i JOIN tenants t ON t.id = i.tenant_id
+  WHERE i.public_token = p_public_token
+    AND t.suspended_at IS NULL
+    AND t.card_payments_enabled
+    AND t.stripe_secret_key_encrypted IS NOT NULL
+    AND i.status NOT IN ('draft', 'pending_review')
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_public_card_payment_target(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_card_payment_target(uuid) TO faktur_app;

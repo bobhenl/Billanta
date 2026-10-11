@@ -1,68 +1,45 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { toast } from '@/components/toaster';
+import { createLinkingCode, unlinkChannel } from './actions';
 
 /**
- * Placeholder Telegram bot username — replace once the real bot (blueprint
- * §6/§10 Phase 5) is registered with BotFather. Only used to build the
- * `https://t.me/<bot>?start=<token>` deep link shown after "generating" a
- * code below.
+ * "Link Telegram": asks the backend for a single-use code (30 min) and shows
+ * the `t.me/<bot>?start=<code>` deep link. The bot consumes the code via the
+ * AI service; "Hotovo" reloads the list so the new chat appears.
  */
-const TELEGRAM_BOT_USERNAME = 'faktur_bot';
-
-/**
- * Stand-in for a server-generated linking token. A real implementation must
- * NEVER generate this client-side (it has to be single-use, short-lived,
- * and recorded server-side in `channel_links` per blueprint §6) — this
- * exists purely so the UI has something plausible to render before the
- * backend endpoint exists.
- */
-function generateMockLinkingToken(): string {
-  return Math.random().toString(36).slice(2, 10).toUpperCase();
-}
-
-/**
- * "Link Telegram" action for the channels settings page.
- *
- * TODO(backend): this should call `POST /api/v1/channel-links` to generate
- * a short-lived, single-use linking code/token for the current tenant.
- * That endpoint does not exist yet — the original backend scaffold only
- * has the bot-side `verify` callback (blueprint §6 step 2: sending the code
- * to the bot activates the row), not the dashboard-side "generate a code"
- * endpoint this button needs. Flagging that as a needed backend addition
- * rather than implementing it here.
- *
- * Everything below `handleGenerateCode` is real, working client state
- * (loading → generated, copy-to-clipboard) — only the network call itself
- * is mocked.
- */
-export function LinkTelegramButton() {
+export function LinkTelegramButton({ botUsername }: { botUsername: string }) {
   const t = useTranslations('settings.channels');
+  const router = useRouter();
+  const locale = useLocale();
   const [status, setStatus] = useState<'idle' | 'generating' | 'generated'>('idle');
-  const [token, setToken] = useState<string | null>(null);
+  const [code, setCode] = useState<{ token: string; expiresAt: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
   async function handleGenerateCode() {
     setStatus('generating');
-
-    // TODO(backend): replace with a real `POST /api/v1/channel-links` call.
-    // The delay below only simulates network latency for the mocked
-    // response so the loading state has something to show.
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    setToken(generateMockLinkingToken());
+    const result = await createLinkingCode('telegram');
+    if (!result.ok) {
+      toast({ text: result.error, tone: 'err' });
+      setStatus(code ? 'generated' : 'idle');
+      return;
+    }
+    setCode({ token: result.data.linkingToken, expiresAt: result.data.expiresAt });
     setStatus('generated');
   }
 
   async function handleCopy() {
-    if (!token) return;
-    await navigator.clipboard.writeText(token);
+    if (!code) return;
+    await navigator.clipboard.writeText(`/start ${code.token}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
 
-  const deepLink = token ? `https://t.me/${TELEGRAM_BOT_USERNAME}?start=${token}` : null;
+  const deepLink = code ? `https://t.me/${botUsername}?start=${code.token}` : null;
+  const expiresAt = code ? new Date(code.expiresAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : '';
 
   return (
     <div>
@@ -72,16 +49,16 @@ export function LinkTelegramButton() {
         disabled={status === 'generating'}
         className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {status === 'generating' ? t('generating') : t('linkTelegram')}
+        {status === 'generating' ? t('generating') : status === 'generated' ? t('newCode') : t('linkTelegram')}
       </button>
 
-      {status === 'generated' && token && deepLink && (
+      {status === 'generated' && code && deepLink && (
         <div className="mt-4 rounded-lg border border-border bg-muted/30 p-4">
           <p className="text-sm text-muted-foreground">{t('codeInstructions')}</p>
 
           <div className="mt-3 flex items-center gap-2">
-            <code className="flex-1 rounded-md border border-border bg-background px-3 py-2 font-mono text-sm tracking-wider">
-              {token}
+            <code className="min-w-0 flex-1 truncate rounded-md border border-border bg-background px-3 py-2 font-mono text-sm">
+              /start {code.token}
             </code>
             <button
               type="button"
@@ -92,20 +69,52 @@ export function LinkTelegramButton() {
             </button>
           </div>
 
-          {/* Absolute external URL, not a locale-aware in-app route — a
-              plain <a>, not next-intl's `Link`, is the correct choice here. */}
-          <a
-            href={deepLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
-          >
-            {t('openInTelegram')}
-          </a>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {/* External URL, so a plain <a> rather than next-intl's Link. */}
+            <a
+              href={deepLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+            >
+              {t('openInTelegram')}
+            </a>
+            <button
+              type="button"
+              onClick={() => router.refresh()}
+              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              {t('done')}
+            </button>
+          </div>
 
-          <p className="mt-2 text-xs text-muted-foreground">{t('expiresNote')}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{t('expiresAt', { time: expiresAt })}</p>
         </div>
       )}
     </div>
+  );
+}
+
+export function UnlinkButton({ id }: { id: string }) {
+  const t = useTranslations('settings.channels');
+  const [busy, setBusy] = useState(false);
+
+  async function handleUnlink() {
+    if (!window.confirm(t('unlinkConfirm'))) return;
+    setBusy(true);
+    const result = await unlinkChannel(id);
+    setBusy(false);
+    toast(result.ok ? { text: t('unlinked'), tone: 'ok' } : { text: result.error, tone: 'err' });
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleUnlink}
+      disabled={busy}
+      className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-60"
+    >
+      {t('unlink')}
+    </button>
   );
 }

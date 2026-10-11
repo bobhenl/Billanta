@@ -23,6 +23,14 @@ if (!connectionString) {
 // A small dedicated pool, distinct from the backend's — Next.js may run
 // this in a serverless/edge-adjacent Node runtime where a very large pool
 // isn't appropriate; `max: 5` is a conservative default for a scaffold.
-const sql = postgres(connectionString, { max: 5 });
+//
+// In `next dev` every hot reload re-evaluates this module, and each run used
+// to open a fresh pool while the old one's connections stayed idle, until
+// Postgres hit `max_connections` ("remaining connection slots are reserved")
+// and every session lookup failed. Reuse one pool per process via
+// `globalThis`, and let idle connections close.
+const globalForDb = globalThis as unknown as { __fakturAuthSql?: ReturnType<typeof postgres> };
+const sql = globalForDb.__fakturAuthSql ?? postgres(connectionString, { max: 5, idle_timeout: 30 });
+if (process.env.NODE_ENV !== "production") globalForDb.__fakturAuthSql = sql;
 
 export const db = drizzle(sql, { schema: authSchema });

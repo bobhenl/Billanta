@@ -11,6 +11,7 @@ type MockApiKeysService = {
 
 interface MockRequest {
   headers: { authorization?: string };
+  method?: string;
   body?: unknown;
   user?: AuthenticatedUser;
 }
@@ -57,7 +58,7 @@ describe("ApiKeyAuthGuard", () => {
   });
 
   it("accepts a valid key, sets req.user to the key's own tenant, and fires the last_used_at touch", async () => {
-    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1" };
+    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1", scopes: [] };
     apiKeysService.validateKey.mockResolvedValue(validated);
     const req: MockRequest = { headers: { authorization: "Bearer sk_live_valid" } };
 
@@ -69,7 +70,7 @@ describe("ApiKeyAuthGuard", () => {
   });
 
   it("rejects with ForbiddenException when the request body names a different tenant than the key's own", async () => {
-    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1" };
+    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1", scopes: [] };
     apiKeysService.validateKey.mockResolvedValue(validated);
     const req: MockRequest = {
       headers: { authorization: "Bearer sk_live_valid" },
@@ -80,8 +81,20 @@ describe("ApiKeyAuthGuard", () => {
     expect(req.user).toBeUndefined();
   });
 
+  it("rejects writes with a read-only key but allows reads", async () => {
+    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1", scopes: ["read"] };
+    apiKeysService.validateKey.mockResolvedValue(validated);
+
+    const write: MockRequest = { headers: { authorization: "Bearer sk_live_valid" }, method: "POST" };
+    await expect(guard.canActivate(makeContext(write))).rejects.toBeInstanceOf(ForbiddenException);
+    expect(write.user).toBeUndefined();
+
+    const read: MockRequest = { headers: { authorization: "Bearer sk_live_valid" }, method: "GET" };
+    await expect(guard.canActivate(makeContext(read))).resolves.toBe(true);
+  });
+
   it("allows a body tenant_id that matches the key's own tenant", async () => {
-    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1" };
+    const validated: ValidatedApiKey = { apiKeyId: "key-1", tenantId: "tenant-1", scopes: [] };
     apiKeysService.validateKey.mockResolvedValue(validated);
     const req: MockRequest = {
       headers: { authorization: "Bearer sk_live_valid" },

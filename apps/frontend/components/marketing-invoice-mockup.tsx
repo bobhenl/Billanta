@@ -1,5 +1,6 @@
 import { CheckCircle2, FileText } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { BrandMark } from '@/components/brand-mark';
 
 /**
  * Purely decorative, static invoice mockup for the marketing homepage hero.
@@ -90,6 +91,12 @@ export async function MarketingInvoiceMockup() {
             {t('aresTag')}
           </span>
         </div>
+
+        {/* The same one-line credit the real PDFs carry at the bottom. */}
+        <p className="mt-5 flex items-center justify-center gap-1.5 border-t border-border pt-3 text-[11px] text-muted-foreground">
+          <BrandMark className="h-3.5 w-3.5" />
+          {t('credit')} · billanta.com
+        </p>
       </div>
     </div>
   );

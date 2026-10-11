@@ -7,6 +7,12 @@
       "runtimeArgs": ["--filter", "@faktur/frontend", "dev"],
       "port": 3100,
       "autoPort": true
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@faktur/backend", "dev"],
+      "port": 3000
     }
   ]
 }

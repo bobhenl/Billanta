@@ -7,6 +7,7 @@ type MockRepository = {
   listAllTenantIds: ReturnType<typeof vi.fn>;
   findOverdueInvoicesForTenant: ReturnType<typeof vi.fn>;
   recordReminderSent: ReturnType<typeof vi.fn>;
+  assertCanSend: ReturnType<typeof vi.fn>;
 };
 type MockEmailService = {
   sendPaymentReminderEmail: ReturnType<typeof vi.fn>;
@@ -68,6 +69,7 @@ describe("InvoiceRemindersCron", () => {
       listAllTenantIds: vi.fn(),
       findOverdueInvoicesForTenant: vi.fn(),
       recordReminderSent: vi.fn().mockResolvedValue(undefined),
+      assertCanSend: vi.fn().mockResolvedValue(undefined),
     };
     emailService = {
       sendPaymentReminderEmail: vi.fn().mockResolvedValue(undefined),
@@ -115,7 +117,7 @@ describe("InvoiceRemindersCron", () => {
         reminderCount: 1, // reminderCount (0) + 1
       }),
     );
-    expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-1");
+    expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-1", expect.any(String));
   });
 
   it("skips (and never records) an overdue invoice whose contact has no email", async () => {
@@ -145,7 +147,7 @@ describe("InvoiceRemindersCron", () => {
     await expect(cron.sendOverdueReminders()).resolves.toBeUndefined();
 
     expect(repository.recordReminderSent).not.toHaveBeenCalledWith("tenant-1", "inv-fail");
-    expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-ok");
+    expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-ok", expect.any(String));
   });
 
   it("bumps reminderCount by one relative to the invoice's current count (second reminder)", async () => {
@@ -160,5 +162,16 @@ describe("InvoiceRemindersCron", () => {
     expect(emailService.sendPaymentReminderEmail).toHaveBeenCalledWith(
       expect.objectContaining({ reminderCount: 2 }),
     );
+  });
+
+  it("skips sending when the company may not send (suspended, paused or over the cap)", async () => {
+    repository.listAllTenantIds.mockResolvedValue(["tenant-1"]);
+    repository.findOverdueInvoicesForTenant.mockResolvedValue([makeOverdueInvoice()]);
+    repository.assertCanSend.mockRejectedValue(new Error("EMAIL_PAUSED"));
+
+    await cron.sendOverdueReminders();
+
+    expect(emailService.sendPaymentReminderEmail).not.toHaveBeenCalled();
+    expect(repository.recordReminderSent).not.toHaveBeenCalled();
   });
 });

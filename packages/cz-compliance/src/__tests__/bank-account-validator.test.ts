@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isValidCzechBankAccount, parseCzechBankAccount } from '../bank-account-validator.js';
+import { czechAccountToIban, isValidCzechBankAccount, parseCzechBankAccount } from '../bank-account-validator.js';
 
 /**
  * Checksum verification notes (weighted mod-11, computed by hand / by a small
@@ -93,5 +93,28 @@ describe('parseCzechBankAccount', () => {
 
   it('returns null for unparsable input', () => {
     expect(parseCzechBankAccount('garbage')).toBeNull();
+  });
+});
+
+describe('czechAccountToIban', () => {
+  it('converts a prefixed domestic account to its IBAN', () => {
+    // Example account from the ČBA QR Platba spec.
+    expect(czechAccountToIban('19-2000145399/0800')).toBe('CZ6508000000192000145399');
+  });
+
+  it('accepts the bank code as a separate argument', () => {
+    expect(czechAccountToIban('19-2000145399', '0800')).toBe('CZ6508000000192000145399');
+  });
+
+  it('zero-pads an account without a prefix', () => {
+    const iban = czechAccountToIban('2000145399/0800')!;
+    expect(iban).toMatch(/^CZ\d{2}08000000002000145399$/);
+    // ISO 13616: moving the first four chars to the end, letters -> digits, mod 97 must be 1.
+    const numeric = (iban.slice(4) + iban.slice(0, 4)).replace(/[A-Z]/g, (c) => String(c.charCodeAt(0) - 55));
+    expect(BigInt(numeric) % 97n).toBe(1n);
+  });
+
+  it('returns null for unparsable input', () => {
+    expect(czechAccountToIban('garbage')).toBeNull();
   });
 });

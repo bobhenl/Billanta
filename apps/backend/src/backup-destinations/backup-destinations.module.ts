@@ -6,6 +6,7 @@ import { ExportService } from "./export.service";
 import { GoogleDriveCallbackController } from "./google-drive-callback.controller";
 import { GoogleDriveOAuthService } from "./google-drive-oauth.service";
 import { GoogleDriveClient } from "./google-drive.client";
+import { SftpBackupClient } from "./sftp.client";
 import { OwnerOnlyGuard } from "./owner-only.guard";
 import { SqliteExportService } from "./sqlite-export.service";
 
@@ -32,6 +33,7 @@ import { SqliteExportService } from "./sqlite-export.service";
     BackupDestinationsService,
     ExportService,
     GoogleDriveClient,
+    SftpBackupClient,
     GoogleDriveOAuthService,
     OwnerOnlyGuard,
     BackupExportCron,

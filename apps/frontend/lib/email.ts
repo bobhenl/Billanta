@@ -80,8 +80,8 @@ function renderPasswordResetEmailHtml(resetUrl: string): string {
             ${escapeHtml(resetUrl)}
           </p>
           <p style="font-size:12px; color:#999; margin-top:24px; line-height:1.5;">
-            Pokud jste o obnovení hesla nežádali, tento e-mail můžete ignorovat — vaše heslo zůstane
-            beze změny. / If you did not request this, you can safely ignore this email — your
+            Pokud jste o obnovení hesla nežádali, tento e-mail můžete ignorovat – vaše heslo zůstane
+            beze změny. / If you did not request this, you can safely ignore this email – your
             password will remain unchanged.
           </p>
         </td>
@@ -89,6 +89,50 @@ function renderPasswordResetEmailHtml(resetUrl: string): string {
     </table>
   </body>
 </html>`;
+}
+
+/**
+ * Sends the "confirm your new email address" link (profile → change email).
+ * Same throw-if-unconfigured contract as `sendPasswordResetEmail`.
+ */
+export async function sendEmailChangeEmail(params: { to: string; confirmUrl: string }): Promise<void> {
+  if (!resend || !fromAddress) {
+    throw new Error('Email is not configured — RESEND_API_KEY and EMAIL_FROM must both be set (see .env.example)');
+  }
+  const url = escapeHtml(params.confirmUrl);
+  const { error } = await resend.emails.send({
+    from: fromAddress,
+    to: params.to,
+    subject: 'Potvrzení nového e-mailu / Confirm your new email',
+    html: `<!doctype html>
+<html lang="cs">
+  <body style="font-family: -apple-system, Helvetica, Arial, sans-serif; background:#f4f5f7; margin:0; padding:24px;">
+    <table role="presentation" width="100%" style="max-width:560px; margin:0 auto; background:#ffffff; border-radius:8px; overflow:hidden;">
+      <tr>
+        <td style="padding:32px;">
+          <h1 style="font-size:20px; margin:0 0 16px; color:#111;">Potvrzení nového e-mailu / Confirm your new email</h1>
+          <p style="font-size:14px; color:#333; margin:0 0 16px; line-height:1.5;">
+            Pro dokončení změny přihlašovacího e-mailu klikněte na tlačítko níže. Odkaz je platný 1 hodinu.
+          </p>
+          <p style="font-size:14px; color:#333; margin:0 0 24px; line-height:1.5;">
+            Click the button below to finish changing your sign-in email. This link is valid for 1 hour.
+          </p>
+          <p style="text-align:center; margin:0 0 8px;">
+            <a href="${url}" style="display:inline-block; background:#111827; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px;">Potvrdit e-mail / Confirm email</a>
+          </p>
+          <p style="font-size:12px; color:#999; text-align:center; margin-top:24px; word-break:break-all;">${url}</p>
+          <p style="font-size:12px; color:#999; margin-top:24px; line-height:1.5;">
+            Pokud jste o změnu nežádali, e-mail ignorujte. / If you did not request this, ignore this email.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+  });
+  if (error) {
+    throw new Error(`Resend send failed (${error.name}): ${error.message}`);
+  }
 }
 
 function escapeHtml(value: string): string {

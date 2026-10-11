@@ -1,11 +1,11 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import type { NextFunction, Response } from "express";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { TenantContextMiddleware } from "../tenancy/tenant-context.middleware";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { isApiKeyFormat } from "./api-key.util";
+import { apiKeyAllowsMethod, isApiKeyFormat } from "./api-key.util";
 import { ApiKeysService } from "./api-keys.service";
 
 /**
@@ -109,6 +109,10 @@ export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
       throw new UnauthorizedException("Invalid or revoked API key");
     }
 
+    if (!apiKeyAllowsMethod(result.scopes, req.method)) {
+      throw new ForbiddenException("This API key is read-only");
+    }
+
     // Tenant-impersonation guard: `CreateInvoiceDraftDto` still carries a
     // required `tenant_id` field (the AI-service contract), and this same
     // field is how `TenantContextMiddleware`'s AI-service branch resolves
@@ -125,6 +129,8 @@ export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
 
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${result.tenantId}, true)`;
+      // Who the audit log credits (audit_log column defaults).
+      await tx`SELECT set_config('app.current_actor', 'api_key', true)`;
 
       req.user = {
         id: result.apiKeyId,

@@ -1,14 +1,61 @@
-import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { Banner } from '@/components/banner';
+import { redirect } from '@/i18n/navigation';
+import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
+import { auth } from '@/auth';
+import { fetchMyAccess, fetchTenant, hiddenSections } from '@/lib/tenant';
+import type { TimeSummary } from '@/lib/time-ui';
+import { DashboardView } from './dashboard-view';
+import { presetRange } from '@/lib/period-presets';
+import type { DashboardConfig, DashboardSummary, PeriodStats } from './types';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('dashboard');
+  return { title: t('title') };
+}
 
 export default async function DashboardHomePage() {
   const t = await getTranslations('dashboard');
+  const locale = await getLocale();
+  let summary: DashboardSummary;
+  let config: DashboardConfig | null;
+  let vatPayer = false;
+  let country = 'CZ';
+  let time: TimeSummary | null = null;
+  let stats: PeriodStats | null = null;
+  try {
+    let tenant, access;
+    [summary, config, tenant, access] = await Promise.all([
+      apiFetch<DashboardSummary>('/api/v1/dashboard/summary'),
+      apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null),
+      fetchTenant().catch(() => null),
+      fetchMyAccess().catch(() => null)
+    ]);
+    const { from, to } = presetRange('last12');
+    stats = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`).catch(() => null);
+    vatPayer = tenant?.dicVatPayer ?? false;
+    country = tenant?.addressCountry ?? 'CZ';
+    if (!hiddenSections(access).includes('time')) {
+      time = await apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null);
+    }
+  } catch (error) {
+    if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
+    if (error instanceof NoTenantError) {
+      return (
+        <Banner tone="info" className="mt-6">
+          {t('noTenant')}
+        </Banner>
+      );
+    }
+    return (
+      <Banner tone="err" className="mt-6">
+        {t('loadError')}
+      </Banner>
+    );
+  }
+  const session = await auth().catch(() => null);
+  const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? null;
 
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight">{t('title')}</h1>
-      <p className="mt-2 text-muted-foreground">{t('welcome')}</p>
-      {/* TODO: summary cards (open invoices, overdue amount, MRR, etc.) once
-          the backend's invoice/billing endpoints exist. */}
-    </div>
-  );
+  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} vatPayer={vatPayer} country={country} time={time} stats={stats} />;
 }

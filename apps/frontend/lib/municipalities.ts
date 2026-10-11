@@ -96,5 +96,138 @@ export function getRegionGroups(): RegionGroup[] {
  * municipality is rendered on first request and cached via ISR.
  */
 export function getBuildTimeMunicipalities(): Municipality[] {
-  return ALL_MUNICIPALITIES.filter((m) => m.name === m.district);
+  return ALL_MUNICIPALITIES.filter(isDistrictSeat);
+}
+
+/** Seat of its own district: the name matches the district, or it is the city of a "…-město" district (Brno, Ostrava, Plzeň). */
+export function isDistrictSeat(m: Municipality): boolean {
+  return m.name === m.district || m.district === `${m.name}-město`;
+}
+
+/** The one locale a municipality's page is written for: Czech places in `cs`, Slovak ones in `sk`. */
+export function municipalityLocale(m: Municipality): 'cs' | 'sk' {
+  return m.country === 'CZ' ? 'cs' : 'sk';
+}
+
+/**
+ * Whether `/{locale}/faktury-pro/{slug}` is offered to search engines
+ * (sitemap + `index`). Every municipality is, but only in its own language:
+ * a Czech village has no audience in Slovak or English, and three language
+ * copies of the same town page are exactly the near-duplicates that read as
+ * doorway pages. The other locales stay reachable and `follow`, but
+ * `noindex`. Each indexed page carries data no other page has (nearest
+ * places with distances, position against the district and region seat,
+ * the competent tax office) — see the [slug] page.
+ */
+export function isIndexedMunicipality(m: Municipality, locale: string): boolean {
+  return locale === municipalityLocale(m);
+}
+
+/** The district's seat, when `m` is not one itself. */
+export function getDistrictSeat(m: Municipality): Municipality | undefined {
+  if (isDistrictSeat(m)) return undefined;
+  return ALL_MUNICIPALITIES.find((o) => o.country === m.country && o.district === m.district && isDistrictSeat(o));
+}
+
+/** Region (kraj) -> its seat. České Budějovice is a known gap in the data, so Jihočeský has none. */
+const REGION_SEATS: Record<string, string> = {
+  'Hlavní město Praha': 'Praha',
+  Středočeský: 'Praha',
+  Jihomoravský: 'Brno',
+  Moravskoslezský: 'Ostrava',
+  Plzeňský: 'Plzeň',
+  Královéhradecký: 'Hradec Králové',
+  Pardubický: 'Pardubice',
+  Liberecký: 'Liberec',
+  Ústecký: 'Ústí nad Labem',
+  Karlovarský: 'Karlovy Vary',
+  Vysočina: 'Jihlava',
+  Olomoucký: 'Olomouc',
+  Zlínský: 'Zlín',
+  'Bratislavský kraj': 'Bratislava',
+  'Trnavský kraj': 'Trnava',
+  'Trenčiansky kraj': 'Trenčín',
+  'Nitriansky kraj': 'Nitra',
+  'Žilinský kraj': 'Žilina',
+  'Banskobystrický kraj': 'Banská Bystrica',
+  'Prešovský kraj': 'Prešov',
+  'Košický kraj': 'Košice'
+};
+
+/** The regional seat (krajské město); for Středočeský kraj that is Praha. */
+export function getRegionSeat(m: Municipality): Municipality | undefined {
+  const name = REGION_SEATS[m.region];
+  if (!name) return undefined;
+  return ALL_MUNICIPALITIES.find((o) => o.country === m.country && o.name === name && isDistrictSeat(o))
+    ?? ALL_MUNICIPALITIES.find((o) => o.country === m.country && o.name === name);
+}
+
+/**
+ * The tax office that administers income tax and VAT for a sole trader
+ * living here (or a company seated here). Both countries organise them by
+ * region: CZ has one "Finanční úřad pro … kraj" per kraj, SK one
+ * "Daňový úrad" per regional seat. Official names, so not translated.
+ */
+export function getTaxOffice(m: Municipality): string {
+  if (m.country === 'SK') {
+    const seat = REGION_SEATS[m.region];
+    return seat ? `Daňový úrad ${seat}` : 'Daňový úrad';
+  }
+  if (m.region === 'Hlavní město Praha') return 'Finanční úřad pro hlavní město Prahu';
+  if (m.region === 'Vysočina') return 'Finanční úřad pro Kraj Vysočina';
+  return `Finanční úřad pro ${m.region} kraj`;
+}
+
+/** Great-circle distance in km, or null without coordinates. */
+export function distanceKm(a: Municipality, b: Municipality): number | null {
+  if (a.lat == null || a.lon == null || b.lat == null || b.lon == null) return null;
+  const rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad;
+  const dLon = (b.lon - a.lon) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+export type Direction = 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w' | 'nw';
+
+/** Which way `to` lies from `from`, in eight compass points. */
+export function direction(from: Municipality, to: Municipality): Direction | null {
+  if (from.lat == null || from.lon == null || to.lat == null || to.lon == null) return null;
+  const dy = to.lat - from.lat;
+  const dx = (to.lon - from.lon) * Math.cos((from.lat * Math.PI) / 180);
+  const deg = ((Math.atan2(dx, dy) * 180) / Math.PI + 360) % 360;
+  return (['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] as const)[Math.round(deg / 45) % 8]!;
+}
+
+export interface NearbyMunicipality {
+  municipality: Municipality;
+  km: number;
+}
+
+/** Nearest places in the same country regardless of district borders, closest first. */
+export function getNearbyMunicipalities(m: Municipality, limit = 10): NearbyMunicipality[] {
+  const out: NearbyMunicipality[] = [];
+  for (const o of ALL_MUNICIPALITIES) {
+    if (o.country !== m.country || o.slug === m.slug) continue;
+    const km = distanceKm(m, o);
+    if (km != null) out.push({ municipality: o, km });
+  }
+  return out.sort((a, b) => a.km - b.km).slice(0, limit);
+}
+
+/**
+ * Other municipalities in the same district (minus `exclude`), alphabetically,
+ * plus the district size.
+ */
+export function getDistrictNeighbours(
+  m: Municipality,
+  exclude: ReadonlySet<string> = new Set(),
+  limit = 24
+): { count: number; others: Municipality[] } {
+  const same = ALL_MUNICIPALITIES.filter((o) => o.country === m.country && o.district === m.district && o.slug !== m.slug);
+  const others = same
+    .filter((o) => !exclude.has(o.slug))
+    .sort((a, b) => Number(isDistrictSeat(b)) - Number(isDistrictSeat(a)) || a.name.localeCompare(b.name, 'cs'))
+    .slice(0, limit);
+  return { count: same.length + 1, others };
 }

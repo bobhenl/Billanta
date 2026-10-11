@@ -3,131 +3,100 @@
 @tailwind utilities;
 
 /*
- * Considered light/dark palette for a CZ/SK invoicing & accounting product.
- * One accent hue only ("ink teal", ~186°) used sparingly for primary
- * actions, links, and small highlights (icon chips, focus rings) — chosen
- * to read as precise/trustworthy (ledger-ink, stamp-of-approval) rather
- * than the generic purple→blue SaaS gradient or neon-on-black look. All
- * neutrals (background/card/secondary/muted/border) carry a slight cool
- * blue-grey bias toward that same hue instead of pure grey, so the whole
- * UI reads as one deliberate palette rather than "grey box + brand color."
- * Status colors (warning = AI-draft/pending review, success = paid,
- * destructive = cancelled) are unrelated to the accent on purpose — they
- * need to stay legible and unambiguous, not "on-brand".
+ * Brand palette: indigo. Layout density, surfaces and the mobile chrome
+ * follow VoxelRank (near-black stepped panels in dark mode, cool off-white
+ * ground with white panels in light mode); the hue is our own so the
+ * product does not read as VoxelRank's sibling or as the blue incumbents.
+ * Status colours are independent of the brand on purpose: success ("paid")
+ * stays green, warning (AI draft / pending review) amber, destructive red.
+ *
+ * Values are HSL triplets for the `hsl(var(--x))` tokens in
+ * tailwind.config.ts. Keep the three dark copies below in sync.
  */
 @layer base {
   :root {
-    --background: 210 25% 98%;
-    --foreground: 215 32% 13%;
-
+    --background: 230 33% 97%; /* #f5f6fb */
+    --foreground: 234 33% 12%; /* #151729 */
     --card: 0 0% 100%;
-    --card-foreground: 215 32% 13%;
-
-    --primary: 186 83% 24%;
+    --card-foreground: 234 33% 12%;
+    --primary: 243 75% 59%; /* #4f46e5 indigo-600 */
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 205 20% 95%;
-    --secondary-foreground: 215 32% 13%;
-
-    --muted: 205 20% 95%;
-    --muted-foreground: 215 14% 40%;
-
-    --accent: 186 45% 92%;
-    --accent-foreground: 186 83% 22%;
-
-    --destructive: 0 72% 45%;
+    --secondary: 230 30% 95%;
+    --secondary-foreground: 234 33% 12%;
+    --muted: 230 30% 94%;
+    --muted-foreground: 231 13% 42%; /* #5d6178 */
+    --accent: 226 100% 96%; /* #eef2ff */
+    --accent-foreground: 243 75% 50%;
+    --destructive: 3 71% 45%;
     --destructive-foreground: 0 0% 100%;
-
-    --warning: 38 92% 42%;
+    --warning: 38 92% 36%;
     --warning-foreground: 0 0% 100%;
-
-    --success: 142 55% 32%;
+    --success: 142 64% 31%; /* "paid" stays green, independent of the brand */
     --success-foreground: 0 0% 100%;
+    --border: 229 27% 89%; /* #dfe2ee */
+    --input: 229 27% 89%;
+    --ring: 243 75% 59%;
 
-    --border: 205 18% 88%;
-    --input: 205 18% 88%;
-    --ring: 186 83% 30%;
-
-    --radius: 0.5rem;
+    --radius: 0.625rem;
+    --tabbar-h: 64px;
+    color-scheme: light;
   }
 
   /*
-   * Dark palette lives in two places on purpose:
-   *  - the media query below is a pre-hydration / no-JS fallback that only
-   *    kicks in when the OS prefers dark AND no explicit theme class has
-   *    been applied yet (`:not(.light)`), so it never fights an explicit
-   *    choice.
-   *  - the `.dark` class block is the real source of truth once
-   *    `next-themes` (see components/theme-provider.tsx) sets `class="dark"`
-   *    on `<html>` per the user's stored/system preference.
-   * Keep both in sync if these values ever change.
+   * Dark lives twice on purpose: the media query is the pre-hydration /
+   * no-JS fallback (only when no explicit `.light` class is set yet), the
+   * `.dark` block is what next-themes applies.
    */
   @media (prefers-color-scheme: dark) {
     :root:not(.light) {
-      --background: 213 30% 8%;
-      --foreground: 205 20% 95%;
-
-      --card: 213 26% 11%;
-      --card-foreground: 205 20% 95%;
-
-      --primary: 186 65% 55%;
-      --primary-foreground: 213 30% 8%;
-
-      --secondary: 213 20% 16%;
-      --secondary-foreground: 205 20% 95%;
-
-      --muted: 213 20% 16%;
-      --muted-foreground: 210 14% 65%;
-
-      --accent: 186 40% 18%;
-      --accent-foreground: 186 70% 70%;
-
-      --destructive: 0 62% 50%;
+      --background: 235 29% 6%; /* #0b0c14 */
+      --foreground: 234 29% 93%; /* #e7e8f2 */
+      --card: 236 27% 10%; /* #12131f */
+      --card-foreground: 234 29% 93%;
+      --primary: 234 89% 74%; /* #818cf8 indigo-400 */
+      --primary-foreground: 235 29% 6%;
+      --secondary: 234 27% 14%; /* #1a1c2d */
+      --secondary-foreground: 234 29% 93%;
+      --muted: 234 27% 14%;
+      --muted-foreground: 232 13% 62%; /* #8e91a8 */
+      --accent: 240 35% 17%;
+      --accent-foreground: 234 89% 82%;
+      --destructive: 3 93% 63%;
       --destructive-foreground: 0 0% 100%;
-
-      --warning: 38 85% 55%;
-      --warning-foreground: 222 25% 8%;
-
-      --success: 142 45% 45%;
-      --success-foreground: 0 0% 100%;
-
-      --border: 213 18% 20%;
-      --input: 213 18% 20%;
-      --ring: 186 60% 55%;
+      --warning: 40 72% 52%;
+      --warning-foreground: 235 29% 6%;
+      --success: 128 49% 49%;
+      --success-foreground: 133 59% 6%;
+      --border: 232 25% 18%; /* #23263a */
+      --input: 232 25% 18%;
+      --ring: 234 89% 74%;
+      color-scheme: dark;
     }
   }
 
   .dark {
-    --background: 213 30% 8%;
-    --foreground: 205 20% 95%;
-
-    --card: 213 26% 11%;
-    --card-foreground: 205 20% 95%;
-
-    --primary: 186 65% 55%;
-    --primary-foreground: 213 30% 8%;
-
-    --secondary: 213 20% 16%;
-    --secondary-foreground: 205 20% 95%;
-
-    --muted: 213 20% 16%;
-    --muted-foreground: 210 14% 65%;
-
-    --accent: 186 40% 18%;
-    --accent-foreground: 186 70% 70%;
-
-    --destructive: 0 62% 50%;
+    --background: 235 29% 6%; /* #0b0c14 */
+    --foreground: 234 29% 93%; /* #e7e8f2 */
+    --card: 236 27% 10%; /* #12131f */
+    --card-foreground: 234 29% 93%;
+    --primary: 234 89% 74%; /* #818cf8 indigo-400 */
+    --primary-foreground: 235 29% 6%;
+    --secondary: 234 27% 14%; /* #1a1c2d */
+    --secondary-foreground: 234 29% 93%;
+    --muted: 234 27% 14%;
+    --muted-foreground: 232 13% 62%; /* #8e91a8 */
+    --accent: 240 35% 17%;
+    --accent-foreground: 234 89% 82%;
+    --destructive: 3 93% 63%;
     --destructive-foreground: 0 0% 100%;
-
-    --warning: 38 85% 55%;
-    --warning-foreground: 222 25% 8%;
-
-    --success: 142 45% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --border: 213 18% 20%;
-    --input: 213 18% 20%;
-    --ring: 186 60% 55%;
+    --warning: 40 72% 52%;
+    --warning-foreground: 235 29% 6%;
+    --success: 128 49% 49%;
+    --success-foreground: 133 59% 6%;
+    --border: 232 25% 18%; /* #23263a */
+    --input: 232 25% 18%;
+    --ring: 234 89% 74%;
+    color-scheme: dark;
   }
 
   * {
@@ -135,6 +104,80 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /*
+   * (i) hint, after VoxelRank's hint() partial: a quiet round button next
+   * to a label, and a note that opens beneath it. The note's text is always
+   * in the DOM (hidden / hidden="until-found"), so crawlers and Ctrl+F still
+   * see it — see components/info-hint.tsx.
+   */
+  .hint-btn {
+    @apply inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors;
+  }
+  .hint-btn:hover,
+  .hint-btn[aria-expanded='true'] {
+    @apply bg-accent text-primary;
+  }
+  .hint-body {
+    @apply mt-1.5 block rounded-r-md border-l-[3px] border-primary/60 bg-accent/60 px-3 py-2 text-sm leading-relaxed text-muted-foreground;
+  }
+  .hint-body[hidden] {
+    @apply m-0 border-0 p-0;
+  }
+  /* Plain `hidden` (server render, browsers without until-found) must win
+     over `display: block` above; `until-found` hides via content-visibility
+     and needs the box kept so find-in-page can still reach the text. */
+  .hint-body[hidden]:not([hidden='until-found']) {
+    display: none;
+  }
+
+  /* Space reserved under page content for the fixed mobile tab bar. */
+  .pb-tabbar {
+    padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+  @media (min-width: 768px) {
+    .pb-tabbar {
+      padding-bottom: 0;
+    }
+  }
+}
+
+/*
+ * Page-to-page cross-fade instead of a white flash (VoxelRank, header.css):
+ * the header and the tab bar get their own transition names so they stay
+ * put while only the content under them fades. Off for reduced motion.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+.site-header {
+  view-transition-name: site-header;
+}
+.bottom-nav {
+  view-transition-name: bottom-nav;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
+}
+
+/* components/nav-progress.tsx: the bar sweeps left to right while a page loads. */
+@keyframes nav-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
   }
 }

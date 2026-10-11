@@ -1,6 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, Optional } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { EmailService } from "../email/email.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
 import { computeInvoiceTotal, formatInvoiceAmount } from "./invoice-total.util";
 
@@ -22,6 +23,7 @@ export class InvoiceRemindersCron {
   constructor(
     private readonly repository: InvoiceRemindersRepository,
     private readonly emailService: EmailService,
+    @Optional() private readonly notifications?: NotificationsService,
   ) {}
 
   /** Runs daily at 09:00 server time. */
@@ -32,8 +34,9 @@ export class InvoiceRemindersCron {
 
     for (const tenantId of tenantIds) {
       const overdueInvoices = await this.repository.findOverdueInvoicesForTenant(tenantId);
+      if (overdueInvoices.length === 0) continue;
 
-      for (const { invoice, contactEmail, lineItems } of overdueInvoices) {
+      for (const { invoice, contactEmail, clientPortalToken, lineItems, custom } of overdueInvoices) {
         if (!contactEmail) {
           this.logger.warn(
             `invoice ${invoice.id} (tenant ${tenantId}) is overdue but its contact has no ` +
@@ -42,18 +45,32 @@ export class InvoiceRemindersCron {
           continue;
         }
 
-        const total = computeInvoiceTotal(lineItems);
+        const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
 
         try {
+          // Suspended/paused companies and ones over today's cap get nothing sent; retried tomorrow.
+          await this.repository.assertCanSend(tenantId);
           await this.emailService.sendPaymentReminderEmail({
             to: contactEmail,
             invoiceNumber: invoice.invoiceNumber ?? invoice.id,
             amount: formatInvoiceAmount(total, invoice.currency),
             dueDate: invoice.dueDate,
             publicToken: invoice.publicToken,
+            clientPortalToken,
             reminderCount: invoice.reminderCount + 1,
+            ...(custom ? { custom } : {}),
           });
-          await this.repository.recordReminderSent(tenantId, invoice.id);
+          await this.repository.recordReminderSent(tenantId, invoice.id, contactEmail);
+          const link = `/invoices/${invoice.id}`;
+          const no = invoice.invoiceNumber ?? "";
+          if (invoice.reminderCount === 0) {
+            this.notifications?.notify(tenantId, "invoice_overdue", { title: `Faktura ${no} je po splatnosti`, link });
+          }
+          this.notifications?.notify(tenantId, "reminder_sent", {
+            title: `Automatická upomínka č. ${invoice.reminderCount + 1} k faktuře ${no}`,
+            body: `Komu: ${contactEmail}`,
+            link,
+          });
         } catch (err) {
           // One invoice/tenant failing (e.g. a Resend outage) must not
           // abort the whole sweep — every other eligible invoice still gets
