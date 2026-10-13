@@ -54,7 +54,14 @@ export class RoleAccessGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<TenantScopedRequest>();
     const role = req.user?.role;
     if (!role) return true;
-    const path = (req.originalUrl ?? req.url ?? "").split("?")[0].replace(/^\/+/, "").replace(/^api\//, "").replace(/\/+$/, "");
+    // Lowercased: Express routing is case-insensitive, so `/api/v1/INVOICES`
+    // reaches the invoices controller and must hit the same area check.
+    const path = (req.originalUrl ?? req.url ?? "")
+      .split("?")[0]
+      .toLowerCase()
+      .replace(/^\/+/, "")
+      .replace(/^api\//, "")
+      .replace(/\/+$/, "");
     if (roleMayAccess(role, req.method, path, req.user?.permissions)) return true;
     throw new ForbiddenException(
       role === "viewer" ? "Your role is read-only in this company" : "Your access in this company doesn't allow this",

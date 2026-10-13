@@ -1,5 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { roleMayAccess, roleMayWrite } from "./role-access.guard";
+import type { ExecutionContext } from "@nestjs/common";
+import { RoleAccessGuard, roleMayAccess, roleMayWrite } from "./role-access.guard";
+
+function httpContext(method: string, originalUrl: string, role: string, permissions?: unknown): ExecutionContext {
+  const req = { method, originalUrl, user: { role, permissions } };
+  return { getType: () => "http", switchToHttp: () => ({ getRequest: () => req }) } as unknown as ExecutionContext;
+}
+
+describe("RoleAccessGuard", () => {
+  const guard = new RoleAccessGuard();
+  const noInvoices = { invoices: "none" };
+
+  it("applies area permissions regardless of path case (Express routes ignore case)", () => {
+    expect(() => guard.canActivate(httpContext("GET", "/api/v1/invoices/abc/pdf", "accountant", noInvoices))).toThrow();
+    expect(() => guard.canActivate(httpContext("GET", "/api/v1/INVOICES/abc/pdf", "accountant", noInvoices))).toThrow();
+    expect(() => guard.canActivate(httpContext("GET", "/API/V1/Invoices/abc?x=1", "accountant", noInvoices))).toThrow();
+  });
+
+  it("keeps admin routes closed to accountants in any case", () => {
+    expect(() => guard.canActivate(httpContext("POST", "/api/v1/TEAM/invitations", "accountant"))).toThrow();
+    expect(guard.canActivate(httpContext("POST", "/api/v1/TEAM/invitations", "admin"))).toBe(true);
+  });
+});
 
 describe("roleMayWrite", () => {
   it("lets every role read", () => {

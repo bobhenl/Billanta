@@ -1,7 +1,7 @@
 import { createHmac, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { NOTIFICATION_EVENTS, type NotificationEvent } from "../notifications/notification-prefs";
-import { publicUrlProblem } from "./public-url";
+import { postToPublicUrl } from "./public-url";
 
 /**
  * Outgoing webhooks (Settings → Integrace), stored as `tenants.webhooks`
@@ -160,7 +160,6 @@ export function signWebhookBody(secret: string, body: string): string {
 
 /** One POST; resolves with the HTTP status (0 = network error / timeout). Never throws. */
 export async function sendWebhook(hook: Webhook, event: NotificationEvent | "test", payload: WebhookPayload, ctx: WebhookContext): Promise<number> {
-  if (await publicUrlProblem(hook.url)) return 0;
   const body = webhookBody(hook.kind, event, payload, ctx);
   const headers: Record<string, string> = { "content-type": "application/json", "user-agent": "Billanta-Webhooks/1.0" };
   if (hook.kind === "json") {
@@ -168,8 +167,7 @@ export async function sendWebhook(hook: Webhook, event: NotificationEvent | "tes
     if (hook.secret) headers["x-billanta-signature"] = signWebhookBody(hook.secret, body);
   }
   try {
-    const res = await fetch(hook.url, { method: "POST", headers, body, redirect: "manual", signal: AbortSignal.timeout(5000) });
-    return res.status;
+    return await postToPublicUrl(hook.url, body, headers, 5000);
   } catch {
     return 0;
   }
