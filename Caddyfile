@@ -20,7 +20,9 @@
 		-Server
 	}
 
+	# Public /ai-webhook/telegram|whatsapp -> ai-service /webhook/telegram|whatsapp.
 	handle /ai-webhook/* {
+		uri replace /ai-webhook/ /webhook/ 1
 		reverse_proxy ai-service:8000
 	}
 

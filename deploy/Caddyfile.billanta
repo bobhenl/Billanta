@@ -14,7 +14,9 @@ http://:8090 {
 		-Server
 	}
 
+	# Public /ai-webhook/telegram|whatsapp -> ai-service /webhook/telegram|whatsapp.
 	handle /ai-webhook/* {
+		uri replace /ai-webhook/ /webhook/ 1
 		reverse_proxy localhost:3112
 	}
 
