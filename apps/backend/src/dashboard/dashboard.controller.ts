@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { effectivePermissions } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { DASHBOARD_WIDGETS, DashboardService } from "./dashboard.service";
 import { upcomingTaxEvents } from "./tax-calendar";
@@ -36,8 +37,15 @@ export class DashboardController {
 
   @Get("summary")
   @ApiOperation({ summary: "KPIs, 12-month revenue/expense chart, recent, overdue and soon-due documents, top customers, attention counters" })
-  summary(@Req() req: TenantScopedRequest) {
-    return this.dashboardService.summary(req.tenantDb!);
+  async summary(@Req() req: TenantScopedRequest) {
+    const result = await this.dashboardService.summary(req.tenantDb!);
+    // `v1/dashboard` is outside the per-area permissions, so the document
+    // lists follow the member's invoice access here. The public link token
+    // never goes out: it opens the full invoice without any membership.
+    const canSeeInvoices = effectivePermissions(req.user!.role, req.user!.permissions).invoices !== "none";
+    const rows = (list: typeof result.recent) =>
+      canSeeInvoices ? list.map(({ publicToken: _publicToken, ...row }) => row) : [];
+    return { ...result, recent: rows(result.recent), overdue: rows(result.overdue), dueSoon: rows(result.dueSoon) };
   }
 
   @Get("stats")

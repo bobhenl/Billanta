@@ -17,6 +17,16 @@ describe("RoleAccessGuard", () => {
     expect(() => guard.canActivate(httpContext("GET", "/API/V1/Invoices/abc?x=1", "accountant", noInvoices))).toThrow();
   });
 
+  it("checks absolute-form request URLs by their path", () => {
+    expect(() => guard.canActivate(httpContext("POST", "http://x/api/v1/api-keys", "accountant"))).toThrow();
+    expect(() => guard.canActivate(httpContext("GET", "https://x:1/api/v1/invoices", "viewer", noInvoices))).toThrow();
+    expect(guard.canActivate(httpContext("GET", "http://x/api/v1/invoices", "viewer"))).toBe(true);
+  });
+
+  it("refuses paths outside v1 instead of guessing", () => {
+    expect(() => guard.canActivate(httpContext("GET", "/somewhere/else", "viewer"))).toThrow();
+  });
+
   it("keeps admin routes closed to accountants in any case", () => {
     expect(() => guard.canActivate(httpContext("POST", "/api/v1/TEAM/invitations", "accountant"))).toThrow();
     expect(guard.canActivate(httpContext("POST", "/api/v1/TEAM/invitations", "admin"))).toBe(true);
