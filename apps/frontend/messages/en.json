@@ -1684,10 +1684,10 @@
         "expenses": "Expenses",
         "expensesHint": "Flat-rate expenses: 60 % most trades, 80 % crafts, 40 % liberal professions, 30 % renting. Or your actual expenses.",
         "modes": {
+          "30": "Flat rate 30 % (renting)",
+          "40": "Flat rate 40 % (professions)",
           "60": "Flat rate 60 % (trades)",
           "80": "Flat rate 80 % (crafts)",
-          "40": "Flat rate 40 % (professions)",
-          "30": "Flat rate 30 % (renting)",
           "actual": "Actual expenses"
         },
         "paidSocial": "Social advances paid",
@@ -2323,9 +2323,9 @@
         "bitfaktura": {
           "name": "bitfaktura",
           "steps": [
-            "In the invoice overview, use the CSV or Excel export.",
-            "Save the Excel file as CSV and upload it below.",
-            "You can upload contacts separately, or let the import create them from the invoices' customers."
+            "The quickest way is a direct connection: in BitFaktura open Settings → Account settings → Integration and copy the API authorization code.",
+            "Fill in the account name (e.g. company from company.bitfaktura.cz) and the code in step 3 below. We load the invoices with customers, exchange rates and payment methods.",
+            "Without the code, you can export the invoices to CSV and upload the file below."
           ]
         },
         "faktorio": {
@@ -2380,6 +2380,14 @@
           "date": "Issued",
           "total": "Total",
           "status": "Status"
+        },
+        "api": {
+          "lead": "Load straight from BitFaktura over its API. The code is used for this import only and is not stored. Feel free to generate a new one in BitFaktura afterwards.",
+          "account": "BitFaktura account",
+          "accountPlaceholder": "company.bitfaktura.cz",
+          "token": "API authorization code",
+          "load": "Load preview",
+          "privacy": "We only read from BitFaktura and change nothing there."
         }
       },
       "status": {
@@ -2396,7 +2404,9 @@
           "invalid_date": "issue date is missing or unreadable.",
           "invalid_amount": "amount is unreadable.",
           "duplicate_in_file": "the number already appears earlier in the file.",
-          "already_exists": "you already have an invoice with this number."
+          "already_exists": "you already have an invoice with this number.",
+          "unsupported_kind": "we can't import this document type.",
+          "unsupported_discount": "the invoice has a line discount, which we don't import yet."
         }
       },
       "errors": {
@@ -2404,7 +2414,10 @@
         "too_many_rows": "The file is too big; split it into smaller parts (max 5,000 invoices).",
         "no_file": "Choose a CSV file.",
         "forbidden": "Only the owner or an admin can run an import.",
-        "failed": "The import failed, please try again."
+        "failed": "The import failed, please try again.",
+        "bitfaktura_account": "We couldn't find that BitFaktura account. Enter it as company.bitfaktura.cz.",
+        "bitfaktura_unauthorized": "BitFaktura didn't accept the code. Check the API authorization code under Settings → Integration.",
+        "bitfaktura_unreachable": "BitFaktura isn't responding right now, please try again shortly."
       }
     },
     "companies": {

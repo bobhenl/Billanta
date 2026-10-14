@@ -1684,10 +1684,10 @@
         "expenses": "Výdaje",
         "expensesHint": "Paušální výdaje: 60 % většina živností, 80 % řemesla a zemědělství, 40 % svobodná povolání, 30 % pronájem majetku. Nebo skutečné výdaje z evidence.",
         "modes": {
+          "30": "Paušál 30 % (pronájem)",
+          "40": "Paušál 40 % (svobodná povolání)",
           "60": "Paušál 60 % (živnosti)",
           "80": "Paušál 80 % (řemesla)",
-          "40": "Paušál 40 % (svobodná povolání)",
-          "30": "Paušál 30 % (pronájem)",
           "actual": "Skutečné výdaje"
         },
         "paidSocial": "Zaplacené zálohy – sociální",
@@ -2323,9 +2323,9 @@
         "bitfaktura": {
           "name": "bitfaktura",
           "steps": [
-            "V přehledu faktur použijte export do CSV nebo Excelu.",
-            "Excel uložte jako CSV a nahrajte ho níže.",
-            "Kontakty můžete nahrát zvlášť, nebo je import vytvoří sám z odběratelů na fakturách."
+            "Nejrychlejší je přímé propojení: v BitFaktuře otevřete Nastavení → Nastavení účtu → Integrace a zkopírujte Autorizační kód API.",
+            "Níže v kroku 3 vyplňte název účtu (např. firma z firma.bitfaktura.cz) a kód. Načteme faktury i s odběrateli, kurzy a způsobem úhrady.",
+            "Bez kódu to jde i přes export faktur do CSV, který nahrajete níže."
           ]
         },
         "faktorio": {
@@ -2380,6 +2380,14 @@
           "date": "Vystaveno",
           "total": "Celkem",
           "status": "Stav"
+        },
+        "api": {
+          "lead": "Načtení přímo z BitFaktury přes API. Kód se použije jen pro tento import, neukládáme ho. Po dokončení ho v BitFaktuře klidně vygenerujte znovu.",
+          "account": "Účet v BitFaktuře",
+          "accountPlaceholder": "firma.bitfaktura.cz",
+          "token": "Autorizační kód API",
+          "load": "Načíst náhled",
+          "privacy": "Z BitFaktury jen čteme, nic v ní neměníme."
         }
       },
       "status": {
@@ -2396,7 +2404,9 @@
           "invalid_date": "chybí nebo nejde přečíst datum vystavení.",
           "invalid_amount": "nejde přečíst částku.",
           "duplicate_in_file": "číslo už je v souboru výš.",
-          "already_exists": "fakturu s tímto číslem už máte."
+          "already_exists": "fakturu s tímto číslem už máte.",
+          "unsupported_kind": "tento typ dokladu neumíme importovat.",
+          "unsupported_discount": "faktura má slevu na položce, tu zatím neimportujeme."
         }
       },
       "errors": {
@@ -2404,7 +2414,10 @@
         "too_many_rows": "Soubor je moc velký, rozdělte ho na menší části (max. 5 000 faktur).",
         "no_file": "Vyberte soubor CSV.",
         "forbidden": "Import může spustit jen vlastník nebo správce.",
-        "failed": "Import se nepodařil, zkuste to znovu."
+        "failed": "Import se nepodařil, zkuste to znovu.",
+        "bitfaktura_account": "Účet v BitFaktuře jsme nenašli. Zadejte adresu ve tvaru firma.bitfaktura.cz.",
+        "bitfaktura_unauthorized": "BitFaktura kód nepřijala. Zkontrolujte Autorizační kód API v Nastavení → Integrace.",
+        "bitfaktura_unreachable": "BitFaktura teď neodpovídá, zkuste to za chvíli."
       }
     },
     "companies": {

@@ -46,12 +46,19 @@ export interface ImportedInvoice {
   };
   note: string | null;
   lines: ImportedLine[];
+  // Only API imports know these; the CSV mapper leaves them out (defaults apply).
+  reverseCharge?: boolean;
+  paymentMethod?: "bank_transfer" | "cash" | "card" | "cash_on_delivery" | "other";
+  paymentMethodLabel?: string | null;
+  language?: string;
+  /** CZK per unit as the source system recorded it; looked up at the ČNB when missing. */
+  exchangeRate?: number | null;
 }
 
 export interface ImportSkip {
   line: number;
   number: string;
-  reason: "missing_number" | "missing_customer" | "invalid_date" | "invalid_amount" | "duplicate_in_file" | "already_exists";
+  reason: "missing_number" | "missing_customer" | "invalid_date" | "invalid_amount" | "duplicate_in_file" | "already_exists" | "unsupported_kind" | "unsupported_discount";
 }
 
 type Field =

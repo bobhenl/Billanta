@@ -19,6 +19,8 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
+import { createZodDto } from "nestjs-zod";
+import { z } from "zod";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RequireActiveSubscription } from "../billing/require-active-subscription.guard";
@@ -36,6 +38,14 @@ import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
+
+class BitfakturaImportDto extends createZodDto(
+  z.object({
+    account: z.string().trim().min(1).max(200),
+    apiToken: z.string().trim().min(8).max(200),
+    dryRun: z.boolean().optional(),
+  }),
+) {}
 
 /**
  * No controller-level `@UseGuards(...)` here (deliberately, since a recent
@@ -158,6 +168,17 @@ export class InvoicesController {
     // Bulk history rewrites the books' past: owner/admin only, even for members with invoice write access.
     if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
     return this.importService.importCsv(req.tenantDb!, req.user!.tenantId, file.buffer, dryRun === "1" || dryRun === "true");
+  }
+
+  @Post("import/bitfaktura")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Import invoice history straight from a BitFaktura / InvoiceOcean account (dryRun only previews)",
+    description: "The API token is used for this request's read-only calls and is never stored. Same rules as the CSV import.",
+  })
+  importBitfaktura(@Req() req: TenantScopedRequest, @Body() dto: BitfakturaImportDto) {
+    if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
+    return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false);
   }
 
   @Post(":id/mark-paid")

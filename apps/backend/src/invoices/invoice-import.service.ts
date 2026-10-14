@@ -5,6 +5,8 @@ import * as schema from "../../drizzle/schema";
 import { decodeCsvBuffer, parseCsv } from "../contacts/contacts-csv.util";
 import { mapInvoiceRows, ownNumberSequence, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
 import { computeInvoiceTotal, round2 } from "./invoice-total.util";
+import { BitfakturaError, fetchBitfakturaInvoices, mapBitfakturaInvoices } from "./bitfaktura-import";
+import { getCnbRate } from "../exports/cnb-rates";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -39,6 +41,34 @@ export class InvoiceImportService {
     } catch {
       throw new BadRequestException({ error: "unknown_columns" });
     }
+    return this.importMapped(db, tenantId, mapped, dryRun);
+  }
+
+  /** Reads the history over the BitFaktura API with the user's token (used for this request only, never stored). */
+  async importFromBitfaktura(
+    db: TenantDb,
+    tenantId: string,
+    account: string,
+    apiToken: string,
+    dryRun: boolean,
+    fetcher?: Parameters<typeof fetchBitfakturaInvoices>[2],
+  ): Promise<InvoiceImportResult> {
+    let source: Awaited<ReturnType<typeof fetchBitfakturaInvoices>>;
+    try {
+      source = await fetchBitfakturaInvoices(account, apiToken, fetcher);
+    } catch (error) {
+      if (error instanceof BitfakturaError) throw new BadRequestException({ error: error.code });
+      throw error;
+    }
+    return this.importMapped(db, tenantId, mapBitfakturaInvoices(source), dryRun);
+  }
+
+  private async importMapped(
+    db: TenantDb,
+    tenantId: string,
+    mapped: { invoices: ImportedInvoice[]; skipped: ImportSkip[] },
+    dryRun: boolean,
+  ): Promise<InvoiceImportResult> {
     if (mapped.invoices.length > MAX_IMPORT_INVOICES) throw new BadRequestException({ error: "too_many_rows" });
 
     const skipped = [...mapped.skipped];
@@ -116,6 +146,10 @@ export class InvoiceImportService {
       }
       const total = totalOf(inv);
       const issuedAt = inv.issueDate;
+      // Foreign-currency documents need the CZK rate for VAT and income-tax
+      // reports: the source's own rate when it has one, else ČNB on the DUZP.
+      const exchangeRate =
+        inv.currency === "CZK" ? null : inv.exchangeRate ?? (await getCnbRate(inv.currency, inv.taxableSupplyDate ?? inv.issueDate));
       const [created] = await db
         .insert(schema.invoices)
         .values({
@@ -136,6 +170,10 @@ export class InvoiceImportService {
           amountPaid: String(inv.status === "paid" ? total : Math.max(0, Math.min(inv.amountPaid, total))),
           paidAt: inv.paidAt,
           cancelledAt: inv.status === "cancelled" ? issuedAt : null,
+          exchangeRate: exchangeRate === null ? null : String(exchangeRate),
+          reverseCharge: inv.reverseCharge ?? false,
+          ...(inv.paymentMethod ? { paymentMethod: inv.paymentMethod, paymentMethodLabel: inv.paymentMethodLabel ?? null } : {}),
+          ...(inv.language ? { language: inv.language } : {}),
         })
         .returning({ id: schema.invoices.id });
       await db.insert(schema.invoiceLineItems).values(
