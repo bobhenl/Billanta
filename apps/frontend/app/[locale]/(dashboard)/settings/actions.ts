@@ -114,6 +114,32 @@ export async function updatePaymentMethods(methods: { id: string; label: string;
   return run<unknown>('/api/v1/tenants/me', 'PATCH', { payment_methods: methods });
 }
 
+export type NumberDocType = 'invoice' | 'proforma' | 'credit_note' | 'quote';
+
+/** GET /tenants/me/number-formats: pattern, counters and the next number per document type. */
+export interface NumberFormatsView {
+  year: number;
+  month: number;
+  types: {
+    type: NumberDocType;
+    pattern: string | null;
+    defaultPattern: string;
+    reset: 'monthly' | 'yearly';
+    lastYearly: number;
+    lastMonthly: number;
+    nextSequence: number | null;
+    nextNumber: string | null;
+  }[];
+}
+
+/** Settings → Číslování dokladů. A null pattern means the built-in one. */
+export async function updateNumberFormats(input: {
+  formats: Partial<Record<NumberDocType, string | null>>;
+  nextNumbers: Partial<Record<NumberDocType, number>>;
+}) {
+  return run<NumberFormatsView>('/api/v1/tenants/me/number-formats', 'PUT', input);
+}
+
 export interface CardPaymentSettings {
   connected: boolean;
   enabled: boolean;

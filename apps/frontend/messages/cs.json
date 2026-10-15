@@ -1380,6 +1380,10 @@
         "activity": {
           "title": "Historie změn",
           "description": "Kdo co kdy změnil: doklady, kontakty, firma, tým a klíče."
+        },
+        "numbering": {
+          "title": "Číslování dokladů",
+          "description": "Vlastní formát čísel faktur, záloh, dobropisů a nabídek a číslo, kterým řada pokračuje."
         }
       }
     },
@@ -2451,6 +2455,52 @@
         "name_too_long": "Název je příliš dlouhý.",
         "tos_required": "Je potřeba souhlasit s podmínkami.",
         "tenant_limit": "Dosáhli jste limitu {max} vlastních firem."
+      }
+    },
+    "numbering": {
+      "title": "Číslování dokladů",
+      "description": "Nastavte, jak vypadají čísla dokladů – třeba stejně jako v nástroji, ze kterého přecházíte.",
+      "loadError": "Nastavení číslování se nepodařilo načíst.",
+      "readOnly": "Číslování dokladů může měnit jen vlastník nebo správce.",
+      "pattern": "Formát čísla",
+      "patternHint": "Text kolem značek se opíše beze změny. Povolena jsou písmena bez diakritiky, číslice, mezera a znaky - / . _",
+      "nextNumber": "Další číslo",
+      "nextNumberHint": "Pořadové číslo, kterým řada v aktuálním měsíci nebo roce pokračuje. Nechte prázdné, pokud nechcete nic měnit.",
+      "preview": "Další doklad dostane číslo",
+      "then": "(pak {number})",
+      "resetMonthly": "Řada začíná znovu každý měsíc.",
+      "resetYearly": "Řada začíná znovu každý rok.",
+      "lastUsed": "Naposledy použité pořadové číslo v tomto období: {number}.",
+      "lowerWarning": "Číslo je nižší nebo stejné jako poslední použité. Uložit ho jde jen tehdy, když v tomto období ještě žádný doklad tohoto typu není.",
+      "save": "Uložit",
+      "saved": "Číslování uloženo",
+      "saveFailed": "Uložení se nepodařilo",
+      "tokensTitle": "Značky",
+      "tokens": {
+        "YYYY": "rok, např. 2026",
+        "YY": "rok dvěma číslicemi, např. 26",
+        "MM": "měsíc, např. 03 – řada pak začíná každý měsíc znovu",
+        "N": "pořadové číslo bez nul, např. 7",
+        "NNNN": "pořadové číslo doplněné nulami ('{NN}' až '{NNNNN}'), např. 0007"
+      },
+      "how": {
+        "rules": "Formát musí obsahovat právě jedno pořadové číslo a rok. Číslo může mít nejvýš 32 znaků.",
+        "reset": "S '{MM}' ve formátu se počítá od 1 každý měsíc, jinak každý rok.",
+        "issued": "Změna platí jen pro nově vystavené doklady. Už vystavené doklady si svá čísla nechají.",
+        "separate": "Každý typ dokladu má vlastní nepřerušenou řadu. Pokud číslo už existuje (třeba z importu), přeskočí se na další volné."
+      },
+      "errors": {
+        "empty": "Zadejte formát.",
+        "invalid_character": "Formát obsahuje nepovolený znak. Použijte písmena bez diakritiky, číslice, mezeru nebo - / . _",
+        "unknown_token": "Neznámá značka. Použijte '{YYYY}', '{YY}', '{MM}', '{N}' až '{NNNNN}'.",
+        "no_sequence": "Chybí pořadové číslo, např. '{NNNN}'.",
+        "multiple_sequences": "Pořadové číslo smí být ve formátu jen jednou.",
+        "no_year": "Chybí rok – '{YYYY}' nebo '{YY}'.",
+        "multiple_years": "Rok smí být ve formátu jen jednou.",
+        "multiple_months": "Měsíc smí být ve formátu jen jednou.",
+        "too_long": "Číslo by bylo delší než {max} znaků.",
+        "pattern_clash": "Tento formát už používá jiný typ dokladu. Každý typ potřebuje vlastní.",
+        "next_number_too_low": "Další číslo je nižší než poslední použité a v tomto období už doklady existují."
       }
     }
   },

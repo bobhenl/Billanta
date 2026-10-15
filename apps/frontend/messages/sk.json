@@ -1380,6 +1380,10 @@
         "activity": {
           "title": "História zmien",
           "description": "Kto čo kedy zmenil: doklady, kontakty, firma, tím a kľúče."
+        },
+        "numbering": {
+          "title": "Číslovanie dokladov",
+          "description": "Vlastný formát čísel faktúr, záloh, dobropisov a ponúk a číslo, ktorým rad pokračuje."
         }
       }
     },
@@ -2451,6 +2455,52 @@
         "name_too_long": "Názov je príliš dlhý.",
         "tos_required": "Je potrebné súhlasiť s podmienkami.",
         "tenant_limit": "Dosiahli ste limit {max} vlastných firiem."
+      }
+    },
+    "numbering": {
+      "title": "Číslovanie dokladov",
+      "description": "Nastavte, ako vyzerajú čísla dokladov – napríklad rovnako ako v nástroji, z ktorého prechádzate.",
+      "loadError": "Nastavenie číslovania sa nepodarilo načítať.",
+      "readOnly": "Číslovanie dokladov môže meniť iba vlastník alebo správca.",
+      "pattern": "Formát čísla",
+      "patternHint": "Text okolo značiek sa prepíše bez zmeny. Povolené sú písmená bez diakritiky, číslice, medzera a znaky - / . _",
+      "nextNumber": "Ďalšie číslo",
+      "nextNumberHint": "Poradové číslo, ktorým rad v aktuálnom mesiaci alebo roku pokračuje. Nechajte prázdne, ak nechcete nič meniť.",
+      "preview": "Ďalší doklad dostane číslo",
+      "then": "(potom {number})",
+      "resetMonthly": "Rad začína znova každý mesiac.",
+      "resetYearly": "Rad začína znova každý rok.",
+      "lastUsed": "Naposledy použité poradové číslo v tomto období: {number}.",
+      "lowerWarning": "Číslo je nižšie alebo rovnaké ako posledné použité. Uložiť ho ide len vtedy, keď v tomto období ešte nie je žiadny doklad tohto typu.",
+      "save": "Uložiť",
+      "saved": "Číslovanie uložené",
+      "saveFailed": "Uloženie sa nepodarilo",
+      "tokensTitle": "Značky",
+      "tokens": {
+        "YYYY": "rok, napr. 2026",
+        "YY": "rok dvoma číslicami, napr. 26",
+        "MM": "mesiac, napr. 03 – rad potom začína každý mesiac znova",
+        "N": "poradové číslo bez núl, napr. 7",
+        "NNNN": "poradové číslo doplnené nulami ('{NN}' až '{NNNNN}'), napr. 0007"
+      },
+      "how": {
+        "rules": "Formát musí obsahovať práve jedno poradové číslo a rok. Číslo môže mať najviac 32 znakov.",
+        "reset": "S '{MM}' vo formáte sa počíta od 1 každý mesiac, inak každý rok.",
+        "issued": "Zmena platí len pre novo vystavené doklady. Už vystavené doklady si svoje čísla nechajú.",
+        "separate": "Každý typ dokladu má vlastný neprerušený rad. Ak číslo už existuje (napríklad z importu), preskočí sa na ďalšie voľné."
+      },
+      "errors": {
+        "empty": "Zadajte formát.",
+        "invalid_character": "Formát obsahuje nepovolený znak. Použite písmená bez diakritiky, číslice, medzeru alebo - / . _",
+        "unknown_token": "Neznáma značka. Použite '{YYYY}', '{YY}', '{MM}', '{N}' až '{NNNNN}'.",
+        "no_sequence": "Chýba poradové číslo, napr. '{NNNN}'.",
+        "multiple_sequences": "Poradové číslo môže byť vo formáte len raz.",
+        "no_year": "Chýba rok – '{YYYY}' alebo '{YY}'.",
+        "multiple_years": "Rok môže byť vo formáte len raz.",
+        "multiple_months": "Mesiac môže byť vo formáte len raz.",
+        "too_long": "Číslo by bolo dlhšie ako {max} znakov.",
+        "pattern_clash": "Tento formát už používa iný typ dokladu. Každý typ potrebuje vlastný.",
+        "next_number_too_low": "Ďalšie číslo je nižšie ako posledné použité a v tomto období už doklady existujú."
       }
     }
   },

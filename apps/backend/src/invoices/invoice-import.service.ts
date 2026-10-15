@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { inArray, sql } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { decodeCsvBuffer, parseCsv } from "../contacts/contacts-csv.util";
-import { mapInvoiceRows, ownNumberSequence, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
+import { highestImportedSequences, mapInvoiceRows, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
+import { bumpInvoiceSequences, loadNumberFormats } from "./invoice-numbering.util";
 import { computeInvoiceTotal, round2 } from "./invoice-total.util";
 import { BitfakturaError, fetchBitfakturaInvoices, fetchBitfakturaPdf, mapBitfakturaInvoices } from "./bitfaktura-import";
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
@@ -168,9 +169,6 @@ export class InvoiceImportService {
     result.contactsMatched = matchedCustomers.size;
     if (dryRun || invoices.length === 0) return result;
 
-    // Highest imported own-format number per (series, year), to continue after.
-    const sequences = new Map<string, { series: string; year: number; sequence: number }>();
-
     // `db` is already the request's transaction (see TenantContextMiddleware), so
     // a failure anywhere rolls the whole import back.
     for (const inv of invoices) {
@@ -229,20 +227,10 @@ export class InvoiceImportService {
           sortOrder: i,
         })),
       );
-      const own = ownNumberSequence(inv.invoiceNumber);
-      if (own) {
-        const key = `${own.series}|${own.year}`;
-        if ((sequences.get(key)?.sequence ?? 0) < own.sequence) sequences.set(key, own);
-      }
     }
-    for (const { series, year, sequence } of sequences.values()) {
-      await db.execute(sql`
-        INSERT INTO invoice_number_sequences (tenant_id, series, year, last_number)
-        VALUES (${tenantId}, ${series}, ${year}, ${sequence})
-        ON CONFLICT (tenant_id, series, year)
-        DO UPDATE SET last_number = GREATEST(invoice_number_sequences.last_number, EXCLUDED.last_number)
-      `);
-    }
+    // Continue numbering after the highest imported number per counter, read
+    // with the company's own pattern (e.g. `N/MM/YYYY`) or our built-in format.
+    await bumpInvoiceSequences(db, tenantId, highestImportedSequences(invoices, await loadNumberFormats(db, tenantId)));
     return result;
   }
 }

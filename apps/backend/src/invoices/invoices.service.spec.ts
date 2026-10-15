@@ -246,7 +246,9 @@ describe("InvoicesService.issue", () => {
     const select = vi
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice])) // load invoice
-      .mockReturnValueOnce(makeSelectChain(lineItems)); // load line items
+      .mockReturnValueOnce(makeSelectChain(lineItems)) // load line items
+      .mockReturnValueOnce(makeSelectChain([{ numberFormats: null }])) // tenant's number formats
+      .mockReturnValueOnce(makeSelectChain([])); // number not taken yet
     const insert = vi.fn().mockReturnValue(makeSequenceInsertChain(1));
     const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -264,6 +266,36 @@ describe("InvoicesService.issue", () => {
       issuedByUserId: "user-1",
     });
     expect(setArg.issuedAt).toBeInstanceOf(Date);
+  });
+
+  it("numbers in the company's own pattern, per month, skipping a number that already exists", async () => {
+    // Issue date 2026-09-01 → the September 2026 counter; 1/09/2026 was imported, so 2/09/2026.
+    const invoice = issuableInvoice();
+    const updated = { ...invoice, status: "issued", invoiceNumber: "2/09/2026" };
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ numberFormats: { invoice: "{N}/{MM}/{YYYY}" } }]))
+      .mockReturnValueOnce(makeSelectChain([{ id: "imported" }])) // 1/09/2026 taken
+      .mockReturnValueOnce(makeSelectChain([])); // 2/09/2026 free
+    let last = 0;
+    const chains: ReturnType<typeof makeSequenceInsertChain>[] = [];
+    const insert = vi.fn(() => {
+      const chain = makeSequenceInsertChain(++last);
+      chains.push(chain);
+      return chain;
+    });
+    const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, insert, update } as any;
+
+    await service.issue(db, "tenant-1", "inv-1", "user-1");
+
+    expect(insert).toHaveBeenCalledTimes(2);
+    expect(chains[0]!.values).toHaveBeenCalledWith({ tenantId: "tenant-1", series: "", year: 2026, month: 9, lastNumber: 1 });
+    const setArg = (update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0];
+    expect(setArg).toMatchObject({ invoiceNumber: "2/09/2026", variableSymbol: "2092026" });
   });
 
   it("rejects issuing an already-issued invoice (400), without touching the sequence or the row", async () => {
@@ -358,7 +390,9 @@ describe("InvoicesService.issue", () => {
     const select = vi
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice]))
-      .mockReturnValueOnce(makeSelectChain(lineItems));
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ numberFormats: null }]))
+      .mockReturnValueOnce(makeSelectChain([]));
     const insert = vi.fn().mockReturnValue(makeSequenceInsertChain(1));
     const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

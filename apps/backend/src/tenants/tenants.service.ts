@@ -8,7 +8,9 @@ import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import { findBankAccount, listBankAccounts } from "./bank-accounts";
 import type { BankAccountDto } from "./dto/bank-account.dto";
 import type { UpdateTenantDto } from "./dto/update-tenant.dto";
+import { getNumberFormats, saveNumberFormats, type NumberFormatsInput } from "./number-formats";
 import { RESERVED_PROFILE_SLUGS, SLUG_PATTERN } from "./public-profile";
+import { NUMBER_DOCUMENT_TYPES } from "@faktur/cz-compliance";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type TenantInsert = typeof schema.tenants.$inferInsert;
@@ -107,6 +109,36 @@ export class TenantsService {
     }
     const [tenant] = await this.findById(db, id);
     return tenant;
+  }
+
+  // --- Number formats (Settings → Číslování dokladů) -----------------------
+
+  getNumberFormats(db: TenantDb, tenantId: string, role: string | undefined) {
+    this.assertNumberingAdmin(role);
+    return getNumberFormats(db, tenantId);
+  }
+
+  async updateNumberFormats(db: TenantDb, tenantId: string, role: string | undefined, dto: NumberFormatsInput) {
+    this.assertNumberingAdmin(role);
+    const { before, after } = await saveNumberFormats(db, tenantId, dto);
+    const changes: schema.AuditChange[] = [];
+    for (const type of NUMBER_DOCUMENT_TYPES) {
+      if ((before[type] ?? null) !== (after[type] ?? null)) {
+        changes.push({ field: `numberFormat.${type}`, from: before[type] ?? null, to: after[type] ?? null });
+      }
+      const next = dto.nextNumbers[type];
+      if (next != null) changes.push({ field: `nextNumber.${type}`, from: null, to: next });
+    }
+    if (changes.length > 0) {
+      await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "number_formats_updated", changes });
+    }
+    return getNumberFormats(db, tenantId);
+  }
+
+  private assertNumberingAdmin(role: string | undefined) {
+    if (role !== "owner" && role !== "admin") {
+      throw new ForbiddenException("Only an owner or admin can change document numbering");
+    }
   }
 
   // --- Public profile (Settings → Veřejný profil) ---------------------------

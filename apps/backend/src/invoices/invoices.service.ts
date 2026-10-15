@@ -24,9 +24,8 @@ import type { CreateInvoiceDto, ListInvoicesQuery, UpdateInvoiceDto } from "./dt
 import type { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
 import { InvoicePdfService } from "./invoice-pdf.service";
 import {
-  allocateNextInvoiceSequence,
-  DOCUMENT_SERIES,
-  formatInvoiceNumber,
+  allocateInvoiceNumber,
+  loadNumberFormats,
   variableSymbolFor,
 } from "./invoice-numbering.util";
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, lineBase, round2 } from "./invoice-total.util";
@@ -1109,12 +1108,11 @@ export class InvoicesService {
     }
 
     const now = new Date();
-    // The date the person chose on the form wins; numbering follows its year.
+    // The date the person chose on the form wins; numbering follows its year
+    // (and month, for a pattern with {MM}) in the company's own number format.
     const issueDate = invoice.issueDate ?? now;
-    const year = new Date(issueDate).getFullYear();
-    const series = DOCUMENT_SERIES[invoice.documentType];
-    const sequence = await allocateNextInvoiceSequence(db, tenantId, year, series);
-    const invoiceNumber = formatInvoiceNumber(year, sequence, series);
+    const formats = await loadNumberFormats(db, tenantId);
+    const { invoiceNumber } = await allocateInvoiceNumber(db, tenantId, invoice.documentType, new Date(issueDate), formats);
     const variableSymbol = invoice.variableSymbol ?? variableSymbolFor(invoice.documentType, invoiceNumber);
     // "Already paid" entered on the draft: in full → paid at issue, otherwise a partial payment.
     const total = round2(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }));

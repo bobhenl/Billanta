@@ -214,6 +214,9 @@ export const tenants = pgTable("tenants", {
   // Outgoing webhooks (Discord, Slack, or plain JSON) fired on the same events
   // as member notifications — see `integrations/webhooks.ts`.
   webhooks: jsonb("webhooks").notNull().default([]),
+  // Own number pattern per document type ({"invoice": "{N}/{MM}/{YYYY}"});
+  // null or a missing type = built-in `{series}{YYYY}-{NNNN}` (`tenants/number-formats.ts`).
+  numberFormats: jsonb("number_formats"),
   // Abuse protection (`abuse/sending-guard.ts`): a suspended company can't send
   // and its share links show a notice; paused only blocks outgoing e-mail
   // (set automatically after repeated recipient reports, cleared by the operator).
@@ -631,13 +634,16 @@ export const invoiceNumberSequences = pgTable(
     // "OD" credit notes, "NA" quotes (see invoice-numbering.util.ts).
     series: varchar("series", { length: 8 }).notNull().default(""),
     year: integer("year").notNull(),
+    // 1–12 for a monthly counter (a pattern with {MM}), 0 for the yearly one.
+    month: integer("month").notNull().default(0),
     lastNumber: integer("last_number").notNull().default(0),
   },
   (table) => ({
-    tenantSeriesYearUnique: uniqueIndex("invoice_number_sequences_tenant_series_year_unique").on(
+    tenantSeriesYearMonthUnique: uniqueIndex("invoice_number_sequences_tenant_series_year_month_unique").on(
       table.tenantId,
       table.series,
       table.year,
+      table.month,
     ),
   }),
 );

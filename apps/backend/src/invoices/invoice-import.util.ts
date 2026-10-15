@@ -1,4 +1,6 @@
+import { parseDocumentNumber, type NumberFormats } from "@faktur/cz-compliance";
 import { normalizeCountry, normalizeHeader } from "../contacts/contacts-csv.util";
+import { DOCUMENT_SERIES, type DocumentType, type SequenceBump } from "./invoice-numbering.util";
 
 /**
  * Historical invoices from another invoicing system ("stěhování"), as CSV.
@@ -270,8 +272,35 @@ export function mapInvoiceRows(rows: string[][]): { invoices: ImportedInvoice[];
 }
 
 /** "2026-0042" / "ZF2026-0003" — our own format, whose sequence must continue after an import. */
-export function ownNumberSequence(invoiceNumber: string): { series: string; year: number; sequence: number } | null {
+export function ownNumberSequence(invoiceNumber: string): { series: string; year: number; month: number; sequence: number } | null {
   const match = /^(ZF|OD|NA)?(\d{4})-(\d{1,6})$/.exec(invoiceNumber);
   if (!match) return null;
-  return { series: match[1] ?? "", year: Number(match[2]), sequence: Number(match[3]) };
+  return { series: match[1] ?? "", year: Number(match[2]), month: 0, sequence: Number(match[3]) };
+}
+
+/**
+ * The counter an imported number belongs to: read with the company's
+ * pattern for that document type (e.g. `1/10/2026` with `{N}/{MM}/{YYYY}` →
+ * the October 2026 counter at 1), else as our built-in format.
+ */
+export function importedNumberSequence(invoiceNumber: string, documentType: DocumentType, formats: NumberFormats): SequenceBump | null {
+  const pattern = formats[documentType];
+  const parsed = pattern ? parseDocumentNumber(pattern, invoiceNumber) : null;
+  if (parsed) return { series: DOCUMENT_SERIES[documentType], ...parsed };
+  return ownNumberSequence(invoiceNumber);
+}
+
+/** Highest imported sequence per counter, so issuance continues after it. */
+export function highestImportedSequences(
+  invoices: { invoiceNumber: string; documentType: DocumentType }[],
+  formats: NumberFormats,
+): SequenceBump[] {
+  const best = new Map<string, SequenceBump>();
+  for (const inv of invoices) {
+    const own = importedNumberSequence(inv.invoiceNumber, inv.documentType, formats);
+    if (!own) continue;
+    const key = `${own.series}|${own.year}|${own.month}`;
+    if ((best.get(key)?.sequence ?? 0) < own.sequence) best.set(key, own);
+  }
+  return [...best.values()];
 }

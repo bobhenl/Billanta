@@ -1380,6 +1380,10 @@
         "activity": {
           "title": "Change history",
           "description": "Who changed what and when: documents, contacts, company, team and keys."
+        },
+        "numbering": {
+          "title": "Document numbering",
+          "description": "Your own number format for invoices, proformas, credit notes and quotes, and the number the series continues at."
         }
       }
     },
@@ -2451,6 +2455,52 @@
         "name_too_long": "The name is too long.",
         "tos_required": "Please accept the terms.",
         "tenant_limit": "You have reached the limit of {max} owned companies."
+      }
+    },
+    "numbering": {
+      "title": "Document numbering",
+      "description": "Choose what your document numbers look like – for example the same as in the tool you are moving from.",
+      "loadError": "Could not load the numbering settings.",
+      "readOnly": "Only an owner or admin can change document numbering.",
+      "pattern": "Number format",
+      "patternHint": "Text around the tokens is copied as is. Allowed: letters without accents, digits, space and - / . _",
+      "nextNumber": "Next number",
+      "nextNumberHint": "The sequence number the series continues at this month or year. Leave empty to keep it as it is.",
+      "preview": "The next document gets",
+      "then": "(then {number})",
+      "resetMonthly": "The series starts again every month.",
+      "resetYearly": "The series starts again every year.",
+      "lastUsed": "Last sequence number used in this period: {number}.",
+      "lowerWarning": "This is lower than or equal to the last number used. You can only save it while there is no document of this type in this period yet.",
+      "save": "Save",
+      "saved": "Numbering saved",
+      "saveFailed": "Saving failed",
+      "tokensTitle": "Tokens",
+      "tokens": {
+        "YYYY": "year, e.g. 2026",
+        "YY": "two-digit year, e.g. 26",
+        "MM": "month, e.g. 03 – the series then starts again every month",
+        "N": "sequence number without zeros, e.g. 7",
+        "NNNN": "sequence number padded with zeros ('{NN}' to '{NNNNN}'), e.g. 0007"
+      },
+      "how": {
+        "rules": "The format needs exactly one sequence number and a year. A number can be at most 32 characters long.",
+        "reset": "With '{MM}' in the format, counting starts at 1 every month, otherwise every year.",
+        "issued": "The change only applies to documents issued from now on. Documents already issued keep their numbers.",
+        "separate": "Each document type has its own unbroken series. If a number already exists (for example from an import), the next free one is used."
+      },
+      "errors": {
+        "empty": "Enter a format.",
+        "invalid_character": "The format has a character that is not allowed. Use letters without accents, digits, space or - / . _",
+        "unknown_token": "Unknown token. Use '{YYYY}', '{YY}', '{MM}', '{N}' to '{NNNNN}'.",
+        "no_sequence": "The sequence number is missing, e.g. '{NNNN}'.",
+        "multiple_sequences": "The sequence number can appear only once.",
+        "no_year": "The year is missing – '{YYYY}' or '{YY}'.",
+        "multiple_years": "The year can appear only once.",
+        "multiple_months": "The month can appear only once.",
+        "too_long": "The number would be longer than {max} characters.",
+        "pattern_clash": "Another document type already uses this format. Each type needs its own.",
+        "next_number_too_low": "The next number is lower than the last one used, and documents already exist in this period."
       }
     }
   },
