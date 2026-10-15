@@ -24,6 +24,7 @@ type InvoiceImportResult = {
   dateTo: string | null;
   skipped: InvoiceSkip[];
   preview: { number: string; customer: string; issueDate: string; total: number; currency: string; status: string }[];
+  originalPdfs?: { archived: number; missing: number };
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
@@ -352,6 +353,12 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
       {result && (
         <div className="mt-4 space-y-3">
           <Banner tone="ok" title={t('step3.done', { count: result.invoices, contacts: result.contactsCreated })}>
+            {result.originalPdfs && (
+              <p className="text-sm">
+                {t('step3.pdfs', { archived: result.originalPdfs.archived })}
+                {result.originalPdfs.missing > 0 && ` ${t('step3.pdfsMissing', { missing: result.originalPdfs.missing })}`}
+              </p>
+            )}
             <Link href="/invoices" className="mt-1 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
               <CheckCircle2 className="h-4 w-4" />
               {t('step3.open')}

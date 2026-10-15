@@ -2382,13 +2382,15 @@
           "status": "Status"
         },
         "api": {
-          "lead": "Load straight from BitFaktura over its API. The code is used for this import only and is not stored. Feel free to generate a new one in BitFaktura afterwards.",
+          "lead": "Load straight from BitFaktura over its API, including the original PDFs. The code is used for this import only and is not stored. Feel free to generate a new one in BitFaktura afterwards.",
           "account": "BitFaktura account",
           "accountPlaceholder": "company.bitfaktura.cz",
           "token": "API authorization code",
           "load": "Load preview",
           "privacy": "We only read from BitFaktura and change nothing there."
-        }
+        },
+        "pdfs": "Original BitFaktura PDFs: {archived} saved as archive attachments (not sent to customers).",
+        "pdfsMissing": "{missing} could not be downloaded."
       },
       "status": {
         "issued": "Unpaid",

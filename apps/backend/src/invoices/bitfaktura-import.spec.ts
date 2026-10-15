@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bitfakturaBaseUrl, BitfakturaError, fetchBitfakturaInvoices, mapBitfakturaInvoices, type BitfakturaInvoice } from "./bitfaktura-import";
+import { bitfakturaBaseUrl, BitfakturaError, fetchBitfakturaInvoices, fetchBitfakturaPdf, mapBitfakturaInvoices, type BitfakturaInvoice } from "./bitfaktura-import";
 
 const invoice = (over: Partial<BitfakturaInvoice> = {}): BitfakturaInvoice => ({
   id: 1,
@@ -136,5 +136,46 @@ describe("fetchBitfakturaInvoices", () => {
       throw new Error("must not be called");
     };
     await expect(fetchBitfakturaInvoices("evil.com", "t0ken-xyz", never)).rejects.toBeInstanceOf(BitfakturaError);
+  });
+});
+
+describe("fetchBitfakturaPdf", () => {
+  const pdf = Buffer.from("%PDF-1.4 original");
+
+  it("returns the original PDF, asked for with the token in the header only", async () => {
+    let seen: { url: string; init: RequestInit } | undefined;
+    const got = await fetchBitfakturaPdf("firma", "secret-token-123", 42, 1000, async (url, init) => {
+      seen = { url, init };
+      return new Response(pdf, { status: 200 });
+    });
+    expect(got?.equals(pdf)).toBe(true);
+    expect(seen!.url).toBe("https://firma.bitfaktura.cz/invoices/42.pdf");
+    expect((seen!.init.headers as Record<string, string>).Authorization).toBe("Bearer secret-token-123");
+    expect(seen!.init.redirect).toBe("error");
+  });
+
+  it("gives up quietly on anything that is not a usable PDF", async () => {
+    const answer = (body: Buffer | string, status = 200) => async () => new Response(body, { status });
+    expect(await fetchBitfakturaPdf("firma", "t0ken-xyz", 42, 1000, answer("<html>login</html>"))).toBeNull();
+    expect(await fetchBitfakturaPdf("firma", "t0ken-xyz", 42, 1000, answer(pdf, 404))).toBeNull();
+    expect(await fetchBitfakturaPdf("firma", "t0ken-xyz", 42, 10, answer(pdf))).toBeNull();
+    expect(
+      await fetchBitfakturaPdf("firma", "t0ken-xyz", 42, 1000, async () => {
+        throw new Error("network");
+      }),
+    ).toBeNull();
+    let calls = 0;
+    const counted = async () => {
+      calls++;
+      return new Response(pdf, { status: 200 });
+    };
+    expect(await fetchBitfakturaPdf("evil.com", "t0ken-xyz", 42, 1000, counted)).toBeNull();
+    expect(await fetchBitfakturaPdf("firma", "t0ken-xyz", -1, 1000, counted)).toBeNull();
+    expect(await fetchBitfakturaPdf("firma", "t0ken-xyz", 1.5, 1000, counted)).toBeNull();
+    expect(calls).toBe(0);
+  });
+
+  it("keeps the source id on mapped invoices so the PDF can be fetched", () => {
+    expect(mapBitfakturaInvoices([invoice({ id: 777 })]).invoices[0]!.sourceId).toBe(777);
   });
 });

@@ -5,7 +5,8 @@ import * as schema from "../../drizzle/schema";
 import { decodeCsvBuffer, parseCsv } from "../contacts/contacts-csv.util";
 import { mapInvoiceRows, ownNumberSequence, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
 import { computeInvoiceTotal, round2 } from "./invoice-total.util";
-import { BitfakturaError, fetchBitfakturaInvoices, mapBitfakturaInvoices } from "./bitfaktura-import";
+import { BitfakturaError, fetchBitfakturaInvoices, fetchBitfakturaPdf, mapBitfakturaInvoices } from "./bitfaktura-import";
+import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbRate } from "../exports/cnb-rates";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -23,7 +24,12 @@ export interface InvoiceImportResult {
   dateTo: string | null;
   skipped: ImportSkip[];
   preview: { number: string; customer: string; issueDate: string; total: number; currency: string; status: string }[];
+  /** API imports only: original PDFs stored as archive attachments, and how many could not be fetched. */
+  originalPdfs?: { archived: number; missing: number };
 }
+
+/** Parallel PDF downloads; low enough not to hammer the source's API. */
+const PDF_CONCURRENCY = 4;
 
 /**
  * "Stěhování": brings the invoice history from another system in as
@@ -60,7 +66,40 @@ export class InvoiceImportService {
       if (error instanceof BitfakturaError) throw new BadRequestException({ error: error.code });
       throw error;
     }
-    return this.importMapped(db, tenantId, mapBitfakturaInvoices(source), dryRun);
+    const created: { invoice: ImportedInvoice; id: string }[] = [];
+    const result = await this.importMapped(db, tenantId, mapBitfakturaInvoices(source), dryRun, (invoice, id) =>
+      created.push({ invoice, id }),
+    );
+    if (dryRun) return result;
+
+    // Archive copy of what the customer received. Not e-mailed again and not
+    // shown in the portal; the invoice data itself stays as imported.
+    const originalPdfs = { archived: 0, missing: 0 };
+    const queue = [...created];
+    const worker = async () => {
+      for (let next = queue.shift(); next; next = queue.shift()) {
+        const pdf = next.invoice.sourceId
+          ? await fetchBitfakturaPdf(account, apiToken, next.invoice.sourceId, MAX_ATTACHMENT_BYTES, fetcher)
+          : null;
+        if (!pdf) {
+          originalPdfs.missing++;
+          continue;
+        }
+        await db.insert(schema.invoiceAttachments).values({
+          tenantId,
+          invoiceId: next.id,
+          filename: `${next.invoice.invoiceNumber.replace(/[\\/:*?"<>|]/g, "-")}-bitfaktura.pdf`,
+          mime: "application/pdf",
+          sizeBytes: pdf.length,
+          data: pdf.toString("base64"),
+          sendWithEmail: false,
+          showInPortal: false,
+        });
+        originalPdfs.archived++;
+      }
+    };
+    await Promise.all(Array.from({ length: PDF_CONCURRENCY }, worker));
+    return { ...result, originalPdfs };
   }
 
   private async importMapped(
@@ -68,6 +107,7 @@ export class InvoiceImportService {
     tenantId: string,
     mapped: { invoices: ImportedInvoice[]; skipped: ImportSkip[] },
     dryRun: boolean,
+    onCreated?: (invoice: ImportedInvoice, id: string) => void,
   ): Promise<InvoiceImportResult> {
     if (mapped.invoices.length > MAX_IMPORT_INVOICES) throw new BadRequestException({ error: "too_many_rows" });
 
@@ -176,6 +216,7 @@ export class InvoiceImportService {
           ...(inv.language ? { language: inv.language } : {}),
         })
         .returning({ id: schema.invoices.id });
+      onCreated?.(inv, created!.id);
       await db.insert(schema.invoiceLineItems).values(
         inv.lines.map((l, i) => ({
           tenantId,

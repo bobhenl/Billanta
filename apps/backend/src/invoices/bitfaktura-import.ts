@@ -62,6 +62,35 @@ export async function fetchBitfakturaInvoices(account: string, apiToken: string,
   return all;
 }
 
+/**
+ * The PDF the customer originally received, kept as an archive copy next to
+ * the imported invoice. Null when it can't be had (missing, not a PDF, too
+ * big); the import goes on without it.
+ */
+export async function fetchBitfakturaPdf(
+  account: string,
+  apiToken: string,
+  sourceId: number,
+  maxBytes: number,
+  fetcher: Fetch = fetch,
+): Promise<Buffer | null> {
+  const base = bitfakturaBaseUrl(account);
+  if (!base || !Number.isSafeInteger(sourceId) || sourceId <= 0) return null;
+  try {
+    const res = await fetcher(`${base}/invoices/${sourceId}.pdf`, {
+      headers: { Authorization: `Bearer ${apiToken}`, Accept: "application/pdf" },
+      redirect: "error",
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (!res.ok) return null;
+    const pdf = Buffer.from(await res.arrayBuffer());
+    if (pdf.length === 0 || pdf.length > maxBytes || pdf.subarray(0, 5).toString("latin1") !== "%PDF-") return null;
+    return pdf;
+  } catch {
+    return null;
+  }
+}
+
 /** The fields of an InvoiceOcean invoice this import reads (the API sends ~200). */
 export interface BitfakturaInvoice {
   id: number;
@@ -206,6 +235,7 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: 
       language: LANGUAGES[(raw.lang ?? "").split("/")[0]!.toLowerCase()],
       // BitFaktura stores the ČNB rate it used; 1.0 on a foreign invoice means none was set.
       exchangeRate: currency !== "CZK" && rate !== null && rate > 0 && rate !== 1 ? rate : null,
+      sourceId: Number.isSafeInteger(raw.id) && raw.id > 0 ? raw.id : undefined,
     });
   });
   return { invoices, skipped };

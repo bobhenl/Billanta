@@ -53,6 +53,8 @@ export interface ImportedInvoice {
   language?: string;
   /** CZK per unit as the source system recorded it; looked up at the ČNB when missing. */
   exchangeRate?: number | null;
+  /** The document's id in the source system, to fetch its original PDF. */
+  sourceId?: number;
 }
 
 export interface ImportSkip {

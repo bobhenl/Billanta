@@ -2382,13 +2382,15 @@
           "status": "Stav"
         },
         "api": {
-          "lead": "Načtení přímo z BitFaktury přes API. Kód se použije jen pro tento import, neukládáme ho. Po dokončení ho v BitFaktuře klidně vygenerujte znovu.",
+          "lead": "Načtení přímo z BitFaktury přes API, včetně původních PDF. Kód se použije jen pro tento import, neukládáme ho. Po dokončení ho v BitFaktuře klidně vygenerujte znovu.",
           "account": "Účet v BitFaktuře",
           "accountPlaceholder": "firma.bitfaktura.cz",
           "token": "Autorizační kód API",
           "load": "Načíst náhled",
           "privacy": "Z BitFaktury jen čteme, nic v ní neměníme."
-        }
+        },
+        "pdfs": "Původní PDF z BitFaktury: {archived} uloženo jako archivní příloha (zákazníkům se neposílá).",
+        "pdfsMissing": "{missing} se stáhnout nepodařilo."
       },
       "status": {
         "issued": "Neuhrazená",
