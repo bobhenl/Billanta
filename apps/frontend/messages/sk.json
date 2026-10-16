@@ -1537,7 +1537,7 @@
         "failed": "Nahranie sa nepodarilo (HTTP {status})"
       },
       "companyNameHint": "Krátky názov pre aplikáciu a e-maily (napr. „Novák Design“). Na faktúre sa tlačí obchodné meno.",
-      "legalNameHint": "Presne podľa obchodného alebo živnostenského registra – tlačí sa na faktúry ako dodávateľ.",
+      "legalNameHint": "Presne podľa obchodného alebo živnostenského registra – tlačí sa na faktúry ako dodávateľ. Pri živnostníkovi je to vaše meno a priezvisko (prípadne s dodatkom).",
       "countryHint": "Dvojpísmenový kód krajiny: SK, CZ, DE…",
       "registryNoteHint": "Firmy zapísané v obchodnom registri ho musia uvádzať na faktúrach. SZČO môže nechať prázdne.",
       "ibanHint": "Stačí vyplniť číslo účtu a kód banky – IBAN treba hlavne pre platby zo zahraničia.",
@@ -2066,7 +2066,7 @@
         "reminder_no": "poradie upomienky",
         "customer": "názov zákazníka",
         "customer_ico": "IČO zákazníka",
-        "company": "názov firmy",
+        "company": "vaše meno alebo názov firmy",
         "ico": "IČO",
         "dic": "DIČ",
         "company_email": "e-mail firmy",
@@ -2442,16 +2442,17 @@
         "title": "Pridať ďalšiu firmu",
         "description": "Založte ďalšiu firmu alebo živnosť. Stanete sa jej vlastníkom a hneď sa do nej prepnete.",
         "hint": "Každá firma má oddelené dáta, číselné rady, tím aj tarif. Medzi firmami prepínate v menu pod svojím avatarom. Ako vlastník môžete mať najviac {max} firiem; do ďalších vás môžu pozvať iní.",
-        "nameLabel": "Názov firmy",
-        "namePlaceholder": "Novák Consulting s.r.o.",
+        "nameLabel": "Meno alebo názov firmy",
+        "namePlaceholder": "Ján Novák alebo Novák s.r.o.",
         "tos": "Mám aspoň 18 rokov a pre túto firmu súhlasím s <tos>obchodnými podmienkami</tos> a so <dpa>sprostredkovateľskou zmluvou</dpa>.",
         "submit": "Založiť firmu",
-        "creating": "Zakladám…"
+        "creating": "Zakladám…",
+        "nameHint": "Pri živnosti stačí vaše meno a priezvisko."
       },
       "errors": {
         "generic": "Niečo sa pokazilo. Skúste to prosím znova.",
         "not_member": "K tejto firme už nemáte prístup.",
-        "name_required": "Vyplňte názov firmy.",
+        "name_required": "Vyplňte meno alebo názov firmy.",
         "name_too_long": "Názov je príliš dlhý.",
         "tos_required": "Je potrebné súhlasiť s podmienkami.",
         "tenant_limit": "Dosiahli ste limit {max} vlastných firiem."
@@ -2512,8 +2513,8 @@
     "signup": {
       "title": "Vytvoriť účet",
       "subtitle": "Založte si účet a začnite fakturovať v priebehu pár minút.",
-      "companyNameLabel": "Názov spoločnosti",
-      "companyNamePlaceholder": "Novák Consulting s.r.o.",
+      "companyNameLabel": "Meno alebo názov firmy",
+      "companyNamePlaceholder": "Ján Novák alebo Novák s.r.o.",
       "emailLabel": "E-mail",
       "emailPlaceholder": "vas@email.sk",
       "passwordLabel": "Heslo",
@@ -2524,7 +2525,8 @@
       "genericError": "Niečo sa pokazilo. Skúste to prosím znova.",
       "rateLimitedError": "Príliš veľa pokusov. Skúste to prosím o chvíľu.",
       "hasAccount": "Už máte účet?",
-      "loginLink": "Prihláste sa"
+      "loginLink": "Prihláste sa",
+      "companyNameHint": "Ako živnostníkovi stačí vaše meno a priezvisko. IČO a fakturačné údaje doplníte v ďalšom kroku."
     },
     "login": {
       "title": "Prihlásiť sa",

@@ -1537,7 +1537,7 @@
         "failed": "Upload failed (HTTP {status})"
       },
       "companyNameHint": "A short name for the app and emails (e.g. “Novák Design”). Invoices print the legal name.",
-      "legalNameHint": "Exactly as in the business register – printed on invoices as the supplier.",
+      "legalNameHint": "Exactly as in the business register – printed on invoices as the supplier. For a sole trader it is your full name (with any trade suffix).",
       "countryHint": "Two-letter country code: CZ, SK, DE…",
       "registryNoteHint": "Companies in the commercial register must state it on invoices. Sole traders can leave it empty.",
       "ibanHint": "The account number and bank code are enough – IBAN is mainly needed for payments from abroad.",
@@ -2066,7 +2066,7 @@
         "reminder_no": "reminder number (reminders only)",
         "customer": "customer name",
         "customer_ico": "customer ID (IČO)",
-        "company": "company name",
+        "company": "your name or company name",
         "ico": "company ID (IČO)",
         "dic": "VAT ID (DIČ)",
         "company_email": "company email",
@@ -2442,16 +2442,17 @@
         "title": "Add another company",
         "description": "Set up another company or sole-trader business. You become its owner and switch to it right away.",
         "hint": "Each company keeps its own data, number series, team and plan. Switch between them in the menu under your avatar. As an owner you can have up to {max} companies; others can invite you to more.",
-        "nameLabel": "Company name",
-        "namePlaceholder": "Novák Consulting s.r.o.",
+        "nameLabel": "Your name or company name",
+        "namePlaceholder": "Jane Doe or Acme s.r.o.",
         "tos": "I am at least 18 and, for this company, accept the <tos>terms of service</tos> and the <dpa>data processing agreement</dpa>.",
         "submit": "Create company",
-        "creating": "Creating…"
+        "creating": "Creating…",
+        "nameHint": "For a sole trader, your own name is enough."
       },
       "errors": {
         "generic": "Something went wrong. Please try again.",
         "not_member": "You no longer have access to this company.",
-        "name_required": "Enter the company name.",
+        "name_required": "Enter your name or company name.",
         "name_too_long": "The name is too long.",
         "tos_required": "Please accept the terms.",
         "tenant_limit": "You have reached the limit of {max} owned companies."
@@ -2512,8 +2513,8 @@
     "signup": {
       "title": "Create an account",
       "subtitle": "Create your account and start invoicing in minutes.",
-      "companyNameLabel": "Company name",
-      "companyNamePlaceholder": "Acme Consulting s.r.o.",
+      "companyNameLabel": "Your name or company name",
+      "companyNamePlaceholder": "Jane Doe or Acme s.r.o.",
       "emailLabel": "Email",
       "emailPlaceholder": "you@email.com",
       "passwordLabel": "Password",
@@ -2524,7 +2525,8 @@
       "genericError": "Something went wrong. Please try again.",
       "rateLimitedError": "Too many attempts. Please try again in a moment.",
       "hasAccount": "Already have an account?",
-      "loginLink": "Sign in"
+      "loginLink": "Sign in",
+      "companyNameHint": "Self-employed? Your own name is enough. You add your IČO and billing details in the next step."
     },
     "login": {
       "title": "Log in",

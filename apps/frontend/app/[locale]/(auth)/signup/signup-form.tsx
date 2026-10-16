@@ -9,7 +9,7 @@ import { TOS_VERSION } from '@/lib/tos';
 // Signup gates on this exact ToS version (see lib/tos.ts).
 
 /**
- * Signup form — company name, email, password, and a required, NOT
+ * Signup form – name or company name (a sole trader just types their own), email, password, and a required, NOT
  * preselected ToS checkbox (blueprint §9's "signup gate"). This is a client
  * component because the submit button's disabled state depends on live
  * checkbox state.
@@ -106,11 +106,13 @@ export function SignupForm() {
             type="text"
             required
             autoComplete="organization"
+            aria-describedby="companyNameHint"
             placeholder={t('companyNamePlaceholder')}
             value={companyName}
             onChange={(event) => setCompanyName(event.target.value)}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
           />
+          <p id="companyNameHint" className="text-xs text-muted-foreground">{t('companyNameHint')}</p>
         </div>
 
         <div className="flex flex-col gap-1.5">

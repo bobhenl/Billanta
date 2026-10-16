@@ -106,11 +106,13 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
                 id="companyName"
                 required
                 maxLength={200}
+                aria-describedby="companyNameHint"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder={t('add.namePlaceholder')}
                 className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
               />
+              <p id="companyNameHint" className="text-xs text-muted-foreground">{t('add.nameHint')}</p>
             </div>
             <label className="flex items-start gap-2 text-sm text-muted-foreground">
               <input
