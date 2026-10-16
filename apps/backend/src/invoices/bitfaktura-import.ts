@@ -1,4 +1,4 @@
-import type { ImportedInvoice, ImportedLine, ImportSkip } from "./invoice-import.util";
+import type { ImportedContact, ImportedInvoice, ImportedLine, ImportSkip } from "./invoice-import.util";
 import { normalizeCountry } from "../contacts/contacts-csv.util";
 
 /**
@@ -35,14 +35,23 @@ export class BitfakturaError extends Error {
 type Fetch = (url: string, init: RequestInit) => Promise<Response>;
 
 /** Every invoice of the account, with its line items (`positions`). */
-export async function fetchBitfakturaInvoices(account: string, apiToken: string, fetcher: Fetch = fetch): Promise<BitfakturaInvoice[]> {
+export function fetchBitfakturaInvoices(account: string, apiToken: string, fetcher: Fetch = fetch): Promise<BitfakturaInvoice[]> {
+  return fetchAllPages<BitfakturaInvoice>(account, apiToken, "invoices.json?period=all&include_positions=true&", fetcher);
+}
+
+/** Every contact of the account, also those never invoiced. */
+export function fetchBitfakturaClients(account: string, apiToken: string, fetcher: Fetch = fetch): Promise<BitfakturaClient[]> {
+  return fetchAllPages<BitfakturaClient>(account, apiToken, "clients.json?", fetcher);
+}
+
+async function fetchAllPages<T>(account: string, apiToken: string, path: string, fetcher: Fetch): Promise<T[]> {
   const base = bitfakturaBaseUrl(account);
   if (!base) throw new BitfakturaError("bitfaktura_account");
-  const all: BitfakturaInvoice[] = [];
+  const all: T[] = [];
   for (let page = 1; page <= MAX_PAGES; page++) {
     let res: Response;
     try {
-      res = await fetcher(`${base}/invoices.json?period=all&include_positions=true&page=${page}&per_page=${PER_PAGE}`, {
+      res = await fetcher(`${base}/${path}page=${page}&per_page=${PER_PAGE}`, {
         headers: { Authorization: `Bearer ${apiToken}`, Accept: "application/json" },
         // A redirect would mean "not an API answer" (e.g. the login page).
         redirect: "error",
@@ -56,7 +65,7 @@ export async function fetchBitfakturaInvoices(account: string, apiToken: string,
     if (!res.ok) throw new BitfakturaError("bitfaktura_unreachable");
     const body: unknown = await res.json().catch(() => null);
     if (!Array.isArray(body)) throw new BitfakturaError("bitfaktura_unauthorized");
-    all.push(...(body as BitfakturaInvoice[]));
+    all.push(...(body as T[]));
     if (body.length < PER_PAGE) break;
   }
   return all;
@@ -130,6 +139,24 @@ export interface BitfakturaInvoice {
   }[];
 }
 
+/** The fields of an InvoiceOcean client this import reads. */
+export interface BitfakturaClient {
+  id: number;
+  name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  tax_no?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  mobile_phone?: string | null;
+  street?: string | null;
+  city?: string | null;
+  post_code?: string | null;
+  country?: string | null;
+  note?: string | null;
+  company?: boolean | null;
+}
+
 const DOCUMENT_TYPES: Record<string, ImportedInvoice["documentType"]> = {
   vat: "invoice",
   bill: "invoice",
@@ -163,6 +190,50 @@ const date = (v: string | null | undefined): Date | null => {
   return Number.isNaN(d.getTime()) ? null : d;
 };
 const text = (v: string | null | undefined, max: number) => (v ? v.trim().slice(0, max) || null : null);
+
+/** A buyer or client as a contact: a bare 8-digit number is a Czech IČO, with a country prefix a VAT ID. */
+function contactFrom(c: {
+  name: string;
+  taxNo?: string | null;
+  email?: string | null;
+  street?: string | null;
+  city?: string | null;
+  postCode?: string | null;
+  country?: string | null;
+}): ImportedInvoice["customer"] {
+  const taxNo = (c.taxNo ?? "").replace(/[\s-]/g, "").toUpperCase();
+  const email = (c.email ?? "").trim();
+  return {
+    legalName: c.name,
+    ico: /^\d{8}$/.test(taxNo) ? taxNo : null,
+    dic: /^[A-Z]{2}[0-9A-Z]{2,12}$/.test(taxNo) ? taxNo : null,
+    email: email && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email) ? email : null,
+    addressStreet: text(c.street, 255),
+    addressCity: text(c.city, 255),
+    addressPostalCode: text(c.postCode, 10),
+    addressCountry: normalizeCountry(c.country ?? undefined) ?? "CZ",
+  };
+}
+
+/** API clients as contacts; one per IČO or name, nameless ones left out. */
+export function mapBitfakturaClients(source: BitfakturaClient[]): ImportedContact[] {
+  const out: ImportedContact[] = [];
+  const seen = new Set<string>();
+  for (const raw of source) {
+    const person = [raw.first_name, raw.last_name].filter(Boolean).join(" ");
+    const name = text(raw.name, 255) ?? text(person, 255);
+    if (!name) continue;
+    const contact = contactFrom({ name, taxNo: raw.tax_no, email: raw.email, street: raw.street, city: raw.city, postCode: raw.post_code, country: raw.country });
+    const key = contact.ico ?? name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    // Contacts have no phone column; the phone goes into the internal note.
+    const phone = text(raw.phone, 64) ?? text(raw.mobile_phone, 64);
+    const internalNote = [phone ? `Tel. ${phone}` : null, text(raw.note, 2000)].filter(Boolean).join("\n") || null;
+    out.push({ ...contact, ...(raw.company === false ? { isPerson: true } : {}), ...(internalNote ? { internalNote } : {}) });
+  }
+  return out;
+}
 
 /** Maps API invoices to the shape the CSV import also produces, so both share one write path. */
 export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: ImportedInvoice[]; skipped: ImportSkip[] } {
@@ -200,7 +271,6 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: 
     const status: ImportedInvoice["status"] = raw.cancelled || raw.status === "rejected" ? "cancelled" : raw.status === "paid" ? "paid" : "issued";
     const currency = /^[A-Za-z]{3}$/.test(raw.currency ?? "") ? raw.currency.toUpperCase() : "CZK";
     const rate = num(raw.exchange_rate);
-    const taxNo = (raw.buyer_tax_no ?? "").replace(/[\s-]/g, "").toUpperCase();
     const paymentType = (raw.payment_type ?? "").trim();
 
     seen.add(number);
@@ -216,17 +286,15 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: 
       status,
       paidAt: status === "paid" ? date(raw.paid_date) ?? date(raw.payment_to) ?? issueDate : null,
       amountPaid: num(raw.paid) ?? 0,
-      customer: {
-        legalName: customerName,
-        // A bare 8-digit number is a Czech IČO; with a country prefix it is a VAT ID.
-        ico: /^\d{8}$/.test(taxNo) ? taxNo : null,
-        dic: /^[A-Z]{2}[0-9A-Z]{2,12}$/.test(taxNo) ? taxNo : null,
-        email: raw.buyer_email && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(raw.buyer_email.trim()) ? raw.buyer_email.trim() : null,
-        addressStreet: text(raw.buyer_street, 255),
-        addressCity: text(raw.buyer_city, 255),
-        addressPostalCode: text(raw.buyer_post_code, 10),
-        addressCountry: normalizeCountry(raw.buyer_country ?? undefined) ?? "CZ",
-      },
+      customer: contactFrom({
+        name: customerName,
+        taxNo: raw.buyer_tax_no,
+        email: raw.buyer_email,
+        street: raw.buyer_street,
+        city: raw.buyer_city,
+        postCode: raw.buyer_post_code,
+        country: raw.buyer_country,
+      }),
       note: text(raw.description, 2000),
       lines,
       reverseCharge: raw.reverse_charge === true,

@@ -3,10 +3,17 @@ import { inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { decodeCsvBuffer, parseCsv } from "../contacts/contacts-csv.util";
-import { highestImportedSequences, mapInvoiceRows, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
+import { highestImportedSequences, mapInvoiceRows, type ImportedContact, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
 import { bumpInvoiceSequences, loadNumberFormats } from "./invoice-numbering.util";
 import { computeInvoiceTotal, round2 } from "./invoice-total.util";
-import { BitfakturaError, fetchBitfakturaInvoices, fetchBitfakturaPdf, mapBitfakturaInvoices } from "./bitfaktura-import";
+import {
+  BitfakturaError,
+  fetchBitfakturaClients,
+  fetchBitfakturaInvoices,
+  fetchBitfakturaPdf,
+  mapBitfakturaClients,
+  mapBitfakturaInvoices,
+} from "./bitfaktura-import";
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbRate } from "../exports/cnb-rates";
 
@@ -61,15 +68,22 @@ export class InvoiceImportService {
     fetcher?: Parameters<typeof fetchBitfakturaInvoices>[2],
   ): Promise<InvoiceImportResult> {
     let source: Awaited<ReturnType<typeof fetchBitfakturaInvoices>>;
+    let clients: Awaited<ReturnType<typeof fetchBitfakturaClients>>;
     try {
       source = await fetchBitfakturaInvoices(account, apiToken, fetcher);
+      clients = await fetchBitfakturaClients(account, apiToken, fetcher);
     } catch (error) {
       if (error instanceof BitfakturaError) throw new BadRequestException({ error: error.code });
       throw error;
     }
     const created: { invoice: ImportedInvoice; id: string }[] = [];
-    const result = await this.importMapped(db, tenantId, mapBitfakturaInvoices(source), dryRun, (invoice, id) =>
-      created.push({ invoice, id }),
+    const result = await this.importMapped(
+      db,
+      tenantId,
+      mapBitfakturaInvoices(source),
+      dryRun,
+      (invoice, id) => created.push({ invoice, id }),
+      mapBitfakturaClients(clients),
     );
     if (dryRun) return result;
 
@@ -109,8 +123,10 @@ export class InvoiceImportService {
     mapped: { invoices: ImportedInvoice[]; skipped: ImportSkip[] },
     dryRun: boolean,
     onCreated?: (invoice: ImportedInvoice, id: string) => void,
+    /** Contacts from the source's address book, also those never invoiced. */
+    contacts: ImportedContact[] = [],
   ): Promise<InvoiceImportResult> {
-    if (mapped.invoices.length > MAX_IMPORT_INVOICES) throw new BadRequestException({ error: "too_many_rows" });
+    if (mapped.invoices.length > MAX_IMPORT_INVOICES || contacts.length > MAX_IMPORT_INVOICES) throw new BadRequestException({ error: "too_many_rows" });
 
     const skipped = [...mapped.skipped];
     const numbers = mapped.invoices.map((i) => i.invoiceNumber);
@@ -151,6 +167,17 @@ export class InvoiceImportService {
     };
     const newCustomers = new Set<string>();
     const matchedCustomers = new Set<string>();
+    // Names the import will create: a buyer found by name in the address book counts once,
+    // the same way the write below finds it. (One IČO is already one key in newCustomers.)
+    const pendingName = new Set<string>();
+    const count = (c: ImportedInvoice["customer"]) => {
+      const id = findContact(c);
+      if (id) return matchedCustomers.add(id);
+      if (pendingName.has(c.legalName.toLowerCase())) return;
+      newCustomers.add(c.ico ?? c.legalName.toLowerCase());
+      pendingName.add(c.legalName.toLowerCase());
+    };
+    contacts.forEach(count);
     for (const inv of invoices) {
       const total = totalOf(inv);
       result.byStatus[inv.status]++;
@@ -158,30 +185,32 @@ export class InvoiceImportService {
       const day = inv.issueDate.toISOString().slice(0, 10);
       if (!result.dateFrom || day < result.dateFrom) result.dateFrom = day;
       if (!result.dateTo || day > result.dateTo) result.dateTo = day;
-      const id = findContact(inv.customer);
-      if (id) matchedCustomers.add(id);
-      else newCustomers.add(inv.customer.ico ?? inv.customer.legalName.toLowerCase());
+      count(inv.customer);
       if (result.preview.length < 10) {
         result.preview.push({ number: inv.invoiceNumber, customer: inv.customer.legalName, issueDate: day, total, currency: inv.currency, status: inv.status });
       }
     }
     result.contactsCreated = newCustomers.size;
     result.contactsMatched = matchedCustomers.size;
-    if (dryRun || invoices.length === 0) return result;
+    if (dryRun || (invoices.length === 0 && newCustomers.size === 0)) return result;
+
+    const createContact = async (c: ImportedContact) => {
+      const [row] = await db
+        .insert(schema.contacts)
+        .values({ tenantId, ...c, ...(c.dic ? { isVatPayer: true } : {}) })
+        .returning({ id: schema.contacts.id });
+      if (c.ico) byIco.set(c.ico, row!.id);
+      byName.set(c.legalName.toLowerCase(), row!.id);
+      return row!.id;
+    };
 
     // `db` is already the request's transaction (see TenantContextMiddleware), so
     // a failure anywhere rolls the whole import back.
+    for (const c of contacts) {
+      if (!findContact(c)) await createContact(c);
+    }
     for (const inv of invoices) {
-      let contactId = findContact(inv.customer);
-      if (!contactId) {
-        const [row] = await db
-          .insert(schema.contacts)
-          .values({ tenantId, ...inv.customer, ...(inv.customer.dic ? { isVatPayer: true } : {}) })
-          .returning({ id: schema.contacts.id });
-        contactId = row!.id;
-        if (inv.customer.ico) byIco.set(inv.customer.ico, contactId);
-        byName.set(inv.customer.legalName.toLowerCase(), contactId);
-      }
+      const contactId = findContact(inv.customer) ?? (await createContact(inv.customer));
       const total = totalOf(inv);
       const issuedAt = inv.issueDate;
       // Foreign-currency documents need the CZK rate for VAT and income-tax
@@ -228,6 +257,7 @@ export class InvoiceImportService {
         })),
       );
     }
+    if (invoices.length === 0) return result;
     // Continue numbering after the highest imported number per counter, read
     // with the company's own pattern (e.g. `N/MM/YYYY`) or our built-in format.
     await bumpInvoiceSequences(db, tenantId, highestImportedSequences(invoices, await loadNumberFormats(db, tenantId)));

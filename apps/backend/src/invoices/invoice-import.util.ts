@@ -24,6 +24,9 @@ export interface ImportedLine {
   vatRate: number;
 }
 
+/** A contact brought in on its own (API imports), with what only that source knows. */
+export type ImportedContact = ImportedInvoice["customer"] & { isPerson?: boolean; internalNote?: string };
+
 export interface ImportedInvoice {
   line: number;
   invoiceNumber: string;

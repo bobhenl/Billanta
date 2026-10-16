@@ -2328,7 +2328,7 @@
           "name": "bitfaktura",
           "steps": [
             "The quickest way is a direct connection: in BitFaktura open Settings → Account settings → Integration and copy the API authorization code.",
-            "Fill in the account name (e.g. company from company.bitfaktura.cz) and the code in step 3 below. We load the invoices with customers, exchange rates and payment methods.",
+            "Fill in the account name (e.g. company from company.bitfaktura.cz) and the code in step 3 below. We load the invoices and your whole contact list (including contacts you haven't invoiced yet), exchange rates and payment methods. You can then skip the contacts CSV in step 2.",
             "Without the code, you can export the invoices to CSV and upload the file below."
           ]
         },
@@ -2373,7 +2373,7 @@
         "range": "Period: {from} – {to}",
         "statuses": "Paid: {paid} · unpaid: {issued} · cancelled: {cancelled}",
         "totals": "Total: {totals}",
-        "contacts": "Customers: {created} new, {matched} existing",
+        "contacts": "Contacts – new: {created}, existing: {matched}",
         "more": "…and {count} more.",
         "confirm": "{count, plural, one {Import # invoice} other {Import # invoices}}",
         "done": "{count, plural, one {# invoice imported} other {# invoices imported}}, new contacts: {contacts}.",
@@ -2386,7 +2386,7 @@
           "status": "Status"
         },
         "api": {
-          "lead": "Load straight from BitFaktura over its API, including the original PDFs. The code is used for this import only and is not stored. Feel free to generate a new one in BitFaktura afterwards.",
+          "lead": "Load straight from BitFaktura over the API: invoices, contacts and the original PDFs. The code is used only for this import and we don't store it. Feel free to generate a new one in BitFaktura afterwards.",
           "account": "BitFaktura account",
           "accountPlaceholder": "company.bitfaktura.cz",
           "token": "API authorization code",

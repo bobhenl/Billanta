@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { bitfakturaBaseUrl, BitfakturaError, fetchBitfakturaInvoices, fetchBitfakturaPdf, mapBitfakturaInvoices, type BitfakturaInvoice } from "./bitfaktura-import";
+import {
+  bitfakturaBaseUrl,
+  BitfakturaError,
+  fetchBitfakturaClients,
+  fetchBitfakturaInvoices,
+  fetchBitfakturaPdf,
+  mapBitfakturaClients,
+  mapBitfakturaInvoices,
+  type BitfakturaClient,
+  type BitfakturaInvoice,
+} from "./bitfaktura-import";
 
 const invoice = (over: Partial<BitfakturaInvoice> = {}): BitfakturaInvoice => ({
   id: 1,
@@ -177,5 +187,70 @@ describe("fetchBitfakturaPdf", () => {
 
   it("keeps the source id on mapped invoices so the PDF can be fetched", () => {
     expect(mapBitfakturaInvoices([invoice({ id: 777 })]).invoices[0]!.sourceId).toBe(777);
+  });
+});
+
+describe("mapBitfakturaClients", () => {
+  const client = (over: Partial<BitfakturaClient> = {}): BitfakturaClient => ({ id: 1, name: "Acme s.r.o.", tax_no: "27082440", company: true, ...over });
+
+  it("reads IČO or VAT ID, email, address and country like the invoice buyer", () => {
+    const [cz, it_] = mapBitfakturaClients([
+      client({ email: " info@acme.cz ", street: "Dlouhá 1", city: "Praha", post_code: "11000", country: "CZ" }),
+      client({ id: 2, name: "Rossi Srl", tax_no: "IT 01234567891", email: "not-an-email", country: "IT" }),
+    ]);
+    expect(cz).toEqual({
+      legalName: "Acme s.r.o.",
+      ico: "27082440",
+      dic: null,
+      email: "info@acme.cz",
+      addressStreet: "Dlouhá 1",
+      addressCity: "Praha",
+      addressPostalCode: "11000",
+      addressCountry: "CZ",
+    });
+    expect(it_).toMatchObject({ legalName: "Rossi Srl", ico: null, dic: "IT01234567891", email: null, addressCountry: "IT" });
+  });
+
+  it("marks people, builds a name from first and last name and keeps the phone in the internal note", () => {
+    const [jan, eva] = mapBitfakturaClients([
+      client({ name: "", first_name: "Jan", last_name: "Novák", tax_no: null, company: false, phone: "+420 777 123 456", note: "Platí pozdě" }),
+      client({ id: 2, name: "Eva", tax_no: null, company: null, mobile_phone: "603 000 000" }),
+    ]);
+    expect(jan).toMatchObject({ legalName: "Jan Novák", isPerson: true, internalNote: "Tel. +420 777 123 456\nPlatí pozdě" });
+    expect(eva).toMatchObject({ legalName: "Eva", internalNote: "Tel. 603 000 000" });
+    expect(eva).not.toHaveProperty("isPerson");
+  });
+
+  it("keeps one contact per IČO or name and leaves out nameless ones", () => {
+    const out = mapBitfakturaClients([
+      client(),
+      client({ id: 2, name: "Acme (old name)" }),
+      client({ id: 3, name: "Beta", tax_no: null }),
+      client({ id: 4, name: "BETA", tax_no: null }),
+      client({ id: 5, name: "  ", first_name: null, last_name: null, tax_no: null }),
+    ]);
+    expect(out.map((c) => c.legalName)).toEqual(["Acme s.r.o.", "Beta"]);
+    expect(out[1]).not.toHaveProperty("internalNote");
+  });
+});
+
+describe("fetchBitfakturaClients", () => {
+  it("pages through clients.json with the token only in the Authorization header", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const fetcher = async (url: string, init: RequestInit) => {
+      calls.push({ url, init });
+      const n = calls.length === 1 ? 100 : 3;
+      return new Response(JSON.stringify(Array.from({ length: n }, (_, i) => ({ id: i, name: `c${i}` }))), { status: 200 });
+    };
+    expect(await fetchBitfakturaClients("firma", "secret-token-123", fetcher)).toHaveLength(103);
+    expect(calls.map((c) => new URL(c.url).pathname)).toEqual(["/clients.json", "/clients.json"]);
+    expect(calls.map((c) => new URL(c.url).searchParams.get("page"))).toEqual(["1", "2"]);
+    for (const c of calls) {
+      expect(c.url).not.toContain("secret-token-123");
+      expect((c.init.headers as Record<string, string>).Authorization).toBe("Bearer secret-token-123");
+    }
+    await expect(fetchBitfakturaClients("firma", "t0ken-xyz", async () => new Response("[]", { status: 401 }))).rejects.toMatchObject({
+      code: "bitfaktura_unauthorized",
+    });
   });
 });

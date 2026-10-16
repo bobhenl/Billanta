@@ -2328,7 +2328,7 @@
           "name": "bitfaktura",
           "steps": [
             "Nejrychlejší je přímé propojení: v BitFaktuře otevřete Nastavení → Nastavení účtu → Integrace a zkopírujte Autorizační kód API.",
-            "Níže v kroku 3 vyplňte název účtu (např. firma z firma.bitfaktura.cz) a kód. Načteme faktury i s odběrateli, kurzy a způsobem úhrady.",
+            "Níže v kroku 3 vyplňte název účtu (např. firma z firma.bitfaktura.cz) a kód. Načteme faktury i celý adresář kontaktů (také ty, kterým jste zatím nefakturovali), kurzy a způsob úhrady. Krok 2 s CSV kontaktů pak přeskočte.",
             "Bez kódu to jde i přes export faktur do CSV, který nahrajete níže."
           ]
         },
@@ -2373,7 +2373,7 @@
         "range": "Období: {from} – {to}",
         "statuses": "Zaplacené: {paid} · neuhrazené: {issued} · stornované: {cancelled}",
         "totals": "Celkem: {totals}",
-        "contacts": "Odběratelé – nových: {created}, existujících: {matched}",
+        "contacts": "Kontakty – nových: {created}, existujících: {matched}",
         "more": "…a dalších {count}.",
         "confirm": "{count, plural, one {Importovat # fakturu} few {Importovat # faktury} other {Importovat # faktur}}",
         "done": "{count, plural, one {Importována # faktura} few {Importovány # faktury} other {Importováno # faktur}}, nových kontaktů: {contacts}.",
@@ -2386,7 +2386,7 @@
           "status": "Stav"
         },
         "api": {
-          "lead": "Načtení přímo z BitFaktury přes API, včetně původních PDF. Kód se použije jen pro tento import, neukládáme ho. Po dokončení ho v BitFaktuře klidně vygenerujte znovu.",
+          "lead": "Načtení přímo z BitFaktury přes API: faktury, kontakty i původní PDF. Kód se použije jen pro tento import, neukládáme ho. Po dokončení ho v BitFaktuře klidně vygenerujte znovu.",
           "account": "Účet v BitFaktuře",
           "accountPlaceholder": "firma.bitfaktura.cz",
           "token": "Autorizační kód API",
