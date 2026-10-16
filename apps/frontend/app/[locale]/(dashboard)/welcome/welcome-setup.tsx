@@ -1,14 +1,17 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Bot, Check, Download, FileQuestion, Landmark, Loader2, Receipt, Search, Timer, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Bot, Check, Download, FileQuestion, Landmark, Loader2, Receipt, Timer, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { BUSINESS_PRESETS, presetForModules, TOGGLEABLE_MODULES, type ModuleSet, type ToggleableModule } from '@/lib/business-presets';
+import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
+import { Typeahead } from '@/components/typeahead';
 import { cn } from '@/lib/utils';
-import { lookupAres } from '../contacts/actions';
+import { searchCustomers } from '../invoices/new/actions';
+import type { AresPrefill } from '../invoices/new/types';
 import { updateCompany, updateModules } from '../settings/actions';
 
 const ICONS: Record<ToggleableModule, LucideIcon> = {
@@ -36,43 +39,40 @@ export function WelcomeSetup({
   const t = useTranslations('welcome');
   const tm = useTranslations('settings.modules');
   const router = useRouter();
-  const [ico, setIco] = useState(company.ico);
+  const [query, setQuery] = useState(company.ico);
+  const [registry, setRegistry] = useCompanyRegistry();
+  const [picked, setPicked] = useState<AresPrefill | null>(null);
   const [vatPayer, setVatPayer] = useState(company.vatPayer);
-  const [ares, setAres] = useState<{ name: string; patch: AresPatch } | null>(null);
-  const [loadingAres, setLoadingAres] = useState(false);
   const [modules, setModules] = useState<ModuleSet>(initialModules);
   const [saving, startSave] = useTransition();
   const preset = presetForModules(modules);
-  const icoValid = /^\d{8}$/.test(ico.trim());
 
-  const loadAres = async () => {
-    setLoadingAres(true);
-    const result = await lookupAres(ico.trim());
-    setLoadingAres(false);
-    if (!result.ok) {
-      setAres(null);
-      toast({ text: result.error === 'not_found' ? t('aresNotFound') : t('aresFailed'), tone: 'err' });
-      return;
-    }
-    const d = result.data;
-    if (d.isVatPayer != null) setVatPayer(d.isVatPayer);
-    setAres({
-      name: [d.legalName, [d.addressStreet, d.addressCity].filter(Boolean).join(', ')].filter(Boolean).join(' · '),
-      patch: {
-        ...(d.legalName ? { legal_name: d.legalName } : {}),
-        ...(d.dic ? { dic: d.dic } : {}),
-        ...(d.addressStreet ? { address_street: d.addressStreet } : {}),
-        ...(d.addressCity ? { address_city: d.addressCity } : {}),
-        ...(d.addressPostalCode ? { address_postal_code: d.addressPostalCode } : {}),
-        ...(d.addressCountry ? { address_country: d.addressCountry } : {})
-      }
-    });
+  // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
+  const fetchCompanies = async (q: string) => {
+    const { ares } = await searchCustomers(q, registry);
+    return [{ items: ares }];
   };
+
+  const pick = (hit: AresPrefill) => {
+    setPicked(hit);
+    setQuery(hit.legalName);
+    if (hit.isVatPayer != null) setVatPayer(hit.isVatPayer);
+  };
+
+  const companyPatch = (hit: AresPrefill): AresPatch => ({
+    legal_name: hit.legalName,
+    ...(hit.ico ? { ico: hit.ico } : {}),
+    ...(hit.dic ? { dic: hit.dic } : {}),
+    ...(hit.addressStreet ? { address_street: hit.addressStreet } : {}),
+    ...(hit.addressCity ? { address_city: hit.addressCity } : {}),
+    ...(hit.addressPostalCode ? { address_postal_code: hit.addressPostalCode } : {}),
+    ...(hit.addressCountry ? { address_country: hit.addressCountry } : {})
+  });
 
   const finish = () =>
     startSave(async () => {
-      const patch: AresPatch = { dic_vat_payer: vatPayer, ...(ares?.patch ?? {}) };
-      if (icoValid) patch.ico = ico.trim();
+      const patch: AresPatch = { dic_vat_payer: vatPayer, ...(picked ? companyPatch(picked) : {}) };
+      if (!picked && /^d{8}$/.test(query.trim())) patch.ico = query.trim();
       const [c, m] = await Promise.all([updateCompany(patch), updateModules(modules)]);
       if (!c.ok || !m.ok) {
         toast({ text: `${t('failed')}: ${(!c.ok ? c.error : !m.ok ? m.error : '') || ''}`, tone: 'err' });
@@ -105,25 +105,36 @@ export function WelcomeSetup({
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
         {step(1, t('companyTitle'), t('companyHint'))}
         <div className="flex gap-2">
-          <input
-            value={ico}
-            onChange={(e) => {
-              setIco(e.target.value.replace(/\D/g, '').slice(0, 8));
-              setAres(null);
+          <Typeahead<AresPrefill>
+            className="min-w-0 flex-1"
+            refreshKey={registry}
+            value={query}
+            onChange={(v) => {
+              setQuery(v);
+              setPicked(null);
             }}
-            inputMode="numeric"
-            placeholder={t('icoPlaceholder')}
-            aria-label={t('icoLabel')}
-            className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 text-sm"
+            ariaLabel={t('searchLabel')}
+            placeholder={t('searchPlaceholder')}
+            emptyHint={t('searchEmpty')}
+            fetchGroups={fetchCompanies}
+            getKey={(o) => o.ico || o.dic || o.regNumber || o.legalName}
+            onPick={pick}
+            renderItem={(o) => (
+              <span className="flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <span className="min-w-0 flex-1 truncate font-medium">{o.legalName}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {[o.ico ? `IČO ${o.ico}` : (o.dic ?? o.regNumber), o.addressCity].filter(Boolean).join(' · ')}
+                </span>
+              </span>
+            )}
           />
-          <button type="button" className={buttonClass.secondary} disabled={!icoValid || loadingAres} onClick={loadAres}>
-            {loadingAres ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-            ARES
-          </button>
+          <RegistryPicker value={registry} onChange={setRegistry} />
         </div>
-        {ares && (
+        {picked && (
           <p className="flex items-center gap-1.5 text-xs text-success">
-            <Check className="h-3.5 w-3.5" /> {ares.name}
+            <Check className="h-3.5 w-3.5" />{' '}
+            {[picked.legalName, [picked.addressStreet, picked.addressCity].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}
           </p>
         )}
         <div>

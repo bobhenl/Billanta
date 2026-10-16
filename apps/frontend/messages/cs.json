@@ -1306,7 +1306,7 @@
           "description": "Jméno, heslo, způsoby přihlášení, jazyk a vzhled."
         },
         "company": {
-          "title": "Firma",
+          "title": "Fakturační údaje",
           "description": "Fakturační údaje, adresa, bankovní účet a výchozí hodnoty faktur."
         },
         "team": {
@@ -1370,11 +1370,11 @@
           "description": "Vizitka firmy na vlastní adrese – služby, kontakty a tlačítko pro poptávku."
         },
         "import": {
-          "title": "Přechod z jiného systému",
-          "description": "Kontakty a historie faktur z Fakturoidu, iDokladu, Excelu a dalších."
+          "title": "Import z jiného systému",
+          "description": "Kontakty a historie faktur z BitFaktury, Fakturoidu, iDokladu, Excelu a dalších."
         },
         "companies": {
-          "title": "Moje firmy",
+          "title": "Moje firmy a živnosti",
           "description": "Víc firem pod jedním přihlášením a rychlé přepínání mezi nimi."
         },
         "activity": {
@@ -1452,10 +1452,10 @@
       }
     },
     "company": {
-      "title": "Firma",
+      "title": "Fakturační údaje",
       "description": "Tyto údaje se tisknou na každou fakturu jako dodavatel.",
-      "loadError": "Údaje firmy se nepodařilo načíst.",
-      "readOnly": "Údaje firmy může měnit jen vlastník nebo administrátor.",
+      "loadError": "Fakturační údaje se nepodařilo načíst.",
+      "readOnly": "Fakturační údaje může měnit jen vlastník nebo administrátor.",
       "sections": {
         "identity": "Identifikace",
         "identityHint": "Zadejte IČO a načtěte zbytek z ARES.",
@@ -2427,7 +2427,7 @@
       }
     },
     "companies": {
-      "title": "Moje firmy",
+      "title": "Moje firmy a živnosti",
       "description": "Všechny firmy, ke kterým máte přístup. Faktury, kontakty, nastavení i předplatné má každá firma vlastní.",
       "loadError": "Seznam firem se nepodařilo načíst.",
       "active": "Aktivní",
@@ -2439,7 +2439,7 @@
         "viewer": "Jen čtení"
       },
       "add": {
-        "title": "Přidat další firmu",
+        "title": "Přidat další firmu nebo živnost",
         "description": "Založte další firmu nebo živnost. Stanete se jejím vlastníkem a hned se do ní přepnete.",
         "hint": "Každá firma má oddělená data, číselné řady, tým i tarif. Mezi firmami přepínáte v menu pod svým avatarem. Jako vlastník můžete mít nejvýš {max} firem; do dalších vás mohou pozvat jiní.",
         "nameLabel": "Jméno nebo název firmy",
@@ -2857,13 +2857,13 @@
     "moreInfo": "Více informací",
     "userMenu": {
       "profile": "Můj profil",
-      "company": "Firma",
+      "company": "Fakturační údaje",
       "team": "Tým",
       "exports": "Exporty pro účetní",
       "billing": "Předplatné",
       "settings": "Nastavení",
-      "companies": "Firmy",
-      "addCompany": "Přidat firmu",
+      "companies": "Firmy a živnosti",
+      "addCompany": "Přidat firmu nebo živnost",
       "manageCompanies": "Spravovat firmy",
       "activity": "Historie změn"
     },
@@ -3975,12 +3975,8 @@
   "welcome": {
     "title": "Vítejte v Billantě",
     "subtitle": "Tři rychlé otázky a aplikace ukáže jen to, co opravdu použijete. Vše jde později změnit v Nastavení.",
-    "companyTitle": "Vaše firma",
-    "companyHint": "Zadejte IČO a údaje na fakturu načteme z ARES. Můžete i přeskočit.",
-    "icoLabel": "IČO",
-    "icoPlaceholder": "IČO (8 číslic)",
-    "aresNotFound": "IČO jsme v ARES nenašli.",
-    "aresFailed": "ARES teď neodpovídá, zkuste to později.",
+    "companyTitle": "Vaše podnikání",
+    "companyHint": "Zadejte název firmy, své jméno (OSVČ) nebo IČO a údaje na fakturu načteme z ARES, slovenského RPO nebo zahraničních registrů. Můžete i přeskočit.",
     "vatQuestion": "Jste plátce DPH?",
     "yes": "Ano",
     "no": "Ne",
@@ -3992,7 +3988,10 @@
     "skip": "Přeskočit",
     "finish": "Hotovo, jdeme fakturovat",
     "saved": "Nastaveno",
-    "failed": "Uložení se nepovedlo"
+    "failed": "Uložení se nepovedlo",
+    "searchLabel": "Firma, jméno nebo IČO",
+    "searchPlaceholder": "Název firmy, vaše jméno nebo IČO",
+    "searchEmpty": "Nic jsme nenašli. Zkuste jiný název nebo IČO, nebo jiný registr."
   },
   "registry": {
     "label": "Registr firem",
@@ -5315,7 +5314,7 @@
       "all": "Vše",
       "invoice": "Doklady",
       "contact": "Kontakty",
-      "tenant": "Firma",
+      "tenant": "Fakturační údaje",
       "bank_account": "Bankovní účty",
       "member": "Tým",
       "api_key": "API klíče"

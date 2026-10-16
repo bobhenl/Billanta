@@ -1306,7 +1306,7 @@
           "description": "Name, password, sign-in methods, language and appearance."
         },
         "company": {
-          "title": "Company",
+          "title": "Business details",
           "description": "Billing details, address, bank account and invoice defaults."
         },
         "team": {
@@ -1370,11 +1370,11 @@
           "description": "A business-card page at your own address – services, contacts and an enquiry button."
         },
         "import": {
-          "title": "Switch from another system",
-          "description": "Contacts and invoice history from Fakturoid, iDoklad, Excel and more."
+          "title": "Import from another system",
+          "description": "Contacts and invoice history from BitFaktura, Fakturoid, iDoklad, Excel and more."
         },
         "companies": {
-          "title": "My companies",
+          "title": "My businesses",
           "description": "Several companies under one sign-in, with quick switching."
         },
         "activity": {
@@ -1452,10 +1452,10 @@
       }
     },
     "company": {
-      "title": "Company",
+      "title": "Business details",
       "description": "These details are printed on every invoice as the supplier.",
-      "loadError": "Could not load the company details.",
-      "readOnly": "Only the owner or an admin can change company details.",
+      "loadError": "Could not load your business details.",
+      "readOnly": "Only an owner or admin can change the business details.",
       "sections": {
         "identity": "Identification",
         "identityHint": "Enter the company ID (IČO) and load the rest from ARES.",
@@ -2427,7 +2427,7 @@
       }
     },
     "companies": {
-      "title": "My companies",
+      "title": "My businesses",
       "description": "Every company you have access to. Each one has its own invoices, contacts, settings and subscription.",
       "loadError": "Couldn't load your companies.",
       "active": "Active",
@@ -2439,7 +2439,7 @@
         "viewer": "Read only"
       },
       "add": {
-        "title": "Add another company",
+        "title": "Add another business",
         "description": "Set up another company or sole-trader business. You become its owner and switch to it right away.",
         "hint": "Each company keeps its own data, number series, team and plan. Switch between them in the menu under your avatar. As an owner you can have up to {max} companies; others can invite you to more.",
         "nameLabel": "Your name or company name",
@@ -2857,13 +2857,13 @@
     "moreInfo": "More info",
     "userMenu": {
       "profile": "My profile",
-      "company": "Company",
+      "company": "Business details",
       "team": "Team",
       "exports": "Accountant exports",
       "billing": "Subscription",
       "settings": "Settings",
-      "companies": "Companies",
-      "addCompany": "Add a company",
+      "companies": "Businesses",
+      "addCompany": "Add a business",
       "manageCompanies": "Manage companies",
       "activity": "Change history"
     },
@@ -3974,12 +3974,8 @@
   "welcome": {
     "title": "Welcome to Billanta",
     "subtitle": "Three quick questions and the app shows only what you'll actually use. You can change everything later in Settings.",
-    "companyTitle": "Your company",
-    "companyHint": "Enter your company ID and we'll load the invoice details from ARES. You can skip this.",
-    "icoLabel": "Company ID (IČO)",
-    "icoPlaceholder": "IČO (8 digits)",
-    "aresNotFound": "That IČO isn't in ARES.",
-    "aresFailed": "ARES isn't responding, try again later.",
+    "companyTitle": "Your business",
+    "companyHint": "Type your company name, your own name (sole trader) or IČO and we fill in the invoice details from ARES, the Slovak RPO or foreign registers. You can also skip this.",
     "vatQuestion": "Are you VAT registered?",
     "yes": "Yes",
     "no": "No",
@@ -3991,7 +3987,10 @@
     "skip": "Skip",
     "finish": "Done, let's invoice",
     "saved": "All set",
-    "failed": "Couldn't save"
+    "failed": "Couldn't save",
+    "searchLabel": "Company, name or IČO",
+    "searchPlaceholder": "Company name, your name or IČO",
+    "searchEmpty": "Nothing found. Try another name or IČO, or another register."
   },
   "registry": {
     "label": "Company register",
@@ -5314,7 +5313,7 @@
       "all": "All",
       "invoice": "Documents",
       "contact": "Contacts",
-      "tenant": "Company",
+      "tenant": "Business details",
       "bank_account": "Bank accounts",
       "member": "Team",
       "api_key": "API keys"
