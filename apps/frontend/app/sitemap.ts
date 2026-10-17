@@ -5,6 +5,8 @@ import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { getAllMunicipalities, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
 
+import { fetchAccountants } from '@/lib/accountant-directory';
+
 /**
  * Sitemap for the whole public site, sharded via Next's `generateSitemaps()`.
  *
@@ -22,6 +24,8 @@ import { SITE_URL } from '@/lib/site';
  */
 
 const URLS_PER_SHARD = 2000;
+
+const ACCOUNTANTS_PATH = '/accountants';
 
 interface UrlEntry {
   path: string; // locale-less path, e.g. "/" or "/invoicing/valtice"
@@ -52,6 +56,8 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/create-invoice', changeFrequency: 'monthly', priority: 0.9 },
   { path: '/for-accountants', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/partners', changeFrequency: 'weekly', priority: 0.5 },
+  // Dropped in sitemap() while no accountant is approved (see there).
+  { path: ACCOUNTANTS_PATH, changeFrequency: 'weekly', priority: 0.6 },
   ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/features/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 })),
   // Calculators and guides only in the languages they are published in
   // (lib/public-tools.ts); the sk copy of a Czech-rules page is noindex.
@@ -106,7 +112,13 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
   }
 
   const start = id * URLS_PER_SHARD;
-  const slice = flat.slice(start, start + URLS_PER_SHARD);
+  let slice = flat.slice(start, start + URLS_PER_SHARD);
+  // An empty accountant directory is a thin page: it stays crawlable and
+  // linked, but is not nominated. Filtered after slicing, so the shard
+  // boundaries stay the same whether or not it is listed.
+  if (slice.some((e) => e.path === ACCOUNTANTS_PATH) && (await fetchAccountants()).length === 0) {
+    slice = slice.filter((e) => e.path !== ACCOUNTANTS_PATH);
+  }
 
   return slice.map(({ path, locale, locales, changeFrequency, priority }) => {
     const languages: Record<string, string> = {};

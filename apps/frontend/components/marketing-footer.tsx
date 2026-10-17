@@ -47,7 +47,8 @@ export async function MarketingFooter() {
         ...GUIDES.filter((g) => isPublishedIn(g, locale)).map((g) => ({
           href: `/guides/${g.slug}`,
           label: tTools(`guides.items.${g.key}.name`)
-        }))
+        })),
+        { href: '/accountants', label: tTools('menu.findAccountant') }
       ]
     },
     {
