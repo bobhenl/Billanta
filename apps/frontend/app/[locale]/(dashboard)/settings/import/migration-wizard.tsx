@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, Loader2, Upload, Users } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, Loader2, Upload, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
@@ -25,6 +25,7 @@ type InvoiceImportResult = {
   skipped: InvoiceSkip[];
   preview: { number: string; customer: string; issueDate: string; total: number; currency: string; status: string }[];
   originalPdfs?: { archived: number; missing: number };
+  source?: { invoices: number; contacts: number };
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
@@ -175,6 +176,9 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
 }
 
 /** What the preview was made from, so the confirmation imports the same thing. */
+/** A pasted https://firma.bitfaktura.cz/invoices/ becomes firma.bitfaktura.cz. */
+const bareHost = (value: string) => value.trimStart().replace(/^[a-z]+:\/\//i, '').replace(/^([^/?#]*\.[^/?#]*)[/?#].*$/, '$1');
+
 type ImportRequest = { kind: 'file'; file: File } | { kind: 'bitfaktura'; account: string; apiToken: string };
 
 function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source }) {
@@ -258,7 +262,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               className="h-10 rounded-lg border border-border bg-background px-3 font-normal"
               placeholder={t('step3.api.accountPlaceholder')}
               value={account}
-              onChange={(e) => setAccount(e.target.value)}
+              onChange={(e) => setAccount(bareHost(e.target.value))}
               autoComplete="off"
               maxLength={200}
             />
@@ -298,6 +302,19 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
 
       {preview && (
         <div className="mt-4 space-y-3">
+          {preview.source && (
+            <p className="flex items-start gap-1.5 text-sm">
+              {preview.skipped.length === 0 ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              )}
+              <span>
+                {t('step3.source', preview.source)}{' '}
+                {preview.skipped.length === 0 ? t('step3.sourceAll') : t('step3.sourceSkipped', { count: preview.skipped.length })}
+              </span>
+            </p>
+          )}
           {preview.invoices === 0 ? (
             <Banner tone="warn" title={t('step3.nothing')} />
           ) : (

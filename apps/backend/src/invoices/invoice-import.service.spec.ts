@@ -60,6 +60,7 @@ describe("InvoiceImportService.importFromBitfaktura – original PDFs", () => {
       throw new Error("must not download on a dry run");
     }, true);
     expect(contacts).toEqual([expect.objectContaining({ legalName: "Klient bez faktury" })]);
+    expect(result.source).toEqual({ invoices: 3, contacts: 1 });
     expect(result.originalPdfs).toBeUndefined();
     expect(inserted).toEqual([]);
   });

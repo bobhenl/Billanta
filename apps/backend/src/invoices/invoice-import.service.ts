@@ -34,6 +34,8 @@ export interface InvoiceImportResult {
   preview: { number: string; customer: string; issueDate: string; total: number; currency: string; status: string }[];
   /** API imports only: original PDFs stored as archive attachments, and how many could not be fetched. */
   originalPdfs?: { archived: number; missing: number };
+  /** API imports only: what the source returned, so the preview can show nothing went missing. */
+  source?: { invoices: number; contacts: number };
 }
 
 /** Parallel PDF downloads; low enough not to hammer the source's API. */
@@ -85,6 +87,7 @@ export class InvoiceImportService {
       (invoice, id) => created.push({ invoice, id }),
       mapBitfakturaClients(clients),
     );
+    result.source = { invoices: source.length, contacts: clients.length };
     if (dryRun) return result;
 
     // Archive copy of what the customer received. Not e-mailed again and not
