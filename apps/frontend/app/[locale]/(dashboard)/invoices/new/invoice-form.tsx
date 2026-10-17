@@ -336,7 +336,7 @@ export function InvoiceForm({
   const [saving, startSaving] = useTransition();
   const [savingIntent, setSavingIntent] = useState<'draft' | 'issue' | null>(null);
 
-  const [aiOpen, setAiOpen] = useState(!editing && !template);
+  const [aiOpen, setAiOpen] = useState(false);
   const [copyOpen, setCopyOpen] = useState(false);
   const [aiText, setAiText] = useState('');
   const [aiBusy, startAi] = useTransition();
