@@ -36,6 +36,7 @@ import {
   Users,
   Wallet,
   Timer,
+  X,
   type LucideIcon
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -85,6 +86,8 @@ const DEFAULT_CONFIG: DashboardConfig = {
 
 const FX_CHOICES = ['EUR', 'USD', 'GBP', 'PLN', 'HUF', 'CHF', 'JPY', 'CNY'] as const;
 const DEFAULT_FX = ['EUR', 'USD', 'GBP'];
+/** Matches the backend limit on saved ČNB currencies. */
+const FX_MAX = 12;
 
 /** Where each KPI card leads, its icon and tone. */
 const CARD_META: Record<KpiCard, { href: string; icon: LucideIcon; tone: string }> = {
@@ -457,6 +460,22 @@ function CustomizeModal({
     showFxRates: config.showFxRates ?? true
   });
   const [fx, setFx] = useState<string[]>(config.fxCurrencies ?? DEFAULT_FX);
+  // Every currency ČNB publishes; the short fallback list is used when cnb.cz is unreachable.
+  const [fxList, setFxList] = useState<{ code: string; country: string; name: string }[] | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/dashboard/fx-rates/currencies')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json: { currencies?: { code: string; country: string; name: string }[] | null } | null) => alive && setFxList(json?.currencies ?? null))
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const fxChoices = fxList
+    ? [...fxList].sort((a, b) => a.code.localeCompare(b.code)).map((c) => ({ code: c.code, label: `${c.name} (${c.country})` }))
+    : FX_CHOICES.map((code) => ({ code, label: '' }));
+  const fxNames: Record<string, string> = Object.fromEntries(fxChoices.map((c) => [c.code, c.label]));
   const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, vatPayer));
   const [taxAmounts, setTaxAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(Object.entries(config.taxAmounts ?? {}).map(([k, v]) => [k, String(v)]))
@@ -590,18 +609,40 @@ function CustomizeModal({
           <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
             <InfoHint hint={t('fxRates.customizeHint')}>{t('fxRates.customizeTitle')}</InfoHint>
           </h3>
-          <div className="mt-2 flex flex-wrap gap-2 text-sm">
-            {FX_CHOICES.map((code) => (
-              <label key={code} className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border px-2 py-1">
-                <input
-                  type="checkbox"
-                  className={check}
-                  checked={fx.includes(code)}
-                  onChange={(e) => setFx((prev) => (e.target.checked ? FX_CHOICES.filter((c) => c === code || prev.includes(c)) : prev.filter((c) => c !== code)))}
-                />
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+            {fx.map((code) => (
+              <span key={code} className="flex items-center gap-1 rounded-lg border border-border px-2 py-1" title={fxNames[code]}>
                 {code}
-              </label>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-destructive"
+                  aria-label={t('fxRates.remove', { code })}
+                  onClick={() => setFx((prev) => prev.filter((c) => c !== code))}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
             ))}
+            {fx.length < FX_MAX ? (
+              <select
+                aria-label={t('fxRates.add')}
+                className="rounded-lg border border-border bg-background px-2 py-1 text-sm"
+                value=""
+                onChange={(e) => e.target.value && setFx((prev) => (prev.includes(e.target.value) ? prev : [...prev, e.target.value]))}
+              >
+                <option value="">{t('fxRates.add')}</option>
+                {fxChoices
+                  .filter((c) => !fx.includes(c.code))
+                  .map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.code}
+                      {c.label ? ` – ${c.label}` : ''}
+                    </option>
+                  ))}
+              </select>
+            ) : (
+              <span className="text-xs text-muted-foreground">{t('fxRates.limit', { max: FX_MAX })}</span>
+            )}
           </div>
         </>
       )}
@@ -780,7 +821,6 @@ interface FxRow {
   weekAgo: number | null;
 }
 
-/** Today's ČNB rates (CZK per unit) with the change against a week ago. */
 /** This week, unbilled work and the running timer; hidden until there's something to show. */
 function TimeCard({ time }: { time: TimeSummary }) {
   const t = useTranslations('time.dashboard');
@@ -835,49 +875,121 @@ function TimeCard({ time }: { time: TimeSummary }) {
   );
 }
 
+/** Local calendar day as YYYY-MM-DD. */
+function isoToday(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** ČNB rates (CZK per unit) for a chosen day, the change against a week before and a small CZK converter. */
 function FxRates({ currencies }: { currencies: string[] }) {
   const t = useTranslations('dashboard.fxRates');
   const locale = useLocale();
   const key = currencies.join(',');
-  const [rows, setRows] = useState<FxRow[] | null | undefined>(undefined);
+  // Empty = today; set after mount so the server and client render the same.
+  const [day, setDay] = useState('');
+  const [today, setToday] = useState('');
+  const [data, setData] = useState<{ rows: FxRow[]; publishedDate: string | null } | null | undefined>(undefined);
+  const [amount, setAmount] = useState('100');
+  const [from, setFrom] = useState('');
+  useEffect(() => setToday(isoToday()), []);
   useEffect(() => {
     if (!key) return;
     let alive = true;
-    fetch(`/api/dashboard/fx-rates?currencies=${key}`)
+    const query = new URLSearchParams({ currencies: key });
+    if (day) query.set('date', day);
+    fetch(`/api/dashboard/fx-rates?${query}`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((json: { rates?: FxRow[] } | null) => alive && setRows(json?.rates?.filter((r) => r.rate != null) ?? null))
-      .catch(() => alive && setRows(null));
+      .then((json: { rates?: FxRow[]; publishedDate?: string | null } | null) =>
+        alive && setData(json?.rates ? { rows: json.rates.filter((r) => r.rate != null), publishedDate: json.publishedDate ?? null } : null)
+      )
+      .catch(() => alive && setData(null));
     return () => {
       alive = false;
     };
-  }, [key]);
-  if (!key || rows === null || (rows && rows.length === 0)) return null;
+  }, [key, day]);
+  // Hide the widget only when today's rates can't be loaded at all; a bad past day shows a message instead.
+  if (!key || (!day && (data === null || (data && data.rows.length === 0)))) return null;
   const num = new Intl.NumberFormat(locale, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
   const pct = new Intl.NumberFormat(locale, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+  const rows = data?.rows ?? [];
+  const requested = day || today;
+  const published = data?.publishedDate ?? null;
+  const fromRow = rows.find((r) => r.code === from) ?? rows[0];
+  const parsedAmount = Number(amount.replace(/\s/g, '').replace(',', '.'));
+  const converted = fromRow?.rate != null && amount.trim() !== '' && Number.isFinite(parsedAmount) ? parsedAmount * fromRow.rate : null;
+  const control = 'rounded-lg border border-border bg-background px-2 py-1 text-sm';
   return (
     <section className="mt-6 rounded-xl border border-border bg-card p-4">
-      <InfoHint hint={t('hint')}>
-        <h2 className="flex items-center gap-2 font-bold">
-          <Landmark className="h-4 w-4 text-primary" />
-          {t('title')}
-        </h2>
-      </InfoHint>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {(rows ?? currencies.map((code) => ({ code, rate: null, weekAgo: null }))).map((row) => {
-          const change = row.rate != null && row.weekAgo ? row.rate / row.weekAgo - 1 : null;
-          return (
-            <div key={row.code} className="rounded-lg bg-secondary/60 px-3 py-2">
-              <div className="text-xs font-semibold text-muted-foreground">1 {row.code}</div>
-              <div className="text-lg font-bold tabular-nums">{row.rate != null ? `${num.format(row.rate)} Kč` : '…'}</div>
-              {change != null && (
-                <div className={cn('text-xs font-semibold tabular-nums', change > 0 ? 'text-destructive' : change < 0 ? 'text-success' : 'text-muted-foreground')} title={t('weekChange')}>
-                  {pct.format(change)} {t('weekShort')}
-                </div>
-              )}
-            </div>
-          );
-        })}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <InfoHint hint={t('hint')}>
+          <h2 className="flex items-center gap-2 font-bold">
+            <Landmark className="h-4 w-4 text-primary" />
+            {t('title')}
+          </h2>
+        </InfoHint>
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">{t('date')}</span>
+          <input
+            type="date"
+            className={control}
+            value={requested}
+            min="1991-01-01"
+            max={today || undefined}
+            onChange={(e) => setDay(e.target.value && e.target.value < today ? e.target.value : '')}
+          />
+        </label>
       </div>
+      {data === null || (data && rows.length === 0) ? (
+        <p className="mt-3 text-sm text-muted-foreground">{t('unavailable')}</p>
+      ) : (
+        <>
+          {published && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              {t('publishedOn', { date: formatDate(published, locale) ?? published })}
+              {requested && published !== requested && <> – {t('fallbackNote')}</>}
+            </p>
+          )}
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {(data ? rows : currencies.map((code) => ({ code, rate: null, weekAgo: null }))).map((row) => {
+              const change = row.rate != null && row.weekAgo ? row.rate / row.weekAgo - 1 : null;
+              return (
+                <div key={row.code} className="rounded-lg bg-secondary/60 px-3 py-2">
+                  <div className="text-xs font-semibold text-muted-foreground">1 {row.code}</div>
+                  <div className="text-lg font-bold tabular-nums">{row.rate != null ? `${num.format(row.rate)} Kč` : '…'}</div>
+                  {change != null && (
+                    <div className={cn('text-xs font-semibold tabular-nums', change > 0 ? 'text-destructive' : change < 0 ? 'text-success' : 'text-muted-foreground')} title={t('weekChange')}>
+                      {pct.format(change)} {t('weekShort')}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {fromRow && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <span className="font-semibold">{t('converter')}</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                aria-label={t('amount')}
+                className={cn(control, 'w-28 tabular-nums')}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+              <select aria-label={t('currency')} className={control} value={fromRow.code} onChange={(e) => setFrom(e.target.value)}>
+                {rows.map((r) => (
+                  <option key={r.code} value={r.code}>
+                    {r.code}
+                  </option>
+                ))}
+              </select>
+              <span className="text-muted-foreground">=</span>
+              <span className="font-bold tabular-nums">{converted != null ? formatMoney(converted, 'CZK', locale) : '–'}</span>
+            </div>
+          )}
+        </>
+      )}
       <p className="mt-2 text-xs text-muted-foreground">
         {t('source')}{' '}
         <a href="https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/" target="_blank" rel="noreferrer" className="font-semibold text-primary hover:underline">
