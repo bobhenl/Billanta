@@ -19,14 +19,23 @@ export function ogImage(locale: string, path: string, alt: string) {
  * Canonical + hreflang for one locale-less path (e.g. "/" or "/pricing").
  * Every public page should emit both in its <head> — the sitemap carries
  * the same alternates, but Google recommends the in-page tags as well.
+ *
+ * `locales` narrows the alternates for a page published in some languages
+ * only (see lib/public-tools.ts): hreflang must never point at a copy that
+ * is noindex. x-default stays the default locale when it is among them.
  */
-export function localeAlternates(locale: string, path: string): NonNullable<Metadata['alternates']> {
+export function localeAlternates(
+  locale: string,
+  path: string,
+  locales: readonly string[] = routing.locales
+): NonNullable<Metadata['alternates']> {
   const suffix = path === '/' ? '' : path;
   const languages: Record<string, string> = {};
-  for (const l of routing.locales) {
+  for (const l of locales) {
     languages[l] = `${SITE_URL}/${l}${suffix}`;
   }
-  languages['x-default'] = `${SITE_URL}/${routing.defaultLocale}${suffix}`;
+  const fallback = locales.includes(routing.defaultLocale) ? routing.defaultLocale : locales[0];
+  languages['x-default'] = `${SITE_URL}/${fallback}${suffix}`;
   return { canonical: `${SITE_URL}/${locale}${suffix}`, languages };
 }
 
@@ -39,15 +48,18 @@ export function publicPageMetadata({
   locale,
   path,
   title,
-  description
+  description,
+  locales
 }: {
   locale: string;
   path: string;
+  /** Languages the page is published in (default: all), for hreflang. */
+  locales?: readonly string[];
   /** As shown in the tab (the layout appends the brand); `absolute` skips that. */
   title?: string | { absolute: string };
   description: string;
 }): Metadata {
-  const alternates = localeAlternates(locale, path);
+  const alternates = localeAlternates(locale, path, locales);
   const social = typeof title === 'string' ? title : title?.absolute;
   const image = ogImage(locale, path, social ?? SITE_NAME);
   return {

@@ -5,6 +5,7 @@ import sk from '@/messages/sk.json';
 import { routing } from '@/i18n/routing';
 import { getFeaturePage } from '@/lib/feature-pages';
 import { getMunicipalityBySlug } from '@/lib/municipalities';
+import { getCalculator, getGuide, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
 
 /**
  * What the Open Graph card of one public page says (`/og/<locale>/<path>`).
@@ -21,10 +22,10 @@ export interface OgCard {
 const MESSAGES = { cs, sk, en } as const;
 type Locale = keyof typeof MESSAGES;
 
-const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool', string>> = {
-  cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace' },
-  sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie' },
-  en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up' }
+const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides', string>> = {
+  cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace', calculators: 'Kalkulačky', guides: 'Návody' },
+  sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie', calculators: 'Kalkulačky', guides: 'Návody' },
+  en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up', calculators: 'Calculators', guides: 'Guides' }
 };
 
 const LEGAL: Record<string, string> = { terms: 'legal.terms', privacy: 'legal.privacy', dpa: 'legal.dpa', cookies: 'cookies.page' };
@@ -61,6 +62,17 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
       subtitle: t(`featurePages.items.${feature.key}.description`),
       section: s.features
     };
+  }
+  // Calculators and guides draw a card only where they are published.
+  if (first === 'kalkulacky') {
+    const c = getCalculator(second);
+    if (!c || !isPublishedIn(c, l)) return null;
+    return { title: t('tools.calculators.items.' + c.key + '.name'), subtitle: t('tools.calculators.items.' + c.key + '.description'), section: s.calculators };
+  }
+  if (first === 'navody') {
+    const g = getGuide(second);
+    if (!g || !isPublishedIn(g, l)) return null;
+    return { title: t('tools.guides.items.' + g.key + '.name'), subtitle: t('tools.guides.items.' + g.key + '.description'), section: s.guides };
   }
   if (first === 'legal' && LEGAL[second]) {
     return { title: t(`${LEGAL[second]}.title`), section: s.legal };

@@ -1,18 +1,22 @@
 'use client';
 
-import { BadgePercent, CircleHelp, Home, LogIn, Plus, Sparkles } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { BadgePercent, BookOpenCheck, Calculator, CircleHelp, Home, LogIn, Plus, Sparkles } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
+import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 
 /**
  * Phone tab bar for the public site, in VoxelRank's order: home, a
  * destination, the one accent CTA in the middle, "More", and the account
  * slot. Language and theme stay in the phone header, as on VoxelRank;
- * secondary pages (about, cities, legal) are footer-only.
+ * secondary pages (about, cities, legal) are footer-only. "More" carries
+ * the same pages as the header's Resources dropdown.
  */
 export function MarketingTabBar() {
   const t = useTranslations('marketing.nav');
   const tMobile = useTranslations('mobile');
+  const tMenu = useTranslations('tools.menu');
+  const locale = useLocale();
 
   return (
     <MobileTabBar
@@ -27,6 +31,8 @@ export function MarketingTabBar() {
       panelTitle={tMobile('explore')}
       links={[
         { key: 'features', href: '/funkce', label: t('features'), icon: Sparkles },
+        { key: 'calculators', href: '/kalkulacky', label: tMenu('calculators'), icon: Calculator },
+        ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ key: 'guides', href: '/navody', label: tMenu('guides'), icon: BookOpenCheck }] : []),
         { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp }
       ]}
     />

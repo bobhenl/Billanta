@@ -6,25 +6,12 @@
  * The rate list is fetched once per day and cached in memory. Lookups never
  * throw: a network failure returns null and callers decide what to do.
  */
-const CNB_URL = "https://www.cnb.cz/cs/financni_trhy/devizovy_trh/kurzy_devizoveho_trhu/denni_kurz.txt";
+import { CNB_DAILY_URL as CNB_URL, cnbDate, parseCnbRates } from "@faktur/cz-compliance";
+
 const cache = new Map<string, Promise<Map<string, number> | null>>();
 
-function cnbDate(d: Date): string {
-  return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
-}
-
-/** Parses the pipe-separated list: `země|měna|množství|kód|kurz` after two header lines. */
-export function parseCnbRates(text: string): Map<string, number> {
-  const rates = new Map<string, number>();
-  for (const line of text.split("\n").slice(2)) {
-    const parts = line.trim().split("|");
-    if (parts.length < 5) continue;
-    const amount = Number(parts[2]!.replace(",", "."));
-    const rate = Number(parts[4]!.replace(",", "."));
-    if (amount > 0 && Number.isFinite(rate)) rates.set(parts[3]!, rate / amount);
-  }
-  return rates;
-}
+// URL, date format and parser are shared with the public converter page.
+export { parseCnbRates };
 
 async function loadDay(key: string): Promise<Map<string, number> | null> {
   try {

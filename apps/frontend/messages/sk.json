@@ -1675,7 +1675,10 @@
         "missingDic": "Doplňte DIČ firmy v Nastaveniach – bez neho priznanie nemožno vytvoriť.",
         "rateUnavailable": "Kurz ČNB sa nepodarilo načítať. Skúste to o chvíľu.",
         "failed": "Súbor sa nepodarilo vytvoriť.",
-        "disclaimer": "Súbor pred podaním skontrolujte v EPO a doplňte finančný úrad. Plnenia do EÚ sa vykazujú ako služby (kód 3); doklady bez DIČ dodávateľa spadajú do B.3."
+        "disclaimer": "Súbor pred podaním skontrolujte v EPO a doplňte finančný úrad. Plnenia do EÚ sa vykazujú ako služby (kód 3); doklady bez DIČ dodávateľa spadajú do B.3.",
+        "formVersions": "Export vytvára XML vo verziách DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidlá a verzie formulárov sme naposledy overili {date}.",
+        "officialLink": "Aktuálne informácie na webe českej Finančnej správy",
+        "guideLink": "Návod na podanie (CZ)"
       },
       "annual": {
         "title": "Ročný odhad dane a poistenia (OSVČ, CZ)",
@@ -5193,7 +5196,9 @@
       "page": "Stránka",
       "feature": "Funkcia",
       "faq": "Časté otázky",
-      "city": "Mesto / obec"
+      "city": "Mesto / obec",
+      "calculator": "Kalkulačky",
+      "guide": "Návody"
     },
     "suggest": {
       "isdoc": "ISDOC",
@@ -5202,7 +5207,8 @@
       "ares": "ARES",
       "banka": "banka",
       "dobropis": "dobropis"
-    }
+    },
+    "keyboardHint": "↑ ↓ vybrať · Enter otvoriť · Esc zavrieť"
   },
   "glossary": {
     "legendLabel": "Čo znamenajú štítky a farby",
@@ -5554,5 +5560,162 @@
     "pricingCta": "Cenník",
     "signupCta": "Začať zadarmo",
     "notStated": "— = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)"
+  },
+  "tools": {
+    "menu": {
+      "resources": "Zdroje",
+      "calculators": "Kalkulačky",
+      "calculatorsHint": "DPH, odvody a kurzy zadarmo",
+      "guides": "Návody",
+      "guidesHint": "Ako podať DPH a hlásenia",
+      "compare": "Porovnanie s konkurenciou"
+    },
+    "search": {
+      "showAll": "Zobraziť všetky výsledky pre „{query}“",
+      "pages": "Stránky",
+      "close": "Zavrieť vyhľadávanie",
+      "noResults": "Rýchle návrhy nič nenašli. Skúste iné slovo alebo otvorte celé výsledky.",
+      "slashHint": "otvorí vyhľadávanie"
+    },
+    "common": {
+      "disclaimerTitle": "Orientačný výpočet",
+      "disclaimer": "Výsledok je len orientačný a nenahrádza účtovníka ani daňového poradcu. Než podľa neho niečo podáte alebo zaplatíte, overte si to u účtovníka alebo na webe finančnej správy, Sociálnej poisťovne či vašej zdravotnej poisťovne.",
+      "validFor": "Sumy platia pre rok {year}.",
+      "ratesSince": "Sadzby platia od {date}.",
+      "ctaTitle": "Fakturujete? Billanta to spočíta z vašich dokladov",
+      "ctaText": "V aplikácii uvidíte DPH, minimálne preddavky a prehľad príjmov rovno z vystavených faktúr a výdavkov.",
+      "ctaButton": "Vyskúšať zadarmo",
+      "ctaNote": "Bez platobnej karty. Základný tarif je zadarmo.",
+      "related": "Ďalšie kalkulačky",
+      "allCalculators": "Všetky kalkulačky",
+      "relatedGuides": "Návody",
+      "allGuides": "Všetky návody",
+      "howTitle": "Ako sa to počíta",
+      "resultTitle": "Výsledok",
+      "perYear": "za rok",
+      "perMonth": "mesačne",
+      "czOnlyTitle": "Táto stránka je o českých pravidlách",
+      "czOnlyText": "„{name}“ sa týka českých predpisov. Na Slovensku platia iné sadzby, lehoty aj formuláre, a preto slovenskú verziu neponúkame, aby vás nepomýlila.",
+      "czOnlyCs": "Otvoriť českú verziu",
+      "czOnlySk": "Slovenské pravidlá: Finančná správa SR",
+      "czTag": "české pravidlá",
+      "lastChecked": "Informácie sme naposledy overili {date}.",
+      "officialSource": "Záväzné informácie a formuláre nájdete na webe finančnej správy",
+      "guideDisclaimer": "Návod zhŕňa základné pravidlá a nenahrádza účtovníka ani daňového poradcu.",
+      "updated": "Aktualizované"
+    },
+    "calculators": {
+      "indexTitle": "Kalkulačky pre podnikateľov",
+      "indexDescription": "Bezplatné kalkulačky pre živnostníkov a firmy: DPH so slovenskými aj českými sadzbami, minimálne preddavky na odvody a kurzy ČNB. Bez registrácie.",
+      "indexLead": "Rýchle orientačné výpočty, ktoré nepotrebujú žiadne vaše údaje. Čísla zadáte ručne a nič sa neukladá. Kalkulačky označené „české pravidlá“ platia len pre Česko.",
+      "items": {
+        "osvc": {
+          "name": "Daň a poistenie OSVČ (Česko)",
+          "title": "Kalkulačka dane a poistenia OSVČ (Česko)",
+          "description": "Orientačná daň z príjmov a odvody českej OSVČ. Platí len podľa českých pravidiel."
+        },
+        "flatTax": {
+          "name": "Paušálna daň (Česko)",
+          "title": "Kalkulačka paušálnej dane (Česko)",
+          "description": "Porovnanie českej paušálnej dane s bežným režimom. Platí len podľa českých pravidiel."
+        },
+        "vat": {
+          "name": "Kalkulačka DPH",
+          "title": "Kalkulačka DPH",
+          "description": "Pripočítajte DPH k cene bez dane alebo ju vypočítajte z ceny s DPH. Slovenské aj české sadzby.",
+          "lead": "Zadajte sumu a sadzbu. Kalkulačka spočíta základ, DPH aj cenu s daňou, oboma smermi.",
+          "keywords": "dph sadzba 23 19 5 výpočet dane z ceny základ dane s dph bez dph",
+          "fields": {
+            "country": "Krajina",
+            "rate": "Sadzba DPH",
+            "mode": "Zadávam",
+            "fromBase": "Cenu bez DPH",
+            "fromGross": "Cenu s DPH",
+            "amount": "Suma"
+          },
+          "result": {
+            "base": "Základ dane",
+            "vat": "DPH",
+            "gross": "Cena s DPH"
+          },
+          "how": [
+            "Z ceny bez DPH: DPH = základ × sadzba / 100, zaokrúhlené na centy.",
+            "Z ceny s DPH: základ = cena / (1 + sadzba / 100), DPH je rozdiel.",
+            "Na faktúre sa DPH počíta za každú sadzbu zvlášť."
+          ],
+          "countries": {
+            "CZ": "Česko",
+            "SK": "Slovensko"
+          }
+        },
+        "minimums": {
+          "name": "Minimálne preddavky SZČO",
+          "title": "Minimálne preddavky na odvody SZČO a OSVČ",
+          "description": "Koľko mesačne najmenej zaplatí živnostník na sociálne a zdravotné poistenie na Slovensku a v Česku.",
+          "lead": "Prehľad minimálnych mesačných preddavkov. Ak tento rok začínate alebo vám vyšiel nízky zisk, platíte práve tieto sumy.",
+          "keywords": "minimálny preddavok sociálne zdravotné poistenie szčo živnostník sociálna poisťovňa",
+          "cz": "Česko (Kč mesačne)",
+          "sk": "Slovensko (€ mesačne)",
+          "period": "Obdobie",
+          "from": "od {date}",
+          "kinds": {
+            "health": "Zdravotné poistenie",
+            "social": "Sociálne poistenie",
+            "flat_tax": "Česká paušálna daň, 1. pásmo"
+          },
+          "notesTitle": "Kedy sa platí",
+          "notesCz": [
+            "V Česku sa sociálne poistenie (ČSSZ) platí za každý mesiac najneskôr jeho posledný deň, zdravotné do 8. dňa nasledujúceho mesiaca a paušálna daň do 20. dňa daného mesiaca."
+          ],
+          "notesSk": [
+            "Na Slovensku sa poistné platí do 8. dňa nasledujúceho mesiaca: sociálne Sociálnej poisťovni a zdravotné vašej zdravotnej poisťovni."
+          ],
+          "none": "Pre tento rok zatiaľ nemáme údaje."
+        },
+        "fx": {
+          "name": "Prevodník kurzov ČNB",
+          "title": "Kurzy ČNB a prevodník mien",
+          "description": "Aktuálne kurzy Českej národnej banky a prevod medzi českou korunou a cudzou menou, napríklad pre faktúry českým odberateľom.",
+          "lead": "ČNB vyhlasuje kurzy každý pracovný deň po 14:30. V Česku sa podľa nich prepočítavajú faktúry v cudzej mene pre DPH. Na Slovensku sa pre DPH používa referenčný kurz ECB.",
+          "keywords": "kurz čnb česká koruna czk eur prepočet meny faktúra",
+          "listDate": "Kurzový lístok ČNB zo dňa {date}",
+          "unavailable": "Kurzy ČNB sa teraz nepodarilo načítať. Skúste to neskôr alebo ich nájdete priamo na webe ČNB.",
+          "fields": {
+            "amount": "Suma",
+            "currency": "Mena",
+            "direction": "Smer",
+            "toCzk": "Cudzia mena → Kč",
+            "fromCzk": "Kč → cudzia mena"
+          },
+          "rate": "Kurz: 1 {code} = {rate} Kč",
+          "tableTitle": "Kurzový lístok",
+          "code": "Kód",
+          "perUnit": "Kč za 1 jednotku",
+          "how": [
+            "Pre českú DPH sa faktúra v cudzej mene prepočíta kurzom ČNB platným ku dňu, keď vznikla povinnosť priznať daň.",
+            "Kurz vyhlásený v pracovný deň po 14:30 platí do vyhlásenia ďalšieho, cez víkend a sviatky teda platí posledný vyhlásený.",
+            "Slovenskí platitelia DPH používajú referenčný kurz ECB, nie kurz ČNB."
+          ],
+          "source": "Zdroj: Česká národná banka"
+        }
+      }
+    },
+    "guides": {
+      "indexTitle": "Návody k českej DPH",
+      "indexDescription": "Návody k českej DPH: priznanie, kontrolné a súhrnné hlásenie, identifikovaná osoba.",
+      "indexLead": "Návody sa týkajú českej DPH.",
+      "items": {
+        "vatFiling": {
+          "name": "Priznanie k DPH, kontrolné a súhrnné hlásenie (Česko)",
+          "title": "Ako podať priznanie k DPH, kontrolné a súhrnné hlásenie v Česku",
+          "description": "Návod k českej DPH. Platí len podľa českých pravidiel."
+        },
+        "identified": {
+          "name": "Identifikovaná osoba k DPH (Česko)",
+          "title": "Identifikovaná osoba k DPH v Česku",
+          "description": "Návod k českej DPH. Platí len podľa českých pravidiel."
+        }
+      }
+    }
   }
 }

@@ -1,4 +1,5 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
@@ -14,6 +15,9 @@ export async function MarketingFooter() {
   const t = await getTranslations('marketing.footer');
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
+  const tTools = await getTranslations('tools');
+  const tMenu = await getTranslations('tools.menu');
+  const locale = await getLocale();
   const year = new Date().getFullYear();
 
   const columns = [
@@ -25,6 +29,21 @@ export async function MarketingFooter() {
         { href: '/pricing', label: t('product.pricing') },
         { href: '/srovnani', label: t('product.compare') },
         { href: '/#faq', label: t('product.faq') }
+      ]
+    },
+    {
+      // Only what is published in this language (lib/public-tools.ts).
+      title: tMenu('resources'),
+      links: [
+        { href: '/kalkulacky', label: tMenu('calculators') },
+        ...CALCULATORS.filter((c) => isPublishedIn(c, locale)).map((c) => ({
+          href: `/kalkulacky/${c.slug}`,
+          label: tTools(`calculators.items.${c.key}.name`)
+        })),
+        ...GUIDES.filter((g) => isPublishedIn(g, locale)).map((g) => ({
+          href: `/navody/${g.slug}`,
+          label: tTools(`guides.items.${g.key}.name`)
+        }))
       ]
     },
     {
@@ -55,7 +74,7 @@ export async function MarketingFooter() {
   return (
     <footer className="border-t border-border bg-card/40">
       <div className="container py-10">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(5,1fr)]">
           <div className="col-span-2 max-w-xs sm:col-span-3 lg:col-span-1">
             <p className="flex items-center gap-2 text-base font-bold tracking-tight">
               <BrandMark />

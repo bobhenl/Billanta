@@ -2,12 +2,13 @@ import cs from '@/messages/cs.json';
 import en from '@/messages/en.json';
 import sk from '@/messages/sk.json';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
 import { getAllMunicipalities, isDistrictSeat, municipalityLocale, type Municipality } from '@/lib/municipalities';
 
 type Messages = typeof cs;
 const MESSAGES: Record<string, Messages> = { cs, sk: sk as Messages, en: en as Messages };
 
-export type SearchKind = 'page' | 'feature' | 'faq' | 'city';
+export type SearchKind = 'page' | 'feature' | 'calculator' | 'guide' | 'faq' | 'city';
 
 export interface SearchHit {
   kind: SearchKind;
@@ -36,6 +37,7 @@ function entry(kind: SearchKind, href: string, title: string, snippet: string, e
 
 type FeatureText = { name: string; title: string; description: string; lead: string; points: string[]; faq: { q: string; a: string }[] };
 type FaqText = { q: string; a: string };
+type ToolText = { name: string; description: string; lead?: string; keywords?: string };
 
 const INDEX = new Map<string, Entry[]>();
 
@@ -65,6 +67,22 @@ function indexFor(locale: string): Entry[] {
     for (const item of text.faq ?? []) entries.push(entry('faq', href, item.q, item.a));
   }
   for (const item of Object.values(homeFaq)) entries.push(entry('faq', '/#faq', item.q, item.a));
+
+  // Calculators and guides, only in the languages they are published in
+  // (lib/public-tools.ts): a Czech-rules page is not offered to Slovak readers.
+  const tools = m.tools as unknown as { calculators: { indexTitle: string; indexDescription: string; items: Record<string, ToolText> }; guides: { indexTitle: string; indexDescription: string; items: Record<string, ToolText> } };
+  entries.push(entry('page', '/kalkulacky', tools.calculators.indexTitle, tools.calculators.indexDescription));
+  for (const c of CALCULATORS) {
+    const text = tools.calculators.items[c.key];
+    if (!text || !isPublishedIn(c, locale)) continue;
+    entries.push(entry('calculator', `/kalkulacky/${c.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
+  }
+  if (GUIDES_HUB_LOCALES.includes(locale)) entries.push(entry('page', '/navody', tools.guides.indexTitle, tools.guides.indexDescription));
+  for (const g of GUIDES) {
+    const text = tools.guides.items[g.key];
+    if (!text || !isPublishedIn(g, locale)) continue;
+    entries.push(entry('guide', `/navody/${g.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
+  }
   INDEX.set(locale, entries);
   return entries;
 }
@@ -91,7 +109,7 @@ export function searchSite(locale: string, query: string, limit = 30): SearchHit
         break;
       }
     }
-    if (all) scored.push({ hit: { kind: e.kind, href: e.href, title: e.title, snippet: e.snippet }, score: score + (e.kind === 'feature' ? 1 : 0) });
+    if (all) scored.push({ hit: { kind: e.kind, href: e.href, title: e.title, snippet: e.snippet }, score: score + (e.kind === 'feature' || e.kind === 'calculator' || e.kind === 'guide' ? 1 : 0) });
   }
 
   const cities = searchMunicipalities(words.join(' '), 8, locale).map(

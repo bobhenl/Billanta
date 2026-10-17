@@ -1,24 +1,36 @@
-import { getTranslations } from 'next-intl/server';
-import { Search } from 'lucide-react';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { MarketingNavMenu } from '@/components/marketing-nav-menu';
+import { MarketingSearch } from '@/components/marketing-search';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 
 /**
  * Header for the public site. Separate from the dashboard shell — the two
  * audiences need different links. Only the pages a visitor is here for sit
- * in the header; secondary ones (about, cities, legal) live in the footer. On phones it shrinks to brand + language
- * + theme; navigation moves to `MarketingTabBar` at the bottom.
+ * in the header; the secondary ones (FAQ, calculators, guides, comparison)
+ * share one "Resources" dropdown so the row does not grow, and the rest
+ * (about, cities, legal) live in the footer. On phones it shrinks to brand +
+ * search + language + theme; navigation moves to `MarketingTabBar` at the
+ * bottom.
  */
 export async function MarketingNavbar() {
   const t = await getTranslations('marketing.nav');
   const tApp = await getTranslations('app');
+  const tMenu = await getTranslations('tools.menu');
+  const locale = await getLocale();
 
   const links = [
     { href: '/funkce', label: t('features') },
-    { href: '/pricing', label: t('pricing') },
-    { href: '/#faq', label: t('faq') }
+    { href: '/pricing', label: t('pricing') }
+  ];
+  const resources = [
+    { href: '/kalkulacky', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
+    ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/navody', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
+    { href: '/#faq', label: t('faq') },
+    { href: '/srovnani', label: tMenu('compare') }
   ];
 
   return (
@@ -39,17 +51,11 @@ export async function MarketingNavbar() {
               {label}
             </Link>
           ))}
+          <MarketingNavMenu label={tMenu('resources')} items={resources} />
         </nav>
 
         <div className="flex items-center gap-1.5">
-          <Link
-            href="/hledat"
-            aria-label={t('search')}
-            title={t('search')}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <Search className="h-4 w-4" aria-hidden="true" />
-          </Link>
+          <MarketingSearch />
           <LanguageSwitcher />
           <ThemeToggle />
           <Link

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { getAllMunicipalities, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
 
@@ -49,7 +50,13 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/faktury-pro', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/funkce', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/vytvorit-fakturu', changeFrequency: 'monthly', priority: 0.9 },
-  ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/funkce/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 }))
+  ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/funkce/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 })),
+  // Calculators and guides only in the languages they are published in
+  // (lib/public-tools.ts); the sk copy of a Czech-rules page is noindex.
+  { path: '/kalkulacky', changeFrequency: 'monthly', priority: 0.7 },
+  ...CALCULATORS.map((c): UrlEntry => ({ path: '/kalkulacky/' + c.slug, changeFrequency: 'monthly', priority: 0.7, locales: c.locales })),
+  { path: '/navody', changeFrequency: 'monthly', priority: 0.6, locales: GUIDES_HUB_LOCALES },
+  ...GUIDES.map((g): UrlEntry => ({ path: '/navody/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales }))
 ];
 
 function buildAllEntries(): UrlEntry[] {

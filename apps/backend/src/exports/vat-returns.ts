@@ -15,6 +15,8 @@
  * e.g. the tax office (`c_ufo`) is picked there, and EU supplies are all
  * reported as services (code 3), since documents don't say goods/services.
  */
+// Shared with the in-app export box and the public guide ("form version" line).
+import { VAT_FORM_VERSIONS } from "@faktur/cz-compliance";
 
 export interface VatSubmitter {
   /** Full DIČ incl. the CZ prefix. */
@@ -199,7 +201,7 @@ export function generateDphDp3(input: {
   };
 
   return `${header("41.6.1")}
-<DPHDP3 verzePis="01.02">
+<DPHDP3 verzePis="${VAT_FORM_VERSIONS.DPHDP3}">
   <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" dapdph_forma="B" typ_platce="P" trans="A" />
   ${vetaP(input.submitter)}${veta("Veta1", [
     ["obrat23", obrat23],
@@ -295,7 +297,7 @@ export function generateDphKh1(input: {
   ];
 
   return `${header("41.16.3")}
-<DPHKH1 verzePis="03.01">
+<DPHKH1 verzePis="${VAT_FORM_VERSIONS.DPHKH1}">
   <VetaD k_uladis="DPH" dokument="KH1" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" khdph_forma="B" />
   ${vetaP(input.submitter)}
   ${rows.join("\n  ")}
@@ -332,7 +334,7 @@ export function generateDphShv(input: {
       `<VetaR por_c_stran="1" c_rad="${i + 1}" k_stat="${r.country}" c_vat="${xmlAttr(r.vat)}" k_pln_eu="3" pln_pocet="${r.count}" pln_hodnota="${int(r.value)}" />`,
   );
   return `${header("45.5.1")}
-<DPHSHV verzePis="02.01">
+<DPHSHV verzePis="${VAT_FORM_VERSIONS.DPHSHV}">
   <VetaD k_uladis="DPH" dokument="SHV" rok="${input.period.year}" ${periodAttr(input.period)} shvies_forma="R" d_poddp="${czDate(input.today ?? new Date())}" />
   ${vetaP(input.submitter)}
   ${vetaR.join("\n  ")}

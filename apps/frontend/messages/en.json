@@ -1675,7 +1675,10 @@
         "missingDic": "Add your company's VAT ID in Settings – filings need it.",
         "rateUnavailable": "The ČNB exchange rate could not be loaded. Try again shortly.",
         "failed": "The file could not be generated.",
-        "disclaimer": "Review the file in EPO before filing and pick the tax office there. EU supplies are reported as services (code 3); documents without a supplier VAT ID go to B.3."
+        "disclaimer": "Review the file in EPO before filing and pick the tax office there. EU supplies are reported as services (code 3); documents without a supplier VAT ID go to B.3.",
+        "formVersions": "The export creates XML in versions DPHDP3 {dp3}, DPHKH1 {kh1} and DPHSHV {shv}. We last checked the rules and form versions on {date}.",
+        "officialLink": "Current information from the Czech Financial Administration",
+        "guideLink": "Filing guide"
       },
       "annual": {
         "title": "Yearly tax & insurance estimate (Czech sole trader)",
@@ -5192,7 +5195,9 @@
       "page": "Page",
       "feature": "Feature",
       "faq": "FAQ",
-      "city": "Municipality"
+      "city": "Municipality",
+      "calculator": "Calculators",
+      "guide": "Guides"
     },
     "suggest": {
       "isdoc": "ISDOC",
@@ -5201,7 +5206,8 @@
       "ares": "ARES",
       "banka": "bank",
       "dobropis": "credit note"
-    }
+    },
+    "keyboardHint": "↑ ↓ select · Enter open · Esc close"
   },
   "glossary": {
     "legendLabel": "What the labels and colours mean",
@@ -5553,5 +5559,298 @@
     "pricingCta": "Pricing",
     "signupCta": "Start for free",
     "notStated": "— = not stated in the price list (does not mean it is missing)"
+  },
+  "tools": {
+    "menu": {
+      "resources": "Resources",
+      "calculators": "Calculators",
+      "calculatorsHint": "Free tax, insurance, VAT and FX tools",
+      "guides": "Guides",
+      "guidesHint": "How to file Czech VAT returns",
+      "compare": "Compare with competitors"
+    },
+    "search": {
+      "showAll": "Show all results for “{query}”",
+      "pages": "Pages",
+      "close": "Close search",
+      "noResults": "No quick matches. Try another word or open the full results.",
+      "slashHint": "opens search"
+    },
+    "common": {
+      "disclaimerTitle": "Rough estimate",
+      "disclaimer": "The result is only a rough estimate and does not replace an accountant or tax adviser. It ignores other income, deductions, child credits and starting or stopping your business during the year. Before you file or pay anything based on it, check with your accountant or on the websites of the Czech Financial Administration (Finanční správa) and the social security office (ČSSZ).",
+      "validFor": "Amounts apply to {year}.",
+      "ratesSince": "Rates apply from {date}.",
+      "ctaTitle": "Invoicing already? Billanta works this out from your documents",
+      "ctaText": "The app shows your tax and insurance estimate, minimum advances and VAT filings straight from the invoices and expenses you record.",
+      "ctaButton": "Try it free",
+      "ctaNote": "No card needed. The basic plan is free.",
+      "related": "More calculators",
+      "allCalculators": "All calculators",
+      "relatedGuides": "Guides",
+      "allGuides": "All guides",
+      "howTitle": "How it is calculated",
+      "resultTitle": "Result",
+      "perYear": "per year",
+      "perMonth": "per month",
+      "czOnlyTitle": "This page is about Czech rules",
+      "czOnlyText": "“{name}” covers Czech law. Slovakia has different rates, deadlines and forms, so there is no Slovak version.",
+      "czOnlyCs": "Open the Czech version",
+      "czOnlySk": "Slovak rules: Finančná správa SR",
+      "czTag": "Czech rules",
+      "lastChecked": "We last checked this information on {date}.",
+      "officialSource": "Binding information and forms are on the Czech Financial Administration website",
+      "guideDisclaimer": "This guide sums up the basic rules and does not replace an accountant or tax adviser. The law and the forms change, so check the details on the Financial Administration website.",
+      "updated": "Updated"
+    },
+    "calculators": {
+      "indexTitle": "Calculators for small businesses",
+      "indexDescription": "Free calculators for Czech sole traders and companies: income tax and insurance, flat-rate tax, VAT, minimum advances and ČNB exchange rates. No sign-up.",
+      "indexLead": "Quick rough calculations that need none of your data. You type the numbers in and nothing is stored.",
+      "items": {
+        "osvc": {
+          "name": "Sole trader tax and insurance",
+          "title": "Czech sole trader (OSVČ) tax and insurance calculator",
+          "description": "Get a rough figure for income tax, social and health insurance of a Czech sole trader (OSVČ) and next year's advances.",
+          "lead": "Enter your income and expenses for the year. The calculator works out income tax, social and health insurance and the monthly advances you will pay next year.",
+          "keywords": "income tax social health insurance advances flat expenses sole trader osvc czech",
+          "how": [
+            "Profit is income minus actual expenses, or minus flat-rate expenses (a share of income, with a cap).",
+            "Income tax is 15 % of the profit rounded down to hundreds, and 23 % of the part above 36 times the average wage. The basic taxpayer credit is then deducted.",
+            "Social insurance is 29.2 % of 55 % of the profit, at least from the minimum and at most from the maximum assessment base.",
+            "Health insurance is 13.5 % of 50 % of the profit, at least from half the average wage for every month.",
+            "Next year's advances come from this year's base, but never below next year's minimum advances."
+          ],
+          "params": "For {year} we use an average wage of CZK {wage}, a taxpayer credit of CZK {credit} and a minimum social insurance base of {share} % of the average wage (main activity).",
+          "fields": {
+            "year": "Year",
+            "income": "Income for the year (CZK)",
+            "expenseMode": "Expenses",
+            "actual": "Actual expenses",
+            "flat": "Flat-rate expenses",
+            "expenses": "Expenses for the year (CZK)",
+            "flatRate": "Type of activity",
+            "paidSocial": "Social advances paid (CZK, optional)",
+            "paidHealth": "Health advances paid (CZK, optional)"
+          },
+          "rates": {
+            "30": "30 % – renting business assets (max. CZK {cap})",
+            "40": "40 % – liberal professions, royalties (max. CZK {cap})",
+            "60": "60 % – other trades (max. CZK {cap})",
+            "80": "80 % – crafts, agriculture (max. CZK {cap})"
+          },
+          "result": {
+            "expenses": "Expenses claimed",
+            "profit": "Profit (tax base)",
+            "tax": "Income tax after credit",
+            "social": "Social insurance",
+            "health": "Health insurance",
+            "total": "Total tax and insurance",
+            "nextSocial": "Social advance from next year",
+            "nextHealth": "Health advance from next year",
+            "toPay": "{amount} left to pay",
+            "overpaid": "{amount} overpaid"
+          }
+        },
+        "flatTax": {
+          "name": "Flat-rate tax",
+          "title": "Czech flat-rate tax (paušální daň) calculator",
+          "description": "Does the Czech flat-rate tax pay off for you? Compare band 1 with regular tax and insurance using flat-rate expenses.",
+          "lead": "The flat-rate tax (paušální daň) replaces income tax, social and health insurance with one monthly payment. The calculator shows whether you fit band 1 and what you would pay in the regular regime with flat-rate expenses.",
+          "keywords": "flat-rate tax pausalni dan band sole trader czech",
+          "fields": {
+            "year": "Year",
+            "income": "Expected income for the year (CZK)",
+            "flatRate": "Main activity"
+          },
+          "monthlyTitle": "Band 1 payment",
+          "monthlyFrom": "from {date}: {amount} per month",
+          "yearTotal": "Flat-rate tax for the year",
+          "normalTotal": "Regular regime with flat-rate expenses",
+          "cheaper": "The flat-rate tax comes out {amount} cheaper.",
+          "dearer": "The regular regime comes out {amount} cheaper.",
+          "notBand1": "With this income and activity you do not fit band 1. Higher bands are not calculated here; see the Financial Administration website for their amounts.",
+          "noData": "We do not have the flat-rate tax amount for this year yet.",
+          "conditionsTitle": "Who can join the flat-rate regime",
+          "conditions": [
+            "You are a sole trader (OSVČ) and not a VAT payer (an identified person is fine).",
+            "Business income stays under CZK 2,000,000 a year. Band 1 applies up to CZK 1,000,000 for any activity, up to CZK 1,500,000 if at least 75 % of income falls under the 80 % or 60 % flat-rate expenses, and up to CZK 2,000,000 if at least 75 % falls under the 80 % rate.",
+            "You have no other income apart from small exceptions (for example a small salary, interest or rent within limits).",
+            "You are not a partner in a general partnership or a general partner in a limited partnership, and you are not insolvent.",
+            "You notify the tax office that you are joining by 10 January of that year."
+          ],
+          "compareNote": "The regular regime is calculated with flat-rate expenses for the chosen activity, with no other income or deductions."
+        },
+        "vat": {
+          "name": "VAT calculator",
+          "title": "VAT calculator",
+          "description": "Add VAT to a net price or work it out from a gross price. Czech and Slovak rates.",
+          "lead": "Enter an amount and a rate. The calculator gives the base, the VAT and the price with VAT, both ways.",
+          "keywords": "vat rate 21 12 23 calculate vat net gross price czech slovak",
+          "fields": {
+            "country": "Country",
+            "rate": "VAT rate",
+            "mode": "I am entering",
+            "fromBase": "Price without VAT",
+            "fromGross": "Price with VAT",
+            "amount": "Amount"
+          },
+          "result": {
+            "base": "Tax base",
+            "vat": "VAT",
+            "gross": "Price with VAT"
+          },
+          "how": [
+            "From a net price: VAT = base × rate / 100, rounded to the cent.",
+            "From a gross price: base = price / (1 + rate / 100), and the VAT is the difference. The old Czech “coefficient” has not been used since 2019.",
+            "On an invoice, VAT is calculated for each rate separately. Rounding of the invoice total is handled at the end."
+          ],
+          "countries": {
+            "CZ": "Czechia",
+            "SK": "Slovakia"
+          }
+        },
+        "minimums": {
+          "name": "Minimum sole trader advances",
+          "title": "Minimum insurance advances for sole traders",
+          "description": "The smallest monthly social and health insurance advances for sole traders in Czechia and Slovakia, plus the Czech flat-rate tax band 1.",
+          "lead": "Minimum monthly advances for sole traders whose business is their main activity. If you are starting out this year or your profit was low, these are the amounts you pay.",
+          "keywords": "minimum advance social health insurance sole trader flat-rate tax czech slovak",
+          "cz": "Czechia (CZK per month)",
+          "sk": "Slovakia (EUR per month)",
+          "period": "Period",
+          "from": "from {date}",
+          "kinds": {
+            "health": "Health insurance",
+            "social": "Social insurance",
+            "flat_tax": "Flat-rate tax, band 1"
+          },
+          "notesTitle": "When to pay",
+          "notesCz": [
+            "Czech social insurance (ČSSZ) is due for each month by its last day.",
+            "Czech health insurance is due by the 8th of the following month.",
+            "The Czech flat-rate tax is due by the 20th of the month."
+          ],
+          "notesSk": [
+            "In Slovakia both are due by the 8th of the following month: social insurance to the Sociálna poisťovňa and health insurance to your health insurer."
+          ],
+          "none": "No data for this year yet."
+        },
+        "fx": {
+          "name": "ČNB exchange rate converter",
+          "title": "ČNB exchange rates and currency converter",
+          "description": "Today's Czech National Bank (ČNB) exchange rates and conversion between CZK and foreign currencies, for invoices in a foreign currency.",
+          "lead": "The ČNB publishes rates every working day after 14:30. Czech VAT uses these rates to convert foreign-currency invoices.",
+          "keywords": "cnb exchange rate czk eur usd convert currency foreign invoice",
+          "listDate": "ČNB rate list of {date}",
+          "unavailable": "We could not load the ČNB rates right now. Try again later or look them up on the ČNB website.",
+          "fields": {
+            "amount": "Amount",
+            "currency": "Currency",
+            "direction": "Direction",
+            "toCzk": "Foreign currency → CZK",
+            "fromCzk": "CZK → foreign currency"
+          },
+          "rate": "Rate: 1 {code} = CZK {rate}",
+          "tableTitle": "Rate list",
+          "code": "Code",
+          "perUnit": "CZK per 1 unit",
+          "how": [
+            "For Czech VAT, a foreign-currency invoice is converted at the ČNB rate valid on the day the tax became due (usually the date of the taxable supply).",
+            "A rate published on a working day after 14:30 stays valid until the next one. On weekends and public holidays the last published rate applies.",
+            "For accounting you can use a fixed rate instead of the daily one if your internal rules say so."
+          ],
+          "source": "Source: Czech National Bank"
+        }
+      }
+    },
+    "guides": {
+      "indexTitle": "Czech VAT guides",
+      "indexDescription": "Plain guides for Czech VAT payers and identified persons: VAT return, control statement, recapitulative statement and reverse charge.",
+      "indexLead": "What to file with the Czech tax office and when, step by step. These guides cover Czech VAT.",
+      "items": {
+        "vatFiling": {
+          "name": "VAT return, control and recapitulative statement",
+          "title": "How to file the Czech VAT return, control statement and recapitulative statement",
+          "description": "Who files the Czech VAT return, control statement (kontrolní hlášení) and recapitulative statement (souhrnné hlášení), the deadlines and how to file them online through EPO.",
+          "lead": "A Czech VAT payer regularly files up to three reports with the tax office. Here is who files them, by when and how.",
+          "keywords": "vat return control statement recapitulative statement dphdp3 dphkh1 dphshv epo deadline 25th czech",
+          "deadlinesTitle": "Next deadlines",
+          "monthly": "Monthly filers: for {period}",
+          "quarterly": "Quarterly filers: for Q{quarter} {year}",
+          "inDays": "{days, plural, =0 {today} one {in # day} other {in # days}}",
+          "deadlinesNote": "If the 25th falls on a weekend or public holiday, the deadline moves to the next working day.",
+          "sections": [
+            {
+              "title": "VAT return (DPHDP3)",
+              "body": "Every VAT payer files it for every tax period, even with no invoices. The tax period is a month, or a quarter if your turnover in the previous year did not exceed CZK 10 million, you are not an unreliable payer or part of a VAT group, and you choose quarterly filing. The return is filed and the tax paid by the 25th day after the period ends."
+            },
+            {
+              "title": "Control statement (DPHKH1)",
+              "body": "Filed by payers who made or received domestic supplies in the period. Legal entities (such as an s.r.o.) always file it monthly by the 25th of the following month; individuals file it with the same deadline as their return, so quarterly filers file quarterly. Documents over CZK 10,000 including VAT are listed one by one (sections A.4 and B.2), smaller ones as totals. It can only be filed electronically, and late filing carries fixed fines starting at CZK 1,000."
+            },
+            {
+              "title": "Recapitulative statement (DPHSHV)",
+              "body": "Filed for each month in which you supplied goods or services under reverse charge to a business in another EU country. The deadline is 25 days after the month ends. If you only supply services you may file it quarterly. Identified persons who supplied a service to the EU file it too."
+            },
+            {
+              "title": "Filing online",
+              "body": "The return and the statements are filed electronically as XML. Most people upload the file to the Moje daně portal (the EPO application), check it and send it through their data box or with a qualified electronic signature. Pay the tax to your tax office's account with your tax ID without the CZ prefix as the variable symbol."
+            }
+          ],
+          "stepsTitle": "Step by step",
+          "steps": [
+            "Make sure you have every issued and received invoice for the period and that the tax point dates are right.",
+            "Create the XML files. In Billanta they are under Settings → Exports → VAT.",
+            "On the Moje daně portal open EPO, choose to load a file and upload the XML.",
+            "Fill in the tax office and any details the export leaves blank, then run the check.",
+            "Send the filing through your data box or with an electronic signature and keep the confirmation.",
+            "Pay the tax by the 25th day after the period ends."
+          ],
+          "beforeTitle": "Before you file",
+          "before": [
+            "Convert foreign-currency invoices at the ČNB rate of the day the tax became due.",
+            "For received invoices in the control statement you need the supplier's VAT number and the invoice number.",
+            "Corrective tax documents (credit notes) belong to the period in which you issued or received them.",
+            "Services bought from abroad under reverse charge are declared as output tax and, as a payer, you can claim them back as input tax."
+          ],
+          "formsLine": "Forms described: DPHDP3 version {dp3}, DPHKH1 version {kh1}, DPHSHV version {shv}."
+        },
+        "identified": {
+          "name": "Identified person for Czech VAT",
+          "title": "Identified person for Czech VAT: when you become one and what to file",
+          "description": "A Czech business that is not a VAT payer becomes an identified person when it buys ads or services from abroad or sells services to the EU. What that means and what to file.",
+          "lead": "Even if you are not a VAT payer, you can become an identified person (identifikovaná osoba). Paying for Facebook or Google ads is usually enough. You then have to declare and pay Czech VAT on that purchase.",
+          "keywords": "identified person vat reverse charge facebook google ads services from abroad registration 15 days czech",
+          "sections": [
+            {
+              "title": "Who is an identified person",
+              "body": "A business that is not a VAT payer but has to register for VAT because of cross-border deals. You become one mainly when you:"
+            },
+            {
+              "title": "Buying ads and services from abroad",
+              "body": "Google Ads, Facebook and Instagram ads, software subscriptions or other services from a foreign supplier: the place of supply is Czechia because you are a business. The supplier invoices you without VAT and you declare and pay the tax yourself (usually 21 %). This is called reverse charge. As an identified person you cannot claim this VAT back, so it is a real cost for you."
+            },
+            {
+              "title": "What to file and when",
+              "body": "You file a VAT return only for the months in which tax became due, by the 25th of the following month, and pay the tax by the same date. If you supplied a service to a business in another EU country, you also file a recapitulative statement for that month. Identified persons do not file the control statement. Everything is filed electronically."
+            },
+            {
+              "title": "When you become a VAT payer",
+              "body": "An identified person is still not a VAT payer. You become one once your turnover for a calendar year exceeds CZK 2,000,000, from 1 January of the next year. If it exceeds CZK 2,536,500 during the year, you become a payer the very next day."
+            }
+          ],
+          "who": [
+            "receive a service from a foreign supplier (for example ads from Google or Meta),",
+            "supply a service to a business in another EU country,",
+            "buy goods from another EU country for more than CZK 326,000 in a calendar year."
+          ],
+          "registrationTitle": "Registration",
+          "registration": "File the registration with your tax office within 15 days of becoming an identified person. You get a VAT number (DIČ), which you then give to foreign suppliers so they invoice you without VAT.",
+          "exampleTitle": "Example",
+          "example": "In March you pay CZK 10,000 for Facebook ads. Meta invoices you without VAT. By 25 April you file a VAT return for March showing tax of CZK 2,100 and pay the same amount to the tax office. In months without such purchases you file nothing."
+        }
+      }
+    }
   }
 }
