@@ -739,11 +739,16 @@ GRANT EXECUTE ON FUNCTION find_active_api_key_by_hash(text) TO faktur_app;
 -- attorney-reviewed ToS text yet to hash (see
 -- `app/[locale]/legal/terms/page.tsx` — still a structural placeholder) —
 -- swap this for a real content hash once real text is published.
+-- 0052 added p_trial_days (the free trial, one per user and e-mail via
+-- trial_claims) and plan_enforced on new companies. The old four-argument
+-- version is dropped so a four-argument call stays unambiguous.
+DROP FUNCTION IF EXISTS bootstrap_tenant_for_user(uuid, text, text, text);
 CREATE OR REPLACE FUNCTION bootstrap_tenant_for_user(
   p_user_id uuid,
   p_company_name text,
   p_tos_version text,
-  p_ip_address text DEFAULT NULL
+  p_ip_address text DEFAULT NULL,
+  p_trial_days integer DEFAULT 0
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -753,6 +758,9 @@ AS $$
 DECLARE
   v_tenant_id uuid;
   v_tos_version_id uuid;
+  v_email text;
+  v_days integer := least(greatest(coalesce(p_trial_days, 0), 0), 90);
+  v_claim uuid;
 BEGIN
   IF p_company_name IS NULL OR btrim(p_company_name) = '' THEN
     RAISE EXCEPTION 'company name is required';
@@ -764,8 +772,8 @@ BEGIN
 
   SELECT id INTO v_tos_version_id FROM tos_versions WHERE version = p_tos_version;
 
-  INSERT INTO tenants (company_name, legal_name)
-  VALUES (btrim(p_company_name), btrim(p_company_name))
+  INSERT INTO tenants (company_name, legal_name, plan_enforced)
+  VALUES (btrim(p_company_name), btrim(p_company_name), true)
   RETURNING id INTO v_tenant_id;
 
   INSERT INTO tenant_memberships (tenant_id, user_id, role)
@@ -774,12 +782,28 @@ BEGIN
   INSERT INTO tos_acceptances (user_id, tenant_id, tos_version_id, ip_address)
   VALUES (p_user_id, v_tenant_id, v_tos_version_id, p_ip_address);
 
+  -- One trial per user account and per e-mail address, whichever was used first.
+  IF v_days > 0 THEN
+    SELECT email INTO v_email FROM users WHERE id = p_user_id;
+    IF v_email IS NOT NULL THEN
+      INSERT INTO trial_claims (user_id, email_hash, tenant_id)
+      VALUES (p_user_id, encode(sha256(convert_to(trial_email_key(v_email), 'UTF8')), 'hex'), v_tenant_id)
+      ON CONFLICT DO NOTHING
+      RETURNING id INTO v_claim;
+      IF v_claim IS NOT NULL THEN
+        UPDATE tenants
+          SET trial_plan = 'business', trial_started_at = now(), trial_ends_at = now() + make_interval(days => v_days)
+          WHERE id = v_tenant_id;
+      END IF;
+    END IF;
+  END IF;
+
   RETURN v_tenant_id;
 END;
 $$;
 
-REVOKE ALL ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text) TO faktur_app;
+REVOKE ALL ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text, integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text, integer) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER lookup function — resolving a user's OWN tenant

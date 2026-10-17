@@ -2,6 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { sql } from "drizzle-orm";
 import * as schema from "../../drizzle/schema";
+import { loadPlanSummary } from "../billing/plan.guard";
+import { planAllows } from "../billing/plan-access";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { BankConnectionsService } from "./bank-connections.service";
@@ -31,7 +33,11 @@ export class BankSyncCron {
       try {
         await this.dbService.sql.begin(async (tx) => {
           await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
-          synced += await this.connections.syncAllForTenant(drizzleTx(tx, schema), tenantId);
+          const db = drizzleTx(tx, schema);
+          // A company back on the free plan keeps its connections, they just stop pulling.
+          const plan = await loadPlanSummary(db, tenantId);
+          if (plan && !planAllows(plan, "bank_sync")) return;
+          synced += await this.connections.syncAllForTenant(db, tenantId);
         });
       } catch (err) {
         this.logger.error(`bank sync sweep failed for tenant ${tenantId}: ${(err as Error).message}`);

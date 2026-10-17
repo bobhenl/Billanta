@@ -1,7 +1,9 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, ForbiddenException, Controller, Delete, Get, HttpCode, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { loadPlanSummary, RequirePlan } from "../billing/plan.guard";
+import { planAllows } from "../billing/plan-access";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { CardPaymentsService } from "./card-payments.service";
 
@@ -25,6 +27,7 @@ export class CardPaymentsSettingsController {
   }
 
   @Put()
+  @RequirePlan("card_payments")
   @ApiOperation({ summary: "Connect the company's own Stripe account with a secret or restricted key (verified with Stripe)" })
   connect(@Req() req: TenantScopedRequest, @Body() body: unknown) {
     const parsed = connectSchema.safeParse(body);
@@ -35,9 +38,16 @@ export class CardPaymentsSettingsController {
   @Post("enabled")
   @HttpCode(200)
   @ApiOperation({ summary: "Show or hide the 'Pay by card' button on invoice links" })
-  setEnabled(@Req() req: TenantScopedRequest, @Body() body: unknown) {
+  async setEnabled(@Req() req: TenantScopedRequest, @Body() body: unknown) {
     const parsed = enabledSchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException("Invalid body");
+    // Switching the button off is always allowed, switching it on needs Plus.
+    if (parsed.data.enabled) {
+      const plan = await loadPlanSummary(req.tenantDb!, req.user!.tenantId);
+      if (plan && !planAllows(plan, "card_payments")) {
+        throw new ForbiddenException({ error: "plan_required", message: "This needs a higher plan", feature: "card_payments", plan: "plus" });
+      }
+    }
     return this.service.setEnabled(req.tenantDb!, req.user!.tenantId, parsed.data.enabled);
   }
 

@@ -1,6 +1,6 @@
 import { dispatchWebhooks } from "../integrations/webhooks";
 import { Injectable, Logger } from "@nestjs/common";
-import { and, count, desc, eq, isNull } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
@@ -138,6 +138,45 @@ export class NotificationsService {
       await this.emailService
         .sendNotificationEmail({ to: m.email, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null })
         .catch((err) => this.logger.warn(`Security alert email failed: ${err instanceof Error ? err.message : err}`));
+    }
+    return members.length;
+  }
+
+  /**
+   * Billing notices (trial ending, plan paid): the bell for owners and admins,
+   * who are the ones who can pay, plus an e-mail when Resend is configured.
+   * Not tied to notification preferences, like security alerts.
+   */
+  async deliverBilling(tenantId: string, payload: NotificationPayload): Promise<number> {
+    let members: { userId: string; email: string | null }[] = [];
+    await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      const db = drizzleTx(tx, schema);
+      members = await db
+        .select({ userId: schema.tenantMemberships.userId, email: schema.users.email })
+        .from(schema.tenantMemberships)
+        .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
+        .where(and(eq(schema.tenantMemberships.tenantId, tenantId), inArray(schema.tenantMemberships.role, ["owner", "admin"])));
+      if (members.length) {
+        await db.insert(schema.notifications).values(
+          members.map((m) => ({
+            tenantId,
+            userId: m.userId,
+            kind: "billing",
+            title: payload.title.slice(0, 200),
+            body: payload.body ?? null,
+            link: payload.link?.slice(0, 300) ?? null,
+          })),
+        );
+      }
+    });
+    if (!this.emailService.isConfigured) return members.length;
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
+    for (const m of members) {
+      if (!m.email) continue;
+      await this.emailService
+        .sendNotificationEmail({ to: m.email, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null })
+        .catch((err) => this.logger.warn(`Billing notice email failed: ${err instanceof Error ? err.message : err}`));
     }
     return members.length;
   }

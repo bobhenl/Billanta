@@ -15,6 +15,7 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { RequirePlan } from "../billing/plan.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankConnectionsService } from "./bank-connections.service";
 import { CompletePsd2Dto, CreateBankConnectionDto, CreatePaypalDto, StartPsd2Dto, UpdateBankConnectionDto } from "./dto/bank-connection.dto";
@@ -40,6 +41,7 @@ export class BankConnectionsController {
   }
 
   @Post()
+  @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Connect a Fio account with a read-only API token" })
   create(@Req() req: TenantScopedRequest, @Body() dto: CreateBankConnectionDto) {
     requireRole(req, ["owner", "admin"]);
@@ -47,6 +49,7 @@ export class BankConnectionsController {
   }
 
   @Post("paypal")
+  @RequirePlan("paypal_sync")
   @ApiOperation({ summary: "Connect a PayPal account with REST app credentials (Transaction Search)" })
   createPaypal(@Req() req: TenantScopedRequest, @Body() dto: CreatePaypalDto) {
     requireRole(req, ["owner", "admin"]);
@@ -66,6 +69,7 @@ export class BankConnectionsController {
   }
 
   @Post("psd2/start")
+  @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Start PSD2 consent at the bank; returns the bank URL to redirect the user to" })
   psd2Start(@Req() req: TenantScopedRequest, @Body() dto: StartPsd2Dto) {
     requireRole(req, ["owner", "admin"]);
@@ -73,6 +77,7 @@ export class BankConnectionsController {
   }
 
   @Post("psd2/complete")
+  @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Finish PSD2 consent with the code the bank returned" })
   psd2Complete(@Req() req: TenantScopedRequest, @Body() dto: CompletePsd2Dto) {
     requireRole(req, ["owner", "admin"]);
@@ -95,6 +100,7 @@ export class BankConnectionsController {
   }
 
   @Post(":id/sync")
+  @RequirePlan("bank_sync")
   @ApiOperation({ summary: "Download new incoming payments now and auto-match them" })
   sync(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     requireRole(req, ["owner", "admin", "accountant"]);

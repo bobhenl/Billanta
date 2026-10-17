@@ -330,6 +330,13 @@
       "when": 1792801100000,
       "tag": "0046_exchange_rate_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1792801700000,
+      "tag": "0052_trial_billing",
+      "breakpoints": true
     }
   ]
 }

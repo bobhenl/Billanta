@@ -97,6 +97,11 @@ export class EmailService {
     this.resend = apiKey ? new Resend(apiKey) : null;
   }
 
+  /** Whether Resend is set up; callers with optional mail (billing reminders) skip sending when not. */
+  get isConfigured(): boolean {
+    return Boolean(this.resend && this.fromAddress);
+  }
+
   async sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<void> {
     const values = placeholderValues(params);
     const c = params.custom;

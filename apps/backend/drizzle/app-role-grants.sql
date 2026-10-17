@@ -23,6 +23,12 @@ REVOKE UPDATE, DELETE ON audit_log FROM faktur_app;
 REVOKE INSERT, UPDATE, DELETE ON referrals FROM faktur_app;
 REVOKE UPDATE, DELETE ON credit_ledger FROM faktur_app;
 
+-- Trial claims are read and written only by bootstrap_tenant_for_user, and
+-- Billanta's own proformas are marked paid only by mark_platform_proforma_paid
+-- (migration 0052); the app may request (insert) a pending one for its tenant.
+REVOKE ALL ON trial_claims FROM faktur_app;
+REVOKE UPDATE, DELETE ON platform_proformas FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 
