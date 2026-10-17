@@ -7,19 +7,23 @@ import { type FormEvent, useState, useTransition } from 'react';
 import { BadgeCheck, Building2, Loader2, RefreshCw, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
+import { VatStatusBadge } from '@/components/vat-status-badge';
+import { lookupCompanyById } from '@/lib/company-lookup-actions';
+import { registryForCountry, suggestedVatStatus, type VatPayerCheck } from '@/lib/company-lookup';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/toaster';
 import { searchCustomers } from '../invoices/new/actions';
 import type { AresPrefill, Contact } from '../invoices/new/types';
 import { CONTACT_COLORS, CONTACT_COLOR_DOT } from '@/lib/contact-colors';
-import { createContact, lookupAres, updateContact, type ContactInput } from './actions';
+import { createContact, updateContact, type ContactInput } from './actions';
 
 const EMPTY: ContactInput = {
   legalName: '',
   ico: '',
   dic: '',
   email: '',
+  phone: '',
   addressStreet: '',
   addressCity: '',
   addressPostalCode: '',
@@ -51,9 +55,21 @@ export function ContactEditor({
   const [loadingAres, setLoadingAres] = useState(false);
   const [registry, setRegistry] = useCompanyRegistry();
   const [registryQuery, setRegistryQuery] = useState('');
+  const [vatCheck, setVatCheck] = useState<VatPayerCheck | null>(null);
+  // "Automaticky" follows the country typed below, so a German customer is looked up in the German register.
+  const effectiveRegistry = registry === 'auto' ? registryForCountry(form.addressCountry) : registry;
+  // With "nevím" picked, any clear answer is worth suggesting; otherwise only one that contradicts the choice.
+  const unknownVat = form.isVatPayer === null || form.isVatPayer === undefined;
+  const suggestVat = unknownVat
+    ? vatCheck && ['payer', 'unreliable', 'valid'].includes(vatCheck.state)
+      ? 'payer'
+      : vatCheck && ['not_registered', 'invalid'].includes(vatCheck.state)
+        ? 'non_payer'
+        : null
+    : suggestedVatStatus(vatCheck, form.isVatPayer ? 'payer' : 'non_payer');
 
   const fetchRegistry = async (q: string): Promise<TypeaheadGroup<AresPrefill>[]> => {
-    const { ares } = await searchCustomers(q, registry);
+    const { ares } = await searchCustomers(q, effectiveRegistry);
     return [{ label: t('registryResults'), items: ares }];
   };
   const pickRegistry = (a: AresPrefill) => {
@@ -72,13 +88,26 @@ export function ContactEditor({
       return;
     }
     setLoadingAres(true);
-    const result = await lookupAres(ico);
+    const result = await lookupCompanyById(ico, form.addressCountry);
     setLoadingAres(false);
     if (!result.ok) {
       toast({ text: result.error === 'not_found' ? t('aresNotFound') : `${t('aresFailed')}: ${result.error}`, tone: 'err' });
       return;
     }
-    setForm((f) => ({ ...f, ...stripNulls(result.data) }));
+    const d = result.data;
+    // "Plátce DPH" is left to the VAT check suggestion below, never switched by the lookup.
+    setForm((f) => ({
+      ...f,
+      ...stripNulls({
+        legalName: d.name,
+        ico: d.ico,
+        dic: d.dic,
+        addressStreet: d.street,
+        addressCity: d.city,
+        addressPostalCode: d.postalCode,
+        addressCountry: d.country
+      })
+    }));
     setAresVerified(true);
     toast({ text: t('aresLoaded'), tone: 'ok' });
   }
@@ -93,6 +122,7 @@ export function ContactEditor({
       ico: person ? null : clean(form.ico),
       dic: person ? null : clean(form.dic),
       email: clean(form.email),
+      phone: clean(form.phone),
       addressStreet: clean(form.addressStreet),
       addressCity: clean(form.addressCity),
       addressPostalCode: clean(form.addressPostalCode),
@@ -210,12 +240,15 @@ export function ContactEditor({
             />
             <button type="button" className={buttonClass.secondary} onClick={fromAres} disabled={loadingAres} title={t('fromAres')}>
               {loadingAres ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              ARES
+              {t('fromRegistry')}
             </button>
           </div>
         </label>
         <label className="block">
-          <span className={label}>DIČ</span>
+          <span className="mb-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+            DIČ
+            <VatStatusBadge dic={form.dic ?? ''} onResult={setVatCheck} />
+          </span>
           <input className={inputClass} value={form.dic ?? ''} onChange={set('dic')} />
         </label>
         </>
@@ -252,6 +285,10 @@ export function ContactEditor({
           <span className={label}>E-mail</span>
           <input type="email" className={inputClass} value={form.email ?? ''} onChange={set('email')} />
         </label>
+        <label className="block">
+          <span className={label}>{t('phone')}</span>
+          <input type="tel" className={inputClass} maxLength={40} value={form.phone ?? ''} onChange={set('phone')} />
+        </label>
         {!person && (
         <label className="block">
           <span className={label}>{t('vatPayer')}</span>
@@ -264,6 +301,15 @@ export function ContactEditor({
             <option value="true">{t('vatYes')}</option>
             <option value="false">{t('vatNo')}</option>
           </select>
+          {suggestVat && (
+            <button
+              type="button"
+              className="mt-1 text-xs font-medium text-primary hover:underline"
+              onClick={() => setForm((f) => ({ ...f, isVatPayer: suggestVat === 'payer' }))}
+            >
+              {t(suggestVat === 'payer' ? 'vatSuggestYes' : 'vatSuggestNo')}
+            </button>
+          )}
         </label>
         )}
         <div className="sm:col-span-2">

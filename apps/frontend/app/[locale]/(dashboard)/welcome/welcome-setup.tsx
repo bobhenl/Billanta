@@ -9,6 +9,7 @@ import { toast } from '@/components/toaster';
 import { BUSINESS_PRESETS, presetForModules, TOGGLEABLE_MODULES, type ModuleSet, type ToggleableModule } from '@/lib/business-presets';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { Typeahead } from '@/components/typeahead';
+import { registryForCountry } from '@/lib/company-lookup';
 import { cn } from '@/lib/utils';
 import { searchCustomers } from '../invoices/new/actions';
 import type { AresPrefill } from '../invoices/new/types';
@@ -49,7 +50,7 @@ export function WelcomeSetup({
 
   // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
   const fetchCompanies = async (q: string) => {
-    const { ares } = await searchCustomers(q, registry);
+    const { ares } = await searchCustomers(q, registry === 'auto' ? registryForCountry(company.country) : registry);
     return [{ items: ares }];
   };
 
@@ -72,7 +73,7 @@ export function WelcomeSetup({
   const finish = () =>
     startSave(async () => {
       const patch: AresPatch = { dic_vat_payer: vatPayer, ...(picked ? companyPatch(picked) : {}) };
-      if (!picked && /^d{8}$/.test(query.trim())) patch.ico = query.trim();
+      if (!picked && /^\d{8}$/.test(query.trim())) patch.ico = query.trim();
       const [c, m] = await Promise.all([updateCompany(patch), updateModules(modules)]);
       if (!c.ok || !m.ok) {
         toast({ text: `${t('failed')}: ${(!c.ok ? c.error : !m.ok ? m.error : '') || ''}`, tone: 'err' });

@@ -35,6 +35,7 @@ export interface ContactInput {
   ico?: string | null;
   dic?: string | null;
   email?: string | null;
+  phone?: string | null;
   addressStreet?: string | null;
   addressCity?: string | null;
   addressPostalCode?: string | null;
