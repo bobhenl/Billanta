@@ -84,6 +84,12 @@ export class DashboardController {
     return this.dashboardService.getConfig(req.tenantDb!, req.user!.tenantId, req.user!.id);
   }
 
+  @Get("vat-activity")
+  @ApiOperation({ summary: "Months (YYYY-MM, last three) with services invoiced to EU businesses and with purchases from abroad – decides the souhrnné hlášení / identified-person deadlines" })
+  vatActivity(@Req() req: TenantScopedRequest) {
+    return this.dashboardService.vatActivity(req.tenantDb!, req.user!.tenantId);
+  }
+
   @Get("tax-calendar")
   @ApiOperation({ summary: "Upcoming rows of the official Czech tax calendar (Finanční správa), cached daily; events = null when the source is unreachable" })
   async taxCalendar(@Query("days") days?: string) {

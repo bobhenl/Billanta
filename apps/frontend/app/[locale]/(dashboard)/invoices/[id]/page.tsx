@@ -20,11 +20,26 @@ import {
   type InvoiceDetail
 } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
+import { lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
 import { BuyerDetailsRequest } from './buyer-details-request';
 
-type CheckIssue = { scheme: 'law' | 'peppol'; rule: string; field: string; code: string; severity: 'error' | 'warning' };
+/** A rule reference such as "§29/1c ZDPH", linked to the law text when lawUrl knows it. */
+function LawRef({ rule }: { rule?: string }) {
+  if (!rule) return null;
+  const href = lawUrl(rule);
+  const cls = 'font-mono text-xs opacity-70';
+  return href ? (
+    <a href={href} target="_blank" rel="noreferrer" className={cn(cls, 'underline underline-offset-2 hover:opacity-100')}>
+      {rule}
+    </a>
+  ) : (
+    <span className={cls}>{rule}</span>
+  );
+}
+
+type CheckIssue = { scheme: 'law' | 'peppol'; rule?: string; field: string; code: string; severity: 'error' | 'warning' };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -201,7 +216,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           <ul className="list-disc space-y-0.5 pl-5">
             {lawIssues.map((i) => (
               <li key={`${i.rule}-${i.field}-${i.code}`}>
-                {t(`peppol.field.${i.field}`)}: {t(`requirements.code.${i.code}`)} <span className="font-mono text-xs opacity-70">{i.rule}</span>
+                {t(`peppol.field.${i.field}`)}: {t(`requirements.code.${i.code}`)} <LawRef rule={i.rule} />
               </li>
             ))}
           </ul>

@@ -1,3 +1,4 @@
+import { isVatStatus, type VatStatus } from './vat-status.js';
 import { nextCzechWorkingDay } from './working-days.js';
 
 /**
@@ -13,6 +14,8 @@ export const TAX_DEADLINE_KINDS = [
   'vat_monthly',
   'vat_quarterly',
   'vat_other',
+  'vat_identified',
+  'ec_sales_list',
   'health',
   'social',
   'income_tax',
@@ -31,6 +34,30 @@ export interface TaxDeadline {
   daysLeft: number;
   /** Official wording (Finanční správa rows of the same kind on that day). */
   details?: string[];
+  /**
+   * Due only if something happened in the period and the app could not see
+   * that it did (identified person: a service bought from abroad; souhrnné
+   * hlášení: a service to an EU business). Shown as "only if …".
+   */
+  conditional?: boolean;
+}
+
+/**
+ * What decides which deadlines apply to the account. `activity` lists the
+ * months ("YYYY-MM") the app saw something in; missing = unknown (iCal feed),
+ * and the conditional rows are then kept and flagged.
+ */
+export interface TaxProfile {
+  country: string;
+  vatStatus: VatStatus;
+  /** s.r.o., a.s. …: no OSVČ insurance advances, no flat tax, no overviews. */
+  legalEntity: boolean;
+  activity?: {
+    /** Months with an issued invoice for a service to a business in another EU state. */
+    euSalesMonths: string[];
+    /** Months with an expense from a supplier abroad (identified person: VAT due under reverse charge). */
+    foreignPurchaseMonths: string[];
+  };
 }
 
 /** A row of `GET /api/v1/dashboard/tax-calendar`. */
@@ -45,10 +72,73 @@ export interface OfficialTaxEvent {
 /** Kinds the official calendar covers; the rest are always computed locally. */
 const OFFICIAL_KINDS: readonly TaxDeadlineKind[] = ['vat_monthly', 'vat_quarterly', 'vat_other', 'income_tax', 'flat_tax', 'payroll', 'road_tax', 'property_tax'];
 
-/** What a company sees until it picks its own set in the dashboard customizer. */
-export function defaultTaxDeadlineKinds(vatPayer: boolean): TaxDeadlineKind[] {
-  return vatPayer ? ['vat_monthly', 'health', 'social', 'income_tax', 'overviews'] : ['health', 'social', 'income_tax', 'overviews'];
+/** What a company sees until it picks its own set in the dashboard customizer (`true`/`false` = legacy plátce/neplátce). */
+export function defaultTaxDeadlineKinds(status: VatStatus | boolean): TaxDeadlineKind[] {
+  const s: VatStatus = isVatStatus(status) ? status : status ? 'payer' : 'non_payer';
+  const vat: TaxDeadlineKind[] = s === 'payer' ? ['vat_monthly', 'ec_sales_list'] : s === 'identified' ? ['vat_identified', 'ec_sales_list'] : [];
+  return [...vat, 'health', 'social', 'income_tax', 'overviews'];
 }
+
+const VAT_KINDS: readonly TaxDeadlineKind[] = ['vat_monthly', 'vat_quarterly', 'vat_other', 'vat_identified', 'ec_sales_list'];
+/** Only a payer files the regular return and kontrolní hlášení (§101c ZDPH); OSS and the like are payer-only too. */
+const PAYER_ONLY: readonly TaxDeadlineKind[] = ['vat_monthly', 'vat_quarterly', 'vat_other'];
+const OSVC_ONLY: readonly TaxDeadlineKind[] = ['health', 'social', 'flat_tax', 'overviews'];
+/** Czech-only: paušální daň and the ČSSZ / health-insurer overviews. */
+const CZ_ONLY: readonly TaxDeadlineKind[] = ['flat_tax', 'overviews'];
+
+/** Drops the kinds that can't apply to this account (a chosen kind that doesn't fit is hidden, not deleted). */
+export function relevantTaxDeadlineKinds(kinds: readonly TaxDeadlineKind[], profile: TaxProfile): TaxDeadlineKind[] {
+  const sk = profile.country.toUpperCase() === 'SK';
+  return kinds.filter((k) => {
+    if (profile.legalEntity && OSVC_ONLY.includes(k)) return false;
+    if (sk && CZ_ONLY.includes(k)) return false;
+    if (profile.vatStatus === 'non_payer' && VAT_KINDS.includes(k)) return false;
+    if (profile.vatStatus === 'identified' && PAYER_ONLY.includes(k)) return false;
+    if (profile.vatStatus === 'payer' && k === 'vat_identified') return false;
+    return true;
+  });
+}
+
+const monthKeyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+/**
+ * Applies the account's activity to the conditional kinds; a deadline on the
+ * 25th covers the month before it. Souhrnné hlášení without an EU service
+ * that month is dropped. An identified person's return without a seen
+ * foreign purchase stays, flagged "only if …" (ads bought abroad are often
+ * not booked as an expense).
+ */
+export function applyTaxActivity(deadlines: TaxDeadline[], profile: TaxProfile): TaxDeadline[] {
+  const out: TaxDeadline[] = [];
+  for (const d of deadlines) {
+    if (d.kind !== 'ec_sales_list' && d.kind !== 'vat_identified') {
+      out.push(d);
+      continue;
+    }
+    const period = monthKeyOf(new Date(d.date.getFullYear(), d.date.getMonth() - 1, 1));
+    const months = profile.activity ? (d.kind === 'ec_sales_list' ? profile.activity.euSalesMonths : profile.activity.foreignPurchaseMonths) : null;
+    if (months?.includes(period)) out.push(d);
+    else if (d.kind === 'vat_identified' || !months) out.push({ ...d, conditional: true });
+  }
+  return out;
+}
+
+/** Upcoming deadlines for this account: relevant kinds only, conditional rows flagged or dropped (see `applyTaxActivity`). */
+export function taxDeadlinesFor(
+  kinds: readonly TaxDeadlineKind[],
+  profile: TaxProfile,
+  official: OfficialTaxEvent[] | null,
+  today = new Date(),
+  horizonDays = 45
+): TaxDeadline[] {
+  return applyTaxActivity(mergeTaxDeadlines(relevantTaxDeadlineKinds(kinds, profile), official, today, horizonDays), profile);
+}
+
+/** s.r.o., spol. s r.o., a.s., v.o.s., k.s., z.s., z.ú., o.p.s., družstvo, SE at the end of the registered name. */
+const LEGAL_FORM = /(s\.?\s?r\.\s?o\.|spol\.|a\.\s?s\.|v\.\s?o\.\s?s\.|k\.\s?s\.|z\.\s?s\.|z\.\s?ú\.|o\.\s?p\.\s?s\.|družstvo|\bSE)\s*$/i;
+
+/** A company (not an OSVČ / SZČO), told from the legal form at the end of its registered name. */
+export const isLegalEntityName = (legalName: string | null | undefined) => LEGAL_FORM.test((legalName ?? '').trim());
 
 const day = (y: number, m: number, d: number) => new Date(y, m, d);
 
@@ -65,6 +155,12 @@ function rawDates(kind: TaxDeadlineKind, year: number): Date[] {
     // OSS/CESOP/SME podání: only from the official calendar.
     case 'vat_other':
       return [];
+    // Identifikovaná osoba: přiznání do 25 dnů po měsíci, ve kterém měla povinnost přiznat daň (§101/1 a 5 ZDPH).
+    case 'vat_identified':
+      return months.map((m) => day(year, m, 25));
+    // Souhrnné hlášení do 25 dnů po skončení měsíce (§102 ZDPH; SK súhrnný výkaz §80 ZoDPH).
+    case 'ec_sales_list':
+      return months.map((m) => day(year, m, 25));
     // Záloha OSVČ na zdravotní pojištění za předchozí měsíc.
     case 'health':
       return months.map((m) => day(year, m, 8));

@@ -89,6 +89,7 @@ export class GuestInvoicesService {
       ico: s.ico,
       dic: s.dic,
       dicVatPayer: input.vatPayer,
+      vatStatus: input.vatPayer ? "payer" : "non_payer",
       email: s.email,
       phone: s.phone,
       bankAccountNumber: s.bankAccountNumber,

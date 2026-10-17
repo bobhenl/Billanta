@@ -20,7 +20,7 @@ async function run<T>(path: string, method: string, body?: unknown): Promise<Set
 }
 
 /** Settings → Company. Keys are the backend's snake_case `UpdateTenantDto` fields. */
-export async function updateCompany(patch: Record<string, string | number | boolean | null>) {
+export async function updateCompany(patch: Record<string, string | number | boolean | null | Record<string, number | null>>) {
   return run<unknown>('/api/v1/tenants/me', 'PATCH', patch);
 }
 

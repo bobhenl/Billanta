@@ -290,6 +290,13 @@
       "breakpoints": true
     },
     {
+      "idx": 41,
+      "version": "7",
+      "when": 1792800800000,
+      "tag": "0041_vat_status_tax_advances",
+      "breakpoints": true
+    },
+    {
       "idx": 42,
       "version": "7",
       "when": 1792800600000,

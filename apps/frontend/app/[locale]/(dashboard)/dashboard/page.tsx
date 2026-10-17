@@ -4,7 +4,8 @@ import { Banner } from '@/components/banner';
 import { redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { auth } from '@/auth';
-import { fetchMyAccess, fetchTenant, hiddenSections } from '@/lib/tenant';
+import { fetchMyAccess, fetchTenant, hiddenSections, vatStatusOf, type TaxAdvances } from '@/lib/tenant';
+import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
 import type { TimeSummary } from '@/lib/time-ui';
 import { DashboardView } from './dashboard-view';
 import { presetRange } from '@/lib/period-presets';
@@ -20,7 +21,8 @@ export default async function DashboardHomePage() {
   const locale = await getLocale();
   let summary: DashboardSummary;
   let config: DashboardConfig | null;
-  let vatPayer = false;
+  let profile: TaxProfile | undefined;
+  let advances: TaxAdvances = {};
   let country = 'CZ';
   let time: TimeSummary | null = null;
   let stats: PeriodStats | null = null;
@@ -34,8 +36,9 @@ export default async function DashboardHomePage() {
     ]);
     const { from, to } = presetRange('last12');
     stats = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`).catch(() => null);
-    vatPayer = tenant?.dicVatPayer ?? false;
     country = tenant?.addressCountry ?? 'CZ';
+    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName) };
+    advances = tenant?.taxAdvances ?? {};
     if (!hiddenSections(access).includes('time')) {
       time = await apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null);
     }
@@ -57,5 +60,5 @@ export default async function DashboardHomePage() {
   const session = await auth().catch(() => null);
   const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? null;
 
-  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} vatPayer={vatPayer} country={country} time={time} stats={stats} />;
+  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} />;
 }

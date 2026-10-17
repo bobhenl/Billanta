@@ -2,13 +2,17 @@
 
 import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, CreditCard, FileText, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
+import { Building2, CreditCard, FileText, Landmark, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import type { BankAccount, TenantSettings } from '@/lib/tenant';
+import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
+import { ADVANCE_KINDS, vatStatusOf, type BankAccount, type TenantSettings } from '@/lib/tenant';
+
+type AdvanceKind = (typeof ADVANCE_KINDS)[number];
+const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
 import { LogoUpload } from './logo-upload';
 import { lookupAres } from '../../contacts/actions';
@@ -34,16 +38,20 @@ const FIELDS = {
   bankAccountSwift: 'bank_account_swift'
 } as const;
 type Field = keyof typeof FIELDS;
-type Values = Record<Field, string> & { dicVatPayer: boolean };
+type AdvanceField = `advance_${AdvanceKind}`;
+type Values = Record<Field, string> & Record<AdvanceField, string> & { vatStatus: VatStatus };
 
 const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry'];
 
 function toValues(t: TenantSettings): Values {
   const v = {} as Values;
   for (const key of Object.keys(FIELDS) as Field[]) v[key] = t[key] == null ? '' : String(t[key]);
-  v.dicVatPayer = t.dicVatPayer;
+  v.vatStatus = vatStatusOf(t);
+  for (const k of ADVANCE_KINDS) v[`advance_${k}`] = t.taxAdvances?.[k] == null ? '' : String(t.taxAdvances[k]);
   return v;
 }
+
+const isAdvanceKey = (k: string): k is AdvanceField => k.startsWith('advance_');
 
 export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSettings; accounts: BankAccount[]; readOnly: boolean }) {
   const t = useTranslations('settings.company');
@@ -74,21 +82,33 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
       addressCity: d.addressCity ?? v.addressCity,
       addressPostalCode: d.addressPostalCode ?? v.addressPostalCode,
       addressCountry: d.addressCountry ?? v.addressCountry,
-      dicVatPayer: d.isVatPayer ?? v.dicVatPayer
+      // ARES only knows "plátce DPH"; an identified person shows up as not a payer, so keep that choice.
+      vatStatus: d.isVatPayer === true ? 'payer' : d.isVatPayer === false ? (v.vatStatus === 'identified' ? 'identified' : 'non_payer') : v.vatStatus
     }));
     toast({ text: t('aresLoaded'), tone: 'ok' });
   };
 
   const save = () => {
-    const patch: Record<string, string | number | boolean | null> = {};
+    const patch: Parameters<typeof updateCompany>[0] = {};
+    const advances: Record<string, number | null> = {};
     for (const key of dirty) {
-      if (key === 'dicVatPayer') {
-        patch.dic_vat_payer = values.dicVatPayer;
+      if (key === 'vatStatus') {
+        patch.vat_status = values.vatStatus;
         continue;
       }
+      if (isAdvanceKey(key)) continue;
       const raw = values[key].trim();
       if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
+    }
+    // The backend replaces the whole object, so send all three whenever one changed.
+    if (dirty.some(isAdvanceKey)) {
+      for (const k of ADVANCE_KINDS) {
+        const raw = values[`advance_${k}`].replace(/\s/g, '').replace(',', '.');
+        const n = Number(raw);
+        advances[k] = raw && Number.isFinite(n) && n > 0 ? n : null;
+      }
+      patch.tax_advances = advances;
     }
     startSave(async () => {
       const result = await updateCompany(patch);
@@ -152,20 +172,57 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
           {field('dic', t('dic'), { placeholder: 'CZ12345678', maxLength: 12 })}
           {field('companyName', t('companyName'), { required: true, maxLength: 200 }, '', t('companyNameHint'))}
           {field('legalName', t('legalName'), { required: true, maxLength: 200 }, '', t('legalNameHint'))}
-          <InfoHint hint={t('vatPayerHint')} className="text-sm sm:col-span-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-primary"
-                checked={values.dicVatPayer}
-                disabled={readOnly}
-                onChange={(e) => setValues((v) => ({ ...v, dicVatPayer: e.target.checked }))}
-              />
-              <span className="font-medium">{t('vatPayer')}</span>
-            </label>
-          </InfoHint>
+          <fieldset className="text-sm sm:col-span-2">
+            <legend className="mb-1 font-medium">{t('vatStatus.title')}</legend>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {VAT_STATUS_OPTIONS.map((s) => (
+                <label
+                  key={s}
+                  className={`flex cursor-pointer gap-2 rounded-lg border p-3 ${values.vatStatus === s ? 'border-primary bg-primary/5' : 'border-border'}`}
+                >
+                  <input
+                    type="radio"
+                    name="vatStatus"
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    checked={values.vatStatus === s}
+                    disabled={readOnly}
+                    onChange={() => setValues((v) => ({ ...v, vatStatus: s }))}
+                  />
+                  <span>
+                    <span className="block font-medium">{t(`vatStatus.${s}`)}</span>
+                    <span className="block text-xs text-muted-foreground">{t(`vatStatus.${s}Hint`)}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+            {values.dic.trim() && values.vatStatus === 'non_payer' && (
+              <p className="mt-2 text-xs text-muted-foreground">{t('vatStatus.dicHint')}</p>
+            )}
+          </fieldset>
         </div>
       </Section>
+
+      {!isLegalEntityName(values.legalName) && (
+        <section id="zalohy" className="scroll-mt-24">
+          <Section icon={Landmark} title={t('advances.title')} hint={t('advances.hint')}>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {ADVANCE_KINDS.filter((k) => k !== 'flat_tax' || values.addressCountry.toUpperCase() !== 'SK').map((k) => (
+                <label key={k} className="block text-sm">
+                  <span className="mb-1 block font-medium">{t(`advances.${k}`)}</span>
+                  <input
+                    className={inputClass}
+                    inputMode="decimal"
+                    placeholder={t('advances.placeholder')}
+                    value={values[`advance_${k}`]}
+                    disabled={readOnly}
+                    onChange={(e) => setValues((v) => ({ ...v, [`advance_${k}`]: e.target.value }))}
+                  />
+                </label>
+              ))}
+            </div>
+          </Section>
+        </section>
+      )}
 
       <Section icon={MapPin} title={t('sections.address')}>
         <div className="grid gap-3 sm:grid-cols-6">

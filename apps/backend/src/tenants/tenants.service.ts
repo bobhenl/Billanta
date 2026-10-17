@@ -1,4 +1,5 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, NotImplementedException, Optional } from "@nestjs/common";
+import { vatPayerOf, type VatStatus } from "@faktur/cz-compliance";
 import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -25,6 +26,29 @@ const JSON_SETTINGS = ["emailPrefs", "templateVars", "paymentMethods", "publicPr
 /** "123456789/0100", else the IBAN, else "–" — for the change alert. */
 const formatAccount = (a: BankFields | undefined) =>
   a?.accountNumber ? `${a.accountNumber}${a.bankCode ? `/${a.bankCode}` : ""}` : a?.iban || "–";
+
+/**
+ * vat_status and the legacy dic_vat_payer flag, always written together (the
+ * DB CHECK keeps them equal). A client sending only the boolean: true = payer;
+ * false = non-payer, except that an identified person stays identified.
+ */
+export function vatFields(
+  dto: Pick<UpdateTenantDto, "vat_status" | "dic_vat_payer">,
+  current: VatStatus | undefined,
+): { vatStatus: VatStatus; dicVatPayer: boolean } | Record<string, never> {
+  let status = dto.vat_status;
+  if (!status && dto.dic_vat_payer !== undefined) status = dto.dic_vat_payer ? "payer" : current === "identified" ? "identified" : "non_payer";
+  return status ? { vatStatus: status, dicVatPayer: vatPayerOf(status) } : {};
+}
+
+/** Keeps the positive amounts, rounded to cents; null / 0 = not set. */
+export function cleanAdvances(input: NonNullable<UpdateTenantDto["tax_advances"]>) {
+  const out: Partial<Record<"social" | "health" | "flat_tax", number>> = {};
+  for (const [key, value] of Object.entries(input) as [keyof typeof out, number | null | undefined][]) {
+    if (value != null && value > 0) out[key] = Math.round(value * 100) / 100;
+  }
+  return out;
+}
 
 @Injectable()
 export class TenantsService {
@@ -53,7 +77,6 @@ export class TenantsService {
       legalName: dto.legal_name,
       ico: blankToNull(dto.ico),
       dic: blankToNull(dto.dic),
-      dicVatPayer: dto.dic_vat_payer,
       addressStreet: blankToNull(dto.address_street),
       addressCity: blankToNull(dto.address_city),
       addressPostalCode: blankToNull(dto.address_postal_code),
@@ -83,6 +106,8 @@ export class TenantsService {
     const slug = dto.public_profile?.slug;
     if (slug && (await this.profileSlugTaken(db, id, slug))) throw new ConflictException({ error: "slug_taken" });
     const [row] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
+    Object.assign(values, vatFields(dto, row?.vatStatus));
+    if (dto.tax_advances) values.taxAdvances = cleanAdvances(dto.tax_advances);
     await db
       .update(schema.tenants)
       .set({ ...values, updatedAt: new Date() })

@@ -145,6 +145,8 @@ export const backupDestinationTypeEnum = pgEnum("backup_destination_type", [
 
 export const backupScheduleEnum = pgEnum("backup_schedule", ["daily", "weekly", "manual"]);
 
+export const vatStatusEnum = pgEnum("vat_status", ["payer", "identified", "non_payer"]);
+
 // ---------------------------------------------------------------------------
 // tenants — the tenant root row itself. Not "tenant-scoped" in the tenant_id
 // sense (it IS the tenant); see rls-policies.sql for how it's still RLS'd
@@ -156,7 +158,12 @@ export const tenants = pgTable("tenants", {
   legalName: text("legal_name").notNull(),
   ico: varchar("ico", { length: 8 }),
   dic: varchar("dic", { length: 14 }),
+  // Legacy flag, kept equal to vatStatus === "payer" (CHECK in 0041); new code reads vatStatus.
   dicVatPayer: boolean("dic_vat_payer").notNull().default(false),
+  // Plátce / identifikovaná osoba (§6g–6l ZDPH, SK §7a) / neplátce, see VAT_STATUSES in @faktur/cz-compliance.
+  vatStatus: vatStatusEnum("vat_status").notNull().default("non_payer"),
+  // OSVČ monthly advances typed in by the owner, shown next to the dashboard deadlines: { social?, health?, flat_tax? } in the tenant's currency.
+  taxAdvances: jsonb("tax_advances").$type<Partial<Record<"social" | "health" | "flat_tax", number>>>().notNull().default({}),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
