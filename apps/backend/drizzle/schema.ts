@@ -1309,7 +1309,7 @@ export const creditLedger = pgTable("credit_ledger", {
 });
 
 // ---------------------------------------------------------------------------
-// platform_proformas — tenant-scoped (RLS). A proforma from Billanta itself
+// platform_proformas – tenant-scoped (RLS). A proforma from Billanta itself
 // for a plan paid by bank transfer (`billing/bank-transfer.service.ts`). The
 // app only inserts pending rows; a platform admin marks one paid through
 // mark_platform_proforma_paid (0052), which also extends tenants.prepaid_*.
