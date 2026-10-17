@@ -120,12 +120,15 @@ export const canManage = (role: string | null) => role === 'owner' || role === '
 export { PERMISSION_AREAS, APP_MODULES } from './access';
 export type { PermissionArea, PermissionLevel, AppModule } from './access';
 import type { AppModule, PermissionArea, PermissionLevel } from './access';
+import type { PlanSummary } from './plan';
 
 /** `GET /api/v1/tenants/me/access`: the member's effective access and the company's enabled modules. */
 export interface MyAccess {
   role: string;
   permissions: Record<PermissionArea, PermissionLevel>;
   modules: Record<AppModule, boolean>;
+  /** Effective plan and trial; missing from an older backend. */
+  plan?: PlanSummary | null;
 }
 
 export async function fetchMyAccess(): Promise<MyAccess> {
