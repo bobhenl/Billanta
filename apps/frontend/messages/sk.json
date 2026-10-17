@@ -3487,6 +3487,8 @@
     "reverseChargeNote": "Daň odvedie zákazník (prenesenie daňovej povinnosti).",
     "customer": "Odberateľ",
     "noCustomer": "Odberateľ zatiaľ nie je vybraný.",
+    "sellerSnapshotNote": "Údaje dodávateľa podľa stavu ku dňu vystavenia",
+    "buyerSnapshotNote": "Údaje odberateľa podľa stavu ku dňu vystavenia",
     "details": "Údaje dokladu",
     "related": "Nadväzujúce doklady",
     "unnumbered": "bez čísla",

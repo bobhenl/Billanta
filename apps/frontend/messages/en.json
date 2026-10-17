@@ -3486,6 +3486,8 @@
     "reverseChargeNote": "VAT to be accounted for by the customer (reverse charge).",
     "customer": "Customer",
     "noCustomer": "No customer selected yet.",
+    "sellerSnapshotNote": "Supplier details as of the issue date",
+    "buyerSnapshotNote": "Customer details as of the issue date",
     "details": "Document details",
     "related": "Related documents",
     "unnumbered": "no number",

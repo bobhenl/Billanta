@@ -4,6 +4,7 @@ import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import type { EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { templateValues } from "../tenants/template-vars";
+import { applyBuyerSnapshot, applySellerSnapshot } from "./party-snapshot";
 import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
@@ -141,8 +142,13 @@ export class InvoiceRemindersRepository {
           .select()
           .from(schema.invoiceLineItems)
           .where(eq(schema.invoiceLineItems.invoiceId, row.invoice.id));
-        const vars = templateValues(tenant, row.invoice, row.contactName ? { legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken } : null);
-        const custom = emailCustomizationOf(emailPrefsOf(tenant?.emailPrefs), "reminder", tenant, row.contactName ?? undefined, vars);
+        // Variables as on the document: its supplier/buyer snapshot when it has one.
+        const docTenant = tenant ? applySellerSnapshot(tenant, row.invoice.sellerSnapshot) : tenant;
+        const buyer = row.contactName
+          ? applyBuyerSnapshot({ legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken }, row.invoice.buyerSnapshot)
+          : null;
+        const vars = templateValues(docTenant, row.invoice, buyer);
+        const custom = emailCustomizationOf(emailPrefsOf(tenant?.emailPrefs), "reminder", tenant, buyer?.legalName ?? undefined, vars);
         results.push({ invoice: row.invoice, contactEmail: row.contactEmail, clientPortalToken: row.contactPortalToken, lineItems, custom });
       }
       return results;

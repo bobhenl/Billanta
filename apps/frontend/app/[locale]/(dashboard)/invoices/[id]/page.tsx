@@ -65,6 +65,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   }
 
   const { invoice, contact, items, totals, parent, children } = detail;
+  // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
+  const buyer = detail.buyer ?? contact;
   // Mandatory-content check (CZ/SK law; Peppol for an issued invoice to a foreign buyer).
   const checkIssues =
     invoice.status !== 'cancelled'
@@ -304,24 +306,26 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <Building2 className="h-4 w-4 text-primary" />
               {t('customer')}
             </h2>
-            {contact ? (
+            {contact && buyer ? (
               <div className="mt-2 text-sm">
                 <Link href={`/contacts/${contact.id}`} className="font-semibold text-primary hover:underline">
-                  {contact.legalName}
+                  {buyer.legalName}
                 </Link>
                 <div className="mt-1 text-muted-foreground">
-                  {[contact.addressStreet, [contact.addressPostalCode, contact.addressCity].filter(Boolean).join(' ')]
+                  {[buyer.addressStreet, [buyer.addressPostalCode, buyer.addressCity].filter(Boolean).join(' ')]
                     .filter(Boolean)
                     .join(', ')}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {contact.ico && <>IČO {contact.ico}</>} {contact.dic && <>· DIČ {contact.dic}</>}
+                  {buyer.ico && <>IČO {buyer.ico}</>} {buyer.dic && <>· DIČ {buyer.dic}</>}
                 </div>
-                {contact.email && <div className="mt-1 text-xs text-muted-foreground">{contact.email}</div>}
+                {buyer.email && <div className="mt-1 text-xs text-muted-foreground">{buyer.email}</div>}
+                {detail.snapshot?.buyerDiffers && <p className="mt-2 text-xs text-muted-foreground">{t('buyerSnapshotNote')}</p>}
               </div>
             ) : (
               <p className="mt-2 text-sm text-muted-foreground">{t('noCustomer')}</p>
             )}
+            {detail.snapshot?.sellerDiffers && <p className="mt-2 text-xs text-muted-foreground">{t('sellerSnapshotNote')}</p>}
           </section>
 
           {showNet && (

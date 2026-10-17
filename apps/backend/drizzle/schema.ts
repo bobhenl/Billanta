@@ -539,6 +539,12 @@ export const invoices = pgTable(
     // What actually landed on the account, in CZK; null = not recorded.
     receivedCzk: numeric("received_czk", { precision: 14, scale: 2 }),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    // Supplier / buyer as printed on the document on its issue date (§29, §34–35
+    // ZDPH): captured when the document leaves the draft stage, or taken from
+    // the source document on import. Null = a draft, or issued before migration
+    // 0040: renderers then read the live tenant / contact. See `invoices/party-snapshot.ts`.
+    sellerSnapshot: jsonb("seller_snapshot"),
+    buyerSnapshot: jsonb("buyer_snapshot"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

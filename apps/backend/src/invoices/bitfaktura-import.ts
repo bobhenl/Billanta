@@ -1,5 +1,6 @@
 import type { ImportedContact, ImportedInvoice, ImportedLine, ImportSkip } from "./invoice-import.util";
 import { normalizeCountry } from "../contacts/contacts-csv.util";
+import type { BuyerSnapshot, SellerSnapshot } from "./party-snapshot";
 
 /**
  * Invoice history straight from the BitFaktura API ("stěhování" without a CSV
@@ -132,6 +133,22 @@ export interface BitfakturaInvoice {
   buyer_city?: string | null;
   buyer_post_code?: string | null;
   buyer_country?: string | null;
+  // The seller block as printed on this very invoice (it may differ from
+  // today's seller profile). Any of these can be missing or empty.
+  seller_name?: string | null;
+  seller_tax_no?: string | null;
+  seller_register_number?: string | null;
+  seller_street?: string | null;
+  seller_city?: string | null;
+  seller_post_code?: string | null;
+  seller_country?: string | null;
+  seller_email?: string | null;
+  seller_phone?: string | null;
+  seller_www?: string | null;
+  seller_bank_account?: string | null;
+  seller_iban?: string | null;
+  seller_swift?: string | null;
+  additional_fields?: { seller_trade_register_cz?: string | null } | null;
   positions?: {
     name?: string | null;
     quantity?: string | null;
@@ -301,8 +318,90 @@ export function mapBitfakturaSeller(departments: BitfakturaDepartment[]): Import
   return Object.keys(out).length > 0 ? out : null;
 }
 
+/**
+ * A bank account as typed into BitFaktura: an IBAN, or a Czech `[prefix-]number/bank`.
+ * Anything else is left out (the document then falls back to the current account).
+ */
+export function parseBitfakturaAccount(value: string | null | undefined): Pick<SellerSnapshot, "bankAccountNumber" | "bankAccountBankCode" | "bankAccountIban"> | null {
+  const raw = (value ?? "").trim();
+  const compact = raw.replace(/\s+/g, "").toUpperCase();
+  if (/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(compact)) return { bankAccountIban: compact };
+  const m = /^((?:\d{1,6}-)?\d{2,10})\/(\d{4})$/.exec(compact);
+  if (m) return { bankAccountNumber: m[1]!, bankAccountBankCode: m[2]! };
+  return null;
+}
+
+/**
+ * The supplier block of one source invoice. Only fields the invoice actually
+ * has (non-empty) are kept, so a field the source lacks falls back to the
+ * current company details instead of being printed empty. The address is
+ * taken as a whole and exactly as typed (an e-mail in the street stays there).
+ * Null when the invoice carries no seller data at all.
+ */
+export function mapBitfakturaInvoiceSeller(raw: BitfakturaInvoice, capturedAt: Date = new Date()): SellerSnapshot | null {
+  const out: SellerSnapshot = {};
+  const name = text(raw.seller_name, 255);
+  if (name) {
+    out.legalName = name;
+    out.companyName = name;
+  }
+  const taxNo = (raw.seller_tax_no ?? "").replace(/[\s-]/g, "").toUpperCase();
+  const reg = (raw.seller_register_number ?? "").replace(/\s/g, "");
+  const ico = [reg, taxNo].find((v) => /^\d{8}$/.test(v));
+  if (ico) out.ico = ico;
+  if (/^[A-Z]{2}[0-9A-Z]{2,12}$/.test(taxNo)) out.dic = taxNo;
+  const street = text(raw.seller_street, 255);
+  const city = text(raw.seller_city, 255);
+  const zip = text(raw.seller_post_code, 10);
+  if (street || city || zip) {
+    out.addressStreet = street;
+    out.addressCity = city;
+    out.addressPostalCode = zip;
+    out.addressCountry = normalizeCountry(raw.seller_country ?? undefined) ?? "CZ";
+  }
+  const email = text(raw.seller_email, 255);
+  if (email) out.email = email;
+  const phone = text(raw.seller_phone, 32);
+  if (phone) out.phone = phone;
+  const web = text(raw.seller_www, 255);
+  if (web) out.website = web;
+  const registry = text(raw.additional_fields?.seller_trade_register_cz, 500);
+  if (registry) out.registryNote = registry;
+  const account = parseBitfakturaAccount(raw.seller_bank_account);
+  const iban = parseBitfakturaAccount(raw.seller_iban)?.bankAccountIban;
+  if (account || iban) {
+    out.bankAccountNumber = account?.bankAccountNumber ?? null;
+    out.bankAccountBankCode = account?.bankAccountBankCode ?? null;
+    out.bankAccountIban = iban ?? account?.bankAccountIban ?? null;
+    out.bankAccountSwift = text(raw.seller_swift, 11)?.toUpperCase() ?? null;
+  }
+  // "bill" is BitFaktura's invoice of a non-VAT payer; VAT on a line means a payer.
+  if (raw.kind === "bill") out.dicVatPayer = false;
+  else if ((raw.positions ?? []).some((p) => (num(p.tax) ?? 0) > 0)) out.dicVatPayer = true;
+  if (Object.keys(out).length === 0) return null;
+  return { ...out, capturedAt: capturedAt.toISOString(), source: "import" };
+}
+
+/**
+ * The buyer block of one source invoice. Name and address exactly as typed;
+ * IČO/DIČ only when the source has them (BitFaktura keeps one tax number).
+ */
+function buyerSnapshotFrom(customer: ImportedInvoice["customer"], capturedAt: Date): BuyerSnapshot {
+  const out: BuyerSnapshot = {
+    legalName: customer.legalName,
+    addressStreet: customer.addressStreet,
+    addressCity: customer.addressCity,
+    addressPostalCode: customer.addressPostalCode,
+    addressCountry: customer.addressCountry,
+  };
+  if (customer.ico) out.ico = customer.ico;
+  if (customer.dic) out.dic = customer.dic;
+  if (customer.email) out.email = customer.email;
+  return { ...out, capturedAt: capturedAt.toISOString(), source: "import" };
+}
+
 /** Maps API invoices to the shape the CSV import also produces, so both share one write path. */
-export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: ImportedInvoice[]; skipped: ImportSkip[] } {
+export function mapBitfakturaInvoices(source: BitfakturaInvoice[], capturedAt: Date = new Date()): { invoices: ImportedInvoice[]; skipped: ImportSkip[] } {
   const invoices: ImportedInvoice[] = [];
   const skipped: ImportSkip[] = [];
   const seen = new Set<string>();
@@ -340,6 +439,15 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: 
     const paymentType = (raw.payment_type ?? "").trim();
 
     seen.add(number);
+    const customer = contactFrom({
+      name: customerName,
+      taxNo: raw.buyer_tax_no,
+      email: raw.buyer_email,
+      street: raw.buyer_street,
+      city: raw.buyer_city,
+      postCode: raw.buyer_post_code,
+      country: raw.buyer_country,
+    });
     invoices.push({
       line,
       invoiceNumber: number,
@@ -352,15 +460,9 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[]): { invoices: 
       status,
       paidAt: status === "paid" ? date(raw.paid_date) ?? date(raw.payment_to) ?? issueDate : null,
       amountPaid: num(raw.paid) ?? 0,
-      customer: contactFrom({
-        name: customerName,
-        taxNo: raw.buyer_tax_no,
-        email: raw.buyer_email,
-        street: raw.buyer_street,
-        city: raw.buyer_city,
-        postCode: raw.buyer_post_code,
-        country: raw.buyer_country,
-      }),
+      customer,
+      sellerSnapshot: mapBitfakturaInvoiceSeller(raw, capturedAt),
+      buyerSnapshot: buyerSnapshotFrom(customer, capturedAt),
       note: text(raw.description, 2000),
       lines,
       reverseCharge: raw.reverse_charge === true,

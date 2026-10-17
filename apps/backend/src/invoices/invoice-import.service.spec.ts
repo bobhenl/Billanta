@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
-import { businessFill, InvoiceImportService } from "./invoice-import.service";
+import { businessFill, csvBuyerSnapshot, InvoiceImportService } from "./invoice-import.service";
 import type { ImportedContact, ImportedInvoice } from "./invoice-import.util";
 
 const source = (id: number, number: string) => ({ id, number }) as never;
@@ -272,5 +272,75 @@ describe("businessFill", () => {
 
   it("does nothing without a seller profile", () => {
     expect(businessFill(EMPTY_TENANT, null)).toEqual({});
+  });
+});
+
+/** A db whose every chain resolves: selects to [], inserts to one new row; invoice inserts are recorded. */
+function recordingDb() {
+  const invoices: Record<string, unknown>[] = [];
+  const chain = (result: unknown, onValues?: (v: Record<string, unknown>) => void): unknown =>
+    new Proxy(() => undefined, {
+      get: (_t, prop) => {
+        if (prop === "then") return (ok: (v: unknown) => void) => ok(result);
+        return (arg: Record<string, unknown>) => {
+          if (prop === "values") onValues?.(arg);
+          return chain(result, onValues);
+        };
+      },
+      apply: () => chain(result, onValues),
+    });
+  const db = {
+    select: () => chain([]),
+    update: () => chain([]),
+    execute: () => chain([]),
+    insert: (table: unknown) => chain([{ id: "new-id" }], (v) => void (table === schema.invoices && invoices.push(v))),
+  };
+  return { db, invoices };
+}
+
+describe("InvoiceImportService – party snapshots of imported invoices", () => {
+  it("stores the buyer from the filled CSV columns and no supplier snapshot", async () => {
+    const { db, invoices } = recordingDb();
+    const csv = "Číslo;Odběratel;IČO;Ulice;Město;Datum vystavení;Celkem\nA1;Alfa s.r.o.;12345678;info@alfa.cz;Praha;1.1.2025;100\n";
+    await new InvoiceImportService().importCsv(db as never, "tenant-1", Buffer.from(csv), false);
+    expect(invoices).toHaveLength(1);
+    expect(invoices[0]!.sellerSnapshot).toBeNull();
+    expect(invoices[0]!.buyerSnapshot).toMatchObject({ legalName: "Alfa s.r.o.", ico: "12345678", addressStreet: "info@alfa.cz", addressCity: "Praha", source: "import" });
+  });
+
+  it("stores the snapshots the BitFaktura mapping produced", async () => {
+    const { db, invoices } = recordingDb();
+    const mapped = {
+      line: 1,
+      invoiceNumber: "1/2025",
+      variableSymbol: null,
+      issueDate: new Date("2025-01-01"),
+      dueDate: null,
+      taxableSupplyDate: null,
+      currency: "CZK",
+      status: "issued",
+      documentType: "invoice",
+      note: null,
+      amountPaid: 0,
+      paidAt: null,
+      customer: { legalName: "Beta", ico: null, dic: null, email: null, addressStreet: null, addressCity: null, addressPostalCode: null, addressCountry: "CZ" },
+      lines: [{ description: "x", quantity: 1, unit: null, unitPrice: 100, vatRate: 0 }],
+      sellerSnapshot: { legalName: "Stará Firma", source: "import" },
+      buyerSnapshot: { legalName: "Beta – jak na dokladu", source: "import" },
+    } as unknown as ImportedInvoice;
+    const service = new InvoiceImportService() as unknown as { importMapped: (...a: unknown[]) => Promise<unknown> };
+    await service.importMapped(db, "tenant-1", { invoices: [mapped], skipped: [] }, false);
+    expect(invoices[0]!.sellerSnapshot).toEqual({ legalName: "Stará Firma", source: "import" });
+    expect(invoices[0]!.buyerSnapshot).toEqual({ legalName: "Beta – jak na dokladu", source: "import" });
+  });
+});
+
+describe("csvBuyerSnapshot", () => {
+  it("keeps the filled columns only, and no country without an address", () => {
+    const customer = { legalName: "Alfa", ico: null, dic: "", email: "a@b.cz", addressStreet: null, addressCity: null, addressPostalCode: null, addressCountry: "CZ" };
+    const s = csvBuyerSnapshot(customer as never);
+    expect(s).toMatchObject({ legalName: "Alfa", email: "a@b.cz" });
+    expect(s).not.toHaveProperty("ico");
+    expect(s).not.toHaveProperty("addressCountry");
   });
 });

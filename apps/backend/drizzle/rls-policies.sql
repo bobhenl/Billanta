@@ -604,11 +604,16 @@ AS $$
   -- The account the invoice is paid to: the one chosen on the invoice, else
   -- an extra account in the invoice currency, else the primary one
   -- (migration 0007, tenant_bank_accounts). Same resolution as the PDF.
+  -- With a supplier snapshot (migration 0040) its company name and account
+  -- win: the account printed when the document was issued.
   SELECT
-    t.company_name,
-    coalesce(a.iban, CASE WHEN a.id IS NULL THEN t.bank_account_iban END),
-    coalesce(a.account_number, CASE WHEN a.id IS NULL THEN t.bank_account_number END),
-    coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END)
+    coalesce(nullif(i.seller_snapshot->>'companyName', ''), t.company_name),
+    CASE WHEN i.seller_snapshot -> 'bankAccountIban' IS NOT NULL THEN i.seller_snapshot->>'bankAccountIban'
+      ELSE coalesce(a.iban, CASE WHEN a.id IS NULL THEN t.bank_account_iban END) END,
+    CASE WHEN i.seller_snapshot -> 'bankAccountNumber' IS NOT NULL THEN i.seller_snapshot->>'bankAccountNumber'
+      ELSE coalesce(a.account_number, CASE WHEN a.id IS NULL THEN t.bank_account_number END) END,
+    CASE WHEN i.seller_snapshot -> 'bankAccountBankCode' IS NOT NULL THEN (i.seller_snapshot->>'bankAccountBankCode')::varchar(4)
+      ELSE coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END) END
   FROM tenants t
   JOIN invoices i ON i.tenant_id = t.id
   LEFT JOIN LATERAL (
@@ -1032,9 +1037,13 @@ LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+  -- Both parties as on the document: the snapshot when it has one (migration 0040).
   SELECT
-    t.ico, t.dic, t.dic_vat_payer,
-    c.ico, c.dic,
+    CASE WHEN i.seller_snapshot -> 'ico' IS NOT NULL THEN (i.seller_snapshot->>'ico')::varchar ELSE t.ico END,
+    CASE WHEN i.seller_snapshot -> 'dic' IS NOT NULL THEN (i.seller_snapshot->>'dic')::varchar ELSE t.dic END,
+    CASE WHEN jsonb_typeof(i.seller_snapshot -> 'dicVatPayer') = 'boolean' THEN (i.seller_snapshot->>'dicVatPayer')::boolean ELSE t.dic_vat_payer END,
+    CASE WHEN i.buyer_snapshot -> 'ico' IS NOT NULL THEN (i.buyer_snapshot->>'ico')::varchar ELSE c.ico END,
+    CASE WHEN i.buyer_snapshot -> 'dic' IS NOT NULL THEN (i.buyer_snapshot->>'dic')::varchar ELSE c.dic END,
     i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number
   FROM invoices i
   JOIN tenants t ON t.id = i.tenant_id

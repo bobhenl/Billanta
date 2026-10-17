@@ -1,6 +1,7 @@
 import { netAfterTaxes } from "../invoices/amount-vars";
 import { displayCustomField, resolveVars } from "../invoices/custom-fields";
 import { templateVarsOf } from "../tenants/template-vars";
+import { applyBuyerSnapshot } from "../invoices/party-snapshot";
 import { Injectable } from "@nestjs/common";
 import { and, asc, eq, gte, inArray, isNotNull, lt, ne, notInArray, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -182,6 +183,8 @@ export class ExportsService {
         const lineItems = byInvoice.get(r.invoice.id) ?? [];
         return {
           ...r,
+          // The buyer as on the document (its snapshot), not today's contact.
+          contact: r.contact ? applyBuyerSnapshot(r.contact, r.invoice.buyerSnapshot) : null,
           lineItems,
           totals: computeVatBreakdown(lineItems, { reverseCharge: r.invoice.reverseCharge }),
         };
@@ -526,7 +529,9 @@ export class ExportsService {
       : [];
 
     const issued: VatIssuedDoc[] = [];
-    for (const { invoice, contact } of rows) {
+    for (const { invoice, contact: liveContact } of rows) {
+      // Kontrolní hlášení needs the buyer's DIČ as on the document.
+      const contact = liveContact ? applyBuyerSnapshot(liveContact, invoice.buyerSnapshot) : null;
       const taxableDate = invoice.taxableSupplyDate ?? invoice.issueDate!;
       const rate = await this.rateFor(invoice.currency, invoice.exchangeRate, taxableDate);
       const totals = computeVatBreakdown(

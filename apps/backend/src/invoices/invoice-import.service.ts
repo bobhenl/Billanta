@@ -20,6 +20,7 @@ import {
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbRate } from "../exports/cnb-rates";
 import { AuditService } from "../audit/audit.service";
+import { buyerSnapshotFromImport } from "./party-snapshot";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -63,6 +64,19 @@ export function businessFill(current: BusinessRow, from: ImportedBusinessDetails
     out.addressCountry = from.addressCountry;
   }
   return out;
+}
+
+/**
+ * A CSV row's buyer as a snapshot: only the columns that are filled, so a
+ * column the file lacks falls back to the contact. The country defaults to CZ
+ * in the mapper, so it only counts next to an actual address.
+ */
+export function csvBuyerSnapshot(customer: ImportedInvoice["customer"]) {
+  const filled: Partial<ImportedInvoice["customer"]> = Object.fromEntries(
+    Object.entries(customer).filter(([, v]) => v !== null && v !== ""),
+  );
+  if (!filled.addressStreet && !filled.addressCity && !filled.addressPostalCode) delete filled.addressCountry;
+  return buyerSnapshotFromImport(filled);
 }
 
 /** Parallel PDF downloads; low enough not to hammer the source's API. */
@@ -326,6 +340,14 @@ export class InvoiceImportService {
           reverseCharge: inv.reverseCharge ?? false,
           ...(inv.paymentMethod ? { paymentMethod: inv.paymentMethod, paymentMethodLabel: inv.paymentMethodLabel ?? null } : {}),
           ...(inv.language ? { language: inv.language } : {}),
+          // The parties as the source document shows them, not as the matched
+          // contact / today's company details say. CSV: the filled customer
+          // columns only; no supplier columns, so no supplier snapshot.
+          sellerSnapshot: inv.sellerSnapshot ?? null,
+          buyerSnapshot:
+            inv.buyerSnapshot !== undefined
+              ? inv.buyerSnapshot
+              : csvBuyerSnapshot(inv.customer),
         })
         .returning({ id: schema.invoices.id });
       onCreated?.(inv, created!.id);

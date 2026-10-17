@@ -281,6 +281,13 @@
       "when": 1792800300000,
       "tag": "0039_number_formats",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792800400000,
+      "tag": "0040_invoice_party_snapshots",
+      "breakpoints": true
     }
   ]
 }

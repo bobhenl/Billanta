@@ -31,6 +31,15 @@ import {
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, lineBase, round2 } from "./invoice-total.util";
 import { documentVars } from "./custom-fields";
 import { resolveTenantForInvoice } from "../tenants/bank-accounts";
+import {
+  BUYER_SNAPSHOT_KEYS,
+  SELLER_SNAPSHOT_KEYS,
+  applyBuyerSnapshot,
+  buyerSnapshotOf,
+  documentParties,
+  sellerSnapshotOf,
+  snapshotDiffers,
+} from "./party-snapshot";
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 
@@ -99,6 +108,15 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.language !== undefined) v.language = dto.language;
   if (dto.reverse_charge !== undefined) v.reverseCharge = dto.reverse_charge;
   return v;
+}
+
+/** Per-field audit entries ("seller.dic: CZ1 → CZ2") between two party snapshots. */
+function snapshotChanges(prefix: string, from: unknown, to: unknown, keys: readonly string[]) {
+  const a = (from ?? {}) as Record<string, unknown>;
+  const b = (to ?? {}) as Record<string, unknown>;
+  return keys
+    .filter((k) => (a[k] ?? null) !== (b[k] ?? null))
+    .map((k) => ({ field: `${prefix}.${k}`, from: a[k] ?? null, to: b[k] ?? null }));
 }
 
 function startOfToday(): Date {
@@ -170,8 +188,8 @@ export class InvoicesService {
     contact: typeof schema.contacts.$inferSelect,
     kind: "invoice" | "reminder",
   ): Promise<EmailCustomization> {
-    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
-    const prefs = emailPrefsOf(tenant?.emailPrefs);
+    const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
     if (kind === "invoice" && invoice.invoiceNumber) {
       const base = `faktura-${invoice.invoiceNumber.replace(/[^\w.-]+/g, "_")}`;
@@ -188,11 +206,15 @@ export class InvoicesService {
     }
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
     const breakdown = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
+    // {company}, {ico}, {iban}, {customer}… as on the document (its snapshot, if issued).
+    const tenant = liveTenant ? documentParties(invoice, await resolveTenantForInvoice(db, liveTenant, invoice), contact).tenant : undefined;
+    const buyer = applyBuyerSnapshot(contact, invoice.buyerSnapshot);
     const vars = {
-      ...templateValues(tenant, invoice, contact),
-      ...documentVars(invoice.customFields, breakdown, invoice.amountPaid, templateVarsOf(tenant?.templateVars), (n) => formatInvoiceAmount(n, invoice.currency)).formatted,
+      ...templateValues(tenant, invoice, buyer),
+      ...documentVars(invoice.customFields, breakdown, invoice.amountPaid, templateVarsOf(liveTenant?.templateVars), (n) => formatInvoiceAmount(n, invoice.currency)).formatted,
     };
-    return { ...emailCustomizationOf(prefs, kind, tenant, contact.legalName, vars), attachments };
+    // Sender name and reply-to stay the company's current ones.
+    return { ...emailCustomizationOf(prefs, kind, liveTenant, buyer.legalName, vars), attachments };
   }
 
   /**
@@ -441,6 +463,7 @@ export class InvoicesService {
 
     const values = invoiceFieldValues(dto);
     const changes = this.audit?.diff(invoice as Record<string, unknown>, values as Record<string, unknown>) ?? [];
+    if (issued) changes.push(...(await this.snapshotAfterEdit(db, tenantId, invoice, values)));
 
     if (dto.line_items) {
       const oldItems = await db
@@ -475,6 +498,44 @@ export class InvoicesService {
 
     if (changes.length > 0 || reason) await this.log(db, updated, issued ? "edited_issued" : "updated", changes, reason);
     return updated;
+  }
+
+  /**
+   * Editing an issued document never refreshes its snapshot from today's
+   * details on its own. Only what the edit itself changes is re-taken: a
+   * different customer chosen, or a different payment account / currency.
+   * Documents without a snapshot (issued before it existed) stay without one.
+   */
+  private async snapshotAfterEdit(
+    db: TenantDb,
+    tenantId: string,
+    invoice: InvoiceRow,
+    values: Partial<typeof schema.invoices.$inferInsert>,
+  ) {
+    const changes: { field: string; from: unknown; to: unknown }[] = [];
+    const contactId = values.contactId !== undefined ? values.contactId : invoice.contactId;
+    if (invoice.buyerSnapshot && contactId !== invoice.contactId) {
+      const [contact] = contactId ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, contactId)).limit(1) : [];
+      values.buyerSnapshot = contact ? buyerSnapshotOf(contact) : null;
+      changes.push(...snapshotChanges("buyer", invoice.buyerSnapshot, values.buyerSnapshot, BUYER_SNAPSHOT_KEYS));
+    }
+    const bankAccountId = values.bankAccountId !== undefined ? values.bankAccountId : invoice.bankAccountId;
+    const currency = values.currency ?? invoice.currency;
+    if (invoice.sellerSnapshot && (bankAccountId !== invoice.bankAccountId || currency !== invoice.currency)) {
+      const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+      if (tenant) {
+        const payee = await resolveTenantForInvoice(db, tenant, { bankAccountId: bankAccountId ?? null, currency });
+        const bank = {
+          bankAccountNumber: payee.bankAccountNumber,
+          bankAccountBankCode: payee.bankAccountBankCode,
+          bankAccountIban: payee.bankAccountIban,
+          bankAccountSwift: payee.bankAccountSwift,
+        };
+        values.sellerSnapshot = { ...(invoice.sellerSnapshot as Record<string, unknown>), ...bank };
+        changes.push(...snapshotChanges("seller", invoice.sellerSnapshot, values.sellerSnapshot, Object.keys(bank)));
+      }
+    }
+    return changes;
   }
 
   /** Delete a draft that never got a number. */
@@ -529,9 +590,23 @@ export class InvoicesService {
           : eq(schema.invoices.relatedInvoiceId, id),
       );
 
+    // The document keeps the parties as they were on its issue date; the page
+    // notes it when today's Fakturační údaje or contact say something else.
+    const [liveTenant] = invoice.sellerSnapshot
+      ? await db.select().from(schema.tenants).where(eq(schema.tenants.id, invoice.tenantId)).limit(1)
+      : [];
+    const payee = liveTenant ? await resolveTenantForInvoice(db, liveTenant, invoice) : null;
+
     return {
       invoice: { ...invoice, isOverdue: isOverdue(invoice) },
+      /** The live contact (link, e-mail for sending). */
       contact: contact ?? null,
+      /** The buyer as printed on the document. */
+      buyer: contact ? applyBuyerSnapshot(contact, invoice.buyerSnapshot) : null,
+      snapshot: {
+        sellerDiffers: snapshotDiffers(invoice.sellerSnapshot, payee, SELLER_SNAPSHOT_KEYS),
+        buyerDiffers: snapshotDiffers(invoice.buyerSnapshot, contact, BUYER_SNAPSHOT_KEYS),
+      },
       items: items.map((item) => ({
         ...item,
         lineTotalWithoutVat: round2(lineBase(item)),
@@ -1147,12 +1222,18 @@ export class InvoicesService {
           (await getCnbRate(invoice.currency, invoice.taxableSupplyDate ?? issueDate))?.toFixed(6) ??
           null);
 
+    // The supplier and buyer as they stand right now, kept with the document
+    // so a later change of address or DIČ does not rewrite it (§29, §34–35 ZDPH).
+    const { sellerSnapshot, buyerSnapshot } = await this.captureParties(db, tenantId, invoice, now);
+
     const [updated] = await db
       .update(schema.invoices)
       .set({
         invoiceNumber,
         variableSymbol,
         issueDate,
+        sellerSnapshot,
+        buyerSnapshot,
         status: settledByProforma ? "paid" : "issued",
         paidAt: settledByProforma ? (prepaidInFull ? issueDate : (related?.paidAt ?? now)) : null,
         amountPaid: settledByProforma ? total.toFixed(2) : invoice.documentType === "quote" ? "0" : invoice.amountPaid,
@@ -1173,6 +1254,55 @@ export class InvoicesService {
       .returning();
 
     await this.log(db, updated, "issued", [{ field: "invoiceNumber", from: null, to: updated.invoiceNumber }]);
+    return updated;
+  }
+
+  /**
+   * Supplier (with the account the document is paid to) and buyer exactly as
+   * they stand now, for the moment a document leaves the draft stage.
+   */
+  private async captureParties(
+    db: TenantDb,
+    tenantId: string,
+    invoice: Pick<InvoiceRow, "contactId" | "bankAccountId" | "currency">,
+    at: Date = new Date(),
+    source: "issue" | "manual_refresh" = "issue",
+  ) {
+    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    const [contact] = invoice.contactId
+      ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1)
+      : [];
+    return {
+      sellerSnapshot: tenant ? sellerSnapshotOf(await resolveTenantForInvoice(db, tenant, invoice), at, source) : null,
+      buyerSnapshot: contact ? buyerSnapshotOf(contact, at, source) : null,
+    };
+  }
+
+  /**
+   * "Aktualizovat údaje dodavatele / odběratele": an explicit, logged choice
+   * to replace an issued document's snapshot with the current details (e.g.
+   * a typo in the DIČ at issue). Never happens on its own.
+   */
+  async refreshPartySnapshot(db: TenantDb, tenantId: string, id: string, party: "seller" | "buyer" | "both", reason?: string | null) {
+    const invoice = await this.requireInvoice(db, id);
+    if (ISSUABLE_STATUSES.includes(invoice.status)) {
+      throw new BadRequestException("A draft always shows the current details");
+    }
+    if (invoice.status === "cancelled") throw new BadRequestException("A cancelled document cannot be edited");
+    const fresh = await this.captureParties(db, tenantId, invoice, new Date(), "manual_refresh");
+    const values: Partial<typeof schema.invoices.$inferInsert> = {};
+    if (party !== "buyer") values.sellerSnapshot = fresh.sellerSnapshot;
+    if (party !== "seller") values.buyerSnapshot = fresh.buyerSnapshot;
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ ...values, updatedAt: new Date() })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    const changes = [
+      ...(party !== "buyer" ? snapshotChanges("seller", invoice.sellerSnapshot, fresh.sellerSnapshot, SELLER_SNAPSHOT_KEYS) : []),
+      ...(party !== "seller" ? snapshotChanges("buyer", invoice.buyerSnapshot, fresh.buyerSnapshot, BUYER_SNAPSHOT_KEYS) : []),
+    ];
+    await this.log(db, updated, "edited_issued", changes, reason?.trim() || "Aktualizace údajů podle současného stavu");
     return updated;
   }
 
@@ -1231,7 +1361,9 @@ export class InvoicesService {
 
     // Payment details: the account chosen on the invoice / matching its currency.
     const payee = await resolveTenantForInvoice(db, tenant, invoice);
-    return { invoice, contact, tenant: payee, lineItems, related: related ?? null };
+    // As on the document: the snapshot taken at issue, live data without one.
+    const parties = documentParties(invoice, payee, contact);
+    return { invoice, contact: parties.contact, tenant: parties.tenant, lineItems, related: related ?? null };
   }
 
   /**
@@ -1295,11 +1427,13 @@ export class InvoicesService {
   ): Promise<{ issues: ((RequirementIssue & { scheme: "law" }) | (PeppolIssue & { scheme: "peppol" }))[] }> {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
     if (!invoice) throw new NotFoundException(`Invoice ${invoiceId} not found`);
-    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
-    if (!tenant) throw new NotFoundException(`Tenant ${tenantId} not found`);
-    const [contact] = invoice.contactId
+    const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    if (!liveTenant) throw new NotFoundException(`Tenant ${tenantId} not found`);
+    const [liveContact] = invoice.contactId
       ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1)
       : [];
+    // An issued document is checked as it was issued (its snapshot), a draft against live data.
+    const { tenant, contact } = documentParties(invoice, liveTenant, liveContact);
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
 
     const law = checkInvoiceRequirements({
