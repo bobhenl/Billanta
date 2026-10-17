@@ -4,6 +4,7 @@ export * from './spayd.js';
 export * from './isdoc-generator.js';
 export * from './ubl-generator.js';
 export * from './invoice-requirements.js';
+export * from './public-holidays.js';
 export * from './working-days.js';
 export * from './rpo-client.js';
 export * from './qr-faktura.js';

@@ -61,7 +61,7 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
         save();
       }}
     >
-      <section className={card}>
+      <section id="fields" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('fieldsHint')}>
           <h2 className="font-bold">{t('fieldsTitle')}</h2>
         </InfoHint>
@@ -166,7 +166,7 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
         </div>
       </section>
 
-      <section className={card}>
+      <section id="reminders" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('remindersHint')}>
           <h2 className="font-bold">{t('remindersTitle')}</h2>
         </InfoHint>
@@ -214,7 +214,7 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
         </div>
       </section>
 
-      <section className={card}>
+      <section id="defaults" className={cn(card, 'scroll-mt-20')}>
         <h2 className="font-bold">{t('defaultsTitle')}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">

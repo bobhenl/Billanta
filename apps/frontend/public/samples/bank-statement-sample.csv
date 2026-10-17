@@ -1,0 +1,4 @@
+date,amount,currency,variable_symbol,counterparty_account,counterparty_name
+2026-08-01,1500.00,CZK,2026001,19-2000145399/0800,Novák s.r.o.
+2026-08-03,12100.00,CZK,2026002,2000145399/2010,Kavárna U Mostu
+2026-08-05,-450.50,CZK,,,Nájem kanceláře

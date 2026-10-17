@@ -703,11 +703,13 @@
       "noFileSelected": "No file selected",
       "submit": "Upload and match",
       "importing": "Uploading and matching…",
-      "formatHint": "Expected format: CSV with columns date, amount, currency, variable_symbol, counterparty_account, counterparty_name – see apps/backend/README.md.",
+      "formatHint": "A CSV statement from your online banking. Date, amount and currency columns are enough.",
       "success": "Imported {total} transaction(s), {matched} matched automatically.",
       "invalidFile": "Please choose a .csv file.",
       "parseError": "Couldn't process the file: {message}",
-      "formatHintShort": "CSV: date, amount, currency, variable_symbol, counterparty_account, counterparty_name"
+      "formatHelpLabel": "Which file to upload?",
+      "formatHelp": "Upload the CSV statement as you download it from online banking. We recognise the usual Czech and Slovak bank exports (Fio, ČSOB, KB, Raiffeisen, Tatra banka and others): semicolon or comma separated, dates like 31.12.2026 or 2026-12-31 and amounts with a decimal comma. Date, amount and currency columns are required. The variable symbol and counterparty account help with matching. If we don't recognise your bank's export, adjust the file to match the sample.",
+      "sample": "Download a sample CSV"
     },
     "empty": "No bank transactions yet. Upload a statement (CSV) with the button at the top right.",
     "filterLabel": "Show",
@@ -781,8 +783,7 @@
     "connections": {
       "title": "Bank connection",
       "hint": "Every hour Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Matched invoices are marked paid, with the PayPal fee included. Outgoing payments are not downloaded.",
-      "empty": "No account yet. Connect Fio or PayPal and payments get matched on their own, no statement uploads.",
-      "connectFio": "Connect Fio account",
+      "empty": "No account yet. Connect Fio or PayPal and payments get matched on their own. For other banks, upload a CSV statement for now.",
       "token": "Fio API token",
       "tokenHint": "In Fio internet banking open Settings → API, add a token with the “view account only” permission and paste it here (64 characters). Such a token cannot pay anything. We store it encrypted and never show it again.",
       "tokenPlaceholder": "64 characters",
@@ -826,9 +827,8 @@
         "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply)."
       },
       "psd2": {
-        "connect": "Connect another bank",
         "hint": "Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Fio connects with an API token, PayPal with your REST app credentials, other banks over PSD2: you sign in at your bank and grant read-only access to the account (up to 180 days, 90 at many banks). Banks allow only a few unattended reads a day, so PSD2 accounts are synced about every 6 hours. Outgoing payments are not downloaded and nothing can be paid through the connection.",
-        "empty": "No account yet. Connect your bank and payments will match themselves, no statement uploads.",
+        "empty": "No account yet. Connect your bank or PayPal and payments will match themselves, no statement uploads.",
         "country": "Country",
         "bank": "Bank",
         "bankHint": "Banks across the EEA supported by our licensed PSD2 provider Enable Banking. Revolut is listed under Lithuania, Wise under Belgium. After Continue you are sent to your online banking to sign in and choose the accounts.",
@@ -840,7 +840,7 @@
         "personal": "Personal (sole trader)",
         "continue": "Continue to the bank",
         "note": "You sign in at your bank directly; Billanta never sees your banking credentials. Withdraw consent at any time by disconnecting the account or in your online banking.",
-        "otherBanksAvailable": "Connect other banks with “Connect another bank” (PSD2).",
+        "otherBanksAvailable": "Connect another bank with Connect a bank → Bank over PSD2.",
         "expired": "Consent expired",
         "consentUntil": "consent until {date}",
         "renew": "Renew consent",
@@ -861,6 +861,22 @@
         "sandboxHint": "Tick only for PayPal sandbox keys. Its payments are not real.",
         "note": "Received payments are matched to invoices by the invoice number or variable symbol in the note, and by amount. The fee PayPal kept is booked on the invoice, so reports show the net income too. PayPal publishes transactions with a delay of up to 3 hours.",
         "connected": "PayPal connected. The last 30 days of payments arrive with the next sync."
+      },
+      "connectBank": "Connect a bank",
+      "chooseProvider": "What do you want to connect?",
+      "providers": {
+        "psd2": {
+          "title": "Bank over PSD2",
+          "text": "ČSOB, KB, Česká spořitelna, Tatra banka, Revolut, Wise and other EEA banks. You sign in at your own bank."
+        },
+        "fio": {
+          "title": "Fio banka",
+          "text": "With a read-only API token. Payments sync every hour."
+        },
+        "paypal": {
+          "title": "PayPal",
+          "text": "With the Client ID and Secret of your REST app. The fee is booked on the invoice too."
+        }
       }
     },
     "fee": "fee {amount}"
@@ -1580,7 +1596,7 @@
       "email": "Email",
       "sendInvite": "Send invitation",
       "inviteSent": "Invitation emailed. You can also share the link yourself:",
-      "inviteNotSent": "The email could not be sent. Share this link yourself:",
+      "inviteNotSent": "We couldn't send the invitation by e-mail. Copy the link and send it yourself:",
       "copied": "Link copied.",
       "done": "Done",
       "cancel": "Cancel",
@@ -3164,7 +3180,7 @@
       "taxableSupplyHint": "Date of the taxable supply. Empty = issue date.",
       "validUntil": "Valid until",
       "dueOnWeekend": "The due date falls on a weekend.",
-      "dueOnHoliday": "The due date falls on a Czech public holiday.",
+      "dueOnHoliday": "The due date falls on a public holiday ({name}).",
       "shiftToWorkday": "Move to next working day"
     },
     "items": {
@@ -3904,7 +3920,27 @@
       "backup": "download data",
       "channels": "telegram whatsapp",
       "apiKeys": "api key integration",
-      "shortcuts": "keyboard hotkey ctrl"
+      "shortcuts": "keyboard hotkey ctrl",
+      "notifications": "alerts bell push e-mail notify",
+      "numbering": "number series format prefix",
+      "emails": "template subject sender e-mail text",
+      "variables": "placeholder text",
+      "paymentMethods": "payment paypal offset cash",
+      "publicProfile": "business card website enquiry",
+      "import": "bitfaktura fakturoid idoklad excel csv migrate move",
+      "integrations": "webhook discord slack calendar ics rss",
+      "bankAccounts": "iban account number bank qr",
+      "logo": "signature stamp image",
+      "invoiceFields": "form fields custom field",
+      "reminders": "reminder unpaid overdue dunning",
+      "invoiceDefaults": "defaults due date vat note currency language",
+      "password": "password change sign in login",
+      "preferences": "language theme dark mode appearance",
+      "cardPayments": "stripe card online payment",
+      "webhooks": "discord slack webhook",
+      "calendar": "ics google calendar due dates",
+      "epo": "tax portal vat control statement xml",
+      "bankConnections": "fio psd2 paypal connect sync"
     },
     "aiSearch": "AI search in invoices",
     "aiOpen": "Ask AI / search in plain words",
@@ -3924,6 +3960,20 @@
       "overdue": "Overdue",
       "paid": "Paid",
       "cancelled": "Cancelled"
+    },
+    "sections": {
+      "bankAccounts": "Bank accounts",
+      "logo": "Logo and signature",
+      "invoiceFields": "Invoice fields",
+      "reminders": "Reminders",
+      "invoiceDefaults": "Invoice defaults",
+      "password": "Password and sign-in",
+      "preferences": "Language and appearance",
+      "cardPayments": "Card payments (Stripe)",
+      "webhooks": "Discord and Slack webhooks",
+      "calendar": "Due date calendar",
+      "epo": "Tax portal filing (EPO)",
+      "bankConnections": "Bank connections"
     }
   },
   "shortcuts": {
@@ -4163,14 +4213,14 @@
           "Unmatched payments stay for manual assignment"
         ],
         "steps": [
-          "In Bank, connect a Fio account with a read-only token, or upload a CSV statement.",
+          "In Bank, connect an account (Fio with a read-only token, other banks over PSD2, or PayPal), or upload a CSV statement from your bank.",
           "The app downloads the payments and matches them to invoices.",
           "Review the remaining unmatched payments and assign them by hand."
         ],
         "faq": [
           {
             "q": "Which banks are supported?",
-            "a": "Fio directly over its free API, other Czech, Slovak and EEA banks (Revolut and Wise included) over PSD2 (licensed provider Enable Banking). Any bank also via a CSV statement with date, amount, currency and variable symbol."
+            "a": "Fio directly over its free API, other Czech, Slovak and EEA banks (Revolut and Wise included) over PSD2 (licensed provider Enable Banking). Any bank also via a CSV statement: we recognise the usual Czech and Slovak bank exports, and date, amount and currency are enough."
           },
           {
             "q": "Can Billanta make payments from my account?",
@@ -4505,7 +4555,7 @@
         ],
         "steps": [
           "In Fio internet banking open Settings → API and add a “view account only” token.",
-          "In Billanta go to Bank, click Connect Fio account and paste the token.",
+          "In Billanta go to Bank, click Connect a bank, choose Fio banka and paste the token.",
           "From then on payments download and match on their own."
         ],
         "faq": [
@@ -4519,11 +4569,11 @@
           },
           {
             "q": "What about other banks?",
-            "a": "Over PSD2: in Bank click Connect another bank, pick your bank and grant read-only access in its online banking. The connection runs through the licensed provider Enable Banking; consent lasts 90 to 180 days depending on the bank and we remind you before it runs out. Because of PSD2 limits these accounts sync about every 6 hours."
+            "a": "Over PSD2: in Bank click Connect a bank, choose Bank over PSD2, pick your bank and grant read-only access in its online banking. The connection runs through the licensed provider Enable Banking; consent lasts 90 to 180 days depending on the bank and we remind you before it runs out. Because of PSD2 limits these accounts sync about every 6 hours."
           },
           {
             "q": "And PayPal payments?",
-            "a": "In Bank click Connect PayPal and paste the Client ID and Secret of your REST app with Transaction search enabled. Received payments are matched by invoice number or variable symbol and amount, and the PayPal fee is booked on the invoice. PayPal publishes transactions with a delay of up to 3 hours."
+            "a": "In Bank click Connect a bank, choose PayPal and paste the Client ID and Secret of your REST app with Transaction search enabled. Received payments are matched by invoice number or variable symbol and amount, and the PayPal fee is booked on the invoice. PayPal publishes transactions with a delay of up to 3 hours."
           }
         ]
       },
@@ -5329,7 +5379,8 @@
       "tenant": "Business details",
       "bank_account": "Bank accounts",
       "member": "Team",
-      "api_key": "API keys"
+      "api_key": "API keys",
+      "import": "Imports"
     },
     "docTypes": {
       "invoice": "an invoice",
@@ -5363,7 +5414,8 @@
       "tenant": {
         "updated": "edited the company details",
         "logo_uploaded": "uploaded the logo",
-        "logo_removed": "removed the logo"
+        "logo_removed": "removed the logo",
+        "number_formats_updated": "changed document numbering"
       },
       "bank_account": {
         "created": "added the bank account",
@@ -5385,6 +5437,11 @@
       "api_key": {
         "created": "created the API key",
         "revoked": "revoked the API key"
+      },
+      "import": {
+        "bitfaktura": "imported data from BitFaktura",
+        "csv": "imported documents from CSV",
+        "contacts_csv": "imported contacts from CSV"
       }
     },
     "fields": {
@@ -5456,7 +5513,14 @@
       "cardPaymentsEnabled": "Card payments",
       "isPerson": "Individual",
       "isStarred": "Starred",
-      "color": "Colour"
+      "color": "Colour",
+      "importedInvoices": "New documents",
+      "importedContacts": "New contacts",
+      "updatedContacts": "Updated contacts",
+      "archivedPdfs": "Original PDFs stored",
+      "skippedRows": "Skipped rows",
+      "numberFormat": "Number format",
+      "nextNumber": "Next number"
     },
     "values": {
       "invoice": "Invoice",
@@ -5632,5 +5696,26 @@
     "pricingCta": "Pricing",
     "signupCta": "Start for free",
     "notStated": "— = not stated in the price list (does not mean it is missing)"
+  },
+  "holidays": {
+    "newYear": "New Year's Day",
+    "slovakRepublic": "Day of the Establishment of the Slovak Republic",
+    "epiphany": "Epiphany",
+    "goodFriday": "Good Friday",
+    "easterMonday": "Easter Monday",
+    "labourDay": "Labour Day",
+    "victoryDay": "Victory in Europe Day",
+    "cyrilMethodius": "Saints Cyril and Methodius Day",
+    "janHus": "Jan Hus Day",
+    "snp": "Slovak National Uprising Anniversary",
+    "constitution": "Constitution Day",
+    "ourLadyOfSorrows": "Our Lady of Sorrows",
+    "statehood": "Czech Statehood Day",
+    "independence": "Independence Day",
+    "allSaints": "All Saints' Day",
+    "freedomDemocracy": "Struggle for Freedom and Democracy Day",
+    "christmasEve": "Christmas Eve",
+    "christmasDay": "Christmas Day",
+    "stStephen": "St Stephen's Day"
   }
 }

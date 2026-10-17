@@ -204,6 +204,14 @@ export class ContactsService {
       if (contact.ico) byIco.set(contact.ico, row.id);
       byName.set(contact.legalName.toLowerCase(), row.id);
     }
+    if (created + updated > 0) {
+      const changes = [
+        { field: "importedContacts", from: null, to: created },
+        { field: "updatedContacts", from: null, to: updated },
+        { field: "skippedRows", from: null, to: mapped.skipped.length },
+      ].filter((c) => c.to > 0);
+      await this.audit?.record(db, tenantId, { entityType: "import", action: "contacts_csv", changes });
+    }
     return { created, updated, skipped: mapped.skipped };
   }
 

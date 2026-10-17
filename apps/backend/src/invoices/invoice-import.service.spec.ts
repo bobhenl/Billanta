@@ -18,8 +18,13 @@ const SELLER = {
 };
 
 /** Runs the BitFaktura import with the invoice writes stubbed, so only the PDF archiving is exercised. */
-async function run(pdfFor: (url: string) => Response | Promise<Response>, dryRun = false, tenantRow: Record<string, string | null> = EMPTY_TENANT) {
-  const service = new InvoiceImportService();
+async function run(
+  pdfFor: (url: string) => Response | Promise<Response>,
+  dryRun = false,
+  tenantRow: Record<string, string | null> = EMPTY_TENANT,
+  audit?: { record: (...a: unknown[]) => Promise<void> },
+) {
+  const service = new InvoiceImportService(audit as never);
   const inserted: { table: unknown; values: Record<string, unknown> }[] = [];
   let contacts: unknown;
   const updated: Record<string, unknown>[] = [];
@@ -83,6 +88,53 @@ describe("InvoiceImportService.importFromBitfaktura – original PDFs", () => {
     expect(result.source).toEqual({ invoices: 3, contacts: 1 });
     expect(result.originalPdfs).toBeUndefined();
     expect(inserted).toEqual([]);
+  });
+});
+
+describe("InvoiceImportService – audit log entry per import run", () => {
+  const pdf = () => new Response("%PDF-1.4", { status: 200 });
+
+  it("records one BitFaktura entry with counts and the business fields it filled", async () => {
+    const record = vi.fn(async (..._args: unknown[]) => undefined);
+    await run(pdf, false, EMPTY_TENANT, { record });
+    expect(record).toHaveBeenCalledTimes(1);
+    const [, tenantId, entry] = record.mock.calls[0] as unknown as [unknown, string, { entityType: string; action: string; changes: { field: string; to: unknown }[] }];
+    expect(tenantId).toBe("tenant-1");
+    expect(entry.entityType).toBe("import");
+    expect(entry.action).toBe("bitfaktura");
+    const byField = Object.fromEntries(entry.changes.map((c) => [c.field, c.to]));
+    expect(byField).toMatchObject({ importedInvoices: 3, archivedPdfs: 3, ico: "12345678", dic: "CZ8001011234", addressCity: "Praha" });
+  });
+
+  it("records nothing on a preview", async () => {
+    const record = vi.fn(async (..._args: unknown[]) => undefined);
+    await run(pdf, true, EMPTY_TENANT, { record });
+    expect(record).not.toHaveBeenCalled();
+  });
+
+  it("records a CSV run, and skips a preview or a run that brought nothing in", async () => {
+    const record = vi.fn(async (..._args: unknown[]) => undefined);
+    const service = new InvoiceImportService({ record } as never);
+    const results = [
+      { dryRun: false, invoices: 2, contactsCreated: 1, skipped: [{ line: 3 }] },
+      { dryRun: false, invoices: 0, contactsCreated: 0, skipped: [{ line: 2 }] },
+      { dryRun: true, invoices: 2, contactsCreated: 1, skipped: [] },
+    ];
+    vi.spyOn(service as never, "importMapped").mockImplementation((async () => results.shift()) as never);
+    const csv = Buffer.from("Číslo faktury;Odběratel;Datum vystavení;Celkem\nF1;Firma;1.10.2026;100\n");
+    await service.importCsv({} as never, "tenant-1", csv, false);
+    await service.importCsv({} as never, "tenant-1", csv, false);
+    await service.importCsv({} as never, "tenant-1", csv, true);
+    expect(record).toHaveBeenCalledTimes(1);
+    expect(record.mock.calls[0]![2]).toEqual({
+      entityType: "import",
+      action: "csv",
+      changes: [
+        { field: "importedInvoices", from: null, to: 2 },
+        { field: "importedContacts", from: null, to: 1 },
+        { field: "skippedRows", from: null, to: 1 },
+      ],
+    });
   });
 });
 

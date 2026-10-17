@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, Optional } from "@nestjs/common";
 import { eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -19,6 +19,7 @@ import {
 } from "./bitfaktura-import";
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbRate } from "../exports/cnb-rates";
+import { AuditService } from "../audit/audit.service";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -76,6 +77,8 @@ const PDF_CONCURRENCY = 4;
  */
 @Injectable()
 export class InvoiceImportService {
+  constructor(@Optional() private readonly audit?: AuditService) {}
+
   async importCsv(db: TenantDb, tenantId: string, buffer: Buffer, dryRun: boolean): Promise<InvoiceImportResult> {
     let mapped: ReturnType<typeof mapInvoiceRows>;
     try {
@@ -83,7 +86,36 @@ export class InvoiceImportService {
     } catch {
       throw new BadRequestException({ error: "unknown_columns" });
     }
-    return this.importMapped(db, tenantId, mapped, dryRun);
+    const result = await this.importMapped(db, tenantId, mapped, dryRun);
+    await this.logImport(db, tenantId, "csv", result);
+    return result;
+  }
+
+  /**
+   * One Historie změn line per import run that brought something in: what
+   * came across and which empty business details were filled. Previews and
+   * runs that found only duplicates leave no entry.
+   */
+  private async logImport(
+    db: TenantDb,
+    tenantId: string,
+    source: "csv" | "bitfaktura",
+    result: InvoiceImportResult,
+    filled: ImportedBusinessDetails = {},
+  ) {
+    if (result.dryRun) return;
+    const filledFields = Object.entries(filled).filter(([, value]) => value);
+    if (!result.invoices && !result.contactsCreated && filledFields.length === 0) return;
+    const changes: schema.AuditChange[] = [];
+    const count = (field: string, n: number | undefined) => {
+      if (n) changes.push({ field, from: null, to: n });
+    };
+    count("importedInvoices", result.invoices);
+    count("importedContacts", result.contactsCreated);
+    count("archivedPdfs", result.originalPdfs?.archived);
+    count("skippedRows", result.skipped?.length);
+    for (const [field, value] of filledFields) changes.push({ field, from: null, to: value });
+    await this.audit?.record(db, tenantId, { entityType: "import", action: source, changes });
   }
 
   /** Reads the history over the BitFaktura API with the user's token (used for this request only, never stored). */
@@ -165,7 +197,9 @@ export class InvoiceImportService {
       }
     };
     await Promise.all(Array.from({ length: PDF_CONCURRENCY }, worker));
-    return { ...result, originalPdfs };
+    const done = { ...result, originalPdfs };
+    await this.logImport(db, tenantId, "bitfaktura", done, fill);
+    return done;
   }
 
   private async importMapped(

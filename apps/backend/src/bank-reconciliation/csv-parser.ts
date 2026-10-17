@@ -1,14 +1,15 @@
 import { BadRequestException } from "@nestjs/common";
 
 /**
- * The bank-statement CSV format this module accepts — see
+ * The bank-statement CSV formats this module accepts – see
  * `apps/backend/README.md`'s "Bank reconciliation" section for the
- * user-facing documentation this mirrors. Defined here (rather than copying
- * a specific bank's real export format) because CZ bank CSV exports vary
- * significantly bank-to-bank (Fio, ČSOB, KB, Raiffeisenbank all differ in
- * column names/order/encoding) — this is a plain, explicit contract a
- * tenant (or a small conversion script) can target regardless of which bank
- * they use.
+ * user-facing documentation. Billanta's own format (date, amount, currency,
+ * variable_symbol, counterparty_account, counterparty_name) always works;
+ * on top of that the usual CZ/SK bank exports are recognised by their
+ * column names (Fio, ČSOB, KB, Raiffeisen, Tatra banka…), with `;` or tab
+ * delimiters, DD.MM.YYYY dates, decimal commas and a few preamble lines
+ * before the header. Anything else needs a small conversion to the plain
+ * format.
  */
 export interface ParsedBankTransactionRow {
   transactionDate: Date;
@@ -21,23 +22,76 @@ export interface ParsedBankTransactionRow {
   counterpartyName: string | null;
 }
 
-/** All six columns are required in the header (order doesn't matter — looked
- * up by name); a row may still leave the optional ones blank. */
-const REQUIRED_HEADERS = [
-  "date",
-  "amount",
-  "currency",
-  "variable_symbol",
-  "counterparty_account",
-  "counterparty_name",
-] as const;
+/**
+ * Accepted names for each column, after `normalizeHeader` (lower case, no
+ * diacritics, single spaces). The first name is Billanta's own format.
+ */
+const COLUMN_ALIASES = {
+  date: [
+    "date",
+    "datum",
+    "datum zauctovani",
+    "datum zauctovania",
+    "datum provedeni",
+    "datum transakce",
+    "datum transakcie",
+    "datum pohybu",
+    "booking date",
+    "transaction date",
+  ],
+  amount: ["amount", "objem", "castka", "suma", "zauctovana castka", "castka v mene uctu", "objem transakcie"],
+  currency: ["currency", "mena"],
+  variableSymbol: ["variable_symbol", "vs", "variabilni symbol", "variabilny symbol", "variable symbol"],
+  counterpartyAccount: [
+    "counterparty_account",
+    "protiucet",
+    "cislo protiuctu",
+    "protiucet/kod banky",
+    "ucet protistrany",
+    "cislo uctu protistrany",
+    "counterparty account",
+  ],
+  counterpartyName: [
+    "counterparty_name",
+    "nazev protiuctu",
+    "nazov protiuctu",
+    "nazev uctu protistrany",
+    "nazov uctu protistrany",
+    "protistrana",
+    "counterparty name",
+  ],
+  bankCode: ["kod banky", "bank code"],
+} as const;
 
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+type Column = keyof typeof COLUMN_ALIASES;
+
+/** Columns that must be present (looked up by name, order doesn't matter);
+ * the others are optional and a row may leave any optional cell blank. */
+const REQUIRED_COLUMNS: Column[] = ["date", "amount", "currency"];
+
+/** How many leading lines may be skipped looking for the header. Bank
+ * exports (Fio especially) start with a few lines of account details. */
+const MAX_PREAMBLE_LINES = 30;
+
+const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})/;
+const DOTTED_DATE = /^(\d{1,2})\.\s?(\d{1,2})\.\s?(\d{4})/;
 const CURRENCY_PATTERN = /^[A-Z]{3}$/;
 /** Matches `invoices.variableSymbol`'s `varchar(10)` column — validated here
  * so a too-long value fails with a clear CSV-row error instead of a raw
  * Postgres string-truncation error deep in the insert. */
 const MAX_VARIABLE_SYMBOL_LENGTH = 10;
+
+/**
+ * Decodes an uploaded file: UTF-8 when it is valid UTF-8, otherwise
+ * Windows-1250, which older Czech and Slovak banking software still uses.
+ */
+export function decodeBankStatement(buffer: Buffer): string {
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+  } catch {
+    return new TextDecoder("windows-1250").decode(buffer);
+  }
+}
 
 /**
  * Parses the whole file up front and either returns every row or throws
@@ -57,52 +111,61 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
     throw new BadRequestException("CSV file is empty");
   }
 
-  const header = splitCsvLine(lines[0]).map((cell) => cell.trim().toLowerCase());
-  const missingHeaders = REQUIRED_HEADERS.filter((name) => !header.includes(name));
-  if (missingHeaders.length > 0) {
+  let headerLine = 0;
+  let delimiter = detectDelimiter(lines[0]);
+  let columns = mapColumns(splitCsvLine(lines[0], delimiter));
+  for (let i = 0; i < Math.min(lines.length, MAX_PREAMBLE_LINES); i++) {
+    const d = detectDelimiter(lines[i]);
+    const candidate = mapColumns(splitCsvLine(lines[i], d));
+    if (candidate.date !== undefined && candidate.amount !== undefined) {
+      headerLine = i;
+      delimiter = d;
+      columns = candidate;
+      break;
+    }
+  }
+
+  const missing = REQUIRED_COLUMNS.filter((name) => columns[name] === undefined);
+  if (missing.length > 0) {
     throw new BadRequestException(
-      `CSV is missing required column(s): ${missingHeaders.join(", ")}. Expected header: ` +
-        `${REQUIRED_HEADERS.join(",")} — see apps/backend/README.md "Bank reconciliation" for the full format.`,
+      `CSV is missing required column(s): ${missing.map((name) => COLUMN_ALIASES[name][0]).join(", ")}. ` +
+        "It needs at least a date, an amount and a currency column (Billanta's names or the ones your bank uses).",
     );
   }
 
-  const dateIdx = header.indexOf("date");
-  const amountIdx = header.indexOf("amount");
-  const currencyIdx = header.indexOf("currency");
-  const vsIdx = header.indexOf("variable_symbol");
-  const accountIdx = header.indexOf("counterparty_account");
-  const nameIdx = header.indexOf("counterparty_name");
-
+  const headerWidth = Math.max(...Object.values(columns).map((idx) => idx + 1));
   const rows: ParsedBankTransactionRow[] = [];
   const errors: string[] = [];
 
-  for (let i = 1; i < lines.length; i++) {
+  for (let i = headerLine + 1; i < lines.length; i++) {
     const lineNumber = i + 1; // 1-based — matches what a user sees in a text editor / spreadsheet app.
-    const cells = splitCsvLine(lines[i]);
+    const cells = splitCsvLine(lines[i], delimiter);
+    if (cells.every((value) => value.trim() === "")) continue;
 
-    if (cells.length < header.length) {
-      errors.push(`Line ${lineNumber}: expected ${header.length} columns, found ${cells.length}`);
+    if (cells.length < headerWidth) {
+      errors.push(`Line ${lineNumber}: expected ${headerWidth} columns, found ${cells.length}`);
       continue;
     }
 
-    const rawDate = (cells[dateIdx] ?? "").trim();
-    const rawAmount = (cells[amountIdx] ?? "").trim();
-    const rawCurrency = (cells[currencyIdx] ?? "").trim().toUpperCase();
-    const rawVariableSymbol = nullIfEmpty(cells[vsIdx]);
+    const cell = (name: Column) => {
+      const idx = columns[name];
+      return idx === undefined ? "" : (cells[idx] ?? "").trim();
+    };
+    const rawDate = cell("date");
+    const rawAmount = cell("amount");
+    const rawCurrency = cell("currency").toUpperCase();
+    const rawVariableSymbol = nullIfEmpty(cell("variableSymbol"));
 
-    if (!DATE_PATTERN.test(rawDate)) {
-      errors.push(`Line ${lineNumber}: invalid date "${rawDate}" (expected YYYY-MM-DD)`);
+    const transactionDate = parseDate(rawDate);
+    if (!transactionDate) {
+      errors.push(`Line ${lineNumber}: invalid date "${rawDate}" (expected YYYY-MM-DD or DD.MM.YYYY)`);
       continue;
     }
-    const transactionDate = new Date(`${rawDate}T00:00:00.000Z`);
-    if (Number.isNaN(transactionDate.getTime())) {
-      errors.push(`Line ${lineNumber}: invalid date "${rawDate}"`);
-      continue;
-    }
 
-    if (rawAmount === "" || Number.isNaN(Number(rawAmount))) {
+    const amount = parseAmount(rawAmount);
+    if (amount === null) {
       errors.push(
-        `Line ${lineNumber}: invalid amount "${rawAmount}" (expected a plain decimal number, e.g. 1500.00 or -450.00)`,
+        `Line ${lineNumber}: invalid amount "${rawAmount}" (expected a decimal number, e.g. 1500.00, -450,50 or 1 500,00)`,
       );
       continue;
     }
@@ -122,13 +185,19 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
       continue;
     }
 
+    let counterpartyAccount = nullIfEmpty(cell("counterpartyAccount"));
+    const bankCode = nullIfEmpty(cell("bankCode"));
+    if (counterpartyAccount && bankCode && !counterpartyAccount.includes("/")) {
+      counterpartyAccount = `${counterpartyAccount}/${bankCode}`;
+    }
+
     rows.push({
       transactionDate,
-      amount: Number(rawAmount).toFixed(2),
+      amount,
       currency: rawCurrency,
       variableSymbol: rawVariableSymbol,
-      counterpartyAccount: nullIfEmpty(cells[accountIdx]),
-      counterpartyName: nullIfEmpty(cells[nameIdx]),
+      counterpartyAccount,
+      counterpartyName: nullIfEmpty(cell("counterpartyName")),
     });
   }
 
@@ -151,15 +220,84 @@ function nullIfEmpty(value: string | undefined): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function normalizeHeader(cell: string): string {
+  return cell
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function mapColumns(headerCells: string[]): Partial<Record<Column, number>> {
+  const names = headerCells.map(normalizeHeader);
+  const result: Partial<Record<Column, number>> = {};
+  for (const column of Object.keys(COLUMN_ALIASES) as Column[]) {
+    const aliases: readonly string[] = COLUMN_ALIASES[column];
+    const idx = names.findIndex((name) => aliases.includes(name));
+    if (idx >= 0) result[column] = idx;
+  }
+  return result;
+}
+
+/** Picks the delimiter used most often outside quotes in a line; comma when none. */
+function detectDelimiter(line: string): string {
+  const counts: Record<string, number> = { ",": 0, ";": 0, "\t": 0 };
+  let inQuotes = false;
+  for (const char of line) {
+    if (char === '"') inQuotes = !inQuotes;
+    else if (!inQuotes && char in counts) counts[char]++;
+  }
+  const [best, count] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  return count > 0 ? best : ",";
+}
+
+function parseDate(raw: string): Date | null {
+  let year: number;
+  let month: number;
+  let day: number;
+  const iso = ISO_DATE.exec(raw);
+  const dotted = DOTTED_DATE.exec(raw);
+  if (iso) {
+    [year, month, day] = [Number(iso[1]), Number(iso[2]), Number(iso[3])];
+  } else if (dotted) {
+    [day, month, year] = [Number(dotted[1]), Number(dotted[2]), Number(dotted[3])];
+  } else {
+    return null;
+  }
+  const date = new Date(Date.UTC(year, month - 1, day));
+  // Rejects 31.02. and similar, which Date would silently roll over.
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+  return date;
+}
+
+/**
+ * Accepts "1500.00", "-450,50", "1 500,00", "1.500,00" and "1,500.00"; a
+ * trailing currency code ("1500,00 CZK") is ignored.
+ */
+function parseAmount(raw: string): string | null {
+  let value = raw.replace(/[\s  ]/g, "").replace(/[A-Za-z]{3}$/, "");
+  if (value === "") return null;
+  const lastComma = value.lastIndexOf(",");
+  const lastDot = value.lastIndexOf(".");
+  if (lastComma > lastDot) {
+    value = value.replace(/\./g, "").replace(",", ".");
+  } else if (lastComma >= 0) {
+    value = value.replace(/,/g, "");
+  }
+  if (!/^[+-]?\d+(\.\d+)?$/.test(value)) return null;
+  return Number(value).toFixed(2);
+}
+
 /**
  * Minimal RFC-4180-style line splitter: handles double-quoted fields with
- * embedded commas and `""`-escaped quotes within a quoted field. This is
+ * embedded delimiters and `""`-escaped quotes within a quoted field. This is
  * intentionally NOT a full CSV/MT940 parser — MT940 is a fixed-width-ish
  * SWIFT statement format, structurally unrelated to CSV, and out of scope
  * for this MVP (see README) even though `bank_statement_imports.source`
  * already has an `mt940` enum value reserved for it.
  */
-function splitCsvLine(line: string): string[] {
+function splitCsvLine(line: string, delimiter = ","): string[] {
   const cells: string[] = [];
   let current = "";
   let inQuotes = false;
@@ -180,7 +318,7 @@ function splitCsvLine(line: string): string[] {
       }
     } else if (char === '"') {
       inQuotes = true;
-    } else if (char === ",") {
+    } else if (char === delimiter) {
       cells.push(current);
       current = "";
     } else {

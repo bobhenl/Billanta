@@ -23,6 +23,7 @@ export async function loadFormContext(): Promise<{ defaults: FormDefaults; ai: A
       companyVars: (tenant?.templateVars ?? []).map((v) => ({ key: v.key, value: v.value })),
       vatPayer: Boolean(tenant?.dicVatPayer),
       quotesEnabled: tenant?.enabledModules?.quotes !== false,
+      sellerCountry: tenant?.addressCountry || 'CZ',
       dueDays: tenant?.defaultDueDays ?? 14,
       paymentMethod,
       customPaymentMethods: (tenant?.paymentMethods ?? []).map((m) => ({ id: m.id, label: m.label, base: m.base, instructions: m.instructions })),

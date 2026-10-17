@@ -2,7 +2,7 @@
 
 import { apiFetch } from '@/lib/api-client';
 
-export type AuditEntityType = 'invoice' | 'tenant' | 'bank_account' | 'contact' | 'member' | 'api_key';
+export type AuditEntityType = 'invoice' | 'tenant' | 'bank_account' | 'contact' | 'member' | 'api_key' | 'import';
 
 export interface AuditChange {
   field: string;

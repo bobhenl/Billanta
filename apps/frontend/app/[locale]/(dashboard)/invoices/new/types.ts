@@ -195,6 +195,8 @@ export interface FormDefaults {
   bankAccounts: { id: string; label: string; line: string; currency: string | null }[];
   /** Settings → Modules: whether quotes (cenové nabídky) are offered as a document type. */
   quotesEnabled: boolean;
+  /** Seller country (ISO code); due-date warnings use its public holidays. */
+  sellerCountry?: string;
 }
 
 /**
