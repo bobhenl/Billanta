@@ -70,33 +70,32 @@ export class DashboardService {
     const yearStart = new Date(now.getFullYear(), 0, 1);
     const chartStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
 
-    const invoices = await db
-      .select({ invoice: schema.invoices, contactName: schema.contacts.legalName, contactColor: schema.contacts.color })
-      .from(schema.invoices)
-      .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
-      .orderBy(desc(schema.invoices.createdAt));
+    // Independent reads, sent together (pipelined on the request's
+    // connection, as in `usage`) instead of one round trip after another.
+    const [invoices, items, expenses, [{ n: missingReceipts }]] = await Promise.all([
+      db
+        .select({ invoice: schema.invoices, contactName: schema.contacts.legalName, contactColor: schema.contacts.color })
+        .from(schema.invoices)
+        .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
+        .orderBy(desc(schema.invoices.createdAt)),
+      // Line items of every invoice the tenant can see (RLS scopes both
+      // tables). A subquery rather than an id list, which would hit
+      // Postgres' bind-parameter limit on a large account.
+      db
+        .select()
+        .from(schema.invoiceLineItems)
+        .where(inArray(schema.invoiceLineItems.invoiceId, db.select({ id: schema.invoices.id }).from(schema.invoices))),
+      db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, chartStart)),
+      // All of them, so the card matches the /expenses?receipt=no list it links to.
+      db.select({ n: count() }).from(schema.expenses).where(isNull(schema.expenses.receiptFileUrl)),
+    ]);
 
-    const ids = invoices.map((r) => r.invoice.id);
-    const items = ids.length
-      ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
-      : [];
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) {
       const list = byInvoice.get(item.invoiceId) ?? [];
       list.push(item);
       byInvoice.set(item.invoiceId, list);
     }
-
-    const expenses = await db
-      .select()
-      .from(schema.expenses)
-      .where(gte(schema.expenses.expenseDate, chartStart));
-
-    // All of them, so the card matches the /expenses?receipt=no list it links to.
-    const [{ n: missingReceipts }] = await db
-      .select({ n: count() })
-      .from(schema.expenses)
-      .where(isNull(schema.expenses.receiptFileUrl));
 
     const months = new Map<string, { month: string; revenue: number; expenses: number }>();
     for (let i = 11; i >= 0; i--) {
@@ -240,13 +239,21 @@ export class DashboardService {
     const prevStart = new Date(start.getTime() - length);
     const currency = filters.currency ?? "CZK";
 
-    const rows = await db
-      .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
-      .from(schema.invoices)
-      .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
-      .where(inArray(schema.invoices.status, ["issued", "paid"]));
-    const ids = rows.map((r) => r.invoice.id);
-    const items = ids.length ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)) : [];
+    const counted = inArray(schema.invoices.status, ["issued", "paid"]);
+    // Sent together, like in `summary`; the line items come via a subquery
+    // with the same condition instead of a (possibly huge) id list.
+    const [rows, items, expenseRows] = await Promise.all([
+      db
+        .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
+        .from(schema.invoices)
+        .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
+        .where(counted),
+      db
+        .select()
+        .from(schema.invoiceLineItems)
+        .where(inArray(schema.invoiceLineItems.invoiceId, db.select({ id: schema.invoices.id }).from(schema.invoices).where(counted))),
+      db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart)),
+    ]);
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) byInvoice.set(item.invoiceId, [...(byInvoice.get(item.invoiceId) ?? []), item]);
 
@@ -272,7 +279,6 @@ export class DashboardService {
     });
     const today = new Date();
     const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
-    const expenseRows = await db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart));
     // Expense amounts are stored including VAT; revenue is compared without it.
     // Expenses have no customer, type or status, so only the currency filter applies.
     const expenses: StatsExpense[] = expenseRows
