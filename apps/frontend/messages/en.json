@@ -121,26 +121,66 @@
       "time": {
         "title": "Time tracking",
         "description": "A timer and manual logs per project. Turn unbilled work into an invoice at the project's rate in one click."
+      },
+      "taxEstimate": {
+        "title": "What you keep",
+        "description": "Each invoice shows a rough amount after income tax and insurance under Czech sole-trader rules. For the whole year we work out the tax, insurance and next advances."
+      },
+      "currencies": {
+        "title": "Foreign currency invoices",
+        "description": "EUR, USD and more. The ČNB rate for the supply date fills in by itself and is converted to CZK for VAT."
+      },
+      "clientPortal": {
+        "title": "Client portal",
+        "description": "One permanent link per client: all their invoices and quotes, what is left to pay and what is overdue."
+      },
+      "migration": {
+        "title": "Switch from another app",
+        "description": "From BitFaktura straight over the API with the original PDFs, from Fakturoid, iDoklad or Excel via CSV. You see a preview before saving."
+      },
+      "api": {
+        "title": "API and webhooks",
+        "description": "A REST API with your own keys, webhooks for Slack, Discord or your own system, and a due-date calendar."
+      },
+      "team": {
+        "title": "Team, accountant, several companies",
+        "description": "Invite colleagues and your accountant with their own role. Run a sole trade and a company from one account."
+      },
+      "auditLog": {
+        "title": "Change history",
+        "description": "Who changed what and when, including changes by AI and over the API. An issued document can only be corrected with a stated reason."
+      },
+      "reports": {
+        "title": "Reports by period",
+        "description": "Revenue, expenses and top customers for a month, quarter or year, compared with the previous period."
+      },
+      "backups": {
+        "title": "Backups to your own storage",
+        "description": "Company data is saved regularly to Google Drive, your server over SFTP or a webhook. Download everything in one click."
       }
     },
     "howItWorks": {
       "title": "How it works",
       "steps": {
         "capture": {
-          "title": "Capture the invoice",
-          "description": "Create it manually, or just send a voice note over Telegram or WhatsApp."
+          "title": "Dictate or type it",
+          "description": "A voice note on Telegram or WhatsApp, a photo of a receipt or one sentence. AI fills in the customer from ARES and the items.",
+          "highlight": "AI on the free plan too"
         },
         "draft": {
-          "title": "AI drafts it, ARES verifies",
-          "description": "AI transcribes the details and looks up your customer in the ARES registry – you always review before anything becomes final."
+          "title": "Check the draft",
+          "description": "Billanta checks the required details, VAT and numbering. Nothing is issued until you confirm it.",
+          "highlight": "Required-details check"
         },
         "issue": {
-          "title": "Issue with ISDOC and a QR code",
-          "description": "Confirm the draft and Billanta generates a compliant ISDOC file plus a scannable payment QR code."
+          "title": "Issue and send",
+          "description": "A PDF with a QR payment code, ISDOC, and UBL for Slovakia. Your client gets an email with a link to the invoice.",
+          "highlight": "10 documents a month free"
         },
         "getPaid": {
-          "title": "Get paid, automatically tracked",
-          "description": "Send it by email, share a payment link, and let overdue reminders and bank reconciliation do the rest."
+          "title": "Payments match themselves",
+          "description": "From Fio, another bank via PSD2 or PayPal. Each invoice shows what you keep after income tax and levies.",
+          "highlight": "You keep: the net amount"
         }
       }
     },
@@ -209,7 +249,7 @@
     },
     "compare": {
       "title": "Compared with the alternatives",
-      "lead": "More for free, a lower price and AI on every plan.",
+      "lead": "More for free, a lower price and AI on every plan. Next to Fakturoid, iDoklad, SuperFaktura, Vyfakturuj and BitFaktura.",
       "more": "Full comparison with Fakturoid, iDoklad and others"
     }
   },
@@ -2916,12 +2956,17 @@
     "isDistrictSeat": "District town of the {district} district.",
     "isRegionSeat": "Regional seat ({region}).",
     "mapLink": "Show on map (OpenStreetMap) ↗",
-    "taxTitle": "Competent tax office",
+    "taxTitle": "Offices for the self-employed",
     "taxNoteCz": "For sole traders by permanent residence, for companies by registered seat. Returns and VAT are filed online through the MOJE daně portal – Billanta prepares the figures.",
     "taxNoteSk": "For sole traders by permanent residence, for companies by registered seat. Returns and VAT are filed online through the Financial Administration portal – Billanta prepares the figures.",
     "nearbyTitle": "Nearest municipalities",
     "km": "{km, number} km",
-    "countryLabel": "Country"
+    "countryLabel": "Country",
+    "socialNote": "Sole traders send social insurance advances and a yearly income and expense summary here, based on permanent residence.",
+    "healthNoteCz": "Health insurance goes to the health insurer you choose yourself. Where you live does not matter.",
+    "healthNoteSk": "Health insurance goes to the health insurer you choose yourself. Where you live does not matter.",
+    "tradeNoteCz": "You can register a trade at any trade licensing office or online. The same form also registers you for tax, social and health insurance.",
+    "tradeNoteSk": "You can register a trade at any district office (trade licensing department) or online through slovensko.sk."
   },
   "mobile": {
     "more": "More",
@@ -4373,11 +4418,12 @@
       },
       "migration": {
         "name": "Switch from another system",
-        "title": "Switch from Fakturoid, iDoklad or Excel",
+        "title": "Switch from BitFaktura, Fakturoid, iDoklad or Excel",
         "description": "Bring over contacts and your whole invoice history from another invoicing system or from Excel. Preview before saving, no emails sent, numbering continues.",
         "lead": "Starting over doesn't mean losing your history. A CSV export from the old system is all you need.",
         "points": [
           "Import contacts and issued invoices from CSV",
+          "From BitFaktura straight over the API: invoices, address book and original PDFs",
           "Columns from Fakturoid, iDoklad, faktorio, Invoice Ninja or your own sheet are recognised automatically",
           "Preview with invoice count, period and totals before saving",
           "Multi-item invoices, proformas and credit notes",
@@ -4880,6 +4926,67 @@
             "a": "No. The client enters the card only on Stripe's secure page."
           }
         ]
+      },
+      "taxEstimate": {
+        "name": "Tax and levy estimate",
+        "title": "What you keep from an invoice after tax and levies",
+        "description": "Each invoice shows a rough net amount after income tax and social and health insurance under Czech sole-trader rules. For the whole year we work out the tax, insurance and next year’s advances.",
+        "lead": "An invoice for CZK 20,000 does not mean CZK 20,000 in your account. Billanta shows you what you keep.",
+        "points": [
+          "A \"You keep\" line on every invoice with a rough net amount",
+          "Works with a 60, 80, 40 or 30 % flat-rate expense, or none",
+          "Converted to CZK on foreign currency invoices",
+          "Yearly income tax estimate with the taxpayer credit",
+          "Social and health insurance, including next year’s advances",
+          "Enter the advances you paid and the estimate adjusts"
+        ],
+        "steps": [
+          "Issue an invoice and see right away what you keep.",
+          "Pick your flat rate, Billanta remembers it.",
+          "Open the yearly estimate in Exports, built from paid invoices and expenses."
+        ],
+        "faq": [
+          {
+            "q": "How accurate is it?",
+            "a": "It is a rough guide under Czech sole-trader rules. On an invoice it uses 15 % tax and insurance on that amount, without minimum advances or credits. The yearly estimate also counts the taxpayer credit and minimums, but it does not replace a tax return or a tax adviser."
+          },
+          {
+            "q": "What is the yearly estimate based on?",
+            "a": "Paid invoices and recorded expenses for the chosen year. Expenses can be a flat rate or actual."
+          },
+          {
+            "q": "Is it on the free plan?",
+            "a": "The \"You keep\" line on invoices is. The yearly estimate comes with the paid plans, from Start."
+          }
+        ]
+      },
+      "auditLog": {
+        "name": "Change history",
+        "title": "Change history: who changed what, and why",
+        "description": "Every change to an invoice, contact, company settings, bank account, team member or API key is recorded, with the author, the time and the old value.",
+        "lead": "When something changes on an invoice, you know who, when and why. Even when it was AI or a system connected over the API.",
+        "points": [
+          "Changes to invoices, contacts, the company, bank accounts, the team and API keys",
+          "The old and new value for each change",
+          "Author: a team member, AI, an API key or the system",
+          "An issued document can only be corrected with a stated reason",
+          "The whole company history in one place, under Activity"
+        ],
+        "steps": [
+          "Work as usual, the history records itself.",
+          "When correcting an issued document, give a reason.",
+          "Under Activity, see what changed in the company."
+        ],
+        "faq": [
+          {
+            "q": "Can a history entry be deleted or edited?",
+            "a": "No. The history is a record of what happened, so it cannot be edited in the app."
+          },
+          {
+            "q": "Can my accountant see it?",
+            "a": "Company members see it according to their permissions, so an invited accountant does too if their role allows it."
+          }
+        ]
       }
     },
     "indexSeoTitle": "Invoicing features for freelancers and SMEs"
@@ -5280,7 +5387,8 @@
       "ares": "ARES",
       "banka": "bank",
       "dobropis": "credit note"
-    }
+    },
+    "keyboardHint": "↑ ↓ select · Enter open · Esc close"
   },
   "glossary": {
     "legendLabel": "What the labels and colours mean",
@@ -5494,15 +5602,15 @@
         "label": "Free plan",
         "billanta": "10 docs/mo, then CZK 5 each",
         "fakturoid": "5 customers",
-        "idoklad": "5 contacts",
-        "superfaktura": "5 contacts",
+        "idoklad": "5 customers",
+        "superfaktura": "5 customers",
         "vyfakturuj": "5 customers",
-        "bitfaktura": "A few invoices/mo"
+        "bitfaktura": "1 invoice/mo"
       },
       "entry": {
         "label": "Cheapest plan",
         "billanta": "CZK 119/mo",
-        "fakturoid": "~CZK 150 incl. VAT",
+        "fakturoid": "CZK 151/mo",
         "idoklad": "CZK 187/mo",
         "superfaktura": "CZK 129/mo",
         "vyfakturuj": "CZK 175/mo",
@@ -5510,66 +5618,75 @@
       },
       "bank": {
         "label": "Bank matching",
-        "billanta": "Yes",
-        "fakturoid": "From 2nd plan",
-        "idoklad": "From 2nd plan",
-        "superfaktura": "Yes",
-        "vyfakturuj": "Yes",
-        "bitfaktura": "Yes"
+        "billanta": "Paid plans",
+        "fakturoid": "From 2nd paid plan",
+        "idoklad": "From 2nd paid plan",
+        "superfaktura": "Paid plans",
+        "vyfakturuj": "Paid plans",
+        "bitfaktura": "Import from 1st, matching from 2nd paid plan"
       },
       "ai": {
         "label": "AI document reading",
         "billanta": "Yes, even free",
         "fakturoid": "Add-on",
-        "idoklad": "A few free, then paid",
+        "idoklad": "3 free, then paid",
         "superfaktura": "20 free, then paid",
-        "vyfakturuj": "—",
+        "vyfakturuj": "–",
         "bitfaktura": "Limited"
       },
       "voice": {
         "label": "Invoice by voice / message",
-        "billanta": "Yes, incl. Telegram",
-        "fakturoid": "—",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "—"
+        "billanta": "Yes, Telegram and WhatsApp",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "taxEstimate": {
+        "label": "Tax and levy estimate",
+        "billanta": "On every invoice, yearly from Start",
+        "fakturoid": "Paid plans",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "import": {
+        "label": "Import from another app",
+        "billanta": "Fakturoid, iDoklad, BitFaktura (with PDFs), CSV",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "From Fakturoid and iDoklad",
+        "bitfaktura": "–"
       },
       "api": {
         "label": "API",
-        "billanta": "Yes",
+        "billanta": "Paid plans",
         "fakturoid": "Even free",
-        "idoklad": "From 2nd plan",
+        "idoklad": "From 2nd paid plan",
         "superfaktura": "Top plan only",
-        "vyfakturuj": "From 2nd plan",
-        "bitfaktura": "Yes"
-      },
-      "history": {
-        "label": "Change history",
-        "billanta": "Yes",
-        "fakturoid": "—",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "Yes"
+        "vyfakturuj": "From 2nd paid plan",
+        "bitfaktura": "Even free"
       },
       "recurring": {
         "label": "Recurring invoices",
         "billanta": "Yes, 2 even free",
-        "fakturoid": "Higher plans",
+        "fakturoid": "Top plan only",
         "idoklad": "Yes",
-        "superfaktura": "From 2nd plan",
-        "vyfakturuj": "Yes",
-        "bitfaktura": "Yes"
+        "superfaktura": "From 2nd paid plan",
+        "vyfakturuj": "From 2nd paid plan",
+        "bitfaktura": "Paid plans"
       },
       "reminders": {
         "label": "Automatic reminders",
-        "billanta": "Yes, from Start",
-        "fakturoid": "Yes",
-        "idoklad": "Yes",
-        "superfaktura": "From 2nd plan, SMS too",
-        "vyfakturuj": "Yes",
-        "bitfaktura": "—"
+        "billanta": "Paid plans",
+        "fakturoid": "From 2nd paid plan",
+        "idoklad": "From 2nd paid plan",
+        "superfaktura": "From 2nd paid plan, SMS too",
+        "vyfakturuj": "Paid plans",
+        "bitfaktura": "Yes, even free"
       },
       "einvoice": {
         "label": "ISDOC / e-invoice",
@@ -5578,16 +5695,34 @@
         "idoklad": "ISDOC",
         "superfaktura": "ISDOC",
         "vyfakturuj": "ISDOC",
-        "bitfaktura": "—"
+        "bitfaktura": "ISDOC, paid plans"
+      },
+      "qr": {
+        "label": "QR payment",
+        "billanta": "Yes, even free",
+        "fakturoid": "Yes, even free",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Yes",
+        "bitfaktura": "–"
+      },
+      "currencies": {
+        "label": "Foreign currencies",
+        "billanta": "Yes, ČNB rate filled in",
+        "fakturoid": "–",
+        "idoklad": "Yes, with rate",
+        "superfaktura": "–",
+        "vyfakturuj": "Yes, even free",
+        "bitfaktura": "Yes, ČNB or ECB rate"
       },
       "czsk": {
         "label": "Czechia and Slovakia",
         "billanta": "One account, SK levies too",
         "fakturoid": "No SK tax features",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "—"
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
       },
       "mobile": {
         "label": "Mobile",
@@ -5596,15 +5731,24 @@
         "idoklad": "iOS, Android",
         "superfaktura": "iOS, Android",
         "vyfakturuj": "iOS, Android",
-        "bitfaktura": "—"
+        "bitfaktura": "–"
+      },
+      "history": {
+        "label": "Change history",
+        "billanta": "Yes",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "Yes"
       }
     },
-    "disclaimer": "Based on the public Czech price lists as of {date}. Monthly prices with yearly billing, excl. VAT unless stated. Approximate, check with the provider. Names are trademarks of their owners.",
+    "disclaimer": "Based on the public Czech price lists as of {date}. Monthly prices with yearly billing, excl. VAT unless stated. \"2nd paid plan\" = the second cheapest paid plan. Free-plan limits are shown as customers, even where a price list calls them contacts. Approximate, check with the provider. Names are trademarks of their owners.",
     "reasonsTitle": "What makes Billanta different",
     "reasons": [
       {
-        "title": "Free without a contact limit",
-        "body": "Invoice anyone. You only pay for documents beyond 10 a month, one by one, not for a whole plan."
+        "title": "Free with no customer limit",
+        "body": "Invoice anyone. You only pay for documents above 10 a month, one by one, not for a whole plan."
       },
       {
         "title": "AI included",
@@ -5623,14 +5767,16 @@
         "body": "Automatic backups to Google Drive and a one-click download of everything."
       },
       {
-        "title": "Easy switch",
-        "body": "Import your contacts and documents from a file exported by your current app."
+        "title": "Easy to switch",
+        "body": "From Fakturoid, iDoklad or Excel via CSV, from BitFaktura straight over the API, original PDFs included."
       }
     ],
     "switchTitle": "Switching from another app?",
     "switchBody": "Start for free and bring your contacts and documents over with an import.",
     "pricingCta": "Pricing",
     "signupCta": "Start for free",
-    "notStated": "— = not stated in the price list (does not mean it is missing)"
+    "notStated": "– = not stated in the price list (does not mean it is missing)",
+    "verified": "Checked against the price lists in {date}",
+    "sourcesTitle": "Sources"
   }
 }

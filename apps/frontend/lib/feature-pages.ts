@@ -3,6 +3,7 @@ import {
   Archive,
   BellRing,
   Building2,
+  Calculator,
   Coins,
   CreditCard,
   FileCheck2,
@@ -12,6 +13,7 @@ import {
   Files,
   FolderInput,
   Globe2,
+  History,
   Landmark,
   Languages,
   Mail,
@@ -66,7 +68,9 @@ export const FEATURE_PAGES = [
   { slug: 'zalohovani-dat', key: 'backups', icon: Archive },
   { slug: 'tym-a-role', key: 'team', icon: Users },
   { slug: 'vice-firem', key: 'companies', icon: Building2 },
-  { slug: 'prechod-z-jineho-systemu', key: 'migration', icon: FolderInput }
+  { slug: 'prechod-z-jineho-systemu', key: 'migration', icon: FolderInput },
+  { slug: 'odhad-dane-a-odvodu', key: 'taxEstimate', icon: Calculator },
+  { slug: 'historie-zmen', key: 'auditLog', icon: History }
 ] as const satisfies readonly { slug: string; key: string; icon: ComponentType<{ className?: string }> }[];
 
 export type FeaturePage = (typeof FEATURE_PAGES)[number];

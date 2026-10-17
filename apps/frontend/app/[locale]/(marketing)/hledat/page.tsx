@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { Search } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { SiteSearchBox } from '@/components/site-search-box';
 import { searchSite, type SearchKind } from '@/lib/site-search';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -33,19 +33,7 @@ export default async function SiteSearchPage({
     <div className="container max-w-3xl py-12 sm:py-16">
       <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
       <form action="" method="get" role="search" className="mt-5 flex gap-2">
-        <label className="relative flex-1">
-          <span className="sr-only">{t('label')}</span>
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-          <input
-            type="search"
-            name="q"
-            defaultValue={query}
-            autoFocus
-            maxLength={100}
-            placeholder={t('placeholder')}
-            className="h-11 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm outline-none focus:border-primary"
-          />
-        </label>
+        <SiteSearchBox key={query} defaultValue={query} />
         <button type="submit" className="rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:opacity-90">
           {t('submit')}
         </button>

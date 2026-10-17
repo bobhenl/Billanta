@@ -106,3 +106,24 @@ during development and is not currently checked into the repo. If this data
 needs refreshing, repeat the steps above: fetch the two sources, join CZ
 municipalities to their district via `obecKod`, drop unresolvable rows
 (don't guess), and slugify with the collision rules described above.
+
+## Derived office data (not stored in this file)
+
+The city pages also name offices derived in code from `region`/`district`,
+not from extra columns here:
+
+- **Finanční úřad / Daňový úrad**: `getTaxOffice()` in `lib/municipalities.ts`
+  (CZ: one krajský FÚ per kraj; SK: by region seat).
+- **OSSZ (CZ only)**: `getSocialSecurityOffice()`, one per okres, checked
+  against the ČSSZ contact list by kraj
+  (https://www.cssz.gov.cz/web/cz/kontakty) in October 2026. Exceptions:
+  Praha (PSSZ), Brno-město (MSSZ Brno), the three Plzeň okresy (OSSZ Plzeň).
+
+Not included yet, because they need a dataset download that has not been
+done: the FÚ územní pracoviště and the ORP (živnostenský úřad) per obec.
+Both can be built from ČSÚ code list 65 with its obec link
+(`apl.czso.cz/iSMS/do_cis_export?kodcis=65&typdat=1&cisvaz=43_1182&format=2`)
+or the ČÚZK RÚIAN `vazby-cr.csv` (CC BY 4.0). This file has no obec codes,
+so `obecKod` has to be added first for the join. Health insurance is not
+tied to a locality, and Slovak Sociálna poisťovňa branches do not map 1:1
+to okresy, so neither is shown as an office.

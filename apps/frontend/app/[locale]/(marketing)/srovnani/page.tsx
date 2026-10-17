@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight, Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { BRANDS, COMPARED_AT, COMPETITOR_ROWS } from '@/lib/competitors';
+import { BRANDS, COMPETITOR_ROWS, comparedAtLabel } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ComparePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations('comparePage');
-  const comparedAt = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(new Date(`${COMPARED_AT}-01`));
+  const comparedAt = comparedAtLabel(locale);
   const reasons = t.raw('reasons') as { title: string; body: string }[];
 
   return (
@@ -65,7 +65,7 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
       </div>
 
       <div className="mt-8 hidden overflow-x-auto rounded-xl border border-border bg-card sm:block">
-        <table className="w-full min-w-[720px] border-collapse text-[13px]">
+        <table className="w-full min-w-[860px] border-collapse text-[13px]">
           <caption className="sr-only">{t('title')}</caption>
           <thead>
             <tr className="border-b border-border">
@@ -105,8 +105,19 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
           </tbody>
         </table>
       </div>
-      <p className="mt-3 max-w-3xl text-xs text-muted-foreground">
+      <p className="mt-3 text-xs font-semibold text-foreground">{t('verified', { date: comparedAt })}</p>
+      <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
         {t('notStated')}. {t('disclaimer', { date: comparedAt })}
+      </p>
+      <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
+        {t('sourcesTitle')}:{' '}
+        {BRANDS.map((b) =>
+          b.pricingUrl ? (
+            <a key={b.key} href={b.pricingUrl} target="_blank" rel="noopener noreferrer nofollow" className="mr-2 underline hover:text-foreground">
+              {b.name}
+            </a>
+          ) : null
+        )}
       </p>
 
       <h2 className="mt-12 text-2xl font-extrabold tracking-tight">{t('reasonsTitle')}</h2>
