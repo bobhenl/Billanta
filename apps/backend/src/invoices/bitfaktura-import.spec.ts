@@ -257,20 +257,20 @@ describe("fetchBitfakturaClients", () => {
 });
 
 describe("e-mail typed into the address", () => {
-  it("is used as the e-mail and kept out of the address", () => {
+  it("is used as the e-mail and kept in the address as typed", () => {
     const [bare, both, inCity] = mapBitfakturaClients([
       { id: 1, name: "Brandon", street: "Contact@brandhyde.com", country: "GB" },
       { id: 2, name: "Gabe", street: "gabe@example.com", email: "billing@example.com" },
       { id: 3, name: "Kamran", street: "Main St 1", city: "k@example.com" },
     ]);
-    expect(bare).toMatchObject({ email: "Contact@brandhyde.com", addressStreet: null, addressCity: null, addressCountry: "GB" });
-    expect(both).toMatchObject({ email: "billing@example.com", addressStreet: null });
-    expect(inCity).toMatchObject({ email: "k@example.com", addressStreet: "Main St 1", addressCity: null });
+    expect(bare).toMatchObject({ email: "Contact@brandhyde.com", addressStreet: "Contact@brandhyde.com", addressCity: null, addressCountry: "GB" });
+    expect(both).toMatchObject({ email: "billing@example.com", addressStreet: "gabe@example.com" });
+    expect(inCity).toMatchObject({ email: "k@example.com", addressStreet: "Main St 1", addressCity: "k@example.com" });
   });
 
   it("works the same for invoice buyers", () => {
     const { invoices } = mapBitfakturaInvoices([invoice({ buyer_street: "mail@cintro.dev", buyer_email: "", buyer_city: "" })]);
-    expect(invoices[0]!.customer).toMatchObject({ email: "mail@cintro.dev", addressStreet: null });
+    expect(invoices[0]!.customer).toMatchObject({ email: "mail@cintro.dev", addressStreet: "mail@cintro.dev" });
   });
 });
 

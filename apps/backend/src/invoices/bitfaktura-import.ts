@@ -208,7 +208,8 @@ function contactFrom(c: {
 }): ImportedInvoice["customer"] {
   const taxNo = (c.taxNo ?? "").replace(/[\s-]/g, "").toUpperCase();
   // With no address at hand, people often typed the e-mail into the street or city
-  // field. It is not an address, but it may be the only e-mail the contact has.
+  // field on purpose, so the invoice still shows how to reach the buyer. Keep it
+  // there as typed, and also use it as the contact's e-mail when there is none.
   const street = text(c.street, 255);
   const city = text(c.city, 255);
   const email = [c.email, street, city].map((v) => (v ?? "").trim()).find(isEmail) ?? null;
@@ -217,8 +218,8 @@ function contactFrom(c: {
     ico: /^\d{8}$/.test(taxNo) ? taxNo : null,
     dic: /^[A-Z]{2}[0-9A-Z]{2,12}$/.test(taxNo) ? taxNo : null,
     email,
-    addressStreet: street && !isEmail(street) ? street : null,
-    addressCity: city && !isEmail(city) ? city : null,
+    addressStreet: street,
+    addressCity: city,
     addressPostalCode: text(c.postCode, 10),
     addressCountry: normalizeCountry(c.country ?? undefined) ?? "CZ",
   };
