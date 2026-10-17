@@ -16,6 +16,9 @@ export {
   type OsvcAnnualSummary as AnnualSummary,
 } from "@faktur/cz-compliance";
 
+/** Which day makes income count for a year: paid (daňová evidence) or DUZP (účetnictví). */
+export type AccountingBasis = "cash" | "accrual";
+
 /**
  * Paid social / health advances for the summary: a typed amount wins,
  * otherwise the advances from Settings for the 12 months of the year (each

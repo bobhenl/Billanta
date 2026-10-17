@@ -8,7 +8,7 @@ import { and, asc, eq, gte, inArray, isNotNull, lt, ne, notInArray, sql } from "
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
-import { computeAnnualSummary, type FlatRate } from "./annual-summary";
+import { type AccountingBasis, computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getCnbRate } from "./cnb-rates";
 import {
   generateDphDp3,
@@ -640,18 +640,22 @@ export class ExportsService {
   }
 
   /**
-   * Cash-basis income and expenses of a calendar year (daňová evidence):
-   * invoices and credit notes by the day they were paid, expenses by the day
-   * paid (or dated, when no payment is recorded). VAT payers count amounts
-   * without VAT. Everything is converted to CZK.
+   * Income and expenses of a calendar year, converted to CZK. Cash basis
+   * (daňová evidence, the default): invoices and credit notes by the day they
+   * were paid, expenses by the day paid (or dated, when no payment is
+   * recorded). Accrual basis (účetnictví): issued invoices by DUZP (issue date
+   * when there is none), expenses by their date. VAT payers count amounts
+   * without VAT.
    */
   async annualSummary(
     db: Db,
     year: number,
-    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number },
+    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number; basis?: AccountingBasis },
   ) {
     const from = new Date(year, 0, 1);
     const to = new Date(year + 1, 0, 1);
+    const accrual = opts.basis === "accrual";
+    const earnedOn = sql`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const invoices = await db
       .select()
       .from(schema.invoices)
@@ -659,9 +663,13 @@ export class ExportsService {
         and(
           isNotNull(schema.invoices.invoiceNumber),
           inArray(schema.invoices.documentType, ["invoice", "credit_note"]),
-          eq(schema.invoices.status, "paid"),
-          gte(schema.invoices.paidAt, from),
-          lt(schema.invoices.paidAt, to),
+          ...(accrual
+            ? [
+                inArray(schema.invoices.status, ["issued", "paid"]),
+                sql`${earnedOn} >= ${from.toISOString()}`,
+                sql`${earnedOn} < ${to.toISOString()}`,
+              ]
+            : [eq(schema.invoices.status, "paid"), gte(schema.invoices.paidAt, from), lt(schema.invoices.paidAt, to)]),
         ),
       );
     const ids = invoices.map((i) => i.id);
@@ -674,7 +682,8 @@ export class ExportsService {
         { reverseCharge: invoice.reverseCharge },
       );
       const amount = opts.vatPayer ? totals.totalWithoutVat : totals.totalWithVat;
-      const rate = invoice.currency === "CZK" ? 1 : Number(invoice.exchangeRate) || (await getCnbRate(invoice.currency, invoice.paidAt));
+      const rateDay = (accrual ? (invoice.taxableSupplyDate ?? invoice.issueDate) : invoice.paidAt) ?? invoice.createdAt;
+      const rate = invoice.currency === "CZK" ? 1 : Number(invoice.exchangeRate) || (await getCnbRate(invoice.currency, rateDay));
       if (rate == null) {
         missingRates++;
         continue;
@@ -682,7 +691,7 @@ export class ExportsService {
       income += Math.abs(amount) * rate * (invoice.documentType === "credit_note" ? -1 : 1);
     }
 
-    const paidOn = sql`coalesce(${schema.expenses.paidAt}, ${schema.expenses.expenseDate})`;
+    const paidOn = accrual ? sql`${schema.expenses.expenseDate}` : sql`coalesce(${schema.expenses.paidAt}, ${schema.expenses.expenseDate})`;
     const expenses = await db
       .select()
       .from(schema.expenses)
@@ -701,6 +710,7 @@ export class ExportsService {
     return {
       ...computeAnnualSummary({ year, income, actualExpenses, flatRate: opts.flatRate, paidSocial: opts.paidSocial, paidHealth: opts.paidHealth }),
       vatPayer: opts.vatPayer,
+      basis: opts.basis ?? "cash",
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
     };
   }

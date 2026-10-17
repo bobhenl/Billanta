@@ -1,3 +1,4 @@
+import { DATASET_CHECKED } from './legislation-datasets.js';
 import { nextCzechWorkingDay } from './working-days.js';
 
 /**
@@ -16,8 +17,12 @@ export const VAT_FORM_VERSIONS = {
   DPHSHV: '02.01'
 } as const;
 
-/** The day the VAT guide text and form versions were last compared with financnisprava.gov.cz (YYYY-MM-DD). */
-export const VAT_INFO_CHECKED = '2026-10-17';
+/**
+ * The day the VAT guide text and form versions were last compared with
+ * financnisprava.gov.cz by hand (YYYY-MM-DD). Pages prefer the monitor's
+ * date via datasetChecked('vat_forms', …); this stays as the fallback.
+ */
+export const VAT_INFO_CHECKED = DATASET_CHECKED.vat_forms;
 
 /** Official source the guide and the export box link to. */
 export const VAT_OFFICIAL_URL = 'https://financnisprava.gov.cz/cs/dane/dane/dan-z-pridane-hodnoty';
