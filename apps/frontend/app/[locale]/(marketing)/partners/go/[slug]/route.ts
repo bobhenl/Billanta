@@ -5,14 +5,14 @@ const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace
 const SLUG = /^[a-z0-9-]{1,60}$/;
 
 /**
- * `/partneri/go/:slug`: counts the click in the backend (bots and repeats
+ * `/partners/go/:slug`: counts the click in the backend (bots and repeats
  * excluded there, per visitor IP passed as `x-guest-ip`) and redirects to
  * the partner. Unknown or inactive partners land on the directory instead.
  * robots.txt disallows the path, and links to it carry rel="sponsored".
  */
 export async function GET(request: Request, { params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
-  const fallback = new URL(`/${locale}/partneri`, request.url);
+  const fallback = new URL(`/${locale}/partners`, request.url);
   if (!SLUG.test(slug)) return NextResponse.redirect(fallback, 302);
   const ip = clientIp(request);
   try {

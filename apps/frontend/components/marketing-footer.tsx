@@ -25,10 +25,10 @@ export async function MarketingFooter() {
     {
       title: t('product.title'),
       links: [
-        { href: '/funkce', label: t('product.features') },
-        { href: '/vytvorit-fakturu', label: t('product.guestInvoice') },
+        { href: '/features', label: t('product.features') },
+        { href: '/create-invoice', label: t('product.guestInvoice') },
         { href: '/pricing', label: t('product.pricing') },
-        { href: '/srovnani', label: t('product.compare') },
+        { href: '/compare', label: t('product.compare') },
         { href: '/#faq', label: t('product.faq') }
       ]
     },
@@ -36,9 +36,9 @@ export async function MarketingFooter() {
       title: t('company.title'),
       links: [
         { href: '/about', label: t('company.about') },
-        { href: '/pro-ucetni', label: t('company.accountants') },
-        { href: '/partneri', label: t('company.partners') },
-        { href: '/faktury-pro', label: tMunicipalities('breadcrumbBrowse') }
+        { href: '/for-accountants', label: t('company.accountants') },
+        { href: '/partners', label: t('company.partners') },
+        { href: '/invoicing', label: tMunicipalities('breadcrumbBrowse') }
       ]
     },
     {
@@ -107,7 +107,7 @@ export async function MarketingFooter() {
                   {p.name}
                 </a>
               ))}
-              <Link href="/partneri" className="font-semibold text-primary hover:underline">
+              <Link href="/partners" className="font-semibold text-primary hover:underline">
                 {t('partners.all')}
               </Link>
             </div>

@@ -15,7 +15,7 @@ import { GuestInvoiceForm } from './guest-invoice-form';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'guestInvoice' });
-  return publicPageMetadata({ locale, path: '/vytvorit-fakturu', title: t('seoTitle'), description: t('seoDescription') });
+  return publicPageMetadata({ locale, path: '/create-invoice', title: t('seoTitle'), description: t('seoDescription') });
 }
 
 export default async function GuestInvoicePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -27,7 +27,7 @@ export default async function GuestInvoicePage({ params }: { params: Promise<{ l
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: `${t('heading')} – ${SITE_NAME}`,
-    url: `${SITE_URL}/${locale}/vytvorit-fakturu`,
+    url: `${SITE_URL}/${locale}/create-invoice`,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     inLanguage: locale,

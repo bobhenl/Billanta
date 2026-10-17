@@ -40,7 +40,7 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
  *   - pretend the product behaves differently here (`localNote` says so).
  * Each page is indexed only in its own language (see isIndexedMunicipality).
  * If Google's spam policies ever require pulling this route, everything
- * lives under this `faktury-pro` segment plus `data/municipalities.json`
+ * lives under this `invoicing` segment plus `data/municipalities.json`
  * and `lib/municipalities.ts`.
  */
 
@@ -74,12 +74,12 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'municipalityPages' });
   const metadata = publicPageMetadata({
     locale,
-    path: `/faktury-pro/${slug}`,
+    path: `/invoicing/${slug}`,
     title: t('heading', { name: municipality.name }),
     description: t('metaDescription', { name: municipality.name, district: municipality.district, region: municipality.region })
   });
   // The page exists in one language only; the other locales are not alternates of it.
-  const home = `${SITE_URL}/${municipalityLocale(municipality)}/faktury-pro/${slug}`;
+  const home = `${SITE_URL}/${municipalityLocale(municipality)}/invoicing/${slug}`;
   const alternates = { ...metadata.alternates, languages: { [municipalityLocale(municipality)]: home, 'x-default': home } };
   return isIndexedMunicipality(municipality, locale)
     ? { ...metadata, alternates }
@@ -98,7 +98,7 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
   const t = await getTranslations('municipalityPages');
   const countryLabel = municipality.country === 'CZ' ? t('countryCz') : t('countrySk');
   const socialOffice = getSocialSecurityOffice(municipality);
-  const regionHref = `/faktury-pro#${regionAnchorId(municipality.country, municipality.region)}`;
+  const regionHref = `/invoicing#${regionAnchorId(municipality.country, municipality.region)}`;
   const seat = getDistrictSeat(municipality);
   const regionSeat = getRegionSeat(municipality);
   const nearby = getNearbyMunicipalities(municipality, 10);
@@ -113,7 +113,7 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
     return (
       <>
         {t(key, { km: km(d), dir })}{' '}
-        <Link href={`/faktury-pro/${from.slug}`} className="font-medium text-primary hover:underline">
+        <Link href={`/invoicing/${from.slug}`} className="font-medium text-primary hover:underline">
           {from.name}
         </Link>
       </>
@@ -134,13 +134,13 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
             dangerouslySetInnerHTML={jsonLd(
               breadcrumbLd(locale, [
                 [SITE_NAME, '/'],
-                [t('breadcrumbBrowse'), '/faktury-pro'],
-                [municipality.name, `/faktury-pro/${slug}`]
+                [t('breadcrumbBrowse'), '/invoicing'],
+                [municipality.name, `/invoicing/${slug}`]
               ])
             )}
           />
           <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-            <Link href="/faktury-pro" className="hover:text-foreground">
+            <Link href="/invoicing" className="hover:text-foreground">
               {t('breadcrumbBrowse')}
             </Link>
             <span className="mx-2">/</span>
@@ -225,7 +225,7 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
                 {nearby.map(({ municipality: n, km: d }) => (
                   <li key={n.slug}>
                     <Link
-                      href={`/faktury-pro/${n.slug}`}
+                      href={`/invoicing/${n.slug}`}
                       className="inline-block rounded-full border border-border px-3 py-1 text-sm text-foreground hover:border-primary hover:text-primary"
                     >
                       {n.name} <span className="text-muted-foreground">· {t('km', { km: km(d) })}</span>
@@ -244,7 +244,7 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
               <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
                 {district.others.map((n) => (
                   <li key={n.slug}>
-                    <Link href={`/faktury-pro/${n.slug}`} className="text-muted-foreground hover:text-foreground hover:underline">
+                    <Link href={`/invoicing/${n.slug}`} className="text-muted-foreground hover:text-foreground hover:underline">
                       {n.name}
                     </Link>
                   </li>

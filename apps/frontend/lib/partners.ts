@@ -37,4 +37,4 @@ export async function fetchPartners(opts: { category?: PartnerCategory; footer?:
  * the partner. A plain `<a>` with the locale already in it: a next-intl
  * `<Link>` could prefetch the route handler and count clicks nobody made.
  */
-export const partnerHref = (locale: string, slug: string) => `/${locale}/partneri/go/${slug}`;
+export const partnerHref = (locale: string, slug: string) => `/${locale}/partners/go/${slug}`;

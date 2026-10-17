@@ -51,7 +51,7 @@ const publicColumns = {
 };
 
 /**
- * The partners directory (/partneri, the footer strip, `/partneri/go/:slug`).
+ * The partners directory (/partners, the footer strip, `/partners/go/:slug`).
  * `partners` is a global catalogue with no RLS, so the pool connection is
  * the right one here (see DbService). Public reads never expose the target
  * URL or click counts: visitors reach a partner only through the counting

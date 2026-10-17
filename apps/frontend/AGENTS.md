@@ -13,8 +13,8 @@ pnpm --filter @faktur/frontend lint
 ## Layout
 
 ```
-app/[locale]/(marketing)/   public site: home, funkce, pricing, vytvorit-fakturu (guest invoice),
-                            pro-ucetni, partneri, srovnani, faktury-pro (local SEO), legal, about
+app/[locale]/(marketing)/   public site: home, features, pricing, create-invoice (guest invoice),
+                            for-accountants, partners, compare, invoicing (local SEO), search, legal, about
 app/[locale]/(auth)/        login, signup, forgot/reset password
 app/[locale]/(dashboard)/   the app (invoices, contacts, expenses, bank, reports, settings, …)
 app/[locale]/{c,d,i,p}/     public token/slug pages (client portal, documents, invoice link, profile)
@@ -25,8 +25,10 @@ messages/{cs,sk,en}.json    translations
 middleware.ts               locale routing, profile subdomain rewrite, referral cookie
 ```
 
-Route folder names on the public site are Czech (`/vytvorit-fakturu`,
-`/pro-ucetni`), and all locales use the same slugs.
+Route folder names and slugs on the public site are English (`/create-invoice`,
+`/features/qr-payments`), the same in every locale. Old Czech URLs 301 via
+`lib/legacy-slugs.json` (next.config.mjs). Never rename a public slug without
+adding it there.
 
 ## i18n
 
@@ -84,6 +86,6 @@ Route folder names on the public site are Czech (`/vytvorit-fakturu`,
   `breadcrumbLd`.
 - New public pages go into `app/sitemap.ts`. Private or redirect paths go
   into the `PRIVATE` list in `app/robots.ts`.
-- Outbound partner links are plain `<a>` tags through `/partneri/go/:slug`
+- Outbound partner links are plain `<a>` tags through `/partners/go/:slug`
   with `rel="sponsored noopener"`. Not `Link`, because prefetching would
   count clicks.

@@ -5,7 +5,7 @@ import { takeToken } from '@/lib/rate-limit';
 import { searchSite } from '@/lib/site-search';
 
 /**
- * Autocomplete for the public /hledat box. Same in-memory index as the
+ * Autocomplete for the public /search box. Same in-memory index as the
  * server-rendered results page (public copy only: features, FAQ, pages,
  * municipalities), so nothing here is private. The middleware skips /api,
  * so the locale comes as a query parameter. One request per keystroke

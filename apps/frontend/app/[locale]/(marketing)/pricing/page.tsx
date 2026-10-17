@@ -113,7 +113,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         <p className="text-xs">{t('vatNote')}</p>
       </div>
 
-      <Link href="/srovnani" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+      <Link href="/compare" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
         {t('compareCompetitors')}
         <ArrowRight className="h-4 w-4" aria-hidden="true" />
       </Link>

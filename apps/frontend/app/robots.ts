@@ -32,7 +32,7 @@ const PRIVATE = [
   'i/',
   'c/',
   // Counting redirects to partner sites (VoxelRank: /partners/go/).
-  'partneri/go/'
+  'partners/go/'
 ].map(
   (section) => `/*/${section}`
 );

@@ -9,7 +9,7 @@ import { SITE_NAME } from '@/lib/site';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'comparePage' });
-  return publicPageMetadata({ locale, path: '/srovnani', title: t('seoTitle'), description: t('lead') });
+  return publicPageMetadata({ locale, path: '/compare', title: t('seoTitle'), description: t('lead') });
 }
 
 /**
@@ -29,10 +29,10 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
-          webPageLd(locale, '/srovnani', 'WebPage', t('title'), t('lead')),
+          webPageLd(locale, '/compare', 'WebPage', t('title'), t('lead')),
           breadcrumbLd(locale, [
             [SITE_NAME, '/'],
-            [t('title'), '/srovnani']
+            [t('title'), '/compare']
           ])
         ])}
       />

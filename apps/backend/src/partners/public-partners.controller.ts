@@ -5,8 +5,8 @@ import { visitorIp } from "../guest-invoices/guest-limits";
 import { PARTNER_CATEGORIES, PartnersService, type PartnerCategory } from "./partners.service";
 
 /**
- * PUBLIC partners directory: the /partneri page, the footer strip and the
- * counting redirect behind `/partneri/go/:slug`. Like the guest invoice, its
+ * PUBLIC partners directory: the /partners page, the footer strip and the
+ * counting redirect behind `/partners/go/:slug`. Like the guest invoice, its
  * own module, no JWT guard, no tenant context.
  */
 @ApiTags("public-partners")

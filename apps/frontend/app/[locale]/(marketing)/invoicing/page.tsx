@@ -6,7 +6,7 @@ import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
 /**
- * Directory/browse page for the `/faktury-pro/[slug]` municipality landing
+ * Directory/browse page for the `/invoicing/[slug]` municipality landing
  * pages. This exists so every municipality page is reachable through real
  * on-site links (country -> region -> municipality), not only through
  * `app/sitemap.ts` — genuine crawlable internal linking is part of this
@@ -21,7 +21,7 @@ type Params = { locale: string };
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'municipalityPages' });
-  const metadata = publicPageMetadata({ locale, path: '/faktury-pro', title: t('indexTitle'), description: t('indexLead') });
+  const metadata = publicPageMetadata({ locale, path: '/invoicing', title: t('indexTitle'), description: t('indexLead') });
   // Town pages are written for Czech and Slovak visitors; the English directory is for browsing only.
   return locale === 'en' ? { ...metadata, robots: { index: false, follow: true } } : metadata;
 }
@@ -40,10 +40,10 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={jsonLd([
-              webPageLd(locale, '/faktury-pro', 'CollectionPage', t('indexTitle'), t('indexLead')),
+              webPageLd(locale, '/invoicing', 'CollectionPage', t('indexTitle'), t('indexLead')),
               breadcrumbLd(locale, [
                 [SITE_NAME, '/'],
-                [t('breadcrumbBrowse'), '/faktury-pro']
+                [t('breadcrumbBrowse'), '/invoicing']
               ])
             ])}
           />
@@ -56,7 +56,7 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
             {country && (
               <>
                 {' '}
-                <Link href="/faktury-pro" locale={country === 'CZ' ? 'sk' : 'cs'} className="font-medium text-primary hover:underline">
+                <Link href="/invoicing" locale={country === 'CZ' ? 'sk' : 'cs'} className="font-medium text-primary hover:underline">
                   {t('otherCountry')}
                 </Link>
               </>
@@ -89,7 +89,7 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
                       {group.municipalities.map((m) => (
                         <li key={m.slug}>
                           <Link
-                            href={`/faktury-pro/${m.slug}`}
+                            href={`/invoicing/${m.slug}`}
                             className="text-muted-foreground transition-colors hover:text-foreground hover:underline"
                           >
                             {m.name}

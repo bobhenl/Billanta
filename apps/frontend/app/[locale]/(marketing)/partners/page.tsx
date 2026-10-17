@@ -11,26 +11,26 @@ import { fetchPartners, partnerHref, PARTNER_CATEGORIES, type PartnerCategory } 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'partners' });
-  return publicPageMetadata({ locale, path: '/partneri', title: t('seoTitle'), description: t('lead') });
+  return publicPageMetadata({ locale, path: '/partners', title: t('seoTitle'), description: t('lead') });
 }
 
 /**
  * Partners directory (as on VoxelRank): accountants, banks and tools that
  * work well with Billanta. Every outbound link goes through the counting
- * redirect `/partneri/go/:slug` and is marked `sponsored`. Categories filter
- * with `?kategorie=` so each stays a plain, shareable link.
+ * redirect `/partners/go/:slug` and is marked `sponsored`. Categories filter
+ * with `?category=` so each stays a plain, shareable link.
  */
 export default async function PartnersPage({
   params,
   searchParams
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ kategorie?: string }>;
+  searchParams: Promise<{ category?: string }>;
 }) {
   const { locale } = await params;
-  const { kategorie } = await searchParams;
+  const { category: requested } = await searchParams;
   const t = await getTranslations('partners');
-  const category = (PARTNER_CATEGORIES as readonly string[]).includes(kategorie ?? '') ? (kategorie as PartnerCategory) : undefined;
+  const category = (PARTNER_CATEGORIES as readonly string[]).includes(requested ?? '') ? (requested as PartnerCategory) : undefined;
   const [partners, all] = await Promise.all([fetchPartners({ category }), category ? fetchPartners() : null]);
   const present = new Set((all ?? partners).map((p) => p.category));
 
@@ -41,7 +41,7 @@ export default async function PartnersPage({
         dangerouslySetInnerHTML={jsonLd(
           breadcrumbLd(locale, [
             [SITE_NAME, '/'],
-            [t('title'), '/partneri']
+            [t('title'), '/partners']
           ])
         )}
       />
@@ -53,7 +53,7 @@ export default async function PartnersPage({
           {[undefined, ...PARTNER_CATEGORIES.filter((c) => present.has(c))].map((c) => (
             <Link
               key={c ?? 'all'}
-              href={c ? { pathname: '/partneri', query: { kategorie: c } } : '/partneri'}
+              href={c ? { pathname: '/partners', query: { category: c } } : '/partners'}
               aria-current={c === category ? 'page' : undefined}
               className={cn(
                 'rounded-full border px-3 py-1 text-sm font-semibold transition-colors',
@@ -113,7 +113,7 @@ export default async function PartnersPage({
         <h2 className="text-xl font-bold tracking-tight">{t('become.title')}</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t('become.body')}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Link href="/pro-ucetni" className={buttonClass.primary}>
+          <Link href="/for-accountants" className={buttonClass.primary}>
             {t('become.accountants')}
           </Link>
           <Link href="/signup" className={buttonClass.secondary}>

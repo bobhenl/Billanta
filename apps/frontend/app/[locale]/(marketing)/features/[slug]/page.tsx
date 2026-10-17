@@ -9,7 +9,7 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 /**
  * One landing page per real feature (see `lib/feature-pages.ts`). Unlike
- * `/faktury-pro`, every page here has its own copy: what it does, the steps,
+ * `/invoicing`, every page here has its own copy: what it does, the steps,
  * and an FAQ mirrored 1:1 in FAQPage structured data (both read the same
  * message keys, so the markup always describes visible text).
  */
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const t = await getTranslations({ locale, namespace: 'featurePages' });
   return publicPageMetadata({
     locale,
-    path: `/funkce/${slug}`,
+    path: `/features/${slug}`,
     title: t(`items.${feature.key}.title`),
     description: t(`items.${feature.key}.description`)
   });
@@ -46,7 +46,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
   const steps = t.raw(`${k}.steps`) as string[];
   const faq = t.raw(`${k}.faq`) as Faq[];
   const Icon = feature.icon;
-  const url = `${SITE_URL}/${locale}/funkce/${slug}`;
+  const url = `${SITE_URL}/${locale}/features/${slug}`;
 
   const structuredData = [
     {
@@ -54,7 +54,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: SITE_NAME, item: `${SITE_URL}/${locale}` },
-        { '@type': 'ListItem', position: 2, name: t('breadcrumb'), item: `${SITE_URL}/${locale}/funkce` },
+        { '@type': 'ListItem', position: 2, name: t('breadcrumb'), item: `${SITE_URL}/${locale}/features` },
         { '@type': 'ListItem', position: 3, name: t(`${k}.name`), item: url }
       ]
     },
@@ -69,7 +69,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
-        <Link href="/funkce" className="hover:text-foreground">
+        <Link href="/features" className="hover:text-foreground">
           {t('breadcrumb')}
         </Link>
         <span className="mx-2">/</span>
@@ -141,7 +141,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
           {relatedFeaturePages(slug).map((r) => (
             <li key={r.slug}>
               <Link
-                href={`/funkce/${r.slug}`}
+                href={`/features/${r.slug}`}
                 className="inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary"
               >
                 {t(`items.${r.key}.name`)}
@@ -149,7 +149,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
             </li>
           ))}
           <li>
-            <Link href="/funkce" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
+            <Link href="/features" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
               {t('allFeatures')} →
             </Link>
           </li>

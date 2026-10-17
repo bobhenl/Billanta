@@ -10,7 +10,7 @@ import { REFERRAL_REWARDS } from '@/lib/referral';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'accountants' });
-  return publicPageMetadata({ locale, path: '/pro-ucetni', title: t('seoTitle'), description: t('lead') });
+  return publicPageMetadata({ locale, path: '/for-accountants', title: t('seoTitle'), description: t('lead') });
 }
 
 /**
@@ -41,7 +41,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
         dangerouslySetInnerHTML={jsonLd(
           breadcrumbLd(locale, [
             [SITE_NAME, '/'],
-            [t('title'), '/pro-ucetni']
+            [t('title'), '/for-accountants']
           ])
         )}
       />
@@ -52,7 +52,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
         <Link href="/signup" className={buttonClass.primary}>
           {t('cta')}
         </Link>
-        <Link href="/partneri" className={buttonClass.secondary}>
+        <Link href="/partners" className={buttonClass.secondary}>
           {t('partnersLink')}
         </Link>
       </div>

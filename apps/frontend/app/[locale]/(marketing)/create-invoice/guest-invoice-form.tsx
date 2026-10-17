@@ -581,7 +581,7 @@ export function GuestInvoiceForm() {
           <Link href="/signup" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
             {t('signup')}
           </Link>
-          <Link href="/funkce" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
+          <Link href="/features" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
             {t('showcase.all')}
           </Link>
         </div>

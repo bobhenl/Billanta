@@ -21,7 +21,7 @@ export async function MarketingNavbar() {
   const tApp = await getTranslations('app');
 
   const links = [
-    { href: '/funkce', label: t('features') },
+    { href: '/features', label: t('features') },
     { href: '/pricing', label: t('pricing') },
     { href: '/#faq', label: t('faq') }
   ];
@@ -48,7 +48,7 @@ export async function MarketingNavbar() {
 
         <div className="flex items-center gap-1.5">
           <Link
-            href="/hledat"
+            href="/search"
             aria-label={t('search')}
             title={t('search')}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -64,7 +64,7 @@ export async function MarketingNavbar() {
             {t('login')}
           </Link>
           <Link
-            href="/vytvorit-fakturu"
+            href="/create-invoice"
             className="hidden items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-flex"
           >
             <Plus className="h-4 w-4" aria-hidden="true" />

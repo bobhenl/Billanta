@@ -26,7 +26,7 @@ export function MarketingTabBar() {
       items={[
         { key: 'home', href: '/', label: t('home'), icon: Home, exact: true },
         { key: 'pricing', href: '/pricing', label: t('pricing'), icon: BadgePercent },
-        { key: 'invoice', href: '/vytvorit-fakturu', label: t('createInvoiceShort'), icon: Plus, cta: true },
+        { key: 'invoice', href: '/create-invoice', label: t('createInvoiceShort'), icon: Plus, cta: true },
         signedIn
           ? { key: 'app', href: '/dashboard', label: t('app'), icon: LayoutDashboard }
           : { key: 'login', href: '/login', label: t('account'), icon: UserRound }
@@ -34,9 +34,9 @@ export function MarketingTabBar() {
       moreLabel={tMobile('more')}
       panelTitle={tMobile('explore')}
       links={[
-        { key: 'features', href: '/funkce', label: t('features'), icon: Sparkles },
-        { key: 'accountants', href: '/pro-ucetni', label: t('accountants'), icon: Calculator },
-        { key: 'partners', href: '/partneri', label: t('partners'), icon: Handshake },
+        { key: 'features', href: '/features', label: t('features'), icon: Sparkles },
+        { key: 'accountants', href: '/for-accountants', label: t('accountants'), icon: Calculator },
+        { key: 'partners', href: '/partners', label: t('partners'), icon: Handshake },
         { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp }
       ]}
       panelFooter={

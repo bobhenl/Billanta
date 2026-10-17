@@ -10,7 +10,7 @@ import { SITE_URL } from '@/lib/site';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'featurePages' });
-  return publicPageMetadata({ locale, path: '/funkce', title: t('indexSeoTitle'), description: t('indexDescription') });
+  return publicPageMetadata({ locale, path: '/features', title: t('indexSeoTitle'), description: t('indexDescription') });
 }
 
 export default async function FeaturesIndexPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -24,7 +24,7 @@ export default async function FeaturesIndexPage({ params }: { params: Promise<{ 
       '@type': 'ListItem',
       position: i + 1,
       name: t(`items.${f.key}.name`),
-      url: `${SITE_URL}/${locale}/funkce/${f.slug}`
+      url: `${SITE_URL}/${locale}/features/${f.slug}`
     }))
   };
 
@@ -38,7 +38,7 @@ export default async function FeaturesIndexPage({ params }: { params: Promise<{ 
         {FEATURE_PAGES.map(({ slug, key, icon: Icon }) => (
           <li key={slug}>
             <Link
-              href={`/funkce/${slug}`}
+              href={`/features/${slug}`}
               className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary">

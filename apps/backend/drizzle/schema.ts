@@ -1290,7 +1290,7 @@ export const creditLedger = pgTable("credit_ledger", {
 });
 
 // ---------------------------------------------------------------------------
-// partners — GLOBAL catalogue (no tenant, no RLS) behind /partneri and the
+// partners — GLOBAL catalogue (no tenant, no RLS) behind /partners and the
 // footer strip; managed by platform admins (`src/partners/`).
 // ---------------------------------------------------------------------------
 export const partners = pgTable("partners", {

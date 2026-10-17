@@ -1,6 +1,6 @@
 # `municipalities.json` — data provenance
 
-This file backs the `/faktury-pro/[slug]` local-SEO landing pages (one per
+This file backs the `/invoicing/[slug]` local-SEO landing pages (one per
 Czech/Slovak municipality). **Every row is a real, verifiable municipality.**
 None of the names, regions, or districts in this file were generated or
 guessed by an LLM — see the exact sources and processing steps below so this
@@ -82,7 +82,7 @@ open-data sources that mix in postal sub-delivery zones.
 
 ```ts
 {
-  slug: string;        // unique, used in /faktury-pro/[slug]
+  slug: string;        // unique, used in /invoicing/[slug]
   name: string;         // official municipality name, with diacritics
   nameAscii: string;    // diacritics stripped (for search/matching)
   region: string;       // kraj (CZ) / kraj (SK) — human-readable name
