@@ -62,7 +62,7 @@ export function BankConnections({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [mode, setMode] = useState<null | 'fio' | 'psd2' | 'paypal'>(null);
+  const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal'>(null);
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
   const [country, setCountry] = useState(psd2.countries[0] ?? 'CZ');
@@ -191,27 +191,47 @@ export function BankConnections({
           </h2>
         </InfoHint>
         {mode === null && (
-          <div className="flex flex-wrap gap-1.5">
-            {psd2.available && (
-              <button type="button" onClick={() => setMode('psd2')} className={cn(softButton, 'inline-flex items-center gap-1')}>
-                <Building2 className="h-3.5 w-3.5" />
-                {t('psd2.connect')}
-              </button>
-            )}
-            <button type="button" onClick={() => setMode('fio')} className={cn(softButton, 'inline-flex items-center gap-1')}>
-              <Plus className="h-3.5 w-3.5" />
-              {t('connectFio')}
-            </button>
-            <button type="button" onClick={() => setMode('paypal')} className={cn(softButton, 'inline-flex items-center gap-1')}>
-              <Wallet className="h-3.5 w-3.5" />
-              {t('paypal.connect')}
-            </button>
-          </div>
+          <button type="button" onClick={() => setMode('choose')} className={cn(primaryButton, 'px-3.5')}>
+            <Plus className="h-3.5 w-3.5" />
+            {t('connectBank')}
+          </button>
         )}
       </div>
 
       {connections.length === 0 && mode === null && (
         <p className="mt-2 text-sm text-muted-foreground">{psd2.available ? t('psd2.empty') : t('empty')}</p>
+      )}
+
+      {mode === 'choose' && (
+        <div className="mt-3">
+          <p className="text-xs font-semibold">{t('chooseProvider')}</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            {(
+              [
+                psd2.available && { key: 'psd2', icon: Building2, title: t('providers.psd2.title'), text: t('providers.psd2.text') },
+                { key: 'fio', icon: Landmark, title: t('providers.fio.title'), text: t('providers.fio.text') },
+                { key: 'paypal', icon: Wallet, title: t('providers.paypal.title'), text: t('providers.paypal.text') }
+              ].filter(Boolean) as { key: 'psd2' | 'fio' | 'paypal'; icon: typeof Landmark; title: string; text: string }[]
+            ).map(({ key, icon: Icon, title, text }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setMode(key)}
+                className="flex flex-col items-start gap-1 rounded-lg border border-border bg-background p-3 text-left hover:border-primary hover:bg-accent/40"
+              >
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold">
+                  <Icon className="h-4 w-4 text-primary" />
+                  {title}
+                </span>
+                <span className="text-xs text-muted-foreground">{text}</span>
+              </button>
+            ))}
+          </div>
+          {!psd2.available && <p className="mt-2 text-[11px] text-muted-foreground">{t('otherBanks')}</p>}
+          <button type="button" onClick={() => setMode(null)} className="mt-2 rounded-full bg-muted px-4 py-1.5 text-xs font-semibold hover:bg-accent">
+            {t('cancel')}
+          </button>
+        </div>
       )}
 
       {connections.length > 0 && (
@@ -224,7 +244,7 @@ export function BankConnections({
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
                 <div className="min-w-0">
                   <div className="truncate text-sm font-semibold">
-                    {c.label || c.bankName || 'Fio banka'}
+                    {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : 'Fio banka')}
                     {c.label && c.bankName && <span className="ml-2 text-xs font-normal text-muted-foreground">{c.bankName}</span>}
                     {c.accountNumber && <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">{c.accountNumber}</span>}
                     {!c.enabled && (

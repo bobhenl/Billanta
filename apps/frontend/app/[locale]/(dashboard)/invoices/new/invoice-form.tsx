@@ -11,7 +11,7 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
-import { isCzechHoliday, isCzechWorkingDay, nextCzechWorkingDay } from '@faktur/cz-compliance';
+import { isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
@@ -204,6 +204,8 @@ export function InvoiceForm({
 }) {
   const t = useTranslations('invoiceForm');
   const tDoc = useTranslations('doc');
+  const tHoliday = useTranslations('holidays');
+  const sellerCountry = defaults.sellerCountry ?? 'CZ';
   const locale = useLocale();
   const router = useRouter();
   const editing = mode.kind === 'edit';
@@ -226,6 +228,7 @@ export function InvoiceForm({
   const [dueDate, setDueDate] = useState(
     () => isoDate(template?.dueDate) || addDays(isoDate(template?.issueDate) || today(), template?.dueInDays ?? defaults.dueDays)
   );
+  const dueHoliday = /^\d{4}-\d{2}-\d{2}$/.test(dueDate) ? publicHolidayOn(localDay(dueDate), sellerCountry) : null;
   const [taxableSupplyDate, setTaxableSupplyDate] = useState(() => isoDate(template?.taxableSupplyDate));
   const [currency, setCurrency] = useState(() => {
     const wanted = template?.currency ?? blank?.currency;
@@ -1284,13 +1287,15 @@ export function InvoiceForm({
                 </button>
               ))}
             </div>
-            {/^\d{4}-\d{2}-\d{2}$/.test(dueDate) && !isCzechWorkingDay(localDay(dueDate)) && (
+            {/^\d{4}-\d{2}-\d{2}$/.test(dueDate) && !isWorkingDay(localDay(dueDate), sellerCountry) && (
               <p className="flex flex-wrap items-center gap-x-2 text-xs text-warning">
-                {isCzechHoliday(localDay(dueDate)) ? t('dates.dueOnHoliday') : t('dates.dueOnWeekend')}
+                {dueHoliday
+                  ? t('dates.dueOnHoliday', { name: tHoliday.has(dueHoliday.key) ? tHoliday(dueHoliday.key) : dueHoliday.name })
+                  : t('dates.dueOnWeekend')}
                 <button
                   type="button"
                   className="font-semibold underline underline-offset-2"
-                  onClick={() => setDueDate(localIso(nextCzechWorkingDay(localDay(dueDate))))}
+                  onClick={() => setDueDate(localIso(nextWorkingDay(localDay(dueDate), sellerCountry)))}
                 >
                   {t('dates.shiftToWorkday')}
                 </button>

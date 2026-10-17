@@ -673,13 +673,13 @@ export class InvoicePdfService {
       doc.page.margins.bottom = 0;
       // Mark + text centred together as one line.
       const text = `${label} · ${url.replace(/^https?:\/\//, "")}`;
-      doc.font(REGULAR).fontSize(7);
-      const mark = 8;
+      doc.font(REGULAR).fontSize(7.5);
+      const mark = 11;
       const width = Math.ceil(doc.widthOfString(text)) + 1;
-      const left = 50 + (495 - (mark + 4 + width)) / 2;
-      this.renderBrandMark(doc, left, doc.page.height - 29.5, mark);
+      const left = 50 + (495 - (mark + 5 + width)) / 2;
+      this.renderBrandMark(doc, left, doc.page.height - 31, mark);
       // pdfkit needs an explicit width to size the link annotation.
-      doc.fillColor(MUTED).text(text, left + mark + 4, doc.page.height - 28, { width, link: url, lineBreak: false });
+      doc.fillColor("#4b5563").text(text, left + mark + 5, doc.page.height - 28.5, { width, link: url, lineBreak: false });
       doc.page.margins.bottom = bottom;
     }
     doc.fillColor("black");

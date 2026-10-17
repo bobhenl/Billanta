@@ -743,11 +743,13 @@
       "noFileSelected": "Nie je vybraný žiadny súbor",
       "submit": "Nahrať a spárovať",
       "importing": "Nahrávam a párujem…",
-      "formatHint": "Očakávaný formát: CSV so stĺpcami date, amount, currency, variable_symbol, counterparty_account, counterparty_name – pozri apps/backend/README.md.",
+      "formatHint": "CSV výpis z internet bankingu. Stačia stĺpce s dátumom, sumou a menou.",
       "success": "Naimportovaných {total} transakcií, {matched} spárovaných automaticky.",
       "invalidFile": "Vyberte prosím súbor vo formáte .csv.",
       "parseError": "Súbor sa nepodarilo spracovať: {message}",
-      "formatHintShort": "CSV: date, amount, currency, variable_symbol, counterparty_account, counterparty_name"
+      "formatHelpLabel": "Aký súbor nahrať?",
+      "formatHelp": "Nahrajte CSV výpis tak, ako ho stiahnete z internet bankingu. Poznáme bežné exporty slovenských a českých bánk (Tatra banka, SLSP, VÚB, ČSOB, Fio a ďalšie): oddelenie bodkočiarkou aj čiarkou, dátum 31.12.2026 aj 2026-12-31 a sumy s desatinnou čiarkou. Povinné sú stĺpce s dátumom, sumou a menou. Variabilný symbol a protiúčet pomáhajú so spárovaním. Keď export vašej banky nepoznáme, upravte súbor podľa vzoru.",
+      "sample": "Stiahnuť vzorový CSV"
     },
     "empty": "Zatiaľ tu nie sú žiadne bankové transakcie. Nahrajte výpis (CSV) tlačidlom vpravo hore.",
     "filterLabel": "Zobraziť",
@@ -821,8 +823,7 @@
     "connections": {
       "title": "Napojenie na banku",
       "hint": "Billanta každú hodinu stiahne nové prichádzajúce platby priamo z banky alebo z PayPalu a sama ich spáruje s faktúrami podľa variabilného symbolu a sumy. Spárované faktúry sa označia ako zaplatené, pri PayPale aj so strhnutým poplatkom. Odchádzajúce platby sa nesťahujú.",
-      "empty": "Zatiaľ žiadny účet. Pripojte Fio alebo PayPal a platby sa budú párovať samy, bez nahrávania výpisov.",
-      "connectFio": "Pripojiť Fio účet",
+      "empty": "Zatiaľ žiadny účet. Pripojte Fio alebo PayPal a platby sa budú párovať samy. Z ostatných bánk zatiaľ nahrajte CSV výpis.",
       "token": "API token z Fio",
       "tokenHint": "V internetbankingu Fio otvorte Nastavenia → API, pridajte token s oprávnením „Iba sledovať účet“ a skopírujte ho sem (64 znakov). S takým tokenom nejde nič zaplatiť. Token ukladáme šifrovane a už ho nikdy nezobrazíme.",
       "tokenPlaceholder": "64 znakov",
@@ -866,9 +867,8 @@
         "paypal_reporting_disabled": "Aplikácia v PayPale nemá zapnutú funkciu Transaction search. Zapnite ju v nastaveniach aplikácie (zmena sa prejaví do niekoľkých hodín)."
       },
       "psd2": {
-        "connect": "Pripojiť inú banku",
         "hint": "Billanta sťahuje nové prichádzajúce platby priamo z banky alebo z PayPalu a sama ich páruje s faktúrami podľa variabilného symbolu a sumy. Fio pripojíte API tokenom, PayPal údajmi svojej REST aplikácie, ostatné banky cez PSD2: prihlásite sa vo svojej banke a udelíte súhlas len na čítanie účtu (najviac na 180 dní, v mnohých bankách 90). Banky dovoľujú len pár automatických čítaní denne, preto sa PSD2 účty sťahujú zhruba každých 6 hodín. Odchádzajúce platby sa nesťahujú a zaplatiť cez napojenie nejde nič.",
-        "empty": "Zatiaľ žiadny účet. Pripojte banku a platby sa budú párovať samy, bez nahrávania výpisov.",
+        "empty": "Zatiaľ žiadny účet. Pripojte svoju banku alebo PayPal a platby sa budú párovať samy, bez nahrávania výpisov.",
         "country": "Krajina",
         "bank": "Banka",
         "bankHint": "Zoznam bánk, ktoré podporuje náš licencovaný PSD2 poskytovateľ Enable Banking, v celom EHP. Revolut nájdete pod Litvou, Wise pod Belgickom. Po kliknutí na Pokračovať vás presmerujeme do internet bankingu, kde sa prihlásite a vyberiete účty.",
@@ -880,7 +880,7 @@
         "personal": "Osobný (SZČO)",
         "continue": "Pokračovať do banky",
         "note": "Prihlasujete sa priamo vo svojej banke, Billanta vaše prihlasovacie údaje nikdy nevidí. Súhlas môžete kedykoľvek zrušiť odpojením účtu alebo v internet bankingu.",
-        "otherBanksAvailable": "Ostatné banky pripojíte tlačidlom „Pripojiť inú banku“ (PSD2).",
+        "otherBanksAvailable": "Inú banku pripojíte cez Pripojiť banku → Banka cez PSD2.",
         "expired": "Súhlas vypršal",
         "consentUntil": "súhlas do {date}",
         "renew": "Obnoviť súhlas",
@@ -901,6 +901,22 @@
         "sandboxHint": "Zaškrtnite len pre kľúče zo sandboxu PayPalu. Platby z neho nie sú skutočné.",
         "note": "Prijaté platby sa párujú s faktúrami podľa čísla faktúry alebo VS v poznámke a sumy. Poplatok, ktorý si PayPal strhol, sa zapíše k faktúre, takže v prehľade vidíte aj čistý príjem. PayPal zverejňuje transakcie s oneskorením až 3 hodiny.",
         "connected": "PayPal pripojený. Platby za posledných 30 dní stiahneme pri najbližšej synchronizácii."
+      },
+      "connectBank": "Pripojiť banku",
+      "chooseProvider": "Čo chcete pripojiť?",
+      "providers": {
+        "psd2": {
+          "title": "Banka cez PSD2",
+          "text": "Tatra banka, SLSP, VÚB, ČSOB, Revolut, Wise a ďalšie banky v EHP. Prihlásite sa priamo vo svojej banke."
+        },
+        "fio": {
+          "title": "Fio banka",
+          "text": "Cez API token len na čítanie. Platby sa sťahujú každú hodinu."
+        },
+        "paypal": {
+          "title": "PayPal",
+          "text": "Cez Client ID a Secret vašej REST aplikácie. K faktúre sa zapíše aj poplatok."
+        }
       }
     },
     "fee": "poplatok {amount}"
@@ -1622,7 +1638,7 @@
       "email": "E-mail",
       "sendInvite": "Poslať pozvánku",
       "inviteSent": "Pozvánka odoslaná e-mailom. Odkaz môžete poslať aj ručne:",
-      "inviteNotSent": "E-mail sa nepodarilo odoslať. Pošlite tento odkaz ručne:",
+      "inviteNotSent": "Pozvánku sa nepodarilo odoslať e-mailom. Skopírujte odkaz a pošlite ho sami:",
       "copied": "Odkaz skopírovaný.",
       "done": "Hotovo",
       "cancel": "Zrušiť",
@@ -3240,7 +3256,7 @@
       "taxableSupplyHint": "Dátum dodania tovaru alebo služby. Prázdne = dátum vystavenia.",
       "validUntil": "Platnosť do",
       "dueOnWeekend": "Splatnosť pripadá na víkend.",
-      "dueOnHoliday": "Splatnosť pripadá na štátny sviatok (CZ).",
+      "dueOnHoliday": "Splatnosť pripadá na sviatok ({name}).",
       "shiftToWorkday": "Posunúť na pracovný deň"
     },
     "items": {
@@ -3994,7 +4010,27 @@
       "backup": "záloha stiahnuť dáta",
       "channels": "telegram whatsapp",
       "apiKeys": "api kľúč integrácia",
-      "shortcuts": "klávesnica skratka ctrl"
+      "shortcuts": "klávesnica skratka ctrl",
+      "notifications": "upozornenie oznámenie zvonček push e-mail notifikácie",
+      "numbering": "číslo číselný rad formát prefix",
+      "emails": "šablóna predmet odosielateľ text e-mailu",
+      "variables": "zástupný text placeholder",
+      "paymentMethods": "platba úhrada paypal zápočet hotovosť",
+      "publicProfile": "vizitka web stránka dopyt",
+      "import": "bitfaktura fakturoid idoklad excel csv prevod migrácia",
+      "integrations": "webhook discord slack kalendár ics rss",
+      "bankAccounts": "iban číslo účtu banka qr",
+      "logo": "podpis pečiatka obrázok",
+      "invoiceFields": "polia formulára vlastné pole",
+      "reminders": "upomienka nezaplatená po splatnosti",
+      "invoiceDefaults": "predvolené splatnosť dph poznámka mena jazyk",
+      "password": "heslo zmeniť prihlásenie",
+      "preferences": "jazyk vzhľad tmavý režim motív",
+      "cardPayments": "stripe karta online platba",
+      "webhooks": "discord slack webhook",
+      "calendar": "ics google kalendár termíny splatnosti",
+      "epo": "daňový portál dph kontrolný výkaz xml",
+      "bankConnections": "fio psd2 paypal napojenie synchronizácia"
     },
     "aiSearch": "AI hľadanie vo faktúrach",
     "aiOpen": "Opýtať sa AI / hľadať prirodzene",
@@ -4014,6 +4050,20 @@
       "overdue": "Po splatnosti",
       "paid": "Zaplatené",
       "cancelled": "Zrušené"
+    },
+    "sections": {
+      "bankAccounts": "Bankové účty",
+      "logo": "Logo a podpis",
+      "invoiceFields": "Polia na faktúre",
+      "reminders": "Upomienky",
+      "invoiceDefaults": "Predvolené hodnoty faktúr",
+      "password": "Heslo a prihlásenie",
+      "preferences": "Jazyk a vzhľad",
+      "cardPayments": "Platby kartou (Stripe)",
+      "webhooks": "Webhooky pre Discord a Slack",
+      "calendar": "Kalendár splatností",
+      "epo": "Podanie na daňový portál",
+      "bankConnections": "Napojenie na banku"
     }
   },
   "shortcuts": {
@@ -4253,14 +4303,14 @@
           "Nespárované platby zostanú na ručné priradenie"
         ],
         "steps": [
-          "V sekcii Banka pripojíte Fio účet tokenom len na čítanie, alebo nahráte CSV výpis.",
+          "V sekcii Banka pripojíte účet (Fio tokenom len na čítanie, ostatné banky cez PSD2, alebo PayPal), prípadne nahráte CSV výpis zo svojej banky.",
           "Aplikácia platby stiahne a spáruje s faktúrami.",
           "Skontrolujete zvyšné nespárované platby a priradíte ich ručne."
         ],
         "faq": [
           {
             "q": "Ktoré banky sú podporované?",
-            "a": "Fio banka priamo cez svoje bezplatné API, ostatné slovenské, české aj zahraničné banky v EHP (vrátane Revolutu a Wise) cez PSD2 (licencovaný poskytovateľ Enable Banking). Akákoľvek banka aj cez CSV výpis s dátumom, sumou, menou a variabilným symbolom."
+            "a": "Fio banka priamo cez svoje bezplatné API, ostatné slovenské, české aj zahraničné banky v EHP (vrátane Revolutu a Wise) cez PSD2 (licencovaný poskytovateľ Enable Banking). Akákoľvek banka aj cez CSV výpis. Poznáme bežné exporty slovenských a českých bánk, stačí dátum, suma a mena."
           },
           {
             "q": "Môže Billanta z môjho účtu platiť?",
@@ -4596,7 +4646,7 @@
         ],
         "steps": [
           "V internetbankingu Fio otvorte Nastavenia → API a pridajte token „Iba sledovať účet“.",
-          "V Billante v sekcii Banka kliknete na Pripojiť Fio účet a token vložíte.",
+          "V Billante v sekcii Banka kliknete na Pripojiť banku, zvolíte Fio banka a token vložíte.",
           "Platby sa odvtedy sťahujú a párujú samy."
         ],
         "faq": [
@@ -4610,11 +4660,11 @@
           },
           {
             "q": "A iné banky?",
-            "a": "Cez PSD2: v sekcii Banka kliknete na Pripojiť inú banku, vyberiete banku a v jej internet bankingu udelíte súhlas len na čítanie účtu. Napojenie sprostredkuje licencovaný poskytovateľ Enable Banking, súhlas platí 90 až 180 dní podľa banky a pred vypršaním vám pripomenieme obnovenie. Pre limity PSD2 sa tieto účty sťahujú zhruba každých 6 hodín."
+            "a": "Cez PSD2: v sekcii Banka kliknete na Pripojiť banku, zvolíte Banka cez PSD2, vyberiete svoju banku a v jej internet bankingu udelíte súhlas len na čítanie účtu. Napojenie sprostredkuje licencovaný poskytovateľ Enable Banking, súhlas platí 90 až 180 dní podľa banky a pred vypršaním vám pripomenieme obnovenie. Pre limity PSD2 sa tieto účty sťahujú zhruba každých 6 hodín."
           },
           {
             "q": "A platby cez PayPal?",
-            "a": "V sekcii Banka kliknete na Pripojiť PayPal a vložíte Client ID a Secret svojej REST aplikácie so zapnutou funkciou Transaction search. Prijaté platby sa párujú podľa čísla faktúry alebo VS a sumy a poplatok PayPalu sa zapíše k faktúre. PayPal zverejňuje transakcie s oneskorením až 3 hodiny."
+            "a": "V sekcii Banka kliknete na Pripojiť banku, zvolíte PayPal a vložíte Client ID a Secret svojej REST aplikácie so zapnutou funkciou Transaction search. Prijaté platby sa párujú podľa čísla faktúry alebo VS a sumy a poplatok PayPalu sa zapíše k faktúre. PayPal zverejňuje transakcie s oneskorením až 3 hodiny."
           }
         ]
       },
@@ -5482,7 +5532,8 @@
       "tenant": "Fakturačné údaje",
       "bank_account": "Bankové účty",
       "member": "Tím",
-      "api_key": "API kľúče"
+      "api_key": "API kľúče",
+      "import": "Importy"
     },
     "docTypes": {
       "invoice": "faktúru",
@@ -5516,7 +5567,8 @@
       "tenant": {
         "updated": "upravil(a) údaje firmy",
         "logo_uploaded": "nahral(a) logo",
-        "logo_removed": "odobral(a) logo"
+        "logo_removed": "odobral(a) logo",
+        "number_formats_updated": "upravil(a) číslovanie dokladov"
       },
       "bank_account": {
         "created": "pridal(a) bankový účet",
@@ -5538,6 +5590,11 @@
       "api_key": {
         "created": "vytvoril(a) API kľúč",
         "revoked": "zneplatnil(a) API kľúč"
+      },
+      "import": {
+        "bitfaktura": "naimportoval(a) dáta z BitFaktúry",
+        "csv": "naimportoval(a) doklady z CSV",
+        "contacts_csv": "naimportoval(a) kontakty z CSV"
       }
     },
     "fields": {
@@ -5609,7 +5666,14 @@
       "cardPaymentsEnabled": "Platby kartou",
       "isPerson": "Fyzická osoba",
       "isStarred": "Obľúbený",
-      "color": "Farba"
+      "color": "Farba",
+      "importedInvoices": "Nové doklady",
+      "importedContacts": "Nové kontakty",
+      "updatedContacts": "Doplnené kontakty",
+      "archivedPdfs": "Uložené pôvodné PDF",
+      "skippedRows": "Preskočené riadky",
+      "numberFormat": "Formát čísla",
+      "nextNumber": "Ďalšie číslo"
     },
     "values": {
       "invoice": "Faktúra",
@@ -5823,5 +5887,26 @@
     "notStated": "– = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)",
     "verified": "Overené v cenníku {date}",
     "sourcesTitle": "Zdroje"
+  },
+  "holidays": {
+    "newYear": "Nový rok",
+    "slovakRepublic": "Deň vzniku Slovenskej republiky",
+    "epiphany": "Traja králi",
+    "goodFriday": "Veľký piatok",
+    "easterMonday": "Veľkonočný pondelok",
+    "labourDay": "Sviatok práce",
+    "victoryDay": "Deň víťazstva nad fašizmom",
+    "cyrilMethodius": "Cyril a Metod",
+    "janHus": "Ján Hus",
+    "snp": "Výročie SNP",
+    "constitution": "Deň Ústavy SR",
+    "ourLadyOfSorrows": "Sedembolestná Panna Mária",
+    "statehood": "Deň českej štátnosti",
+    "independence": "Deň vzniku Československa",
+    "allSaints": "Všetkých svätých",
+    "freedomDemocracy": "Deň boja za slobodu a demokraciu",
+    "christmasEve": "Štedrý deň",
+    "christmasDay": "1. sviatok vianočný",
+    "stStephen": "2. sviatok vianočný"
   }
 }

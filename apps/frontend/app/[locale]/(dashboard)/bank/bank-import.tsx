@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Loader2, UploadCloud } from 'lucide-react';
+import { Download, Loader2, UploadCloud } from 'lucide-react';
+import { InfoHint } from '@/components/info-hint';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
@@ -58,7 +59,22 @@ export function BankImport() {
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
         {busy ? t('importing') : t('submit')}
       </button>
-      <span className="max-w-xs text-right text-[11px] text-muted-foreground">{t('formatHintShort')}</span>
+      <InfoHint
+        label={t('formatHelpLabel')}
+        rowClassName="justify-end"
+        bodyClassName="max-w-xs text-left"
+        hint={
+          <>
+            {t('formatHelp')}{' '}
+            <a href="/samples/bank-statement-sample.csv" download className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+              <Download className="h-3 w-3" aria-hidden="true" />
+              {t('sample')}
+            </a>
+          </>
+        }
+      >
+        <span className="text-[11px] text-muted-foreground">{t('formatHelpLabel')}</span>
+      </InfoHint>
     </div>
   );
 }

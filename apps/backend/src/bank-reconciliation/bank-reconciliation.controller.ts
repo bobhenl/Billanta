@@ -17,6 +17,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nes
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankReconciliationService } from "./bank-reconciliation.service";
+import { decodeBankStatement } from "./csv-parser";
 import { ListBankTransactionsQueryDto } from "./dto/list-transactions-query.dto";
 import { ManualMatchDto } from "./dto/manual-match.dto";
 
@@ -83,7 +84,7 @@ export class BankReconciliationController {
       req.tenantDb!,
       req.user!.tenantId,
       file.originalname,
-      file.buffer.toString("utf-8"),
+      decodeBankStatement(file.buffer),
     );
   }
 

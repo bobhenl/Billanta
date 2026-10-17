@@ -135,7 +135,7 @@ export function ProfileForms({
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section id="password" className="scroll-mt-20 rounded-xl border border-border bg-card p-5">
         <h2 className="flex items-center gap-2 font-bold">
           <KeyRound className="h-4 w-4 text-primary" />
           {hasPassword ? t('changePassword') : t('setPassword')}
@@ -191,7 +191,7 @@ export function ProfileForms({
         </ul>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section id="preferences" className="scroll-mt-20 rounded-xl border border-border bg-card p-5">
         <h2 className="font-bold">{t('preferences')}</h2>
         <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
           <div>

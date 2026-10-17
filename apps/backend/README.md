@@ -344,6 +344,23 @@ bank's, and documents it here:
   quotes doubled (`""`) — standard RFC-4180-style quoting. Blank lines are
   ignored.
 
+The parser also reads the usual Czech/Slovak bank exports (e.g. Fio's CSV)
+without any editing:
+
+- Czech/Slovak column names are recognised next to the English ones
+  (`Datum`, `Objem`/`Částka`, `Měna`, `VS`, `Protiúčet`, `Kód banky`,
+  `Název protiúčtu` …, compared without diacritics). A separate bank code
+  column is joined to the account as `account/code`.
+- Lines before the header (account summary, period) are skipped; the header
+  is the first of the first 30 lines that has a date and an amount column.
+- `,`, `;` or tab as the delimiter, `D.M.YYYY` dates, decimal commas,
+  thousands separators (`1 500,00`, `1.234,56`) and a trailing currency code
+  (`99,90 EUR`) are all accepted.
+- Windows-1250 files are decoded when the upload is not valid UTF-8.
+
+A sample in the plain format is served at
+`/samples/bank-statement-sample.csv` (linked from the import screen).
+
 Example file:
 
 ```csv

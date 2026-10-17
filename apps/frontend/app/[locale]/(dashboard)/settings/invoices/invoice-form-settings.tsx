@@ -116,7 +116,7 @@ export function InvoiceFormSettings({
         save();
       }}
     >
-      <section className={card}>
+      <section id="fields" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('fieldsHint')}>
           <h2 className="font-bold">{t('fieldsTitle')}</h2>
         </InfoHint>
@@ -221,7 +221,7 @@ export function InvoiceFormSettings({
         </div>
       </section>
 
-      <section className={card}>
+      <section id="reminders" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('remindersHint')}>
           <h2 className="font-bold">{t('remindersTitle')}</h2>
         </InfoHint>
