@@ -178,6 +178,23 @@ export function getTaxOffice(m: Municipality): string {
   return `Finanční úřad pro ${m.region} kraj`;
 }
 
+/**
+ * The social security office (OSSZ) an OSVČ in this Czech municipality
+ * reports to. There is one per okres, named after it, with these
+ * exceptions: Prague has PSSZ, Brno-město has MSSZ Brno, and the three
+ * Plzeň okresy share OSSZ Plzeň. Checked against the ČSSZ contact list
+ * (https://www.cssz.gov.cz/web/cz/kontakty, by kraj) in October 2026.
+ * Slovakia: null, Sociálna poisťovňa branches do not map 1:1 to okresy.
+ */
+export function getSocialSecurityOffice(m: Municipality): string | null {
+  if (m.country !== 'CZ' || !m.district) return null;
+  if (m.district === 'Praha') return 'Pražská správa sociálního zabezpečení';
+  if (m.district === 'Brno-město') return 'Městská správa sociálního zabezpečení Brno';
+  if (m.district.startsWith('Plzeň-')) return 'Okresní správa sociálního zabezpečení Plzeň';
+  if (m.district === 'Ostrava-město') return 'Okresní správa sociálního zabezpečení Ostrava';
+  return `Okresní správa sociálního zabezpečení ${m.district}`;
+}
+
 /** Great-circle distance in km, or null without coordinates. */
 export function distanceKm(a: Municipality, b: Municipality): number | null {
   if (a.lat == null || a.lon == null || b.lat == null || b.lon == null) return null;

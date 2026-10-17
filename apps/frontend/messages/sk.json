@@ -121,26 +121,66 @@
       "time": {
         "title": "Evidencia času",
         "description": "Časovač a ručný zápis hodín po projektoch. Nevyfakturovanú prácu premeníte jedným klikom na faktúru so sadzbou projektu."
+      },
+      "taxEstimate": {
+        "title": "Koľko vám zostane",
+        "description": "Pri každej faktúre vidíte orientačnú sumu po dani z príjmov a poistnom podľa českých pravidiel pre OSVČ. Za celý rok spočítame daň, poistné aj nové preddavky."
+      },
+      "currencies": {
+        "title": "Faktúry v cudzej mene",
+        "description": "EUR, USD a ďalšie meny. Kurz ČNB ku dňu plnenia sa doplní sám a pre DPH sa prepočíta na koruny."
+      },
+      "clientPortal": {
+        "title": "Klientský portál",
+        "description": "Jeden trvalý odkaz pre každého klienta: všetky jeho faktúry a ponuky, čo zostáva zaplatiť a čo je po splatnosti."
+      },
+      "migration": {
+        "title": "Prechod z inej aplikácie",
+        "description": "Z BitFaktury priamo cez API aj s pôvodnými PDF, z Fakturoidu, iDokladu alebo Excelu cez CSV. Pred uložením uvidíte náhľad."
+      },
+      "api": {
+        "title": "API a webhooky",
+        "description": "REST API s vlastnými kľúčmi, webhooky pre Slack, Discord alebo váš systém a kalendár splatností."
+      },
+      "team": {
+        "title": "Tím, účtovník a viac firiem",
+        "description": "Pozvite kolegov aj účtovníka s vlastnou rolou. Živnosť aj s.r.o. spravujete z jedného účtu."
+      },
+      "auditLog": {
+        "title": "História zmien",
+        "description": "Kto čo a kedy zmenil, vrátane zmien od AI a cez API. Vystavený doklad sa dá opraviť len s uvedeným dôvodom."
+      },
+      "reports": {
+        "title": "Prehľady za obdobie",
+        "description": "Tržby, výdavky a najlepší zákazníci za mesiac, štvrťrok alebo rok, aj v porovnaní s predchádzajúcim obdobím."
+      },
+      "backups": {
+        "title": "Zálohy na váš disk",
+        "description": "Dáta firmy sa pravidelne ukladajú na Google Disk, váš server cez SFTP alebo webhook. Všetko stiahnete aj jedným klikom."
       }
     },
     "howItWorks": {
       "title": "Ako to funguje",
       "steps": {
         "capture": {
-          "title": "Zachyťte faktúru",
-          "description": "Vytvorte ju ručne, alebo jednoducho pošlite hlasovú správu cez Telegram alebo WhatsApp."
+          "title": "Nadiktujte alebo napíšte",
+          "description": "Hlasovka do Telegramu či WhatsAppu, fotka bločku alebo jedna veta. AI doplní odberateľa z registra aj položky.",
+          "highlight": "AI aj v tarife zadarmo"
         },
         "draft": {
-          "title": "AI pripraví návrh, ARES overí",
-          "description": "AI prepíše detaily a vyhľadá vášho zákazníka v registri ARES – vy vždy všetko skontrolujete, kým je čokoľvek finálne."
+          "title": "Skontrolujte návrh",
+          "description": "Billanta postráži povinné údaje, DPH a číselný rad. Bez vášho potvrdenia sa nič nevystaví.",
+          "highlight": "Kontrola povinných údajov"
         },
         "issue": {
-          "title": "Vystavte s ISDOC a QR kódom",
-          "description": "Potvrďte návrh a Billanta vygeneruje súbor ISDOC podľa normy a QR kód na platbu."
+          "title": "Vystavte a pošlite",
+          "description": "PDF s QR platbou, ISDOC a pre Slovensko aj UBL. Klient dostane e-mail s odkazom na faktúru.",
+          "highlight": "10 dokladov mesačne zadarmo"
         },
         "getPaid": {
-          "title": "Dostaňte zaplatené, automaticky",
-          "description": "Pošlite faktúru e-mailom, zdieľajte platobný odkaz a nechajte upomienky a párovanie platieb urobiť zvyšok."
+          "title": "Platby sa spárujú samy",
+          "description": "Z Fio, inej banky cez PSD2 alebo z PayPalu. Pri faktúre hneď vidíte, koľko vám zostane po dani a odvodoch.",
+          "highlight": "Zostane vám: čistá suma"
         }
       }
     },
@@ -209,7 +249,7 @@
     },
     "compare": {
       "title": "Porovnanie s konkurenciou",
-      "lead": "Viac zadarmo, nižšia cena a AI v každom tarife.",
+      "lead": "Viac zadarmo, nižšia cena a AI v každom tarife. Vedľa Fakturoidu, iDokladu, SuperFaktúry, Vyfakturuj a BitFaktury.",
       "more": "Celé porovnanie s Fakturoidom, iDokladom a ďalšími"
     }
   },
@@ -2918,13 +2958,18 @@
     "isDistrictSeat": "Okresné mesto okresu {district}.",
     "isRegionSeat": "Sídlo kraja ({region}).",
     "mapLink": "Zobraziť na mape (OpenStreetMap) ↗",
-    "taxTitle": "Miestne príslušný daňový úrad",
+    "taxTitle": "Úrady pre podnikateľov",
     "taxNoteCz": "Pre OSVČ podľa trvalého bydliska, pre firmy podľa sídla. Priznanie aj DPH sa podávajú elektronicky cez portál MOJE daně – Billanta k tomu pripraví podklady.",
     "taxNoteSk": "Pre SZČO podľa trvalého pobytu, pre firmy podľa sídla. Priznanie aj DPH podáte elektronicky cez portál Finančnej správy – Billanta k tomu pripraví podklady.",
     "nearbyTitle": "Najbližšie obce",
     "km": "{km, number} km",
     "otherCountry": "České obce nájdete v českej verzii →",
-    "countryLabel": "Krajina"
+    "countryLabel": "Krajina",
+    "socialNote": "Sem OSVČ podľa trvalého bydliska posiela preddavky na sociálne poistenie a raz ročne prehľad o príjmoch a výdavkoch.",
+    "healthNoteCz": "Zdravotné poistenie platíte svojej zdravotnej poisťovni, ktorú si vyberáte sami. Na bydlisku nezáleží.",
+    "healthNoteSk": "Zdravotné poistenie platíte svojej zdravotnej poisťovni, ktorú si vyberáte sami. Na bydlisku nezáleží.",
+    "tradeNoteCz": "Živnosť ohlásite na ktoromkoľvek živnostenskom úrade alebo online. Na jednom formulári sa rovno prihlásite aj k dani, sociálnemu a zdravotnému poisteniu.",
+    "tradeNoteSk": "Živnosť ohlásite na ktoromkoľvek okresnom úrade (odbor živnostenského podnikania) alebo online cez slovensko.sk."
   },
   "mobile": {
     "more": "Viac",
@@ -4376,11 +4421,12 @@
       },
       "migration": {
         "name": "Prechod z iného systému",
-        "title": "Prechod z Fakturoidu, iDokladu alebo Excelu",
+        "title": "Prechod z BitFaktury, Fakturoidu, iDokladu alebo Excelu",
         "description": "Preneste kontakty aj celú históriu faktúr z iného fakturačného systému alebo z Excelu. Náhľad pred uložením, bez odosielania e-mailov a s nadväzujúcim číslovaním.",
         "lead": "Začať odznova neznamená prísť o históriu. Stačí CSV export zo starého systému.",
         "points": [
           "Import kontaktov aj vydaných faktúr z CSV",
+          "Z BitFaktury priamo cez API: faktúry, adresár aj pôvodné PDF",
           "Stĺpce Fakturoidu, iDokladu, faktoria, Invoice Ninja aj vlastnej tabuľky rozpoznáme sami",
           "Náhľad s počtom faktúr, obdobím a súčtami pred uložením",
           "Faktúry s viacerými položkami, zálohové faktúry aj dobropisy",
@@ -4883,6 +4929,67 @@
             "a": "Nie. Kartu klient zadáva len na zabezpečenej stránke Stripe."
           }
         ]
+      },
+      "taxEstimate": {
+        "name": "Odhad dane a odvodov",
+        "title": "Koľko vám z faktúry zostane po dani a odvodoch",
+        "description": "Pri každej faktúre orientačná čistá suma po dani z príjmov, sociálnom a zdravotnom poistení podľa českých pravidiel pre OSVČ. Za celý rok spočítame daň, poistné aj preddavky na ďalší rok.",
+        "lead": "Faktúra na 20 000 Kč neznamená 20 000 Kč na účte. Billanta vám rovno ukáže, koľko vám zostane.",
+        "points": [
+          "Pri každej faktúre riadok „Zostane vám“ s orientačnou čistou sumou",
+          "Počíta s paušálom 60, 80, 40 alebo 30 %, alebo bez paušálu",
+          "Pri faktúre v cudzej mene aj prepočet na koruny",
+          "Ročný odhad dane z príjmov so zľavou na poplatníka",
+          "Sociálne a zdravotné poistenie vrátane preddavkov na ďalší rok",
+          "Zaplatené preddavky doplníte a odhad sa upraví"
+        ],
+        "steps": [
+          "Vystavte faktúru, pri nej hneď uvidíte, koľko vám zostane.",
+          "Vyberte svoj paušál, Billanta si ho zapamätá.",
+          "V Exportoch si zobrazte ročný odhad z uhradených faktúr a výdavkov."
+        ],
+        "faq": [
+          {
+            "q": "Aký presný je odhad?",
+            "a": "Je orientačný a počíta podľa českých pravidiel pre OSVČ. Pri faktúre počíta s 15 % daňou a poistným z tejto sumy, bez minimálnych preddavkov a zliav. Ročný odhad počíta aj so zľavou na poplatníka a minimami, napriek tomu nenahrádza daňové priznanie ani daňového poradcu."
+          },
+          {
+            "q": "Z čoho ročný odhad vychádza?",
+            "a": "Z uhradených faktúr a zapísaných výdavkov za vybraný rok. Výdavky môžete uplatniť paušálom alebo skutočne."
+          },
+          {
+            "q": "Je odhad v tarife zadarmo?",
+            "a": "Riadok „Zostane vám“ pri faktúre áno. Ročný odhad je v platených tarifoch od Start."
+          }
+        ]
+      },
+      "auditLog": {
+        "name": "História zmien",
+        "title": "História zmien: kto čo zmenil a prečo",
+        "description": "Každá zmena faktúry, kontaktu, nastavení firmy, bankového účtu, člena tímu alebo API kľúča sa zapíše. S autorom, časom a pôvodnou hodnotou.",
+        "lead": "Keď sa na faktúre niečo zmení, viete kto, kedy a prečo. Aj keď to bola AI alebo napojený systém cez API.",
+        "points": [
+          "Zmeny faktúr, kontaktov, firmy, bankových účtov, tímu a API kľúčov",
+          "Pri každej zmene pôvodná a nová hodnota",
+          "Autor: člen tímu, AI, API kľúč alebo systém",
+          "Vystavený doklad sa dá opraviť len s uvedeným dôvodom",
+          "Celá história firmy na jednom mieste v Aktivite"
+        ],
+        "steps": [
+          "Pracujte ako zvyčajne, história sa zapisuje sama.",
+          "Pri oprave vystaveného dokladu uveďte dôvod.",
+          "V Aktivite prejdete, čo sa vo firme menilo."
+        ],
+        "faq": [
+          {
+            "q": "Dá sa záznam v histórii zmazať alebo upraviť?",
+            "a": "Nie. História slúži ako záznam toho, čo sa stalo, preto ju v aplikácii upraviť nejde."
+          },
+          {
+            "q": "Uvidí históriu aj účtovník?",
+            "a": "Históriu vidia členovia firmy podľa svojich oprávnení, takže aj pozvaný účtovník, ak mu to rola dovolí."
+          }
+        ]
       }
     },
     "indexSeoTitle": "Funkcie fakturácie pre živnostníkov a firmy"
@@ -5283,7 +5390,8 @@
       "ares": "ARES",
       "banka": "banka",
       "dobropis": "dobropis"
-    }
+    },
+    "keyboardHint": "↑ ↓ vybrať · Enter otvoriť · Esc zavrieť"
   },
   "glossary": {
     "legendLabel": "Čo znamenajú štítky a farby",
@@ -5496,16 +5604,16 @@
       "free": {
         "label": "Zadarmo",
         "billanta": "10 dokladov/mes., ďalší 5 Kč",
-        "fakturoid": "5 zákazníkov",
-        "idoklad": "5 kontaktov",
-        "superfaktura": "5 kontaktov",
+        "fakturoid": "5 odberateľov",
+        "idoklad": "5 odberateľov",
+        "superfaktura": "5 odberateľov",
         "vyfakturuj": "5 odberateľov",
-        "bitfaktura": "Pár faktúr/mes."
+        "bitfaktura": "1 faktúra/mes."
       },
       "entry": {
         "label": "Najlacnejší tarif",
         "billanta": "119 Kč/mes.",
-        "fakturoid": "~150 Kč s DPH",
+        "fakturoid": "151 Kč/mes.",
         "idoklad": "187 Kč/mes.",
         "superfaktura": "129 Kč/mes.",
         "vyfakturuj": "175 Kč/mes.",
@@ -5513,66 +5621,75 @@
       },
       "bank": {
         "label": "Párovanie z banky",
-        "billanta": "Áno",
-        "fakturoid": "Od 2. tarifu",
-        "idoklad": "Od 2. tarifu",
-        "superfaktura": "Áno",
-        "vyfakturuj": "Áno",
-        "bitfaktura": "Áno"
+        "billanta": "Platené tarify",
+        "fakturoid": "Od 2. plateného",
+        "idoklad": "Od 2. plateného",
+        "superfaktura": "Platené tarify",
+        "vyfakturuj": "Platené tarify",
+        "bitfaktura": "Import od 1., párovanie od 2. plateného"
       },
       "ai": {
         "label": "AI čítanie dokladov",
         "billanta": "Áno, aj zadarmo",
         "fakturoid": "Doplnok",
-        "idoklad": "Pár zadarmo, potom platené",
+        "idoklad": "3 zadarmo, potom platené",
         "superfaktura": "20 zadarmo, potom platené",
-        "vyfakturuj": "—",
+        "vyfakturuj": "–",
         "bitfaktura": "S limitom"
       },
       "voice": {
         "label": "Faktúra hlasom / správou",
-        "billanta": "Áno, aj Telegram",
-        "fakturoid": "—",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "—"
+        "billanta": "Áno, aj Telegram a WhatsApp",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "taxEstimate": {
+        "label": "Odhad dane a odvodov",
+        "billanta": "Pri každej faktúre, za rok od Start",
+        "fakturoid": "Platené tarify",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "import": {
+        "label": "Import z inej aplikácie",
+        "billanta": "Fakturoid, iDoklad, BitFaktura (aj s PDF), CSV",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Z Fakturoidu a iDokladu",
+        "bitfaktura": "–"
       },
       "api": {
         "label": "API",
-        "billanta": "Áno",
+        "billanta": "Platené tarify",
         "fakturoid": "Aj zadarmo",
-        "idoklad": "Od 2. tarifu",
+        "idoklad": "Od 2. plateného",
         "superfaktura": "Len najvyšší",
-        "vyfakturuj": "Od 2. tarifu",
-        "bitfaktura": "Áno"
-      },
-      "history": {
-        "label": "História zmien",
-        "billanta": "Áno",
-        "fakturoid": "—",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "Áno"
+        "vyfakturuj": "Od 2. plateného",
+        "bitfaktura": "Aj zadarmo"
       },
       "recurring": {
         "label": "Opakované faktúry",
         "billanta": "Áno, 2 aj zadarmo",
-        "fakturoid": "Vyššie tarify",
+        "fakturoid": "Len najvyšší",
         "idoklad": "Áno",
-        "superfaktura": "Od 2. tarifu",
-        "vyfakturuj": "Áno",
-        "bitfaktura": "Áno"
+        "superfaktura": "Od 2. plateného",
+        "vyfakturuj": "Od 2. plateného",
+        "bitfaktura": "Platené tarify"
       },
       "reminders": {
         "label": "Automatické upomienky",
-        "billanta": "Áno, od Start",
-        "fakturoid": "Áno",
-        "idoklad": "Áno",
-        "superfaktura": "Od 2. tarifu, aj SMS",
-        "vyfakturuj": "Áno",
-        "bitfaktura": "—"
+        "billanta": "Platené tarify",
+        "fakturoid": "Od 2. plateného",
+        "idoklad": "Od 2. plateného",
+        "superfaktura": "Od 2. plateného, aj SMS",
+        "vyfakturuj": "Platené tarify",
+        "bitfaktura": "Áno, aj zadarmo"
       },
       "einvoice": {
         "label": "ISDOC / e-faktúra",
@@ -5581,16 +5698,34 @@
         "idoklad": "ISDOC",
         "superfaktura": "ISDOC",
         "vyfakturuj": "ISDOC",
-        "bitfaktura": "—"
+        "bitfaktura": "ISDOC, platené tarify"
+      },
+      "qr": {
+        "label": "QR platba",
+        "billanta": "Áno, aj zadarmo",
+        "fakturoid": "Áno, aj zadarmo",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Áno",
+        "bitfaktura": "–"
+      },
+      "currencies": {
+        "label": "Cudzie meny",
+        "billanta": "Áno, kurz ČNB sa doplní sám",
+        "fakturoid": "–",
+        "idoklad": "Áno, s kurzom",
+        "superfaktura": "–",
+        "vyfakturuj": "Áno, aj zadarmo",
+        "bitfaktura": "Áno, kurz ČNB alebo ECB"
       },
       "czsk": {
         "label": "Česko aj Slovensko",
         "billanta": "V jednom účte, aj SK odvody",
         "fakturoid": "Bez SK daňovej agendy",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "—"
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
       },
       "mobile": {
         "label": "Mobil",
@@ -5599,14 +5734,23 @@
         "idoklad": "iOS, Android",
         "superfaktura": "iOS, Android",
         "vyfakturuj": "iOS, Android",
-        "bitfaktura": "—"
+        "bitfaktura": "–"
+      },
+      "history": {
+        "label": "História zmien",
+        "billanta": "Áno",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "Áno"
       }
     },
-    "disclaimer": "Podľa verejných cenníkov českých verzií služieb ku stavu {date}. Ceny mesačne pri ročnej platbe, bez DPH, ak nie je uvedené inak. Orientačné, overte si ich u poskytovateľa. Názvy sú ochranné známky svojich vlastníkov.",
+    "disclaimer": "Podľa verejných cenníkov českých verzií služieb ku stavu {date}. Ceny mesačne pri ročnej platbe, bez DPH, ak nie je uvedené inak. „Od 2. plateného“ = druhý najlacnejší platený tarif. Limity tarifov zadarmo uvádzame ako počet odberateľov, aj keď ich cenník niekde nazýva kontakty. Orientačné, overte si ich u poskytovateľa. Názvy sú ochranné známky svojich vlastníkov.",
     "reasonsTitle": "V čom je Billanta iná",
     "reasons": [
       {
-        "title": "Zadarmo bez limitu kontaktov",
+        "title": "Zadarmo bez limitu odberateľov",
         "body": "Fakturujte komukoľvek. Platíte len doklady nad 10 mesačne, a to po kusoch, nie celý tarif."
       },
       {
@@ -5627,13 +5771,15 @@
       },
       {
         "title": "Jednoduchý prechod",
-        "body": "Kontakty a doklady naimportujete zo súboru z vašej doterajšej aplikácie."
+        "body": "Z Fakturoidu, iDokladu alebo Excelu cez CSV, z BitFaktury priamo cez API aj s pôvodnými PDF."
       }
     ],
     "switchTitle": "Prechádzate odinakiaľ?",
     "switchBody": "Začnite zadarmo a kontakty aj doklady si preneste importom.",
     "pricingCta": "Cenník",
     "signupCta": "Začať zadarmo",
-    "notStated": "— = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)"
+    "notStated": "– = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)",
+    "verified": "Overené v cenníku {date}",
+    "sourcesTitle": "Zdroje"
   }
 }

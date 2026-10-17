@@ -11,6 +11,7 @@ import {
   getMunicipalityBySlug,
   getNearbyMunicipalities,
   getRegionSeat,
+  getSocialSecurityOffice,
   getTaxOffice,
   isDistrictSeat,
   isIndexedMunicipality,
@@ -96,6 +97,7 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
 
   const t = await getTranslations('municipalityPages');
   const countryLabel = municipality.country === 'CZ' ? t('countryCz') : t('countrySk');
+  const socialOffice = getSocialSecurityOffice(municipality);
   const regionHref = `/faktury-pro#${regionAnchorId(municipality.country, municipality.region)}`;
   const seat = getDistrictSeat(municipality);
   const regionSeat = getRegionSeat(municipality);
@@ -195,6 +197,18 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
               <p className="mt-3 text-sm font-medium text-foreground">{getTaxOffice(municipality)}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {municipality.country === 'CZ' ? t('taxNoteCz') : t('taxNoteSk')}
+              </p>
+              {socialOffice && (
+                <>
+                  <p className="mt-4 text-sm font-medium text-foreground">{socialOffice}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t('socialNote')}</p>
+                </>
+              )}
+              <p className="mt-4 text-sm text-muted-foreground">
+                {municipality.country === 'CZ' ? t('healthNoteCz') : t('healthNoteSk')}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {municipality.country === 'CZ' ? t('tradeNoteCz') : t('tradeNoteSk')}
               </p>
             </div>
           </div>
