@@ -244,7 +244,7 @@ export class ExportsService {
     const supply = sql`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const inPeriod =
       dateBy === "supply"
-        ? and(gte(supply, period.from), lt(supply, period.to))
+        ? and(sql`${supply} >= ${period.from.toISOString()}`, sql`${supply} < ${period.to.toISOString()}`)
         : and(gte(schema.invoices.issueDate, period.from), lt(schema.invoices.issueDate, period.to));
     const rows = await db
       .select({ invoice: schema.invoices, contact: schema.contacts })
@@ -567,8 +567,8 @@ export class ExportsService {
           isNotNull(schema.invoices.invoiceNumber),
           inArray(schema.invoices.documentType, ["invoice", "credit_note"]),
           notInArray(schema.invoices.status, ["draft", "pending_review", "cancelled"]),
-          sql`${duzp} >= ${period.from}`,
-          sql`${duzp} < ${period.to}`,
+          sql`${duzp} >= ${period.from.toISOString()}`,
+          sql`${duzp} < ${period.to.toISOString()}`,
         ),
       )
       .orderBy(asc(schema.invoices.invoiceNumber));
