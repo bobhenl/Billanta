@@ -12,6 +12,8 @@
  * they are announced. (Moved here from apps/frontend/lib so the public pages
  * and Settings read one table.)
  */
+import { flatTaxYearTotal } from './cz-tax-years.js';
+
 export type MinimumKind = 'health' | 'social' | 'flat_tax';
 
 type Period = { from: string; values: Partial<Record<MinimumKind, number>> };
@@ -19,6 +21,10 @@ type Period = { from: string; values: Partial<Record<MinimumKind, number>> };
 const MINIMUMS: Record<'CZ' | 'SK', Period[]> = {
   // cssz.gov.cz, vzp.cz, financnisprava.cz (paušální daň 1. pásmo)
   CZ: [
+    // Past years, for the yearly filings. Sources per number in cz-tax-years.ts.
+    { from: '2023-01', values: { health: 2722, social: 2944, flat_tax: 6208 } },
+    { from: '2024-01', values: { health: 2968, social: 3852, flat_tax: 7498 } },
+    { from: '2025-01', values: { health: 3143, social: 4759, flat_tax: 8716 } },
     { from: '2026-01', values: { health: 3306, social: 5720, flat_tax: 9984 } },
     // Novela: the social minimum back to 35 % of the average wage.
     { from: '2026-07', values: { social: 5005, flat_tax: 9162 } }
@@ -76,17 +82,12 @@ export function minimumsByMonth(country: string, year: number): (Partial<Record<
 }
 
 /**
- * Paušální daň in the 1st band for a whole year: the sum of the monthly
- * amounts in force (the 2026 amendment changed it from July), or null when
- * any month of that year has no figure in the table.
+ * Paušální daň in the 1st band for a whole year as finally settled, or null
+ * for an unknown year. The 2026 reduction to 9 162 Kč applies from January,
+ * so 2026 is 12 × 9 162 Kč even though 9 984 Kč was due until June.
  */
 export function flatTaxBand1ForYear(year: number): number | null {
-  let sum = 0;
-  for (const month of minimumsByMonth('CZ', year)) {
-    if (month?.flat_tax == null) return null;
-    sum += month.flat_tax;
-  }
-  return sum;
+  return flatTaxYearTotal(year, 1);
 }
 
 /**
