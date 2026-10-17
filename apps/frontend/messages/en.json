@@ -2377,10 +2377,20 @@
         "source": "We loaded {invoices, plural, one {# document} other {# documents}} and {contacts, plural, one {# contact} other {# contacts}} from BitFaktura.",
         "sourceAll": "Everything comes across, nothing was skipped.",
         "sourceSkipped": "{count, plural, one {# document will be skipped} other {# documents will be skipped}}, the reason for each is listed below.",
+        "business": "We fill in the empty business details: {fields}",
+        "businessDone": "We filled in your business details: {fields}.",
+        "businessCheck": "Check them",
+        "businessFields": {
+          "ico": "company ID (IČO)",
+          "dic": "VAT ID (DIČ)",
+          "registryNote": "register entry",
+          "address": "registered address"
+        },
         "more": "…and {count} more.",
         "confirm": "{count, plural, one {Import # invoice} other {Import # invoices}}",
         "done": "{count, plural, one {# invoice imported} other {# invoices imported}}, new contacts: {contacts}.",
         "open": "Show invoices",
+        "openContacts": "Show contacts",
         "columns": {
           "number": "Number",
           "customer": "Customer",

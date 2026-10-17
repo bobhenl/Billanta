@@ -2377,10 +2377,20 @@
         "source": "Z BitFaktúry sme načítali {invoices, plural, one {# doklad} few {# doklady} other {# dokladov}} a {contacts, plural, one {# kontakt} few {# kontakty} other {# kontaktov}}.",
         "sourceAll": "Prenesie sa všetko, nič sa nepreskočilo.",
         "sourceSkipped": "{count, plural, one {# doklad sa preskočí} few {# doklady sa preskočia} other {# dokladov sa preskočí}}, dôvod nájdete pri každom nižšie.",
+        "business": "Doplníme prázdne Fakturačné údaje: {fields}",
+        "businessDone": "Do Fakturačných údajov sme doplnili: {fields}.",
+        "businessCheck": "Skontrolovať",
+        "businessFields": {
+          "ico": "IČO",
+          "dic": "DIČ",
+          "registryNote": "zápis v registri",
+          "address": "sídlo"
+        },
         "more": "…a ďalších {count}.",
         "confirm": "{count, plural, one {Importovať # faktúru} few {Importovať # faktúry} other {Importovať # faktúr}}",
         "done": "{count, plural, one {Importovaná # faktúra} few {Importované # faktúry} other {Importovaných # faktúr}}, nových kontaktov: {contacts}.",
         "open": "Zobraziť faktúry",
+        "openContacts": "Zobraziť kontakty",
         "columns": {
           "number": "Číslo",
           "customer": "Odberateľ",

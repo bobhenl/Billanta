@@ -10,8 +10,11 @@ const FLAT_RATES = [60, 80, 40, 30, 0] as const;
 type FlatRate = (typeof FLAT_RATES)[number];
 const STORAGE_KEY = 'billanta.netEstimate.flatRate';
 
-/** "Roughly how much of this invoice you keep" — base without VAT minus tax and insurance. */
-export function NetEstimate({ base, currency }: { base: number; currency: string }) {
+/**
+ * "Roughly how much of this invoice you keep" — base without VAT minus tax and insurance.
+ * On a foreign-currency invoice `czkRate` adds the amount in CZK, the currency the tax is paid in.
+ */
+export function NetEstimate({ base, currency, czkRate }: { base: number; currency: string; czkRate?: number }) {
   const t = useTranslations('netEstimate');
   const locale = useLocale();
   const [rate, setRate] = useState<FlatRate>(60);
@@ -33,11 +36,14 @@ export function NetEstimate({ base, currency }: { base: number; currency: string
   };
   const fmt = new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 });
   const { net, burden } = netAfterTaxes(base, rate);
+  const czk = currency !== 'CZK' && czkRate && czkRate > 0 ? new Intl.NumberFormat(locale, { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }) : null;
+  const both = (amount: number) => (czk ? `${fmt.format(amount)} (≈ ${czk.format(amount * czkRate!)})` : fmt.format(amount));
 
   return (
     <div className="mt-1 flex flex-wrap items-center gap-x-2 sm:justify-end text-xs text-muted-foreground">
-      <InfoHint hint={t('hint', { burden: fmt.format(burden) })}>
+      <InfoHint hint={t('hint', { burden: both(burden) })}>
         {t('label')} <span className="font-semibold text-foreground">≈ {fmt.format(net)}</span>
+        {czk && <span className="font-semibold text-foreground"> · ≈ {czk.format(net * czkRate!)}</span>}
       </InfoHint>
       <select
         aria-label={t('flatRate')}

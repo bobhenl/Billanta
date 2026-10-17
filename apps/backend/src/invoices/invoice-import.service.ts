@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { decodeCsvBuffer, parseCsv } from "../contacts/contacts-csv.util";
@@ -9,10 +9,13 @@ import { computeInvoiceTotal, round2 } from "./invoice-total.util";
 import {
   BitfakturaError,
   fetchBitfakturaClients,
+  fetchBitfakturaDepartments,
   fetchBitfakturaInvoices,
   fetchBitfakturaPdf,
   mapBitfakturaClients,
   mapBitfakturaInvoices,
+  mapBitfakturaSeller,
+  type ImportedBusinessDetails,
 } from "./bitfaktura-import";
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbRate } from "../exports/cnb-rates";
@@ -36,6 +39,29 @@ export interface InvoiceImportResult {
   originalPdfs?: { archived: number; missing: number };
   /** API imports only: what the source returned, so the preview can show nothing went missing. */
   source?: { invoices: number; contacts: number };
+  /** API imports only: empty business-detail fields filled from the source (or that would be, on a preview). */
+  businessFilled?: (keyof ImportedBusinessDetails)[];
+}
+
+type BusinessRow = { [K in keyof ImportedBusinessDetails]-?: string | null };
+
+/**
+ * What the source may fill in the business details: only fields still empty, and the
+ * address only as a whole, so a half-typed address is never mixed with another one.
+ */
+export function businessFill(current: BusinessRow, from: ImportedBusinessDetails | null): ImportedBusinessDetails {
+  if (!from) return {};
+  const out: ImportedBusinessDetails = {};
+  if (from.ico && !current.ico) out.ico = from.ico;
+  if (from.dic && !current.dic) out.dic = from.dic;
+  if (from.registryNote && !current.registryNote) out.registryNote = from.registryNote;
+  if (from.addressStreet && !current.addressStreet && !current.addressCity && !current.addressPostalCode) {
+    out.addressStreet = from.addressStreet;
+    out.addressCity = from.addressCity;
+    if (from.addressPostalCode) out.addressPostalCode = from.addressPostalCode;
+    out.addressCountry = from.addressCountry;
+  }
+  return out;
 }
 
 /** Parallel PDF downloads; low enough not to hammer the source's API. */
@@ -78,6 +104,8 @@ export class InvoiceImportService {
       if (error instanceof BitfakturaError) throw new BadRequestException({ error: error.code });
       throw error;
     }
+    // Nice to have: without the seller profile the invoices still come across.
+    const seller = mapBitfakturaSeller(await fetchBitfakturaDepartments(account, apiToken, fetcher).catch(() => []));
     const created: { invoice: ImportedInvoice; id: string }[] = [];
     const result = await this.importMapped(
       db,
@@ -88,7 +116,27 @@ export class InvoiceImportService {
       mapBitfakturaClients(clients),
     );
     result.source = { invoices: source.length, contacts: clients.length };
+    const [tenant] = await db
+      .select({
+        ico: schema.tenants.ico,
+        dic: schema.tenants.dic,
+        registryNote: schema.tenants.registryNote,
+        addressStreet: schema.tenants.addressStreet,
+        addressCity: schema.tenants.addressCity,
+        addressPostalCode: schema.tenants.addressPostalCode,
+        addressCountry: schema.tenants.addressCountry,
+      })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId));
+    const fill = tenant ? businessFill(tenant, seller) : {};
+    result.businessFilled = Object.keys(fill) as (keyof ImportedBusinessDetails)[];
     if (dryRun) return result;
+    if (result.businessFilled.length > 0) {
+      await db
+        .update(schema.tenants)
+        .set({ ...fill, updatedAt: new Date() })
+        .where(eq(schema.tenants.id, tenantId));
+    }
 
     // Archive copy of what the customer received. Not e-mailed again and not
     // shown in the portal; the invoice data itself stays as imported.

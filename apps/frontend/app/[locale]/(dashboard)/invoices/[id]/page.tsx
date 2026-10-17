@@ -142,7 +142,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <span className="text-muted-foreground"> · {t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span>
             </div>
           )}
-          {invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} />}
+          {invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} />}
         </div>
       </div>
 

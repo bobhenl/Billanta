@@ -6,6 +6,7 @@ import {
   fetchBitfakturaInvoices,
   fetchBitfakturaPdf,
   mapBitfakturaClients,
+  mapBitfakturaSeller,
   mapBitfakturaInvoices,
   type BitfakturaClient,
   type BitfakturaInvoice,
@@ -252,5 +253,50 @@ describe("fetchBitfakturaClients", () => {
     await expect(fetchBitfakturaClients("firma", "t0ken-xyz", async () => new Response("[]", { status: 401 }))).rejects.toMatchObject({
       code: "bitfaktura_unauthorized",
     });
+  });
+});
+
+describe("e-mail typed into the address", () => {
+  it("is used as the e-mail and kept out of the address", () => {
+    const [bare, both, inCity] = mapBitfakturaClients([
+      { id: 1, name: "Brandon", street: "Contact@brandhyde.com", country: "GB" },
+      { id: 2, name: "Gabe", street: "gabe@example.com", email: "billing@example.com" },
+      { id: 3, name: "Kamran", street: "Main St 1", city: "k@example.com" },
+    ]);
+    expect(bare).toMatchObject({ email: "Contact@brandhyde.com", addressStreet: null, addressCity: null, addressCountry: "GB" });
+    expect(both).toMatchObject({ email: "billing@example.com", addressStreet: null });
+    expect(inCity).toMatchObject({ email: "k@example.com", addressStreet: "Main St 1", addressCity: null });
+  });
+
+  it("works the same for invoice buyers", () => {
+    const { invoices } = mapBitfakturaInvoices([invoice({ buyer_street: "mail@cintro.dev", buyer_email: "", buyer_city: "" })]);
+    expect(invoices[0]!.customer).toMatchObject({ email: "mail@cintro.dev", addressStreet: null });
+  });
+});
+
+describe("mapBitfakturaSeller", () => {
+  const dept = { id: 1, main: true, name: "Jan Novák", tax_no: "CZ8001011234", register_number: "12345678", street: "Dlouhá 1", city: "Praha", post_code: "110 00" };
+
+  it("reads IČO, DIČ, address and the trade-register line of the main profile", () => {
+    expect(
+      mapBitfakturaSeller([
+        { ...dept, id: 2, main: false, street: "Jiná 5" },
+        { ...dept, additional_fields: { seller_trade_register_cz: " Fyzická osoba zapsaná v živnostenském rejstříku. " } },
+      ]),
+    ).toEqual({
+      ico: "12345678",
+      dic: "CZ8001011234",
+      addressStreet: "Dlouhá 1",
+      addressCity: "Praha",
+      addressPostalCode: "110 00",
+      addressCountry: "CZ",
+      registryNote: "Fyzická osoba zapsaná v živnostenském rejstříku.",
+    });
+  });
+
+  it("takes an 8-digit tax number as the IČO, skips deleted profiles and half addresses", () => {
+    expect(mapBitfakturaSeller([{ ...dept, deleted: true }, { id: 3, tax_no: "27082440", register_number: null, street: "Dlouhá 1", city: "" }])).toEqual({ ico: "27082440" });
+    expect(mapBitfakturaSeller([{ id: 4, tax_no: "", street: "x@example.com", city: "Praha" }])).toBeNull();
+    expect(mapBitfakturaSeller([])).toBeNull();
   });
 });

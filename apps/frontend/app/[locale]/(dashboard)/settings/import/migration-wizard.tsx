@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, Loader2, Upload, Users } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, FileText, Loader2, Upload, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
@@ -26,6 +26,7 @@ type InvoiceImportResult = {
   preview: { number: string; customer: string; issueDate: string; total: number; currency: string; status: string }[];
   originalPdfs?: { archived: number; missing: number };
   source?: { invoices: number; contacts: number };
+  businessFilled?: string[];
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
@@ -239,6 +240,8 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
     }
   };
 
+  const businessFields = (keys: string[]) =>
+    [...new Set(keys.map((k) => (k.startsWith('address') ? 'address' : k)))].map((k) => t(`step3.businessFields.${k}`)).join(', ');
   const money = (amount: number, currency: string) =>
     new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount);
   const date = (iso: string) => new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(`${iso}T00:00:00`));
@@ -325,6 +328,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
                 <li>{t('step3.statuses', preview.byStatus)}</li>
                 <li>{t('step3.totals', { totals: Object.entries(preview.totals).map(([c, v]) => money(v, c)).join(' · ') || '–' })}</li>
                 <li>{t('step3.contacts', { created: preview.contactsCreated, matched: preview.contactsMatched })}</li>
+                {preview.businessFilled && preview.businessFilled.length > 0 && <li>{t('step3.business', { fields: businessFields(preview.businessFilled) })}</li>}
               </ul>
             </div>
           )}
@@ -376,10 +380,24 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
                 {result.originalPdfs.missing > 0 && ` ${t('step3.pdfsMissing', { missing: result.originalPdfs.missing })}`}
               </p>
             )}
-            <Link href="/invoices" className="mt-1 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-              <CheckCircle2 className="h-4 w-4" />
-              {t('step3.open')}
-            </Link>
+            {result.businessFilled && result.businessFilled.length > 0 && (
+              <p className="text-sm">
+                {t('step3.businessDone', { fields: businessFields(result.businessFilled) })}{' '}
+                <Link href="/settings/company" className="font-semibold text-primary hover:underline">
+                  {t('step3.businessCheck')}
+                </Link>
+              </p>
+            )}
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+              <Link href="/invoices" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                <FileText className="h-4 w-4" />
+                {t('step3.open')}
+              </Link>
+              <Link href="/contacts" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                <Users className="h-4 w-4" />
+                {t('step3.openContacts')}
+              </Link>
+            </div>
           </Banner>
           <Skipped rows={result.skipped} />
         </div>

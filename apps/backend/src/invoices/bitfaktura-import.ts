@@ -39,6 +39,11 @@ export function fetchBitfakturaInvoices(account: string, apiToken: string, fetch
   return fetchAllPages<BitfakturaInvoice>(account, apiToken, "invoices.json?period=all&include_positions=true&", fetcher);
 }
 
+/** The account's seller profiles; the main one holds the business details. */
+export function fetchBitfakturaDepartments(account: string, apiToken: string, fetcher: Fetch = fetch): Promise<BitfakturaDepartment[]> {
+  return fetchAllPages<BitfakturaDepartment>(account, apiToken, "departments.json?", fetcher);
+}
+
 /** Every contact of the account, also those never invoiced. */
 export function fetchBitfakturaClients(account: string, apiToken: string, fetcher: Fetch = fetch): Promise<BitfakturaClient[]> {
   return fetchAllPages<BitfakturaClient>(account, apiToken, "clients.json?", fetcher);
@@ -202,14 +207,18 @@ function contactFrom(c: {
   country?: string | null;
 }): ImportedInvoice["customer"] {
   const taxNo = (c.taxNo ?? "").replace(/[\s-]/g, "").toUpperCase();
-  const email = (c.email ?? "").trim();
+  // With no address at hand, people often typed the e-mail into the street or city
+  // field. It is not an address, but it may be the only e-mail the contact has.
+  const street = text(c.street, 255);
+  const city = text(c.city, 255);
+  const email = [c.email, street, city].map((v) => (v ?? "").trim()).find(isEmail) ?? null;
   return {
     legalName: c.name,
     ico: /^\d{8}$/.test(taxNo) ? taxNo : null,
     dic: /^[A-Z]{2}[0-9A-Z]{2,12}$/.test(taxNo) ? taxNo : null,
-    email: email && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email) ? email : null,
-    addressStreet: text(c.street, 255),
-    addressCity: text(c.city, 255),
+    email,
+    addressStreet: street && !isEmail(street) ? street : null,
+    addressCity: city && !isEmail(city) ? city : null,
     addressPostalCode: text(c.postCode, 10),
     addressCountry: normalizeCountry(c.country ?? undefined) ?? "CZ",
   };
@@ -233,6 +242,62 @@ export function mapBitfakturaClients(source: BitfakturaClient[]): ImportedContac
     out.push({ ...contact, ...(raw.company === false ? { isPerson: true } : {}), ...(internalNote ? { internalNote } : {}) });
   }
   return out;
+}
+
+const isEmail = (v: string) => /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(v);
+
+/** The fields of an InvoiceOcean department (the seller profile) this import reads. */
+export interface BitfakturaDepartment {
+  id: number;
+  name?: string | null;
+  tax_no?: string | null;
+  register_number?: string | null;
+  street?: string | null;
+  city?: string | null;
+  post_code?: string | null;
+  country?: string | null;
+  main?: boolean | null;
+  deleted?: boolean | null;
+  additional_fields?: { seller_trade_register_cz?: string | null } | null;
+}
+
+/**
+ * Business details as the tenant settings store them; only what the source actually has.
+ * No bank account: a change there alerts the owner, and an import should not go around that.
+ */
+export interface ImportedBusinessDetails {
+  ico?: string;
+  dic?: string;
+  addressStreet?: string;
+  addressCity?: string;
+  addressPostalCode?: string;
+  addressCountry?: string;
+  registryNote?: string;
+}
+
+/** The main seller profile as business details, or null when there is none. */
+export function mapBitfakturaSeller(departments: BitfakturaDepartment[]): ImportedBusinessDetails | null {
+  const live = departments.filter((d) => !d.deleted);
+  const d = live.find((x) => x.main) ?? live[0];
+  if (!d) return null;
+  const out: ImportedBusinessDetails = {};
+  const taxNo = (d.tax_no ?? "").replace(/[\s-]/g, "").toUpperCase();
+  const reg = (d.register_number ?? "").replace(/\s/g, "");
+  const ico = [reg, taxNo].find((v) => /^\d{8}$/.test(v));
+  if (ico) out.ico = ico;
+  if (/^[A-Z]{2}[0-9A-Z]{2,12}$/.test(taxNo)) out.dic = taxNo;
+  const street = text(d.street, 255);
+  const city = text(d.city, 255);
+  if (street && city && !isEmail(street)) {
+    out.addressStreet = street;
+    out.addressCity = city;
+    const zip = text(d.post_code, 10);
+    if (zip) out.addressPostalCode = zip;
+    out.addressCountry = normalizeCountry(d.country ?? undefined) ?? "CZ";
+  }
+  const registry = text(d.additional_fields?.seller_trade_register_cz, 500);
+  if (registry) out.registryNote = registry;
+  return Object.keys(out).length > 0 ? out : null;
 }
 
 /** Maps API invoices to the shape the CSV import also produces, so both share one write path. */

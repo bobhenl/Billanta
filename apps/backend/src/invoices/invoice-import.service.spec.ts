@@ -1,16 +1,35 @@
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
-import { InvoiceImportService } from "./invoice-import.service";
+import { businessFill, InvoiceImportService } from "./invoice-import.service";
 import type { ImportedContact, ImportedInvoice } from "./invoice-import.util";
 
 const source = (id: number, number: string) => ({ id, number }) as never;
+const EMPTY_TENANT = { ico: null, dic: null, registryNote: null, addressStreet: null, addressCity: null, addressPostalCode: null, addressCountry: "CZ" };
+const SELLER = {
+  id: 1,
+  main: true,
+  name: "Jan Novák",
+  tax_no: "CZ8001011234",
+  register_number: "12345678",
+  street: "Dlouhá 1",
+  city: "Praha",
+  post_code: "110 00",
+  additional_fields: { seller_trade_register_cz: "Fyzická osoba zapsaná v živnostenském rejstříku." },
+};
 
 /** Runs the BitFaktura import with the invoice writes stubbed, so only the PDF archiving is exercised. */
-async function run(pdfFor: (url: string) => Response | Promise<Response>, dryRun = false) {
+async function run(pdfFor: (url: string) => Response | Promise<Response>, dryRun = false, tenantRow: Record<string, string | null> = EMPTY_TENANT) {
   const service = new InvoiceImportService();
   const inserted: { table: unknown; values: Record<string, unknown> }[] = [];
   let contacts: unknown;
-  const db = { insert: (table: unknown) => ({ values: async (values: Record<string, unknown>) => void inserted.push({ table, values }) }) };
+  const updated: Record<string, unknown>[] = [];
+  const db = {
+    insert: (table: unknown) => ({ values: async (values: Record<string, unknown>) => void inserted.push({ table, values }) }),
+    select: () => ({ from: () => ({ where: async () => [tenantRow] }) }),
+    update: (table: unknown) => ({
+      set: (values: Record<string, unknown>) => ({ where: async () => void updated.push({ table, ...values }) }),
+    }),
+  };
   vi.spyOn(service as never, "importMapped").mockImplementation((async (
     _db: unknown,
     _tenant: string,
@@ -24,6 +43,7 @@ async function run(pdfFor: (url: string) => Response | Promise<Response>, dryRun
     return { dryRun: _dry, invoices: mapped.invoices.length };
   }) as never);
   const fetcher = async (url: string) => {
+    if (url.includes("/departments.json")) return new Response(JSON.stringify([SELLER]), { status: 200 });
     if (url.includes("/clients.json")) return new Response(JSON.stringify([{ id: 5, name: "Klient bez faktury" }]), { status: 200 });
     if (url.includes("/invoices.json")) {
       return new Response(JSON.stringify([source(11, "1/10/2026"), source(12, "2/10/2026"), source(13, "3/10/2026")]), { status: 200 });
@@ -36,7 +56,7 @@ async function run(pdfFor: (url: string) => Response | Promise<Response>, dryRun
     skipped: [],
   }));
   const result = await service.importFromBitfaktura(db as never, "tenant-1", "firma", "t0ken-xyz", dryRun, fetcher as never);
-  return { result, inserted, contacts };
+  return { result, inserted, contacts, updated };
 }
 
 describe("InvoiceImportService.importFromBitfaktura – original PDFs", () => {
@@ -145,5 +165,60 @@ describe("InvoiceImportService.importMapped – address-book contacts", () => {
       expect.objectContaining({ tenantId: "tenant-1", legalName: "Acme s.r.o.", ico: "27082440", internalNote: "Tel. 777" }),
       expect.objectContaining({ tenantId: "tenant-1", legalName: "Jan Novák", isPerson: true }),
     ]);
+  });
+});
+
+describe("InvoiceImportService.importFromBitfaktura – business details", () => {
+  const pdf = () => new Response("%PDF-1.4 x", { status: 200 });
+
+  it("previews which empty fields the seller profile fills, without writing them", async () => {
+    const { result, updated } = await run(pdf, true);
+    expect(result.businessFilled).toEqual(["ico", "dic", "registryNote", "addressStreet", "addressCity", "addressPostalCode", "addressCountry"]);
+    expect(updated).toEqual([]);
+  });
+
+  it("fills them on the real import", async () => {
+    const { updated } = await run(pdf);
+    expect(updated).toEqual([
+      expect.objectContaining({
+        table: schema.tenants,
+        ico: "12345678",
+        dic: "CZ8001011234",
+        registryNote: "Fyzická osoba zapsaná v živnostenském rejstříku.",
+        addressStreet: "Dlouhá 1",
+        addressCity: "Praha",
+        addressPostalCode: "110 00",
+      }),
+    ]);
+  });
+
+  it("writes nothing when the details are already filled in", async () => {
+    const full = { ico: "87654321", dic: "CZ87654321", registryNote: "x", addressStreet: "Krátká 2", addressCity: "Brno", addressPostalCode: "602 00", addressCountry: "CZ" };
+    const { result, updated } = await run(pdf, false, full);
+    expect(result.businessFilled).toEqual([]);
+    expect(updated).toEqual([]);
+  });
+});
+
+describe("businessFill", () => {
+  const from = { ico: "12345678", dic: "CZ8001011234", registryNote: "r", addressStreet: "Dlouhá 1", addressCity: "Praha", addressPostalCode: "11000", addressCountry: "CZ" };
+
+  it("never overwrites a filled field", () => {
+    expect(businessFill({ ...EMPTY_TENANT, ico: "87654321", dic: "CZ1", registryNote: "mine" }, from)).toEqual({
+      addressStreet: "Dlouhá 1",
+      addressCity: "Praha",
+      addressPostalCode: "11000",
+      addressCountry: "CZ",
+    });
+  });
+
+  it("fills the address only as a whole", () => {
+    for (const partial of [{ addressStreet: "Krátká 2" }, { addressCity: "Brno" }, { addressPostalCode: "60200" }]) {
+      expect(businessFill({ ...EMPTY_TENANT, ...partial }, from), JSON.stringify(partial)).not.toHaveProperty("addressStreet");
+    }
+  });
+
+  it("does nothing without a seller profile", () => {
+    expect(businessFill(EMPTY_TENANT, null)).toEqual({});
   });
 });
