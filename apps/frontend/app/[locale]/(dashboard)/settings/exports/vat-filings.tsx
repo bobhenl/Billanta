@@ -20,7 +20,7 @@ const FILES = [
  * fetched rather than linked so a "nothing to report" or missing-DIČ answer
  * shows as a toast instead of a downloaded error page.
  */
-export function VatFilings() {
+export function VatFilings({ checked = VAT_INFO_CHECKED }: { checked?: string }) {
   const t = useTranslations('settings.exports.vat');
   const locale = useLocale();
   const now = new Date();
@@ -120,7 +120,7 @@ export function VatFilings() {
           dp3: VAT_FORM_VERSIONS.DPHDP3,
           kh1: VAT_FORM_VERSIONS.DPHKH1,
           shv: VAT_FORM_VERSIONS.DPHSHV,
-          date: new Date(`${VAT_INFO_CHECKED}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
+          date: new Date(`${checked}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
         })}{' '}
         <a href={VAT_OFFICIAL_URL} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline">
           {t('officialLink')}

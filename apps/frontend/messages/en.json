@@ -1997,6 +1997,106 @@
             "Not sure? Invite your accountant to the team (Settings → Team) – they see the exports and can file for you."
           ]
         }
+      },
+      "filings": {
+        "title": "Annual filings for {year}",
+        "hint": "Income tax return, the ČSSZ statement and the values for your health insurer, prefilled from the year’s invoices and expenses. You download, check and file them yourself.",
+        "year": "Year",
+        "expenses": "Expenses",
+        "basis": "Bookkeeping",
+        "basisHint": "Tax records (daňová evidence) count income when invoices are paid. Full accounting counts it by the date of supply (DUZP).",
+        "basisCash": "Tax records (by payment)",
+        "basisAccrual": "Accounting (by date of supply)",
+        "activity": "Activity",
+        "activityHint": "Secondary activity is, for example, a business next to a job or parental leave. Insurance starts only above the threshold amount.",
+        "activityMain": "Main",
+        "activitySecondary": "Secondary",
+        "fromMonth": "In business since",
+        "taxAdvances": "Income tax advances paid (CZK)",
+        "taxAdvancesHint": "Income tax advances paid for this year. Most sole traders pay none in their first years.",
+        "spouse": "Claim the spouse credit",
+        "spouseHint": "Only if your spouse had their own income of up to CZK 68,000 for the year and you live in one household.",
+        "failed": "Could not load the annual filing data.",
+        "rowNo": "line {n}",
+        "dpfoTitle": "Income tax return (DPFO)",
+        "dpfo": {
+          "r101": "Business income (§ 7)",
+          "r102": "Expenses ({rate} % flat rate or actual)",
+          "r113": "Partial tax base from business",
+          "r61": "Tax loss",
+          "r56": "Tax base, rounded",
+          "r57": "Tax 15 % / 23 %",
+          "r64": "Taxpayer credit",
+          "r65a": "Spouse credit",
+          "r71": "Tax after credits",
+          "r84": "Advances paid",
+          "r91": "Left to pay (minus is an overpayment)"
+        },
+        "csszTitle": "Statement for ČSSZ (social insurance)",
+        "cssz": {
+          "r24": "Profit (income minus expenses)",
+          "r25": "Assessment base from profit",
+          "r27": "Minimum assessment base",
+          "r28": "Assessment base",
+          "r32": "Insurance due",
+          "r33": "Advances paid",
+          "r34": "Left to pay (minus is an overpayment)",
+          "r35": "New monthly assessment base",
+          "r36": "New monthly advance"
+        },
+        "csszNotInsured": "Profit from the secondary activity stayed below the threshold, so no pension insurance arose. You still file the ČSSZ statement, with zero insurance.",
+        "nextUnknown": "Next year’s minimum advance is not known yet. Check the new advance in the ČSSZ ePortal.",
+        "healthTitle": "Statement for the health insurer",
+        "health": {
+          "profit": "Profit",
+          "baseFromProfit": "Half of the profit",
+          "minBase": "Minimum assessment base",
+          "base": "Assessment base",
+          "premium": "Insurance 13.5 %",
+          "paid": "Advances paid",
+          "balance": "Left to pay (minus is an overpayment)",
+          "nextAdvance": "New monthly advance"
+        },
+        "insurer": "Your insurer",
+        "healthHowTo": "Each insurer has its own form and none has published a shared XML format yet. Copy the values on the left into the statement on your insurer’s portal or its PDF form.",
+        "missingRates": "{count, plural, one {# foreign-currency document has} other {# foreign-currency documents have}} no CNB rate and is missing from the totals.",
+        "personTitle": "Personal details for the files",
+        "personHint": "Only written into the downloaded XML. We do not store them and they never appear in the page address.",
+        "person": {
+          "birthNumber": "Birth number (rodné číslo)",
+          "birthNumberHint": "Goes into both the tax return and the ČSSZ statement.",
+          "taxOffice": "Tax office code",
+          "taxOfficeHint": "The three-digit code from EPO, e.g. 451 for the City of Prague.",
+          "taxWorkplace": "Local office code",
+          "ossz": "OSSZ code",
+          "osszHint": "The three-digit code of your district social security office.",
+          "variableSymbol": "ČSSZ variable symbol",
+          "variableSymbolHint": "Shown in the ČSSZ ePortal or on your earlier advance payments.",
+          "dataBox": "Data box ID"
+        },
+        "downloadDpfdp": "Download tax return ({form}, XML)",
+        "dpfdpMissing": "No tax return form for this year yet",
+        "downloadCssz": "Download ČSSZ statement (XML)",
+        "csszMissing": "No ČSSZ statement for this year yet",
+        "print": "Print summary",
+        "epoLink": "Financial Administration EPO",
+        "epoHow": "load the file with “Načíst soubor”, check it and send it.",
+        "csszLink": "ČSSZ ePortal",
+        "csszHow": "upload the statement as XML, or send it through your data box.",
+        "errors": {
+          "form_not_published": "The authority has not published the form for this year yet.",
+          "year_not_supported": "We do not have the parameters for this year yet.",
+          "invalid_filings_query": "Please check the details you entered; something has the wrong format.",
+          "generic": "Could not create the file."
+        },
+        "disclaimer": "Prefilled from the documents in the app for the typical sole-trader case (business income only, basic credits). This is not tax advice. Check everything before filing; you file yourself through EPO, the ČSSZ ePortal, your insurer’s portal or your data box.",
+        "modes": {
+          "30": "Flat rate 30 % (renting)",
+          "40": "Flat rate 40 % (professions)",
+          "60": "Flat rate 60 % (trades)",
+          "80": "Flat rate 80 % (crafts)",
+          "actual": "Actual expenses"
+        }
       }
     },
     "invoices": {
@@ -6259,21 +6359,20 @@
         "flatTax": {
           "name": "Flat-rate tax",
           "title": "Czech flat-rate tax (paušální daň) calculator",
-          "description": "Does the Czech flat-rate tax pay off for you? Compare band 1 with regular tax and insurance using flat-rate expenses.",
-          "lead": "The flat-rate tax (paušální daň) replaces income tax, social and health insurance with one monthly payment. The calculator shows whether you fit band 1 and what you would pay in the regular regime with flat-rate expenses.",
+          "description": "Does the Czech flat-rate tax pay off for you? The calculator finds your band from your income and compares it with regular tax and insurance using flat-rate expenses.",
+          "lead": "The flat-rate tax (paušální daň) replaces income tax, social and health insurance with one monthly payment. The calculator shows which band you fall into and what you would pay in the regular regime with flat-rate expenses.",
           "keywords": "flat-rate tax pausalni dan band sole trader czech",
           "fields": {
             "year": "Year",
             "income": "Expected income for the year (CZK)",
             "flatRate": "Main activity"
           },
-          "monthlyTitle": "Band 1 payment",
+          "monthlyTitle": "Band {band} payment",
           "monthlyFrom": "from {date}: {amount} per month",
           "yearTotal": "Flat-rate tax for the year",
           "normalTotal": "Regular regime with flat-rate expenses",
           "cheaper": "The flat-rate tax comes out {amount} cheaper.",
           "dearer": "The regular regime comes out {amount} cheaper.",
-          "notBand1": "With this income and activity you do not fit band 1. Higher bands are not calculated here; see the Financial Administration website for their amounts.",
           "noData": "We do not have the flat-rate tax amount for this year yet.",
           "conditionsTitle": "Who can join the flat-rate regime",
           "conditions": [
@@ -6283,7 +6382,10 @@
             "You are not a partner in a general partnership or a general partner in a limited partnership, and you are not insolvent.",
             "You notify the tax office that you are joining by 10 January of that year."
           ],
-          "compareNote": "The regular regime is calculated with flat-rate expenses for the chosen activity, with no other income or deductions."
+          "compareNote": "The regular regime is calculated with flat-rate expenses for the chosen activity, with no other income or deductions.",
+          "bandFits": "You fall into band {band}.",
+          "notEligible": "With income above CZK 2,000,000 you cannot enter the flat-rate regime.",
+          "retroactiveNote": "The cut applies back to January; what you paid on top comes back from the tax office as an overpayment."
         },
         "vat": {
           "name": "VAT calculator",

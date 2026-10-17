@@ -107,7 +107,7 @@ const annualQuerySchema = z.object({
 });
 
 const monthsSchema = z
-  .union([z.array(z.coerce.number().int().min(1).max(12)), z.string().regex(/^d{1,2}(,d{1,2})*$/)])
+  .union([z.array(z.coerce.number().int().min(1).max(12)), z.string().regex(/^\d{1,2}(,\d{1,2})*$/)])
   .transform((v) => (typeof v === "string" ? v.split(",").map(Number) : v))
   .refine((v) => v.length > 0 && v.every((m) => m >= 1 && m <= 12))
   .optional();
@@ -122,13 +122,13 @@ const filingsQuerySchema = annualQuerySchema.extend({
 // Personal data for the files travels in the POST body only (never in a URL)
 // and is not stored: it goes straight into the generated XML.
 const filingPersonSchema = z.object({
-  birthNumber: z.string().regex(/^d{6}/?d{3,4}$/).optional(),
-  birthDate: z.string().regex(/^d{4}-d{2}-d{2}$/).optional(),
+  birthNumber: z.string().regex(/^\d{6}\/?\d{3,4}$/).optional(),
+  birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   taxOffice: z.coerce.number().int().min(1).max(9999).optional(),
   taxWorkplace: z.coerce.number().int().min(1).max(9999).optional(),
   dataBox: z.string().regex(/^[a-z0-9]{7}$/i).optional(),
-  variableSymbol: z.string().regex(/^d{1,10}$/).optional(),
-  ossz: z.string().regex(/^d{3}$/).optional(),
+  variableSymbol: z.string().regex(/^\d{1,10}$/).optional(),
+  ossz: z.string().regex(/^\d{3}$/).optional(),
 });
 const filingBodySchema = filingsQuerySchema.merge(filingPersonSchema);
 
