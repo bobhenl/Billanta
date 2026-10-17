@@ -7,6 +7,8 @@ export { ADVANCE_KINDS, vatStatusOf, type TaxAdvances } from './vat-status';
 import type { TaxAdvances } from './vat-status';
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
+export type BuyerDetailsField = 'email' | 'phone' | 'ico' | 'dic';
+
 export interface TenantSettings {
   id: string;
   companyName: string;
@@ -19,6 +21,8 @@ export interface TenantSettings {
   vatStatus?: VatStatus;
   /** OSVČ monthly advances by period for the dashboard deadlines (an old backend may still send the single-set object: read via normalizeTaxAdvances). */
   taxAdvances?: TaxAdvances;
+  /** Fields a customer must fill in on a buyer-details link (0050); missing on an older backend. */
+  buyerDetailsRequired?: BuyerDetailsField[];
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;

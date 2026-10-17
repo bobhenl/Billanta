@@ -125,6 +125,7 @@ export interface InvoiceDetail {
     buyerDetailsRequestedAt?: string | null;
     buyerDetailsEmail?: string | null;
     buyerDetailsAutoIssue?: boolean;
+    buyerDetailsRequired?: ('email' | 'phone' | 'ico' | 'dic')[] | null;
     buyerDetailsOutcome?: BuyerDetailsOutcome | null;
     customFields?: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
   };

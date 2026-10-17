@@ -114,6 +114,7 @@ export class TenantsService {
       paymentMethods: dto.payment_methods,
       publicProfile: dto.public_profile,
       enabledModules: dto.enabled_modules,
+      buyerDetailsRequired: dto.buyer_details_required ? [...new Set(dto.buyer_details_required)] : undefined,
     };
     for (const key of Object.keys(values) as Array<keyof TenantInsert>) {
       if (values[key] === undefined) delete values[key];

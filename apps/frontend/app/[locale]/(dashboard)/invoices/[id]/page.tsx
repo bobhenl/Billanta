@@ -94,6 +94,12 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           .catch(() => [])
       : [];
   const lawIssues = checkIssues.filter((i) => i.scheme === 'law');
+  // A draft without a customer: the "fill in" box offers sending the link or picking a contact right there.
+  const customerMissing =
+    (invoice.status === 'draft' || invoice.status === 'pending_review') &&
+    invoice.documentType !== 'credit_note' &&
+    !invoice.buyerDetailsToken &&
+    lawIssues.some((i) => i.code === 'customerMissing');
   const peppolIssues = checkIssues.filter((i) => i.scheme === 'peppol');
   const money = (n: number) => formatMoney(n, invoice.currency, locale);
   // The customer has an older copy: edited in place after the last send.
@@ -200,6 +206,9 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             autoIssue={Boolean(invoice.buyerDetailsAutoIssue)}
             outcome={invoice.buyerDetailsOutcome ?? null}
             contactEmail={contact?.email ?? null}
+            required={invoice.buyerDetailsRequired ?? tenant?.buyerDetailsRequired ?? ['email', 'ico']}
+            defaultRequired={tenant?.buyerDetailsRequired ?? ['email', 'ico']}
+            hideStart={customerMissing}
           />
         )}
       </div>
@@ -222,6 +231,21 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               </li>
             ))}
           </ul>
+          {customerMissing && (
+            <BuyerDetailsRequest
+              variant="inline"
+              id={invoice.id}
+              token={null}
+              submittedAt={null}
+              submittedLabel={null}
+              email={null}
+              autoIssue={false}
+              outcome={null}
+              contactEmail={null}
+              required={tenant?.buyerDetailsRequired ?? ['email', 'ico']}
+              defaultRequired={tenant?.buyerDetailsRequired ?? ['email', 'ico']}
+            />
+          )}
         </Banner>
       )}
       {peppolIssues.length > 0 && (
