@@ -601,8 +601,16 @@
         "dic": "DIČ",
         "address": "adresa",
         "isPerson": "soukromá osoba",
-        "contactId": "kontakt"
-      }
+        "contactId": "kontakt",
+        "phone": "telefon"
+      },
+      "copyManual": "Kopírování tady nejde. Odkaz označte a zkopírujte ručně.",
+      "copyManualLabel": "Odkaz pro odběratele",
+      "requiredLabel": "Povinné údaje",
+      "requiredHint": "Co musí odběratel vyplnit. Jméno a adresa jsou povinné vždy, IČO a DIČ jen u firem.",
+      "requiredSaveDefault": "Použít jako výchozí pro další odkazy",
+      "requiredSummary": "Povinné: {fields}",
+      "pickCustomer": "Vybrat odběratele"
     }
   },
   "publicInvoice": {
@@ -1102,7 +1110,11 @@
       },
       "internalNote": "Interní poznámka",
       "internalNoteHint": "Jen pro vás: nikdy se netiskne na doklady ani neposílá odběrateli. Ukáže se v detailu kontaktu a při vystavování faktury tomuto odběrateli a je i v CSV exportu.",
-      "internalNotePlaceholder": "Např. platí vždy pozdě, fakturovat na paní Novou, sleva 5 %…"
+      "internalNotePlaceholder": "Např. platí vždy pozdě, fakturovat na paní Novou, sleva 5 %…",
+      "fromRegistry": "Načíst z registru",
+      "phone": "Telefon",
+      "vatSuggestYes": "Registr ho vede jako plátce DPH. Nastavit „Ano“?",
+      "vatSuggestNo": "Registr ho jako plátce DPH nevede. Nastavit „Ne“?"
     },
     "detail": {
       "title": "Detail kontaktu",
@@ -1653,7 +1665,13 @@
         "identifiedHint": "Nejste plátce, ale DPH odvádíte z reklam a služeb nakoupených v zahraničí.",
         "non_payer": "Neplátce DPH",
         "non_payerHint": "Fakturujete bez DPH a přiznání k DPH nepodáváte.",
-        "dicHint": "Máte DIČ, ale nejste plátce? Pokud nakupujete reklamy nebo služby ze zahraničí (Google, Meta), jste nejspíš identifikovaná osoba. ARES to neukazuje, ověřte to v daňové informační schránce."
+        "dicHint": "Máte DIČ, ale nejste plátce? Pokud nakupujete reklamy nebo služby ze zahraničí (Google, Meta), jste nejspíš identifikovaná osoba. ARES to neukazuje, ověřte to v daňové informační schránce.",
+        "suggest": {
+          "payer": "{source} vás vede jako plátce DPH.",
+          "non_payer": "{source} vás jako plátce DPH nevede.",
+          "registry": "Registr plátců DPH",
+          "apply": "Nastavit: {status}"
+        }
       },
       "advances": {
         "title": "Měsíční zálohy",
@@ -1751,7 +1769,11 @@
       "ibanHint": "Stačí vyplnit číslo účtu a kód banky – IBAN je potřeba hlavně pro platby ze zahraničí.",
       "defaultDueDaysHint": "Kolik dní po vystavení je nová faktura splatná. Běžně 14.",
       "defaultsMoved": "Výchozí hodnoty faktur najdete v",
-      "defaultsLink": "Nastavení › Faktury"
+      "defaultsLink": "Nastavení › Faktury",
+      "registrySearch": "Najít v registru",
+      "registrySearchPlaceholder": "Název firmy, jméno OSVČ, IČO nebo město",
+      "loadRegistry": "Načíst z registru",
+      "dicKeepHint": "DIČ nechte vyplněné i jako neplátce nebo identifikovaná osoba. Na dokladech se pak uvádí."
     },
     "team": {
       "title": "Tým",
@@ -6503,7 +6525,7 @@
       "title": "Fakturační údaje",
       "hint": "Na tyto údaje vystaví {supplier} doklad.",
       "kind": "Odběratel je",
-      "company": "Firma",
+      "company": "Firma nebo OSVČ",
       "person": "Soukromá osoba",
       "country": "Země",
       "ico": "IČO",
@@ -6514,7 +6536,7 @@
       "lookupNeedsVat": "Nejdřív vyplňte VAT ID.",
       "lookupNotFound": "V registru jsme nic nenašli, vyplňte údaje ručně.",
       "lookupDone": "Údaje jsme načetli, zkontrolujte je.",
-      "companyName": "Název firmy",
+      "companyName": "Obchodní jméno",
       "personName": "Jméno a příjmení",
       "street": "Ulice a číslo",
       "city": "Město",
@@ -6531,8 +6553,19 @@
         "ico_required": "Firma z Česka nebo Slovenska potřebuje IČO.",
         "ico_format": "IČO má 8 číslic.",
         "ico_foreign": "IČO se vyplňuje jen u českých a slovenských firem.",
-        "dic_format": "DIČ nemá správný tvar."
-      }
+        "dic_format": "DIČ nemá správný tvar.",
+        "required": "Toto pole je povinné.",
+        "phone_format": "Telefon nemá správný tvar."
+      },
+      "optional": "nepovinné",
+      "phone": "Telefon",
+      "companySearch": "Najít firmu v registru",
+      "companySearchHint": "Začněte psát název, IČO nebo město a vyberte firmu. Údaje doplníme za vás."
+    },
+    "trust": {
+      "verifiedAres": "Dodavatele {supplier} jsme ověřili v ARES.",
+      "verifiedRpo": "Dodavatele {supplier} jsme ověřili v registru právnických osob (RPO).",
+      "private": "Odkaz je soukromý. Údaje uvidí jen tento dodavatel."
     }
   },
   "referrals": {
@@ -6672,6 +6705,27 @@
         "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
         "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
       ]
+    }
+  },
+  "companyLookup": {
+    "group": "Z registru",
+    "placeholder": "Název firmy, jméno OSVČ nebo IČO",
+    "empty": "Nic jsme nenašli. Zkuste IČO nebo jiný tvar názvu.",
+    "ico": "IČO"
+  },
+  "vatCheck": {
+    "checking": "Ověřuji DIČ…",
+    "state": {
+      "payer": "Plátce DPH ověřen",
+      "unreliable": "Nespolehlivý plátce",
+      "not_registered": "Neplátce",
+      "valid": "DIČ platné ve VIES",
+      "invalid": "DIČ ve VIES neplatné"
+    },
+    "source": {
+      "ADIS": "Podle registru plátců DPH (Finanční správa)",
+      "VIES": "Podle evropského systému VIES",
+      "none": "Zdroj neznámý"
     }
   }
 }
