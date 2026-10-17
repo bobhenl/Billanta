@@ -4,7 +4,8 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
-import { periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
+import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
+import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -223,13 +224,17 @@ export class DashboardService {
   /**
    * The period report: totals for [from, to] (whole days, inclusive), the
    * same-length period right before it for comparison, revenue / expenses
-   * per day, week or month, and the period's top customers.
+   * per day, week or month, the period's top customers and pie-chart
+   * shares. Amounts are in CZK (foreign documents at their stored rate), or
+   * in the filtered currency when the report is narrowed to one. `db` is
+   * the tenant's RLS-scoped connection, so only its own rows ever load.
    */
-  async stats(db: Db, from: Date, to: Date) {
+  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}) {
     const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
     const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
     const length = end.getTime() - start.getTime();
     const prevStart = new Date(start.getTime() - length);
+    const currency = filters.currency ?? "CZK";
 
     const rows = await db
       .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
@@ -241,37 +246,51 @@ export class DashboardService {
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) byInvoice.set(item.invoiceId, [...(byInvoice.get(item.invoiceId) ?? []), item]);
 
-    const docs: StatsDoc[] = rows.map(({ invoice, contactName }) => {
+    const allDocs: StatsDoc[] = rows.map(({ invoice, contactName }) => {
       const totals = computeVatBreakdown(byInvoice.get(invoice.id) ?? [], { reverseCharge: invoice.reverseCharge });
       return {
         documentType: invoice.documentType,
         status: invoice.status,
         currency: invoice.currency,
+        language: invoice.language,
         date: invoice.taxableSupplyDate ?? invoice.issueDate ?? invoice.createdAt,
         issueDate: invoice.issueDate,
+        dueDate: invoice.dueDate,
         paidAt: invoice.paidAt,
         contactId: invoice.contactId,
         contactName,
+        exchangeRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
+        amountPaid: Number(invoice.amountPaid ?? 0),
         base: totals.totalWithoutVat,
         vat: totals.totalVat,
         total: totals.totalWithVat,
       };
     });
+    const today = new Date();
+    const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
     const expenseRows = await db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart));
     // Expense amounts are stored including VAT; revenue is compared without it.
-    const expenses: StatsExpense[] = expenseRows.map((e) => ({
-      currency: e.currency,
-      date: e.expenseDate,
-      base: Number(e.amount) / (1 + Number(e.vatRate) / 100),
-    }));
+    // Expenses have no customer, type or status, so only the currency filter applies.
+    const expenses: StatsExpense[] = expenseRows
+      .filter((e) => !filters.currency || e.currency === filters.currency)
+      .map((e) => ({
+        currency: e.currency,
+        date: e.expenseDate,
+        base: Number(e.amount) / (1 + Number(e.vatRate) / 100),
+        exchangeRate: e.exchangeRate == null ? null : Number(e.exchangeRate),
+      }));
 
     return {
-      currency: "CZK",
+      currency,
       from: start.toISOString(),
       to: new Date(end.getTime() - 1).toISOString(),
-      current: periodTotals(docs, expenses, start, end),
-      previous: periodTotals(docs, expenses, prevStart, start),
-      ...periodBreakdown(docs, expenses, start, end),
+      filters,
+      /** False when a customer / type / status / language filter is on: expenses then stay unfiltered. */
+      expensesFiltered: !hasDocumentFilters(filters),
+      options: filterOptions(allDocs),
+      current: periodTotals(docs, expenses, start, end, currency, today),
+      previous: periodTotals(docs, expenses, prevStart, start, currency, today),
+      ...periodBreakdown(docs, expenses, start, end, currency, today),
     };
   }
 

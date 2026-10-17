@@ -6,6 +6,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { effectivePermissions } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { DASHBOARD_WIDGETS, DashboardService } from "./dashboard.service";
+import { parseReportFilters, type ReportFilters } from "./report-filters";
 import { upcomingTaxEvents } from "./tax-calendar";
 import { getCnbRates } from "../exports/cnb-rates";
 
@@ -49,8 +50,19 @@ export class DashboardController {
   }
 
   @Get("stats")
-  @ApiOperation({ summary: "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series and top customers" })
-  stats(@Req() req: TenantScopedRequest, @Query("from") from?: string, @Query("to") to?: string) {
+  @ApiOperation({
+    summary:
+      "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series, top customers and pie shares. Optional filters: currency, language, contactId, documentType (invoice|proforma|credit_note), status (paid|unpaid|overdue|cancelled)",
+  })
+  stats(@Req() req: TenantScopedRequest, @Query() query: Record<string, unknown>) {
+    const from = typeof query.from === "string" ? query.from : undefined;
+    const to = typeof query.to === "string" ? query.to : undefined;
+    let filters: ReportFilters;
+    try {
+      filters = parseReportFilters(query);
+    } catch {
+      throw new BadRequestException("Invalid report filters");
+    }
     const day = (value: string | undefined) => {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
       const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
@@ -63,7 +75,7 @@ export class DashboardController {
     // At most five years in one report.
     const earliest = new Date(end.getFullYear() - 5, end.getMonth(), end.getDate());
     if (start < earliest) start = earliest;
-    return this.dashboardService.stats(req.tenantDb!, start, end);
+    return this.dashboardService.stats(req.tenantDb!, start, end, filters);
   }
 
   @Get("config")

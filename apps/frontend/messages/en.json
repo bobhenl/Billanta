@@ -1695,7 +1695,7 @@
       "files": {
         "invoices": {
           "title": "Issued invoices (CSV)",
-          "hint": "All issued documents with the VAT breakdown, for Excel or accounting software."
+          "hint": "All issued documents with base and VAT per rate, the ČNB rate and the CZK amount. For Excel and accounting software."
         },
         "expenses": {
           "title": "Expenses (CSV)",
@@ -5434,7 +5434,56 @@
     "vsPrevious": "vs. previous",
     "paidCount": "{count, plural, one {# invoice paid} other {# invoices paid}}",
     "days": "{count, number} days",
-    "foreign": "{count, plural, one {# document in another currency is not included.} other {# documents in other currencies are not included.}}",
+    "exportCsv": "Export for your accountant (CSV)",
+    "exportHint": "The documents for the chosen period and filters, ready for Excel. The period follows the tax point date.",
+    "docCount": "{count, plural, one {# document} other {# documents}}",
+    "inCurrency": "Amounts are in {currency}, not converted.",
+    "converted": "{count, plural, one {# document in another currency is} other {# documents in other currencies are}} converted to CZK at the rate stored on the document.",
+    "missingRate": "{count, plural, one {# document in another currency has no stored rate, so it is not included.} other {# documents in other currencies have no stored rate, so they are not included.}}",
+    "expensesUnfiltered": "Expenses are filtered by currency only, the other filters do not apply to them.",
+    "outstandingHint": "Unpaid and overdue: with VAT, from documents in the period, minus partial payments.",
+    "byCurrency": "Revenue by currency",
+    "noRate": "no rate",
+    "chartKind": {
+      "label": "Chart type",
+      "bars": "Bars",
+      "line": "Line",
+      "area": "Area"
+    },
+    "filters": {
+      "label": "Filters",
+      "currency": "Currency",
+      "allCurrencies": "All currencies (in CZK)",
+      "language": "Document language",
+      "allLanguages": "All languages",
+      "customer": "Customer",
+      "allCustomers": "All customers",
+      "type": "Document type",
+      "allTypes": "All types",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "clear": "Clear filters"
+    },
+    "docTypes": {
+      "invoice": "Invoices",
+      "proforma": "Proforma invoices",
+      "credit_note": "Credit notes"
+    },
+    "statuses": {
+      "paid": "Paid",
+      "unpaid": "Unpaid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "pies": {
+      "customers": "Revenue by customer",
+      "currencies": "Revenue by currency",
+      "types": "Documents by type (with VAT)",
+      "payment": "Paid and unpaid (with VAT)",
+      "empty": "Nothing in this period.",
+      "others": "Others",
+      "unpaidNotDue": "Unpaid, not yet due"
+    },
     "topCustomers": "Top customers in the period",
     "customerMeta": "{count, plural, one {# invoice} other {# invoices}} · {share} %",
     "presets": {
@@ -5459,7 +5508,11 @@
       "invoiceCount": "Invoices issued",
       "averageInvoice": "Average invoice",
       "vat": "Output VAT",
-      "daysToPay": "Average time to pay"
+      "daysToPay": "Average time to pay",
+      "outstanding": "Unpaid",
+      "overdue": "Overdue",
+      "customers": "Customers",
+      "newCustomers": "New customers"
     }
   },
   "siteSearch": {

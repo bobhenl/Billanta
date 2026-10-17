@@ -1,20 +1,24 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { ArrowDown, ArrowUp, Loader2 } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+import { ArrowDown, ArrowUp, Download, Loader2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { formatMoney } from '@/lib/invoice-ui';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
+import { reportQuery } from '@/lib/report-query';
 import { cn } from '@/lib/utils';
 import { fetchPeriodStats } from './actions';
-import type { PeriodStats } from './types';
+import { ChartKindSwitch, Donut, PeriodChart, type ChartKind } from './report-charts';
+import { REPORT_DOC_TYPES, REPORT_STATUSES, type PeriodStats, type ReportFilters } from './types';
+
+const CHART_KIND_KEY = 'billanta.reports.chartKind';
 
 /**
  * Revenue, expenses and profit for a chosen period, each against the
- * same-length period right before it, with a bar chart by day / week /
- * month and the period's best customers. `compact` is the dashboard card;
- * the reports page shows everything.
+ * same-length period right before it, with a chart by day / week / month
+ * and the period's best customers. `compact` is the dashboard card; the
+ * reports page shows everything, plus filters, pie charts and the CSV.
  */
 export function PeriodReport({
   initial,
@@ -30,21 +34,45 @@ export function PeriodReport({
   const [stats, setStats] = useState(initial);
   const [preset, setPreset] = useState<PeriodPreset | 'custom'>(initialPreset);
   const [range, setRange] = useState(() => presetRange(initialPreset));
+  const [filters, setFilters] = useState<ReportFilters>({});
+  const [chartKind, setChartKindState] = useState<ChartKind>('bars');
+  // Read after mount, so the server render and the first client render agree.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(CHART_KIND_KEY);
+      if (saved === 'line' || saved === 'area') setChartKindState(saved);
+    } catch {
+      // Storage blocked: stay on bars.
+    }
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const [loading, start] = useTransition();
   const money = (n: number) => formatMoney(n, stats.currency, locale);
 
-  const load = (next: { from: string; to: string }) => {
+  const setChartKind = (kind: ChartKind) => {
+    setChartKindState(kind);
+    try {
+      window.localStorage.setItem(CHART_KIND_KEY, kind);
+    } catch {
+      // Private mode: the choice just isn't remembered.
+    }
+  };
+
+  const load = (next: { from: string; to: string }, nextFilters = filters) => {
     setRange(next);
+    setFilters(nextFilters);
     if (!next.from || !next.to || next.from > next.to) return;
     start(async () => {
-      const res = await fetchPeriodStats(next.from, next.to);
+      const res = await fetchPeriodStats(next.from, next.to, nextFilters);
       if (res.ok) {
         setStats(res.stats);
         setError(null);
       } else setError(res.error);
     });
   };
+  const setFilter = <K extends keyof ReportFilters>(key: K, value: string) =>
+    load(range, { ...filters, [key]: value || undefined } as ReportFilters);
+  const anyFilter = Object.values(filters).some(Boolean);
 
   const { current, previous } = stats;
   const kpis: { key: string; value: string; now: number; before: number; invert?: boolean; sub?: string }[] = [
@@ -71,9 +99,36 @@ export function PeriodReport({
         // No comparison unless both periods had payments.
         before: current.averageDaysToPay == null ? 0 : (previous.averageDaysToPay ?? 0),
         invert: true
-      }
+      },
+      {
+        key: 'outstanding',
+        value: money(current.outstanding),
+        now: current.outstanding,
+        before: previous.outstanding,
+        invert: true,
+        sub: t('docCount', { count: current.outstandingCount })
+      },
+      {
+        key: 'overdue',
+        value: money(current.overdue),
+        now: current.overdue,
+        before: previous.overdue,
+        invert: true,
+        sub: t('docCount', { count: current.overdueCount })
+      },
+      {
+        key: 'customers',
+        value: String(current.customerCount),
+        now: current.customerCount,
+        before: previous.customerCount
+      },
+      { key: 'newCustomers', value: String(current.newCustomers), now: current.newCustomers, before: previous.newCustomers }
     );
   }
+
+  const typeLabel = (type: string) => t(`docTypes.${type as (typeof REPORT_DOC_TYPES)[number]}`);
+  const select = 'rounded-md border border-border bg-background px-2 py-1 text-xs';
+  const exportHref = `/api/files/exports/invoices.csv?${reportQuery(range.from, range.to, filters, { dateBy: 'supply' })}`;
 
   return (
     <section className="rounded-xl border border-border bg-card p-4">
@@ -85,10 +140,20 @@ export function PeriodReport({
           </h2>
           <p className="text-xs text-muted-foreground">{t('hint')}</p>
         </div>
-        {compact && (
+        {compact ? (
           <Link href="/reports" className="text-xs font-semibold text-primary hover:underline">
             {t('openReports')}
           </Link>
+        ) : (
+          <a
+            href={range.from && range.to && range.from <= range.to ? exportHref : undefined}
+            download
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-primary hover:border-primary"
+            title={t('exportHint')}
+          >
+            <Download className="h-3.5 w-3.5" aria-hidden="true" />
+            {t('exportCsv')}
+          </a>
         )}
       </div>
 
@@ -134,6 +199,62 @@ export function PeriodReport({
           />
         </span>
       </div>
+
+      {!compact && (
+        <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label={t('filters.label')}>
+          <select aria-label={t('filters.currency')} className={select} value={filters.currency ?? ''} onChange={(e) => setFilter('currency', e.target.value)}>
+            <option value="">{t('filters.allCurrencies')}</option>
+            {stats.options.currencies.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <select aria-label={t('filters.language')} className={select} value={filters.language ?? ''} onChange={(e) => setFilter('language', e.target.value)}>
+            <option value="">{t('filters.allLanguages')}</option>
+            {stats.options.languages.map((l) => (
+              <option key={l} value={l}>
+                {l.toUpperCase()}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label={t('filters.customer')}
+            className={cn(select, 'max-w-[14rem]')}
+            value={filters.contactId ?? ''}
+            onChange={(e) => setFilter('contactId', e.target.value)}
+          >
+            <option value="">{t('filters.allCustomers')}</option>
+            {stats.options.customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          <select aria-label={t('filters.type')} className={select} value={filters.documentType ?? ''} onChange={(e) => setFilter('documentType', e.target.value)}>
+            <option value="">{t('filters.allTypes')}</option>
+            {REPORT_DOC_TYPES.map((d) => (
+              <option key={d} value={d}>
+                {typeLabel(d)}
+              </option>
+            ))}
+          </select>
+          <select aria-label={t('filters.status')} className={select} value={filters.status ?? ''} onChange={(e) => setFilter('status', e.target.value)}>
+            <option value="">{t('filters.allStatuses')}</option>
+            {REPORT_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {t(`statuses.${s}`)}
+              </option>
+            ))}
+          </select>
+          {anyFilter && (
+            <button type="button" onClick={() => load(range, {})} className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground">
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('filters.clear')}
+            </button>
+          )}
+        </div>
+      )}
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
 
       <div className={cn('mt-4 grid grid-cols-2 gap-2', compact ? 'lg:grid-cols-4' : 'sm:grid-cols-4')}>
@@ -147,9 +268,73 @@ export function PeriodReport({
         ))}
       </div>
 
-      <Chart stats={stats} money={money} />
+      <PeriodChart stats={stats} money={money} kind={compact ? 'bars' : chartKind} extra={compact ? undefined : <ChartKindSwitch value={chartKind} onChange={setChartKind} />} />
 
-      {stats.foreignCount > 0 && <p className="mt-2 text-[11px] text-muted-foreground">{t('foreign', { count: stats.foreignCount })}</p>}
+      <div className="mt-2 space-y-0.5 text-[11px] text-muted-foreground">
+        {stats.currency !== 'CZK' && <p>{t('inCurrency', { currency: stats.currency })}</p>}
+        {stats.convertedCount > 0 && <p>{t('converted', { count: stats.convertedCount })}</p>}
+        {stats.missingRateCount > 0 && <p>{t('missingRate', { count: stats.missingRateCount })}</p>}
+        {!compact && !stats.expensesFiltered && <p>{t('expensesUnfiltered')}</p>}
+        {!compact && <p>{t('outstandingHint')}</p>}
+      </div>
+
+      {!compact && (
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <Donut
+            title={t('pies.customers')}
+            money={money}
+            empty={t('pies.empty')}
+            slices={stats.byCustomer.map((s) => ({ key: s.key, label: s.label ?? t('pies.others'), value: s.value }))}
+          />
+          <Donut
+            title={t('pies.currencies')}
+            money={money}
+            empty={t('pies.empty')}
+            slices={stats.byCurrency
+              .filter((c) => c.converted != null)
+              .map((c) => ({
+                key: c.currency,
+                label: c.currency,
+                value: c.converted!,
+                sub: c.currency === stats.currency ? undefined : formatMoney(c.amount, c.currency, locale)
+              }))}
+          />
+          <Donut
+            title={t('pies.types')}
+            money={money}
+            empty={t('pies.empty')}
+            slices={stats.byType.map((s) => ({ key: s.documentType, label: typeLabel(s.documentType), value: s.total, sub: t('docCount', { count: s.count }) }))}
+          />
+          <Donut
+            title={t('pies.payment')}
+            money={money}
+            empty={t('pies.empty')}
+            slices={[
+              { key: 'paid', label: t('statuses.paid'), value: stats.payment.paid, color: 'text-emerald-500' },
+              { key: 'unpaid', label: t('pies.unpaidNotDue'), value: stats.payment.unpaid, color: 'text-amber-500' },
+              { key: 'overdue', label: t('statuses.overdue'), value: stats.payment.overdue, color: 'text-rose-500' }
+            ]}
+          />
+        </div>
+      )}
+
+      {!compact && stats.byCurrency.length > 1 && (
+        <div className="mt-5">
+          <h3 className="text-sm font-bold">{t('byCurrency')}</h3>
+          <table className="mt-2 w-full text-sm">
+            <tbody>
+              {stats.byCurrency.map((c) => (
+                <tr key={c.currency} className="border-t border-border first:border-t-0">
+                  <td className="py-1.5 font-medium">{c.currency}</td>
+                  <td className="py-1.5 text-xs text-muted-foreground">{t('docCount', { count: c.count })}</td>
+                  <td className="py-1.5 text-right tabular-nums">{formatMoney(c.amount, c.currency, locale)}</td>
+                  <td className="py-1.5 text-right font-semibold tabular-nums">{c.converted == null ? t('noRate') : money(c.converted)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {!compact && stats.topCustomers.length > 0 && (
         <div className="mt-5">
@@ -191,50 +376,5 @@ function Change({ now, before, invert, label }: { now: number; before: number; i
       <Icon className="h-3 w-3" aria-hidden="true" />
       {Math.abs(pct)} %<span className="font-normal text-muted-foreground"> {label}</span>
     </p>
-  );
-}
-
-function Chart({ stats, money }: { stats: PeriodStats; money: (n: number) => string }) {
-  const t = useTranslations('reports');
-  const locale = useLocale();
-  const max = Math.max(1, ...stats.series.flatMap((b) => [b.revenue, b.expenses]));
-  const label = (key: string) => {
-    const d = new Date(`${key}T00:00:00`);
-    if (stats.grain === 'month') {
-      return new Intl.DateTimeFormat(locale, { month: 'short', year: stats.series.length > 12 ? '2-digit' : undefined }).format(d);
-    }
-    return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric' }).format(d);
-  };
-  // Label every bar while they fit, otherwise every n-th.
-  const every = Math.max(1, Math.ceil(stats.series.length / 12));
-
-  return (
-    <div className="mt-4">
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-        <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-primary" />
-          {t('kpi.revenue')}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-sm bg-muted-foreground/40" />
-          {t('kpi.expenses')}
-        </span>
-        <span className="text-muted-foreground">{t(`grain.${stats.grain}`)}</span>
-      </div>
-      <div className="mt-2 flex h-40 items-end gap-px sm:gap-1" role="img" aria-label={t('title')}>
-        {stats.series.map((b, i) => (
-          <div key={b.start} className="group relative flex h-full min-w-0 flex-1 flex-col justify-end">
-            <div className="flex h-full items-end justify-center gap-px">
-              <div className="w-1/2 max-w-4 rounded-t bg-primary transition-opacity group-hover:opacity-80" style={{ height: `${(b.revenue / max) * 100}%` }} />
-              <div className="w-1/2 max-w-4 rounded-t bg-muted-foreground/40" style={{ height: `${(b.expenses / max) * 100}%` }} />
-            </div>
-            <span className="mt-1 h-3 whitespace-nowrap text-center text-[10px] text-muted-foreground">{i % every === 0 ? label(b.start) : ''}</span>
-            <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-foreground px-2 py-1 text-[11px] text-background shadow group-hover:block">
-              {label(b.start)}: {money(b.revenue)} / {money(b.expenses)}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
