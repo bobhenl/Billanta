@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
+import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { SettingsHeader } from '@/components/settings-header';
 import { fetchIntegrations } from '@/lib/integration-actions';
 import { IntegrationsSettings } from './integrations-settings';
@@ -18,6 +19,7 @@ export default async function IntegrationsPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
+      <TwoFactorNotice className="mt-4" />
       {state ? <IntegrationsSettings initial={state} siteUrl={siteUrl} /> : <Banner tone="err" title={t('loadError')} className="mt-6" />}
     </div>
   );

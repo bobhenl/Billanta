@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Pa
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { TwoFactorGuard } from "../auth/two-factor.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { IntegrationsService } from "./integrations.service";
 import { MAX_WEBHOOKS, webhookInputSchema } from "./webhooks";
@@ -36,6 +37,7 @@ export class IntegrationsController {
   }
 
   @Put("webhooks")
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({ summary: "Replace the company's webhooks (Discord, Slack or signed JSON)" })
   saveWebhooks(@Req() req: TenantScopedRequest, @Body() body: unknown) {
     const parsed = webhooksBody.safeParse(body);
@@ -44,6 +46,7 @@ export class IntegrationsController {
   }
 
   @Post("webhooks/:id/test")
+  @UseGuards(TwoFactorGuard)
   @HttpCode(200)
   @ApiOperation({ summary: "Send a test message to one webhook" })
   test(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {

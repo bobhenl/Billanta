@@ -107,11 +107,16 @@ interface ResolvedIdentity {
  */
 const resolveIdentity = cache(async (): Promise<ResolvedIdentity> => {
   const session = await auth();
-  if (!session?.user?.id || !session.user.email) {
+  // A session still waiting for its two-factor code counts as signed out here.
+  if (!session?.user?.id || !session.user.email || session.twoFactor === "pending") {
     throw new NotSignedInError();
   }
 
-  const token = await mintBackendToken({ id: session.user.id, email: session.user.email });
+  const token = await mintBackendToken({
+    id: session.user.id,
+    email: session.user.email,
+    twoFactor: session.twoFactor === "verified",
+  });
 
   const res = await fetch(`${BACKEND_URL}/api/v1/me`, {
     headers: { Authorization: `Bearer ${token}` },

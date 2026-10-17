@@ -41,6 +41,7 @@
  * are addressed from TypeScript in this one file.
  */
 import {
+  boolean,
   integer,
   pgTable,
   primaryKey,
@@ -64,6 +65,12 @@ export const users = pgTable(
     name: text("name"),
     emailVerified: timestamp("email_verified", { withTimezone: true }),
     image: text("image"),
+    // Two-factor sign-in (migration 0045, see lib/two-factor.ts): encrypted
+    // TOTP secret, active once totpEnabledAt is set; recovery codes as hashes.
+    totpSecret: text("totp_secret"),
+    totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
+    totpRecoveryCodes: text("totp_recovery_codes").array(),
+    totpLastStep: integer("totp_last_step"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -106,6 +113,8 @@ export const sessions = pgTable("sessions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { withTimezone: true }).notNull(),
+  twoFactorPending: boolean("two_factor_pending").notNull().default(false),
+  twoFactorAt: timestamp("two_factor_at", { withTimezone: true }),
 });
 
 export const verificationTokens = pgTable(

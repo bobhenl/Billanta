@@ -974,7 +974,8 @@
         "psd2_no_accounts": "V souhlasu nebyl vybraný žádný účet.",
         "psd2_state_invalid": "Odkaz z banky je neplatný nebo už byl použitý. Začněte napojení znovu.",
         "paypal_credentials_invalid": "PayPal odmítl Client ID nebo Secret. Zkontrolujte je a zda nepatří do sandboxu.",
-        "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin)."
+        "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin).",
+        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení."
       },
       "psd2": {
         "hint": "Billanta stahuje nové příchozí platby přímo z banky nebo z PayPalu a sama je páruje s fakturami podle variabilního symbolu a částky. Fio připojíte API tokenem, PayPal údaji své REST aplikace, ostatní banky přes PSD2: přihlásíte se u své banky a udělíte souhlas jen ke čtení účtu (nejvýše na 180 dní, u mnoha bank 90). Banky dovolují jen pár automatických čtení denně, proto se PSD2 účty stahují zhruba každých 6 hodin. Odchozí platby se nestahují a zaplatit přes napojení nejde nic.",
@@ -1308,7 +1309,8 @@
         "description": "Klíč pošlete v hlavičce Authorization jako bearer token. Příklad výpisu faktur:",
         "docs": "Dokumentace API (Swagger)"
       },
-      "readOnlyBadge": "Jen čtení"
+      "readOnlyBadge": "Jen čtení",
+      "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením."
     },
     "backup": {
       "title": "Zálohování dat",
@@ -1417,7 +1419,8 @@
         "saved": "Šifrování uloženo.",
         "badgeKey": "Šifrováno klíčem",
         "badgePassphrase": "Šifrováno heslem"
-      }
+      },
+      "twoFactorRequired": "Cíl zálohy lze připojit jen s dvoufázovým ověřením."
     },
     "ai": {
       "title": "AI",
@@ -1554,6 +1557,10 @@
         "referrals": {
           "title": "Pozvat a získat kredity",
           "description": "Odkaz pro známé a klienty, kredity a platba tarifu kredity."
+        },
+        "security": {
+          "title": "Zabezpečení",
+          "description": "Dvoufázové ověření a záložní kódy"
         }
       }
     },
@@ -2323,7 +2330,8 @@
         "https_only": "Adresa webhooku musí začínat https://.",
         "private_host": "Adresa webhooku musí vést na veřejný server, ne do vnitřní sítě.",
         "invalid_url": "Adresa webhooku není platná.",
-        "too_many": "Najednou jde mít nejvýš 10 webhooků."
+        "too_many": "Najednou jde mít nejvýš 10 webhooků.",
+        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení."
       },
       "feed": {
         "title": "Kalendář a RSS",
@@ -2738,6 +2746,42 @@
         "pattern_clash": "Tento formát už používá jiný typ dokladu. Každý typ potřebuje vlastní.",
         "next_number_too_low": "Další číslo je nižší než poslední použité a v tomto období už doklady existují."
       }
+    },
+    "security": {
+      "title": "Zabezpečení",
+      "description": "Dvoufázové ověření a ochrana účtu.",
+      "usedRecovery": "Přihlásili jste se záložním kódem. {n, plural, one {Zbývá # kód} few {Zbývají # kódy} other {Zbývá # kódů}} – zvažte vygenerování nových.",
+      "twoFactorTitle": "Dvoufázové ověření (2FA)",
+      "statusOn": "Zapnuto · {n, plural, one {# záložní kód} few {# záložní kódy} other {# záložních kódů}}",
+      "statusOff": "Vypnuto",
+      "why": "Kromě hesla budete při přihlášení zadávat kód z aplikace (Google Authenticator, 1Password, Authy…). Bez 2FA nejde připojit banku, vytvořit API klíč, webhook ani zálohy.",
+      "enable": "Zapnout dvoufázové ověření",
+      "step1": "Nainstalujte si autentizační aplikaci.",
+      "step2": "Naskenujte QR kód nebo opište klíč ručně.",
+      "step3": "Zadejte šestimístný kód, který aplikace ukazuje.",
+      "manualKey": "Klíč pro ruční zadání:",
+      "qrAlt": "QR kód pro autentizační aplikaci",
+      "codeLabel": "Kód z aplikace nebo záložní kód",
+      "codeLabelApp": "Kód z autentizační aplikace",
+      "confirm": "Potvrdit a zapnout",
+      "cancel": "Zrušit",
+      "regenerate": "Nové záložní kódy",
+      "disable": "Vypnout 2FA",
+      "codesTitle": "Záložní kódy",
+      "codesHint": "Uložte si je na bezpečné místo. Každý kód lze použít jen jednou, když nebudete mít telefon. Znovu je už neuvidíte.",
+      "copy": "Kopírovat",
+      "copied": "Kódy zkopírovány",
+      "codesSaved": "Mám uloženo",
+      "enabledToast": "Dvoufázové ověření je zapnuté",
+      "disabledToast": "Dvoufázové ověření je vypnuté",
+      "errors": {
+        "generic": "Něco se pokazilo. Zkuste to znovu.",
+        "invalid_code": "Kód nesedí. Zkuste to znovu.",
+        "rate_limited": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+        "already_enabled": "Dvoufázové ověření už je zapnuté.",
+        "not_enabled": "Dvoufázové ověření není zapnuté.",
+        "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
+      }
     }
   },
   "billing": {
@@ -2803,6 +2847,19 @@
       "goToLogin": "Přejít na přihlášení",
       "requestNewLink": "Vyžádat nový odkaz",
       "rateLimitedError": "Příliš mnoho pokusů. Zkuste to prosím za chvíli."
+    },
+    "twoFactor": {
+      "title": "Dvoufázové ověření",
+      "subtitle": "Přihlašujete se jako {email}. Zadejte šestimístný kód z autentizační aplikace.",
+      "codeLabel": "Ověřovací kód",
+      "recoveryHint": "Nemáte telefon po ruce? Zadejte jeden ze záložních kódů.",
+      "submit": "Ověřit",
+      "cancel": "Zrušit a odhlásit",
+      "errors": {
+        "invalid_code": "Kód nesedí. Zkontrolujte čas v telefonu a zkuste to znovu.",
+        "rate_limited": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+        "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
+      }
     }
   },
   "legal": {
@@ -6322,6 +6379,13 @@
         "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
         "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
       ]
+    }
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Vyžaduje dvoufázové ověření",
+      "body": "Kvůli přístupu k penězům a datům jde nové připojení vytvořit jen s dvoufázovým ověřením. Stávající připojení fungují dál.",
+      "cta": "Zapnout 2FA"
     }
   }
 }

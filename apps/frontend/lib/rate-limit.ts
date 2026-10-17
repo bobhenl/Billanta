@@ -44,7 +44,9 @@ export const AUTH_LIMITS = {
   registerPerIp: { limit: 5, windowMs: 60 * MINUTE },
   forgotPerIp: { limit: 10, windowMs: 15 * MINUTE },
   forgotPerEmail: { limit: 3, windowMs: 60 * MINUTE },
-  resetPerIp: { limit: 20, windowMs: 15 * MINUTE }
+  resetPerIp: { limit: 20, windowMs: 15 * MINUTE },
+  // A million six-digit codes: ten tries per quarter hour makes guessing hopeless.
+  twoFactorPerUser: { limit: 10, windowMs: 15 * MINUTE }
 } as const;
 
 export function allow(key: string, rule: { limit: number; windowMs: number }): boolean {

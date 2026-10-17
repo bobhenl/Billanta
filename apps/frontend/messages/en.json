@@ -974,7 +974,8 @@
         "psd2_no_accounts": "No account was selected in the consent.",
         "psd2_state_invalid": "The link from the bank is invalid or already used. Start the connection again.",
         "paypal_credentials_invalid": "PayPal rejected the Client ID or Secret. Check them, and whether they belong to the sandbox.",
-        "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply)."
+        "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply).",
+        "two_factor_required": "Turn on two-factor authentication in Settings → Security first."
       },
       "psd2": {
         "hint": "Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Fio connects with an API token, PayPal with your REST app credentials, other banks over PSD2: you sign in at your bank and grant read-only access to the account (up to 180 days, 90 at many banks). Banks allow only a few unattended reads a day, so PSD2 accounts are synced about every 6 hours. Outgoing payments are not downloaded and nothing can be paid through the connection.",
@@ -1308,7 +1309,8 @@
         "description": "Send the key in the Authorization header as a bearer token. Example listing invoices:",
         "docs": "API documentation (Swagger)"
       },
-      "readOnlyBadge": "Read-only"
+      "readOnlyBadge": "Read-only",
+      "twoFactorRequired": "API keys can only be created with two-factor authentication."
     },
     "backup": {
       "title": "Backup destinations",
@@ -1417,7 +1419,8 @@
         "saved": "Encryption saved.",
         "badgeKey": "Encrypted with key",
         "badgePassphrase": "Encrypted with passphrase"
-      }
+      },
+      "twoFactorRequired": "Backup destinations can only be connected with two-factor authentication."
     },
     "ai": {
       "title": "AI",
@@ -1554,6 +1557,10 @@
         "referrals": {
           "title": "Invite and earn credits",
           "description": "A link for friends and clients, credits, and paying your plan with them."
+        },
+        "security": {
+          "title": "Security",
+          "description": "Two-factor authentication and recovery codes"
         }
       }
     },
@@ -2323,7 +2330,8 @@
         "https_only": "The webhook URL must start with https://.",
         "private_host": "The webhook URL must point to a public server, not an internal network.",
         "invalid_url": "The webhook URL is not valid.",
-        "too_many": "You can have at most 10 webhooks."
+        "too_many": "You can have at most 10 webhooks.",
+        "two_factor_required": "Turn on two-factor authentication in Settings → Security first."
       },
       "feed": {
         "title": "Calendar & RSS",
@@ -2738,6 +2746,42 @@
         "pattern_clash": "Another document type already uses this format. Each type needs its own.",
         "next_number_too_low": "The next number is lower than the last one used, and documents already exist in this period."
       }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Two-factor authentication and account protection.",
+      "usedRecovery": "You signed in with a recovery code. {n, plural, one {# code left} other {# codes left}} — consider generating new ones.",
+      "twoFactorTitle": "Two-factor authentication (2FA)",
+      "statusOn": "On · {n, plural, one {# recovery code} other {# recovery codes}}",
+      "statusOff": "Off",
+      "why": "Besides your password, you'll enter a code from an app (Google Authenticator, 1Password, Authy…) when signing in. Without 2FA you can't connect a bank, create API keys, webhooks or backups.",
+      "enable": "Turn on two-factor authentication",
+      "step1": "Install an authenticator app.",
+      "step2": "Scan the QR code or type the key in manually.",
+      "step3": "Enter the six-digit code the app shows.",
+      "manualKey": "Key for manual entry:",
+      "qrAlt": "QR code for your authenticator app",
+      "codeLabel": "App code or recovery code",
+      "codeLabelApp": "Code from your authenticator app",
+      "confirm": "Confirm and turn on",
+      "cancel": "Cancel",
+      "regenerate": "New recovery codes",
+      "disable": "Turn off 2FA",
+      "codesTitle": "Recovery codes",
+      "codesHint": "Store them somewhere safe. Each code works once, for when you don't have your phone. You won't see them again.",
+      "copy": "Copy",
+      "copied": "Codes copied",
+      "codesSaved": "I've saved them",
+      "enabledToast": "Two-factor authentication is on",
+      "disabledToast": "Two-factor authentication is off",
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "invalid_code": "That code doesn't match. Try again.",
+        "rate_limited": "Too many attempts. Try again in a few minutes.",
+        "already_enabled": "Two-factor authentication is already on.",
+        "not_enabled": "Two-factor authentication isn't on.",
+        "not_signed_in": "Your sign-in expired. Please sign in again."
+      }
     }
   },
   "billing": {
@@ -2803,6 +2847,19 @@
       "goToLogin": "Go to login",
       "requestNewLink": "Request a new reset link",
       "rateLimitedError": "Too many attempts. Please try again in a moment."
+    },
+    "twoFactor": {
+      "title": "Two-factor authentication",
+      "subtitle": "Signing in as {email}. Enter the six-digit code from your authenticator app.",
+      "codeLabel": "Verification code",
+      "recoveryHint": "No phone at hand? Enter one of your recovery codes.",
+      "submit": "Verify",
+      "cancel": "Cancel and sign out",
+      "errors": {
+        "invalid_code": "That code doesn't match. Check your phone's clock and try again.",
+        "rate_limited": "Too many attempts. Try again in a few minutes.",
+        "not_signed_in": "Your sign-in expired. Please sign in again."
+      }
     }
   },
   "legal": {
@@ -6321,6 +6378,13 @@
         "An invite counts for companies created with your link within the last 30 days.",
         "You can’t invite your own company or one you are already a member of."
       ]
+    }
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Two-factor authentication required",
+      "body": "Because this gives access to money and data, new connections can only be added with two-factor authentication. Existing connections keep working.",
+      "cta": "Turn on 2FA"
     }
   }
 }

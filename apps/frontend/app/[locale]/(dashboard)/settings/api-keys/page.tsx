@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
@@ -36,6 +37,7 @@ export default async function ApiKeysSettingsPage() {
   return (
     <div className="mx-auto max-w-4xl">
       <SettingsHeader title={t('title')} description={t('description')} />
+      <TwoFactorNotice className="mt-4" />
       {!canManage(role) && (
         <Banner tone="info" className="mt-4">
           {t('readOnly')}

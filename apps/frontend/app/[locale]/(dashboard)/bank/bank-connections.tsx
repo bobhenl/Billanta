@@ -20,6 +20,7 @@ import {
 } from './actions';
 
 const KNOWN_ERRORS = [
+  'two_factor_required',
   'fio_token_format',
   'fio_token_invalid',
   'bank_sync_too_soon',

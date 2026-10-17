@@ -974,7 +974,8 @@
         "psd2_no_accounts": "V súhlase nebol vybraný žiadny účet.",
         "psd2_state_invalid": "Odkaz z banky je neplatný alebo už bol použitý. Začnite napojenie znova.",
         "paypal_credentials_invalid": "PayPal odmietol Client ID alebo Secret. Skontrolujte ich a či nepatria do sandboxu.",
-        "paypal_reporting_disabled": "Aplikácia v PayPale nemá zapnutú funkciu Transaction search. Zapnite ju v nastaveniach aplikácie (zmena sa prejaví do niekoľkých hodín)."
+        "paypal_reporting_disabled": "Aplikácia v PayPale nemá zapnutú funkciu Transaction search. Zapnite ju v nastaveniach aplikácie (zmena sa prejaví do niekoľkých hodín).",
+        "two_factor_required": "Najprv si zapnite dvojfázové overenie v Nastavenia → Zabezpečenie."
       },
       "psd2": {
         "hint": "Billanta sťahuje nové prichádzajúce platby priamo z banky alebo z PayPalu a sama ich páruje s faktúrami podľa variabilného symbolu a sumy. Fio pripojíte API tokenom, PayPal údajmi svojej REST aplikácie, ostatné banky cez PSD2: prihlásite sa vo svojej banke a udelíte súhlas len na čítanie účtu (najviac na 180 dní, v mnohých bankách 90). Banky dovoľujú len pár automatických čítaní denne, preto sa PSD2 účty sťahujú zhruba každých 6 hodín. Odchádzajúce platby sa nesťahujú a zaplatiť cez napojenie nejde nič.",
@@ -1308,7 +1309,8 @@
         "description": "Kľúč pošlite v hlavičke Authorization ako bearer token. Príklad výpisu faktúr:",
         "docs": "Dokumentácia API (Swagger)"
       },
-      "readOnlyBadge": "Len čítanie"
+      "readOnlyBadge": "Len čítanie",
+      "twoFactorRequired": "API kľúč sa dá vytvoriť iba s dvojfázovým overením."
     },
     "backup": {
       "title": "Zálohovanie dát",
@@ -1417,7 +1419,8 @@
         "saved": "Šifrovanie uložené.",
         "badgeKey": "Šifrované kľúčom",
         "badgePassphrase": "Šifrované heslom"
-      }
+      },
+      "twoFactorRequired": "Cieľ zálohy sa dá pripojiť iba s dvojfázovým overením."
     },
     "ai": {
       "title": "AI",
@@ -1554,6 +1557,10 @@
         "referrals": {
           "title": "Pozvať a získať kredity",
           "description": "Odkaz pre známych a klientov, kredity a platba tarifu kreditmi."
+        },
+        "security": {
+          "title": "Zabezpečenie",
+          "description": "Dvojfázové overenie a záložné kódy"
         }
       }
     },
@@ -2323,7 +2330,8 @@
         "https_only": "Adresa webhooku musí začínať https://.",
         "private_host": "Adresa webhooku musí viesť na verejný server, nie do vnútornej siete.",
         "invalid_url": "Adresa webhooku nie je platná.",
-        "too_many": "Naraz môžete mať najviac 10 webhookov."
+        "too_many": "Naraz môžete mať najviac 10 webhookov.",
+        "two_factor_required": "Najprv si zapnite dvojfázové overenie v Nastavenia → Zabezpečenie."
       },
       "feed": {
         "title": "Kalendár a RSS",
@@ -2738,6 +2746,42 @@
         "pattern_clash": "Tento formát už používa iný typ dokladu. Každý typ potrebuje vlastný.",
         "next_number_too_low": "Ďalšie číslo je nižšie ako posledné použité a v tomto období už doklady existujú."
       }
+    },
+    "security": {
+      "title": "Zabezpečenie",
+      "description": "Dvojfázové overenie a ochrana účtu.",
+      "usedRecovery": "Prihlásili ste sa záložným kódom. {n, plural, one {Zostáva # kód} few {Zostávajú # kódy} other {Zostáva # kódov}} – zvážte vygenerovanie nových.",
+      "twoFactorTitle": "Dvojfázové overenie (2FA)",
+      "statusOn": "Zapnuté · {n, plural, one {# záložný kód} few {# záložné kódy} other {# záložných kódov}}",
+      "statusOff": "Vypnuté",
+      "why": "Okrem hesla budete pri prihlásení zadávať kód z aplikácie (Google Authenticator, 1Password, Authy…). Bez 2FA sa nedá pripojiť banka, vytvoriť API kľúč, webhook ani zálohy.",
+      "enable": "Zapnúť dvojfázové overenie",
+      "step1": "Nainštalujte si overovaciu aplikáciu.",
+      "step2": "Naskenujte QR kód alebo odpíšte kľúč ručne.",
+      "step3": "Zadajte šesťmiestny kód, ktorý aplikácia zobrazuje.",
+      "manualKey": "Kľúč na ručné zadanie:",
+      "qrAlt": "QR kód pre overovaciu aplikáciu",
+      "codeLabel": "Kód z aplikácie alebo záložný kód",
+      "codeLabelApp": "Kód z overovacej aplikácie",
+      "confirm": "Potvrdiť a zapnúť",
+      "cancel": "Zrušiť",
+      "regenerate": "Nové záložné kódy",
+      "disable": "Vypnúť 2FA",
+      "codesTitle": "Záložné kódy",
+      "codesHint": "Uložte si ich na bezpečné miesto. Každý kód sa dá použiť iba raz, keď nebudete mať telefón. Znova ich už neuvidíte.",
+      "copy": "Kopírovať",
+      "copied": "Kódy skopírované",
+      "codesSaved": "Mám uložené",
+      "enabledToast": "Dvojfázové overenie je zapnuté",
+      "disabledToast": "Dvojfázové overenie je vypnuté",
+      "errors": {
+        "generic": "Niečo sa pokazilo. Skúste to znova.",
+        "invalid_code": "Kód nesedí. Skúste to znova.",
+        "rate_limited": "Priveľa pokusov. Skúste to o pár minút.",
+        "already_enabled": "Dvojfázové overenie už je zapnuté.",
+        "not_enabled": "Dvojfázové overenie nie je zapnuté.",
+        "not_signed_in": "Prihlásenie vypršalo. Prihláste sa znova."
+      }
     }
   },
   "billing": {
@@ -2803,6 +2847,19 @@
       "goToLogin": "Prejsť na prihlásenie",
       "requestNewLink": "Vyžiadať nový odkaz",
       "rateLimitedError": "Príliš veľa pokusov. Skúste to prosím o chvíľu."
+    },
+    "twoFactor": {
+      "title": "Dvojfázové overenie",
+      "subtitle": "Prihlasujete sa ako {email}. Zadajte šesťmiestny kód z overovacej aplikácie.",
+      "codeLabel": "Overovací kód",
+      "recoveryHint": "Nemáte telefón poruke? Zadajte jeden zo záložných kódov.",
+      "submit": "Overiť",
+      "cancel": "Zrušiť a odhlásiť",
+      "errors": {
+        "invalid_code": "Kód nesedí. Skontrolujte čas v telefóne a skúste to znova.",
+        "rate_limited": "Priveľa pokusov. Skúste to o pár minút.",
+        "not_signed_in": "Prihlásenie vypršalo. Prihláste sa znova."
+      }
     }
   },
   "legal": {
@@ -6322,6 +6379,13 @@
         "Pozvánka platí pre firmy založené cez váš odkaz počas posledných 30 dní.",
         "Pozvať vlastnú firmu alebo firmu, v ktorej už ste členom, nejde."
       ]
+    }
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Vyžaduje dvojfázové overenie",
+      "body": "Keďže ide o prístup k peniazom a dátam, nové pripojenie sa dá vytvoriť iba s dvojfázovým overením. Existujúce pripojenia fungujú ďalej.",
+      "cta": "Zapnúť 2FA"
     }
   }
 }

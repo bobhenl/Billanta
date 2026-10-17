@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { TwoFactorGuard } from "../auth/two-factor.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { ApiKeysService } from "./api-keys.service";
 import { CreateApiKeyDto } from "./dto/create-api-key.dto";
@@ -20,6 +21,7 @@ export class ApiKeysController {
   constructor(private readonly apiKeysService: ApiKeysService) {}
 
   @Post()
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({
     summary: "Generate a new public-API key",
     description:
