@@ -41,7 +41,8 @@ export function taxEventSummary(label: string, kind: TaxDeadlineKind, dueDate: D
 
 const iso = (d: Date) =>`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
+/** Also used by the weekly digest e-mail (src/email/weekly-digest.cron.ts). */
+export const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
   cs: {
     vat_monthly: "DPH a kontrolní hlášení",
     vat_quarterly: "DPH a kontrolní hlášení (čtvrtletí)",

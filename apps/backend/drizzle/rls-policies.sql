@@ -1401,3 +1401,19 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION get_buyer_details_target(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_buyer_details_target(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- E-mail outbox (migration 0053): standard tenant isolation. The cross-tenant
+-- worker uses claim_email_outbox / finish_email_outbox, the Resend webhook
+-- record_email_event, and the platform-admin view email_outbox_stats /
+-- email_outbox_recent, all defined in that migration. email_suppressions has
+-- RLS on and no policy on purpose.
+-- ---------------------------------------------------------------------------
+ALTER TABLE email_outbox ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_outbox FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON email_outbox;
+CREATE POLICY tenant_isolation ON email_outbox
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE email_suppressions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_suppressions FORCE ROW LEVEL SECURITY;

@@ -1040,16 +1040,20 @@ export class InvoicesService {
     const corrected = invoice.sentAt ? await this.editedSince(db, id, invoice.sentAt) : false;
 
     await assertCanSendEmail(db, invoice.tenantId);
-    await this.emailService.sendInvoiceEmail({
-      corrected,
-      to: contact.email,
-      invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-      amount: formatInvoiceAmount(total, invoice.currency),
-      dueDate: invoice.dueDate,
-      publicToken: invoice.publicToken,
-      clientPortalToken: contact.portalToken,
-      ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
-    });
+    await this.emailService.sendInvoiceEmail(
+      {
+        corrected,
+        to: contact.email,
+        invoiceNumber: invoice.invoiceNumber ?? invoice.id,
+        amount: formatInvoiceAmount(total, invoice.currency),
+        dueDate: invoice.dueDate,
+        publicToken: invoice.publicToken,
+        clientPortalToken: contact.portalToken,
+        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
+      },
+      // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
+      { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` },
+    );
     await recordEmailSent(db, invoice.tenantId, "invoice", contact.email);
 
     const [updated] = await db
@@ -1097,16 +1101,19 @@ export class InvoicesService {
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id));
     const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
     await assertCanSendEmail(db, invoice.tenantId);
-    await this.emailService.sendPaymentReminderEmail({
-      to: contact.email,
-      invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-      amount: formatInvoiceAmount(total, invoice.currency),
-      dueDate: invoice.dueDate,
-      publicToken: invoice.publicToken,
-      clientPortalToken: contact.portalToken,
-      reminderCount: invoice.reminderCount + 1,
-      ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
-    });
+    await this.emailService.sendPaymentReminderEmail(
+      {
+        to: contact.email,
+        invoiceNumber: invoice.invoiceNumber ?? invoice.id,
+        amount: formatInvoiceAmount(total, invoice.currency),
+        dueDate: invoice.dueDate,
+        publicToken: invoice.publicToken,
+        clientPortalToken: contact.portalToken,
+        reminderCount: invoice.reminderCount + 1,
+        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
+      },
+      { tenantId: invoice.tenantId, db, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },
+    );
     await recordEmailSent(db, invoice.tenantId, "reminder", contact.email);
     const [updated] = await db
       .update(schema.invoices)

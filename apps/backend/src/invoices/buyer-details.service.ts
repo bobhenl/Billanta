@@ -136,15 +136,18 @@ export class BuyerDetailsService {
         .limit(1);
       const items = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
       const total = computeInvoiceTotal(items, { reverseCharge: invoice.reverseCharge });
-      // A failed send rolls the whole request back, so the user sees the error and can retry.
+      // Queued in the same transaction: a refused request (sending limits) rolls everything back.
       await assertCanSendEmail(db, tenantId);
-      await this.email.sendBuyerDetailsRequestEmail({
-        to: email,
-        companyName: tenant?.companyName ?? "",
-        amount: formatInvoiceAmount(total, invoice.currency),
-        url,
-        replyTo: tenant?.email ?? null,
-      });
+      await this.email.sendBuyerDetailsRequestEmail(
+        {
+          to: email,
+          companyName: tenant?.companyName ?? "",
+          amount: formatInvoiceAmount(total, invoice.currency),
+          url,
+          replyTo: tenant?.email ?? null,
+        },
+        { tenantId, db },
+      );
       await recordEmailSent(db, tenantId, "buyer_details", email);
     }
     return { token, url, emailed: Boolean(email), autoIssue: updated.buyerDetailsAutoIssue };

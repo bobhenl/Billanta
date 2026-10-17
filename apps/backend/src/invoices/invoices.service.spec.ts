@@ -164,7 +164,7 @@ describe("InvoicesService.sendInvoice", () => {
       amount: "1815.00 CZK", // 3 * 500 * 1.21
       dueDate: invoice.dueDate,
       publicToken: invoice.publicToken,
-    });
+    }, expect.objectContaining({ tenantId: invoice.tenantId, db, idempotencyKey: expect.stringMatching(/^invoice:inv-1:\d+$/) }));
     expect(update).toHaveBeenCalled();
     expect(result).toEqual(updated);
   });
@@ -202,7 +202,7 @@ describe("InvoicesService.sendInvoice", () => {
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 
-  it("never marks sent_at if the email send itself throws", async () => {
+  it("never marks sent_at if queueing the email throws", async () => {
     const invoice = makeInvoice();
     const contact = makeContact();
     const select = vi
