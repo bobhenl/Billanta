@@ -64,6 +64,24 @@ export function hitFromPrefill(p: {
   };
 }
 
+/**
+ * Which "Vztah k DPH" the register answer points to, or null when the
+ * current choice already fits (or the answer says nothing). Only ever a
+ * suggestion: the owner picks. An identified person (§6g ZDPH) is not in the
+ * Czech register of payers but VIES lists it, so neither answer moves an
+ * identified person on its own except a clear "payer" from the CZ register.
+ */
+export function suggestedVatStatus(
+  check: Pick<VatPayerCheck, 'state'> | null,
+  current: 'payer' | 'identified' | 'non_payer'
+): 'payer' | 'non_payer' | null {
+  if (!check) return null;
+  if ((check.state === 'payer' || check.state === 'unreliable') && current !== 'payer') return 'payer';
+  if (check.state === 'valid' && current === 'non_payer') return 'payer';
+  if ((check.state === 'not_registered' || check.state === 'invalid') && current === 'payer') return 'non_payer';
+  return null;
+}
+
 /** Outcome of the VAT register check (backend `VatPayerCheck`, without the bank accounts on public pages). */
 export type VatPayerState = 'payer' | 'unreliable' | 'not_registered' | 'valid' | 'invalid' | 'unknown';
 export interface VatPayerCheck {
