@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { and, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { ReportRates } from "../exports/uniform-rate";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
@@ -229,11 +230,12 @@ export class DashboardService {
    * The period report: totals for [from, to] (whole days, inclusive), the
    * same-length period right before it for comparison, revenue / expenses
    * per day, week or month, the period's top customers and pie-chart
-   * shares. Amounts are in CZK (foreign documents at their stored rate), or
-   * in the filtered currency when the report is narrowed to one. `db` is
+   * shares. Amounts are in CZK (foreign documents at their stored rate, or
+   * at the year's jednotný kurz when the company chose it, `rates`), or in
+   * the filtered currency when the report is narrowed to one. `db` is
    * the tenant's RLS-scoped connection, so only its own rows ever load.
    */
-  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}) {
+  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}, rates: ReportRates = new ReportRates(false, [])) {
     const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
     const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
     const length = end.getTime() - start.getTime();
@@ -270,6 +272,9 @@ export class DashboardService {
         total: totals.totalWithVat,
       };
     });
+    if (rates.annual) {
+      for (const d of allDocs) if (d.currency !== "CZK") d.exchangeRate = await rates.rate(d.currency, d.exchangeRate, d.date);
+    }
     const today = new Date();
     const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
     const expenseRows = await db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart));
@@ -283,6 +288,9 @@ export class DashboardService {
         base: Number(e.amount) / (1 + Number(e.vatRate) / 100),
         exchangeRate: e.exchangeRate == null ? null : Number(e.exchangeRate),
       }));
+    if (rates.annual) {
+      for (const e of expenses) if (e.currency !== "CZK") e.exchangeRate = await rates.rate(e.currency, e.exchangeRate, e.date);
+    }
 
     return {
       currency,

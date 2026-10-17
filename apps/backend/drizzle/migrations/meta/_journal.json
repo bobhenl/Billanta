@@ -330,6 +330,13 @@
       "when": 1792801100000,
       "tag": "0046_exchange_rate_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1792801600000,
+      "tag": "0051_report_rate_mode",
+      "breakpoints": true
     }
   ]
 }

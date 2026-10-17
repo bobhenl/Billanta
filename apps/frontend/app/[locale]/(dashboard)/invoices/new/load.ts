@@ -70,7 +70,14 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     defaultContactId: typeof raw?.defaultContactId === 'string' ? raw.defaultContactId : null,
     defaultItems: Array.isArray(raw?.defaultItems) ? raw.defaultItems.filter(isDefaultItem) : [],
     defaultNoteAbove: typeof raw?.defaultNoteAbove === 'string' ? raw.defaultNoteAbove : null,
-    exchangeRateMode: raw?.exchangeRateMode === 'annual' || raw?.exchangeRateMode === 'none' ? raw.exchangeRateMode : 'cnb_daily',
+    exchangeRateMode: raw?.exchangeRateMode === 'none' ? 'none' : 'cnb_daily',
+    // The old single setting "annual" meant the annual rate everywhere; now it only applies to reports.
+    reportRateMode:
+      raw?.reportRateMode === 'annual' || raw?.reportRateMode === 'daily'
+        ? raw.reportRateMode
+        : (raw?.exchangeRateMode as string | undefined) === 'annual'
+          ? 'annual'
+          : 'daily',
     annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : []
   };
 }

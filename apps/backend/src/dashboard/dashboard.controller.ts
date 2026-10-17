@@ -1,7 +1,9 @@
 import { BadRequestException, Body, Controller, Get, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { createZodDto } from "nestjs-zod";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
+import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { effectivePermissions } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
@@ -9,6 +11,7 @@ import { DASHBOARD_WIDGETS, DashboardService } from "./dashboard.service";
 import { parseReportFilters, type ReportFilters } from "./report-filters";
 import { upcomingTaxEvents } from "./tax-calendar";
 import { getCnbDay, parseCurrencyList, parseRateDate } from "../exports/cnb-rates";
+import { computeUniformRates } from "../exports/uniform-rate";
 
 const dashboardConfigSchema = z
   .object({
@@ -56,7 +59,7 @@ export class DashboardController {
     summary:
       "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series, top customers and pie shares. Optional filters: currency, language, contactId, documentType (invoice|proforma|credit_note), status (paid|unpaid|overdue|cancelled)",
   })
-  stats(@Req() req: TenantScopedRequest, @Query() query: Record<string, unknown>) {
+  async stats(@Req() req: TenantScopedRequest, @Query() query: Record<string, unknown>) {
     const from = typeof query.from === "string" ? query.from : undefined;
     const to = typeof query.to === "string" ? query.to : undefined;
     let filters: ReportFilters;
@@ -77,7 +80,11 @@ export class DashboardController {
     // At most five years in one report.
     const earliest = new Date(end.getFullYear() - 5, end.getMonth(), end.getDate());
     if (start < earliest) start = earliest;
-    return this.dashboardService.stats(req.tenantDb!, start, end, filters);
+    const [tenant] = await req
+      .tenantDb!.select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, req.user!.tenantId));
+    return this.dashboardService.stats(req.tenantDb!, start, end, filters, ReportRates.fromPrefs(tenant?.invoiceFormPrefs));
   }
 
   @Get("config")
@@ -128,6 +135,30 @@ export class DashboardController {
         rate: current?.rates.get(code)?.rate ?? null,
         weekAgo: previous?.rates.get(code)?.rate ?? null,
       })),
+    };
+  }
+
+  @Get("fx-rates/uniform")
+  @ApiOperation({
+    summary:
+      "Jednotný kurz (§ 38 odst. 1 ZDP) per year: the average of the ČNB rates on the last day of each month, for ?years=2025,2026&currencies=EUR,USD. final = all 12 months are in; a running year counts the months that are over. rate = null when no month is known.",
+  })
+  async uniformRates(@Query("years") years?: string, @Query("currencies") currencies?: string) {
+    const list = parseCurrencyList(currencies);
+    if ("error" in list) throw new BadRequestException(list.error);
+    const now = new Date();
+    const wanted = [...new Set((years ?? String(now.getFullYear())).split(",").map((y) => Number(y.trim())))];
+    if (wanted.length > 5 || wanted.some((y) => !Number.isInteger(y) || y < 1992 || y > now.getFullYear())) {
+      throw new BadRequestException("years must be up to 5 years between 1992 and this year");
+    }
+    return {
+      source: "cnb.cz",
+      years: await Promise.all(
+        wanted.map(async (year) => {
+          const rates = await computeUniformRates(year, now);
+          return { year, rates: list.codes.map((code) => ({ code, ...(rates.get(code) ?? { rate: null, months: 0, final: false }) })) };
+        }),
+      ),
     };
   }
 

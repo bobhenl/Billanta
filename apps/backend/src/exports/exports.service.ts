@@ -10,6 +10,7 @@ import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getCnbRate } from "./cnb-rates";
+import { ReportRates } from "./uniform-rate";
 import {
   generateDphDp3,
   generateDphKh1,
@@ -582,7 +583,9 @@ export class ExportsService {
       // Kontrolní hlášení needs the buyer's DIČ as on the document.
       const contact = liveContact ? applyBuyerSnapshot(liveContact, invoice.buyerSnapshot) : null;
       const taxableDate = invoice.taxableSupplyDate ?? invoice.issueDate!;
-      const rate = await this.rateFor(invoice.currency, invoice.exchangeRate, taxableDate);
+      // VAT needs the ČNB rate of the DUZP (§ 38 ZDPH): a document issued
+      // with the old "annual" setting stores the jednotný kurz instead.
+      const rate = await this.rateFor(invoice.currency, invoice.exchangeRateMode === "annual" ? null : invoice.exchangeRate, taxableDate);
       const totals = computeVatBreakdown(
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
@@ -643,13 +646,16 @@ export class ExportsService {
    * Cash-basis income and expenses of a calendar year (daňová evidence):
    * invoices and credit notes by the day they were paid, expenses by the day
    * paid (or dated, when no payment is recorded). VAT payers count amounts
-   * without VAT. Everything is converted to CZK.
+   * without VAT. Everything is converted to CZK: at each document's rate,
+   * or at the year's jednotný kurz when the company chose it for reports
+   * (`opts.rates`, uniform-rate.ts).
    */
   async annualSummary(
     db: Db,
     year: number,
-    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number },
+    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number; rates?: ReportRates },
   ) {
+    const rates = opts.rates ?? new ReportRates(false, []);
     const from = new Date(year, 0, 1);
     const to = new Date(year + 1, 0, 1);
     const invoices = await db
@@ -674,7 +680,8 @@ export class ExportsService {
         { reverseCharge: invoice.reverseCharge },
       );
       const amount = opts.vatPayer ? totals.totalWithoutVat : totals.totalWithVat;
-      const rate = invoice.currency === "CZK" ? 1 : Number(invoice.exchangeRate) || (await getCnbRate(invoice.currency, invoice.paidAt));
+      const rate =
+        (await rates.rate(invoice.currency, Number(invoice.exchangeRate) || null, invoice.paidAt!, year)) ?? (await getCnbRate(invoice.currency, invoice.paidAt));
       if (rate == null) {
         missingRates++;
         continue;
@@ -689,7 +696,7 @@ export class ExportsService {
       .where(and(sql`${paidOn} >= ${from.toISOString()}`, sql`${paidOn} < ${to.toISOString()}`));
     let actualExpenses = 0;
     for (const e of expenses) {
-      const rate = e.currency === "CZK" ? 1 : Number(e.exchangeRate) || (await getCnbRate(e.currency, e.paidAt ?? e.expenseDate));
+      const rate = (await rates.rate(e.currency, Number(e.exchangeRate) || null, e.paidAt ?? e.expenseDate, year)) ?? (await getCnbRate(e.currency, e.paidAt ?? e.expenseDate));
       if (rate == null) {
         missingRates++;
         continue;
@@ -701,6 +708,8 @@ export class ExportsService {
     return {
       ...computeAnnualSummary({ year, income, actualExpenses, flatRate: opts.flatRate, paidSocial: opts.paidSocial, paidHealth: opts.paidHealth }),
       vatPayer: opts.vatPayer,
+      /** Which rate converted foreign documents: their own, or the year's jednotný kurz. */
+      rateMode: rates.annual ? ("annual" as const) : ("daily" as const),
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
     };
   }

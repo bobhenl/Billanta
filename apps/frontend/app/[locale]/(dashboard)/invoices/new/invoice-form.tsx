@@ -275,11 +275,6 @@ export function InvoiceForm({
   const { prefs } = defaults;
   const [issuePlace, setIssuePlace] = useState(() => template?.issuePlace ?? (editing ? '' : prefs.defaultIssuePlace ?? ''));
   const [issuedByName, setIssuedByName] = useState(() => template?.issuedByName ?? (editing ? '' : prefs.defaultIssuedBy ?? ''));
-  // Settings → Faktury → Kurz: with an annual rate for this year the empty field means that rate, not ČNB's.
-  const rateYear = Number(((vatPayer && taxableSupplyDate) || issueDate).slice(0, 4));
-  const annualRate =
-    prefs.exchangeRateMode === 'annual' ? prefs.annualRates.find((r) => r.year === rateYear && r.currency === currency)?.rate ?? null : null;
-  const annualRatePlaceholder = annualRate ? t('payment.exchangeRateAnnual', { rate: annualRate.toLocaleString(locale), year: rateYear }) : null;
   const [customFields, setCustomFields] = useState<CustomField[]>(() => {
     const existing = template?.customFields ?? [];
     const preset = prefs.customFieldLabels.filter((label) => !existing.some((f) => f.label === label)).map((label) => ({ label, value: '' }));
@@ -1397,7 +1392,7 @@ export function InvoiceForm({
                   inputMode="decimal"
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value.replace(/[^\d.,]/g, ''))}
-                  placeholder={annualRatePlaceholder ?? t('payment.exchangeRateAuto')}
+                  placeholder={t('payment.exchangeRateAuto')}
                   className={field}
                 />
                 <button
@@ -1405,7 +1400,9 @@ export function InvoiceForm({
                   disabled={loadingRate}
                   onClick={async () => {
                     setLoadingRate(true);
-                    const rate = await fetchExchangeRate(currency, (vatPayer && taxableSupplyDate) || issueDate);
+                    // The day the backend converts with at issue (the DUZP is only saved for a payer),
+                    // so it recognises this as ČNB's rate and labels it as such.
+                    const rate = await fetchExchangeRate(currency, (vatPayer && !isQuote && taxableSupplyDate) || issueDate);
                     setLoadingRate(false);
                     if (rate) setExchangeRate(String(Number(rate.toFixed(4))));
                     else toast({ text: t('payment.exchangeRateFailed'), tone: 'err' });

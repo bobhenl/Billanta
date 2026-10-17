@@ -1933,7 +1933,8 @@
         "epoLink": "EPO forms (Financial Administration)",
         "failed": "The estimate could not be calculated.",
         "disclaimer": "A rough estimate for a full year of main activity. It does not replace the tax return or the insurance statements.",
-        "paidFromSettings": "Filled in from the monthly advances in Business details. You can change it."
+        "paidFromSettings": "Filled in from the monthly advances in Business details. You can change it.",
+        "uniformRate": "Foreign currencies are converted at the uniform rate for {year} (the average of ČNB month-end rates). You can change this in Settings → Invoice form."
       },
       "epo": {
         "title": "How to file the VAT return, control statement and EC sales list",
@@ -2008,26 +2009,40 @@
       "fieldsHint": "Checked fields are always visible in the form. A field that already has a value on the document is always shown.",
       "rate": {
         "title": "Exchange rate on foreign-currency invoices",
-        "hint": "How an amount in a foreign currency is converted to CZK. The rate is saved with the document when it is issued and does not change after that.",
+        "hint": "How amounts in a foreign currency are converted to CZK, separately on the invoice and in your reports. The rate is saved with the document when it is issued and does not change after that.",
+        "invoiceTitle": "On the invoice",
         "modes": {
           "cnb_daily": "Daily ČNB rate",
-          "annual": "Fixed annual rate",
           "none": "Don't print the CZK conversion"
         },
-        "cnbDailyHint": "The ČNB rate for the date of taxable supply. If ČNB published no rate that day, the last earlier one is used.",
-        "annualHint": "One rate for the whole year under § 38 of the Czech VAT Act. Enter it below for each year and currency. A year without a rate falls back to the daily ČNB rate.",
+        "cnbDailyHint": "The ČNB rate valid on the date of taxable supply, as § 38 of the Czech VAT Act requires for VAT. If ČNB published no rate that day, the last earlier one is used. A document with VAT always uses this rate.",
         "noneHint": "The document won't show a conversion to CZK. The ČNB rate is still saved for your reports.",
         "noneIdentified": "Applies only to documents without VAT. If a document has VAT, the conversion is printed.",
         "nonePayer": "A VAT payer must show the CZK conversion on the document, so this option isn't available. Invoices are issued with the ČNB rate.",
-        "annualTitle": "Fixed rates",
-        "annualEmpty": "No rates yet. Add a year and currency.",
+        "reportTitle": "In reports and the income tax estimate",
+        "reportModes": {
+          "daily": "Daily rate from the document",
+          "annual": "Uniform annual rate"
+        },
+        "reportDailyHint": "Each document is converted at the rate saved on it.",
+        "annualHint": "The uniform rate (jednotný kurz) under § 38(1) of the Czech Income Tax Act. We work it out ourselves as the average of the ČNB rates on the last day of each month, the same way the tax authority (GFŘ) publishes it after the year ends.",
+        "invoiceStaysDaily": "Invoices still show the daily ČNB rate because VAT law requires it, and the uniform rate is only used in your reports.",
+        "computedTitle": "Calculated uniform rates",
+        "computedError": "The ČNB rates could not be loaded right now. Reports will use your own rate, otherwise the document's rate.",
+        "computedEmpty": "No month has ended yet to calculate a rate from.",
+        "final": "final",
+        "running": "provisional, {n, plural, one {# month} other {# months}} so far",
+        "computedValue": "Calculated rate: {rate} ({status})",
+        "annualTitle": "Your own rate for a year",
+        "annualEmpty": "You don't need to enter anything. Add your own rate only if you want a different one from the calculated rate, for example the exact one from the GFŘ notice.",
+        "annualOverrideHint": "Your rate takes priority over the calculated one for that year and currency.",
         "year": "Year",
         "currency": "Currency",
         "rate": "Rate",
         "perUnit": "CZK per 1 {currency}",
         "remove": "Remove rate",
         "duplicate": "Each year and currency can be listed only once.",
-        "add": "Add rate"
+        "add": "Add your own rate"
       },
       "groups": {
         "items": "Items",
@@ -3534,7 +3549,6 @@
       "more": "Constant / specific symbol, order number",
       "exchangeRate": "Rate CZK/{currency}",
       "exchangeRateAuto": "ČNB rate at issue",
-      "exchangeRateAnnual": "Fixed rate {rate} ({year})",
       "exchangeRateLoad": "Load from ČNB",
       "exchangeRateFailed": "The ČNB rate could not be loaded.",
       "inCzk": "≈ {amount} total",

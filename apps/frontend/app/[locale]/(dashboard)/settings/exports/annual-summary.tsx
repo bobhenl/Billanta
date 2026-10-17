@@ -30,6 +30,8 @@ interface Summary {
   totalBurden: number;
   vatPayer: boolean;
   counts: { invoices: number; expenses: number; missingRates: number };
+  /** Foreign documents at their own rate, or at the year's jednotný kurz (Settings → Faktury → Kurz). */
+  rateMode?: 'daily' | 'annual';
   /** Where `paid` came from: the typed amount, or the advances in Settings (each month as it applied then). Missing on an older backend. */
   paidSource?: Record<'social' | 'health', 'input' | 'settings' | null>;
 }
@@ -195,6 +197,7 @@ export function AnnualSummary() {
               {row(t('total'), data.totalBurden, { strong: true })}
             </div>
           </div>
+          {data.rateMode === 'annual' && <p className="mt-2 text-xs text-muted-foreground">{t('uniformRate', { year: data.year })}</p>}
           {data.counts.missingRates > 0 && <p className="mt-2 text-xs text-warning">{t('missingRates', { count: data.counts.missingRates })}</p>}
           {!data.params.exact && <p className="mt-2 text-xs text-warning">{t('paramsFallback', { year: data.params.paramsYear })}</p>}
           <div className="mt-4 flex flex-wrap items-center gap-3">

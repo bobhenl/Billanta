@@ -3,7 +3,7 @@ import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
 import type { InvoicePdfService } from "./invoice-pdf.service";
-import { customerRequiredError, InvoicesService, rateModeAfterEdit } from "./invoices.service";
+import { customerRequiredError, InvoicesService, rateAfterEdit, rateModeAfterEdit } from "./invoices.service";
 
 // The sending guard has its own spec; here it always allows the send.
 vi.mock("../abuse/sending-guard", () => ({ assertCanSendEmail: vi.fn(async () => undefined), recordEmailSent: vi.fn(async () => undefined) }));
@@ -455,14 +455,13 @@ describe("InvoicesService.issue – exchange rate mode", () => {
     expect(cnb.getCnbDay).toHaveBeenCalledWith(new Date("2026-03-14T10:00:00Z"));
   });
 
-  it("annual: stores the company's rate for the DUZP year, without asking ČNB", async () => {
-    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }, { year: 2025, currency: "EUR", rate: 25.3 }] }, "payer");
-    expect(set).toMatchObject({ exchangeRate: "24.600000", exchangeRateMode: "annual", exchangeRateDate: "2026-01-01" });
-    expect(cnb.getCnbDay).not.toHaveBeenCalled();
+  it("the old annual setting: the invoice still gets the daily ČNB rate", async () => {
+    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer");
+    expect(set).toMatchObject({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
   });
 
-  it("annual without a rate for that year: falls back to ČNB and is printed as such", async () => {
-    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2025, currency: "EUR", rate: 25.3 }] }, "payer");
+  it("annual reports never change what the invoice prints", async () => {
+    const set = await issueEur({ exchangeRateMode: "cnb_daily", reportRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer");
     expect(set).toMatchObject({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily" });
   });
 
@@ -477,9 +476,13 @@ describe("InvoicesService.issue – exchange rate mode", () => {
   });
 
   it("a rate typed on the draft is kept and labelled as a plain rate", async () => {
-    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer", { exchangeRate: "25.500000" });
+    const set = await issueEur({}, "payer", { exchangeRate: "25.500000" });
     expect(set).toMatchObject({ exchangeRate: "25.500000", exchangeRateMode: "manual", exchangeRateDate: null });
-    expect(cnb.getCnbDay).not.toHaveBeenCalled();
+  });
+
+  it("a rate loaded with 'Načíst z ČNB' is stored as the ČNB rate of its day, not as a typed one", async () => {
+    const set = await issueEur({}, "payer", { exchangeRate: "25.120000" });
+    expect(set).toMatchObject({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
   });
 });
 
@@ -526,6 +529,16 @@ describe("InvoicesService – drafts without a customer", () => {
     const db = { select, update } as any;
     await expect(service.update(db, "tenant-1", "inv-1", { contact_id: null, edit_reason: "oprava" })).rejects.toBeInstanceOf(BadRequestException);
     expect(update).not.toHaveBeenCalled();
+  });
+});
+
+describe("rateAfterEdit", () => {
+  const issued = { currency: "EUR", exchangeRate: "24.900000", exchangeRateMode: "cnb_daily" as const, taxableSupplyDate: new Date("2026-03-14T10:00:00Z"), issueDate: new Date("2026-03-16T10:00:00Z") };
+  it("a rate reloaded from ČNB on an issued document stays a ČNB rate, with its list day", async () => {
+    expect(await rateAfterEdit(issued, { exchangeRate: "25.120000" })).toEqual({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
+  });
+  it("any other new rate is a plain rate", async () => {
+    expect(await rateAfterEdit(issued, { exchangeRate: "25.500000" })).toEqual({ exchangeRateMode: "manual", exchangeRateDate: null });
   });
 });
 
