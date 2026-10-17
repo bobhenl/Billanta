@@ -350,7 +350,7 @@
     "customizeCards": "Number cards",
     "customizeTiles": "Quick actions",
     "customizeSections": "Sections",
-    "customizeReset": "Defaults",
+    "customizeReset": "Restore recommended",
     "customizeSaved": "Overview saved",
     "customizeFailed": "Saving failed: {reason}",
     "moveUp": "Move up",
@@ -409,6 +409,19 @@
       "add": "Add currency",
       "remove": "Remove {code}",
       "limit": "Up to {max} currencies."
+    },
+    "usage": {
+      "title": "Recommended from what you use",
+      "hint": "Anything you leave as is keeps adapting. Your own choice always wins.",
+      "newAccount": "Nothing here yet, so you see the basic layout.",
+      "currencies": "You invoice in {list}",
+      "onlyHome": "You invoice only in {currency}",
+      "expenses": "you record expenses",
+      "noExpenses": "no expenses recorded yet",
+      "paypal": "PayPal connected",
+      "bank": "bank connected",
+      "proformas": "you issue proformas",
+      "quotes": "you send quotes"
     }
   },
   "invoices": {
@@ -5621,6 +5634,22 @@
       "overdue": "Overdue",
       "customers": "Customers",
       "newCustomers": "New customers"
+    },
+    "customize": {
+      "button": "Customize",
+      "title": "Report figures",
+      "recommendedTitle": "Recommended from what you use",
+      "noVat": "You are not a VAT payer, so VAT is hidden.",
+      "noVatIdentified": "You are an identified person with no reverse-charge invoices, so VAT is hidden.",
+      "noExpenses": "No expenses recorded yet, so expenses and profit are hidden.",
+      "allRelevant": "Showing everything that applies to you.",
+      "notRecommended": "not relevant yet",
+      "noExpensesHint": "No expenses recorded yet",
+      "reset": "Restore recommended",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Saved",
+      "failed": "Could not save: {reason}"
     }
   },
   "siteSearch": {

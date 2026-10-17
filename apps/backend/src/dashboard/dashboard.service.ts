@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { and, count, desc, eq, gte, inArray, isNull } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
+import { summarizeUsage, type Usage } from "./usage";
 import { vatActivity, type VatActivity } from "./vat-activity";
 
 type Db = PostgresJsDatabase<typeof schema>;
@@ -39,10 +40,12 @@ export const DEFAULT_DASHBOARD_CONFIG = {
   // Tax-deadline kinds (frontend lib/tax-deadlines.ts); null = derived from the VAT-payer flag.
   taxDeadlines: null as string[] | null,
   showFxRates: true,
-  // ČNB rate cards; null = EUR, USD, GBP.
+  // ČNB rate cards; null = the currencies the company uses (frontend), else EUR, USD, GBP.
   fxCurrencies: null as string[] | null,
   // The member's own expected amount per tax-deadline kind (e.g. their insurance advance); null = none.
   taxAmounts: null as Record<string, number> | null,
+  // KPI cards on the reports page (frontend ids); null = picked from what the company uses.
+  reportKpis: null as string[] | null,
 };
 
 /** "Due soon" = issued, not yet overdue, due within this many days. */
@@ -332,24 +335,106 @@ export class DashboardService {
     );
   }
 
-  async getConfig(db: Db, tenantId: string, userId: string): Promise<DashboardConfig> {
+  /**
+   * What the company uses (currencies, expenses, bank / PayPal, document
+   * types, VAT status…), for the usage-based defaults of the dashboard and
+   * the reports page. A handful of GROUP BY / COUNT queries over the
+   * tenant's RLS-scoped connection; the logic is in `summarizeUsage`.
+   */
+  async usage(db: Db, tenantId: string, now = new Date()): Promise<Usage> {
+    const since = new Date(now.getFullYear(), now.getMonth() - 12, now.getDate());
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Inlined as literals (built from Dates, never user input): with bound
+    // parameters Postgres sees the SELECT and GROUP BY expressions as
+    // different ($1 vs $2) and refuses the grouping.
+    const ts = (d: Date) => sql.raw(`'${d.toISOString()}'::timestamptz`);
+    const inv = schema.invoices;
+    const invDate = sql`coalesce(${inv.taxableSupplyDate}, ${inv.issueDate}, ${inv.createdAt})`;
+    const recentInv = sql<boolean>`(${invDate} >= ${ts(since)})`;
+    const overdue = sql<boolean>`(${inv.status} = 'issued' and ${inv.documentType} <> 'quote' and ${inv.dueDate} is not null and ${inv.dueDate} < ${ts(today)})`;
+    const recentExp = sql<boolean>`(${schema.expenses.expenseDate} >= ${ts(since)})`;
+    const tx = schema.bankTransactions;
+
+    const [invoiceRows, expenseRows, connections, [transactions], [recurring], [templates], [contacts], [tenant]] = await Promise.all([
+      db
+        .select({
+          documentType: inv.documentType,
+          status: inv.status,
+          currency: inv.currency,
+          language: inv.language,
+          reverseCharge: inv.reverseCharge,
+          recent: recentInv,
+          overdue,
+          n: count(),
+        })
+        .from(inv)
+        .groupBy(inv.documentType, inv.status, inv.currency, inv.language, inv.reverseCharge, recentInv, overdue),
+      db.select({ currency: schema.expenses.currency, recent: recentExp, n: count() }).from(schema.expenses).groupBy(schema.expenses.currency, recentExp),
+      db
+        .select({ provider: schema.bankConnections.provider, status: schema.bankConnections.status, enabled: schema.bankConnections.enabled })
+        .from(schema.bankConnections),
+      db
+        .select({
+          total: count(),
+          matched: sql<number>`count(*) filter (where ${tx.matchedInvoiceId} is not null)`.mapWith(Number),
+          paypal: sql<number>`count(*) filter (where ${schema.bankStatementImports.source} = 'paypal')`.mapWith(Number),
+        })
+        .from(tx)
+        .leftJoin(schema.bankStatementImports, eq(schema.bankStatementImports.id, tx.importId)),
+      db.select({ n: count() }).from(schema.recurringInvoiceTemplates).where(eq(schema.recurringInvoiceTemplates.isActive, true)),
+      db.select({ n: count() }).from(schema.invoiceTemplates),
+      db.select({ n: count() }).from(schema.contacts),
+      db
+        .select({ vatStatus: schema.tenants.vatStatus, dicVatPayer: schema.tenants.dicVatPayer, legalName: schema.tenants.legalName })
+        .from(schema.tenants)
+        .where(eq(schema.tenants.id, tenantId)),
+    ]);
+
+    return summarizeUsage({
+      invoices: invoiceRows.map((r) => ({ ...r, recent: !!r.recent, overdue: !!r.overdue })),
+      expenses: expenseRows.map((r) => ({ ...r, recent: !!r.recent })),
+      connections,
+      transactions: transactions ?? { total: 0, matched: 0, paypal: 0 },
+      recurringCount: recurring?.n ?? 0,
+      templateCount: templates?.n ?? 0,
+      contactCount: contacts?.n ?? 0,
+      tenant: tenant ?? { vatStatus: null, dicVatPayer: false, legalName: null },
+    });
+  }
+
+  /** The member's own saved keys only (no defaults merged in); older rows stored a bare array of quick-action ids. */
+  private async storedConfig(db: Db, tenantId: string, userId: string): Promise<Partial<DashboardConfig>> {
     const [membership] = await db
       .select({ dashboardTiles: schema.tenantMemberships.dashboardTiles })
       .from(schema.tenantMemberships)
       .where(and(eq(schema.tenantMemberships.tenantId, tenantId), eq(schema.tenantMemberships.userId, userId)));
     const stored = membership?.dashboardTiles;
-    // Older rows stored a bare array of quick-action ids.
-    if (Array.isArray(stored)) return { ...DEFAULT_DASHBOARD_CONFIG, tiles: stored as string[] };
-    if (stored && typeof stored === "object") return { ...DEFAULT_DASHBOARD_CONFIG, ...(stored as object) };
-    return DEFAULT_DASHBOARD_CONFIG;
+    if (Array.isArray(stored)) return { tiles: stored as string[] };
+    if (stored && typeof stored === "object") return stored as Partial<DashboardConfig>;
+    return {};
   }
 
-  async saveConfig(db: Db, tenantId: string, userId: string, config: Partial<DashboardConfig>) {
-    const merged = { ...(await this.getConfig(db, tenantId, userId)), ...config };
+  /**
+   * The layout with defaults filled in, plus `savedKeys`: what the member
+   * chose themselves. The frontend fills every other key from the
+   * company's usage, so a saved choice always wins over a recommendation.
+   */
+  async getConfig(db: Db, tenantId: string, userId: string): Promise<DashboardConfig & { savedKeys: string[] }> {
+    const stored = await this.storedConfig(db, tenantId, userId);
+    return { ...DEFAULT_DASHBOARD_CONFIG, ...stored, savedKeys: Object.keys(stored).filter((k) => k in DEFAULT_DASHBOARD_CONFIG) };
+  }
+
+  /** Merges into the saved keys; a null value forgets that key, so it follows the defaults (and usage) again. */
+  async saveConfig(db: Db, tenantId: string, userId: string, config: { [K in keyof DashboardConfig]?: DashboardConfig[K] | null }) {
+    const stored: Record<string, unknown> = { ...(await this.storedConfig(db, tenantId, userId)) };
+    for (const [key, value] of Object.entries(config)) {
+      if (value === null) delete stored[key];
+      else if (value !== undefined) stored[key] = value;
+    }
     await db
       .update(schema.tenantMemberships)
-      .set({ dashboardTiles: merged })
+      .set({ dashboardTiles: stored })
       .where(and(eq(schema.tenantMemberships.tenantId, tenantId), eq(schema.tenantMemberships.userId, userId)));
-    return merged;
+    return this.getConfig(db, tenantId, userId);
   }
 }

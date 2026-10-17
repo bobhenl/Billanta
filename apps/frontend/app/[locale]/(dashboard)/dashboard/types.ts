@@ -20,11 +20,18 @@ export interface DashboardConfig {
   /** null = defaults for the company's VAT status (lib/tax-deadlines.ts). */
   taxDeadlines: string[] | null;
   showFxRates: boolean;
-  /** ČNB rate cards; null = EUR, USD, GBP. */
+  /** ČNB rate cards; null = the foreign currencies the company uses (else EUR, USD, GBP). */
   fxCurrencies: string[] | null;
   /** Expected amount per tax-deadline kind, typed in by the member (their own advances); null = none. */
   taxAmounts: Record<string, number> | null;
+  /** KPI cards on the reports page; null = picked from usage (lib/usage-defaults.ts). */
+  reportKpis?: string[] | null;
+  /** Keys the member saved themselves; everything else follows usage. Missing on an older backend. */
+  savedKeys?: string[];
 }
+
+/** What PUT /dashboard/config takes: null on a key forgets the saved choice (back to the usage-based default). */
+export type DashboardConfigPatch = { [K in keyof Omit<DashboardConfig, 'savedKeys'>]?: DashboardConfig[K] | null };
 
 export interface DashboardDoc {
   id: string;

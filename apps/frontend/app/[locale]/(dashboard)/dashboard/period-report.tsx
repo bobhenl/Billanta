@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { ArrowDown, ArrowUp, Download, Loader2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Download, Loader2, Settings2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { formatMoney } from '@/lib/invoice-ui';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { reportQuery } from '@/lib/report-query';
 import { cn } from '@/lib/utils';
-import { fetchPeriodStats } from './actions';
+import { Modal, buttonClass } from '@/components/modal';
+import { toast } from '@/components/toaster';
+import { EXPENSE_KPIS, REPORT_KPIS, recommendReportKpis, reportKpisOf, type ReportKpi, type Usage } from '@/lib/usage-defaults';
+import { fetchPeriodStats, saveDashboardConfig } from './actions';
 import { ChartKindSwitch, Donut, PeriodChart, type ChartKind } from './report-charts';
 import { REPORT_DOC_TYPES, REPORT_STATUSES, type PeriodStats, type ReportFilters } from './types';
 
@@ -23,11 +26,17 @@ const CHART_KIND_KEY = 'billanta.reports.chartKind';
 export function PeriodReport({
   initial,
   initialPreset = 'last12',
-  compact = false
+  compact = false,
+  usage = null,
+  savedKpis = null
 }: {
   initial: PeriodStats;
   initialPreset?: PeriodPreset;
   compact?: boolean;
+  /** What the company uses: hides VAT for non-payers, expenses when there are none, filters with one option. */
+  usage?: Usage | null;
+  /** The member's own KPI choice for the full report (dashboard config `reportKpis`); null = from usage. */
+  savedKpis?: string[] | null;
 }) {
   const t = useTranslations('reports');
   const locale = useLocale();
@@ -47,6 +56,9 @@ export function PeriodReport({
   }, []);
   const [error, setError] = useState<string | null>(null);
   const [loading, start] = useTransition();
+  const [kpiChoice, setKpiChoice] = useState<string[] | null>(savedKpis);
+  const [customizing, setCustomizing] = useState(false);
+  const noExpenses = !!usage && !usage.has.expenses;
   const money = (n: number) => formatMoney(n, stats.currency, locale);
 
   const setChartKind = (kind: ChartKind) => {
@@ -75,7 +87,7 @@ export function PeriodReport({
   const anyFilter = Object.values(filters).some(Boolean);
 
   const { current, previous } = stats;
-  const kpis: { key: string; value: string; now: number; before: number; invert?: boolean; sub?: string }[] = [
+  const all: { key: ReportKpi; value: string; now: number; before: number; invert?: boolean; sub?: string }[] = [
     { key: 'revenue', value: money(current.revenue), now: current.revenue, before: previous.revenue },
     { key: 'expenses', value: money(current.expenses), now: current.expenses, before: previous.expenses, invert: true },
     { key: 'profit', value: money(current.profit), now: current.profit, before: previous.profit },
@@ -85,46 +97,50 @@ export function PeriodReport({
       now: current.collected,
       before: previous.collected,
       sub: t('paidCount', { count: current.paidCount })
-    }
+    },
+    { key: 'invoiceCount', value: String(current.invoiceCount), now: current.invoiceCount, before: previous.invoiceCount },
+    { key: 'averageInvoice', value: money(current.averageInvoice), now: current.averageInvoice, before: previous.averageInvoice },
+    { key: 'vat', value: money(current.vat), now: current.vat, before: previous.vat },
+    {
+      key: 'daysToPay',
+      value: current.averageDaysToPay == null ? '–' : t('days', { count: current.averageDaysToPay }),
+      now: current.averageDaysToPay ?? 0,
+      // No comparison unless both periods had payments.
+      before: current.averageDaysToPay == null ? 0 : (previous.averageDaysToPay ?? 0),
+      invert: true
+    },
+    {
+      key: 'outstanding',
+      value: money(current.outstanding),
+      now: current.outstanding,
+      before: previous.outstanding,
+      invert: true,
+      sub: t('docCount', { count: current.outstandingCount })
+    },
+    {
+      key: 'overdue',
+      value: money(current.overdue),
+      now: current.overdue,
+      before: previous.overdue,
+      invert: true,
+      sub: t('docCount', { count: current.overdueCount })
+    },
+    {
+      key: 'customers',
+      value: String(current.customerCount),
+      now: current.customerCount,
+      before: previous.customerCount
+    },
+    { key: 'newCustomers', value: String(current.newCustomers), now: current.newCustomers, before: previous.newCustomers }
   ];
-  if (!compact) {
-    kpis.push(
-      { key: 'invoiceCount', value: String(current.invoiceCount), now: current.invoiceCount, before: previous.invoiceCount },
-      { key: 'averageInvoice', value: money(current.averageInvoice), now: current.averageInvoice, before: previous.averageInvoice },
-      { key: 'vat', value: money(current.vat), now: current.vat, before: previous.vat },
-      {
-        key: 'daysToPay',
-        value: current.averageDaysToPay == null ? '–' : t('days', { count: current.averageDaysToPay }),
-        now: current.averageDaysToPay ?? 0,
-        // No comparison unless both periods had payments.
-        before: current.averageDaysToPay == null ? 0 : (previous.averageDaysToPay ?? 0),
-        invert: true
-      },
-      {
-        key: 'outstanding',
-        value: money(current.outstanding),
-        now: current.outstanding,
-        before: previous.outstanding,
-        invert: true,
-        sub: t('docCount', { count: current.outstandingCount })
-      },
-      {
-        key: 'overdue',
-        value: money(current.overdue),
-        now: current.overdue,
-        before: previous.overdue,
-        invert: true,
-        sub: t('docCount', { count: current.overdueCount })
-      },
-      {
-        key: 'customers',
-        value: String(current.customerCount),
-        now: current.customerCount,
-        before: previous.customerCount
-      },
-      { key: 'newCustomers', value: String(current.newCustomers), now: current.newCustomers, before: previous.newCustomers }
-    );
-  }
+  // The dashboard card: four KPIs, without expenses / profit for a company that records none.
+  const compactKeys: ReportKpi[] = noExpenses ? ['revenue', 'collected', 'invoiceCount', 'averageInvoice'] : ['revenue', 'expenses', 'profit', 'collected'];
+  const visible = compact ? compactKeys : reportKpisOf(kpiChoice, usage);
+  const kpis = visible.map((key) => all.find((k) => k.key === key)!).filter(Boolean);
+  const showCurrencyFilter = stats.options.currencies.length > 1 || !!filters.currency;
+  const showLanguageFilter = stats.options.languages.length > 1 || !!filters.language;
+  const showCustomerFilter = stats.options.customers.length > 1 || !!filters.contactId;
+  const showTypeFilter = !usage || usage.has.proformas || usage.has.creditNotes || !!filters.documentType;
 
   const typeLabel = (type: string) => t(`docTypes.${type as (typeof REPORT_DOC_TYPES)[number]}`);
   const select = 'rounded-md border border-border bg-background px-2 py-1 text-xs';
@@ -145,15 +161,25 @@ export function PeriodReport({
             {t('openReports')}
           </Link>
         ) : (
-          <a
-            href={range.from && range.to && range.from <= range.to ? exportHref : undefined}
-            download
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-primary hover:border-primary"
-            title={t('exportHint')}
-          >
-            <Download className="h-3.5 w-3.5" aria-hidden="true" />
-            {t('exportCsv')}
-          </a>
+          <span className="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setCustomizing(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground hover:border-primary hover:text-foreground"
+            >
+              <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('customize.button')}
+            </button>
+            <a
+              href={range.from && range.to && range.from <= range.to ? exportHref : undefined}
+              download
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-primary hover:border-primary"
+              title={t('exportHint')}
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('exportCsv')}
+            </a>
+          </span>
         )}
       </div>
 
@@ -202,43 +228,51 @@ export function PeriodReport({
 
       {!compact && (
         <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label={t('filters.label')}>
-          <select aria-label={t('filters.currency')} className={select} value={filters.currency ?? ''} onChange={(e) => setFilter('currency', e.target.value)}>
-            <option value="">{t('filters.allCurrencies')}</option>
-            {stats.options.currencies.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <select aria-label={t('filters.language')} className={select} value={filters.language ?? ''} onChange={(e) => setFilter('language', e.target.value)}>
-            <option value="">{t('filters.allLanguages')}</option>
-            {stats.options.languages.map((l) => (
-              <option key={l} value={l}>
-                {l.toUpperCase()}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label={t('filters.customer')}
-            className={cn(select, 'max-w-[14rem]')}
-            value={filters.contactId ?? ''}
-            onChange={(e) => setFilter('contactId', e.target.value)}
-          >
-            <option value="">{t('filters.allCustomers')}</option>
-            {stats.options.customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <select aria-label={t('filters.type')} className={select} value={filters.documentType ?? ''} onChange={(e) => setFilter('documentType', e.target.value)}>
-            <option value="">{t('filters.allTypes')}</option>
-            {REPORT_DOC_TYPES.map((d) => (
-              <option key={d} value={d}>
-                {typeLabel(d)}
-              </option>
-            ))}
-          </select>
+          {showCurrencyFilter && (
+            <select aria-label={t('filters.currency')} className={select} value={filters.currency ?? ''} onChange={(e) => setFilter('currency', e.target.value)}>
+              <option value="">{t('filters.allCurrencies')}</option>
+              {stats.options.currencies.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          )}
+          {showLanguageFilter && (
+            <select aria-label={t('filters.language')} className={select} value={filters.language ?? ''} onChange={(e) => setFilter('language', e.target.value)}>
+              <option value="">{t('filters.allLanguages')}</option>
+              {stats.options.languages.map((l) => (
+                <option key={l} value={l}>
+                  {l.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          )}
+          {showCustomerFilter && (
+            <select
+              aria-label={t('filters.customer')}
+              className={cn(select, 'max-w-[14rem]')}
+              value={filters.contactId ?? ''}
+              onChange={(e) => setFilter('contactId', e.target.value)}
+            >
+              <option value="">{t('filters.allCustomers')}</option>
+              {stats.options.customers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          )}
+          {showTypeFilter && (
+            <select aria-label={t('filters.type')} className={select} value={filters.documentType ?? ''} onChange={(e) => setFilter('documentType', e.target.value)}>
+              <option value="">{t('filters.allTypes')}</option>
+              {REPORT_DOC_TYPES.map((d) => (
+                <option key={d} value={d}>
+                  {typeLabel(d)}
+                </option>
+              ))}
+            </select>
+          )}
           <select aria-label={t('filters.status')} className={select} value={filters.status ?? ''} onChange={(e) => setFilter('status', e.target.value)}>
             <option value="">{t('filters.allStatuses')}</option>
             {REPORT_STATUSES.map((s) => (
@@ -258,14 +292,22 @@ export function PeriodReport({
       {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
 
       <div className={cn('mt-4 grid grid-cols-2 gap-2', compact ? 'lg:grid-cols-4' : 'sm:grid-cols-4')}>
-        {kpis.map((k) => (
-          <div key={k.key} className="rounded-lg bg-secondary/60 px-3 py-2">
-            <p className="text-[11px] font-semibold text-muted-foreground">{t(`kpi.${k.key}`)}</p>
-            <p className="mt-0.5 text-base font-bold tabular-nums">{k.value}</p>
-            <Change now={k.now} before={k.before} invert={k.invert} label={t('vsPrevious')} />
-            {k.sub && <p className="text-[11px] text-muted-foreground">{k.sub}</p>}
-          </div>
-        ))}
+        {kpis.map((k) => {
+          // Chosen by the member although nothing is recorded: shown dimmed, with the reason.
+          const dim = noExpenses && EXPENSE_KPIS.includes(k.key);
+          return (
+            <div key={k.key} className={cn('rounded-lg bg-secondary/60 px-3 py-2', dim && 'opacity-60')}>
+              <p className="text-[11px] font-semibold text-muted-foreground">{t(`kpi.${k.key}`)}</p>
+              <p className="mt-0.5 text-base font-bold tabular-nums">{k.value}</p>
+              {dim ? (
+                <p className="text-[11px] text-muted-foreground">{t('customize.noExpensesHint')}</p>
+              ) : (
+                <Change now={k.now} before={k.before} invert={k.invert} label={t('vsPrevious')} />
+              )}
+              {k.sub && <p className="text-[11px] text-muted-foreground">{k.sub}</p>}
+            </div>
+          );
+        })}
       </div>
 
       <PeriodChart stats={stats} money={money} kind={compact ? 'bars' : chartKind} extra={compact ? undefined : <ChartKindSwitch value={chartKind} onChange={setChartKind} />} />
@@ -274,7 +316,7 @@ export function PeriodReport({
         {stats.currency !== 'CZK' && <p>{t('inCurrency', { currency: stats.currency })}</p>}
         {stats.convertedCount > 0 && <p>{t('converted', { count: stats.convertedCount })}</p>}
         {stats.missingRateCount > 0 && <p>{t('missingRate', { count: stats.missingRateCount })}</p>}
-        {!compact && !stats.expensesFiltered && <p>{t('expensesUnfiltered')}</p>}
+        {!compact && !stats.expensesFiltered && !noExpenses && <p>{t('expensesUnfiltered')}</p>}
         {!compact && <p>{t('outstandingHint')}</p>}
       </div>
 
@@ -286,19 +328,21 @@ export function PeriodReport({
             empty={t('pies.empty')}
             slices={stats.byCustomer.map((s) => ({ key: s.key, label: s.label ?? t('pies.others'), value: s.value }))}
           />
-          <Donut
-            title={t('pies.currencies')}
-            money={money}
-            empty={t('pies.empty')}
-            slices={stats.byCurrency
-              .filter((c) => c.converted != null)
-              .map((c) => ({
-                key: c.currency,
-                label: c.currency,
-                value: c.converted!,
-                sub: c.currency === stats.currency ? undefined : formatMoney(c.amount, c.currency, locale)
-              }))}
-          />
+          {stats.byCurrency.length > 1 && (
+            <Donut
+              title={t('pies.currencies')}
+              money={money}
+              empty={t('pies.empty')}
+              slices={stats.byCurrency
+                .filter((c) => c.converted != null)
+                .map((c) => ({
+                  key: c.currency,
+                  label: c.currency,
+                  value: c.converted!,
+                  sub: c.currency === stats.currency ? undefined : formatMoney(c.amount, c.currency, locale)
+                }))}
+            />
+          )}
           <Donut
             title={t('pies.types')}
             money={money}
@@ -362,7 +406,108 @@ export function PeriodReport({
           </ol>
         </div>
       )}
+      {!compact && (
+        <KpiCustomizer
+          open={customizing}
+          onClose={() => setCustomizing(false)}
+          usage={usage}
+          saved={kpiChoice}
+          onSaved={(next) => {
+            setKpiChoice(next);
+            setCustomizing(false);
+          }}
+        />
+      )}
     </section>
+  );
+}
+
+/** Show / hide the report's KPI cards, saved with the member's dashboard layout. */
+function KpiCustomizer({
+  open,
+  onClose,
+  usage,
+  saved,
+  onSaved
+}: {
+  open: boolean;
+  onClose: () => void;
+  usage: Usage | null;
+  saved: string[] | null;
+  onSaved: (next: string[] | null) => void;
+}) {
+  const t = useTranslations('reports');
+  const [chosen, setChosen] = useState<ReportKpi[]>(() => reportKpisOf(saved, usage));
+  // Untouched = keep following usage (saved as null).
+  const [touched, setTouched] = useState(saved != null);
+  const [saving, start] = useTransition();
+  const recommended = recommendReportKpis(usage);
+  const toggle = (key: ReportKpi) => {
+    setTouched(true);
+    setChosen((cur) => (cur.includes(key) ? cur.filter((k) => k !== key) : REPORT_KPIS.filter((k) => k === key || cur.includes(k))));
+  };
+  const save = () =>
+    start(async () => {
+      const next = touched ? chosen : null;
+      const res = await saveDashboardConfig({ reportKpis: next });
+      if (!res.ok) {
+        toast({ text: t('customize.failed', { reason: res.error }), tone: 'err' });
+        return;
+      }
+      toast({ text: t('customize.saved'), tone: 'ok' });
+      onSaved(next);
+    });
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={t('customize.title')}
+      className="max-w-md"
+      footer={
+        <>
+          <button
+            type="button"
+            className={cn(buttonClass.ghost, 'mr-auto')}
+            disabled={saving}
+            onClick={() => {
+              setChosen(recommended);
+              setTouched(false);
+            }}
+          >
+            {t('customize.reset')}
+          </button>
+          <button type="button" className={buttonClass.secondary} onClick={onClose}>
+            {t('customize.cancel')}
+          </button>
+          <button type="button" className={buttonClass.primary} disabled={saving} onClick={save}>
+            {t('customize.save')}
+          </button>
+        </>
+      }
+    >
+      {usage && (
+        <div className="mb-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs">
+          <p className="font-semibold">{t('customize.recommendedTitle')}</p>
+          <p className="mt-0.5 text-muted-foreground">
+            {[
+              usage.has.vat ? null : t(usage.vatStatus === 'identified' ? 'customize.noVatIdentified' : 'customize.noVat'),
+              usage.has.expenses ? null : t('customize.noExpenses')
+            ]
+              .filter(Boolean)
+              .join(' ') || t('customize.allRelevant')}
+          </p>
+        </div>
+      )}
+      <div className="grid gap-2 text-sm sm:grid-cols-2">
+        {REPORT_KPIS.map((key) => (
+          <label key={key} className="flex cursor-pointer items-center gap-2">
+            <input type="checkbox" className="h-4 w-4 accent-primary" checked={chosen.includes(key)} onChange={() => toggle(key)} />
+            {t(`kpi.${key}`)}
+            {!recommended.includes(key) && <span className="text-[11px] text-muted-foreground">({t('customize.notRecommended')})</span>}
+          </label>
+        ))}
+      </div>
+    </Modal>
   );
 }
 

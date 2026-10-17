@@ -12,17 +12,19 @@ import { getCnbDay, parseCurrencyList, parseRateDate } from "../exports/cnb-rate
 
 const dashboardConfigSchema = z
   .object({
-    cards: z.array(z.enum(DASHBOARD_WIDGETS)).max(DASHBOARD_WIDGETS.length),
+    // null on any key = forget the saved choice (back to the default / usage-based one).
+    cards: z.array(z.enum(DASHBOARD_WIDGETS)).max(DASHBOARD_WIDGETS.length).nullable(),
     tiles: z.array(z.string().max(40)).max(24).nullable(),
-    showChart: z.boolean(),
-    showRecent: z.boolean(),
-    showTopCustomers: z.boolean(),
-    showDueSoon: z.boolean(),
-    showTaxDeadlines: z.boolean(),
+    showChart: z.boolean().nullable(),
+    showRecent: z.boolean().nullable(),
+    showTopCustomers: z.boolean().nullable(),
+    showDueSoon: z.boolean().nullable(),
+    showTaxDeadlines: z.boolean().nullable(),
     taxDeadlines: z.array(z.string().max(32)).max(16).nullable(),
-    showFxRates: z.boolean(),
+    showFxRates: z.boolean().nullable(),
     fxCurrencies: z.array(z.string().regex(/^[A-Z]{3}$/)).max(12).nullable(),
     taxAmounts: z.record(z.string().max(32), z.number().nonnegative().max(10_000_000)).nullable(),
+    reportKpis: z.array(z.string().max(32)).max(24).nullable(),
   })
   .partial();
 
@@ -82,6 +84,15 @@ export class DashboardController {
   @ApiOperation({ summary: "The signed-in member's dashboard layout (cards, quick actions, sections)" })
   getConfig(@Req() req: TenantScopedRequest) {
     return this.dashboardService.getConfig(req.tenantDb!, req.user!.tenantId, req.user!.id);
+  }
+
+  @Get("usage")
+  @ApiOperation({
+    summary:
+      "What the company uses: currencies on issued documents and expenses (all time and last 12 months), document types, languages, expenses, bank / PayPal connections and imported payments, recurring invoices, templates, contacts, unpaid / overdue counts, VAT status and account type. Drives the usage-based dashboard and report defaults.",
+  })
+  usage(@Req() req: TenantScopedRequest) {
+    return this.dashboardService.usage(req.tenantDb!, req.user!.tenantId);
   }
 
   @Get("vat-activity")

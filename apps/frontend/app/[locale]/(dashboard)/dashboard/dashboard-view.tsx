@@ -65,11 +65,13 @@ const SETTINGS_ADVANCE_KINDS: TaxDeadlineKind[] = ['social', 'health', 'flat_tax
 import { minimumsFor, type MinimumKind } from '@/lib/tax-minimums';
 import { cn } from '@/lib/utils';
 import { saveDashboardConfig } from './actions';
+import { USAGE_DRIVEN_KEYS, recommendDashboard, withUsageDefaults, type DashboardRecommendation, type Usage, type UsageDrivenKey } from '@/lib/usage-defaults';
 import {
   DEFAULT_TILES,
   KPI_CARDS,
   QUICK_TILES,
   type DashboardConfig,
+  type DashboardConfigPatch,
   type DashboardDoc,
   type DashboardSummary,
   type KpiCard,
@@ -151,7 +153,8 @@ export function DashboardView({
   advances = {},
   country = 'CZ',
   time = null,
-  stats = null
+  stats = null,
+  usage = null
 }: {
   summary: DashboardSummary;
   initialConfig: DashboardConfig | null;
@@ -165,10 +168,16 @@ export function DashboardView({
   time?: TimeSummary | null;
   /** The period card; without it (older backend) the fixed 12-month chart shows. */
   stats?: PeriodStats | null;
+  /** What the company uses: decides the defaults the member hasn't overridden. */
+  usage?: Usage | null;
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
-  const [config, setConfig] = useState(() => normalize(initialConfig));
+  const [stored, setStored] = useState(() => normalize(initialConfig));
+  const [savedKeys, setSavedKeys] = useState<string[] | undefined>(initialConfig?.savedKeys);
+  const recommendation = useMemo(() => recommendDashboard(usage), [usage]);
+  // Saved choices win; every key the member never touched follows usage.
+  const config = useMemo(() => normalize(withUsageDefaults(stored, savedKeys, recommendation)), [stored, savedKeys, recommendation]);
   const [customizing, setCustomizing] = useState(false);
   const money = (n: number) => formatMoney(n, summary.currency, locale);
   const { kpi } = summary;
@@ -305,7 +314,7 @@ export function DashboardView({
       {(config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
-        {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact /> : <RevenueChart chart={summary.chart} money={money} />)}
+        {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact usage={usage} /> : <RevenueChart chart={summary.chart} money={money} />)}
         {config.showTopCustomers && summary.topCustomers.length > 0 && (
           <section className="rounded-xl border border-border bg-card p-4">
             <h2 className="font-bold">{t('topCustomers')}</h2>
@@ -352,8 +361,20 @@ export function DashboardView({
         config={config}
         profile={profile}
         country={country}
-        onSaved={(next) => {
-          setConfig(next);
+        usage={usage}
+        recommendation={recommendation}
+        savedKeys={savedKeys}
+        onSaved={(patch) => {
+          const kept = Object.fromEntries(Object.entries(patch).filter(([, v]) => v != null)) as Partial<DashboardConfig>;
+          setStored((cur) => normalize({ ...cur, ...kept }));
+          setSavedKeys((cur) => {
+            const keys = new Set(cur ?? []);
+            for (const [k, v] of Object.entries(patch)) {
+              if (v == null) keys.delete(k);
+              else keys.add(k);
+            }
+            return [...keys];
+          });
           setCustomizing(false);
         }}
       />
@@ -448,14 +469,20 @@ function CustomizeModal({
   config,
   onSaved,
   profile,
-  country
+  country,
+  usage,
+  recommendation,
+  savedKeys
 }: {
   open: boolean;
   onClose: () => void;
   config: DashboardConfig;
-  onSaved: (config: DashboardConfig) => void;
+  onSaved: (patch: DashboardConfigPatch) => void;
   profile: TaxProfile;
   country: string;
+  usage: Usage | null;
+  recommendation: DashboardRecommendation;
+  savedKeys: string[] | undefined;
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
@@ -472,6 +499,11 @@ function CustomizeModal({
     showFxRates: config.showFxRates ?? true
   });
   const [fx, setFx] = useState<string[]>(config.fxCurrencies ?? DEFAULT_FX);
+  // Usage-driven keys the member changed (or saved before); the others are sent as null and keep following usage.
+  const [touched, setTouched] = useState<Set<UsageDrivenKey>>(
+    () => new Set(USAGE_DRIVEN_KEYS.filter((k) => (savedKeys ?? USAGE_DRIVEN_KEYS).includes(k)))
+  );
+  const touch = (key: UsageDrivenKey) => setTouched((cur) => (cur.has(key) ? cur : new Set(cur).add(key)));
   // Every currency ČNB publishes; the short fallback list is used when cnb.cz is unreachable.
   const [fxList, setFxList] = useState<{ code: string; country: string; name: string }[] | null>(null);
   useEffect(() => {
@@ -496,7 +528,10 @@ function CustomizeModal({
 
   // Cards keep the user's order; unchecked ones are listed after, in default order.
   const ordered = [...cards, ...KPI_CARDS.filter((c) => !cards.includes(c))];
-  const toggleCard = (card: KpiCard) => setCards((cur) => (cur.includes(card) ? cur.filter((c) => c !== card) : [...cur, card]));
+  const toggleCard = (card: KpiCard) => {
+    touch('cards');
+    setCards((cur) => (cur.includes(card) ? cur.filter((c) => c !== card) : [...cur, card]));
+  };
   const move = (card: KpiCard, dir: -1 | 1) =>
     setCards((cur) => {
       const i = cur.indexOf(card);
@@ -507,9 +542,18 @@ function CustomizeModal({
       next[j] = cur[i]!;
       return next;
     });
-  const toggleTile = (tile: string) => setTiles((cur) => (cur.includes(tile) ? cur.filter((x) => x !== tile) : [...cur, tile]));
+  const toggleTile = (tile: string) => {
+    touch('tiles');
+    setTiles((cur) => (cur.includes(tile) ? cur.filter((x) => x !== tile) : [...cur, tile]));
+  };
+  /** Untouched usage-driven keys go out as null, so they keep adapting. */
+  const choices = (next: DashboardConfigPatch): DashboardConfigPatch => {
+    const out: DashboardConfigPatch = { ...next };
+    for (const key of USAGE_DRIVEN_KEYS) if (!touched.has(key)) out[key] = null;
+    return out;
+  };
 
-  const save = (next: DashboardConfig) =>
+  const save = (next: DashboardConfigPatch) =>
     start(async () => {
       const result = await saveDashboardConfig(next);
       if (!result.ok) {
@@ -535,10 +579,11 @@ function CustomizeModal({
             className={cn(buttonClass.ghost, 'mr-auto')}
             disabled={saving}
             onClick={() => {
-              setCards(DEFAULT_CONFIG.cards);
-              setTiles(DEFAULT_TILES);
-              setSections({ showChart: true, showRecent: true, showTopCustomers: true, showDueSoon: true, showTaxDeadlines: true, showFxRates: true });
-              setFx(DEFAULT_FX);
+              setCards(recommendation.cards.filter((c): c is KpiCard => (KPI_CARDS as readonly string[]).includes(c)));
+              setTiles(recommendation.tiles);
+              setSections({ showChart: true, showRecent: true, showTopCustomers: true, showDueSoon: true, showTaxDeadlines: true, showFxRates: recommendation.showFxRates });
+              setFx(recommendation.fxCurrencies);
+              setTouched(new Set());
               setTaxKinds(defaultTaxDeadlineKinds(profile.vatStatus));
             }}
           >
@@ -547,12 +592,13 @@ function CustomizeModal({
           <button type="button" className={buttonClass.secondary} onClick={onClose}>
             {t('cancel')}
           </button>
-          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(profile.vatStatus)) ? null : taxKinds, fxCurrencies: sameKinds(fx, DEFAULT_FX) ? null : fx, taxAmounts: amountsOf(taxAmounts, taxKinds) })}>
+          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save(choices({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(profile.vatStatus)) ? null : taxKinds, fxCurrencies: fx, taxAmounts: amountsOf(taxAmounts, taxKinds) }))}>
             {t('save')}
           </button>
         </>
       }
     >
+      {usage && <UsageNote usage={usage} />}
       <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('customizeCards')}</h3>
       <ul className="mt-2 space-y-1">
         {ordered.map((card) => {
@@ -566,14 +612,20 @@ function CustomizeModal({
               </label>
               {on && (
                 <>
-                  <button type="button" aria-label={t('moveUp')} disabled={i === 0} onClick={() => move(card, -1)} className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30">
+                  <button type="button" aria-label={t('moveUp')} disabled={i === 0} onClick={() => {
+                      touch('cards');
+                      move(card, -1);
+                    }} className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30">
                     <ArrowUp className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
                     aria-label={t('moveDown')}
                     disabled={i === cards.length - 1}
-                    onClick={() => move(card, 1)}
+                    onClick={() => {
+                      touch('cards');
+                      move(card, 1);
+                    }}
                     className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30"
                   >
                     <ArrowDown className="h-3.5 w-3.5" />
@@ -610,7 +662,15 @@ function CustomizeModal({
       <div className="mt-2 space-y-2 text-sm">
         {(['showDueSoon', 'showTaxDeadlines', 'showFxRates', 'showChart', 'showTopCustomers', 'showRecent'] as const).map((key) => (
           <label key={key} className="flex cursor-pointer items-center gap-2">
-            <input type="checkbox" className={check} checked={sections[key]} onChange={(e) => setSections((s) => ({ ...s, [key]: e.target.checked }))} />
+            <input
+              type="checkbox"
+              className={check}
+              checked={sections[key]}
+              onChange={(e) => {
+                if (key === 'showFxRates') touch('showFxRates');
+                setSections((s) => ({ ...s, [key]: e.target.checked }));
+              }}
+            />
             {t(`sections.${key}`)}
           </label>
         ))}
@@ -629,7 +689,10 @@ function CustomizeModal({
                   type="button"
                   className="text-muted-foreground hover:text-destructive"
                   aria-label={t('fxRates.remove', { code })}
-                  onClick={() => setFx((prev) => prev.filter((c) => c !== code))}
+                  onClick={() => {
+                    touch('fxCurrencies');
+                    setFx((prev) => prev.filter((c) => c !== code));
+                  }}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -640,7 +703,12 @@ function CustomizeModal({
                 aria-label={t('fxRates.add')}
                 className="rounded-lg border border-border bg-background px-2 py-1 text-sm"
                 value=""
-                onChange={(e) => e.target.value && setFx((prev) => (prev.includes(e.target.value) ? prev : [...prev, e.target.value]))}
+                onChange={(e) => {
+                  const code = e.target.value;
+                  if (!code) return;
+                  touch('fxCurrencies');
+                  setFx((prev) => (prev.includes(code) ? prev : [...prev, code]));
+                }}
               >
                 <option value="">{t('fxRates.add')}</option>
                 {fxChoices
@@ -713,6 +781,26 @@ function CustomizeModal({
         </>
       )}
     </Modal>
+  );
+}
+
+/** "Recommended from what you use": a one-line summary of the facts the defaults came from. */
+function UsageNote({ usage }: { usage: Usage }) {
+  const t = useTranslations('dashboard.usage');
+  const facts: string[] = [];
+  if (usage.has.foreignCurrencies) facts.push(t('currencies', { list: usage.foreignCurrencies.slice(0, 6).join(', ') }));
+  else if (usage.has.invoices) facts.push(t('onlyHome', { currency: usage.homeCurrency }));
+  if (usage.has.invoices) facts.push(usage.has.expenses ? t('expenses') : t('noExpenses'));
+  if (usage.has.paypal) facts.push(t('paypal'));
+  if (usage.has.bank && (usage.bank.bankApi || !usage.has.paypal)) facts.push(t('bank'));
+  if (usage.has.proformas) facts.push(t('proformas'));
+  if (usage.has.quotes) facts.push(t('quotes'));
+  return (
+    <div className="mb-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs">
+      <p className="font-semibold">{t('title')}</p>
+      <p className="mt-0.5 text-muted-foreground">{usage.has.invoices ? facts.join(' · ') : t('newAccount')}</p>
+      <p className="mt-0.5 text-muted-foreground">{t('hint')}</p>
+    </div>
   );
 }
 
