@@ -46,6 +46,8 @@
       "about": "O nás",
       "faq": "Časté dotazy",
       "guestInvoice": "Faktura bez registrace",
+      "createInvoice": "Vystavit fakturu",
+      "createInvoiceShort": "Vystavit",
       "search": "Hledat"
     },
     "hero": {
@@ -215,8 +217,7 @@
         "title": "Účet",
         "login": "Přihlásit se",
         "signup": "Registrovat se"
-      },
-      "copyright": "© {year} {name}. Všechna práva vyhrazena."
+      }
     },
     "seo": {
       "title": "Billanta – online fakturace pro OSVČ a firmy v ČR a SR",

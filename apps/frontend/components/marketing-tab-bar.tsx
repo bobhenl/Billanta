@@ -20,7 +20,7 @@ export function MarketingTabBar() {
       items={[
         { key: 'home', href: '/', label: t('home'), icon: Home, exact: true },
         { key: 'pricing', href: '/pricing', label: t('pricing'), icon: BadgePercent },
-        { key: 'signup', href: '/signup', label: t('start'), icon: Plus, cta: true },
+        { key: 'invoice', href: '/vytvorit-fakturu', label: t('createInvoiceShort'), icon: Plus, cta: true },
         { key: 'login', href: '/login', label: t('login'), icon: LogIn }
       ]}
       moreLabel={tMobile('more')}

@@ -46,6 +46,8 @@
       "about": "About",
       "faq": "FAQ",
       "guestInvoice": "Invoice without sign-up",
+      "createInvoice": "Create invoice",
+      "createInvoiceShort": "Invoice",
       "search": "Search"
     },
     "hero": {
@@ -215,8 +217,7 @@
         "title": "Account",
         "login": "Log in",
         "signup": "Sign up"
-      },
-      "copyright": "© {year} {name}. All rights reserved."
+      }
     },
     "seo": {
       "title": "Billanta – online invoicing for Czech and Slovak businesses",

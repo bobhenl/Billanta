@@ -46,6 +46,8 @@
       "about": "O nás",
       "faq": "Časté otázky",
       "guestInvoice": "Faktúra bez registrácie",
+      "createInvoice": "Vystaviť faktúru",
+      "createInvoiceShort": "Vystaviť",
       "search": "Hľadať"
     },
     "hero": {
@@ -215,8 +217,7 @@
         "title": "Účet",
         "login": "Prihlásiť sa",
         "signup": "Registrovať sa"
-      },
-      "copyright": "© {year} {name}. Všetky práva vyhradené."
+      }
     },
     "seo": {
       "title": "Billanta – online fakturácia pre živnostníkov a firmy",

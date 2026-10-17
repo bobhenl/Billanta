@@ -3,20 +3,21 @@ import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { InstallAppButton } from '@/components/install-app-button';
-import { SITE_NAME } from '@/lib/site';
 
 /**
  * Public-site footer: a compact link grid that doubles as secondary
  * navigation and as internal linking — every entry is a real, crawlable
- * `<a>`.
+ * `<a>`. One block, as on VoxelRank: the cookie settings and "install app"
+ * entries sit in the columns rather than in a second strip underneath, and
+ * there is no "© … All rights reserved" line (copyright needs no notice).
  */
 export async function MarketingFooter() {
   const t = await getTranslations('marketing.footer');
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
-  const year = new Date().getFullYear();
 
-  const columns = [
+  const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
+  const columns: { title: string; links: { href: string; label: string }[]; extra?: React.ReactNode }[] = [
     {
       title: t('product.title'),
       links: [
@@ -41,14 +42,24 @@ export async function MarketingFooter() {
         { href: '/legal/privacy', label: t('legal.privacy') },
         { href: '/legal/dpa', label: t('legal.dpa') },
         { href: '/legal/cookies', label: t('legal.cookies') }
-      ]
+      ],
+      extra: (
+        <li>
+          <CookieSettingsButton label={t('legal.cookieSettings')} className={linkClass} />
+        </li>
+      )
     },
     {
       title: t('account.title'),
       links: [
         { href: '/login', label: t('account.login') },
         { href: '/signup', label: t('account.signup') }
-      ]
+      ],
+      extra: (
+        <li>
+          <InstallAppButton className={`inline-flex items-center gap-1.5 ${linkClass}`} />
+        </li>
+      )
     }
   ];
 
@@ -70,22 +81,15 @@ export async function MarketingFooter() {
               <ul className="mt-3 space-y-2 text-sm">
                 {column.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-foreground/80 transition-colors hover:text-primary">
+                    <Link href={link.href} className={linkClass}>
                       {link.label}
                     </Link>
                   </li>
                 ))}
+                {column.extra}
               </ul>
             </nav>
           ))}
-        </div>
-
-        <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>{t('copyright', { year, name: SITE_NAME })}</p>
-          <div className="flex flex-wrap items-center gap-4">
-            <InstallAppButton className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground" />
-            <CookieSettingsButton label={t('legal.cookieSettings')} className="self-start transition-colors hover:text-foreground" />
-          </div>
         </div>
       </div>
     </footer>
