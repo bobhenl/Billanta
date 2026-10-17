@@ -40,6 +40,8 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL     NEXT_PUBLIC_PROFILE_DOMAIN=$N
 # every route while collecting page data. The pool is lazy, so a placeholder
 # is never dialled; it stays in this stage, not in the runtime image.
 ENV DATABASE_URL=postgres://build:build@127.0.0.1:1/build
+# Type check and lint run locally before a deploy; see next.config.mjs.
+ENV SKIP_BUILD_CHECKS=1 NEXT_TELEMETRY_DISABLED=1
 # The frontend imports @faktur/cz-compliance's build output, so it is
 # compiled first (as in apps/backend/Dockerfile).
 COPY packages/cz-compliance packages/cz-compliance

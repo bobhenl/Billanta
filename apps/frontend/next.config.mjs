@@ -13,6 +13,10 @@ const nextConfig = {
   // `node server.js` — lets apps/frontend/Dockerfile copy just that into a
   // slim runtime stage instead of the whole node_modules tree.
   output: 'standalone',
+  // The Docker build on the small VPS skips the type check and lint that
+  // `next build` would repeat: they run locally before every deploy.
+  typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_CHECKS === '1' },
+  eslint: { ignoreDuringBuilds: process.env.SKIP_BUILD_CHECKS === '1' },
   // Public backend URLs shown to users (calendar/RSS feeds, API docs) are
   // built on the site origin. Behind Caddy those paths go straight to the
   // backend; without Caddy (local dev) Next forwards them.
