@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { reverseChargeNoteKind } from "../invoices/invoice-pdf.service";
+import { taxAdvancesSchema } from "./dto/update-tenant.dto";
 import { cleanAdvances, vatFields } from "./tenants.service";
 
 describe("vatFields", () => {
@@ -17,8 +18,47 @@ describe("vatFields", () => {
 });
 
 describe("cleanAdvances", () => {
-  it("keeps positive amounts, rounded to cents", () => {
-    expect(cleanAdvances({ social: 5720.004, health: 0, flat_tax: null })).toEqual({ social: 5720 });
+  it("rounds to cents, keeps 0, drops null and empty periods, sorts oldest first", () => {
+    expect(
+      cleanAdvances([
+        { from: "2026-07", social: 5005.004, flat_tax: null },
+        { from: "2026-03" },
+        { from: "2026-01", social: 5720, health: 0 },
+      ]),
+    ).toEqual([
+      { from: "2026-01", social: 5720, health: 0 },
+      { from: "2026-07", social: 5005 },
+    ]);
+  });
+});
+
+describe("taxAdvancesSchema", () => {
+  const ok = (v: unknown) => taxAdvancesSchema.safeParse(v).success;
+
+  it("accepts a list of periods", () => {
+    expect(ok([{ from: "2026-01", social: 5720, health: 3306, flat_tax: null }, { from: "2026-07", social: 5005 }])).toBe(true);
+    expect(ok([])).toBe(true);
+  });
+
+  it("from must be a real YYYY-MM month in a sane year", () => {
+    expect(ok([{ from: "2026-13", social: 1 }])).toBe(false);
+    expect(ok([{ from: "2026-1", social: 1 }])).toBe(false);
+    expect(ok([{ from: "1999-12", social: 1 }])).toBe(false);
+    expect(ok([{ social: 1 }])).toBe(false);
+  });
+
+  it("amounts are 0 to 10 million, no unknown keys", () => {
+    expect(ok([{ from: "2026-01", social: -1 }])).toBe(false);
+    expect(ok([{ from: "2026-01", health: 10_000_001 }])).toBe(false);
+    expect(ok([{ from: "2026-01", payroll: 100 }])).toBe(false);
+  });
+
+  it("rejects two periods from the same month", () => {
+    expect(ok([{ from: "2026-01", social: 1 }, { from: "2026-01", health: 2 }])).toBe(false);
+  });
+
+  it("the old single object is no longer accepted", () => {
+    expect(ok({ social: 5720 })).toBe(false);
   });
 });
 

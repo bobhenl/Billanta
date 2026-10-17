@@ -55,14 +55,11 @@ import {
   type TaxDeadline,
   type TaxDeadlineKind
 } from '@/lib/tax-deadlines';
-import type { VatStatus } from '@faktur/cz-compliance';
-import type { TaxAdvances } from '@/lib/tenant';
+import { advanceForDeadline, isTaxAdvanceKind, type VatStatus } from '@faktur/cz-compliance';
+import type { TaxAdvances } from '@/lib/vat-status';
 import { formatElapsed, formatMinutes, type TimeSummary } from '@/lib/time-ui';
 
 const DEFAULT_PROFILE: TaxProfile = { country: 'CZ', vatStatus: 'non_payer', legalEntity: false };
-/** Advances entered in Settings → Firma; without one the deadline links there. */
-const SETTINGS_ADVANCE_KINDS: TaxDeadlineKind[] = ['social', 'health', 'flat_tax'];
-import { minimumsFor, type MinimumKind } from '@/lib/tax-minimums';
 import { cn } from '@/lib/utils';
 import { saveDashboardConfig } from './actions';
 import {
@@ -148,7 +145,7 @@ export function DashboardView({
   initialConfig,
   firstName,
   profile = DEFAULT_PROFILE,
-  advances = {},
+  advances = [],
   country = 'CZ',
   time = null,
   stats = null
@@ -158,7 +155,7 @@ export function DashboardView({
   firstName: string | null;
   /** VAT status, country and legal form: decides which deadlines apply. */
   profile?: TaxProfile;
-  /** Advances typed in Settings → Firma (win over the dashboard amounts). */
+  /** OSVČ advances by period from Settings → Fakturační údaje (the only source for social / health / flat tax amounts). */
   advances?: TaxAdvances;
   /** Company country: an SK company books its insurance as an expense from the deadline card. */
   country?: string;
@@ -301,7 +298,7 @@ export function DashboardView({
       )}
 
       {time && <TimeCard time={time} />}
-      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} amounts={{ ...(config.taxAmounts ?? {}), ...advances }} country={country} />}
+      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
       {(config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
@@ -458,8 +455,6 @@ function CustomizeModal({
   country: string;
 }) {
   const t = useTranslations('dashboard');
-  const locale = useLocale();
-  const minimums = minimumsFor(country);
   const router = useRouter();
   const [cards, setCards] = useState<KpiCard[]>(config.cards);
   const [tiles, setTiles] = useState<string[]>(config.tiles ?? DEFAULT_TILES);
@@ -679,6 +674,15 @@ function CustomizeModal({
               </label>
             ))}
           </div>
+          {/* Social / health / flat tax amounts live in Settings, by period (one source for the dashboard, iCal and reports). */}
+          {relevantTaxDeadlineKinds(taxKinds, profile).some(isTaxAdvanceKind) && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              {t('taxDeadlines.advancesInSettings')}{' '}
+              <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
+                {t('taxDeadlines.editAdvances')}
+              </Link>
+            </p>
+          )}
           {AMOUNT_KINDS.some((k) => taxKinds.includes(k)) && (
             <>
               <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -697,14 +701,6 @@ function CustomizeModal({
                       value={taxAmounts[kind] ?? ''}
                       onChange={(e) => setTaxAmounts((prev) => ({ ...prev, [kind]: e.target.value }))}
                     />
-                    {minimums?.values[kind as MinimumKind] != null && (
-                      <span className="text-xs text-muted-foreground">
-                        {t('taxDeadlines.minimum', { from: `${Number(minimums.from.slice(5))}/${minimums.from.slice(0, 4)}`, amount: formatMoney(minimums.values[kind as MinimumKind]!, country === 'SK' ? 'EUR' : 'CZK', locale) })}{' '}
-                        <button type="button" className="font-semibold text-primary hover:underline" onClick={() => setTaxAmounts((prev) => ({ ...prev, [kind]: String(minimums.values[kind as MinimumKind]) }))}>
-                          {t('taxDeadlines.useMinimum')}
-                        </button>
-                      </span>
-                    )}
                   </label>
                 ))}
               </div>
@@ -716,8 +712,12 @@ function CustomizeModal({
   );
 }
 
-/** Kinds paid as a regular amount the member can type in (shown next to the deadline). */
-const AMOUNT_KINDS: TaxDeadlineKind[] = ['health', 'social', 'flat_tax', 'payroll'];
+/**
+ * Kinds paid as a regular amount the member can type in here (shown next to
+ * the deadline). The OSVČ advances (social, health, flat tax) are not here:
+ * they are set by period in Settings → Fakturační údaje (#zalohy).
+ */
+const AMOUNT_KINDS: TaxDeadlineKind[] = ['payroll'];
 /** Kinds an SK company books as a tax expense (odvody are deductible there, unlike CZ OSVČ advances). */
 const SK_EXPENSE_KINDS: TaxDeadlineKind[] = ['health', 'social'];
 
@@ -741,11 +741,15 @@ function taxKindsOf(config: DashboardConfig, vatStatus: VatStatus): TaxDeadlineK
 function TaxDeadlines({
   kinds,
   profile,
+  advances,
   amounts,
   country
 }: {
   kinds: TaxDeadlineKind[];
   profile: TaxProfile;
+  /** Advances by period: each deadline shows the amount for the month it pays. */
+  advances: TaxAdvances;
+  /** The member's own amounts for the other kinds (e.g. payroll). */
   amounts: Record<string, number | undefined>;
   country: string;
 }) {
@@ -794,9 +798,12 @@ function TaxDeadlines({
   if (!items || items.length === 0) return null;
   const fmt = new Intl.DateTimeFormat(locale, { weekday: 'short', day: 'numeric', month: 'numeric' });
   const currency = country === 'SK' ? 'EUR' : 'CZK';
-  const expenseHref = (kind: TaxDeadlineKind) => {
-    const params = new URLSearchParams({ description: t(`kinds.${kind}`) });
-    if (amounts[kind]) params.set('amount', String(amounts[kind]));
+  // The 20 January social payment covers December, so it shows December's amount (see advanceMonthOf).
+  const amountOf = (item: TaxDeadline) => (isTaxAdvanceKind(item.kind) ? advanceForDeadline(advances, item.kind, item.date) : amounts[item.kind]);
+  const expenseHref = (item: TaxDeadline) => {
+    const params = new URLSearchParams({ description: t(`kinds.${item.kind}`) });
+    const amount = amountOf(item);
+    if (amount) params.set('amount', String(amount));
     return `/expenses/new?${params}`;
   };
   return (
@@ -822,17 +829,17 @@ function TaxDeadlines({
                 </span>
               )}
             </span>
-            {amounts[item.kind] !== undefined ? (
-              <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amounts[item.kind]!, currency, locale)}</span>
+            {amountOf(item) !== undefined ? (
+              <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amountOf(item)!, currency, locale)}</span>
             ) : (
-              SETTINGS_ADVANCE_KINDS.includes(item.kind) && (
+              isTaxAdvanceKind(item.kind) && (
                 <Link href="/settings/company#zalohy" className="shrink-0 text-xs font-semibold text-primary hover:underline">
                   {t('fillAmount')}
                 </Link>
               )
             )}
             {country === 'SK' && SK_EXPENSE_KINDS.includes(item.kind) && (
-              <Link href={expenseHref(item.kind)} className="shrink-0 text-xs font-semibold text-primary hover:underline">
+              <Link href={expenseHref(item)}className="shrink-0 text-xs font-semibold text-primary hover:underline">
                 {t('bookExpense')}
               </Link>
             )}

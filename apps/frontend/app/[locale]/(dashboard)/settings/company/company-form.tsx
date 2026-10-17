@@ -10,12 +10,11 @@ import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
 import type { BankAccount, TenantSettings } from '@/lib/tenant';
-import { ADVANCE_KINDS, vatStatusOf } from '@/lib/vat-status';
-
-type AdvanceKind = (typeof ADVANCE_KINDS)[number];
+import { vatStatusOf } from '@/lib/vat-status';
 const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
 import { LogoUpload } from './logo-upload';
+import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow } from './tax-advances-editor';
 import { lookupAres } from '../../contacts/actions';
 import { updateCompany } from '../actions';
 
@@ -39,8 +38,7 @@ const FIELDS = {
   bankAccountSwift: 'bank_account_swift'
 } as const;
 type Field = keyof typeof FIELDS;
-type AdvanceField = `advance_${AdvanceKind}`;
-type Values = Record<Field, string> & Record<AdvanceField, string> & { vatStatus: VatStatus };
+type Values = Record<Field, string> & { vatStatus: VatStatus };
 
 const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry'];
 
@@ -48,22 +46,23 @@ function toValues(t: TenantSettings): Values {
   const v = {} as Values;
   for (const key of Object.keys(FIELDS) as Field[]) v[key] = t[key] == null ? '' : String(t[key]);
   v.vatStatus = vatStatusOf(t);
-  for (const k of ADVANCE_KINDS) v[`advance_${k}`] = t.taxAdvances?.[k] == null ? '' : String(t.taxAdvances[k]);
   return v;
 }
-
-const isAdvanceKey = (k: string): k is AdvanceField => k.startsWith('advance_');
 
 export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSettings; accounts: BankAccount[]; readOnly: boolean }) {
   const t = useTranslations('settings.company');
   const router = useRouter();
   const initial = useMemo(() => toValues(tenant), [tenant]);
   const [values, setValues] = useState<Values>(initial);
+  const initialAdvances = useMemo(() => rowsFromAdvances(tenant.taxAdvances), [tenant]);
+  const [advanceRows, setAdvanceRows] = useState<AdvanceRow[]>(initialAdvances);
+  const advancesDirty = rowsKey(advanceRows) !== rowsKey(initialAdvances);
   const [saving, startSave] = useTransition();
   const [loadingAres, setLoadingAres] = useState(false);
 
   const set = (key: Field, value: string) => setValues((v) => ({ ...v, [key]: value }));
   const dirty = (Object.keys(values) as (keyof Values)[]).filter((k) => values[k] !== initial[k]);
+  const dirtyCount = dirty.length + (advancesDirty ? 1 : 0);
 
   const loadAres = async () => {
     setLoadingAres(true);
@@ -91,25 +90,24 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
 
   const save = () => {
     const patch: Parameters<typeof updateCompany>[0] = {};
-    const advances: Record<string, number | null> = {};
     for (const key of dirty) {
       if (key === 'vatStatus') {
         patch.vat_status = values.vatStatus;
         continue;
       }
-      if (isAdvanceKey(key)) continue;
       const raw = values[key].trim();
       if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
     }
-    // The backend replaces the whole object, so send all three whenever one changed.
-    if (dirty.some(isAdvanceKey)) {
-      for (const k of ADVANCE_KINDS) {
-        const raw = values[`advance_${k}`].replace(/\s/g, '').replace(',', '.');
-        const n = Number(raw);
-        advances[k] = raw && Number.isFinite(n) && n > 0 ? n : null;
+    // The backend replaces the whole list, so send every period whenever one changed.
+    if (advancesDirty) {
+      const advances = advancesPayload(advanceRows);
+      if (!advances.ok) {
+        toast({ text: t(`advances.errors.${advances.error}`), tone: 'err' });
+        document.getElementById('zalohy')?.scrollIntoView({ behavior: 'smooth' });
+        return;
       }
-      patch.tax_advances = advances;
+      patch.tax_advances = advances.value;
     }
     startSave(async () => {
       const result = await updateCompany(patch);
@@ -206,21 +204,7 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
       {!isLegalEntityName(values.legalName) && (
         <section id="zalohy" className="scroll-mt-24">
           <Section icon={Landmark} title={t('advances.title')} hint={t('advances.hint')}>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {ADVANCE_KINDS.filter((k) => k !== 'flat_tax' || values.addressCountry.toUpperCase() !== 'SK').map((k) => (
-                <label key={k} className="block text-sm">
-                  <span className="mb-1 block font-medium">{t(`advances.${k}`)}</span>
-                  <input
-                    className={inputClass}
-                    inputMode="decimal"
-                    placeholder={t('advances.placeholder')}
-                    value={values[`advance_${k}`]}
-                    disabled={readOnly}
-                    onChange={(e) => setValues((v) => ({ ...v, [`advance_${k}`]: e.target.value }))}
-                  />
-                </label>
-              ))}
-            </div>
+            <TaxAdvancesEditor rows={advanceRows} onChange={setAdvanceRows} country={values.addressCountry} readOnly={readOnly} />
           </Section>
         </section>
       )}
@@ -276,13 +260,16 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
 
       {!readOnly && (
         <div className="sticky bottom-20 z-10 flex items-center justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">
-          <span className="mr-auto text-sm text-muted-foreground">{dirty.length > 0 ? t('unsaved', { count: dirty.length }) : t('noChanges')}</span>
-          {dirty.length > 0 && (
-            <button type="button" className={buttonClass.ghost} onClick={() => setValues(initial)}>
+          <span className="mr-auto text-sm text-muted-foreground">{dirtyCount > 0 ? t('unsaved', { count: dirtyCount }) : t('noChanges')}</span>
+          {dirtyCount > 0 && (
+            <button type="button" className={buttonClass.ghost} onClick={() => {
+              setValues(initial);
+              setAdvanceRows(initialAdvances);
+            }}>
               {t('discard')}
             </button>
           )}
-          <button type="submit" className={buttonClass.primary} disabled={saving || dirty.length === 0}>
+          <button type="submit" className={buttonClass.primary} disabled={saving || dirtyCount === 0}>
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {t('save')}
           </button>

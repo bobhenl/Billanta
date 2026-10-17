@@ -17,7 +17,7 @@ export interface TenantSettings {
   dicVatPayer: boolean;
   /** Optional so an older backend without it still renders (then derived from dicVatPayer, see vatStatusOf). */
   vatStatus?: VatStatus;
-  /** OSVČ monthly advances for the dashboard deadlines. */
+  /** OSVČ monthly advances by period for the dashboard deadlines (an old backend may still send the single-set object: read via normalizeTaxAdvances). */
   taxAdvances?: TaxAdvances;
   addressStreet: string | null;
   addressCity: string | null;

@@ -383,13 +383,13 @@
       "sourceLocal": "Kalendár Finančnej správy sa teraz nepodarilo načítať, termíny sú dopočítané podľa zákona.",
       "prepareXml": "Pripraviť XML",
       "amountsTitle": "Očakávané sumy",
-      "amountsHint": "Vaše mesačné preddavky a odvody. Zobrazia sa pri termíne, aby bolo vidno, koľko si pripraviť. Na Slovensku sú odvody živnostníka daňovým výdavkom, preto ich jedným klikom zapíšete do nákladov. Prázdne pole = bez sumy.",
+      "amountsHint": "Suma, ktorú každý mesiac odvádzate ako zamestnávateľ. Zobrazí sa pri termíne, aby ste vedeli, koľko si pripraviť. Prázdne pole = bez sumy.",
       "bookExpense": "Zapísať ako výdavok",
       "fillAmount": "Doplniť výšku",
       "onlyIfForeignPurchase": "Len ak ste v mesiaci kúpili služby zo zahraničia (napr. reklamy).",
       "onlyIfEuSales": "Len ak ste v mesiaci fakturovali službu firme v inom štáte EÚ.",
-      "minimum": "Zákonné minimum od {from}: {amount}",
-      "useMinimum": "Použiť"
+      "advancesInSettings": "Výšku preddavkov na poistenie a daň nastavíte podľa obdobia vo Fakturačných údajoch.",
+      "editAdvances": "Upraviť preddavky"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
@@ -1627,11 +1627,29 @@
       },
       "advances": {
         "title": "Mesačné preddavky",
-        "hint": "Zobrazia sa na prehľade pri daňových termínoch, aby ste vedeli, koľko si pripraviť. Prázdne pole = bez sumy.",
+        "hint": "Každá výška platí od zvoleného mesiaca, kým ju nenahradí novší riadok. Staršie riadky nechajte: prehľad, kalendár aj ročný odhad podľa nich počítajú minulé mesiace. Prázdne pole = platí suma z predchádzajúceho riadku, 0 = nič neplatíte.",
         "social": "Sociálne poistenie",
         "health": "Zdravotné poistenie",
         "flat_tax": "Preddavok na daň",
-        "placeholder": "napr. 290"
+        "short": {
+          "social": "sociálne",
+          "health": "zdravotné",
+          "flat_tax": "daň"
+        },
+        "from": "Platí od",
+        "current": "Platí teraz",
+        "inherit": "bez zmeny",
+        "add": "Nová výška od…",
+        "remove": "Zmazať riadok od {month}",
+        "empty": "Zatiaľ žiadne preddavky. Pridajte výšku a mesiac, od ktorého platí.",
+        "duplicate": "Tento mesiac už má iný riadok.",
+        "minimum": "Zákonné minimum od {from}: {amounts}.",
+        "useMinimum": "Použiť",
+        "errors": {
+          "month": "Pri každom riadku vyplňte mesiac, od ktorého platí.",
+          "duplicate": "Dva riadky majú rovnaký mesiac. Spojte ich do jedného.",
+          "amount": "Preddavky musia byť čísla od 0 do 10 000 000."
+        }
       },
       "street": "Ulica a číslo",
       "city": "Mesto",
@@ -1858,7 +1876,7 @@
         },
         "paidSocial": "Zaplatené preddavky – sociálne",
         "paidHealth": "Zaplatené preddavky – zdravotné",
-        "paidHint": "Nepovinné. Keď vyplníte, ukáže sa nedoplatok alebo preplatok.",
+        "paidHint": "Predvyplní sa z mesačných preddavkov vo Fakturačných údajoch (každý mesiac roka s výškou, ktorá vtedy platila). Sumu môžete prepísať, ukáže sa nedoplatok alebo preplatok.",
         "income": "Príjmy",
         "incomeHint": "Súčet faktúr uhradených v danom roku (počet: {invoices}), dobropisy sa odpočítavajú.",
         "incomeHintVat": "Súčet faktúr uhradených v danom roku bez DPH (počet: {invoices}), dobropisy sa odpočítavajú.",
@@ -1881,7 +1899,8 @@
         "downloadCsv": "Stiahnuť CSV",
         "epoLink": "Formuláre EPO (Finanční správa)",
         "failed": "Odhad sa nepodarilo vypočítať.",
-        "disclaimer": "Orientačný odhad pre hlavnú činnosť počas celého roka. Nenahrádza daňové priznanie ani prehľady."
+        "disclaimer": "Orientačný odhad pre hlavnú činnosť počas celého roka. Nenahrádza daňové priznanie ani prehľady.",
+        "paidFromSettings": "Predvyplnené z mesačných preddavkov vo Fakturačných údajoch. Môžete prepísať."
       },
       "epo": {
         "title": "Ako podať priznanie, kontrolné a súhrnné hlásenie (CZ)",

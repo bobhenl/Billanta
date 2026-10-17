@@ -1,5 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { computeAnnualSummary, paramsFor } from "./annual-summary";
+import { computeAnnualSummary, paidAdvances, paramsFor } from "./annual-summary";
+
+describe("paidAdvances", () => {
+  const history = [
+    { from: "2025-01", social: 4759, health: 3143 },
+    { from: "2026-01", social: 5720 },
+    { from: "2026-07", social: 5005 },
+  ];
+
+  it("sums the advances in force in each month of the year", () => {
+    const p = paidAdvances(history, 2026, {});
+    expect(p.paidSocial).toBe(6 * 5720 + 6 * 5005);
+    expect(p.paidHealth).toBe(12 * 3143);
+    expect(p.source).toEqual({ social: "settings", health: "settings" });
+    expect(paidAdvances(history, 2025, {}).paidSocial).toBe(12 * 4759);
+  });
+
+  it("a typed amount wins; nothing set = no amount", () => {
+    const p = paidAdvances(history, 2026, { paidSocial: 1000 });
+    expect(p.paidSocial).toBe(1000);
+    expect(p.source.social).toBe("input");
+    const none = paidAdvances(history, 2024, {});
+    expect(none.paidSocial).toBeUndefined();
+    expect(none.source).toEqual({ social: null, health: null });
+  });
+});
 
 describe("computeAnnualSummary", () => {
   it("60 % flat-rate trade with 1 M income in 2025", () => {

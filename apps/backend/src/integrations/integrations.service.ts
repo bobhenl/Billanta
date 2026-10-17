@@ -6,9 +6,13 @@ import { and, desc, eq, inArray, isNotNull, isNull, ne, notInArray, sql } from "
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import {
   TAX_DEADLINE_KINDS,
+  advanceForDeadline,
   defaultTaxDeadlineKinds,
   isLegalEntityName,
+  isTaxAdvanceKind,
+  normalizeTaxAdvances,
   taxDeadlinesFor,
+  type TaxAdvancePeriod,
   type TaxDeadlineKind,
   type TaxProfile,
 } from "@faktur/cz-compliance";
@@ -25,7 +29,17 @@ type Lang = "cs" | "sk" | "en";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const siteUrl = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+/**
+ * Calendar title of a tax deadline; an OSVČ advance gets the amount set in
+ * Settings for the month that payment covers (the 20 January social payment
+ * still shows December's amount).
+ */
+export function taxEventSummary(label: string, kind: TaxDeadlineKind, dueDate: Date, advances: TaxAdvancePeriod[], country: string): string {
+  const amount = isTaxAdvanceKind(kind) ? advanceForDeadline(advances, kind, dueDate) : undefined;
+  return amount == null ? label : `${label} · ${formatInvoiceAmount(amount, country.toUpperCase() === "SK" ? "EUR" : "CZK")}`;
+}
+
+const iso = (d: Date) =>`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
   cs: {
@@ -231,12 +245,13 @@ export class IntegrationsService {
         vatPayer: schema.tenants.dicVatPayer,
         vatStatus: schema.tenants.vatStatus,
         country: schema.tenants.addressCountry,
+        taxAdvances: schema.tenants.taxAdvances,
       })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));
     const lang: Lang = t?.locale === "sk" || t?.locale === "en" ? t.locale : "cs";
     const profile: TaxProfile = { country: t?.country ?? "CZ", vatStatus: t?.vatStatus ?? "non_payer", legalEntity: isLegalEntityName(t?.legalName) };
-    return { company: t?.company ?? "Billanta", lang, vatPayer: Boolean(t?.vatPayer), profile };
+    return { company: t?.company ?? "Billanta", lang, vatPayer: Boolean(t?.vatPayer), profile, advances: normalizeTaxAdvances(t?.taxAdvances) };
   }
 
   /**
@@ -247,7 +262,7 @@ export class IntegrationsService {
   async calendar(token: string, now = new Date()): Promise<string> {
     const official = await upcomingTaxEvents(366, now).catch(() => null);
     return this.asFeedOwner(token, async (db, owner) => {
-      const { company, lang, profile } = await this.tenantOf(db, owner.tenantId);
+      const { company, lang, profile, advances } = await this.tenantOf(db, owner.tenantId);
       const t = TEXT[lang];
       const [m] = await db
         .select({ config: schema.tenantMemberships.dashboardTiles })
@@ -268,7 +283,7 @@ export class IntegrationsService {
         events.push({
           uid: `tax-${d.kind}-${date}@billanta`,
           date,
-          summary: TAX_LABELS[lang][d.kind],
+          summary: taxEventSummary(TAX_LABELS[lang][d.kind], d.kind, d.date, advances, profile.country),
           description: [d.conditional ? t[`onlyIf_${d.kind}`] : null, ...(d.details ?? [])].filter(Boolean).join("\n") || undefined,
           categories: [t.taxes!],
         });

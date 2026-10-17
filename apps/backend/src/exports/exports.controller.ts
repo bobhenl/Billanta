@@ -9,7 +9,8 @@ import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { parseReportFilters, type ReportFilters } from "../dashboard/report-filters";
 import { type ExportDateBy, type ExportPeriod, ExportsService, VatRateUnavailableError } from "./exports.service";
 import type { VatPeriod } from "./vat-returns";
-import { FLAT_RATES, type FlatRate } from "./annual-summary";
+import { FLAT_RATES, paidAdvances, type FlatRate } from "./annual-summary";
+import { normalizeTaxAdvances } from "@faktur/cz-compliance";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -171,6 +172,9 @@ export class ExportsController {
       ["Doplatek / přeplatek – zdravotní", n(s.health.balance)],
       ["Nová měsíční záloha – zdravotní", n(s.health.nextAdvance)],
       ["Celkem daň + pojištění", n(s.totalBurden)],
+      ...(s.paidSource.social === "settings" || s.paidSource.health === "settings"
+        ? ([["Zaplacené zálohy", "podle nastavení měsíčních záloh (výše platná v jednotlivých měsících)"]] as [string, string][])
+        : []),
       ["Pozn.", "Orientační odhad, nenahrazuje daňové přiznání ani přehledy pro ČSSZ a ZP."],
     ];
     const body = "﻿" + rows.map(([k, v]) => `${k};${v.includes(";") ? `"${v}"` : v}`).join("\r\n") + "\r\n";
@@ -182,13 +186,16 @@ export class ExportsController {
     if (!parsed.success) throw new BadRequestException("Invalid year summary query");
     const { year, expenses, paidSocial, paidHealth } = parsed.data;
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    // Without a typed amount, the paid advances come from Settings → Měsíční zálohy (per month, as they applied then).
+    const paid = paidAdvances(normalizeTaxAdvances(tenant?.taxAdvances), year, { paidSocial, paidHealth });
     try {
-      return await this.exportsService.annualSummary(req.tenantDb!, year, {
+      const summary = await this.exportsService.annualSummary(req.tenantDb!, year, {
         vatPayer: tenant?.dicVatPayer ?? false,
         flatRate: expenses === "actual" ? null : (Number(expenses) as FlatRate),
-        paidSocial,
-        paidHealth,
+        paidSocial: paid.paidSocial,
+        paidHealth: paid.paidHealth,
       });
+      return { ...summary, paidSource: paid.source };
     } catch (err) {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;

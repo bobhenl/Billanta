@@ -383,13 +383,13 @@
       "sourceLocal": "Kalendář Finanční správy se teď nepodařilo načíst, termíny jsou dopočítané podle zákona.",
       "prepareXml": "Připravit XML",
       "amountsTitle": "Očekávané částky",
-      "amountsHint": "Vaše měsíční zálohy (najdete je v přehledu pro ČSSZ, pojišťovnu nebo v rozhodnutí o paušální dani). Ukážou se u termínu, aby bylo vidět, kolik si nachystat. Prázdné pole = bez částky.",
+      "amountsHint": "Částka, kterou každý měsíc odvádíte jako zaměstnavatel. Ukáže se u termínu, ať víte, kolik si nachystat. Prázdné pole = bez částky.",
       "bookExpense": "Zapsat jako výdaj",
       "fillAmount": "Doplnit výši",
       "onlyIfForeignPurchase": "Jen pokud jste v měsíci nakoupili služby ze zahraničí (např. reklamy).",
       "onlyIfEuSales": "Jen pokud jste v měsíci fakturovali službu firmě v jiném státě EU.",
-      "minimum": "Zákonné minimum od {from}: {amount}",
-      "useMinimum": "Použít"
+      "advancesInSettings": "Výši záloh na pojištění a paušální daň nastavíte podle období ve Fakturačních údajích.",
+      "editAdvances": "Upravit zálohy"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
@@ -1627,11 +1627,29 @@
       },
       "advances": {
         "title": "Měsíční zálohy",
-        "hint": "Ukážou se na přehledu u daňových termínů, ať víte, kolik si nachystat. Prázdné pole = bez částky.",
+        "hint": "Každá výše platí od zvoleného měsíce, dokud ji nenahradí novější řádek. Starší řádky nechte: přehled, kalendář i roční odhad podle nich počítají minulé měsíce. Prázdné pole = platí částka z předchozího řádku, 0 = nic neplatíte.",
         "social": "Sociální pojištění",
         "health": "Zdravotní pojištění",
         "flat_tax": "Paušální daň nebo záloha na daň",
-        "placeholder": "např. 5 720"
+        "short": {
+          "social": "sociální",
+          "health": "zdravotní",
+          "flat_tax": "paušál"
+        },
+        "from": "Platí od",
+        "current": "Platí teď",
+        "inherit": "beze změny",
+        "add": "Nová výše od…",
+        "remove": "Smazat řádek od {month}",
+        "empty": "Zatím žádné zálohy. Přidejte výši a měsíc, od kterého platí.",
+        "duplicate": "Tento měsíc už má jiný řádek.",
+        "minimum": "Zákonné minimum od {from}: {amounts}.",
+        "useMinimum": "Použít",
+        "errors": {
+          "month": "U každého řádku vyplňte měsíc, od kterého platí.",
+          "duplicate": "Dva řádky mají stejný měsíc. Spojte je do jednoho.",
+          "amount": "Zálohy musí být čísla od 0 do 10 000 000."
+        }
       },
       "street": "Ulice a číslo",
       "city": "Město",
@@ -1858,7 +1876,7 @@
         },
         "paidSocial": "Zaplacené zálohy – sociální",
         "paidHealth": "Zaplacené zálohy – zdravotní",
-        "paidHint": "Nepovinné. Když vyplníte, ukáže se doplatek nebo přeplatek.",
+        "paidHint": "Předvyplní se z měsíčních záloh ve Fakturačních údajích (každý měsíc roku s výší, která tehdy platila). Částku můžete přepsat, ukáže se doplatek nebo přeplatek.",
         "income": "Příjmy",
         "incomeHint": "Součet faktur uhrazených v daném roce (počet: {invoices}), dobropisy se odečítají.",
         "incomeHintVat": "Součet faktur uhrazených v daném roce bez DPH (počet: {invoices}), dobropisy se odečítají.",
@@ -1881,7 +1899,8 @@
         "downloadCsv": "Stáhnout CSV",
         "epoLink": "Formuláře EPO (Finanční správa)",
         "failed": "Odhad se nepodařilo spočítat.",
-        "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu."
+        "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
+        "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat."
       },
       "epo": {
         "title": "Jak podat přiznání, kontrolní a souhrnné hlášení",
