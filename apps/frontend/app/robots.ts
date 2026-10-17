@@ -31,6 +31,7 @@ const PRIVATE = [
   'welcome',
   'i/',
   'c/',
+  'unsubscribe/',
   // Counting redirects to partner sites (VoxelRank: /partners/go/).
   'partners/go/'
 ].map(

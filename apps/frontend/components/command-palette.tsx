@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import {
   BarChart3,
   Bell,
+  BellRing,
   Blocks,
   Braces,
   Keyboard,
@@ -120,6 +121,7 @@ const PAGES: Entry[] = [
   { key: 'ai', href: '/settings/ai', icon: Bot, label: 'settings.hub.items.ai.title', section: 'ai' },
   { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title' },
   { key: 'notifications', href: '/settings/notifications', icon: Bell, label: 'settings.hub.items.notifications.title' },
+  { key: 'emailNotifications', href: '/settings/email-notifications', icon: BellRing, label: 'settings.hub.items.emailNotifications.title' },
   { key: 'numbering', href: '/settings/numbering', icon: Hash, label: 'settings.hub.items.numbering.title' },
   { key: 'emails', href: '/settings/emails', icon: Mail, label: 'settings.hub.items.emails.title' },
   { key: 'variables', href: '/settings/variables', icon: Braces, label: 'settings.hub.items.variables.title' },
