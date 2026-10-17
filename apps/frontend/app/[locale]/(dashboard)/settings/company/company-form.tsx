@@ -14,11 +14,11 @@ import { vatStatusOf } from '@/lib/vat-status';
 const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
 import { LogoUpload } from './logo-upload';
-import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow } from './tax-advances-editor';
+import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow, type RegimeAnswers } from './tax-advances-editor';
 import { lookupAres } from '../../contacts/actions';
 import { updateCompany } from '../actions';
 
-/** Form field → backend snake_case key; every value is edited as a string, except the two flags below. */
+/** Form field → backend snake_case key; every value is edited as a string, except the flags below. */
 const FIELDS = {
   companyName: 'company_name',
   legalName: 'legal_name',
@@ -38,7 +38,7 @@ const FIELDS = {
   bankAccountSwift: 'bank_account_swift'
 } as const;
 type Field = keyof typeof FIELDS;
-type Values = Record<Field, string> & { vatStatus: VatStatus };
+type Values = Record<Field, string> & { vatStatus: VatStatus; flatTax: RegimeAnswers['flatTax']; activity: RegimeAnswers['activity'] };
 
 const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry'];
 
@@ -46,6 +46,8 @@ function toValues(t: TenantSettings): Values {
   const v = {} as Values;
   for (const key of Object.keys(FIELDS) as Field[]) v[key] = t[key] == null ? '' : String(t[key]);
   v.vatStatus = vatStatusOf(t);
+  v.flatTax = t.flatTaxRegime == null ? '' : t.flatTaxRegime ? 'yes' : 'no';
+  v.activity = t.activityKind ?? '';
   return v;
 }
 
@@ -93,6 +95,14 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
     for (const key of dirty) {
       if (key === 'vatStatus') {
         patch.vat_status = values.vatStatus;
+        continue;
+      }
+      if (key === 'flatTax') {
+        patch.flat_tax_regime = values.flatTax === '' ? null : values.flatTax === 'yes';
+        continue;
+      }
+      if (key === 'activity') {
+        patch.activity_kind = values.activity || null;
         continue;
       }
       const raw = values[key].trim();
@@ -204,7 +214,14 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
       {!isLegalEntityName(values.legalName) && (
         <section id="zalohy" className="scroll-mt-24">
           <Section icon={Landmark} title={t('advances.title')} hint={t('advances.hint')}>
-            <TaxAdvancesEditor rows={advanceRows} onChange={setAdvanceRows} country={values.addressCountry} readOnly={readOnly} />
+            <TaxAdvancesEditor
+              rows={advanceRows}
+              onChange={setAdvanceRows}
+              country={values.addressCountry}
+              readOnly={readOnly}
+              answers={{ flatTax: values.flatTax, activity: values.activity }}
+              onAnswers={(patch) => setValues((v) => ({ ...v, ...patch }))}
+            />
           </Section>
         </section>
       )}

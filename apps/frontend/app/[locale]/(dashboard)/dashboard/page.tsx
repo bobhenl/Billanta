@@ -41,7 +41,7 @@ export default async function DashboardHomePage() {
     const { from, to } = presetRange('last12');
     stats = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`).catch(() => null);
     country = tenant?.addressCountry ?? 'CZ';
-    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName) };
+    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName), flatTax: tenant?.flatTaxRegime ?? null };
     advances = normalizeTaxAdvances(tenant?.taxAdvances);
     if (!hiddenSections(access).includes('time')) {
       time = await apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null);

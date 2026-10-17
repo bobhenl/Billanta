@@ -1,16 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { and, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, isNull, min, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
-import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
+import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
 import { summarizeUsage, type Usage } from "./usage";
 import { vatActivity, type VatActivity } from "./vat-activity";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
+const DAY_MS = 86_400_000;
 
 /** Tiles a member can pin to the dashboard, in the default order. */
 export const DASHBOARD_WIDGETS = [
@@ -232,12 +233,11 @@ export class DashboardService {
    * shares. Amounts are in CZK (foreign documents at their stored rate), or
    * in the filtered currency when the report is narrowed to one. `db` is
    * the tenant's RLS-scoped connection, so only its own rows ever load.
+   * `allTime` ("Celkem") ignores `from` and starts on the first day with
+   * any document or expense (`earliest`, also sent for every report).
    */
-  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}) {
+  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}, opts: { allTime?: boolean } = {}) {
     const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
-    const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-    const length = end.getTime() - start.getTime();
-    const prevStart = new Date(start.getTime() - length);
     const currency = filters.currency ?? "CZK";
 
     const rows = await db
@@ -272,6 +272,12 @@ export class DashboardService {
     });
     const today = new Date();
     const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
+    const [firstExpense] = await db.select({ date: min(schema.expenses.expenseDate) }).from(schema.expenses);
+    const earliest = earliestDay([...allDocs.map((d) => d.date), firstExpense?.date ? new Date(firstExpense.date) : null]);
+    let start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    if (opts.allTime) start = earliest && earliest < end ? earliest : new Date(end.getTime() - DAY_MS);
+    const length = end.getTime() - start.getTime();
+    const prevStart = new Date(start.getTime() - length);
     const expenseRows = await db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart));
     // Expense amounts are stored including VAT; revenue is compared without it.
     // Expenses have no customer, type or status, so only the currency filter applies.
@@ -288,6 +294,8 @@ export class DashboardService {
       currency,
       from: start.toISOString(),
       to: new Date(end.getTime() - 1).toISOString(),
+      /** First day with any document or expense (YYYY-MM-DD), null with no data. */
+      earliest: earliest ? localDay(earliest) : null,
       filters,
       /** False when a customer / type / status / language filter is on: expenses then stay unfiltered. */
       expensesFiltered: !hasDocumentFilters(filters),

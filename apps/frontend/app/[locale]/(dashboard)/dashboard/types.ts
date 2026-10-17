@@ -110,6 +110,8 @@ export interface PeriodStats {
   currency: string;
   from: string;
   to: string;
+  /** The company's first document or expense (YYYY-MM-DD), null with none; where "Celkem" starts. Older backends omit it. */
+  earliest?: string | null;
   current: PeriodTotals;
   previous: PeriodTotals;
   grain: 'day' | 'week' | 'month';

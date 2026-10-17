@@ -53,6 +53,13 @@ describe('defaultTaxDeadlineKinds', () => {
     expect(defaultTaxDeadlineKinds(true)).toEqual(defaultTaxDeadlineKinds('payer'));
     expect(defaultTaxDeadlineKinds(false)).toEqual(defaultTaxDeadlineKinds('non_payer'));
   });
+
+  it('paušální režim: the flat tax instead of insurance advances, return and overviews', () => {
+    expect(defaultTaxDeadlineKinds('non_payer', true)).toEqual(['flat_tax']);
+    expect(defaultTaxDeadlineKinds('identified', true)).toEqual(['vat_identified', 'ec_sales_list', 'flat_tax']);
+    expect(defaultTaxDeadlineKinds('non_payer', false)).toEqual(['health', 'social', 'income_tax', 'overviews']);
+    expect(defaultTaxDeadlineKinds('non_payer', null)).toEqual(defaultTaxDeadlineKinds('non_payer'));
+  });
 });
 
 describe('taxDeadlinesFor', () => {

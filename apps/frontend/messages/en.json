@@ -400,7 +400,10 @@
       "onlyIfForeignPurchase": "Only if you bought services from abroad that month (e.g. ads).",
       "onlyIfEuSales": "Only if you invoiced a service to a business in another EU country that month.",
       "advancesInSettings": "Social, health and flat tax advances are set by period in Business details.",
-      "editAdvances": "Edit advances"
+      "editAdvances": "Edit advances",
+      "manualKindsHint": "Billanta cannot tell whether you have employees, a vehicle for road tax or property for property tax, so tick those yourself.",
+      "regimeUnknown": "We do not know whether you are in the flat-tax regime, so we watch the regular insurance advances.",
+      "regimeAnswer": "Answer in settings"
     },
     "fxRates": {
       "title": "ČNB exchange rates",
@@ -433,7 +436,9 @@
       "bank": "bank connected",
       "proformas": "you issue proformas",
       "quotes": "you send quotes"
-    }
+    },
+    "customizeOrderHint": "Drag by the handle or use the arrows to change the order.",
+    "dragToReorder": "Drag to reorder"
   },
   "invoices": {
     "hover": {
@@ -1679,7 +1684,27 @@
           "month": "Fill in the month each row applies from.",
           "duplicate": "Two rows have the same month. Merge them into one.",
           "amount": "Advances must be numbers from 0 to 10,000,000."
-        }
+        },
+        "flatTaxLabel": {
+          "flat": "Flat tax",
+          "advance": "Income tax advance",
+          "unknown": "Flat tax / tax advance"
+        },
+        "regime": {
+          "flatTax": "Are you in the flat-tax regime?",
+          "flatTaxHint": "In the flat-tax regime (paušální daň) you pay one monthly amount that covers income tax, social and health insurance. You do not pay separate insurance advances.",
+          "activity": "Main or secondary activity?",
+          "activityHint": "Self-employment is a secondary activity when you also have a job, study, or receive a pension or parental allowance. The minimum social insurance advance is then lower and there is no minimum health insurance advance.",
+          "yes": "Yes",
+          "no": "No",
+          "main": "Main",
+          "secondary": "Secondary"
+        },
+        "minimumAsk": {
+          "flatTax": "To show the statutory minimum, tell us whether you are in the flat-tax regime:",
+          "activity": "To show the statutory minimum, tell us whether self-employment is your main or secondary activity:"
+        },
+        "useMinimumHint": "Fills the statutory minimum into the row. Other empty fields are set to 0."
       },
       "street": "Street and number",
       "city": "City",
@@ -5692,7 +5717,8 @@
       "lastQuarter": "Last quarter",
       "thisYear": "This year",
       "lastYear": "Last year",
-      "last12": "12 months"
+      "last12": "12 months",
+      "all": "All time"
     },
     "grain": {
       "day": "by day",
@@ -5721,13 +5747,18 @@
       "noVatIdentified": "You are an identified person with no reverse-charge invoices, so VAT is hidden.",
       "noExpenses": "No expenses recorded yet, so expenses and profit are hidden.",
       "allRelevant": "Showing everything that applies to you.",
-      "notRecommended": "not relevant yet",
       "noExpensesHint": "No expenses recorded yet",
       "reset": "Restore recommended",
       "cancel": "Cancel",
       "save": "Save",
       "saved": "Saved",
-      "failed": "Could not save: {reason}"
+      "failed": "Could not save: {reason}",
+      "notUsed": "not used yet",
+      "notVatPayer": "not a VAT payer",
+      "orderHint": "The order here is the order of the cards in the report. Drag by the handle or use the arrows to change it.",
+      "moveUp": "Move earlier",
+      "moveDown": "Move later",
+      "dragToReorder": "Drag to reorder"
     }
   },
   "siteSearch": {

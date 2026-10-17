@@ -28,7 +28,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   let config: DashboardConfig | null;
   try {
     [stats, usage, config] = await Promise.all([
-      apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`),
+      apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}${preset === 'all' ? '&period=all' : ''}`),
       // Both optional: without them the report shows everything, as before.
       apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null),
       apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null)

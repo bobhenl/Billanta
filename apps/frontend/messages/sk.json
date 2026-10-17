@@ -400,7 +400,10 @@
       "onlyIfForeignPurchase": "Len ak ste v mesiaci kúpili služby zo zahraničia (napr. reklamy).",
       "onlyIfEuSales": "Len ak ste v mesiaci fakturovali službu firme v inom štáte EÚ.",
       "advancesInSettings": "Výšku preddavkov na poistenie a daň nastavíte podľa obdobia vo Fakturačných údajoch.",
-      "editAdvances": "Upraviť preddavky"
+      "editAdvances": "Upraviť preddavky",
+      "manualKindsHint": "Zamestnancov, daň z motorových vozidiel a daň z nehnuteľností Billanta nespozná, tie si zaškrtnite sami.",
+      "regimeUnknown": "Nevieme, či ste v paušálnom režime, preto strážime bežné preddavky na poistenie.",
+      "regimeAnswer": "Doplniť v nastaveniach"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
@@ -433,7 +436,9 @@
       "bank": "máte prepojenú banku",
       "proformas": "vystavujete zálohové faktúry",
       "quotes": "posielate ponuky"
-    }
+    },
+    "customizeOrderHint": "Poradie zmeníte potiahnutím za úchyt alebo šípkami.",
+    "dragToReorder": "Potiahnite na zmenu poradia"
   },
   "invoices": {
     "hover": {
@@ -1679,7 +1684,27 @@
           "month": "Pri každom riadku vyplňte mesiac, od ktorého platí.",
           "duplicate": "Dva riadky majú rovnaký mesiac. Spojte ich do jedného.",
           "amount": "Preddavky musia byť čísla od 0 do 10 000 000."
-        }
+        },
+        "flatTaxLabel": {
+          "flat": "Paušálna daň",
+          "advance": "Preddavok na daň",
+          "unknown": "Paušálna daň / preddavok"
+        },
+        "regime": {
+          "flatTax": "Ste v paušálnom režime?",
+          "flatTaxHint": "V paušálnom režime platíte jednu mesačnú platbu, ktorá zahŕňa daň, sociálne aj zdravotné poistenie. Preddavky na poistenie zvlášť neplatíte.",
+          "activity": "Hlavná, alebo vedľajšia činnosť?",
+          "activityHint": "Vedľajšiu činnosť máte, keď popri podnikaní napríklad chodíte do zamestnania, študujete alebo poberáte dôchodok či rodičovský príspevok. Minimálny preddavok na sociálne poistenie je potom nižší a minimálny preddavok na zdravotné poistenie žiadny.",
+          "yes": "Áno",
+          "no": "Nie",
+          "main": "Hlavná",
+          "secondary": "Vedľajšia"
+        },
+        "minimumAsk": {
+          "flatTax": "Na zákonné minimum potrebujeme vedieť, či ste v paušálnom režime:",
+          "activity": "Na zákonné minimum potrebujeme vedieť, či je podnikanie vaša hlavná, alebo vedľajšia činnosť:"
+        },
+        "useMinimumHint": "Vyplní do riadku zákonné minimum. Ostatné prázdne polia nastaví na 0."
       },
       "street": "Ulica a číslo",
       "city": "Mesto",
@@ -5693,7 +5718,8 @@
       "lastQuarter": "Minulý štvrťrok",
       "thisYear": "Tento rok",
       "lastYear": "Minulý rok",
-      "last12": "12 mesiacov"
+      "last12": "12 mesiacov",
+      "all": "Celkovo"
     },
     "grain": {
       "day": "po dňoch",
@@ -5722,13 +5748,18 @@
       "noVatIdentified": "Ste registrovaný podľa §7a bez faktúr s prenesením daňovej povinnosti, preto DPH skrývame.",
       "noExpenses": "Výdavky zatiaľ nezapisujete, preto náklady a zisk skrývame.",
       "allRelevant": "Ukazujeme všetko, čo sa vás týka.",
-      "notRecommended": "zatiaľ sa vás netýka",
       "noExpensesHint": "Zatiaľ bez zapísaných výdavkov",
       "reset": "Obnoviť odporúčané",
       "cancel": "Zrušiť",
       "save": "Uložiť",
       "saved": "Uložené",
-      "failed": "Nepodarilo sa uložiť: {reason}"
+      "failed": "Nepodarilo sa uložiť: {reason}",
+      "notUsed": "zatiaľ nevyužívate",
+      "notVatPayer": "nie ste platiteľ DPH",
+      "orderHint": "Poradie tu určuje poradie kariet v prehľade. Zmeníte ho potiahnutím za úchyt alebo šípkami.",
+      "moveUp": "Posunúť dopredu",
+      "moveDown": "Posunúť dozadu",
+      "dragToReorder": "Potiahnite na zmenu poradia"
     }
   },
   "siteSearch": {
