@@ -9,7 +9,8 @@ import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
-import { ADVANCE_KINDS, vatStatusOf, type BankAccount, type TenantSettings } from '@/lib/tenant';
+import type { BankAccount, TenantSettings } from '@/lib/tenant';
+import { ADVANCE_KINDS, vatStatusOf } from '@/lib/vat-status';
 
 type AdvanceKind = (typeof ADVANCE_KINDS)[number];
 const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];

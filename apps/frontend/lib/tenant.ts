@@ -3,12 +3,8 @@ import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
 import { apiFetch, fetchMyCompanies } from './api-client';
 
-/** OSVČ monthly advances typed in Settings → Firma; a missing key = not set. */
-export type TaxAdvances = Partial<Record<'social' | 'health' | 'flat_tax', number>>;
-export const ADVANCE_KINDS = ['social', 'health', 'flat_tax'] as const;
-
-export const vatStatusOf = (t: Pick<TenantSettings, 'vatStatus' | 'dicVatPayer'> | null | undefined): VatStatus =>
-  t?.vatStatus ?? (t?.dicVatPayer ? 'payer' : 'non_payer');
+export { ADVANCE_KINDS, vatStatusOf, type TaxAdvances } from './vat-status';
+import type { TaxAdvances } from './vat-status';
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
 export interface TenantSettings {
