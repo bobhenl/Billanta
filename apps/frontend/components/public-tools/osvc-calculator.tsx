@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { computeOsvcAnnualSummary, OSVC_FLAT_EXPENSE_CAPS, OSVC_PARAM_YEARS, osvcParamsFor, type OsvcFlatRate } from '@faktur/cz-compliance';
+import { computeOsvcAnnualSummary, OSVC_FLAT_EXPENSE_CAPS, OSVC_PARAM_YEARS, osvcMinSocialAdvance, osvcParamsFor, type OsvcFlatRate } from '@faktur/cz-compliance';
 import { AmountField, money, parseAmount, ResultRow, Segmented, SelectField } from '@/components/public-tools/fields';
 
 const RATES = [80, 60, 40, 30] as const satisfies readonly OsvcFlatRate[];
@@ -91,6 +91,18 @@ export function OsvcCalculator({ defaultYear }: { defaultYear: number }) {
             credit: new Intl.NumberFormat(locale).format(params.taxpayerCredit),
             share: Math.round(params.minSocialShare * 100)
           })}
+          {/* Same mid-year change the statutory minimums table has (2026: 35 % and 5 005 Kč from July). */}
+          {params.minSocialShareFrom ? (
+            <>
+              {' '}
+              {t('paramsShareChange', {
+                month: params.minSocialShareFrom.fromMonth,
+                year: params.year,
+                share: Math.round(params.minSocialShareFrom.share * 100),
+                advance: new Intl.NumberFormat(locale).format(osvcMinSocialAdvance(params.year, params.minSocialShareFrom.fromMonth))
+              })}
+            </>
+          ) : null}
         </p>
       </section>
     </div>

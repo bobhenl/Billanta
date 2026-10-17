@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from 'next-intl/server';
+import { Plus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -10,11 +11,16 @@ import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 /**
  * Header for the public site. Separate from the dashboard shell — the two
  * audiences need different links. Only the pages a visitor is here for sit
- * in the header; the secondary ones (FAQ, calculators, guides, comparison)
- * share one "Resources" dropdown so the row does not grow, and the rest
- * (about, cities, legal) live in the footer. On phones it shrinks to brand +
- * search + language + theme; navigation moves to `MarketingTabBar` at the
- * bottom.
+ * in the header; the secondary ones (calculators, guides, FAQ, comparison)
+ * share one "Resources" dropdown in the third slot, so the row stays at three
+ * items. The rest (about, cities, legal) live in the footer. On phones it
+ * shrinks to brand + search + language + theme; navigation moves to
+ * `MarketingTabBar` at the bottom.
+ *
+ * As on VoxelRank ("Log in" + "+ Add server"), the one accent button is the
+ * thing people come to do, issuing an invoice (no account needed), not
+ * "Sign up"; sign-up is linked from the login page, the guest invoice and
+ * the footer.
  */
 export async function MarketingNavbar() {
   const t = await getTranslations('marketing.nav');
@@ -23,14 +29,14 @@ export async function MarketingNavbar() {
   const locale = await getLocale();
 
   const links = [
-    { href: '/funkce', label: t('features') },
+    { href: '/features', label: t('features') },
     { href: '/pricing', label: t('pricing') }
   ];
   const resources = [
-    { href: '/kalkulacky', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
-    ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/navody', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
+    { href: '/calculators', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
+    ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
     { href: '/#faq', label: t('faq') },
-    { href: '/srovnani', label: tMenu('compare') }
+    { href: '/compare', label: tMenu('compare') }
   ];
 
   return (
@@ -65,10 +71,11 @@ export async function MarketingNavbar() {
             {t('login')}
           </Link>
           <Link
-            href="/signup"
-            className="hidden rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-block"
+            href="/create-invoice"
+            className="hidden items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-flex"
           >
-            {t('signup')}
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {t('createInvoice')}
           </Link>
         </div>
       </div>

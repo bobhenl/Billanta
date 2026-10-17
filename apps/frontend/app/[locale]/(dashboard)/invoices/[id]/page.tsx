@@ -11,18 +11,36 @@ import { displayCustomField, documentVars } from '@/lib/custom-fields';
 import { fetchTenant } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
+  buyerDetailsState,
   displayStatus,
   formatDate,
+  fxLabelOf,
   formatMoney,
   STATUS_BADGE_CLASSES,
   TYPE_BADGE_CLASSES,
   type InvoiceDetail
 } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
+import { lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
+import { BuyerDetailsRequest } from './buyer-details-request';
 
-type CheckIssue = { scheme: 'law' | 'peppol'; rule: string; field: string; code: string; severity: 'error' | 'warning' };
+/** A rule reference such as "§29/1c ZDPH", linked to the law text when lawUrl knows it. */
+function LawRef({ rule }: { rule?: string }) {
+  if (!rule) return null;
+  const href = lawUrl(rule);
+  const cls = 'font-mono text-xs opacity-70';
+  return href ? (
+    <a href={href} target="_blank" rel="noreferrer" className={cn(cls, 'underline underline-offset-2 hover:opacity-100')}>
+      {rule}
+    </a>
+  ) : (
+    <span className={cls}>{rule}</span>
+  );
+}
+
+type CheckIssue = { scheme: 'law' | 'peppol'; rule?: string; field: string; code: string; severity: 'error' | 'warning' };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -37,6 +55,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const locale = await getLocale();
   const t = await getTranslations('doc');
   const tStatus = await getTranslations('invoices.status');
+  const tBuyer = await getTranslations('invoices.buyerDetails');
   const tGloss = await getTranslations('glossary');
 
   let detail: InvoiceDetail;
@@ -65,6 +84,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   }
 
   const { invoice, contact, items, totals, parent, children } = detail;
+  // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
+  const buyer = detail.buyer ?? contact;
   // Mandatory-content check (CZ/SK law; Peppol for an issued invoice to a foreign buyer).
   const checkIssues =
     invoice.status !== 'cancelled'
@@ -92,6 +113,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
 
   // Net proceeds after provider fees and conversion, in CZK at the invoice's ČNB rate.
   const rate = invoice.currency === 'CZK' ? 1 : Number(invoice.exchangeRate) || 0;
+  const fx = fxLabelOf(invoice);
   const received = invoice.status === 'paid' ? totals.totalWithVat : Number(invoice.amountPaid ?? 0);
   const fees = Number(invoice.paymentFees ?? 0);
   const receivedCzk = invoice.receivedCzk == null ? null : Number(invoice.receivedCzk);
@@ -129,6 +151,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               {t(`type.${invoice.documentType}`)}
             </span>
             <span title={tGloss(`status.${status}`)} className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>{statusLabel}</span>
+            {buyerDetailsState(invoice) && (
+              <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', buyerDetailsState(invoice) === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
+                {tBuyer(`badge.${buyerDetailsState(invoice)}`)}
+              </span>
+            )}
           </div>
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{title}</h1>
           {contact && <p className="mt-1 text-muted-foreground">{contact.legalName}</p>}
@@ -142,7 +169,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <span className="text-muted-foreground"> · {t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span>
             </div>
           )}
-          {invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} />}
+          {invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} />}
         </div>
       </div>
 
@@ -163,6 +190,18 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
         />
+        {(invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
+          <BuyerDetailsRequest
+            id={invoice.id}
+            token={invoice.buyerDetailsToken ?? null}
+            submittedAt={invoice.buyerDetailsSubmittedAt ?? null}
+            submittedLabel={formatDate(invoice.buyerDetailsSubmittedAt, locale)}
+            email={invoice.buyerDetailsEmail ?? null}
+            autoIssue={Boolean(invoice.buyerDetailsAutoIssue)}
+            outcome={invoice.buyerDetailsOutcome ?? null}
+            contactEmail={contact?.email ?? null}
+          />
+        )}
       </div>
 
       {invoice.source.startsWith('ai_') && invoice.status === 'pending_review' && (
@@ -179,7 +218,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           <ul className="list-disc space-y-0.5 pl-5">
             {lawIssues.map((i) => (
               <li key={`${i.rule}-${i.field}-${i.code}`}>
-                {t(`peppol.field.${i.field}`)}: {t(`requirements.code.${i.code}`)} <span className="font-mono text-xs opacity-70">{i.rule}</span>
+                {t(`peppol.field.${i.field}`)}: {t(`requirements.code.${i.code}`)} <LawRef rule={i.rule} />
               </li>
             ))}
           </ul>
@@ -286,12 +325,25 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           </div>
           {invoice.currency !== 'CZK' && invoice.exchangeRate && (
             <p className="mt-3 text-right text-xs text-muted-foreground">
-              {t('fxLine', {
-                rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
-                currency: invoice.currency,
-                vat: formatMoney(totals.totalVat * Number(invoice.exchangeRate), 'CZK', locale),
-                total: formatMoney(totals.totalWithVat * Number(invoice.exchangeRate), 'CZK', locale)
-              })}
+              {fx.kind === 'hidden'
+                ? t('fxHidden', {
+                    rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    currency: invoice.currency
+                  })
+                : t('fxLine', {
+                    label:
+                      fx.kind === 'on'
+                        ? t('fxLabelOn', { date: formatDate(fx.date, locale) ?? fx.date })
+                        : fx.kind === 'annual'
+                          ? t('fxLabelAnnual', { year: fx.year })
+                          : fx.kind === 'manual'
+                            ? t('fxLabelManual')
+                            : t('fxLabel'),
+                    rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    currency: invoice.currency,
+                    vat: formatMoney(totals.totalVat * Number(invoice.exchangeRate), 'CZK', locale),
+                    total: formatMoney(totals.totalWithVat * Number(invoice.exchangeRate), 'CZK', locale)
+                  })}
             </p>
           )}
           {invoice.reverseCharge && <p className="mt-3 text-xs text-muted-foreground">{t('reverseChargeNote')}</p>}
@@ -304,24 +356,26 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <Building2 className="h-4 w-4 text-primary" />
               {t('customer')}
             </h2>
-            {contact ? (
+            {contact && buyer ? (
               <div className="mt-2 text-sm">
                 <Link href={`/contacts/${contact.id}`} className="font-semibold text-primary hover:underline">
-                  {contact.legalName}
+                  {buyer.legalName}
                 </Link>
                 <div className="mt-1 text-muted-foreground">
-                  {[contact.addressStreet, [contact.addressPostalCode, contact.addressCity].filter(Boolean).join(' ')]
+                  {[buyer.addressStreet, [buyer.addressPostalCode, buyer.addressCity].filter(Boolean).join(' ')]
                     .filter(Boolean)
                     .join(', ')}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {contact.ico && <>IČO {contact.ico}</>} {contact.dic && <>· DIČ {contact.dic}</>}
+                  {buyer.ico && <>IČO {buyer.ico}</>} {buyer.dic && <>· DIČ {buyer.dic}</>}
                 </div>
-                {contact.email && <div className="mt-1 text-xs text-muted-foreground">{contact.email}</div>}
+                {buyer.email && <div className="mt-1 text-xs text-muted-foreground">{buyer.email}</div>}
+                {detail.snapshot?.buyerDiffers && <p className="mt-2 text-xs text-muted-foreground">{t('buyerSnapshotNote')}</p>}
               </div>
             ) : (
               <p className="mt-2 text-sm text-muted-foreground">{t('noCustomer')}</p>
             )}
+            {detail.snapshot?.sellerDiffers && <p className="mt-2 text-xs text-muted-foreground">{t('sellerSnapshotNote')}</p>}
           </section>
 
           {showNet && (

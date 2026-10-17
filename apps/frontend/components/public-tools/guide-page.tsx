@@ -10,7 +10,7 @@ export function guideMetadata(slug: string, locale: string): Promise<Metadata> {
   const g = getGuide(slug)!;
   return toolPageMetadata({
     locale,
-    path: `/navody/${slug}`,
+    path: `/guides/${slug}`,
     tool: g,
     titleKey: `tools.guides.items.${g.key}.title`,
     descriptionKey: `tools.guides.items.${g.key}.description`
@@ -31,9 +31,9 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
   const t = await getTranslations('tools');
   const format = await getFormatter();
   const k = `guides.items.${g.key}` as const;
-  if (!isPublishedIn(g, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/navody/${slug}`} />;
+  if (!isPublishedIn(g, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/guides/${slug}`} />;
 
-  const path = `/navody/${slug}`;
+  const path = `/guides/${slug}`;
   const updated = format.dateTime(new Date(`${VAT_INFO_CHECKED}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
   const forms = t('guides.items.vatFiling.formsLine', { dp3: VAT_FORM_VERSIONS.DPHDP3, kh1: VAT_FORM_VERSIONS.DPHKH1, shv: VAT_FORM_VERSIONS.DPHSHV });
   return (
@@ -42,7 +42,7 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(guideArticleLd(locale, path, t(`${k}.title`), t(`${k}.description`), VAT_INFO_CHECKED))}
       />
-      <ToolHeader hubHref="/navody" hubLabel={t('menu.guides')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={g.icon} />
+      <ToolHeader hubHref="/guides" hubLabel={t('menu.guides')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={g.icon} />
       <p className="mt-3 text-sm text-muted-foreground">
         {t('common.updated')}: <time dateTime={VAT_INFO_CHECKED}>{updated}</time>
       </p>

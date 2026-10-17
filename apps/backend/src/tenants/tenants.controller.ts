@@ -24,6 +24,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { effectivePermissions } from "../tenancy/permissions";
 import { BankAccountDto } from "./dto/bank-account.dto";
+import { NumberFormatsDto } from "./dto/number-formats.dto";
 import { resolveModules } from "./modules";
 import { UpdateTenantDto } from "./dto/update-tenant.dto";
 import { TenantsService } from "./tenants.service";
@@ -62,6 +63,22 @@ export class TenantsController {
   @ApiOperation({ summary: "Update the company profile, bank details and invoice defaults (owner/admin)" })
   updateCurrentTenant(@Req() req: TenantScopedRequest, @Body() dto: UpdateTenantDto) {
     return this.tenantsService.update(req.tenantDb!, req.user!.tenantId, req.user!.role, dto);
+  }
+
+  @Get("me/number-formats")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Document number pattern per type, counters and a preview of the next number (owner/admin)" })
+  getNumberFormats(@Req() req: TenantScopedRequest) {
+    return this.tenantsService.getNumberFormats(req.tenantDb!, req.user!.tenantId, req.user!.role);
+  }
+
+  @Put("me/number-formats")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Set the number pattern and the next number per document type; affects only numbers issued from now on (owner/admin)" })
+  updateNumberFormats(@Req() req: TenantScopedRequest, @Body() dto: NumberFormatsDto) {
+    return this.tenantsService.updateNumberFormats(req.tenantDb!, req.user!.tenantId, req.user!.role, dto);
   }
 
   @Get("me/public-profile/slug")

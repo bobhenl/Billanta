@@ -11,9 +11,11 @@
  * RLS policies themselves live in `rls-policies.sql`, applied separately
  * (Drizzle Kit has no first-class RLS DSL in the version pinned here).
  */
+import type { TaxAdvancePeriod } from "@faktur/cz-compliance";
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  date,
   integer,
   jsonb,
   numeric,
@@ -145,6 +147,8 @@ export const backupDestinationTypeEnum = pgEnum("backup_destination_type", [
 
 export const backupScheduleEnum = pgEnum("backup_schedule", ["daily", "weekly", "manual"]);
 
+export const vatStatusEnum = pgEnum("vat_status", ["payer", "identified", "non_payer"]);
+
 // ---------------------------------------------------------------------------
 // tenants — the tenant root row itself. Not "tenant-scoped" in the tenant_id
 // sense (it IS the tenant); see rls-policies.sql for how it's still RLS'd
@@ -156,7 +160,13 @@ export const tenants = pgTable("tenants", {
   legalName: text("legal_name").notNull(),
   ico: varchar("ico", { length: 8 }),
   dic: varchar("dic", { length: 14 }),
+  // Legacy flag, kept equal to vatStatus === "payer" (CHECK in 0041); new code reads vatStatus.
   dicVatPayer: boolean("dic_vat_payer").notNull().default(false),
+  // Plátce / identifikovaná osoba (§6g–6l ZDPH, SK §7a) / neplátce, see VAT_STATUSES in @faktur/cz-compliance.
+  vatStatus: vatStatusEnum("vat_status").notNull().default("non_payer"),
+  // OSVČ monthly advances typed in by the owner, with history (0044): [{ from: "YYYY-MM", social?, health?, flat_tax? }]
+  // in the tenant's currency, each valid from its month on. Read through normalizeTaxAdvances / advancesFor (@faktur/cz-compliance).
+  taxAdvances: jsonb("tax_advances").$type<TaxAdvancePeriod[]>().notNull().default([]),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
@@ -214,12 +224,22 @@ export const tenants = pgTable("tenants", {
   // Outgoing webhooks (Discord, Slack, or plain JSON) fired on the same events
   // as member notifications — see `integrations/webhooks.ts`.
   webhooks: jsonb("webhooks").notNull().default([]),
+  // Own number pattern per document type ({"invoice": "{N}/{MM}/{YYYY}"});
+  // null or a missing type = built-in `{series}{YYYY}-{NNNN}` (`tenants/number-formats.ts`).
+  numberFormats: jsonb("number_formats"),
   // Abuse protection (`abuse/sending-guard.ts`): a suspended company can't send
   // and its share links show a notice; paused only blocks outgoing e-mail
   // (set automatically after repeated recipient reports, cleared by the operator).
   suspendedAt: timestamp("suspended_at", { withTimezone: true }),
   suspensionReason: text("suspension_reason"),
   emailPausedAt: timestamp("email_paused_at", { withTimezone: true }),
+  // Referral programme (migration 0044, `src/referrals/`): the invite code
+  // (/signup?ref=CODE, created lazily) and which programme it pays out under.
+  referralCode: varchar("referral_code", { length: 12 }),
+  referralProgram: varchar("referral_program", { length: 16 }).$type<"friend" | "accountant">().notNull().default("friend"),
+  // A plan paid with credits (`credit_ledger`), see ReferralsService.redeem.
+  prepaidPlan: varchar("prepaid_plan", { length: 16 }),
+  prepaidUntil: date("prepaid_until"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -514,6 +534,10 @@ export const invoices = pgTable(
     reverseCharge: boolean("reverse_charge").notNull().default(false),
     /** CZK per 1 unit of `currency` (ČNB rate on the taxable supply date), set at issue; null for CZK. */
     exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+    /** How `exchangeRate` was chosen at issue (exchange-rate-mode.ts); null = issued before the setting existed. */
+    exchangeRateMode: text("exchange_rate_mode").$type<"cnb_daily" | "annual" | "manual" | "none">(),
+    /** The ČNB list day for `cnb_daily`, 1 January of the rate's year for `annual`; null otherwise. */
+    exchangeRateDate: date("exchange_rate_date", { mode: "string" }),
     /** Account printed for payment; null = auto (matching currency, else the company's primary account). */
     bankAccountId: uuid("bank_account_id").references(() => tenantBankAccounts.id, { onDelete: "set null" }),
     // "Místo vystavení" and "Vystavil" (person) as printed on the document.
@@ -528,6 +552,18 @@ export const invoices = pgTable(
     clientRespondedAt: timestamp("client_responded_at", { withTimezone: true }),
     clientResponseName: text("client_response_name"),
     clientResponseNote: text("client_response_note"),
+    // "Odběratel si doplní údaje sám" (migration 0042): a draft sent to the
+    // customer to fill in their own billing details at /d/:buyerDetailsToken.
+    // The token is a separate secret from `publicToken` and only works while
+    // the document is a draft and nothing has been submitted yet; null = no
+    // request open. `buyerDetailsOutcome` says what happened to the contact.
+    buyerDetailsToken: uuid("buyer_details_token"),
+    buyerDetailsRequestedAt: timestamp("buyer_details_requested_at", { withTimezone: true }),
+    buyerDetailsRequestedBy: uuid("buyer_details_requested_by").references(() => users.id, { onDelete: "set null" }),
+    buyerDetailsEmail: text("buyer_details_email"),
+    buyerDetailsAutoIssue: boolean("buyer_details_auto_issue").notNull().default(false),
+    buyerDetailsSubmittedAt: timestamp("buyer_details_submitted_at", { withTimezone: true }),
+    buyerDetailsOutcome: jsonb("buyer_details_outcome").$type<BuyerDetailsOutcome>(),
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
     paidAt: timestamp("paid_at", { withTimezone: true }),
@@ -536,6 +572,12 @@ export const invoices = pgTable(
     // What actually landed on the account, in CZK; null = not recorded.
     receivedCzk: numeric("received_czk", { precision: 14, scale: 2 }),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    // Supplier / buyer as printed on the document on its issue date (§29, §34–35
+    // ZDPH): captured when the document leaves the draft stage, or taken from
+    // the source document on import. Null = a draft, or issued before migration
+    // 0040: renderers then read the live tenant / contact. See `invoices/party-snapshot.ts`.
+    sellerSnapshot: jsonb("seller_snapshot"),
+    buyerSnapshot: jsonb("buyer_snapshot"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -548,8 +590,25 @@ export const invoices = pgTable(
       table.invoiceNumber,
     ),
     publicTokenUnique: uniqueIndex("invoices_public_token_unique").on(table.publicToken),
+    buyerDetailsTokenUnique: uniqueIndex("invoices_buyer_details_token_unique").on(table.buyerDetailsToken),
   }),
 );
+
+/**
+ * What a customer's own billing details did to the address book
+ * (`invoices.buyerDetailsOutcome`): `existing` = matched a saved contact by
+ * IČO/DIČ, `filled` = completed the contact already on the draft, `created` =
+ * a new contact. `filled` lists the fields that were empty and got a value;
+ * `conflicts` the ones that differ and were left unchanged.
+ */
+export type BuyerDetailsOutcome = {
+  mode: "existing" | "filled" | "created";
+  contactId: string;
+  filled: string[];
+  conflicts: { field: string; saved: string | null; submitted: string | null }[];
+  autoIssue: "issued" | "sent" | "skipped" | "failed" | null;
+  autoIssueError?: string | null;
+};
 
 // ---------------------------------------------------------------------------
 // invoice_line_items — tenant-scoped.
@@ -631,13 +690,16 @@ export const invoiceNumberSequences = pgTable(
     // "OD" credit notes, "NA" quotes (see invoice-numbering.util.ts).
     series: varchar("series", { length: 8 }).notNull().default(""),
     year: integer("year").notNull(),
+    // 1–12 for a monthly counter (a pattern with {MM}), 0 for the yearly one.
+    month: integer("month").notNull().default(0),
     lastNumber: integer("last_number").notNull().default(0),
   },
   (table) => ({
-    tenantSeriesYearUnique: uniqueIndex("invoice_number_sequences_tenant_series_year_unique").on(
+    tenantSeriesYearMonthUnique: uniqueIndex("invoice_number_sequences_tenant_series_year_month_unique").on(
       table.tenantId,
       table.series,
       table.year,
+      table.month,
     ),
   }),
 );
@@ -1193,3 +1255,66 @@ export const auditLog = pgTable(
   },
   // Indexes (tenant + time, tenant + entity) live in the migration.
 );
+
+// ---------------------------------------------------------------------------
+// referrals — tenant-scoped, OWNED BY THE INVITER (tenant_id). Read-only for
+// the app role; written by the claim_referral / reward_referral SECURITY
+// DEFINER functions (migration 0044).
+// ---------------------------------------------------------------------------
+export const referrals = pgTable("referrals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  referredTenantId: uuid("referred_tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  program: varchar("program", { length: 16 }).$type<"friend" | "accountant">().notNull(),
+  rewardedAt: timestamp("rewarded_at", { withTimezone: true }),
+  rewardCredits: integer("reward_credits"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// credit_ledger — tenant-scoped, append-only. 1 credit = 1 Kč. Positive rows
+// only come from the referral functions; the app may insert spends
+// (amount < 0, reason 'plan_purchase') for its own tenant.
+// ---------------------------------------------------------------------------
+export const creditLedger = pgTable("credit_ledger", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(),
+  reason: varchar("reason", { length: 32 })
+    .$type<"referral_welcome" | "referral_reward" | "plan_purchase" | "adjustment">()
+    .notNull(),
+  referralId: uuid("referral_id").references(() => referrals.id, { onDelete: "set null" }),
+  plan: varchar("plan", { length: 16 }),
+  months: integer("months"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// partners — GLOBAL catalogue (no tenant, no RLS) behind /partners and the
+// footer strip; managed by platform admins (`src/partners/`).
+// ---------------------------------------------------------------------------
+export const partners = pgTable("partners", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: varchar("slug", { length: 60 }).notNull(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  description: text("description"),
+  logoUrl: text("logo_url"),
+  category: varchar("category", { length: 16 })
+    .$type<"accounting" | "banking" | "software" | "service" | "other">()
+    .notNull()
+    .default("other"),
+  featured: boolean("featured").notNull().default(false),
+  showInFooter: boolean("show_in_footer").notNull().default(false),
+  weight: integer("weight").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  clicks: integer("clicks").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});

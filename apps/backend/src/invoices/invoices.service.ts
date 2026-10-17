@@ -8,10 +8,11 @@ import {
   type PeppolIssue,
   type RequirementIssue,
 } from "@faktur/cz-compliance";
-import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, notInArray, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { fuzzyScore } from "../common/fuzzy";
-import { getCnbRate } from "../exports/cnb-rates";
+import { getCnbDay } from "../exports/cnb-rates";
+import { annualRateFor, exchangeRateSettingsOf, rateYearOf, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
 import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
@@ -24,14 +25,22 @@ import type { CreateInvoiceDto, ListInvoicesQuery, UpdateInvoiceDto } from "./dt
 import type { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
 import { InvoicePdfService } from "./invoice-pdf.service";
 import {
-  allocateNextInvoiceSequence,
-  DOCUMENT_SERIES,
-  formatInvoiceNumber,
+  allocateInvoiceNumber,
+  loadNumberFormats,
   variableSymbolFor,
 } from "./invoice-numbering.util";
 import { computeInvoiceTotal, computeVatBreakdown, formatInvoiceAmount, lineBase, round2 } from "./invoice-total.util";
 import { documentVars } from "./custom-fields";
 import { resolveTenantForInvoice } from "../tenants/bank-accounts";
+import {
+  BUYER_SNAPSHOT_KEYS,
+  SELLER_SNAPSHOT_KEYS,
+  applyBuyerSnapshot,
+  buyerSnapshotOf,
+  documentParties,
+  sellerSnapshotOf,
+  snapshotDiffers,
+} from "./party-snapshot";
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 
@@ -76,7 +85,7 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   const v: Partial<typeof schema.invoices.$inferInsert> = {};
   if (dto.document_type !== undefined) v.documentType = dto.document_type;
   if (dto.related_invoice_id !== undefined) v.relatedInvoiceId = dto.related_invoice_id ?? null;
-  if (dto.contact_id !== undefined) v.contactId = dto.contact_id;
+  if (dto.contact_id !== undefined) v.contactId = dto.contact_id ?? null;
   if (dto.issue_date !== undefined) v.issueDate = dto.issue_date;
   if (dto.due_date !== undefined) v.dueDate = dto.due_date ?? null;
   if (dto.taxable_supply_date !== undefined) v.taxableSupplyDate = dto.taxable_supply_date ?? null;
@@ -100,6 +109,43 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.language !== undefined) v.language = dto.language;
   if (dto.reverse_charge !== undefined) v.reverseCharge = dto.reverse_charge;
   return v;
+}
+
+/**
+ * Whether a document may be in this state without a customer: a draft may
+ * (the customer can still be picked, or fill in their own details through
+ * the "Poslat odběrateli k doplnění údajů" link), an issued document never.
+ * Returns the error to show, or null when it is fine.
+ */
+export function customerRequiredError(action: "save_draft" | "issue" | "edit_issued", contactId: string | null | undefined): string | null {
+  if (contactId) return null;
+  if (action === "save_draft") return null;
+  return action === "issue" ? "Invoice has no contact – assign one before issuing" : "An issued document must keep its customer";
+}
+
+/**
+ * Edit-with-reason of an issued document: a different rate than the stored
+ * one makes it `manual` (no "Kurz ČNB k …" claim for a rate that is not
+ * ČNB's). A hidden conversion stays hidden, an untouched rate stays as it was.
+ */
+export function rateModeAfterEdit(
+  invoice: Pick<InvoiceRow, "exchangeRate" | "exchangeRateMode">,
+  values: Partial<typeof schema.invoices.$inferInsert>,
+): Partial<typeof schema.invoices.$inferInsert> {
+  if (values.exchangeRate === undefined) return {};
+  const before = invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
+  const after = values.exchangeRate == null ? null : Number(values.exchangeRate);
+  if (before === after || after == null || invoice.exchangeRateMode === "none") return {};
+  return { exchangeRateMode: "manual", exchangeRateDate: null };
+}
+
+/** Per-field audit entries ("seller.dic: CZ1 → CZ2") between two party snapshots. */
+function snapshotChanges(prefix: string, from: unknown, to: unknown, keys: readonly string[]) {
+  const a = (from ?? {}) as Record<string, unknown>;
+  const b = (to ?? {}) as Record<string, unknown>;
+  return keys
+    .filter((k) => (a[k] ?? null) !== (b[k] ?? null))
+    .map((k) => ({ field: `${prefix}.${k}`, from: a[k] ?? null, to: b[k] ?? null }));
 }
 
 function startOfToday(): Date {
@@ -171,8 +217,8 @@ export class InvoicesService {
     contact: typeof schema.contacts.$inferSelect,
     kind: "invoice" | "reminder",
   ): Promise<EmailCustomization> {
-    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
-    const prefs = emailPrefsOf(tenant?.emailPrefs);
+    const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    const prefs = emailPrefsOf(liveTenant?.emailPrefs);
     const attachments: EmailAttachment[] = [];
     if (kind === "invoice" && invoice.invoiceNumber) {
       const base = `faktura-${invoice.invoiceNumber.replace(/[^\w.-]+/g, "_")}`;
@@ -189,11 +235,15 @@ export class InvoicesService {
     }
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoice.id));
     const breakdown = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
+    // {company}, {ico}, {iban}, {customer}… as on the document (its snapshot, if issued).
+    const tenant = liveTenant ? documentParties(invoice, await resolveTenantForInvoice(db, liveTenant, invoice), contact).tenant : undefined;
+    const buyer = applyBuyerSnapshot(contact, invoice.buyerSnapshot);
     const vars = {
-      ...templateValues(tenant, invoice, contact),
-      ...documentVars(invoice.customFields, breakdown, invoice.amountPaid, templateVarsOf(tenant?.templateVars), (n) => formatInvoiceAmount(n, invoice.currency)).formatted,
+      ...templateValues(tenant, invoice, buyer),
+      ...documentVars(invoice.customFields, breakdown, invoice.amountPaid, templateVarsOf(liveTenant?.templateVars), (n) => formatInvoiceAmount(n, invoice.currency)).formatted,
     };
-    return { ...emailCustomizationOf(prefs, kind, tenant, contact.legalName, vars), attachments };
+    // Sender name and reply-to stay the company's current ones.
+    return { ...emailCustomizationOf(prefs, kind, liveTenant, buyer.legalName, vars), attachments };
   }
 
   /**
@@ -380,10 +430,13 @@ export class InvoicesService {
   /**
    * A person-typed draft from the dashboard form or the public API. The
    * contact must belong to this tenant — RLS hides other tenants' contacts,
-   * so a foreign id simply isn't found.
+   * so a foreign id simply isn't found. A draft may have no contact yet
+   * (`customerRequiredError`); issuing it still needs one.
    */
   async create(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api" = "manual") {
-    await this.requireContact(db, dto.contact_id);
+    const missing = customerRequiredError("save_draft", dto.contact_id);
+    if (missing) throw new BadRequestException(missing);
+    if (dto.contact_id) await this.requireContact(db, dto.contact_id);
     await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
 
     // No db.transaction here: `db` is the request's own transaction (tenant
@@ -393,7 +446,7 @@ export class InvoicesService {
       .values({
         ...invoiceFieldValues(dto),
         tenantId,
-        contactId: dto.contact_id,
+        contactId: dto.contact_id ?? null,
         issueDate: dto.issue_date ?? new Date(),
         status: "draft",
         source,
@@ -434,6 +487,10 @@ export class InvoicesService {
       if (dto.related_invoice_id !== undefined && (dto.related_invoice_id ?? null) !== invoice.relatedInvoiceId) {
         throw new BadRequestException("The linked document of an issued document cannot be changed");
       }
+      if (dto.contact_id !== undefined) {
+        const missing = customerRequiredError("edit_issued", dto.contact_id);
+        if (missing) throw new BadRequestException(missing);
+      }
     }
     if (dto.contact_id) await this.requireContact(db, dto.contact_id);
     const documentType = dto.document_type ?? invoice.documentType;
@@ -441,7 +498,11 @@ export class InvoicesService {
     await this.checkRelated(db, documentType, relatedId);
 
     const values = invoiceFieldValues(dto);
+    // A rate changed by hand on an issued document is no longer the ČNB or
+    // annual rate it was printed as; label it as a plain rate from now on.
+    if (issued) Object.assign(values, rateModeAfterEdit(invoice, values));
     const changes = this.audit?.diff(invoice as Record<string, unknown>, values as Record<string, unknown>) ?? [];
+    if (issued) changes.push(...(await this.snapshotAfterEdit(db, tenantId, invoice, values)));
 
     if (dto.line_items) {
       const oldItems = await db
@@ -476,6 +537,44 @@ export class InvoicesService {
 
     if (changes.length > 0 || reason) await this.log(db, updated, issued ? "edited_issued" : "updated", changes, reason);
     return updated;
+  }
+
+  /**
+   * Editing an issued document never refreshes its snapshot from today's
+   * details on its own. Only what the edit itself changes is re-taken: a
+   * different customer chosen, or a different payment account / currency.
+   * Documents without a snapshot (issued before it existed) stay without one.
+   */
+  private async snapshotAfterEdit(
+    db: TenantDb,
+    tenantId: string,
+    invoice: InvoiceRow,
+    values: Partial<typeof schema.invoices.$inferInsert>,
+  ) {
+    const changes: { field: string; from: unknown; to: unknown }[] = [];
+    const contactId = values.contactId !== undefined ? values.contactId : invoice.contactId;
+    if (invoice.buyerSnapshot && contactId !== invoice.contactId) {
+      const [contact] = contactId ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, contactId)).limit(1) : [];
+      values.buyerSnapshot = contact ? buyerSnapshotOf(contact) : null;
+      changes.push(...snapshotChanges("buyer", invoice.buyerSnapshot, values.buyerSnapshot, BUYER_SNAPSHOT_KEYS));
+    }
+    const bankAccountId = values.bankAccountId !== undefined ? values.bankAccountId : invoice.bankAccountId;
+    const currency = values.currency ?? invoice.currency;
+    if (invoice.sellerSnapshot && (bankAccountId !== invoice.bankAccountId || currency !== invoice.currency)) {
+      const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+      if (tenant) {
+        const payee = await resolveTenantForInvoice(db, tenant, { bankAccountId: bankAccountId ?? null, currency });
+        const bank = {
+          bankAccountNumber: payee.bankAccountNumber,
+          bankAccountBankCode: payee.bankAccountBankCode,
+          bankAccountIban: payee.bankAccountIban,
+          bankAccountSwift: payee.bankAccountSwift,
+        };
+        values.sellerSnapshot = { ...(invoice.sellerSnapshot as Record<string, unknown>), ...bank };
+        changes.push(...snapshotChanges("seller", invoice.sellerSnapshot, values.sellerSnapshot, Object.keys(bank)));
+      }
+    }
+    return changes;
   }
 
   /** Delete a draft that never got a number. */
@@ -530,9 +629,23 @@ export class InvoicesService {
           : eq(schema.invoices.relatedInvoiceId, id),
       );
 
+    // The document keeps the parties as they were on its issue date; the page
+    // notes it when today's Fakturační údaje or contact say something else.
+    const [liveTenant] = invoice.sellerSnapshot
+      ? await db.select().from(schema.tenants).where(eq(schema.tenants.id, invoice.tenantId)).limit(1)
+      : [];
+    const payee = liveTenant ? await resolveTenantForInvoice(db, liveTenant, invoice) : null;
+
     return {
       invoice: { ...invoice, isOverdue: isOverdue(invoice) },
+      /** The live contact (link, e-mail for sending). */
       contact: contact ?? null,
+      /** The buyer as printed on the document. */
+      buyer: contact ? applyBuyerSnapshot(contact, invoice.buyerSnapshot) : null,
+      snapshot: {
+        sellerDiffers: snapshotDiffers(invoice.sellerSnapshot, payee, SELLER_SNAPSHOT_KEYS),
+        buyerDiffers: snapshotDiffers(invoice.buyerSnapshot, contact, BUYER_SNAPSHOT_KEYS),
+      },
       items: items.map((item) => ({
         ...item,
         lineTotalWithoutVat: round2(lineBase(item)),
@@ -784,6 +897,7 @@ export class InvoicesService {
       contact: contact ?? null,
       documentType: invoice.documentType,
       currency: invoice.currency,
+      bankAccountId: invoice.bankAccountId,
       dueInDays,
       paymentMethod: invoice.paymentMethod,
       paymentMethodLabel: invoice.paymentMethodLabel,
@@ -808,6 +922,22 @@ export class InvoicesService {
         vatRate: item.vatRate == null ? null : Number(item.vatRate),
       })),
     };
+  }
+
+  /**
+   * "Podle poslední faktury": the most recently created document (credit
+   * notes left out, they only make sense against their invoice) as a
+   * starting point, exactly like duplicateTemplate. Nothing is written.
+   */
+  async latestDuplicateTemplate(db: TenantDb) {
+    const [latest] = await db
+      .select({ id: schema.invoices.id })
+      .from(schema.invoices)
+      .where(ne(schema.invoices.documentType, "credit_note"))
+      .orderBy(desc(schema.invoices.createdAt))
+      .limit(1);
+    if (!latest) throw new NotFoundException("No invoice yet");
+    return this.duplicateTemplate(db, latest.id);
   }
 
   findOne(db: TenantDb, id: string) {
@@ -1091,9 +1221,8 @@ export class InvoicesService {
       );
     }
 
-    if (!invoice.contactId) {
-      throw new BadRequestException("Invoice has no contact — assign one before issuing");
-    }
+    const noCustomer = customerRequiredError("issue", invoice.contactId);
+    if (noCustomer) throw new BadRequestException(noCustomer);
 
     if (!invoice.dueDate && invoice.documentType !== "quote") {
       throw new BadRequestException("Invoice has no due date — set one before issuing");
@@ -1109,12 +1238,11 @@ export class InvoicesService {
     }
 
     const now = new Date();
-    // The date the person chose on the form wins; numbering follows its year.
+    // The date the person chose on the form wins; numbering follows its year
+    // (and month, for a pattern with {MM}) in the company's own number format.
     const issueDate = invoice.issueDate ?? now;
-    const year = new Date(issueDate).getFullYear();
-    const series = DOCUMENT_SERIES[invoice.documentType];
-    const sequence = await allocateNextInvoiceSequence(db, tenantId, year, series);
-    const invoiceNumber = formatInvoiceNumber(year, sequence, series);
+    const formats = await loadNumberFormats(db, tenantId);
+    const { invoiceNumber } = await allocateInvoiceNumber(db, tenantId, invoice.documentType, new Date(issueDate), formats);
     const variableSymbol = invoice.variableSymbol ?? variableSymbolFor(invoice.documentType, invoiceNumber);
     // "Already paid" entered on the draft: in full → paid at issue, otherwise a partial payment.
     const total = round2(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }));
@@ -1122,15 +1250,15 @@ export class InvoicesService {
     const settledByProforma =
       prepaidInFull ||
       (invoice.documentType === "invoice" && related?.documentType === "proforma" && related.status === "paid");
-    // Foreign-currency documents carry the ČNB rate of the taxable supply
-    // date, so VAT returns can convert them to CZK (§38 ZDPH). A failed
-    // lookup leaves it null; the VAT export looks it up again later.
-    const exchangeRate =
-      invoice.currency === "CZK"
-        ? null
-        : (invoice.exchangeRate ??
-          (await getCnbRate(invoice.currency, invoice.taxableSupplyDate ?? issueDate))?.toFixed(6) ??
-          null);
+    // The supplier and buyer as they stand right now, kept with the document
+    // so a later change of address or DIČ does not rewrite it (§29, §34–35 ZDPH).
+    const { sellerSnapshot, buyerSnapshot } = await this.captureParties(db, tenantId, invoice, now);
+
+    // Foreign-currency documents carry their CZK rate, so the PDF and the VAT
+    // returns can convert them (§38 ZDPH); which rate follows the company's
+    // setting (exchange-rate-mode.ts). A failed ČNB lookup leaves it null;
+    // the VAT export looks it up again later.
+    const { exchangeRate, exchangeRateMode, exchangeRateDate } = await this.issueRate(db, tenantId, invoice, lineItems, issueDate);
 
     const [updated] = await db
       .update(schema.invoices)
@@ -1138,12 +1266,16 @@ export class InvoicesService {
         invoiceNumber,
         variableSymbol,
         issueDate,
+        sellerSnapshot,
+        buyerSnapshot,
         status: settledByProforma ? "paid" : "issued",
         paidAt: settledByProforma ? (prepaidInFull ? issueDate : (related?.paidAt ?? now)) : null,
         amountPaid: settledByProforma ? total.toFixed(2) : invoice.documentType === "quote" ? "0" : invoice.amountPaid,
         issuedByUserId: userId,
         issuedAt: now,
         exchangeRate,
+        exchangeRateMode,
+        exchangeRateDate,
         // Only an AI-sourced draft has a meaningful "reviewed" moment
         // distinct from "issued" (blueprint §9) — a manual/api/recurring
         // invoice was never an unreviewed AI draft in the first place, so
@@ -1158,6 +1290,92 @@ export class InvoicesService {
       .returning();
 
     await this.log(db, updated, "issued", [{ field: "invoiceNumber", from: null, to: updated.invoiceNumber }]);
+    return updated;
+  }
+
+  /**
+   * The CZK rate a document gets at issue and how it was chosen: a rate typed
+   * on the draft, the company's annual rate for the year of the taxable
+   * supply date (issue date when there is none), or the ČNB list valid on
+   * that day. Nothing for CZK documents.
+   */
+  private async issueRate(
+    db: TenantDb,
+    tenantId: string,
+    invoice: Pick<InvoiceRow, "currency" | "exchangeRate" | "taxableSupplyDate" | "reverseCharge">,
+    lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
+    issueDate: Date,
+  ): Promise<{ exchangeRate: string | null; exchangeRateMode: StoredRateMode | null; exchangeRateDate: string | null }> {
+    if (invoice.currency === "CZK") return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
+    const [tenant] = await db
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId))
+      .limit(1);
+    const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
+    const day = new Date(invoice.taxableSupplyDate ?? issueDate);
+    const year = rateYearOf(day);
+    const annualRate = annualRateFor(settings.annualRates, invoice.currency, year);
+    const { mode, source } = resolveRateMode({
+      setting: settings.mode,
+      vatStatus: tenant?.vatStatus ?? "non_payer",
+      totalVat: computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
+      manualRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
+      annualRate,
+    });
+    if (source === "manual") return { exchangeRate: invoice.exchangeRate, exchangeRateMode: mode, exchangeRateDate: null };
+    if (source === "annual") return { exchangeRate: annualRate!.toFixed(6), exchangeRateMode: mode, exchangeRateDate: `${year}-01-01` };
+    const cnb = await getCnbDay(day);
+    const rate = cnb?.rates.get(invoice.currency.toUpperCase())?.rate ?? null;
+    return { exchangeRate: rate == null ? null : rate.toFixed(6), exchangeRateMode: mode, exchangeRateDate: rate == null ? null : cnb!.date };
+  }
+
+  /**
+   * Supplier (with the account the document is paid to) and buyer exactly as
+   * they stand now, for the moment a document leaves the draft stage.
+   */
+  private async captureParties(
+    db: TenantDb,
+    tenantId: string,
+    invoice: Pick<InvoiceRow, "contactId" | "bankAccountId" | "currency">,
+    at: Date = new Date(),
+    source: "issue" | "manual_refresh" = "issue",
+  ) {
+    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    const [contact] = invoice.contactId
+      ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1)
+      : [];
+    return {
+      sellerSnapshot: tenant ? sellerSnapshotOf(await resolveTenantForInvoice(db, tenant, invoice), at, source) : null,
+      buyerSnapshot: contact ? buyerSnapshotOf(contact, at, source) : null,
+    };
+  }
+
+  /**
+   * "Aktualizovat údaje dodavatele / odběratele": an explicit, logged choice
+   * to replace an issued document's snapshot with the current details (e.g.
+   * a typo in the DIČ at issue). Never happens on its own.
+   */
+  async refreshPartySnapshot(db: TenantDb, tenantId: string, id: string, party: "seller" | "buyer" | "both", reason?: string | null) {
+    const invoice = await this.requireInvoice(db, id);
+    if (ISSUABLE_STATUSES.includes(invoice.status)) {
+      throw new BadRequestException("A draft always shows the current details");
+    }
+    if (invoice.status === "cancelled") throw new BadRequestException("A cancelled document cannot be edited");
+    const fresh = await this.captureParties(db, tenantId, invoice, new Date(), "manual_refresh");
+    const values: Partial<typeof schema.invoices.$inferInsert> = {};
+    if (party !== "buyer") values.sellerSnapshot = fresh.sellerSnapshot;
+    if (party !== "seller") values.buyerSnapshot = fresh.buyerSnapshot;
+    const [updated] = await db
+      .update(schema.invoices)
+      .set({ ...values, updatedAt: new Date() })
+      .where(eq(schema.invoices.id, id))
+      .returning();
+    const changes = [
+      ...(party !== "buyer" ? snapshotChanges("seller", invoice.sellerSnapshot, fresh.sellerSnapshot, SELLER_SNAPSHOT_KEYS) : []),
+      ...(party !== "seller" ? snapshotChanges("buyer", invoice.buyerSnapshot, fresh.buyerSnapshot, BUYER_SNAPSHOT_KEYS) : []),
+    ];
+    await this.log(db, updated, "edited_issued", changes, reason?.trim() || "Aktualizace údajů podle současného stavu");
     return updated;
   }
 
@@ -1216,7 +1434,9 @@ export class InvoicesService {
 
     // Payment details: the account chosen on the invoice / matching its currency.
     const payee = await resolveTenantForInvoice(db, tenant, invoice);
-    return { invoice, contact, tenant: payee, lineItems, related: related ?? null };
+    // As on the document: the snapshot taken at issue, live data without one.
+    const parties = documentParties(invoice, payee, contact);
+    return { invoice, contact: parties.contact, tenant: parties.tenant, lineItems, related: related ?? null };
   }
 
   /**
@@ -1280,17 +1500,19 @@ export class InvoicesService {
   ): Promise<{ issues: ((RequirementIssue & { scheme: "law" }) | (PeppolIssue & { scheme: "peppol" }))[] }> {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
     if (!invoice) throw new NotFoundException(`Invoice ${invoiceId} not found`);
-    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
-    if (!tenant) throw new NotFoundException(`Tenant ${tenantId} not found`);
-    const [contact] = invoice.contactId
+    const [liveTenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    if (!liveTenant) throw new NotFoundException(`Tenant ${tenantId} not found`);
+    const [liveContact] = invoice.contactId
       ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1)
       : [];
+    // An issued document is checked as it was issued (its snapshot), a draft against live data.
+    const { tenant, contact } = documentParties(invoice, liveTenant, liveContact);
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
 
     const law = checkInvoiceRequirements({
       supplier: { ...tenantToIsdocParty(tenant), registryNote: tenant.registryNote ?? undefined },
-      customer: contact ? contactToIsdocParty(contact) : undefined,
-      vatPayer: tenant.dicVatPayer,
+      customer: contact ? { ...contactToIsdocParty(contact), isPerson: contact.isPerson } : undefined,
+      vatStatus: tenant.vatStatus,
       reverseCharge: invoice.reverseCharge,
       taxDocument: invoice.documentType === "invoice" || invoice.documentType === "credit_note",
       lines: lineItems.map((l) => ({ description: l.description, quantity: Number(l.quantity) })),

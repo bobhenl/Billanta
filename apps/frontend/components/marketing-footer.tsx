@@ -1,47 +1,51 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { InstallAppButton } from '@/components/install-app-button';
-import { SITE_NAME } from '@/lib/site';
+import { fetchPartners, partnerHref } from '@/lib/partners';
+import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 
 /**
  * Public-site footer: a compact link grid that doubles as secondary
  * navigation and as internal linking — every entry is a real, crawlable
- * `<a>`.
+ * `<a>`. One block, as on VoxelRank: the cookie settings and "install app"
+ * entries sit in the columns rather than in a second strip underneath, and
+ * there is no "© … All rights reserved" line (copyright needs no notice).
+ * Partners marked `show_in_footer` get a strip under the grid, linked
+ * through the counting redirect.
  */
 export async function MarketingFooter() {
   const t = await getTranslations('marketing.footer');
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
   const tTools = await getTranslations('tools');
-  const tMenu = await getTranslations('tools.menu');
-  const locale = await getLocale();
-  const year = new Date().getFullYear();
+  const [locale, partners] = await Promise.all([getLocale(), fetchPartners({ footer: true })]);
 
-  const columns = [
+  const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
+  const columns: { title: string; links: { href: string; label: string }[]; extra?: React.ReactNode }[] = [
     {
       title: t('product.title'),
       links: [
-        { href: '/funkce', label: t('product.features') },
-        { href: '/vytvorit-fakturu', label: t('product.guestInvoice') },
+        { href: '/features', label: t('product.features') },
+        { href: '/create-invoice', label: t('product.guestInvoice') },
         { href: '/pricing', label: t('product.pricing') },
-        { href: '/srovnani', label: t('product.compare') },
+        { href: '/compare', label: t('product.compare') },
         { href: '/#faq', label: t('product.faq') }
       ]
     },
     {
-      // Only what is published in this language (lib/public-tools.ts).
-      title: tMenu('resources'),
+      // Same entries as the header's Resources dropdown, spelled out; only
+      // what is published in this language (lib/public-tools.ts).
+      title: tTools('menu.resources'),
       links: [
-        { href: '/kalkulacky', label: tMenu('calculators') },
+        { href: '/calculators', label: tTools('menu.calculators') },
         ...CALCULATORS.filter((c) => isPublishedIn(c, locale)).map((c) => ({
-          href: `/kalkulacky/${c.slug}`,
+          href: `/calculators/${c.slug}`,
           label: tTools(`calculators.items.${c.key}.name`)
         })),
         ...GUIDES.filter((g) => isPublishedIn(g, locale)).map((g) => ({
-          href: `/navody/${g.slug}`,
+          href: `/guides/${g.slug}`,
           label: tTools(`guides.items.${g.key}.name`)
         }))
       ]
@@ -50,7 +54,9 @@ export async function MarketingFooter() {
       title: t('company.title'),
       links: [
         { href: '/about', label: t('company.about') },
-        { href: '/faktury-pro', label: tMunicipalities('breadcrumbBrowse') }
+        { href: '/for-accountants', label: t('company.accountants') },
+        { href: '/partners', label: t('company.partners') },
+        { href: '/invoicing', label: tMunicipalities('breadcrumbBrowse') }
       ]
     },
     {
@@ -60,14 +66,24 @@ export async function MarketingFooter() {
         { href: '/legal/privacy', label: t('legal.privacy') },
         { href: '/legal/dpa', label: t('legal.dpa') },
         { href: '/legal/cookies', label: t('legal.cookies') }
-      ]
+      ],
+      extra: (
+        <li>
+          <CookieSettingsButton label={t('legal.cookieSettings')} className={linkClass} />
+        </li>
+      )
     },
     {
       title: t('account.title'),
       links: [
         { href: '/login', label: t('account.login') },
         { href: '/signup', label: t('account.signup') }
-      ]
+      ],
+      extra: (
+        <li>
+          <InstallAppButton className={`inline-flex items-center gap-1.5 ${linkClass}`} />
+        </li>
+      )
     }
   ];
 
@@ -89,23 +105,32 @@ export async function MarketingFooter() {
               <ul className="mt-3 space-y-2 text-sm">
                 {column.links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-foreground/80 transition-colors hover:text-primary">
+                    <Link href={link.href} className={linkClass}>
                       {link.label}
                     </Link>
                   </li>
                 ))}
+                {column.extra}
               </ul>
             </nav>
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>{t('copyright', { year, name: SITE_NAME })}</p>
-          <div className="flex flex-wrap items-center gap-4">
-            <InstallAppButton className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground" />
-            <CookieSettingsButton label={t('legal.cookieSettings')} className="self-start transition-colors hover:text-foreground" />
-          </div>
-        </div>
+        {partners.length > 0 && (
+          <nav aria-label={t('partners.title')} className="mt-8 border-t border-border pt-6">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('partners.title')}</span>
+              {partners.map((p) => (
+                <a key={p.slug} href={partnerHref(locale, p.slug)} target="_blank" rel="sponsored noopener" className={linkClass}>
+                  {p.name}
+                </a>
+              ))}
+              <Link href="/partners" className="font-semibold text-primary hover:underline">
+                {t('partners.all')}
+              </Link>
+            </div>
+          </nav>
+        )}
       </div>
     </footer>
   );

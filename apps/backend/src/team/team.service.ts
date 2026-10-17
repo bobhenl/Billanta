@@ -11,6 +11,7 @@ import {
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { EmailService } from "../email/email.service";
@@ -104,6 +105,10 @@ export class TeamService {
       .limit(1);
     if (existingMember) throw new ConflictException("This person is already a member");
 
+    // Invitations go to any address with the company name in the subject, so
+    // they share the invoice e-mail caps and the suspended/paused checks.
+    await assertCanSendEmail(db, user.tenantId);
+
     // A fresh invite to the same address replaces any pending one.
     await db
       .delete(schema.tenantInvitations)
@@ -146,6 +151,7 @@ export class TeamService {
         role: ROLE_LABEL_CS[dto.role] ?? dto.role,
         acceptUrl,
       });
+      await recordEmailSent(db, user.tenantId, "invitation", dto.email);
     } catch (err) {
       emailSent = false;
       this.logger.warn(`Invitation email to ${dto.email} failed: ${(err as Error).message}`);

@@ -1,0 +1,43 @@
+{
+  "segments": {
+    "vytvorit-fakturu": "create-invoice",
+    "faktury-pro": "invoicing",
+    "pro-ucetni": "for-accountants",
+    "partneri": "partners",
+    "srovnani": "compare",
+    "funkce": "features",
+    "hledat": "search"
+  },
+  "features": {
+    "qr-platba": "qr-payments",
+    "vyhledani-firem-ares": "company-lookup-ares",
+    "kontrola-povinnych-udaju": "required-fields-check",
+    "upominky": "payment-reminders",
+    "parovani-plateb": "payment-matching",
+    "napojeni-na-fio-banku": "fio-bank-sync",
+    "opakovane-faktury": "recurring-invoices",
+    "castecne-uhrady": "partial-payments",
+    "faktura-hlasem": "voice-invoicing",
+    "ai-predvyplneni-faktur": "ai-invoice-prefill",
+    "evidence-vydaju": "expense-tracking",
+    "evidence-casu": "time-tracking",
+    "dph-priznani-epo": "vat-returns-epo",
+    "export-pro-ucetni": "accountant-export",
+    "api-webhooky": "api-webhooks",
+    "nabidky-a-zalohove-faktury": "quotes-and-proforma-invoices",
+    "faktury-v-cizi-mene": "foreign-currency-invoices",
+    "dvojjazycne-faktury": "bilingual-invoices",
+    "sablony-a-hromadna-fakturace": "templates-and-bulk-invoicing",
+    "platba-kartou": "card-payments",
+    "vlastni-zpusoby-uhrady": "custom-payment-methods",
+    "emaily-a-promenne": "emails-and-variables",
+    "klientsky-portal": "client-portal",
+    "verejny-profil-firmy": "public-company-profile",
+    "zalohovani-dat": "data-backups",
+    "tym-a-role": "team-and-roles",
+    "vice-firem": "multiple-companies",
+    "prechod-z-jineho-systemu": "switch-from-another-app",
+    "odhad-dane-a-odvodu": "tax-estimate",
+    "historie-zmen": "audit-log"
+  }
+}

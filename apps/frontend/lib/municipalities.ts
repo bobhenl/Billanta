@@ -1,7 +1,7 @@
 import municipalitiesData from '@/data/municipalities.json';
 
 /**
- * Backs the `/faktury-pro/[slug]` local-SEO landing pages (one per Czech and
+ * Backs the `/invoicing/[slug]` local-SEO landing pages (one per Czech and
  * Slovak municipality). See `apps/frontend/data/README.md` for exactly where
  * this data comes from, its real coverage, and its known gaps — every
  * municipality here is a real, sourced place; none were invented to pad out
@@ -51,14 +51,14 @@ function stripDiacritics(value: string): string {
   return value.normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
-/** Stable anchor id for a region's section on the `/faktury-pro` browse page. */
+/** Stable anchor id for a region's section on the `/invoicing` browse page. */
 export function regionAnchorId(country: Municipality['country'], region: string): string {
   const ascii = stripDiacritics(region).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   return `${country.toLowerCase()}-${ascii}`;
 }
 
 /**
- * Groups every municipality by (country, region) for the `/faktury-pro`
+ * Groups every municipality by (country, region) for the `/invoicing`
  * directory/browse page — real internal linking down to every municipality
  * page, not just a sitemap entry, per the project's doorway-page mitigation
  * plan (crawlable hierarchy: country -> region -> municipality).
@@ -88,7 +88,7 @@ export function getRegionGroups(): RegionGroup[] {
 
 /**
  * The subset of municipalities statically pre-rendered at build time (see
- * `app/[locale]/faktury-pro/[slug]/page.tsx` for why: build-time generation
+ * `app/[locale]/invoicing/[slug]/page.tsx` for why: build-time generation
  * of all ~9,100 municipalities × 3 locales is not reasonable). These are the
  * municipalities that are themselves the seat of their own district (i.e.
  * their name matches their `district` field) — the largest, most-searched
@@ -110,7 +110,7 @@ export function municipalityLocale(m: Municipality): 'cs' | 'sk' {
 }
 
 /**
- * Whether `/{locale}/faktury-pro/{slug}` is offered to search engines
+ * Whether `/{locale}/invoicing/{slug}` is offered to search engines
  * (sitemap + `index`). Every municipality is, but only in its own language:
  * a Czech village has no audience in Slovak or English, and three language
  * copies of the same town page are exactly the near-duplicates that read as
@@ -176,6 +176,23 @@ export function getTaxOffice(m: Municipality): string {
   if (m.region === 'Hlavní město Praha') return 'Finanční úřad pro hlavní město Prahu';
   if (m.region === 'Vysočina') return 'Finanční úřad pro Kraj Vysočina';
   return `Finanční úřad pro ${m.region} kraj`;
+}
+
+/**
+ * The social security office (OSSZ) an OSVČ in this Czech municipality
+ * reports to. There is one per okres, named after it, with these
+ * exceptions: Prague has PSSZ, Brno-město has MSSZ Brno, and the three
+ * Plzeň okresy share OSSZ Plzeň. Checked against the ČSSZ contact list
+ * (https://www.cssz.gov.cz/web/cz/kontakty, by kraj) in October 2026.
+ * Slovakia: null, Sociálna poisťovňa branches do not map 1:1 to okresy.
+ */
+export function getSocialSecurityOffice(m: Municipality): string | null {
+  if (m.country !== 'CZ' || !m.district) return null;
+  if (m.district === 'Praha') return 'Pražská správa sociálního zabezpečení';
+  if (m.district === 'Brno-město') return 'Městská správa sociálního zabezpečení Brno';
+  if (m.district.startsWith('Plzeň-')) return 'Okresní správa sociálního zabezpečení Plzeň';
+  if (m.district === 'Ostrava-město') return 'Okresní správa sociálního zabezpečení Ostrava';
+  return `Okresní správa sociálního zabezpečení ${m.district}`;
 }
 
 /** Great-circle distance in km, or null without coordinates. */

@@ -2,19 +2,21 @@
 
 import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, CreditCard, FileText, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
+import { Building2, CreditCard, FileText, Landmark, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
 import type { BankAccount, TenantSettings } from '@/lib/tenant';
+import { vatStatusOf } from '@/lib/vat-status';
+const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
 import { LogoUpload } from './logo-upload';
+import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow } from './tax-advances-editor';
 import { lookupAres } from '../../contacts/actions';
 import { updateCompany } from '../actions';
-
-const PAYMENT_METHODS = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'] as const;
 
 /** Form field → backend snake_case key; every value is edited as a string, except the two flags below. */
 const FIELDS = {
@@ -33,35 +35,34 @@ const FIELDS = {
   bankAccountNumber: 'bank_account_number',
   bankAccountBankCode: 'bank_account_bank_code',
   bankAccountIban: 'bank_account_iban',
-  bankAccountSwift: 'bank_account_swift',
-  defaultLocale: 'default_locale',
-  defaultDueDays: 'default_due_days',
-  defaultPaymentMethod: 'default_payment_method',
-  defaultNoteBelow: 'default_note_below'
+  bankAccountSwift: 'bank_account_swift'
 } as const;
 type Field = keyof typeof FIELDS;
-type Values = Record<Field, string> & { dicVatPayer: boolean };
+type Values = Record<Field, string> & { vatStatus: VatStatus };
 
-const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry', 'defaultLocale', 'defaultDueDays', 'defaultPaymentMethod'];
+const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry'];
 
 function toValues(t: TenantSettings): Values {
   const v = {} as Values;
   for (const key of Object.keys(FIELDS) as Field[]) v[key] = t[key] == null ? '' : String(t[key]);
-  v.dicVatPayer = t.dicVatPayer;
+  v.vatStatus = vatStatusOf(t);
   return v;
 }
 
 export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSettings; accounts: BankAccount[]; readOnly: boolean }) {
   const t = useTranslations('settings.company');
-  const tPay = useTranslations('doc.payment');
   const router = useRouter();
   const initial = useMemo(() => toValues(tenant), [tenant]);
   const [values, setValues] = useState<Values>(initial);
+  const initialAdvances = useMemo(() => rowsFromAdvances(tenant.taxAdvances), [tenant]);
+  const [advanceRows, setAdvanceRows] = useState<AdvanceRow[]>(initialAdvances);
+  const advancesDirty = rowsKey(advanceRows) !== rowsKey(initialAdvances);
   const [saving, startSave] = useTransition();
   const [loadingAres, setLoadingAres] = useState(false);
 
   const set = (key: Field, value: string) => setValues((v) => ({ ...v, [key]: value }));
   const dirty = (Object.keys(values) as (keyof Values)[]).filter((k) => values[k] !== initial[k]);
+  const dirtyCount = dirty.length + (advancesDirty ? 1 : 0);
 
   const loadAres = async () => {
     setLoadingAres(true);
@@ -81,22 +82,32 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
       addressCity: d.addressCity ?? v.addressCity,
       addressPostalCode: d.addressPostalCode ?? v.addressPostalCode,
       addressCountry: d.addressCountry ?? v.addressCountry,
-      dicVatPayer: d.isVatPayer ?? v.dicVatPayer
+      // ARES only knows "plátce DPH"; an identified person shows up as not a payer, so keep that choice.
+      vatStatus: d.isVatPayer === true ? 'payer' : d.isVatPayer === false ? (v.vatStatus === 'identified' ? 'identified' : 'non_payer') : v.vatStatus
     }));
     toast({ text: t('aresLoaded'), tone: 'ok' });
   };
 
   const save = () => {
-    const patch: Record<string, string | number | boolean | null> = {};
+    const patch: Parameters<typeof updateCompany>[0] = {};
     for (const key of dirty) {
-      if (key === 'dicVatPayer') {
-        patch.dic_vat_payer = values.dicVatPayer;
+      if (key === 'vatStatus') {
+        patch.vat_status = values.vatStatus;
         continue;
       }
       const raw = values[key].trim();
-      if (key === 'defaultDueDays') patch.default_due_days = Number(raw || 0);
-      else if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
+      if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
+    }
+    // The backend replaces the whole list, so send every period whenever one changed.
+    if (advancesDirty) {
+      const advances = advancesPayload(advanceRows);
+      if (!advances.ok) {
+        toast({ text: t(`advances.errors.${advances.error}`), tone: 'err' });
+        document.getElementById('zalohy')?.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      patch.tax_advances = advances.value;
     }
     startSave(async () => {
       const result = await updateCompany(patch);
@@ -160,20 +171,43 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
           {field('dic', t('dic'), { placeholder: 'CZ12345678', maxLength: 12 })}
           {field('companyName', t('companyName'), { required: true, maxLength: 200 }, '', t('companyNameHint'))}
           {field('legalName', t('legalName'), { required: true, maxLength: 200 }, '', t('legalNameHint'))}
-          <InfoHint hint={t('vatPayerHint')} className="text-sm sm:col-span-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-primary"
-                checked={values.dicVatPayer}
-                disabled={readOnly}
-                onChange={(e) => setValues((v) => ({ ...v, dicVatPayer: e.target.checked }))}
-              />
-              <span className="font-medium">{t('vatPayer')}</span>
-            </label>
-          </InfoHint>
+          <fieldset className="text-sm sm:col-span-2">
+            <legend className="mb-1 font-medium">{t('vatStatus.title')}</legend>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {VAT_STATUS_OPTIONS.map((s) => (
+                <label
+                  key={s}
+                  className={`flex cursor-pointer gap-2 rounded-lg border p-3 ${values.vatStatus === s ? 'border-primary bg-primary/5' : 'border-border'}`}
+                >
+                  <input
+                    type="radio"
+                    name="vatStatus"
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    checked={values.vatStatus === s}
+                    disabled={readOnly}
+                    onChange={() => setValues((v) => ({ ...v, vatStatus: s }))}
+                  />
+                  <span>
+                    <span className="block font-medium">{t(`vatStatus.${s}`)}</span>
+                    <span className="block text-xs text-muted-foreground">{t(`vatStatus.${s}Hint`)}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+            {values.dic.trim() && values.vatStatus === 'non_payer' && (
+              <p className="mt-2 text-xs text-muted-foreground">{t('vatStatus.dicHint')}</p>
+            )}
+          </fieldset>
         </div>
       </Section>
+
+      {!isLegalEntityName(values.legalName) && (
+        <section id="zalohy" className="scroll-mt-24">
+          <Section icon={Landmark} title={t('advances.title')} hint={t('advances.hint')}>
+            <TaxAdvancesEditor rows={advanceRows} onChange={setAdvanceRows} country={values.addressCountry} readOnly={readOnly} />
+          </Section>
+        </section>
+      )}
 
       <Section icon={MapPin} title={t('sections.address')}>
         <div className="grid gap-3 sm:grid-cols-6">
@@ -214,50 +248,28 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
         <BankAccounts accounts={accounts} readOnly={readOnly} />
       </Section>
 
-      <Section icon={FileText} title={t('sections.defaults')} hint={t('sections.defaultsHint')}>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">{t('defaultLocale')}</span>
-            <select className={inputClass} value={values.defaultLocale} disabled={readOnly} onChange={(e) => set('defaultLocale', e.target.value)}>
-              <option value="cs">Čeština</option>
-              <option value="sk">Slovenčina</option>
-              <option value="en">English</option>
-            </select>
-          </label>
-          {field('defaultDueDays', t('defaultDueDays'), { type: 'number', min: 0, max: 365, required: true }, '', t('defaultDueDaysHint'))}
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">{t('defaultPaymentMethod')}</span>
-            <select className={inputClass} value={values.defaultPaymentMethod} disabled={readOnly} onChange={(e) => set('defaultPaymentMethod', e.target.value)}>
-              {PAYMENT_METHODS.map((m) => (
-                <option key={m} value={m}>
-                  {tPay(m)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-sm sm:col-span-3">
-            <span className="mb-1 block font-medium">{t('defaultNoteBelow')}</span>
-            <textarea
-              className={`${inputClass} min-h-20`}
-              value={values.defaultNoteBelow}
-              disabled={readOnly}
-              maxLength={2000}
-              placeholder={t('defaultNotePlaceholder')}
-              onChange={(e) => set('defaultNoteBelow', e.target.value)}
-            />
-          </label>
-        </div>
+      {/* Invoice defaults (language, due days, payment, notes, customer, items…) live together in Settings → Faktury. */}
+      <Section icon={FileText} title={t('sections.defaults')}>
+        <p className="text-sm text-muted-foreground">
+          {t('defaultsMoved')}{' '}
+          <Link href="/settings/invoices#defaults" className="font-semibold text-foreground underline underline-offset-2">
+            {t('defaultsLink')}
+          </Link>
+        </p>
       </Section>
 
       {!readOnly && (
         <div className="sticky bottom-20 z-10 flex items-center justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">
-          <span className="mr-auto text-sm text-muted-foreground">{dirty.length > 0 ? t('unsaved', { count: dirty.length }) : t('noChanges')}</span>
-          {dirty.length > 0 && (
-            <button type="button" className={buttonClass.ghost} onClick={() => setValues(initial)}>
+          <span className="mr-auto text-sm text-muted-foreground">{dirtyCount > 0 ? t('unsaved', { count: dirtyCount }) : t('noChanges')}</span>
+          {dirtyCount > 0 && (
+            <button type="button" className={buttonClass.ghost} onClick={() => {
+              setValues(initial);
+              setAdvanceRows(initialAdvances);
+            }}>
               {t('discard')}
             </button>
           )}
-          <button type="submit" className={buttonClass.primary} disabled={saving || dirty.length === 0}>
+          <button type="submit" className={buttonClass.primary} disabled={saving || dirtyCount === 0}>
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {t('save')}
           </button>

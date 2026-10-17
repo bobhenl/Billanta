@@ -24,6 +24,12 @@ export interface InvoiceRow {
   issueDate: string | null;
   dueDate: string | null;
   taxableSupplyDate: string | null;
+  /** CZK per 1 unit of `currency` (ČNB rate stored at issue); null for CZK. */
+  exchangeRate?: string | null;
+  /** How the rate was chosen at issue (Settings → Faktury → Kurz); null = issued before the setting. */
+  exchangeRateMode?: 'cnb_daily' | 'annual' | 'manual' | 'none' | null;
+  /** ČNB list day (cnb_daily) or 1 January of the rate's year (annual), YYYY-MM-DD. */
+  exchangeRateDate?: string | null;
   paidAt: string | null;
   /** Sum received so far (numeric string); equals the total once paid. */
   amountPaid?: string;
@@ -37,6 +43,54 @@ export interface InvoiceRow {
   totalVat: number;
   total: number;
   isOverdue: boolean;
+  /** Open "customer fills in their details" link on a draft (null when none). */
+  buyerDetailsToken?: string | null;
+  buyerDetailsSubmittedAt?: string | null;
+}
+
+export interface BuyerDetailsOutcome {
+  mode: 'existing' | 'filled' | 'created';
+  contactId: string;
+  filled: string[];
+  conflicts: { field: string; saved: string | null; submitted: string | null }[];
+  autoIssue: 'issued' | 'sent' | 'skipped' | 'failed' | null;
+  autoIssueError?: string | null;
+}
+
+/**
+ * Which wording the CZK conversion of a foreign-currency document gets, the
+ * same as its PDF (backend invoices/exchange-rate-mode.ts `rateLineLabel`):
+ * `on` = ČNB rate of a given day, `annual` = the company's rate for a year,
+ * `manual` = a typed rate, `hidden` = not printed, `legacy` = before the setting.
+ */
+export function fxLabelOf(row: {
+  exchangeRateMode?: InvoiceRow['exchangeRateMode'];
+  exchangeRateDate?: string | null;
+  taxableSupplyDate?: string | null;
+  issueDate?: string | null;
+}): { kind: 'on'; date: string } | { kind: 'annual'; year: string } | { kind: 'manual' | 'hidden' | 'legacy' } {
+  const fallback = row.taxableSupplyDate ?? row.issueDate ?? null;
+  switch (row.exchangeRateMode) {
+    case 'none':
+      return { kind: 'hidden' };
+    case 'manual':
+      return { kind: 'manual' };
+    case 'annual':
+      return { kind: 'annual', year: (row.exchangeRateDate ?? fallback ?? '').slice(0, 4) };
+    case 'cnb_daily': {
+      const date = row.exchangeRateDate ?? fallback;
+      return date ? { kind: 'on', date } : { kind: 'legacy' };
+    }
+    default:
+      return { kind: 'legacy' };
+  }
+}
+
+/** The draft is waiting for the customer, or the customer has filled in their details and it still is a draft. */
+export function buyerDetailsState(row: { status: string; buyerDetailsToken?: string | null; buyerDetailsSubmittedAt?: string | null }): 'waiting' | 'submitted' | null {
+  if (row.status !== 'draft' && row.status !== 'pending_review') return null;
+  if (row.buyerDetailsSubmittedAt) return 'submitted';
+  return row.buyerDetailsToken ? 'waiting' : null;
 }
 
 export interface InvoiceDetail {
@@ -68,19 +122,18 @@ export interface InvoiceDetail {
     clientRespondedAt?: string | null;
     clientResponseName?: string | null;
     clientResponseNote?: string | null;
+    buyerDetailsRequestedAt?: string | null;
+    buyerDetailsEmail?: string | null;
+    buyerDetailsAutoIssue?: boolean;
+    buyerDetailsOutcome?: BuyerDetailsOutcome | null;
     customFields?: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
   };
-  contact: {
-    id: string;
-    legalName: string;
-    ico: string | null;
-    dic: string | null;
-    email: string | null;
-    addressStreet: string | null;
-    addressCity: string | null;
-    addressPostalCode: string | null;
-    addressCountry: string;
-  } | null;
+  /** The live contact (link, e-mail for sending). */
+  contact: InvoiceParty | null;
+  /** The buyer as printed on the document: its issue-date snapshot when it has one. */
+  buyer?: Omit<InvoiceParty, 'id'> | null;
+  /** True when the issue-date snapshot differs from today's company details / contact. */
+  snapshot?: { sellerDiffers: boolean; buyerDiffers: boolean };
   items: {
     id: string;
     description: string;
@@ -99,6 +152,18 @@ export interface InvoiceDetail {
   };
   parent: RelatedDoc | null;
   children: RelatedDoc[];
+}
+
+export interface InvoiceParty {
+  id: string;
+  legalName: string;
+  ico: string | null;
+  dic: string | null;
+  email: string | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressPostalCode: string | null;
+  addressCountry: string;
 }
 
 export interface RelatedDoc {

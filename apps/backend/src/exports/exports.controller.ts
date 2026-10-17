@@ -6,9 +6,11 @@ import { z } from "zod";
 import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { type ExportPeriod, ExportsService, VatRateUnavailableError } from "./exports.service";
+import { parseReportFilters, type ReportFilters } from "../dashboard/report-filters";
+import { type ExportDateBy, type ExportPeriod, ExportsService, VatRateUnavailableError } from "./exports.service";
 import type { VatPeriod } from "./vat-returns";
-import { FLAT_RATES, type FlatRate } from "./annual-summary";
+import { FLAT_RATES, paidAdvances, type FlatRate } from "./annual-summary";
+import { normalizeTaxAdvances } from "@faktur/cz-compliance";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -71,6 +73,17 @@ function parsePeriod(query: Record<string, string>): ExportPeriod & { label: str
   return { from: new Date(y!, m! - 1, 1), to: new Date(y!, m!, 1), label: `${y}-${String(m).padStart(2, "0")}` };
 }
 
+/** Filters and date basis for the invoice list; anything malformed is a 400, never ignored. */
+export function parseInvoiceExportQuery(query: Record<string, unknown>): { filters: ReportFilters; dateBy: ExportDateBy } {
+  const dateBy = query.dateBy ?? "issue";
+  if (dateBy !== "issue" && dateBy !== "supply") throw new BadRequestException("Invalid dateBy");
+  try {
+    return { filters: parseReportFilters(query), dateBy };
+  } catch {
+    throw new BadRequestException("Invalid export filters");
+  }
+}
+
 const annualQuerySchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
   // Paušální výdaje (80/60/40/30) or "actual".
@@ -88,10 +101,14 @@ export class ExportsController {
   constructor(private readonly exportsService: ExportsService) {}
 
   @Get("invoices.csv")
-  @ApiOperation({ summary: "Issued documents of a period as CSV (?month=YYYY-MM or ?from=&to=)" })
+  @ApiOperation({
+    summary:
+      "Issued documents of a period as CSV for the accountant (?month=YYYY-MM or ?from=&to=; dateBy=issue|supply; optional report filters currency, language, contactId, documentType, status)",
+  })
   async invoicesCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     const period = parsePeriod(query);
-    const body = await this.exportsService.invoicesCsv(req.tenantDb!, period);
+    const { filters, dateBy } = parseInvoiceExportQuery(query);
+    const body = await this.exportsService.invoicesCsv(req.tenantDb!, period, filters, dateBy);
     this.send(res, body, "text/csv; charset=utf-8", `faktury-${period.label}.csv`);
   }
 
@@ -155,6 +172,9 @@ export class ExportsController {
       ["Doplatek / přeplatek – zdravotní", n(s.health.balance)],
       ["Nová měsíční záloha – zdravotní", n(s.health.nextAdvance)],
       ["Celkem daň + pojištění", n(s.totalBurden)],
+      ...(s.paidSource.social === "settings" || s.paidSource.health === "settings"
+        ? ([["Zaplacené zálohy", "podle nastavení měsíčních záloh (výše platná v jednotlivých měsících)"]] as [string, string][])
+        : []),
       ["Pozn.", "Orientační odhad, nenahrazuje daňové přiznání ani přehledy pro ČSSZ a ZP."],
     ];
     const body = "﻿" + rows.map(([k, v]) => `${k};${v.includes(";") ? `"${v}"` : v}`).join("\r\n") + "\r\n";
@@ -166,13 +186,16 @@ export class ExportsController {
     if (!parsed.success) throw new BadRequestException("Invalid year summary query");
     const { year, expenses, paidSocial, paidHealth } = parsed.data;
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    // Without a typed amount, the paid advances come from Settings → Měsíční zálohy (per month, as they applied then).
+    const paid = paidAdvances(normalizeTaxAdvances(tenant?.taxAdvances), year, { paidSocial, paidHealth });
     try {
-      return await this.exportsService.annualSummary(req.tenantDb!, year, {
+      const summary = await this.exportsService.annualSummary(req.tenantDb!, year, {
         vatPayer: tenant?.dicVatPayer ?? false,
         flatRate: expenses === "actual" ? null : (Number(expenses) as FlatRate),
-        paidSocial,
-        paidHealth,
+        paidSocial: paid.paidSocial,
+        paidHealth: paid.paidHealth,
       });
+      return { ...summary, paidSource: paid.source };
     } catch (err) {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;

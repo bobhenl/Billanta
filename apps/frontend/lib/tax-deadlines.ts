@@ -4,6 +4,10 @@ export {
   defaultTaxDeadlineKinds,
   mergeTaxDeadlines,
   upcomingTaxDeadlines,
+  relevantTaxDeadlineKinds,
+  taxDeadlinesFor,
+  isLegalEntityName,
+  type TaxProfile,
   type OfficialTaxEvent,
   type TaxDeadline,
   type TaxDeadlineKind

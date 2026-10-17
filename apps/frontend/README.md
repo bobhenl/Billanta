@@ -118,11 +118,11 @@ Two follow-ups to the original marketing homepage/theme scaffold:
   Faktur is, who it's for, and a short "why we built this" narrative. Safe
   to edit/expand without legal review since it makes no compliance claims.
 
-## Local-SEO municipality pages (`/faktury-pro`)
+## Local-SEO municipality pages (`/invoicing`)
 
-`app/[locale]/faktury-pro/[slug]/page.tsx` renders one landing page per real
+`app/[locale]/invoicing/[slug]/page.tsx` renders one landing page per real
 Czech and Slovak municipality (e.g. "Fakturační software pro Valtice"),
-plus `app/[locale]/faktury-pro/page.tsx`, a browse/directory page grouping
+plus `app/[locale]/invoicing/page.tsx`, a browse/directory page grouping
 every municipality by region for real on-site crawlable linking.
 
 - **Coverage**: 9,124 of the ~9,100 target (6,234 of Czechia's ~6,254
@@ -154,7 +154,7 @@ every municipality by region for real on-site crawlable linking.
 - **Sitemap/robots**: `app/sitemap.ts` covers the whole public site, sharded
   via `generateSitemaps()` (~27,400 URLs across 14 files, well under the
   50,000-per-file protocol limit, sharded anyway for headroom — see the
-  in-file comment). `app/robots.ts` allows `/faktury-pro` and disallows the
+  in-file comment). `app/robots.ts` allows `/invoicing` and disallows the
   authenticated dashboard sections.
 - **Messages**: `municipalityPages` namespace in
   `messages/{cs,sk,en}.json` — all copy is templated/generic by design (see
@@ -350,10 +350,10 @@ lib/email.ts                                         Resend wrapper for the pass
 app/[locale]/legal/terms/page.tsx                    Placeholder Terms of Service page (structural, pending attorney review)
 app/[locale]/legal/privacy/page.tsx                  Placeholder Privacy Policy page (structural, pending attorney review)
 app/[locale]/about/page.tsx                          About page (real marketing copy, not a placeholder)
-app/[locale]/faktury-pro/page.tsx                    Municipality directory/browse page (grouped by region)
-app/[locale]/faktury-pro/[slug]/page.tsx             Per-municipality local-SEO landing page (~159 static + ISR)
+app/[locale]/invoicing/page.tsx                    Municipality directory/browse page (grouped by region)
+app/[locale]/invoicing/[slug]/page.tsx             Per-municipality local-SEO landing page (~159 static + ISR)
 app/sitemap.ts                                       Sharded sitemap (generateSitemaps) for the whole public site
-app/robots.ts                                        robots.txt — allows /faktury-pro, disallows dashboard routes
+app/robots.ts                                        robots.txt — allows /invoicing, disallows dashboard routes
 app/[locale]/(dashboard)/layout.tsx                  Top navbar + mobile bottom bar shell (no auth guard yet — TODO)
 app/[locale]/(dashboard)/dashboard/page.tsx          Dashboard home (placeholder)
 app/[locale]/(dashboard)/invoices/page.tsx           Invoice list, mock data, AI-draft disclaimer banner

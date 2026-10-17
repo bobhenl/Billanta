@@ -50,10 +50,10 @@ function indexFor(locale: string): Entry[] {
   const homeFaq = m.marketing.faq.items as unknown as Record<string, FaqText>;
   const entries: Entry[] = [
     entry('page', '/', m.marketing.seo.title, m.marketing.seo.description),
-    entry('page', '/vytvorit-fakturu', m.guestInvoice.seoTitle, m.guestInvoice.seoDescription),
+    entry('page', '/create-invoice', m.guestInvoice.seoTitle, m.guestInvoice.seoDescription),
     entry('page', '/pricing', m.pricing.seoTitle, m.pricing.metaDescription, m.pricing.lead),
-    entry('page', '/funkce', m.featurePages.indexHeading, m.featurePages.indexDescription),
-    entry('page', '/faktury-pro', m.municipalityPages.indexTitle, m.municipalityPages.indexLead),
+    entry('page', '/features', m.featurePages.indexHeading, m.featurePages.indexDescription),
+    entry('page', '/invoicing', m.municipalityPages.indexTitle, m.municipalityPages.indexLead),
     entry('page', '/about', m.about.title, m.about.lead, `${m.about.whatBody} ${m.about.whoBody}`),
     entry('page', '/legal/terms', m.legal.terms.title, m.legal.terms.intro),
     entry('page', '/legal/privacy', m.legal.privacy.title, m.legal.privacy.intro),
@@ -62,7 +62,7 @@ function indexFor(locale: string): Entry[] {
   for (const f of FEATURE_PAGES) {
     const text = features[f.key];
     if (!text) continue;
-    const href = `/funkce/${f.slug}`;
+    const href = `/features/${f.slug}`;
     entries.push(entry('feature', href, text.name, text.description, `${text.title} ${text.lead} ${text.points.join(' ')}`));
     for (const item of text.faq ?? []) entries.push(entry('faq', href, item.q, item.a));
   }
@@ -71,17 +71,17 @@ function indexFor(locale: string): Entry[] {
   // Calculators and guides, only in the languages they are published in
   // (lib/public-tools.ts): a Czech-rules page is not offered to Slovak readers.
   const tools = m.tools as unknown as { calculators: { indexTitle: string; indexDescription: string; items: Record<string, ToolText> }; guides: { indexTitle: string; indexDescription: string; items: Record<string, ToolText> } };
-  entries.push(entry('page', '/kalkulacky', tools.calculators.indexTitle, tools.calculators.indexDescription));
+  entries.push(entry('page', '/calculators', tools.calculators.indexTitle, tools.calculators.indexDescription));
   for (const c of CALCULATORS) {
     const text = tools.calculators.items[c.key];
     if (!text || !isPublishedIn(c, locale)) continue;
-    entries.push(entry('calculator', `/kalkulacky/${c.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
+    entries.push(entry('calculator', `/calculators/${c.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
   }
-  if (GUIDES_HUB_LOCALES.includes(locale)) entries.push(entry('page', '/navody', tools.guides.indexTitle, tools.guides.indexDescription));
+  if (GUIDES_HUB_LOCALES.includes(locale)) entries.push(entry('page', '/guides', tools.guides.indexTitle, tools.guides.indexDescription));
   for (const g of GUIDES) {
     const text = tools.guides.items[g.key];
     if (!text || !isPublishedIn(g, locale)) continue;
-    entries.push(entry('guide', `/navody/${g.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
+    entries.push(entry('guide', `/guides/${g.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
   }
   INDEX.set(locale, entries);
   return entries;
@@ -114,7 +114,7 @@ export function searchSite(locale: string, query: string, limit = 30): SearchHit
 
   const cities = searchMunicipalities(words.join(' '), 8, locale).map(
     (c): { hit: SearchHit; score: number } => ({
-      hit: { kind: 'city', href: `/faktury-pro/${c.slug}`, title: c.name, snippet: `${c.district}, ${c.region}` },
+      hit: { kind: 'city', href: `/invoicing/${c.slug}`, title: c.name, snippet: `${c.district}, ${c.region}` },
       score: 2
     })
   );

@@ -5,7 +5,7 @@ import * as schema from "../../drizzle/schema";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
-export type AuditEntityType = "invoice" | "tenant" | "bank_account" | "contact" | "member" | "api_key";
+export type AuditEntityType = "invoice" | "tenant" | "bank_account" | "contact" | "member" | "api_key" | "import";
 
 export interface AuditEntry {
   entityType: AuditEntityType;

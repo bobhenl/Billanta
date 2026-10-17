@@ -1,6 +1,10 @@
+import type { VatStatus } from '@faktur/cz-compliance';
 import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
 import { apiFetch, fetchMyCompanies } from './api-client';
+
+export { ADVANCE_KINDS, vatStatusOf, type TaxAdvances } from './vat-status';
+import type { TaxAdvances } from './vat-status';
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
 export interface TenantSettings {
@@ -9,7 +13,12 @@ export interface TenantSettings {
   legalName: string;
   ico: string | null;
   dic: string | null;
+  /** Legacy, equal to vatStatus === 'payer'. */
   dicVatPayer: boolean;
+  /** Optional so an older backend without it still renders (then derived from dicVatPayer, see vatStatusOf). */
+  vatStatus?: VatStatus;
+  /** OSVČ monthly advances by period for the dashboard deadlines (an old backend may still send the single-set object: read via normalizeTaxAdvances). */
+  taxAdvances?: TaxAdvances;
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;

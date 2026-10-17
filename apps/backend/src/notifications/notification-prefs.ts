@@ -16,12 +16,13 @@ export const NOTIFICATION_EVENTS = [
   "bank_import",
   "member_joined",
   "quote_response",
+  "buyer_details",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 export const NOTIFICATION_CHANNELS = ["app", "email"] as const;
 export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
 
-const EMAIL_ON_BY_DEFAULT: ReadonlySet<NotificationEvent> = new Set(["invoice_paid", "draft_ready", "quote_response"]);
+const EMAIL_ON_BY_DEFAULT: ReadonlySet<NotificationEvent> = new Set(["invoice_paid", "draft_ready", "quote_response", "buyer_details"]);
 
 export interface NotificationPrefs {
   events: Record<NotificationEvent, Record<NotificationChannel, boolean>>;

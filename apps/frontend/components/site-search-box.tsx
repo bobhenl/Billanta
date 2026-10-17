@@ -9,7 +9,7 @@ import type { SearchHit } from '@/lib/site-search';
 import { cn } from '@/lib/utils';
 
 /**
- * The /hledat box with instant results, styled after the in-app command
+ * The /search box with instant results, styled after the in-app command
  * palette: results grouped by kind, ArrowUp/Down to move, Enter to open the
  * highlighted hit (or submit the form for the full results page), Escape to
  * close. It sits inside the server-rendered GET form, so without JavaScript

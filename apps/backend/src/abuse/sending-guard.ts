@@ -77,7 +77,7 @@ export async function assertCanSendEmail(db: Db, tenantId: string): Promise<void
   throw new ForbiddenException({ statusCode: 403, code: block, message: block === "ACCOUNT_SUSPENDED" ? "Account suspended" : "E-mail sending paused" });
 }
 
-/** Counts one sent customer e-mail towards the daily cap. */
-export async function recordEmailSent(db: Db, tenantId: string, kind: "invoice" | "reminder", recipient: string): Promise<void> {
+/** Counts one e-mail sent to an outside address towards the daily cap. */
+export async function recordEmailSent(db: Db, tenantId: string, kind: "invoice" | "reminder" | "invitation" | "buyer_details", recipient: string): Promise<void> {
   await db.insert(schema.outboundEmails).values({ tenantId, kind, recipient: recipient.slice(0, 320) });
 }

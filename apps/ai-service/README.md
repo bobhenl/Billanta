@@ -15,7 +15,7 @@ cp .env.example .env   # fill in secrets
 uvicorn app.main:app --reload
 ```
 
-`GET /health` confirms the service is up. Webhook routes are `POST /webhook/telegram` and `GET|POST /webhook/whatsapp`.
+`GET /health` confirms the service is up. Webhook routes are `POST /webhook/telegram` and `GET|POST /webhook/whatsapp`. Behind Caddy they are public as `/ai-webhook/telegram` and `/ai-webhook/whatsapp` (Caddy rewrites the prefix), so register e.g. `https://<site>/ai-webhook/telegram` with Telegram's `setWebhook`.
 
 ## Pipeline overview
 

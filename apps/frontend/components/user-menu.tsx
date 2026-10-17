@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { Briefcase, Building2, Check, CreditCard, Download, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
+import { Briefcase, Building2, Check, CreditCard, Download, Gift, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { signOut, useSession } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -20,14 +20,15 @@ const ITEMS = [
   { key: 'exports', href: '/settings/exports', icon: Download },
   { key: 'activity', href: '/activity', icon: History },
   { key: 'billing', href: '/billing', icon: CreditCard },
+  { key: 'referrals', href: '/settings/referrals', icon: Gift },
   { key: 'settings', href: '/settings', icon: Settings }
 ] as const;
 
 /**
  * Avatar button that opens the account menu: who is signed in, the
  * account-level sections (profile, company, team, exports, subscription,
- * settings), the company switcher when the account has more than one
- * company (`switchTenant`, see lib/api-client.ts), and "Log out" (Auth.js
+ * settings), the company list (the active one is always shown; with more than one
+ * company you switch here, `switchTenant`, see lib/api-client.ts), and "Log out" (Auth.js
  * `signOut`, back to the homepage).
  */
 export function UserMenu({ companies = [], activeId = null }: { companies?: MenuCompany[]; activeId?: string | null }) {
@@ -101,7 +102,7 @@ export function UserMenu({ companies = [], activeId = null }: { companies?: Menu
           {companies.length > 0 && (
             <div className="border-b border-border py-1">
               <p className="px-2 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{tMenu('companies')}</p>
-              {companies.length > 1 &&
+              {companies.length > 0 &&
                 companies.map((company) => {
                   const active = company.id === activeId;
                   return (

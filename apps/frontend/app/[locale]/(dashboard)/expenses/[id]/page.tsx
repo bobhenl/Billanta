@@ -138,7 +138,8 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
 
           {expense.receiptFileUrl && (
             <a
-              href={expense.receiptFileUrl}
+              // Free text from a teammate: only http(s) links, never `javascript:` etc.
+              href={/^https?:\/\//i.test(expense.receiptFileUrl) ? expense.receiptFileUrl : `https://${expense.receiptFileUrl}`}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 rounded-xl border border-border bg-card p-4 text-sm font-semibold text-primary hover:bg-accent"

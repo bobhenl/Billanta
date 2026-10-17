@@ -4,16 +4,37 @@ import { displayCustomField, documentVars } from "./custom-fields";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { Injectable } from "@nestjs/common";
-import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, qrInvoiceForSpayd } from "@faktur/cz-compliance";
+import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, isEuReverseChargeService, qrInvoiceForSpayd } from "@faktur/cz-compliance";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
 import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
+import { rateLineLabel } from "./exchange-rate-mode";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
 type TenantRow = typeof schema.tenants.$inferSelect;
+
+/**
+ * Which reverse-charge note the document prints: "eu" for a service to a
+ * business in another EU state (from a payer with reverse charge ticked, or
+ * from an identified person, who charges no VAT and so never ticks it),
+ * "domestic" for the §92a note, else none.
+ */
+export function reverseChargeNoteKind(
+  invoice: Pick<InvoiceRow, "documentType" | "reverseCharge">,
+  tenant: Pick<TenantRow, "vatStatus" | "addressCountry">,
+  contact?: Pick<ContactRow, "ico" | "dic" | "isPerson" | "addressCountry">,
+): "eu" | "domestic" | null {
+  const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
+  const customer = contact
+    ? { ico: contact.ico ?? undefined, dic: contact.dic ?? undefined, isPerson: contact.isPerson, address: { countryCode: contact.addressCountry } }
+    : undefined;
+  const euService = taxDocument && isEuReverseChargeService(tenant.vatStatus, tenant.addressCountry, customer);
+  if (euService && (invoice.reverseCharge || tenant.vatStatus === "identified")) return "eu";
+  return invoice.reverseCharge ? "domestic" : null;
+}
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type RelatedDocument = { invoiceNumber: string | null; documentType: InvoiceRow["documentType"] } | null;
 type Lang = "cs" | "sk" | "en";
@@ -76,8 +97,13 @@ const L = {
     qr: "QR platba",
     qrInvoice: "QR Faktura",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
+    // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
+    reverseChargeEu: "Daň odvede zákazník.",
     proformaNote: "Zálohová faktura není daňovým dokladem.",
     fxRate: "Kurz ČNB",
+    fxRateOn: "Kurz ČNB k {date}",
+    fxRateAnnual: "Jednotný kurz pro rok {year}",
+    fxRateManual: "Kurz",
     vatInCzk: "DPH v CZK",
     totalInCzk: "Celkem v CZK",
     paid: "UHRAZENO",
@@ -130,7 +156,11 @@ const L = {
     qr: "QR platba",
     qrInvoice: "QR faktúra",
     reverseCharge: "Prenesenie daňovej povinnosti.",
+    reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
+    fxRateOn: "Kurz ČNB k {date}",
+    fxRateAnnual: "Jednotný kurz pre rok {year}",
+    fxRateManual: "Kurz",
     vatInCzk: "DPH v CZK",
     totalInCzk: "Spolu v CZK",
     proformaNote: "Zálohová faktúra nie je daňovým dokladom.",
@@ -184,7 +214,11 @@ const L = {
     qr: "QR payment",
     qrInvoice: "QR invoice",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
+    reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
+    fxRateOn: "ČNB rate as of {date}",
+    fxRateAnnual: "Fixed annual rate for {year}",
+    fxRateManual: "Exchange rate",
     vatInCzk: "VAT in CZK",
     totalInCzk: "Total in CZK",
     proformaNote: "A proforma invoice is not a tax document.",
@@ -275,7 +309,7 @@ export class InvoicePdfService {
     this.renderLineItemsTable(doc, t, lineItems, invoice);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs));
     if (qr) this.renderPaymentQr(doc, qr.payment ? t.qr : t.qrInvoice, qr.png, totalsTop);
-    this.renderFooterNotes(doc, t, invoice, tenant, fill);
+    this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
 
     doc.end();
@@ -606,11 +640,14 @@ export class InvoicePdfService {
       y += t.remaining.includes(BILINGUAL_SEPARATOR) ? 26 : 18;
     }
     // §29 ZDPH: a foreign-currency tax document states the VAT in CZK too.
+    // The label follows the mode stored at issue; "none" (non-payers only,
+    // see exchange-rate-mode.ts) prints no conversion.
     const rate = invoice.exchangeRate ? Number(invoice.exchangeRate) : null;
-    if (currency !== "CZK" && rate) {
+    const rateLabel = rateLineLabel(t, invoice, invoice.taxableSupplyDate ?? invoice.issueDate ?? null);
+    if (currency !== "CZK" && rate && rateLabel) {
       doc.font(REGULAR).fontSize(8.5).fillColor(MUTED);
       const rateText = rate.toLocaleString("cs-CZ", { maximumFractionDigits: 4 });
-      doc.text(`${t.fxRate} ${rateText} CZK/${currency}`, x, y, { width: 245 });
+      doc.text(`${rateLabel} ${rateText} CZK/${currency}`, x, y, { width: 245 });
       y += 12;
       doc.text(`${t.vatInCzk} ${this.formatAmount(totals.totalVat * rate, "CZK")}`, x, y, { width: 245 });
       y += 12;
@@ -631,15 +668,26 @@ export class InvoicePdfService {
     doc.y = Math.max(doc.y, top + 120);
   }
 
+  /**
+   * "Daň odvede zákazník": a service to a business in another EU state (§29/2c
+   * ZDPH) – also from an identified person, who never ticks reverse charge
+   * because it charges no VAT; otherwise the domestic reverse-charge note.
+   */
+  private reverseChargeNote(t: (typeof L)[Lang], invoice: InvoiceRow, tenant: TenantRow, contact?: ContactRow): string | null {
+    const kind = reverseChargeNoteKind(invoice, tenant, contact);
+    return kind === "eu" ? t.reverseChargeEu : kind === "domestic" ? t.reverseCharge : null;
+  }
+
   private renderFooterNotes(
     doc: PDFKit.PDFDocument,
     t: (typeof L)[Lang],
     invoice: InvoiceRow,
     tenant: TenantRow,
     fill: (text: string | null) => string | null,
+    contact?: ContactRow,
   ): void {
     const notes = [
-      invoice.reverseCharge ? t.reverseCharge : null,
+      this.reverseChargeNote(t, invoice, tenant, contact),
       invoice.documentType === "proforma" ? t.proformaNote : null,
       invoice.documentType !== "quote" && invoice.paymentInstructions
         ? `${invoice.paymentMethodLabel || t.methods[invoice.paymentMethod]}: ${fill(invoice.paymentInstructions)}`
@@ -673,13 +721,13 @@ export class InvoicePdfService {
       doc.page.margins.bottom = 0;
       // Mark + text centred together as one line.
       const text = `${label} · ${url.replace(/^https?:\/\//, "")}`;
-      doc.font(REGULAR).fontSize(7);
-      const mark = 8;
+      doc.font(REGULAR).fontSize(7.5);
+      const mark = 11;
       const width = Math.ceil(doc.widthOfString(text)) + 1;
-      const left = 50 + (495 - (mark + 4 + width)) / 2;
-      this.renderBrandMark(doc, left, doc.page.height - 29.5, mark);
+      const left = 50 + (495 - (mark + 5 + width)) / 2;
+      this.renderBrandMark(doc, left, doc.page.height - 31, mark);
       // pdfkit needs an explicit width to size the link annotation.
-      doc.fillColor(MUTED).text(text, left + mark + 4, doc.page.height - 28, { width, link: url, lineBreak: false });
+      doc.fillColor("#4b5563").text(text, left + mark + 5, doc.page.height - 28.5, { width, link: url, lineBreak: false });
       doc.page.margins.bottom = bottom;
     }
     doc.fillColor("black");

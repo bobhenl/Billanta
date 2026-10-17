@@ -23,7 +23,8 @@ const optionalText = (max: number) => z.string().trim().max(max).nullish();
 export const invoiceFieldsSchema = z.object({
   document_type: z.enum(["invoice", "proforma", "credit_note", "quote"]).default("invoice"),
   related_invoice_id: z.string().uuid().nullish(),
-  contact_id: z.string().uuid(),
+  /** Null/missing = no customer yet: allowed for a draft, issuing still needs one. */
+  contact_id: z.string().uuid().nullish(),
   issue_date: z.coerce.date().optional(),
   due_date: z.coerce.date().nullish(),
   // DUZP; null/omitted = same as the issue date.

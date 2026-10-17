@@ -8,8 +8,9 @@ import { apiFetchRaw, ApiError, NotSignedInError } from '@/lib/api-client';
  * Only the listed download endpoints are reachable.
  */
 const ALLOWED = [
-  /^invoices\/[0-9a-f-]{36}\/(pdf|isdoc|ubl)$/i,
-  /^invoices\/[0-9a-f-]{36}\/attachments\/[0-9a-f-]{36}$/i,
+  // Route names stay case-sensitive (only the ids may be upper-case).
+  /^invoices\/[0-9a-fA-F-]{36}\/(pdf|isdoc|ubl)$/,
+  /^invoices\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
   /^tenants\/me\/logo$/,
   /^contacts\/export\.csv$/,
   /^exports\/(invoices\.csv|expenses\.csv|pohoda\.xml|money-s3\.xml|dphdp3\.xml|dphkh1\.xml|dphshv\.xml|annual-summary|annual-summary\.csv)$/

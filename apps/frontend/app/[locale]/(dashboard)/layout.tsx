@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
@@ -11,11 +12,13 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { NavProgress } from '@/components/nav-progress';
 import { NotificationBell } from '@/components/notification-bell';
+import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
 import { fetchMyAccess, hiddenSections } from '@/lib/tenant';
 import { fetchMyCompanies } from '@/lib/api-client';
+import { REFERRAL_COOKIE } from '@/lib/referral';
 
 // The signed-in app is never a search result (robots.ts also disallows it).
 export const metadata: Metadata = { robots: NOINDEX };
@@ -44,6 +47,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const [access, companies] = await Promise.all([fetchMyAccess().catch(() => null), fetchMyCompanies().catch(() => null)]);
   const role = access?.role ?? null;
   const hidden = hiddenSections(access);
+  // Arrived via someone's invite link: the owner of the (new) company claims it.
+  const claimReferral = role === 'owner' && (await cookies()).has(REFERRAL_COOKIE);
   // The Ctrl+K palette also drops create actions the member can't perform and switched-off modules.
   const paletteHidden = [...hidden];
   if (access) {
@@ -92,6 +97,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <NavProgress />
       </Suspense>
       <KeyboardShortcuts hidden={paletteHidden} />
+      {claimReferral && <ReferralClaim />}
     </div>
   );
 }

@@ -11,10 +11,11 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
-import { isCzechHoliday, isCzechWorkingDay, nextCzechWorkingDay } from '@faktur/cz-compliance';
+import { isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
+import { CopyFromInvoicePanel } from './copy-from-invoice';
 import { fetchExchangeRate, saveInvoice, searchCustomers, suggestInvoice, suggestItems } from './actions';
 import type {
   AiSettings,
@@ -203,6 +204,8 @@ export function InvoiceForm({
 }) {
   const t = useTranslations('invoiceForm');
   const tDoc = useTranslations('doc');
+  const tHoliday = useTranslations('holidays');
+  const sellerCountry = defaults.sellerCountry ?? 'CZ';
   const locale = useLocale();
   const router = useRouter();
   const editing = mode.kind === 'edit';
@@ -210,25 +213,32 @@ export function InvoiceForm({
   const [editReason, setEditReason] = useState(mode.kind === 'edit' ? mode.reason ?? '' : '');
   const { vatPayer } = defaults;
   const defaultVat = vatPayer ? '21' : '';
+  // A blank new invoice (no copy, no template; a chosen customer alone still
+  // counts) starts from Settings → Faktury → Výchozí hodnoty.
+  const blank = mode.kind === 'create' && !template?.items && !template?.templateName && template?.sourceNumber === undefined ? defaults.blank : undefined;
 
   const [documentType, setDocumentType] = useState<DocumentType>(template?.documentType ?? 'invoice');
-  const [customer, setCustomer] = useState<SelectedCustomer | null>(() =>
-    template?.contact ? { kind: 'contact', id: template.contact.id, contact: template.contact } : null
-  );
+  const [customer, setCustomer] = useState<SelectedCustomer | null>(() => {
+    const contact = template?.contact ?? blank?.contact;
+    return contact ? { kind: 'contact', id: contact.id, contact } : null;
+  });
   const [customerQuery, setCustomerQuery] = useState('');
   const [registry, setRegistry] = useCompanyRegistry();
   const [issueDate, setIssueDate] = useState(() => isoDate(template?.issueDate) || today());
   const [dueDate, setDueDate] = useState(
     () => isoDate(template?.dueDate) || addDays(isoDate(template?.issueDate) || today(), template?.dueInDays ?? defaults.dueDays)
   );
+  const dueHoliday = /^\d{4}-\d{2}-\d{2}$/.test(dueDate) ? publicHolidayOn(localDay(dueDate), sellerCountry) : null;
   const [taxableSupplyDate, setTaxableSupplyDate] = useState(() => isoDate(template?.taxableSupplyDate));
-  const [currency, setCurrency] = useState(() =>
-    template?.currency && CURRENCIES.includes(template.currency) ? template.currency : 'CZK'
-  );
+  const [currency, setCurrency] = useState(() => {
+    const wanted = template?.currency ?? blank?.currency;
+    return wanted && CURRENCIES.includes(wanted) ? wanted : 'CZK';
+  });
   const [exchangeRate, setExchangeRate] = useState(() => (template?.exchangeRate ? String(template.exchangeRate) : ''));
-  const [bankAccountId, setBankAccountId] = useState(() =>
-    defaults.bankAccounts.some((a) => a.id === template?.bankAccountId) ? template!.bankAccountId! : ''
-  );
+  const [bankAccountId, setBankAccountId] = useState(() => {
+    const wanted = template?.bankAccountId ?? blank?.bankAccountId;
+    return wanted && defaults.bankAccounts.some((a) => a.id === wanted) ? wanted : '';
+  });
   const [loadingRate, setLoadingRate] = useState(false);
   const [paidValue, setPaidValue] = useState('');
   const [paidUnit, setPaidUnit] = useState<'amount' | 'percent'>('amount');
@@ -259,12 +269,17 @@ export function InvoiceForm({
   const [reverseCharge, setReverseCharge] = useState(Boolean(template?.reverseCharge));
   // bitfaktura-style "I enter prices incl. VAT"; the default lives in Settings → Invoices.
   const [grossPrices, setGrossPricesState] = useState(defaults.prefs.pricesIncludeVat);
-  const [noteAbove, setNoteAbove] = useState(template?.noteAbove ?? '');
+  const [noteAbove, setNoteAbove] = useState(template?.noteAbove ?? blank?.noteAbove ?? '');
   const [noteBelow, setNoteBelow] = useState(() => (template && template.noteBelow !== undefined ? template.noteBelow ?? '' : defaults.noteBelow ?? ''));
   const [internalNote, setInternalNote] = useState(template?.internalNote ?? '');
   const { prefs } = defaults;
   const [issuePlace, setIssuePlace] = useState(() => template?.issuePlace ?? (editing ? '' : prefs.defaultIssuePlace ?? ''));
   const [issuedByName, setIssuedByName] = useState(() => template?.issuedByName ?? (editing ? '' : prefs.defaultIssuedBy ?? ''));
+  // Settings → Faktury → Kurz: with an annual rate for this year the empty field means that rate, not ČNB's.
+  const rateYear = Number(((vatPayer && taxableSupplyDate) || issueDate).slice(0, 4));
+  const annualRate =
+    prefs.exchangeRateMode === 'annual' ? prefs.annualRates.find((r) => r.year === rateYear && r.currency === currency)?.rate ?? null : null;
+  const annualRatePlaceholder = annualRate ? t('payment.exchangeRateAnnual', { rate: annualRate.toLocaleString(locale), year: rateYear }) : null;
   const [customFields, setCustomFields] = useState<CustomField[]>(() => {
     const existing = template?.customFields ?? [];
     const preset = prefs.customFieldLabels.filter((label) => !existing.some((f) => f.label === label)).map((label) => ({ label, value: '' }));
@@ -284,13 +299,23 @@ export function InvoiceForm({
             vatRate: vatPayer ? (item.vatRate == null ? '' : String(item.vatRate)) : ''
           })
         )
-      : [newRow(defaultVat)]
+      : blank?.items.length
+        ? blank.items.map((item) =>
+            newRow(defaultVat, {
+              description: item.description,
+              quantity: String(item.quantity),
+              unit: item.unit ?? '',
+              unitPrice: item.unitPrice ? String(item.unitPrice) : '',
+              vatRate: vatPayer ? (item.vatRate == null ? '' : String(item.vatRate)) : ''
+            })
+          )
+        : [newRow(defaultVat)]
   );
   // Optional fields: expanded when the company wants them (Nastavení →
   // Faktury) or when the document already has a value; otherwise one
   // "+ field" chip away.
   const [shown, setShown] = useState<Record<OptionalField, boolean>>(() => {
-    const items = template?.items ?? [];
+    const items: { code?: string | null; unit?: string | null; discountPercent?: number }[] = template?.items ?? blank?.items ?? [];
     const has: Record<OptionalField, boolean> = {
       itemCode: items.some((i) => i.code),
       unit: items.some((i) => i.unit),
@@ -300,7 +325,7 @@ export function InvoiceForm({
       orderNumber: Boolean(template?.orderNumber),
       issuePlace: Boolean(template?.issuePlace),
       issuedBy: Boolean(template?.issuedByName),
-      noteAbove: Boolean(template?.noteAbove),
+      noteAbove: Boolean(template?.noteAbove ?? blank?.noteAbove),
       internalNote: Boolean(template?.internalNote),
       // Preset labels from settings only make sense if the editor is visible.
       customFields: Boolean(template?.customFields?.some((f) => f.value)) || prefs.customFieldLabels.length > 0,
@@ -316,7 +341,8 @@ export function InvoiceForm({
   const [saving, startSaving] = useTransition();
   const [savingIntent, setSavingIntent] = useState<'draft' | 'issue' | null>(null);
 
-  const [aiOpen, setAiOpen] = useState(!editing && !template);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [copyOpen, setCopyOpen] = useState(false);
   const [aiText, setAiText] = useState('');
   const [aiBusy, startAi] = useTransition();
   const [aiError, setAiError] = useState<string | null>(null);
@@ -518,7 +544,8 @@ export function InvoiceForm({
 
   const submit = (issue: boolean) => {
     setError(null);
-    if (!customer) return setError(t('errors.customer_required'));
+    // A draft can wait for its customer (or be sent to them to fill in); issuing cannot.
+    if (!customer && (issue || issuedEdit)) return setError(t('errors.customer_required'));
     const items = rows
       .filter((row) => row.description.trim())
       .map((row) => ({
@@ -545,7 +572,7 @@ export function InvoiceForm({
     startSaving(async () => {
       const result = await saveInvoice(
         {
-          customer: customer.kind === 'contact' ? { kind: 'contact', id: customer.id } : { kind: 'ares', ares: customer.ares },
+          customer: !customer ? null : customer.kind === 'contact' ? { kind: 'contact', id: customer.id } : { kind: 'ares', ares: customer.ares },
           documentType,
           issueDate,
           dueDate,
@@ -722,13 +749,44 @@ export function InvoiceForm({
 
         {/* AI pre-fill */}
         {!editing && (
-          <section className="rounded-xl border border-primary/30 bg-accent/40 p-4">
-            <button type="button" onClick={() => setAiOpen((v) => !v)} className="flex w-full items-center gap-1.5 text-left" aria-expanded={aiOpen}>
-              <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-              <h2 className="flex-1 text-sm font-bold">{t('ai.title')}</h2>
-              <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', aiOpen && 'rotate-180')} />
-            </button>
-            {aiOpen &&
+          <div>
+            {/* Two pre-fill options side by side; the open one expands full width below. */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => { setAiOpen((v) => !v); setCopyOpen(false); }}
+                aria-expanded={aiOpen}
+                className={cn(
+                  'flex min-w-0 items-center gap-1.5 rounded-xl border p-3 text-left transition-colors',
+                  aiOpen ? 'border-primary/30 bg-accent/40' : 'border-border bg-card hover:bg-secondary',
+                )}
+              >
+                <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">{t('ai.title')}</h2>
+                <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', aiOpen && 'rotate-180')} />
+              </button>
+              <button
+                type="button"
+                onClick={() => { setCopyOpen((v) => !v); setAiOpen(false); }}
+                aria-expanded={copyOpen}
+                className={cn(
+                  'flex min-w-0 items-center gap-1.5 rounded-xl border p-3 text-left transition-colors',
+                  copyOpen ? 'border-primary/30 bg-accent/40' : 'border-border bg-card hover:bg-secondary',
+                )}
+              >
+                <Copy className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">{t('copy.title')}</h2>
+                <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', copyOpen && 'rotate-180')} />
+              </button>
+            </div>
+            {copyOpen && (
+              <section className="mt-2 rounded-xl border border-border bg-card p-4">
+                <CopyFromInvoicePanel />
+              </section>
+            )}
+            {aiOpen && (
+              <section className="mt-2 rounded-xl border border-primary/30 bg-accent/40 p-4">
+                {
               (aiUsable ? (
                 <>
                   <p className="mt-1 text-xs text-muted-foreground">{t('ai.hint')}</p>
@@ -779,7 +837,9 @@ export function InvoiceForm({
                   </Link>
                 </p>
               ))}
-          </section>
+              </section>
+            )}
+          </div>
         )}
 
         {/* Customer */}
@@ -854,6 +914,7 @@ export function InvoiceForm({
               />
               <RegistryPicker value={registry} onChange={setRegistry} />
               </div>
+              {!issuedEdit && <p className="mt-2 text-xs text-muted-foreground">{t('customer.draftWithout')}</p>}
             </>
           )}
         </section>
@@ -1264,13 +1325,15 @@ export function InvoiceForm({
                 </button>
               ))}
             </div>
-            {/^\d{4}-\d{2}-\d{2}$/.test(dueDate) && !isCzechWorkingDay(localDay(dueDate)) && (
+            {/^\d{4}-\d{2}-\d{2}$/.test(dueDate) && !isWorkingDay(localDay(dueDate), sellerCountry) && (
               <p className="flex flex-wrap items-center gap-x-2 text-xs text-warning">
-                {isCzechHoliday(localDay(dueDate)) ? t('dates.dueOnHoliday') : t('dates.dueOnWeekend')}
+                {dueHoliday
+                  ? t('dates.dueOnHoliday', { name: tHoliday.has(dueHoliday.key) ? tHoliday(dueHoliday.key) : dueHoliday.name })
+                  : t('dates.dueOnWeekend')}
                 <button
                   type="button"
                   className="font-semibold underline underline-offset-2"
-                  onClick={() => setDueDate(localIso(nextCzechWorkingDay(localDay(dueDate))))}
+                  onClick={() => setDueDate(localIso(nextWorkingDay(localDay(dueDate), sellerCountry)))}
                 >
                   {t('dates.shiftToWorkday')}
                 </button>
@@ -1334,7 +1397,7 @@ export function InvoiceForm({
                   inputMode="decimal"
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value.replace(/[^\d.,]/g, ''))}
-                  placeholder={t('payment.exchangeRateAuto')}
+                  placeholder={annualRatePlaceholder ?? t('payment.exchangeRateAuto')}
                   className={field}
                 />
                 <button

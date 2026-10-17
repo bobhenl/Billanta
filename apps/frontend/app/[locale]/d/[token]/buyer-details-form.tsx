@@ -1,0 +1,211 @@
+'use client';
+
+import { useMemo, useState, useTransition } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { Loader2, Search } from 'lucide-react';
+import { submitBuyerDetails, type BuyerDetailsInput } from '@/lib/public-buyer-details-actions';
+
+const COUNTRIES = [
+  'CZ', 'SK', 'AT', 'BE', 'BG', 'HR', 'CY', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO',
+  'SI', 'ES', 'SE', 'GB', 'CH', 'NO', 'IS', 'LI', 'UA', 'RS', 'US', 'CA', 'AU', 'IL', 'TR', 'AE', 'CN', 'JP', 'IN'
+];
+const EU = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE']);
+
+const inputClass =
+  'h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[invalid=true]:border-destructive';
+
+interface Props {
+  token: string;
+  supplierName: string;
+  prefill: { name: string | null; email: string | null; country: string | null; isPerson: boolean };
+}
+
+type Lookup = { name: string | null; ico: string | null; dic: string | null; street: string | null; city: string | null; postalCode: string | null; country: string };
+
+/** The customer's billing details form, with company lookup by IČO (ARES/RPO) or EU VAT ID (VIES). */
+export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
+  const t = useTranslations('buyerDetails.form');
+  const locale = useLocale();
+  const router = useRouter();
+  const [form, setForm] = useState<BuyerDetailsInput>({
+    isPerson: prefill.isPerson,
+    name: prefill.name ?? '',
+    email: prefill.email ?? '',
+    street: '',
+    city: '',
+    postalCode: '',
+    country: prefill.country && COUNTRIES.includes(prefill.country) ? prefill.country : 'CZ',
+    ico: '',
+    dic: ''
+  });
+  const [fields, setFields] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string | null>(null);
+  const [lookupNote, setLookupNote] = useState<string | null>(null);
+  const [looking, setLooking] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const countryNames = useMemo(() => {
+    const names = new Intl.DisplayNames([locale], { type: 'region' });
+    return COUNTRIES.map((code) => ({ code, name: names.of(code) ?? code }));
+  }, [locale]);
+
+  const domestic = form.country === 'CZ' || form.country === 'SK';
+  const set = (key: keyof BuyerDetailsInput) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
+
+  const fieldError = (key: string) => {
+    const code = fields[key];
+    if (!code) return null;
+    const known = ['ico_required', 'ico_format', 'ico_foreign', 'dic_format'];
+    return known.includes(code) ? t(`errors.${code}`) : t('errors.field');
+  };
+
+  const lookup = async () => {
+    setLookupNote(null);
+    const ico = form.ico.replace(/\s+/g, '');
+    const vat = form.dic.replace(/[\s.-]/g, '');
+    const query = domestic && /^\d{6,8}$/.test(ico) ? `ico=${ico}` : EU.has(form.country) && vat ? `vat=${encodeURIComponent(/^\d/.test(vat) ? `${form.country === 'GR' ? 'EL' : form.country}${vat}` : vat)}` : null;
+    if (!query) {
+      setLookupNote(t(domestic ? 'lookupNeedsIco' : 'lookupNeedsVat'));
+      return;
+    }
+    setLooking(true);
+    try {
+      const res = await fetch(`/api/public/buyer-details/${encodeURIComponent(token)}/lookup?${query}`, { cache: 'no-store' });
+      if (!res.ok) {
+        setLookupNote(t(res.status === 429 ? 'errors.limit' : 'lookupNotFound'));
+        return;
+      }
+      const hit = (await res.json()) as Lookup;
+      setForm((f) => ({
+        ...f,
+        name: hit.name || f.name,
+        ico: hit.ico ?? f.ico,
+        dic: hit.dic ?? f.dic,
+        street: hit.street || f.street,
+        city: hit.city || f.city,
+        postalCode: hit.postalCode || f.postalCode,
+        country: COUNTRIES.includes(hit.country) ? hit.country : f.country
+      }));
+      setLookupNote(t('lookupDone'));
+    } catch {
+      setLookupNote(t('lookupNotFound'));
+    } finally {
+      setLooking(false);
+    }
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setFields({});
+    startTransition(async () => {
+      // The IČO field is only shown for Czech and Slovak companies.
+      const r = await submitBuyerDetails(token, { ...form, ico: domestic ? form.ico : '' });
+      if (r.ok) {
+        router.refresh();
+        return;
+      }
+      if (r.fields) setFields(r.fields);
+      setError(t(`errors.${r.error}`));
+    });
+  };
+
+  const label = (key: string, text: string, node: React.ReactNode, wide = false) => (
+    <label className={`text-sm ${wide ? 'sm:col-span-2' : ''}`}>
+      <span className="mb-1 block font-medium">{text}</span>
+      {node}
+      {fieldError(key) && <span className="mt-1 block text-xs text-destructive">{fieldError(key)}</span>}
+    </label>
+  );
+
+  return (
+    <form onSubmit={submit} className="mt-8 rounded-lg border border-primary/30 bg-primary/5 p-5">
+      <h2 className="text-sm font-semibold">{t('title')}</h2>
+      <p className="mt-1 text-sm text-muted-foreground">{t('hint', { supplier: supplierName })}</p>
+
+      <div className="mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label={t('kind')}>
+        {[false, true].map((person) => (
+          <button
+            key={String(person)}
+            type="button"
+            role="radio"
+            aria-checked={form.isPerson === person}
+            onClick={() => setForm((f) => ({ ...f, isPerson: person }))}
+            className={`h-9 rounded-md border px-3 text-sm font-medium ${form.isPerson === person ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-background hover:bg-muted'}`}
+          >
+            {person ? t('person') : t('company')}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {label(
+          'country',
+          t('country'),
+          <select className={inputClass} value={form.country} onChange={set('country')}>
+            {countryNames.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        )}
+        {!form.isPerson && (
+          <div className="grid grid-cols-[1fr_auto] items-end gap-2 sm:col-span-2">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {domestic &&
+                label('ico', t('ico'), <input className={inputClass} value={form.ico} onChange={set('ico')} inputMode="numeric" maxLength={12} aria-invalid={Boolean(fields.ico)} />)}
+              {label(
+                'dic',
+                domestic ? t('dic') : t('vatId'),
+                <input className={inputClass} value={form.dic} onChange={set('dic')} maxLength={20} aria-invalid={Boolean(fields.dic)} placeholder={domestic ? `${form.country}…` : ''} />
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={lookup}
+              disabled={looking}
+              className="inline-flex h-10 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-muted disabled:opacity-50"
+            >
+              {looking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              {t('lookup')}
+            </button>
+            {lookupNote && <p className="col-span-2 text-xs text-muted-foreground">{lookupNote}</p>}
+          </div>
+        )}
+        {label(
+          'name',
+          form.isPerson ? t('personName') : t('companyName'),
+          <input className={inputClass} value={form.name} onChange={set('name')} required minLength={2} maxLength={200} autoComplete={form.isPerson ? 'name' : 'organization'} aria-invalid={Boolean(fields.name)} />,
+          true
+        )}
+        {label(
+          'street',
+          t('street'),
+          <input className={inputClass} value={form.street} onChange={set('street')} required maxLength={200} autoComplete="street-address" aria-invalid={Boolean(fields.street)} />,
+          true
+        )}
+        {label('city', t('city'), <input className={inputClass} value={form.city} onChange={set('city')} required maxLength={120} autoComplete="address-level2" aria-invalid={Boolean(fields.city)} />)}
+        {label('postalCode', t('postalCode'), <input className={inputClass} value={form.postalCode} onChange={set('postalCode')} required maxLength={10} autoComplete="postal-code" aria-invalid={Boolean(fields.postalCode)} />)}
+        {label(
+          'email',
+          t('email'),
+          <input className={inputClass} type="email" value={form.email} onChange={set('email')} maxLength={200} autoComplete="email" aria-invalid={Boolean(fields.email)} />,
+          true
+        )}
+      </div>
+
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+      <button
+        type="submit"
+        disabled={pending}
+        className="mt-4 inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+      >
+        {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+        {t('submit')}
+      </button>
+    </form>
+  );
+}

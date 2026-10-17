@@ -30,12 +30,12 @@ function isTyping(target: EventTarget | null): boolean {
 /**
  * Header search for the public site, modelled on the in-app Ctrl K palette
  * (components/command-palette.tsx): the icon, Ctrl/⌘ K or "/" opens a dialog
- * with instant suggestions from the same index as /hledat (features,
+ * with instant suggestions from the same index as /search (features,
  * calculators, guides, FAQ, pages, municipalities), grouped by kind, with
  * ArrowUp/Down, Enter and Escape. The last row always opens the full
  * results page, which stays the place for everything else.
  *
- * The trigger is a real link to /hledat, so without JavaScript (or with a
+ * The trigger is a real link to /search, so without JavaScript (or with a
  * modifier-click) it still goes to the results page. With an empty query
  * the dialog shows quick links instead of nothing.
  */
@@ -102,16 +102,16 @@ export function MarketingSearch() {
     const rows: Row[] = [];
     for (const c of CALCULATORS) {
       if (!isPublishedIn(c, locale)) continue;
-      rows.push({ id: `calc:${c.slug}`, href: `/kalkulacky/${c.slug}`, label: tTools(`calculators.items.${c.key}.name`), icon: c.icon, group: 'calculator' });
+      rows.push({ id: `calc:${c.slug}`, href: `/calculators/${c.slug}`, label: tTools(`calculators.items.${c.key}.name`), icon: c.icon, group: 'calculator' });
     }
     for (const g of GUIDES) {
       if (!isPublishedIn(g, locale)) continue;
-      rows.push({ id: `guide:${g.slug}`, href: `/navody/${g.slug}`, label: tTools(`guides.items.${g.key}.name`), icon: g.icon, group: 'guide' });
+      rows.push({ id: `guide:${g.slug}`, href: `/guides/${g.slug}`, label: tTools(`guides.items.${g.key}.name`), icon: g.icon, group: 'guide' });
     }
     rows.push(
-      { id: 'page:funkce', href: '/funkce', label: tNav('features'), icon: Sparkles, group: 'page' },
+      { id: 'page:features', href: '/features', label: tNav('features'), icon: Sparkles, group: 'page' },
       { id: 'page:pricing', href: '/pricing', label: tNav('pricing'), icon: BadgePercent, group: 'page' },
-      { id: 'page:guest', href: '/vytvorit-fakturu', label: tNav('guestInvoice'), icon: FilePlus2, group: 'page' }
+      { id: 'page:guest', href: '/create-invoice', label: tNav('guestInvoice'), icon: FilePlus2, group: 'page' }
     );
     return rows;
   }, [locale, tTools, tNav]);
@@ -128,7 +128,7 @@ export function MarketingSearch() {
         group: g.kind
       }))
     );
-    out.push({ id: 'all', href: `/hledat?q=${encodeURIComponent(q)}`, label: tTools('search.showAll', { query: q }), icon: ArrowRight, group: 'all' });
+    out.push({ id: 'all', href: `/search?q=${encodeURIComponent(q)}`, label: tTools('search.showAll', { query: q }), icon: ArrowRight, group: 'all' });
     return out;
   }, [q, hits, quick, tTools]);
 
@@ -156,7 +156,7 @@ export function MarketingSearch() {
       event.preventDefault();
       const row = rows[active];
       if (row) go(row.href);
-      else if (q) go(`/hledat?q=${encodeURIComponent(q)}`);
+      else if (q) go(`/search?q=${encodeURIComponent(q)}`);
     } else if (event.key === 'Escape') {
       event.preventDefault();
       setOpen(false);
@@ -169,7 +169,7 @@ export function MarketingSearch() {
   return (
     <>
       <Link
-        href="/hledat"
+        href="/search"
         onClick={(event) => {
           if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
           event.preventDefault();
@@ -195,7 +195,7 @@ export function MarketingSearch() {
             <div role="dialog" aria-modal="true" aria-label={t('title')} className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
               <form
                 role="search"
-                action={`/${locale}/hledat`}
+                action={`/${locale}/search`}
                 method="get"
                 onSubmit={(event) => event.preventDefault()}
                 className="flex items-center gap-2 border-b border-border px-4"

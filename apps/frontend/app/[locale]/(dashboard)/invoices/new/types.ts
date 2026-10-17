@@ -81,7 +81,8 @@ export interface FormItem {
 
 /** Everything the form sends; maps 1:1 onto the backend's `invoiceFieldsSchema`. */
 export interface InvoiceDraftInput {
-  customer: { kind: 'contact'; id: string } | { kind: 'ares'; ares: AresPrefill };
+  /** null = no customer yet: fine for a draft (they can fill in their own details via a link), not for issuing. */
+  customer: { kind: 'contact'; id: string } | { kind: 'ares'; ares: AresPrefill } | null;
   documentType: DocumentType;
   issueDate: string;
   dueDate: string;
@@ -173,6 +174,36 @@ export interface InvoiceFormPrefs {
   remindersEnabled: boolean;
   reminderIntervalDays: number;
   reminderMax: number;
+  /** What a blank new invoice starts with (Settings → Faktury → Výchozí hodnoty). */
+  defaultCurrency: string | null;
+  defaultBankAccountId: string | null;
+  defaultContactId: string | null;
+  defaultItems: DefaultItem[];
+  defaultNoteAbove: string | null;
+  /** Kurz pro cizí měny (backend invoices/exchange-rate-mode.ts). */
+  exchangeRateMode: ExchangeRateSetting;
+  annualRates: AnnualRate[];
+}
+
+/** Daily ČNB rate, the company's annual rate (§38 odst. 2 ZDPH), or no conversion printed (non-payers only). */
+export type ExchangeRateSetting = 'cnb_daily' | 'annual' | 'none';
+/** What an issued document stored; null = issued before the setting existed. */
+export type StoredRateMode = 'cnb_daily' | 'annual' | 'manual' | 'none';
+
+/** One "jednotný kurz": CZK per 1 unit of `currency` for the calendar year. */
+export interface AnnualRate {
+  year: number;
+  currency: string;
+  rate: number;
+}
+
+/** A line item a blank invoice starts with. */
+export interface DefaultItem {
+  description: string;
+  quantity: number;
+  unit: string | null;
+  unitPrice: number;
+  vatRate: number | null;
 }
 
 /** Same list as the backend's `PDF_ACCENTS` (tenants/invoice-form-prefs.ts); first = default. */
@@ -190,11 +221,15 @@ export interface FormDefaults {
   customPaymentMethods?: { id: string; label: string; base: PaymentMethod; instructions: string | null }[];
   noteBelow: string | null;
   language: DocLanguage;
+  /** Blank invoice only (no template): customer, currency, account, items and note above to start with. */
+  blank?: { contact: Contact | null; currency: string | null; bankAccountId: string | null; items: DefaultItem[]; noteAbove: string | null };
   /** Primary account (company profile) and the extra ones the invoice may be paid to. */
   primaryAccount: string | null;
   bankAccounts: { id: string; label: string; line: string; currency: string | null }[];
   /** Settings → Modules: whether quotes (cenové nabídky) are offered as a document type. */
   quotesEnabled: boolean;
+  /** Seller country (ISO code); due-date warnings use its public holidays. */
+  sellerCountry?: string;
 }
 
 /**

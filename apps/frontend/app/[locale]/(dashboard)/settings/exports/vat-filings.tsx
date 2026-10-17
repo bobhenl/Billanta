@@ -126,7 +126,7 @@ export function VatFilings() {
           {t('officialLink')}
         </a>
         {' · '}
-        <Link href="/navody/priznani-dph-kontrolni-a-souhrnne-hlaseni" locale={locale === 'en' ? 'en' : 'cs'} className="font-semibold text-primary hover:underline">
+        <Link href="/guides/vat-return-control-statement" locale={locale === 'en' ? 'en' : 'cs'} className="font-semibold text-primary hover:underline">
           {t('guideLink')}
         </Link>
       </p>

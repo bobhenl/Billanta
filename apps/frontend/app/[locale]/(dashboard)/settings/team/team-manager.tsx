@@ -335,7 +335,11 @@ export function TeamManager({ team, canManage, currentUserId }: { team: TeamData
       >
         {createdLink ? (
           <div className="space-y-3">
-            <p>{createdLink.emailSent ? t('inviteSent') : t('inviteNotSent')}</p>
+            {createdLink.emailSent ? (
+              <p>{t('inviteSent')}</p>
+            ) : (
+              <p role="alert" className="font-medium text-warning">{t('inviteNotSent')}</p>
+            )}
             <div className="flex gap-2">
               <input className={cn(inputClass, 'font-mono text-xs')} readOnly value={createdLink.url} onFocus={(e) => e.target.select()} />
               <button type="button" className={buttonClass.secondary} onClick={() => copy(createdLink.url)}>

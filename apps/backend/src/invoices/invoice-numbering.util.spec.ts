@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   allocateNextInvoiceSequence,
   deriveVariableSymbol,
+  firstFreeNumber,
   formatInvoiceNumber,
 } from "./invoice-numbering.util";
 
@@ -50,7 +51,7 @@ function makeInsertChain(returningResult: Array<{ lastNumber: number }>) {
 }
 
 describe("allocateNextInvoiceSequence", () => {
-  it("issues a single INSERT ... ON CONFLICT DO UPDATE targeting (tenantId, year) and returns the new lastNumber", async () => {
+  it("issues a single INSERT ... ON CONFLICT DO UPDATE targeting (tenantId, series, year, month) and returns the new lastNumber", async () => {
     const { chain, calls } = makeInsertChain([{ lastNumber: 7 }]);
     const insert = vi.fn(() => chain);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,16 +60,16 @@ describe("allocateNextInvoiceSequence", () => {
     const result = await allocateNextInvoiceSequence(db, "tenant-1", 2026);
 
     expect(result).toBe(7);
-    expect(chain.values).toHaveBeenCalledWith({ tenantId: "tenant-1", series: "", year: 2026, lastNumber: 1 });
+    expect(chain.values).toHaveBeenCalledWith({ tenantId: "tenant-1", series: "", year: 2026, month: 0, lastNumber: 1 });
     expect(chain.onConflictDoUpdate).toHaveBeenCalledTimes(1);
     // The whole race-safety guarantee hinges on this being a single
     // statement's ON CONFLICT clause (not a separate read-then-write from
-    // the application) — assert the target columns are exactly the pair
-    // the tenant_year unique index covers, and that `set` is present (its
-    // value is a drizzle `sql` fragment object, not worth deep-asserting
-    // structurally here).
+    // the application) – assert the target columns are exactly the four
+    // the tenant/series/year/month unique index covers, and that `set` is
+    // present (its value is a drizzle `sql` fragment object, not worth
+    // deep-asserting structurally here).
     const onConflictArg = calls.onConflictDoUpdate as { target: unknown[]; set: unknown };
-    expect(onConflictArg.target).toHaveLength(3);
+    expect(onConflictArg.target).toHaveLength(4);
     expect(onConflictArg.set).toBeDefined();
   });
 
@@ -107,5 +108,37 @@ describe("allocateNextInvoiceSequence", () => {
     const db = { insert } as any;
 
     await expect(allocateNextInvoiceSequence(db, "tenant-1", 2026)).rejects.toThrow();
+  });
+});
+
+describe("firstFreeNumber", () => {
+  const counter = (start = 0) => {
+    let n = start;
+    return async () => ++n;
+  };
+
+  it("steps over numbers that already exist and keeps the skipped ones used", async () => {
+    const taken = new Set(["1/10/2026", "2/10/2026"]);
+    const next = vi.fn(counter());
+    const got = await firstFreeNumber({ next, render: (s) => `${s}/10/2026`, isTaken: async (n) => taken.has(n) });
+    expect(got).toEqual({ sequence: 3, invoiceNumber: "3/10/2026" });
+    expect(next).toHaveBeenCalledTimes(3);
+  });
+
+  it("refuses a number longer than the column allows", async () => {
+    const long = "X".repeat(33);
+    await expect(firstFreeNumber({ next: counter(), render: () => long, isTaken: async () => false })).rejects.toMatchObject({
+      response: { error: "invoice_number_too_long" },
+    });
+    const fits = "X".repeat(32);
+    await expect(firstFreeNumber({ next: counter(), render: () => fits, isTaken: async () => false })).resolves.toMatchObject({ invoiceNumber: fits });
+  });
+
+  it("gives up after maxTries taken numbers in a row", async () => {
+    const next = vi.fn(counter());
+    await expect(firstFreeNumber({ next, render: String, isTaken: async () => true, maxTries: 5 })).rejects.toMatchObject({
+      response: { error: "invoice_number_exhausted" },
+    });
+    expect(next).toHaveBeenCalledTimes(5);
   });
 });

@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   BarChart3,
+  Bell,
   Blocks,
+  Braces,
   Keyboard,
   Bot,
   Briefcase,
@@ -15,12 +17,16 @@ import {
   FilePlus2,
   FileSliders,
   FileText,
+  FolderInput,
+  Globe,
+  Hash,
   KeyRound,
   Landmark,
   Timer,
   LayoutDashboard,
   LayoutTemplate,
   Loader2,
+  Mail,
   MessageCircle,
   Receipt,
   ReceiptText,
@@ -31,6 +37,8 @@ import {
   UserCog,
   UserPlus,
   Users,
+  Wallet,
+  Webhook,
   History,
   type LucideIcon
 } from 'lucide-react';
@@ -110,7 +118,34 @@ const PAGES: Entry[] = [
   { key: 'backup', href: '/settings/backup', icon: DatabaseBackup, label: 'settings.hub.items.backup.title' },
   { key: 'channels', href: '/settings/channels', icon: MessageCircle, label: 'settings.hub.items.channels.title' },
   { key: 'ai', href: '/settings/ai', icon: Bot, label: 'settings.hub.items.ai.title', section: 'ai' },
-  { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title' }
+  { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title' },
+  { key: 'notifications', href: '/settings/notifications', icon: Bell, label: 'settings.hub.items.notifications.title' },
+  { key: 'numbering', href: '/settings/numbering', icon: Hash, label: 'settings.hub.items.numbering.title' },
+  { key: 'emails', href: '/settings/emails', icon: Mail, label: 'settings.hub.items.emails.title' },
+  { key: 'variables', href: '/settings/variables', icon: Braces, label: 'settings.hub.items.variables.title' },
+  { key: 'paymentMethods', href: '/settings/payment-methods', icon: Wallet, label: 'settings.hub.items.paymentMethods.title' },
+  { key: 'publicProfile', href: '/settings/public-profile', icon: Globe, label: 'settings.hub.items.publicProfile.title' },
+  { key: 'import', href: '/settings/import', icon: FolderInput, label: 'settings.hub.items.import.title' },
+  { key: 'integrations', href: '/settings/integrations', icon: Webhook, label: 'settings.hub.items.integrations.title' }
+];
+
+/**
+ * Parts of a page worth finding on their own ("bankovní účet" lives inside
+ * Fakturační údaje). Shown with the page they belong to as the hint.
+ */
+const SECTIONS: (Entry & { parent: string })[] = [
+  { key: 'bankAccounts', href: '/settings/company#bank-accounts', icon: Landmark, label: 'palette.sections.bankAccounts', parent: 'settings.hub.items.company.title' },
+  { key: 'logo', href: '/settings/company', icon: Building2, label: 'palette.sections.logo', parent: 'settings.hub.items.company.title' },
+  { key: 'invoiceFields', href: '/settings/invoices#fields', icon: FileSliders, label: 'palette.sections.invoiceFields', parent: 'settings.hub.items.invoices.title' },
+  { key: 'reminders', href: '/settings/invoices#reminders', icon: Bell, label: 'palette.sections.reminders', parent: 'settings.hub.items.invoices.title' },
+  { key: 'invoiceDefaults', href: '/settings/invoices#defaults', icon: FileSliders, label: 'palette.sections.invoiceDefaults', parent: 'settings.hub.items.invoices.title' },
+  { key: 'password', href: '/settings/profile#password', icon: KeyRound, label: 'palette.sections.password', parent: 'settings.hub.items.profile.title' },
+  { key: 'preferences', href: '/settings/profile#preferences', icon: UserCog, label: 'palette.sections.preferences', parent: 'settings.hub.items.profile.title' },
+  { key: 'cardPayments', href: '/settings/payment-methods', icon: CreditCard, label: 'palette.sections.cardPayments', parent: 'settings.hub.items.paymentMethods.title' },
+  { key: 'webhooks', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.webhooks', parent: 'settings.hub.items.integrations.title' },
+  { key: 'calendar', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.calendar', parent: 'settings.hub.items.integrations.title' },
+  { key: 'epo', href: '/settings/exports#epo', icon: Download, label: 'palette.sections.epo', parent: 'settings.hub.items.exports.title', section: 'exports' },
+  { key: 'bankConnections', href: '/bank', icon: Landmark, label: 'palette.sections.bankConnections', parent: 'nav.bank', section: 'bank' }
 ];
 
 // Customers and pages before invoices: there are few of them, but invoices pile up.
@@ -199,7 +234,11 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
           group,
           label: t(e.label),
           icon: e.icon,
-          keywords: t.has(`palette.keywords.${e.key}`) ? t(`palette.keywords.${e.key}`) : undefined,
+          // Settings pages are also found by what their hub card says they do.
+          keywords: [
+            t.has(`palette.keywords.${e.key}`) ? t(`palette.keywords.${e.key}`) : '',
+            e.href.startsWith('/settings/') && t.has(`settings.hub.items.${e.key}.description`) ? t(`settings.hub.items.${e.key}.description`) : ''
+          ].join(' '),
           shortcut: e.shortcut,
           run: () => go(e.href)
         }));
@@ -218,6 +257,15 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
       }
     });
     const pages = entries(PAGES, 'pages');
+    const sections: Item[] = SECTIONS.filter((e) => !isHidden(e.section)).map((e) => ({
+      id: `section:${e.key}`,
+      group: 'pages',
+      label: t(e.label),
+      hint: t(e.parent),
+      icon: e.icon,
+      keywords: t.has(`palette.keywords.${e.key}`) ? t(`palette.keywords.${e.key}`) : undefined,
+      run: () => go(e.href)
+    }));
     if (!q) return [...actions, ...pages.slice(0, 7)];
 
     const rank = <T,>(list: T[], fields: (x: T) => (string | null | undefined)[]) =>
@@ -292,7 +340,7 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
         }))
       );
     }
-    out.push(...rank(pages, (p) => [p.label, p.keywords]));
+    out.push(...rank([...pages, ...sections], (p) => [p.label, p.keywords, p.hint]));
     // In AI mode (or when the text reads like a question) AI leads; otherwise
     // real hits come first and AI suggestions follow.
     const aiFirst = aiMode || out.filter((i) => i.group !== 'ai').length === 0 || out.some((i) => i.id === 'ai:search');

@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Inter } from 'next/font/google';
-import { hasLocale } from '@/i18n/has-locale';
+import { hasLocale } from 'next-intl';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SessionProvider } from '@/components/session-provider';
@@ -46,7 +46,7 @@ export async function generateMetadata({
     // Lets every page use relative URLs in its own `alternates`/`openGraph`
     // fields (e.g. `canonical: '/'`) instead of every page having to
     // reconstruct `SITE_URL` itself — pages that need a fully custom
-    // canonical/hreflang set (homepage, faktury-pro/[slug]) still define
+    // canonical/hreflang set (homepage, invoicing/[slug]) still define
     // their own `generateMetadata` on top of this; this is just the
     // sitewide fallback so no page silently ships with none at all.
     metadataBase: new URL(SITE_URL),

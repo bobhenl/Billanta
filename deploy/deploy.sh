@@ -24,6 +24,9 @@ docker save $IMAGES | gzip -1 | ssh "$HOST" 'gunzip | docker load -q'
 echo "uploading compose files…"
 tar czf - deploy docker/postgres .env.example | ssh "$HOST" "mkdir -p $DIR && tar xzf - -C $DIR && chmod +x $DIR/deploy/*.sh"
 ssh "$HOST" "[ -e $DIR/.env ] || $DIR/deploy/init-env.sh '$SITE_URL'"
+# Renamed keys in an existing .env (no-op once done): ai-service reads
+# WHATSAPP_WEBHOOK_VERIFY_TOKEN, older .env files had WHATSAPP_VERIFY_TOKEN.
+ssh "$HOST" "sed -i 's/^WHATSAPP_VERIFY_TOKEN=/WHATSAPP_WEBHOOK_VERIFY_TOKEN=/' $DIR/.env"
 
 ssh "$HOST" "cd $DIR && C='docker compose -f deploy/docker-compose.prod.yml --env-file .env' \
   && \$C up -d postgres redis && \$C run --rm migrate && \$C up -d --remove-orphans && \$C ps \

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { Injectable } from "@nestjs/common";
 import { utils } from "ssh2";
 import SftpClient from "ssh2-sftp-client";
-import { publicUrlProblem } from "../integrations/public-url";
+import { resolvePublicHost } from "../integrations/public-url";
 
 export interface SftpTarget {
   host: string;
@@ -47,14 +47,20 @@ export function remoteFilePath(dir: string, filename: string): string {
 @Injectable()
 export class SftpBackupClient {
   async upload(target: SftpTarget, filename: string, content: Buffer): Promise<{ fingerprint: string }> {
-    const problem = await publicUrlProblem(`https://${target.host}`);
-    if (problem) throw new Error(`SFTP host refused: ${problem}`);
+    // Connect to the address that passed the public check, not the name:
+    // resolving twice would let a rebinding domain point the socket inward.
+    let address: string;
+    try {
+      address = await resolvePublicHost(target.host);
+    } catch (err) {
+      throw new Error(`SFTP host refused: ${(err as Error).message}`);
+    }
 
     let seen: string | null = null;
     const client = new SftpClient("billanta-backup");
     try {
       await client.connect({
-        host: target.host,
+        host: address,
         port: target.port,
         username: target.username,
         ...(target.password ? { password: target.password } : { privateKey: target.privateKey }),

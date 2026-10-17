@@ -1,6 +1,6 @@
 /**
  * Statutory minimum monthly advances for a self-employed person, offered as
- * a one-click suggestion next to "Očekávané částky" on the dashboard (never
+ * a one-click suggestion per period row in Settings → Měsíční zálohy (never
  * filled in on their own) and shown on the public "minimální zálohy" page.
  * There is no official API for these: ČSSZ, the health insurers, Finanční
  * správa and Sociálna poisťovňa publish them once a year (and a mid-year
@@ -10,7 +10,7 @@
  * earlier ones. Only the requested calendar year is ever used, so a missing
  * year shows no figure rather than a stale one. Add next year's entries when
  * they are announced. (Moved here from apps/frontend/lib so the public pages
- * and the dashboard read one table.)
+ * and Settings read one table.)
  */
 export type MinimumKind = 'health' | 'social' | 'flat_tax';
 
@@ -29,8 +29,12 @@ const MINIMUMS: Record<'CZ' | 'SK', Period[]> = {
 
 /** The minimums in force on `date` (that calendar year only) and the month they apply from, or null. */
 export function minimumsFor(country: string, date = new Date()): { from: string; values: Partial<Record<MinimumKind, number>> } | null {
+  return minimumsAt(country, date.toISOString().slice(0, 7));
+}
+
+/** The minimums in force in `month` ("YYYY-MM", entries of that year only), or null when the year is not known. */
+export function minimumsAt(country: string, month: string): { from: string; values: Partial<Record<MinimumKind, number>> } | null {
   const periods = MINIMUMS[country === 'SK' ? 'SK' : 'CZ'];
-  const month = date.toISOString().slice(0, 7);
   const year = month.slice(0, 4);
   const values: Partial<Record<MinimumKind, number>> = {};
   let from: string | null = null;

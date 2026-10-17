@@ -5,7 +5,8 @@ import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { PeriodReport } from '../dashboard/period-report';
-import type { PeriodStats } from '../dashboard/types';
+import type { Usage } from '@/lib/usage-defaults';
+import type { DashboardConfig, PeriodStats } from '../dashboard/types';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('reports');
@@ -23,8 +24,15 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const preset: PeriodPreset = (PERIOD_PRESETS as readonly string[]).includes(period ?? '') ? (period as PeriodPreset) : 'thisYear';
   const { from, to } = presetRange(preset);
   let stats: PeriodStats;
+  let usage: Usage | null;
+  let config: DashboardConfig | null;
   try {
-    stats = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`);
+    [stats, usage, config] = await Promise.all([
+      apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`),
+      // Both optional: without them the report shows everything, as before.
+      apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null),
+      apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null)
+    ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     return (
@@ -45,7 +53,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           {t('exportsLink')}
         </Link>
       </div>
-      <PeriodReport key={preset} initial={stats} initialPreset={preset} />
+      <PeriodReport key={preset} initial={stats} initialPreset={preset} usage={usage} savedKpis={config?.reportKpis ?? null} />
     </div>
   );
 }

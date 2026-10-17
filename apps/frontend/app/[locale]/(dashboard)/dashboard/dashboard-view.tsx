@@ -36,6 +36,7 @@ import {
   Users,
   Wallet,
   Timer,
+  X,
   type LucideIcon
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -47,20 +48,27 @@ import { STATUS_BADGE_CLASSES, displayStatus, formatDate, formatMoney } from '@/
 import {
   TAX_DEADLINE_KINDS,
   defaultTaxDeadlineKinds,
-  mergeTaxDeadlines,
+  relevantTaxDeadlineKinds,
+  taxDeadlinesFor,
   type OfficialTaxEvent,
+  type TaxProfile,
   type TaxDeadline,
   type TaxDeadlineKind
 } from '@/lib/tax-deadlines';
+import { advanceForDeadline, isTaxAdvanceKind, type VatStatus } from '@faktur/cz-compliance';
+import type { TaxAdvances } from '@/lib/vat-status';
 import { formatElapsed, formatMinutes, type TimeSummary } from '@/lib/time-ui';
-import { minimumsFor, type MinimumKind } from '@/lib/tax-minimums';
+
+const DEFAULT_PROFILE: TaxProfile = { country: 'CZ', vatStatus: 'non_payer', legalEntity: false };
 import { cn } from '@/lib/utils';
 import { saveDashboardConfig } from './actions';
+import { USAGE_DRIVEN_KEYS, recommendDashboard, withUsageDefaults, type DashboardRecommendation, type Usage, type UsageDrivenKey } from '@/lib/usage-defaults';
 import {
   DEFAULT_TILES,
   KPI_CARDS,
   QUICK_TILES,
   type DashboardConfig,
+  type DashboardConfigPatch,
   type DashboardDoc,
   type DashboardSummary,
   type KpiCard,
@@ -85,6 +93,8 @@ const DEFAULT_CONFIG: DashboardConfig = {
 
 const FX_CHOICES = ['EUR', 'USD', 'GBP', 'PLN', 'HUF', 'CHF', 'JPY', 'CNY'] as const;
 const DEFAULT_FX = ['EUR', 'USD', 'GBP'];
+/** Matches the backend limit on saved ČNB currencies. */
+const FX_MAX = 12;
 
 /** Where each KPI card leads, its icon and tone. */
 const CARD_META: Record<KpiCard, { href: string; icon: LucideIcon; tone: string }> = {
@@ -136,24 +146,35 @@ export function DashboardView({
   summary,
   initialConfig,
   firstName,
-  vatPayer = false,
+  profile = DEFAULT_PROFILE,
+  advances = [],
   country = 'CZ',
   time = null,
-  stats = null
+  stats = null,
+  usage = null
 }: {
   summary: DashboardSummary;
   initialConfig: DashboardConfig | null;
   firstName: string | null;
-  vatPayer?: boolean;
+  /** VAT status, country and legal form: decides which deadlines apply. */
+  profile?: TaxProfile;
+  /** OSVČ advances by period from Settings → Fakturační údaje (the only source for social / health / flat tax amounts). */
+  advances?: TaxAdvances;
   /** Company country: an SK company books its insurance as an expense from the deadline card. */
   country?: string;
   time?: TimeSummary | null;
   /** The period card; without it (older backend) the fixed 12-month chart shows. */
   stats?: PeriodStats | null;
+  /** What the company uses: decides the defaults the member hasn't overridden. */
+  usage?: Usage | null;
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
-  const [config, setConfig] = useState(() => normalize(initialConfig));
+  const [stored, setStored] = useState(() => normalize(initialConfig));
+  const [savedKeys, setSavedKeys] = useState<string[] | undefined>(initialConfig?.savedKeys);
+  const recommendation = useMemo(() => recommendDashboard(usage), [usage]);
+  // Saved choices win; every key the member never touched follows usage.
+  const config = useMemo(() => normalize(withUsageDefaults(stored, savedKeys, recommendation)), [stored, savedKeys, recommendation]);
   const [customizing, setCustomizing] = useState(false);
   const money = (n: number) => formatMoney(n, summary.currency, locale);
   const { kpi } = summary;
@@ -286,11 +307,11 @@ export function DashboardView({
       )}
 
       {time && <TimeCard time={time} />}
-      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, vatPayer)} amounts={config.taxAmounts ?? {}} country={country} />}
+      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
       {(config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
-        {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact /> : <RevenueChart chart={summary.chart} money={money} />)}
+        {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact usage={usage} /> : <RevenueChart chart={summary.chart} money={money} />)}
         {config.showTopCustomers && summary.topCustomers.length > 0 && (
           <section className="rounded-xl border border-border bg-card p-4">
             <h2 className="font-bold">{t('topCustomers')}</h2>
@@ -335,10 +356,22 @@ export function DashboardView({
         open={customizing}
         onClose={() => setCustomizing(false)}
         config={config}
-        vatPayer={vatPayer}
+        profile={profile}
         country={country}
-        onSaved={(next) => {
-          setConfig(next);
+        usage={usage}
+        recommendation={recommendation}
+        savedKeys={savedKeys}
+        onSaved={(patch) => {
+          const kept = Object.fromEntries(Object.entries(patch).filter(([, v]) => v != null)) as Partial<DashboardConfig>;
+          setStored((cur) => normalize({ ...cur, ...kept }));
+          setSavedKeys((cur) => {
+            const keys = new Set(cur ?? []);
+            for (const [k, v] of Object.entries(patch)) {
+              if (v == null) keys.delete(k);
+              else keys.add(k);
+            }
+            return [...keys];
+          });
           setCustomizing(false);
         }}
       />
@@ -432,19 +465,23 @@ function CustomizeModal({
   onClose,
   config,
   onSaved,
-  vatPayer,
-  country
+  profile,
+  country,
+  usage,
+  recommendation,
+  savedKeys
 }: {
   open: boolean;
   onClose: () => void;
   config: DashboardConfig;
-  onSaved: (config: DashboardConfig) => void;
-  vatPayer: boolean;
+  onSaved: (patch: DashboardConfigPatch) => void;
+  profile: TaxProfile;
   country: string;
+  usage: Usage | null;
+  recommendation: DashboardRecommendation;
+  savedKeys: string[] | undefined;
 }) {
   const t = useTranslations('dashboard');
-  const locale = useLocale();
-  const minimums = minimumsFor(country);
   const router = useRouter();
   const [cards, setCards] = useState<KpiCard[]>(config.cards);
   const [tiles, setTiles] = useState<string[]>(config.tiles ?? DEFAULT_TILES);
@@ -457,7 +494,28 @@ function CustomizeModal({
     showFxRates: config.showFxRates ?? true
   });
   const [fx, setFx] = useState<string[]>(config.fxCurrencies ?? DEFAULT_FX);
-  const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, vatPayer));
+  // Usage-driven keys the member changed (or saved before); the others are sent as null and keep following usage.
+  const [touched, setTouched] = useState<Set<UsageDrivenKey>>(
+    () => new Set(USAGE_DRIVEN_KEYS.filter((k) => (savedKeys ?? USAGE_DRIVEN_KEYS).includes(k)))
+  );
+  const touch = (key: UsageDrivenKey) => setTouched((cur) => (cur.has(key) ? cur : new Set(cur).add(key)));
+  // Every currency ČNB publishes; the short fallback list is used when cnb.cz is unreachable.
+  const [fxList, setFxList] = useState<{ code: string; country: string; name: string }[] | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/dashboard/fx-rates/currencies')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json: { currencies?: { code: string; country: string; name: string }[] | null } | null) => alive && setFxList(json?.currencies ?? null))
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const fxChoices = fxList
+    ? [...fxList].sort((a, b) => a.code.localeCompare(b.code)).map((c) => ({ code: c.code, label: `${c.name} (${c.country})` }))
+    : FX_CHOICES.map((code) => ({ code, label: '' }));
+  const fxNames: Record<string, string> = Object.fromEntries(fxChoices.map((c) => [c.code, c.label]));
+  const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, profile.vatStatus));
   const [taxAmounts, setTaxAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(Object.entries(config.taxAmounts ?? {}).map(([k, v]) => [k, String(v)]))
   );
@@ -465,7 +523,10 @@ function CustomizeModal({
 
   // Cards keep the user's order; unchecked ones are listed after, in default order.
   const ordered = [...cards, ...KPI_CARDS.filter((c) => !cards.includes(c))];
-  const toggleCard = (card: KpiCard) => setCards((cur) => (cur.includes(card) ? cur.filter((c) => c !== card) : [...cur, card]));
+  const toggleCard = (card: KpiCard) => {
+    touch('cards');
+    setCards((cur) => (cur.includes(card) ? cur.filter((c) => c !== card) : [...cur, card]));
+  };
   const move = (card: KpiCard, dir: -1 | 1) =>
     setCards((cur) => {
       const i = cur.indexOf(card);
@@ -476,9 +537,18 @@ function CustomizeModal({
       next[j] = cur[i]!;
       return next;
     });
-  const toggleTile = (tile: string) => setTiles((cur) => (cur.includes(tile) ? cur.filter((x) => x !== tile) : [...cur, tile]));
+  const toggleTile = (tile: string) => {
+    touch('tiles');
+    setTiles((cur) => (cur.includes(tile) ? cur.filter((x) => x !== tile) : [...cur, tile]));
+  };
+  /** Untouched usage-driven keys go out as null, so they keep adapting. */
+  const choices = (next: DashboardConfigPatch): DashboardConfigPatch => {
+    const out: DashboardConfigPatch = { ...next };
+    for (const key of USAGE_DRIVEN_KEYS) if (!touched.has(key)) out[key] = null;
+    return out;
+  };
 
-  const save = (next: DashboardConfig) =>
+  const save = (next: DashboardConfigPatch) =>
     start(async () => {
       const result = await saveDashboardConfig(next);
       if (!result.ok) {
@@ -504,11 +574,12 @@ function CustomizeModal({
             className={cn(buttonClass.ghost, 'mr-auto')}
             disabled={saving}
             onClick={() => {
-              setCards(DEFAULT_CONFIG.cards);
-              setTiles(DEFAULT_TILES);
-              setSections({ showChart: true, showRecent: true, showTopCustomers: true, showDueSoon: true, showTaxDeadlines: true, showFxRates: true });
-              setFx(DEFAULT_FX);
-              setTaxKinds(defaultTaxDeadlineKinds(vatPayer));
+              setCards(recommendation.cards.filter((c): c is KpiCard => (KPI_CARDS as readonly string[]).includes(c)));
+              setTiles(recommendation.tiles);
+              setSections({ showChart: true, showRecent: true, showTopCustomers: true, showDueSoon: true, showTaxDeadlines: true, showFxRates: recommendation.showFxRates });
+              setFx(recommendation.fxCurrencies);
+              setTouched(new Set());
+              setTaxKinds(defaultTaxDeadlineKinds(profile.vatStatus));
             }}
           >
             {t('customizeReset')}
@@ -516,12 +587,13 @@ function CustomizeModal({
           <button type="button" className={buttonClass.secondary} onClick={onClose}>
             {t('cancel')}
           </button>
-          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(vatPayer)) ? null : taxKinds, fxCurrencies: sameKinds(fx, DEFAULT_FX) ? null : fx, taxAmounts: amountsOf(taxAmounts, taxKinds) })}>
+          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save(choices({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(profile.vatStatus)) ? null : taxKinds, fxCurrencies: fx, taxAmounts: amountsOf(taxAmounts, taxKinds) }))}>
             {t('save')}
           </button>
         </>
       }
     >
+      {usage && <UsageNote usage={usage} />}
       <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('customizeCards')}</h3>
       <ul className="mt-2 space-y-1">
         {ordered.map((card) => {
@@ -535,14 +607,20 @@ function CustomizeModal({
               </label>
               {on && (
                 <>
-                  <button type="button" aria-label={t('moveUp')} disabled={i === 0} onClick={() => move(card, -1)} className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30">
+                  <button type="button" aria-label={t('moveUp')} disabled={i === 0} onClick={() => {
+                      touch('cards');
+                      move(card, -1);
+                    }} className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30">
                     <ArrowUp className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
                     aria-label={t('moveDown')}
                     disabled={i === cards.length - 1}
-                    onClick={() => move(card, 1)}
+                    onClick={() => {
+                      touch('cards');
+                      move(card, 1);
+                    }}
                     className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30"
                   >
                     <ArrowDown className="h-3.5 w-3.5" />
@@ -579,7 +657,15 @@ function CustomizeModal({
       <div className="mt-2 space-y-2 text-sm">
         {(['showDueSoon', 'showTaxDeadlines', 'showFxRates', 'showChart', 'showTopCustomers', 'showRecent'] as const).map((key) => (
           <label key={key} className="flex cursor-pointer items-center gap-2">
-            <input type="checkbox" className={check} checked={sections[key]} onChange={(e) => setSections((s) => ({ ...s, [key]: e.target.checked }))} />
+            <input
+              type="checkbox"
+              className={check}
+              checked={sections[key]}
+              onChange={(e) => {
+                if (key === 'showFxRates') touch('showFxRates');
+                setSections((s) => ({ ...s, [key]: e.target.checked }));
+              }}
+            />
             {t(`sections.${key}`)}
           </label>
         ))}
@@ -590,18 +676,48 @@ function CustomizeModal({
           <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
             <InfoHint hint={t('fxRates.customizeHint')}>{t('fxRates.customizeTitle')}</InfoHint>
           </h3>
-          <div className="mt-2 flex flex-wrap gap-2 text-sm">
-            {FX_CHOICES.map((code) => (
-              <label key={code} className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-border px-2 py-1">
-                <input
-                  type="checkbox"
-                  className={check}
-                  checked={fx.includes(code)}
-                  onChange={(e) => setFx((prev) => (e.target.checked ? FX_CHOICES.filter((c) => c === code || prev.includes(c)) : prev.filter((c) => c !== code)))}
-                />
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+            {fx.map((code) => (
+              <span key={code} className="flex items-center gap-1 rounded-lg border border-border px-2 py-1" title={fxNames[code]}>
                 {code}
-              </label>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-destructive"
+                  aria-label={t('fxRates.remove', { code })}
+                  onClick={() => {
+                    touch('fxCurrencies');
+                    setFx((prev) => prev.filter((c) => c !== code));
+                  }}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
             ))}
+            {fx.length < FX_MAX ? (
+              <select
+                aria-label={t('fxRates.add')}
+                className="rounded-lg border border-border bg-background px-2 py-1 text-sm"
+                value=""
+                onChange={(e) => {
+                  const code = e.target.value;
+                  if (!code) return;
+                  touch('fxCurrencies');
+                  setFx((prev) => (prev.includes(code) ? prev : [...prev, code]));
+                }}
+              >
+                <option value="">{t('fxRates.add')}</option>
+                {fxChoices
+                  .filter((c) => !fx.includes(c.code))
+                  .map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.code}
+                      {c.label ? ` – ${c.label}` : ''}
+                    </option>
+                  ))}
+              </select>
+            ) : (
+              <span className="text-xs text-muted-foreground">{t('fxRates.limit', { max: FX_MAX })}</span>
+            )}
           </div>
         </>
       )}
@@ -612,7 +728,7 @@ function CustomizeModal({
             <InfoHint hint={t('taxDeadlines.customizeHint')}>{t('taxDeadlines.customizeTitle')}</InfoHint>
           </h3>
           <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-            {TAX_DEADLINE_KINDS.map((kind) => (
+            {relevantTaxDeadlineKinds(TAX_DEADLINE_KINDS, profile).map((kind) => (
               <label key={kind} className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
@@ -626,6 +742,15 @@ function CustomizeModal({
               </label>
             ))}
           </div>
+          {/* Social / health / flat tax amounts live in Settings, by period (one source for the dashboard, iCal and reports). */}
+          {relevantTaxDeadlineKinds(taxKinds, profile).some(isTaxAdvanceKind) && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              {t('taxDeadlines.advancesInSettings')}{' '}
+              <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
+                {t('taxDeadlines.editAdvances')}
+              </Link>
+            </p>
+          )}
           {AMOUNT_KINDS.some((k) => taxKinds.includes(k)) && (
             <>
               <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -644,14 +769,6 @@ function CustomizeModal({
                       value={taxAmounts[kind] ?? ''}
                       onChange={(e) => setTaxAmounts((prev) => ({ ...prev, [kind]: e.target.value }))}
                     />
-                    {minimums?.values[kind as MinimumKind] != null && (
-                      <span className="text-xs text-muted-foreground">
-                        {t('taxDeadlines.minimum', { from: `${Number(minimums.from.slice(5))}/${minimums.from.slice(0, 4)}`, amount: formatMoney(minimums.values[kind as MinimumKind]!, country === 'SK' ? 'EUR' : 'CZK', locale) })}{' '}
-                        <button type="button" className="font-semibold text-primary hover:underline" onClick={() => setTaxAmounts((prev) => ({ ...prev, [kind]: String(minimums.values[kind as MinimumKind]) }))}>
-                          {t('taxDeadlines.useMinimum')}
-                        </button>
-                      </span>
-                    )}
                   </label>
                 ))}
               </div>
@@ -663,8 +780,32 @@ function CustomizeModal({
   );
 }
 
-/** Kinds paid as a regular amount the member can type in (shown next to the deadline). */
-const AMOUNT_KINDS: TaxDeadlineKind[] = ['health', 'social', 'flat_tax', 'payroll'];
+/** "Recommended from what you use": a one-line summary of the facts the defaults came from. */
+function UsageNote({ usage }: { usage: Usage }) {
+  const t = useTranslations('dashboard.usage');
+  const facts: string[] = [];
+  if (usage.has.foreignCurrencies) facts.push(t('currencies', { list: usage.foreignCurrencies.slice(0, 6).join(', ') }));
+  else if (usage.has.invoices) facts.push(t('onlyHome', { currency: usage.homeCurrency }));
+  if (usage.has.invoices) facts.push(usage.has.expenses ? t('expenses') : t('noExpenses'));
+  if (usage.has.paypal) facts.push(t('paypal'));
+  if (usage.has.bank && (usage.bank.bankApi || !usage.has.paypal)) facts.push(t('bank'));
+  if (usage.has.proformas) facts.push(t('proformas'));
+  if (usage.has.quotes) facts.push(t('quotes'));
+  return (
+    <div className="mb-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs">
+      <p className="font-semibold">{t('title')}</p>
+      <p className="mt-0.5 text-muted-foreground">{usage.has.invoices ? facts.join(' · ') : t('newAccount')}</p>
+      <p className="mt-0.5 text-muted-foreground">{t('hint')}</p>
+    </div>
+  );
+}
+
+/**
+ * Kinds paid as a regular amount the member can type in here (shown next to
+ * the deadline). The OSVČ advances (social, health, flat tax) are not here:
+ * they are set by period in Settings → Fakturační údaje (#zalohy).
+ */
+const AMOUNT_KINDS: TaxDeadlineKind[] = ['payroll'];
 /** Kinds an SK company books as a tax expense (odvody are deductible there, unlike CZ OSVČ advances). */
 const SK_EXPENSE_KINDS: TaxDeadlineKind[] = ['health', 'social'];
 
@@ -679,16 +820,44 @@ function amountsOf(input: Record<string, string>, kinds: TaxDeadlineKind[]): Rec
 
 const sameKinds = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((k) => b.includes(k));
 
-function taxKindsOf(config: DashboardConfig, vatPayer: boolean): TaxDeadlineKind[] {
-  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(vatPayer);
+function taxKindsOf(config: DashboardConfig, vatStatus: VatStatus): TaxDeadlineKind[] {
+  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(vatStatus);
   return TAX_DEADLINE_KINDS.filter((k) => config.taxDeadlines!.includes(k));
 }
 
 /** Upcoming Czech tax & insurance due days (calendar only, weekends/holidays shifted). */
-function TaxDeadlines({ kinds, amounts, country }: { kinds: TaxDeadlineKind[]; amounts: Record<string, number>; country: string }) {
+function TaxDeadlines({
+  kinds,
+  profile,
+  advances,
+  amounts,
+  country
+}: {
+  kinds: TaxDeadlineKind[];
+  profile: TaxProfile;
+  /** Advances by period: each deadline shows the amount for the month it pays. */
+  advances: TaxAdvances;
+  /** The member's own amounts for the other kinds (e.g. payroll). */
+  amounts: Record<string, number | undefined>;
+  country: string;
+}) {
   const t = useTranslations('dashboard.taxDeadlines');
   const locale = useLocale();
   const kindsKey = kinds.join(',');
+  // Months with EU services / foreign purchases decide souhrnné hlášení and the identified person's return.
+  const needsActivity = kinds.includes('ec_sales_list') || kinds.includes('vat_identified');
+  const [activity, setActivity] = useState<TaxProfile['activity'] | null | undefined>(needsActivity ? undefined : null);
+  useEffect(() => {
+    if (!needsActivity) return;
+    let alive = true;
+    fetch('/api/dashboard/vat-activity')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json: TaxProfile['activity'] | null) => alive && setActivity(json?.euSalesMonths ? json : null))
+      .catch(() => alive && setActivity(null));
+    return () => {
+      alive = false;
+    };
+  }, [needsActivity]);
   // Official rows load on the client (the first fetch from Finanční správa can
   // take a few seconds); "today" is the browser's, so server and client agree.
   const [official, setOfficial] = useState<OfficialTaxEvent[] | null | undefined>(undefined);
@@ -702,16 +871,27 @@ function TaxDeadlines({ kinds, amounts, country }: { kinds: TaxDeadlineKind[]; a
       alive = false;
     };
   }, []);
+  const { country: pCountry, vatStatus, legalEntity } = profile;
   const items = useMemo<TaxDeadline[] | null>(
-    () => (official === undefined ? null : mergeTaxDeadlines(kindsKey ? (kindsKey.split(',') as TaxDeadlineKind[]) : [], official).slice(0, 6)),
-    [official, kindsKey]
+    () =>
+      official === undefined || activity === undefined
+        ? null
+        : taxDeadlinesFor(
+            kindsKey ? (kindsKey.split(',') as TaxDeadlineKind[]) : [],
+            { country: pCountry, vatStatus, legalEntity, activity: activity ?? undefined },
+            official
+          ).slice(0, 6),
+    [official, activity, kindsKey, pCountry, vatStatus, legalEntity]
   );
   if (!items || items.length === 0) return null;
   const fmt = new Intl.DateTimeFormat(locale, { weekday: 'short', day: 'numeric', month: 'numeric' });
   const currency = country === 'SK' ? 'EUR' : 'CZK';
-  const expenseHref = (kind: TaxDeadlineKind) => {
-    const params = new URLSearchParams({ description: t(`kinds.${kind}`) });
-    if (amounts[kind]) params.set('amount', String(amounts[kind]));
+  // The 20 January social payment covers December, so it shows December's amount (see advanceMonthOf).
+  const amountOf = (item: TaxDeadline) => (isTaxAdvanceKind(item.kind) ? advanceForDeadline(advances, item.kind, item.date) : amounts[item.kind]);
+  const expenseHref = (item: TaxDeadline) => {
+    const params = new URLSearchParams({ description: t(`kinds.${item.kind}`) });
+    const amount = amountOf(item);
+    if (amount) params.set('amount', String(amount));
     return `/expenses/new?${params}`;
   };
   return (
@@ -728,17 +908,26 @@ function TaxDeadlines({ kinds, amounts, country }: { kinds: TaxDeadlineKind[]; a
             <span className="w-24 shrink-0 font-semibold tabular-nums">{fmt.format(item.date)}</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate">{t(`kinds.${item.kind}`)}</span>
+              {item.conditional && (
+                <span className="block text-xs text-muted-foreground">{t(item.kind === 'ec_sales_list' ? 'onlyIfEuSales' : 'onlyIfForeignPurchase')}</span>
+              )}
               {item.details && (
                 <span className="block truncate text-xs text-muted-foreground" title={item.details.join('\n')}>
                   {item.details.join(' · ')}
                 </span>
               )}
             </span>
-            {amounts[item.kind] !== undefined && (
-              <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amounts[item.kind]!, currency, locale)}</span>
+            {amountOf(item) !== undefined ? (
+              <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amountOf(item)!, currency, locale)}</span>
+            ) : (
+              isTaxAdvanceKind(item.kind) && (
+                <Link href="/settings/company#zalohy" className="shrink-0 text-xs font-semibold text-primary hover:underline">
+                  {t('fillAmount')}
+                </Link>
+              )
             )}
             {country === 'SK' && SK_EXPENSE_KINDS.includes(item.kind) && (
-              <Link href={expenseHref(item.kind)} className="shrink-0 text-xs font-semibold text-primary hover:underline">
+              <Link href={expenseHref(item)}className="shrink-0 text-xs font-semibold text-primary hover:underline">
                 {t('bookExpense')}
               </Link>
             )}
@@ -780,7 +969,6 @@ interface FxRow {
   weekAgo: number | null;
 }
 
-/** Today's ČNB rates (CZK per unit) with the change against a week ago. */
 /** This week, unbilled work and the running timer; hidden until there's something to show. */
 function TimeCard({ time }: { time: TimeSummary }) {
   const t = useTranslations('time.dashboard');
@@ -835,49 +1023,121 @@ function TimeCard({ time }: { time: TimeSummary }) {
   );
 }
 
+/** Local calendar day as YYYY-MM-DD. */
+function isoToday(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** ČNB rates (CZK per unit) for a chosen day, the change against a week before and a small CZK converter. */
 function FxRates({ currencies }: { currencies: string[] }) {
   const t = useTranslations('dashboard.fxRates');
   const locale = useLocale();
   const key = currencies.join(',');
-  const [rows, setRows] = useState<FxRow[] | null | undefined>(undefined);
+  // Empty = today; set after mount so the server and client render the same.
+  const [day, setDay] = useState('');
+  const [today, setToday] = useState('');
+  const [data, setData] = useState<{ rows: FxRow[]; publishedDate: string | null } | null | undefined>(undefined);
+  const [amount, setAmount] = useState('100');
+  const [from, setFrom] = useState('');
+  useEffect(() => setToday(isoToday()), []);
   useEffect(() => {
     if (!key) return;
     let alive = true;
-    fetch(`/api/dashboard/fx-rates?currencies=${key}`)
+    const query = new URLSearchParams({ currencies: key });
+    if (day) query.set('date', day);
+    fetch(`/api/dashboard/fx-rates?${query}`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((json: { rates?: FxRow[] } | null) => alive && setRows(json?.rates?.filter((r) => r.rate != null) ?? null))
-      .catch(() => alive && setRows(null));
+      .then((json: { rates?: FxRow[]; publishedDate?: string | null } | null) =>
+        alive && setData(json?.rates ? { rows: json.rates.filter((r) => r.rate != null), publishedDate: json.publishedDate ?? null } : null)
+      )
+      .catch(() => alive && setData(null));
     return () => {
       alive = false;
     };
-  }, [key]);
-  if (!key || rows === null || (rows && rows.length === 0)) return null;
+  }, [key, day]);
+  // Hide the widget only when today's rates can't be loaded at all; a bad past day shows a message instead.
+  if (!key || (!day && (data === null || (data && data.rows.length === 0)))) return null;
   const num = new Intl.NumberFormat(locale, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
   const pct = new Intl.NumberFormat(locale, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+  const rows = data?.rows ?? [];
+  const requested = day || today;
+  const published = data?.publishedDate ?? null;
+  const fromRow = rows.find((r) => r.code === from) ?? rows[0];
+  const parsedAmount = Number(amount.replace(/\s/g, '').replace(',', '.'));
+  const converted = fromRow?.rate != null && amount.trim() !== '' && Number.isFinite(parsedAmount) ? parsedAmount * fromRow.rate : null;
+  const control = 'rounded-lg border border-border bg-background px-2 py-1 text-sm';
   return (
     <section className="mt-6 rounded-xl border border-border bg-card p-4">
-      <InfoHint hint={t('hint')}>
-        <h2 className="flex items-center gap-2 font-bold">
-          <Landmark className="h-4 w-4 text-primary" />
-          {t('title')}
-        </h2>
-      </InfoHint>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {(rows ?? currencies.map((code) => ({ code, rate: null, weekAgo: null }))).map((row) => {
-          const change = row.rate != null && row.weekAgo ? row.rate / row.weekAgo - 1 : null;
-          return (
-            <div key={row.code} className="rounded-lg bg-secondary/60 px-3 py-2">
-              <div className="text-xs font-semibold text-muted-foreground">1 {row.code}</div>
-              <div className="text-lg font-bold tabular-nums">{row.rate != null ? `${num.format(row.rate)} Kč` : '…'}</div>
-              {change != null && (
-                <div className={cn('text-xs font-semibold tabular-nums', change > 0 ? 'text-destructive' : change < 0 ? 'text-success' : 'text-muted-foreground')} title={t('weekChange')}>
-                  {pct.format(change)} {t('weekShort')}
-                </div>
-              )}
-            </div>
-          );
-        })}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <InfoHint hint={t('hint')}>
+          <h2 className="flex items-center gap-2 font-bold">
+            <Landmark className="h-4 w-4 text-primary" />
+            {t('title')}
+          </h2>
+        </InfoHint>
+        <label className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">{t('date')}</span>
+          <input
+            type="date"
+            className={control}
+            value={requested}
+            min="1991-01-01"
+            max={today || undefined}
+            onChange={(e) => setDay(e.target.value && e.target.value < today ? e.target.value : '')}
+          />
+        </label>
       </div>
+      {data === null || (data && rows.length === 0) ? (
+        <p className="mt-3 text-sm text-muted-foreground">{t('unavailable')}</p>
+      ) : (
+        <>
+          {published && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              {t('publishedOn', { date: formatDate(published, locale) ?? published })}
+              {requested && published !== requested && <> – {t('fallbackNote')}</>}
+            </p>
+          )}
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {(data ? rows : currencies.map((code) => ({ code, rate: null, weekAgo: null }))).map((row) => {
+              const change = row.rate != null && row.weekAgo ? row.rate / row.weekAgo - 1 : null;
+              return (
+                <div key={row.code} className="rounded-lg bg-secondary/60 px-3 py-2">
+                  <div className="text-xs font-semibold text-muted-foreground">1 {row.code}</div>
+                  <div className="text-lg font-bold tabular-nums">{row.rate != null ? `${num.format(row.rate)} Kč` : '…'}</div>
+                  {change != null && (
+                    <div className={cn('text-xs font-semibold tabular-nums', change > 0 ? 'text-destructive' : change < 0 ? 'text-success' : 'text-muted-foreground')} title={t('weekChange')}>
+                      {pct.format(change)} {t('weekShort')}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {fromRow && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <span className="font-semibold">{t('converter')}</span>
+              <input
+                type="text"
+                inputMode="decimal"
+                aria-label={t('amount')}
+                className={cn(control, 'w-28 tabular-nums')}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+              <select aria-label={t('currency')} className={control} value={fromRow.code} onChange={(e) => setFrom(e.target.value)}>
+                {rows.map((r) => (
+                  <option key={r.code} value={r.code}>
+                    {r.code}
+                  </option>
+                ))}
+              </select>
+              <span className="text-muted-foreground">=</span>
+              <span className="font-bold tabular-nums">{converted != null ? formatMoney(converted, 'CZK', locale) : '–'}</span>
+            </div>
+          )}
+        </>
+      )}
       <p className="mt-2 text-xs text-muted-foreground">
         {t('source')}{' '}
         <a href="https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/" target="_blank" rel="noreferrer" className="font-semibold text-primary hover:underline">

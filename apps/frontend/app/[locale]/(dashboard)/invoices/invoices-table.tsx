@@ -25,6 +25,7 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
 import { ColorDot } from '@/components/color-dot';
 import {
+  buyerDetailsState,
   CONVERSIONS,
   displayStatus,
   formatDate,
@@ -36,6 +37,7 @@ import {
 import { COLUMNS_KEY, INLINE_KEY, readJson, SORT_KEY, VIEW_EVENT, writeJson } from '@/lib/invoice-list-prefs';
 import { startNavProgress } from '@/components/nav-progress';
 import { cn } from '@/lib/utils';
+import { AmountHover, ContactHover } from './invoice-hover-cards';
 import {
   cancelInvoice,
   convertInvoice,
@@ -243,7 +245,7 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
         return (
           <span className="inline-flex items-center gap-1.5 font-medium">
             <ColorDot color={row.contactColor} />
-            {row.contactName ?? '–'}
+            <ContactHover contactId={row.contactId}>{row.contactName ?? <span className="font-normal italic text-muted-foreground">{t('noCustomer')}</span>}</ContactHover>
           </span>
         );
       case 'issueDate':
@@ -261,7 +263,7 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
       case 'total':
         return (
           <span className="font-semibold tabular-nums">
-            {formatMoney(row.total, row.currency, locale)}
+            <AmountHover row={row}>{formatMoney(row.total, row.currency, locale)}</AmountHover>
             {row.status === 'issued' && Number(row.amountPaid ?? 0) > 0 && (
               <span className="block text-xs font-medium text-success">{t('partial.short', { amount: formatMoney(Number(row.amountPaid), row.currency, locale) })}</span>
             )}
@@ -269,9 +271,17 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
         );
       case 'status': {
         const status = displayStatus(row);
+        const buyer = buyerDetailsState(row);
         return (
-          <span title={tGloss(`status.${status}`)} className={cn('inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>
-            {status === 'overdue' ? t('overdue') : tStatus(status)}
+          <span className="inline-flex flex-wrap items-center gap-1">
+            <span title={tGloss(`status.${status}`)} className={cn('inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>
+              {status === 'overdue' ? t('overdue') : tStatus(status)}
+            </span>
+            {buyer && (
+              <span className={cn('inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', buyer === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
+                {tList(`buyerDetails.badge.${buyer}`)}
+              </span>
+            )}
           </span>
         );
       }

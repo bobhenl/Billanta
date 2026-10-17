@@ -2,7 +2,7 @@
 
 import { apiFetch } from '@/lib/api-client';
 
-export type AuditEntityType = 'invoice' | 'tenant' | 'bank_account' | 'contact' | 'member' | 'api_key';
+export type AuditEntityType = 'invoice' | 'tenant' | 'bank_account' | 'contact' | 'member' | 'api_key' | 'import';
 
 export interface AuditChange {
   field: string;
@@ -19,7 +19,7 @@ export interface AuditItem {
   action: string;
   changes: AuditChange[];
   reason: string | null;
-  actor: 'user' | 'ai' | 'api_key' | 'system';
+  actor: 'user' | 'ai' | 'api_key' | 'system' | 'customer';
   createdAt: string;
   userName: string | null;
   userEmail: string | null;

@@ -6,9 +6,15 @@ import { and, desc, eq, inArray, isNotNull, isNull, ne, notInArray, sql } from "
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import {
   TAX_DEADLINE_KINDS,
+  advanceForDeadline,
   defaultTaxDeadlineKinds,
-  mergeTaxDeadlines,
+  isLegalEntityName,
+  isTaxAdvanceKind,
+  normalizeTaxAdvances,
+  taxDeadlinesFor,
+  type TaxAdvancePeriod,
   type TaxDeadlineKind,
+  type TaxProfile,
 } from "@faktur/cz-compliance";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
@@ -23,13 +29,25 @@ type Lang = "cs" | "sk" | "en";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const siteUrl = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+/**
+ * Calendar title of a tax deadline; an OSVČ advance gets the amount set in
+ * Settings for the month that payment covers (the 20 January social payment
+ * still shows December's amount).
+ */
+export function taxEventSummary(label: string, kind: TaxDeadlineKind, dueDate: Date, advances: TaxAdvancePeriod[], country: string): string {
+  const amount = isTaxAdvanceKind(kind) ? advanceForDeadline(advances, kind, dueDate) : undefined;
+  return amount == null ? label : `${label} · ${formatInvoiceAmount(amount, country.toUpperCase() === "SK" ? "EUR" : "CZK")}`;
+}
+
+const iso = (d: Date) =>`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
   cs: {
-    vat_monthly: "DPH, kontrolní a souhrnné hlášení",
-    vat_quarterly: "DPH a souhrnné hlášení (čtvrtletí)",
+    vat_monthly: "DPH a kontrolní hlášení",
+    vat_quarterly: "DPH a kontrolní hlášení (čtvrtletí)",
     vat_other: "DPH: OSS, CESOP a další hlášení",
+    vat_identified: "Přiznání k DPH (identifikovaná osoba)",
+    ec_sales_list: "Souhrnné hlášení",
     health: "Záloha na zdravotní pojištění OSVČ",
     social: "Záloha na sociální pojištění OSVČ",
     income_tax: "Daňové přiznání DPFO/DPPO",
@@ -40,9 +58,11 @@ const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
     property_tax: "Daň z nemovitých věcí",
   },
   sk: {
-    vat_monthly: "DPH, kontrolný a súhrnný výkaz",
-    vat_quarterly: "DPH a súhrnný výkaz (štvrťrok)",
+    vat_monthly: "DPH a kontrolný výkaz",
+    vat_quarterly: "DPH a kontrolný výkaz (štvrťrok)",
     vat_other: "DPH: OSS, CESOP a ďalšie hlásenia",
+    vat_identified: "Daňové priznanie k DPH (registrovaný podľa §7a)",
+    ec_sales_list: "Súhrnný výkaz",
     health: "Preddavok na zdravotné poistenie SZČO",
     social: "Preddavok na sociálne poistenie SZČO",
     income_tax: "Daňové priznanie FO/PO",
@@ -53,9 +73,11 @@ const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
     property_tax: "Daň z nehnuteľností",
   },
   en: {
-    vat_monthly: "VAT return, control & EC sales list",
-    vat_quarterly: "VAT return & EC sales list (quarter)",
+    vat_monthly: "VAT return & control statement",
+    vat_quarterly: "VAT return & control statement (quarter)",
     vat_other: "VAT: OSS, CESOP and other reports",
+    vat_identified: "VAT return (identified person)",
+    ec_sales_list: "EC sales list",
     health: "Self-employed health insurance advance",
     social: "Self-employed social insurance advance",
     income_tax: "Income tax return",
@@ -79,6 +101,8 @@ const TEXT: Record<Lang, Record<string, string>> = {
     cancelled: "stornována",
     overdue: "po splatnosti",
     taxes: "Daně a pojištění",
+    onlyIf_vat_identified: "Jen pokud jste v předchozím měsíci nakoupili služby ze zahraničí (např. reklamy).",
+    onlyIf_ec_sales_list: "Jen pokud jste v předchozím měsíci fakturovali služby firmám v jiném státě EU.",
     invoices: "Faktury",
     expenses: "Výdaje",
   },
@@ -93,6 +117,8 @@ const TEXT: Record<Lang, Record<string, string>> = {
     cancelled: "stornovaná",
     overdue: "po splatnosti",
     taxes: "Dane a poistenie",
+    onlyIf_vat_identified: "Len ak ste v predchádzajúcom mesiaci nakúpili služby zo zahraničia (napr. reklamu).",
+    onlyIf_ec_sales_list: "Len ak ste v predchádzajúcom mesiaci fakturovali služby firmám v inom štáte EÚ.",
     invoices: "Faktúry",
     expenses: "Výdavky",
   },
@@ -107,6 +133,8 @@ const TEXT: Record<Lang, Record<string, string>> = {
     cancelled: "cancelled",
     overdue: "overdue",
     taxes: "Taxes & insurance",
+    onlyIf_vat_identified: "Only if you bought services from abroad (e.g. ads) in the previous month.",
+    onlyIf_ec_sales_list: "Only if you invoiced services to businesses in another EU country in the previous month.",
     invoices: "Invoices",
     expenses: "Expenses",
   },
@@ -210,11 +238,20 @@ export class IntegrationsService {
 
   private async tenantOf(db: Db, tenantId: string) {
     const [t] = await db
-      .select({ company: schema.tenants.companyName, locale: schema.tenants.defaultLocale, vatPayer: schema.tenants.dicVatPayer })
+      .select({
+        company: schema.tenants.companyName,
+        legalName: schema.tenants.legalName,
+        locale: schema.tenants.defaultLocale,
+        vatPayer: schema.tenants.dicVatPayer,
+        vatStatus: schema.tenants.vatStatus,
+        country: schema.tenants.addressCountry,
+        taxAdvances: schema.tenants.taxAdvances,
+      })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));
     const lang: Lang = t?.locale === "sk" || t?.locale === "en" ? t.locale : "cs";
-    return { company: t?.company ?? "Billanta", lang, vatPayer: Boolean(t?.vatPayer) };
+    const profile: TaxProfile = { country: t?.country ?? "CZ", vatStatus: t?.vatStatus ?? "non_payer", legalEntity: isLegalEntityName(t?.legalName) };
+    return { company: t?.company ?? "Billanta", lang, vatPayer: Boolean(t?.vatPayer), profile, advances: normalizeTaxAdvances(t?.taxAdvances) };
   }
 
   /**
@@ -225,7 +262,7 @@ export class IntegrationsService {
   async calendar(token: string, now = new Date()): Promise<string> {
     const official = await upcomingTaxEvents(366, now).catch(() => null);
     return this.asFeedOwner(token, async (db, owner) => {
-      const { company, lang, vatPayer } = await this.tenantOf(db, owner.tenantId);
+      const { company, lang, profile, advances } = await this.tenantOf(db, owner.tenantId);
       const t = TEXT[lang];
       const [m] = await db
         .select({ config: schema.tenantMemberships.dashboardTiles })
@@ -237,16 +274,17 @@ export class IntegrationsService {
         | undefined;
       const kinds = Array.isArray(chosen)
         ? chosen.filter((k): k is TaxDeadlineKind => (TAX_DEADLINE_KINDS as readonly string[]).includes(k))
-        : defaultTaxDeadlineKinds(vatPayer);
+        : defaultTaxDeadlineKinds(profile.vatStatus);
 
       const events: IcsEvent[] = [];
-      for (const d of mergeTaxDeadlines(kinds, official, now, 366)) {
+      // No activity here (unknown months ahead): conditional rows come flagged "only if …".
+      for (const d of taxDeadlinesFor(kinds, profile, official, now, 366)) {
         const date = iso(d.date);
         events.push({
           uid: `tax-${d.kind}-${date}@billanta`,
           date,
-          summary: TAX_LABELS[lang][d.kind],
-          description: d.details?.join("\n"),
+          summary: taxEventSummary(TAX_LABELS[lang][d.kind], d.kind, d.date, advances, profile.country),
+          description: [d.conditional ? t[`onlyIf_${d.kind}`] : null, ...(d.details ?? [])].filter(Boolean).join("\n") || undefined,
           categories: [t.taxes!],
         });
       }

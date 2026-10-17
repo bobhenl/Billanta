@@ -9,14 +9,21 @@
  * (numbers typed in by the visitor), so both always use the same constants.
  *
  * Yearly parameters: průměrná mzda (nařízení vlády / MPSV), the share of it
- * used as the minimum social base (consolidation package: 30 % → 35 % → 40 %),
+ * used as the minimum social base (consolidation package: 30 % → 35 % → 40 %,
+ * then back to 35 % from July 2026),
  * and the tax brackets derived from it.
  */
 export interface OsvcYearParams {
   /** "Průměrná mzda" used for the year (CZK / month). */
   averageWage: number;
-  /** Minimum monthly social base as a share of the average wage (main activity). */
+  /** Minimum monthly social base as a share of the average wage (main activity), from January. */
   minSocialShare: number;
+  /**
+   * A mid-year change of that share: from `fromMonth` (1–12) on, `share`
+   * applies. The 2026 amendment of zákon č. 589/1992 Sb. (§ 5b) took it back
+   * from 40 % to 35 % from July 2026 (minimum social advance 5 005 Kč).
+   */
+  minSocialShareFrom?: { fromMonth: number; share: number };
   /** Basic taxpayer credit (sleva na poplatníka, CZK / year). */
   taxpayerCredit: number;
 }
@@ -24,7 +31,7 @@ export interface OsvcYearParams {
 export const OSVC_YEAR_PARAMS: Record<number, OsvcYearParams> = {
   2024: { averageWage: 43_967, minSocialShare: 0.3, taxpayerCredit: 30_840 },
   2025: { averageWage: 46_557, minSocialShare: 0.35, taxpayerCredit: 30_840 },
-  2026: { averageWage: 48_967, minSocialShare: 0.4, taxpayerCredit: 30_840 },
+  2026: { averageWage: 48_967, minSocialShare: 0.4, minSocialShareFrom: { fromMonth: 7, share: 0.35 }, taxpayerCredit: 30_840 },
 };
 
 export function osvcParamsFor(year: number): OsvcYearParams & { year: number; exact: boolean } {
@@ -32,6 +39,21 @@ export function osvcParamsFor(year: number): OsvcYearParams & { year: number; ex
   const exact = year in OSVC_YEAR_PARAMS;
   const pick = exact ? year : year < known[0]! ? known[0]! : known[known.length - 1]!;
   return { ...OSVC_YEAR_PARAMS[pick]!, year: pick, exact };
+}
+
+/** Minimum social base share in force in `month` (1–12) of the parameters' year. */
+export function minSocialShareIn(p: OsvcYearParams, month: number): number {
+  return p.minSocialShareFrom && month >= p.minSocialShareFrom.fromMonth ? p.minSocialShareFrom.share : p.minSocialShare;
+}
+
+/**
+ * Minimum monthly social advance (main activity) for `month` (1–12) of
+ * `year`: 29.2 % of the minimum base, both rounded up to whole crowns. It
+ * must match the statutory table in tax-minimums.ts (a test pins that).
+ */
+export function osvcMinSocialAdvance(year: number, month: number): number {
+  const p = osvcParamsFor(year);
+  return roundUp(roundUp(p.averageWage * minSocialShareIn(p, month)) * SOCIAL_RATE);
 }
 
 /** Paušální výdaje by activity: share of income and the yearly cap. */
@@ -79,9 +101,11 @@ export function computeOsvcAnnualSummary(input: OsvcAnnualInput) {
   const taxBeforeCredit = Math.min(taxBase, highThreshold) * TAX_LOW + Math.max(0, taxBase - highThreshold) * TAX_HIGH;
   const incomeTax = roundUp(taxBeforeCredit - p.taxpayerCredit);
 
-  // Social insurance: 55 % of profit, at least the yearly minimum, at most 48× the average wage.
-  const minSocialMonthly = roundUp(p.averageWage * p.minSocialShare);
-  const socialBase = Math.min(Math.max(profit * SOCIAL_BASE_SHARE, minSocialMonthly * 12), 48 * p.averageWage);
+  // Social insurance: 55 % of profit, at least the yearly minimum (the sum of
+  // the monthly minimum bases, which can change mid-year), at most 48× the average wage.
+  let minSocialYearly = 0;
+  for (let m = 1; m <= 12; m++) minSocialYearly += roundUp(p.averageWage * minSocialShareIn(p, m));
+  const socialBase = Math.min(Math.max(profit * SOCIAL_BASE_SHARE, minSocialYearly), 48 * p.averageWage);
   const social = roundUp(socialBase * SOCIAL_RATE);
 
   // Health insurance: 50 % of profit, at least 50 % of the average wage per month.
@@ -91,9 +115,14 @@ export function computeOsvcAnnualSummary(input: OsvcAnnualInput) {
 
   // Next year's monthly advances (from this year's base, never under next year's minimum).
   const next = osvcParamsFor(input.year + 1);
-  const nextMinSocial = roundUp(roundUp(next.averageWage * next.minSocialShare) * SOCIAL_RATE);
+  // Without parameters for next year, carry this year's December share forward.
+  const nextShare = next.exact ? minSocialShareIn(next, 1) : minSocialShareIn(next, 12);
+  const nextMinSocial = roundUp(roundUp(next.averageWage * nextShare) * SOCIAL_RATE);
   const nextMinHealth = roundUp(roundUp(next.averageWage * 0.5) * HEALTH_RATE);
-  const socialAdvance = Math.max(roundUp((socialBase / 12) * SOCIAL_RATE), nextMinSocial);
+  // Someone at the minimum base pays next year's minimum, even when this year's
+  // average monthly minimum was higher (2026: 40 % for half a year, 35 % after).
+  const atSocialMinimum = profit * SOCIAL_BASE_SHARE <= minSocialYearly;
+  const socialAdvance = atSocialMinimum ? nextMinSocial : Math.max(roundUp((socialBase / 12) * SOCIAL_RATE), nextMinSocial);
   const healthAdvance = Math.max(roundUp((healthBase / 12) * HEALTH_RATE), nextMinHealth);
 
   return {

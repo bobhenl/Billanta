@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Bot, KeyRound, Server, User } from 'lucide-react';
+import { Bot, KeyRound, Server, User, UserPen } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { fetchAuditLog, type AuditChange, type AuditEntityType, type AuditItem, type AuditPage } from '@/lib/audit';
 
-const FILTERS: (AuditEntityType | 'all')[] = ['all', 'invoice', 'contact', 'tenant', 'bank_account', 'member', 'api_key'];
+const FILTERS: (AuditEntityType | 'all')[] = ['all', 'invoice', 'contact', 'tenant', 'bank_account', 'member', 'api_key', 'import'];
 const MONEY_FIELDS = new Set(['amountPaid', 'total', 'exchangeRate']);
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?$/;
 /** Date-only columns come back as midnight UTC; they have no time worth showing. */
@@ -28,6 +28,8 @@ function hrefOf(item: AuditItem): string | null {
       return '/settings/company';
     case 'member':
       return '/settings/team';
+    case 'import':
+      return '/settings/import';
     case 'api_key':
       return '/settings/api-keys';
   }
@@ -104,7 +106,9 @@ export function AuditLogList({
   };
 
   const changeRow = (c: AuditChange) => {
-    const name = label('fields', c.field, c.field);
+    // "numberFormat.invoice" → "Formát čísla (Faktura)"
+    const [base, sub] = c.field.split('.', 2) as [string, string | undefined];
+    const name = sub ? `${label('fields', base, base)} (${label('values', sub, sub)})` : label('fields', c.field, c.field);
     // Settings objects, secrets and links to other records: only "it changed".
     if ((c.from === null && c.to === null) || /Id$/.test(c.field)) return <>{name}: <span className="text-muted-foreground">{t('changed')}</span></>;
     if (Array.isArray(c.from) || Array.isArray(c.to)) {
@@ -147,6 +151,7 @@ export function AuditLogList({
     if (item.actor === 'ai') return { icon: Bot, name: t('actor.ai') };
     if (item.actor === 'api_key') return { icon: KeyRound, name: t('actor.api_key') };
     if (item.actor === 'system') return { icon: Server, name: t('actor.system') };
+    if (item.actor === 'customer') return { icon: UserPen, name: t('actor.customer') };
     return { icon: User, name: item.userName || item.userEmail || t('actor.user') };
   };
 

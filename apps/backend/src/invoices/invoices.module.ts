@@ -11,6 +11,7 @@ import { InvoiceRemindersCron } from "./invoice-reminders.cron";
 import { InvoiceRemindersRepository } from "./invoice-reminders.repository";
 import { InvoicesController } from "./invoices.controller";
 import { InvoicesService } from "./invoices.service";
+import { BuyerDetailsService } from "./buyer-details.service";
 
 @Module({
   // EmailModule: InvoicesService.sendInvoice and InvoiceRemindersCron both
@@ -44,11 +45,12 @@ import { InvoicesService } from "./invoices.service";
     InvoiceRemindersRepository,
     InvoiceRemindersCron,
     CombinedAuthGuard,
+    BuyerDetailsService,
   ],
   // InvoicesService is consumed outside this module by
   // BankReconciliationModule (BankReconciliationService.markPaidFromReconciliation
   // — see bank-reconciliation.module.ts's doc comment for why it imports
   // this whole module rather than re-providing InvoicesService directly).
-  exports: [InvoicesService],
+  exports: [InvoicesService, BuyerDetailsService],
 })
 export class InvoicesModule {}

@@ -11,7 +11,7 @@ const PERSONAL_PREFIXES = ["v1/me", "v1/dashboard/config", "v1/invitations"];
  * Company administration. Accountants work with documents, the bank and exports
  * (Settings → Team promises exactly that) but never manage these.
  */
-const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billing", "v1/backup-destinations", "v1/ai/settings", "v1/channel-links"];
+const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billing", "v1/backup-destinations", "v1/ai/settings", "v1/channel-links", "v1/referrals"];
 
 const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
 
@@ -38,6 +38,27 @@ export function roleMayAccess(role: string, method: string, path: string, permis
   return false;
 }
 
+/**
+ * The request path as the router matched it, normalised for prefix checks
+ * (no `/api/` prefix, no query, no trailing slash).
+ *   - An absolute-form request line (`POST http://x/api/v1/... HTTP/1.1`)
+ *     puts the scheme and host into `originalUrl`, while Express still routes
+ *     on the pathname, so they are stripped.
+ *   - Lowercased: Express routing is case-insensitive, so `/api/v1/INVOICES`
+ *     reaches the invoices controller and must hit the same area check.
+ *   - `..` segments are deliberately not resolved: Express doesn't resolve
+ *     them either, so resolving here would check a different route.
+ */
+export function guardPath(rawUrl: string): string {
+  return rawUrl
+    .split(/[?#]/)[0]!
+    .replace(/^[a-z][a-z0-9+.-]*:\/\/[^/]*/i, "")
+    .toLowerCase()
+    .replace(/^\/+/, "")
+    .replace(/^api\//, "")
+    .replace(/\/+$/, "");
+}
+
 /** Backwards-compatible name for role-only checks. */
 export const roleMayWrite = (role: string, method: string, path: string) => roleMayAccess(role, method, path);
 
@@ -54,8 +75,10 @@ export class RoleAccessGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<TenantScopedRequest>();
     const role = req.user?.role;
     if (!role) return true;
-    const path = (req.originalUrl ?? req.url ?? "").split("?")[0].replace(/^\/+/, "").replace(/^api\//, "").replace(/\/+$/, "");
-    if (roleMayAccess(role, req.method, path, req.user?.permissions)) return true;
+    const path = guardPath(req.originalUrl ?? req.url ?? "");
+    // Every tenant route lives under `v1/`; anything else means the URL was
+    // not parsed the way the router parsed it, so refuse rather than guess.
+    if (under(path, "v1") && roleMayAccess(role, req.method, path, req.user?.permissions)) return true;
     throw new ForbiddenException(
       role === "viewer" ? "Your role is read-only in this company" : "Your access in this company doesn't allow this",
     );

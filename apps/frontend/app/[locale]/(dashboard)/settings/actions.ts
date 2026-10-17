@@ -20,7 +20,9 @@ async function run<T>(path: string, method: string, body?: unknown): Promise<Set
 }
 
 /** Settings → Company. Keys are the backend's snake_case `UpdateTenantDto` fields. */
-export async function updateCompany(patch: Record<string, string | number | boolean | null>) {
+export async function updateCompany(
+  patch: Record<string, string | number | boolean | null | Record<string, number | null> | Array<Record<string, string | number | null>>>
+) {
   return run<unknown>('/api/v1/tenants/me', 'PATCH', patch);
 }
 
@@ -29,8 +31,14 @@ export async function updateModules(modules: Record<string, boolean>) {
   return run<unknown>('/api/v1/tenants/me', 'PATCH', { enabled_modules: modules });
 }
 
-/** Settings → Invoices: which optional fields the invoice form starts with, preset labels and defaults. */
-export async function updateInvoiceFormPrefs(prefs: {
+/**
+ * Settings → Invoices: which optional fields the invoice form starts with,
+ * preset labels and defaults. `company` carries the defaults that are
+ * plain tenant columns (language, due days, payment method, note below),
+ * saved in the same request.
+ */
+export async function updateInvoiceFormPrefs(
+  prefs: {
   show: Record<string, boolean>;
   custom_field_labels: string[];
   default_issue_place: string | null;
@@ -41,8 +49,22 @@ export async function updateInvoiceFormPrefs(prefs: {
   reminders_enabled: boolean;
   reminder_interval_days: number;
   reminder_max: number;
-}) {
-  return run<unknown>('/api/v1/tenants/me', 'PATCH', { invoice_form_prefs: prefs });
+  default_currency: string | null;
+  default_bank_account_id: string | null;
+  default_contact_id: string | null;
+  default_items: { description: string; quantity: number; unit: string | null; unit_price: number; vat_rate: number | null }[];
+  default_note_above: string | null;
+  exchange_rate_mode: 'cnb_daily' | 'annual' | 'none';
+  annual_rates: { year: number; currency: string; rate: number }[];
+  },
+  company?: {
+    default_locale: 'cs' | 'sk' | 'en';
+    default_due_days: number;
+    default_payment_method: string;
+    default_note_below: string | null;
+  }
+) {
+  return run<unknown>('/api/v1/tenants/me', 'PATCH', { ...company, invoice_form_prefs: prefs });
 }
 
 /** Settings → E-maily: sender, wording and attachments of the emails to customers. */
@@ -112,6 +134,32 @@ export async function deleteBankAccount(id: string) {
 
 export async function updatePaymentMethods(methods: { id: string; label: string; base: string; instructions: string | null }[]) {
   return run<unknown>('/api/v1/tenants/me', 'PATCH', { payment_methods: methods });
+}
+
+export type NumberDocType = 'invoice' | 'proforma' | 'credit_note' | 'quote';
+
+/** GET /tenants/me/number-formats: pattern, counters and the next number per document type. */
+export interface NumberFormatsView {
+  year: number;
+  month: number;
+  types: {
+    type: NumberDocType;
+    pattern: string | null;
+    defaultPattern: string;
+    reset: 'monthly' | 'yearly';
+    lastYearly: number;
+    lastMonthly: number;
+    nextSequence: number | null;
+    nextNumber: string | null;
+  }[];
+}
+
+/** Settings → Číslování dokladů. A null pattern means the built-in one. */
+export async function updateNumberFormats(input: {
+  formats: Partial<Record<NumberDocType, string | null>>;
+  nextNumbers: Partial<Record<NumberDocType, number>>;
+}) {
+  return run<NumberFormatsView>('/api/v1/tenants/me/number-formats', 'PUT', input);
 }
 
 export interface CardPaymentSettings {

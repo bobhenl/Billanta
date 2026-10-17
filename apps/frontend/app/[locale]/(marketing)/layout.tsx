@@ -6,7 +6,7 @@ import { MarketingTabBar } from '@/components/marketing-tab-bar';
 
 /**
  * Shared chrome for every public, indexable page (home, pricing, about,
- * legal, faktury-pro): header, footer and the phone tab bar, so no public
+ * legal, invoicing): header, footer and the phone tab bar, so no public
  * page ships without navigation or internal links.
  */
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {

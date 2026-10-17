@@ -115,6 +115,12 @@ export class ContactsController {
     return this.contactsService.create(req.tenantDb!, req.user!.tenantId, dto);
   }
 
+  @Get(":id/summary")
+  @ApiOperation({ summary: "Hover-card aggregates for a contact: invoice count, totals per currency, unpaid/overdue, last invoice date" })
+  summary(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.contactsService.summary(req.tenantDb!, req.user!.tenantId, id);
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "Get a contact by id" })
   findOne(@Req() req: TenantScopedRequest, @Param("id") id: string) {

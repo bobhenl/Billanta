@@ -1,4 +1,5 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, NotImplementedException, Optional } from "@nestjs/common";
+import { TAX_ADVANCE_KINDS, normalizeTaxAdvances, vatPayerOf, type TaxAdvancePeriod, type VatStatus } from "@faktur/cz-compliance";
 import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -8,7 +9,9 @@ import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import { findBankAccount, listBankAccounts } from "./bank-accounts";
 import type { BankAccountDto } from "./dto/bank-account.dto";
 import type { UpdateTenantDto } from "./dto/update-tenant.dto";
+import { getNumberFormats, saveNumberFormats, type NumberFormatsInput } from "./number-formats";
 import { RESERVED_PROFILE_SLUGS, SLUG_PATTERN } from "./public-profile";
+import { NUMBER_DOCUMENT_TYPES } from "@faktur/cz-compliance";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type TenantInsert = typeof schema.tenants.$inferInsert;
@@ -24,6 +27,39 @@ const JSON_SETTINGS = ["emailPrefs", "templateVars", "paymentMethods", "publicPr
 const formatAccount = (a: BankFields | undefined) =>
   a?.accountNumber ? `${a.accountNumber}${a.bankCode ? `/${a.bankCode}` : ""}` : a?.iban || "–";
 
+/**
+ * vat_status and the legacy dic_vat_payer flag, always written together (the
+ * DB CHECK keeps them equal). A client sending only the boolean: true = payer;
+ * false = non-payer, except that an identified person stays identified.
+ */
+export function vatFields(
+  dto: Pick<UpdateTenantDto, "vat_status" | "dic_vat_payer">,
+  current: VatStatus | undefined,
+): { vatStatus: VatStatus; dicVatPayer: boolean } | Record<string, never> {
+  let status = dto.vat_status;
+  if (!status && dto.dic_vat_payer !== undefined) status = dto.dic_vat_payer ? "payer" : current === "identified" ? "identified" : "non_payer";
+  return status ? { vatStatus: status, dicVatPayer: vatPayerOf(status) } : {};
+}
+
+/**
+ * The advance periods as stored: oldest first, amounts rounded to cents,
+ * null = not set in that period (0 stays: nothing to pay from then). A period
+ * without any amount says nothing and is dropped.
+ */
+export function cleanAdvances(input: NonNullable<UpdateTenantDto["tax_advances"]>): TaxAdvancePeriod[] {
+  return input
+    .map((entry) => {
+      const out: TaxAdvancePeriod = { from: entry.from };
+      for (const k of TAX_ADVANCE_KINDS) {
+        const value = entry[k];
+        if (value != null) out[k] = Math.round(value * 100) / 100;
+      }
+      return out;
+    })
+    .filter((entry) => TAX_ADVANCE_KINDS.some((k) => entry[k] !== undefined))
+    .sort((a, b) => a.from.localeCompare(b.from));
+}
+
 @Injectable()
 export class TenantsService {
   constructor(
@@ -35,7 +71,12 @@ export class TenantsService {
   async findById(db: TenantDb, id: string) {
     const rows = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     // The logo is served separately (GET /tenants/me/logo) to keep this row small.
-    return rows.map(({ aiApiKeyEncrypted: _secret, logoData, ...tenant }) => ({ ...tenant, hasLogo: Boolean(logoData) }));
+    // Advances always go out as the period list (a row not yet migrated by 0044 still holds the old single object).
+    return rows.map(({ aiApiKeyEncrypted: _secret, logoData, ...tenant }) => ({
+      ...tenant,
+      taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
+      hasLogo: Boolean(logoData),
+    }));
   }
 
   /**
@@ -51,7 +92,6 @@ export class TenantsService {
       legalName: dto.legal_name,
       ico: blankToNull(dto.ico),
       dic: blankToNull(dto.dic),
-      dicVatPayer: dto.dic_vat_payer,
       addressStreet: blankToNull(dto.address_street),
       addressCity: blankToNull(dto.address_city),
       addressPostalCode: blankToNull(dto.address_postal_code),
@@ -81,6 +121,8 @@ export class TenantsService {
     const slug = dto.public_profile?.slug;
     if (slug && (await this.profileSlugTaken(db, id, slug))) throw new ConflictException({ error: "slug_taken" });
     const [row] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
+    Object.assign(values, vatFields(dto, row?.vatStatus));
+    if (dto.tax_advances) values.taxAdvances = cleanAdvances(dto.tax_advances);
     await db
       .update(schema.tenants)
       .set({ ...values, updatedAt: new Date() })
@@ -107,6 +149,36 @@ export class TenantsService {
     }
     const [tenant] = await this.findById(db, id);
     return tenant;
+  }
+
+  // --- Number formats (Settings → Číslování dokladů) -----------------------
+
+  getNumberFormats(db: TenantDb, tenantId: string, role: string | undefined) {
+    this.assertNumberingAdmin(role);
+    return getNumberFormats(db, tenantId);
+  }
+
+  async updateNumberFormats(db: TenantDb, tenantId: string, role: string | undefined, dto: NumberFormatsInput) {
+    this.assertNumberingAdmin(role);
+    const { before, after } = await saveNumberFormats(db, tenantId, dto);
+    const changes: schema.AuditChange[] = [];
+    for (const type of NUMBER_DOCUMENT_TYPES) {
+      if ((before[type] ?? null) !== (after[type] ?? null)) {
+        changes.push({ field: `numberFormat.${type}`, from: before[type] ?? null, to: after[type] ?? null });
+      }
+      const next = dto.nextNumbers[type];
+      if (next != null) changes.push({ field: `nextNumber.${type}`, from: null, to: next });
+    }
+    if (changes.length > 0) {
+      await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "number_formats_updated", changes });
+    }
+    return getNumberFormats(db, tenantId);
+  }
+
+  private assertNumberingAdmin(role: string | undefined) {
+    if (role !== "owner" && role !== "admin") {
+      throw new ForbiddenException("Only an owner or admin can change document numbering");
+    }
   }
 
   // --- Public profile (Settings → Veřejný profil) ---------------------------

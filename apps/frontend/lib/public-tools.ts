@@ -3,7 +3,7 @@ import { ArrowLeftRight, BookOpenCheck, Calculator, Globe2, Percent, Scale, Wall
 import { routing } from '@/i18n/routing';
 
 /**
- * Public calculators (`/kalkulacky/<slug>`) and guides (`/navody/<slug>`).
+ * Public calculators (`/calculators/<slug>`) and guides (`/guides/<slug>`).
  * One list feeds the pages, the sitemap, hreflang, the header menu, the
  * footer, the phone "More" panel, the site search and the OG cards, so a new
  * entry shows up everywhere at once.
@@ -14,8 +14,8 @@ import { routing } from '@/i18n/routing';
  * of Czech rules would read as advice for Slovak businesses. The sk URL of
  * such a page still answers (the language switcher keeps the path) but shows
  * a short "this is about Czech rules" notice with `noindex` and links to the
- * Czech version and the Slovak authority. Slugs are Czech in every locale,
- * same as `/funkce` and `/faktury-pro`.
+ * Czech version and the Slovak authority. Slugs are English in every locale,
+ * same as `/features` and `/invoicing`.
  */
 export interface PublicTool {
   slug: string;
@@ -28,16 +28,16 @@ const ALL = routing.locales;
 const CZ_ONLY = ['cs', 'en'] as const;
 
 export const CALCULATORS = [
-  { slug: 'dan-a-pojisteni-osvc', key: 'osvc', icon: Calculator, locales: CZ_ONLY },
-  { slug: 'pausalni-dan', key: 'flatTax', icon: Scale, locales: CZ_ONLY },
-  { slug: 'dph', key: 'vat', icon: Percent, locales: ALL },
-  { slug: 'minimalni-zalohy', key: 'minimums', icon: Wallet, locales: ALL },
-  { slug: 'kurzy-cnb', key: 'fx', icon: ArrowLeftRight, locales: ALL }
+  { slug: 'self-employed-tax', key: 'osvc', icon: Calculator, locales: CZ_ONLY },
+  { slug: 'flat-tax', key: 'flatTax', icon: Scale, locales: CZ_ONLY },
+  { slug: 'vat', key: 'vat', icon: Percent, locales: ALL },
+  { slug: 'minimum-advances', key: 'minimums', icon: Wallet, locales: ALL },
+  { slug: 'cnb-exchange-rates', key: 'fx', icon: ArrowLeftRight, locales: ALL }
 ] as const satisfies readonly PublicTool[];
 
 export const GUIDES = [
-  { slug: 'priznani-dph-kontrolni-a-souhrnne-hlaseni', key: 'vatFiling', icon: BookOpenCheck, locales: CZ_ONLY },
-  { slug: 'identifikovana-osoba', key: 'identified', icon: Globe2, locales: CZ_ONLY }
+  { slug: 'vat-return-control-statement', key: 'vatFiling', icon: BookOpenCheck, locales: CZ_ONLY },
+  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: CZ_ONLY }
 ] as const satisfies readonly PublicTool[];
 
 export type Calculator = (typeof CALCULATORS)[number];

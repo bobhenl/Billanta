@@ -73,6 +73,11 @@ async def whatsapp_verify(
     """
     settings = get_settings()
 
+    # Fail closed when no token is configured, otherwise an empty
+    # `hub.verify_token` would match the empty default.
+    if not settings.whatsapp_webhook_verify_token:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Verification failed")
+
     if hub_mode != "subscribe" or not hmac.compare_digest(
         hub_verify_token, settings.whatsapp_webhook_verify_token
     ):

@@ -52,6 +52,9 @@ import { TenantContextMiddleware } from "./tenancy/tenant-context.middleware";
 import { RoleAccessGuard } from "./tenancy/role-access.guard";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
+import { PartnersModule } from "./partners/partners.module";
+import { ReferralsController } from "./referrals/referrals.controller";
+import { ReferralsModule } from "./referrals/referrals.module";
 
 @Module({
   imports: [
@@ -115,6 +118,10 @@ import { TenantsModule } from "./tenants/tenants.module";
     NotificationsModule,
     AuditModule,
     IntegrationsModule,
+    // Invite companies for credits; credits pay plans.
+    ReferralsModule,
+    // Public partners directory + Billanta-staff catalogue admin (no tenant context).
+    PartnersModule,
   ],
   // Viewers are read-only and accountants stay out of company administration.
   providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],
@@ -204,6 +211,7 @@ export class AppModule implements NestModule {
         ChannelLinksController,
         CardPaymentsSettingsController,
         AuditController,
+        ReferralsController,
       );
 
     // InvoicesController: same tenant-context requirement as every

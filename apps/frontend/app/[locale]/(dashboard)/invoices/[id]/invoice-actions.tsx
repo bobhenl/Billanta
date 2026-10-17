@@ -10,6 +10,7 @@ import {
   Download,
   ExternalLink,
   FileCode2,
+  FilePlus2,
   Pencil,
   Repeat2,
   RotateCcw,
@@ -200,6 +201,13 @@ export function InvoiceActions({
           <Copy className="h-4 w-4" />
           {t('actions.duplicate')}
         </Link>
+        {/* Same copy, but the due date follows the default term ("Podle faktury" in the new-invoice form). */}
+        {documentType !== 'credit_note' && (
+          <Link href={`/invoices/new?from=${id}&similar=1`} className={buttonClass.ghost}>
+            <FilePlus2 className="h-4 w-4" />
+            {t('actions.issueSimilar')}
+          </Link>
+        )}
         <button type="button" className={buttonClass.ghost} onClick={() => setDialog('template')}>
           <BookmarkPlus className="h-4 w-4" />
           {t('actions.saveTemplate')}

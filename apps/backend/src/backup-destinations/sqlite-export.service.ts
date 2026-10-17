@@ -136,7 +136,10 @@ export class SqliteExportService {
         last_reminder_sent_at TEXT,
         reminder_count INTEGER,
         created_at TEXT,
-        updated_at TEXT
+        updated_at TEXT,
+        -- Supplier / buyer as printed on the document (JSON), null = live data.
+        seller_snapshot TEXT,
+        buyer_snapshot TEXT
       );
 
       CREATE TABLE invoice_line_items (
@@ -214,8 +217,8 @@ export class SqliteExportService {
         (id, tenant_id, contact_id, invoice_number, variable_symbol, issue_date, due_date,
          currency, status, source, ai_confidence_score, issued_by_user_id, issued_at,
          ai_draft_reviewed_at, needs_attention, raw_ai_payload, public_token, sent_at,
-         last_reminder_sent_at, reminder_count, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         last_reminder_sent_at, reminder_count, created_at, updated_at, seller_snapshot, buyer_snapshot)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const insertLineItem = db.prepare(
       `INSERT INTO invoice_line_items
@@ -246,6 +249,8 @@ export class SqliteExportService {
         invoice.reminderCount,
         toSqliteValue(invoice.createdAt),
         toSqliteValue(invoice.updatedAt),
+        toSqliteValue(invoice.sellerSnapshot ?? null),
+        toSqliteValue(invoice.buyerSnapshot ?? null),
       );
 
       for (const lineItem of invoice.lineItems) {

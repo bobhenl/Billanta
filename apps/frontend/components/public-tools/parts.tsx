@@ -4,8 +4,8 @@ import { Link } from '@/i18n/navigation';
 import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 
 /**
- * Building blocks shared by the public calculators (/kalkulacky/…) and
- * guides (/navody/…), so every page carries the same disclaimer, the same
+ * Building blocks shared by the public calculators (/calculators/…) and
+ * guides (/guides/…), so every page carries the same disclaimer, the same
  * sign-up CTA and the same related links.
  */
 
@@ -121,13 +121,13 @@ export async function RelatedTools({ current }: { current: string }) {
       <ul className="mt-4 flex flex-wrap gap-2">
         {calculators.map((c) => (
           <li key={c.slug}>
-            <Link href={`/kalkulacky/${c.slug}`} className={pill}>
+            <Link href={`/calculators/${c.slug}`} className={pill}>
               {t(`calculators.items.${c.key}.name`)}
             </Link>
           </li>
         ))}
         <li>
-          <Link href="/kalkulacky" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
+          <Link href="/calculators" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
             {t('common.allCalculators')} →
           </Link>
         </li>
@@ -138,7 +138,7 @@ export async function RelatedTools({ current }: { current: string }) {
           <ul className="mt-4 flex flex-wrap gap-2">
             {guides.map((g) => (
               <li key={g.slug}>
-                <Link href={`/navody/${g.slug}`} className={pill}>
+                <Link href={`/guides/${g.slug}`} className={pill}>
                   {t(`guides.items.${g.key}.name`)}
                 </Link>
               </li>

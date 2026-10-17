@@ -19,6 +19,8 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
+import { createZodDto } from "nestjs-zod";
+import { z } from "zod";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RequireActiveSubscription } from "../billing/require-active-subscription.guard";
@@ -34,8 +36,29 @@ import { getCnbRate } from "../exports/cnb-rates";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
+import { BuyerDetailsService } from "./buyer-details.service";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
+
+const buyerDetailsRequestSchema = z.object({
+  email: z.string().trim().max(200).email().optional().or(z.literal("")),
+  autoIssue: z.boolean().optional(),
+});
+
+class BitfakturaImportDto extends createZodDto(
+  z.object({
+    account: z.string().trim().min(1).max(200),
+    apiToken: z.string().trim().min(8).max(200),
+    dryRun: z.boolean().optional(),
+  }),
+) {}
+
+class RefreshPartiesDto extends createZodDto(
+  z.object({
+    party: z.enum(["seller", "buyer", "both"]).default("both"),
+    reason: z.string().trim().max(500).optional(),
+  }),
+) {}
 
 /**
  * No controller-level `@UseGuards(...)` here (deliberately, since a recent
@@ -57,6 +80,7 @@ export class InvoicesController {
     private readonly invoicesService: InvoicesService,
     private readonly attachmentsService: InvoiceAttachmentsService,
     private readonly importService: InvoiceImportService,
+    private readonly buyerDetails: BuyerDetailsService,
   ) {}
 
   @Get()
@@ -105,6 +129,14 @@ export class InvoicesController {
       dto,
       req.user!.email ? "manual" : "api",
     );
+  }
+
+  // Declared before ":id/duplicate" so "latest" never reaches the UUID pipe.
+  @Get("latest/duplicate")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The most recent invoice (no credit notes) as a template for a new draft" })
+  latestDuplicateTemplate(@Req() req: TenantScopedRequest) {
+    return this.invoicesService.latestDuplicateTemplate(req.tenantDb!);
   }
 
   @Get(":id/duplicate")
@@ -160,6 +192,17 @@ export class InvoicesController {
     return this.importService.importCsv(req.tenantDb!, req.user!.tenantId, file.buffer, dryRun === "1" || dryRun === "true");
   }
 
+  @Post("import/bitfaktura")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Import invoice history straight from a BitFaktura / InvoiceOcean account (dryRun only previews)",
+    description: "The API token is used for this request's read-only calls and is never stored. Same rules as the CSV import.",
+  })
+  importBitfaktura(@Req() req: TenantScopedRequest, @Body() dto: BitfakturaImportDto) {
+    if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
+    return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false);
+  }
+
   @Post(":id/mark-paid")
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({
@@ -195,11 +238,48 @@ export class InvoicesController {
     return this.invoicesService.rotatePublicToken(req.tenantDb!, id);
   }
 
+  @Post(":id/buyer-details-request")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Send a draft to the customer to fill in their own billing details",
+    description:
+      "Creates a new secret link (/d/:token; an older one stops working) and optionally e-mails it. " +
+      "Only drafts. With autoIssue the draft is issued and sent once the customer submits, " +
+      "unless their details differ from a saved contact.",
+  })
+  requestBuyerDetails(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() body: unknown) {
+    const parsed = buyerDetailsRequestSchema.safeParse(body ?? {});
+    if (!parsed.success) throw new BadRequestException("Invalid e-mail address");
+    return this.buyerDetails.request(req.tenantDb!, req.user!.tenantId, req.user!.id, id, {
+      email: parsed.data.email || null,
+      autoIssue: parsed.data.autoIssue,
+    });
+  }
+
+  @Delete(":id/buyer-details-request")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Close the buyer-details link of a draft (it stops working at once)" })
+  cancelBuyerDetails(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.buyerDetails.cancel(req.tenantDb!, req.user!.tenantId, id);
+  }
+
   @Post(":id/cancel")
   @UseGuards(CombinedAuthGuard)
   @ApiOperation({ summary: "Cancel (storno) an issued document; its number stays used" })
   cancel(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.invoicesService.cancel(req.tenantDb!, id);
+  }
+
+  @Post(":id/refresh-parties")
+  @UseGuards(CombinedAuthGuard)
+  @ApiOperation({
+    summary: "Replace an issued document's supplier/buyer snapshot with the current details",
+    description:
+      "Issued documents keep the supplier and buyer as they were on the issue date. " +
+      "This explicit, audit-logged action re-takes them from today's company settings / contact.",
+  })
+  refreshParties(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: RefreshPartiesDto) {
+    return this.invoicesService.refreshPartySnapshot(req.tenantDb!, req.user!.tenantId, id, dto.party, dto.reason);
   }
 
   @Post(":id/convert")

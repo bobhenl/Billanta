@@ -1,2 +1,2 @@
-/** Moved to `@faktur/cz-compliance` (shared with the public calculators). */
-export { minimumsFor, type MinimumKind } from '@faktur/cz-compliance';
+/** Moved to `@faktur/cz-compliance` (one table for Settings and the public calculators). */
+export { minimumsAt, minimumsFor, type MinimumKind } from '@faktur/cz-compliance';

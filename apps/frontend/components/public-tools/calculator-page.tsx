@@ -5,12 +5,12 @@ import { getCalculator, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd, webPageLd } from '@/lib/seo';
 
-/** Metadata for /kalkulacky/<slug> (noindex,follow where it is not published). */
+/** Metadata for /calculators/<slug> (noindex,follow where it is not published). */
 export function calculatorMetadata(slug: string, locale: string): Promise<Metadata> {
   const c = getCalculator(slug)!;
   return toolPageMetadata({
     locale,
-    path: `/kalkulacky/${slug}`,
+    path: `/calculators/${slug}`,
     tool: c,
     titleKey: `tools.calculators.items.${c.key}.title`,
     descriptionKey: `tools.calculators.items.${c.key}.description`
@@ -42,14 +42,14 @@ export async function CalculatorPage({
   const c = getCalculator(slug)!;
   const t = await getTranslations('tools');
   const k = `calculators.items.${c.key}` as const;
-  if (!isPublishedIn(c, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/kalkulacky/${slug}`} />;
+  if (!isPublishedIn(c, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/calculators/${slug}`} />;
 
   const how = t.has(`${k}.how`) ? (t.raw(`${k}.how`) as string[]) : [];
-  const path = `/kalkulacky/${slug}`;
+  const path = `/calculators/${slug}`;
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
-      <ToolHeader hubHref="/kalkulacky" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
+      <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
       <div className="mt-10">{children}</div>
       <div className="mt-6">
         <ToolDisclaimer validity={validity} />

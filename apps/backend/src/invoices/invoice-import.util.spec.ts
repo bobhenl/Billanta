@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { parseCsv } from "../contacts/contacts-csv.util";
-import { mapInvoiceRows, ownNumberSequence, parseAmount, parseDate } from "./invoice-import.util";
+import {
+  highestImportedSequences,
+  importedNumberSequence,
+  mapInvoiceRows,
+  ownNumberSequence,
+  parseAmount,
+  parseDate,
+} from "./invoice-import.util";
 
 const map = (csv: string) => mapInvoiceRows(parseCsv(csv));
 
@@ -92,8 +99,57 @@ describe("mapInvoiceRows", () => {
 
 describe("ownNumberSequence", () => {
   it("parses only our own number format", () => {
-    expect(ownNumberSequence("2026-0042")).toEqual({ series: "", year: 2026, sequence: 42 });
-    expect(ownNumberSequence("ZF2026-0003")).toEqual({ series: "ZF", year: 2026, sequence: 3 });
+    expect(ownNumberSequence("2026-0042")).toEqual({ series: "", year: 2026, month: 0, sequence: 42 });
+    expect(ownNumberSequence("ZF2026-0003")).toEqual({ series: "ZF", year: 2026, month: 0, sequence: 3 });
     expect(ownNumberSequence("FV-17")).toBeNull();
+  });
+});
+
+describe("importedNumberSequence", () => {
+  const formats = { invoice: "{N}/{MM}/{YYYY}", proforma: "ZF{YY}{NNNN}" };
+
+  it("reads a number with the company's pattern for its document type", () => {
+    expect(importedNumberSequence("4/10/2026", "invoice", formats)).toEqual({ series: "", year: 2026, month: 10, sequence: 4 });
+    expect(importedNumberSequence("ZF260012", "proforma", formats)).toEqual({ series: "ZF", year: 2026, month: 0, sequence: 12 });
+  });
+
+  it("uses the document type's own series, not another type's pattern", () => {
+    // A credit note keeps the built-in pattern, so "4/10/2026" says nothing about its counter.
+    expect(importedNumberSequence("4/10/2026", "credit_note", formats)).toBeNull();
+    expect(importedNumberSequence("OD2026-0002", "credit_note", formats)).toEqual({ series: "OD", year: 2026, month: 0, sequence: 2 });
+  });
+
+  it("falls back to the built-in format", () => {
+    expect(importedNumberSequence("2026-0042", "invoice", formats)).toEqual({ series: "", year: 2026, month: 0, sequence: 42 });
+    expect(importedNumberSequence("2026-0042", "invoice", {})).toEqual({ series: "", year: 2026, month: 0, sequence: 42 });
+    expect(importedNumberSequence("4/10/2026", "invoice", {})).toBeNull();
+  });
+});
+
+describe("highestImportedSequences", () => {
+  it("keeps the highest sequence per series, year and month", () => {
+    const formats = { invoice: "{N}/{MM}/{YYYY}" };
+    const result = highestImportedSequences(
+      [
+        { invoiceNumber: "1/09/2026", documentType: "invoice" },
+        { invoiceNumber: "7/09/2026", documentType: "invoice" },
+        { invoiceNumber: "3/09/2026", documentType: "invoice" },
+        { invoiceNumber: "2/10/2026", documentType: "invoice" },
+        { invoiceNumber: "1/10/2026", documentType: "invoice" },
+        { invoiceNumber: "5/10/2025", documentType: "invoice" },
+        { invoiceNumber: "ZF2026-0009", documentType: "proforma" },
+        { invoiceNumber: "něco jiného", documentType: "invoice" },
+      ],
+      formats,
+    );
+    expect(result).toEqual(
+      expect.arrayContaining([
+        { series: "", year: 2026, month: 9, sequence: 7 },
+        { series: "", year: 2026, month: 10, sequence: 2 },
+        { series: "", year: 2025, month: 10, sequence: 5 },
+        { series: "ZF", year: 2026, month: 0, sequence: 9 },
+      ]),
+    );
+    expect(result).toHaveLength(4);
   });
 });

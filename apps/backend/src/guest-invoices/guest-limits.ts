@@ -23,6 +23,17 @@ export function visitorBucket(ip: string): string {
 }
 
 /**
+ * The visitor's bucket for a public endpoint. The Next.js proxies pass the
+ * visitor's IP as `x-guest-ip`; it's trusted only when the request itself
+ * comes from loopback/private network (i.e. that proxy), never from outside.
+ */
+export function visitorIp(ip: string, req: { headers: Record<string, string | string[] | undefined> }): string {
+  const forwarded = req.headers["x-guest-ip"];
+  const local = /^(::1|127\.|::ffff:127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::ffff:(10|192\.168|172)\.)/.test(ip);
+  return visitorBucket(local && typeof forwarded === "string" && forwarded ? forwarded.slice(0, 64) : ip);
+}
+
+/**
  * Sliding-window counter per key. When the map grows past `maxKeys`, stale
  * keys are dropped first and then the oldest ones — never everything at once,
  * so flooding it with fresh addresses can't reset the counters of others.

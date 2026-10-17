@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
+import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN } from './lib/site';
 
 const intl = createMiddleware(routing);
@@ -25,8 +26,22 @@ function profileRewrite(request: NextRequest) {
   return NextResponse.rewrite(url);
 }
 
+/** `?ref=` on any page: remember who invited the visitor (first invite wins). */
+function rememberReferral(request: NextRequest, response: NextResponse) {
+  const ref = request.nextUrl.searchParams.get('ref');
+  if (!ref || !REFERRAL_CODE.test(ref) || request.cookies.has(REFERRAL_COOKIE)) return response;
+  response.cookies.set(REFERRAL_COOKIE, ref.toUpperCase(), {
+    maxAge: 60 * 60 * 24 * 30,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: request.nextUrl.protocol === 'https:'
+  });
+  return response;
+}
+
 export default function middleware(request: NextRequest) {
-  return profileRewrite(request) ?? intl(request);
+  return rememberReferral(request, profileRewrite(request) ?? intl(request));
 }
 
 export const config = {

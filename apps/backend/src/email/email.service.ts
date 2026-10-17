@@ -165,6 +165,24 @@ export class EmailService {
     await this.send(params.to, params.title, html);
   }
 
+  /** "Doplňte prosím své fakturační údaje" – the buyer-details link for a draft (BuyerDetailsService). */
+  async sendBuyerDetailsRequestEmail(params: { to: string; companyName: string; amount: string; url: string; replyTo?: string | null }) {
+    const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
+      <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;">
+        <h1 style="font-size:18px;margin:0 0 12px;color:#111;">Doplňte prosím své fakturační údaje</h1>
+        <p style="color:#374151;line-height:1.5;margin:0 0 12px;"><strong>${escapeHtml(params.companyName)}</strong> pro vás připravuje fakturu na
+          <strong>${escapeHtml(params.amount)}</strong>. Aby byla vystavená správně, vyplňte prosím, na koho má znít –
+          název nebo jméno, adresu a případně IČO a DIČ. Zabere to minutu.</p>
+        <p style="margin:20px 0;"><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;">Doplnit údaje</a></p>
+        <p style="color:#9ca3af;font-size:12px;word-break:break-all;">${escapeHtml(params.url)}</p>
+        <p style="color:#9ca3af;font-size:12px;margin-top:16px;">Pokud jste nic neobjednávali, e-mail ignorujte.</p>
+      </div></body></html>`;
+    await this.send(params.to, `Doplňte prosím fakturační údaje pro ${params.companyName}`, html, {
+      fromName: params.companyName,
+      ...(params.replyTo ? { replyTo: params.replyTo } : {}),
+    });
+  }
+
   /** "You've been invited to <company> on Billanta" — Settings → Team. */
   async sendInvitationEmail(params: { to: string; companyName: string; role: string; acceptUrl: string }) {
     const esc = (v: string) =>

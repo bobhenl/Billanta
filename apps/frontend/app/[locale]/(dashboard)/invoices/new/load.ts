@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant } from '@/lib/tenant';
-import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, type AiSettings, type Contact, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
+import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
 const LANGUAGES: DocLanguage[] = ['cs', 'sk', 'en'];
@@ -17,12 +17,23 @@ export async function loadFormContext(): Promise<{ defaults: FormDefaults; ai: A
   ]);
   const paymentMethod = PAYMENT_METHODS.find((m) => m === tenant?.defaultPaymentMethod) ?? 'bank_transfer';
   const language = LANGUAGES.find((l) => l === tenant?.defaultLocale) ?? 'cs';
+  const prefs = formPrefs(tenant?.invoiceFormPrefs);
+  const defaultContact = await loadContact(prefs.defaultContactId);
   return {
     defaults: {
-      prefs: formPrefs(tenant?.invoiceFormPrefs),
+      prefs,
+      blank: {
+        contact: defaultContact,
+        currency: prefs.defaultCurrency,
+        // Only an account that still exists; a deleted one falls back to the primary account.
+        bankAccountId: accounts.some((a) => a.id === prefs.defaultBankAccountId) ? prefs.defaultBankAccountId : null,
+        items: prefs.defaultItems,
+        noteAbove: prefs.defaultNoteAbove
+      },
       companyVars: (tenant?.templateVars ?? []).map((v) => ({ key: v.key, value: v.value })),
       vatPayer: Boolean(tenant?.dicVatPayer),
       quotesEnabled: tenant?.enabledModules?.quotes !== false,
+      sellerCountry: tenant?.addressCountry || 'CZ',
       dueDays: tenant?.defaultDueDays ?? 14,
       paymentMethod,
       customPaymentMethods: (tenant?.paymentMethods ?? []).map((m) => ({ id: m.id, label: m.label, base: m.base, instructions: m.instructions })),
@@ -53,8 +64,25 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     pdfSecondLanguage: raw?.pdfSecondLanguage === 'cs' || raw?.pdfSecondLanguage === 'sk' || raw?.pdfSecondLanguage === 'en' ? raw.pdfSecondLanguage : null,
     remindersEnabled: raw?.remindersEnabled !== false,
     reminderIntervalDays: typeof raw?.reminderIntervalDays === 'number' ? raw.reminderIntervalDays : 7,
-    reminderMax: typeof raw?.reminderMax === 'number' ? raw.reminderMax : 3
+    reminderMax: typeof raw?.reminderMax === 'number' ? raw.reminderMax : 3,
+    defaultCurrency: typeof raw?.defaultCurrency === 'string' ? raw.defaultCurrency : null,
+    defaultBankAccountId: typeof raw?.defaultBankAccountId === 'string' ? raw.defaultBankAccountId : null,
+    defaultContactId: typeof raw?.defaultContactId === 'string' ? raw.defaultContactId : null,
+    defaultItems: Array.isArray(raw?.defaultItems) ? raw.defaultItems.filter(isDefaultItem) : [],
+    defaultNoteAbove: typeof raw?.defaultNoteAbove === 'string' ? raw.defaultNoteAbove : null,
+    exchangeRateMode: raw?.exchangeRateMode === 'annual' || raw?.exchangeRateMode === 'none' ? raw.exchangeRateMode : 'cnb_daily',
+    annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : []
   };
+}
+
+function isAnnualRate(r: unknown): r is AnnualRate {
+  const rate = r as Partial<AnnualRate> | null;
+  return !!rate && typeof rate.year === 'number' && typeof rate.currency === 'string' && typeof rate.rate === 'number' && rate.rate > 0;
+}
+
+function isDefaultItem(i: unknown): i is DefaultItem {
+  const item = i as Partial<DefaultItem> | null;
+  return Boolean(item && typeof item.description === 'string' && typeof item.quantity === 'number' && typeof item.unitPrice === 'number');
 }
 
 export async function loadContact(id: string | null | undefined): Promise<Contact | null> {

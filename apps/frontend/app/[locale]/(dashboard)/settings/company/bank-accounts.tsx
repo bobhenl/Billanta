@@ -90,7 +90,7 @@ export function BankAccounts({ accounts, readOnly }: { accounts: BankAccount[]; 
   );
 
   return (
-    <div className="mt-5 border-t border-border pt-4">
+    <div id="bank-accounts" className="mt-5 scroll-mt-20 border-t border-border pt-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold">{t('title')}</h3>

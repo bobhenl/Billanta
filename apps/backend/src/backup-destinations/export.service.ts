@@ -1,4 +1,4 @@
-import { publicUrlProblem } from "../integrations/public-url";
+import { postToPublicUrl } from "../integrations/public-url";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { eq, inArray } from "drizzle-orm";
@@ -369,25 +369,25 @@ export class ExportService {
    * reversed (this app is the sender here).
    */
   private async sendToWebhook(url: string, bundle: ExportBundle, secret: string): Promise<void> {
-    const problem = await publicUrlProblem(url);
-    if (problem) throw new Error(`Webhook destination refused: ${problem}`);
     const rawBody = JSON.stringify(bundle);
     const signature = signWebhookPayload(rawBody, secret);
 
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        [WEBHOOK_SIGNATURE_HEADER]: signature,
-      },
-      body: rawBody,
-      // No redirects: a public URL must not bounce the backup to an internal host.
-      redirect: "manual",
-      signal: AbortSignal.timeout(30_000),
-    });
+    // Public hosts only, pinned to the checked address; redirects are never
+    // followed, so a public URL cannot bounce the backup to an internal host.
+    let status: number;
+    try {
+      status = await postToPublicUrl(
+        url,
+        rawBody,
+        { "Content-Type": "application/json", [WEBHOOK_SIGNATURE_HEADER]: signature },
+        30_000,
+      );
+    } catch (err) {
+      throw new Error(`Webhook destination refused: ${(err as Error).message}`);
+    }
 
-    if (!response.ok) {
-      throw new Error(`Webhook destination responded with HTTP ${response.status}`);
+    if (status < 200 || status >= 300) {
+      throw new Error(`Webhook destination responded with HTTP ${status}`);
     }
   }
 }

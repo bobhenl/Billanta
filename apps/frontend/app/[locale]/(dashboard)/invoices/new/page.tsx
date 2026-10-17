@@ -33,7 +33,9 @@ interface SavedTemplate {
  * Starting points, first match wins:
  * - `?preset=<key>` a built-in starter from the gallery,
  * - `?template=<id>` a saved invoice template (gallery → "Použít"),
- * - `?from=<invoiceId>` a copy of that invoice ("Duplikovat"),
+ * - `?from=<invoiceId>` a copy of that invoice ("Duplikovat"); `?from=latest`
+ *   the most recent one. With `&similar=1` ("Podle faktury", "Vystavit
+ *   podobnou") the due date follows the default term, not the source's,
  * - `?contact=<contactId>` a chosen customer ("Nová faktura" in contacts).
  * `?type=proforma|quote` preselects the document type. Anything that cannot
  * be loaded just falls back to an empty form.
@@ -42,6 +44,7 @@ async function loadTemplate(params: {
   preset?: string;
   template?: string;
   from?: string;
+  similar?: string;
   contact?: string;
 }): Promise<{ template: InvoiceTemplate | null; templateId: string | null }> {
   const preset = TEMPLATE_PRESETS.find((p) => p.key === params.preset);
@@ -84,9 +87,10 @@ async function loadTemplate(params: {
       };
     }
   }
-  if (params.from && UUID.test(params.from)) {
+  if (params.from && (UUID.test(params.from) || params.from === 'latest')) {
     const copy = await apiFetch<InvoiceTemplate>(`/api/v1/invoices/${params.from}/duplicate`).catch(() => null);
     if (copy?.documentType === 'credit_note') copy.documentType = 'invoice';
+    if (copy && params.similar === '1') copy.dueInDays = null;
     return { template: copy, templateId: null };
   }
   const contact = await loadContact(params.contact);
@@ -95,7 +99,7 @@ async function loadTemplate(params: {
 
 export default async function NewInvoicePage(
   props: {
-    searchParams: Promise<{ from?: string; contact?: string; template?: string; preset?: string; type?: string }>;
+    searchParams: Promise<{ from?: string; similar?: string; contact?: string; template?: string; preset?: string; type?: string }>;
   }
 ) {
   const searchParams = await props.searchParams;
@@ -109,6 +113,11 @@ export default async function NewInvoicePage(
     <div className="mx-auto max-w-6xl">
       <h1 className="text-2xl font-extrabold tracking-tight">{t(`titles.${template?.documentType ?? 'invoice'}`)}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('lead')}</p>
+      {searchParams.from === 'latest' && !loaded && (
+        <Banner tone="info" className="mt-4">
+          {t('copy.noneYet')}
+        </Banner>
+      )}
       {template?.templateName ? (
         <Banner tone="info" className="mt-4">
           {t('fromTemplate', { name: template.templateName })}
@@ -116,12 +125,21 @@ export default async function NewInvoicePage(
       ) : (
         template?.items && (
           <Banner tone="info" className="mt-4">
-            {template.sourceNumber ? t('duplicate.fromNumber', { number: template.sourceNumber }) : t('duplicate.fromDraft')}
+            {searchParams.similar === '1'
+              ? template.sourceNumber
+                ? t('copy.fromNumber', { number: template.sourceNumber })
+                : t('copy.fromDraft')
+              : template.sourceNumber
+                ? t('duplicate.fromNumber', { number: template.sourceNumber })
+                : t('duplicate.fromDraft')}
           </Banner>
         )
       )}
       <div className="mt-6">
-        <InvoiceForm mode={{ kind: 'create', templateId }} defaults={defaults} ai={ai} starred={starred} template={template} />
+        {/* Keyed by the starting point, so "Podle faktury" on this page starts over with the copy. */}
+        <InvoiceForm
+          key={[searchParams.from, searchParams.template, searchParams.preset, searchParams.contact, searchParams.type].join('|')}
+          mode={{ kind: 'create', templateId }} defaults={defaults} ai={ai} starred={starred} template={template} />
       </div>
     </div>
   );

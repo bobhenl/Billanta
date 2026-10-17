@@ -21,6 +21,31 @@ export async function searchCustomers(query: string, registry = 'auto'): Promise
   }
 }
 
+/** One hit of the "Podle jiné faktury…" picker. */
+export interface InvoiceToCopy {
+  id: string;
+  invoiceNumber: string | null;
+  contactName: string | null;
+  issueDate: string | null;
+  total: string | number;
+  currency: string;
+  documentType: string;
+}
+
+/** Own documents by number, customer, IČO or symbol (backend fuzzy `q`); credit notes left out, newest first. */
+export async function searchInvoicesToCopy(query: string): Promise<InvoiceToCopy[]> {
+  if (query.trim().length < 2) return [];
+  try {
+    const rows = await apiFetch<InvoiceToCopy[]>(`/api/v1/invoices?q=${encodeURIComponent(query.trim())}`);
+    return rows
+      .filter((r) => r.documentType !== 'credit_note')
+      .slice(0, 8)
+      .map(({ id, invoiceNumber, contactName, issueDate, total, currency, documentType }) => ({ id, invoiceNumber, contactName, issueDate, total, currency, documentType }));
+  } catch {
+    return [];
+  }
+}
+
 /** ČNB rate for the form's "load rate" button; null when ČNB is unreachable. */
 export async function fetchExchangeRate(currency: string, date: string): Promise<number | null> {
   try {
@@ -71,8 +96,10 @@ export async function saveInvoice(
 ): Promise<SaveResult> {
   let id: string;
   try {
-    const contactId = await resolveContact(input.customer);
-    if (!contactId) return { ok: false, error: 'customer_required' };
+    // A draft may have no customer yet; issuing needs one (the backend checks it too).
+    if (!input.customer && options.issue) return { ok: false, error: 'customer_required' };
+    const contactId = input.customer ? await resolveContact(input.customer) : null;
+    if (input.customer && !contactId) return { ok: false, error: 'customer_required' };
 
     const body = {
       ...invoiceBody(input),
@@ -100,7 +127,7 @@ export async function saveInvoice(
   }
 }
 
-async function resolveContact(customer: InvoiceDraftInput['customer']): Promise<string | null> {
+async function resolveContact(customer: NonNullable<InvoiceDraftInput['customer']>): Promise<string | null> {
   if (customer.kind === 'contact') return customer.id;
   const a = customer.ares;
   const [created] = await apiFetch<Contact[]>('/api/v1/contacts', {

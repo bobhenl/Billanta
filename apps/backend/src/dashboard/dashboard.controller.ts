@@ -3,24 +3,28 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { effectivePermissions } from "../tenancy/permissions";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { DASHBOARD_WIDGETS, DashboardService } from "./dashboard.service";
+import { parseReportFilters, type ReportFilters } from "./report-filters";
 import { upcomingTaxEvents } from "./tax-calendar";
-import { getCnbRates } from "../exports/cnb-rates";
+import { getCnbDay, parseCurrencyList, parseRateDate } from "../exports/cnb-rates";
 
 const dashboardConfigSchema = z
   .object({
-    cards: z.array(z.enum(DASHBOARD_WIDGETS)).max(DASHBOARD_WIDGETS.length),
+    // null on any key = forget the saved choice (back to the default / usage-based one).
+    cards: z.array(z.enum(DASHBOARD_WIDGETS)).max(DASHBOARD_WIDGETS.length).nullable(),
     tiles: z.array(z.string().max(40)).max(24).nullable(),
-    showChart: z.boolean(),
-    showRecent: z.boolean(),
-    showTopCustomers: z.boolean(),
-    showDueSoon: z.boolean(),
-    showTaxDeadlines: z.boolean(),
+    showChart: z.boolean().nullable(),
+    showRecent: z.boolean().nullable(),
+    showTopCustomers: z.boolean().nullable(),
+    showDueSoon: z.boolean().nullable(),
+    showTaxDeadlines: z.boolean().nullable(),
     taxDeadlines: z.array(z.string().max(32)).max(16).nullable(),
-    showFxRates: z.boolean(),
-    fxCurrencies: z.array(z.string().regex(/^[A-Z]{3}$/)).max(8).nullable(),
+    showFxRates: z.boolean().nullable(),
+    fxCurrencies: z.array(z.string().regex(/^[A-Z]{3}$/)).max(12).nullable(),
     taxAmounts: z.record(z.string().max(32), z.number().nonnegative().max(10_000_000)).nullable(),
+    reportKpis: z.array(z.string().max(32)).max(24).nullable(),
   })
   .partial();
 
@@ -36,13 +40,31 @@ export class DashboardController {
 
   @Get("summary")
   @ApiOperation({ summary: "KPIs, 12-month revenue/expense chart, recent, overdue and soon-due documents, top customers, attention counters" })
-  summary(@Req() req: TenantScopedRequest) {
-    return this.dashboardService.summary(req.tenantDb!);
+  async summary(@Req() req: TenantScopedRequest) {
+    const result = await this.dashboardService.summary(req.tenantDb!);
+    // `v1/dashboard` is outside the per-area permissions, so the document
+    // lists follow the member's invoice access here. The public link token
+    // never goes out: it opens the full invoice without any membership.
+    const canSeeInvoices = effectivePermissions(req.user!.role, req.user!.permissions).invoices !== "none";
+    const rows = (list: typeof result.recent) =>
+      canSeeInvoices ? list.map(({ publicToken: _publicToken, ...row }) => row) : [];
+    return { ...result, recent: rows(result.recent), overdue: rows(result.overdue), dueSoon: rows(result.dueSoon) };
   }
 
   @Get("stats")
-  @ApiOperation({ summary: "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series and top customers" })
-  stats(@Req() req: TenantScopedRequest, @Query("from") from?: string, @Query("to") to?: string) {
+  @ApiOperation({
+    summary:
+      "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series, top customers and pie shares. Optional filters: currency, language, contactId, documentType (invoice|proforma|credit_note), status (paid|unpaid|overdue|cancelled)",
+  })
+  stats(@Req() req: TenantScopedRequest, @Query() query: Record<string, unknown>) {
+    const from = typeof query.from === "string" ? query.from : undefined;
+    const to = typeof query.to === "string" ? query.to : undefined;
+    let filters: ReportFilters;
+    try {
+      filters = parseReportFilters(query);
+    } catch {
+      throw new BadRequestException("Invalid report filters");
+    }
     const day = (value: string | undefined) => {
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "");
       const d = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
@@ -55,13 +77,28 @@ export class DashboardController {
     // At most five years in one report.
     const earliest = new Date(end.getFullYear() - 5, end.getMonth(), end.getDate());
     if (start < earliest) start = earliest;
-    return this.dashboardService.stats(req.tenantDb!, start, end);
+    return this.dashboardService.stats(req.tenantDb!, start, end, filters);
   }
 
   @Get("config")
   @ApiOperation({ summary: "The signed-in member's dashboard layout (cards, quick actions, sections)" })
   getConfig(@Req() req: TenantScopedRequest) {
     return this.dashboardService.getConfig(req.tenantDb!, req.user!.tenantId, req.user!.id);
+  }
+
+  @Get("usage")
+  @ApiOperation({
+    summary:
+      "What the company uses: currencies on issued documents and expenses (all time and last 12 months), document types, languages, expenses, bank / PayPal connections and imported payments, recurring invoices, templates, contacts, unpaid / overdue counts, VAT status and account type. Drives the usage-based dashboard and report defaults.",
+  })
+  usage(@Req() req: TenantScopedRequest) {
+    return this.dashboardService.usage(req.tenantDb!, req.user!.tenantId);
+  }
+
+  @Get("vat-activity")
+  @ApiOperation({ summary: "Months (YYYY-MM, last three) with services invoiced to EU businesses and with purchases from abroad – decides the souhrnné hlášení / identified-person deadlines" })
+  vatActivity(@Req() req: TenantScopedRequest) {
+    return this.dashboardService.vatActivity(req.tenantDb!, req.user!.tenantId);
   }
 
   @Get("tax-calendar")
@@ -72,18 +109,36 @@ export class DashboardController {
   }
 
   @Get("fx-rates")
-  @ApiOperation({ summary: "Today's ČNB rates (CZK per unit) for the given currencies, plus the rate a week ago for the trend" })
-  async fxRates(@Query("currencies") currencies?: string) {
-    const list = (currencies ?? "EUR,USD,GBP")
-      .split(",")
-      .map((c) => c.trim().toUpperCase())
-      .filter((c) => /^[A-Z]{3}$/.test(c) && c !== "CZK")
-      .slice(0, 8);
-    const weekAgo = new Date(Date.now() - 7 * 86_400_000);
-    const [today, previous] = await Promise.all([getCnbRates(list), getCnbRates(list, weekAgo)]);
+  @ApiOperation({
+    summary:
+      "ČNB rates (CZK per unit) for the given currencies on a day (date=YYYY-MM-DD, default today), plus the rate a week earlier for the trend. publishedDate is the day the list is from: weekends and holidays fall back to the last working day.",
+  })
+  async fxRates(@Query("currencies") currencies?: string, @Query("date") date?: string) {
+    const list = parseCurrencyList(currencies);
+    if ("error" in list) throw new BadRequestException(list.error);
+    const day = parseRateDate(date);
+    if ("error" in day) throw new BadRequestException(day.error);
+    const weekAgo = new Date(day.date.getFullYear(), day.date.getMonth(), day.date.getDate() - 7);
+    const [current, previous] = await Promise.all([getCnbDay(day.date), getCnbDay(weekAgo)]);
     return {
       source: "cnb.cz",
-      rates: list.map((code) => ({ code, rate: today[code] ?? null, weekAgo: previous[code] ?? null })),
+      publishedDate: current?.date ?? null,
+      rates: list.codes.map((code) => ({
+        code,
+        rate: current?.rates.get(code)?.rate ?? null,
+        weekAgo: previous?.rates.get(code)?.rate ?? null,
+      })),
+    };
+  }
+
+  @Get("fx-rates/currencies")
+  @ApiOperation({ summary: "Every currency in today's ČNB list (code, country, name) for the currency picker; currencies = null when ČNB is unreachable" })
+  async fxCurrencies() {
+    const day = await getCnbDay();
+    return {
+      source: "cnb.cz",
+      publishedDate: day?.date ?? null,
+      currencies: day ? [...day.rates].map(([code, r]) => ({ code, country: r.country, name: r.name })) : null,
     };
   }
 

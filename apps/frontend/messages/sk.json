@@ -46,7 +46,13 @@
       "about": "O nás",
       "faq": "Časté otázky",
       "guestInvoice": "Faktúra bez registrácie",
-      "search": "Hľadať"
+      "createInvoice": "Vystaviť faktúru",
+      "createInvoiceShort": "Vystaviť",
+      "search": "Hľadať",
+      "app": "Aplikácia",
+      "account": "Účet",
+      "accountants": "Pre účtovníkov",
+      "partners": "Partneri"
     },
     "hero": {
       "title": "Fakturácia pre českých a slovenských podnikateľov bez papierovania",
@@ -121,26 +127,66 @@
       "time": {
         "title": "Evidencia času",
         "description": "Časovač a ručný zápis hodín po projektoch. Nevyfakturovanú prácu premeníte jedným klikom na faktúru so sadzbou projektu."
+      },
+      "taxEstimate": {
+        "title": "Koľko vám zostane",
+        "description": "Pri každej faktúre vidíte orientačnú sumu po dani z príjmov a poistnom podľa českých pravidiel pre OSVČ. Za celý rok spočítame daň, poistné aj nové preddavky."
+      },
+      "currencies": {
+        "title": "Faktúry v cudzej mene",
+        "description": "EUR, USD a ďalšie meny. Kurz ČNB ku dňu plnenia sa doplní sám a pre DPH sa prepočíta na koruny."
+      },
+      "clientPortal": {
+        "title": "Klientský portál",
+        "description": "Jeden trvalý odkaz pre každého klienta: všetky jeho faktúry a ponuky, čo zostáva zaplatiť a čo je po splatnosti."
+      },
+      "migration": {
+        "title": "Prechod z inej aplikácie",
+        "description": "Z BitFaktury priamo cez API aj s pôvodnými PDF, z Fakturoidu, iDokladu alebo Excelu cez CSV. Pred uložením uvidíte náhľad."
+      },
+      "api": {
+        "title": "API a webhooky",
+        "description": "REST API s vlastnými kľúčmi, webhooky pre Slack, Discord alebo váš systém a kalendár splatností."
+      },
+      "team": {
+        "title": "Tím, účtovník a viac firiem",
+        "description": "Pozvite kolegov aj účtovníka s vlastnou rolou. Živnosť aj s.r.o. spravujete z jedného účtu."
+      },
+      "auditLog": {
+        "title": "História zmien",
+        "description": "Kto čo a kedy zmenil, vrátane zmien od AI a cez API. Vystavený doklad sa dá opraviť len s uvedeným dôvodom."
+      },
+      "reports": {
+        "title": "Prehľady za obdobie",
+        "description": "Tržby, výdavky a najlepší zákazníci za mesiac, štvrťrok alebo rok, aj v porovnaní s predchádzajúcim obdobím."
+      },
+      "backups": {
+        "title": "Zálohy na váš disk",
+        "description": "Dáta firmy sa pravidelne ukladajú na Google Disk, váš server cez SFTP alebo webhook. Všetko stiahnete aj jedným klikom."
       }
     },
     "howItWorks": {
       "title": "Ako to funguje",
       "steps": {
         "capture": {
-          "title": "Zachyťte faktúru",
-          "description": "Vytvorte ju ručne, alebo jednoducho pošlite hlasovú správu cez Telegram alebo WhatsApp."
+          "title": "Nadiktujte alebo napíšte",
+          "description": "Hlasovka do Telegramu či WhatsAppu, fotka bločku alebo jedna veta. AI doplní odberateľa z registra aj položky.",
+          "highlight": "AI aj v tarife zadarmo"
         },
         "draft": {
-          "title": "AI pripraví návrh, ARES overí",
-          "description": "AI prepíše detaily a vyhľadá vášho zákazníka v registri ARES – vy vždy všetko skontrolujete, kým je čokoľvek finálne."
+          "title": "Skontrolujte návrh",
+          "description": "Billanta postráži povinné údaje, DPH a číselný rad. Bez vášho potvrdenia sa nič nevystaví.",
+          "highlight": "Kontrola povinných údajov"
         },
         "issue": {
-          "title": "Vystavte s ISDOC a QR kódom",
-          "description": "Potvrďte návrh a Billanta vygeneruje súbor ISDOC podľa normy a QR kód na platbu."
+          "title": "Vystavte a pošlite",
+          "description": "PDF s QR platbou, ISDOC a pre Slovensko aj UBL. Klient dostane e-mail s odkazom na faktúru.",
+          "highlight": "10 dokladov mesačne zadarmo"
         },
         "getPaid": {
-          "title": "Dostaňte zaplatené, automaticky",
-          "description": "Pošlite faktúru e-mailom, zdieľajte platobný odkaz a nechajte upomienky a párovanie platieb urobiť zvyšok."
+          "title": "Platby sa spárujú samy",
+          "description": "Z Fio, inej banky cez PSD2 alebo z PayPalu. Pri faktúre hneď vidíte, koľko vám zostane po dani a odvodoch.",
+          "highlight": "Zostane vám: čistá suma"
         }
       }
     },
@@ -161,7 +207,9 @@
       },
       "company": {
         "title": "Spoločnosť",
-        "about": "O nás"
+        "about": "O nás",
+        "accountants": "Pre účtovníkov",
+        "partners": "Partneri"
       },
       "legal": {
         "title": "Právne informácie",
@@ -176,7 +224,10 @@
         "login": "Prihlásiť sa",
         "signup": "Registrovať sa"
       },
-      "copyright": "© {year} {name}. Všetky práva vyhradené."
+      "partners": {
+        "title": "Partneri",
+        "all": "Všetci partneri"
+      }
     },
     "seo": {
       "title": "Billanta – online fakturácia pre živnostníkov a firmy",
@@ -209,7 +260,7 @@
     },
     "compare": {
       "title": "Porovnanie s konkurenciou",
-      "lead": "Viac zadarmo, nižšia cena a AI v každom tarife.",
+      "lead": "Viac zadarmo, nižšia cena a AI v každom tarife. Vedľa Fakturoidu, iDokladu, SuperFaktúry, Vyfakturuj a BitFaktury.",
       "more": "Celé porovnanie s Fakturoidom, iDokladom a ďalšími"
     }
   },
@@ -310,7 +361,7 @@
     "customizeCards": "Karty s číslami",
     "customizeTiles": "Rýchle akcie",
     "customizeSections": "Sekcie",
-    "customizeReset": "Predvolené",
+    "customizeReset": "Obnoviť odporúčané",
     "customizeSaved": "Prehľad uložený",
     "customizeFailed": "Uloženie sa nepodarilo: {reason}",
     "moveUp": "Posunúť hore",
@@ -323,10 +374,12 @@
       "hint": "Daňové lehoty berie Billanta z oficiálneho daňového kalendára českej Finančnej správy (obnovuje sa denne, termíny sú už posunuté na pracovné dni). Preddavky na poistenie a prehľady v ňom nie sú, tie sa dopočítavajú. Zobrazuje najbližších 45 dní.",
       "daysLeft": "{count, plural, =0 {dnes} one {zajtra} few {o # dni} other {o # dní}}",
       "customizeTitle": "Ktoré termíny strážiť",
-      "customizeHint": "Predvolený výber sa riadi tým, či ste platiteľ DPH (Nastavenia → Firma). Štvrťročný platiteľ DPH si namiesto mesačného zaškrtne štvrťročný.",
+      "customizeHint": "Zobrazujeme len termíny, ktoré sa vás týkajú podľa vzťahu k DPH a právnej formy (Nastavenia → Firma). Štvrťročný platiteľ DPH si namiesto mesačného zaškrtne štvrťročný.",
       "kinds": {
-        "vat_monthly": "DPH, kontrolný a súhrnný výkaz (mesačne)",
-        "vat_quarterly": "DPH a súhrnný výkaz (štvrťročne)",
+        "vat_monthly": "DPH a kontrolný výkaz (mesačne)",
+        "vat_quarterly": "DPH a kontrolný výkaz (štvrťročne)",
+        "vat_identified": "Daňové priznanie k DPH (registrovaný podľa §7a)",
+        "ec_sales_list": "Súhrnný výkaz",
         "health": "Preddavok na zdravotné poistenie SZČO",
         "social": "Preddavok na sociálne poistenie SZČO",
         "income_tax": "Daňové priznanie FO/PO",
@@ -341,22 +394,65 @@
       "sourceLocal": "Kalendár Finančnej správy sa teraz nepodarilo načítať, termíny sú dopočítané podľa zákona.",
       "prepareXml": "Pripraviť XML",
       "amountsTitle": "Očakávané sumy",
-      "amountsHint": "Vaše mesačné preddavky a odvody. Zobrazia sa pri termíne, aby bolo vidno, koľko si pripraviť. Na Slovensku sú odvody živnostníka daňovým výdavkom, preto ich jedným klikom zapíšete do nákladov. Prázdne pole = bez sumy.",
+      "amountsHint": "Suma, ktorú každý mesiac odvádzate ako zamestnávateľ. Zobrazí sa pri termíne, aby ste vedeli, koľko si pripraviť. Prázdne pole = bez sumy.",
       "bookExpense": "Zapísať ako výdavok",
-      "minimum": "Zákonné minimum od {from}: {amount}",
-      "useMinimum": "Použiť"
+      "fillAmount": "Doplniť výšku",
+      "onlyIfForeignPurchase": "Len ak ste v mesiaci kúpili služby zo zahraničia (napr. reklamy).",
+      "onlyIfEuSales": "Len ak ste v mesiaci fakturovali službu firme v inom štáte EÚ.",
+      "advancesInSettings": "Výšku preddavkov na poistenie a daň nastavíte podľa obdobia vo Fakturačných údajoch.",
+      "editAdvances": "Upraviť preddavky"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
-      "hint": "Dnešný kurz devízového trhu ČNB – používa sa na prepočet faktúr v cudzej mene. Percentá ukazujú zmenu za posledný týždeň.",
+      "hint": "Kurz devízového trhu ČNB pre zvolený deň – používa sa na prepočet faktúr v cudzej mene. Percentá ukazujú zmenu za týždeň pred týmto dňom.",
       "customizeTitle": "Meny v kurzoch ČNB",
-      "customizeHint": "Vyberte, ktoré meny sa majú na prehľade zobrazovať.",
+      "customizeHint": "Vyberte, ktoré meny sa majú na prehľade zobrazovať. Na výber sú všetky meny, ktoré ČNB vyhlasuje.",
       "source": "Zdroj:",
       "weekChange": "Zmena za 7 dní",
-      "weekShort": "/ týždeň"
+      "weekShort": "/ týždeň",
+      "date": "Deň",
+      "publishedOn": "Kurz zo dňa {date}",
+      "fallbackNote": "ČNB pre zvolený deň kurz nevyhlásila (víkend, sviatok alebo ešte pred 14:30), preto ukazujeme posledný vyhlásený.",
+      "unavailable": "Kurzy pre tento deň sa nepodarilo načítať.",
+      "converter": "Prevod na Kč",
+      "amount": "Suma",
+      "currency": "Mena",
+      "add": "Pridať menu",
+      "remove": "Odobrať {code}",
+      "limit": "Najviac {max} mien."
+    },
+    "usage": {
+      "title": "Odporúčané podľa toho, čo používate",
+      "hint": "Čo nezmeníte, sa bude ďalej prispôsobovať. Vaša voľba má vždy prednosť.",
+      "newAccount": "Zatiaľ tu nič nemáte, preto ukazujeme základné rozloženie.",
+      "currencies": "Fakturujete v {list}",
+      "onlyHome": "Fakturujete len v {currency}",
+      "expenses": "zapisujete výdavky",
+      "noExpenses": "výdavky zatiaľ nezapisujete",
+      "paypal": "máte PayPal",
+      "bank": "máte prepojenú banku",
+      "proformas": "vystavujete zálohové faktúry",
+      "quotes": "posielate ponuky"
     }
   },
   "invoices": {
+    "hover": {
+      "fx": "≈ {amount} (kurz ČNB {rate} zo dňa {date})",
+      "fxNoDate": "≈ {amount} (kurz ČNB {rate})",
+      "fxAnnual": "≈ {amount} (jednotný kurz {rate} pre rok {year})",
+      "fxManual": "≈ {amount} (kurz {rate})",
+      "breakdown": "Základ {base} + DPH {vat}",
+      "loading": "Načítavam…",
+      "error": "Súhrn sa nepodarilo načítať.",
+      "ico": "IČO",
+      "count": "{count, plural, one {# faktúra} few {# faktúry} other {# faktúr}}",
+      "none": "Zatiaľ žiadne vystavené faktúry.",
+      "invoiced": "Vyfakturované",
+      "unpaid": "Neuhradené",
+      "overdue": "Po splatnosti",
+      "last": "Posledná faktúra",
+      "open": "Otvoriť kontakt"
+    },
     "title": "Faktúry",
     "description": "Zoznam všetkých vystavených aj rozpracovaných faktúr.",
     "newInvoice": "Nová faktúra",
@@ -451,6 +547,62 @@
       "EMAIL_DAILY_LIMIT": "Dnes ste dosiahli denný limit odoslaných e-mailov. Nové účty majú prvý týždeň nižší limit; zajtra pôjde odosielať znova, prípadne použite odkaz alebo PDF.",
       "EMAIL_PAUSED": "Odosielanie e-mailov je dočasne pozastavené, pretože viacerí príjemcovia nahlásili vaše doklady ako nevyžiadané. Ozvite sa nám prosím na podporu, radi to preveríme.",
       "ACCOUNT_SUSPENDED": "Účet je pozastavený pre podozrenie zo zneužitia. Kontaktujte prosím podporu."
+    },
+    "buyerDetails": {
+      "badge": {
+        "waiting": "Čaká na údaje odberateľa",
+        "submitted": "Odberateľ doplnil údaje"
+      },
+      "button": "Poslať odberateľovi na doplnenie údajov",
+      "dialogTitle": "Odberateľ si doplní údaje sám",
+      "dialogHint": "Odberateľ dostane odkaz, kde uvidí položky a sumu a vyplní svoj názov, adresu a IČO/DIČ. Údaje sa uložia do kontaktov, nič uložené sa neprepíše.",
+      "emailLabel": "E-mail odberateľa",
+      "emailPlaceholder": "napr@firma.sk",
+      "emailHint": "Nechajte prázdne, ak chcete odkaz len skopírovať a poslať sami.",
+      "autoIssue": "Po doplnení automaticky vystaviť a poslať faktúru",
+      "autoIssueHint": "Len keď údaje nebudú v rozpore s uloženým kontaktom. Inak koncept počká na vás.",
+      "replaceNote": "Nový odkaz nahradí ten pôvodný, starý prestane fungovať.",
+      "sendEmail": "Poslať e-mail",
+      "createLink": "Vytvoriť odkaz",
+      "close": "Zavrieť",
+      "copied": "Odkaz je skopírovaný.",
+      "copyPrompt": "Skopírujte odkaz:",
+      "emailed": "Odkaz sme poslali na {email}.",
+      "cancelled": "Odkaz bol zrušený.",
+      "failed": "Nepodarilo sa",
+      "waitingTitle": "Čaká na údaje odberateľa",
+      "waitingEmail": "Odkaz odišiel na {email}.",
+      "waitingLink": "Odkaz je pripravený na zdieľanie.",
+      "waitingAuto": "Po doplnení sa faktúra sama vystaví a odošle.",
+      "waitingManual": "Po doplnení vám dáme vedieť a faktúru vystavíte sami.",
+      "copyLink": "Kopírovať odkaz",
+      "resend": "Poslať znova",
+      "cancel": "Zrušiť odkaz",
+      "submittedTitle": "Odberateľ doplnil údaje {date}",
+      "mode": {
+        "created": "Vytvorili sme nový kontakt a priradili ho ku konceptu.",
+        "existing": "Podľa IČO/DIČ sme našli uložený kontakt a priradili ho ku konceptu.",
+        "filled": "Údaje patria ku kontaktu, ktorý už na koncepte bol."
+      },
+      "filled": "Doplnené: {fields}.",
+      "conflicts": "Líši sa od uloženého kontaktu, nič sme neprepísali:",
+      "empty": "prázdne",
+      "auto": {
+        "sent": "Faktúra bola automaticky vystavená a odoslaná.",
+        "issued": "Faktúra bola vystavená, ale e-mail sa nepodarilo odoslať.",
+        "failed": "Automatické vystavenie sa nepodarilo. Skontrolujte koncept.",
+        "skipped": "Automatické vystavenie čaká na vás, údaje treba skontrolovať."
+      },
+      "askAgain": "Poslať nový odkaz",
+      "field": {
+        "legalName": "názov",
+        "email": "e-mail",
+        "ico": "IČO",
+        "dic": "DIČ",
+        "address": "adresa",
+        "isPerson": "súkromná osoba",
+        "contactId": "kontakt"
+      }
     }
   },
   "publicInvoice": {
@@ -703,11 +855,13 @@
       "noFileSelected": "Nie je vybraný žiadny súbor",
       "submit": "Nahrať a spárovať",
       "importing": "Nahrávam a párujem…",
-      "formatHint": "Očakávaný formát: CSV so stĺpcami date, amount, currency, variable_symbol, counterparty_account, counterparty_name – pozri apps/backend/README.md.",
+      "formatHint": "CSV výpis z internet bankingu. Stačia stĺpce s dátumom, sumou a menou.",
       "success": "Naimportovaných {total} transakcií, {matched} spárovaných automaticky.",
       "invalidFile": "Vyberte prosím súbor vo formáte .csv.",
       "parseError": "Súbor sa nepodarilo spracovať: {message}",
-      "formatHintShort": "CSV: date, amount, currency, variable_symbol, counterparty_account, counterparty_name"
+      "formatHelpLabel": "Aký súbor nahrať?",
+      "formatHelp": "Nahrajte CSV výpis tak, ako ho stiahnete z internet bankingu. Poznáme bežné exporty slovenských a českých bánk (Tatra banka, SLSP, VÚB, ČSOB, Fio a ďalšie): oddelenie bodkočiarkou aj čiarkou, dátum 31.12.2026 aj 2026-12-31 a sumy s desatinnou čiarkou. Povinné sú stĺpce s dátumom, sumou a menou. Variabilný symbol a protiúčet pomáhajú so spárovaním. Keď export vašej banky nepoznáme, upravte súbor podľa vzoru.",
+      "sample": "Stiahnuť vzorový CSV"
     },
     "empty": "Zatiaľ tu nie sú žiadne bankové transakcie. Nahrajte výpis (CSV) tlačidlom vpravo hore.",
     "filterLabel": "Zobraziť",
@@ -781,8 +935,7 @@
     "connections": {
       "title": "Napojenie na banku",
       "hint": "Billanta každú hodinu stiahne nové prichádzajúce platby priamo z banky alebo z PayPalu a sama ich spáruje s faktúrami podľa variabilného symbolu a sumy. Spárované faktúry sa označia ako zaplatené, pri PayPale aj so strhnutým poplatkom. Odchádzajúce platby sa nesťahujú.",
-      "empty": "Zatiaľ žiadny účet. Pripojte Fio alebo PayPal a platby sa budú párovať samy, bez nahrávania výpisov.",
-      "connectFio": "Pripojiť Fio účet",
+      "empty": "Zatiaľ žiadny účet. Pripojte Fio alebo PayPal a platby sa budú párovať samy. Z ostatných bánk zatiaľ nahrajte CSV výpis.",
       "token": "API token z Fio",
       "tokenHint": "V internetbankingu Fio otvorte Nastavenia → API, pridajte token s oprávnením „Iba sledovať účet“ a skopírujte ho sem (64 znakov). S takým tokenom nejde nič zaplatiť. Token ukladáme šifrovane a už ho nikdy nezobrazíme.",
       "tokenPlaceholder": "64 znakov",
@@ -826,9 +979,8 @@
         "paypal_reporting_disabled": "Aplikácia v PayPale nemá zapnutú funkciu Transaction search. Zapnite ju v nastaveniach aplikácie (zmena sa prejaví do niekoľkých hodín)."
       },
       "psd2": {
-        "connect": "Pripojiť inú banku",
         "hint": "Billanta sťahuje nové prichádzajúce platby priamo z banky alebo z PayPalu a sama ich páruje s faktúrami podľa variabilného symbolu a sumy. Fio pripojíte API tokenom, PayPal údajmi svojej REST aplikácie, ostatné banky cez PSD2: prihlásite sa vo svojej banke a udelíte súhlas len na čítanie účtu (najviac na 180 dní, v mnohých bankách 90). Banky dovoľujú len pár automatických čítaní denne, preto sa PSD2 účty sťahujú zhruba každých 6 hodín. Odchádzajúce platby sa nesťahujú a zaplatiť cez napojenie nejde nič.",
-        "empty": "Zatiaľ žiadny účet. Pripojte banku a platby sa budú párovať samy, bez nahrávania výpisov.",
+        "empty": "Zatiaľ žiadny účet. Pripojte svoju banku alebo PayPal a platby sa budú párovať samy, bez nahrávania výpisov.",
         "country": "Krajina",
         "bank": "Banka",
         "bankHint": "Zoznam bánk, ktoré podporuje náš licencovaný PSD2 poskytovateľ Enable Banking, v celom EHP. Revolut nájdete pod Litvou, Wise pod Belgickom. Po kliknutí na Pokračovať vás presmerujeme do internet bankingu, kde sa prihlásite a vyberiete účty.",
@@ -840,7 +992,7 @@
         "personal": "Osobný (SZČO)",
         "continue": "Pokračovať do banky",
         "note": "Prihlasujete sa priamo vo svojej banke, Billanta vaše prihlasovacie údaje nikdy nevidí. Súhlas môžete kedykoľvek zrušiť odpojením účtu alebo v internet bankingu.",
-        "otherBanksAvailable": "Ostatné banky pripojíte tlačidlom „Pripojiť inú banku“ (PSD2).",
+        "otherBanksAvailable": "Inú banku pripojíte cez Pripojiť banku → Banka cez PSD2.",
         "expired": "Súhlas vypršal",
         "consentUntil": "súhlas do {date}",
         "renew": "Obnoviť súhlas",
@@ -861,6 +1013,22 @@
         "sandboxHint": "Zaškrtnite len pre kľúče zo sandboxu PayPalu. Platby z neho nie sú skutočné.",
         "note": "Prijaté platby sa párujú s faktúrami podľa čísla faktúry alebo VS v poznámke a sumy. Poplatok, ktorý si PayPal strhol, sa zapíše k faktúre, takže v prehľade vidíte aj čistý príjem. PayPal zverejňuje transakcie s oneskorením až 3 hodiny.",
         "connected": "PayPal pripojený. Platby za posledných 30 dní stiahneme pri najbližšej synchronizácii."
+      },
+      "connectBank": "Pripojiť banku",
+      "chooseProvider": "Čo chcete pripojiť?",
+      "providers": {
+        "psd2": {
+          "title": "Banka cez PSD2",
+          "text": "Tatra banka, SLSP, VÚB, ČSOB, Revolut, Wise a ďalšie banky v EHP. Prihlásite sa priamo vo svojej banke."
+        },
+        "fio": {
+          "title": "Fio banka",
+          "text": "Cez API token len na čítanie. Platby sa sťahujú každú hodinu."
+        },
+        "paypal": {
+          "title": "PayPal",
+          "text": "Cez Client ID a Secret vašej REST aplikácie. K faktúre sa zapíše aj poplatok."
+        }
       }
     },
     "fee": "poplatok {amount}"
@@ -1306,7 +1474,7 @@
           "description": "Meno, heslo, spôsoby prihlásenia, jazyk a vzhľad."
         },
         "company": {
-          "title": "Firma",
+          "title": "Fakturačné údaje",
           "description": "Fakturačné údaje, adresa, bankový účet a predvolené hodnoty faktúr."
         },
         "team": {
@@ -1370,16 +1538,24 @@
           "description": "Vizitka firmy na vlastnej adrese – služby, kontakty a tlačidlo na dopyt."
         },
         "import": {
-          "title": "Prechod z iného systému",
-          "description": "Kontakty a história faktúr z Fakturoidu, iDokladu, Excelu a ďalších."
+          "title": "Import z iného systému",
+          "description": "Kontakty a história faktúr z BitFaktury, Fakturoidu, iDokladu, Excelu a ďalších."
         },
         "companies": {
-          "title": "Moje firmy",
+          "title": "Moje firmy a živnosti",
           "description": "Viac firiem pod jedným prihlásením a rýchle prepínanie medzi nimi."
         },
         "activity": {
           "title": "História zmien",
           "description": "Kto čo kedy zmenil: doklady, kontakty, firma, tím a kľúče."
+        },
+        "numbering": {
+          "title": "Číslovanie dokladov",
+          "description": "Vlastný formát čísel faktúr, záloh, dobropisov a ponúk a číslo, ktorým rad pokračuje."
+        },
+        "referrals": {
+          "title": "Pozvať a získať kredity",
+          "description": "Odkaz pre známych a klientov, kredity a platba tarifu kreditmi."
         }
       }
     },
@@ -1448,10 +1624,10 @@
       }
     },
     "company": {
-      "title": "Firma",
+      "title": "Fakturačné údaje",
       "description": "Tieto údaje sa tlačia na každú faktúru ako dodávateľ.",
-      "loadError": "Údaje firmy sa nepodarilo načítať.",
-      "readOnly": "Údaje firmy môže meniť len vlastník alebo administrátor.",
+      "loadError": "Fakturačné údaje sa nepodarilo načítať.",
+      "readOnly": "Fakturačné údaje môže meniť len vlastník alebo administrátor.",
       "sections": {
         "identity": "Identifikácia",
         "identityHint": "Zadajte IČO a zvyšok načítajte z ARES.",
@@ -1469,6 +1645,42 @@
       "legalName": "Obchodné meno",
       "vatPayer": "Platiteľ DPH",
       "vatPayerHint": "Faktúry sa vystavujú s DPH a s rekapituláciou dane. Neplatiteľ má na faktúre poznámku „Nie som platiteľ DPH“.",
+      "vatStatus": {
+        "title": "Vzťah k DPH",
+        "payer": "Platiteľ DPH",
+        "payerHint": "Fakturujete s DPH a podávate daňové priznanie a kontrolný výkaz.",
+        "identified": "Registrovaný podľa §7a",
+        "identifiedHint": "Nie ste platiteľ, ale DPH odvádzate z reklám a služieb kúpených v zahraničí.",
+        "non_payer": "Neplatiteľ DPH",
+        "non_payerHint": "Fakturujete bez DPH a daňové priznanie k DPH nepodávate.",
+        "dicHint": "Máte IČ DPH, ale nie ste platiteľ? Ak kupujete reklamy alebo služby zo zahraničia (Google, Meta), ste pravdepodobne registrovaný podľa §7a. Overte to v osobnej internetovej zóne na Finančnej správe."
+      },
+      "advances": {
+        "title": "Mesačné preddavky",
+        "hint": "Každá výška platí od zvoleného mesiaca, kým ju nenahradí novší riadok. Staršie riadky nechajte: prehľad, kalendár aj ročný odhad podľa nich počítajú minulé mesiace. Prázdne pole = platí suma z predchádzajúceho riadku, 0 = nič neplatíte.",
+        "social": "Sociálne poistenie",
+        "health": "Zdravotné poistenie",
+        "flat_tax": "Preddavok na daň",
+        "short": {
+          "social": "sociálne",
+          "health": "zdravotné",
+          "flat_tax": "daň"
+        },
+        "from": "Platí od",
+        "current": "Platí teraz",
+        "inherit": "bez zmeny",
+        "add": "Nová výška od…",
+        "remove": "Zmazať riadok od {month}",
+        "empty": "Zatiaľ žiadne preddavky. Pridajte výšku a mesiac, od ktorého platí.",
+        "duplicate": "Tento mesiac už má iný riadok.",
+        "minimum": "Zákonné minimum od {from}: {amounts}.",
+        "useMinimum": "Použiť",
+        "errors": {
+          "month": "Pri každom riadku vyplňte mesiac, od ktorého platí.",
+          "duplicate": "Dva riadky majú rovnaký mesiac. Spojte ich do jedného.",
+          "amount": "Preddavky musia byť čísla od 0 do 10 000 000."
+        }
+      },
       "street": "Ulica a číslo",
       "city": "Mesto",
       "postalCode": "PSČ",
@@ -1533,11 +1745,13 @@
         "failed": "Nahranie sa nepodarilo (HTTP {status})"
       },
       "companyNameHint": "Krátky názov pre aplikáciu a e-maily (napr. „Novák Design“). Na faktúre sa tlačí obchodné meno.",
-      "legalNameHint": "Presne podľa obchodného alebo živnostenského registra – tlačí sa na faktúry ako dodávateľ.",
+      "legalNameHint": "Presne podľa obchodného alebo živnostenského registra – tlačí sa na faktúry ako dodávateľ. Pri živnostníkovi je to vaše meno a priezvisko (prípadne s dodatkom).",
       "countryHint": "Dvojpísmenový kód krajiny: SK, CZ, DE…",
       "registryNoteHint": "Firmy zapísané v obchodnom registri ho musia uvádzať na faktúrach. SZČO môže nechať prázdne.",
       "ibanHint": "Stačí vyplniť číslo účtu a kód banky – IBAN treba hlavne pre platby zo zahraničia.",
-      "defaultDueDaysHint": "Koľko dní po vystavení je nová faktúra splatná. Bežne 14."
+      "defaultDueDaysHint": "Koľko dní po vystavení je nová faktúra splatná. Bežne 14.",
+      "defaultsMoved": "Predvolené hodnoty faktúr nájdete v",
+      "defaultsLink": "Nastavenia › Faktúry"
     },
     "team": {
       "title": "Tím",
@@ -1576,7 +1790,7 @@
       "email": "E-mail",
       "sendInvite": "Poslať pozvánku",
       "inviteSent": "Pozvánka odoslaná e-mailom. Odkaz môžete poslať aj ručne:",
-      "inviteNotSent": "E-mail sa nepodarilo odoslať. Pošlite tento odkaz ručne:",
+      "inviteNotSent": "Pozvánku sa nepodarilo odoslať e-mailom. Skopírujte odkaz a pošlite ho sami:",
       "copied": "Odkaz skopírovaný.",
       "done": "Hotovo",
       "cancel": "Zrušiť",
@@ -1633,7 +1847,7 @@
       "files": {
         "invoices": {
           "title": "Vydané faktúry (CSV)",
-          "hint": "Všetky vystavené doklady s rozpisom DPH, pre Excel aj účtovný softvér."
+          "hint": "Všetky vystavené doklady so základom a DPH podľa sadzieb, kurzom ČNB a sumou v CZK. Pre Excel aj účtovný softvér."
         },
         "expenses": {
           "title": "Náklady (CSV)",
@@ -1687,15 +1901,15 @@
         "expenses": "Výdavky",
         "expensesHint": "Paušálne výdavky: 60 % väčšina živností, 80 % remeslá, 40 % slobodné povolania, 30 % prenájom. Alebo skutočné výdavky.",
         "modes": {
+          "30": "Paušál 30 % (prenájom)",
+          "40": "Paušál 40 % (slobodné povolania)",
           "60": "Paušál 60 % (živnosti)",
           "80": "Paušál 80 % (remeslá)",
-          "40": "Paušál 40 % (slobodné povolania)",
-          "30": "Paušál 30 % (prenájom)",
           "actual": "Skutočné výdavky"
         },
         "paidSocial": "Zaplatené preddavky – sociálne",
         "paidHealth": "Zaplatené preddavky – zdravotné",
-        "paidHint": "Nepovinné. Keď vyplníte, ukáže sa nedoplatok alebo preplatok.",
+        "paidHint": "Predvyplní sa z mesačných preddavkov vo Fakturačných údajoch (každý mesiac roka s výškou, ktorá vtedy platila). Sumu môžete prepísať, ukáže sa nedoplatok alebo preplatok.",
         "income": "Príjmy",
         "incomeHint": "Súčet faktúr uhradených v danom roku (počet: {invoices}), dobropisy sa odpočítavajú.",
         "incomeHintVat": "Súčet faktúr uhradených v danom roku bez DPH (počet: {invoices}), dobropisy sa odpočítavajú.",
@@ -1718,7 +1932,8 @@
         "downloadCsv": "Stiahnuť CSV",
         "epoLink": "Formuláre EPO (Finanční správa)",
         "failed": "Odhad sa nepodarilo vypočítať.",
-        "disclaimer": "Orientačný odhad pre hlavnú činnosť počas celého roka. Nenahrádza daňové priznanie ani prehľady."
+        "disclaimer": "Orientačný odhad pre hlavnú činnosť počas celého roka. Nenahrádza daňové priznanie ani prehľady.",
+        "paidFromSettings": "Predvyplnené z mesačných preddavkov vo Fakturačných údajoch. Môžete prepísať."
       },
       "epo": {
         "title": "Ako podať priznanie, kontrolné a súhrnné hlásenie (CZ)",
@@ -1791,6 +2006,29 @@
       "readOnly": "Nastavenia môže meniť len vlastník alebo administrátor.",
       "fieldsTitle": "Zobrazené polia",
       "fieldsHint": "Zaškrtnuté polia sú vo formulári vždy viditeľné. Pole, ktoré už má na doklade hodnotu, sa zobrazí vždy.",
+      "rate": {
+        "title": "Kurz pri faktúrach v cudzej mene",
+        "hint": "Ako sa suma v cudzej mene prepočíta na koruny. Kurz sa uloží k dokladu pri vystavení a potom sa už nemení.",
+        "modes": {
+          "cnb_daily": "Denný kurz ČNB",
+          "annual": "Jednotný kurz na rok",
+          "none": "Prepočet na CZK netlačiť"
+        },
+        "cnbDailyHint": "Kurz ČNB zo dňa uskutočnenia plnenia (DUZP). Keď ČNB v ten deň kurz nevyhlásila, použije sa posledný predchádzajúci.",
+        "annualHint": "Jeden kurz na celý rok podľa § 38 zákona o DPH. Zadáte ho nižšie pre každý rok a menu. Pre rok bez zadaného kurzu sa použije denný kurz ČNB.",
+        "noneHint": "Na doklade nebude prepočet na koruny. Kurz ČNB sa aj tak uloží pre vaše prehľady.",
+        "noneIdentified": "Platí len pre doklady bez DPH. Keď doklad DPH obsahuje, prepočet sa vytlačí.",
+        "nonePayer": "Platiteľ DPH musí mať na doklade prepočet na koruny, preto túto voľbu nejde použiť. Faktúry sa vystavia s kurzom ČNB.",
+        "annualTitle": "Jednotné kurzy",
+        "annualEmpty": "Zatiaľ žiadny kurz. Pridajte rok a menu.",
+        "year": "Rok",
+        "currency": "Mena",
+        "rate": "Kurz",
+        "perUnit": "CZK za 1 {currency}",
+        "remove": "Odobrať kurz",
+        "duplicate": "Každý rok a mena môžu byť v zozname len raz.",
+        "add": "Pridať kurz"
+      },
       "groups": {
         "items": "Položky",
         "dates": "Dátumy a platba",
@@ -1813,6 +2051,32 @@
       },
       "resetDefaults": "Obnoviť predvolený výber",
       "defaultsTitle": "Predvolené hodnoty",
+      "defaultsHint": "Takto začne každá nová prázdna faktúra. Kópie a šablóny majú vlastné hodnoty. Všetko sa dá vo faktúre zmeniť.",
+      "registryNoteElsewhere": "Zápis v obchodnom alebo živnostenskom registri sa tlačí na každej faktúre a upravíte ho vo",
+      "registryNoteLink": "Fakturačných údajoch",
+      "blank": {
+        "currency": "Mena",
+        "bankAccount": "Bankový účet",
+        "bankAccountPrimary": "Hlavný účet z fakturačných údajov",
+        "customer": "Odberateľ",
+        "customerHint": "Hodí sa, keď fakturujete hlavne jednému odberateľovi. Vo faktúre ho zmeníte jedným klikom.",
+        "customerSearch": "Hľadať vo vašich kontaktoch",
+        "customerEmpty": "Žiadny kontakt nezodpovedá.",
+        "customerNone": "Bez predvoleného odberateľa",
+        "customerRemove": "Odobrať odberateľa",
+        "items": "Položky",
+        "itemsHint": "Riadky, ktoré sa objavia v každej novej faktúre, napr. mesačný paušál. Max. 10.",
+        "itemDescription": "Popis",
+        "itemQuantity": "Množstvo",
+        "itemUnit": "Jedn.",
+        "itemPrice": "Cena/j.",
+        "itemVat": "DPH",
+        "noVat": "Bez DPH",
+        "itemRemove": "Odobrať položku",
+        "addItem": "Pridať položku",
+        "noteAbove": "Text nad položkami",
+        "noteAbovePlaceholder": "napr. Fakturujeme Vám za služby v mesiaci…"
+      },
       "customLabelsTitle": "Predvyplnené vlastné polia",
       "customLabelsHint": "Tieto názvy sa ponúknu pri každej novej faktúre, stačí doplniť hodnotu (max. 4).",
       "customLabelPlaceholder": "napr. Číslo zmluvy",
@@ -1955,6 +2219,10 @@
         "quote_response": {
           "label": "Odpoveď na ponuku",
           "hint": "Klient v portáli prijal alebo odmietol cenovú ponuku."
+        },
+        "buyer_details": {
+          "label": "Odberateľ doplnil údaje",
+          "hint": "Odberateľ vyplnil fakturačné údaje cez odkaz, ktorý ste mu poslali."
         }
       },
       "browserTitle": "Oznámenia v prehliadači",
@@ -2065,7 +2333,7 @@
         "reminder_no": "poradie upomienky",
         "customer": "názov zákazníka",
         "customer_ico": "IČO zákazníka",
-        "company": "názov firmy",
+        "company": "vaše meno alebo názov firmy",
         "ico": "IČO",
         "dic": "DIČ",
         "company_email": "e-mail firmy",
@@ -2326,9 +2594,9 @@
         "bitfaktura": {
           "name": "bitfaktura",
           "steps": [
-            "V prehľade faktúr použite export do CSV alebo Excelu.",
-            "Excel uložte ako CSV a nahrajte ho nižšie.",
-            "Kontakty môžete nahrať zvlášť, alebo ich import vytvorí sám z odberateľov na faktúrach."
+            "Najrýchlejšie je priame prepojenie: v BitFaktúre otvorte Nastavenia → Nastavenia účtu → Integrácia a skopírujte Autorizačný kód API.",
+            "Nižšie v kroku 3 vyplňte názov účtu (napr. firma z firma.bitfaktura.cz) a kód. Načítame faktúry aj celý adresár kontaktov (aj tie, ktorým ste zatiaľ nefakturovali), kurzy a spôsob úhrady. Krok 2 s CSV kontaktov potom preskočte.",
+            "Bez kódu to ide aj cez export faktúr do CSV, ktorý nahráte nižšie."
           ]
         },
         "faktorio": {
@@ -2368,22 +2636,47 @@
         "lead": "Najprv uvidíte náhľad. Uloženie prebehne až po potvrdení.",
         "upload": "Vybrať súbor s faktúrami",
         "nothing": "V súbore nie je nič nové na import.",
+        "extraOnly": "Nové doklady nie sú. Doplníme len toto:",
         "summary": "{count, plural, one {Pripravená # faktúra} few {Pripravené # faktúry} other {Pripravených # faktúr}}",
         "range": "Obdobie: {from} – {to}",
         "statuses": "Zaplatené: {paid} · neuhradené: {issued} · stornované: {cancelled}",
         "totals": "Spolu: {totals}",
-        "contacts": "Odberatelia – nových: {created}, existujúcich: {matched}",
+        "contacts": "Kontakty – nových: {created}, existujúcich: {matched}",
+        "source": "Z BitFaktúry sme načítali {invoices, plural, one {# doklad} few {# doklady} other {# dokladov}} a {contacts, plural, one {# kontakt} few {# kontakty} other {# kontaktov}}.",
+        "sourceAll": "Prenesie sa všetko, nič sa nepreskočilo.",
+        "sourceSkipped": "{count, plural, one {# doklad sa preskočí} few {# doklady sa preskočia} other {# dokladov sa preskočí}}, dôvod nájdete pri každom nižšie.",
+        "business": "Doplníme prázdne Fakturačné údaje: {fields}",
+        "businessDone": "Do Fakturačných údajov sme doplnili: {fields}.",
+        "businessCheck": "Skontrolovať",
+        "businessFields": {
+          "ico": "IČO",
+          "dic": "DIČ",
+          "registryNote": "zápis v registri",
+          "address": "sídlo"
+        },
         "more": "…a ďalších {count}.",
         "confirm": "{count, plural, one {Importovať # faktúru} few {Importovať # faktúry} other {Importovať # faktúr}}",
+        "confirmExtra": "Doplniť",
         "done": "{count, plural, one {Importovaná # faktúra} few {Importované # faktúry} other {Importovaných # faktúr}}, nových kontaktov: {contacts}.",
         "open": "Zobraziť faktúry",
+        "openContacts": "Zobraziť kontakty",
         "columns": {
           "number": "Číslo",
           "customer": "Odberateľ",
           "date": "Vystavená",
           "total": "Spolu",
           "status": "Stav"
-        }
+        },
+        "api": {
+          "lead": "Načítanie priamo z BitFaktúry cez API: faktúry, kontakty aj pôvodné PDF. Kód sa použije len pre tento import, neukladáme ho. Po dokončení ho v BitFaktúre pokojne vygenerujte znova.",
+          "account": "Účet v BitFaktúre",
+          "accountPlaceholder": "firma.bitfaktura.cz",
+          "token": "Autorizačný kód API",
+          "load": "Načítať náhľad",
+          "privacy": "Z BitFaktúry len čítame, nič v nej nemeníme."
+        },
+        "pdfs": "Pôvodné PDF z BitFaktúry: {archived} uložených ako archívna príloha (zákazníkom sa neposiela).",
+        "pdfsMissing": "{missing} sa nepodarilo stiahnuť."
       },
       "status": {
         "issued": "Neuhradená",
@@ -2399,7 +2692,9 @@
           "invalid_date": "chýba alebo sa nedá prečítať dátum vystavenia.",
           "invalid_amount": "nedá sa prečítať suma.",
           "duplicate_in_file": "číslo už je v súbore vyššie.",
-          "already_exists": "faktúru s týmto číslom už máte."
+          "already_exists": "faktúru s týmto číslom už máte.",
+          "unsupported_kind": "tento typ dokladu nevieme importovať.",
+          "unsupported_discount": "faktúra má zľavu na položke, tú zatiaľ neimportujeme."
         }
       },
       "errors": {
@@ -2407,11 +2702,14 @@
         "too_many_rows": "Súbor je príliš veľký, rozdeľte ho na menšie časti (max. 5 000 faktúr).",
         "no_file": "Vyberte súbor CSV.",
         "forbidden": "Import môže spustiť len vlastník alebo správca.",
-        "failed": "Import sa nepodaril, skúste to znova."
+        "failed": "Import sa nepodaril, skúste to znova.",
+        "bitfaktura_account": "Účet v BitFaktúre sme nenašli. Zadajte adresu v tvare firma.bitfaktura.cz.",
+        "bitfaktura_unauthorized": "BitFaktúra kód neprijala. Skontrolujte Autorizačný kód API v Nastavenia → Integrácia.",
+        "bitfaktura_unreachable": "BitFaktúra teraz neodpovedá, skúste to o chvíľu."
       }
     },
     "companies": {
-      "title": "Moje firmy",
+      "title": "Moje firmy a živnosti",
       "description": "Všetky firmy, ku ktorým máte prístup. Faktúry, kontakty, nastavenia aj predplatné má každá firma vlastné.",
       "loadError": "Zoznam firiem sa nepodarilo načítať.",
       "active": "Aktívna",
@@ -2423,22 +2721,69 @@
         "viewer": "Len čítanie"
       },
       "add": {
-        "title": "Pridať ďalšiu firmu",
+        "title": "Pridať ďalšiu firmu alebo živnosť",
         "description": "Založte ďalšiu firmu alebo živnosť. Stanete sa jej vlastníkom a hneď sa do nej prepnete.",
         "hint": "Každá firma má oddelené dáta, číselné rady, tím aj tarif. Medzi firmami prepínate v menu pod svojím avatarom. Ako vlastník môžete mať najviac {max} firiem; do ďalších vás môžu pozvať iní.",
-        "nameLabel": "Názov firmy",
-        "namePlaceholder": "Novák Consulting s.r.o.",
+        "nameLabel": "Meno alebo názov firmy",
+        "namePlaceholder": "Ján Novák alebo Novák s.r.o.",
         "tos": "Mám aspoň 18 rokov a pre túto firmu súhlasím s <tos>obchodnými podmienkami</tos> a so <dpa>sprostredkovateľskou zmluvou</dpa>.",
         "submit": "Založiť firmu",
-        "creating": "Zakladám…"
+        "creating": "Zakladám…",
+        "nameHint": "Pri živnosti stačí vaše meno a priezvisko."
       },
       "errors": {
         "generic": "Niečo sa pokazilo. Skúste to prosím znova.",
         "not_member": "K tejto firme už nemáte prístup.",
-        "name_required": "Vyplňte názov firmy.",
+        "name_required": "Vyplňte meno alebo názov firmy.",
         "name_too_long": "Názov je príliš dlhý.",
         "tos_required": "Je potrebné súhlasiť s podmienkami.",
         "tenant_limit": "Dosiahli ste limit {max} vlastných firiem."
+      }
+    },
+    "numbering": {
+      "title": "Číslovanie dokladov",
+      "description": "Nastavte, ako vyzerajú čísla dokladov – napríklad rovnako ako v nástroji, z ktorého prechádzate.",
+      "loadError": "Nastavenie číslovania sa nepodarilo načítať.",
+      "readOnly": "Číslovanie dokladov môže meniť iba vlastník alebo správca.",
+      "pattern": "Formát čísla",
+      "patternHint": "Text okolo značiek sa prepíše bez zmeny. Povolené sú písmená bez diakritiky, číslice, medzera a znaky - / . _",
+      "nextNumber": "Ďalšie číslo",
+      "nextNumberHint": "Poradové číslo, ktorým rad v aktuálnom mesiaci alebo roku pokračuje. Nechajte prázdne, ak nechcete nič meniť.",
+      "preview": "Ďalší doklad dostane číslo",
+      "then": "(potom {number})",
+      "resetMonthly": "Rad začína znova každý mesiac.",
+      "resetYearly": "Rad začína znova každý rok.",
+      "lastUsed": "Naposledy použité poradové číslo v tomto období: {number}.",
+      "lowerWarning": "Číslo je nižšie alebo rovnaké ako posledné použité. Uložiť ho ide len vtedy, keď v tomto období ešte nie je žiadny doklad tohto typu.",
+      "save": "Uložiť",
+      "saved": "Číslovanie uložené",
+      "saveFailed": "Uloženie sa nepodarilo",
+      "tokensTitle": "Značky",
+      "tokens": {
+        "YYYY": "rok, napr. 2026",
+        "YY": "rok dvoma číslicami, napr. 26",
+        "MM": "mesiac, napr. 03 – rad potom začína každý mesiac znova",
+        "N": "poradové číslo bez núl, napr. 7",
+        "NNNN": "poradové číslo doplnené nulami ('{NN}' až '{NNNNN}'), napr. 0007"
+      },
+      "how": {
+        "rules": "Formát musí obsahovať práve jedno poradové číslo a rok. Číslo môže mať najviac 32 znakov.",
+        "reset": "S '{MM}' vo formáte sa počíta od 1 každý mesiac, inak každý rok.",
+        "issued": "Zmena platí len pre novo vystavené doklady. Už vystavené doklady si svoje čísla nechajú.",
+        "separate": "Každý typ dokladu má vlastný neprerušený rad. Ak číslo už existuje (napríklad z importu), preskočí sa na ďalšie voľné."
+      },
+      "errors": {
+        "empty": "Zadajte formát.",
+        "invalid_character": "Formát obsahuje nepovolený znak. Použite písmená bez diakritiky, číslice, medzeru alebo - / . _",
+        "unknown_token": "Neznáma značka. Použite '{YYYY}', '{YY}', '{MM}', '{N}' až '{NNNNN}'.",
+        "no_sequence": "Chýba poradové číslo, napr. '{NNNN}'.",
+        "multiple_sequences": "Poradové číslo môže byť vo formáte len raz.",
+        "no_year": "Chýba rok – '{YYYY}' alebo '{YY}'.",
+        "multiple_years": "Rok môže byť vo formáte len raz.",
+        "multiple_months": "Mesiac môže byť vo formáte len raz.",
+        "too_long": "Číslo by bolo dlhšie ako {max} znakov.",
+        "pattern_clash": "Tento formát už používa iný typ dokladu. Každý typ potrebuje vlastný.",
+        "next_number_too_low": "Ďalšie číslo je nižšie ako posledné použité a v tomto období už doklady existujú."
       }
     }
   },
@@ -2450,8 +2795,8 @@
     "signup": {
       "title": "Vytvoriť účet",
       "subtitle": "Založte si účet a začnite fakturovať v priebehu pár minút.",
-      "companyNameLabel": "Názov spoločnosti",
-      "companyNamePlaceholder": "Novák Consulting s.r.o.",
+      "companyNameLabel": "Meno alebo názov firmy",
+      "companyNamePlaceholder": "Ján Novák alebo Novák s.r.o.",
       "emailLabel": "E-mail",
       "emailPlaceholder": "vas@email.sk",
       "passwordLabel": "Heslo",
@@ -2462,7 +2807,8 @@
       "genericError": "Niečo sa pokazilo. Skúste to prosím znova.",
       "rateLimitedError": "Príliš veľa pokusov. Skúste to prosím o chvíľu.",
       "hasAccount": "Už máte účet?",
-      "loginLink": "Prihláste sa"
+      "loginLink": "Prihláste sa",
+      "companyNameHint": "Ako živnostníkovi stačí vaše meno a priezvisko. IČO a fakturačné údaje doplníte v ďalšom kroku."
     },
     "login": {
       "title": "Prihlásiť sa",
@@ -2793,15 +3139,16 @@
     "moreInfo": "Viac informácií",
     "userMenu": {
       "profile": "Môj profil",
-      "company": "Firma",
+      "company": "Fakturačné údaje",
       "team": "Tím",
       "exports": "Exporty pre účtovníka",
       "billing": "Predplatné",
       "settings": "Nastavenia",
-      "companies": "Firmy",
-      "addCompany": "Pridať firmu",
+      "companies": "Firmy a živnosti",
+      "addCompany": "Pridať firmu alebo živnosť",
       "manageCompanies": "Spravovať firmy",
-      "activity": "História zmien"
+      "activity": "História zmien",
+      "referrals": "Pozvať a získať kredity"
     },
     "installApp": {
       "label": "Stiahnuť aplikáciu",
@@ -2839,13 +3186,18 @@
     "isDistrictSeat": "Okresné mesto okresu {district}.",
     "isRegionSeat": "Sídlo kraja ({region}).",
     "mapLink": "Zobraziť na mape (OpenStreetMap) ↗",
-    "taxTitle": "Miestne príslušný daňový úrad",
+    "taxTitle": "Úrady pre podnikateľov",
     "taxNoteCz": "Pre OSVČ podľa trvalého bydliska, pre firmy podľa sídla. Priznanie aj DPH sa podávajú elektronicky cez portál MOJE daně – Billanta k tomu pripraví podklady.",
     "taxNoteSk": "Pre SZČO podľa trvalého pobytu, pre firmy podľa sídla. Priznanie aj DPH podáte elektronicky cez portál Finančnej správy – Billanta k tomu pripraví podklady.",
     "nearbyTitle": "Najbližšie obce",
     "km": "{km, number} km",
     "otherCountry": "České obce nájdete v českej verzii →",
-    "countryLabel": "Krajina"
+    "countryLabel": "Krajina",
+    "socialNote": "Sem OSVČ podľa trvalého bydliska posiela preddavky na sociálne poistenie a raz ročne prehľad o príjmoch a výdavkoch.",
+    "healthNoteCz": "Zdravotné poistenie platíte svojej zdravotnej poisťovni, ktorú si vyberáte sami. Na bydlisku nezáleží.",
+    "healthNoteSk": "Zdravotné poistenie platíte svojej zdravotnej poisťovni, ktorú si vyberáte sami. Na bydlisku nezáleží.",
+    "tradeNoteCz": "Živnosť ohlásite na ktoromkoľvek živnostenskom úrade alebo online. Na jednom formulári sa rovno prihlásite aj k dani, sociálnemu a zdravotnému poisteniu.",
+    "tradeNoteSk": "Živnosť ohlásite na ktoromkoľvek okresnom úrade (odbor živnostenského podnikania) alebo online cez slovensko.sk."
   },
   "mobile": {
     "more": "Viac",
@@ -3065,6 +3417,7 @@
       "setup": "Nastaviť AI"
     },
     "customer": {
+      "draftWithout": "Odberateľa môžete doplniť neskôr. Koncept sa dá uložiť aj bez neho a poslať mu odkaz, nech si údaje vyplní sám.",
       "title": "Odberateľ",
       "hint": "Hľadajte podľa názvu alebo IČO. Našepkávač ukáže vaše kontakty a firmy z registra ARES; firma z ARES sa pri uložení faktúry pridá do kontaktov aj s adresou.",
       "placeholder": "Názov firmy alebo IČO",
@@ -3088,7 +3441,7 @@
       "taxableSupplyHint": "Dátum dodania tovaru alebo služby. Prázdne = dátum vystavenia.",
       "validUntil": "Platnosť do",
       "dueOnWeekend": "Splatnosť pripadá na víkend.",
-      "dueOnHoliday": "Splatnosť pripadá na štátny sviatok (CZ).",
+      "dueOnHoliday": "Splatnosť pripadá na sviatok ({name}).",
       "shiftToWorkday": "Posunúť na pracovný deň"
     },
     "items": {
@@ -3121,7 +3474,7 @@
     "save": "Uložiť koncept",
     "saveNote": "Koncept dostane číslo až pri vystavení.",
     "errors": {
-      "customer_required": "Vyberte odberateľa.",
+      "customer_required": "Bez odberateľa sa dá uložiť len koncept. Pred vystavením ho vyberte.",
       "items_required": "Pridajte aspoň jednu položku.",
       "save_failed": "Faktúru sa nepodarilo uložiť. Skúste to znova.",
       "not_allowed": "Na túto akciu nemáte oprávnenie alebo neaktívne predplatné.",
@@ -3138,6 +3491,19 @@
       "empty_input": "Napíšte, čo sa má fakturovať.",
       "symbol_invalid": "Symboly môžu obsahovať len číslice (VS a ŠS max. 10, KS max. 4).",
       "reason_required": "Napíšte dôvod úpravy."
+    },
+    "copy": {
+      "title": "Predvyplniť podľa inej faktúry",
+      "hint": "Skopíruje odberateľa, položky, menu, platbu, účet, jazyk, poznámky a vlastné polia. Číslo, dátumy a platby sa nekopírujú, splatnosť sa vypočíta podľa predvoleného nastavenia.",
+      "latest": "Podľa poslednej faktúry",
+      "other": "Podľa inej faktúry…",
+      "searchLabel": "Hľadať faktúru",
+      "searchPlaceholder": "Číslo faktúry alebo odberateľ",
+      "searchEmpty": "Žiadna faktúra nezodpovedá.",
+      "draft": "Koncept",
+      "fromNumber": "Predvyplnené podľa faktúry {number}: odberateľ, položky aj platba sú skopírované, dátumy sú dnešné a splatnosť podľa predvoleného nastavenia.",
+      "fromDraft": "Predvyplnené podľa konceptu: odberateľ, položky aj platba sú skopírované, dátumy sú dnešné a splatnosť podľa predvoleného nastavenia.",
+      "noneYet": "Zatiaľ nemáte žiadnu faktúru, z ktorej by sa dalo vychádzať. Prvú vyplňte ručne."
     },
     "duplicate": {
       "fromNumber": "Kópia faktúry {number}: zákazník, mena, splatnosť aj položky sú predvyplnené, dátumy sú dnešné.",
@@ -3169,6 +3535,7 @@
       "more": "Konštantný / špecifický symbol, objednávka",
       "exchangeRate": "Kurz CZK/{currency}",
       "exchangeRateAuto": "Kurz ČNB pri vystavení",
+      "exchangeRateAnnual": "Jednotný kurz {rate} (rok {year})",
       "exchangeRateLoad": "Načítať z ČNB",
       "exchangeRateFailed": "Kurz ČNB sa nepodarilo načítať.",
       "inCzk": "≈ {amount} spolu",
@@ -3305,7 +3672,9 @@
     "vatAt": "DPH {rate} %",
     "reverseChargeNote": "Daň odvedie zákazník (prenesenie daňovej povinnosti).",
     "customer": "Odberateľ",
-    "noCustomer": "Odberateľ zatiaľ nie je vybraný.",
+    "noCustomer": "Odberateľ zatiaľ nevyplnený",
+    "sellerSnapshotNote": "Údaje dodávateľa podľa stavu ku dňu vystavenia",
+    "buyerSnapshotNote": "Údaje odberateľa podľa stavu ku dňu vystavenia",
     "details": "Údaje dokladu",
     "related": "Nadväzujúce doklady",
     "unnumbered": "bez čísla",
@@ -3390,6 +3759,7 @@
       "markUnpaid": "Zrušiť úhradu",
       "send": "Odoslať e-mailom",
       "duplicate": "Duplikovať",
+      "issueSimilar": "Vystaviť podobnú",
       "saveTemplate": "Uložiť ako šablónu",
       "publicLink": "Verejný odkaz",
       "cancel": "Stornovať",
@@ -3446,7 +3816,12 @@
       "partial": "Čiastočná úhrada zaznamenaná.",
       "rotated": "Nový odkaz vydaný, starý už nefunguje"
     },
-    "fxLine": "Kurz ČNB {rate} CZK/{currency} · DPH {vat} · spolu {total}",
+    "fxLine": "{label} {rate} CZK/{currency} · DPH {vat} · spolu {total}",
+    "fxLabel": "Kurz ČNB",
+    "fxLabelOn": "Kurz ČNB k {date}",
+    "fxLabelAnnual": "Jednotný kurz pre rok {year}",
+    "fxLabelManual": "Kurz",
+    "fxHidden": "Prepočet na CZK sa na doklade netlačí (kurz {rate} CZK/{currency} len pre prehľady).",
     "views": {
       "title": "Zdieľaný odkaz",
       "count": "Zobrazené",
@@ -3828,7 +4203,27 @@
       "backup": "záloha stiahnuť dáta",
       "channels": "telegram whatsapp",
       "apiKeys": "api kľúč integrácia",
-      "shortcuts": "klávesnica skratka ctrl"
+      "shortcuts": "klávesnica skratka ctrl",
+      "notifications": "upozornenie oznámenie zvonček push e-mail notifikácie",
+      "numbering": "číslo číselný rad formát prefix",
+      "emails": "šablóna predmet odosielateľ text e-mailu",
+      "variables": "zástupný text placeholder",
+      "paymentMethods": "platba úhrada paypal zápočet hotovosť",
+      "publicProfile": "vizitka web stránka dopyt",
+      "import": "bitfaktura fakturoid idoklad excel csv prevod migrácia",
+      "integrations": "webhook discord slack kalendár ics rss",
+      "bankAccounts": "iban číslo účtu banka qr",
+      "logo": "podpis pečiatka obrázok",
+      "invoiceFields": "polia formulára vlastné pole",
+      "reminders": "upomienka nezaplatená po splatnosti",
+      "invoiceDefaults": "predvolené splatnosť dph poznámka mena jazyk",
+      "password": "heslo zmeniť prihlásenie",
+      "preferences": "jazyk vzhľad tmavý režim motív",
+      "cardPayments": "stripe karta online platba",
+      "webhooks": "discord slack webhook",
+      "calendar": "ics google kalendár termíny splatnosti",
+      "epo": "daňový portál dph kontrolný výkaz xml",
+      "bankConnections": "fio psd2 paypal napojenie synchronizácia"
     },
     "aiSearch": "AI hľadanie vo faktúrach",
     "aiOpen": "Opýtať sa AI / hľadať prirodzene",
@@ -3848,6 +4243,20 @@
       "overdue": "Po splatnosti",
       "paid": "Zaplatené",
       "cancelled": "Zrušené"
+    },
+    "sections": {
+      "bankAccounts": "Bankové účty",
+      "logo": "Logo a podpis",
+      "invoiceFields": "Polia na faktúre",
+      "reminders": "Upomienky",
+      "invoiceDefaults": "Predvolené hodnoty faktúr",
+      "password": "Heslo a prihlásenie",
+      "preferences": "Jazyk a vzhľad",
+      "cardPayments": "Platby kartou (Stripe)",
+      "webhooks": "Webhooky pre Discord a Slack",
+      "calendar": "Kalendár splatností",
+      "epo": "Podanie na daňový portál",
+      "bankConnections": "Napojenie na banku"
     }
   },
   "shortcuts": {
@@ -3911,12 +4320,8 @@
   "welcome": {
     "title": "Vitajte v Billante",
     "subtitle": "Tri rýchle otázky a aplikácia ukáže len to, čo naozaj použijete. Všetko sa dá neskôr zmeniť v Nastaveniach.",
-    "companyTitle": "Vaša firma",
-    "companyHint": "Zadajte IČO a údaje na faktúru načítame z ARES. Môžete aj preskočiť.",
-    "icoLabel": "IČO",
-    "icoPlaceholder": "IČO (8 číslic)",
-    "aresNotFound": "IČO sme v ARES nenašli.",
-    "aresFailed": "ARES teraz neodpovedá, skúste to neskôr.",
+    "companyTitle": "Vaše podnikanie",
+    "companyHint": "Zadajte názov firmy, svoje meno (živnostník) alebo IČO a údaje na faktúru načítame z RPO, českého ARES alebo zahraničných registrov. Môžete aj preskočiť.",
     "vatQuestion": "Ste platiteľ DPH?",
     "yes": "Áno",
     "no": "Nie",
@@ -3928,7 +4333,10 @@
     "skip": "Preskočiť",
     "finish": "Hotovo, ideme fakturovať",
     "saved": "Nastavené",
-    "failed": "Uloženie sa nepodarilo"
+    "failed": "Uloženie sa nepodarilo",
+    "searchLabel": "Firma, meno alebo IČO",
+    "searchPlaceholder": "Názov firmy, vaše meno alebo IČO",
+    "searchEmpty": "Nič sme nenašli. Skúste iný názov alebo IČO, alebo iný register."
   },
   "registry": {
     "label": "Register firiem",
@@ -4088,14 +4496,14 @@
           "Nespárované platby zostanú na ručné priradenie"
         ],
         "steps": [
-          "V sekcii Banka pripojíte Fio účet tokenom len na čítanie, alebo nahráte CSV výpis.",
+          "V sekcii Banka pripojíte účet (Fio tokenom len na čítanie, ostatné banky cez PSD2, alebo PayPal), prípadne nahráte CSV výpis zo svojej banky.",
           "Aplikácia platby stiahne a spáruje s faktúrami.",
           "Skontrolujete zvyšné nespárované platby a priradíte ich ručne."
         ],
         "faq": [
           {
             "q": "Ktoré banky sú podporované?",
-            "a": "Fio banka priamo cez svoje bezplatné API, ostatné slovenské, české aj zahraničné banky v EHP (vrátane Revolutu a Wise) cez PSD2 (licencovaný poskytovateľ Enable Banking). Akákoľvek banka aj cez CSV výpis s dátumom, sumou, menou a variabilným symbolom."
+            "a": "Fio banka priamo cez svoje bezplatné API, ostatné slovenské, české aj zahraničné banky v EHP (vrátane Revolutu a Wise) cez PSD2 (licencovaný poskytovateľ Enable Banking). Akákoľvek banka aj cez CSV výpis. Poznáme bežné exporty slovenských a českých bánk, stačí dátum, suma a mena."
           },
           {
             "q": "Môže Billanta z môjho účtu platiť?",
@@ -4298,11 +4706,12 @@
       },
       "migration": {
         "name": "Prechod z iného systému",
-        "title": "Prechod z Fakturoidu, iDokladu alebo Excelu",
+        "title": "Prechod z BitFaktury, Fakturoidu, iDokladu alebo Excelu",
         "description": "Preneste kontakty aj celú históriu faktúr z iného fakturačného systému alebo z Excelu. Náhľad pred uložením, bez odosielania e-mailov a s nadväzujúcim číslovaním.",
         "lead": "Začať odznova neznamená prísť o históriu. Stačí CSV export zo starého systému.",
         "points": [
           "Import kontaktov aj vydaných faktúr z CSV",
+          "Z BitFaktury priamo cez API: faktúry, adresár aj pôvodné PDF",
           "Stĺpce Fakturoidu, iDokladu, faktoria, Invoice Ninja aj vlastnej tabuľky rozpoznáme sami",
           "Náhľad s počtom faktúr, obdobím a súčtami pred uložením",
           "Faktúry s viacerými položkami, zálohové faktúry aj dobropisy",
@@ -4430,7 +4839,7 @@
         ],
         "steps": [
           "V internetbankingu Fio otvorte Nastavenia → API a pridajte token „Iba sledovať účet“.",
-          "V Billante v sekcii Banka kliknete na Pripojiť Fio účet a token vložíte.",
+          "V Billante v sekcii Banka kliknete na Pripojiť banku, zvolíte Fio banka a token vložíte.",
           "Platby sa odvtedy sťahujú a párujú samy."
         ],
         "faq": [
@@ -4444,11 +4853,11 @@
           },
           {
             "q": "A iné banky?",
-            "a": "Cez PSD2: v sekcii Banka kliknete na Pripojiť inú banku, vyberiete banku a v jej internet bankingu udelíte súhlas len na čítanie účtu. Napojenie sprostredkuje licencovaný poskytovateľ Enable Banking, súhlas platí 90 až 180 dní podľa banky a pred vypršaním vám pripomenieme obnovenie. Pre limity PSD2 sa tieto účty sťahujú zhruba každých 6 hodín."
+            "a": "Cez PSD2: v sekcii Banka kliknete na Pripojiť banku, zvolíte Banka cez PSD2, vyberiete svoju banku a v jej internet bankingu udelíte súhlas len na čítanie účtu. Napojenie sprostredkuje licencovaný poskytovateľ Enable Banking, súhlas platí 90 až 180 dní podľa banky a pred vypršaním vám pripomenieme obnovenie. Pre limity PSD2 sa tieto účty sťahujú zhruba každých 6 hodín."
           },
           {
             "q": "A platby cez PayPal?",
-            "a": "V sekcii Banka kliknete na Pripojiť PayPal a vložíte Client ID a Secret svojej REST aplikácie so zapnutou funkciou Transaction search. Prijaté platby sa párujú podľa čísla faktúry alebo VS a sumy a poplatok PayPalu sa zapíše k faktúre. PayPal zverejňuje transakcie s oneskorením až 3 hodiny."
+            "a": "V sekcii Banka kliknete na Pripojiť banku, zvolíte PayPal a vložíte Client ID a Secret svojej REST aplikácie so zapnutou funkciou Transaction search. Prijaté platby sa párujú podľa čísla faktúry alebo VS a sumy a poplatok PayPalu sa zapíše k faktúre. PayPal zverejňuje transakcie s oneskorením až 3 hodiny."
           }
         ]
       },
@@ -4805,6 +5214,67 @@
             "a": "Nie. Kartu klient zadáva len na zabezpečenej stránke Stripe."
           }
         ]
+      },
+      "taxEstimate": {
+        "name": "Odhad dane a odvodov",
+        "title": "Koľko vám z faktúry zostane po dani a odvodoch",
+        "description": "Pri každej faktúre orientačná čistá suma po dani z príjmov, sociálnom a zdravotnom poistení podľa českých pravidiel pre OSVČ. Za celý rok spočítame daň, poistné aj preddavky na ďalší rok.",
+        "lead": "Faktúra na 20 000 Kč neznamená 20 000 Kč na účte. Billanta vám rovno ukáže, koľko vám zostane.",
+        "points": [
+          "Pri každej faktúre riadok „Zostane vám“ s orientačnou čistou sumou",
+          "Počíta s paušálom 60, 80, 40 alebo 30 %, alebo bez paušálu",
+          "Pri faktúre v cudzej mene aj prepočet na koruny",
+          "Ročný odhad dane z príjmov so zľavou na poplatníka",
+          "Sociálne a zdravotné poistenie vrátane preddavkov na ďalší rok",
+          "Zaplatené preddavky doplníte a odhad sa upraví"
+        ],
+        "steps": [
+          "Vystavte faktúru, pri nej hneď uvidíte, koľko vám zostane.",
+          "Vyberte svoj paušál, Billanta si ho zapamätá.",
+          "V Exportoch si zobrazte ročný odhad z uhradených faktúr a výdavkov."
+        ],
+        "faq": [
+          {
+            "q": "Aký presný je odhad?",
+            "a": "Je orientačný a počíta podľa českých pravidiel pre OSVČ. Pri faktúre počíta s 15 % daňou a poistným z tejto sumy, bez minimálnych preddavkov a zliav. Ročný odhad počíta aj so zľavou na poplatníka a minimami, napriek tomu nenahrádza daňové priznanie ani daňového poradcu."
+          },
+          {
+            "q": "Z čoho ročný odhad vychádza?",
+            "a": "Z uhradených faktúr a zapísaných výdavkov za vybraný rok. Výdavky môžete uplatniť paušálom alebo skutočne."
+          },
+          {
+            "q": "Je odhad v tarife zadarmo?",
+            "a": "Riadok „Zostane vám“ pri faktúre áno. Ročný odhad je v platených tarifoch od Start."
+          }
+        ]
+      },
+      "auditLog": {
+        "name": "História zmien",
+        "title": "História zmien: kto čo zmenil a prečo",
+        "description": "Každá zmena faktúry, kontaktu, nastavení firmy, bankového účtu, člena tímu alebo API kľúča sa zapíše. S autorom, časom a pôvodnou hodnotou.",
+        "lead": "Keď sa na faktúre niečo zmení, viete kto, kedy a prečo. Aj keď to bola AI alebo napojený systém cez API.",
+        "points": [
+          "Zmeny faktúr, kontaktov, firmy, bankových účtov, tímu a API kľúčov",
+          "Pri každej zmene pôvodná a nová hodnota",
+          "Autor: člen tímu, AI, API kľúč alebo systém",
+          "Vystavený doklad sa dá opraviť len s uvedeným dôvodom",
+          "Celá história firmy na jednom mieste v Aktivite"
+        ],
+        "steps": [
+          "Pracujte ako zvyčajne, história sa zapisuje sama.",
+          "Pri oprave vystaveného dokladu uveďte dôvod.",
+          "V Aktivite prejdete, čo sa vo firme menilo."
+        ],
+        "faq": [
+          {
+            "q": "Dá sa záznam v histórii zmazať alebo upraviť?",
+            "a": "Nie. História slúži ako záznam toho, čo sa stalo, preto ju v aplikácii upraviť nejde."
+          },
+          {
+            "q": "Uvidí históriu aj účtovník?",
+            "a": "Históriu vidia členovia firmy podľa svojich oprávnení, takže aj pozvaný účtovník, ak mu to rola dovolí."
+          }
+        ]
       }
     },
     "indexSeoTitle": "Funkcie fakturácie pre živnostníkov a firmy"
@@ -4985,6 +5455,14 @@
           "text": "Online platba z odkazu na faktúru a evidencia čiastočných úhrad."
         }
       }
+    },
+    "account": {
+      "title": "Chcete faktúry ukladať a posielať e-mailom?",
+      "body": "S bezplatným účtom máte prehľad faktúr, kontakty z registra, upomienky a QR platby. Faktúru vytvoríte aj bez neho.",
+      "signup": "Založiť účet zadarmo",
+      "login": "Prihlásiť sa",
+      "signedIn": "Ste prihlásení. Faktúru si môžete uložiť rovno v aplikácii.",
+      "openApp": "Nová faktúra v aplikácii"
     }
   },
   "publicProfile": {
@@ -5156,7 +5634,56 @@
     "vsPrevious": "vs. predchádzajúce",
     "paidCount": "{count, plural, one {# zaplatená faktúra} few {# zaplatené faktúry} other {# zaplatených faktúr}}",
     "days": "{count, number} dňa",
-    "foreign": "{count, plural, one {# doklad v cudzej mene nie je započítaný.} few {# doklady v cudzej mene nie sú započítané.} other {# dokladov v cudzej mene nie je započítaných.}}",
+    "exportCsv": "Export pre účtovníka (CSV)",
+    "exportHint": "Zoznam dokladov podľa zvoleného obdobia a filtrov, pre Excel. Obdobie sa riadi dátumom dodania.",
+    "docCount": "{count, plural, one {# doklad} few {# doklady} other {# dokladov}}",
+    "inCurrency": "Sumy sú v {currency}, bez prepočtu.",
+    "converted": "{count, plural, one {# doklad v cudzej mene je prepočítaný} few {# doklady v cudzej mene sú prepočítané} other {# dokladov v cudzej mene je prepočítaných}} na CZK kurzom uloženým na doklade.",
+    "missingRate": "{count, plural, one {# doklad v cudzej mene nemá uložený kurz, preto nie je započítaný.} few {# doklady v cudzej mene nemajú uložený kurz, preto nie sú započítané.} other {# dokladov v cudzej mene nemá uložený kurz, preto nie sú započítané.}}",
+    "expensesUnfiltered": "Náklady filtrujeme len podľa meny, ostatné filtre sa ich netýkajú.",
+    "outstandingHint": "Neuhradené a po splatnosti: s DPH, z dokladov v období, po odpočítaní čiastočných úhrad.",
+    "byCurrency": "Tržby podľa meny",
+    "noRate": "bez kurzu",
+    "chartKind": {
+      "label": "Typ grafu",
+      "bars": "Stĺpce",
+      "line": "Čiara",
+      "area": "Plocha"
+    },
+    "filters": {
+      "label": "Filtre",
+      "currency": "Mena",
+      "allCurrencies": "Všetky meny (v CZK)",
+      "language": "Jazyk dokladu",
+      "allLanguages": "Všetky jazyky",
+      "customer": "Odberateľ",
+      "allCustomers": "Všetci odberatelia",
+      "type": "Druh dokladu",
+      "allTypes": "Všetky druhy",
+      "status": "Stav",
+      "allStatuses": "Všetky stavy",
+      "clear": "Zrušiť filtre"
+    },
+    "docTypes": {
+      "invoice": "Faktúry",
+      "proforma": "Zálohové faktúry",
+      "credit_note": "Dobropisy"
+    },
+    "statuses": {
+      "paid": "Uhradené",
+      "unpaid": "Neuhradené",
+      "overdue": "Po splatnosti",
+      "cancelled": "Stornované"
+    },
+    "pies": {
+      "customers": "Tržby podľa odberateľa",
+      "currencies": "Tržby podľa meny",
+      "types": "Doklady podľa druhu (s DPH)",
+      "payment": "Uhradené a neuhradené (s DPH)",
+      "empty": "Za toto obdobie nič.",
+      "others": "Ostatní",
+      "unpaidNotDue": "Neuhradené v splatnosti"
+    },
     "topCustomers": "Najlepší odberatelia v období",
     "customerMeta": "{count, plural, one {# faktúra} few {# faktúry} other {# faktúr}} · {share} %",
     "presets": {
@@ -5181,7 +5708,27 @@
       "invoiceCount": "Vystavené faktúry",
       "averageInvoice": "Priemerná faktúra",
       "vat": "DPH na výstupe",
-      "daysToPay": "Priemerná doba úhrady"
+      "daysToPay": "Priemerná doba úhrady",
+      "outstanding": "Neuhradené",
+      "overdue": "Po splatnosti",
+      "customers": "Odberatelia",
+      "newCustomers": "Noví odberatelia"
+    },
+    "customize": {
+      "button": "Upraviť",
+      "title": "Ukazovatele v prehľade",
+      "recommendedTitle": "Odporúčané podľa toho, čo používate",
+      "noVat": "Nie ste platiteľ DPH, preto DPH skrývame.",
+      "noVatIdentified": "Ste registrovaný podľa §7a bez faktúr s prenesením daňovej povinnosti, preto DPH skrývame.",
+      "noExpenses": "Výdavky zatiaľ nezapisujete, preto náklady a zisk skrývame.",
+      "allRelevant": "Ukazujeme všetko, čo sa vás týka.",
+      "notRecommended": "zatiaľ sa vás netýka",
+      "noExpensesHint": "Zatiaľ bez zapísaných výdavkov",
+      "reset": "Obnoviť odporúčané",
+      "cancel": "Zrušiť",
+      "save": "Uložiť",
+      "saved": "Uložené",
+      "failed": "Nepodarilo sa uložiť: {reason}"
     }
   },
   "siteSearch": {
@@ -5248,16 +5795,18 @@
       "user": "Používateľ",
       "ai": "AI asistent",
       "api_key": "API kľúč",
-      "system": "Systém"
+      "system": "Systém",
+      "customer": "Odberateľ"
     },
     "entities": {
       "all": "Všetko",
       "invoice": "Doklady",
       "contact": "Kontakty",
-      "tenant": "Firma",
+      "tenant": "Fakturačné údaje",
       "bank_account": "Bankové účty",
       "member": "Tím",
-      "api_key": "API kľúče"
+      "api_key": "API kľúče",
+      "import": "Importy"
     },
     "docTypes": {
       "invoice": "faktúru",
@@ -5286,12 +5835,16 @@
         "paid_from_bank": "spároval(a) platbu z banky k",
         "link_rotated": "vymenil(a) verejný odkaz",
         "cancelled": "stornoval(a)",
-        "sent_corrected": "poslal(a) opravenú verziu"
+        "sent_corrected": "poslal(a) opravenú verziu",
+        "buyer_details_requested": "poslal(a) odberateľovi na doplnenie údajov",
+        "buyer_details_submitted": "doplnil(a) fakturačné údaje k",
+        "buyer_details_cancelled": "zrušil(a) žiadosť o údaje odberateľa k"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
         "logo_uploaded": "nahral(a) logo",
-        "logo_removed": "odobral(a) logo"
+        "logo_removed": "odobral(a) logo",
+        "number_formats_updated": "upravil(a) číslovanie dokladov"
       },
       "bank_account": {
         "created": "pridal(a) bankový účet",
@@ -5313,6 +5866,11 @@
       "api_key": {
         "created": "vytvoril(a) API kľúč",
         "revoked": "zneplatnil(a) API kľúč"
+      },
+      "import": {
+        "bitfaktura": "naimportoval(a) dáta z BitFaktúry",
+        "csv": "naimportoval(a) doklady z CSV",
+        "contacts_csv": "naimportoval(a) kontakty z CSV"
       }
     },
     "fields": {
@@ -5384,7 +5942,14 @@
       "cardPaymentsEnabled": "Platby kartou",
       "isPerson": "Fyzická osoba",
       "isStarred": "Obľúbený",
-      "color": "Farba"
+      "color": "Farba",
+      "importedInvoices": "Nové doklady",
+      "importedContacts": "Nové kontakty",
+      "updatedContacts": "Doplnené kontakty",
+      "archivedPdfs": "Uložené pôvodné PDF",
+      "skippedRows": "Preskočené riadky",
+      "numberFormat": "Formát čísla",
+      "nextNumber": "Ďalšie číslo"
     },
     "values": {
       "invoice": "Faktúra",
@@ -5421,16 +5986,16 @@
       "free": {
         "label": "Zadarmo",
         "billanta": "10 dokladov/mes., ďalší 5 Kč",
-        "fakturoid": "5 zákazníkov",
-        "idoklad": "5 kontaktov",
-        "superfaktura": "5 kontaktov",
+        "fakturoid": "5 odberateľov",
+        "idoklad": "5 odberateľov",
+        "superfaktura": "5 odberateľov",
         "vyfakturuj": "5 odberateľov",
-        "bitfaktura": "Pár faktúr/mes."
+        "bitfaktura": "1 faktúra/mes."
       },
       "entry": {
         "label": "Najlacnejší tarif",
         "billanta": "119 Kč/mes.",
-        "fakturoid": "~150 Kč s DPH",
+        "fakturoid": "151 Kč/mes.",
         "idoklad": "187 Kč/mes.",
         "superfaktura": "129 Kč/mes.",
         "vyfakturuj": "175 Kč/mes.",
@@ -5438,66 +6003,75 @@
       },
       "bank": {
         "label": "Párovanie z banky",
-        "billanta": "Áno",
-        "fakturoid": "Od 2. tarifu",
-        "idoklad": "Od 2. tarifu",
-        "superfaktura": "Áno",
-        "vyfakturuj": "Áno",
-        "bitfaktura": "Áno"
+        "billanta": "Platené tarify",
+        "fakturoid": "Od 2. plateného",
+        "idoklad": "Od 2. plateného",
+        "superfaktura": "Platené tarify",
+        "vyfakturuj": "Platené tarify",
+        "bitfaktura": "Import od 1., párovanie od 2. plateného"
       },
       "ai": {
         "label": "AI čítanie dokladov",
         "billanta": "Áno, aj zadarmo",
         "fakturoid": "Doplnok",
-        "idoklad": "Pár zadarmo, potom platené",
+        "idoklad": "3 zadarmo, potom platené",
         "superfaktura": "20 zadarmo, potom platené",
-        "vyfakturuj": "—",
+        "vyfakturuj": "–",
         "bitfaktura": "S limitom"
       },
       "voice": {
         "label": "Faktúra hlasom / správou",
-        "billanta": "Áno, aj Telegram",
-        "fakturoid": "—",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "—"
+        "billanta": "Áno, aj Telegram a WhatsApp",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "taxEstimate": {
+        "label": "Odhad dane a odvodov",
+        "billanta": "Pri každej faktúre, za rok od Start",
+        "fakturoid": "Platené tarify",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "import": {
+        "label": "Import z inej aplikácie",
+        "billanta": "Fakturoid, iDoklad, BitFaktura (aj s PDF), CSV",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Z Fakturoidu a iDokladu",
+        "bitfaktura": "–"
       },
       "api": {
         "label": "API",
-        "billanta": "Áno",
+        "billanta": "Platené tarify",
         "fakturoid": "Aj zadarmo",
-        "idoklad": "Od 2. tarifu",
+        "idoklad": "Od 2. plateného",
         "superfaktura": "Len najvyšší",
-        "vyfakturuj": "Od 2. tarifu",
-        "bitfaktura": "Áno"
-      },
-      "history": {
-        "label": "História zmien",
-        "billanta": "Áno",
-        "fakturoid": "—",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "Áno"
+        "vyfakturuj": "Od 2. plateného",
+        "bitfaktura": "Aj zadarmo"
       },
       "recurring": {
         "label": "Opakované faktúry",
         "billanta": "Áno, 2 aj zadarmo",
-        "fakturoid": "Vyššie tarify",
+        "fakturoid": "Len najvyšší",
         "idoklad": "Áno",
-        "superfaktura": "Od 2. tarifu",
-        "vyfakturuj": "Áno",
-        "bitfaktura": "Áno"
+        "superfaktura": "Od 2. plateného",
+        "vyfakturuj": "Od 2. plateného",
+        "bitfaktura": "Platené tarify"
       },
       "reminders": {
         "label": "Automatické upomienky",
-        "billanta": "Áno, od Start",
-        "fakturoid": "Áno",
-        "idoklad": "Áno",
-        "superfaktura": "Od 2. tarifu, aj SMS",
-        "vyfakturuj": "Áno",
-        "bitfaktura": "—"
+        "billanta": "Platené tarify",
+        "fakturoid": "Od 2. plateného",
+        "idoklad": "Od 2. plateného",
+        "superfaktura": "Od 2. plateného, aj SMS",
+        "vyfakturuj": "Platené tarify",
+        "bitfaktura": "Áno, aj zadarmo"
       },
       "einvoice": {
         "label": "ISDOC / e-faktúra",
@@ -5506,16 +6080,34 @@
         "idoklad": "ISDOC",
         "superfaktura": "ISDOC",
         "vyfakturuj": "ISDOC",
-        "bitfaktura": "—"
+        "bitfaktura": "ISDOC, platené tarify"
+      },
+      "qr": {
+        "label": "QR platba",
+        "billanta": "Áno, aj zadarmo",
+        "fakturoid": "Áno, aj zadarmo",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Áno",
+        "bitfaktura": "–"
+      },
+      "currencies": {
+        "label": "Cudzie meny",
+        "billanta": "Áno, kurz ČNB sa doplní sám",
+        "fakturoid": "–",
+        "idoklad": "Áno, s kurzom",
+        "superfaktura": "–",
+        "vyfakturuj": "Áno, aj zadarmo",
+        "bitfaktura": "Áno, kurz ČNB alebo ECB"
       },
       "czsk": {
         "label": "Česko aj Slovensko",
         "billanta": "V jednom účte, aj SK odvody",
         "fakturoid": "Bez SK daňovej agendy",
-        "idoklad": "—",
-        "superfaktura": "—",
-        "vyfakturuj": "—",
-        "bitfaktura": "—"
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
       },
       "mobile": {
         "label": "Mobil",
@@ -5524,14 +6116,23 @@
         "idoklad": "iOS, Android",
         "superfaktura": "iOS, Android",
         "vyfakturuj": "iOS, Android",
-        "bitfaktura": "—"
+        "bitfaktura": "–"
+      },
+      "history": {
+        "label": "História zmien",
+        "billanta": "Áno",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "Áno"
       }
     },
-    "disclaimer": "Podľa verejných cenníkov českých verzií služieb ku stavu {date}. Ceny mesačne pri ročnej platbe, bez DPH, ak nie je uvedené inak. Orientačné, overte si ich u poskytovateľa. Názvy sú ochranné známky svojich vlastníkov.",
+    "disclaimer": "Podľa verejných cenníkov českých verzií služieb ku stavu {date}. Ceny mesačne pri ročnej platbe, bez DPH, ak nie je uvedené inak. „Od 2. plateného“ = druhý najlacnejší platený tarif. Limity tarifov zadarmo uvádzame ako počet odberateľov, aj keď ich cenník niekde nazýva kontakty. Orientačné, overte si ich u poskytovateľa. Názvy sú ochranné známky svojich vlastníkov.",
     "reasonsTitle": "V čom je Billanta iná",
     "reasons": [
       {
-        "title": "Zadarmo bez limitu kontaktov",
+        "title": "Zadarmo bez limitu odberateľov",
         "body": "Fakturujte komukoľvek. Platíte len doklady nad 10 mesačne, a to po kusoch, nie celý tarif."
       },
       {
@@ -5552,14 +6153,16 @@
       },
       {
         "title": "Jednoduchý prechod",
-        "body": "Kontakty a doklady naimportujete zo súboru z vašej doterajšej aplikácie."
+        "body": "Z Fakturoidu, iDokladu alebo Excelu cez CSV, z BitFaktury priamo cez API aj s pôvodnými PDF."
       }
     ],
     "switchTitle": "Prechádzate odinakiaľ?",
     "switchBody": "Začnite zadarmo a kontakty aj doklady si preneste importom.",
     "pricingCta": "Cenník",
     "signupCta": "Začať zadarmo",
-    "notStated": "— = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)"
+    "notStated": "– = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)",
+    "verified": "Overené v cenníku {date}",
+    "sourcesTitle": "Zdroje"
   },
   "tools": {
     "menu": {
@@ -5716,6 +6319,222 @@
           "description": "Návod k českej DPH. Platí len podľa českých pravidiel."
         }
       }
+    }
+  },
+  "holidays": {
+    "newYear": "Nový rok",
+    "slovakRepublic": "Deň vzniku Slovenskej republiky",
+    "epiphany": "Traja králi",
+    "goodFriday": "Veľký piatok",
+    "easterMonday": "Veľkonočný pondelok",
+    "labourDay": "Sviatok práce",
+    "victoryDay": "Deň víťazstva nad fašizmom",
+    "cyrilMethodius": "Cyril a Metod",
+    "janHus": "Ján Hus",
+    "snp": "Výročie SNP",
+    "constitution": "Deň Ústavy SR",
+    "ourLadyOfSorrows": "Sedembolestná Panna Mária",
+    "statehood": "Deň českej štátnosti",
+    "independence": "Deň vzniku Československa",
+    "allSaints": "Všetkých svätých",
+    "freedomDemocracy": "Deň boja za slobodu a demokraciu",
+    "christmasEve": "Štedrý deň",
+    "christmasDay": "1. sviatok vianočný",
+    "stStephen": "2. sviatok vianočný"
+  },
+  "buyerDetails": {
+    "title": "Doplňte prosím fakturačné údaje",
+    "intro": "{supplier} pre vás pripravuje {document}. Vyplňte, na koho má byť vystavená.",
+    "documentType": {
+      "invoice": "faktúru",
+      "proforma": "zálohovú faktúru",
+      "quote": "cenovú ponuku"
+    },
+    "supplier": "Dodávateľ",
+    "amount": "Suma",
+    "withoutVat": "{amount} bez DPH",
+    "dueDate": "Splatnosť {date}",
+    "item": "Položka",
+    "quantity": "Množstvo",
+    "total": "Spolu",
+    "ico": "IČO",
+    "dic": "DIČ",
+    "doneTitle": "Ďakujeme, údaje máme",
+    "doneText": "{supplier} teraz faktúru dokončí. Túto stránku môžete zavrieť.",
+    "privacy": "Údaje dostane len {supplier}, aby vám mohol vystaviť doklad.",
+    "form": {
+      "title": "Fakturačné údaje",
+      "hint": "Na tieto údaje vystaví {supplier} doklad.",
+      "kind": "Odberateľ je",
+      "company": "Firma",
+      "person": "Súkromná osoba",
+      "country": "Krajina",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "vatId": "DIČ / VAT ID",
+      "lookup": "Načítať z registra",
+      "lookupNeedsIco": "Najprv vyplňte IČO.",
+      "lookupNeedsVat": "Najprv vyplňte VAT ID.",
+      "lookupNotFound": "V registri sme nič nenašli, vyplňte údaje ručne.",
+      "lookupDone": "Údaje sme načítali, skontrolujte ich.",
+      "companyName": "Názov firmy",
+      "personName": "Meno a priezvisko",
+      "street": "Ulica a číslo",
+      "city": "Mesto",
+      "postalCode": "PSČ",
+      "email": "E-mail pre faktúru",
+      "submit": "Odoslať údaje",
+      "errors": {
+        "invalid": "Skontrolujte prosím zvýraznené polia.",
+        "closed": "Tento odkaz už neplatí. Požiadajte dodávateľa o nový.",
+        "submitted": "Údaje už boli odoslané.",
+        "limit": "Príliš veľa pokusov, skúste to prosím o chvíľu.",
+        "failed": "Niečo sa nepodarilo, skúste to prosím znova.",
+        "field": "Skontrolujte toto pole.",
+        "ico_required": "Firma z Česka alebo Slovenska potrebuje IČO.",
+        "ico_format": "IČO má 8 číslic.",
+        "ico_foreign": "IČO sa vypĺňa len pri českých a slovenských firmách.",
+        "dic_format": "DIČ nemá správny tvar."
+      }
+    }
+  },
+  "referrals": {
+    "title": "Pozvať a získať kredity",
+    "description": "Pozvite známe firmy alebo klientov. Za každú, ktorá začne platiť, dostanete kredity a zaplatíte nimi tarif.",
+    "loadError": "Program odporúčaní sa nepodarilo načítať.",
+    "failed": "Nepodarilo sa",
+    "readOnly": "Kredity míňa a program mení len vlastník alebo administrátor firmy.",
+    "credits": "{credits, plural, one {# kredit} few {# kredity} other {# kreditov}}",
+    "welcomeToast": "Vitajte! Za pozvánku ste dostali {credits} kreditov.",
+    "copyFailed": "Odkaz sa nepodarilo skopírovať, označte ho a skopírujte ručne.",
+    "link": {
+      "title": "Váš odkaz na pozvanie",
+      "body": "Nová firma dostane {welcome} kreditov hneď po registrácii. Vy {reward} kreditov, keď začne platiť. 1 kredit = 1 Kč.",
+      "copy": "Kopírovať",
+      "copied": "Skopírované",
+      "code": "Kód: {code}"
+    },
+    "stats": {
+      "balance": "Zostatok",
+      "invited": "Pozvané firmy",
+      "paying": "Platiace"
+    },
+    "program": {
+      "title": "Program",
+      "hint": "Účtovníci a účtovné kancelárie dostávajú za klientov viac.",
+      "saved": "Program zmenený.",
+      "friend": {
+        "title": "Odporúčanie známym",
+        "body": "Pozvaná firma {welcome} kreditov, vy {reward} za každú platiacu."
+      },
+      "accountant": {
+        "title": "Partnerský program pre účtovníkov",
+        "body": "Klient {welcome} kreditov, vy {reward} za každého platiaceho klienta."
+      }
+    },
+    "redeem": {
+      "title": "Zaplatiť tarif kreditmi",
+      "hint": "Ročná platba je za cenu ročného tarifu. Bežiaci tarif sa predĺži.",
+      "button": "{months, plural, one {1 mesiac} few {# mesiace} other {# mesiacov}} · {credits} kr.",
+      "done": "Tarif {plan} je zaplatený do {until}.",
+      "running": "Kreditmi máte zaplatený tarif {plan} do {until}."
+    },
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "invited": {
+      "title": "Pozvané firmy",
+      "empty": "Zatiaľ sa cez váš odkaz nikto nezaregistroval.",
+      "company": "Firma č. {n}",
+      "paying": "Platí · +{credits} kr.",
+      "waiting": "Zatiaľ neplatí"
+    },
+    "ledger": {
+      "title": "História kreditov",
+      "empty": "Zatiaľ žiadne pohyby.",
+      "reason": {
+        "referral_welcome": "Uvítací bonus za pozvánku",
+        "referral_reward": "Odmena za platiacu firmu",
+        "plan_purchase": "Tarif {plan} na {months, plural, one {1 mesiac} few {# mesiace} other {# mesiacov}}",
+        "adjustment": "Úprava"
+      }
+    },
+    "errors": {
+      "insufficient_credits": "Na tento tarif nemáte dosť kreditov.",
+      "other_plan_running": "Kreditmi už máte zaplatený iný tarif. Predĺžiť sa dá len ten bežiaci.",
+      "ico_required": "Partnerský program vyžaduje IČO firmy (Nastavenia → Firma)."
+    }
+  },
+  "partners": {
+    "title": "Partneri",
+    "seoTitle": "Partneri Billanty – účtovníci, banky a nástroje",
+    "lead": "Účtovníci, banky a nástroje, ktoré s Billantou dobre fungujú. Vyberte si, s kým vám fakturácia a účtovníctvo pôjdu ľahko.",
+    "filterLabel": "Kategórie partnerov",
+    "categories": {
+      "all": "Všetko",
+      "accounting": "Účtovníci",
+      "banking": "Banky",
+      "software": "Softvér",
+      "service": "Služby",
+      "other": "Ostatné"
+    },
+    "empty": "Partnerov práve pridávame. Zatiaľ si pozrite program pre účtovníkov.",
+    "featured": "Odporúčame",
+    "visit": "Navštíviť",
+    "become": {
+      "title": "Chcete byť partnerom?",
+      "body": "Účtovníci a účtovné kancelárie získavajú kredity za každého platiaceho klienta. Ostatné firmy môžu pozvať známych cez odkaz v Nastaveniach.",
+      "accountants": "Program pre účtovníkov",
+      "signup": "Založiť účet"
+    },
+    "disclosure": "Odkazy na partnerov sú partnerské. Za preklik alebo registráciu môžeme dostať odmenu, cenu pre vás to nemení."
+  },
+  "accountants": {
+    "eyebrow": "Partnerský program",
+    "title": "Billanta pre účtovníkov a účtovné kancelárie",
+    "seoTitle": "Billanta pre účtovníkov – prístup ku klientom a odmeny",
+    "lead": "Pozvite klientov do Billanty, majte ich doklady na jednom mieste a za každého platiaceho klienta získajte kredity na vlastný tarif.",
+    "cta": "Zaregistrovať kanceláriu",
+    "partnersLink": "Naši partneri",
+    "benefits": {
+      "access": {
+        "title": "Rola účtovník u klienta",
+        "body": "Klient vás pozve do tímu. Vidíte faktúry, náklady a banku, administráciu firmy nie."
+      },
+      "exports": {
+        "title": "Exporty pre účtovníctvo",
+        "body": "Výkazy k DPH, ISDOC a CSV stiahnete bez prepisovania."
+      },
+      "credits": {
+        "title": "Kredity za klientov",
+        "body": "Klient dostane {welcome} kreditov, vy {reward} za každého, kto začne platiť."
+      }
+    },
+    "stepsTitle": "Ako to funguje",
+    "steps": {
+      "signup": {
+        "title": "Založte účet kancelárie",
+        "body": "Registrácia je zadarmo. Vyplňte IČO kancelárie v nastaveniach firmy."
+      },
+      "program": {
+        "title": "Zapnite program pre účtovníkov",
+        "body": "V Nastaveniach → Pozvať a získať kredity prepnite na partnerský program."
+      },
+      "share": {
+        "title": "Pošlite odkaz klientom",
+        "body": "Kto sa zaregistruje cez váš odkaz a začne platiť, prinesie vám kredity."
+      }
+    },
+    "fine": {
+      "title": "Pravidlá",
+      "points": [
+        "1 kredit = 1 Kč. Kredity zaplatia tarif Start, Plus alebo Business na mesiac alebo rok.",
+        "Odmenu dostanete raz za každú pozvanú firmu, keď prvýkrát zaplatí.",
+        "Pozvánka platí pre firmy založené cez váš odkaz počas posledných 30 dní.",
+        "Pozvať vlastnú firmu alebo firmu, v ktorej už ste členom, nejde."
+      ]
     }
   }
 }

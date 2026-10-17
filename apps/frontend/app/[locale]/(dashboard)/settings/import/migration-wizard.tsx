@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ArrowRight, CheckCircle2, Download, FileSpreadsheet, Loader2, Upload, Users } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, FileText, Loader2, Upload, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
@@ -24,6 +24,9 @@ type InvoiceImportResult = {
   dateTo: string | null;
   skipped: InvoiceSkip[];
   preview: { number: string; customer: string; issueDate: string; total: number; currency: string; status: string }[];
+  originalPdfs?: { archived: number; missing: number };
+  source?: { invoices: number; contacts: number };
+  businessFilled?: string[];
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
@@ -92,7 +95,7 @@ export function MigrationWizard({ readOnly }: { readOnly: boolean }) {
       </section>
 
       <ContactsStep readOnly={readOnly} />
-      <InvoicesStep readOnly={readOnly} />
+      <InvoicesStep readOnly={readOnly} source={source} />
     </div>
   );
 }
@@ -173,30 +176,47 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
   );
 }
 
-function InvoicesStep({ readOnly }: { readOnly: boolean }) {
+/** What the preview was made from, so the confirmation imports the same thing. */
+/** A pasted https://firma.bitfaktura.cz/invoices/ becomes firma.bitfaktura.cz. */
+const bareHost = (value: string) => value.trimStart().replace(/^[a-z]+:\/\//i, '').replace(/^([^/?#]*\.[^/?#]*)[/?#].*$/, '$1');
+
+type ImportRequest = { kind: 'file'; file: File } | { kind: 'bitfaktura'; account: string; apiToken: string };
+
+function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source }) {
   const t = useTranslations('settings.import');
   const locale = useLocale();
-  const [file, setFile] = useState<File | null>(null);
+  const [request, setRequest] = useState<ImportRequest | null>(null);
+  const [account, setAccount] = useState('');
+  const [apiToken, setApiToken] = useState('');
   const [preview, setPreview] = useState<InvoiceImportResult | null>(null);
   const [result, setResult] = useState<InvoiceImportResult | null>(null);
   const [busy, setBusy] = useState<'preview' | 'import' | null>(null);
 
-  const send = async (f: File, dryRun: boolean) => {
-    const body = new FormData();
-    body.set('file', f);
-    const res = await fetch(`/api/invoices/import${dryRun ? '?dryRun=1' : ''}`, { method: 'POST', body });
+  const send = async (req: ImportRequest, dryRun: boolean) => {
+    let res: Response;
+    if (req.kind === 'file') {
+      const body = new FormData();
+      body.set('file', req.file);
+      res = await fetch(`/api/invoices/import${dryRun ? '?dryRun=1' : ''}`, { method: 'POST', body });
+    } else {
+      res = await fetch('/api/invoices/import/bitfaktura', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ account: req.account, apiToken: req.apiToken, dryRun })
+      });
+    }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(errorText(t, data.error));
     return data as InvoiceImportResult;
   };
 
-  const check = async (f: File) => {
+  const check = async (req: ImportRequest) => {
     setBusy('preview');
     setResult(null);
     setPreview(null);
-    setFile(f);
+    setRequest(req);
     try {
-      setPreview(await send(f, true));
+      setPreview(await send(req, true));
     } catch (e) {
       toast({ text: (e as Error).message, tone: 'err' });
     } finally {
@@ -205,11 +225,14 @@ function InvoicesStep({ readOnly }: { readOnly: boolean }) {
   };
 
   const confirm = async () => {
-    if (!file) return;
+    if (!request) return;
     setBusy('import');
     try {
-      setResult(await send(file, false));
+      setResult(await send(request, false));
       setPreview(null);
+      // The token was needed for this import only; do not keep it around.
+      setApiToken('');
+      setRequest(null);
     } catch (e) {
       toast({ text: (e as Error).message, tone: 'err' });
     } finally {
@@ -217,6 +240,10 @@ function InvoicesStep({ readOnly }: { readOnly: boolean }) {
     }
   };
 
+  // No new invoices, but new contacts or empty business details still worth bringing over.
+  const hasExtra = (r: { contactsCreated: number; businessFilled?: string[] }) => r.contactsCreated > 0 || (r.businessFilled?.length ?? 0) > 0;
+  const businessFields = (keys: string[]) =>
+    [...new Set(keys.map((k) => (k.startsWith('address') ? 'address' : k)))].map((k) => t(`step3.businessFields.${k}`)).join(', ');
   const money = (amount: number, currency: string) =>
     new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 2 }).format(amount);
   const date = (iso: string) => new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(`${iso}T00:00:00`));
@@ -225,15 +252,84 @@ function InvoicesStep({ readOnly }: { readOnly: boolean }) {
     <section className={card}>
       <StepTitle n={3} title={t('step3.title')} hint={t('step3.hint')} />
       <p className="mt-2 text-sm text-muted-foreground">{t('step3.lead')}</p>
+      {source === 'bitfaktura' && (
+        <form
+          className="mt-3 grid gap-3 rounded-lg border border-border p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (account.trim() && apiToken.trim()) void check({ kind: 'bitfaktura', account: account.trim(), apiToken: apiToken.trim() });
+          }}
+        >
+          <p className="text-sm text-muted-foreground sm:col-span-3">{t('step3.api.lead')}</p>
+          <label className="grid gap-1 text-sm font-semibold">
+            {t('step3.api.account')}
+            <input
+              className="h-10 rounded-lg border border-border bg-background px-3 font-normal"
+              placeholder={t('step3.api.accountPlaceholder')}
+              value={account}
+              onChange={(e) => setAccount(bareHost(e.target.value))}
+              autoComplete="off"
+              maxLength={200}
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-semibold">
+            {t('step3.api.token')}
+            <input
+              className="h-10 rounded-lg border border-border bg-background px-3 font-normal"
+              type="password"
+              value={apiToken}
+              onChange={(e) => setApiToken(e.target.value)}
+              autoComplete="off"
+              maxLength={200}
+            />
+          </label>
+          <button type="submit" className={button} disabled={readOnly || busy !== null || !account.trim() || !apiToken.trim()}>
+            {busy === 'preview' && request?.kind === 'bitfaktura' ? <Loader2 className="h-4 w-4 animate-spin" /> : <CloudDownload className="h-4 w-4" />}
+            {t('step3.api.load')}
+          </button>
+          <p className="text-xs text-muted-foreground sm:col-span-3">{t('step3.api.privacy')}</p>
+        </form>
+      )}
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <FilePicker disabled={readOnly || busy === 'import'} busy={busy === 'preview'} label={t('step3.upload')} onFile={check} />
-        {file && <span className="inline-flex items-center gap-1 text-sm text-muted-foreground"><FileSpreadsheet className="h-4 w-4" />{file.name}</span>}
+        <FilePicker
+          disabled={readOnly || busy === 'import'}
+          busy={busy === 'preview' && request?.kind === 'file'}
+          label={t('step3.upload')}
+          onFile={(file) => void check({ kind: 'file', file })}
+        />
+        {request?.kind === 'file' && (
+          <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+            <FileSpreadsheet className="h-4 w-4" />
+            {request.file.name}
+          </span>
+        )}
       </div>
 
       {preview && (
         <div className="mt-4 space-y-3">
-          {preview.invoices === 0 ? (
+          {preview.source && (
+            <p className="flex items-start gap-1.5 text-sm">
+              {preview.skipped.length === 0 ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              ) : (
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              )}
+              <span>
+                {t('step3.source', preview.source)}{' '}
+                {preview.skipped.length === 0 ? t('step3.sourceAll') : t('step3.sourceSkipped', { count: preview.skipped.length })}
+              </span>
+            </p>
+          )}
+          {preview.invoices === 0 && !hasExtra(preview) ? (
             <Banner tone="warn" title={t('step3.nothing')} />
+          ) : preview.invoices === 0 ? (
+            <div className="rounded-lg bg-secondary/60 p-4 text-sm">
+              <p className="font-bold">{t('step3.extraOnly')}</p>
+              <ul className="mt-2 space-y-1 text-muted-foreground">
+                {preview.contactsCreated > 0 && <li>{t('step3.contacts', { created: preview.contactsCreated, matched: preview.contactsMatched })}</li>}
+                {preview.businessFilled && preview.businessFilled.length > 0 && <li>{t('step3.business', { fields: businessFields(preview.businessFilled) })}</li>}
+              </ul>
+            </div>
           ) : (
             <div className="rounded-lg bg-secondary/60 p-4 text-sm">
               <p className="font-bold">{t('step3.summary', { count: preview.invoices })}</p>
@@ -242,6 +338,7 @@ function InvoicesStep({ readOnly }: { readOnly: boolean }) {
                 <li>{t('step3.statuses', preview.byStatus)}</li>
                 <li>{t('step3.totals', { totals: Object.entries(preview.totals).map(([c, v]) => money(v, c)).join(' · ') || '–' })}</li>
                 <li>{t('step3.contacts', { created: preview.contactsCreated, matched: preview.contactsMatched })}</li>
+                {preview.businessFilled && preview.businessFilled.length > 0 && <li>{t('step3.business', { fields: businessFields(preview.businessFilled) })}</li>}
               </ul>
             </div>
           )}
@@ -275,10 +372,10 @@ function InvoicesStep({ readOnly }: { readOnly: boolean }) {
             </div>
           )}
           <Skipped rows={preview.skipped} />
-          {preview.invoices > 0 && (
+          {(preview.invoices > 0 || hasExtra(preview)) && (
             <button type="button" className={primary} disabled={readOnly || busy !== null} onClick={confirm}>
               {busy === 'import' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-              {t('step3.confirm', { count: preview.invoices })}
+              {preview.invoices > 0 ? t('step3.confirm', { count: preview.invoices }) : t('step3.confirmExtra')}
             </button>
           )}
         </div>
@@ -287,10 +384,30 @@ function InvoicesStep({ readOnly }: { readOnly: boolean }) {
       {result && (
         <div className="mt-4 space-y-3">
           <Banner tone="ok" title={t('step3.done', { count: result.invoices, contacts: result.contactsCreated })}>
-            <Link href="/invoices" className="mt-1 inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-              <CheckCircle2 className="h-4 w-4" />
-              {t('step3.open')}
-            </Link>
+            {result.originalPdfs && (
+              <p className="text-sm">
+                {t('step3.pdfs', { archived: result.originalPdfs.archived })}
+                {result.originalPdfs.missing > 0 && ` ${t('step3.pdfsMissing', { missing: result.originalPdfs.missing })}`}
+              </p>
+            )}
+            {result.businessFilled && result.businessFilled.length > 0 && (
+              <p className="text-sm">
+                {t('step3.businessDone', { fields: businessFields(result.businessFilled) })}{' '}
+                <Link href="/settings/company" className="font-semibold text-primary hover:underline">
+                  {t('step3.businessCheck')}
+                </Link>
+              </p>
+            )}
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+              <Link href="/invoices" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                <FileText className="h-4 w-4" />
+                {t('step3.open')}
+              </Link>
+              <Link href="/contacts" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                <Users className="h-4 w-4" />
+                {t('step3.openContacts')}
+              </Link>
+            </div>
           </Banner>
           <Skipped rows={result.skipped} />
         </div>
@@ -317,6 +434,14 @@ function Skipped({ rows }: { rows: InvoiceSkip[] }) {
 }
 
 function errorText(t: ReturnType<typeof useTranslations>, error: unknown): string {
-  const known = ['unknown_columns', 'too_many_rows', 'no_file', 'forbidden'];
+  const known = [
+    'unknown_columns',
+    'too_many_rows',
+    'no_file',
+    'forbidden',
+    'bitfaktura_account',
+    'bitfaktura_unauthorized',
+    'bitfaktura_unreachable'
+  ];
   return t(`errors.${typeof error === 'string' && known.includes(error) ? error : 'failed'}`);
 }

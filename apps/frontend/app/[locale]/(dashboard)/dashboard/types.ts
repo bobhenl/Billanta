@@ -20,11 +20,18 @@ export interface DashboardConfig {
   /** null = defaults for the company's VAT status (lib/tax-deadlines.ts). */
   taxDeadlines: string[] | null;
   showFxRates: boolean;
-  /** ČNB rate cards; null = EUR, USD, GBP. */
+  /** ČNB rate cards; null = the foreign currencies the company uses (else EUR, USD, GBP). */
   fxCurrencies: string[] | null;
   /** Expected amount per tax-deadline kind, typed in by the member (their own advances); null = none. */
   taxAmounts: Record<string, number> | null;
+  /** KPI cards on the reports page; null = picked from usage (lib/usage-defaults.ts). */
+  reportKpis?: string[] | null;
+  /** Keys the member saved themselves; everything else follows usage. Missing on an older backend. */
+  savedKeys?: string[];
 }
+
+/** What PUT /dashboard/config takes: null on a key forgets the saved choice (back to the usage-based default). */
+export type DashboardConfigPatch = { [K in keyof Omit<DashboardConfig, 'savedKeys'>]?: DashboardConfig[K] | null };
 
 export interface DashboardDoc {
   id: string;
@@ -77,7 +84,26 @@ export interface PeriodTotals {
   collected: number;
   paidCount: number;
   averageDaysToPay: number | null;
+  /** Unpaid rest (with VAT) of invoices and proformas dated in the period, and its overdue part. */
+  outstanding: number;
+  outstandingCount: number;
+  overdue: number;
+  overdueCount: number;
+  customerCount: number;
+  newCustomers: number;
 }
+
+export const REPORT_STATUSES = ['paid', 'unpaid', 'overdue', 'cancelled'] as const;
+export const REPORT_DOC_TYPES = ['invoice', 'proforma', 'credit_note'] as const;
+
+/** Optional report filters (`GET /dashboard/stats` and the invoice CSV take the same query keys). */
+export type ReportFilters = {
+  currency?: string;
+  language?: string;
+  contactId?: string;
+  documentType?: (typeof REPORT_DOC_TYPES)[number];
+  status?: (typeof REPORT_STATUSES)[number];
+};
 
 /** `GET /dashboard/stats`: one period against the same-length period before it. */
 export interface PeriodStats {
@@ -87,7 +113,20 @@ export interface PeriodStats {
   current: PeriodTotals;
   previous: PeriodTotals;
   grain: 'day' | 'week' | 'month';
-  foreignCount: number;
+  filters: ReportFilters;
+  /** False when a customer / type / status / language filter is on: expenses are then not filtered. */
+  expensesFiltered: boolean;
+  options: { currencies: string[]; languages: string[]; customers: { id: string; name: string }[] };
+  /** Foreign-currency documents counted at their stored rate, and those left out for lack of one. */
+  convertedCount: number;
+  missingRateCount: number;
   series: { start: string; revenue: number; expenses: number }[];
   topCustomers: { contactId: string; name: string; total: number; count: number }[];
+  /** Top customers by revenue; key "others" (label null) is the rest together. */
+  byCustomer: { key: string; label: string | null; value: number }[];
+  /** Revenue without VAT per original currency; `converted` is null when some lacked a rate. */
+  byCurrency: { currency: string; count: number; amount: number; converted: number | null }[];
+  /** Amount with VAT per document type (credit notes as a positive size). */
+  byType: { documentType: string; count: number; total: number }[];
+  payment: { paid: number; unpaid: number; overdue: number };
 }
