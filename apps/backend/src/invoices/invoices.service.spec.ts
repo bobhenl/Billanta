@@ -24,6 +24,7 @@ function makeSelectChain<T>(result: T[]) {
   chain.from = vi.fn(() => chain);
   chain.leftJoin = vi.fn(() => chain);
   chain.where = vi.fn(() => chain);
+  chain.orderBy = vi.fn(() => chain);
   chain.limit = vi.fn(() => Promise.resolve(result));
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chain.then = (resolve: any, reject?: any) => Promise.resolve(result).then(resolve, reject);
@@ -244,7 +245,7 @@ describe("InvoicesService.issue", () => {
     const updated = { ...invoice, status: "issued", invoiceNumber: "2026-0001" };
 
     const select = vi
-      .fn()
+      .fn(() => makeSelectChain([])) // then: no tenant / contact row to snapshot
       .mockReturnValueOnce(makeSelectChain([invoice])) // load invoice
       .mockReturnValueOnce(makeSelectChain(lineItems)) // load line items
       .mockReturnValueOnce(makeSelectChain([{ numberFormats: null }])) // tenant's number formats
@@ -273,7 +274,7 @@ describe("InvoicesService.issue", () => {
     const invoice = issuableInvoice();
     const updated = { ...invoice, status: "issued", invoiceNumber: "2/09/2026" };
     const select = vi
-      .fn()
+      .fn(() => makeSelectChain([]))
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain(lineItems))
       .mockReturnValueOnce(makeSelectChain([{ numberFormats: { invoice: "{N}/{MM}/{YYYY}" } }]))
@@ -388,7 +389,7 @@ describe("InvoicesService.issue", () => {
     const updated = { ...invoice, status: "issued", invoiceNumber: "2026-0001" };
 
     const select = vi
-      .fn()
+      .fn(() => makeSelectChain([]))
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain(lineItems))
       .mockReturnValueOnce(makeSelectChain([{ numberFormats: null }]))
@@ -402,6 +403,122 @@ describe("InvoicesService.issue", () => {
 
     const setArg = (update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0];
     expect(setArg.aiDraftReviewedAt).toBeInstanceOf(Date);
+  });
+});
+
+const liveTenant = {
+  id: "tenant-1",
+  companyName: "Firma",
+  legalName: "Firma s.r.o.",
+  ico: "12345678",
+  dic: "CZ12345678",
+  dicVatPayer: true,
+  addressStreet: "Nová 2",
+  addressCity: "Brno",
+  addressPostalCode: "602 00",
+  addressCountry: "CZ",
+  registryNote: null,
+  email: "f@firma.cz",
+  phone: null,
+  website: null,
+  bankAccountNumber: "1000",
+  bankAccountBankCode: "0100",
+  bankAccountIban: null,
+  bankAccountSwift: null,
+  numberFormats: null,
+};
+
+describe("InvoicesService – supplier and buyer as on the issue date", () => {
+  let invoicePdfService: MockInvoicePdfService;
+  let service: InvoicesService;
+
+  beforeEach(() => {
+    invoicePdfService = { generate: vi.fn().mockResolvedValue(Buffer.from("%PDF-fake")) };
+    service = new InvoicesService({} as EmailService, invoicePdfService as unknown as InvoicePdfService);
+  });
+
+  it("issue() stores both parties, with the bank account the document is paid to", async () => {
+    const invoice = makeInvoice({ status: "draft", invoiceNumber: null, issuedAt: null, bankAccountId: null });
+    const contact = makeContact({ ico: "87654321", addressStreet: "Jiná 5" });
+    const account = { id: "acc-1", tenantId: "tenant-1", currency: "CZK", accountNumber: "2000", bankCode: "0800", iban: null, swift: null, sortOrder: 0 };
+    const select = vi
+      .fn(() => makeSelectChain([]))
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ numberFormats: null }]))
+      .mockReturnValueOnce(makeSelectChain([])) // number free
+      .mockReturnValueOnce(makeSelectChain([liveTenant]))
+      .mockReturnValueOnce(makeSelectChain([contact]))
+      .mockReturnValueOnce(makeSelectChain([account]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, insert: vi.fn().mockReturnValue(makeSequenceInsertChain(1)), update } as any;
+
+    await service.issue(db, "tenant-1", "inv-1", "user-1");
+
+    const setArg = (update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0];
+    expect(setArg.sellerSnapshot).toMatchObject({
+      legalName: "Firma s.r.o.",
+      dic: "CZ12345678",
+      addressStreet: "Nová 2",
+      bankAccountNumber: "2000",
+      bankAccountBankCode: "0800",
+      source: "issue",
+    });
+    expect(setArg.buyerSnapshot).toMatchObject({ legalName: "ACME s.r.o.", ico: "87654321", addressStreet: "Jiná 5", source: "issue" });
+  });
+
+  const pdfFor = async (invoice: ReturnType<typeof makeInvoice>) => {
+    const select = vi
+      .fn(() => makeSelectChain([]))
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact({ legalName: "ACME nově", ico: "11111111" })]))
+      .mockReturnValueOnce(makeSelectChain([liveTenant]))
+      .mockReturnValueOnce(makeSelectChain(lineItems));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await service.generateInvoicePdf({ select } as any, "tenant-1", "inv-1");
+    const [, contact, tenant] = invoicePdfService.generate.mock.calls[0]!;
+    return { contact, tenant };
+  };
+
+  it("prints the snapshot taken at issue, not today's details", async () => {
+    const { contact, tenant } = await pdfFor(
+      makeInvoice({
+        sellerSnapshot: { legalName: "Firma v.o.s.", dic: null, addressStreet: "Stará 1", bankAccountNumber: "999" },
+        buyerSnapshot: { legalName: "ACME tehdy", ico: "22222222" },
+      }),
+    );
+    expect(tenant).toMatchObject({ legalName: "Firma v.o.s.", dic: null, addressStreet: "Stará 1", bankAccountNumber: "999", addressCity: "Brno" });
+    expect(contact).toMatchObject({ legalName: "ACME tehdy", ico: "22222222" });
+  });
+
+  it("an edit of an issued document keeps its snapshot unless the customer or the account changes", async () => {
+    const snap = { legalName: "Firma v.o.s.", bankAccountNumber: "999", bankAccountBankCode: "0300" };
+    const invoice = makeInvoice({ sellerSnapshot: snap, buyerSnapshot: { legalName: "ACME tehdy" }, bankAccountId: null }) as never;
+    const edit = (values: Record<string, unknown>, select = vi.fn(() => makeSelectChain([]))) =>
+      (service as unknown as { snapshotAfterEdit: (...a: unknown[]) => Promise<unknown[]> }).snapshotAfterEdit({ select }, "tenant-1", invoice, values);
+
+    const kept: Record<string, unknown> = { noteBelow: "díky", dueDate: new Date("2026-10-01") };
+    const select = vi.fn(() => makeSelectChain([]));
+    expect(await edit(kept, select)).toEqual([]);
+    expect(select).not.toHaveBeenCalled();
+    expect(kept).not.toHaveProperty("sellerSnapshot");
+    expect(kept).not.toHaveProperty("buyerSnapshot");
+
+    const other: Record<string, unknown> = { contactId: "contact-2" };
+    await edit(other, vi.fn(() => makeSelectChain([makeContact({ id: "contact-2", legalName: "Jiný odběratel" })])));
+    expect(other.buyerSnapshot).toMatchObject({ legalName: "Jiný odběratel" });
+    expect(other).not.toHaveProperty("sellerSnapshot");
+
+    const rebanked: Record<string, unknown> = { currency: "EUR" };
+    await edit(rebanked, vi.fn(() => makeSelectChain([liveTenant])));
+    expect(rebanked.sellerSnapshot).toEqual({ ...snap, bankAccountNumber: "1000", bankAccountBankCode: "0100", bankAccountIban: null, bankAccountSwift: null });
+  });
+
+  it("prints the live details for a document without a snapshot", async () => {
+    const { contact, tenant } = await pdfFor(makeInvoice({ sellerSnapshot: null, buyerSnapshot: null }));
+    expect(tenant).toMatchObject({ legalName: "Firma s.r.o.", dic: "CZ12345678", addressStreet: "Nová 2", bankAccountNumber: "1000" });
+    expect(contact).toMatchObject({ legalName: "ACME nově", ico: "11111111" });
   });
 });
 

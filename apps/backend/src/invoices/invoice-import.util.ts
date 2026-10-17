@@ -1,6 +1,7 @@
 import { parseDocumentNumber, type NumberFormats } from "@faktur/cz-compliance";
 import { normalizeCountry, normalizeHeader } from "../contacts/contacts-csv.util";
 import { DOCUMENT_SERIES, type DocumentType, type SequenceBump } from "./invoice-numbering.util";
+import type { BuyerSnapshot, SellerSnapshot } from "./party-snapshot";
 
 /**
  * Historical invoices from another invoicing system ("stěhování"), as CSV.
@@ -60,6 +61,13 @@ export interface ImportedInvoice {
   exchangeRate?: number | null;
   /** The document's id in the source system, to fetch its original PDF. */
   sourceId?: number;
+  /**
+   * Supplier / buyer exactly as the source document shows them (`party-snapshot.ts`).
+   * Only API imports set these; a CSV import gets a buyer snapshot from the
+   * filled customer columns and no supplier snapshot.
+   */
+  sellerSnapshot?: SellerSnapshot | null;
+  buyerSnapshot?: BuyerSnapshot | null;
 }
 
 export interface ImportSkip {

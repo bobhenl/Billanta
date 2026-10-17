@@ -70,17 +70,12 @@ export interface InvoiceDetail {
     clientResponseNote?: string | null;
     customFields?: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
   };
-  contact: {
-    id: string;
-    legalName: string;
-    ico: string | null;
-    dic: string | null;
-    email: string | null;
-    addressStreet: string | null;
-    addressCity: string | null;
-    addressPostalCode: string | null;
-    addressCountry: string;
-  } | null;
+  /** The live contact (link, e-mail for sending). */
+  contact: InvoiceParty | null;
+  /** The buyer as printed on the document: its issue-date snapshot when it has one. */
+  buyer?: Omit<InvoiceParty, 'id'> | null;
+  /** True when the issue-date snapshot differs from today's company details / contact. */
+  snapshot?: { sellerDiffers: boolean; buyerDiffers: boolean };
   items: {
     id: string;
     description: string;
@@ -99,6 +94,18 @@ export interface InvoiceDetail {
   };
   parent: RelatedDoc | null;
   children: RelatedDoc[];
+}
+
+export interface InvoiceParty {
+  id: string;
+  legalName: string;
+  ico: string | null;
+  dic: string | null;
+  email: string | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressPostalCode: string | null;
+  addressCountry: string;
 }
 
 export interface RelatedDoc {

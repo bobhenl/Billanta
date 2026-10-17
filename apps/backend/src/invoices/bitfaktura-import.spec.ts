@@ -8,6 +8,8 @@ import {
   mapBitfakturaClients,
   mapBitfakturaSeller,
   mapBitfakturaInvoices,
+  mapBitfakturaInvoiceSeller,
+  parseBitfakturaAccount,
   type BitfakturaClient,
   type BitfakturaInvoice,
 } from "./bitfaktura-import";
@@ -298,5 +300,77 @@ describe("mapBitfakturaSeller", () => {
     expect(mapBitfakturaSeller([{ ...dept, deleted: true }, { id: 3, tax_no: "27082440", register_number: null, street: "Dlouhá 1", city: "" }])).toEqual({ ico: "27082440" });
     expect(mapBitfakturaSeller([{ id: 4, tax_no: "", street: "x@example.com", city: "Praha" }])).toBeNull();
     expect(mapBitfakturaSeller([])).toBeNull();
+  });
+});
+
+describe("BitFaktura invoice party snapshots", () => {
+  const at = new Date("2026-10-01T00:00:00Z");
+
+  it("parses an IBAN or a Czech account number, and nothing else", () => {
+    expect(parseBitfakturaAccount("CZ65 0800 0000 1920 0014 5399")).toEqual({ bankAccountIban: "CZ6508000000192000145399" });
+    expect(parseBitfakturaAccount("19-2000145399/0800")).toEqual({ bankAccountNumber: "19-2000145399", bankAccountBankCode: "0800" });
+    expect(parseBitfakturaAccount("v hotovosti")).toBeNull();
+    expect(parseBitfakturaAccount(null)).toBeNull();
+  });
+
+  it("takes the seller as the source invoice shows it", () => {
+    const s = mapBitfakturaInvoiceSeller(
+      invoice({
+        seller_name: "Stará Firma",
+        seller_tax_no: "CZ12345678",
+        seller_register_number: "12345678",
+        seller_street: "Stará 1",
+        seller_city: "Praha",
+        seller_post_code: "110 00",
+        seller_bank_account: "123456789/0100",
+        seller_iban: "CZ6501000000000123456789",
+        seller_swift: "kombczpp",
+        additional_fields: { seller_trade_register_cz: "C 1 MS Praha" },
+        positions: [{ name: "x", quantity: "1", quantity_unit: "", price_net: "100", price_gross: "121", tax: "21" }],
+      }),
+      at,
+    );
+    expect(s).toEqual({
+      legalName: "Stará Firma",
+      companyName: "Stará Firma",
+      ico: "12345678",
+      dic: "CZ12345678",
+      addressStreet: "Stará 1",
+      addressCity: "Praha",
+      addressPostalCode: "110 00",
+      addressCountry: "CZ",
+      registryNote: "C 1 MS Praha",
+      bankAccountNumber: "123456789",
+      bankAccountBankCode: "0100",
+      bankAccountIban: "CZ6501000000000123456789",
+      bankAccountSwift: "KOMBCZPP",
+      dicVatPayer: true,
+      capturedAt: "2026-10-01T00:00:00.000Z",
+      source: "import",
+    });
+  });
+
+  it("keeps only what the source has, and no snapshot without seller data", () => {
+    expect(mapBitfakturaInvoiceSeller(invoice(), at)).toBeNull();
+    expect(mapBitfakturaInvoiceSeller(invoice({ kind: "bill", seller_name: "Živnostník" }), at)).toEqual({
+      legalName: "Živnostník",
+      companyName: "Živnostník",
+      dicVatPayer: false,
+      capturedAt: "2026-10-01T00:00:00.000Z",
+      source: "import",
+    });
+  });
+
+  it("gives every imported invoice its own seller and buyer, address as typed", () => {
+    const { invoices } = mapBitfakturaInvoices([invoice({ seller_name: "Stará Firma", buyer_street: "billing@acme.example", buyer_email: "" })], at);
+    expect(invoices[0]!.sellerSnapshot).toMatchObject({ legalName: "Stará Firma", source: "import" });
+    expect(invoices[0]!.buyerSnapshot).toMatchObject({
+      legalName: "Acme Ltd",
+      addressStreet: "billing@acme.example",
+      addressCity: "Austin",
+      addressCountry: "US",
+      source: "import",
+    });
+    expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("ico");
   });
 });

@@ -47,6 +47,13 @@ class BitfakturaImportDto extends createZodDto(
   }),
 ) {}
 
+class RefreshPartiesDto extends createZodDto(
+  z.object({
+    party: z.enum(["seller", "buyer", "both"]).default("both"),
+    reason: z.string().trim().max(500).optional(),
+  }),
+) {}
+
 /**
  * No controller-level `@UseGuards(...)` here (deliberately, since a recent
  * pass added the public API): the two representative "call our API to
@@ -221,6 +228,18 @@ export class InvoicesController {
   @ApiOperation({ summary: "Cancel (storno) an issued document; its number stays used" })
   cancel(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.invoicesService.cancel(req.tenantDb!, id);
+  }
+
+  @Post(":id/refresh-parties")
+  @UseGuards(CombinedAuthGuard)
+  @ApiOperation({
+    summary: "Replace an issued document's supplier/buyer snapshot with the current details",
+    description:
+      "Issued documents keep the supplier and buyer as they were on the issue date. " +
+      "This explicit, audit-logged action re-takes them from today's company settings / contact.",
+  })
+  refreshParties(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: RefreshPartiesDto) {
+    return this.invoicesService.refreshPartySnapshot(req.tenantDb!, req.user!.tenantId, id, dto.party, dto.reason);
   }
 
   @Post(":id/convert")
