@@ -357,6 +357,21 @@
     }
   },
   "invoices": {
+    "hover": {
+      "fx": "≈ {amount} (CNB rate {rate} as of {date})",
+      "fxNoDate": "≈ {amount} (CNB rate {rate})",
+      "breakdown": "Net {base} + VAT {vat}",
+      "loading": "Loading…",
+      "error": "Could not load the summary.",
+      "ico": "Company ID",
+      "count": "{count, plural, one {# invoice} other {# invoices}}",
+      "none": "No issued invoices yet.",
+      "invoiced": "Invoiced",
+      "unpaid": "Unpaid",
+      "overdue": "Overdue",
+      "last": "Last invoice",
+      "open": "Open contact"
+    },
     "title": "Invoices",
     "description": "All issued and in-progress invoices.",
     "newInvoice": "New invoice",

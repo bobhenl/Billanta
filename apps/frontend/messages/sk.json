@@ -357,6 +357,21 @@
     }
   },
   "invoices": {
+    "hover": {
+      "fx": "≈ {amount} (kurz ČNB {rate} zo dňa {date})",
+      "fxNoDate": "≈ {amount} (kurz ČNB {rate})",
+      "breakdown": "Základ {base} + DPH {vat}",
+      "loading": "Načítavam…",
+      "error": "Súhrn sa nepodarilo načítať.",
+      "ico": "IČO",
+      "count": "{count, plural, one {# faktúra} few {# faktúry} other {# faktúr}}",
+      "none": "Zatiaľ žiadne vystavené faktúry.",
+      "invoiced": "Vyfakturované",
+      "unpaid": "Neuhradené",
+      "overdue": "Po splatnosti",
+      "last": "Posledná faktúra",
+      "open": "Otvoriť kontakt"
+    },
     "title": "Faktúry",
     "description": "Zoznam všetkých vystavených aj rozpracovaných faktúr.",
     "newInvoice": "Nová faktúra",

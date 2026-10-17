@@ -357,6 +357,21 @@
     }
   },
   "invoices": {
+    "hover": {
+      "fx": "≈ {amount} (kurz ČNB {rate} ze dne {date})",
+      "fxNoDate": "≈ {amount} (kurz ČNB {rate})",
+      "breakdown": "Základ {base} + DPH {vat}",
+      "loading": "Načítám…",
+      "error": "Souhrn se nepodařilo načíst.",
+      "ico": "IČO",
+      "count": "{count, plural, one {# faktura} few {# faktury} other {# faktur}}",
+      "none": "Zatím žádné vystavené faktury.",
+      "invoiced": "Vyfakturováno",
+      "unpaid": "Neuhrazeno",
+      "overdue": "Po splatnosti",
+      "last": "Poslední faktura",
+      "open": "Otevřít kontakt"
+    },
     "title": "Faktury",
     "description": "Seznam všech vystavených i rozpracovaných faktur.",
     "newInvoice": "Nová faktura",

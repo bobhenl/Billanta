@@ -36,6 +36,7 @@ import {
 import { COLUMNS_KEY, INLINE_KEY, readJson, SORT_KEY, VIEW_EVENT, writeJson } from '@/lib/invoice-list-prefs';
 import { startNavProgress } from '@/components/nav-progress';
 import { cn } from '@/lib/utils';
+import { AmountHover, ContactHover } from './invoice-hover-cards';
 import {
   cancelInvoice,
   convertInvoice,
@@ -243,7 +244,7 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
         return (
           <span className="inline-flex items-center gap-1.5 font-medium">
             <ColorDot color={row.contactColor} />
-            {row.contactName ?? '–'}
+            <ContactHover contactId={row.contactId}>{row.contactName ?? '–'}</ContactHover>
           </span>
         );
       case 'issueDate':
@@ -261,7 +262,7 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
       case 'total':
         return (
           <span className="font-semibold tabular-nums">
-            {formatMoney(row.total, row.currency, locale)}
+            <AmountHover row={row}>{formatMoney(row.total, row.currency, locale)}</AmountHover>
             {row.status === 'issued' && Number(row.amountPaid ?? 0) > 0 && (
               <span className="block text-xs font-medium text-success">{t('partial.short', { amount: formatMoney(Number(row.amountPaid), row.currency, locale) })}</span>
             )}
