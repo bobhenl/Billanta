@@ -96,8 +96,10 @@ export async function saveInvoice(
 ): Promise<SaveResult> {
   let id: string;
   try {
-    const contactId = await resolveContact(input.customer);
-    if (!contactId) return { ok: false, error: 'customer_required' };
+    // A draft may have no customer yet; issuing needs one (the backend checks it too).
+    if (!input.customer && options.issue) return { ok: false, error: 'customer_required' };
+    const contactId = input.customer ? await resolveContact(input.customer) : null;
+    if (input.customer && !contactId) return { ok: false, error: 'customer_required' };
 
     const body = {
       ...invoiceBody(input),
@@ -125,7 +127,7 @@ export async function saveInvoice(
   }
 }
 
-async function resolveContact(customer: InvoiceDraftInput['customer']): Promise<string | null> {
+async function resolveContact(customer: NonNullable<InvoiceDraftInput['customer']>): Promise<string | null> {
   if (customer.kind === 'contact') return customer.id;
   const a = customer.ares;
   const [created] = await apiFetch<Contact[]>('/api/v1/contacts', {

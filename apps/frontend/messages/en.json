@@ -415,6 +415,8 @@
     "hover": {
       "fx": "≈ {amount} (CNB rate {rate} as of {date})",
       "fxNoDate": "≈ {amount} (CNB rate {rate})",
+      "fxAnnual": "≈ {amount} (fixed rate {rate} for {year})",
+      "fxManual": "≈ {amount} (rate {rate})",
       "breakdown": "Net {base} + VAT {vat}",
       "loading": "Loading…",
       "error": "Could not load the summary.",
@@ -1954,6 +1956,29 @@
       "readOnly": "Only an owner or admin can change these settings.",
       "fieldsTitle": "Visible fields",
       "fieldsHint": "Checked fields are always visible in the form. A field that already has a value on the document is always shown.",
+      "rate": {
+        "title": "Exchange rate on foreign-currency invoices",
+        "hint": "How an amount in a foreign currency is converted to CZK. The rate is saved with the document when it is issued and does not change after that.",
+        "modes": {
+          "cnb_daily": "Daily ČNB rate",
+          "annual": "Fixed annual rate",
+          "none": "Don't print the CZK conversion"
+        },
+        "cnbDailyHint": "The ČNB rate for the date of taxable supply. If ČNB published no rate that day, the last earlier one is used.",
+        "annualHint": "One rate for the whole year under § 38 of the Czech VAT Act. Enter it below for each year and currency. A year without a rate falls back to the daily ČNB rate.",
+        "noneHint": "The document won't show a conversion to CZK. The ČNB rate is still saved for your reports.",
+        "noneIdentified": "Applies only to documents without VAT. If a document has VAT, the conversion is printed.",
+        "nonePayer": "A VAT payer must show the CZK conversion on the document, so this option isn't available. Invoices are issued with the ČNB rate.",
+        "annualTitle": "Fixed rates",
+        "annualEmpty": "No rates yet. Add a year and currency.",
+        "year": "Year",
+        "currency": "Currency",
+        "rate": "Rate",
+        "perUnit": "CZK per 1 {currency}",
+        "remove": "Remove rate",
+        "duplicate": "Each year and currency can be listed only once.",
+        "add": "Add rate"
+      },
       "groups": {
         "items": "Items",
         "dates": "Dates and payment",
@@ -3340,6 +3365,7 @@
       "setup": "Set up AI"
     },
     "customer": {
+      "draftWithout": "You can add the customer later. A draft can be saved without one, and you can send them a link to fill in their details.",
       "title": "Customer",
       "hint": "Search by name or company ID (IČO). Suggestions show your contacts and companies from the ARES registry; an ARES company is added to your contacts, with its address, when you save.",
       "placeholder": "Company name or IČO",
@@ -3396,7 +3422,7 @@
     "save": "Save draft",
     "saveNote": "The draft gets its number when it is issued.",
     "errors": {
-      "customer_required": "Choose a customer.",
+      "customer_required": "Without a customer you can only save a draft. Choose one before issuing.",
       "items_required": "Add at least one item.",
       "save_failed": "The invoice could not be saved. Please try again.",
       "not_allowed": "You are not allowed to do this, or the subscription is inactive.",
@@ -3457,6 +3483,7 @@
       "more": "Constant / specific symbol, order number",
       "exchangeRate": "Rate CZK/{currency}",
       "exchangeRateAuto": "ČNB rate at issue",
+      "exchangeRateAnnual": "Fixed rate {rate} ({year})",
       "exchangeRateLoad": "Load from ČNB",
       "exchangeRateFailed": "The ČNB rate could not be loaded.",
       "inCzk": "≈ {amount} total",
@@ -3593,7 +3620,7 @@
     "vatAt": "VAT {rate} %",
     "reverseChargeNote": "VAT to be accounted for by the customer (reverse charge).",
     "customer": "Customer",
-    "noCustomer": "No customer selected yet.",
+    "noCustomer": "Customer not filled in yet",
     "sellerSnapshotNote": "Supplier details as of the issue date",
     "buyerSnapshotNote": "Customer details as of the issue date",
     "details": "Document details",
@@ -3737,7 +3764,12 @@
       "partial": "Partial payment recorded.",
       "rotated": "New link issued, the old one no longer works"
     },
-    "fxLine": "ČNB rate {rate} CZK/{currency} · VAT {vat} · total {total}",
+    "fxLine": "{label} {rate} CZK/{currency} · VAT {vat} · total {total}",
+    "fxLabel": "ČNB rate",
+    "fxLabelOn": "ČNB rate as of {date}",
+    "fxLabelAnnual": "Fixed annual rate for {year}",
+    "fxLabelManual": "Exchange rate",
+    "fxHidden": "The CZK conversion isn't printed on the document (rate {rate} CZK/{currency} for reports only).",
     "views": {
       "title": "Shared link",
       "count": "Viewed",

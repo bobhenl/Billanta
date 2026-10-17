@@ -14,6 +14,7 @@ import {
   buyerDetailsState,
   displayStatus,
   formatDate,
+  fxLabelOf,
   formatMoney,
   STATUS_BADGE_CLASSES,
   TYPE_BADGE_CLASSES,
@@ -112,6 +113,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
 
   // Net proceeds after provider fees and conversion, in CZK at the invoice's ČNB rate.
   const rate = invoice.currency === 'CZK' ? 1 : Number(invoice.exchangeRate) || 0;
+  const fx = fxLabelOf(invoice);
   const received = invoice.status === 'paid' ? totals.totalWithVat : Number(invoice.amountPaid ?? 0);
   const fees = Number(invoice.paymentFees ?? 0);
   const receivedCzk = invoice.receivedCzk == null ? null : Number(invoice.receivedCzk);
@@ -323,12 +325,25 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           </div>
           {invoice.currency !== 'CZK' && invoice.exchangeRate && (
             <p className="mt-3 text-right text-xs text-muted-foreground">
-              {t('fxLine', {
-                rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
-                currency: invoice.currency,
-                vat: formatMoney(totals.totalVat * Number(invoice.exchangeRate), 'CZK', locale),
-                total: formatMoney(totals.totalWithVat * Number(invoice.exchangeRate), 'CZK', locale)
-              })}
+              {fx.kind === 'hidden'
+                ? t('fxHidden', {
+                    rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    currency: invoice.currency
+                  })
+                : t('fxLine', {
+                    label:
+                      fx.kind === 'on'
+                        ? t('fxLabelOn', { date: formatDate(fx.date, locale) ?? fx.date })
+                        : fx.kind === 'annual'
+                          ? t('fxLabelAnnual', { year: fx.year })
+                          : fx.kind === 'manual'
+                            ? t('fxLabelManual')
+                            : t('fxLabel'),
+                    rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    currency: invoice.currency,
+                    vat: formatMoney(totals.totalVat * Number(invoice.exchangeRate), 'CZK', locale),
+                    total: formatMoney(totals.totalWithVat * Number(invoice.exchangeRate), 'CZK', locale)
+                  })}
             </p>
           )}
           {invoice.reverseCharge && <p className="mt-3 text-xs text-muted-foreground">{t('reverseChargeNote')}</p>}

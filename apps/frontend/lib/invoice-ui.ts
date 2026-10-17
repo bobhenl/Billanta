@@ -26,6 +26,10 @@ export interface InvoiceRow {
   taxableSupplyDate: string | null;
   /** CZK per 1 unit of `currency` (ČNB rate stored at issue); null for CZK. */
   exchangeRate?: string | null;
+  /** How the rate was chosen at issue (Settings → Faktury → Kurz); null = issued before the setting. */
+  exchangeRateMode?: 'cnb_daily' | 'annual' | 'manual' | 'none' | null;
+  /** ČNB list day (cnb_daily) or 1 January of the rate's year (annual), YYYY-MM-DD. */
+  exchangeRateDate?: string | null;
   paidAt: string | null;
   /** Sum received so far (numeric string); equals the total once paid. */
   amountPaid?: string;
@@ -51,6 +55,35 @@ export interface BuyerDetailsOutcome {
   conflicts: { field: string; saved: string | null; submitted: string | null }[];
   autoIssue: 'issued' | 'sent' | 'skipped' | 'failed' | null;
   autoIssueError?: string | null;
+}
+
+/**
+ * Which wording the CZK conversion of a foreign-currency document gets, the
+ * same as its PDF (backend invoices/exchange-rate-mode.ts `rateLineLabel`):
+ * `on` = ČNB rate of a given day, `annual` = the company's rate for a year,
+ * `manual` = a typed rate, `hidden` = not printed, `legacy` = before the setting.
+ */
+export function fxLabelOf(row: {
+  exchangeRateMode?: InvoiceRow['exchangeRateMode'];
+  exchangeRateDate?: string | null;
+  taxableSupplyDate?: string | null;
+  issueDate?: string | null;
+}): { kind: 'on'; date: string } | { kind: 'annual'; year: string } | { kind: 'manual' | 'hidden' | 'legacy' } {
+  const fallback = row.taxableSupplyDate ?? row.issueDate ?? null;
+  switch (row.exchangeRateMode) {
+    case 'none':
+      return { kind: 'hidden' };
+    case 'manual':
+      return { kind: 'manual' };
+    case 'annual':
+      return { kind: 'annual', year: (row.exchangeRateDate ?? fallback ?? '').slice(0, 4) };
+    case 'cnb_daily': {
+      const date = row.exchangeRateDate ?? fallback;
+      return date ? { kind: 'on', date } : { kind: 'legacy' };
+    }
+    default:
+      return { kind: 'legacy' };
+  }
 }
 
 /** The draft is waiting for the customer, or the customer has filled in their details and it still is a draft. */

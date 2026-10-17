@@ -14,6 +14,7 @@
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  date,
   integer,
   jsonb,
   numeric,
@@ -524,6 +525,10 @@ export const invoices = pgTable(
     reverseCharge: boolean("reverse_charge").notNull().default(false),
     /** CZK per 1 unit of `currency` (ČNB rate on the taxable supply date), set at issue; null for CZK. */
     exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+    /** How `exchangeRate` was chosen at issue (exchange-rate-mode.ts); null = issued before the setting existed. */
+    exchangeRateMode: text("exchange_rate_mode").$type<"cnb_daily" | "annual" | "manual" | "none">(),
+    /** The ČNB list day for `cnb_daily`, 1 January of the rate's year for `annual`; null otherwise. */
+    exchangeRateDate: date("exchange_rate_date", { mode: "string" }),
     /** Account printed for payment; null = auto (matching currency, else the company's primary account). */
     bankAccountId: uuid("bank_account_id").references(() => tenantBankAccounts.id, { onDelete: "set null" }),
     // "Místo vystavení" and "Vystavil" (person) as printed on the document.

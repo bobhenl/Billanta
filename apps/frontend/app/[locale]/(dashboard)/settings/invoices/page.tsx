@@ -5,6 +5,7 @@ import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { vatStatusOf } from '@/lib/vat-status';
 import { formPrefs, loadContact } from '../../invoices/new/load';
 import { InvoiceFormSettings } from './invoice-form-settings';
 
@@ -50,6 +51,7 @@ export default async function InvoiceSettingsPage() {
         defaultContact={defaultContact}
         bankAccounts={accounts.map((a) => ({ id: a.id, label: a.label, line: bankAccountLine(a) }))}
         vatPayer={tenant.dicVatPayer}
+        vatStatus={vatStatusOf(tenant)}
         readOnly={!canManage(role)}
       />
     </div>

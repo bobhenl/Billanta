@@ -309,6 +309,13 @@
       "when": 1792800700000,
       "tag": "0043_contact_summary_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1792801100000,
+      "tag": "0046_exchange_rate_mode",
+      "breakpoints": true
     }
   ]
 }

@@ -275,6 +275,11 @@ export function InvoiceForm({
   const { prefs } = defaults;
   const [issuePlace, setIssuePlace] = useState(() => template?.issuePlace ?? (editing ? '' : prefs.defaultIssuePlace ?? ''));
   const [issuedByName, setIssuedByName] = useState(() => template?.issuedByName ?? (editing ? '' : prefs.defaultIssuedBy ?? ''));
+  // Settings → Faktury → Kurz: with an annual rate for this year the empty field means that rate, not ČNB's.
+  const rateYear = Number(((vatPayer && taxableSupplyDate) || issueDate).slice(0, 4));
+  const annualRate =
+    prefs.exchangeRateMode === 'annual' ? prefs.annualRates.find((r) => r.year === rateYear && r.currency === currency)?.rate ?? null : null;
+  const annualRatePlaceholder = annualRate ? t('payment.exchangeRateAnnual', { rate: annualRate.toLocaleString(locale), year: rateYear }) : null;
   const [customFields, setCustomFields] = useState<CustomField[]>(() => {
     const existing = template?.customFields ?? [];
     const preset = prefs.customFieldLabels.filter((label) => !existing.some((f) => f.label === label)).map((label) => ({ label, value: '' }));
@@ -539,7 +544,8 @@ export function InvoiceForm({
 
   const submit = (issue: boolean) => {
     setError(null);
-    if (!customer) return setError(t('errors.customer_required'));
+    // A draft can wait for its customer (or be sent to them to fill in); issuing cannot.
+    if (!customer && (issue || issuedEdit)) return setError(t('errors.customer_required'));
     const items = rows
       .filter((row) => row.description.trim())
       .map((row) => ({
@@ -566,7 +572,7 @@ export function InvoiceForm({
     startSaving(async () => {
       const result = await saveInvoice(
         {
-          customer: customer.kind === 'contact' ? { kind: 'contact', id: customer.id } : { kind: 'ares', ares: customer.ares },
+          customer: !customer ? null : customer.kind === 'contact' ? { kind: 'contact', id: customer.id } : { kind: 'ares', ares: customer.ares },
           documentType,
           issueDate,
           dueDate,
@@ -908,6 +914,7 @@ export function InvoiceForm({
               />
               <RegistryPicker value={registry} onChange={setRegistry} />
               </div>
+              {!issuedEdit && <p className="mt-2 text-xs text-muted-foreground">{t('customer.draftWithout')}</p>}
             </>
           )}
         </section>
@@ -1390,7 +1397,7 @@ export function InvoiceForm({
                   inputMode="decimal"
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value.replace(/[^\d.,]/g, ''))}
-                  placeholder={t('payment.exchangeRateAuto')}
+                  placeholder={annualRatePlaceholder ?? t('payment.exchangeRateAuto')}
                   className={field}
                 />
                 <button
