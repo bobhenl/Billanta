@@ -88,6 +88,57 @@ describe("mapBitfakturaInvoices", () => {
     expect(invoices[1]).toMatchObject({ paymentMethod: "bank_transfer", paymentMethodLabel: null, exchangeRate: null, language: "sk", customer: { ico: "27082440", dic: null } });
   });
 
+  it("keeps the printed notes, the internal note, order number, place, issuer and VS", () => {
+    const [inv] = mapBitfakturaInvoices([
+      invoice({
+        number: "FV-12/2026",
+        description: "Platba předem.\r\n",
+        description_long: "Dodací podmínky dle smlouvy.",
+        description_footer: "Platba předem.",
+        internal_note: "Volat před dodáním",
+        oid: " OBJ-77 ",
+        place: "Olomouc",
+        seller_person: "Petra Malá",
+      }),
+    ]).invoices;
+    expect(inv).toMatchObject({
+      note: "Platba předem.\n\nDodací podmínky dle smlouvy.",
+      internalNote: "Volat před dodáním",
+      orderNumber: "OBJ-77",
+      issuePlace: "Olomouc",
+      issuedByName: "Petra Malá",
+      variableSymbol: "122026",
+    });
+    const [bare] = mapBitfakturaInvoices([invoice({ description: "", internal_note: null, oid: "", place: null })]).invoices;
+    expect(bare).toMatchObject({ note: null, internalNote: null, orderNumber: null, issuePlace: null, issuedByName: null });
+  });
+
+  it("reads reverse charge from the flag, or from the sentence on an invoice without VAT", () => {
+    const zero = [{ name: "x", price_net: "50", tax: "0" }];
+    const { invoices } = mapBitfakturaInvoices([
+      invoice({ number: "1", description: "Ref 42\r\nDaň odvede zákazník v režimu přenesené daňové povinnosti.", positions: zero }),
+      invoice({ number: "2", description: "Reverse charge", positions: zero }),
+      invoice({ number: "3", description: "Přenesení daňové povinnosti", positions: [{ name: "x", price_net: "50", tax: "21" }] }),
+      invoice({ number: "4", description: "Děkujeme", positions: zero }),
+      invoice({ number: "5", description: "", reverse_charge: true, positions: zero }),
+    ]);
+    expect(invoices.map((i) => i.reverseCharge)).toEqual([true, true, false, false, true]);
+    // The text stays on the document as it was typed.
+    expect(invoices[0]!.note).toBe("Ref 42\nDaň odvede zákazník v režimu přenesené daňové povinnosti.");
+  });
+
+  it("records where the rate came from", () => {
+    const [cnb, manual, czk] = mapBitfakturaInvoices([
+      invoice({ number: "1", exchange_kind: "cnb", exchange_date: "2026-09-29" }),
+      invoice({ number: "2", exchange_kind: "own" }),
+      invoice({ number: "3", currency: "CZK", exchange_rate: "1.0", exchange_kind: "cnb" }),
+    ]).invoices;
+    expect(cnb).toMatchObject({ exchangeRate: 20.861, exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-09-29" });
+    expect(manual).toMatchObject({ exchangeRate: 20.861, exchangeRateMode: "manual", exchangeRateDate: null });
+    expect(czk!.exchangeRate).toBeNull();
+    expect(czk).not.toHaveProperty("exchangeRateMode");
+  });
+
   it("drops a placeholder 1.0 rate on a foreign invoice so the import looks it up", () => {
     expect(mapBitfakturaInvoices([invoice({ exchange_rate: "1.0" })]).invoices[0]!.exchangeRate).toBeNull();
   });
@@ -372,5 +423,21 @@ describe("BitFaktura invoice party snapshots", () => {
       source: "import",
     });
     expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("ico");
+  });
+
+  it("takes each invoice's own seller address, not one shared profile", () => {
+    const seller = { seller_name: "Lesní Studio", seller_tax_no: "CZ87654321", seller_city: "Brno", seller_post_code: "602 00" };
+    const { invoices } = mapBitfakturaInvoices(
+      [
+        invoice({ number: "1/2025", issue_date: "2025-03-01", ...seller, seller_street: "Stará 4" }),
+        invoice({ number: "1/2026", issue_date: "2026-03-01", ...seller, seller_street: "Nová 9", seller_city: "Olomouc", seller_post_code: "779 00" }),
+      ],
+      at,
+    );
+    expect(invoices.map((i) => [i.sellerSnapshot?.addressStreet, i.sellerSnapshot?.addressCity, i.sellerSnapshot?.addressPostalCode])).toEqual([
+      ["Stará 4", "Brno", "602 00"],
+      ["Nová 9", "Olomouc", "779 00"],
+    ]);
+    expect(invoices.every((i) => i.sellerSnapshot?.source === "import" && i.sellerSnapshot.dic === "CZ87654321")).toBe(true);
   });
 });
