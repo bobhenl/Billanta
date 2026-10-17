@@ -24,6 +24,8 @@ export interface InvoiceRow {
   issueDate: string | null;
   dueDate: string | null;
   taxableSupplyDate: string | null;
+  /** CZK per 1 unit of `currency` (ČNB rate stored at issue); null for CZK. */
+  exchangeRate?: string | null;
   paidAt: string | null;
   /** Sum received so far (numeric string); equals the total once paid. */
   amountPaid?: string;

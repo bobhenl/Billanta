@@ -279,6 +279,7 @@
       "idx": 39,
       "version": "7",
       "when": 1792800300000,
+<<<<<<< HEAD
       "tag": "0039_number_formats",
       "breakpoints": true
     },
@@ -287,6 +288,9 @@
       "version": "7",
       "when": 1792800400000,
       "tag": "0040_invoice_party_snapshots",
+=======
+      "tag": "0039_contact_summary_indexes",
+>>>>>>> worktree-agent-a49bf21f4a04a807a
       "breakpoints": true
     }
   ]

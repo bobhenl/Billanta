@@ -20,11 +20,12 @@ import {
   type AresSubject,
   type RegistryHit,
 } from "@faktur/cz-compliance";
-import { asc, desc, eq, ilike, like, or } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, like, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
+import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, decodeCsvBuffer, mapContactRows, parseCsv, type CsvContact, type CsvSkip } from "./contacts-csv.util";
 import { mapAresSubjectToContactPrefill, mapRegistryHitToContactPrefill, mapRpoSubjectToContactPrefill, type AresContactPrefill } from "./ares-mapper.util";
 import type { CreateContactDto } from "./dto/create-contact.dto";
@@ -117,6 +118,56 @@ export class ContactsService {
 
   findOne(db: TenantDb, id: string) {
     return db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+  }
+
+  /**
+   * Hover card on the invoice list: contact basics plus invoice aggregates.
+   * One aggregate query (line items summed per invoice and VAT rate, served
+   * by the contact/invoice indexes); the tenant filter repeats what RLS
+   * already enforces. Returns aggregates only, never the invoices.
+   */
+  async summary(db: TenantDb, tenantId: string, id: string) {
+    const [contact] = await db
+      .select({
+        id: schema.contacts.id,
+        legalName: schema.contacts.legalName,
+        email: schema.contacts.email,
+        ico: schema.contacts.ico,
+        country: schema.contacts.addressCountry,
+      })
+      .from(schema.contacts)
+      .where(and(eq(schema.contacts.tenantId, tenantId), eq(schema.contacts.id, id)))
+      .limit(1);
+    if (!contact) throw new NotFoundException("Contact not found");
+
+    const inv = schema.invoices;
+    const li = schema.invoiceLineItems;
+    const buckets: ContactSummaryBucket[] = await db
+      .select({
+        invoiceId: inv.id,
+        currency: inv.currency,
+        status: inv.status,
+        documentType: inv.documentType,
+        dueDate: inv.dueDate,
+        issueDate: inv.issueDate,
+        amountPaid: inv.amountPaid,
+        reverseCharge: inv.reverseCharge,
+        vatRate: li.vatRate,
+        base: sql<string | null>`sum(${li.quantity} * ${li.unitPrice} * (1 - ${li.discountPercent} / 100))`,
+      })
+      .from(inv)
+      .leftJoin(li, eq(li.invoiceId, inv.id))
+      .where(
+        and(
+          eq(inv.tenantId, tenantId),
+          eq(inv.contactId, id),
+          inArray(inv.documentType, ["invoice", "credit_note"]),
+          inArray(inv.status, ["issued", "paid"]),
+        ),
+      )
+      .groupBy(inv.id, li.vatRate);
+
+    return { ...contact, ...summarizeContactInvoices(buckets) };
   }
 
   /** Turns the customer's portal link on (or issues a new one, revoking the old), or off with `enabled: false`. */
