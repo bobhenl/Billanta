@@ -25,6 +25,7 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
 import { ColorDot } from '@/components/color-dot';
 import {
+  buyerDetailsState,
   CONVERSIONS,
   displayStatus,
   formatDate,
@@ -269,9 +270,17 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
         );
       case 'status': {
         const status = displayStatus(row);
+        const buyer = buyerDetailsState(row);
         return (
-          <span title={tGloss(`status.${status}`)} className={cn('inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>
-            {status === 'overdue' ? t('overdue') : tStatus(status)}
+          <span className="inline-flex flex-wrap items-center gap-1">
+            <span title={tGloss(`status.${status}`)} className={cn('inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>
+              {status === 'overdue' ? t('overdue') : tStatus(status)}
+            </span>
+            {buyer && (
+              <span className={cn('inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', buyer === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
+                {tList(`buyerDetails.badge.${buyer}`)}
+              </span>
+            )}
           </span>
         );
       }

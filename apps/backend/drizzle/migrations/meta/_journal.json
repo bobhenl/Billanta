@@ -281,6 +281,13 @@
       "when": 1792800300000,
       "tag": "0039_number_formats",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1792800600000,
+      "tag": "0042_buyer_details_request",
+      "breakpoints": true
     }
   ]
 }

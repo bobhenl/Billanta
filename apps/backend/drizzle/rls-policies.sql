@@ -1367,3 +1367,28 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION get_public_card_payment_target(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_card_payment_target(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- "Odběratel si doplní údaje sám" (migration 0042): which company and draft a
+-- buyer-details link (/d/:buyer_details_token) belongs to. One static SELECT
+-- on the unguessable token, nothing for suspended companies, only while the
+-- document is a draft. The page and the submission then run in an ordinary
+-- tenant-scoped transaction (BuyerDetailsService), like card payments.
+-- ---------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS get_buyer_details_target(uuid);
+CREATE OR REPLACE FUNCTION get_buyer_details_target(p_token uuid)
+RETURNS TABLE (tenant_id uuid, invoice_id uuid)
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT i.tenant_id, i.id
+  FROM invoices i JOIN tenants t ON t.id = i.tenant_id
+  WHERE i.buyer_details_token = p_token
+    AND t.suspended_at IS NULL
+    AND i.status IN ('draft', 'pending_review')
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_buyer_details_target(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_buyer_details_target(uuid) TO faktur_app;

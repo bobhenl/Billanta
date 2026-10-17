@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Bot, KeyRound, Server, User } from 'lucide-react';
+import { Bot, KeyRound, Server, User, UserPen } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { fetchAuditLog, type AuditChange, type AuditEntityType, type AuditItem, type AuditPage } from '@/lib/audit';
@@ -147,6 +147,7 @@ export function AuditLogList({
     if (item.actor === 'ai') return { icon: Bot, name: t('actor.ai') };
     if (item.actor === 'api_key') return { icon: KeyRound, name: t('actor.api_key') };
     if (item.actor === 'system') return { icon: Server, name: t('actor.system') };
+    if (item.actor === 'customer') return { icon: UserPen, name: t('actor.customer') };
     return { icon: User, name: item.userName || item.userEmail || t('actor.user') };
   };
 
