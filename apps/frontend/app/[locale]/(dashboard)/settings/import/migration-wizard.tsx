@@ -240,6 +240,8 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
     }
   };
 
+  // No new invoices, but new contacts or empty business details still worth bringing over.
+  const hasExtra = (r: { contactsCreated: number; businessFilled?: string[] }) => r.contactsCreated > 0 || (r.businessFilled?.length ?? 0) > 0;
   const businessFields = (keys: string[]) =>
     [...new Set(keys.map((k) => (k.startsWith('address') ? 'address' : k)))].map((k) => t(`step3.businessFields.${k}`)).join(', ');
   const money = (amount: number, currency: string) =>
@@ -318,8 +320,16 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               </span>
             </p>
           )}
-          {preview.invoices === 0 ? (
+          {preview.invoices === 0 && !hasExtra(preview) ? (
             <Banner tone="warn" title={t('step3.nothing')} />
+          ) : preview.invoices === 0 ? (
+            <div className="rounded-lg bg-secondary/60 p-4 text-sm">
+              <p className="font-bold">{t('step3.extraOnly')}</p>
+              <ul className="mt-2 space-y-1 text-muted-foreground">
+                {preview.contactsCreated > 0 && <li>{t('step3.contacts', { created: preview.contactsCreated, matched: preview.contactsMatched })}</li>}
+                {preview.businessFilled && preview.businessFilled.length > 0 && <li>{t('step3.business', { fields: businessFields(preview.businessFilled) })}</li>}
+              </ul>
+            </div>
           ) : (
             <div className="rounded-lg bg-secondary/60 p-4 text-sm">
               <p className="font-bold">{t('step3.summary', { count: preview.invoices })}</p>
@@ -362,10 +372,10 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
             </div>
           )}
           <Skipped rows={preview.skipped} />
-          {preview.invoices > 0 && (
+          {(preview.invoices > 0 || hasExtra(preview)) && (
             <button type="button" className={primary} disabled={readOnly || busy !== null} onClick={confirm}>
               {busy === 'import' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-              {t('step3.confirm', { count: preview.invoices })}
+              {preview.invoices > 0 ? t('step3.confirm', { count: preview.invoices }) : t('step3.confirmExtra')}
             </button>
           )}
         </div>
