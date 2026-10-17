@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Bell, Blocks, Braces, Bot, Briefcase, Building2, ChevronRight, CreditCard, DatabaseBackup, Download, FileSliders, FolderInput, Globe, Hash, History, KeyRound, Mail, MessageCircle, UserCog, Users, Wallet, Webhook, type LucideIcon } from 'lucide-react';
+import { Bell, Blocks, Braces, Bot, Briefcase, Building2, ChevronRight, CreditCard, DatabaseBackup, Download, FileSliders, FolderInput, Gift, Globe, Hash, History, KeyRound, Mail, MessageCircle, UserCog, Users, Wallet, Webhook, type LucideIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { fetchMyAccess } from '@/lib/tenant';
@@ -25,7 +25,8 @@ const GROUPS: { key: string; items: { key: string; href: string; icon: LucideIco
       { key: 'publicProfile', href: '/settings/public-profile', icon: Globe },
       { key: 'modules', href: '/settings/modules', icon: Blocks },
       { key: 'team', href: '/settings/team', icon: Users },
-      { key: 'billing', href: '/billing', icon: CreditCard }
+      { key: 'billing', href: '/billing', icon: CreditCard },
+      { key: 'referrals', href: '/settings/referrals', icon: Gift }
     ]
   },
   {

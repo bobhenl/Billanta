@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { Briefcase, Building2, Check, CreditCard, Download, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
+import { Briefcase, Building2, Check, CreditCard, Download, Gift, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { signOut, useSession } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -20,6 +20,7 @@ const ITEMS = [
   { key: 'exports', href: '/settings/exports', icon: Download },
   { key: 'activity', href: '/activity', icon: History },
   { key: 'billing', href: '/billing', icon: CreditCard },
+  { key: 'referrals', href: '/settings/referrals', icon: Gift },
   { key: 'settings', href: '/settings', icon: Settings }
 ] as const;
 

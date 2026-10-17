@@ -309,6 +309,13 @@
       "when": 1792800700000,
       "tag": "0043_contact_summary_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1792800900000,
+      "tag": "0044_referrals_credits_partners",
+      "breakpoints": true
     }
   ]
 }

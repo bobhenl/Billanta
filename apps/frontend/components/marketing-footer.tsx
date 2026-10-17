@@ -1,8 +1,9 @@
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { InstallAppButton } from '@/components/install-app-button';
+import { fetchPartners, partnerHref } from '@/lib/partners';
 
 /**
  * Public-site footer: a compact link grid that doubles as secondary
@@ -10,11 +11,14 @@ import { InstallAppButton } from '@/components/install-app-button';
  * `<a>`. One block, as on VoxelRank: the cookie settings and "install app"
  * entries sit in the columns rather than in a second strip underneath, and
  * there is no "© … All rights reserved" line (copyright needs no notice).
+ * Partners marked `show_in_footer` get a strip under the grid, linked
+ * through the counting redirect.
  */
 export async function MarketingFooter() {
   const t = await getTranslations('marketing.footer');
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
+  const [locale, partners] = await Promise.all([getLocale(), fetchPartners({ footer: true })]);
 
   const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
   const columns: { title: string; links: { href: string; label: string }[]; extra?: React.ReactNode }[] = [
@@ -32,6 +36,8 @@ export async function MarketingFooter() {
       title: t('company.title'),
       links: [
         { href: '/about', label: t('company.about') },
+        { href: '/pro-ucetni', label: t('company.accountants') },
+        { href: '/partneri', label: t('company.partners') },
         { href: '/faktury-pro', label: tMunicipalities('breadcrumbBrowse') }
       ]
     },
@@ -91,6 +97,22 @@ export async function MarketingFooter() {
             </nav>
           ))}
         </div>
+
+        {partners.length > 0 && (
+          <nav aria-label={t('partners.title')} className="mt-8 border-t border-border pt-6">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('partners.title')}</span>
+              {partners.map((p) => (
+                <a key={p.slug} href={partnerHref(locale, p.slug)} target="_blank" rel="sponsored noopener" className={linkClass}>
+                  {p.name}
+                </a>
+              ))}
+              <Link href="/partneri" className="font-semibold text-primary hover:underline">
+                {t('partners.all')}
+              </Link>
+            </div>
+          </nav>
+        )}
       </div>
     </footer>
   );

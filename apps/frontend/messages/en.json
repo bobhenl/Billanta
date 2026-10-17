@@ -48,7 +48,11 @@
       "guestInvoice": "Invoice without sign-up",
       "createInvoice": "Create invoice",
       "createInvoiceShort": "Invoice",
-      "search": "Search"
+      "search": "Search",
+      "app": "App",
+      "account": "Account",
+      "accountants": "For accountants",
+      "partners": "Partners"
     },
     "hero": {
       "title": "Invoicing for Czech and Slovak businesses, without the paperwork",
@@ -203,7 +207,9 @@
       },
       "company": {
         "title": "Company",
-        "about": "About"
+        "about": "About",
+        "accountants": "For accountants",
+        "partners": "Partners"
       },
       "legal": {
         "title": "Legal",
@@ -217,6 +223,10 @@
         "title": "Account",
         "login": "Log in",
         "signup": "Sign up"
+      },
+      "partners": {
+        "title": "Partners",
+        "all": "All partners"
       }
     },
     "seo": {
@@ -1540,6 +1550,10 @@
         "numbering": {
           "title": "Document numbering",
           "description": "Your own number format for invoices, proformas, credit notes and quotes, and the number the series continues at."
+        },
+        "referrals": {
+          "title": "Invite and earn credits",
+          "description": "A link for friends and clients, credits, and paying your plan with them."
         }
       }
     },
@@ -3086,7 +3100,8 @@
       "companies": "Businesses",
       "addCompany": "Add a business",
       "manageCompanies": "Manage companies",
-      "activity": "Change history"
+      "activity": "Change history",
+      "referrals": "Invite and earn credits"
     },
     "installApp": {
       "label": "Install app",
@@ -5385,6 +5400,14 @@
           "text": "Online payment from the invoice link and tracking of partial payments."
         }
       }
+    },
+    "account": {
+      "title": "Want to keep your invoices and email them?",
+      "body": "A free account gives you an invoice overview, contacts from the business register, reminders and QR payments. You can still make this invoice without one.",
+      "signup": "Create a free account",
+      "login": "Sign in",
+      "signedIn": "You are signed in. You can save the invoice straight in the app.",
+      "openApp": "New invoice in the app"
     }
   },
   "publicProfile": {
@@ -6159,6 +6182,145 @@
         "ico_foreign": "A company ID (IČO) is only for Czech and Slovak companies.",
         "dic_format": "The VAT ID doesn't look right."
       }
+    }
+  },
+  "referrals": {
+    "title": "Invite and earn credits",
+    "description": "Invite businesses you know or your clients. For each one that starts paying you get credits to pay your own plan.",
+    "loadError": "Could not load the referral programme.",
+    "failed": "Failed",
+    "readOnly": "Only the company owner or an admin can spend credits or change the programme.",
+    "credits": "{credits, plural, one {# credit} other {# credits}}",
+    "welcomeToast": "Welcome! Your invite brought you {credits} credits.",
+    "copyFailed": "Could not copy the link. Select it and copy it by hand.",
+    "link": {
+      "title": "Your invite link",
+      "body": "A new company gets {welcome} credits right after signing up. You get {reward} credits once it starts paying. 1 credit = 1 CZK.",
+      "copy": "Copy",
+      "copied": "Copied",
+      "code": "Code: {code}"
+    },
+    "stats": {
+      "balance": "Balance",
+      "invited": "Invited companies",
+      "paying": "Paying"
+    },
+    "program": {
+      "title": "Programme",
+      "hint": "Accountants and bookkeeping firms get more per client.",
+      "saved": "Programme changed.",
+      "friend": {
+        "title": "Refer a friend",
+        "body": "The invited company gets {welcome} credits, you get {reward} for each paying one."
+      },
+      "accountant": {
+        "title": "Accountant partner programme",
+        "body": "Your client gets {welcome} credits, you get {reward} for each paying client."
+      }
+    },
+    "redeem": {
+      "title": "Pay a plan with credits",
+      "hint": "A year costs the yearly plan price. A running plan is extended.",
+      "button": "{months, plural, one {1 month} other {# months}} · {credits} cr.",
+      "done": "The {plan} plan is paid until {until}.",
+      "running": "Your {plan} plan is paid with credits until {until}."
+    },
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "invited": {
+      "title": "Invited companies",
+      "empty": "Nobody has signed up with your link yet.",
+      "company": "Company #{n}",
+      "paying": "Paying · +{credits} cr.",
+      "waiting": "Not paying yet"
+    },
+    "ledger": {
+      "title": "Credit history",
+      "empty": "No movements yet.",
+      "reason": {
+        "referral_welcome": "Welcome bonus for an invite",
+        "referral_reward": "Reward for a paying company",
+        "plan_purchase": "{plan} plan for {months, plural, one {1 month} other {# months}}",
+        "adjustment": "Adjustment"
+      }
+    },
+    "errors": {
+      "insufficient_credits": "You don’t have enough credits for this plan.",
+      "other_plan_running": "Credits already pay for a different plan. Only the running one can be extended.",
+      "ico_required": "The partner programme needs the company ID (Settings → Company)."
+    }
+  },
+  "partners": {
+    "title": "Partners",
+    "seoTitle": "Billanta partners – accountants, banks and tools",
+    "lead": "Accountants, banks and tools that work well with Billanta. Pick who makes your invoicing and bookkeeping easy.",
+    "filterLabel": "Partner categories",
+    "categories": {
+      "all": "All",
+      "accounting": "Accountants",
+      "banking": "Banks",
+      "software": "Software",
+      "service": "Services",
+      "other": "Other"
+    },
+    "empty": "We are adding partners right now. Meanwhile, have a look at the accountant programme.",
+    "featured": "Recommended",
+    "visit": "Visit",
+    "become": {
+      "title": "Want to become a partner?",
+      "body": "Accountants and bookkeeping firms earn credits for each paying client. Any other company can invite people it knows with the link in Settings.",
+      "accountants": "Accountant programme",
+      "signup": "Create an account"
+    },
+    "disclosure": "Links to partners are affiliate links. We may be rewarded for a click or sign-up; it doesn’t change your price."
+  },
+  "accountants": {
+    "eyebrow": "Partner programme",
+    "title": "Billanta for accountants and bookkeeping firms",
+    "seoTitle": "Billanta for accountants – client access and rewards",
+    "lead": "Invite your clients to Billanta, keep their documents in one place and earn credits towards your own plan for each paying client.",
+    "cta": "Register your firm",
+    "partnersLink": "Our partners",
+    "benefits": {
+      "access": {
+        "title": "Accountant role with clients",
+        "body": "Your client invites you to their team. You see invoices, expenses and the bank, not the company administration."
+      },
+      "exports": {
+        "title": "Exports for bookkeeping",
+        "body": "VAT returns and control statements, ISDOC and CSV, without retyping anything."
+      },
+      "credits": {
+        "title": "Credits for clients",
+        "body": "Your client gets {welcome} credits, you get {reward} for each one who starts paying."
+      }
+    },
+    "stepsTitle": "How it works",
+    "steps": {
+      "signup": {
+        "title": "Create your firm’s account",
+        "body": "Signing up is free. Fill in your firm’s company ID in the company settings."
+      },
+      "program": {
+        "title": "Turn on the accountant programme",
+        "body": "In Settings → Invite and earn credits, switch to the partner programme."
+      },
+      "share": {
+        "title": "Send the link to clients",
+        "body": "Whoever signs up with your link and starts paying earns you credits."
+      }
+    },
+    "fine": {
+      "title": "Rules",
+      "points": [
+        "1 credit = 1 CZK. Credits pay the Start, Plus or Business plan for a month or a year.",
+        "You are rewarded once per invited company, when it pays for the first time.",
+        "An invite counts for companies created with your link within the last 30 days.",
+        "You can’t invite your own company or one you are already a member of."
+      ]
     }
   }
 }

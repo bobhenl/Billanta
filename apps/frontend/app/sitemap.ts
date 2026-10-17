@@ -49,6 +49,8 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/faktury-pro', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/funkce', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/vytvorit-fakturu', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/pro-ucetni', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/partneri', changeFrequency: 'weekly', priority: 0.5 },
   ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/funkce/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 }))
 ];
 

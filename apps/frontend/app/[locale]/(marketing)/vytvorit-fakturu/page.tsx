@@ -3,6 +3,7 @@ import { Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { GuestAccountCta } from '@/components/account-cta';
 import { GuestInvoiceForm } from './guest-invoice-form';
 
 /**
@@ -46,6 +47,7 @@ export default async function GuestInvoicePage({ params }: { params: Promise<{ l
           </li>
         ))}
       </ul>
+      <GuestAccountCta />
       {/* Clarity (consent-gated session recording on public pages) must
           never record what visitors type here: names, addresses, amounts,
           the AI prompt. data-clarity-mask hides the whole subtree. */}
