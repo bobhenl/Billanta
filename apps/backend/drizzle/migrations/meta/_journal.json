@@ -330,6 +330,13 @@
       "when": 1792801100000,
       "tag": "0046_exchange_rate_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1792801500000,
+      "tag": "0050_registries_buyer_details",
+      "breakpoints": true
     }
   ]
 }

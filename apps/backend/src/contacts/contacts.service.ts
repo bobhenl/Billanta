@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import {
+  checkVatPayer,
+  isEuCountry,
+  type VatPayerCheck,
   getRpoSubjectByIco,
   getSubjectByIco,
   lookupPoland,
@@ -56,6 +59,20 @@ const MAX_IMPORT_ROWS = 5000;
 
 const REGISTRY_SEARCH_TTL_MS = 60 * 60 * 1000;
 const REGISTRY_SEARCH_MAX = 2000;
+const VAT_CHECK_TTL_MS = 6 * 60 * 60 * 1000;
+const VAT_CHECK_RETRY_MS = 10 * 60 * 1000;
+
+/**
+ * Which register a country's companies are looked up in. CZ (the default
+ * country of every form) stays "auto" so a Slovak company typed into a
+ * fresh form is still found; unknown or blank countries search everything.
+ */
+export function registryForCountry(country: string | null | undefined): CompanyRegistry {
+  const c = (country ?? "").trim().toUpperCase();
+  if (!c || c === "CZ") return "auto";
+  if ((COMPANY_REGISTRIES as readonly string[]).includes(c)) return c as CompanyRegistry;
+  return isEuCountry(c) ? "EU" : "auto";
+}
 
 @Injectable()
 export class ContactsService {
@@ -77,6 +94,7 @@ export class ContactsService {
    * cache is shared across tenants; per-tenant contacts are never cached.
    */
   private readonly registryHits = new Map<string, { at: number; hits: AresContactPrefill[] }>();
+  private readonly vatChecks = new Map<string, { at: number; check: VatPayerCheck | null }>();
 
   private rememberRegistryHits(key: string, hits: AresContactPrefill[]) {
     if (this.registryHits.size >= REGISTRY_SEARCH_MAX) {
@@ -200,6 +218,7 @@ export class ContactsService {
         ico: dto.ico,
         dic: dto.dic,
         email: dto.email,
+        phone: dto.phone || null,
         addressStreet: dto.addressStreet ?? null,
         addressCity: dto.addressCity ?? null,
         addressPostalCode: dto.addressPostalCode ?? null,
@@ -300,8 +319,22 @@ export class ContactsService {
       .orderBy(desc(schema.contacts.isStarred), asc(schema.contacts.legalName))
       .limit(8);
 
+    const ares = registry === "none" ? [] : await this.registrySearch(q, registry);
+
+    const known = new Set(contacts.flatMap((c) => [c.ico, c.dic]).filter(Boolean));
+    return { contacts, ares: ares.filter((a) => !known.has(a.ico || a.dic)) };
+  }
+
+  /**
+   * Company registers only (no contacts), cached for an hour and shared
+   * across tenants because the data is public. Never throws: an outage
+   * means no hits. Also behind the public company lookup
+   * (`v1/public/company-lookup`), so keep it free of tenant data.
+   */
+  async registrySearch(rawQuery: string, registry: CompanyRegistry = "auto"): Promise<AresContactPrefill[]> {
+    const q = rawQuery.trim().slice(0, 120);
+    if (q.length < 2 || registry === "none") return [];
     let ares: AresContactPrefill[] = [];
-    if (registry === "none") return { contacts, ares };
     const cacheKey = `${registry}:${q.toLowerCase()}`;
     const cached = this.registryHits.get(cacheKey);
     if (cached && cached.at > Date.now() - REGISTRY_SEARCH_TTL_MS) {
@@ -336,9 +369,40 @@ export class ContactsService {
     } catch {
       ares = [];
     }
+    return ares;
+  }
 
-    const known = new Set(contacts.flatMap((c) => [c.ico, c.dic]).filter(Boolean));
-    return { contacts, ares: ares.filter((a) => !known.has(a.ico || a.dic)) };
+  /**
+   * VAT registration of a DIČ / EU VAT number: the CZ register of VAT
+   * payers (ADIS) for CZ, VIES elsewhere. Cached in memory (6 h for an
+   * answer, 10 min for "unknown" so an outage is retried soon). Never throws.
+   */
+  async vatCheck(rawVatId: string): Promise<VatPayerCheck | null> {
+    const key = rawVatId.replace(/[\s.-]/g, "").toUpperCase().slice(0, 20);
+    if (!key) return null;
+    const cached = this.vatChecks.get(key);
+    const ttl = cached?.check?.state === "unknown" ? VAT_CHECK_RETRY_MS : VAT_CHECK_TTL_MS;
+    if (cached && cached.at > Date.now() - ttl) return cached.check;
+    const check = await checkVatPayer(key, { timeoutMs: 6000 }).catch(() => null);
+    if (this.vatChecks.size >= REGISTRY_SEARCH_MAX) {
+      const oldest = this.vatChecks.keys().next().value;
+      if (oldest !== undefined) this.vatChecks.delete(oldest);
+    }
+    this.vatChecks.set(key, { at: Date.now(), check });
+    return check;
+  }
+
+  /**
+   * "Načíst z registru" for one IČO: the register of the given country
+   * first (RPO for SK, ARES otherwise; the other one as a fallback, since
+   * CZ and SK IČOs share the format). 404 when neither knows it.
+   */
+  async lookupById(ico: string, country?: string | null): Promise<AresContactPrefill> {
+    if ((country ?? "").toUpperCase() === "SK") {
+      const sk = await this.rpoLookup(ico).catch(() => null);
+      if (sk) return sk;
+    }
+    return this.aresLookup(ico);
   }
 
   /**

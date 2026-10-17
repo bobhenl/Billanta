@@ -36,6 +36,7 @@ import { getCnbRate } from "../exports/cnb-rates";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
+import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
 import { BuyerDetailsService } from "./buyer-details.service";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
@@ -43,6 +44,9 @@ const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
 const buyerDetailsRequestSchema = z.object({
   email: z.string().trim().max(200).email().optional().or(z.literal("")),
   autoIssue: z.boolean().optional(),
+  // Which fields the customer must fill in; omitted = the company default.
+  required: z.array(z.enum(BUYER_DETAILS_FIELDS)).max(4).optional(),
+  saveAsDefault: z.boolean().optional(),
 });
 
 class BitfakturaImportDto extends createZodDto(
@@ -253,6 +257,8 @@ export class InvoicesController {
     return this.buyerDetails.request(req.tenantDb!, req.user!.tenantId, req.user!.id, id, {
       email: parsed.data.email || null,
       autoIssue: parsed.data.autoIssue,
+      required: parsed.data.required,
+      saveAsDefault: parsed.data.saveAsDefault,
     });
   }
 

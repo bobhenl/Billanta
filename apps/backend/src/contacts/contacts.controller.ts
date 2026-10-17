@@ -58,6 +58,12 @@ export class ContactsController {
     return this.contactsService.search(req.tenantDb!, q, picked);
   }
 
+  @Get("vat-check")
+  @ApiOperation({ summary: "VAT registration of a DIČ: CZ register of VAT payers (ADIS, incl. unreliable payer and published accounts), VIES for other EU states" })
+  vatCheck(@Query("dic") dic = "") {
+    return this.contactsService.vatCheck(dic);
+  }
+
   @Get("addresses")
   @ApiOperation({ summary: "Address typeahead: RÚIAN via ARES for CZ, OpenStreetMap (Photon) for other countries" })
   addresses(@Query("q") q = "", @Query("country") country = "CZ") {
@@ -156,6 +162,6 @@ export class ContactsController {
       "Returns 404 if the IČO doesn't resolve to a registered subject.",
   })
   aresLookup(@Body() dto: AresLookupDto) {
-    return this.contactsService.aresLookup(dto.ico);
+    return this.contactsService.lookupById(dto.ico, dto.country);
   }
 }
