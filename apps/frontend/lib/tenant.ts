@@ -1,6 +1,14 @@
+import type { VatStatus } from '@faktur/cz-compliance';
 import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
 import { apiFetch, fetchMyCompanies } from './api-client';
+
+/** OSVČ monthly advances typed in Settings → Firma; a missing key = not set. */
+export type TaxAdvances = Partial<Record<'social' | 'health' | 'flat_tax', number>>;
+export const ADVANCE_KINDS = ['social', 'health', 'flat_tax'] as const;
+
+export const vatStatusOf = (t: Pick<TenantSettings, 'vatStatus' | 'dicVatPayer'> | null | undefined): VatStatus =>
+  t?.vatStatus ?? (t?.dicVatPayer ? 'payer' : 'non_payer');
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
 export interface TenantSettings {
@@ -9,7 +17,12 @@ export interface TenantSettings {
   legalName: string;
   ico: string | null;
   dic: string | null;
+  /** Legacy, equal to vatStatus === 'payer'. */
   dicVatPayer: boolean;
+  /** Optional so an older backend without it still renders (then derived from dicVatPayer, see vatStatusOf). */
+  vatStatus?: VatStatus;
+  /** OSVČ monthly advances for the dashboard deadlines. */
+  taxAdvances?: TaxAdvances;
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;

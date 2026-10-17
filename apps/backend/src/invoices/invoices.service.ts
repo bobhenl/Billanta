@@ -1289,8 +1289,8 @@ export class InvoicesService {
 
     const law = checkInvoiceRequirements({
       supplier: { ...tenantToIsdocParty(tenant), registryNote: tenant.registryNote ?? undefined },
-      customer: contact ? contactToIsdocParty(contact) : undefined,
-      vatPayer: tenant.dicVatPayer,
+      customer: contact ? { ...contactToIsdocParty(contact), isPerson: contact.isPerson } : undefined,
+      vatStatus: tenant.vatStatus,
       reverseCharge: invoice.reverseCharge,
       taxDocument: invoice.documentType === "invoice" || invoice.documentType === "credit_note",
       lines: lineItems.map((l) => ({ description: l.description, quantity: Number(l.quantity) })),

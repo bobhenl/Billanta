@@ -4,7 +4,7 @@ import { displayCustomField, documentVars } from "./custom-fields";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { Injectable } from "@nestjs/common";
-import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, qrInvoiceForSpayd } from "@faktur/cz-compliance";
+import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, isEuReverseChargeService, qrInvoiceForSpayd } from "@faktur/cz-compliance";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
@@ -14,6 +14,26 @@ import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-for
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
 type TenantRow = typeof schema.tenants.$inferSelect;
+
+/**
+ * Which reverse-charge note the document prints: "eu" for a service to a
+ * business in another EU state (from a payer with reverse charge ticked, or
+ * from an identified person, who charges no VAT and so never ticks it),
+ * "domestic" for the §92a note, else none.
+ */
+export function reverseChargeNoteKind(
+  invoice: Pick<InvoiceRow, "documentType" | "reverseCharge">,
+  tenant: Pick<TenantRow, "vatStatus" | "addressCountry">,
+  contact?: Pick<ContactRow, "ico" | "dic" | "isPerson" | "addressCountry">,
+): "eu" | "domestic" | null {
+  const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
+  const customer = contact
+    ? { ico: contact.ico ?? undefined, dic: contact.dic ?? undefined, isPerson: contact.isPerson, address: { countryCode: contact.addressCountry } }
+    : undefined;
+  const euService = taxDocument && isEuReverseChargeService(tenant.vatStatus, tenant.addressCountry, customer);
+  if (euService && (invoice.reverseCharge || tenant.vatStatus === "identified")) return "eu";
+  return invoice.reverseCharge ? "domestic" : null;
+}
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type RelatedDocument = { invoiceNumber: string | null; documentType: InvoiceRow["documentType"] } | null;
 type Lang = "cs" | "sk" | "en";
@@ -76,6 +96,8 @@ const L = {
     qr: "QR platba",
     qrInvoice: "QR Faktura",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
+    // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
+    reverseChargeEu: "Daň odvede zákazník.",
     proformaNote: "Zálohová faktura není daňovým dokladem.",
     fxRate: "Kurz ČNB",
     vatInCzk: "DPH v CZK",
@@ -130,6 +152,7 @@ const L = {
     qr: "QR platba",
     qrInvoice: "QR faktúra",
     reverseCharge: "Prenesenie daňovej povinnosti.",
+    reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
     vatInCzk: "DPH v CZK",
     totalInCzk: "Spolu v CZK",
@@ -184,6 +207,7 @@ const L = {
     qr: "QR payment",
     qrInvoice: "QR invoice",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
+    reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
     vatInCzk: "VAT in CZK",
     totalInCzk: "Total in CZK",
@@ -275,7 +299,7 @@ export class InvoicePdfService {
     this.renderLineItemsTable(doc, t, lineItems, invoice);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs));
     if (qr) this.renderPaymentQr(doc, qr.payment ? t.qr : t.qrInvoice, qr.png, totalsTop);
-    this.renderFooterNotes(doc, t, invoice, tenant, fill);
+    this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
 
     doc.end();
@@ -631,15 +655,26 @@ export class InvoicePdfService {
     doc.y = Math.max(doc.y, top + 120);
   }
 
+  /**
+   * "Daň odvede zákazník": a service to a business in another EU state (§29/2c
+   * ZDPH) – also from an identified person, who never ticks reverse charge
+   * because it charges no VAT; otherwise the domestic reverse-charge note.
+   */
+  private reverseChargeNote(t: (typeof L)[Lang], invoice: InvoiceRow, tenant: TenantRow, contact?: ContactRow): string | null {
+    const kind = reverseChargeNoteKind(invoice, tenant, contact);
+    return kind === "eu" ? t.reverseChargeEu : kind === "domestic" ? t.reverseCharge : null;
+  }
+
   private renderFooterNotes(
     doc: PDFKit.PDFDocument,
     t: (typeof L)[Lang],
     invoice: InvoiceRow,
     tenant: TenantRow,
     fill: (text: string | null) => string | null,
+    contact?: ContactRow,
   ): void {
     const notes = [
-      invoice.reverseCharge ? t.reverseCharge : null,
+      this.reverseChargeNote(t, invoice, tenant, contact),
       invoice.documentType === "proforma" ? t.proformaNote : null,
       invoice.documentType !== "quote" && invoice.paymentInstructions
         ? `${invoice.paymentMethodLabel || t.methods[invoice.paymentMethod]}: ${fill(invoice.paymentInstructions)}`

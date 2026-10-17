@@ -1,6 +1,7 @@
 import { paymentMethodsSchema } from "../payment-methods";
 import { publicProfileSchema } from "../public-profile";
 import { templateVarsSchema } from "../template-vars";
+import { VAT_STATUSES } from "@faktur/cz-compliance";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { emailPrefsSchema } from "../email-prefs";
@@ -22,7 +23,18 @@ export const updateTenantSchema = z
       .string()
       .regex(/^[A-Z]{2}\d{8,10}$/)
       .nullish(),
+    /** Legacy: true = payer, false = non_payer (an identified person stays identified). `vat_status` wins when both are sent. */
     dic_vat_payer: z.boolean(),
+    vat_status: z.enum(VAT_STATUSES),
+    /** OSVČ monthly advances shown on the dashboard; a missing or null key = not set. */
+    tax_advances: z
+      .object({
+        social: z.number().nonnegative().max(10_000_000).nullable(),
+        health: z.number().nonnegative().max(10_000_000).nullable(),
+        flat_tax: z.number().nonnegative().max(10_000_000).nullable(),
+      })
+      .partial()
+      .strict(),
     address_street: text(200),
     address_city: text(100),
     address_postal_code: text(10),

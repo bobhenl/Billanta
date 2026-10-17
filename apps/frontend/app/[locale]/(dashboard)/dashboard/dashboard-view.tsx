@@ -47,12 +47,20 @@ import { STATUS_BADGE_CLASSES, displayStatus, formatDate, formatMoney } from '@/
 import {
   TAX_DEADLINE_KINDS,
   defaultTaxDeadlineKinds,
-  mergeTaxDeadlines,
+  relevantTaxDeadlineKinds,
+  taxDeadlinesFor,
   type OfficialTaxEvent,
+  type TaxProfile,
   type TaxDeadline,
   type TaxDeadlineKind
 } from '@/lib/tax-deadlines';
+import type { VatStatus } from '@faktur/cz-compliance';
+import type { TaxAdvances } from '@/lib/tenant';
 import { formatElapsed, formatMinutes, type TimeSummary } from '@/lib/time-ui';
+
+const DEFAULT_PROFILE: TaxProfile = { country: 'CZ', vatStatus: 'non_payer', legalEntity: false };
+/** Advances entered in Settings → Firma; without one the deadline links there. */
+const SETTINGS_ADVANCE_KINDS: TaxDeadlineKind[] = ['social', 'health', 'flat_tax'];
 import { minimumsFor, type MinimumKind } from '@/lib/tax-minimums';
 import { cn } from '@/lib/utils';
 import { saveDashboardConfig } from './actions';
@@ -136,7 +144,8 @@ export function DashboardView({
   summary,
   initialConfig,
   firstName,
-  vatPayer = false,
+  profile = DEFAULT_PROFILE,
+  advances = {},
   country = 'CZ',
   time = null,
   stats = null
@@ -144,7 +153,10 @@ export function DashboardView({
   summary: DashboardSummary;
   initialConfig: DashboardConfig | null;
   firstName: string | null;
-  vatPayer?: boolean;
+  /** VAT status, country and legal form: decides which deadlines apply. */
+  profile?: TaxProfile;
+  /** Advances typed in Settings → Firma (win over the dashboard amounts). */
+  advances?: TaxAdvances;
   /** Company country: an SK company books its insurance as an expense from the deadline card. */
   country?: string;
   time?: TimeSummary | null;
@@ -286,7 +298,7 @@ export function DashboardView({
       )}
 
       {time && <TimeCard time={time} />}
-      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, vatPayer)} amounts={config.taxAmounts ?? {}} country={country} />}
+      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} amounts={{ ...(config.taxAmounts ?? {}), ...advances }} country={country} />}
       {(config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
@@ -335,7 +347,7 @@ export function DashboardView({
         open={customizing}
         onClose={() => setCustomizing(false)}
         config={config}
-        vatPayer={vatPayer}
+        profile={profile}
         country={country}
         onSaved={(next) => {
           setConfig(next);
@@ -432,14 +444,14 @@ function CustomizeModal({
   onClose,
   config,
   onSaved,
-  vatPayer,
+  profile,
   country
 }: {
   open: boolean;
   onClose: () => void;
   config: DashboardConfig;
   onSaved: (config: DashboardConfig) => void;
-  vatPayer: boolean;
+  profile: TaxProfile;
   country: string;
 }) {
   const t = useTranslations('dashboard');
@@ -457,7 +469,7 @@ function CustomizeModal({
     showFxRates: config.showFxRates ?? true
   });
   const [fx, setFx] = useState<string[]>(config.fxCurrencies ?? DEFAULT_FX);
-  const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, vatPayer));
+  const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, profile.vatStatus));
   const [taxAmounts, setTaxAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(Object.entries(config.taxAmounts ?? {}).map(([k, v]) => [k, String(v)]))
   );
@@ -508,7 +520,7 @@ function CustomizeModal({
               setTiles(DEFAULT_TILES);
               setSections({ showChart: true, showRecent: true, showTopCustomers: true, showDueSoon: true, showTaxDeadlines: true, showFxRates: true });
               setFx(DEFAULT_FX);
-              setTaxKinds(defaultTaxDeadlineKinds(vatPayer));
+              setTaxKinds(defaultTaxDeadlineKinds(profile.vatStatus));
             }}
           >
             {t('customizeReset')}
@@ -516,7 +528,7 @@ function CustomizeModal({
           <button type="button" className={buttonClass.secondary} onClick={onClose}>
             {t('cancel')}
           </button>
-          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(vatPayer)) ? null : taxKinds, fxCurrencies: sameKinds(fx, DEFAULT_FX) ? null : fx, taxAmounts: amountsOf(taxAmounts, taxKinds) })}>
+          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(profile.vatStatus)) ? null : taxKinds, fxCurrencies: sameKinds(fx, DEFAULT_FX) ? null : fx, taxAmounts: amountsOf(taxAmounts, taxKinds) })}>
             {t('save')}
           </button>
         </>
@@ -612,7 +624,7 @@ function CustomizeModal({
             <InfoHint hint={t('taxDeadlines.customizeHint')}>{t('taxDeadlines.customizeTitle')}</InfoHint>
           </h3>
           <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
-            {TAX_DEADLINE_KINDS.map((kind) => (
+            {relevantTaxDeadlineKinds(TAX_DEADLINE_KINDS, profile).map((kind) => (
               <label key={kind} className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
@@ -679,16 +691,40 @@ function amountsOf(input: Record<string, string>, kinds: TaxDeadlineKind[]): Rec
 
 const sameKinds = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((k) => b.includes(k));
 
-function taxKindsOf(config: DashboardConfig, vatPayer: boolean): TaxDeadlineKind[] {
-  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(vatPayer);
+function taxKindsOf(config: DashboardConfig, vatStatus: VatStatus): TaxDeadlineKind[] {
+  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(vatStatus);
   return TAX_DEADLINE_KINDS.filter((k) => config.taxDeadlines!.includes(k));
 }
 
 /** Upcoming Czech tax & insurance due days (calendar only, weekends/holidays shifted). */
-function TaxDeadlines({ kinds, amounts, country }: { kinds: TaxDeadlineKind[]; amounts: Record<string, number>; country: string }) {
+function TaxDeadlines({
+  kinds,
+  profile,
+  amounts,
+  country
+}: {
+  kinds: TaxDeadlineKind[];
+  profile: TaxProfile;
+  amounts: Record<string, number | undefined>;
+  country: string;
+}) {
   const t = useTranslations('dashboard.taxDeadlines');
   const locale = useLocale();
   const kindsKey = kinds.join(',');
+  // Months with EU services / foreign purchases decide souhrnné hlášení and the identified person's return.
+  const needsActivity = kinds.includes('ec_sales_list') || kinds.includes('vat_identified');
+  const [activity, setActivity] = useState<TaxProfile['activity'] | null | undefined>(needsActivity ? undefined : null);
+  useEffect(() => {
+    if (!needsActivity) return;
+    let alive = true;
+    fetch('/api/dashboard/vat-activity')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json: TaxProfile['activity'] | null) => alive && setActivity(json?.euSalesMonths ? json : null))
+      .catch(() => alive && setActivity(null));
+    return () => {
+      alive = false;
+    };
+  }, [needsActivity]);
   // Official rows load on the client (the first fetch from Finanční správa can
   // take a few seconds); "today" is the browser's, so server and client agree.
   const [official, setOfficial] = useState<OfficialTaxEvent[] | null | undefined>(undefined);
@@ -702,9 +738,17 @@ function TaxDeadlines({ kinds, amounts, country }: { kinds: TaxDeadlineKind[]; a
       alive = false;
     };
   }, []);
+  const { country: pCountry, vatStatus, legalEntity } = profile;
   const items = useMemo<TaxDeadline[] | null>(
-    () => (official === undefined ? null : mergeTaxDeadlines(kindsKey ? (kindsKey.split(',') as TaxDeadlineKind[]) : [], official).slice(0, 6)),
-    [official, kindsKey]
+    () =>
+      official === undefined || activity === undefined
+        ? null
+        : taxDeadlinesFor(
+            kindsKey ? (kindsKey.split(',') as TaxDeadlineKind[]) : [],
+            { country: pCountry, vatStatus, legalEntity, activity: activity ?? undefined },
+            official
+          ).slice(0, 6),
+    [official, activity, kindsKey, pCountry, vatStatus, legalEntity]
   );
   if (!items || items.length === 0) return null;
   const fmt = new Intl.DateTimeFormat(locale, { weekday: 'short', day: 'numeric', month: 'numeric' });
@@ -728,14 +772,23 @@ function TaxDeadlines({ kinds, amounts, country }: { kinds: TaxDeadlineKind[]; a
             <span className="w-24 shrink-0 font-semibold tabular-nums">{fmt.format(item.date)}</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate">{t(`kinds.${item.kind}`)}</span>
+              {item.conditional && (
+                <span className="block text-xs text-muted-foreground">{t(item.kind === 'ec_sales_list' ? 'onlyIfEuSales' : 'onlyIfForeignPurchase')}</span>
+              )}
               {item.details && (
                 <span className="block truncate text-xs text-muted-foreground" title={item.details.join('\n')}>
                   {item.details.join(' · ')}
                 </span>
               )}
             </span>
-            {amounts[item.kind] !== undefined && (
+            {amounts[item.kind] !== undefined ? (
               <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amounts[item.kind]!, currency, locale)}</span>
+            ) : (
+              SETTINGS_ADVANCE_KINDS.includes(item.kind) && (
+                <Link href="/settings/company#zalohy" className="shrink-0 text-xs font-semibold text-primary hover:underline">
+                  {t('fillAmount')}
+                </Link>
+              )
             )}
             {country === 'SK' && SK_EXPENSE_KINDS.includes(item.kind) && (
               <Link href={expenseHref(item.kind)} className="shrink-0 text-xs font-semibold text-primary hover:underline">

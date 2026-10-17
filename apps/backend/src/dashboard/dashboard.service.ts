@@ -5,6 +5,7 @@ import * as schema from "../../drizzle/schema";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
+import { vatActivity, type VatActivity } from "./vat-activity";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -273,6 +274,43 @@ export class DashboardService {
       previous: periodTotals(docs, expenses, prevStart, start),
       ...periodBreakdown(docs, expenses, start, end),
     };
+  }
+
+  /** Months (last three) with EU service sales and purchases from abroad, for the conditional VAT deadlines. */
+  async vatActivity(db: Db, tenantId: string, now = new Date()): Promise<VatActivity> {
+    const since = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+    const [tenant] = await db.select({ country: schema.tenants.addressCountry }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
+    const invoices = await db
+      .select({
+        documentType: schema.invoices.documentType,
+        invoiceNumber: schema.invoices.invoiceNumber,
+        status: schema.invoices.status,
+        supplyDate: schema.invoices.taxableSupplyDate,
+        issueDate: schema.invoices.issueDate,
+        ico: schema.contacts.ico,
+        dic: schema.contacts.dic,
+        isPerson: schema.contacts.isPerson,
+        country: schema.contacts.addressCountry,
+      })
+      .from(schema.invoices)
+      .innerJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
+      .where(gte(schema.invoices.issueDate, since));
+    const expenses = await db
+      .select({ date: schema.expenses.expenseDate, supplierDic: schema.expenses.supplierDic, supplierCountry: schema.contacts.addressCountry })
+      .from(schema.expenses)
+      .leftJoin(schema.contacts, eq(schema.contacts.id, schema.expenses.supplierContactId))
+      .where(gte(schema.expenses.expenseDate, since));
+    return vatActivity(
+      tenant?.country ?? "CZ",
+      invoices.map((i) => ({
+        documentType: i.documentType,
+        invoiceNumber: i.invoiceNumber,
+        status: i.status,
+        date: i.supplyDate ?? i.issueDate,
+        customer: { ico: i.ico, dic: i.dic, isPerson: i.isPerson, country: i.country },
+      })),
+      expenses,
+    );
   }
 
   async getConfig(db: Db, tenantId: string, userId: string): Promise<DashboardConfig> {
