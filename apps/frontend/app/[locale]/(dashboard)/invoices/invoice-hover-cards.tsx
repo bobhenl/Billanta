@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
+import { formatDate, formatMoney, fxLabelOf, type InvoiceRow } from '@/lib/invoice-ui';
 
 const OPEN_DELAY_MS = 300;
 const CLOSE_DELAY_MS = 150;
@@ -126,8 +126,13 @@ export function AmountHover({ row, children }: { row: InvoiceRow; children: Reac
   if (row.currency !== 'CZK' && rate) {
     const amount = formatMoney(row.total * rate, 'CZK', locale);
     const rateText = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(rate);
-    const date = formatDate(row.taxableSupplyDate ?? row.issueDate, locale);
-    info = date ? t('fx', { amount, rate: rateText, date }) : t('fxNoDate', { amount, rate: rateText });
+    const fx = fxLabelOf(row);
+    if (fx.kind === 'annual' && fx.year) info = t('fxAnnual', { amount, rate: rateText, year: fx.year });
+    else if (fx.kind === 'manual' || fx.kind === 'hidden') info = t('fxManual', { amount, rate: rateText });
+    else {
+      const date = formatDate(fx.kind === 'on' ? fx.date : (row.taxableSupplyDate ?? row.issueDate), locale);
+      info = date ? t('fx', { amount, rate: rateText, date }) : t('fxNoDate', { amount, rate: rateText });
+    }
   } else if (row.currency === 'CZK' && row.totalVat !== 0) {
     info = t('breakdown', { base: formatMoney(row.totalWithoutVat, 'CZK', locale), vat: formatMoney(row.totalVat, 'CZK', locale) });
   }

@@ -439,6 +439,8 @@
     "hover": {
       "fx": "≈ {amount} (kurz ČNB {rate} ze dne {date})",
       "fxNoDate": "≈ {amount} (kurz ČNB {rate})",
+      "fxAnnual": "≈ {amount} (jednotný kurz {rate} pro rok {year})",
+      "fxManual": "≈ {amount} (kurz {rate})",
       "breakdown": "Základ {base} + DPH {vat}",
       "loading": "Načítám…",
       "error": "Souhrn se nepodařilo načíst.",
@@ -2001,6 +2003,29 @@
       "readOnly": "Nastavení může měnit jen vlastník nebo administrátor.",
       "fieldsTitle": "Zobrazená pole",
       "fieldsHint": "Zaškrtnutá pole jsou ve formuláři vždy vidět. Pole, které už má na dokladu hodnotu, se zobrazí vždy.",
+      "rate": {
+        "title": "Kurz u faktur v cizí měně",
+        "hint": "Jak se částka v cizí měně přepočítá na koruny. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
+        "modes": {
+          "cnb_daily": "Denní kurz ČNB",
+          "annual": "Jednotný kurz na rok",
+          "none": "Přepočet na CZK netisknout"
+        },
+        "cnbDailyHint": "Kurz ČNB ze dne uskutečnění plnění (DUZP). Když ČNB ten den kurz nevyhlásila, použije se poslední předchozí.",
+        "annualHint": "Jeden kurz pro celý rok podle § 38 zákona o DPH. Zadáte ho níže pro každý rok a měnu. Pro rok bez zadaného kurzu se použije denní kurz ČNB.",
+        "noneHint": "Na dokladu nebude přepočet na koruny. Kurz ČNB se i tak uloží pro vaše přehledy.",
+        "noneIdentified": "Platí jen pro doklady bez DPH. Když doklad DPH obsahuje, přepočet se vytiskne.",
+        "nonePayer": "Plátce DPH musí mít na dokladu přepočet na koruny, proto tuhle volbu použít nejde. Faktury se vystaví s kurzem ČNB.",
+        "annualTitle": "Jednotné kurzy",
+        "annualEmpty": "Zatím žádný kurz. Přidejte rok a měnu.",
+        "year": "Rok",
+        "currency": "Měna",
+        "rate": "Kurz",
+        "perUnit": "CZK za 1 {currency}",
+        "remove": "Odebrat kurz",
+        "duplicate": "Každý rok a měna smí být v seznamu jen jednou.",
+        "add": "Přidat kurz"
+      },
       "groups": {
         "items": "Položky",
         "dates": "Data a platba",
@@ -3389,6 +3414,7 @@
       "setup": "Nastavit AI"
     },
     "customer": {
+      "draftWithout": "Odběratele můžete doplnit později. Koncept jde uložit i bez něj a poslat mu odkaz, ať si údaje vyplní sám.",
       "title": "Odběratel",
       "hint": "Hledejte podle názvu nebo IČO. Našeptávač ukáže vaše kontakty a firmy z registru ARES; firma z ARES se při uložení faktury přidá do kontaktů i s adresou.",
       "placeholder": "Název firmy nebo IČO",
@@ -3445,7 +3471,7 @@
     "save": "Uložit koncept",
     "saveNote": "Koncept dostane číslo až při vystavení.",
     "errors": {
-      "customer_required": "Vyberte odběratele.",
+      "customer_required": "Bez odběratele jde uložit jen koncept. Před vystavením ho vyberte.",
       "items_required": "Přidejte alespoň jednu položku.",
       "save_failed": "Fakturu se nepodařilo uložit. Zkuste to znovu.",
       "not_allowed": "Na tuto akci nemáte oprávnění nebo neaktivní předplatné.",
@@ -3506,6 +3532,7 @@
       "more": "Konstantní / specifický symbol, objednávka",
       "exchangeRate": "Kurz CZK/{currency}",
       "exchangeRateAuto": "Kurz ČNB při vystavení",
+      "exchangeRateAnnual": "Jednotný kurz {rate} (rok {year})",
       "exchangeRateLoad": "Načíst z ČNB",
       "exchangeRateFailed": "Kurz ČNB se nepodařilo načíst.",
       "inCzk": "≈ {amount} celkem",
@@ -3642,7 +3669,7 @@
     "vatAt": "DPH {rate} %",
     "reverseChargeNote": "Daň odvede zákazník (přenesená daňová povinnost).",
     "customer": "Odběratel",
-    "noCustomer": "Odběratel zatím není vybrán.",
+    "noCustomer": "Odběratel zatím nevyplněn",
     "sellerSnapshotNote": "Údaje dodavatele podle stavu ke dni vystavení",
     "buyerSnapshotNote": "Údaje odběratele podle stavu ke dni vystavení",
     "details": "Údaje dokladu",
@@ -3786,7 +3813,12 @@
       "partial": "Částečná úhrada zaznamenána.",
       "rotated": "Nový odkaz vydán, starý už nefunguje"
     },
-    "fxLine": "Kurz ČNB {rate} CZK/{currency} · DPH {vat} · celkem {total}",
+    "fxLine": "{label} {rate} CZK/{currency} · DPH {vat} · celkem {total}",
+    "fxLabel": "Kurz ČNB",
+    "fxLabelOn": "Kurz ČNB k {date}",
+    "fxLabelAnnual": "Jednotný kurz pro rok {year}",
+    "fxLabelManual": "Kurz",
+    "fxHidden": "Přepočet na CZK se na dokladu netiskne (kurz {rate} CZK/{currency} jen pro přehledy).",
     "views": {
       "title": "Sdílený odkaz",
       "count": "Zobrazeno",

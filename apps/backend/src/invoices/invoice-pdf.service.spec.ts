@@ -1,3 +1,4 @@
+import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
@@ -215,5 +216,39 @@ describe("bilingualLabels", () => {
     );
     expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
     if (process.env.PDF_SAMPLE_OUT) require("node:fs").writeFileSync(process.env.PDF_SAMPLE_OUT, pdf);
+  });
+});
+
+describe("InvoicePdfService exchange rate line", () => {
+  /** Every string the renderer wrote, for a EUR document with these rate fields. */
+  async function printed(over: Partial<InvoiceRow>) {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const lineItems = makeLineItems();
+    await new InvoicePdfService().generate(
+      makeInvoice({ currency: "EUR", exchangeRate: "25.120000", taxableSupplyDate: new Date("2026-03-14T10:00:00Z"), ...over }),
+      makeContact(),
+      makeTenant(),
+      lineItems,
+      computeVatBreakdown(lineItems),
+    );
+    const out = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    return out;
+  }
+
+  it("names the ČNB list day for a daily rate", async () => {
+    expect(await printed({ exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" })).toContain("Kurz ČNB k 13.03.2026 25,12 CZK/EUR");
+  });
+  it("names the year for an annual rate", async () => {
+    expect(await printed({ exchangeRateMode: "annual", exchangeRateDate: "2026-01-01", exchangeRate: "24.600000" })).toContain(
+      "Jednotný kurz pro rok 2026 24,6 CZK/EUR",
+    );
+  });
+  it("prints no conversion when hidden", async () => {
+    const out = await printed({ exchangeRateMode: "none" });
+    expect(out.some((s) => s.includes("CZK/EUR") || s.startsWith("Celkem v CZK"))).toBe(false);
+  });
+  it("keeps the old line for documents issued before the setting", async () => {
+    expect(await printed({ exchangeRateMode: null, exchangeRateDate: null })).toContain("Kurz ČNB 25,12 CZK/EUR");
   });
 });

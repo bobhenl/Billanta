@@ -81,7 +81,8 @@ export interface FormItem {
 
 /** Everything the form sends; maps 1:1 onto the backend's `invoiceFieldsSchema`. */
 export interface InvoiceDraftInput {
-  customer: { kind: 'contact'; id: string } | { kind: 'ares'; ares: AresPrefill };
+  /** null = no customer yet: fine for a draft (they can fill in their own details via a link), not for issuing. */
+  customer: { kind: 'contact'; id: string } | { kind: 'ares'; ares: AresPrefill } | null;
   documentType: DocumentType;
   issueDate: string;
   dueDate: string;
@@ -179,6 +180,21 @@ export interface InvoiceFormPrefs {
   defaultContactId: string | null;
   defaultItems: DefaultItem[];
   defaultNoteAbove: string | null;
+  /** Kurz pro cizí měny (backend invoices/exchange-rate-mode.ts). */
+  exchangeRateMode: ExchangeRateSetting;
+  annualRates: AnnualRate[];
+}
+
+/** Daily ČNB rate, the company's annual rate (§38 odst. 2 ZDPH), or no conversion printed (non-payers only). */
+export type ExchangeRateSetting = 'cnb_daily' | 'annual' | 'none';
+/** What an issued document stored; null = issued before the setting existed. */
+export type StoredRateMode = 'cnb_daily' | 'annual' | 'manual' | 'none';
+
+/** One "jednotný kurz": CZK per 1 unit of `currency` for the calendar year. */
+export interface AnnualRate {
+  year: number;
+  currency: string;
+  rate: number;
 }
 
 /** A line item a blank invoice starts with. */

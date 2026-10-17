@@ -215,6 +215,20 @@ describe("resolveBuyerContact", () => {
     expect(r.filled).toEqual([]);
     expect(r.conflicts.map((c) => c.field)).toEqual(["email", "dic", "address"]);
   });
+  it("creates a contact for a draft without a customer when nothing matches", () => {
+    const r = resolveBuyerContact({ attached: null, match: null, submitted: details() });
+    expect(r.mode).toBe("created");
+    expect(r.mode === "created" && r.values).toMatchObject({ legalName: "Nová firma s.r.o.", ico: "12345678", dic: "CZ12345678" });
+  });
+  it("on a draft without a customer, uses a saved contact found by IČO/DIČ but never writes to it", () => {
+    const saved = contact({ id: "c-saved", ico: "12345678", email: null });
+    const r = resolveBuyerContact({ attached: null, match: saved, submitted: details() });
+    expect(r.mode).toBe("existing");
+    expect(r.contactId).toBe("c-saved");
+    expect(r.mode !== "created" && r.patch).toEqual({});
+    expect(r.filled).toEqual([]);
+    expect(r.conflicts.map((c) => c.field)).toEqual(["email", "dic", "address"]);
+  });
   it("flips private person only on a contact without IDs", () => {
     const person = resolveBuyerContact({ attached: contact(), match: null, submitted: details({ isPerson: true, ico: null, dic: null }) });
     expect(person.mode !== "created" && person.patch.isPerson).toBe(true);
@@ -240,5 +254,9 @@ describe("shouldAutoIssue", () => {
   });
   it("issues to a newly created contact", () => {
     expect(shouldAutoIssue(true, { conflicts: [], mode: "created", contactId: null }, "c-attached")).toBe(true);
+  });
+  it("on a draft without a customer: issues to a new contact, waits for a matched saved one", () => {
+    expect(shouldAutoIssue(true, { conflicts: [], mode: "created", contactId: null }, null)).toBe(true);
+    expect(shouldAutoIssue(true, { conflicts: [], mode: "existing", contactId: "c-saved" }, null)).toBe(false);
   });
 });

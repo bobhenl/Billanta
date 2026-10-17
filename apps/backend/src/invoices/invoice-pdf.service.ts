@@ -10,6 +10,7 @@ import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
 import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
+import { rateLineLabel } from "./exchange-rate-mode";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -100,6 +101,9 @@ const L = {
     reverseChargeEu: "Daň odvede zákazník.",
     proformaNote: "Zálohová faktura není daňovým dokladem.",
     fxRate: "Kurz ČNB",
+    fxRateOn: "Kurz ČNB k {date}",
+    fxRateAnnual: "Jednotný kurz pro rok {year}",
+    fxRateManual: "Kurz",
     vatInCzk: "DPH v CZK",
     totalInCzk: "Celkem v CZK",
     paid: "UHRAZENO",
@@ -154,6 +158,9 @@ const L = {
     reverseCharge: "Prenesenie daňovej povinnosti.",
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
+    fxRateOn: "Kurz ČNB k {date}",
+    fxRateAnnual: "Jednotný kurz pre rok {year}",
+    fxRateManual: "Kurz",
     vatInCzk: "DPH v CZK",
     totalInCzk: "Spolu v CZK",
     proformaNote: "Zálohová faktúra nie je daňovým dokladom.",
@@ -209,6 +216,9 @@ const L = {
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
+    fxRateOn: "ČNB rate as of {date}",
+    fxRateAnnual: "Fixed annual rate for {year}",
+    fxRateManual: "Exchange rate",
     vatInCzk: "VAT in CZK",
     totalInCzk: "Total in CZK",
     proformaNote: "A proforma invoice is not a tax document.",
@@ -630,11 +640,14 @@ export class InvoicePdfService {
       y += t.remaining.includes(BILINGUAL_SEPARATOR) ? 26 : 18;
     }
     // §29 ZDPH: a foreign-currency tax document states the VAT in CZK too.
+    // The label follows the mode stored at issue; "none" (non-payers only,
+    // see exchange-rate-mode.ts) prints no conversion.
     const rate = invoice.exchangeRate ? Number(invoice.exchangeRate) : null;
-    if (currency !== "CZK" && rate) {
+    const rateLabel = rateLineLabel(t, invoice, invoice.taxableSupplyDate ?? invoice.issueDate ?? null);
+    if (currency !== "CZK" && rate && rateLabel) {
       doc.font(REGULAR).fontSize(8.5).fillColor(MUTED);
       const rateText = rate.toLocaleString("cs-CZ", { maximumFractionDigits: 4 });
-      doc.text(`${t.fxRate} ${rateText} CZK/${currency}`, x, y, { width: 245 });
+      doc.text(`${rateLabel} ${rateText} CZK/${currency}`, x, y, { width: 245 });
       y += 12;
       doc.text(`${t.vatInCzk} ${this.formatAmount(totals.totalVat * rate, "CZK")}`, x, y, { width: 245 });
       y += 12;

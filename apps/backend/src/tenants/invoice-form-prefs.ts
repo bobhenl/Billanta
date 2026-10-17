@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EXCHANGE_RATE_SETTINGS } from "../invoices/exchange-rate-mode";
 
 /**
  * Settings → Invoices: which optional fields the invoice form shows
@@ -43,6 +44,16 @@ const defaultItemSchema = z
     unitPrice: i.unit_price,
     vatRate: i.vat_rate,
   }));
+
+/** One "jednotný kurz" (§38 odst. 2 ZDPH): CZK per 1 unit of `currency` for a calendar year. */
+const annualRateSchema = z.object({
+  year: z.number().int().min(2000).max(2100),
+  currency: z
+    .string()
+    .regex(/^[A-Z]{3}$/)
+    .refine((c) => c !== "CZK", "CZK needs no rate"),
+  rate: z.number().positive().max(1_000_000),
+});
 
 /** Accent colours offered for the PDF (title, total box); the first is the default. */
 export const PDF_ACCENTS = ["#4f46e5", "#2563eb", "#0d9488", "#16a34a", "#ea580c", "#e11d48", "#334155", "#111827"] as const;
@@ -91,6 +102,13 @@ export const invoiceFormPrefsSchema = z
     default_contact_id: z.string().uuid().nullish(),
     default_items: z.array(defaultItemSchema).max(MAX_DEFAULT_ITEMS).default([]),
     default_note_above: z.string().trim().max(2000).nullish(),
+    /** Kurz pro cizí měny: daily ČNB rate, the company's annual rate, or no conversion printed (exchange-rate-mode.ts). */
+    exchange_rate_mode: z.enum(EXCHANGE_RATE_SETTINGS).default("cnb_daily"),
+    annual_rates: z
+      .array(annualRateSchema)
+      .max(100)
+      .default([])
+      .refine((rates) => new Set(rates.map((r) => `${r.year}:${r.currency}`)).size === rates.length, "One rate per year and currency"),
   })
   .transform((p) => ({
     show: p.show as Partial<Record<OptionalInvoiceField, boolean>>,
@@ -108,6 +126,8 @@ export const invoiceFormPrefsSchema = z
     defaultContactId: p.default_contact_id || null,
     defaultItems: p.default_items,
     defaultNoteAbove: p.default_note_above || null,
+    exchangeRateMode: p.exchange_rate_mode,
+    annualRates: [...p.annual_rates].sort((a, b) => b.year - a.year || a.currency.localeCompare(b.currency)),
   }));
 
 /** The tenant's PDF accent, falling back to the default for old or unknown values. */

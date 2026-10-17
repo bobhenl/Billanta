@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant } from '@/lib/tenant';
-import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, type AiSettings, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
+import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
 const LANGUAGES: DocLanguage[] = ['cs', 'sk', 'en'];
@@ -69,8 +69,15 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     defaultBankAccountId: typeof raw?.defaultBankAccountId === 'string' ? raw.defaultBankAccountId : null,
     defaultContactId: typeof raw?.defaultContactId === 'string' ? raw.defaultContactId : null,
     defaultItems: Array.isArray(raw?.defaultItems) ? raw.defaultItems.filter(isDefaultItem) : [],
-    defaultNoteAbove: typeof raw?.defaultNoteAbove === 'string' ? raw.defaultNoteAbove : null
+    defaultNoteAbove: typeof raw?.defaultNoteAbove === 'string' ? raw.defaultNoteAbove : null,
+    exchangeRateMode: raw?.exchangeRateMode === 'annual' || raw?.exchangeRateMode === 'none' ? raw.exchangeRateMode : 'cnb_daily',
+    annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : []
   };
+}
+
+function isAnnualRate(r: unknown): r is AnnualRate {
+  const rate = r as Partial<AnnualRate> | null;
+  return !!rate && typeof rate.year === 'number' && typeof rate.currency === 'string' && typeof rate.rate === 'number' && rate.rate > 0;
 }
 
 function isDefaultItem(i: unknown): i is DefaultItem {
