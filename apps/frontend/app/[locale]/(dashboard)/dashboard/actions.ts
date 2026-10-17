@@ -4,9 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
 import { reportQuery } from '@/lib/report-query';
-import type { DashboardConfig, PeriodStats, ReportFilters } from './types';
+import type { DashboardConfigPatch, PeriodStats, ReportFilters } from './types';
 
-export async function saveDashboardConfig(config: Partial<DashboardConfig>): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function saveDashboardConfig(config: DashboardConfigPatch): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     await apiFetch('/api/v1/dashboard/config', {
       method: 'PUT',
@@ -14,6 +14,7 @@ export async function saveDashboardConfig(config: Partial<DashboardConfig>): Pro
       body: JSON.stringify(config)
     });
     revalidatePath('/[locale]/(dashboard)/dashboard', 'page');
+    revalidatePath('/[locale]/(dashboard)/reports', 'page');
     return { ok: true };
   } catch (error) {
     return { ok: false, error: backendMessage(error) };

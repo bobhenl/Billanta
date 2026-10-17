@@ -350,7 +350,7 @@
     "customizeCards": "Karty s číslami",
     "customizeTiles": "Rýchle akcie",
     "customizeSections": "Sekcie",
-    "customizeReset": "Predvolené",
+    "customizeReset": "Obnoviť odporúčané",
     "customizeSaved": "Prehľad uložený",
     "customizeFailed": "Uloženie sa nepodarilo: {reason}",
     "moveUp": "Posunúť hore",
@@ -409,6 +409,19 @@
       "add": "Pridať menu",
       "remove": "Odobrať {code}",
       "limit": "Najviac {max} mien."
+    },
+    "usage": {
+      "title": "Odporúčané podľa toho, čo používate",
+      "hint": "Čo nezmeníte, sa bude ďalej prispôsobovať. Vaša voľba má vždy prednosť.",
+      "newAccount": "Zatiaľ tu nič nemáte, preto ukazujeme základné rozloženie.",
+      "currencies": "Fakturujete v {list}",
+      "onlyHome": "Fakturujete len v {currency}",
+      "expenses": "zapisujete výdavky",
+      "noExpenses": "výdavky zatiaľ nezapisujete",
+      "paypal": "máte PayPal",
+      "bank": "máte prepojenú banku",
+      "proformas": "vystavujete zálohové faktúry",
+      "quotes": "posielate ponuky"
     }
   },
   "invoices": {
@@ -5622,6 +5635,22 @@
       "overdue": "Po splatnosti",
       "customers": "Odberatelia",
       "newCustomers": "Noví odberatelia"
+    },
+    "customize": {
+      "button": "Upraviť",
+      "title": "Ukazovatele v prehľade",
+      "recommendedTitle": "Odporúčané podľa toho, čo používate",
+      "noVat": "Nie ste platiteľ DPH, preto DPH skrývame.",
+      "noVatIdentified": "Ste registrovaný podľa §7a bez faktúr s prenesením daňovej povinnosti, preto DPH skrývame.",
+      "noExpenses": "Výdavky zatiaľ nezapisujete, preto náklady a zisk skrývame.",
+      "allRelevant": "Ukazujeme všetko, čo sa vás týka.",
+      "notRecommended": "zatiaľ sa vás netýka",
+      "noExpensesHint": "Zatiaľ bez zapísaných výdavkov",
+      "reset": "Obnoviť odporúčané",
+      "cancel": "Zrušiť",
+      "save": "Uložiť",
+      "saved": "Uložené",
+      "failed": "Nepodarilo sa uložiť: {reason}"
     }
   },
   "siteSearch": {
