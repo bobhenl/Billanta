@@ -24,6 +24,26 @@ export const OPTIONAL_INVOICE_FIELDS = [
 
 const fieldText = z.string().trim().max(100).nullish();
 
+/** At most this many default line items start a blank invoice. */
+export const MAX_DEFAULT_ITEMS = 10;
+
+/** A line item a blank invoice starts with (Settings → Faktury → Výchozí hodnoty). */
+const defaultItemSchema = z
+  .object({
+    description: z.string().trim().min(1).max(500),
+    quantity: z.number().min(0).max(1_000_000).default(1),
+    unit: z.string().trim().max(20).nullish(),
+    unit_price: z.number().min(-1_000_000_000).max(1_000_000_000).default(0),
+    vat_rate: z.number().min(0).max(100).nullable().default(null),
+  })
+  .transform((i) => ({
+    description: i.description,
+    quantity: i.quantity,
+    unit: i.unit || null,
+    unitPrice: i.unit_price,
+    vatRate: i.vat_rate,
+  }));
+
 /** Accent colours offered for the PDF (title, total box); the first is the default. */
 export const PDF_ACCENTS = ["#4f46e5", "#2563eb", "#0d9488", "#16a34a", "#ea580c", "#e11d48", "#334155", "#111827"] as const;
 
@@ -64,6 +84,13 @@ export const invoiceFormPrefsSchema = z
     reminders_enabled: z.boolean().default(true),
     reminder_interval_days: z.number().int().min(1).max(60).default(REMINDER_DEFAULTS.intervalDays),
     reminder_max: z.number().int().min(1).max(10).default(REMINDER_DEFAULTS.max),
+    // Defaults for a blank new invoice. The ids are only hints: the form
+    // loads them through RLS and ignores ones that no longer exist.
+    default_currency: z.string().regex(/^[A-Z]{3}$/).nullish(),
+    default_bank_account_id: z.string().uuid().nullish(),
+    default_contact_id: z.string().uuid().nullish(),
+    default_items: z.array(defaultItemSchema).max(MAX_DEFAULT_ITEMS).default([]),
+    default_note_above: z.string().trim().max(2000).nullish(),
   })
   .transform((p) => ({
     show: p.show as Partial<Record<OptionalInvoiceField, boolean>>,
@@ -76,6 +103,11 @@ export const invoiceFormPrefsSchema = z
     remindersEnabled: p.reminders_enabled,
     reminderIntervalDays: p.reminder_interval_days,
     reminderMax: p.reminder_max,
+    defaultCurrency: p.default_currency || null,
+    defaultBankAccountId: p.default_bank_account_id || null,
+    defaultContactId: p.default_contact_id || null,
+    defaultItems: p.default_items,
+    defaultNoteAbove: p.default_note_above || null,
   }));
 
 /** The tenant's PDF accent, falling back to the default for old or unknown values. */

@@ -21,6 +21,31 @@ export async function searchCustomers(query: string, registry = 'auto'): Promise
   }
 }
 
+/** One hit of the "Podle jiné faktury…" picker. */
+export interface InvoiceToCopy {
+  id: string;
+  invoiceNumber: string | null;
+  contactName: string | null;
+  issueDate: string | null;
+  total: string | number;
+  currency: string;
+  documentType: string;
+}
+
+/** Own documents by number, customer, IČO or symbol (backend fuzzy `q`); credit notes left out, newest first. */
+export async function searchInvoicesToCopy(query: string): Promise<InvoiceToCopy[]> {
+  if (query.trim().length < 2) return [];
+  try {
+    const rows = await apiFetch<InvoiceToCopy[]>(`/api/v1/invoices?q=${encodeURIComponent(query.trim())}`);
+    return rows
+      .filter((r) => r.documentType !== 'credit_note')
+      .slice(0, 8)
+      .map(({ id, invoiceNumber, contactName, issueDate, total, currency, documentType }) => ({ id, invoiceNumber, contactName, issueDate, total, currency, documentType }));
+  } catch {
+    return [];
+  }
+}
+
 /** ČNB rate for the form's "load rate" button; null when ČNB is unreachable. */
 export async function fetchExchangeRate(currency: string, date: string): Promise<number | null> {
   try {

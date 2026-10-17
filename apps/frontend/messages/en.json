@@ -1581,7 +1581,9 @@
       "countryHint": "Two-letter country code: CZ, SK, DE…",
       "registryNoteHint": "Companies in the commercial register must state it on invoices. Sole traders can leave it empty.",
       "ibanHint": "The account number and bank code are enough – IBAN is mainly needed for payments from abroad.",
-      "defaultDueDaysHint": "How many days after issue a new invoice is due. Usually 14."
+      "defaultDueDaysHint": "How many days after issue a new invoice is due. Usually 14.",
+      "defaultsMoved": "Invoice defaults are in",
+      "defaultsLink": "Settings › Invoices"
     },
     "team": {
       "title": "Team",
@@ -1854,6 +1856,32 @@
       },
       "resetDefaults": "Reset to default selection",
       "defaultsTitle": "Defaults",
+      "defaultsHint": "Every new blank invoice starts like this. Copies and templates keep their own values. You can change anything on the invoice.",
+      "registryNoteElsewhere": "The business register entry is printed on every invoice. You can change it in",
+      "registryNoteLink": "Billing details",
+      "blank": {
+        "currency": "Currency",
+        "bankAccount": "Bank account",
+        "bankAccountPrimary": "Main account from billing details",
+        "customer": "Customer",
+        "customerHint": "Handy when you mostly invoice one customer. One click changes it on the invoice.",
+        "customerSearch": "Search your contacts",
+        "customerEmpty": "No contact matches.",
+        "customerNone": "No default customer",
+        "customerRemove": "Remove customer",
+        "items": "Items",
+        "itemsHint": "Lines that appear on every new invoice, e.g. a monthly fee. Up to 10.",
+        "itemDescription": "Description",
+        "itemQuantity": "Qty",
+        "itemUnit": "Unit",
+        "itemPrice": "Unit price",
+        "itemVat": "VAT",
+        "noVat": "No VAT",
+        "itemRemove": "Remove item",
+        "addItem": "Add item",
+        "noteAbove": "Text above the items",
+        "noteAbovePlaceholder": "e.g. Services for the month of…"
+      },
       "customLabelsTitle": "Preset custom fields",
       "customLabelsHint": "These names are offered on every new invoice; just fill in the value (max 4).",
       "customLabelPlaceholder": "e.g. Contract number",
@@ -3262,6 +3290,19 @@
       "symbol_invalid": "Symbols may contain digits only (VS and SS up to 10, KS up to 4).",
       "reason_required": "Enter a reason for the change."
     },
+    "copy": {
+      "title": "Prefill from another invoice",
+      "hint": "Copies the customer, items, currency, payment, account, language, notes and custom fields. The number, dates and payments are not copied, and the due date follows your default term.",
+      "latest": "From the last invoice",
+      "other": "From another invoice…",
+      "searchLabel": "Search invoices",
+      "searchPlaceholder": "Invoice number or customer",
+      "searchEmpty": "No invoice matches.",
+      "draft": "Draft",
+      "fromNumber": "Prefilled from invoice {number}: customer, items and payment are copied, dates are today and the due date follows your default term.",
+      "fromDraft": "Prefilled from a draft: customer, items and payment are copied, dates are today and the due date follows your default term.",
+      "noneYet": "You have no invoice to start from yet. Fill in the first one by hand."
+    },
     "duplicate": {
       "fromNumber": "Copy of invoice {number}: customer, currency, payment term and items are filled in; dates are today.",
       "fromDraft": "Copy of a draft: customer, currency, payment term and items are filled in; dates are today."
@@ -3513,6 +3554,7 @@
       "markUnpaid": "Undo payment",
       "send": "Send by email",
       "duplicate": "Duplicate",
+      "issueSimilar": "Issue a similar one",
       "saveTemplate": "Save as template",
       "publicLink": "Public link",
       "cancel": "Cancel",

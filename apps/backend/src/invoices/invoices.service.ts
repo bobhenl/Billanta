@@ -8,7 +8,7 @@ import {
   type PeppolIssue,
   type RequirementIssue,
 } from "@faktur/cz-compliance";
-import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, notInArray, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { fuzzyScore } from "../common/fuzzy";
 import { getCnbRate } from "../exports/cnb-rates";
@@ -783,6 +783,7 @@ export class InvoicesService {
       contact: contact ?? null,
       documentType: invoice.documentType,
       currency: invoice.currency,
+      bankAccountId: invoice.bankAccountId,
       dueInDays,
       paymentMethod: invoice.paymentMethod,
       paymentMethodLabel: invoice.paymentMethodLabel,
@@ -807,6 +808,22 @@ export class InvoicesService {
         vatRate: item.vatRate == null ? null : Number(item.vatRate),
       })),
     };
+  }
+
+  /**
+   * "Podle poslední faktury": the most recently created document (credit
+   * notes left out, they only make sense against their invoice) as a
+   * starting point, exactly like duplicateTemplate. Nothing is written.
+   */
+  async latestDuplicateTemplate(db: TenantDb) {
+    const [latest] = await db
+      .select({ id: schema.invoices.id })
+      .from(schema.invoices)
+      .where(ne(schema.invoices.documentType, "credit_note"))
+      .orderBy(desc(schema.invoices.createdAt))
+      .limit(1);
+    if (!latest) throw new NotFoundException("No invoice yet");
+    return this.duplicateTemplate(db, latest.id);
   }
 
   findOne(db: TenantDb, id: string) {

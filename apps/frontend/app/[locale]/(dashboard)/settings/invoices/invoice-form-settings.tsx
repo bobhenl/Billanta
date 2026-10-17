@@ -6,10 +6,11 @@ import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
-import { DEFAULT_SHOWN, PDF_ACCENTS, type InvoiceFormPrefs, type OptionalField } from '../../invoices/new/types';
+import { DEFAULT_SHOWN, PDF_ACCENTS, type Contact, type DocLanguage, type InvoiceFormPrefs, type OptionalField } from '../../invoices/new/types';
 import { updateInvoiceFormPrefs } from '../actions';
+import { InvoiceDefaultsFields, parseNumber, type DefaultsDraft } from './invoice-defaults';
 
 /** Toggles grouped the way the invoice form lays them out. */
 const GROUPS: { key: string; fields: OptionalField[] }[] = [
@@ -19,7 +20,22 @@ const GROUPS: { key: string; fields: OptionalField[] }[] = [
   { key: 'notes', fields: ['noteAbove', 'internalNote'] }
 ];
 
-export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: InvoiceFormPrefs; vatPayer: boolean; readOnly: boolean }) {
+export function InvoiceFormSettings({
+  prefs,
+  company,
+  defaultContact,
+  bankAccounts,
+  vatPayer,
+  readOnly
+}: {
+  prefs: InvoiceFormPrefs;
+  /** Defaults stored as tenant columns (they used to sit in Settings → Company). */
+  company: { locale: DocLanguage; dueDays: number; paymentMethod: string; noteBelow: string | null };
+  defaultContact: Contact | null;
+  bankAccounts: { id: string; label: string; line: string }[];
+  vatPayer: boolean;
+  readOnly: boolean;
+}) {
   const t = useTranslations('settings.invoices');
   const tf = useTranslations('invoiceForm.fields');
   const router = useRouter();
@@ -33,6 +49,23 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
   const [reminders, setReminders] = useState(prefs.remindersEnabled);
   const [reminderInterval, setReminderInterval] = useState(prefs.reminderIntervalDays);
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
+  const [blank, setBlank] = useState<DefaultsDraft>(() => ({
+    language: company.locale,
+    dueDays: String(company.dueDays),
+    paymentMethod: company.paymentMethod,
+    currency: prefs.defaultCurrency ?? '',
+    bankAccountId: bankAccounts.some((a) => a.id === prefs.defaultBankAccountId) ? prefs.defaultBankAccountId! : '',
+    contact: defaultContact,
+    items: prefs.defaultItems.map((i) => ({
+      description: i.description,
+      quantity: String(i.quantity),
+      unit: i.unit ?? '',
+      unitPrice: i.unitPrice ? String(i.unitPrice) : '',
+      vatRate: vatPayer ? (i.vatRate == null ? '' : String(i.vatRate)) : ''
+    })),
+    noteAbove: prefs.defaultNoteAbove ?? '',
+    noteBelow: company.noteBelow ?? ''
+  }));
   const [saving, startSave] = useTransition();
 
   const save = () =>
@@ -47,7 +80,29 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
         pdf_second_language: secondLanguage === '' ? null : secondLanguage,
         reminders_enabled: reminders,
         reminder_interval_days: Math.min(60, Math.max(1, Math.round(reminderInterval) || 7)),
-        reminder_max: Math.min(10, Math.max(1, Math.round(reminderMax) || 3))
+        reminder_max: Math.min(10, Math.max(1, Math.round(reminderMax) || 3)),
+        default_currency: blank.currency && blank.currency !== 'CZK' ? blank.currency : null,
+        default_bank_account_id: blank.bankAccountId || null,
+        default_contact_id: blank.contact?.id ?? null,
+        default_items: blank.items
+          .filter((i) => i.description.trim())
+          .map((i) => {
+            const quantity = parseNumber(i.quantity);
+            const price = parseNumber(i.unitPrice);
+            return {
+              description: i.description.trim(),
+              quantity: Number.isFinite(quantity) && i.quantity.trim() ? quantity : 1,
+              unit: i.unit.trim() || null,
+              unit_price: Number.isFinite(price) ? price : 0,
+              vat_rate: vatPayer && i.vatRate !== '' ? Number(i.vatRate) : null
+            };
+          }),
+        default_note_above: blank.noteAbove.trim() || null
+      }, {
+        default_locale: blank.language,
+        default_due_days: Math.min(365, Math.max(0, Math.round(parseNumber(blank.dueDays)) || 0)),
+        default_payment_method: blank.paymentMethod,
+        default_note_below: blank.noteBelow.trim() || null
       });
       toast(result.ok ? { text: t('saved'), tone: 'ok' } : { text: `${t('saveFailed')}: ${result.error}`, tone: 'err' });
       if (result.ok) router.refresh();
@@ -214,8 +269,11 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
         </div>
       </section>
 
-      <section className={card}>
-        <h2 className="font-bold">{t('defaultsTitle')}</h2>
+      <section id="defaults" className={cn(card, 'scroll-mt-20')}>
+        <InfoHint hint={t('defaultsHint')}>
+          <h2 className="font-bold">{t('defaultsTitle')}</h2>
+        </InfoHint>
+        <InvoiceDefaultsFields value={blank} onChange={setBlank} bankAccounts={bankAccounts} vatPayer={vatPayer} readOnly={readOnly} />
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
             <span className="font-medium">{tf('issuePlace')}</span>
@@ -274,6 +332,12 @@ export function InvoiceFormSettings({ prefs, vatPayer, readOnly }: { prefs: Invo
             </button>
           )}
         </div>
+        <p className="mt-6 text-sm text-muted-foreground">
+          {t('registryNoteElsewhere')}{' '}
+          <Link href="/settings/company" className="font-semibold text-foreground underline underline-offset-2">
+            {t('registryNoteLink')}
+          </Link>
+        </p>
       </section>
 
       {!readOnly && (

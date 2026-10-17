@@ -117,6 +117,14 @@ export class InvoicesController {
     );
   }
 
+  // Declared before ":id/duplicate" so "latest" never reaches the UUID pipe.
+  @Get("latest/duplicate")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "The most recent invoice (no credit notes) as a template for a new draft" })
+  latestDuplicateTemplate(@Req() req: TenantScopedRequest) {
+    return this.invoicesService.latestDuplicateTemplate(req.tenantDb!);
+  }
+
   @Get(":id/duplicate")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "An invoice's customer, currency, term and items as a template for a new draft" })

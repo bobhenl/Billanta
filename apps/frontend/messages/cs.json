@@ -1581,7 +1581,9 @@
       "countryHint": "Dvoupísmenný kód země: CZ, SK, DE…",
       "registryNoteHint": "Firmy zapsané v obchodním rejstříku ho musí uvádět na fakturách. OSVČ může nechat prázdné.",
       "ibanHint": "Stačí vyplnit číslo účtu a kód banky – IBAN je potřeba hlavně pro platby ze zahraničí.",
-      "defaultDueDaysHint": "Kolik dní po vystavení je nová faktura splatná. Běžně 14."
+      "defaultDueDaysHint": "Kolik dní po vystavení je nová faktura splatná. Běžně 14.",
+      "defaultsMoved": "Výchozí hodnoty faktur najdete v",
+      "defaultsLink": "Nastavení › Faktury"
     },
     "team": {
       "title": "Tým",
@@ -1854,6 +1856,32 @@
       },
       "resetDefaults": "Obnovit výchozí výběr",
       "defaultsTitle": "Výchozí hodnoty",
+      "defaultsHint": "Takhle začne každá nová prázdná faktura. Kopie a šablony si nesou vlastní hodnoty. Vše jde ve faktuře změnit.",
+      "registryNoteElsewhere": "Zápis v obchodním nebo živnostenském rejstříku se tiskne na každé faktuře a upravíte ho ve",
+      "registryNoteLink": "Fakturačních údajích",
+      "blank": {
+        "currency": "Měna",
+        "bankAccount": "Bankovní účet",
+        "bankAccountPrimary": "Hlavní účet z fakturačních údajů",
+        "customer": "Odběratel",
+        "customerHint": "Hodí se, když fakturujete hlavně jednomu odběrateli. Ve faktuře ho jde jedním klikem změnit.",
+        "customerSearch": "Hledat ve vašich kontaktech",
+        "customerEmpty": "Žádný kontakt neodpovídá.",
+        "customerNone": "Bez výchozího odběratele",
+        "customerRemove": "Odebrat odběratele",
+        "items": "Položky",
+        "itemsHint": "Řádky, které se objeví v každé nové faktuře, např. měsíční paušál. Max. 10.",
+        "itemDescription": "Popis",
+        "itemQuantity": "Množství",
+        "itemUnit": "Jedn.",
+        "itemPrice": "Cena/j.",
+        "itemVat": "DPH",
+        "noVat": "Bez DPH",
+        "itemRemove": "Odebrat položku",
+        "addItem": "Přidat položku",
+        "noteAbove": "Text nad položkami",
+        "noteAbovePlaceholder": "např. Fakturujeme Vám za služby v měsíci…"
+      },
       "customLabelsTitle": "Předvyplněná vlastní pole",
       "customLabelsHint": "Tyto názvy se nabídnou u každé nové faktury, stačí doplnit hodnotu (max. 4).",
       "customLabelPlaceholder": "např. Číslo smlouvy",
@@ -3263,6 +3291,19 @@
       "symbol_invalid": "Symboly smí obsahovat jen číslice (VS a SS max. 10, KS max. 4).",
       "reason_required": "Napište důvod úpravy."
     },
+    "copy": {
+      "title": "Předvyplnit podle jiné faktury",
+      "hint": "Zkopíruje odběratele, položky, měnu, platbu, účet, jazyk, poznámky a vlastní pole. Číslo, data a platby se nekopírují, splatnost se spočítá podle výchozího nastavení.",
+      "latest": "Podle poslední faktury",
+      "other": "Podle jiné faktury…",
+      "searchLabel": "Hledat fakturu",
+      "searchPlaceholder": "Číslo faktury nebo odběratel",
+      "searchEmpty": "Žádná faktura neodpovídá.",
+      "draft": "Koncept",
+      "fromNumber": "Předvyplněno podle faktury {number}: odběratel, položky i platba jsou zkopírované, data jsou dnešní a splatnost podle výchozího nastavení.",
+      "fromDraft": "Předvyplněno podle konceptu: odběratel, položky i platba jsou zkopírované, data jsou dnešní a splatnost podle výchozího nastavení.",
+      "noneYet": "Zatím nemáte žádnou fakturu, ze které by šlo vycházet. Vyplňte první ručně."
+    },
     "duplicate": {
       "fromNumber": "Kopie faktury {number}: zákazník, měna, splatnost i položky jsou předvyplněné, data jsou dnešní.",
       "fromDraft": "Kopie konceptu: zákazník, měna, splatnost i položky jsou předvyplněné, data jsou dnešní."
@@ -3514,6 +3555,7 @@
       "markUnpaid": "Zrušit úhradu",
       "send": "Odeslat e-mailem",
       "duplicate": "Duplikovat",
+      "issueSimilar": "Vystavit podobnou",
       "saveTemplate": "Uložit jako šablonu",
       "publicLink": "Veřejný odkaz",
       "cancel": "Stornovat",
