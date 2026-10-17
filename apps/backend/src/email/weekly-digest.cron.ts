@@ -141,7 +141,7 @@ export class WeeklyDigestCron {
       .where(
         and(
           notInArray(schema.invoices.documentType, ["quote", "credit_note"]),
-          sql`(${schema.invoices.status} = 'issued' OR (${schema.invoices.status} = 'paid' AND ${schema.invoices.paidAt} >= ${new Date(now.getTime() - 7 * DAY)}))`,
+          sql`(${schema.invoices.status} = 'issued' OR (${schema.invoices.status} = 'paid' AND ${schema.invoices.paidAt} >= ${new Date(now.getTime() - 7 * DAY).toISOString()}::timestamptz))`,
         ),
       );
     const items = rows.length

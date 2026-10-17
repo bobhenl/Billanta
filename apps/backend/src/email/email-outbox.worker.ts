@@ -96,6 +96,6 @@ export class EmailOutboxWorker {
   }
 
   private async finish(id: string, outcome: "sent" | "retry" | "dead", providerId: string | null, error: string | null, retryAt: Date | null) {
-    await this.dbService.sql`SELECT finish_email_outbox(${id}, ${outcome}, ${providerId}, ${error}, ${retryAt})`;
+    await this.dbService.sql`SELECT finish_email_outbox(${id}, ${outcome}, ${providerId}, ${error}, ${retryAt?.toISOString() ?? null}::timestamptz)`;
   }
 }
