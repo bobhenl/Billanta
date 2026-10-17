@@ -1,5 +1,5 @@
 /**
- * The /srovnani table: Billanta next to the CZ/SK invoicing apps people
+ * The /compare table: Billanta next to the CZ/SK invoicing apps people
  * usually switch from. Brand names are fixed; every cell's wording lives
  * in `comparePage.rows.<row>.<brand>` so it can be translated.
  *

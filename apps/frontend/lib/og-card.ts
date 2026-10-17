@@ -44,16 +44,16 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
         return { title: t('about.title'), subtitle: t('about.lead'), section: s.about };
       case 'pricing':
         return { title: t('pricing.title'), subtitle: t('pricing.metaDescription'), section: s.pricing };
-      case 'funkce':
+      case 'features':
         return { title: t('featurePages.indexTitle'), subtitle: t('featurePages.indexDescription'), section: s.features };
-      case 'vytvorit-fakturu':
+      case 'create-invoice':
         return { title: t('guestInvoice.seoTitle'), subtitle: t('guestInvoice.seoDescription'), section: s.tool };
-      case 'faktury-pro':
+      case 'invoicing':
         return { title: t('municipalityPages.indexTitle'), subtitle: t('municipalityPages.indexLead'), section: s.places };
     }
     return null;
   }
-  if (first === 'funkce') {
+  if (first === 'features') {
     const feature = getFeaturePage(second);
     if (!feature) return null;
     return {
@@ -65,7 +65,7 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
   if (first === 'legal' && LEGAL[second]) {
     return { title: t(`${LEGAL[second]}.title`), section: s.legal };
   }
-  if (first === 'faktury-pro') {
+  if (first === 'invoicing') {
     const m = getMunicipalityBySlug(second);
     if (!m) return null;
     return { title: t('municipalityPages.heading', { name: m.name }), subtitle: `${m.district} · ${m.region}`, section: s.places };

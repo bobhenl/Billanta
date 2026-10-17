@@ -3,6 +3,7 @@ import { Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { GuestAccountCta } from '@/components/account-cta';
 import { GuestInvoiceForm } from './guest-invoice-form';
 
 /**
@@ -14,7 +15,7 @@ import { GuestInvoiceForm } from './guest-invoice-form';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'guestInvoice' });
-  return publicPageMetadata({ locale, path: '/vytvorit-fakturu', title: t('seoTitle'), description: t('seoDescription') });
+  return publicPageMetadata({ locale, path: '/create-invoice', title: t('seoTitle'), description: t('seoDescription') });
 }
 
 export default async function GuestInvoicePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -26,7 +27,7 @@ export default async function GuestInvoicePage({ params }: { params: Promise<{ l
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: `${t('heading')} – ${SITE_NAME}`,
-    url: `${SITE_URL}/${locale}/vytvorit-fakturu`,
+    url: `${SITE_URL}/${locale}/create-invoice`,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     inLanguage: locale,
@@ -46,6 +47,7 @@ export default async function GuestInvoicePage({ params }: { params: Promise<{ l
           </li>
         ))}
       </ul>
+      <GuestAccountCta />
       {/* Clarity (consent-gated session recording on public pages) must
           never record what visitors type here: names, addresses, amounts,
           the AI prompt. data-clarity-mask hides the whole subtree. */}

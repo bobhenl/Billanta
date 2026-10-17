@@ -46,7 +46,13 @@
       "about": "O nás",
       "faq": "Časté dotazy",
       "guestInvoice": "Faktura bez registrace",
-      "search": "Hledat"
+      "createInvoice": "Vystavit fakturu",
+      "createInvoiceShort": "Vystavit",
+      "search": "Hledat",
+      "app": "Aplikace",
+      "account": "Účet",
+      "accountants": "Pro účetní",
+      "partners": "Partneři"
     },
     "hero": {
       "title": "Fakturace pro české a slovenské podnikatele, bez papírování",
@@ -201,7 +207,9 @@
       },
       "company": {
         "title": "Společnost",
-        "about": "O nás"
+        "about": "O nás",
+        "accountants": "Pro účetní",
+        "partners": "Partneři"
       },
       "legal": {
         "title": "Právní informace",
@@ -216,7 +224,10 @@
         "login": "Přihlásit se",
         "signup": "Registrovat se"
       },
-      "copyright": "© {year} {name}. Všechna práva vyhrazena."
+      "partners": {
+        "title": "Partneři",
+        "all": "Všichni partneři"
+      }
     },
     "seo": {
       "title": "Billanta – online fakturace pro OSVČ a firmy v ČR a SR",
@@ -1539,6 +1550,10 @@
         "numbering": {
           "title": "Číslování dokladů",
           "description": "Vlastní formát čísel faktur, záloh, dobropisů a nabídek a číslo, kterým řada pokračuje."
+        },
+        "referrals": {
+          "title": "Pozvat a získat kredity",
+          "description": "Odkaz pro známé a klienty, kredity a platba tarifu kredity."
         }
       }
     },
@@ -3104,7 +3119,8 @@
       "companies": "Firmy a živnosti",
       "addCompany": "Přidat firmu nebo živnost",
       "manageCompanies": "Spravovat firmy",
-      "activity": "Historie změn"
+      "activity": "Historie změn",
+      "referrals": "Pozvat a získat kredity"
     },
     "installApp": {
       "label": "Stáhnout aplikaci",
@@ -5404,6 +5420,14 @@
           "text": "Online platba z odkazu na fakturu a evidence částečných úhrad."
         }
       }
+    },
+    "account": {
+      "title": "Chcete faktury ukládat a posílat e-mailem?",
+      "body": "S účtem zdarma máte přehled faktur, kontakty z ARES, upomínky a QR platby. Fakturu vytvoříte i bez něj.",
+      "signup": "Založit účet zdarma",
+      "login": "Přihlásit se",
+      "signedIn": "Jste přihlášeni. Fakturu si můžete uložit rovnou v aplikaci.",
+      "openApp": "Nová faktura v aplikaci"
     }
   },
   "publicProfile": {
@@ -6178,6 +6202,145 @@
         "ico_foreign": "IČO se vyplňuje jen u českých a slovenských firem.",
         "dic_format": "DIČ nemá správný tvar."
       }
+    }
+  },
+  "referrals": {
+    "title": "Pozvat a získat kredity",
+    "description": "Pozvěte známé firmy nebo klienty. Za každou, která začne platit, dostanete kredity a zaplatíte jimi tarif.",
+    "loadError": "Program doporučení se nepodařilo načíst.",
+    "failed": "Nepodařilo se",
+    "readOnly": "Kredity utrácí a program mění jen vlastník nebo administrátor firmy.",
+    "credits": "{credits, plural, one {# kredit} few {# kredity} other {# kreditů}}",
+    "welcomeToast": "Vítejte! Za pozvánku jste dostali {credits} kreditů.",
+    "copyFailed": "Odkaz se nepodařilo zkopírovat, označte ho a zkopírujte ručně.",
+    "link": {
+      "title": "Váš odkaz pro pozvání",
+      "body": "Nová firma dostane {welcome} kreditů hned po registraci. Vy {reward} kreditů, jakmile začne platit. 1 kredit = 1 Kč.",
+      "copy": "Kopírovat",
+      "copied": "Zkopírováno",
+      "code": "Kód: {code}"
+    },
+    "stats": {
+      "balance": "Zůstatek",
+      "invited": "Pozvané firmy",
+      "paying": "Platící"
+    },
+    "program": {
+      "title": "Program",
+      "hint": "Účetní a účetní kanceláře dostávají za klienty víc.",
+      "saved": "Program změněn.",
+      "friend": {
+        "title": "Doporučení známým",
+        "body": "Pozvaná firma {welcome} kreditů, vy {reward} za každou platící."
+      },
+      "accountant": {
+        "title": "Partnerský program pro účetní",
+        "body": "Klient {welcome} kreditů, vy {reward} za každého platícího klienta."
+      }
+    },
+    "redeem": {
+      "title": "Zaplatit tarif kredity",
+      "hint": "Roční platba je za cenu ročního tarifu. Běžící tarif se prodlouží.",
+      "button": "{months, plural, one {1 měsíc} few {# měsíce} other {# měsíců}} · {credits} kr.",
+      "done": "Tarif {plan} je zaplacený do {until}.",
+      "running": "Kredity máte zaplacený tarif {plan} do {until}."
+    },
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "invited": {
+      "title": "Pozvané firmy",
+      "empty": "Zatím se přes váš odkaz nikdo nezaregistroval.",
+      "company": "Firma č. {n}",
+      "paying": "Platí · +{credits} kr.",
+      "waiting": "Zatím neplatí"
+    },
+    "ledger": {
+      "title": "Historie kreditů",
+      "empty": "Zatím žádné pohyby.",
+      "reason": {
+        "referral_welcome": "Uvítací bonus za pozvánku",
+        "referral_reward": "Odměna za platící firmu",
+        "plan_purchase": "Tarif {plan} na {months, plural, one {1 měsíc} few {# měsíce} other {# měsíců}}",
+        "adjustment": "Úprava"
+      }
+    },
+    "errors": {
+      "insufficient_credits": "Na tento tarif nemáte dost kreditů.",
+      "other_plan_running": "Kredity už máte zaplacený jiný tarif. Prodloužit jde jen ten běžící.",
+      "ico_required": "Partnerský program vyžaduje IČO firmy (Nastavení → Firma)."
+    }
+  },
+  "partners": {
+    "title": "Partneři",
+    "seoTitle": "Partneři Billanty – účetní, banky a nástroje",
+    "lead": "Účetní, banky a nástroje, které s Billantou dobře fungují. Vyberte si, s kým vám fakturace a účetnictví půjdou snadno.",
+    "filterLabel": "Kategorie partnerů",
+    "categories": {
+      "all": "Vše",
+      "accounting": "Účetní",
+      "banking": "Banky",
+      "software": "Software",
+      "service": "Služby",
+      "other": "Ostatní"
+    },
+    "empty": "Partnery právě přidáváme. Zatím se podívejte na program pro účetní.",
+    "featured": "Doporučujeme",
+    "visit": "Navštívit",
+    "become": {
+      "title": "Chcete být partnerem?",
+      "body": "Účetní a účetní kanceláře získávají kredity za každého platícího klienta. Ostatní firmy mohou pozvat známé přes odkaz v Nastavení.",
+      "accountants": "Program pro účetní",
+      "signup": "Založit účet"
+    },
+    "disclosure": "Odkazy na partnery jsou partnerské. Za proklik nebo registraci můžeme dostat odměnu, cenu pro vás to nemění."
+  },
+  "accountants": {
+    "eyebrow": "Partnerský program",
+    "title": "Billanta pro účetní a účetní kanceláře",
+    "seoTitle": "Billanta pro účetní – přístup ke klientům a odměny",
+    "lead": "Pozvěte klienty do Billanty, mějte jejich doklady na jednom místě a za každého platícího klienta získejte kredity na vlastní tarif.",
+    "cta": "Zaregistrovat kancelář",
+    "partnersLink": "Naši partneři",
+    "benefits": {
+      "access": {
+        "title": "Role účetní u klienta",
+        "body": "Klient vás pozve do týmu. Vidíte faktury, náklady a banku, administraci firmy ne."
+      },
+      "exports": {
+        "title": "Exporty pro účetnictví",
+        "body": "Kontrolní hlášení, přiznání k DPH, ISDOC a CSV stáhnete bez přepisování."
+      },
+      "credits": {
+        "title": "Kredity za klienty",
+        "body": "Klient dostane {welcome} kreditů, vy {reward} za každého, kdo začne platit."
+      }
+    },
+    "stepsTitle": "Jak to funguje",
+    "steps": {
+      "signup": {
+        "title": "Založte účet kanceláře",
+        "body": "Registrace je zdarma. Vyplňte IČO kanceláře v nastavení firmy."
+      },
+      "program": {
+        "title": "Zapněte program pro účetní",
+        "body": "V Nastavení → Pozvat a získat kredity přepněte na partnerský program."
+      },
+      "share": {
+        "title": "Pošlete odkaz klientům",
+        "body": "Kdo se zaregistruje přes váš odkaz a začne platit, přinese vám kredity."
+      }
+    },
+    "fine": {
+      "title": "Pravidla",
+      "points": [
+        "1 kredit = 1 Kč. Kredity zaplatí tarif Start, Plus nebo Business na měsíc nebo rok.",
+        "Odměnu dostanete jednou za každou pozvanou firmu, když poprvé zaplatí.",
+        "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
+        "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
+      ]
     }
   }
 }

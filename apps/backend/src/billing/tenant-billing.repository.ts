@@ -3,6 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { REFERRAL_REWARDS } from "../referrals/rewards";
 
 export type SubscriptionStatus = (typeof schema.subscriptionStatusEnum.enumValues)[number];
 
@@ -89,6 +90,11 @@ export class TenantBillingRepository {
           updatedAt: new Date(),
         })
         .where(eq(schema.tenants.id, tenantId));
+      // First payment of an invited company pays its inviter (once; the
+      // function is a no-op for an already rewarded or unreferred company).
+      if (status === "active") {
+        await tx`SELECT reward_referral(${tenantId}, ${REFERRAL_REWARDS.friend.reward}, ${REFERRAL_REWARDS.accountant.reward})`;
+      }
     });
     this.logger.log(`tenant ${tenantId} subscription_status -> ${status}`);
   }

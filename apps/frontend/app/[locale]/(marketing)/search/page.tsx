@@ -63,7 +63,7 @@ export default async function SiteSearchPage({
           <ul className="mt-3 flex flex-wrap gap-2">
             {(['isdoc', 'qr', 'dph', 'ares', 'banka', 'dobropis'] as const).map((s) => (
               <li key={s}>
-                <Link href={{ pathname: '/hledat', query: { q: t(`suggest.${s}`) } }} className="inline-block rounded-full border border-border px-3 py-1 text-foreground hover:border-primary hover:text-primary">
+                <Link href={{ pathname: '/search', query: { q: t(`suggest.${s}`) } }} className="inline-block rounded-full border border-border px-3 py-1 text-foreground hover:border-primary hover:text-primary">
                   {t(`suggest.${s}`)}
                 </Link>
               </li>

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { AiService } from "../ai/ai.service";
 import { ContactsService } from "../contacts/contacts.service";
 import { GuestInvoicesService, guestInvoiceSchema } from "./guest-invoices.service";
-import { ConcurrencyGate, DailyCap, GATE_BUSY, SlidingWindowLimiter, visitorBucket } from "./guest-limits";
+import { ConcurrencyGate, DailyCap, GATE_BUSY, SlidingWindowLimiter, visitorIp } from "./guest-limits";
 
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_PER_WINDOW = 20;
@@ -19,17 +19,6 @@ const LOOKUP_GLOBAL_DAILY = Number(process.env.GUEST_LOOKUP_DAILY_LIMIT ?? 2000)
 const PDF_CONCURRENCY = 4;
 
 const aiBodySchema = z.object({ text: z.string().trim().min(3).max(1500), vatPayer: z.boolean().default(false) });
-
-/**
- * The Next.js proxy (`app/api/public/guest-invoice/route.ts`) passes the
- * visitor's IP as `x-guest-ip`; it's trusted only when the request itself
- * comes from loopback/private network (i.e. that proxy), never from outside.
- */
-function visitorIp(ip: string, req: Request): string {
-  const forwarded = req.headers["x-guest-ip"];
-  const local = /^(::1|127\.|::ffff:127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::ffff:(10|192\.168|172)\.)/.test(ip);
-  return visitorBucket(local && typeof forwarded === "string" && forwarded ? forwarded.slice(0, 64) : ip);
-}
 
 /**
  * PUBLIC, unauthenticated "make an invoice without an account" endpoint.

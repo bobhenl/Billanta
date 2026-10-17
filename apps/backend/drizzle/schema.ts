@@ -15,6 +15,7 @@ import type { TaxAdvancePeriod } from "@faktur/cz-compliance";
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  date,
   integer,
   jsonb,
   numeric,
@@ -232,6 +233,13 @@ export const tenants = pgTable("tenants", {
   suspendedAt: timestamp("suspended_at", { withTimezone: true }),
   suspensionReason: text("suspension_reason"),
   emailPausedAt: timestamp("email_paused_at", { withTimezone: true }),
+  // Referral programme (migration 0044, `src/referrals/`): the invite code
+  // (/signup?ref=CODE, created lazily) and which programme it pays out under.
+  referralCode: varchar("referral_code", { length: 12 }),
+  referralProgram: varchar("referral_program", { length: 16 }).$type<"friend" | "accountant">().notNull().default("friend"),
+  // A plan paid with credits (`credit_ledger`), see ReferralsService.redeem.
+  prepaidPlan: varchar("prepaid_plan", { length: 16 }),
+  prepaidUntil: date("prepaid_until"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1243,3 +1251,66 @@ export const auditLog = pgTable(
   },
   // Indexes (tenant + time, tenant + entity) live in the migration.
 );
+
+// ---------------------------------------------------------------------------
+// referrals — tenant-scoped, OWNED BY THE INVITER (tenant_id). Read-only for
+// the app role; written by the claim_referral / reward_referral SECURITY
+// DEFINER functions (migration 0044).
+// ---------------------------------------------------------------------------
+export const referrals = pgTable("referrals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  referredTenantId: uuid("referred_tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  program: varchar("program", { length: 16 }).$type<"friend" | "accountant">().notNull(),
+  rewardedAt: timestamp("rewarded_at", { withTimezone: true }),
+  rewardCredits: integer("reward_credits"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// credit_ledger — tenant-scoped, append-only. 1 credit = 1 Kč. Positive rows
+// only come from the referral functions; the app may insert spends
+// (amount < 0, reason 'plan_purchase') for its own tenant.
+// ---------------------------------------------------------------------------
+export const creditLedger = pgTable("credit_ledger", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(),
+  reason: varchar("reason", { length: 32 })
+    .$type<"referral_welcome" | "referral_reward" | "plan_purchase" | "adjustment">()
+    .notNull(),
+  referralId: uuid("referral_id").references(() => referrals.id, { onDelete: "set null" }),
+  plan: varchar("plan", { length: 16 }),
+  months: integer("months"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// partners — GLOBAL catalogue (no tenant, no RLS) behind /partners and the
+// footer strip; managed by platform admins (`src/partners/`).
+// ---------------------------------------------------------------------------
+export const partners = pgTable("partners", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: varchar("slug", { length: 60 }).notNull(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  description: text("description"),
+  logoUrl: text("logo_url"),
+  category: varchar("category", { length: 16 })
+    .$type<"accounting" | "banking" | "software" | "service" | "other">()
+    .notNull()
+    .default("other"),
+  featured: boolean("featured").notNull().default(false),
+  showInFooter: boolean("show_in_footer").notNull().default(false),
+  weight: integer("weight").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  clicks: integer("clicks").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});

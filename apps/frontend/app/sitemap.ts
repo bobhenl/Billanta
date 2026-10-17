@@ -23,7 +23,7 @@ import { SITE_URL } from '@/lib/site';
 const URLS_PER_SHARD = 2000;
 
 interface UrlEntry {
-  path: string; // locale-less path, e.g. "/" or "/faktury-pro/valtice"
+  path: string; // locale-less path, e.g. "/" or "/invoicing/valtice"
   changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'];
   priority: number;
   /** Only these locales (default: all). A municipality page is indexed in its own language only. */
@@ -44,19 +44,21 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/legal/dpa', changeFrequency: 'yearly', priority: 0.2 },
   { path: '/legal/cookies', changeFrequency: 'yearly', priority: 0.2 },
   { path: '/pricing', changeFrequency: 'monthly', priority: 0.8 },
-  { path: '/srovnani', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/compare', changeFrequency: 'monthly', priority: 0.7 },
   // Czech towns in cs, Slovak in sk; the English directory is noindex.
-  { path: '/faktury-pro', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
-  { path: '/funkce', changeFrequency: 'monthly', priority: 0.8 },
-  { path: '/vytvorit-fakturu', changeFrequency: 'monthly', priority: 0.9 },
-  ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/funkce/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 }))
+  { path: '/invoicing', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
+  { path: '/features', changeFrequency: 'monthly', priority: 0.8 },
+  { path: '/create-invoice', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/for-accountants', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/partners', changeFrequency: 'weekly', priority: 0.5 },
+  ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/features/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 }))
 ];
 
 function buildAllEntries(): UrlEntry[] {
   // Each municipality only in its own language (see isIndexedMunicipality);
   // the other copies are noindex and a noindex URL in a sitemap is a contradiction.
   const municipalityEntries: UrlEntry[] = getAllMunicipalities().map((m) => ({
-    path: `/faktury-pro/${m.slug}`,
+    path: `/invoicing/${m.slug}`,
     changeFrequency: 'monthly',
     priority: 0.5,
     locales: [municipalityLocale(m)]

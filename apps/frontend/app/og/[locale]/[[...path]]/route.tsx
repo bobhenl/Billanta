@@ -4,7 +4,7 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 /**
  * The Open Graph card of a public page, 1200x630, one per page and locale:
- * `/og/cs/funkce/isdoc` draws the card of `/cs/funkce/isdoc`. As on
+ * `/og/cs/features/isdoc` draws the card of `/cs/features/isdoc`. As on
  * VoxelRank (services/ogcard.js), a shared link shows what it opens instead
  * of one generic picture. Text comes from `resolveOgCard`, never from the URL.
  *

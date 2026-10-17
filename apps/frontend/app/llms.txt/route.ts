@@ -22,11 +22,11 @@ export function GET() {
 
 - [Home](${SITE_URL}/${l}): what the product does, how it works, FAQ
 - [Pricing](${SITE_URL}/${l}/pricing): plans
-- [Invoice without sign-up](${SITE_URL}/${l}/vytvorit-fakturu): free one-off PDF invoice, nothing stored
-- [Features](${SITE_URL}/${l}/funkce): one page per feature
-${FEATURE_PAGES.map((f) => `  - [${FEATURE_TEXT[f.key]!.name}](${SITE_URL}/${l}/funkce/${f.slug}): ${FEATURE_TEXT[f.key]!.description}`).join('\n')}
+- [Invoice without sign-up](${SITE_URL}/${l}/create-invoice): free one-off PDF invoice, nothing stored
+- [Features](${SITE_URL}/${l}/features): one page per feature
+${FEATURE_PAGES.map((f) => `  - [${FEATURE_TEXT[f.key]!.name}](${SITE_URL}/${l}/features/${f.slug}): ${FEATURE_TEXT[f.key]!.description}`).join('\n')}
 - [About](${SITE_URL}/${l}/about): who it is for and why it exists
-- [Invoicing by municipality](${SITE_URL}/${l}/faktury-pro): index of Czech and Slovak municipalities
+- [Invoicing by municipality](${SITE_URL}/${l}/invoicing): index of Czech and Slovak municipalities
 - [Terms](${SITE_URL}/${l}/legal/terms)
 - [Privacy](${SITE_URL}/${l}/legal/privacy)
 - [Data processing agreement](${SITE_URL}/${l}/legal/dpa)

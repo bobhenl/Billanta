@@ -5,7 +5,6 @@ import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { SITE_NAME } from '@/lib/site';
 
 // Sign-in, sign-up and password forms have no search value; keep them out
 // of the index (robots.ts still lets crawlers fetch them to see this).
@@ -35,7 +34,6 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       </header>
       {children}
       <footer className="container flex flex-wrap items-center justify-center gap-x-4 gap-y-1 pb-6 text-xs text-muted-foreground">
-        <span>{tFooter('copyright', { year: new Date().getFullYear(), name: SITE_NAME })}</span>
         <Link href="/legal/terms" className="transition-colors hover:text-foreground">
           {tFooter('legal.terms')}
         </Link>

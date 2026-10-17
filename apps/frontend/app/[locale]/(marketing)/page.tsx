@@ -193,7 +193,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 {t('hero.cta')}
               </Link>
               <Link
-                href="/vytvorit-fakturu"
+                href="/create-invoice"
                 className="inline-flex items-center justify-center rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 {t('hero.guestCta')}
@@ -231,7 +231,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               />
             ))}
           </ul>
-          <Link href="/funkce" className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+          <Link href="/features" className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
             {tFeatures('allFeatures')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
@@ -266,7 +266,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      {/* A taste of /srovnani: the rows people ask about first, from the same data and wording as the full table. */}
+      {/* A taste of /compare: the rows people ask about first, from the same data and wording as the full table. */}
       <section id="compare" className="scroll-mt-16 border-b border-border py-12 sm:py-16">
         <div className="container">
           <SectionHeading title={t('compare.title')} lead={t('compare.lead')} />
@@ -325,7 +325,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <p className="mt-3 text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">{tCompare('verified', { date: comparedAtLabel(locale) })}</span>. {tCompare('notStated')}.
           </p>
-          <Link href="/srovnani" className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+          <Link href="/compare" className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
             {t('compare.more')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>

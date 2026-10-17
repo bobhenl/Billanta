@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -10,13 +10,18 @@ import { ThemeToggle } from '@/components/theme-toggle';
  * audiences need different links. Only the pages a visitor is here for sit
  * in the header; secondary ones (about, cities, legal) live in the footer. On phones it shrinks to brand + language
  * + theme; navigation moves to `MarketingTabBar` at the bottom.
+ *
+ * As on VoxelRank ("Log in" + "+ Add server"), the one accent button is the
+ * thing people come to do, issuing an invoice (no account needed), not
+ * "Sign up"; sign-up is linked from the login page, the guest invoice and
+ * the footer.
  */
 export async function MarketingNavbar() {
   const t = await getTranslations('marketing.nav');
   const tApp = await getTranslations('app');
 
   const links = [
-    { href: '/funkce', label: t('features') },
+    { href: '/features', label: t('features') },
     { href: '/pricing', label: t('pricing') },
     { href: '/#faq', label: t('faq') }
   ];
@@ -43,7 +48,7 @@ export async function MarketingNavbar() {
 
         <div className="flex items-center gap-1.5">
           <Link
-            href="/hledat"
+            href="/search"
             aria-label={t('search')}
             title={t('search')}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -59,10 +64,11 @@ export async function MarketingNavbar() {
             {t('login')}
           </Link>
           <Link
-            href="/signup"
-            className="hidden rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-block"
+            href="/create-invoice"
+            className="hidden items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-flex"
           >
-            {t('signup')}
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {t('createInvoice')}
           </Link>
         </div>
       </div>

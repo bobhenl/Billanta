@@ -18,6 +18,11 @@ REVOKE UPDATE, DELETE ON outbound_emails FROM faktur_app;
 -- Same for the activity history (migration 0038 grants only SELECT, INSERT).
 REVOKE UPDATE, DELETE ON audit_log FROM faktur_app;
 
+-- Referrals and credit grants are written only by claim_referral /
+-- reward_referral (migration 0044); the app may only record spends.
+REVOKE INSERT, UPDATE, DELETE ON referrals FROM faktur_app;
+REVOKE UPDATE, DELETE ON credit_ledger FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 
