@@ -76,7 +76,7 @@ export class TenantBillingRepository {
   async updateSubscriptionStatus(
     tenantId: string,
     status: SubscriptionStatus,
-    extra?: { stripeCustomerId?: string; gopayPayerId?: string },
+    extra?: { stripeCustomerId?: string; gopayPayerId?: string; subscriptionPlan?: string; subscriptionInterval?: "month" | "year" },
   ): Promise<void> {
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
@@ -87,6 +87,8 @@ export class TenantBillingRepository {
           subscriptionStatus: status,
           ...(extra?.stripeCustomerId ? { stripeCustomerId: extra.stripeCustomerId } : {}),
           ...(extra?.gopayPayerId ? { gopayPayerId: extra.gopayPayerId } : {}),
+          ...(extra?.subscriptionPlan ? { subscriptionPlan: extra.subscriptionPlan } : {}),
+          ...(extra?.subscriptionInterval ? { subscriptionInterval: extra.subscriptionInterval } : {}),
           updatedAt: new Date(),
         })
         .where(eq(schema.tenants.id, tenantId));
