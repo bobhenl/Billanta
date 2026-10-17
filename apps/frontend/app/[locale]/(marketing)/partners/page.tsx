@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ArrowUpRight, Handshake } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -28,6 +28,7 @@ export default async function PartnersPage({
   searchParams: Promise<{ category?: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const { category: requested } = await searchParams;
   const t = await getTranslations('partners');
   const category = (PARTNER_CATEGORIES as readonly string[]).includes(requested ?? '') ? (requested as PartnerCategory) : undefined;

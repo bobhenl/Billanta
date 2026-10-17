@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { SignupCta } from '@/components/public-tools/parts';
 import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function CalculatorsHub({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('tools');
   const own = CALCULATORS.filter((c) => isPublishedIn(c, locale));
   const czech = CALCULATORS.filter((c) => !isPublishedIn(c, locale));

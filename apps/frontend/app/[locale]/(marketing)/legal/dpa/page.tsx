@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { LegalDocument } from '@/components/legal-document';
 import { publicPageMetadata } from '@/lib/seo';
 
@@ -9,6 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return publicPageMetadata({ locale, path: '/legal/dpa', title: t('title'), description: t('intro') });
 }
 
-export default function Page() {
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  setRequestLocale((await params).locale);
   return <LegalDocument doc="dpa" />;
 }

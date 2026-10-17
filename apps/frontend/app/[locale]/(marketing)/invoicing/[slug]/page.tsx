@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import {
   direction,
@@ -90,6 +90,7 @@ const km = (value: number) => (value < 10 ? Math.round(value * 10) / 10 : Math.r
 
 export default async function MunicipalityPage({ params }: { params: Promise<Params> }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const municipality = getMunicipalityBySlug(slug);
   if (!municipality) {
     notFound();

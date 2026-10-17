@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { VatStatus } from '@faktur/cz-compliance';
 import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
@@ -128,9 +129,8 @@ export interface MyAccess {
   modules: Record<AppModule, boolean>;
 }
 
-export async function fetchMyAccess(): Promise<MyAccess> {
-  return apiFetch<MyAccess>('/api/v1/tenants/me/access');
-}
+// The dashboard layout and most pages both ask for it; one call per request.
+export const fetchMyAccess = cache(async (): Promise<MyAccess> => apiFetch<MyAccess>('/api/v1/tenants/me/access'));
 
 /** Dashboard sections to leave out of the navigation for this member/company. */
 export function hiddenSections(access: MyAccess | null): string[] {

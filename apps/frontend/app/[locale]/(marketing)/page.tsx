@@ -28,7 +28,7 @@ import {
   Wallet,
   Webhook
 } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { HintCard } from '@/components/hint-card';
 import { MarketingInvoiceMockup } from '@/components/marketing-invoice-mockup';
@@ -115,6 +115,7 @@ const HERO_POINTS = ['isdoc', 'ares', 'qr'] as const;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('marketing');
   const tApp = await getTranslations('app');
   const tFeatures = await getTranslations('featurePages');

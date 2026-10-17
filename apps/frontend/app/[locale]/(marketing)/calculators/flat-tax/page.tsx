@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { flatTaxBand1ForYear, minimumYears, OSVC_PARAM_YEARS } from '@faktur/cz-compliance';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { FlatTaxCalculator } from '@/components/public-tools/flat-tax-calculator';
@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function FlatTaxPage({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   // sk: the Czech-rules notice only; the sk catalog has no body for this page.
   if (!isPublishedIn(getCalculator(SLUG)!, locale)) return <CalculatorPage slug={SLUG} locale={locale}>{null}</CalculatorPage>;
   const t = await getTranslations('tools');

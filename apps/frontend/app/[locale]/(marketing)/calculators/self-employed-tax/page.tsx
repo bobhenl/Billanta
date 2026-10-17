@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { OSVC_PARAM_YEARS } from '@faktur/cz-compliance';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { OsvcCalculator } from '@/components/public-tools/osvc-calculator';
@@ -14,6 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function OsvcCalculatorPage({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('tools');
   const first = OSVC_PARAM_YEARS[0]!;
   const latest = OSVC_PARAM_YEARS[OSVC_PARAM_YEARS.length - 1]!;

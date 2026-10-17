@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getFormatter, getTranslations } from 'next-intl/server';
+import { getFormatter, getTranslations, setRequestLocale } from 'next-intl/server';
 import { CNB_DAILY_URL, parseCnbDay } from '@faktur/cz-compliance';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { FxConverter } from '@/components/public-tools/fx-converter';
@@ -32,6 +32,7 @@ async function loadRates(): Promise<{ date: string | null; rates: [string, numbe
 
 export default async function FxPage({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('tools.calculators.items.fx');
   const format = await getFormatter();
   const data = await loadRates();

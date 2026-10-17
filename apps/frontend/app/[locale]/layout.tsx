@@ -11,6 +11,7 @@ import { ToastFromQuery, Toaster } from '@/components/toaster';
 import { Suspense } from 'react';
 import { SITE_URL } from '@/lib/site';
 import { OG_IMAGE } from '@/lib/seo';
+import { publicClientMessages } from '@/lib/client-messages';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-sans', display: 'swap' });
@@ -95,7 +96,7 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <NextIntlClientProvider messages={messages}>
+          <NextIntlClientProvider messages={publicClientMessages(messages)}>
             {/* Makes useSession() available to client components anywhere
                 below (e.g. login-form.tsx) without turning this server
                 layout itself into a client component — see
