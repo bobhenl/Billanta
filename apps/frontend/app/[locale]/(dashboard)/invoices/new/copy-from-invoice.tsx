@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Copy, FileClock, Search } from 'lucide-react';
+import { FileClock, Search } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { useRouter } from '@/i18n/navigation';
-import { cn } from '@/lib/utils';
 import { searchInvoicesToCopy, type InvoiceToCopy } from './actions';
 
 /**
@@ -16,11 +15,10 @@ import { searchInvoicesToCopy, type InvoiceToCopy } from './actions';
  * dates, status and payments never are, and the due date follows the
  * company's default term.
  */
-export function CopyFromInvoice() {
+export function CopyFromInvoicePanel() {
   const t = useTranslations('invoiceForm.copy');
   const locale = useLocale();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [picking, setPicking] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -35,15 +33,8 @@ export function CopyFromInvoice() {
   };
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4">
-      <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center gap-1.5 text-left" aria-expanded={open}>
-        <Copy className="h-4 w-4 text-primary" aria-hidden="true" />
-        <h2 className="flex-1 text-sm font-bold">{t('title')}</h2>
-        <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', open && 'rotate-180')} />
-      </button>
-      {open && (
-        <>
-          <p className="mt-1 text-xs text-muted-foreground">{t('hint')}</p>
+    <>
+          <p className="text-xs text-muted-foreground">{t('hint')}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
@@ -87,8 +78,6 @@ export function CopyFromInvoice() {
               )}
             />
           )}
-        </>
-      )}
-    </section>
+    </>
   );
 }

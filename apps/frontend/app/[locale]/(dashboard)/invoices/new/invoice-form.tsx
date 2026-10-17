@@ -15,7 +15,7 @@ import { isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compli
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
-import { CopyFromInvoice } from './copy-from-invoice';
+import { CopyFromInvoicePanel } from './copy-from-invoice';
 import { fetchExchangeRate, saveInvoice, searchCustomers, suggestInvoice, suggestItems } from './actions';
 import type {
   AiSettings,
@@ -337,6 +337,7 @@ export function InvoiceForm({
   const [savingIntent, setSavingIntent] = useState<'draft' | 'issue' | null>(null);
 
   const [aiOpen, setAiOpen] = useState(!editing && !template);
+  const [copyOpen, setCopyOpen] = useState(false);
   const [aiText, setAiText] = useState('');
   const [aiBusy, startAi] = useTransition();
   const [aiError, setAiError] = useState<string | null>(null);
@@ -742,13 +743,44 @@ export function InvoiceForm({
 
         {/* AI pre-fill */}
         {!editing && (
-          <section className="rounded-xl border border-primary/30 bg-accent/40 p-4">
-            <button type="button" onClick={() => setAiOpen((v) => !v)} className="flex w-full items-center gap-1.5 text-left" aria-expanded={aiOpen}>
-              <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-              <h2 className="flex-1 text-sm font-bold">{t('ai.title')}</h2>
-              <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', aiOpen && 'rotate-180')} />
-            </button>
-            {aiOpen &&
+          <div>
+            {/* Two pre-fill options side by side; the open one expands full width below. */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => { setAiOpen((v) => !v); setCopyOpen(false); }}
+                aria-expanded={aiOpen}
+                className={cn(
+                  'flex min-w-0 items-center gap-1.5 rounded-xl border p-3 text-left transition-colors',
+                  aiOpen ? 'border-primary/30 bg-accent/40' : 'border-border bg-card hover:bg-secondary',
+                )}
+              >
+                <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">{t('ai.title')}</h2>
+                <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', aiOpen && 'rotate-180')} />
+              </button>
+              <button
+                type="button"
+                onClick={() => { setCopyOpen((v) => !v); setAiOpen(false); }}
+                aria-expanded={copyOpen}
+                className={cn(
+                  'flex min-w-0 items-center gap-1.5 rounded-xl border p-3 text-left transition-colors',
+                  copyOpen ? 'border-primary/30 bg-accent/40' : 'border-border bg-card hover:bg-secondary',
+                )}
+              >
+                <Copy className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">{t('copy.title')}</h2>
+                <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', copyOpen && 'rotate-180')} />
+              </button>
+            </div>
+            {copyOpen && (
+              <section className="mt-2 rounded-xl border border-border bg-card p-4">
+                <CopyFromInvoicePanel />
+              </section>
+            )}
+            {aiOpen && (
+              <section className="mt-2 rounded-xl border border-primary/30 bg-accent/40 p-4">
+                {
               (aiUsable ? (
                 <>
                   <p className="mt-1 text-xs text-muted-foreground">{t('ai.hint')}</p>
@@ -799,11 +831,10 @@ export function InvoiceForm({
                   </Link>
                 </p>
               ))}
-          </section>
+              </section>
+            )}
+          </div>
         )}
-
-        {/* Start from the latest or another invoice ("Duplikovat" flow). */}
-        {!editing && <CopyFromInvoice />}
 
         {/* Customer */}
         <section data-field="customer" className={card}>
