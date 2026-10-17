@@ -16,8 +16,7 @@ import {
   mapBitfakturaInvoices,
   mapBitfakturaSeller,
   type ImportedBusinessDetails,
-} from "./bitfaktura-import";
-import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
+} from "./bitfaktura-import";import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbRate } from "../exports/cnb-rates";
 import { AuditService } from "../audit/audit.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
@@ -43,6 +42,87 @@ export interface InvoiceImportResult {
   source?: { invoices: number; contacts: number };
   /** API imports only: empty business-detail fields filled from the source (or that would be, on a preview). */
   businessFilled?: (keyof ImportedBusinessDetails)[];
+  /** API imports only, when the invoices come from more than one supplier IČO: who issued how many. */
+  sellers?: ImportSeller[];
+  /** API imports only, after a real run: the newest imported invoice shows other supplier details than the profile. */
+  sellerUpdate?: SellerProfileUpdate;
+}
+
+export interface ImportSeller {
+  ico: string;
+  name: string | null;
+  invoices: number;
+}
+
+export interface SellerProfileUpdate {
+  invoiceNumber: string;
+  issueDate: string;
+  changes: { field: "name" | "dic" | "address"; from: string | null; to: string }[];
+  /** Ready for `PATCH /tenants/me` (UpdateTenantDto keys); applied only when the owner clicks. */
+  patch: Record<string, string | null>;
+}
+
+type ProfileRow = {
+  ico: string | null;
+  companyName: string;
+  legalName: string;
+  dic: string | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressPostalCode: string | null;
+  addressCountry: string;
+};
+
+/** Supplier IČOs across the source invoices, most invoices first; empty when there is at most one. */
+export function distinctSellers(invoices: ImportedInvoice[]): ImportSeller[] {
+  const by = new Map<string, ImportSeller>();
+  for (const inv of invoices) {
+    const ico = inv.sellerSnapshot?.ico;
+    if (!ico) continue;
+    const entry = by.get(ico) ?? { ico, name: inv.sellerSnapshot?.legalName ?? null, invoices: 0 };
+    entry.invoices++;
+    by.set(ico, entry);
+  }
+  return by.size > 1 ? [...by.values()].sort((a, b) => b.invoices - a.invoices || a.ico.localeCompare(b.ico)) : [];
+}
+
+const same = (a: string | null | undefined, b: string | null | undefined) => (a ?? "").trim().toLowerCase() === (b ?? "").trim().toLowerCase();
+const oneLine = (...parts: (string | null | undefined)[]) => parts.filter((p) => p && p.trim()).join(", ") || null;
+
+/**
+ * What the newest imported invoice says about the supplier that the company
+ * profile says differently: name, DIČ, address (as a whole). Null when they
+ * agree, or when that invoice is of another IČO (another company, not a move).
+ */
+export function sellerProfileUpdate(current: ProfileRow, newest: ImportedInvoice | undefined): SellerProfileUpdate | null {
+  const snap = newest?.sellerSnapshot;
+  if (!newest || !snap) return null;
+  if (snap.ico && current.ico && snap.ico !== current.ico) return null;
+  const changes: SellerProfileUpdate["changes"] = [];
+  const patch: SellerProfileUpdate["patch"] = {};
+  const name = snap.legalName?.trim().slice(0, 200);
+  if (name && (!same(name, current.legalName) || !same(name, current.companyName))) {
+    changes.push({ field: "name", from: current.legalName || null, to: name });
+    patch.legal_name = name;
+    patch.company_name = name;
+  }
+  if (snap.dic && /^[A-Z]{2}\d{8,10}$/.test(snap.dic) && snap.dic !== current.dic) {
+    changes.push({ field: "dic", from: current.dic, to: snap.dic });
+    patch.dic = snap.dic;
+  }
+  const street = snap.addressStreet?.trim();
+  const city = snap.addressCity?.trim();
+  const zip = snap.addressPostalCode?.trim() || null;
+  const country = snap.addressCountry ?? current.addressCountry;
+  if (street && city && !street.includes("@")) {
+    const moved = !same(street, current.addressStreet) || !same(city, current.addressCity) || !same(zip, current.addressPostalCode) || country !== current.addressCountry;
+    if (moved) {
+      changes.push({ field: "address", from: oneLine(current.addressStreet, current.addressPostalCode, current.addressCity), to: oneLine(street, zip, city)! });
+      Object.assign(patch, { address_street: street.slice(0, 200), address_city: city.slice(0, 100), address_postal_code: zip?.slice(0, 10) ?? null, address_country: country });
+    }
+  }
+  if (changes.length === 0) return null;
+  return { invoiceNumber: newest.invoiceNumber, issueDate: newest.issueDate.toISOString().slice(0, 10), changes, patch };
 }
 
 type BusinessRow = { [K in keyof ImportedBusinessDetails]-?: string | null };
@@ -140,6 +220,8 @@ export class InvoiceImportService {
     apiToken: string,
     dryRun: boolean,
     fetcher?: Parameters<typeof fetchBitfakturaInvoices>[2],
+    /** Import only the invoices this supplier IČO issued (an account shared by several businesses). */
+    onlySellerIco?: string,
   ): Promise<InvoiceImportResult> {
     let source: Awaited<ReturnType<typeof fetchBitfakturaInvoices>>;
     let clients: Awaited<ReturnType<typeof fetchBitfakturaClients>>;
@@ -153,17 +235,30 @@ export class InvoiceImportService {
     // Nice to have: without the seller profile the invoices still come across.
     const seller = mapBitfakturaSeller(await fetchBitfakturaDepartments(account, apiToken, fetcher).catch(() => []));
     const created: { invoice: ImportedInvoice; id: string }[] = [];
+    const mapped = mapBitfakturaInvoices(source);
+    // Several suppliers in one account: say so, and import one of them only on request.
+    // Companies are never created from this; the user picks which one this is.
+    const sellers = distinctSellers(mapped.invoices);
+    if (onlySellerIco) {
+      const own = mapped.invoices.filter((inv) => inv.sellerSnapshot?.ico === onlySellerIco);
+      const other = mapped.invoices.filter((inv) => inv.sellerSnapshot?.ico !== onlySellerIco);
+      mapped.invoices = own;
+      mapped.skipped.push(...other.map((inv) => ({ line: inv.line, number: inv.invoiceNumber, reason: "other_seller" as const })));
+    }
     const result = await this.importMapped(
       db,
       tenantId,
-      mapBitfakturaInvoices(source),
+      mapped,
       dryRun,
       (invoice, id) => created.push({ invoice, id }),
       mapBitfakturaClients(clients),
     );
     result.source = { invoices: source.length, contacts: clients.length };
+    if (sellers.length > 0) result.sellers = sellers;
     const [tenant] = await db
       .select({
+        companyName: schema.tenants.companyName,
+        legalName: schema.tenants.legalName,
         ico: schema.tenants.ico,
         dic: schema.tenants.dic,
         registryNote: schema.tenants.registryNote,
@@ -211,7 +306,11 @@ export class InvoiceImportService {
       }
     };
     await Promise.all(Array.from({ length: PDF_CONCURRENCY }, worker));
-    const done = { ...result, originalPdfs };
+    const done: InvoiceImportResult = { ...result, originalPdfs };
+    // Compared with the profile as it stands after the fill above.
+    const newest = created.reduce<ImportedInvoice | undefined>((a, { invoice }) => (!a || invoice.issueDate >= a.issueDate ? invoice : a), undefined);
+    const update = tenant ? sellerProfileUpdate({ ...tenant, ...fill }, newest) : null;
+    if (update) done.sellerUpdate = update;
     await this.logImport(db, tenantId, "bitfaktura", done, fill);
     return done;
   }
@@ -337,6 +436,13 @@ export class InvoiceImportService {
           paidAt: inv.paidAt,
           cancelledAt: inv.status === "cancelled" ? issuedAt : null,
           exchangeRate: exchangeRate === null ? null : String(exchangeRate),
+          ...(inv.exchangeRate != null && inv.exchangeRateMode
+            ? { exchangeRateMode: inv.exchangeRateMode, exchangeRateDate: inv.exchangeRateDate ?? null }
+            : {}),
+          internalNote: inv.internalNote ?? null,
+          orderNumber: inv.orderNumber ?? null,
+          issuePlace: inv.issuePlace ?? null,
+          issuedByName: inv.issuedByName ?? null,
           reverseCharge: inv.reverseCharge ?? false,
           ...(inv.paymentMethod ? { paymentMethod: inv.paymentMethod, paymentMethodLabel: inv.paymentMethodLabel ?? null } : {}),
           ...(inv.language ? { language: inv.language } : {}),

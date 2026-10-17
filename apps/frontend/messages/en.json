@@ -2676,7 +2676,26 @@
           "privacy": "We only read from BitFaktura and change nothing there."
         },
         "pdfs": "Original BitFaktura PDFs: {archived} saved as archive attachments (not sent to customers).",
-        "pdfsMissing": "{missing} could not be downloaded."
+        "pdfsMissing": "{missing} could not be downloaded.",
+        "sellers": {
+          "title": "The invoices come from {count, plural, one {# supplier} other {# different suppliers}}",
+          "lead": "More than one business uses this BitFaktura account. Choose whose invoices belong here. We don't create a new company from this.",
+          "choose": "Import invoices of",
+          "all": "All suppliers",
+          "row": "{name} (company ID {ico}): {count, plural, one {# invoice} other {# invoices}}"
+        },
+        "sellerUpdate": {
+          "title": "The newest invoice ({number}, {date}) shows different supplier details than your business details.",
+          "fields": {
+            "name": "Name",
+            "dic": "VAT ID (DIČ)",
+            "address": "Registered address"
+          },
+          "empty": "empty",
+          "apply": "Use details from the newest invoice",
+          "applied": "Your business details are updated.",
+          "failed": "The details could not be saved."
+        }
       },
       "status": {
         "issued": "Unpaid",
@@ -2694,7 +2713,8 @@
           "duplicate_in_file": "the number already appears earlier in the file.",
           "already_exists": "you already have an invoice with this number.",
           "unsupported_kind": "we can't import this document type.",
-          "unsupported_discount": "the invoice has a line discount, which we don't import yet."
+          "unsupported_discount": "the invoice has a line discount, which we don't import yet.",
+          "other_seller": "issued by a different supplier (company ID) than the one you chose."
         }
       },
       "errors": {
