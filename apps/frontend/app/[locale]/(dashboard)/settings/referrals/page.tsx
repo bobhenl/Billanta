@@ -6,6 +6,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { SITE_URL } from '@/lib/site';
 import { canManage, fetchMyRole } from '@/lib/tenant';
+import { ListingForm, type OwnListing } from './listing-form';
 import { ReferralsPanel, type ReferralOverview } from './referrals-panel';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,8 +22,14 @@ export default async function ReferralsPage() {
 
   let overview: ReferralOverview;
   let role: string | null;
+  let listing: OwnListing | null;
   try {
-    [overview, role] = await Promise.all([apiFetch<ReferralOverview>('/api/v1/referrals'), fetchMyRole()]);
+    [overview, role, listing] = await Promise.all([
+      apiFetch<ReferralOverview>('/api/v1/referrals'),
+      fetchMyRole(),
+      // The directory form is an extra; a failure here must not hide the wallet.
+      apiFetch<OwnListing>('/api/v1/referrals/listing').catch(() => null)
+    ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     return <Banner tone="err" title={t('loadError')} className="mt-6" />;
@@ -34,6 +41,7 @@ export default async function ReferralsPage() {
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
       <ReferralsPanel overview={overview} link={link} readOnly={!canManage(role)} />
+      {listing && (listing.eligible || listing.listing || overview.canBeAccountant) && <ListingForm own={listing} readOnly={!canManage(role)} />}
 
       <section className="mt-6 rounded-xl border border-border bg-card p-4">
         <h2 className="font-bold">{t('invited.title')}</h2>
