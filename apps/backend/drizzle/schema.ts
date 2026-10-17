@@ -75,6 +75,9 @@ export const invoiceSourceEnum = pgEnum("invoice_source", [
   // Historical documents brought over from another invoicing system (CSV
   // import, src/invoices/invoice-import.util.ts). Never emailed or reminded.
   "import",
+  // A visitor ordered from the company's public profile (Služby a ceník).
+  // Always a draft for the owner to review; see public-profiles/profile-orders.service.ts.
+  "profile_order",
 ]);
 
 // What kind of document an `invoices` row is. Quotes and proformas are not

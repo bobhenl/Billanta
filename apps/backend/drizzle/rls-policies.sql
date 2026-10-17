@@ -1401,3 +1401,48 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION get_buyer_details_target(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_buyer_details_target(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Orders and messages from the public profile (migration 0048): which company
+-- a visitor's order ("Objednat") or message ("Kontaktovat") goes to. Only for
+-- a published profile with the matching switch on and a company that is not
+-- suspended. Returns just the id; ProfileOrdersService / ProfileMessagesService
+-- then work in an ordinary tenant-scoped transaction under RLS.
+-- ---------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS get_profile_order_target(text);
+CREATE OR REPLACE FUNCTION get_profile_order_target(p_slug text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.id
+  FROM tenants t
+  WHERE lower(t.public_profile->>'slug') = lower(p_slug)
+    AND (t.public_profile->>'enabled')::boolean IS TRUE
+    AND (t.public_profile->'orders'->>'enabled')::boolean IS TRUE
+    AND t.suspended_at IS NULL
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_profile_order_target(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_profile_order_target(text) TO faktur_app;
+
+DROP FUNCTION IF EXISTS get_profile_message_target(text);
+CREATE OR REPLACE FUNCTION get_profile_message_target(p_slug text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.id
+  FROM tenants t
+  WHERE lower(t.public_profile->>'slug') = lower(p_slug)
+    AND (t.public_profile->>'enabled')::boolean IS TRUE
+    AND (t.public_profile->>'contactForm')::boolean IS TRUE
+    AND t.suspended_at IS NULL
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_profile_message_target(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_profile_message_target(text) TO faktur_app;

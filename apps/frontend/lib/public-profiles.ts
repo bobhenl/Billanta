@@ -18,8 +18,12 @@ export interface PublicProfile {
   hasLogo: boolean;
   tagline: string | null;
   about: string | null;
-  services: { title: string; description: string | null; price: string | null }[];
+  services: { id: string | null; title: string; description: string | null; price: string | null; unitPrice: number | null; unit: string | null }[];
   contactCta: boolean;
+  /** `enabled` only when the owner switched orders on and some service can be ordered. */
+  orders?: { enabled: boolean; customItems: boolean; prepay: boolean; currency: 'CZK' | 'EUR' };
+  /** "Kontaktovat" message form. */
+  contactForm?: boolean;
 }
 
 /** `null` for an unknown or unpublished slug. Cached briefly — the owner sees changes within a minute. */

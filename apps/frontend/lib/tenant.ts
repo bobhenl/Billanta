@@ -58,9 +58,17 @@ export interface PublicProfileSettings {
   slug: string | null;
   tagline: string | null;
   about: string | null;
-  services: { title: string; description: string | null; price: string | null }[];
+  /** `id` is assigned by the backend on save; `unitPrice`/`unit` are what an order puts on the draft. */
+  services: { id?: string | null; title: string; description: string | null; price: string | null; unitPrice?: number | null; unit?: string | null }[];
   show: { email: boolean; phone: boolean; website: boolean; address: boolean; ico: boolean; logo: boolean };
   contactCta: boolean;
+  /**
+   * Orders from the profile: each lands as a draft for review. `customItems` lets customers add
+   * unpriced lines; `prepay` shows payment details with a QR code after ordering.
+   */
+  orders: { enabled: boolean; customItems: boolean; prepay: boolean };
+  /** "Kontaktovat": a message form whose messages land in the notifications. */
+  contactForm: boolean;
 }
 
 export interface PaymentMethodDef {

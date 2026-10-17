@@ -1,4 +1,4 @@
-import { Building2, Globe, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { Building2, Globe, Mail, MapPin, MessageSquare, Phone, Send, ShoppingCart } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -6,10 +6,16 @@ import { Link } from '@/i18n/navigation';
 import { getPublicProfile, type PublicProfile } from '@/lib/public-profiles';
 import { jsonLd } from '@/lib/seo';
 import { profileUrl, SITE_NAME } from '@/lib/site';
+import { ProfileMessageForm } from './profile-message-form';
+import { ProfileOrderForm } from './profile-order-form';
 
 interface Props {
   params: Promise<{ locale: string; slug: string }>;
+  /** `?service=<id>` preselects the order form (the owner's shareable link), `?ask=<id>` the message form. */
+  searchParams?: Promise<{ service?: string | string[]; ask?: string | string[] }>;
 }
+
+const one = (v: string | string[] | undefined) => (typeof v === 'string' && /^[a-z0-9]{6,24}$/.test(v) ? v : null);
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
@@ -53,8 +59,9 @@ function organizationLd(p: PublicProfile, url: string) {
  * or `<slug>.<NEXT_PUBLIC_PROFILE_DOMAIN>` via middleware. Shows only what
  * the company published in Settings → Veřejný profil; 404 otherwise.
  */
-export default async function PublicProfilePage({ params }: Props) {
+export default async function PublicProfilePage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const query = (await searchParams) ?? {};
   const profile = await getPublicProfile(slug.toLowerCase());
   if (!profile) notFound();
 
@@ -69,7 +76,10 @@ export default async function PublicProfilePage({ params }: Props) {
   const mailto = profile.email
     ? `mailto:${profile.email}?subject=${encodeURIComponent(t('cta.subject', { company: profile.companyName }))}&body=${encodeURIComponent(t('cta.body'))}`
     : null;
+  const orderable = profile.orders?.enabled ? profile.services.flatMap((s) => (s.id ? [{ id: s.id, title: s.title, unitPrice: s.unitPrice, unit: s.unit }] : [])) : [];
+  const askable = profile.contactForm ? profile.services.flatMap((s) => (s.id ? [{ id: s.id, title: s.title }] : [])) : [];
   const row = 'flex items-start gap-3 text-sm';
+  const pill = 'inline-flex items-center gap-1.5 rounded-lg border border-input px-3 py-1.5 text-xs font-semibold hover:bg-muted';
   const icon = 'mt-0.5 h-4 w-4 shrink-0 text-primary';
 
   return (
@@ -90,7 +100,12 @@ export default async function PublicProfilePage({ params }: Props) {
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{profile.companyName}</h1>
               {profile.tagline && <p className="mt-1 text-muted-foreground">{profile.tagline}</p>}
             </div>
-            {profile.contactCta && mailto && (
+            {profile.contactForm ? (
+              <a href="#contact" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+                <MessageSquare className="h-4 w-4" />
+                {t('message.button')}
+              </a>
+            ) : profile.contactCta && mailto && (
               <a href={mailto} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
                 <Send className="h-4 w-4" />
                 {t('cta.button')}
@@ -111,9 +126,44 @@ export default async function PublicProfilePage({ params }: Props) {
                     {s.price && <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{s.price}</span>}
                   </div>
                   {s.description && <p className="mt-1.5 text-sm text-muted-foreground">{s.description}</p>}
+                  {s.id && (orderable.length > 0 || askable.length > 0) && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {orderable.length > 0 && (
+                        <a href={`?service=${s.id}#order`} className={`${pill} border-primary bg-primary text-primary-foreground hover:bg-primary/90`}>
+                          <ShoppingCart className="h-3.5 w-3.5" />
+                          {t('order.button')}
+                        </a>
+                      )}
+                      {askable.length > 0 && (
+                        <a href={`?ask=${s.id}#contact`} className={pill}>
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          {t('message.button')}
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {orderable.length > 0 && (
+          <section id="order" className="mt-6 scroll-mt-6">
+            <ProfileOrderForm
+              slug={profile.slug}
+              companyName={profile.companyName}
+              services={orderable}
+              customItemsAllowed={Boolean(profile.orders?.customItems)}
+              currency={profile.orders?.currency ?? 'CZK'}
+              initialServiceId={one(query.service)}
+            />
+          </section>
+        )}
+
+        {profile.contactForm && (
+          <section id="contact" className="mt-6 scroll-mt-6">
+            <ProfileMessageForm slug={profile.slug} companyName={profile.companyName} services={askable} initialServiceId={one(query.ask)} />
           </section>
         )}
 
