@@ -290,9 +290,47 @@ on file simply can't be emailed yet):
 
 ### Required env vars
 
-`RESEND_API_KEY` and `EMAIL_FROM` (root `.env.example`) — both must be set
-for `EmailService.send` to actually deliver; if either is missing it throws
-immediately rather than silently no-op-ing.
+`RESEND_API_KEY` and `EMAIL_FROM` (root `.env.example`). Without them
+backend mail stays queued in `email_outbox` and nothing is sent; the
+worker logs one warning. Abuse reports (`sendPlatformEmail`) only log.
+
+### Outbox, unsubscribe and bounces
+
+All tenant mail goes through `EmailOutboxService` into `email_outbox`
+(migration `0053_email_outbox.sql`, RLS per tenant). `EmailOutboxWorker`
+runs every minute and claims due rows through the SECURITY DEFINER
+`claim_email_outbox()`, so one worker sees every tenant without bypassing
+RLS for anything else.
+
+- **Retries**: 429, 5xx and network errors retry with backoff (1 min
+  doubling, 6 h cap, jitter) up to `EMAIL_MAX_ATTEMPTS`; other 4xx go
+  straight to `dead`. Rows older than `EMAIL_OUTBOX_MAX_AGE_HOURS` are
+  marked dead instead of sent late. Each row has a unique
+  `idempotency_key` and Resend gets `outbox-<id>` as its idempotency key,
+  so a crash between send and finish does not send twice.
+- **Batching and quiet hours**: activity notifications for one member
+  merge into one queued e-mail for `EMAIL_BATCH_WINDOW_MINUTES` and wait
+  out the member's quiet hours (default 21:00–7:00 Europe/Prague).
+  Transactional mail (invoices, reminders, invitations, security alerts)
+  goes out at once.
+- **Unsubscribe**: non-transactional mail carries `List-Unsubscribe` and
+  `List-Unsubscribe-Post: List-Unsubscribe=One-Click`. The token is
+  HMAC-signed with a key derived from `JWT_SECRET`. Public endpoints:
+  `GET/POST /api/v1/public/email/unsubscribe/:token`; the frontend page is
+  `/<locale>/unsubscribe/<token>` and the one-click target
+  `/api/email/unsubscribe/<token>`.
+- **Bounces**: `POST /api/v1/webhooks/resend` verifies the Svix signature
+  with `RESEND_WEBHOOK_SECRET` (503 when unset). Hard bounces and
+  complaints add the address to `email_suppressions`. Queued mail to a
+  hard-bounced address is dropped; after a complaint only transactional
+  mail still goes out.
+- **Weekly digest**: `WeeklyDigestCron`, Mondays 8:00 Europe/Prague, for
+  members who turned it on in Settings → E-mailová upozornění.
+- **Admin view**: `GET /api/v1/admin/email-outbox?status=&limit=`
+  (`PlatformAdminGuard`): counts per status and the latest rows.
+
+Optional tuning: `EMAIL_BATCH_WINDOW_MINUTES` (15), `EMAIL_MAX_ATTEMPTS`
+(6), `EMAIL_OUTBOX_MAX_AGE_HOURS` (72), `EMAIL_OUTBOX_BATCH_SIZE` (50).
 
 ## Bank reconciliation (CSV import + auto-match)
 
