@@ -173,6 +173,21 @@ export interface InvoiceFormPrefs {
   remindersEnabled: boolean;
   reminderIntervalDays: number;
   reminderMax: number;
+  /** What a blank new invoice starts with (Settings → Faktury → Výchozí hodnoty). */
+  defaultCurrency: string | null;
+  defaultBankAccountId: string | null;
+  defaultContactId: string | null;
+  defaultItems: DefaultItem[];
+  defaultNoteAbove: string | null;
+}
+
+/** A line item a blank invoice starts with. */
+export interface DefaultItem {
+  description: string;
+  quantity: number;
+  unit: string | null;
+  unitPrice: number;
+  vatRate: number | null;
 }
 
 /** Same list as the backend's `PDF_ACCENTS` (tenants/invoice-form-prefs.ts); first = default. */
@@ -190,6 +205,8 @@ export interface FormDefaults {
   customPaymentMethods?: { id: string; label: string; base: PaymentMethod; instructions: string | null }[];
   noteBelow: string | null;
   language: DocLanguage;
+  /** Blank invoice only (no template): customer, currency, account, items and note above to start with. */
+  blank?: { contact: Contact | null; currency: string | null; bankAccountId: string | null; items: DefaultItem[]; noteAbove: string | null };
   /** Primary account (company profile) and the extra ones the invoice may be paid to. */
   primaryAccount: string | null;
   bankAccounts: { id: string; label: string; line: string; currency: string | null }[];

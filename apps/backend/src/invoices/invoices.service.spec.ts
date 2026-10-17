@@ -1,4 +1,5 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
 import type { InvoicePdfService } from "./invoice-pdf.service";
@@ -381,7 +382,7 @@ describe("InvoicesService.duplicateTemplate", () => {
     ];
     const chain = vi
       .fn()
-      .mockReturnValueOnce(makeSelectChain([makeInvoice()]))
+      .mockReturnValueOnce(makeSelectChain([makeInvoice({ bankAccountId: "acc-2" })]))
       .mockReturnValueOnce(makeSelectChain([makeContact()]))
       .mockReturnValueOnce({ from: () => ({ where: () => ({ orderBy: () => Promise.resolve(items) }) }) });
     const db = { select: chain, insert: vi.fn(), update: vi.fn() };
@@ -390,6 +391,7 @@ describe("InvoicesService.duplicateTemplate", () => {
 
     expect(template.contact?.legalName).toBe("ACME s.r.o.");
     expect(template.dueInDays).toBe(14);
+    expect(template.bankAccountId).toBe("acc-2");
     expect(template.items).toEqual([
       { description: "Konzultace", quantity: 3, unit: "hod", discountPercent: 0, unitPrice: 1500, vatRate: 21 },
       { description: "Cestovné", quantity: 1, unit: null, discountPercent: 10, unitPrice: 400, vatRate: null },
@@ -401,5 +403,45 @@ describe("InvoicesService.duplicateTemplate", () => {
   it("404s for an invoice the tenant cannot see", async () => {
     const db = { select: vi.fn(() => makeSelectChain([])) };
     await expect(service.duplicateTemplate(db as never, "missing")).rejects.toBeInstanceOf(NotFoundException);
+  });
+});
+
+describe("InvoicesService.latestDuplicateTemplate", () => {
+  const service = new InvoicesService({} as unknown as EmailService, {} as unknown as InvoicePdfService);
+  const dialect = new PgDialect();
+
+  function latestChain(rows: { id: string }[]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chain: any = {};
+    chain.from = vi.fn(() => chain);
+    chain.where = vi.fn(() => chain);
+    chain.orderBy = vi.fn(() => chain);
+    chain.limit = vi.fn(() => Promise.resolve(rows));
+    return chain;
+  }
+
+  it("copies the newest non-credit-note document and writes nothing", async () => {
+    const latest = latestChain([{ id: "inv-9" }]);
+    const db = { select: vi.fn().mockReturnValueOnce(latest), insert: vi.fn(), update: vi.fn() };
+    const duplicate = vi.spyOn(service, "duplicateTemplate").mockResolvedValue({ sourceNumber: "2026-0009" } as never);
+
+    const template = await service.latestDuplicateTemplate(db as never);
+
+    expect(duplicate).toHaveBeenCalledWith(db, "inv-9");
+    expect(template.sourceNumber).toBe("2026-0009");
+    const where = dialect.sqlToQuery(latest.where.mock.calls[0][0]);
+    expect(where.sql).toBe('"invoices"."document_type" <> $1');
+    expect(where.params).toEqual(["credit_note"]);
+    const order = dialect.sqlToQuery(latest.orderBy.mock.calls[0][0]);
+    expect(order.sql).toBe('"invoices"."created_at" desc');
+    expect(latest.limit).toHaveBeenCalledWith(1);
+    expect(db.insert).not.toHaveBeenCalled();
+    expect(db.update).not.toHaveBeenCalled();
+    duplicate.mockRestore();
+  });
+
+  it("404s when the company has no invoice yet", async () => {
+    const db = { select: vi.fn(() => latestChain([])) };
+    await expect(service.latestDuplicateTemplate(db as never)).rejects.toBeInstanceOf(NotFoundException);
   });
 });

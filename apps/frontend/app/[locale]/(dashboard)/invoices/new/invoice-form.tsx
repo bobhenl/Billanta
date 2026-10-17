@@ -15,6 +15,7 @@ import { isCzechHoliday, isCzechWorkingDay, nextCzechWorkingDay } from '@faktur/
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
+import { CopyFromInvoice } from './copy-from-invoice';
 import { fetchExchangeRate, saveInvoice, searchCustomers, suggestInvoice, suggestItems } from './actions';
 import type {
   AiSettings,
@@ -210,11 +211,15 @@ export function InvoiceForm({
   const [editReason, setEditReason] = useState(mode.kind === 'edit' ? mode.reason ?? '' : '');
   const { vatPayer } = defaults;
   const defaultVat = vatPayer ? '21' : '';
+  // A blank new invoice (no copy, no template; a chosen customer alone still
+  // counts) starts from Settings → Faktury → Výchozí hodnoty.
+  const blank = mode.kind === 'create' && !template?.items && !template?.templateName && template?.sourceNumber === undefined ? defaults.blank : undefined;
 
   const [documentType, setDocumentType] = useState<DocumentType>(template?.documentType ?? 'invoice');
-  const [customer, setCustomer] = useState<SelectedCustomer | null>(() =>
-    template?.contact ? { kind: 'contact', id: template.contact.id, contact: template.contact } : null
-  );
+  const [customer, setCustomer] = useState<SelectedCustomer | null>(() => {
+    const contact = template?.contact ?? blank?.contact;
+    return contact ? { kind: 'contact', id: contact.id, contact } : null;
+  });
   const [customerQuery, setCustomerQuery] = useState('');
   const [registry, setRegistry] = useCompanyRegistry();
   const [issueDate, setIssueDate] = useState(() => isoDate(template?.issueDate) || today());
@@ -222,13 +227,15 @@ export function InvoiceForm({
     () => isoDate(template?.dueDate) || addDays(isoDate(template?.issueDate) || today(), template?.dueInDays ?? defaults.dueDays)
   );
   const [taxableSupplyDate, setTaxableSupplyDate] = useState(() => isoDate(template?.taxableSupplyDate));
-  const [currency, setCurrency] = useState(() =>
-    template?.currency && CURRENCIES.includes(template.currency) ? template.currency : 'CZK'
-  );
+  const [currency, setCurrency] = useState(() => {
+    const wanted = template?.currency ?? blank?.currency;
+    return wanted && CURRENCIES.includes(wanted) ? wanted : 'CZK';
+  });
   const [exchangeRate, setExchangeRate] = useState(() => (template?.exchangeRate ? String(template.exchangeRate) : ''));
-  const [bankAccountId, setBankAccountId] = useState(() =>
-    defaults.bankAccounts.some((a) => a.id === template?.bankAccountId) ? template!.bankAccountId! : ''
-  );
+  const [bankAccountId, setBankAccountId] = useState(() => {
+    const wanted = template?.bankAccountId ?? blank?.bankAccountId;
+    return wanted && defaults.bankAccounts.some((a) => a.id === wanted) ? wanted : '';
+  });
   const [loadingRate, setLoadingRate] = useState(false);
   const [paidValue, setPaidValue] = useState('');
   const [paidUnit, setPaidUnit] = useState<'amount' | 'percent'>('amount');
@@ -259,7 +266,7 @@ export function InvoiceForm({
   const [reverseCharge, setReverseCharge] = useState(Boolean(template?.reverseCharge));
   // bitfaktura-style "I enter prices incl. VAT"; the default lives in Settings → Invoices.
   const [grossPrices, setGrossPricesState] = useState(defaults.prefs.pricesIncludeVat);
-  const [noteAbove, setNoteAbove] = useState(template?.noteAbove ?? '');
+  const [noteAbove, setNoteAbove] = useState(template?.noteAbove ?? blank?.noteAbove ?? '');
   const [noteBelow, setNoteBelow] = useState(() => (template && template.noteBelow !== undefined ? template.noteBelow ?? '' : defaults.noteBelow ?? ''));
   const [internalNote, setInternalNote] = useState(template?.internalNote ?? '');
   const { prefs } = defaults;
@@ -284,13 +291,23 @@ export function InvoiceForm({
             vatRate: vatPayer ? (item.vatRate == null ? '' : String(item.vatRate)) : ''
           })
         )
-      : [newRow(defaultVat)]
+      : blank?.items.length
+        ? blank.items.map((item) =>
+            newRow(defaultVat, {
+              description: item.description,
+              quantity: String(item.quantity),
+              unit: item.unit ?? '',
+              unitPrice: item.unitPrice ? String(item.unitPrice) : '',
+              vatRate: vatPayer ? (item.vatRate == null ? '' : String(item.vatRate)) : ''
+            })
+          )
+        : [newRow(defaultVat)]
   );
   // Optional fields: expanded when the company wants them (Nastavení →
   // Faktury) or when the document already has a value; otherwise one
   // "+ field" chip away.
   const [shown, setShown] = useState<Record<OptionalField, boolean>>(() => {
-    const items = template?.items ?? [];
+    const items: { code?: string | null; unit?: string | null; discountPercent?: number }[] = template?.items ?? blank?.items ?? [];
     const has: Record<OptionalField, boolean> = {
       itemCode: items.some((i) => i.code),
       unit: items.some((i) => i.unit),
@@ -300,7 +317,7 @@ export function InvoiceForm({
       orderNumber: Boolean(template?.orderNumber),
       issuePlace: Boolean(template?.issuePlace),
       issuedBy: Boolean(template?.issuedByName),
-      noteAbove: Boolean(template?.noteAbove),
+      noteAbove: Boolean(template?.noteAbove ?? blank?.noteAbove),
       internalNote: Boolean(template?.internalNote),
       // Preset labels from settings only make sense if the editor is visible.
       customFields: Boolean(template?.customFields?.some((f) => f.value)) || prefs.customFieldLabels.length > 0,
@@ -781,6 +798,9 @@ export function InvoiceForm({
               ))}
           </section>
         )}
+
+        {/* Start from the latest or another invoice ("Duplikovat" flow). */}
+        {!editing && <CopyFromInvoice />}
 
         {/* Customer */}
         <section data-field="customer" className={card}>

@@ -29,8 +29,14 @@ export async function updateModules(modules: Record<string, boolean>) {
   return run<unknown>('/api/v1/tenants/me', 'PATCH', { enabled_modules: modules });
 }
 
-/** Settings → Invoices: which optional fields the invoice form starts with, preset labels and defaults. */
-export async function updateInvoiceFormPrefs(prefs: {
+/**
+ * Settings → Invoices: which optional fields the invoice form starts with,
+ * preset labels and defaults. `company` carries the defaults that are
+ * plain tenant columns (language, due days, payment method, note below),
+ * saved in the same request.
+ */
+export async function updateInvoiceFormPrefs(
+  prefs: {
   show: Record<string, boolean>;
   custom_field_labels: string[];
   default_issue_place: string | null;
@@ -41,8 +47,20 @@ export async function updateInvoiceFormPrefs(prefs: {
   reminders_enabled: boolean;
   reminder_interval_days: number;
   reminder_max: number;
-}) {
-  return run<unknown>('/api/v1/tenants/me', 'PATCH', { invoice_form_prefs: prefs });
+  default_currency: string | null;
+  default_bank_account_id: string | null;
+  default_contact_id: string | null;
+  default_items: { description: string; quantity: number; unit: string | null; unit_price: number; vat_rate: number | null }[];
+  default_note_above: string | null;
+  },
+  company?: {
+    default_locale: 'cs' | 'sk' | 'en';
+    default_due_days: number;
+    default_payment_method: string;
+    default_note_below: string | null;
+  }
+) {
+  return run<unknown>('/api/v1/tenants/me', 'PATCH', { ...company, invoice_form_prefs: prefs });
 }
 
 /** Settings → E-maily: sender, wording and attachments of the emails to customers. */

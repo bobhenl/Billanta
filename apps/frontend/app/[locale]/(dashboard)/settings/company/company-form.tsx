@@ -4,7 +4,7 @@ import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
 import { Building2, CreditCard, FileText, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
@@ -13,8 +13,6 @@ import { BankAccounts } from './bank-accounts';
 import { LogoUpload } from './logo-upload';
 import { lookupAres } from '../../contacts/actions';
 import { updateCompany } from '../actions';
-
-const PAYMENT_METHODS = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'] as const;
 
 /** Form field → backend snake_case key; every value is edited as a string, except the two flags below. */
 const FIELDS = {
@@ -33,16 +31,12 @@ const FIELDS = {
   bankAccountNumber: 'bank_account_number',
   bankAccountBankCode: 'bank_account_bank_code',
   bankAccountIban: 'bank_account_iban',
-  bankAccountSwift: 'bank_account_swift',
-  defaultLocale: 'default_locale',
-  defaultDueDays: 'default_due_days',
-  defaultPaymentMethod: 'default_payment_method',
-  defaultNoteBelow: 'default_note_below'
+  bankAccountSwift: 'bank_account_swift'
 } as const;
 type Field = keyof typeof FIELDS;
 type Values = Record<Field, string> & { dicVatPayer: boolean };
 
-const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry', 'defaultLocale', 'defaultDueDays', 'defaultPaymentMethod'];
+const REQUIRED: Field[] = ['companyName', 'legalName', 'addressCountry'];
 
 function toValues(t: TenantSettings): Values {
   const v = {} as Values;
@@ -53,7 +47,6 @@ function toValues(t: TenantSettings): Values {
 
 export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSettings; accounts: BankAccount[]; readOnly: boolean }) {
   const t = useTranslations('settings.company');
-  const tPay = useTranslations('doc.payment');
   const router = useRouter();
   const initial = useMemo(() => toValues(tenant), [tenant]);
   const [values, setValues] = useState<Values>(initial);
@@ -94,8 +87,7 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
         continue;
       }
       const raw = values[key].trim();
-      if (key === 'defaultDueDays') patch.default_due_days = Number(raw || 0);
-      else if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
+      if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
     }
     startSave(async () => {
@@ -214,39 +206,14 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
         <BankAccounts accounts={accounts} readOnly={readOnly} />
       </Section>
 
-      <Section icon={FileText} title={t('sections.defaults')} hint={t('sections.defaultsHint')}>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">{t('defaultLocale')}</span>
-            <select className={inputClass} value={values.defaultLocale} disabled={readOnly} onChange={(e) => set('defaultLocale', e.target.value)}>
-              <option value="cs">Čeština</option>
-              <option value="sk">Slovenčina</option>
-              <option value="en">English</option>
-            </select>
-          </label>
-          {field('defaultDueDays', t('defaultDueDays'), { type: 'number', min: 0, max: 365, required: true }, '', t('defaultDueDaysHint'))}
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium">{t('defaultPaymentMethod')}</span>
-            <select className={inputClass} value={values.defaultPaymentMethod} disabled={readOnly} onChange={(e) => set('defaultPaymentMethod', e.target.value)}>
-              {PAYMENT_METHODS.map((m) => (
-                <option key={m} value={m}>
-                  {tPay(m)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-sm sm:col-span-3">
-            <span className="mb-1 block font-medium">{t('defaultNoteBelow')}</span>
-            <textarea
-              className={`${inputClass} min-h-20`}
-              value={values.defaultNoteBelow}
-              disabled={readOnly}
-              maxLength={2000}
-              placeholder={t('defaultNotePlaceholder')}
-              onChange={(e) => set('defaultNoteBelow', e.target.value)}
-            />
-          </label>
-        </div>
+      {/* Invoice defaults (language, due days, payment, notes, customer, items…) live together in Settings → Faktury. */}
+      <Section icon={FileText} title={t('sections.defaults')}>
+        <p className="text-sm text-muted-foreground">
+          {t('defaultsMoved')}{' '}
+          <Link href="/settings/invoices#defaults" className="font-semibold text-foreground underline underline-offset-2">
+            {t('defaultsLink')}
+          </Link>
+        </p>
       </Section>
 
       {!readOnly && (
