@@ -204,7 +204,7 @@ export function ContactEditor({
               className="min-w-0 flex-1"
               value={registryQuery}
               onChange={setRegistryQuery}
-              refreshKey={registry}
+              refreshKey={effectiveRegistry}
               ariaLabel={t('registrySearch')}
               placeholder={t(`registryPlaceholder.${registry}`)}
               emptyHint={t('registryEmpty')}
