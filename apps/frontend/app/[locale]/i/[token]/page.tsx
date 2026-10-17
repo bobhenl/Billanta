@@ -15,14 +15,18 @@ import {
   type PublicInvoiceStatus,
 } from "@/lib/public-invoices";
 import type { Metadata } from "next";
-import { NOINDEX } from "@/lib/seo";
+import { privateLinkMetadata } from "@/lib/seo";
 import { QuoteResponse } from "./quote-response";
 import { ReportAbuse } from "./report-abuse";
 import { PayerNote } from "./payer-note";
 import { CardPayButton } from "./card-pay-button";
 
 // A client's private invoice link: never indexed, never followed.
-export const metadata: Metadata = { robots: NOINDEX, referrer: "no-referrer" };
+// Generic, non-revealing preview card; see privateLinkMetadata.
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return privateLinkMetadata(locale);
+}
 
 /**
  * Client-portal invoice view — the page a client lands on after clicking an

@@ -30,3 +30,11 @@ export const PROFILE_DOMAIN = (process.env.NEXT_PUBLIC_PROFILE_DOMAIN ?? '').tri
 export function profileUrl(slug: string, locale = 'cs', origin = SITE_URL): string {
   return PROFILE_DOMAIN ? `https://${slug}.${PROFILE_DOMAIN}` : `${origin}/${locale}/p/${slug}`;
 }
+
+/**
+ * The one card every private token page (/i, /d, /c) shares. It says what
+ * kind of link this is and nothing else: no number, amount or name, so a
+ * link pasted into a chat cannot leak what the invoice is about. Not a real
+ * route, so it never collides with a page.
+ */
+export const PRIVATE_CARD = '_private';

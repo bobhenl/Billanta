@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { getPublicProfile, type PublicProfile } from '@/lib/public-profiles';
-import { jsonLd } from '@/lib/seo';
+import { jsonLd, ogImage } from '@/lib/seo';
 import { profileUrl, SITE_NAME } from '@/lib/site';
 
 interface Props {
@@ -16,11 +16,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await getPublicProfile(slug.toLowerCase()).catch(() => null);
   if (!profile) return { title: SITE_NAME, robots: { index: false, follow: false } };
   const description = profile.tagline ?? profile.about?.slice(0, 160) ?? profile.companyName;
+  const url = profileUrl(profile.slug, locale);
+  // The drawn card (name, logo, services count) rather than the bare logo:
+  // chat apps crop a square logo into a wide preview badly.
+  const image = ogImage(locale, `/p/${profile.slug}`, profile.companyName);
   return {
     title: { absolute: profile.companyName },
     description,
-    alternates: { canonical: profileUrl(profile.slug, locale) },
-    openGraph: { title: profile.companyName, description, type: 'profile', ...(profile.hasLogo ? { images: [`/api/public/profiles/${profile.slug}/logo`] } : {}) }
+    alternates: { canonical: url },
+    openGraph: { title: profile.companyName, description, url, siteName: SITE_NAME, locale, type: 'profile', images: [image] },
+    twitter: { card: 'summary_large_image', title: profile.companyName, description, images: [image.url] }
   };
 }
 
