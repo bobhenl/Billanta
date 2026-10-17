@@ -65,6 +65,19 @@ export async function rotateInvoiceLink(id: string) {
   return run<{ id: string; publicToken: string }>(`/api/v1/invoices/${id}/public-link/rotate`);
 }
 
+/** Sends the draft to the customer to fill in their own billing details (a fresh /d/{token} link each time). */
+export async function requestBuyerDetails(id: string, email: string, autoIssue: boolean) {
+  return run<{ token: string; url: string; emailed: boolean; autoIssue: boolean }>(
+    `/api/v1/invoices/${id}/buyer-details-request`,
+    json('POST', { email: email.trim() || undefined, autoIssue })
+  );
+}
+
+/** Closes the request; the customer's link stops working at once. */
+export async function cancelBuyerDetails(id: string) {
+  return run<unknown>(`/api/v1/invoices/${id}/buyer-details-request`, { method: 'DELETE' });
+}
+
 export async function convertInvoice(id: string, to: 'invoice' | 'proforma' | 'credit_note') {
   return run<{ id: string }>(`/api/v1/invoices/${id}/convert`, json('POST', { to }));
 }

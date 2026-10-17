@@ -36,8 +36,14 @@ import { getCnbRate } from "../exports/cnb-rates";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
+import { BuyerDetailsService } from "./buyer-details.service";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
+
+const buyerDetailsRequestSchema = z.object({
+  email: z.string().trim().max(200).email().optional().or(z.literal("")),
+  autoIssue: z.boolean().optional(),
+});
 
 class BitfakturaImportDto extends createZodDto(
   z.object({
@@ -74,6 +80,7 @@ export class InvoicesController {
     private readonly invoicesService: InvoicesService,
     private readonly attachmentsService: InvoiceAttachmentsService,
     private readonly importService: InvoiceImportService,
+    private readonly buyerDetails: BuyerDetailsService,
   ) {}
 
   @Get()
@@ -229,6 +236,31 @@ export class InvoicesController {
   @ApiOperation({ summary: "Issue a new secret client link for the document (the old link stops working)" })
   rotatePublicLink(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.invoicesService.rotatePublicToken(req.tenantDb!, id);
+  }
+
+  @Post(":id/buyer-details-request")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Send a draft to the customer to fill in their own billing details",
+    description:
+      "Creates a new secret link (/d/:token; an older one stops working) and optionally e-mails it. " +
+      "Only drafts. With autoIssue the draft is issued and sent once the customer submits, " +
+      "unless their details differ from a saved contact.",
+  })
+  requestBuyerDetails(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() body: unknown) {
+    const parsed = buyerDetailsRequestSchema.safeParse(body ?? {});
+    if (!parsed.success) throw new BadRequestException("Invalid e-mail address");
+    return this.buyerDetails.request(req.tenantDb!, req.user!.tenantId, req.user!.id, id, {
+      email: parsed.data.email || null,
+      autoIssue: parsed.data.autoIssue,
+    });
+  }
+
+  @Delete(":id/buyer-details-request")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Close the buyer-details link of a draft (it stops working at once)" })
+  cancelBuyerDetails(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.buyerDetails.cancel(req.tenantDb!, req.user!.tenantId, id);
   }
 
   @Post(":id/cancel")

@@ -78,6 +78,6 @@ export async function assertCanSendEmail(db: Db, tenantId: string): Promise<void
 }
 
 /** Counts one e-mail sent to an outside address towards the daily cap. */
-export async function recordEmailSent(db: Db, tenantId: string, kind: "invoice" | "reminder" | "invitation", recipient: string): Promise<void> {
+export async function recordEmailSent(db: Db, tenantId: string, kind: "invoice" | "reminder" | "invitation" | "buyer_details", recipient: string): Promise<void> {
   await db.insert(schema.outboundEmails).values({ tenantId, kind, recipient: recipient.slice(0, 320) });
 }

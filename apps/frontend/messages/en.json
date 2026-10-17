@@ -516,6 +516,62 @@
       "EMAIL_DAILY_LIMIT": "You have reached today's e-mail limit. New accounts have a lower limit during their first week; you can send again tomorrow, or share the link or PDF instead.",
       "EMAIL_PAUSED": "E-mail sending is paused because several recipients reported your documents as unsolicited. Please contact support and we'll review it.",
       "ACCOUNT_SUSPENDED": "The account is suspended on suspicion of abuse. Please contact support."
+    },
+    "buyerDetails": {
+      "badge": {
+        "waiting": "Waiting for customer details",
+        "submitted": "Customer filled in details"
+      },
+      "button": "Ask the customer to fill in their details",
+      "dialogTitle": "Let the customer fill in their details",
+      "dialogHint": "The customer gets a link where they see the items and amount and fill in their name, address and company or VAT ID. The details go into your contacts and nothing you saved is overwritten.",
+      "emailLabel": "Customer e-mail",
+      "emailPlaceholder": "name@company.com",
+      "emailHint": "Leave empty if you just want to copy the link and send it yourself.",
+      "autoIssue": "Issue and send the invoice automatically once filled in",
+      "autoIssueHint": "Only when the details don't conflict with the saved contact. Otherwise the draft waits for you.",
+      "replaceNote": "A new link replaces the old one, which stops working.",
+      "sendEmail": "Send e-mail",
+      "createLink": "Create link",
+      "close": "Close",
+      "copied": "Link copied.",
+      "copyPrompt": "Copy the link:",
+      "emailed": "We sent the link to {email}.",
+      "cancelled": "The link was closed.",
+      "failed": "Failed",
+      "waitingTitle": "Waiting for customer details",
+      "waitingEmail": "The link was sent to {email}.",
+      "waitingLink": "The link is ready to share.",
+      "waitingAuto": "Once filled in, the invoice is issued and sent automatically.",
+      "waitingManual": "Once filled in, we'll let you know and you issue the invoice yourself.",
+      "copyLink": "Copy link",
+      "resend": "Send again",
+      "cancel": "Close link",
+      "submittedTitle": "The customer filled in their details {date}",
+      "mode": {
+        "created": "We created a new contact and put it on the draft.",
+        "existing": "We found a saved contact by company or VAT ID and put it on the draft.",
+        "filled": "The details belong to the contact that was already on the draft."
+      },
+      "filled": "Filled in: {fields}.",
+      "conflicts": "Different from the saved contact, nothing was overwritten:",
+      "empty": "empty",
+      "auto": {
+        "sent": "The invoice was issued and sent automatically.",
+        "issued": "The invoice was issued, but the e-mail could not be sent.",
+        "failed": "Automatic issuing failed. Please check the draft.",
+        "skipped": "Automatic issuing is waiting for you, the details need a check."
+      },
+      "askAgain": "Send a new link",
+      "field": {
+        "legalName": "name",
+        "email": "e-mail",
+        "ico": "company ID",
+        "dic": "VAT ID",
+        "address": "address",
+        "isPerson": "private person",
+        "contactId": "contact"
+      }
     }
   },
   "publicInvoice": {
@@ -2065,6 +2121,10 @@
         "quote_response": {
           "label": "Quote answered",
           "hint": "A client accepted or declined a quote in the portal."
+        },
+        "buyer_details": {
+          "label": "Customer filled in their details",
+          "hint": "The customer filled in their billing details using the link you sent."
         }
       },
       "browserTitle": "Browser notifications",
@@ -5602,7 +5662,8 @@
       "user": "User",
       "ai": "AI assistant",
       "api_key": "API key",
-      "system": "System"
+      "system": "System",
+      "customer": "Customer"
     },
     "entities": {
       "all": "All",
@@ -5641,7 +5702,10 @@
         "paid_from_bank": "matched a bank payment to",
         "link_rotated": "replaced the public link of",
         "cancelled": "cancelled",
-        "sent_corrected": "sent the corrected version of"
+        "sent_corrected": "sent the corrected version of",
+        "buyer_details_requested": "sent to the customer to fill in their details:",
+        "buyer_details_submitted": "filled in their billing details for",
+        "buyer_details_cancelled": "closed the customer details request for"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -5987,5 +6051,61 @@
     "christmasEve": "Christmas Eve",
     "christmasDay": "Christmas Day",
     "stStephen": "St Stephen's Day"
+  },
+  "buyerDetails": {
+    "title": "Please fill in your billing details",
+    "intro": "{supplier} is preparing {document} for you. Tell them who it should be made out to.",
+    "documentType": {
+      "invoice": "an invoice",
+      "proforma": "a proforma invoice",
+      "quote": "a quote"
+    },
+    "supplier": "Supplier",
+    "amount": "Amount",
+    "withoutVat": "{amount} excl. VAT",
+    "dueDate": "Due {date}",
+    "item": "Item",
+    "quantity": "Quantity",
+    "total": "Total",
+    "ico": "Company ID",
+    "dic": "VAT ID",
+    "doneTitle": "Thank you, we have your details",
+    "doneText": "{supplier} will now finish the invoice. You can close this page.",
+    "privacy": "Only {supplier} gets these details, to make out your document.",
+    "form": {
+      "title": "Billing details",
+      "hint": "{supplier} will make out the document to these details.",
+      "kind": "The customer is",
+      "company": "Company",
+      "person": "Private person",
+      "country": "Country",
+      "ico": "Company ID (IČO)",
+      "dic": "VAT ID (DIČ)",
+      "vatId": "VAT ID",
+      "lookup": "Look up",
+      "lookupNeedsIco": "Fill in the company ID first.",
+      "lookupNeedsVat": "Fill in the VAT ID first.",
+      "lookupNotFound": "Nothing found in the register, please fill in the details yourself.",
+      "lookupDone": "Details loaded, please check them.",
+      "companyName": "Company name",
+      "personName": "Full name",
+      "street": "Street and number",
+      "city": "City",
+      "postalCode": "Postal code",
+      "email": "E-mail for the invoice",
+      "submit": "Send details",
+      "errors": {
+        "invalid": "Please check the highlighted fields.",
+        "closed": "This link no longer works. Ask the supplier for a new one.",
+        "submitted": "The details were already sent.",
+        "limit": "Too many attempts, please try again in a moment.",
+        "failed": "Something went wrong, please try again.",
+        "field": "Please check this field.",
+        "ico_required": "A Czech or Slovak company needs a company ID.",
+        "ico_format": "A company ID has 8 digits.",
+        "ico_foreign": "A company ID (IČO) is only for Czech and Slovak companies.",
+        "dic_format": "The VAT ID doesn't look right."
+      }
+    }
   }
 }

@@ -531,6 +531,18 @@ export const invoices = pgTable(
     clientRespondedAt: timestamp("client_responded_at", { withTimezone: true }),
     clientResponseName: text("client_response_name"),
     clientResponseNote: text("client_response_note"),
+    // "Odběratel si doplní údaje sám" (migration 0042): a draft sent to the
+    // customer to fill in their own billing details at /d/:buyerDetailsToken.
+    // The token is a separate secret from `publicToken` and only works while
+    // the document is a draft and nothing has been submitted yet; null = no
+    // request open. `buyerDetailsOutcome` says what happened to the contact.
+    buyerDetailsToken: uuid("buyer_details_token"),
+    buyerDetailsRequestedAt: timestamp("buyer_details_requested_at", { withTimezone: true }),
+    buyerDetailsRequestedBy: uuid("buyer_details_requested_by").references(() => users.id, { onDelete: "set null" }),
+    buyerDetailsEmail: text("buyer_details_email"),
+    buyerDetailsAutoIssue: boolean("buyer_details_auto_issue").notNull().default(false),
+    buyerDetailsSubmittedAt: timestamp("buyer_details_submitted_at", { withTimezone: true }),
+    buyerDetailsOutcome: jsonb("buyer_details_outcome").$type<BuyerDetailsOutcome>(),
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
     paidAt: timestamp("paid_at", { withTimezone: true }),
@@ -557,8 +569,25 @@ export const invoices = pgTable(
       table.invoiceNumber,
     ),
     publicTokenUnique: uniqueIndex("invoices_public_token_unique").on(table.publicToken),
+    buyerDetailsTokenUnique: uniqueIndex("invoices_buyer_details_token_unique").on(table.buyerDetailsToken),
   }),
 );
+
+/**
+ * What a customer's own billing details did to the address book
+ * (`invoices.buyerDetailsOutcome`): `existing` = matched a saved contact by
+ * IČO/DIČ, `filled` = completed the contact already on the draft, `created` =
+ * a new contact. `filled` lists the fields that were empty and got a value;
+ * `conflicts` the ones that differ and were left unchanged.
+ */
+export type BuyerDetailsOutcome = {
+  mode: "existing" | "filled" | "created";
+  contactId: string;
+  filled: string[];
+  conflicts: { field: string; saved: string | null; submitted: string | null }[];
+  autoIssue: "issued" | "sent" | "skipped" | "failed" | null;
+  autoIssueError?: string | null;
+};
 
 // ---------------------------------------------------------------------------
 // invoice_line_items — tenant-scoped.

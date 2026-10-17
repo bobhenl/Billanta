@@ -39,6 +39,25 @@ export interface InvoiceRow {
   totalVat: number;
   total: number;
   isOverdue: boolean;
+  /** Open "customer fills in their details" link on a draft (null when none). */
+  buyerDetailsToken?: string | null;
+  buyerDetailsSubmittedAt?: string | null;
+}
+
+export interface BuyerDetailsOutcome {
+  mode: 'existing' | 'filled' | 'created';
+  contactId: string;
+  filled: string[];
+  conflicts: { field: string; saved: string | null; submitted: string | null }[];
+  autoIssue: 'issued' | 'sent' | 'skipped' | 'failed' | null;
+  autoIssueError?: string | null;
+}
+
+/** The draft is waiting for the customer, or the customer has filled in their details and it still is a draft. */
+export function buyerDetailsState(row: { status: string; buyerDetailsToken?: string | null; buyerDetailsSubmittedAt?: string | null }): 'waiting' | 'submitted' | null {
+  if (row.status !== 'draft' && row.status !== 'pending_review') return null;
+  if (row.buyerDetailsSubmittedAt) return 'submitted';
+  return row.buyerDetailsToken ? 'waiting' : null;
 }
 
 export interface InvoiceDetail {
@@ -70,6 +89,10 @@ export interface InvoiceDetail {
     clientRespondedAt?: string | null;
     clientResponseName?: string | null;
     clientResponseNote?: string | null;
+    buyerDetailsRequestedAt?: string | null;
+    buyerDetailsEmail?: string | null;
+    buyerDetailsAutoIssue?: boolean;
+    buyerDetailsOutcome?: BuyerDetailsOutcome | null;
     customFields?: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
   };
   /** The live contact (link, e-mail for sending). */

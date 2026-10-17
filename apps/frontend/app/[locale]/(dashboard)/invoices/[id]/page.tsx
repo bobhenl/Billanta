@@ -11,6 +11,7 @@ import { displayCustomField, documentVars } from '@/lib/custom-fields';
 import { fetchTenant } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
+  buyerDetailsState,
   displayStatus,
   formatDate,
   formatMoney,
@@ -21,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
+import { BuyerDetailsRequest } from './buyer-details-request';
 
 type CheckIssue = { scheme: 'law' | 'peppol'; rule: string; field: string; code: string; severity: 'error' | 'warning' };
 
@@ -37,6 +39,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const locale = await getLocale();
   const t = await getTranslations('doc');
   const tStatus = await getTranslations('invoices.status');
+  const tBuyer = await getTranslations('invoices.buyerDetails');
   const tGloss = await getTranslations('glossary');
 
   let detail: InvoiceDetail;
@@ -131,6 +134,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               {t(`type.${invoice.documentType}`)}
             </span>
             <span title={tGloss(`status.${status}`)} className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>{statusLabel}</span>
+            {buyerDetailsState(invoice) && (
+              <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', buyerDetailsState(invoice) === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
+                {tBuyer(`badge.${buyerDetailsState(invoice)}`)}
+              </span>
+            )}
           </div>
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{title}</h1>
           {contact && <p className="mt-1 text-muted-foreground">{contact.legalName}</p>}
@@ -165,6 +173,18 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
         />
+        {(invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
+          <BuyerDetailsRequest
+            id={invoice.id}
+            token={invoice.buyerDetailsToken ?? null}
+            submittedAt={invoice.buyerDetailsSubmittedAt ?? null}
+            submittedLabel={formatDate(invoice.buyerDetailsSubmittedAt, locale)}
+            email={invoice.buyerDetailsEmail ?? null}
+            autoIssue={Boolean(invoice.buyerDetailsAutoIssue)}
+            outcome={invoice.buyerDetailsOutcome ?? null}
+            contactEmail={contact?.email ?? null}
+          />
+        )}
       </div>
 
       {invoice.source.startsWith('ai_') && invoice.status === 'pending_review' && (

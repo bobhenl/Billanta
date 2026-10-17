@@ -516,6 +516,62 @@
       "EMAIL_DAILY_LIMIT": "Dnes jste dosáhli denního limitu odeslaných e-mailů. Nové účty mají první týden nižší limit; zítra půjde odesílat znovu, případně použijte odkaz nebo PDF.",
       "EMAIL_PAUSED": "Odesílání e-mailů je dočasně pozastaveno, protože několik příjemců nahlásilo vaše doklady jako nevyžádané. Ozvěte se nám prosím na podporu, rádi to prověříme.",
       "ACCOUNT_SUSPENDED": "Účet je pozastaven kvůli podezření na zneužití. Kontaktujte prosím podporu."
+    },
+    "buyerDetails": {
+      "badge": {
+        "waiting": "Čeká na údaje odběratele",
+        "submitted": "Odběratel doplnil údaje"
+      },
+      "button": "Poslat odběrateli k doplnění údajů",
+      "dialogTitle": "Odběratel si doplní údaje sám",
+      "dialogHint": "Odběratel dostane odkaz, kde uvidí položky a částku a vyplní svůj název, adresu a IČO/DIČ. Údaje se uloží do kontaktů, nic uloženého se nepřepíše.",
+      "emailLabel": "E-mail odběratele",
+      "emailPlaceholder": "napr@firma.cz",
+      "emailHint": "Nechte prázdné, pokud chcete odkaz jen zkopírovat a poslat sami.",
+      "autoIssue": "Po doplnění automaticky vystavit a poslat fakturu",
+      "autoIssueHint": "Jen když údaje nebudou v rozporu s uloženým kontaktem. Jinak koncept počká na vás.",
+      "replaceNote": "Nový odkaz nahradí ten původní, starý přestane fungovat.",
+      "sendEmail": "Poslat e-mail",
+      "createLink": "Vytvořit odkaz",
+      "close": "Zavřít",
+      "copied": "Odkaz je zkopírovaný.",
+      "copyPrompt": "Zkopírujte odkaz:",
+      "emailed": "Odkaz jsme poslali na {email}.",
+      "cancelled": "Odkaz byl zrušen.",
+      "failed": "Nepovedlo se",
+      "waitingTitle": "Čeká na údaje odběratele",
+      "waitingEmail": "Odkaz odešel na {email}.",
+      "waitingLink": "Odkaz je připravený ke sdílení.",
+      "waitingAuto": "Po doplnění se faktura sama vystaví a odešle.",
+      "waitingManual": "Po doplnění vám dáme vědět a fakturu vystavíte sami.",
+      "copyLink": "Kopírovat odkaz",
+      "resend": "Poslat znovu",
+      "cancel": "Zrušit odkaz",
+      "submittedTitle": "Odběratel doplnil údaje {date}",
+      "mode": {
+        "created": "Vytvořili jsme nový kontakt a přiřadili ho ke konceptu.",
+        "existing": "Podle IČO/DIČ jsme našli uložený kontakt a přiřadili ho ke konceptu.",
+        "filled": "Údaje patří ke kontaktu, který už na konceptu byl."
+      },
+      "filled": "Doplněno: {fields}.",
+      "conflicts": "Liší se od uloženého kontaktu, nic jsme nepřepsali:",
+      "empty": "prázdné",
+      "auto": {
+        "sent": "Faktura byla automaticky vystavena a odeslána.",
+        "issued": "Faktura byla vystavena, ale e-mail se nepodařilo odeslat.",
+        "failed": "Automatické vystavení se nepovedlo. Zkontrolujte koncept.",
+        "skipped": "Automatické vystavení čeká na vás, údaje je potřeba zkontrolovat."
+      },
+      "askAgain": "Poslat nový odkaz",
+      "field": {
+        "legalName": "název",
+        "email": "e-mail",
+        "ico": "IČO",
+        "dic": "DIČ",
+        "address": "adresa",
+        "isPerson": "soukromá osoba",
+        "contactId": "kontakt"
+      }
     }
   },
   "publicInvoice": {
@@ -2065,6 +2121,10 @@
         "quote_response": {
           "label": "Odpověď na nabídku",
           "hint": "Klient v portálu přijal nebo odmítl cenovou nabídku."
+        },
+        "buyer_details": {
+          "label": "Odběratel doplnil údaje",
+          "hint": "Odběratel vyplnil fakturační údaje přes odkaz, který jste mu poslali."
         }
       },
       "browserTitle": "Oznámení v prohlížeči",
@@ -5603,7 +5663,8 @@
       "user": "Uživatel",
       "ai": "AI asistent",
       "api_key": "API klíč",
-      "system": "Systém"
+      "system": "Systém",
+      "customer": "Odběratel"
     },
     "entities": {
       "all": "Vše",
@@ -5642,7 +5703,10 @@
         "paid_from_bank": "spároval(a) platbu z banky k",
         "link_rotated": "vyměnil(a) veřejný odkaz",
         "cancelled": "stornoval(a)",
-        "sent_corrected": "poslal(a) opravenou verzi"
+        "sent_corrected": "poslal(a) opravenou verzi",
+        "buyer_details_requested": "poslal(a) odběrateli k doplnění údajů",
+        "buyer_details_submitted": "doplnil(a) fakturační údaje k",
+        "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -5988,5 +6052,61 @@
     "christmasEve": "Štědrý den",
     "christmasDay": "1. svátek vánoční",
     "stStephen": "2. svátek vánoční"
+  },
+  "buyerDetails": {
+    "title": "Doplňte prosím fakturační údaje",
+    "intro": "{supplier} pro vás připravuje {document}. Vyplňte, na koho má být vystavená.",
+    "documentType": {
+      "invoice": "fakturu",
+      "proforma": "zálohovou fakturu",
+      "quote": "cenovou nabídku"
+    },
+    "supplier": "Dodavatel",
+    "amount": "Částka",
+    "withoutVat": "{amount} bez DPH",
+    "dueDate": "Splatnost {date}",
+    "item": "Položka",
+    "quantity": "Množství",
+    "total": "Celkem",
+    "ico": "IČO",
+    "dic": "DIČ",
+    "doneTitle": "Děkujeme, údaje máme",
+    "doneText": "{supplier} teď fakturu dokončí. Tuto stránku můžete zavřít.",
+    "privacy": "Údaje dostane jen {supplier}, aby vám mohl vystavit doklad.",
+    "form": {
+      "title": "Fakturační údaje",
+      "hint": "Na tyto údaje vystaví {supplier} doklad.",
+      "kind": "Odběratel je",
+      "company": "Firma",
+      "person": "Soukromá osoba",
+      "country": "Země",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "vatId": "DIČ / VAT ID",
+      "lookup": "Načíst z registru",
+      "lookupNeedsIco": "Nejdřív vyplňte IČO.",
+      "lookupNeedsVat": "Nejdřív vyplňte VAT ID.",
+      "lookupNotFound": "V registru jsme nic nenašli, vyplňte údaje ručně.",
+      "lookupDone": "Údaje jsme načetli, zkontrolujte je.",
+      "companyName": "Název firmy",
+      "personName": "Jméno a příjmení",
+      "street": "Ulice a číslo",
+      "city": "Město",
+      "postalCode": "PSČ",
+      "email": "E-mail pro fakturu",
+      "submit": "Odeslat údaje",
+      "errors": {
+        "invalid": "Zkontrolujte prosím zvýrazněná pole.",
+        "closed": "Tento odkaz už neplatí. Požádejte dodavatele o nový.",
+        "submitted": "Údaje už byly odeslány.",
+        "limit": "Příliš mnoho pokusů, zkuste to prosím za chvíli.",
+        "failed": "Něco se nepovedlo, zkuste to prosím znovu.",
+        "field": "Zkontrolujte toto pole.",
+        "ico_required": "Firma z Česka nebo Slovenska potřebuje IČO.",
+        "ico_format": "IČO má 8 číslic.",
+        "ico_foreign": "IČO se vyplňuje jen u českých a slovenských firem.",
+        "dic_format": "DIČ nemá správný tvar."
+      }
+    }
   }
 }
