@@ -21,6 +21,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { planSummary } from "../billing/plan-access";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { effectivePermissions } from "../tenancy/permissions";
 import { BankAccountDto } from "./dto/bank-account.dto";
@@ -54,6 +55,8 @@ export class TenantsController {
       role: req.user!.role,
       permissions: effectivePermissions(req.user!.role, req.user!.permissions),
       modules: resolveModules(tenant?.enabledModules),
+      // Drives the trial banner and the read-only state of paid features.
+      plan: tenant ? planSummary(tenant, new Date()) : null,
     };
   }
 

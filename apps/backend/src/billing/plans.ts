@@ -16,6 +16,13 @@ export type BillingInterval = "month" | "year";
 export const TRIAL_PLAN: PaidPlan = "business";
 export const DEFAULT_TRIAL_DAYS = 14;
 
+/** TRIAL_DAYS from env (0 turns the trial off), clamped like the SQL bootstrap does. */
+export function trialDays(raw: string | undefined = process.env.TRIAL_DAYS): number {
+  if (raw === undefined || raw.trim() === "") return DEFAULT_TRIAL_DAYS;
+  const n = Number(raw);
+  return Number.isInteger(n) ? Math.min(Math.max(n, 0), 90) : DEFAULT_TRIAL_DAYS;
+}
+
 /** Prices in minor units (haléře / cents) so nothing is rounded twice. */
 export const PLAN_PRICES_MINOR: Record<PaidPlan, Record<PlanCurrency, { monthly: number; yearly: number }>> = {
   start: { CZK: { monthly: 14900, yearly: 11900 }, EUR: { monthly: 599, yearly: 499 } },

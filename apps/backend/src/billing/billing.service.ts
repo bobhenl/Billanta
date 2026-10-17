@@ -193,9 +193,11 @@ export class BillingService {
       }
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
+        const plan = subscription.metadata?.plan;
         await this.tenantBilling.updateSubscriptionStatus(
           tenantId,
           mapStripeSubscriptionStatus(subscription.status),
+          isPaidPlan(plan) ? { subscriptionPlan: plan } : undefined,
         );
         return;
       }
