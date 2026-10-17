@@ -6,7 +6,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { DASHBOARD_WIDGETS, DashboardService } from "./dashboard.service";
 import { upcomingTaxEvents } from "./tax-calendar";
-import { getCnbRates } from "../exports/cnb-rates";
+import { getCnbDay, parseCurrencyList, parseRateDate } from "../exports/cnb-rates";
 
 const dashboardConfigSchema = z
   .object({
@@ -19,7 +19,7 @@ const dashboardConfigSchema = z
     showTaxDeadlines: z.boolean(),
     taxDeadlines: z.array(z.string().max(32)).max(16).nullable(),
     showFxRates: z.boolean(),
-    fxCurrencies: z.array(z.string().regex(/^[A-Z]{3}$/)).max(8).nullable(),
+    fxCurrencies: z.array(z.string().regex(/^[A-Z]{3}$/)).max(12).nullable(),
     taxAmounts: z.record(z.string().max(32), z.number().nonnegative().max(10_000_000)).nullable(),
   })
   .partial();
@@ -72,18 +72,36 @@ export class DashboardController {
   }
 
   @Get("fx-rates")
-  @ApiOperation({ summary: "Today's ČNB rates (CZK per unit) for the given currencies, plus the rate a week ago for the trend" })
-  async fxRates(@Query("currencies") currencies?: string) {
-    const list = (currencies ?? "EUR,USD,GBP")
-      .split(",")
-      .map((c) => c.trim().toUpperCase())
-      .filter((c) => /^[A-Z]{3}$/.test(c) && c !== "CZK")
-      .slice(0, 8);
-    const weekAgo = new Date(Date.now() - 7 * 86_400_000);
-    const [today, previous] = await Promise.all([getCnbRates(list), getCnbRates(list, weekAgo)]);
+  @ApiOperation({
+    summary:
+      "ČNB rates (CZK per unit) for the given currencies on a day (date=YYYY-MM-DD, default today), plus the rate a week earlier for the trend. publishedDate is the day the list is from: weekends and holidays fall back to the last working day.",
+  })
+  async fxRates(@Query("currencies") currencies?: string, @Query("date") date?: string) {
+    const list = parseCurrencyList(currencies);
+    if ("error" in list) throw new BadRequestException(list.error);
+    const day = parseRateDate(date);
+    if ("error" in day) throw new BadRequestException(day.error);
+    const weekAgo = new Date(day.date.getFullYear(), day.date.getMonth(), day.date.getDate() - 7);
+    const [current, previous] = await Promise.all([getCnbDay(day.date), getCnbDay(weekAgo)]);
     return {
       source: "cnb.cz",
-      rates: list.map((code) => ({ code, rate: today[code] ?? null, weekAgo: previous[code] ?? null })),
+      publishedDate: current?.date ?? null,
+      rates: list.codes.map((code) => ({
+        code,
+        rate: current?.rates.get(code)?.rate ?? null,
+        weekAgo: previous?.rates.get(code)?.rate ?? null,
+      })),
+    };
+  }
+
+  @Get("fx-rates/currencies")
+  @ApiOperation({ summary: "Every currency in today's ČNB list (code, country, name) for the currency picker; currencies = null when ČNB is unreachable" })
+  async fxCurrencies() {
+    const day = await getCnbDay();
+    return {
+      source: "cnb.cz",
+      publishedDate: day?.date ?? null,
+      currencies: day ? [...day.rates].map(([code, r]) => ({ code, country: r.country, name: r.name })) : null,
     };
   }
 

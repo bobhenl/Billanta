@@ -348,12 +348,22 @@
     },
     "fxRates": {
       "title": "ČNB exchange rates",
-      "hint": "Today's Czech National Bank rate, used to convert foreign-currency invoices to CZK. The percentage is the change over the last week.",
+      "hint": "The Czech National Bank rate for the chosen day, used to convert foreign-currency invoices to CZK. The percentage is the change over the week before that day.",
       "customizeTitle": "Currencies in ČNB rates",
-      "customizeHint": "Pick which currencies the dashboard shows.",
+      "customizeHint": "Pick which currencies the dashboard shows. You can choose any currency ČNB publishes.",
       "source": "Source:",
       "weekChange": "Change over 7 days",
-      "weekShort": "/ week"
+      "weekShort": "/ week",
+      "date": "Day",
+      "publishedOn": "Rate from {date}",
+      "fallbackNote": "ČNB published no rate for the chosen day (weekend, holiday or before 2:30 pm), so this is the last published one.",
+      "unavailable": "Could not load the rates for this day.",
+      "converter": "Convert to CZK",
+      "amount": "Amount",
+      "currency": "Currency",
+      "add": "Add currency",
+      "remove": "Remove {code}",
+      "limit": "Up to {max} currencies."
     }
   },
   "invoices": {

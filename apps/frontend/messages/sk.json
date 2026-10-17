@@ -348,12 +348,22 @@
     },
     "fxRates": {
       "title": "Kurzy ČNB",
-      "hint": "Dnešný kurz devízového trhu ČNB – používa sa na prepočet faktúr v cudzej mene. Percentá ukazujú zmenu za posledný týždeň.",
+      "hint": "Kurz devízového trhu ČNB pre zvolený deň – používa sa na prepočet faktúr v cudzej mene. Percentá ukazujú zmenu za týždeň pred týmto dňom.",
       "customizeTitle": "Meny v kurzoch ČNB",
-      "customizeHint": "Vyberte, ktoré meny sa majú na prehľade zobrazovať.",
+      "customizeHint": "Vyberte, ktoré meny sa majú na prehľade zobrazovať. Na výber sú všetky meny, ktoré ČNB vyhlasuje.",
       "source": "Zdroj:",
       "weekChange": "Zmena za 7 dní",
-      "weekShort": "/ týždeň"
+      "weekShort": "/ týždeň",
+      "date": "Deň",
+      "publishedOn": "Kurz zo dňa {date}",
+      "fallbackNote": "ČNB pre zvolený deň kurz nevyhlásila (víkend, sviatok alebo ešte pred 14:30), preto ukazujeme posledný vyhlásený.",
+      "unavailable": "Kurzy pre tento deň sa nepodarilo načítať.",
+      "converter": "Prevod na Kč",
+      "amount": "Suma",
+      "currency": "Mena",
+      "add": "Pridať menu",
+      "remove": "Odobrať {code}",
+      "limit": "Najviac {max} mien."
     }
   },
   "invoices": {

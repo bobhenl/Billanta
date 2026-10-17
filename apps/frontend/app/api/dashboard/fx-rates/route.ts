@@ -3,8 +3,11 @@ import { forwardJson } from '@/lib/forward-json';
 
 export const dynamic = 'force-dynamic';
 
-/** Today's ČNB rates for the dashboard (backend caches the daily list). */
+/** ČNB rates for the dashboard on a day (backend validates and caches the daily list). */
 export function GET(req: NextRequest) {
-  const currencies = (req.nextUrl.searchParams.get('currencies') ?? 'EUR,USD,GBP').replace(/[^A-Z,]/gi, '').slice(0, 40);
-  return forwardJson(`/api/v1/dashboard/fx-rates?currencies=${encodeURIComponent(currencies)}`);
+  const params = req.nextUrl.searchParams;
+  const query = new URLSearchParams({ currencies: (params.get('currencies') ?? 'EUR,USD,GBP').slice(0, 80) });
+  const date = params.get('date');
+  if (date) query.set('date', date.slice(0, 10));
+  return forwardJson(`/api/v1/dashboard/fx-rates?${query}`);
 }
