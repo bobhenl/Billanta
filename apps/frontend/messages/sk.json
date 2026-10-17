@@ -1637,7 +1637,7 @@
       "files": {
         "invoices": {
           "title": "Vydané faktúry (CSV)",
-          "hint": "Všetky vystavené doklady s rozpisom DPH, pre Excel aj účtovný softvér."
+          "hint": "Všetky vystavené doklady so základom a DPH podľa sadzieb, kurzom ČNB a sumou v CZK. Pre Excel aj účtovný softvér."
         },
         "expenses": {
           "title": "Náklady (CSV)",
@@ -5232,7 +5232,56 @@
     "vsPrevious": "vs. predchádzajúce",
     "paidCount": "{count, plural, one {# zaplatená faktúra} few {# zaplatené faktúry} other {# zaplatených faktúr}}",
     "days": "{count, number} dňa",
-    "foreign": "{count, plural, one {# doklad v cudzej mene nie je započítaný.} few {# doklady v cudzej mene nie sú započítané.} other {# dokladov v cudzej mene nie je započítaných.}}",
+    "exportCsv": "Export pre účtovníka (CSV)",
+    "exportHint": "Zoznam dokladov podľa zvoleného obdobia a filtrov, pre Excel. Obdobie sa riadi dátumom dodania.",
+    "docCount": "{count, plural, one {# doklad} few {# doklady} other {# dokladov}}",
+    "inCurrency": "Sumy sú v {currency}, bez prepočtu.",
+    "converted": "{count, plural, one {# doklad v cudzej mene je prepočítaný} few {# doklady v cudzej mene sú prepočítané} other {# dokladov v cudzej mene je prepočítaných}} na CZK kurzom uloženým na doklade.",
+    "missingRate": "{count, plural, one {# doklad v cudzej mene nemá uložený kurz, preto nie je započítaný.} few {# doklady v cudzej mene nemajú uložený kurz, preto nie sú započítané.} other {# dokladov v cudzej mene nemá uložený kurz, preto nie sú započítané.}}",
+    "expensesUnfiltered": "Náklady filtrujeme len podľa meny, ostatné filtre sa ich netýkajú.",
+    "outstandingHint": "Neuhradené a po splatnosti: s DPH, z dokladov v období, po odpočítaní čiastočných úhrad.",
+    "byCurrency": "Tržby podľa meny",
+    "noRate": "bez kurzu",
+    "chartKind": {
+      "label": "Typ grafu",
+      "bars": "Stĺpce",
+      "line": "Čiara",
+      "area": "Plocha"
+    },
+    "filters": {
+      "label": "Filtre",
+      "currency": "Mena",
+      "allCurrencies": "Všetky meny (v CZK)",
+      "language": "Jazyk dokladu",
+      "allLanguages": "Všetky jazyky",
+      "customer": "Odberateľ",
+      "allCustomers": "Všetci odberatelia",
+      "type": "Druh dokladu",
+      "allTypes": "Všetky druhy",
+      "status": "Stav",
+      "allStatuses": "Všetky stavy",
+      "clear": "Zrušiť filtre"
+    },
+    "docTypes": {
+      "invoice": "Faktúry",
+      "proforma": "Zálohové faktúry",
+      "credit_note": "Dobropisy"
+    },
+    "statuses": {
+      "paid": "Uhradené",
+      "unpaid": "Neuhradené",
+      "overdue": "Po splatnosti",
+      "cancelled": "Stornované"
+    },
+    "pies": {
+      "customers": "Tržby podľa odberateľa",
+      "currencies": "Tržby podľa meny",
+      "types": "Doklady podľa druhu (s DPH)",
+      "payment": "Uhradené a neuhradené (s DPH)",
+      "empty": "Za toto obdobie nič.",
+      "others": "Ostatní",
+      "unpaidNotDue": "Neuhradené v splatnosti"
+    },
     "topCustomers": "Najlepší odberatelia v období",
     "customerMeta": "{count, plural, one {# faktúra} few {# faktúry} other {# faktúr}} · {share} %",
     "presets": {
@@ -5257,7 +5306,11 @@
       "invoiceCount": "Vystavené faktúry",
       "averageInvoice": "Priemerná faktúra",
       "vat": "DPH na výstupe",
-      "daysToPay": "Priemerná doba úhrady"
+      "daysToPay": "Priemerná doba úhrady",
+      "outstanding": "Neuhradené",
+      "overdue": "Po splatnosti",
+      "customers": "Odberatelia",
+      "newCustomers": "Noví odberatelia"
     }
   },
   "siteSearch": {

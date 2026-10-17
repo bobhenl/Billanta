@@ -1,11 +1,12 @@
 import { netAfterTaxes } from "../invoices/amount-vars";
 import { displayCustomField, resolveVars } from "../invoices/custom-fields";
-import { templateVarsOf } from "../tenants/template-vars";
+import { type TemplateVar, templateVarsOf } from "../tenants/template-vars";
+import { matchesFilters, type ReportFilters } from "../dashboard/report-filters";
 import { Injectable } from "@nestjs/common";
 import { and, asc, eq, gte, inArray, isNotNull, lt, ne, notInArray, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
+import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getCnbRate } from "./cnb-rates";
 import {
@@ -74,7 +75,8 @@ function csDate(d: Date | null | undefined): string {
 function csv(rows: (string | number | null | undefined)[][]): string {
   const cell = (v: string | number | null | undefined) => {
     if (v == null) return "";
-    const s = typeof v === "number" ? v.toFixed(2).replace(".", ",") : String(v);
+    // Text starting like a formula (=, +, @) is prefixed with ' so Excel shows it instead of running it.
+    const s = typeof v === "number" ? v.toFixed(2).replace(".", ",") : String(v).replace(/^([=+@\t\r])/, "'$1");
     return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   return "﻿" + rows.map((r) => r.map(cell).join(";")).join("\r\n") + "\r\n";
@@ -140,6 +142,94 @@ function pohodaRate(percent: number): string {
   return "third";
 }
 
+/** Which date puts a document into the export period. */
+export type ExportDateBy = "issue" | "supply";
+
+export interface CsvInvoiceRow {
+  invoice: InvoiceRow;
+  contact: ContactRow | null;
+  totals: InvoiceVatBreakdown;
+}
+
+const percentLabel = (p: number) => `${String(p).replace(".", ",")} %`;
+
+/**
+ * The accountant's invoice list: one row per document, the columns Czech
+ * accountants ask for first (dates, customer IDs, base and VAT per rate,
+ * CZK rate and CZK total), then the extras. Rate columns are made for every
+ * VAT rate present, highest first. The CZK rate is the one stored on the
+ * document at issue; a foreign document without one gets an empty CZK total.
+ */
+export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[] = []): string {
+  const rates = [...new Set(rows.flatMap((r) => r.totals.byRate.map((b) => b.vatRatePercent)))].sort((a, b) => b - a);
+  const rateHeaders = rates.flatMap((p) => (p > 0 ? [`Základ ${percentLabel(p)}`, `DPH ${percentLabel(p)}`] : [`Základ ${percentLabel(p)}`]));
+  return csv([
+    [
+      "Číslo",
+      "Typ",
+      "Vystaveno",
+      "DUZP",
+      "Splatnost",
+      "Uhrazeno",
+      "Odběratel",
+      "IČO",
+      "DIČ",
+      "Měna",
+      ...rateHeaders,
+      "Základ celkem",
+      "DPH celkem",
+      "Celkem",
+      "Kurz ČNB",
+      "Celkem v CZK",
+      "VS",
+      "Stav",
+      "Jazyk",
+      "Přenesená daňová povinnost",
+      "Uhrazená částka",
+      "Čistý odhad (po dani a pojištění, paušál 60 %)",
+      "Vlastní pole",
+      "Interní poznámka",
+    ],
+    ...rows.map(({ invoice, contact, totals }) => {
+      const perRate = rates.flatMap((p) => {
+        const b = totals.byRate.find((x) => x.vatRatePercent === p);
+        return p > 0 ? [b?.totalWithoutVat ?? null, b?.vatAmount ?? null] : [b?.totalWithoutVat ?? null];
+      });
+      const rate = invoice.currency === "CZK" ? 1 : invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
+      return [
+        invoice.invoiceNumber,
+        TYPE_LABEL[invoice.documentType],
+        csDate(invoice.issueDate),
+        csDate(invoice.taxableSupplyDate ?? invoice.issueDate),
+        csDate(invoice.dueDate),
+        csDate(invoice.paidAt),
+        contact?.legalName,
+        contact?.ico,
+        contact?.dic,
+        invoice.currency,
+        ...perRate,
+        totals.totalWithoutVat,
+        totals.totalVat,
+        totals.totalWithVat,
+        // Up to 6 decimals as stored; a plain number cell would round it to 2.
+        rate == null ? null : String(rate).replace(".", ","),
+        rate == null ? null : round2(totals.totalWithVat * rate),
+        invoice.variableSymbol,
+        STATUS_LABEL[invoice.status],
+        invoice.language,
+        invoice.reverseCharge ? "ano" : "",
+        Number(invoice.amountPaid ?? 0),
+        netAfterTaxes(totals.totalWithoutVat),
+        // Internal ones included: the export goes to the company / its accountant.
+        (invoice.customFields ?? [])
+          .map((f) => `${f.label}: ${displayCustomField(f, resolveVars(invoice.customFields, totals, invoice.amountPaid, companyVars), (n) => n.toFixed(2).replace(".", ","), (v) => v)}${f.internal ? " (interní)" : ""}`)
+          .join(" | "),
+        invoice.internalNote,
+      ];
+    }),
+  ]);
+}
+
 /**
  * Accountant exports for a period (by issue date): CSV for spreadsheets and
  * a Pohoda XML dataPack (issued invoices, credit notes, proformas and
@@ -148,7 +238,13 @@ function pohodaRate(percent: number): string {
  */
 @Injectable()
 export class ExportsService {
-  private async loadInvoices(db: Db, period: ExportPeriod) {
+  private async loadInvoices(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue") {
+    // By DUZP (falling back to the issue date) the list matches the Reports page; by issue date it is the classic book.
+    const supply = sql`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
+    const inPeriod =
+      dateBy === "supply"
+        ? and(gte(supply, period.from), lt(supply, period.to))
+        : and(gte(schema.invoices.issueDate, period.from), lt(schema.invoices.issueDate, period.to));
     const rows = await db
       .select({ invoice: schema.invoices, contact: schema.contacts })
       .from(schema.invoices)
@@ -156,13 +252,17 @@ export class ExportsService {
       .where(
         and(
           isNotNull(schema.invoices.invoiceNumber),
-          gte(schema.invoices.issueDate, period.from),
-          lt(schema.invoices.issueDate, period.to),
+          inPeriod,
+          filters.contactId ? eq(schema.invoices.contactId, filters.contactId) : undefined,
+          filters.currency ? eq(schema.invoices.currency, filters.currency) : undefined,
         ),
       )
       .orderBy(asc(schema.invoices.issueDate), asc(schema.invoices.invoiceNumber));
 
-    const ids = rows.map((r) => r.invoice.id);
+    // The rest of the filters (status "overdue" needs today) run in memory, on the same rule as the report.
+    const today = new Date();
+    const kept = rows.filter((r) => r.invoice.documentType !== "quote" && matchesFilters(r.invoice, filters, today));
+    const ids = kept.map((r) => r.invoice.id);
     const items = ids.length
       ? await db
           .select()
@@ -176,16 +276,14 @@ export class ExportsService {
       list.push(item);
       byInvoice.set(item.invoiceId, list);
     }
-    return rows
-      .filter((r) => r.invoice.documentType !== "quote")
-      .map((r) => {
-        const lineItems = byInvoice.get(r.invoice.id) ?? [];
-        return {
-          ...r,
-          lineItems,
-          totals: computeVatBreakdown(lineItems, { reverseCharge: r.invoice.reverseCharge }),
-        };
-      });
+    return kept.map((r) => {
+      const lineItems = byInvoice.get(r.invoice.id) ?? [];
+      return {
+        ...r,
+        lineItems,
+        totals: computeVatBreakdown(lineItems, { reverseCharge: r.invoice.reverseCharge }),
+      };
+    });
   }
 
   private loadExpenses(db: Db, period: ExportPeriod) {
@@ -196,60 +294,11 @@ export class ExportsService {
       .orderBy(asc(schema.expenses.expenseDate));
   }
 
-  async invoicesCsv(db: Db, period: ExportPeriod): Promise<string> {
-    const rows = await this.loadInvoices(db, period);
+  async invoicesCsv(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue"): Promise<string> {
+    const rows = await this.loadInvoices(db, period, filters, dateBy);
     // RLS scopes this to the caller's own company — its number variables feed the formulas.
     const [tenant] = await db.select({ templateVars: schema.tenants.templateVars }).from(schema.tenants).limit(1);
-    const companyVars = templateVarsOf(tenant?.templateVars);
-    return csv([
-      [
-        "Číslo",
-        "Typ",
-        "Stav",
-        "Odběratel",
-        "IČO",
-        "DIČ",
-        "Vystaveno",
-        "DUZP",
-        "Splatnost",
-        "Uhrazeno",
-        "Měna",
-        "Základ",
-        "DPH",
-        "Celkem",
-        "VS",
-        "Přenesená daňová povinnost",
-        "Uhrazená částka",
-        "Čistý odhad (po dani a pojištění, paušál 60 %)",
-        "Vlastní pole",
-        "Interní poznámka",
-      ],
-      ...rows.map(({ invoice, contact, totals }) => [
-        invoice.invoiceNumber,
-        TYPE_LABEL[invoice.documentType],
-        STATUS_LABEL[invoice.status],
-        contact?.legalName,
-        contact?.ico,
-        contact?.dic,
-        csDate(invoice.issueDate),
-        csDate(invoice.taxableSupplyDate ?? invoice.issueDate),
-        csDate(invoice.dueDate),
-        csDate(invoice.paidAt),
-        invoice.currency,
-        totals.totalWithoutVat,
-        totals.totalVat,
-        totals.totalWithVat,
-        invoice.variableSymbol,
-        invoice.reverseCharge ? "ano" : "",
-        Number(invoice.amountPaid ?? 0),
-        netAfterTaxes(totals.totalWithoutVat),
-        // Internal ones included: the export goes to the company / its accountant.
-        (invoice.customFields ?? [])
-          .map((f) => `${f.label}: ${displayCustomField(f, resolveVars(invoice.customFields, totals, invoice.amountPaid, companyVars), (n) => n.toFixed(2).replace(".", ","), (v) => v)}${f.internal ? " (interní)" : ""}`)
-          .join(" | "),
-        invoice.internalNote,
-      ]),
-    ]);
+    return invoicesCsvBody(rows, templateVarsOf(tenant?.templateVars));
   }
 
   async expensesCsv(db: Db, period: ExportPeriod): Promise<string> {
