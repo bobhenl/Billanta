@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, NotImplementedException, Optional } from "@nestjs/common";
-import { vatPayerOf, type VatStatus } from "@faktur/cz-compliance";
+import { TAX_ADVANCE_KINDS, normalizeTaxAdvances, vatPayerOf, type TaxAdvancePeriod, type VatStatus } from "@faktur/cz-compliance";
 import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -41,13 +41,23 @@ export function vatFields(
   return status ? { vatStatus: status, dicVatPayer: vatPayerOf(status) } : {};
 }
 
-/** Keeps the positive amounts, rounded to cents; null / 0 = not set. */
-export function cleanAdvances(input: NonNullable<UpdateTenantDto["tax_advances"]>) {
-  const out: Partial<Record<"social" | "health" | "flat_tax", number>> = {};
-  for (const [key, value] of Object.entries(input) as [keyof typeof out, number | null | undefined][]) {
-    if (value != null && value > 0) out[key] = Math.round(value * 100) / 100;
-  }
-  return out;
+/**
+ * The advance periods as stored: oldest first, amounts rounded to cents,
+ * null = not set in that period (0 stays: nothing to pay from then). A period
+ * without any amount says nothing and is dropped.
+ */
+export function cleanAdvances(input: NonNullable<UpdateTenantDto["tax_advances"]>): TaxAdvancePeriod[] {
+  return input
+    .map((entry) => {
+      const out: TaxAdvancePeriod = { from: entry.from };
+      for (const k of TAX_ADVANCE_KINDS) {
+        const value = entry[k];
+        if (value != null) out[k] = Math.round(value * 100) / 100;
+      }
+      return out;
+    })
+    .filter((entry) => TAX_ADVANCE_KINDS.some((k) => entry[k] !== undefined))
+    .sort((a, b) => a.from.localeCompare(b.from));
 }
 
 @Injectable()
@@ -61,7 +71,12 @@ export class TenantsService {
   async findById(db: TenantDb, id: string) {
     const rows = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     // The logo is served separately (GET /tenants/me/logo) to keep this row small.
-    return rows.map(({ aiApiKeyEncrypted: _secret, logoData, ...tenant }) => ({ ...tenant, hasLogo: Boolean(logoData) }));
+    // Advances always go out as the period list (a row not yet migrated by 0044 still holds the old single object).
+    return rows.map(({ aiApiKeyEncrypted: _secret, logoData, ...tenant }) => ({
+      ...tenant,
+      taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
+      hasLogo: Boolean(logoData),
+    }));
   }
 
   /**

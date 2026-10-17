@@ -383,13 +383,13 @@
       "sourceLocal": "Couldn't load the Financial Administration calendar right now; deadlines are computed from the law.",
       "prepareXml": "Prepare XML",
       "amountsTitle": "Expected amounts",
-      "amountsHint": "Your monthly advances. They show next to the deadline so you know how much to set aside. In Slovakia these contributions are a tax-deductible expense, so you can book them with one click. Leave empty for none.",
+      "amountsHint": "The amount you pay each month as an employer. It shows next to the deadline so you know how much to set aside. Leave empty for none.",
       "bookExpense": "Book as expense",
       "fillAmount": "Add amount",
       "onlyIfForeignPurchase": "Only if you bought services from abroad that month (e.g. ads).",
       "onlyIfEuSales": "Only if you invoiced a service to a business in another EU country that month.",
-      "minimum": "Statutory minimum from {from}: {amount}",
-      "useMinimum": "Use"
+      "advancesInSettings": "Social, health and flat tax advances are set by period in Business details.",
+      "editAdvances": "Edit advances"
     },
     "fxRates": {
       "title": "ČNB exchange rates",
@@ -1640,11 +1640,29 @@
       },
       "advances": {
         "title": "Monthly advances",
-        "hint": "Shown next to the tax deadlines on the dashboard, so you know how much to set aside. Leave empty for no amount.",
+        "hint": "Each amount applies from the chosen month until a newer row replaces it. Keep the older rows: the dashboard, calendar and year estimate use them for past months. An empty field keeps the amount from the row before, 0 means nothing to pay.",
         "social": "Social insurance",
         "health": "Health insurance",
         "flat_tax": "Flat tax or income tax advance",
-        "placeholder": "e.g. 5 720"
+        "short": {
+          "social": "social",
+          "health": "health",
+          "flat_tax": "flat tax"
+        },
+        "from": "Applies from",
+        "current": "Current",
+        "inherit": "unchanged",
+        "add": "New amount from…",
+        "remove": "Delete the row from {month}",
+        "empty": "No advances yet. Add an amount and the month it applies from.",
+        "duplicate": "Another row already uses this month.",
+        "minimum": "Statutory minimum from {from}: {amounts}.",
+        "useMinimum": "Use",
+        "errors": {
+          "month": "Fill in the month each row applies from.",
+          "duplicate": "Two rows have the same month. Merge them into one.",
+          "amount": "Advances must be numbers from 0 to 10,000,000."
+        }
       },
       "street": "Street and number",
       "city": "City",
@@ -1871,7 +1889,7 @@
         },
         "paidSocial": "Social advances paid",
         "paidHealth": "Health advances paid",
-        "paidHint": "Optional. Fill in to see what is left to pay or overpaid.",
+        "paidHint": "Filled in from the monthly advances in Business details (each month of the year with the amount that applied then). Change it if needed; the summary shows what is left to pay or overpaid.",
         "income": "Income",
         "incomeHint": "Invoices paid in the year ({invoices}), credit notes subtracted.",
         "incomeHintVat": "Invoices paid in the year without VAT ({invoices}), credit notes subtracted.",
@@ -1894,7 +1912,8 @@
         "downloadCsv": "Download CSV",
         "epoLink": "EPO forms (Financial Administration)",
         "failed": "The estimate could not be calculated.",
-        "disclaimer": "A rough estimate for a full year of main activity. It does not replace the tax return or the insurance statements."
+        "disclaimer": "A rough estimate for a full year of main activity. It does not replace the tax return or the insurance statements.",
+        "paidFromSettings": "Filled in from the monthly advances in Business details. You can change it."
       },
       "epo": {
         "title": "How to file the VAT return, control statement and EC sales list",

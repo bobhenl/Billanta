@@ -11,6 +11,7 @@
  * RLS policies themselves live in `rls-policies.sql`, applied separately
  * (Drizzle Kit has no first-class RLS DSL in the version pinned here).
  */
+import type { TaxAdvancePeriod } from "@faktur/cz-compliance";
 import { sql } from "drizzle-orm";
 import {
   boolean,
@@ -162,8 +163,9 @@ export const tenants = pgTable("tenants", {
   dicVatPayer: boolean("dic_vat_payer").notNull().default(false),
   // Plátce / identifikovaná osoba (§6g–6l ZDPH, SK §7a) / neplátce, see VAT_STATUSES in @faktur/cz-compliance.
   vatStatus: vatStatusEnum("vat_status").notNull().default("non_payer"),
-  // OSVČ monthly advances typed in by the owner, shown next to the dashboard deadlines: { social?, health?, flat_tax? } in the tenant's currency.
-  taxAdvances: jsonb("tax_advances").$type<Partial<Record<"social" | "health" | "flat_tax", number>>>().notNull().default({}),
+  // OSVČ monthly advances typed in by the owner, with history (0044): [{ from: "YYYY-MM", social?, health?, flat_tax? }]
+  // in the tenant's currency, each valid from its month on. Read through normalizeTaxAdvances / advancesFor (@faktur/cz-compliance).
+  taxAdvances: jsonb("tax_advances").$type<TaxAdvancePeriod[]>().notNull().default([]),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
