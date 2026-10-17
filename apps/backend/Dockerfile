@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # apps/backend/Dockerfile — NestJS API.
 #
 # Build context is the MONOREPO ROOT (see root docker-compose.yml's
@@ -33,7 +34,7 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY packages/cz-compliance/package.json packages/cz-compliance/package.json
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
-RUN pnpm install --frozen-lockfile --filter "@faktur/backend..."
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm-store pnpm install --frozen-lockfile --store-dir /pnpm-store --filter "@faktur/backend..."
 
 # ---------------------------------------------------------------------------
 # build
@@ -59,7 +60,7 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY packages/cz-compliance/package.json packages/cz-compliance/package.json
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
-RUN pnpm install --frozen-lockfile --prod --filter "@faktur/backend..."
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm-store pnpm install --frozen-lockfile --store-dir /pnpm-store --prod --filter "@faktur/backend..."
 
 # ---------------------------------------------------------------------------
 # runtime

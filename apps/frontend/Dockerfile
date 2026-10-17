@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # apps/frontend/Dockerfile — Next.js App Router dashboard, standalone output.
 #
 # Build context is the MONOREPO ROOT (root docker-compose.yml's
@@ -25,7 +26,7 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY packages/cz-compliance/package.json packages/cz-compliance/package.json
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
-RUN pnpm install --frozen-lockfile --filter "@faktur/frontend..."
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm-store pnpm install --frozen-lockfile --store-dir /pnpm-store --filter "@faktur/frontend..."
 
 # ---------------------------------------------------------------------------
 # build
@@ -46,7 +47,8 @@ ENV SKIP_BUILD_CHECKS=1 NEXT_TELEMETRY_DISABLED=1
 # compiled first (as in apps/backend/Dockerfile).
 COPY packages/cz-compliance packages/cz-compliance
 COPY apps/frontend apps/frontend
-RUN pnpm --filter @faktur/cz-compliance build && pnpm --filter @faktur/frontend build
+# The Next.js build cache survives between builds (BuildKit cache mount).
+RUN --mount=type=cache,id=next-cache,target=/repo/apps/frontend/.next/cache pnpm --filter @faktur/cz-compliance build && pnpm --filter @faktur/frontend build
 
 # ---------------------------------------------------------------------------
 # runtime — standalone server + static assets only. No manual node_modules
