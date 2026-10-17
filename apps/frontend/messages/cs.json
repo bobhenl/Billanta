@@ -6171,7 +6171,9 @@
       "calculatorsHint": "Daň, pojištění, DPH a kurzy zdarma",
       "guides": "Návody",
       "guidesHint": "Jak podat DPH a hlášení",
-      "compare": "Srovnání s konkurencí"
+      "compare": "Srovnání s konkurencí",
+      "findAccountant": "Sháníte účetní?",
+      "findAccountantHint": "Doporučené účetní podle kraje"
     },
     "search": {
       "showAll": "Zobrazit všechny výsledky pro „{query}“",
@@ -6205,7 +6207,8 @@
       "lastChecked": "Informace jsme naposledy ověřili {date}.",
       "officialSource": "Závazné informace a formuláře najdete na webu Finanční správy",
       "guideDisclaimer": "Návod shrnuje základní pravidla a nenahrazuje účetní ani daňového poradce. Zákon a formuláře se mění, proto si podrobnosti ověřte na webu Finanční správy.",
-      "updated": "Aktualizováno"
+      "updated": "Aktualizováno",
+      "overview": "Přehled"
     },
     "calculators": {
       "indexTitle": "Kalkulačky pro podnikatele",
@@ -6672,6 +6675,125 @@
         "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
         "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
       ]
+    }
+  },
+  "og": {
+    "sections": {
+      "compare": "Srovnání",
+      "forAccountants": "Pro účetní",
+      "partners": "Partneři",
+      "directory": "Adresář účetních",
+      "profile": "Firemní profil"
+    },
+    "services": "{n, plural, one {# služba} few {# služby} other {# služeb}}",
+    "privateTitle": "Sdílený doklad",
+    "privateSubtitle": "Doklad se zobrazí po otevření odkazu.",
+    "privateSection": "Soukromý odkaz"
+  },
+  "accountantDirectory": {
+    "seoTitle": "Sháníte účetní? Doporučené účetní podle kraje",
+    "title": "Sháníte účetní?",
+    "lead": "Účetní a účetní kanceláře, které pracují s Billantou. Vyberte kraj a službu a napište jim napřímo.",
+    "filters": {
+      "label": "Filtrovat účetní",
+      "region": "Kraj",
+      "anyRegion": "Celá ČR a SR",
+      "service": "Služba",
+      "anyService": "Jakákoli služba",
+      "apply": "Filtrovat",
+      "reset": "Zrušit filtry"
+    },
+    "count": "{n, plural, one {# účetní} few {# účetní} other {# účetních}}",
+    "empty": "V tomto výběru zatím nikoho nemáme. Zkuste jiný kraj nebo službu.",
+    "emptyAll": "Seznam se teprve plní. Účetní přidáváme postupně, každého po kontrole.",
+    "remote": "I na dálku",
+    "languages": "Jazyky",
+    "price": "Cena",
+    "contact": "Napsat",
+    "website": "Web",
+    "profile": "Profil firmy",
+    "emailSubject": "Poptávka účetních služeb ({site})",
+    "howTitle": "Jak se sem účetní dostanou",
+    "howBody": "Účetní se přidávají sami v programu pro účetní a každý zápis před zveřejněním ručně schvalujeme. Za zařazení se neplatí. Cenu a podmínky si domluvíte přímo s účetní, Billanta do toho nevstupuje.",
+    "joinTitle": "Jste účetní?",
+    "joinBody": "Přidejte se do programu pro účetní a nabídněte své služby firmám, které fakturují v Billantě.",
+    "joinCta": "Program pro účetní",
+    "regions": {
+      "CZ-10": "Hlavní město Praha",
+      "CZ-20": "Středočeský kraj",
+      "CZ-31": "Jihočeský kraj",
+      "CZ-32": "Plzeňský kraj",
+      "CZ-41": "Karlovarský kraj",
+      "CZ-42": "Ústecký kraj",
+      "CZ-51": "Liberecký kraj",
+      "CZ-52": "Královéhradecký kraj",
+      "CZ-53": "Pardubický kraj",
+      "CZ-63": "Kraj Vysočina",
+      "CZ-64": "Jihomoravský kraj",
+      "CZ-71": "Olomoucký kraj",
+      "CZ-72": "Zlínský kraj",
+      "CZ-80": "Moravskoslezský kraj",
+      "SK-BL": "Bratislavský kraj",
+      "SK-TA": "Trnavský kraj",
+      "SK-TC": "Trenčínský kraj",
+      "SK-NI": "Nitranský kraj",
+      "SK-ZI": "Žilinský kraj",
+      "SK-BC": "Banskobystrický kraj",
+      "SK-PV": "Prešovský kraj",
+      "SK-KI": "Košický kraj"
+    },
+    "services": {
+      "bookkeeping": "Vedení účetnictví",
+      "tax_records": "Daňová evidence",
+      "tax_return": "Daňové přiznání",
+      "vat": "DPH a kontrolní hlášení",
+      "payroll": "Mzdy a personalistika",
+      "annual_accounts": "Účetní závěrka",
+      "advisory": "Daňové poradenství",
+      "startup": "Založení firmy a živnosti"
+    },
+    "promo": {
+      "title": "Sháníte účetní?",
+      "body": "Nemáte komu exporty posílat? V našem seznamu najdete účetní podle kraje a služeb.",
+      "cta": "Najít účetní"
+    },
+    "settings": {
+      "title": "Zápis do adresáře účetních",
+      "intro": "Firmy, které hledají účetní, vás najdou na stránce „Sháníte účetní?“. Zápis zveřejníme po kontrole.",
+      "needProgram": "Zápis do adresáře patří k programu pro účetní. Přepněte se na něj výše.",
+      "displayName": "Jméno nebo název kanceláře",
+      "bio": "Krátce o vás",
+      "regions": "Kraje, kde působíte",
+      "remote": "Pracuji i na dálku",
+      "services": "Služby",
+      "languages": "Jazyky",
+      "priceHint": "Orientační cena",
+      "priceHintPlaceholder": "např. od 1 500 Kč měsíčně",
+      "contactEmail": "E-mail pro poptávky",
+      "website": "Web",
+      "contactNote": "Vyplňte e-mail, web nebo obojí. Zobrazí se veřejně.",
+      "save": "Odeslat ke schválení",
+      "withdraw": "Stáhnout ze seznamu",
+      "saved": "Odesláno ke schválení",
+      "withdrawn": "Zápis je stažený",
+      "editNote": "Každá změna jde znovu ke schválení.",
+      "viewPage": "Zobrazit stránku",
+      "reviewNote": "Poznámka od nás: {note}",
+      "status": {
+        "pending": "Čeká na schválení",
+        "approved": "Zveřejněno",
+        "rejected": "Neschváleno",
+        "withdrawn": "Staženo"
+      },
+      "errors": {
+        "services_required": "Vyberte aspoň jednu službu.",
+        "languages_required": "Vyberte aspoň jeden jazyk.",
+        "region_required": "Vyberte kraj, nebo zaškrtněte práci na dálku.",
+        "contact_required": "Vyplňte e-mail nebo web.",
+        "invalid_website": "Web nevypadá jako platná adresa.",
+        "accountant_program_required": "Nejdřív se přepněte na program pro účetní.",
+        "generic": "Uložení se nepovedlo. Zkuste to prosím znovu."
+      }
     }
   }
 }

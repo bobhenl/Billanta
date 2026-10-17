@@ -53,6 +53,8 @@ import { RoleAccessGuard } from "./tenancy/role-access.guard";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
+import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
+import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
 import { ReferralsController } from "./referrals/referrals.controller";
 import { ReferralsModule } from "./referrals/referrals.module";
 
@@ -122,6 +124,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     ReferralsModule,
     // Public partners directory + Billanta-staff catalogue admin (no tenant context).
     PartnersModule,
+    // Accountant directory (/accountants): own listing, public list, admin review.
+    AccountantDirectoryModule,
   ],
   // Viewers are read-only and accountants stay out of company administration.
   providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],
@@ -212,6 +216,7 @@ export class AppModule implements NestModule {
         CardPaymentsSettingsController,
         AuditController,
         ReferralsController,
+        AccountantListingController,
       );
 
     // InvoicesController: same tenant-context requirement as every

@@ -6171,7 +6171,9 @@
       "calculatorsHint": "DPH, odvody a kurzy zadarmo",
       "guides": "Návody",
       "guidesHint": "Ako podať DPH a hlásenia",
-      "compare": "Porovnanie s konkurenciou"
+      "compare": "Porovnanie s konkurenciou",
+      "findAccountant": "Hľadáte účtovníka?",
+      "findAccountantHint": "Odporúčaní účtovníci podľa kraja"
     },
     "search": {
       "showAll": "Zobraziť všetky výsledky pre „{query}“",
@@ -6205,7 +6207,8 @@
       "lastChecked": "Informácie sme naposledy overili {date}.",
       "officialSource": "Záväzné informácie a formuláre nájdete na webe finančnej správy",
       "guideDisclaimer": "Návod zhŕňa základné pravidlá a nenahrádza účtovníka ani daňového poradcu.",
-      "updated": "Aktualizované"
+      "updated": "Aktualizované",
+      "overview": "Prehľad"
     },
     "calculators": {
       "indexTitle": "Kalkulačky pre podnikateľov",
@@ -6535,6 +6538,125 @@
         "Pozvánka platí pre firmy založené cez váš odkaz počas posledných 30 dní.",
         "Pozvať vlastnú firmu alebo firmu, v ktorej už ste členom, nejde."
       ]
+    }
+  },
+  "og": {
+    "sections": {
+      "compare": "Porovnanie",
+      "forAccountants": "Pre účtovníkov",
+      "partners": "Partneri",
+      "directory": "Adresár účtovníkov",
+      "profile": "Firemný profil"
+    },
+    "services": "{n, plural, one {# služba} few {# služby} other {# služieb}}",
+    "privateTitle": "Zdieľaný doklad",
+    "privateSubtitle": "Doklad sa zobrazí po otvorení odkazu.",
+    "privateSection": "Súkromný odkaz"
+  },
+  "accountantDirectory": {
+    "seoTitle": "Hľadáte účtovníka? Odporúčaní účtovníci podľa kraja",
+    "title": "Hľadáte účtovníka?",
+    "lead": "Účtovníci a účtovnícke kancelárie, ktorí pracujú s Billantou. Vyberte kraj a službu a napíšte im priamo.",
+    "filters": {
+      "label": "Filtrovať účtovníkov",
+      "region": "Kraj",
+      "anyRegion": "Celé Česko a Slovensko",
+      "service": "Služba",
+      "anyService": "Akákoľvek služba",
+      "apply": "Filtrovať",
+      "reset": "Zrušiť filtre"
+    },
+    "count": "{n, plural, one {# účtovník} few {# účtovníci} other {# účtovníkov}}",
+    "empty": "V tomto výbere zatiaľ nikoho nemáme. Skúste iný kraj alebo službu.",
+    "emptyAll": "Zoznam sa ešte len plní. Účtovníkov pridávame postupne, každého po kontrole.",
+    "remote": "Aj na diaľku",
+    "languages": "Jazyky",
+    "price": "Cena",
+    "contact": "Napísať",
+    "website": "Web",
+    "profile": "Profil firmy",
+    "emailSubject": "Dopyt po účtovníckych službách ({site})",
+    "howTitle": "Ako sa sem účtovníci dostanú",
+    "howBody": "Účtovníci sa pridávajú sami v programe pre účtovníkov a každý zápis pred zverejnením ručne schvaľujeme. Za zaradenie sa neplatí. Cenu a podmienky si dohodnete priamo s účtovníkom, Billanta do toho nevstupuje.",
+    "joinTitle": "Ste účtovník?",
+    "joinBody": "Pridajte sa do programu pre účtovníkov a ponúknite svoje služby firmám, ktoré fakturujú v Billante.",
+    "joinCta": "Program pre účtovníkov",
+    "regions": {
+      "CZ-10": "Hlavné mesto Praha",
+      "CZ-20": "Stredočeský kraj",
+      "CZ-31": "Juhočeský kraj",
+      "CZ-32": "Plzenský kraj",
+      "CZ-41": "Karlovarský kraj",
+      "CZ-42": "Ústecký kraj",
+      "CZ-51": "Liberecký kraj",
+      "CZ-52": "Královohradecký kraj",
+      "CZ-53": "Pardubický kraj",
+      "CZ-63": "Kraj Vysočina",
+      "CZ-64": "Juhomoravský kraj",
+      "CZ-71": "Olomoucký kraj",
+      "CZ-72": "Zlínsky kraj",
+      "CZ-80": "Moravskosliezsky kraj",
+      "SK-BL": "Bratislavský kraj",
+      "SK-TA": "Trnavský kraj",
+      "SK-TC": "Trenčiansky kraj",
+      "SK-NI": "Nitriansky kraj",
+      "SK-ZI": "Žilinský kraj",
+      "SK-BC": "Banskobystrický kraj",
+      "SK-PV": "Prešovský kraj",
+      "SK-KI": "Košický kraj"
+    },
+    "services": {
+      "bookkeeping": "Vedenie účtovníctva",
+      "tax_records": "Daňová evidencia",
+      "tax_return": "Daňové priznanie",
+      "vat": "DPH a kontrolný výkaz",
+      "payroll": "Mzdy a personalistika",
+      "annual_accounts": "Účtovná závierka",
+      "advisory": "Daňové poradenstvo",
+      "startup": "Založenie firmy a živnosti"
+    },
+    "promo": {
+      "title": "Hľadáte účtovníka?",
+      "body": "Nemáte komu posielať exporty? V našom zozname nájdete účtovníkov podľa kraja a služieb.",
+      "cta": "Nájsť účtovníka"
+    },
+    "settings": {
+      "title": "Zápis do adresára účtovníkov",
+      "intro": "Firmy, ktoré hľadajú účtovníka, vás nájdu na stránke „Hľadáte účtovníka?“. Zápis zverejníme po kontrole.",
+      "needProgram": "Zápis do adresára patrí k programu pre účtovníkov. Prepnite sa naň vyššie.",
+      "displayName": "Meno alebo názov kancelárie",
+      "bio": "Krátko o vás",
+      "regions": "Kraje, v ktorých pôsobíte",
+      "remote": "Pracujem aj na diaľku",
+      "services": "Služby",
+      "languages": "Jazyky",
+      "priceHint": "Orientačná cena",
+      "priceHintPlaceholder": "napr. od 80 € mesačne",
+      "contactEmail": "E-mail pre dopyty",
+      "website": "Web",
+      "contactNote": "Vyplňte e-mail, web alebo oboje. Zobrazí sa verejne.",
+      "save": "Odoslať na schválenie",
+      "withdraw": "Stiahnuť zo zoznamu",
+      "saved": "Odoslané na schválenie",
+      "withdrawn": "Zápis je stiahnutý",
+      "editNote": "Každá zmena ide znova na schválenie.",
+      "viewPage": "Zobraziť stránku",
+      "reviewNote": "Poznámka od nás: {note}",
+      "status": {
+        "pending": "Čaká na schválenie",
+        "approved": "Zverejnené",
+        "rejected": "Neschválené",
+        "withdrawn": "Stiahnuté"
+      },
+      "errors": {
+        "services_required": "Vyberte aspoň jednu službu.",
+        "languages_required": "Vyberte aspoň jeden jazyk.",
+        "region_required": "Vyberte kraj alebo zaškrtnite prácu na diaľku.",
+        "contact_required": "Vyplňte e-mail alebo web.",
+        "invalid_website": "Web nevyzerá ako platná adresa.",
+        "accountant_program_required": "Najprv sa prepnite na program pre účtovníkov.",
+        "generic": "Uloženie sa nepodarilo. Skúste to, prosím, znova."
+      }
     }
   }
 }

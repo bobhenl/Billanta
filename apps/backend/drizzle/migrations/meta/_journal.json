@@ -330,6 +330,13 @@
       "when": 1792801100000,
       "tag": "0046_exchange_rate_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1792801900000,
+      "tag": "0054_accountant_directory",
+      "breakpoints": true
     }
   ]
 }

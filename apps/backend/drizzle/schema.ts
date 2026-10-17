@@ -1318,3 +1318,36 @@ export const partners = pgTable("partners", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// accountant_listings — an accountant's entry in the public directory
+// (/accountants), one per company in the accountant programme. RLS: the
+// company may only store 'pending' or 'withdrawn'; approval goes through
+// review_accountant_listing (platform admins, migration 0054).
+// ---------------------------------------------------------------------------
+export const accountantListings = pgTable(
+  "accountant_listings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    displayName: text("display_name").notNull(),
+    bio: text("bio"),
+    regions: varchar("regions", { length: 8 }).array().notNull().default(sql`'{}'`),
+    remote: boolean("remote").notNull().default(false),
+    services: varchar("services", { length: 24 }).array().notNull().default(sql`'{}'`),
+    languages: varchar("languages", { length: 4 }).array().notNull().default(sql`'{}'`),
+    priceHint: text("price_hint"),
+    contactEmail: text("contact_email"),
+    website: text("website"),
+    status: varchar("status", { length: 12 }).$type<"pending" | "approved" | "rejected" | "withdrawn">().notNull().default("pending"),
+    reviewNote: text("review_note"),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantUnique: uniqueIndex("accountant_listings_tenant_unique").on(table.tenantId),
+  }),
+);

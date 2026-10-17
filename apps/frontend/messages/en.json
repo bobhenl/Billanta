@@ -6170,7 +6170,9 @@
       "calculatorsHint": "Free tax, insurance, VAT and FX tools",
       "guides": "Guides",
       "guidesHint": "How to file Czech VAT returns",
-      "compare": "Compare with competitors"
+      "compare": "Compare with competitors",
+      "findAccountant": "Looking for an accountant?",
+      "findAccountantHint": "Recommended accountants by region"
     },
     "search": {
       "showAll": "Show all results for “{query}”",
@@ -6204,7 +6206,8 @@
       "lastChecked": "We last checked this information on {date}.",
       "officialSource": "Binding information and forms are on the Czech Financial Administration website",
       "guideDisclaimer": "This guide sums up the basic rules and does not replace an accountant or tax adviser. The law and the forms change, so check the details on the Financial Administration website.",
-      "updated": "Updated"
+      "updated": "Updated",
+      "overview": "Overview"
     },
     "calculators": {
       "indexTitle": "Calculators for small businesses",
@@ -6671,6 +6674,125 @@
         "An invite counts for companies created with your link within the last 30 days.",
         "You can’t invite your own company or one you are already a member of."
       ]
+    }
+  },
+  "og": {
+    "sections": {
+      "compare": "Comparison",
+      "forAccountants": "For accountants",
+      "partners": "Partners",
+      "directory": "Accountant directory",
+      "profile": "Company profile"
+    },
+    "services": "{n, plural, one {# service} other {# services}}",
+    "privateTitle": "Shared document",
+    "privateSubtitle": "Open the link to see the document.",
+    "privateSection": "Private link"
+  },
+  "accountantDirectory": {
+    "seoTitle": "Looking for an accountant? Recommended accountants by region",
+    "title": "Looking for an accountant?",
+    "lead": "Accountants and bookkeeping firms that work with Billanta. Pick a region and a service and contact them directly.",
+    "filters": {
+      "label": "Filter accountants",
+      "region": "Region",
+      "anyRegion": "Czechia and Slovakia",
+      "service": "Service",
+      "anyService": "Any service",
+      "apply": "Filter",
+      "reset": "Clear filters"
+    },
+    "count": "{n, plural, one {# accountant} other {# accountants}}",
+    "empty": "No one matches this yet. Try another region or service.",
+    "emptyAll": "The list is just getting started. We add accountants one by one, each after a check.",
+    "remote": "Also remote",
+    "languages": "Languages",
+    "price": "Price",
+    "contact": "Contact",
+    "website": "Website",
+    "profile": "Company profile",
+    "emailSubject": "Accounting services enquiry ({site})",
+    "howTitle": "How accountants get listed",
+    "howBody": "Accountants add themselves through the accountant programme, and we approve every entry by hand before it goes live. Nobody pays to be listed. You agree the price and terms with the accountant directly; Billanta is not part of that.",
+    "joinTitle": "Are you an accountant?",
+    "joinBody": "Join the accountant programme and offer your services to businesses that invoice with Billanta.",
+    "joinCta": "Accountant programme",
+    "regions": {
+      "CZ-10": "Prague",
+      "CZ-20": "Central Bohemian Region",
+      "CZ-31": "South Bohemian Region",
+      "CZ-32": "Plzeň Region",
+      "CZ-41": "Karlovy Vary Region",
+      "CZ-42": "Ústí nad Labem Region",
+      "CZ-51": "Liberec Region",
+      "CZ-52": "Hradec Králové Region",
+      "CZ-53": "Pardubice Region",
+      "CZ-63": "Vysočina Region",
+      "CZ-64": "South Moravian Region",
+      "CZ-71": "Olomouc Region",
+      "CZ-72": "Zlín Region",
+      "CZ-80": "Moravian-Silesian Region",
+      "SK-BL": "Bratislava Region",
+      "SK-TA": "Trnava Region",
+      "SK-TC": "Trenčín Region",
+      "SK-NI": "Nitra Region",
+      "SK-ZI": "Žilina Region",
+      "SK-BC": "Banská Bystrica Region",
+      "SK-PV": "Prešov Region",
+      "SK-KI": "Košice Region"
+    },
+    "services": {
+      "bookkeeping": "Bookkeeping",
+      "tax_records": "Tax records (sole traders)",
+      "tax_return": "Income tax return",
+      "vat": "VAT returns and statements",
+      "payroll": "Payroll and HR",
+      "annual_accounts": "Annual accounts",
+      "advisory": "Tax advice",
+      "startup": "Company and trade set-up"
+    },
+    "promo": {
+      "title": "Looking for an accountant?",
+      "body": "Nobody to send your exports to? Our list has accountants by region and service.",
+      "cta": "Find an accountant"
+    },
+    "settings": {
+      "title": "Accountant directory listing",
+      "intro": "Businesses looking for an accountant will find you on the “Looking for an accountant?” page. We publish your entry after a check.",
+      "needProgram": "The directory is part of the accountant programme. Switch to it above.",
+      "displayName": "Your name or firm name",
+      "bio": "A few words about you",
+      "regions": "Regions you cover",
+      "remote": "I also work remotely",
+      "services": "Services",
+      "languages": "Languages",
+      "priceHint": "Price guide",
+      "priceHintPlaceholder": "e.g. from CZK 1,500 a month",
+      "contactEmail": "Email for enquiries",
+      "website": "Website",
+      "contactNote": "Fill in an email, a website or both. They are shown publicly.",
+      "save": "Submit for review",
+      "withdraw": "Remove from the list",
+      "saved": "Submitted for review",
+      "withdrawn": "Listing removed",
+      "editNote": "Every change goes back for review.",
+      "viewPage": "View the page",
+      "reviewNote": "Note from us: {note}",
+      "status": {
+        "pending": "Waiting for review",
+        "approved": "Published",
+        "rejected": "Not approved",
+        "withdrawn": "Removed"
+      },
+      "errors": {
+        "services_required": "Pick at least one service.",
+        "languages_required": "Pick at least one language.",
+        "region_required": "Pick a region or tick remote work.",
+        "contact_required": "Fill in an email or a website.",
+        "invalid_website": "The website does not look like a valid address.",
+        "accountant_program_required": "Switch to the accountant programme first.",
+        "generic": "Saving failed. Please try again."
+      }
     }
   }
 }
