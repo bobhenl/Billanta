@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePercent, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
+import { BadgePercent, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -50,6 +50,7 @@ export function MarketingTabBar() {
         { key: 'schools', href: '/for-schools', label: t('schools'), icon: GraduationCap },
         { key: 'creators', href: '/for-creators', label: t('creators'), icon: Clapperboard },
         { key: 'events', href: '/events', label: t('events'), icon: CalendarDays },
+        { key: 'for-partners', href: '/for-partners', label: t('forPartners'), icon: Megaphone },
         { key: 'partners', href: '/partners', label: t('partners'), icon: Handshake },
         { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp }
       ]}

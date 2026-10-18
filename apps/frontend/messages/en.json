@@ -55,7 +55,8 @@
       "partners": "Partners",
       "schools": "For schools",
       "creators": "For creators",
-      "events": "For events and communities"
+      "events": "For events and communities",
+      "forPartners": "For partners"
     },
     "hero": {
       "title": "Invoicing for Czech and Slovak businesses, without the paperwork",
@@ -216,7 +217,8 @@
         "blog": "Blog",
         "schools": "For schools",
         "creators": "For creators",
-        "events": "For events and communities"
+        "events": "For events and communities",
+        "forPartners": "For partners"
       },
       "legal": {
         "title": "Legal",
@@ -7878,7 +7880,8 @@
       "title": "Want to become a partner?",
       "body": "Accountants and bookkeeping firms earn credits for each paying client. Any other company can invite people it knows with the link in Settings.",
       "accountants": "Accountant programme",
-      "signup": "Create an account"
+      "signup": "Create an account",
+      "programmes": "Partner programmes"
     },
     "disclosure": "Links to partners are affiliate links. We may be rewarded for a click or sign-up; it doesn’t change your price."
   },
@@ -8574,7 +8577,17 @@
       "button": "Open the demo",
       "buttonView": "Demo as {role}"
     },
-    "signOutAndStart": "Sign out and open the demo"
+    "signOutAndStart": "Sign out and open the demo",
+    "audiences": {
+      "courses": "Set up for a course: an empty new business, ready for a first invoice.",
+      "coworkings": "Set up for coworking members: a freelancer with sample documents.",
+      "communities": "Set up for community members: a freelancer on the flat-rate regime.",
+      "expats": "Set up for a freelancer working in English, with sample documents.",
+      "banks": "Set up for a company with an accountant and bank sync.",
+      "schools": "Set up for a lesson: an empty business with invoicing only.",
+      "creators": "Set up for creators: a freelancer on the flat-rate regime.",
+      "events": "Set up for attendees: a freelancer with invoicing only."
+    }
   },
   "shareQr": {
     "button": "Share / QR code",
@@ -8841,6 +8854,397 @@
         "They scan it and they are in. You never create accounts one by one.",
         "For members who stay with Billanta, the coworking can earn referral credits."
       ]
+    }
+  },
+  "partnerSegments": {
+    "common": {
+      "contact": "Talk to us",
+      "hubCrumb": "For partners",
+      "faqTitle": "Questions partners ask",
+      "allSegments": "All partner programmes"
+    },
+    "how": {
+      "title": "How it works for partners",
+      "lead": "No lists of names, no accounts created one by one. Your people sign up themselves, with your benefit already applied.",
+      "steps": {
+        "code": {
+          "title": "We issue your code",
+          "body": "One group code with the benefit we agree on: a free period, a discount or extra credit."
+        },
+        "share": {
+          "title": "You get a QR, a poster and a link",
+          "body": "Print the poster, put the QR on a slide or paste the link into your newsletter or group chat."
+        },
+        "scan": {
+          "title": "Members scan and are in",
+          "body": "Each person opens the link, sets up their own company and starts invoicing. They can try the demo first, without signing up."
+        },
+        "track": {
+          "title": "You see sign-ups and earn credit",
+          "body": "You see how many people joined through your code and get credit for each one who starts paying (by default {reward} credits, 1 credit = CZK 1)."
+        }
+      }
+    },
+    "contact": {
+      "title": "Let's set it up",
+      "body": "Write a few lines about your group and how many people it has. We reply within two working days with a code and a suggested benefit.",
+      "mail": "Send an e-mail",
+      "about": "Contact details"
+    },
+    "hub": {
+      "eyebrow": "Partner programmes",
+      "title": "Bring Billanta to your people",
+      "seoTitle": "Partner programmes – courses, coworkings, communities, banks",
+      "lead": "Courses, coworkings, communities, schools, creators, accountants and banks: each gets one code for its whole group, a benefit for members and credit for every company that starts paying.",
+      "more": "See the offer",
+      "mailSubject": "Partnership with Billanta",
+      "directory": "Partner directory",
+      "segments": {
+        "courses": {
+          "title": "Business start-up courses",
+          "body": "Retraining and start-up courses, incubators. Participants invoice for free while the course runs."
+        },
+        "coworkings": {
+          "title": "Coworkings",
+          "body": "One permanent QR for all members, a poster for the wall and credit for the space."
+        },
+        "communities": {
+          "title": "Communities and associations",
+          "body": "Associations of the self-employed, unions, Facebook and Discord groups. A member code and an optional talk."
+        },
+        "expats": {
+          "title": "Expats and digital nomads",
+          "body": "Invoices in English, EUR and CZK, reverse charge. For relocation agencies and expat groups."
+        },
+        "schools": {
+          "title": "Schools",
+          "body": "Lessons on invoicing and running a business, with a classroom demo."
+        },
+        "creators": {
+          "title": "Creators",
+          "body": "Your own code for your audience and credit for every company that stays."
+        },
+        "events": {
+          "title": "Events and fairs",
+          "body": "A code for the attendees of a conference, fair or meetup."
+        },
+        "accountants": {
+          "title": "Accountants",
+          "body": "Access to your clients' companies, exports and credit for each client."
+        },
+        "banks": {
+          "title": "Banks",
+          "body": "An offer for business-account clients, bank sync and co-branded codes."
+        }
+      }
+    },
+    "courses": {
+      "eyebrow": "For start-up and retraining courses",
+      "title": "Your participants are starting a business. Their invoicing can start in the lesson.",
+      "seoTitle": "Invoicing for business start-up courses and incubators",
+      "lead": "For retraining courses from the labour office, start-up programmes such as CzechInvest's and incubators. Participants issue their first invoice during the course, free of charge, with a code you hand out in the first session.",
+      "demoButton": "Open the empty demo",
+      "offerTitle": "What we offer your course",
+      "offers": {
+        "free": {
+          "title": "Free while the course runs",
+          "body": "Participants use the paid plan for free for the length of the course and a bit beyond, so the first real invoices are covered too."
+        },
+        "code": {
+          "title": "One code for the whole group",
+          "body": "A single QR or passphrase for each run of the course. Nobody has to collect e-mails or create accounts."
+        },
+        "lessons": {
+          "title": "Ready-made lessons",
+          "body": "Short lessons on invoicing, VAT and payments that lecturers can use as they are or pick parts from."
+        },
+        "empty": {
+          "title": "A \"just founded\" start",
+          "body": "The demo opens as an empty new business: no sample documents, just the settings a beginner needs."
+        },
+        "noAccounts": {
+          "title": "Each person sets up their own company",
+          "body": "Participants enter their own ID number and bank account. The data belongs to them, not to the course."
+        },
+        "lecturer": {
+          "title": "Help for lecturers",
+          "body": "We gladly walk your lecturers through the app before the first run, online, in about half an hour."
+        }
+      },
+      "lesson": {
+        "title": "A lesson that ends with a real invoice",
+        "lead": "A simple outline that fits into one session:",
+        "points": [
+          "What a valid invoice must contain and why",
+          "Setting up the new business: ID number, address, bank account",
+          "Issuing a first invoice with a QR payment code",
+          "Recording a payment and sending a polite reminder",
+          "What the accountant or the tax office will want at year end"
+        ],
+        "link": "Lessons for schools and courses"
+      },
+      "faq": [
+        {
+          "q": "Who can use the course offer?",
+          "a": "Any course that helps people start a business: retraining courses, start-up programmes, incubators and accelerators. Write to us and we set up a code for your next run."
+        },
+        {
+          "q": "What happens when the free period ends?",
+          "a": "Participants can stay on the free plan or pick a paid one. Nothing is charged automatically and nobody loses their invoices."
+        },
+        {
+          "q": "Can participants practise without a real business yet?",
+          "a": "Yes. The empty demo works without signing up, and a demo company can later be moved to a real account."
+        },
+        {
+          "q": "Does the course see participants' invoices?",
+          "a": "No. The course only sees how many people joined through its code. Each company's data stays private."
+        }
+      ],
+      "mailSubject": "Billanta for our course",
+      "contactTitle": "Get a code for your next course",
+      "contactBody": "Tell us when the course starts and how many participants it has. We send the code, a poster and the lessons ahead of the first session."
+    },
+    "coworkings": {
+      "eyebrow": "For coworkings",
+      "title": "One QR on the wall, a benefit for every member",
+      "seoTitle": "Invoicing benefit for coworking members",
+      "lead": "Most coworking members are freelancers who invoice every month. Give them a better start in Billanta as part of the membership, with one permanent code that never needs updating.",
+      "demoButton": "Try the demo",
+      "offerTitle": "What we offer your coworking",
+      "offers": {
+        "permanent": {
+          "title": "A permanent code",
+          "body": "One QR and passphrase for all members, now and later. New members simply use the same one."
+        },
+        "benefit": {
+          "title": "A member benefit",
+          "body": "A free period or a discount on the paid plan, which you can list among your membership perks."
+        },
+        "credit": {
+          "title": "Credit for the coworking",
+          "body": "For each member company that starts paying, the coworking gets credit (by default {reward} credits). Larger arrangements we agree individually."
+        },
+        "poster": {
+          "title": "A poster for the wall",
+          "body": "A printable A4 or A3 poster with your code, for the kitchen, the reception or the meeting room."
+        },
+        "qr": {
+          "title": "A QR for screens and chats",
+          "body": "The same code works on a lobby screen, in your newsletter or in the members' group chat."
+        },
+        "members": {
+          "title": "No admin work for you",
+          "body": "Members sign up themselves. You don't manage accounts, licences or departures."
+        }
+      },
+      "faq": [
+        {
+          "q": "Does the code ever expire?",
+          "a": "No, a coworking code is permanent unless you ask us to change it. Posters you print today keep working."
+        },
+        {
+          "q": "Do we need to use Billanta ourselves?",
+          "a": "No. The credit can go towards your own subscription if you use it, and for larger communities we agree a different reward."
+        },
+        {
+          "q": "Can we see who signed up?",
+          "a": "You see the number of sign-ups and paying companies, not their names or invoices."
+        }
+      ],
+      "mailSubject": "Billanta for our coworking",
+      "contactTitle": "Get a code for your coworking",
+      "contactBody": "Tell us the name of the space and roughly how many members it has. We send the code and a poster to print."
+    },
+    "communities": {
+      "eyebrow": "For communities and associations",
+      "title": "A member benefit your community will actually use",
+      "seoTitle": "Invoicing benefit for associations and freelancer communities",
+      "lead": "For associations of the self-employed, trade unions and professional groups, and for Facebook or Discord communities of freelancers. One member code, an optional talk on invoicing and credit for the community.",
+      "demoButton": "Try the demo",
+      "offerTitle": "What we offer your community",
+      "offers": {
+        "code": {
+          "title": "A member code",
+          "body": "One code for all members, which you share in your newsletter, member zone or a pinned post."
+        },
+        "benefit": {
+          "title": "A benefit for members",
+          "body": "A free period or a discount on the paid plan, a concrete perk you can name in your offer."
+        },
+        "talk": {
+          "title": "A talk or webinar (optional)",
+          "body": "A short, practical session on invoicing, VAT deadlines and getting paid on time. No sales pitch."
+        },
+        "credit": {
+          "title": "Credit for the community",
+          "body": "For each member company that starts paying, the community earns credit (by default {reward} credits)."
+        },
+        "online": {
+          "title": "Made for online groups",
+          "body": "A link and a QR that work in a post, a chat or a stream. Members can try the demo first, without signing up."
+        },
+        "members": {
+          "title": "Members stay independent",
+          "body": "Every member has their own company and data. The community does not manage anyone's account."
+        }
+      },
+      "faq": [
+        {
+          "q": "Is there a minimum group size?",
+          "a": "No. A local association with thirty members is as welcome as a group of thousands."
+        },
+        {
+          "q": "What does the talk cover?",
+          "a": "Whatever your members need: a first invoice, VAT registration thresholds, reminders, working with an accountant. About 30 to 45 minutes, online or in person."
+        },
+        {
+          "q": "Can we see what our members invoice?",
+          "a": "No. You only see how many members joined and how many pay. Their companies stay private."
+        }
+      ],
+      "mailSubject": "Billanta for our community",
+      "contactTitle": "Get a member code",
+      "contactBody": "Tell us about your community and whether you would like a talk. We send the code, a QR and a short text for your members."
+    },
+    "expats": {
+      "eyebrow": "For expats and digital nomads",
+      "title": "Invoicing in Czechia and Slovakia, in English",
+      "seoTitle": "Invoicing for expats and freelancers in Czechia and Slovakia",
+      "lead": "For foreigners who run a trade licence or a company in Czechia or Slovakia, and for the relocation agencies, expat groups and coworkings that help them. The app and the invoices speak English; the rules are the local ones.",
+      "demoButton": "Open the demo in English",
+      "offerTitle": "What you get",
+      "offers": {
+        "english": {
+          "title": "The app and invoices in English",
+          "body": "Use the whole app in English and issue invoices in English, or in two languages side by side."
+        },
+        "currencies": {
+          "title": "EUR, CZK and other currencies",
+          "body": "Invoice in euros or any other currency. The VAT in Czech crowns is added from the Czech National Bank rate."
+        },
+        "reverseCharge": {
+          "title": "Reverse charge for EU clients",
+          "body": "Invoices to VAT payers in other EU countries carry the right note and leave the VAT to the client."
+        },
+        "checks": {
+          "title": "Checks before you send",
+          "body": "The app warns you when something the law requires is missing, so a Czech accountant won't send the invoice back."
+        },
+        "recurring": {
+          "title": "Recurring invoices",
+          "body": "A monthly retainer for a foreign client goes out on its own, with a QR code for local clients."
+        },
+        "remote": {
+          "title": "Works from anywhere",
+          "body": "In the browser and on your phone, from Prague, Bratislava or anywhere else."
+        }
+      },
+      "musts": {
+        "title": "What a Czech or Slovak invoice must contain",
+        "lead": "The short version, for a freelancer or a small company:",
+        "points": [
+          "Your name or company name, address and company ID (IČO)",
+          "The client's name and address, and their ID and VAT number if they have one",
+          "A unique invoice number, the date of issue and the due date",
+          "What you supplied, the quantity and the price",
+          "If you are a VAT payer: your VAT number, the date of the taxable supply, the rate and the VAT amount, in CZK in Czechia and in EUR in Slovakia",
+          "If you are not a VAT payer, it's good practice to say so on the invoice",
+          "For a VAT-registered EU client: both VAT numbers and the reverse charge note"
+        ],
+        "note": "A summary, not tax advice. The details depend on your situation; the guides below go further.",
+        "readMore": "Read more",
+        "links": {
+          "requiredFields": "Required fields check",
+          "currencies": "Invoices in foreign currencies",
+          "bilingual": "Bilingual invoices",
+          "fx": "Czech National Bank exchange rates",
+          "identified": "The identified person for VAT",
+          "vatFiling": "VAT return and control statement"
+        }
+      },
+      "faq": [
+        {
+          "q": "Do I need to speak Czech or Slovak to use it?",
+          "a": "No. The app, the invoices, the e-mails to clients and the help are available in English."
+        },
+        {
+          "q": "Can I invoice in euros from Czechia?",
+          "a": "Yes. You can invoice in EUR or another currency. If you are a Czech VAT payer, the VAT amount is also shown in CZK, which the app fills in from the Czech National Bank rate."
+        },
+        {
+          "q": "My client is a company in Germany. What changes?",
+          "a": "If they are a VAT payer, the invoice usually goes without Czech VAT under the reverse charge, with both VAT numbers on it. You may also need to file a recapitulative statement."
+        },
+        {
+          "q": "We help expats relocate. Can we offer this to our clients?",
+          "a": "Yes. We issue a code for your clients with a benefit, and you earn credit for every company that starts paying."
+        }
+      ],
+      "mailSubject": "Billanta for expats",
+      "contactTitle": "Helping expats settle in?",
+      "contactBody": "Relocation agencies, expat communities and coworkings get a code for their clients or members. Write to us in English, Czech or Slovak."
+    },
+    "banks": {
+      "eyebrow": "For banks",
+      "title": "Invoicing for your business-account clients",
+      "seoTitle": "Partnership for banks – invoicing for business clients",
+      "lead": "Small businesses open an account with you and then look for a way to invoice. Offer them Billanta as part of the account: invoices with your account number and QR payment, payments paired automatically and a co-branded code.",
+      "demoButton": "Try the demo",
+      "offerTitle": "What a partnership can include",
+      "offers": {
+        "clients": {
+          "title": "An offer for new business accounts",
+          "body": "A free period or a discount for clients who open a business account, handed out in your app, branch or welcome e-mail."
+        },
+        "sync": {
+          "title": "Bank sync and payment pairing",
+          "body": "Incoming payments are paired with invoices automatically, so your clients see what is paid without exporting statements."
+        },
+        "cobranded": {
+          "title": "Co-branded codes",
+          "body": "A code and a landing page carrying both brands, with the benefit you choose for your clients."
+        },
+        "onboarding": {
+          "title": "A quick start for new businesses",
+          "body": "Many new account holders are founding a business. They get a ready invoice with your account and QR code in minutes."
+        },
+        "api": {
+          "title": "Integration",
+          "body": "An API and webhooks for invoices and payments, and a direct statement connection where your bank offers one."
+        },
+        "security": {
+          "title": "Data protection by design",
+          "body": "Each company's data is isolated at the database level, hosted in the EU, with backups and an audit log."
+        }
+      },
+      "models": {
+        "title": "How we can work together",
+        "lead": "We adapt the scope to the bank, from a simple code to a deeper integration:",
+        "points": [
+          "A benefit code for business-account clients, with sign-up reporting",
+          "A co-branded landing page and materials for branches",
+          "A statement connection for automatic payment pairing",
+          "A pilot with a limited group of clients before a wider launch"
+        ]
+      },
+      "faq": [
+        {
+          "q": "Do clients need an account with your bank to use Billanta?",
+          "a": "No. Billanta works with any bank. A partnership gives your clients a benefit and a smoother start with your account."
+        },
+        {
+          "q": "Does Billanta see clients' banking data?",
+          "a": "Only what the client connects themselves, and only to pair payments with invoices. Each company's data stays private."
+        },
+        {
+          "q": "How long does a pilot take?",
+          "a": "A benefit code can run within days. A statement integration depends on the bank's interface; we agree the plan together."
+        }
+      ],
+      "mailSubject": "Billanta and our bank",
+      "contactTitle": "Let's talk about a partnership",
+      "contactBody": "Write to us with the contact person and what you have in mind. We prepare a proposal tailored to your bank."
     }
   }
 }

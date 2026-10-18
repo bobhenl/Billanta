@@ -6,6 +6,7 @@ import { BUSINESS_PRESETS } from '@/lib/business-presets';
 import { ShareQr } from '@/components/share-qr';
 import { Link, redirect } from '@/i18n/navigation';
 import { DEMO_VIEW_ROLES, demoEnabled } from '@/lib/demo';
+import { demoAudience } from '@/lib/demo-audiences';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -14,7 +15,7 @@ type Faq = { q: string; a: string };
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'demo' });
-  // `?view=` only preselects the picker; every variant shares this one canonical page.
+  // `?view=` and `?for=` only preselect the picker; every variant shares this one canonical page.
   return publicPageMetadata({ locale, path: '/demo', title: t('meta.title'), description: t('meta.description') });
 }
 
@@ -41,14 +42,15 @@ export default async function DemoPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ view?: string | string[] }>;
+  searchParams: Promise<{ view?: string | string[]; for?: string | string[] }>;
 }) {
   const { locale } = await params;
   // The links to this page are baked into static pages; with the demo off they still lead somewhere useful.
   if (!demoEnabled()) redirect({ href: '/signup', locale });
   setRequestLocale(locale);
-  const { view } = await searchParams;
+  const { view, for: audienceParam } = await searchParams;
   const initialView = DEMO_VIEW_ROLES.find((r) => r === view) ?? 'owner';
+  const audience = demoAudience(audienceParam);
   const t = await getTranslations('demo');
   const title = t('page.title', { site: SITE_NAME });
   const faq = t.raw('page.faq') as Faq[];
@@ -101,7 +103,8 @@ export default async function DemoPage({
       <ShareQr className="mt-6" />
 
       <h2 className="mt-10 text-base font-semibold">{t('page.pick')}</h2>
-      <DemoKindPicker locale={locale} presets={presets} initialView={initialView} />
+      {audience && <p className="mt-1 text-sm text-muted-foreground">{t(`audiences.${audience}`)}</p>}
+      <DemoKindPicker locale={locale} presets={presets} initialView={initialView} audience={audience} />
 
       <h2 className="mt-14 text-xl font-semibold tracking-tight">{t('page.rolesTitle')}</h2>
       <p className="mt-2 text-sm text-muted-foreground">{t('page.rolesLead')}</p>

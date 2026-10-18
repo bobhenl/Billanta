@@ -64,6 +64,8 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/for-creators', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/events', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/partners', changeFrequency: 'weekly', priority: 0.5 },
+  { path: '/for-partners', changeFrequency: 'monthly', priority: 0.6 },
+  ...['courses', 'coworkings', 'communities', 'expats', 'banks'].map((s): UrlEntry => ({ path: `/for-${s}`, changeFrequency: 'monthly', priority: 0.6 })),
   // Dropped in sitemap() while no accountant is approved (see there).
   { path: ACCOUNTANTS_PATH, changeFrequency: 'weekly', priority: 0.6 },
   ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/features/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 })),

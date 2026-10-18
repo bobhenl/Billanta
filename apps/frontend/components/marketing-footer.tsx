@@ -76,6 +76,7 @@ export async function MarketingFooter() {
         { href: '/for-schools', label: t('company.schools') },
         { href: '/for-creators', label: t('company.creators') },
         { href: '/events', label: t('company.events') },
+        { href: '/for-partners', label: t('company.forPartners') },
         { href: '/partners', label: t('company.partners') },
         { href: '/invoicing', label: tMunicipalities('breadcrumbBrowse') }
       ]

@@ -5,6 +5,7 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
+import { DEMO_AUDIENCES, type DemoAudienceKey } from '@/lib/demo-audiences';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
 import { cn } from '@/lib/utils';
 
@@ -40,29 +41,35 @@ export type DemoPresetLabels = Record<string, { title: string; description: stri
  * link here with `?view=accountant` and the like). A click asks
  * /api/demo/start for a fresh company, switches the view if needed and then
  * loads the dashboard with a full page load, so the new session cookie is
- * the one every server component sees.
+ * the one every server component sees. Partner pages link with `?for=`
+ * (lib/demo-audiences.ts), which preselects the business type and data and
+ * puts that audience's company first.
  */
 export function DemoKindPicker({
   locale,
   presets,
-  initialView = 'owner'
+  initialView = 'owner',
+  audience
 }: {
   locale: string;
   presets: DemoPresetLabels;
   initialView?: DemoViewRole;
+  audience?: DemoAudienceKey | null;
 }) {
+  const preselected = audience ? DEMO_AUDIENCES[audience] : null;
   const t = useTranslations('demo');
-  // Slovak visitors look for the Slovak companies first; everyone else starts in Czechia.
-  const [country, setCountry] = useState<Country>(locale === 'sk' ? 'SK' : 'CZ');
+  // Slovak visitors look for the Slovak companies first; everyone else starts in Czechia, unless the audience's company is Slovak.
+  const [country, setCountry] = useState<Country>(preselected ? COUNTRY[preselected.kind] : locale === 'sk' ? 'SK' : 'CZ');
   const [busy, setBusy] = useState<DemoKind | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [empty, setEmpty] = useState(false);
+  const [empty, setEmpty] = useState<boolean>(preselected?.empty ?? false);
   const [view, setView] = useState<DemoViewRole>(initialView);
-  const [preset, setPreset] = useState<string | null>(null);
+  const [preset, setPreset] = useState<string | null>(preselected?.preset ?? null);
   // Set when the visitor is signed in to a real account and may sign out to continue.
   const [signedInKind, setSignedInKind] = useState<DemoKind | null>(null);
 
-  const kinds = DEMO_KINDS.filter((kind) => COUNTRY[kind] === country);
+  const inCountry = DEMO_KINDS.filter((kind) => COUNTRY[kind] === country);
+  const kinds = preselected && inCountry.includes(preselected.kind) ? [preselected.kind, ...inCountry.filter((k) => k !== preselected.kind)] : inCountry;
 
   async function start(kind: DemoKind) {
     setBusy(kind);
