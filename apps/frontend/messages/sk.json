@@ -8128,5 +8128,79 @@
     "failed": "Uloženie sa nepodarilo",
     "copy": "Kopírovať",
     "copied": "Odkaz je skopírovaný"
+  },
+  "demo": {
+    "cta": "Vyskúšať demo",
+    "ctaHint": "Bez registrácie, ukážková firma na 24 hodín",
+    "meta": {
+      "title": "Demo – vyskúšajte fakturáciu bez registrácie",
+      "description": "Otvorte si ukážkovú firmu s faktúrami, kontaktmi a prehľadmi. Bez e-mailu a bez hesla, údaje sa po 24 hodinách vymažú."
+    },
+    "page": {
+      "eyebrow": "Demo bez registrácie",
+      "title": "Vyskúšajte si {site} na ukážkovej firme",
+      "lead": "Vyberte typ firmy a o pár sekúnd ste v aplikácii. Faktúry, kontakty aj prehľady sú už vyplnené, môžete čokoľvek upraviť, vystaviť alebo zmazať.",
+      "points": {
+        "time": "Firma vydrží 24 hodín, potom sa celá vymaže.",
+        "safe": "Údaje sú vymyslené. Nič sa neposiela e-mailom a nič sa neplatí.",
+        "keep": "Páči sa vám to? Založte si účet a začnite s vlastnou firmou."
+      },
+      "pick": "Vyberte typ firmy"
+    },
+    "kinds": {
+      "cz_vat_sro": {
+        "title": "Česká s.r.o., platiteľ DPH",
+        "description": "Česká spoločnosť s DPH, faktúry v CZK aj EUR, zahraniční odberatelia."
+      },
+      "cz_freelancer": {
+        "title": "Český živnostník, neplatiteľ DPH",
+        "description": "Živnostník bez DPH, jednoduché faktúry a prehľad príjmov."
+      },
+      "cz_pausal": {
+        "title": "Český živnostník v paušálnom režime",
+        "description": "Paušálna daň, stráženie limitu príjmov a mesačné preddavky."
+      },
+      "sk_vat_sro": {
+        "title": "s.r.o., platiteľ DPH",
+        "description": "Slovenská firma v eurách, faktúry aj aplikácia v slovenčine."
+      }
+    },
+    "country": {
+      "CZ": "Česko",
+      "SK": "Slovensko"
+    },
+    "start": "Otvoriť demo",
+    "starting": "Pripravujem firmu…",
+    "banner": {
+      "label": "Demo",
+      "left": "Ukážková firma, vymaže sa o {time}.",
+      "ai": "{n, plural, =0 {AI otázky sú vyčerpané} one {Zostáva # AI otázka} few {Zostávajú # AI otázky} other {Zostáva # AI otázok}}",
+      "register": "Založiť vlastný účet",
+      "restart": "Začať odznova",
+      "hours": "{h} h {m} min",
+      "minutes": "{m} min"
+    },
+    "expired": {
+      "metaTitle": "Demo sa skončilo",
+      "title": "Ukážková firma už neexistuje",
+      "lead": "Demo trvá 24 hodín a potom sa aj so všetkými údajmi vymaže. Môžete si otvoriť nové alebo si založiť vlastný účet.",
+      "again": "Otvoriť nové demo",
+      "register": "Založiť účet"
+    },
+    "publicNotice": "Ukážková faktúra z dema {site}. Firma aj všetky údaje sú vymyslené – nič neplaťte.",
+    "watermark": "DEMO",
+    "errors": {
+      "demo_locked": "V deme sa nedá meniť identita firmy (názov, IČO, DIČ, adresa). Vo vlastnom účte, samozrejme, áno.",
+      "demo_limit": "Demo firma má obmedzený počet záznamov. Pre viac údajov si založte vlastný účet.",
+      "demo_disabled": "Toto sa v deme nedá vyskúšať. Vo vlastnom účte to funguje.",
+      "demo_no_email": "Demo neposiela e-maily. Faktúru si môžete stiahnuť ako PDF alebo otvoriť jej odkaz.",
+      "demo_ai_quota": "AI otázky pre toto demo sú vyčerpané.",
+      "demo_expired": "Demo sa skončilo a firma sa vymazala.",
+      "demo_signed_in": "Ste prihlásení do vlastného účtu. Pre demo sa najprv odhláste.",
+      "demo_ip_limit": "Z vašej siete dnes vzniklo už veľa dem. Skúste to zajtra alebo si založte účet.",
+      "demo_capacity": "Práve beží priveľa dem. Skúste to, prosím, o chvíľu.",
+      "demo_unavailable": "Demo sa teraz nepodarilo pripraviť. Skúste to, prosím, znova.",
+      "rate_limited": "Priveľa pokusov. Skúste to o pár minút."
+    }
   }
 }

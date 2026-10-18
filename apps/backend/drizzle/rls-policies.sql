@@ -419,7 +419,9 @@ LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT id FROM tenants;
+  -- Demo companies (migration 0068) get no reminders, digests or recurring
+  -- runs; they are only ever cleaned up, by claim_expired_demo_tenants.
+  SELECT id FROM tenants WHERE NOT is_demo;
 $$;
 
 REVOKE ALL ON FUNCTION list_tenant_ids() FROM PUBLIC;
@@ -1081,7 +1083,8 @@ AS $$
   FROM invoices i
   JOIN tenants t ON t.id = i.tenant_id
   LEFT JOIN contacts c ON c.id = i.contact_id
-  WHERE i.public_token = p_public_token
+  -- A demo's fictional account must not end up in anyone's banking app.
+  WHERE i.public_token = p_public_token AND NOT t.is_demo
   LIMIT 1;
 $$;
 
@@ -1297,6 +1300,23 @@ REVOKE ALL ON FUNCTION public_invoice_blocked(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION report_invoice_abuse(uuid, text, text, text, text, integer) TO faktur_app;
 GRANT EXECUTE ON FUNCTION public_invoice_blocked(uuid) TO faktur_app;
 
+-- Whether a share link belongs to a demo company (migration 0068): the page
+-- then says the document is fictional and shows no payment QR.
+DROP FUNCTION IF EXISTS public_invoice_demo(uuid);
+CREATE OR REPLACE FUNCTION public_invoice_demo(p_public_token uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM invoices i JOIN tenants t ON t.id = i.tenant_id
+    WHERE i.public_token = p_public_token AND t.is_demo
+  );
+$$;
+REVOKE ALL ON FUNCTION public_invoice_demo(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public_invoice_demo(uuid) TO faktur_app;
+
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER read functions — per-customer client portal
 -- (apps/backend/src/public-invoices/client-portal.*), keyed by
@@ -1473,6 +1493,7 @@ AS $$
   FROM invoices i JOIN tenants t ON t.id = i.tenant_id
   WHERE i.public_token = p_public_token
     AND t.suspended_at IS NULL
+    AND NOT t.is_demo
     AND t.card_payments_enabled
     AND t.stripe_secret_key_encrypted IS NOT NULL
     AND i.status NOT IN ('draft', 'pending_review')

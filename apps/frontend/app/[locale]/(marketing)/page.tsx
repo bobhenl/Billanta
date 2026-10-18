@@ -136,6 +136,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const tApp = await getTranslations('app');
   const tFeatures = await getTranslations('featurePages');
   const tCompare = await getTranslations('comparePage');
+  const tDemo = await getTranslations('demo');
 
   const structuredData = [
     {
@@ -215,13 +216,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               >
                 {t('hero.guestCta')}
               </Link>
-              <a
-                href="#how"
+              <Link
+                href="/demo"
                 className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:text-primary"
               >
-                {t('hero.secondaryCta')}
+                {tDemo('cta')}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
+              </Link>
             </div>
           </div>
 

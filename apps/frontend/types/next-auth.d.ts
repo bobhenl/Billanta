@@ -15,5 +15,7 @@ declare module "next-auth" {
       id: string;
     } & DefaultSession["user"];
     twoFactor: "pending" | "verified" | "off";
+    /** The throwaway user of a /demo company. */
+    isDemo: boolean;
   }
 }

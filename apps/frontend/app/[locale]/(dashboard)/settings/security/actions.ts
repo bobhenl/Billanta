@@ -18,7 +18,7 @@ import {
   verifyTwoFactorCode
 } from '@/lib/two-factor';
 
-type Fail = { ok: false; error: 'not_signed_in' | 'already_enabled' | 'not_enabled' | 'invalid_code' | 'rate_limited' };
+type Fail = { ok: false; error: 'not_signed_in' | 'already_enabled' | 'not_enabled' | 'invalid_code' | 'rate_limited' | 'demo_disabled' };
 export type SetupResult = { ok: true; secret: string; qr: string } | Fail;
 export type CodesResult = { ok: true; codes: string[] } | Fail;
 export type PlainResult = { ok: true } | Fail;
@@ -36,6 +36,8 @@ function underLimit(userId: string): boolean {
 
 /** New secret (replacing an unconfirmed one) and its QR code; nothing is switched on until `confirmTwoFactorSetup`. */
 export async function startTwoFactorSetup(): Promise<SetupResult> {
+  // A throwaway demo user (deleted after 24 h) has nothing to protect.
+  if ((await auth())?.isDemo) return { ok: false, error: 'demo_disabled' };
   const user = await signedInUser();
   if (!user) return { ok: false, error: 'not_signed_in' };
   if ((await twoFactorState(user.id)).enabled) return { ok: false, error: 'already_enabled' };
@@ -54,6 +56,7 @@ export async function startTwoFactorSetup(): Promise<SetupResult> {
  * (shown once). Other devices are signed out: they never passed a code.
  */
 export async function confirmTwoFactorSetup(code: string): Promise<CodesResult> {
+  if ((await auth())?.isDemo) return { ok: false, error: 'demo_disabled' };
   const user = await signedInUser();
   if (!user) return { ok: false, error: 'not_signed_in' };
   if (!underLimit(user.id)) return { ok: false, error: 'rate_limited' };

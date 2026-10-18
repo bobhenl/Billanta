@@ -61,6 +61,11 @@ export interface TenantSettings {
   subscriptionPlanId: string | null;
   subscriptionStatus: string | null;
   hasLogo: boolean;
+  /** Demo playground (backend src/demo/); missing on an older backend. */
+  isDemo?: boolean;
+  demoKind?: import('./demo').DemoKind | null;
+  demoExpiresAt?: string | null;
+  demoAiCallsLeft?: number | null;
   createdAt: string;
 }
 

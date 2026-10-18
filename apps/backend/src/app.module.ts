@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ApiKeyOrJwtTenantContextMiddleware } from "./api-keys/api-key-or-jwt-tenant-context.middleware";
@@ -51,6 +51,9 @@ import { IntegrationsModule } from "./integrations/integrations.module";
 import { TeamModule } from "./team/team.module";
 import { TenantContextMiddleware } from "./tenancy/tenant-context.middleware";
 import { RoleAccessGuard } from "./tenancy/role-access.guard";
+import { DemoErrorFilter } from "./demo/demo-error.filter";
+import { DemoGuard } from "./demo/demo.guard";
+import { DemoModule } from "./demo/demo.module";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
@@ -133,9 +136,17 @@ import { ReferralsModule } from "./referrals/referrals.module";
     AccountantDirectoryModule,
     // Weekly check of the official tax form and minimum pages; alerts for staff (no tenant context).
     LegislationModule,
+    // Public demo playground: start, seed and the 15-minute cleanup (no tenant context).
+    DemoModule,
   ],
-  // Viewers are read-only and accountants stay out of company administration.
-  providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],
+  providers: [
+    // Viewers are read-only and accountants stay out of company administration.
+    { provide: APP_GUARD, useClass: RoleAccessGuard },
+    // Demo companies: no e-mails, no admin changes; runs after the role check.
+    { provide: APP_GUARD, useClass: DemoGuard },
+    // The demo triggers' codes become a 403 instead of a 500.
+    { provide: APP_FILTER, useClass: DemoErrorFilter },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

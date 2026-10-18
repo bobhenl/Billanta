@@ -39,12 +39,23 @@ const ICON_CLASS: Record<ToastTone, string> = {
 };
 
 /**
+ * In the demo playground the backend refuses a few things (src/demo/) with
+ * codes no feature knows, so their generic "failed (code)" message would
+ * reach the visitor. One place swaps it for the demo's own explanation.
+ */
+function explainDemo(text: string, t: ReturnType<typeof useTranslations>): string {
+  const code = /\bdemo_[a-z_]+/.exec(text)?.[0];
+  return code && t.has(code) ? t(code) : text;
+}
+
+/**
  * The floating "Saved" pill, after VoxelRank's .fav-toast: bottom-left on
  * desktop (the cookie card owns bottom-right), full width just above the tab
  * bar on phones. It is a polite live region, so screen readers announce it
  * without moving focus.
  */
 export function Toaster() {
+  const tDemo = useTranslations('demo.errors');
   const [current, setCurrent] = useState<ToastInput | null>(null);
   const [shown, setShown] = useState(false);
   const timers = useRef<number[]>([]);
@@ -91,7 +102,7 @@ export function Toaster() {
           )}
         >
           <Icon className={cn('h-4 w-4 shrink-0', ICON_CLASS[tone])} aria-hidden="true" />
-          <span>{current.text}</span>
+          <span>{explainDemo(current.text, tDemo)}</span>
           {current.href && current.linkLabel && (
             <Link href={current.href} className="whitespace-nowrap font-bold text-primary hover:underline">
               {current.linkLabel}

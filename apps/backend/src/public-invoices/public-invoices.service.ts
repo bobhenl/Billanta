@@ -121,6 +121,8 @@ export interface PublicInvoiceView {
   quote: { canRespond: boolean; response: "accepted" | "rejected" | null; respondedAt: string | null; name: string | null } | null;
   /** The company accepts cards (own Stripe) and something is left to pay: show "Pay by card". */
   cardPayment: boolean;
+  /** Issued in the demo playground: fictional, no payment details (src/demo/). */
+  demo: boolean;
 }
 
 type PublicAttachmentRow = { id: string; filename: string; mime: string; size_bytes: number };
@@ -241,7 +243,7 @@ export class PublicInvoicesService {
       throw new NotFoundException("Invoice not found");
     }
 
-    const [lineItemRows, supplierRows, attachmentRows, qrRows, quoteRows, cardRows] = await Promise.all([
+    const [lineItemRows, supplierRows, attachmentRows, qrRows, quoteRows, cardRows, demoRows] = await Promise.all([
       this.dbService.db.execute<PublicInvoiceLineItemRow>(
         sql`SELECT * FROM get_public_invoice_line_items(${token})`,
       ),
@@ -254,7 +256,9 @@ export class PublicInvoicesService {
         sql`SELECT * FROM get_public_quote_response(${token})`,
       ),
       this.dbService.db.execute<{ document_type: string }>(sql`SELECT document_type FROM get_public_card_payment_target(${token})`),
+      this.dbService.db.execute<{ demo: boolean }>(sql`SELECT public_invoice_demo(${token}) AS demo`),
     ]);
+    const demo = demoRows[0]?.demo === true;
     const quoteRow = quoteRows[0];
 
     const lineItems: PublicInvoiceLineItemView[] = lineItemRows.map((row) => ({
@@ -328,12 +332,13 @@ export class PublicInvoicesService {
       paymentMethod: header.payment_method,
       paymentMethodLabel: header.payment_method_label,
       paymentInstructions: header.payment_instructions,
+      // A demo's account is made up: no payment QR may be built from it.
       supplier: supplierRow
         ? {
             companyName: supplierRow.company_name,
-            bankAccountIban: supplierRow.bank_account_iban,
-            bankAccountNumber: supplierRow.bank_account_number,
-            bankAccountBankCode: supplierRow.bank_account_bank_code,
+            bankAccountIban: demo ? null : supplierRow.bank_account_iban,
+            bankAccountNumber: demo ? null : supplierRow.bank_account_number,
+            bankAccountBankCode: demo ? null : supplierRow.bank_account_bank_code,
           }
         : null,
       attachments: attachmentRows.map((r) => ({ id: r.id, filename: r.filename, mime: r.mime, sizeBytes: r.size_bytes })),
@@ -351,6 +356,7 @@ export class PublicInvoicesService {
         header.status === "issued" &&
         ["invoice", "proforma"].includes(cardRows[0]?.document_type ?? "") &&
         total - Number(header.amount_paid ?? 0) > 0.005,
+      demo,
     };
   }
 

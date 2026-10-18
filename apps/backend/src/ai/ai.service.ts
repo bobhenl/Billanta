@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Optional,
   ServiceUnavailableException,
   UnprocessableEntityException,
 } from "@nestjs/common";
@@ -15,6 +16,8 @@ import { z } from "zod/v4";
 import * as schema from "../../drizzle/schema";
 import { decryptSecret, encryptSecret } from "../backup-destinations/encryption.util";
 import { ContactsService } from "../contacts/contacts.service";
+import { DbService } from "../db/db.service";
+import { demoConfig } from "../demo/demo-config";
 import type { AresContactPrefill } from "../contacts/ares-mapper.util";
 import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import type { UpdateAiSettingsDto } from "./dto/update-ai-settings.dto";
@@ -109,7 +112,10 @@ export type ReceiptMediaType = (typeof RECEIPT_MEDIA_TYPES)[number];
 export class AiService {
   private readonly usage = new Map<string, { day: string; count: number }>();
 
-  constructor(private readonly contactsService: ContactsService) {}
+  constructor(
+    private readonly contactsService: ContactsService,
+    @Optional() private readonly dbService?: DbService,
+  ) {}
 
   get platformAvailable(): boolean {
     return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
@@ -175,6 +181,7 @@ export class AiService {
     }
     const tenant = await this.loadTenant(db, tenantId);
     const client = this.clientFor(tenant.id, tenant.aiMode, tenant.aiApiKeyEncrypted);
+    if (tenant.isDemo) await this.consumeDemoQuota(tenant.id);
 
     const today = new Date().toISOString().slice(0, 10);
     const context = `Today is ${today}. The issuing business is ${tenant.dicVatPayer ? "a VAT payer" : "NOT a VAT payer, so vat_rate must be null"}.`;
@@ -254,6 +261,7 @@ export class AiService {
   async readReceipt(db: TenantDb, tenantId: string, file: { buffer: Buffer; mediaType: ReceiptMediaType }) {
     const tenant = await this.loadTenant(db, tenantId);
     const client = this.clientFor(tenant.id, tenant.aiMode, tenant.aiApiKeyEncrypted);
+    if (tenant.isDemo) await this.consumeDemoQuota(tenant.id);
     const data = file.buffer.toString("base64");
     const source =
       file.mediaType === "application/pdf"
@@ -353,6 +361,18 @@ export class AiService {
       }
       throw new ServiceUnavailableException({ error: "ai_provider_unavailable" });
     }
+  }
+
+  /**
+   * One AI call off a demo's allowance (per session and per visitor IP). Runs
+   * on the pool, not the request tx, so the count sticks even when the
+   * request later fails and rolls back.
+   */
+  private async consumeDemoQuota(tenantId: string) {
+    const cfg = demoConfig();
+    const [row] = await this.dbService!.sql<{ left: number }[]>`
+      SELECT consume_demo_ai_call(${tenantId}, ${cfg.aiPerSession}, ${cfg.aiPerIpDaily}) AS left`;
+    if (!row || row.left < 0) throw new HttpException("demo_ai_quota", HttpStatus.TOO_MANY_REQUESTS);
   }
 
   private async loadTenant(db: TenantDb, tenantId: string) {

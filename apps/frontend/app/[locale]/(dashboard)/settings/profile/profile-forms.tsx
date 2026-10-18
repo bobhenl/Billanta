@@ -26,6 +26,8 @@ export function ProfileForms({
   providers: string[];
 }) {
   const t = useTranslations('settings.profile');
+  // The toaster explains demo refusals itself (components/toaster.tsx).
+  const errorText = (code: string) => (code.startsWith('demo_') ? code : t(`errors.${code}`));
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [current, setCurrent] = useState('');
@@ -48,7 +50,7 @@ export function ProfileForms({
         toast({ text: t('emailChange.sent', { email: emailForm.email.trim() }), tone: 'ok' });
         setEmailForm(null);
       } else {
-        toast({ text: t(`errors.${result.error}`), tone: 'err' });
+        toast({ text: errorText(result.error), tone: 'err' });
       }
     });
   };
@@ -61,14 +63,14 @@ export function ProfileForms({
         window.location.href = `/${locale}`;
         return;
       }
-      toast({ text: t(`errors.${result.error}`, { company: result.company ?? '' }), tone: 'err' });
+      toast({ text: result.error.startsWith('demo_') ? result.error : t(`errors.${result.error}`, { company: result.company ?? '' }), tone: 'err' });
     });
   };
 
   const saveName = () =>
     startName(async () => {
       const result = await updateProfileName(name);
-      toast(result.ok ? { text: t('nameSaved'), tone: 'ok' } : { text: t(`errors.${result.error}`), tone: 'err' });
+      toast(result.ok ? { text: t('nameSaved'), tone: 'ok' } : { text: errorText(result.error), tone: 'err' });
       if (result.ok) router.refresh();
     });
 
@@ -86,7 +88,7 @@ export function ProfileForms({
         setConfirm('');
         router.refresh();
       } else {
-        toast({ text: t(`errors.${result.error}`), tone: 'err' });
+        toast({ text: errorText(result.error), tone: 'err' });
       }
     });
   };

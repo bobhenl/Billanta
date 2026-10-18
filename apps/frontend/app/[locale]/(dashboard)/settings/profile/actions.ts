@@ -24,6 +24,15 @@ async function currentUserId(): Promise<string | null> {
   return session?.user?.id ?? null;
 }
 
+/**
+ * A demo user has no password and is deleted with its company, so it gets no
+ * password, email or account changes: a password would let someone keep the
+ * throwaway account, and deleting it here would skip the demo cleanup.
+ */
+async function refuseDemo(): Promise<ProfileResult | null> {
+  return (await auth())?.isDemo ? { ok: false, error: 'demo_disabled' } : null;
+}
+
 export async function updateProfileName(name: string): Promise<ProfileResult> {
   const userId = await currentUserId();
   if (!userId) return { ok: false, error: 'not_signed_in' };
@@ -36,6 +45,8 @@ export async function updateProfileName(name: string): Promise<ProfileResult> {
 
 /** Changes the local password; `current` is required only when one is already set (OAuth-only users set their first one). */
 export async function changePassword(current: string, next: string): Promise<ProfileResult> {
+  const refused = await refuseDemo();
+  if (refused) return refused;
   const userId = await currentUserId();
   if (!userId) return { ok: false, error: 'not_signed_in' };
   if (next.length < MIN_PASSWORD_LENGTH) return { ok: false, error: 'too_short' };
@@ -79,6 +90,8 @@ async function verifyPassword(userId: string, password: string): Promise<{ email
  * the token — the same storage the password-reset flow uses.
  */
 export async function requestEmailChange(password: string, newEmailRaw: string, locale: string): Promise<ProfileResult> {
+  const refused = await refuseDemo();
+  if (refused) return refused;
   const userId = await currentUserId();
   if (!userId) return { ok: false, error: 'not_signed_in' };
   const newEmail = newEmailRaw.trim().toLowerCase();
@@ -126,6 +139,8 @@ export async function requestEmailChange(password: string, newEmailRaw: string, 
  * OAuth accounts and sessions.
  */
 export async function deleteAccount(password: string, confirmEmail: string): Promise<ProfileResult> {
+  const refused = await refuseDemo();
+  if (refused) return refused;
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId || !session.user?.email || session.twoFactor === 'pending') return { ok: false, error: 'not_signed_in' };

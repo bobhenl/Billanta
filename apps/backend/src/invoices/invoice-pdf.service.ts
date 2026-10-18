@@ -16,6 +16,7 @@ import {
 } from "@faktur/cz-compliance";
 import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import PDFDocument from "pdfkit";
+import { drawDemoWatermark } from "./invoice-pdf-demo";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
@@ -315,7 +316,8 @@ export class InvoicePdfService {
     const t = second && second !== lang ? bilingualLabels(L[lang], L[second]) : L[lang];
 
     const payable = invoice.documentType !== "quote" && totals.totalWithVat > 0;
-    const qr = invoice.documentType !== "quote" ? await this.buildQrCode(invoice, contact, tenant, totals, payable) : null;
+    // A demo's fictional bank account must not end up in anyone's banking app.
+    const qr = invoice.documentType !== "quote" && !tenant.isDemo ? await this.buildQrCode(invoice, contact, tenant, totals, payable) : null;
 
     const doc = new PDFDocument({ size: "A4", margin: 50, bufferPages: true, info: { Title: `${invoice.invoiceNumber}`, Creator: "Billanta" } });
     if (FONTS) {
@@ -344,6 +346,7 @@ export class InvoicePdfService {
     if (qr) this.renderPaymentQr(doc, qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
+    if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR);
 
     doc.end();
     return finished;

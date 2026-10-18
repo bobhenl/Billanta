@@ -4,6 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
+import { demoConfig } from "../demo/demo-config";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import { findBankAccount, listBankAccounts } from "./bank-accounts";
@@ -76,11 +77,16 @@ export class TenantsService {
     const rows = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     // The logo is served separately (GET /tenants/me/logo) to keep this row small.
     // Advances always go out as the period list (a row not yet migrated by 0044 still holds the old single object).
+    // A demo shows how many AI calls it has left (the count lives in demo_sessions, see src/demo/).
+    const demoAiCallsLeft = rows[0]?.isDemo
+      ? ((await db.execute<{ left: number }>(sql`SELECT demo_ai_calls_left(${id}, ${demoConfig().aiPerSession}) AS left`))[0]?.left ?? 0)
+      : null;
     return rows.map(({ aiApiKeyEncrypted: _aiKey, stripeSecretKeyEncrypted, logoData, ...tenant }) => ({
       ...tenant,
       hasStripeKey: Boolean(stripeSecretKeyEncrypted),
       taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
       hasLogo: Boolean(logoData),
+      demoAiCallsLeft,
     }));
   }
 

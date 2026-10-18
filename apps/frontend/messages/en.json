@@ -8225,5 +8225,79 @@
     "failed": "Could not save",
     "copy": "Copy",
     "copied": "Link copied"
+  },
+  "demo": {
+    "cta": "Try the demo",
+    "ctaHint": "No sign-up, a sample company for 24 hours",
+    "meta": {
+      "title": "Demo – try invoicing without signing up",
+      "description": "Open a sample company with invoices, contacts and reports. No email, no password, and everything is deleted after 24 hours."
+    },
+    "page": {
+      "eyebrow": "Demo, no sign-up",
+      "title": "Try {site} with a sample company",
+      "lead": "Pick a kind of company and you are in the app within seconds. Invoices, contacts and reports are already filled in, and you can edit, issue or delete anything.",
+      "points": {
+        "time": "The company lasts 24 hours, then it is deleted entirely.",
+        "safe": "All details are made up. Nothing is emailed and nothing is charged.",
+        "keep": "Like it? Create an account and start with your own company."
+      },
+      "pick": "Pick a kind of company"
+    },
+    "kinds": {
+      "cz_vat_sro": {
+        "title": "Czech s.r.o., VAT payer",
+        "description": "A Czech limited company with VAT, invoices in CZK and EUR, foreign customers."
+      },
+      "cz_freelancer": {
+        "title": "Czech freelancer, no VAT",
+        "description": "A sole trader without VAT, simple invoices and an income overview."
+      },
+      "cz_pausal": {
+        "title": "Czech freelancer, flat-rate tax",
+        "description": "The flat-rate tax regime, income limit tracking and monthly advances."
+      },
+      "sk_vat_sro": {
+        "title": "Slovak s.r.o., VAT payer",
+        "description": "A Slovak company in euros, with invoices and the app in Slovak."
+      }
+    },
+    "country": {
+      "CZ": "Czechia",
+      "SK": "Slovakia"
+    },
+    "start": "Open the demo",
+    "starting": "Setting up the company…",
+    "banner": {
+      "label": "Demo",
+      "left": "Sample company, deleted in {time}.",
+      "ai": "{n, plural, =0 {No AI requests left} one {# AI request left} other {# AI requests left}}",
+      "register": "Create your own account",
+      "restart": "Start over",
+      "hours": "{h} h {m} min",
+      "minutes": "{m} min"
+    },
+    "expired": {
+      "metaTitle": "The demo has ended",
+      "title": "The sample company no longer exists",
+      "lead": "A demo lasts 24 hours and is then deleted with all its data. You can open a new one or create your own account.",
+      "again": "Open a new demo",
+      "register": "Create an account"
+    },
+    "publicNotice": "A sample invoice from the {site} demo. The company and every detail are made up – do not pay anything.",
+    "watermark": "DEMO",
+    "errors": {
+      "demo_locked": "The company's identity (name, IČO, VAT number, address) can't be changed in the demo. In your own account it can.",
+      "demo_limit": "The demo company has a limited number of records. Create your own account for more.",
+      "demo_disabled": "This can't be tried in the demo. It works in your own account.",
+      "demo_no_email": "The demo sends no emails. You can download the invoice as a PDF or open its link.",
+      "demo_ai_quota": "This demo has used up its AI requests.",
+      "demo_expired": "The demo has ended and the company was deleted.",
+      "demo_signed_in": "You are signed in to your own account. Sign out first to open the demo.",
+      "demo_ip_limit": "Many demos have already been opened from your network today. Try tomorrow or create an account.",
+      "demo_capacity": "Too many demos are running right now. Please try again in a moment.",
+      "demo_unavailable": "The demo couldn't be set up right now. Please try again.",
+      "rate_limited": "Too many attempts. Try again in a few minutes."
+    }
   }
 }

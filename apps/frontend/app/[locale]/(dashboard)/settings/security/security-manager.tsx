@@ -14,6 +14,7 @@ type Setup = { secret: string; qr: string };
 
 export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boolean; recoveryCodesLeft: number }) {
   const t = useTranslations('settings.security');
+  const tDemo = useTranslations('demo.errors');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [setup, setSetup] = useState<Setup | null>(null);
@@ -23,7 +24,7 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
   const [error, setError] = useState<string | null>(null);
 
   function fail(errorCode: string) {
-    setError(t.has(`errors.${errorCode}`) ? t(`errors.${errorCode}`) : t('errors.generic'));
+    setError(tDemo.has(errorCode) ? tDemo(errorCode) : t.has(`errors.${errorCode}`) ? t(`errors.${errorCode}`) : t('errors.generic'));
     setCode('');
   }
 

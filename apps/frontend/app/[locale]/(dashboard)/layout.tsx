@@ -1,12 +1,14 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { unstable_rethrow } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CommandPalette } from '@/components/command-palette';
+import { DemoBanner } from '@/components/demo/demo-banner';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -18,7 +20,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
-import { fetchMyAccess, hiddenSections } from '@/lib/tenant';
+import { fetchMyAccess, fetchTenant, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { fetchMyCompanies } from '@/lib/api-client';
 import { REFERRAL_COOKIE } from '@/lib/referral';
 import { dashboardClientMessages } from '@/lib/client-messages';
@@ -47,6 +49,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   const tApp = await getTranslations('app');
+  const locale = await getLocale();
+  // A demo company shows its countdown. Fetched without a blanket catch so an
+  // expired demo's redirect (lib/api-client.ts) is not swallowed here.
+  let demo: TenantSettings | null = null;
+  if (session.isDemo) {
+    try {
+      demo = await fetchTenant();
+    } catch (error) {
+      unstable_rethrow(error);
+    }
+  }
   // The backend enforces access (RoleAccessGuard); the shell just leaves out
   // what this member can't open or the company switched off, and tells a
   // viewer up front that they can only look.
@@ -100,7 +113,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {role === 'viewer' && (
             <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
           )}
-          <TrialBanner plan={access?.plan} />
+          {demo?.isDemo && demo.demoExpiresAt ? (
+            <DemoBanner expiresAt={demo.demoExpiresAt} aiLeft={demo.demoAiCallsLeft ?? null} locale={locale} />
+          ) : (
+            <TrialBanner plan={access?.plan} />
+          )}
           {children}
         </main>
 

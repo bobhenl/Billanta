@@ -23,6 +23,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('pricing');
+  const tDemo = await getTranslations('demo');
   const currency = defaultCurrency(locale);
   const trial = trialDays();
 
@@ -92,6 +93,13 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
             {t('trialNote', { days: trial })}
           </p>
         )}
+        <p className="mt-4 text-sm">
+          <Link href="/demo" className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline">
+            {tDemo('cta')}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+          <span className="ml-2 text-muted-foreground">{tDemo('ctaHint')}</span>
+        </p>
       </div>
 
       <PricingPlans

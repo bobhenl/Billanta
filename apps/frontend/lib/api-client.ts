@@ -35,6 +35,8 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
 import { mintBackendToken } from "./backend-token";
 
 // Same var `lib/public-invoices.ts` already uses for its own server-side
@@ -177,6 +179,7 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
+    await leaveExpiredDemo(res.status, body);
     throw new ApiError(res.status, path, body);
   }
 
@@ -186,6 +189,17 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   }
 
   return (await res.json()) as T;
+}
+
+/**
+ * A demo company past its 24 hours answers 410 until the cleanup deletes it
+ * (src/demo/ in the backend). Every page would then show its own error, so
+ * the visitor goes to one page that explains what happened.
+ */
+async function leaveExpiredDemo(status: number, body: string) {
+  if (status === 410 && body.includes("demo_expired")) {
+    redirect({ href: "/demo/expired", locale: await getLocale() });
+  }
 }
 
 /**
@@ -202,6 +216,7 @@ export async function apiFetchRaw(path: string, init?: RequestInit): Promise<Res
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
+    await leaveExpiredDemo(res.status, body);
     throw new ApiError(res.status, path, body);
   }
   return res;

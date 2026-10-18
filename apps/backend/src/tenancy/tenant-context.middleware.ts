@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { and, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -51,6 +51,8 @@ export interface AuthenticatedUser {
   permissions?: unknown;
   /** The dashboard session passed the two-factor check (JWT `mfa` claim). Unset for API keys and the AI service. */
   twoFactor?: boolean;
+  /** The company is a demo playground (see `src/demo/`); `DemoGuard` narrows what it may do. */
+  demo?: boolean;
 }
 
 export interface TenantScopedRequest extends Request {
@@ -251,7 +253,25 @@ export class TenantContextMiddleware implements NestMiddleware {
         );
       }
 
-      req.user = { id: userId, email, tenantId: candidateTenantId, role: membership.role, permissions: membership.permissions, twoFactor };
+      const [tenant] = await membershipDb
+        .select({ isDemo: schema.tenants.isDemo, demoExpiresAt: schema.tenants.demoExpiresAt })
+        .from(schema.tenants)
+        .where(eq(schema.tenants.id, candidateTenantId))
+        .limit(1);
+      // An expired demo waits for the cleanup job; nobody works in it meanwhile.
+      if (tenant?.isDemo && (!tenant.demoExpiresAt || tenant.demoExpiresAt.getTime() <= Date.now())) {
+        throw new HttpException("demo_expired", HttpStatus.GONE);
+      }
+
+      req.user = {
+        id: userId,
+        email,
+        tenantId: candidateTenantId,
+        role: membership.role,
+        permissions: membership.permissions,
+        twoFactor,
+        demo: tenant?.isDemo === true,
+      };
       req.tenantDb = membershipDb;
 
       await new Promise<void>((resolve, reject) => {

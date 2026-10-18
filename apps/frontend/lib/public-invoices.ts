@@ -34,6 +34,8 @@ export interface PublicInvoiceSupplier {
 }
 
 export interface PublicInvoice {
+  /** Issued in the demo playground: made up, shown with a notice (backend src/demo/); missing on an older backend. */
+  demo?: boolean;
   invoiceNumber: string | null;
   variableSymbol: string | null;
   issueDate: string | null;

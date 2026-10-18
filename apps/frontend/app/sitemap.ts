@@ -58,6 +58,7 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/invoicing', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/features', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/create-invoice', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/demo', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/for-accountants', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/partners', changeFrequency: 'weekly', priority: 0.5 },
   // Dropped in sitemap() while no accountant is approved (see there).

@@ -16,6 +16,7 @@ import { sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  char,
   date,
   index,
   integer,
@@ -287,6 +288,11 @@ export const tenants = pgTable("tenants", {
   // Fields a customer must fill in on a buyer-details link (0054): email, phone, ico, dic.
   // A link can carry its own list (invoices.buyer_details_required); this is the default.
   buyerDetailsRequired: text("buyer_details_required").array().notNull().default(sql`'{email,ico}'::text[]`),
+  // Demo playground (0068, `src/demo/`): a fictional company that exists for
+  // demo_expires_at - now. Its identity is locked by a trigger.
+  isDemo: boolean("is_demo").notNull().default(false),
+  demoExpiresAt: timestamp("demo_expires_at", { withTimezone: true }),
+  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro">(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -321,6 +327,8 @@ export const users = pgTable(
     totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
     totpRecoveryCodes: text("totp_recovery_codes").array(),
     totpLastStep: integer("totp_last_step"),
+    // The password-less owner of a demo company (0068); deleted with it.
+    isDemo: boolean("is_demo").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -1652,3 +1660,21 @@ export const platformAlerts = pgTable(
     openIdx: index("platform_alerts_open_idx").on(table.createdAt).where(sql`${table.acknowledgedAt} IS NULL`),
   }),
 );
+
+// ---------------------------------------------------------------------------
+// demo_sessions – one row per demo company (0068): the visitor's salted IP
+// hash for the per-IP limits and the AI call count. Not readable by the app
+// role; only through the demo functions of that migration.
+// ---------------------------------------------------------------------------
+export const demoSessions = pgTable("demo_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull(),
+  userId: uuid("user_id").notNull(),
+  kind: text("kind").notNull(),
+  ipBucket: char("ip_bucket", { length: 64 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  aiCalls: integer("ai_calls").notNull().default(0),
+  cleanupStartedAt: timestamp("cleanup_started_at", { withTimezone: true }),
+  cleanedAt: timestamp("cleaned_at", { withTimezone: true }),
+});

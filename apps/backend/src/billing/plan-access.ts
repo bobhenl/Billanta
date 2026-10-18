@@ -11,9 +11,11 @@ export interface TenantPlanFields {
   prepaidUntil: string | null;
   subscriptionPlan: string | null;
   subscriptionStatus: string;
+  /** A demo playground shows everything (src/demo/). */
+  isDemo?: boolean;
 }
 
-export type PlanSource = "subscription" | "prepaid" | "trial" | "free";
+export type PlanSource = "subscription" | "prepaid" | "trial" | "free" | "demo";
 
 export interface PlanSummary {
   plan: PlanKey;
@@ -46,6 +48,9 @@ export function daysLeft(endsAt: Date, now: Date): number {
  * having to flip a flag, and nothing about the company's data changes.
  */
 export function planSummary(t: TenantPlanFields, now: Date = new Date()): PlanSummary {
+  if (t.isDemo) {
+    return { plan: "business", source: "demo", enforced: true, paidPlan: null, trial: null, prepaidUntil: null, subscriptionStatus: t.subscriptionStatus };
+  }
   const candidates: { plan: PlanKey; source: PlanSource }[] = [];
   // past_due keeps the plan while Stripe retries the payment; canceled doesn't.
   if (isPaidPlan(t.subscriptionPlan) && (t.subscriptionStatus === "active" || t.subscriptionStatus === "past_due")) {

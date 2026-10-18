@@ -137,3 +137,9 @@ describe("prepaidReminderDue", () => {
     expect(prepaidReminderDue(period("2026-10-17"), { until: "2026-10-17", days: 14 }, "2026-10-17")).toBe(3);
   });
 });
+
+describe("planSummary for a demo", () => {
+  it("shows the top plan, whatever the billing columns say", () => {
+    expect(planSummary({ ...base, isDemo: true }, NOW)).toMatchObject({ plan: "business", source: "demo", enforced: true, trial: null });
+  });
+});

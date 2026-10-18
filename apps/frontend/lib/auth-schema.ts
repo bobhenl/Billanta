@@ -71,6 +71,8 @@ export const users = pgTable(
     totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
     totpRecoveryCodes: text("totp_recovery_codes").array(),
     totpLastStep: integer("totp_last_step"),
+    // The throwaway user behind a /demo company (migration 0068); never has a password.
+    isDemo: boolean("is_demo").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

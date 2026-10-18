@@ -18,6 +18,7 @@ import {
 } from "@/lib/public-invoices";
 import type { Metadata } from "next";
 import { privateLinkMetadata } from "@/lib/seo";
+import { PublicDemoNotice } from "@/components/demo/public-demo-notice";
 import { QuoteResponse } from "./quote-response";
 import { ReportAbuse } from "./report-abuse";
 import { PayerNote } from "./payer-note";
@@ -200,7 +201,10 @@ export default async function PublicInvoicePage({
         </p>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
+      {invoice.demo && <PublicDemoNotice />}
+
+      <div className="relative overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-8">
+        {invoice.demo && <PublicDemoNotice watermark />}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
@@ -393,7 +397,7 @@ export default async function PublicInvoicePage({
         {!invoice.quote && (
           <div className="mt-8 rounded-lg border border-dashed border-border p-5">
             <h2 className="text-sm font-semibold">{t("paymentTitle")}</h2>
-            {invoice.cardPayment && (
+            {invoice.cardPayment && !invoice.demo && (
               <CardPayButton
                 token={token}
                 disabled={Boolean(preview)}

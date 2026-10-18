@@ -31,6 +31,7 @@ export async function loadPlanSummary(db: TenantDb, tenantId: string, now = new 
       prepaidUntil: schema.tenants.prepaidUntil,
       subscriptionPlan: schema.tenants.subscriptionPlan,
       subscriptionStatus: schema.tenants.subscriptionStatus,
+      isDemo: schema.tenants.isDemo,
     })
     .from(schema.tenants)
     .where(eq(schema.tenants.id, tenantId))

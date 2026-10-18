@@ -1,6 +1,9 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, ForbiddenException, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { eq } from "drizzle-orm";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { DbService } from "../db/db.service";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { AccountDeletionService } from "./account-deletion.service";
 import { CreateTenantDto } from "./dto/create-tenant.dto";
@@ -34,6 +37,7 @@ export class MeController {
   constructor(
     private readonly meService: MeService,
     private readonly accountDeletion: AccountDeletionService,
+    private readonly dbService: DbService,
   ) {}
 
   @Get()
@@ -60,6 +64,7 @@ export class MeController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Create another company (tenant) owned by the current user" })
   async createTenant(@Req() req: TenantScopedRequest, @Body() dto: CreateTenantDto) {
+    await this.refuseDemoUser(req.user!.id);
     return this.meService.createTenant(req.user!.id, dto.companyName, dto.tosVersion, req.ip ?? null);
   }
 
@@ -72,6 +77,17 @@ export class MeController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Delete the current user's tenant-side data (wipe sole-member companies, leave shared ones)" })
   async deleteMe(@Req() req: TenantScopedRequest) {
+    await this.refuseDemoUser(req.user!.id);
     return this.accountDeletion.deleteAccountData(req.user!.id);
+  }
+
+  /**
+   * A demo visitor owns exactly the one demo company, which the cleanup job
+   * deletes. Read through the pool: `users` has no tenant and this route has
+   * no tenant context.
+   */
+  private async refuseDemoUser(userId: string) {
+    const [user] = await this.dbService.db.select({ isDemo: schema.users.isDemo }).from(schema.users).where(eq(schema.users.id, userId)).limit(1);
+    if (user?.isDemo) throw new ForbiddenException("demo_disabled");
   }
 }

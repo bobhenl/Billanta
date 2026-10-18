@@ -33,6 +33,9 @@ REVOKE ALL ON email_suppressions FROM faktur_app;
 -- (migration 0051); the app may request (insert) a pending one for its tenant.
 REVOKE ALL ON trial_claims FROM faktur_app;
 REVOKE UPDATE, DELETE ON platform_proformas FROM faktur_app;
+-- Demo bookkeeping (per-IP hashes, AI counts) only through the demo
+-- functions of migration 0068.
+REVOKE ALL ON demo_sessions FROM faktur_app;
 
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;

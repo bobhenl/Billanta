@@ -40,6 +40,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import { encode as defaultEncode } from "next-auth/jwt";
+import { cookies } from "next/headers";
 import Credentials from "next-auth/providers/credentials";
 import type { Provider } from "next-auth/providers";
 import Apple from "next-auth/providers/apple";
@@ -118,6 +119,37 @@ const adapter: typeof drizzleAdapter = {
     });
   },
 };
+
+const SESSION_COOKIES = ["__Secure-authjs.session-token", "authjs.session-token"] as const;
+
+/** The cookie Auth.js uses for the session on this request's scheme. */
+export function sessionCookieName(secure: boolean): string {
+  return secure ? SESSION_COOKIES[0] : SESSION_COOKIES[1];
+}
+
+/**
+ * Opens a session for the password-less demo user `create_demo_tenant` made
+ * (app/api/demo/start). Goes through the wrapped adapter, so only the hash
+ * is stored, like any other sign-in. Returns the raw token for the cookie.
+ */
+export async function createDemoSession(userId: string, expires: Date): Promise<string> {
+  const sessionToken = randomUUID();
+  await adapter.createSession!({ sessionToken, userId, expires });
+  return sessionToken;
+}
+
+export async function deleteSessionByToken(sessionToken: string): Promise<void> {
+  await adapter.deleteSession!(sessionToken);
+}
+
+/** Whether the browser's current session belongs to a demo user. */
+async function currentSessionIsDemo(): Promise<boolean> {
+  const jar = await cookies();
+  const token = SESSION_COOKIES.map((name) => jar.get(name)?.value).find(Boolean);
+  if (!token) return false;
+  const found = await adapter.getSessionAndUser!(token);
+  return Boolean((found?.user as { isDemo?: boolean } | undefined)?.isDemo);
+}
 
 /**
  * Social sign-in. Every provider is always REGISTERED, but the login page
@@ -245,13 +277,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // `types/next-auth.d.ts` for the matching type augmentation.
     session({ session, user }) {
       const row = session as unknown as { twoFactorPending?: boolean; twoFactorAt?: Date | null };
-      const fullUser = user as typeof user & { totpEnabledAt?: Date | null };
+      const fullUser = user as typeof user & { totpEnabledAt?: Date | null; isDemo?: boolean };
       const twoFactor = row.twoFactorPending ? "pending" : fullUser.totpEnabledAt && row.twoFactorAt ? "verified" : "off";
       return {
         user: { id: user.id, name: user.name ?? null, email: user.email, image: user.image ?? null },
         expires: session.expires.toISOString?.() ?? session.expires,
         twoFactor,
+        isDemo: fullUser.isDemo === true,
       } as typeof session;
+    },
+    // With database sessions, an OAuth sign-in while signed in LINKS the
+    // provider to the current user. From a demo that would tie a real Google
+    // account to a user the cleanup is about to delete, so refuse it.
+    async signIn({ account }) {
+      if (account && account.provider !== "credentials" && (await currentSessionIsDemo())) return false;
+      return true;
     },
     // See this file's top-of-file doc comment. For a Credentials sign-in
     // Auth.js runs this callback and then writes `jwt.encode(token)` into

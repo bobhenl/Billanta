@@ -31,6 +31,8 @@ export interface SendingTenant {
   subscriptionStatus: string;
   suspendedAt: Date | null;
   emailPausedAt: Date | null;
+  /** A demo playground never e-mails anyone (src/demo/). */
+  isDemo?: boolean;
 }
 
 /** The cap that applies to a tenant right now (pure, unit-tested). */
@@ -45,6 +47,7 @@ export function dailyCapFor(tenant: Pick<SendingTenant, "createdAt" | "subscript
  * frontend maps to a translated message.
  */
 export function sendingBlock(tenant: SendingTenant, sentLast24h: number, now = new Date()): string | null {
+  if (tenant.isDemo) return "DEMO_TENANT";
   if (tenant.suspendedAt) return "ACCOUNT_SUSPENDED";
   if (tenant.emailPausedAt) return "EMAIL_PAUSED";
   if (sentLast24h >= dailyCapFor(tenant, now)) return "EMAIL_DAILY_LIMIT";
@@ -59,6 +62,7 @@ export async function assertCanSendEmail(db: Db, tenantId: string): Promise<void
       subscriptionStatus: schema.tenants.subscriptionStatus,
       suspendedAt: schema.tenants.suspendedAt,
       emailPausedAt: schema.tenants.emailPausedAt,
+      isDemo: schema.tenants.isDemo,
     })
     .from(schema.tenants)
     .where(eq(schema.tenants.id, tenantId))
@@ -71,6 +75,7 @@ export async function assertCanSendEmail(db: Db, tenantId: string): Promise<void
     .where(and(eq(schema.outboundEmails.tenantId, tenantId), gt(schema.outboundEmails.createdAt, since)));
   const block = sendingBlock(tenant, Number(sent));
   if (!block) return;
+  if (block === "DEMO_TENANT") throw new ForbiddenException("demo_no_email");
   if (block === "EMAIL_DAILY_LIMIT") {
     throw new HttpException({ statusCode: 429, code: block, message: `Daily e-mail limit (${dailyCapFor(tenant)}) reached` }, HttpStatus.TOO_MANY_REQUESTS);
   }

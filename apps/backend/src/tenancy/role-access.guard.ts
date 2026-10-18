@@ -11,9 +11,9 @@ const PERSONAL_PREFIXES = ["v1/me", "v1/dashboard/config", "v1/invitations"];
  * Company administration. Accountants work with documents, the bank and exports
  * (Settings → Team promises exactly that) but never manage these.
  */
-const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billing", "v1/backup-destinations", "v1/ai/settings", "v1/channel-links", "v1/referrals"];
+export const ADMIN_PREFIXES = ["v1/tenants", "v1/team", "v1/api-keys", "v1/billing", "v1/backup-destinations", "v1/ai/settings", "v1/channel-links", "v1/referrals"];
 
-const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
+export const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
 
 /**
  * Whether `role` (with its per-area `permissions` overrides) may send `method`

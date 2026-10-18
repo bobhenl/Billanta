@@ -7,7 +7,7 @@ export type PaidPlanKey = Exclude<PlanKey, 'free'>;
 
 export interface PlanSummary {
   plan: PlanKey;
-  source: 'free' | 'trial' | 'prepaid' | 'subscription';
+  source: 'free' | 'trial' | 'prepaid' | 'subscription' | 'demo';
   enforced: boolean;
   paidPlan: PlanKey | null;
   trial: { plan: PlanKey; endsAt: string; daysLeft: number; active: boolean } | null;

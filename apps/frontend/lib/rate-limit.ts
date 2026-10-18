@@ -49,6 +49,11 @@ export const AUTH_LIMITS = {
   twoFactorPerUser: { limit: 10, windowMs: 15 * MINUTE }
 } as const;
 
+/** /api/demo/start; the backend also caps demos per network per day. */
+export const DEMO_LIMITS = {
+  startPerIp: { limit: 5, windowMs: 10 * MINUTE }
+} as const;
+
 export function allow(key: string, rule: { limit: number; windowMs: number }): boolean {
   return takeToken(key, rule.limit, rule.windowMs);
 }
