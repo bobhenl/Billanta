@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { and, count, desc, eq, gte, inArray, isNull, min, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { expenseVatParts } from "../expenses/expense-vat";
 import { ReportRates } from "../exports/uniform-rate";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
@@ -195,8 +196,8 @@ export class DashboardService {
 
     for (const e of expenses) {
       if (e.currency !== "CZK") continue;
-      // Expense amounts are stored including VAT; the chart compares base amounts.
-      const base = Number(e.amount) / (1 + Number(e.vatRate) / 100);
+      // Expense amounts are stored including VAT (reverse charge: net); the chart compares base amounts.
+      const base = expenseVatParts(Number(e.amount), Number(e.vatRate), e.reverseCharge).base;
       if (e.expenseDate >= monthStart) kpi.expensesMonth += base;
       const bucket = months.get(monthKey(e.expenseDate));
       if (bucket) bucket.expenses += base;
@@ -299,7 +300,7 @@ export class DashboardService {
       .map((e) => ({
         currency: e.currency,
         date: e.expenseDate,
-        base: Number(e.amount) / (1 + Number(e.vatRate) / 100),
+        base: expenseVatParts(Number(e.amount), Number(e.vatRate), e.reverseCharge).base,
         exchangeRate: e.exchangeRate == null ? null : Number(e.exchangeRate),
       }));
     if (rates.annual) {

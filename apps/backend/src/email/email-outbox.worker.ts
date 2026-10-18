@@ -6,7 +6,8 @@ import { classifySendError, nextStepAfterFailure, OUTBOX } from "./outbox-policy
 
 interface ClaimedRow {
   id: string;
-  tenant_id: string;
+  /** Null for account e-mails queued by the frontend (migration 0059). */
+  tenant_id: string | null;
   kind: string;
   recipient: string;
   from_name: string | null;

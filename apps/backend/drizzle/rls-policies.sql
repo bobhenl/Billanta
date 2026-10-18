@@ -1046,6 +1046,10 @@ GRANT EXECUTE ON FUNCTION find_feed_owner(uuid) TO faktur_app;
 -- IČO/DIČ, DUZP, document kind, reverse charge, ČNB rate, order number), so
 -- the client's accounting software can import the invoice by scanning it.
 -- Nothing beyond what the PDF shows; same hardening as its siblings above.
+-- customer_country picks the payment QR standard (SPAYD or PAY by square,
+-- paymentQrScheme in cz-compliance). Adding it changed the row type, hence
+-- the DROP: CREATE OR REPLACE cannot change a function's result columns.
+DROP FUNCTION IF EXISTS get_public_invoice_qr_details(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_qr_details(p_public_token uuid)
 RETURNS TABLE (
   supplier_ico varchar,
@@ -1057,7 +1061,8 @@ RETURNS TABLE (
   document_type text,
   reverse_charge boolean,
   exchange_rate numeric,
-  order_number varchar
+  order_number varchar,
+  customer_country varchar
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -1070,7 +1075,8 @@ AS $$
     CASE WHEN jsonb_typeof(i.seller_snapshot -> 'dicVatPayer') = 'boolean' THEN (i.seller_snapshot->>'dicVatPayer')::boolean ELSE t.dic_vat_payer END,
     CASE WHEN i.buyer_snapshot -> 'ico' IS NOT NULL THEN (i.buyer_snapshot->>'ico')::varchar ELSE c.ico END,
     CASE WHEN i.buyer_snapshot -> 'dic' IS NOT NULL THEN (i.buyer_snapshot->>'dic')::varchar ELSE c.dic END,
-    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number
+    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number,
+    CASE WHEN i.buyer_snapshot -> 'addressCountry' IS NOT NULL THEN (i.buyer_snapshot->>'addressCountry')::varchar ELSE c.address_country END
   FROM invoices i
   JOIN tenants t ON t.id = i.tenant_id
   LEFT JOIN contacts c ON c.id = i.contact_id
@@ -1547,7 +1553,9 @@ GRANT EXECUTE ON FUNCTION get_profile_message_target(text) TO faktur_app;
 -- worker uses claim_email_outbox / finish_email_outbox, the Resend webhook
 -- record_email_event, and the platform-admin view email_outbox_stats /
 -- email_outbox_recent, all defined in that migration. email_suppressions has
--- RLS on and no policy on purpose.
+-- RLS on and no policy on purpose. Account e-mails (migration 0059) have a
+-- NULL tenant_id, which this policy never matches: they are written only by
+-- enqueue_account_email and read only by the worker's functions.
 -- ---------------------------------------------------------------------------
 ALTER TABLE email_outbox ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_outbox FORCE ROW LEVEL SECURITY;

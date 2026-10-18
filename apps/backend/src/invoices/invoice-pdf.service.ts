@@ -3,8 +3,16 @@ import { templateValues, templateVarsOf } from "../tenants/template-vars";
 import { displayCustomField, documentVars } from "./custom-fields";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { Injectable } from "@nestjs/common";
-import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, isEuReverseChargeService, qrInvoiceForSpayd } from "@faktur/cz-compliance";
+import { Injectable, Logger } from "@nestjs/common";
+import {
+  czechAccountToIban,
+  generateQrInvoiceString,
+  generateSpaydString,
+  isEuReverseChargeService,
+  paymentQrScheme,
+  qrInvoiceForSpayd,
+} from "@faktur/cz-compliance";
+import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
@@ -106,6 +114,7 @@ const L = {
     remaining: "Zbývá uhradit",
     totalQuote: "Celkem",
     qr: "QR platba",
+    qrPayBySquare: "PAY by square",
     qrInvoice: "QR Faktura",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
     // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
@@ -165,6 +174,7 @@ const L = {
     remaining: "Zostáva uhradiť",
     totalQuote: "Spolu",
     qr: "QR platba",
+    qrPayBySquare: "PAY by square",
     qrInvoice: "QR faktúra",
     reverseCharge: "Prenesenie daňovej povinnosti.",
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
@@ -223,6 +233,7 @@ const L = {
     remaining: "Left to pay",
     totalQuote: "Total",
     qr: "QR payment",
+    qrPayBySquare: "PAY by square",
     qrInvoice: "QR invoice",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
@@ -278,6 +289,8 @@ const stacked = (label: string) => label.replace(BILINGUAL_SEPARATOR, "\n");
  */
 @Injectable()
 export class InvoicePdfService {
+  private readonly logger = new Logger(InvoicePdfService.name);
+
   async generate(
     invoice: InvoiceRow,
     contact: ContactRow,
@@ -319,7 +332,7 @@ export class InvoicePdfService {
     }
     this.renderLineItemsTable(doc, t, lineItems, invoice);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs));
-    if (qr) this.renderPaymentQr(doc, qr.payment ? t.qr : t.qrInvoice, qr.png, totalsTop);
+    if (qr) this.renderPaymentQr(doc, qr.kind === "spayd" ? t.qr : qr.kind === "pay_by_square" ? t.qrPayBySquare : t.qrInvoice, qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
 
@@ -332,6 +345,9 @@ export class InvoicePdfService {
    * embedded as QR Faktura (X-INV), so the customer's bank app pays it and
    * their accounting app imports it from the same scan. Without a payable
    * bank transfer the PDF still gets a standalone QR Faktura.
+   *
+   * Slovak payers get PAY by square instead (rule in paymentQrScheme). It
+   * has no slot for QR Faktura, so that code only pays.
    */
   private async buildQrCode(
     invoice: InvoiceRow,
@@ -339,7 +355,7 @@ export class InvoicePdfService {
     tenant: TenantRow,
     totals: InvoiceVatBreakdown,
     payable: boolean,
-  ): Promise<{ png: Buffer; payment: boolean } | null> {
+  ): Promise<{ png: Buffer; kind: "spayd" | "pay_by_square" | "invoice" } | null> {
     // Same gate as the client-portal page (apps/frontend/app/[locale]/i/[token]/page.tsx):
     // prefer the stored IBAN, otherwise derive it from the domestic
     // account number + bank code, and omit the payment part when neither is on file.
@@ -371,20 +387,52 @@ export class InvoicePdfService {
       : null;
 
     if (payable && iban && invoice.paymentMethod === "bank_transfer") {
+      // After a partial payment the QR asks only for what is left.
+      const amount =
+        Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100) || totals.totalWithVat;
+      const scheme = paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: contact.addressCountry });
+      const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount) : null;
+      if (bysquare) {
+        return { png: await QRCode.toBuffer(bysquare, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "pay_by_square" };
+      }
       const spayd = generateSpaydString({
         iban,
-        // After a partial payment the QR asks only for what is left.
-        amount: Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100) || totals.totalWithVat,
+        amount,
         currency: invoice.currency,
         variableSymbol: invoice.variableSymbol ?? undefined,
         dueDate: invoice.dueDate ?? undefined,
         message: invoice.invoiceNumber ?? undefined,
         invoice: sid ? qrInvoiceForSpayd(sid) : undefined,
       });
-      return { png: await QRCode.toBuffer(spayd, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), payment: true };
+      return { png: await QRCode.toBuffer(spayd, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "spayd" };
     }
     if (!sid) return null;
-    return { png: await QRCode.toBuffer(sid, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), payment: false };
+    return { png: await QRCode.toBuffer(sid, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "invoice" };
+  }
+
+  /**
+   * PAY by square validates the IBAN and BIC, SPAYD does not. A bad account
+   * on file must not break the whole PDF, so the caller falls back to SPAYD.
+   */
+  private payBySquare(invoice: InvoiceRow, tenant: TenantRow, iban: string, amount: number): string | null {
+    try {
+      return generatePayBySquareString({
+        iban,
+        bic: tenant.bankAccountSwift ?? undefined,
+        amount,
+        currency: invoice.currency,
+        variableSymbol: invoice.variableSymbol ?? undefined,
+        dueDate: invoice.dueDate ?? undefined,
+        message: invoice.invoiceNumber ?? undefined,
+        invoiceId: invoice.invoiceNumber ?? undefined,
+        beneficiaryName: tenant.legalName,
+        beneficiaryStreet: tenant.addressStreet ?? undefined,
+        beneficiaryCity: tenant.addressCity ?? undefined,
+      });
+    } catch (error) {
+      this.logger.warn(`PAY by square failed for invoice ${invoice.id}, using SPAYD: ${(error as Error).message}`);
+      return null;
+    }
   }
 
   private iban(tenant: TenantRow): string | null {

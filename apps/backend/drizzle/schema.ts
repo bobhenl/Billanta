@@ -999,6 +999,12 @@ export const expenses = pgTable("expenses", {
   supplierDic: varchar("supplier_dic", { length: 14 }),
   /** CZK per 1 unit of `currency`; null for CZK (looked up from ČNB when missing). */
   exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+  // Received in domestic reverse charge (§92a ZDPH): the supplier charged no
+  // VAT, so `amount` is the net and the company self-assesses `vatRate` on
+  // it (DPHDP3 ř. 10/11, deduction ř. 43/44, KH B.1). Migration 0058.
+  reverseCharge: boolean("reverse_charge").notNull().default(false),
+  /** Kód předmětu plnění for KH B.1 (REVERSE_CHARGE_CODES); null = not chosen, the export warns. */
+  reverseChargeCode: text("reverse_charge_code"),
   dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   note: text("note"),
@@ -1278,7 +1284,10 @@ export type OutboxItem = { kind: string; title: string; body?: string | null; ur
 
 export const emailOutbox = pgTable("email_outbox", {
   id: uuid("id").primaryKey().defaultRandom(),
-  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  // Null = an account e-mail (password reset, e-mail change) queued by the
+  // frontend through enqueue_account_email (migration 0059). No tenant
+  // context can see those rows.
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
   // The member it goes to (notifications, digest); null for customers and invitees.
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   kind: varchar("kind", { length: 40 }).notNull(),
@@ -1302,6 +1311,8 @@ export const emailOutbox = pgTable("email_outbox", {
   attempts: integer("attempts").notNull().default(0),
   maxAttempts: integer("max_attempts").notNull().default(6),
   sendAfter: timestamp("send_after", { withTimezone: true }).notNull().defaultNow(),
+  // The worker drops a queued row past this (its link has expired).
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
   lockedUntil: timestamp("locked_until", { withTimezone: true }),
   lastError: text("last_error"),
   providerMessageId: varchar("provider_message_id", { length: 100 }),

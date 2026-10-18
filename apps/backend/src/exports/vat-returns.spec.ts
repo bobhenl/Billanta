@@ -39,6 +39,8 @@ const received = (o: Partial<VatReceivedDoc>): VatReceivedDoc => ({
   number: "FV-9",
   supplierDic: "CZ87654321",
   taxableDate: d,
+  reverseCharge: false,
+  reverseChargeCode: null,
   parts: [{ ratePercent: 21, base: 10000, vat: 2100 }],
   totalCzk: 12100,
   ...o,
@@ -86,6 +88,28 @@ describe("generateDphDp3", () => {
     expect(xml).toContain('d_poddp="10.10.2026"');
     expect(xml).toContain('dic="8001011234"');
   });
+  it("self-assesses received reverse charge on ř. 10/11 and deducts it on ř. 43/44", () => {
+    const xml = generateDphDp3({
+      issued: [issued({})],
+      received: [
+        received({}),
+        received({ number: "RC-1", reverseCharge: true, parts: [{ ratePercent: 21, base: 40000, vat: 8400 }], totalCzk: 48400 }),
+        received({ number: "RC-2", reverseCharge: true, parts: [{ ratePercent: 12, base: 3000, vat: 360 }], totalCzk: 3360 }),
+      ],
+      submitter,
+      period,
+      today,
+    });
+    expect(xml).toContain(
+      '<Veta1 obrat23="20000" dan23="4200" rez_pren23="40000" dan_rpren23="8400" rez_pren5="3000" dan_rpren5="360" />',
+    );
+    // Not in ř. 40/41: those are B.2/B.3 supplies with VAT on the invoice.
+    expect(xml).toContain(
+      '<Veta4 pln23="10000" odp_tuz23_nar="2100" nar_zdp23="40000" od_zdp23="8400" nar_zdp5="3000" od_zdp5="360" odp_sum_nar="10860" />',
+    );
+    // ř. 62 = 4200 + 8400 + 360, ř. 63 = ř. 46: the self-assessment nets out.
+    expect(xml).toContain('<Veta6 dan_zocelk="12960" odp_zocelk="10860" dano_da="2100" dano_no="0" />');
+  });
   it("reports an excess deduction", () => {
     const xml = generateDphDp3({ issued: [], received: [received({})], submitter, period: { year: 2026, quarter: 3 }, today });
     expect(xml).toContain('dano_da="0" dano_no="2100"');
@@ -112,7 +136,7 @@ describe("generateDphKh1", () => {
     expect(xml).toContain('<VetaA5 zakl_dane1="1000" dan1="210" zakl_dane2="0" dan2="0" />');
     expect(xml).toMatch(/<VetaB2 c_radku="1" dic_dod="87654321" c_evid_dd="FV-9"/);
     expect(xml).toContain('<VetaB3 zakl_dane1="100" dan1="21" zakl_dane2="0" dan2="0" />');
-    expect(xml).toContain('<VetaC obrat23="21000" obrat5="0" pln23="10100" pln5="0" pln_rez_pren="50000" />');
+    expect(xml).toContain('<VetaC obrat23="21000" obrat5="0" pln23="10100" pln5="0" pln_rez_pren="50000" rez_pren23="0" rez_pren5="0" />');
   });
   it("escapes document numbers", () => {
     const { xml } = generateDphKh1({ issued: [issued({ number: 'A&"B' })], received: [], submitter, period, today });
@@ -157,6 +181,56 @@ describe("generateDphKh1", () => {
     });
     expect(warnings).toEqual([{ code: "reverse_charge_dic_missing", document: "rc-nodic" }]);
     expect(xml).not.toContain("<VetaA1");
+  });
+  it("lists received reverse-charge documents in B.1, each with its code", () => {
+    const rc = { reverseCharge: true as const };
+    const { xml, warnings } = generateDphKh1({
+      issued: [],
+      received: [
+        received({}),
+        received({ ...rc, number: "RC-1", reverseChargeCode: "4", parts: [{ ratePercent: 21, base: 40000, vat: 8400 }], totalCzk: 48400 }),
+        // Below 10 000 CZK: B.1 has no threshold, and it must not land in B.3.
+        received({ ...rc, number: "RC-2", supplierDic: "CZ11223344", reverseChargeCode: "14", parts: [{ ratePercent: 12, base: 3000, vat: 360 }], totalCzk: 3360 }),
+      ],
+      submitter,
+      period,
+      today,
+    });
+    expect(warnings).toEqual([]);
+    expect(xml).toContain(
+      '<VetaB1 c_radku="1" dic_dod="87654321" c_evid_dd="RC-1" duzp="15.09.2026" zakl_dane1="40000" dan1="8400" zakl_dane2="0" dan2="0" kod_pred_pl="4" />',
+    );
+    expect(xml).toContain(
+      '<VetaB1 c_radku="2" dic_dod="11223344" c_evid_dd="RC-2" duzp="15.09.2026" zakl_dane1="0" dan1="0" zakl_dane2="3000" dan2="360" kod_pred_pl="14" />',
+    );
+    expect(xml.match(/<VetaB2 /g)).toHaveLength(1);
+    expect(xml).not.toContain("<VetaB3");
+    // B.1 sits between A.5 and B.2 in the EPO structure.
+    expect(xml.indexOf("<VetaB1")).toBeLessThan(xml.indexOf("<VetaB2"));
+    expect(xml).toContain('pln23="10000" pln5="0" pln_rez_pren="0" rez_pren23="40000" rez_pren5="3000" />');
+  });
+  it("warns about received reverse-charge documents EPO would refuse", () => {
+    const rc = { reverseCharge: true as const, parts: [{ ratePercent: 21, base: 5000, vat: 1050 }], totalCzk: 6050 };
+    const { xml, warnings } = generateDphKh1({
+      issued: [],
+      received: [
+        received({ ...rc, number: "RC-nocode" }),
+        received({ ...rc, number: "RC-nodic", supplierDic: null, reverseChargeCode: "4" }),
+        received({ ...rc, number: "", reverseChargeCode: "4" }),
+      ],
+      submitter,
+      period,
+      today,
+    });
+    expect(warnings).toEqual([
+      { code: "received_reverse_charge_code_missing", document: "RC-nocode" },
+      { code: "received_reverse_charge_dic_missing", document: "RC-nodic" },
+      { code: "received_reverse_charge_number_missing", document: "15.09.2026" },
+    ]);
+    // Only the row without a code is written; C counts only written rows.
+    expect(xml.match(/<VetaB1 /g)).toHaveLength(1);
+    expect(xml).toContain('<VetaB1 c_radku="1" dic_dod="87654321" c_evid_dd="RC-nocode" duzp="15.09.2026" zakl_dane1="5000" dan1="1050" zakl_dane2="0" dan2="0" />');
+    expect(xml).toContain('rez_pren23="5000" rez_pren5="0" />');
   });
 });
 

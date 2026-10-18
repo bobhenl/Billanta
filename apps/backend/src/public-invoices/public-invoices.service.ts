@@ -63,6 +63,7 @@ type PublicQrDetailsRow = {
   reverse_charge: boolean;
   exchange_rate: string | null;
   order_number: string | null;
+  customer_country: string | null;
 };
 
 export interface PublicInvoiceLineItemView {
@@ -114,6 +115,8 @@ export interface PublicInvoiceView {
    * Null when the invoice has no number yet.
    */
   qrInvoice: string | null;
+  /** Buyer's country as on the document; with the IBAN it picks SPAYD or PAY by square. */
+  buyerCountry: string | null;
   /** Quotes only: whether the client may still answer, and the answer if given. */
   quote: { canRespond: boolean; response: "accepted" | "rejected" | null; respondedAt: string | null; name: string | null } | null;
   /** The company accepts cards (own Stripe) and something is left to pay: show "Pay by card". */
@@ -335,6 +338,7 @@ export class PublicInvoicesService {
         : null,
       attachments: attachmentRows.map((r) => ({ id: r.id, filename: r.filename, mime: r.mime, sizeBytes: r.size_bytes })),
       qrInvoice,
+      buyerCountry: qr?.customer_country ?? null,
       quote: quoteRow
         ? {
             canRespond: header.status === "issued" && !quoteRow.client_response,

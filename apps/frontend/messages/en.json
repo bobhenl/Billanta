@@ -643,6 +643,7 @@
     "paymentTitle": "Pay this invoice",
     "paymentInstructions": "Scan the QR code with your banking app to pre-fill an instant bank transfer.",
     "paymentDisclaimer": "This is a standard Czech/Slovak instant bank-transfer QR code (SPAYD / \"QR Platba\"), not a card payment.",
+    "paymentDisclaimerBySquare": "This is a standard Slovak bank-transfer QR code (PAY by square), not a card payment.",
     "noBankAccount": "The issuer hasn't set up a bank account for online payment yet. Please contact them directly to arrange payment.",
     "notFoundTitle": "Invoice not found",
     "notFoundBody": "This link is invalid or has expired. Please contact the sender for a new one.",
@@ -769,6 +770,11 @@
       "noCategory": "No category",
       "amountSection": "Amount",
       "vatBreakdown": "Base {base} + VAT {vat}",
+      "reverseChargeLabel": "Reverse charge (§ 92a)",
+      "reverseChargeHint": "The supplier invoiced without VAT and you account for it. Enter the amount without VAT; the VAT is both paid and deducted in the return (rows 10/11 and 43/44), and the document goes to section B.1 of the control statement.",
+      "amountLabelReverseCharge": "Amount excl. VAT",
+      "vatBreakdownReverseCharge": "Base {base}, VAT to self-assess {vat}",
+      "reverseChargeRequiredHint": "Section B.1 needs the supplier's VAT ID and the document number.",
       "datesSection": "Dates & payment",
       "dueDateLabel": "Due date",
       "paidLabel": "Already paid",
@@ -1973,7 +1979,10 @@
         "guideLink": "Filing guide",
         "warnings": {
           "reverse_charge_code_missing": "Documents without a supply code: {documents}. Add the code on the document and download the file again, otherwise EPO rejects it.",
-          "reverse_charge_dic_missing": "Reverse-charge documents without the customer’s VAT ID, left out of section A.1: {documents}."
+          "reverse_charge_dic_missing": "Reverse-charge documents without the customer’s VAT ID, left out of section A.1: {documents}.",
+          "received_reverse_charge_code_missing": "Received reverse-charge documents without a supply code: {documents}. Add the code on the expense and download the file again, otherwise EPO rejects it.",
+          "received_reverse_charge_dic_missing": "Received reverse-charge documents without the supplier's VAT ID, left out of section B.1: {documents}.",
+          "received_reverse_charge_number_missing": "Received reverse-charge documents without a document number (shown by date), left out of section B.1: {documents}."
         }
       },
       "annual": {

@@ -1,4 +1,5 @@
 import { createZodDto } from "nestjs-zod";
+import { REVERSE_CHARGE_CODE_VALUES } from "@faktur/cz-compliance";
 import { z } from "zod";
 
 /**
@@ -42,6 +43,10 @@ export const createExpenseSchema = z.object({
     .toUpperCase()
     .regex(/^[A-Z]{2}[0-9A-Z]{2,12}$/)
     .nullish(),
+  // Domestic reverse charge (§92a ZDPH): `amount` is then the net and
+  // `vatRate` the rate the company self-assesses (KH B.1, DPHDP3 ř. 10/11).
+  reverseCharge: z.boolean().optional(),
+  reverseChargeCode: z.enum(REVERSE_CHARGE_CODE_VALUES).nullish(),
   dueDate: z.coerce.date().nullish(),
   paidAt: z.coerce.date().nullish(),
   note: z.string().max(2000).nullish(),

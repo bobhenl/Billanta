@@ -59,6 +59,15 @@ describe('defaultTaxDeadlineKinds', () => {
     expect(defaultTaxDeadlineKinds('identified', true)).toEqual(['vat_identified', 'ec_sales_list', 'flat_tax']);
     expect(defaultTaxDeadlineKinds('non_payer', false)).toEqual(['health', 'social', 'income_tax', 'overviews']);
     expect(defaultTaxDeadlineKinds('non_payer', null)).toEqual(defaultTaxDeadlineKinds('non_payer'));
+    expect(defaultTaxDeadlineKinds('non_payer', true, 'cz')).toEqual(['flat_tax']);
+  });
+
+  it('ignores a leftover paušální režim answer for a Slovak SZČO', () => {
+    const kinds = defaultTaxDeadlineKinds('non_payer', true, 'sk');
+    expect(kinds).toEqual(['health', 'social', 'income_tax', 'overviews']);
+    // After the SK filter the advances are still there.
+    const sk = profile({ country: 'SK', vatStatus: 'non_payer', flatTax: true });
+    expect(relevantTaxDeadlineKinds(kinds, sk)).toEqual(['health', 'social', 'income_tax']);
   });
 });
 
