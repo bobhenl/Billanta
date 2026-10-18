@@ -8,7 +8,7 @@ import { drizzleTx } from "../db/drizzle-tx";
 import { emailLocaleOf } from "../email/email-render";
 import { EmailOutboxService } from "../email/email-outbox.service";
 import { emailTypesView, type EmailTypeInfo } from "../email/email-types";
-import { EmailService } from "../email/email.service";
+import { EmailService, type BillingNoticeDetail, type EmailAttachment } from "../email/email.service";
 import {
   NOTIFICATION_EVENTS,
   mergeNotificationPrefs,
@@ -168,7 +168,11 @@ export class NotificationsService {
    * who are the ones who can pay, plus a transactional e-mail via the outbox.
    * Not tied to notification preferences, like security alerts.
    */
-  async deliverBilling(tenantId: string, payload: NotificationPayload): Promise<number> {
+  async deliverBilling(
+    tenantId: string,
+    payload: NotificationPayload,
+    email: { lang?: string; details?: BillingNoticeDetail[]; attachments?: EmailAttachment[]; idempotencyKey?: string } = {},
+  ): Promise<number> {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
     let members: { userId: string; email: string | null }[] = [];
     await this.dbService.sql.begin(async (tx) => {
@@ -182,8 +186,17 @@ export class NotificationsService {
       for (const m of members) {
         if (!m.email) continue;
         await this.emailService.sendBillingNoticeEmail(
-          { to: m.email, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null },
-          { tenantId, db, userId: m.userId },
+          {
+            to: m.email,
+            title: payload.title,
+            body: payload.body,
+            url: payload.link ? `${siteUrl}${payload.link}` : null,
+            lang: email.lang,
+            details: email.details,
+            attachments: email.attachments,
+          },
+          // Per member, so a re-run of the same reminder queues nothing twice.
+          { tenantId, db, userId: m.userId, ...(email.idempotencyKey ? { idempotencyKey: `${email.idempotencyKey}:${m.userId}` } : {}) },
         );
       }
       if (members.length) {

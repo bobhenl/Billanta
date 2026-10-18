@@ -198,10 +198,32 @@ export class EmailService {
     );
   }
 
-  /** Trial ending, plan paid: to owners and admins, transactional like a security alert. */
-  async sendBillingNoticeEmail(params: { to: string; title: string; body?: string | null; url?: string | null }, queue: EmailQueueOptions) {
+  /**
+   * Trial ending, plan paid, prepaid period ending: to owners and admins,
+   * transactional like a security alert. `details` is a label/value table
+   * (payment details for a renewal proforma), `attachments` its QR code.
+   */
+  async sendBillingNoticeEmail(
+    params: {
+      to: string;
+      title: string;
+      body?: string | null;
+      url?: string | null;
+      lang?: string;
+      details?: BillingNoticeDetail[];
+      attachments?: EmailAttachment[];
+    },
+    queue: EmailQueueOptions,
+  ) {
     await this.queue(
-      { kind: "billing_notice", category: "transactional", to: params.to, subject: params.title, html: simpleMessageHtml(params) },
+      {
+        kind: "billing_notice",
+        category: "transactional",
+        to: params.to,
+        subject: params.title,
+        html: simpleMessageHtml(params),
+        ...(params.attachments?.length ? { attachments: params.attachments } : {}),
+      },
       queue,
     );
   }
@@ -314,12 +336,27 @@ function sendOptions(c: SendOptions | undefined): Pick<OutgoingEmail, "fromName"
   return { fromName: c?.fromName ?? null, replyTo: c?.replyTo ?? null, bcc: c?.bcc ?? null, attachments: c?.attachments };
 }
 
-function simpleMessageHtml(params: { title: string; body?: string | null; url?: string | null }): string {
-  return `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
+export interface BillingNoticeDetail {
+  label: string;
+  value: string;
+}
+
+const OPEN_IN_APP: Record<string, string> = { cs: "Otevřít v Billantě", sk: "Otvoriť v Billante", en: "Open in Billanta" };
+
+function simpleMessageHtml(params: { title: string; body?: string | null; url?: string | null; lang?: string; details?: BillingNoticeDetail[] }): string {
+  const lang = params.lang === "sk" || params.lang === "en" ? params.lang : "cs";
+  const rows = (params.details ?? [])
+    .map(
+      (d) =>
+        `<tr><td style="color:#6b7280;padding:4px 16px 4px 0;vertical-align:top;">${escapeHtml(d.label)}</td><td style="color:#111;padding:4px 0;font-weight:bold;">${escapeHtml(d.value)}</td></tr>`,
+    )
+    .join("");
+  return `<!doctype html><html lang="${lang}"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
       <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;">
         <h1 style="font-size:18px;margin:0 0 12px;color:#111;">${escapeHtml(params.title)}</h1>
         ${params.body ? `<p style="color:#374151;line-height:1.5;margin:0 0 20px;">${escapeHtml(params.body)}</p>` : ""}
-        ${params.url ? `<p><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:14px;">Otevřít v Billantě</a></p>` : ""}
+        ${rows ? `<table style="font-size:14px;border-collapse:collapse;margin:0 0 20px;">${rows}</table>` : ""}
+        ${params.url ? `<p><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:14px;">${OPEN_IN_APP[lang]}</a></p>` : ""}
       </div></body></html>`;
 }
 

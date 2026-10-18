@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Building2, CreditCard, ExternalLink, Loader2 } from 'lucide-react';
+import { Building2, CreditCard, ExternalLink, Loader2, Repeat, RotateCcw } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import type { PaidPlanKey, PlanSummary } from '@/lib/plan';
 import { cn } from '@/lib/utils';
-import { openPortal, requestBankTransfer, startCheckout } from './actions';
+import { cancelSubscription, openPortal, requestBankTransfer, resumeSubscription, startCheckout, switchInterval, type SubscriptionInfo } from './actions';
 
 type Currency = 'CZK' | 'EUR';
 type Interval = 'month' | 'year';
@@ -38,8 +38,14 @@ interface Proforma {
 export interface BillingStatus {
   plan: PlanSummary;
   subscriptionInterval: Interval | null;
+  /** Set while a card subscription is the company's plan. */
+  subscription: SubscriptionInfo | null;
   hasStripeCustomer: boolean;
+  /** Card subscription prices, the headline. */
   prices: Record<PaidPlanKey, Record<Currency, { monthly: number; yearly: number }>>;
+  /** The same per month when paid by bank transfer, with the surcharge. */
+  transferPrices: Record<PaidPlanKey, Record<Currency, { monthly: number; yearly: number }>>;
+  transferSurchargePercent: number;
   card: { enabled: boolean };
   bankTransfer:
     | {
@@ -71,6 +77,16 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
   const subscribed = plan.source === 'subscription';
   // Proformas are in CZK only; the interval toggle picks a month or a year up front.
   const transferOk = status.bankTransfer.enabled && currency === 'CZK';
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const sub = subscribed ? status.subscription : null;
+  const subPlan = plan.paidPlan && plan.paidPlan !== 'free' ? plan.paidPlan : null;
+  const subInterval = sub?.interval ?? status.subscriptionInterval;
+  const otherInterval: Interval | null = subInterval === 'month' ? 'year' : subInterval === 'year' ? 'month' : null;
+  const subCurrency: Currency = sub?.currency ?? 'CZK';
+  const switchPrice =
+    subPlan && otherInterval
+      ? money(otherInterval === 'year' ? status.prices[subPlan][subCurrency].yearly : status.prices[subPlan][subCurrency].monthly, subCurrency)
+      : '';
 
   const fail = (code: string) => {
     const key = `errors.${code}`;
@@ -114,16 +130,87 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
         {plan.subscriptionStatus === 'past_due' && plan.source === 'subscription' && (
           <p className="mt-2 text-sm font-semibold text-warning">{t('current.pastDue')}</p>
         )}
+        {sub && sub.cancelAt && <p className="mt-2 text-sm font-semibold text-warning">{t('sub.endsOn', { date: day(sub.cancelAt) })}</p>}
+        {sub && !sub.cancelAt && sub.periodEnd && <p className="mt-2 text-sm text-muted-foreground">{t('sub.renewsOn', { date: day(sub.periodEnd) })}</p>}
+
+        {sub && !readOnly && (
+          <div className="mt-3 flex flex-col gap-3">
+            {otherInterval && plan.subscriptionStatus !== 'past_due' && !sub.cancelAt && (
+              <div>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() =>
+                    act('interval', () => switchInterval(otherInterval), () =>
+                      toast({ text: t('sub.switched', { interval: otherInterval }), tone: 'ok' })
+                    )
+                  }
+                  className={buttonClass.secondary}
+                >
+                  {busy === 'interval' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Repeat className="h-4 w-4" aria-hidden="true" />}
+                  {t(otherInterval === 'year' ? 'sub.switchToYear' : 'sub.switchToMonth', { price: switchPrice })}
+                </button>
+                <p className="mt-1 text-xs text-muted-foreground">{t('sub.switchNote')}</p>
+              </div>
+            )}
+            {sub.cancelAt ? (
+              <div>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => act('resume', resumeSubscription, () => toast({ text: t('sub.resumed'), tone: 'ok' }))}
+                  className={buttonClass.primary}
+                >
+                  {busy === 'resume' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <RotateCcw className="h-4 w-4" aria-hidden="true" />}
+                  {t('sub.resume')}
+                </button>
+              </div>
+            ) : confirmCancel ? (
+              <div className="rounded-lg border border-border p-3 text-sm">
+                <p>{sub.periodEnd ? t('sub.cancelConfirm', { date: day(sub.periodEnd) }) : t('sub.cancelConfirmNoDate')}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={pending}
+                    onClick={() =>
+                      act('cancel', cancelSubscription, () => {
+                        setConfirmCancel(false);
+                        toast({ text: t('sub.canceled'), tone: 'ok' });
+                      })
+                    }
+                    className={buttonClass.danger}
+                  >
+                    {busy === 'cancel' && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+                    {t('sub.cancelYes')}
+                  </button>
+                  <button type="button" disabled={pending} onClick={() => setConfirmCancel(false)} className={buttonClass.ghost}>
+                    {t('sub.keep')}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <button type="button" disabled={pending} onClick={() => setConfirmCancel(true)} className={buttonClass.ghost}>
+                  {t('sub.cancel')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {status.hasStripeCustomer && (
-          <button
-            type="button"
-            disabled={readOnly || pending}
-            onClick={() => act('portal', openPortal)}
-            className={cn(buttonClass.secondary, 'mt-3')}
-          >
-            {busy === 'portal' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ExternalLink className="h-4 w-4" aria-hidden="true" />}
-            {t('portal')}
-          </button>
+          <div className="mt-3">
+            <button
+              type="button"
+              disabled={readOnly || pending}
+              onClick={() => act('portal', openPortal)}
+              className={buttonClass.secondary}
+            >
+              {busy === 'portal' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ExternalLink className="h-4 w-4" aria-hidden="true" />}
+              {t('portal')}
+            </button>
+            <p className="mt-1 text-xs text-muted-foreground">{t('portalHint')}</p>
+          </div>
         )}
       </section>
 
@@ -151,11 +238,32 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
             </div>
           </div>
 
+          <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+            <p className="flex items-start gap-2 rounded-lg bg-primary/[0.06] p-2.5">
+              <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <span>
+                <span className="block font-semibold">{t('choose.cardTitle')}</span>
+                <span className="text-xs text-muted-foreground">{t('choose.cardBody')}</span>
+              </span>
+            </p>
+            {status.bankTransfer.enabled && (
+              <p className="flex items-start gap-2 rounded-lg border border-border p-2.5">
+                <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                <span>
+                  <span className="block font-semibold">{t('choose.transferTitle')}</span>
+                  <span className="text-xs text-muted-foreground">{t('choose.transferBody', { percent: status.transferSurchargePercent })}</span>
+                </span>
+              </p>
+            )}
+          </div>
+
           <ul className="mt-4 grid gap-3 sm:grid-cols-3">
             {PAID.map((key) => {
               const price = status.prices[key][currency];
               const perMonth = interval === 'year' ? price.yearly : price.monthly;
               const total = interval === 'year' ? price.yearly * 12 : price.monthly;
+              const tPrice = status.transferPrices[key][currency];
+              const tTotal = interval === 'year' ? tPrice.yearly * 12 : tPrice.monthly;
               const current = plan.paidPlan === key;
               return (
                 <li key={key} className={cn('flex flex-col rounded-lg border p-3', key === 'plus' ? 'border-primary/50' : 'border-border')}>
@@ -178,6 +286,10 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                       {current ? t('choose.renewCard') : t('choose.payCard')}
                     </button>
                     {transferOk && (
+                      <>
+                      <p className="mt-1 border-t border-border pt-2 text-xs text-muted-foreground">
+                        {t('choose.transferPrice', { price: money(interval === 'year' ? tPrice.yearly : tPrice.monthly, currency), total: money(tTotal, currency) })}
+                      </p>
                       <button
                         type="button"
                         disabled={readOnly || pending}
@@ -189,6 +301,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                         {busy === `bank-${key}` ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Building2 className="h-4 w-4" aria-hidden="true" />}
                         {t('transfer.button')}
                       </button>
+                      </>
                     )}
                   </div>
                 </li>
@@ -202,7 +315,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
             <p>{t('terms.cancel')}</p>
             <p>{t('terms.methods')}</p>
             {status.bankTransfer.enabled && (
-              <p>{t(!transferOk ? 'terms.transferCzkOnly' : interval === 'year' ? 'terms.transfer' : 'terms.transferMonthly')}</p>
+              <p>{t(!transferOk ? 'terms.transferCzkOnly' : interval === 'year' ? 'terms.transfer' : 'terms.transferMonthly', { percent: status.transferSurchargePercent })}</p>
             )}
             <p>{t('terms.vat')}</p>
           </div>

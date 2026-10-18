@@ -11,6 +11,7 @@ import { SubscriptionController } from "./subscription.controller";
 import { SubscriptionService } from "./subscription.service";
 import { SubscriptionEventsRepository } from "./subscription-events.repository";
 import { TenantBillingRepository } from "./tenant-billing.repository";
+import { PrepaidRemindersCron } from "./prepaid-reminders.cron";
 import { TrialRemindersCron } from "./trial-reminders.cron";
 
 @Module({
@@ -25,6 +26,7 @@ import { TrialRemindersCron } from "./trial-reminders.cron";
     AdminBillingService,
     PlatformAdminGuard,
     TrialRemindersCron,
+    PrepaidRemindersCron,
     { provide: STRIPE_CLIENT, useFactory: stripeClientFactory, inject: [ConfigService] },
   ],
   // SubscriptionActiveGuard is also re-provided directly in InvoicesModule

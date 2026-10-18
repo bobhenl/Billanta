@@ -47,14 +47,15 @@ export function platformBillingEntity(env: Record<string, string | undefined> = 
 
 /**
  * What a proforma can prepay. A month costs the monthly price, a year the
- * yearly rate; the `months` CHECK on platform_proformas (0051) allows these two.
+ * yearly rate, both with the bank-transfer surcharge (`transferPriceMinor`);
+ * the `months` CHECK on platform_proformas (0051) allows these two.
  */
 export const PROFORMA_MONTHS = [1, 12] as const;
 export type ProformaMonths = (typeof PROFORMA_MONTHS)[number];
 
 /** `months` of `plan` in haléře, plus VAT rounded to whole haléře. */
 export function proformaAmounts(plan: PaidPlan, vatRate: number, months: ProformaMonths): { amountMinor: number; totalMinor: number } {
-  const amountMinor = periodPriceMinor(plan, "CZK", months === 12 ? "year" : "month");
+  const amountMinor = periodPriceMinor(plan, "CZK", months === 12 ? "year" : "month", "transfer");
   return { amountMinor, totalMinor: amountMinor + Math.round((amountMinor * vatRate) / 100) };
 }
 

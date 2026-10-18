@@ -80,3 +80,90 @@ export function planPaidMessage(locale: string | null | undefined, plan: PlanKey
     en: { title: `Payment received, ${name} is paid until ${date}`, body: "Thank you for your payment.", link: "/billing" },
   }[lang];
 }
+
+/** What the prepaid-period reminder needs to know about the renewal proforma. */
+export interface RenewalProforma {
+  number: string;
+  months: number;
+  totalMinor: number;
+  variableSymbol: string;
+  dueDate: string;
+  account: string | null;
+  iban: string;
+}
+
+function dateOf(lang: Lang, iso: string): string {
+  const [y, m, d] = iso.split("-");
+  return lang === "en" ? iso : `${Number(d)}. ${Number(m)}. ${y}`;
+}
+
+function czk(lang: Lang, minor: number): string {
+  const locale = lang === "en" ? "en-GB" : lang === "sk" ? "sk-SK" : "cs-CZ";
+  return new Intl.NumberFormat(locale, { style: "currency", currency: "CZK" }).format(minor / 100);
+}
+
+/** Proformas are for a month or a year (PROFORMA_MONTHS). */
+function periodOf(lang: Lang, months: number): string {
+  if (lang === "en") return months === 12 ? "year" : "month";
+  if (lang === "sk") return months === 12 ? "rok" : "mesiac";
+  return months === 12 ? "rok" : "měsíc";
+}
+
+/**
+ * "Your prepaid plan ends in 14 / 3 days" with the renewal proforma: the
+ * text for the bell and the e-mail, and the payment details table for the
+ * e-mail (the QR code goes along as an attachment).
+ */
+export function prepaidReminderMessage(
+  locale: string | null | undefined,
+  plan: PlanKey,
+  until: string,
+  daysLeft: number,
+  proforma: RenewalProforma,
+) {
+  const lang = langOf(locale);
+  const name = PLAN_NAMES[lang][plan];
+  const date = dateOf(lang, until);
+  const left = days(lang, daysLeft);
+  const period = periodOf(lang, proforma.months);
+  const link = "/billing";
+  const notice = {
+    cs: {
+      title: `Tarif ${name} máte zaplacený do ${date}, zbývá ${left}`,
+      body:
+        `Platba převodem se sama neobnovuje, proto jsme připravili zálohovou fakturu ${proforma.number} na další ${period}. ` +
+        "Zaplatit ji můžete QR kódem z přílohy nebo podle údajů níže. Když platba dorazí před koncem, o žádný den nepřijdete. " +
+        "Pohodlnější a levnější je předplatné kartou, které se obnovuje samo. Zapnete ho v části Tarif a platby.",
+      link,
+    },
+    sk: {
+      title: `Tarif ${name} máte zaplatený do ${date}, zostáva ${left}`,
+      body:
+        `Platba prevodom sa sama neobnovuje, preto sme pripravili zálohovú faktúru ${proforma.number} na ďalší ${period}. ` +
+        "Zaplatiť ju môžete QR kódom z prílohy alebo podľa údajov nižšie. Ak platba príde pred koncom, o žiadny deň neprídete. " +
+        "Pohodlnejšie a lacnejšie je predplatné kartou, ktoré sa obnovuje samo. Zapnete ho v časti Tarif a platby.",
+      link,
+    },
+    en: {
+      title: `Your ${name} plan is paid until ${date}, ${left} left`,
+      body:
+        `A bank transfer doesn't renew by itself, so we've issued proforma ${proforma.number} for another ${period}. ` +
+        "Pay it with the attached QR code or the details below. If the payment arrives before the end, you don't lose a day. " +
+        "A card subscription is easier and cheaper, and it renews by itself. You can switch to it under Billing.",
+      link,
+    },
+  }[lang];
+  const labels = {
+    cs: { amount: "Částka", vs: "Variabilní symbol", account: "Číslo účtu", due: "Splatnost" },
+    sk: { amount: "Suma", vs: "Variabilný symbol", account: "Číslo účtu", due: "Splatnosť" },
+    en: { amount: "Amount", vs: "Variable symbol", account: "Account number", due: "Due date" },
+  }[lang];
+  const details = [
+    { label: labels.amount, value: czk(lang, proforma.totalMinor) },
+    { label: labels.vs, value: proforma.variableSymbol },
+    ...(proforma.account ? [{ label: labels.account, value: proforma.account }] : []),
+    { label: "IBAN", value: proforma.iban },
+    { label: labels.due, value: dateOf(lang, proforma.dueDate) },
+  ];
+  return { notice, details, lang };
+}

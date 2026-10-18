@@ -14,6 +14,7 @@ import type Stripe from "stripe";
 import { GopayClient, type GopayPaymentStatus } from "./gopay.client";
 import { isPaidPlan } from "./plans";
 import { STRIPE_CLIENT } from "./stripe-client.provider";
+import { stripeSubscriptionDetails } from "./stripe-subscription";
 import { SubscriptionEventsRepository } from "./subscription-events.repository";
 import { TenantBillingRepository, type SubscriptionStatus } from "./tenant-billing.repository";
 
@@ -183,10 +184,15 @@ export class BillingService {
         // Our own Checkout (SubscriptionService) puts the plan in metadata.
         const plan = session.metadata?.plan;
         const interval = session.metadata?.interval;
+        const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
+        const currency = session.currency?.toUpperCase();
         const extra = {
           ...(customerId ? { stripeCustomerId: customerId } : {}),
           ...(isPaidPlan(plan) ? { subscriptionPlan: plan } : {}),
           ...(interval === "month" || interval === "year" ? { subscriptionInterval: interval as "month" | "year" } : {}),
+          // A new subscription starts renewing, whatever an earlier one was set to.
+          ...(subscriptionId ? { stripeSubscriptionId: subscriptionId, subscriptionCancelAt: null } : {}),
+          ...(currency === "CZK" || currency === "EUR" ? { subscriptionCurrency: currency as "CZK" | "EUR" } : {}),
         };
         await this.tenantBilling.updateSubscriptionStatus(tenantId, "active", Object.keys(extra).length ? extra : undefined);
         return;
@@ -194,15 +200,18 @@ export class BillingService {
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
         const plan = subscription.metadata?.plan;
-        await this.tenantBilling.updateSubscriptionStatus(
-          tenantId,
-          mapStripeSubscriptionStatus(subscription.status),
-          isPaidPlan(plan) ? { subscriptionPlan: plan } : undefined,
-        );
+        // Period end, cancel-at-period-end and interval, so the billing panel
+        // reflects a change made in the Customer Portal too.
+        const { subscriptionInterval, ...details } = stripeSubscriptionDetails(subscription);
+        await this.tenantBilling.updateSubscriptionStatus(tenantId, mapStripeSubscriptionStatus(subscription.status), {
+          ...(isPaidPlan(plan) ? { subscriptionPlan: plan } : {}),
+          ...(subscriptionInterval ? { subscriptionInterval } : {}),
+          ...details,
+        });
         return;
       }
       case "customer.subscription.deleted": {
-        await this.tenantBilling.updateSubscriptionStatus(tenantId, "canceled");
+        await this.tenantBilling.updateSubscriptionStatus(tenantId, "canceled", { stripeSubscriptionId: null, subscriptionCancelAt: null });
         return;
       }
       case "invoice.payment_failed": {

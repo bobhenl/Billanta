@@ -265,6 +265,17 @@ export const tenants = pgTable("tenants", {
   // Plan and interval of the Stripe subscription, from the Checkout metadata.
   subscriptionPlan: varchar("subscription_plan", { length: 16 }),
   subscriptionInterval: varchar("subscription_interval", { length: 8 }).$type<"month" | "year">(),
+  // The live Stripe subscription as the billing panel shows it (0063): written by
+  // the webhook and after a change from the panel. cancel_at is set while the
+  // subscription is due to end instead of renewing.
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionCurrency: varchar("subscription_currency", { length: 3 }).$type<"CZK" | "EUR">(),
+  subscriptionPeriodEnd: timestamp("subscription_period_end", { withTimezone: true }),
+  subscriptionCancelAt: timestamp("subscription_cancel_at", { withTimezone: true }),
+  // "Prepaid period ends in 14 / 3 days" (0063, PrepaidRemindersCron): the
+  // smallest stage sent, valid only for the prepaid_until it was sent for.
+  prepaidReminderUntil: date("prepaid_reminder_until"),
+  prepaidRemindedDays: integer("prepaid_reminded_days"),
   // Fields a customer must fill in on a buyer-details link (0054): email, phone, ico, dic.
   // A link can carry its own list (invoices.buyer_details_required); this is the default.
   buyerDetailsRequired: text("buyer_details_required").array().notNull().default(sql`'{email,ico}'::text[]`),

@@ -7,6 +7,15 @@ import { REFERRAL_REWARDS } from "../referrals/rewards";
 
 export type SubscriptionStatus = (typeof schema.subscriptionStatusEnum.enumValues)[number];
 
+/** The live Stripe subscription as `tenants` keeps it for the billing panel (0063). */
+export interface SubscriptionDetails {
+  stripeSubscriptionId: string | null;
+  subscriptionCurrency: "CZK" | "EUR" | null;
+  subscriptionPeriodEnd: Date | null;
+  subscriptionCancelAt: Date | null;
+}
+const DETAIL_KEYS = ["stripeSubscriptionId", "subscriptionCurrency", "subscriptionPeriodEnd", "subscriptionCancelAt"] as const;
+
 /**
  * Billing-side reads/writes against `tenants`. Split out of
  * `BillingService` so the service's event-handling control flow can be
@@ -76,8 +85,10 @@ export class TenantBillingRepository {
   async updateSubscriptionStatus(
     tenantId: string,
     status: SubscriptionStatus,
-    extra?: { stripeCustomerId?: string; gopayPayerId?: string; subscriptionPlan?: string; subscriptionInterval?: "month" | "year" },
+    extra?: { stripeCustomerId?: string; gopayPayerId?: string; subscriptionPlan?: string; subscriptionInterval?: "month" | "year" } & Partial<SubscriptionDetails>,
   ): Promise<void> {
+    // Details are copied as given, null included: a cleared cancel_at must reach the row.
+    const details = Object.fromEntries(DETAIL_KEYS.filter((k) => extra?.[k] !== undefined).map((k) => [k, extra![k]]));
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
@@ -89,6 +100,7 @@ export class TenantBillingRepository {
           ...(extra?.gopayPayerId ? { gopayPayerId: extra.gopayPayerId } : {}),
           ...(extra?.subscriptionPlan ? { subscriptionPlan: extra.subscriptionPlan } : {}),
           ...(extra?.subscriptionInterval ? { subscriptionInterval: extra.subscriptionInterval } : {}),
+          ...details,
           updatedAt: new Date(),
         })
         .where(eq(schema.tenants.id, tenantId));

@@ -3191,15 +3191,20 @@
       "billedMonthly": "billed every month",
       "payCard": "Pay by card",
       "renewCard": "Renew by card",
-      "cardUnavailable": "Card payments aren't switched on yet."
+      "cardUnavailable": "Card payments aren't switched on yet.",
+      "cardTitle": "Card subscription – renews automatically, cheaper",
+      "cardBody": "Card, Apple Pay or Google Pay. Renews by itself, and you can cancel it here in one click.",
+      "transferTitle": "Bank transfer – no automatic renewal",
+      "transferBody": "A proforma with a QR code for a month or a year ahead, {percent} % more. We send a reminder before the period ends.",
+      "transferPrice": "By transfer {price} / month ({total})"
     },
     "terms": {
       "renewYearly": "The subscription renews automatically every year at the same price until you cancel it.",
       "renewMonthly": "The subscription renews automatically every month at the same price until you cancel it.",
-      "cancel": "You can cancel at any time in one step in the subscription portal. The plan then runs until the end of the paid period.",
+      "cancel": "You can cancel any time in one step right on this page. The plan then runs until the end of the paid period.",
       "methods": "Pay by card, Apple Pay, Google Pay or any other method the checkout offers you.",
-      "transfer": "A bank transfer pays one year up front and doesn't renew by itself. We switch the plan on as soon as the money arrives.",
-      "transferMonthly": "A bank transfer pays one month at a time. Nothing renews by itself and we don't send a reminder, so pay the next month by hand before the paid period ends.",
+      "transfer": "By bank transfer you pay a year ahead, {percent} % more than by card. Nothing renews by itself: 14 and 3 days before the end we e-mail you a new proforma with a QR code. The plan starts as soon as the payment reaches our account.",
+      "transferMonthly": "By bank transfer you pay a month ahead, {percent} % more than by card. Nothing renews by itself: 14 and 3 days before the end we e-mail you a new proforma with a QR code.",
       "transferCzkOnly": "Bank transfer is available in CZK only.",
       "vat": "Prices exclude VAT."
     },
@@ -3228,11 +3233,32 @@
     "errors": {
       "generic": "Something went wrong. Please try again.",
       "billing_not_configured": "Card payments aren't switched on yet.",
-      "already_subscribed": "The company already has a subscription. Change it in the subscription portal.",
+      "already_subscribed": "The company already has a subscription. You manage it at the top of this page.",
       "no_stripe_customer": "The company has no Stripe subscription yet.",
       "bank_transfer_not_configured": "Bank transfer isn't switched on yet.",
       "too_many_pending_proformas": "You already have three unpaid proformas. Pay one of them, or wait until we match it.",
-      "forbidden": "Only the company's owner or an admin can pay."
+      "forbidden": "Only the company's owner or an admin can pay.",
+      "no_subscription": "The company doesn't have a running card subscription.",
+      "same_interval": "You already pay that way.",
+      "subscription_past_due": "The last payment didn't go through. Change the card in the subscription portal first.",
+      "subscription_not_changeable": "This subscription can't be changed here. Write to us and we'll sort it out."
+    },
+    "portalHint": "In the Stripe portal you can change your card or billing details and download invoices.",
+    "sub": {
+      "renewsOn": "Next payment and renewal on {date}.",
+      "endsOn": "The subscription is cancelled and ends on {date}. The plan keeps running until then.",
+      "cancel": "Cancel subscription",
+      "cancelConfirm": "The subscription won't renew. The plan runs until {date}, then the company moves to the Free plan. Your data stays.",
+      "cancelConfirmNoDate": "The subscription won't renew. The plan runs until the end of the paid period, then the company moves to the Free plan. Your data stays.",
+      "cancelYes": "Yes, cancel",
+      "keep": "Keep subscription",
+      "canceled": "The subscription won't renew. The plan runs until the end of the paid period.",
+      "resume": "Keep my subscription",
+      "resumed": "The subscription will renew again.",
+      "switchToYear": "Switch to yearly billing ({price} / month)",
+      "switchToMonth": "Switch to monthly billing ({price} / month)",
+      "switchNote": "The new period starts right away. We take the unused part of the current one off the first payment.",
+      "switched": "Done, you now pay {interval, select, year {yearly} other {monthly}}."
     }
   },
   "auth": {
@@ -3796,7 +3822,20 @@
       }
     },
     "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
-    "trialNote": "{days, plural, one {# day} other {# days}} free, no card: try the whole Business plan."
+    "trialNote": "{days, plural, one {# day} other {# days}} free, no card: try the whole Business plan.",
+    "methods": {
+      "title": "How to pay",
+      "card": {
+        "title": "Card subscription – renews automatically, cheaper",
+        "body": "The prices above are for a subscription by card, Apple Pay or Google Pay. It renews by itself, you can cancel any time, and the plan runs until the end of the paid period."
+      },
+      "transfer": {
+        "title": "Bank transfer – no automatic renewal",
+        "body": "A month or a year ahead against a proforma with a QR code, {percent} % more, because we pair every payment by hand. Nothing is charged automatically, and we send a reminder with the next proforma before the period ends."
+      }
+    },
+    "transferPrice": "by transfer {price} / month",
+    "transferCzkOnly": "Bank transfer is in Czech koruna only."
   },
   "cookies": {
     "banner": {

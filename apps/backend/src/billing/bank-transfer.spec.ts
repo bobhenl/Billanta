@@ -22,17 +22,18 @@ describe("platformBillingEntity", () => {
 });
 
 describe("proformaAmounts", () => {
-  it("charges a year at the yearly rate, VAT on top", () => {
-    expect(proformaAmounts("plus", 0, 12)).toEqual({ amountMinor: 239 * 12 * 100, totalMinor: 239 * 12 * 100 });
-    // 2868 Kč + 21 % = 3470.28 Kč
-    expect(proformaAmounts("plus", 21, 12)).toEqual({ amountMinor: 286800, totalMinor: 347028 });
+  it("charges a year at the yearly transfer rate, VAT on top", () => {
+    // Card 239 Kč a month on a year, +10 % = 262.90, rounded up to 263 Kč.
+    expect(proformaAmounts("plus", 0, 12)).toEqual({ amountMinor: 263 * 12 * 100, totalMinor: 263 * 12 * 100 });
+    // 3156 Kč + 21 % = 3818.76 Kč
+    expect(proformaAmounts("plus", 21, 12)).toEqual({ amountMinor: 315600, totalMinor: 381876 });
   });
 
-  it("charges a month at the monthly price, VAT on top", () => {
-    expect(proformaAmounts("plus", 0, 1)).toEqual({ amountMinor: 28900, totalMinor: 28900 });
-    // 149 Kč + 21 % = 180.29 Kč
-    expect(proformaAmounts("start", 21, 1)).toEqual({ amountMinor: 14900, totalMinor: 18029 });
-    expect(proformaAmounts("business", 0, 1).amountMinor).toBe(57900);
+  it("charges a month at the monthly transfer price, VAT on top", () => {
+    expect(proformaAmounts("plus", 0, 1)).toEqual({ amountMinor: 31800, totalMinor: 31800 });
+    // 164 Kč + 21 % = 198.44 Kč
+    expect(proformaAmounts("start", 21, 1)).toEqual({ amountMinor: 16400, totalMinor: 19844 });
+    expect(proformaAmounts("business", 0, 1).amountMinor).toBe(63700);
   });
 });
 

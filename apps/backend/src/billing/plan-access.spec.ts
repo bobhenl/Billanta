@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { daysLeft, planAllows, planSummary, trialReminderDue, type TenantPlanFields } from "./plan-access";
+import { daysLeft, planAllows, planSummary, prepaidReminderDue, trialReminderDue, type TenantPlanFields } from "./plan-access";
 import { periodPriceMinor } from "./plans";
 
 const NOW = new Date("2026-10-17T09:00:00Z");
@@ -104,5 +104,36 @@ describe("periodPriceMinor", () => {
   it("charges twelve months at the yearly rate", () => {
     expect(periodPriceMinor("business", "CZK", "year")).toBe(479 * 12 * 100);
     expect(periodPriceMinor("start", "EUR", "month")).toBe(599);
+  });
+});
+
+describe("prepaidReminderDue", () => {
+  const none = { until: null, days: null };
+  const period = (prepaidUntil: string | null, subscriptionLive = false) => ({ prepaidUntil, subscriptionLive });
+
+  it("is quiet more than 14 days out, then sends 14 and 3", () => {
+    expect(prepaidReminderDue(period("2026-11-01"), none, "2026-10-17")).toBeNull(); // 15 days
+    expect(prepaidReminderDue(period("2026-11-01"), none, "2026-10-18")).toBe(14);
+    expect(prepaidReminderDue(period("2026-11-01"), { until: "2026-11-01", days: 14 }, "2026-10-25")).toBeNull();
+    expect(prepaidReminderDue(period("2026-11-01"), { until: "2026-11-01", days: 14 }, "2026-10-29")).toBe(3);
+    expect(prepaidReminderDue(period("2026-11-01"), { until: "2026-11-01", days: 3 }, "2026-10-31")).toBeNull();
+  });
+
+  it("sends the 3-day one to a company that missed the 14-day one", () => {
+    expect(prepaidReminderDue(period("2026-11-01"), none, "2026-10-30")).toBe(3);
+  });
+
+  it("starts afresh once a payment moves the end date", () => {
+    expect(prepaidReminderDue(period("2026-12-01"), { until: "2026-11-01", days: 3 }, "2026-11-20")).toBe(14);
+  });
+
+  it("skips a lapsed period, no period and a live card subscription", () => {
+    expect(prepaidReminderDue(period("2026-10-16"), none, "2026-10-17")).toBeNull();
+    expect(prepaidReminderDue(period(null), none, "2026-10-17")).toBeNull();
+    expect(prepaidReminderDue(period("2026-10-20", true), none, "2026-10-17")).toBeNull();
+  });
+
+  it("still reminds on the last paid day", () => {
+    expect(prepaidReminderDue(period("2026-10-17"), { until: "2026-10-17", days: 14 }, "2026-10-17")).toBe(3);
   });
 });
