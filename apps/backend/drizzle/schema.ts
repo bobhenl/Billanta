@@ -1237,7 +1237,10 @@ export type OutboxItem = { kind: string; title: string; body?: string | null; ur
 
 export const emailOutbox = pgTable("email_outbox", {
   id: uuid("id").primaryKey().defaultRandom(),
-  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  // Null = an account e-mail (password reset, e-mail change) queued by the
+  // frontend through enqueue_account_email (migration 0059). No tenant
+  // context can see those rows.
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
   // The member it goes to (notifications, digest); null for customers and invitees.
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   kind: varchar("kind", { length: 40 }).notNull(),
@@ -1261,6 +1264,8 @@ export const emailOutbox = pgTable("email_outbox", {
   attempts: integer("attempts").notNull().default(0),
   maxAttempts: integer("max_attempts").notNull().default(6),
   sendAfter: timestamp("send_after", { withTimezone: true }).notNull().defaultNow(),
+  // The worker drops a queued row past this (its link has expired).
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
   lockedUntil: timestamp("locked_until", { withTimezone: true }),
   lastError: text("last_error"),
   providerMessageId: varchar("provider_message_id", { length: 100 }),

@@ -363,6 +363,14 @@ runs every minute and claims due rows through the SECURITY DEFINER
 `claim_email_outbox()`, so one worker sees every tenant without bypassing
 RLS for anything else.
 
+- **Account e-mails** (password reset, sign-in e-mail change) are queued by
+  the frontend through the SECURITY DEFINER `enqueue_account_email()`
+  (migration `0059_account_email_outbox.sql`). They have no tenant
+  (`tenant_id` NULL, invisible to every tenant context), are always
+  transactional, are claimed before tenant mail, and die as `expired` once
+  `expires_at` (the link's lifetime) has passed. The daily sending caps in
+  `src/abuse/` limit a company's mail to its customers and do not apply.
+
 - **Retries**: 429, 5xx and network errors retry with backoff (1 min
   doubling, 6 h cap, jitter) up to `EMAIL_MAX_ATTEMPTS`; other 4xx go
   straight to `dead`. Rows older than `EMAIL_OUTBOX_MAX_AGE_HOURS` are

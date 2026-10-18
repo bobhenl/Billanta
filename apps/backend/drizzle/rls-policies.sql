@@ -1549,7 +1549,9 @@ GRANT EXECUTE ON FUNCTION get_profile_message_target(text) TO faktur_app;
 -- worker uses claim_email_outbox / finish_email_outbox, the Resend webhook
 -- record_email_event, and the platform-admin view email_outbox_stats /
 -- email_outbox_recent, all defined in that migration. email_suppressions has
--- RLS on and no policy on purpose.
+-- RLS on and no policy on purpose. Account e-mails (migration 0059) have a
+-- NULL tenant_id, which this policy never matches: they are written only by
+-- enqueue_account_email and read only by the worker's functions.
 -- ---------------------------------------------------------------------------
 ALTER TABLE email_outbox ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_outbox FORCE ROW LEVEL SECURITY;

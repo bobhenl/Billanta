@@ -1,53 +1,63 @@
 /**
- * Thin Resend wrapper for the frontend's own transactional email: the
- * "reset your password" link sent by `POST /api/auth/forgot-password`
- * (`app/api/auth/forgot-password/route.ts`).
+ * The frontend's own account e-mails: the password-reset link
+ * (`app/api/auth/forgot-password/route.ts`) and the confirmation of a new
+ * sign-in address (`settings/profile/actions.ts`).
  *
- * Deliberately mirrors `apps/backend/src/email/email.service.ts`'s shape
- * (same `RESEND_API_KEY`/`EMAIL_FROM` env vars — see root `.env.example` —
- * same tolerant-of-missing-key construction, same inline-HTML-no-templating-
- * engine choice for a single simple email) rather than reusing that class
- * directly: the backend is a separate NestJS app/deploy unit with its own
- * `ConfigService`-based DI, and the frontend has no dependency on it. Two
- * small, independently-typed copies of "wrap Resend" is the same tradeoff
- * this codebase already accepted for `lib/auth-schema.ts` duplicating the
- * backend's Auth.js tables — see that file's doc comment.
+ * They are queued in the backend's `email_outbox` and delivered by its
+ * worker, like every other e-mail, so a Resend 429 or 5xx is retried instead
+ * of losing the link. The frontend has no tenant, so it cannot insert into
+ * the tenant-scoped table; it calls the SECURITY DEFINER
+ * `enqueue_account_email` (backend migration 0059) instead. That function
+ * queues the mail as transactional (no batching, no quiet hours), the worker
+ * claims it before tenant mail, and it dies unsent once the link inside has
+ * expired. The daily caps in the backend's `src/abuse/` limit a company's
+ * mail to its customers and do not apply here.
  *
- * Confidence note, same standard as the backend copy: `new Resend(apiKey)`
- * and `resend.emails.send({ from, to, subject, html })` returning
- * `{ data, error }` is the verified `resend` SDK shape (backend already
- * pinned `resend@^6.26.0` against the real published types). No live send
- * against a real Resend account was exercised in this task — see this
- * feature's verification notes.
+ * Without RESEND_API_KEY on the backend the row just waits in the outbox,
+ * so queuing succeeds even where nothing is sent (local dev).
  */
-import { Resend } from 'resend';
+import { sql } from 'drizzle-orm';
+import { db } from './db';
 
-const apiKey = process.env.RESEND_API_KEY;
-const fromAddress = process.env.EMAIL_FROM;
+type AccountEmailKind = 'password_reset' | 'email_change';
 
-const resend = apiKey ? new Resend(apiKey) : null;
+async function enqueueAccountEmail(email: {
+  kind: AccountEmailKind;
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  userId: string | null;
+  validMinutes: number;
+}): Promise<void> {
+  await db.execute(
+    sql`SELECT enqueue_account_email(${email.kind}, ${email.to}, ${email.subject}, ${email.html}, ${email.text}, ${email.userId}::uuid, ${email.validMinutes}::integer)`
+  );
+}
 
 /**
- * Sends the "reset your password" email. Throws if `RESEND_API_KEY`/
- * `EMAIL_FROM` aren't configured or if Resend reports a send failure —
- * callers (the forgot-password route) catch this so a misconfigured Resend
- * setup never leaks into the anti-enumeration-safe HTTP response.
+ * Queues the "reset your password" email. Throws only if the database call
+ * fails; the forgot-password route catches that so the anti-enumeration-safe
+ * response stays the same.
  */
-export async function sendPasswordResetEmail(params: { to: string; resetUrl: string }): Promise<void> {
-  if (!resend || !fromAddress) {
-    throw new Error('Email is not configured — RESEND_API_KEY and EMAIL_FROM must both be set (see .env.example)');
-  }
-
-  const { error } = await resend.emails.send({
-    from: fromAddress,
+export async function sendPasswordResetEmail(params: { to: string; resetUrl: string; userId: string; validMinutes: number }): Promise<void> {
+  await enqueueAccountEmail({
+    kind: 'password_reset',
     to: params.to,
     subject: 'Obnovení hesla / Password reset',
-    html: renderPasswordResetEmailHtml(params.resetUrl)
+    html: renderPasswordResetEmailHtml(params.resetUrl),
+    text: [
+      'Obnovení hesla / Password reset',
+      '',
+      'Nové heslo si nastavíte na tomto odkazu, platí 1 hodinu:',
+      'Set a new password at this link, valid for 1 hour:',
+      params.resetUrl,
+      '',
+      'Pokud jste o obnovení hesla nežádali, e-mail ignorujte. / If you did not request this, ignore this email.'
+    ].join('\n'),
+    userId: params.userId,
+    validMinutes: params.validMinutes
   });
-
-  if (error) {
-    throw new Error(`Resend send failed (${error.name}): ${error.message}`);
-  }
 }
 
 /**
@@ -92,18 +102,26 @@ function renderPasswordResetEmailHtml(resetUrl: string): string {
 }
 
 /**
- * Sends the "confirm your new email address" link (profile → change email).
- * Same throw-if-unconfigured contract as `sendPasswordResetEmail`.
+ * Queues the "confirm your new email address" link (profile → change email).
+ * Throws only if the database call fails.
  */
-export async function sendEmailChangeEmail(params: { to: string; confirmUrl: string }): Promise<void> {
-  if (!resend || !fromAddress) {
-    throw new Error('Email is not configured — RESEND_API_KEY and EMAIL_FROM must both be set (see .env.example)');
-  }
+export async function sendEmailChangeEmail(params: { to: string; confirmUrl: string; userId: string; validMinutes: number }): Promise<void> {
   const url = escapeHtml(params.confirmUrl);
-  const { error } = await resend.emails.send({
-    from: fromAddress,
+  await enqueueAccountEmail({
+    kind: 'email_change',
     to: params.to,
     subject: 'Potvrzení nového e-mailu / Confirm your new email',
+    text: [
+      'Potvrzení nového e-mailu / Confirm your new email',
+      '',
+      'Změnu přihlašovacího e-mailu dokončíte na tomto odkazu, platí 1 hodinu:',
+      'Finish changing your sign-in email at this link, valid for 1 hour:',
+      params.confirmUrl,
+      '',
+      'Pokud jste o změnu nežádali, e-mail ignorujte. / If you did not request this, ignore this email.'
+    ].join('\n'),
+    userId: params.userId,
+    validMinutes: params.validMinutes,
     html: `<!doctype html>
 <html lang="cs">
   <body style="font-family: -apple-system, Helvetica, Arial, sans-serif; background:#f4f5f7; margin:0; padding:24px;">
@@ -130,9 +148,6 @@ export async function sendEmailChangeEmail(params: { to: string; confirmUrl: str
   </body>
 </html>`
   });
-  if (error) {
-    throw new Error(`Resend send failed (${error.name}): ${error.message}`);
-  }
 }
 
 function escapeHtml(value: string): string {
