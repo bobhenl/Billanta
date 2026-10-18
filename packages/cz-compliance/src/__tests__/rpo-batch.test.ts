@@ -51,6 +51,10 @@ describe('rpoBatchEntryOf', () => {
     expect(rpoBatchEntryOf({ ...parseRpoBatchLine(NAYRA)!, termination: '2026-10-17' })).toEqual({ kind: 'remove', rpoId: 520199 });
     expect(rpoBatchEntryOf({ id: 2, fullNames: [{ value: 'Bez IČO' }] })).toEqual({ kind: 'remove', rpoId: 2 });
   });
+
+  it('leaves out subjects whose identifier is not an 8-digit IČO', () => {
+    expect(rpoBatchEntryOf({ id: 3, identifiers: [{ value: '420012345678' }], fullNames: [{ value: 'Organizačná zložka' }] })).toEqual({ kind: 'remove', rpoId: 3 });
+  });
 });
 
 const init = (date: string, n = 2, manifest = true) => [

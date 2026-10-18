@@ -68,7 +68,10 @@ export function parseRpoBatchLine(line: string): RpoBatchRecord | null {
 
 export function rpoBatchEntryOf(r: RpoBatchRecord): RpoBatchEntry {
   const subject = r.termination ? null : mapRpoResult({ ...r, termination: undefined });
-  if (!subject) return { kind: 'remove', rpoId: r.id };
+  // Some subjects (branches, units of public bodies) carry a longer
+  // identifier instead of an IČO. Nobody types those into an invoice and the
+  // column is varchar(8), so they are left out like inactive ones.
+  if (!subject || !/^\d{8}$/.test(subject.ico)) return { kind: 'remove', rpoId: r.id };
   const form = r.legalForms?.find((f) => !f.validTo) ?? r.legalForms?.[r.legalForms.length - 1];
   return {
     kind: 'upsert',
