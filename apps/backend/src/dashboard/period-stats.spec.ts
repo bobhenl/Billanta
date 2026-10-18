@@ -40,6 +40,10 @@ describe("rateTo", () => {
     expect(rateTo("CZK", null, "EUR")).toBeNull();
     expect(rateTo("EUR", 25, "EUR")).toBe(1);
   });
+  it("a Slovak company's EUR report converts at the stored EUR rate", () => {
+    expect(rateTo("CZK", 0.04, "EUR", "EUR")).toBe(0.04);
+    expect(rateTo("USD", 0.9, "CZK", "EUR")).toBeNull();
+  });
 });
 
 describe("periodTotals", () => {

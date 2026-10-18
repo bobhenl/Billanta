@@ -2,7 +2,7 @@
 
 import { Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { VatStatus } from '@faktur/cz-compliance';
+import type { HomeCurrency, VatStatus } from '@faktur/cz-compliance';
 import { InfoHint } from '@/components/info-hint';
 import { inputClass } from '@/components/modal';
 import { cn } from '@/lib/utils';
@@ -29,6 +29,7 @@ export function annualRatesOf(rows: AnnualRateDraft[]): { year: number; currency
  * Settings → Faktury → Kurz pro cizí měny. "Netisknout" is only for a
  * company that is not a VAT payer; the backend ignores it for a payer anyway
  * (invoices/exchange-rate-mode.ts), here it is disabled with the reason.
+ * A Slovak company (home EUR) gets the ECB rate and no annual option.
  */
 export function ExchangeRateSettings({
   mode,
@@ -36,6 +37,7 @@ export function ExchangeRateSettings({
   rates,
   onRatesChange,
   vatStatus,
+  home = 'CZK',
   readOnly,
   className
 }: {
@@ -44,22 +46,32 @@ export function ExchangeRateSettings({
   rates: AnnualRateDraft[];
   onRatesChange: (rates: AnnualRateDraft[]) => void;
   vatStatus: VatStatus;
+  home?: HomeCurrency;
   readOnly: boolean;
   className?: string;
 }) {
   const t = useTranslations('settings.invoices.rate');
   const payer = vatStatus === 'payer';
   const duplicate = annualRatesOf(rates) === null;
-  const options: { value: ExchangeRateSetting; disabled: boolean; hint: string }[] = [
-    { value: 'cnb_daily', disabled: false, hint: t('cnbDailyHint') },
-    { value: 'annual', disabled: false, hint: t('annualHint') },
-    { value: 'none', disabled: payer, hint: payer ? t('nonePayer') : vatStatus === 'identified' ? t('noneIdentified') : t('noneHint') }
+  const eur = home === 'EUR';
+  const nonePayer = eur ? t('nonePayerEcb') : t('nonePayer');
+  const options: { value: ExchangeRateSetting; label: string; disabled: boolean; hint: string }[] = [
+    { value: 'cnb_daily', label: eur ? t('modes.ecb_daily') : t('modes.cnb_daily'), disabled: false, hint: eur ? t('ecbDailyHint') : t('cnbDailyHint') },
+    ...(eur ? [] : [{ value: 'annual' as const, label: t('modes.annual'), disabled: false, hint: t('annualHint') }]),
+    {
+      value: 'none',
+      label: t('modes.none', { home }),
+      disabled: payer,
+      hint: payer ? nonePayer : vatStatus === 'identified' ? t('noneIdentified') : eur ? t('noneHintEcb') : t('noneHint')
+    }
   ];
+  // The stored "daily" setting means the official rate of the home country; an annual one does not apply in SK.
+  const shown = eur && mode === 'annual' ? 'cnb_daily' : mode;
   const setRow = (i: number, patch: Partial<AnnualRateDraft>) => onRatesChange(rates.map((r, j) => (j === i ? { ...r, ...patch } : r)));
 
   return (
     <section id="exchange-rate" className={cn(className, 'scroll-mt-20')}>
-      <InfoHint hint={t('hint')}>
+      <InfoHint hint={eur ? t('hintEur') : t('hint')}>
         <h2 className="font-bold">{t('title')}</h2>
       </InfoHint>
       <div role="radiogroup" aria-label={t('title')} className="mt-3 space-y-3">
@@ -69,21 +81,21 @@ export function ExchangeRateSettings({
               type="radio"
               name="exchange-rate-mode"
               value={o.value}
-              checked={mode === o.value}
+              checked={shown === o.value}
               disabled={readOnly || o.disabled}
               onChange={() => onModeChange(o.value)}
               className="mt-0.5 h-4 w-4 accent-primary"
             />
             <span>
-              <span className="font-medium">{t(`modes.${o.value}`)}</span>
+              <span className="font-medium">{o.label}</span>
               <span className="block text-xs text-muted-foreground">{o.hint}</span>
             </span>
           </label>
         ))}
       </div>
-      {payer && mode === 'none' && <p className="mt-2 text-xs text-warning">{t('nonePayer')}</p>}
+      {payer && mode === 'none' && <p className="mt-2 text-xs text-warning">{nonePayer}</p>}
 
-      {mode === 'annual' && (
+      {shown === 'annual' && (
         <div className="mt-4">
           <h3 className="text-sm font-semibold">{t('annualTitle')}</h3>
           {rates.length === 0 && <p className="mt-1 text-xs text-muted-foreground">{t('annualEmpty')}</p>}

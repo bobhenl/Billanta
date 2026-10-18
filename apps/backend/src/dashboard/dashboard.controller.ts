@@ -41,7 +41,7 @@ export class DashboardController {
   @Get("summary")
   @ApiOperation({ summary: "KPIs, 12-month revenue/expense chart, recent, overdue and soon-due documents, top customers, attention counters" })
   async summary(@Req() req: TenantScopedRequest) {
-    const result = await this.dashboardService.summary(req.tenantDb!);
+    const result = await this.dashboardService.summary(req.tenantDb!, req.user!.tenantId);
     // `v1/dashboard` is outside the per-area permissions, so the document
     // lists follow the member's invoice access here. The public link token
     // never goes out: it opens the full invoice without any membership.
@@ -77,7 +77,7 @@ export class DashboardController {
     // At most five years in one report.
     const earliest = new Date(end.getFullYear() - 5, end.getMonth(), end.getDate());
     if (start < earliest) start = earliest;
-    return this.dashboardService.stats(req.tenantDb!, start, end, filters);
+    return this.dashboardService.stats(req.tenantDb!, req.user!.tenantId, start, end, filters);
   }
 
   @Get("config")

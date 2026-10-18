@@ -22,7 +22,8 @@ export type ContactRow = Contact & {
   /** Issued invoices to this customer (null = none yet). */
   stats: {
     count: number;
-    revenueCzk: number;
+    /** Invoiced in the company's own currency (other currencies are not added up). */
+    revenueHome: number;
     unpaid: number;
     lastIssue: string | null;
   } | null;
@@ -42,7 +43,7 @@ function compare(a: Row, b: Row, key: SortKey, locale: string) {
     case 'newest':
       return b.createdAt.localeCompare(a.createdAt);
     case 'revenue':
-      return (b.stats?.revenueCzk ?? -1) - (a.stats?.revenueCzk ?? -1) || byName;
+      return (b.stats?.revenueHome ?? -1) - (a.stats?.revenueHome ?? -1) || byName;
     case 'lastInvoice':
       return (b.stats?.lastIssue ?? '').localeCompare(a.stats?.lastIssue ?? '') || byName;
     case 'unpaid':
@@ -62,9 +63,11 @@ export function ContactsList({
   initial,
   filtered = false,
   startCreating = false,
+  home = 'CZK',
   filters
 }: {
   initial: Row[];
+  home?: string;
   filtered?: boolean;
   startCreating?: boolean;
   /** The server-rendered filter panel, shown under the toolbar. */
@@ -229,7 +232,7 @@ export function ContactsList({
               </div>
               {row.stats && (
                 <div className="hidden shrink-0 text-right text-xs sm:block">
-                  {row.stats.revenueCzk > 0 && <p className="font-semibold tabular-nums">{formatMoney(row.stats.revenueCzk, 'CZK', locale)}</p>}
+                  {row.stats.revenueHome > 0 && <p className="font-semibold tabular-nums">{formatMoney(row.stats.revenueHome, home, locale)}</p>}
                   <p className="text-muted-foreground">
                     {t('stats.invoices', { count: row.stats.count })}
                     {row.stats.lastIssue && ` · ${formatDate(row.stats.lastIssue, locale)}`}

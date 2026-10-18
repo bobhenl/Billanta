@@ -438,10 +438,10 @@
   },
   "invoices": {
     "hover": {
-      "fx": "≈ {amount} (kurz ČNB {rate} zo dňa {date})",
-      "fxNoDate": "≈ {amount} (kurz ČNB {rate})",
-      "fxAnnual": "≈ {amount} (jednotný kurz {rate} pre rok {year})",
-      "fxManual": "≈ {amount} (kurz {rate})",
+      "fx": "≈ {amount} (kurz {source} {rate} {pair} zo dňa {date})",
+      "fxNoDate": "≈ {amount} (kurz {source} {rate} {pair})",
+      "fxAnnual": "≈ {amount} (jednotný kurz {rate} {pair} pre rok {year})",
+      "fxManual": "≈ {amount} (kurz {rate} {pair})",
       "breakdown": "Základ {base} + DPH {vat}",
       "loading": "Načítavam…",
       "error": "Súhrn sa nepodarilo načítať.",
@@ -901,8 +901,8 @@
     "kpi": {
       "toReview": "Na spárovanie",
       "matched": "Spárované",
-      "incoming": "Prichádzajúce (CZK)",
-      "outgoing": "Odchádzajúce (CZK)"
+      "incoming": "Prichádzajúce ({currency})",
+      "outgoing": "Odchádzajúce ({currency})"
     },
     "detail": {
       "title": "Banková transakcia",
@@ -1855,7 +1855,7 @@
       "files": {
         "invoices": {
           "title": "Vydané faktúry (CSV)",
-          "hint": "Všetky vystavené doklady so základom a DPH podľa sadzieb, kurzom ČNB a sumou v CZK. Pre Excel aj účtovný softvér."
+          "hint": "Všetky vystavené doklady so základom a DPH podľa sadzieb, kurzom {source} a sumou v {home}. Pre Excel aj účtovný softvér."
         },
         "expenses": {
           "title": "Náklady (CSV)",
@@ -1959,7 +1959,7 @@
         "balance": "Nedoplatok (+) / preplatok (−)",
         "nextAdvance": "Nový mesačný preddavok",
         "total": "Spolu daň + poistenie",
-        "missingRates": "{count, plural, one {# doklad} few {# doklady} other {# dokladov}} v cudzej mene bez kurzu ČNB – nezapočítané.",
+        "missingRates": "{count, plural, one {# doklad} few {# doklady} other {# dokladov}} v cudzej mene bez kurzu {source} – nezapočítané.",
         "paramsFallback": "Pre tento rok nemáme parametre, použité hodnoty roku {year}.",
         "downloadCsv": "Stiahnuť CSV",
         "epoLink": "Formuláre EPO (Finanční správa)",
@@ -2044,7 +2044,8 @@
         "modes": {
           "cnb_daily": "Denný kurz ČNB",
           "annual": "Jednotný kurz na rok",
-          "none": "Prepočet na CZK netlačiť"
+          "none": "Prepočet na {home} netlačiť",
+          "ecb_daily": "Denný kurz ECB"
         },
         "cnbDailyHint": "Kurz ČNB zo dňa uskutočnenia plnenia (DUZP). Keď ČNB v ten deň kurz nevyhlásila, použije sa posledný predchádzajúci.",
         "annualHint": "Jeden kurz na celý rok podľa § 38 zákona o DPH. Zadáte ho nižšie pre každý rok a menu. Pre rok bez zadaného kurzu sa použije denný kurz ČNB.",
@@ -2059,7 +2060,11 @@
         "perUnit": "CZK za 1 {currency}",
         "remove": "Odobrať kurz",
         "duplicate": "Každý rok a mena môžu byť v zozname len raz.",
-        "add": "Pridať kurz"
+        "add": "Pridať kurz",
+        "hintEur": "Ako sa suma v cudzej mene prepočíta na eurá. Kurz sa uloží k dokladu pri vystavení a potom sa už nemení.",
+        "ecbDailyHint": "Referenčný kurz ECB zo dňa, ktorý predchádza dňu vzniku daňovej povinnosti (§ 26 ods. 1 zákona o DPH). Jednotný ročný kurz slovenský zákon nepozná.",
+        "noneHintEcb": "Na doklade nebude prepočet na eurá. Kurz ECB sa aj tak uloží pre vaše prehľady.",
+        "nonePayerEcb": "Platiteľ DPH musí mať na faktúre uvedenú DPH v eurách (§ 74 ods. 1 písm. i zákona o DPH), preto túto voľbu nemožno použiť. Faktúry sa vystavia s kurzom ECB."
       },
       "groups": {
         "items": "Položky",
@@ -3628,11 +3633,11 @@
       "ks": "Konštantný s.",
       "ss": "Špecifický s.",
       "more": "Konštantný / špecifický symbol, objednávka",
-      "exchangeRate": "Kurz CZK/{currency}",
-      "exchangeRateAuto": "Kurz ČNB pri vystavení",
+      "exchangeRate": "Kurz {pair}",
+      "exchangeRateAuto": "Kurz {source} pri vystavení",
       "exchangeRateAnnual": "Jednotný kurz {rate} (rok {year})",
-      "exchangeRateLoad": "Načítať z ČNB",
-      "exchangeRateFailed": "Kurz ČNB sa nepodarilo načítať.",
+      "exchangeRateLoad": "Načítať z {source}",
+      "exchangeRateFailed": "Kurz {source} sa nepodarilo načítať.",
       "inCzk": "≈ {amount} spolu",
       "bankAccount": "Účet na platbu",
       "bankAccountAuto": "Automaticky ({account})",
@@ -3911,12 +3916,12 @@
       "partial": "Čiastočná úhrada zaznamenaná.",
       "rotated": "Nový odkaz vydaný, starý už nefunguje"
     },
-    "fxLine": "{label} {rate} CZK/{currency} · DPH {vat} · spolu {total}",
+    "fxLine": "{label} {rate} {pair} · DPH {vat} · spolu {total}",
     "fxLabel": "Kurz ČNB",
     "fxLabelOn": "Kurz ČNB k {date}",
     "fxLabelAnnual": "Jednotný kurz pre rok {year}",
     "fxLabelManual": "Kurz",
-    "fxHidden": "Prepočet na CZK sa na doklade netlačí (kurz {rate} CZK/{currency} len pre prehľady).",
+    "fxHidden": "Prepočet na {home} sa na doklade netlačí (kurz {rate} {pair} len pre prehľady).",
     "views": {
       "title": "Zdieľaný odkaz",
       "count": "Zobrazené",
@@ -4108,13 +4113,13 @@
       "toggle": "Poplatky a kurz (PayPal, Stripe, Wise…)",
       "hint": "Nepovinné. Z poplatkov a skutočne pripísanej sumy vypočítame čistý výnos a kurzový rozdiel.",
       "fee": "Poplatok poskytovateľa ({currency})",
-      "received": "Pripísané na účet (CZK)",
+      "received": "Pripísané na účet ({home})",
       "title": "Čistý výnos platby",
-      "gross": "Prijaté (kurz ČNB faktúry)",
+      "gross": "Prijaté (kurz faktúry)",
       "fees": "Poplatky",
       "fx": "Kurzový rozdiel",
       "net": "Čistý výnos",
-      "noReceived": "Zadajte pripísanú sumu v CZK, aby sme vypočítali aj kurzový rozdiel."
+      "noReceived": "Zadajte pripísanú sumu v {home}, aby sme vypočítali aj kurzový rozdiel."
     },
     "history": "História zmien",
     "correction": {
@@ -4123,7 +4128,8 @@
       "send": "Poslať opravenú verziu",
       "sendBody": "Odberateľ dostane e-mail s predmetom „Opravená faktúra“ a vysvetlením, že nahrádza predchádzajúcu verziu. Odoslanie sa zapíše do histórie zmien.",
       "editNote": "Túto faktúru ste odberateľovi už poslali ({date}). Po úprave vám na detaile ponúkneme poslať mu opravenú verziu."
-    }
+    },
+    "fxLabelEcbOn": "Kurz ECB k {date}"
   },
   "invite": {
     "title": "Pozvánka do tímu",
@@ -5733,7 +5739,7 @@
     "exportHint": "Zoznam dokladov podľa zvoleného obdobia a filtrov, pre Excel. Obdobie sa riadi dátumom dodania.",
     "docCount": "{count, plural, one {# doklad} few {# doklady} other {# dokladov}}",
     "inCurrency": "Sumy sú v {currency}, bez prepočtu.",
-    "converted": "{count, plural, one {# doklad v cudzej mene je prepočítaný} few {# doklady v cudzej mene sú prepočítané} other {# dokladov v cudzej mene je prepočítaných}} na CZK kurzom uloženým na doklade.",
+    "converted": "{count, plural, one {# doklad v cudzej mene je prepočítaný} few {# doklady v cudzej mene sú prepočítané} other {# dokladov v cudzej mene je prepočítaných}} na {home} kurzom uloženým na doklade.",
     "missingRate": "{count, plural, one {# doklad v cudzej mene nemá uložený kurz, preto nie je započítaný.} few {# doklady v cudzej mene nemajú uložený kurz, preto nie sú započítané.} other {# dokladov v cudzej mene nemá uložený kurz, preto nie sú započítané.}}",
     "expensesUnfiltered": "Náklady filtrujeme len podľa meny, ostatné filtre sa ich netýkajú.",
     "outstandingHint": "Neuhradené a po splatnosti: s DPH, z dokladov v období, po odpočítaní čiastočných úhrad.",
@@ -5748,7 +5754,7 @@
     "filters": {
       "label": "Filtre",
       "currency": "Mena",
-      "allCurrencies": "Všetky meny (v CZK)",
+      "allCurrencies": "Všetky meny (v {home})",
       "language": "Jazyk dokladu",
       "allLanguages": "Všetky jazyky",
       "customer": "Odberateľ",

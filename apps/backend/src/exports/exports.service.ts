@@ -9,8 +9,8 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { computeAnnualSummary, type FlatRate } from "./annual-summary";
-import { getCnbRate } from "./cnb-rates";
-import { getEcbRate } from "./ecb-rates";
+import { getHomeRate } from "./home-rates";
+import { homeCurrencyOf, type HomeCurrency } from "@faktur/cz-compliance";
 import {
   generateDphDp3,
   generateDphKh1,
@@ -126,9 +126,9 @@ export function moneyVatSummary(byRate: RateBucket[]): string {
   );
 }
 
-/** Header totals: plain for CZK, inside `Valuty` (with the stored rate, if any) for a foreign currency. */
-export function moneyTotals(currency: string, rate: string | null, byRate: RateBucket[], total: number): string {
-  if (currency === "CZK") return moneyVatSummary(byRate) + `<Celkem>${money(total)}</Celkem>`;
+/** Header totals: plain in the home currency, inside `Valuty` (with the stored rate, if any) for a foreign one. */
+export function moneyTotals(currency: string, rate: string | null, byRate: RateBucket[], total: number, home: HomeCurrency = "CZK"): string {
+  if (currency === home) return moneyVatSummary(byRate) + `<Celkem>${money(total)}</Celkem>`;
   // Without a stored rate Money converts with its own exchange-rate list.
   return (
     `<Valuty><Mena><Kod>${xml(currency)}</Kod><Mnozstvi>1</Mnozstvi>` +
@@ -159,11 +159,12 @@ const percentLabel = (p: number) => `${String(p).replace(".", ",")} %`;
 /**
  * The accountant's invoice list: one row per document, the columns Czech
  * accountants ask for first (dates, customer IDs, base and VAT per rate,
- * CZK rate and CZK total), then the extras. Rate columns are made for every
- * VAT rate present, highest first. The CZK rate is the one stored on the
- * document at issue; a foreign document without one gets an empty CZK total.
+ * home-currency rate and total), then the extras. Rate columns are made for
+ * every VAT rate present, highest first. The rate is the one stored on the
+ * document at issue (ČNB, or ECB for a Slovak company in EUR); a foreign
+ * document without one gets an empty home-currency total.
  */
-export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[] = []): string {
+export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[] = [], home: HomeCurrency = "CZK"): string {
   const rates = [...new Set(rows.flatMap((r) => r.totals.byRate.map((b) => b.vatRatePercent)))].sort((a, b) => b - a);
   const rateHeaders = rates.flatMap((p) => (p > 0 ? [`Základ ${percentLabel(p)}`, `DPH ${percentLabel(p)}`] : [`Základ ${percentLabel(p)}`]));
   return csv([
@@ -182,8 +183,8 @@ export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[
       "Základ celkem",
       "DPH celkem",
       "Celkem",
-      "Kurz ČNB",
-      "Celkem v CZK",
+      home === "EUR" ? "Kurz ECB" : "Kurz ČNB",
+      `Celkem v ${home}`,
       "VS",
       "Stav",
       "Jazyk",
@@ -198,7 +199,7 @@ export function invoicesCsvBody(rows: CsvInvoiceRow[], companyVars: TemplateVar[
         const b = totals.byRate.find((x) => x.vatRatePercent === p);
         return p > 0 ? [b?.totalWithoutVat ?? null, b?.vatAmount ?? null] : [b?.totalWithoutVat ?? null];
       });
-      const rate = invoice.currency === "CZK" ? 1 : invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
+      const rate = invoice.currency === home ? 1 : invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
       return [
         invoice.invoiceNumber,
         TYPE_LABEL[invoice.documentType],
@@ -302,8 +303,8 @@ export class ExportsService {
   async invoicesCsv(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue"): Promise<string> {
     const rows = await this.loadInvoices(db, period, filters, dateBy);
     // RLS scopes this to the caller's own company — its number variables feed the formulas.
-    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars }).from(schema.tenants).limit(1);
-    return invoicesCsvBody(rows, templateVarsOf(tenant?.templateVars));
+    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.addressCountry }).from(schema.tenants).limit(1);
+    return invoicesCsvBody(rows, templateVarsOf(tenant?.templateVars), homeCurrencyOf(tenant?.country));
   }
 
   async expensesCsv(db: Db, period: ExportPeriod): Promise<string> {
@@ -332,6 +333,7 @@ export class ExportsService {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
     const packId = `billanta-${isoDate(period.from)}`;
+    const home = homeCurrencyOf(tenant.addressCountry);
 
     const partner = (c: ContactRow | null) =>
       c
@@ -349,7 +351,7 @@ export class ExportsService {
     for (const { invoice, contact, lineItems } of invoices) {
       const type = POHODA_INVOICE_TYPE[invoice.documentType];
       if (!type) continue;
-      const foreign = invoice.currency !== "CZK";
+      const foreign = invoice.currency !== home;
       const priceTag = foreign ? "inv:foreignCurrency" : "inv:homeCurrency";
       const lines = lineItems
         .map((li) => {
@@ -402,7 +404,7 @@ export class ExportsService {
 
     for (const e of expenses) {
       const rate = Number(e.vatRate);
-      const foreign = e.currency !== "CZK";
+      const foreign = e.currency !== home;
       const priceTag = foreign ? "inv:foreignCurrency" : "inv:homeCurrency";
       const ref = e.documentNumber || e.id.slice(0, 8);
       items.push(
@@ -458,9 +460,10 @@ export class ExportsService {
   async moneyS3Xml(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<string> {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
+    const home = homeCurrencyOf(tenant.addressCountry);
 
     const issued = invoices.map(({ invoice, contact, lineItems, totals }) => {
-      const foreign = invoice.currency !== "CZK";
+      const foreign = invoice.currency !== home;
       const lines = lineItems
         .map((li) => {
           const rate = invoice.reverseCharge ? 0 : Number(li.vatRate ?? 0);
@@ -497,7 +500,7 @@ export class ExportsService {
         (invoice.documentType === "credit_note" ? `<Dobropis>true</Dobropis>` : "") +
         el("Uhrada", MONEY_PAYMENT[invoice.paymentMethod]) +
         `<SazbaDPH1>12</SazbaDPH1><SazbaDPH2>21</SazbaDPH2>` +
-        moneyTotals(invoice.currency, invoice.exchangeRate, totals.byRate, totals.totalWithVat) +
+        moneyTotals(invoice.currency, invoice.exchangeRate, totals.byRate, totals.totalWithVat, home) +
         el("Poznamka", note.join("\n")) +
         el("TextZaFa", invoice.noteBelow) +
         (contact
@@ -515,7 +518,7 @@ export class ExportsService {
       const rate = Number(e.vatRate);
       const total = Number(e.amount);
       const base = total / (1 + rate / 100);
-      const foreign = e.currency !== "CZK";
+      const foreign = e.currency !== home;
       return (
         `<FaktPrij>` +
         el("Popis", e.description.slice(0, 50)) +
@@ -525,7 +528,7 @@ export class ExportsService {
         el("VarSymbol", e.variableSymbol) +
         el("PrijatDokl", e.documentNumber) +
         `<Druh>N</Druh><SazbaDPH1>12</SazbaDPH1><SazbaDPH2>21</SazbaDPH2>` +
-        moneyTotals(e.currency, null, [{ vatRatePercent: rate, totalWithoutVat: base, vatAmount: total - base }], total) +
+        moneyTotals(e.currency, null, [{ vatRatePercent: rate, totalWithoutVat: base, vatAmount: total - base }], total, home) +
         el("Poznamka", e.note) +
         (e.supplierNameRaw || e.supplierIco
           ? `<DodOdb>${el("ObchNazev", e.supplierNameRaw)}${el("ICO", e.supplierIco)}</DodOdb>`
@@ -554,7 +557,7 @@ export class ExportsService {
 
   /**
    * Documents for a VAT period, by the taxable supply date (DUZP, falling
-   * back to the issue date) and converted to CZK at the stored rate or the
+   * back to the issue date) and converted to the home currency at the stored rate or the
    * ČNB rate of that day. Drafts, proformas, quotes and cancelled documents
    * are not taxable supplies; credit notes enter with negative amounts.
    */
@@ -566,7 +569,7 @@ export class ExportsService {
   private async loadVatDocs(
     db: Db,
     period: ExportPeriod,
-    toHome: (currency: string, stored: string | null, date: Date) => Promise<number> = (c, s, d) => this.rateFor(c, s, d),
+    toHome: (currency: string, stored: string | null, date: Date) => Promise<number> = (c, s, d) => this.rateFor("CZK", c, s, d),
   ) {
     const duzp = sql<Date>`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const rows = await db
@@ -658,11 +661,12 @@ export class ExportsService {
     return { issued, received };
   }
 
-  private async rateFor(currency: string, stored: string | null, date: Date): Promise<number> {
-    if (currency === "CZK") return 1;
+  /** Home currency per 1 unit of `currency`: the rate stored at issue, else the official one of that day. */
+  private async rateFor(home: HomeCurrency, currency: string, stored: string | null, date: Date): Promise<number> {
+    if (currency === home) return 1;
     if (stored) return Number(stored);
-    const rate = await getCnbRate(currency, date);
-    if (rate == null) throw new VatRateUnavailableError(currency, date);
+    const rate = await getHomeRate(home, currency, date);
+    if (rate == null) throw new VatRateUnavailableError(currency, date, home === "EUR" ? "ECB" : "ČNB");
     return rate;
   }
 
@@ -670,13 +674,14 @@ export class ExportsService {
    * Cash-basis income and expenses of a calendar year (daňová evidence):
    * invoices and credit notes by the day they were paid, expenses by the day
    * paid (or dated, when no payment is recorded). VAT payers count amounts
-   * without VAT. Everything is converted to CZK.
+   * without VAT. Everything is converted to the home currency.
    */
   async annualSummary(
     db: Db,
     year: number,
-    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number },
+    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number; home?: HomeCurrency },
   ) {
+    const home = opts.home ?? "CZK";
     const from = new Date(year, 0, 1);
     const to = new Date(year + 1, 0, 1);
     const invoices = await db
@@ -701,7 +706,7 @@ export class ExportsService {
         { reverseCharge: invoice.reverseCharge },
       );
       const amount = opts.vatPayer ? totals.totalWithoutVat : totals.totalWithVat;
-      const rate = invoice.currency === "CZK" ? 1 : Number(invoice.exchangeRate) || (await getCnbRate(invoice.currency, invoice.paidAt));
+      const rate = invoice.currency === home ? 1 : Number(invoice.exchangeRate) || (await getHomeRate(home, invoice.currency, invoice.paidAt));
       if (rate == null) {
         missingRates++;
         continue;
@@ -716,7 +721,7 @@ export class ExportsService {
       .where(and(sql`${paidOn} >= ${from.toISOString()}`, sql`${paidOn} < ${to.toISOString()}`));
     let actualExpenses = 0;
     for (const e of expenses) {
-      const rate = e.currency === "CZK" ? 1 : Number(e.exchangeRate) || (await getCnbRate(e.currency, e.paidAt ?? e.expenseDate));
+      const rate = e.currency === home ? 1 : Number(e.exchangeRate) || (await getHomeRate(home, e.currency, e.paidAt ?? e.expenseDate));
       if (rate == null) {
         missingRates++;
         continue;
@@ -748,8 +753,8 @@ export class ExportsService {
 
   /**
    * Slovak VAT filings (DPHv25, KVDPHv25, SVDPHv20) in EUR. Foreign
-   * currencies use the ECB rate of the day before the tax point (§ 26
-   * ods. 1 ZDPH); the stored invoice rate is CZK-based, so it is not used.
+   * currencies use the rate stored at issue, else the ECB rate of the day
+   * before the tax point (§ 26 ods. 1 ZDPH).
    */
   async vatReturnSk(
     db: Db,
@@ -758,11 +763,7 @@ export class ExportsService {
     vatPeriod: VatPeriod,
     tenant: typeof schema.tenants.$inferSelect,
   ): Promise<string | null> {
-    const { issued, received } = await this.loadVatDocs(db, period, async (currency, _stored, date) => {
-      const rate = await getEcbRate(currency, date);
-      if (rate == null) throw new VatRateUnavailableError(currency, date, "ECB");
-      return 1 / rate;
-    });
+    const { issued, received } = await this.loadVatDocs(db, period, (c, s, d) => this.rateFor("EUR", c, s, d));
     const skIssued = issued.map((d) => ({
       number: d.number,
       customerVatId: d.customerDic,
@@ -785,7 +786,7 @@ export class ExportsService {
   }
 }
 
-/** A foreign-currency document whose ČNB rate could not be fetched. */
+/** A foreign-currency document whose ČNB / ECB rate could not be fetched. */
 export class VatRateUnavailableError extends Error {
   constructor(
     readonly currency: string,

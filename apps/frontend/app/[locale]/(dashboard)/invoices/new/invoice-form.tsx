@@ -11,7 +11,7 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
-import { isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
+import { homeCurrencyOf, isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
@@ -206,6 +206,11 @@ export function InvoiceForm({
   const tDoc = useTranslations('doc');
   const tHoliday = useTranslations('holidays');
   const sellerCountry = defaults.sellerCountry ?? 'CZ';
+  const home = homeCurrencyOf(sellerCountry);
+  // The rate field shows the rate the way its source quotes it (ČNB: CZK per unit, ECB: units per
+  // euro); the API stores home currency per unit. For EUR that is 1/x, which is its own inverse.
+  const quoted = (rate: number) => (home === 'EUR' ? 1 / rate : rate);
+  const rateSource = home === 'EUR' ? 'ECB' : 'ČNB';
   const locale = useLocale();
   const router = useRouter();
   const editing = mode.kind === 'edit';
@@ -232,9 +237,11 @@ export function InvoiceForm({
   const [taxableSupplyDate, setTaxableSupplyDate] = useState(() => isoDate(template?.taxableSupplyDate));
   const [currency, setCurrency] = useState(() => {
     const wanted = template?.currency ?? blank?.currency;
-    return wanted && CURRENCIES.includes(wanted) ? wanted : 'CZK';
+    return wanted && CURRENCIES.includes(wanted) ? wanted : home;
   });
-  const [exchangeRate, setExchangeRate] = useState(() => (template?.exchangeRate ? String(template.exchangeRate) : ''));
+  const [exchangeRate, setExchangeRate] = useState(() =>
+    Number(template?.exchangeRate) > 0 ? String(Number(quoted(Number(template!.exchangeRate)).toFixed(4))) : ''
+  );
   const [bankAccountId, setBankAccountId] = useState(() => {
     const wanted = template?.bankAccountId ?? blank?.bankAccountId;
     return wanted && defaults.bankAccounts.some((a) => a.id === wanted) ? wanted : '';
@@ -275,10 +282,11 @@ export function InvoiceForm({
   const { prefs } = defaults;
   const [issuePlace, setIssuePlace] = useState(() => template?.issuePlace ?? (editing ? '' : prefs.defaultIssuePlace ?? ''));
   const [issuedByName, setIssuedByName] = useState(() => template?.issuedByName ?? (editing ? '' : prefs.defaultIssuedBy ?? ''));
-  // Settings → Faktury → Kurz: with an annual rate for this year the empty field means that rate, not ČNB's.
+  // Settings → Faktury → Kurz: with an annual rate for this year the empty field means that rate, not ČNB's
+  // (Slovak law has no annual rate).
   const rateYear = Number(((vatPayer && taxableSupplyDate) || issueDate).slice(0, 4));
   const annualRate =
-    prefs.exchangeRateMode === 'annual' ? prefs.annualRates.find((r) => r.year === rateYear && r.currency === currency)?.rate ?? null : null;
+    prefs.exchangeRateMode === 'annual' && home === 'CZK' ? prefs.annualRates.find((r) => r.year === rateYear && r.currency === currency)?.rate ?? null : null;
   const annualRatePlaceholder = annualRate ? t('payment.exchangeRateAnnual', { rate: annualRate.toLocaleString(locale), year: rateYear }) : null;
   const [customFields, setCustomFields] = useState<CustomField[]>(() => {
     const existing = template?.customFields ?? [];
@@ -579,7 +587,7 @@ export function InvoiceForm({
           // Hidden DUZP: a new document gets none, an edit keeps what is stored.
           taxableSupplyDate: vatPayer && !isQuote ? taxableSupplyDate : editing ? undefined : '',
           currency,
-          exchangeRate,
+          exchangeRate: currency !== home && Number(exchangeRate.replace(',', '.')) > 0 ? String(quoted(Number(exchangeRate.replace(',', '.')))) : '',
           bankAccountId,
           paymentMethod,
           paymentMethodLabel,
@@ -685,7 +693,7 @@ export function InvoiceForm({
       ['dueDate', isQuote ? t('dates.validUntil') : t('dates.due'), sec.dates],
       ['paymentMethod', tDoc('fields.paymentMethod'), sec.payment],
       ['currency', t('dates.currency'), sec.payment],
-      ['exchangeRate', t('payment.exchangeRate', { currency }), sec.payment, currency !== 'CZK'],
+      ['exchangeRate', t('payment.exchangeRate', { pair: home === 'EUR' ? `${currency}/EUR` : `CZK/${currency}` }), sec.payment, currency !== home],
       ['bankAccount', t('payment.bankAccount'), sec.payment, paymentMethod === 'bank_transfer' && defaults.bankAccounts.length > 0],
       ['variableSymbol', tDoc('fields.variableSymbol'), sec.payment],
       ['symbols', t('fields.symbols'), sec.payment],
@@ -1389,15 +1397,15 @@ export function InvoiceForm({
               />
             </label>
           )}
-          {currency !== 'CZK' && (
+          {currency !== home && (
             <div data-field="exchangeRate" className="space-y-1.5">
-              <span className="text-sm font-medium">{t('payment.exchangeRate', { currency })}</span>
+              <span className="text-sm font-medium">{t('payment.exchangeRate', { pair: home === 'EUR' ? `${currency}/EUR` : `CZK/${currency}` })}</span>
               <div className="flex gap-2">
                 <input
                   inputMode="decimal"
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value.replace(/[^\d.,]/g, ''))}
-                  placeholder={annualRatePlaceholder ?? t('payment.exchangeRateAuto')}
+                  placeholder={annualRatePlaceholder ?? t('payment.exchangeRateAuto', { source: rateSource })}
                   className={field}
                 />
                 <button
@@ -1407,20 +1415,20 @@ export function InvoiceForm({
                     setLoadingRate(true);
                     const rate = await fetchExchangeRate(currency, (vatPayer && taxableSupplyDate) || issueDate);
                     setLoadingRate(false);
-                    if (rate) setExchangeRate(String(Number(rate.toFixed(4))));
-                    else toast({ text: t('payment.exchangeRateFailed'), tone: 'err' });
+                    if (rate) setExchangeRate(String(Number(quoted(rate).toFixed(4))));
+                    else toast({ text: t('payment.exchangeRateFailed', { source: rateSource }), tone: 'err' });
                   }}
                   className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-sm font-semibold hover:border-primary disabled:opacity-60"
                 >
                   {loadingRate && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {t('payment.exchangeRateLoad')}
+                  {t('payment.exchangeRateLoad', { source: rateSource })}
                 </button>
               </div>
               {Number(exchangeRate.replace(',', '.')) > 0 && (
                 <p className="text-xs text-muted-foreground">
                   {t('payment.inCzk', {
-                    amount: new Intl.NumberFormat(locale, { style: 'currency', currency: 'CZK' }).format(
-                      totals.total * Number(exchangeRate.replace(',', '.'))
+                    amount: new Intl.NumberFormat(locale, { style: 'currency', currency: home }).format(
+                      totals.total * quoted(Number(exchangeRate.replace(',', '.')))
                     )
                   })}
                 </p>

@@ -10,7 +10,7 @@ import { parseReportFilters, type ReportFilters } from "../dashboard/report-filt
 import { type ExportDateBy, type ExportPeriod, ExportsService, VatRateUnavailableError } from "./exports.service";
 import type { VatPeriod } from "./vat-returns";
 import { FLAT_RATES, paidAdvances, type FlatRate } from "./annual-summary";
-import { normalizeTaxAdvances } from "@faktur/cz-compliance";
+import { homeCurrencyOf, normalizeTaxAdvances } from "@faktur/cz-compliance";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -194,6 +194,7 @@ export class ExportsController {
         flatRate: expenses === "actual" ? null : (Number(expenses) as FlatRate),
         paidSocial: paid.paidSocial,
         paidHealth: paid.paidHealth,
+        home: homeCurrencyOf(tenant?.addressCountry),
       });
       return { ...summary, paidSource: paid.source };
     } catch (err) {

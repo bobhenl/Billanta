@@ -18,7 +18,8 @@ import {
   type ImportedBusinessDetails,
 } from "./bitfaktura-import";
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
-import { getCnbRate } from "../exports/cnb-rates";
+import { getHomeRate } from "../exports/home-rates";
+import { tenantHomeCurrency } from "../tenants/home-currency";
 import { AuditService } from "../audit/audit.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
 
@@ -308,14 +309,16 @@ export class InvoiceImportService {
     for (const c of contacts) {
       if (!findContact(c)) await createContact(c);
     }
+    const home = await tenantHomeCurrency(db, tenantId);
     for (const inv of invoices) {
       const contactId = findContact(inv.customer) ?? (await createContact(inv.customer));
       const total = totalOf(inv);
       const issuedAt = inv.issueDate;
-      // Foreign-currency documents need the CZK rate for VAT and income-tax
-      // reports: the source's own rate when it has one, else ČNB on the DUZP.
+      // Foreign-currency documents need the home-currency rate for VAT and
+      // income-tax reports: the source's own rate when it has one, else the
+      // official one (ČNB, or ECB for SK) on the DUZP.
       const exchangeRate =
-        inv.currency === "CZK" ? null : inv.exchangeRate ?? (await getCnbRate(inv.currency, inv.taxableSupplyDate ?? inv.issueDate));
+        inv.currency === home ? null : inv.exchangeRate ?? (await getHomeRate(home, inv.currency, inv.taxableSupplyDate ?? inv.issueDate));
       const [created] = await db
         .insert(schema.invoices)
         .values({

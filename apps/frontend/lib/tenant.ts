@@ -1,4 +1,5 @@
-import type { VatStatus } from '@faktur/cz-compliance';
+import { cache } from 'react';
+import { homeCurrencyOf, type HomeCurrency, type VatStatus } from '@faktur/cz-compliance';
 import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
 import { apiFetch, fetchMyCompanies } from './api-client';
@@ -109,6 +110,9 @@ export async function fetchTenant(): Promise<TenantSettings | null> {
   const rows = await apiFetch<TenantSettings[]>('/api/v1/tenants/me');
   return rows[0] ?? null;
 }
+
+/** The currency the company keeps its books in, from where it is registered (CZK when unknown). */
+export const fetchHomeCurrency = cache(async (): Promise<HomeCurrency> => homeCurrencyOf((await fetchTenant().catch(() => null))?.addressCountry));
 
 /** The signed-in user's role in the active company (same choice as `apiFetch`). */
 export async function fetchMyRole(): Promise<string | null> {

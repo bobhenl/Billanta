@@ -4,6 +4,7 @@ import { FilterField, filterFieldClass as field, FilterPanel } from '@/component
 import { InfoHint } from '@/components/info-hint';
 import { apiFetch } from '@/lib/api-client';
 import type { InvoiceRow } from '@/lib/invoice-ui';
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { ContactsList, type ContactRow } from './contacts-list';
 
 const KINDS = ['company', 'person'] as const;
@@ -31,9 +32,10 @@ export default async function ContactsPage(props: { searchParams: Promise<Filter
   const t = await getTranslations('contacts');
   const tDoc = await getTranslations('doc');
   const locale = await getLocale();
-  const [contacts, invoices] = await Promise.all([
+  const [contacts, invoices, home] = await Promise.all([
     apiFetch<Omit<ContactRow, 'stats'>[]>('/api/v1/contacts').catch(() => null),
-    apiFetch<InvoiceRow[]>('/api/v1/invoices?type=invoice').catch(() => [] as InvoiceRow[])
+    apiFetch<InvoiceRow[]>('/api/v1/invoices?type=invoice').catch(() => [] as InvoiceRow[]),
+    fetchHomeCurrency()
   ]);
 
   const filters: Filters = {
@@ -53,12 +55,12 @@ export default async function ContactsPage(props: { searchParams: Promise<Filter
     if (!inv.contactId || inv.status === 'draft' || inv.status === 'cancelled') continue;
     const s = stats.get(inv.contactId) ?? {
       count: 0,
-      revenueCzk: 0,
+      revenueHome: 0,
       unpaid: 0,
       lastIssue: null
     };
     s.count += 1;
-    if (inv.currency === 'CZK') s.revenueCzk += Number(inv.total);
+    if (inv.currency === home) s.revenueHome += Number(inv.total);
     if (inv.status !== 'paid') s.unpaid += 1;
     if (inv.issueDate && (!s.lastIssue || inv.issueDate > s.lastIssue)) s.lastIssue = inv.issueDate;
     stats.set(inv.contactId, s);
@@ -100,6 +102,7 @@ export default async function ContactsPage(props: { searchParams: Promise<Filter
       {contacts ? (
         <ContactsList
           initial={rows}
+          home={home}
           filtered={active > 0}
           startCreating={searchParams.new === '1'}
           filters={

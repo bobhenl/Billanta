@@ -13,6 +13,9 @@ const cnb = vi.hoisted(() => ({
   getCnbDay: vi.fn(async () => ({ date: "2026-03-13", rates: new Map([["EUR", { rate: 25.12, country: "EMU", name: "euro" }]]) })),
 }));
 vi.mock("../exports/cnb-rates", async (orig) => ({ ...(await orig<typeof import("../exports/cnb-rates")>()), getCnbDay: cnb.getCnbDay }));
+// ECB publishes 25.2 CZK per euro on Friday 13 March 2026.
+const ecb = vi.hoisted(() => ({ getEcbFixing: vi.fn(async () => ({ rate: 25.2, day: "2026-03-13" })) }));
+vi.mock("../exports/ecb-rates", async (orig) => ({ ...(await orig<typeof import("../exports/ecb-rates")>()), getEcbFixing: ecb.getEcbFixing }));
 
 type MockEmailService = { sendInvoiceEmail: ReturnType<typeof vi.fn> };
 type MockInvoicePdfService = { generate: ReturnType<typeof vi.fn> };
@@ -421,7 +424,7 @@ describe("InvoicesService.issue – exchange rate mode", () => {
   });
 
   /** Issues a EUR draft (DUZP Saturday 14 March 2026) for a company with these prefs and VAT status; returns what was written. */
-  async function issueEur(prefs: Record<string, unknown>, vatStatus: string, over: Record<string, unknown> = {}, items: unknown[] = lineItems) {
+  async function issueEur(prefs: Record<string, unknown>, vatStatus: string, over: Record<string, unknown> = {}, items: unknown[] = lineItems, addressCountry = "CZ") {
     const invoice = makeInvoice({
       status: "draft",
       invoiceNumber: null,
@@ -439,7 +442,7 @@ describe("InvoicesService.issue – exchange rate mode", () => {
       .mockReturnValueOnce(makeSelectChain([])) // number free
       .mockReturnValueOnce(makeSelectChain([])) // snapshot: tenant
       .mockReturnValueOnce(makeSelectChain([])) // snapshot: contact
-      .mockReturnValueOnce(makeSelectChain([{ invoiceFormPrefs: prefs, vatStatus }])); // rate settings
+      .mockReturnValueOnce(makeSelectChain([{ invoiceFormPrefs: prefs, vatStatus, addressCountry }])); // rate settings
     const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, insert: vi.fn().mockReturnValue(makeSequenceInsertChain(1)), update } as any;
@@ -451,24 +454,24 @@ describe("InvoicesService.issue – exchange rate mode", () => {
 
   it("daily ČNB: stores the rate and the day of the list ČNB published for the DUZP", async () => {
     const set = await issueEur({}, "payer");
-    expect(set).toMatchObject({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
+    expect(set).toMatchObject({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
     expect(cnb.getCnbDay).toHaveBeenCalledWith(new Date("2026-03-14T10:00:00Z"));
   });
 
   it("annual: stores the company's rate for the DUZP year, without asking ČNB", async () => {
     const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }, { year: 2025, currency: "EUR", rate: 25.3 }] }, "payer");
-    expect(set).toMatchObject({ exchangeRate: "24.600000", exchangeRateMode: "annual", exchangeRateDate: "2026-01-01" });
+    expect(set).toMatchObject({ exchangeRate: "24.6000000000", exchangeRateMode: "annual", exchangeRateDate: "2026-01-01" });
     expect(cnb.getCnbDay).not.toHaveBeenCalled();
   });
 
   it("annual without a rate for that year: falls back to ČNB and is printed as such", async () => {
     const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2025, currency: "EUR", rate: 25.3 }] }, "payer");
-    expect(set).toMatchObject({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily" });
+    expect(set).toMatchObject({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily" });
   });
 
   it("none: hidden for a non-payer, the rate is still kept for reports", async () => {
     const set = await issueEur({ exchangeRateMode: "none" }, "non_payer", {}, noVat);
-    expect(set).toMatchObject({ exchangeRate: "25.120000", exchangeRateMode: "none" });
+    expect(set).toMatchObject({ exchangeRate: "25.1200000000", exchangeRateMode: "none" });
   });
 
   it("none is ignored for a VAT payer", async () => {
@@ -480,6 +483,17 @@ describe("InvoicesService.issue – exchange rate mode", () => {
     const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer", { exchangeRate: "25.500000" });
     expect(set).toMatchObject({ exchangeRate: "25.500000", exchangeRateMode: "manual", exchangeRateDate: null });
     expect(cnb.getCnbDay).not.toHaveBeenCalled();
+  });
+
+  it("a Slovak company stores the ECB rate in EUR per unit, never ČNB", async () => {
+    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "CZK", rate: 0.04 }] }, "payer", { currency: "CZK" }, lineItems, "SK");
+    expect(set).toMatchObject({ exchangeRate: (1 / 25.2).toFixed(10), exchangeRateMode: "ecb_daily", exchangeRateDate: "2026-03-13" });
+    expect(cnb.getCnbDay).not.toHaveBeenCalled();
+  });
+
+  it("a Slovak company's EUR invoice needs no rate", async () => {
+    const set = await issueEur({}, "payer", {}, lineItems, "SK");
+    expect(set).toMatchObject({ exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null });
   });
 });
 
@@ -531,15 +545,15 @@ describe("InvoicesService – drafts without a customer", () => {
 
 describe("rateModeAfterEdit", () => {
   it("a changed rate on an issued document becomes a plain rate", () => {
-    expect(rateModeAfterEdit({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily" }, { exchangeRate: "25.500000" })).toEqual({
+    expect(rateModeAfterEdit({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily" }, { exchangeRate: "25.500000" })).toEqual({
       exchangeRateMode: "manual",
       exchangeRateDate: null,
     });
   });
   it("leaves the mode alone when the rate is unchanged, not sent, or the conversion is hidden", () => {
-    expect(rateModeAfterEdit({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily" }, { exchangeRate: "25.12" })).toEqual({});
-    expect(rateModeAfterEdit({ exchangeRate: "25.120000", exchangeRateMode: "annual" }, {})).toEqual({});
-    expect(rateModeAfterEdit({ exchangeRate: "25.120000", exchangeRateMode: "none" }, { exchangeRate: "26.000000" })).toEqual({});
+    expect(rateModeAfterEdit({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily" }, { exchangeRate: "25.12" })).toEqual({});
+    expect(rateModeAfterEdit({ exchangeRate: "25.1200000000", exchangeRateMode: "annual" }, {})).toEqual({});
+    expect(rateModeAfterEdit({ exchangeRate: "25.1200000000", exchangeRateMode: "none" }, { exchangeRate: "26.000000" })).toEqual({});
   });
 });
 

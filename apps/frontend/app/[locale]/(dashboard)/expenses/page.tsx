@@ -6,6 +6,7 @@ import { AmountRange, amountParam, FilterField, filterFieldClass as field, Filte
 import { InfoHint } from '@/components/info-hint';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney } from '@/lib/invoice-ui';
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { EXPENSE_CATEGORIES, expenseState, type Expense, type ExpensePage } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { ExpensesTable } from './expenses-table';
@@ -121,9 +122,10 @@ export default async function ExpensesPage(props: { searchParams: Promise<Filter
   const currencies = distinct(all.map((e) => e.currency));
   const vatRates = [...new Set(all.map((e) => Number(e.vatRate)))].sort((a, b) => b - a);
 
-  // KPI cards (CZK only — the dashboard does the per-currency split).
+  // KPI cards (home currency only – the dashboard does the per-currency split).
+  const home = await fetchHomeCurrency();
   const thisMonth = new Date().toISOString().slice(0, 7);
-  const czk = all.filter((e) => e.currency === 'CZK');
+  const czk = all.filter((e) => e.currency === home);
   const sum = (list: Expense[]) => list.reduce((acc, e) => acc + Number(e.amount), 0);
   const unpaid = czk.filter((e) => expenseState(e) !== 'paid');
   const overdue = czk.filter((e) => expenseState(e) === 'overdue');
@@ -194,7 +196,7 @@ export default async function ExpensesPage(props: { searchParams: Promise<Filter
             className="rounded-xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
           >
             <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{card.label}</div>
-            <div className={cn('mt-1 text-2xl font-extrabold tabular-nums', card.tone)}>{formatMoney(card.value, 'CZK', locale)}</div>
+            <div className={cn('mt-1 text-2xl font-extrabold tabular-nums', card.tone)}>{formatMoney(card.value, home, locale)}</div>
             <div className="mt-0.5 text-xs text-muted-foreground">{card.sub}</div>
           </Link>
         ))}

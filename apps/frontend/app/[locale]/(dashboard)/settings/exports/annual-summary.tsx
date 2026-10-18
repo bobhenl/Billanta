@@ -195,7 +195,7 @@ export function AnnualSummary() {
               {row(t('total'), data.totalBurden, { strong: true })}
             </div>
           </div>
-          {data.counts.missingRates > 0 && <p className="mt-2 text-xs text-warning">{t('missingRates', { count: data.counts.missingRates })}</p>}
+          {data.counts.missingRates > 0 && <p className="mt-2 text-xs text-warning">{t('missingRates', { count: data.counts.missingRates, source: 'ČNB' })}</p>}
           {!data.params.exact && <p className="mt-2 text-xs text-warning">{t('paramsFallback', { year: data.params.paramsYear })}</p>}
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <a

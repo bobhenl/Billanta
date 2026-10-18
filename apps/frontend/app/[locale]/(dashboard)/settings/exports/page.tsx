@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { SettingsHeader } from '@/components/settings-header';
+import { homeCurrencyOf } from '@faktur/cz-compliance';
 import { fetchTenant } from '@/lib/tenant';
 import { AnnualSummary } from './annual-summary';
 import { ExportPicker } from './export-picker';
@@ -15,11 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ExportsPage() {
   const t = await getTranslations('settings.exports');
   // Slovak companies file in eDane, so they get the SK forms and no EPO guide.
-  const sk = (await fetchTenant().catch(() => null))?.addressCountry === 'SK';
+  const country = (await fetchTenant().catch(() => null))?.addressCountry;
+  const sk = country === 'SK';
   return (
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
-      <ExportPicker />
+      <ExportPicker home={homeCurrencyOf(country)} />
       <div className="mt-5">
         <VatFilings country={sk ? 'SK' : 'CZ'} />
       </div>
@@ -28,9 +30,11 @@ export default async function ExportsPage() {
           <EpoGuide />
         </div>
       )}
-      <div className="mt-5">
-        <AnnualSummary />
-      </div>
+      {!sk && (
+        <div className="mt-5">
+          <AnnualSummary />
+        </div>
+      )}
     </div>
   );
 }

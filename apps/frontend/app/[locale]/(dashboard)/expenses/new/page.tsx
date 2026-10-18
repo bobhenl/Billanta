@@ -1,3 +1,4 @@
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { apiFetch } from '@/lib/api-client';
 import type { Expense } from '@/lib/expense-ui';
 import { ExpenseForm, type SupplierOption } from '../expense-form';
@@ -21,7 +22,7 @@ export default async function NewExpensePage(props: { searchParams: Promise<{ fr
     : searchParams.description
       ? prefill(searchParams.description, searchParams.amount)
       : undefined;
-  return <ExpenseForm autoScan={searchParams.scan === '1'} initial={initial} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} />;
+  return <ExpenseForm autoScan={searchParams.scan === '1'} initial={initial} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} home={await fetchHomeCurrency()} />;
 }
 
 function prefill(description: string, amount?: string): Expense {

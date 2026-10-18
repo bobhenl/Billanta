@@ -28,13 +28,16 @@ export function PeriodReport({
   initialPreset = 'last12',
   compact = false,
   usage = null,
-  savedKpis = null
+  savedKpis = null,
+  home = 'CZK'
 }: {
   initial: PeriodStats;
   initialPreset?: PeriodPreset;
   compact?: boolean;
   /** What the company uses: hides VAT for non-payers, expenses when there are none, filters with one option. */
   usage?: Usage | null;
+  /** CZK, or EUR for a Slovak company: the currency foreign amounts are converted into. */
+  home?: string;
   /** The member's own KPI choice for the full report (dashboard config `reportKpis`); null = from usage. */
   savedKpis?: string[] | null;
 }) {
@@ -230,7 +233,7 @@ export function PeriodReport({
         <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label={t('filters.label')}>
           {showCurrencyFilter && (
             <select aria-label={t('filters.currency')} className={select} value={filters.currency ?? ''} onChange={(e) => setFilter('currency', e.target.value)}>
-              <option value="">{t('filters.allCurrencies')}</option>
+              <option value="">{t('filters.allCurrencies', { home })}</option>
               {stats.options.currencies.map((c) => (
                 <option key={c} value={c}>
                   {c}
@@ -313,8 +316,8 @@ export function PeriodReport({
       <PeriodChart stats={stats} money={money} kind={compact ? 'bars' : chartKind} extra={compact ? undefined : <ChartKindSwitch value={chartKind} onChange={setChartKind} />} />
 
       <div className="mt-2 space-y-0.5 text-[11px] text-muted-foreground">
-        {stats.currency !== 'CZK' && <p>{t('inCurrency', { currency: stats.currency })}</p>}
-        {stats.convertedCount > 0 && <p>{t('converted', { count: stats.convertedCount })}</p>}
+        {stats.currency !== home && <p>{t('inCurrency', { currency: stats.currency })}</p>}
+        {stats.convertedCount > 0 && <p>{t('converted', { count: stats.convertedCount, home })}</p>}
         {stats.missingRateCount > 0 && <p>{t('missingRate', { count: stats.missingRateCount })}</p>}
         {!compact && !stats.expensesFiltered && !noExpenses && <p>{t('expensesUnfiltered')}</p>}
         {!compact && <p>{t('outstandingHint')}</p>}

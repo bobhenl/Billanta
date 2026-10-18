@@ -32,7 +32,8 @@ import {
   UpdateInvoiceDto,
 } from "./dto/create-invoice.dto";
 import { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
-import { getCnbRate } from "../exports/cnb-rates";
+import { getHomeRate } from "../exports/home-rates";
+import { tenantHomeCurrency } from "../tenants/home-currency";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
@@ -108,11 +109,15 @@ export class InvoicesController {
 
   @Get("exchange-rate")
   @UseGuards(CombinedAuthGuard)
-  @ApiOperation({ summary: "ČNB rate (CZK per 1 unit) for ?currency=EUR&date=YYYY-MM-DD; rate is null when unavailable" })
-  async exchangeRate(@Query("currency") currency = "", @Query("date") date?: string) {
+  @ApiOperation({
+    summary:
+      "Official rate in the company's home currency (ČNB in CZK, or ECB in EUR for a Slovak company) per 1 unit of ?currency=USD&date=YYYY-MM-DD; rate is null when unavailable",
+  })
+  async exchangeRate(@Req() req: TenantScopedRequest, @Query("currency") currency = "", @Query("date") date?: string) {
     if (!/^[A-Za-z]{3}$/.test(currency)) throw new BadRequestException("currency must be a 3-letter code");
     const day = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(`${date}T12:00:00`) : null;
-    return { currency: currency.toUpperCase(), rate: await getCnbRate(currency, day) };
+    const home = await tenantHomeCurrency(req.tenantDb!, req.user!.tenantId);
+    return { currency: currency.toUpperCase(), home, rate: await getHomeRate(home, currency, day) };
   }
 
   @Post()

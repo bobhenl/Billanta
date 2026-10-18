@@ -14,7 +14,7 @@ export interface StatsDoc {
   paidAt: Date | null;
   contactId: string | null;
   contactName: string | null;
-  /** CZK per 1 unit of `currency`, stored at issue; null for CZK or when unknown. */
+  /** Home currency per 1 unit of `currency`, stored at issue; null at home or when unknown. */
   exchangeRate: number | null;
   amountPaid: number;
   base: number;
@@ -100,11 +100,12 @@ const within = (d: Date | null, from: Date, to: Date) => !!d && d >= from && d <
 /**
  * The factor that turns an amount in `currency` into the report currency:
  * 1 for the same currency, the stored rate for a foreign one when the report
- * is in CZK, null when it cannot be converted (no stored rate).
+ * is in the home currency (CZK, EUR for SK), null when it cannot be
+ * converted (no stored rate).
  */
-export function rateTo(currency: string, exchangeRate: number | null, reportCurrency: string): number | null {
+export function rateTo(currency: string, exchangeRate: number | null, reportCurrency: string, home = "CZK"): number | null {
   if (currency === reportCurrency) return 1;
-  if (reportCurrency === "CZK" && exchangeRate != null && Number.isFinite(exchangeRate) && exchangeRate > 0) return exchangeRate;
+  if (reportCurrency === home && exchangeRate != null && Number.isFinite(exchangeRate) && exchangeRate > 0) return exchangeRate;
   return null;
 }
 
@@ -130,6 +131,7 @@ export function periodTotals(
   to: Date,
   currency = "CZK",
   today = new Date(),
+  home = "CZK",
 ): PeriodTotals {
   let revenue = 0;
   let vat = 0;
@@ -150,7 +152,7 @@ export function periodTotals(
       const seen = firstSeen.get(doc.contactId);
       if (seen == null || doc.date.getTime() < seen) firstSeen.set(doc.contactId, doc.date.getTime());
     }
-    const rate = rateTo(doc.currency, doc.exchangeRate, currency);
+    const rate = rateTo(doc.currency, doc.exchangeRate, currency, home);
     const inPeriod = within(doc.date, from, to);
     if (isTaxDoc(doc) && inPeriod && doc.contactId) customers.add(doc.contactId);
     if (rate == null) continue;
@@ -176,7 +178,7 @@ export function periodTotals(
   }
   let spent = 0;
   for (const e of expenses) {
-    const rate = rateTo(e.currency, e.exchangeRate, currency);
+    const rate = rateTo(e.currency, e.exchangeRate, currency, home);
     if (rate != null && within(e.date, from, to)) spent += e.base * rate;
   }
   let newCustomers = 0;
@@ -215,6 +217,7 @@ export function periodBreakdown(
   to: Date,
   currency = "CZK",
   today = new Date(),
+  home = "CZK",
 ) {
   const grain = grainFor(from, new Date(to.getTime() - 1));
   const series = new Map(bucketsBetween(from, new Date(to.getTime() - 1), grain).map((k) => [k, { start: k, revenue: 0, expenses: 0 }]));
@@ -226,7 +229,7 @@ export function periodBreakdown(
   let missingRateCount = 0;
   for (const doc of docs) {
     if (!countable(doc) || !within(doc.date, from, to)) continue;
-    const rate = rateTo(doc.currency, doc.exchangeRate, currency);
+    const rate = rateTo(doc.currency, doc.exchangeRate, currency, home);
     if (doc.currency !== currency) {
       if (rate == null) missingRateCount++;
       else convertedCount++;
@@ -263,7 +266,7 @@ export function periodBreakdown(
     }
   }
   for (const e of expenses) {
-    const rate = rateTo(e.currency, e.exchangeRate, currency);
+    const rate = rateTo(e.currency, e.exchangeRate, currency, home);
     if (rate == null || !within(e.date, from, to)) continue;
     const bucket = series.get(bucketOf(e.date, grain));
     if (bucket) bucket.expenses += e.base * rate;

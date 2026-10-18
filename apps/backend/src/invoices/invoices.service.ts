@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, NotFoundException, Optional } from "@n
 import {
   checkInvoiceRequirements,
   generateIsdocXml,
+  homeCurrencyOf,
   generateUblInvoiceXml,
   validatePeppolInvoice,
   type PeppolIssue,
@@ -11,7 +12,7 @@ import {
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { fuzzyScore } from "../common/fuzzy";
-import { getCnbDay } from "../exports/cnb-rates";
+import { getHomeRateDay } from "../exports/home-rates";
 import { annualRateFor, exchangeRateSettingsOf, rateYearOf, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
 import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
@@ -91,7 +92,7 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.taxable_supply_date !== undefined) v.taxableSupplyDate = dto.taxable_supply_date ?? null;
   if (dto.currency !== undefined) v.currency = dto.currency.toUpperCase();
   if (dto.bank_account_id !== undefined) v.bankAccountId = dto.bank_account_id ?? null;
-  if (dto.exchange_rate !== undefined) v.exchangeRate = dto.exchange_rate == null ? null : dto.exchange_rate.toFixed(6);
+  if (dto.exchange_rate !== undefined) v.exchangeRate = dto.exchange_rate == null ? null : dto.exchange_rate.toFixed(10);
   if (dto.payment_method !== undefined) v.paymentMethod = dto.payment_method;
   if (dto.payment_method_label !== undefined) v.paymentMethodLabel = dto.payment_method_label || null;
   if (dto.payment_instructions !== undefined) v.paymentInstructions = dto.payment_instructions || null;
@@ -1141,14 +1142,17 @@ export class InvoicesService {
     tenantId: string,
     received?: { amount: number; currency: string; fee?: number },
   ) {
-    // A CZK credit settling a foreign-currency invoice is the real proceeds
-    // after the bank's conversion; keep it for the margin / exchange difference.
+    // A home-currency credit settling a foreign-currency invoice is the real
+    // proceeds after the bank's conversion; keep it for the margin / exchange
+    // difference. `receivedCzk` holds it in the home currency (EUR for SK).
     const [current] = await db
-      .select({ currency: schema.invoices.currency, paymentFees: schema.invoices.paymentFees })
+      .select({ currency: schema.invoices.currency, paymentFees: schema.invoices.paymentFees, addressCountry: schema.tenants.addressCountry })
       .from(schema.invoices)
+      .innerJoin(schema.tenants, eq(schema.tenants.id, schema.invoices.tenantId))
       .where(eq(schema.invoices.id, invoiceId));
+    const home = homeCurrencyOf(current?.addressCountry);
     const receivedCzk =
-      received && received.currency.toUpperCase() === "CZK" && current && current.currency !== "CZK" && received.amount > 0
+      received && received.currency.toUpperCase() === home && current && current.currency !== home && received.amount > 0
         ? { receivedCzk: round2(received.amount).toFixed(2) }
         : {};
     // Fee the payment provider kept (PayPal), booked like a manual "net received" entry.
@@ -1254,9 +1258,9 @@ export class InvoicesService {
     // so a later change of address or DIČ does not rewrite it (§29, §34–35 ZDPH).
     const { sellerSnapshot, buyerSnapshot } = await this.captureParties(db, tenantId, invoice, now);
 
-    // Foreign-currency documents carry their CZK rate, so the PDF and the VAT
-    // returns can convert them (§38 ZDPH); which rate follows the company's
-    // setting (exchange-rate-mode.ts). A failed ČNB lookup leaves it null;
+    // Foreign-currency documents carry their home-currency rate, so the PDF
+    // and the VAT returns can convert them (§38 ZDPH, § 26 SK); which rate
+    // follows the company's setting (exchange-rate-mode.ts). A failed lookup leaves it null;
     // the VAT export looks it up again later.
     const { exchangeRate, exchangeRateMode, exchangeRateDate } = await this.issueRate(db, tenantId, invoice, lineItems, issueDate);
 
@@ -1294,10 +1298,11 @@ export class InvoicesService {
   }
 
   /**
-   * The CZK rate a document gets at issue and how it was chosen: a rate typed
-   * on the draft, the company's annual rate for the year of the taxable
-   * supply date (issue date when there is none), or the ČNB list valid on
-   * that day. Nothing for CZK documents.
+   * The home-currency rate a document gets at issue and how it was chosen: a
+   * rate typed on the draft, the company's annual rate for the year of the
+   * taxable supply date (issue date when there is none; Czech companies
+   * only), or the official daily rate for that day (ČNB, or ECB for a Slovak
+   * company, see home-rates.ts). Nothing for documents in the home currency.
    */
   private async issueRate(
     db: TenantDb,
@@ -1306,12 +1311,13 @@ export class InvoicesService {
     lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
     issueDate: Date,
   ): Promise<{ exchangeRate: string | null; exchangeRateMode: StoredRateMode | null; exchangeRateDate: string | null }> {
-    if (invoice.currency === "CZK") return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
     const [tenant] = await db
-      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus })
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus, addressCountry: schema.tenants.addressCountry })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId))
       .limit(1);
+    const home = homeCurrencyOf(tenant?.addressCountry);
+    if (invoice.currency.toUpperCase() === home) return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
     const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
     const day = new Date(invoice.taxableSupplyDate ?? issueDate);
     const year = rateYearOf(day);
@@ -1322,12 +1328,12 @@ export class InvoicesService {
       totalVat: computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
       manualRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
       annualRate,
+      home,
     });
     if (source === "manual") return { exchangeRate: invoice.exchangeRate, exchangeRateMode: mode, exchangeRateDate: null };
-    if (source === "annual") return { exchangeRate: annualRate!.toFixed(6), exchangeRateMode: mode, exchangeRateDate: `${year}-01-01` };
-    const cnb = await getCnbDay(day);
-    const rate = cnb?.rates.get(invoice.currency.toUpperCase())?.rate ?? null;
-    return { exchangeRate: rate == null ? null : rate.toFixed(6), exchangeRateMode: mode, exchangeRateDate: rate == null ? null : cnb!.date };
+    if (source === "annual") return { exchangeRate: annualRate!.toFixed(10), exchangeRateMode: mode, exchangeRateDate: `${year}-01-01` };
+    const official = await getHomeRateDay(home, invoice.currency, day);
+    return { exchangeRate: official ? official.rate.toFixed(10) : null, exchangeRateMode: mode, exchangeRateDate: official?.date ?? null };
   }
 
   /**

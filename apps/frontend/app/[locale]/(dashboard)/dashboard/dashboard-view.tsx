@@ -55,7 +55,7 @@ import {
   type TaxDeadline,
   type TaxDeadlineKind
 } from '@/lib/tax-deadlines';
-import { advanceForDeadline, isTaxAdvanceKind, type VatStatus } from '@faktur/cz-compliance';
+import { advanceForDeadline, homeCurrencyOf, isTaxAdvanceKind, type VatStatus } from '@faktur/cz-compliance';
 import type { TaxAdvances } from '@/lib/vat-status';
 import { formatElapsed, formatMinutes, type TimeSummary } from '@/lib/time-ui';
 
@@ -313,10 +313,10 @@ export function DashboardView({
       {referral && <ReferralNudge {...referral} />}
       {time && <TimeCard time={time} />}
       {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
-      {(config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
+      {country !== 'SK' && (config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
-        {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact usage={usage} /> : <RevenueChart chart={summary.chart} money={money} />)}
+        {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact usage={usage} home={homeCurrencyOf(country)} /> : <RevenueChart chart={summary.chart} money={money} />)}
         {config.showTopCustomers && summary.topCustomers.length > 0 && (
           <section className="rounded-xl border border-border bg-card p-4">
             <h2 className="font-bold">{t('topCustomers')}</h2>
@@ -660,7 +660,9 @@ function CustomizeModal({
 
       <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('customizeSections')}</h3>
       <div className="mt-2 space-y-2 text-sm">
-        {(['showDueSoon', 'showTaxDeadlines', 'showFxRates', 'showChart', 'showTopCustomers', 'showRecent'] as const).map((key) => (
+        {(['showDueSoon', 'showTaxDeadlines', 'showFxRates', 'showChart', 'showTopCustomers', 'showRecent'] as const)
+          .filter((key) => key !== 'showFxRates' || country !== 'SK')
+          .map((key) => (
           <label key={key} className="flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
@@ -676,7 +678,7 @@ function CustomizeModal({
         ))}
       </div>
 
-      {sections.showFxRates && (
+      {sections.showFxRates && country !== 'SK' && (
         <>
           <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
             <InfoHint hint={t('fxRates.customizeHint')}>{t('fxRates.customizeTitle')}</InfoHint>

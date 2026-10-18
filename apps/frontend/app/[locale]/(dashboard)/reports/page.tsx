@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { PeriodReport } from '../dashboard/period-report';
 import type { Usage } from '@/lib/usage-defaults';
@@ -53,7 +54,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           {t('exportsLink')}
         </Link>
       </div>
-      <PeriodReport key={preset} initial={stats} initialPreset={preset} usage={usage} savedKpis={config?.reportKpis ?? null} />
+      <PeriodReport key={preset} initial={stats} initialPreset={preset} usage={usage} savedKpis={config?.reportKpis ?? null} home={await fetchHomeCurrency()} />
     </div>
   );
 }

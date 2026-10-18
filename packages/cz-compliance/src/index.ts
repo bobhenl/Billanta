@@ -19,3 +19,4 @@ export * from './tax-minimums.js';
 export * from './vat-rates.js';
 export * from './cnb-rates.js';
 export * from './vat-filing.js';
+export * from './home-currency.js';

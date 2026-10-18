@@ -1,3 +1,4 @@
+import { homeCurrencyOf } from '@faktur/cz-compliance';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from '@/i18n/navigation';
@@ -52,6 +53,7 @@ export default async function InvoiceSettingsPage() {
         bankAccounts={accounts.map((a) => ({ id: a.id, label: a.label, line: bankAccountLine(a) }))}
         vatPayer={tenant.dicVatPayer}
         vatStatus={vatStatusOf(tenant)}
+        home={homeCurrencyOf(tenant.addressCountry)}
         readOnly={!canManage(role)}
       />
     </div>

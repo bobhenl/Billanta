@@ -19,14 +19,14 @@ const field = 'h-10 w-full rounded-lg border border-input bg-background px-3 tex
 const label = 'mb-1 block text-xs font-semibold text-muted-foreground';
 
 /** Projects: customer, hourly rate, colour; archive or delete. */
-export function ProjectsManager({ projects, contacts }: { projects: Project[]; contacts: { id: string; name: string }[] }) {
+export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects: Project[]; contacts: { id: string; name: string }[]; home?: string }) {
   const t = useTranslations('time');
   const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState<Project | 'new' | null>(null);
   const [showArchived, setShowArchived] = useState(false);
-  const [form, setForm] = useState<Required<Omit<ProjectInput, 'archived' | 'hourly_rate'>>>({ name: '', contact_id: null, currency: 'CZK', color: COLORS[0] ?? null });
+  const [form, setForm] = useState<Required<Omit<ProjectInput, 'archived' | 'hourly_rate'>>>({ name: '', contact_id: null, currency: home, color: COLORS[0] ?? null });
   const [rate, setRate] = useState('');
 
   useEffect(() => {
@@ -35,11 +35,11 @@ export function ProjectsManager({ projects, contacts }: { projects: Project[]; c
     setForm({
       name: p?.name ?? '',
       contact_id: p?.contactId ?? null,
-      currency: p?.currency ?? 'CZK',
+      currency: p?.currency ?? home,
       color: p?.color ?? COLORS[projects.length % COLORS.length] ?? null
     });
     setRate(p?.hourlyRate ? String(Number(p.hourlyRate)) : '');
-  }, [editing, projects.length]);
+  }, [editing, projects.length, home]);
   const payload = (): ProjectInput => ({ ...form, name: form.name.trim(), hourly_rate: rate ? Number(rate.replace(',', '.')) : null });
 
   const act = (fn: () => Promise<{ ok: true } | { ok: false; error: string }>, okText: string, after?: () => void) =>

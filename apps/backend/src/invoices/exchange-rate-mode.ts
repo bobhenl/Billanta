@@ -1,6 +1,10 @@
 /**
- * How a foreign-currency document converts to CZK (Settings → Faktury →
- * Kurz pro cizí měny), and what of it the document prints.
+ * How a foreign-currency document converts to the company's home currency
+ * (Settings → Faktury → Kurz pro cizí měny), and what of it the document
+ * prints. The home currency is CZK, or EUR for a Slovak company
+ * (`homeCurrencyOf`); a Slovak company always gets the ECB rate of the day
+ * before the tax point (§ 26 ods. 1 zákona č. 222/2004 Z. z.), stored as
+ * `ecb_daily`, because Slovak law knows no annual rate.
  *
  * Company setting (`tenants.invoice_form_prefs.exchangeRateMode`):
  *  - `cnb_daily`: the ČNB rate of the taxable supply date (DUZP, else the
@@ -18,17 +22,19 @@
  * null there and keep printing exactly what they printed before.
  */
 
+import type { HomeCurrency } from "@faktur/cz-compliance";
+
 export const EXCHANGE_RATE_SETTINGS = ["cnb_daily", "annual", "none"] as const;
 export type ExchangeRateSetting = (typeof EXCHANGE_RATE_SETTINGS)[number];
 
 /** Stored per document. `manual` = a rate typed on the draft by the user. */
-export const STORED_RATE_MODES = ["cnb_daily", "annual", "manual", "none"] as const;
+export const STORED_RATE_MODES = ["cnb_daily", "ecb_daily", "annual", "manual", "none"] as const;
 export type StoredRateMode = (typeof STORED_RATE_MODES)[number];
 
 export interface AnnualRate {
   year: number;
   currency: string;
-  /** CZK per 1 unit. */
+  /** CZK per 1 unit (Czech companies only). */
   rate: number;
 }
 
@@ -89,10 +95,14 @@ export function resolveRateMode(input: {
   totalVat: number;
   manualRate: number | null;
   annualRate: number | null;
-}): { mode: StoredRateMode; source: "manual" | "annual" | "cnb" } {
-  const source = input.manualRate != null && input.manualRate > 0 ? "manual" : input.setting === "annual" && input.annualRate != null && input.annualRate > 0 ? "annual" : "cnb";
+  /** Home currency; EUR (a Slovak company) has the ECB rate and no annual one. */
+  home?: HomeCurrency;
+}): { mode: StoredRateMode; source: "manual" | "annual" | "cnb" | "ecb" } {
+  const daily = input.home === "EUR" ? "ecb" : "cnb";
+  const annual = daily === "cnb" && input.setting === "annual" && input.annualRate != null && input.annualRate > 0;
+  const source = input.manualRate != null && input.manualRate > 0 ? "manual" : annual ? "annual" : daily;
   if (input.setting === "none" && mayHideConversion(input.vatStatus, input.totalVat)) return { mode: "none", source };
-  return { mode: source === "manual" ? "manual" : source === "annual" ? "annual" : "cnb_daily", source };
+  return { mode: source === "manual" ? "manual" : source === "annual" ? "annual" : source === "ecb" ? "ecb_daily" : "cnb_daily", source };
 }
 
 /** Year of the day the rate belongs to (DUZP, else the issue date), in Prague time. */
@@ -112,7 +122,7 @@ export function czechDay(iso: string): string {
  * the old wording.
  */
 export function rateLineLabel(
-  labels: { fxRate: string; fxRateOn: string; fxRateAnnual: string; fxRateManual: string },
+  labels: { fxRate: string; fxRateOn: string; fxRateEcbOn: string; fxRateAnnual: string; fxRateManual: string },
   invoice: { exchangeRateMode: string | null; exchangeRateDate: string | null },
   fallbackDay: Date | null,
 ): string | null {
@@ -125,10 +135,12 @@ export function rateLineLabel(
     }
     case "manual":
       return labels.fxRateManual;
-    case "cnb_daily": {
+    case "cnb_daily":
+    case "ecb_daily": {
       const day = invoice.exchangeRateDate ? czechDay(invoice.exchangeRateDate) : fallbackDay ? czechDay(isoPragueDay(fallbackDay)) : null;
+      const label = invoice.exchangeRateMode === "ecb_daily" ? labels.fxRateEcbOn : labels.fxRateOn;
       // split/join: a bilingual label holds the placeholder twice.
-      return day ? labels.fxRateOn.split("{date}").join(day) : labels.fxRate;
+      return day ? label.split("{date}").join(day) : labels.fxRate;
     }
     default:
       return labels.fxRate;

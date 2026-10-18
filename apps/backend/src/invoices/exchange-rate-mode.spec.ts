@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { invoiceFormPrefsSchema } from "../tenants/invoice-form-prefs";
 import { annualRateFor, exchangeRateSettingsOf, mayHideConversion, rateLineLabel, resolveRateMode } from "./exchange-rate-mode";
 
-const labels = { fxRate: "Kurz ČNB", fxRateOn: "Kurz ČNB k {date}", fxRateAnnual: "Jednotný kurz pro rok {year}", fxRateManual: "Kurz" };
+const labels = { fxRate: "Kurz ČNB", fxRateOn: "Kurz ČNB k {date}", fxRateEcbOn: "Kurz ECB k {date}", fxRateAnnual: "Jednotný kurz pro rok {year}", fxRateManual: "Kurz" };
 
 describe("exchangeRateSettingsOf", () => {
   it("defaults to the daily ČNB rate for prefs saved before the setting", () => {
@@ -92,6 +92,11 @@ describe("resolveRateMode", () => {
   it("ignores 'none' for an identified person on a document with VAT", () => {
     expect(resolveRateMode({ ...base, vatStatus: "identified", totalVat: 21, setting: "none" }).mode).toBe("cnb_daily");
   });
+  it("a Slovak company converts at the ECB rate, with no annual rate", () => {
+    expect(resolveRateMode({ ...base, home: "EUR", setting: "cnb_daily" })).toEqual({ mode: "ecb_daily", source: "ecb" });
+    expect(resolveRateMode({ ...base, home: "EUR", setting: "annual", annualRate: 24.6 })).toEqual({ mode: "ecb_daily", source: "ecb" });
+    expect(resolveRateMode({ ...base, home: "EUR", vatStatus: "non_payer", totalVat: 0, setting: "none" })).toEqual({ mode: "none", source: "ecb" });
+  });
 });
 
 describe("rateLineLabel", () => {
@@ -101,6 +106,9 @@ describe("rateLineLabel", () => {
   });
   it("names the year of an annual rate", () => {
     expect(rateLineLabel(labels, { exchangeRateMode: "annual", exchangeRateDate: "2026-01-01" }, day)).toBe("Jednotný kurz pro rok 2026");
+  });
+  it("names the ECB fixing day", () => {
+    expect(rateLineLabel(labels, { exchangeRateMode: "ecb_daily", exchangeRateDate: "2026-03-13" }, day)).toBe("Kurz ECB k 13.03.2026");
   });
   it("prints nothing for a hidden conversion", () => {
     expect(rateLineLabel(labels, { exchangeRateMode: "none", exchangeRateDate: null }, day)).toBeNull();

@@ -4,6 +4,8 @@
  * (apps/backend/src/invoices/invoices.service.ts `list()` / `detail()`).
  */
 
+import type { HomeCurrency } from '@faktur/cz-compliance';
+
 export type InvoiceStatus = 'draft' | 'pending_review' | 'issued' | 'paid' | 'cancelled';
 export type DocumentType = 'invoice' | 'proforma' | 'credit_note' | 'quote';
 export type PaymentMethod = 'bank_transfer' | 'cash' | 'card' | 'cash_on_delivery' | 'other';
@@ -24,11 +26,11 @@ export interface InvoiceRow {
   issueDate: string | null;
   dueDate: string | null;
   taxableSupplyDate: string | null;
-  /** CZK per 1 unit of `currency` (ČNB rate stored at issue); null for CZK. */
+  /** Home currency per 1 unit of `currency` (ČNB, or ECB for a Slovak company, stored at issue); null at home. */
   exchangeRate?: string | null;
   /** How the rate was chosen at issue (Settings → Faktury → Kurz); null = issued before the setting. */
-  exchangeRateMode?: 'cnb_daily' | 'annual' | 'manual' | 'none' | null;
-  /** ČNB list day (cnb_daily) or 1 January of the rate's year (annual), YYYY-MM-DD. */
+  exchangeRateMode?: 'cnb_daily' | 'ecb_daily' | 'annual' | 'manual' | 'none' | null;
+  /** ČNB / ECB fixing day (cnb_daily, ecb_daily) or 1 January of the rate's year (annual), YYYY-MM-DD. */
   exchangeRateDate?: string | null;
   paidAt: string | null;
   /** Sum received so far (numeric string); equals the total once paid. */
@@ -60,7 +62,7 @@ export interface BuyerDetailsOutcome {
 /**
  * Which wording the CZK conversion of a foreign-currency document gets, the
  * same as its PDF (backend invoices/exchange-rate-mode.ts `rateLineLabel`):
- * `on` = ČNB rate of a given day, `annual` = the company's rate for a year,
+ * `on` = ČNB rate of a given day, `ecb` = ECB rate of a given day (a Slovak company), `annual` = the company's rate for a year,
  * `manual` = a typed rate, `hidden` = not printed, `legacy` = before the setting.
  */
 export function fxLabelOf(row: {
@@ -68,7 +70,7 @@ export function fxLabelOf(row: {
   exchangeRateDate?: string | null;
   taxableSupplyDate?: string | null;
   issueDate?: string | null;
-}): { kind: 'on'; date: string } | { kind: 'annual'; year: string } | { kind: 'manual' | 'hidden' | 'legacy' } {
+}): { kind: 'on' | 'ecb'; date: string } | { kind: 'annual'; year: string } | { kind: 'manual' | 'hidden' | 'legacy' } {
   const fallback = row.taxableSupplyDate ?? row.issueDate ?? null;
   switch (row.exchangeRateMode) {
     case 'none':
@@ -81,9 +83,21 @@ export function fxLabelOf(row: {
       const date = row.exchangeRateDate ?? fallback;
       return date ? { kind: 'on', date } : { kind: 'legacy' };
     }
+    case 'ecb_daily': {
+      const date = row.exchangeRateDate ?? fallback;
+      return date ? { kind: 'ecb', date } : { kind: 'legacy' };
+    }
     default:
       return { kind: 'legacy' };
   }
+}
+
+/**
+ * A stored rate (home currency per 1 unit) the way its source quotes it:
+ * ČNB as CZK per unit, ECB as units per euro (25,2 CZK/EUR, not 0,0397).
+ */
+export function rateQuote(rate: number, currency: string, home: HomeCurrency): { value: number; pair: string } {
+  return home === 'EUR' ? { value: 1 / rate, pair: `${currency}/EUR` } : { value: rate, pair: `CZK/${currency}` };
 }
 
 /** The draft is waiting for the customer, or the customer has filled in their details and it still is a draft. */

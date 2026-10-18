@@ -5,6 +5,7 @@ import { Banner } from '@/components/banner';
 import { FilterField, filterFieldClass as field, FilterPanel } from '@/components/filter-panel';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney } from '@/lib/invoice-ui';
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { formatMinutes, type Project, type TimeEntry, type TimeSummary } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
 import type { Contact } from '../invoices/new/types';
@@ -110,7 +111,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
     {
       key: 'unbilled',
       label: t('kpi.unbilled'),
-      value: summary.unbilled.length ? summary.unbilled.map((u) => formatMoney(u.amount, u.currency, locale)).join(' · ') : formatMoney(0, 'CZK', locale),
+      value: summary.unbilled.length ? summary.unbilled.map((u) => formatMoney(u.amount, u.currency, locale)).join(' · ') : formatMoney(0, await fetchHomeCurrency(), locale),
       sub: t('kpi.unbilledHours', { hours: formatMinutes(summary.unbilledMinutes) }),
       href: hrefWith({}, { period: 'all', state: 'unbilled' }),
       tone: 'text-warning'
@@ -222,7 +223,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
 
       <EntriesTable rows={rows} projects={projects} contacts={contactOptions} filtered={rows.length !== entries.length || !!filters.state || panelActive > 0} />
 
-      <ProjectsManager projects={projects} contacts={contactOptions} />
+      <ProjectsManager projects={projects} contacts={contactOptions} home={await fetchHomeCurrency()} />
     </div>
   );
 }

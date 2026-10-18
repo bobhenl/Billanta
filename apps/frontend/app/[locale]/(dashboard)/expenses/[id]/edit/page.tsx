@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { apiFetch, ApiError } from '@/lib/api-client';
 import type { Expense } from '@/lib/expense-ui';
 import { ExpenseForm, type SupplierOption } from '../../expense-form';
@@ -15,5 +16,5 @@ export default async function EditExpensePage(props: { params: Promise<{ id: str
     }),
     apiFetch<SupplierOption[]>('/api/v1/contacts').catch(() => [])
   ]);
-  return <ExpenseForm expense={expense} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} />;
+  return <ExpenseForm expense={expense} suppliers={suppliers.map(({ id, legalName, ico }) => ({ id, legalName, ico }))} home={await fetchHomeCurrency()} />;
 }

@@ -542,11 +542,11 @@ export const invoices = pgTable(
     language: varchar("language", { length: 2 }).notNull().default("cs"),
     // Přenesená daňová povinnost (§92a ZDPH): VAT is not charged on the invoice.
     reverseCharge: boolean("reverse_charge").notNull().default(false),
-    /** CZK per 1 unit of `currency` (ČNB rate on the taxable supply date), set at issue; null for CZK. */
-    exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+    /** Home currency (CZK, EUR for SK companies) per 1 unit of `currency`, set at issue; null for the home currency. */
+    exchangeRate: numeric("exchange_rate", { precision: 20, scale: 10 }),
     /** How `exchangeRate` was chosen at issue (exchange-rate-mode.ts); null = issued before the setting existed. */
-    exchangeRateMode: text("exchange_rate_mode").$type<"cnb_daily" | "annual" | "manual" | "none">(),
-    /** The ČNB list day for `cnb_daily`, 1 January of the rate's year for `annual`; null otherwise. */
+    exchangeRateMode: text("exchange_rate_mode").$type<"cnb_daily" | "ecb_daily" | "annual" | "manual" | "none">(),
+    /** The ČNB list / ECB fixing day for `cnb_daily` / `ecb_daily`, 1 January of the rate's year for `annual`; null otherwise. */
     exchangeRateDate: date("exchange_rate_date", { mode: "string" }),
     /** Account printed for payment; null = auto (matching currency, else the company's primary account). */
     bankAccountId: uuid("bank_account_id").references(() => tenantBankAccounts.id, { onDelete: "set null" }),
@@ -908,8 +908,8 @@ export const expenses = pgTable("expenses", {
   supplierIco: varchar("supplier_ico", { length: 8 }),
   /** Supplier's DIČ — the VAT control statement (KH, B.2) lists received documents by it. */
   supplierDic: varchar("supplier_dic", { length: 14 }),
-  /** CZK per 1 unit of `currency`; null for CZK (looked up from ČNB when missing). */
-  exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+  /** Home currency (CZK, EUR for SK companies) per 1 unit of `currency`; null for the home currency (looked up when missing). */
+  exchangeRate: numeric("exchange_rate", { precision: 20, scale: 10 }),
   dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   note: text("note"),

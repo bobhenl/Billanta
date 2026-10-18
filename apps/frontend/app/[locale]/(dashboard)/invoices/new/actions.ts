@@ -158,7 +158,8 @@ function invoiceBody(input: InvoiceDraftInput) {
     taxable_supply_date: input.taxableSupplyDate === undefined ? undefined : input.taxableSupplyDate || null,
     currency: input.currency,
     bank_account_id: input.bankAccountId || null,
-    exchange_rate: input.currency !== 'CZK' && Number(input.exchangeRate.replace(',', '.')) > 0 ? Number(input.exchangeRate.replace(',', '.')) : null,
+    // Already home currency per unit and empty at home (see the form); the API ignores it at home anyway.
+    exchange_rate: Number(input.exchangeRate.replace(',', '.')) > 0 ? Number(input.exchangeRate.replace(',', '.')) : null,
     payment_method: input.paymentMethod,
     payment_method_label: text(input.paymentMethodLabel),
     payment_instructions: text(input.paymentInstructions),

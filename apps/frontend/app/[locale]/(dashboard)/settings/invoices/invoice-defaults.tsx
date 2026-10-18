@@ -30,7 +30,7 @@ export interface DefaultsDraft {
   language: DocLanguage;
   dueDays: string;
   paymentMethod: string;
-  currency: string; // '' = CZK, the form's own default
+  currency: string; // '' = the home currency, the form's own default
   bankAccountId: string; // '' = the primary account
   contact: Contact | null;
   items: ItemDraft[];
@@ -51,12 +51,14 @@ export function InvoiceDefaultsFields({
   onChange,
   bankAccounts,
   vatPayer,
+  home = 'CZK',
   readOnly
 }: {
   value: DefaultsDraft;
   onChange: (next: DefaultsDraft) => void;
   bankAccounts: { id: string; label: string; line: string }[];
   vatPayer: boolean;
+  home?: string;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices.blank');
@@ -110,7 +112,7 @@ export function InvoiceDefaultsFields({
         </label>
         <label className="block text-sm">
           <span className={labelText}>{t('currency')}</span>
-          <select className={cn(inputClass, 'mt-1')} value={value.currency || 'CZK'} disabled={readOnly} onChange={(e) => set('currency', e.target.value)}>
+          <select className={cn(inputClass, 'mt-1')} value={value.currency || home} disabled={readOnly} onChange={(e) => set('currency', e.target.value)}>
             {CURRENCIES.map((c) => (
               <option key={c} value={c}>
                 {c}

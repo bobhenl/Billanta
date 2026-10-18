@@ -12,7 +12,7 @@ import { DEFAULT_SHOWN, PDF_ACCENTS, type Contact, type DocLanguage, type Invoic
 import { updateInvoiceFormPrefs } from '../actions';
 import { InvoiceDefaultsFields, parseNumber, type DefaultsDraft } from './invoice-defaults';
 import { annualRatesOf, ExchangeRateSettings, type AnnualRateDraft } from './exchange-rate-settings';
-import type { VatStatus } from '@faktur/cz-compliance';
+import type { HomeCurrency, VatStatus } from '@faktur/cz-compliance';
 
 /** Toggles grouped the way the invoice form lays them out. */
 const GROUPS: { key: string; fields: OptionalField[] }[] = [
@@ -29,6 +29,7 @@ export function InvoiceFormSettings({
   bankAccounts,
   vatPayer,
   vatStatus,
+  home = 'CZK',
   readOnly
 }: {
   prefs: InvoiceFormPrefs;
@@ -38,6 +39,8 @@ export function InvoiceFormSettings({
   bankAccounts: { id: string; label: string; line: string }[];
   vatPayer: boolean;
   vatStatus: VatStatus;
+  /** CZK, or EUR for a Slovak company: the form's own default currency and the rate source. */
+  home?: HomeCurrency;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices');
@@ -96,7 +99,7 @@ export function InvoiceFormSettings({
         reminders_enabled: reminders,
         reminder_interval_days: Math.min(60, Math.max(1, Math.round(reminderInterval) || 7)),
         reminder_max: Math.min(10, Math.max(1, Math.round(reminderMax) || 3)),
-        default_currency: blank.currency && blank.currency !== 'CZK' ? blank.currency : null,
+        default_currency: blank.currency && blank.currency !== home ? blank.currency : null,
         default_bank_account_id: blank.bankAccountId || null,
         default_contact_id: blank.contact?.id ?? null,
         default_items: blank.items
@@ -243,6 +246,7 @@ export function InvoiceFormSettings({
         rates={annualRates}
         onRatesChange={setAnnualRates}
         vatStatus={vatStatus}
+        home={home}
         readOnly={readOnly}
       />
 
@@ -298,7 +302,7 @@ export function InvoiceFormSettings({
         <InfoHint hint={t('defaultsHint')}>
           <h2 className="font-bold">{t('defaultsTitle')}</h2>
         </InfoHint>
-        <InvoiceDefaultsFields value={blank} onChange={setBlank} bankAccounts={bankAccounts} vatPayer={vatPayer} readOnly={readOnly} />
+        <InvoiceDefaultsFields value={blank} onChange={setBlank} bankAccounts={bankAccounts} vatPayer={vatPayer} home={home} readOnly={readOnly} />
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
             <span className="font-medium">{tf('issuePlace')}</span>

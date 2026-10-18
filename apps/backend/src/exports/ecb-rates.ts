@@ -11,7 +11,13 @@ const ECB_URL = "https://data-api.ecb.europa.eu/service/data/EXR";
 const LOOKBACK_DAYS = 10;
 const MAX_CACHED = 1000;
 
-const cache = new Map<string, Promise<number | null>>();
+/** A published fixing: units of the currency per 1 EUR, and its day (YYYY-MM-DD). */
+export interface EcbFixing {
+  rate: number;
+  day: string;
+}
+
+const cache = new Map<string, Promise<EcbFixing | null>>();
 
 /** Test hook: forget every cached rate. */
 export function clearEcbCache() {
@@ -26,12 +32,16 @@ const isoDay = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d
  * `format=csvdata` response, in units of the currency per 1 EUR.
  */
 export function parseEcbCsv(csv: string, upTo: string): number | null {
+  return parseEcbFixing(csv, upTo)?.rate ?? null;
+}
+
+export function parseEcbFixing(csv: string, upTo: string): EcbFixing | null {
   const lines = csv.trim().split(/\r?\n/);
   const head = lines.shift()?.split(",") ?? [];
   const day = head.indexOf("TIME_PERIOD");
   const value = head.indexOf("OBS_VALUE");
   if (day < 0 || value < 0) return null;
-  let best: { day: string; rate: number } | null = null;
+  let best: EcbFixing | null = null;
   for (const line of lines) {
     const cols = line.split(",");
     const d = cols[day]!;
@@ -39,17 +49,17 @@ export function parseEcbCsv(csv: string, upTo: string): number | null {
     if (!d || d > upTo || !Number.isFinite(rate) || rate <= 0) continue;
     if (!best || d > best.day) best = { day: d, rate };
   }
-  return best?.rate ?? null;
+  return best;
 }
 
-async function load(code: string, upTo: Date): Promise<number | null> {
+async function load(code: string, upTo: Date): Promise<EcbFixing | null> {
   const from = new Date(upTo);
   from.setDate(from.getDate() - LOOKBACK_DAYS);
   const url = `${ECB_URL}/D.${code}.EUR.SP00.A?startPeriod=${isoDay(from)}&endPeriod=${isoDay(upTo)}&format=csvdata`;
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) return null;
-    return parseEcbCsv(await res.text(), isoDay(upTo));
+    return parseEcbFixing(await res.text(), isoDay(upTo));
   } catch {
     return null;
   }
@@ -61,8 +71,14 @@ async function load(code: string, upTo: Date): Promise<number | null> {
  * null when the rate is not available.
  */
 export async function getEcbRate(currency: string, taxPoint: Date): Promise<number | null> {
+  if (currency.toUpperCase() === "EUR") return 1;
+  return (await getEcbFixing(currency, taxPoint))?.rate ?? null;
+}
+
+/** The fixing `getEcbRate` uses, with the day it was published. EUR has none (null). */
+export async function getEcbFixing(currency: string, taxPoint: Date): Promise<EcbFixing | null> {
   const code = currency.toUpperCase();
-  if (code === "EUR") return 1;
+  if (code === "EUR") return null;
   if (!/^[A-Z]{3}$/.test(code)) return null;
   const dayBefore = new Date(taxPoint);
   dayBefore.setDate(dayBefore.getDate() - 1);
@@ -75,8 +91,8 @@ export async function getEcbRate(currency: string, taxPoint: Date): Promise<numb
   cache.set(key, pending);
   while (cache.size > MAX_CACHED) cache.delete(cache.keys().next().value!);
   // A failed fetch is not cached; the next call retries.
-  void pending.then((rate) => {
-    if (rate == null && cache.get(key) === pending) cache.delete(key);
+  void pending.then((fixing) => {
+    if (fixing == null && cache.get(key) === pending) cache.delete(key);
   });
   return pending;
 }

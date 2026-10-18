@@ -29,7 +29,7 @@ const FILES = [
   { key: 'moneyS3', path: 'money-s3.xml', icon: FileCode2 }
 ] as const;
 
-export function ExportPicker() {
+export function ExportPicker({ home = 'CZK' }: { home?: string }) {
   const t = useTranslations('settings.exports');
   const now = new Date();
   const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -101,7 +101,7 @@ export function ExportPicker() {
           >
             <Icon className="h-7 w-7 text-primary" />
             <span className="mt-3 font-bold">{t(`files.${key}.title`)}</span>
-            <span className="mt-1 flex-1 text-xs text-muted-foreground">{t(`files.${key}.hint`)}</span>
+            <span className="mt-1 flex-1 text-xs text-muted-foreground">{t(`files.${key}.hint`, { home, source: home === 'EUR' ? 'ECB' : 'ČNB' })}</span>
             <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
               <Download className="h-4 w-4" />
               {t('download')}

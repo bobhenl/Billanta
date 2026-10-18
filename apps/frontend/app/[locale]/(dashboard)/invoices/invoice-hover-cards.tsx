@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import type { HomeCurrency } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
-import { formatDate, formatMoney, fxLabelOf, type InvoiceRow } from '@/lib/invoice-ui';
+import { formatDate, formatMoney, fxLabelOf, rateQuote, type InvoiceRow } from '@/lib/invoice-ui';
 
 const OPEN_DELAY_MS = 300;
 const CLOSE_DELAY_MS = 150;
@@ -117,24 +118,26 @@ function HoverPopover({
   );
 }
 
-/** The total cell: CZK equivalent at the stored ČNB rate, or the VAT split for CZK. */
-export function AmountHover({ row, children }: { row: InvoiceRow; children: ReactNode }) {
+/** The total cell: home-currency equivalent at the stored rate, or the VAT split at home. */
+export function AmountHover({ row, home = 'CZK', children }: { row: InvoiceRow; home?: HomeCurrency; children: ReactNode }) {
   const t = useTranslations('invoices.hover');
   const locale = useLocale();
   const rate = row.exchangeRate ? Number(row.exchangeRate) : null;
   let info: string | null = null;
-  if (row.currency !== 'CZK' && rate) {
-    const amount = formatMoney(row.total * rate, 'CZK', locale);
-    const rateText = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(rate);
+  if (row.currency !== home && rate) {
+    const amount = formatMoney(row.total * rate, home, locale);
+    const quote = rateQuote(rate, row.currency, home);
+    const rateText = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(quote.value);
+    const vars = { amount, rate: rateText, pair: quote.pair, source: home === 'EUR' ? 'ECB' : 'ČNB' };
     const fx = fxLabelOf(row);
-    if (fx.kind === 'annual' && fx.year) info = t('fxAnnual', { amount, rate: rateText, year: fx.year });
-    else if (fx.kind === 'manual' || fx.kind === 'hidden') info = t('fxManual', { amount, rate: rateText });
+    if (fx.kind === 'annual' && fx.year) info = t('fxAnnual', { ...vars, year: fx.year });
+    else if (fx.kind === 'manual' || fx.kind === 'hidden') info = t('fxManual', vars);
     else {
-      const date = formatDate(fx.kind === 'on' ? fx.date : (row.taxableSupplyDate ?? row.issueDate), locale);
-      info = date ? t('fx', { amount, rate: rateText, date }) : t('fxNoDate', { amount, rate: rateText });
+      const date = formatDate(fx.kind === 'on' || fx.kind === 'ecb' ? fx.date : (row.taxableSupplyDate ?? row.issueDate), locale);
+      info = date ? t('fx', { ...vars, date }) : t('fxNoDate', vars);
     }
-  } else if (row.currency === 'CZK' && row.totalVat !== 0) {
-    info = t('breakdown', { base: formatMoney(row.totalWithoutVat, 'CZK', locale), vat: formatMoney(row.totalVat, 'CZK', locale) });
+  } else if (row.currency === home && row.totalVat !== 0) {
+    info = t('breakdown', { base: formatMoney(row.totalWithoutVat, home, locale), vat: formatMoney(row.totalVat, home, locale) });
   }
   if (!info) return <>{children}</>;
   return (

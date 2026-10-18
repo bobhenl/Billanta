@@ -1,5 +1,6 @@
 'use client';
 
+import type { HomeCurrency } from '@faktur/cz-compliance';
 import { Fragment, useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import {
   AlertTriangle,
@@ -149,7 +150,7 @@ function sortValue(row: InvoiceRow, key: SortKey): string | number | null {
  * the state-dependent actions, checkboxes enable bulk actions, and the
  * visible columns are the viewer's choice (remembered in this browser).
  */
-export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered: boolean }) {
+export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceRow[]; filtered: boolean; home?: HomeCurrency }) {
   const t = useTranslations('doc');
   const tList = useTranslations('invoices');
   const tStatus = useTranslations('invoices.status');
@@ -263,7 +264,7 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
       case 'total':
         return (
           <span className="font-semibold tabular-nums">
-            <AmountHover row={row}>{formatMoney(row.total, row.currency, locale)}</AmountHover>
+            <AmountHover row={row} home={home}>{formatMoney(row.total, row.currency, locale)}</AmountHover>
             {row.status === 'issued' && Number(row.amountPaid ?? 0) > 0 && (
               <span className="block text-xs font-medium text-success">{t('partial.short', { amount: formatMoney(Number(row.amountPaid), row.currency, locale) })}</span>
             )}

@@ -438,10 +438,10 @@
   },
   "invoices": {
     "hover": {
-      "fx": "≈ {amount} (CNB rate {rate} as of {date})",
-      "fxNoDate": "≈ {amount} (CNB rate {rate})",
-      "fxAnnual": "≈ {amount} (fixed rate {rate} for {year})",
-      "fxManual": "≈ {amount} (rate {rate})",
+      "fx": "≈ {amount} ({source} rate {rate} {pair} as of {date})",
+      "fxNoDate": "≈ {amount} ({source} rate {rate} {pair})",
+      "fxAnnual": "≈ {amount} (fixed rate {rate} {pair} for {year})",
+      "fxManual": "≈ {amount} (rate {rate} {pair})",
       "breakdown": "Net {base} + VAT {vat}",
       "loading": "Loading…",
       "error": "Could not load the summary.",
@@ -901,8 +901,8 @@
     "kpi": {
       "toReview": "To match",
       "matched": "Matched",
-      "incoming": "Incoming (CZK)",
-      "outgoing": "Outgoing (CZK)"
+      "incoming": "Incoming ({currency})",
+      "outgoing": "Outgoing ({currency})"
     },
     "detail": {
       "title": "Bank transaction",
@@ -1855,7 +1855,7 @@
       "files": {
         "invoices": {
           "title": "Issued invoices (CSV)",
-          "hint": "All issued documents with base and VAT per rate, the ČNB rate and the CZK amount. For Excel and accounting software."
+          "hint": "All issued documents with base and VAT per rate, the {source} rate and the {home} amount. For Excel and accounting software."
         },
         "expenses": {
           "title": "Expenses (CSV)",
@@ -1959,7 +1959,7 @@
         "balance": "To pay (+) / overpaid (−)",
         "nextAdvance": "New monthly advance",
         "total": "Tax + insurance in total",
-        "missingRates": "{count, plural, one {# foreign-currency document} other {# foreign-currency documents}} without a ČNB rate – left out.",
+        "missingRates": "{count, plural, one {# foreign-currency document} other {# foreign-currency documents}} without a {source} rate – left out.",
         "paramsFallback": "No parameters for this year yet; using {year}.",
         "downloadCsv": "Download CSV",
         "epoLink": "EPO forms (Financial Administration)",
@@ -2044,7 +2044,8 @@
         "modes": {
           "cnb_daily": "Daily ČNB rate",
           "annual": "Fixed annual rate",
-          "none": "Don't print the CZK conversion"
+          "none": "Don't print the {home} conversion",
+          "ecb_daily": "Daily ECB rate"
         },
         "cnbDailyHint": "The ČNB rate for the date of taxable supply. If ČNB published no rate that day, the last earlier one is used.",
         "annualHint": "One rate for the whole year under § 38 of the Czech VAT Act. Enter it below for each year and currency. A year without a rate falls back to the daily ČNB rate.",
@@ -2059,7 +2060,11 @@
         "perUnit": "CZK per 1 {currency}",
         "remove": "Remove rate",
         "duplicate": "Each year and currency can be listed only once.",
-        "add": "Add rate"
+        "add": "Add rate",
+        "hintEur": "How an amount in a foreign currency is converted to EUR. The rate is saved with the document when it is issued and does not change after that.",
+        "ecbDailyHint": "The ECB reference rate of the day before the tax point (§ 26(1) of the Slovak VAT Act). Slovak law has no fixed annual rate.",
+        "noneHintEcb": "The document won't show a conversion to EUR. The ECB rate is still saved for your reports.",
+        "nonePayerEcb": "A VAT payer must state the VAT in euros on the invoice (§ 74(1)(i) of the Slovak VAT Act), so this option isn't available. Invoices are issued with the ECB rate."
       },
       "groups": {
         "items": "Items",
@@ -3627,11 +3632,11 @@
       "ks": "Constant sym.",
       "ss": "Specific sym.",
       "more": "Constant / specific symbol, order number",
-      "exchangeRate": "Rate CZK/{currency}",
-      "exchangeRateAuto": "ČNB rate at issue",
+      "exchangeRate": "Rate {pair}",
+      "exchangeRateAuto": "{source} rate at issue",
       "exchangeRateAnnual": "Fixed rate {rate} ({year})",
-      "exchangeRateLoad": "Load from ČNB",
-      "exchangeRateFailed": "The ČNB rate could not be loaded.",
+      "exchangeRateLoad": "Load from {source}",
+      "exchangeRateFailed": "The {source} rate could not be loaded.",
       "inCzk": "≈ {amount} total",
       "bankAccount": "Pay to account",
       "bankAccountAuto": "Automatic ({account})",
@@ -3910,12 +3915,12 @@
       "partial": "Partial payment recorded.",
       "rotated": "New link issued, the old one no longer works"
     },
-    "fxLine": "{label} {rate} CZK/{currency} · VAT {vat} · total {total}",
+    "fxLine": "{label} {rate} {pair} · VAT {vat} · total {total}",
     "fxLabel": "ČNB rate",
     "fxLabelOn": "ČNB rate as of {date}",
     "fxLabelAnnual": "Fixed annual rate for {year}",
     "fxLabelManual": "Exchange rate",
-    "fxHidden": "The CZK conversion isn't printed on the document (rate {rate} CZK/{currency} for reports only).",
+    "fxHidden": "The {home} conversion isn't printed on the document (rate {rate} {pair} for reports only).",
     "views": {
       "title": "Shared link",
       "count": "Viewed",
@@ -4107,13 +4112,13 @@
       "toggle": "Fees and exchange rate (PayPal, Stripe, Wise…)",
       "hint": "Optional. From the fees and the amount actually credited we work out the net proceeds and the exchange difference.",
       "fee": "Provider fee ({currency})",
-      "received": "Credited to the account (CZK)",
+      "received": "Credited to the account ({home})",
       "title": "Net proceeds",
-      "gross": "Received (invoice ČNB rate)",
+      "gross": "Received (invoice rate)",
       "fees": "Fees",
       "fx": "Exchange difference",
       "net": "Net proceeds",
-      "noReceived": "Enter the amount credited in CZK to see the exchange difference too."
+      "noReceived": "Enter the amount credited in {home} to see the exchange difference too."
     },
     "history": "Change history",
     "correction": {
@@ -4122,7 +4127,8 @@
       "send": "Send corrected version",
       "sendBody": "The customer gets an email titled “Corrected invoice” explaining that it replaces the earlier version. The send is recorded in the change history.",
       "editNote": "You already sent this invoice to the customer ({date}). After editing, the detail page will offer to send them the corrected version."
-    }
+    },
+    "fxLabelEcbOn": "ECB rate as of {date}"
   },
   "invite": {
     "title": "Team invitation",
@@ -5732,7 +5738,7 @@
     "exportHint": "The documents for the chosen period and filters, ready for Excel. The period follows the tax point date.",
     "docCount": "{count, plural, one {# document} other {# documents}}",
     "inCurrency": "Amounts are in {currency}, not converted.",
-    "converted": "{count, plural, one {# document in another currency is} other {# documents in other currencies are}} converted to CZK at the rate stored on the document.",
+    "converted": "{count, plural, one {# document in another currency is} other {# documents in other currencies are}} converted to {home} at the rate stored on the document.",
     "missingRate": "{count, plural, one {# document in another currency has no stored rate, so it is not included.} other {# documents in other currencies have no stored rate, so they are not included.}}",
     "expensesUnfiltered": "Expenses are filtered by currency only, the other filters do not apply to them.",
     "outstandingHint": "Unpaid and overdue: with VAT, from documents in the period, minus partial payments.",
@@ -5747,7 +5753,7 @@
     "filters": {
       "label": "Filters",
       "currency": "Currency",
-      "allCurrencies": "All currencies (in CZK)",
+      "allCurrencies": "All currencies (in {home})",
       "language": "Document language",
       "allLanguages": "All languages",
       "customer": "Customer",

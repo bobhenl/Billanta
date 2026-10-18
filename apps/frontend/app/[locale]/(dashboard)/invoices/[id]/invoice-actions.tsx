@@ -57,6 +57,7 @@ export function InvoiceActions({
   total = 0,
   amountPaid = 0,
   currency = 'CZK',
+  home = 'CZK',
   sentAt = null,
   editedAfterSend = false
 }: {
@@ -72,6 +73,8 @@ export function InvoiceActions({
   total?: number;
   amountPaid?: number;
   currency?: string;
+  /** The company's own currency: CZK, or EUR for a Slovak one. */
+  home?: string;
   sentAt?: string | null;
   /** Edited in place after the last send: the customer has an older copy. */
   editedAfterSend?: boolean;
@@ -91,12 +94,12 @@ export function InvoiceActions({
   const payNumber = Number(payValue.replace(',', '.')) || 0;
   const payAmount = payMode === 'full' ? undefined : Math.round((payUnit === 'percent' ? (total * payNumber) / 100 : payNumber) * 100) / 100;
   const payInvalid = payMode === 'partial' && !(payAmount && payAmount > 0);
-  // Provider fees (PayPal, Stripe, Wise…) and the CZK actually credited → net margin on the detail.
+  // Provider fees (PayPal, Stripe, Wise…) and the home currency actually credited → net margin on the detail.
   const [feeValue, setFeeValue] = useState('');
   const [editReason, setEditReason] = useState('');
   const [receivedValue, setReceivedValue] = useState('');
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
-  const net = { fee: num(feeValue), receivedCzk: currency === 'CZK' ? undefined : num(receivedValue) };
+  const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
   const isDraft = status === 'draft' || status === 'pending_review';
   const canPay = status === 'issued' && documentType !== 'quote';
@@ -317,15 +320,15 @@ export function InvoiceActions({
         <details className="mt-3 rounded-lg border border-border px-3 py-2 text-sm">
           <summary className="cursor-pointer font-semibold text-muted-foreground">{t('net.toggle')}</summary>
           <p className="mt-1 text-xs text-muted-foreground">{t('net.hint')}</p>
-          <div className={`mt-2 grid gap-2 ${currency === 'CZK' ? '' : 'sm:grid-cols-2'}`}>
+          <div className={`mt-2 grid gap-2 ${currency === home ? '' : 'sm:grid-cols-2'}`}>
             <label className="block">
               <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('net.fee', { currency })}</span>
               <input className={inputClass} inputMode="decimal" value={feeValue} onChange={(e) => setFeeValue(e.target.value.replace(/[^\d.,]/g, ''))} placeholder="0" />
             </label>
-            {currency !== 'CZK' && (
+            {currency !== home && (
               <label className="block">
-                <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('net.received')}</span>
-                <input className={inputClass} inputMode="decimal" value={receivedValue} onChange={(e) => setReceivedValue(e.target.value.replace(/[^\d.,]/g, ''))} placeholder="CZK" />
+                <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('net.received', { home })}</span>
+                <input className={inputClass} inputMode="decimal" value={receivedValue} onChange={(e) => setReceivedValue(e.target.value.replace(/[^\d.,]/g, ''))} placeholder={home} />
               </label>
             )}
           </div>

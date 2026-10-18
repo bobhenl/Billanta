@@ -4,7 +4,7 @@ import { displayCustomField, documentVars } from "./custom-fields";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { Injectable } from "@nestjs/common";
-import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, isEuReverseChargeService, qrInvoiceForSpayd } from "@faktur/cz-compliance";
+import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, homeCurrencyOf, isEuReverseChargeService, qrInvoiceForSpayd, type HomeCurrency } from "@faktur/cz-compliance";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
@@ -102,10 +102,11 @@ const L = {
     proformaNote: "Zálohová faktura není daňovým dokladem.",
     fxRate: "Kurz ČNB",
     fxRateOn: "Kurz ČNB k {date}",
+    fxRateEcbOn: "Kurz ECB k {date}",
     fxRateAnnual: "Jednotný kurz pro rok {year}",
     fxRateManual: "Kurz",
-    vatInCzk: "DPH v CZK",
-    totalInCzk: "Celkem v CZK",
+    vatInHome: "DPH v {currency}",
+    totalInHome: "Celkem v {currency}",
     paid: "UHRAZENO",
     cancelled: "STORNO",
     methods: {
@@ -159,10 +160,11 @@ const L = {
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
     fxRateOn: "Kurz ČNB k {date}",
+    fxRateEcbOn: "Kurz ECB zo dňa {date}",
     fxRateAnnual: "Jednotný kurz pre rok {year}",
     fxRateManual: "Kurz",
-    vatInCzk: "DPH v CZK",
-    totalInCzk: "Spolu v CZK",
+    vatInHome: "DPH v {currency}",
+    totalInHome: "Spolu v {currency}",
     proformaNote: "Zálohová faktúra nie je daňovým dokladom.",
     paid: "UHRADENÉ",
     cancelled: "STORNO",
@@ -217,10 +219,11 @@ const L = {
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
     fxRateOn: "ČNB rate as of {date}",
+    fxRateEcbOn: "ECB rate as of {date}",
     fxRateAnnual: "Fixed annual rate for {year}",
     fxRateManual: "Exchange rate",
-    vatInCzk: "VAT in CZK",
-    totalInCzk: "Total in CZK",
+    vatInHome: "VAT in {currency}",
+    totalInHome: "Total in {currency}",
     proformaNote: "A proforma invoice is not a tax document.",
     paid: "PAID",
     cancelled: "CANCELLED",
@@ -307,7 +310,7 @@ export class InvoicePdfService {
       doc.moveDown(0.8);
     }
     this.renderLineItemsTable(doc, t, lineItems, invoice);
-    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs));
+    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), homeCurrencyOf(tenant.addressCountry));
     if (qr) this.renderPaymentQr(doc, qr.payment ? t.qr : t.qrInvoice, qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
@@ -591,6 +594,7 @@ export class InvoicePdfService {
     totals: InvoiceVatBreakdown,
     invoice: InvoiceRow,
     accent: string,
+    home: HomeCurrency,
   ): number {
     const currency = invoice.currency;
     if (doc.y > 650) doc.addPage();
@@ -639,19 +643,23 @@ export class InvoicePdfService {
       doc.fillColor("black");
       y += t.remaining.includes(BILINGUAL_SEPARATOR) ? 26 : 18;
     }
-    // §29 ZDPH: a foreign-currency tax document states the VAT in CZK too.
+    // §29 ZDPH / § 74 ods. 1 písm. i SK: a foreign-currency tax document
+    // states the VAT in the home currency too (CZK, or EUR for SK).
     // The label follows the mode stored at issue; "none" (non-payers only,
     // see exchange-rate-mode.ts) prints no conversion.
     const rate = invoice.exchangeRate ? Number(invoice.exchangeRate) : null;
     const rateLabel = rateLineLabel(t, invoice, invoice.taxableSupplyDate ?? invoice.issueDate ?? null);
-    if (currency !== "CZK" && rate && rateLabel) {
+    if (currency !== home && rate && rateLabel) {
       doc.font(REGULAR).fontSize(8.5).fillColor(MUTED);
-      const rateText = rate.toLocaleString("cs-CZ", { maximumFractionDigits: 4 });
-      doc.text(`${rateLabel} ${rateText} CZK/${currency}`, x, y, { width: 245 });
+      // ECB rates are quoted as units per euro, so a Slovak document shows
+      // them that way round (25,2 CZK/EUR) rather than 0,0397 EUR/CZK.
+      const perEuro = home === "EUR";
+      const rateText = (perEuro ? 1 / rate : rate).toLocaleString("cs-CZ", { maximumFractionDigits: 4 });
+      doc.text(`${rateLabel} ${rateText} ${perEuro ? `${currency}/${home}` : `${home}/${currency}`}`, x, y, { width: 245 });
       y += 12;
-      doc.text(`${t.vatInCzk} ${this.formatAmount(totals.totalVat * rate, "CZK")}`, x, y, { width: 245 });
+      doc.text(`${t.vatInHome.replaceAll("{currency}", home)} ${this.formatAmount(totals.totalVat * rate, home)}`, x, y, { width: 245 });
       y += 12;
-      doc.text(`${t.totalInCzk} ${this.formatAmount(totals.totalWithVat * rate, "CZK")}`, x, y, { width: 245 });
+      doc.text(`${t.totalInHome.replaceAll("{currency}", home)} ${this.formatAmount(totals.totalWithVat * rate, home)}`, x, y, { width: 245 });
       y += 16;
       doc.fillColor("black");
     }

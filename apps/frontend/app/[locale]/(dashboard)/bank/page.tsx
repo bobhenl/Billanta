@@ -5,6 +5,7 @@ import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { TRANSACTION_STATUSES, type BankTransaction, type TransactionStatus } from '@/lib/bank-ui';
+import { fetchHomeCurrency } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import type { BankConnection } from './actions';
 import { BankConnections } from './bank-connections';
@@ -27,6 +28,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
   let invoices: InvoiceRow[];
   let connections: BankConnection[];
   let psd2: { available: boolean; countries: string[] };
+  const home = await fetchHomeCurrency();
   try {
     [transactions, invoices, connections, psd2] = await Promise.all([
       apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions'),
@@ -58,16 +60,16 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
       (!q || [r.counterpartyName, r.variableSymbol, r.counterpartyAccount, r.invoiceNumber].some((v) => v?.toLowerCase().includes(q)))
   );
 
-  const czk = transactions.filter((tx) => tx.currency === 'CZK');
-  const incoming = czk.filter((tx) => Number(tx.amount) > 0).reduce((s, tx) => s + Number(tx.amount), 0);
-  const outgoing = czk.filter((tx) => Number(tx.amount) < 0).reduce((s, tx) => s + Number(tx.amount), 0);
+  const atHome = transactions.filter((tx) => tx.currency === home);
+  const incoming = atHome.filter((tx) => Number(tx.amount) > 0).reduce((s, tx) => s + Number(tx.amount), 0);
+  const outgoing = atHome.filter((tx) => Number(tx.amount) < 0).reduce((s, tx) => s + Number(tx.amount), 0);
   const unmatched = transactions.filter((tx) => tx.status === 'unmatched');
   const matchedCount = transactions.filter((tx) => tx.status === 'matched').length;
   const cards = [
     { key: 'unmatched', label: t('kpi.toReview'), value: String(unmatched.length), href: '/bank?status=unmatched', tone: unmatched.length ? 'text-warning' : '' },
     { key: 'matched', label: t('kpi.matched'), value: String(matchedCount), href: '/bank?status=matched', tone: 'text-success' },
-    { key: 'in', label: t('kpi.incoming'), value: formatMoney(incoming, 'CZK', locale), href: '/bank', tone: 'text-primary' },
-    { key: 'out', label: t('kpi.outgoing'), value: formatMoney(outgoing, 'CZK', locale), href: '/bank', tone: '' }
+    { key: 'in', label: t('kpi.incoming', { currency: home }), value: formatMoney(incoming, home, locale), href: '/bank', tone: 'text-primary' },
+    { key: 'out', label: t('kpi.outgoing', { currency: home }), value: formatMoney(outgoing, home, locale), href: '/bank', tone: '' }
   ];
 
   const chip = (active: boolean) =>

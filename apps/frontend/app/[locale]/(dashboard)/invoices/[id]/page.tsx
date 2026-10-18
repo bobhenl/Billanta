@@ -16,12 +16,13 @@ import {
   formatDate,
   fxLabelOf,
   formatMoney,
+  rateQuote,
   STATUS_BADGE_CLASSES,
   TYPE_BADGE_CLASSES,
   type InvoiceDetail
 } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
-import { lawUrl } from '@faktur/cz-compliance';
+import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
 import { BuyerDetailsRequest } from './buyer-details-request';
@@ -63,6 +64,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   let history: AuditPage | null = null;
   let lastEdit: AuditPage | null = null;
   let companyVars: { key: string; value: string }[] = [];
+  let homeCountry: string | undefined;
   try {
     let tenant;
     [detail, attachments, tenant, history, lastEdit] = await Promise.all([
@@ -73,6 +75,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       fetchAuditLog({ entityType: 'invoice', entityId: params.id, action: 'edited_issued', limit: 1 })
     ]);
     companyVars = (tenant?.templateVars ?? []).map((v) => ({ key: v.key, value: v.value }));
+    homeCountry = tenant?.addressCountry;
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     if (error instanceof ApiError && error.status === 404) notFound();
@@ -111,14 +114,16 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const customFieldText = (f: NonNullable<typeof invoice.customFields>[number]) =>
     displayCustomField(f, docVars.numbers, money, (v) => v.replace(/\{([a-z0-9_]+)\}/g, (m, k: string) => amountVars[k] ?? m));
 
-  // Net proceeds after provider fees and conversion, in CZK at the invoice's ČNB rate.
-  const rate = invoice.currency === 'CZK' ? 1 : Number(invoice.exchangeRate) || 0;
+  // Net proceeds after provider fees and conversion, in the home currency at the invoice's rate.
+  const home = homeCurrencyOf(homeCountry);
+  const rate = invoice.currency === home ? 1 : Number(invoice.exchangeRate) || 0;
+  const quote = rate > 0 && invoice.currency !== home ? rateQuote(rate, invoice.currency, home) : null;
   const fx = fxLabelOf(invoice);
   const received = invoice.status === 'paid' ? totals.totalWithVat : Number(invoice.amountPaid ?? 0);
   const fees = Number(invoice.paymentFees ?? 0);
   const receivedCzk = invoice.receivedCzk == null ? null : Number(invoice.receivedCzk);
-  const showNet = received > 0 && rate > 0 && (fees > 0 || receivedCzk != null || invoice.currency !== 'CZK');
-  const czk = (n: number) => formatMoney(n, 'CZK', locale);
+  const showNet = received > 0 && rate > 0 && (fees > 0 || receivedCzk != null || invoice.currency !== home);
+  const czk = (n: number) => formatMoney(n, home, locale);
   const grossCzk = received * rate;
   const expectedCzk = (received - fees) * rate;
   const netCzk = receivedCzk ?? expectedCzk;
@@ -169,7 +174,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <span className="text-muted-foreground"> · {t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span>
             </div>
           )}
-          {invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} />}
+          {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} />}
         </div>
       </div>
 
@@ -187,6 +192,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           total={totals.totalWithVat}
           amountPaid={Number(invoice.amountPaid ?? 0)}
           currency={invoice.currency}
+          home={home}
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
         />
@@ -323,26 +329,29 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               </div>
             </dl>
           </div>
-          {invoice.currency !== 'CZK' && invoice.exchangeRate && (
+          {quote && (
             <p className="mt-3 text-right text-xs text-muted-foreground">
               {fx.kind === 'hidden'
                 ? t('fxHidden', {
-                    rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
-                    currency: invoice.currency
+                    rate: quote.value.toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    pair: quote.pair,
+                    home
                   })
                 : t('fxLine', {
                     label:
                       fx.kind === 'on'
                         ? t('fxLabelOn', { date: formatDate(fx.date, locale) ?? fx.date })
-                        : fx.kind === 'annual'
+                        : fx.kind === 'ecb'
+                          ? t('fxLabelEcbOn', { date: formatDate(fx.date, locale) ?? fx.date })
+                          : fx.kind === 'annual'
                           ? t('fxLabelAnnual', { year: fx.year })
                           : fx.kind === 'manual'
                             ? t('fxLabelManual')
                             : t('fxLabel'),
-                    rate: Number(invoice.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 }),
-                    currency: invoice.currency,
-                    vat: formatMoney(totals.totalVat * Number(invoice.exchangeRate), 'CZK', locale),
-                    total: formatMoney(totals.totalWithVat * Number(invoice.exchangeRate), 'CZK', locale)
+                    rate: quote.value.toLocaleString(locale, { maximumFractionDigits: 4 }),
+                    pair: quote.pair,
+                    vat: formatMoney(totals.totalVat * rate, home, locale),
+                    total: formatMoney(totals.totalWithVat * rate, home, locale)
                   })}
             </p>
           )}
@@ -394,7 +403,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                     <dt className="text-muted-foreground">{t('net.fees')}</dt>
                     <dd className="text-right tabular-nums text-destructive">
                       −{czk(fees * rate)}
-                      {invoice.currency !== 'CZK' && <span className="block text-xs text-muted-foreground">{money(fees)}</span>}
+                      {invoice.currency !== home && <span className="block text-xs text-muted-foreground">{money(fees)}</span>}
                     </dd>
                   </div>
                 )}
@@ -419,7 +428,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                   </dd>
                 </div>
               </dl>
-              {receivedCzk == null && invoice.currency !== 'CZK' && <p className="mt-2 text-xs text-muted-foreground">{t('net.noReceived')}</p>}
+              {receivedCzk == null && invoice.currency !== home && <p className="mt-2 text-xs text-muted-foreground">{t('net.noReceived', { home })}</p>}
             </section>
           )}
 

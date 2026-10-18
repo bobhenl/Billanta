@@ -54,7 +54,8 @@ export function ExpenseForm({
   autoScan = false,
   expense,
   initial,
-  suppliers
+  suppliers,
+  home = 'CZK'
 }: {
   /** Open the QR camera right away (dashboard "scan an invoice" tile). */
   autoScan?: boolean;
@@ -63,6 +64,8 @@ export function ExpenseForm({
   /** Create mode prefill (duplicate) — copied, never updated. */
   initial?: Expense;
   suppliers: SupplierOption[];
+  /** The company's own currency, the default for a new expense. */
+  home?: string;
 }) {
   const src = expense ?? initial;
   const t = useTranslations('expenses.form');
@@ -87,7 +90,7 @@ export function ExpenseForm({
   const [description, setDescription] = useState(src?.description ?? '');
   const [amount, setAmount] = useState(src?.amount ? String(Number(src.amount)) : '');
   const [vatRate, setVatRate] = useState(src ? String(Number(src.vatRate)) : VAT_RATE_OPTIONS[0]);
-  const [currency, setCurrency] = useState(src?.currency ?? 'CZK');
+  const [currency, setCurrency] = useState(src?.currency ?? home);
   const [expenseDate, setExpenseDate] = useState(day(src?.expenseDate) || today());
   const [dueDate, setDueDate] = useState(day(src?.dueDate));
   const [category, setCategory] = useState(src?.category ?? '');

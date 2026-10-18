@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { homeCurrencyOf } from "@faktur/cz-compliance";
 import { and, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
@@ -6,6 +7,7 @@ import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
+import { tenantHomeCurrency } from "../tenants/home-currency";
 import { summarizeUsage, type Usage } from "./usage";
 import { vatActivity, type VatActivity } from "./vat-activity";
 
@@ -59,13 +61,14 @@ function monthKey(d: Date) {
 
 /**
  * Everything the dashboard home shows, computed in one pass. Amounts are in
- * the tenant's home currency (CZK); documents in other currencies are
+ * the tenant's home currency (CZK, EUR for SK); documents in other currencies are
  * counted but not summed, and surfaced in `foreignCurrencyCount`.
  */
 @Injectable()
 export class DashboardService {
-  async summary(db: Db) {
+  async summary(db: Db, tenantId: string) {
     const now = new Date();
+    const home = await tenantHomeCurrency(db, tenantId);
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const yearStart = new Date(now.getFullYear(), 0, 1);
     const chartStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
@@ -141,7 +144,7 @@ export class DashboardService {
         if (!overdue && invoice.dueDate && invoice.dueDate >= today && invoice.dueDate < dueSoonLimit) {
           dueSoon.push(row);
           kpi.dueSoonCount++;
-          if (invoice.currency === "CZK") kpi.dueSoonTotal += totals.totalWithVat;
+          if (invoice.currency === home) kpi.dueSoonTotal += totals.totalWithVat;
         }
       }
 
@@ -154,7 +157,7 @@ export class DashboardService {
       // Quotes never count; proformas count towards "unpaid" only.
       if (invoice.status === "cancelled" || invoice.documentType === "quote") continue;
 
-      if (invoice.currency !== "CZK") {
+      if (invoice.currency !== home) {
         foreignCurrencyCount++;
         continue;
       }
@@ -193,7 +196,7 @@ export class DashboardService {
     }
 
     for (const e of expenses) {
-      if (e.currency !== "CZK") continue;
+      if (e.currency !== home) continue;
       // Expense amounts are stored including VAT; the chart compares base amounts.
       const base = Number(e.amount) / (1 + Number(e.vatRate) / 100);
       if (e.expenseDate >= monthStart) kpi.expensesMonth += base;
@@ -207,7 +210,7 @@ export class DashboardService {
     }
 
     return {
-      currency: "CZK",
+      currency: home,
       kpi,
       foreignCurrencyCount,
       chart: [...months.values()].map((m) => ({
@@ -229,16 +232,17 @@ export class DashboardService {
    * The period report: totals for [from, to] (whole days, inclusive), the
    * same-length period right before it for comparison, revenue / expenses
    * per day, week or month, the period's top customers and pie-chart
-   * shares. Amounts are in CZK (foreign documents at their stored rate), or
+   * shares. Amounts are in the home currency (foreign documents at their stored rate), or
    * in the filtered currency when the report is narrowed to one. `db` is
    * the tenant's RLS-scoped connection, so only its own rows ever load.
    */
-  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}) {
+  async stats(db: Db, tenantId: string, from: Date, to: Date, filters: ReportFilters = {}) {
     const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
     const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
     const length = end.getTime() - start.getTime();
     const prevStart = new Date(start.getTime() - length);
-    const currency = filters.currency ?? "CZK";
+    const home = await tenantHomeCurrency(db, tenantId);
+    const currency = filters.currency ?? home;
 
     const rows = await db
       .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
@@ -292,9 +296,9 @@ export class DashboardService {
       /** False when a customer / type / status / language filter is on: expenses then stay unfiltered. */
       expensesFiltered: !hasDocumentFilters(filters),
       options: filterOptions(allDocs),
-      current: periodTotals(docs, expenses, start, end, currency, today),
-      previous: periodTotals(docs, expenses, prevStart, start, currency, today),
-      ...periodBreakdown(docs, expenses, start, end, currency, today),
+      current: periodTotals(docs, expenses, start, end, currency, today, home),
+      previous: periodTotals(docs, expenses, prevStart, start, currency, today, home),
+      ...periodBreakdown(docs, expenses, start, end, currency, today, home),
     };
   }
 
@@ -385,7 +389,7 @@ export class DashboardService {
       db.select({ n: count() }).from(schema.invoiceTemplates),
       db.select({ n: count() }).from(schema.contacts),
       db
-        .select({ vatStatus: schema.tenants.vatStatus, dicVatPayer: schema.tenants.dicVatPayer, legalName: schema.tenants.legalName })
+        .select({ vatStatus: schema.tenants.vatStatus, dicVatPayer: schema.tenants.dicVatPayer, legalName: schema.tenants.legalName, country: schema.tenants.addressCountry })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, tenantId)),
     ]);
@@ -399,6 +403,7 @@ export class DashboardService {
       templateCount: templates?.n ?? 0,
       contactCount: contacts?.n ?? 0,
       tenant: tenant ?? { vatStatus: null, dicVatPayer: false, legalName: null },
+      homeCurrency: homeCurrencyOf(tenant?.country),
     });
   }
 
