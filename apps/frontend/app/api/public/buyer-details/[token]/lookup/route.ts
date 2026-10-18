@@ -22,6 +22,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ toke
   else if (vat) query.set('vat', vat.slice(0, 20));
   else if (q) query.set('q', q.slice(0, 120));
   if (country && /^[A-Za-z]{2}$/.test(country)) query.set('country', country.toUpperCase());
+  const part = search.get('part');
+  if (q && (part === 'fast' || part === 'slow')) query.set('part', part);
   const ip = clientIp(request);
   try {
     const upstream = await fetch(`${BACKEND_URL}/api/v1/public/buyer-details/${encodeURIComponent(token)}/lookup?${query}`, {

@@ -11,12 +11,14 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
+import { fetchContactSearch } from '@/components/company-lookup';
+import { hasSlowRegistryPart, type RegistryPart } from '@/lib/company-lookup';
 import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode, isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
-import { fetchExchangeRate, saveInvoice, searchCustomers, suggestInvoice, suggestItems } from './actions';
+import { fetchExchangeRate, saveInvoice, suggestInvoice, suggestItems } from './actions';
 import type {
   AiSettings,
   AresPrefill,
@@ -205,6 +207,7 @@ export function InvoiceForm({
   const t = useTranslations('invoiceForm');
   const tDoc = useTranslations('doc');
   const tHoliday = useTranslations('holidays');
+  const tLookup = useTranslations('companyLookup');
   const sellerCountry = defaults.sellerCountry ?? 'CZ';
   const locale = useLocale();
   const router = useRouter();
@@ -456,14 +459,17 @@ export function InvoiceForm({
     setRows((current) => current.flatMap((row) => (row.key === key ? [row, { ...row, key: ++rowSeq }] : [row])));
 
   const fetchCustomers = async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
-    // Own contacts first — instant; the registers (slower, abroad even more) arrive in fetchRegistryHits.
-    const { contacts } = await searchCustomers(q, 'none');
+    // Own contacts first – instant; the registers (slower, abroad even more) arrive in registryFetchers.
+    const { contacts } = await fetchContactSearch(q, 'none');
     return [{ label: t('customer.yourContacts'), items: contacts.map((contact) => ({ kind: 'contact' as const, contact })) }];
   };
-  const fetchRegistryHits = async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
-    const { ares } = await searchCustomers(q, registry);
+  const registryPart = (part: RegistryPart) => async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
+    if (part === 'slow' && !hasSlowRegistryPart(q, registry)) return [];
+    const { ares } = await fetchContactSearch(q, registry, part);
     return [{ label: t('customer.fromAres'), items: ares.map((a) => ({ kind: 'ares' as const, ares: a })) }];
   };
+  // ARES first, the Slovak RPO name search (seconds) after it, appended under the same heading.
+  const registryFetchers = [registryPart('fast'), registryPart('slow')];
 
   const applySuggestion = ({ suggestion, contact, ares }: SuggestionResult) => {
     if (contact) {
@@ -889,9 +895,9 @@ export function InvoiceForm({
                 placeholder={t('customer.placeholder')}
                 emptyHint={t('customer.empty')}
                 fetchGroups={fetchCustomers}
-                fetchMoreGroups={fetchRegistryHits}
-                moreLoadingHint={t('customer.searchingRegisters')}
-                getKey={(o) => (o.kind === 'contact' ? `c-${o.contact.id}` : `a-${o.ares.ico || o.ares.dic || o.ares.regNumber || o.ares.legalName}`)}
+                fetchMoreGroups={registryFetchers}
+                moreLoadingHint={[t('customer.searchingRegisters'), tLookup('searchingSlovak')]}
+                getKey={(o) => (o.kind === 'contact' ? `c-${o.contact.id}` : `a-${o.ares.addressCountry}-${o.ares.ico ||o.ares.dic || o.ares.regNumber || o.ares.legalName}`)}
                 onPick={(o) => setCustomer(o.kind === 'contact' ? { kind: 'contact', id: o.contact.id, contact: o.contact } : o)}
                 renderItem={(o) => {
                   const name = o.kind === 'contact' ? o.contact.legalName : o.ares.legalName;

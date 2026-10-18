@@ -1,26 +1,11 @@
 'use server';
 
 import { apiFetch, ApiError } from '@/lib/api-client';
-import { hitFromPrefill, registryForCountry, type CompanyHit, type VatPayerCheck } from '@/lib/company-lookup';
+import { hitFromPrefill, type CompanyHit, type VatPayerCheck } from '@/lib/company-lookup';
 import type { AresPrefill } from '@/app/[locale]/(dashboard)/invoices/new/types';
 
-/**
- * Signed-in side of the company lookup: the register of the form's country
- * (CZ + SK when unknown), through the contacts API so results share its
- * cache. Never throws; an outage means no hits.
- */
-export async function searchCompanyRegistries(query: string, country?: string | null): Promise<CompanyHit[]> {
-  const q = query.trim();
-  if (q.length < 2) return [];
-  try {
-    const res = await apiFetch<{ ares: AresPrefill[] }>(
-      `/api/v1/contacts/search?q=${encodeURIComponent(q.slice(0, 120))}&registry=${encodeURIComponent(registryForCountry(country))}`
-    );
-    return (res.ares ?? []).slice(0, 8).map(hitFromPrefill);
-  } catch {
-    return [];
-  }
-}
+// The typeahead itself is not here but in `fetchContactSearch` (a route): actions run one at a time per tab,
+// and the slow Slovak half would hold up every keystroke after it.
 
 /** One company by IČO: RPO first for a Slovak form, ARES otherwise. */
 export async function lookupCompanyById(ico: string, country?: string | null): Promise<{ ok: true; data: CompanyHit & { isVatPayer: boolean | null } } | { ok: false; error: string }> {

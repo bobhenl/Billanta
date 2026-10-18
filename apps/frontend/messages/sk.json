@@ -7359,7 +7359,8 @@
     "group": "Z registra",
     "placeholder": "Názov firmy, meno živnostníka alebo IČO",
     "empty": "Nič sme nenašli. Skúste IČO alebo iný tvar názvu.",
-    "ico": "IČO"
+    "ico": "IČO",
+    "searchingSlovak": "Prehľadávam aj slovenský register…"
   },
   "vatCheck": {
     "checking": "Overujem DIČ…",

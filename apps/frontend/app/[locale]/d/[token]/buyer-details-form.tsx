@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Loader2, Search } from 'lucide-react';
 import { CompanyLookup } from '@/components/company-lookup';
-import type { CompanyHit } from '@/lib/company-lookup';
+import { registryForCountry, type CompanyHit, type RegistryPart } from '@/lib/company-lookup';
 import type { BuyerDetailsField } from '@/lib/public-buyer-details';
 import { submitBuyerDetails, type BuyerDetailsInput } from '@/lib/public-buyer-details-actions';
 
@@ -84,9 +84,10 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
       country: COUNTRIES.includes(hit.country) ? hit.country : f.country
     }));
 
-  const searchByName = async (q: string): Promise<CompanyHit[]> => {
+  const searchByName = async (q: string, part: RegistryPart): Promise<CompanyHit[]> => {
     try {
       const params = new URLSearchParams({ q, country: form.country });
+      if (part !== 'all') params.set('part', part);
       const res = await fetch(`/api/public/buyer-details/${encodeURIComponent(token)}/lookup?${params}`, { cache: 'no-store' });
       if (!res.ok) return [];
       return ((await res.json()) as { hits?: CompanyHit[] }).hits ?? [];
@@ -208,6 +209,7 @@ export function BuyerDetailsForm({ token, supplierName, prefill, required }: Pro
                 setLookupNote(t('lookupDone'));
               }}
               fetchHits={searchByName}
+              registry={registryForCountry(form.country)}
               refreshKey={form.country}
               placeholder={t('companySearch')}
               ariaLabel={t('companyName')}

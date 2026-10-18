@@ -7503,7 +7503,8 @@
     "group": "From the register",
     "placeholder": "Company name, sole trader or company ID",
     "empty": "Nothing found. Try the company ID or a different spelling.",
-    "ico": "ID"
+    "ico": "ID",
+    "searchingSlovak": "Also searching the Slovak register…"
   },
   "vatCheck": {
     "checking": "Checking VAT number…",

@@ -9,11 +9,11 @@ import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { VatStatusBadge } from '@/components/vat-status-badge';
 import { lookupCompanyById } from '@/lib/company-lookup-actions';
-import { registryForCountry, suggestedVatStatus, type VatPayerCheck } from '@/lib/company-lookup';
+import { hasSlowRegistryPart, registryForCountry, suggestedVatStatus, type RegistryPart, type VatPayerCheck } from '@/lib/company-lookup';
+import { fetchContactSearch } from '@/components/company-lookup';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/toaster';
-import { searchCustomers } from '../invoices/new/actions';
 import type { AresPrefill, Contact } from '../invoices/new/types';
 import { CONTACT_COLORS, CONTACT_COLOR_DOT } from '@/lib/contact-colors';
 import { createContact, updateContact, type ContactInput } from './actions';
@@ -49,6 +49,7 @@ export function ContactEditor({
 }) {
   const t = useTranslations('contacts.editor');
   const tColors = useTranslations('contacts.colors');
+  const tLookup = useTranslations('companyLookup');
   const [form, setForm] = useState<ContactInput>(() => (contact ? { ...EMPTY, ...stripNulls(contact) } : EMPTY));
   const [aresVerified, setAresVerified] = useState<boolean | undefined>(undefined);
   const [pending, startTransition] = useTransition();
@@ -68,8 +69,10 @@ export function ContactEditor({
         : null
     : suggestedVatStatus(vatCheck, form.isVatPayer ? 'payer' : 'non_payer');
 
-  const fetchRegistry = async (q: string): Promise<TypeaheadGroup<AresPrefill>[]> => {
-    const { ares } = await searchCustomers(q, effectiveRegistry);
+  // ARES hits at once, the slow Slovak name search appended when it answers.
+  const fetchRegistry = (part: RegistryPart) => async (q: string): Promise<TypeaheadGroup<AresPrefill>[]> => {
+    if (part === 'slow' && !hasSlowRegistryPart(q, effectiveRegistry)) return [];
+    const { ares } = await fetchContactSearch(q, effectiveRegistry, part);
     return [{ label: t('registryResults'), items: ares }];
   };
   const pickRegistry = (a: AresPrefill) => {
@@ -208,7 +211,9 @@ export function ContactEditor({
               ariaLabel={t('registrySearch')}
               placeholder={t(`registryPlaceholder.${registry}`)}
               emptyHint={t('registryEmpty')}
-              fetchGroups={fetchRegistry}
+              fetchGroups={fetchRegistry('fast')}
+              fetchMoreGroups={fetchRegistry('slow')}
+              moreLoadingHint={tLookup('searchingSlovak')}
               getKey={(a) => `${a.ico || a.dic || a.regNumber || a.legalName}-${a.addressCountry}`}
               onPick={pickRegistry}
               renderItem={(a) => (
