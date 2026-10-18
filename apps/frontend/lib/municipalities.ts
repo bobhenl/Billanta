@@ -110,17 +110,49 @@ export function municipalityLocale(m: Municipality): 'cs' | 'sk' {
 }
 
 /**
+ * Large towns that are not the seat of their district (several districts
+ * have a small namesake seat, e.g. Karviná's Havířov or Ilava's Dubnica).
+ * Roughly 20k inhabitants and up.
+ */
+const MAJOR_NON_SEATS: ReadonlySet<string> = new Set([
+  'havirov',
+  'trinec',
+  'orlova',
+  'cesky-tesin',
+  'bohumin',
+  'koprivnice',
+  'valasske-mezirici',
+  'krnov',
+  'litvinov',
+  'brandys-nad-labem-stara-boleslav',
+  'dubnica-nad-vahom'
+]);
+
+/** A district seat or one of the larger towns above: the ~150 places with real search volume. */
+export function isMajorMunicipality(m: Municipality): boolean {
+  return isDistrictSeat(m) || MAJOR_NON_SEATS.has(m.slug);
+}
+
+/**
+ * Which municipality pages search engines get, from `MUNICIPALITY_INDEX`
+ * ('major' by default, or 'all'). 'major' while the site is new: ~150
+ * solid pages earn crawl budget and trust faster than 9,000 thin ones.
+ * Set 'all' once those are indexed; the sitemap and robots meta follow.
+ */
+const INDEXED_TIER: 'major' | 'all' = process.env.MUNICIPALITY_INDEX === 'all' ? 'all' : 'major';
+
+/**
  * Whether `/{locale}/invoicing/{slug}` is offered to search engines
- * (sitemap + `index`). Every municipality is, but only in its own language:
- * a Czech village has no audience in Slovak or English, and three language
- * copies of the same town page are exactly the near-duplicates that read as
- * doorway pages. The other locales stay reachable and `follow`, but
- * `noindex`. Each indexed page carries data no other page has (nearest
- * places with distances, position against the district and region seat,
- * the competent tax office) — see the [slug] page.
+ * (sitemap + `index`). Only in the municipality's own language: a Czech
+ * village has no audience in Slovak or English, and three language copies
+ * of the same town page are exactly the near-duplicates that read as
+ * doorway pages. Pages outside INDEXED_TIER and the other locales stay
+ * reachable and `follow`, but `noindex`. Each indexed page carries data no
+ * other page has (nearest places with distances, position against the
+ * district and region seat, the competent tax office) — see the [slug] page.
  */
 export function isIndexedMunicipality(m: Municipality, locale: string): boolean {
-  return locale === municipalityLocale(m);
+  return locale === municipalityLocale(m) && (INDEXED_TIER === 'all' || isMajorMunicipality(m));
 }
 
 /** The district's seat, when `m` is not one itself. */
@@ -226,6 +258,17 @@ export function getNearbyMunicipalities(m: Municipality, limit = 10): NearbyMuni
   const out: NearbyMunicipality[] = [];
   for (const o of ALL_MUNICIPALITIES) {
     if (o.country !== m.country || o.slug === m.slug) continue;
+    const km = distanceKm(m, o);
+    if (km != null) out.push({ municipality: o, km });
+  }
+  return out.sort((a, b) => a.km - b.km).slice(0, limit);
+}
+
+/** The nearest other major towns (see isMajorMunicipality), closest first. */
+export function getNearbyMajorMunicipalities(m: Municipality, limit = 6): NearbyMunicipality[] {
+  const out: NearbyMunicipality[] = [];
+  for (const o of ALL_MUNICIPALITIES) {
+    if (o.country !== m.country || o.slug === m.slug || !isMajorMunicipality(o)) continue;
     const km = distanceKm(m, o);
     if (km != null) out.push({ municipality: o, km });
   }

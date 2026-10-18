@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { getAllMunicipalities, getRegionGroups, regionAnchorId } from '@/lib/municipalities';
+import { getAllMunicipalities, getRegionGroups, isMajorMunicipality, regionAnchorId } from '@/lib/municipalities';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
@@ -67,6 +67,7 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
             {groups.map((group) => {
               const anchorId = regionAnchorId(group.country, group.region);
               const countryLabel = group.country === 'CZ' ? t('countryCz') : t('countrySk');
+              const major = group.municipalities.filter(isMajorMunicipality);
 
               return (
                 <section
@@ -80,6 +81,24 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
                   <p className="mt-1 text-sm text-muted-foreground">
                     {t('regionMunicipalityCount', { count: group.municipalities.length })}
                   </p>
+
+                  {major.length > 0 && (
+                    <>
+                      <h3 className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('majorTowns')}</h3>
+                      <ul className="mt-2 flex flex-wrap gap-2">
+                        {major.map((m) => (
+                          <li key={m.slug}>
+                            <Link
+                              href={`/invoicing/${m.slug}`}
+                              className="inline-block rounded-full border border-border px-3 py-1 text-sm text-foreground hover:border-primary hover:text-primary"
+                            >
+                              {m.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
 
                   <details className="mt-4 group">
                     <summary className="cursor-pointer text-sm font-medium text-primary">

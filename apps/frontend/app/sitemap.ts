@@ -4,7 +4,7 @@ import { COMPARED_BRANDS } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { fetchBlogSitemap } from '@/lib/blog';
-import { getAllMunicipalities, municipalityLocale } from '@/lib/municipalities';
+import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
 
 /**
@@ -12,7 +12,8 @@ import { SITE_URL } from '@/lib/site';
  *
  * Why sharded: `getAllMunicipalities()` has ~9,000 real, sourced entries
  * (see `apps/frontend/data/README.md`), each listed in its own language
- * only, plus a handful of static marketing routes × 3 locales. That's well
+ * only and for now only the larger towns (isIndexedMunicipality), plus
+ * a handful of static marketing routes × 3 locales. That's well
  * under the sitemap protocol's hard cap of 50,000 URLs (and 50MB) per file,
  * so a single `sitemap.xml` would be spec-legal — but sharding keeps
  * headroom (the CZ dataset is
@@ -65,14 +66,16 @@ const STATIC_ENTRIES: UrlEntry[] = [
 ];
 
 function buildAllEntries(): UrlEntry[] {
-  // Each municipality only in its own language (see isIndexedMunicipality);
-  // the other copies are noindex and a noindex URL in a sitemap is a contradiction.
-  const municipalityEntries: UrlEntry[] = getAllMunicipalities().map((m) => ({
-    path: `/invoicing/${m.slug}`,
-    changeFrequency: 'monthly',
-    priority: 0.5,
-    locales: [municipalityLocale(m)]
-  }));
+  // Only indexed municipality pages, each in its own language (see
+  // isIndexedMunicipality); a noindex URL in a sitemap is a contradiction.
+  const municipalityEntries: UrlEntry[] = getAllMunicipalities()
+    .filter((m) => isIndexedMunicipality(m, municipalityLocale(m)))
+    .map((m) => ({
+      path: `/invoicing/${m.slug}`,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+      locales: [municipalityLocale(m)]
+    }));
   return [...STATIC_ENTRIES, ...municipalityEntries];
 }
 
