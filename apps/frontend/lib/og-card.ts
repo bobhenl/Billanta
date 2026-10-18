@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 import { getFeaturePage } from '@/lib/feature-pages';
 import { getMunicipalityBySlug } from '@/lib/municipalities';
 import { getCalculator, getGuide, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
+import { PRIVATE_CARD } from '@/lib/site';
 
 /**
  * What the Open Graph card of one public page says (`/og/<locale>/<path>`).
@@ -53,6 +54,16 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
         return { title: t('municipalityPages.indexTitle'), subtitle: t('municipalityPages.indexLead'), section: s.places };
       case 'calculators':
         return { title: t('tools.calculators.indexTitle'), subtitle: t('tools.calculators.indexDescription'), section: s.calculators };
+      case 'compare':
+        return { title: t('comparePage.title'), subtitle: t('comparePage.lead'), section: t('og.sections.compare') };
+      case 'for-accountants':
+        return { title: t('accountants.title'), subtitle: t('accountants.lead'), section: t('og.sections.forAccountants') };
+      case 'partners':
+        return { title: t('partners.title'), subtitle: t('partners.lead'), section: t('og.sections.partners') };
+      case 'accountants':
+        return { title: t('accountantDirectory.title'), subtitle: t('accountantDirectory.lead'), section: t('og.sections.directory') };
+      case PRIVATE_CARD:
+        return { title: t('og.privateTitle'), subtitle: t('og.privateSubtitle'), section: t('og.privateSection') };
       case 'guides':
         // The guides hub is published only where the guides are (cs/en).
         if (!GUIDES_HUB_LOCALES.includes(l)) return null;

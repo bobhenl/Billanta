@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { routing } from '@/i18n/routing';
-import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { getTranslations } from 'next-intl/server';
+import { PRIVATE_CARD, SITE_NAME, SITE_URL } from '@/lib/site';
 
 /**
  * Fallback social preview, a static file (public/og.png). Public pages get
@@ -81,6 +82,29 @@ export function publicPageMetadata({
 
 /** For pages that must never be indexed (auth forms, dashboard, private invoice links). */
 export const NOINDEX: Metadata['robots'] = { index: false, follow: false };
+
+/**
+ * Metadata of a private token page (/i, /d, /c): never indexed, no referrer,
+ * and one generic preview card (PRIVATE_CARD in lib/site.ts). A link pasted
+ * into Discord, WhatsApp or Slack unfurls as "a shared document from
+ * Billanta" and nothing more: no invoice number, amount, customer or
+ * supplier, because whoever sees the chat is not necessarily allowed to see
+ * the invoice. The page's own title stays generic for the same reason.
+ */
+export async function privateLinkMetadata(locale: string): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'og' });
+  const title = t('privateTitle');
+  const description = t('privateSubtitle');
+  const image = ogImage(locale, `/${PRIVATE_CARD}`, title);
+  return {
+    title,
+    description,
+    robots: NOINDEX,
+    referrer: 'no-referrer',
+    openGraph: { title, description, siteName: SITE_NAME, locale, type: 'website', images: [image] },
+    twitter: { card: 'summary_large_image', title, description, images: [image.url] }
+  };
+}
 
 /** Serialises JSON-LD safely for a <script> tag (no `</script>` breakout). */
 export function jsonLd(data: unknown): { __html: string } {

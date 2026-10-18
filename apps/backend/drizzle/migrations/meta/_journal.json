@@ -351,6 +351,13 @@
       "when": 1792900200000,
       "tag": "0049_email_outbox",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1792900300000,
+      "tag": "0050_accountant_directory",
+      "breakpoints": true
     }
   ]
 }

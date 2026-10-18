@@ -5,11 +5,15 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { getClientPortal, type ClientPortalDocument } from '@/lib/client-portal';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
-import { NOINDEX } from '@/lib/seo';
+import { privateLinkMetadata } from '@/lib/seo';
 import { cn } from '@/lib/utils';
 
 // A customer's private portal link: never indexed, never followed.
-export const metadata: Metadata = { robots: NOINDEX, referrer: 'no-referrer' };
+// Generic, non-revealing preview card; see privateLinkMetadata.
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return privateLinkMetadata(locale);
+}
 export const dynamic = 'force-dynamic';
 
 const FILTERS = ['all', 'unpaid', 'paid', 'quotes'] as const;

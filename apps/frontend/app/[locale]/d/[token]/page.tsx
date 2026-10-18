@@ -4,11 +4,15 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getBuyerDetailsView } from '@/lib/public-buyer-details';
-import { NOINDEX } from '@/lib/seo';
+import { privateLinkMetadata } from '@/lib/seo';
 import { BuyerDetailsForm } from './buyer-details-form';
 
 // A private link for one customer: never indexed, never followed, no referrer.
-export const metadata: Metadata = { robots: NOINDEX, referrer: 'no-referrer' };
+// Generic, non-revealing preview card; see privateLinkMetadata.
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return privateLinkMetadata(locale);
+}
 export const dynamic = 'force-dynamic';
 
 /**

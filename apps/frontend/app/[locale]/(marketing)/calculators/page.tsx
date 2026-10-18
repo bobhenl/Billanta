@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { SignupCta } from '@/components/public-tools/parts';
 import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -45,6 +46,7 @@ export default async function CalculatorsHub({ params }: { params: Promise<Param
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />
+      <ToolTabs kind="calculators" />
       <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('calculators.indexTitle')}</h1>
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('calculators.indexLead')}</p>
 

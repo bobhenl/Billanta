@@ -36,3 +36,10 @@ export function profileOrderUrl(slug: string, serviceId: string, locale = 'cs', 
   const base = profileUrl(slug, locale, origin);
   return `${base}${PROFILE_DOMAIN ? '/' : ''}?service=${encodeURIComponent(serviceId)}#order`;
 }
+/**
+ * The one card every private token page (/i, /d, /c) shares. It says what
+ * kind of link this is and nothing else: no number, amount or name, so a
+ * link pasted into a chat cannot leak what the invoice is about. Not a real
+ * route, so it never collides with a page.
+ */
+export const PRIVATE_CARD = '_private';

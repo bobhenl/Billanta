@@ -35,6 +35,7 @@ export async function MarketingNavbar() {
   const resources = [
     { href: '/calculators', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
     ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
+    { href: '/accountants', label: tMenu('findAccountant'), hint: tMenu('findAccountantHint') },
     { href: '/#faq', label: t('faq') },
     { href: '/compare', label: tMenu('compare') }
   ];

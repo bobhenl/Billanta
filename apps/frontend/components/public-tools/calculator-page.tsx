@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader } from '@/components/public-tools/parts';
+import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd, webPageLd } from '@/lib/seo';
@@ -55,6 +56,7 @@ export async function CalculatorPage({
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
+      <ToolTabs kind="calculators" current={slug} />
       <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
       <div className="mt-10">{children}</div>
       {disclaimer && (

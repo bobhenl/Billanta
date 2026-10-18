@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
 import { CzOnlyNotice, GuideSources, RelatedTools, SignupCta, ToolHeader } from '@/components/public-tools/parts';
+import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { getGuide, isPublishedIn } from '@/lib/public-tools';
 import { guideArticleLd, toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd } from '@/lib/seo';
@@ -42,6 +43,7 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(guideArticleLd(locale, path, t(`${k}.title`), t(`${k}.description`), VAT_INFO_CHECKED))}
       />
+      <ToolTabs kind="guides" current={slug} />
       <ToolHeader hubHref="/guides" hubLabel={t('menu.guides')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={g.icon} />
       <p className="mt-3 text-sm text-muted-foreground">
         {t('common.updated')}: <time dateTime={VAT_INFO_CHECKED}>{updated}</time>
