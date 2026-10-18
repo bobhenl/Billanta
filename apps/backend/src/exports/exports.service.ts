@@ -10,6 +10,7 @@ import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getCnbRate } from "./cnb-rates";
+import { getEcbRate } from "./ecb-rates";
 import {
   generateDphDp3,
   generateDphKh1,
@@ -19,6 +20,7 @@ import {
   type VatPeriod,
   type VatReceivedDoc,
 } from "./vat-returns";
+import { generateSkDphV25, generateSkKvDphV25, generateSkSvDphV20, skSubmitterFromTenant } from "./vat-returns-sk";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -556,7 +558,16 @@ export class ExportsService {
    * ČNB rate of that day. Drafts, proformas, quotes and cancelled documents
    * are not taxable supplies; credit notes enter with negative amounts.
    */
-  private async loadVatDocs(db: Db, period: ExportPeriod) {
+  /**
+   * Issued tax documents and VAT-bearing expenses of a period, converted to
+   * the filing currency by `toHome` (a multiplier per currency, document
+   * value and day).
+   */
+  private async loadVatDocs(
+    db: Db,
+    period: ExportPeriod,
+    toHome: (currency: string, stored: string | null, date: Date) => Promise<number> = (c, s, d) => this.rateFor(c, s, d),
+  ) {
     const duzp = sql<Date>`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const rows = await db
       .select({ invoice: schema.invoices, contact: schema.contacts })
@@ -576,13 +587,25 @@ export class ExportsService {
     const items = ids.length
       ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
       : [];
+    // A credit note is reported against the invoice it corrects (SK KV C.1).
+    const relatedIds = [...new Set(rows.map((r) => r.invoice.relatedInvoiceId).filter((id): id is string => !!id))];
+    const relatedNumbers = new Map(
+      relatedIds.length
+        ? (
+            await db
+              .select({ id: schema.invoices.id, number: schema.invoices.invoiceNumber })
+              .from(schema.invoices)
+              .where(inArray(schema.invoices.id, relatedIds))
+          ).map((r) => [r.id, r.number])
+        : [],
+    );
 
-    const issued: VatIssuedDoc[] = [];
+    const issued: (VatIssuedDoc & { correctsNumber: string | null })[] = [];
     for (const { invoice, contact: liveContact } of rows) {
       // Kontrolní hlášení needs the buyer's DIČ as on the document.
       const contact = liveContact ? applyBuyerSnapshot(liveContact, invoice.buyerSnapshot) : null;
       const taxableDate = invoice.taxableSupplyDate ?? invoice.issueDate!;
-      const rate = await this.rateFor(invoice.currency, invoice.exchangeRate, taxableDate);
+      const rate = await toHome(invoice.currency, invoice.exchangeRate, taxableDate);
       const totals = computeVatBreakdown(
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
@@ -599,6 +622,10 @@ export class ExportsService {
           vat: r.vatAmount * rate,
         })),
         totalCzk: totals.totalWithVat * rate,
+        correctsNumber:
+          invoice.documentType === "credit_note" && invoice.relatedInvoiceId
+            ? (relatedNumbers.get(invoice.relatedInvoiceId) ?? null)
+            : null,
       });
     }
 
@@ -616,7 +643,7 @@ export class ExportsService {
       .orderBy(asc(schema.expenses.expenseDate));
     const received: VatReceivedDoc[] = [];
     for (const { expense, contact } of expenseRows) {
-      const rate = await this.rateFor(expense.currency, expense.exchangeRate, expense.expenseDate);
+      const rate = await toHome(expense.currency, expense.exchangeRate, expense.expenseDate);
       const total = Number(expense.amount) * rate;
       const vatRate = Number(expense.vatRate);
       const base = total / (1 + vatRate / 100);
@@ -718,6 +745,44 @@ export class ExportsService {
     if (kind === "kh1") return generateDphKh1({ issued, received, submitter, period: vatPeriod });
     return generateDphShv({ issued, submitter, period: vatPeriod });
   }
+
+  /**
+   * Slovak VAT filings (DPHv25, KVDPHv25, SVDPHv20) in EUR. Foreign
+   * currencies use the ECB rate of the day before the tax point (§ 26
+   * ods. 1 ZDPH); the stored invoice rate is CZK-based, so it is not used.
+   */
+  async vatReturnSk(
+    db: Db,
+    kind: "dph" | "kv" | "sv",
+    period: ExportPeriod,
+    vatPeriod: VatPeriod,
+    tenant: typeof schema.tenants.$inferSelect,
+  ): Promise<string | null> {
+    const { issued, received } = await this.loadVatDocs(db, period, async (currency, _stored, date) => {
+      const rate = await getEcbRate(currency, date);
+      if (rate == null) throw new VatRateUnavailableError(currency, date, "ECB");
+      return 1 / rate;
+    });
+    const skIssued = issued.map((d) => ({
+      number: d.number,
+      customerVatId: d.customerDic,
+      customerCountry: d.customerCountry,
+      taxableDate: d.taxableDate,
+      reverseCharge: d.reverseCharge,
+      parts: d.parts,
+      correctsNumber: d.correctsNumber,
+    }));
+    const skReceived = received.map((d) => ({
+      number: d.number,
+      supplierVatId: d.supplierDic,
+      taxableDate: d.taxableDate,
+      parts: d.parts,
+    }));
+    const submitter = skSubmitterFromTenant(tenant);
+    if (kind === "dph") return generateSkDphV25({ issued: skIssued, received: skReceived, submitter, period: vatPeriod });
+    if (kind === "kv") return generateSkKvDphV25({ issued: skIssued, received: skReceived, submitter, period: vatPeriod });
+    return generateSkSvDphV20({ issued: skIssued, submitter, period: vatPeriod });
+  }
 }
 
 /** A foreign-currency document whose ČNB rate could not be fetched. */
@@ -725,7 +790,8 @@ export class VatRateUnavailableError extends Error {
   constructor(
     readonly currency: string,
     readonly date: Date,
+    readonly source: "ČNB" | "ECB" = "ČNB",
   ) {
-    super(`ČNB rate for ${currency} on ${isoDate(date)} is not available`);
+    super(`${source} rate for ${currency} on ${isoDate(date)} is not available`);
   }
 }

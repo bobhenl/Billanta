@@ -1900,7 +1900,31 @@
         "disclaimer": "Soubor před podáním zkontrolujte v EPO a doplňte finanční úřad. Plnění do EU se vykazují jako služby (kód 3); doklady bez DIČ dodavatele spadají do B.3.",
         "formVersions": "Export vytváří XML ve verzích DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidla a verze formulářů jsme naposledy ověřili {date}.",
         "officialLink": "Aktuální informace na webu Finanční správy",
-        "guideLink": "Návod k podání"
+        "guideLink": "Návod k podání",
+        "sk": {
+          "title": "Slovenské výkazy k DPH",
+          "hint": "XML soubory pro elektronickou podateľňu eDane Finanční správy SR. Doklady se řadí podle dne vzniku daňové povinnosti, cizí měny se přepočtou kurzem ECB ze dne předcházejícího (§ 26 zákona č. 222/2004 Z. z.).",
+          "files": {
+            "dph": {
+              "title": "Daňové přiznání k DPH",
+              "hint": "DPHv25 – daň na výstupu podle sazeb, odpočet, vlastní daňová povinnost (§ 78)."
+            },
+            "kv": {
+              "title": "Kontrolní výkaz",
+              "hint": "KVDPHv25 – faktury po jednotlivých odběratelích a dodavatelích (A.1, A.2, B.2), zjednodušené faktury souhrnně, opravy v C.1 (§ 78a)."
+            },
+            "sv": {
+              "title": "Souhrnný výkaz",
+              "hint": "SVDPHv20 – služby odběratelům s IČ DPH v jiném státě EU (§ 80)."
+            }
+          },
+          "nothingToReport": "V tomto období nejsou žádná plnění do EU, souhrnný výkaz se nepodává.",
+          "missingDic": "Doplňte v Nastavení IČ DPH firmy ve tvaru SK a 10 číslic – bez něj výkazy nelze vytvořit.",
+          "rateUnavailable": "Kurz ECB se nepodařilo načíst. Zkuste to za chvíli.",
+          "disclaimer": "Soubor před podáním zkontrolujte v eDane a doplňte daňový úřad. Plnění do EU se vykazují jako služby (kód 2); dodání zboží do EU (ř. 14) a vývoz (ř. 15) přesuňte ručně. Přijaté doklady bez IČ DPH dodavatele spadají do B.3.1.",
+          "formVersions": "Export vytváří XML ve verzích DPHv25, KVDPHv25 a SVDPHv20.",
+          "officialLink": "Aktuální informace na webu Finanční správy SR"
+        }
       },
       "annual": {
         "title": "Roční odhad daně a pojištění (OSVČ)",
@@ -7131,7 +7155,7 @@
       },
       {
         "q": "Jaké exporty Billanta umí?",
-        "a": "Přiznání k DPH, kontrolní a souhrnné hlášení ve formátu pro EPO, faktury v ISDOC, export pro Pohodu a Money S3 a CSV s doklady."
+        "a": "Přiznání k DPH, kontrolní a souhrnné hlášení ve formátu pro EPO, pro slovenské firmy daňové přiznání, kontrolní a souhrnný výkaz pro eDane, faktury v ISDOC, export pro Pohodu a Money S3 a CSV s doklady."
       },
       {
         "q": "Jak se dostanu na stránky měst?",

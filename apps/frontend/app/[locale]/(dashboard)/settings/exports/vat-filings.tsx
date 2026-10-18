@@ -15,13 +15,24 @@ const FILES = [
   { key: 'shv', path: 'dphshv.xml' }
 ] as const;
 
+const FILES_SK = [
+  { key: 'dph', path: 'sk/dphv25.xml' },
+  { key: 'kv', path: 'sk/kvdph.xml' },
+  { key: 'sv', path: 'sk/svdph.xml' }
+] as const;
+
+const SK_OFFICIAL_URL = 'https://www.financnasprava.sk/sk/podnikatelia/dane/dan-z-pridanej-hodnoty';
+
 /**
- * VAT filings as EPO XML (přiznání, kontrolní hlášení, souhrnné hlášení),
- * fetched rather than linked so a "nothing to report" or missing-DIČ answer
- * shows as a toast instead of a downloaded error page.
+ * VAT filings as XML: EPO for Czech companies (přiznání, kontrolní hlášení,
+ * souhrnné hlášení), eDane for Slovak ones (priznanie, kontrolný výkaz,
+ * súhrnný výkaz). Fetched rather than linked so a "nothing to report" or
+ * missing-DIČ answer shows as a toast instead of a downloaded error page.
  */
-export function VatFilings() {
-  const t = useTranslations('settings.exports.vat');
+export function VatFilings({ country = 'CZ' }: { country?: 'CZ' | 'SK' }) {
+  const sk = country === 'SK';
+  const t = useTranslations(sk ? 'settings.exports.vat.sk' : 'settings.exports.vat');
+  const common = useTranslations('settings.exports.vat');
   const locale = useLocale();
   const now = new Date();
   const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -39,7 +50,13 @@ export function VatFilings() {
       const res = await fetch(`/api/files/exports/${path}?${query}`);
       if (!res.ok) {
         const reason =
-          res.status === 404 ? t('nothingToReport') : res.status === 400 ? t('missingDic') : res.status === 503 ? t('rateUnavailable') : t('failed');
+          res.status === 404
+            ? t('nothingToReport')
+            : res.status === 400
+              ? t('missingDic')
+              : res.status === 503
+                ? t('rateUnavailable')
+                : common('failed');
         toast({ text: reason, tone: res.status === 404 ? 'info' : 'err' });
         return;
       }
@@ -52,7 +69,7 @@ export function VatFilings() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      toast({ text: t('failed'), tone: 'err' });
+      toast({ text: common('failed'), tone: 'err' });
     } finally {
       setBusy(null);
     }
@@ -69,8 +86,8 @@ export function VatFilings() {
       </div>
       <div className="mt-4 flex flex-wrap gap-3 text-sm">
         <select className={cn(inputClass, 'w-auto')} value={mode} onChange={(e) => setMode(e.target.value as 'month' | 'quarter')}>
-          <option value="month">{t('monthly')}</option>
-          <option value="quarter">{t('quarterly')}</option>
+          <option value="month">{common('monthly')}</option>
+          <option value="quarter">{common('quarterly')}</option>
         </select>
         <select className={cn(inputClass, 'w-auto')} value={year} onChange={(e) => setYear(e.target.value)}>
           {years.map((y) => (
@@ -89,14 +106,14 @@ export function VatFilings() {
           <select className={cn(inputClass, 'w-auto')} value={quarter} onChange={(e) => setQuarter(e.target.value)}>
             {['1', '2', '3', '4'].map((q) => (
               <option key={q} value={q}>
-                {t('quarter', { q })}
+                {common('quarter', { q })}
               </option>
             ))}
           </select>
         )}
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {FILES.map(({ key, path }) => (
+        {(sk ? FILES_SK : FILES).map(({ key, path }) => (
           <button
             key={key}
             type="button"
@@ -108,28 +125,37 @@ export function VatFilings() {
             <span className="mt-1 flex-1 text-xs text-muted-foreground">{t(`files.${key}.hint`)}</span>
             <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
               {busy === key ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-              {t('download')}
+              {common('download')}
             </span>
           </button>
         ))}
       </div>
       <p className="mt-4 text-xs text-muted-foreground">{t('disclaimer')}</p>
-      {/* Same constants the XML export (verzePis) and the public guide use. */}
-      <p className="mt-2 text-xs text-muted-foreground">
-        {t('formVersions', {
-          dp3: VAT_FORM_VERSIONS.DPHDP3,
-          kh1: VAT_FORM_VERSIONS.DPHKH1,
-          shv: VAT_FORM_VERSIONS.DPHSHV,
-          date: new Date(`${VAT_INFO_CHECKED}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
-        })}{' '}
-        <a href={VAT_OFFICIAL_URL} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline">
-          {t('officialLink')}
-        </a>
-        {' · '}
-        <Link href="/guides/vat-return-control-statement" locale={locale === 'en' ? 'en' : 'cs'} className="font-semibold text-primary hover:underline">
-          {t('guideLink')}
-        </Link>
-      </p>
+      {sk ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          {t('formVersions')}{' '}
+          <a href={SK_OFFICIAL_URL} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline">
+            {t('officialLink')}
+          </a>
+        </p>
+      ) : (
+        /* Same constants the XML export (verzePis) and the public guide use. */
+        <p className="mt-2 text-xs text-muted-foreground">
+          {t('formVersions', {
+            dp3: VAT_FORM_VERSIONS.DPHDP3,
+            kh1: VAT_FORM_VERSIONS.DPHKH1,
+            shv: VAT_FORM_VERSIONS.DPHSHV,
+            date: new Date(`${VAT_INFO_CHECKED}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
+          })}{' '}
+          <a href={VAT_OFFICIAL_URL} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline">
+            {t('officialLink')}
+          </a>
+          {' · '}
+          <Link href="/guides/vat-return-control-statement" locale={locale === 'en' ? 'en' : 'cs'} className="font-semibold text-primary hover:underline">
+            {t('guideLink')}
+          </Link>
+        </p>
+      )}
     </section>
   );
 }

@@ -1900,7 +1900,31 @@
         "disclaimer": "Súbor pred podaním skontrolujte v EPO a doplňte finančný úrad. Plnenia do EÚ sa vykazujú ako služby (kód 3); doklady bez DIČ dodávateľa spadajú do B.3.",
         "formVersions": "Export vytvára XML vo verziách DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidlá a verzie formulárov sme naposledy overili {date}.",
         "officialLink": "Aktuálne informácie na webe českej Finančnej správy",
-        "guideLink": "Návod na podanie (CZ)"
+        "guideLink": "Návod na podanie (CZ)",
+        "sk": {
+          "title": "Výkazy k DPH",
+          "hint": "XML súbory pre elektronickú podateľňu eDane Finančnej správy SR. Doklady sa zaraďujú podľa dňa vzniku daňovej povinnosti, cudzie meny sa prepočítajú kurzom ECB z predchádzajúceho dňa (§ 26 zákona č. 222/2004 Z. z.).",
+          "files": {
+            "dph": {
+              "title": "Daňové priznanie k DPH",
+              "hint": "DPHv25 – daň na výstupe podľa sadzieb, odpočítanie dane, vlastná daňová povinnosť (§ 78)."
+            },
+            "kv": {
+              "title": "Kontrolný výkaz",
+              "hint": "KVDPHv25 – faktúry po jednotlivých odberateľoch a dodávateľoch (A.1, A.2, B.2), zjednodušené faktúry súhrnne, opravy v C.1 (§ 78a)."
+            },
+            "sv": {
+              "title": "Súhrnný výkaz",
+              "hint": "SVDPHv20 – služby odberateľom s IČ DPH v inom členskom štáte EÚ (§ 80)."
+            }
+          },
+          "nothingToReport": "V tomto období nie sú žiadne plnenia do EÚ, súhrnný výkaz sa nepodáva.",
+          "missingDic": "Doplňte v Nastaveniach IČ DPH firmy v tvare SK a 10 číslic – bez neho výkazy nemožno vytvoriť.",
+          "rateUnavailable": "Kurz ECB sa nepodarilo načítať. Skúste to o chvíľu.",
+          "disclaimer": "Súbor pred podaním skontrolujte v eDane a doplňte daňový úrad. Plnenia do EÚ sa vykazujú ako služby (kód 2); dodanie tovaru do EÚ (r. 14) a vývoz (r. 15) presuňte ručne. Prijaté doklady bez IČ DPH dodávateľa patria do B.3.1.",
+          "formVersions": "Export vytvára XML vo verziách DPHv25, KVDPHv25 a SVDPHv20.",
+          "officialLink": "Aktuálne informácie na webe Finančnej správy SR"
+        }
       },
       "annual": {
         "title": "Ročný odhad dane a poistenia (OSVČ, CZ)",
@@ -4668,20 +4692,20 @@
         ]
       },
       "vat": {
-        "name": "DPH priznanie (CZ EPO)",
-        "title": "Priznanie k DPH, kontrolné a súhrnné hlásenie v XML pre český EPO",
-        "description": "Pre českých platiteľov DPH pripravíme z faktúr a výdavkov XML súbory priznania k DPH, kontrolného a súhrnného hlásenia na nahratie do EPO.",
-        "lead": "Českí platitelia DPH nemusia čísla prepisovať do formulárov. Stiahnu XML a nahrajú ho do daňového portálu EPO.",
+        "name": "DPH priznanie a výkazy (SK aj CZ)",
+        "title": "Priznanie k DPH, kontrolný a súhrnný výkaz v XML pre eDane aj český EPO",
+        "description": "Z faktúr a výdavkov pripravíme XML súbory priznania k DPH, kontrolného a súhrnného výkazu – pre slovenskú podateľňu eDane aj pre český portál EPO.",
+        "lead": "Platitelia DPH nemusia čísla prepisovať do formulárov. Stiahnu XML a nahrajú ho do eDane alebo do EPO.",
         "points": [
           "Priznanie k DPH (DPHDP3) vo formáte XML",
           "Kontrolné hlásenie (DPHKH1) so všetkými dokladmi",
           "Súhrnné hlásenie (DPHSHV) pre plnenia do EÚ",
-          "Súbory načíta český daňový portál EPO aj dátová schránka"
+          "Súbory načíta slovenská podateľňa eDane aj český portál EPO"
         ],
         "steps": [
           "Počas obdobia vystavujete faktúry a zapisujete výdavky.",
           "V Exportoch zvolíte obdobie a stiahnete XML.",
-          "Súbor nahráte do EPO, skontrolujete a odošlete."
+          "Súbor nahráte do eDane alebo EPO, skontrolujete a odošlete."
         ],
         "faq": [
           {
@@ -4690,7 +4714,7 @@
           },
           {
             "q": "Funguje to aj pre slovenskú finančnú správu?",
-            "a": "Nie, XML súbory sú vo formáte českého portálu EPO. Slovenskí používatelia môžu použiť ročný prehľad a exporty pre účtovníčku."
+            "a": "Áno. Slovenským platiteľom pripravíme daňové priznanie k DPH, kontrolný výkaz a súhrnný výkaz vo formáte pre eDane (DPHv25, KVDPHv25, SVDPHv20). Formát sa vyberie podľa krajiny firmy v nastaveniach."
           }
         ]
       },
@@ -6988,7 +7012,7 @@
       },
       {
         "q": "Aké exporty Billanta ponúka?",
-        "a": "Pre české firmy priznanie k DPH, kontrolné a súhrnné hlásenie pre portál EPO. Pre všetkých faktúry v ISDOC, export pre Pohodu a Money S3 a CSV s dokladmi."
+        "a": "Pre slovenské firmy daňové priznanie k DPH, kontrolný a súhrnný výkaz pre eDane, pre české firmy priznanie, kontrolné a súhrnné hlásenie pre portál EPO. Pre všetkých faktúry v ISDOC, export pre Pohodu a Money S3 a CSV s dokladmi."
       },
       {
         "q": "Ako sa dostanem na stránky miest?",

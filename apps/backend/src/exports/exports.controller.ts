@@ -221,6 +221,47 @@ export class ExportsController {
     return this.vat(req, res, "shv", parseVatPeriod(query));
   }
 
+  @Get("sk/dphv25.xml")
+  @ApiOperation({ summary: "Slovak VAT return (daňové priznanie k DPH, DPHv25) for ?year=&month= or ?year=&quarter=" })
+  skDph(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
+    return this.vatSk(req, res, "dph", parseVatPeriod(query));
+  }
+
+  @Get("sk/kvdph.xml")
+  @ApiOperation({ summary: "Slovak VAT control statement (kontrolný výkaz, KVDPHv25) — due even when empty" })
+  skKv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
+    return this.vatSk(req, res, "kv", parseVatPeriod(query));
+  }
+
+  @Get("sk/svdph.xml")
+  @ApiOperation({ summary: "Slovak EC sales list (súhrnný výkaz, SVDPHv20) — 404 when nothing to report" })
+  skSv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
+    return this.vatSk(req, res, "sv", parseVatPeriod(query));
+  }
+
+  private async vatSk(
+    req: TenantScopedRequest,
+    res: Response,
+    kind: "dph" | "kv" | "sv",
+    period: ExportPeriod & { vat: VatPeriod; label: string },
+  ) {
+    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    // The Slovak forms identify the payer by the IČ DPH (SK + 10 digits).
+    if (!tenant?.dic || !/^SK\d{10}$/i.test(tenant.dic.replace(/\s/g, ""))) {
+      throw new BadRequestException("sk_vat_id_required");
+    }
+    let body: string | null;
+    try {
+      body = await this.exportsService.vatReturnSk(req.tenantDb!, kind, period, period.vat, tenant);
+    } catch (err) {
+      if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
+      throw err;
+    }
+    if (body == null) throw new NotFoundException("No EU supplies to report in this period");
+    const name = { dph: "dphv25", kv: "kvdph", sv: "svdph" }[kind];
+    this.send(res, body, "application/xml; charset=utf-8", `${name}-${period.label}.xml`);
+  }
+
   private async vat(
     req: TenantScopedRequest,
     res: Response,

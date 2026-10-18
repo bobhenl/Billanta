@@ -1900,7 +1900,31 @@
         "disclaimer": "Review the file in EPO before filing and pick the tax office there. EU supplies are reported as services (code 3); documents without a supplier VAT ID go to B.3.",
         "formVersions": "The export creates XML in versions DPHDP3 {dp3}, DPHKH1 {kh1} and DPHSHV {shv}. We last checked the rules and form versions on {date}.",
         "officialLink": "Current information from the Czech Financial Administration",
-        "guideLink": "Filing guide"
+        "guideLink": "Filing guide",
+        "sk": {
+          "title": "Slovak VAT filings",
+          "hint": "XML files for the eDane e-filing service of the Slovak Financial Administration. Documents are assigned by tax point; foreign currencies use the ECB rate of the previous day (§ 26 of Act No. 222/2004 Coll.).",
+          "files": {
+            "dph": {
+              "title": "VAT return",
+              "hint": "DPHv25 – output VAT by rate, input VAT deduction, tax due (§ 78)."
+            },
+            "kv": {
+              "title": "Control statement",
+              "hint": "KVDPHv25 – invoices per customer and supplier (A.1, A.2, B.2), simplified invoices aggregated, corrections in C.1 (§ 78a)."
+            },
+            "sv": {
+              "title": "EC sales list",
+              "hint": "SVDPHv20 – services to VAT-registered customers in other EU states (§ 80)."
+            }
+          },
+          "nothingToReport": "No EU supplies in this period – no EC sales list is due.",
+          "missingDic": "Add your company’s Slovak VAT ID (SK followed by 10 digits) in Settings – filings need it.",
+          "rateUnavailable": "The ECB exchange rate could not be loaded. Try again shortly.",
+          "disclaimer": "Review the file in eDane before filing and fill in the tax office. EU supplies are reported as services (code 2); move EU supplies of goods (line 14) and exports (line 15) by hand. Received documents without a supplier VAT ID go to B.3.1.",
+          "formVersions": "The export creates XML in versions DPHv25, KVDPHv25 and SVDPHv20.",
+          "officialLink": "Current information from the Slovak Financial Administration"
+        }
       },
       "annual": {
         "title": "Yearly tax & insurance estimate (Czech sole trader)",
@@ -7130,7 +7154,7 @@
       },
       {
         "q": "Which exports does Billanta support?",
-        "a": "Czech VAT return, control statement and EC sales list for the tax portal, ISDOC invoices, exports for Pohoda and Money S3, and CSV."
+        "a": "Czech VAT return, control statement and EC sales list for the EPO portal, the Slovak VAT return, control statement and EC sales list for eDane, ISDOC invoices, exports for Pohoda and Money S3, and CSV."
       },
       {
         "q": "How do I get onto the town pages?",
