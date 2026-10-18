@@ -32,7 +32,8 @@ export async function CalculatorPage({
   children,
   after,
   disclaimer = true,
-  cta = 'signup'
+  cta = 'signup',
+  skAlternative
 }: {
   slug: string;
   locale: string;
@@ -42,14 +43,25 @@ export async function CalculatorPage({
   /** Extra sections below the widget (conditions, tables). */
   after?: React.ReactNode;
   /** The tax "orientační výpočet" box; off for tools that compute nothing tax-related (QR, IBAN, due date). */
-  disclaimer?: boolean;
+  disclaimer?: boolean | string;
   /** Invoice tools lead to the guest invoice, which needs no account. */
   cta?: 'signup' | 'invoice';
+  /** Slug of the same calculator under Slovak rules, linked from the sk notice. */
+  skAlternative?: string;
 }) {
   const c = getCalculator(slug)!;
   const t = await getTranslations('tools');
   const k = `calculators.items.${c.key}` as const;
-  if (!isPublishedIn(c, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/calculators/${slug}`} />;
+  if (!isPublishedIn(c, locale)) {
+    const alt = skAlternative ? getCalculator(skAlternative) : undefined;
+    return (
+      <CzOnlyNotice
+        name={t(`${k}.name`)}
+        path={`/calculators/${slug}`}
+        skAlternative={alt && { href: `/calculators/${alt.slug}`, name: t(`calculators.items.${alt.key}.name`) }}
+      />
+    );
+  }
 
   const how = t.has(`${k}.how`) ? (t.raw(`${k}.how`) as string[]) : [];
   const path = `/calculators/${slug}`;
@@ -61,7 +73,7 @@ export async function CalculatorPage({
       <div className="mt-10">{children}</div>
       {disclaimer && (
         <div className="mt-6">
-          <ToolDisclaimer validity={validity} />
+          <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} />
         </div>
       )}
       {after && <div className="mt-12 space-y-10">{after}</div>}

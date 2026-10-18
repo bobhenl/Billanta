@@ -1967,44 +1967,16 @@
       "annual": {
         "title": "Roční odhad daně a pojištění (OSVČ)",
         "hint": "Spočítá daň z příjmů, sociální a zdravotní pojištění a nové zálohy z uhrazených faktur a výdajů za rok. Hodí se k přiznání a přehledům pro ČSSZ a pojišťovnu.",
-        "year": "Rok",
-        "expenses": "Výdaje",
-        "expensesHint": "Paušální výdaje: 60 % většina živností, 80 % řemesla a zemědělství, 40 % svobodná povolání, 30 % pronájem majetku. Nebo skutečné výdaje z evidence.",
-        "modes": {
-          "30": "Paušál 30 % (pronájem)",
-          "40": "Paušál 40 % (svobodná povolání)",
-          "60": "Paušál 60 % (živnosti)",
-          "80": "Paušál 80 % (řemesla)",
-          "actual": "Skutečné výdaje"
-        },
-        "paidSocial": "Zaplacené zálohy – sociální",
-        "paidHealth": "Zaplacené zálohy – zdravotní",
-        "paidHint": "Předvyplní se z měsíčních záloh ve Fakturačních údajích (každý měsíc roku s výší, která tehdy platila). Částku můžete přepsat, ukáže se doplatek nebo přeplatek.",
-        "income": "Příjmy",
         "incomeHint": "Součet faktur uhrazených v daném roce (počet: {invoices}), dobropisy se odečítají.",
         "incomeHintVat": "Součet faktur uhrazených v daném roce bez DPH (počet: {invoices}), dobropisy se odečítají.",
-        "actualExpenses": "Skutečné výdaje",
-        "flatExpenses": "Paušální výdaje {rate} %",
-        "profit": "Zisk",
-        "taxBase": "Základ daně",
-        "taxCredit": "Sleva na poplatníka",
-        "incomeTax": "Daň z příjmů",
-        "incomeTaxHint": "15 %, nad 36násobek průměrné mzdy 23 %. Počítá jen se slevou na poplatníka – děti, manžel/ka a odpočty nejsou zahrnuté.",
-        "social": "Sociální pojištění",
-        "socialHint": "29,2 % z 55 % zisku, nejméně z minimálního vyměřovacího základu pro hlavní činnost.",
-        "health": "Zdravotní pojištění",
-        "healthHint": "13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy.",
-        "balance": "Doplatek (+) / přeplatek (−)",
-        "nextAdvance": "Nová měsíční záloha",
-        "total": "Celkem daň + pojištění",
         "missingRates": "{count, plural, one {# doklad} few {# doklady} other {# dokladů}} v cizí měně bez kurzu ČNB – nezapočítáno.",
-        "paramsFallback": "Pro tento rok nemáme parametry, použity hodnoty roku {year}.",
-        "downloadCsv": "Stáhnout CSV",
         "epoLink": "Formuláře EPO (Finanční správa)",
         "failed": "Odhad se nepodařilo spočítat.",
-        "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
+        "disclaimer": "Orientační odhad pro hlavní činnost. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
         "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat.",
-        "uniformRate": "Cizí měny jsou přepočtené jednotným kurzem za rok {year} (průměr kurzů ČNB ke konci měsíců). Změníte to v Nastavení → Formulář faktury."
+        "uniformRate": "Cizí měny jsou přepočtené jednotným kurzem za rok {year} (průměr kurzů ČNB ke konci měsíců). Změníte to v Nastavení → Formulář faktury.",
+        "titleSk": "Roční odhad daně a pojištění (SZČO, Slovensko)",
+        "hintSk": "Spočítá slovenskou daň z příjmů, zdravotní a sociální pojištění z uhrazených faktur a výdajů za rok, v eurech."
       },
       "epo": {
         "title": "Jak podat přiznání, kontrolní a souhrnné hlášení",
@@ -2129,7 +2101,7 @@
           "nextAdvance": "Nová měsíční záloha"
         },
         "insurer": "Vaše pojišťovna",
-        "healthHowTo": "Pojišťovny mají vlastní formuláře a jednotný XML formát zatím nezveřejnily. Hodnoty vlevo opište do přehledu na portálu své pojišťovny nebo do jejího PDF formuláře.",
+        "healthHowTo": "Od roku 2026 se přehled pro zdravotní pojišťovnu podává jen elektronicky: na portálu pojišťovny (například Moje VZP) nebo datovou schránkou. Jednotný XML formát pojišťovny nemají a VZP datovou schránkou přijímá PDF, proto soubor nevytváříme. Hodnoty vlevo opište do formuláře své pojišťovny.",
         "missingRates": "{count, plural, one {# cizoměnový doklad nemá} few {# cizoměnové doklady nemají} other {# cizoměnových dokladů nemá}} kurz ČNB, v součtech chybí.",
         "personTitle": "Osobní údaje do souborů",
         "personHint": "Doplní se jen do staženého XML. Neukládáme je a do adresy stránky se nedostanou.",
@@ -2143,12 +2115,15 @@
           "osszHint": "Třímístný kód vaší okresní správy sociálního zabezpečení.",
           "variableSymbol": "Variabilní symbol ČSSZ",
           "variableSymbolHint": "Najdete ho v ePortálu ČSSZ nebo na dřívějších platbách záloh.",
-          "dataBox": "ID datové schránky"
+          "dataBox": "ID datové schránky",
+          "prefilled": "Kódy úřadů a datovou schránku jsme předvyplnili z adresy a údajů ve Fakturačních údajích. Zkontrolujte je, můžete je přepsat.",
+          "remember": "Zapamatovat v tomto prohlížeči",
+          "rememberHint": "Rodné číslo a variabilní symbol se uloží jen v tomto prohlížeči, na náš server se neposílají. Zrušením zaškrtnutí je smažete."
         },
         "downloadDpfdp": "Stáhnout přiznání ({form}, XML)",
-        "dpfdpMissing": "Formulář přiznání pro tento rok ještě není",
+        "dpfdpMissing": "Formulář přiznání za {year} vydá Finanční správa obvykle v lednu {next}.",
         "downloadCssz": "Stáhnout přehled ČSSZ (XML)",
-        "csszMissing": "Přehled ČSSZ pro tento rok ještě není",
+        "csszMissing": "Tiskopis přehledu za {year} vydává ČSSZ obvykle začátkem roku {next}.",
         "print": "Vytisknout souhrn",
         "epoLink": "EPO Finanční správy",
         "epoHow": "soubor načtete přes „Načíst soubor“, zkontrolujete a odešlete.",
@@ -6743,7 +6718,8 @@
       "invoiceCtaTitle": "Potřebujete z toho rovnou fakturu?",
       "invoiceCtaText": "Vystavte fakturu s QR platbou, údaji z ARES a správnou splatností bez registrace. S účtem v Billantě se vám faktury uloží, pohlídáte úhrady a pošlete podklady účetní.",
       "invoiceCtaButton": "Vystavit fakturu zdarma",
-      "overview": "Přehled"
+      "overview": "Přehled",
+      "czOnlyTextAlt": "„{name}“ se týká českých předpisů. Pro slovenské živnostníky máme samostatnou kalkulačku podle slovenských pravidel."
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pro podnikatele",
@@ -6763,19 +6739,6 @@
             "Zdravotní pojištění je 13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy za každý měsíc.",
             "Zálohy na další rok vychází z letošního základu, nikdy ale nejsou nižší než minimální zálohy dalšího roku."
           ],
-          "params": "Pro rok {year} počítáme s průměrnou mzdou {wage} Kč, slevou na poplatníka {credit} Kč a minimálním základem sociálního pojištění {share} % průměrné mzdy (hlavní činnost).",
-          "paramsShareChange": "Od {month}. {year} se minimum snižuje na {share} % (sociální záloha nejméně {advance} Kč).",
-          "fields": {
-            "year": "Rok",
-            "income": "Příjmy za rok (Kč)",
-            "expenseMode": "Výdaje",
-            "actual": "Skutečné výdaje",
-            "flat": "Výdajový paušál",
-            "expenses": "Výdaje za rok (Kč)",
-            "flatRate": "Druh činnosti",
-            "paidSocial": "Zaplacené zálohy na sociální (Kč, nepovinné)",
-            "paidHealth": "Zaplacené zálohy na zdravotní (Kč, nepovinné)"
-          },
           "rates": {
             "30": "30 % – pronájem obchodního majetku (max. {cap} Kč)",
             "40": "40 % – svobodná povolání, autorské příjmy (max. {cap} Kč)",
@@ -6783,16 +6746,9 @@
             "80": "80 % – řemeslné živnosti, zemědělství (max. {cap} Kč)"
           },
           "result": {
-            "expenses": "Uplatněné výdaje",
-            "profit": "Zisk (základ daně)",
             "tax": "Daň z příjmů po slevě",
             "social": "Sociální pojištění",
-            "health": "Zdravotní pojištění",
-            "total": "Celkem daň a pojištění",
-            "nextSocial": "Záloha na sociální od dalšího roku",
-            "nextHealth": "Záloha na zdravotní od dalšího roku",
-            "toPay": "doplatek {amount}",
-            "overpaid": "přeplatek {amount}"
+            "health": "Zdravotní pojištění"
           }
         },
         "flatTax": {
@@ -7029,6 +6985,20 @@
             "Mezi podnikateli lze splatnost delší než 60 dní sjednat jen výslovně a jen tehdy, když není vůči věřiteli hrubě nespravedlivá (§ 1963 občanského zákoníku)."
           ],
           "howTitle": "Jak to funguje"
+        },
+        "szco": {
+          "name": "Daň a odvody SZČO (Slovensko)",
+          "title": "Kalkulačka dane a odvodů SZČO na Slovensku",
+          "description": "Orientační slovenská daň z příjmů, zdravotní a sociální pojištění živnostníka (SZČO) za rok, s paušálními výdaji 60 %.",
+          "lead": "Zadejte příjmy za rok. Kalkulačka spočítá daň z příjmů fyzické osoby, zdravotní pojištění, sociální odvody od července dalšího roku a novou zálohu na zdravotní pojištění podle slovenských pravidel.",
+          "keywords": "szčo živnostník slovensko daň z príjmov paušálne výdavky odvody sociálna poisťovňa zdravotné poistenie nezdaniteľná časť",
+          "how": [
+            "Zisk je příjem minus paušální výdaje 60 % (nejvýš 20 000 € za rok) nebo minus skutečné výdaje.",
+            "Základ daně je zisk minus sociální a zdravotní pojištění zaplacené během roku. Odečte se nezdanitelná část na daňovníka, která nad hranicí příjmů postupně klesá.",
+            "Daň je 15 %, když příjmy nepřesáhnou 100 000 € (za rok 2024 60 000 €). Jinak 19 % a 25 % z části nad 176,8násobkem životního minima, od roku 2026 navíc 30 % a 35 %.",
+            "Zdravotní pojištění je 15 % (od roku 2026 16 %) ze zisku děleného 1,486, nejméně z minimálního základu za každý měsíc. Rozdíl proti zaplaceným zálohám se doplatí v ročním zúčtování.",
+            "Sociální pojištění vzniká až od července dalšího roku, a jen když příjem přesáhne zákonnou hranici. Základ je zisk děleno 1,486 a počtem měsíců, mezi minimálním a maximálním základem."
+          ]
         }
       }
     },
@@ -7521,6 +7491,76 @@
       "ADIS": "Podle registru plátců DPH (Finanční správa)",
       "VIES": "Podle evropského systému VIES",
       "none": "Zdroj neznámý"
+    }
+  },
+  "annualEstimate": {
+    "year": "Rok",
+    "incomeCzk": "Příjmy za rok (Kč)",
+    "incomeEur": "Příjmy za rok (€)",
+    "income": "Příjmy",
+    "expenses": "Výdaje",
+    "actualMode": "Skutečné výdaje",
+    "actualExpenses": "Skutečné výdaje",
+    "start": "Podnikání během roku",
+    "startFull": "Celý rok",
+    "startFrom": "Od {date} ({months, plural, one {# měsíc} few {# měsíce} other {# měsíců}})",
+    "paidSocial": "Zaplacené sociální pojištění (nepovinné)",
+    "paidHealth": "Zaplacené zdravotní pojištění (nepovinné)",
+    "paidHint": "Zálohy zaplacené za tento rok. Když je vyplníte, ukáže se doplatek nebo přeplatek.",
+    "balance": "Doplatek (+) / přeplatek (−)",
+    "nextAdvance": "Nová měsíční záloha",
+    "total": "Celkem daň + pojištění",
+    "paramsFallback": "Pro tento rok nemáme parametry, použity hodnoty roku {year}.",
+    "downloadCsv": "Stáhnout CSV",
+    "csvName": "odhad-dane-a-pojisteni",
+    "resultTitle": "Odhad",
+    "perMonth": "měsíčně",
+    "disclaimer": "Výsledek je jen orientační a nenahrazuje účetní ani daňového poradce. Počítá jen s příjmy z podnikání a základní slevou nebo nezdanitelnou částí na poplatníka, bez dětí, odpočtů a dalších příjmů. Než podle něj něco podáte nebo zaplatíte, ověřte si to u účetní nebo na webu příslušných úřadů.",
+    "cz": {
+      "modes": {
+        "30": "Paušál 30 % – pronájem obchodního majetku (max. {cap} Kč)",
+        "40": "Paušál 40 % – svobodná povolání, autorské příjmy (max. {cap} Kč)",
+        "60": "Paušál 60 % – ostatní živnosti (max. {cap} Kč)",
+        "80": "Paušál 80 % – řemeslné živnosti, zemědělství (max. {cap} Kč)"
+      },
+      "flatExpenses": "Paušální výdaje {rate} %",
+      "profit": "Zisk",
+      "taxBase": "Základ daně (zaokrouhlený na stovky)",
+      "taxCredit": "Sleva na poplatníka",
+      "incomeTax": "Daň z příjmů",
+      "incomeTaxHint": "15 %, nad 36násobek průměrné mzdy 23 %. Počítá jen se slevou na poplatníka – děti, manžel/ka a odpočty nejsou zahrnuté.",
+      "social": "Sociální pojištění",
+      "socialHint": "29,2 % z 55 % zisku, nejméně z minimálního vyměřovacího základu pro hlavní činnost za každý měsíc podnikání.",
+      "health": "Zdravotní pojištění",
+      "healthHint": "13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy za každý měsíc podnikání.",
+      "params": "Pro rok {year} počítáme s průměrnou mzdou {wage} Kč, slevou na poplatníka {credit} Kč a minimálním základem sociálního pojištění {share} % průměrné mzdy (hlavní činnost).",
+      "paramsShareChange": "Od {month}. {year} se minimum snižuje na {share} % (sociální záloha nejméně {advance} Kč).",
+      "startHint": "Minimální základy pojištění se počítají jen za měsíce podnikání. Sleva na poplatníka a strop paušálu platí celé."
+    },
+    "sk": {
+      "flatMode": "Paušální výdaje 60 % (max. {cap})",
+      "actualHint": "Bez zaplaceného sociálního a zdravotního pojištění, to se odečítá zvlášť.",
+      "flatExpenses": "Paušální výdaje 60 %",
+      "paidInsurance": "Zaplacené pojistné",
+      "taxBase": "Základ daně",
+      "allowance": "Nezdanitelná část na daňovníka",
+      "taxable": "Zdanitelný základ",
+      "incomeTax": "Daň z příjmů",
+      "incomeTaxReduced": "Daň z příjmů (15 %)",
+      "incomeTaxHint": "15 % při příjmech do 100 000 € (za rok 2024 do 60 000 €), jinak 19 % a 25 % (od roku 2026 také 30 % a 35 %). Bez daňového bonusu na děti a dalších odpočtů.",
+      "health": "Zdravotní pojištění za rok",
+      "healthHint": "{rate} % z vyměřovacího základu (zisk děleno 1,486), nejméně z minimálního základu za každý měsíc podnikání.",
+      "social": "Sociální pojištění od července {year}",
+      "socialNone": "neplatíte",
+      "socialHint": "Povinnost a výši určí Sociální pojišťovna z daňového přiznání: základ je zisk děleno 1,486 a počtem měsíců, nejméně minimální a nejvýš maximální základ. Při příjmu pod zákonnou hranicí pojištění nevzniká.",
+      "socialMicroHint": "Příjem je jen mírně nad hranicí, proto se od července 2026 platí mikroodvod z nižšího základu.",
+      "total": "Celkem daň + pojištění za rok",
+      "totalHint": "Daň z příjmů, zdravotní pojištění za rok a sociální pojištění zaplacené během roku.",
+      "params": "Pro rok {year} počítáme se životním minimem {zm} a stropem paušálních výdajů {cap}.",
+      "socialFallback": "Parametry sociálního pojištění pro další rok ještě nejsou zveřejněné, použity hodnoty od července {year}.",
+      "startHint": "Minimální základ zdravotního pojištění se počítá jen za měsíce podnikání. Strop paušálu a nezdanitelná část platí celé.",
+      "paidSocialHint": "Sociální pojistné zaplacené během roku. Snižuje základ daně.",
+      "paidHealthHint": "Zdravotní zálohy zaplacené během roku. Snižují základ daně a odečtou se v ročním zúčtování."
     }
   }
 }
