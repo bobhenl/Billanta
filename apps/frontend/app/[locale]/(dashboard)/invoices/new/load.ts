@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant } from '@/lib/tenant';
-import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
+import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, PUBLIC_LINK_PREFIXES, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
 const LANGUAGES: DocLanguage[] = ['cs', 'sk', 'en'];
@@ -78,7 +78,8 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
         : (raw?.exchangeRateMode as string | undefined) === 'annual'
           ? 'annual'
           : 'daily',
-    annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : []
+    annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : [],
+    publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number'
   };
 }
 

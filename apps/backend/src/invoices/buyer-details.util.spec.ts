@@ -80,7 +80,16 @@ describe("token", () => {
     expect(TOKEN_PATTERN.test(TOKEN.toUpperCase())).toBe(true);
     expect(TOKEN_PATTERN.test("x")).toBe(false);
     expect(TOKEN_PATTERN.test(`${TOKEN}' OR 1=1`)).toBe(false);
-    expect(TOKEN_PATTERN.test(`a${TOKEN}`)).toBe(false);
+    // Not a UUID any more: it reads as a prefix plus the UUID's last group, which no link stores.
+    expect(normalizeToken(`a${TOKEN}`)).toBe("1d2e3f4a5b6c");
+    expect(submitBlock(state(), `a${TOKEN}`)).toBe("not_found");
+  });
+  it("accepts a short token behind a readable prefix and compares only the token", () => {
+    expect(TOKEN_PATTERN.test("2026-0012-aZ09bY18cX27")).toBe(true);
+    expect(normalizeToken("novak-2026-0012-aZ09bY18cX27")).toBe("aZ09bY18cX27");
+    expect(submitBlock(state({ buyerDetailsToken: "aZ09bY18cX27" }), "wrong-prefix-aZ09bY18cX27")).toBeNull();
+    expect(TOKEN_PATTERN.test("bad prefix-aZ09bY18cX27")).toBe(false);
+    expect(normalizeToken("x")).toBe("");
   });
   it("accepts the short base62 tokens and nothing near them", () => {
     expect(TOKEN_PATTERN.test("aZ09bY18cX27")).toBe(true);

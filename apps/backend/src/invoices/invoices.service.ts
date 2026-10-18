@@ -43,6 +43,7 @@ import {
 } from "./party-snapshot";
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
+import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -234,6 +235,33 @@ export class InvoicesService {
    * text, sender name, reply-to, and — for the invoice email — the PDF,
    * ISDOC and the invoice's own attachments marked "send with email".
    */
+  /**
+   * The /i/, /c/ and /d/ path segments as the customer gets them: a readable
+   * prefix (Settings → Faktury) plus the secret key. Company name as on the
+   * document, like the {link} variable in the e-mail text.
+   */
+  private async publicLinks(
+    db: TenantDb,
+    invoice: typeof schema.invoices.$inferSelect,
+    contact?: typeof schema.contacts.$inferSelect | null,
+  ) {
+    const [live] = await db
+      .select({
+        companyName: schema.tenants.companyName,
+        publicProfile: schema.tenants.publicProfile,
+        invoiceFormPrefs: schema.tenants.invoiceFormPrefs,
+      })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, invoice.tenantId))
+      .limit(1);
+    const { tenant, contact: buyer } = documentParties(invoice, live ?? {}, contact);
+    return {
+      public: invoiceLinkOf(tenant, invoice),
+      portal: buyer ? clientPortalLinkOf(tenant, buyer) : null,
+      buyerDetails: invoice.buyerDetailsToken ? buyerDetailsLinkOf(tenant, invoice, invoice.buyerDetailsToken) : null,
+    };
+  }
+
   private async emailCustomization(
     db: TenantDb,
     tenantId: string,
@@ -662,6 +690,8 @@ export class InvoicesService {
 
     return {
       invoice: { ...invoice, isOverdue: isOverdue(invoice) },
+      /** Path segments for the copy-link buttons and previews. */
+      links: await this.publicLinks(db, invoice, contact),
       /** The live contact (link, e-mail for sending). */
       contact: contact ?? null,
       /** The buyer as printed on the document. */
@@ -740,11 +770,12 @@ export class InvoicesService {
     const invoice = await this.requireInvoice(db, id);
     const [updated] = await db
       .update(schema.invoices)
-      .set({ publicToken: randomUUID(), updatedAt: new Date() })
+      // Both secrets, so neither the old UUID link nor the old short one keeps working.
+      .set({ publicToken: randomUUID(), publicKey: newShortKey(), updatedAt: new Date() })
       .where(eq(schema.invoices.id, id))
-      .returning({ id: schema.invoices.id, publicToken: schema.invoices.publicToken });
+      .returning();
     await this.log(db, invoice, "link_rotated");
-    return updated;
+    return { id: updated.id, publicToken: updated.publicToken, link: (await this.publicLinks(db, updated)).public };
   }
 
   /**
@@ -1073,8 +1104,7 @@ export class InvoicesService {
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
         amount: formatInvoiceAmount(total, invoice.currency),
         dueDate: invoice.dueDate,
-        publicToken: invoice.publicToken,
-        clientPortalToken: contact.portalToken,
+        ...(await this.emailLinks(db, invoice, contact)),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
       },
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
@@ -1091,6 +1121,11 @@ export class InvoicesService {
     this.ping(updated, "invoice_sent", `Faktura ${updated.invoiceNumber ?? ""} odeslána`, `Komu: ${contact.email}`);
     await this.log(db, updated, corrected ? "sent_corrected" : "sent", [{ field: "email", from: null, to: contact.email }]);
     return updated;
+  }
+
+  private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {
+    const links = await this.publicLinks(db, invoice, contact);
+    return { publicLink: links.public, clientPortalLink: links.portal };
   }
 
   /** Whether the issued invoice was edited in place after `since` (its last send). */
@@ -1133,8 +1168,7 @@ export class InvoicesService {
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
         amount: formatInvoiceAmount(total, invoice.currency),
         dueDate: invoice.dueDate,
-        publicToken: invoice.publicToken,
-        clientPortalToken: contact.portalToken,
+        ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
       },

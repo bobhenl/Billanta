@@ -87,7 +87,7 @@ export function BuyerDetailsRequest({
       }
       setOpen(false);
       if (r.data.emailed) toast({ text: t('emailed', { email: to.trim() }), tone: 'ok' });
-      else await copy(linkOf(r.data.token));
+      else await copy(linkOf(r.data.link ?? r.data.token));
       router.refresh();
     });
 

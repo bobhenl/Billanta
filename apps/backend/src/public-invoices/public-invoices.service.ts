@@ -5,6 +5,7 @@ import { DbService } from "../db/db.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { EmailService } from "../email/email.service";
 import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
+import { resolveInvoiceToken } from "../public-links/resolve";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -12,8 +13,9 @@ export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
  * Deliberately loose (not a strict RFC-4122 version check) — this only
  * needs to reject obviously-malformed input before it ever reaches a
  * `::uuid` cast in Postgres (which would otherwise raise a raw driver
- * error, not a clean 404). The real access control is `public_token`
+ * error, not a clean 404). The real access control is the link secret
  * being an unguessable random value with a unique index, not this regex.
+ * Link segments themselves are checked by `resolveInvoiceToken`.
  */
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -149,8 +151,9 @@ export class PublicInvoicesService {
    * operator reviews it. The company itself is not told who reported.
    * Never throws for an unknown token, so it reveals nothing.
    */
-  async reportAbuse(token: string, reason: AbuseReason, message: string | null, reporterEmail: string | null, bucket: string): Promise<void> {
-    if (!UUID_PATTERN.test(token)) return;
+  async reportAbuse(link: string, reason: AbuseReason, message: string | null, reporterEmail: string | null, bucket: string): Promise<void> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token) return;
     const rows = await this.dbService.db.execute<{
       tenant_id: string;
       invoice_id: string;
@@ -183,8 +186,9 @@ export class PublicInvoicesService {
   }
 
   /** Bumps the share-link view counter via `record_public_invoice_view`; never throws on a bad token. */
-  async recordView(token: string): Promise<void> {
-    if (!UUID_PATTERN.test(token)) return;
+  async recordView(link: string): Promise<void> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token) return;
     const rows = await this.dbService.db.execute<{ tenant_id: string; invoice_id: string; invoice_number: string | null; first_view: boolean }>(
       sql`SELECT * FROM record_public_invoice_view(${token})`,
     );
@@ -199,8 +203,9 @@ export class PublicInvoicesService {
   }
 
   /** The client's accept/reject answer to an issued quote; 409 when already answered or not a quote. */
-  async respondToQuote(token: string, response: "accepted" | "rejected", name: string, note: string | null): Promise<void> {
-    if (!UUID_PATTERN.test(token) || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
+  async respondToQuote(link: string, response: "accepted" | "rejected", name: string, note: string | null): Promise<void> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
     const rows = await this.dbService.db.execute<{ tenant_id: string; invoice_id: string; invoice_number: string | null }>(
       sql`SELECT * FROM respond_to_public_quote(${token}, ${response}, ${name}, ${note})`,
     );
@@ -214,8 +219,10 @@ export class PublicInvoicesService {
     });
   }
 
-  async findByPublicToken(token: string): Promise<PublicInvoiceView> {
-    if (!UUID_PATTERN.test(token) || (await this.isBlocked(token))) {
+  /** `link` is the /i/ segment: a short key behind its readable prefix, or the UUID of an older link. */
+  async findByPublicToken(link: string): Promise<PublicInvoiceView> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || (await this.isBlocked(token))) {
       throw new NotFoundException("Invoice not found");
     }
 
@@ -344,8 +351,9 @@ export class PublicInvoicesService {
   }
 
   /** One portal attachment by token + id (`get_public_invoice_attachment`); 404 for anything else. */
-  async downloadAttachment(token: string, attachmentId: string) {
-    if (!UUID_PATTERN.test(token) || !UUID_PATTERN.test(attachmentId) || (await this.isBlocked(token))) throw new NotFoundException("Attachment not found");
+  async downloadAttachment(link: string, attachmentId: string) {
+    const token = UUID_PATTERN.test(attachmentId) ? await resolveInvoiceToken(this.dbService.db, link) : null;
+    if (!token || (await this.isBlocked(token))) throw new NotFoundException("Attachment not found");
     const rows = await this.dbService.db.execute<{ filename: string; mime: string; data: string }>(
       sql`SELECT * FROM get_public_invoice_attachment(${token}, ${attachmentId})`,
     );

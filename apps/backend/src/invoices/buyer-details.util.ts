@@ -1,38 +1,30 @@
-import { randomBytes } from "node:crypto";
 import { parseVatId, VIES_COUNTRIES } from "@faktur/cz-compliance";
 import { z } from "zod";
 import type { BuyerDetailsOutcome } from "../../drizzle/schema";
+import { newShortKey, parseLinkSegment } from "../public-links/public-link";
 
 /**
  * "Odběratel si doplní údaje sám": the rules behind the buyer-details link,
  * kept free of Nest and the database so each one can be unit-tested.
  */
 
-const UUID_TOKEN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const SHORT_TOKEN = /^[0-9A-Za-z]{12}$/;
+/**
+ * Shape check before a link segment reaches the database: a base62 token
+ * (new links, ~71 random bits), optionally behind a readable prefix
+ * ("2026-0012-k3Fq9Xa2Lm7P", see public-links/public-link.ts), or a UUID
+ * (links sent before 0054). Real access control is the randomness, not the pattern.
+ */
+export const TOKEN_PATTERN = { test: (token: string) => parseLinkSegment(token) !== null };
 
 /**
- * Shape check before a token reaches the database: a 12-character base62
- * token (new links, ~71 random bits) or a UUID (links sent before 0054).
- * Real access control is the randomness, not the pattern.
+ * The form a token is stored in: the key without its prefix (case matters),
+ * UUIDs in lower case as Postgres printed them. "" for a malformed segment,
+ * which matches no stored token.
  */
-export const TOKEN_PATTERN = { test: (token: string) => SHORT_TOKEN.test(token) || UUID_TOKEN.test(token) };
+export const normalizeToken = (token: string) => parseLinkSegment(token)?.value ?? "";
 
-/** The form a token is stored in: UUIDs in lower case (as Postgres printed them), short tokens as they are (case matters). */
-export const normalizeToken = (token: string) => (UUID_TOKEN.test(token) ? token.toLowerCase() : token);
-
-const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-/** A new link token: 12 base62 characters from the CSPRNG, without modulo bias (bytes >= 248 are redrawn). */
-export function newBuyerDetailsToken(random: (n: number) => Buffer = randomBytes): string {
-  let out = "";
-  while (out.length < 12) {
-    for (const byte of random(16)) {
-      if (byte < 248 && out.length < 12) out += BASE62[byte % 62];
-    }
-  }
-  return out;
-}
+/** A new link token: 12 base62 characters (~71 bits), the same generator as the /i/ and /c/ keys. */
+export const newBuyerDetailsToken = newShortKey;
 
 /** Fields the supplier can make mandatory on the buyer-details page (name and address always are). */
 export const BUYER_DETAILS_FIELDS = ["email", "phone", "ico", "dic"] as const;

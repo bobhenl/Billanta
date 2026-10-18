@@ -2287,7 +2287,16 @@
       "remindersEnabled": "Send reminders automatically",
       "remindersRule": "Repeat every <interval></interval> days, at most <max></max>×.",
       "reminderInterval": "Days between reminders",
-      "reminderMax": "Maximum reminders"
+      "reminderMax": "Maximum reminders",
+      "links": {
+        "title": "Customer links",
+        "hint": "How the document link your customer gets by e-mail looks. Only the code at the end is secret; the text in front of it is there to make it readable. The client portal link starts with the customer's name unless you pick the code only. Links you have already sent keep working.",
+        "options": {
+          "number": "Document number",
+          "company_number": "Company and document number",
+          "none": "Random code only"
+        }
+      }
     },
     "modules": {
       "title": "Modules & business type",

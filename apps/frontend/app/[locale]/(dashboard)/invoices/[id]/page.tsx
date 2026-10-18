@@ -192,7 +192,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           status={invoice.status}
           numbered={Boolean(invoice.invoiceNumber)}
           hasEmail={Boolean(contact?.email)}
-          publicToken={invoice.publicToken}
+          publicLink={detail.links?.public ?? invoice.publicToken}
           defaultTemplateName={contact ? `${contact.legalName}` : title}
           overdue={invoice.isOverdue}
           reminderCount={invoice.reminderCount}
@@ -205,7 +205,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         {(invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
           <BuyerDetailsRequest
             id={invoice.id}
-            token={invoice.buyerDetailsToken ?? null}
+            token={invoice.buyerDetailsToken ? (detail.links?.buyerDetails ?? invoice.buyerDetailsToken) : null}
             submittedAt={invoice.buyerDetailsSubmittedAt ?? null}
             submittedLabel={formatDate(invoice.buyerDetailsSubmittedAt, locale)}
             email={invoice.buyerDetailsEmail ?? null}

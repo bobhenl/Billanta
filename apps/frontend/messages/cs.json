@@ -2287,7 +2287,16 @@
       "remindersEnabled": "Posílat upomínky automaticky",
       "remindersRule": "Opakovat každých <interval></interval> dní, nejvýše <max></max>×.",
       "reminderInterval": "Dní mezi upomínkami",
-      "reminderMax": "Nejvýše upomínek"
+      "reminderMax": "Nejvýše upomínek",
+      "links": {
+        "title": "Odkazy pro zákazníky",
+        "hint": "Jak vypadá odkaz na doklad, který zákazník dostane e-mailem. Tajný je jen kód na konci, text před ním je pro přehlednost. Odkaz na klientský portál začíná jménem zákazníka, pokud nezvolíte jen kód. Odkazy, které už jste poslali, fungují dál.",
+        "options": {
+          "number": "Číslo dokladu",
+          "company_number": "Firma a číslo dokladu",
+          "none": "Jen náhodný kód"
+        }
+      }
     },
     "modules": {
       "title": "Moduly a typ podnikání",

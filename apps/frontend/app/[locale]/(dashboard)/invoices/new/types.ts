@@ -191,7 +191,12 @@ export interface InvoiceFormPrefs {
   reportRateMode: ReportRateMode;
   /** The company's own jednotný kurz per year, over the computed one. */
   annualRates: AnnualRate[];
+  /** What customer links start with (backend public-links/public-link.ts). */
+  publicLinkPrefix: PublicLinkPrefix;
 }
+
+export const PUBLIC_LINK_PREFIXES = ['number', 'company_number', 'none'] as const;
+export type PublicLinkPrefix = (typeof PUBLIC_LINK_PREFIXES)[number];
 
 /** Printed on invoices: the daily ČNB rate (§ 38 ZDPH), or no conversion (non-payers only). */
 export type ExchangeRateSetting = 'cnb_daily' | 'none';

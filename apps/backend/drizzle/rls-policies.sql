@@ -1295,15 +1295,16 @@ GRANT EXECUTE ON FUNCTION public_invoice_blocked(uuid) TO faktur_app;
 -- EXECUTE only for faktur_app. Nothing is returned for a suspended company.
 -- Only documents past the draft stage are listed, and per document only what
 -- the client already sees on its own /i/:public_token page; the public_token
--- is returned so the portal can link to that page.
+-- and public_key are returned so the portal can link to that page, with the
+-- company's link prefix setting (migration 0057).
 DROP FUNCTION IF EXISTS get_client_portal(uuid);
 CREATE OR REPLACE FUNCTION get_client_portal(p_portal_token uuid)
-RETURNS TABLE (customer_name text, company_name text)
+RETURNS TABLE (customer_name text, company_name text, profile_slug text, link_prefix text)
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT c.legal_name, t.company_name
+  SELECT c.legal_name, t.company_name, t.public_profile->>'slug', t.invoice_form_prefs->>'publicLinkPrefix'
   FROM contacts c JOIN tenants t ON t.id = c.tenant_id
   WHERE c.portal_token = p_portal_token AND t.suspended_at IS NULL
   LIMIT 1;
@@ -1315,6 +1316,7 @@ DROP FUNCTION IF EXISTS get_client_portal_documents(uuid);
 CREATE OR REPLACE FUNCTION get_client_portal_documents(p_portal_token uuid)
 RETURNS TABLE (
   public_token uuid,
+  public_key text,
   invoice_number varchar(32),
   document_type text,
   status text,
@@ -1332,6 +1334,7 @@ SET search_path = public
 AS $$
   SELECT
     i.public_token,
+    i.public_key,
     i.invoice_number,
     i.document_type::text,
     i.status::text,
@@ -1355,6 +1358,69 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION get_client_portal_documents(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_client_portal_documents(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Short customer links (migration 0057, src/public-links/)
+-- ---------------------------------------------------------------------------
+-- /i/2026-0012-k3Fq9Xa2Lm7P and /c/novak-<key>: only the 12-character key is
+-- looked up. These two map it to the uuid token every function above takes,
+-- so the uuid links sent earlier and the short ones go through the same
+-- checks. They return only the token, never anything about the document.
+CREATE OR REPLACE FUNCTION gen_public_key()
+RETURNS text
+LANGUAGE plpgsql
+VOLATILE
+SET search_path = public
+AS $$
+DECLARE
+  alphabet constant text := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  bytes bytea;
+  b int;
+  result text := '';
+BEGIN
+  -- gen_random_uuid() is the CSPRNG; bytes 6 and 8 carry the version and
+  -- variant bits, and bytes >= 248 are skipped so % 62 has no bias.
+  WHILE length(result) < 12 LOOP
+    bytes := uuid_send(gen_random_uuid());
+    FOR i IN 0..15 LOOP
+      CONTINUE WHEN i IN (6, 8);
+      b := get_byte(bytes, i);
+      IF b < 248 AND length(result) < 12 THEN
+        result := result || substr(alphabet, b % 62 + 1, 1);
+      END IF;
+    END LOOP;
+  END LOOP;
+  RETURN result;
+END;
+$$;
+-- The default of invoices.public_key, so inserts as faktur_app call it.
+GRANT EXECUTE ON FUNCTION gen_public_key() TO faktur_app;
+
+DROP FUNCTION IF EXISTS invoice_public_token_by_key(text);
+CREATE OR REPLACE FUNCTION invoice_public_token_by_key(p_key text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT public_token FROM invoices WHERE public_key = p_key LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION invoice_public_token_by_key(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION invoice_public_token_by_key(text) TO faktur_app;
+
+DROP FUNCTION IF EXISTS contact_portal_token_by_key(text);
+CREATE OR REPLACE FUNCTION contact_portal_token_by_key(p_key text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT portal_token FROM contacts WHERE portal_key = p_key AND portal_token IS NOT NULL LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION contact_portal_token_by_key(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION contact_portal_token_by_key(text) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- card_payment_sessions (migration 0033) + public card-payment lookup

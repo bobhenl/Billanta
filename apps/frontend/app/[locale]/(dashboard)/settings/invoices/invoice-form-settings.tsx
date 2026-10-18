@@ -8,7 +8,18 @@ import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
-import { DEFAULT_SHOWN, PDF_ACCENTS, type Contact, type DocLanguage, type InvoiceFormPrefs, type OptionalField } from '../../invoices/new/types';
+import { slugify } from '@/lib/public-link';
+import { SITE_URL } from '@/lib/site';
+import {
+  DEFAULT_SHOWN,
+  PDF_ACCENTS,
+  PUBLIC_LINK_PREFIXES,
+  type Contact,
+  type DocLanguage,
+  type InvoiceFormPrefs,
+  type OptionalField,
+  type PublicLinkPrefix
+} from '../../invoices/new/types';
 import { updateInvoiceFormPrefs } from '../actions';
 import { InvoiceDefaultsFields, parseNumber, type DefaultsDraft } from './invoice-defaults';
 import { annualRatesOf, ExchangeRateSettings, type AnnualRateDraft, type UniformYear } from './exchange-rate-settings';
@@ -22,6 +33,16 @@ const GROUPS: { key: string; fields: OptionalField[] }[] = [
   { key: 'notes', fields: ['noteAbove', 'internalNote'] }
 ];
 
+const EXAMPLE_NUMBER = '2026-0012';
+const EXAMPLE_KEY = 'k3Fq9Xa2Lm7P';
+
+/** What an invoice link looks like with this setting; mirrors documentPrefix in the backend. */
+function exampleLink(mode: PublicLinkPrefix, company: string) {
+  const number = slugify(EXAMPLE_NUMBER, 24);
+  const prefix = mode === 'none' ? '' : mode === 'number' ? number : [slugify(company, 40 - number.length - 1), number].filter(Boolean).join('-');
+  return `${new URL(SITE_URL).host}/i/${prefix ? `${prefix}-` : ''}${EXAMPLE_KEY}`;
+}
+
 export function InvoiceFormSettings({
   prefs,
   company,
@@ -30,6 +51,7 @@ export function InvoiceFormSettings({
   vatPayer,
   vatStatus,
   uniformRates,
+  linkCompany,
   readOnly
 }: {
   prefs: InvoiceFormPrefs;
@@ -41,6 +63,8 @@ export function InvoiceFormSettings({
   vatStatus: VatStatus;
   /** Computed jednotný kurz per year; null when ČNB could not be reached. */
   uniformRates: UniformYear[] | null;
+  /** Public profile slug or company name, for the example links. */
+  linkCompany: string;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices');
@@ -58,6 +82,7 @@ export function InvoiceFormSettings({
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
   const [rateMode, setRateMode] = useState(prefs.exchangeRateMode);
   const [reportRateMode, setReportRateMode] = useState(prefs.reportRateMode);
+  const [linkPrefix, setLinkPrefix] = useState<PublicLinkPrefix>(prefs.publicLinkPrefix);
   const [annualRates, setAnnualRates] = useState<AnnualRateDraft[]>(() =>
     prefs.annualRates.map((r) => ({ year: String(r.year), currency: r.currency, rate: String(r.rate) }))
   );
@@ -91,6 +116,7 @@ export function InvoiceFormSettings({
         exchange_rate_mode: rateMode,
         report_rate_mode: reportRateMode,
         annual_rates: rates,
+        public_link_prefix: linkPrefix,
         show,
         custom_field_labels: labels.map((l) => l.trim()).filter(Boolean),
         default_issue_place: place.trim() || null,
@@ -299,6 +325,30 @@ export function InvoiceFormSettings({
               })}
             </div>
           )}
+        </div>
+      </section>
+
+      <section id="links" className={cn(card, 'scroll-mt-20')}>
+        <InfoHint hint={t('links.hint')}>
+          <h2 className="font-bold">{t('links.title')}</h2>
+        </InfoHint>
+        <div role="radiogroup" aria-label={t('links.title')} className="mt-3 space-y-2">
+          {PUBLIC_LINK_PREFIXES.map((mode) => (
+            <label key={mode} className={cn('flex items-start gap-2.5 text-sm', readOnly && 'opacity-70')}>
+              <input
+                type="radio"
+                name="public-link-prefix"
+                checked={linkPrefix === mode}
+                disabled={readOnly}
+                onChange={() => setLinkPrefix(mode)}
+                className="mt-0.5 h-4 w-4 accent-primary"
+              />
+              <span className="min-w-0">
+                <span className="font-medium">{t(`links.options.${mode}`)}</span>
+                <span className="block break-all font-mono text-xs text-muted-foreground">{exampleLink(mode, linkCompany)}</span>
+              </span>
+            </label>
+          ))}
         </div>
       </section>
 

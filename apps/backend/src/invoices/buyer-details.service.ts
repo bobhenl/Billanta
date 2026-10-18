@@ -8,6 +8,7 @@ import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { EmailService } from "../email/email.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { buyerDetailsLinkOf } from "../public-links/public-link";
 import {
   buyerDetailsSchema,
   DRAFT_STATUSES,
@@ -32,10 +33,10 @@ type TenantDb = PostgresJsDatabase<typeof schema>;
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type Actor = "customer" | "system";
 
-/** The public page where the customer fills in their details (frontend `app/[locale]/d/[token]`). */
-export function buyerDetailsUrlOf(token: string): string {
+/** The public page where the customer fills in their details (frontend `app/[locale]/d/[token]`); `link` from `buyerDetailsLinkOf`. */
+export function buyerDetailsUrlOf(link: string): string {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://faktur.app").replace(/\/$/, "");
-  return `${siteUrl}/d/${token}`;
+  return `${siteUrl}/d/${link}`;
 }
 
 const FIELD_LABELS: Record<string, string> = {
@@ -142,13 +143,19 @@ export class BuyerDetailsService {
       ],
     });
 
-    const url = buyerDetailsUrlOf(token);
+    const [tenant] = await db
+      .select({
+        companyName: schema.tenants.companyName,
+        email: schema.tenants.email,
+        publicProfile: schema.tenants.publicProfile,
+        invoiceFormPrefs: schema.tenants.invoiceFormPrefs,
+      })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId))
+      .limit(1);
+    const link = buyerDetailsLinkOf(tenant, invoice, token);
+    const url = buyerDetailsUrlOf(link);
     if (email) {
-      const [tenant] = await db
-        .select({ companyName: schema.tenants.companyName, email: schema.tenants.email })
-        .from(schema.tenants)
-        .where(eq(schema.tenants.id, tenantId))
-        .limit(1);
       const items = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
       const total = computeInvoiceTotal(items, { reverseCharge: invoice.reverseCharge });
       // Queued in the same transaction: a refused request (sending limits) rolls everything back.
@@ -165,7 +172,7 @@ export class BuyerDetailsService {
       );
       await recordEmailSent(db, tenantId, "buyer_details", email);
     }
-    return { token, url, emailed: Boolean(email), autoIssue: updated.buyerDetailsAutoIssue };
+    return { token, link, url, emailed: Boolean(email), autoIssue: updated.buyerDetailsAutoIssue };
   }
 
   /** Closes the request: the link stops working at once. */

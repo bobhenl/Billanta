@@ -47,10 +47,10 @@ export class DashboardController {
     const result = await this.dashboardService.summary(req.tenantDb!);
     // `v1/dashboard` is outside the per-area permissions, so the document
     // lists follow the member's invoice access here. The public link token
-    // never goes out: it opens the full invoice without any membership.
+    // and its short key never go out: they open the full invoice without any membership.
     const canSeeInvoices = effectivePermissions(req.user!.role, req.user!.permissions).invoices !== "none";
     const rows = (list: typeof result.recent) =>
-      canSeeInvoices ? list.map(({ publicToken: _publicToken, ...row }) => row) : [];
+      canSeeInvoices ? list.map(({ publicToken: _publicToken, publicKey: _publicKey, ...row }) => row) : [];
     return { ...result, recent: rows(result.recent), overdue: rows(result.overdue), dueSoon: rows(result.dueSoon) };
   }
 
