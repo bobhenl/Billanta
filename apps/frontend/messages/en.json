@@ -142,7 +142,7 @@
       },
       "migration": {
         "title": "Switch from another app",
-        "description": "From BitFaktura straight over the API with the original PDFs, from Fakturoid, iDoklad or Excel via CSV. You see a preview before saving."
+        "description": "From BitFaktura and Fakturoid straight over the API with the original PDFs, from iDoklad or Excel via CSV. You see a preview before saving."
       },
       "api": {
         "title": "API and webhooks",
@@ -2784,9 +2784,9 @@
         "fakturoid": {
           "name": "Fakturoid",
           "steps": [
-            "In the invoice list, pick the period (the whole history is fine) and download the CSV export.",
-            "Export your contacts the same way under Contacts.",
-            "Upload both files below, contacts first."
+            "The quickest way is a direct connection: in Fakturoid open your user account settings and copy the Client ID and Client secret from the API v3 section.",
+            "Fill them in at step 3 below. We load invoices, proformas, corrections, your whole address book, exchange rates, payments and the original PDFs. You can then skip the contacts step.",
+            "Without the connection, export both the invoice list and the contacts to CSV and upload them below, contacts first."
           ]
         },
         "idoklad": {
@@ -2901,6 +2901,18 @@
           "apply": "Use details from the newest invoice",
           "applied": "Your business details are updated.",
           "failed": "The details could not be saved."
+        },
+        "fakturoid": {
+          "lead": "Load straight from Fakturoid over the API: invoices, contacts and the original PDFs. The credentials are used only for this import and we don't store them. Feel free to generate a new Client secret in Fakturoid afterwards.",
+          "clientId": "Client ID",
+          "clientSecret": "Client secret",
+          "account": "Account (optional)",
+          "accountPlaceholder": "mycompany",
+          "accountHint": "Only needed if you have more than one Fakturoid account. Pasting the address from your browser works too.",
+          "privacy": "We only read from Fakturoid and change nothing there.",
+          "source": "We loaded {invoices, plural, one {# document} other {# documents}} and {contacts, plural, one {# contact} other {# contacts}} from Fakturoid.",
+          "pdfs": "Original Fakturoid PDFs: {archived} saved as archive attachments (not sent to customers).",
+          "sellersLead": "The invoices in Fakturoid list more than one supplier. Choose whose invoices belong here. We don't create a new company from this."
         }
       },
       "status": {
@@ -2931,7 +2943,11 @@
         "failed": "The import failed, please try again.",
         "bitfaktura_account": "We couldn't find that BitFaktura account. Enter it as company.bitfaktura.cz.",
         "bitfaktura_unauthorized": "BitFaktura didn't accept the code. Check the API authorization code under Settings → Integration.",
-        "bitfaktura_unreachable": "BitFaktura isn't responding right now, please try again shortly."
+        "bitfaktura_unreachable": "BitFaktura isn't responding right now, please try again shortly.",
+        "fakturoid_unauthorized": "Fakturoid didn't accept the credentials. Check the Client ID and Client secret in your user account settings.",
+        "fakturoid_account": "We can't see that Fakturoid account. Enter it as it appears in app.fakturoid.cz/mycompany, or leave the field empty.",
+        "fakturoid_blocked": "The Fakturoid account is blocked or its plan is unpaid, so it won't hand out data over the API.",
+        "fakturoid_unreachable": "Fakturoid isn't responding right now, please try again shortly."
       }
     },
     "companies": {
@@ -5168,7 +5184,7 @@
         "lead": "Starting over doesn't mean losing your history. A CSV export from the old system is all you need.",
         "points": [
           "Import contacts and issued invoices from CSV",
-          "From BitFaktura straight over the API: invoices, address book and original PDFs",
+          "From BitFaktura and Fakturoid straight over the API: invoices, address book and original PDFs",
           "Columns from Fakturoid, iDoklad, faktorio, Invoice Ninja or your own sheet are recognised automatically",
           "Preview with invoice count, period and totals before saving",
           "Multi-item invoices, proformas and credit notes",
@@ -6401,7 +6417,8 @@
       "import": {
         "bitfaktura": "imported data from BitFaktura",
         "csv": "imported documents from CSV",
-        "contacts_csv": "imported contacts from CSV"
+        "contacts_csv": "imported contacts from CSV",
+        "fakturoid": "imported data from Fakturoid"
       }
     },
     "fields": {
@@ -6685,7 +6702,7 @@
       },
       {
         "title": "Easy to switch",
-        "body": "From Fakturoid, iDoklad or Excel via CSV, from BitFaktura straight over the API, original PDFs included."
+        "body": "From iDoklad or Excel via CSV, from BitFaktura and Fakturoid straight over the API, original PDFs included."
       }
     ],
     "switchTitle": "Switching from another app?",
