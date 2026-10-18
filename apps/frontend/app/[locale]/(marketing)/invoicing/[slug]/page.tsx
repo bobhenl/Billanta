@@ -9,6 +9,7 @@ import {
   getDistrictNeighbours,
   getDistrictSeat,
   getMunicipalityBySlug,
+  getNearbyMajorMunicipalities,
   getNearbyMunicipalities,
   getRegionSeat,
   getSocialSecurityOffice,
@@ -19,6 +20,7 @@ import {
   regionAnchorId,
   type Municipality
 } from '@/lib/municipalities';
+import { accountantsNear, fetchPublicAccountants } from '@/lib/public-accountants';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -32,13 +34,15 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
  * makes each page its own is real data computed from the dataset — the
  * nearest places with distances, where the town lies against its district
  * and regional seat, the district's other municipalities and the competent
- * tax office. The page deliberately does NOT:
+ * tax office — plus accountants who listed themselves for the town.
+ * The page deliberately does NOT:
  *   - claim any town-specific customer count, testimonial, or usage stat
  *     (there is no such data, and inventing it would be a false claim);
  *   - emit LocalBusiness/postal-address structured data, since Billanta has
  *     no physical presence in any of these towns;
  *   - pretend the product behaves differently here (`localNote` says so).
- * Each page is indexed only in its own language (see isIndexedMunicipality).
+ * Each page is indexed only in its own language, and for now only the
+ * larger towns are (see isIndexedMunicipality).
  * If Google's spam policies ever require pulling this route, everything
  * lives under this `invoicing` segment plus `data/municipalities.json`
  * and `lib/municipalities.ts`.
@@ -58,9 +62,9 @@ export function generateStaticParams() {
 // 404ing.
 export const dynamicParams = true;
 
-// Static per municipality (no live data): a long window is enough to pick up
-// copy/template changes on redeploy.
-export const revalidate = 2592000; // 30 days
+// Daily, so a newly listed accountant shows up; everything else on the page
+// only changes on redeploy.
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params
@@ -102,7 +106,17 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
   const seat = getDistrictSeat(municipality);
   const regionSeat = getRegionSeat(municipality);
   const nearby = getNearbyMunicipalities(municipality, 10);
-  const district = getDistrictNeighbours(municipality, new Set(nearby.map((n) => n.municipality.slug)));
+  const nearbySlugs = new Set(nearby.map((n) => n.municipality.slug));
+  // Larger towns around, beyond the immediate neighbours: links small pages up and big ones to each other.
+  const nearbyMajor = getNearbyMajorMunicipalities(municipality, 12)
+    .filter((n) => !nearbySlugs.has(n.municipality.slug))
+    .slice(0, 6);
+  const district = getDistrictNeighbours(municipality, nearbySlugs);
+  const accountants = accountantsNear(
+    await fetchPublicAccountants(),
+    municipality,
+    [...nearby, ...nearbyMajor].map((n) => n.municipality).concat(seat ? [seat] : [])
+  );
 
   /** "12 km north-east of X", or null when the coordinates are missing or it is X itself. */
   const position = (from: Municipality | undefined, key: 'seatPosition' | 'regionPosition') => {
@@ -230,6 +244,49 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
                     >
                       {n.name} <span className="text-muted-foreground">· {t('km', { km: km(d) })}</span>
                     </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="mt-10 max-w-3xl rounded-lg border border-border bg-card p-5">
+            <h2 className="text-base font-semibold text-foreground">{t('accountantsTitle', { name: municipality.name })}</h2>
+            {accountants.length > 0 ? (
+              <>
+                <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {accountants.map((a) => (
+                    <li key={a.slug}>
+                      <Link href={`/p/${a.slug}`} className="block rounded-md border border-border p-3 hover:border-primary">
+                        <span className="block text-sm font-semibold text-foreground">{a.companyName}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {a.city}
+                          {a.tagline ? ` · ${a.tagline}` : ''}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-xs text-muted-foreground">{t('accountantsNote')}</p>
+              </>
+            ) : (
+              <p className="mt-2 text-sm text-muted-foreground">{t('accountantsEmpty', { name: municipality.name })}</p>
+            )}
+            <Link href="/for-accountants" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
+              {t('accountantsJoin', { name: municipality.name })}
+            </Link>
+          </div>
+
+          {nearbyMajor.length > 0 && (
+            <div className="mt-8 max-w-3xl">
+              <h2 className="text-base font-semibold text-foreground">{t('nearbyMajorTitle')}</h2>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                {nearbyMajor.map(({ municipality: n, km: d }) => (
+                  <li key={n.slug} className="text-sm text-muted-foreground">
+                    <Link href={`/invoicing/${n.slug}`} className="font-medium text-foreground hover:text-primary hover:underline">
+                      {n.name}
+                    </Link>{' '}
+                    · {t('nearbyMajorItem', { km: km(d), dir: direction(municipality, n) ?? 'n' })}
                   </li>
                 ))}
               </ul>

@@ -61,6 +61,7 @@ export interface PublicProfileSettings {
   services: { title: string; description: string | null; price: string | null }[];
   show: { email: boolean; phone: boolean; website: boolean; address: boolean; ico: boolean; logo: boolean };
   contactCta: boolean;
+  listInAccountants: boolean;
 }
 
 export interface PaymentMethodDef {

@@ -2572,7 +2572,11 @@
       "publish": "Uložit a zveřejnit",
       "saved": "Profil uložen",
       "savedLive": "Profil je zveřejněn",
-      "saveFailed": "Uložení se nepodařilo"
+      "saveFailed": "Uložení se nepodařilo",
+      "accountantList": "Zobrazit mě v seznamu účetních na stránkách obcí",
+      "accountantListHint": "Profil se objeví na stránce Billanty pro vaše město (podle adresy firmy) a v okolních obcích. Vyžaduje zveřejněný profil a viditelnou adresu.",
+      "accountantListLocked": "Jste účetní? Po přepnutí do partnerského programu pro účetní se můžete zobrazit v seznamu účetních u svého města.",
+      "accountantListLockedLink": "Program pro účetní"
     },
     "import": {
       "title": "Přechod z jiného systému",
@@ -3232,7 +3236,7 @@
     "indexTitle": "Fakturační software podle měst a obcí",
     "indexLead": "Billanta funguje stejně spolehlivě pro podnikatele kdekoli v Česku a na Slovensku. Vyberte kraj a najděte stránku pro své město nebo obec.",
     "indexCoverageNote": "Aktuálně {count, plural, one {# obec} few {# obce} other {# obcí}}.",
-    "regionMunicipalityCount": "{count} měst a obcí",
+    "regionMunicipalityCount": "{count, plural, one {# město nebo obec} few {# města a obce} other {# měst a obcí}}",
     "expandListLabel": "Zobrazit seznam",
     "backToIndex": "Zpět na přehled měst a obcí",
     "districtTitle": "Další obce v okrese {district}",
@@ -3255,7 +3259,14 @@
     "healthNoteCz": "Zdravotní pojištění platíte své zdravotní pojišťovně, kterou si volíte sami. Na bydlišti nezáleží.",
     "healthNoteSk": "Zdravotní pojištění platíte své zdravotní pojišťovně, kterou si volíte sami. Na bydlišti nezáleží.",
     "tradeNoteCz": "Živnost ohlásíte na kterémkoli živnostenském úřadu nebo online. Na jednom formuláři se rovnou přihlásíte i k dani, sociálnímu a zdravotnímu pojištění.",
-    "tradeNoteSk": "Živnost ohlásíte na kterémkoli okresním úřadu (odbor živnostenského podnikání) nebo online přes slovensko.sk."
+    "tradeNoteSk": "Živnost ohlásíte na kterémkoli okresním úřadu (odbor živnostenského podnikání) nebo online přes slovensko.sk.",
+    "nearbyMajorTitle": "Větší města v okolí",
+    "majorTowns": "Větší města",
+    "nearbyMajorItem": "{km, number} km {dir, select, n {na sever} ne {na severovýchod} e {na východ} se {na jihovýchod} s {na jih} sw {na jihozápad} w {na západ} other {na severozápad}}",
+    "accountantsTitle": "Účetní v obci {name} a okolí",
+    "accountantsNote": "Účetní se do seznamu zapsali sami přes svůj veřejný profil v Billantě. Údaje neověřujeme, výběr je na vás.",
+    "accountantsEmpty": "Zatím se tu nezapsal žádný účetní. Pokud účetního hledáte, Billanta mu umožní přístup k vašim dokladům bez posílání e-mailů.",
+    "accountantsJoin": "Jste účetní v obci {name} nebo blízko? Zapište se zdarma →"
   },
   "mobile": {
     "more": "Více",

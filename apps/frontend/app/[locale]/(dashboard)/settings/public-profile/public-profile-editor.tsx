@@ -32,11 +32,14 @@ export function PublicProfileEditor({
   initial,
   readOnly,
   suggestedSlug,
+  isAccountant,
   company
 }: {
   initial: PublicProfileSettings;
   readOnly: boolean;
   suggestedSlug: string;
+  /** In the accountant referral programme: may be listed on the town pages. */
+  isAccountant: boolean;
   company: CompanyFacts;
 }) {
   const t = useTranslations('settings.publicProfile');
@@ -307,6 +310,29 @@ export function PublicProfileEditor({
                 <InfoHint hint={t('ctaHint')}>{t('cta')}</InfoHint>
               </span>
             </label>
+          </li>
+          <li className="sm:col-span-2">
+            {isAccountant ? (
+              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 accent-primary"
+                  checked={p.listInAccountants}
+                  disabled={!p.show.address || !company.hasAddress}
+                  onChange={(e) => set({ listInAccountants: e.target.checked })}
+                />
+                <span className="flex-1">
+                  <InfoHint hint={t('accountantListHint')}>{t('accountantList')}</InfoHint>
+                </span>
+              </label>
+            ) : (
+              <p className="px-1 text-xs text-muted-foreground">
+                {t('accountantListLocked')}{' '}
+                <Link href="/settings/referrals" className="font-semibold text-primary hover:underline">
+                  {t('accountantListLockedLink')}
+                </Link>
+              </p>
+            )}
           </li>
         </ul>
         {missing.length > 0 && (

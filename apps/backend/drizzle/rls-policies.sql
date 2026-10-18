@@ -1173,6 +1173,45 @@ $$;
 REVOKE ALL ON FUNCTION get_public_profile_logo(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_profile_logo(text) TO faktur_app;
 
+-- Accountants who opted into the public directory (Settings → Veřejný
+-- profil → "list me among accountants"): accountant programme, published
+-- profile, city shown, not suspended. Only card fields, matched to towns by
+-- the frontend on the city name.
+DROP FUNCTION IF EXISTS list_public_accountants();
+CREATE OR REPLACE FUNCTION list_public_accountants()
+RETURNS TABLE (
+  slug text,
+  company_name text,
+  address_city text,
+  address_country varchar(2),
+  tagline text,
+  has_logo boolean
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT
+    lower(t.public_profile->>'slug'),
+    t.company_name,
+    t.address_city,
+    t.address_country,
+    nullif(btrim(t.public_profile->>'tagline'), ''),
+    t.logo_data IS NOT NULL AND coalesce((t.public_profile->'show'->>'logo')::boolean, true)
+  FROM tenants t
+  WHERE (t.public_profile->>'enabled')::boolean IS TRUE
+    AND (t.public_profile->>'listInAccountants')::boolean IS TRUE
+    AND t.referral_program = 'accountant'
+    AND t.suspended_at IS NULL
+    AND coalesce((t.public_profile->'show'->>'address')::boolean, true)
+    AND nullif(btrim(t.address_city), '') IS NOT NULL
+    AND t.public_profile->>'slug' IS NOT NULL
+  ORDER BY t.company_name
+  LIMIT 5000;
+$$;
+REVOKE ALL ON FUNCTION list_public_accountants() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION list_public_accountants() TO faktur_app;
+
 -- Whether another company already holds the slug (the caller's own tenant
 -- can't see other rows through RLS). Returns only a boolean.
 DROP FUNCTION IF EXISTS public_profile_slug_taken(text, uuid);

@@ -39,6 +39,25 @@ export interface PublicProfileView {
   contactCta: boolean;
 }
 
+/** A row of the accountant directory shown on the /invoicing/<town> pages. */
+export interface PublicAccountant {
+  slug: string;
+  companyName: string;
+  city: string;
+  country: string;
+  tagline: string | null;
+  hasLogo: boolean;
+}
+
+type PublicAccountantRow = {
+  slug: string;
+  company_name: string;
+  address_city: string;
+  address_country: string;
+  tagline: string | null;
+  has_logo: boolean;
+};
+
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : null);
 
 /**
@@ -85,6 +104,19 @@ export class PublicProfilesService {
       services,
       contactCta: p.contactCta !== false && Boolean(row.email),
     };
+  }
+
+  /** Every opted-in accountant; small enough that the frontend matches towns itself. */
+  async listAccountants(): Promise<PublicAccountant[]> {
+    const rows = await this.dbService.db.execute<PublicAccountantRow>(sql`SELECT * FROM list_public_accountants()`);
+    return [...rows].map((r) => ({
+      slug: r.slug,
+      companyName: r.company_name,
+      city: r.address_city,
+      country: r.address_country,
+      tagline: r.tagline,
+      hasLogo: r.has_logo,
+    }));
   }
 
   async logo(raw: string): Promise<{ data: Buffer; mime: string }> {

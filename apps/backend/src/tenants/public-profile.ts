@@ -59,6 +59,10 @@ export const publicProfileSchema = z
       .default({}),
     // Lets visitors request a quote by email (a prefilled mailto:, nothing is stored).
     contactCta: z.boolean().default(true),
+    // Listed under "accountants nearby" on the /invoicing/<town> pages. Only
+    // takes effect for companies in the accountant programme with a visible
+    // city (see `list_public_accountants`).
+    listInAccountants: z.boolean().default(false),
   })
   .refine((p) => !p.enabled || p.slug, { message: "slug is required to publish", path: ["slug"] });
 

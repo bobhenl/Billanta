@@ -2572,7 +2572,11 @@
       "publish": "Save and publish",
       "saved": "Profile saved",
       "savedLive": "Profile is live",
-      "saveFailed": "Saving failed"
+      "saveFailed": "Saving failed",
+      "accountantList": "List me among accountants on the town pages",
+      "accountantListHint": "Your profile appears on Billanta’s page for your town (from the company address) and the towns around it. Needs a published profile with the address shown.",
+      "accountantListLocked": "Are you an accountant? Switch to the accountant partner programme to be listed among accountants for your town.",
+      "accountantListLockedLink": "Accountant programme"
     },
     "import": {
       "title": "Switch from another system",
@@ -3232,7 +3236,7 @@
     "indexTitle": "Invoicing software by town and municipality",
     "indexLead": "Billanta works just as reliably for businesses anywhere in Czechia and Slovakia. Pick a region to find the page for your town or municipality.",
     "indexCoverageNote": "Currently {count, plural, one {# municipality} other {# municipalities}}.",
-    "regionMunicipalityCount": "{count} towns and municipalities",
+    "regionMunicipalityCount": "{count, plural, one {# town or municipality} other {# towns and municipalities}}",
     "expandListLabel": "Show list",
     "backToIndex": "Back to the town & municipality directory",
     "districtTitle": "More municipalities in the {district} district",
@@ -3254,7 +3258,14 @@
     "healthNoteCz": "Health insurance goes to the health insurer you choose yourself. Where you live does not matter.",
     "healthNoteSk": "Health insurance goes to the health insurer you choose yourself. Where you live does not matter.",
     "tradeNoteCz": "You can register a trade at any trade licensing office or online. The same form also registers you for tax, social and health insurance.",
-    "tradeNoteSk": "You can register a trade at any district office (trade licensing department) or online through slovensko.sk."
+    "tradeNoteSk": "You can register a trade at any district office (trade licensing department) or online through slovensko.sk.",
+    "nearbyMajorTitle": "Larger towns nearby",
+    "majorTowns": "Larger towns",
+    "nearbyMajorItem": "{km, number} km {dir, select, n {north} ne {north-east} e {east} se {south-east} s {south} sw {south-west} w {west} other {north-west}}",
+    "accountantsTitle": "Accountants in {name} and nearby",
+    "accountantsNote": "Accountants add themselves through their public Billanta profile. We do not verify the details; the choice is yours.",
+    "accountantsEmpty": "No accountant has listed themselves here yet. If you are looking for one, Billanta gives them access to your documents without emailing files around.",
+    "accountantsJoin": "Are you an accountant in or near {name}? List yourself for free →"
   },
   "mobile": {
     "more": "More",
