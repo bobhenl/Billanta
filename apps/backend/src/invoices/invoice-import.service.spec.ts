@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
-import { businessFill, csvBuyerSnapshot, InvoiceImportService } from "./invoice-import.service";
+import { businessFill, csvBuyerSnapshot, distinctSellers, InvoiceImportService, sellerProfileUpdate } from "./invoice-import.service";
 import type { ImportedContact, ImportedInvoice } from "./invoice-import.util";
 
 const source = (id: number, number: string) => ({ id, number }) as never;
