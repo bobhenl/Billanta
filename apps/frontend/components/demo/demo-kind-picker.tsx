@@ -5,6 +5,7 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
+import { DEMO_AUDIENCES, type DemoAudienceKey } from '@/lib/demo-audiences';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
 import { cn } from '@/lib/utils';
 
@@ -21,21 +22,33 @@ const presetModules = (key: string): ModuleSet | undefined => BUSINESS_PRESETS.f
  * link here with `?view=accountant` and the like). A click asks
  * /api/demo/start for a fresh company, switches the view if needed and then
  * loads the dashboard with a full page load, so the new session cookie is
- * the one every server component sees.
+ * the one every server component sees. Partner pages link with `?for=`
+ * (lib/demo-audiences.ts), which preselects the business type and data and
+ * puts that audience's company first.
  */
-export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: string; initialView?: DemoViewRole }) {
+export function DemoKindPicker({
+  locale,
+  initialView = 'owner',
+  audience
+}: {
+  locale: string;
+  initialView?: DemoViewRole;
+  audience?: DemoAudienceKey | null;
+}) {
+  const preselected = audience ? DEMO_AUDIENCES[audience] : null;
   const t = useTranslations('demo');
   const tm = useTranslations('settings.modules');
   const [busy, setBusy] = useState<DemoKind | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [empty, setEmpty] = useState(false);
+  const [empty, setEmpty] = useState<boolean>(preselected?.empty ?? false);
   const [view, setView] = useState<DemoViewRole>(initialView);
-  const [preset, setPreset] = useState<string | null>(null);
+  const [preset, setPreset] = useState<string | null>(preselected?.preset ?? null);
   // Set when the visitor is signed in to a real account and may sign out to continue.
   const [signedInKind, setSignedInKind] = useState<DemoKind | null>(null);
 
   // Slovak visitors look for the Slovak company first.
-  const kinds = locale === 'sk' ? [...DEMO_KINDS].sort((a, b) => Number(COUNTRY[b] === 'SK') - Number(COUNTRY[a] === 'SK')) : DEMO_KINDS;
+  const byLocale = locale === 'sk' ? [...DEMO_KINDS].sort((a, b) => Number(COUNTRY[b] === 'SK') - Number(COUNTRY[a] === 'SK')) : DEMO_KINDS;
+  const kinds = preselected ? [preselected.kind, ...byLocale.filter((k) => k !== preselected.kind)] : byLocale;
 
   async function start(kind: DemoKind) {
     setBusy(kind);

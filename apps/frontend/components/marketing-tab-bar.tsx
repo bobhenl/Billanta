@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePercent, BookOpenCheck, Calculator, CircleHelp, Handshake, Home, LayoutDashboard, LogIn, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
+import { BadgePercent, BookOpenCheck, Calculator, CircleHelp, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -47,6 +47,7 @@ export function MarketingTabBar() {
         { key: 'find-accountant', href: '/accountants', label: tMenu('findAccountant'), icon: UserSearch },
         { key: 'blog', href: '/blog', label: tMenu('blog'), icon: Newspaper },
         { key: 'accountants', href: '/for-accountants', label: t('accountants'), icon: Calculator },
+        { key: 'for-partners', href: '/for-partners', label: t('forPartners'), icon: Megaphone },
         { key: 'partners', href: '/partners', label: t('partners'), icon: Handshake },
         { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp }
       ]}
