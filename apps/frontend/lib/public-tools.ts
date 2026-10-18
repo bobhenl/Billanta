@@ -33,10 +33,11 @@ export const CALCULATORS = [
   { slug: 'vat', key: 'vat', icon: Percent, locales: ALL },
   { slug: 'minimum-advances', key: 'minimums', icon: Wallet, locales: ALL },
   { slug: 'cnb-exchange-rates', key: 'fx', icon: ArrowLeftRight, locales: ALL },
-  // Invoice helpers. QR Platba, ARES and the domestic account format are Czech;
-  // the due date knows Slovak holidays too.
+  // Invoice helpers. QR Platba and the domestic account format are Czech; the
+  // company lookup searches RPO and VIES as well as ARES, and the due date
+  // knows Slovak holidays too.
   { slug: 'qr-payment', key: 'qrPayment', icon: QrCode, locales: CZ_ONLY },
-  { slug: 'company-lookup', key: 'companyLookup', icon: Building2, locales: CZ_ONLY },
+  { slug: 'company-lookup', key: 'companyLookup', icon: Building2, locales: ALL },
   { slug: 'iban', key: 'iban', icon: Landmark, locales: CZ_ONLY },
   { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL }
 ] as const satisfies readonly PublicTool[];
@@ -62,4 +63,15 @@ export function getGuide(slug: string): Guide | undefined {
 
 export function isPublishedIn(tool: { locales: readonly string[] }, locale: string): boolean {
   return tool.locales.includes(locale);
+}
+
+/**
+ * Calculators that also run inside the app, prefilled with the company's
+ * own numbers (`/dashboard/calculators/<slug>`). Same component as the
+ * public page; the public page links there for a signed-in visitor.
+ */
+const IN_APP_CALCULATORS: readonly string[] = ['flat-tax'];
+
+export function inAppCalculatorPath(slug: string): string | null {
+  return IN_APP_CALCULATORS.includes(slug) ? `/dashboard/calculators/${slug}` : null;
 }

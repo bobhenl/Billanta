@@ -6279,7 +6279,8 @@
       "moveUp": "Move earlier",
       "moveDown": "Move later",
       "dragToReorder": "Drag to reorder"
-    }
+    },
+    "flatTaxLink": "Does the flat-rate tax pay off? →"
   },
   "siteSearch": {
     "title": "Search the site",
@@ -6762,7 +6763,11 @@
       "invoiceCtaTitle": "Need an invoice out of this?",
       "invoiceCtaText": "Issue an invoice with a QR payment code, company details from ARES and the right due date, no account needed. With a Billanta account your invoices are saved, payments are tracked and your accountant gets the records.",
       "invoiceCtaButton": "Create a free invoice",
-      "overview": "Overview"
+      "overview": "Overview",
+      "myNumbers": {
+        "hint": "You are signed in. Open the calculator in the app with income and expenses from your documents.",
+        "cta": "Open with my numbers"
+      }
     },
     "calculators": {
       "indexTitle": "Calculators and tools for businesses",
@@ -6815,35 +6820,93 @@
           }
         },
         "flatTax": {
-          "name": "Flat-rate tax",
-          "title": "Czech flat-rate tax (paušální daň) calculator",
-          "description": "Does the Czech flat-rate tax pay off for you? The calculator finds your band from your income and compares it with regular tax and insurance using flat-rate expenses.",
-          "lead": "The flat-rate tax (paušální daň) replaces income tax, social and health insurance with one monthly payment. The calculator shows which band you fall into and what you would pay in the regular regime with flat-rate expenses.",
-          "keywords": "flat-rate tax pausalni dan band sole trader czech",
+          "name": "Does the flat-rate tax pay off?",
+          "title": "Does the Czech flat-rate tax pay off? Compared with flat-rate and actual expenses",
+          "description": "Compare the Czech flat-rate tax (paušální daň) with the regular regime using flat-rate or actual expenses. Tax and insurance for each option, child credits and a clear recommendation.",
+          "lead": "Enter your yearly income and, if you like, your actual expenses. The calculator works out income tax, social and health insurance under the flat-rate tax, with flat-rate expenses and with actual expenses, and tells you which comes out best.",
+          "keywords": "flat-rate tax pausalni dan band sole trader czech flat-rate expenses actual expenses comparison",
           "fields": {
             "year": "Year",
-            "income": "Expected income for the year (CZK)",
-            "flatRate": "Main activity"
+            "income": "Income for the year (CZK)",
+            "actualExpenses": "Actual expenses for the year (CZK)",
+            "actualHint": "Optional. Without them we compare only the flat-rate tax and flat-rate expenses.",
+            "flatRate": "Main activity",
+            "children": "Number of children (child tax credit)",
+            "spouse": "Spouse credit (partner earns up to CZK 68,000, child under 3)",
+            "vatPayer": "I am a VAT payer"
+          },
+          "rates": {
+            "30": "Renting business property (30 %, up to CZK {cap})",
+            "40": "Liberal professions and other business (40 %, up to CZK {cap})",
+            "60": "Other trades (60 %, up to CZK {cap})",
+            "80": "Crafts and farming (80 %, expenses up to CZK {cap})"
+          },
+          "options": {
+            "flat_tax": "Flat-rate tax",
+            "flat_expenses": "Flat-rate expenses {rate} %",
+            "actual_expenses": "Actual expenses"
+          },
+          "result": {
+            "best": "Best",
+            "band": "Band",
+            "bandValue": "Band {band}",
+            "oneSum": "One payment covers income tax, social and health insurance.",
+            "expenses": "Expenses",
+            "tax": "Income tax",
+            "social": "Social insurance",
+            "health": "Health insurance",
+            "bonus": "Child tax bonus",
+            "total": "Total for the year"
+          },
+          "unavailable": {
+            "vat_payer": "A VAT payer cannot join the flat-rate regime.",
+            "over_limit": "With this income and activity you do not fit any band (CZK 2,000,000 at most).",
+            "no_data": "We do not have all the parameters for this year yet."
+          },
+          "recommend": {
+            "same": "Both options come out the same.",
+            "flat_tax": "The flat-rate tax pays off: you save {amount} a year compared with the regular regime.",
+            "flat_expenses": "The regular regime with flat-rate expenses pays off: {amount} less than the flat-rate tax.",
+            "actual_expenses": "The regular regime with actual expenses pays off: {amount} less than the flat-rate tax.",
+            "noFlatOnly": "You cannot join the flat-rate regime, so the regular regime is what is left.",
+            "noFlat": {
+              "flat_expenses": "You cannot join the flat-rate regime. Flat-rate expenses come out {amount} better than actual expenses.",
+              "actual_expenses": "You cannot join the flat-rate regime. Actual expenses come out {amount} better than flat-rate expenses."
+            }
           },
           "monthlyTitle": "Band {band} payment",
           "monthlyFrom": "from {date}: {amount} per month",
-          "yearTotal": "Flat-rate tax for the year",
-          "normalTotal": "Regular regime with flat-rate expenses",
-          "cheaper": "The flat-rate tax comes out {amount} cheaper.",
-          "dearer": "The regular regime comes out {amount} cheaper.",
-          "noData": "We do not have the flat-rate tax amount for this year yet.",
+          "retroactiveNote": "The cut applies back to January; what you paid on top comes back from the tax office as an overpayment.",
+          "creditsNote": "Child and spouse credits do not apply in the flat-rate regime, so they can make the regular regime cheap enough to win.",
+          "compareNote": "The regular regime counts only business income, with the basic taxpayer credit and the credits you chose. Other income and deductions are left out, and insurance is calculated as for a main activity.",
           "conditionsTitle": "Who can join the flat-rate regime",
           "conditions": [
             "You are a sole trader (OSVČ) and not a VAT payer (an identified person is fine).",
-            "Business income stays under CZK 2,000,000 a year. Band 1 applies up to CZK 1,000,000 for any activity, up to CZK 1,500,000 if at least 75 % of income falls under the 80 % or 60 % flat-rate expenses, and up to CZK 2,000,000 if at least 75 % falls under the 80 % rate.",
+            "Business income stays under CZK 2,000,000 a year.",
+            "Band 1: income up to CZK 1,000,000 for any activity, up to CZK 1,500,000 if at least 75 % of income falls under the 80 % or 60 % flat-rate expenses, and up to CZK 2,000,000 if at least 75 % falls under the 80 % rate.",
+            "Band 2: up to CZK 1,500,000 for any activity and up to CZK 2,000,000 if at least 75 % of income falls under the 80 % or 60 % rate. Band 3: up to CZK 2,000,000.",
             "You have no other income apart from small exceptions (for example a small salary, interest or rent within limits).",
             "You are not a partner in a general partnership or a general partner in a limited partnership, and you are not insolvent.",
             "You notify the tax office that you are joining by 10 January of that year."
           ],
-          "compareNote": "The regular regime is calculated with flat-rate expenses for the chosen activity, with no other income or deductions.",
-          "bandFits": "You fall into band {band}.",
-          "notEligible": "With income above CZK 2,000,000 you cannot enter the flat-rate regime.",
-          "retroactiveNote": "The cut applies back to January; what you paid on top comes back from the tax office as an overpayment."
+          "how": [
+            "The flat-rate tax is one monthly amount set by the band. The band depends on income and the main activity (§ 2a of the Czech Income Tax Act).",
+            "In the regular regime we deduct expenses (flat-rate up to the cap for the activity, or actual expenses), take the credits off the tax and calculate insurance from half the profit, at least from the minimum assessment base.",
+            "The child credit lowers the tax and what is left is paid out as a tax bonus. The bonus is paid from CZK 100 and only if income reaches six times the minimum wage (§ 35c).",
+            "This is an estimate for the whole year. Nothing is saved; the calculation runs in your browser."
+          ],
+          "app": {
+            "title": "Does the flat-rate tax pay off?",
+            "lead": "The calculator with your numbers from Billanta. You can change everything, nothing is saved.",
+            "publicLink": "Public version of the calculator",
+            "noTenant": "Set up your company first, then we can prefill the calculator.",
+            "notOsvc": "The flat-rate regime is only for Czech sole traders. Your company does not look like one in Settings, so treat the result as a rough guide.",
+            "prefilled": "Prefilled for {year}: paid income {income} and expenses {expenses} from your documents in Billanta.",
+            "loadError": "Your totals could not be loaded. Enter the numbers by hand.",
+            "regimeFlat": "Settings say you are in the flat-rate regime.",
+            "regimeRegular": "Settings say you are not in the flat-rate regime.",
+            "secondary": "Settings say this is a secondary activity. The calculator counts insurance as for a main activity; for a secondary one it can be lower."
+          }
         },
         "vat": {
           "name": "VAT calculator",
@@ -6968,35 +7031,55 @@
           "howTitle": "How it works"
         },
         "companyLookup": {
-          "name": "Company lookup by IČO",
-          "title": "Czech company lookup by IČO (ARES)",
-          "description": "Enter a company ID (IČO) to get the name, VAT number (DIČ) and registered address from the Czech ARES registry.",
-          "lead": "Eight digits are enough. The data comes from ARES, the public registry of the Czech Ministry of Finance.",
-          "keywords": "ares ičo czech company lookup company id vat number dič registered address",
+          "name": "Company lookup by IČO, VAT number or name",
+          "title": "Company lookup by IČO, VAT number or name (ARES, RPO, VIES)",
+          "description": "Find a company by IČO, VAT number (DIČ) or name in the Czech ARES, the Slovak RPO or the EU VIES. See the address, VAT number and whether it is a VAT payer or an unreliable payer.",
+          "lead": "Enter an IČO, a VAT number or part of the name. We search the Czech ARES, the Slovak register of legal entities (RPO), the EU VIES and the other registers you pick.",
+          "keywords": "ares ičo dič company lookup vat number check vies rpo czech company search unreliable vat payer registered address",
           "fields": {
-            "ico": "IČO (company ID)",
-            "icoHint": "Eight digits. A shorter IČO is padded with zeros.",
+            "query": "IČO, VAT number or name",
+            "queryHint": "IČO (up to 8 digits), VAT number with the country code (CZ…, SK…, DE…) or at least 3 characters of the name.",
+            "registry": "Register",
             "search": "Look up",
             "searching": "Looking up…"
           },
           "result": {
+            "hits": "{n, plural, one {# result} other {# results}}",
             "ico": "IČO",
-            "dic": "DIČ",
-            "noDic": "not listed in ARES",
+            "regNumber": "Registration number",
+            "dic": "VAT number (DIČ)",
+            "noDic": "not listed",
+            "vat": "VAT",
+            "vatChecking": "checking…",
+            "vatState": {
+              "payer": "VAT payer",
+              "unreliable": "unreliable VAT payer",
+              "not_registered": "not a VAT payer",
+              "valid": "valid VAT number",
+              "invalid": "invalid or inactive VAT number",
+              "unknown": "could not be checked"
+            },
+            "vatSource": {
+              "ADIS": "VAT payer register, Czech Financial Administration",
+              "VIES": "VIES, European Commission"
+            },
+            "unreliableNote": "The Czech Financial Administration lists this company as an unreliable payer. If you pay it VAT, you can be liable for that VAT (§ 109 of the Czech VAT Act).",
             "address": "Registered address",
-            "source": "Source: ARES, Czech Ministry of Finance.",
+            "country": "Country",
+            "source": "Source: {source}",
             "invoice": "Invoice this company",
-            "empty": "Enter an IČO and the result shows here."
+            "empty": "Enter an IČO, a VAT number or a name and the result shows here."
           },
           "errors": {
-            "invalid": "An IČO has at most 8 digits.",
-            "notFound": "No company with this IČO in ARES.",
-            "busy": "ARES is not answering or you searched too often. Try again in a moment."
+            "invalid": "Enter an IČO (up to 8 digits), a VAT number with the country code or at least 3 characters of the name.",
+            "notFound": "Nothing found. Try another register or another spelling.",
+            "busy": "The register is not answering or you searched too often. Try again in a moment."
           },
           "how": [
-            "Only the Czech ARES registry is searched. Slovak companies are in the Slovak register of legal entities (RPO).",
-            "A DIČ in ARES does not say whether the company is VAT-registered. Check that in the VAT payer register of the Czech Financial Administration.",
-            "In Billanta the customer is filled in from the IČO right on the invoice."
+            "An IČO is looked up in ARES and the Slovak RPO, depending on the register you pick. A VAT number with a country code is checked in VIES, a Czech DIČ in the VAT payer register of the Czech Financial Administration.",
+            "For a Czech DIČ we show whether the company is a VAT payer and whether it is listed as an unreliable payer. For other countries VIES only says whether the VAT number is valid.",
+            "Names are searched in ARES and RPO. For companies from other countries, pick their register.",
+            "In Billanta the customer is filled in from the IČO or VAT number right on the invoice."
           ],
           "howTitle": "How it works"
         },

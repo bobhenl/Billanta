@@ -4,6 +4,9 @@ import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
+import { inAppCalculatorPath } from '@/lib/public-tools';
+import { isLegalEntityName } from '@/lib/tax-deadlines';
+import { fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { PeriodReport } from '../dashboard/period-report';
 import type { Usage } from '@/lib/usage-defaults';
 import type { DashboardConfig, PeriodStats } from '../dashboard/types';
@@ -26,12 +29,14 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   let stats: PeriodStats;
   let usage: Usage | null;
   let config: DashboardConfig | null;
+  let tenant: TenantSettings | null;
   try {
-    [stats, usage, config] = await Promise.all([
+    [stats, usage, config, tenant] = await Promise.all([
       apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}${preset === 'all' ? '&period=all' : ''}`),
       // Both optional: without them the report shows everything, as before.
       apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null),
-      apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null)
+      apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null),
+      fetchTenant().catch(() => null)
     ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -49,9 +54,17 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <h1 className="text-2xl font-extrabold tracking-tight">{t('pageTitle')}</h1>
           <p className="mt-1 text-muted-foreground">{t('pageLead')}</p>
         </div>
-        <Link href="/settings/exports" className="text-sm font-semibold text-primary hover:underline">
-          {t('exportsLink')}
-        </Link>
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          {/* The paušální režim is for Czech sole traders only. */}
+          {tenant && tenant.addressCountry.toUpperCase() !== 'SK' && !isLegalEntityName(tenant.legalName) && (
+            <Link href={inAppCalculatorPath('flat-tax')!} className="text-sm font-semibold text-primary hover:underline">
+              {t('flatTaxLink')}
+            </Link>
+          )}
+          <Link href="/settings/exports" className="text-sm font-semibold text-primary hover:underline">
+            {t('exportsLink')}
+          </Link>
+        </div>
       </div>
       <PeriodReport key={preset} initial={stats} initialPreset={preset} usage={usage} savedKpis={config?.reportKpis ?? null} />
     </div>
