@@ -11,7 +11,7 @@ import { DASHBOARD_WIDGETS, DashboardService } from "./dashboard.service";
 import { parseReportFilters, type ReportFilters } from "./report-filters";
 import { upcomingTaxEvents } from "./tax-calendar";
 import { getCnbDay, parseCurrencyList, parseRateDate } from "../exports/cnb-rates";
-import { computeUniformRates } from "../exports/uniform-rate";
+import { computeUniformRates, ReportRates } from "../exports/uniform-rate";
 
 const dashboardConfigSchema = z
   .object({
