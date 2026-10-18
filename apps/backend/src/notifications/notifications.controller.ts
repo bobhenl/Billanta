@@ -3,10 +3,12 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { createZodDto } from "nestjs-zod";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
+import { emailPrefsSchema } from "./email-prefs.schema";
 import { notificationPrefsSchema } from "./notification-prefs";
 import { NotificationsService } from "./notifications.service";
 
 class NotificationPrefsDto extends createZodDto(notificationPrefsSchema) {}
+class EmailPrefsDto extends createZodDto(emailPrefsSchema) {}
 
 /** The signed-in member's notifications and their own settings. */
 @ApiTags("notifications")
@@ -50,5 +52,17 @@ export class NotificationsController {
   @ApiOperation({ summary: "Change my notification settings (partial)" })
   setPrefs(@Req() req: TenantScopedRequest, @Body() dto: NotificationPrefsDto) {
     return this.notificationsService.setPrefs(req.tenantDb!, req.user!.tenantId, req.user!.id, dto);
+  }
+
+  @Get("email")
+  @ApiOperation({ summary: "Every e-mail type with my switch (locked = always sent), weekly digest, quiet hours" })
+  getEmailPrefs(@Req() req: TenantScopedRequest) {
+    return this.notificationsService.getEmailPrefs(req.tenantDb!, req.user!.tenantId, req.user!.id);
+  }
+
+  @Put("email")
+  @ApiOperation({ summary: "Change my e-mail settings (partial)" })
+  setEmailPrefs(@Req() req: TenantScopedRequest, @Body() dto: EmailPrefsDto) {
+    return this.notificationsService.setEmailPrefs(req.tenantDb!, req.user!.tenantId, req.user!.id, dto);
   }
 }

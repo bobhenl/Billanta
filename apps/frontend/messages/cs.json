@@ -1567,6 +1567,10 @@
         "security": {
           "title": "Zabezpečení",
           "description": "Dvoufázové ověření a záložní kódy"
+        },
+        "emailNotifications": {
+          "title": "E-mailová upozornění",
+          "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc."
         }
       }
     },
@@ -2854,6 +2858,81 @@
         "already_enabled": "Dvoufázové ověření už je zapnuté.",
         "not_enabled": "Dvoufázové ověření není zapnuté.",
         "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
+      }
+    },
+    "emailNotifications": {
+      "title": "E-mailová upozornění",
+      "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc.",
+      "loadError": "Nastavení e-mailů se nepodařilo načíst.",
+      "saved": "Uloženo",
+      "saveFailed": "Uložení se nepovedlo",
+      "otherChannels": "Upozornění ve zvonečku a v prohlížeči nastavíte v <link>Notifikacích</link>.",
+      "locked": "Vždy",
+      "lockedHint": "Tento e-mail nejde vypnout – je potřeba pro účet nebo pro vaše zákazníky.",
+      "groups": {
+        "activity": {
+          "title": "Dění ve firmě",
+          "hint": "Platby, otevřené faktury, návrhy ke kontrole a další. Když jich přijde víc najednou, pošleme je v jednom e-mailu."
+        },
+        "digest": {
+          "title": "Týdenní přehled",
+          "hint": "V pondělí v 8:00: neuhrazené faktury, platby za minulý týden a blížící se daňové termíny. Ve výchozím stavu je vypnutý."
+        },
+        "account": {
+          "title": "Účet a zabezpečení",
+          "hint": "Bezpečnostní upozornění, pozvánky do týmu, obnova hesla a změna e-mailu. Chodí vždy."
+        },
+        "customers": {
+          "title": "E-maily vašim zákazníkům",
+          "hint": "Faktury, upomínky a žádosti o údaje, které posíláte odběratelům. Jejich znění upravíte v Nastavení → E-maily."
+        }
+      },
+      "types": {
+        "weekly_digest": {
+          "label": "Týdenní přehled e-mailem",
+          "hint": "Souhrn každé pondělí ráno. Když není co hlásit, nepřijde."
+        },
+        "security_alert": {
+          "label": "Bezpečnostní upozornění",
+          "hint": "Změna bankovního účtu firmy. Chodí všem členům, aby si nikdo nemohl nenápadně podstrčit jiné číslo účtu."
+        },
+        "team_invitation": {
+          "label": "Pozvánky do týmu",
+          "hint": "Když vás někdo pozve do své firmy."
+        },
+        "password_reset": {
+          "label": "Obnova hesla",
+          "hint": "Odkaz na nastavení nového hesla, když o něj požádáte."
+        },
+        "email_change": {
+          "label": "Změna e-mailu",
+          "hint": "Potvrzení nové e-mailové adresy."
+        },
+        "invoice": {
+          "label": "Faktura odběrateli",
+          "hint": "Faktura s PDF, kterou odešlete odběrateli."
+        },
+        "reminder": {
+          "label": "Upomínka odběrateli",
+          "hint": "Ruční i automatické upomínky neuhrazených faktur."
+        },
+        "buyer_details_request": {
+          "label": "Žádost o doplnění údajů",
+          "hint": "Odkaz, přes který si odběratel sám doplní fakturační údaje."
+        }
+      },
+      "quiet": {
+        "title": "Tichý režim",
+        "hint": "Upozornění, která přijdou v noci, počkají do rána a přijdou v jednom e-mailu. Bezpečnostní e-maily a e-maily zákazníkům odcházejí hned.",
+        "toggle": "V noci nic neposílat",
+        "from": "Od",
+        "to": "Do",
+        "timeZone": "Časové pásmo",
+        "note": "Výchozí je 21:00–7:00 podle pražského času.",
+        "save": "Uložit tichý režim"
+      },
+      "errors": {
+        "invalid_time_zone": "Neznámé časové pásmo."
       }
     }
   },
@@ -6956,6 +7035,33 @@
       "title": "Vyžaduje dvoufázové ověření",
       "body": "Kvůli přístupu k penězům a datům jde nové připojení vytvořit jen s dvoufázovým ověřením. Stávající připojení fungují dál.",
       "cta": "Zapnout 2FA"
+    }
+  },
+  "unsubscribe": {
+    "title": "Odhlásit e-maily",
+    "intro": "Přestanete dostávat {what} pro firmu {company}. Ostatní e-maily budou chodit dál.",
+    "introNoCompany": "Přestanete dostávat {what}. Ostatní e-maily budou chodit dál.",
+    "confirm": "Odhlásit",
+    "done": "Hotovo, odhlášeno. Tyto e-maily vám už nepošleme.",
+    "already": "Tyto e-maily už máte odhlášené.",
+    "manage": "Ostatní e-maily nastavíte po přihlášení v <link>Nastavení → E-mailová upozornění</link>.",
+    "types": {
+      "invoice_paid": "e-maily o zaplacených fakturách",
+      "invoice_viewed": "e-maily o otevřených fakturách",
+      "invoice_overdue": "e-maily o fakturách po splatnosti",
+      "reminder_sent": "e-maily o odeslaných upomínkách",
+      "invoice_sent": "e-maily o odeslaných fakturách",
+      "draft_ready": "e-maily o nových návrzích ke kontrole",
+      "bank_import": "e-maily o importu bankovních výpisů",
+      "member_joined": "e-maily o nových členech týmu",
+      "quote_response": "e-maily o odpovědích na nabídky",
+      "buyer_details": "e-maily o údajích, které doplnili odběratelé",
+      "weekly_digest": "týdenní přehled",
+      "all": "všechna nepovinná upozornění e-mailem"
+    },
+    "errors": {
+      "invalid": "Odkaz je neplatný nebo neúplný. Zkuste ho z e-mailu zkopírovat celý.",
+      "unavailable": "Odhlášení se teď nepovedlo. Zkuste to prosím za chvíli znovu."
     }
   }
 }

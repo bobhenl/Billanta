@@ -1567,6 +1567,10 @@
         "security": {
           "title": "Security",
           "description": "Two-factor authentication and recovery codes"
+        },
+        "emailNotifications": {
+          "title": "Email notifications",
+          "description": "Which emails you get, the weekly digest and quiet hours at night."
         }
       }
     },
@@ -2854,6 +2858,81 @@
         "already_enabled": "Two-factor authentication is already on.",
         "not_enabled": "Two-factor authentication isn't on.",
         "not_signed_in": "Your sign-in expired. Please sign in again."
+      }
+    },
+    "emailNotifications": {
+      "title": "Email notifications",
+      "description": "Which emails you get, the weekly digest and quiet hours at night.",
+      "loadError": "Could not load your email settings.",
+      "saved": "Saved",
+      "saveFailed": "Could not save",
+      "otherChannels": "Bell and browser notifications are in <link>Notifications</link>.",
+      "locked": "Always",
+      "lockedHint": "This email cannot be turned off – your account or your customers need it.",
+      "groups": {
+        "activity": {
+          "title": "Company activity",
+          "hint": "Payments, opened invoices, drafts to review and more. When several arrive at once, we send them in one email."
+        },
+        "digest": {
+          "title": "Weekly digest",
+          "hint": "Mondays at 8:00: unpaid invoices, last week’s payments and upcoming tax deadlines. Off by default."
+        },
+        "account": {
+          "title": "Account and security",
+          "hint": "Security alerts, team invitations, password resets and email changes. Always sent."
+        },
+        "customers": {
+          "title": "Emails to your customers",
+          "hint": "Invoices, reminders and details requests you send to customers. Edit their wording in Settings → Emails."
+        }
+      },
+      "types": {
+        "weekly_digest": {
+          "label": "Weekly digest by email",
+          "hint": "A summary every Monday morning. Skipped when there is nothing to report."
+        },
+        "security_alert": {
+          "label": "Security alerts",
+          "hint": "A change to the company’s bank account. Every member gets it, so nobody can quietly swap in another account number."
+        },
+        "team_invitation": {
+          "label": "Team invitations",
+          "hint": "When someone invites you to their company."
+        },
+        "password_reset": {
+          "label": "Password reset",
+          "hint": "A link to set a new password, when you ask for one."
+        },
+        "email_change": {
+          "label": "Email change",
+          "hint": "Confirms a new email address."
+        },
+        "invoice": {
+          "label": "Invoice to a customer",
+          "hint": "An invoice with its PDF that you send to a customer."
+        },
+        "reminder": {
+          "label": "Reminder to a customer",
+          "hint": "Manual and automatic reminders for unpaid invoices."
+        },
+        "buyer_details_request": {
+          "label": "Details request",
+          "hint": "A link where the customer fills in their own billing details."
+        }
+      },
+      "quiet": {
+        "title": "Quiet hours",
+        "hint": "Notifications that come in at night wait until morning and arrive in one email. Security emails and emails to customers go out right away.",
+        "toggle": "Send nothing at night",
+        "from": "From",
+        "to": "To",
+        "timeZone": "Time zone",
+        "note": "The default is 21:00–7:00 Prague time.",
+        "save": "Save quiet hours"
+      },
+      "errors": {
+        "invalid_time_zone": "Unknown time zone."
       }
     }
   },
@@ -6955,6 +7034,33 @@
       "title": "Two-factor authentication required",
       "body": "Because this gives access to money and data, new connections can only be added with two-factor authentication. Existing connections keep working.",
       "cta": "Turn on 2FA"
+    }
+  },
+  "unsubscribe": {
+    "title": "Unsubscribe",
+    "intro": "You will stop getting {what} for {company}. Other emails will keep coming.",
+    "introNoCompany": "You will stop getting {what}. Other emails will keep coming.",
+    "confirm": "Unsubscribe",
+    "done": "Done, you are unsubscribed. We will not send these emails again.",
+    "already": "You are already unsubscribed from these emails.",
+    "manage": "Sign in and go to <link>Settings → Email notifications</link> to change other emails.",
+    "types": {
+      "invoice_paid": "emails about paid invoices",
+      "invoice_viewed": "emails about opened invoices",
+      "invoice_overdue": "emails about overdue invoices",
+      "reminder_sent": "emails about sent reminders",
+      "invoice_sent": "emails about sent invoices",
+      "draft_ready": "emails about new drafts to review",
+      "bank_import": "emails about bank statement imports",
+      "member_joined": "emails about new team members",
+      "quote_response": "emails about replies to quotes",
+      "buyer_details": "emails about details filled in by customers",
+      "weekly_digest": "the weekly digest",
+      "all": "all optional email notifications"
+    },
+    "errors": {
+      "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",
+      "unavailable": "Could not unsubscribe right now. Please try again in a moment."
     }
   }
 }

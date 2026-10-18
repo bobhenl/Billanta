@@ -173,7 +173,7 @@ export class PublicInvoicesService {
       this.logger.warn(`${title}: ${body}`);
       return;
     }
-    await this.email.sendNotificationEmail({ to, title, body }).catch((err) => this.logger.error(`Abuse report e-mail failed: ${err}`));
+    await this.email.sendPlatformEmail({ to, title, body }).catch((err) => this.logger.error(`Abuse report e-mail failed: ${err}`));
   }
 
   /** True when the company behind the link is suspended; the portal then shows nothing. */

@@ -370,8 +370,8 @@ export const tenantMemberships = pgTable(
     // This person's own quick-action tiles on the dashboard (null = defaults),
     // see src/dashboard/dashboard-tiles.ts for the shape.
     dashboardTiles: jsonb("dashboard_tiles"),
-    // Which events reach this person and how (in-app/browser, email) —
-    // see src/notifications/notification-prefs.ts.
+    // Which events reach this person and how (in-app/browser, email), plus
+    // the weekly digest and quiet hours — see src/notifications/notification-prefs.ts.
     notificationPrefs: jsonb("notification_prefs").notNull().default({}),
     // Secret of this person's read-only calendar (iCal) and RSS feeds
     // (Settings → Integrace); null = feeds off. Resolved without a session
@@ -1177,6 +1177,63 @@ export const outboundEmails = pgTable("outbound_emails", {
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
   kind: text("kind").notNull(),
   recipient: text("recipient").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// email_outbox — every e-mail the backend sends, written first and delivered
+// by `EmailOutboxWorker` with retries (src/email/). Tenant-scoped: the app
+// inserts and merges rows under RLS; the cross-tenant worker only claims and
+// finishes rows through SECURITY DEFINER functions (migration 0049).
+// Indexes and CHECKs live in the migration.
+// ---------------------------------------------------------------------------
+export type OutboxAttachment = { filename: string; contentType?: string; content: string };
+export type OutboxItem = { kind: string; title: string; body?: string | null; url?: string | null; at: string };
+
+export const emailOutbox = pgTable("email_outbox", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  // The member it goes to (notifications, digest); null for customers and invitees.
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  kind: varchar("kind", { length: 40 }).notNull(),
+  // transactional | notification | digest — decides quiet hours, batching and List-Unsubscribe.
+  category: varchar("category", { length: 16 }).notNull(),
+  idempotencyKey: varchar("idempotency_key", { length: 200 }).notNull(),
+  batchKey: varchar("batch_key", { length: 120 }),
+  recipient: varchar("recipient", { length: 320 }).notNull(),
+  fromName: text("from_name"),
+  replyTo: text("reply_to"),
+  bcc: text("bcc"),
+  subject: varchar("subject", { length: 300 }).notNull(),
+  html: text("html").notNull(),
+  textBody: text("text_body").notNull(),
+  headers: jsonb("headers").$type<Record<string, string>>().notNull().default({}),
+  // Base64 content; cleared once sent.
+  attachments: jsonb("attachments").$type<OutboxAttachment[]>(),
+  // Batched notifications merged into this row.
+  items: jsonb("items").$type<OutboxItem[]>(),
+  status: varchar("status", { length: 12 }).notNull().default("queued"),
+  attempts: integer("attempts").notNull().default(0),
+  maxAttempts: integer("max_attempts").notNull().default(6),
+  sendAfter: timestamp("send_after", { withTimezone: true }).notNull().defaultNow(),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
+  lastError: text("last_error"),
+  providerMessageId: varchar("provider_message_id", { length: 100 }),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// email_suppressions — GLOBAL list of addresses that hard-bounced or marked
+// our mail as spam (Resend webhook). RLS on with no policy: only the
+// SECURITY DEFINER functions of migration 0049 read or write it.
+// ---------------------------------------------------------------------------
+export const emailSuppressions = pgTable("email_suppressions", {
+  address: varchar("address", { length: 320 }).primaryKey(),
+  reason: varchar("reason", { length: 16 }).notNull(),
+  detail: text("detail"),
+  providerMessageId: varchar("provider_message_id", { length: 100 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

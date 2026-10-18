@@ -23,6 +23,12 @@ REVOKE UPDATE, DELETE ON audit_log FROM faktur_app;
 REVOKE INSERT, UPDATE, DELETE ON referrals FROM faktur_app;
 REVOKE UPDATE, DELETE ON credit_ledger FROM faktur_app;
 
+-- The e-mail outbox keeps its history; the worker finishes rows through
+-- finish_email_outbox (migration 0049). The suppression list is reached only
+-- through that migration's functions.
+REVOKE DELETE ON email_outbox FROM faktur_app;
+REVOKE ALL ON email_suppressions FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 

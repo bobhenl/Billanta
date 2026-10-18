@@ -27,6 +27,31 @@ export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 export interface NotificationPrefs {
   events: Record<NotificationEvent, { app: boolean; email: boolean }>;
   browserPopups: boolean;
+  weeklyDigest: boolean;
+  quietHours: QuietHours;
+}
+
+/** Non-urgent e-mails wait until the window ends ("HH:MM", local to `timeZone`). */
+export interface QuietHours {
+  enabled: boolean;
+  start: string;
+  end: string;
+  timeZone: string;
+}
+
+/** Settings → E-mailová upozornění (backend: `v1/me/notifications/email`). */
+export interface EmailTypeRow {
+  type: string;
+  group: 'activity' | 'digest' | 'account' | 'customers';
+  category: 'transactional' | 'notification' | 'digest';
+  locked: boolean;
+  enabled: boolean;
+}
+
+export interface EmailPrefs {
+  types: EmailTypeRow[];
+  weeklyDigest: boolean;
+  quietHours: QuietHours;
 }
 
 /** Lucide-free colour per event, for the bell's dots. */

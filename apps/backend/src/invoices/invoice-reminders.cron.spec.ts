@@ -116,6 +116,7 @@ describe("InvoiceRemindersCron", () => {
         publicToken: overdue.invoice.publicToken,
         reminderCount: 1, // reminderCount (0) + 1
       }),
+      { tenantId: "tenant-1", idempotencyKey: "reminder:inv-1:1" },
     );
     expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-1", expect.any(String));
   });
@@ -161,6 +162,7 @@ describe("InvoiceRemindersCron", () => {
 
     expect(emailService.sendPaymentReminderEmail).toHaveBeenCalledWith(
       expect.objectContaining({ reminderCount: 2 }),
+      expect.objectContaining({ idempotencyKey: "reminder:inv-1:2" }),
     );
   });
 
