@@ -1,19 +1,27 @@
 'use client';
 
 import { useEffect, useMemo, useState, useTransition } from 'react';
-import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Eye, Globe, Loader2, Plus, Save, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Eye, Globe, Link2, Loader2, Plus, Save, ShoppingCart, Trash2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
-import { PROFILE_DOMAIN, profileUrl } from '@/lib/site';
+import { PROFILE_DOMAIN, profileOrderUrl, profileUrl } from '@/lib/site';
 import type { PublicProfileSettings } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import { checkProfileSlug, updatePublicProfile } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
 const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
 const MAX_SERVICES = 12;
+/** Same shape the backend accepts; it keeps an existing id so a shared order link survives renaming and reordering. */
+function newServiceId() {
+  const bytes = new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 const SHOW_KEYS = ['email', 'phone', 'website', 'address', 'ico', 'logo'] as const;
 
 type SlugState = { state: 'idle' | 'checking' | 'ok' } | { state: 'bad'; reason: 'invalid' | 'reserved' | 'taken' };
@@ -26,20 +34,18 @@ interface CompanyFacts {
   hasLogo: boolean;
   hasAddress: boolean;
   ico: string | null;
+  hasBankAccount: boolean;
 }
 
 export function PublicProfileEditor({
   initial,
   readOnly,
   suggestedSlug,
-  isAccountant,
   company
 }: {
   initial: PublicProfileSettings;
   readOnly: boolean;
   suggestedSlug: string;
-  /** In the accountant referral programme: may be listed on the town pages. */
-  isAccountant: boolean;
   company: CompanyFacts;
 }) {
   const t = useTranslations('settings.publicProfile');
@@ -50,7 +56,7 @@ export function PublicProfileEditor({
   const [saved, setSaved] = useState(initial);
   const [saving, startSave] = useTransition();
   const [origin, setOrigin] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => setOrigin(window.location.origin), []);
 
@@ -82,6 +88,10 @@ export function PublicProfileEditor({
   const invalid = (p.enabled && !slug) || (slug !== '' && !SLUG.test(slug)) || slugState.state === 'bad' || p.services.some((s) => !s.title.trim());
   const url = slug && SLUG.test(slug) ? profileUrl(slug, locale, origin || undefined) : null;
   const live = saved.enabled && saved.slug ? profileUrl(saved.slug, locale, origin || undefined) : null;
+  // Only a service that is already saved on a live profile taking orders has a working link.
+  const orderLinkOf = (id: string | null | undefined) =>
+    id && live && saved.slug && saved.orders.enabled && saved.services.some((s) => s.id === id) ? profileOrderUrl(saved.slug, id, locale, origin || undefined) : null;
+  const setOrders = (patch: Partial<PublicProfileSettings['orders']>) => set({ orders: { ...p.orders, ...patch } });
 
   const missing = useMemo(
     () =>
@@ -103,7 +113,14 @@ export function PublicProfileEditor({
         slug: slug || null,
         tagline: p.tagline?.trim() || null,
         about: p.about?.trim() || null,
-        services: p.services.map((s) => ({ title: s.title.trim(), description: s.description?.trim() || null, price: s.price?.trim() || null }))
+        services: p.services.map((s) => ({
+          id: s.id ?? null,
+          title: s.title.trim(),
+          description: s.description?.trim() || null,
+          price: s.price?.trim() || null,
+          unitPrice: s.unitPrice ?? null,
+          unit: s.unit?.trim() || null
+        }))
       };
       const result = await updatePublicProfile(body);
       if (!result.ok) {
@@ -117,12 +134,12 @@ export function PublicProfileEditor({
       router.refresh();
     });
 
-  const copy = async () => {
-    if (!live) return;
+  const copy = async (text: string | null, key = 'profile') => {
+    if (!text) return;
     try {
-      await navigator.clipboard.writeText(live);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      await copyText(text);
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
     } catch {
       // clipboard blocked — the link is visible anyway
     }
@@ -150,8 +167,8 @@ export function PublicProfileEditor({
             <a href={live} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate font-semibold text-primary hover:underline">
               {live}
             </a>
-            <button type="button" onClick={copy} className={iconBtn} title={t('copy')} aria-label={t('copy')}>
-              {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+            <button type="button" onClick={() => copy(live)} className={iconBtn} title={t('copy')} aria-label={t('copy')}>
+              {copied === 'profile' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
             </button>
             <a href={live} target="_blank" rel="noreferrer" className={iconBtn} title={t('open')} aria-label={t('open')}>
               <ExternalLink className="h-4 w-4" />
@@ -253,8 +270,40 @@ export function PublicProfileEditor({
                   className={inputClass}
                 />
               </div>
-              <input value={s.price ?? ''} onChange={(e) => setService(i, { price: e.target.value })} maxLength={40} placeholder={t('servicePrice')} aria-label={t('servicePrice')} className={cn(inputClass, 'h-fit')} />
+              <div className="space-y-2">
+                <input value={s.price ?? ''} onChange={(e) => setService(i, { price: e.target.value })} maxLength={40} placeholder={t('servicePrice')} aria-label={t('servicePrice')} className={inputClass} />
+                {p.orders.enabled && (
+                  <>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      max={10000000}
+                      step="0.01"
+                      value={s.unitPrice ?? ''}
+                      onChange={(e) => setService(i, { unitPrice: e.target.value === '' ? null : Math.max(0, Number(e.target.value)) })}
+                      placeholder={t('serviceUnitPrice')}
+                      aria-label={t('serviceUnitPrice')}
+                      title={t('serviceUnitPriceHint')}
+                      className={inputClass}
+                    />
+                    <input value={s.unit ?? ''} onChange={(e) => setService(i, { unit: e.target.value })} maxLength={16} placeholder={t('serviceUnit')} aria-label={t('serviceUnit')} className={inputClass} />
+                  </>
+                )}
+              </div>
               <div className="flex gap-1 sm:flex-col">
+                {p.orders.enabled && (
+                  <button
+                    type="button"
+                    onClick={() => copy(orderLinkOf(s.id), `service:${s.id}`)}
+                    disabled={!orderLinkOf(s.id)}
+                    className={iconBtn}
+                    title={orderLinkOf(s.id) ? t('copyOrderLink') : t('copyOrderLinkSaveFirst')}
+                    aria-label={t('copyOrderLink')}
+                  >
+                    {copied === `service:${s.id}` ? <Check className="h-4 w-4 text-success" /> : <Link2 className="h-4 w-4" />}
+                  </button>
+                )}
                 <button type="button" onClick={() => moveService(i, -1)} disabled={i === 0} className={iconBtn} title={t('up')} aria-label={t('up')}>
                   <ArrowUp className="h-4 w-4" />
                 </button>
@@ -276,7 +325,7 @@ export function PublicProfileEditor({
           {!readOnly && (
             <button
               type="button"
-              onClick={() => set({ services: [...p.services, { title: '', description: null, price: null }] })}
+              onClick={() => set({ services: [...p.services, { id: newServiceId(), title: '', description: null, price: null, unitPrice: null, unit: null }] })}
               disabled={p.services.length >= MAX_SERVICES}
               className={buttonClass.secondary}
             >
@@ -285,6 +334,42 @@ export function PublicProfileEditor({
             </button>
           )}
         </div>
+      </section>
+
+      <section className={cn(card, p.orders.enabled ? 'border-primary/40' : '')}>
+        <h2 className="flex items-center gap-2 font-bold">
+          <ShoppingCart className="h-4 w-4 text-primary" />
+          {t('orders.title')}
+        </h2>
+        <ul className="mt-3 space-y-2">
+          {(
+            [
+              ['enabled', p.orders.enabled, (v: boolean) => setOrders({ enabled: v }), false],
+              ['customItems', p.orders.customItems, (v: boolean) => setOrders({ customItems: v }), !p.orders.enabled],
+              ['prepay', p.orders.prepay, (v: boolean) => setOrders({ prepay: v }), !p.orders.enabled],
+              ['contactForm', p.contactForm, (v: boolean) => set({ contactForm: v }), false]
+            ] as const
+          ).map(([key, checked, onChange, disabled]) => (
+            <li key={key}>
+              <label className={cn('flex cursor-pointer items-start gap-3 rounded-lg border border-border px-3 py-2 text-sm', disabled && 'cursor-not-allowed opacity-60')}>
+                <input type="checkbox" role="switch" className="mt-0.5 h-4 w-4 accent-primary" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold">{t(`orders.${key}`)}</span>
+                  <span className="block text-xs text-muted-foreground">{t(`orders.${key}Hint`)}</span>
+                </span>
+              </label>
+            </li>
+          ))}
+        </ul>
+        {p.orders.enabled && p.orders.prepay && !company.hasBankAccount && (
+          <p className="mt-3 text-xs text-destructive">
+            {t('orders.prepayNoAccount')}{' '}
+            <Link href="/settings/company" className="font-semibold text-primary hover:underline">
+              {t('missingLink')}
+            </Link>
+          </p>
+        )}
+        {p.orders.enabled && <p className="mt-3 text-xs text-muted-foreground">{t('orders.linksHint')}</p>}
       </section>
 
       <section className={card}>
@@ -310,29 +395,6 @@ export function PublicProfileEditor({
                 <InfoHint hint={t('ctaHint')}>{t('cta')}</InfoHint>
               </span>
             </label>
-          </li>
-          <li className="sm:col-span-2">
-            {isAccountant ? (
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-2 text-sm">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 accent-primary"
-                  checked={p.listInAccountants}
-                  disabled={!p.show.address || !company.hasAddress}
-                  onChange={(e) => set({ listInAccountants: e.target.checked })}
-                />
-                <span className="flex-1">
-                  <InfoHint hint={t('accountantListHint')}>{t('accountantList')}</InfoHint>
-                </span>
-              </label>
-            ) : (
-              <p className="px-1 text-xs text-muted-foreground">
-                {t('accountantListLocked')}{' '}
-                <Link href="/settings/referrals" className="font-semibold text-primary hover:underline">
-                  {t('accountantListLockedLink')}
-                </Link>
-              </p>
-            )}
           </li>
         </ul>
         {missing.length > 0 && (

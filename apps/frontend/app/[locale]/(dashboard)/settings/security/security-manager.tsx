@@ -8,6 +8,7 @@ import { Banner } from '@/components/banner';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { confirmTwoFactorSetup, disableTwoFactor, regenerateRecoveryCodes, startTwoFactorSetup } from './actions';
+import { copyText } from '@/lib/clipboard';
 
 type Setup = { secret: string; qr: string };
 
@@ -126,7 +127,7 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
               type="button"
               className={buttonClass.secondary}
               onClick={() => {
-                void navigator.clipboard.writeText(codes.join('\n')).then(() => toast({ text: t('copied'), tone: 'ok' }));
+                void copyText(codes.join('\n')).then(() => toast({ text: t('copied'), tone: 'ok' }));
               }}
             >
               <Copy className="h-4 w-4" />

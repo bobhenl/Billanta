@@ -54,6 +54,8 @@ export interface PublicInvoice {
   attachments?: { id: string; filename: string; mime: string; sizeBytes: number }[];
   /** Server-built QR Faktura (SID) with both parties' IČO/DIČ and the VAT recap. */
   qrInvoice?: string | null;
+  /** Buyer country (ISO alpha-2); with the IBAN it picks SPAYD or PAY by square. */
+  buyerCountry?: string | null;
   /** Present for quotes: the client's accept/reject state. */
   quote?: { canRespond: boolean; response: 'accepted' | 'rejected' | null; respondedAt: string | null; name: string | null } | null;
   /** The supplier accepts cards (own Stripe account) and something is left to pay. */

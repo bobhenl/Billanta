@@ -1,11 +1,12 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Ip, NotFoundException, Param, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
-import { lookupVies, parseVatId } from "@faktur/cz-compliance";
-import { ContactsService } from "../contacts/contacts.service";
+import { toPublicHit } from "../contacts/company-lookup-public.controller";
+import { ContactsService, hasSlowPart, registryForCountry, registryPartOf } from "../contacts/contacts.service";
 import { DailyCap, SlidingWindowLimiter, visitorBucket } from "../guest-invoices/guest-limits";
 import { BuyerDetailsService } from "../invoices/buyer-details.service";
-import { TOKEN_PATTERN } from "../invoices/buyer-details.util";
+import { sameCompanyName, TOKEN_PATTERN } from "../invoices/buyer-details.util";
+import { registryLookup, registryQueryOf } from "./registry-lookup";
 
 /** The visitor's IP; the frontend's server action / route forwards it as x-guest-ip, trusted only from local addresses. */
 function visitorOf(ip: string, req: Request): string {
@@ -28,7 +29,9 @@ export class BuyerDetailsPublicController {
   private readonly viewLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 60);
   private readonly submitLimiter = new SlidingWindowLimiter(60 * 60 * 1000, 10);
   private readonly lookupLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 20);
-  private readonly lookupDaily = new DailyCap(Number(process.env.BUYER_LOOKUP_DAILY_LIMIT ?? 2000));
+  // Typeahead: two requests per pause in typing (fast and slow half), so a looser limit than the exact lookup.
+  private readonly searchLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 160);
+  private readonly lookupDaily = new DailyCap(Number(process.env.BUYER_LOOKUP_DAILY_LIMIT ?? 4000));
 
   constructor(
     private readonly buyerDetails: BuyerDetailsService,
@@ -37,10 +40,26 @@ export class BuyerDetailsPublicController {
 
   @Get(":token")
   @ApiOperation({ summary: "The draft the customer is asked to complete: supplier, items, amount (read-only)" })
-  view(@Param("token") token: string, @Ip() ip: string, @Req() req: Request) {
+  async view(@Param("token") token: string, @Ip() ip: string, @Req() req: Request) {
     this.throttle(this.viewLimiter, visitorOf(ip, req));
     if (!TOKEN_PATTERN.test(token)) throw new NotFoundException("Link not found");
-    return this.buyerDetails.publicView(token);
+    const view = await this.buyerDetails.publicView(token);
+    return { ...view, supplierVerified: await this.supplierVerified(view.supplier) };
+  }
+
+  /**
+   * True only when the register (ARES, RPO for a Slovak supplier) knows the
+   * supplier's IČO under the same name. Cached in ares_cache; any outage or
+   * mismatch is simply "not verified", and the page then says nothing.
+   */
+  private async supplierVerified(supplier: { name: string; ico: string | null; country: string }): Promise<boolean> {
+    if (!supplier.ico || !/^\d{8}$/.test(supplier.ico) || !["CZ", "SK"].includes(supplier.country)) return false;
+    try {
+      const hit = await this.contacts.lookupById(supplier.ico, supplier.country);
+      return hit.ico === supplier.ico && sameCompanyName(hit.legalName, supplier.name);
+    } catch {
+      return false;
+    }
   }
 
   @Post(":token")
@@ -55,39 +74,40 @@ export class BuyerDetailsPublicController {
   }
 
   @Get(":token/lookup")
-  @ApiOperation({ summary: "Company details by Czech/Slovak IČO (ARES/RPO) or EU VAT ID (VIES), for this link only" })
+  @ApiOperation({
+    summary: "Company details by Czech/Slovak IČO (ARES/RPO) or EU VAT ID (VIES), for this link only",
+    description:
+      "With ?q= instead: a name typeahead in the register of ?country= (CZ + SK when unknown), returning { hits }. " +
+      "?part=fast leaves out the slow Slovak name search, ?part=slow returns only it.",
+  })
   async lookup(
     @Param("token") token: string,
     @Query("ico") rawIco: string | undefined,
     @Query("vat") rawVat: string | undefined,
+    @Query("q") rawQ: string | undefined,
+    @Query("country") country: string | undefined,
+    @Query("part") rawPart: string | undefined,
     @Ip() ip: string,
     @Req() req: Request,
   ) {
+    const q = (rawQ ?? "").trim().slice(0, 120);
+    if (q) {
+      if (q.length < 2) return { hits: [] };
+      const registry = registryForCountry(country);
+      const part = registryPartOf(rawPart);
+      if (part === "slow" && !hasSlowPart(q, registry)) return { hits: [] };
+      this.throttle(this.searchLimiter, visitorOf(ip, req));
+      await this.buyerDetails.assertOpen(token);
+      if (!this.lookupDaily.take()) throw new HttpException({ error: "busy" }, HttpStatus.SERVICE_UNAVAILABLE);
+      const hits = await this.contacts.registrySearch(q, registry, part);
+      return { hits: hits.slice(0, 8).map(toPublicHit) };
+    }
     this.throttle(this.lookupLimiter, visitorOf(ip, req));
-    const ico = (rawIco ?? "").replace(/\s+/g, "");
-    const vat = (rawVat ?? "").replace(/[\s.-]/g, "").toUpperCase();
-    if (ico ? !/^\d{6,8}$/.test(ico) : !parseVatId(vat)) throw new BadRequestException({ error: "invalid_id" });
+    const query = registryQueryOf(rawIco, rawVat);
+    if (!query) throw new BadRequestException({ error: "invalid_id" });
     await this.buyerDetails.assertOpen(token);
     if (!this.lookupDaily.take()) throw new HttpException({ error: "busy" }, HttpStatus.SERVICE_UNAVAILABLE);
-    try {
-      if (ico) {
-        const hit = await this.contacts.aresLookup(ico.padStart(8, "0"));
-        return {
-          name: hit.legalName,
-          ico: hit.ico || null,
-          dic: hit.dic,
-          street: hit.addressStreet,
-          city: hit.addressCity,
-          postalCode: hit.addressPostalCode,
-          country: hit.addressCountry,
-        };
-      }
-      const [hit] = await lookupVies(vat);
-      if (!hit) throw new Error("not found");
-      return { name: hit.name || null, ico: null, dic: hit.vatId, street: hit.street, city: hit.city, postalCode: hit.postalCode, country: hit.country };
-    } catch {
-      throw new NotFoundException({ error: "not_found" });
-    }
+    return registryLookup(this.contacts, query, country);
   }
 
   private throttle(limiter: SlidingWindowLimiter, visitor: string) {

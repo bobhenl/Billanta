@@ -121,6 +121,15 @@ export interface IsdocInvoiceInput {
   /** ISO 8601 date of the taxable supply / VAT chargeable event ("datum uskutečnění zdanitelného plnění", DUZP). */
   taxableSupplyDate: string;
   currency: IsdocCurrencyCode;
+  /**
+   * The supplier's home currency (CZK unless set; EUR for a Slovak supplier).
+   * When `currency` differs and `exchangeRate` is set, ISDOC's plain amounts
+   * are in this currency and the invoice's own amounts go into the `*Curr`
+   * siblings.
+   */
+  localCurrency?: IsdocCurrencyCode;
+  /** Units of `localCurrency` per one unit of `currency` (the rate used on the invoice). */
+  exchangeRate?: number;
   supplier: IsdocParty;
   customer: IsdocParty;
   lineItems: IsdocLineItem[];
@@ -358,7 +367,7 @@ function buildPartyXml(party: IsdocParty): string {
  * base" is normal and is exactly what ISDOC's `RoundingAmount` field exists
  * to absorb.
  */
-function buildInvoiceLineXml(item: IsdocLineItem, index: number): string {
+function buildInvoiceLineXml(item: IsdocLineItem, index: number, fx: Fx): string {
   const lineNet = roundMoney(item.quantity * item.unitPriceWithoutVat);
   const lineTax = roundMoney((lineNet * item.vatRatePercent) / 100);
   const lineGross = roundMoney(lineNet + lineTax);
@@ -383,15 +392,55 @@ function buildInvoiceLineXml(item: IsdocLineItem, index: number): string {
     '<InvoiceLine>',
     xmlElement('ID', String(index + 1)),
     invoicedQuantity,
-    xmlElement('LineExtensionAmount', formatAmount(lineNet)),
-    xmlElement('LineExtensionAmountTaxInclusive', formatAmount(lineGross)),
-    xmlElement('LineExtensionTaxAmount', formatAmount(lineTax)),
-    xmlElement('UnitPrice', formatAmount(item.unitPriceWithoutVat)),
-    xmlElement('UnitPriceTaxInclusive', formatAmount(unitPriceTaxInclusive)),
+    currFirst(fx, 'LineExtensionAmount', lineNet),
+    currFirst(fx, 'LineExtensionAmountTaxInclusive', lineGross),
+    xmlElement('LineExtensionTaxAmount', formatAmount(fx.local(lineTax))),
+    // Unit prices have no foreign sibling in the schema: local currency only.
+    xmlElement('UnitPrice', formatAmount(fx.local(item.unitPriceWithoutVat))),
+    xmlElement('UnitPriceTaxInclusive', formatAmount(fx.local(unitPriceTaxInclusive))),
     classifiedTaxCategory,
     itemXml,
     '</InvoiceLine>',
   ].join('');
+}
+
+// ---------------------------------------------------------------------------
+// Foreign currency
+// ---------------------------------------------------------------------------
+
+/**
+ * How amounts are written. ISDOC's plain amounts are always in the local
+ * (home) currency; a foreign-currency invoice adds `ForeignCurrencyCode`,
+ * the rate in `CurrRate` and its own amounts in the optional `*Curr`
+ * siblings (VERIFIED against the 6.0.2 XSD, which puts `*Curr` before the
+ * plain element in lines and tax subtotals but after it in
+ * `LegalMonetaryTotal`). Without a rate the invoice currency stays local,
+ * as before, rather than guessing one.
+ */
+interface Fx {
+  localCode: string;
+  foreignCode: string | null;
+  rate: number;
+  local(amount: number): number;
+}
+
+function currencyMode(input: IsdocInvoiceInput): Fx {
+  const localCode = input.localCurrency ?? 'CZK';
+  const rate = input.exchangeRate ?? 0;
+  if (input.currency === localCode || !(rate > 0)) {
+    return { localCode: input.currency, foreignCode: null, rate: 1, local: (amount) => amount };
+  }
+  return { localCode, foreignCode: input.currency, rate, local: (amount) => roundMoney(amount * rate) };
+}
+
+function currFirst(fx: Fx, name: string, amount: number): string {
+  const local = xmlElement(name, formatAmount(fx.local(amount)));
+  return fx.foreignCode ? xmlElement(`${name}Curr`, formatAmount(amount)) + local : local;
+}
+
+function currAfter(fx: Fx, name: string, amount: number): string {
+  const local = xmlElement(name, formatAmount(fx.local(amount)));
+  return fx.foreignCode ? local + xmlElement(`${name}Curr`, formatAmount(amount)) : local;
 }
 
 // ---------------------------------------------------------------------------
@@ -525,25 +574,22 @@ function validateTotalsConsistency(computed: ComputedVatGroup[], totals: IsdocTo
  * optional and emitted as `"VAT"` for consistency with the party-level tax
  * scheme (same best-effort caveat as `buildPartyXml`).
  */
-function buildTaxTotalXml(groups: ComputedVatGroup[]): string {
-  const zero = formatAmount(0);
+function buildTaxTotalXml(groups: ComputedVatGroup[], fx: Fx): string {
 
   const taxSubTotals = groups
     .map((group) => {
-      const taxInclusive = formatAmount(roundMoney(group.taxableAmount + group.taxAmount));
-      const taxableAmount = formatAmount(group.taxableAmount);
-      const taxAmount = formatAmount(group.taxAmount);
+      const taxInclusive = roundMoney(group.taxableAmount + group.taxAmount);
       return [
         '<TaxSubTotal>',
-        xmlElement('TaxableAmount', taxableAmount),
-        xmlElement('TaxAmount', taxAmount),
-        xmlElement('TaxInclusiveAmount', taxInclusive),
-        xmlElement('AlreadyClaimedTaxableAmount', zero),
-        xmlElement('AlreadyClaimedTaxAmount', zero),
-        xmlElement('AlreadyClaimedTaxInclusiveAmount', zero),
-        xmlElement('DifferenceTaxableAmount', taxableAmount),
-        xmlElement('DifferenceTaxAmount', taxAmount),
-        xmlElement('DifferenceTaxInclusiveAmount', taxInclusive),
+        currFirst(fx, 'TaxableAmount', group.taxableAmount),
+        currFirst(fx, 'TaxAmount', group.taxAmount),
+        currFirst(fx, 'TaxInclusiveAmount', taxInclusive),
+        currFirst(fx, 'AlreadyClaimedTaxableAmount', 0),
+        currFirst(fx, 'AlreadyClaimedTaxAmount', 0),
+        currFirst(fx, 'AlreadyClaimedTaxInclusiveAmount', 0),
+        currFirst(fx, 'DifferenceTaxableAmount', group.taxableAmount),
+        currFirst(fx, 'DifferenceTaxAmount', group.taxAmount),
+        currFirst(fx, 'DifferenceTaxInclusiveAmount', taxInclusive),
         `<TaxCategory>${xmlElement('Percent', formatDecimal(group.vatRatePercent))}${xmlElement(
           'TaxScheme',
           'VAT',
@@ -555,7 +601,7 @@ function buildTaxTotalXml(groups: ComputedVatGroup[]): string {
 
   const totalTax = roundMoney(groups.reduce((sum, group) => sum + group.taxAmount, 0));
 
-  return `<TaxTotal>${taxSubTotals}${xmlElement('TaxAmount', formatAmount(totalTax))}</TaxTotal>`;
+  return `<TaxTotal>${taxSubTotals}${currFirst(fx, 'TaxAmount', totalTax)}</TaxTotal>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -581,24 +627,20 @@ function buildTaxTotalXml(groups: ComputedVatGroup[]): string {
  * rule, so it's flagged as best-effort even though it's the only value that
  * makes arithmetic sense for a non-advance invoice.
  */
-function buildLegalMonetaryTotalXml(totals: IsdocTotals): string {
-  const taxExclusive = formatAmount(totals.totalWithoutVat);
-  const taxInclusive = formatAmount(roundMoney(totals.totalWithoutVat + totals.totalVat));
-  const zero = formatAmount(0);
+function buildLegalMonetaryTotalXml(totals: IsdocTotals, fx: Fx): string {
+  const taxInclusive = roundMoney(totals.totalWithoutVat + totals.totalVat);
 
   return [
     '<LegalMonetaryTotal>',
-    xmlElement('TaxExclusiveAmount', taxExclusive),
-    xmlElement('TaxInclusiveAmount', taxInclusive),
-    xmlElement('AlreadyClaimedTaxExclusiveAmount', zero),
-    xmlElement('AlreadyClaimedTaxInclusiveAmount', zero),
-    xmlElement('DifferenceTaxExclusiveAmount', taxExclusive),
-    xmlElement('DifferenceTaxInclusiveAmount', taxInclusive),
-    ...(totals.roundingAmount !== undefined
-      ? [xmlElement('PayableRoundingAmount', formatAmount(totals.roundingAmount))]
-      : []),
-    xmlElement('PaidDepositsAmount', zero),
-    xmlElement('PayableAmount', formatAmount(totals.totalWithVat)),
+    currAfter(fx, 'TaxExclusiveAmount', totals.totalWithoutVat),
+    currAfter(fx, 'TaxInclusiveAmount', taxInclusive),
+    currAfter(fx, 'AlreadyClaimedTaxExclusiveAmount', 0),
+    currAfter(fx, 'AlreadyClaimedTaxInclusiveAmount', 0),
+    currAfter(fx, 'DifferenceTaxExclusiveAmount', totals.totalWithoutVat),
+    currAfter(fx, 'DifferenceTaxInclusiveAmount', taxInclusive),
+    ...(totals.roundingAmount !== undefined ? [currAfter(fx, 'PayableRoundingAmount', totals.roundingAmount)] : []),
+    currAfter(fx, 'PaidDepositsAmount', 0),
+    currAfter(fx, 'PayableAmount', totals.totalWithVat),
     '</LegalMonetaryTotal>',
   ].join('');
 }
@@ -651,7 +693,7 @@ function parseDomesticAccountNumber(accountNumber: string): { localId: string; b
  * foreign-only account will need a future enhancement (e.g. deriving the
  * domestic-format fields from IBAN) that's out of scope here.
  */
-function buildPaymentMeansXml(input: IsdocInvoiceInput): string {
+function buildPaymentMeansXml(input: IsdocInvoiceInput, fx: Fx): string {
   const account = input.bankAccount;
   if (!account?.accountNumber || !account.iban || !account.bic) {
     return '';
@@ -678,7 +720,7 @@ function buildPaymentMeansXml(input: IsdocInvoiceInput): string {
 
   const payment = [
     '<Payment>',
-    xmlElement('PaidAmount', formatAmount(input.totals.totalWithVat)),
+    xmlElement('PaidAmount', formatAmount(fx.local(input.totals.totalWithVat))),
     xmlElement('PaymentMeansCode', String(PAYMENT_MEANS_CODE_BANK_TRANSFER)),
     `<Details>${details}</Details>`,
     '</Payment>',
@@ -723,6 +765,7 @@ export function generateIsdocXml(input: IsdocInvoiceInput): string {
   }
 
   const vatGroups = computeVatRecapitulation(input.lineItems);
+  const fx = currencyMode(input);
   validateTotalsConsistency(vatGroups, input.totals);
 
   const vatApplicable = input.supplier.isVatPayer ?? vatGroups.some((group) => group.vatRatePercent > 0);
@@ -731,7 +774,7 @@ export function generateIsdocXml(input: IsdocInvoiceInput): string {
     (part): part is string => Boolean(part),
   );
 
-  const invoiceLines = input.lineItems.map((item, index) => buildInvoiceLineXml(item, index)).join('');
+  const invoiceLines = input.lineItems.map((item, index) => buildInvoiceLineXml(item, index, fx)).join('');
 
   const body = [
     xmlElement('DocumentType', String(DOCUMENT_TYPE_INVOICE)),
@@ -742,15 +785,16 @@ export function generateIsdocXml(input: IsdocInvoiceInput): string {
     xmlElement('VATApplicable', vatApplicable ? 'true' : 'false'),
     xmlElement('ElectronicPossibilityAgreementReference', escapeXml(ELECTRONIC_INVOICE_AGREEMENT_PLACEHOLDER)),
     noteParts.length > 0 ? xmlElement('Note', escapeXml(noteParts.join('; '))) : '',
-    xmlElement('LocalCurrencyCode', escapeXml(input.currency)),
-    xmlElement('CurrRate', formatDecimal(1)),
+    xmlElement('LocalCurrencyCode', escapeXml(fx.localCode)),
+    fx.foreignCode ? xmlElement('ForeignCurrencyCode', escapeXml(fx.foreignCode)) : '',
+    xmlElement('CurrRate', formatDecimal(fx.rate)),
     xmlElement('RefCurrRate', formatDecimal(1)),
     `<AccountingSupplierParty>${buildPartyXml(input.supplier)}</AccountingSupplierParty>`,
     `<AccountingCustomerParty>${buildPartyXml(input.customer)}</AccountingCustomerParty>`,
     `<InvoiceLines>${invoiceLines}</InvoiceLines>`,
-    buildTaxTotalXml(vatGroups),
-    buildLegalMonetaryTotalXml(input.totals),
-    buildPaymentMeansXml(input),
+    buildTaxTotalXml(vatGroups, fx),
+    buildLegalMonetaryTotalXml(input.totals, fx),
+    buildPaymentMeansXml(input, fx),
   ].join('');
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<Invoice xmlns="${ISDOC_NAMESPACE}" version="${ISDOC_VERSION}">${body}</Invoice>`;

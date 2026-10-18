@@ -142,7 +142,7 @@
       },
       "migration": {
         "title": "Přechod z jiné aplikace",
-        "description": "Z BitFaktury přímo přes API i s původními PDF, z Fakturoidu, iDokladu nebo Excelu přes CSV. Před uložením uvidíte náhled."
+        "description": "Z BitFaktury a Fakturoidu přímo přes API i s původními PDF, z iDokladu nebo Excelu přes CSV. Před uložením uvidíte náhled."
       },
       "api": {
         "title": "API a webhooky",
@@ -223,7 +223,8 @@
       "account": {
         "title": "Účet",
         "login": "Přihlásit se",
-        "signup": "Registrovat se"
+        "signup": "Registrovat se",
+        "openApp": "Přejít do aplikace"
       },
       "partners": {
         "title": "Partneři",
@@ -401,7 +402,10 @@
       "onlyIfForeignPurchase": "Jen pokud jste v měsíci nakoupili služby ze zahraničí (např. reklamy).",
       "onlyIfEuSales": "Jen pokud jste v měsíci fakturovali službu firmě v jiném státě EU.",
       "advancesInSettings": "Výši záloh na pojištění a paušální daň nastavíte podle období ve Fakturačních údajích.",
-      "editAdvances": "Upravit zálohy"
+      "editAdvances": "Upravit zálohy",
+      "manualKindsHint": "Zaměstnance, silniční daň a daň z nemovitých věcí Billanta nepozná, ty si zaškrtněte sami.",
+      "regimeUnknown": "Nevíme, jestli jste v paušálním režimu, proto hlídáme běžné zálohy na pojištění.",
+      "regimeAnswer": "Doplnit v nastavení"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
@@ -434,7 +438,9 @@
       "bank": "máte propojenou banku",
       "proformas": "vystavujete zálohovky",
       "quotes": "posíláte nabídky"
-    }
+    },
+    "customizeOrderHint": "Pořadí změníte přetažením za úchyt nebo šipkami.",
+    "dragToReorder": "Přetáhněte pro změnu pořadí"
   },
   "invoices": {
     "hover": {
@@ -602,8 +608,20 @@
         "dic": "DIČ",
         "address": "adresa",
         "isPerson": "soukromá osoba",
-        "contactId": "kontakt"
-      }
+        "contactId": "kontakt",
+        "phone": "telefon"
+      },
+      "copyManual": "Kopírování tady nejde. Odkaz označte a zkopírujte ručně.",
+      "copyManualLabel": "Odkaz pro odběratele",
+      "requiredLabel": "Povinné údaje",
+      "requiredHint": "Co musí odběratel vyplnit. Jméno a adresa jsou povinné vždy, IČO a DIČ jen u firem.",
+      "requiredSaveDefault": "Použít jako výchozí pro další odkazy",
+      "requiredSummary": "Povinné: {fields}",
+      "pickCustomer": "Vybrat odběratele"
+    },
+    "profileOrder": {
+      "badge": "Objednávka z profilu",
+      "banner": "Tento koncept vytvořil zákazník objednávkou z vašeho veřejného profilu. Zkontrolujte položky a ceny, pak ho vystavte. Zákazníkovi jsme nic neposlali."
     }
   },
   "publicInvoice": {
@@ -626,7 +644,6 @@
     "paymentTitle": "Uhradit fakturu",
     "paymentInstructions": "Naskenujte QR kód v bankovní aplikaci a předvyplňte si okamžitý bankovní převod.",
     "paymentDisclaimer": "Jde o standardní český/slovenský QR kód pro bankovní převod (SPAYD / „QR Platba“), nikoli o platbu kartou.",
-    "paymentDisclaimerSk": "Jde o slovenský QR kód PAY by square pro bankovní převod, který čtou všechny slovenské bankovní aplikace. Nejde o platbu kartou.",
     "noBankAccount": "Vystavovatel zatím nemá nastavený bankovní účet pro online platbu. Ohledně úhrady ho prosím kontaktujte přímo.",
     "notFoundTitle": "Faktura nenalezena",
     "notFoundBody": "Tento odkaz je neplatný nebo již vypršel. Pro nový odkaz kontaktujte odesílatele.",
@@ -697,7 +714,8 @@
         "unavailable": "Platba kartou teď u této faktury není k dispozici.",
         "failed": "Platební bránu se nepodařilo otevřít. Zkuste to prosím za chvíli."
       }
-    }
+    },
+    "paymentDisclaimerBySquare": "Jde o standardní slovenský QR kód pro bankovní převod (PAY by square), nikoli o platbu kartou."
   },
   "expenses": {
     "title": "Výdaje",
@@ -753,6 +771,11 @@
       "noCategory": "Bez kategorie",
       "amountSection": "Částka",
       "vatBreakdown": "Základ {base} + DPH {vat}",
+      "reverseChargeLabel": "Přenesená daňová povinnost (§ 92a)",
+      "reverseChargeHint": "Dodavatel fakturoval bez DPH a daň přiznáváte vy. Zadejte částku bez DPH; DPH se odvede i odečte v přiznání (ř. 10/11 a 43/44) a doklad půjde do oddílu B.1 kontrolního hlášení.",
+      "amountLabelReverseCharge": "Částka bez DPH",
+      "vatBreakdownReverseCharge": "Základ {base}, DPH k přiznání {vat}",
+      "reverseChargeRequiredHint": "Oddíl B.1 potřebuje DIČ dodavatele a číslo dokladu.",
       "datesSection": "Data a úhrada",
       "dueDateLabel": "Splatnost",
       "paidLabel": "Už uhrazeno",
@@ -850,22 +873,27 @@
   },
   "bank": {
     "title": "Banka",
-    "description": "Nahrajte bankovní výpis (CSV) a spárujte příchozí platby s vystavenými fakturami.",
+    "description": "Nahrajte bankovní výpis (camt.053, GPC nebo CSV) a spárujte příchozí platby s vystavenými fakturami.",
     "import": {
       "label": "Import výpisu",
-      "selectFile": "Vybrat CSV soubor",
+      "selectFile": "Vybrat soubor s výpisem",
       "noFileSelected": "Nevybrán žádný soubor",
       "submit": "Nahrát a spárovat",
       "importing": "Nahrávám a párovám…",
-      "formatHint": "CSV výpis z internetového bankovnictví. Stačí sloupce s datem, částkou a měnou.",
+      "formatHint": "Výpis z internetového bankovnictví ve formátu camt.053 (XML), GPC/ABO nebo CSV.",
       "success": "Naimportováno {total} transakcí, {matched} spárováno automaticky.",
-      "invalidFile": "Vyberte prosím soubor ve formátu .csv.",
+      "invalidFile": "Vyberte prosím výpis ve formátu .xml (camt.053), .gpc, .abo nebo .csv.",
       "parseError": "Soubor se nepodařilo zpracovat: {message}",
       "formatHelpLabel": "Jaký soubor nahrát?",
-      "formatHelp": "Nahrajte CSV výpis tak, jak ho stáhnete z internetového bankovnictví. Poznáme běžné exporty českých a slovenských bank (Fio, ČSOB, KB, Raiffeisen, Tatra banka a další): oddělení středníkem i čárkou, datum 31.12.2026 i 2026-12-31 a částky s desetinnou čárkou. Nutné jsou sloupce s datem, částkou a měnou. Variabilní symbol a protiúčet pomáhají se spárováním. Když export vaší banky nepoznáme, upravte soubor podle vzoru.",
-      "sample": "Stáhnout vzorový CSV"
+      "formatHelp": "Nejlépe funguje výpis ve formátu camt.053 (XML) nebo GPC/ABO (.gpc), které nabízí většina českých a slovenských bank. Stáhnete ho v internetovém bankovnictví u výpisů nebo exportu pohybů. Poradíme si i s CSV: poznáme běžné exporty (Fio, ČSOB, KB, Raiffeisen, Tatra banka a další), oddělení středníkem i čárkou, datum 31.12.2026 i 2026-12-31 a částky s desetinnou čárkou. Platby, které už v Billantě jsou (z jiného výpisu nebo z Fio API), poznáme a podruhé je nenahrajeme.",
+      "sample": "Stáhnout vzorový CSV",
+      "successWithDuplicates": "Naimportováno {total} transakcí, {matched} spárováno automaticky. {duplicates, plural, one {# platbu už Billanta měla} few {# platby už Billanta měla} other {# plateb už Billanta měla}}, ty jsme přeskočili.",
+      "errors": {
+        "bank_statement_unknown_format": "Tento formát neznáme. Nahrajte výpis jako camt.053 (XML), GPC/ABO nebo CSV.",
+        "bank_statement_invalid": "Výpis je poškozený nebo neúplný."
+      }
     },
-    "empty": "Zatím zde nejsou žádné bankovní transakce. Nahrajte výpis (CSV) tlačítkem vpravo nahoře.",
+    "empty": "Zatím zde nejsou žádné bankovní transakce. Nahrajte výpis tlačítkem vpravo nahoře.",
     "filterLabel": "Zobrazit",
     "filterAll": "Vše",
     "columns": {
@@ -932,12 +960,13 @@
       "matchedDone": "Spárováno, faktura je uhrazená.",
       "ignoredDone": "Transakce ignorována.",
       "restoredDone": "Transakce vrácena ke spárování.",
-      "actionFailed": "Akce selhala"
+      "actionFailed": "Akce selhala",
+      "message": "Zpráva pro příjemce"
     },
     "connections": {
       "title": "Napojení na banku",
       "hint": "Billanta každou hodinu stáhne nové příchozí platby přímo z banky nebo z PayPalu a sama je spáruje s fakturami podle variabilního symbolu a částky. Spárované faktury se označí jako zaplacené, u PayPalu i se strženým poplatkem. Odchozí platby se nestahují.",
-      "empty": "Zatím žádný účet. Připojte Fio nebo PayPal a platby se budou párovat samy. Z ostatních bank zatím nahrajte CSV výpis.",
+      "empty": "Zatím žádný účet. Připojte Fio nebo PayPal a platby se budou párovat samy. Z ostatních bank nahrajte výpis (camt.053, GPC nebo CSV).",
       "token": "API token z Fio",
       "tokenHint": "V internetovém bankovnictví Fio otevřete Nastavení → API, přidejte token s oprávněním „Pouze sledovat účet“ a zkopírujte ho sem (64 znaků). S takovým tokenem nejde nic zaplatit. Token ukládáme šifrovaně a už ho nikdy nezobrazíme.",
       "tokenPlaceholder": "64 znaků",
@@ -956,7 +985,7 @@
       "resume": "Obnovit",
       "disconnect": "Odpojit účet",
       "disconnectConfirm": "Odpojit účet a smazat uložený token? Už stažené platby zůstanou.",
-      "otherBanks": "Další banky (ČSOB, KB, Česká spořitelna, Raiffeisen…) zatím přes import CSV výpisu, dokud na serveru není zapnuté napojení přes PSD2.",
+      "otherBanks": "Další banky (ČSOB, KB, Česká spořitelna, Raiffeisen…) zatím přes nahrání výpisu (camt.053, GPC nebo CSV), dokud na serveru není zapnuté napojení přes PSD2.",
       "errors": {
         "fio_token_format": "Token musí mít přesně 64 písmen a číslic.",
         "fio_token_invalid": "Fio token odmítlo. Zkontrolujte, že je platný a není zrušený.",
@@ -979,7 +1008,9 @@
         "psd2_state_invalid": "Odkaz z banky je neplatný nebo už byl použitý. Začněte napojení znovu.",
         "paypal_credentials_invalid": "PayPal odmítl Client ID nebo Secret. Zkontrolujte je a zda nepatří do sandboxu.",
         "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin).",
-        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení."
+        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení.",
+        "plan_required": "Tahle funkce patří do placeného tarifu. Vyberte si ho v sekci Tarif a platby.",
+        "history_locked": "Fio vydá pohyby starší než 90 dní jen po silném ověření v internetovém bankovnictví. Příště začneme stahovat od posledních 89 dní."
       },
       "psd2": {
         "hint": "Billanta stahuje nové příchozí platby přímo z banky nebo z PayPalu a sama je páruje s fakturami podle variabilního symbolu a částky. Fio připojíte API tokenem, PayPal údaji své REST aplikace, ostatní banky přes PSD2: přihlásíte se u své banky a udělíte souhlas jen ke čtení účtu (nejvýše na 180 dní, u mnoha bank 90). Banky dovolují jen pár automatických čtení denně, proto se PSD2 účty stahují zhruba každých 6 hodin. Odchozí platby se nestahují a zaplatit přes napojení nejde nic.",
@@ -1032,7 +1063,8 @@
           "title": "PayPal",
           "text": "Přes Client ID a Secret vaší REST aplikace. K faktuře se zapíše i poplatek."
         }
-      }
+      },
+      "syncPending": "Fio jsme připravili. Platby stáhneme při další synchronizaci, zkuste to za 30 sekund."
     },
     "fee": "poplatek {amount}"
   },
@@ -1105,7 +1137,11 @@
       },
       "internalNote": "Interní poznámka",
       "internalNoteHint": "Jen pro vás: nikdy se netiskne na doklady ani neposílá odběrateli. Ukáže se v detailu kontaktu a při vystavování faktury tomuto odběrateli a je i v CSV exportu.",
-      "internalNotePlaceholder": "Např. platí vždy pozdě, fakturovat na paní Novou, sleva 5 %…"
+      "internalNotePlaceholder": "Např. platí vždy pozdě, fakturovat na paní Novou, sleva 5 %…",
+      "fromRegistry": "Načíst z registru",
+      "phone": "Telefon",
+      "vatSuggestYes": "Registr ho vede jako plátce DPH. Nastavit „Ano“?",
+      "vatSuggestNo": "Registr ho jako plátce DPH nevede. Nastavit „Ne“?"
     },
     "detail": {
       "title": "Detail kontaktu",
@@ -1314,7 +1350,8 @@
         "docs": "Dokumentace API (Swagger)"
       },
       "readOnlyBadge": "Jen čtení",
-      "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením."
+      "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením.",
+      "planRequired": "Tahle funkce patří do vyššího tarifu. Vyberte si ho v sekci Tarif a platby."
     },
     "backup": {
       "title": "Zálohování dat",
@@ -1565,6 +1602,10 @@
         "security": {
           "title": "Zabezpečení",
           "description": "Dvoufázové ověření a záložní kódy"
+        },
+        "emailNotifications": {
+          "title": "E-mailová upozornění",
+          "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc."
         }
       }
     },
@@ -1662,7 +1703,13 @@
         "identifiedHint": "Nejste plátce, ale DPH odvádíte z reklam a služeb nakoupených v zahraničí.",
         "non_payer": "Neplátce DPH",
         "non_payerHint": "Fakturujete bez DPH a přiznání k DPH nepodáváte.",
-        "dicHint": "Máte DIČ, ale nejste plátce? Pokud nakupujete reklamy nebo služby ze zahraničí (Google, Meta), jste nejspíš identifikovaná osoba. ARES to neukazuje, ověřte to v daňové informační schránce."
+        "dicHint": "Máte DIČ, ale nejste plátce? Pokud nakupujete reklamy nebo služby ze zahraničí (Google, Meta), jste nejspíš identifikovaná osoba. ARES to neukazuje, ověřte to v daňové informační schránce.",
+        "suggest": {
+          "payer": "{source} vás vede jako plátce DPH.",
+          "non_payer": "{source} vás jako plátce DPH nevede.",
+          "registry": "Registr plátců DPH",
+          "apply": "Nastavit: {status}"
+        }
       },
       "advances": {
         "title": "Měsíční zálohy",
@@ -1688,7 +1735,27 @@
           "month": "U každého řádku vyplňte měsíc, od kterého platí.",
           "duplicate": "Dva řádky mají stejný měsíc. Spojte je do jednoho.",
           "amount": "Zálohy musí být čísla od 0 do 10 000 000."
-        }
+        },
+        "flatTaxLabel": {
+          "flat": "Paušální daň",
+          "advance": "Záloha na daň",
+          "unknown": "Paušální daň / záloha"
+        },
+        "regime": {
+          "flatTax": "Jste v paušálním režimu?",
+          "flatTaxHint": "V paušálním režimu platíte jednu měsíční platbu, která zahrnuje daň, sociální i zdravotní pojištění. Zálohy na pojištění zvlášť neplatíte.",
+          "activity": "Hlavní, nebo vedlejší činnost?",
+          "activityHint": "Vedlejší činnost máte, když vedle podnikání třeba chodíte do zaměstnání, studujete nebo pobíráte důchod či rodičovský příspěvek. Pak je minimální záloha na sociální pojištění nižší a minimální záloha na zdravotní pojištění žádná.",
+          "yes": "Ano",
+          "no": "Ne",
+          "main": "Hlavní",
+          "secondary": "Vedlejší"
+        },
+        "minimumAsk": {
+          "flatTax": "Pro zákonné minimum potřebujeme vědět, jestli jste v paušálním režimu:",
+          "activity": "Pro zákonné minimum potřebujeme vědět, jestli je podnikání vaše hlavní, nebo vedlejší činnost:"
+        },
+        "useMinimumHint": "Vyplní do řádku zákonné minimum. Ostatní prázdná pole nastaví na 0."
       },
       "street": "Ulice a číslo",
       "city": "Město",
@@ -1760,7 +1827,13 @@
       "ibanHint": "Stačí vyplnit číslo účtu a kód banky – IBAN je potřeba hlavně pro platby ze zahraničí.",
       "defaultDueDaysHint": "Kolik dní po vystavení je nová faktura splatná. Běžně 14.",
       "defaultsMoved": "Výchozí hodnoty faktur najdete v",
-      "defaultsLink": "Nastavení › Faktury"
+      "defaultsLink": "Nastavení › Faktury",
+      "registrySearch": "Najít v registru",
+      "registrySearchPlaceholder": "Název firmy, jméno OSVČ, IČO nebo město",
+      "loadRegistry": "Načíst z registru",
+      "dicKeepHint": "DIČ nechte vyplněné i jako neplátce nebo identifikovaná osoba. Na dokladech se pak uvádí.",
+      "dataBoxId": "ID datové schránky",
+      "dataBoxIdHint": "Sedm znaků, např. ab12cd3. Není tajné. Předvyplní se do ročního přehledu pro ČSSZ."
     },
     "team": {
       "title": "Tým",
@@ -1839,7 +1912,18 @@
       "editPermissions": "Upravit oprávnění",
       "editPermissionsFor": "Oprávnění – {name}",
       "permissionsHint": "Úpravy zahrnují i čtení. Tým, údaje firmy a předplatné spravují jen administrátoři.",
-      "save": "Uložit"
+      "save": "Uložit",
+      "directory": {
+        "toggle": "Nemáte účetní? Vyberte z ověřených",
+        "hint": "Účetní z našeho adresáře, které jsme prošli a schválili. Pozvat jen vyplní e-mail, pozvánku odešlete sami.",
+        "region": "Kraj",
+        "anyRegion": "Všechny kraje",
+        "invite": "Pozvat",
+        "contact": "Kontaktovat",
+        "empty": "V tomto kraji zatím nikoho nemáme.",
+        "all": "Celý adresář účetních",
+        "picked": "E-mail {email} je vyplněný. Zkontrolujte roli a pošlete pozvánku."
+      }
     },
     "exports": {
       "title": "Exporty pro účetní",
@@ -1925,25 +2009,18 @@
           "disclaimer": "Soubor před podáním zkontrolujte v eDane a doplňte daňový úřad. Plnění do EU se vykazují jako služby (kód 2); dodání zboží do EU (ř. 14) a vývoz (ř. 15) přesuňte ručně. Přijaté doklady bez IČ DPH dodavatele spadají do B.3.1.",
           "formVersions": "Export vytváří XML ve verzích DPHv25, KVDPHv25 a SVDPHv20.",
           "officialLink": "Aktuální informace na webu Finanční správy SR"
+        },
+        "warnings": {
+          "reverse_charge_code_missing": "Doklady bez kódu předmětu plnění: {documents}. Doplňte kód na dokladu a stáhněte soubor znovu, jinak ho EPO odmítne.",
+          "reverse_charge_dic_missing": "Doklady v přenesené daňové povinnosti bez DIČ odběratele, v oddílu A.1 chybí: {documents}.",
+          "received_reverse_charge_code_missing": "Přijaté doklady v přenesené daňové povinnosti bez kódu předmětu plnění: {documents}. Doplňte kód u nákladu a stáhněte soubor znovu, jinak ho EPO odmítne.",
+          "received_reverse_charge_dic_missing": "Přijaté doklady v přenesené daňové povinnosti bez DIČ dodavatele, v oddílu B.1 chybí: {documents}.",
+          "received_reverse_charge_number_missing": "Přijaté doklady v přenesené daňové povinnosti bez čísla dokladu (podle data), v oddílu B.1 chybí: {documents}."
         }
       },
       "annual": {
         "title": "Roční odhad daně a pojištění (OSVČ)",
         "hint": "Spočítá daň z příjmů, sociální a zdravotní pojištění a nové zálohy z uhrazených faktur a výdajů za rok. Hodí se k přiznání a přehledům pro ČSSZ a pojišťovnu.",
-        "year": "Rok",
-        "expenses": "Výdaje",
-        "expensesHint": "Paušální výdaje: 60 % většina živností, 80 % řemesla a zemědělství, 40 % svobodná povolání, 30 % pronájem majetku. Nebo skutečné výdaje z evidence.",
-        "modes": {
-          "30": "Paušál 30 % (pronájem)",
-          "40": "Paušál 40 % (svobodná povolání)",
-          "60": "Paušál 60 % (živnosti)",
-          "80": "Paušál 80 % (řemesla)",
-          "actual": "Skutečné výdaje"
-        },
-        "paidSocial": "Zaplacené zálohy – sociální",
-        "paidHealth": "Zaplacené zálohy – zdravotní",
-        "paidHint": "Předvyplní se z měsíčních záloh ve Fakturačních údajích (každý měsíc roku s výší, která tehdy platila). Částku můžete přepsat, ukáže se doplatek nebo přeplatek.",
-        "income": "Příjmy",
         "incomeHint": "Součet faktur uhrazených v daném roce (počet: {invoices}), dobropisy se odečítají.",
         "incomeHintVat": "Součet faktur uhrazených v daném roce bez DPH (počet: {invoices}), dobropisy se odečítají.",
         "actualExpenses": "Skutečné výdaje",
@@ -1965,8 +2042,12 @@
         "downloadCsv": "Stáhnout CSV",
         "epoLink": "Formuláře EPO (Finanční správa)",
         "failed": "Odhad se nepodařilo spočítat.",
-        "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
-        "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat."
+        "disclaimer": "Orientační odhad pro hlavní činnost. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
+        "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat.",
+        "uniformRate": "Cizí měny jsou přepočtené jednotným kurzem za rok {year} (průměr kurzů ČNB ke konci měsíců). Změníte to v Nastavení → Formulář faktury.",
+        "titleSk": "Roční odhad daně a pojištění (SZČO, Slovensko)",
+        "hintSk": "Spočítá slovenskou daň z příjmů, zdravotní a sociální pojištění z uhrazených faktur a výdajů za rok, v eurech.",
+        "modes": {}
       },
       "epo": {
         "title": "Jak podat přiznání, kontrolní a souhrnné hlášení",
@@ -2030,6 +2111,109 @@
             "Nejste si jistí? Pozvěte účetní do týmu (Nastavení → Tým). Uvidí exporty a může je podat za vás."
           ]
         }
+      },
+      "filings": {
+        "title": "Roční podání za {year}",
+        "hint": "Daňové přiznání, přehled pro ČSSZ a hodnoty pro zdravotní pojišťovnu, předvyplněné z faktur a výdajů roku. Soubory si stáhnete, zkontrolujete a podáte sami.",
+        "year": "Rok",
+        "expenses": "Výdaje",
+        "basis": "Evidence",
+        "basisHint": "Daňová evidence počítá příjmy podle úhrady faktur. Účetnictví podle data uskutečnění plnění (DUZP).",
+        "basisCash": "Daňová evidence (podle úhrad)",
+        "basisAccrual": "Účetnictví (podle DUZP)",
+        "activity": "Činnost",
+        "activityHint": "Vedlejší činnost je například podnikání při zaměstnání nebo na mateřské. Pojištění vzniká až nad rozhodnou částkou.",
+        "activityMain": "Hlavní",
+        "activitySecondary": "Vedlejší",
+        "fromMonth": "Podnikání od měsíce",
+        "taxAdvances": "Zaplacené zálohy na daň (Kč)",
+        "taxAdvancesHint": "Zálohy na daň z příjmů zaplacené za tento rok. Většina OSVČ v prvních letech žádné neplatí.",
+        "spouse": "Uplatnit slevu na manžela nebo manželku",
+        "spouseHint": "Jen když manžel nebo manželka měli za rok vlastní příjmy do 68 000 Kč a žijete ve společné domácnosti.",
+        "failed": "Údaje pro roční podání se nepodařilo načíst.",
+        "rowNo": "ř. {n}",
+        "dpfoTitle": "Daňové přiznání (DPFO)",
+        "dpfo": {
+          "r101": "Příjmy z podnikání (§ 7)",
+          "r102": "Výdaje (paušál {rate} % nebo skutečné)",
+          "r113": "Dílčí základ daně z podnikání",
+          "r61": "Daňová ztráta",
+          "r56": "Základ daně zaokrouhlený",
+          "r57": "Daň 15 % / 23 %",
+          "r64": "Sleva na poplatníka",
+          "r65a": "Sleva na manžela nebo manželku",
+          "r71": "Daň po slevách",
+          "r84": "Zaplacené zálohy",
+          "r91": "Zbývá doplatit (minus je přeplatek)"
+        },
+        "csszTitle": "Přehled pro ČSSZ",
+        "cssz": {
+          "r24": "Zisk (příjmy minus výdaje)",
+          "r25": "Vyměřovací základ ze zisku",
+          "r27": "Minimální vyměřovací základ",
+          "r28": "Vyměřovací základ",
+          "r32": "Pojistné",
+          "r33": "Zaplacené zálohy",
+          "r34": "Nedoplatek (minus je přeplatek)",
+          "r35": "Nový měsíční vyměřovací základ",
+          "r36": "Nová měsíční záloha"
+        },
+        "csszNotInsured": "Zisk z vedlejší činnosti nepřesáhl rozhodnou částku, takže důchodové pojištění nevzniklo. Přehled ČSSZ i tak podáváte, s nulovým pojistným.",
+        "nextUnknown": "Minimální zálohu na další rok ještě neznáme. Novou zálohu ověřte v ePortálu ČSSZ.",
+        "healthTitle": "Přehled pro zdravotní pojišťovnu",
+        "health": {
+          "profit": "Zisk",
+          "baseFromProfit": "Polovina zisku",
+          "minBase": "Minimální vyměřovací základ",
+          "base": "Vyměřovací základ",
+          "premium": "Pojistné 13,5 %",
+          "paid": "Zaplacené zálohy",
+          "balance": "Nedoplatek (minus je přeplatek)",
+          "nextAdvance": "Nová měsíční záloha"
+        },
+        "insurer": "Vaše pojišťovna",
+        "healthHowTo": "Od roku 2026 se přehled pro zdravotní pojišťovnu podává jen elektronicky: na portálu pojišťovny (například Moje VZP) nebo datovou schránkou. Jednotný XML formát pojišťovny nemají a VZP datovou schránkou přijímá PDF, proto soubor nevytváříme. Hodnoty vlevo opište do formuláře své pojišťovny.",
+        "missingRates": "{count, plural, one {# cizoměnový doklad nemá} few {# cizoměnové doklady nemají} other {# cizoměnových dokladů nemá}} kurz ČNB, v součtech chybí.",
+        "personTitle": "Osobní údaje do souborů",
+        "personHint": "Doplní se jen do staženého XML. Neukládáme je a do adresy stránky se nedostanou.",
+        "person": {
+          "birthNumber": "Rodné číslo",
+          "birthNumberHint": "Patří do přiznání i do přehledu ČSSZ.",
+          "taxOffice": "Kód finančního úřadu",
+          "taxOfficeHint": "Třímístný kód z EPO, například 451 pro Hlavní město Prahu.",
+          "taxWorkplace": "Kód územního pracoviště",
+          "ossz": "Kód OSSZ",
+          "osszHint": "Třímístný kód vaší okresní správy sociálního zabezpečení.",
+          "variableSymbol": "Variabilní symbol ČSSZ",
+          "variableSymbolHint": "Najdete ho v ePortálu ČSSZ nebo na dřívějších platbách záloh.",
+          "dataBox": "ID datové schránky",
+          "prefilled": "Kódy úřadů a datovou schránku jsme předvyplnili z adresy a údajů ve Fakturačních údajích. Zkontrolujte je, můžete je přepsat.",
+          "remember": "Zapamatovat v tomto prohlížeči",
+          "rememberHint": "Rodné číslo a variabilní symbol se uloží jen v tomto prohlížeči, na náš server se neposílají. Zrušením zaškrtnutí je smažete."
+        },
+        "downloadDpfdp": "Stáhnout přiznání ({form}, XML)",
+        "dpfdpMissing": "Formulář přiznání za {year} vydá Finanční správa obvykle v lednu {next}.",
+        "downloadCssz": "Stáhnout přehled ČSSZ (XML)",
+        "csszMissing": "Tiskopis přehledu za {year} vydává ČSSZ obvykle začátkem roku {next}.",
+        "print": "Vytisknout souhrn",
+        "epoLink": "EPO Finanční správy",
+        "epoHow": "soubor načtete přes „Načíst soubor“, zkontrolujete a odešlete.",
+        "csszLink": "ePortál ČSSZ",
+        "csszHow": "přehled nahrajete jako XML, nebo ho pošlete datovou schránkou.",
+        "errors": {
+          "form_not_published": "Formulář pro tento rok úřad ještě nezveřejnil.",
+          "year_not_supported": "Pro tento rok zatím nemáme parametry.",
+          "invalid_filings_query": "Zkontrolujte vyplněné údaje, něco nemá správný tvar.",
+          "generic": "Soubor se nepodařilo vytvořit."
+        },
+        "disclaimer": "Předvyplněno z dokladů v aplikaci podle běžného případu OSVČ (jen příjmy z podnikání, základní slevy). Nejde o daňové poradenství. Před podáním vše zkontrolujte, podáváte sami přes EPO, ePortál ČSSZ, portál pojišťovny nebo datovou schránku.",
+        "modes": {
+          "30": "Paušál 30 % (pronájem)",
+          "40": "Paušál 40 % (svobodná povolání)",
+          "60": "Paušál 60 % (živnosti)",
+          "80": "Paušál 80 % (řemesla)",
+          "actual": "Skutečné výdaje"
+        }
       }
     },
     "invoices": {
@@ -2041,27 +2225,41 @@
       "fieldsHint": "Zaškrtnutá pole jsou ve formuláři vždy vidět. Pole, které už má na dokladu hodnotu, se zobrazí vždy.",
       "rate": {
         "title": "Kurz u faktur v cizí měně",
-        "hint": "Jak se částka v cizí měně přepočítá na koruny. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
+        "hint": "Jak se částky v cizí měně přepočítají na koruny, zvlášť na faktuře a zvlášť ve vašich přehledech. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
+        "invoiceTitle": "Na faktuře",
         "modes": {
           "cnb_daily": "Denní kurz ČNB",
-          "annual": "Jednotný kurz na rok",
           "none": "Přepočet na {home} netisknout",
           "ecb_daily": "Denní kurz ECB"
         },
-        "cnbDailyHint": "Kurz ČNB ze dne uskutečnění plnění (DUZP). Když ČNB ten den kurz nevyhlásila, použije se poslední předchozí.",
-        "annualHint": "Jeden kurz pro celý rok podle § 38 zákona o DPH. Zadáte ho níže pro každý rok a měnu. Pro rok bez zadaného kurzu se použije denní kurz ČNB.",
+        "cnbDailyHint": "Kurz ČNB platný ke dni uskutečnění zdanitelného plnění (DUZP), jak to pro DPH žádá § 38 zákona o DPH. Když ČNB ten den kurz nevyhlásila, použije se poslední předchozí. Doklad s DPH má vždy tento kurz.",
         "noneHint": "Na dokladu nebude přepočet na koruny. Kurz ČNB se i tak uloží pro vaše přehledy.",
         "noneIdentified": "Platí jen pro doklady bez DPH. Když doklad DPH obsahuje, přepočet se vytiskne.",
         "nonePayer": "Plátce DPH musí mít na dokladu přepočet na koruny, proto tuhle volbu použít nejde. Faktury se vystaví s kurzem ČNB.",
-        "annualTitle": "Jednotné kurzy",
-        "annualEmpty": "Zatím žádný kurz. Přidejte rok a měnu.",
+        "reportTitle": "V přehledech a odhadu daně z příjmů",
+        "reportModes": {
+          "daily": "Denní kurz z dokladu",
+          "annual": "Jednotný kurz za rok"
+        },
+        "reportDailyHint": "Každý doklad se přepočte kurzem, který je na něm uložený.",
+        "annualHint": "Jednotný kurz podle § 38 odst. 1 zákona o daních z příjmů. Spočítáme ho sami jako průměr kurzů ČNB k poslednímu dni každého měsíce, stejně jako ho po konci roku vyhlašuje GFŘ.",
+        "invoiceStaysDaily": "Na fakturách se i tak tiskne denní kurz ČNB, protože ho pro DPH vyžaduje zákon, a jednotný kurz se použije jen ve vašich přehledech.",
+        "computedTitle": "Spočítané jednotné kurzy",
+        "computedError": "Kurzy ČNB se teď nepodařilo načíst. Přehledy použijí váš vlastní kurz, jinak kurz z dokladu.",
+        "computedEmpty": "Zatím neskončil žádný měsíc, ze kterého by šel kurz spočítat.",
+        "final": "konečný",
+        "running": "průběžný, zatím {n, plural, one {# měsíc} few {# měsíce} other {# měsíců}}",
+        "computedValue": "Spočítaný kurz: {rate} ({status})",
+        "annualTitle": "Vlastní kurz pro rok",
+        "annualEmpty": "Nemusíte nic zadávat. Vlastní kurz přidejte, jen když chcete jiný než spočítaný, třeba přesně ten z pokynu GFŘ.",
+        "annualOverrideHint": "Váš kurz má pro daný rok a měnu přednost před spočítaným.",
         "year": "Rok",
         "currency": "Měna",
         "rate": "Kurz",
         "perUnit": "CZK za 1 {currency}",
         "remove": "Odebrat kurz",
         "duplicate": "Každý rok a měna smí být v seznamu jen jednou.",
-        "add": "Přidat kurz",
+        "add": "Přidat vlastní kurz",
         "hintEur": "Jak se částka v cizí měně přepočítá na eura. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
         "ecbDailyHint": "Referenční kurz ECB ze dne předcházejícího dni vzniku daňové povinnosti (§ 26 ods. 1 slovenského zákona o DPH). Jednotný roční kurz slovenský zákon nezná.",
         "noneHintEcb": "Na dokladu nebude přepočet na eura. Kurz ECB se i tak uloží pro vaše přehledy.",
@@ -2142,7 +2340,16 @@
       "remindersEnabled": "Posílat upomínky automaticky",
       "remindersRule": "Opakovat každých <interval></interval> dní, nejvýše <max></max>×.",
       "reminderInterval": "Dní mezi upomínkami",
-      "reminderMax": "Nejvýše upomínek"
+      "reminderMax": "Nejvýše upomínek",
+      "links": {
+        "title": "Odkazy pro zákazníky",
+        "hint": "Jak vypadá odkaz na doklad, který zákazník dostane e-mailem. Tajný je jen kód na konci, text před ním je pro přehlednost. Odkaz na klientský portál začíná jménem zákazníka, pokud nezvolíte jen kód. Odkazy, které už jste poslali, fungují dál.",
+        "options": {
+          "number": "Číslo dokladu",
+          "company_number": "Firma a číslo dokladu",
+          "none": "Jen náhodný kód"
+        }
+      }
     },
     "modules": {
       "title": "Moduly a typ podnikání",
@@ -2261,6 +2468,10 @@
         "buyer_details": {
           "label": "Odběratel doplnil údaje",
           "hint": "Odběratel vyplnil fakturační údaje přes odkaz, který jste mu poslali."
+        },
+        "profile_message": {
+          "label": "Zpráva z profilu",
+          "hint": "Návštěvník vám napsal přes formulář Kontaktovat na veřejném profilu."
         }
       },
       "browserTitle": "Oznámení v prohlížeči",
@@ -2542,7 +2753,8 @@
           "invalid_key_format": "Tohle nevypadá jako tajný klíč Stripe (sk_… nebo rk_…). Publikovatelný klíč pk_… nestačí.",
           "invalid_key": "Stripe klíč odmítl. Zkontrolujte, že je platný a má potřebná oprávnění.",
           "not_connected": "Nejdřív připojte Stripe.",
-          "generic": "Uložení se nepovedlo. Zkuste to prosím znovu."
+          "generic": "Uložení se nepovedlo. Zkuste to prosím znovu.",
+          "plan_required": "Tahle funkce patří do vyššího tarifu. Vyberte si ho v sekci Tarif a platby."
         }
       }
     },
@@ -2603,10 +2815,24 @@
       "saved": "Profil uložen",
       "savedLive": "Profil je zveřejněn",
       "saveFailed": "Uložení se nepodařilo",
-      "accountantList": "Zobrazit mě v seznamu účetních na stránkách obcí",
-      "accountantListHint": "Profil se objeví na stránce Billanty pro vaše město (podle adresy firmy) a v okolních obcích. Vyžaduje zveřejněný profil a viditelnou adresu.",
-      "accountantListLocked": "Jste účetní? Po přepnutí do partnerského programu pro účetní se můžete zobrazit v seznamu účetních u svého města.",
-      "accountantListLockedLink": "Program pro účetní"
+      "serviceUnitPrice": "Cena za jednotku",
+      "serviceUnitPriceHint": "Číslo bez DPH, které se dá do objednávky. Bez něj doplníte cenu sami.",
+      "serviceUnit": "Jednotka (ks, hod)",
+      "copyOrderLink": "Kopírovat odkaz na objednávku",
+      "copyOrderLinkSaveFirst": "Odkaz bude k dispozici po uložení a zveřejnění profilu.",
+      "orders": {
+        "title": "Objednávky a zprávy",
+        "enabled": "Přijímat objednávky z profilu",
+        "enabledHint": "U každé služby bude tlačítko Objednat. Objednávka se vám uloží jako koncept faktury ke kontrole, nic se samo nevystaví ani neodešle.",
+        "customItems": "Povolit vlastní položky",
+        "customItemsHint": "Zákazník může připsat, co dalšího chce. Tyto položky přijdou bez ceny a doplníte ji sami.",
+        "prepay": "Platba předem",
+        "prepayHint": "Po odeslání objednávky uvidí zákazník číslo účtu, částku, variabilní symbol a QR kód. Platí jen pro služby s cenou za jednotku. Fakturu vystavíte ručně.",
+        "prepayNoAccount": "Pro platbu předem doplňte bankovní účet firmy.",
+        "contactForm": "Formulář Kontaktovat",
+        "contactFormHint": "Návštěvník vám napíše zprávu přímo z profilu. Přijde vám do upozornění v aplikaci, zákazníkovi nic neposíláme.",
+        "linksHint": "Odkaz na objednávku konkrétní služby zkopírujete ikonou řetězu u služby. Hodí se do e-mailu nebo na sociální sítě."
+      }
     },
     "import": {
       "title": "Přechod z jiného systému",
@@ -2621,9 +2847,9 @@
         "fakturoid": {
           "name": "Fakturoid",
           "steps": [
-            "V seznamu faktur zvolte období (klidně celou historii) a stáhněte export do CSV.",
-            "Stejně vyexportujte kontakty v sekci Kontakty.",
-            "Oba soubory nahrajte níže, nejdřív kontakty."
+            "Nejrychlejší je přímé propojení: ve Fakturoidu otevřete nastavení svého uživatelského účtu a v části API v3 zkopírujte Client ID a Client secret.",
+            "Vyplňte je níže v kroku 3. Načteme faktury, zálohové faktury, opravné doklady, celý adresář, kurzy, platby i původní PDF. Krok 2 s kontakty pak můžete přeskočit.",
+            "Bez propojení vyexportujte v seznamu faktur i kontaktů CSV a nahrajte oba soubory níže, nejdřív kontakty."
           ]
         },
         "idoklad": {
@@ -2719,7 +2945,38 @@
           "privacy": "Z BitFaktury jen čteme, nic v ní neměníme."
         },
         "pdfs": "Původní PDF z BitFaktury: {archived} uloženo jako archivní příloha (zákazníkům se neposílá).",
-        "pdfsMissing": "{missing} se stáhnout nepodařilo."
+        "pdfsMissing": "{missing} se stáhnout nepodařilo.",
+        "sellers": {
+          "title": "Faktury obsahují {count, plural, one {# dodavatele} few {# různé dodavatele} other {# různých dodavatelů}}",
+          "lead": "Účet v BitFaktuře používá víc firem. Vyberte, čí faktury sem patří. Novou firmu podle toho nezakládáme.",
+          "choose": "Importovat faktury dodavatele",
+          "all": "Všech dodavatelů",
+          "row": "{name} (IČO {ico}): {count, plural, one {# faktura} few {# faktury} other {# faktur}}"
+        },
+        "sellerUpdate": {
+          "title": "Nejnovější faktura ({number}, {date}) má jiné údaje dodavatele než vaše Fakturační údaje.",
+          "fields": {
+            "name": "Název",
+            "dic": "DIČ",
+            "address": "Sídlo"
+          },
+          "empty": "nevyplněno",
+          "apply": "Použít údaje z nejnovější faktury",
+          "applied": "Fakturační údaje jsou aktualizované.",
+          "failed": "Údaje se nepodařilo uložit."
+        },
+        "fakturoid": {
+          "lead": "Načtení přímo z Fakturoidu přes API: faktury, kontakty i původní PDF. Údaje se použijí jen pro tento import a neukládáme je. Pokud chcete, vygenerujte si ve Fakturoidu potom nový Client secret.",
+          "clientId": "Client ID",
+          "clientSecret": "Client secret",
+          "account": "Účet (nepovinné)",
+          "accountPlaceholder": "mojefirma",
+          "accountHint": "Vyplňte jen tehdy, když máte ve Fakturoidu víc účtů. Stačí vložit adresu z prohlížeče.",
+          "privacy": "Z Fakturoidu jen čteme, nic v něm neměníme.",
+          "source": "Z Fakturoidu jsme načetli {invoices, plural, one {# doklad} few {# doklady} other {# dokladů}} a {contacts, plural, one {# kontakt} few {# kontakty} other {# kontaktů}}.",
+          "pdfs": "Původní PDF z Fakturoidu: {archived} uloženo jako archivní příloha (zákazníkům se neposílá).",
+          "sellersLead": "Faktury ve Fakturoidu mají víc různých dodavatelů. Vyberte, čí faktury sem patří. Novou firmu podle toho nezakládáme."
+        }
       },
       "status": {
         "issued": "Neuhrazená",
@@ -2737,7 +2994,8 @@
           "duplicate_in_file": "číslo už je v souboru výš.",
           "already_exists": "fakturu s tímto číslem už máte.",
           "unsupported_kind": "tento typ dokladu neumíme importovat.",
-          "unsupported_discount": "faktura má slevu na položce, tu zatím neimportujeme."
+          "unsupported_discount": "faktura má slevu na položce, tu zatím neimportujeme.",
+          "other_seller": "fakturu vystavil jiný dodavatel (IČO), než jste vybrali."
         }
       },
       "errors": {
@@ -2748,7 +3006,11 @@
         "failed": "Import se nepodařil, zkuste to znovu.",
         "bitfaktura_account": "Účet v BitFaktuře jsme nenašli. Zadejte adresu ve tvaru firma.bitfaktura.cz.",
         "bitfaktura_unauthorized": "BitFaktura kód nepřijala. Zkontrolujte Autorizační kód API v Nastavení → Integrace.",
-        "bitfaktura_unreachable": "BitFaktura teď neodpovídá, zkuste to za chvíli."
+        "bitfaktura_unreachable": "BitFaktura teď neodpovídá, zkuste to za chvíli.",
+        "fakturoid_unauthorized": "Fakturoid údaje nepřijal. Zkontrolujte Client ID a Client secret v nastavení uživatelského účtu.",
+        "fakturoid_account": "Ten účet ve Fakturoidu nevidíme. Zadejte ho tak, jak je v adrese app.fakturoid.cz/mojefirma, nebo pole nechte prázdné.",
+        "fakturoid_blocked": "Účet ve Fakturoidu je zablokovaný nebo nemá zaplacený tarif, proto data přes API nevydá.",
+        "fakturoid_unreachable": "Fakturoid teď neodpovídá, zkuste to za chvíli."
       }
     },
     "companies": {
@@ -2864,11 +3126,194 @@
         "not_enabled": "Dvoufázové ověření není zapnuté.",
         "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
       }
+    },
+    "emailNotifications": {
+      "title": "E-mailová upozornění",
+      "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc.",
+      "loadError": "Nastavení e-mailů se nepodařilo načíst.",
+      "saved": "Uloženo",
+      "saveFailed": "Uložení se nepovedlo",
+      "otherChannels": "Upozornění ve zvonečku a v prohlížeči nastavíte v <link>Notifikacích</link>.",
+      "locked": "Vždy",
+      "lockedHint": "Tento e-mail nejde vypnout – je potřeba pro účet nebo pro vaše zákazníky.",
+      "groups": {
+        "activity": {
+          "title": "Dění ve firmě",
+          "hint": "Platby, otevřené faktury, návrhy ke kontrole a další. Když jich přijde víc najednou, pošleme je v jednom e-mailu."
+        },
+        "digest": {
+          "title": "Týdenní přehled",
+          "hint": "V pondělí v 8:00: neuhrazené faktury, platby za minulý týden a blížící se daňové termíny. Ve výchozím stavu je vypnutý."
+        },
+        "account": {
+          "title": "Účet a zabezpečení",
+          "hint": "Bezpečnostní upozornění, pozvánky do týmu, obnova hesla a změna e-mailu. Chodí vždy."
+        },
+        "customers": {
+          "title": "E-maily vašim zákazníkům",
+          "hint": "Faktury, upomínky a žádosti o údaje, které posíláte odběratelům. Jejich znění upravíte v Nastavení → E-maily."
+        }
+      },
+      "types": {
+        "weekly_digest": {
+          "label": "Týdenní přehled e-mailem",
+          "hint": "Souhrn každé pondělí ráno. Když není co hlásit, nepřijde."
+        },
+        "security_alert": {
+          "label": "Bezpečnostní upozornění",
+          "hint": "Změna bankovního účtu firmy. Chodí všem členům, aby si nikdo nemohl nenápadně podstrčit jiné číslo účtu."
+        },
+        "billing_notice": {
+          "label": "Předplatné a zkušební verze",
+          "hint": "Konec zkušební verze, zaplacený tarif. Chodí vlastníkům a správcům firmy."
+        },
+        "team_invitation": {
+          "label": "Pozvánky do týmu",
+          "hint": "Když vás někdo pozve do své firmy."
+        },
+        "password_reset": {
+          "label": "Obnova hesla",
+          "hint": "Odkaz na nastavení nového hesla, když o něj požádáte."
+        },
+        "email_change": {
+          "label": "Změna e-mailu",
+          "hint": "Potvrzení nové e-mailové adresy."
+        },
+        "invoice": {
+          "label": "Faktura odběrateli",
+          "hint": "Faktura s PDF, kterou odešlete odběrateli."
+        },
+        "reminder": {
+          "label": "Upomínka odběrateli",
+          "hint": "Ruční i automatické upomínky neuhrazených faktur."
+        },
+        "buyer_details_request": {
+          "label": "Žádost o doplnění údajů",
+          "hint": "Odkaz, přes který si odběratel sám doplní fakturační údaje."
+        }
+      },
+      "quiet": {
+        "title": "Tichý režim",
+        "hint": "Upozornění, která přijdou v noci, počkají do rána a přijdou v jednom e-mailu. Bezpečnostní e-maily a e-maily zákazníkům odcházejí hned.",
+        "toggle": "V noci nic neposílat",
+        "from": "Od",
+        "to": "Do",
+        "timeZone": "Časové pásmo",
+        "note": "Výchozí je 21:00–7:00 podle pražského času.",
+        "save": "Uložit tichý režim"
+      },
+      "errors": {
+        "invalid_time_zone": "Neznámé časové pásmo."
+      }
     }
   },
   "billing": {
-    "title": "Předplatné",
-    "comingSoon": "Správa předplatného bude brzy k dispozici."
+    "title": "Tarif a platby",
+    "description": "Jaký tarif firma má, kolik zbývá ze zkušební verze a jak za tarif platíte.",
+    "loadError": "Údaje o tarifu se nepodařilo načíst. Zkuste stránku obnovit.",
+    "checkoutSuccess": "Děkujeme, platba proběhla. Tarif se zapne během pár vteřin.",
+    "checkoutCanceled": "Platbu jste nedokončili. Nic jsme nestrhli.",
+    "planNames": {
+      "free": "Zdarma",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Firma"
+    },
+    "trialBanner": {
+      "active": "Zkoušíte tarif {plan} zdarma, {days, plural, one {zbývá # den} few {zbývají # dny} other {zbývá # dní}}.",
+      "ended": "Zkušební verze tarifu {plan} skončila. Data zůstala, placené funkce jsou jen pro čtení.",
+      "choose": "Vybrat tarif",
+      "upgrade": "Přejít na placený tarif"
+    },
+    "current": {
+      "label": "Současný tarif",
+      "trial": "Zkušební verze zdarma, {days, plural, one {zbývá # den} few {zbývají # dny} other {zbývá # dní}} (do {date}). Bez karty, nic se samo nestrhne.",
+      "trialEnded": "Zkušební verze tarifu {plan} skončila. Firma běží na tarifu Zdarma, nic se nesmazalo a funkce nad jeho rámec jsou jen pro čtení.",
+      "prepaid": "Zaplaceno do {date}.",
+      "subscriptionMonth": "Předplatné s měsíční platbou.",
+      "subscriptionYear": "Předplatné s roční platbou.",
+      "free": "Tarif Zdarma. Na vyšší přejdete, až ho budete potřebovat.",
+      "pastDue": "Poslední platba neprošla. Stripe ji zkusí znovu, mezitím si v portálu můžete změnit platební metodu."
+    },
+    "portal": "Spravovat předplatné",
+    "choose": {
+      "title": "Vyberte tarif",
+      "yearly": "Ročně",
+      "monthly": "Měsíčně",
+      "perMonth": "/ měsíc",
+      "billedYearly": "{total} za rok",
+      "billedMonthly": "platba každý měsíc",
+      "payCard": "Zaplatit kartou",
+      "renewCard": "Prodloužit kartou",
+      "cardUnavailable": "Platba kartou zatím není zapnutá.",
+      "cardTitle": "Předplatné kartou – automatické obnovení, levnější",
+      "cardBody": "Kartou, Apple Pay nebo Google Pay. Obnovuje se samo a zrušíte ho tady jedním kliknutím.",
+      "transferTitle": "Převodem – bez automatického obnovení",
+      "transferBody": "Zálohová faktura s QR kódem na měsíc nebo rok dopředu, o {percent} % dráž. Před koncem období pošleme připomínku.",
+      "transferPrice": "Převodem {price} / měsíc ({total})"
+    },
+    "terms": {
+      "renewYearly": "Předplatné se obnovuje automaticky každý rok za stejnou cenu, dokud ho nezrušíte.",
+      "renewMonthly": "Předplatné se obnovuje automaticky každý měsíc za stejnou cenu, dokud ho nezrušíte.",
+      "cancel": "Zrušit ho můžete kdykoli jedním krokem tady na stránce. Tarif pak poběží do konce zaplaceného období.",
+      "methods": "Platit můžete kartou, Apple Pay, Google Pay nebo jinou metodou, kterou vám platební brána nabídne.",
+      "transfer": "Převodem platíte rok dopředu, o {percent} % dráž než kartou. Nic se samo neobnovuje: 14 a 3 dny před koncem vám pošleme e-mail s novou zálohovou fakturou a QR kódem. Tarif zapneme, jakmile platba dorazí na účet.",
+      "transferMonthly": "Převodem platíte měsíc dopředu, o {percent} % dráž než kartou. Nic se samo neobnovuje: 14 a 3 dny před koncem vám pošleme e-mail s novou zálohovou fakturou a QR kódem.",
+      "transferCzkOnly": "Převodem jde platit jen v korunách.",
+      "vat": "Ceny jsou bez DPH."
+    },
+    "transfer": {
+      "title": "Platby převodem",
+      "button": "Zaplatit převodem",
+      "created": "Zálohová faktura je připravená. Údaje k platbě najdete níže.",
+      "months": "{n, plural, one {# měsíc} few {# měsíce} other {# měsíců}}",
+      "status": {
+        "pending": "Čeká na platbu",
+        "paid": "Zaplaceno",
+        "canceled": "Zrušeno"
+      },
+      "qrAlt": "QR kód pro platbu",
+      "amount": "Částka",
+      "vat": "z toho DPH {rate} %",
+      "vs": "Variabilní symbol",
+      "account": "Číslo účtu",
+      "due": "Splatnost",
+      "payee": "Příjemce",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "note": "Naskenujte QR kód v bankovní aplikaci, nebo zadejte účet a variabilní symbol ručně. Tarif zapneme, jakmile platbu spárujeme, obvykle do jednoho pracovního dne.",
+      "paidOn": "Platba přijata {date}."
+    },
+    "errors": {
+      "generic": "Něco se nepovedlo. Zkuste to prosím znovu.",
+      "billing_not_configured": "Platba kartou zatím není zapnutá.",
+      "already_subscribed": "Firma už předplatné má. Spravujete ho nahoře na této stránce.",
+      "no_stripe_customer": "Firma zatím nemá předplatné u Stripe.",
+      "bank_transfer_not_configured": "Platba převodem zatím není zapnutá.",
+      "too_many_pending_proformas": "Máte už tři nezaplacené zálohové faktury. Zaplaťte některou z nich, nebo počkejte, až ji spárujeme.",
+      "forbidden": "Platit může jen vlastník nebo správce firmy.",
+      "no_subscription": "Firma teď nemá běžící předplatné kartou.",
+      "same_interval": "Předplatné už tak platíte.",
+      "subscription_past_due": "Poslední platba neprošla. Nejdřív v portálu předplatného změňte kartu.",
+      "subscription_not_changeable": "Toto předplatné tady změnit nejde. Napište nám a vyřešíme to."
+    },
+    "portalHint": "V portálu Stripe změníte kartu nebo fakturační údaje a stáhnete faktury.",
+    "sub": {
+      "renewsOn": "Další platba a obnovení {date}.",
+      "endsOn": "Předplatné je zrušené a skončí {date}. Do té doby tarif běží dál.",
+      "cancel": "Zrušit předplatné",
+      "cancelConfirm": "Předplatné se už neobnoví. Tarif poběží do {date}, pak firma přejde na tarif Zdarma. Data zůstanou.",
+      "cancelConfirmNoDate": "Předplatné se už neobnoví. Tarif poběží do konce zaplaceného období, pak firma přejde na tarif Zdarma. Data zůstanou.",
+      "cancelYes": "Ano, zrušit",
+      "keep": "Nechat předplatné",
+      "canceled": "Předplatné se už neobnoví. Tarif běží do konce zaplaceného období.",
+      "resume": "Pokračovat v předplatném",
+      "resumed": "Předplatné se bude zase obnovovat.",
+      "switchToYear": "Přejít na roční platbu ({price} / měsíc)",
+      "switchToMonth": "Přejít na měsíční platbu ({price} / měsíc)",
+      "switchNote": "Nové období začne hned. Nevyčerpanou část současného vám odečteme z první platby.",
+      "switched": "Hotovo, předplatné teď platíte {interval, select, year {ročně} other {měsíčně}}."
+    }
   },
   "auth": {
     "signup": {
@@ -2996,7 +3441,8 @@
         {
           "title": "Nejde o daňové, účetní ani právní poradenství",
           "body": [
-            "Billanta je nástroj pro tvorbu dokladů. Nápovědy, výchozí sazby DPH, texty o přenesené daňové povinnosti, předvyplněné formuláře pro EPO a další obsah aplikace mají jen informativní povahu a nejsou daňovým, účetním ani právním poradenstvím."
+            "Billanta je nástroj pro tvorbu dokladů. Nápovědy, výchozí sazby DPH, texty o přenesené daňové povinnosti, předvyplněné formuláře pro EPO a další obsah aplikace mají jen informativní povahu a nejsou daňovým, účetním ani právním poradenstvím.",
+            "Totéž platí pro kalkulačky, návody a odhady daně a pojištění na webu i v aplikaci a pro soubory, které z nich vzniknou. Výsledky jsou orientační a bez záruky, nezohledňují všechny okolnosti uživatele a před použitím je třeba je ověřit. V rozsahu, který připouští právní řád, provozovatel neodpovídá za škodu, která vznikne z rozhodnutí na nich založeného."
           ]
         },
         {
@@ -3293,8 +3739,8 @@
     "nearbyMajorTitle": "Větší města v okolí",
     "majorTowns": "Větší města",
     "nearbyMajorItem": "{km, number} km {dir, select, n {na sever} ne {na severovýchod} e {na východ} se {na jihovýchod} s {na jih} sw {na jihozápad} w {na západ} other {na severozápad}}",
-    "accountantsTitle": "Účetní v obci {name} a okolí",
-    "accountantsNote": "Účetní se do seznamu zapsali sami přes svůj veřejný profil v Billantě. Údaje neověřujeme, výběr je na vás.",
+    "accountantsTitle": "Účetní – {region}",
+    "accountantsNote": "Účetní z adresáře Billanty, kteří uvádějí, že pracují pro klienty z tohoto kraje. Zápisy schvalujeme ručně, výběr je na vás.",
     "accountantsEmpty": "Zatím se tu nezapsal žádný účetní. Pokud účetního hledáte, Billanta mu umožní přístup k vašim dokladům bez posílání e-mailů.",
     "accountantsJoin": "Jste účetní v obci {name} nebo blízko? Zapište se zdarma →",
     "populationCz": "{count, plural, one {# obyvatel} few {# obyvatelé} other {# obyvatel}} (ČSÚ, k 1. 1. 2025).",
@@ -3439,7 +3885,21 @@
         "priority": "Přednostní"
       }
     },
-    "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším"
+    "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším",
+    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} zdarma, bez karty: vyzkoušejte celý tarif Firma.",
+    "methods": {
+      "title": "Jak platit",
+      "card": {
+        "title": "Předplatné kartou – automatické obnovení, levnější",
+        "body": "Ceny výše platí pro předplatné kartou, Apple Pay nebo Google Pay. Obnovuje se samo, zrušit ho můžete kdykoli a tarif poběží do konce zaplaceného období."
+      },
+      "transfer": {
+        "title": "Převodem – bez automatického obnovení",
+        "body": "Měsíc nebo rok dopředu podle zálohové faktury s QR kódem, o {percent} % dráž, protože každou platbu párujeme ručně. Nic se samo nestrhne a před koncem období vám pošleme připomínku s další zálohovkou."
+      }
+    },
+    "transferPrice": "převodem {price} / měsíc",
+    "transferCzkOnly": "Převodem jde platit jen v korunách."
   },
   "cookies": {
     "banner": {
@@ -3636,7 +4096,6 @@
       "more": "Konstantní / specifický symbol, objednávka",
       "exchangeRate": "Kurz {pair}",
       "exchangeRateAuto": "Kurz {source} při vystavení",
-      "exchangeRateAnnual": "Jednotný kurz {rate} (rok {year})",
       "exchangeRateLoad": "Načíst z {source}",
       "exchangeRateFailed": "Kurz {source} se nepodařilo načíst.",
       "inCzk": "≈ {amount} celkem",
@@ -3659,7 +4118,32 @@
         "en": "English"
       },
       "reverseCharge": "Přenesená daňová povinnost",
-      "reverseChargeHint": "DPH odvede odběratel; na dokladu bude bez DPH s poznámkou."
+      "reverseChargeHint": "DPH odvede odběratel; na dokladu bude bez DPH s poznámkou.",
+      "reverseChargeCode": "Kód předmětu plnění",
+      "reverseChargeCodeNone": "Vyberte kód…",
+      "reverseChargeCodeHint": "Kontrolní hlášení ho vyžaduje u každého dokladu v oddílu A.1.",
+      "reverseChargeCodes": {
+        "1": "Zlato",
+        "3": "Dodání nemovité věci, pokud se při něm uplatní daň",
+        "4": "Stavební a montážní práce",
+        "5": "Zboží uvedené v příloze č. 5 (odpad, šrot)",
+        "6": "Dodání zboží poskytnutého původně jako záruka",
+        "7": "Dodání zboží po postoupení výhrady vlastnictví",
+        "11": "Povolenky na emise skleníkových plynů",
+        "12": "Obiloviny a technické plodiny",
+        "13": "Kovy",
+        "14": "Mobilní telefony",
+        "15": "Integrované obvody",
+        "16": "Přenosná zařízení pro automatizované zpracování dat",
+        "17": "Videoherní konzole",
+        "18": "Dodání certifikátů elektřiny",
+        "19": "Dodání elektřiny soustavami nebo sítěmi obchodníkovi",
+        "20": "Dodání plynu soustavami nebo sítěmi obchodníkovi",
+        "21": "Poskytnutí vymezených služeb elektronických komunikací",
+        "1a": "Zprostředkování dodání investičního zlata",
+        "3a": "Dodání nemovité věci v nuceném prodeji",
+        "4a": "Stavební a montážní práce – poskytnutí pracovníků"
+      }
     },
     "notes": {
       "title": "Poznámky",
@@ -3995,7 +4479,8 @@
         "ai": "AI (Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Pravidelná faktura",
-        "import": "Import"
+        "import": "Import",
+        "profile_order": "Objednávka z profilu"
       },
       "bankAccount": "Bankovní účet",
       "attachments": "Má přílohy",
@@ -4813,7 +5298,7 @@
         "lead": "Začít znovu neznamená přijít o historii. Stačí CSV export ze starého systému.",
         "points": [
           "Import kontaktů i vydaných faktur z CSV",
-          "Z BitFaktury přímo přes API: faktury, adresář i původní PDF",
+          "Z BitFaktury a Fakturoidu přímo přes API: faktury, adresář i původní PDF",
           "Sloupce Fakturoidu, iDokladu, faktoria, Invoice Ninja i vlastní tabulky poznáme samy",
           "Náhled s počtem faktur, obdobím a součty před uložením",
           "Faktury s více položkami, zálohové faktury i dobropisy",
@@ -5577,7 +6062,72 @@
       "subject": "Poptávka – {company}",
       "body": "Dobrý den,\n\nmám zájem o:\n\n"
     },
-    "poweredBy": "Profil vytvořen v <brand>Billanta</brand> – fakturace pro živnostníky a firmy"
+    "poweredBy": "Profil vytvořen v <brand>Billanta</brand> – fakturace pro živnostníky a firmy",
+    "order": {
+      "button": "Objednat",
+      "title": "Objednávka",
+      "hint": "Vyberte službu a vyplňte fakturační údaje. {company} objednávku zkontroluje a ozve se vám.",
+      "service": "Služba",
+      "noService": "Jen vlastní položky",
+      "quantity": "Množství",
+      "estimate": "Orientačně {amount}. Konečnou cenu potvrdí dodavatel.",
+      "priceLater": "Cenu doplní dodavatel.",
+      "customItems": "Další položky",
+      "customItemsHint": "Napište, co dalšího potřebujete. Cenu doplní dodavatel.",
+      "itemDescription": "Co potřebujete",
+      "addItem": "Přidat položku",
+      "removeItem": "Odebrat položku",
+      "buyerTitle": "Fakturační údaje",
+      "note": "Poznámka",
+      "notePlaceholder": "Termín, upřesnění, cokoli dalšího",
+      "submit": "Odeslat objednávku",
+      "legal": "Odesláním předáte své údaje dodavateli, aby mohl objednávku vyřídit a vystavit fakturu.",
+      "doneTitle": "Objednávka je odeslaná",
+      "doneText": "{company} ji teď zkontroluje a fakturu vám vystaví sám. Nic dalšího dělat nemusíte.",
+      "payTitle": "Platba předem",
+      "payHint": "{company} žádá o platbu předem. Zaplaťte prosím podle těchto údajů nebo načtěte QR kód v aplikaci banky.",
+      "payAmount": "Částka",
+      "payAccount": "Číslo účtu",
+      "payVs": "Variabilní symbol",
+      "payRecipient": "Příjemce",
+      "payNote": "Uveďte prosím přesně tento variabilní symbol, podle něj dodavatel platbu spáruje. Fakturu dostanete od dodavatele.",
+      "errors": {
+        "invalid": "Zkontrolujte prosím zvýrazněná pole.",
+        "closed": "Tato firma teď objednávky nepřijímá.",
+        "limit": "Příliš mnoho pokusů, zkuste to prosím za chvíli.",
+        "daily_cap": "Firma dnes už přijala hodně objednávek. Zkuste to prosím zítra.",
+        "unknown_service": "Tuto službu už firma nenabízí. Obnovte prosím stránku.",
+        "custom_items_disabled": "Vlastní položky tato firma nepřijímá. Obnovte prosím stránku.",
+        "empty_order": "Vyberte službu nebo přidejte položku.",
+        "items": "Zkontrolujte prosím položky (popis aspoň 2 znaky).",
+        "failed": "Něco se nepovedlo, zkuste to prosím znovu."
+      }
+    },
+    "message": {
+      "button": "Kontaktovat",
+      "title": "Napište nám",
+      "hint": "Zpráva přijde přímo firmě {company}. Odpoví vám na váš e-mail.",
+      "name": "Jméno",
+      "email": "E-mail",
+      "about": "Téma",
+      "aboutGeneral": "Obecný dotaz",
+      "message": "Zpráva",
+      "submit": "Odeslat zprávu",
+      "legal": "Odesláním předáte jméno, e-mail a zprávu firmě, aby vám mohla odpovědět.",
+      "doneTitle": "Zpráva je odeslaná",
+      "doneText": "{company} ji dostala a odpoví vám na e-mail.",
+      "errors": {
+        "invalid": "Zkontrolujte prosím zvýrazněná pole.",
+        "closed": "Tato firma teď zprávy přes profil nepřijímá.",
+        "limit": "Příliš mnoho zpráv, zkuste to prosím za chvíli.",
+        "daily_cap": "Firma dnes už dostala hodně zpráv. Zkuste to prosím zítra.",
+        "failed": "Něco se nepovedlo, zkuste to prosím znovu.",
+        "name": "Napište jméno (aspoň 2 znaky).",
+        "email": "Zadejte platný e-mail.",
+        "message": "Zpráva musí mít 5 až 2000 znaků.",
+        "serviceId": "Vyberte téma znovu."
+      }
+    }
   },
   "time": {
     "title": "Evidence času",
@@ -5795,7 +6345,8 @@
       "lastQuarter": "Minulé čtvrtletí",
       "thisYear": "Letos",
       "lastYear": "Loni",
-      "last12": "12 měsíců"
+      "last12": "12 měsíců",
+      "all": "Celkem"
     },
     "grain": {
       "day": "po dnech",
@@ -5824,14 +6375,20 @@
       "noVatIdentified": "Jste identifikovaná osoba bez faktur v režimu přenesení daňové povinnosti, takže DPH skrýváme.",
       "noExpenses": "Výdaje zatím nezapisujete, takže náklady a zisk skrýváme.",
       "allRelevant": "Ukazujeme vše, co se vás týká.",
-      "notRecommended": "zatím se vás netýká",
       "noExpensesHint": "Zatím bez zapsaných výdajů",
       "reset": "Obnovit doporučené",
       "cancel": "Zrušit",
       "save": "Uložit",
       "saved": "Uloženo",
-      "failed": "Nepodařilo se uložit: {reason}"
-    }
+      "failed": "Nepodařilo se uložit: {reason}",
+      "notUsed": "zatím nevyužíváte",
+      "notVatPayer": "nejste plátce DPH",
+      "orderHint": "Pořadí tady určuje pořadí karet v přehledu. Změníte ho přetažením za úchyt nebo šipkami.",
+      "moveUp": "Posunout dopředu",
+      "moveDown": "Posunout dozadu",
+      "dragToReorder": "Přetáhněte pro změnu pořadí"
+    },
+    "flatTaxLink": "Vyplatí se paušální daň? →"
   },
   "siteSearch": {
     "title": "Hledat na webu",
@@ -5940,7 +6497,9 @@
         "sent_corrected": "poslal(a) opravenou verzi",
         "buyer_details_requested": "poslal(a) odběrateli k doplnění údajů",
         "buyer_details_submitted": "doplnil(a) fakturační údaje k",
-        "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k"
+        "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k",
+        "profile_order": "vytvořil(a) objednávkou z veřejného profilu koncept",
+        "link_renamed": "přejmenoval(a) veřejný odkaz"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -5972,7 +6531,8 @@
       "import": {
         "bitfaktura": "naimportoval(a) data z BitFaktury",
         "csv": "naimportoval(a) doklady z CSV",
-        "contacts_csv": "naimportoval(a) kontakty z CSV"
+        "contacts_csv": "naimportoval(a) kontakty z CSV",
+        "fakturoid": "naimportoval(a) data z Fakturoidu"
       }
     },
     "fields": {
@@ -6051,7 +6611,8 @@
       "archivedPdfs": "Uložená původní PDF",
       "skippedRows": "Přeskočené řádky",
       "numberFormat": "Formát čísla",
-      "nextNumber": "Další číslo"
+      "nextNumber": "Další číslo",
+      "publicSlug": "Název odkazu"
     },
     "values": {
       "invoice": "Faktura",
@@ -6255,7 +6816,7 @@
       },
       {
         "title": "Snadný přechod",
-        "body": "Z Fakturoidu, iDokladu nebo Excelu přes CSV, z BitFaktury rovnou přes API i s původními PDF."
+        "body": "Z iDokladu nebo Excelu přes CSV, z BitFaktury a Fakturoidu rovnou přes API i s původními PDF."
       }
     ],
     "switchTitle": "Přecházíte odjinud?",
@@ -6474,7 +7035,9 @@
       "guidesHint": "Jak podat DPH a hlášení",
       "compare": "Srovnání s konkurencí",
       "blog": "Blog",
-      "blogHint": "Termíny, legislativa a návody"
+      "blogHint": "Termíny, legislativa a návody",
+      "findAccountant": "Sháníte účetní?",
+      "findAccountantHint": "Doporučené účetní podle kraje"
     },
     "search": {
       "showAll": "Zobrazit všechny výsledky pro „{query}“",
@@ -6511,7 +7074,15 @@
       "updated": "Aktualizováno",
       "invoiceCtaTitle": "Potřebujete z toho rovnou fakturu?",
       "invoiceCtaText": "Vystavte fakturu s QR platbou, údaji z ARES a správnou splatností bez registrace. S účtem v Billantě se vám faktury uloží, pohlídáte úhrady a pošlete podklady účetní.",
-      "invoiceCtaButton": "Vystavit fakturu zdarma"
+      "invoiceCtaButton": "Vystavit fakturu zdarma",
+      "overview": "Přehled",
+      "myNumbers": {
+        "hint": "Jste přihlášeni. Kalkulačku můžete otevřít v aplikaci s příjmy a výdaji z vašich dokladů.",
+        "cta": "Otevřít s mými čísly"
+      },
+      "czOnlyTextAlt": "„{name}“ se týká českých předpisů. Pro slovenské živnostníky máme samostatnou kalkulačku podle slovenských pravidel.",
+      "noLiability": "Výsledek je bez záruky. Za rozhodnutí učiněná podle něj neodpovídáme.",
+      "noWarranty": "Výsledek má jen informativní charakter a je bez záruky. Před použitím si údaje ověřte."
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pro podnikatele",
@@ -6531,19 +7102,6 @@
             "Zdravotní pojištění je 13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy za každý měsíc.",
             "Zálohy na další rok vychází z letošního základu, nikdy ale nejsou nižší než minimální zálohy dalšího roku."
           ],
-          "params": "Pro rok {year} počítáme s průměrnou mzdou {wage} Kč, slevou na poplatníka {credit} Kč a minimálním základem sociálního pojištění {share} % průměrné mzdy (hlavní činnost).",
-          "paramsShareChange": "Od {month}. {year} se minimum snižuje na {share} % (sociální záloha nejméně {advance} Kč).",
-          "fields": {
-            "year": "Rok",
-            "income": "Příjmy za rok (Kč)",
-            "expenseMode": "Výdaje",
-            "actual": "Skutečné výdaje",
-            "flat": "Výdajový paušál",
-            "expenses": "Výdaje za rok (Kč)",
-            "flatRate": "Druh činnosti",
-            "paidSocial": "Zaplacené zálohy na sociální (Kč, nepovinné)",
-            "paidHealth": "Zaplacené zálohy na zdravotní (Kč, nepovinné)"
-          },
           "rates": {
             "30": "30 % – pronájem obchodního majetku (max. {cap} Kč)",
             "40": "40 % – svobodná povolání, autorské příjmy (max. {cap} Kč)",
@@ -6551,46 +7109,100 @@
             "80": "80 % – řemeslné živnosti, zemědělství (max. {cap} Kč)"
           },
           "result": {
-            "expenses": "Uplatněné výdaje",
-            "profit": "Zisk (základ daně)",
             "tax": "Daň z příjmů po slevě",
             "social": "Sociální pojištění",
-            "health": "Zdravotní pojištění",
-            "total": "Celkem daň a pojištění",
-            "nextSocial": "Záloha na sociální od dalšího roku",
-            "nextHealth": "Záloha na zdravotní od dalšího roku",
-            "toPay": "doplatek {amount}",
-            "overpaid": "přeplatek {amount}"
-          }
+            "health": "Zdravotní pojištění"
+          },
+          "fields": {}
         },
         "flatTax": {
-          "name": "Paušální daň",
-          "title": "Kalkulačka paušální daně",
-          "description": "Vyplatí se vám paušální daň? Porovnejte první pásmo s běžnou daní a pojištěním při výdajovém paušálu.",
-          "lead": "Paušální daň nahrazuje jednou měsíční platbou daň z příjmů, sociální i zdravotní pojištění. Kalkulačka ukáže, jestli vám vychází první pásmo a kolik byste zaplatili v běžném režimu s výdajovým paušálem.",
-          "keywords": "paušální režim paušální daň pásmo osvč výdajový paušál",
+          "name": "Vyplatí se paušální daň?",
+          "title": "Vyplatí se paušální daň? Srovnání s výdajovým paušálem a skutečnými výdaji",
+          "description": "Porovnejte paušální daň s výdajovým paušálem a skutečnými výdaji. Daň a pojištění pro každou variantu, slevy na děti a jasné doporučení.",
+          "lead": "Zadejte roční příjmy, případně skutečné výdaje. Kalkulačka spočítá daň, sociální a zdravotní pojištění v paušálním režimu, s výdajovým paušálem i se skutečnými výdaji a řekne, co vychází nejlépe.",
+          "keywords": "vyplatí se paušální daň paušální režim pásmo osvč výdajový paušál skutečné výdaje srovnání",
           "fields": {
             "year": "Rok",
-            "income": "Očekávané příjmy za rok (Kč)",
-            "flatRate": "Převažující činnost"
+            "income": "Příjmy za rok (Kč)",
+            "actualExpenses": "Skutečné výdaje za rok (Kč)",
+            "actualHint": "Nepovinné. Bez nich porovnáme jen paušální daň a výdajový paušál.",
+            "flatRate": "Převažující činnost",
+            "children": "Počet dětí (daňové zvýhodnění)",
+            "spouse": "Sleva na manželku/manžela (příjmy partnera do 68 000 Kč, dítě do 3 let)",
+            "vatPayer": "Jsem plátce DPH"
           },
-          "monthlyTitle": "Platba v 1. pásmu",
+          "rates": {
+            "30": "Pronájem obchodního majetku (30 %, nejvýš {cap} Kč)",
+            "40": "Svobodná povolání a jiné podnikání (40 %, nejvýš {cap} Kč)",
+            "60": "Ostatní živnosti (60 %, nejvýš {cap} Kč)",
+            "80": "Řemeslné živnosti a zemědělství (80 %, výdaje nejvýš {cap} Kč)"
+          },
+          "options": {
+            "flat_tax": "Paušální daň",
+            "flat_expenses": "Výdajový paušál {rate} %",
+            "actual_expenses": "Skutečné výdaje"
+          },
+          "result": {
+            "best": "Nejvýhodnější",
+            "band": "Pásmo",
+            "bandValue": "{band}. pásmo",
+            "oneSum": "Jedna platba za daň, sociální i zdravotní pojištění.",
+            "expenses": "Výdaje",
+            "tax": "Daň z příjmů",
+            "social": "Sociální pojištění",
+            "health": "Zdravotní pojištění",
+            "bonus": "Daňový bonus",
+            "total": "Celkem za rok"
+          },
+          "unavailable": {
+            "vat_payer": "Plátce DPH do paušálního režimu vstoupit nemůže.",
+            "over_limit": "S těmito příjmy a činností se nevejdete do žádného pásma (nejvýš 2 000 000 Kč).",
+            "no_data": "Pro tento rok zatím nemáme všechny parametry."
+          },
+          "recommend": {
+            "same": "Obě možnosti vycházejí stejně.",
+            "flat_tax": "Vyplatí se paušální daň: ušetříte {amount} za rok oproti běžnému režimu.",
+            "flat_expenses": "Vyplatí se běžný režim s výdajovým paušálem: o {amount} méně než paušální daň.",
+            "actual_expenses": "Vyplatí se běžný režim se skutečnými výdaji: o {amount} méně než paušální daň.",
+            "noFlatOnly": "Do paušálního režimu vstoupit nemůžete, zbývá běžný režim.",
+            "noFlat": {
+              "flat_expenses": "Do paušálního režimu vstoupit nemůžete. Výdajový paušál vychází o {amount} lépe než skutečné výdaje.",
+              "actual_expenses": "Do paušálního režimu vstoupit nemůžete. Skutečné výdaje vycházejí o {amount} lépe než výdajový paušál."
+            }
+          },
+          "monthlyTitle": "Platba v {band}. pásmu",
           "monthlyFrom": "od {date}: {amount} měsíčně",
-          "yearTotal": "Paušální daň za rok",
-          "normalTotal": "Běžný režim s výdajovým paušálem",
-          "cheaper": "Paušální daň vychází o {amount} levněji.",
-          "dearer": "Běžný režim vychází o {amount} levněji.",
-          "notBand1": "S tímto příjmem a druhem činnosti 1. pásmo nevychází. Vyšší pásma tady nepočítáme, jejich výši najdete na webu Finanční správy.",
-          "noData": "Pro tento rok zatím nemáme výši paušální daně.",
+          "retroactiveNote": "Snížení platí zpětně od ledna, co jste zaplatili navíc, vám finanční úřad vrátí jako přeplatek.",
+          "creditsNote": "Slevy na dítě a na manželku/manžela se v paušálním režimu neuplatní. Běžný režim proto mohou zlevnit natolik, že vyjde lépe.",
+          "compareNote": "Běžný režim počítáme jen z příjmů z podnikání, se slevou na poplatníka a se zvolenými slevami. Další příjmy ani odpočty nezohledňujeme a pojistné počítáme jako u hlavní činnosti.",
           "conditionsTitle": "Kdo může vstoupit do paušálního režimu",
           "conditions": [
             "Jste OSVČ a nejste plátce DPH (identifikovaná osoba být můžete).",
-            "Příjmy z podnikání nepřesáhnou 2 000 000 Kč za rok. Pro 1. pásmo platí do 1 000 000 Kč u jakékoli činnosti, do 1 500 000 Kč, když aspoň 75 % příjmů spadá pod 80% nebo 60% paušál, a do 2 000 000 Kč, když aspoň 75 % spadá pod 80% paušál.",
+            "Příjmy z podnikání nepřesáhnou 2 000 000 Kč za rok.",
+            "1. pásmo: příjmy do 1 000 000 Kč u jakékoli činnosti, do 1 500 000 Kč, když aspoň 75 % příjmů spadá pod 80% nebo 60% paušál, a do 2 000 000 Kč, když aspoň 75 % spadá pod 80% paušál.",
+            "2. pásmo: do 1 500 000 Kč u jakékoli činnosti a do 2 000 000 Kč, když aspoň 75 % příjmů spadá pod 80% nebo 60% paušál. 3. pásmo: do 2 000 000 Kč.",
             "Nemáte jiné příjmy kromě drobných výjimek (např. malé příjmy ze zaměstnání, úroky nebo nájem do limitu).",
             "Nejste společníkem v. o. s. ani komplementářem k. s. a nejste v insolvenci.",
             "Vstup do režimu oznámíte finančnímu úřadu do 10. ledna daného roku."
           ],
-          "compareNote": "Běžný režim počítáme s výdajovým paušálem podle zvolené činnosti, bez dalších příjmů a odpočtů."
+          "how": [
+            "Paušální daň je jedna měsíční částka podle pásma. Pásmo určují příjmy a převažující činnost (§ 2a zákona o daních z příjmů).",
+            "V běžném režimu odečteme výdaje (paušál nejvýš do limitu podle činnosti, nebo skutečné výdaje), z daně odečteme slevy a pojistné počítáme z poloviny zisku, nejméně z minimálního vyměřovacího základu.",
+            "Sleva na dítě snižuje daň a co zbude, dostanete jako daňový bonus. Bonus se vyplácí od 100 Kč a jen při příjmech aspoň ve výši šestinásobku minimální mzdy (§ 35c).",
+            "Jde o odhad za celý rok. Nic neukládáme, výpočet běží ve vašem prohlížeči."
+          ],
+          "app": {
+            "title": "Vyplatí se paušální daň?",
+            "lead": "Kalkulačka s vašimi čísly z Billanty. Všechno můžete přepsat, nic se neukládá.",
+            "publicLink": "Veřejná verze kalkulačky",
+            "noTenant": "Nejdřív si založte firmu, pak kalkulačku předvyplníme.",
+            "notOsvc": "Paušální režim je jen pro české OSVČ. Vaše firma mezi ně podle nastavení nepatří, výsledek berte jako orientační.",
+            "prefilled": "Předvyplnili jsme rok {year}: zaplacené příjmy {income} a výdaje {expenses} podle dokladů v Billantě.",
+            "loadError": "Vaše součty se nepodařilo načíst, zadejte čísla ručně.",
+            "regimeFlat": "V nastavení máte uvedeno, že jste v paušálním režimu.",
+            "regimeRegular": "V nastavení máte uvedeno, že v paušálním režimu nejste.",
+            "secondary": "V nastavení máte vedlejší činnost. Kalkulačka počítá pojistné jako u hlavní činnosti, při vedlejší může vyjít nižší."
+          }
         },
         "vat": {
           "name": "Kalkulačka DPH",
@@ -6645,24 +7257,24 @@
           "notesSk": [
             "Na Slovensku se odvody platí do 8. dne následujícího měsíce, sociální poistné Sociálnej poisťovni a zdravotné poistné své zdravotní pojišťovně."
           ],
-          "none": "Pro tento rok zatím nemáme údaje."
+          "none": "Pro tento rok zatím nemáme údaje.",
+          "previousYears": "Předchozí roky"
         },
         "fx": {
           "name": "Převodník kurzů ČNB",
           "title": "Kurzy ČNB a převodník měn",
-          "description": "Aktuální kurzy devizového trhu ČNB a převod mezi korunou a cizí měnou. Pro přepočet faktur v cizí měně.",
+          "description": "Aktuální kurzy devizového trhu ČNB a převod mezi korunou a cizími měnami i mezi dvěma cizími měnami. Pro přepočet faktur v cizí měně.",
           "lead": "ČNB vyhlašuje kurzy každý pracovní den po 14:30. Tyto kurzy se používají i pro přepočet faktur v cizí měně pro účely DPH.",
           "keywords": "kurz čnb kurzovní lístek eur usd přepočet měny faktura v cizí měně",
           "listDate": "Kurzovní lístek ČNB ze dne {date}",
           "unavailable": "Kurzy ČNB se teď nepodařilo načíst. Zkuste to později, nebo je najdete přímo na webu ČNB.",
           "fields": {
             "amount": "Částka",
-            "currency": "Měna",
-            "direction": "Směr",
-            "toCzk": "Cizí měna → Kč",
-            "fromCzk": "Kč → cizí měna"
+            "from": "Z měny",
+            "to": "Na měnu",
+            "swap": "Prohodit měny"
           },
-          "rate": "Kurz: 1 {code} = {rate} Kč",
+          "rate": "Kurz: 1 {from} = {rate} {to}",
           "tableTitle": "Kurzovní lístek",
           "code": "Kód",
           "perUnit": "Kč za 1 jednotku",
@@ -6671,7 +7283,15 @@
             "Kurz vyhlášený v pracovní den po 14:30 platí do vyhlášení dalšího. O víkendu a ve svátek tedy platí poslední vyhlášený.",
             "Pro účetnictví můžete místo denního kurzu používat i pevný kurz, pokud to máte ve vnitřní směrnici."
           ],
-          "source": "Zdroj: Česká národní banka"
+          "source": "Zdroj: Česká národní banka",
+          "crossRate": "Křížový kurz přes korunu podle kurzovního lístku ČNB.",
+          "date": {
+            "label": "Kurzy ke dni",
+            "show": "Zobrazit",
+            "today": "Dnešní kurzy",
+            "fallback": "Dne {day} ČNB kurzy nevyhlásila (víkend nebo svátek), proto platí lístek ze dne {date}.",
+            "notYet": "Dnešní kurzy ČNB ještě nevyhlásila (vyhlašuje je v pracovní dny po 14:30), proto platí lístek ze dne {date}."
+          }
         },
         "qrPayment": {
           "name": "Generátor QR platby",
@@ -6707,35 +7327,55 @@
           "howTitle": "Jak to funguje"
         },
         "companyLookup": {
-          "name": "Vyhledání firmy podle IČO",
-          "title": "Vyhledání firmy podle IČO v ARES",
-          "description": "Zadejte IČO a zjistěte název firmy, DIČ a sídlo z registru ARES. Údaje rovnou použijete na fakturu.",
-          "lead": "Stačí osm číslic IČO. Údaje bereme z ARES, veřejného registru Ministerstva financí.",
-          "keywords": "ares ičo vyhledat firmu podle ičo dič sídlo firmy obchodní rejstřík živnostenský rejstřík odběratel",
+          "name": "Vyhledání firmy podle IČO, DIČ nebo názvu",
+          "title": "Vyhledání firmy podle IČO, DIČ nebo názvu (ARES, RPO, VIES)",
+          "description": "Najděte firmu podle IČO, DIČ nebo názvu v ARES, slovenském RPO nebo evropském VIES. Ukážeme sídlo, DIČ a jestli je plátce DPH, případně nespolehlivý plátce.",
+          "lead": "Zadejte IČO, DIČ nebo část názvu. Hledáme v českém ARES, ve slovenském registru právnických osob (RPO), v evropském VIES a v dalších registrech, které si vyberete.",
+          "keywords": "ares ičo dič vyhledat firmu podle ičo podle názvu plátce dph nespolehlivý plátce vies rpo sídlo firmy odběratel",
           "fields": {
-            "ico": "IČO",
-            "icoHint": "Osm číslic. Kratší IČO doplníme nulami zleva.",
+            "query": "IČO, DIČ nebo název",
+            "queryHint": "IČO (až 8 číslic), DIČ s kódem země (CZ…, SK…, DE…) nebo aspoň 3 znaky názvu.",
+            "registry": "Registr",
             "search": "Vyhledat",
             "searching": "Hledám…"
           },
           "result": {
+            "hits": "{n, plural, one {# výsledek} few {# výsledky} other {# výsledků}}",
             "ico": "IČO",
+            "regNumber": "Registrační číslo",
             "dic": "DIČ",
-            "noDic": "v ARES neuvedeno",
+            "noDic": "neuvedeno",
+            "vat": "DPH",
+            "vatChecking": "ověřuji…",
+            "vatState": {
+              "payer": "plátce DPH",
+              "unreliable": "nespolehlivý plátce DPH",
+              "not_registered": "není plátce DPH",
+              "valid": "platné DIČ pro DPH",
+              "invalid": "neplatné nebo neaktivní DIČ pro DPH",
+              "unknown": "nepodařilo se ověřit"
+            },
+            "vatSource": {
+              "ADIS": "Registr plátců DPH, Finanční správa ČR",
+              "VIES": "VIES, Evropská komise"
+            },
+            "unreliableNote": "Finanční správa vede firmu jako nespolehlivého plátce. Když jí zaplatíte DPH, můžete za ni ručit (§ 109 zákona o DPH).",
             "address": "Sídlo",
-            "source": "Zdroj: ARES, Ministerstvo financí ČR.",
+            "country": "Země",
+            "source": "Zdroj: {source}",
             "invoice": "Vystavit fakturu této firmě",
-            "empty": "Zadejte IČO a výsledek se ukáže tady."
+            "empty": "Zadejte IČO, DIČ nebo název a výsledek se ukáže tady."
           },
           "errors": {
-            "invalid": "IČO má mít nejvýš 8 číslic.",
-            "notFound": "Firmu s tímto IČO jsme v ARES nenašli.",
-            "busy": "ARES teď neodpovídá nebo jste hledali příliš často. Zkuste to za chvíli."
+            "invalid": "Zadejte IČO (až 8 číslic), DIČ s kódem země nebo aspoň 3 znaky názvu.",
+            "notFound": "Nic jsme nenašli. Zkuste jiný registr nebo jiný zápis.",
+            "busy": "Registr teď neodpovídá nebo jste hledali příliš často. Zkuste to za chvíli."
           },
           "how": [
-            "Hledáme jen v českém registru ARES. Slovenské firmy najdete v registru právnických osob (RPO).",
-            "DIČ v ARES neříká, jestli je firma plátce DPH. To ověříte v registru plátců DPH na webu Finanční správy.",
-            "V Billantě se odběratel podle IČO doplní sám přímo na faktuře."
+            "IČO hledáme v ARES a ve slovenském RPO podle zvoleného registru. DIČ s kódem země ověříme ve VIES, české DIČ v registru plátců DPH Finanční správy.",
+            "U českého DIČ ukážeme, jestli je firma plátce DPH a jestli ji Finanční správa vede jako nespolehlivého plátce. U ostatních zemí VIES řekne jen, jestli je DIČ platné.",
+            "Podle názvu hledáme v ARES a RPO. Pro firmy z jiných zemí vyberte jejich registr.",
+            "V Billantě se odběratel podle IČO nebo DIČ doplní sám přímo na faktuře."
           ],
           "howTitle": "Jak to funguje"
         },
@@ -6795,6 +7435,20 @@
             "Mezi podnikateli lze splatnost delší než 60 dní sjednat jen výslovně a jen tehdy, když není vůči věřiteli hrubě nespravedlivá (§ 1963 občanského zákoníku)."
           ],
           "howTitle": "Jak to funguje"
+        },
+        "szco": {
+          "name": "Daň a odvody SZČO (Slovensko)",
+          "title": "Kalkulačka dane a odvodů SZČO na Slovensku",
+          "description": "Orientační slovenská daň z příjmů, zdravotní a sociální pojištění živnostníka (SZČO) za rok, s paušálními výdaji 60 %.",
+          "lead": "Zadejte příjmy za rok. Kalkulačka spočítá daň z příjmů fyzické osoby, zdravotní pojištění, sociální odvody od července dalšího roku a novou zálohu na zdravotní pojištění podle slovenských pravidel.",
+          "keywords": "szčo živnostník slovensko daň z príjmov paušálne výdavky odvody sociálna poisťovňa zdravotné poistenie nezdaniteľná časť",
+          "how": [
+            "Zisk je příjem minus paušální výdaje 60 % (nejvýš 20 000 € za rok) nebo minus skutečné výdaje.",
+            "Základ daně je zisk minus sociální a zdravotní pojištění zaplacené během roku. Odečte se nezdanitelná část na daňovníka, která nad hranicí příjmů postupně klesá.",
+            "Daň je 15 %, když příjmy nepřesáhnou 100 000 € (za rok 2024 60 000 €). Jinak 19 % a 25 % z části nad 176,8násobkem životního minima, od roku 2026 navíc 30 % a 35 %.",
+            "Zdravotní pojištění je 15 % (od roku 2026 16 %) ze zisku děleného 1,486, nejméně z minimálního základu za každý měsíc. Rozdíl proti zaplaceným zálohám se doplatí v ročním zúčtování.",
+            "Sociální pojištění vzniká až od července dalšího roku, a jen když příjem přesáhne zákonnou hranici. Základ je zisk děleno 1,486 a počtem měsíců, mezi minimálním a maximálním základem."
+          ]
         }
       }
     },
@@ -6932,7 +7586,7 @@
       "title": "Fakturační údaje",
       "hint": "Na tyto údaje vystaví {supplier} doklad.",
       "kind": "Odběratel je",
-      "company": "Firma",
+      "company": "Firma nebo OSVČ",
       "person": "Soukromá osoba",
       "country": "Země",
       "ico": "IČO",
@@ -6943,7 +7597,7 @@
       "lookupNeedsVat": "Nejdřív vyplňte VAT ID.",
       "lookupNotFound": "V registru jsme nic nenašli, vyplňte údaje ručně.",
       "lookupDone": "Údaje jsme načetli, zkontrolujte je.",
-      "companyName": "Název firmy",
+      "companyName": "Obchodní jméno",
       "personName": "Jméno a příjmení",
       "street": "Ulice a číslo",
       "city": "Město",
@@ -6960,8 +7614,20 @@
         "ico_required": "Firma z Česka nebo Slovenska potřebuje IČO.",
         "ico_format": "IČO má 8 číslic.",
         "ico_foreign": "IČO se vyplňuje jen u českých a slovenských firem.",
-        "dic_format": "DIČ nemá správný tvar."
-      }
+        "dic_format": "DIČ nemá správný tvar.",
+        "email_required": "Vyplňte e-mail, ať se vám dodavatel může ozvat.",
+        "required": "Toto pole je povinné.",
+        "phone_format": "Telefon nemá správný tvar."
+      },
+      "optional": "nepovinné",
+      "phone": "Telefon",
+      "companySearch": "Najít firmu v registru",
+      "companySearchHint": "Začněte psát název, IČO nebo město a vyberte firmu. Údaje doplníme za vás."
+    },
+    "trust": {
+      "verifiedAres": "Dodavatele {supplier} jsme ověřili v ARES.",
+      "verifiedRpo": "Dodavatele {supplier} jsme ověřili v registru právnických osob (RPO).",
+      "private": "Odkaz je soukromý. Údaje uvidí jen tento dodavatel."
     }
   },
   "referrals": {
@@ -7273,5 +7939,289 @@
       "bad_link": "Odkaz smí vést jen na https:// nebo na stránku webu (/…).",
       "unknown_number": "Text obsahuje číslo, které není ve faktech ani ve zdrojích."
     }
+  },
+  "unsubscribe": {
+    "title": "Odhlásit e-maily",
+    "intro": "Přestanete dostávat {what} pro firmu {company}. Ostatní e-maily budou chodit dál.",
+    "introNoCompany": "Přestanete dostávat {what}. Ostatní e-maily budou chodit dál.",
+    "confirm": "Odhlásit",
+    "done": "Hotovo, odhlášeno. Tyto e-maily vám už nepošleme.",
+    "already": "Tyto e-maily už máte odhlášené.",
+    "manage": "Ostatní e-maily nastavíte po přihlášení v <link>Nastavení → E-mailová upozornění</link>.",
+    "types": {
+      "invoice_paid": "e-maily o zaplacených fakturách",
+      "invoice_viewed": "e-maily o otevřených fakturách",
+      "invoice_overdue": "e-maily o fakturách po splatnosti",
+      "reminder_sent": "e-maily o odeslaných upomínkách",
+      "invoice_sent": "e-maily o odeslaných fakturách",
+      "draft_ready": "e-maily o nových návrzích ke kontrole",
+      "bank_import": "e-maily o importu bankovních výpisů",
+      "member_joined": "e-maily o nových členech týmu",
+      "quote_response": "e-maily o odpovědích na nabídky",
+      "buyer_details": "e-maily o údajích, které doplnili odběratelé",
+      "weekly_digest": "týdenní přehled",
+      "all": "všechna nepovinná upozornění e-mailem"
+    },
+    "errors": {
+      "invalid": "Odkaz je neplatný nebo neúplný. Zkuste ho z e-mailu zkopírovat celý.",
+      "unavailable": "Odhlášení se teď nepovedlo. Zkuste to prosím za chvíli znovu."
+    }
+  },
+  "og": {
+    "sections": {
+      "compare": "Srovnání",
+      "forAccountants": "Pro účetní",
+      "partners": "Partneři",
+      "directory": "Adresář účetních",
+      "profile": "Firemní profil"
+    },
+    "services": "{n, plural, one {# služba} few {# služby} other {# služeb}}",
+    "privateTitle": "Sdílený doklad",
+    "privateSubtitle": "Doklad se zobrazí po otevření odkazu.",
+    "privateSection": "Soukromý odkaz"
+  },
+  "accountantDirectory": {
+    "seoTitle": "Sháníte účetní? Doporučené účetní podle kraje",
+    "title": "Sháníte účetní?",
+    "lead": "Účetní a účetní kanceláře, které pracují s Billantou. Vyberte kraj a službu a napište jim napřímo.",
+    "filters": {
+      "label": "Filtrovat účetní",
+      "region": "Kraj",
+      "anyRegion": "Celá ČR a SR",
+      "service": "Služba",
+      "anyService": "Jakákoli služba",
+      "apply": "Filtrovat",
+      "reset": "Zrušit filtry"
+    },
+    "count": "{n, plural, one {# účetní} few {# účetní} other {# účetních}}",
+    "empty": "V tomto výběru zatím nikoho nemáme. Zkuste jiný kraj nebo službu.",
+    "emptyAll": "Seznam se teprve plní. Účetní přidáváme postupně, každého po kontrole.",
+    "remote": "I na dálku",
+    "languages": "Jazyky",
+    "price": "Cena",
+    "contact": "Napsat",
+    "website": "Web",
+    "profile": "Profil firmy",
+    "emailSubject": "Poptávka účetních služeb ({site})",
+    "howTitle": "Jak se sem účetní dostanou",
+    "howBody": "Účetní se přidávají sami v programu pro účetní a každý zápis před zveřejněním ručně schvalujeme. Za zařazení se neplatí. Cenu a podmínky si domluvíte přímo s účetní, Billanta do toho nevstupuje.",
+    "joinTitle": "Jste účetní?",
+    "joinBody": "Přidejte se do programu pro účetní a nabídněte své služby firmám, které fakturují v Billantě.",
+    "joinCta": "Program pro účetní",
+    "regions": {
+      "CZ-10": "Hlavní město Praha",
+      "CZ-20": "Středočeský kraj",
+      "CZ-31": "Jihočeský kraj",
+      "CZ-32": "Plzeňský kraj",
+      "CZ-41": "Karlovarský kraj",
+      "CZ-42": "Ústecký kraj",
+      "CZ-51": "Liberecký kraj",
+      "CZ-52": "Královéhradecký kraj",
+      "CZ-53": "Pardubický kraj",
+      "CZ-63": "Kraj Vysočina",
+      "CZ-64": "Jihomoravský kraj",
+      "CZ-71": "Olomoucký kraj",
+      "CZ-72": "Zlínský kraj",
+      "CZ-80": "Moravskoslezský kraj",
+      "SK-BL": "Bratislavský kraj",
+      "SK-TA": "Trnavský kraj",
+      "SK-TC": "Trenčínský kraj",
+      "SK-NI": "Nitranský kraj",
+      "SK-ZI": "Žilinský kraj",
+      "SK-BC": "Banskobystrický kraj",
+      "SK-PV": "Prešovský kraj",
+      "SK-KI": "Košický kraj"
+    },
+    "services": {
+      "bookkeeping": "Vedení účetnictví",
+      "tax_records": "Daňová evidence",
+      "tax_return": "Daňové přiznání",
+      "vat": "DPH a kontrolní hlášení",
+      "payroll": "Mzdy a personalistika",
+      "annual_accounts": "Účetní závěrka",
+      "advisory": "Daňové poradenství",
+      "startup": "Založení firmy a živnosti"
+    },
+    "promo": {
+      "title": "Sháníte účetní?",
+      "body": "Nemáte komu exporty posílat? V našem seznamu najdete účetní podle kraje a služeb.",
+      "cta": "Najít účetní"
+    },
+    "settings": {
+      "title": "Zápis do adresáře účetních",
+      "intro": "Firmy, které hledají účetní, vás najdou na stránce „Sháníte účetní?“. Zápis zveřejníme po kontrole.",
+      "needProgram": "Zápis do adresáře patří k programu pro účetní. Přepněte se na něj výše.",
+      "displayName": "Jméno nebo název kanceláře",
+      "bio": "Krátce o vás",
+      "regions": "Kraje, kde působíte",
+      "remote": "Pracuji i na dálku",
+      "services": "Služby",
+      "languages": "Jazyky",
+      "priceHint": "Orientační cena",
+      "priceHintPlaceholder": "např. od 1 500 Kč měsíčně",
+      "contactEmail": "E-mail pro poptávky",
+      "website": "Web",
+      "contactNote": "Vyplňte e-mail, web nebo obojí. Zobrazí se veřejně.",
+      "save": "Odeslat ke schválení",
+      "withdraw": "Stáhnout ze seznamu",
+      "saved": "Odesláno ke schválení",
+      "withdrawn": "Zápis je stažený",
+      "editNote": "Každá změna jde znovu ke schválení.",
+      "viewPage": "Zobrazit stránku",
+      "reviewNote": "Poznámka od nás: {note}",
+      "status": {
+        "pending": "Čeká na schválení",
+        "approved": "Zveřejněno",
+        "rejected": "Neschváleno",
+        "withdrawn": "Staženo"
+      },
+      "errors": {
+        "services_required": "Vyberte aspoň jednu službu.",
+        "languages_required": "Vyberte aspoň jeden jazyk.",
+        "region_required": "Vyberte kraj, nebo zaškrtněte práci na dálku.",
+        "contact_required": "Vyplňte e-mail nebo web.",
+        "invalid_website": "Web nevypadá jako platná adresa.",
+        "accountant_program_required": "Nejdřív se přepněte na program pro účetní.",
+        "generic": "Uložení se nepovedlo. Zkuste to prosím znovu."
+      }
+    }
+  },
+  "companyLookup": {
+    "group": "Z registru",
+    "placeholder": "Název firmy, jméno OSVČ nebo IČO",
+    "empty": "Nic jsme nenašli. Zkuste IČO nebo jiný tvar názvu.",
+    "ico": "IČO",
+    "searchingSlovak": "Prohledávám i slovenský registr…"
+  },
+  "vatCheck": {
+    "checking": "Ověřuji DIČ…",
+    "state": {
+      "payer": "Plátce DPH ověřen",
+      "unreliable": "Nespolehlivý plátce",
+      "not_registered": "Neplátce",
+      "valid": "DIČ platné ve VIES",
+      "invalid": "DIČ ve VIES neplatné"
+    },
+    "source": {
+      "ADIS": "Podle registru plátců DPH (Finanční správa)",
+      "VIES": "Podle evropského systému VIES",
+      "none": "Zdroj neznámý"
+    }
+  },
+  "adminAccountants": {
+    "title": "Adresář účetních – schvalování",
+    "description": "Žádné nové ani upravené záznamy se v adresáři nezobrazí, dokud je neschválíte.",
+    "loadError": "Záznamy se nepodařilo načíst.",
+    "statusLabel": "Stav záznamu",
+    "status": {
+      "pending": "Ke schválení",
+      "approved": "Schválené",
+      "rejected": "Zamítnuté",
+      "withdrawn": "Stažené"
+    },
+    "empty": "Tady nic není.",
+    "updated": "upraveno {date}",
+    "ico": "IČO",
+    "fields": {
+      "places": "Působnost",
+      "services": "Služby",
+      "languages": "Jazyky",
+      "price": "Cena",
+      "contact": "Kontakt"
+    },
+    "note": "Poznámka pro účetní",
+    "notePlaceholder": "Nepovinné. U zamítnutí napište proč.",
+    "approve": "Schválit",
+    "reject": "Zamítnout",
+    "approved": "Záznam schválen.",
+    "rejected": "Záznam zamítnut.",
+    "changed": "Účetní záznam mezitím upravil. Načetli jsme novou verzi, projděte ji znovu.",
+    "failed": "Akce selhala",
+    "withdrawnHint": "Účetní záznam stáhl. Znovu ho posoudíte, až ho zase uloží."
+  },
+  "annualEstimate": {
+    "year": "Rok",
+    "incomeCzk": "Příjmy za rok (Kč)",
+    "incomeEur": "Příjmy za rok (€)",
+    "income": "Příjmy",
+    "expenses": "Výdaje",
+    "actualMode": "Skutečné výdaje",
+    "actualExpenses": "Skutečné výdaje",
+    "start": "Podnikání během roku",
+    "startFull": "Celý rok",
+    "startFrom": "Od {date} ({months, plural, one {# měsíc} few {# měsíce} other {# měsíců}})",
+    "paidSocial": "Zaplacené sociální pojištění (nepovinné)",
+    "paidHealth": "Zaplacené zdravotní pojištění (nepovinné)",
+    "paidHint": "Zálohy zaplacené za tento rok. Když je vyplníte, ukáže se doplatek nebo přeplatek.",
+    "balance": "Doplatek (+) / přeplatek (−)",
+    "nextAdvance": "Nová měsíční záloha",
+    "total": "Celkem daň + pojištění",
+    "paramsFallback": "Pro tento rok nemáme parametry, použity hodnoty roku {year}.",
+    "downloadCsv": "Stáhnout CSV",
+    "csvName": "odhad-dane-a-pojisteni",
+    "resultTitle": "Odhad",
+    "perMonth": "měsíčně",
+    "disclaimer": "Výsledek je jen orientační a nenahrazuje účetní ani daňového poradce. Počítá jen s příjmy z podnikání a základní slevou nebo nezdanitelnou částí na poplatníka, bez dětí, odpočtů a dalších příjmů. Než podle něj něco podáte nebo zaplatíte, ověřte si to u účetní nebo na webu příslušných úřadů.",
+    "cz": {
+      "modes": {
+        "30": "Paušál 30 % – pronájem obchodního majetku (max. {cap} Kč)",
+        "40": "Paušál 40 % – svobodná povolání, autorské příjmy (max. {cap} Kč)",
+        "60": "Paušál 60 % – ostatní živnosti (max. {cap} Kč)",
+        "80": "Paušál 80 % – řemeslné živnosti, zemědělství (max. {cap} Kč)"
+      },
+      "flatExpenses": "Paušální výdaje {rate} %",
+      "profit": "Zisk",
+      "taxBase": "Základ daně (zaokrouhlený na stovky)",
+      "taxCredit": "Sleva na poplatníka",
+      "incomeTax": "Daň z příjmů",
+      "incomeTaxHint": "15 %, nad 36násobek průměrné mzdy 23 %. Počítá jen se slevou na poplatníka – děti, manžel/ka a odpočty nejsou zahrnuté.",
+      "social": "Sociální pojištění",
+      "socialHint": "29,2 % z 55 % zisku, nejméně z minimálního vyměřovacího základu pro hlavní činnost za každý měsíc podnikání.",
+      "health": "Zdravotní pojištění",
+      "healthHint": "13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy za každý měsíc podnikání.",
+      "params": "Pro rok {year} počítáme s průměrnou mzdou {wage} Kč, slevou na poplatníka {credit} Kč a minimálním základem sociálního pojištění {share} % průměrné mzdy (hlavní činnost).",
+      "paramsShareChange": "Od {month}. {year} se minimum snižuje na {share} % (sociální záloha nejméně {advance} Kč).",
+      "startHint": "Minimální základy pojištění se počítají jen za měsíce podnikání. Sleva na poplatníka a strop paušálu platí celé."
+    },
+    "sk": {
+      "flatMode": "Paušální výdaje 60 % (max. {cap})",
+      "actualHint": "Bez zaplaceného sociálního a zdravotního pojištění, to se odečítá zvlášť.",
+      "flatExpenses": "Paušální výdaje 60 %",
+      "paidInsurance": "Zaplacené pojistné",
+      "taxBase": "Základ daně",
+      "allowance": "Nezdanitelná část na daňovníka",
+      "taxable": "Zdanitelný základ",
+      "incomeTax": "Daň z příjmů",
+      "incomeTaxReduced": "Daň z příjmů (15 %)",
+      "incomeTaxHint": "15 % při příjmech do 100 000 € (za rok 2024 do 60 000 €), jinak 19 % a 25 % (od roku 2026 také 30 % a 35 %). Bez daňového bonusu na děti a dalších odpočtů.",
+      "health": "Zdravotní pojištění za rok",
+      "healthHint": "{rate} % z vyměřovacího základu (zisk děleno 1,486), nejméně z minimálního základu za každý měsíc podnikání.",
+      "social": "Sociální pojištění od července {year}",
+      "socialNone": "neplatíte",
+      "socialHint": "Povinnost a výši určí Sociální pojišťovna z daňového přiznání: základ je zisk děleno 1,486 a počtem měsíců, nejméně minimální a nejvýš maximální základ. Při příjmu pod zákonnou hranicí pojištění nevzniká.",
+      "socialMicroHint": "Příjem je jen mírně nad hranicí, proto se od července 2026 platí mikroodvod z nižšího základu.",
+      "total": "Celkem daň + pojištění za rok",
+      "totalHint": "Daň z příjmů, zdravotní pojištění za rok a sociální pojištění zaplacené během roku.",
+      "params": "Pro rok {year} počítáme se životním minimem {zm} a stropem paušálních výdajů {cap}.",
+      "socialFallback": "Parametry sociálního pojištění pro další rok ještě nejsou zveřejněné, použity hodnoty od července {year}.",
+      "startHint": "Minimální základ zdravotního pojištění se počítá jen za měsíce podnikání. Strop paušálu a nezdanitelná část platí celé.",
+      "paidSocialHint": "Sociální pojistné zaplacené během roku. Snižuje základ daně.",
+      "paidHealthHint": "Zdravotní zálohy zaplacené během roku. Snižují základ daně a odečtou se v ročním zúčtování."
+    },
+    "csvNote": "Pozn.",
+    "csvDisclaimer": "Orientační odhad bez záruky. Nenahrazuje daňové přiznání ani daňového poradce. Údaje si před použitím ověřte."
+  },
+  "linkName": {
+    "title": "Odkaz pro zákazníka",
+    "label": "Vlastní název odkazu",
+    "placeholder": "např. web-redesign",
+    "hint": "Jen pro čitelnost. Odkaz otevírá jen klíč na konci, takže dříve poslané odkazy dál fungují. Prázdné pole vrátí výchozí tvar.",
+    "save": "Uložit",
+    "saved": "Název odkazu uložen",
+    "cleared": "Odkaz má zase výchozí tvar",
+    "invalid": "Použijte písmena, číslice nebo pomlčky.",
+    "failed": "Uložení se nezdařilo",
+    "copy": "Kopírovat",
+    "copied": "Odkaz zkopírován"
   }
 }

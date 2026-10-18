@@ -5,6 +5,7 @@ import { DbService } from "../db/db.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { EmailService } from "../email/email.service";
 import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
+import { resolveInvoiceToken } from "../public-links/resolve";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -12,8 +13,9 @@ export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
  * Deliberately loose (not a strict RFC-4122 version check) — this only
  * needs to reject obviously-malformed input before it ever reaches a
  * `::uuid` cast in Postgres (which would otherwise raise a raw driver
- * error, not a clean 404). The real access control is `public_token`
+ * error, not a clean 404). The real access control is the link secret
  * being an unguessable random value with a unique index, not this regex.
+ * Link segments themselves are checked by `resolveInvoiceToken`.
  */
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -48,7 +50,6 @@ type PublicInvoiceSupplierRow = {
   bank_account_iban: string | null;
   bank_account_number: string | null;
   bank_account_bank_code: string | null;
-  address_country: string | null;
 };
 
 type PublicQrDetailsRow = {
@@ -62,6 +63,7 @@ type PublicQrDetailsRow = {
   reverse_charge: boolean;
   exchange_rate: string | null;
   order_number: string | null;
+  customer_country: string | null;
 };
 
 export interface PublicInvoiceLineItemView {
@@ -77,8 +79,6 @@ export interface PublicInvoiceSupplierView {
   bankAccountIban: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
-  /** Registered country: SK gets a PAY by square code instead of SPAYD. */
-  country: string | null;
 }
 
 export interface PublicInvoiceView {
@@ -115,6 +115,8 @@ export interface PublicInvoiceView {
    * Null when the invoice has no number yet.
    */
   qrInvoice: string | null;
+  /** Buyer's country as on the document; with the IBAN it picks SPAYD or PAY by square. */
+  buyerCountry: string | null;
   /** Quotes only: whether the client may still answer, and the answer if given. */
   quote: { canRespond: boolean; response: "accepted" | "rejected" | null; respondedAt: string | null; name: string | null } | null;
   /** The company accepts cards (own Stripe) and something is left to pay: show "Pay by card". */
@@ -152,8 +154,9 @@ export class PublicInvoicesService {
    * operator reviews it. The company itself is not told who reported.
    * Never throws for an unknown token, so it reveals nothing.
    */
-  async reportAbuse(token: string, reason: AbuseReason, message: string | null, reporterEmail: string | null, bucket: string): Promise<void> {
-    if (!UUID_PATTERN.test(token)) return;
+  async reportAbuse(link: string, reason: AbuseReason, message: string | null, reporterEmail: string | null, bucket: string): Promise<void> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token) return;
     const rows = await this.dbService.db.execute<{
       tenant_id: string;
       invoice_id: string;
@@ -176,7 +179,7 @@ export class PublicInvoicesService {
       this.logger.warn(`${title}: ${body}`);
       return;
     }
-    await this.email.sendNotificationEmail({ to, title, body }).catch((err) => this.logger.error(`Abuse report e-mail failed: ${err}`));
+    await this.email.sendPlatformEmail({ to, title, body }).catch((err) => this.logger.error(`Abuse report e-mail failed: ${err}`));
   }
 
   /** True when the company behind the link is suspended; the portal then shows nothing. */
@@ -186,8 +189,9 @@ export class PublicInvoicesService {
   }
 
   /** Bumps the share-link view counter via `record_public_invoice_view`; never throws on a bad token. */
-  async recordView(token: string): Promise<void> {
-    if (!UUID_PATTERN.test(token)) return;
+  async recordView(link: string): Promise<void> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token) return;
     const rows = await this.dbService.db.execute<{ tenant_id: string; invoice_id: string; invoice_number: string | null; first_view: boolean }>(
       sql`SELECT * FROM record_public_invoice_view(${token})`,
     );
@@ -202,8 +206,9 @@ export class PublicInvoicesService {
   }
 
   /** The client's accept/reject answer to an issued quote; 409 when already answered or not a quote. */
-  async respondToQuote(token: string, response: "accepted" | "rejected", name: string, note: string | null): Promise<void> {
-    if (!UUID_PATTERN.test(token) || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
+  async respondToQuote(link: string, response: "accepted" | "rejected", name: string, note: string | null): Promise<void> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
     const rows = await this.dbService.db.execute<{ tenant_id: string; invoice_id: string; invoice_number: string | null }>(
       sql`SELECT * FROM respond_to_public_quote(${token}, ${response}, ${name}, ${note})`,
     );
@@ -217,8 +222,10 @@ export class PublicInvoicesService {
     });
   }
 
-  async findByPublicToken(token: string): Promise<PublicInvoiceView> {
-    if (!UUID_PATTERN.test(token) || (await this.isBlocked(token))) {
+  /** `link` is the /i/ segment: a short key behind its readable prefix, or the UUID of an older link. */
+  async findByPublicToken(link: string): Promise<PublicInvoiceView> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || (await this.isBlocked(token))) {
       throw new NotFoundException("Invoice not found");
     }
 
@@ -327,11 +334,11 @@ export class PublicInvoicesService {
             bankAccountIban: supplierRow.bank_account_iban,
             bankAccountNumber: supplierRow.bank_account_number,
             bankAccountBankCode: supplierRow.bank_account_bank_code,
-            country: supplierRow.address_country,
           }
         : null,
       attachments: attachmentRows.map((r) => ({ id: r.id, filename: r.filename, mime: r.mime, sizeBytes: r.size_bytes })),
       qrInvoice,
+      buyerCountry: qr?.customer_country ?? null,
       quote: quoteRow
         ? {
             canRespond: header.status === "issued" && !quoteRow.client_response,
@@ -348,8 +355,9 @@ export class PublicInvoicesService {
   }
 
   /** One portal attachment by token + id (`get_public_invoice_attachment`); 404 for anything else. */
-  async downloadAttachment(token: string, attachmentId: string) {
-    if (!UUID_PATTERN.test(token) || !UUID_PATTERN.test(attachmentId) || (await this.isBlocked(token))) throw new NotFoundException("Attachment not found");
+  async downloadAttachment(link: string, attachmentId: string) {
+    const token = UUID_PATTERN.test(attachmentId) ? await resolveInvoiceToken(this.dbService.db, link) : null;
+    if (!token || (await this.isBlocked(token))) throw new NotFoundException("Attachment not found");
     const rows = await this.dbService.db.execute<{ filename: string; mime: string; data: string }>(
       sql`SELECT * FROM get_public_invoice_attachment(${token}, ${attachmentId})`,
     );

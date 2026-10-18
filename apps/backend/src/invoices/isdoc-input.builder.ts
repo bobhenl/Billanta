@@ -69,7 +69,7 @@ export function contactToIsdocParty(contact: ContactRow): IsdocParty {
 
 /** `invoices.source`'s DB enum includes `"recurring"` and `"import"`, which have no equivalent in ISDOC's (narrower, optional) `source` field — omitted rather than misrepresented as `manual`. */
 function toIsdocSource(source: InvoiceRow["source"]): IsdocInvoiceInput["source"] {
-  return source === "recurring" || source === "import" ? undefined : source;
+  return source === "recurring" || source === "import" || source === "profile_order" ? undefined : source;
 }
 
 /**
@@ -107,6 +107,9 @@ export function buildIsdocInvoiceInput(
     // DUZP defaults to the issue date (goods/services delivered at invoicing time).
     taxableSupplyDate: (invoice.taxableSupplyDate ?? invoice.issueDate).toISOString().slice(0, 10),
     currency: invoice.currency,
+    // Same home-currency rule as the Pohoda export; SK suppliers keep EUR as local.
+    localCurrency: tenant.addressCountry === "SK" ? "EUR" : "CZK",
+    exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
     supplier: tenantToIsdocParty(tenant),
     customer: contactToIsdocParty(contact),
     lineItems: lineItems.map((item) => {

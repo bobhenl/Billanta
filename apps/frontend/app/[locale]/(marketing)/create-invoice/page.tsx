@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { GuestAccountCta } from '@/components/account-cta';
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function GuestInvoicePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('guestInvoice');
   const points = t.raw('points') as string[];
 

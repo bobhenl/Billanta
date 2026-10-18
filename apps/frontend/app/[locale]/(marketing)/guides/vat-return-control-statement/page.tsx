@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { GuidePage, GuideSection, guideMetadata } from '@/components/public-tools/guide-page';
 import { VatDeadlines } from '@/components/public-tools/vat-deadlines';
 import { getGuide, isPublishedIn } from '@/lib/public-tools';
@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function VatFilingGuide({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   // Where the guide is not published (sk), GuidePage shows the Czech-rules
   // notice and the catalog has no body, so the body is not even read.
   if (!isPublishedIn(getGuide(SLUG)!, locale)) return <GuidePage slug={SLUG} locale={locale}>{null}</GuidePage>;

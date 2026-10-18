@@ -12,8 +12,9 @@ import {
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { fuzzyScore } from "../common/fuzzy";
+import { getCnbDay } from "../exports/cnb-rates";
 import { getHomeRateDay } from "../exports/home-rates";
-import { annualRateFor, exchangeRateSettingsOf, rateYearOf, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
+import { exchangeRateSettingsOf, isCnbRate, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
 import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
@@ -44,6 +45,7 @@ import {
 } from "./party-snapshot";
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
+import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -109,6 +111,9 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.amount_paid !== undefined) v.amountPaid = (dto.amount_paid ?? 0).toFixed(2);
   if (dto.language !== undefined) v.language = dto.language;
   if (dto.reverse_charge !== undefined) v.reverseCharge = dto.reverse_charge;
+  if (dto.reverse_charge_code !== undefined) v.reverseChargeCode = dto.reverse_charge_code ?? null;
+  // A code left over from a ticked box would confuse a later KH export.
+  if (dto.reverse_charge === false) v.reverseChargeCode = null;
   return v;
 }
 
@@ -138,6 +143,27 @@ export function rateModeAfterEdit(
   const after = values.exchangeRate == null ? null : Number(values.exchangeRate);
   if (before === after || after == null || invoice.exchangeRateMode === "none") return {};
   return { exchangeRateMode: "manual", exchangeRateDate: null };
+}
+
+/**
+ * `rateModeAfterEdit`, except that a new rate equal to ČNB's for the
+ * document's day (the "Načíst z ČNB" button) is stored as the ČNB rate with
+ * its list day instead of as a plain typed rate.
+ */
+export async function rateAfterEdit(
+  invoice: Pick<InvoiceRow, "currency" | "exchangeRate" | "exchangeRateMode" | "taxableSupplyDate" | "issueDate">,
+  values: Partial<typeof schema.invoices.$inferInsert>,
+): Promise<Partial<typeof schema.invoices.$inferInsert>> {
+  const change = rateModeAfterEdit(invoice, values);
+  if (change.exchangeRateMode !== "manual" || values.exchangeRate == null) return change;
+  const currency = (values.currency ?? invoice.currency).toUpperCase();
+  const supply = values.taxableSupplyDate !== undefined ? values.taxableSupplyDate : invoice.taxableSupplyDate;
+  const day = supply ?? values.issueDate ?? invoice.issueDate;
+  if (currency === "CZK" || !day) return change;
+  const cnb = await getCnbDay(new Date(day));
+  const cnbRate = cnb?.rates.get(currency)?.rate ?? null;
+  if (!isCnbRate(Number(values.exchangeRate), cnbRate)) return change;
+  return { exchangeRate: cnbRate!.toFixed(6), exchangeRateMode: "cnb_daily", exchangeRateDate: cnb!.date };
 }
 
 /** Per-field audit entries ("seller.dic: CZ1 → CZ2") between two party snapshots. */
@@ -211,6 +237,35 @@ export class InvoicesService {
    * text, sender name, reply-to, and — for the invoice email — the PDF,
    * ISDOC and the invoice's own attachments marked "send with email".
    */
+  /**
+   * The /i/, /c/ and /d/ path segments as the customer gets them: a readable
+   * prefix (Settings → Faktury) plus the secret key. Company name as on the
+   * document, like the {link} variable in the e-mail text.
+   */
+  private async publicLinks(
+    db: TenantDb,
+    invoice: typeof schema.invoices.$inferSelect,
+    contact?: typeof schema.contacts.$inferSelect | null,
+  ) {
+    const [live] = await db
+      .select({
+        companyName: schema.tenants.companyName,
+        publicProfile: schema.tenants.publicProfile,
+        invoiceFormPrefs: schema.tenants.invoiceFormPrefs,
+      })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, invoice.tenantId))
+      .limit(1);
+    const { tenant, contact: buyer } = documentParties(invoice, live ?? {}, contact);
+    return {
+      public: invoiceLinkOf(tenant, invoice),
+      // The same link without the custom name, so the editor can preview "back to default".
+      publicDefault: invoiceLinkOf(tenant, { ...invoice, publicSlug: null }),
+      portal: buyer ? clientPortalLinkOf(tenant, buyer) : null,
+      buyerDetails: invoice.buyerDetailsToken ? buyerDetailsLinkOf(tenant, invoice, invoice.buyerDetailsToken) : null,
+    };
+  }
+
   private async emailCustomization(
     db: TenantDb,
     tenantId: string,
@@ -501,7 +556,7 @@ export class InvoicesService {
     const values = invoiceFieldValues(dto);
     // A rate changed by hand on an issued document is no longer the ČNB or
     // annual rate it was printed as; label it as a plain rate from now on.
-    if (issued) Object.assign(values, rateModeAfterEdit(invoice, values));
+    if (issued) Object.assign(values, await rateAfterEdit(invoice, values));
     const changes = this.audit?.diff(invoice as Record<string, unknown>, values as Record<string, unknown>) ?? [];
     if (issued) changes.push(...(await this.snapshotAfterEdit(db, tenantId, invoice, values)));
 
@@ -639,6 +694,8 @@ export class InvoicesService {
 
     return {
       invoice: { ...invoice, isOverdue: isOverdue(invoice) },
+      /** Path segments for the copy-link buttons and previews. */
+      links: await this.publicLinks(db, invoice, contact),
       /** The live contact (link, e-mail for sending). */
       contact: contact ?? null,
       /** The buyer as printed on the document. */
@@ -717,11 +774,32 @@ export class InvoicesService {
     const invoice = await this.requireInvoice(db, id);
     const [updated] = await db
       .update(schema.invoices)
-      .set({ publicToken: randomUUID(), updatedAt: new Date() })
+      // Both secrets, so neither the old UUID link nor the old short one keeps working.
+      .set({ publicToken: randomUUID(), publicKey: newShortKey(), updatedAt: new Date() })
       .where(eq(schema.invoices.id, id))
-      .returning({ id: schema.invoices.id, publicToken: schema.invoices.publicToken });
+      .returning();
     await this.log(db, invoice, "link_rotated");
-    return updated;
+    return { id: updated.id, publicToken: updated.publicToken, link: (await this.publicLinks(db, updated)).public };
+  }
+
+  /**
+   * The user's own name in front of the link key (`slug` already normalised
+   * by `customSlugSchema`; null goes back to the Settings prefix). Only the
+   * key is a secret, so links sent with the old name keep opening.
+   */
+  async setPublicSlug(db: TenantDb, id: string, slug: string | null) {
+    const invoice = await this.requireInvoice(db, id);
+    let row = invoice;
+    if ((invoice.publicSlug ?? null) !== slug) {
+      [row] = await db
+        .update(schema.invoices)
+        .set({ publicSlug: slug, updatedAt: new Date() })
+        .where(eq(schema.invoices.id, id))
+        .returning();
+      await this.log(db, invoice, "link_renamed", [{ field: "publicSlug", from: invoice.publicSlug ?? null, to: slug }]);
+    }
+    const links = await this.publicLinks(db, row);
+    return { id: row.id, publicSlug: row.publicSlug, link: links.public, defaultLink: links.publicDefault };
   }
 
   /**
@@ -812,6 +890,7 @@ export class InvoicesService {
         noteBelow: source.noteBelow,
         language: source.language,
         reverseCharge: source.reverseCharge,
+        reverseChargeCode: source.reverseChargeCode,
         bankAccountId: source.bankAccountId,
         status: "draft",
         source: "manual",
@@ -913,6 +992,7 @@ export class InvoicesService {
       noteBelow: invoice.noteBelow,
       language: invoice.language,
       reverseCharge: invoice.reverseCharge,
+      reverseChargeCode: invoice.reverseChargeCode,
       items: items.map((item) => ({
         description: item.description,
         quantity: Number(item.quantity),
@@ -1041,16 +1121,19 @@ export class InvoicesService {
     const corrected = invoice.sentAt ? await this.editedSince(db, id, invoice.sentAt) : false;
 
     await assertCanSendEmail(db, invoice.tenantId);
-    await this.emailService.sendInvoiceEmail({
-      corrected,
-      to: contact.email,
-      invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-      amount: formatInvoiceAmount(total, invoice.currency),
-      dueDate: invoice.dueDate,
-      publicToken: invoice.publicToken,
-      clientPortalToken: contact.portalToken,
-      ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
-    });
+    await this.emailService.sendInvoiceEmail(
+      {
+        corrected,
+        to: contact.email,
+        invoiceNumber: invoice.invoiceNumber ?? invoice.id,
+        amount: formatInvoiceAmount(total, invoice.currency),
+        dueDate: invoice.dueDate,
+        ...(await this.emailLinks(db, invoice, contact)),
+        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
+      },
+      // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
+      { tenantId: invoice.tenantId, db, idempotencyKey: `invoice:${invoice.id}:${Math.floor(Date.now() / 60_000)}` },
+    );
     await recordEmailSent(db, invoice.tenantId, "invoice", contact.email);
 
     const [updated] = await db
@@ -1062,6 +1145,11 @@ export class InvoicesService {
     this.ping(updated, "invoice_sent", `Faktura ${updated.invoiceNumber ?? ""} odeslána`, `Komu: ${contact.email}`);
     await this.log(db, updated, corrected ? "sent_corrected" : "sent", [{ field: "email", from: null, to: contact.email }]);
     return updated;
+  }
+
+  private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {
+    const links = await this.publicLinks(db, invoice, contact);
+    return { publicLink: links.public, clientPortalLink: links.portal };
   }
 
   /** Whether the issued invoice was edited in place after `since` (its last send). */
@@ -1098,16 +1186,18 @@ export class InvoicesService {
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id));
     const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
     await assertCanSendEmail(db, invoice.tenantId);
-    await this.emailService.sendPaymentReminderEmail({
-      to: contact.email,
-      invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-      amount: formatInvoiceAmount(total, invoice.currency),
-      dueDate: invoice.dueDate,
-      publicToken: invoice.publicToken,
-      clientPortalToken: contact.portalToken,
-      reminderCount: invoice.reminderCount + 1,
-      ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
-    });
+    await this.emailService.sendPaymentReminderEmail(
+      {
+        to: contact.email,
+        invoiceNumber: invoice.invoiceNumber ?? invoice.id,
+        amount: formatInvoiceAmount(total, invoice.currency),
+        dueDate: invoice.dueDate,
+        ...(await this.emailLinks(db, invoice, contact)),
+        reminderCount: invoice.reminderCount + 1,
+        ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
+      },
+      { tenantId: invoice.tenantId, db, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },
+    );
     await recordEmailSent(db, invoice.tenantId, "reminder", contact.email);
     const [updated] = await db
       .update(schema.invoices)
@@ -1135,18 +1225,30 @@ export class InvoicesService {
    * but requiring it here makes the caller's intent explicit at the call
    * site. Returns `null` (not a thrown error) when no row transitioned, so
    * callers can decide for themselves whether that's worth surfacing.
+   *
+   * `received.paidAt` is the bank's booking day, which becomes `paid_at`.
+   * A payment in the invoice's currency that is less than what is still
+   * due (only possible through the manual match; auto-match leaves partial
+   * payments unmatched) is added to `amount_paid` and the invoice stays
+   * issued, like a partial payment entered by hand in `markPaid`.
    */
   async markPaidFromReconciliation(
     db: TenantDb,
     invoiceId: string,
     tenantId: string,
-    received?: { amount: number; currency: string; fee?: number },
+    received?: { amount: number; currency: string; fee?: number; paidAt?: Date },
   ) {
     // A home-currency credit settling a foreign-currency invoice is the real
     // proceeds after the bank's conversion; keep it for the margin / exchange
     // difference. `receivedCzk` holds it in the home currency (EUR for SK).
     const [current] = await db
-      .select({ currency: schema.invoices.currency, paymentFees: schema.invoices.paymentFees, addressCountry: schema.tenants.addressCountry })
+      .select({
+        currency: schema.invoices.currency,
+        paymentFees: schema.invoices.paymentFees,
+        amountPaid: schema.invoices.amountPaid,
+        reverseCharge: schema.invoices.reverseCharge,
+        addressCountry: schema.tenants.addressCountry,
+      })
       .from(schema.invoices)
       .innerJoin(schema.tenants, eq(schema.tenants.id, schema.invoices.tenantId))
       .where(eq(schema.invoices.id, invoiceId));
@@ -1160,9 +1262,41 @@ export class InvoicesService {
       received?.fee && received.fee > 0 && current && received.currency.toUpperCase() === current.currency
         ? { paymentFees: round2(Number(current.paymentFees) + received.fee).toFixed(2) }
         : {};
+
+    const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
+    const total = round2(computeInvoiceTotal(lineItems, { reverseCharge: current?.reverseCharge ?? false }));
+    const sameCurrency = Boolean(received && current && received.currency.toUpperCase() === current.currency);
+    const paidSoFar = sameCurrency ? round2(Number(current!.amountPaid) + received!.amount) : total;
+    if (sameCurrency && paidSoFar < total - 0.005) {
+      const [partial] = await db
+        .update(schema.invoices)
+        .set({ amountPaid: paidSoFar.toFixed(2), ...fee, updatedAt: new Date() })
+        .where(
+          and(
+            eq(schema.invoices.id, invoiceId),
+            eq(schema.invoices.tenantId, tenantId),
+            eq(schema.invoices.status, "issued"),
+          ),
+        )
+        .returning();
+      if (partial) {
+        await this.log(db, partial, "partial_payment", [
+          { field: "amountPaid", from: Number(current!.amountPaid), to: paidSoFar },
+        ]);
+      }
+      return partial ?? null;
+    }
+
     const [updated] = await db
       .update(schema.invoices)
-      .set({ status: "paid", paidAt: new Date(), ...receivedCzk, ...fee, updatedAt: new Date() })
+      .set({
+        status: "paid",
+        paidAt: received?.paidAt ?? new Date(),
+        amountPaid: total.toFixed(2),
+        ...receivedCzk,
+        ...fee,
+        updatedAt: new Date(),
+      })
       .where(
         and(
           eq(schema.invoices.id, invoiceId),
@@ -1298,11 +1432,13 @@ export class InvoicesService {
   }
 
   /**
-   * The home-currency rate a document gets at issue and how it was chosen: a
-   * rate typed on the draft, the company's annual rate for the year of the
-   * taxable supply date (issue date when there is none; Czech companies
-   * only), or the official daily rate for that day (ČNB, or ECB for a Slovak
-   * company, see home-rates.ts). Nothing for documents in the home currency.
+   * The home-currency rate a document gets at issue and how it was chosen:
+   * a rate typed on the draft, or the official list valid on the taxable
+   * supply date (issue date when there is none): ČNB, or ECB for a Slovak
+   * company (home-rates.ts). A typed rate that is the official one for that
+   * day (the form's "Načíst kurz" button) is stored as such, with its list
+   * day. The jednotný kurz never goes on a document (exchange-rate-mode.ts).
+   * Nothing for documents in the home currency.
    */
   private async issueRate(
     db: TenantDb,
@@ -1320,19 +1456,17 @@ export class InvoicesService {
     if (invoice.currency.toUpperCase() === home) return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
     const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
     const day = new Date(invoice.taxableSupplyDate ?? issueDate);
-    const year = rateYearOf(day);
-    const annualRate = annualRateFor(settings.annualRates, invoice.currency, year);
+    const official = await getHomeRateDay(home, invoice.currency, day);
+    const manualRate = invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
     const { mode, source } = resolveRateMode({
       setting: settings.mode,
       vatStatus: tenant?.vatStatus ?? "non_payer",
       totalVat: computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
-      manualRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
-      annualRate,
+      manualRate,
+      manualIsCnb: manualRate != null && isCnbRate(manualRate, official?.rate),
       home,
     });
     if (source === "manual") return { exchangeRate: invoice.exchangeRate, exchangeRateMode: mode, exchangeRateDate: null };
-    if (source === "annual") return { exchangeRate: annualRate!.toFixed(10), exchangeRateMode: mode, exchangeRateDate: `${year}-01-01` };
-    const official = await getHomeRateDay(home, invoice.currency, day);
     return { exchangeRate: official ? official.rate.toFixed(10) : null, exchangeRateMode: mode, exchangeRateDate: official?.date ?? null };
   }
 

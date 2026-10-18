@@ -1,5 +1,6 @@
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
+import { REVERSE_CHARGE_CODE_VALUES } from "@faktur/cz-compliance";
 
 const lineItemSchema = z.object({
   description: z.string().trim().min(1).max(500),
@@ -78,6 +79,9 @@ export const invoiceFieldsSchema = z.object({
   amount_paid: z.number().min(0).max(1_000_000_000).nullish(),
   language: z.enum(["cs", "sk", "en"]).default("cs"),
   reverse_charge: z.boolean().default(false),
+  // Kód předmětu plnění (§ 92a–92i ZDPH) for kontrolní hlášení A.1; only the
+  // codes EPO accepts today.
+  reverse_charge_code: z.enum(REVERSE_CHARGE_CODE_VALUES).nullish(),
   line_items: z.array(lineItemSchema).min(1).max(200),
 });
 
@@ -134,7 +138,7 @@ export const listInvoicesQuerySchema = z.object({
   amount_min: z.coerce.number().min(0).optional(),
   amount_max: z.coerce.number().min(0).optional(),
   // How it was created: "ai" covers every AI channel (Telegram, WhatsApp).
-  source: z.enum(["manual", "ai", "api", "recurring", "import"]).optional(),
+  source: z.enum(["manual", "ai", "api", "recurring", "import", "profile_order"]).optional(),
   language: z.enum(["cs", "sk", "en"]).optional(),
   reverse_charge: z.enum(["yes", "no"]).optional(),
   // At least one line item with this VAT rate (percent).

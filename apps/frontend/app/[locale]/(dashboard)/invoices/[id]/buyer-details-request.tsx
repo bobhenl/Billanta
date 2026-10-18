@@ -1,13 +1,17 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { CheckCircle2, Clock, Copy, Link2, Send, UserPen, X } from 'lucide-react';
+import { CheckCircle2, Clock, Copy, Link2, Send, UserPen, UserSearch, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import type { BuyerDetailsOutcome } from '@/lib/invoice-ui';
 import { cancelBuyerDetails, requestBuyerDetails } from '../actions';
+import { copyText } from '@/lib/clipboard';
+
+type Field = 'email' | 'phone' | 'ico' | 'dic';
+const FIELDS: Field[] = ['email', 'phone', 'ico', 'dic'];
 
 interface Props {
   id: string;
@@ -18,41 +22,72 @@ interface Props {
   autoIssue: boolean;
   outcome: BuyerDetailsOutcome | null;
   contactEmail: string | null;
+  /** Required fields of the open link (or the company default for a new one). */
+  required: Field[];
+  /** The company default, for "use as default". */
+  defaultRequired: Field[];
+  /** `inline`: inside the "fill in the required details" box of a draft without a customer. */
+  variant?: 'block' | 'inline';
+  /** The inline variant is shown elsewhere on the page, so skip the start button here. */
+  hideStart?: boolean;
 }
+
+const sameSet = (a: Field[], b: Field[]) => a.length === b.length && a.every((f) => b.includes(f));
 
 /**
  * "Odběratel si doplní údaje sám" on a draft: send the customer a link to
  * fill in their own billing details, see whether they did, and what
  * happened with the contact.
  */
-export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, email, autoIssue, outcome, contactEmail }: Props) {
+export function BuyerDetailsRequest({
+  id,
+  token,
+  submittedAt,
+  submittedLabel,
+  email,
+  autoIssue,
+  outcome,
+  contactEmail,
+  required,
+  defaultRequired,
+  variant = 'block',
+  hideStart = false
+}: Props) {
   const t = useTranslations('invoices.buyerDetails');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [to, setTo] = useState(email ?? contactEmail ?? '');
   const [auto, setAuto] = useState(autoIssue);
+  const [fields, setFields] = useState<Field[]>(required);
+  const [saveDefault, setSaveDefault] = useState(false);
+  // When copying fails even with the HTTP fallback (copyText), the link is shown to copy by hand.
+  const [manualUrl, setManualUrl] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const linkOf = (tok: string) => `${window.location.origin}/d/${tok}`;
   const copy = async (url: string) => {
     try {
-      await navigator.clipboard.writeText(url);
+      await copyText(url);
+      setManualUrl(null);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {
-      window.prompt(t('copyPrompt'), url);
+      setManualUrl(url);
+      toast({ text: t('copyManual'), tone: 'info' });
     }
   };
 
+  const toggle = (f: Field) => setFields((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : FIELDS.filter((x) => x === f || cur.includes(x))));
+
   const send = () =>
     startTransition(async () => {
-      const r = await requestBuyerDetails(id, to, auto);
+      const r = await requestBuyerDetails(id, to, auto, fields, saveDefault && !sameSet(fields, defaultRequired));
       if (!r.ok) {
         toast({ text: `${t('failed')}: ${r.error}`, tone: 'err' });
         return;
       }
       setOpen(false);
       if (r.data.emailed) toast({ text: t('emailed', { email: to.trim() }), tone: 'ok' });
-      else await copy(linkOf(r.data.token));
+      else await copy(linkOf(r.data.link ?? r.data.token));
       router.refresh();
     });
 
@@ -61,12 +96,27 @@ export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, em
       const r = await cancelBuyerDetails(id);
       if (!r.ok) toast({ text: `${t('failed')}: ${r.error}`, tone: 'err' });
       else {
+        setManualUrl(null);
         toast({ text: t('cancelled'), tone: 'ok' });
         router.refresh();
       }
     });
 
-  const fieldLabel = (f: string) => (['legalName', 'email', 'ico', 'dic', 'address', 'isPerson', 'contactId'].includes(f) ? t(`field.${f}`) : f);
+  const fieldLabel = (f: string) => (['legalName', 'email', 'phone', 'ico', 'dic', 'address', 'isPerson', 'contactId'].includes(f) ? t(`field.${f}`) : f);
+
+  const manual = manualUrl && (
+    <label className="mt-3 block text-xs">
+      <span className="mb-1 block text-muted-foreground">{t('copyManualLabel')}</span>
+      <input
+        className={`${inputClass} font-mono text-xs`}
+        readOnly
+        value={manualUrl}
+        autoFocus
+        onFocus={(e) => e.currentTarget.select()}
+        onClick={(e) => e.currentTarget.select()}
+      />
+    </label>
+  );
 
   const dialog = (
     <Modal
@@ -91,6 +141,24 @@ export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, em
         <input className={inputClass} type="email" value={to} onChange={(e) => setTo(e.target.value)} placeholder={t('emailPlaceholder')} maxLength={200} />
         <span className="mt-1 block text-xs text-muted-foreground">{t('emailHint')}</span>
       </label>
+      <fieldset className="mt-4 text-sm">
+        <legend className="mb-1 font-medium">{t('requiredLabel')}</legend>
+        <p className="mb-2 text-xs text-muted-foreground">{t('requiredHint')}</p>
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
+          {FIELDS.map((f) => (
+            <label key={f} className="inline-flex items-center gap-2">
+              <input type="checkbox" checked={fields.includes(f)} onChange={() => toggle(f)} />
+              {t(`field.${f}`)}
+            </label>
+          ))}
+        </div>
+        {!sameSet(fields, defaultRequired) && (
+          <label className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+            <input type="checkbox" checked={saveDefault} onChange={(e) => setSaveDefault(e.target.checked)} />
+            {t('requiredSaveDefault')}
+          </label>
+        )}
+      </fieldset>
       <label className="mt-4 flex items-start gap-2 text-sm">
         <input type="checkbox" className="mt-1" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
         <span>
@@ -101,6 +169,23 @@ export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, em
       {token && !submittedAt && <p className="mt-4 text-xs text-warning">{t('replaceNote')}</p>}
     </Modal>
   );
+
+  if (variant === 'inline') {
+    return (
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <button type="button" className={buttonClass.secondary} onClick={() => setOpen(true)}>
+          <UserPen className="h-4 w-4" />
+          {t('button')}
+        </button>
+        <Link href={`/invoices/${id}/edit`} className={buttonClass.ghost}>
+          <UserSearch className="h-4 w-4" />
+          {t('pickCustomer')}
+        </Link>
+        {manual && <div className="w-full">{manual}</div>}
+        {dialog}
+      </div>
+    );
+  }
 
   if (submittedAt && outcome) {
     return (
@@ -129,6 +214,7 @@ export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, em
               <UserPen className="h-4 w-4" />
               {t('askAgain')}
             </button>
+            {manual}
           </div>
         </div>
         {dialog}
@@ -146,6 +232,7 @@ export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, em
             <p className="mt-1 text-muted-foreground">
               {email ? t('waitingEmail', { email }) : t('waitingLink')} {autoIssue ? t('waitingAuto') : t('waitingManual')}
             </p>
+            {required.length > 0 && <p className="mt-1 text-xs text-muted-foreground">{t('requiredSummary', { fields: required.map(fieldLabel).join(', ') })}</p>}
           </div>
           <div className="flex flex-wrap gap-2">
             <button type="button" className={buttonClass.secondary} onClick={() => copy(linkOf(token))}>
@@ -162,17 +249,20 @@ export function BuyerDetailsRequest({ id, token, submittedAt, submittedLabel, em
             </button>
           </div>
         </div>
+        {manual}
         {dialog}
       </div>
     );
   }
 
+  if (hideStart) return null;
   return (
     <>
       <button type="button" className={`${buttonClass.secondary} mt-3`} onClick={() => setOpen(true)}>
         <UserPen className="h-4 w-4" />
         {t('button')}
       </button>
+      {manual}
       {dialog}
     </>
   );

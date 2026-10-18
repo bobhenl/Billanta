@@ -12,6 +12,8 @@
  * they are announced. (Moved here from apps/frontend/lib so the public pages
  * and Settings read one table.)
  */
+import { flatTaxYearTotal } from './cz-tax-years.js';
+
 export type MinimumKind = 'health' | 'social' | 'flat_tax';
 
 type Period = { from: string; values: Partial<Record<MinimumKind, number>> };
@@ -19,13 +21,88 @@ type Period = { from: string; values: Partial<Record<MinimumKind, number>> };
 const MINIMUMS: Record<'CZ' | 'SK', Period[]> = {
   // cssz.gov.cz, vzp.cz, financnisprava.cz (paušální daň 1. pásmo)
   CZ: [
+    // Past years, for the yearly filings. Sources per number in cz-tax-years.ts.
+    { from: '2023-01', values: { health: 2722, social: 2944, flat_tax: 6208 } },
+    { from: '2024-01', values: { health: 2968, social: 3852, flat_tax: 7498 } },
+    { from: '2025-01', values: { health: 3143, social: 4759, flat_tax: 8716 } },
     { from: '2026-01', values: { health: 3306, social: 5720, flat_tax: 9984 } },
     // Novela: the social minimum back to 35 % of the average wage.
     { from: '2026-07', values: { social: 5005, flat_tax: 9162 } }
   ],
-  // socpoist.sk, vszp.sk (SZČO bez zdravotného postihnutia)
-  SK: [{ from: '2026-01', values: { health: 121.92, social: 303.11 } }]
+  // Povinne poistená SZČO: social = "Spolu" at the minimum base in Sociálna
+  // poisťovňa's yearly tables; health = minimum preddavok bez zdravotného
+  // postihnutia (§ 13 ods. 9 zákona č. 580/2004 Z. z.: 50 % of the average
+  // wage two years earlier × the SZČO rate). Neither changed mid-year.
+  SK: [
+    // 605,50 € base. Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1
+    // Health (14 %): https://www.union.sk/payment-archive/vyska-preddavkov-na-poistne-v-cleneni-podla-platitelov-poistneho-za-rok-2023/
+    { from: '2023-01', values: { health: 84.77, social: 200.72 } },
+    // 652 € base. Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1-4
+    // Health (15 %): https://www.vszp.sk/platitelia/platenie-poistneho/oznamenia-zmeny/zmeny-od-01-01.2024/
+    { from: '2024-01', values: { health: 97.8, social: 216.13 } },
+    // 715 € base. Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1-5
+    // Health (15 %): https://www.vszp.sk/platitelia/platenie-poistneho/oznamenia-zmeny/zmeny-od-01-01.2025/
+    { from: '2025-01', values: { health: 107.25, social: 237.02 } },
+    // 914,40 € social base, 762 € health base (16 %).
+    // Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1-6
+    // Health: https://www.vszp.sk/platitelia/platenie-poistneho/oznamenia-zmeny/zmeny-od-01-01.2026/
+    { from: '2026-01', values: { health: 121.92, social: 303.11 } }
+  ]
 };
+
+/**
+ * Vedlejší činnost (§ 5b odst. 2 zákona č. 589/1992 Sb.): the social minimum
+ * base is 11 % of the average wage (2026: 48 967 × 11 % = 5 387 Kč, × 29.2 %
+ * = 1 574 Kč a month; cssz.gov.cz). The July 2026 amendment changed only the
+ * main-activity share. There is no health minimum for a secondary activity:
+ * the minimum base of § 3a zákona č. 592/1992 Sb. applies to the main
+ * activity only (vzp.cz).
+ */
+const SECONDARY_SOCIAL: Period[] = [{ from: '2026-01', values: { social: 1574 } }];
+
+/** Hlavní or vedlejší samostatná výdělečná činnost (Czech OSVČ). */
+export type ActivityKind = 'main' | 'secondary';
+export const ACTIVITY_KINDS: readonly ActivityKind[] = ['main', 'secondary'];
+export const isActivityKind = (v: unknown): v is ActivityKind => v === 'main' || v === 'secondary';
+
+/** The two answers in Settings that decide which advances a Czech OSVČ pays; null = not answered yet. */
+export interface AdvanceRegime {
+  /** Paušální režim (§ 2a ZDP): the flat tax already contains social and health insurance. */
+  flatTax: boolean | null;
+  activity: ActivityKind | null;
+}
+
+/**
+ * What the "Použít" button fills for this regime, or the question to answer
+ * first. CZ: in paušální režim only the flat tax (it covers social and
+ * health, § 7a ZDP); outside it social and health, for a secondary activity
+ * the lower social minimum and no health minimum. SK has no paušální daň
+ * here, so it is always social and health. Null when the year (or the
+ * secondary minimum for it) is not in the table.
+ */
+export function applicableMinimums(
+  country: string,
+  month: string,
+  regime: AdvanceRegime
+): { from: string; values: Partial<Record<MinimumKind, number>> } | { ask: 'flat_tax' | 'activity' } | null {
+  const all = minimumsAt(country, month);
+  if (!all) return null;
+  if (country === 'SK') return { from: all.from, values: pick(all.values, ['social', 'health']) };
+  if (regime.flatTax == null) return { ask: 'flat_tax' };
+  if (regime.flatTax) return all.values.flat_tax == null ? null : { from: all.from, values: { flat_tax: all.values.flat_tax } };
+  if (regime.activity == null) return { ask: 'activity' };
+  if (regime.activity === 'main') return { from: all.from, values: pick(all.values, ['social', 'health']) };
+  const year = month.slice(0, 4);
+  let found: Period | null = null;
+  for (const p of SECONDARY_SOCIAL) if (p.from.startsWith(year) && p.from <= month) found = p;
+  return found ? { from: found.from, values: { ...found.values } } : null;
+}
+
+function pick(values: Partial<Record<MinimumKind, number>>, kinds: MinimumKind[]): Partial<Record<MinimumKind, number>> {
+  const out: Partial<Record<MinimumKind, number>> = {};
+  for (const k of kinds) if (values[k] != null) out[k] = values[k];
+  return out;
+}
 
 /** The minimums in force on `date` (that calendar year only) and the month they apply from, or null. */
 export function minimumsFor(country: string, date = new Date()): { from: string; values: Partial<Record<MinimumKind, number>> } | null {
@@ -76,17 +153,12 @@ export function minimumsByMonth(country: string, year: number): (Partial<Record<
 }
 
 /**
- * Paušální daň in the 1st band for a whole year: the sum of the monthly
- * amounts in force (the 2026 amendment changed it from July), or null when
- * any month of that year has no figure in the table.
+ * Paušální daň in the 1st band for a whole year as finally settled, or null
+ * for an unknown year. The 2026 reduction to 9 162 Kč applies from January,
+ * so 2026 is 12 × 9 162 Kč even though 9 984 Kč was due until June.
  */
 export function flatTaxBand1ForYear(year: number): number | null {
-  let sum = 0;
-  for (const month of minimumsByMonth('CZ', year)) {
-    if (month?.flat_tax == null) return null;
-    sum += month.flat_tax;
-  }
-  return sum;
+  return flatTaxYearTotal(year, 1);
 }
 
 /**

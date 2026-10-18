@@ -101,11 +101,12 @@ export async function POST(request: Request): Promise<NextResponse> {
       const resetUrl = `${SITE_URL}/${locale}/reset-password?token=${rawToken}`;
 
       try {
-        await sendPasswordResetEmail({ to: email, resetUrl });
+        await sendPasswordResetEmail({ to: email, resetUrl, userId: user.id, validMinutes: RESET_TOKEN_TTL_MS / 60_000 });
       } catch (emailError) {
-        // Log and swallow: a failed send must not turn into a distinguishable
-        // response (and must not fail the request in a way that reveals the
-        // token was created). The user just won't receive the email.
+        // Log and swallow: a failed enqueue must not turn into a
+        // distinguishable response (and must not fail the request in a way
+        // that reveals the token was created). The user just won't receive
+        // the email.
         console.error('Failed to send password reset email', emailError);
       }
     }

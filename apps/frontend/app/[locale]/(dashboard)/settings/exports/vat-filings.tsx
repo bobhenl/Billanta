@@ -5,6 +5,7 @@ import { Download, Landmark, Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
+import { Banner } from '@/components/banner';
 import { inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,18 @@ const FILES_SK = [
 ] as const;
 
 const SK_OFFICIAL_URL = 'https://www.financnasprava.sk/sk/podnikatelia/dane/dan-z-pridanej-hodnoty';
+/** `X-Vat-Warnings` (URI-encoded JSON `[{ code, document }]`) grouped by code. */
+function vatWarnings(header: string | null): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  if (!header) return out;
+  try {
+    const list = JSON.parse(decodeURIComponent(header)) as { code: string; document: string }[];
+    for (const w of list) out.set(w.code, [...(out.get(w.code) ?? []), w.document]);
+  } catch {
+    // A malformed header must not break the download that already happened.
+  }
+  return out;
+}
 
 /**
  * VAT filings as XML: EPO for Czech companies (přiznání, kontrolní hlášení,
@@ -29,7 +42,7 @@ const SK_OFFICIAL_URL = 'https://www.financnasprava.sk/sk/podnikatelia/dane/dan-
  * súhrnný výkaz). Fetched rather than linked so a "nothing to report" or
  * missing-DIČ answer shows as a toast instead of a downloaded error page.
  */
-export function VatFilings({ country = 'CZ' }: { country?: 'CZ' | 'SK' }) {
+export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { country?: 'CZ' | 'SK'; checked?: string }) {
   const sk = country === 'SK';
   const t = useTranslations(sk ? 'settings.exports.vat.sk' : 'settings.exports.vat');
   const common = useTranslations('settings.exports.vat');
@@ -41,11 +54,14 @@ export function VatFilings({ country = 'CZ' }: { country?: 'CZ' | 'SK' }) {
   const [month, setMonth] = useState(String(prev.getMonth() + 1));
   const [quarter, setQuarter] = useState(String(Math.floor(prev.getMonth() / 3) + 1));
   const [busy, setBusy] = useState<string | null>(null);
+  // Kept on screen (not a toast): the person needs the document numbers to go and fix them.
+  const [warnings, setWarnings] = useState<string[]>([]);
   const years = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - i));
   const query = mode === 'month' ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
 
   async function download(key: string, path: string) {
     setBusy(key);
+    setWarnings([]);
     try {
       const res = await fetch(`/api/files/exports/${path}?${query}`);
       if (!res.ok) {
@@ -68,6 +84,12 @@ export function VatFilings({ country = 'CZ' }: { country?: 'CZ' | 'SK' }) {
       a.download = name;
       a.click();
       URL.revokeObjectURL(url);
+      // The file downloads anyway; EPO would reject it until these are fixed.
+      setWarnings(
+        [...vatWarnings(res.headers.get('x-vat-warnings'))].map(([code, documents]) =>
+          t.has(`warnings.${code}`) ? t(`warnings.${code}`, { documents: documents.join(', ') }) : documents.join(', ')
+        )
+      );
     } catch {
       toast({ text: common('failed'), tone: 'err' });
     } finally {
@@ -130,6 +152,11 @@ export function VatFilings({ country = 'CZ' }: { country?: 'CZ' | 'SK' }) {
           </button>
         ))}
       </div>
+      {warnings.map((text) => (
+        <Banner key={text} tone="warn" className="mt-4">
+          {text}
+        </Banner>
+      ))}
       <p className="mt-4 text-xs text-muted-foreground">{t('disclaimer')}</p>
       {sk ? (
         <p className="mt-2 text-xs text-muted-foreground">
@@ -145,7 +172,7 @@ export function VatFilings({ country = 'CZ' }: { country?: 'CZ' | 'SK' }) {
             dp3: VAT_FORM_VERSIONS.DPHDP3,
             kh1: VAT_FORM_VERSIONS.DPHKH1,
             shv: VAT_FORM_VERSIONS.DPHSHV,
-            date: new Date(`${VAT_INFO_CHECKED}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
+            date: new Date(`${checked}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
           })}{' '}
           <a href={VAT_OFFICIAL_URL} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline">
             {t('officialLink')}

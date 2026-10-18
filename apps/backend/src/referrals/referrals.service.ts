@@ -3,6 +3,7 @@ import { BadRequestException, ConflictException, Injectable, Logger } from "@nes
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { prepaidUntilAfterPayment } from "../billing/prepaid-period";
 import { CREDIT_PLANS, REFERRAL_REWARDS, planCost, type CreditPlan, type ReferralProgram } from "./rewards";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -14,15 +15,6 @@ const CODE_LENGTH = 8;
 const newCode = () => Array.from({ length: CODE_LENGTH }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join("");
 
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
-
-function addMonths(isoDay: string, months: number): string {
-  const d = new Date(`${isoDay}T00:00:00Z`);
-  const day = d.getUTCDate();
-  d.setUTCMonth(d.getUTCMonth() + months);
-  // 31 Jan + 1 month → 28/29 Feb, not 3 Mar.
-  if (d.getUTCDate() < day) d.setUTCDate(0);
-  return isoDate(d);
-}
 
 /**
  * Referral programme and credit wallet of the company in `tenantDb`
@@ -167,8 +159,7 @@ export class ReferralsService {
     const today = isoDate(new Date());
     const running = tenant?.prepaidPlan && tenant.prepaidUntil && tenant.prepaidUntil >= today;
     if (running && tenant!.prepaidPlan !== plan) throw new ConflictException("other_plan_running");
-    const from = running ? tenant!.prepaidUntil! : today;
-    const until = addMonths(from, months);
+    const until = prepaidUntilAfterPayment(tenant ?? { prepaidPlan: null, prepaidUntil: null }, plan, months, today);
 
     await db.insert(schema.creditLedger).values({ tenantId, amount: -cost, reason: "plan_purchase", plan, months });
     await db
@@ -178,5 +169,3 @@ export class ReferralsService {
     return { plan, until, balance: balance - cost };
   }
 }
-
-export { addMonths as _addMonthsForTest };

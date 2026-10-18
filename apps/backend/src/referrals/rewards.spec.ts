@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { platformAdminEmails } from "../partners/platform-admin.guard";
 import { partnerSchema } from "../partners/partners.service";
 import { visitorIp } from "../guest-invoices/guest-limits";
-import { _addMonthsForTest as addMonths } from "./referrals.service";
 import { planCost, REFERRAL_REWARDS } from "./rewards";
 
 describe("planCost", () => {
@@ -14,18 +13,6 @@ describe("planCost", () => {
   it("pays the inviter more than the welcome bonus, and the accountant more than a friend", () => {
     expect(REFERRAL_REWARDS.friend.reward).toBeGreaterThan(REFERRAL_REWARDS.friend.welcome);
     expect(REFERRAL_REWARDS.accountant.reward).toBeGreaterThan(REFERRAL_REWARDS.friend.reward);
-  });
-});
-
-describe("addMonths", () => {
-  it("clamps to the end of a shorter month", () => {
-    expect(addMonths("2026-01-31", 1)).toBe("2026-02-28");
-    expect(addMonths("2028-01-31", 1)).toBe("2028-02-29");
-  });
-
-  it("adds a year across the year boundary", () => {
-    expect(addMonths("2026-10-17", 12)).toBe("2027-10-17");
-    expect(addMonths("2026-12-15", 1)).toBe("2027-01-15");
   });
 });
 

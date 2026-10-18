@@ -11,12 +11,14 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
-import { homeCurrencyOf, isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
+import { fetchContactSearch } from '@/components/company-lookup';
+import { hasSlowRegistryPart, type RegistryPart } from '@/lib/company-lookup';
+import { REVERSE_CHARGE_CODE_VALUES, homeCurrencyOf, isReverseChargeCode, isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
-import { fetchExchangeRate, saveInvoice, searchCustomers, suggestInvoice, suggestItems } from './actions';
+import { fetchExchangeRate, saveInvoice, suggestInvoice, suggestItems } from './actions';
 import type {
   AiSettings,
   AresPrefill,
@@ -205,6 +207,7 @@ export function InvoiceForm({
   const t = useTranslations('invoiceForm');
   const tDoc = useTranslations('doc');
   const tHoliday = useTranslations('holidays');
+  const tLookup = useTranslations('companyLookup');
   const sellerCountry = defaults.sellerCountry ?? 'CZ';
   const home = homeCurrencyOf(sellerCountry);
   // The rate field shows the rate the way its source quotes it (ČNB: CZK per unit, ECB: units per
@@ -274,6 +277,13 @@ export function InvoiceForm({
   const [orderNumber, setOrderNumber] = useState(template?.orderNumber ?? '');
   const [language, setLanguage] = useState<DocLanguage>(template?.language ?? defaults.language);
   const [reverseCharge, setReverseCharge] = useState(Boolean(template?.reverseCharge));
+  const [reverseChargeCode, setReverseChargeCode] = useState<string>(() => {
+    const code = template?.reverseChargeCode;
+    return isReverseChargeCode(code) ? code : '';
+  });
+  // Kontrolní hlášení A.1 needs the code only when the buyer has a Czech DIČ.
+  const customerDic = customer?.kind === 'contact' ? customer.contact.dic : (customer?.ares.dic ?? null);
+  const domesticReverseCharge = vatPayer && reverseCharge && /^CZ/i.test(customerDic?.trim() ?? '');
   // bitfaktura-style "I enter prices incl. VAT"; the default lives in Settings → Invoices.
   const [grossPrices, setGrossPricesState] = useState(defaults.prefs.pricesIncludeVat);
   const [noteAbove, setNoteAbove] = useState(template?.noteAbove ?? blank?.noteAbove ?? '');
@@ -282,12 +292,6 @@ export function InvoiceForm({
   const { prefs } = defaults;
   const [issuePlace, setIssuePlace] = useState(() => template?.issuePlace ?? (editing ? '' : prefs.defaultIssuePlace ?? ''));
   const [issuedByName, setIssuedByName] = useState(() => template?.issuedByName ?? (editing ? '' : prefs.defaultIssuedBy ?? ''));
-  // Settings → Faktury → Kurz: with an annual rate for this year the empty field means that rate, not ČNB's
-  // (Slovak law has no annual rate).
-  const rateYear = Number(((vatPayer && taxableSupplyDate) || issueDate).slice(0, 4));
-  const annualRate =
-    prefs.exchangeRateMode === 'annual' && home === 'CZK' ? prefs.annualRates.find((r) => r.year === rateYear && r.currency === currency)?.rate ?? null : null;
-  const annualRatePlaceholder = annualRate ? t('payment.exchangeRateAnnual', { rate: annualRate.toLocaleString(locale), year: rateYear }) : null;
   const [customFields, setCustomFields] = useState<CustomField[]>(() => {
     const existing = template?.customFields ?? [];
     const preset = prefs.customFieldLabels.filter((label) => !existing.some((f) => f.label === label)).map((label) => ({ label, value: '' }));
@@ -462,14 +466,17 @@ export function InvoiceForm({
     setRows((current) => current.flatMap((row) => (row.key === key ? [row, { ...row, key: ++rowSeq }] : [row])));
 
   const fetchCustomers = async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
-    // Own contacts first — instant; the registers (slower, abroad even more) arrive in fetchRegistryHits.
-    const { contacts } = await searchCustomers(q, 'none');
+    // Own contacts first – instant; the registers (slower, abroad even more) arrive in registryFetchers.
+    const { contacts } = await fetchContactSearch(q, 'none');
     return [{ label: t('customer.yourContacts'), items: contacts.map((contact) => ({ kind: 'contact' as const, contact })) }];
   };
-  const fetchRegistryHits = async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
-    const { ares } = await searchCustomers(q, registry);
+  const registryPart = (part: RegistryPart) => async (q: string): Promise<TypeaheadGroup<CustomerOption>[]> => {
+    if (part === 'slow' && !hasSlowRegistryPart(q, registry)) return [];
+    const { ares } = await fetchContactSearch(q, registry, part);
     return [{ label: t('customer.fromAres'), items: ares.map((a) => ({ kind: 'ares' as const, ares: a })) }];
   };
+  // ARES first, the Slovak RPO name search (seconds) after it, appended under the same heading.
+  const registryFetchers = [registryPart('fast'), registryPart('slow')];
 
   const applySuggestion = ({ suggestion, contact, ares }: SuggestionResult) => {
     if (contact) {
@@ -598,6 +605,7 @@ export function InvoiceForm({
           orderNumber,
           language,
           reverseCharge: vatPayer && reverseCharge,
+          reverseChargeCode: domesticReverseCharge && isReverseChargeCode(reverseChargeCode) ? reverseChargeCode : null,
           noteAbove,
           noteBelow,
           internalNote,
@@ -894,9 +902,9 @@ export function InvoiceForm({
                 placeholder={t('customer.placeholder')}
                 emptyHint={t('customer.empty')}
                 fetchGroups={fetchCustomers}
-                fetchMoreGroups={fetchRegistryHits}
-                moreLoadingHint={t('customer.searchingRegisters')}
-                getKey={(o) => (o.kind === 'contact' ? `c-${o.contact.id}` : `a-${o.ares.ico || o.ares.dic || o.ares.regNumber || o.ares.legalName}`)}
+                fetchMoreGroups={registryFetchers}
+                moreLoadingHint={[t('customer.searchingRegisters'), tLookup('searchingSlovak')]}
+                getKey={(o) => (o.kind === 'contact' ? `c-${o.contact.id}` : `a-${o.ares.addressCountry}-${o.ares.ico ||o.ares.dic || o.ares.regNumber || o.ares.legalName}`)}
                 onPick={(o) => setCustomer(o.kind === 'contact' ? { kind: 'contact', id: o.contact.id, contact: o.contact } : o)}
                 renderItem={(o) => {
                   const name = o.kind === 'contact' ? o.contact.legalName : o.ares.legalName;
@@ -1405,7 +1413,7 @@ export function InvoiceForm({
                   inputMode="decimal"
                   value={exchangeRate}
                   onChange={(e) => setExchangeRate(e.target.value.replace(/[^\d.,]/g, ''))}
-                  placeholder={annualRatePlaceholder ?? t('payment.exchangeRateAuto', { source: rateSource })}
+                  placeholder={t('payment.exchangeRateAuto', { source: rateSource })}
                   className={field}
                 />
                 <button
@@ -1413,7 +1421,9 @@ export function InvoiceForm({
                   disabled={loadingRate}
                   onClick={async () => {
                     setLoadingRate(true);
-                    const rate = await fetchExchangeRate(currency, (vatPayer && taxableSupplyDate) || issueDate);
+                    // The day the backend converts with at issue (the DUZP is only saved for a payer),
+                    // so it recognises this as ČNB's rate and labels it as such.
+                    const rate = await fetchExchangeRate(currency, (vatPayer && !isQuote && taxableSupplyDate) || issueDate);
                     setLoadingRate(false);
                     if (rate) setExchangeRate(String(Number(quoted(rate).toFixed(4))));
                     else toast({ text: t('payment.exchangeRateFailed', { source: rateSource }), tone: 'err' });
@@ -1530,6 +1540,20 @@ export function InvoiceForm({
                 <span className="font-medium">{t('settings.reverseCharge')}</span>
                 <span className="block text-xs text-muted-foreground">{t('settings.reverseChargeHint')}</span>
               </span>
+            </label>
+          )}
+          {domesticReverseCharge && (
+            <label data-field="reverseChargeCode" className="block space-y-1.5">
+              <span className="text-sm font-medium">{t('settings.reverseChargeCode')}</span>
+              <select value={reverseChargeCode} onChange={(e) => setReverseChargeCode(e.target.value)} className={field}>
+                <option value="">{t('settings.reverseChargeCodeNone')}</option>
+                {REVERSE_CHARGE_CODE_VALUES.map((code) => (
+                  <option key={code} value={code}>
+                    {code} – {t(`settings.reverseChargeCodes.${code}`)}
+                  </option>
+                ))}
+              </select>
+              <span className="block text-xs text-muted-foreground">{t('settings.reverseChargeCodeHint')}</span>
             </label>
           )}
         </Collapsible>

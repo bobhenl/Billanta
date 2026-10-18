@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   buyerDetailsSchema,
+  DEFAULT_BUYER_DETAILS_REQUIRED,
+  missingRequired,
+  newBuyerDetailsToken,
+  normalizeToken,
   requestBlock,
+  requiredFieldsOf,
+  sameCompanyName,
   resolveBuyerContact,
   shouldAutoIssue,
   submitBlock,
@@ -43,6 +49,7 @@ const details = (over: Partial<BuyerDetails> = {}): BuyerDetails => ({
   isPerson: false,
   legalName: "Nová firma s.r.o.",
   email: "fakturace@firma.cz",
+  phone: null,
   addressStreet: "Dlouhá 1",
   addressCity: "Praha",
   addressPostalCode: "110 00",
@@ -57,6 +64,7 @@ const contact = (over: Partial<BuyerContact> = {}): BuyerContact => ({
   legalName: "Nová firma s.r.o.",
   isPerson: false,
   email: null,
+  phone: null,
   ico: null,
   dic: null,
   addressStreet: null,
@@ -72,7 +80,40 @@ describe("token", () => {
     expect(TOKEN_PATTERN.test(TOKEN.toUpperCase())).toBe(true);
     expect(TOKEN_PATTERN.test("x")).toBe(false);
     expect(TOKEN_PATTERN.test(`${TOKEN}' OR 1=1`)).toBe(false);
-    expect(TOKEN_PATTERN.test(`a${TOKEN}`)).toBe(false);
+    // Not a UUID any more: it reads as a prefix plus the UUID's last group, which no link stores.
+    expect(normalizeToken(`a${TOKEN}`)).toBe("1d2e3f4a5b6c");
+    expect(submitBlock(state(), `a${TOKEN}`)).toBe("not_found");
+  });
+  it("accepts a short token behind a readable prefix and compares only the token", () => {
+    expect(TOKEN_PATTERN.test("2026-0012-aZ09bY18cX27")).toBe(true);
+    expect(normalizeToken("novak-2026-0012-aZ09bY18cX27")).toBe("aZ09bY18cX27");
+    expect(submitBlock(state({ buyerDetailsToken: "aZ09bY18cX27" }), "wrong-prefix-aZ09bY18cX27")).toBeNull();
+    expect(TOKEN_PATTERN.test("bad prefix-aZ09bY18cX27")).toBe(false);
+    expect(normalizeToken("x")).toBe("");
+  });
+  it("accepts the short base62 tokens and nothing near them", () => {
+    expect(TOKEN_PATTERN.test("aZ09bY18cX27")).toBe(true);
+    expect(TOKEN_PATTERN.test("aZ09bY18cX2")).toBe(false);
+    expect(TOKEN_PATTERN.test("aZ09bY18cX27a")).toBe(false);
+    expect(TOKEN_PATTERN.test("aZ09bY18cX2-")).toBe(false);
+  });
+  it("normalizes UUIDs to lower case but keeps short tokens exact", () => {
+    expect(normalizeToken(TOKEN.toUpperCase())).toBe(TOKEN);
+    expect(normalizeToken("aZ09bY18cX27")).toBe("aZ09bY18cX27");
+  });
+  it("generates 12 base62 characters that pass the pattern", () => {
+    const seen = new Set<string>();
+    for (let i = 0; i < 200; i++) {
+      const t = newBuyerDetailsToken();
+      expect(t).toMatch(/^[0-9A-Za-z]{12}$/);
+      seen.add(t);
+    }
+    expect(seen.size).toBe(200);
+  });
+  it("skips the bytes that would bias the alphabet", () => {
+    // 248..255 are dropped, so 255 never maps to a character; 61 -> "z", 0 -> "0", 124 -> 124 % 62 = 0.
+    const bytes = Buffer.from([255, 61, 248, 0, 124, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    expect(newBuyerDetailsToken(() => bytes)).toBe("z00123456789");
   });
 });
 
@@ -95,6 +136,9 @@ describe("submitBlock", () => {
   it("lets the exact open token submit once on a draft", () => {
     expect(submitBlock(state(), TOKEN)).toBeNull();
     expect(submitBlock(state(), TOKEN.toUpperCase())).toBeNull();
+    expect(submitBlock(state({ buyerDetailsToken: "aZ09bY18cX27" }), "aZ09bY18cX27")).toBeNull();
+    // Short tokens are case-sensitive: a different case is a different token.
+    expect(submitBlock(state({ buyerDetailsToken: "aZ09bY18cX27" }), "az09by18cx27")).toBe("not_found");
   });
   it("is not_found for a missing invoice, a closed request, a malformed or a different token", () => {
     expect(submitBlock(null, TOKEN)).toBe("not_found");
@@ -120,9 +164,14 @@ describe("buyerDetailsSchema", () => {
     const r = parse({ ico: "123456", dic: "00123456" });
     expect(r.success && [r.data.ico, r.data.dic]).toEqual(["00123456", "CZ00123456"]);
   });
-  it("requires an IČO for a Czech or Slovak company", () => {
-    expect(messages({ ico: "" })).toContain("ico_required");
-    expect(messages({ ico: null, country: "SK", dic: null })).toContain("ico_required");
+  it("leaves required fields to missingRequired, so a supplier can drop the IČO", () => {
+    expect(parse({ ico: "" }).success).toBe(true);
+  });
+  it("accepts a phone number and rejects text", () => {
+    const r = parse({ phone: " +420  777 123 456 " });
+    expect(r.success && r.data.phone).toBe("+420 777 123 456");
+    expect(messages({ phone: "call me" })).toContain("phone_format");
+    expect(parse({ phone: "" }).success).toBe(true);
   });
   it("rejects a malformed IČO", () => {
     expect(messages({ ico: "12AB5678" })).toContain("ico_format");
@@ -157,6 +206,37 @@ describe("buyerDetailsSchema", () => {
     expect(parse({ email: "not-an-email" }).success).toBe(false);
     expect(parse({ country: "CZE" }).success).toBe(false);
     expect(parse({ email: "" }).success).toBe(true);
+  });
+});
+
+describe("sameCompanyName", () => {
+  it("ignores case, accents, punctuation and spacing", () => {
+    expect(sameCompanyName("Čokoláda, s.r.o.", "COKOLADA s. r. o.")).toBe(true);
+  });
+  it("says no to a different name or a missing one", () => {
+    expect(sameCompanyName("Alfa s.r.o.", "Alfa Plus s.r.o.")).toBe(false);
+    expect(sameCompanyName(null, "Alfa")).toBe(false);
+    expect(sameCompanyName("", "")).toBe(false);
+  });
+});
+
+describe("missingRequired", () => {
+  const d = (over: Partial<BuyerDetails> = {}) => details({ phone: null, ...over });
+  it("defaults to e-mail and IČO", () => {
+    expect(requiredFieldsOf(null)).toEqual(DEFAULT_BUYER_DETAILS_REQUIRED);
+    expect(requiredFieldsOf(["phone", "bogus", "email"])).toEqual(["email", "phone"]);
+    expect(requiredFieldsOf([])).toEqual([]);
+  });
+  it("lists the empty required fields of a company", () => {
+    expect(missingRequired(d({ email: null, ico: null }), ["email", "phone", "ico", "dic"])).toEqual(["email", "phone", "ico"]);
+    expect(missingRequired(d(), ["email", "ico"])).toEqual([]);
+  });
+  it("never asks a private person for IČO or DIČ", () => {
+    expect(missingRequired(d({ isPerson: true, ico: null, dic: null }), ["email", "ico", "dic"])).toEqual([]);
+  });
+  it("asks for an IČO only in Czechia and Slovakia", () => {
+    expect(missingRequired(d({ addressCountry: "SK", ico: null }), ["ico"])).toEqual(["ico"]);
+    expect(missingRequired(d({ addressCountry: "DE", ico: null }), ["ico"])).toEqual([]);
   });
 });
 

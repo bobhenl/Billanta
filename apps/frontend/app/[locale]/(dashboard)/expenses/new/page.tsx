@@ -34,6 +34,8 @@ function prefill(description: string, amount?: string): Expense {
     description: description.slice(0, 200),
     amount: Number.isFinite(value) && value > 0 ? String(value) : '',
     vatRate: '0',
+    reverseCharge: false,
+    reverseChargeCode: null,
     currency: 'EUR',
     expenseDate: new Date().toISOString(),
     category: 'other',

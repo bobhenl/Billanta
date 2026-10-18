@@ -63,6 +63,20 @@ const pad = (n: number) => String(n).padStart(2, "0");
 const dayKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
 /** Short ranges by day, a quarter or so by week (Monday), anything longer by month. */
+/**
+ * The first day the company has anything on record (an issued or paid
+ * document or an expense), as a local midnight; null with no data. The
+ * "Celkem" report runs from it.
+ */
+export function earliestDay(dates: Iterable<Date | null | undefined>): Date | null {
+  let min: Date | null = null;
+  for (const d of dates) if (d && !Number.isNaN(d.getTime()) && (!min || d < min)) min = d;
+  return min ? startOfDay(min) : null;
+}
+
+/** YYYY-MM-DD of a local date. */
+export const localDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 export function grainFor(from: Date, to: Date): StatsGrain {
   const days = Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY) + 1;
   if (days <= 45) return "day";

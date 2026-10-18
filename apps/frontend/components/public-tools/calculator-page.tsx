@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader } from '@/components/public-tools/parts';
+import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader, ToolNote } from '@/components/public-tools/parts';
+import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd, webPageLd } from '@/lib/seo';
@@ -31,7 +32,8 @@ export async function CalculatorPage({
   children,
   after,
   disclaimer = true,
-  cta = 'signup'
+  cta = 'signup',
+  skAlternative
 }: {
   slug: string;
   locale: string;
@@ -40,28 +42,38 @@ export async function CalculatorPage({
   children: React.ReactNode;
   /** Extra sections below the widget (conditions, tables). */
   after?: React.ReactNode;
-  /** The tax "orientační výpočet" box; off for tools that compute nothing tax-related (QR, IBAN, due date). */
-  disclaimer?: boolean;
+  /** The tax "orientační výpočet" box; off for tools that compute nothing tax-related (QR, IBAN, due date), which get the one-line ToolNote instead. */
+  disclaimer?: boolean | string;
   /** Invoice tools lead to the guest invoice, which needs no account. */
   cta?: 'signup' | 'invoice';
+  /** Slug of the same calculator under Slovak rules, linked from the sk notice. */
+  skAlternative?: string;
 }) {
   const c = getCalculator(slug)!;
   const t = await getTranslations('tools');
   const k = `calculators.items.${c.key}` as const;
-  if (!isPublishedIn(c, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/calculators/${slug}`} />;
+  if (!isPublishedIn(c, locale)) {
+    const alt = skAlternative ? getCalculator(skAlternative) : undefined;
+    return (
+      <CzOnlyNotice
+        name={t(`${k}.name`)}
+        path={`/calculators/${slug}`}
+        skAlternative={alt && { href: `/calculators/${alt.slug}`, name: t(`calculators.items.${alt.key}.name`) }}
+      />
+    );
+  }
 
   const how = t.has(`${k}.how`) ? (t.raw(`${k}.how`) as string[]) : [];
   const path = `/calculators/${slug}`;
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
+      <ToolTabs kind="calculators" current={slug} />
       <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
       <div className="mt-10">{children}</div>
-      {disclaimer && (
-        <div className="mt-6">
-          <ToolDisclaimer validity={validity} />
-        </div>
-      )}
+      <div className="mt-6">
+        {disclaimer ? <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} /> : <ToolNote />}
+      </div>
       {after && <div className="mt-12 space-y-10">{after}</div>}
       {how.length > 0 && (
         <div className="mt-12 max-w-3xl">

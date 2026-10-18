@@ -1,38 +1,47 @@
 import { describe, expect, it } from "vitest";
 import { invoiceFormPrefsSchema } from "../tenants/invoice-form-prefs";
-import { annualRateFor, exchangeRateSettingsOf, mayHideConversion, rateLineLabel, resolveRateMode } from "./exchange-rate-mode";
+import { annualRateFor, exchangeRateSettingsOf, isCnbRate, mayHideConversion, rateLineLabel, resolveRateMode } from "./exchange-rate-mode";
 
 const labels = { fxRate: "Kurz ČNB", fxRateOn: "Kurz ČNB k {date}", fxRateEcbOn: "Kurz ECB k {date}", fxRateAnnual: "Jednotný kurz pro rok {year}", fxRateManual: "Kurz" };
 
 describe("exchangeRateSettingsOf", () => {
   it("defaults to the daily ČNB rate for prefs saved before the setting", () => {
-    expect(exchangeRateSettingsOf({})).toEqual({ mode: "cnb_daily", annualRates: [] });
-    expect(exchangeRateSettingsOf(null)).toEqual({ mode: "cnb_daily", annualRates: [] });
-    expect(exchangeRateSettingsOf({ exchangeRateMode: "weird" }).mode).toBe("cnb_daily");
+    expect(exchangeRateSettingsOf({})).toEqual({ mode: "cnb_daily", reportMode: "daily", annualRates: [] });
+    expect(exchangeRateSettingsOf(null)).toEqual({ mode: "cnb_daily", reportMode: "daily", annualRates: [] });
+    expect(exchangeRateSettingsOf({ exchangeRateMode: "weird", reportRateMode: "weird" })).toMatchObject({ mode: "cnb_daily", reportMode: "daily" });
+  });
+  it("reads the old single 'annual' setting as daily on invoices, annual in reports", () => {
+    expect(exchangeRateSettingsOf({ exchangeRateMode: "annual" })).toMatchObject({ mode: "cnb_daily", reportMode: "annual" });
+    expect(exchangeRateSettingsOf({ exchangeRateMode: "none", reportRateMode: "annual" })).toMatchObject({ mode: "none", reportMode: "annual" });
   });
   it("keeps valid annual rates and drops broken ones", () => {
     const s = exchangeRateSettingsOf({
       exchangeRateMode: "annual",
       annualRates: [{ year: 2026, currency: "EUR", rate: 24.5 }, { year: 2026, currency: "eur", rate: 1 }, { year: 2026, currency: "USD", rate: 0 }, null],
     });
-    expect(s).toEqual({ mode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.5 }] });
+    expect(s).toEqual({ mode: "cnb_daily", reportMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.5 }] });
   });
 });
 
 describe("invoiceFormPrefsSchema rate fields", () => {
-  it("stores the mode and the annual rates in camelCase, newest year first", () => {
+  it("stores both modes and the annual rates in camelCase, newest year first", () => {
     const p = invoiceFormPrefsSchema.parse({
-      exchange_rate_mode: "annual",
+      exchange_rate_mode: "none",
+      report_rate_mode: "annual",
       annual_rates: [
         { year: 2025, currency: "EUR", rate: 25.1 },
         { year: 2026, currency: "EUR", rate: 24.6 },
       ],
     });
-    expect(p.exchangeRateMode).toBe("annual");
+    expect(p).toMatchObject({ exchangeRateMode: "none", reportRateMode: "annual" });
     expect(p.annualRates.map((r) => r.year)).toEqual([2026, 2025]);
   });
-  it("defaults to the daily ČNB rate", () => {
-    expect(invoiceFormPrefsSchema.parse({}).exchangeRateMode).toBe("cnb_daily");
+  it("defaults to the daily rate everywhere", () => {
+    expect(invoiceFormPrefsSchema.parse({})).toMatchObject({ exchangeRateMode: "cnb_daily", reportRateMode: "daily" });
+  });
+  it("takes the old 'annual' from an old client as daily on invoices, annual in reports", () => {
+    expect(invoiceFormPrefsSchema.parse({ exchange_rate_mode: "annual" })).toMatchObject({ exchangeRateMode: "cnb_daily", reportRateMode: "annual" });
+    expect(invoiceFormPrefsSchema.parse({ exchange_rate_mode: "annual", report_rate_mode: "daily" })).toMatchObject({ exchangeRateMode: "cnb_daily", reportRateMode: "daily" });
   });
   it("rejects two rates for the same year and currency, CZK and non-positive rates", () => {
     expect(invoiceFormPrefsSchema.safeParse({ annual_rates: [{ year: 2026, currency: "EUR", rate: 24 }, { year: 2026, currency: "EUR", rate: 25 }] }).success).toBe(false);
@@ -69,18 +78,15 @@ describe("mayHideConversion", () => {
 });
 
 describe("resolveRateMode", () => {
-  const base = { vatStatus: "payer" as const, totalVat: 210, manualRate: null, annualRate: null };
+  const base = { vatStatus: "payer" as const, totalVat: 210, manualRate: null };
   it("uses the daily ČNB rate by default", () => {
     expect(resolveRateMode({ ...base, setting: "cnb_daily" })).toEqual({ mode: "cnb_daily", source: "cnb" });
   });
-  it("uses the annual rate when the company set one for that year", () => {
-    expect(resolveRateMode({ ...base, setting: "annual", annualRate: 24.6 })).toEqual({ mode: "annual", source: "annual" });
+  it("a rate typed on the draft wins", () => {
+    expect(resolveRateMode({ ...base, setting: "cnb_daily", manualRate: 25 })).toEqual({ mode: "manual", source: "manual" });
   });
-  it("falls back to the daily ČNB rate (and says so) when the annual rate is missing", () => {
-    expect(resolveRateMode({ ...base, setting: "annual" })).toEqual({ mode: "cnb_daily", source: "cnb" });
-  });
-  it("a rate typed on the draft always wins", () => {
-    expect(resolveRateMode({ ...base, setting: "annual", annualRate: 24.6, manualRate: 25 })).toEqual({ mode: "manual", source: "manual" });
+  it("a typed rate that is ČNB's for the day is the daily ČNB rate", () => {
+    expect(resolveRateMode({ ...base, setting: "cnb_daily", manualRate: 25.12, manualIsCnb: true })).toEqual({ mode: "cnb_daily", source: "cnb" });
   });
   it("hides the conversion for a non-payer but still keeps a rate for reports", () => {
     expect(resolveRateMode({ ...base, vatStatus: "non_payer", totalVat: 0, setting: "none" })).toEqual({ mode: "none", source: "cnb" });
@@ -92,10 +98,19 @@ describe("resolveRateMode", () => {
   it("ignores 'none' for an identified person on a document with VAT", () => {
     expect(resolveRateMode({ ...base, vatStatus: "identified", totalVat: 21, setting: "none" }).mode).toBe("cnb_daily");
   });
-  it("a Slovak company converts at the ECB rate, with no annual rate", () => {
+  it("a Slovak company converts at the ECB rate", () => {
     expect(resolveRateMode({ ...base, home: "EUR", setting: "cnb_daily" })).toEqual({ mode: "ecb_daily", source: "ecb" });
-    expect(resolveRateMode({ ...base, home: "EUR", setting: "annual", annualRate: 24.6 })).toEqual({ mode: "ecb_daily", source: "ecb" });
     expect(resolveRateMode({ ...base, home: "EUR", vatStatus: "non_payer", totalVat: 0, setting: "none" })).toEqual({ mode: "none", source: "ecb" });
+  });
+});
+
+describe("isCnbRate", () => {
+  it("matches the ČNB rate as the form rounds it (4 decimals)", () => {
+    expect(isCnbRate(25.12, 25.12)).toBe(true);
+    expect(isCnbRate(0.1612, 0.16123)).toBe(true);
+    expect(isCnbRate(0.1613, 0.16123)).toBe(false);
+    expect(isCnbRate(25.5, 25.12)).toBe(false);
+    expect(isCnbRate(25.12, null)).toBe(false);
   });
 });
 

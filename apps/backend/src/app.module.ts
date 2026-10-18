@@ -12,6 +12,7 @@ import { BankReconciliationController } from "./bank-reconciliation/bank-reconci
 import { BankConnectionsController } from "./bank-reconciliation/bank-connections.controller";
 import { BankReconciliationModule } from "./bank-reconciliation/bank-reconciliation.module";
 import { BillingModule } from "./billing/billing.module";
+import { SubscriptionController } from "./billing/subscription.controller";
 import { ChannelLinksController } from "./channel-links/channel-links.controller";
 import { ChannelLinksModule } from "./channel-links/channel-links.module";
 import { ContactsController } from "./contacts/contacts.controller";
@@ -54,6 +55,9 @@ import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
 import { BlogModule } from "./blog/blog.module";
+import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
+import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
+import { LegislationModule } from "./legislation/legislation.module";
 import { ReferralsController } from "./referrals/referrals.controller";
 import { ReferralsModule } from "./referrals/referrals.module";
 
@@ -125,6 +129,10 @@ import { ReferralsModule } from "./referrals/referrals.module";
     PartnersModule,
     // Public /blog + staff review queue for AI drafts (no tenant context).
     BlogModule,
+    // Accountant directory (/accountants): own listing, public list, admin review.
+    AccountantDirectoryModule,
+    // Weekly check of the official tax form and minimum pages; alerts for staff (no tenant context).
+    LegislationModule,
   ],
   // Viewers are read-only and accountants stay out of company administration.
   providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],
@@ -215,6 +223,8 @@ export class AppModule implements NestModule {
         CardPaymentsSettingsController,
         AuditController,
         ReferralsController,
+        AccountantListingController,
+        SubscriptionController,
       );
 
     // InvoicesController: same tenant-context requirement as every

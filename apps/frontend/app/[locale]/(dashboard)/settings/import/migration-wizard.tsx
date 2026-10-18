@@ -8,6 +8,7 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
+import { updateCompany } from '../actions';
 
 const SOURCES = ['fakturoid', 'idoklad', 'bitfaktura', 'faktorio', 'invoiceNinja', 'excel'] as const;
 type Source = (typeof SOURCES)[number];
@@ -27,6 +28,14 @@ type InvoiceImportResult = {
   originalPdfs?: { archived: number; missing: number };
   source?: { invoices: number; contacts: number };
   businessFilled?: string[];
+  sellers?: { ico: string; name: string | null; invoices: number }[];
+  sellerUpdate?: SellerUpdate;
+};
+type SellerUpdate = {
+  invoiceNumber: string;
+  issueDate: string;
+  changes: { field: 'name' | 'dic' | 'address'; from: string | null; to: string }[];
+  patch: Record<string, string | null>;
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
@@ -180,7 +189,10 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
 /** A pasted https://firma.bitfaktura.cz/invoices/ becomes firma.bitfaktura.cz. */
 const bareHost = (value: string) => value.trimStart().replace(/^[a-z]+:\/\//i, '').replace(/^([^/?#]*\.[^/?#]*)[/?#].*$/, '$1');
 
-type ImportRequest = { kind: 'file'; file: File } | { kind: 'bitfaktura'; account: string; apiToken: string };
+type ImportRequest =
+  | { kind: 'file'; file: File }
+  | { kind: 'bitfaktura'; account: string; apiToken: string; sellerIco?: string }
+  | { kind: 'fakturoid'; clientId: string; clientSecret: string; account: string; sellerIco?: string };
 
 function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source }) {
   const t = useTranslations('settings.import');
@@ -188,6 +200,10 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
   const [request, setRequest] = useState<ImportRequest | null>(null);
   const [account, setAccount] = useState('');
   const [apiToken, setApiToken] = useState('');
+  const [clientId, setClientId] = useState('');
+  const [clientSecret, setClientSecret] = useState('');
+  // The backend accepts a bare slug or a pasted app.fakturoid.cz URL, so no bareHost here.
+  const [fakturoidAccount, setFakturoidAccount] = useState('');
   const [preview, setPreview] = useState<InvoiceImportResult | null>(null);
   const [result, setResult] = useState<InvoiceImportResult | null>(null);
   const [busy, setBusy] = useState<'preview' | 'import' | null>(null);
@@ -198,11 +214,23 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
       const body = new FormData();
       body.set('file', req.file);
       res = await fetch(`/api/invoices/import${dryRun ? '?dryRun=1' : ''}`, { method: 'POST', body });
+    } else if (req.kind === 'fakturoid') {
+      res = await fetch('/api/invoices/import/fakturoid', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          clientId: req.clientId,
+          clientSecret: req.clientSecret,
+          account: req.account,
+          dryRun,
+          ...(req.sellerIco ? { sellerIco: req.sellerIco } : {})
+        })
+      });
     } else {
       res = await fetch('/api/invoices/import/bitfaktura', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ account: req.account, apiToken: req.apiToken, dryRun })
+        body: JSON.stringify({ account: req.account, apiToken: req.apiToken, dryRun, ...(req.sellerIco ? { sellerIco: req.sellerIco } : {}) })
       });
     }
     const data = await res.json().catch(() => ({}));
@@ -230,8 +258,9 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
     try {
       setResult(await send(request, false));
       setPreview(null);
-      // The token was needed for this import only; do not keep it around.
+      // The token and secret were needed for this import only; do not keep them around.
       setApiToken('');
+      setClientSecret('');
       setRequest(null);
     } catch (e) {
       toast({ text: (e as Error).message, tone: 'err' });
@@ -290,6 +319,58 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
           <p className="text-xs text-muted-foreground sm:col-span-3">{t('step3.api.privacy')}</p>
         </form>
       )}
+      {source === 'fakturoid' && (
+        <form
+          className="mt-3 grid gap-3 rounded-lg border border-border p-4 sm:grid-cols-2 sm:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (clientId.trim() && clientSecret.trim())
+              void check({ kind: 'fakturoid', clientId: clientId.trim(), clientSecret: clientSecret.trim(), account: fakturoidAccount.trim() });
+          }}
+        >
+          <p className="text-sm text-muted-foreground sm:col-span-2">{t('step3.fakturoid.lead')}</p>
+          <label className="grid gap-1 text-sm font-semibold">
+            {t('step3.fakturoid.clientId')}
+            <input
+              className="h-10 rounded-lg border border-border bg-background px-3 font-normal"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={200}
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-semibold">
+            {t('step3.fakturoid.clientSecret')}
+            <input
+              className="h-10 rounded-lg border border-border bg-background px-3 font-normal"
+              type="password"
+              value={clientSecret}
+              onChange={(e) => setClientSecret(e.target.value)}
+              autoComplete="off"
+              maxLength={200}
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-semibold">
+            {t('step3.fakturoid.account')}
+            <input
+              className="h-10 rounded-lg border border-border bg-background px-3 font-normal"
+              placeholder={t('step3.fakturoid.accountPlaceholder')}
+              value={fakturoidAccount}
+              onChange={(e) => setFakturoidAccount(e.target.value)}
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={200}
+            />
+            <span className="text-xs font-normal text-muted-foreground">{t('step3.fakturoid.accountHint')}</span>
+          </label>
+          <button type="submit" className={cn(button, 'sm:mb-6')} disabled={readOnly || busy !== null || !clientId.trim() || !clientSecret.trim()}>
+            {busy === 'preview' && request?.kind === 'fakturoid' ? <Loader2 className="h-4 w-4 animate-spin" /> : <CloudDownload className="h-4 w-4" />}
+            {t('step3.api.load')}
+          </button>
+          <p className="text-xs text-muted-foreground sm:col-span-2">{t('step3.fakturoid.privacy')}</p>
+        </form>
+      )}
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <FilePicker
           disabled={readOnly || busy === 'import'}
@@ -315,7 +396,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
               )}
               <span>
-                {t('step3.source', preview.source)}{' '}
+                {t(source === 'fakturoid' ? 'step3.fakturoid.source' : 'step3.source', preview.source)}{' '}
                 {preview.skipped.length === 0 ? t('step3.sourceAll') : t('step3.sourceSkipped', { count: preview.skipped.length })}
               </span>
             </p>
@@ -371,6 +452,27 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               )}
             </div>
           )}
+          {request && request.kind !== 'file' && preview.sellers && preview.sellers.length > 1 && (
+            <Banner tone="warn" title={t('step3.sellers.title', { count: preview.sellers.length })}>
+              <p className="text-sm">{t(request.kind === 'fakturoid' ? 'step3.fakturoid.sellersLead' : 'step3.sellers.lead')}</p>
+              <label className="mt-2 grid gap-1 text-sm font-semibold">
+                {t('step3.sellers.choose')}
+                <select
+                  className="h-10 max-w-full rounded-lg border border-border bg-background px-3 font-normal"
+                  value={request.sellerIco ?? ''}
+                  disabled={readOnly || busy !== null}
+                  onChange={(e) => void check({ ...request, sellerIco: e.target.value || undefined })}
+                >
+                  <option value="">{t('step3.sellers.all')}</option>
+                  {preview.sellers.map((s) => (
+                    <option key={s.ico} value={s.ico}>
+                      {t('step3.sellers.row', { name: s.name ?? '–', ico: s.ico, count: s.invoices })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </Banner>
+          )}
           <Skipped rows={preview.skipped} />
           {(preview.invoices > 0 || hasExtra(preview)) && (
             <button type="button" className={primary} disabled={readOnly || busy !== null} onClick={confirm}>
@@ -386,7 +488,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
           <Banner tone="ok" title={t('step3.done', { count: result.invoices, contacts: result.contactsCreated })}>
             {result.originalPdfs && (
               <p className="text-sm">
-                {t('step3.pdfs', { archived: result.originalPdfs.archived })}
+                {t(source === 'fakturoid' ? 'step3.fakturoid.pdfs' : 'step3.pdfs', { archived: result.originalPdfs.archived })}
                 {result.originalPdfs.missing > 0 && ` ${t('step3.pdfsMissing', { missing: result.originalPdfs.missing })}`}
               </p>
             )}
@@ -409,10 +511,54 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               </Link>
             </div>
           </Banner>
+          {result.sellerUpdate && !readOnly && <SellerUpdateOffer update={result.sellerUpdate} date={date} />}
           <Skipped rows={result.skipped} />
         </div>
       )}
     </section>
+  );
+}
+
+/** The newest imported invoice shows other supplier details: offer them for the profile, applied only on click. */
+function SellerUpdateOffer({ update, date }: { update: SellerUpdate; date: (iso: string) => string }) {
+  const t = useTranslations('settings.import.step3.sellerUpdate');
+  const [state, setState] = useState<'idle' | 'busy' | 'done'>('idle');
+  const apply = async () => {
+    setState('busy');
+    const res = await updateCompany(update.patch);
+    if (res.ok) {
+      setState('done');
+      toast({ text: t('applied'), tone: 'ok' });
+    } else {
+      setState('idle');
+      toast({ text: t('failed'), tone: 'err' });
+    }
+  };
+  return (
+    <div className="rounded-lg border border-border p-4 text-sm">
+      <p className="font-semibold">{t('title', { number: update.invoiceNumber, date: date(update.issueDate) })}</p>
+      <dl className="mt-2 space-y-1">
+        {update.changes.map((c) => (
+          <div key={c.field} className="grid gap-x-3 sm:grid-cols-[8rem_1fr]">
+            <dt className="text-muted-foreground">{t(`fields.${c.field}`)}</dt>
+            <dd className="break-words">
+              <span className="text-muted-foreground line-through">{c.from ?? t('empty')}</span> <ArrowRight className="inline h-3.5 w-3.5" /> {c.to}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {state === 'done' ? (
+        <p className="mt-3 inline-flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
+          <CheckCircle2 className="h-4 w-4" />
+          {t('applied')}
+        </p>
+      ) : (
+        <button type="button" className={cn(button, 'mt-3')} disabled={state === 'busy'} onClick={apply}>
+          {state === 'busy' && <Loader2 className="h-4 w-4 animate-spin" />}
+          {t('apply')}
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -441,7 +587,11 @@ function errorText(t: ReturnType<typeof useTranslations>, error: unknown): strin
     'forbidden',
     'bitfaktura_account',
     'bitfaktura_unauthorized',
-    'bitfaktura_unreachable'
+    'bitfaktura_unreachable',
+    'fakturoid_account',
+    'fakturoid_unauthorized',
+    'fakturoid_blocked',
+    'fakturoid_unreachable'
   ];
   return t(`errors.${typeof error === 'string' && known.includes(error) ? error : 'failed'}`);
 }

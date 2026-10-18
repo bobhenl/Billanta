@@ -33,18 +33,21 @@ export default async function DashboardHomePage() {
   let usage: Usage | null = null;
   let referral: { code: string; link: string; welcome: number; reward: number } | null = null;
   try {
-    let tenant, access;
-    [summary, config, tenant, access, usage] = await Promise.all([
+    let tenant;
+    const { from, to } = presetRange('last12');
+    // All in one round: the time summary waits only for the access check
+    // that decides whether to load it, not for the slower summary/stats.
+    const access = fetchMyAccess().catch(() => null);
+    [summary, config, tenant, usage, stats, time] = await Promise.all([
       apiFetch<DashboardSummary>('/api/v1/dashboard/summary'),
       apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null),
       fetchTenant().catch(() => null),
-      fetchMyAccess().catch(() => null),
-      apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null)
+      apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null),
+      apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`).catch(() => null),
+      access.then((a) => (hiddenSections(a).includes('time') ? null : apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null)))
     ]);
-    const { from, to } = presetRange('last12');
-    stats = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`).catch(() => null);
     country = tenant?.addressCountry ?? 'CZ';
-    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName) };
+    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName), flatTax: tenant?.flatTaxRegime ?? null };
     advances = normalizeTaxAdvances(tenant?.taxAdvances);
     // Only after money has actually come in (last 12 months is close enough to "ever").
     if ((stats?.current.paidCount ?? 0) > 0) {
@@ -53,9 +56,6 @@ export default async function DashboardHomePage() {
         const rewards = REFERRAL_REWARDS[overview.program] ?? REFERRAL_REWARDS.friend;
         referral = { code: overview.code, link: `${SITE_URL}/${locale}/signup?ref=${overview.code}`, ...rewards };
       }
-    }
-    if (!hiddenSections(access).includes('time')) {
-      time = await apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null);
     }
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });

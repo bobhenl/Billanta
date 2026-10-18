@@ -25,7 +25,7 @@ const user = { id: "u1", tenantId: "t1", role: "owner" } as never;
 const dto = { email: "ucetni@example.cz", role: "accountant" } as never;
 
 function run(send: () => Promise<void>) {
-  const email = { sendInvitationEmail: vi.fn(send) };
+  const email = { sendInvitationEmail: vi.fn(send), isConfigured: () => true };
   const service = new TeamService({} as never, email as never);
   return { email, result: service.invite(fakeDb([[], [{ companyName: "Novák s.r.o." }]]) as never, user, dto) };
 }
@@ -36,6 +36,7 @@ describe("TeamService.invite", () => {
     const out = await result;
     expect(email.sendInvitationEmail).toHaveBeenCalledWith(
       expect.objectContaining({ to: "ucetni@example.cz", companyName: "Novák s.r.o.", role: "Účetní", acceptUrl: out.acceptUrl }),
+      expect.objectContaining({ tenantId: "t1" }),
     );
     expect(out.emailSent).toBe(true);
     expect(out.acceptUrl).toMatch(/\/invite\/[\w-]{20,}$/);

@@ -36,6 +36,21 @@ export const PLANS: Plan[] = [
   { key: 'business', price: { CZK: { monthly: 579, yearly: 479 }, EUR: { monthly: 23.99, yearly: 19.99 } } }
 ];
 
+/**
+ * The prices above are for a card subscription that renews by itself. A
+ * period paid by bank transfer (proforma, no auto-renewal) costs this many
+ * percent more. Mirrors BANK_TRANSFER_SURCHARGE_PERCENT in
+ * apps/backend/src/billing/plans.ts, which a backend spec checks.
+ */
+export const BANK_TRANSFER_SURCHARGE_PERCENT = 10;
+
+/** A per-month card price with the surcharge, rounded up to a whole koruna or cent, as the backend bills it. */
+export function transferPrice(cardPrice: number, currency: PlanCurrency): number {
+  const minor = Math.round(cardPrice * 100);
+  const step = currency === 'CZK' ? 100 : 1;
+  return (Math.ceil((minor * (100 + BANK_TRANSFER_SURCHARGE_PERCENT)) / (100 * step)) * step) / 100;
+}
+
 /** Slovak visitors pay in euro; Czech in koruna; English defaults to euro. */
 export const defaultCurrency = (locale: string): PlanCurrency => (locale === 'cs' ? 'CZK' : 'EUR');
 

@@ -172,6 +172,80 @@ Session; the CLI's synthetic event won't have it, so `BillingService`
 will log `tenant-not-resolved` and skip, which is expected without a real
 tenant/`stripe_customer_id` row in the DB to match against).
 
+## Plans, free trial and paying for Billanta
+
+Code: `src/billing/` (`plans.ts`, `plan-access.ts`, `plan.guard.ts`,
+`subscription.*`, `admin-billing.controller.ts`, `bank-transfer.ts`),
+migration `0051_trial_billing.sql`.
+
+- **Effective plan** is computed on every read (`planSummary`): the best of
+  a live Stripe subscription (`active`/`past_due`), a prepaid period
+  (`prepaid_plan`/`prepaid_until`, from credits or a paid proforma) and a
+  running trial, else free. Nothing flips when a trial ends.
+- **Trial**: `bootstrap_tenant_for_user(..., p_trial_days)` gives a new
+  company `TRIAL_DAYS` (default 14, 0 = off, max 90) of Business, no card.
+  One trial per user account and per normalised e-mail (`trial_claims`,
+  lowercased, `+tag` and Gmail dots removed, stored as a SHA-256 hash).
+  `TrialRemindersCron` (08:00 Prague) sends the 3-day, 1-day and "ended"
+  notices to owners and admins in the bell, and by e-mail only when Resend
+  is configured.
+- **Limits** (`@RequirePlan`, `FEATURE_MIN_PLAN`): bank and PayPal sync, new
+  API keys need Start, card payments need Plus, and free keeps 2 active
+  recurring templates. Only companies created after 0051 are limited
+  (`plan_enforced`). Nothing is deleted when a plan lapses: existing data
+  stays readable, only creating or syncing more is refused with
+  `plan_required`.
+- **Card / wallets**: `POST /v1/billing/subscription/checkout` creates a
+  Checkout Session in `subscription` mode **without
+  `payment_method_types`**, so Stripe shows whatever the dashboard enables
+  for the currency and device. `STRIPE_PAYMENT_METHOD_CONFIGURATION`
+  (`pmc_...`) picks a specific configuration. `POST .../portal` opens the
+  Customer Portal. The card subscription is the default and the cheaper
+  way to pay. `POST .../cancel` and `POST .../resume` set or clear cancel
+  at period end, and `POST .../interval` switches monthly/yearly on the
+  same product with a new inline price (`proration_behavior:
+  always_invoice`). Prices are inline `price_data`, so there are no Stripe
+  Price ids to create. The webhook stores the subscription id, currency,
+  period end and cancel date on the tenant (0063), so the panel needs no
+  Stripe call to render.
+- **Bank transfer** (a month or a year, CZK): `POST .../bank-transfer`
+  with `months: 1 | 12` (default 12) issues a proforma from
+  `PLATFORM_BILLING_*` at the monthly price or the yearly rate plus
+  `BANK_TRANSFER_SURCHARGE_PERCENT` (`src/billing/plans.ts`, mirrored in
+  the frontend's `lib/plans.ts` and checked by a spec), with a QR
+  Platba code and a variable symbol (`YYYY` + 6-digit sequence). A platform
+  admin (`PLATFORM_ADMIN_EMAILS`) checks the bank statement and calls
+  `POST /v1/admin/billing/proformas/:id/mark-paid`, which extends
+  `prepaid_until` by the proforma's months (calendar months, the day
+  clamped to the month's end; from the current end while the same plan
+  still runs, otherwise from today), pays the referral reward and notifies
+  the company. Nothing renews. `PrepaidRemindersCron` (08:15 Prague) mails
+  the company 14 and 3 days before `prepaid_until` through the outbox,
+  with a renewal proforma (same plan and length as the last one, reused if
+  one is already open) and its QR code attached. It skips companies with a
+  running card subscription. The proforma is a payment request;
+  issue the tax document for the payment in your own accounting.
+
+### Stripe dashboard setup
+
+1. **Settings > Payment methods**: turn on Cards, Apple Pay, Google Pay and
+   Link. Turn on SEPA Direct Debit for EUR subscriptions. Hosted Checkout
+   runs on Stripe's domain, so wallets need no domain verification there.
+   Stripe's own bank transfer method is not offered for subscriptions in
+   Checkout, which is why transfers go through our proformas.
+2. **Settings > Billing > Customer portal**: allow updating the payment
+   method and viewing invoices. Cancelling there (at the end of the
+   period) can stay on; the billing panel offers it too.
+   Leave plan switching off, the plan comes from Checkout metadata.
+3. **Developers > Webhooks**: endpoint
+   `https://<domain>/api/v1/billing/stripe/webhook` with
+   `checkout.session.completed`, `customer.subscription.updated`,
+   `customer.subscription.deleted`, `invoice.paid` and
+   `invoice.payment_failed`. Put its signing secret in
+   `STRIPE_WEBHOOK_SECRET`.
+4. Optional: a payment method configuration for Billanta only, its id in
+   `STRIPE_PAYMENT_METHOD_CONFIGURATION`; Stripe Tax if you charge VAT.
+
 ### GoPay
 
 GoPay's notification callback does not sign its payload the way Stripe
@@ -290,25 +364,95 @@ on file simply can't be emailed yet):
 
 ### Required env vars
 
-`RESEND_API_KEY` and `EMAIL_FROM` (root `.env.example`) — both must be set
-for `EmailService.send` to actually deliver; if either is missing it throws
-immediately rather than silently no-op-ing.
+`RESEND_API_KEY` and `EMAIL_FROM` (root `.env.example`). Without them
+backend mail stays queued in `email_outbox` and nothing is sent; the
+worker logs one warning. Abuse reports (`sendPlatformEmail`) only log.
 
-## Bank reconciliation (CSV import + auto-match)
+### Outbox, unsubscribe and bounces
+
+All tenant mail goes through `EmailOutboxService` into `email_outbox`
+(migration `0049_email_outbox.sql`, RLS per tenant). `EmailOutboxWorker`
+runs every minute and claims due rows through the SECURITY DEFINER
+`claim_email_outbox()`, so one worker sees every tenant without bypassing
+RLS for anything else.
+
+- **Account e-mails** (password reset, sign-in e-mail change) are queued by
+  the frontend through the SECURITY DEFINER `enqueue_account_email()`
+  (migration `0062_account_email_outbox.sql`). They have no tenant
+  (`tenant_id` NULL, invisible to every tenant context), are always
+  transactional, are claimed before tenant mail, and die as `expired` once
+  `expires_at` (the link's lifetime) has passed. The daily sending caps in
+  `src/abuse/` limit a company's mail to its customers and do not apply.
+
+- **Retries**: 429, 5xx and network errors retry with backoff (1 min
+  doubling, 6 h cap, jitter) up to `EMAIL_MAX_ATTEMPTS`; other 4xx go
+  straight to `dead`. Rows older than `EMAIL_OUTBOX_MAX_AGE_HOURS` are
+  marked dead instead of sent late. Each row has a unique
+  `idempotency_key` and Resend gets `outbox-<id>` as its idempotency key,
+  so a crash between send and finish does not send twice.
+- **Batching and quiet hours**: activity notifications for one member
+  merge into one queued e-mail for `EMAIL_BATCH_WINDOW_MINUTES` and wait
+  out the member's quiet hours (default 21:00–7:00 Europe/Prague).
+  Transactional mail (invoices, reminders, invitations, security alerts)
+  goes out at once.
+- **Unsubscribe**: non-transactional mail carries `List-Unsubscribe` and
+  `List-Unsubscribe-Post: List-Unsubscribe=One-Click`. The token is
+  HMAC-signed with a key derived from `JWT_SECRET`. Public endpoints:
+  `GET/POST /api/v1/public/email/unsubscribe/:token`; the frontend page is
+  `/<locale>/unsubscribe/<token>` and the one-click target
+  `/api/email/unsubscribe/<token>`.
+- **Bounces**: `POST /api/v1/webhooks/resend` verifies the Svix signature
+  with `RESEND_WEBHOOK_SECRET` (503 when unset). Hard bounces and
+  complaints add the address to `email_suppressions`. Queued mail to a
+  hard-bounced address is dropped; after a complaint only transactional
+  mail still goes out.
+- **Weekly digest**: `WeeklyDigestCron`, Mondays 8:00 Europe/Prague, for
+  members who turned it on in Settings → E-mailová upozornění.
+- **Admin view**: `GET /api/v1/admin/email-outbox?status=&limit=`
+  (`PlatformAdminGuard`): counts per status and the latest rows.
+
+Optional tuning: `EMAIL_BATCH_WINDOW_MINUTES` (15), `EMAIL_MAX_ATTEMPTS`
+(6), `EMAIL_OUTBOX_MAX_AGE_HOURS` (72), `EMAIL_OUTBOX_BATCH_SIZE` (50).
+
+## Bank reconciliation (statement upload + auto-match)
 
 `src/bank-reconciliation/` implements bank-statement reconciliation against
-`bank_statement_imports`/`bank_transactions` (`drizzle/schema.ts`). This is
-an **MVP: CSV import + auto-match, NOT live PSD2/open-banking** — a real
-open-banking integration requires bank-specific certifications and is out of
-scope for this pass. `bank_statement_source` reserves an `mt940` enum value
-for the SWIFT MT940 statement format, but no MT940 parser is implemented
-here — only `source = 'csv'` is ever written by this module today.
+`bank_statement_imports`/`bank_transactions` (`drizzle/schema.ts`). Payments
+reach Billanta in two ways only: the **Fio API** (below) and an **uploaded
+statement** in one of three formats:
+
+- **camt.053** XML (ISO 20022, every larger CZ/SK bank exports it);
+- **GPC / ABO** (`.gpc`, `.abo`), the Czech fixed-width format, CP1250;
+- **CSV** (described below).
+
+The camt.053 and GPC parsers are pure functions in `@faktur/cz-compliance`
+(`bank-statements.ts`); `statement-upload.ts` detects the format and keeps
+incoming payments only. `bank_statement_source` records which format an
+import came from (`csv`, `camt053`, `gpc`, `fio`; `mt940` is reserved and
+unused).
+
+### Duplicates
+
+The same payment can arrive twice: Fio API plus an uploaded statement of the
+same account, overlapping statements, or one file uploaded again.
+`dedupe.ts` (`splitDuplicates`) drops a movement when
+
+1. its bank id (`external_id`: `fio:<ID pohybu>`, `camt053:<account>:<ref>`,
+   `gpc:<account>:<doc number>`) is already stored, or
+2. a stored movement has the same day, amount, currency, VS and payer account
+   (account compared in canonical form, so an IBAN and `prefix-number/bank`
+   agree). Each stored row absorbs one incoming row only, so two identical
+   payments on one day stay two. A stored row with an id from the same
+   source never absorbs a row with another id from that source.
+
+A stored row without an id that absorbs one with an id takes it over. The
+import summary reports `duplicates`.
 
 ### Endpoints
 
 | Endpoint | What it does |
 |---|---|
-| `POST /api/v1/bank-reconciliation/import` | Multipart CSV upload (`file` field). Parses in-memory, discards the raw upload, persists one `bank_statement_imports` row + one `bank_transactions` row per line, then runs auto-match (see below) on every newly-created transaction. |
+| `POST /api/v1/bank-reconciliation/import` | Multipart upload (`file` field): `.csv`, `.xml` (camt.053), `.gpc`/`.abo`. Max 5 MB. Parses in-memory, discards the raw upload, persists one `bank_statement_imports` row + one `bank_transactions` row per line, then runs auto-match (see below) on every newly-created transaction. |
 | `GET /api/v1/bank-reconciliation/transactions?status=unmatched\|matched\|ignored` | Tenant-scoped list, optionally filtered by status. |
 | `POST /api/v1/bank-reconciliation/transactions/:id/match` | Manual override — body `{ "invoiceId": "<uuid>" }`. Links the transaction to a specific `status = 'issued'` invoice and marks it paid, same as an auto-match. For the leftovers the algorithm below correctly declined to guess on. |
 | `POST /api/v1/bank-reconciliation/transactions/:id/ignore` | Marks a transaction `ignored` (e.g. a transfer that isn't an invoice payment at all — a refund, a bank fee, an owner's own transfer between accounts). |
@@ -383,17 +527,15 @@ Implemented as a pure, DB-free function (`src/bank-reconciliation/matching.ts`
 hand-built candidate lists — no database or mocking required to exercise the
 whole decision table:
 
-1. **Exact variable-symbol match**: if the transaction has a
-   `variable_symbol` and exactly one `status = 'issued'` invoice for the
-   tenant has the same `variable_symbol`, match it — **without** also
-   requiring the amount to agree. This is a deliberate tradeoff: variable
-   symbols are the primary payment-identification mechanism in CZ/SK bank
-   transfers and are trusted on their own once uniquely resolved, so a
-   partial payment (transaction amount less than the invoice total) still
-   auto-matches and marks the invoice fully paid — a false positive this
-   MVP accepts rather than block on. If two or more issued invoices happen
-   to share the same variable symbol, the transaction is left `unmatched`
-   rather than picking one (logged as ambiguous).
+1. **Variable symbol + amount**: if the transaction has a
+   `variable_symbol` and exactly one `status = 'issued'` invoice (quotes
+   excluded) has the same one (leading zeros ignored on both sides), it is
+   matched only when the currency agrees and the amount equals what is still
+   due (total minus `amount_paid`) to the cent. A partial payment, an
+   overpayment or a payment in another currency is left `unmatched` with
+   reason `amount_mismatch` for a human to decide. Two issued invoices with
+   the same VS are `ambiguous`. The invoice is marked paid with `paid_at` =
+   the bank's booking day.
 2. **Fallback — amount + currency + due-date window**: if there's no
    variable-symbol match, look for `status = 'issued'` invoices with the
    same currency, a due date within **±60 days** of the transaction date,
@@ -415,14 +557,10 @@ whole decision table:
    30-second human decision** — precision over recall, explicitly, per the
    task this module was built against.
 
-What this tradeoff does NOT cover (known gaps, not silently swept under the
-rug): a genuine partial payment against a correct variable-symbol match is
-still marked fully "paid" (case 1 above); the amount/date fallback has no
-signal at all for an invoice with no `due_date` set (those invoices are
-simply never fallback-candidates, variable-symbol match remains their only
-path); and there's no reconciliation UI for "this transaction is a partial
-payment, apply it and leave the invoice open" — only the binary matched/
-unmatched/ignored states the schema defines.
+A partial payment matched by hand (`.../match`) is added to `amount_paid`
+and the invoice stays issued; the next payment of the rest then matches
+automatically. The amount/date fallback never considers an invoice without a
+`due_date`.
 
 ## Automatic bank sync (Fio API)
 
@@ -432,16 +570,28 @@ sledovat účet") via `POST /api/v1/bank-reconciliation/connections`. It is
 encrypted with `AI_KEY_ENCRYPTION_KEY` (falls back to
 `BACKUP_CONFIG_ENCRYPTION_KEY`) and never returned.
 
-- `BankSyncCron` runs hourly over `list_tenant_ids()` and pulls
-  `periods/{token}/{from}/{to}/transactions.json` (first sync: last 30 days,
-  then from the last sync minus 3 days).
-- Only incoming payments are kept. Each row stores `external_id`
-  (`fio:<ID pohybu>`), and a partial unique index on
-  `(tenant_id, external_id)` makes overlapping windows harmless.
-- New rows go through the same `persistAndMatch` as the CSV import.
-- `POST .../connections/:id/sync` runs it on demand. Fio allows one request
-  per token every 30 s, and the endpoint answers 429 (`bank_sync_too_soon`)
-  before that.
+- Fio keeps a server-side cursor ("zarážka") per token. We read with
+  `last/{token}/transactions.json` and move the cursor with
+  `set-last-id` / `set-last-date`. Fio allows one request per token every
+  30 s for all of these together, so every sync makes exactly one request
+  (`planFioStep`): when the cursor is in place it downloads, otherwise it
+  only moves the cursor and answers `pending: true`; the movements come with
+  the next sync.
+- `bank_connections.fio_last_id` is the newest movement id we stored and
+  `fio_cursor_ready` says whether Fio's cursor stands there. Creating a
+  connection checks the token by putting the cursor 30 days back. If Fio
+  reports a cursor we did not leave (`info.idLastDownload`, e.g. another app
+  using the same token), the next sync rewinds to `fio_last_id`
+  (`fioCursorAfterFetch`). Fio answers 422 for history older than 90 days
+  without a strong authorisation: we then start again from a date at most
+  89 days back (`history_locked`).
+- `last_request_at` enforces the 30 s limit: the manual
+  `POST .../connections/:id/sync` answers 429 (`bank_sync_too_soon`), the
+  hourly `BankSyncCron` (over `list_tenant_ids()`) skips the connection.
+- Only incoming payments are kept, with `external_id` `fio:<ID pohybu>`.
+  New rows go through the same `persistAndMatch` and duplicate check as an
+  upload. The token is decrypted only for the request and never logged;
+  Fio errors carry fixed messages without the URL.
 - `FIO_API_BASE_URL` overrides the API base, for a local mock in development.
 
 ## PSD2 bank sync (Enable Banking)
@@ -546,6 +696,84 @@ ISDOC export. Slovakia requires structured B2B e-invoices over Peppol from
 - `EndpointID` comes from the VAT number (EAS 9929 CZ, 9950 SK, …). Parties
   without one get none, and the access point has to supply it.
 - Sending over Peppol needs an access point and is not implemented.
+
+## Slovak company index
+
+The SK half of the company typeahead used to ask RPO (api.statistics.sk)
+live. From the VPS a name search took 6.6–8.7 s. Slovak companies now come
+from three sources, in this order:
+
+| Source | What it has | Speed | Licence |
+|---|---|---|---|
+| `sk_companies` (local copy of RPO) | name search and IČO, ~1 M active subjects | ms | RPO data, CC BY 4.0 |
+| RÚZ (registeruz.sk open API) | IČO only, plus the **DIČ**, which RPO lacks | ~0.1 s per call, 2 per IČO | CC0 |
+| live RPO API | name search and IČO | 2–9 s | CC BY 4.0 |
+
+- **IČO**: if the index is usable, its answer is final, including "not
+  found", and RÚZ only adds the DIČ. Otherwise RÚZ, then live RPO. RÚZ
+  alone can't decide that a company is gone, because it lags RPO by weeks
+  to months.
+- **Name**: the index (pg_trgm GIN on `name_norm`, 2 s statement timeout).
+  Live RPO is used only when the index is not usable.
+- "Usable" means at least 500 000 rows and data no older than 10 days
+  (`skIndexUsable`). Until the first import, or while the import is
+  broken, everything works as before, only slower.
+
+The API shape and the `?part=fast|slow` split of `GET /api/v1/contacts/search`
+(and the public company lookup) stay the same. The slow half is just fast now.
+
+### Where the data comes from
+
+RPO publishes a bulk export in an Oracle object storage bucket
+(`RPO_BATCH_URL` in `@faktur/cz-compliance`):
+
+- `batch-init/init_YYYY-MM-DD_NNN.json.gz`: a full snapshot, made on the
+  first Saturday of the month and uploaded about a day later. It has 23
+  files, ~930 MB gzipped and 9.8 GB of JSON (2.29 M subjects, 1.04 M
+  active). A snapshot is only taken once its `_list.txt` manifest exists.
+- `batch-daily/actual_YYYY-MM-DD.json.gz`: the day's changes, ~1 MB,
+  written at 03:00 UTC.
+- The bucket keeps files for 45 days.
+
+### The import
+
+`importSkCompanies` (`src/contacts/sk-companies/`) does three things:
+
+- It loads the newest snapshot when it is newer than the loaded one. It
+  then deletes the rows the snapshot did not touch. This deletion is
+  skipped, and the run fails, if the snapshot has under 500 k subjects or
+  under 80 % of the current rows.
+- It applies every daily delta after the snapshot. A dissolved subject is
+  deleted.
+- It saves progress after each file, so a failed run resumes where it
+  stopped. If the deltas have a gap, it reloads the snapshot.
+
+It streams one line at a time and writes in chunks of 1000. Streaming a
+whole snapshot took 270 s and ~200 MB RSS on a dev machine, before any
+database writes. A Postgres advisory lock stops the cron and a manual run
+from overlapping. The table is global: no `tenant_id`, no RLS, like
+`ares_cache`.
+
+- **Cron**: `SkCompaniesCron`, daily at 06:15 Europe/Bratislava. A normal
+  day is one small delta. It is on in production. Set
+  `SK_COMPANIES_SYNC=off` to stop it, or `SK_COMPANIES_SYNC=on` to run it
+  outside production.
+- **CLI**: `--full` reloads the newest snapshot even if it is already
+  loaded. The first run takes a few minutes, so run it by hand after
+  deploying migration 0058 rather than waiting for the cron:
+
+  ```bash
+  # production (inside the running backend container)
+  docker compose exec backend node dist/src/contacts/sk-companies/sk-companies-import.cli.js [--full]
+  # dev, from apps/backend, with DATABASE_URL set
+  node -r ts-node/register src/contacts/sk-companies/sk-companies-import.cli.ts [--full]
+  ```
+
+- **State**: `SELECT * FROM sk_companies_sync` shows the loaded snapshot,
+  the last delta, the row count, when the last run finished and the last
+  error.
+- **Expected size**: 250–400 MB in Postgres, including the trigram index.
+  This is an estimate, not a measurement.
 
 ## Per-tenant backup destinations
 

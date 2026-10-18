@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import { DbService } from "../db/db.service";
-import { SLUG_PATTERN } from "../tenants/public-profile";
+import { SERVICE_ID_PATTERN, SLUG_PATTERN } from "../tenants/public-profile";
+import { orderCurrency } from "./profile-orders.util";
 
 // `type`, not `interface` — see the note in public-invoices.service.ts.
 type PublicProfileRow = {
@@ -35,30 +36,16 @@ export interface PublicProfileView {
   hasLogo: boolean;
   tagline: string | null;
   about: string | null;
-  services: { title: string; description: string | null; price: string | null }[];
+  services: { id: string | null; title: string; description: string | null; price: string | null; unitPrice: number | null; unit: string | null }[];
   contactCta: boolean;
+  /** "Přijímat objednávky z profilu"; customItems = the visitor may add their own unpriced lines; prepay = payment details after ordering. */
+  orders: { enabled: boolean; customItems: boolean; prepay: boolean; currency: "CZK" | "EUR" };
+  /** "Kontaktovat": a message form whose messages land in the owner's notifications. */
+  contactForm: boolean;
 }
-
-/** A row of the accountant directory shown on the /invoicing/<town> pages. */
-export interface PublicAccountant {
-  slug: string;
-  companyName: string;
-  city: string;
-  country: string;
-  tagline: string | null;
-  hasLogo: boolean;
-}
-
-type PublicAccountantRow = {
-  slug: string;
-  company_name: string;
-  address_city: string;
-  address_country: string;
-  tagline: string | null;
-  has_logo: boolean;
-};
 
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : null);
+const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null);
 
 /**
  * Anonymous read of a published company profile. Never touches
@@ -81,9 +68,12 @@ export class PublicProfilesService {
       ? p.services.flatMap((s) => {
           const o = (s ?? {}) as Record<string, unknown>;
           const title = str(o.title);
-          return title ? [{ title, description: str(o.description), price: str(o.price) }] : [];
+          const id = typeof o.id === "string" && SERVICE_ID_PATTERN.test(o.id) ? o.id : null;
+          return title ? [{ id, title, description: str(o.description), price: str(o.price), unitPrice: num(o.unitPrice), unit: str(o.unit) }] : [];
         })
       : [];
+    const orders = (p.orders ?? {}) as Record<string, unknown>;
+    const ordersEnabled = orders.enabled === true && services.some((s) => s.id);
     const hasAddress = Boolean(row.address_street || row.address_city);
     return {
       slug,
@@ -103,20 +93,9 @@ export class PublicProfilesService {
       about: str(p.about),
       services,
       contactCta: p.contactCta !== false && Boolean(row.email),
+      orders: { enabled: ordersEnabled, customItems: ordersEnabled && orders.customItems === true, prepay: ordersEnabled && orders.prepay === true, currency: orderCurrency(row.address_country) },
+      contactForm: p.contactForm === true,
     };
-  }
-
-  /** Every opted-in accountant; small enough that the frontend matches towns itself. */
-  async listAccountants(): Promise<PublicAccountant[]> {
-    const rows = await this.dbService.db.execute<PublicAccountantRow>(sql`SELECT * FROM list_public_accountants()`);
-    return [...rows].map((r) => ({
-      slug: r.slug,
-      companyName: r.company_name,
-      city: r.address_city,
-      country: r.address_country,
-      tagline: r.tagline,
-      hasLogo: r.has_logo,
-    }));
   }
 
   async logo(raw: string): Promise<{ data: Buffer; mime: string }> {

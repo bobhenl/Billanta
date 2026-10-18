@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getFormatter, getTranslations } from 'next-intl/server';
+import { getFormatter, getTranslations, setRequestLocale } from 'next-intl/server';
 import { VAT_RATES } from '@faktur/cz-compliance';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { VatCalculator } from '@/components/public-tools/vat-calculator';
@@ -14,6 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function VatCalculatorPage({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('tools');
   const format = await getFormatter();
   const since = (d: string) => format.dateTime(new Date(`${d}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });

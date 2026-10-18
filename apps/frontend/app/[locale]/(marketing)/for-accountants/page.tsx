@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Building2, Calculator, Check, FileDown, Gift, Link2, MapPin, MessageSquare, Sparkles, UserPlus, Users } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  */
 export default async function AccountantsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('accountants');
   const credits = REFERRAL_REWARDS.accountant;
   const faq = (t.raw('faq') as { q: string; a: string }[]).map(({ q, a }) => ({

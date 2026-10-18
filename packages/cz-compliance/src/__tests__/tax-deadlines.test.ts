@@ -53,6 +53,22 @@ describe('defaultTaxDeadlineKinds', () => {
     expect(defaultTaxDeadlineKinds(true)).toEqual(defaultTaxDeadlineKinds('payer'));
     expect(defaultTaxDeadlineKinds(false)).toEqual(defaultTaxDeadlineKinds('non_payer'));
   });
+
+  it('paušální režim: the flat tax instead of insurance advances, return and overviews', () => {
+    expect(defaultTaxDeadlineKinds('non_payer', true)).toEqual(['flat_tax']);
+    expect(defaultTaxDeadlineKinds('identified', true)).toEqual(['vat_identified', 'ec_sales_list', 'flat_tax']);
+    expect(defaultTaxDeadlineKinds('non_payer', false)).toEqual(['health', 'social', 'income_tax', 'overviews']);
+    expect(defaultTaxDeadlineKinds('non_payer', null)).toEqual(defaultTaxDeadlineKinds('non_payer'));
+    expect(defaultTaxDeadlineKinds('non_payer', true, 'cz')).toEqual(['flat_tax']);
+  });
+
+  it('ignores a leftover paušální režim answer for a Slovak SZČO', () => {
+    const kinds = defaultTaxDeadlineKinds('non_payer', true, 'sk');
+    expect(kinds).toEqual(['health', 'social', 'income_tax', 'overviews']);
+    // After the SK filter the advances are still there.
+    const sk = profile({ country: 'SK', vatStatus: 'non_payer', flatTax: true });
+    expect(relevantTaxDeadlineKinds(kinds, sk)).toEqual(['health', 'social', 'income_tax']);
+  });
 });
 
 describe('taxDeadlinesFor', () => {
@@ -65,9 +81,16 @@ describe('taxDeadlinesFor', () => {
     expect(first?.date).toEqual(new Date(2026, 9, 26));
   });
 
-  it('identified person: return flagged "only if" without a seen foreign purchase, plain with one', () => {
+  it('identified person: return plain with a foreign purchase that month, "only if" for a regular buyer, gone for someone who never buys abroad', () => {
     const none = profile({ vatStatus: 'identified', activity: { euSalesMonths: [], foreignPurchaseMonths: [] } });
-    expect(taxDeadlinesFor(kinds, none, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([['vat_identified', true]]);
+    expect(taxDeadlinesFor(kinds, none, null, today, 30)).toEqual([]);
+    const earlier = profile({ vatStatus: 'identified', activity: { euSalesMonths: [], foreignPurchaseMonths: ['2026-03'] } });
+    expect(taxDeadlinesFor(kinds, earlier, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([['vat_identified', true]]);
+    const unknown = profile({ vatStatus: 'identified' });
+    expect(taxDeadlinesFor(kinds, unknown, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([
+      ['vat_identified', true],
+      ['ec_sales_list', true]
+    ]);
     const seen = profile({ vatStatus: 'identified', activity: { euSalesMonths: ['2026-09'], foreignPurchaseMonths: ['2026-09'] } });
     expect(taxDeadlinesFor(kinds, seen, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([
       ['vat_identified', false],

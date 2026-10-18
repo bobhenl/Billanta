@@ -15,6 +15,8 @@ export interface BankTransaction {
   variableSymbol: string | null;
   counterpartyAccount: string | null;
   counterpartyName: string | null;
+  /** "Zpráva pro příjemce" from the bank, when the source carries it. */
+  message?: string | null;
   /** Fee the payment provider kept (PayPal), in `currency`; null for bank rows. */
   fee?: string | null;
   matchedInvoiceId: string | null;

@@ -1,17 +1,22 @@
 import { dispatchWebhooks } from "../integrations/webhooks";
 import { Injectable, Logger } from "@nestjs/common";
-import { and, count, desc, eq, isNull } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
-import { EmailService } from "../email/email.service";
+import { emailLocaleOf } from "../email/email-render";
+import { EmailOutboxService } from "../email/email-outbox.service";
+import { emailTypesView, type EmailTypeInfo } from "../email/email-types";
+import { EmailService, type BillingNoticeDetail, type EmailAttachment } from "../email/email.service";
 import {
+  NOTIFICATION_EVENTS,
   mergeNotificationPrefs,
   notificationPrefsOf,
   type NotificationEvent,
   type NotificationPrefsPatch,
 } from "./notification-prefs";
+import type { EmailPrefsPatch } from "./email-prefs.schema";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -35,6 +40,7 @@ export class NotificationsService {
   constructor(
     private readonly dbService: DbService,
     private readonly emailService: EmailService,
+    private readonly outbox: EmailOutboxService,
   ) {}
 
   notify(tenantId: string, kind: NotificationEvent, payload: NotificationPayload): void {
@@ -43,11 +49,15 @@ export class NotificationsService {
     );
   }
 
-  /** Writes the in-app rows and sends the emails; returns how many went out. */
+  /**
+   * Writes the in-app rows and queues the e-mails (batched per member and
+   * held over their quiet hours by the outbox); returns how many were made.
+   */
   async deliver(tenantId: string, kind: NotificationEvent, payload: NotificationPayload): Promise<number> {
-    const emails: string[] = [];
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
+    let emails = 0;
     let inApp = 0;
-    let hooks: { webhooks: unknown; company: string } | undefined;
+    let hooks: { webhooks: unknown; company: string; locale: string | null } | undefined;
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       const db = drizzleTx(tx, schema);
@@ -60,9 +70,14 @@ export class NotificationsService {
         .from(schema.tenantMemberships)
         .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
         .where(eq(schema.tenantMemberships.tenantId, tenantId));
+      [hooks] = await db
+        .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName, locale: schema.tenants.defaultLocale })
+        .from(schema.tenants)
+        .where(eq(schema.tenants.id, tenantId));
       const rows: (typeof schema.notifications.$inferInsert)[] = [];
       for (const m of members) {
-        const channels = notificationPrefsOf(m.prefs).events[kind];
+        const prefs = notificationPrefsOf(m.prefs);
+        const channels = prefs.events[kind];
         if (channels.app) {
           rows.push({
             tenantId,
@@ -73,21 +88,26 @@ export class NotificationsService {
             link: payload.link?.slice(0, 300) ?? null,
           });
         }
-        if (channels.email && m.email) emails.push(m.email);
+        if (channels.email && m.email) {
+          await this.outbox.enqueueNotification(
+            {
+              userId: m.userId,
+              to: m.email,
+              kind,
+              title: payload.title,
+              body: payload.body,
+              url: payload.link ? `${siteUrl}${payload.link}` : null,
+              quietHours: prefs.quietHours,
+              locale: emailLocaleOf(hooks?.locale),
+            },
+            { tenantId, db },
+          );
+          emails++;
+        }
       }
       if (rows.length) await db.insert(schema.notifications).values(rows);
       inApp = rows.length;
-      [hooks] = await db
-        .select({ webhooks: schema.tenants.webhooks, company: schema.tenants.companyName })
-        .from(schema.tenants)
-        .where(eq(schema.tenants.id, tenantId));
     });
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
-    for (const to of emails) {
-      await this.emailService
-        .sendNotificationEmail({ to, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null })
-        .catch((err) => this.logger.warn(`Notification email failed: ${err instanceof Error ? err.message : err}`));
-    }
     let hooked = 0;
     if (hooks) {
       hooked = await dispatchWebhooks(hooks.webhooks, kind, payload, { company: hooks.company, siteUrl }).catch((err) => {
@@ -95,7 +115,7 @@ export class NotificationsService {
         return 0;
       });
     }
-    return inApp + emails.length + hooked;
+    return inApp + emails + hooked;
   }
 
   /**
@@ -110,6 +130,7 @@ export class NotificationsService {
   }
 
   async deliverSecurity(tenantId: string, payload: NotificationPayload): Promise<number> {
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
     let members: { userId: string; email: string | null }[] = [];
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
@@ -119,6 +140,13 @@ export class NotificationsService {
         .from(schema.tenantMemberships)
         .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
         .where(eq(schema.tenantMemberships.tenantId, tenantId));
+      for (const m of members) {
+        if (!m.email) continue;
+        await this.emailService.sendSecurityAlertEmail(
+          { to: m.email, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null },
+          { tenantId, db, userId: m.userId },
+        );
+      }
       if (members.length) {
         await db.insert(schema.notifications).values(
           members.map((m) => ({
@@ -132,13 +160,58 @@ export class NotificationsService {
         );
       }
     });
+    return members.length;
+  }
+
+  /**
+   * Billing notices (trial ending, plan paid): the bell for owners and admins,
+   * who are the ones who can pay, plus a transactional e-mail via the outbox.
+   * Not tied to notification preferences, like security alerts.
+   */
+  async deliverBilling(
+    tenantId: string,
+    payload: NotificationPayload,
+    email: { lang?: string; details?: BillingNoticeDetail[]; attachments?: EmailAttachment[]; idempotencyKey?: string } = {},
+  ): Promise<number> {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
-    for (const m of members) {
-      if (!m.email) continue;
-      await this.emailService
-        .sendNotificationEmail({ to: m.email, title: payload.title, body: payload.body, url: payload.link ? `${siteUrl}${payload.link}` : null })
-        .catch((err) => this.logger.warn(`Security alert email failed: ${err instanceof Error ? err.message : err}`));
-    }
+    let members: { userId: string; email: string | null }[] = [];
+    await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      const db = drizzleTx(tx, schema);
+      members = await db
+        .select({ userId: schema.tenantMemberships.userId, email: schema.users.email })
+        .from(schema.tenantMemberships)
+        .innerJoin(schema.users, eq(schema.users.id, schema.tenantMemberships.userId))
+        .where(and(eq(schema.tenantMemberships.tenantId, tenantId), inArray(schema.tenantMemberships.role, ["owner", "admin"])));
+      for (const m of members) {
+        if (!m.email) continue;
+        await this.emailService.sendBillingNoticeEmail(
+          {
+            to: m.email,
+            title: payload.title,
+            body: payload.body,
+            url: payload.link ? `${siteUrl}${payload.link}` : null,
+            lang: email.lang,
+            details: email.details,
+            attachments: email.attachments,
+          },
+          // Per member, so a re-run of the same reminder queues nothing twice.
+          { tenantId, db, userId: m.userId, ...(email.idempotencyKey ? { idempotencyKey: `${email.idempotencyKey}:${m.userId}` } : {}) },
+        );
+      }
+      if (members.length) {
+        await db.insert(schema.notifications).values(
+          members.map((m) => ({
+            tenantId,
+            userId: m.userId,
+            kind: "billing",
+            title: payload.title.slice(0, 200),
+            body: payload.body ?? null,
+            link: payload.link?.slice(0, 300) ?? null,
+          })),
+        );
+      }
+    });
     return members.length;
   }
 
@@ -183,6 +256,27 @@ export class NotificationsService {
     return notificationPrefsOf(m?.prefs);
   }
 
+  /** Settings → E-mailová upozornění: every e-mail type with its switch, the digest and quiet hours. */
+  async getEmailPrefs(db: TenantDb, tenantId: string, userId: string) {
+    return emailPrefsView(await this.getPrefs(db, tenantId, userId));
+  }
+
+  async setEmailPrefs(db: TenantDb, tenantId: string, userId: string, patch: EmailPrefsPatch) {
+    const events: NonNullable<NotificationPrefsPatch["events"]> = {};
+    let weeklyDigest = patch.weekly_digest;
+    for (const [type, on] of Object.entries(patch.types ?? {})) {
+      if (type === "weekly_digest") weeklyDigest = on;
+      else if ((NOTIFICATION_EVENTS as readonly string[]).includes(type)) events[type as NotificationEvent] = { email: on };
+      // Locked types (security, invitations, mail to customers) are ignored: they can't be switched off.
+    }
+    const next = await this.setPrefs(db, tenantId, userId, {
+      events,
+      ...(weeklyDigest === undefined ? {} : { weekly_digest: weeklyDigest }),
+      ...(patch.quiet_hours ? { quiet_hours: patch.quiet_hours } : {}),
+    });
+    return emailPrefsView(next);
+  }
+
   async setPrefs(db: TenantDb, tenantId: string, userId: string, patch: NotificationPrefsPatch) {
     const next = mergeNotificationPrefs(await this.getPrefs(db, tenantId, userId), patch);
     await db
@@ -191,4 +285,12 @@ export class NotificationsService {
       .where(and(eq(schema.tenantMemberships.tenantId, tenantId), eq(schema.tenantMemberships.userId, userId)));
     return next;
   }
+}
+
+function emailPrefsView(prefs: ReturnType<typeof notificationPrefsOf>): {
+  types: (EmailTypeInfo & { enabled: boolean })[];
+  weeklyDigest: boolean;
+  quietHours: ReturnType<typeof notificationPrefsOf>["quietHours"];
+} {
+  return { types: emailTypesView(prefs), weeklyDigest: prefs.weeklyDigest, quietHours: prefs.quietHours };
 }

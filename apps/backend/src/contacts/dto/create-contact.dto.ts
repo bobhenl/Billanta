@@ -16,6 +16,7 @@ export const createContactSchema = z.object({
   // and overdue-reminder emails check for this explicitly rather than
   // assuming it's set.
   email: z.string().email().optional(),
+  phone: z.string().trim().max(40).nullish(),
   // Filled in when the contact is created from an ARES hit (invoice form's
   // customer search), so the invoice has a full address from the start.
   addressStreet: z.string().nullish(),

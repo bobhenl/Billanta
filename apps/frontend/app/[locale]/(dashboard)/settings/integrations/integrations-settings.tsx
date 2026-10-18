@@ -10,6 +10,7 @@ import { Link } from '@/i18n/navigation';
 import { saveWebhooks, setFeed, testWebhook, type IntegrationsState, type Webhook, type WebhookKind } from '@/lib/integration-actions';
 import { NOTIFICATION_EVENTS, type NotificationEvent } from '@/lib/notifications';
 import { cn } from '@/lib/utils';
+import { copyText } from '@/lib/clipboard';
 
 type Draft = Omit<Webhook, 'id' | 'kind'> & { id?: string; kind?: WebhookKind; key: string };
 
@@ -35,7 +36,7 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
 
   const copy = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      await copyText(text);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {
       toast({ text: text, tone: 'info' });

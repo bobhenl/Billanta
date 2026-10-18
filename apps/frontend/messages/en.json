@@ -142,7 +142,7 @@
       },
       "migration": {
         "title": "Switch from another app",
-        "description": "From BitFaktura straight over the API with the original PDFs, from Fakturoid, iDoklad or Excel via CSV. You see a preview before saving."
+        "description": "From BitFaktura and Fakturoid straight over the API with the original PDFs, from iDoklad or Excel via CSV. You see a preview before saving."
       },
       "api": {
         "title": "API and webhooks",
@@ -223,7 +223,8 @@
       "account": {
         "title": "Account",
         "login": "Log in",
-        "signup": "Sign up"
+        "signup": "Sign up",
+        "openApp": "Go to the app"
       },
       "partners": {
         "title": "Partners",
@@ -401,7 +402,10 @@
       "onlyIfForeignPurchase": "Only if you bought services from abroad that month (e.g. ads).",
       "onlyIfEuSales": "Only if you invoiced a service to a business in another EU country that month.",
       "advancesInSettings": "Social, health and flat tax advances are set by period in Business details.",
-      "editAdvances": "Edit advances"
+      "editAdvances": "Edit advances",
+      "manualKindsHint": "Billanta cannot tell whether you have employees, a vehicle for road tax or property for property tax, so tick those yourself.",
+      "regimeUnknown": "We do not know whether you are in the flat-tax regime, so we watch the regular insurance advances.",
+      "regimeAnswer": "Answer in settings"
     },
     "fxRates": {
       "title": "ČNB exchange rates",
@@ -434,7 +438,9 @@
       "bank": "bank connected",
       "proformas": "you issue proformas",
       "quotes": "you send quotes"
-    }
+    },
+    "customizeOrderHint": "Drag by the handle or use the arrows to change the order.",
+    "dragToReorder": "Drag to reorder"
   },
   "invoices": {
     "hover": {
@@ -602,8 +608,20 @@
         "dic": "VAT ID",
         "address": "address",
         "isPerson": "private person",
-        "contactId": "contact"
-      }
+        "contactId": "contact",
+        "phone": "phone"
+      },
+      "copyManual": "Copying is not available here. Select the link and copy it yourself.",
+      "copyManualLabel": "Link for the customer",
+      "requiredLabel": "Required details",
+      "requiredHint": "What the customer must fill in. Name and address are always required, company ID and VAT number only for companies.",
+      "requiredSaveDefault": "Use as the default for new links",
+      "requiredSummary": "Required: {fields}",
+      "pickCustomer": "Pick a customer"
+    },
+    "profileOrder": {
+      "badge": "Profile order",
+      "banner": "A customer created this draft by ordering from your public profile. Check the items and prices, then issue it. Nothing was sent to the customer."
     }
   },
   "publicInvoice": {
@@ -626,7 +644,6 @@
     "paymentTitle": "Pay this invoice",
     "paymentInstructions": "Scan the QR code with your banking app to pre-fill an instant bank transfer.",
     "paymentDisclaimer": "This is a standard Czech/Slovak instant bank-transfer QR code (SPAYD / \"QR Platba\"), not a card payment.",
-    "paymentDisclaimerSk": "This is a Slovak PAY by square bank-transfer QR code, read by every Slovak banking app. It is not a card payment.",
     "noBankAccount": "The issuer hasn't set up a bank account for online payment yet. Please contact them directly to arrange payment.",
     "notFoundTitle": "Invoice not found",
     "notFoundBody": "This link is invalid or has expired. Please contact the sender for a new one.",
@@ -697,7 +714,8 @@
         "unavailable": "Card payment isn't available for this invoice right now.",
         "failed": "Couldn't open the payment page. Please try again in a moment."
       }
-    }
+    },
+    "paymentDisclaimerBySquare": "This is a standard Slovak bank-transfer QR code (PAY by square), not a card payment."
   },
   "expenses": {
     "title": "Expenses",
@@ -753,6 +771,11 @@
       "noCategory": "No category",
       "amountSection": "Amount",
       "vatBreakdown": "Base {base} + VAT {vat}",
+      "reverseChargeLabel": "Reverse charge (§ 92a)",
+      "reverseChargeHint": "The supplier invoiced without VAT and you account for it. Enter the amount without VAT; the VAT is both paid and deducted in the return (rows 10/11 and 43/44), and the document goes to section B.1 of the control statement.",
+      "amountLabelReverseCharge": "Amount excl. VAT",
+      "vatBreakdownReverseCharge": "Base {base}, VAT to self-assess {vat}",
+      "reverseChargeRequiredHint": "Section B.1 needs the supplier's VAT ID and the document number.",
       "datesSection": "Dates & payment",
       "dueDateLabel": "Due date",
       "paidLabel": "Already paid",
@@ -850,22 +873,27 @@
   },
   "bank": {
     "title": "Bank",
-    "description": "Upload a bank statement (CSV) and reconcile incoming payments against issued invoices.",
+    "description": "Upload a bank statement (camt.053, GPC or CSV) and reconcile incoming payments against issued invoices.",
     "import": {
       "label": "Import statement",
-      "selectFile": "Choose CSV file",
+      "selectFile": "Choose statement file",
       "noFileSelected": "No file selected",
       "submit": "Upload and match",
       "importing": "Uploading and matching…",
-      "formatHint": "A CSV statement from your online banking. Date, amount and currency columns are enough.",
+      "formatHint": "A statement from your online banking as camt.053 (XML), GPC/ABO or CSV.",
       "success": "Imported {total} transaction(s), {matched} matched automatically.",
-      "invalidFile": "Please choose a .csv file.",
+      "invalidFile": "Please choose a statement in .xml (camt.053), .gpc, .abo or .csv format.",
       "parseError": "Couldn't process the file: {message}",
       "formatHelpLabel": "Which file to upload?",
-      "formatHelp": "Upload the CSV statement as you download it from online banking. We recognise the usual Czech and Slovak bank exports (Fio, ČSOB, KB, Raiffeisen, Tatra banka and others): semicolon or comma separated, dates like 31.12.2026 or 2026-12-31 and amounts with a decimal comma. Date, amount and currency columns are required. The variable symbol and counterparty account help with matching. If we don't recognise your bank's export, adjust the file to match the sample.",
-      "sample": "Download a sample CSV"
+      "formatHelp": "A camt.053 (XML) or GPC/ABO (.gpc) statement works best; most Czech and Slovak banks offer one under statements or transaction export in online banking. CSV works too: we recognise the usual exports (Fio, ČSOB, KB, Raiffeisen, Tatra banka and others), semicolon or comma separated, dates like 31.12.2026 or 2026-12-31 and amounts with a decimal comma. Payments already in Billanta (from another statement or the Fio API) are recognised and not added twice.",
+      "sample": "Download a sample CSV",
+      "successWithDuplicates": "Imported {total} transaction(s), {matched} matched automatically. {duplicates, plural, one {# payment was} other {# payments were}} already in Billanta and skipped.",
+      "errors": {
+        "bank_statement_unknown_format": "We don't know this format. Upload the statement as camt.053 (XML), GPC/ABO or CSV.",
+        "bank_statement_invalid": "The statement is damaged or incomplete."
+      }
     },
-    "empty": "No bank transactions yet. Upload a statement (CSV) with the button at the top right.",
+    "empty": "No bank transactions yet. Upload a statement with the button at the top right.",
     "filterLabel": "Show",
     "filterAll": "All",
     "columns": {
@@ -932,12 +960,13 @@
       "matchedDone": "Matched; the invoice is paid.",
       "ignoredDone": "Transaction ignored.",
       "restoredDone": "Transaction returned to matching.",
-      "actionFailed": "Action failed"
+      "actionFailed": "Action failed",
+      "message": "Message for the recipient"
     },
     "connections": {
       "title": "Bank connection",
       "hint": "Every hour Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Matched invoices are marked paid, with the PayPal fee included. Outgoing payments are not downloaded.",
-      "empty": "No account yet. Connect Fio or PayPal and payments get matched on their own. For other banks, upload a CSV statement for now.",
+      "empty": "No account yet. Connect Fio or PayPal and payments get matched on their own. For other banks, upload a statement (camt.053, GPC or CSV).",
       "token": "Fio API token",
       "tokenHint": "In Fio internet banking open Settings → API, add a token with the “view account only” permission and paste it here (64 characters). Such a token cannot pay anything. We store it encrypted and never show it again.",
       "tokenPlaceholder": "64 characters",
@@ -956,7 +985,7 @@
       "resume": "Resume",
       "disconnect": "Disconnect account",
       "disconnectConfirm": "Disconnect the account and delete the stored token? Payments already downloaded stay.",
-      "otherBanks": "Other banks use CSV statement import until PSD2 connections are enabled on this server.",
+      "otherBanks": "Other banks use statement upload (camt.053, GPC or CSV) until PSD2 connections are enabled on this server.",
       "errors": {
         "fio_token_format": "The token must be exactly 64 letters and digits.",
         "fio_token_invalid": "Fio rejected the token. Check that it is valid and not revoked.",
@@ -979,7 +1008,9 @@
         "psd2_state_invalid": "The link from the bank is invalid or already used. Start the connection again.",
         "paypal_credentials_invalid": "PayPal rejected the Client ID or Secret. Check them, and whether they belong to the sandbox.",
         "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply).",
-        "two_factor_required": "Turn on two-factor authentication in Settings → Security first."
+        "two_factor_required": "Turn on two-factor authentication in Settings → Security first.",
+        "plan_required": "This feature is part of a paid plan. Pick one under Plan and billing.",
+        "history_locked": "Fio releases movements older than 90 days only after a strong authorisation in online banking. Next time we start from the last 89 days."
       },
       "psd2": {
         "hint": "Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Fio connects with an API token, PayPal with your REST app credentials, other banks over PSD2: you sign in at your bank and grant read-only access to the account (up to 180 days, 90 at many banks). Banks allow only a few unattended reads a day, so PSD2 accounts are synced about every 6 hours. Outgoing payments are not downloaded and nothing can be paid through the connection.",
@@ -1032,7 +1063,8 @@
           "title": "PayPal",
           "text": "With the Client ID and Secret of your REST app. The fee is booked on the invoice too."
         }
-      }
+      },
+      "syncPending": "Fio is ready. Payments come with the next sync, try again in 30 seconds."
     },
     "fee": "fee {amount}"
   },
@@ -1105,7 +1137,11 @@
       },
       "internalNote": "Internal note",
       "internalNoteHint": "Only for you: never printed on documents or sent to the customer. Shown on the contact page and when you invoice this customer, and included in the CSV export.",
-      "internalNotePlaceholder": "E.g. always pays late, address invoices to Ms Nová, 5% discount…"
+      "internalNotePlaceholder": "E.g. always pays late, address invoices to Ms Nová, 5% discount…",
+      "fromRegistry": "Load from register",
+      "phone": "Phone",
+      "vatSuggestYes": "The register lists them as a VAT payer. Set to \"Yes\"?",
+      "vatSuggestNo": "The register does not list them as a VAT payer. Set to \"No\"?"
     },
     "detail": {
       "title": "Contact detail",
@@ -1314,7 +1350,8 @@
         "docs": "API documentation (Swagger)"
       },
       "readOnlyBadge": "Read-only",
-      "twoFactorRequired": "API keys can only be created with two-factor authentication."
+      "twoFactorRequired": "API keys can only be created with two-factor authentication.",
+      "planRequired": "This feature is part of a higher plan. Pick one under Plan and billing."
     },
     "backup": {
       "title": "Backup destinations",
@@ -1565,6 +1602,10 @@
         "security": {
           "title": "Security",
           "description": "Two-factor authentication and recovery codes"
+        },
+        "emailNotifications": {
+          "title": "Email notifications",
+          "description": "Which emails you get, the weekly digest and quiet hours at night."
         }
       }
     },
@@ -1662,7 +1703,13 @@
         "identifiedHint": "Not a VAT payer, but you pay VAT on ads and services bought from abroad.",
         "non_payer": "Not a VAT payer",
         "non_payerHint": "You invoice without VAT and file no VAT returns.",
-        "dicHint": "You have a VAT ID but aren't a payer? If you buy ads or services from abroad (Google, Meta), you are probably an identified person. ARES doesn't show this, so check it with your tax office."
+        "dicHint": "You have a VAT ID but aren't a payer? If you buy ads or services from abroad (Google, Meta), you are probably an identified person. ARES doesn't show this, so check it with your tax office.",
+        "suggest": {
+          "payer": "{source} lists you as a VAT payer.",
+          "non_payer": "{source} does not list you as a VAT payer.",
+          "registry": "The register of VAT payers",
+          "apply": "Set to: {status}"
+        }
       },
       "advances": {
         "title": "Monthly advances",
@@ -1688,7 +1735,27 @@
           "month": "Fill in the month each row applies from.",
           "duplicate": "Two rows have the same month. Merge them into one.",
           "amount": "Advances must be numbers from 0 to 10,000,000."
-        }
+        },
+        "flatTaxLabel": {
+          "flat": "Flat tax",
+          "advance": "Income tax advance",
+          "unknown": "Flat tax / tax advance"
+        },
+        "regime": {
+          "flatTax": "Are you in the flat-tax regime?",
+          "flatTaxHint": "In the flat-tax regime (paušální daň) you pay one monthly amount that covers income tax, social and health insurance. You do not pay separate insurance advances.",
+          "activity": "Main or secondary activity?",
+          "activityHint": "Self-employment is a secondary activity when you also have a job, study, or receive a pension or parental allowance. The minimum social insurance advance is then lower and there is no minimum health insurance advance.",
+          "yes": "Yes",
+          "no": "No",
+          "main": "Main",
+          "secondary": "Secondary"
+        },
+        "minimumAsk": {
+          "flatTax": "To show the statutory minimum, tell us whether you are in the flat-tax regime:",
+          "activity": "To show the statutory minimum, tell us whether self-employment is your main or secondary activity:"
+        },
+        "useMinimumHint": "Fills the statutory minimum into the row. Other empty fields are set to 0."
       },
       "street": "Street and number",
       "city": "City",
@@ -1760,7 +1827,13 @@
       "ibanHint": "The account number and bank code are enough – IBAN is mainly needed for payments from abroad.",
       "defaultDueDaysHint": "How many days after issue a new invoice is due. Usually 14.",
       "defaultsMoved": "Invoice defaults are in",
-      "defaultsLink": "Settings › Invoices"
+      "defaultsLink": "Settings › Invoices",
+      "registrySearch": "Find in the register",
+      "registrySearchPlaceholder": "Company name, sole trader, company ID or city",
+      "loadRegistry": "Load from register",
+      "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents.",
+      "dataBoxId": "Data box ID",
+      "dataBoxIdHint": "Seven characters, e.g. ab12cd3. Not a secret. Prefilled into the yearly overview for ČSSZ."
     },
     "team": {
       "title": "Team",
@@ -1839,7 +1912,18 @@
       "editPermissions": "Edit permissions",
       "editPermissionsFor": "Permissions – {name}",
       "permissionsHint": "Edit includes read. Only administrators manage the team, company details and billing.",
-      "save": "Save"
+      "save": "Save",
+      "directory": {
+        "toggle": "Don't have an accountant? Pick a verified one",
+        "hint": "Accountants from our directory that we have reviewed and approved. Invite only fills in the e-mail; you still send the invitation yourself.",
+        "region": "Region",
+        "anyRegion": "All regions",
+        "invite": "Invite",
+        "contact": "Contact",
+        "empty": "Nobody in this region yet.",
+        "all": "Full accountant directory",
+        "picked": "{email} is filled in. Check the role and send the invitation."
+      }
     },
     "exports": {
       "title": "Accountant exports",
@@ -1925,25 +2009,18 @@
           "disclaimer": "Review the file in eDane before filing and fill in the tax office. EU supplies are reported as services (code 2); move EU supplies of goods (line 14) and exports (line 15) by hand. Received documents without a supplier VAT ID go to B.3.1.",
           "formVersions": "The export creates XML in versions DPHv25, KVDPHv25 and SVDPHv20.",
           "officialLink": "Current information from the Slovak Financial Administration"
+        },
+        "warnings": {
+          "reverse_charge_code_missing": "Documents without a supply code: {documents}. Add the code on the document and download the file again, otherwise EPO rejects it.",
+          "reverse_charge_dic_missing": "Reverse-charge documents without the customer’s VAT ID, left out of section A.1: {documents}.",
+          "received_reverse_charge_code_missing": "Received reverse-charge documents without a supply code: {documents}. Add the code on the expense and download the file again, otherwise EPO rejects it.",
+          "received_reverse_charge_dic_missing": "Received reverse-charge documents without the supplier's VAT ID, left out of section B.1: {documents}.",
+          "received_reverse_charge_number_missing": "Received reverse-charge documents without a document number (shown by date), left out of section B.1: {documents}."
         }
       },
       "annual": {
         "title": "Yearly tax & insurance estimate (Czech sole trader)",
         "hint": "Estimates income tax, social and health insurance and next year's advances from the invoices and expenses paid in the year.",
-        "year": "Year",
-        "expenses": "Expenses",
-        "expensesHint": "Flat-rate expenses: 60 % most trades, 80 % crafts, 40 % liberal professions, 30 % renting. Or your actual expenses.",
-        "modes": {
-          "30": "Flat rate 30 % (renting)",
-          "40": "Flat rate 40 % (professions)",
-          "60": "Flat rate 60 % (trades)",
-          "80": "Flat rate 80 % (crafts)",
-          "actual": "Actual expenses"
-        },
-        "paidSocial": "Social advances paid",
-        "paidHealth": "Health advances paid",
-        "paidHint": "Filled in from the monthly advances in Business details (each month of the year with the amount that applied then). Change it if needed; the summary shows what is left to pay or overpaid.",
-        "income": "Income",
         "incomeHint": "Invoices paid in the year ({invoices}), credit notes subtracted.",
         "incomeHintVat": "Invoices paid in the year without VAT ({invoices}), credit notes subtracted.",
         "actualExpenses": "Actual expenses",
@@ -1965,8 +2042,12 @@
         "downloadCsv": "Download CSV",
         "epoLink": "EPO forms (Financial Administration)",
         "failed": "The estimate could not be calculated.",
-        "disclaimer": "A rough estimate for a full year of main activity. It does not replace the tax return or the insurance statements.",
-        "paidFromSettings": "Filled in from the monthly advances in Business details. You can change it."
+        "disclaimer": "A rough estimate for main activity. It does not replace the tax return or the insurance statements.",
+        "paidFromSettings": "Filled in from the monthly advances in Business details. You can change it.",
+        "uniformRate": "Foreign currencies are converted at the uniform rate for {year} (the average of ČNB month-end rates). You can change this in Settings → Invoice form.",
+        "titleSk": "Yearly tax & insurance estimate (Slovak sole trader)",
+        "hintSk": "Estimates Slovak income tax, health and social insurance from the invoices and expenses paid in the year, in euros.",
+        "modes": {}
       },
       "epo": {
         "title": "How to file the VAT return, control statement and EC sales list",
@@ -2030,6 +2111,109 @@
             "Not sure? Invite your accountant to the team (Settings → Team) – they see the exports and can file for you."
           ]
         }
+      },
+      "filings": {
+        "title": "Annual filings for {year}",
+        "hint": "Income tax return, the ČSSZ statement and the values for your health insurer, prefilled from the year’s invoices and expenses. You download, check and file them yourself.",
+        "year": "Year",
+        "expenses": "Expenses",
+        "basis": "Bookkeeping",
+        "basisHint": "Tax records (daňová evidence) count income when invoices are paid. Full accounting counts it by the date of supply (DUZP).",
+        "basisCash": "Tax records (by payment)",
+        "basisAccrual": "Accounting (by date of supply)",
+        "activity": "Activity",
+        "activityHint": "Secondary activity is, for example, a business next to a job or parental leave. Insurance starts only above the threshold amount.",
+        "activityMain": "Main",
+        "activitySecondary": "Secondary",
+        "fromMonth": "In business since",
+        "taxAdvances": "Income tax advances paid (CZK)",
+        "taxAdvancesHint": "Income tax advances paid for this year. Most sole traders pay none in their first years.",
+        "spouse": "Claim the spouse credit",
+        "spouseHint": "Only if your spouse had their own income of up to CZK 68,000 for the year and you live in one household.",
+        "failed": "Could not load the annual filing data.",
+        "rowNo": "line {n}",
+        "dpfoTitle": "Income tax return (DPFO)",
+        "dpfo": {
+          "r101": "Business income (§ 7)",
+          "r102": "Expenses ({rate} % flat rate or actual)",
+          "r113": "Partial tax base from business",
+          "r61": "Tax loss",
+          "r56": "Tax base, rounded",
+          "r57": "Tax 15 % / 23 %",
+          "r64": "Taxpayer credit",
+          "r65a": "Spouse credit",
+          "r71": "Tax after credits",
+          "r84": "Advances paid",
+          "r91": "Left to pay (minus is an overpayment)"
+        },
+        "csszTitle": "Statement for ČSSZ (social insurance)",
+        "cssz": {
+          "r24": "Profit (income minus expenses)",
+          "r25": "Assessment base from profit",
+          "r27": "Minimum assessment base",
+          "r28": "Assessment base",
+          "r32": "Insurance due",
+          "r33": "Advances paid",
+          "r34": "Left to pay (minus is an overpayment)",
+          "r35": "New monthly assessment base",
+          "r36": "New monthly advance"
+        },
+        "csszNotInsured": "Profit from the secondary activity stayed below the threshold, so no pension insurance arose. You still file the ČSSZ statement, with zero insurance.",
+        "nextUnknown": "Next year’s minimum advance is not known yet. Check the new advance in the ČSSZ ePortal.",
+        "healthTitle": "Statement for the health insurer",
+        "health": {
+          "profit": "Profit",
+          "baseFromProfit": "Half of the profit",
+          "minBase": "Minimum assessment base",
+          "base": "Assessment base",
+          "premium": "Insurance 13.5 %",
+          "paid": "Advances paid",
+          "balance": "Left to pay (minus is an overpayment)",
+          "nextAdvance": "New monthly advance"
+        },
+        "insurer": "Your insurer",
+        "healthHowTo": "Since 2026 the health insurance statement can only be filed electronically: on the insurer’s portal (for example Moje VZP) or through a data box. Insurers have no common XML format and VZP takes a PDF through the data box, so we do not generate a file. Copy the values on the left into your insurer’s form.",
+        "missingRates": "{count, plural, one {# foreign-currency document has} other {# foreign-currency documents have}} no CNB rate and is missing from the totals.",
+        "personTitle": "Personal details for the files",
+        "personHint": "Only written into the downloaded XML. We do not store them and they never appear in the page address.",
+        "person": {
+          "birthNumber": "Birth number (rodné číslo)",
+          "birthNumberHint": "Goes into both the tax return and the ČSSZ statement.",
+          "taxOffice": "Tax office code",
+          "taxOfficeHint": "The three-digit code from EPO, e.g. 451 for the City of Prague.",
+          "taxWorkplace": "Local office code",
+          "ossz": "OSSZ code",
+          "osszHint": "The three-digit code of your district social security office.",
+          "variableSymbol": "ČSSZ variable symbol",
+          "variableSymbolHint": "Shown in the ČSSZ ePortal or on your earlier advance payments.",
+          "dataBox": "Data box ID",
+          "prefilled": "The office codes and data box are prefilled from the address and details in Billing details. Check them; you can change them.",
+          "remember": "Remember in this browser",
+          "rememberHint": "Your birth number and variable symbol are saved only in this browser and never sent to our server. Untick to delete them."
+        },
+        "downloadDpfdp": "Download tax return ({form}, XML)",
+        "dpfdpMissing": "The Financial Administration usually publishes the return form for {year} in January {next}.",
+        "downloadCssz": "Download ČSSZ statement (XML)",
+        "csszMissing": "ČSSZ usually publishes the statement form for {year} early in {next}.",
+        "print": "Print summary",
+        "epoLink": "Financial Administration EPO",
+        "epoHow": "load the file with “Načíst soubor”, check it and send it.",
+        "csszLink": "ČSSZ ePortal",
+        "csszHow": "upload the statement as XML, or send it through your data box.",
+        "errors": {
+          "form_not_published": "The authority has not published the form for this year yet.",
+          "year_not_supported": "We do not have the parameters for this year yet.",
+          "invalid_filings_query": "Please check the details you entered; something has the wrong format.",
+          "generic": "Could not create the file."
+        },
+        "disclaimer": "Prefilled from the documents in the app for the typical sole-trader case (business income only, basic credits). This is not tax advice. Check everything before filing; you file yourself through EPO, the ČSSZ ePortal, your insurer’s portal or your data box.",
+        "modes": {
+          "30": "Flat rate 30 % (renting)",
+          "40": "Flat rate 40 % (professions)",
+          "60": "Flat rate 60 % (trades)",
+          "80": "Flat rate 80 % (crafts)",
+          "actual": "Actual expenses"
+        }
       }
     },
     "invoices": {
@@ -2041,27 +2225,41 @@
       "fieldsHint": "Checked fields are always visible in the form. A field that already has a value on the document is always shown.",
       "rate": {
         "title": "Exchange rate on foreign-currency invoices",
-        "hint": "How an amount in a foreign currency is converted to CZK. The rate is saved with the document when it is issued and does not change after that.",
+        "hint": "How amounts in a foreign currency are converted to CZK, separately on the invoice and in your reports. The rate is saved with the document when it is issued and does not change after that.",
+        "invoiceTitle": "On the invoice",
         "modes": {
           "cnb_daily": "Daily ČNB rate",
-          "annual": "Fixed annual rate",
           "none": "Don't print the {home} conversion",
           "ecb_daily": "Daily ECB rate"
         },
-        "cnbDailyHint": "The ČNB rate for the date of taxable supply. If ČNB published no rate that day, the last earlier one is used.",
-        "annualHint": "One rate for the whole year under § 38 of the Czech VAT Act. Enter it below for each year and currency. A year without a rate falls back to the daily ČNB rate.",
+        "cnbDailyHint": "The ČNB rate valid on the date of taxable supply, as § 38 of the Czech VAT Act requires for VAT. If ČNB published no rate that day, the last earlier one is used. A document with VAT always uses this rate.",
         "noneHint": "The document won't show a conversion to CZK. The ČNB rate is still saved for your reports.",
         "noneIdentified": "Applies only to documents without VAT. If a document has VAT, the conversion is printed.",
         "nonePayer": "A VAT payer must show the CZK conversion on the document, so this option isn't available. Invoices are issued with the ČNB rate.",
-        "annualTitle": "Fixed rates",
-        "annualEmpty": "No rates yet. Add a year and currency.",
+        "reportTitle": "In reports and the income tax estimate",
+        "reportModes": {
+          "daily": "Daily rate from the document",
+          "annual": "Uniform annual rate"
+        },
+        "reportDailyHint": "Each document is converted at the rate saved on it.",
+        "annualHint": "The uniform rate (jednotný kurz) under § 38(1) of the Czech Income Tax Act. We work it out ourselves as the average of the ČNB rates on the last day of each month, the same way the tax authority (GFŘ) publishes it after the year ends.",
+        "invoiceStaysDaily": "Invoices still show the daily ČNB rate because VAT law requires it, and the uniform rate is only used in your reports.",
+        "computedTitle": "Calculated uniform rates",
+        "computedError": "The ČNB rates could not be loaded right now. Reports will use your own rate, otherwise the document's rate.",
+        "computedEmpty": "No month has ended yet to calculate a rate from.",
+        "final": "final",
+        "running": "provisional, {n, plural, one {# month} other {# months}} so far",
+        "computedValue": "Calculated rate: {rate} ({status})",
+        "annualTitle": "Your own rate for a year",
+        "annualEmpty": "You don't need to enter anything. Add your own rate only if you want a different one from the calculated rate, for example the exact one from the GFŘ notice.",
+        "annualOverrideHint": "Your rate takes priority over the calculated one for that year and currency.",
         "year": "Year",
         "currency": "Currency",
         "rate": "Rate",
         "perUnit": "CZK per 1 {currency}",
         "remove": "Remove rate",
         "duplicate": "Each year and currency can be listed only once.",
-        "add": "Add rate",
+        "add": "Add your own rate",
         "hintEur": "How an amount in a foreign currency is converted to EUR. The rate is saved with the document when it is issued and does not change after that.",
         "ecbDailyHint": "The ECB reference rate of the day before the tax point (§ 26(1) of the Slovak VAT Act). Slovak law has no fixed annual rate.",
         "noneHintEcb": "The document won't show a conversion to EUR. The ECB rate is still saved for your reports.",
@@ -2142,7 +2340,16 @@
       "remindersEnabled": "Send reminders automatically",
       "remindersRule": "Repeat every <interval></interval> days, at most <max></max>×.",
       "reminderInterval": "Days between reminders",
-      "reminderMax": "Maximum reminders"
+      "reminderMax": "Maximum reminders",
+      "links": {
+        "title": "Customer links",
+        "hint": "How the document link your customer gets by e-mail looks. Only the code at the end is secret; the text in front of it is there to make it readable. The client portal link starts with the customer's name unless you pick the code only. Links you have already sent keep working.",
+        "options": {
+          "number": "Document number",
+          "company_number": "Company and document number",
+          "none": "Random code only"
+        }
+      }
     },
     "modules": {
       "title": "Modules & business type",
@@ -2261,6 +2468,10 @@
         "buyer_details": {
           "label": "Customer filled in their details",
           "hint": "The customer filled in their billing details using the link you sent."
+        },
+        "profile_message": {
+          "label": "Profile message",
+          "hint": "A visitor wrote to you through the Contact form on your public profile."
         }
       },
       "browserTitle": "Browser notifications",
@@ -2542,7 +2753,8 @@
           "invalid_key_format": "That doesn't look like a Stripe secret key (sk_… or rk_…). A publishable pk_… key isn't enough.",
           "invalid_key": "Stripe rejected the key. Check that it's valid and has the required permissions.",
           "not_connected": "Connect Stripe first.",
-          "generic": "Couldn't save. Please try again."
+          "generic": "Couldn't save. Please try again.",
+          "plan_required": "This feature is part of a higher plan. Pick one under Plan and billing."
         }
       }
     },
@@ -2603,10 +2815,24 @@
       "saved": "Profile saved",
       "savedLive": "Profile is live",
       "saveFailed": "Saving failed",
-      "accountantList": "List me among accountants on the town pages",
-      "accountantListHint": "Your profile appears on Billanta’s page for your town (from the company address) and the towns around it. Needs a published profile with the address shown.",
-      "accountantListLocked": "Are you an accountant? Switch to the accountant partner programme to be listed among accountants for your town.",
-      "accountantListLockedLink": "Accountant programme"
+      "serviceUnitPrice": "Unit price",
+      "serviceUnitPriceHint": "A number without VAT that goes on the order. Without it, you add the price yourself.",
+      "serviceUnit": "Unit (pcs, hrs)",
+      "copyOrderLink": "Copy order link",
+      "copyOrderLinkSaveFirst": "The link is available once the profile is saved and published.",
+      "orders": {
+        "title": "Orders and messages",
+        "enabled": "Take orders from the profile",
+        "enabledHint": "Each service gets an Order button. Orders are saved as draft invoices for you to review; nothing is issued or sent automatically.",
+        "customItems": "Allow custom items",
+        "customItemsHint": "Customers can add what else they want. These items come without a price and you add it yourself.",
+        "prepay": "Payment in advance",
+        "prepayHint": "After ordering, the customer sees the account number, amount, variable symbol and a QR code. Only for services with a unit price. You still issue the invoice by hand.",
+        "prepayNoAccount": "Add the company bank account to ask for payment in advance.",
+        "contactForm": "Contact form",
+        "contactFormHint": "Visitors can write to you straight from the profile. Messages land in your in-app notifications; we send nothing to the visitor.",
+        "linksHint": "Copy a link to order a specific service with the chain icon next to it. Handy for e-mails or social media."
+      }
     },
     "import": {
       "title": "Switch from another system",
@@ -2621,9 +2847,9 @@
         "fakturoid": {
           "name": "Fakturoid",
           "steps": [
-            "In the invoice list, pick the period (the whole history is fine) and download the CSV export.",
-            "Export your contacts the same way under Contacts.",
-            "Upload both files below, contacts first."
+            "The quickest way is a direct connection: in Fakturoid open your user account settings and copy the Client ID and Client secret from the API v3 section.",
+            "Fill them in at step 3 below. We load invoices, proformas, corrections, your whole address book, exchange rates, payments and the original PDFs. You can then skip the contacts step.",
+            "Without the connection, export both the invoice list and the contacts to CSV and upload them below, contacts first."
           ]
         },
         "idoklad": {
@@ -2719,7 +2945,38 @@
           "privacy": "We only read from BitFaktura and change nothing there."
         },
         "pdfs": "Original BitFaktura PDFs: {archived} saved as archive attachments (not sent to customers).",
-        "pdfsMissing": "{missing} could not be downloaded."
+        "pdfsMissing": "{missing} could not be downloaded.",
+        "sellers": {
+          "title": "The invoices come from {count, plural, one {# supplier} other {# different suppliers}}",
+          "lead": "More than one business uses this BitFaktura account. Choose whose invoices belong here. We don't create a new company from this.",
+          "choose": "Import invoices of",
+          "all": "All suppliers",
+          "row": "{name} (company ID {ico}): {count, plural, one {# invoice} other {# invoices}}"
+        },
+        "sellerUpdate": {
+          "title": "The newest invoice ({number}, {date}) shows different supplier details than your business details.",
+          "fields": {
+            "name": "Name",
+            "dic": "VAT ID (DIČ)",
+            "address": "Registered address"
+          },
+          "empty": "empty",
+          "apply": "Use details from the newest invoice",
+          "applied": "Your business details are updated.",
+          "failed": "The details could not be saved."
+        },
+        "fakturoid": {
+          "lead": "Load straight from Fakturoid over the API: invoices, contacts and the original PDFs. The credentials are used only for this import and we don't store them. Feel free to generate a new Client secret in Fakturoid afterwards.",
+          "clientId": "Client ID",
+          "clientSecret": "Client secret",
+          "account": "Account (optional)",
+          "accountPlaceholder": "mycompany",
+          "accountHint": "Only needed if you have more than one Fakturoid account. Pasting the address from your browser works too.",
+          "privacy": "We only read from Fakturoid and change nothing there.",
+          "source": "We loaded {invoices, plural, one {# document} other {# documents}} and {contacts, plural, one {# contact} other {# contacts}} from Fakturoid.",
+          "pdfs": "Original Fakturoid PDFs: {archived} saved as archive attachments (not sent to customers).",
+          "sellersLead": "The invoices in Fakturoid list more than one supplier. Choose whose invoices belong here. We don't create a new company from this."
+        }
       },
       "status": {
         "issued": "Unpaid",
@@ -2737,7 +2994,8 @@
           "duplicate_in_file": "the number already appears earlier in the file.",
           "already_exists": "you already have an invoice with this number.",
           "unsupported_kind": "we can't import this document type.",
-          "unsupported_discount": "the invoice has a line discount, which we don't import yet."
+          "unsupported_discount": "the invoice has a line discount, which we don't import yet.",
+          "other_seller": "issued by a different supplier (company ID) than the one you chose."
         }
       },
       "errors": {
@@ -2748,7 +3006,11 @@
         "failed": "The import failed, please try again.",
         "bitfaktura_account": "We couldn't find that BitFaktura account. Enter it as company.bitfaktura.cz.",
         "bitfaktura_unauthorized": "BitFaktura didn't accept the code. Check the API authorization code under Settings → Integration.",
-        "bitfaktura_unreachable": "BitFaktura isn't responding right now, please try again shortly."
+        "bitfaktura_unreachable": "BitFaktura isn't responding right now, please try again shortly.",
+        "fakturoid_unauthorized": "Fakturoid didn't accept the credentials. Check the Client ID and Client secret in your user account settings.",
+        "fakturoid_account": "We can't see that Fakturoid account. Enter it as it appears in app.fakturoid.cz/mycompany, or leave the field empty.",
+        "fakturoid_blocked": "The Fakturoid account is blocked or its plan is unpaid, so it won't hand out data over the API.",
+        "fakturoid_unreachable": "Fakturoid isn't responding right now, please try again shortly."
       }
     },
     "companies": {
@@ -2864,11 +3126,194 @@
         "not_enabled": "Two-factor authentication isn't on.",
         "not_signed_in": "Your sign-in expired. Please sign in again."
       }
+    },
+    "emailNotifications": {
+      "title": "Email notifications",
+      "description": "Which emails you get, the weekly digest and quiet hours at night.",
+      "loadError": "Could not load your email settings.",
+      "saved": "Saved",
+      "saveFailed": "Could not save",
+      "otherChannels": "Bell and browser notifications are in <link>Notifications</link>.",
+      "locked": "Always",
+      "lockedHint": "This email cannot be turned off – your account or your customers need it.",
+      "groups": {
+        "activity": {
+          "title": "Company activity",
+          "hint": "Payments, opened invoices, drafts to review and more. When several arrive at once, we send them in one email."
+        },
+        "digest": {
+          "title": "Weekly digest",
+          "hint": "Mondays at 8:00: unpaid invoices, last week’s payments and upcoming tax deadlines. Off by default."
+        },
+        "account": {
+          "title": "Account and security",
+          "hint": "Security alerts, team invitations, password resets and email changes. Always sent."
+        },
+        "customers": {
+          "title": "Emails to your customers",
+          "hint": "Invoices, reminders and details requests you send to customers. Edit their wording in Settings → Emails."
+        }
+      },
+      "types": {
+        "weekly_digest": {
+          "label": "Weekly digest by email",
+          "hint": "A summary every Monday morning. Skipped when there is nothing to report."
+        },
+        "security_alert": {
+          "label": "Security alerts",
+          "hint": "A change to the company’s bank account. Every member gets it, so nobody can quietly swap in another account number."
+        },
+        "billing_notice": {
+          "label": "Subscription and trial",
+          "hint": "Trial ending, plan paid. Sent to the company’s owners and admins."
+        },
+        "team_invitation": {
+          "label": "Team invitations",
+          "hint": "When someone invites you to their company."
+        },
+        "password_reset": {
+          "label": "Password reset",
+          "hint": "A link to set a new password, when you ask for one."
+        },
+        "email_change": {
+          "label": "Email change",
+          "hint": "Confirms a new email address."
+        },
+        "invoice": {
+          "label": "Invoice to a customer",
+          "hint": "An invoice with its PDF that you send to a customer."
+        },
+        "reminder": {
+          "label": "Reminder to a customer",
+          "hint": "Manual and automatic reminders for unpaid invoices."
+        },
+        "buyer_details_request": {
+          "label": "Details request",
+          "hint": "A link where the customer fills in their own billing details."
+        }
+      },
+      "quiet": {
+        "title": "Quiet hours",
+        "hint": "Notifications that come in at night wait until morning and arrive in one email. Security emails and emails to customers go out right away.",
+        "toggle": "Send nothing at night",
+        "from": "From",
+        "to": "To",
+        "timeZone": "Time zone",
+        "note": "The default is 21:00–7:00 Prague time.",
+        "save": "Save quiet hours"
+      },
+      "errors": {
+        "invalid_time_zone": "Unknown time zone."
+      }
     }
   },
   "billing": {
-    "title": "Billing",
-    "comingSoon": "Subscription management is coming soon."
+    "title": "Plan and billing",
+    "description": "Which plan the company is on, how much of the trial is left and how you pay.",
+    "loadError": "Couldn't load your plan. Try reloading the page.",
+    "checkoutSuccess": "Thanks, the payment went through. Your plan switches on in a few seconds.",
+    "checkoutCanceled": "You didn't finish the payment. Nothing was charged.",
+    "planNames": {
+      "free": "Free",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "trialBanner": {
+      "active": "You're trying the {plan} plan for free, {days, plural, one {# day} other {# days}} left.",
+      "ended": "Your {plan} trial has ended. Your data is all there; paid features are read-only.",
+      "choose": "Choose a plan",
+      "upgrade": "Upgrade"
+    },
+    "current": {
+      "label": "Current plan",
+      "trial": "Free trial, {days, plural, one {# day} other {# days}} left (until {date}). No card, nothing is charged automatically.",
+      "trialEnded": "Your {plan} trial has ended. The company is on the Free plan now. Nothing was deleted; features above it are read-only.",
+      "prepaid": "Paid until {date}.",
+      "subscriptionMonth": "Subscription, billed monthly.",
+      "subscriptionYear": "Subscription, billed yearly.",
+      "free": "Free plan. Upgrade whenever you need more.",
+      "pastDue": "The last payment failed. Stripe will retry it; meanwhile you can change the payment method in the portal."
+    },
+    "portal": "Manage subscription",
+    "choose": {
+      "title": "Choose a plan",
+      "yearly": "Yearly",
+      "monthly": "Monthly",
+      "perMonth": "/ month",
+      "billedYearly": "{total} per year",
+      "billedMonthly": "billed every month",
+      "payCard": "Pay by card",
+      "renewCard": "Renew by card",
+      "cardUnavailable": "Card payments aren't switched on yet.",
+      "cardTitle": "Card subscription – renews automatically, cheaper",
+      "cardBody": "Card, Apple Pay or Google Pay. Renews by itself, and you can cancel it here in one click.",
+      "transferTitle": "Bank transfer – no automatic renewal",
+      "transferBody": "A proforma with a QR code for a month or a year ahead, {percent} % more. We send a reminder before the period ends.",
+      "transferPrice": "By transfer {price} / month ({total})"
+    },
+    "terms": {
+      "renewYearly": "The subscription renews automatically every year at the same price until you cancel it.",
+      "renewMonthly": "The subscription renews automatically every month at the same price until you cancel it.",
+      "cancel": "You can cancel any time in one step right on this page. The plan then runs until the end of the paid period.",
+      "methods": "Pay by card, Apple Pay, Google Pay or any other method the checkout offers you.",
+      "transfer": "By bank transfer you pay a year ahead, {percent} % more than by card. Nothing renews by itself: 14 and 3 days before the end we e-mail you a new proforma with a QR code. The plan starts as soon as the payment reaches our account.",
+      "transferMonthly": "By bank transfer you pay a month ahead, {percent} % more than by card. Nothing renews by itself: 14 and 3 days before the end we e-mail you a new proforma with a QR code.",
+      "transferCzkOnly": "Bank transfer is available in CZK only.",
+      "vat": "Prices exclude VAT."
+    },
+    "transfer": {
+      "title": "Bank transfer payments",
+      "button": "Pay by bank transfer",
+      "created": "Your proforma invoice is ready. The payment details are below.",
+      "months": "{n, plural, one {# month} other {# months}}",
+      "status": {
+        "pending": "Awaiting payment",
+        "paid": "Paid",
+        "canceled": "Cancelled"
+      },
+      "qrAlt": "QR code for the payment",
+      "amount": "Amount",
+      "vat": "incl. VAT {rate} %",
+      "vs": "Variable symbol",
+      "account": "Account number",
+      "due": "Due",
+      "payee": "Payee",
+      "ico": "Company ID",
+      "dic": "VAT ID",
+      "note": "Scan the QR code in your banking app, or enter the account and variable symbol by hand. We switch the plan on once we match the payment, usually within one business day.",
+      "paidOn": "Payment received on {date}."
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "billing_not_configured": "Card payments aren't switched on yet.",
+      "already_subscribed": "The company already has a subscription. You manage it at the top of this page.",
+      "no_stripe_customer": "The company has no Stripe subscription yet.",
+      "bank_transfer_not_configured": "Bank transfer isn't switched on yet.",
+      "too_many_pending_proformas": "You already have three unpaid proformas. Pay one of them, or wait until we match it.",
+      "forbidden": "Only the company's owner or an admin can pay.",
+      "no_subscription": "The company doesn't have a running card subscription.",
+      "same_interval": "You already pay that way.",
+      "subscription_past_due": "The last payment didn't go through. Change the card in the subscription portal first.",
+      "subscription_not_changeable": "This subscription can't be changed here. Write to us and we'll sort it out."
+    },
+    "portalHint": "In the Stripe portal you can change your card or billing details and download invoices.",
+    "sub": {
+      "renewsOn": "Next payment and renewal on {date}.",
+      "endsOn": "The subscription is cancelled and ends on {date}. The plan keeps running until then.",
+      "cancel": "Cancel subscription",
+      "cancelConfirm": "The subscription won't renew. The plan runs until {date}, then the company moves to the Free plan. Your data stays.",
+      "cancelConfirmNoDate": "The subscription won't renew. The plan runs until the end of the paid period, then the company moves to the Free plan. Your data stays.",
+      "cancelYes": "Yes, cancel",
+      "keep": "Keep subscription",
+      "canceled": "The subscription won't renew. The plan runs until the end of the paid period.",
+      "resume": "Keep my subscription",
+      "resumed": "The subscription will renew again.",
+      "switchToYear": "Switch to yearly billing ({price} / month)",
+      "switchToMonth": "Switch to monthly billing ({price} / month)",
+      "switchNote": "The new period starts right away. We take the unused part of the current one off the first payment.",
+      "switched": "Done, you now pay {interval, select, year {yearly} other {monthly}}."
+    }
   },
   "auth": {
     "signup": {
@@ -2996,7 +3441,8 @@
         {
           "title": "No tax, accounting or legal advice",
           "body": [
-            "Billanta is a tool for creating documents. Hints, default VAT rates, reverse-charge wording, pre-filled tax forms and any other content in the app are for information only and are not tax, accounting or legal advice."
+            "Billanta is a tool for creating documents. Hints, default VAT rates, reverse-charge wording, pre-filled tax forms and any other content in the app are for information only and are not tax, accounting or legal advice.",
+            "The same applies to the calculators, guides and tax and insurance estimates on the website and in the app, and to the files they produce. Results are rough estimates with no warranty, do not take every circumstance of the user into account and must be checked before use. To the extent the law allows, the operator is not liable for loss arising from decisions based on them."
           ]
         },
         {
@@ -3292,8 +3738,8 @@
     "nearbyMajorTitle": "Larger towns nearby",
     "majorTowns": "Larger towns",
     "nearbyMajorItem": "{km, number} km {dir, select, n {north} ne {north-east} e {east} se {south-east} s {south} sw {south-west} w {west} other {north-west}}",
-    "accountantsTitle": "Accountants in {name} and nearby",
-    "accountantsNote": "Accountants add themselves through their public Billanta profile. We do not verify the details; the choice is yours.",
+    "accountantsTitle": "Accountants – {region}",
+    "accountantsNote": "Accountants from the Billanta directory who say they work for clients in this region. We approve each listing by hand; the choice is yours.",
     "accountantsEmpty": "No accountant has listed themselves here yet. If you are looking for one, Billanta gives them access to your documents without emailing files around.",
     "accountantsJoin": "Are you an accountant in or near {name}? List yourself for free →",
     "populationCz": "{count, plural, one {# inhabitant} other {# inhabitants}} (Czech Statistical Office, 1 Jan 2025).",
@@ -3438,7 +3884,21 @@
         "priority": "Priority"
       }
     },
-    "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others"
+    "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
+    "trialNote": "{days, plural, one {# day} other {# days}} free, no card: try the whole Business plan.",
+    "methods": {
+      "title": "How to pay",
+      "card": {
+        "title": "Card subscription – renews automatically, cheaper",
+        "body": "The prices above are for a subscription by card, Apple Pay or Google Pay. It renews by itself, you can cancel any time, and the plan runs until the end of the paid period."
+      },
+      "transfer": {
+        "title": "Bank transfer – no automatic renewal",
+        "body": "A month or a year ahead against a proforma with a QR code, {percent} % more, because we pair every payment by hand. Nothing is charged automatically, and we send a reminder with the next proforma before the period ends."
+      }
+    },
+    "transferPrice": "by transfer {price} / month",
+    "transferCzkOnly": "Bank transfer is in Czech koruna only."
   },
   "cookies": {
     "banner": {
@@ -3635,7 +4095,6 @@
       "more": "Constant / specific symbol, order number",
       "exchangeRate": "Rate {pair}",
       "exchangeRateAuto": "{source} rate at issue",
-      "exchangeRateAnnual": "Fixed rate {rate} ({year})",
       "exchangeRateLoad": "Load from {source}",
       "exchangeRateFailed": "The {source} rate could not be loaded.",
       "inCzk": "≈ {amount} total",
@@ -3658,7 +4117,32 @@
         "en": "English"
       },
       "reverseCharge": "Reverse charge",
-      "reverseChargeHint": "The customer accounts for VAT; the document shows no VAT and a note."
+      "reverseChargeHint": "The customer accounts for VAT; the document shows no VAT and a note.",
+      "reverseChargeCode": "Supply code (kód předmětu plnění)",
+      "reverseChargeCodeNone": "Choose a code…",
+      "reverseChargeCodeHint": "The Czech control statement needs it for every document in section A.1.",
+      "reverseChargeCodes": {
+        "1": "Gold",
+        "3": "Supply of real estate where VAT applies",
+        "4": "Construction and installation work",
+        "5": "Goods listed in Annex 5 (waste, scrap)",
+        "6": "Supply of goods originally provided as security",
+        "7": "Supply of goods after assignment of retention of title",
+        "11": "Greenhouse gas emission allowances",
+        "12": "Cereals and industrial crops",
+        "13": "Metals",
+        "14": "Mobile phones",
+        "15": "Integrated circuits",
+        "16": "Portable data processing devices",
+        "17": "Video game consoles",
+        "18": "Electricity certificates",
+        "19": "Electricity supplied through networks to a trader",
+        "20": "Gas supplied through networks to a trader",
+        "21": "Specified electronic communications services",
+        "1a": "Arranging the supply of investment gold",
+        "3a": "Supply of real estate in a forced sale",
+        "4a": "Construction and installation work – provision of workers"
+      }
     },
     "notes": {
       "title": "Notes",
@@ -3994,7 +4478,8 @@
         "ai": "AI (Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Recurring invoice",
-        "import": "Import"
+        "import": "Import",
+        "profile_order": "Profile order"
       },
       "bankAccount": "Bank account",
       "attachments": "Has attachments",
@@ -4812,7 +5297,7 @@
         "lead": "Starting over doesn't mean losing your history. A CSV export from the old system is all you need.",
         "points": [
           "Import contacts and issued invoices from CSV",
-          "From BitFaktura straight over the API: invoices, address book and original PDFs",
+          "From BitFaktura and Fakturoid straight over the API: invoices, address book and original PDFs",
           "Columns from Fakturoid, iDoklad, faktorio, Invoice Ninja or your own sheet are recognised automatically",
           "Preview with invoice count, period and totals before saving",
           "Multi-item invoices, proformas and credit notes",
@@ -5576,7 +6061,72 @@
       "subject": "Enquiry – {company}",
       "body": "Hello,\n\nI'm interested in:\n\n"
     },
-    "poweredBy": "Profile made with <brand>Billanta</brand> – invoicing for freelancers and businesses"
+    "poweredBy": "Profile made with <brand>Billanta</brand> – invoicing for freelancers and businesses",
+    "order": {
+      "button": "Order",
+      "title": "Order",
+      "hint": "Pick a service and fill in your billing details. {company} will review the order and get back to you.",
+      "service": "Service",
+      "noService": "Only my own items",
+      "quantity": "Quantity",
+      "estimate": "About {amount}. The supplier confirms the final price.",
+      "priceLater": "The supplier will add the price.",
+      "customItems": "Other items",
+      "customItemsHint": "Tell us what else you need. The supplier will add the price.",
+      "itemDescription": "What you need",
+      "addItem": "Add item",
+      "removeItem": "Remove item",
+      "buyerTitle": "Billing details",
+      "note": "Note",
+      "notePlaceholder": "Deadline, details, anything else",
+      "submit": "Send order",
+      "legal": "By sending, you share your details with the supplier so they can handle the order and issue an invoice.",
+      "doneTitle": "Order sent",
+      "doneText": "{company} will now review it and issue the invoice themselves. Nothing else to do.",
+      "payTitle": "Payment in advance",
+      "payHint": "{company} asks for payment in advance. Please pay using these details or scan the QR code in your banking app.",
+      "payAmount": "Amount",
+      "payAccount": "Account number",
+      "payVs": "Variable symbol",
+      "payRecipient": "Recipient",
+      "payNote": "Please use exactly this variable symbol so the supplier can match your payment. The invoice will come from the supplier.",
+      "errors": {
+        "invalid": "Please check the highlighted fields.",
+        "closed": "This company is not taking orders right now.",
+        "limit": "Too many attempts, please try again in a moment.",
+        "daily_cap": "This company has had a lot of orders today. Please try again tomorrow.",
+        "unknown_service": "This service is no longer offered. Please reload the page.",
+        "custom_items_disabled": "This company does not take custom items. Please reload the page.",
+        "empty_order": "Pick a service or add an item.",
+        "items": "Please check the items (description of at least 2 characters).",
+        "failed": "Something went wrong, please try again."
+      }
+    },
+    "message": {
+      "button": "Contact",
+      "title": "Write to us",
+      "hint": "Your message goes straight to {company}. They will reply to your e-mail.",
+      "name": "Name",
+      "email": "E-mail",
+      "about": "Topic",
+      "aboutGeneral": "General question",
+      "message": "Message",
+      "submit": "Send message",
+      "legal": "By sending, you share your name, e-mail and message with the company so they can reply.",
+      "doneTitle": "Message sent",
+      "doneText": "{company} has received it and will reply to your e-mail.",
+      "errors": {
+        "invalid": "Please check the highlighted fields.",
+        "closed": "This company is not taking messages through its profile right now.",
+        "limit": "Too many messages, please try again in a moment.",
+        "daily_cap": "This company has had a lot of messages today. Please try again tomorrow.",
+        "failed": "Something went wrong, please try again.",
+        "name": "Enter your name (at least 2 characters).",
+        "email": "Enter a valid e-mail.",
+        "message": "The message must be 5 to 2000 characters long.",
+        "serviceId": "Pick the topic again."
+      }
+    }
   },
   "time": {
     "title": "Time tracking",
@@ -5794,7 +6344,8 @@
       "lastQuarter": "Last quarter",
       "thisYear": "This year",
       "lastYear": "Last year",
-      "last12": "12 months"
+      "last12": "12 months",
+      "all": "All time"
     },
     "grain": {
       "day": "by day",
@@ -5823,14 +6374,20 @@
       "noVatIdentified": "You are an identified person with no reverse-charge invoices, so VAT is hidden.",
       "noExpenses": "No expenses recorded yet, so expenses and profit are hidden.",
       "allRelevant": "Showing everything that applies to you.",
-      "notRecommended": "not relevant yet",
       "noExpensesHint": "No expenses recorded yet",
       "reset": "Restore recommended",
       "cancel": "Cancel",
       "save": "Save",
       "saved": "Saved",
-      "failed": "Could not save: {reason}"
-    }
+      "failed": "Could not save: {reason}",
+      "notUsed": "not used yet",
+      "notVatPayer": "not a VAT payer",
+      "orderHint": "The order here is the order of the cards in the report. Drag by the handle or use the arrows to change it.",
+      "moveUp": "Move earlier",
+      "moveDown": "Move later",
+      "dragToReorder": "Drag to reorder"
+    },
+    "flatTaxLink": "Does the flat-rate tax pay off? →"
   },
   "siteSearch": {
     "title": "Search the site",
@@ -5939,7 +6496,9 @@
         "sent_corrected": "sent the corrected version of",
         "buyer_details_requested": "sent to the customer to fill in their details:",
         "buyer_details_submitted": "filled in their billing details for",
-        "buyer_details_cancelled": "closed the customer details request for"
+        "buyer_details_cancelled": "closed the customer details request for",
+        "profile_order": "created by ordering from the public profile:",
+        "link_renamed": "renamed the public link"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -5971,7 +6530,8 @@
       "import": {
         "bitfaktura": "imported data from BitFaktura",
         "csv": "imported documents from CSV",
-        "contacts_csv": "imported contacts from CSV"
+        "contacts_csv": "imported contacts from CSV",
+        "fakturoid": "imported data from Fakturoid"
       }
     },
     "fields": {
@@ -6050,7 +6610,8 @@
       "archivedPdfs": "Original PDFs stored",
       "skippedRows": "Skipped rows",
       "numberFormat": "Number format",
-      "nextNumber": "Next number"
+      "nextNumber": "Next number",
+      "publicSlug": "Link name"
     },
     "values": {
       "invoice": "Invoice",
@@ -6254,7 +6815,7 @@
       },
       {
         "title": "Easy to switch",
-        "body": "From Fakturoid, iDoklad or Excel via CSV, from BitFaktura straight over the API, original PDFs included."
+        "body": "From iDoklad or Excel via CSV, from BitFaktura and Fakturoid straight over the API, original PDFs included."
       }
     ],
     "switchTitle": "Switching from another app?",
@@ -6473,7 +7034,9 @@
       "guidesHint": "How to file Czech VAT returns",
       "compare": "Compare with competitors",
       "blog": "Blog",
-      "blogHint": "Deadlines, legislation and how-tos"
+      "blogHint": "Deadlines, legislation and how-tos",
+      "findAccountant": "Looking for an accountant?",
+      "findAccountantHint": "Recommended accountants by region"
     },
     "search": {
       "showAll": "Show all results for “{query}”",
@@ -6510,7 +7073,15 @@
       "updated": "Updated",
       "invoiceCtaTitle": "Need an invoice out of this?",
       "invoiceCtaText": "Issue an invoice with a QR payment code, company details from ARES and the right due date, no account needed. With a Billanta account your invoices are saved, payments are tracked and your accountant gets the records.",
-      "invoiceCtaButton": "Create a free invoice"
+      "invoiceCtaButton": "Create a free invoice",
+      "overview": "Overview",
+      "myNumbers": {
+        "hint": "You are signed in. Open the calculator in the app with income and expenses from your documents.",
+        "cta": "Open with my numbers"
+      },
+      "czOnlyTextAlt": "“{name}” is about Czech rules. For Slovak sole traders there is a separate calculator under Slovak rules.",
+      "noLiability": "The result comes with no warranty, and we are not liable for decisions made based on it.",
+      "noWarranty": "The result is for information only and comes with no warranty. Check the details before you use them."
     },
     "calculators": {
       "indexTitle": "Calculators and tools for businesses",
@@ -6530,19 +7101,6 @@
             "Health insurance is 13.5 % of 50 % of the profit, at least from half the average wage for every month.",
             "Next year's advances come from this year's base, but never below next year's minimum advances."
           ],
-          "params": "For {year} we use an average wage of CZK {wage}, a taxpayer credit of CZK {credit} and a minimum social insurance base of {share} % of the average wage (main activity).",
-          "paramsShareChange": "From {month}/{year} the minimum drops to {share} % (social advance at least CZK {advance}).",
-          "fields": {
-            "year": "Year",
-            "income": "Income for the year (CZK)",
-            "expenseMode": "Expenses",
-            "actual": "Actual expenses",
-            "flat": "Flat-rate expenses",
-            "expenses": "Expenses for the year (CZK)",
-            "flatRate": "Type of activity",
-            "paidSocial": "Social advances paid (CZK, optional)",
-            "paidHealth": "Health advances paid (CZK, optional)"
-          },
           "rates": {
             "30": "30 % – renting business assets (max. CZK {cap})",
             "40": "40 % – liberal professions, royalties (max. CZK {cap})",
@@ -6550,46 +7108,100 @@
             "80": "80 % – crafts, agriculture (max. CZK {cap})"
           },
           "result": {
-            "expenses": "Expenses claimed",
-            "profit": "Profit (tax base)",
             "tax": "Income tax after credit",
             "social": "Social insurance",
-            "health": "Health insurance",
-            "total": "Total tax and insurance",
-            "nextSocial": "Social advance from next year",
-            "nextHealth": "Health advance from next year",
-            "toPay": "{amount} left to pay",
-            "overpaid": "{amount} overpaid"
-          }
+            "health": "Health insurance"
+          },
+          "fields": {}
         },
         "flatTax": {
-          "name": "Flat-rate tax",
-          "title": "Czech flat-rate tax (paušální daň) calculator",
-          "description": "Does the Czech flat-rate tax pay off for you? Compare band 1 with regular tax and insurance using flat-rate expenses.",
-          "lead": "The flat-rate tax (paušální daň) replaces income tax, social and health insurance with one monthly payment. The calculator shows whether you fit band 1 and what you would pay in the regular regime with flat-rate expenses.",
-          "keywords": "flat-rate tax pausalni dan band sole trader czech",
+          "name": "Does the flat-rate tax pay off?",
+          "title": "Does the Czech flat-rate tax pay off? Compared with flat-rate and actual expenses",
+          "description": "Compare the Czech flat-rate tax (paušální daň) with the regular regime using flat-rate or actual expenses. Tax and insurance for each option, child credits and a clear recommendation.",
+          "lead": "Enter your yearly income and, if you like, your actual expenses. The calculator works out income tax, social and health insurance under the flat-rate tax, with flat-rate expenses and with actual expenses, and tells you which comes out best.",
+          "keywords": "flat-rate tax pausalni dan band sole trader czech flat-rate expenses actual expenses comparison",
           "fields": {
             "year": "Year",
-            "income": "Expected income for the year (CZK)",
-            "flatRate": "Main activity"
+            "income": "Income for the year (CZK)",
+            "actualExpenses": "Actual expenses for the year (CZK)",
+            "actualHint": "Optional. Without them we compare only the flat-rate tax and flat-rate expenses.",
+            "flatRate": "Main activity",
+            "children": "Number of children (child tax credit)",
+            "spouse": "Spouse credit (partner earns up to CZK 68,000, child under 3)",
+            "vatPayer": "I am a VAT payer"
           },
-          "monthlyTitle": "Band 1 payment",
+          "rates": {
+            "30": "Renting business property (30 %, up to CZK {cap})",
+            "40": "Liberal professions and other business (40 %, up to CZK {cap})",
+            "60": "Other trades (60 %, up to CZK {cap})",
+            "80": "Crafts and farming (80 %, expenses up to CZK {cap})"
+          },
+          "options": {
+            "flat_tax": "Flat-rate tax",
+            "flat_expenses": "Flat-rate expenses {rate} %",
+            "actual_expenses": "Actual expenses"
+          },
+          "result": {
+            "best": "Best",
+            "band": "Band",
+            "bandValue": "Band {band}",
+            "oneSum": "One payment covers income tax, social and health insurance.",
+            "expenses": "Expenses",
+            "tax": "Income tax",
+            "social": "Social insurance",
+            "health": "Health insurance",
+            "bonus": "Child tax bonus",
+            "total": "Total for the year"
+          },
+          "unavailable": {
+            "vat_payer": "A VAT payer cannot join the flat-rate regime.",
+            "over_limit": "With this income and activity you do not fit any band (CZK 2,000,000 at most).",
+            "no_data": "We do not have all the parameters for this year yet."
+          },
+          "recommend": {
+            "same": "Both options come out the same.",
+            "flat_tax": "The flat-rate tax pays off: you save {amount} a year compared with the regular regime.",
+            "flat_expenses": "The regular regime with flat-rate expenses pays off: {amount} less than the flat-rate tax.",
+            "actual_expenses": "The regular regime with actual expenses pays off: {amount} less than the flat-rate tax.",
+            "noFlatOnly": "You cannot join the flat-rate regime, so the regular regime is what is left.",
+            "noFlat": {
+              "flat_expenses": "You cannot join the flat-rate regime. Flat-rate expenses come out {amount} better than actual expenses.",
+              "actual_expenses": "You cannot join the flat-rate regime. Actual expenses come out {amount} better than flat-rate expenses."
+            }
+          },
+          "monthlyTitle": "Band {band} payment",
           "monthlyFrom": "from {date}: {amount} per month",
-          "yearTotal": "Flat-rate tax for the year",
-          "normalTotal": "Regular regime with flat-rate expenses",
-          "cheaper": "The flat-rate tax comes out {amount} cheaper.",
-          "dearer": "The regular regime comes out {amount} cheaper.",
-          "notBand1": "With this income and activity you do not fit band 1. Higher bands are not calculated here; see the Financial Administration website for their amounts.",
-          "noData": "We do not have the flat-rate tax amount for this year yet.",
+          "retroactiveNote": "The cut applies back to January; what you paid on top comes back from the tax office as an overpayment.",
+          "creditsNote": "Child and spouse credits do not apply in the flat-rate regime, so they can make the regular regime cheap enough to win.",
+          "compareNote": "The regular regime counts only business income, with the basic taxpayer credit and the credits you chose. Other income and deductions are left out, and insurance is calculated as for a main activity.",
           "conditionsTitle": "Who can join the flat-rate regime",
           "conditions": [
             "You are a sole trader (OSVČ) and not a VAT payer (an identified person is fine).",
-            "Business income stays under CZK 2,000,000 a year. Band 1 applies up to CZK 1,000,000 for any activity, up to CZK 1,500,000 if at least 75 % of income falls under the 80 % or 60 % flat-rate expenses, and up to CZK 2,000,000 if at least 75 % falls under the 80 % rate.",
+            "Business income stays under CZK 2,000,000 a year.",
+            "Band 1: income up to CZK 1,000,000 for any activity, up to CZK 1,500,000 if at least 75 % of income falls under the 80 % or 60 % flat-rate expenses, and up to CZK 2,000,000 if at least 75 % falls under the 80 % rate.",
+            "Band 2: up to CZK 1,500,000 for any activity and up to CZK 2,000,000 if at least 75 % of income falls under the 80 % or 60 % rate. Band 3: up to CZK 2,000,000.",
             "You have no other income apart from small exceptions (for example a small salary, interest or rent within limits).",
             "You are not a partner in a general partnership or a general partner in a limited partnership, and you are not insolvent.",
             "You notify the tax office that you are joining by 10 January of that year."
           ],
-          "compareNote": "The regular regime is calculated with flat-rate expenses for the chosen activity, with no other income or deductions."
+          "how": [
+            "The flat-rate tax is one monthly amount set by the band. The band depends on income and the main activity (§ 2a of the Czech Income Tax Act).",
+            "In the regular regime we deduct expenses (flat-rate up to the cap for the activity, or actual expenses), take the credits off the tax and calculate insurance from half the profit, at least from the minimum assessment base.",
+            "The child credit lowers the tax and what is left is paid out as a tax bonus. The bonus is paid from CZK 100 and only if income reaches six times the minimum wage (§ 35c).",
+            "This is an estimate for the whole year. Nothing is saved; the calculation runs in your browser."
+          ],
+          "app": {
+            "title": "Does the flat-rate tax pay off?",
+            "lead": "The calculator with your numbers from Billanta. You can change everything, nothing is saved.",
+            "publicLink": "Public version of the calculator",
+            "noTenant": "Set up your company first, then we can prefill the calculator.",
+            "notOsvc": "The flat-rate regime is only for Czech sole traders. Your company does not look like one in Settings, so treat the result as a rough guide.",
+            "prefilled": "Prefilled for {year}: paid income {income} and expenses {expenses} from your documents in Billanta.",
+            "loadError": "Your totals could not be loaded. Enter the numbers by hand.",
+            "regimeFlat": "Settings say you are in the flat-rate regime.",
+            "regimeRegular": "Settings say you are not in the flat-rate regime.",
+            "secondary": "Settings say this is a secondary activity. The calculator counts insurance as for a main activity; for a secondary one it can be lower."
+          }
         },
         "vat": {
           "name": "VAT calculator",
@@ -6644,24 +7256,24 @@
           "notesSk": [
             "In Slovakia both are due by the 8th of the following month: social insurance to the Sociálna poisťovňa and health insurance to your health insurer."
           ],
-          "none": "No data for this year yet."
+          "none": "No data for this year yet.",
+          "previousYears": "Previous years"
         },
         "fx": {
           "name": "ČNB exchange rate converter",
           "title": "ČNB exchange rates and currency converter",
-          "description": "Today's Czech National Bank (ČNB) exchange rates and conversion between CZK and foreign currencies, for invoices in a foreign currency.",
+          "description": "Today's Czech National Bank (ČNB) exchange rates and conversion between any two currencies on the list, CZK included, for invoices in a foreign currency.",
           "lead": "The ČNB publishes rates every working day after 14:30. Czech VAT uses these rates to convert foreign-currency invoices.",
           "keywords": "cnb exchange rate czk eur usd convert currency foreign invoice",
           "listDate": "ČNB rate list of {date}",
           "unavailable": "We could not load the ČNB rates right now. Try again later or look them up on the ČNB website.",
           "fields": {
             "amount": "Amount",
-            "currency": "Currency",
-            "direction": "Direction",
-            "toCzk": "Foreign currency → CZK",
-            "fromCzk": "CZK → foreign currency"
+            "from": "From",
+            "to": "To",
+            "swap": "Swap currencies"
           },
-          "rate": "Rate: 1 {code} = CZK {rate}",
+          "rate": "Rate: 1 {from} = {rate} {to}",
           "tableTitle": "Rate list",
           "code": "Code",
           "perUnit": "CZK per 1 unit",
@@ -6670,7 +7282,15 @@
             "A rate published on a working day after 14:30 stays valid until the next one. On weekends and public holidays the last published rate applies.",
             "For accounting you can use a fixed rate instead of the daily one if your internal rules say so."
           ],
-          "source": "Source: Czech National Bank"
+          "source": "Source: Czech National Bank",
+          "crossRate": "Cross rate through CZK, from the ČNB rate list.",
+          "date": {
+            "label": "Rates on",
+            "show": "Show",
+            "today": "Today's rates",
+            "fallback": "The ČNB published no rates on {day} (weekend or public holiday), so the list of {date} applies.",
+            "notYet": "The ČNB has not published today's rates yet (it does so on working days after 14:30), so the list of {date} applies."
+          }
         },
         "qrPayment": {
           "name": "QR payment generator",
@@ -6706,35 +7326,55 @@
           "howTitle": "How it works"
         },
         "companyLookup": {
-          "name": "Company lookup by IČO",
-          "title": "Czech company lookup by IČO (ARES)",
-          "description": "Enter a company ID (IČO) to get the name, VAT number (DIČ) and registered address from the Czech ARES registry.",
-          "lead": "Eight digits are enough. The data comes from ARES, the public registry of the Czech Ministry of Finance.",
-          "keywords": "ares ičo czech company lookup company id vat number dič registered address",
+          "name": "Company lookup by IČO, VAT number or name",
+          "title": "Company lookup by IČO, VAT number or name (ARES, RPO, VIES)",
+          "description": "Find a company by IČO, VAT number (DIČ) or name in the Czech ARES, the Slovak RPO or the EU VIES. See the address, VAT number and whether it is a VAT payer or an unreliable payer.",
+          "lead": "Enter an IČO, a VAT number or part of the name. We search the Czech ARES, the Slovak register of legal entities (RPO), the EU VIES and the other registers you pick.",
+          "keywords": "ares ičo dič company lookup vat number check vies rpo czech company search unreliable vat payer registered address",
           "fields": {
-            "ico": "IČO (company ID)",
-            "icoHint": "Eight digits. A shorter IČO is padded with zeros.",
+            "query": "IČO, VAT number or name",
+            "queryHint": "IČO (up to 8 digits), VAT number with the country code (CZ…, SK…, DE…) or at least 3 characters of the name.",
+            "registry": "Register",
             "search": "Look up",
             "searching": "Looking up…"
           },
           "result": {
+            "hits": "{n, plural, one {# result} other {# results}}",
             "ico": "IČO",
-            "dic": "DIČ",
-            "noDic": "not listed in ARES",
+            "regNumber": "Registration number",
+            "dic": "VAT number (DIČ)",
+            "noDic": "not listed",
+            "vat": "VAT",
+            "vatChecking": "checking…",
+            "vatState": {
+              "payer": "VAT payer",
+              "unreliable": "unreliable VAT payer",
+              "not_registered": "not a VAT payer",
+              "valid": "valid VAT number",
+              "invalid": "invalid or inactive VAT number",
+              "unknown": "could not be checked"
+            },
+            "vatSource": {
+              "ADIS": "VAT payer register, Czech Financial Administration",
+              "VIES": "VIES, European Commission"
+            },
+            "unreliableNote": "The Czech Financial Administration lists this company as an unreliable payer. If you pay it VAT, you can be liable for that VAT (§ 109 of the Czech VAT Act).",
             "address": "Registered address",
-            "source": "Source: ARES, Czech Ministry of Finance.",
+            "country": "Country",
+            "source": "Source: {source}",
             "invoice": "Invoice this company",
-            "empty": "Enter an IČO and the result shows here."
+            "empty": "Enter an IČO, a VAT number or a name and the result shows here."
           },
           "errors": {
-            "invalid": "An IČO has at most 8 digits.",
-            "notFound": "No company with this IČO in ARES.",
-            "busy": "ARES is not answering or you searched too often. Try again in a moment."
+            "invalid": "Enter an IČO (up to 8 digits), a VAT number with the country code or at least 3 characters of the name.",
+            "notFound": "Nothing found. Try another register or another spelling.",
+            "busy": "The register is not answering or you searched too often. Try again in a moment."
           },
           "how": [
-            "Only the Czech ARES registry is searched. Slovak companies are in the Slovak register of legal entities (RPO).",
-            "A DIČ in ARES does not say whether the company is VAT-registered. Check that in the VAT payer register of the Czech Financial Administration.",
-            "In Billanta the customer is filled in from the IČO right on the invoice."
+            "An IČO is looked up in ARES and the Slovak RPO, depending on the register you pick. A VAT number with a country code is checked in VIES, a Czech DIČ in the VAT payer register of the Czech Financial Administration.",
+            "For a Czech DIČ we show whether the company is a VAT payer and whether it is listed as an unreliable payer. For other countries VIES only says whether the VAT number is valid.",
+            "Names are searched in ARES and RPO. For companies from other countries, pick their register.",
+            "In Billanta the customer is filled in from the IČO or VAT number right on the invoice."
           ],
           "howTitle": "How it works"
         },
@@ -6794,6 +7434,20 @@
             "Between businesses, Czech and Slovak law allow a term over 60 days only when it is expressly agreed and not grossly unfair to the creditor."
           ],
           "howTitle": "How it works"
+        },
+        "szco": {
+          "name": "Slovak sole trader tax",
+          "title": "Slovak sole trader (SZČO) tax and insurance calculator",
+          "description": "Get a rough figure for the income tax, health and social insurance of a Slovak sole trader (SZČO) for the year, with 60 % flat-rate expenses.",
+          "lead": "Enter your income for the year. The calculator works out Slovak personal income tax, health insurance, the social insurance due from July of the next year and the new health insurance advance.",
+          "keywords": "slovakia sole trader szco self-employed income tax flat-rate expenses social insurance health insurance allowance",
+          "how": [
+            "Profit is income minus 60 % flat-rate expenses (at most EUR 20,000 a year) or minus actual expenses.",
+            "The tax base is profit minus the social and health insurance paid during the year. The taxpayer allowance is deducted; above an income threshold it gradually shrinks.",
+            "Tax is 15 % if income does not exceed EUR 100,000 (EUR 60,000 for 2024). Otherwise 19 % and 25 % on the part above 176.8 times the subsistence minimum, and from 2026 also 30 % and 35 %.",
+            "Health insurance is 15 % (16 % from 2026) of profit divided by 1.486, at least the minimum base for every month. The difference to the advances paid is settled in the yearly reconciliation.",
+            "Social insurance starts only in July of the next year, and only if income exceeds the legal threshold. The base is profit divided by 1.486 and by the months, between the minimum and the maximum base."
+          ]
         }
       }
     },
@@ -6931,18 +7585,18 @@
       "title": "Billing details",
       "hint": "{supplier} will make out the document to these details.",
       "kind": "The customer is",
-      "company": "Company",
+      "company": "Company or sole trader",
       "person": "Private person",
       "country": "Country",
       "ico": "Company ID (IČO)",
       "dic": "VAT ID (DIČ)",
       "vatId": "VAT ID",
-      "lookup": "Look up",
+      "lookup": "Load from register",
       "lookupNeedsIco": "Fill in the company ID first.",
       "lookupNeedsVat": "Fill in the VAT ID first.",
       "lookupNotFound": "Nothing found in the register, please fill in the details yourself.",
       "lookupDone": "Details loaded, please check them.",
-      "companyName": "Company name",
+      "companyName": "Business name",
       "personName": "Full name",
       "street": "Street and number",
       "city": "City",
@@ -6959,8 +7613,20 @@
         "ico_required": "A Czech or Slovak company needs a company ID.",
         "ico_format": "A company ID has 8 digits.",
         "ico_foreign": "A company ID (IČO) is only for Czech and Slovak companies.",
-        "dic_format": "The VAT ID doesn't look right."
-      }
+        "dic_format": "The VAT ID doesn't look right.",
+        "email_required": "Enter your e-mail so the supplier can get back to you.",
+        "required": "This field is required.",
+        "phone_format": "This phone number does not look right."
+      },
+      "optional": "optional",
+      "phone": "Phone",
+      "companySearch": "Find your company in the register",
+      "companySearchHint": "Start typing a name, company ID or city and pick your company. We fill in the rest."
+    },
+    "trust": {
+      "verifiedAres": "We verified {supplier} in the Czech business register (ARES).",
+      "verifiedRpo": "We verified {supplier} in the Slovak register of legal entities (RPO).",
+      "private": "This link is private. Only this supplier sees your details."
     }
   },
   "referrals": {
@@ -7272,5 +7938,289 @@
       "bad_link": "Links may only point to https:// or to a page on this site (/…).",
       "unknown_number": "The text contains a number that is not in the facts or the sources."
     }
+  },
+  "unsubscribe": {
+    "title": "Unsubscribe",
+    "intro": "You will stop getting {what} for {company}. Other emails will keep coming.",
+    "introNoCompany": "You will stop getting {what}. Other emails will keep coming.",
+    "confirm": "Unsubscribe",
+    "done": "Done, you are unsubscribed. We will not send these emails again.",
+    "already": "You are already unsubscribed from these emails.",
+    "manage": "Sign in and go to <link>Settings → Email notifications</link> to change other emails.",
+    "types": {
+      "invoice_paid": "emails about paid invoices",
+      "invoice_viewed": "emails about opened invoices",
+      "invoice_overdue": "emails about overdue invoices",
+      "reminder_sent": "emails about sent reminders",
+      "invoice_sent": "emails about sent invoices",
+      "draft_ready": "emails about new drafts to review",
+      "bank_import": "emails about bank statement imports",
+      "member_joined": "emails about new team members",
+      "quote_response": "emails about replies to quotes",
+      "buyer_details": "emails about details filled in by customers",
+      "weekly_digest": "the weekly digest",
+      "all": "all optional email notifications"
+    },
+    "errors": {
+      "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",
+      "unavailable": "Could not unsubscribe right now. Please try again in a moment."
+    }
+  },
+  "og": {
+    "sections": {
+      "compare": "Comparison",
+      "forAccountants": "For accountants",
+      "partners": "Partners",
+      "directory": "Accountant directory",
+      "profile": "Company profile"
+    },
+    "services": "{n, plural, one {# service} other {# services}}",
+    "privateTitle": "Shared document",
+    "privateSubtitle": "Open the link to see the document.",
+    "privateSection": "Private link"
+  },
+  "accountantDirectory": {
+    "seoTitle": "Looking for an accountant? Recommended accountants by region",
+    "title": "Looking for an accountant?",
+    "lead": "Accountants and bookkeeping firms that work with Billanta. Pick a region and a service and contact them directly.",
+    "filters": {
+      "label": "Filter accountants",
+      "region": "Region",
+      "anyRegion": "Czechia and Slovakia",
+      "service": "Service",
+      "anyService": "Any service",
+      "apply": "Filter",
+      "reset": "Clear filters"
+    },
+    "count": "{n, plural, one {# accountant} other {# accountants}}",
+    "empty": "No one matches this yet. Try another region or service.",
+    "emptyAll": "The list is just getting started. We add accountants one by one, each after a check.",
+    "remote": "Also remote",
+    "languages": "Languages",
+    "price": "Price",
+    "contact": "Contact",
+    "website": "Website",
+    "profile": "Company profile",
+    "emailSubject": "Accounting services enquiry ({site})",
+    "howTitle": "How accountants get listed",
+    "howBody": "Accountants add themselves through the accountant programme, and we approve every entry by hand before it goes live. Nobody pays to be listed. You agree the price and terms with the accountant directly; Billanta is not part of that.",
+    "joinTitle": "Are you an accountant?",
+    "joinBody": "Join the accountant programme and offer your services to businesses that invoice with Billanta.",
+    "joinCta": "Accountant programme",
+    "regions": {
+      "CZ-10": "Prague",
+      "CZ-20": "Central Bohemian Region",
+      "CZ-31": "South Bohemian Region",
+      "CZ-32": "Plzeň Region",
+      "CZ-41": "Karlovy Vary Region",
+      "CZ-42": "Ústí nad Labem Region",
+      "CZ-51": "Liberec Region",
+      "CZ-52": "Hradec Králové Region",
+      "CZ-53": "Pardubice Region",
+      "CZ-63": "Vysočina Region",
+      "CZ-64": "South Moravian Region",
+      "CZ-71": "Olomouc Region",
+      "CZ-72": "Zlín Region",
+      "CZ-80": "Moravian-Silesian Region",
+      "SK-BL": "Bratislava Region",
+      "SK-TA": "Trnava Region",
+      "SK-TC": "Trenčín Region",
+      "SK-NI": "Nitra Region",
+      "SK-ZI": "Žilina Region",
+      "SK-BC": "Banská Bystrica Region",
+      "SK-PV": "Prešov Region",
+      "SK-KI": "Košice Region"
+    },
+    "services": {
+      "bookkeeping": "Bookkeeping",
+      "tax_records": "Tax records (sole traders)",
+      "tax_return": "Income tax return",
+      "vat": "VAT returns and statements",
+      "payroll": "Payroll and HR",
+      "annual_accounts": "Annual accounts",
+      "advisory": "Tax advice",
+      "startup": "Company and trade set-up"
+    },
+    "promo": {
+      "title": "Looking for an accountant?",
+      "body": "Nobody to send your exports to? Our list has accountants by region and service.",
+      "cta": "Find an accountant"
+    },
+    "settings": {
+      "title": "Accountant directory listing",
+      "intro": "Businesses looking for an accountant will find you on the “Looking for an accountant?” page. We publish your entry after a check.",
+      "needProgram": "The directory is part of the accountant programme. Switch to it above.",
+      "displayName": "Your name or firm name",
+      "bio": "A few words about you",
+      "regions": "Regions you cover",
+      "remote": "I also work remotely",
+      "services": "Services",
+      "languages": "Languages",
+      "priceHint": "Price guide",
+      "priceHintPlaceholder": "e.g. from CZK 1,500 a month",
+      "contactEmail": "Email for enquiries",
+      "website": "Website",
+      "contactNote": "Fill in an email, a website or both. They are shown publicly.",
+      "save": "Submit for review",
+      "withdraw": "Remove from the list",
+      "saved": "Submitted for review",
+      "withdrawn": "Listing removed",
+      "editNote": "Every change goes back for review.",
+      "viewPage": "View the page",
+      "reviewNote": "Note from us: {note}",
+      "status": {
+        "pending": "Waiting for review",
+        "approved": "Published",
+        "rejected": "Not approved",
+        "withdrawn": "Removed"
+      },
+      "errors": {
+        "services_required": "Pick at least one service.",
+        "languages_required": "Pick at least one language.",
+        "region_required": "Pick a region or tick remote work.",
+        "contact_required": "Fill in an email or a website.",
+        "invalid_website": "The website does not look like a valid address.",
+        "accountant_program_required": "Switch to the accountant programme first.",
+        "generic": "Saving failed. Please try again."
+      }
+    }
+  },
+  "companyLookup": {
+    "group": "From the register",
+    "placeholder": "Company name, sole trader or company ID",
+    "empty": "Nothing found. Try the company ID or a different spelling.",
+    "ico": "ID",
+    "searchingSlovak": "Also searching the Slovak register…"
+  },
+  "vatCheck": {
+    "checking": "Checking VAT number…",
+    "state": {
+      "payer": "VAT payer verified",
+      "unreliable": "Unreliable VAT payer",
+      "not_registered": "Not a VAT payer",
+      "valid": "Valid in VIES",
+      "invalid": "Not valid in VIES"
+    },
+    "source": {
+      "ADIS": "From the Czech register of VAT payers",
+      "VIES": "From the EU VIES system",
+      "none": "Unknown source"
+    }
+  },
+  "adminAccountants": {
+    "title": "Accountant directory – review",
+    "description": "New and edited listings stay off the directory until you approve them.",
+    "loadError": "Could not load the listings.",
+    "statusLabel": "Listing status",
+    "status": {
+      "pending": "To review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "empty": "Nothing here.",
+    "updated": "edited {date}",
+    "ico": "Company ID",
+    "fields": {
+      "places": "Area",
+      "services": "Services",
+      "languages": "Languages",
+      "price": "Price",
+      "contact": "Contact"
+    },
+    "note": "Note for the accountant",
+    "notePlaceholder": "Optional. When rejecting, say why.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approved": "Listing approved.",
+    "rejected": "Listing rejected.",
+    "changed": "The accountant edited the listing in the meantime. The new version is loaded, please review it again.",
+    "failed": "Action failed",
+    "withdrawnHint": "The accountant withdrew the listing. You can review it again once they save it."
+  },
+  "annualEstimate": {
+    "year": "Year",
+    "incomeCzk": "Income for the year (CZK)",
+    "incomeEur": "Income for the year (EUR)",
+    "income": "Income",
+    "expenses": "Expenses",
+    "actualMode": "Actual expenses",
+    "actualExpenses": "Actual expenses",
+    "start": "Business during the year",
+    "startFull": "Whole year",
+    "startFrom": "From {date} ({months, plural, one {# month} other {# months}})",
+    "paidSocial": "Social insurance paid (optional)",
+    "paidHealth": "Health insurance paid (optional)",
+    "paidHint": "Advances paid for this year. Fill them in to see what is left to pay or overpaid.",
+    "balance": "To pay (+) / overpaid (−)",
+    "nextAdvance": "New monthly advance",
+    "total": "Tax + insurance in total",
+    "paramsFallback": "No parameters for this year yet; using {year}.",
+    "downloadCsv": "Download CSV",
+    "csvName": "tax-and-insurance-estimate",
+    "resultTitle": "Estimate",
+    "perMonth": "per month",
+    "disclaimer": "The result is only a rough estimate and does not replace an accountant or tax adviser. It counts business income only, with the basic taxpayer credit or allowance, and ignores children, deductions and other income. Before you file or pay anything based on it, check with your accountant or on the websites of the authorities.",
+    "cz": {
+      "modes": {
+        "30": "Flat 30 % – renting business assets (max. CZK {cap})",
+        "40": "Flat 40 % – liberal professions, royalties (max. CZK {cap})",
+        "60": "Flat 60 % – other trades (max. CZK {cap})",
+        "80": "Flat 80 % – crafts, agriculture (max. CZK {cap})"
+      },
+      "flatExpenses": "Flat-rate expenses {rate} %",
+      "profit": "Profit",
+      "taxBase": "Tax base (rounded down to hundreds)",
+      "taxCredit": "Taxpayer credit",
+      "incomeTax": "Income tax",
+      "incomeTaxHint": "15 %, 23 % above 36 average wages. Only the basic taxpayer credit is applied, no children, spouse or deductions.",
+      "social": "Social insurance",
+      "socialHint": "29.2 % of 55 % of profit, at least the minimum base for main activity for every month in business.",
+      "health": "Health insurance",
+      "healthHint": "13.5 % of 50 % of profit, at least half the average wage for every month in business.",
+      "params": "For {year} we use an average wage of CZK {wage}, a taxpayer credit of CZK {credit} and a minimum social insurance base of {share} % of the average wage (main activity).",
+      "paramsShareChange": "From {month}/{year} the minimum drops to {share} % (social advance at least CZK {advance}).",
+      "startHint": "Minimum insurance bases count only the months in business. The taxpayer credit and the flat-rate cap stay in full."
+    },
+    "sk": {
+      "flatMode": "Flat-rate expenses 60 % (max. {cap})",
+      "actualHint": "Without the social and health insurance you paid, that is deducted separately.",
+      "flatExpenses": "Flat-rate expenses 60 %",
+      "paidInsurance": "Insurance paid",
+      "taxBase": "Tax base",
+      "allowance": "Taxpayer allowance (nezdaniteľná časť)",
+      "taxable": "Taxable amount",
+      "incomeTax": "Income tax",
+      "incomeTaxReduced": "Income tax (15 %)",
+      "incomeTaxHint": "15 % with income up to EUR 100,000 (EUR 60,000 for 2024), otherwise 19 % and 25 % (from 2026 also 30 % and 35 %). No child bonus or other deductions.",
+      "health": "Health insurance for the year",
+      "healthHint": "{rate} % of the assessment base (profit divided by 1.486), at least the minimum base for every month in business.",
+      "social": "Social insurance from July {year}",
+      "socialNone": "none",
+      "socialHint": "The Social Insurance Agency (Sociálna poisťovňa) sets it from your tax return: the base is profit divided by 1.486 and by the months, between the minimum and the maximum base. Below the income threshold there is no obligation.",
+      "socialMicroHint": "Income is only slightly above the threshold, so from July 2026 a reduced micro contribution (mikroodvod) applies.",
+      "total": "Tax + insurance for the year",
+      "totalHint": "Income tax, health insurance for the year and the social insurance paid during the year.",
+      "params": "For {year} we use a subsistence minimum of {zm} and a flat-rate expense cap of {cap}.",
+      "socialFallback": "Social insurance parameters for next year are not published yet; using those from July {year}.",
+      "startHint": "The minimum health base counts only the months in business. The flat-rate cap and the allowance stay in full.",
+      "paidSocialHint": "Social insurance paid during the year. It lowers the tax base.",
+      "paidHealthHint": "Health insurance advances paid during the year. They lower the tax base and are settled in the yearly reconciliation."
+    },
+    "csvNote": "Note",
+    "csvDisclaimer": "Rough estimate with no warranty. It does not replace a tax return or a tax adviser. Check the figures before you use them."
+  },
+  "linkName": {
+    "title": "Customer link",
+    "label": "Custom link name",
+    "placeholder": "e.g. web-redesign",
+    "hint": "Only for readability. The key at the end is what opens the link, so links you already sent keep working. Leave it empty for the default form.",
+    "save": "Save",
+    "saved": "Link name saved",
+    "cleared": "The link is back to its default form",
+    "invalid": "Use letters, digits or dashes.",
+    "failed": "Could not save",
+    "copy": "Copy",
+    "copied": "Link copied"
   }
 }

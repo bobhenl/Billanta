@@ -36,3 +36,16 @@ export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? '').trim(
 export function profileUrl(slug: string, locale = 'cs', origin = SITE_URL): string {
   return PROFILE_DOMAIN ? `https://${slug}.${PROFILE_DOMAIN}` : `${origin}/${locale}/p/${slug}`;
 }
+
+/** Link straight to the order form with one service picked, for the owner to share. */
+export function profileOrderUrl(slug: string, serviceId: string, locale = 'cs', origin = SITE_URL): string {
+  const base = profileUrl(slug, locale, origin);
+  return `${base}${PROFILE_DOMAIN ? '/' : ''}?service=${encodeURIComponent(serviceId)}#order`;
+}
+/**
+ * The one card every private token page (/i, /d, /c) shares. It says what
+ * kind of link this is and nothing else: no number, amount or name, so a
+ * link pasted into a chat cannot leak what the invoice is about. Not a real
+ * route, so it never collides with a page.
+ */
+export const PRIVATE_CARD = '_private';

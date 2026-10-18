@@ -1,3 +1,5 @@
+import { normalizeVariableSymbol } from "@faktur/cz-compliance";
+
 /**
  * Auto-match logic for bank statement reconciliation. Deliberately a pure,
  * DB-free function — `bank-reconciliation.service.ts` does all the fetching
@@ -10,6 +12,10 @@
  * a real problem, so any tie between two or more equally-good candidates
  * returns "ambiguous" rather than guessing — the transaction stays
  * `unmatched` and a human resolves it via the manual `.../match` endpoint.
+ *
+ * The same goes for a payment whose VS points at one invoice but whose
+ * amount or currency does not settle it: a partial payment or an
+ * overpayment is left for review instead of marking the invoice paid.
  */
 
 /** ±60 days between the transaction date and the invoice's due date for the
@@ -25,9 +31,10 @@ export interface MatchCandidateInvoice {
   variableSymbol: string | null;
   currency: string;
   dueDate: Date | null;
-  /** Computed from `invoice_line_items` — `invoices` has no stored total
-   *  column. See `computeInvoiceTotal` / `bank-reconciliation.service.ts`. */
-  total: number;
+  /** What is still to be paid: the total computed from `invoice_line_items`
+   *  (`invoices` has no stored total column) minus `amount_paid` from
+   *  earlier partial payments. See `bank-reconciliation.service.ts`. */
+  amountDue: number;
 }
 
 export interface TransactionForMatching {
@@ -39,28 +46,31 @@ export interface TransactionForMatching {
 
 export type MatchOutcome =
   | { type: "matched"; invoiceId: string; matchedBy: "variable_symbol" | "amount_and_due_date" }
-  | { type: "unmatched"; reason: "no_candidate" | "ambiguous" };
+  | { type: "unmatched"; reason: "no_candidate" | "ambiguous" }
+  /** The VS names one invoice, but the payment does not settle it exactly. */
+  | { type: "unmatched"; reason: "amount_mismatch"; invoiceId: string };
 
 export function findInvoiceMatch(
   transaction: TransactionForMatching,
   candidates: MatchCandidateInvoice[],
 ): MatchOutcome {
-  // 1. Exact variable symbol match — the primary signal in CZ/SK bank
-  // transfers, since the payer's bank typically carries it through
-  // unmodified. Deliberately does NOT also require amount/currency
-  // agreement (see the module doc comment + README precision-tradeoffs
-  // note): a variable symbol collision across two *issued* invoices for the
-  // same tenant is caught below and left ambiguous, but a VS match against
-  // an invoice with a different amount (e.g. a partial payment) is still
-  // trusted, matching the brief's "either A or (fallback) B" — not "A and
-  // a same amount check".
-  if (transaction.variableSymbol) {
-    const vsMatches = candidates.filter((c) => c.variableSymbol === transaction.variableSymbol);
-    if (vsMatches.length === 1) {
-      return { type: "matched", invoiceId: vsMatches[0].id, matchedBy: "variable_symbol" };
-    }
+  // 1. Variable symbol: the primary signal in CZ/SK transfers, since the
+  // payer's bank carries it through unmodified. Leading zeros don't count
+  // (GPC pads the VS to 10 digits). Two issued invoices with one VS are
+  // ambiguous; one invoice is matched only when the payment settles exactly
+  // what is still due, in the invoice's currency.
+  const variableSymbol = normalizeVariableSymbol(transaction.variableSymbol);
+  if (variableSymbol) {
+    const vsMatches = candidates.filter((c) => normalizeVariableSymbol(c.variableSymbol) === variableSymbol);
     if (vsMatches.length > 1) {
       return { type: "unmatched", reason: "ambiguous" };
+    }
+    const [invoice] = vsMatches;
+    if (invoice) {
+      if (invoice.currency === transaction.currency && amountsEqual(invoice.amountDue, transaction.amount)) {
+        return { type: "matched", invoiceId: invoice.id, matchedBy: "variable_symbol" };
+      }
+      return { type: "unmatched", reason: "amount_mismatch", invoiceId: invoice.id };
     }
   }
 
@@ -69,7 +79,7 @@ export function findInvoiceMatch(
   const amountMatches = candidates.filter((c) => {
     if (c.currency !== transaction.currency) return false;
     if (!c.dueDate) return false;
-    if (!amountsEqual(c.total, transaction.amount)) return false;
+    if (!amountsEqual(c.amountDue, transaction.amount)) return false;
     return Math.abs(c.dueDate.getTime() - transaction.transactionDate.getTime()) <= windowMs;
   });
 

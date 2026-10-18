@@ -240,6 +240,10 @@ importers:
         version: 5.9.3
 
   packages/cz-compliance:
+    dependencies:
+      bysquare:
+        specifier: 4.1.0
+        version: 4.1.0
     devDependencies:
       fast-xml-parser:
         specifier: ^4.5.0
@@ -2546,6 +2550,10 @@ packages:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
     engines: {node: '>=10.16.0'}
 
+  bysquare@4.1.0:
+    resolution: {integrity: sha512-/Oc0h342r22zhXFEe12F9a6OK2eN33ZPZ3yeezELw1Ihz6Rp3WJ7HaaRMgNA2a8K2sgrbr72PsaVg17cCvKf8g==}
+    hasBin: true
+
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
@@ -3845,6 +3853,10 @@ packages:
     resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
     engines: {node: '>=12'}
 
+  lzma1@0.4.0:
+    resolution: {integrity: sha512-6AP1zxycZ2bmfaX1GDex1k4eme5NINXvsViA15oZNCvyzc1F9408YwxC/jW5w8uqs6+h1jZeziB444xykOrK7A==}
+    engines: {bun: '>=1.0.0', node: '>=18.0.0'}
+
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
@@ -5005,6 +5017,10 @@ packages:
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
+
+  validator@13.15.35:
+    resolution: {integrity: sha512-TQ5pAGhd5whStmqWvYF4OjQROlmv9SMFVt37qoCBdqRffuuklWYQlCNnEs2ZaIBD1kZRNnikiZOS1eqgkar0iw==}
+    engines: {node: '>= 0.10'}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -7092,6 +7108,11 @@ snapshots:
     dependencies:
       streamsearch: 1.1.0
 
+  bysquare@4.1.0:
+    dependencies:
+      lzma1: 0.4.0
+      validator: 13.15.35
+
   bytes@3.1.2: {}
 
   cac@6.7.14: {}
@@ -8568,6 +8589,8 @@ snapshots:
 
   luxon@3.7.2: {}
 
+  lzma1@0.4.0: {}
+
   magic-string@0.30.17:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
@@ -9848,6 +9871,8 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
+
+  validator@13.15.35: {}
 
   vary@1.1.2: {}
 

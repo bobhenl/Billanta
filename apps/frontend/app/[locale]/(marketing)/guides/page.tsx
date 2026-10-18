@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { CzOnlyNotice, SignupCta } from '@/components/public-tools/parts';
 import { GUIDES, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
@@ -21,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function GuidesHub({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('tools');
   if (!isPublishedIn(HUB, locale)) return <CzOnlyNotice name={t('guides.indexTitle')} path="/guides" />;
   const guides = GUIDES.filter((g) => isPublishedIn(g, locale));
@@ -40,6 +42,7 @@ export default async function GuidesHub({ params }: { params: Promise<Params> })
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />
+      <ToolTabs kind="guides" />
       <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('guides.indexTitle')}</h1>
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('guides.indexLead')}</p>
       <ul className="mt-10 grid gap-4 sm:grid-cols-2">

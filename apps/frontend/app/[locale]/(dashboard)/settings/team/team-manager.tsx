@@ -11,6 +11,9 @@ import { cn } from '@/lib/utils';
 import { PERMISSION_AREAS, type PermissionLevel } from '@/lib/access';
 import { effective, presetOf, TEAM_PRESETS, toAssignment, type Perms } from '@/lib/team-presets';
 import { changeMemberRole, inviteMember, removeMember, revokeInvitation, type MemberPermissions, type TeamRole } from '../actions';
+import { copyText } from '@/lib/clipboard';
+import type { PublicAccountant } from '@/lib/accountant-directory';
+import { AccountantPicker } from './accountant-picker';
 
 export interface TeamData {
   members: {
@@ -114,7 +117,20 @@ const ROLE_CLASSES: Record<TeamRole, string> = {
   viewer: 'bg-muted text-muted-foreground'
 };
 
-export function TeamManager({ team, canManage, currentUserId }: { team: TeamData; canManage: boolean; currentUserId: string }) {
+/** Presets an outside accountant or tax advisor would be invited with: these offer the directory. */
+const DIRECTORY_PRESETS = new Set(['accountant', 'auditor']);
+
+export function TeamManager({
+  team,
+  canManage,
+  currentUserId,
+  accountants
+}: {
+  team: TeamData;
+  canManage: boolean;
+  currentUserId: string;
+  accountants: PublicAccountant[];
+}) {
   const t = useTranslations('settings.team');
   const locale = useLocale();
   const router = useRouter();
@@ -137,7 +153,7 @@ export function TeamManager({ team, canManage, currentUserId }: { team: TeamData
 
   const copy = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      await copyText(text);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {
       toast({ text: text, tone: 'info' });
@@ -384,6 +400,15 @@ export function TeamManager({ team, canManage, currentUserId }: { team: TeamData
               </div>
             </fieldset>
             {preset === 'custom' && <PermissionGrid value={customPerms} onChange={setCustomPerms} />}
+            {DIRECTORY_PRESETS.has(preset) && (
+              <AccountantPicker
+                accountants={accountants}
+                onPick={(picked) => {
+                  setEmail(picked);
+                  toast({ text: t('directory.picked', { email: picked }), tone: 'info' });
+                }}
+              />
+            )}
           </div>
         )}
       </Modal>

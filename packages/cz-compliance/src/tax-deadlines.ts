@@ -52,10 +52,12 @@ export interface TaxProfile {
   vatStatus: VatStatus;
   /** s.r.o., a.s. …: no OSVČ insurance advances, no flat tax, no overviews. */
   legalEntity: boolean;
+  /** Paušální režim from Settings (null = not answered). Only changes the default kinds, see defaultTaxDeadlineKinds. */
+  flatTax?: boolean | null;
   activity?: {
     /** Months with an issued invoice for a service to a business in another EU state. */
     euSalesMonths: string[];
-    /** Months with an expense from a supplier abroad (identified person: VAT due under reverse charge). */
+    /** Months with an expense from a supplier abroad (identified person: VAT due under reverse charge), over the last year. */
     foreignPurchaseMonths: string[];
   };
 }
@@ -72,10 +74,22 @@ export interface OfficialTaxEvent {
 /** Kinds the official calendar covers; the rest are always computed locally. */
 const OFFICIAL_KINDS: readonly TaxDeadlineKind[] = ['vat_monthly', 'vat_quarterly', 'vat_other', 'income_tax', 'flat_tax', 'payroll', 'road_tax', 'property_tax'];
 
-/** What a company sees until it picks its own set in the dashboard customizer (`true`/`false` = legacy plátce/neplátce). */
-export function defaultTaxDeadlineKinds(status: VatStatus | boolean): TaxDeadlineKind[] {
+/**
+ * What a company sees until it picks its own set in the dashboard customizer
+ * (`true`/`false` = legacy plátce/neplátce). `flatTax` is the paušální režim
+ * answer from Settings: there the one monthly flat tax replaces the social
+ * and health advances, and there is no income tax return and no overviews
+ * (§ 2a and § 7a ZDP). Unknown keeps the classic OSVČ set. Payroll, road and
+ * property tax can't be told from the data, so they are never on by default.
+ * A Slovak SZČO has no paušální daň (§ 2a ZDP is Czech law), so an answer
+ * left over from when the company was Czech is ignored for `country` SK;
+ * otherwise it would swap the SZČO's health and social advances for a flat
+ * tax that `relevantTaxDeadlineKinds` then hides, leaving none of them.
+ */
+export function defaultTaxDeadlineKinds(status: VatStatus | boolean, flatTax: boolean | null = null, country = 'CZ'): TaxDeadlineKind[] {
   const s: VatStatus = isVatStatus(status) ? status : status ? 'payer' : 'non_payer';
   const vat: TaxDeadlineKind[] = s === 'payer' ? ['vat_monthly', 'ec_sales_list'] : s === 'identified' ? ['vat_identified', 'ec_sales_list'] : [];
+  if (flatTax === true && country.toUpperCase() !== 'SK') return [...vat, 'flat_tax'];
   return [...vat, 'health', 'social', 'income_tax', 'overviews'];
 }
 
@@ -104,9 +118,11 @@ const monthKeyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).p
 /**
  * Applies the account's activity to the conditional kinds; a deadline on the
  * 25th covers the month before it. Souhrnné hlášení without an EU service
- * that month is dropped. An identified person's return without a seen
- * foreign purchase stays, flagged "only if …" (ads bought abroad are often
- * not booked as an expense).
+ * that month is dropped. An identified person's return without a foreign
+ * purchase that month stays, flagged "only if …", only when the account has
+ * bought abroad at all in the window `activity` covers (a year): a regular
+ * ad buyer may simply not have booked this month's invoice yet, while
+ * someone who never buys abroad would only be nagged by it.
  */
 export function applyTaxActivity(deadlines: TaxDeadline[], profile: TaxProfile): TaxDeadline[] {
   const out: TaxDeadline[] = [];
@@ -118,7 +134,7 @@ export function applyTaxActivity(deadlines: TaxDeadline[], profile: TaxProfile):
     const period = monthKeyOf(new Date(d.date.getFullYear(), d.date.getMonth() - 1, 1));
     const months = profile.activity ? (d.kind === 'ec_sales_list' ? profile.activity.euSalesMonths : profile.activity.foreignPurchaseMonths) : null;
     if (months?.includes(period)) out.push(d);
-    else if (d.kind === 'vat_identified' || !months) out.push({ ...d, conditional: true });
+    else if (!months || (d.kind === 'vat_identified' && months.length > 0)) out.push({ ...d, conditional: true });
   }
   return out;
 }

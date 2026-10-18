@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { SiteSearchBox } from '@/components/site-search-box';
 import { searchSite, type SearchKind } from '@/lib/site-search';
@@ -24,6 +24,7 @@ export default async function SiteSearchPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const { q = '' } = await searchParams;
   const query = q.trim().slice(0, 100);
   const t = await getTranslations('siteSearch');

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ArrowRight, Check } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { BRANDS, COMPARED_BRANDS, COMPETITOR_ROWS, comparedAtLabel } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  */
 export default async function ComparePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('comparePage');
   const comparedAt = comparedAtLabel(locale);
   const reasons = t.raw('reasons') as { title: string; body: string }[];

@@ -37,13 +37,18 @@ import { tenantHomeCurrency } from "../tenants/home-currency";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
+import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
 import { BuyerDetailsService } from "./buyer-details.service";
+import { customSlugSchema } from "../public-links/public-link";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
 
 const buyerDetailsRequestSchema = z.object({
   email: z.string().trim().max(200).email().optional().or(z.literal("")),
   autoIssue: z.boolean().optional(),
+  // Which fields the customer must fill in; omitted = the company default.
+  required: z.array(z.enum(BUYER_DETAILS_FIELDS)).max(4).optional(),
+  saveAsDefault: z.boolean().optional(),
 });
 
 class BitfakturaImportDto extends createZodDto(
@@ -51,6 +56,21 @@ class BitfakturaImportDto extends createZodDto(
     account: z.string().trim().min(1).max(200),
     apiToken: z.string().trim().min(8).max(200),
     dryRun: z.boolean().optional(),
+    /** Only the invoices of this supplier IČO (the preview lists them when there are several). */
+    sellerIco: z.string().regex(/^\d{8}$/).optional(),
+  }),
+) {}
+
+class PublicSlugDto extends createZodDto(z.object({ slug: customSlugSchema })) {}
+
+class FakturoidImportDto extends createZodDto(
+  z.object({
+    clientId: z.string().trim().min(8).max(200),
+    clientSecret: z.string().trim().min(8).max(200),
+    /** The account slug; only needed when the Fakturoid user has several accounts. */
+    account: z.string().trim().max(200).optional(),
+    dryRun: z.boolean().optional(),
+    sellerIco: z.string().regex(/^\d{8}$/).optional(),
   }),
 ) {}
 
@@ -205,7 +225,27 @@ export class InvoicesController {
   })
   importBitfaktura(@Req() req: TenantScopedRequest, @Body() dto: BitfakturaImportDto) {
     if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
-    return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false);
+    return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false, undefined, dto.sellerIco);
+  }
+
+  @Post("import/fakturoid")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Import invoice history straight from a Fakturoid account over API v3 (dryRun only previews)",
+    description:
+      "The Client ID and secret (Fakturoid Settings → User account) are used for this request only and never stored. " +
+      "Apart from the OAuth token request only GETs are sent. Same rules as the CSV import.",
+  })
+  importFakturoid(@Req() req: TenantScopedRequest, @Body() dto: FakturoidImportDto) {
+    if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
+    return this.importService.importFromFakturoid(
+      req.tenantDb!,
+      req.user!.tenantId,
+      { clientId: dto.clientId, clientSecret: dto.clientSecret, account: dto.account || undefined },
+      dto.dryRun ?? false,
+      undefined,
+      dto.sellerIco,
+    );
   }
 
   @Post(":id/mark-paid")
@@ -243,6 +283,13 @@ export class InvoicesController {
     return this.invoicesService.rotatePublicToken(req.tenantDb!, id);
   }
 
+  @Patch(":id/public-link")
+  @UseGuards(CombinedAuthGuard)
+  @ApiOperation({ summary: "Set or clear the custom readable name in front of the client link's key (cosmetic; the key stays the secret)" })
+  setPublicSlug(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PublicSlugDto) {
+    return this.invoicesService.setPublicSlug(req.tenantDb!, id, dto.slug);
+  }
+
   @Post(":id/buyer-details-request")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
@@ -258,6 +305,8 @@ export class InvoicesController {
     return this.buyerDetails.request(req.tenantDb!, req.user!.tenantId, req.user!.id, id, {
       email: parsed.data.email || null,
       autoIssue: parsed.data.autoIssue,
+      required: parsed.data.required,
+      saveAsDefault: parsed.data.saveAsDefault,
     });
   }
 

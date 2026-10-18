@@ -3,6 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { Resend } from "resend";
 import { fillTemplate } from "../tenants/email-prefs";
 import { clientPortalUrlOf, portalUrlOf } from "../tenants/template-vars";
+import { escapeHtml, htmlToText } from "./email-render";
+import { EmailOutboxService, type OutgoingEmail, type QueueContext } from "./email-outbox.service";
 
 export interface SendInvoiceEmailParams {
   to: string;
@@ -10,10 +12,10 @@ export interface SendInvoiceEmailParams {
   /** Pre-formatted for display, e.g. "1815.00 CZK" — see `invoice-total.util.ts`. */
   amount: string;
   dueDate: Date | null;
-  /** `invoices.publicToken` — used to build the client-portal link. */
-  publicToken: string;
-  /** `contacts.portalToken` when the customer's portal is on — adds an "all your documents" link. */
-  clientPortalToken?: string | null;
+  /** The /i/ path segment from `invoiceLinkOf` (readable prefix + key), used to build the client-portal link. */
+  publicLink: string;
+  /** The /c/ segment from `clientPortalLinkOf` when the customer has the portal on; adds an "all your documents" link. */
+  clientPortalLink?: string | null;
   /** The company's own wording, sender name and attachments (Settings → E-maily). */
   custom?: EmailCustomization;
   /** The customer already has this invoice and it was edited since: say it replaces the earlier copy. */
@@ -47,6 +49,30 @@ interface SendOptions {
   bcc?: string | null;
   attachments?: EmailAttachment[];
 }
+
+/** Where and how an e-mail is queued (see `QueueContext`); the key makes a retried action safe. */
+export interface EmailQueueOptions extends QueueContext {
+  idempotencyKey?: string;
+  userId?: string | null;
+}
+
+/** A claimed outbox row, ready for Resend. */
+export interface DeliverableEmail {
+  id: string;
+  recipient: string;
+  fromName: string | null;
+  replyTo: string | null;
+  bcc: string | null;
+  subject: string;
+  html: string;
+  textBody: string;
+  headers: Record<string, string>;
+  attachments: { filename: string; contentType?: string; content: string }[] | null;
+}
+
+export type DeliveryResult =
+  | { ok: true; providerId: string | null }
+  | { ok: false; statusCode: number | null; name: string; message: string };
 
 export interface SendPaymentReminderEmailParams extends SendInvoiceEmailParams {
   /** 1-based — "this is reminder #N for this invoice." */
@@ -87,17 +113,24 @@ export class EmailService {
   private readonly resend: Resend | null;
   private readonly fromAddress: string | undefined;
 
-  constructor(config: ConfigService) {
+  constructor(
+    config: ConfigService,
+    private readonly outbox: EmailOutboxService,
+  ) {
     const apiKey = config.get<string>("RESEND_API_KEY");
     this.fromAddress = config.get<string>("EMAIL_FROM");
     // Constructed tolerant-of-missing-key rather than throwing at boot, so
     // the rest of the app (tests, local dev before Resend is configured)
-    // doesn't hard-fail on startup — `send()` below fails loudly and
-    // specifically the first time an actual send is attempted unconfigured.
+    // doesn't hard-fail on startup. Everything is queued in the outbox
+    // either way; the worker leaves it waiting while unconfigured.
     this.resend = apiKey ? new Resend(apiKey) : null;
   }
 
-  async sendInvoiceEmail(params: SendInvoiceEmailParams): Promise<void> {
+  isConfigured(): boolean {
+    return Boolean(this.resend && this.fromAddress);
+  }
+
+  async sendInvoiceEmail(params: SendInvoiceEmailParams, queue: EmailQueueOptions): Promise<void> {
     const values = placeholderValues(params);
     const c = params.custom;
     const custom = c?.subject ? fillTemplate(c.subject, values) : null;
@@ -119,16 +152,16 @@ export class EmailService {
       invoiceNumber: params.invoiceNumber,
       amount: params.amount,
       dueDate: params.dueDate,
-      publicToken: params.publicToken,
-      clientPortalToken: params.clientPortalToken,
+      publicLink: params.publicLink,
+      clientPortalLink: params.clientPortalLink,
       signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
       accent: c?.accent,
       attachmentNames: c?.attachments?.map((a) => a.filename),
     });
-    await this.send(params.to, subject, html, c);
+    await this.queue({ kind: "invoice", category: "transactional", to: params.to, subject, html, ...sendOptions(c) }, queue);
   }
 
-  async sendPaymentReminderEmail(params: SendPaymentReminderEmailParams): Promise<void> {
+  async sendPaymentReminderEmail(params: SendPaymentReminderEmailParams, queue: EmailQueueOptions): Promise<void> {
     const values = { ...placeholderValues(params), reminder_no: String(params.reminderCount) };
     const c = params.custom;
     const subject = c?.subject
@@ -144,29 +177,76 @@ export class EmailService {
       invoiceNumber: params.invoiceNumber,
       amount: params.amount,
       dueDate: params.dueDate,
-      publicToken: params.publicToken,
-      clientPortalToken: params.clientPortalToken,
+      publicLink: params.publicLink,
+      clientPortalLink: params.clientPortalLink,
       signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
       accent: c?.accent,
       attachmentNames: c?.attachments?.map((a) => a.filename),
     });
-    await this.send(params.to, subject, html, c);
+    await this.queue({ kind: "reminder", category: "transactional", to: params.to, subject, html, ...sendOptions(c) }, queue);
   }
 
-  /** A notification for a member ("Faktura 2026-0004 byla zaplacena") — Settings → Notifikace. */
-  async sendNotificationEmail(params: { to: string; title: string; body?: string | null; url?: string | null }) {
-    const html = `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
-      <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;">
-        <h1 style="font-size:18px;margin:0 0 12px;color:#111;">${escapeHtml(params.title)}</h1>
-        ${params.body ? `<p style="color:#374151;line-height:1.5;margin:0 0 20px;">${escapeHtml(params.body)}</p>` : ""}
-        ${params.url ? `<p><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:14px;">Otevřít v Billantě</a></p>` : ""}
-        <p style="color:#9ca3af;font-size:12px;margin-top:24px;">Upozornění si nastavíte v Nastavení → Notifikace.</p>
-      </div></body></html>`;
-    await this.send(params.to, params.title, html);
+  /**
+   * A security alert to a member (payout account changed, …): goes out at
+   * once, ignores quiet hours and preferences, no unsubscribe link. Ordinary
+   * notifications go through `EmailOutboxService.enqueueNotification` instead.
+   */
+  async sendSecurityAlertEmail(params: { to: string; title: string; body?: string | null; url?: string | null }, queue: EmailQueueOptions) {
+    await this.queue(
+      { kind: "security_alert", category: "transactional", to: params.to, subject: params.title, html: simpleMessageHtml(params) },
+      queue,
+    );
+  }
+
+  /**
+   * Trial ending, plan paid, prepaid period ending: to owners and admins,
+   * transactional like a security alert. `details` is a label/value table
+   * (payment details for a renewal proforma), `attachments` its QR code.
+   */
+  async sendBillingNoticeEmail(
+    params: {
+      to: string;
+      title: string;
+      body?: string | null;
+      url?: string | null;
+      lang?: string;
+      details?: BillingNoticeDetail[];
+      attachments?: EmailAttachment[];
+    },
+    queue: EmailQueueOptions,
+  ) {
+    await this.queue(
+      {
+        kind: "billing_notice",
+        category: "transactional",
+        to: params.to,
+        subject: params.title,
+        html: simpleMessageHtml(params),
+        ...(params.attachments?.length ? { attachments: params.attachments } : {}),
+      },
+      queue,
+    );
+  }
+
+  /**
+   * Billanta's own mail to staff (abuse reports): there is no tenant, so no
+   * outbox. Sent directly when Resend is configured, otherwise only logged.
+   */
+  async sendPlatformEmail(params: { to: string; title: string; body?: string | null }) {
+    if (!this.resend || !this.fromAddress) {
+      this.logger.warn(`E-mail is not configured, staff e-mail "${params.title}" not sent`);
+      return;
+    }
+    const html = simpleMessageHtml(params);
+    const { error } = await this.resend.emails.send({ from: this.fromAddress, to: params.to, subject: params.title, html, text: htmlToText(html) });
+    if (error) throw new Error(`Resend send failed (${error.name}): ${error.message}`);
   }
 
   /** "Doplňte prosím své fakturační údaje" – the buyer-details link for a draft (BuyerDetailsService). */
-  async sendBuyerDetailsRequestEmail(params: { to: string; companyName: string; amount: string; url: string; replyTo?: string | null }) {
+  async sendBuyerDetailsRequestEmail(
+    params: { to: string; companyName: string; amount: string; url: string; replyTo?: string | null },
+    queue: EmailQueueOptions,
+  ) {
     const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
       <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;">
         <h1 style="font-size:18px;margin:0 0 12px;color:#111;">Doplňte prosím své fakturační údaje</h1>
@@ -177,14 +257,22 @@ export class EmailService {
         <p style="color:#9ca3af;font-size:12px;word-break:break-all;">${escapeHtml(params.url)}</p>
         <p style="color:#9ca3af;font-size:12px;margin-top:16px;">Pokud jste nic neobjednávali, e-mail ignorujte.</p>
       </div></body></html>`;
-    await this.send(params.to, `Doplňte prosím fakturační údaje pro ${params.companyName}`, html, {
-      fromName: params.companyName,
-      ...(params.replyTo ? { replyTo: params.replyTo } : {}),
-    });
+    await this.queue(
+      {
+        kind: "buyer_details_request",
+        category: "transactional",
+        to: params.to,
+        subject: `Doplňte prosím fakturační údaje pro ${params.companyName}`,
+        html,
+        fromName: params.companyName,
+        replyTo: params.replyTo ?? null,
+      },
+      queue,
+    );
   }
 
   /** "You've been invited to <company> on Billanta" — Settings → Team. */
-  async sendInvitationEmail(params: { to: string; companyName: string; role: string; acceptUrl: string }) {
+  async sendInvitationEmail(params: { to: string; companyName: string; role: string; acceptUrl: string }, queue: EmailQueueOptions) {
     const esc = (v: string) =>
       v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
     const html = `<!doctype html><html><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
@@ -196,41 +284,80 @@ export class EmailService {
           text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;">Přijmout pozvánku</a></p>
         <p style="color:#6b7280;font-size:12px;">Pokud jste pozvánku nečekali, e-mail ignorujte.</p>
       </div></body></html>`;
-    await this.send(params.to, `Pozvánka do ${params.companyName} (Billanta)`, html);
+    await this.queue(
+      { kind: "team_invitation", category: "transactional", to: params.to, subject: `Pozvánka do ${params.companyName} (Billanta)`, html },
+      queue,
+    );
   }
 
-  private async send(to: string, subject: string, html: string, options: SendOptions = {}): Promise<void> {
+  private async queue(email: OutgoingEmail, queue: EmailQueueOptions): Promise<void> {
+    await this.outbox.enqueue(
+      { ...email, userId: queue.userId ?? null, ...(queue.idempotencyKey ? { idempotencyKey: queue.idempotencyKey } : {}) },
+      { tenantId: queue.tenantId, db: queue.db },
+    );
+  }
+
+  /**
+   * One delivery attempt for a claimed outbox row (`EmailOutboxWorker`).
+   * The row id is Resend's idempotency key, so a retry after a timeout whose
+   * send actually went through doesn't mail the customer twice.
+   */
+  async deliver(row: DeliverableEmail): Promise<DeliveryResult> {
     if (!this.resend || !this.fromAddress) {
-      throw new Error(
-        "EmailService is not configured – RESEND_API_KEY and EMAIL_FROM must both be set " +
-          "(see .env.example)",
+      return { ok: false, statusCode: null, name: "not_configured", message: "RESEND_API_KEY and EMAIL_FROM must both be set" };
+    }
+    try {
+      const { data, error } = await this.resend.emails.send(
+        {
+          from: withDisplayName(this.fromAddress, row.fromName),
+          to: row.recipient,
+          subject: row.subject,
+          html: row.html,
+          text: row.textBody,
+          ...(Object.keys(row.headers ?? {}).length ? { headers: row.headers } : {}),
+          ...(row.replyTo ? { replyTo: row.replyTo } : {}),
+          ...(row.bcc ? { bcc: row.bcc } : {}),
+          ...(row.attachments?.length
+            ? { attachments: row.attachments.map((a) => ({ filename: a.filename, content: a.content, contentType: a.contentType })) }
+            : {}),
+        },
+        { idempotencyKey: `outbox-${row.id}` },
       );
+      if (error) return { ok: false, statusCode: error.statusCode ?? null, name: error.name, message: error.message };
+      return { ok: true, providerId: data?.id ?? null };
+    } catch (err) {
+      // Network failure or timeout: worth another attempt.
+      return { ok: false, statusCode: null, name: "network_error", message: err instanceof Error ? err.message : String(err) };
     }
-
-    const { error } = await this.resend.emails.send({
-      from: withDisplayName(this.fromAddress, options.fromName),
-      to,
-      subject,
-      html,
-      ...(options.replyTo ? { replyTo: options.replyTo } : {}),
-      ...(options.bcc ? { bcc: options.bcc } : {}),
-      ...(options.attachments?.length
-        ? {
-            attachments: options.attachments.map((a) => ({
-              filename: a.filename,
-              content: a.content,
-              contentType: a.contentType,
-            })),
-          }
-        : {}),
-    });
-
-    if (error) {
-      throw new Error(`Resend send failed (${error.name}): ${error.message}`);
-    }
-
-    this.logger.log(`email sent to ${to}: ${subject}`);
   }
+}
+
+function sendOptions(c: SendOptions | undefined): Pick<OutgoingEmail, "fromName" | "replyTo" | "bcc" | "attachments"> {
+  return { fromName: c?.fromName ?? null, replyTo: c?.replyTo ?? null, bcc: c?.bcc ?? null, attachments: c?.attachments };
+}
+
+export interface BillingNoticeDetail {
+  label: string;
+  value: string;
+}
+
+const OPEN_IN_APP: Record<string, string> = { cs: "Otevřít v Billantě", sk: "Otvoriť v Billante", en: "Open in Billanta" };
+
+function simpleMessageHtml(params: { title: string; body?: string | null; url?: string | null; lang?: string; details?: BillingNoticeDetail[] }): string {
+  const lang = params.lang === "sk" || params.lang === "en" ? params.lang : "cs";
+  const rows = (params.details ?? [])
+    .map(
+      (d) =>
+        `<tr><td style="color:#6b7280;padding:4px 16px 4px 0;vertical-align:top;">${escapeHtml(d.label)}</td><td style="color:#111;padding:4px 0;font-weight:bold;">${escapeHtml(d.value)}</td></tr>`,
+    )
+    .join("");
+  return `<!doctype html><html lang="${lang}"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
+      <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;">
+        <h1 style="font-size:18px;margin:0 0 12px;color:#111;">${escapeHtml(params.title)}</h1>
+        ${params.body ? `<p style="color:#374151;line-height:1.5;margin:0 0 20px;">${escapeHtml(params.body)}</p>` : ""}
+        ${rows ? `<table style="font-size:14px;border-collapse:collapse;margin:0 0 20px;">${rows}</table>` : ""}
+        ${params.url ? `<p><a href="${escapeHtml(params.url)}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:14px;">${OPEN_IN_APP[lang]}</a></p>` : ""}
+      </div></body></html>`;
 }
 
 /**
@@ -241,7 +368,7 @@ export class EmailService {
  * The client-portal link is built from `NEXT_PUBLIC_SITE_URL` (already
  * defined in the root `.env.example` for the frontend's canonical origin —
  * see `apps/frontend/lib/site.ts` — reused here rather than inventing a
- * second site-URL env var) plus `/i/${publicToken}`, per this feature's
+ * second site-URL env var) plus `/i/${publicLink}`, per this feature's
  * brief. No client-portal page at that route exists in the frontend yet
  * (that's a separate, concurrently-built module) — this is the URL contract
  * that page is expected to implement.
@@ -252,13 +379,13 @@ function renderInvoiceEmailHtml(params: {
   invoiceNumber: string;
   amount: string;
   dueDate: Date | null;
-  publicToken: string;
-  clientPortalToken?: string | null;
+  publicLink: string;
+  clientPortalLink?: string | null;
   signature?: string;
   accent?: string;
   attachmentNames?: string[];
 }): string {
-  const portalUrl = portalUrlOf(params.publicToken);
+  const portalUrl = portalUrlOf(params.publicLink);
   const accent = params.accent && /^#[0-9a-fA-F]{6}$/.test(params.accent) ? params.accent : "#111827";
   const paragraphs = (text: string) => escapeHtml(text).replace(/\r?\n/g, "<br>");
   const dueDateFormatted = params.dueDate
@@ -291,8 +418,8 @@ function renderInvoiceEmailHtml(params: {
             <a href="${portalUrl}" style="display:inline-block; background:${accent}; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px;">Zobrazit fakturu</a>
           </p>
           ${
-            params.clientPortalToken
-              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalToken)}" style="color:${accent};">Všechny vaše doklady na jednom místě</a></p>`
+            params.clientPortalLink
+              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalLink)}" style="color:${accent};">Všechny vaše doklady na jednom místě</a></p>`
               : ""
           }
           ${
@@ -325,8 +452,8 @@ function placeholderValues(params: SendInvoiceEmailParams): Record<string, strin
       : "",
     company: params.custom?.companyName ?? "",
     customer: params.custom?.customerName ?? "",
-    link: portalUrlOf(params.publicToken),
-    portal_link: params.clientPortalToken ? clientPortalUrlOf(params.clientPortalToken) : "",
+    link: portalUrlOf(params.publicLink),
+    portal_link: params.clientPortalLink ? clientPortalUrlOf(params.clientPortalLink) : "",
   };
 }
 
@@ -336,13 +463,4 @@ export function withDisplayName(from: string, name?: string | null): string {
   if (!clean) return from;
   const address = from.match(/<([^>]+)>/)?.[1] ?? from.trim();
   return `"${clean}" <${address}>`;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }

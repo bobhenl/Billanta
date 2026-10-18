@@ -41,6 +41,7 @@ function makeOverdueInvoice(overrides: Partial<OverdueInvoiceForReminder> = {}):
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
     contactEmail: "client@example.com",
+    publicLink: "2026-0001-aZ09bY18cX27",
     lineItems: [
       {
         id: "li-1",
@@ -113,9 +114,10 @@ describe("InvoiceRemindersCron", () => {
         invoiceNumber: "2026-0001",
         amount: "2420.00 CZK", // 2 * 1000 * 1.21
         dueDate: overdue.invoice.dueDate,
-        publicToken: overdue.invoice.publicToken,
+        publicLink: "2026-0001-aZ09bY18cX27",
         reminderCount: 1, // reminderCount (0) + 1
       }),
+      { tenantId: "tenant-1", idempotencyKey: "reminder:inv-1:1" },
     );
     expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-1", expect.any(String));
   });
@@ -161,6 +163,7 @@ describe("InvoiceRemindersCron", () => {
 
     expect(emailService.sendPaymentReminderEmail).toHaveBeenCalledWith(
       expect.objectContaining({ reminderCount: 2 }),
+      expect.objectContaining({ idempotencyKey: "reminder:inv-1:2" }),
     );
   });
 

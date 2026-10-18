@@ -89,14 +89,37 @@ export async function getRpoSubjectByIco(ico: string, opts: { timeoutMs?: number
   return hit ?? null;
 }
 
+/** Lowercase, no diacritics, single spaces: "Pošta  a.s." and "posta a.s." fold the same (the local SK index stores this). */
+export const foldCompanyName = (s: string): string =>
+  s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+/**
+ * Keeps the hits whose current name contains `query`, names that start with
+ * it first, then shorter (closer) names, one hit per IČO. The live RPO
+ * search and the local index (apps/backend sk-companies) both rank through
+ * this, so switching between them does not reorder the typeahead.
+ */
+export function rankByName<T extends { ico: string; name: string }>(hits: T[], query: string, limit: number): T[] {
+  const needle = foldCompanyName(query);
+  if (!needle) return [];
+  const matching = hits.map((h) => ({ h, f: foldCompanyName(h.name) })).filter((x) => x.f.includes(needle));
+  matching.sort((a, b) => Number(!a.f.startsWith(needle)) - Number(!b.f.startsWith(needle)) || a.h.name.length - b.h.name.length);
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const { h } of matching) {
+    if (seen.has(h.ico)) continue;
+    seen.add(h.ico);
+    out.push(h);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
 /** Slovak companies whose name contains `name` (active ones only). */
 export async function searchRpoSubjects(name: string, opts: { timeoutMs?: number; limit?: number } = {}): Promise<RpoSubject[]> {
   const q = name.trim();
   if (q.length < 3) return [];
-  // RPO also matches former names, so keep subjects whose *current* name matches.
-  const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
-  const needle = fold(q);
-  const hits = (await query({ fullName: q }, opts.timeoutMs ?? 8000)).filter((h) => !h.terminatedAt && fold(h.name).includes(needle));
-  hits.sort((a, b) => Number(!fold(a.name).startsWith(needle)) - Number(!fold(b.name).startsWith(needle)) || a.name.length - b.name.length);
-  return hits.slice(0, opts.limit ?? 6);
+  // RPO also matches former names; rankByName keeps subjects whose *current* name matches.
+  const hits = (await query({ fullName: q }, opts.timeoutMs ?? 8000)).filter((h) => !h.terminatedAt);
+  return rankByName(hits, q, opts.limit ?? 6);
 }

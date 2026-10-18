@@ -36,7 +36,7 @@ export class InvoiceRemindersCron {
       const overdueInvoices = await this.repository.findOverdueInvoicesForTenant(tenantId);
       if (overdueInvoices.length === 0) continue;
 
-      for (const { invoice, contactEmail, clientPortalToken, lineItems, custom } of overdueInvoices) {
+      for (const { invoice, contactEmail, publicLink, clientPortalLink, lineItems, custom } of overdueInvoices) {
         if (!contactEmail) {
           this.logger.warn(
             `invoice ${invoice.id} (tenant ${tenantId}) is overdue but its contact has no ` +
@@ -50,16 +50,20 @@ export class InvoiceRemindersCron {
         try {
           // Suspended/paused companies and ones over today's cap get nothing sent; retried tomorrow.
           await this.repository.assertCanSend(tenantId);
-          await this.emailService.sendPaymentReminderEmail({
-            to: contactEmail,
-            invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-            amount: formatInvoiceAmount(total, invoice.currency),
-            dueDate: invoice.dueDate,
-            publicToken: invoice.publicToken,
-            clientPortalToken,
-            reminderCount: invoice.reminderCount + 1,
-            ...(custom ? { custom } : {}),
-          });
+          await this.emailService.sendPaymentReminderEmail(
+            {
+              to: contactEmail,
+              invoiceNumber: invoice.invoiceNumber ?? invoice.id,
+              amount: formatInvoiceAmount(total, invoice.currency),
+              dueDate: invoice.dueDate,
+              publicLink,
+              clientPortalLink,
+              reminderCount: invoice.reminderCount + 1,
+              ...(custom ? { custom } : {}),
+            },
+            // Same key as the on-demand reminder: reminder #N goes out once, whoever asked first.
+            { tenantId, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },
+          );
           await this.repository.recordReminderSent(tenantId, invoice.id, contactEmail);
           const link = `/invoices/${invoice.id}`;
           const no = invoice.invoiceNumber ?? "";

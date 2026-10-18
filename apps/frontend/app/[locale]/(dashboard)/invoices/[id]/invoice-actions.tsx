@@ -50,7 +50,7 @@ export function InvoiceActions({
   status,
   numbered,
   hasEmail,
-  publicToken,
+  publicLink,
   defaultTemplateName,
   overdue = false,
   reminderCount = 0,
@@ -66,7 +66,8 @@ export function InvoiceActions({
   status: InvoiceStatus;
   numbered: boolean;
   hasEmail: boolean;
-  publicToken: string;
+  /** The /i/ segment with its readable prefix (detail.links.public). */
+  publicLink: string;
   defaultTemplateName: string;
   overdue?: boolean;
   reminderCount?: number;
@@ -216,7 +217,7 @@ export function InvoiceActions({
           {t('actions.saveTemplate')}
         </button>
         {numbered && (
-          <a href={`/i/${publicToken}?preview=1`} target="_blank" rel="noreferrer" className={buttonClass.ghost}>
+          <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={buttonClass.ghost}>
             <ExternalLink className="h-4 w-4" />
             {t('actions.publicLink')}
           </a>

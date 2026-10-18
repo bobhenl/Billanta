@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from "@nestjs/common";
+import { clientPortalLinkOf, newShortKey } from "../public-links/public-link";
 import {
+  checkVatPayer,
+  isEuCountry,
+  type VatPayerCheck,
   getRpoSubjectByIco,
+  getRuzSubjectByIco,
   getSubjectByIco,
   lookupPoland,
   lookupVies,
@@ -17,6 +22,7 @@ import {
   searchRpoSubjects,
   searchSubjectsTypeahead,
   searchWorldAddresses,
+  type AresPoolCache,
   type AresSubject,
   type RegistryHit,
 } from "@faktur/cz-compliance";
@@ -27,7 +33,15 @@ import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, decodeCsvBuffer, mapContactRows, parseCsv, type CsvContact, type CsvSkip } from "./contacts-csv.util";
-import { mapAresSubjectToContactPrefill, mapRegistryHitToContactPrefill, mapRpoSubjectToContactPrefill, type AresContactPrefill } from "./ares-mapper.util";
+import {
+  mapAresSubjectToContactPrefill,
+  mapRegistryHitToContactPrefill,
+  mapRpoSubjectToContactPrefill,
+  mapRuzSubjectToContactPrefill,
+  withRuzDic,
+  type AresContactPrefill,
+} from "./ares-mapper.util";
+import { SkCompaniesService } from "./sk-companies/sk-companies.service";
 import type { CreateContactDto } from "./dto/create-contact.dto";
 import type { UpdateContactDto } from "./dto/update-contact.dto";
 
@@ -40,6 +54,33 @@ export const COMPANY_REGISTRIES = ["auto", "none", "CZ", "SK", "FR", "NO", "PL",
 /** Registers answered by the GLEIF LEI index filtered to that country. */
 const GLEIF_COUNTRIES = new Set(["DE", "AT", "IT", "US"]);
 export type CompanyRegistry = (typeof COMPANY_REGISTRIES)[number];
+
+/**
+ * Which half of a register search to run. A name search in "auto" (and in
+ * "EU", which has no name search of its own) asks ARES and the Slovak RPO,
+ * and RPO takes several seconds where ARES takes a fraction of one. So the
+ * typeahead asks for the halves separately and shows the ARES hits at once:
+ * "fast" is everything but that RPO name search, "slow" is only it, "all" both.
+ */
+export const REGISTRY_PARTS = ["all", "fast", "slow"] as const;
+export type RegistryPart = (typeof REGISTRY_PARTS)[number];
+
+export function registryPartOf(raw: string | undefined): RegistryPart {
+  return (REGISTRY_PARTS as readonly string[]).includes(raw ?? "") ? (raw as RegistryPart) : "all";
+}
+
+/**
+ * Whether a search has a "slow" half at all, so a caller can answer an empty
+ * one without spending a rate-limit token. Mirrors the branches of
+ * `registrySearch`: IČOs, foreign registers and prefixed VAT numbers (VIES)
+ * never ask RPO by name.
+ */
+export function hasSlowPart(rawQuery: string, registry: CompanyRegistry): boolean {
+  const q = rawQuery.trim().slice(0, 120);
+  if ((registry !== "auto" && registry !== "EU") || q.length < 3 || /^\d+$/.test(q)) return false;
+  const vat = parseVatId(q);
+  return !vat || (registry === "auto" && (vat.country === "CZ" || vat.country === "SK"));
+}
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -56,6 +97,34 @@ const MAX_IMPORT_ROWS = 5000;
 
 const REGISTRY_SEARCH_TTL_MS = 60 * 60 * 1000;
 const REGISTRY_SEARCH_MAX = 2000;
+/**
+ * RPO answers the production VPS in 6.6-8.7 s, by IČO as well as by name, so
+ * anything shorter means Slovak companies are never found. Asked live only
+ * when the local copy (sk_companies) is not usable and, by IČO, when RÚZ
+ * does not know the company either.
+ */
+const RPO_TIMEOUT_MS = 12_000;
+/** RÚZ answers in ~0.1 s per call (two per IČO); past this the company comes without its DIČ. */
+const RUZ_TIMEOUT_MS = 3000;
+/** RPO by IČO: a found company for as long as ARES rows (24 h), "unknown" for 10 min. */
+const RPO_MISS_TTL_MS = 10 * 60 * 1000;
+/** ARES "finished words" pools (up to 1000 subjects each, see searchSubjectsTypeahead): a few, briefly. */
+const ARES_POOL_TTL_MS = 10 * 60 * 1000;
+const ARES_POOL_MAX = 20;
+const VAT_CHECK_TTL_MS = 6 * 60 * 60 * 1000;
+const VAT_CHECK_RETRY_MS = 10 * 60 * 1000;
+
+/**
+ * Which register a country's companies are looked up in. CZ (the default
+ * country of every form) stays "auto" so a Slovak company typed into a
+ * fresh form is still found; unknown or blank countries search everything.
+ */
+export function registryForCountry(country: string | null | undefined): CompanyRegistry {
+  const c = (country ?? "").trim().toUpperCase();
+  if (!c || c === "CZ") return "auto";
+  if ((COMPANY_REGISTRIES as readonly string[]).includes(c)) return c as CompanyRegistry;
+  return isEuCountry(c) ? "EU" : "auto";
+}
 
 @Injectable()
 export class ContactsService {
@@ -68,6 +137,7 @@ export class ContactsService {
   constructor(
     private readonly dbService: DbService,
     @Optional() private readonly audit?: AuditService,
+    @Optional() private readonly skCompanies?: SkCompaniesService,
   ) {}
 
   /**
@@ -77,6 +147,24 @@ export class ContactsService {
    * cache is shared across tenants; per-tenant contacts are never cached.
    */
   private readonly registryHits = new Map<string, { at: number; hits: AresContactPrefill[] }>();
+  private readonly vatChecks = new Map<string, { at: number; check: VatPayerCheck | null }>();
+  private readonly rpoByIco = new Map<string, { at: number; hit: AresContactPrefill | null }>();
+  private readonly aresPools = new Map<string, { at: number; subjects: AresSubject[] }>();
+  private readonly aresPool: AresPoolCache = {
+    get: (words) => {
+      const entry = this.aresPools.get(words);
+      return entry && entry.at > Date.now() - ARES_POOL_TTL_MS ? entry.subjects : undefined;
+    },
+    set: (words, subjects) => {
+      if (this.aresPools.size >= ARES_POOL_MAX) {
+        const oldest = this.aresPools.keys().next().value;
+        if (oldest !== undefined) this.aresPools.delete(oldest);
+      }
+      // Only what the prefill reads: the raw subjects carry ~4 kB of registration blocks each.
+      const slim = subjects.map(({ ico, dic, obchodniJmeno, sidlo, platceDph }) => ({ ico, dic, obchodniJmeno, sidlo, platceDph }));
+      this.aresPools.set(words, { at: Date.now(), subjects: slim });
+    },
+  };
 
   private rememberRegistryHits(key: string, hits: AresContactPrefill[]) {
     if (this.registryHits.size >= REGISTRY_SEARCH_MAX) {
@@ -116,8 +204,22 @@ export class ContactsService {
     return row;
   }
 
-  findOne(db: TenantDb, id: string) {
-    return db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+  async findOne(db: TenantDb, id: string) {
+    const rows = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+    if (!rows[0]?.portalToken) return rows.map((r) => ({ ...r, portalLink: null, portalLinkDefault: null }));
+    const tenant = await this.linkTenant(db, rows[0].tenantId);
+    // The default form too, so the custom-name editor can preview clearing it.
+    return rows.map((r) => ({ ...r, portalLink: clientPortalLinkOf(tenant, r), portalLinkDefault: clientPortalLinkOf(tenant, { ...r, portalSlug: null }) }));
+  }
+
+  /** What the readable prefix of a customer's portal link needs (Settings → Faktury). */
+  private async linkTenant(db: TenantDb, tenantId: string) {
+    const [tenant] = await db
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId))
+      .limit(1);
+    return tenant;
   }
 
   /**
@@ -174,11 +276,28 @@ export class ContactsService {
   async setPortal(db: TenantDb, id: string, enabled: boolean) {
     const [row] = await db
       .update(schema.contacts)
-      .set({ portalToken: enabled ? randomUUID() : null, updatedAt: new Date() })
+      // A new key with every new token, so renewing revokes the short link too.
+      .set({ portalToken: enabled ? randomUUID() : null, portalKey: enabled ? newShortKey() : null, updatedAt: new Date() })
       .where(eq(schema.contacts.id, id))
-      .returning({ portalToken: schema.contacts.portalToken });
+      .returning();
     if (!row) throw new NotFoundException("Contact not found");
-    return row;
+    return { portalToken: row.portalToken, portalLink: clientPortalLinkOf(await this.linkTenant(db, row.tenantId), row) };
+  }
+
+  /**
+   * The user's own name in front of the portal key instead of the customer's
+   * name (null goes back to the default). Kept when the portal is renewed or
+   * turned off: it is decoration, not part of the secret.
+   */
+  async setPortalSlug(db: TenantDb, id: string, slug: string | null) {
+    const [row] = await db
+      .update(schema.contacts)
+      .set({ portalSlug: slug, updatedAt: new Date() })
+      .where(eq(schema.contacts.id, id))
+      .returning();
+    if (!row) throw new NotFoundException("Contact not found");
+    const tenant = await this.linkTenant(db, row.tenantId);
+    return { portalSlug: row.portalSlug, portalLink: clientPortalLinkOf(tenant, row), portalLinkDefault: clientPortalLinkOf(tenant, { ...row, portalSlug: null }) };
   }
 
   async create(db: TenantDb, tenantId: string, dto: CreateContactDto) {
@@ -200,6 +319,7 @@ export class ContactsService {
         ico: dto.ico,
         dic: dto.dic,
         email: dto.email,
+        phone: dto.phone || null,
         addressStreet: dto.addressStreet ?? null,
         addressCity: dto.addressCity ?? null,
         addressPostalCode: dto.addressPostalCode ?? null,
@@ -279,6 +399,7 @@ export class ContactsService {
     db: TenantDb,
     rawQuery: string,
     registry: CompanyRegistry = "auto",
+    part: RegistryPart = "all",
   ): Promise<{ contacts: (typeof schema.contacts.$inferSelect)[]; ares: AresContactPrefill[] }> {
     const q = rawQuery.trim().slice(0, 120);
     if (q.length < 2) {
@@ -300,45 +421,114 @@ export class ContactsService {
       .orderBy(desc(schema.contacts.isStarred), asc(schema.contacts.legalName))
       .limit(8);
 
-    let ares: AresContactPrefill[] = [];
-    if (registry === "none") return { contacts, ares };
-    const cacheKey = `${registry}:${q.toLowerCase()}`;
-    const cached = this.registryHits.get(cacheKey);
-    if (cached && cached.at > Date.now() - REGISTRY_SEARCH_TTL_MS) {
-      ares = cached.hits;
-    } else try {
-      const foreign = await this.foreignLookup(q, registry);
-      if (foreign) {
-        ares = foreign;
-      } else if (registry === "SK") {
-        ares = /^\d{6,8}$/.test(q)
-          ? [await this.rpoLookup(q.padStart(8, "0"))].filter((h): h is AresContactPrefill => h !== null)
-          : (await searchRpoSubjects(q, { limit: 6, timeoutMs: 5000 })).map(mapRpoSubjectToContactPrefill);
-      } else if (/^\d{8}$/.test(q)) {
-        // CZ and SK IČOs share the format and may even collide — ask both registers.
-        const [cz, sk] = await Promise.allSettled([this.aresLookup(q), this.rpoLookup(q)]);
-        const hits = [cz, sk].flatMap((r) => (r.status === "fulfilled" && r.value ? [r.value] : []));
-        // aresLookup itself falls back to RPO, so the same SK company can come back twice.
-        ares = hits.filter((h, i) => hits.findIndex((o) => o.ico === h.ico && o.addressCountry === h.addressCountry) === i);
-      } else if (q.length >= 3 && !/^\d+$/.test(q)) {
-        // "auto" asks both home registers by name; "CZ" only ARES. VIES ("EU")
-        // has no name search, so a name typed there falls back to CZ + SK too.
-        const [cz, sk] = await Promise.allSettled([
-          searchSubjectsTypeahead(q, { limit: 6 }),
-          registry === "auto" || registry === "EU" ? searchRpoSubjects(q, { limit: 3, timeoutMs: 5000 }) : Promise.resolve([]),
-        ]);
-        ares = [
-          ...(cz.status === "fulfilled" ? cz.value.map(mapAresSubjectToContactPrefill) : []),
-          ...(sk.status === "fulfilled" ? sk.value.map(mapRpoSubjectToContactPrefill) : []),
-        ];
-      }
-      this.rememberRegistryHits(cacheKey, ares);
-    } catch {
-      ares = [];
-    }
+    const ares = registry === "none" ? [] : await this.registrySearch(q, registry, part);
 
     const known = new Set(contacts.flatMap((c) => [c.ico, c.dic]).filter(Boolean));
     return { contacts, ares: ares.filter((a) => !known.has(a.ico || a.dic)) };
+  }
+
+  /**
+   * Company registers only (no contacts), cached for an hour and shared
+   * across tenants because the data is public. Never throws: an outage
+   * means no hits. Also behind the public company lookup
+   * (`v1/public/company-lookup`), so keep it free of tenant data.
+   * `part` splits off the slow RPO name search (see `RegistryPart`).
+   */
+  async registrySearch(rawQuery: string, registry: CompanyRegistry = "auto", part: RegistryPart = "all"): Promise<AresContactPrefill[]> {
+    const q = rawQuery.trim().slice(0, 120);
+    if (q.length < 2 || registry === "none") return [];
+    if (part === "all") {
+      const [fast, slow] = await Promise.all([this.registrySearch(q, registry, "fast"), this.registrySearch(q, registry, "slow")]);
+      return [...fast, ...slow];
+    }
+    if (part === "slow" && !hasSlowPart(q, registry)) return [];
+    const cacheKey = `${part}:${registry}:${q.toLowerCase()}`;
+    const cached = this.registryHits.get(cacheKey);
+    if (cached && cached.at > Date.now() - REGISTRY_SEARCH_TTL_MS) return cached.hits;
+    try {
+      const hits =
+        part === "slow"
+          ? await this.skNameSearch(q, 3)
+          : await this.fastRegistrySearch(q, registry);
+      // A timeout or outage throws past this line, so it is never cached as "no hits".
+      this.rememberRegistryHits(cacheKey, hits);
+      return hits;
+    } catch {
+      return [];
+    }
+  }
+
+  private async fastRegistrySearch(q: string, registry: CompanyRegistry): Promise<AresContactPrefill[]> {
+    const foreign = await this.foreignLookup(q, registry);
+    if (foreign) return foreign;
+    if (/^\d{8}$/.test(q) || (registry === "SK" && /^\d{6,8}$/.test(q))) {
+      const hit = await this.findByIco(q.padStart(8, "0"), registry === "SK" ? "SK" : "CZ");
+      return hit ? [hit] : [];
+    }
+    if (registry === "SK") return this.skNameSearch(q, 6);
+    // "auto", "CZ" and a name typed into "EU" (VIES has no name search) ask ARES here; RPO is the slow half.
+    if (q.length >= 3 && !/^\d+$/.test(q)) {
+      return (await searchSubjectsTypeahead(q, { limit: 6, pool: this.aresPool })).map(mapAresSubjectToContactPrefill);
+    }
+    return [];
+  }
+
+  /**
+   * Slovak companies by name: the local RPO copy when it is current (a few
+   * ms), live RPO otherwise (3-9 s). A failed local query is not a reason to
+   * wait for RPO: registrySearch turns it into "no hits, not remembered".
+   */
+  private async skNameSearch(q: string, limit: number): Promise<AresContactPrefill[]> {
+    const local = this.skCompanies ? await this.skCompanies.search(q, limit) : undefined;
+    const subjects = local ?? (await searchRpoSubjects(q, { limit, timeoutMs: RPO_TIMEOUT_MS }));
+    return subjects.map(mapRpoSubjectToContactPrefill);
+  }
+
+  /**
+   * One IČO in the home registers. CZ and SK IČOs share the format, so the
+   * other register is the fallback, asked only when the first one does not
+   * know the number (or is down). ARES answers in a fraction of a second and
+   * RPO in several, so a Czech company never waits for RPO.
+   */
+  private async findByIco(ico: string, first: "CZ" | "SK"): Promise<AresContactPrefill | null> {
+    const cz = () => this.aresSubject(ico).then((s) => (s ? mapAresSubjectToContactPrefill(s) : null), () => null);
+    const sk = () => this.rpoLookup(ico).catch(() => null);
+    return first === "SK" ? ((await sk()) ?? (await cz())) : ((await cz()) ?? (await sk()));
+  }
+
+  /**
+   * VAT registration of a DIČ / EU VAT number: the CZ register of VAT
+   * payers (ADIS) for CZ, VIES elsewhere. Cached in memory (6 h for an
+   * answer, 10 min for "unknown" so an outage is retried soon). Never throws.
+   */
+  async vatCheck(rawVatId: string): Promise<VatPayerCheck | null> {
+    const key = rawVatId.replace(/[\s.-]/g, "").toUpperCase().slice(0, 20);
+    if (!key) return null;
+    const cached = this.vatChecks.get(key);
+    const ttl = cached?.check?.state === "unknown" ? VAT_CHECK_RETRY_MS : VAT_CHECK_TTL_MS;
+    if (cached && cached.at > Date.now() - ttl) return cached.check;
+    const check = await checkVatPayer(key, { timeoutMs: 6000 }).catch(() => null);
+    if (this.vatChecks.size >= REGISTRY_SEARCH_MAX) {
+      const oldest = this.vatChecks.keys().next().value;
+      if (oldest !== undefined) this.vatChecks.delete(oldest);
+    }
+    this.vatChecks.set(key, { at: Date.now(), check });
+    return check;
+  }
+
+  /**
+   * "Načíst z registru" for one IČO: the register of the given country
+   * first (RPO for SK, ARES otherwise; the other one as a fallback, since
+   * CZ and SK IČOs share the format). 404 when neither knows it.
+   */
+  async lookupById(ico: string, country?: string | null): Promise<AresContactPrefill> {
+    if ((country ?? "").toUpperCase() !== "SK") return this.aresLookup(ico);
+    const sk = await this.rpoLookup(ico).catch(() => null);
+    if (sk) return sk;
+    // ARES only: aresLookup's own RPO fallback would ask RPO a second time.
+    const cz = await this.aresSubject(ico);
+    if (cz) return mapAresSubjectToContactPrefill(cz);
+    throw new NotFoundException(`No ARES/RPO subject found for IČO "${ico}"`);
   }
 
   /**
@@ -456,6 +646,18 @@ export class ContactsService {
    * whether the IČO exists or not).
    */
   async aresLookup(ico: string): Promise<AresContactPrefill> {
+    const subject = await this.aresSubject(ico);
+    if (!subject) {
+      // Not a Czech company – maybe a Slovak one (RPO). An RPO outage still reads as "not found".
+      const sk = await this.rpoLookup(ico).catch(() => null);
+      if (sk) return sk;
+      throw new NotFoundException(`No ARES subject found for IČO "${ico}"`);
+    }
+    return mapAresSubjectToContactPrefill(subject);
+  }
+
+  /** ARES by IČO through `ares_cache` (see `aresLookup`); null when ARES does not know it. */
+  private async aresSubject(ico: string): Promise<AresSubject | null> {
     const cached = await this.dbService.db
       .select()
       .from(schema.aresCache)
@@ -486,19 +688,44 @@ export class ContactsService {
       }
     }
 
-    if (!subject) {
-      // Not a Czech company — maybe a Slovak one (RPO). An RPO outage still reads as "not found".
-      const sk = await this.rpoLookup(ico).catch(() => null);
-      if (sk) return sk;
-      throw new NotFoundException(`No ARES subject found for IČO "${ico}"`);
-    }
-
-    return mapAresSubjectToContactPrefill(subject);
+    return subject;
   }
 
-  /** Slovak register (RPO) by IČO; null when unknown or the company no longer exists. */
+  /**
+   * Slovak register by IČO; null when unknown or the company no longer
+   * exists. Kept in memory like ARES rows are in `ares_cache`, since a live
+   * RPO call costs seconds; an outage throws and is not remembered.
+   */
   private async rpoLookup(ico: string): Promise<AresContactPrefill | null> {
-    const subject = await getRpoSubjectByIco(ico, { timeoutMs: 5000 });
+    const cached = this.rpoByIco.get(ico);
+    if (cached && cached.at > Date.now() - (cached.hit ? ARES_CACHE_TTL_MS : RPO_MISS_TTL_MS)) return cached.hit;
+    const hit = await this.skCompanyByIco(ico);
+    if (this.rpoByIco.size >= REGISTRY_SEARCH_MAX) {
+      const oldest = this.rpoByIco.keys().next().value;
+      if (oldest !== undefined) this.rpoByIco.delete(oldest);
+    }
+    this.rpoByIco.set(ico, { at: Date.now(), hit });
+    return hit;
+  }
+
+  /**
+   * Fastest source first. The local RPO copy is at most a day behind, so it
+   * decides whether the company exists, and RÚZ only adds the DIČ (RPO does
+   * not publish one). Without a usable copy RÚZ answers (~0.2 s, but weeks
+   * behind RPO, so it may still list a company dissolved since), and live
+   * RPO (6-9 s from the VPS) only when RÚZ does not know the IČO, e.g. a
+   * company founded this quarter.
+   */
+  private async skCompanyByIco(ico: string): Promise<AresContactPrefill | null> {
+    const ruz = () => getRuzSubjectByIco(ico, { timeoutMs: RUZ_TIMEOUT_MS });
+    const indexed = this.skCompanies ? await this.skCompanies.findByIco(ico).catch(() => undefined) : undefined;
+    if (indexed !== undefined) {
+      if (!indexed) return null;
+      return withRuzDic(mapRpoSubjectToContactPrefill(indexed), await ruz().catch(() => null));
+    }
+    const fromRuz = await ruz().catch(() => null);
+    if (fromRuz) return mapRuzSubjectToContactPrefill(fromRuz);
+    const subject = await getRpoSubjectByIco(ico, { timeoutMs: RPO_TIMEOUT_MS });
     return subject && !subject.terminatedAt ? mapRpoSubjectToContactPrefill(subject) : null;
   }
 }

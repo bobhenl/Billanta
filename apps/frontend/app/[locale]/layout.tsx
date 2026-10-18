@@ -11,20 +11,21 @@ import { ToastFromQuery, Toaster } from '@/components/toaster';
 import { Suspense } from 'react';
 import { SITE_URL } from '@/lib/site';
 import { OG_IMAGE } from '@/lib/seo';
+import { publicClientMessages } from '@/lib/client-messages';
 import '../globals.css';
 
 const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-sans', display: 'swap' });
 
-// Browser chrome (mobile address bar, PWA title bar) follows the page
-// ground in each scheme — the same two hexes as --background in globals.css.
+// Brand indigo (--primary in globals.css), one value for both schemes. Chat
+// apps read it as the accent of a link preview: Discord draws it as the
+// embed side bar. Mobile address bars take it too, which
+// reads as branding in both themes. A media-split value would leave the
+// unfurl colour to whichever tag the scraper happens to pick first.
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f5f6fb' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b0c14' }
-  ]
+  themeColor: '#4f46e5'
 };
 
 export function generateStaticParams() {
@@ -95,7 +96,7 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <NextIntlClientProvider messages={messages}>
+          <NextIntlClientProvider messages={publicClientMessages(messages)}>
             {/* Makes useSession() available to client components anywhere
                 below (e.g. login-form.tsx) without turning this server
                 layout itself into a client component — see

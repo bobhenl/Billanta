@@ -10,7 +10,7 @@ import { findBankAccount, listBankAccounts } from "./bank-accounts";
 import type { BankAccountDto } from "./dto/bank-account.dto";
 import type { UpdateTenantDto } from "./dto/update-tenant.dto";
 import { getNumberFormats, saveNumberFormats, type NumberFormatsInput } from "./number-formats";
-import { RESERVED_PROFILE_SLUGS, SLUG_PATTERN } from "./public-profile";
+import { RESERVED_PROFILE_SLUGS, SLUG_PATTERN, withServiceIds } from "./public-profile";
 import { NUMBER_DOCUMENT_TYPES } from "@faktur/cz-compliance";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -67,13 +67,18 @@ export class TenantsService {
     @Optional() private readonly audit?: AuditService,
   ) {}
 
-  /** The tenant's own row, minus secrets: the encrypted AI key never leaves the backend (see src/ai/). */
+  /**
+   * The tenant's own row, minus secrets: the encrypted AI and Stripe keys
+   * never leave the backend (see src/ai/ and src/card-payments/). The page
+   * only needs to know whether a Stripe key is set.
+   */
   async findById(db: TenantDb, id: string) {
     const rows = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     // The logo is served separately (GET /tenants/me/logo) to keep this row small.
     // Advances always go out as the period list (a row not yet migrated by 0044 still holds the old single object).
-    return rows.map(({ aiApiKeyEncrypted: _secret, logoData, ...tenant }) => ({
+    return rows.map(({ aiApiKeyEncrypted: _aiKey, stripeSecretKeyEncrypted, logoData, ...tenant }) => ({
       ...tenant,
+      hasStripeKey: Boolean(stripeSecretKeyEncrypted),
       taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
       hasLogo: Boolean(logoData),
     }));
@@ -100,6 +105,7 @@ export class TenantsService {
       phone: blankToNull(dto.phone),
       website: blankToNull(dto.website),
       registryNote: blankToNull(dto.registry_note),
+      dataBoxId: blankToNull(dto.data_box_id),
       bankAccountNumber: blankToNull(dto.bank_account_number),
       bankAccountBankCode: blankToNull(dto.bank_account_bank_code),
       bankAccountIban: blankToNull(dto.bank_account_iban),
@@ -112,8 +118,11 @@ export class TenantsService {
       emailPrefs: dto.email_prefs,
       templateVars: dto.template_vars,
       paymentMethods: dto.payment_methods,
-      publicProfile: dto.public_profile,
+      publicProfile: dto.public_profile && withServiceIds(dto.public_profile),
       enabledModules: dto.enabled_modules,
+      flatTaxRegime: dto.flat_tax_regime,
+      activityKind: dto.activity_kind,
+      buyerDetailsRequired: dto.buyer_details_required ? [...new Set(dto.buyer_details_required)] : undefined,
     };
     for (const key of Object.keys(values) as Array<keyof TenantInsert>) {
       if (values[key] === undefined) delete values[key];

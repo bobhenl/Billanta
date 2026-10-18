@@ -5,12 +5,14 @@
  * Checkout session on the supplier's own Stripe account
  * (`POST /api/v1/public/invoices/:token/card-checkout`) and returns its URL.
  */
+import { isPublicLinkSegment } from '@/lib/public-link';
+
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 
 export type CardCheckoutResult = { ok: true; url: string } | { ok: false; error: 'unavailable' | 'failed' };
 
 export async function startCardCheckout(token: string, locale: string): Promise<CardCheckoutResult> {
-  if (!/^[0-9a-f-]{36}$/i.test(token)) return { ok: false, error: 'unavailable' };
+  if (!isPublicLinkSegment(token)) return { ok: false, error: 'unavailable' };
   try {
     const res = await fetch(`${BACKEND_URL}/api/v1/public/invoices/${encodeURIComponent(token)}/card-checkout`, {
       method: 'POST',

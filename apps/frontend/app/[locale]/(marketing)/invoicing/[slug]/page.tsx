@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import {
   direction,
@@ -20,7 +20,7 @@ import {
   regionAnchorId,
   type Municipality
 } from '@/lib/municipalities';
-import { accountantsNear, fetchPublicAccountants } from '@/lib/public-accountants';
+import { accountantsForTown, regionLabel } from '@/lib/public-accountants';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -94,6 +94,7 @@ const km = (value: number) => (value < 10 ? Math.round(value * 10) / 10 : Math.r
 
 export default async function MunicipalityPage({ params }: { params: Promise<Params> }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const municipality = getMunicipalityBySlug(slug);
   if (!municipality) {
     notFound();
@@ -112,11 +113,7 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
     .filter((n) => !nearbySlugs.has(n.municipality.slug))
     .slice(0, 6);
   const district = getDistrictNeighbours(municipality, nearbySlugs);
-  const accountants = accountantsNear(
-    await fetchPublicAccountants(),
-    municipality,
-    [...nearby, ...nearbyMajor].map((n) => n.municipality).concat(seat ? [seat] : [])
-  );
+  const accountants = await accountantsForTown(municipality);
 
   /** "12 km north-east of X", or null when the coordinates are missing or it is X itself. */
   const position = (from: Municipality | undefined, key: 'seatPosition' | 'regionPosition') => {
@@ -254,18 +251,18 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
           )}
 
           <div className="mt-10 max-w-3xl rounded-lg border border-border bg-card p-5">
-            <h2 className="text-base font-semibold text-foreground">{t('accountantsTitle', { name: municipality.name })}</h2>
+            <h2 className="text-base font-semibold text-foreground">{t('accountantsTitle', { region: regionLabel(municipality) })}</h2>
             {accountants.length > 0 ? (
               <>
                 <ul className="mt-3 grid gap-3 sm:grid-cols-2">
                   {accountants.map((a) => (
-                    <li key={a.slug}>
-                      <Link href={`/p/${a.slug}`} className="block rounded-md border border-border p-3 hover:border-primary">
-                        <span className="block text-sm font-semibold text-foreground">{a.companyName}</span>
-                        <span className="block text-xs text-muted-foreground">
-                          {a.city}
-                          {a.tagline ? ` · ${a.tagline}` : ''}
-                        </span>
+                    <li key={a.id}>
+                      <Link
+                        href={a.profileSlug ? `/p/${a.profileSlug}` : '/accountants'}
+                        className="block rounded-md border border-border p-3 hover:border-primary"
+                      >
+                        <span className="block text-sm font-semibold text-foreground">{a.name}</span>
+                        {a.bio && <span className="line-clamp-2 block text-xs text-muted-foreground">{a.bio}</span>}
                       </Link>
                     </li>
                   ))}

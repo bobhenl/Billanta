@@ -14,8 +14,10 @@
 import type { TaxAdvancePeriod } from "@faktur/cz-compliance";
 import { sql } from "drizzle-orm";
 import {
+  bigint,
   boolean,
   date,
+  index,
   integer,
   jsonb,
   numeric,
@@ -23,6 +25,7 @@ import {
   pgEnum,
   pgTable,
   primaryKey,
+  smallint,
   text,
   timestamp,
   uniqueIndex,
@@ -75,6 +78,9 @@ export const invoiceSourceEnum = pgEnum("invoice_source", [
   // Historical documents brought over from another invoicing system (CSV
   // import, src/invoices/invoice-import.util.ts). Never emailed or reminded.
   "import",
+  // A visitor ordered from the company's public profile (Služby a ceník).
+  // Always a draft for the owner to review; see public-profiles/profile-orders.service.ts.
+  "profile_order",
 ]);
 
 // What kind of document an `invoices` row is. Quotes and proformas are not
@@ -113,7 +119,15 @@ export const recurringFrequencyEnum = pgEnum("recurring_frequency", [
   "yearly",
 ]);
 
-export const bankStatementSourceEnum = pgEnum("bank_statement_source", ["csv", "mt940", "fio", "psd2", "paypal"]);
+export const bankStatementSourceEnum = pgEnum("bank_statement_source", [
+  "csv",
+  "mt940",
+  "fio",
+  "psd2",
+  "paypal",
+  "camt053",
+  "gpc",
+]);
 
 export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
   "unmatched",
@@ -167,6 +181,10 @@ export const tenants = pgTable("tenants", {
   // OSVČ monthly advances typed in by the owner, with history (0044): [{ from: "YYYY-MM", social?, health?, flat_tax? }]
   // in the tenant's currency, each valid from its month on. Read through normalizeTaxAdvances / advancesFor (@faktur/cz-compliance).
   taxAdvances: jsonb("tax_advances").$type<TaxAdvancePeriod[]>().notNull().default([]),
+  // OSVČ answers in Settings (0053), null = not answered: paušální režim (decides which
+  // minimums "Použít" fills and the default deadlines) and hlavní / vedlejší činnost ('main' | 'secondary').
+  flatTaxRegime: boolean("flat_tax_regime"),
+  activityKind: text("activity_kind").$type<"main" | "secondary">(),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
@@ -200,6 +218,8 @@ export const tenants = pgTable("tenants", {
   website: text("website"),
   // e.g. "Fyzická osoba zapsaná v živnostenském rejstříku" / "C 1234 vedená u MS v Praze".
   registryNote: text("registry_note"),
+  // ID datové schránky (7 chars). Public, so plain text; prefills the yearly přehled for ČSSZ.
+  dataBoxId: varchar("data_box_id", { length: 7 }),
   bankAccountSwift: varchar("bank_account_swift", { length: 11 }),
   defaultDueDays: integer("default_due_days").notNull().default(14),
   defaultPaymentMethod: paymentMethodEnum("default_payment_method").notNull().default("bank_transfer"),
@@ -240,6 +260,33 @@ export const tenants = pgTable("tenants", {
   // A plan paid with credits (`credit_ledger`), see ReferralsService.redeem.
   prepaidPlan: varchar("prepaid_plan", { length: 16 }),
   prepaidUntil: date("prepaid_until"),
+  // Free trial of the top plan (0051, `billing/plan-access.ts`): granted once by
+  // bootstrap_tenant_for_user and never cleared, so it can't be started twice.
+  trialPlan: varchar("trial_plan", { length: 16 }),
+  trialStartedAt: timestamp("trial_started_at", { withTimezone: true }),
+  trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
+  // Smallest "days left" the ending reminder already went out for (3, 1, 0 = ended).
+  trialRemindedDays: integer("trial_reminded_days"),
+  // Plan limits apply (features above the plan turn read-only). False for
+  // companies created before 0051, which keep everything as before.
+  planEnforced: boolean("plan_enforced").notNull().default(false),
+  // Plan and interval of the Stripe subscription, from the Checkout metadata.
+  subscriptionPlan: varchar("subscription_plan", { length: 16 }),
+  subscriptionInterval: varchar("subscription_interval", { length: 8 }).$type<"month" | "year">(),
+  // The live Stripe subscription as the billing panel shows it (0063): written by
+  // the webhook and after a change from the panel. cancel_at is set while the
+  // subscription is due to end instead of renewing.
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionCurrency: varchar("subscription_currency", { length: 3 }).$type<"CZK" | "EUR">(),
+  subscriptionPeriodEnd: timestamp("subscription_period_end", { withTimezone: true }),
+  subscriptionCancelAt: timestamp("subscription_cancel_at", { withTimezone: true }),
+  // "Prepaid period ends in 14 / 3 days" (0063, PrepaidRemindersCron): the
+  // smallest stage sent, valid only for the prepaid_until it was sent for.
+  prepaidReminderUntil: date("prepaid_reminder_until"),
+  prepaidRemindedDays: integer("prepaid_reminded_days"),
+  // Fields a customer must fill in on a buyer-details link (0054): email, phone, ico, dic.
+  // A link can carry its own list (invoices.buyer_details_required); this is the default.
+  buyerDetailsRequired: text("buyer_details_required").array().notNull().default(sql`'{email,ico}'::text[]`),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -367,8 +414,8 @@ export const tenantMemberships = pgTable(
     // This person's own quick-action tiles on the dashboard (null = defaults),
     // see src/dashboard/dashboard-tiles.ts for the shape.
     dashboardTiles: jsonb("dashboard_tiles"),
-    // Which events reach this person and how (in-app/browser, email) —
-    // see src/notifications/notification-prefs.ts.
+    // Which events reach this person and how (in-app/browser, email), plus
+    // the weekly digest and quiet hours — see src/notifications/notification-prefs.ts.
     notificationPrefs: jsonb("notification_prefs").notNull().default({}),
     // Secret of this person's read-only calendar (iCal) and RSS feeds
     // (Settings → Integrace); null = feeds off. Resolved without a session
@@ -405,6 +452,8 @@ export const contacts = pgTable("contacts", {
   // `InvoicesService.sendInvoice`/`InvoiceRemindersCron` both check for this
   // explicitly rather than assuming it's always set.
   email: text("email"),
+  // Filled in by the customer on a buyer-details link or typed by the user (0054); never printed.
+  phone: text("phone"),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
@@ -428,6 +477,14 @@ export const contacts = pgTable("contacts", {
   // Client portal link (/c/:portalToken) listing every issued document for this customer;
   // null = no portal. Unique index in migration 0030.
   portalToken: uuid("portal_token"),
+  // The short key in the readable portal link (/c/{name}-{key}); resolves to
+  // portalToken, which stays valid for links sent before. Set and cleared with
+  // portalToken. Unique index in migration 0057.
+  portalKey: text("portal_key"),
+  // A name the user picked for the portal link instead of the customer's
+  // name (/c/{slug}-{key}). Cosmetic like the rest of the prefix, so it is
+  // not unique. Migration 0058.
+  portalSlug: text("portal_slug"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -509,6 +566,13 @@ export const invoices = pgTable(
     // rls-policies.sql) since no tenant context exists yet at that point —
     // same pattern as `find_tenant_id_by_stripe_customer_id`.
     publicToken: uuid("public_token").notNull().defaultRandom(),
+    // The secret part of the readable link /i/{number}-{key} (12 base62 chars,
+    // ~71 bits; public-links/public-link.ts). Only the key is looked up, the
+    // prefix is cosmetic. Old /i/{publicToken} links keep working.
+    publicKey: text("public_key").default(sql`gen_public_key()`),
+    // The user's own name for this link (/i/web-redesign-{key}), replacing the
+    // prefix from Settings → Faktury. Cosmetic and not unique. Migration 0058.
+    publicSlug: text("public_slug"),
     // Set when the invoice is actually emailed/delivered to the contact;
     // null means "never sent" (e.g. still a draft, or issued but not yet
     // dispatched). Distinct from `issuedAt` — an invoice can be issued
@@ -542,6 +606,10 @@ export const invoices = pgTable(
     language: varchar("language", { length: 2 }).notNull().default("cs"),
     // Přenesená daňová povinnost (§92a ZDPH): VAT is not charged on the invoice.
     reverseCharge: boolean("reverse_charge").notNull().default(false),
+    // Kód předmětu plnění for domestic reverse charge (REVERSE_CHARGE_CODES in
+    // cz-compliance): kontrolní hlášení A.1 needs it per document. Null = not
+    // chosen yet; the KH export then warns instead of guessing (migration 0056).
+    reverseChargeCode: text("reverse_charge_code"),
     /** Home currency (CZK, EUR for SK companies) per 1 unit of `currency`, set at issue; null for the home currency. */
     exchangeRate: numeric("exchange_rate", { precision: 20, scale: 10 }),
     /** How `exchangeRate` was chosen at issue (exchange-rate-mode.ts); null = issued before the setting existed. */
@@ -567,13 +635,16 @@ export const invoices = pgTable(
     // The token is a separate secret from `publicToken` and only works while
     // the document is a draft and nothing has been submitted yet; null = no
     // request open. `buyerDetailsOutcome` says what happened to the contact.
-    buyerDetailsToken: uuid("buyer_details_token"),
+    // Text since 0054: new links get 12 base62 characters, older ones keep their UUID.
+    buyerDetailsToken: text("buyer_details_token"),
     buyerDetailsRequestedAt: timestamp("buyer_details_requested_at", { withTimezone: true }),
     buyerDetailsRequestedBy: uuid("buyer_details_requested_by").references(() => users.id, { onDelete: "set null" }),
     buyerDetailsEmail: text("buyer_details_email"),
     buyerDetailsAutoIssue: boolean("buyer_details_auto_issue").notNull().default(false),
     buyerDetailsSubmittedAt: timestamp("buyer_details_submitted_at", { withTimezone: true }),
     buyerDetailsOutcome: jsonb("buyer_details_outcome").$type<BuyerDetailsOutcome>(),
+    // Required fields for this link; null = the company's tenants.buyer_details_required.
+    buyerDetailsRequired: text("buyer_details_required").array(),
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
     paidAt: timestamp("paid_at", { withTimezone: true }),
@@ -600,6 +671,7 @@ export const invoices = pgTable(
       table.invoiceNumber,
     ),
     publicTokenUnique: uniqueIndex("invoices_public_token_unique").on(table.publicToken),
+    publicKeyUnique: uniqueIndex("invoices_public_key_unique").on(table.publicKey),
     buyerDetailsTokenUnique: uniqueIndex("invoices_buyer_details_token_unique").on(table.buyerDetailsToken),
   }),
 );
@@ -800,6 +872,42 @@ export const aresCache = pgTable("ares_cache", {
 });
 
 // ---------------------------------------------------------------------------
+// sk_companies – GLOBAL, not tenant-scoped, no RLS. The active part of the
+// Slovak register (RPO), loaded from its bulk export so the SK typeahead does
+// not wait 3-9 s for the live RPO search (migration 0058,
+// src/contacts/sk-companies/). The trigram index on name_norm lives only in
+// the migration.
+// ---------------------------------------------------------------------------
+export const skCompanies = pgTable(
+  "sk_companies",
+  {
+    rpoId: bigint("rpo_id", { mode: "number" }).primaryKey(),
+    ico: varchar("ico", { length: 8 }).notNull(),
+    name: text("name").notNull(),
+    nameNorm: text("name_norm").notNull(),
+    street: text("street"),
+    city: text("city"),
+    postalCode: varchar("postal_code", { length: 10 }),
+    legalForm: varchar("legal_form", { length: 3 }),
+    establishedOn: date("established_on", { mode: "string" }),
+    syncedAt: timestamp("synced_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    icoIdx: index("sk_companies_ico_idx").on(table.ico),
+  }),
+);
+
+/** Single row (id = 1): how far the sk_companies import got. */
+export const skCompaniesSync = pgTable("sk_companies_sync", {
+  id: smallint("id").primaryKey().default(1),
+  initDate: date("init_date", { mode: "string" }),
+  dailyDate: date("daily_date", { mode: "string" }),
+  rowCount: integer("row_count").notNull().default(0),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  lastError: text("last_error"),
+});
+
+// ---------------------------------------------------------------------------
 // tos_versions — GLOBAL, not tenant-scoped, no RLS. One row per published
 // VOP/ToS version (blueprint §9).
 // ---------------------------------------------------------------------------
@@ -910,6 +1018,12 @@ export const expenses = pgTable("expenses", {
   supplierDic: varchar("supplier_dic", { length: 14 }),
   /** Home currency (CZK, EUR for SK companies) per 1 unit of `currency`; null for the home currency (looked up when missing). */
   exchangeRate: numeric("exchange_rate", { precision: 20, scale: 10 }),
+  // Received in domestic reverse charge (§92a ZDPH): the supplier charged no
+  // VAT, so `amount` is the net and the company self-assesses `vatRate` on
+  // it (DPHDP3 ř. 10/11, deduction ř. 43/44, KH B.1). Migration 0058.
+  reverseCharge: boolean("reverse_charge").notNull().default(false),
+  /** Kód předmětu plnění for KH B.1 (REVERSE_CHARGE_CODES); null = not chosen, the export warns. */
+  reverseChargeCode: text("reverse_charge_code"),
   dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   note: text("note"),
@@ -991,10 +1105,13 @@ export const bankTransactions = pgTable("bank_transactions", {
   status: bankTransactionStatusEnum("status").notNull().default("unmatched"),
   // Bank-side movement id (e.g. Fio "ID pohybu") for synced rows; unique per
   // tenant so a re-sync of an overlapping period inserts nothing twice.
-  // Null for CSV imports.
+  // Uploaded camt.053/GPC rows carry the bank's reference when the file has
+  // one ("camt:…", "gpc:…"); null for CSV imports.
   externalId: text("external_id"),
   /** Fee kept by the payment provider (PayPal), in `currency`. Null for bank rows. */
   fee: numeric("fee", { precision: 14, scale: 2 }),
+  /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
+  message: text("message"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1025,6 +1142,12 @@ export const bankConnections = pgTable("bank_connections", {
   enabled: boolean("enabled").notNull().default(true),
   lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
   lastError: text("last_error"),
+  /** Fio: highest "ID pohybu" stored, where `set-last-id` rewinds Fio's cursor to. Migration 0063. */
+  fioLastId: bigint("fio_last_id", { mode: "number" }),
+  /** Fio: whether Fio's server-side cursor is known to sit at `fioLastId` (false until set-last-id/-date ran). */
+  fioCursorReady: boolean("fio_cursor_ready").notNull().default(false),
+  /** Last call to the provider with this token; Fio refuses a second one within 30 s. */
+  lastRequestAt: timestamp("last_request_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1178,6 +1301,68 @@ export const outboundEmails = pgTable("outbound_emails", {
 });
 
 // ---------------------------------------------------------------------------
+// email_outbox — every e-mail the backend sends, written first and delivered
+// by `EmailOutboxWorker` with retries (src/email/). Tenant-scoped: the app
+// inserts and merges rows under RLS; the cross-tenant worker only claims and
+// finishes rows through SECURITY DEFINER functions (migration 0049).
+// Indexes and CHECKs live in the migration.
+// ---------------------------------------------------------------------------
+export type OutboxAttachment = { filename: string; contentType?: string; content: string };
+export type OutboxItem = { kind: string; title: string; body?: string | null; url?: string | null; at: string };
+
+export const emailOutbox = pgTable("email_outbox", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  // Null = an account e-mail (password reset, e-mail change) queued by the
+  // frontend through enqueue_account_email (migration 0059). No tenant
+  // context can see those rows.
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
+  // The member it goes to (notifications, digest); null for customers and invitees.
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  kind: varchar("kind", { length: 40 }).notNull(),
+  // transactional | notification | digest — decides quiet hours, batching and List-Unsubscribe.
+  category: varchar("category", { length: 16 }).notNull(),
+  idempotencyKey: varchar("idempotency_key", { length: 200 }).notNull(),
+  batchKey: varchar("batch_key", { length: 120 }),
+  recipient: varchar("recipient", { length: 320 }).notNull(),
+  fromName: text("from_name"),
+  replyTo: text("reply_to"),
+  bcc: text("bcc"),
+  subject: varchar("subject", { length: 300 }).notNull(),
+  html: text("html").notNull(),
+  textBody: text("text_body").notNull(),
+  headers: jsonb("headers").$type<Record<string, string>>().notNull().default({}),
+  // Base64 content; cleared once sent.
+  attachments: jsonb("attachments").$type<OutboxAttachment[]>(),
+  // Batched notifications merged into this row.
+  items: jsonb("items").$type<OutboxItem[]>(),
+  status: varchar("status", { length: 12 }).notNull().default("queued"),
+  attempts: integer("attempts").notNull().default(0),
+  maxAttempts: integer("max_attempts").notNull().default(6),
+  sendAfter: timestamp("send_after", { withTimezone: true }).notNull().defaultNow(),
+  // The worker drops a queued row past this (its link has expired).
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  lockedUntil: timestamp("locked_until", { withTimezone: true }),
+  lastError: text("last_error"),
+  providerMessageId: varchar("provider_message_id", { length: 100 }),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// email_suppressions — GLOBAL list of addresses that hard-bounced or marked
+// our mail as spam (Resend webhook). RLS on with no policy: only the
+// SECURITY DEFINER functions of migration 0049 read or write it.
+// ---------------------------------------------------------------------------
+export const emailSuppressions = pgTable("email_suppressions", {
+  address: varchar("address", { length: 320 }).primaryKey(),
+  reason: varchar("reason", { length: 16 }).notNull(),
+  detail: text("detail"),
+  providerMessageId: varchar("provider_message_id", { length: 100 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // abuse_reports — recipients flagging a document as fraudulent/unexpected via
 // the client portal. No app-role policy: written only by the SECURITY DEFINER
 // `report_invoice_abuse()`, reviewed by the operator.
@@ -1306,6 +1491,36 @@ export const creditLedger = pgTable("credit_ledger", {
 });
 
 // ---------------------------------------------------------------------------
+// platform_proformas – tenant-scoped (RLS). A proforma from Billanta itself
+// for a plan paid by bank transfer (`billing/bank-transfer.service.ts`). The
+// app only inserts pending rows; a platform admin marks one paid through
+// mark_platform_proforma_paid (0051), which also extends tenants.prepaid_*.
+// trial_claims (one trial per user and e-mail) has no Drizzle model on
+// purpose: only bootstrap_tenant_for_user reads or writes it.
+// ---------------------------------------------------------------------------
+export const platformProformas = pgTable("platform_proformas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  number: varchar("number", { length: 20 }).notNull(),
+  variableSymbol: varchar("variable_symbol", { length: 10 }).notNull(),
+  plan: varchar("plan", { length: 16 }).notNull(),
+  months: integer("months").notNull(),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  // Without VAT; total = amount + VAT at vat_rate (percent).
+  amountMinor: integer("amount_minor").notNull(),
+  vatRate: integer("vat_rate").notNull().default(0),
+  totalMinor: integer("total_minor").notNull(),
+  status: varchar("status", { length: 10 }).$type<"pending" | "paid" | "canceled">().notNull().default("pending"),
+  dueDate: date("due_date").notNull(),
+  createdByUserId: uuid("created_by_user_id"),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  paidBy: text("paid_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // partners — GLOBAL catalogue (no tenant, no RLS) behind /partners and the
 // footer strip; managed by platform admins (`src/partners/`).
 // ---------------------------------------------------------------------------
@@ -1362,3 +1577,70 @@ export const blogPosts = pgTable("blog_posts", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// accountant_listings — an accountant's entry in the public directory
+// (/accountants), one per company in the accountant programme. RLS: the
+// company may only store 'pending' or 'withdrawn'; approval goes through
+// review_accountant_listing (platform admins, migration 0050).
+// ---------------------------------------------------------------------------
+export const accountantListings = pgTable(
+  "accountant_listings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    displayName: text("display_name").notNull(),
+    bio: text("bio"),
+    regions: varchar("regions", { length: 8 }).array().notNull().default(sql`'{}'`),
+    remote: boolean("remote").notNull().default(false),
+    services: varchar("services", { length: 24 }).array().notNull().default(sql`'{}'`),
+    languages: varchar("languages", { length: 4 }).array().notNull().default(sql`'{}'`),
+    priceHint: text("price_hint"),
+    contactEmail: text("contact_email"),
+    website: text("website"),
+    status: varchar("status", { length: 12 }).$type<"pending" | "approved" | "rejected" | "withdrawn">().notNull().default("pending"),
+    reviewNote: text("review_note"),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantUnique: uniqueIndex("accountant_listings_tenant_unique").on(table.tenantId),
+  }),
+);
+
+/**
+ * NOT tenant-scoped. Official pages the tax constants come from, with a hash
+ * of the part that matters (legislation monitor, migration 0052).
+ * `confirmed_at` = last time the page was seen unchanged, or a platform
+ * admin reviewed a change; it drives the "last checked" date per dataset.
+ */
+export const legislationSources = pgTable("legislation_sources", {
+  key: varchar("key", { length: 40 }).primaryKey(),
+  url: text("url").notNull(),
+  hash: text("hash"),
+  excerpt: text("excerpt"),
+  status: varchar("status", { length: 16 }).$type<"new" | "ok" | "changed" | "error">().notNull().default("new"),
+  lastError: text("last_error"),
+  lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
+  lastChangedAt: timestamp("last_changed_at", { withTimezone: true }),
+  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+});
+
+/** NOT tenant-scoped. Alerts for Billanta staff, e.g. a watched legislation page changed. */
+export const platformAlerts = pgTable(
+  "platform_alerts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    kind: varchar("kind", { length: 40 }).notNull(),
+    sourceKey: varchar("source_key", { length: 40 }),
+    message: text("message").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+  },
+  (table) => ({
+    openIdx: index("platform_alerts_open_idx").on(table.createdAt).where(sql`${table.acknowledgedAt} IS NULL`),
+  }),
+);

@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { homeCurrencyOf } from "@faktur/cz-compliance";
-import { and, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, isNull, min, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
+import { expenseVatParts } from "../expenses/expense-vat";
+import { ReportRates } from "../exports/uniform-rate";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
-import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
+import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { summarizeUsage, type Usage } from "./usage";
@@ -13,6 +15,7 @@ import { vatActivity, type VatActivity } from "./vat-activity";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
+const DAY_MS = 86_400_000;
 
 /** Tiles a member can pin to the dashboard, in the default order. */
 export const DASHBOARD_WIDGETS = [
@@ -73,33 +76,32 @@ export class DashboardService {
     const yearStart = new Date(now.getFullYear(), 0, 1);
     const chartStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
 
-    const invoices = await db
-      .select({ invoice: schema.invoices, contactName: schema.contacts.legalName, contactColor: schema.contacts.color })
-      .from(schema.invoices)
-      .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
-      .orderBy(desc(schema.invoices.createdAt));
+    // Independent reads, sent together (pipelined on the request's
+    // connection, as in `usage`) instead of one round trip after another.
+    const [invoices, items, expenses, [{ n: missingReceipts }]] = await Promise.all([
+      db
+        .select({ invoice: schema.invoices, contactName: schema.contacts.legalName, contactColor: schema.contacts.color })
+        .from(schema.invoices)
+        .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
+        .orderBy(desc(schema.invoices.createdAt)),
+      // Line items of every invoice the tenant can see (RLS scopes both
+      // tables). A subquery rather than an id list, which would hit
+      // Postgres' bind-parameter limit on a large account.
+      db
+        .select()
+        .from(schema.invoiceLineItems)
+        .where(inArray(schema.invoiceLineItems.invoiceId, db.select({ id: schema.invoices.id }).from(schema.invoices))),
+      db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, chartStart)),
+      // All of them, so the card matches the /expenses?receipt=no list it links to.
+      db.select({ n: count() }).from(schema.expenses).where(isNull(schema.expenses.receiptFileUrl)),
+    ]);
 
-    const ids = invoices.map((r) => r.invoice.id);
-    const items = ids.length
-      ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids))
-      : [];
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) {
       const list = byInvoice.get(item.invoiceId) ?? [];
       list.push(item);
       byInvoice.set(item.invoiceId, list);
     }
-
-    const expenses = await db
-      .select()
-      .from(schema.expenses)
-      .where(gte(schema.expenses.expenseDate, chartStart));
-
-    // All of them, so the card matches the /expenses?receipt=no list it links to.
-    const [{ n: missingReceipts }] = await db
-      .select({ n: count() })
-      .from(schema.expenses)
-      .where(isNull(schema.expenses.receiptFileUrl));
 
     const months = new Map<string, { month: string; revenue: number; expenses: number }>();
     for (let i = 11; i >= 0; i--) {
@@ -197,8 +199,8 @@ export class DashboardService {
 
     for (const e of expenses) {
       if (e.currency !== home) continue;
-      // Expense amounts are stored including VAT; the chart compares base amounts.
-      const base = Number(e.amount) / (1 + Number(e.vatRate) / 100);
+      // Expense amounts are stored including VAT (reverse charge: net); the chart compares base amounts.
+      const base = expenseVatParts(Number(e.amount), Number(e.vatRate), e.reverseCharge).base;
       if (e.expenseDate >= monthStart) kpi.expensesMonth += base;
       const bucket = months.get(monthKey(e.expenseDate));
       if (bucket) bucket.expenses += base;
@@ -232,25 +234,38 @@ export class DashboardService {
    * The period report: totals for [from, to] (whole days, inclusive), the
    * same-length period right before it for comparison, revenue / expenses
    * per day, week or month, the period's top customers and pie-chart
-   * shares. Amounts are in the home currency (foreign documents at their stored rate), or
-   * in the filtered currency when the report is narrowed to one. `db` is
+   * shares. Amounts are in the home currency (CZK or EUR; foreign documents at their stored rate, or
+   * at the year's jednotný kurz when the company chose it, `rates`), or in
+   * the filtered currency when the report is narrowed to one. `db` is
    * the tenant's RLS-scoped connection, so only its own rows ever load.
+   * `allTime` ("Celkem") ignores `from` and starts on the first day with
+   * any document or expense (`earliest`, also sent for every report).
    */
-  async stats(db: Db, tenantId: string, from: Date, to: Date, filters: ReportFilters = {}) {
+  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}, opts: { allTime?: boolean; rates?: ReportRates } = {}) {
+    const rates = opts.rates ?? new ReportRates(false, []);
     const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
-    const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-    const length = end.getTime() - start.getTime();
-    const prevStart = new Date(start.getTime() - length);
-    const home = await tenantHomeCurrency(db, tenantId);
+    const home = rates.home;
     const currency = filters.currency ?? home;
+    let start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    // "Celkem" has no comparison period, so it simply loads every expense.
+    const prevStart = opts.allTime ? null : new Date(start.getTime() - (end.getTime() - start.getTime()));
 
-    const rows = await db
-      .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
-      .from(schema.invoices)
-      .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
-      .where(inArray(schema.invoices.status, ["issued", "paid"]));
-    const ids = rows.map((r) => r.invoice.id);
-    const items = ids.length ? await db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)) : [];
+    const counted = inArray(schema.invoices.status, ["issued", "paid"]);
+    // Sent together, like in `summary`; the line items come via a subquery
+    // with the same condition instead of a (possibly huge) id list.
+    const [rows, items, expenseRows, [firstExpense]] = await Promise.all([
+      db
+        .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
+        .from(schema.invoices)
+        .leftJoin(schema.contacts, eq(schema.contacts.id, schema.invoices.contactId))
+        .where(counted),
+      db
+        .select()
+        .from(schema.invoiceLineItems)
+        .where(inArray(schema.invoiceLineItems.invoiceId, db.select({ id: schema.invoices.id }).from(schema.invoices).where(counted))),
+      prevStart ? db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart)) : db.select().from(schema.expenses),
+      db.select({ date: min(schema.expenses.expenseDate) }).from(schema.expenses),
+    ]);
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) byInvoice.set(item.invoiceId, [...(byInvoice.get(item.invoiceId) ?? []), item]);
 
@@ -274,9 +289,14 @@ export class DashboardService {
         total: totals.totalWithVat,
       };
     });
+    if (rates.annual) {
+      for (const d of allDocs) if (d.currency !== home) d.exchangeRate = await rates.rate(d.currency, d.exchangeRate, d.date);
+    }
     const today = new Date();
     const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
-    const expenseRows = await db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart));
+    const earliest = earliestDay([...allDocs.map((d) => d.date), firstExpense?.date ? new Date(firstExpense.date) : null]);
+    if (opts.allTime) start = earliest && earliest < end ? earliest : new Date(end.getTime() - DAY_MS);
+    const previousFrom = prevStart ?? new Date(start.getTime() - (end.getTime() - start.getTime()));
     // Expense amounts are stored including VAT; revenue is compared without it.
     // Expenses have no customer, type or status, so only the currency filter applies.
     const expenses: StatsExpense[] = expenseRows
@@ -284,27 +304,34 @@ export class DashboardService {
       .map((e) => ({
         currency: e.currency,
         date: e.expenseDate,
-        base: Number(e.amount) / (1 + Number(e.vatRate) / 100),
+        base: expenseVatParts(Number(e.amount), Number(e.vatRate), e.reverseCharge).base,
         exchangeRate: e.exchangeRate == null ? null : Number(e.exchangeRate),
       }));
+    if (rates.annual) {
+      for (const e of expenses) if (e.currency !== home) e.exchangeRate = await rates.rate(e.currency, e.exchangeRate, e.date);
+    }
 
     return {
       currency,
       from: start.toISOString(),
       to: new Date(end.getTime() - 1).toISOString(),
+      /** First day with any document or expense (YYYY-MM-DD), null with no data. */
+      earliest: earliest ? localDay(earliest) : null,
       filters,
       /** False when a customer / type / status / language filter is on: expenses then stay unfiltered. */
       expensesFiltered: !hasDocumentFilters(filters),
       options: filterOptions(allDocs),
       current: periodTotals(docs, expenses, start, end, currency, today, home),
-      previous: periodTotals(docs, expenses, prevStart, start, currency, today, home),
+      previous: periodTotals(docs, expenses, previousFrom, start, currency, today, home),
       ...periodBreakdown(docs, expenses, start, end, currency, today, home),
     };
   }
 
   /** Months (last three) with EU service sales and purchases from abroad, for the conditional VAT deadlines. */
   async vatActivity(db: Db, tenantId: string, now = new Date()): Promise<VatActivity> {
-    const since = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+    // A year back: whether the account buys abroad at all decides if an
+    // identified person's return shows in a month without such an expense.
+    const since = new Date(now.getFullYear(), now.getMonth() - 12, 1);
     const [tenant] = await db.select({ country: schema.tenants.addressCountry }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
     const invoices = await db
       .select({

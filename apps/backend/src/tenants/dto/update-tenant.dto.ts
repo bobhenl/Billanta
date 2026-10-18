@@ -7,6 +7,7 @@ import { z } from "zod";
 import { emailPrefsSchema } from "../email-prefs";
 import { invoiceFormPrefsSchema } from "../invoice-form-prefs";
 import { enabledModulesSchema } from "../modules";
+import { BUYER_DETAILS_FIELDS } from "../../invoices/buyer-details.util";
 
 const text = (max: number) => z.string().trim().max(max).nullish();
 
@@ -56,6 +57,10 @@ export const updateTenantSchema = z
     vat_status: z.enum(VAT_STATUSES),
     /** OSVČ monthly advances by period, shown on the dashboard deadlines (see taxAdvancesSchema). */
     tax_advances: taxAdvancesSchema,
+    /** OSVČ: paušální režim yes / no, null = not answered (decides the suggested minimums and default deadlines). */
+    flat_tax_regime: z.boolean().nullable(),
+    /** OSVČ: hlavní or vedlejší činnost, null = not answered. */
+    activity_kind: z.enum(["main", "secondary"]).nullable(),
     address_street: text(200),
     address_city: text(100),
     address_postal_code: text(10),
@@ -64,6 +69,13 @@ export const updateTenantSchema = z
     phone: text(32),
     website: text(200),
     registry_note: text(500),
+    /** ID datové schránky; boxes are case-insensitive, stored lowercase. Empty string clears it. */
+    data_box_id: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .regex(/^([a-z0-9]{7})?$/)
+      .nullish(),
     bank_account_number: z
       .string()
       .regex(/^(\d{1,6}-)?\d{2,10}$/)
@@ -93,6 +105,8 @@ export const updateTenantSchema = z
     payment_methods: paymentMethodsSchema,
     public_profile: publicProfileSchema,
     enabled_modules: enabledModulesSchema,
+    // Default required fields on a buyer-details link (see BuyerDetailsService.request).
+    buyer_details_required: z.array(z.enum(BUYER_DETAILS_FIELDS)).max(4),
   })
   .partial();
 

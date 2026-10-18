@@ -8,6 +8,8 @@ export { ADVANCE_KINDS, vatStatusOf, type TaxAdvances } from './vat-status';
 import type { TaxAdvances } from './vat-status';
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
+export type BuyerDetailsField = 'email' | 'phone' | 'ico' | 'dic';
+
 export interface TenantSettings {
   id: string;
   companyName: string;
@@ -20,6 +22,12 @@ export interface TenantSettings {
   vatStatus?: VatStatus;
   /** OSVČ monthly advances by period for the dashboard deadlines (an old backend may still send the single-set object: read via normalizeTaxAdvances). */
   taxAdvances?: TaxAdvances;
+  /** OSVČ: paušální režim yes / no; null or missing = not answered yet. */
+  flatTaxRegime?: boolean | null;
+  /** OSVČ: hlavní / vedlejší činnost; null or missing = not answered yet. */
+  activityKind?: 'main' | 'secondary' | null;
+  /** Fields a customer must fill in on a buyer-details link (0054); missing on an older backend. */
+  buyerDetailsRequired?: BuyerDetailsField[];
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;
@@ -28,6 +36,8 @@ export interface TenantSettings {
   phone: string | null;
   website: string | null;
   registryNote: string | null;
+  /** ID datové schránky, lowercase; prefills the yearly přehled for ČSSZ. */
+  dataBoxId?: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
   bankAccountIban: string | null;
@@ -59,10 +69,17 @@ export interface PublicProfileSettings {
   slug: string | null;
   tagline: string | null;
   about: string | null;
-  services: { title: string; description: string | null; price: string | null }[];
+  /** `id` is assigned by the backend on save; `unitPrice`/`unit` are what an order puts on the draft. */
+  services: { id?: string | null; title: string; description: string | null; price: string | null; unitPrice?: number | null; unit?: string | null }[];
   show: { email: boolean; phone: boolean; website: boolean; address: boolean; ico: boolean; logo: boolean };
   contactCta: boolean;
-  listInAccountants: boolean;
+  /**
+   * Orders from the profile: each lands as a draft for review. `customItems` lets customers add
+   * unpriced lines; `prepay` shows payment details with a QR code after ordering.
+   */
+  orders: { enabled: boolean; customItems: boolean; prepay: boolean };
+  /** "Kontaktovat": a message form whose messages land in the notifications. */
+  contactForm: boolean;
 }
 
 export interface PaymentMethodDef {
@@ -125,17 +142,19 @@ export const canManage = (role: string | null) => role === 'owner' || role === '
 export { PERMISSION_AREAS, APP_MODULES } from './access';
 export type { PermissionArea, PermissionLevel, AppModule } from './access';
 import type { AppModule, PermissionArea, PermissionLevel } from './access';
+import type { PlanSummary } from './plan';
 
 /** `GET /api/v1/tenants/me/access`: the member's effective access and the company's enabled modules. */
 export interface MyAccess {
   role: string;
   permissions: Record<PermissionArea, PermissionLevel>;
   modules: Record<AppModule, boolean>;
+  /** Effective plan and trial; missing from an older backend. */
+  plan?: PlanSummary | null;
 }
 
-export async function fetchMyAccess(): Promise<MyAccess> {
-  return apiFetch<MyAccess>('/api/v1/tenants/me/access');
-}
+// The dashboard layout and most pages both ask for it; one call per request.
+export const fetchMyAccess = cache(async (): Promise<MyAccess> => apiFetch<MyAccess>('/api/v1/tenants/me/access'));
 
 /** Dashboard sections to leave out of the navigation for this member/company. */
 export function hiddenSections(access: MyAccess | null): string[] {

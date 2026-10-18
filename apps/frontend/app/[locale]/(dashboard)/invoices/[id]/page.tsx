@@ -8,7 +8,7 @@ import { Banner } from '@/components/banner';
 import { fetchAuditLog, type AuditPage } from '@/lib/audit';
 import { NetEstimate } from '@/components/net-estimate';
 import { displayCustomField, documentVars } from '@/lib/custom-fields';
-import { fetchTenant } from '@/lib/tenant';
+import { fetchTenant, type BuyerDetailsField } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
   buyerDetailsState,
@@ -26,6 +26,7 @@ import { homeCurrencyOf, lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
 import { BuyerDetailsRequest } from './buyer-details-request';
+import { PublicLinkPanel } from './public-link-panel';
 
 /** A rule reference such as "§29/1c ZDPH", linked to the law text when lawUrl knows it. */
 function LawRef({ rule }: { rule?: string }) {
@@ -57,6 +58,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const t = await getTranslations('doc');
   const tStatus = await getTranslations('invoices.status');
   const tBuyer = await getTranslations('invoices.buyerDetails');
+  const tProfileOrder = await getTranslations('invoices.profileOrder');
   const tGloss = await getTranslations('glossary');
 
   let detail: InvoiceDetail;
@@ -65,6 +67,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   let lastEdit: AuditPage | null = null;
   let companyVars: { key: string; value: string }[] = [];
   let homeCountry: string | undefined;
+  let defaultRequired: BuyerDetailsField[] = ['email', 'ico'];
   try {
     let tenant;
     [detail, attachments, tenant, history, lastEdit] = await Promise.all([
@@ -76,6 +79,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
     ]);
     companyVars = (tenant?.templateVars ?? []).map((v) => ({ key: v.key, value: v.value }));
     homeCountry = tenant?.addressCountry;
+    if (tenant?.buyerDetailsRequired) defaultRequired = tenant.buyerDetailsRequired;
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     if (error instanceof ApiError && error.status === 404) notFound();
@@ -97,6 +101,12 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           .catch(() => [])
       : [];
   const lawIssues = checkIssues.filter((i) => i.scheme === 'law');
+  // A draft without a customer: the "fill in" box offers sending the link or picking a contact right there.
+  const customerMissing =
+    (invoice.status === 'draft' || invoice.status === 'pending_review') &&
+    invoice.documentType !== 'credit_note' &&
+    !invoice.buyerDetailsToken &&
+    lawIssues.some((i) => i.code === 'customerMissing');
   const peppolIssues = checkIssues.filter((i) => i.scheme === 'peppol');
   const money = (n: number) => formatMoney(n, invoice.currency, locale);
   // The customer has an older copy: edited in place after the last send.
@@ -156,6 +166,9 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               {t(`type.${invoice.documentType}`)}
             </span>
             <span title={tGloss(`status.${status}`)} className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>{statusLabel}</span>
+            {invoice.source === 'profile_order' && (
+              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{tProfileOrder('badge')}</span>
+            )}
             {buyerDetailsState(invoice) && (
               <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', buyerDetailsState(invoice) === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
                 {tBuyer(`badge.${buyerDetailsState(invoice)}`)}
@@ -185,7 +198,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           status={invoice.status}
           numbered={Boolean(invoice.invoiceNumber)}
           hasEmail={Boolean(contact?.email)}
-          publicToken={invoice.publicToken}
+          publicLink={detail.links?.public ?? invoice.publicToken}
           defaultTemplateName={contact ? `${contact.legalName}` : title}
           overdue={invoice.isOverdue}
           reminderCount={invoice.reminderCount}
@@ -196,20 +209,36 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
         />
+        {invoice.invoiceNumber && detail.links?.public && (
+          <PublicLinkPanel
+            id={invoice.id}
+            link={detail.links.public}
+            defaultLink={detail.links.publicDefault ?? detail.links.public}
+            slug={invoice.publicSlug ?? null}
+          />
+        )}
         {(invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
           <BuyerDetailsRequest
             id={invoice.id}
-            token={invoice.buyerDetailsToken ?? null}
+            token={invoice.buyerDetailsToken ? (detail.links?.buyerDetails ?? invoice.buyerDetailsToken) : null}
             submittedAt={invoice.buyerDetailsSubmittedAt ?? null}
             submittedLabel={formatDate(invoice.buyerDetailsSubmittedAt, locale)}
             email={invoice.buyerDetailsEmail ?? null}
             autoIssue={Boolean(invoice.buyerDetailsAutoIssue)}
             outcome={invoice.buyerDetailsOutcome ?? null}
             contactEmail={contact?.email ?? null}
+            required={invoice.buyerDetailsRequired ?? defaultRequired}
+            defaultRequired={defaultRequired}
+            hideStart={customerMissing}
           />
         )}
       </div>
 
+      {invoice.source === 'profile_order' && invoice.status === 'pending_review' && (
+        <Banner tone="info" className="mt-4">
+          {tProfileOrder('banner')}
+        </Banner>
+      )}
       {invoice.source.startsWith('ai_') && invoice.status === 'pending_review' && (
         <Banner tone="warn" className="mt-4">
           {t('aiDisclaimer')}
@@ -228,6 +257,21 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               </li>
             ))}
           </ul>
+          {customerMissing && (
+            <BuyerDetailsRequest
+              variant="inline"
+              id={invoice.id}
+              token={null}
+              submittedAt={null}
+              submittedLabel={null}
+              email={null}
+              autoIssue={false}
+              outcome={null}
+              contactEmail={null}
+              required={defaultRequired}
+              defaultRequired={defaultRequired}
+            />
+          )}
         </Banner>
       )}
       {peppolIssues.length > 0 && (

@@ -17,8 +17,11 @@ import {
   mapBitfakturaSeller,
   type ImportedBusinessDetails,
 } from "./bitfaktura-import";
+import { connectFakturoid, fetchFakturoidData, FakturoidError, mapFakturoidAccount, mapFakturoidInvoices, mapFakturoidSubjects, type FakturoidOptions } from "./fakturoid-import";
 import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
-import { getHomeRate } from "../exports/home-rates";
+import { getCnbDay, type CnbDay } from "../exports/cnb-rates";
+import { getHomeRateDay } from "../exports/home-rates";
+import type { HomeCurrency } from "@faktur/cz-compliance";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { AuditService } from "../audit/audit.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
@@ -44,6 +47,87 @@ export interface InvoiceImportResult {
   source?: { invoices: number; contacts: number };
   /** API imports only: empty business-detail fields filled from the source (or that would be, on a preview). */
   businessFilled?: (keyof ImportedBusinessDetails)[];
+  /** API imports only, when the invoices come from more than one supplier IČO: who issued how many. */
+  sellers?: ImportSeller[];
+  /** API imports only, after a real run: the newest imported invoice shows other supplier details than the profile. */
+  sellerUpdate?: SellerProfileUpdate;
+}
+
+export interface ImportSeller {
+  ico: string;
+  name: string | null;
+  invoices: number;
+}
+
+export interface SellerProfileUpdate {
+  invoiceNumber: string;
+  issueDate: string;
+  changes: { field: "name" | "dic" | "address"; from: string | null; to: string }[];
+  /** Ready for `PATCH /tenants/me` (UpdateTenantDto keys); applied only when the owner clicks. */
+  patch: Record<string, string | null>;
+}
+
+type ProfileRow = {
+  ico: string | null;
+  companyName: string;
+  legalName: string;
+  dic: string | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressPostalCode: string | null;
+  addressCountry: string;
+};
+
+/** Supplier IČOs across the source invoices, most invoices first; empty when there is at most one. */
+export function distinctSellers(invoices: ImportedInvoice[]): ImportSeller[] {
+  const by = new Map<string, ImportSeller>();
+  for (const inv of invoices) {
+    const ico = inv.sellerSnapshot?.ico;
+    if (!ico) continue;
+    const entry = by.get(ico) ?? { ico, name: inv.sellerSnapshot?.legalName ?? null, invoices: 0 };
+    entry.invoices++;
+    by.set(ico, entry);
+  }
+  return by.size > 1 ? [...by.values()].sort((a, b) => b.invoices - a.invoices || a.ico.localeCompare(b.ico)) : [];
+}
+
+const same = (a: string | null | undefined, b: string | null | undefined) => (a ?? "").trim().toLowerCase() === (b ?? "").trim().toLowerCase();
+const oneLine = (...parts: (string | null | undefined)[]) => parts.filter((p) => p && p.trim()).join(", ") || null;
+
+/**
+ * What the newest imported invoice says about the supplier that the company
+ * profile says differently: name, DIČ, address (as a whole). Null when they
+ * agree, or when that invoice is of another IČO (another company, not a move).
+ */
+export function sellerProfileUpdate(current: ProfileRow, newest: ImportedInvoice | undefined): SellerProfileUpdate | null {
+  const snap = newest?.sellerSnapshot;
+  if (!newest || !snap) return null;
+  if (snap.ico && current.ico && snap.ico !== current.ico) return null;
+  const changes: SellerProfileUpdate["changes"] = [];
+  const patch: SellerProfileUpdate["patch"] = {};
+  const name = snap.legalName?.trim().slice(0, 200);
+  if (name && (!same(name, current.legalName) || !same(name, current.companyName))) {
+    changes.push({ field: "name", from: current.legalName || null, to: name });
+    patch.legal_name = name;
+    patch.company_name = name;
+  }
+  if (snap.dic && /^[A-Z]{2}\d{8,10}$/.test(snap.dic) && snap.dic !== current.dic) {
+    changes.push({ field: "dic", from: current.dic, to: snap.dic });
+    patch.dic = snap.dic;
+  }
+  const street = snap.addressStreet?.trim();
+  const city = snap.addressCity?.trim();
+  const zip = snap.addressPostalCode?.trim() || null;
+  const country = snap.addressCountry ?? current.addressCountry;
+  if (street && city && !street.includes("@")) {
+    const moved = !same(street, current.addressStreet) || !same(city, current.addressCity) || !same(zip, current.addressPostalCode) || country !== current.addressCountry;
+    if (moved) {
+      changes.push({ field: "address", from: oneLine(current.addressStreet, current.addressPostalCode, current.addressCity), to: oneLine(street, zip, city)! });
+      Object.assign(patch, { address_street: street.slice(0, 200), address_city: city.slice(0, 100), address_postal_code: zip?.slice(0, 10) ?? null, address_country: country });
+    }
+  }
+  if (changes.length === 0) return null;
+  return { invoiceNumber: newest.invoiceNumber, issueDate: newest.issueDate.toISOString().slice(0, 10), changes, patch };
 }
 
 type BusinessRow = { [K in keyof ImportedBusinessDetails]-?: string | null };
@@ -83,6 +167,9 @@ export function csvBuyerSnapshot(customer: ImportedInvoice["customer"]) {
 /** Parallel PDF downloads; low enough not to hammer the source's API. */
 const PDF_CONCURRENCY = 4;
 
+/** The systems read over their API; also the audit action and the PDF file name suffix. */
+type ApiImportSource = "bitfaktura" | "fakturoid";
+
 /**
  * "Stěhování": brings the invoice history from another system in as
  * already-issued documents (`source = 'import'`). Nothing is sent, no
@@ -90,6 +177,36 @@ const PDF_CONCURRENCY = 4;
  * record of the past, not new work. Own-format numbers bump the sequence so
  * the next invoice continues the row instead of colliding with it.
  */
+/**
+ * Foreign-currency documents need the CZK rate for VAT and income-tax
+ * reports: the source's own rate when it has one, else ČNB on the DUZP. A
+ * rate we looked up ourselves is a ČNB rate, so it is stored as one with its
+ * list day; that keeps the PDF's "kurz ČNB ze dne" line and the exports from
+ * treating it as typed in by hand.
+ */
+export async function importedRate(
+  inv: Pick<ImportedInvoice, "currency" | "exchangeRate" | "exchangeRateMode" | "exchangeRateDate" | "taxableSupplyDate" | "issueDate">,
+  cnbDay: (date: Date) => Promise<CnbDay | null>,
+  home: HomeCurrency = "CZK",
+): Promise<Pick<typeof schema.invoices.$inferInsert, "exchangeRate" | "exchangeRateMode" | "exchangeRateDate">> {
+  if (inv.currency === home) return { exchangeRate: null };
+  if (inv.exchangeRate != null) {
+    return {
+      exchangeRate: String(inv.exchangeRate),
+      ...(inv.exchangeRateMode ? { exchangeRateMode: inv.exchangeRateMode, exchangeRateDate: inv.exchangeRateDate ?? null } : {}),
+    };
+  }
+  // A Slovak company converts to EUR at the ECB rate of the day before (home-rates.ts).
+  if (home === "EUR") {
+    const ecb = await getHomeRateDay("EUR", inv.currency, inv.taxableSupplyDate ?? inv.issueDate);
+    return ecb ? { exchangeRate: String(ecb.rate), exchangeRateMode: "ecb_daily", exchangeRateDate: ecb.date } : { exchangeRate: null };
+  }
+  const day = await cnbDay(inv.taxableSupplyDate ?? inv.issueDate);
+  const rate = day?.rates.get(inv.currency.toUpperCase())?.rate ?? null;
+  if (rate === null) return { exchangeRate: null };
+  return { exchangeRate: String(rate), exchangeRateMode: "cnb_daily", exchangeRateDate: day!.date };
+}
+
 @Injectable()
 export class InvoiceImportService {
   constructor(@Optional() private readonly audit?: AuditService) {}
@@ -114,7 +231,7 @@ export class InvoiceImportService {
   private async logImport(
     db: TenantDb,
     tenantId: string,
-    source: "csv" | "bitfaktura",
+    source: "csv" | ApiImportSource,
     result: InvoiceImportResult,
     filled: ImportedBusinessDetails = {},
   ) {
@@ -141,6 +258,8 @@ export class InvoiceImportService {
     apiToken: string,
     dryRun: boolean,
     fetcher?: Parameters<typeof fetchBitfakturaInvoices>[2],
+    /** Import only the invoices this supplier IČO issued (an account shared by several businesses). */
+    onlySellerIco?: string,
   ): Promise<InvoiceImportResult> {
     let source: Awaited<ReturnType<typeof fetchBitfakturaInvoices>>;
     let clients: Awaited<ReturnType<typeof fetchBitfakturaClients>>;
@@ -153,18 +272,88 @@ export class InvoiceImportService {
     }
     // Nice to have: without the seller profile the invoices still come across.
     const seller = mapBitfakturaSeller(await fetchBitfakturaDepartments(account, apiToken, fetcher).catch(() => []));
-    const created: { invoice: ImportedInvoice; id: string }[] = [];
-    const result = await this.importMapped(
-      db,
-      tenantId,
-      mapBitfakturaInvoices(source),
+    return this.importFromApi(db, tenantId, {
+      source: "bitfaktura",
       dryRun,
-      (invoice, id) => created.push({ invoice, id }),
-      mapBitfakturaClients(clients),
-    );
-    result.source = { invoices: source.length, contacts: clients.length };
+      onlySellerIco,
+      counts: { invoices: source.length, contacts: clients.length },
+      mapped: mapBitfakturaInvoices(source),
+      contacts: mapBitfakturaClients(clients),
+      seller,
+      fetchPdf: (sourceId) => fetchBitfakturaPdf(account, apiToken, sourceId, MAX_ATTACHMENT_BYTES, fetcher),
+    });
+  }
+
+  /**
+   * Reads the history over the Fakturoid API with the user's Client ID and
+   * secret. They and the access token they buy live only in this request.
+   */
+  async importFromFakturoid(
+    db: TenantDb,
+    tenantId: string,
+    credentials: { clientId: string; clientSecret: string; account?: string },
+    dryRun: boolean,
+    options?: FakturoidOptions,
+    onlySellerIco?: string,
+  ): Promise<InvoiceImportResult> {
+    let conn: Awaited<ReturnType<typeof connectFakturoid>>;
+    let data: Awaited<ReturnType<typeof fetchFakturoidData>>;
+    try {
+      conn = await connectFakturoid(credentials, options);
+      data = await fetchFakturoidData(conn);
+    } catch (error) {
+      if (error instanceof FakturoidError) throw new BadRequestException({ error: error.code });
+      throw error;
+    }
+    return this.importFromApi(db, tenantId, {
+      source: "fakturoid",
+      dryRun,
+      onlySellerIco,
+      counts: { invoices: data.invoices.length, contacts: data.subjects.length },
+      mapped: mapFakturoidInvoices(data.invoices, data.account?.currency),
+      contacts: mapFakturoidSubjects(data.subjects),
+      seller: mapFakturoidAccount(data.account),
+      fetchPdf: (sourceId) => conn.pdf(sourceId, MAX_ATTACHMENT_BYTES),
+    });
+  }
+
+  /**
+   * What every API import does once the source is read: write the mapped
+   * invoices and contacts, fill empty business details, archive the original
+   * PDFs and offer the newest supplier details.
+   */
+  private async importFromApi(
+    db: TenantDb,
+    tenantId: string,
+    run: {
+      source: ApiImportSource;
+      dryRun: boolean;
+      onlySellerIco?: string;
+      counts: { invoices: number; contacts: number };
+      mapped: { invoices: ImportedInvoice[]; skipped: ImportSkip[] };
+      contacts: ImportedContact[];
+      seller: ImportedBusinessDetails | null;
+      fetchPdf: (sourceId: number) => Promise<Buffer | null>;
+    },
+  ): Promise<InvoiceImportResult> {
+    const { mapped, dryRun, onlySellerIco } = run;
+    const created: { invoice: ImportedInvoice; id: string }[] = [];
+    // Several suppliers in one account: say so, and import one of them only on request.
+    // Companies are never created from this; the user picks which one this is.
+    const sellers = distinctSellers(mapped.invoices);
+    if (onlySellerIco) {
+      const own = mapped.invoices.filter((inv) => inv.sellerSnapshot?.ico === onlySellerIco);
+      const other = mapped.invoices.filter((inv) => inv.sellerSnapshot?.ico !== onlySellerIco);
+      mapped.invoices = own;
+      mapped.skipped.push(...other.map((inv) => ({ line: inv.line, number: inv.invoiceNumber, reason: "other_seller" as const })));
+    }
+    const result = await this.importMapped(db, tenantId, mapped, dryRun, (invoice, id) => created.push({ invoice, id }), run.contacts);
+    result.source = run.counts;
+    if (sellers.length > 0) result.sellers = sellers;
     const [tenant] = await db
       .select({
+        companyName: schema.tenants.companyName,
+        legalName: schema.tenants.legalName,
         ico: schema.tenants.ico,
         dic: schema.tenants.dic,
         registryNote: schema.tenants.registryNote,
@@ -175,7 +364,7 @@ export class InvoiceImportService {
       })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));
-    const fill = tenant ? businessFill(tenant, seller) : {};
+    const fill = tenant ? businessFill(tenant, run.seller) : {};
     result.businessFilled = Object.keys(fill) as (keyof ImportedBusinessDetails)[];
     if (dryRun) return result;
     if (result.businessFilled.length > 0) {
@@ -191,9 +380,7 @@ export class InvoiceImportService {
     const queue = [...created];
     const worker = async () => {
       for (let next = queue.shift(); next; next = queue.shift()) {
-        const pdf = next.invoice.sourceId
-          ? await fetchBitfakturaPdf(account, apiToken, next.invoice.sourceId, MAX_ATTACHMENT_BYTES, fetcher)
-          : null;
+        const pdf = next.invoice.sourceId ? await run.fetchPdf(next.invoice.sourceId) : null;
         if (!pdf) {
           originalPdfs.missing++;
           continue;
@@ -201,7 +388,7 @@ export class InvoiceImportService {
         await db.insert(schema.invoiceAttachments).values({
           tenantId,
           invoiceId: next.id,
-          filename: `${next.invoice.invoiceNumber.replace(/[\\/:*?"<>|]/g, "-")}-bitfaktura.pdf`,
+          filename: `${next.invoice.invoiceNumber.replace(/[\\/:*?"<>|]/g, "-")}-${run.source}.pdf`,
           mime: "application/pdf",
           sizeBytes: pdf.length,
           data: pdf.toString("base64"),
@@ -212,8 +399,12 @@ export class InvoiceImportService {
       }
     };
     await Promise.all(Array.from({ length: PDF_CONCURRENCY }, worker));
-    const done = { ...result, originalPdfs };
-    await this.logImport(db, tenantId, "bitfaktura", done, fill);
+    const done: InvoiceImportResult = { ...result, originalPdfs };
+    // Compared with the profile as it stands after the fill above.
+    const newest = created.reduce<ImportedInvoice | undefined>((a, { invoice }) => (!a || invoice.issueDate >= a.issueDate ? invoice : a), undefined);
+    const update = tenant ? sellerProfileUpdate({ ...tenant, ...fill }, newest) : null;
+    if (update) done.sellerUpdate = update;
+    await this.logImport(db, tenantId, run.source, done, fill);
     return done;
   }
 
@@ -314,11 +505,7 @@ export class InvoiceImportService {
       const contactId = findContact(inv.customer) ?? (await createContact(inv.customer));
       const total = totalOf(inv);
       const issuedAt = inv.issueDate;
-      // Foreign-currency documents need the home-currency rate for VAT and
-      // income-tax reports: the source's own rate when it has one, else the
-      // official one (ČNB, or ECB for SK) on the DUZP.
-      const exchangeRate =
-        inv.currency === home ? null : inv.exchangeRate ?? (await getHomeRate(home, inv.currency, inv.taxableSupplyDate ?? inv.issueDate));
+      const rate = await importedRate(inv, getCnbDay, home);
       const [created] = await db
         .insert(schema.invoices)
         .values({
@@ -339,8 +526,14 @@ export class InvoiceImportService {
           amountPaid: String(inv.status === "paid" ? total : Math.max(0, Math.min(inv.amountPaid, total))),
           paidAt: inv.paidAt,
           cancelledAt: inv.status === "cancelled" ? issuedAt : null,
-          exchangeRate: exchangeRate === null ? null : String(exchangeRate),
+          ...rate,
+          internalNote: inv.internalNote ?? null,
+          orderNumber: inv.orderNumber ?? null,
+          issuePlace: inv.issuePlace ?? null,
+          issuedByName: inv.issuedByName ?? null,
           reverseCharge: inv.reverseCharge ?? false,
+          reverseChargeCode: inv.reverseCharge ? inv.reverseChargeCode ?? null : null,
+          constantSymbol: inv.constantSymbol ?? null,
           ...(inv.paymentMethod ? { paymentMethod: inv.paymentMethod, paymentMethodLabel: inv.paymentMethodLabel ?? null } : {}),
           ...(inv.language ? { language: inv.language } : {}),
           // The parties as the source document shows them, not as the matched

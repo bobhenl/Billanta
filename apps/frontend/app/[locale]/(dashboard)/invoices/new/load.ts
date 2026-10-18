@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant } from '@/lib/tenant';
-import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
+import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, PUBLIC_LINK_PREFIXES, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
 const LANGUAGES: DocLanguage[] = ['cs', 'sk', 'en'];
@@ -70,8 +70,16 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     defaultContactId: typeof raw?.defaultContactId === 'string' ? raw.defaultContactId : null,
     defaultItems: Array.isArray(raw?.defaultItems) ? raw.defaultItems.filter(isDefaultItem) : [],
     defaultNoteAbove: typeof raw?.defaultNoteAbove === 'string' ? raw.defaultNoteAbove : null,
-    exchangeRateMode: raw?.exchangeRateMode === 'annual' || raw?.exchangeRateMode === 'none' ? raw.exchangeRateMode : 'cnb_daily',
-    annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : []
+    exchangeRateMode: raw?.exchangeRateMode === 'none' ? 'none' : 'cnb_daily',
+    // The old single setting "annual" meant the annual rate everywhere; now it only applies to reports.
+    reportRateMode:
+      raw?.reportRateMode === 'annual' || raw?.reportRateMode === 'daily'
+        ? raw.reportRateMode
+        : (raw?.exchangeRateMode as string | undefined) === 'annual'
+          ? 'annual'
+          : 'daily',
+    annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : [],
+    publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number'
   };
 }
 

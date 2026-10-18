@@ -20,14 +20,22 @@ export async function setContactStarred(id: string, starred: boolean): Promise<b
   }
 }
 
-/** Turns the customer portal on or renews its link (enabled), or turns it off; returns the new token. */
+/** Turns the customer portal on or renews its link (enabled), or turns it off; returns the new link segment. */
 export async function setContactPortal(id: string, enabled: boolean): Promise<ActionResult<string | null>> {
   try {
-    const row = await apiFetch<{ portalToken: string | null }>(`/api/v1/contacts/${encodeURIComponent(id)}/portal`, { method: enabled ? 'POST' : 'DELETE' });
-    return { ok: true, data: row.portalToken };
+    const row = await apiFetch<{ portalToken: string | null; portalLink: string | null }>(`/api/v1/contacts/${encodeURIComponent(id)}/portal`, { method: enabled ? 'POST' : 'DELETE' });
+    return { ok: true, data: row.portalLink };
   } catch (e) {
     return { ok: false, error: e instanceof ApiError ? e.message : 'unknown' };
   }
+}
+
+/** The custom name in front of the portal key; null goes back to the customer's name. The key does not change. */
+export async function setContactPortalName(id: string, slug: string | null) {
+  return run<{ portalSlug: string | null; portalLink: string | null; portalLinkDefault: string | null }>(
+    `/api/v1/contacts/${encodeURIComponent(id)}/portal`,
+    json('PATCH', { slug })
+  );
 }
 
 export interface ContactInput {
@@ -35,6 +43,7 @@ export interface ContactInput {
   ico?: string | null;
   dic?: string | null;
   email?: string | null;
+  phone?: string | null;
   addressStreet?: string | null;
   addressCity?: string | null;
   addressPostalCode?: string | null;

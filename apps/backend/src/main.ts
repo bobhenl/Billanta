@@ -3,6 +3,7 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ZodValidationPipe } from "nestjs-zod";
 import { AppModule } from "./app.module";
+import { defaultNoStore } from "./common/cache-control";
 import { assertProductionSecrets } from "./common/production-secrets";
 
 async function bootstrap() {
@@ -19,6 +20,10 @@ async function bootstrap() {
   // matching the exact paths `apps/ai-service` already calls
   // (`/api/v1/invoices/drafts`, `/api/v1/internal/channel-links/verify`).
   app.setGlobalPrefix("api");
+
+  // Before every route, so `@Header("Cache-Control", …)` on a public route
+  // can still replace it. See common/cache-control.ts.
+  app.use(defaultNoStore);
 
   // Zod (not class-validator) is this project's request-validation choice
   // (see package.json deps) — `nestjs-zod`'s createZodDto keeps a single

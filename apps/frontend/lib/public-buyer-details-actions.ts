@@ -1,6 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { isBuyerDetailsToken } from '@/lib/public-buyer-details';
 
 /**
  * The customer's billing details, posted from the public page `/d/:token`
@@ -13,6 +14,7 @@ export interface BuyerDetailsInput {
   isPerson: boolean;
   name: string;
   email: string;
+  phone: string;
   street: string;
   city: string;
   postalCode: string;
@@ -26,7 +28,7 @@ export type BuyerDetailsResult =
   | { ok: false; error: 'invalid' | 'closed' | 'submitted' | 'limit' | 'failed'; fields?: Record<string, string> };
 
 export async function submitBuyerDetails(token: string, input: BuyerDetailsInput): Promise<BuyerDetailsResult> {
-  if (!/^[0-9a-f-]{36}$/i.test(token)) return { ok: false, error: 'closed' };
+  if (!isBuyerDetailsToken(token)) return { ok: false, error: 'closed' };
   const h = await headers();
   // Same rule as lib/client-ip.ts: only the last X-Forwarded-For entry comes from our own proxy.
   const ip = h.get('x-forwarded-for')?.split(',').map((p) => p.trim()).filter(Boolean).pop() ?? h.get('x-real-ip') ?? '';
@@ -38,6 +40,7 @@ export async function submitBuyerDetails(token: string, input: BuyerDetailsInput
         isPerson: Boolean(input.isPerson),
         name: input.name,
         email: input.email || null,
+        phone: input.phone || null,
         street: input.street,
         city: input.city,
         postalCode: input.postalCode,

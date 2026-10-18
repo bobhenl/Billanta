@@ -243,6 +243,8 @@ CREATE POLICY tenant_isolation ON backup_runs
 --   subscription_plans — global plan catalog, same rows visible to everyone.
 --   ares_cache          — public ARES registry data, identical regardless of
 --                         which tenant looked it up.
+--   sk_companies,       – public Slovak register (RPO) copy and its import
+--   sk_companies_sync     state, same for everyone (migration 0058).
 --   tos_versions        — published VOP/ToS text, same for everyone.
 --
 -- If any of these ever gain a tenant_id column, add a matching policy above.
@@ -590,16 +592,13 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_line_items(uuid) TO faktur_app;
 -- render a payment QR code, and the latter three in particular are exactly
 -- the kind of internal/billing-provider data this function's siblings
 -- above are careful to keep out of the public-portal surface.
--- `address_country` (the registered country, never anything finer) picks
--- the QR standard: PAY by square for a Slovak supplier, SPAYD otherwise.
 DROP FUNCTION IF EXISTS get_public_invoice_supplier_info(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_supplier_info(p_public_token uuid)
 RETURNS TABLE (
   company_name text,
   bank_account_iban text,
   bank_account_number text,
-  bank_account_bank_code varchar(4),
-  address_country varchar
+  bank_account_bank_code varchar(4)
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -617,8 +616,7 @@ AS $$
     CASE WHEN i.seller_snapshot -> 'bankAccountNumber' IS NOT NULL THEN i.seller_snapshot->>'bankAccountNumber'
       ELSE coalesce(a.account_number, CASE WHEN a.id IS NULL THEN t.bank_account_number END) END,
     CASE WHEN i.seller_snapshot -> 'bankAccountBankCode' IS NOT NULL THEN (i.seller_snapshot->>'bankAccountBankCode')::varchar(4)
-      ELSE coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END) END,
-    coalesce(nullif(i.seller_snapshot->>'addressCountry', ''), t.address_country)::varchar
+      ELSE coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END) END
   FROM tenants t
   JOIN invoices i ON i.tenant_id = t.id
   LEFT JOIN LATERAL (
@@ -744,11 +742,16 @@ GRANT EXECUTE ON FUNCTION find_active_api_key_by_hash(text) TO faktur_app;
 -- attorney-reviewed ToS text yet to hash (see
 -- `app/[locale]/legal/terms/page.tsx` — still a structural placeholder) —
 -- swap this for a real content hash once real text is published.
+-- 0051 added p_trial_days (the free trial, one per user and e-mail via
+-- trial_claims) and plan_enforced on new companies. The old four-argument
+-- version is dropped so a four-argument call stays unambiguous.
+DROP FUNCTION IF EXISTS bootstrap_tenant_for_user(uuid, text, text, text);
 CREATE OR REPLACE FUNCTION bootstrap_tenant_for_user(
   p_user_id uuid,
   p_company_name text,
   p_tos_version text,
-  p_ip_address text DEFAULT NULL
+  p_ip_address text DEFAULT NULL,
+  p_trial_days integer DEFAULT 0
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -758,6 +761,9 @@ AS $$
 DECLARE
   v_tenant_id uuid;
   v_tos_version_id uuid;
+  v_email text;
+  v_days integer := least(greatest(coalesce(p_trial_days, 0), 0), 90);
+  v_claim uuid;
 BEGIN
   IF p_company_name IS NULL OR btrim(p_company_name) = '' THEN
     RAISE EXCEPTION 'company name is required';
@@ -769,8 +775,8 @@ BEGIN
 
   SELECT id INTO v_tos_version_id FROM tos_versions WHERE version = p_tos_version;
 
-  INSERT INTO tenants (company_name, legal_name)
-  VALUES (btrim(p_company_name), btrim(p_company_name))
+  INSERT INTO tenants (company_name, legal_name, plan_enforced)
+  VALUES (btrim(p_company_name), btrim(p_company_name), true)
   RETURNING id INTO v_tenant_id;
 
   INSERT INTO tenant_memberships (tenant_id, user_id, role)
@@ -779,12 +785,28 @@ BEGIN
   INSERT INTO tos_acceptances (user_id, tenant_id, tos_version_id, ip_address)
   VALUES (p_user_id, v_tenant_id, v_tos_version_id, p_ip_address);
 
+  -- One trial per user account and per e-mail address, whichever was used first.
+  IF v_days > 0 THEN
+    SELECT email INTO v_email FROM users WHERE id = p_user_id;
+    IF v_email IS NOT NULL THEN
+      INSERT INTO trial_claims (user_id, email_hash, tenant_id)
+      VALUES (p_user_id, encode(sha256(convert_to(trial_email_key(v_email), 'UTF8')), 'hex'), v_tenant_id)
+      ON CONFLICT DO NOTHING
+      RETURNING id INTO v_claim;
+      IF v_claim IS NOT NULL THEN
+        UPDATE tenants
+          SET trial_plan = 'business', trial_started_at = now(), trial_ends_at = now() + make_interval(days => v_days)
+          WHERE id = v_tenant_id;
+      END IF;
+    END IF;
+  END IF;
+
   RETURN v_tenant_id;
 END;
 $$;
 
-REVOKE ALL ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text) TO faktur_app;
+REVOKE ALL ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text, integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text, integer) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER lookup function — resolving a user's OWN tenant
@@ -1025,6 +1047,10 @@ GRANT EXECUTE ON FUNCTION find_feed_owner(uuid) TO faktur_app;
 -- IČO/DIČ, DUZP, document kind, reverse charge, ČNB rate, order number), so
 -- the client's accounting software can import the invoice by scanning it.
 -- Nothing beyond what the PDF shows; same hardening as its siblings above.
+-- customer_country picks the payment QR standard (SPAYD or PAY by square,
+-- paymentQrScheme in cz-compliance). Adding it changed the row type, hence
+-- the DROP: CREATE OR REPLACE cannot change a function's result columns.
+DROP FUNCTION IF EXISTS get_public_invoice_qr_details(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_qr_details(p_public_token uuid)
 RETURNS TABLE (
   supplier_ico varchar,
@@ -1036,7 +1062,8 @@ RETURNS TABLE (
   document_type text,
   reverse_charge boolean,
   exchange_rate numeric,
-  order_number varchar
+  order_number varchar,
+  customer_country varchar
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -1049,7 +1076,8 @@ AS $$
     CASE WHEN jsonb_typeof(i.seller_snapshot -> 'dicVatPayer') = 'boolean' THEN (i.seller_snapshot->>'dicVatPayer')::boolean ELSE t.dic_vat_payer END,
     CASE WHEN i.buyer_snapshot -> 'ico' IS NOT NULL THEN (i.buyer_snapshot->>'ico')::varchar ELSE c.ico END,
     CASE WHEN i.buyer_snapshot -> 'dic' IS NOT NULL THEN (i.buyer_snapshot->>'dic')::varchar ELSE c.dic END,
-    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number
+    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number,
+    CASE WHEN i.buyer_snapshot -> 'addressCountry' IS NOT NULL THEN (i.buyer_snapshot->>'addressCountry')::varchar ELSE c.address_country END
   FROM invoices i
   JOIN tenants t ON t.id = i.tenant_id
   LEFT JOIN contacts c ON c.id = i.contact_id
@@ -1178,44 +1206,8 @@ $$;
 REVOKE ALL ON FUNCTION get_public_profile_logo(text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_profile_logo(text) TO faktur_app;
 
--- Accountants who opted into the public directory (Settings → Veřejný
--- profil → "list me among accountants"): accountant programme, published
--- profile, city shown, not suspended. Only card fields, matched to towns by
--- the frontend on the city name.
+-- Superseded by the accountant directory (accountant_listings, migration 0050).
 DROP FUNCTION IF EXISTS list_public_accountants();
-CREATE OR REPLACE FUNCTION list_public_accountants()
-RETURNS TABLE (
-  slug text,
-  company_name text,
-  address_city text,
-  address_country varchar(2),
-  tagline text,
-  has_logo boolean
-)
-LANGUAGE sql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT
-    lower(t.public_profile->>'slug'),
-    t.company_name,
-    t.address_city,
-    t.address_country,
-    nullif(btrim(t.public_profile->>'tagline'), ''),
-    t.logo_data IS NOT NULL AND coalesce((t.public_profile->'show'->>'logo')::boolean, true)
-  FROM tenants t
-  WHERE (t.public_profile->>'enabled')::boolean IS TRUE
-    AND (t.public_profile->>'listInAccountants')::boolean IS TRUE
-    AND t.referral_program = 'accountant'
-    AND t.suspended_at IS NULL
-    AND coalesce((t.public_profile->'show'->>'address')::boolean, true)
-    AND nullif(btrim(t.address_city), '') IS NOT NULL
-    AND t.public_profile->>'slug' IS NOT NULL
-  ORDER BY t.company_name
-  LIMIT 5000;
-$$;
-REVOKE ALL ON FUNCTION list_public_accountants() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION list_public_accountants() TO faktur_app;
 
 -- Whether another company already holds the slug (the caller's own tenant
 -- can't see other rows through RLS). Returns only a boolean.
@@ -1315,15 +1307,16 @@ GRANT EXECUTE ON FUNCTION public_invoice_blocked(uuid) TO faktur_app;
 -- EXECUTE only for faktur_app. Nothing is returned for a suspended company.
 -- Only documents past the draft stage are listed, and per document only what
 -- the client already sees on its own /i/:public_token page; the public_token
--- is returned so the portal can link to that page.
+-- and public_key are returned so the portal can link to that page, with the
+-- company's link prefix setting (migration 0057).
 DROP FUNCTION IF EXISTS get_client_portal(uuid);
 CREATE OR REPLACE FUNCTION get_client_portal(p_portal_token uuid)
-RETURNS TABLE (customer_name text, company_name text)
+RETURNS TABLE (customer_name text, company_name text, profile_slug text, link_prefix text)
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT c.legal_name, t.company_name
+  SELECT c.legal_name, t.company_name, t.public_profile->>'slug', t.invoice_form_prefs->>'publicLinkPrefix'
   FROM contacts c JOIN tenants t ON t.id = c.tenant_id
   WHERE c.portal_token = p_portal_token AND t.suspended_at IS NULL
   LIMIT 1;
@@ -1335,6 +1328,8 @@ DROP FUNCTION IF EXISTS get_client_portal_documents(uuid);
 CREATE OR REPLACE FUNCTION get_client_portal_documents(p_portal_token uuid)
 RETURNS TABLE (
   public_token uuid,
+  public_key text,
+  public_slug text,
   invoice_number varchar(32),
   document_type text,
   status text,
@@ -1352,6 +1347,8 @@ SET search_path = public
 AS $$
   SELECT
     i.public_token,
+    i.public_key,
+    i.public_slug,
     i.invoice_number,
     i.document_type::text,
     i.status::text,
@@ -1375,6 +1372,69 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION get_client_portal_documents(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_client_portal_documents(uuid) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Short customer links (migration 0057, src/public-links/)
+-- ---------------------------------------------------------------------------
+-- /i/2026-0012-k3Fq9Xa2Lm7P and /c/novak-<key>: only the 12-character key is
+-- looked up. These two map it to the uuid token every function above takes,
+-- so the uuid links sent earlier and the short ones go through the same
+-- checks. They return only the token, never anything about the document.
+CREATE OR REPLACE FUNCTION gen_public_key()
+RETURNS text
+LANGUAGE plpgsql
+VOLATILE
+SET search_path = public
+AS $$
+DECLARE
+  alphabet constant text := '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  bytes bytea;
+  b int;
+  result text := '';
+BEGIN
+  -- gen_random_uuid() is the CSPRNG; bytes 6 and 8 carry the version and
+  -- variant bits, and bytes >= 248 are skipped so % 62 has no bias.
+  WHILE length(result) < 12 LOOP
+    bytes := uuid_send(gen_random_uuid());
+    FOR i IN 0..15 LOOP
+      CONTINUE WHEN i IN (6, 8);
+      b := get_byte(bytes, i);
+      IF b < 248 AND length(result) < 12 THEN
+        result := result || substr(alphabet, b % 62 + 1, 1);
+      END IF;
+    END LOOP;
+  END LOOP;
+  RETURN result;
+END;
+$$;
+-- The default of invoices.public_key, so inserts as faktur_app call it.
+GRANT EXECUTE ON FUNCTION gen_public_key() TO faktur_app;
+
+DROP FUNCTION IF EXISTS invoice_public_token_by_key(text);
+CREATE OR REPLACE FUNCTION invoice_public_token_by_key(p_key text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT public_token FROM invoices WHERE public_key = p_key LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION invoice_public_token_by_key(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION invoice_public_token_by_key(text) TO faktur_app;
+
+DROP FUNCTION IF EXISTS contact_portal_token_by_key(text);
+CREATE OR REPLACE FUNCTION contact_portal_token_by_key(p_key text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT portal_token FROM contacts WHERE portal_key = p_key AND portal_token IS NOT NULL LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION contact_portal_token_by_key(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION contact_portal_token_by_key(text) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- card_payment_sessions (migration 0033) + public card-payment lookup
@@ -1422,14 +1482,15 @@ REVOKE ALL ON FUNCTION get_public_card_payment_target(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_card_payment_target(uuid) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
--- "Odběratel si doplní údaje sám" (migration 0042): which company and draft a
--- buyer-details link (/d/:buyer_details_token) belongs to. One static SELECT
+-- "Odběratel si doplní údaje sám" (migrations 0042, 0054): which company and draft a
+-- buyer-details link (/d/:buyer_details_token) belongs to. The token is text
+-- since 0054 (short base62, or a UUID for links sent before). One static SELECT
 -- on the unguessable token, nothing for suspended companies, only while the
 -- document is a draft. The page and the submission then run in an ordinary
 -- tenant-scoped transaction (BuyerDetailsService), like card payments.
 -- ---------------------------------------------------------------------------
 DROP FUNCTION IF EXISTS get_buyer_details_target(uuid);
-CREATE OR REPLACE FUNCTION get_buyer_details_target(p_token uuid)
+CREATE OR REPLACE FUNCTION get_buyer_details_target(p_token text)
 RETURNS TABLE (tenant_id uuid, invoice_id uuid)
 LANGUAGE sql
 STABLE
@@ -1443,5 +1504,68 @@ AS $$
     AND i.status IN ('draft', 'pending_review')
   LIMIT 1;
 $$;
-REVOKE ALL ON FUNCTION get_buyer_details_target(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION get_buyer_details_target(uuid) TO faktur_app;
+REVOKE ALL ON FUNCTION get_buyer_details_target(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_buyer_details_target(text) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- Orders and messages from the public profile (migration 0048): which company
+-- a visitor's order ("Objednat") or message ("Kontaktovat") goes to. Only for
+-- a published profile with the matching switch on and a company that is not
+-- suspended. Returns just the id; ProfileOrdersService / ProfileMessagesService
+-- then work in an ordinary tenant-scoped transaction under RLS.
+-- ---------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS get_profile_order_target(text);
+CREATE OR REPLACE FUNCTION get_profile_order_target(p_slug text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.id
+  FROM tenants t
+  WHERE lower(t.public_profile->>'slug') = lower(p_slug)
+    AND (t.public_profile->>'enabled')::boolean IS TRUE
+    AND (t.public_profile->'orders'->>'enabled')::boolean IS TRUE
+    AND t.suspended_at IS NULL
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_profile_order_target(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_profile_order_target(text) TO faktur_app;
+
+DROP FUNCTION IF EXISTS get_profile_message_target(text);
+CREATE OR REPLACE FUNCTION get_profile_message_target(p_slug text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.id
+  FROM tenants t
+  WHERE lower(t.public_profile->>'slug') = lower(p_slug)
+    AND (t.public_profile->>'enabled')::boolean IS TRUE
+    AND (t.public_profile->>'contactForm')::boolean IS TRUE
+    AND t.suspended_at IS NULL
+  LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION get_profile_message_target(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_profile_message_target(text) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- E-mail outbox (migration 0049): standard tenant isolation. The cross-tenant
+-- worker uses claim_email_outbox / finish_email_outbox, the Resend webhook
+-- record_email_event, and the platform-admin view email_outbox_stats /
+-- email_outbox_recent, all defined in that migration. email_suppressions has
+-- RLS on and no policy on purpose. Account e-mails (migration 0059) have a
+-- NULL tenant_id, which this policy never matches: they are written only by
+-- enqueue_account_email and read only by the worker's functions.
+-- ---------------------------------------------------------------------------
+ALTER TABLE email_outbox ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_outbox FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON email_outbox;
+CREATE POLICY tenant_isolation ON email_outbox
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE email_suppressions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_suppressions FORCE ROW LEVEL SECURITY;

@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { RequirePlan } from "../billing/plan.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { CreateRecurringInvoiceDto } from "./dto/create-recurring-invoice.dto";
 import { UpdateRecurringInvoiceDto } from "./dto/update-recurring-invoice.dto";
@@ -32,6 +33,7 @@ export class RecurringInvoicesController {
   }
 
   @Post()
+  @RequirePlan("recurring_templates")
   @ApiOperation({ summary: "Create a recurring invoice template" })
   create(@Req() req: TenantScopedRequest, @Body() dto: CreateRecurringInvoiceDto) {
     return this.recurringInvoicesService.create(req.tenantDb!, req.user!.tenantId, dto);

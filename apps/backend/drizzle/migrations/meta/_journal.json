@@ -341,15 +341,127 @@
     {
       "idx": 48,
       "version": "7",
-      "when": 1793000000000,
-      "tag": "0048_blog_posts",
+      "when": 1792900100000,
+      "tag": "0048_profile_orders",
       "breakpoints": true
     },
     {
       "idx": 49,
       "version": "7",
-      "when": 1793100000000,
-      "tag": "0049_home_currency_rates",
+      "when": 1792900200000,
+      "tag": "0049_email_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1792900300000,
+      "tag": "0050_accountant_directory",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1792900400000,
+      "tag": "0051_trial_billing",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1792900500000,
+      "tag": "0052_legislation_monitor",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1792900700000,
+      "tag": "0054_registries_buyer_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1792900800000,
+      "tag": "0055_report_rate_mode",
+      "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1792900900000,
+      "tag": "0056_reverse_charge_code",
+      "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1792901000000,
+      "tag": "0057_short_public_links",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1792901100000,
+      "tag": "0058_data_box_id",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1792901200000,
+      "tag": "0059_custom_link_slugs",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1792901300000,
+      "tag": "0060_sk_companies",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1792901400000,
+      "tag": "0061_expense_reverse_charge",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1792901500000,
+      "tag": "0062_account_email_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1792901600000,
+      "tag": "0063_bank_statement_formats",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1792901700000,
+      "tag": "0064_card_first_billing",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1792901800000,
+      "tag": "0065_blog_posts",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1792901900000,
+      "tag": "0066_home_currency_rates",
       "breakpoints": true
     }
   ]

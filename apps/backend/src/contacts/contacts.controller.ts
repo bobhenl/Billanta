@@ -22,9 +22,10 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nes
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { COMPANY_REGISTRIES, ContactsService, type CompanyRegistry } from "./contacts.service";
+import { COMPANY_REGISTRIES, ContactsService, registryPartOf, type CompanyRegistry } from "./contacts.service";
 import { AresLookupDto } from "./dto/ares-lookup.dto";
 import { CreateContactDto } from "./dto/create-contact.dto";
+import { PortalSlugDto } from "./dto/portal-slug.dto";
 import { StarContactDto } from "./dto/star-contact.dto";
 import { UpdateContactDto } from "./dto/update-contact.dto";
 
@@ -52,10 +53,19 @@ export class ContactsController {
 
   // Declared before `:id` so "search" is never captured as an id.
   @Get("search")
-  @ApiOperation({ summary: "Customer typeahead: own contacts + a company register (ARES/RPO, FR, NO, PL or EU VIES)" })
-  search(@Req() req: TenantScopedRequest, @Query("q") q = "", @Query("registry") registry = "auto") {
+  @ApiOperation({
+    summary: "Customer typeahead: own contacts + a company register (ARES/RPO, FR, NO, PL or EU VIES)",
+    description: "?part=fast leaves out the Slovak name search that registry=auto adds, ?part=slow returns only it (default: both).",
+  })
+  search(@Req() req: TenantScopedRequest, @Query("q") q = "", @Query("registry") registry = "auto", @Query("part") part?: string) {
     const picked = (COMPANY_REGISTRIES as readonly string[]).includes(registry) ? (registry as CompanyRegistry) : "auto";
-    return this.contactsService.search(req.tenantDb!, q, picked);
+    return this.contactsService.search(req.tenantDb!, q, picked, registryPartOf(part));
+  }
+
+  @Get("vat-check")
+  @ApiOperation({ summary: "VAT registration of a DIČ: CZ register of VAT payers (ADIS, incl. unreliable payer and published accounts), VIES for other EU states" })
+  vatCheck(@Query("dic") dic = "") {
+    return this.contactsService.vatCheck(dic);
   }
 
   @Get("addresses")
@@ -101,6 +111,12 @@ export class ContactsController {
   @ApiOperation({ summary: "Turn on the customer's client portal, or issue a new link (the old one stops working)" })
   enablePortal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.contactsService.setPortal(req.tenantDb!, id, true);
+  }
+
+  @Patch(":id/portal")
+  @ApiOperation({ summary: "Set or clear the custom readable name in front of the portal link's key (cosmetic; the key stays the secret)" })
+  setPortalSlug(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PortalSlugDto) {
+    return this.contactsService.setPortalSlug(req.tenantDb!, id, dto.slug);
   }
 
   @Delete(":id/portal")
@@ -156,6 +172,6 @@ export class ContactsController {
       "Returns 404 if the IČO doesn't resolve to a registered subject.",
   })
   aresLookup(@Body() dto: AresLookupDto) {
-    return this.contactsService.aresLookup(dto.ico);
+    return this.contactsService.lookupById(dto.ico, dto.country);
   }
 }

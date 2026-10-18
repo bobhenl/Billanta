@@ -143,14 +143,19 @@ export class TeamService {
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100").replace(/\/$/, "");
     const acceptUrl = `${siteUrl}/invite/${token}`;
 
-    let emailSent = true;
+    // Without a mail provider the invitation only waits in the outbox, so
+    // the inviter is told to pass the link on themselves.
+    let emailSent = this.emailService.isConfigured();
     try {
-      await this.emailService.sendInvitationEmail({
-        to: dto.email,
-        companyName: tenant?.companyName ?? "",
-        role: ROLE_LABEL_CS[dto.role] ?? dto.role,
-        acceptUrl,
-      });
+      await this.emailService.sendInvitationEmail(
+        {
+          to: dto.email,
+          companyName: tenant?.companyName ?? "",
+          role: ROLE_LABEL_CS[dto.role] ?? dto.role,
+          acceptUrl,
+        },
+        { tenantId: user.tenantId, db },
+      );
       await recordEmailSent(db, user.tenantId, "invitation", dto.email);
     } catch (err) {
       emailSent = false;

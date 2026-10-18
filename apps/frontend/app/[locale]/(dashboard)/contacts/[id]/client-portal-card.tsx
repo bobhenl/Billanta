@@ -6,17 +6,31 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
-import { setContactPortal } from '../actions';
+import { LinkNameField } from '@/components/link-name-field';
+import { setContactPortal, setContactPortalName } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
-/** The customer's portal link (all their documents on one page): turn on, copy, renew, turn off. */
-export function ClientPortalCard({ contactId, token }: { contactId: string; token: string | null }) {
+/** The customer's portal link (all their documents on one page): turn on, copy, rename, renew, turn off. */
+export function ClientPortalCard({
+  contactId,
+  link,
+  defaultLink,
+  slug
+}: {
+  contactId: string;
+  link: string | null;
+  /** The link without the custom name (customer's name or nothing, per Settings). */
+  defaultLink: string | null;
+  slug: string | null;
+}) {
   const t = useTranslations('contacts.detail.portal');
   const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [origin, setOrigin] = useState('');
   useEffect(() => setOrigin(window.location.origin), []);
-  const url = token ? `${origin}/${locale}/c/${token}` : '';
+  const base = `${origin}/${locale}/c/`;
+  const url = link ? `${base}${link}` : '';
 
   const set = (enabled: boolean, okText: string) =>
     startTransition(async () => {
@@ -31,7 +45,7 @@ export function ClientPortalCard({ contactId, token }: { contactId: string; toke
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await copyText(url);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {
       toast({ text: t('failed'), tone: 'err' });
@@ -49,7 +63,7 @@ export function ClientPortalCard({ contactId, token }: { contactId: string; toke
           {t('title')}
         </h2>
       </InfoHint>
-      {token ? (
+      {link ? (
         <>
           <input
             readOnly
@@ -80,6 +94,14 @@ export function ClientPortalCard({ contactId, token }: { contactId: string; toke
               {t('disable')}
             </button>
           </div>
+          <LinkNameField
+            className="mt-3"
+            base={base}
+            link={link}
+            defaultLink={defaultLink ?? link}
+            slug={slug}
+            onSave={(s) => setContactPortalName(contactId, s)}
+          />
         </>
       ) : (
         <>

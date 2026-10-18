@@ -1,6 +1,43 @@
-import type { AresSubject } from "@faktur/cz-compliance";
+import type { AresSubject, RuzSubject } from "@faktur/cz-compliance";
 import { describe, expect, it } from "vitest";
-import { mapAresSubjectToContactPrefill } from "./ares-mapper.util";
+import { mapAresSubjectToContactPrefill, mapRpoSubjectToContactPrefill, mapRuzSubjectToContactPrefill, withRuzDic } from "./ares-mapper.util";
+
+const RUZ: RuzSubject = {
+  ico: "35763469",
+  dic: "2020273893",
+  name: "Slovak Telekom, a.s.",
+  street: "Bajkalská 28",
+  city: "Bratislava",
+  postalCode: "81762",
+  legalForm: "121",
+  terminatedAt: null,
+  updatedAt: "2026-07-03",
+};
+const RPO = { ico: "35763469", name: "Slovak Telekom, a.s.", street: "Bajkalská 2", city: "Bratislava", postalCode: "81762", terminatedAt: null };
+
+describe("Slovak prefills", () => {
+  it("maps an RÚZ unit with its DIČ", () => {
+    expect(mapRuzSubjectToContactPrefill(RUZ)).toEqual({
+      ico: "35763469",
+      dic: "2020273893",
+      legalName: "Slovak Telekom, a.s.",
+      isVatPayer: null,
+      addressStreet: "Bajkalská 28",
+      addressCity: "Bratislava",
+      addressPostalCode: "81762",
+      addressCountry: "SK",
+    });
+  });
+
+  it("adds the RÚZ DIČ to RPO data only for the same IČO and keeps RPO's address", () => {
+    const rpo = mapRpoSubjectToContactPrefill(RPO);
+    expect(withRuzDic(rpo, RUZ)).toEqual({ ...rpo, dic: "2020273893" });
+    expect(withRuzDic(rpo, { ...RUZ, ico: "36319198" })).toBe(rpo);
+    expect(withRuzDic(rpo, { ...RUZ, dic: null })).toBe(rpo);
+    expect(withRuzDic(rpo, null)).toBe(rpo);
+    expect(withRuzDic({ ...rpo, dic: "2099999999" }, RUZ).dic).toBe("2099999999");
+  });
+});
 
 function makeSubject(overrides: Partial<AresSubject> = {}): AresSubject {
   return {
@@ -49,6 +86,22 @@ describe("mapAresSubjectToContactPrefill", () => {
       }),
     );
     expect(result.addressStreet).toBe("Náměstí Míru 1, 120 00 Praha 2");
+  });
+
+  it("builds the street of a village without street names from the village part and house number", () => {
+    const result = mapAresSubjectToContactPrefill(
+      makeSubject({
+        sidlo: {
+          textovaAdresa: "Lhota 12, 25001 Kostelec",
+          nazevObce: "Kostelec",
+          nazevCastiObce: "Lhota",
+          cisloDomovni: 12,
+          psc: 25001,
+          kodStatu: "CZ",
+        },
+      }),
+    );
+    expect([result.addressStreet, result.addressCity, result.addressPostalCode]).toEqual(["Lhota 12", "Kostelec", "25001"]);
   });
 
   it("never fabricates isVatPayer=false from dic presence alone — stays null (unknown) unless ARES explicitly says so", () => {

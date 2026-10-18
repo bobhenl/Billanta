@@ -16,6 +16,8 @@ export interface Expense {
   variableSymbol: string | null;
   supplierIco: string | null;
   supplierDic: string | null;
+  reverseCharge: boolean;
+  reverseChargeCode: string | null;
   dueDate: string | null;
   paidAt: string | null;
   note: string | null;

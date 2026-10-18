@@ -2,17 +2,21 @@
  * Rough annual figures for a Czech sole trader (OSVČ, §7 ZDP): income tax
  * (DPFO), social (ČSSZ) and health insurance, and next year's advances.
  * It is an estimate for planning: it ignores other income, deductions other
- * than the basic taxpayer credit, children, losses and part-year activity.
+ * than the basic taxpayer credit, children and losses. A part year
+ * (`activeMonths`) scales only what the law scales by month: the minimum
+ * social and health bases (§ 5b odst. 1 zákona č. 589/1992 Sb., § 3a odst. 2
+ * zákona č. 592/1992 Sb.). The flat-rate cap (§ 7 odst. 7 ZDP) and the
+ * taxpayer credit (§ 35ba odst. 1 a) ZDP) stay yearly amounts.
  *
  * Shared by the backend (Exports, "Roční odhad daně a pojištění" from the
  * company's own invoices) and the public calculator on the marketing site
  * (numbers typed in by the visitor), so both always use the same constants.
  *
- * Yearly parameters: průměrná mzda (nařízení vlády / MPSV), the share of it
- * used as the minimum social base (consolidation package: 30 % → 35 % → 40 %,
- * then back to 35 % from July 2026),
- * and the tax brackets derived from it.
+ * Yearly parameters come from cz-tax-years.ts (průměrná mzda, the minimum
+ * base shares, the 23 % threshold), with a source next to each number.
  */
+import { CZ_TAX_YEARS } from './cz-tax-years.js';
+
 export interface OsvcYearParams {
   /** "Průměrná mzda" used for the year (CZK / month). */
   averageWage: number;
@@ -24,15 +28,37 @@ export interface OsvcYearParams {
    * from 40 % to 35 % from July 2026 (minimum social advance 5 005 Kč).
    */
   minSocialShareFrom?: { fromMonth: number; share: number };
+  /**
+   * Share the yearly minimum base is settled at. The 2026 amendment applies
+   * 35 % to the whole year, so the yearly minimum is 12 × 17 139 Kč even
+   * though 5 720 Kč was due until June.
+   */
+  annualMinSocialShare: number;
   /** Basic taxpayer credit (sleva na poplatníka, CZK / year). */
   taxpayerCredit: number;
+  /** Share of profit that is the social base (50 % in 2023, 55 % since 2024). */
+  socialBaseShare: number;
+  /** 23 % above this multiple of the average wage (48× in 2023, 36× since 2024). */
+  taxHighMultiple: number;
+  /** Maximum yearly social base as a multiple of the average wage. */
+  socialMaxMultiple: number;
 }
 
-export const OSVC_YEAR_PARAMS: Record<number, OsvcYearParams> = {
-  2024: { averageWage: 43_967, minSocialShare: 0.3, taxpayerCredit: 30_840 },
-  2025: { averageWage: 46_557, minSocialShare: 0.35, taxpayerCredit: 30_840 },
-  2026: { averageWage: 48_967, minSocialShare: 0.4, minSocialShareFrom: { fromMonth: 7, share: 0.35 }, taxpayerCredit: 30_840 },
-};
+export const OSVC_YEAR_PARAMS: Record<number, OsvcYearParams> = Object.fromEntries(
+  Object.entries(CZ_TAX_YEARS).map(([year, y]) => [
+    Number(year),
+    {
+      averageWage: y.averageWage,
+      minSocialShare: y.social.mainShare,
+      ...(y.social.mainShareFrom ? { minSocialShareFrom: y.social.mainShareFrom } : {}),
+      annualMinSocialShare: y.social.annualMainShare,
+      taxpayerCredit: y.taxpayerCredit,
+      socialBaseShare: y.socialBaseShare,
+      taxHighMultiple: y.taxHighMultiple,
+      socialMaxMultiple: y.socialMaxMultiple,
+    } satisfies OsvcYearParams,
+  ]),
+);
 
 export function osvcParamsFor(year: number): OsvcYearParams & { year: number; exact: boolean } {
   const known = Object.keys(OSVC_YEAR_PARAMS).map(Number).sort((a, b) => a - b);
@@ -67,7 +93,6 @@ export type OsvcFlatRate = keyof typeof OSVC_FLAT_EXPENSE_CAPS;
 
 const SOCIAL_RATE = 0.292;
 const HEALTH_RATE = 0.135;
-const SOCIAL_BASE_SHARE = 0.55;
 const HEALTH_BASE_SHARE = 0.5;
 const TAX_LOW = 0.15;
 const TAX_HIGH = 0.23;
@@ -86,47 +111,51 @@ export interface OsvcAnnualInput {
   /** Social / health advances already paid during the year (optional). */
   paidSocial?: number;
   paidHealth?: number;
+  /** Months with the activity, 1–12 (default 12), e.g. 6 for a start in July. */
+  activeMonths?: number;
 }
 
 export function computeOsvcAnnualSummary(input: OsvcAnnualInput) {
   const p = osvcParamsFor(input.year);
+  const months = clampMonths(input.activeMonths);
   const income = Math.max(0, input.income);
   const flatExpenses = input.flatRate ? Math.min(income * (input.flatRate / 100), OSVC_FLAT_EXPENSE_CAPS[input.flatRate]) : null;
   const expenses = flatExpenses ?? Math.max(0, input.actualExpenses);
   const profit = Math.max(0, income - expenses);
 
-  // Income tax: 15 %, 23 % above 36× the average wage; minus the taxpayer credit.
+  // Income tax: 15 %, 23 % above 36× (2023: 48×) the average wage; minus the taxpayer credit.
   const taxBase = floorHundreds(profit);
-  const highThreshold = 36 * p.averageWage;
+  const highThreshold = p.taxHighMultiple * p.averageWage;
   const taxBeforeCredit = Math.min(taxBase, highThreshold) * TAX_LOW + Math.max(0, taxBase - highThreshold) * TAX_HIGH;
   const incomeTax = roundUp(taxBeforeCredit - p.taxpayerCredit);
 
-  // Social insurance: 55 % of profit, at least the yearly minimum (the sum of
-  // the monthly minimum bases, which can change mid-year), at most 48× the average wage.
-  let minSocialYearly = 0;
-  for (let m = 1; m <= 12; m++) minSocialYearly += roundUp(p.averageWage * minSocialShareIn(p, m));
-  const socialBase = Math.min(Math.max(profit * SOCIAL_BASE_SHARE, minSocialYearly), 48 * p.averageWage);
+  // Social insurance: 55 % of profit, at least the yearly minimum (one monthly
+  // minimum base per month of activity, at the share the year is settled at),
+  // at most 48× the average wage (a yearly cap, not scaled by months).
+  const minSocialYearly = months * roundUp(p.averageWage * p.annualMinSocialShare);
+  const socialBase = Math.min(Math.max(profit * p.socialBaseShare, minSocialYearly), p.socialMaxMultiple * p.averageWage);
   const social = roundUp(socialBase * SOCIAL_RATE);
 
-  // Health insurance: 50 % of profit, at least 50 % of the average wage per month.
+  // Health insurance: 50 % of profit, at least 50 % of the average wage per month of activity.
   const minHealthMonthly = roundUp(p.averageWage * 0.5);
-  const healthBase = Math.max(profit * HEALTH_BASE_SHARE, minHealthMonthly * 12);
+  const healthBase = Math.max(profit * HEALTH_BASE_SHARE, minHealthMonthly * months);
   const health = roundUp(healthBase * HEALTH_RATE);
 
-  // Next year's monthly advances (from this year's base, never under next year's minimum).
+  // Next year's monthly advances: this year's base per month of activity
+  // (přehled ČSSZ ř. 35, přehled ZP), never under next year's minimum.
   const next = osvcParamsFor(input.year + 1);
   // Without parameters for next year, carry this year's December share forward.
   const nextShare = next.exact ? minSocialShareIn(next, 1) : minSocialShareIn(next, 12);
   const nextMinSocial = roundUp(roundUp(next.averageWage * nextShare) * SOCIAL_RATE);
   const nextMinHealth = roundUp(roundUp(next.averageWage * 0.5) * HEALTH_RATE);
-  // Someone at the minimum base pays next year's minimum, even when this year's
-  // average monthly minimum was higher (2026: 40 % for half a year, 35 % after).
-  const atSocialMinimum = profit * SOCIAL_BASE_SHARE <= minSocialYearly;
-  const socialAdvance = atSocialMinimum ? nextMinSocial : Math.max(roundUp((socialBase / 12) * SOCIAL_RATE), nextMinSocial);
-  const healthAdvance = Math.max(roundUp((healthBase / 12) * HEALTH_RATE), nextMinHealth);
+  // Someone at the minimum base pays next year's minimum.
+  const atSocialMinimum = profit * p.socialBaseShare <= minSocialYearly;
+  const socialAdvance = atSocialMinimum ? nextMinSocial : Math.max(roundUp((socialBase / months) * SOCIAL_RATE), nextMinSocial);
+  const healthAdvance = Math.max(roundUp((healthBase / months) * HEALTH_RATE), nextMinHealth);
 
   return {
     year: input.year,
+    activeMonths: months,
     params: { averageWage: p.averageWage, paramsYear: p.year, exact: p.exact },
     income: round2(income),
     actualExpenses: round2(Math.max(0, input.actualExpenses)),
@@ -159,6 +188,11 @@ export type OsvcAnnualSummary = ReturnType<typeof computeOsvcAnnualSummary>;
 export const OSVC_PARAM_YEARS: readonly number[] = Object.keys(OSVC_YEAR_PARAMS)
   .map(Number)
   .sort((a, b) => a - b);
+
+/** 1–12; anything else (missing, 0, 13, NaN) is a full year. */
+export function clampMonths(n: number | undefined): number {
+  return n != null && Number.isInteger(n) && n >= 1 && n <= 12 ? n : 12;
+}
 
 function round2(n: number) {
   return Math.round(n * 100) / 100;

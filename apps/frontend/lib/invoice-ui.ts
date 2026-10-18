@@ -9,7 +9,7 @@ import type { HomeCurrency } from '@faktur/cz-compliance';
 export type InvoiceStatus = 'draft' | 'pending_review' | 'issued' | 'paid' | 'cancelled';
 export type DocumentType = 'invoice' | 'proforma' | 'credit_note' | 'quote';
 export type PaymentMethod = 'bank_transfer' | 'cash' | 'card' | 'cash_on_delivery' | 'other';
-export type InvoiceSource = 'manual' | 'ai_telegram' | 'ai_whatsapp' | 'api' | 'recurring';
+export type InvoiceSource = 'manual' | 'ai_telegram' | 'ai_whatsapp' | 'api' | 'recurring' | 'import' | 'profile_order';
 
 export const DOCUMENT_TYPES: DocumentType[] = ['invoice', 'proforma', 'credit_note', 'quote'];
 export const INVOICE_STATUSES: InvoiceStatus[] = ['draft', 'pending_review', 'issued', 'paid', 'cancelled'];
@@ -127,6 +127,8 @@ export interface InvoiceDetail {
     issuedAt: string | null;
     cancelledAt: string | null;
     publicToken: string;
+    /** The user's own name in front of the link key; null = the Settings prefix. */
+    publicSlug?: string | null;
     reminderCount: number;
     lastReminderSentAt: string | null;
     publicViewCount: number;
@@ -139,11 +141,14 @@ export interface InvoiceDetail {
     buyerDetailsRequestedAt?: string | null;
     buyerDetailsEmail?: string | null;
     buyerDetailsAutoIssue?: boolean;
+    buyerDetailsRequired?: ('email' | 'phone' | 'ico' | 'dic')[] | null;
     buyerDetailsOutcome?: BuyerDetailsOutcome | null;
     customFields?: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
   };
   /** The live contact (link, e-mail for sending). */
   contact: InvoiceParty | null;
+  /** Customer link path segments with the readable prefix (/i/, /c/, /d/). */
+  links?: { public: string; publicDefault?: string; portal: string | null; buyerDetails: string | null };
   /** The buyer as printed on the document: its issue-date snapshot when it has one. */
   buyer?: Omit<InvoiceParty, 'id'> | null;
   /** True when the issue-date snapshot differs from today's company details / contact. */

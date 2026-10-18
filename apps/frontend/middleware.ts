@@ -5,6 +5,17 @@ import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN, SITE_URL } from './lib/site';
 
 const intl = createMiddleware(routing);
+/**
+ * For a visitor who sends no cookie at all. next-intl would otherwise set
+ * `NEXT_LOCALE` whenever the page's locale differs from Accept-Language,
+ * and on every page for a client that sends none (most crawlers). A shared
+ * cache does not store a response that sets a cookie, and one that did
+ * would hand that cookie to everyone, so those pages could never be served
+ * from a CDN. The cookie only steers the `/` redirect; the language
+ * switcher's Link writes it on the client, and a visitor who carries any
+ * cookie still gets it from `intl` above.
+ */
+const intlNoCookie = createMiddleware({ ...routing, localeCookie: false });
 const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
 const NOT_PROFILES = new Set(['www', 'app', 'api']);
 
@@ -41,8 +52,20 @@ function rememberReferral(request: NextRequest, response: NextResponse) {
   return response;
 }
 
+/**
+ * A response that sets a cookie (the referral, the locale for a visitor
+ * who has cookies) must never reach a shared cache, whatever Next would
+ * say about the page. Next keeps a Cache-Control it finds on the response,
+ * so this wins over the page's ISR one.
+ */
+function privateIfSettingCookies(response: NextResponse) {
+  if (response.headers.has('set-cookie')) response.headers.set('Cache-Control', 'private, no-store');
+  return response;
+}
+
 export default function middleware(request: NextRequest) {
-  return rememberReferral(request, profileRewrite(request) ?? intl(request));
+  const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
+  return privateIfSettingCookies(rememberReferral(request, profileRewrite(request) ?? locale(request)));
 }
 
 export const config = {

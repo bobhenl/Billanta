@@ -28,8 +28,11 @@ import {
   Wallet,
   Webhook
 } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { hasLocale } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
+import { routing } from '@/i18n/routing';
 import { HintCard } from '@/components/hint-card';
 import { MarketingInvoiceMockup } from '@/components/marketing-invoice-mockup';
 import { BRANDS, COMPETITOR_ROWS, TEASER_ROW_KEYS, comparedAtLabel } from '@/lib/competitors';
@@ -44,8 +47,20 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
  * structured data — structured data must describe text the visitor can
  * actually see, so both come from the same message keys.
  */
+/**
+ * A one-segment path with a dot (`/favicon.ico`, `/sitemap.xml`,
+ * `/wp-login.php`) skips the middleware and lands here as the "locale".
+ * The layout's notFound() alone does not stop this page from rendering, and
+ * Intl throws on such a locale, so every bot probe was a full render ending
+ * in a 500. Checked first, in the metadata too, it is a cheap 404.
+ */
+function rejectUnknownLocale(locale: string) {
+  if (!hasLocale(routing.locales, locale)) notFound();
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  rejectUnknownLocale(locale);
   const t = await getTranslations({ locale, namespace: 'marketing' });
   // The layout's title template would append the brand again; the
   // homepage title already leads with it.
@@ -115,6 +130,8 @@ const HERO_POINTS = ['isdoc', 'ares', 'qr'] as const;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  rejectUnknownLocale(locale);
+  setRequestLocale(locale);
   const t = await getTranslations('marketing');
   const tApp = await getTranslations('app');
   const tFeatures = await getTranslations('featurePages');

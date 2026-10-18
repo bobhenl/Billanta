@@ -4,6 +4,9 @@ import { useMemo, useState, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Loader2, Search } from 'lucide-react';
+import { CompanyLookup } from '@/components/company-lookup';
+import { registryForCountry, type CompanyHit, type RegistryPart } from '@/lib/company-lookup';
+import type { BuyerDetailsField } from '@/lib/public-buyer-details';
 import { submitBuyerDetails, type BuyerDetailsInput } from '@/lib/public-buyer-details-actions';
 
 const COUNTRIES = [
@@ -19,12 +22,16 @@ interface Props {
   token: string;
   supplierName: string;
   prefill: { name: string | null; email: string | null; country: string | null; isPerson: boolean };
+  /** Fields the supplier made mandatory; name and address always are. */
+  required: BuyerDetailsField[];
 }
 
-type Lookup = { name: string | null; ico: string | null; dic: string | null; street: string | null; city: string | null; postalCode: string | null; country: string };
-
-/** The customer's billing details form, with company lookup by IČO (ARES/RPO) or EU VAT ID (VIES). */
-export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
+/**
+ * The customer's billing details form: a name search over the register of
+ * the picked country (CZ + SK when unknown), an exact lookup by IČO
+ * (ARES/RPO) or EU VAT ID (VIES), and the fields the supplier asked for.
+ */
+export function BuyerDetailsForm({ token, supplierName, prefill, required }: Props) {
   const t = useTranslations('buyerDetails.form');
   const locale = useLocale();
   const router = useRouter();
@@ -32,6 +39,7 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
     isPerson: prefill.isPerson,
     name: prefill.name ?? '',
     email: prefill.email ?? '',
+    phone: '',
     street: '',
     city: '',
     postalCode: '',
@@ -51,14 +59,41 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
   }, [locale]);
 
   const domestic = form.country === 'CZ' || form.country === 'SK';
+  // IČO only exists for Czech and Slovak companies; a private person never gives IČO or DIČ.
+  const isRequired = (key: BuyerDetailsField) =>
+    required.includes(key) && (key === 'email' || key === 'phone' || (!form.isPerson && (key === 'dic' || domestic)));
   const set = (key: keyof BuyerDetailsInput) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value }));
 
   const fieldError = (key: string) => {
     const code = fields[key];
     if (!code) return null;
-    const known = ['ico_required', 'ico_format', 'ico_foreign', 'dic_format'];
+    const known = ['required', 'ico_required', 'ico_format', 'ico_foreign', 'dic_format', 'phone_format'];
     return known.includes(code) ? t(`errors.${code}`) : t('errors.field');
+  };
+
+  const fill = (hit: Omit<CompanyHit, 'source'>) =>
+    setForm((f) => ({
+      ...f,
+      name: hit.name || f.name,
+      ico: hit.ico ?? f.ico,
+      dic: hit.dic ?? f.dic,
+      street: hit.street || f.street,
+      city: hit.city || f.city,
+      postalCode: hit.postalCode || f.postalCode,
+      country: COUNTRIES.includes(hit.country) ? hit.country : f.country
+    }));
+
+  const searchByName = async (q: string, part: RegistryPart): Promise<CompanyHit[]> => {
+    try {
+      const params = new URLSearchParams({ q, country: form.country });
+      if (part !== 'all') params.set('part', part);
+      const res = await fetch(`/api/public/buyer-details/${encodeURIComponent(token)}/lookup?${params}`, { cache: 'no-store' });
+      if (!res.ok) return [];
+      return ((await res.json()) as { hits?: CompanyHit[] }).hits ?? [];
+    } catch {
+      return [];
+    }
   };
 
   const lookup = async () => {
@@ -72,22 +107,12 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
     }
     setLooking(true);
     try {
-      const res = await fetch(`/api/public/buyer-details/${encodeURIComponent(token)}/lookup?${query}`, { cache: 'no-store' });
+      const res = await fetch(`/api/public/buyer-details/${encodeURIComponent(token)}/lookup?${query}&country=${form.country}`, { cache: 'no-store' });
       if (!res.ok) {
         setLookupNote(t(res.status === 429 ? 'errors.limit' : 'lookupNotFound'));
         return;
       }
-      const hit = (await res.json()) as Lookup;
-      setForm((f) => ({
-        ...f,
-        name: hit.name || f.name,
-        ico: hit.ico ?? f.ico,
-        dic: hit.dic ?? f.dic,
-        street: hit.street || f.street,
-        city: hit.city || f.city,
-        postalCode: hit.postalCode || f.postalCode,
-        country: COUNTRIES.includes(hit.country) ? hit.country : f.country
-      }));
+      fill((await res.json()) as CompanyHit);
       setLookupNote(t('lookupDone'));
     } catch {
       setLookupNote(t('lookupNotFound'));
@@ -112,9 +137,18 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
     });
   };
 
-  const label = (key: string, text: string, node: React.ReactNode, wide = false) => (
+  const label = (key: string, text: string, node: React.ReactNode, wide = false, mandatory = true) => (
     <label className={`text-sm ${wide ? 'sm:col-span-2' : ''}`}>
-      <span className="mb-1 block font-medium">{text}</span>
+      <span className="mb-1 block font-medium">
+        {text}
+        {mandatory ? (
+          <span className="text-destructive" aria-hidden="true">
+            {' '}*
+          </span>
+        ) : (
+          <span className="font-normal text-muted-foreground"> ({t('optional')})</span>
+        )}
+      </span>
       {node}
       {fieldError(key) && <span className="mt-1 block text-xs text-destructive">{fieldError(key)}</span>}
     </label>
@@ -152,15 +186,56 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
             ))}
           </select>
         )}
+        {form.isPerson ? (
+          label(
+            'name',
+            t('personName'),
+            <input className={inputClass} value={form.name} onChange={set('name')} required minLength={2} maxLength={200} autoComplete="name" aria-invalid={Boolean(fields.name)} />,
+            true
+          )
+        ) : (
+          <div className="text-sm sm:col-span-2">
+            <span className="mb-1 block font-medium">
+              {t('companyName')}
+              <span className="text-destructive" aria-hidden="true">
+                {' '}*
+              </span>
+            </span>
+            <CompanyLookup
+              value={form.name}
+              onChange={(name) => setForm((f) => ({ ...f, name: name.slice(0, 200) }))}
+              onPick={(hit) => {
+                fill(hit);
+                setLookupNote(t('lookupDone'));
+              }}
+              fetchHits={searchByName}
+              registry={registryForCountry(form.country)}
+              refreshKey={form.country}
+              placeholder={t('companySearch')}
+              ariaLabel={t('companyName')}
+              inputClassName={`rounded-md ${fields.name ? 'border-destructive' : ''}`}
+            />
+            <span className="mt-1 block text-xs text-muted-foreground">{t('companySearchHint')}</span>
+            {fieldError('name') && <span className="mt-1 block text-xs text-destructive">{fieldError('name')}</span>}
+          </div>
+        )}
         {!form.isPerson && (
           <div className="grid grid-cols-[1fr_auto] items-end gap-2 sm:col-span-2">
             <div className="grid gap-3 sm:grid-cols-2">
               {domestic &&
-                label('ico', t('ico'), <input className={inputClass} value={form.ico} onChange={set('ico')} inputMode="numeric" maxLength={12} aria-invalid={Boolean(fields.ico)} />)}
+                label(
+                  'ico',
+                  t('ico'),
+                  <input className={inputClass} value={form.ico} onChange={set('ico')} inputMode="numeric" maxLength={12} required={isRequired('ico')} aria-invalid={Boolean(fields.ico)} />,
+                  false,
+                  isRequired('ico')
+                )}
               {label(
                 'dic',
                 domestic ? t('dic') : t('vatId'),
-                <input className={inputClass} value={form.dic} onChange={set('dic')} maxLength={20} aria-invalid={Boolean(fields.dic)} placeholder={domestic ? `${form.country}…` : ''} />
+                <input className={inputClass} value={form.dic} onChange={set('dic')} maxLength={20} required={isRequired('dic')} aria-invalid={Boolean(fields.dic)} placeholder={domestic ? `${form.country}…` : ''} />,
+                false,
+                isRequired('dic')
               )}
             </div>
             <button
@@ -176,12 +251,6 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
           </div>
         )}
         {label(
-          'name',
-          form.isPerson ? t('personName') : t('companyName'),
-          <input className={inputClass} value={form.name} onChange={set('name')} required minLength={2} maxLength={200} autoComplete={form.isPerson ? 'name' : 'organization'} aria-invalid={Boolean(fields.name)} />,
-          true
-        )}
-        {label(
           'street',
           t('street'),
           <input className={inputClass} value={form.street} onChange={set('street')} required maxLength={200} autoComplete="street-address" aria-invalid={Boolean(fields.street)} />,
@@ -192,8 +261,16 @@ export function BuyerDetailsForm({ token, supplierName, prefill }: Props) {
         {label(
           'email',
           t('email'),
-          <input className={inputClass} type="email" value={form.email} onChange={set('email')} maxLength={200} autoComplete="email" aria-invalid={Boolean(fields.email)} />,
-          true
+          <input className={inputClass} type="email" value={form.email} onChange={set('email')} maxLength={200} autoComplete="email" required={isRequired('email')} aria-invalid={Boolean(fields.email)} />,
+          false,
+          isRequired('email')
+        )}
+        {label(
+          'phone',
+          t('phone'),
+          <input className={inputClass} type="tel" value={form.phone} onChange={set('phone')} maxLength={40} autoComplete="tel" required={isRequired('phone')} aria-invalid={Boolean(fields.phone)} />,
+          false,
+          isRequired('phone')
         )}
       </div>
 

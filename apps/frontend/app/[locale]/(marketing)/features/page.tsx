@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -15,6 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function FeaturesIndexPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('featurePages');
 
   const structuredData = {

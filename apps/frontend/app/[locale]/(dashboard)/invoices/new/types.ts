@@ -1,11 +1,14 @@
 /** Wire shapes of the backend endpoints the new-invoice form uses (apps/backend/src/{contacts,invoices,ai}). */
 
+import type { ReverseChargeCode } from '@faktur/cz-compliance';
+
 export interface Contact {
   id: string;
   legalName: string;
   ico: string | null;
   dic: string | null;
   email: string | null;
+  phone?: string | null;
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;
@@ -103,6 +106,8 @@ export interface InvoiceDraftInput {
   orderNumber: string;
   language: DocLanguage;
   reverseCharge: boolean;
+  /** Kód předmětu plnění (REVERSE_CHARGE_CODES); null = none chosen or not a domestic reverse charge. */
+  reverseChargeCode: ReverseChargeCode | null;
   noteAbove: string;
   noteBelow: string;
   internalNote: string;
@@ -180,13 +185,25 @@ export interface InvoiceFormPrefs {
   defaultContactId: string | null;
   defaultItems: DefaultItem[];
   defaultNoteAbove: string | null;
-  /** Kurz pro cizí měny (backend invoices/exchange-rate-mode.ts). */
+  /** Kurz u faktur v cizí měně (backend invoices/exchange-rate-mode.ts): what invoices print… */
   exchangeRateMode: ExchangeRateSetting;
+  /** …and which rate reports and the income-tax estimate use. */
+  reportRateMode: ReportRateMode;
+  /** The company's own jednotný kurz per year, over the computed one. */
   annualRates: AnnualRate[];
+  /** What customer links start with (backend public-links/public-link.ts). */
+  publicLinkPrefix: PublicLinkPrefix;
 }
 
-/** Daily ČNB rate, the company's annual rate (§38 odst. 2 ZDPH), or no conversion printed (non-payers only). */
-export type ExchangeRateSetting = 'cnb_daily' | 'annual' | 'none';
+export const PUBLIC_LINK_PREFIXES = ['number', 'company_number', 'none'] as const;
+export type PublicLinkPrefix = (typeof PUBLIC_LINK_PREFIXES)[number];
+
+/** Printed on invoices: the daily ČNB rate (§ 38 ZDPH), or no conversion (non-payers only). */
+export type ExchangeRateSetting = 'cnb_daily' | 'none';
+/** Reports and the income-tax estimate: each document's rate, or the jednotný kurz (§ 38 odst. 1 ZDP). */
+export type ReportRateMode = 'daily' | 'annual';
+/** Currencies the rate settings offer (and show a computed jednotný kurz for) by default. */
+export const RATE_CURRENCIES = ['EUR', 'USD', 'GBP', 'PLN'];
 /** What an issued document stored; null = issued before the setting existed. */
 export type StoredRateMode = 'cnb_daily' | 'annual' | 'manual' | 'none';
 
@@ -255,6 +272,7 @@ export interface InvoiceTemplate {
   noteBelow?: string | null;
   language?: DocLanguage;
   reverseCharge?: boolean;
+  reverseChargeCode?: string | null;
   orderNumber?: string | null;
   issuePlace?: string | null;
   issuedByName?: string | null;

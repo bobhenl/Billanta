@@ -325,3 +325,27 @@ describe('generateIsdocXml', () => {
     expect(String(parsed.AccountingCustomerParty.Party.PostalAddress.Country.IdentificationCode)).toBe('DE');
   });
 });
+
+describe('generateIsdocXml foreign currency', () => {
+  it('writes CZK as local, the invoice currency as foreign and the real rate', () => {
+    const xml = generateIsdocXml(buildRealisticInvoice({ currency: 'EUR', exchangeRate: 25 }));
+    expect(firstTag(xml, 'LocalCurrencyCode')).toBe('CZK');
+    expect(firstTag(xml, 'ForeignCurrencyCode')).toBe('EUR');
+    expect(firstTag(xml, 'CurrRate')).toBe('25');
+    const local = Number(firstTag(xml, 'PayableAmount'));
+    const foreign = Number(firstTag(xml, 'PayableAmountCurr'));
+    expect(local).toBeCloseTo(foreign * 25, 2);
+    // Curr comes before the plain element in lines, after it in the totals.
+    expect(xml.indexOf('<LineExtensionAmountCurr>')).toBeLessThan(xml.indexOf('<LineExtensionAmount>'));
+    expect(xml.indexOf('<PayableAmount>')).toBeLessThan(xml.indexOf('<PayableAmountCurr>'));
+  });
+
+  it('keeps the invoice currency local without a rate or for the home currency', () => {
+    for (const input of [{ currency: 'EUR' }, { currency: 'EUR', exchangeRate: 25, localCurrency: 'EUR' }]) {
+      const xml = generateIsdocXml(buildRealisticInvoice(input));
+      expect(firstTag(xml, 'LocalCurrencyCode')).toBe('EUR');
+      expect(firstTag(xml, 'CurrRate')).toBe('1');
+      expect(xml).not.toContain('Curr>');
+    }
+  });
+});

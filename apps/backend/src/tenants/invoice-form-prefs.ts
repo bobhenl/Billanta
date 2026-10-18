@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { EXCHANGE_RATE_SETTINGS } from "../invoices/exchange-rate-mode";
+import { EXCHANGE_RATE_SETTINGS, REPORT_RATE_MODES } from "../invoices/exchange-rate-mode";
+import { PUBLIC_LINK_PREFIXES } from "../public-links/public-link";
 
 /**
  * Settings → Invoices: which optional fields the invoice form shows
@@ -45,7 +46,7 @@ const defaultItemSchema = z
     vatRate: i.vat_rate,
   }));
 
-/** One "jednotný kurz" (§38 odst. 2 ZDPH): CZK per 1 unit of `currency` for a calendar year. */
+/** The company's own "jednotný kurz" (§ 38 odst. 1 ZDP): CZK per 1 unit of `currency` for a calendar year. */
 const annualRateSchema = z.object({
   year: z.number().int().min(2000).max(2100),
   currency: z
@@ -102,13 +103,17 @@ export const invoiceFormPrefsSchema = z
     default_contact_id: z.string().uuid().nullish(),
     default_items: z.array(defaultItemSchema).max(MAX_DEFAULT_ITEMS).default([]),
     default_note_above: z.string().trim().max(2000).nullish(),
-    /** Kurz pro cizí měny: daily ČNB rate, the company's annual rate, or no conversion printed (exchange-rate-mode.ts). */
-    exchange_rate_mode: z.enum(EXCHANGE_RATE_SETTINGS).default("cnb_daily"),
+    /** Printed on invoices: daily ČNB rate or no conversion (exchange-rate-mode.ts). "annual" is the old setting: daily on invoices, annual in reports. */
+    exchange_rate_mode: z.enum([...EXCHANGE_RATE_SETTINGS, "annual"]).default("cnb_daily"),
+    /** Used by reports and the income-tax estimate: each document's rate, or the jednotný kurz of the year. */
+    report_rate_mode: z.enum(REPORT_RATE_MODES).optional(),
     annual_rates: z
       .array(annualRateSchema)
       .max(100)
       .default([])
       .refine((rates) => new Set(rates.map((r) => `${r.year}:${r.currency}`)).size === rates.length, "One rate per year and currency"),
+    /** What goes in front of the key in customer links (public-links/public-link.ts). */
+    public_link_prefix: z.enum(PUBLIC_LINK_PREFIXES).default("number"),
   })
   .transform((p) => ({
     show: p.show as Partial<Record<OptionalInvoiceField, boolean>>,
@@ -126,8 +131,10 @@ export const invoiceFormPrefsSchema = z
     defaultContactId: p.default_contact_id || null,
     defaultItems: p.default_items,
     defaultNoteAbove: p.default_note_above || null,
-    exchangeRateMode: p.exchange_rate_mode,
+    exchangeRateMode: p.exchange_rate_mode === "annual" ? ("cnb_daily" as const) : p.exchange_rate_mode,
+    reportRateMode: p.report_rate_mode ?? (p.exchange_rate_mode === "annual" ? ("annual" as const) : ("daily" as const)),
     annualRates: [...p.annual_rates].sort((a, b) => b.year - a.year || a.currency.localeCompare(b.currency)),
+    publicLinkPrefix: p.public_link_prefix,
   }));
 
 /** The tenant's PDF accent, falling back to the default for old or unknown values. */

@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
-import { apiFetch, NotSignedInError } from '@/lib/api-client';
+import { NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole, fetchTenant, type PublicProfileSettings, type TenantSettings } from '@/lib/tenant';
 import { PublicProfileEditor } from './public-profile-editor';
 
@@ -34,13 +34,8 @@ export default async function PublicProfileSettingsPage() {
 
   let tenant: TenantSettings | null;
   let role: string | null;
-  let program: string | null;
   try {
-    [tenant, role, program] = await Promise.all([
-      fetchTenant(),
-      fetchMyRole(),
-      apiFetch<{ program: string }>('/api/v1/referrals').then((r) => r.program, () => null)
-    ]);
+    [tenant, role] = await Promise.all([fetchTenant(), fetchMyRole()]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     return <Banner tone="err" title={t('loadError')} className="mt-6" />;
@@ -56,7 +51,8 @@ export default async function PublicProfileSettingsPage() {
     services: stored.services ?? [],
     show: { ...SHOW_DEFAULTS, ...(stored.show ?? {}) },
     contactCta: stored.contactCta ?? true,
-    listInAccountants: stored.listInAccountants ?? false
+    orders: { enabled: false, customItems: false, prepay: false, ...(stored.orders ?? {}) },
+    contactForm: stored.contactForm ?? false
   };
 
   return (
@@ -71,8 +67,7 @@ export default async function PublicProfileSettingsPage() {
         initial={initial}
         readOnly={!canManage(role)}
         suggestedSlug={suggestSlug(tenant.companyName)}
-        isAccountant={program === 'accountant'}
-        company={{ name: tenant.companyName, email: tenant.email, phone: tenant.phone, website: tenant.website, hasLogo: tenant.hasLogo, hasAddress: Boolean(tenant.addressStreet || tenant.addressCity), ico: tenant.ico }}
+        company={{ name: tenant.companyName, email: tenant.email, phone: tenant.phone, website: tenant.website, hasLogo: tenant.hasLogo, hasAddress: Boolean(tenant.addressStreet || tenant.addressCity), ico: tenant.ico, hasBankAccount: Boolean(tenant.bankAccountIban || tenant.bankAccountNumber) }}
       />
     </div>
   );

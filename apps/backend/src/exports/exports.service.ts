@@ -2,20 +2,23 @@ import { netAfterTaxes } from "../invoices/amount-vars";
 import { displayCustomField, resolveVars } from "../invoices/custom-fields";
 import { type TemplateVar, templateVarsOf } from "../tenants/template-vars";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
+import { expenseVatParts } from "../expenses/expense-vat";
 import { matchesFilters, type ReportFilters } from "../dashboard/report-filters";
 import { Injectable } from "@nestjs/common";
 import { and, asc, eq, gte, inArray, isNotNull, lt, ne, notInArray, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
-import { computeAnnualSummary, type FlatRate } from "./annual-summary";
+import { type AccountingBasis, computeAnnualSummary, type FlatRate } from "./annual-summary";
 import { getHomeRate } from "./home-rates";
 import { homeCurrencyOf, type HomeCurrency } from "@faktur/cz-compliance";
+import { ReportRates } from "./uniform-rate";
 import {
   generateDphDp3,
   generateDphKh1,
   generateDphShv,
   submitterFromTenant,
+  type VatExportWarning,
   type VatIssuedDoc,
   type VatPeriod,
   type VatReceivedDoc,
@@ -403,7 +406,9 @@ export class ExportsService {
     }
 
     for (const e of expenses) {
-      const rate = Number(e.vatRate);
+      // Reverse charge: the supplier's document carries no VAT, like our own
+      // reverse-charge invoices above. The accountant books the self-assessment.
+      const rate = e.reverseCharge ? 0 : Number(e.vatRate);
       const foreign = e.currency !== home;
       const priceTag = foreign ? "inv:foreignCurrency" : "inv:homeCurrency";
       const ref = e.documentNumber || e.id.slice(0, 8);
@@ -515,7 +520,7 @@ export class ExportsService {
     });
 
     const received = expenses.map((e) => {
-      const rate = Number(e.vatRate);
+      const rate = e.reverseCharge ? 0 : Number(e.vatRate);
       const total = Number(e.amount);
       const base = total / (1 + rate / 100);
       const foreign = e.currency !== home;
@@ -608,7 +613,9 @@ export class ExportsService {
       // Kontrolní hlášení needs the buyer's DIČ as on the document.
       const contact = liveContact ? applyBuyerSnapshot(liveContact, invoice.buyerSnapshot) : null;
       const taxableDate = invoice.taxableSupplyDate ?? invoice.issueDate!;
-      const rate = await toHome(invoice.currency, invoice.exchangeRate, taxableDate);
+      // VAT needs the official rate of the DUZP (§ 38 ZDPH): a document issued
+      // with the old "annual" setting stores the jednotný kurz instead.
+      const rate = await toHome(invoice.currency, invoice.exchangeRateMode === "annual" ? null : invoice.exchangeRate, taxableDate);
       const totals = computeVatBreakdown(
         items.filter((i) => i.invoiceId === invoice.id),
         { reverseCharge: invoice.reverseCharge },
@@ -619,6 +626,7 @@ export class ExportsService {
         customerCountry: contact?.addressCountry ?? "CZ",
         taxableDate,
         reverseCharge: invoice.reverseCharge,
+        reverseChargeCode: invoice.reverseChargeCode,
         parts: totals.byRate.map((r) => ({
           ratePercent: r.vatRatePercent,
           base: r.totalWithoutVat * rate,
@@ -647,15 +655,16 @@ export class ExportsService {
     const received: VatReceivedDoc[] = [];
     for (const { expense, contact } of expenseRows) {
       const rate = await toHome(expense.currency, expense.exchangeRate, expense.expenseDate);
-      const total = Number(expense.amount) * rate;
       const vatRate = Number(expense.vatRate);
-      const base = total / (1 + vatRate / 100);
+      const { base, vat } = expenseVatParts(Number(expense.amount) * rate, vatRate, expense.reverseCharge);
       received.push({
         number: expense.documentNumber ?? "",
         supplierDic: expense.supplierDic ?? contact?.dic ?? null,
         taxableDate: expense.expenseDate,
-        parts: [{ ratePercent: vatRate, base, vat: total - base }],
-        totalCzk: total,
+        reverseCharge: expense.reverseCharge,
+        reverseChargeCode: expense.reverseChargeCode,
+        parts: [{ ratePercent: vatRate, base, vat }],
+        totalCzk: base + vat,
       });
     }
     return { issued, received };
@@ -671,19 +680,42 @@ export class ExportsService {
   }
 
   /**
-   * Cash-basis income and expenses of a calendar year (daňová evidence):
-   * invoices and credit notes by the day they were paid, expenses by the day
-   * paid (or dated, when no payment is recorded). VAT payers count amounts
-   * without VAT. Everything is converted to the home currency.
+   * Income and expenses of a calendar year, converted to the home currency. Cash basis
+   * (daňová evidence, the default): invoices and credit notes by the day they
+   * were paid, expenses by the day paid (or dated, when no payment is
+   * recorded). Accrual basis (účetnictví): issued invoices by DUZP (issue date
+   * when there is none), expenses by their date. VAT payers count amounts
+   * without VAT.
+   * Everything is converted to the home currency (CZK, EUR for a Slovak
+   * company) at each document's rate, or at the
+   * year's jednotný kurz when the company chose it for reports
+   * (`opts.rates`, uniform-rate.ts).
    */
   async annualSummary(
     db: Db,
     year: number,
-    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number; home?: HomeCurrency },
+    opts: {
+      vatPayer: boolean;
+      flatRate: FlatRate | null;
+      paidSocial?: number;
+      paidHealth?: number;
+      basis?: AccountingBasis;
+      rates?: ReportRates;
+      /** EUR for a Slovak company: its income and expenses are summed in euros. */
+      homeCurrency?: HomeCurrency;
+    },
   ) {
-    const home = opts.home ?? "CZK";
+    const home = opts.homeCurrency ?? "CZK";
+    const eur = home === "EUR";
+    const rates = opts.rates ?? new ReportRates(false, [], new Date(), home);
+    // A Slovak company counts in euros at the ECB rate (§ 24 zákona
+    // č. 431/2002 Z. z.); `rates` never applies the Czech jednotný kurz to it.
+    const toHome = async (currency: string, stored: number | null, day: Date): Promise<number | null> =>
+      (await rates.rate(currency, stored, day, year)) ?? (await getHomeRate(home, currency, day));
     const from = new Date(year, 0, 1);
     const to = new Date(year + 1, 0, 1);
+    const accrual = opts.basis === "accrual";
+    const earnedOn = sql`coalesce(${schema.invoices.taxableSupplyDate}, ${schema.invoices.issueDate})`;
     const invoices = await db
       .select()
       .from(schema.invoices)
@@ -691,9 +723,13 @@ export class ExportsService {
         and(
           isNotNull(schema.invoices.invoiceNumber),
           inArray(schema.invoices.documentType, ["invoice", "credit_note"]),
-          eq(schema.invoices.status, "paid"),
-          gte(schema.invoices.paidAt, from),
-          lt(schema.invoices.paidAt, to),
+          ...(accrual
+            ? [
+                inArray(schema.invoices.status, ["issued", "paid"]),
+                sql`${earnedOn} >= ${from.toISOString()}`,
+                sql`${earnedOn} < ${to.toISOString()}`,
+              ]
+            : [eq(schema.invoices.status, "paid"), gte(schema.invoices.paidAt, from), lt(schema.invoices.paidAt, to)]),
         ),
       );
     const ids = invoices.map((i) => i.id);
@@ -706,7 +742,8 @@ export class ExportsService {
         { reverseCharge: invoice.reverseCharge },
       );
       const amount = opts.vatPayer ? totals.totalWithoutVat : totals.totalWithVat;
-      const rate = invoice.currency === home ? 1 : Number(invoice.exchangeRate) || (await getHomeRate(home, invoice.currency, invoice.paidAt));
+      const rateDay = (accrual ? (invoice.taxableSupplyDate ?? invoice.issueDate) : invoice.paidAt) ?? invoice.createdAt;
+      const rate = await toHome(invoice.currency, Number(invoice.exchangeRate) || null, rateDay);
       if (rate == null) {
         missingRates++;
         continue;
@@ -714,25 +751,29 @@ export class ExportsService {
       income += Math.abs(amount) * rate * (invoice.documentType === "credit_note" ? -1 : 1);
     }
 
-    const paidOn = sql`coalesce(${schema.expenses.paidAt}, ${schema.expenses.expenseDate})`;
+    const paidOn = accrual ? sql`${schema.expenses.expenseDate}` : sql`coalesce(${schema.expenses.paidAt}, ${schema.expenses.expenseDate})`;
     const expenses = await db
       .select()
       .from(schema.expenses)
       .where(and(sql`${paidOn} >= ${from.toISOString()}`, sql`${paidOn} < ${to.toISOString()}`));
     let actualExpenses = 0;
     for (const e of expenses) {
-      const rate = e.currency === home ? 1 : Number(e.exchangeRate) || (await getHomeRate(home, e.currency, e.paidAt ?? e.expenseDate));
+      const rate = await toHome(e.currency, Number(e.exchangeRate) || null, e.paidAt ?? e.expenseDate);
       if (rate == null) {
         missingRates++;
         continue;
       }
       const total = Number(e.amount) * rate;
-      actualExpenses += opts.vatPayer ? total / (1 + Number(e.vatRate) / 100) : total;
+      actualExpenses += opts.vatPayer ? expenseVatParts(total, Number(e.vatRate), e.reverseCharge).base : total;
     }
 
     return {
       ...computeAnnualSummary({ year, income, actualExpenses, flatRate: opts.flatRate, paidSocial: opts.paidSocial, paidHealth: opts.paidHealth }),
       vatPayer: opts.vatPayer,
+      basis: opts.basis ?? "cash",
+      /** Which rate converted foreign documents: their own, or the year's jednotný kurz. */
+      rateMode: rates.annual && !eur ? ("annual" as const) : ("daily" as const),
+      currency: eur ? ("EUR" as const) : ("CZK" as const),
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
     };
   }
@@ -743,12 +784,15 @@ export class ExportsService {
     period: ExportPeriod,
     vatPeriod: VatPeriod,
     tenant: typeof schema.tenants.$inferSelect,
-  ): Promise<string | null> {
+  ): Promise<{ body: string | null; warnings: VatExportWarning[] }> {
     const { issued, received } = await this.loadVatDocs(db, period);
     const submitter = submitterFromTenant(tenant);
-    if (kind === "dp3") return generateDphDp3({ issued, received, submitter, period: vatPeriod });
-    if (kind === "kh1") return generateDphKh1({ issued, received, submitter, period: vatPeriod });
-    return generateDphShv({ issued, submitter, period: vatPeriod });
+    if (kind === "dp3") return { body: generateDphDp3({ issued, received, submitter, period: vatPeriod }), warnings: [] };
+    if (kind === "kh1") {
+      const { xml, warnings } = generateDphKh1({ issued, received, submitter, period: vatPeriod });
+      return { body: xml, warnings };
+    }
+    return { body: generateDphShv({ issued, submitter, period: vatPeriod }), warnings: [] };
   }
 
   /**

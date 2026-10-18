@@ -4,6 +4,7 @@ import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import type { EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { templateValues } from "../tenants/template-vars";
+import { clientPortalLinkOf, invoiceLinkOf } from "../public-links/public-link";
 import { applyBuyerSnapshot, applySellerSnapshot } from "./party-snapshot";
 import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import * as schema from "../../drizzle/schema";
@@ -13,8 +14,9 @@ import { drizzleTx } from "../db/drizzle-tx";
 export interface OverdueInvoiceForReminder {
   invoice: typeof schema.invoices.$inferSelect;
   contactEmail: string | null;
-  /** The customer's portal token, when their portal is on. */
-  clientPortalToken?: string | null;
+  /** Path segments for the e-mail's links (public-links/public-link.ts); the portal one only when it is on. */
+  publicLink: string;
+  clientPortalLink?: string | null;
   lineItems: (typeof schema.invoiceLineItems.$inferSelect)[];
   /** Settings → E-maily wording/sender for this tenant's reminder. */
   custom?: EmailCustomization;
@@ -110,6 +112,9 @@ export class InvoiceRemindersRepository {
           bankAccountBankCode: schema.tenants.bankAccountBankCode,
           bankAccountIban: schema.tenants.bankAccountIban,
           templateVars: schema.tenants.templateVars,
+          // for the readable prefix of the links
+          invoiceFormPrefs: schema.tenants.invoiceFormPrefs,
+          publicProfile: schema.tenants.publicProfile,
         })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, tenantId))
@@ -119,7 +124,7 @@ export class InvoiceRemindersRepository {
       const cooldownCutoff = new Date(Date.now() - rules.intervalDays * 24 * 60 * 60 * 1000);
 
       const rows = await db
-        .select({ invoice: schema.invoices, contactEmail: schema.contacts.email, contactName: schema.contacts.legalName, contactIco: schema.contacts.ico, contactPortalToken: schema.contacts.portalToken })
+        .select({ invoice: schema.invoices, contactEmail: schema.contacts.email, contactName: schema.contacts.legalName, contactIco: schema.contacts.ico, contactPortalToken: schema.contacts.portalToken, contactPortalKey: schema.contacts.portalKey, contactPortalSlug: schema.contacts.portalSlug })
         .from(schema.invoices)
         .leftJoin(schema.contacts, eq(schema.invoices.contactId, schema.contacts.id))
         .where(
@@ -145,11 +150,18 @@ export class InvoiceRemindersRepository {
         // Variables as on the document: its supplier/buyer snapshot when it has one.
         const docTenant = tenant ? applySellerSnapshot(tenant, row.invoice.sellerSnapshot) : tenant;
         const buyer = row.contactName
-          ? applyBuyerSnapshot({ legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken }, row.invoice.buyerSnapshot)
+          ? applyBuyerSnapshot({ legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken, portalKey: row.contactPortalKey, portalSlug: row.contactPortalSlug }, row.invoice.buyerSnapshot)
           : null;
         const vars = templateValues(docTenant, row.invoice, buyer);
         const custom = emailCustomizationOf(emailPrefsOf(tenant?.emailPrefs), "reminder", tenant, buyer?.legalName ?? undefined, vars);
-        results.push({ invoice: row.invoice, contactEmail: row.contactEmail, clientPortalToken: row.contactPortalToken, lineItems, custom });
+        results.push({
+          invoice: row.invoice,
+          contactEmail: row.contactEmail,
+          publicLink: invoiceLinkOf(docTenant, row.invoice),
+          clientPortalLink: buyer ? clientPortalLinkOf(docTenant, buyer) : null,
+          lineItems,
+          custom,
+        });
       }
       return results;
     });

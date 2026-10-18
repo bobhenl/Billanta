@@ -40,6 +40,7 @@ import {
   type LucideIcon
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { DragHandle, moveBy, useDragSort } from '@/components/drag-sort';
 import { InfoHint } from '@/components/info-hint';
 import { Modal, buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
@@ -55,7 +56,7 @@ import {
   type TaxDeadline,
   type TaxDeadlineKind
 } from '@/lib/tax-deadlines';
-import { advanceForDeadline, homeCurrencyOf, isTaxAdvanceKind, type VatStatus } from '@faktur/cz-compliance';
+import { advanceForDeadline, homeCurrencyOf, isTaxAdvanceKind } from '@faktur/cz-compliance';
 import type { TaxAdvances } from '@/lib/vat-status';
 import { formatElapsed, formatMinutes, type TimeSummary } from '@/lib/time-ui';
 
@@ -312,7 +313,7 @@ export function DashboardView({
 
       {referral && <ReferralNudge {...referral} />}
       {time && <TimeCard time={time} />}
-      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
+      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
       {country !== 'SK' && (config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
@@ -520,7 +521,8 @@ function CustomizeModal({
     ? [...fxList].sort((a, b) => a.code.localeCompare(b.code)).map((c) => ({ code: c.code, label: `${c.name} (${c.country})` }))
     : FX_CHOICES.map((code) => ({ code, label: '' }));
   const fxNames: Record<string, string> = Object.fromEntries(fxChoices.map((c) => [c.code, c.label]));
-  const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, profile.vatStatus));
+  const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, profile));
+  const defaultKinds = defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax ?? null, profile.country);
   const [taxAmounts, setTaxAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(Object.entries(config.taxAmounts ?? {}).map(([k, v]) => [k, String(v)]))
   );
@@ -532,16 +534,19 @@ function CustomizeModal({
     touch('cards');
     setCards((cur) => (cur.includes(card) ? cur.filter((c) => c !== card) : [...cur, card]));
   };
-  const move = (card: KpiCard, dir: -1 | 1) =>
-    setCards((cur) => {
-      const i = cur.indexOf(card);
-      const j = i + dir;
-      if (i < 0 || j < 0 || j >= cur.length) return cur;
-      const next = [...cur];
-      next[i] = cur[j]!;
-      next[j] = cur[i]!;
-      return next;
-    });
+  const move = (card: KpiCard, dir: -1 | 1) => setCards((cur) => moveBy(cur, card, dir));
+  const sort = useDragSort(cards, (next) => {
+    touch('cards');
+    setCards(next);
+  });
+  const tReports = useTranslations('reports.customize');
+  /** Same tags as the report customizer: why the usage-based defaults leave a card out. */
+  const unusedTag = (card: KpiCard): string | null => {
+    if (!usage) return null;
+    if (card === 'vat_month' && !usage.has.vat) return usage.vatStatus === 'non_payer' ? tReports('notVatPayer') : tReports('notUsed');
+    if ((card === 'expenses_month' || card === 'profit_month') && !usage.has.expenses) return tReports('notUsed');
+    return null;
+  };
   const toggleTile = (tile: string) => {
     touch('tiles');
     setTiles((cur) => (cur.includes(tile) ? cur.filter((x) => x !== tile) : [...cur, tile]));
@@ -584,7 +589,7 @@ function CustomizeModal({
               setSections({ showChart: true, showRecent: true, showTopCustomers: true, showDueSoon: true, showTaxDeadlines: true, showFxRates: recommendation.showFxRates });
               setFx(recommendation.fxCurrencies);
               setTouched(new Set());
-              setTaxKinds(defaultTaxDeadlineKinds(profile.vatStatus));
+              setTaxKinds(defaultKinds);
             }}
           >
             {t('customizeReset')}
@@ -592,7 +597,7 @@ function CustomizeModal({
           <button type="button" className={buttonClass.secondary} onClick={onClose}>
             {t('cancel')}
           </button>
-          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save(choices({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultTaxDeadlineKinds(profile.vatStatus)) ? null : taxKinds, fxCurrencies: fx, taxAmounts: amountsOf(taxAmounts, taxKinds) }))}>
+          <button type="button" className={buttonClass.primary} disabled={saving} onClick={() => save(choices({ cards, tiles, ...sections, taxDeadlines: sameKinds(taxKinds, defaultKinds) ? null : taxKinds, fxCurrencies: fx, taxAmounts: amountsOf(taxAmounts, taxKinds) }))}>
             {t('save')}
           </button>
         </>
@@ -600,15 +605,29 @@ function CustomizeModal({
     >
       {usage && <UsageNote usage={usage} />}
       <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('customizeCards')}</h3>
+      {cards.length > 1 && <p className="mt-1 text-xs text-muted-foreground">{t('customizeOrderHint')}</p>}
       <ul className="mt-2 space-y-1">
         {ordered.map((card) => {
           const on = cards.includes(card);
           const i = cards.indexOf(card);
+          const tag = unusedTag(card);
           return (
-            <li key={card} className={cn('flex items-center gap-2 rounded-lg border px-3 py-2 text-sm', on ? 'border-border' : 'border-dashed border-border opacity-70')}>
-              <label className="flex flex-1 cursor-pointer items-center gap-2">
+            <li
+              key={card}
+              {...(on ? sort.itemProps(card) : {})}
+              className={cn(
+                'flex items-center gap-2 rounded-lg border py-2 pr-3 text-sm',
+                on ? 'border-border bg-card pl-1' : 'border-dashed border-border pl-3 opacity-70',
+                sort.dragging === card && 'border-primary shadow-md ring-2 ring-primary/20'
+              )}
+            >
+              {on && <DragHandle label={t('dragToReorder')} {...sort.handleProps(card)} />}
+              <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2">
                 <input type="checkbox" className={check} checked={on} onChange={() => toggleCard(card)} />
-                {t(`cards.${card}.label`)}
+                <span className="min-w-0">
+                  {t(`cards.${card}.label`)}
+                  {tag && <span className="ml-1 text-[11px] text-muted-foreground">({tag})</span>}
+                </span>
               </label>
               {on && (
                 <>
@@ -749,6 +768,15 @@ function CustomizeModal({
               </label>
             ))}
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t('taxDeadlines.manualKindsHint')}</p>
+          {!profile.legalEntity && profile.country.toUpperCase() !== 'SK' && profile.flatTax == null && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t('taxDeadlines.regimeUnknown')}{' '}
+              <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
+                {t('taxDeadlines.regimeAnswer')}
+              </Link>
+            </p>
+          )}
           {/* Social / health / flat tax amounts live in Settings, by period (one source for the dashboard, iCal and reports). */}
           {relevantTaxDeadlineKinds(taxKinds, profile).some(isTaxAdvanceKind) && (
             <p className="mt-4 text-xs text-muted-foreground">
@@ -827,8 +855,9 @@ function amountsOf(input: Record<string, string>, kinds: TaxDeadlineKind[]): Rec
 
 const sameKinds = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((k) => b.includes(k));
 
-function taxKindsOf(config: DashboardConfig, vatStatus: VatStatus): TaxDeadlineKind[] {
-  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(vatStatus);
+/** The member's saved kinds win; until they pick, the defaults follow VAT status and the paušální režim answer. */
+function taxKindsOf(config: DashboardConfig, profile: TaxProfile): TaxDeadlineKind[] {
+  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax ?? null, profile.country);
   return TAX_DEADLINE_KINDS.filter((k) => config.taxDeadlines!.includes(k));
 }
 

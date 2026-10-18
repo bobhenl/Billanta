@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
@@ -14,11 +15,13 @@ import { NavProgress } from '@/components/nav-progress';
 import { NotificationBell } from '@/components/notification-bell';
 import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
 import { fetchMyAccess, hiddenSections } from '@/lib/tenant';
 import { fetchMyCompanies } from '@/lib/api-client';
 import { REFERRAL_COOKIE } from '@/lib/referral';
+import { dashboardClientMessages } from '@/lib/client-messages';
 
 // The signed-in app is never a search result (robots.ts also disallows it).
 export const metadata: Metadata = { robots: NOINDEX };
@@ -64,43 +67,50 @@ export default async function DashboardLayout({ children }: { children: React.Re
     if (!access.modules.ai) paletteHidden.push('ai');
   }
 
+  // The root layout sends the browser only the public namespaces; the app
+  // needs its own as well (lib/client-messages.ts).
+  const messages = dashboardClientMessages(await getMessages());
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
-        <div className="container flex h-14 items-center justify-between gap-3">
-          <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
-            <BrandMark />
-            {tApp('name')}
-          </Link>
+    <NextIntlClientProvider messages={messages}>
+      <div className="flex min-h-screen flex-col">
+        <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
+          <div className="container flex h-14 items-center justify-between gap-3">
+            <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
+              <BrandMark />
+              {tApp('name')}
+            </Link>
 
-          <DashboardNav hidden={hidden} />
+            <DashboardNav hidden={hidden} />
 
-          <div className="flex items-center gap-1.5">
-            <CommandPalette hidden={paletteHidden} />
-            <NotificationBell />
-            <LanguageSwitcher className="hidden md:inline-flex" />
-            <ThemeToggle className="hidden md:inline-flex" />
-            <UserMenu
-              companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
-              activeId={companies?.active.id ?? null}
-            />
+            <div className="flex items-center gap-1.5">
+              <CommandPalette hidden={paletteHidden} />
+              <NotificationBell />
+              <LanguageSwitcher className="hidden md:inline-flex" />
+              <ThemeToggle className="hidden md:inline-flex" />
+              <UserMenu
+                companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
+                activeId={companies?.active.id ?? null}
+              />
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
-        {role === 'viewer' && (
-          <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
-        )}
-        {children}
-      </main>
+        <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
+          {role === 'viewer' && (
+            <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
+          )}
+          <TrialBanner plan={access?.plan} />
+          {children}
+        </main>
 
-      <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
-      <Suspense fallback={null}>
-        <NavProgress />
-      </Suspense>
-      <KeyboardShortcuts hidden={paletteHidden} />
-      {claimReferral && <ReferralClaim />}
-    </div>
+        <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
+        <KeyboardShortcuts hidden={paletteHidden} />
+        {claimReferral && <ReferralClaim />}
+      </div>
+    </NextIntlClientProvider>
   );
 }

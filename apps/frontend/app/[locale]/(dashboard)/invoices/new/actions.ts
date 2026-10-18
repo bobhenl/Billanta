@@ -169,6 +169,7 @@ function invoiceBody(input: InvoiceDraftInput) {
     order_number: text(input.orderNumber),
     language: input.language,
     reverse_charge: input.reverseCharge,
+    reverse_charge_code: input.reverseChargeCode,
     note_above: text(input.noteAbove),
     note_below: text(input.noteBelow),
     internal_note: text(input.internalNote),

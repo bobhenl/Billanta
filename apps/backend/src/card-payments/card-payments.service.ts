@@ -8,6 +8,7 @@ import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
 import { InvoicesService } from "../invoices/invoices.service";
+import { resolveInvoiceToken } from "../public-links/resolve";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -15,7 +16,6 @@ type TenantDb = PostgresJsDatabase<typeof schema>;
 export const STRIPE_FACTORY = Symbol("STRIPE_FACTORY");
 export type StripeFactory = (secretKey: string) => Stripe;
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const KEY_PATTERN = /^(sk|rk)_(test|live)_[A-Za-z0-9]{16,}$/;
 /** Stripe's zero-decimal currencies among those an invoice may use. */
 const ZERO_DECIMAL = new Set(["JPY", "KRW", "VND", "CLP", "ISK"]);
@@ -274,8 +274,9 @@ export class CardPaymentsService {
     return { amount: rest, currency: invoice.currency, label };
   }
 
-  private async target(token: string): Promise<Target | null> {
-    if (!UUID_PATTERN.test(token)) return null;
+  private async target(link: string): Promise<Target | null> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token) return null;
     const rows = await this.dbService.db.execute<Target>(sql`SELECT * FROM get_public_card_payment_target(${token})`);
     return rows[0] ?? null;
   }

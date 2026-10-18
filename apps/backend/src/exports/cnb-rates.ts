@@ -78,6 +78,17 @@ export async function getCnbRate(currency: string, date?: Date | null): Promise<
   return day?.rates.get(code)?.rate ?? null;
 }
 
+/**
+ * Euros per 1 unit of `currency` on `date`, through the ČNB list of that day
+ * (CZK per unit ÷ CZK per euro). 1 for EUR, null when either rate is missing.
+ */
+export async function eurCrossRate(currency: string, date?: Date | null): Promise<number | null> {
+  const code = currency.toUpperCase();
+  if (code === "EUR") return 1;
+  const [unit, euro] = [await getCnbRate(code, date), await getCnbRate("EUR", date)];
+  return unit != null && euro != null && euro > 0 ? unit / euro : null;
+}
+
 /** Several rates at once (same cached day list); missing ones are null. */
 export async function getCnbRates(currencies: string[], date?: Date | null): Promise<Record<string, number | null>> {
   const out: Record<string, number | null> = {};

@@ -1,4 +1,4 @@
-import type { AresSubject, RegistryHit, RpoSubject } from "@faktur/cz-compliance";
+import type { AresSubject, RegistryHit, RpoSubject, RuzSubject } from "@faktur/cz-compliance";
 
 /**
  * Pure mapping from an ARES `AresSubject` (or a same-shaped row read back out
@@ -55,13 +55,16 @@ function buildStreet(subject: AresSubject): string | null {
     return null;
   }
 
+  let houseNumber = address.cisloDomovni != null ? String(address.cisloDomovni) : "";
+  if (address.cisloOrientacni != null) {
+    houseNumber += `/${address.cisloOrientacni}${address.cisloOrientacniPismeno ?? ""}`;
+  }
   if (address.nazevUlice) {
-    let houseNumber = address.cisloDomovni != null ? String(address.cisloDomovni) : "";
-    if (address.cisloOrientacni != null) {
-      houseNumber += `/${address.cisloOrientacni}${address.cisloOrientacniPismeno ?? ""}`;
-    }
     return houseNumber ? `${address.nazevUlice} ${houseNumber}` : address.nazevUlice;
   }
+  // A village without street names: the address is "Lhota 12". textovaAdresa would put PSČ and town into the street field too.
+  const place = address.nazevCastiObce || address.nazevObce;
+  if (place && houseNumber) return `${place} ${houseNumber}`;
 
   return address.textovaAdresa ?? null;
 }
@@ -97,4 +100,23 @@ export function mapRpoSubjectToContactPrefill(subject: RpoSubject): AresContactP
     addressPostalCode: subject.postalCode,
     addressCountry: "SK",
   };
+}
+
+/** A Slovak company from RÚZ, the one SK source with the DIČ. RÚZ gets its units from ŠÚ SR (RPO), so the source stays "RPO". */
+export function mapRuzSubjectToContactPrefill(subject: RuzSubject): AresContactPrefill {
+  return {
+    ico: subject.ico,
+    dic: subject.dic,
+    legalName: subject.name,
+    isVatPayer: null,
+    addressStreet: subject.street,
+    addressCity: subject.city,
+    addressPostalCode: subject.postalCode,
+    addressCountry: "SK",
+  };
+}
+
+/** RPO data plus the DIČ from RÚZ, when RÚZ has one for the same IČO. Name and address stay RPO's, which is fresher. */
+export function withRuzDic(prefill: AresContactPrefill, ruz: RuzSubject | null): AresContactPrefill {
+  return ruz?.dic && ruz.ico === prefill.ico && !prefill.dic ? { ...prefill, dic: ruz.dic } : prefill;
 }

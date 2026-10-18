@@ -2,13 +2,15 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import { DbService } from "../db/db.service";
 import { computeInvoiceTotal } from "../invoices/invoice-total.util";
+import { invoiceLinkOf } from "../public-links/public-link";
+import { resolvePortalToken } from "../public-links/resolve";
 
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-type PortalRow = { customer_name: string; company_name: string };
+type PortalRow = { customer_name: string; company_name: string; profile_slug: string | null; link_prefix: string | null };
 
 type PortalDocumentRow = {
   public_token: string;
+  public_key: string | null;
+  public_slug: string | null;
   invoice_number: string | null;
   document_type: string;
   status: string;
@@ -22,6 +24,7 @@ type PortalDocumentRow = {
 };
 
 export interface ClientPortalDocument {
+  /** The document's /i/ link segment (prefix + key, or the UUID of a row without a key). */
   token: string;
   number: string | null;
   documentType: string;
@@ -52,11 +55,19 @@ const iso = (v: string | Date | null) => (v == null ? null : new Date(v).toISOSt
 export class ClientPortalService {
   constructor(private readonly dbService: DbService) {}
 
-  async find(token: string): Promise<ClientPortalView> {
-    if (!UUID_PATTERN.test(token)) throw new NotFoundException("Portal not found");
+  /** `link` is the /c/ segment: a short key behind the customer's name, or the UUID of an older link. */
+  async find(link: string): Promise<ClientPortalView> {
+    const token = await resolvePortalToken(this.dbService.db, link);
+    if (!token) throw new NotFoundException("Portal not found");
     const [head] = await this.dbService.db.execute<PortalRow>(sql`SELECT * FROM get_client_portal(${token})`);
     if (!head) throw new NotFoundException("Portal not found");
     const rows = await this.dbService.db.execute<PortalDocumentRow>(sql`SELECT * FROM get_client_portal_documents(${token})`);
+    // The same links the company's e-mails carry, built from the same setting.
+    const linkTenant = {
+      companyName: head.company_name,
+      publicProfile: { slug: head.profile_slug },
+      invoiceFormPrefs: { publicLinkPrefix: head.link_prefix },
+    };
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -66,7 +77,7 @@ export class ClientPortalService {
       const payable = (r.document_type === "invoice" || r.document_type === "proforma") && r.status === "issued";
       const balance = payable ? Math.max(0, Math.round((total - amountPaid) * 100) / 100) : 0;
       return {
-        token: r.public_token,
+        token: invoiceLinkOf(linkTenant, { publicKey: r.public_key, publicSlug: r.public_slug, publicToken: r.public_token, invoiceNumber: r.invoice_number }),
         number: r.invoice_number,
         documentType: r.document_type,
         status: r.status,

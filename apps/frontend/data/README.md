@@ -149,3 +149,20 @@ or the ČÚZK RÚIAN `vazby-cr.csv` (CC BY 4.0). This file has no obec codes,
 so `obecKod` has to be added first for the join. Health insurance is not
 tied to a locality, and Slovak Sociálna poisťovňa branches do not map 1:1
 to okresy, so neither is shown as an office.
+
+# `cz-offices.json` – data provenance
+
+PSČ (and, where one PSČ spans several offices, the obec or městská část
+name) to `[kód FÚ, kód územního pracoviště, kód OSSZ]`. It only prefills the
+office codes in Nastavení → Exporty → Roční podání, and the user can always
+change them. It is read on the server only (`settings/exports/page.tsx`)
+through `lookupCzOffices()` from `@faktur/cz-compliance`.
+
+Built by `scripts/build-cz-offices.mjs` from official code lists (URLs in
+the script header): Česká pošta "Seznam obcí a částí obcí s PSČ", the
+Finanční správa ADIS číselníky `obce` and `pracufo`, and the ČSSZ číselník
+`C_COKR`. Last built in October 2026: 2,680 PSČ, 225 of them split by name.
+
+Left as 0 (the user fills it in) rather than guessed: the OSSZ for Prague
+(PSSZ is not split by okres) and the územní pracoviště where ADIS gives one
+c_pufo for two pracoviště (Praha-východ / Brandýs nad Labem).

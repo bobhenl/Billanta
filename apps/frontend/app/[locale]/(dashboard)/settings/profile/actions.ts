@@ -104,16 +104,16 @@ export async function requestEmailChange(password: string, newEmailRaw: string, 
   const lang = ['cs', 'sk', 'en'].includes(locale) ? locale : 'cs';
   const confirmUrl = `${SITE_URL}/api/auth/confirm-email?token=${rawToken}&locale=${lang}`;
   try {
-    await sendEmailChangeEmail({ to: newEmail, confirmUrl });
+    await sendEmailChangeEmail({ to: newEmail, confirmUrl, userId, validMinutes: EMAIL_CHANGE_TTL_MS / 60_000 });
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
-      // Local dev has no Resend key — print the link so the flow stays testable.
-      console.info(`[dev] email change confirmation link for ${newEmail}: ${confirmUrl}`);
-      return { ok: true };
-    }
-    console.error('Failed to send email change confirmation', error);
+    console.error('Failed to queue email change confirmation', error);
     await db.delete(verificationTokens).where(like(verificationTokens.identifier, `${EMAIL_CHANGE_PREFIX}${userId}:%`));
     return { ok: false, error: 'send_failed' };
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    // Local dev usually has no Resend key, so the queued mail never leaves:
+    // print the link so the flow stays testable.
+    console.info(`[dev] email change confirmation link for ${newEmail}: ${confirmUrl}`);
   }
   return { ok: true };
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Check } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { FEATURE_PAGES, getFeaturePage, relatedFeaturePages } from '@/lib/feature-pages';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -37,6 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function FeaturePage({ params }: { params: Promise<Params> }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const feature = getFeaturePage(slug);
   if (!feature) notFound();
 

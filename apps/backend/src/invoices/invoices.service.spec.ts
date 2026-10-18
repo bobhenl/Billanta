@@ -3,7 +3,7 @@ import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
 import type { InvoicePdfService } from "./invoice-pdf.service";
-import { customerRequiredError, InvoicesService, rateModeAfterEdit } from "./invoices.service";
+import { customerRequiredError, InvoicesService, rateAfterEdit, rateModeAfterEdit } from "./invoices.service";
 
 // The sending guard has its own spec; here it always allows the send.
 vi.mock("../abuse/sending-guard", () => ({ assertCanSendEmail: vi.fn(async () => undefined), recordEmailSent: vi.fn(async () => undefined) }));
@@ -145,15 +145,17 @@ describe("InvoicesService.sendInvoice", () => {
   });
 
   it("happy path: emails the invoice's contact and stamps sent_at", async () => {
-    const invoice = makeInvoice();
-    const contact = makeContact();
+    const invoice = makeInvoice({ publicKey: "aZ09bY18cX27" });
+    const contact = makeContact({ portalToken: "33333333-3333-4333-8333-333333333333", portalKey: "Qw12Er34Ty56" });
     const updated = { ...invoice, sentAt: new Date("2026-09-09T09:00:00Z") };
 
     const select = vi
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain([contact]))
-      .mockReturnValueOnce(makeSelectChain(lineItems));
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      // the company's link prefix setting
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "number" } }]));
     const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, update } as any;
@@ -166,8 +168,10 @@ describe("InvoicesService.sendInvoice", () => {
       invoiceNumber: "2026-0001",
       amount: "1815.00 CZK", // 3 * 500 * 1.21
       dueDate: invoice.dueDate,
-      publicToken: invoice.publicToken,
-    });
+      // the readable links, never the bare key or uuid
+      publicLink: "2026-0001-aZ09bY18cX27",
+      clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
+    }, expect.objectContaining({ tenantId: invoice.tenantId, db, idempotencyKey: expect.stringMatching(/^invoice:inv-1:\d+$/) }));
     expect(update).toHaveBeenCalled();
     expect(result).toEqual(updated);
   });
@@ -205,14 +209,15 @@ describe("InvoicesService.sendInvoice", () => {
     expect(emailService.sendInvoiceEmail).not.toHaveBeenCalled();
   });
 
-  it("never marks sent_at if the email send itself throws", async () => {
+  it("never marks sent_at if queueing the email throws", async () => {
     const invoice = makeInvoice();
     const contact = makeContact();
     const select = vi
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain([contact]))
-      .mockReturnValueOnce(makeSelectChain(lineItems));
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {} }]));
     const update = vi.fn();
     emailService.sendInvoiceEmail.mockRejectedValueOnce(new Error("Resend outage"));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -458,14 +463,13 @@ describe("InvoicesService.issue – exchange rate mode", () => {
     expect(cnb.getCnbDay).toHaveBeenCalledWith(new Date("2026-03-14T10:00:00Z"));
   });
 
-  it("annual: stores the company's rate for the DUZP year, without asking ČNB", async () => {
-    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }, { year: 2025, currency: "EUR", rate: 25.3 }] }, "payer");
-    expect(set).toMatchObject({ exchangeRate: "24.6000000000", exchangeRateMode: "annual", exchangeRateDate: "2026-01-01" });
-    expect(cnb.getCnbDay).not.toHaveBeenCalled();
+  it("the old annual setting: the invoice still gets the daily ČNB rate", async () => {
+    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer");
+    expect(set).toMatchObject({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
   });
 
-  it("annual without a rate for that year: falls back to ČNB and is printed as such", async () => {
-    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2025, currency: "EUR", rate: 25.3 }] }, "payer");
+  it("annual reports never change what the invoice prints", async () => {
+    const set = await issueEur({ exchangeRateMode: "cnb_daily", reportRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer");
     expect(set).toMatchObject({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily" });
   });
 
@@ -480,9 +484,13 @@ describe("InvoicesService.issue – exchange rate mode", () => {
   });
 
   it("a rate typed on the draft is kept and labelled as a plain rate", async () => {
-    const set = await issueEur({ exchangeRateMode: "annual", annualRates: [{ year: 2026, currency: "EUR", rate: 24.6 }] }, "payer", { exchangeRate: "25.500000" });
+    const set = await issueEur({}, "payer", { exchangeRate: "25.500000" });
     expect(set).toMatchObject({ exchangeRate: "25.500000", exchangeRateMode: "manual", exchangeRateDate: null });
-    expect(cnb.getCnbDay).not.toHaveBeenCalled();
+  });
+
+  it("a rate loaded with 'Načíst z ČNB' is stored as the ČNB rate of its day, not as a typed one", async () => {
+    const set = await issueEur({}, "payer", { exchangeRate: "25.120000" });
+    expect(set).toMatchObject({ exchangeRate: "25.1200000000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
   });
 
   it("a Slovak company stores the ECB rate in EUR per unit, never ČNB", async () => {
@@ -540,6 +548,16 @@ describe("InvoicesService – drafts without a customer", () => {
     const db = { select, update } as any;
     await expect(service.update(db, "tenant-1", "inv-1", { contact_id: null, edit_reason: "oprava" })).rejects.toBeInstanceOf(BadRequestException);
     expect(update).not.toHaveBeenCalled();
+  });
+});
+
+describe("rateAfterEdit", () => {
+  const issued = { currency: "EUR", exchangeRate: "24.900000", exchangeRateMode: "cnb_daily" as const, taxableSupplyDate: new Date("2026-03-14T10:00:00Z"), issueDate: new Date("2026-03-16T10:00:00Z") };
+  it("a rate reloaded from ČNB on an issued document stays a ČNB rate, with its list day", async () => {
+    expect(await rateAfterEdit(issued, { exchangeRate: "25.120000" })).toEqual({ exchangeRate: "25.120000", exchangeRateMode: "cnb_daily", exchangeRateDate: "2026-03-13" });
+  });
+  it("any other new rate is a plain rate", async () => {
+    expect(await rateAfterEdit(issued, { exchangeRate: "25.500000" })).toEqual({ exchangeRateMode: "manual", exchangeRateDate: null });
   });
 });
 
@@ -744,5 +762,35 @@ describe("InvoicesService.latestDuplicateTemplate", () => {
   it("404s when the company has no invoice yet", async () => {
     const db = { select: vi.fn(() => latestChain([])) };
     await expect(service.latestDuplicateTemplate(db as never)).rejects.toBeInstanceOf(NotFoundException);
+  });
+});
+
+describe("InvoicesService.setPublicSlug", () => {
+  const KEY = "k3Fq9Xa2Lm7P";
+  const tenant = { companyName: "Firma s.r.o.", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "number" } };
+  const setup = (invoice: ReturnType<typeof makeInvoice>, updated: Record<string, unknown> = invoice) => {
+    const audit = { record: vi.fn(async () => undefined) };
+    const service = new InvoicesService({} as EmailService, {} as InvoicePdfService, undefined, undefined, audit as never);
+    const select = vi.fn(() => makeSelectChain([tenant])).mockReturnValueOnce(makeSelectChain([invoice]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
+    return { service, audit, update, db: { select, update } as never };
+  };
+
+  it("stores the name, logs old and new, and returns the link with it in front of the same key", async () => {
+    const invoice = makeInvoice({ publicKey: KEY, publicSlug: null });
+    const { service, audit, update, db } = setup(invoice, { ...invoice, publicSlug: "web-redesign" });
+    const result = await service.setPublicSlug(db, "inv-1", "web-redesign");
+    expect((update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0]).toMatchObject({ publicSlug: "web-redesign" });
+    // Only the name: the key and the token are the secret and stay.
+    expect(Object.keys((update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0])).not.toContain("publicKey");
+    expect(audit.record).toHaveBeenCalledWith(db, "tenant-1", expect.objectContaining({ action: "link_renamed", changes: [{ field: "publicSlug", from: null, to: "web-redesign" }] }));
+    expect(result).toEqual({ id: "inv-1", publicSlug: "web-redesign", link: `web-redesign-${KEY}`, defaultLink: `2026-0001-${KEY}` });
+  });
+
+  it("writes and logs nothing when the name is unchanged", async () => {
+    const { service, audit, update, db } = setup(makeInvoice({ publicKey: KEY, publicSlug: "web" }));
+    expect((await service.setPublicSlug(db, "inv-1", "web")).link).toBe(`web-${KEY}`);
+    expect(update).not.toHaveBeenCalled();
+    expect(audit.record).not.toHaveBeenCalled();
   });
 });

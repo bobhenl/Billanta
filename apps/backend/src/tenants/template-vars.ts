@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type * as schema from "../../drizzle/schema";
+import { clientPortalLinkOf, invoiceLinkOf, type LinkTenant } from "../public-links/public-link";
 
 /**
  * Settings → Proměnné: `{placeholders}` usable in the customer emails
@@ -84,15 +85,16 @@ type ContactRow = typeof schema.contacts.$inferSelect;
 const czDate = (d: Date | null | undefined) =>
   d ? d.toLocaleDateString("cs-CZ", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Prague" }) : "";
 
-export function portalUrlOf(publicToken: string): string {
+/** The invoice's client page; `link` comes from `invoiceLinkOf` (public-links/public-link.ts). */
+export function portalUrlOf(link: string): string {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://faktur.app").replace(/\/$/, "");
-  return `${siteUrl}/i/${publicToken}`;
+  return `${siteUrl}/i/${link}`;
 }
 
-/** The customer's portal with all their documents (`contacts.portal_token`), see `/c/:token`. */
-export function clientPortalUrlOf(portalToken: string): string {
+/** The customer's portal with all their documents, see `/c/:token`; `link` comes from `clientPortalLinkOf`. */
+export function clientPortalUrlOf(link: string): string {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://faktur.app").replace(/\/$/, "");
-  return `${siteUrl}/c/${portalToken}`;
+  return `${siteUrl}/c/${link}`;
 }
 
 /**
@@ -101,9 +103,9 @@ export function clientPortalUrlOf(portalToken: string): string {
  * top. `amount` is left to the caller — it needs the computed totals.
  */
 export function templateValues(
-  tenant: Pick<TenantRow, "companyName" | "ico" | "dic" | "email" | "phone" | "website" | "addressStreet" | "addressCity" | "addressPostalCode" | "bankAccountNumber" | "bankAccountBankCode" | "bankAccountIban" | "templateVars"> | undefined,
-  invoice?: Pick<InvoiceRow, "invoiceNumber" | "variableSymbol" | "issueDate" | "dueDate" | "publicToken"> | null,
-  contact?: (Pick<ContactRow, "legalName" | "ico"> & { portalToken?: string | null }) | null,
+  tenant: (Pick<TenantRow, "companyName" | "ico" | "dic" | "email" | "phone" | "website" | "addressStreet" | "addressCity" | "addressPostalCode" | "bankAccountNumber" | "bankAccountBankCode" | "bankAccountIban" | "templateVars"> & LinkTenant) | undefined,
+  invoice?: (Pick<InvoiceRow, "invoiceNumber" | "variableSymbol" | "issueDate" | "dueDate" | "publicToken"> & { publicKey?: string | null; publicSlug?: string | null }) | null,
+  contact?: (Pick<ContactRow, "legalName" | "ico"> & { portalToken?: string | null; portalKey?: string | null; portalSlug?: string | null }) | null,
   now: Date = new Date(),
 ): Record<string, string> {
   const own = Object.fromEntries(templateVarsOf(tenant?.templateVars).map((v) => [v.key, v.value]));
@@ -127,9 +129,12 @@ export function templateValues(
       vs: invoice.variableSymbol ?? "",
       issue_date: czDate(invoice.issueDate),
       due_date: czDate(invoice.dueDate),
-      link: portalUrlOf(invoice.publicToken),
+      link: portalUrlOf(invoiceLinkOf(tenant, invoice)),
     });
   }
-  if (contact) Object.assign(builtins, { customer: contact.legalName, customer_ico: contact.ico ?? "", portal_link: contact.portalToken ? clientPortalUrlOf(contact.portalToken) : "" });
+  if (contact) {
+    const portal = clientPortalLinkOf(tenant, contact);
+    Object.assign(builtins, { customer: contact.legalName, customer_ico: contact.ico ?? "", portal_link: portal ? clientPortalUrlOf(portal) : "" });
+  }
   return { ...own, ...builtins };
 }

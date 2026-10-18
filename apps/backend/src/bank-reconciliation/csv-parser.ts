@@ -20,6 +20,8 @@ export interface ParsedBankTransactionRow {
   variableSymbol: string | null;
   counterpartyAccount: string | null;
   counterpartyName: string | null;
+  /** The payer's note, when the source has one. */
+  message?: string | null;
 }
 
 /**
@@ -61,6 +63,7 @@ const COLUMN_ALIASES = {
     "counterparty name",
   ],
   bankCode: ["kod banky", "bank code"],
+  message: ["message", "zprava pro prijemce", "sprava pre prijemcu", "zprava", "sprava", "poznamka", "popis transakcie"],
 } as const;
 
 type Column = keyof typeof COLUMN_ALIASES;
@@ -198,6 +201,7 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
       variableSymbol: rawVariableSymbol,
       counterpartyAccount,
       counterpartyName: nullIfEmpty(cell("counterpartyName")),
+      message: nullIfEmpty(cell("message")),
     });
   }
 

@@ -3,6 +3,7 @@
 import { type FormEvent, useRef, useState, useTransition } from 'react';
 import { Loader2, QrCode, ScanLine, Upload } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode } from '@faktur/cz-compliance';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
@@ -70,6 +71,8 @@ export function ExpenseForm({
   const src = expense ?? initial;
   const t = useTranslations('expenses.form');
   const tCat = useTranslations('expenses.category');
+  // Code names are shared with the invoice form.
+  const tRc = useTranslations('invoiceForm.settings');
   const locale = useLocale();
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -99,7 +102,16 @@ export function ExpenseForm({
   const [receiptFileUrl, setReceiptFileUrl] = useState(src?.receiptFileUrl ?? '');
   const [note, setNote] = useState(src?.note ?? '');
 
-  const vatPart = vatOfGross(Number(amount) || 0, Number(vatRate) || 0);
+  const [reverseCharge, setReverseCharge] = useState(src?.reverseCharge ?? false);
+  const [reverseChargeCode, setReverseChargeCode] = useState(src?.reverseChargeCode ?? '');
+  // Reverse charge needs a rate to self-assess; at 0 % there is nothing to report.
+  const isReverseCharge = reverseCharge && Number(vatRate) > 0;
+
+  // Reverse charge: the amount is the net and the VAT comes on top (§ 92a ZDPH).
+  const vatPart = isReverseCharge
+    ? Math.round(Number(amount) * Number(vatRate)) / 100 || 0
+    : vatOfGross(Number(amount) || 0, Number(vatRate) || 0);
+  const basePart = isReverseCharge ? Number(amount) : Number(amount) - vatPart;
 
   function pickSupplier(name: string) {
     setSupplierName(name);
@@ -195,6 +207,8 @@ export function ExpenseForm({
       description: description.trim(),
       amount: Number(amount),
       vatRate: Number(vatRate),
+      reverseCharge: isReverseCharge,
+      reverseChargeCode: isReverseCharge && isReverseChargeCode(reverseChargeCode) ? reverseChargeCode : null,
       currency,
       expenseDate,
       dueDate: dueDate || null,
@@ -320,6 +334,7 @@ export function ExpenseForm({
               <input
                 className={inputClass}
                 placeholder="CZ12345678"
+                required={isReverseCharge}
                 pattern="[A-Za-z]{2}[0-9A-Za-z]{2,12}"
                 maxLength={14}
                 value={supplierDic}
@@ -329,7 +344,7 @@ export function ExpenseForm({
             </label>
             <label className="block">
               <span className={label}>{t('documentNumberLabel')}</span>
-              <input className={inputClass} maxLength={64} value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value)} />
+              <input className={inputClass} maxLength={64} required={isReverseCharge} value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value)} />
             </label>
             <label className="block">
               <span className={label}>{t('variableSymbolLabel')}</span>
@@ -370,7 +385,7 @@ export function ExpenseForm({
           </label>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <label className="block">
-              <span className={label}>{t('amountLabel')}</span>
+              <span className={label}>{isReverseCharge ? t('amountLabelReverseCharge') : t('amountLabel')}</span>
               <input
                 type="number"
                 min="0"
@@ -404,11 +419,39 @@ export function ExpenseForm({
           </div>
           {Number(amount) > 0 && (
             <p className="mt-2 text-sm text-muted-foreground">
-              {t('vatBreakdown', {
-                base: formatMoney(Number(amount) - vatPart, currency, locale),
+              {t(isReverseCharge ? 'vatBreakdownReverseCharge' : 'vatBreakdown', {
+                base: formatMoney(basePart, currency, locale),
                 vat: formatMoney(vatPart, currency, locale)
               })}
             </p>
+          )}
+          {Number(vatRate) > 0 && (
+            <label className="mt-3 flex items-start gap-2.5 text-sm">
+              <input
+                type="checkbox"
+                checked={reverseCharge}
+                onChange={(e) => setReverseCharge(e.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-primary"
+              />
+              <span>
+                <span className="font-medium">{t('reverseChargeLabel')}</span>
+                <span className="block text-xs text-muted-foreground">{t('reverseChargeHint')}</span>
+              </span>
+            </label>
+          )}
+          {isReverseCharge && (
+            <label className="mt-3 block">
+              <span className={label}>{tRc('reverseChargeCode')}</span>
+              <select className={inputClass} value={reverseChargeCode} onChange={(e) => setReverseChargeCode(e.target.value)}>
+                <option value="">{tRc('reverseChargeCodeNone')}</option>
+                {REVERSE_CHARGE_CODE_VALUES.map((code) => (
+                  <option key={code} value={code}>
+                    {code} – {tRc(`reverseChargeCodes.${code}`)}
+                  </option>
+                ))}
+              </select>
+              <span className="mt-1 block text-xs text-muted-foreground">{t('reverseChargeRequiredHint')}</span>
+            </label>
           )}
         </section>
 

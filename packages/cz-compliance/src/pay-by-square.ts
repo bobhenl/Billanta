@@ -1,193 +1,108 @@
 /**
- * PAY by square generator: the Slovak Banking Association's payment QR
- * code, the Slovak counterpart of the Czech QR Platba (SPAYD). Every Slovak
- * banking app reads it.
+ * PAY by square generator, the Slovak counterpart of SPAYD.
  *
- * Spec: "by square – PAY specifications 1.2.0", Slovenská banková asociácia,
- * https://www.sbaonline.sk/wp-content/uploads/2020/03/bysquare-PAYspecifications-1.2.0.pdf
+ * PAY by square is the Slovak Banking Association's standard for payment QR
+ * codes (spec: https://bsqr.co/schema/, current version 1.2.0). Unlike SPAYD
+ * it is not plain text: the fields are tab-joined, prefixed with a CRC32,
+ * LZMA-compressed and base32hex-encoded. The compression and header layout
+ * are easy to get subtly wrong, so we use the `bysquare` library (Filip
+ * Seman, Apache-2.0, https://github.com/xseman/bysquare) and only map our
+ * invoice fields onto its data model. See THIRD_PARTY_NOTICES.md.
  *
- * Encoding (spec 3.8–3.13):
- *   1. Field values in the XSD order, joined by horizontal tabs (UTF-8).
- *   2. CRC32 of that sequence, little-endian, put in front of it.
- *   3. Raw LZMA1 (lc=3, lp=0, pb=2, dictionary 2^17), no .lzma header.
- *   4. Prefixed with the 2-byte by square header (type, version, document
- *      type, reserved: 4 bits each, all 0 for PAY) and the uncompressed
- *      size as a little-endian 16-bit word.
- *   5. Base32hex (0–9, A–V) over the bit stream, zero-padded to 5 bits.
- *
- * The payload is a few hundred bytes at most, so the LZMA stream here codes
- * every byte as a literal: a valid stream any LZMA decoder reads, without
- * pulling in a full compressor.
+ * Exported as the `@faktur/cz-compliance/pay-by-square` subpath, not from the
+ * package index: `bysquare` pulls in `validator`, and the index is imported
+ * by client components that never draw a QR code.
  */
+import { encode, PaymentOptions } from 'bysquare/pay';
 
 export interface PayBySquareParams {
   /** Beneficiary IBAN. Required. */
   iban: string;
+  /** Optional BIC of the beneficiary's bank. */
   bic?: string;
-  /** Amount payable; left out for "any amount". */
+  /** Amount to pay. Omit to let the payer type it. */
   amount?: number;
-  /** ISO 4217, defaults to EUR. */
+  /** ISO 4217 currency code. Defaults to "EUR". */
   currency?: string;
-  dueDate?: Date;
-  /** Variabilný symbol, up to 10 digits. */
+  /** Variable symbol, up to 10 digits. */
   variableSymbol?: string;
-  /** Konštantný symbol, up to 4 digits. */
+  /** Constant symbol, up to 4 digits. */
   constantSymbol?: string;
-  /** Špecifický symbol, up to 10 digits. */
+  /** Specific symbol, up to 10 digits. */
   specificSymbol?: string;
-  /** Payment note for the payer's statement, up to 140 characters. */
-  note?: string;
-  /** Required by the 1.2.0 schema; up to 70 characters. */
-  beneficiaryName?: string;
-  beneficiaryAddressLine1?: string;
-  beneficiaryAddressLine2?: string;
-}
-
-/** Tabs separate the fields, so a tab inside a value becomes a space (spec 3.8). */
-function clean(value: string | undefined, max?: number): string {
-  const v = (value ?? '').replace(/\t/g, ' ').trim();
-  return max ? v.slice(0, max) : v;
+  /** Note for the payee ("správa pre prijímateľa"), cut to 140 chars. */
+  message?: string;
+  /** Payment due date (UTC calendar day). */
+  dueDate?: Date;
+  /** Beneficiary name. Required by spec 1.2.0. */
+  beneficiaryName: string;
+  beneficiaryStreet?: string;
+  beneficiaryCity?: string;
+  /**
+   * Invoice number, carried as the document's InvoiceID. The field holds at
+   * most 10 characters; a longer number is left out rather than cut, since a
+   * cut number would point at a different invoice. Put it in `message` too.
+   */
+  invoiceId?: string;
 }
 
 function formatDate(date: Date): string {
-  return `${date.getUTCFullYear()}${String(date.getUTCMonth() + 1).padStart(2, '0')}${String(date.getUTCDate()).padStart(2, '0')}`;
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
 }
 
-/** The tab-separated field sequence (spec 3.8), before checksum and compression. */
-export function payBySquareSequence(params: PayBySquareParams): string {
-  const iban = params.iban?.replace(/\s+/g, '').toUpperCase();
-  if (!iban) throw new Error('payBySquareSequence: "iban" is required');
-  const fields = [
-    '', // InvoiceID
-    '1', // number of payments
-    '1', // PaymentOptions: paymentorder
-    params.amount != null ? params.amount.toFixed(2) : '',
-    clean(params.currency ?? 'EUR').toUpperCase(),
-    params.dueDate ? formatDate(params.dueDate) : '',
-    clean(params.variableSymbol, 10),
-    clean(params.constantSymbol, 4),
-    clean(params.specificSymbol, 10),
-    '', // OriginatorsReferenceInformation
-    clean(params.note, 140),
-    '1', // number of bank accounts
-    iban,
-    clean(params.bic).toUpperCase(),
-    '0', // StandingOrderExt: none
-    '0', // DirectDebitExt: none
-    clean(params.beneficiaryName, 70),
-    clean(params.beneficiaryAddressLine1, 70),
-    clean(params.beneficiaryAddressLine2, 70)
-  ];
-  return fields.join('\t');
+/** Symbols are digit-only in the spec; drop anything else rather than fail the whole QR. */
+function digits(value: string | undefined, max: number): string | undefined {
+  const cleaned = (value ?? '').replace(/\D/g, '').slice(0, max);
+  return cleaned || undefined;
 }
 
-const CRC_TABLE = (() => {
-  const table = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    table[n] = c >>> 0;
-  }
-  return table;
-})();
-
-export function crc32(bytes: Uint8Array): number {
-  let crc = 0xffffffff;
-  for (const b of bytes) crc = CRC_TABLE[(crc ^ b) & 0xff]! ^ (crc >>> 8);
-  return (crc ^ 0xffffffff) >>> 0;
+function text(value: string | undefined, max: number): string | undefined {
+  const cleaned = (value ?? '').trim().slice(0, max);
+  return cleaned || undefined;
 }
 
 /**
- * Raw LZMA1 stream (lc=3, lp=0, pb=2) coding every byte as a literal, so the
- * state machine never leaves state 0 and no match models are needed. No end
- * marker: the decoder knows the size from the by square header.
+ * Encodes one payment order as a PAY by square string, ready to be rendered
+ * as a QR code. Diacritics are removed (the library's `deburr`), as the spec
+ * recommends for compatibility with older banking apps.
+ *
+ * @throws {Error} if `iban` or `beneficiaryName` is empty, or the library's
+ * validation rejects the IBAN or BIC.
  */
-function lzmaLiterals(data: Uint8Array): Uint8Array {
-  const out: number[] = [];
-  // Range coder, as in the LZMA SDK. `low` needs 33 bits, so it is a plain number.
-  let low = 0;
-  let range = 0xffffffff;
-  let cache = 0;
-  let cacheSize = 1;
-  const shiftLow = () => {
-    if (low < 0xff000000 || low >= 0x100000000) {
-      const carry = low >= 0x100000000 ? 1 : 0;
-      let temp = cache;
-      do {
-        out.push((temp + carry) & 0xff);
-        temp = 0xff;
-      } while (--cacheSize !== 0);
-      cache = Math.floor(low / 0x1000000) & 0xff;
-    }
-    cacheSize++;
-    low = (low & 0xffffff) * 256;
-  };
-  const encodeBit = (probs: Uint16Array, i: number, bit: number) => {
-    const p = probs[i]!;
-    const bound = (range >>> 11) * p;
-    if (bit === 0) {
-      range = bound;
-      probs[i] = p + ((2048 - p) >>> 5);
-    } else {
-      low += bound;
-      range -= bound;
-      probs[i] = p - (p >>> 5);
-    }
-    while (range < 0x1000000) {
-      range = (range * 256) >>> 0;
-      shiftLow();
-    }
-  };
-  const isMatch = new Uint16Array(12 << 2).fill(1024);
-  const literal = new Uint16Array(0x300 << 3).fill(1024);
-  let prev = 0;
-  data.forEach((byte, pos) => {
-    encodeBit(isMatch, pos & 3, 0); // state 0, posState = pos & (2^pb - 1)
-    const base = 0x300 * (prev >> 5); // lc = 3 high bits of the previous byte
-    let symbol = 1;
-    for (let i = 7; i >= 0; i--) {
-      const bit = (byte >> i) & 1;
-      encodeBit(literal, base + symbol, bit);
-      symbol = (symbol << 1) | bit;
-    }
-    prev = byte;
-  });
-  for (let i = 0; i < 5; i++) shiftLow();
-  return Uint8Array.from(out);
-}
+export function generatePayBySquareString(params: PayBySquareParams): string {
+  const iban = params.iban.replace(/\s+/g, '').toUpperCase();
+  if (!iban) throw new Error('generatePayBySquareString: "iban" is required');
+  const beneficiaryName = text(params.beneficiaryName, 70);
+  if (!beneficiaryName) throw new Error('generatePayBySquareString: "beneficiaryName" is required');
 
-const BASE32HEX = '0123456789ABCDEFGHIJKLMNOPQRSTUV';
-
-function base32hex(bytes: Uint8Array): string {
-  let out = '';
-  let buffer = 0;
-  let bits = 0;
-  for (const b of bytes) {
-    buffer = ((buffer << 8) | b) & 0xffff;
-    bits += 8;
-    while (bits >= 5) {
-      out += BASE32HEX[(buffer >> (bits - 5)) & 31];
-      bits -= 5;
-    }
-  }
-  if (bits > 0) out += BASE32HEX[(buffer << (5 - bits)) & 31];
-  return out;
-}
-
-/** The PAY by square string to render as a QR code (alphanumeric mode). */
-export function generatePayBySquare(params: PayBySquareParams): string {
-  const sequence = new TextEncoder().encode(payBySquareSequence(params));
-  const payload = new Uint8Array(4 + sequence.length);
-  new DataView(payload.buffer).setUint32(0, crc32(sequence), true);
-  payload.set(sequence, 4);
-  if (payload.length > 0xffff) throw new Error('generatePayBySquare: payload too large');
-  const compressed = lzmaLiterals(payload);
-  const bytes = new Uint8Array(4 + compressed.length);
-  // Header: by square type 0 (PAY), version 0, document type 0, reserved 0.
-  bytes[0] = 0x00;
-  bytes[1] = 0x00;
-  bytes[2] = payload.length & 0xff;
-  bytes[3] = payload.length >> 8;
-  bytes.set(compressed, 4);
-  return base32hex(bytes);
+  const invoiceId = params.invoiceId?.trim();
+  const bic = params.bic?.replace(/\s+/g, '').toUpperCase();
+  return encode(
+    {
+      invoiceId: invoiceId && invoiceId.length <= 10 ? invoiceId : undefined,
+      payments: [
+        {
+          type: PaymentOptions.PaymentOrder,
+          // Two decimals, the same rounding the PDF totals use.
+          amount: params.amount === undefined ? undefined : Math.round(params.amount * 100) / 100,
+          currencyCode: (params.currency ?? 'EUR').toUpperCase(),
+          paymentDueDate: params.dueDate ? formatDate(params.dueDate) : undefined,
+          variableSymbol: digits(params.variableSymbol, 10),
+          constantSymbol: digits(params.constantSymbol, 4),
+          specificSymbol: digits(params.specificSymbol, 10),
+          paymentNote: text(params.message, 140),
+          bankAccounts: [bic ? { iban, bic } : { iban }],
+          beneficiary: {
+            name: beneficiaryName,
+            street: text(params.beneficiaryStreet, 70),
+            city: text(params.beneficiaryCity, 70),
+          },
+        },
+      ],
+    },
+    { deburr: true, validate: true },
+  );
 }

@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BuyerDetailsService } from "./buyer-details.service";
-import type { BuyerContact } from "./buyer-details.util";
+import type { BuyerContact, BuyerDetailsField } from "./buyer-details.util";
 
 const TOKEN = "3f2b8c1e-9a4d-4c2e-8b7a-1d2e3f4a5b6c";
 
@@ -21,6 +21,7 @@ const contact = (over: Partial<BuyerContact> = {}): BuyerContact => ({
   legalName: "Nová firma s.r.o.",
   isPerson: false,
   email: null,
+  phone: null,
   ico: null,
   dic: null,
   addressStreet: null,
@@ -32,7 +33,9 @@ const contact = (over: Partial<BuyerContact> = {}): BuyerContact => ({
 
 type Inv = Record<string, unknown>;
 
-function setup(opts: { invoice?: Inv | null; attached?: BuyerContact | null; match?: BuyerContact | null; target?: boolean } = {}) {
+function setup(
+  opts: { invoice?: Inv | null; attached?: BuyerContact | null; match?: BuyerContact | null; target?: boolean; required?: BuyerDetailsField[] } = {}
+) {
   const invoice: Inv | null =
     opts.invoice === null
       ? null
@@ -62,6 +65,7 @@ function setup(opts: { invoice?: Inv | null; attached?: BuyerContact | null; mat
   vi.spyOn(svc, "loadInvoice").mockResolvedValue(invoice as never);
   vi.spyOn(svc, "loadContact").mockResolvedValue(opts.attached === undefined ? contact() : opts.attached);
   vi.spyOn(svc, "findByIdentifier").mockResolvedValue(opts.match ?? null);
+  vi.spyOn(svc, "requiredFor").mockResolvedValue(opts.required ?? ["email", "ico"]);
   const insertContact = vi.spyOn(svc, "insertContact").mockResolvedValue("c-new");
   const updateContact = vi.spyOn(svc, "updateContact").mockResolvedValue();
   return { svc, invoices, notifications, audit, target, insertContact, updateContact, invoiceUpdates };
@@ -72,8 +76,23 @@ describe("BuyerDetailsService.submit", () => {
 
   it("rejects invalid details with 400 before touching the database", async () => {
     const t = setup();
-    await expect(t.svc.submit(TOKEN, { ...body, ico: "" })).rejects.toBeInstanceOf(BadRequestException);
+    await expect(t.svc.submit(TOKEN, { ...body, ico: "123" })).rejects.toBeInstanceOf(BadRequestException);
     expect(t.target).not.toHaveBeenCalled();
+  });
+
+  it("rejects a missing required field with 400 and names it, without touching the contact", async () => {
+    const t = setup({ required: ["email", "phone", "ico"] });
+    const err = await t.svc.submit(TOKEN, { ...body, ico: "" }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(BadRequestException);
+    expect((err as BadRequestException).getResponse()).toMatchObject({ error: "invalid_input", issues: [{ path: "phone" }, { path: "ico" }] });
+    expect(t.updateContact).not.toHaveBeenCalled();
+    expect(t.invoiceUpdates).toEqual([]);
+  });
+
+  it("accepts a company without IČO when the owner did not require it", async () => {
+    const t = setup({ required: ["email"] });
+    await t.svc.submit(TOKEN, { ...body, ico: "" });
+    expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-attached" });
   });
 
   it("is 404 for a malformed or unknown token", async () => {

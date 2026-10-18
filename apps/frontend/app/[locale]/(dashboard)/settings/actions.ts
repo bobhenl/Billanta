@@ -54,8 +54,10 @@ export async function updateInvoiceFormPrefs(
   default_contact_id: string | null;
   default_items: { description: string; quantity: number; unit: string | null; unit_price: number; vat_rate: number | null }[];
   default_note_above: string | null;
-  exchange_rate_mode: 'cnb_daily' | 'annual' | 'none';
+  exchange_rate_mode: 'cnb_daily' | 'none';
+  report_rate_mode: 'daily' | 'annual';
   annual_rates: { year: number; currency: string; rate: number }[];
+  public_link_prefix: 'number' | 'company_number' | 'none';
   },
   company?: {
     default_locale: 'cs' | 'sk' | 'en';

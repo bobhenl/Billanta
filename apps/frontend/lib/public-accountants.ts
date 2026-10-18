@@ -1,63 +1,48 @@
+import { fetchAccountants, type ListingRegion, type PublicAccountant } from '@/lib/accountant-directory';
 import type { Municipality } from '@/lib/municipalities';
 
 /**
- * Accountants who chose to be listed (Settings → Veřejný profil), from the
- * backend's unauthenticated `GET /api/v1/public/accountants`. Server-side
- * only. Fails soft: the town pages render without the list.
+ * Approved accountant listings for a town page: the ones serving the town's
+ * region (kraj). Listings carry regions, not towns, so this is as close as
+ * the directory gets. Fails soft like `fetchAccountants`.
  */
-const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+const REGION_CODES: Record<string, ListingRegion> = {
+  'Hlavní město Praha': 'CZ-10',
+  Středočeský: 'CZ-20',
+  Jihočeský: 'CZ-31',
+  Plzeňský: 'CZ-32',
+  Karlovarský: 'CZ-41',
+  Ústecký: 'CZ-42',
+  Liberecký: 'CZ-51',
+  Královéhradecký: 'CZ-52',
+  Pardubický: 'CZ-53',
+  Vysočina: 'CZ-63',
+  Jihomoravský: 'CZ-64',
+  Olomoucký: 'CZ-71',
+  Zlínský: 'CZ-72',
+  Moravskoslezský: 'CZ-80',
+  'Bratislavský kraj': 'SK-BL',
+  'Trnavský kraj': 'SK-TA',
+  'Trenčiansky kraj': 'SK-TC',
+  'Nitriansky kraj': 'SK-NI',
+  'Žilinský kraj': 'SK-ZI',
+  'Banskobystrický kraj': 'SK-BC',
+  'Prešovský kraj': 'SK-PV',
+  'Košický kraj': 'SK-KI'
+};
 
-export interface PublicAccountant {
-  slug: string;
-  companyName: string;
-  city: string;
-  country: string;
-  tagline: string | null;
-  hasLogo: boolean;
+export function regionCode(m: Municipality): ListingRegion | undefined {
+  return REGION_CODES[m.region];
 }
 
-export async function fetchPublicAccountants(): Promise<PublicAccountant[]> {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/v1/public/accountants`, {
-      next: { revalidate: 3600 },
-      signal: AbortSignal.timeout(3000)
-    });
-    if (!res.ok) return [];
-    const data = (await res.json()) as unknown;
-    return Array.isArray(data) ? (data as PublicAccountant[]) : [];
-  } catch {
-    return [];
-  }
+/** "Jihomoravský kraj", "Kraj Vysočina", "Hlavní město Praha", "Trenčiansky kraj": the region's own name. */
+export function regionLabel(m: Municipality): string {
+  if (m.region === 'Vysočina') return 'Kraj Vysočina';
+  return /kraj$|^Hlavní/.test(m.region) ? m.region : `${m.region} kraj`;
 }
 
-const fold = (v: string) => v.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-
-/**
- * Town names an address city could mean: "Praha 4 - Nusle" → praha,
- * "Brno-Žabovřesky" → brno-zabovresky and brno. Hyphenated towns
- * (Frýdek-Místek) keep their full name as the first candidate.
- */
-function cityKeys(city: string): string[] {
-  const base = fold(city.split(/,|\s\d|\s[-–]\s/)[0] ?? '');
-  const head = base.split('-')[0]!.trim();
-  return head && head !== base ? [base, head] : [base];
-}
-
-/**
- * Listed accountants in `m` itself first, then in the places around it
- * (`around`, e.g. the nearest towns and the district seat). Matched on the
- * name only, so a name shared by two towns lists the firm in both.
- */
-export function accountantsNear(all: PublicAccountant[], m: Municipality, around: Municipality[], limit = 8) {
-  const own = fold(m.name);
-  const near = new Set(around.map((o) => fold(o.name)));
-  const here: PublicAccountant[] = [];
-  const nearby: PublicAccountant[] = [];
-  for (const a of all) {
-    if (a.country !== m.country) continue;
-    const keys = cityKeys(a.city);
-    if (keys.includes(own)) here.push(a);
-    else if (keys.some((k) => near.has(k))) nearby.push(a);
-  }
-  return [...here, ...nearby].slice(0, limit);
+export async function accountantsForTown(m: Municipality, limit = 8): Promise<PublicAccountant[]> {
+  const region = regionCode(m);
+  if (!region) return [];
+  return (await fetchAccountants({ region })).slice(0, limit);
 }

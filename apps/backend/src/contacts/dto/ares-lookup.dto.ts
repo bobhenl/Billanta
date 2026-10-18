@@ -10,6 +10,8 @@ import { z } from "zod";
  */
 export const aresLookupSchema = z.object({
   ico: z.string().regex(/^\d{8}$/, "IČO must be 8 digits"),
+  // The form's country picks the register to ask first (SK → RPO); the AI service sends none.
+  country: z.string().length(2).optional(),
 });
 
 export class AresLookupDto extends createZodDto(aresLookupSchema) {}

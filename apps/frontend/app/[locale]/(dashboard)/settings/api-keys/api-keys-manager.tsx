@@ -8,6 +8,7 @@ import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { createApiKey, revokeApiKey } from './actions';
+import { copyText } from '@/lib/clipboard';
 
 export interface ApiKeyListItem {
   id: string;
@@ -51,7 +52,7 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
     const result = await createApiKey(name, readOnlyKey);
     setGenerating(false);
     if (!result.ok) {
-      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : t('generateFailed'), tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error === 'plan_required' ? t('planRequired') : t('generateFailed'), tone: 'err' });
       return;
     }
     const { key, ...row } = result.data;
@@ -78,7 +79,7 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
   const curl = `curl ${apiBase}/api/v1/invoices \\\n  -H "Authorization: Bearer ${revealedKey ?? 'sk_live_…'}"`;
 
   async function copy(text: string, what: 'key' | 'curl') {
-    await navigator.clipboard.writeText(text);
+    await copyText(text);
     toast(t('reveal.copied'));
     setCopied(what);
     setTimeout(() => setCopied(null), 1500);

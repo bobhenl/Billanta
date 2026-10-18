@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterOptions, periodBreakdown, periodTotals, rateTo, type StatsDoc, type StatsExpense } from "./period-stats";
+import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, rateTo, type StatsDoc, type StatsExpense } from "./period-stats";
 import { matchesFilters, parseReportFilters } from "./report-filters";
 
 const d = (s: string) => new Date(`${s}T00:00:00`);
@@ -194,5 +194,18 @@ describe("report filters", () => {
   it("filter options list currencies, languages and customers from all documents", () => {
     const o = filterOptions([doc({ contactId: "b", contactName: "Beta" }), doc({ contactId: "a", contactName: "Alfa", currency: "EUR", language: "en" })]);
     expect(o).toEqual({ currencies: ["CZK", "EUR"], languages: ["cs", "en"], customers: [{ id: "a", name: "Alfa" }, { id: "b", name: "Beta" }] });
+  });
+});
+
+describe("earliestDay", () => {
+  it("takes the oldest date of documents and expenses, at midnight", () => {
+    const first = earliestDay([new Date(2025, 4, 3, 15, 30), null, new Date(2024, 10, 9, 8), undefined, new Date(2026, 0, 1)]);
+    expect(first && localDay(first)).toBe("2024-11-09");
+    expect(first?.getHours()).toBe(0);
+  });
+
+  it("is null without data, ignoring invalid dates", () => {
+    expect(earliestDay([])).toBeNull();
+    expect(earliestDay([null, new Date(Number.NaN)])).toBeNull();
   });
 });
