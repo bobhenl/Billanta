@@ -85,6 +85,7 @@ const L = {
     no: "č.",
     supplier: "Dodavatel",
     customer: "Odběratel",
+    contactPerson: "Kontaktní osoba",
     ico: "IČO",
     dic: "DIČ",
     nonVatPayer: "Neplátce DPH",
@@ -145,6 +146,7 @@ const L = {
     no: "č.",
     supplier: "Dodávateľ",
     customer: "Odberateľ",
+    contactPerson: "Kontaktná osoba",
     ico: "IČO",
     dic: "DIČ",
     nonVatPayer: "Neplatiteľ DPH",
@@ -204,6 +206,7 @@ const L = {
     no: "No.",
     supplier: "Supplier",
     customer: "Customer",
+    contactPerson: "Contact person",
     ico: "Reg. No.",
     dic: "VAT ID",
     nonVatPayer: "Not a VAT payer",
@@ -501,6 +504,7 @@ export class InvoicePdfService {
     this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, contact.addressPostalCode, right);
     if (contact.ico) doc.text(`${t.ico}: ${contact.ico}`, right);
     if (contact.dic) doc.text(`${t.dic}: ${contact.dic}`, right);
+    if (invoice.buyerContactPerson) doc.text(`${t.contactPerson}: ${invoice.buyerContactPerson}`, right, doc.y, { width: 240 });
     const rightEnd = doc.y;
 
     // Dates (left) and payment details (right).

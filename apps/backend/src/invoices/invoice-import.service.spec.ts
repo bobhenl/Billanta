@@ -342,11 +342,14 @@ describe("InvoiceImportService – party snapshots of imported invoices", () => 
       internalNote: "interní",
       issuePlace: "Brno",
       issuedByName: "Jana",
+      buyerContactPerson: "Petr",
     });
-    expect(contacts[0]).toMatchObject({ legalName: "Alfa s.r.o.", phone: "777 000 111", internalNote: "Kontaktní osoba: Petr" });
+    expect(contacts[0]).toMatchObject({ legalName: "Alfa s.r.o.", phone: "777 000 111", contactPerson: "Petr" });
+    expect(contacts[0]).not.toHaveProperty("internalNote");
     // Phone and contact person describe the contact, not what the document printed.
     expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("phone");
     expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("internalNote");
+    expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("contactPerson");
   });
 
   it("never stores a KH code without reverse charge", async () => {

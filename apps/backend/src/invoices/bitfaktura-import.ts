@@ -143,6 +143,8 @@ export interface BitfakturaInvoice {
   buyer_city?: string | null;
   buyer_post_code?: string | null;
   buyer_country?: string | null;
+  /** The buyer's person on the document, the counterpart of `seller_person`. */
+  buyer_person?: string | null;
   // The seller block as printed on this very invoice (it may differ from
   // today's seller profile). Any of these can be missing or empty.
   seller_name?: string | null;
@@ -432,6 +434,7 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[], capturedAt: D
       note,
       internalNote: longText(raw.internal_note, 4000),
       orderNumber: text(raw.oid, 64),
+      buyerContactPerson: text(raw.buyer_person, 255),
       issuePlace: text(raw.place, 255),
       issuedByName: text(raw.seller_person, 255),
       lines,

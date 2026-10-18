@@ -320,6 +320,7 @@ export class ContactsService {
         dic: dto.dic,
         email: dto.email,
         phone: dto.phone || null,
+        contactPerson: dto.contactPerson || null,
         addressStreet: dto.addressStreet ?? null,
         addressCity: dto.addressCity ?? null,
         addressPostalCode: dto.addressPostalCode ?? null,

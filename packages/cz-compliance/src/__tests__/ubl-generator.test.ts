@@ -69,6 +69,17 @@ describe('generateUblInvoiceXml', () => {
     expect(xml).toContain('Odberateľ &amp; syn a.s.');
   });
 
+  it('puts the buyer contact person into AccountingCustomerParty/Party/Contact/Name', () => {
+    const base = invoice();
+    const xml = generateUblInvoiceXml(invoice({ customer: { ...base.customer, contactName: 'Ján Kováč', email: 'jan@odberatel.sk' } }));
+    expect(XMLValidator.validate(xml)).toBe(true);
+    const contact = parser.parse(xml).Invoice['cac:AccountingCustomerParty']['cac:Party']['cac:Contact'];
+    expect(contact).toEqual({ 'cbc:Name': 'Ján Kováč', 'cbc:ElectronicMail': 'jan@odberatel.sk' });
+    expect(xml).toContain('<cac:Contact><cbc:Name>Ján Kováč</cbc:Name><cbc:ElectronicMail>');
+    const plain = parser.parse(generateUblInvoiceXml(base)).Invoice['cac:AccountingCustomerParty']['cac:Party'];
+    expect(plain['cac:Contact']).toBeUndefined();
+  });
+
   it('maps a non-VAT payer to category O without any VAT identifiers', () => {
     const xml = generateUblInvoiceXml(
       invoice({

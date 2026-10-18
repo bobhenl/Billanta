@@ -87,6 +87,7 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.document_type !== undefined) v.documentType = dto.document_type;
   if (dto.related_invoice_id !== undefined) v.relatedInvoiceId = dto.related_invoice_id ?? null;
   if (dto.contact_id !== undefined) v.contactId = dto.contact_id ?? null;
+  if (dto.buyer_contact_person !== undefined) v.buyerContactPerson = dto.buyer_contact_person || null;
   if (dto.issue_date !== undefined) v.issueDate = dto.issue_date;
   if (dto.due_date !== undefined) v.dueDate = dto.due_date ?? null;
   if (dto.taxable_supply_date !== undefined) v.taxableSupplyDate = dto.taxable_supply_date ?? null;
@@ -454,7 +455,7 @@ export class InvoicesService {
 
   private async requireContact(db: TenantDb, contactId: string) {
     const [contact] = await db
-      .select({ id: schema.contacts.id })
+      .select({ id: schema.contacts.id, contactPerson: schema.contacts.contactPerson })
       .from(schema.contacts)
       .where(eq(schema.contacts.id, contactId))
       .limit(1);
@@ -490,7 +491,7 @@ export class InvoicesService {
   async create(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api" = "manual") {
     const missing = customerRequiredError("save_draft", dto.contact_id);
     if (missing) throw new BadRequestException(missing);
-    if (dto.contact_id) await this.requireContact(db, dto.contact_id);
+    const contact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
     await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
 
     // No db.transaction here: `db` is the request's own transaction (tenant
@@ -501,6 +502,8 @@ export class InvoicesService {
         ...invoiceFieldValues(dto),
         tenantId,
         contactId: dto.contact_id ?? null,
+        // An API caller that leaves it out gets the customer's own contact person, like the form.
+        ...(dto.buyer_contact_person === undefined && { buyerContactPerson: contact?.contactPerson ?? null }),
         issueDate: dto.issue_date ?? new Date(),
         status: "draft",
         source,
@@ -546,12 +549,17 @@ export class InvoicesService {
         if (missing) throw new BadRequestException(missing);
       }
     }
-    if (dto.contact_id) await this.requireContact(db, dto.contact_id);
+    const newContact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
     const documentType = dto.document_type ?? invoice.documentType;
     const relatedId = dto.related_invoice_id !== undefined ? dto.related_invoice_id : invoice.relatedInvoiceId;
     await this.checkRelated(db, documentType, relatedId);
 
     const values = invoiceFieldValues(dto);
+    // Another customer picked without a contact person in the request: the
+    // old customer's person must not stay on the document.
+    if (dto.contact_id !== undefined && (dto.contact_id ?? null) !== invoice.contactId && dto.buyer_contact_person === undefined) {
+      values.buyerContactPerson = newContact?.contactPerson ?? null;
+    }
     // A rate changed by hand on an issued document is no longer the ČNB or
     // annual rate it was printed as; label it as a plain rate from now on.
     if (issued) Object.assign(values, await rateAfterEdit(invoice, values));
@@ -870,6 +878,7 @@ export class InvoicesService {
       .values({
         tenantId,
         contactId: source.contactId,
+        buyerContactPerson: source.buyerContactPerson,
         documentType: to,
         relatedInvoiceId: source.id,
         currency: source.currency,
@@ -973,6 +982,7 @@ export class InvoicesService {
     return {
       sourceNumber: invoice.invoiceNumber,
       contact: contact ?? null,
+      buyerContactPerson: invoice.buyerContactPerson,
       documentType: invoice.documentType,
       currency: invoice.currency,
       bankAccountId: invoice.bankAccountId,
