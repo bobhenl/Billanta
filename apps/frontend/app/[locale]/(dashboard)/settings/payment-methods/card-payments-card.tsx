@@ -9,7 +9,7 @@ import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
 import { type CardPaymentSettings, connectStripe, disconnectStripe, setCardPaymentsEnabled } from '../actions';
 
-const KNOWN_ERRORS = ['invalid_key_format', 'invalid_key', 'not_connected'];
+const KNOWN_ERRORS = ['invalid_key_format', 'invalid_key', 'not_connected', 'plan_required'];
 
 /**
  * Card payments from the invoice link: the company pastes its own Stripe

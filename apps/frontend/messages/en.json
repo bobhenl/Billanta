@@ -1334,7 +1334,8 @@
         "docs": "API documentation (Swagger)"
       },
       "readOnlyBadge": "Read-only",
-      "twoFactorRequired": "API keys can only be created with two-factor authentication."
+      "twoFactorRequired": "API keys can only be created with two-factor authentication.",
+      "planRequired": "This feature is part of a higher plan. Pick one under Plan and billing."
     },
     "backup": {
       "title": "Backup destinations",
@@ -2686,7 +2687,8 @@
           "invalid_key_format": "That doesn't look like a Stripe secret key (sk_… or rk_…). A publishable pk_… key isn't enough.",
           "invalid_key": "Stripe rejected the key. Check that it's valid and has the required permissions.",
           "not_connected": "Connect Stripe first.",
-          "generic": "Couldn't save. Please try again."
+          "generic": "Couldn't save. Please try again.",
+          "plan_required": "This feature is part of a higher plan. Pick one under Plan and billing."
         }
       }
     },

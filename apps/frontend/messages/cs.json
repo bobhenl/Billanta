@@ -1334,7 +1334,8 @@
         "docs": "Dokumentace API (Swagger)"
       },
       "readOnlyBadge": "Jen čtení",
-      "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením."
+      "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením.",
+      "planRequired": "Tahle funkce patří do vyššího tarifu. Vyberte si ho v sekci Tarif a platby."
     },
     "backup": {
       "title": "Zálohování dat",
@@ -2686,7 +2687,8 @@
           "invalid_key_format": "Tohle nevypadá jako tajný klíč Stripe (sk_… nebo rk_…). Publikovatelný klíč pk_… nestačí.",
           "invalid_key": "Stripe klíč odmítl. Zkontrolujte, že je platný a má potřebná oprávnění.",
           "not_connected": "Nejdřív připojte Stripe.",
-          "generic": "Uložení se nepovedlo. Zkuste to prosím znovu."
+          "generic": "Uložení se nepovedlo. Zkuste to prosím znovu.",
+          "plan_required": "Tahle funkce patří do vyššího tarifu. Vyberte si ho v sekci Tarif a platby."
         }
       }
     },

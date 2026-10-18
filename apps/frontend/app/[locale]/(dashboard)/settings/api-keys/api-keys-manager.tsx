@@ -51,7 +51,7 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
     const result = await createApiKey(name, readOnlyKey);
     setGenerating(false);
     if (!result.ok) {
-      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : t('generateFailed'), tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error === 'plan_required' ? t('planRequired') : t('generateFailed'), tone: 'err' });
       return;
     }
     const { key, ...row } = result.data;
