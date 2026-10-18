@@ -8,6 +8,7 @@ import { SITE_URL } from '@/lib/site';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { ListingForm, type OwnListing } from './listing-form';
 import { ReferralsPanel, type ReferralOverview } from './referrals-panel';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('referrals');
@@ -16,6 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Invite for credits: the invite link, credit balance, what credits buy and who signed up. */
 export default async function ReferralsPage() {
+  const gate = await settingsGate('referrals');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('referrals');
   const format = await getFormatter();

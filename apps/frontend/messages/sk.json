@@ -440,7 +440,9 @@
       "quotes": "posielate ponuky"
     },
     "customizeOrderHint": "Poradie zmeníte potiahnutím za úchyt alebo šípkami.",
-    "dragToReorder": "Potiahnite na zmenu poradia"
+    "dragToReorder": "Potiahnite na zmenu poradia",
+    "exportsCta": "Exporty pre účtovníka",
+    "emptyHintReadOnly": "Zatiaľ tu nie sú žiadne doklady. Keď firma vystaví prvú faktúru, uvidíte tu tržby, graf aj odberateľov."
   },
   "invoices": {
     "hover": {
@@ -1510,7 +1512,8 @@
       "groups": {
         "account": "Účet a firma",
         "data": "Dáta",
-        "integrations": "Prepojenia"
+        "integrations": "Prepojenia",
+        "personal": "Môj účet"
       },
       "items": {
         "profile": {
@@ -1609,7 +1612,8 @@
           "title": "E-mailové upozornenia",
           "description": "Ktoré e-maily vám chodia, týždenný prehľad a tichý režim cez noc."
         }
-      }
+      },
+      "managedByAdmins": "Údaje firmy, tím, predplatné a ďalšie nastavenia firmy spravuje vlastník alebo administrátor."
     },
     "profile": {
       "title": "Môj profil",
@@ -3207,6 +3211,12 @@
       "errors": {
         "invalid_time_zone": "Neznáme časové pásmo."
       }
+    },
+    "noAccess": {
+      "title": "Túto časť spravuje vlastník alebo administrátor",
+      "body": "S rolou „{role}“ sa tieto nastavenia firmy nedajú meniť. Ak ich potrebujete upraviť, požiadajte vlastníka alebo administrátora firmy.",
+      "bodyGeneric": "Vaša rola v tejto firme k tomuto nastaveniu nemá prístup. Požiadajte vlastníka alebo administrátora firmy.",
+      "back": "Späť do nastavení"
     }
   },
   "billing": {

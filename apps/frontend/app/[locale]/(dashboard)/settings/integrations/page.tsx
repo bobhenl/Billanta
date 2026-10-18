@@ -5,6 +5,7 @@ import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { SettingsHeader } from '@/components/settings-header';
 import { fetchIntegrations } from '@/lib/integration-actions';
 import { IntegrationsSettings } from './integrations-settings';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.integrations');
@@ -13,6 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Integrace: calendar & RSS feeds, webhooks (Discord, Slack, JSON) and the API. */
 export default async function IntegrationsPage() {
+  const gate = await settingsGate('integrations');
+  if (gate) return gate;
   const t = await getTranslations('settings.integrations');
   const state = await fetchIntegrations();
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3100').replace(/\/$/, '');

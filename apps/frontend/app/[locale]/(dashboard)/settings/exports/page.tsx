@@ -13,6 +13,7 @@ import { AnnualSummary } from './annual-summary';
 import { ExportPicker } from './export-picker';
 import { VatFilings } from './vat-filings';
 import { EpoGuide } from './epo-guide';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.exports');
@@ -20,6 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ExportsPage() {
+  const gate = await settingsGate('exports');
+  if (gate) return gate;
   const t = await getTranslations('settings.exports');
   const tDir = await getTranslations('accountantDirectory.promo');
   // The page works without it (CZ, nothing prefilled); the cards load their own figures.

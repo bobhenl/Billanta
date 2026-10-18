@@ -8,6 +8,7 @@ import { canManage, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/
 import { PaymentMethodsEditor } from './payment-methods-editor';
 import { CardPaymentsCard } from './card-payments-card';
 import type { CardPaymentSettings } from '../actions';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.paymentMethods');
@@ -16,6 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Způsoby úhrady: the company's own payment methods offered in the invoice form. */
 export default async function PaymentMethodsPage() {
+  const gate = await settingsGate('paymentMethods');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.paymentMethods');
 

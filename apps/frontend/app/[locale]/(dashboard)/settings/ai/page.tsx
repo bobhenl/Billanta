@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { apiFetch } from '@/lib/api-client';
 import type { AiSettings } from '../../invoices/new/types';
 import { AiSettingsForm } from './ai-settings-form';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.ai');
@@ -10,6 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AiSettingsPage() {
+  const gate = await settingsGate('ai');
+  if (gate) return gate;
   const t = await getTranslations('settings.ai');
   const settings = await apiFetch<AiSettings>('/api/v1/ai/settings').catch(() => null);
 

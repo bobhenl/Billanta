@@ -8,6 +8,7 @@ import { fetchAccountants, type PublicAccountant } from '@/lib/accountant-direct
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { TeamManager, type TeamData } from './team-manager';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.team');
@@ -15,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TeamPage() {
+  const gate = await settingsGate('team');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.team');
   const session = await auth();
