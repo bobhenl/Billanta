@@ -1,0 +1,300 @@
+/*
+ * Print sheets. Fixed ink colours instead of theme tokens: paper is white in
+ * dark mode too, and the one accent (indigo-600) still reads as a dark grey
+ * on a black-and-white printer. Every length is in em, and the sheet's
+ * font-size (set inline in mm) scales the whole layout between A4, A5 and A6.
+ */
+
+.sheet {
+  --ink: #0a0a0a;
+  --accent: #4f46e5;
+  --muted: #3f3f46;
+  --line: #a1a1aa;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.25;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Inset well past the 4–5 mm that office printers cannot reach. */
+.body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 2.4em 2.4em 2em;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  padding-bottom: 0.7em;
+  border-bottom: 0.2em solid var(--ink);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  font-size: 1.3em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.mark {
+  width: 1.3em;
+  height: 1.3em;
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.event {
+  margin-top: 1.6em;
+  color: var(--accent);
+  font-size: 1.1em;
+  font-weight: 800;
+}
+
+.headline {
+  margin: 0.45em 0 0;
+  font-size: calc(4.4em * var(--fit, 1));
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.event + .headline {
+  margin-top: 0.15em;
+}
+
+.withTabs .headline {
+  font-size: calc(3.9em * var(--fit, 1));
+}
+
+.lead {
+  max-width: 30em;
+  margin: 0.9em 0 0;
+  color: var(--muted);
+  font-size: 1.45em;
+  line-height: 1.3;
+}
+
+.benefits {
+  margin: 1.8em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefit {
+  display: grid;
+  grid-template-columns: 2.6em 1fr;
+  gap: 0 0.4em;
+  padding: 0.75em 0;
+  border-top: 0.06em solid var(--line);
+}
+
+.benefit:last-child {
+  border-bottom: 0.06em solid var(--line);
+}
+
+.num {
+  color: var(--accent);
+  font-size: 1.4em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.benefitTitle {
+  display: block;
+  font-size: 1.4em;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.benefitText {
+  display: block;
+  margin-top: 0.15em;
+  color: var(--muted);
+  font-size: 1.12em;
+}
+
+.withTabs .benefit {
+  padding: 0.55em 0;
+}
+
+.cta {
+  display: grid;
+  grid-template-columns: 13em 1fr;
+  gap: 1.6em;
+  align-items: end;
+  margin-top: auto;
+  padding-top: 1.6em;
+}
+
+.withTabs .cta {
+  grid-template-columns: 10em 1fr;
+}
+
+.qr {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ctaText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.9em;
+}
+
+.scan {
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.url {
+  margin-top: 0.15em;
+  font-size: 1.3em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.code {
+  padding: 0.55em 0.8em 0.6em;
+  border: 0.22em solid var(--accent);
+}
+
+.codeLabel {
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.codeValue {
+  display: block;
+  margin-top: 0.1em;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
+  font-size: 2.5em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.codeValue.long {
+  font-size: 1.7em;
+}
+
+.foot {
+  margin: 1.2em 0 0;
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+/*
+ * Tear-off strips: a fixed 2.6 mm base, because a strip is about 25 mm wide
+ * on every sheet size and its QR has to stay scannable.
+ */
+.tabs {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  flex-shrink: 0;
+  padding: 0 5mm;
+  border-top: 0.3mm dashed var(--ink);
+  font-size: 2.6mm;
+}
+
+.tab {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.1em 0.6em 2.2em;
+  text-align: center;
+}
+
+.tab + .tab {
+  border-left: 0.3mm dashed var(--ink);
+}
+
+.tabQr {
+  width: 7.2em;
+}
+
+.tabTitle {
+  margin-top: 0.6em;
+  font-size: 0.95em;
+  font-weight: 800;
+}
+
+.tabHost {
+  font-size: 0.9em;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.tabCode {
+  margin-top: 0.3em;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace;
+  font-size: 1.1em;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.scissors {
+  position: absolute;
+  left: 2mm;
+  width: 4mm;
+  height: 4mm;
+  top: -2.15mm;
+  background: #fff;
+}
+
+/* Four A6 flyers on one A4 sheet. The grey hairlines are where to cut. */
+.fourUp {
+  display: grid;
+  grid-template-columns: 105mm 105mm;
+  grid-template-rows: 148mm 148mm;
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  background: #fff;
+}
+
+.fourUp > .sheet:nth-child(odd) {
+  border-right: 0.2mm dashed #a1a1aa;
+}
+
+.fourUp > .sheet:nth-child(-n + 2) {
+  border-bottom: 0.2mm dashed #a1a1aa;
+}
