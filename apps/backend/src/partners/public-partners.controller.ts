@@ -1,6 +1,7 @@
-import { Controller, Get, HttpCode, Ip, Param, Post, Query, Req } from "@nestjs/common";
+import { Controller, Get, Header, HttpCode, Ip, Param, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
+import { PUBLIC_LIST } from "../common/cache-control";
 import { visitorIp } from "../guest-invoices/guest-limits";
 import { PARTNER_CATEGORIES, PartnersService, type PartnerCategory } from "./partners.service";
 
@@ -15,6 +16,7 @@ export class PublicPartnersController {
   constructor(private readonly partners: PartnersService) {}
 
   @Get()
+  @Header("Cache-Control", PUBLIC_LIST)
   @ApiOperation({ summary: "Active partners (`?category=`, `?footer=1` for the footer strip)" })
   list(@Query("category") category?: string, @Query("footer") footer?: string) {
     const known = (PARTNER_CATEGORIES as readonly string[]).includes(category ?? "") ? (category as PartnerCategory) : undefined;

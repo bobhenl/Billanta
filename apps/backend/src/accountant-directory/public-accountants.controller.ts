@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Header, Param, ParseUUIDPipe, Patch, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { PUBLIC_LIST } from "../common/cache-control";
 import { PlatformAdminGuard } from "../partners/platform-admin.guard";
 import { AccountantDirectoryService } from "./accountant-directory.service";
 import { ReviewListingDto } from "./dto";
@@ -12,6 +13,7 @@ export class PublicAccountantsController {
   constructor(private readonly directory: AccountantDirectoryService) {}
 
   @Get()
+  @Header("Cache-Control", PUBLIC_LIST)
   @ApiOperation({ summary: "Approved accountant listings (`?region=CZ-64`, `?service=vat`)" })
   list(@Query("region") region?: string, @Query("service") service?: string) {
     return this.directory.listPublic({ region, service });
