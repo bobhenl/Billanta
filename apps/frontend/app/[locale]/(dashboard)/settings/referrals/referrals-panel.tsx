@@ -8,6 +8,7 @@ import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { redeemCredits, setReferralProgram } from './actions';
+import { copyText } from '@/lib/clipboard';
 
 type Program = 'friend' | 'accountant';
 type CreditPlan = 'start' | 'plus' | 'business';
@@ -39,7 +40,7 @@ export function ReferralsPanel({ overview, link, readOnly }: { overview: Referra
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(link);
+      await copyText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

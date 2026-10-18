@@ -7,6 +7,7 @@ import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { setContactPortal } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
 /** The customer's portal link (all their documents on one page): turn on, copy, renew, turn off. */
 export function ClientPortalCard({ contactId, token }: { contactId: string; token: string | null }) {
@@ -31,7 +32,7 @@ export function ClientPortalCard({ contactId, token }: { contactId: string; toke
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await copyText(url);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {
       toast({ text: t('failed'), tone: 'err' });

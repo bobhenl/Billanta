@@ -5,6 +5,7 @@ import { toast } from '@/components/toaster';
 import { useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { InfoHint } from '@/components/info-hint';
+import { copyText } from '@/lib/clipboard';
 import {
   createBackupDestination,
   deleteBackupDestination,
@@ -280,7 +281,7 @@ export function BackupDestinationsManager({
 
   async function handleCopy(value = revealedSecret) {
     if (!value) return;
-    await navigator.clipboard.writeText(value);
+    await copyText(value);
     toast(t('reveal.copied'));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);

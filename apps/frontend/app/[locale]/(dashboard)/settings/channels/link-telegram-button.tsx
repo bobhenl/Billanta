@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from '@/components/toaster';
 import { createLinkingCode, unlinkChannel } from './actions';
+import { copyText } from '@/lib/clipboard';
 
 /**
  * "Link Telegram": asks the backend for a single-use code (30 min) and shows
@@ -33,7 +34,7 @@ export function LinkTelegramButton({ botUsername }: { botUsername: string }) {
 
   async function handleCopy() {
     if (!code) return;
-    await navigator.clipboard.writeText(`/start ${code.token}`);
+    await copyText(`/start ${code.token}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }

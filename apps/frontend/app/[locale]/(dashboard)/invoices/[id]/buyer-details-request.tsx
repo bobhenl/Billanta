@@ -8,6 +8,7 @@ import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import type { BuyerDetailsOutcome } from '@/lib/invoice-ui';
 import { cancelBuyerDetails, requestBuyerDetails } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
 type Field = 'email' | 'phone' | 'ico' | 'dic';
 const FIELDS: Field[] = ['email', 'phone', 'ico', 'dic'];
@@ -59,15 +60,14 @@ export function BuyerDetailsRequest({
   const [auto, setAuto] = useState(autoIssue);
   const [fields, setFields] = useState<Field[]>(required);
   const [saveDefault, setSaveDefault] = useState(false);
-  // The site may run without HTTPS, where the clipboard API is missing: then the link is shown to copy by hand.
+  // When copying fails even with the HTTP fallback (copyText), the link is shown to copy by hand.
   const [manualUrl, setManualUrl] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const linkOf = (tok: string) => `${window.location.origin}/d/${tok}`;
   const copy = async (url: string) => {
     try {
-      if (!navigator.clipboard || !window.isSecureContext) throw new Error('no clipboard');
-      await navigator.clipboard.writeText(url);
+      await copyText(url);
       setManualUrl(null);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {

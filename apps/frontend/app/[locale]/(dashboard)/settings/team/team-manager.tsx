@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { PERMISSION_AREAS, type PermissionLevel } from '@/lib/access';
 import { effective, presetOf, TEAM_PRESETS, toAssignment, type Perms } from '@/lib/team-presets';
 import { changeMemberRole, inviteMember, removeMember, revokeInvitation, type MemberPermissions, type TeamRole } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
 export interface TeamData {
   members: {
@@ -137,7 +138,7 @@ export function TeamManager({ team, canManage, currentUserId }: { team: TeamData
 
   const copy = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
+      await copyText(text);
       toast({ text: t('copied'), tone: 'ok' });
     } catch {
       toast({ text: text, tone: 'info' });

@@ -10,6 +10,7 @@ import { useRouter } from '@/i18n/navigation';
 import { BUILTIN_GROUPS, BUILTIN_VARS, MAX_TEMPLATE_VARS, PRESET_VARS, sampleValues, VAR_KEY_RE, type TemplateVar } from '@/lib/template-vars';
 import { cn } from '@/lib/utils';
 import { updateTemplateVars } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
 /** "Obchodní podmínky" → "obchodni_podminky". */
 const slug = (label: string) =>
@@ -51,7 +52,7 @@ export function VariablesEditor({
 
   const copy = async (key: string) => {
     try {
-      await navigator.clipboard.writeText(`{${key}}`);
+      await copyText(`{${key}}`);
       setCopied(key);
       setTimeout(() => setCopied((c) => (c === key ? null : c)), 1200);
     } catch {

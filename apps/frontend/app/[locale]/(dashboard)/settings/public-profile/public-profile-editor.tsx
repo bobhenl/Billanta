@@ -11,6 +11,7 @@ import { PROFILE_DOMAIN, profileOrderUrl, profileUrl } from '@/lib/site';
 import type { PublicProfileSettings } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import { checkProfileSlug, updatePublicProfile } from '../actions';
+import { copyText } from '@/lib/clipboard';
 
 const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
 const MAX_SERVICES = 12;
@@ -136,7 +137,7 @@ export function PublicProfileEditor({
   const copy = async (text: string | null, key = 'profile') => {
     if (!text) return;
     try {
-      await navigator.clipboard.writeText(text);
+      await copyText(text);
       setCopied(key);
       setTimeout(() => setCopied(null), 1500);
     } catch {
