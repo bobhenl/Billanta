@@ -1,6 +1,6 @@
 import { daysAgo } from "./dates";
 import type { DemoInvoice } from "./invoices";
-import { SUPPLIERS, type DemoKind } from "./kinds";
+import { SUPPLIERS, type DemoKind, type DemoLanguage } from "./kinds";
 
 /** What the seeder knows about an invoice after InvoicesService issued it. */
 export interface SeededInvoice {
@@ -30,9 +30,9 @@ export interface DemoBankTransaction {
  * someone chose to ignore. Counterparty accounts are left empty on purpose:
  * any valid-looking number could belong to a real person.
  */
-export function buildBankTransactions(kind: DemoKind, now: Date, seeded: SeededInvoice[]): DemoBankTransaction[] {
+export function buildBankTransactions(kind: DemoKind, now: Date, seeded: SeededInvoice[], language: DemoLanguage = SUPPLIERS[kind].language): DemoBankTransaction[] {
   const sup = SUPPLIERS[kind];
-  const sk = sup.language === "sk";
+  const say = (cs: string, sk: string, en: string) => (language === "en" ? en : language === "sk" ? sk : cs);
   const accountCurrencies = new Set(sup.bank.map((b) => b.currency));
   const out: DemoBankTransaction[] = [];
 
@@ -50,7 +50,7 @@ export function buildBankTransactions(kind: DemoKind, now: Date, seeded: SeededI
       counterpartyName: s.counterpartyName,
       matchedInvoiceId: s.id,
       status: "matched",
-      message: spec.documentType === "credit_note" ? (sk ? "Vrátenie preplatku" : "Vrácení přeplatku") : null,
+      message: spec.documentType === "credit_note" ? say("Vrácení přeplatku", "Vrátenie preplatku", "Overpayment refund") : null,
     });
   }
 
@@ -68,11 +68,11 @@ export function buildBankTransactions(kind: DemoKind, now: Date, seeded: SeededI
       counterpartyName: overdue.counterpartyName,
       matchedInvoiceId: null,
       status: "unmatched",
-      message: sk ? "Úhrada faktúry po odpočítaní zľavy" : "Úhrada faktury po odečtení slevy",
+      message: say("Úhrada faktury po odečtení slevy", "Úhrada faktúry po odpočítaní zľavy", "Invoice payment less a discount"),
     });
   }
 
-  const unknownPayer = sk ? "Ján Baláž" : "Petr Novotný";
+  const unknownPayer = sup.language === "sk" ? "Ján Baláž" : "Petr Novotný";
   out.push(
     {
       transactionDate: daysAgo(now, 1),
@@ -82,7 +82,7 @@ export function buildBankTransactions(kind: DemoKind, now: Date, seeded: SeededI
       counterpartyName: unknownPayer,
       matchedInvoiceId: null,
       status: "unmatched",
-      message: sk ? "Záloha" : "Záloha na zakázku",
+      message: say("Záloha na zakázku", "Záloha", "Advance for an order"),
     },
     {
       transactionDate: daysAgo(now, 30),
@@ -92,7 +92,7 @@ export function buildBankTransactions(kind: DemoKind, now: Date, seeded: SeededI
       counterpartyName: null,
       matchedInvoiceId: null,
       status: "ignored",
-      message: sk ? "Poplatok za vedenie účtu" : "Poplatek za vedení účtu",
+      message: say("Poplatek za vedení účtu", "Poplatok za vedenie účtu", "Account fee"),
     },
   );
 

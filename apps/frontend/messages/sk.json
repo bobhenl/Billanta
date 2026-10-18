@@ -57,7 +57,7 @@
     "hero": {
       "title": "Fakturácia pre českých a slovenských podnikateľov bez papierovania",
       "subtitle": "Vystavujte faktúry hlasom cez Telegram alebo WhatsApp, exportujte ich do ISDOC a majte istotu, že všetko zodpovedá pravidlám ARES aj platnej legislatíve.",
-      "cta": "Vyskúšať zadarmo",
+      "cta": "Založiť účet zadarmo",
       "secondaryCta": "Zistiť viac",
       "eyebrow": "Fakturácia pre SK a CZ",
       "points": {
@@ -3709,7 +3709,7 @@
     "lead": "{name} aj kdekoľvek inde v Česku a na Slovensku: vystavujte faktúry, sledujte DPH a exportujte do ISDOC.",
     "body": "Billanta vystavuje faktúry vo formáte ISDOC, ťahá údaje o odberateľoch priamo z registra ARES a stráži nadväznosť číselných radov aj sadzby DPH. Cez Telegram alebo WhatsApp stačí nahovoriť hlasovku a Billanta z nej pripraví návrh faktúry na rýchlu kontrolu – hotovo je až vo chvíli, keď ju sami potvrdíte.",
     "localNote": "ISDOC, ARES aj sadzby DPH platia rovnako po celom Česku a na Slovensku – {district} nevynímajúc. Billanta nevyžaduje žiadne miestne nastavenie ani nový účet navyše.",
-    "cta": "Vyskúšať zadarmo",
+    "cta": "Založiť účet zadarmo",
     "browseCta": "Všetky mestá a obce – {region} →",
     "indexTitle": "Fakturačný softvér podľa miest a obcí",
     "indexLead": "Billanta funguje rovnako spoľahlivo pre podnikateľov kdekoľvek v Česku a na Slovensku. Vyberte kraj a nájdite stránku pre svoje mesto alebo obec.",
@@ -4960,7 +4960,7 @@
     "stepsTitle": "Ako to funguje",
     "faqTitle": "Časté otázky",
     "relatedTitle": "Ďalšie funkcie",
-    "cta": "Vyskúšať zadarmo",
+    "cta": "Založiť účet zadarmo",
     "ctaNote": "Bez platobnej karty. Funkcie sú dostupné hneď po registrácii.",
     "more": "Viac o funkcii",
     "items": {
@@ -7179,7 +7179,7 @@
       "ratesSince": "Sadzby platia od {date}.",
       "ctaTitle": "Fakturujete? Billanta to spočíta z vašich dokladov",
       "ctaText": "V aplikácii uvidíte DPH, minimálne preddavky a prehľad príjmov rovno z vystavených faktúr a výdavkov.",
-      "ctaButton": "Vyskúšať zadarmo",
+      "ctaButton": "Založiť účet zadarmo",
       "ctaNote": "Bez platobnej karty. Základný tarif je zadarmo.",
       "related": "Ďalšie kalkulačky",
       "allCalculators": "Všetky kalkulačky",
@@ -7886,7 +7886,7 @@
     "disclaimer": "Článok je zhrnutie, nie daňové ani právne poradenstvo. Pred rozhodnutím si údaje overte v zdrojoch alebo u daňového poradcu.",
     "ctaTitle": "Fakturujte bez starostí",
     "ctaBody": "Billanta stráži splatnosti, QR platby a exporty pre účtovníkov. Začnite zadarmo.",
-    "ctaButton": "Vyskúšať zadarmo"
+    "ctaButton": "Založiť účet zadarmo"
   },
   "adminBlog": {
     "title": "Blog",
@@ -8351,7 +8351,7 @@
       },
       "sk_vat_sro": {
         "title": "s.r.o., platiteľ DPH",
-        "description": "Slovenská firma v eurách, faktúry aj aplikácia v slovenčine."
+        "description": "Slovenská firma v eurách so slovenskou DPH a faktúrami v slovenčine."
       }
     },
     "country": {

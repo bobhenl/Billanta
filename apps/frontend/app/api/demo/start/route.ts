@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         ...(ip ? { 'x-guest-ip': ip } : {})
       },
       // `empty`: the company and its settings, no documents ("start from scratch").
-      body: JSON.stringify({ kind: body.kind, empty: body.empty === true }),
+      body: JSON.stringify({ kind: body.kind, empty: body.empty === true, language: locale }),
       cache: 'no-store',
       // Seeding a company with ~20 invoices takes a moment.
       signal: AbortSignal.timeout(20000)

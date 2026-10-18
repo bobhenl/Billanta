@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DbService } from "../db/db.service";
-import { SUPPLIERS } from "./dataset/kinds";
-import type { DemoKind } from "./dataset";
+import { buildDemoDataset, type DemoKind, type DemoLanguage } from "./dataset";
 import { demoConfig } from "./demo-config";
 import { DemoSeedService } from "./demo-seed.service";
 
@@ -25,10 +24,14 @@ export class DemoService {
     private readonly seeder: DemoSeedService,
   ) {}
 
-  /** `empty`: the company and its settings only, for a visitor who wants to start from nothing. */
-  async create(kind: DemoKind, ipBucket: string, empty = false): Promise<DemoStart> {
+  /**
+   * `empty`: the company and its settings only, for a visitor who wants to
+   * start from nothing. `language` is the site the visitor came from.
+   */
+  async create(kind: DemoKind, ipBucket: string, empty = false, language?: DemoLanguage): Promise<DemoStart> {
     const cfg = demoConfig();
-    const sup = SUPPLIERS[kind];
+    // The company's settings (invoice language, bank labels) follow the visitor's language too.
+    const { supplier: sup, language: lang } = buildDemoDataset(kind, new Date(), language);
     let row: { tenant_id: string; user_id: string; expires_at: Date };
     try {
       [row] = await this.dbService.sql<{ tenant_id: string; user_id: string; expires_at: Date }[]>`
@@ -44,7 +47,7 @@ export class DemoService {
     }
 
     try {
-      if (!empty) await this.seeder.seed(row.tenant_id, row.user_id, kind);
+      if (!empty) await this.seeder.seed(row.tenant_id, row.user_id, kind, lang);
       // Whatever is created from here on is the visitor's, and can go to their own account.
       await this.dbService.sql`SELECT mark_demo_seeded(${row.tenant_id})`;
     } catch (err) {

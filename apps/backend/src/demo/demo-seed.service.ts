@@ -7,7 +7,7 @@ import { drizzleTx } from "../db/drizzle-tx";
 import { createInvoiceSchema, updateInvoiceSchema } from "../invoices/dto/create-invoice.dto";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
 import { InvoicesService } from "../invoices/invoices.service";
-import { buildBankTransactions, buildDemoDataset, type DemoInvoice, type DemoKind, type SeededInvoice } from "./dataset";
+import { buildBankTransactions, buildDemoDataset, type DemoInvoice, type DemoKind, type DemoLanguage, type SeededInvoice } from "./dataset";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -26,8 +26,8 @@ export class DemoSeedService {
     private readonly invoices: InvoicesService,
   ) {}
 
-  async seed(tenantId: string, userId: string, kind: DemoKind, now = new Date()): Promise<void> {
-    const ds = buildDemoDataset(kind, now);
+  async seed(tenantId: string, userId: string, kind: DemoKind, language: DemoLanguage, now = new Date()): Promise<void> {
+    const ds = buildDemoDataset(kind, now, language);
     await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
       await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
@@ -125,11 +125,11 @@ export class DemoSeedService {
         });
       }
 
-      const statement = buildBankTransactions(kind, now, seeded);
+      const statement = buildBankTransactions(kind, now, seeded, ds.language);
       if (statement.length > 0) {
         const [imp] = await db
           .insert(schema.bankStatementImports)
-          .values({ tenantId, filename: ds.supplier.language === "sk" ? "vypis-uctu.csv" : "vypis.csv", source: "csv" })
+          .values({ tenantId, filename: { cs: "vypis.csv", sk: "vypis-uctu.csv", en: "statement.csv" }[ds.language], source: "csv" })
           .returning({ id: schema.bankStatementImports.id });
         await db.insert(schema.bankTransactions).values(
           statement.map((t) => ({

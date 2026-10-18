@@ -90,6 +90,7 @@ function writeStorage(key: string, value: unknown) {
 
 export function GuestInvoiceForm() {
   const t = useTranslations('guestInvoice');
+  const tDemo = useTranslations('demo');
   const locale = useLocale();
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -555,9 +556,14 @@ export function GuestInvoiceForm() {
             <div role="status" className="w-full rounded-xl border border-primary/30 bg-accent/50 p-4 text-sm">
               <p className="font-semibold">{t('doneTitle')}</p>
               <p className="mt-1 text-muted-foreground">{t('doneText')}</p>
-              <Link href="/signup" className="mt-3 inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
-                {t('signup')}
-              </Link>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link href="/signup" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
+                  {t('signup')}
+                </Link>
+                <Link href="/demo" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
+                  {tDemo('cta')}
+                </Link>
+              </div>
             </div>
           )}
         </div>
@@ -580,6 +586,9 @@ export function GuestInvoiceForm() {
         <div className="mt-4 flex flex-wrap gap-3">
           <Link href="/signup" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
             {t('signup')}
+          </Link>
+          <Link href="/demo" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
+            {tDemo('cta')}
           </Link>
           <Link href="/features" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
             {t('showcase.all')}

@@ -1,5 +1,6 @@
 import { isValidCzechBankAccount, isValidIban } from "@faktur/cz-compliance";
 import { describe, expect, it } from "vitest";
+import { toEnglish } from "./english";
 import { buildBankTransactions, buildDemoDataset, DEMO_KINDS, type SeededInvoice } from "./index";
 
 const NOW = new Date("2026-10-18T14:30:00Z");
@@ -114,5 +115,30 @@ describe("demo dataset sk_vat_sro", () => {
     expect(ds.supplier.tenant.dic).toMatch(/^SK\d{10}$/);
     const domestic = ds.invoices.filter((i) => i.currency === "EUR" && !i.reverseCharge);
     expect(domestic.every((i) => i.language === "sk")).toBe(true);
+  });
+});
+
+describe.each(DEMO_KINDS)("demo dataset %s in English", (kind) => {
+  const ds = buildDemoDataset(kind, NOW, "en");
+
+  it("has a translation for every text", () => {
+    const missing: string[] = [];
+    toEnglish(buildDemoDataset(kind, NOW), missing);
+    expect(missing).toEqual([]);
+  });
+
+  it("issues every document in English and keeps the numbers", () => {
+    const own = buildDemoDataset(kind, NOW);
+    expect(ds.language).toBe("en");
+    expect(ds.supplier.tenant.default_locale).toBe("en");
+    expect(ds.invoices.every((i) => i.language === "en")).toBe(true);
+    expect(ds.invoices.map((i) => i.lines.map((l) => l.unitPrice * l.quantity))).toEqual(own.invoices.map((i) => i.lines.map((l) => l.unitPrice * l.quantity)));
+  });
+
+  it("writes bank messages in English", () => {
+    const seeded: SeededInvoice[] = ds.invoices
+      .filter((i) => !["draft", "ai_draft"].includes(i.state))
+      .map((spec, n) => ({ spec, id: `id-${n}`, variableSymbol: String(2026000 + n), total: 1000, counterpartyName: spec.contactKey }));
+    for (const t of buildBankTransactions(kind, NOW, seeded, "en")) if (t.message) expect(t.message).toMatch(/^[ -~]+$/);
   });
 });

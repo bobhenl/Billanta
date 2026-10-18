@@ -57,7 +57,7 @@
     "hero": {
       "title": "Invoicing for Czech and Slovak businesses, without the paperwork",
       "subtitle": "Issue invoices by voice over Telegram or WhatsApp, export them to ISDOC, and stay confident everything matches ARES and current regulations.",
-      "cta": "Try it for free",
+      "cta": "Create a free account",
       "secondaryCta": "See how it works",
       "eyebrow": "Invoicing for CZ and SK",
       "points": {
@@ -3709,7 +3709,7 @@
     "lead": "Issue invoices, track VAT, and export to ISDOC – whether you do business in {name} or anywhere else in Czechia and Slovakia.",
     "body": "Billanta issues invoices in the ISDOC format, pulls counterparty details straight from the ARES business registry, and keeps your numbering sequence and VAT rates consistent. Over Telegram or WhatsApp, just send a voice note and Billanta turns it into a draft invoice ready for a quick check – it's only final once you confirm it yourself.",
     "localNote": "ISDOC, ARES, and VAT rates work the same way across all of Czechia and Slovakia – {district} included. Billanta doesn't need any local setup or a separate account.",
-    "cta": "Try it for free",
+    "cta": "Create a free account",
     "browseCta": "View all towns and municipalities in {region}",
     "indexTitle": "Invoicing software by town and municipality",
     "indexLead": "Billanta works just as reliably for businesses anywhere in Czechia and Slovakia. Pick a region to find the page for your town or municipality.",
@@ -4959,7 +4959,7 @@
     "stepsTitle": "How it works",
     "faqTitle": "FAQ",
     "relatedTitle": "More features",
-    "cta": "Try it free",
+    "cta": "Create a free account",
     "ctaNote": "No credit card. Every feature is available right after sign-up.",
     "more": "Learn more",
     "items": {
@@ -7174,7 +7174,7 @@
       "ratesSince": "Rates apply from {date}.",
       "ctaTitle": "Invoicing already? Billanta works this out from your documents",
       "ctaText": "The app shows your tax and insurance estimate, minimum advances and VAT filings straight from the invoices and expenses you record.",
-      "ctaButton": "Try it free",
+      "ctaButton": "Create a free account",
       "ctaNote": "No card needed. The basic plan is free.",
       "related": "More calculators",
       "allCalculators": "All calculators",
@@ -7979,7 +7979,7 @@
     "disclaimer": "This article is a summary, not tax or legal advice. Check the sources or ask a tax adviser before you act on it.",
     "ctaTitle": "Invoicing without the hassle",
     "ctaBody": "Billanta tracks due dates, QR payments and exports for your accountant. Start for free.",
-    "ctaButton": "Try it free"
+    "ctaButton": "Create a free account"
   },
   "adminBlog": {
     "title": "Blog",
@@ -8444,7 +8444,7 @@
       },
       "sk_vat_sro": {
         "title": "Slovak s.r.o., VAT payer",
-        "description": "A Slovak company in euros, with invoices and the app in Slovak."
+        "description": "A Slovak company in euros, with Slovak VAT rates and Slovak customers."
       }
     },
     "country": {

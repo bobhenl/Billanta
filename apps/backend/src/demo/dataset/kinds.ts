@@ -8,6 +8,13 @@
 export const DEMO_KINDS = ["cz_vat_sro", "cz_freelancer", "cz_pausal", "sk_vat_sro"] as const;
 export type DemoKind = (typeof DEMO_KINDS)[number];
 
+/** The site language a demo is started from; `en` translates the data. */
+export type DemoLanguage = "cs" | "sk" | "en";
+
+export function isDemoLanguage(value: unknown): value is DemoLanguage {
+  return value === "cs" || value === "sk" || value === "en";
+}
+
 export function isDemoKind(value: unknown): value is DemoKind {
   return typeof value === "string" && (DEMO_KINDS as readonly string[]).includes(value);
 }
@@ -26,7 +33,7 @@ export interface DemoTenantFields {
   address_city: string;
   address_postal_code: string;
   address_country: "CZ" | "SK";
-  default_locale: "cs" | "sk";
+  default_locale: "cs" | "sk" | "en";
   email: string;
   phone: string | null;
   website: string | null;
