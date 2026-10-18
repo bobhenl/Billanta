@@ -517,7 +517,7 @@ function CustomizeModal({
     : FX_CHOICES.map((code) => ({ code, label: '' }));
   const fxNames: Record<string, string> = Object.fromEntries(fxChoices.map((c) => [c.code, c.label]));
   const [taxKinds, setTaxKinds] = useState<TaxDeadlineKind[]>(() => taxKindsOf(config, profile));
-  const defaultKinds = defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax ?? null);
+  const defaultKinds = defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax ?? null, profile.country);
   const [taxAmounts, setTaxAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(Object.entries(config.taxAmounts ?? {}).map(([k, v]) => [k, String(v)]))
   );
@@ -850,7 +850,7 @@ const sameKinds = (a: readonly string[], b: readonly string[]) => a.length === b
 
 /** The member's saved kinds win; until they pick, the defaults follow VAT status and the paušální režim answer. */
 function taxKindsOf(config: DashboardConfig, profile: TaxProfile): TaxDeadlineKind[] {
-  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax ?? null);
+  if (!config.taxDeadlines) return defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax ?? null, profile.country);
   return TAX_DEADLINE_KINDS.filter((k) => config.taxDeadlines!.includes(k));
 }
 

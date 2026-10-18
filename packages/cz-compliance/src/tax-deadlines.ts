@@ -81,11 +81,15 @@ const OFFICIAL_KINDS: readonly TaxDeadlineKind[] = ['vat_monthly', 'vat_quarterl
  * and health advances, and there is no income tax return and no overviews
  * (§ 2a and § 7a ZDP). Unknown keeps the classic OSVČ set. Payroll, road and
  * property tax can't be told from the data, so they are never on by default.
+ * A Slovak SZČO has no paušální daň (§ 2a ZDP is Czech law), so an answer
+ * left over from when the company was Czech is ignored for `country` SK;
+ * otherwise it would swap the SZČO's health and social advances for a flat
+ * tax that `relevantTaxDeadlineKinds` then hides, leaving none of them.
  */
-export function defaultTaxDeadlineKinds(status: VatStatus | boolean, flatTax: boolean | null = null): TaxDeadlineKind[] {
+export function defaultTaxDeadlineKinds(status: VatStatus | boolean, flatTax: boolean | null = null, country = 'CZ'): TaxDeadlineKind[] {
   const s: VatStatus = isVatStatus(status) ? status : status ? 'payer' : 'non_payer';
   const vat: TaxDeadlineKind[] = s === 'payer' ? ['vat_monthly', 'ec_sales_list'] : s === 'identified' ? ['vat_identified', 'ec_sales_list'] : [];
-  if (flatTax === true) return [...vat, 'flat_tax'];
+  if (flatTax === true && country.toUpperCase() !== 'SK') return [...vat, 'flat_tax'];
   return [...vat, 'health', 'social', 'income_tax', 'overviews'];
 }
 

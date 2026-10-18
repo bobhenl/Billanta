@@ -276,7 +276,7 @@ export class IntegrationsService {
         | undefined;
       const kinds = Array.isArray(chosen)
         ? chosen.filter((k): k is TaxDeadlineKind => (TAX_DEADLINE_KINDS as readonly string[]).includes(k))
-        : defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax);
+        : defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax, profile.country);
 
       const events: IcsEvent[] = [];
       // No activity here (unknown months ahead): conditional rows come flagged "only if …".
