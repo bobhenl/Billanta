@@ -6,6 +6,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { MigrationWizard } from './migration-wizard';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.import');
@@ -14,6 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Přechod z jiného systému: contacts + invoice history from a CSV export. */
 export default async function ImportSettingsPage() {
+  const gate = await settingsGate('import');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.import');
   let role: string | null;

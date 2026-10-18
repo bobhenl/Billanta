@@ -175,6 +175,42 @@ export function hiddenSections(access: MyAccess | null): string[] {
   return hidden;
 }
 
+/**
+ * Settings pages that save under the backend's `ADMIN_PREFIXES`
+ * (apps/backend/src/tenancy/role-access.guard.ts): only owners and admins
+ * can use them, so other roles don't get a form that fails on save.
+ */
+export const MANAGER_SETTINGS = [
+  'company',
+  'invoices',
+  'numbering',
+  'emails',
+  'variables',
+  'paymentMethods',
+  'publicProfile',
+  'modules',
+  'team',
+  'billing',
+  'referrals',
+  'backup',
+  'import',
+  'channels',
+  'ai',
+  'apiKeys'
+] as const;
+export type SettingsKey = (typeof MANAGER_SETTINGS)[number] | 'integrations' | 'exports';
+
+/** Settings pages this member's role can't use (switched-off modules are not counted here). */
+export function forbiddenSettings(access: MyAccess | null): Set<SettingsKey> {
+  const out = new Set<SettingsKey>();
+  if (!access || canManage(access.role)) return out;
+  for (const key of MANAGER_SETTINGS) out.add(key);
+  // The calendar feed is the only part of Integrace a non-admin can switch on, and the guard lets only accountants write there.
+  if (access.role !== 'accountant') out.add('integrations');
+  if (access.permissions.reports === 'none') out.add('exports');
+  return out;
+}
+
 export type { BankAccount } from './bank-account';
 export { bankAccountLine } from './bank-account';
 

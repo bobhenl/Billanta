@@ -1,9 +1,10 @@
-import type { DemoKind } from "./kinds";
+import { SUPPLIERS, type DemoKind } from "./kinds";
 
 /**
  * Customers of the demo companies. Made up like the suppliers: the IČOs
  * 25719360, 25830473, 61830712 are not in ARES and 47281634 is in neither
- * ARES nor the Slovak RPO (checked 2026-10-18). Foreign VAT IDs are
+ * ARES nor the Slovak RPO (checked 2026-10-18), nor are 58641033, 58915362
+ * and 59073187 (checked 2026-10-19). Foreign VAT IDs are
  * deliberately all nines. E-mails use the reserved .example TLD.
  */
 export interface DemoContact {
@@ -37,7 +38,10 @@ type ContactKey =
   | "bluewater"
   | "kovac"
   | "balaz"
-  | "bergquelle";
+  | "bergquelle"
+  | "zobor"
+  | "povazie"
+  | "gazdovska";
 
 const ALL: Record<ContactKey, Omit<DemoContact, "key" | "isStarred" | "internalNote">> = {
   javor: {
@@ -222,6 +226,48 @@ const ALL: Record<ContactKey, Omit<DemoContact, "key" | "isStarred" | "internalN
     isPerson: false,
     color: null,
   },
+  zobor: {
+    legalName: "Vinárstvo Pod Zoborom s.r.o.",
+    ico: "58641033",
+    dic: "SK2120638410",
+    email: "obchod@vinarstvo-zobor.example",
+    contactPerson: "Andrea Mikulová",
+    addressStreet: "Vinohradnícka 412/5",
+    addressCity: "Nitra",
+    addressPostalCode: "949 01",
+    addressCountry: "SK",
+    isVatPayer: true,
+    isPerson: false,
+    color: "pink",
+  },
+  povazie: {
+    legalName: "Strojárne Považie s.r.o.",
+    ico: "58915362",
+    dic: "SK2121574906",
+    email: "nakup@strojarne-povazie.example",
+    contactPerson: "Rastislav Kubica",
+    addressStreet: "Priemyselná 2860/11",
+    addressCity: "Trenčín",
+    addressPostalCode: "911 01",
+    addressCountry: "SK",
+    isVatPayer: true,
+    isPerson: false,
+    color: "indigo",
+  },
+  gazdovska: {
+    legalName: "Pekáreň Gazdovská s.r.o.",
+    ico: "59073187",
+    dic: "SK2122896303",
+    email: "pekaren@gazdovska.example",
+    contactPerson: "Milan Slanina",
+    addressStreet: "Partizánska cesta 908/42",
+    addressCity: "Banská Bystrica",
+    addressPostalCode: "974 01",
+    addressCountry: "SK",
+    isVatPayer: true,
+    isPerson: false,
+    color: "amber",
+  },
 };
 
 const PICK: Record<DemoKind, ContactKey[]> = {
@@ -229,15 +275,21 @@ const PICK: Record<DemoKind, ContactKey[]> = {
   cz_freelancer: ["atelier", "kavarna", "javor", "horakova", "novotny", "tatranska", "nordlicht", "bluewater"],
   cz_pausal: ["javor", "atelier", "kavarna", "novotny", "horakova", "kestrel", "nordlicht"],
   sk_vat_sro: ["tatranska", "kovac", "balaz", "javor", "atelier", "bergquelle", "kestrel"],
+  // Services to non-EU clients only: one for a business in another EU state
+  // would make a Slovak non-payer register for VAT (§7a ZoDPH).
+  sk_freelancer: ["povazie", "zobor", "tatranska", "kovac", "balaz", "kestrel", "bluewater"],
+  sk_vat_freelancer: ["gazdovska", "tatranska", "zobor", "kovac", "balaz"],
 };
 
 const NOTES: Partial<Record<ContactKey, { cs: string; sk: string }>> = {
   javor: { cs: "Platí spíš pozdě, upomínat po týdnu.", sk: "Platia skôr neskoro, upomienku poslať po týždni." },
   tatranska: { cs: "Stálý klient, objednávky e-mailem.", sk: "Stály klient, objednávky e-mailom." },
+  povazie: { cs: "Technické manuály, termíny vždy na poslední chvíli.", sk: "Technické manuály, termíny vždy na poslednú chvíľu." },
+  gazdovska: { cs: "Pekárna jede od tří ráno, výjezdy jen odpoledne.", sk: "Pekáreň ide od tretej ráno, výjazdy len poobede." },
 };
 
 export function buildContacts(kind: DemoKind): DemoContact[] {
-  const lang = kind === "sk_vat_sro" ? "sk" : "cs";
+  const lang = SUPPLIERS[kind].language;
   return PICK[kind].map((key, i) => ({
     key,
     ...ALL[key],

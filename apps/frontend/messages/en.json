@@ -440,7 +440,9 @@
       "quotes": "you send quotes"
     },
     "customizeOrderHint": "Drag by the handle or use the arrows to change the order.",
-    "dragToReorder": "Drag to reorder"
+    "dragToReorder": "Drag to reorder",
+    "exportsCta": "Accountant exports",
+    "emptyHintReadOnly": "There are no documents yet. Once the company issues its first invoice, you’ll see revenue, a chart and customers here."
   },
   "invoices": {
     "hover": {
@@ -1510,7 +1512,8 @@
       "groups": {
         "account": "Account & company",
         "data": "Data",
-        "integrations": "Integrations"
+        "integrations": "Integrations",
+        "personal": "My account"
       },
       "items": {
         "profile": {
@@ -1609,7 +1612,8 @@
           "title": "Email notifications",
           "description": "Which emails you get, the weekly digest and quiet hours at night."
         }
-      }
+      },
+      "managedByAdmins": "Company details, the team, the subscription and other company settings are managed by the owner or an admin."
     },
     "profile": {
       "title": "My profile",
@@ -3207,6 +3211,12 @@
       "errors": {
         "invalid_time_zone": "Unknown time zone."
       }
+    },
+    "noAccess": {
+      "title": "The owner or an admin manages this",
+      "body": "With the “{role}” role you can’t change these company settings. If they need changing, ask the company’s owner or an admin.",
+      "bodyGeneric": "Your role in this company has no access to this setting. Ask the company’s owner or an admin.",
+      "back": "Back to settings"
     }
   },
   "billing": {
@@ -8455,6 +8465,14 @@
       "sk_vat_sro": {
         "title": "Slovak s.r.o., VAT payer",
         "description": "A Slovak company in euros, with Slovak VAT rates and Slovak customers."
+      },
+      "sk_freelancer": {
+        "title": "Slovak freelancer, no VAT",
+        "description": "A translator without VAT, invoices in euros, clients in the UK and the US too."
+      },
+      "sk_vat_freelancer": {
+        "title": "Slovak freelancer, VAT payer",
+        "description": "An electrician with VAT, reverse charge on construction work for businesses."
       }
     },
     "country": {
@@ -8513,6 +8531,8 @@
       }
     },
     "picker": {
+      "countryTitle": "Country",
+      "countryHint": "The country sets the currency, VAT rates, registries and how documents look.",
       "dataTitle": "Data",
       "filled": "With sample documents",
       "empty": "Empty company",

@@ -6,6 +6,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole, fetchTenant, type PublicProfileSettings, type TenantSettings } from '@/lib/tenant';
 import { PublicProfileEditor } from './public-profile-editor';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.publicProfile');
@@ -29,6 +30,8 @@ function suggestSlug(name: string) {
 
 /** Settings → Veřejný profil: the company's public business-card page. */
 export default async function PublicProfileSettingsPage() {
+  const gate = await settingsGate('publicProfile');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.publicProfile');
 
