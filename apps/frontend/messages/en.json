@@ -52,7 +52,10 @@
       "app": "App",
       "account": "Account",
       "accountants": "For accountants",
-      "partners": "Partners"
+      "partners": "Partners",
+      "schools": "For schools",
+      "creators": "For creators",
+      "events": "For events and communities"
     },
     "hero": {
       "title": "Invoicing for Czech and Slovak businesses, without the paperwork",
@@ -210,7 +213,10 @@
         "about": "About",
         "accountants": "For accountants",
         "partners": "Partners",
-        "blog": "Blog"
+        "blog": "Blog",
+        "schools": "For schools",
+        "creators": "For creators",
+        "events": "For events and communities"
       },
       "legal": {
         "title": "Legal",
@@ -7836,6 +7842,10 @@
       "copied": "Copied",
       "more": "How referrals work",
       "dismiss": "Hide"
+    },
+    "qr": {
+      "title": "A QR code with your link",
+      "hint": "Print it or show it on your phone. Whoever scans it signs up through your link."
     }
   },
   "partners": {
@@ -8545,5 +8555,272 @@
       "buttonView": "Demo as {role}"
     },
     "signOutAndStart": "Sign out and open the demo"
+  },
+  "shareQr": {
+    "button": "Share / QR code",
+    "title": "Share this page",
+    "lead": "Scan the QR code with a phone, or download it for a poster or a slide.",
+    "alt": "QR code linking to {url}",
+    "promoLabel": "Promo code (optional)",
+    "promoPlaceholder": "e.g. MEETUP26",
+    "promoHint": "With a code, the QR leads to the page for joining a group, such as an event or a coworking. We issue the codes, so a made-up one will not work.",
+    "copy": "Copy link",
+    "copied": "Link copied.",
+    "failed": "That did not work, please try again.",
+    "share": "Share from your phone"
+  },
+  "schools": {
+    "seoTitle": "Billanta for schools – free invoicing for teaching",
+    "eyebrow": "For schools and teachers",
+    "title": "Invoicing your students actually get to try",
+    "lead": "Billanta is free for teaching. On practice companies, students go through the whole life of an invoice: issuing it, correcting it, chasing it and billing a foreign customer, under both Czech and Slovak rules.",
+    "freeBadge": "Free for teaching",
+    "lessonsLink": "Lessons and worksheets",
+    "practiceTitle": "What students practise",
+    "practiceLead": "The same steps every freelancer and every bookkeeper takes, without the risk of breaking anything real.",
+    "practice": {
+      "vatInvoice": {
+        "title": "VAT invoice",
+        "body": "Required fields, VAT rates, the date of the taxable supply and why they matter. The required-fields check shows straight away what is missing."
+      },
+      "creditNote": {
+        "title": "Credit note",
+        "body": "A discount after issuing, returned goods or a wrong price. Students see how the original invoice is corrected and what that changes for VAT."
+      },
+      "reminder": {
+        "title": "Reminder and payment",
+        "body": "An overdue invoice, a reminder, a partial payment and matching it. A piece of practice school rarely gets to."
+      },
+      "foreign": {
+        "title": "Foreign customer",
+        "body": "An invoice in euros, the central bank rate, reverse charge and a bilingual document for a customer from another EU country."
+      },
+      "czsk": {
+        "title": "Czech vs. Slovak rules",
+        "body": "The same invoice under Czech and Slovak rules: different VAT rates, different tax IDs and different payment QR codes."
+      },
+      "roles": {
+        "title": "Owner, accountant, colleague",
+        "body": "Who may see and change what. Students try the owner, the accountant and a read-only colleague."
+      }
+    },
+    "access": {
+      "title": "How to get Billanta for your class",
+      "lead": "We are finishing a classroom mode. Teachers who get in touch now will be among the first to have it.",
+      "steps": {
+        "request": {
+          "title": "Write to us",
+          "body": "From your school e-mail: the school, the subject, the year and roughly how many students."
+        },
+        "setup": {
+          "title": "We set up the class",
+          "body": "You get teacher access and practice companies for the students to work on. Soon you will create them yourself."
+        },
+        "teach": {
+          "title": "You teach",
+          "body": "Students issue documents on their practice companies, and you see their work and can go through it with them."
+        }
+      },
+      "soon": "Until then you can show your students the no-signup demo on the projector.",
+      "cta": "Request access for your school",
+      "signup": "Create a teacher account",
+      "mailSubject": "Billanta for schools – access request"
+    },
+    "safeguardsTitle": "A practice environment, not a real business",
+    "safeguards": {
+      "practice": {
+        "title": "Practice companies",
+        "body": "Students work on made-up companies and customers. They do not need to enter any real personal data."
+      },
+      "watermark": {
+        "title": "Watermarked documents",
+        "body": "Documents from the classroom mode will carry a visible practice mark, so nobody mistakes them for a real invoice."
+      },
+      "notReal": {
+        "title": "For teaching only",
+        "body": "Teaching access is not meant for a real business. Anyone who starts invoicing for real opens a regular account."
+      }
+    },
+    "resourcesTitle": "Teaching materials",
+    "resourcesLead": "Lessons and worksheets, guides to the legislation and pages that explain each topic in detail.",
+    "resources": {
+      "requiredFields": "Required fields on an invoice",
+      "currencies": "Invoices in foreign currencies",
+      "reminders": "Reminders and overdue payments",
+      "vatCalculator": "VAT calculator"
+    },
+    "faqTitle": "Questions teachers ask",
+    "faq": [
+      {
+        "q": "Is Billanta for schools really free?",
+        "a": "Yes. The school, the teacher and the students pay nothing for teaching. Only a regular account for a real business is paid."
+      },
+      {
+        "q": "Which schools is teaching access for?",
+        "a": "Business academies and other secondary schools with economics subjects, colleges and universities, and retraining courses. If you teach invoicing elsewhere, write to us too."
+      },
+      {
+        "q": "When will the classroom mode be ready?",
+        "a": "Soon. Teachers who request access now get it among the first and can tell us what they need in class."
+      },
+      {
+        "q": "Can students use Billanta for their own business?",
+        "a": "Not with teaching access, which is for practice only. For real invoicing a student opens a regular account that works independently of the school."
+      },
+      {
+        "q": "What about students’ personal data?",
+        "a": "Practice does not need any. The companies and customers are made up, and a student’s school e-mail is enough to join a class."
+      }
+    ]
+  },
+  "creators": {
+    "seoTitle": "Invoicing for creators and influencers – brands, agencies, euros",
+    "eyebrow": "For content creators",
+    "title": "Invoice brand deals without the headache",
+    "lead": "A campaign for a brand, a fee from an agency, a payout from a platform abroad. Billanta issues the invoice in crowns or euros, handles reverse charge and reminds clients who have not paid.",
+    "cta": "Start invoicing for free",
+    "demo": "Try it without signing up",
+    "topicsTitle": "What creators deal with most",
+    "topics": {
+      "brands": {
+        "title": "Brands and agencies",
+        "body": "One invoice per campaign or per deliverable. The line items say exactly what you deliver: the number of posts or videos, a licence to use the content."
+      },
+      "eur": {
+        "title": "Invoices in euros",
+        "body": "Invoice in EUR and other currencies. The central bank rate fills in by itself, and the invoice shows the converted amount too."
+      },
+      "reverseCharge": {
+        "title": "Reverse charge",
+        "body": "A business in another EU country usually accounts for the VAT itself. The invoice then carries the customer’s VAT ID and a reverse-charge note. A non-VAT payer often has to register for VAT purposes because of it."
+      },
+      "abroad": {
+        "title": "Clients outside the EU",
+        "body": "A deal with a US brand or platform: an invoice in English, in dollars or euros, with the right wording on the place of supply."
+      },
+      "advance": {
+        "title": "Advances and quotes",
+        "body": "Send a quote, get an advance paid and issue the final invoice after the campaign. All in one place and linked together."
+      },
+      "recurring": {
+        "title": "Ongoing deals",
+        "body": "An ambassador contract with a monthly fee? A recurring invoice is issued and sent by itself."
+      }
+    },
+    "flatTax": {
+      "title": "Flat tax and flat-rate expenses",
+      "body": "Most creators are self-employed and use a flat-rate regime. Billanta shows how much you have invoiced this year, so you know where you stand against the limits.",
+      "points": [
+        "In Czechia, the flat tax: one monthly payment for income tax and insurance, if you are not a VAT payer and stay under the income limit.",
+        "Or flat-rate expenses as a percentage of income, with an estimate of tax and insurance in the app.",
+        "In Slovakia, flat-rate expenses and an estimate of tax and contributions for the self-employed.",
+        "Always check your own situation with an accountant, who can see your invoicing data straight from Billanta."
+      ]
+    },
+    "linksTitle": "Read on",
+    "links": {
+      "currencies": "Invoices in foreign currencies",
+      "bilingual": "Bilingual invoices",
+      "quotes": "Quotes and proforma invoices",
+      "taxEstimate": "Tax and insurance estimate"
+    },
+    "partner": {
+      "title": "Want your own code for your audience?",
+      "body": "We work with creators who talk to their followers about business and money. Your audience gets a perk when signing up, and you see how many people used your code.",
+      "points": [
+        "We issue the code after a short chat.",
+        "We agree the perk for your followers and the terms together.",
+        "And yes, you can invoice us for the collaboration from Billanta."
+      ],
+      "cta": "Ask for a code",
+      "mailSubject": "Billanta – promo code for creators"
+    },
+    "faqTitle": "Questions creators ask",
+    "faq": [
+      {
+        "q": "Do I have to be a VAT payer to invoice foreign companies?",
+        "a": "Not necessarily. A non-VAT payer who supplies services to a business in another EU country usually has to register for VAT purposes and file EC sales lists, though. Billanta puts the right note on the invoice, but the registration and filings are for you and your accountant or tax office."
+      },
+      {
+        "q": "Can I invoice a Czech agency in euros?",
+        "a": "Yes, if you agree on it. Billanta fills in the central bank rate and the amount in crowns needed for tax."
+      },
+      {
+        "q": "What if a brand pays me in products instead of money?",
+        "a": "A barter deal is usually taxable income too. How to account for it depends on the deal, so ask your accountant. You then issue the document in Billanta like any other invoice."
+      },
+      {
+        "q": "How do I get a promo code for my followers?",
+        "a": "Write to us. We issue the codes ourselves once we agree on the terms, and then you just share them, for example as a QR code from this page."
+      }
+    ]
+  },
+  "events": {
+    "seoTitle": "Billanta for meetups, coworkings and communities",
+    "eyebrow": "For event organisers",
+    "title": "Let your attendees try invoicing on the spot",
+    "lead": "Running a meetup, a course for new founders or a coworking space? We will prepare a code and a QR code for your attendees. They try Billanta in 30 seconds, without signing up.",
+    "demoCta": "Try the demo",
+    "offerTitle": "What you get from us",
+    "offer": {
+      "code": {
+        "title": "A code for attendees",
+        "body": "A perk when they sign up, such as a few months for free. We agree the terms for each event."
+      },
+      "qr": {
+        "title": "A QR code for posters and slides",
+        "body": "Download it as PNG or SVG and print it at any size. The code is already in the link."
+      },
+      "demo": {
+        "title": "A demo in 30 seconds",
+        "body": "Attendees scan the QR code and land in a sample company with invoices, payments and VAT. No e-mail, no password."
+      }
+    },
+    "stepsTitle": "How it works",
+    "steps": {
+      "write": {
+        "title": "Write to us",
+        "body": "When and where the event is, how many people you expect and who they are."
+      },
+      "print": {
+        "title": "We send the code",
+        "body": "You get the code and a QR code. You can also draw the same QR here with the Share button."
+      },
+      "scan": {
+        "title": "Attendees scan",
+        "body": "Anyone can try the demo right there. Those who want to stay sign up with your code."
+      }
+    },
+    "contact": {
+      "title": "Let’s talk",
+      "body": "It is free for organisers. A few lines about your event are enough and we will get back with a proposal.",
+      "cta": "Tell us about your event",
+      "mailSubject": "Billanta – code for an event",
+      "schools": "Teaching? Billanta for schools"
+    },
+    "faqTitle": "Questions organisers ask",
+    "faq": [
+      {
+        "q": "What does it cost?",
+        "a": "Nothing for organisers. We prepare the attendee code and the QR code for free."
+      },
+      {
+        "q": "Do attendees need to install anything?",
+        "a": "No. The demo runs in the browser on a phone or a computer and needs no signup."
+      },
+      {
+        "q": "What exactly do attendees get with the code?",
+        "a": "A perk when signing up that we agree on, such as a few months for free. They enter the code at signup, or it is already in the link from the QR code."
+      }
+    ],
+    "coworking": {
+      "title": "For coworkings: one QR code for all members",
+      "body": "A coworking does not need an event, a standing code is enough. Put the QR code up at the reception or in the kitchen, or tell members the passphrase.",
+      "points": [
+        "One permanent QR code or passphrase for all members.",
+        "They scan it and they are in. You never create accounts one by one.",
+        "For members who stay with Billanta, the coworking can earn referral credits."
+      ]
+    }
   }
 }

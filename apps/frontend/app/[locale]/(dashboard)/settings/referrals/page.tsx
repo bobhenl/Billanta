@@ -3,6 +3,7 @@ import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
+import { QrLinkPanel } from '@/components/share-qr';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { SITE_URL } from '@/lib/site';
 import { canManage, fetchMyRole } from '@/lib/tenant';
@@ -41,6 +42,11 @@ export default async function ReferralsPage() {
     <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
       <ReferralsPanel overview={overview} link={link} readOnly={!canManage(role)} />
+      <section className="mt-6 rounded-xl border border-border bg-card p-4">
+        <h2 className="font-bold">{t('qr.title')}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">{t('qr.hint')}</p>
+        <QrLinkPanel url={link} fileSlug={`ref-${overview.code.toLowerCase()}`} className="mx-auto max-w-sm" />
+      </section>
       {listing && (listing.eligible || listing.listing || overview.canBeAccountant) && <ListingForm own={listing} readOnly={!canManage(role)} />}
 
       <section className="mt-6 rounded-xl border border-border bg-card p-4">

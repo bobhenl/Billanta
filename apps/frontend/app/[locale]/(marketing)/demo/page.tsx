@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Check, Eye, Calculator, UserCog } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { DemoKindPicker } from '@/components/demo/demo-kind-picker';
+import { ShareQr } from '@/components/share-qr';
 import { Link, redirect } from '@/i18n/navigation';
 import { DEMO_VIEW_ROLES, demoEnabled } from '@/lib/demo';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
@@ -92,6 +93,7 @@ export default async function DemoPage({
           </li>
         ))}
       </ul>
+      <ShareQr className="mt-6" />
 
       <h2 className="mt-10 text-base font-semibold">{t('page.pick')}</h2>
       <DemoKindPicker locale={locale} initialView={initialView} />

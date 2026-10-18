@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ArrowRight, CreditCard, Gift, Landmark, Sparkles } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { trialDays } from '@/lib/plan';
@@ -100,6 +101,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           </Link>
           <span className="ml-2 text-muted-foreground">{tDemo('ctaHint')}</span>
         </p>
+        <ShareQr className="mt-4" />
       </div>
 
       <PricingPlans
