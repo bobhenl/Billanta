@@ -166,6 +166,7 @@ function invoiceBody(input: InvoiceDraftInput) {
     constant_symbol: text(input.constantSymbol),
     specific_symbol: text(input.specificSymbol),
     order_number: text(input.orderNumber),
+    buyer_contact_person: text(input.buyerContactPerson),
     language: input.language,
     reverse_charge: input.reverseCharge,
     reverse_charge_code: input.reverseChargeCode,

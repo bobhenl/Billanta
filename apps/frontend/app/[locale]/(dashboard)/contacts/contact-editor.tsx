@@ -24,6 +24,7 @@ const EMPTY: ContactInput = {
   dic: '',
   email: '',
   phone: '',
+  contactPerson: '',
   addressStreet: '',
   addressCity: '',
   addressPostalCode: '',
@@ -126,6 +127,7 @@ export function ContactEditor({
       dic: person ? null : clean(form.dic),
       email: clean(form.email),
       phone: clean(form.phone),
+      contactPerson: clean(form.contactPerson),
       addressStreet: clean(form.addressStreet),
       addressCity: clean(form.addressCity),
       addressPostalCode: clean(form.addressPostalCode),
@@ -293,6 +295,10 @@ export function ContactEditor({
         <label className="block">
           <span className={label}>{t('phone')}</span>
           <input type="tel" className={inputClass} maxLength={40} value={form.phone ?? ''} onChange={set('phone')} />
+        </label>
+        <label className="block">
+          <span className={label}>{t('contactPerson')}</span>
+          <input className={inputClass} maxLength={255} value={form.contactPerson ?? ''} onChange={set('contactPerson')} />
         </label>
         {!person && (
         <label className="block">

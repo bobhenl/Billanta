@@ -1140,7 +1140,8 @@
       "fromRegistry": "Načítať z registra",
       "phone": "Telefón",
       "vatSuggestYes": "Register ho vedie ako platiteľa DPH. Nastaviť „Áno“?",
-      "vatSuggestNo": "Register ho ako platiteľa DPH nevedie. Nastaviť „Nie“?"
+      "vatSuggestNo": "Register ho ako platiteľa DPH nevedie. Nastaviť „Nie“?",
+      "contactPerson": "Kontaktná osoba"
     },
     "detail": {
       "title": "Detail kontaktu",
@@ -1198,7 +1199,8 @@
         "disable": "Vypnúť",
         "disabled": "Portál je vypnutý",
         "failed": "Akcia sa nepodarila"
-      }
+      },
+      "contactPerson": "Kontaktná osoba"
     },
     "csv": {
       "import": "Import CSV",
@@ -3935,7 +3937,8 @@
       "aresWillSave": "Pri uložení sa pridá do vašich kontaktov.",
       "starred": "Obľúbení zákazníci",
       "searchingRegisters": "Hľadám v obchodných registroch…",
-      "internalNote": "Interná poznámka ku kontaktu"
+      "internalNote": "Interná poznámka ku kontaktu",
+      "contactPerson": "Kontaktná osoba"
     },
     "dates": {
       "issue": "Vystavené",

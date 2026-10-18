@@ -29,6 +29,7 @@ interface DetailResponse {
     constantSymbol: string | null;
     specificSymbol: string | null;
     orderNumber: string | null;
+    buyerContactPerson: string | null;
     issuePlace: string | null;
     issuedByName: string | null;
     customFields: { label: string; value: string; kind?: 'text' | 'amount' | 'percent'; internal?: boolean }[] | null;
@@ -87,6 +88,7 @@ export default async function EditInvoicePage(props: {
     constantSymbol: invoice.constantSymbol,
     specificSymbol: invoice.specificSymbol,
     orderNumber: invoice.orderNumber,
+    buyerContactPerson: invoice.buyerContactPerson,
     issuePlace: invoice.issuePlace,
     issuedByName: invoice.issuedByName,
     customFields: invoice.customFields ?? [],
