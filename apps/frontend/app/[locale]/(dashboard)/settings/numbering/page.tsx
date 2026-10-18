@@ -7,6 +7,7 @@ import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import type { NumberFormatsView } from '../actions';
 import { NumberFormatsEditor } from './number-formats-editor';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.numbering');
@@ -15,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Číslování dokladů: own number pattern and next number per document type. */
 export default async function NumberingSettingsPage() {
+  const gate = await settingsGate('numbering');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.numbering');
 

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Check, Eye, Calculator, UserCog } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { DemoKindPicker } from '@/components/demo/demo-kind-picker';
+import { DemoKindPicker, type DemoPresetLabels } from '@/components/demo/demo-kind-picker';
+import { BUSINESS_PRESETS } from '@/lib/business-presets';
 import { Link, redirect } from '@/i18n/navigation';
 import { DEMO_VIEW_ROLES, demoEnabled } from '@/lib/demo';
 import { demoAudience } from '@/lib/demo-audiences';
@@ -52,6 +53,10 @@ export default async function DemoPage({
   const t = await getTranslations('demo');
   const title = t('page.title', { site: SITE_NAME });
   const faq = t.raw('page.faq') as Faq[];
+  const tm = await getTranslations('settings.modules');
+  const presets: DemoPresetLabels = Object.fromEntries(
+    BUSINESS_PRESETS.map((p) => [p.key, { title: tm(`presets.${p.key}.title`), description: tm(`presets.${p.key}.description`) }])
+  );
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 md:py-16">
@@ -97,7 +102,7 @@ export default async function DemoPage({
 
       <h2 className="mt-10 text-base font-semibold">{t('page.pick')}</h2>
       {audience && <p className="mt-1 text-sm text-muted-foreground">{t(`audiences.${audience}`)}</p>}
-      <DemoKindPicker locale={locale} initialView={initialView} audience={audience} />
+      <DemoKindPicker locale={locale} presets={presets} initialView={initialView} audience={audience} />
 
       <h2 className="mt-14 text-xl font-semibold tracking-tight">{t('page.rolesTitle')}</h2>
       <p className="mt-2 text-sm text-muted-foreground">{t('page.rolesLead')}</p>

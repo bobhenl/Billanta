@@ -7,6 +7,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { ApiKeysManager, type ApiKeyListItem } from './api-keys-manager';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.apiKeys');
@@ -15,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → API klíče: the tenant's own public-API keys. */
 export default async function ApiKeysSettingsPage() {
+  const gate = await settingsGate('apiKeys');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.apiKeys');
 
