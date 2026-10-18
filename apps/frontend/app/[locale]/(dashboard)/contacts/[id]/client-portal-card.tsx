@@ -10,14 +10,14 @@ import { setContactPortal } from '../actions';
 import { copyText } from '@/lib/clipboard';
 
 /** The customer's portal link (all their documents on one page): turn on, copy, renew, turn off. */
-export function ClientPortalCard({ contactId, token }: { contactId: string; token: string | null }) {
+export function ClientPortalCard({ contactId, link }: { contactId: string; link: string | null }) {
   const t = useTranslations('contacts.detail.portal');
   const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [origin, setOrigin] = useState('');
   useEffect(() => setOrigin(window.location.origin), []);
-  const url = token ? `${origin}/${locale}/c/${token}` : '';
+  const url = link ? `${origin}/${locale}/c/${link}` : '';
 
   const set = (enabled: boolean, okText: string) =>
     startTransition(async () => {
@@ -50,7 +50,7 @@ export function ClientPortalCard({ contactId, token }: { contactId: string; toke
           {t('title')}
         </h2>
       </InfoHint>
-      {token ? (
+      {link ? (
         <>
           <input
             readOnly

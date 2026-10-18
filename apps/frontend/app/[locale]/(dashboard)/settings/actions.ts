@@ -57,6 +57,7 @@ export async function updateInvoiceFormPrefs(
   exchange_rate_mode: 'cnb_daily' | 'none';
   report_rate_mode: 'daily' | 'annual';
   annual_rates: { year: number; currency: string; rate: number }[];
+  public_link_prefix: 'number' | 'company_number' | 'none';
   },
   company?: {
     default_locale: 'cs' | 'sk' | 'en';

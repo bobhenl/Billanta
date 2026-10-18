@@ -454,6 +454,10 @@ export const contacts = pgTable("contacts", {
   // Client portal link (/c/:portalToken) listing every issued document for this customer;
   // null = no portal. Unique index in migration 0030.
   portalToken: uuid("portal_token"),
+  // The short key in the readable portal link (/c/{name}-{key}); resolves to
+  // portalToken, which stays valid for links sent before. Set and cleared with
+  // portalToken. Unique index in migration 0057.
+  portalKey: text("portal_key"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -535,6 +539,10 @@ export const invoices = pgTable(
     // rls-policies.sql) since no tenant context exists yet at that point —
     // same pattern as `find_tenant_id_by_stripe_customer_id`.
     publicToken: uuid("public_token").notNull().defaultRandom(),
+    // The secret part of the readable link /i/{number}-{key} (12 base62 chars,
+    // ~71 bits; public-links/public-link.ts). Only the key is looked up, the
+    // prefix is cosmetic. Old /i/{publicToken} links keep working.
+    publicKey: text("public_key").default(sql`gen_public_key()`),
     // Set when the invoice is actually emailed/delivered to the contact;
     // null means "never sent" (e.g. still a draft, or issued but not yet
     // dispatched). Distinct from `issuedAt` — an invoice can be issued
@@ -633,6 +641,7 @@ export const invoices = pgTable(
       table.invoiceNumber,
     ),
     publicTokenUnique: uniqueIndex("invoices_public_token_unique").on(table.publicToken),
+    publicKeyUnique: uniqueIndex("invoices_public_key_unique").on(table.publicKey),
     buyerDetailsTokenUnique: uniqueIndex("invoices_buyer_details_token_unique").on(table.buyerDetailsToken),
   }),
 );

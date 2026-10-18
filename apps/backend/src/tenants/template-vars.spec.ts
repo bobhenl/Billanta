@@ -39,4 +39,12 @@ describe("template vars", () => {
       "2026-0001 / VS 20260001 / https://demo.cz/vop / 123456789/0100 / Dlouhá 1, 110 00 Praha / 2026 / {unknown}",
     );
   });
+
+  it("puts the readable short links in {link} and {portal_link}", () => {
+    const invoice = { invoiceNumber: "2026-0001", variableSymbol: null, issueDate: null, dueDate: null, publicToken: "0f8fad5b-d9cb-469f-a165-70867728950e", publicKey: "aZ09bY18cX27" };
+    const contact = { legalName: "Novák", ico: null, portalToken: "33333333-3333-4333-8333-333333333333", portalKey: "Qw12Er34Ty56" };
+    const values = templateValues({ ...tenant, invoiceFormPrefs: { publicLinkPrefix: "company_number" } }, invoice, contact);
+    expect(values.link.endsWith("/i/demo-s-r-o-2026-0001-aZ09bY18cX27")).toBe(true);
+    expect(values.portal_link.endsWith("/c/novak-Qw12Er34Ty56")).toBe(true);
+  });
 });

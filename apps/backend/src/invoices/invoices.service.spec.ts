@@ -142,15 +142,17 @@ describe("InvoicesService.sendInvoice", () => {
   });
 
   it("happy path: emails the invoice's contact and stamps sent_at", async () => {
-    const invoice = makeInvoice();
-    const contact = makeContact();
+    const invoice = makeInvoice({ publicKey: "aZ09bY18cX27" });
+    const contact = makeContact({ portalToken: "33333333-3333-4333-8333-333333333333", portalKey: "Qw12Er34Ty56" });
     const updated = { ...invoice, sentAt: new Date("2026-09-09T09:00:00Z") };
 
     const select = vi
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain([contact]))
-      .mockReturnValueOnce(makeSelectChain(lineItems));
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      // the company's link prefix setting
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "number" } }]));
     const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, update } as any;
@@ -163,7 +165,9 @@ describe("InvoicesService.sendInvoice", () => {
       invoiceNumber: "2026-0001",
       amount: "1815.00 CZK", // 3 * 500 * 1.21
       dueDate: invoice.dueDate,
-      publicToken: invoice.publicToken,
+      // the readable links, never the bare key or uuid
+      publicLink: "2026-0001-aZ09bY18cX27",
+      clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
     }, expect.objectContaining({ tenantId: invoice.tenantId, db, idempotencyKey: expect.stringMatching(/^invoice:inv-1:\d+$/) }));
     expect(update).toHaveBeenCalled();
     expect(result).toEqual(updated);
@@ -209,7 +213,8 @@ describe("InvoicesService.sendInvoice", () => {
       .fn()
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain([contact]))
-      .mockReturnValueOnce(makeSelectChain(lineItems));
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {} }]));
     const update = vi.fn();
     emailService.sendInvoiceEmail.mockRejectedValueOnce(new Error("Resend outage"));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

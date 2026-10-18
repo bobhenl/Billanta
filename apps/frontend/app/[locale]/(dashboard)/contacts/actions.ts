@@ -20,11 +20,11 @@ export async function setContactStarred(id: string, starred: boolean): Promise<b
   }
 }
 
-/** Turns the customer portal on or renews its link (enabled), or turns it off; returns the new token. */
+/** Turns the customer portal on or renews its link (enabled), or turns it off; returns the new link segment. */
 export async function setContactPortal(id: string, enabled: boolean): Promise<ActionResult<string | null>> {
   try {
-    const row = await apiFetch<{ portalToken: string | null }>(`/api/v1/contacts/${encodeURIComponent(id)}/portal`, { method: enabled ? 'POST' : 'DELETE' });
-    return { ok: true, data: row.portalToken };
+    const row = await apiFetch<{ portalToken: string | null; portalLink: string | null }>(`/api/v1/contacts/${encodeURIComponent(id)}/portal`, { method: enabled ? 'POST' : 'DELETE' });
+    return { ok: true, data: row.portalLink };
   } catch (e) {
     return { ok: false, error: e instanceof ApiError ? e.message : 'unknown' };
   }

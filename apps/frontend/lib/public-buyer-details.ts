@@ -3,10 +3,12 @@
  * draft it belongs to from `GET /api/v1/public/buyer-details/:token`
  * (no session; the backend only answers for an open request on a draft).
  */
+import { isPublicLinkSegment } from '@/lib/public-link';
+
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 
-/** A link token: 12 base62 characters, or a UUID for links sent before the short ones. */
-export const isBuyerDetailsToken = (token: string) => /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9A-Za-z]{12})$/i.test(token);
+/** A link token: 12 base62 characters with an optional readable prefix, or a UUID for links sent before the short ones. */
+export const isBuyerDetailsToken = isPublicLinkSegment;
 
 /** Fields the supplier can make mandatory (name and address always are). */
 export type BuyerDetailsField = 'email' | 'phone' | 'ico' | 'dic';

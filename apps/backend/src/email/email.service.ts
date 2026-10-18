@@ -12,10 +12,10 @@ export interface SendInvoiceEmailParams {
   /** Pre-formatted for display, e.g. "1815.00 CZK" — see `invoice-total.util.ts`. */
   amount: string;
   dueDate: Date | null;
-  /** `invoices.publicToken` — used to build the client-portal link. */
-  publicToken: string;
-  /** `contacts.portalToken` when the customer's portal is on — adds an "all your documents" link. */
-  clientPortalToken?: string | null;
+  /** The /i/ path segment from `invoiceLinkOf` (readable prefix + key), used to build the client-portal link. */
+  publicLink: string;
+  /** The /c/ segment from `clientPortalLinkOf` when the customer has the portal on; adds an "all your documents" link. */
+  clientPortalLink?: string | null;
   /** The company's own wording, sender name and attachments (Settings → E-maily). */
   custom?: EmailCustomization;
   /** The customer already has this invoice and it was edited since: say it replaces the earlier copy. */
@@ -152,8 +152,8 @@ export class EmailService {
       invoiceNumber: params.invoiceNumber,
       amount: params.amount,
       dueDate: params.dueDate,
-      publicToken: params.publicToken,
-      clientPortalToken: params.clientPortalToken,
+      publicLink: params.publicLink,
+      clientPortalLink: params.clientPortalLink,
       signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
       accent: c?.accent,
       attachmentNames: c?.attachments?.map((a) => a.filename),
@@ -177,8 +177,8 @@ export class EmailService {
       invoiceNumber: params.invoiceNumber,
       amount: params.amount,
       dueDate: params.dueDate,
-      publicToken: params.publicToken,
-      clientPortalToken: params.clientPortalToken,
+      publicLink: params.publicLink,
+      clientPortalLink: params.clientPortalLink,
       signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
       accent: c?.accent,
       attachmentNames: c?.attachments?.map((a) => a.filename),
@@ -331,7 +331,7 @@ function simpleMessageHtml(params: { title: string; body?: string | null; url?: 
  * The client-portal link is built from `NEXT_PUBLIC_SITE_URL` (already
  * defined in the root `.env.example` for the frontend's canonical origin —
  * see `apps/frontend/lib/site.ts` — reused here rather than inventing a
- * second site-URL env var) plus `/i/${publicToken}`, per this feature's
+ * second site-URL env var) plus `/i/${publicLink}`, per this feature's
  * brief. No client-portal page at that route exists in the frontend yet
  * (that's a separate, concurrently-built module) — this is the URL contract
  * that page is expected to implement.
@@ -342,13 +342,13 @@ function renderInvoiceEmailHtml(params: {
   invoiceNumber: string;
   amount: string;
   dueDate: Date | null;
-  publicToken: string;
-  clientPortalToken?: string | null;
+  publicLink: string;
+  clientPortalLink?: string | null;
   signature?: string;
   accent?: string;
   attachmentNames?: string[];
 }): string {
-  const portalUrl = portalUrlOf(params.publicToken);
+  const portalUrl = portalUrlOf(params.publicLink);
   const accent = params.accent && /^#[0-9a-fA-F]{6}$/.test(params.accent) ? params.accent : "#111827";
   const paragraphs = (text: string) => escapeHtml(text).replace(/\r?\n/g, "<br>");
   const dueDateFormatted = params.dueDate
@@ -381,8 +381,8 @@ function renderInvoiceEmailHtml(params: {
             <a href="${portalUrl}" style="display:inline-block; background:${accent}; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px;">Zobrazit fakturu</a>
           </p>
           ${
-            params.clientPortalToken
-              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalToken)}" style="color:${accent};">Všechny vaše doklady na jednom místě</a></p>`
+            params.clientPortalLink
+              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalLink)}" style="color:${accent};">Všechny vaše doklady na jednom místě</a></p>`
               : ""
           }
           ${
@@ -415,8 +415,8 @@ function placeholderValues(params: SendInvoiceEmailParams): Record<string, strin
       : "",
     company: params.custom?.companyName ?? "",
     customer: params.custom?.customerName ?? "",
-    link: portalUrlOf(params.publicToken),
-    portal_link: params.clientPortalToken ? clientPortalUrlOf(params.clientPortalToken) : "",
+    link: portalUrlOf(params.publicLink),
+    portal_link: params.clientPortalLink ? clientPortalUrlOf(params.clientPortalLink) : "",
   };
 }
 

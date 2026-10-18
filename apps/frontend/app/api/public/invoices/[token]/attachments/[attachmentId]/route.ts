@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { isPublicLinkSegment } from '@/lib/public-link';
 
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -13,7 +14,7 @@ export async function GET(
   props: { params: Promise<{ token: string; attachmentId: string }> }
 ) {
   const params = await props.params;
-  if (!UUID.test(params.token) || !UUID.test(params.attachmentId)) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  if (!isPublicLinkSegment(params.token) || !UUID.test(params.attachmentId)) return NextResponse.json({ error: 'not_found' }, { status: 404 });
   const upstream = await fetch(`${BACKEND_URL}/api/v1/public/invoices/${params.token}/attachments/${params.attachmentId}`, { cache: 'no-store' });
   if (!upstream.ok) return NextResponse.json({ error: 'not_found' }, { status: upstream.status === 404 ? 404 : 502 });
   const headers = new Headers();

@@ -131,6 +131,8 @@ export interface InvoiceDetail {
   };
   /** The live contact (link, e-mail for sending). */
   contact: InvoiceParty | null;
+  /** Customer link path segments with the readable prefix (/i/, /c/, /d/). */
+  links?: { public: string; portal: string | null; buyerDetails: string | null };
   /** The buyer as printed on the document: its issue-date snapshot when it has one. */
   buyer?: Omit<InvoiceParty, 'id'> | null;
   /** True when the issue-date snapshot differs from today's company details / contact. */

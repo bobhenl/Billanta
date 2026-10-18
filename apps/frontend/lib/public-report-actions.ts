@@ -1,6 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
+import { isPublicLinkSegment } from '@/lib/public-link';
 
 /**
  * A recipient's report of a suspicious document, posted from the public
@@ -14,7 +15,7 @@ export type AbuseReason = 'fraud' | 'not_ordered' | 'spam' | 'other';
 export type ReportResult = { ok: true } | { ok: false; error: 'invalid' | 'limit' | 'failed' };
 
 export async function reportInvoice(token: string, reason: AbuseReason, message: string, email: string): Promise<ReportResult> {
-  if (!/^[0-9a-f-]{36}$/i.test(token) || !['fraud', 'not_ordered', 'spam', 'other'].includes(reason)) {
+  if (!isPublicLinkSegment(token) || !['fraud', 'not_ordered', 'spam', 'other'].includes(reason)) {
     return { ok: false, error: 'invalid' };
   }
   const h = await headers();

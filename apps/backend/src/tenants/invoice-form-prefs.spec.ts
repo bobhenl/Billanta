@@ -8,6 +8,12 @@ describe("invoice form prefs", () => {
     expect(prefs.pdfAccent).toBe(PDF_ACCENTS[0]);
   });
 
+  it("keeps the customer-link prefix, defaulting to the number", () => {
+    expect(invoiceFormPrefsSchema.parse({}).publicLinkPrefix).toBe("number");
+    expect(invoiceFormPrefsSchema.parse({ public_link_prefix: "none" }).publicLinkPrefix).toBe("none");
+    expect(invoiceFormPrefsSchema.safeParse({ public_link_prefix: "uuid" }).success).toBe(false);
+  });
+
   it("rejects an accent outside the palette", () => {
     expect(invoiceFormPrefsSchema.safeParse({ pdf_accent: "#ff00ff" }).success).toBe(false);
   });

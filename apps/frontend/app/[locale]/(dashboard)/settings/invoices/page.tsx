@@ -65,6 +65,7 @@ export default async function InvoiceSettingsPage() {
         vatPayer={tenant.dicVatPayer}
         vatStatus={vatStatusOf(tenant)}
         uniformRates={uniformRates}
+        linkCompany={tenant.publicProfile?.slug || tenant.companyName}
         readOnly={!canManage(role)}
       />
     </div>

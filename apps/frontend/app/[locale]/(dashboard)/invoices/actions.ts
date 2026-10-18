@@ -62,7 +62,7 @@ export async function cancelInvoice(id: string) {
 
 /** New secret client link; the old /i/{token} address stops working. */
 export async function rotateInvoiceLink(id: string) {
-  return run<{ id: string; publicToken: string }>(`/api/v1/invoices/${id}/public-link/rotate`);
+  return run<{ id: string; publicToken: string; link: string }>(`/api/v1/invoices/${id}/public-link/rotate`);
 }
 
 /** Sends the draft to the customer to fill in their own billing details (a fresh /d/{token} link each time). */
@@ -73,7 +73,7 @@ export async function requestBuyerDetails(
   required?: ('email' | 'phone' | 'ico' | 'dic')[],
   saveAsDefault = false
 ) {
-  return run<{ token: string; url: string; emailed: boolean; autoIssue: boolean }>(
+  return run<{ token: string; link?: string; url: string; emailed: boolean; autoIssue: boolean }>(
     `/api/v1/invoices/${id}/buyer-details-request`,
     json('POST', { email: email.trim() || undefined, autoIssue, required, saveAsDefault })
   );

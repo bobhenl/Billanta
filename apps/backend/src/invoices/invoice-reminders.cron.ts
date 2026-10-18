@@ -36,7 +36,7 @@ export class InvoiceRemindersCron {
       const overdueInvoices = await this.repository.findOverdueInvoicesForTenant(tenantId);
       if (overdueInvoices.length === 0) continue;
 
-      for (const { invoice, contactEmail, clientPortalToken, lineItems, custom } of overdueInvoices) {
+      for (const { invoice, contactEmail, publicLink, clientPortalLink, lineItems, custom } of overdueInvoices) {
         if (!contactEmail) {
           this.logger.warn(
             `invoice ${invoice.id} (tenant ${tenantId}) is overdue but its contact has no ` +
@@ -56,8 +56,8 @@ export class InvoiceRemindersCron {
               invoiceNumber: invoice.invoiceNumber ?? invoice.id,
               amount: formatInvoiceAmount(total, invoice.currency),
               dueDate: invoice.dueDate,
-              publicToken: invoice.publicToken,
-              clientPortalToken,
+              publicLink,
+              clientPortalLink,
               reminderCount: invoice.reminderCount + 1,
               ...(custom ? { custom } : {}),
             },

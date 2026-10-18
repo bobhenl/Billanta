@@ -4,6 +4,8 @@
  * The client's accept/reject answer to a quote, posted from the public
  * portal (no session) to `POST /api/v1/public/invoices/:token/respond`.
  */
+import { isPublicLinkSegment } from '@/lib/public-link';
+
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 
 export type QuoteResponseResult = { ok: true } | { ok: false; error: 'invalid' | 'closed' | 'failed' };
@@ -14,7 +16,7 @@ export async function respondToQuote(
   name: string,
   note: string
 ): Promise<QuoteResponseResult> {
-  if (!/^[0-9a-f-]{36}$/i.test(token) || !name.trim()) return { ok: false, error: 'invalid' };
+  if (!isPublicLinkSegment(token) || !name.trim()) return { ok: false, error: 'invalid' };
   try {
     const res = await fetch(`${BACKEND_URL}/api/v1/public/invoices/${encodeURIComponent(token)}/respond`, {
       method: 'POST',

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from "@nestjs/common";
+import { clientPortalLinkOf, newShortKey } from "../public-links/public-link";
 import {
   checkVatPayer,
   isEuCountry,
@@ -190,8 +191,21 @@ export class ContactsService {
     return row;
   }
 
-  findOne(db: TenantDb, id: string) {
-    return db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+  async findOne(db: TenantDb, id: string) {
+    const rows = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+    if (!rows[0]?.portalToken) return rows.map((r) => ({ ...r, portalLink: null }));
+    const tenant = await this.linkTenant(db, rows[0].tenantId);
+    return rows.map((r) => ({ ...r, portalLink: clientPortalLinkOf(tenant, r) }));
+  }
+
+  /** What the readable prefix of a customer's portal link needs (Settings → Faktury). */
+  private async linkTenant(db: TenantDb, tenantId: string) {
+    const [tenant] = await db
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId))
+      .limit(1);
+    return tenant;
   }
 
   /**
@@ -248,11 +262,12 @@ export class ContactsService {
   async setPortal(db: TenantDb, id: string, enabled: boolean) {
     const [row] = await db
       .update(schema.contacts)
-      .set({ portalToken: enabled ? randomUUID() : null, updatedAt: new Date() })
+      // A new key with every new token, so renewing revokes the short link too.
+      .set({ portalToken: enabled ? randomUUID() : null, portalKey: enabled ? newShortKey() : null, updatedAt: new Date() })
       .where(eq(schema.contacts.id, id))
-      .returning({ portalToken: schema.contacts.portalToken });
+      .returning();
     if (!row) throw new NotFoundException("Contact not found");
-    return row;
+    return { portalToken: row.portalToken, portalLink: clientPortalLinkOf(await this.linkTenant(db, row.tenantId), row) };
   }
 
   async create(db: TenantDb, tenantId: string, dto: CreateContactDto) {
