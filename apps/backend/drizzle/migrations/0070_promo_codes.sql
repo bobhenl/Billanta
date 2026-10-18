@@ -1,6 +1,8 @@
 -- Promo codes for the growth channels (networking events, creators, schools).
 -- Billanta staff issue them in the admin area; a company redeems one at
--- sign-up (/signup?promo=CODE) or later in Billing.
+-- sign-up (/join/CODE, or its alias /signup?promo=CODE) or later in Billing.
+-- A code is also a group join link: one QR or passphrase for a whole event
+-- or coworking, carrying a referrer, a business type and a language.
 --
 --   * promo_codes: GLOBAL catalogue (no tenant, no RLS), like partners. The
 --     benefit is extra trial days or free (prepaid) months of a plan, which is
@@ -14,6 +16,9 @@
 --   * promo_code_stats(): per-code totals across companies for the admin
 --     list (redemptions and how many of those companies pay now). Counts only,
 --     never which companies.
+--   * referral_code_exists(): lets staff check a code's referrer (another
+--     company's invite code) without reading tenants. The referral itself is
+--     claimed through the existing claim_referral() at redemption.
 CREATE TABLE IF NOT EXISTS "promo_codes" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   "code" varchar(32) NOT NULL,
@@ -28,6 +33,11 @@ CREATE TABLE IF NOT EXISTS "promo_codes" (
   "active" boolean NOT NULL DEFAULT true,
   "owner_label" text,
   "note" text,
+  -- The creator or coworking's own invite code (tenants.referral_code).
+  "referral_code" varchar(16),
+  -- A key of BUSINESS_PRESETS (apps/frontend/lib/business-presets.ts).
+  "business_preset" varchar(32),
+  "default_locale" varchar(2),
   "created_by" text,
   "created_at" timestamp with time zone NOT NULL DEFAULT now(),
   "updated_at" timestamp with time zone NOT NULL DEFAULT now()
@@ -52,6 +62,10 @@ ALTER TABLE "promo_codes" ADD CONSTRAINT "promo_codes_limits_check" CHECK (
   AND "redemption_count" >= 0
   AND ("valid_from" IS NULL OR "valid_until" IS NULL OR "valid_from" <= "valid_until")
 );
+--> statement-breakpoint
+ALTER TABLE "promo_codes" DROP CONSTRAINT IF EXISTS "promo_codes_locale_check";
+--> statement-breakpoint
+ALTER TABLE "promo_codes" ADD CONSTRAINT "promo_codes_locale_check" CHECK ("default_locale" IS NULL OR "default_locale" IN ('cs', 'sk', 'en'));
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "promo_codes_code_unique" ON "promo_codes" (upper("code"));
 --> statement-breakpoint
@@ -111,10 +125,25 @@ $$;
 --> statement-breakpoint
 REVOKE ALL ON FUNCTION promo_code_stats() FROM PUBLIC;
 --> statement-breakpoint
+DROP FUNCTION IF EXISTS referral_code_exists(text);
+--> statement-breakpoint
+CREATE FUNCTION referral_code_exists(p_code text)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (SELECT 1 FROM tenants WHERE referral_code = upper(p_code) AND suspended_at IS NULL);
+$$;
+--> statement-breakpoint
+REVOKE ALL ON FUNCTION referral_code_exists(text) FROM PUBLIC;
+--> statement-breakpoint
 DO $$ BEGIN
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'faktur_app') THEN
     GRANT SELECT, INSERT, UPDATE ON "promo_codes" TO faktur_app;
     GRANT SELECT, INSERT ON "promo_redemptions" TO faktur_app;
     GRANT EXECUTE ON FUNCTION promo_code_stats() TO faktur_app;
+    GRANT EXECUTE ON FUNCTION referral_code_exists(text) TO faktur_app;
   END IF;
 END $$;

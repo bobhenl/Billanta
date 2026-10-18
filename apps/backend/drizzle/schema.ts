@@ -1570,7 +1570,8 @@ export const partners = pgTable("partners", {
 export const promoCodes = pgTable("promo_codes", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 32 }).notNull(),
-  kind: varchar("kind", { length: 16 }).$type<"event" | "creator" | "school" | "other">().notNull(),
+  /** Other modules (class codes) add their own kinds with a PromoKindHandler. */
+  kind: varchar("kind", { length: 16 }).notNull(),
   benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
   benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
   /** Days for trial_days, months for free_months. */
@@ -1584,6 +1585,11 @@ export const promoCodes = pgTable("promo_codes", {
   /** Who the code belongs to: the creator, event or school. */
   ownerLabel: text("owner_label"),
   note: text("note"),
+  /** The creator or coworking's invite code (tenants.referral_code): they get the referral credit. */
+  referralCode: varchar("referral_code", { length: 16 }),
+  /** A BUSINESS_PRESETS key (frontend): the join link preselects that company type. */
+  businessPreset: varchar("business_preset", { length: 32 }),
+  defaultLocale: varchar("default_locale", { length: 2 }).$type<"cs" | "sk" | "en">(),
   createdBy: text("created_by"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

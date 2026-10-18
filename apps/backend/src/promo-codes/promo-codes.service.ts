@@ -4,11 +4,36 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { z } from "zod";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
-import { normalizePromoCode, PROMO_BENEFITS, PROMO_KINDS, PROMO_MAX_VALUE, promoPatch, promoRejection, type PromoError } from "./promo-logic";
+import { ReferralsService } from "../referrals/referrals.service";
+import type { PromoCodeRow, PromoKindHandler } from "./promo-kind-handler";
+import {
+  normalizePromoCode,
+  PROMO_BENEFITS,
+  PROMO_KINDS,
+  PROMO_LOCALES,
+  PROMO_MAX_VALUE,
+  PROMO_PRESETS,
+  promoPatch,
+  promoRejection,
+  type PromoError,
+} from "./promo-logic";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
 const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+// Same alphabet as ReferralsService's codes; whether one exists is checked in create/update.
+const referralCode = z
+  .string()
+  .trim()
+  .transform((c) => c.toUpperCase())
+  .pipe(z.string().regex(/^[A-Z0-9]{4,16}$/));
+
+/** Join-link extras every code may carry, on create and on edit. */
+const joinFields = {
+  referral_code: z.union([z.literal(""), referralCode]).nullish(),
+  business_preset: z.enum(PROMO_PRESETS).nullish(),
+  default_locale: z.enum(PROMO_LOCALES).nullish(),
+};
 
 export const redeemPromoSchema = z.object({
   // Loose on purpose: anything that isn't a code gets the same promo_invalid as an unknown one.
@@ -32,6 +57,7 @@ export const promoCodeSchema = z
     owner_label: z.string().trim().max(120).nullish(),
     note: z.string().trim().max(500).nullish(),
     active: z.boolean().default(true),
+    ...joinFields,
   })
   .refine((p) => p.benefit_value <= PROMO_MAX_VALUE[p.benefit_type], { path: ["benefit_value"], message: "too_large" })
   .refine((p) => !p.valid_from || !p.valid_until || p.valid_from <= p.valid_until, { path: ["valid_until"], message: "before_valid_from" });
@@ -44,10 +70,25 @@ export const updatePromoCodeSchema = z.object({
   valid_until: isoDay.nullish(),
   owner_label: z.string().trim().max(120).nullish(),
   note: z.string().trim().max(500).nullish(),
+  ...joinFields,
 });
 export type UpdatePromoCodeInput = z.infer<typeof updatePromoCodeSchema>;
 
 const today = () => new Date().toISOString().slice(0, 10);
+
+/** What the public join page may know about a code: never the referrer, the note or the counts. */
+export const publicPromoView = (p: PromoCodeRow) => ({
+  code: p.code,
+  kind: p.kind,
+  ownerLabel: p.ownerLabel,
+  benefitType: p.benefitType,
+  benefitPlan: p.benefitPlan,
+  benefitValue: p.benefitValue,
+  businessPreset: p.businessPreset,
+  defaultLocale: p.defaultLocale,
+});
+
+const pgCode = (error: unknown) => (error as { code?: string })?.code ?? (error as { cause?: { code?: string } })?.cause?.code;
 
 const promoError = (code: PromoError) => (code === "promo_already_applied" || code === "promo_used_up" ? new ConflictException(code) : new BadRequestException(code));
 
@@ -57,13 +98,44 @@ const promoError = (code: PromoError) => (code === "promo_already_applied" || co
  * table is global, so the redeeming transaction locks and counts it
  * directly; the company's redemption row and plan change go through RLS
  * like any other write. Nothing here reads another company's data except
- * the counts from promo_code_stats().
+ * the counts from promo_code_stats() and, for a code with a referrer, the
+ * existing claim_referral().
+ *
+ * Generic on purpose: other modules hang their own kind of code (class
+ * codes) on the same lookup, join link and redemption with a
+ * PromoKindHandler (see promo-kind-handler.ts).
  */
 @Injectable()
 export class PromoCodesService {
   private readonly logger = new Logger(PromoCodesService.name);
 
-  constructor(private readonly dbService: DbService) {}
+  private readonly handlers = new Map<string, PromoKindHandler>();
+
+  constructor(
+    private readonly dbService: DbService,
+    private readonly referrals: ReferralsService,
+  ) {}
+
+  registerKindHandler(kind: string, handler: PromoKindHandler) {
+    if (this.handlers.has(kind)) throw new Error(`promo kind ${kind} already has a handler`);
+    this.handlers.set(kind, handler);
+  }
+
+  /**
+   * The join page's view of a redeemable code. Unknown, switched off, not
+   * started, expired and used up all read as the same promo_invalid, so the
+   * page tells a guesser nothing a failed redemption wouldn't.
+   */
+  async lookup(rawCode: string) {
+    const code = normalizePromoCode(rawCode);
+    if (!code) throw new NotFoundException("promo_invalid");
+    const [promo] = await this.dbService.db
+      .select()
+      .from(schema.promoCodes)
+      .where(sql`upper(${schema.promoCodes.code}) = ${code}`);
+    if (!promo || promoRejection(promo, today())) throw new NotFoundException("promo_invalid");
+    return publicPromoView(promo);
+  }
 
   /** The code this company redeemed, if any (Billing shows it instead of the form). */
   async current(db: TenantDb) {
@@ -74,8 +146,10 @@ export class PromoCodesService {
         benefitPlan: schema.promoRedemptions.benefitPlan,
         benefitValue: schema.promoRedemptions.benefitValue,
         createdAt: schema.promoRedemptions.createdAt,
+        businessPreset: schema.promoCodes.businessPreset,
       })
       .from(schema.promoRedemptions)
+      .innerJoin(schema.promoCodes, eq(schema.promoCodes.id, schema.promoRedemptions.promoCodeId))
       .limit(1);
     return { redemption: row ?? null };
   }
@@ -121,12 +195,18 @@ export class PromoCodesService {
       .update(schema.tenants)
       .set({ ...result.patch, updatedAt: now })
       .where(eq(schema.tenants.id, tenantId));
+    // The creator or coworking behind the link gets the usual referral credit;
+    // claim_referral() quietly skips a company that doesn't qualify.
+    const referral = promo.referralCode ? await this.referrals.claim(db, promo.referralCode) : null;
+    await this.handlers.get(promo.kind)?.onRedeem({ db, tenantId, promo, source });
     this.logger.log(`promo ${promo.code} redeemed (${source}): ${promo.benefitValue} ${promo.benefitType} of ${promo.benefitPlan}`);
     return {
       code: promo.code,
       benefitType: promo.benefitType,
       benefitPlan: promo.benefitPlan,
       benefitValue: promo.benefitValue,
+      businessPreset: promo.businessPreset,
+      referralCredits: referral?.credits ?? 0,
       ...("trialEndsAt" in result.patch ? { trialEndsAt: result.patch.trialEndsAt.toISOString() } : { prepaidUntil: result.patch.prepaidUntil }),
     };
   }
@@ -143,7 +223,15 @@ export class PromoCodesService {
     return codes.map((c) => ({ ...c, paying: Number(byId.get(c.id)?.paying ?? 0) }));
   }
 
+  /** A typo in the referrer would silently credit nobody; staff hear about it instead. */
+  private async checkReferrer(code: string | null | undefined) {
+    if (!code) return;
+    const rows = await this.dbService.db.execute<{ ok: boolean }>(sql`SELECT referral_code_exists(${code}) AS ok`);
+    if (![...rows][0]?.ok) throw new BadRequestException("referral_unknown");
+  }
+
   async create(input: PromoCodeInput, createdBy: string | undefined) {
+    await this.checkReferrer(input.referral_code);
     try {
       const [row] = await this.dbService.db
         .insert(schema.promoCodes)
@@ -159,13 +247,15 @@ export class PromoCodesService {
           ownerLabel: input.owner_label || null,
           note: input.note || null,
           active: input.active,
+          referralCode: input.referral_code || null,
+          businessPreset: input.business_preset ?? null,
+          defaultLocale: input.default_locale ?? null,
           createdBy: createdBy ?? null,
         })
         .returning();
       return row;
     } catch (error) {
-      const code = (error as { code?: string })?.code ?? (error as { cause?: { code?: string } })?.cause?.code;
-      throw code === "23505" ? new ConflictException("code_taken") : error;
+      throw pgCode(error) === "23505" ? new ConflictException("code_taken") : error;
     }
   }
 
@@ -176,16 +266,19 @@ export class PromoCodesService {
     if (input.valid_until !== undefined) row.validUntil = input.valid_until ?? null;
     if (input.owner_label !== undefined) row.ownerLabel = input.owner_label || null;
     if (input.note !== undefined) row.note = input.note || null;
+    if (input.referral_code !== undefined) {
+      await this.checkReferrer(input.referral_code);
+      row.referralCode = input.referral_code || null;
+    }
+    if (input.business_preset !== undefined) row.businessPreset = input.business_preset ?? null;
+    if (input.default_locale !== undefined) row.defaultLocale = input.default_locale ?? null;
     try {
       const [updated] = await this.dbService.db.update(schema.promoCodes).set(row).where(eq(schema.promoCodes.id, id)).returning();
       if (!updated) throw new NotFoundException("promo_not_found");
       return updated;
     } catch (error) {
       // The table's check constraint: valid_until before valid_from.
-      if ((error as { code?: string })?.code === "23514" || (error as { cause?: { code?: string } })?.cause?.code === "23514") {
-        throw new BadRequestException("invalid_dates");
-      }
-      throw error;
+      throw pgCode(error) === "23514" ? new BadRequestException("invalid_dates") : error;
     }
   }
 }

@@ -10,6 +10,12 @@ import { addMonths, prepaidUntilAfterPayment } from "../billing/prepaid-period";
 export const PROMO_KINDS = ["event", "creator", "school", "other"] as const;
 export type PromoKind = (typeof PROMO_KINDS)[number];
 
+/** The keys of BUSINESS_PRESETS in apps/frontend/lib/business-presets.ts; keep the two in step. */
+export const PROMO_PRESETS = ["invoicingOnly", "flatTax", "tradesman", "withAccountant", "eshop"] as const;
+export type PromoPreset = (typeof PROMO_PRESETS)[number];
+
+export const PROMO_LOCALES = ["cs", "sk", "en"] as const;
+
 export const PROMO_BENEFITS = ["trial_days", "free_months"] as const;
 export type PromoBenefit = (typeof PROMO_BENEFITS)[number];
 
