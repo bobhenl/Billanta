@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown } from "./invoice-total.util";
-import { bilingualLabels, InvoicePdfService } from "./invoice-pdf.service";
+import { bilingualLabels, InvoicePdfService, mentionsReverseCharge } from "./invoice-pdf.service";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -250,5 +250,15 @@ describe("InvoicePdfService exchange rate line", () => {
   });
   it("keeps the old line for documents issued before the setting", async () => {
     expect(await printed({ exchangeRateMode: null, exchangeRateDate: null })).toContain("Kurz ČNB 25,12 CZK/EUR");
+  });
+});
+
+describe("mentionsReverseCharge", () => {
+  it("spots the reverse-charge wording an imported note already carries", () => {
+    expect(mentionsReverseCharge("584611057\r\nDaň odvede zákazník v režimu přenesené daňové povinnosti.")).toBe(true);
+    expect(mentionsReverseCharge("Prenesenie daňovej povinnosti")).toBe(true);
+    expect(mentionsReverseCharge("Reverse charge")).toBe(true);
+    expect(mentionsReverseCharge("Děkujeme za objednávku.")).toBe(false);
+    expect(mentionsReverseCharge(null)).toBe(false);
   });
 });

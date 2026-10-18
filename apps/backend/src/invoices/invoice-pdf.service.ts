@@ -35,6 +35,17 @@ export function reverseChargeNoteKind(
   if (euService && (invoice.reverseCharge || tenant.vatStatus === "identified")) return "eu";
   return invoice.reverseCharge ? "domestic" : null;
 }
+
+/**
+ * Whether a note already says the customer pays the VAT. Invoices imported
+ * from BitFaktura carry "Daň odvede zákazník … / Reverse charge" in their own
+ * note, and printing our line on top of it showed the same thing twice.
+ */
+export function mentionsReverseCharge(note: string | null | undefined): boolean {
+  if (!note) return false;
+  const text = note.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return /dan odvede zakaznik|prenesen\w* danov|reverse[ -]?charge/.test(text);
+}
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type RelatedDocument = { invoiceNumber: string | null; documentType: InvoiceRow["documentType"] } | null;
 type Lang = "cs" | "sk" | "en";
@@ -687,7 +698,7 @@ export class InvoicePdfService {
     contact?: ContactRow,
   ): void {
     const notes = [
-      this.reverseChargeNote(t, invoice, tenant, contact),
+      mentionsReverseCharge(invoice.noteBelow) ? null : this.reverseChargeNote(t, invoice, tenant, contact),
       invoice.documentType === "proforma" ? t.proformaNote : null,
       invoice.documentType !== "quote" && invoice.paymentInstructions
         ? `${invoice.paymentMethodLabel || t.methods[invoice.paymentMethod]}: ${fill(invoice.paymentInstructions)}`
