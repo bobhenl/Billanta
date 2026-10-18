@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader } from '@/components/public-tools/parts';
+import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader, ToolNote } from '@/components/public-tools/parts';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
@@ -42,7 +42,7 @@ export async function CalculatorPage({
   children: React.ReactNode;
   /** Extra sections below the widget (conditions, tables). */
   after?: React.ReactNode;
-  /** The tax "orientační výpočet" box; off for tools that compute nothing tax-related (QR, IBAN, due date). */
+  /** The tax "orientační výpočet" box; off for tools that compute nothing tax-related (QR, IBAN, due date), which get the one-line ToolNote instead. */
   disclaimer?: boolean | string;
   /** Invoice tools lead to the guest invoice, which needs no account. */
   cta?: 'signup' | 'invoice';
@@ -71,11 +71,9 @@ export async function CalculatorPage({
       <ToolTabs kind="calculators" current={slug} />
       <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
       <div className="mt-10">{children}</div>
-      {disclaimer && (
-        <div className="mt-6">
-          <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} />
-        </div>
-      )}
+      <div className="mt-6">
+        {disclaimer ? <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} /> : <ToolNote />}
+      </div>
       {after && <div className="mt-12 space-y-10">{after}</div>}
       {how.length > 0 && (
         <div className="mt-12 max-w-3xl">

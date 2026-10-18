@@ -61,9 +61,22 @@ export async function ToolDisclaimer({ validity, text }: { validity?: string; te
       <div>
         <p className="font-semibold">{t('disclaimerTitle')}</p>
         {validity && <p className="mt-1 font-medium">{validity}</p>}
-        <p className="mt-1 leading-relaxed text-muted-foreground">{text ?? t('disclaimer')}</p>
+        <p className="mt-1 leading-relaxed text-muted-foreground">
+          {text ?? t('disclaimer')} {t('noLiability')}
+        </p>
       </div>
     </aside>
+  );
+}
+
+/** One-line caveat for tools that compute nothing tax-related (QR, IBAN, due date, company lookup). */
+export async function ToolNote() {
+  const t = await getTranslations('tools.common');
+  return (
+    <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+      {t('noWarranty')}
+    </p>
   );
 }
 
