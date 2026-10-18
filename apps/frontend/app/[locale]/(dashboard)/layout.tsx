@@ -16,6 +16,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { NavProgress } from '@/components/nav-progress';
 import { NotificationBell } from '@/components/notification-bell';
+import { OfflineIndicator, OfflineProvider } from '@/components/offline-sync';
 import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { TrialBanner } from '@/components/trial-banner';
@@ -97,59 +98,64 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // The root layout sends the browser only the public namespaces; the app
   // needs its own as well (lib/client-messages.ts).
   const messages = dashboardClientMessages(await getMessages());
+  // Who offline drafts belong to; a different value on this device wipes the queue (docs/offline-drafts-plan.md).
+  const offlineScope = companies ? `${session.user.id}:${companies.active.id}` : null;
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <div className="flex min-h-screen flex-col">
-        <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
-          <div className="container flex h-14 items-center justify-between gap-3">
-            <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
-              <BrandMark />
-              {tApp('name')}
-            </Link>
-
-            <DashboardNav hidden={hidden} />
-
-            <div className="flex items-center gap-1.5">
-              <CommandPalette hidden={paletteHidden} />
-              <NotificationBell />
-              <LanguageSwitcher className="hidden md:inline-flex" />
-              <ThemeToggle className="hidden md:inline-flex" />
-              <UserMenu
-                companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
-                activeId={companies?.active.id ?? null}
-                hidden={menuHidden}
-              />
+      <OfflineProvider scope={offlineScope}>
+        <div className="flex min-h-screen flex-col">
+          <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
+            <div className="container flex h-14 items-center justify-between gap-3">
+              <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
+                <BrandMark />
+                {tApp('name')}
+              </Link>
+  
+              <DashboardNav hidden={hidden} />
+  
+              <div className="flex items-center gap-1.5">
+                <OfflineIndicator />
+                <CommandPalette hidden={paletteHidden} />
+                <NotificationBell />
+                <LanguageSwitcher className="hidden md:inline-flex" />
+                <ThemeToggle className="hidden md:inline-flex" />
+                <UserMenu
+                  companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
+                  activeId={companies?.active.id ?? null}
+                  hidden={menuHidden}
+                />
+              </div>
             </div>
-          </div>
-        </header>
-
-        <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
-          {role === 'viewer' && (
-            <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
-          )}
-          {demo?.isDemo && demo.demoExpiresAt ? (
-            <DemoBanner
-              expiresAt={demo.demoExpiresAt}
-              aiLeft={demo.demoAiCallsLeft ?? null}
-              locale={locale}
-              kind={demo.demoKind ?? null}
-              role={demoRole}
-            />
-          ) : (
-            <TrialBanner plan={access?.plan} />
-          )}
-          {claimDemo && <DemoTransferClaim />}
-          {children}
-        </main>
-
-        <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
-        <Suspense fallback={null}>
-          <NavProgress />
-        </Suspense>
-        <KeyboardShortcuts hidden={paletteHidden} />
-        {claimReferral && <ReferralClaim />}
-      </div>
+          </header>
+  
+          <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
+            {role === 'viewer' && (
+              <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
+            )}
+            {demo?.isDemo && demo.demoExpiresAt ? (
+              <DemoBanner
+                expiresAt={demo.demoExpiresAt}
+                aiLeft={demo.demoAiCallsLeft ?? null}
+                locale={locale}
+                kind={demo.demoKind ?? null}
+                role={demoRole}
+              />
+            ) : (
+              <TrialBanner plan={access?.plan} />
+            )}
+            {claimDemo && <DemoTransferClaim />}
+            {children}
+          </main>
+  
+          <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
+          <Suspense fallback={null}>
+            <NavProgress />
+          </Suspense>
+          <KeyboardShortcuts hidden={paletteHidden} />
+          {claimReferral && <ReferralClaim />}
+        </div>
+      </OfflineProvider>
     </NextIntlClientProvider>
   );
 }

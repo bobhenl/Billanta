@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { AiModule } from "../ai/ai.module";
 import { ApiKeysModule } from "../api-keys/api-keys.module";
 import { AuthModule } from "../auth/auth.module";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
@@ -22,7 +23,8 @@ import { BuyerDetailsService } from "./buyer-details.service";
   // `ApiKeyAuthGuard` (ApiKeysModule) resolvable through THIS module's own
   // injector, the same reason SubscriptionActiveGuard is re-provided below
   // rather than assumed available globally.
-  imports: [EmailModule, AuthModule, ApiKeysModule],
+  // AiModule: voice notes from the dashboard become drafts through AiService.suggestInvoice.
+  imports: [EmailModule, AuthModule, ApiKeysModule, AiModule],
   controllers: [InvoicesController],
   // SubscriptionActiveGuard (blueprint §5 plan gating) is re-provided
   // directly here — rather than importing the whole BillingModule — since

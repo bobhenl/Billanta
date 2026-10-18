@@ -70,6 +70,10 @@ class TranscriptionError(PipelineError):
     )
 
 
+class EmptyTranscriptError(TranscriptionError):
+    """Whisper ran fine but heard no speech (silence, a pocket recording)."""
+
+
 class ExtractionError(PipelineError):
     """Raised when GPT-4o structured extraction fails schema validation twice
     or the OpenAI call itself fails.

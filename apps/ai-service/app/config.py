@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     )
     # Scoped service JWT — see module docstring. NOT a superuser token.
     backend_service_jwt: str = Field(default="", alias="BACKEND_SERVICE_JWT")
+    # Shared with the backend for its calls into this service
+    # (`POST /internal/transcribe`, voice notes recorded in the dashboard).
+    # Empty = those endpoints refuse every request.
+    internal_api_token: str = Field(default="", alias="AI_SERVICE_INTERNAL_TOKEN")
 
     # --- Misc ---
     environment: str = Field(default="development", alias="ENVIRONMENT")

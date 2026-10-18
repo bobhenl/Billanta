@@ -30,6 +30,7 @@ import { and, asc, desc, eq, ilike, inArray, like, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
+import { withIdempotencyKey } from "../common/idempotency";
 import { DbService } from "../db/db.service";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, decodeCsvBuffer, mapContactRows, parseCsv, type CsvContact, type CsvSkip } from "./contacts-csv.util";
@@ -300,7 +301,23 @@ export class ContactsService {
     return { portalSlug: row.portalSlug, portalLink: clientPortalLinkOf(tenant, row), portalLinkDefault: clientPortalLinkOf(tenant, { ...row, portalSlug: null }) };
   }
 
-  async create(db: TenantDb, tenantId: string, dto: CreateContactDto) {
+  async create(db: TenantDb, tenantId: string, dto: CreateContactDto, idempotencyKey: string | null = null) {
+    return withIdempotencyKey(
+      db,
+      tenantId,
+      idempotencyKey,
+      "contact",
+      () => this.insertContact(db, tenantId, dto),
+      (rows) => rows[0].id,
+      async (id) => {
+        const rows = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
+        if (rows.length === 0) throw new ConflictException({ error: "idempotent_resource_deleted" });
+        return rows;
+      },
+    );
+  }
+
+  private async insertContact(db: TenantDb, tenantId: string, dto: CreateContactDto) {
     // tenantId is taken from the verified request context (req.user.tenantId
     // via the controller), never from client-supplied input — the DTO
     // deliberately has no tenantId field.
@@ -309,6 +326,9 @@ export class ContactsService {
     // saved (e.g. picking the same ARES hit twice) returns the existing row.
     if (dto.ico) {
       const existing = await db.select().from(schema.contacts).where(eq(schema.contacts.ico, dto.ico)).limit(1);
+      if (existing.length > 0 && dto.onDuplicateIco === "conflict") {
+        throw new ConflictException({ error: "ico_taken", contactId: existing[0].id, legalName: existing[0].legalName });
+      }
       if (existing.length > 0) return existing;
     }
     return db

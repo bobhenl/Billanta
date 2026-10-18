@@ -6,6 +6,7 @@ import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
+import { clearOfflineData } from '@/lib/offline-outbox';
 import { cn } from '@/lib/utils';
 
 const COUNTRY: Record<DemoKind, 'CZ' | 'SK'> = { cz_vat_sro: 'CZ', cz_freelancer: 'CZ', cz_pausal: 'CZ', sk_vat_sro: 'SK' };
@@ -68,6 +69,8 @@ export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: stri
   async function signOutAndStart(kind: DemoKind) {
     setBusy(kind);
     await signOut({ redirect: false }).catch(() => null);
+    // The demo is another account: no offline drafts or cached pages of the real one may stay behind.
+    await clearOfflineData();
     await start(kind);
   }
 

@@ -7,6 +7,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
 import { ThemeSegment } from '@/components/theme-toggle';
 import { ACTIONS } from '@/components/command-palette';
+import { useLeaveOffline } from '@/components/offline-sync';
 import { DASHBOARD_NAV_ITEMS } from '@/lib/dashboard-nav-items';
 
 /**
@@ -55,6 +56,7 @@ export function MobileBottomNav({ hidden = [], actionsHidden = hidden }: { hidde
 
 export function PanelSettings({ logOutLabel }: { logOutLabel?: string }) {
   const tMobile = useTranslations('mobile');
+  const leaveOffline = useLeaveOffline();
   return (
     <>
       <div className="flex items-center justify-between gap-3">
@@ -68,7 +70,7 @@ export function PanelSettings({ logOutLabel }: { logOutLabel?: string }) {
       {logOutLabel && (
         <button
           type="button"
-          onClick={() => signOut({ callbackUrl: '/' })}
+          onClick={async () => (await leaveOffline()) && signOut({ callbackUrl: '/' })}
           className="flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
           <LogOut className="h-4 w-4" />

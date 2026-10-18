@@ -484,6 +484,20 @@
       "when": 1792902200000,
       "tag": "0069_demo_roles_transfer",
       "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1792902300000,
+      "tag": "0070_idempotency_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1792902360000,
+      "tag": "0071_invoice_source_ai_voice",
+      "breakpoints": true
     }
   ]
 }

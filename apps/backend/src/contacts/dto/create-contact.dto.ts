@@ -32,6 +32,10 @@ export const createContactSchema = z.object({
   color: z.enum(CONTACT_COLORS).nullish(),
   // Private, never printed on documents.
   internalNote: z.string().max(4000).nullish(),
+  // An IČO that is already saved: "return" hands back that contact (picking
+  // the same ARES hit twice), "conflict" answers 409 so the caller can let
+  // the user decide (offline drafts syncing later).
+  onDuplicateIco: z.enum(["return", "conflict"]).optional(),
 });
 
 export class CreateContactDto extends createZodDto(createContactSchema) {}

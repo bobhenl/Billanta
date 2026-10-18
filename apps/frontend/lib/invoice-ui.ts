@@ -9,7 +9,7 @@ import type { HomeCurrency } from '@faktur/cz-compliance';
 export type InvoiceStatus = 'draft' | 'pending_review' | 'issued' | 'paid' | 'cancelled';
 export type DocumentType = 'invoice' | 'proforma' | 'credit_note' | 'quote';
 export type PaymentMethod = 'bank_transfer' | 'cash' | 'card' | 'cash_on_delivery' | 'other';
-export type InvoiceSource = 'manual' | 'ai_telegram' | 'ai_whatsapp' | 'api' | 'recurring' | 'import' | 'profile_order';
+export type InvoiceSource = 'manual' | 'ai_telegram' | 'ai_whatsapp' | 'ai_voice' | 'api' | 'recurring' | 'import' | 'profile_order';
 
 export const DOCUMENT_TYPES: DocumentType[] = ['invoice', 'proforma', 'credit_note', 'quote'];
 export const INVOICE_STATUSES: InvoiceStatus[] = ['draft', 'pending_review', 'issued', 'paid', 'cancelled'];

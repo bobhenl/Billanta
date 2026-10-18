@@ -5,6 +5,7 @@ import { Building2, Check, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { useLeaveOffline } from '@/components/offline-sync';
 import { InfoHint } from '@/components/info-hint';
 import type { CurrentTenant } from '@/lib/api-client';
 import { createTenant, switchTenant } from '@/lib/tenant-actions';
@@ -16,6 +17,7 @@ const ROLES = ['owner', 'admin', 'accountant', 'viewer'];
 /** The account's companies (switch with one click) and the "add a company" form. */
 export function CompaniesManager({ companies, activeId }: { companies: CurrentTenant[]; activeId: string }) {
   const t = useTranslations('settings.companies');
+  const leaveOffline = useLeaveOffline();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState('');
@@ -27,6 +29,7 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
   function handleSwitch(id: string) {
     setError(null);
     startTransition(async () => {
+      if (!(await leaveOffline())) return;
       const result = await switchTenant(id);
       if (!result.ok) return setError(result.error);
       router.push('/dashboard');
@@ -38,6 +41,7 @@ export function CompaniesManager({ companies, activeId }: { companies: CurrentTe
     event.preventDefault();
     setError(null);
     startTransition(async () => {
+      if (!(await leaveOffline())) return;
       const result = await createTenant(name, tos);
       if (!result.ok) return setError(result.error);
       router.push('/settings/company');

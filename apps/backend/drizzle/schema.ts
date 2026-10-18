@@ -82,6 +82,9 @@ export const invoiceSourceEnum = pgEnum("invoice_source", [
   // A visitor ordered from the company's public profile (Služby a ceník).
   // Always a draft for the owner to review; see public-profiles/profile-orders.service.ts.
   "profile_order",
+  // A voice note recorded in the dashboard (often offline), transcribed into a
+  // pending_review draft once it synced. See docs/offline-drafts-plan.md.
+  "ai_voice",
 ]);
 
 // What kind of document an `invoices` row is. Quotes and proformas are not
@@ -1683,3 +1686,27 @@ export const demoSessions = pgTable("demo_sessions", {
   transferTokenHash: char("transfer_token_hash", { length: 64 }),
   transferredAt: timestamp("transferred_at", { withTimezone: true }),
 });
+
+// ---------------------------------------------------------------------------
+// idempotency_keys — tenant-scoped (migration 0070). One row per
+// Idempotency-Key a client sent with a create (offline drafts, see
+// docs/offline-drafts-plan.md); a retry with the same key returns
+// `resource_id` instead of creating another row. Kept for 30 days.
+// ---------------------------------------------------------------------------
+export const idempotencyKeys = pgTable(
+  "idempotency_keys",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    key: varchar("key", { length: 100 }).notNull(),
+    // What the key created ("invoice", "contact"): the same key can't replay into another kind.
+    scope: varchar("scope", { length: 40 }).notNull(),
+    resourceId: uuid("resource_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tenantId, table.key] }),
+    createdIdx: index("idempotency_keys_created_idx").on(table.tenantId, table.createdAt),
+  }),
+);
