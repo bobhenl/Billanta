@@ -6837,7 +6837,14 @@
             "Slovenskí platitelia DPH používajú referenčný kurz ECB, nie kurz ČNB."
           ],
           "source": "Zdroj: Česká národná banka",
-          "crossRate": "Krížový kurz cez českú korunu podľa kurzového lístka ČNB."
+          "crossRate": "Krížový kurz cez českú korunu podľa kurzového lístka ČNB.",
+          "date": {
+            "label": "Kurzy ku dňu",
+            "show": "Zobraziť",
+            "today": "Dnešné kurzy",
+            "fallback": "Dňa {day} ČNB kurzy nevyhlásila (víkend alebo sviatok), preto platí lístok zo dňa {date}.",
+            "notYet": "Dnešné kurzy ČNB ešte nevyhlásila (vyhlasuje ich v pracovné dni po 14:30), preto platí lístok zo dňa {date}."
+          }
         },
         "qrPayment": {
           "name": "Generátor QR platby (CZ)",
