@@ -1955,7 +1955,11 @@
         "disclaimer": "Soubor před podáním zkontrolujte v EPO a doplňte finanční úřad. Plnění do EU se vykazují jako služby (kód 3); doklady bez DIČ dodavatele spadají do B.3.",
         "formVersions": "Export vytváří XML ve verzích DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidla a verze formulářů jsme naposledy ověřili {date}.",
         "officialLink": "Aktuální informace na webu Finanční správy",
-        "guideLink": "Návod k podání"
+        "guideLink": "Návod k podání",
+        "warnings": {
+          "reverse_charge_code_missing": "Doklady bez kódu předmětu plnění: {documents}. Doplňte kód na dokladu a stáhněte soubor znovu, jinak ho EPO odmítne.",
+          "reverse_charge_dic_missing": "Doklady v přenesené daňové povinnosti bez DIČ odběratele, v oddílu A.1 chybí: {documents}."
+        }
       },
       "annual": {
         "title": "Roční odhad daně a pojištění (OSVČ)",
@@ -3984,7 +3988,32 @@
         "en": "English"
       },
       "reverseCharge": "Přenesená daňová povinnost",
-      "reverseChargeHint": "DPH odvede odběratel; na dokladu bude bez DPH s poznámkou."
+      "reverseChargeHint": "DPH odvede odběratel; na dokladu bude bez DPH s poznámkou.",
+      "reverseChargeCode": "Kód předmětu plnění",
+      "reverseChargeCodeNone": "Vyberte kód…",
+      "reverseChargeCodeHint": "Kontrolní hlášení ho vyžaduje u každého dokladu v oddílu A.1.",
+      "reverseChargeCodes": {
+        "1": "Zlato",
+        "3": "Dodání nemovité věci, pokud se při něm uplatní daň",
+        "4": "Stavební a montážní práce",
+        "5": "Zboží uvedené v příloze č. 5 (odpad, šrot)",
+        "6": "Dodání zboží poskytnutého původně jako záruka",
+        "7": "Dodání zboží po postoupení výhrady vlastnictví",
+        "11": "Povolenky na emise skleníkových plynů",
+        "12": "Obiloviny a technické plodiny",
+        "13": "Kovy",
+        "14": "Mobilní telefony",
+        "15": "Integrované obvody",
+        "16": "Přenosná zařízení pro automatizované zpracování dat",
+        "17": "Videoherní konzole",
+        "18": "Dodání certifikátů elektřiny",
+        "19": "Dodání elektřiny soustavami nebo sítěmi obchodníkovi",
+        "20": "Dodání plynu soustavami nebo sítěmi obchodníkovi",
+        "21": "Poskytnutí vymezených služeb elektronických komunikací",
+        "1a": "Zprostředkování dodání investičního zlata",
+        "3a": "Dodání nemovité věci v nuceném prodeji",
+        "4a": "Stavební a montážní práce – poskytnutí pracovníků"
+      }
     },
     "notes": {
       "title": "Poznámky",

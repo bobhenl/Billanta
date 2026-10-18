@@ -568,6 +568,10 @@ export const invoices = pgTable(
     language: varchar("language", { length: 2 }).notNull().default("cs"),
     // Přenesená daňová povinnost (§92a ZDPH): VAT is not charged on the invoice.
     reverseCharge: boolean("reverse_charge").notNull().default(false),
+    // Kód předmětu plnění for domestic reverse charge (REVERSE_CHARGE_CODES in
+    // cz-compliance): kontrolní hlášení A.1 needs it per document. Null = not
+    // chosen yet; the KH export then warns instead of guessing (migration 0056).
+    reverseChargeCode: text("reverse_charge_code"),
     /** CZK per 1 unit of `currency` (ČNB rate on the taxable supply date), set at issue; null for CZK. */
     exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
     /** How `exchangeRate` was chosen at issue (exchange-rate-mode.ts); null = issued before the setting existed. */

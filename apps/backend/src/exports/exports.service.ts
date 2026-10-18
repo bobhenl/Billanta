@@ -16,6 +16,7 @@ import {
   generateDphKh1,
   generateDphShv,
   submitterFromTenant,
+  type VatExportWarning,
   type VatIssuedDoc,
   type VatPeriod,
   type VatReceivedDoc,
@@ -596,6 +597,7 @@ export class ExportsService {
         customerCountry: contact?.addressCountry ?? "CZ",
         taxableDate,
         reverseCharge: invoice.reverseCharge,
+        reverseChargeCode: invoice.reverseChargeCode,
         parts: totals.byRate.map((r) => ({
           ratePercent: r.vatRatePercent,
           base: r.totalWithoutVat * rate,
@@ -730,12 +732,15 @@ export class ExportsService {
     period: ExportPeriod,
     vatPeriod: VatPeriod,
     tenant: typeof schema.tenants.$inferSelect,
-  ): Promise<string | null> {
+  ): Promise<{ body: string | null; warnings: VatExportWarning[] }> {
     const { issued, received } = await this.loadVatDocs(db, period);
     const submitter = submitterFromTenant(tenant);
-    if (kind === "dp3") return generateDphDp3({ issued, received, submitter, period: vatPeriod });
-    if (kind === "kh1") return generateDphKh1({ issued, received, submitter, period: vatPeriod });
-    return generateDphShv({ issued, submitter, period: vatPeriod });
+    if (kind === "dp3") return { body: generateDphDp3({ issued, received, submitter, period: vatPeriod }), warnings: [] };
+    if (kind === "kh1") {
+      const { xml, warnings } = generateDphKh1({ issued, received, submitter, period: vatPeriod });
+      return { body: xml, warnings };
+    }
+    return { body: generateDphShv({ issued, submitter, period: vatPeriod }), warnings: [] };
   }
 }
 

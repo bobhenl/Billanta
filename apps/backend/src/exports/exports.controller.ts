@@ -9,7 +9,7 @@ import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { parseReportFilters, type ReportFilters } from "../dashboard/report-filters";
 import { type ExportDateBy, type ExportPeriod, ExportsService, VatRateUnavailableError } from "./exports.service";
 import { ReportRates } from "./uniform-rate";
-import type { VatPeriod } from "./vat-returns";
+import type { VatExportWarning, VatPeriod } from "./vat-returns";
 import { FLAT_RATES, paidAdvances, type FlatRate } from "./annual-summary";
 import {
   computeCssz,
@@ -349,14 +349,20 @@ export class ExportsController {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant?.dic) throw new BadRequestException("Company has no DIČ — VAT filings need it");
     let body: string | null;
+    let warnings: VatExportWarning[];
     try {
-      body = await this.exportsService.vatReturn(req.tenantDb!, kind, period, period.vat, tenant);
+      ({ body, warnings } = await this.exportsService.vatReturn(req.tenantDb!, kind, period, period.vat, tenant));
     } catch (err) {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;
     }
     if (body == null) throw new NotFoundException("No EU supplies to report in this period");
     const name = { dp3: "dphdp3", kh1: "dphkh1", shv: "dphshv" }[kind];
+    // The file still downloads; the export box reads this header and names
+    // the documents to fix (e.g. a reverse-charge invoice without kód
+    // předmětu plnění, which EPO would reject). URI-encoded JSON, since
+    // document numbers may hold non-ASCII characters.
+    if (warnings.length) res.setHeader("X-Vat-Warnings", encodeURIComponent(JSON.stringify(warnings)));
     this.send(res, body, "application/xml; charset=utf-8", `${name}-${period.label}.xml`);
   }
 
