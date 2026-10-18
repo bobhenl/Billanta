@@ -35,6 +35,48 @@ export function AmountField({ label, value, onChange, hint }: { label: string; v
   );
 }
 
+export function TextField({
+  label,
+  value,
+  onChange,
+  hint,
+  placeholder,
+  inputMode,
+  type = 'text',
+  maxLength
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+  placeholder?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+  type?: 'text' | 'date';
+  maxLength?: number;
+}) {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id} className="text-sm font-medium">
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        inputMode={inputMode}
+        autoComplete="off"
+        spellCheck={false}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={cn(inputClass, 'mt-1.5')}
+      />
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+    </div>
+  );
+}
+
 export function SelectField<T extends string>({
   label,
   value,

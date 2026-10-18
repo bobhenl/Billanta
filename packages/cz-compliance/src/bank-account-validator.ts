@@ -143,3 +143,57 @@ export function czechAccountToIban(accountNumber: string, bankCode?: string | nu
   }
   return `CZ${String(98 - remainder).padStart(2, '0')}${bban}`;
 }
+
+/** "CZ65 0800 0000 1920 0014 5399" or lowercase → "CZ6508000000192000145399"; anything else unchanged. */
+export function normalizeIban(iban: string): string {
+  return iban.replace(/[\s-]+/g, '').toUpperCase();
+}
+
+/** Length of the IBAN per country, for the countries our users invoice most (ISO 13616 registry). */
+const IBAN_LENGTHS: Record<string, number> = {
+  AT: 20, BE: 16, CH: 21, CZ: 24, DE: 22, DK: 18, ES: 24, FI: 18, FR: 27, GB: 22, HR: 21, HU: 28,
+  IE: 22, IT: 27, LT: 20, LU: 20, NL: 18, NO: 15, PL: 28, PT: 25, RO: 24, SE: 24, SI: 19, SK: 24,
+};
+
+/**
+ * ISO 13616 check: shape, the known length for the country and the mod-97
+ * check digits. A country missing from IBAN_LENGTHS only has to be 15–34
+ * characters long.
+ */
+export function isValidIban(iban: string): boolean {
+  const value = normalizeIban(iban);
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(value)) {
+    return false;
+  }
+  const expected = IBAN_LENGTHS[value.slice(0, 2)];
+  if (expected !== undefined && value.length !== expected) {
+    return false;
+  }
+  let remainder = 0;
+  for (const ch of value.slice(4) + value.slice(0, 4)) {
+    const code = ch.charCodeAt(0);
+    const digits = code >= 65 ? String(code - 55) : ch;
+    for (const digit of digits) {
+      remainder = (remainder * 10 + Number(digit)) % 97;
+    }
+  }
+  return remainder === 1;
+}
+
+/**
+ * The domestic form of a Czech or Slovak IBAN: "CZ65 0800 0000 1920 0014 5399"
+ * → "19-2000145399/0800". Both countries share the BBAN layout (bank code,
+ * prefix, number). Returns null for other countries or a malformed IBAN; the
+ * check digits are not validated here (use `isValidIban`).
+ */
+export function ibanToCzechAccount(iban: string): string | null {
+  const value = normalizeIban(iban);
+  const match = /^(CZ|SK)\d{2}(\d{4})(\d{6})(\d{10})$/.exec(value);
+  if (!match) {
+    return null;
+  }
+  const [, , bankCode, prefix, number] = match;
+  const p = prefix!.replace(/^0+/, '');
+  const n = number!.replace(/^0+/, '').padStart(2, '0');
+  return `${p ? `${p}-` : ''}${n}/${bankCode}`;
+}

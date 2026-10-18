@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { CzOnlyNotice, HowList, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader } from '@/components/public-tools/parts';
+import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader } from '@/components/public-tools/parts';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd, webPageLd } from '@/lib/seo';
@@ -29,7 +29,9 @@ export async function CalculatorPage({
   locale,
   validity,
   children,
-  after
+  after,
+  disclaimer = true,
+  cta = 'signup'
 }: {
   slug: string;
   locale: string;
@@ -38,6 +40,10 @@ export async function CalculatorPage({
   children: React.ReactNode;
   /** Extra sections below the widget (conditions, tables). */
   after?: React.ReactNode;
+  /** The tax "orientační výpočet" box; off for tools that compute nothing tax-related (QR, IBAN, due date). */
+  disclaimer?: boolean;
+  /** Invoice tools lead to the guest invoice, which needs no account. */
+  cta?: 'signup' | 'invoice';
 }) {
   const c = getCalculator(slug)!;
   const t = await getTranslations('tools');
@@ -51,17 +57,19 @@ export async function CalculatorPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
       <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
       <div className="mt-10">{children}</div>
-      <div className="mt-6">
-        <ToolDisclaimer validity={validity} />
-      </div>
+      {disclaimer && (
+        <div className="mt-6">
+          <ToolDisclaimer validity={validity} />
+        </div>
+      )}
       {after && <div className="mt-12 space-y-10">{after}</div>}
       {how.length > 0 && (
         <div className="mt-12 max-w-3xl">
-          <HowList title={t('common.howTitle')} items={how} />
+          <HowList title={t.has(`${k}.howTitle`) ? t(`${k}.howTitle`) : t('common.howTitle')} items={how} />
         </div>
       )}
       <div className="mt-12">
-        <SignupCta />
+        {cta === 'invoice' ? <InvoiceCta /> : <SignupCta />}
       </div>
       <div className="mt-12">
         <RelatedTools current={slug} />

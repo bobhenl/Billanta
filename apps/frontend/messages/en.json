@@ -6224,7 +6224,7 @@
     "menu": {
       "resources": "Resources",
       "calculators": "Calculators",
-      "calculatorsHint": "Free tax, insurance, VAT and FX tools",
+      "calculatorsHint": "Tax, VAT, QR payment, company lookup, due dates",
       "guides": "Guides",
       "guidesHint": "How to file Czech VAT returns",
       "compare": "Compare with competitors"
@@ -6261,11 +6261,14 @@
       "lastChecked": "We last checked this information on {date}.",
       "officialSource": "Binding information and forms are on the Czech Financial Administration website",
       "guideDisclaimer": "This guide sums up the basic rules and does not replace an accountant or tax adviser. The law and the forms change, so check the details on the Financial Administration website.",
-      "updated": "Updated"
+      "updated": "Updated",
+      "invoiceCtaTitle": "Need an invoice out of this?",
+      "invoiceCtaText": "Issue an invoice with a QR payment code, company details from ARES and the right due date, no account needed. With a Billanta account your invoices are saved, payments are tracked and your accountant gets the records.",
+      "invoiceCtaButton": "Create a free invoice"
     },
     "calculators": {
-      "indexTitle": "Calculators for small businesses",
-      "indexDescription": "Free calculators for Czech sole traders and companies: income tax and insurance, flat-rate tax, VAT, minimum advances and ČNB exchange rates. No sign-up.",
+      "indexTitle": "Calculators and tools for businesses",
+      "indexDescription": "Free tools for Czech freelancers and companies: tax and insurance, VAT, ČNB rates, QR payment codes, company lookup by IČO, IBAN conversion and invoice due dates.",
       "indexLead": "Quick rough calculations that need none of your data. You type the numbers in and nothing is stored.",
       "items": {
         "osvc": {
@@ -6422,6 +6425,129 @@
             "For accounting you can use a fixed rate instead of the daily one if your internal rules say so."
           ],
           "source": "Source: Czech National Bank"
+        },
+        "qrPayment": {
+          "name": "QR payment generator",
+          "title": "Czech QR payment code generator",
+          "description": "Create a Czech QR Platba code from an account number or IBAN, an amount and a variable symbol. Download it as PNG; nothing is stored.",
+          "lead": "Enter the account and amount and the code appears straight away. The payer scans it in their banking app and the transfer is filled in.",
+          "keywords": "qr platba generator czech qr payment code spayd invoice bank transfer variable symbol",
+          "fields": {
+            "account": "Account number or IBAN",
+            "accountHint": "For example 19-2000145399/0800 or CZ65 0800 0000 1920 0014 5399.",
+            "amount": "Amount",
+            "currency": "Currency",
+            "vs": "Variable symbol",
+            "vsHint": "Up to 10 digits, usually the invoice number.",
+            "message": "Message for the recipient"
+          },
+          "result": {
+            "alt": "QR payment code",
+            "download": "Download PNG",
+            "spayd": "Show the encoded text",
+            "empty": "The QR code appears here once the account is valid."
+          },
+          "errors": {
+            "invalidAccount": "The account number does not check out. Look at the prefix, the number and the bank code after the slash.",
+            "invalidIban": "The IBAN has the wrong shape or check digits."
+          },
+          "how": [
+            "The code uses QR Platba (SPAYD), the Czech Banking Association format every Czech banking app reads.",
+            "A domestic account number is converted to an IBAN and both parts are checksummed, so a typo shows up before you send the code.",
+            "The code is made in your browser. The account and amount are not sent anywhere.",
+            "Use euros only for a euro account. Slovak banks use the PAY by square format instead of QR Platba."
+          ],
+          "howTitle": "How it works"
+        },
+        "companyLookup": {
+          "name": "Company lookup by IČO",
+          "title": "Czech company lookup by IČO (ARES)",
+          "description": "Enter a company ID (IČO) to get the name, VAT number (DIČ) and registered address from the Czech ARES registry.",
+          "lead": "Eight digits are enough. The data comes from ARES, the public registry of the Czech Ministry of Finance.",
+          "keywords": "ares ičo czech company lookup company id vat number dič registered address",
+          "fields": {
+            "ico": "IČO (company ID)",
+            "icoHint": "Eight digits. A shorter IČO is padded with zeros.",
+            "search": "Look up",
+            "searching": "Looking up…"
+          },
+          "result": {
+            "ico": "IČO",
+            "dic": "DIČ",
+            "noDic": "not listed in ARES",
+            "address": "Registered address",
+            "source": "Source: ARES, Czech Ministry of Finance.",
+            "invoice": "Invoice this company",
+            "empty": "Enter an IČO and the result shows here."
+          },
+          "errors": {
+            "invalid": "An IČO has at most 8 digits.",
+            "notFound": "No company with this IČO in ARES.",
+            "busy": "ARES is not answering or you searched too often. Try again in a moment."
+          },
+          "how": [
+            "Only the Czech ARES registry is searched. Slovak companies are in the Slovak register of legal entities (RPO).",
+            "A DIČ in ARES does not say whether the company is VAT-registered. Check that in the VAT payer register of the Czech Financial Administration.",
+            "In Billanta the customer is filled in from the IČO right on the invoice."
+          ],
+          "howTitle": "How it works"
+        },
+        "iban": {
+          "name": "Account number to IBAN",
+          "title": "Czech account number to IBAN converter",
+          "description": "Convert a Czech account number to IBAN or an IBAN back to the domestic form, with the checksums verified.",
+          "lead": "Type a domestic account number or an IBAN. The tool tells which one it is and shows the other form.",
+          "keywords": "iban converter czech account number to iban bank code prefix account check",
+          "fields": {
+            "input": "Account number or IBAN",
+            "inputHint": "For example 19-2000145399/0800 or CZ65 0800 0000 1920 0014 5399."
+          },
+          "result": {
+            "valid": "The number is valid",
+            "invalidAccount": "The account number fails its checksum",
+            "invalidIban": "The IBAN fails its check",
+            "domestic": "Account number",
+            "bankCode": "Bank code",
+            "foreign": "This is a foreign IBAN; it has no Czech domestic form.",
+            "empty": "Enter an account number or IBAN."
+          },
+          "how": [
+            "A Czech IBAN has 24 characters: CZ, two check digits, the bank code, a 6-digit prefix and a 10-digit account number.",
+            "The prefix and the number each have a mod-11 checksum, and the IBAN adds a mod-97 one.",
+            "Valid means the account can exist. Whether it is open, and whose it is, no checksum can tell."
+          ],
+          "howTitle": "How it works"
+        },
+        "dueDate": {
+          "name": "Invoice due date calculator",
+          "title": "Invoice due date calculator",
+          "description": "Work out an invoice due date from the issue date and the payment term, with weekends and Czech and Slovak public holidays flagged.",
+          "lead": "Pick the issue date and the term in days. You see the exact date and whether it falls on a weekend or holiday.",
+          "keywords": "invoice due date calculator payment terms 14 days 30 days working days public holidays czech slovak",
+          "fields": {
+            "country": "Holidays of",
+            "issued": "Issue date",
+            "term": "Payment term",
+            "days": "{n, plural, one {# day} other {# days}}"
+          },
+          "countries": {
+            "CZ": "Czechia",
+            "SK": "Slovakia"
+          },
+          "result": {
+            "due": "Due date",
+            "holiday": "It falls on a public holiday: {name}.",
+            "weekend": "It falls on a weekend.",
+            "nextWorking": "To avoid any doubt about when the invoice is overdue, use the next working day instead: {date}.",
+            "working": "It is a working day.",
+            "empty": "Enter the issue date."
+          },
+          "how": [
+            "The term runs in calendar days from the issue date; weekends and holidays are not skipped.",
+            "Holidays are worked out for each year, Good Friday and Easter Monday included.",
+            "Between businesses, Czech and Slovak law allow a term over 60 days only when it is expressly agreed and not grossly unfair to the creditor."
+          ],
+          "howTitle": "How it works"
         }
       }
     },

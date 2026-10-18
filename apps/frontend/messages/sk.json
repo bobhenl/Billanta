@@ -6225,7 +6225,7 @@
     "menu": {
       "resources": "Zdroje",
       "calculators": "Kalkulačky",
-      "calculatorsHint": "DPH, odvody a kurzy zadarmo",
+      "calculatorsHint": "Dane, DPH, kurzy a splatnosť faktúry",
       "guides": "Návody",
       "guidesHint": "Ako podať DPH a hlásenia",
       "compare": "Porovnanie s konkurenciou"
@@ -6262,11 +6262,14 @@
       "lastChecked": "Informácie sme naposledy overili {date}.",
       "officialSource": "Záväzné informácie a formuláre nájdete na webe finančnej správy",
       "guideDisclaimer": "Návod zhŕňa základné pravidlá a nenahrádza účtovníka ani daňového poradcu.",
-      "updated": "Aktualizované"
+      "updated": "Aktualizované",
+      "invoiceCtaTitle": "Potrebujete z toho rovno faktúru?",
+      "invoiceCtaText": "Vystavte faktúru so správnou splatnosťou a údajmi odberateľa bez registrácie. S účtom v Billante sa vám faktúry uložia, postrážite úhrady a pošlete podklady účtovníčke.",
+      "invoiceCtaButton": "Vystaviť faktúru zadarmo"
     },
     "calculators": {
-      "indexTitle": "Kalkulačky pre podnikateľov",
-      "indexDescription": "Bezplatné kalkulačky pre živnostníkov a firmy: DPH so slovenskými aj českými sadzbami, minimálne preddavky na odvody a kurzy ČNB. Bez registrácie.",
+      "indexTitle": "Kalkulačky a nástroje pre podnikateľov",
+      "indexDescription": "Bezplatné nástroje pre živnostníkov a firmy: DPH, minimálne preddavky, kurzy ČNB a splatnosť faktúry so slovenskými sviatkami.",
       "indexLead": "Rýchle orientačné výpočty, ktoré nepotrebujú žiadne vaše údaje. Čísla zadáte ručne a nič sa neukladá. Kalkulačky označené „české pravidlá“ platia len pre Česko.",
       "items": {
         "osvc": {
@@ -6357,6 +6360,123 @@
             "Slovenskí platitelia DPH používajú referenčný kurz ECB, nie kurz ČNB."
           ],
           "source": "Zdroj: Česká národná banka"
+        },
+        "qrPayment": {
+          "name": "Generátor QR platby (CZ)",
+          "title": "Generátor českej QR platby (SPAYD)",
+          "description": "QR kód vo formáte QR Platba pre české bankové účty. Slovenské banky používajú PAY by square.",
+          "lead": "Nástroj vytvára QR kód podľa českého štandardu QR Platba.",
+          "keywords": "qr platba česko spayd",
+          "fields": {
+            "account": "Číslo účtu alebo IBAN",
+            "accountHint": "Napríklad 19-2000145399/0800 alebo CZ65 0800 0000 1920 0014 5399.",
+            "amount": "Suma",
+            "currency": "Mena",
+            "vs": "Variabilný symbol",
+            "vsHint": "Najviac 10 číslic, zvyčajne číslo faktúry.",
+            "message": "Správa pre príjemcu"
+          },
+          "result": {
+            "alt": "QR kód na platbu",
+            "download": "Stiahnuť PNG",
+            "spayd": "Zobraziť zakódovaný text",
+            "empty": "Po zadaní platného účtu sa tu zobrazí QR kód."
+          },
+          "errors": {
+            "invalidAccount": "Číslo účtu nesedí. Skontrolujte predčíslie, číslo aj kód banky za lomkou.",
+            "invalidIban": "IBAN nemá správny tvar alebo kontrolné číslice."
+          },
+          "how": [
+            "QR kód je vo formáte QR Platba (SPAYD), ktorý čítajú české bankové aplikácie.",
+            "Kód sa vytvára vo vašom prehliadači a nikam sa neodosiela."
+          ],
+          "howTitle": "Ako to funguje"
+        },
+        "companyLookup": {
+          "name": "Vyhľadanie firmy podľa IČO (CZ)",
+          "title": "Vyhľadanie českej firmy podľa IČO v ARES",
+          "description": "Vyhľadanie v českom registri ARES. Slovenské firmy nájdete v registri právnických osôb (RPO).",
+          "lead": "Nástroj hľadá iba v českom registri ARES.",
+          "keywords": "ares ičo česká firma",
+          "fields": {
+            "ico": "IČO",
+            "icoHint": "Osem číslic. Kratšie IČO doplníme nulami zľava.",
+            "search": "Vyhľadať",
+            "searching": "Hľadám…"
+          },
+          "result": {
+            "ico": "IČO",
+            "dic": "DIČ",
+            "noDic": "v ARES neuvedené",
+            "address": "Sídlo",
+            "source": "Zdroj: ARES, Ministerstvo financií ČR.",
+            "invoice": "Vystaviť faktúru tejto firme",
+            "empty": "Zadajte IČO a výsledok sa zobrazí tu."
+          },
+          "errors": {
+            "invalid": "IČO môže mať najviac 8 číslic.",
+            "notFound": "Firmu s týmto IČO sme v ARES nenašli.",
+            "busy": "ARES teraz neodpovedá alebo ste hľadali príliš často. Skúste to o chvíľu."
+          },
+          "how": [
+            "Hľadáme iba v českom registri ARES."
+          ],
+          "howTitle": "Ako to funguje"
+        },
+        "iban": {
+          "name": "Prevod čísla účtu na IBAN (CZ)",
+          "title": "Prevod českého čísla účtu na IBAN",
+          "description": "Prevod českého domáceho čísla účtu na IBAN a späť s kontrolou kontrolného súčtu.",
+          "lead": "Nástroj pracuje s českým formátom čísla účtu.",
+          "keywords": "iban česko číslo účtu",
+          "fields": {
+            "input": "Číslo účtu alebo IBAN",
+            "inputHint": "Napríklad 19-2000145399/0800 alebo CZ65 0800 0000 1920 0014 5399."
+          },
+          "result": {
+            "valid": "Číslo je platné",
+            "invalidAccount": "Číslo účtu neprešlo kontrolným súčtom",
+            "invalidIban": "IBAN neprešiel kontrolou",
+            "domestic": "Číslo účtu",
+            "bankCode": "Kód banky",
+            "foreign": "Ide o zahraničný IBAN, domáci tvar preň neexistuje.",
+            "empty": "Zadajte číslo účtu alebo IBAN."
+          },
+          "how": [
+            "Český IBAN má 24 znakov: CZ, dve kontrolné číslice, kód banky, predčíslie a číslo účtu."
+          ],
+          "howTitle": "Ako to funguje"
+        },
+        "dueDate": {
+          "name": "Kalkulačka splatnosti faktúry",
+          "title": "Kalkulačka splatnosti faktúry",
+          "description": "Vypočítajte dátum splatnosti faktúry z dátumu vyhotovenia a počtu dní. Upozorníme na víkend aj štátny sviatok na Slovensku a v Česku.",
+          "lead": "Vyberte dátum vyhotovenia a splatnosť v dňoch. Uvidíte presný dátum a či nepripadá na víkend alebo sviatok.",
+          "keywords": "dátum splatnosti faktúry splatnosť 14 dní 30 dní pracovné dni štátne sviatky víkend kalkulačka",
+          "fields": {
+            "country": "Sviatky podľa",
+            "issued": "Dátum vyhotovenia",
+            "term": "Splatnosť",
+            "days": "{n, plural, one {# deň} few {# dni} other {# dní}}"
+          },
+          "countries": {
+            "CZ": "Česko",
+            "SK": "Slovensko"
+          },
+          "result": {
+            "due": "Dátum splatnosti",
+            "holiday": "Pripadá na štátny sviatok: {name}.",
+            "weekend": "Pripadá na víkend.",
+            "nextWorking": "Aby nevznikol spor, kedy je faktúra po splatnosti, dajte radšej najbližší pracovný deň: {date}.",
+            "working": "Je to pracovný deň.",
+            "empty": "Zadajte dátum vyhotovenia."
+          },
+          "how": [
+            "Splatnosť sa počíta v kalendárnych dňoch od dátumu vyhotovenia, víkendy a sviatky sa nepreskakujú.",
+            "Sviatky počítame pre každý rok zvlášť vrátane Veľkého piatku a Veľkonočného pondelka. Zohľadňujeme aj to, že 1. september a 17. november už od roku 2025 nie sú dňami pracovného pokoja.",
+            "Medzi podnikateľmi možno splatnosť dlhšiu ako 60 dní dohodnúť len výslovne a len vtedy, ak nie je voči veriteľovi hrubo nespravodlivá (§ 340b Obchodného zákonníka)."
+          ],
+          "howTitle": "Ako to funguje"
         }
       }
     },
