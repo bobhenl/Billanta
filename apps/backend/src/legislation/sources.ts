@@ -24,7 +24,8 @@ export const LEGISLATION_SOURCES: LegislationSource[] = [
     datasets: ["vat_forms", "dpfo_form"],
     label: "EPO form list (DPHDP3, DPHKH1, DPHSHV, DPFDP)",
     // "DPHDP3 Přiznání k dani z přidané hodnoty 03.01.04": code, name, version.
-    patterns: [/\b(?:DPHDP\d|DPHKH\d|DPHSHV|DPFDP\d+)\b[^0-9]{0,160}\d{2}\.\d{2}\.\d{2}/g],
+    // Lazy, since names contain digits ("od roku 2024"); dates (23.9.2025) never match NN.NN.NN.
+    patterns: [/\b(?:DPHDP\d|DPHKH\d|DPHSHV|DPFDP\d+)\b.{0,160}?\d{2}\.\d{2}\.\d{2}/g],
   },
   {
     key: "cssz_osvc_schema",

@@ -215,7 +215,7 @@ export function AnnualFilings() {
             <div>
               <h3 className="mb-1 font-semibold">{t('dpfoTitle')}</h3>
               <div className="divide-y divide-border rounded-lg border border-border px-3">
-                {DPFO_ROWS.filter((r) => r !== 'r61' || data.dpfo.rows.r61 > 0)
+                {DPFO_ROWS.filter((r) => r !== 'r61' || (data.dpfo.rows.r61 ?? 0) > 0)
                   .filter((r) => r !== 'r65a' || spouse)
                   .map((r) =>
                     line(r, t(`dpfo.${r}`, { rate: data.dpfo.flatRate ?? 0 }), r === 'r64' || r === 'r65a' ? -data.dpfo.rows[r]! : data.dpfo.rows[r]!, DPFO_STRONG.has(r), t('rowNo', { n: r.slice(1) }))

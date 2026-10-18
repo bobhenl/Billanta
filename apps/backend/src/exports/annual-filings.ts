@@ -246,7 +246,10 @@ export function computeCssz(input: CsszInput) {
   const main = input.activity === "H";
   const r20 = Math.max(0, Math.round(input.profit));
   const r23 = n ? round2(r20 / n) : 0;
-  const r24 = round2(r23 * n);
+  // ř. 24 splits the profit between main and secondary months (zadání D24).
+  // With one kind of activity all of it belongs there; r23 × n would add
+  // rounding cents (400 000 / 12 × 12 = 399 999.96).
+  const r24 = r20;
   const r25 = roundUp(r24 * y.socialBaseShare);
   const maxBase = y.socialMaxMultiple * y.averageWage;
   const minMonthly = roundUp(y.averageWage * (main ? y.social.annualMainShare : y.social.secondaryShare));
