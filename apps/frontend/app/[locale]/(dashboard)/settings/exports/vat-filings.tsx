@@ -5,6 +5,7 @@ import { Download, Landmark, Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
+import { Banner } from '@/components/banner';
 import { inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
@@ -14,6 +15,19 @@ const FILES = [
   { key: 'kh1', path: 'dphkh1.xml' },
   { key: 'shv', path: 'dphshv.xml' }
 ] as const;
+
+/** `X-Vat-Warnings` (URI-encoded JSON `[{ code, document }]`) grouped by code. */
+function vatWarnings(header: string | null): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  if (!header) return out;
+  try {
+    const list = JSON.parse(decodeURIComponent(header)) as { code: string; document: string }[];
+    for (const w of list) out.set(w.code, [...(out.get(w.code) ?? []), w.document]);
+  } catch {
+    // A malformed header must not break the download that already happened.
+  }
+  return out;
+}
 
 /**
  * VAT filings as EPO XML (přiznání, kontrolní hlášení, souhrnné hlášení),
@@ -30,11 +44,14 @@ export function VatFilings({ checked = VAT_INFO_CHECKED }: { checked?: string })
   const [month, setMonth] = useState(String(prev.getMonth() + 1));
   const [quarter, setQuarter] = useState(String(Math.floor(prev.getMonth() / 3) + 1));
   const [busy, setBusy] = useState<string | null>(null);
+  // Kept on screen (not a toast): the person needs the document numbers to go and fix them.
+  const [warnings, setWarnings] = useState<string[]>([]);
   const years = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - i));
   const query = mode === 'month' ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
 
   async function download(key: string, path: string) {
     setBusy(key);
+    setWarnings([]);
     try {
       const res = await fetch(`/api/files/exports/${path}?${query}`);
       if (!res.ok) {
@@ -51,6 +68,12 @@ export function VatFilings({ checked = VAT_INFO_CHECKED }: { checked?: string })
       a.download = name;
       a.click();
       URL.revokeObjectURL(url);
+      // The file downloads anyway; EPO would reject it until these are fixed.
+      setWarnings(
+        [...vatWarnings(res.headers.get('x-vat-warnings'))].map(([code, documents]) =>
+          t.has(`warnings.${code}`) ? t(`warnings.${code}`, { documents: documents.join(', ') }) : documents.join(', ')
+        )
+      );
     } catch {
       toast({ text: t('failed'), tone: 'err' });
     } finally {
@@ -113,6 +136,11 @@ export function VatFilings({ checked = VAT_INFO_CHECKED }: { checked?: string })
           </button>
         ))}
       </div>
+      {warnings.map((text) => (
+        <Banner key={text} tone="warn" className="mt-4">
+          {text}
+        </Banner>
+      ))}
       <p className="mt-4 text-xs text-muted-foreground">{t('disclaimer')}</p>
       {/* Same constants the XML export (verzePis) and the public guide use. */}
       <p className="mt-2 text-xs text-muted-foreground">

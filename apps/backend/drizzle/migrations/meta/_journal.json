@@ -391,6 +391,13 @@
       "when": 1792900800000,
       "tag": "0055_report_rate_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1792900900000,
+      "tag": "0056_reverse_charge_code",
+      "breakpoints": true
     }
   ]
 }

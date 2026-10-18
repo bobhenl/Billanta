@@ -1,5 +1,7 @@
 /** Wire shapes of the backend endpoints the new-invoice form uses (apps/backend/src/{contacts,invoices,ai}). */
 
+import type { ReverseChargeCode } from '@faktur/cz-compliance';
+
 export interface Contact {
   id: string;
   legalName: string;
@@ -104,6 +106,8 @@ export interface InvoiceDraftInput {
   orderNumber: string;
   language: DocLanguage;
   reverseCharge: boolean;
+  /** Kód předmětu plnění (REVERSE_CHARGE_CODES); null = none chosen or not a domestic reverse charge. */
+  reverseChargeCode: ReverseChargeCode | null;
   noteAbove: string;
   noteBelow: string;
   internalNote: string;
@@ -263,6 +267,7 @@ export interface InvoiceTemplate {
   noteBelow?: string | null;
   language?: DocLanguage;
   reverseCharge?: boolean;
+  reverseChargeCode?: string | null;
   orderNumber?: string | null;
   issuePlace?: string | null;
   issuedByName?: string | null;

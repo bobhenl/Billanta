@@ -37,6 +37,7 @@ interface DetailResponse {
     internalNote: string | null;
     language: DocLanguage;
     reverseCharge: boolean;
+    reverseChargeCode: string | null;
     exchangeRate: string | null;
     bankAccountId: string | null;
   };
@@ -94,6 +95,7 @@ export default async function EditInvoicePage(props: {
     internalNote: invoice.internalNote,
     language: invoice.language,
     reverseCharge: invoice.reverseCharge,
+    reverseChargeCode: invoice.reverseChargeCode,
     items: detail.items.map((item) => ({
       description: item.description,
       quantity: Number(item.quantity),

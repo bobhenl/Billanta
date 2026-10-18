@@ -30,6 +30,7 @@ const issued = (o: Partial<VatIssuedDoc>): VatIssuedDoc => ({
   customerCountry: "CZ",
   taxableDate: d,
   reverseCharge: false,
+  reverseChargeCode: null,
   parts: [{ ratePercent: 21, base: 20000, vat: 4200 }],
   totalCzk: 24200,
   ...o,
@@ -94,18 +95,19 @@ describe("generateDphDp3", () => {
 
 describe("generateDphKh1", () => {
   it("itemizes documents over 10 000 CZK and aggregates the rest", () => {
-    const xml = generateDphKh1({
+    const { xml, warnings } = generateDphKh1({
       issued: [
         issued({}),
         issued({ number: "small", parts: [{ ratePercent: 21, base: 1000, vat: 210 }], totalCzk: 1210 }),
-        issued({ number: "rc", reverseCharge: true, parts: [{ ratePercent: 21, base: 50000, vat: 0 }], totalCzk: 50000 }),
+        issued({ number: "rc", reverseCharge: true, reverseChargeCode: "4", parts: [{ ratePercent: 21, base: 50000, vat: 0 }], totalCzk: 50000 }),
       ],
       received: [received({}), received({ number: "small-in", parts: [{ ratePercent: 21, base: 100, vat: 21 }], totalCzk: 121 })],
       submitter,
       period,
       today,
     });
-    expect(xml).toContain('<VetaA1 c_radku="1" dic_odb="12345678" c_evid_dd="rc" duzp="15.09.2026" zakl_dane1="50000" />');
+    expect(xml).toContain('<VetaA1 c_radku="1" dic_odb="12345678" c_evid_dd="rc" duzp="15.09.2026" zakl_dane1="50000" kod_pred_pl="4" />');
+    expect(warnings).toEqual([]);
     expect(xml).toMatch(/<VetaA4 c_radku="1" dic_odb="12345678" c_evid_dd="2026-001" [^>]*zakl_dane1="20000" dan1="4200"/);
     expect(xml).toContain('<VetaA5 zakl_dane1="1000" dan1="210" zakl_dane2="0" dan2="0" />');
     expect(xml).toMatch(/<VetaB2 c_radku="1" dic_dod="87654321" c_evid_dd="FV-9"/);
@@ -113,8 +115,48 @@ describe("generateDphKh1", () => {
     expect(xml).toContain('<VetaC obrat23="21000" obrat5="0" pln23="10100" pln5="0" pln_rez_pren="50000" />');
   });
   it("escapes document numbers", () => {
-    const xml = generateDphKh1({ issued: [issued({ number: 'A&"B' })], received: [], submitter, period, today });
+    const { xml } = generateDphKh1({ issued: [issued({ number: 'A&"B' })], received: [], submitter, period, today });
     expect(xml).toContain('c_evid_dd="A&amp;&quot;B"');
+  });
+  it("writes each reverse-charge document's own kód předmětu plnění", () => {
+    const rc = { reverseCharge: true, parts: [{ ratePercent: 21, base: 30000, vat: 0 }], totalCzk: 30000 };
+    const { xml } = generateDphKh1({
+      issued: [issued({ ...rc, number: "rc-gold", reverseChargeCode: "1a" }), issued({ ...rc, number: "rc-phones", reverseChargeCode: "14" })],
+      received: [],
+      submitter,
+      period,
+      today,
+    });
+    expect(xml).toMatch(/<VetaA1 c_radku="1" [^>]*c_evid_dd="rc-gold" [^>]*kod_pred_pl="1a" \/>/);
+    expect(xml).toMatch(/<VetaA1 c_radku="2" [^>]*c_evid_dd="rc-phones" [^>]*kod_pred_pl="14" \/>/);
+  });
+  it("warns instead of inventing a code when a reverse-charge document has none", () => {
+    const { xml, warnings } = generateDphKh1({
+      issued: [
+        issued({ number: "rc-ok", reverseCharge: true, reverseChargeCode: "4", parts: [{ ratePercent: 21, base: 30000, vat: 0 }], totalCzk: 30000 }),
+        issued({ number: "rc-nocode", reverseCharge: true, parts: [{ ratePercent: 21, base: 7000, vat: 0 }], totalCzk: 7000 }),
+      ],
+      received: [],
+      submitter,
+      period,
+      today,
+    });
+    expect(warnings).toEqual([{ code: "reverse_charge_code_missing", document: "rc-nocode" }]);
+    // The row is still there for review in EPO, just without a made-up code.
+    expect(xml).toContain('<VetaA1 c_radku="2" dic_odb="12345678" c_evid_dd="rc-nocode" duzp="15.09.2026" zakl_dane1="7000" />');
+    expect(xml.match(/kod_pred_pl=/g)).toHaveLength(1);
+    expect(xml).toContain('pln_rez_pren="37000"');
+  });
+  it("warns about a reverse-charge document without the customer's DIČ", () => {
+    const { xml, warnings } = generateDphKh1({
+      issued: [issued({ number: "rc-nodic", customerDic: null, reverseCharge: true, reverseChargeCode: "4" })],
+      received: [],
+      submitter,
+      period,
+      today,
+    });
+    expect(warnings).toEqual([{ code: "reverse_charge_dic_missing", document: "rc-nodic" }]);
+    expect(xml).not.toContain("<VetaA1");
   });
 });
 

@@ -28,7 +28,8 @@ export async function GET(request: NextRequest, props: { params: Promise<{ path:
   try {
     const upstream = await apiFetchRaw(`/api/v1/${path}${request.nextUrl.search}`);
     const headers = new Headers();
-    for (const name of ['content-type', 'content-disposition', 'cache-control']) {
+    // x-vat-warnings: what the VAT export box tells the person to fix (exports.controller.ts).
+    for (const name of ['content-type', 'content-disposition', 'cache-control', 'x-vat-warnings']) {
       const value = upstream.headers.get(name);
       if (value) headers.set(name, value);
     }

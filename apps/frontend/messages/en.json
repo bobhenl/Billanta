@@ -1956,7 +1956,11 @@
         "disclaimer": "Review the file in EPO before filing and pick the tax office there. EU supplies are reported as services (code 3); documents without a supplier VAT ID go to B.3.",
         "formVersions": "The export creates XML in versions DPHDP3 {dp3}, DPHKH1 {kh1} and DPHSHV {shv}. We last checked the rules and form versions on {date}.",
         "officialLink": "Current information from the Czech Financial Administration",
-        "guideLink": "Filing guide"
+        "guideLink": "Filing guide",
+        "warnings": {
+          "reverse_charge_code_missing": "Documents without a supply code: {documents}. Add the code on the document and download the file again, otherwise EPO rejects it.",
+          "reverse_charge_dic_missing": "Reverse-charge documents without the customer’s VAT ID, left out of section A.1: {documents}."
+        }
       },
       "annual": {
         "title": "Yearly tax & insurance estimate (Czech sole trader)",
@@ -3985,7 +3989,32 @@
         "en": "English"
       },
       "reverseCharge": "Reverse charge",
-      "reverseChargeHint": "The customer accounts for VAT; the document shows no VAT and a note."
+      "reverseChargeHint": "The customer accounts for VAT; the document shows no VAT and a note.",
+      "reverseChargeCode": "Supply code (kód předmětu plnění)",
+      "reverseChargeCodeNone": "Choose a code…",
+      "reverseChargeCodeHint": "The Czech control statement needs it for every document in section A.1.",
+      "reverseChargeCodes": {
+        "1": "Gold",
+        "3": "Supply of real estate where VAT applies",
+        "4": "Construction and installation work",
+        "5": "Goods listed in Annex 5 (waste, scrap)",
+        "6": "Supply of goods originally provided as security",
+        "7": "Supply of goods after assignment of retention of title",
+        "11": "Greenhouse gas emission allowances",
+        "12": "Cereals and industrial crops",
+        "13": "Metals",
+        "14": "Mobile phones",
+        "15": "Integrated circuits",
+        "16": "Portable data processing devices",
+        "17": "Video game consoles",
+        "18": "Electricity certificates",
+        "19": "Electricity supplied through networks to a trader",
+        "20": "Gas supplied through networks to a trader",
+        "21": "Specified electronic communications services",
+        "1a": "Arranging the supply of investment gold",
+        "3a": "Supply of real estate in a forced sale",
+        "4a": "Construction and installation work – provision of workers"
+      }
     },
     "notes": {
       "title": "Notes",

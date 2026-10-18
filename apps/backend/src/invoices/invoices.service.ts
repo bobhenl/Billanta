@@ -108,6 +108,9 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.amount_paid !== undefined) v.amountPaid = (dto.amount_paid ?? 0).toFixed(2);
   if (dto.language !== undefined) v.language = dto.language;
   if (dto.reverse_charge !== undefined) v.reverseCharge = dto.reverse_charge;
+  if (dto.reverse_charge_code !== undefined) v.reverseChargeCode = dto.reverse_charge_code ?? null;
+  // A code left over from a ticked box would confuse a later KH export.
+  if (dto.reverse_charge === false) v.reverseChargeCode = null;
   return v;
 }
 
@@ -832,6 +835,7 @@ export class InvoicesService {
         noteBelow: source.noteBelow,
         language: source.language,
         reverseCharge: source.reverseCharge,
+        reverseChargeCode: source.reverseChargeCode,
         bankAccountId: source.bankAccountId,
         status: "draft",
         source: "manual",
@@ -933,6 +937,7 @@ export class InvoicesService {
       noteBelow: invoice.noteBelow,
       language: invoice.language,
       reverseCharge: invoice.reverseCharge,
+      reverseChargeCode: invoice.reverseChargeCode,
       items: items.map((item) => ({
         description: item.description,
         quantity: Number(item.quantity),

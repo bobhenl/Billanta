@@ -51,9 +51,22 @@ export interface VatIssuedDoc {
   customerCountry: string;
   taxableDate: Date;
   reverseCharge: boolean;
+  /** Kód předmětu plnění (REVERSE_CHARGE_CODES) for domestic reverse charge; null = not chosen. */
+  reverseChargeCode: string | null;
   parts: VatRatePart[];
   /** Document total incl. VAT, CZK. */
   totalCzk: number;
+}
+
+/**
+ * Something the generated file is missing that EPO will reject or the
+ * person has to add by hand. The export still returns the XML (so the rest
+ * can be reviewed in EPO) and lists these next to it.
+ */
+export interface VatExportWarning {
+  code: "reverse_charge_code_missing" | "reverse_charge_dic_missing";
+  /** Document number. */
+  document: string;
 }
 
 export interface VatReceivedDoc {
@@ -225,26 +238,42 @@ export function generateDphDp3(input: {
 `;
 }
 
-/** Kontrolní hlášení (DPHKH1). */
+/**
+ * Kontrolní hlášení (DPHKH1).
+ *
+ * Received documents all go to B.2/B.3: expenses carry no reverse-charge
+ * flag yet, so B.1 (the customer's side of § 92a) is not generated.
+ */
 export function generateDphKh1(input: {
   issued: VatIssuedDoc[];
   received: VatReceivedDoc[];
   submitter: VatSubmitter;
   period: VatPeriod;
   today?: Date;
-}): string {
+}): { xml: string; warnings: VatExportWarning[] } {
   const a1: string[] = [];
   const a4: string[] = [];
   const a5 = { base1: 0, vat1: 0, base2: 0, vat2: 0 };
   const c = { obrat23: 0, obrat5: 0, plnRezPren: 0, pln23: 0, pln5: 0 };
+  const warnings: VatExportWarning[] = [];
 
   for (const doc of input.issued) {
     const kind = classifyIssued(doc);
-    if (kind === "domestic_reverse" && doc.customerDic) {
+    if (kind === "domestic_reverse") {
+      // A.1 is keyed on the customer's DIČ; without it there is no row to write.
+      if (!doc.customerDic) {
+        warnings.push({ code: "reverse_charge_dic_missing", document: doc.number });
+        continue;
+      }
       const base = baseOf(doc.parts);
       c.plnRezPren += base;
+      // EPO rejects an A.1 row without kod_pred_pl. Guessing one (say 4,
+      // construction) would file a wrong statement, so leave it out and
+      // tell the person which documents need it.
+      if (!doc.reverseChargeCode) warnings.push({ code: "reverse_charge_code_missing", document: doc.number });
+      const code = doc.reverseChargeCode ? ` kod_pred_pl="${xmlAttr(doc.reverseChargeCode)}"` : "";
       a1.push(
-        `<VetaA1 c_radku="${a1.length + 1}" dic_odb="${xmlAttr(dicNumber(doc.customerDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${int(base)}" />`,
+        `<VetaA1 c_radku="${a1.length + 1}" dic_odb="${xmlAttr(dicNumber(doc.customerDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${int(base)}"${code} />`,
       );
       continue;
     }
@@ -296,7 +325,7 @@ export function generateDphKh1(input: {
     `<VetaC obrat23="${int(c.obrat23)}" obrat5="${int(c.obrat5)}" pln23="${int(c.pln23)}" pln5="${int(c.pln5)}" pln_rez_pren="${int(c.plnRezPren)}" />`,
   ];
 
-  return `${header("41.16.3")}
+  const xml = `${header("41.16.3")}
 <DPHKH1 verzePis="${VAT_FORM_VERSIONS.DPHKH1}">
   <VetaD k_uladis="DPH" dokument="KH1" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" khdph_forma="B" />
   ${vetaP(input.submitter)}
@@ -304,6 +333,7 @@ export function generateDphKh1(input: {
 </DPHKH1>
 </Pisemnost>
 `;
+  return { xml, warnings };
 }
 
 /**

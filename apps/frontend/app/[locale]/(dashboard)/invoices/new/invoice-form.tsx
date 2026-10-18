@@ -11,7 +11,7 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
-import { isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
+import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode, isWorkingDay, nextWorkingDay, publicHolidayOn } from '@faktur/cz-compliance';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
@@ -267,6 +267,13 @@ export function InvoiceForm({
   const [orderNumber, setOrderNumber] = useState(template?.orderNumber ?? '');
   const [language, setLanguage] = useState<DocLanguage>(template?.language ?? defaults.language);
   const [reverseCharge, setReverseCharge] = useState(Boolean(template?.reverseCharge));
+  const [reverseChargeCode, setReverseChargeCode] = useState<string>(() => {
+    const code = template?.reverseChargeCode;
+    return isReverseChargeCode(code) ? code : '';
+  });
+  // Kontrolní hlášení A.1 needs the code only when the buyer has a Czech DIČ.
+  const customerDic = customer?.kind === 'contact' ? customer.contact.dic : (customer?.ares.dic ?? null);
+  const domesticReverseCharge = vatPayer && reverseCharge && /^CZ/i.test(customerDic?.trim() ?? '');
   // bitfaktura-style "I enter prices incl. VAT"; the default lives in Settings → Invoices.
   const [grossPrices, setGrossPricesState] = useState(defaults.prefs.pricesIncludeVat);
   const [noteAbove, setNoteAbove] = useState(template?.noteAbove ?? blank?.noteAbove ?? '');
@@ -585,6 +592,7 @@ export function InvoiceForm({
           orderNumber,
           language,
           reverseCharge: vatPayer && reverseCharge,
+          reverseChargeCode: domesticReverseCharge && isReverseChargeCode(reverseChargeCode) ? reverseChargeCode : null,
           noteAbove,
           noteBelow,
           internalNote,
@@ -1519,6 +1527,20 @@ export function InvoiceForm({
                 <span className="font-medium">{t('settings.reverseCharge')}</span>
                 <span className="block text-xs text-muted-foreground">{t('settings.reverseChargeHint')}</span>
               </span>
+            </label>
+          )}
+          {domesticReverseCharge && (
+            <label data-field="reverseChargeCode" className="block space-y-1.5">
+              <span className="text-sm font-medium">{t('settings.reverseChargeCode')}</span>
+              <select value={reverseChargeCode} onChange={(e) => setReverseChargeCode(e.target.value)} className={field}>
+                <option value="">{t('settings.reverseChargeCodeNone')}</option>
+                {REVERSE_CHARGE_CODE_VALUES.map((code) => (
+                  <option key={code} value={code}>
+                    {code} – {t(`settings.reverseChargeCodes.${code}`)}
+                  </option>
+                ))}
+              </select>
+              <span className="block text-xs text-muted-foreground">{t('settings.reverseChargeCodeHint')}</span>
             </label>
           )}
         </Collapsible>
