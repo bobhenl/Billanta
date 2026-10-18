@@ -73,13 +73,13 @@ const EU = new Set([
 /** KH itemizes documents above CZK 10,000 incl. VAT (A.4 / B.2). */
 const KH_THRESHOLD = 10_000;
 
-const xmlAttr = (v: string) =>
+export const xmlAttr = (v: string) =>
   v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
 const int = (n: number) => String(Math.round(n));
-const czDate = (d: Date) =>
+export const czDate = (d: Date) =>
   `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
 /** DIČ without the country prefix, as EPO wants it. */
-const dicNumber = (dic: string) => dic.replace(/^[A-Z]{2}/i, "");
+export const dicNumber = (dic: string) => dic.replace(/^[A-Z]{2}/i, "");
 const dicCountry = (dic: string | null) => (dic && /^[A-Z]{2}/i.test(dic) ? dic.slice(0, 2).toUpperCase() : null);
 
 /** 21 % → band 1 (základní), anything else above 0 → band 2 (snížená). */
@@ -143,7 +143,7 @@ function vetaP(s: VatSubmitter, extra = "") {
   return `<VetaP ${body}${extra} />`;
 }
 
-const header = (verzeSW: string) => `<?xml version="1.0" encoding="UTF-8"?>\n<Pisemnost nazevSW="EPO MF ČR" verzeSW="${verzeSW}">`;
+export const header = (verzeSW: string) => `<?xml version="1.0" encoding="UTF-8"?>\n<Pisemnost nazevSW="EPO MF ČR" verzeSW="${verzeSW}">`;
 
 /** Přiznání k DPH (DPHDP3). */
 export function generateDphDp3(input: {

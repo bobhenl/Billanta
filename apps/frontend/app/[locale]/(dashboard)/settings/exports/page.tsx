@@ -3,7 +3,9 @@ import { UserSearch } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
+import { checkedDate } from '@/lib/legislation-checked';
 import { SettingsHeader } from '@/components/settings-header';
+import { AnnualFilings } from './annual-filings';
 import { AnnualSummary } from './annual-summary';
 import { ExportPicker } from './export-picker';
 import { VatFilings } from './vat-filings';
@@ -22,13 +24,16 @@ export default async function ExportsPage() {
       <SettingsHeader title={t('title')} description={t('description')} />
       <ExportPicker />
       <div className="mt-5">
-        <VatFilings />
+        <VatFilings checked={await checkedDate('vat_forms')} />
       </div>
       <div className="mt-5">
         <EpoGuide />
       </div>
       <div className="mt-5">
         <AnnualSummary />
+      </div>
+      <div className="mt-5">
+        <AnnualFilings />
       </div>
       {/* Exports are what people hand to an accountant, so this is where the question comes up. */}
       <aside className="mt-5 flex flex-col gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center">

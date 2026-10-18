@@ -3,6 +3,7 @@ import { getFormatter, getTranslations } from 'next-intl/server';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
 import { CzOnlyNotice, GuideSources, RelatedTools, SignupCta, ToolHeader } from '@/components/public-tools/parts';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
+import { checkedDate } from '@/lib/legislation-checked';
 import { getGuide, isPublishedIn } from '@/lib/public-tools';
 import { guideArticleLd, toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd } from '@/lib/seo';
@@ -24,7 +25,10 @@ export function guideMetadata(slug: string, locale: string): Promise<Metadata> {
  *
  * Structured data is an Article whose dateModified is the same
  * VAT_INFO_CHECKED the page prints (not HowTo, deprecated since 2023), so
- * the markup claims nothing the page does not show. No BreadcrumbList: the
+ * the markup claims nothing the page does not show. The sources box shows
+ * the separate "last checked" date, which the weekly legislation monitor
+ * moves forward without the text changing, so it stays out of the markup.
+ * No BreadcrumbList: the
  * visible trail has two rungs (see ToolHeader).
  */
 export async function GuidePage({ slug, locale, children }: { slug: string; locale: string; children: React.ReactNode }) {
@@ -36,6 +40,7 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
 
   const path = `/guides/${slug}`;
   const updated = format.dateTime(new Date(`${VAT_INFO_CHECKED}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
+  const checked = await checkedDate('vat_forms');
   const forms = t('guides.items.vatFiling.formsLine', { dp3: VAT_FORM_VERSIONS.DPHDP3, kh1: VAT_FORM_VERSIONS.DPHKH1, shv: VAT_FORM_VERSIONS.DPHSHV });
   return (
     <article className="container py-12 sm:py-16">
@@ -50,7 +55,7 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
       </p>
       <div className="mt-10 max-w-3xl space-y-10">{children}</div>
       <div className="mt-12 max-w-3xl">
-        <GuideSources checked={VAT_INFO_CHECKED} officialUrl={VAT_OFFICIAL_URL} extra={forms} />
+        <GuideSources checked={checked} officialUrl={VAT_OFFICIAL_URL} extra={forms} />
       </div>
       <div className="mt-12">
         <SignupCta />

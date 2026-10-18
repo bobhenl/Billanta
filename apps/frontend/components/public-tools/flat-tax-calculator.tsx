@@ -4,22 +4,33 @@ import { useMemo, useState } from 'react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import {
   computeOsvcAnnualSummary,
-  fitsFlatTaxBand1,
-  flatTaxBand1ForYear,
-  minimumPeriods,
+  flatTaxBandFor,
+  flatTaxMonthly,
+  flatTaxYearTotal,
   OSVC_FLAT_EXPENSE_CAPS,
+  type FlatTaxBand,
   type OsvcFlatRate
 } from '@faktur/cz-compliance';
 import { AmountField, money, parseAmount, ResultRow, SelectField } from '@/components/public-tools/fields';
 
 const RATES = [80, 60, 40, 30] as const satisfies readonly OsvcFlatRate[];
 
+/** Monthly amounts of a band through the year, merged into runs ("from July: …"). */
+function monthlyRuns(year: number, band: FlatTaxBand): { fromMonth: number; amount: number }[] {
+  const runs: { fromMonth: number; amount: number }[] = [];
+  for (let m = 1; m <= 12; m++) {
+    const amount = flatTaxMonthly(year, band, m);
+    if (amount == null) return [];
+    if (runs[runs.length - 1]?.amount !== amount) runs.push({ fromMonth: m, amount });
+  }
+  return runs;
+}
+
 /**
- * Paušální daň, band 1, against the regular regime with flat-rate expenses.
- * Both sides come from @faktur/cz-compliance: the monthly band-1 amounts
- * from the minimums table (which carries the mid-year change), the regular
- * regime from computeOsvcAnnualSummary. Higher bands are not computed;
- * the page says so instead of guessing.
+ * Paušální daň in the band the income fits, against the regular regime with
+ * flat-rate expenses. Both sides come from @faktur/cz-compliance: the band
+ * amounts from cz-tax-years (which carries the 2026 mid-year change), the
+ * regular regime from computeOsvcAnnualSummary.
  */
 export function FlatTaxCalculator({ years }: { years: number[] }) {
   const t = useTranslations('tools.calculators.items.flatTax');
@@ -34,12 +45,15 @@ export function FlatTaxCalculator({ years }: { years: number[] }) {
   const y = Number(year);
   const rate = Number(flatRate) as OsvcFlatRate;
   const amount = parseAmount(income);
-  const band1 = flatTaxBand1ForYear(y);
-  const periods = useMemo(() => minimumPeriods('CZ', y).filter((p) => p.values.flat_tax != null), [y]);
-  const fits = fitsFlatTaxBand1(amount, rate);
+  const band = flatTaxBandFor(amount, rate);
+  const total = band == null ? null : flatTaxYearTotal(y, band);
+  const runs = useMemo(() => (band == null ? [] : monthlyRuns(y, band)), [y, band]);
   const normal = useMemo(() => computeOsvcAnnualSummary({ year: y, income: amount, actualExpenses: 0, flatRate: rate }), [y, amount, rate]);
   const czk = (n: number) => money(locale, n);
-  const diff = band1 == null ? 0 : normal.totalBurden - band1;
+  const diff = total == null ? 0 : normal.totalBurden - total;
+  // A retroactive cut (2026 band 1) settles at the new amount for the whole year.
+  const paidMore = band != null && total != null && runs.length > 1 && runs.reduce((s, r, i) => s + r.amount * ((runs[i + 1]?.fromMonth ?? 13) - r.fromMonth), 0) !== total;
+  const monthName = (m: number) => format.dateTime(new Date(Date.UTC(y, m - 1, 15)), { month: 'long', year: 'numeric', timeZone: 'Europe/Prague' });
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
@@ -52,19 +66,15 @@ export function FlatTaxCalculator({ years }: { years: number[] }) {
           onChange={setFlatRate}
           options={RATES.map((r) => ({ value: String(r), label: tOsvc(`rates.${r}`, { cap: new Intl.NumberFormat(locale).format(OSVC_FLAT_EXPENSE_CAPS[r]) }) }))}
         />
-        {periods.length > 0 && (
+        {band != null && runs.length > 0 && (
           <div className="rounded-lg bg-secondary/60 p-3 text-sm">
-            <p className="font-semibold">{t('monthlyTitle')}</p>
+            <p className="font-semibold">{t('monthlyTitle', { band })}</p>
             <ul className="mt-1 space-y-0.5 text-muted-foreground">
-              {periods.map((p) => (
-                <li key={p.from}>
-                  {t('monthlyFrom', {
-                    date: format.dateTime(new Date(`${p.from}-01T12:00:00Z`), { month: 'long', year: 'numeric', timeZone: 'Europe/Prague' }),
-                    amount: czk(p.values.flat_tax!)
-                  })}
-                </li>
+              {runs.map((r) => (
+                <li key={r.fromMonth}>{t('monthlyFrom', { date: monthName(r.fromMonth), amount: czk(r.amount) })}</li>
               ))}
             </ul>
+            {paidMore && <p className="mt-2 text-xs text-muted-foreground">{t('retroactiveNote')}</p>}
           </div>
         )}
       </form>
@@ -73,19 +83,20 @@ export function FlatTaxCalculator({ years }: { years: number[] }) {
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           {tc('resultTitle')} · {y}
         </h2>
-        {band1 == null ? (
-          <p className="mt-3 text-sm text-muted-foreground">{t('noData')}</p>
-        ) : !fits ? (
+        {band == null ? (
           <>
-            <p className="mt-3 text-sm">{t('notBand1')}</p>
+            <p className="mt-3 text-sm">{t('notEligible')}</p>
             <dl className="mt-3 text-sm">
               <ResultRow label={t('normalTotal')} value={czk(normal.totalBurden)} />
             </dl>
           </>
+        ) : total == null ? (
+          <p className="mt-3 text-sm text-muted-foreground">{t('noData')}</p>
         ) : (
           <>
+            <p className="mt-3 text-sm font-semibold">{t('bandFits', { band })}</p>
             <dl className="mt-3 text-sm">
-              <ResultRow label={t('yearTotal')} value={czk(band1)} />
+              <ResultRow label={t('yearTotal')} value={czk(total)} />
               <ResultRow label={t('normalTotal')} value={czk(normal.totalBurden)} />
               <ResultRow label={tOsvc('result.tax')} value={czk(normal.tax.total)} />
               <ResultRow label={tOsvc('result.social')} value={czk(normal.social.total)} />

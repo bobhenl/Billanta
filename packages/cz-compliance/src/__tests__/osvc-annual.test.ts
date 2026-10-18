@@ -33,19 +33,23 @@ describe('OSVČ minimum social base', () => {
     }
   });
 
-  it('a 2026 minimum payer: yearly base is 6 months at 40 % plus 6 at 35 %', () => {
+  it('a 2026 minimum payer: the whole year is settled at 35 %', () => {
     const r = computeOsvcAnnualSummary({ year: 2026, income: 0, actualExpenses: 0, flatRate: null });
-    // 6 × 19 587 + 6 × 17 139 (a flat 40 % would be 12 × 19 587 = 235 044).
-    expect(r.social.base).toBe(220_356);
-    expect(r.social.total).toBe(64_344);
+    // 12 × 17 139, although 5 720 Kč (40 %) was due until June: the amendment
+    // applies from January and the difference comes back in the přehled.
+    expect(r.social.base).toBe(205_668);
+    expect(r.social.total).toBe(60_056);
     // No 2027 parameters yet: the July share carries forward, so the minimum advance is 5 005.
     expect(r.social.nextAdvance).toBe(5005);
   });
 
   it('above the minimum the advance still follows the yearly base', () => {
     const r = computeOsvcAnnualSummary({ year: 2026, income: 1_000_000, actualExpenses: 0, flatRate: 60 });
-    // Profit 400 000, base 55 % = 220 000 < the 220 356 minimum, so the minimum applies.
-    expect(r.social.base).toBe(220_356);
+    // Profit 400 000, base 55 % = 220 000 > the 205 668 minimum.
+    expect(r.social.base).toBe(220_000);
+    const low = computeOsvcAnnualSummary({ year: 2026, income: 900_000, actualExpenses: 0, flatRate: 60 });
+    // Profit 360 000, base 198 000 < 205 668, so the minimum applies.
+    expect(low.social.base).toBe(205_668);
     const high = computeOsvcAnnualSummary({ year: 2026, income: 2_000_000, actualExpenses: 0, flatRate: 60 });
     // Profit 800 000, base 440 000 → 36 667 / month → 10 707 Kč advance.
     expect(high.social.base).toBe(440_000);
@@ -72,8 +76,9 @@ describe('statutory minimums', () => {
     expect(minimumsAt('SK', '2026-08')!.values.social).toBe(303.11);
   });
 
-  it('paušální daň band 1 for 2026 sums the amounts in force each month', () => {
-    expect(flatTaxBand1ForYear(2026)).toBe(6 * 9984 + 6 * 9162);
+  it('paušální daň band 1 for 2026 is 12 × 9 162, the cut applies from January', () => {
+    expect(flatTaxBand1ForYear(2026)).toBe(12 * 9162);
+    expect(flatTaxBand1ForYear(2025)).toBe(12 * 8716);
     expect(flatTaxBand1ForYear(2027)).toBeNull();
   });
 

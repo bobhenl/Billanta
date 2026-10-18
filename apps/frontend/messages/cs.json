@@ -2013,6 +2013,106 @@
             "Nejste si jistí? Pozvěte účetní do týmu (Nastavení → Tým). Uvidí exporty a může je podat za vás."
           ]
         }
+      },
+      "filings": {
+        "title": "Roční podání za {year}",
+        "hint": "Daňové přiznání, přehled pro ČSSZ a hodnoty pro zdravotní pojišťovnu, předvyplněné z faktur a výdajů roku. Soubory si stáhnete, zkontrolujete a podáte sami.",
+        "year": "Rok",
+        "expenses": "Výdaje",
+        "basis": "Evidence",
+        "basisHint": "Daňová evidence počítá příjmy podle úhrady faktur. Účetnictví podle data uskutečnění plnění (DUZP).",
+        "basisCash": "Daňová evidence (podle úhrad)",
+        "basisAccrual": "Účetnictví (podle DUZP)",
+        "activity": "Činnost",
+        "activityHint": "Vedlejší činnost je například podnikání při zaměstnání nebo na mateřské. Pojištění vzniká až nad rozhodnou částkou.",
+        "activityMain": "Hlavní",
+        "activitySecondary": "Vedlejší",
+        "fromMonth": "Podnikání od měsíce",
+        "taxAdvances": "Zaplacené zálohy na daň (Kč)",
+        "taxAdvancesHint": "Zálohy na daň z příjmů zaplacené za tento rok. Většina OSVČ v prvních letech žádné neplatí.",
+        "spouse": "Uplatnit slevu na manžela nebo manželku",
+        "spouseHint": "Jen když manžel nebo manželka měli za rok vlastní příjmy do 68 000 Kč a žijete ve společné domácnosti.",
+        "failed": "Údaje pro roční podání se nepodařilo načíst.",
+        "rowNo": "ř. {n}",
+        "dpfoTitle": "Daňové přiznání (DPFO)",
+        "dpfo": {
+          "r101": "Příjmy z podnikání (§ 7)",
+          "r102": "Výdaje (paušál {rate} % nebo skutečné)",
+          "r113": "Dílčí základ daně z podnikání",
+          "r61": "Daňová ztráta",
+          "r56": "Základ daně zaokrouhlený",
+          "r57": "Daň 15 % / 23 %",
+          "r64": "Sleva na poplatníka",
+          "r65a": "Sleva na manžela nebo manželku",
+          "r71": "Daň po slevách",
+          "r84": "Zaplacené zálohy",
+          "r91": "Zbývá doplatit (minus je přeplatek)"
+        },
+        "csszTitle": "Přehled pro ČSSZ",
+        "cssz": {
+          "r24": "Zisk (příjmy minus výdaje)",
+          "r25": "Vyměřovací základ ze zisku",
+          "r27": "Minimální vyměřovací základ",
+          "r28": "Vyměřovací základ",
+          "r32": "Pojistné",
+          "r33": "Zaplacené zálohy",
+          "r34": "Nedoplatek (minus je přeplatek)",
+          "r35": "Nový měsíční vyměřovací základ",
+          "r36": "Nová měsíční záloha"
+        },
+        "csszNotInsured": "Zisk z vedlejší činnosti nepřesáhl rozhodnou částku, takže důchodové pojištění nevzniklo. Přehled ČSSZ i tak podáváte, s nulovým pojistným.",
+        "nextUnknown": "Minimální zálohu na další rok ještě neznáme. Novou zálohu ověřte v ePortálu ČSSZ.",
+        "healthTitle": "Přehled pro zdravotní pojišťovnu",
+        "health": {
+          "profit": "Zisk",
+          "baseFromProfit": "Polovina zisku",
+          "minBase": "Minimální vyměřovací základ",
+          "base": "Vyměřovací základ",
+          "premium": "Pojistné 13,5 %",
+          "paid": "Zaplacené zálohy",
+          "balance": "Nedoplatek (minus je přeplatek)",
+          "nextAdvance": "Nová měsíční záloha"
+        },
+        "insurer": "Vaše pojišťovna",
+        "healthHowTo": "Pojišťovny mají vlastní formuláře a jednotný XML formát zatím nezveřejnily. Hodnoty vlevo opište do přehledu na portálu své pojišťovny nebo do jejího PDF formuláře.",
+        "missingRates": "{count, plural, one {# cizoměnový doklad nemá} few {# cizoměnové doklady nemají} other {# cizoměnových dokladů nemá}} kurz ČNB, v součtech chybí.",
+        "personTitle": "Osobní údaje do souborů",
+        "personHint": "Doplní se jen do staženého XML. Neukládáme je a do adresy stránky se nedostanou.",
+        "person": {
+          "birthNumber": "Rodné číslo",
+          "birthNumberHint": "Patří do přiznání i do přehledu ČSSZ.",
+          "taxOffice": "Kód finančního úřadu",
+          "taxOfficeHint": "Třímístný kód z EPO, například 451 pro Hlavní město Prahu.",
+          "taxWorkplace": "Kód územního pracoviště",
+          "ossz": "Kód OSSZ",
+          "osszHint": "Třímístný kód vaší okresní správy sociálního zabezpečení.",
+          "variableSymbol": "Variabilní symbol ČSSZ",
+          "variableSymbolHint": "Najdete ho v ePortálu ČSSZ nebo na dřívějších platbách záloh.",
+          "dataBox": "ID datové schránky"
+        },
+        "downloadDpfdp": "Stáhnout přiznání ({form}, XML)",
+        "dpfdpMissing": "Formulář přiznání pro tento rok ještě není",
+        "downloadCssz": "Stáhnout přehled ČSSZ (XML)",
+        "csszMissing": "Přehled ČSSZ pro tento rok ještě není",
+        "print": "Vytisknout souhrn",
+        "epoLink": "EPO Finanční správy",
+        "epoHow": "soubor načtete přes „Načíst soubor“, zkontrolujete a odešlete.",
+        "csszLink": "ePortál ČSSZ",
+        "csszHow": "přehled nahrajete jako XML, nebo ho pošlete datovou schránkou.",
+        "errors": {
+          "form_not_published": "Formulář pro tento rok úřad ještě nezveřejnil.",
+          "year_not_supported": "Pro tento rok zatím nemáme parametry.",
+          "invalid_filings_query": "Zkontrolujte vyplněné údaje, něco nemá správný tvar.",
+          "generic": "Soubor se nepodařilo vytvořit."
+        },
+        "disclaimer": "Předvyplněno z dokladů v aplikaci podle běžného případu OSVČ (jen příjmy z podnikání, základní slevy). Nejde o daňové poradenství. Před podáním vše zkontrolujte, podáváte sami přes EPO, ePortál ČSSZ, portál pojišťovny nebo datovou schránku.",
+        "modes": {
+          "30": "Paušál 30 % (pronájem)",
+          "40": "Paušál 40 % (svobodná povolání)",
+          "60": "Paušál 60 % (živnosti)",
+          "80": "Paušál 80 % (řemesla)",
+          "actual": "Skutečné výdaje"
+        }
       }
     },
     "invoices": {
@@ -6574,21 +6674,20 @@
         "flatTax": {
           "name": "Paušální daň",
           "title": "Kalkulačka paušální daně",
-          "description": "Vyplatí se vám paušální daň? Porovnejte první pásmo s běžnou daní a pojištěním při výdajovém paušálu.",
-          "lead": "Paušální daň nahrazuje jednou měsíční platbou daň z příjmů, sociální i zdravotní pojištění. Kalkulačka ukáže, jestli vám vychází první pásmo a kolik byste zaplatili v běžném režimu s výdajovým paušálem.",
+          "description": "Vyplatí se vám paušální daň? Kalkulačka najde pásmo podle příjmů a porovná ho s běžnou daní a pojištěním při výdajovém paušálu.",
+          "lead": "Paušální daň nahrazuje jednou měsíční platbou daň z příjmů, sociální i zdravotní pojištění. Kalkulačka ukáže, do kterého pásma patříte a kolik byste zaplatili v běžném režimu s výdajovým paušálem.",
           "keywords": "paušální režim paušální daň pásmo osvč výdajový paušál",
           "fields": {
             "year": "Rok",
             "income": "Očekávané příjmy za rok (Kč)",
             "flatRate": "Převažující činnost"
           },
-          "monthlyTitle": "Platba v 1. pásmu",
+          "monthlyTitle": "Platba v {band}. pásmu",
           "monthlyFrom": "od {date}: {amount} měsíčně",
           "yearTotal": "Paušální daň za rok",
           "normalTotal": "Běžný režim s výdajovým paušálem",
           "cheaper": "Paušální daň vychází o {amount} levněji.",
           "dearer": "Běžný režim vychází o {amount} levněji.",
-          "notBand1": "S tímto příjmem a druhem činnosti 1. pásmo nevychází. Vyšší pásma tady nepočítáme, jejich výši najdete na webu Finanční správy.",
           "noData": "Pro tento rok zatím nemáme výši paušální daně.",
           "conditionsTitle": "Kdo může vstoupit do paušálního režimu",
           "conditions": [
@@ -6598,7 +6697,10 @@
             "Nejste společníkem v. o. s. ani komplementářem k. s. a nejste v insolvenci.",
             "Vstup do režimu oznámíte finančnímu úřadu do 10. ledna daného roku."
           ],
-          "compareNote": "Běžný režim počítáme s výdajovým paušálem podle zvolené činnosti, bez dalších příjmů a odpočtů."
+          "compareNote": "Běžný režim počítáme s výdajovým paušálem podle zvolené činnosti, bez dalších příjmů a odpočtů.",
+          "bandFits": "Vychází vám {band}. pásmo.",
+          "notEligible": "S příjmy nad 2 000 000 Kč do paušálního režimu vstoupit nelze.",
+          "retroactiveNote": "Snížení platí zpětně od ledna, co jste zaplatili navíc, vám finanční úřad vrátí jako přeplatek."
         },
         "vat": {
           "name": "Kalkulačka DPH",

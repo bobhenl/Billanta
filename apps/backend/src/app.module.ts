@@ -56,6 +56,7 @@ import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
 import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
 import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
+import { LegislationModule } from "./legislation/legislation.module";
 import { ReferralsController } from "./referrals/referrals.controller";
 import { ReferralsModule } from "./referrals/referrals.module";
 
@@ -127,6 +128,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     PartnersModule,
     // Accountant directory (/accountants): own listing, public list, admin review.
     AccountantDirectoryModule,
+    // Weekly check of the official tax form and minimum pages; alerts for staff (no tenant context).
+    LegislationModule,
   ],
   // Viewers are read-only and accountants stay out of company administration.
   providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],

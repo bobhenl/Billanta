@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { flatTaxBand1ForYear, minimumYears, OSVC_PARAM_YEARS } from '@faktur/cz-compliance';
+import { CZ_TAX_YEAR_LIST, OSVC_PARAM_YEARS } from '@faktur/cz-compliance';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { FlatTaxCalculator } from '@/components/public-tools/flat-tax-calculator';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
@@ -20,8 +20,8 @@ export default async function FlatTaxPage({ params }: { params: Promise<Params> 
   // sk: the Czech-rules notice only; the sk catalog has no body for this page.
   if (!isPublishedIn(getCalculator(SLUG)!, locale)) return <CalculatorPage slug={SLUG} locale={locale}>{null}</CalculatorPage>;
   const t = await getTranslations('tools');
-  // Only years with both a full band-1 table and OSVČ parameters to compare against.
-  const years = minimumYears('CZ').filter((y) => flatTaxBand1ForYear(y) != null && OSVC_PARAM_YEARS.includes(y));
+  // Only years with both the paušální daň bands and OSVČ parameters to compare against.
+  const years = CZ_TAX_YEAR_LIST.filter((y) => OSVC_PARAM_YEARS.includes(y));
   const conditions = t.raw('calculators.items.flatTax.conditions') as string[];
   return (
     <CalculatorPage

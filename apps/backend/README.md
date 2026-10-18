@@ -176,7 +176,7 @@ tenant/`stripe_customer_id` row in the DB to match against).
 
 Code: `src/billing/` (`plans.ts`, `plan-access.ts`, `plan.guard.ts`,
 `subscription.*`, `admin-billing.controller.ts`, `bank-transfer.ts`),
-migration `0052_trial_billing.sql`.
+migration `0051_trial_billing.sql`.
 
 - **Effective plan** is computed on every read (`planSummary`): the best of
   a live Stripe subscription (`active`/`past_due`), a prepaid period

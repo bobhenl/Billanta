@@ -16,6 +16,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   date,
+  index,
   integer,
   jsonb,
   numeric,
@@ -1462,5 +1463,39 @@ export const accountantListings = pgTable(
   },
   (table) => ({
     tenantUnique: uniqueIndex("accountant_listings_tenant_unique").on(table.tenantId),
+  }),
+);
+
+/**
+ * NOT tenant-scoped. Official pages the tax constants come from, with a hash
+ * of the part that matters (legislation monitor, migration 0052).
+ * `confirmed_at` = last time the page was seen unchanged, or a platform
+ * admin reviewed a change; it drives the "last checked" date per dataset.
+ */
+export const legislationSources = pgTable("legislation_sources", {
+  key: varchar("key", { length: 40 }).primaryKey(),
+  url: text("url").notNull(),
+  hash: text("hash"),
+  excerpt: text("excerpt"),
+  status: varchar("status", { length: 16 }).$type<"new" | "ok" | "changed" | "error">().notNull().default("new"),
+  lastError: text("last_error"),
+  lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
+  lastChangedAt: timestamp("last_changed_at", { withTimezone: true }),
+  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+});
+
+/** NOT tenant-scoped. Alerts for Billanta staff, e.g. a watched legislation page changed. */
+export const platformAlerts = pgTable(
+  "platform_alerts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    kind: varchar("kind", { length: 40 }).notNull(),
+    sourceKey: varchar("source_key", { length: 40 }),
+    message: text("message").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+  },
+  (table) => ({
+    openIdx: index("platform_alerts_open_idx").on(table.createdAt).where(sql`${table.acknowledgedAt} IS NULL`),
   }),
 );
