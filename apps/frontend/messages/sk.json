@@ -3175,7 +3175,8 @@
       "cancel": "Zrušiť ho môžete kedykoľvek jedným krokom v portáli predplatného. Tarif potom pobeží do konca zaplateného obdobia.",
       "methods": "Platiť môžete kartou, Apple Pay, Google Pay alebo inou metódou, ktorú vám platobná brána ponúkne.",
       "transfer": "Platba prevodom je jednorazová na rok dopredu a sama sa neobnovuje. Tarif zapneme, hneď ako platba príde na účet.",
-      "transferYearlyOnly": "Prevodom sa dá zaplatiť len ročný tarif v korunách.",
+      "transferMonthly": "Prevodom platíte vždy len jeden mesiac dopredu. Nič sa neobnovuje samo a pripomienku neposielame, preto si ďalší mesiac zaplaťte ručne ešte pred koncom zaplateného obdobia.",
+      "transferCzkOnly": "Prevodom sa dá platiť len v korunách.",
       "vat": "Ceny sú bez DPH."
     },
     "transfer": {
