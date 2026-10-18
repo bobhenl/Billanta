@@ -31,6 +31,7 @@ import {
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { HintCard } from '@/components/hint-card';
@@ -225,6 +226,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 {tDemo('cta')}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
+              <ShareQr className="rounded-full" />
             </div>
           </div>
 

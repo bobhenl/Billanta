@@ -9,6 +9,31 @@ export const QUICK_TILES = ['new_invoice', 'new_proforma', 'new_quote', 'new_exp
 export type QuickTile = (typeof QUICK_TILES)[number];
 export const DEFAULT_TILES: QuickTile[] = ['new_invoice', 'new_expense', 'scan_invoice', 'templates', 'bank'];
 
+/** What the member's role lets them do from the overview (layout's `hiddenSections` plus create rights). */
+export interface DashboardAbilities {
+  role: string | null;
+  /** Nav sections left out for this member (`hiddenSections`). */
+  hidden: string[];
+  createInvoices: boolean;
+  createExpenses: boolean;
+  createContacts: boolean;
+  /** Company settings (owner / admin). */
+  manage: boolean;
+  exports: boolean;
+  integrations: boolean;
+}
+
+export const FULL_ABILITIES: DashboardAbilities = {
+  role: null,
+  hidden: [],
+  createInvoices: true,
+  createExpenses: true,
+  createContacts: true,
+  manage: true,
+  exports: true,
+  integrations: true
+};
+
 export interface DashboardConfig {
   cards: KpiCard[];
   tiles: string[] | null;

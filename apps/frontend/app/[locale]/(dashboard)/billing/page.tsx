@@ -7,6 +7,7 @@ import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { BillingPanel, type BillingStatus } from './billing-panel';
 import { PromoCodeCard, type PromoRedemption } from './promo-code-card';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('billing');
@@ -20,6 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
  * information, California ARL), and cancelling is one step in the portal.
  */
 export default async function BillingPage({ searchParams }: { searchParams: Promise<{ checkout?: string }> }) {
+  const gate = await settingsGate('billing');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('billing');
   const { checkout } = await searchParams;

@@ -182,6 +182,52 @@ function skVatSro(now: Date): DemoExpense[] {
   ];
 }
 
+function skFreelancer(now: Date): DemoExpense[] {
+  // Domestic sellers only: a non-payer buying a service from abroad would
+  // have to register for VAT (§7a ZoDPH).
+  return rows("sk_freelancer", now, [
+    ["Kníhkupectvo Pod Kalváriou", "Technický slovník nemecko-slovenský", 48, 5, 61, "office", 0],
+    ["Coworking Hradná s.r.o.", "Miesto v coworkingu – september", 145, 23, 46, "rent", 2],
+    ["Coworking Hradná s.r.o.", "Miesto v coworkingu – október", 145, 23, 16, "rent", 2],
+    ["Softvér Váh s.r.o.", "Prekladateľský softvér – ročná licencia", 276, 23, 38, "software", 4],
+    ["Telekom Západ a.s.", "Mobilný paušál a internet", 32, 23, 19, "telecom", 5],
+    ["Jazyková škola Nitrianska s.r.o.", "Kurz odbornej angličtiny – strojárstvo", 210, 23, 7, "services", null],
+  ]);
+}
+
+function skVatFreelancer(now: Date): DemoExpense[] {
+  return [
+    ...rows("sk_vat_freelancer", now, [
+      ["Elektro Hron s.r.o.", "Káble CYKY a chráničky", 1_164, 23, 75, "material", 10],
+      ["Elektro Hron s.r.o.", "Rozvádzač a ističe", 862, 23, 58, "material", 10],
+      ["Elektro Hron s.r.o.", "Svietidlá a zásuvky", 437, 23, 33, "material", 8],
+      ["Čerpacia stanica Pri moste", "Nafta – dodávka", 86, 23, 27, "fuel", 0],
+      ["Čerpacia stanica Pri moste", "Nafta – dodávka", 79, 23, 9, "fuel", 0],
+      ["Náradie Urpín s.r.o.", "Revízny prístroj a sada skrutkovačov", 694, 23, 44, "material", 0],
+      ["Telekom Západ a.s.", "Mobilný paušál", 24, 23, 20, "telecom", 5],
+      ["Autoservis Radvaň s.r.o.", "Servis dodávky", 318, 23, 5, "services", null],
+    ]),
+    {
+      // Domestic reverse charge (§69 ods. 12 písm. j): a subcontractor's
+      // construction work, so `amount` is the net and the VAT is self-assessed.
+      supplierName: "Montáže Sitno s.r.o.",
+      description: "Subdodávka – drážkovanie a murárske práce, Pekáreň Gazdovská",
+      amount: 1_200,
+      vatRate: 23,
+      currency: "EUR",
+      exchangeRate: null,
+      expenseDate: daysAgo(now, 66),
+      category: "services",
+      documentNumber: "FA-2026-0217",
+      dueDate: daysAgo(now, 52),
+      paidAt: daysAgo(now, 54),
+      reverseCharge: true,
+      reverseChargeCode: null,
+      note: null,
+    },
+  ];
+}
+
 export function buildExpenses(kind: DemoKind, now: Date): DemoExpense[] {
   switch (kind) {
     case "cz_vat_sro":
@@ -192,5 +238,9 @@ export function buildExpenses(kind: DemoKind, now: Date): DemoExpense[] {
       return czPausal(now);
     case "sk_vat_sro":
       return skVatSro(now);
+    case "sk_freelancer":
+      return skFreelancer(now);
+    case "sk_vat_freelancer":
+      return skVatFreelancer(now);
   }
 }

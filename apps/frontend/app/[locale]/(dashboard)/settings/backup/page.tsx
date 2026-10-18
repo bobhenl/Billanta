@@ -4,6 +4,7 @@ import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { Banner } from '@/components/banner';
 import { TwoFactorNotice } from '@/components/two-factor-notice';
+import { settingsGate } from '@/components/settings-gate';
 import {
   BackupDestinationsManager,
   type BackupDestinationListItem
@@ -19,6 +20,8 @@ interface BackupSettingsPageProps {
 }
 
 export default async function BackupSettingsPage({ searchParams }: BackupSettingsPageProps) {
+  const gate = await settingsGate('backup');
+  if (gate) return gate;
   const t = await getTranslations('settings.backup');
   const locale = await getLocale();
   const params = await searchParams;

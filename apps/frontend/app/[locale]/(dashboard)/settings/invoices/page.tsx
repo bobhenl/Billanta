@@ -11,6 +11,7 @@ import { formPrefs, loadContact } from '../../invoices/new/load';
 import { RATE_CURRENCIES } from '../../invoices/new/types';
 import type { UniformYear } from './exchange-rate-settings';
 import { InvoiceFormSettings } from './invoice-form-settings';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.invoices');
@@ -19,6 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Invoices: tailor the invoice form to what this company actually fills in. */
 export default async function InvoiceSettingsPage() {
+  const gate = await settingsGate('invoices');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.invoices');
 
