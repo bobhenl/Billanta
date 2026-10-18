@@ -1,6 +1,7 @@
 import { ArrowRight, ExternalLink, Info, type LucideIcon } from 'lucide-react';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { CreateInvoiceLink } from '@/components/marketing-account-links';
 import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 
 /**
@@ -129,13 +130,10 @@ export async function InvoiceCta() {
       <h2 className="text-lg font-semibold">{t('invoiceCtaTitle')}</h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t('invoiceCtaText')}</p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Link
-          href="/create-invoice"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
-        >
+        <CreateInvoiceLink className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90">
           {t('invoiceCtaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
+        </CreateInvoiceLink>
         <Link href="/signup" className="text-sm font-semibold text-primary hover:underline">
           {t('ctaButton')}
         </Link>

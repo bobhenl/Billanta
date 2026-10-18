@@ -6,6 +6,7 @@ import { AlertTriangle, Search } from 'lucide-react';
 import { parseVatId } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
+import { CreateInvoiceLink } from '@/components/marketing-account-links';
 import { RegistryPicker, useCompanyRegistry, type CompanyRegistry } from '@/components/registry-picker';
 import { ResultRow, TextField } from '@/components/public-tools/fields';
 import { cn } from '@/lib/utils';
@@ -191,9 +192,9 @@ export function CompanyLookup() {
               </p>
             )}
             {c.source && <p className="mt-3 text-xs text-muted-foreground">{t('result.source', { source: c.source })}</p>}
-            <Link href="/create-invoice" className={`${buttonClass.secondary} mt-4`}>
+            <CreateInvoiceLink className={`${buttonClass.secondary} mt-4`}>
               {t('result.invoice')}
-            </Link>
+            </CreateInvoiceLink>
           </>
         ) : state.kind === 'error' ? (
           <p role="alert" className="text-sm font-medium text-destructive">

@@ -4,6 +4,7 @@ import { BadgePercent, BookOpenCheck, Calculator, CircleHelp, Handshake, Home, L
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { useCreateInvoiceHref } from '@/components/marketing-account-links';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
 import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 
@@ -23,6 +24,7 @@ export function MarketingTabBar() {
   const locale = useLocale();
   const { status } = useSession();
   const signedIn = status === 'authenticated';
+  const createInvoiceHref = useCreateInvoiceHref();
 
   return (
     <MobileTabBar
@@ -30,7 +32,7 @@ export function MarketingTabBar() {
       items={[
         { key: 'home', href: '/', label: t('home'), icon: Home, exact: true },
         { key: 'pricing', href: '/pricing', label: t('pricing'), icon: BadgePercent },
-        { key: 'invoice', href: '/create-invoice', label: t('createInvoiceShort'), icon: Plus, cta: true },
+        { key: 'invoice', href: createInvoiceHref, label: t('createInvoiceShort'), icon: Plus, cta: true },
         signedIn
           ? { key: 'app', href: '/dashboard', label: t('app'), icon: LayoutDashboard }
           : { key: 'login', href: '/login', label: t('account'), icon: UserRound }

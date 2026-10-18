@@ -1,6 +1,7 @@
 'use client';
 
 import { LayoutDashboard } from 'lucide-react';
+import type { ComponentProps } from 'react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -13,6 +14,20 @@ import { Link } from '@/i18n/navigation';
  */
 function useSignedIn() {
   return useSession().status === 'authenticated';
+}
+
+/**
+ * Where "Issue an invoice" leads: the free guest invoice for a visitor, the
+ * dashboard's own invoice form for someone signed in, who would otherwise
+ * fill in a form that never reaches their books.
+ */
+export function useCreateInvoiceHref() {
+  return useSignedIn() ? '/invoices/new' : '/create-invoice';
+}
+
+/** A `Link` to `useCreateInvoiceHref()`, for server components. */
+export function CreateInvoiceLink(props: Omit<ComponentProps<typeof Link>, 'href'>) {
+  return <Link {...props} href={useCreateInvoiceHref()} />;
 }
 
 /** Header slot next to the "Issue an invoice" button, from `md` up. */
