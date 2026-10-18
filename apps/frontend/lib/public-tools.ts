@@ -63,3 +63,14 @@ export function getGuide(slug: string): Guide | undefined {
 export function isPublishedIn(tool: { locales: readonly string[] }, locale: string): boolean {
   return tool.locales.includes(locale);
 }
+
+/**
+ * Calculators that also run inside the app, prefilled with the company's
+ * own numbers (`/dashboard/calculators/<slug>`). Same component as the
+ * public page; the public page links there for a signed-in visitor.
+ */
+const IN_APP_CALCULATORS: readonly string[] = ['flat-tax'];
+
+export function inAppCalculatorPath(slug: string): string | null {
+  return IN_APP_CALCULATORS.includes(slug) ? `/dashboard/calculators/${slug}` : null;
+}

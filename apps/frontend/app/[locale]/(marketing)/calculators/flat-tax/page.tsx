@@ -4,7 +4,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { CZ_TAX_YEAR_LIST, OSVC_PARAM_YEARS } from '@faktur/cz-compliance';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { FlatTaxCalculator } from '@/components/public-tools/flat-tax-calculator';
-import { getCalculator, isPublishedIn } from '@/lib/public-tools';
+import { MyNumbersLink } from '@/components/public-tools/my-numbers-link';
+import { getCalculator, inAppCalculatorPath, isPublishedIn } from '@/lib/public-tools';
 
 const SLUG = 'flat-tax';
 type Params = { locale: string };
@@ -17,7 +18,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 export default async function FlatTaxPage({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  // sk: the Czech-rules notice only; the sk catalog has no body for this page.
+  // sk: the Czech-rules notice only. (The sk catalog still has the body: the
+  // in-app copy of this calculator runs in every UI language.)
   if (!isPublishedIn(getCalculator(SLUG)!, locale)) return <CalculatorPage slug={SLUG} locale={locale}>{null}</CalculatorPage>;
   const t = await getTranslations('tools');
   // Only years with both the paušální daň bands and OSVČ parameters to compare against.
@@ -42,6 +44,7 @@ export default async function FlatTaxPage({ params }: { params: Promise<Params> 
         </div>
       }
     >
+      <MyNumbersLink href={inAppCalculatorPath(SLUG)!} />
       <FlatTaxCalculator years={years} />
     </CalculatorPage>
   );

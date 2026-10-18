@@ -6258,7 +6258,8 @@
       "moveUp": "Posunúť dopredu",
       "moveDown": "Posunúť dozadu",
       "dragToReorder": "Potiahnite na zmenu poradia"
-    }
+    },
+    "flatTaxLink": "Oplatí sa paušálna daň? →"
   },
   "siteSearch": {
     "title": "Hľadať na webe",
@@ -6741,7 +6742,11 @@
       "invoiceCtaTitle": "Potrebujete z toho rovno faktúru?",
       "invoiceCtaText": "Vystavte faktúru so správnou splatnosťou a údajmi odberateľa bez registrácie. S účtom v Billante sa vám faktúry uložia, postrážite úhrady a pošlete podklady účtovníčke.",
       "invoiceCtaButton": "Vystaviť faktúru zadarmo",
-      "overview": "Prehľad"
+      "overview": "Prehľad",
+      "myNumbers": {
+        "hint": "Ste prihlásení. Kalkulačku môžete otvoriť v aplikácii s príjmami a výdavkami z vašich dokladov.",
+        "cta": "Otvoriť s mojimi číslami"
+      }
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pre podnikateľov",
@@ -6754,9 +6759,93 @@
           "description": "Orientačná daň z príjmov a odvody českej OSVČ. Platí len podľa českých pravidiel."
         },
         "flatTax": {
-          "name": "Paušálna daň (Česko)",
-          "title": "Kalkulačka paušálnej dane (Česko)",
-          "description": "Porovnanie českej paušálnej dane s bežným režimom. Platí len podľa českých pravidiel."
+          "name": "Oplatí sa paušálna daň? (Česko)",
+          "title": "Oplatí sa česká paušálna daň? Porovnanie s paušálnymi a skutočnými výdavkami",
+          "description": "Porovnanie českej paušálnej dane s bežným režimom. Platí len podľa českých pravidiel.",
+          "lead": "Zadajte ročné príjmy, prípadne skutočné výdavky. Kalkulačka spočíta daň, sociálne a zdravotné poistenie v českom paušálnom režime, s paušálnymi výdavkami aj so skutočnými výdavkami a povie, čo vychádza najlepšie.",
+          "keywords": "paušálna daň česko paušálny režim osvč paušálne výdavky skutočné výdavky porovnanie",
+          "fields": {
+            "year": "Rok",
+            "income": "Príjmy za rok (Kč)",
+            "actualExpenses": "Skutočné výdavky za rok (Kč)",
+            "actualHint": "Nepovinné. Bez nich porovnáme iba paušálnu daň a paušálne výdavky.",
+            "flatRate": "Prevažujúca činnosť",
+            "children": "Počet detí (daňové zvýhodnenie)",
+            "spouse": "Zľava na manželku/manžela (príjmy partnera do 68 000 Kč, dieťa do 3 rokov)",
+            "vatPayer": "Som platiteľ DPH"
+          },
+          "rates": {
+            "30": "Prenájom obchodného majetku (30 %, najviac {cap} Kč)",
+            "40": "Slobodné povolania a iné podnikanie (40 %, najviac {cap} Kč)",
+            "60": "Ostatné živnosti (60 %, najviac {cap} Kč)",
+            "80": "Remeselné živnosti a poľnohospodárstvo (80 %, výdavky najviac {cap} Kč)"
+          },
+          "options": {
+            "flat_tax": "Paušálna daň",
+            "flat_expenses": "Paušálne výdavky {rate} %",
+            "actual_expenses": "Skutočné výdavky"
+          },
+          "result": {
+            "best": "Najvýhodnejšie",
+            "band": "Pásmo",
+            "bandValue": "{band}. pásmo",
+            "oneSum": "Jedna platba za daň, sociálne aj zdravotné poistenie.",
+            "expenses": "Výdavky",
+            "tax": "Daň z príjmov",
+            "social": "Sociálne poistenie",
+            "health": "Zdravotné poistenie",
+            "bonus": "Daňový bonus",
+            "total": "Spolu za rok"
+          },
+          "unavailable": {
+            "vat_payer": "Platiteľ DPH do paušálneho režimu vstúpiť nemôže.",
+            "over_limit": "S týmito príjmami a činnosťou sa nezmestíte do žiadneho pásma (najviac 2 000 000 Kč).",
+            "no_data": "Pre tento rok zatiaľ nemáme všetky parametre."
+          },
+          "recommend": {
+            "same": "Obe možnosti vychádzajú rovnako.",
+            "flat_tax": "Oplatí sa paušálna daň: ušetríte {amount} ročne oproti bežnému režimu.",
+            "flat_expenses": "Oplatí sa bežný režim s paušálnymi výdavkami: o {amount} menej ako paušálna daň.",
+            "actual_expenses": "Oplatí sa bežný režim so skutočnými výdavkami: o {amount} menej ako paušálna daň.",
+            "noFlatOnly": "Do paušálneho režimu vstúpiť nemôžete, zostáva bežný režim.",
+            "noFlat": {
+              "flat_expenses": "Do paušálneho režimu vstúpiť nemôžete. Paušálne výdavky vychádzajú o {amount} lepšie ako skutočné.",
+              "actual_expenses": "Do paušálneho režimu vstúpiť nemôžete. Skutočné výdavky vychádzajú o {amount} lepšie ako paušálne."
+            }
+          },
+          "monthlyTitle": "Platba v {band}. pásme",
+          "monthlyFrom": "od {date}: {amount} mesačne",
+          "retroactiveNote": "Zníženie platí spätne od januára, čo ste zaplatili navyše, vám finančný úrad vráti ako preplatok.",
+          "creditsNote": "Zľavy na dieťa a na manželku/manžela sa v paušálnom režime neuplatňujú. Bežný režim preto môžu zlacniť natoľko, že vyjde lepšie.",
+          "compareNote": "Bežný režim počítame iba z príjmov z podnikania, so zľavou na daňovníka a so zvolenými zľavami. Ďalšie príjmy ani odpočty nezohľadňujeme a poistné počítame ako pri hlavnej činnosti.",
+          "conditionsTitle": "Kto môže vstúpiť do paušálneho režimu",
+          "conditions": [
+            "Ste OSVČ v Česku a nie ste platiteľ DPH (identifikovaná osoba byť môžete).",
+            "Príjmy z podnikania neprekročia 2 000 000 Kč za rok.",
+            "1. pásmo: príjmy do 1 000 000 Kč pri akejkoľvek činnosti, do 1 500 000 Kč, keď aspoň 75 % príjmov patrí pod 80 % alebo 60 % paušál, a do 2 000 000 Kč, keď aspoň 75 % patrí pod 80 % paušál.",
+            "2. pásmo: do 1 500 000 Kč pri akejkoľvek činnosti a do 2 000 000 Kč, keď aspoň 75 % príjmov patrí pod 80 % alebo 60 % paušál. 3. pásmo: do 2 000 000 Kč.",
+            "Nemáte iné príjmy okrem drobných výnimiek (napr. malé príjmy zo zamestnania, úroky alebo nájom do limitu).",
+            "Nie ste spoločníkom v. o. s. ani komplementárom k. s. a nie ste v insolvencii.",
+            "Vstup do režimu oznámite finančnému úradu do 10. januára daného roka."
+          ],
+          "how": [
+            "Paušálna daň je jedna mesačná suma podľa pásma. Pásmo určujú príjmy a prevažujúca činnosť (§ 2a českého zákona o daniach z príjmov).",
+            "V bežnom režime odpočítame výdavky (paušál najviac do limitu podľa činnosti alebo skutočné výdavky), z dane odpočítame zľavy a poistné počítame z polovice zisku, najmenej z minimálneho vymeriavacieho základu.",
+            "Zľava na dieťa znižuje daň a čo zostane, dostanete ako daňový bonus. Bonus sa vypláca od 100 Kč a iba pri príjmoch aspoň vo výške šesťnásobku minimálnej mzdy (§ 35c).",
+            "Ide o odhad za celý rok. Nič neukladáme, výpočet beží vo vašom prehliadači."
+          ],
+          "app": {
+            "title": "Oplatí sa paušálna daň?",
+            "lead": "Kalkulačka s vašimi číslami z Billanty. Všetko môžete prepísať, nič sa neukladá.",
+            "publicLink": "Verejná verzia kalkulačky",
+            "noTenant": "Najprv si založte firmu, potom kalkulačku predvyplníme.",
+            "notOsvc": "Paušálny režim je iba pre české OSVČ. Vaša firma medzi ne podľa nastavení nepatrí, výsledok berte ako orientačný.",
+            "prefilled": "Predvyplnili sme rok {year}: zaplatené príjmy {income} a výdavky {expenses} podľa dokladov v Billante.",
+            "loadError": "Vaše súčty sa nepodarilo načítať, zadajte čísla ručne.",
+            "regimeFlat": "V nastavení máte uvedené, že ste v paušálnom režime.",
+            "regimeRegular": "V nastavení máte uvedené, že v paušálnom režime nie ste.",
+            "secondary": "V nastavení máte vedľajšiu činnosť. Kalkulačka počíta poistné ako pri hlavnej činnosti, pri vedľajšej môže vyjsť nižšie."
+          }
         },
         "vat": {
           "name": "Kalkulačka DPH",
