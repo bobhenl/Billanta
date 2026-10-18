@@ -1816,7 +1816,9 @@
       "registrySearch": "Find in the register",
       "registrySearchPlaceholder": "Company name, sole trader, company ID or city",
       "loadRegistry": "Load from register",
-      "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents."
+      "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents.",
+      "dataBoxId": "Data box ID",
+      "dataBoxIdHint": "Seven characters, e.g. ab12cd3. Not a secret. Prefilled into the yearly overview for ČSSZ."
     },
     "team": {
       "title": "Team",
@@ -1977,44 +1979,16 @@
       "annual": {
         "title": "Yearly tax & insurance estimate (Czech sole trader)",
         "hint": "Estimates income tax, social and health insurance and next year's advances from the invoices and expenses paid in the year.",
-        "year": "Year",
-        "expenses": "Expenses",
-        "expensesHint": "Flat-rate expenses: 60 % most trades, 80 % crafts, 40 % liberal professions, 30 % renting. Or your actual expenses.",
-        "modes": {
-          "30": "Flat rate 30 % (renting)",
-          "40": "Flat rate 40 % (professions)",
-          "60": "Flat rate 60 % (trades)",
-          "80": "Flat rate 80 % (crafts)",
-          "actual": "Actual expenses"
-        },
-        "paidSocial": "Social advances paid",
-        "paidHealth": "Health advances paid",
-        "paidHint": "Filled in from the monthly advances in Business details (each month of the year with the amount that applied then). Change it if needed; the summary shows what is left to pay or overpaid.",
-        "income": "Income",
         "incomeHint": "Invoices paid in the year ({invoices}), credit notes subtracted.",
         "incomeHintVat": "Invoices paid in the year without VAT ({invoices}), credit notes subtracted.",
-        "actualExpenses": "Actual expenses",
-        "flatExpenses": "Flat-rate expenses {rate} %",
-        "profit": "Profit",
-        "taxBase": "Tax base",
-        "taxCredit": "Taxpayer credit",
-        "incomeTax": "Income tax",
-        "incomeTaxHint": "15 %, 23 % above 36 average wages. Only the basic taxpayer credit is applied.",
-        "social": "Social insurance",
-        "socialHint": "29.2 % of 55 % of profit, at least the minimum base for main activity.",
-        "health": "Health insurance",
-        "healthHint": "13.5 % of 50 % of profit, at least half the average wage.",
-        "balance": "To pay (+) / overpaid (−)",
-        "nextAdvance": "New monthly advance",
-        "total": "Tax + insurance in total",
         "missingRates": "{count, plural, one {# foreign-currency document} other {# foreign-currency documents}} without a ČNB rate – left out.",
-        "paramsFallback": "No parameters for this year yet; using {year}.",
-        "downloadCsv": "Download CSV",
         "epoLink": "EPO forms (Financial Administration)",
         "failed": "The estimate could not be calculated.",
-        "disclaimer": "A rough estimate for a full year of main activity. It does not replace the tax return or the insurance statements.",
+        "disclaimer": "A rough estimate for main activity. It does not replace the tax return or the insurance statements.",
         "paidFromSettings": "Filled in from the monthly advances in Business details. You can change it.",
-        "uniformRate": "Foreign currencies are converted at the uniform rate for {year} (the average of ČNB month-end rates). You can change this in Settings → Invoice form."
+        "uniformRate": "Foreign currencies are converted at the uniform rate for {year} (the average of ČNB month-end rates). You can change this in Settings → Invoice form.",
+        "titleSk": "Yearly tax & insurance estimate (Slovak sole trader)",
+        "hintSk": "Estimates Slovak income tax, health and social insurance from the invoices and expenses paid in the year, in euros."
       },
       "epo": {
         "title": "How to file the VAT return, control statement and EC sales list",
@@ -2139,7 +2113,7 @@
           "nextAdvance": "New monthly advance"
         },
         "insurer": "Your insurer",
-        "healthHowTo": "Each insurer has its own form and none has published a shared XML format yet. Copy the values on the left into the statement on your insurer’s portal or its PDF form.",
+        "healthHowTo": "Since 2026 the health insurance statement can only be filed electronically: on the insurer’s portal (for example Moje VZP) or through a data box. Insurers have no common XML format and VZP takes a PDF through the data box, so we do not generate a file. Copy the values on the left into your insurer’s form.",
         "missingRates": "{count, plural, one {# foreign-currency document has} other {# foreign-currency documents have}} no CNB rate and is missing from the totals.",
         "personTitle": "Personal details for the files",
         "personHint": "Only written into the downloaded XML. We do not store them and they never appear in the page address.",
@@ -2153,12 +2127,15 @@
           "osszHint": "The three-digit code of your district social security office.",
           "variableSymbol": "ČSSZ variable symbol",
           "variableSymbolHint": "Shown in the ČSSZ ePortal or on your earlier advance payments.",
-          "dataBox": "Data box ID"
+          "dataBox": "Data box ID",
+          "prefilled": "The office codes and data box are prefilled from the address and details in Billing details. Check them; you can change them.",
+          "remember": "Remember in this browser",
+          "rememberHint": "Your birth number and variable symbol are saved only in this browser and never sent to our server. Untick to delete them."
         },
         "downloadDpfdp": "Download tax return ({form}, XML)",
-        "dpfdpMissing": "No tax return form for this year yet",
+        "dpfdpMissing": "The Financial Administration usually publishes the return form for {year} in January {next}.",
         "downloadCssz": "Download ČSSZ statement (XML)",
-        "csszMissing": "No ČSSZ statement for this year yet",
+        "csszMissing": "ČSSZ usually publishes the statement form for {year} early in {next}.",
         "print": "Print summary",
         "epoLink": "Financial Administration EPO",
         "epoHow": "load the file with “Načíst soubor”, check it and send it.",
@@ -6767,7 +6744,8 @@
       "myNumbers": {
         "hint": "You are signed in. Open the calculator in the app with income and expenses from your documents.",
         "cta": "Open with my numbers"
-      }
+      },
+      "czOnlyTextAlt": "“{name}” is about Czech rules. For Slovak sole traders there is a separate calculator under Slovak rules."
     },
     "calculators": {
       "indexTitle": "Calculators and tools for businesses",
@@ -6787,19 +6765,6 @@
             "Health insurance is 13.5 % of 50 % of the profit, at least from half the average wage for every month.",
             "Next year's advances come from this year's base, but never below next year's minimum advances."
           ],
-          "params": "For {year} we use an average wage of CZK {wage}, a taxpayer credit of CZK {credit} and a minimum social insurance base of {share} % of the average wage (main activity).",
-          "paramsShareChange": "From {month}/{year} the minimum drops to {share} % (social advance at least CZK {advance}).",
-          "fields": {
-            "year": "Year",
-            "income": "Income for the year (CZK)",
-            "expenseMode": "Expenses",
-            "actual": "Actual expenses",
-            "flat": "Flat-rate expenses",
-            "expenses": "Expenses for the year (CZK)",
-            "flatRate": "Type of activity",
-            "paidSocial": "Social advances paid (CZK, optional)",
-            "paidHealth": "Health advances paid (CZK, optional)"
-          },
           "rates": {
             "30": "30 % – renting business assets (max. CZK {cap})",
             "40": "40 % – liberal professions, royalties (max. CZK {cap})",
@@ -6807,16 +6772,9 @@
             "80": "80 % – crafts, agriculture (max. CZK {cap})"
           },
           "result": {
-            "expenses": "Expenses claimed",
-            "profit": "Profit (tax base)",
             "tax": "Income tax after credit",
             "social": "Social insurance",
-            "health": "Health insurance",
-            "total": "Total tax and insurance",
-            "nextSocial": "Social advance from next year",
-            "nextHealth": "Health advance from next year",
-            "toPay": "{amount} left to pay",
-            "overpaid": "{amount} overpaid"
+            "health": "Health insurance"
           }
         },
         "flatTax": {
@@ -7139,6 +7097,20 @@
             "Between businesses, Czech and Slovak law allow a term over 60 days only when it is expressly agreed and not grossly unfair to the creditor."
           ],
           "howTitle": "How it works"
+        },
+        "szco": {
+          "name": "Slovak sole trader tax",
+          "title": "Slovak sole trader (SZČO) tax and insurance calculator",
+          "description": "Get a rough figure for the income tax, health and social insurance of a Slovak sole trader (SZČO) for the year, with 60 % flat-rate expenses.",
+          "lead": "Enter your income for the year. The calculator works out Slovak personal income tax, health insurance, the social insurance due from July of the next year and the new health insurance advance.",
+          "keywords": "slovakia sole trader szco self-employed income tax flat-rate expenses social insurance health insurance allowance",
+          "how": [
+            "Profit is income minus 60 % flat-rate expenses (at most EUR 20,000 a year) or minus actual expenses.",
+            "The tax base is profit minus the social and health insurance paid during the year. The taxpayer allowance is deducted; above an income threshold it gradually shrinks.",
+            "Tax is 15 % if income does not exceed EUR 100,000 (EUR 60,000 for 2024). Otherwise 19 % and 25 % on the part above 176.8 times the subsistence minimum, and from 2026 also 30 % and 35 %.",
+            "Health insurance is 15 % (16 % from 2026) of profit divided by 1.486, at least the minimum base for every month. The difference to the advances paid is settled in the yearly reconciliation.",
+            "Social insurance starts only in July of the next year, and only if income exceeds the legal threshold. The base is profit divided by 1.486 and by the months, between the minimum and the maximum base."
+          ]
         }
       }
     },
@@ -7664,5 +7636,75 @@
     "changed": "The accountant edited the listing in the meantime. The new version is loaded, please review it again.",
     "failed": "Action failed",
     "withdrawnHint": "The accountant withdrew the listing. You can review it again once they save it."
+  },
+  "annualEstimate": {
+    "year": "Year",
+    "incomeCzk": "Income for the year (CZK)",
+    "incomeEur": "Income for the year (EUR)",
+    "income": "Income",
+    "expenses": "Expenses",
+    "actualMode": "Actual expenses",
+    "actualExpenses": "Actual expenses",
+    "start": "Business during the year",
+    "startFull": "Whole year",
+    "startFrom": "From {date} ({months, plural, one {# month} other {# months}})",
+    "paidSocial": "Social insurance paid (optional)",
+    "paidHealth": "Health insurance paid (optional)",
+    "paidHint": "Advances paid for this year. Fill them in to see what is left to pay or overpaid.",
+    "balance": "To pay (+) / overpaid (−)",
+    "nextAdvance": "New monthly advance",
+    "total": "Tax + insurance in total",
+    "paramsFallback": "No parameters for this year yet; using {year}.",
+    "downloadCsv": "Download CSV",
+    "csvName": "tax-and-insurance-estimate",
+    "resultTitle": "Estimate",
+    "perMonth": "per month",
+    "disclaimer": "The result is only a rough estimate and does not replace an accountant or tax adviser. It counts business income only, with the basic taxpayer credit or allowance, and ignores children, deductions and other income. Before you file or pay anything based on it, check with your accountant or on the websites of the authorities.",
+    "cz": {
+      "modes": {
+        "30": "Flat 30 % – renting business assets (max. CZK {cap})",
+        "40": "Flat 40 % – liberal professions, royalties (max. CZK {cap})",
+        "60": "Flat 60 % – other trades (max. CZK {cap})",
+        "80": "Flat 80 % – crafts, agriculture (max. CZK {cap})"
+      },
+      "flatExpenses": "Flat-rate expenses {rate} %",
+      "profit": "Profit",
+      "taxBase": "Tax base (rounded down to hundreds)",
+      "taxCredit": "Taxpayer credit",
+      "incomeTax": "Income tax",
+      "incomeTaxHint": "15 %, 23 % above 36 average wages. Only the basic taxpayer credit is applied, no children, spouse or deductions.",
+      "social": "Social insurance",
+      "socialHint": "29.2 % of 55 % of profit, at least the minimum base for main activity for every month in business.",
+      "health": "Health insurance",
+      "healthHint": "13.5 % of 50 % of profit, at least half the average wage for every month in business.",
+      "params": "For {year} we use an average wage of CZK {wage}, a taxpayer credit of CZK {credit} and a minimum social insurance base of {share} % of the average wage (main activity).",
+      "paramsShareChange": "From {month}/{year} the minimum drops to {share} % (social advance at least CZK {advance}).",
+      "startHint": "Minimum insurance bases count only the months in business. The taxpayer credit and the flat-rate cap stay in full."
+    },
+    "sk": {
+      "flatMode": "Flat-rate expenses 60 % (max. {cap})",
+      "actualHint": "Without the social and health insurance you paid, that is deducted separately.",
+      "flatExpenses": "Flat-rate expenses 60 %",
+      "paidInsurance": "Insurance paid",
+      "taxBase": "Tax base",
+      "allowance": "Taxpayer allowance (nezdaniteľná časť)",
+      "taxable": "Taxable amount",
+      "incomeTax": "Income tax",
+      "incomeTaxReduced": "Income tax (15 %)",
+      "incomeTaxHint": "15 % with income up to EUR 100,000 (EUR 60,000 for 2024), otherwise 19 % and 25 % (from 2026 also 30 % and 35 %). No child bonus or other deductions.",
+      "health": "Health insurance for the year",
+      "healthHint": "{rate} % of the assessment base (profit divided by 1.486), at least the minimum base for every month in business.",
+      "social": "Social insurance from July {year}",
+      "socialNone": "none",
+      "socialHint": "The Social Insurance Agency (Sociálna poisťovňa) sets it from your tax return: the base is profit divided by 1.486 and by the months, between the minimum and the maximum base. Below the income threshold there is no obligation.",
+      "socialMicroHint": "Income is only slightly above the threshold, so from July 2026 a reduced micro contribution (mikroodvod) applies.",
+      "total": "Tax + insurance for the year",
+      "totalHint": "Income tax, health insurance for the year and the social insurance paid during the year.",
+      "params": "For {year} we use a subsistence minimum of {zm} and a flat-rate expense cap of {cap}.",
+      "socialFallback": "Social insurance parameters for next year are not published yet; using those from July {year}.",
+      "startHint": "The minimum health base counts only the months in business. The flat-rate cap and the allowance stay in full.",
+      "paidSocialHint": "Social insurance paid during the year. It lowers the tax base.",
+      "paidHealthHint": "Health insurance advances paid during the year. They lower the tax base and are settled in the yearly reconciliation."
+    }
   }
 }

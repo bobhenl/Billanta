@@ -69,6 +69,13 @@ export const updateTenantSchema = z
     phone: text(32),
     website: text(200),
     registry_note: text(500),
+    /** ID datové schránky; boxes are case-insensitive, stored lowercase. Empty string clears it. */
+    data_box_id: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .regex(/^([a-z0-9]{7})?$/)
+      .nullish(),
     bank_account_number: z
       .string()
       .regex(/^(\d{1,6}-)?\d{2,10}$/)

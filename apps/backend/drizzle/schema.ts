@@ -208,6 +208,8 @@ export const tenants = pgTable("tenants", {
   website: text("website"),
   // e.g. "Fyzická osoba zapsaná v živnostenském rejstříku" / "C 1234 vedená u MS v Praze".
   registryNote: text("registry_note"),
+  // ID datové schránky (7 chars). Public, so plain text; prefills the yearly přehled for ČSSZ.
+  dataBoxId: varchar("data_box_id", { length: 7 }),
   bankAccountSwift: varchar("bank_account_swift", { length: 11 }),
   defaultDueDays: integer("default_due_days").notNull().default(14),
   defaultPaymentMethod: paymentMethodEnum("default_payment_method").notNull().default("bank_transfer"),

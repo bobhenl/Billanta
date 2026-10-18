@@ -9,7 +9,7 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeVatBreakdown, type InvoiceVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { type AccountingBasis, computeAnnualSummary, type FlatRate } from "./annual-summary";
-import { getCnbRate } from "./cnb-rates";
+import { eurCrossRate, getCnbRate } from "./cnb-rates";
 import { ReportRates } from "./uniform-rate";
 import {
   generateDphDp3,
@@ -658,9 +658,27 @@ export class ExportsService {
   async annualSummary(
     db: Db,
     year: number,
-    opts: { vatPayer: boolean; flatRate: FlatRate | null; paidSocial?: number; paidHealth?: number; basis?: AccountingBasis; rates?: ReportRates },
+    opts: {
+      vatPayer: boolean;
+      flatRate: FlatRate | null;
+      paidSocial?: number;
+      paidHealth?: number;
+      basis?: AccountingBasis;
+      rates?: ReportRates;
+      /** EUR for a Slovak company: its income and expenses are summed in euros. */
+      homeCurrency?: "CZK" | "EUR";
+    },
   ) {
     const rates = opts.rates ?? new ReportRates(false, []);
+    const eur = opts.homeCurrency === "EUR";
+    // A Slovak company counts in euros. Other currencies go through the ČNB
+    // cross rate of the day (CZK per unit / CZK per euro): close to the ECB
+    // rate Slovak law asks for (§ 24 zákona č. 431/2002 Z. z.), and the app
+    // has no ECB feed. The jednotný kurz is a Czech rule, so it is not used.
+    const toHome = async (currency: string, stored: number | null, day: Date): Promise<number | null> => {
+      if (eur) return eurCrossRate(currency, day);
+      return (await rates.rate(currency, stored, day, year)) ?? (await getCnbRate(currency, day));
+    };
     const from = new Date(year, 0, 1);
     const to = new Date(year + 1, 0, 1);
     const accrual = opts.basis === "accrual";
@@ -692,7 +710,7 @@ export class ExportsService {
       );
       const amount = opts.vatPayer ? totals.totalWithoutVat : totals.totalWithVat;
       const rateDay = (accrual ? (invoice.taxableSupplyDate ?? invoice.issueDate) : invoice.paidAt) ?? invoice.createdAt;
-      const rate = (await rates.rate(invoice.currency, Number(invoice.exchangeRate) || null, rateDay, year)) ?? (await getCnbRate(invoice.currency, rateDay));
+      const rate = await toHome(invoice.currency, Number(invoice.exchangeRate) || null, rateDay);
       if (rate == null) {
         missingRates++;
         continue;
@@ -707,7 +725,7 @@ export class ExportsService {
       .where(and(sql`${paidOn} >= ${from.toISOString()}`, sql`${paidOn} < ${to.toISOString()}`));
     let actualExpenses = 0;
     for (const e of expenses) {
-      const rate = (await rates.rate(e.currency, Number(e.exchangeRate) || null, e.paidAt ?? e.expenseDate, year)) ?? (await getCnbRate(e.currency, e.paidAt ?? e.expenseDate));
+      const rate = await toHome(e.currency, Number(e.exchangeRate) || null, e.paidAt ?? e.expenseDate);
       if (rate == null) {
         missingRates++;
         continue;
@@ -721,7 +739,8 @@ export class ExportsService {
       vatPayer: opts.vatPayer,
       basis: opts.basis ?? "cash",
       /** Which rate converted foreign documents: their own, or the year's jednotný kurz. */
-      rateMode: rates.annual ? ("annual" as const) : ("daily" as const),
+      rateMode: rates.annual && !eur ? ("annual" as const) : ("daily" as const),
+      currency: eur ? ("EUR" as const) : ("CZK" as const),
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
     };
   }

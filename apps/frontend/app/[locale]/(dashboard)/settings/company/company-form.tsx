@@ -36,6 +36,7 @@ const FIELDS = {
   phone: 'phone',
   website: 'website',
   registryNote: 'registry_note',
+  dataBoxId: 'data_box_id',
   bankAccountNumber: 'bank_account_number',
   bankAccountBankCode: 'bank_account_bank_code',
   bankAccountIban: 'bank_account_iban',
@@ -129,6 +130,7 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
       }
       const raw = values[key].trim();
       if (key === 'dic' || key === 'bankAccountIban' || key === 'bankAccountSwift') patch[FIELDS[key]] = raw ? raw.toUpperCase() : null;
+      else if (key === 'dataBoxId') patch[FIELDS[key]] = raw ? raw.toLowerCase() : null;
       else patch[FIELDS[key]] = raw || (REQUIRED.includes(key) ? raw : null);
     }
     // The backend replaces the whole list, so send every period whenever one changed.
@@ -317,6 +319,7 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
           {field('phone', t('phone'), { type: 'tel', maxLength: 32 })}
           {field('website', t('website'), { maxLength: 200, placeholder: 'https://' })}
           {field('registryNote', t('registryNote'), { maxLength: 500, placeholder: t('registryNotePlaceholder') }, '', t('registryNoteHint'))}
+          {field('dataBoxId', t('dataBoxId'), { maxLength: 7, pattern: '[A-Za-z0-9]{7}', autoComplete: 'off' }, '', t('dataBoxIdHint'))}
         </div>
       </Section>
 

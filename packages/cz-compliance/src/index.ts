@@ -24,3 +24,5 @@ export * from './legislation-datasets.js';
 export * from './vat-payer-check.js';
 export * from './reverse-charge-codes.js';
 export * from './flat-tax-comparison.js';
+export * from './cz-offices.js';
+export * from './sk-szco-annual.js';

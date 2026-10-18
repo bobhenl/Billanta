@@ -29,6 +29,8 @@ const CZ_ONLY = ['cs', 'en'] as const;
 
 export const CALCULATORS = [
   { slug: 'self-employed-tax', key: 'osvc', icon: Calculator, locales: CZ_ONLY },
+  // Slovak rules, so unlike the Czech one it is published in Slovak too.
+  { slug: 'slovak-self-employed-tax', key: 'szco', icon: Calculator, locales: ALL },
   { slug: 'flat-tax', key: 'flatTax', icon: Scale, locales: CZ_ONLY },
   { slug: 'vat', key: 'vat', icon: Percent, locales: ALL },
   { slug: 'minimum-advances', key: 'minimums', icon: Wallet, locales: ALL },

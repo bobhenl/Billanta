@@ -52,8 +52,8 @@ export function ToolHeader({
   );
 }
 
-/** "Orientační výpočet" box with the year the constants apply to. */
-export async function ToolDisclaimer({ validity }: { validity?: string }) {
+/** "Orientační výpočet" box with the year the constants apply to; `text` replaces the generic caveat. */
+export async function ToolDisclaimer({ validity, text }: { validity?: string; text?: string }) {
   const t = await getTranslations('tools.common');
   return (
     <aside className="flex gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
@@ -61,7 +61,7 @@ export async function ToolDisclaimer({ validity }: { validity?: string }) {
       <div>
         <p className="font-semibold">{t('disclaimerTitle')}</p>
         {validity && <p className="mt-1 font-medium">{validity}</p>}
-        <p className="mt-1 leading-relaxed text-muted-foreground">{t('disclaimer')}</p>
+        <p className="mt-1 leading-relaxed text-muted-foreground">{text ?? t('disclaimer')}</p>
       </div>
     </aside>
   );
@@ -194,13 +194,17 @@ export function HowList({ title, items }: { title: string; items: string[] }) {
  * What the sk URL of a Czech-rules page shows instead of a Slovak
  * translation (the page itself is noindex,follow, see toolPageMetadata).
  */
-export async function CzOnlyNotice({ name, path }: { name: string; path: string }) {
+/**
+ * `skAlternative` is a page about the same thing under Slovak rules: then
+ * the notice says so and links there as well.
+ */
+export async function CzOnlyNotice({ name, path, skAlternative }: { name: string; path: string; skAlternative?: { href: string; name: string } }) {
   const t = await getTranslations('tools.common');
   return (
     <section className="container max-w-2xl py-16">
       <div className="rounded-2xl border border-border bg-card p-6">
         <h1 className="text-2xl font-semibold tracking-tight">{t('czOnlyTitle')}</h1>
-        <p className="mt-3 text-muted-foreground">{t('czOnlyText', { name })}</p>
+        <p className="mt-3 text-muted-foreground">{t(skAlternative ? 'czOnlyTextAlt' : 'czOnlyText', { name })}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href={path}
@@ -210,6 +214,15 @@ export async function CzOnlyNotice({ name, path }: { name: string; path: string 
           >
             {t('czOnlyCs')}
           </Link>
+          {skAlternative && (
+            <Link
+              href={skAlternative.href}
+              className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-semibold hover:border-primary/40 hover:text-primary"
+            >
+              {skAlternative.name}
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          )}
           <a
             href="https://www.financnasprava.sk/"
             target="_blank"

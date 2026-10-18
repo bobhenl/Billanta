@@ -38,24 +38,88 @@ const HEALTH_ROWS = ['profit', 'baseFromProfit', 'minBase', 'base', 'premium', '
 const HEALTH_STRONG = new Set(['premium', 'balance', 'nextAdvance']);
 const ERROR_CODES = ['form_not_published', 'year_not_supported', 'invalid_filings_query'] as const;
 
+/** Office codes looked up from the company address on the server, and the data box from Settings. */
+export interface AnnualFilingsPrefill {
+  taxOffice: number | null;
+  taxWorkplace: number | null;
+  ossz: string | null;
+  dataBox: string | null;
+}
+
+const REMEMBER_KEY = 'billanta.filings.person';
+type Remembered = { birthNumber?: string; variableSymbol?: string };
+
+function readRemembered(): Remembered | null {
+  try {
+    const raw = window.localStorage.getItem(REMEMBER_KEY);
+    const v = raw ? (JSON.parse(raw) as unknown) : null;
+    if (!v || typeof v !== 'object') return null;
+    const o = v as Record<string, unknown>;
+    return {
+      birthNumber: typeof o.birthNumber === 'string' ? o.birthNumber : undefined,
+      variableSymbol: typeof o.variableSymbol === 'string' ? o.variableSymbol : undefined
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeRemembered(v: Remembered | null) {
+  try {
+    if (v) window.localStorage.setItem(REMEMBER_KEY, JSON.stringify(v));
+    else window.localStorage.removeItem(REMEMBER_KEY);
+  } catch {
+    // Storage blocked: the fields still work, they are just not kept.
+  }
+}
+
 /**
  * Roční podání for an OSVČ: the DPFO return (EPO XML), the přehled for ČSSZ
  * (ePortál XML) and the values for the health insurer's own form, all from
  * the year's documents. Personal data for the files is typed here, sent in
- * the POST body and never stored. Filing itself is always the user's step.
+ * the POST body and never stored on the server. Filing itself is always the
+ * user's step.
  */
-export function AnnualFilings() {
+export function AnnualFilings({ prefill }: { prefill: AnnualFilingsPrefill }) {
   const t = useTranslations('settings.exports.filings');
   const locale = useLocale();
   const now = new Date();
-  const [year, setYear] = useState(String(now.getMonth() < 6 ? now.getFullYear() - 1 : now.getFullYear()));
+  // Always the year being filed: the current year's forms only come out the
+  // next January, so defaulting to it in autumn showed two dead buttons.
+  const [year, setYear] = useState(String(now.getFullYear() - 1));
   const [mode, setMode] = useState<(typeof EXPENSE_MODES)[number]>('60');
   const [basis, setBasis] = useState<'cash' | 'accrual'>('cash');
   const [activity, setActivity] = useState<'H' | 'V'>('H');
   const [fromMonth, setFromMonth] = useState('1');
   const [taxAdvances, setTaxAdvances] = useState('');
   const [spouse, setSpouse] = useState(false);
-  const [person, setPerson] = useState({ birthNumber: '', taxOffice: '', taxWorkplace: '', ossz: '', variableSymbol: '', dataBox: '' });
+  const [person, setPerson] = useState({
+    birthNumber: '',
+    taxOffice: prefill.taxOffice == null ? '' : String(prefill.taxOffice),
+    taxWorkplace: prefill.taxWorkplace == null ? '' : String(prefill.taxWorkplace),
+    ossz: prefill.ossz ?? '',
+    variableSymbol: '',
+    dataBox: prefill.dataBox ?? ''
+  });
+  const prefilled = prefill.taxOffice != null || prefill.ossz != null || !!prefill.dataBox;
+  const [remember, setRemember] = useState(false);
+
+  // Rodné číslo and VS ČSSZ are personal data the server never keeps; the
+  // user may opt in to keep them in this browser only. Storage can throw
+  // (private mode, blocked site data), which just means nothing is kept.
+  useEffect(() => {
+    const saved = readRemembered();
+    if (!saved) return;
+    setRemember(true);
+    setPerson((p) => ({ ...p, birthNumber: saved.birthNumber ?? p.birthNumber, variableSymbol: saved.variableSymbol ?? p.variableSymbol }));
+  }, []);
+  useEffect(() => {
+    if (remember) writeRemembered({ birthNumber: person.birthNumber, variableSymbol: person.variableSymbol });
+  }, [remember, person.birthNumber, person.variableSymbol]);
+  const toggleRemember = (on: boolean) => {
+    setRemember(on);
+    if (!on) writeRemembered(null);
+  };
   const [insurer, setInsurer] = useState('111');
   const [data, setData] = useState<Filings | null | undefined>(undefined);
   const [busy, setBusy] = useState<'dpfdp' | 'osvc' | null>(null);
@@ -263,6 +327,7 @@ export function AnnualFilings() {
           <details className="mt-5 rounded-lg border border-border p-3 text-sm print:hidden">
             <summary className="cursor-pointer font-semibold">{t('personTitle')}</summary>
             <p className="mt-2 text-xs text-muted-foreground">{t('personHint')}</p>
+            {prefilled && <p className="mt-1 text-xs text-muted-foreground">{t('person.prefilled')}</p>}
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {personField('birthNumber', { hint: t('person.birthNumberHint') })}
               {personField('taxOffice', { hint: t('person.taxOfficeHint'), inputMode: 'numeric' })}
@@ -270,17 +335,21 @@ export function AnnualFilings() {
               {personField('ossz', { hint: t('person.osszHint'), inputMode: 'numeric' })}
               {personField('variableSymbol', { hint: t('person.variableSymbolHint'), inputMode: 'numeric' })}
               {personField('dataBox')}
+              <label className="flex items-center gap-2 sm:col-span-2">
+                <input type="checkbox" checked={remember} onChange={(e) => toggleRemember(e.target.checked)} />
+                <InfoHint hint={t('person.rememberHint')}>{t('person.remember')}</InfoHint>
+              </label>
             </div>
           </details>
 
           <div className="mt-4 flex flex-wrap items-center gap-3 print:hidden">
             <button type="button" className={button} disabled={!data.forms.dpfdp || busy != null} onClick={() => download('dpfdp')}>
               <Download className="h-4 w-4" />
-              {data.forms.dpfdp ? t('downloadDpfdp', { form: data.forms.dpfdp }) : t('dpfdpMissing')}
+              {data.forms.dpfdp ? t('downloadDpfdp', { form: data.forms.dpfdp }) : t('dpfdpMissing', { year: data.year, next: data.year + 1 })}
             </button>
             <button type="button" className={button} disabled={!data.forms.cssz || !data.cssz.insured || busy != null} onClick={() => download('osvc')}>
               <Download className="h-4 w-4" />
-              {data.forms.cssz ? t('downloadCssz') : t('csszMissing')}
+              {data.forms.cssz ? t('downloadCssz') : t('csszMissing', { year: data.year, next: data.year + 1 })}
             </button>
             <button type="button" className={button} onClick={() => window.print()}>
               <Printer className="h-4 w-4" />
