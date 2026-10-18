@@ -6851,19 +6851,18 @@
         "fx": {
           "name": "Převodník kurzů ČNB",
           "title": "Kurzy ČNB a převodník měn",
-          "description": "Aktuální kurzy devizového trhu ČNB a převod mezi korunou a cizí měnou. Pro přepočet faktur v cizí měně.",
+          "description": "Aktuální kurzy devizového trhu ČNB a převod mezi korunou a cizími měnami i mezi dvěma cizími měnami. Pro přepočet faktur v cizí měně.",
           "lead": "ČNB vyhlašuje kurzy každý pracovní den po 14:30. Tyto kurzy se používají i pro přepočet faktur v cizí měně pro účely DPH.",
           "keywords": "kurz čnb kurzovní lístek eur usd přepočet měny faktura v cizí měně",
           "listDate": "Kurzovní lístek ČNB ze dne {date}",
           "unavailable": "Kurzy ČNB se teď nepodařilo načíst. Zkuste to později, nebo je najdete přímo na webu ČNB.",
           "fields": {
             "amount": "Částka",
-            "currency": "Měna",
-            "direction": "Směr",
-            "toCzk": "Cizí měna → Kč",
-            "fromCzk": "Kč → cizí měna"
+            "from": "Z měny",
+            "to": "Na měnu",
+            "swap": "Prohodit měny"
           },
-          "rate": "Kurz: 1 {code} = {rate} Kč",
+          "rate": "Kurz: 1 {from} = {rate} {to}",
           "tableTitle": "Kurzovní lístek",
           "code": "Kód",
           "perUnit": "Kč za 1 jednotku",
@@ -6872,7 +6871,8 @@
             "Kurz vyhlášený v pracovní den po 14:30 platí do vyhlášení dalšího. O víkendu a ve svátek tedy platí poslední vyhlášený.",
             "Pro účetnictví můžete místo denního kurzu používat i pevný kurz, pokud to máte ve vnitřní směrnici."
           ],
-          "source": "Zdroj: Česká národní banka"
+          "source": "Zdroj: Česká národní banka",
+          "crossRate": "Křížový kurz přes korunu podle kurzovního lístku ČNB."
         },
         "qrPayment": {
           "name": "Generátor QR platby",

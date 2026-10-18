@@ -6783,19 +6783,18 @@
         "fx": {
           "name": "Prevodník kurzov ČNB",
           "title": "Kurzy ČNB a prevodník mien",
-          "description": "Aktuálne kurzy Českej národnej banky a prevod medzi českou korunou a cudzou menou, napríklad pre faktúry českým odberateľom.",
+          "description": "Aktuálne kurzy Českej národnej banky a prevod medzi ľubovoľnými menami z kurzového lístka vrátane eura a českej koruny, napríklad pre faktúry českým odberateľom.",
           "lead": "ČNB vyhlasuje kurzy každý pracovný deň po 14:30. V Česku sa podľa nich prepočítavajú faktúry v cudzej mene pre DPH. Na Slovensku sa pre DPH používa referenčný kurz ECB.",
           "keywords": "kurz čnb česká koruna czk eur prepočet meny faktúra",
           "listDate": "Kurzový lístok ČNB zo dňa {date}",
           "unavailable": "Kurzy ČNB sa teraz nepodarilo načítať. Skúste to neskôr alebo ich nájdete priamo na webe ČNB.",
           "fields": {
             "amount": "Suma",
-            "currency": "Mena",
-            "direction": "Smer",
-            "toCzk": "Cudzia mena → Kč",
-            "fromCzk": "Kč → cudzia mena"
+            "from": "Z meny",
+            "to": "Na menu",
+            "swap": "Vymeniť meny"
           },
-          "rate": "Kurz: 1 {code} = {rate} Kč",
+          "rate": "Kurz: 1 {from} = {rate} {to}",
           "tableTitle": "Kurzový lístok",
           "code": "Kód",
           "perUnit": "Kč za 1 jednotku",
@@ -6804,7 +6803,8 @@
             "Kurz vyhlásený v pracovný deň po 14:30 platí do vyhlásenia ďalšieho, cez víkend a sviatky teda platí posledný vyhlásený.",
             "Slovenskí platitelia DPH používajú referenčný kurz ECB, nie kurz ČNB."
           ],
-          "source": "Zdroj: Česká národná banka"
+          "source": "Zdroj: Česká národná banka",
+          "crossRate": "Krížový kurz cez českú korunu podľa kurzového lístka ČNB."
         },
         "qrPayment": {
           "name": "Generátor QR platby (CZ)",

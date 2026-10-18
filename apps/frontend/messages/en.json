@@ -6850,19 +6850,18 @@
         "fx": {
           "name": "ČNB exchange rate converter",
           "title": "ČNB exchange rates and currency converter",
-          "description": "Today's Czech National Bank (ČNB) exchange rates and conversion between CZK and foreign currencies, for invoices in a foreign currency.",
+          "description": "Today's Czech National Bank (ČNB) exchange rates and conversion between any two currencies on the list, CZK included, for invoices in a foreign currency.",
           "lead": "The ČNB publishes rates every working day after 14:30. Czech VAT uses these rates to convert foreign-currency invoices.",
           "keywords": "cnb exchange rate czk eur usd convert currency foreign invoice",
           "listDate": "ČNB rate list of {date}",
           "unavailable": "We could not load the ČNB rates right now. Try again later or look them up on the ČNB website.",
           "fields": {
             "amount": "Amount",
-            "currency": "Currency",
-            "direction": "Direction",
-            "toCzk": "Foreign currency → CZK",
-            "fromCzk": "CZK → foreign currency"
+            "from": "From",
+            "to": "To",
+            "swap": "Swap currencies"
           },
-          "rate": "Rate: 1 {code} = CZK {rate}",
+          "rate": "Rate: 1 {from} = {rate} {to}",
           "tableTitle": "Rate list",
           "code": "Code",
           "perUnit": "CZK per 1 unit",
@@ -6871,7 +6870,8 @@
             "A rate published on a working day after 14:30 stays valid until the next one. On weekends and public holidays the last published rate applies.",
             "For accounting you can use a fixed rate instead of the daily one if your internal rules say so."
           ],
-          "source": "Source: Czech National Bank"
+          "source": "Source: Czech National Bank",
+          "crossRate": "Cross rate through CZK, from the ČNB rate list."
         },
         "qrPayment": {
           "name": "QR payment generator",
