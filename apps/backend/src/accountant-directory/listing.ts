@@ -71,7 +71,7 @@ export const saveListingSchema = z
 export type SaveListingInput = z.input<typeof saveListingSchema>;
 export type ListingValues = z.output<typeof saveListingSchema>;
 
-export interface PublicListingRow {
+export type PublicListingRow = {
   id: string;
   display_name: string;
   bio: string | null;
@@ -83,7 +83,7 @@ export interface PublicListingRow {
   contact_email: string | null;
   website: string | null;
   profile_slug: string | null;
-}
+};
 
 export interface PublicListing {
   id: string;
