@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { CheckCircle2, Loader2, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { BuyerFields, buyerForSubmit, buyerInputClass, emptyBuyer, type BuyerFieldsValue } from '@/components/buyer-fields';
@@ -25,19 +25,23 @@ export function ProfileOrderForm({
   companyName,
   services,
   customItemsAllowed,
-  currency,
-  initialServiceId
+  currency
 }: {
   slug: string;
   companyName: string;
   services: Service[];
   customItemsAllowed: boolean;
   currency: string;
-  initialServiceId: string | null;
 }) {
   const t = useTranslations('publicProfile.order');
   const locale = useLocale();
-  const [serviceId, setServiceId] = useState<string>(() => (initialServiceId && services.some((s) => s.id === initialServiceId) ? initialServiceId : (services[0]?.id ?? '')));
+  const [serviceId, setServiceId] = useState<string>(services[0]?.id ?? '');
+  // `?service=<id>` (the owner's shareable link) is read here and not on the
+  // server, so the profile page stays static and cacheable.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('service');
+    if (id && services.some((s) => s.id === id)) setServiceId(id);
+  }, [services]);
   const [quantity, setQuantity] = useState('1');
   const [items, setItems] = useState<{ description: string; quantity: string }[]>([]);
   const [buyer, setBuyer] = useState<BuyerFieldsValue>(() => emptyBuyer());

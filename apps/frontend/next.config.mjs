@@ -29,6 +29,8 @@ const backendUrl = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Caddy already strips `Server`; no reason to announce the framework either.
+  poweredByHeader: false,
   // Standalone output traces the minimal server + node_modules needed to run
   // `node server.js` — lets apps/frontend/Dockerfile copy just that into a
   // slim runtime stage instead of the whole node_modules tree.
