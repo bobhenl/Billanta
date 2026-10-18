@@ -49,6 +49,8 @@ export interface AuthenticatedUser {
   role: DashboardRole | "service";
   /** Per-area overrides of the role's defaults (`tenant_memberships.permissions`), see permissions.ts. */
   permissions?: unknown;
+  /** The dashboard session passed the two-factor check (JWT `mfa` claim). Unset for API keys and the AI service. */
+  twoFactor?: boolean;
 }
 
 export interface TenantScopedRequest extends Request {
@@ -155,7 +157,7 @@ export class TenantContextMiddleware implements NestMiddleware {
       if (identity.scope === AI_SERVICE_SCOPE) {
         await this.handleServiceRequest(req, res, next, identity.sub, identity.email);
       } else {
-        await this.handleDashboardUserRequest(req, res, next, identity.sub, identity.email);
+        await this.handleDashboardUserRequest(req, res, next, identity.sub, identity.email, identity.twoFactor === true);
       }
     } catch (err) {
       next(err as Error);
@@ -211,6 +213,7 @@ export class TenantContextMiddleware implements NestMiddleware {
     next: NextFunction,
     userId: string,
     email: string,
+    twoFactor: boolean,
   ): Promise<void> {
     const tenantIdHeader = req.headers["x-tenant-id"];
     const candidateTenantId = Array.isArray(tenantIdHeader) ? tenantIdHeader[0] : tenantIdHeader;
@@ -248,7 +251,7 @@ export class TenantContextMiddleware implements NestMiddleware {
         );
       }
 
-      req.user = { id: userId, email, tenantId: candidateTenantId, role: membership.role, permissions: membership.permissions };
+      req.user = { id: userId, email, tenantId: candidateTenantId, role: membership.role, permissions: membership.permissions, twoFactor };
       req.tenantDb = membershipDb;
 
       await new Promise<void>((resolve, reject) => {

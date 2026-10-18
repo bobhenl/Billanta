@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Calculator, Globe2, Percent, Scale, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, Globe2, Landmark, Percent, QrCode, Scale, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -32,7 +32,13 @@ export const CALCULATORS = [
   { slug: 'flat-tax', key: 'flatTax', icon: Scale, locales: CZ_ONLY },
   { slug: 'vat', key: 'vat', icon: Percent, locales: ALL },
   { slug: 'minimum-advances', key: 'minimums', icon: Wallet, locales: ALL },
-  { slug: 'cnb-exchange-rates', key: 'fx', icon: ArrowLeftRight, locales: ALL }
+  { slug: 'cnb-exchange-rates', key: 'fx', icon: ArrowLeftRight, locales: ALL },
+  // Invoice helpers. QR Platba, ARES and the domestic account format are Czech;
+  // the due date knows Slovak holidays too.
+  { slug: 'qr-payment', key: 'qrPayment', icon: QrCode, locales: CZ_ONLY },
+  { slug: 'company-lookup', key: 'companyLookup', icon: Building2, locales: CZ_ONLY },
+  { slug: 'iban', key: 'iban', icon: Landmark, locales: CZ_ONLY },
+  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL }
 ] as const satisfies readonly PublicTool[];
 
 export const GUIDES = [

@@ -39,7 +39,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // independently authorised by the backend JWT; this is the UI gate.)
   const session = await auth();
   if (!session?.user) {
-    redirect({ href: '/login', locale: await getLocale() });
+    return redirect({ href: '/login', locale: await getLocale() });
+  }
+  if (session.twoFactor === 'pending') {
+    redirect({ href: '/two-factor', locale: await getLocale() });
   }
 
   const tApp = await getTranslations('app');

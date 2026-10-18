@@ -133,7 +133,7 @@ export function BackupDestinationsManager({
     const result = await createBackupDestination({ type: 'webhook', webhookUrl, schedule: webhookSchedule });
     setSubmitting(false);
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     const { secret, ...destination } = result.data;
@@ -160,7 +160,7 @@ export function BackupDestinationsManager({
     });
     setAddingSftp(false);
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     const { secret: _secret, ...destination } = result.data;
@@ -189,7 +189,7 @@ export function BackupDestinationsManager({
     const result = await updateBackupDestination(encryptingId, { encryption });
     setSavingEncryption(false);
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     setDestinations((current) =>
@@ -219,7 +219,7 @@ export function BackupDestinationsManager({
     const result = await createBackupDestination({ type: 'local' });
     setAddingLocal(false);
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     const { secret: _secret, ...destination } = result.data;
@@ -251,7 +251,7 @@ export function BackupDestinationsManager({
   async function handleSchedule(destination: BackupDestinationListItem, schedule: BackupSchedule) {
     const result = await updateBackupDestination(destination.id, { schedule });
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     setDestinations((current) => current.map((d) => (d.id === destination.id ? { ...d, schedule } : d)));
@@ -260,7 +260,7 @@ export function BackupDestinationsManager({
   async function handleToggleActive(destination: BackupDestinationListItem) {
     const result = await updateBackupDestination(destination.id, { isActive: !destination.isActive });
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     setDestinations((current) => current.map((d) => (d.id === destination.id ? { ...d, isActive: !d.isActive } : d)));
@@ -272,7 +272,7 @@ export function BackupDestinationsManager({
     const result = await deleteBackupDestination(id);
     setDeletingId(null);
     if (!result.ok) {
-      toast({ text: result.error, tone: 'err' });
+      toast({ text: result.error === 'two_factor_required' ? t('twoFactorRequired') : result.error, tone: 'err' });
       return;
     }
     setDestinations((current) => current.filter((destination) => destination.id !== id));

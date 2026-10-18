@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { czechAccountToIban, isValidCzechBankAccount, parseCzechBankAccount } from '../bank-account-validator.js';
+import { czechAccountToIban, ibanToCzechAccount, isValidCzechBankAccount, isValidIban, parseCzechBankAccount } from '../bank-account-validator.js';
 
 /**
  * Checksum verification notes (weighted mod-11, computed by hand / by a small
@@ -116,5 +116,38 @@ describe('czechAccountToIban', () => {
 
   it('returns null for unparsable input', () => {
     expect(czechAccountToIban('garbage')).toBeNull();
+  });
+});
+
+describe('isValidIban', () => {
+  it('accepts valid IBANs with spaces and in lowercase', () => {
+    expect(isValidIban('CZ65 0800 0000 1920 0014 5399')).toBe(true);
+    expect(isValidIban('cz6508000000192000145399')).toBe(true);
+    expect(isValidIban('SK3112000000198742637541')).toBe(true);
+    expect(isValidIban('DE89370400440532013000')).toBe(true);
+  });
+
+  it('rejects a wrong check digit, a wrong length or junk', () => {
+    expect(isValidIban('CZ6608000000192000145399')).toBe(false);
+    expect(isValidIban('CZ650800000019200014539')).toBe(false);
+    expect(isValidIban('19-2000145399/0800')).toBe(false);
+    expect(isValidIban('')).toBe(false);
+  });
+
+  it('round-trips with czechAccountToIban', () => {
+    expect(isValidIban(czechAccountToIban('19-2000145399/0800')!)).toBe(true);
+    expect(isValidIban(czechAccountToIban('2400123456/2010')!)).toBe(true);
+  });
+});
+
+describe('ibanToCzechAccount', () => {
+  it('returns the domestic form with and without a prefix', () => {
+    expect(ibanToCzechAccount('CZ65 0800 0000 1920 0014 5399')).toBe('19-2000145399/0800');
+    expect(ibanToCzechAccount(czechAccountToIban('2400123456/2010')!)).toBe('2400123456/2010');
+    expect(ibanToCzechAccount('SK3112000000198742637541')).toBe('19-8742637541/1200');
+  });
+
+  it('returns null for other countries', () => {
+    expect(ibanToCzechAccount('DE89370400440532013000')).toBeNull();
   });
 });

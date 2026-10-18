@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { TwoFactorGuard } from "../auth/two-factor.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BackupDestinationsService } from "./backup-destinations.service";
 import { CreateBackupDestinationDto } from "./dto/create-backup-destination.dto";
@@ -38,6 +39,7 @@ export class BackupDestinationsController {
   ) {}
 
   @Post()
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({
     summary: "Create a webhook backup destination",
     description:
@@ -75,6 +77,7 @@ export class BackupDestinationsController {
    * first is the conventional, unambiguous way to write this regardless.
    */
   @Get("google-drive/authorize")
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({
     summary: "Start the Google Drive OAuth consent flow for backup exports",
     description:
@@ -91,6 +94,7 @@ export class BackupDestinationsController {
   }
 
   @Patch(":id")
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({
     summary: "Update a backup destination",
     description: "Patchable fields: schedule, isActive, webhookUrl, googleDriveFolderId.",

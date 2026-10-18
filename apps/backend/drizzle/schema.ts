@@ -271,6 +271,12 @@ export const users = pgTable(
     name: text("name"),
     emailVerified: timestamp("email_verified", { withTimezone: true }),
     image: text("image"),
+    // Two-factor sign-in, managed by the frontend (apps/frontend/lib/two-factor.ts).
+    // The secret is AES-GCM encrypted; recovery codes are SHA-256 hashes.
+    totpSecret: text("totp_secret"),
+    totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
+    totpRecoveryCodes: text("totp_recovery_codes").array(),
+    totpLastStep: integer("totp_last_step"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -325,6 +331,10 @@ export const sessions = pgTable("sessions", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { withTimezone: true }).notNull(),
+  // A user with 2FA on starts every session pending; entering a code clears
+  // it and stamps two_factor_at (migration 0045).
+  twoFactorPending: boolean("two_factor_pending").notNull().default(false),
+  twoFactorAt: timestamp("two_factor_at", { withTimezone: true }),
 });
 
 export const verificationTokens = pgTable(

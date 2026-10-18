@@ -20,6 +20,11 @@ export interface BackendJwtPayload {
    * this claim.
    */
   scope?: string;
+  /**
+   * `mfa: true` when the dashboard session behind this token passed the
+   * two-factor check. Sensitive endpoints require it (`TwoFactorGuard`).
+   */
+  twoFactor?: boolean;
 }
 
 /**
@@ -65,5 +70,6 @@ export function verifyBearerToken(
     sub: record.sub,
     email: record.email,
     scope: typeof record.scope === "string" ? record.scope : undefined,
+    twoFactor: record.mfa === true,
   };
 }

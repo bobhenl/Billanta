@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { Banner } from '@/components/banner';
+import { TwoFactorNotice } from '@/components/two-factor-notice';
 import {
   BackupDestinationsManager,
   type BackupDestinationListItem
@@ -59,6 +60,8 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
         <Banner tone="err" className="mt-4">
           {params.error === 'google_drive_unavailable'
             ? t('connectGoogleDrive.unavailable')
+            : params.error === 'two_factor_required'
+            ? t('twoFactorRequired')
             : t('connectGoogleDrive.errorBanner', { error: params.error })}
         </Banner>
       )}
@@ -69,6 +72,7 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
       )}
       {state === 'error' && <Banner tone="err" title={t('loadError')} className="mt-4" />}
 
+      {state === 'ok' && <TwoFactorNotice className="mt-4" />}
       {state === 'ok' && <BackupDestinationsManager initialDestinations={destinations} />}
 
       <p className="mt-4 text-xs text-muted-foreground">{t('docsHint')}</p>

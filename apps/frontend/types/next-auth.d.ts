@@ -1,15 +1,11 @@
 /**
  * Module augmentation for Auth.js v5's `Session` type.
  *
- * By default, `@auth/core`'s built-in `session` callback for the database
- * strategy (see `../auth.ts`'s top-of-file doc comment on
- * `session: { strategy: "database" }`) deliberately strips the session down
- * to `{ user: { name, email, image }, expires }` — `user.id` is NOT
- * included unless a custom `session` callback puts it there. `auth.ts` adds
- * exactly that (see its `callbacks.session`), so this augmentation makes
- * the resulting `session.user.id` visible to TypeScript everywhere `auth()`
- * is called — most importantly `lib/api-client.ts`, which needs the raw
- * user id to mint a backend JWT (`lib/backend-token.ts`'s `sub` claim).
+ * `auth.ts`'s `callbacks.session` builds the session itself (see the comment
+ * there), adding `user.id`, which `lib/api-client.ts` needs to mint a
+ * backend JWT (`lib/backend-token.ts`'s `sub` claim), and `twoFactor`:
+ * `pending` until the sign-in code is entered, `verified` after, `off` for
+ * users without two-factor sign-in.
  */
 import type { DefaultSession } from "next-auth";
 
@@ -18,5 +14,6 @@ declare module "next-auth" {
     user: {
       id: string;
     } & DefaultSession["user"];
+    twoFactor: "pending" | "verified" | "off";
   }
 }

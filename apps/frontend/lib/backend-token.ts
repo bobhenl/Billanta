@@ -39,6 +39,8 @@ function getSecretKey(): Uint8Array {
 export interface BackendTokenSubject {
   id: string;
   email: string;
+  /** The session passed two-factor sign-in; becomes the `mfa` claim the backend's `TwoFactorGuard` checks. */
+  twoFactor?: boolean;
 }
 
 /**
@@ -49,7 +51,7 @@ export interface BackendTokenSubject {
  * to matter if leaked.
  */
 export async function mintBackendToken(user: BackendTokenSubject): Promise<string> {
-  return new SignJWT({ email: user.email })
+  return new SignJWT(user.twoFactor ? { email: user.email, mfa: true } : { email: user.email })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
     .setIssuedAt()

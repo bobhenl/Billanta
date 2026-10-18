@@ -980,7 +980,8 @@
         "psd2_no_accounts": "V souhlasu nebyl vybraný žádný účet.",
         "psd2_state_invalid": "Odkaz z banky je neplatný nebo už byl použitý. Začněte napojení znovu.",
         "paypal_credentials_invalid": "PayPal odmítl Client ID nebo Secret. Zkontrolujte je a zda nepatří do sandboxu.",
-        "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin)."
+        "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin).",
+        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení."
       },
       "psd2": {
         "hint": "Billanta stahuje nové příchozí platby přímo z banky nebo z PayPalu a sama je páruje s fakturami podle variabilního symbolu a částky. Fio připojíte API tokenem, PayPal údaji své REST aplikace, ostatní banky přes PSD2: přihlásíte se u své banky a udělíte souhlas jen ke čtení účtu (nejvýše na 180 dní, u mnoha bank 90). Banky dovolují jen pár automatických čtení denně, proto se PSD2 účty stahují zhruba každých 6 hodin. Odchozí platby se nestahují a zaplatit přes napojení nejde nic.",
@@ -1314,7 +1315,8 @@
         "description": "Klíč pošlete v hlavičce Authorization jako bearer token. Příklad výpisu faktur:",
         "docs": "Dokumentace API (Swagger)"
       },
-      "readOnlyBadge": "Jen čtení"
+      "readOnlyBadge": "Jen čtení",
+      "twoFactorRequired": "API klíč lze vytvořit jen s dvoufázovým ověřením."
     },
     "backup": {
       "title": "Zálohování dat",
@@ -1423,7 +1425,8 @@
         "saved": "Šifrování uloženo.",
         "badgeKey": "Šifrováno klíčem",
         "badgePassphrase": "Šifrováno heslem"
-      }
+      },
+      "twoFactorRequired": "Cíl zálohy lze připojit jen s dvoufázovým ověřením."
     },
     "ai": {
       "title": "AI",
@@ -1560,6 +1563,10 @@
         "referrals": {
           "title": "Pozvat a získat kredity",
           "description": "Odkaz pro známé a klienty, kredity a platba tarifu kredity."
+        },
+        "security": {
+          "title": "Zabezpečení",
+          "description": "Dvoufázové ověření a záložní kódy"
         }
       }
     },
@@ -2378,7 +2385,8 @@
         "https_only": "Adresa webhooku musí začínat https://.",
         "private_host": "Adresa webhooku musí vést na veřejný server, ne do vnitřní sítě.",
         "invalid_url": "Adresa webhooku není platná.",
-        "too_many": "Najednou jde mít nejvýš 10 webhooků."
+        "too_many": "Najednou jde mít nejvýš 10 webhooků.",
+        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení."
       },
       "feed": {
         "title": "Kalendář a RSS",
@@ -2811,6 +2819,42 @@
         "pattern_clash": "Tento formát už používá jiný typ dokladu. Každý typ potřebuje vlastní.",
         "next_number_too_low": "Další číslo je nižší než poslední použité a v tomto období už doklady existují."
       }
+    },
+    "security": {
+      "title": "Zabezpečení",
+      "description": "Dvoufázové ověření a ochrana účtu.",
+      "usedRecovery": "Přihlásili jste se záložním kódem. {n, plural, one {Zbývá # kód} few {Zbývají # kódy} other {Zbývá # kódů}} – zvažte vygenerování nových.",
+      "twoFactorTitle": "Dvoufázové ověření (2FA)",
+      "statusOn": "Zapnuto · {n, plural, one {# záložní kód} few {# záložní kódy} other {# záložních kódů}}",
+      "statusOff": "Vypnuto",
+      "why": "Kromě hesla budete při přihlášení zadávat kód z aplikace (Google Authenticator, 1Password, Authy…). Bez 2FA nejde připojit banku, vytvořit API klíč, webhook ani zálohy.",
+      "enable": "Zapnout dvoufázové ověření",
+      "step1": "Nainstalujte si autentizační aplikaci.",
+      "step2": "Naskenujte QR kód nebo opište klíč ručně.",
+      "step3": "Zadejte šestimístný kód, který aplikace ukazuje.",
+      "manualKey": "Klíč pro ruční zadání:",
+      "qrAlt": "QR kód pro autentizační aplikaci",
+      "codeLabel": "Kód z aplikace nebo záložní kód",
+      "codeLabelApp": "Kód z autentizační aplikace",
+      "confirm": "Potvrdit a zapnout",
+      "cancel": "Zrušit",
+      "regenerate": "Nové záložní kódy",
+      "disable": "Vypnout 2FA",
+      "codesTitle": "Záložní kódy",
+      "codesHint": "Uložte si je na bezpečné místo. Každý kód lze použít jen jednou, když nebudete mít telefon. Znovu je už neuvidíte.",
+      "copy": "Kopírovat",
+      "copied": "Kódy zkopírovány",
+      "codesSaved": "Mám uloženo",
+      "enabledToast": "Dvoufázové ověření je zapnuté",
+      "disabledToast": "Dvoufázové ověření je vypnuté",
+      "errors": {
+        "generic": "Něco se pokazilo. Zkuste to znovu.",
+        "invalid_code": "Kód nesedí. Zkuste to znovu.",
+        "rate_limited": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+        "already_enabled": "Dvoufázové ověření už je zapnuté.",
+        "not_enabled": "Dvoufázové ověření není zapnuté.",
+        "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
+      }
     }
   },
   "billing": {
@@ -2876,6 +2920,19 @@
       "goToLogin": "Přejít na přihlášení",
       "requestNewLink": "Vyžádat nový odkaz",
       "rateLimitedError": "Příliš mnoho pokusů. Zkuste to prosím za chvíli."
+    },
+    "twoFactor": {
+      "title": "Dvoufázové ověření",
+      "subtitle": "Přihlašujete se jako {email}. Zadejte šestimístný kód z autentizační aplikace.",
+      "codeLabel": "Ověřovací kód",
+      "recoveryHint": "Nemáte telefon po ruce? Zadejte jeden ze záložních kódů.",
+      "submit": "Ověřit",
+      "cancel": "Zrušit a odhlásit",
+      "errors": {
+        "invalid_code": "Kód nesedí. Zkontrolujte čas v telefonu a zkuste to znovu.",
+        "rate_limited": "Příliš mnoho pokusů. Zkuste to za pár minut.",
+        "not_signed_in": "Přihlášení vypršelo. Přihlaste se znovu."
+      }
     }
   },
   "legal": {
@@ -6261,7 +6318,7 @@
     "menu": {
       "resources": "Zdroje",
       "calculators": "Kalkulačky",
-      "calculatorsHint": "Daň, pojištění, DPH a kurzy zdarma",
+      "calculatorsHint": "Daně, DPH, QR platba, IČO a splatnost",
       "guides": "Návody",
       "guidesHint": "Jak podat DPH a hlášení",
       "compare": "Srovnání s konkurencí"
@@ -6298,11 +6355,14 @@
       "lastChecked": "Informace jsme naposledy ověřili {date}.",
       "officialSource": "Závazné informace a formuláře najdete na webu Finanční správy",
       "guideDisclaimer": "Návod shrnuje základní pravidla a nenahrazuje účetní ani daňového poradce. Zákon a formuláře se mění, proto si podrobnosti ověřte na webu Finanční správy.",
-      "updated": "Aktualizováno"
+      "updated": "Aktualizováno",
+      "invoiceCtaTitle": "Potřebujete z toho rovnou fakturu?",
+      "invoiceCtaText": "Vystavte fakturu s QR platbou, údaji z ARES a správnou splatností bez registrace. S účtem v Billantě se vám faktury uloží, pohlídáte úhrady a pošlete podklady účetní.",
+      "invoiceCtaButton": "Vystavit fakturu zdarma"
     },
     "calculators": {
-      "indexTitle": "Kalkulačky pro podnikatele",
-      "indexDescription": "Bezplatné kalkulačky pro OSVČ a firmy: daň a pojištění, paušální daň, DPH, minimální zálohy a kurzy ČNB. Bez registrace.",
+      "indexTitle": "Kalkulačky a nástroje pro podnikatele",
+      "indexDescription": "Bezplatné nástroje pro OSVČ a firmy: daň a pojištění, DPH, kurzy ČNB, QR platba, vyhledání firmy podle IČO, převod na IBAN a splatnost faktury.",
       "indexLead": "Rychlé orientační výpočty, které nepotřebují žádná vaše data. Čísla zadáte ručně a nic se neukládá.",
       "items": {
         "osvc": {
@@ -6459,6 +6519,129 @@
             "Pro účetnictví můžete místo denního kurzu používat i pevný kurz, pokud to máte ve vnitřní směrnici."
           ],
           "source": "Zdroj: Česká národní banka"
+        },
+        "qrPayment": {
+          "name": "Generátor QR platby",
+          "title": "Generátor QR platby zdarma (SPAYD)",
+          "description": "Vytvořte QR kód pro platbu z čísla účtu nebo IBANu, částky a variabilního symbolu. Stáhnete ho jako PNG, nic se neukládá.",
+          "lead": "Vyplňte účet a částku, QR kód se vykreslí hned. Plátce ho naskenuje v bankovní aplikaci a platba se mu předvyplní.",
+          "keywords": "qr platba generátor qr kód pro platbu spayd qr kód na fakturu převod banka variabilní symbol",
+          "fields": {
+            "account": "Číslo účtu nebo IBAN",
+            "accountHint": "Například 19-2000145399/0800 nebo CZ65 0800 0000 1920 0014 5399.",
+            "amount": "Částka",
+            "currency": "Měna",
+            "vs": "Variabilní symbol",
+            "vsHint": "Nejvýš 10 číslic, obvykle číslo faktury.",
+            "message": "Zpráva pro příjemce"
+          },
+          "result": {
+            "alt": "QR kód pro platbu",
+            "download": "Stáhnout PNG",
+            "spayd": "Zobrazit zakódovaný text",
+            "empty": "Po zadání platného účtu se tu objeví QR kód."
+          },
+          "errors": {
+            "invalidAccount": "Číslo účtu nesedí. Zkontrolujte předčíslí, číslo i kód banky za lomítkem.",
+            "invalidIban": "IBAN nemá správný tvar nebo kontrolní číslice."
+          },
+          "how": [
+            "QR kód je ve formátu QR Platba (SPAYD) České bankovní asociace, který čtou všechny české bankovní aplikace.",
+            "Domácí číslo účtu převedeme na IBAN a obě části ověříme kontrolním součtem, takže překlep odhalíte dřív, než kód pošlete.",
+            "Kód se vytváří ve vašem prohlížeči. Číslo účtu ani částka se nikam neodesílají.",
+            "Platbu v eurech použijte jen u eurového účtu. Slovenské banky místo QR Platby používají formát PAY by square."
+          ],
+          "howTitle": "Jak to funguje"
+        },
+        "companyLookup": {
+          "name": "Vyhledání firmy podle IČO",
+          "title": "Vyhledání firmy podle IČO v ARES",
+          "description": "Zadejte IČO a zjistěte název firmy, DIČ a sídlo z registru ARES. Údaje rovnou použijete na fakturu.",
+          "lead": "Stačí osm číslic IČO. Údaje bereme z ARES, veřejného registru Ministerstva financí.",
+          "keywords": "ares ičo vyhledat firmu podle ičo dič sídlo firmy obchodní rejstřík živnostenský rejstřík odběratel",
+          "fields": {
+            "ico": "IČO",
+            "icoHint": "Osm číslic. Kratší IČO doplníme nulami zleva.",
+            "search": "Vyhledat",
+            "searching": "Hledám…"
+          },
+          "result": {
+            "ico": "IČO",
+            "dic": "DIČ",
+            "noDic": "v ARES neuvedeno",
+            "address": "Sídlo",
+            "source": "Zdroj: ARES, Ministerstvo financí ČR.",
+            "invoice": "Vystavit fakturu této firmě",
+            "empty": "Zadejte IČO a výsledek se ukáže tady."
+          },
+          "errors": {
+            "invalid": "IČO má mít nejvýš 8 číslic.",
+            "notFound": "Firmu s tímto IČO jsme v ARES nenašli.",
+            "busy": "ARES teď neodpovídá nebo jste hledali příliš často. Zkuste to za chvíli."
+          },
+          "how": [
+            "Hledáme jen v českém registru ARES. Slovenské firmy najdete v registru právnických osob (RPO).",
+            "DIČ v ARES neříká, jestli je firma plátce DPH. To ověříte v registru plátců DPH na webu Finanční správy.",
+            "V Billantě se odběratel podle IČO doplní sám přímo na faktuře."
+          ],
+          "howTitle": "Jak to funguje"
+        },
+        "iban": {
+          "name": "Převod čísla účtu na IBAN",
+          "title": "Převod čísla účtu na IBAN a kontrola účtu",
+          "description": "Převeďte české číslo účtu na IBAN nebo IBAN zpět na číslo účtu. Nástroj zároveň ověří kontrolní součet.",
+          "lead": "Napište domácí číslo účtu nebo IBAN. Nástroj pozná, co jste zadali, a ukáže druhý tvar.",
+          "keywords": "převod na iban iban kalkulačka číslo účtu na iban kontrola čísla účtu kód banky předčíslí",
+          "fields": {
+            "input": "Číslo účtu nebo IBAN",
+            "inputHint": "Například 19-2000145399/0800 nebo CZ65 0800 0000 1920 0014 5399."
+          },
+          "result": {
+            "valid": "Číslo je platné",
+            "invalidAccount": "Číslo účtu neprošlo kontrolním součtem",
+            "invalidIban": "IBAN neprošel kontrolou",
+            "domestic": "Číslo účtu",
+            "bankCode": "Kód banky",
+            "foreign": "Jde o zahraniční IBAN, domácí tvar pro něj neexistuje.",
+            "empty": "Zadejte číslo účtu nebo IBAN."
+          },
+          "how": [
+            "Český IBAN má 24 znaků: CZ, dvě kontrolní číslice, kód banky, předčíslí na 6 míst a číslo účtu na 10 míst.",
+            "Předčíslí i číslo účtu mají vlastní kontrolní součet (modulo 11), IBAN ještě jeden navíc (modulo 97).",
+            "Platné číslo znamená, že účet může existovat. Jestli je otevřený a čí je, kontrola neřekne."
+          ],
+          "howTitle": "Jak to funguje"
+        },
+        "dueDate": {
+          "name": "Kalkulačka splatnosti faktury",
+          "title": "Kalkulačka splatnosti faktury",
+          "description": "Spočítejte datum splatnosti faktury z data vystavení a počtu dní. Upozorníme na víkend i státní svátek v Česku a na Slovensku.",
+          "lead": "Vyberte datum vystavení a splatnost ve dnech. Uvidíte přesné datum a jestli nepřipadá na víkend nebo svátek.",
+          "keywords": "datum splatnosti faktury splatnost 14 dní 30 dní pracovní dny státní svátky víkend kalkulačka",
+          "fields": {
+            "country": "Svátky podle",
+            "issued": "Datum vystavení",
+            "term": "Splatnost",
+            "days": "{n, plural, one {# den} few {# dny} other {# dní}}"
+          },
+          "countries": {
+            "CZ": "Česko",
+            "SK": "Slovensko"
+          },
+          "result": {
+            "due": "Datum splatnosti",
+            "holiday": "Připadá na státní svátek: {name}.",
+            "weekend": "Připadá na víkend.",
+            "nextWorking": "Aby nebylo sporu, kdy je faktura po splatnosti, dejte raději nejbližší pracovní den: {date}.",
+            "working": "Je to pracovní den.",
+            "empty": "Zadejte datum vystavení."
+          },
+          "how": [
+            "Splatnost se počítá v kalendářních dnech od data vystavení, víkendy a svátky se nepřeskakují.",
+            "Svátky počítáme pro každý rok zvlášť, včetně Velkého pátku a Velikonočního pondělí.",
+            "Mezi podnikateli lze splatnost delší než 60 dní sjednat jen výslovně a jen tehdy, když není vůči věřiteli hrubě nespravedlivá (§ 1963 občanského zákoníku)."
+          ],
+          "howTitle": "Jak to funguje"
         }
       }
     },
@@ -6766,6 +6949,13 @@
         "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
         "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
       ]
+    }
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Vyžaduje dvoufázové ověření",
+      "body": "Kvůli přístupu k penězům a datům jde nové připojení vytvořit jen s dvoufázovým ověřením. Stávající připojení fungují dál.",
+      "cta": "Zapnout 2FA"
     }
   }
 }

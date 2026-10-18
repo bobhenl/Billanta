@@ -20,6 +20,7 @@ const BCRYPT_COST_FACTOR = 12;
 
 async function currentUserId(): Promise<string | null> {
   const session = await auth();
+  if (session?.twoFactor === 'pending') return null;
   return session?.user?.id ?? null;
 }
 
@@ -127,7 +128,7 @@ export async function requestEmailChange(password: string, newEmailRaw: string, 
 export async function deleteAccount(password: string, confirmEmail: string): Promise<ProfileResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId || !session.user?.email) return { ok: false, error: 'not_signed_in' };
+  if (!userId || !session.user?.email || session.twoFactor === 'pending') return { ok: false, error: 'not_signed_in' };
 
   const me = await verifyPassword(userId, password);
   if (!me) return { ok: false, error: 'not_signed_in' };

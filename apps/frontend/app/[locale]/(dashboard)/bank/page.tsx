@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { TRANSACTION_STATUSES, type BankTransaction, type TransactionStatus } from '@/lib/bank-ui';
@@ -105,6 +106,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
         ))}
       </div>
 
+      <TwoFactorNotice className="mt-6" />
       <BankConnections connections={connections} psd2={psd2} />
 
       <div className="mt-5 flex flex-wrap items-center gap-2">

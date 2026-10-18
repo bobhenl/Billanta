@@ -980,7 +980,8 @@
         "psd2_no_accounts": "No account was selected in the consent.",
         "psd2_state_invalid": "The link from the bank is invalid or already used. Start the connection again.",
         "paypal_credentials_invalid": "PayPal rejected the Client ID or Secret. Check them, and whether they belong to the sandbox.",
-        "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply)."
+        "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply).",
+        "two_factor_required": "Turn on two-factor authentication in Settings → Security first."
       },
       "psd2": {
         "hint": "Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Fio connects with an API token, PayPal with your REST app credentials, other banks over PSD2: you sign in at your bank and grant read-only access to the account (up to 180 days, 90 at many banks). Banks allow only a few unattended reads a day, so PSD2 accounts are synced about every 6 hours. Outgoing payments are not downloaded and nothing can be paid through the connection.",
@@ -1314,7 +1315,8 @@
         "description": "Send the key in the Authorization header as a bearer token. Example listing invoices:",
         "docs": "API documentation (Swagger)"
       },
-      "readOnlyBadge": "Read-only"
+      "readOnlyBadge": "Read-only",
+      "twoFactorRequired": "API keys can only be created with two-factor authentication."
     },
     "backup": {
       "title": "Backup destinations",
@@ -1423,7 +1425,8 @@
         "saved": "Encryption saved.",
         "badgeKey": "Encrypted with key",
         "badgePassphrase": "Encrypted with passphrase"
-      }
+      },
+      "twoFactorRequired": "Backup destinations can only be connected with two-factor authentication."
     },
     "ai": {
       "title": "AI",
@@ -1560,6 +1563,10 @@
         "referrals": {
           "title": "Invite and earn credits",
           "description": "A link for friends and clients, credits, and paying your plan with them."
+        },
+        "security": {
+          "title": "Security",
+          "description": "Two-factor authentication and recovery codes"
         }
       }
     },
@@ -2378,7 +2385,8 @@
         "https_only": "The webhook URL must start with https://.",
         "private_host": "The webhook URL must point to a public server, not an internal network.",
         "invalid_url": "The webhook URL is not valid.",
-        "too_many": "You can have at most 10 webhooks."
+        "too_many": "You can have at most 10 webhooks.",
+        "two_factor_required": "Turn on two-factor authentication in Settings → Security first."
       },
       "feed": {
         "title": "Calendar & RSS",
@@ -2811,6 +2819,42 @@
         "pattern_clash": "Another document type already uses this format. Each type needs its own.",
         "next_number_too_low": "The next number is lower than the last one used, and documents already exist in this period."
       }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Two-factor authentication and account protection.",
+      "usedRecovery": "You signed in with a recovery code. {n, plural, one {# code left} other {# codes left}} — consider generating new ones.",
+      "twoFactorTitle": "Two-factor authentication (2FA)",
+      "statusOn": "On · {n, plural, one {# recovery code} other {# recovery codes}}",
+      "statusOff": "Off",
+      "why": "Besides your password, you'll enter a code from an app (Google Authenticator, 1Password, Authy…) when signing in. Without 2FA you can't connect a bank, create API keys, webhooks or backups.",
+      "enable": "Turn on two-factor authentication",
+      "step1": "Install an authenticator app.",
+      "step2": "Scan the QR code or type the key in manually.",
+      "step3": "Enter the six-digit code the app shows.",
+      "manualKey": "Key for manual entry:",
+      "qrAlt": "QR code for your authenticator app",
+      "codeLabel": "App code or recovery code",
+      "codeLabelApp": "Code from your authenticator app",
+      "confirm": "Confirm and turn on",
+      "cancel": "Cancel",
+      "regenerate": "New recovery codes",
+      "disable": "Turn off 2FA",
+      "codesTitle": "Recovery codes",
+      "codesHint": "Store them somewhere safe. Each code works once, for when you don't have your phone. You won't see them again.",
+      "copy": "Copy",
+      "copied": "Codes copied",
+      "codesSaved": "I've saved them",
+      "enabledToast": "Two-factor authentication is on",
+      "disabledToast": "Two-factor authentication is off",
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "invalid_code": "That code doesn't match. Try again.",
+        "rate_limited": "Too many attempts. Try again in a few minutes.",
+        "already_enabled": "Two-factor authentication is already on.",
+        "not_enabled": "Two-factor authentication isn't on.",
+        "not_signed_in": "Your sign-in expired. Please sign in again."
+      }
     }
   },
   "billing": {
@@ -2876,6 +2920,19 @@
       "goToLogin": "Go to login",
       "requestNewLink": "Request a new reset link",
       "rateLimitedError": "Too many attempts. Please try again in a moment."
+    },
+    "twoFactor": {
+      "title": "Two-factor authentication",
+      "subtitle": "Signing in as {email}. Enter the six-digit code from your authenticator app.",
+      "codeLabel": "Verification code",
+      "recoveryHint": "No phone at hand? Enter one of your recovery codes.",
+      "submit": "Verify",
+      "cancel": "Cancel and sign out",
+      "errors": {
+        "invalid_code": "That code doesn't match. Check your phone's clock and try again.",
+        "rate_limited": "Too many attempts. Try again in a few minutes.",
+        "not_signed_in": "Your sign-in expired. Please sign in again."
+      }
     }
   },
   "legal": {
@@ -6260,7 +6317,7 @@
     "menu": {
       "resources": "Resources",
       "calculators": "Calculators",
-      "calculatorsHint": "Free tax, insurance, VAT and FX tools",
+      "calculatorsHint": "Tax, VAT, QR payment, company lookup, due dates",
       "guides": "Guides",
       "guidesHint": "How to file Czech VAT returns",
       "compare": "Compare with competitors"
@@ -6297,11 +6354,14 @@
       "lastChecked": "We last checked this information on {date}.",
       "officialSource": "Binding information and forms are on the Czech Financial Administration website",
       "guideDisclaimer": "This guide sums up the basic rules and does not replace an accountant or tax adviser. The law and the forms change, so check the details on the Financial Administration website.",
-      "updated": "Updated"
+      "updated": "Updated",
+      "invoiceCtaTitle": "Need an invoice out of this?",
+      "invoiceCtaText": "Issue an invoice with a QR payment code, company details from ARES and the right due date, no account needed. With a Billanta account your invoices are saved, payments are tracked and your accountant gets the records.",
+      "invoiceCtaButton": "Create a free invoice"
     },
     "calculators": {
-      "indexTitle": "Calculators for small businesses",
-      "indexDescription": "Free calculators for Czech sole traders and companies: income tax and insurance, flat-rate tax, VAT, minimum advances and ČNB exchange rates. No sign-up.",
+      "indexTitle": "Calculators and tools for businesses",
+      "indexDescription": "Free tools for Czech freelancers and companies: tax and insurance, VAT, ČNB rates, QR payment codes, company lookup by IČO, IBAN conversion and invoice due dates.",
       "indexLead": "Quick rough calculations that need none of your data. You type the numbers in and nothing is stored.",
       "items": {
         "osvc": {
@@ -6458,6 +6518,129 @@
             "For accounting you can use a fixed rate instead of the daily one if your internal rules say so."
           ],
           "source": "Source: Czech National Bank"
+        },
+        "qrPayment": {
+          "name": "QR payment generator",
+          "title": "Czech QR payment code generator",
+          "description": "Create a Czech QR Platba code from an account number or IBAN, an amount and a variable symbol. Download it as PNG; nothing is stored.",
+          "lead": "Enter the account and amount and the code appears straight away. The payer scans it in their banking app and the transfer is filled in.",
+          "keywords": "qr platba generator czech qr payment code spayd invoice bank transfer variable symbol",
+          "fields": {
+            "account": "Account number or IBAN",
+            "accountHint": "For example 19-2000145399/0800 or CZ65 0800 0000 1920 0014 5399.",
+            "amount": "Amount",
+            "currency": "Currency",
+            "vs": "Variable symbol",
+            "vsHint": "Up to 10 digits, usually the invoice number.",
+            "message": "Message for the recipient"
+          },
+          "result": {
+            "alt": "QR payment code",
+            "download": "Download PNG",
+            "spayd": "Show the encoded text",
+            "empty": "The QR code appears here once the account is valid."
+          },
+          "errors": {
+            "invalidAccount": "The account number does not check out. Look at the prefix, the number and the bank code after the slash.",
+            "invalidIban": "The IBAN has the wrong shape or check digits."
+          },
+          "how": [
+            "The code uses QR Platba (SPAYD), the Czech Banking Association format every Czech banking app reads.",
+            "A domestic account number is converted to an IBAN and both parts are checksummed, so a typo shows up before you send the code.",
+            "The code is made in your browser. The account and amount are not sent anywhere.",
+            "Use euros only for a euro account. Slovak banks use the PAY by square format instead of QR Platba."
+          ],
+          "howTitle": "How it works"
+        },
+        "companyLookup": {
+          "name": "Company lookup by IČO",
+          "title": "Czech company lookup by IČO (ARES)",
+          "description": "Enter a company ID (IČO) to get the name, VAT number (DIČ) and registered address from the Czech ARES registry.",
+          "lead": "Eight digits are enough. The data comes from ARES, the public registry of the Czech Ministry of Finance.",
+          "keywords": "ares ičo czech company lookup company id vat number dič registered address",
+          "fields": {
+            "ico": "IČO (company ID)",
+            "icoHint": "Eight digits. A shorter IČO is padded with zeros.",
+            "search": "Look up",
+            "searching": "Looking up…"
+          },
+          "result": {
+            "ico": "IČO",
+            "dic": "DIČ",
+            "noDic": "not listed in ARES",
+            "address": "Registered address",
+            "source": "Source: ARES, Czech Ministry of Finance.",
+            "invoice": "Invoice this company",
+            "empty": "Enter an IČO and the result shows here."
+          },
+          "errors": {
+            "invalid": "An IČO has at most 8 digits.",
+            "notFound": "No company with this IČO in ARES.",
+            "busy": "ARES is not answering or you searched too often. Try again in a moment."
+          },
+          "how": [
+            "Only the Czech ARES registry is searched. Slovak companies are in the Slovak register of legal entities (RPO).",
+            "A DIČ in ARES does not say whether the company is VAT-registered. Check that in the VAT payer register of the Czech Financial Administration.",
+            "In Billanta the customer is filled in from the IČO right on the invoice."
+          ],
+          "howTitle": "How it works"
+        },
+        "iban": {
+          "name": "Account number to IBAN",
+          "title": "Czech account number to IBAN converter",
+          "description": "Convert a Czech account number to IBAN or an IBAN back to the domestic form, with the checksums verified.",
+          "lead": "Type a domestic account number or an IBAN. The tool tells which one it is and shows the other form.",
+          "keywords": "iban converter czech account number to iban bank code prefix account check",
+          "fields": {
+            "input": "Account number or IBAN",
+            "inputHint": "For example 19-2000145399/0800 or CZ65 0800 0000 1920 0014 5399."
+          },
+          "result": {
+            "valid": "The number is valid",
+            "invalidAccount": "The account number fails its checksum",
+            "invalidIban": "The IBAN fails its check",
+            "domestic": "Account number",
+            "bankCode": "Bank code",
+            "foreign": "This is a foreign IBAN; it has no Czech domestic form.",
+            "empty": "Enter an account number or IBAN."
+          },
+          "how": [
+            "A Czech IBAN has 24 characters: CZ, two check digits, the bank code, a 6-digit prefix and a 10-digit account number.",
+            "The prefix and the number each have a mod-11 checksum, and the IBAN adds a mod-97 one.",
+            "Valid means the account can exist. Whether it is open, and whose it is, no checksum can tell."
+          ],
+          "howTitle": "How it works"
+        },
+        "dueDate": {
+          "name": "Invoice due date calculator",
+          "title": "Invoice due date calculator",
+          "description": "Work out an invoice due date from the issue date and the payment term, with weekends and Czech and Slovak public holidays flagged.",
+          "lead": "Pick the issue date and the term in days. You see the exact date and whether it falls on a weekend or holiday.",
+          "keywords": "invoice due date calculator payment terms 14 days 30 days working days public holidays czech slovak",
+          "fields": {
+            "country": "Holidays of",
+            "issued": "Issue date",
+            "term": "Payment term",
+            "days": "{n, plural, one {# day} other {# days}}"
+          },
+          "countries": {
+            "CZ": "Czechia",
+            "SK": "Slovakia"
+          },
+          "result": {
+            "due": "Due date",
+            "holiday": "It falls on a public holiday: {name}.",
+            "weekend": "It falls on a weekend.",
+            "nextWorking": "To avoid any doubt about when the invoice is overdue, use the next working day instead: {date}.",
+            "working": "It is a working day.",
+            "empty": "Enter the issue date."
+          },
+          "how": [
+            "The term runs in calendar days from the issue date; weekends and holidays are not skipped.",
+            "Holidays are worked out for each year, Good Friday and Easter Monday included.",
+            "Between businesses, Czech and Slovak law allow a term over 60 days only when it is expressly agreed and not grossly unfair to the creditor."
+          ],
+          "howTitle": "How it works"
         }
       }
     },
@@ -6765,6 +6948,13 @@
         "An invite counts for companies created with your link within the last 30 days.",
         "You can’t invite your own company or one you are already a member of."
       ]
+    }
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Two-factor authentication required",
+      "body": "Because this gives access to money and data, new connections can only be added with two-factor authentication. Existing connections keep working.",
+      "cta": "Turn on 2FA"
     }
   }
 }

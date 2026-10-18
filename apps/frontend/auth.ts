@@ -78,8 +78,19 @@ export function hashSessionToken(token: string): string {
  */
 const adapter: typeof drizzleAdapter = {
   ...drizzleAdapter,
+  // Every way in (password and OAuth alike) ends here, so this is where a
+  // user with two-factor sign-in gets a session that still waits for a code.
   async createSession(session) {
-    const created = await drizzleAdapter.createSession!({ ...session, sessionToken: hashSessionToken(session.sessionToken) });
+    const [owner] = await db
+      .select({ totpEnabledAt: authSchema.users.totpEnabledAt })
+      .from(authSchema.users)
+      .where(eq(authSchema.users.id, session.userId))
+      .limit(1);
+    const created = await drizzleAdapter.createSession!({
+      ...session,
+      sessionToken: hashSessionToken(session.sessionToken),
+      twoFactorPending: Boolean(owner?.totpEnabledAt),
+    } as typeof session);
     return { ...created, sessionToken: session.sessionToken };
   },
   async getSessionAndUser(sessionToken) {
@@ -225,18 +236,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...oauthProviders(),
   ],
   callbacks: {
-    // `@auth/core`'s default `session` callback for the database strategy
-    // deliberately narrows the session down to `{ name, email, image }` —
-    // it never forwards `user.id`. Server-side backend calls
-    // (`lib/api-client.ts`, via `lib/backend-token.ts`) need that raw id to
-    // mint the backend JWT's `sub` claim, so it's added back here. See
-    // `types/next-auth.d.ts` for the matching `Session.user.id` type
-    // augmentation.
+    // Builds the session from scratch rather than returning what Auth.js
+    // passes in: that object is the whole `sessions` row (raw session token
+    // included) plus the whole `users` row (password hash, TOTP secret), and
+    // whatever this returns is also served to the browser by
+    // `/api/auth/session`. `user.id` is needed to mint the backend JWT
+    // (`lib/backend-token.ts`); `twoFactor` drives the code prompt. See
+    // `types/next-auth.d.ts` for the matching type augmentation.
     session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-      }
-      return session;
+      const row = session as unknown as { twoFactorPending?: boolean; twoFactorAt?: Date | null };
+      const fullUser = user as typeof user & { totpEnabledAt?: Date | null };
+      const twoFactor = row.twoFactorPending ? "pending" : fullUser.totpEnabledAt && row.twoFactorAt ? "verified" : "off";
+      return {
+        user: { id: user.id, name: user.name ?? null, email: user.email, image: user.image ?? null },
+        expires: session.expires.toISOString?.() ?? session.expires,
+        twoFactor,
+      } as typeof session;
     },
     // See this file's top-of-file doc comment. For a Credentials sign-in
     // Auth.js runs this callback and then writes `jwt.encode(token)` into

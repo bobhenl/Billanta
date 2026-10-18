@@ -15,6 +15,7 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { TwoFactorGuard } from "../auth/two-factor.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankConnectionsService } from "./bank-connections.service";
 import { CompletePsd2Dto, CreateBankConnectionDto, CreatePaypalDto, StartPsd2Dto, UpdateBankConnectionDto } from "./dto/bank-connection.dto";
@@ -40,6 +41,7 @@ export class BankConnectionsController {
   }
 
   @Post()
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({ summary: "Connect a Fio account with a read-only API token" })
   create(@Req() req: TenantScopedRequest, @Body() dto: CreateBankConnectionDto) {
     requireRole(req, ["owner", "admin"]);
@@ -47,6 +49,7 @@ export class BankConnectionsController {
   }
 
   @Post("paypal")
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({ summary: "Connect a PayPal account with REST app credentials (Transaction Search)" })
   createPaypal(@Req() req: TenantScopedRequest, @Body() dto: CreatePaypalDto) {
     requireRole(req, ["owner", "admin"]);
@@ -66,6 +69,7 @@ export class BankConnectionsController {
   }
 
   @Post("psd2/start")
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({ summary: "Start PSD2 consent at the bank; returns the bank URL to redirect the user to" })
   psd2Start(@Req() req: TenantScopedRequest, @Body() dto: StartPsd2Dto) {
     requireRole(req, ["owner", "admin"]);
@@ -73,6 +77,7 @@ export class BankConnectionsController {
   }
 
   @Post("psd2/complete")
+  @UseGuards(TwoFactorGuard)
   @ApiOperation({ summary: "Finish PSD2 consent with the code the bank returned" })
   psd2Complete(@Req() req: TenantScopedRequest, @Body() dto: CompletePsd2Dto) {
     requireRole(req, ["owner", "admin"]);

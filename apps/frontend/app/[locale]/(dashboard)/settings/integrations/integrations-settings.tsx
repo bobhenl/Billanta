@@ -70,7 +70,7 @@ export function IntegrationsSettings({ initial, siteUrl }: { initial: Integratio
         setSaved(JSON.stringify(next));
         toast({ text: t('saved'), tone: 'ok' });
       } else {
-        const known = ['https_only', 'private_host', 'invalid_url', 'too_many'];
+        const known = ['https_only', 'private_host', 'invalid_url', 'too_many', 'two_factor_required'];
         toast({ text: known.includes(r.error) ? t(`errors.${r.error}`) : `${t('saveFailed')}: ${r.error}`, tone: 'err' });
       }
     });
