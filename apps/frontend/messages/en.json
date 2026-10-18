@@ -8545,5 +8545,44 @@
       "buttonView": "Demo as {role}"
     },
     "signOutAndStart": "Sign out and open the demo"
+  },
+  "schoolLessons": {
+    "hubName": "For schools",
+    "indexName": "Lessons",
+    "indexTitle": "Ready-to-teach invoicing lessons for business schools",
+    "indexMetaTitle": "Invoicing lessons for secondary schools – ready lessons with worksheets",
+    "indexLead": "Nine 45-minute lessons on Czech invoicing and VAT: goals, teacher notes, a task in the no-signup demo and a worksheet with answers. Free, for print or the projector.",
+    "indexMeta": "Ready-to-teach 45-minute lessons on Czech invoicing and VAT for business schools: invoice details, tax point, VAT rates, credit notes, advances, reverse charge, reminders and the flat-rate tax. Worksheets with answers.",
+    "howTitle": "How the lessons work",
+    "how": [
+      "Each lesson has goals, a lesson plan, an explanation of the key terms with links to the exact provisions, and notes for the teacher.",
+      "Students work through a step-by-step task in the Billanta demo. The demo needs no signup or e-mail, and every student gets their own company with sample data.",
+      "Print the worksheet in the student version (without answers) or for yourself with the answers."
+    ],
+    "rvpNote": "The lessons fit the economics and accounting content of the Czech framework curricula (RVP) for business academies. How they map to years and subjects is up to the school.",
+    "lawBasis": "The lessons follow Czech law. Links to the legislation lead to the Czech texts.",
+    "minutes": "{n} min",
+    "lessonNumber": "Lesson {n}",
+    "openLesson": "Open lesson",
+    "allLessons": "All lessons",
+    "goals": "Lesson goals",
+    "timeline": "Lesson plan",
+    "teacherNotes": "Teacher notes",
+    "concepts": "Key concepts",
+    "task": "Demo task",
+    "check": "Done when",
+    "worksheet": "Worksheet",
+    "worksheetName": "Name and class:",
+    "answer": "Answer for the teacher",
+    "law": "Legislation",
+    "lawNote": "Links lead to the current consolidated Czech texts on zakonyprolidi.cz.",
+    "tools": "Related guides and calculators",
+    "demoCta": "Open the demo",
+    "demoPick": "In the demo pick the company \"{kind}\". No signup needed.",
+    "teacherOnly": "Teacher only – hidden in the student printout.",
+    "printStudent": "Print for students",
+    "printTeacher": "Print with answers",
+    "checked": "We last checked the legal references on {date}. Laws change, so check the current wording before the lesson. The lessons are for teaching and are not tax advice.",
+    "skAlternative": "Slovak self-employed tax calculator"
   }
 }

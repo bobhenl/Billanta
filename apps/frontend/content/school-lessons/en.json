@@ -1,0 +1,1147 @@
+{
+  "invoice-essentials": {
+    "name": "What an invoice must contain",
+    "title": "What a Czech invoice must contain and why",
+    "lead": "Students learn the required details of an invoice under three Czech laws – the VAT Act, the Accounting Act and the Civil Code – and find them on a real document in the demo.",
+    "metaDescription": "Ready-to-teach business school lesson: required invoice details under § 29 of the Czech VAT Act, § 11 of the Accounting Act and § 435 of the Civil Code. Demo task and worksheet with answers.",
+    "goals": [
+      "List the required details of a tax document under § 29(1) of the VAT Act.",
+      "Tell what a VAT payer puts on an invoice and what a non-payer does.",
+      "Explain why a company invoice must show its entry in the Commercial Register.",
+      "Spot a missing or wrong detail on a sample invoice."
+    ],
+    "teacherNotes": [
+      "Three laws look at an invoice: the VAT Act (tax document, payers only), the Accounting Act (accounting document) and the Civil Code (business document). Drawing them on the board as three overlapping circles helps.",
+      "A non-payer does not issue a tax document. Their invoice still has to meet § 11 of the Accounting Act and § 435 of the Civil Code. The law does not require the words \"Not a VAT payer\", but they are good practice and save questions.",
+      "In the app an invoice gets its number only when it is issued; a draft has none. A good discussion question: why must the number series have no gaps or duplicates?",
+      "A simplified tax document (up to CZK 10,000, § 30 and § 30a) is worth a mention. Students know it from receipts."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Hook: show two invoices, one without the customer's VAT number. Who spots the difference and why does it matter?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: three laws and what they require, payer vs non-payer."
+      },
+      {
+        "min": "15–35",
+        "text": "Demo task: take apart a finished invoice and issue a new one."
+      },
+      {
+        "min": "35–43",
+        "text": "Worksheet in pairs."
+      },
+      {
+        "min": "43–45",
+        "text": "Summary and answer check."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Tax document (VAT payer)",
+        "body": "Under § 29(1) of the VAT Act it contains: supplier and customer details, both VAT numbers (DIČ), the document number, the scope and subject of the supply, the issue date, the date of the taxable supply (if it differs from the issue date), the unit price without VAT and any discount, the tax base, the VAT rate and the VAT amount in Czech crowns. It must be issued within 15 days (§ 28(8))."
+      },
+      {
+        "title": "Accounting document",
+        "body": "Under § 11 of the Accounting Act every accounting document has a designation, the content of the transaction and its parties, the amount (or unit price and quantity), when it was made, when the transaction took place (if different) and the signature record of the responsible people."
+      },
+      {
+        "title": "Business document",
+        "body": "Under § 435 of the Civil Code every business shows on its business documents its name and registered office, its company ID (IČO) if it has one, and its entry in a public register including the section and file number. A sole trader who is not in the Commercial Register states their entry in another register, typically the Trade Register."
+      },
+      {
+        "title": "Simplified tax document",
+        "body": "Up to CZK 10,000 in total a payer may issue a simplified document (§ 30). It may leave out the customer's details, the unit price, the tax base and the VAT amount; without the VAT amount it must state the total (§ 30a)."
+      }
+    ],
+    "task": {
+      "intro": "You work as an accounting assistant at Lipová stezka s.r.o., a VAT-registered company from Brno. First you check a finished invoice, then you issue a new one.",
+      "steps": [
+        "In the menu open Invoices and click any paid invoice.",
+        "On the preview find all twelve details from § 29(1) and tick them off in the worksheet table. For each, note where it is on the document.",
+        "Find the Commercial Register entry (file number). Which law requires it?",
+        "Click New invoice. Pick a customer marked Verified in ARES and add two lines: Consultation, 2 hours at CZK 1,200, and Licence, 1 piece at CZK 5,000.",
+        "Look at the Tax point date field. If you leave it empty, the issue date is used. Why does the law allow that? (Hint: § 29(1)(h).)",
+        "Click Save draft and then Issue. Before issuing, the app checks the required details. If it reports anything, write down what and fix it.",
+        "Download the PDF and compare it with your table from step 2."
+      ],
+      "check": "Done when the student has an issued invoice with a number and every detail from § 29(1) ticked off in the table, with where it appears on the document."
+    },
+    "worksheet": [
+      {
+        "q": "Name at least eight required details of a tax document.",
+        "a": "Supplier details, supplier VAT number, customer details, customer VAT number, document number, scope and subject of the supply, issue date, date of the taxable supply, unit price without VAT and discount, tax base, VAT rate, VAT amount in CZK (§ 29(1)(a) to (l))."
+      },
+      {
+        "q": "A non-payer invoices a bicycle repair. Must the invoice show a VAT rate and amount?",
+        "a": "No. A non-payer does not issue a tax document and does not show VAT. The invoice must meet § 11 of the Accounting Act and § 435 of the Civil Code (name, registered office, IČO, register entry)."
+      },
+      {
+        "q": "The date of the taxable supply is missing. When is that fine?",
+        "a": "When it is the same as the issue date (§ 29(1)(h))."
+      },
+      {
+        "q": "Why must an s.r.o. state the section and file number of the Commercial Register on its invoice?",
+        "a": "An invoice is a business document and § 435 of the Civil Code requires the entry in a public register including the section and file number."
+      },
+      {
+        "q": "A payer delivered goods on 3 March. By when must the tax document be issued?",
+        "a": "Within 15 days of the day the obligation to declare the tax arose (§ 28(8)), so by 18 March."
+      },
+      {
+        "q": "A customer paid CZK 7,900 in a payer's e-shop and wants a document. Must it show their name?",
+        "a": "No. Up to CZK 10,000 a simplified tax document may be issued (§ 30), which does not need the customer's details (§ 30a)."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 29 – details of a tax document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p29"
+      },
+      {
+        "label": "VAT Act, § 28 – 15-day deadline (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p28"
+      },
+      {
+        "label": "VAT Act, § 30 and § 30a – simplified tax document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p30a"
+      },
+      {
+        "label": "Accounting Act No. 563/1991 Coll., § 11 – accounting document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      },
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 435 – business document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p435"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Required-details check on invoices",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Company lookup in ARES and other registers",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Company lookup by ID",
+        "href": "/calculators/company-lookup"
+      }
+    ]
+  },
+  "vat-payers-and-registries": {
+    "name": "VAT payers, non-payers and partner checks",
+    "title": "VAT payer, non-payer and checking a business partner in public registers",
+    "lead": "When a Czech business becomes a VAT payer, how that shows on the invoice, and how to check a customer's IČO and VAT number in ARES, the VAT payer register and VIES in a few minutes.",
+    "metaDescription": "Lesson: Czech VAT registration threshold (§ 6 of the VAT Act), payer vs non-payer invoices, checking IČO in ARES, unreliable payers and published bank accounts, VAT numbers in VIES.",
+    "goals": [
+      "Explain when a taxable person becomes a VAT payer (§ 6 of the VAT Act).",
+      "Compare a non-payer's and a payer's invoice and name the differences.",
+      "Check an IČO in ARES and a VAT number in VIES and explain what an unreliable payer is.",
+      "Explain why it pays to check the supplier's published bank account."
+    ],
+    "teacherNotes": [
+      "Since 2025 the threshold is counted per calendar year: a person becomes a payer from 1 January of the year after their turnover exceeded CZK 2,000,000. If turnover exceeds CZK 2,536,500 during the year, they are a payer from the following day (§ 6(1) and (2)). The registration application is due within 10 working days (§ 94(1)).",
+      "Have students work out the threshold on paper from a table of monthly sales. The app tracks the limit, but the point of the lesson is understanding the rule.",
+      "Liability for tax (§ 109) surprises students: a customer may end up paying the supplier's VAT if they pay to an unpublished account or to an unreliable payer. A good chance to show why partners are checked before paying, not after.",
+      "VIES checks VAT numbers for trade within the EU. The Czech VAT payer register shows status in Czechia including published accounts. They are two different tools."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Question for the class: why would anyone register for VAT voluntarily?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: threshold, compulsory registration, what changes on the invoice."
+      },
+      {
+        "min": "15–22",
+        "text": "Threshold calculation on paper (first part of the worksheet)."
+      },
+      {
+        "min": "22–38",
+        "text": "Demo task: a non-payer invoice and checking partners in registers."
+      },
+      {
+        "min": "38–45",
+        "text": "Answer check, summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Registration threshold",
+        "body": "A taxable person established in Czechia becomes a payer from 1 January of the following year if their turnover for the calendar year exceeded CZK 2,000,000 (§ 6(1)). If turnover in the current year exceeds CZK 2,536,500, they are a payer from the next day (§ 6(2)(b))."
+      },
+      {
+        "title": "Non-payer vs payer invoice",
+        "body": "A non-payer does not show a VAT number as a payer, a rate or a VAT amount, and charges no VAT. A payer issues a tax document with tax base, rate and VAT (§ 29). For a customer who is a payer the difference matters: they cannot deduct VAT from a non-payer's invoice."
+      },
+      {
+        "title": "ARES and the VAT payer register",
+        "body": "ARES is the public register of economic entities: it confirms IČO, name, registered office and register entry. The VAT payer register on the Financial Administration website shows whether an entity is a payer, whether it is an unreliable payer (§ 106a) and which bank accounts it has published."
+      },
+      {
+        "title": "Customer liability",
+        "body": "A customer is liable for the supplier's unpaid VAT, among other cases, when at the time of supply they know the supplier is an unreliable payer, or when they pay to an account the supplier has not published (§ 109)."
+      },
+      {
+        "title": "VIES",
+        "body": "The European Commission's system for checking a VAT number in another EU member state. A valid VAT number in VIES is one of the conditions for VAT-free supplies of goods to the EU and for reverse charge on services."
+      }
+    ],
+    "task": {
+      "intro": "You work for Tereza Málková, a self-employed non-payer. The second part of the task you do for a company that is a payer.",
+      "steps": [
+        "Start the demo for Tereza Málková. In Invoices open any issued invoice and download the PDF. Write down which details from § 29(1) are missing and why.",
+        "Open Contacts and click New contact. Type the IČO of any well-known Czech company (you will find it on its website) and click Load from ARES. Compare the loaded details with the company's website.",
+        "Look up the same entity by hand at ares.gov.cz and in the VAT payer register on the Financial Administration website. Is it a payer? Has it published an account? Is it an unreliable payer?",
+        "Go back to /demo and start the demo of a company that is a VAT payer. In Contacts open the German customer Holzwerk Neumann and look at its VAT number status. Check the same number by hand in VIES.",
+        "Compare the payer's invoice with the non-payer's invoice from step 1. Fill in the table of differences in the worksheet."
+      ],
+      "check": "Done when the student has filled in the table of differences and written down the check result (ARES, VAT payer register, VIES) for one Czech and one foreign company, with the date of the check."
+    },
+    "worksheet": [
+      {
+        "q": "A sole trader had turnover of CZK 1,950,000 in 2025. By 31 August 2026 their turnover is CZK 2,100,000. From when are they a payer?",
+        "a": "They did not exceed CZK 2,000,000 in 2025, so they are not a payer from 1 January 2026. In 2026 they exceeded CZK 2,000,000 but not CZK 2,536,500, so they become a payer from 1 January 2027 (§ 6(1)). Had they exceeded CZK 2,536,500 during 2026, they would be a payer from the next day."
+      },
+      {
+        "q": "By when must someone who exceeded the threshold apply for registration?",
+        "a": "Within 10 working days of exceeding it (§ 94(1))."
+      },
+      {
+        "q": "What do you check in ARES and what in the VAT payer register?",
+        "a": "In ARES the entity's identity (IČO, name, registered office, register entry). In the VAT payer register whether it is a payer, whether it is unreliable and which accounts it has published."
+      },
+      {
+        "q": "Why not pay to an account the supplier has not published in the VAT payer register?",
+        "a": "Above the statutory limit the customer would be liable for VAT the supplier does not pay (§ 109)."
+      },
+      {
+        "q": "What is VIES for?",
+        "a": "Checking a VAT number in another EU member state, for example before a VAT-free supply of goods to the EU or before invoicing a service with reverse charge."
+      },
+      {
+        "q": "Must a non-payer show their IČO on the invoice?",
+        "a": "Yes, if they have one (§ 435 of the Civil Code)."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 6 – taxable persons as payers (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p6"
+      },
+      {
+        "label": "VAT Act, § 94 – compulsory registration (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p94"
+      },
+      {
+        "label": "VAT Act, § 106a – unreliable payer (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p106a"
+      },
+      {
+        "label": "VAT Act, § 109 – liability of the recipient (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p109"
+      },
+      {
+        "label": "ARES – register of economic entities",
+        "href": "https://ares.gov.cz/"
+      },
+      {
+        "label": "VIES – EU VAT number check (European Commission)",
+        "href": "https://ec.europa.eu/taxation_customs/vies/"
+      },
+      {
+        "label": "Financial Administration – VAT payer register and other services",
+        "href": "https://financnisprava.gov.cz/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Company lookup by ID",
+        "href": "/calculators/company-lookup"
+      },
+      {
+        "label": "Company lookup in ARES and other registers",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "VAT calculator",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "tax-point-and-due-dates": {
+    "name": "Tax point and due dates",
+    "title": "Date of taxable supply, issue date and due date",
+    "lead": "The three dates on every invoice mean three different things. Students learn to set the tax point (DUZP) for goods and services, count the deadline for issuing and set a sensible due date.",
+    "metaDescription": "Lesson: date of taxable supply under § 21 of the Czech VAT Act, 15-day deadline for the tax document, due dates under § 1963 of the Civil Code. Demo task with weekends and holidays.",
+    "goals": [
+      "Set the date of the taxable supply for goods, services and partial supplies.",
+      "Work out the last day on which a tax document must be issued.",
+      "Explain the default due date between businesses and the 60-day limit under § 1963 of the Civil Code.",
+      "Spot a due date that falls on a weekend or public holiday."
+    ],
+    "teacherNotes": [
+      "Students' most common mistake: mixing up the tax point with the issue date. Show an example where a service ended on 28 April and the invoice is issued on 5 May. The VAT belongs to April.",
+      "For services, the supply takes place on the day it is provided or on the day the tax document is issued, whichever comes first (§ 21(3)). Students often do not know that an early invoice moves the tax point forward.",
+      "The due date is a contract matter, not a tax one. The default rules are in the Civil Code (§ 1963). A due date on a weekend or holiday is in practice moved to the next working day; the app warns about it.",
+      "A non-payer does not have to show the tax point, but the Accounting Act wants the moment of the transaction if it differs from the issue date."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Intro: three dates on an invoice, each for a different reader (tax office, accountant, customer)."
+      },
+      {
+        "min": "5–17",
+        "text": "Explanation: tax point for goods, services and partial supplies, the 15-day deadline, due dates."
+      },
+      {
+        "min": "17–35",
+        "text": "Demo task: three invoices with different dates."
+      },
+      {
+        "min": "35–43",
+        "text": "Worksheet (date calculations)."
+      },
+      {
+        "min": "43–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Tax point for goods",
+        "body": "A supply of goods takes place on the day of delivery (§ 21(1) of the VAT Act)."
+      },
+      {
+        "title": "Tax point for services",
+        "body": "A service is supplied on the day it is provided or on the day the tax document is issued, whichever is earlier (§ 21(3)). Partial and repeated supplies have special rules (§ 21(7) and (8))."
+      },
+      {
+        "title": "Deadline for issuing",
+        "body": "A tax document must be issued within 15 days of the day the obligation to declare the tax arose (§ 28(8))."
+      },
+      {
+        "title": "Due date",
+        "body": "Between businesses, without an agreement the price is due within 30 days of receiving the invoice or of the supply, whichever is later. A term longer than 60 days applies only if expressly agreed and not grossly unfair to the creditor (§ 1963 of the Civil Code)."
+      }
+    ],
+    "task": {
+      "intro": "You invoice for Lipová stezka s.r.o. You create three draft invoices with different dates and see how the app handles them.",
+      "steps": [
+        "Open Invoices and click New invoice. Pick any Czech customer.",
+        "Invoice A (goods): add the line Wooden bench, 1 piece, CZK 8,000. The goods were handed over on the 28th of last month. Set the Tax point date to that day and the issue date to today. Save draft.",
+        "Check whether today's issue date meets the 15-day deadline. If not, write down how many days late the invoice is.",
+        "Invoice B (service): new invoice, line Garden maintenance, 6 hours at CZK 450. The work finishes next week, but you issue the invoice today. Which tax point do you enter and why? Save draft.",
+        "Invoice C (due date): on any invoice set the Due date to the next Saturday. The app shows a warning. Click Move to next working day and write down the new date.",
+        "For fun, set the due date on a public holiday (for example 28 October) and see what the app says."
+      ],
+      "check": "Done when the student has three saved drafts and for each has written down the tax point, issue date and due date with a short reason citing the provision."
+    },
+    "worksheet": [
+      {
+        "q": "A carpenter delivered a table on 12 May and invoiced on 20 May. What is the tax point and by when did the invoice have to be issued?",
+        "a": "The tax point is 12 May (§ 21(1)). The document must be issued within 15 days, so by 27 May at the latest (§ 28(8)). Issuing on 20 May is fine."
+      },
+      {
+        "q": "A designer issues an invoice on 3 June for a logo delivered on 10 June. What is the tax point?",
+        "a": "3 June. For a service it is the day it is provided or the day the document is issued, whichever comes first (§ 21(3))."
+      },
+      {
+        "q": "A contract between two companies sets no due date. The invoice was received on 2 September, the supply took place on 30 August. When is it due?",
+        "a": "Within 30 days of the later of the two, the receipt of the invoice on 2 September, so on 2 October (§ 1963 of the Civil Code)."
+      },
+      {
+        "q": "Can a large customer negotiate 90-day payment terms?",
+        "a": "Only if it is expressly agreed and not grossly unfair to the supplier (§ 1963 of the Civil Code). Otherwise the longer term is disregarded."
+      },
+      {
+        "q": "The due date falls on Sunday 1 November. What do you do?",
+        "a": "Move it to the next working day so the customer can pay on time, or agree on another date. The app warns about weekends."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 21 – date of taxable supply (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p21"
+      },
+      {
+        "label": "VAT Act, § 28 – deadline for issuing a tax document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p28"
+      },
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 1963 – due dates between businesses (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1963"
+      },
+      {
+        "label": "Accounting Act No. 563/1991 Coll., § 11 – moment of the transaction (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Due date calculator",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Required-details check on invoices",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "vat-rates-and-rounding": {
+    "name": "VAT rates and rounding",
+    "title": "VAT rates, calculating the tax and rounding",
+    "lead": "How VAT is calculated from the net price and from the gross price, why an invoice with several rates splits into a VAT summary, and why rounding the total to whole crowns is not part of the tax base.",
+    "metaDescription": "Lesson: Czech VAT rates 21% and 12% (§ 47 of the VAT Act), calculating VAT under § 37, rounding under § 36(5). Demo task with net and gross prices.",
+    "goals": [
+      "Know the current Czech VAT rates and match them to typical examples.",
+      "Calculate VAT from the net amount and from the gross amount.",
+      "Build a VAT summary by rate.",
+      "Explain how rounding the total is treated."
+    ],
+    "teacherNotes": [
+      "Since 2024 Czechia has two rates: the standard 21% and the reduced 12% (§ 47). Let students only browse the annexes listing goods and services at the reduced rate; learning them by heart is pointless.",
+      "Calculating from the gross amount under § 37(b): VAT = gross − gross / 1.21 (or 1.12). The old coefficients no longer apply; older textbooks may still show them.",
+      "The app rounds each line to hellers and the summary adds up the bases per rate. It does not round the total to whole crowns, so do that by hand on paper.",
+      "If the total is rounded to whole crowns, the difference is not part of the tax base (§ 36(5)). A frequent question with cash payments."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Puzzle: how much VAT is in a CZK 59 coffee?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: rates, calculating from net and from gross, the summary."
+      },
+      {
+        "min": "15–33",
+        "text": "Demo task: an invoice with two rates, prices including VAT."
+      },
+      {
+        "min": "33–43",
+        "text": "Worksheet: calculations and rounding."
+      },
+      {
+        "min": "43–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Rates",
+        "body": "The standard rate is 21%, the reduced rate 12% (§ 47 of the VAT Act). Some supplies are exempt (no rate)."
+      },
+      {
+        "title": "From the net amount",
+        "body": "VAT = tax base × rate (§ 37(a)). Example: CZK 1,000 × 21% = CZK 210, total CZK 1,210."
+      },
+      {
+        "title": "From the gross amount",
+        "body": "VAT = gross − gross / 1.21 (reduced rate / 1.12) (§ 37(b)). Example: 1,210 − 1,210 / 1.21 = CZK 210."
+      },
+      {
+        "title": "Rounding",
+        "body": "The total payable may be rounded, but the rounding difference is not part of the tax base (§ 36(5))."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. runs a course with refreshments. You issue an invoice with two lines and check the calculation.",
+      "steps": [
+        "Open Invoices and click New invoice. Pick any Czech customer.",
+        "Add the line Herbal course, 1 piece, CZK 3,500 net, rate 21%.",
+        "Add a line of your choice at the reduced rate of 12% (check the annex of the Act for what qualifies), 1 piece, CZK 480 net.",
+        "Look at the VAT summary below the lines. Recalculate the base, VAT and total on a calculator and compare.",
+        "Turn on I enter prices incl. VAT and change the first line's price to CZK 4,235. What VAT did the app calculate? Check it by calculating from the gross amount.",
+        "Save draft. In the worksheet, round the total to whole crowns and write down the difference and where it belongs."
+      ],
+      "check": "Done when the student's manual summary matches the app to the heller and they can say why rounding is not part of the tax base."
+    },
+    "worksheet": [
+      {
+        "q": "Calculate VAT and the total: tax base CZK 2,450, rate 21%.",
+        "a": "VAT CZK 514.50, total CZK 2,964.50."
+      },
+      {
+        "q": "The gross price is CZK 1,344 at 12%. What are the base and the VAT?",
+        "a": "Base 1,344 / 1.12 = CZK 1,200, VAT CZK 144 (§ 37(b))."
+      },
+      {
+        "q": "An invoice has lines of CZK 1,000 (21%) and CZK 500 (12%). Build the summary.",
+        "a": "21%: base 1,000, VAT 210. 12%: base 500, VAT 60. Total base 1,500, VAT 270, payable CZK 1,770."
+      },
+      {
+        "q": "The total is CZK 2,964.50 and the customer pays cash, so you round to CZK 2,965. Does the tax base change?",
+        "a": "No. The CZK 0.50 rounding difference is not part of the tax base (§ 36(5))."
+      },
+      {
+        "q": "Why is calculating from the gross amount useful?",
+        "a": "When I only know the final price (for example from a consumer price list), I can work out the VAT and the base without anything else."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 47 – VAT rates (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p47"
+      },
+      {
+        "label": "VAT Act, § 37 – calculating the tax (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p37"
+      },
+      {
+        "label": "VAT Act, § 36 – tax base and rounding (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p36"
+      }
+    ],
+    "tools": [
+      {
+        "label": "VAT calculator",
+        "href": "/calculators/vat"
+      },
+      {
+        "label": "Required-details check on invoices",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "advances-and-proforma": {
+    "name": "Advances and proforma invoices",
+    "title": "Proforma invoice, tax document for a received payment and final settlement",
+    "lead": "A proforma invoice is not a tax document. Students go through the whole chain: quote, proforma, payment, tax document for the payment and the final invoice with the advance deducted.",
+    "metaDescription": "Lesson on advances: the proforma as a request for payment, VAT on a received payment (§ 20a of the Czech VAT Act), tax document within 15 days (§ 28), final settlement. Demo and paper task.",
+    "goals": [
+      "Explain the difference between a proforma invoice and a tax document.",
+      "Tell when the obligation to declare VAT arises on a received advance.",
+      "Build a final invoice with the paid advance deducted.",
+      "Turn a quote into a proforma and a proforma into an invoice in the demo."
+    ],
+    "teacherNotes": [
+      "A proforma invoice is only a request for payment. The tax obligation arises not when it is issued but when the payment is received (§ 20a(2)), and only if the supply is specific enough: the goods or service, the rate and the place of supply are known (§ 20a(3)).",
+      "After receiving the payment a payer must issue a tax document for the received payment within 15 days (§ 28(1)(d) and (8)). Billanta does not issue this document yet, so students put it together on paper. Say so openly; it is a good chance to show that software is not the law.",
+      "The final invoice then shows the whole supply and deducts the advance, including the VAT already declared.",
+      "A non-payer does not have this issue: the advance is just a payment and the final invoice deducts it."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Story: a customer orders a custom kitchen and pays half up front. When does the carpenter pay the VAT?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: proforma, received payment, tax document for the payment, final settlement."
+      },
+      {
+        "min": "15–30",
+        "text": "Demo task: quote, proforma, invoice."
+      },
+      {
+        "min": "30–40",
+        "text": "On paper: tax document for the received payment and the settlement."
+      },
+      {
+        "min": "40–45",
+        "text": "Check and summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Proforma invoice",
+        "body": "A request to pay an advance. It is not a tax document, has no tax point, and issuing it creates no VAT."
+      },
+      {
+        "title": "VAT on a received payment",
+        "body": "When a payer receives a payment before the supply, they must declare VAT on the day the payment is received (§ 20a(2)), provided the supply is specific enough at that moment (§ 20a(3))."
+      },
+      {
+        "title": "Tax document for a received payment",
+        "body": "The payer issues it within 15 days of receiving the payment (§ 28(1)(d) and (8)). It need not show the scope of the supply if it is not yet known (§ 29(3)(c))."
+      },
+      {
+        "title": "Final settlement",
+        "body": "The final invoice shows the whole supply and deducts the advances on which VAT was already declared. Only the difference is paid."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. is preparing a CZK 60,500 job (VAT included) for a municipality and wants a 50% advance.",
+      "steps": [
+        "Open Invoices and find a document of type Quote. Open it and look at the buttons at the top.",
+        "Click Create proforma. Set the advance to half the total and save. Note that the document type is Proforma invoice.",
+        "Find a proforma in the demo that already has an invoice (look in the Invoices list). Open both and compare: what is the same and what differs?",
+        "On your new proforma click Create invoice. Look at the Already paid and Left to pay fields.",
+        "On paper, put together the tax document for a received advance of CZK 30,250 including VAT (21%): work out the base and VAT from the gross amount. The app does not issue this document yet.",
+        "On paper, put together the settlement: the whole supply, the deducted advance and the balance, separately for base, VAT and total."
+      ],
+      "check": "Done when the student has the quote – proforma – invoice chain in the demo and a correct tax document for the payment and settlement on paper (advance: base CZK 25,000, VAT CZK 5,250)."
+    },
+    "worksheet": [
+      {
+        "q": "Is a proforma invoice a tax document?",
+        "a": "No. It is a request for payment; issuing it creates no VAT."
+      },
+      {
+        "q": "A payer issued a proforma on 1 March, the customer paid on 10 March, the goods are delivered on 2 April. When must VAT on the advance be declared?",
+        "a": "On 10 March, the day the payment was received (§ 20a(2)), provided the supply is specific enough."
+      },
+      {
+        "q": "By when must the tax document for the received payment be issued?",
+        "a": "Within 15 days of receiving the payment, so by 25 March (§ 28(8))."
+      },
+      {
+        "q": "An advance of CZK 30,250 including 21% VAT. What are the base and the VAT?",
+        "a": "Base CZK 25,000, VAT CZK 5,250 (30,250 − 30,250 / 1.21)."
+      },
+      {
+        "q": "The whole job is CZK 50,000 net and the advance from question 4 was paid. What is the balance?",
+        "a": "Total CZK 60,500 with VAT (base 50,000, VAT 10,500). After deducting the advance: base 25,000, VAT 5,250, balance CZK 30,250."
+      },
+      {
+        "q": "A customer paid an advance \"for something from the catalogue\" but has not chosen what. Does VAT arise?",
+        "a": "No, because the supply is not specific enough: neither the goods nor the rate are known (§ 20a(3))."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 20a – VAT on a received payment (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p20a"
+      },
+      {
+        "label": "VAT Act, § 28 – tax document for a received payment and deadline (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p28"
+      },
+      {
+        "label": "VAT Act, § 29(3) – details a document may leave out (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p29"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Quotes and proforma invoices in the app",
+        "href": "/features/quotes-and-proforma-invoices"
+      },
+      {
+        "label": "Partial payments",
+        "href": "/features/partial-payments"
+      },
+      {
+        "label": "VAT calculator",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "credit-notes": {
+    "name": "Credit notes and corrections",
+    "title": "Credit note, corrective tax document and cancellation",
+    "lead": "The invoice has gone out and the customer returns goods. Students learn when to issue a corrective tax document, what it must contain and why an issued invoice is never deleted.",
+    "metaDescription": "Lesson: correcting the tax base (§ 42 of the Czech VAT Act), details of a corrective tax document (§ 45), the 15-day deadline, credit note vs cancellation. Demo task.",
+    "goals": [
+      "Recognise situations where the tax base must be corrected.",
+      "List the details of a corrective tax document.",
+      "Issue a credit note for an existing invoice in the demo.",
+      "Explain why an issued invoice must not be deleted or overwritten."
+    ],
+    "teacherNotes": [
+      "In practice people say credit note (dobropis); the Act speaks of a corrective tax document (§ 45). Agree on the terms at the start of the lesson.",
+      "The correction is a separate taxable supply made on the day the decisive facts occurred (§ 42(3)), and the document must be issued and delivered within 15 days (§ 42(5)). No correction is possible after seven years from the end of the year of the original supply (§ 42(8)).",
+      "In the app an issued invoice has three actions: Issue credit note (return or discount), New invoice with the fix (wrong details) and Cancel. Show the difference on the board before students start clicking.",
+      "Mind the rate: a correction uses the rate that applied to the original supply (§ 42(7))."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Situation: a customer returned two of ten chairs. Do we delete the invoice and issue a new one?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: correcting the tax base, required details, deadlines, credit note vs cancellation."
+      },
+      {
+        "min": "15–33",
+        "text": "Demo task: a credit note and an invoice with a fix."
+      },
+      {
+        "min": "33–43",
+        "text": "Worksheet."
+      },
+      {
+        "min": "43–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "When to correct the tax base",
+        "body": "A payer corrects the tax base when, after the supply, something happens that changes it: goods returned, a discount, part of a delivery cancelled (§ 42(1))."
+      },
+      {
+        "title": "Corrective tax document",
+        "body": "It contains supplier and customer details including VAT numbers, the number of the original document, its own number, the reason for the correction, the difference in base, the difference in VAT, the difference in total and the date of the decisive facts (§ 45(1))."
+      },
+      {
+        "title": "Deadlines",
+        "body": "The document must be issued and delivered to the customer within 15 days of the decisive facts (§ 42(5)). No correction is possible after seven years from the end of the year of the original supply (§ 42(8))."
+      },
+      {
+        "title": "Why not delete the invoice",
+        "body": "An issued invoice is an accounting record with a serial number. Deleting it would leave a gap in the series and remove the document the customer may already have used to deduct VAT. A mistake is therefore fixed with a new document."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. delivered goods and the customer returns part of them. You put it right.",
+      "steps": [
+        "Open Invoices and find the existing credit note in the demo. Open it and find the details from § 45(1). Which do you find, and how does it refer to the original invoice?",
+        "Open any issued invoice with two or more lines. Click Issue credit note.",
+        "In the credit note keep only the line the customer is returning and change the quantity as your teacher says. The amounts are negative. Save and issue.",
+        "On another invoice try New invoice with the fix. How does it differ from a credit note? When would you use it?",
+        "Try to find a Delete button on an issued invoice. Why is there none? Write down your answer."
+      ],
+      "check": "Done when the student has an issued credit note referring to the original invoice and can explain the difference between a credit note, an invoice with a fix and a cancellation."
+    },
+    "worksheet": [
+      {
+        "q": "A customer returned 2 of 10 chairs at CZK 1,500 net each (21%). What are the differences in base, VAT and total on the credit note?",
+        "a": "Base −CZK 3,000, VAT −CZK 630, total −CZK 3,630."
+      },
+      {
+        "q": "Name at least five details of a corrective tax document.",
+        "a": "Supplier and customer details, their VAT numbers, number of the original document, number of the corrective document, reason for the correction, difference in base, difference in VAT, difference in total, date of the decisive facts (§ 45(1))."
+      },
+      {
+        "q": "Goods were returned on 4 April. By when must the corrective document reach the customer?",
+        "a": "Within 15 days of the decisive facts, so by 19 April (§ 42(5))."
+      },
+      {
+        "q": "The original invoice used a rate that has since changed. Which rate goes on the credit note?",
+        "a": "The rate that applied on the day of the original supply (§ 42(7))."
+      },
+      {
+        "q": "The invoicing clerk found a typo in the customer's name. Is that a correction of the tax base?",
+        "a": "No, the base does not change. A new invoice with the fix or a corrective document is issued according to internal rules; the issued invoice is not deleted."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 42 – correcting the tax base (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p42"
+      },
+      {
+        "label": "VAT Act, § 45 – corrective tax document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p45"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Required-details check on invoices",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "VAT calculator",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "foreign-customers-reverse-charge": {
+    "name": "Foreign customers and reverse charge",
+    "title": "Foreign customers: services and goods to the EU and OSS basics",
+    "lead": "When a Czech invoice abroad carries no VAT, what to write instead, and why VAT figures are stated in crowns even on a euro invoice. At the end, a short look at OSS for sales to consumers in the EU.",
+    "metaDescription": "Lesson: place of supply of services (§ 9 of the Czech VAT Act), \"daň odvede zákazník\" (§ 29(2)), supplies of goods to the EU (§ 64), recapitulative statement, OSS basics. Demo task with a EUR invoice.",
+    "goals": [
+      "Set the place of supply for a service to a business in another EU state.",
+      "Issue an invoice with reverse charge and the right wording.",
+      "Explain why tax figures are stated in crowns even on a foreign-currency invoice.",
+      "Describe what the recapitulative statement and OSS are for."
+    ],
+    "teacherNotes": [
+      "The main rule for services between businesses: the place of supply is where the customer is established (§ 9(1)). The customer declares the VAT in their own country and the invoice says \"daň odvede zákazník\" (the customer accounts for the tax, § 29(2)(c)), with no rate or VAT amount (§ 29(3)(e)).",
+      "A supply of goods to a payer in another member state is exempt (§ 64) if the conditions are met (customer's VAT number, transport to another state). The document is issued within 15 days of the end of the month (§ 28(9)).",
+      "OSS (the one-stop-shop special scheme, § 110a and following) mainly covers distance sales of goods and services to consumers in other EU states. The app does not support OSS, so explaining the idea and working the example on paper is enough.",
+      "The exchange rate is set by § 4(8) of the VAT Act: the ČNB foreign-exchange market rate or the ECB reference rate valid on the day the obligation to declare the tax arose. In class it is enough that the app offers the ČNB rate. Leave the details of conversion to the accounting seminar."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Question: a Brno company invoices a Vienna company for web design. Does it charge Czech VAT?"
+      },
+      {
+        "min": "5–17",
+        "text": "Explanation: place of supply, reverse charge, goods to the EU, non-EU countries, recapitulative statement."
+      },
+      {
+        "min": "17–35",
+        "text": "Demo task: an invoice to Germany in EUR."
+      },
+      {
+        "min": "35–42",
+        "text": "OSS by example and the worksheet."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Place of supply of a service",
+        "body": "For a service to a taxable person, the place of supply is where the recipient is established (§ 9(1)). No Czech VAT is charged."
+      },
+      {
+        "title": "The customer accounts for the tax",
+        "body": "When the customer declares the VAT, the document must say \"daň odvede zákazník\" (§ 29(2)(c)). The rate and VAT amount are left out (§ 29(3)(e))."
+      },
+      {
+        "title": "Goods to the EU",
+        "body": "A supply of goods to a payer from another member state, dispatched to that state, is exempt (§ 64). The invoice refers to the exemption (§ 29(2)(a)). The supply goes into the recapitulative statement (§ 102)."
+      },
+      {
+        "title": "OSS",
+        "body": "When a business sells goods at a distance or services to consumers in other EU states, the customer's country's VAT applies. The one-stop-shop scheme (§ 110a and following) lets it declare and pay that VAT in Czechia without registering in each state."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. ran a training course for the German company Holzwerk Neumann. It invoices in euros.",
+      "steps": [
+        "Open Contacts and find Holzwerk Neumann. Check its VAT number status (the VIES label) and write it down.",
+        "Open Invoices and find an existing reverse-charge invoice in EUR. Find the reverse-charge wording and the amounts in crowns.",
+        "Click New invoice, pick Holzwerk Neumann and set Currency to EUR. Note the ČNB rate the app offers.",
+        "Add the line Training – timber construction design, 1 day, EUR 1,200. Turn on Reverse charge. What happened to the VAT rate on the line?",
+        "Save draft and download the PDF. Find the wording for the customer and the conversion to crowns.",
+        "On paper: a Czech company sells goods through its e-shop to a Slovak consumer for EUR 100 net. Assume its sales to consumers in other EU states exceeded EUR 10,000 in the year, so the customer's country's VAT applies. Calculate VAT at the Slovak standard rate of 23% and write down how the company would pay it under OSS."
+      ],
+      "check": "Done when the student has a draft EUR invoice with reverse charge, can point to the words \"daň odvede zákazník\" and has worked the OSS example on paper (EUR 23 VAT, paid through OSS in Czechia)."
+    },
+    "worksheet": [
+      {
+        "q": "A Czech company (payer) invoices an Austrian company for a translation. Where is the place of supply and who declares the VAT?",
+        "a": "In Austria, where the recipient is established (§ 9(1)). The Austrian customer declares the VAT; the invoice says \"daň odvede zákazník\"."
+      },
+      {
+        "q": "What is left out of such an invoice?",
+        "a": "The VAT rate and the VAT amount (§ 29(3)(e))."
+      },
+      {
+        "q": "A Czech company sells a machine to a company in Poland and transports it there. Which regime applies?",
+        "a": "An exempt supply of goods to another member state (§ 64), if the customer has a valid VAT number and the goods were transported. The invoice refers to the exemption; the supply goes into the recapitulative statement (§ 102)."
+      },
+      {
+        "q": "By when is the document issued for a supply of goods to the EU made on 10 May?",
+        "a": "Within 15 days of the end of the month, so by 15 June (§ 28(9))."
+      },
+      {
+        "q": "On a EUR invoice the VAT is zero because of reverse charge. In which currency would the VAT amount otherwise be stated?",
+        "a": "In Czech crowns (§ 29(1)(l))."
+      },
+      {
+        "q": "What is OSS in one sentence?",
+        "a": "A scheme in which a business declares and pays VAT on sales to consumers in other EU states in one return in Czechia instead of registering in each state."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 9 – place of supply of services (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p9"
+      },
+      {
+        "label": "VAT Act, § 29 – \"daň odvede zákazník\" and amounts in CZK (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p29"
+      },
+      {
+        "label": "VAT Act, § 64 – supply of goods to another member state (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p64"
+      },
+      {
+        "label": "VAT Act, § 102 – recapitulative statement (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p102"
+      },
+      {
+        "label": "VAT Act, § 110a – one-stop-shop special schemes (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p110a"
+      },
+      {
+        "label": "VIES – EU VAT number check",
+        "href": "https://ec.europa.eu/taxation_customs/vies/"
+      },
+      {
+        "label": "European Commission – OSS portal",
+        "href": "https://vat-one-stop-shop.ec.europa.eu/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Foreign-currency invoices",
+        "href": "/features/foreign-currency-invoices"
+      },
+      {
+        "label": "ČNB exchange rates",
+        "href": "/calculators/cnb-exchange-rates"
+      },
+      {
+        "label": "Czech VAT return and control statement",
+        "href": "/guides/vat-return-control-statement"
+      },
+      {
+        "label": "Identified person",
+        "href": "/guides/identified-person"
+      }
+    ]
+  },
+  "payment-reminders-late-interest": {
+    "name": "Reminders and late-payment interest",
+    "title": "Reminders, late-payment interest and limitation",
+    "lead": "The invoice is overdue. Students write a polite reminder, calculate late-payment interest under the Czech government decree and find out how long the debt can be enforced.",
+    "metaDescription": "Lesson: late-payment interest (§ 1970 of the Czech Civil Code, Government Decree 351/2013 Coll.), minimum recovery costs of CZK 1,200, limitation (§ 629), automatic reminders in the demo.",
+    "goals": [
+      "Spot an overdue invoice and send a reminder.",
+      "Calculate statutory late-payment interest between businesses.",
+      "Explain the right to minimum costs of recovering a claim.",
+      "Know the general limitation period."
+    ],
+    "teacherNotes": [
+      "The interest rate is set by Government Decree No. 351/2013 Coll.: the ČNB repo rate valid on the first day of the calendar half-year in which the delay began, plus 8 percentage points (§ 2(1)). Have students look up the current repo rate on the ČNB website themselves.",
+      "Between businesses the creditor is also entitled to minimum recovery costs of CZK 1,200 (§ 3 of the decree).",
+      "The app sends reminders (automatically too, if set up) but does not calculate late interest. Do the interest calculation on paper.",
+      "The general limitation period is three years (§ 629 of the Civil Code). A good question: when does it start? When the right could first be exercised, typically the day after the due date."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Role play: call a customer who has not paid. What do you say?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: delay, interest, minimum costs, limitation."
+      },
+      {
+        "min": "15–30",
+        "text": "Demo task: a reminder and automatic reminder settings."
+      },
+      {
+        "min": "30–42",
+        "text": "Interest calculation on paper."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Delay",
+        "body": "A debtor is in delay when they do not pay properly and on time. The creditor may then claim late-payment interest (§ 1970 of the Civil Code) without warning them first."
+      },
+      {
+        "title": "Interest rate",
+        "body": "The ČNB repo rate valid on the first day of the calendar half-year in which the delay began, plus 8 percentage points (Government Decree 351/2013 Coll., § 2(1)). The rate stays the same for the whole delay in that half-year."
+      },
+      {
+        "title": "Calculation",
+        "body": "Interest = amount owed × annual rate × days of delay / 365. If the contract sets a different rate, the contractual rate applies."
+      },
+      {
+        "title": "Minimum costs and limitation",
+        "body": "Between businesses the creditor is entitled to CZK 1,200 as minimum costs of recovering the claim (§ 3 of the decree). The general limitation period is three years (§ 629 of the Civil Code)."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. has several overdue invoices. You send a reminder and set up automation.",
+      "steps": [
+        "Open Invoices and filter the overdue ones. Write down how many there are and their total.",
+        "Open one and click Send reminder. Read the prefilled text. Is it polite? What would you change?",
+        "Open Settings, the Invoices section, and find Reminders. Find out how automatic sending, the days between reminders and their maximum number are set. Choose your own values and write down why.",
+        "In the settings find the email template Reminder to a customer and edit it so it includes the invoice number and amount.",
+        "On paper, calculate late interest on the chosen invoice: look up the ČNB repo rate on the first day of the half-year, add 8 percentage points and calculate the interest for the actual days of delay."
+      ],
+      "check": "Done when the student has sent a reminder, set up automatic reminders with reasons, and correctly calculated late interest with the repo rate and its source stated."
+    },
+    "worksheet": [
+      {
+        "q": "An invoice for CZK 50,000 was due on 31 March and paid on 30 April (30 days late). For this example, the repo rate on 1 January was 3.5%. What is the late interest?",
+        "a": "Rate 3.5 + 8 = 11.5% a year. Interest = 50,000 × 0.115 × 30 / 365 = CZK 472.60."
+      },
+      {
+        "q": "What else is a business creditor entitled to besides interest?",
+        "a": "Minimum recovery costs of CZK 1,200 (§ 3 of Government Decree 351/2013 Coll.)."
+      },
+      {
+        "q": "The delay started in August and lasts until November. Which repo rate do you use?",
+        "a": "The rate valid on 1 July, the first day of the half-year in which the delay began (§ 2(1))."
+      },
+      {
+        "q": "An invoice was due on 15 June 2026. Roughly by when must the claim be brought to court so it is not time-barred?",
+        "a": "The limitation period is three years (§ 629 of the Civil Code) and runs from when the claim could first be made, the day after the due date. It ends in mid-June 2029 (the general rule; the law also has cases where the period stops running)."
+      },
+      {
+        "q": "Why set a maximum number of automatic reminders?",
+        "a": "So the customer does not get endless emails; after the last reminder it makes sense to phone, meet or start collection."
+      }
+    ],
+    "law": [
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 1970 – late-payment interest (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1970"
+      },
+      {
+        "label": "Civil Code, § 629 – limitation period (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p629"
+      },
+      {
+        "label": "Government Decree No. 351/2013 Coll. – interest rate and minimum costs (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2013-351"
+      },
+      {
+        "label": "Czech National Bank – repo rate",
+        "href": "https://www.cnb.cz/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Automatic payment reminders",
+        "href": "/features/payment-reminders"
+      },
+      {
+        "label": "Due date calculator",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Partial payments",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "flat-tax": {
+    "name": "Czech flat-rate tax",
+    "title": "Czech flat-rate tax for the self-employed: who may use it and how to watch the limit",
+    "lead": "The Czech flat-rate regime (paušální daň) replaces the tax return and insurance statements with one monthly payment. Students find out who may join, how the bands work and how to watch the income limit in the app.",
+    "metaDescription": "Lesson on the Czech flat-rate tax: conditions (§ 2a of the Income Tax Act), bands by amount and type of income, notice of entry by 10 January, payment by the 20th. Demo task.",
+    "goals": [
+      "List the conditions for joining the flat-rate regime.",
+      "Place a self-employed person in the right band by amount and type of income.",
+      "Know the deadlines for the notice of entry and the monthly payments.",
+      "Track income against the band limit in the demo."
+    ],
+    "teacherNotes": [
+      "The flat-rate tax exists only in Czechia. Slovakia has no similar regime; for Slovak sole traders we offer a tax and contributions calculator.",
+      "The monthly amounts change every year with the minimum and average wage, so this page deliberately does not state them: have students look up the current amounts on the Financial Administration website or in our flat-tax calculator.",
+      "Bands (§ 2a(5) of the Income Tax Act): band one up to CZK 1,000,000 of income of any type, or up to CZK 1,500,000 if at least 75% of income falls under the 80% or 60% flat expense rate, or up to CZK 2,000,000 if at least 75% falls under the 80% rate. Band two up to CZK 1,500,000, or up to CZK 2,000,000 with income under the 80% and 60% rates. Band three up to CZK 2,000,000.",
+      "Conditions (§ 2a(1)): a self-employed person who is not a VAT payer (exception: identified person), is not insolvent and has no employment income (with exceptions). The notice of entry is due by 10 January (§ 38lc(1)), the payment by the 20th of the month (§ 38lk(5))."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Question: why would a self-employed person want to pay the same amount every month instead of filing a tax return?"
+      },
+      {
+        "min": "5–17",
+        "text": "Explanation: conditions, bands, deadlines, what the flat-rate tax covers (income tax, social and health insurance)."
+      },
+      {
+        "min": "17–33",
+        "text": "Demo task: a self-employed person in the flat-rate regime."
+      },
+      {
+        "min": "33–42",
+        "text": "Worksheet: placing in a band."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "What the flat-rate tax covers",
+        "body": "One monthly payment that includes income tax, social insurance and health insurance (§ 7a and § 38li of the Income Tax Act). Someone in the regime for the whole year files neither a tax return nor the statements for social and health insurance."
+      },
+      {
+        "title": "Who may join",
+        "body": "A self-employed person who is not a VAT payer (except an identified person), is not insolvent, has no employment income (with exceptions) and stays within the income limit (§ 2a(1))."
+      },
+      {
+        "title": "Bands",
+        "body": "The three bands differ in the monthly amount. Which band applies depends on the income and on which flat expense rate would apply to it (§ 2a(5))."
+      },
+      {
+        "title": "Deadlines",
+        "body": "Notice of entry by 10 January of the year (§ 38lc(1)). The monthly payment is due by the 20th of the calendar month (§ 38lk(5))."
+      }
+    ],
+    "task": {
+      "intro": "You work for Ondřej Kalina, a self-employed person in the flat-rate regime and a VAT non-payer.",
+      "steps": [
+        "On /demo start the flat-rate freelancer demo. In Invoices add up (or read from the overview) how much Ondřej invoiced over the last twelve months.",
+        "Open Settings, the Business details section, and find the question Are you in the flat-tax regime? and the type of activity. Write down what is filled in and why it matters for the band.",
+        "Open our flat-tax calculator (link below), enter Ondřej's annual income and type of activity. Which band is he in and how much does he pay a month?",
+        "Issue a new invoice for CZK 150,000 and recalculate the annual income. Does Ondřej still fit his band? Is he at risk of moving to a higher band or leaving the regime?",
+        "Look up the current monthly amounts for all three bands on the Financial Administration website (link below) and write them in the worksheet."
+      ],
+      "check": "Done when the student can say which band Ondřej is in, how much he pays a month (per the Financial Administration's current figures) and how much is left before the band limit."
+    },
+    "worksheet": [
+      {
+        "q": "A graphic designer (non-payer, no employment) had income of CZK 900,000 last year. Can she join the flat-rate regime, and in which band?",
+        "a": "Yes, she meets the conditions (§ 2a(1)). She belongs in band one, as her income did not exceed CZK 1,000,000."
+      },
+      {
+        "q": "A tradesman (80% flat expense rate) has income of CZK 1,800,000. Which band?",
+        "a": "Band one, because at least 75% of his income falls under the 80% rate and it did not exceed CZK 2,000,000 (§ 2a(5))."
+      },
+      {
+        "q": "A programmer (60% flat expense rate) has income of CZK 1,800,000. Which band?",
+        "a": "Band two: band one for the 60% rate ends at CZK 1,500,000, band two for the 80% and 60% rates goes up to CZK 2,000,000."
+      },
+      {
+        "q": "By when is the notice of entry into the flat-rate regime filed?",
+        "a": "By 10 January of the year from which the person wants to be in the regime (§ 38lc(1))."
+      },
+      {
+        "q": "By when is the monthly payment due?",
+        "a": "By the 20th of the calendar month (§ 38lk(5))."
+      },
+      {
+        "q": "Can a VAT payer join the flat-rate regime?",
+        "a": "No, except an identified person (§ 2a(1))."
+      }
+    ],
+    "law": [
+      {
+        "label": "Income Tax Act No. 586/1992 Coll., § 2a – flat-rate regime (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p2a"
+      },
+      {
+        "label": "Income Tax Act, § 7a – flat-rate tax (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p7a"
+      },
+      {
+        "label": "Income Tax Act, § 38lc – notice of entry (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p38lc"
+      },
+      {
+        "label": "Income Tax Act, § 38lk – paying the flat-rate advance (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p38lk"
+      },
+      {
+        "label": "Financial Administration – flat-rate tax, current amounts (in Czech)",
+        "href": "https://financnisprava.gov.cz/cs/dane/dane/dan-z-prijmu/pausalni-dan"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Flat-rate tax calculator",
+        "href": "/calculators/flat-tax"
+      },
+      {
+        "label": "Self-employed tax and contributions calculator",
+        "href": "/calculators/self-employed-tax"
+      },
+      {
+        "label": "Identified person",
+        "href": "/guides/identified-person"
+      }
+    ]
+  }
+}

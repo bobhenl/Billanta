@@ -8,6 +8,7 @@ import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from 
 import { SITE_URL } from '@/lib/site';
 
 import { fetchAccountants } from '@/lib/accountant-directory';
+import { SCHOOL_LESSONS } from '@/lib/school-lessons';
 
 /**
  * Sitemap for the whole public site, sharded via Next's `generateSitemaps()`.
@@ -69,7 +70,10 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/calculators', changeFrequency: 'monthly', priority: 0.7 },
   ...CALCULATORS.map((c): UrlEntry => ({ path: '/calculators/' + c.slug, changeFrequency: 'monthly', priority: 0.7, locales: c.locales })),
   { path: '/guides', changeFrequency: 'monthly', priority: 0.6, locales: GUIDES_HUB_LOCALES },
-  ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales }))
+  ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales })),
+  // School lessons; the Czech-only ones (flat tax) are noindex in sk.
+  { path: '/for-schools/lessons', changeFrequency: 'monthly', priority: 0.6 },
+  ...SCHOOL_LESSONS.map((l): UrlEntry => ({ path: '/for-schools/lessons/' + l.slug, changeFrequency: 'yearly', priority: 0.5, locales: l.locales }))
 ];
 
 function buildAllEntries(): UrlEntry[] {

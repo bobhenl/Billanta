@@ -8546,5 +8546,44 @@
       "buttonView": "Demo jako {role}"
     },
     "signOutAndStart": "Odhlásit se a otevřít demo"
+  },
+  "schoolLessons": {
+    "hubName": "Pro školy",
+    "indexName": "Lekce",
+    "indexTitle": "Hotové lekce fakturace pro obchodní akademie",
+    "indexMetaTitle": "Lekce fakturace pro střední školy – hotové hodiny s pracovními listy",
+    "indexLead": "Devět vyučovacích hodin po 45 minutách: cíle, poznámky pro učitele, úkol v demu bez registrace a pracovní list s řešením. Zdarma, k tisku i na projektor.",
+    "indexMeta": "Hotové 45minutové lekce fakturace a DPH pro obchodní akademie: náležitosti faktury, DUZP, sazby DPH, dobropisy, zálohy, přenesená daňová povinnost, upomínky a paušální daň. Pracovní listy s řešením.",
+    "howTitle": "Jak lekce fungují",
+    "how": [
+      "Každá lekce má cíle, časový plán hodiny, výklad pojmů s odkazy na konkrétní paragrafy a poznámky pro učitele.",
+      "Žáci plní úkol krok za krokem v demu Billanty. Demo nevyžaduje registraci ani e-mail a každý žák dostane vlastní firmu s ukázkovými daty.",
+      "Pracovní list vytisknete ve verzi pro žáky (bez řešení), nebo pro sebe s řešením."
+    ],
+    "rvpNote": "Lekce navazují na ekonomické a účetní vzdělávací obsahy rámcových vzdělávacích programů obchodních akademií. Rozdělení do ročníků a předmětů necháváme na škole.",
+    "lawBasis": "Lekce vycházejí z českého práva.",
+    "minutes": "{n} min",
+    "lessonNumber": "Lekce {n}",
+    "openLesson": "Otevřít lekci",
+    "allLessons": "Všechny lekce",
+    "goals": "Cíle hodiny",
+    "timeline": "Průběh hodiny",
+    "teacherNotes": "Poznámky pro učitele",
+    "concepts": "Výklad",
+    "task": "Úkol v demu",
+    "check": "Hotovo, když",
+    "worksheet": "Pracovní list",
+    "worksheetName": "Jméno a třída:",
+    "answer": "Řešení pro učitele",
+    "law": "Právní předpisy",
+    "lawNote": "Odkazy vedou na aktuální znění zákonů na zakonyprolidi.cz.",
+    "tools": "Související návody a kalkulačky",
+    "demoCta": "Otevřít demo",
+    "demoPick": "V demu vyberte firmu „{kind}“. Registrace není potřeba.",
+    "teacherOnly": "Jen pro učitele – při tisku pro žáky se skryje.",
+    "printStudent": "Tisk pro žáky",
+    "printTeacher": "Tisk s řešením",
+    "checked": "Právní odkazy jsme naposledy ověřili {date}. Zákony se mění, před hodinou proto zkontrolujte aktuální znění. Lekce slouží k výuce a nenahrazují daňové poradenství.",
+    "skAlternative": "Kalkulačka daní a odvodů pro SZČO"
   }
 }

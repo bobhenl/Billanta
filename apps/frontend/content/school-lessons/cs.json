@@ -1,0 +1,1147 @@
+{
+  "invoice-essentials": {
+    "name": "Náležitosti faktury",
+    "title": "Náležitosti faktury: co musí být na dokladu a proč",
+    "lead": "Studenti poznají povinné údaje faktury podle tří zákonů – o DPH, o účetnictví a občanského zákoníku – a najdou je na skutečném dokladu v demu.",
+    "metaDescription": "Hotová vyučovací hodina pro obchodní akademie: povinné údaje faktury podle § 29 zákona o DPH, § 11 zákona o účetnictví a § 435 OZ. Úkol v demu, pracovní list s řešením.",
+    "goals": [
+      "Vyjmenovat povinné údaje daňového dokladu podle § 29 odst. 1 zákona o DPH.",
+      "Rozlišit, co na fakturu píše plátce DPH a co neplátce.",
+      "Vysvětlit, proč na faktuře firmy musí být zápis v obchodním rejstříku.",
+      "Najít chybějící nebo chybný údaj na vzorové faktuře."
+    ],
+    "teacherNotes": [
+      "Fakturu vidí tři zákony: zákon o DPH (daňový doklad, jen plátci), zákon o účetnictví (účetní doklad) a občanský zákoník (obchodní listina). Pomůže, když je na tabuli nakreslíte jako tři překrývající se kruhy.",
+      "Neplátce DPH nevystavuje daňový doklad. Jeho faktura ale musí splnit § 11 zákona o účetnictví a § 435 OZ. Text „Nejsem plátce DPH“ zákon výslovně nevyžaduje, je to ale dobrá praxe, která předejde dotazům.",
+      "V aplikaci se číslo faktury přidělí až při vystavení, koncept číslo nemá. To je dobrá otázka do diskuse: proč musí číselná řada zůstat bez mezer a duplicit?",
+      "Zjednodušený daňový doklad (do 10 000 Kč, § 30 a § 30a) stačí zmínit. Studenti ho znají z účtenek."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Motivace: promítněte dvě faktury, jedna nemá DIČ odběratele. Kdo najde rozdíl a proč vadí?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: tři zákony a jejich požadavky, rozdíl plátce a neplátce."
+      },
+      {
+        "min": "15–35",
+        "text": "Úkol v demu: rozbor hotové faktury a vystavení nové."
+      },
+      {
+        "min": "35–43",
+        "text": "Pracovní list ve dvojicích."
+      },
+      {
+        "min": "43–45",
+        "text": "Shrnutí a kontrola odpovědí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Daňový doklad (plátce DPH)",
+        "body": "Podle § 29 odst. 1 zákona o DPH obsahuje: označení dodavatele a odběratele, DIČ obou, evidenční číslo dokladu, rozsah a předmět plnění, den vystavení, den uskutečnění plnění (pokud se liší od dne vystavení), jednotkovou cenu bez daně a slevu, základ daně, sazbu daně a výši daně v korunách. Vystavit ho je třeba do 15 dnů od uskutečnění plnění (§ 28 odst. 8)."
+      },
+      {
+        "title": "Účetní doklad",
+        "body": "Podle § 11 zákona o účetnictví musí mít každý účetní doklad označení, obsah účetního případu a jeho účastníky, peněžní částku (nebo cenu za jednotku a množství), okamžik vyhotovení, okamžik uskutečnění účetního případu (liší-li se) a podpisový záznam odpovědných osob."
+      },
+      {
+        "title": "Obchodní listina",
+        "body": "Podle § 435 OZ uvede každý podnikatel na obchodní listině své jméno a sídlo, identifikační číslo (IČO), pokud ho má, a údaj o zápisu ve veřejném rejstříku včetně oddílu a vložky. Živnostník, který v rejstříku není, uvede zápis v jiné evidenci, typicky v živnostenském rejstříku."
+      },
+      {
+        "title": "Zjednodušený daňový doklad",
+        "body": "Do 10 000 Kč celkem smí plátce vystavit zjednodušený doklad (§ 30). Ten nemusí obsahovat údaje o odběrateli, jednotkovou cenu, základ daně ani výši daně; když daň neuvádí, musí uvést celkovou částku (§ 30a)."
+      }
+    ],
+    "task": {
+      "intro": "Pracujete jako asistent účetní ve firmě Lipová stezka s.r.o. z Brna, která je plátcem DPH. Nejdřív zkontrolujete hotovou fakturu, pak vystavíte novou.",
+      "steps": [
+        "V menu otevřete Faktury a klikněte na libovolnou zaplacenou fakturu.",
+        "Na náhledu najděte všech dvanáct údajů z § 29 odst. 1 a odškrtněte je v tabulce v pracovním listu. Ke každému si poznamenejte, kde na dokladu je.",
+        "Najděte údaj o zápisu v obchodním rejstříku (spisovou značku). Podle kterého zákona tam je?",
+        "Klikněte na Nová faktura. Vyberte odběratele, který má u sebe štítek Ověřeno v ARES, a přidejte dvě položky: Konzultace, 2 hodiny po 1 200 Kč, a Licence, 1 kus za 5 000 Kč.",
+        "Podívejte se na pole DUZP. Když ho necháte prázdné, použije se datum vystavení. Proč to zákon dovoluje? (Nápověda: § 29 odst. 1 písm. h.)",
+        "Klikněte na Uložit koncept a potom na Vystavit. Před vystavením aplikace zkontroluje povinné údaje. Pokud něco hlásí, zapište si co a opravte to.",
+        "Stáhněte PDF a porovnejte ho se svou tabulkou z kroku 2."
+      ],
+      "check": "Hotovo je, když má student vystavenou fakturu s přiděleným číslem a v tabulce odškrtnuté všechny údaje z § 29 odst. 1 včetně místa, kde na dokladu jsou."
+    },
+    "worksheet": [
+      {
+        "q": "Vyjmenujte aspoň osm povinných údajů daňového dokladu.",
+        "a": "Označení dodavatele, DIČ dodavatele, označení odběratele, DIČ odběratele, evidenční číslo, rozsah a předmět plnění, den vystavení, den uskutečnění plnění, jednotková cena bez daně a sleva, základ daně, sazba daně, výše daně v Kč (§ 29 odst. 1 písm. a až l)."
+      },
+      {
+        "q": "Neplátce DPH vystavuje fakturu za opravu kola. Musí na ni napsat sazbu a výši DPH?",
+        "a": "Ne. Neplátce nevystavuje daňový doklad a DPH neuvádí. Faktura musí splnit § 11 zákona o účetnictví a § 435 OZ (jméno, sídlo, IČO, zápis v evidenci)."
+      },
+      {
+        "q": "Na faktuře chybí den uskutečnění plnění. Kdy je to v pořádku?",
+        "a": "Když je stejný jako den vystavení dokladu (§ 29 odst. 1 písm. h)."
+      },
+      {
+        "q": "Proč musí s.r.o. na faktuře uvést oddíl a vložku obchodního rejstříku?",
+        "a": "Faktura je obchodní listina a § 435 OZ vyžaduje údaj o zápisu ve veřejném rejstříku včetně oddílu a vložky."
+      },
+      {
+        "q": "Plátce dodal zboží 3. března. Do kdy musí vystavit daňový doklad?",
+        "a": "Do 15 dnů ode dne, kdy vznikla povinnost přiznat daň (§ 28 odst. 8), tedy do 18. března."
+      },
+      {
+        "q": "Zákazník zaplatil v e-shopu plátce 7 900 Kč a chce doklad. Musí na něm být jeho jméno?",
+        "a": "Nemusí. Do 10 000 Kč lze vystavit zjednodušený daňový doklad (§ 30), který nemusí obsahovat označení odběratele (§ 30a)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 29 – náležitosti daňového dokladu",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p29"
+      },
+      {
+        "label": "Zákon o DPH, § 28 – lhůta 15 dnů pro vystavení",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p28"
+      },
+      {
+        "label": "Zákon o DPH, § 30 a § 30a – zjednodušený daňový doklad",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p30a"
+      },
+      {
+        "label": "Zákon o účetnictví č. 563/1991 Sb., § 11 – účetní doklad",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      },
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 435 – obchodní listina",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p435"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kontrola povinných údajů na faktuře",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Vyhledání firem v ARES a registrech",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Vyhledání firmy podle IČO",
+        "href": "/calculators/company-lookup"
+      }
+    ]
+  },
+  "vat-payers-and-registries": {
+    "name": "Plátce a neplátce DPH, kontrola IČO a DIČ",
+    "title": "Plátce, neplátce a kontrola obchodního partnera v registrech",
+    "lead": "Kdy se podnikatel stává plátcem DPH, jak se to projeví na faktuře a jak si za pár minut ověřit IČO a DIČ odběratele v ARES, registru plátců a VIES.",
+    "metaDescription": "Vyučovací hodina: obratový limit pro plátce DPH (§ 6 ZDPH), rozdíl na faktuře plátce a neplátce, ověření IČO v ARES, nespolehlivý plátce a zveřejněný účet, DIČ ve VIES.",
+    "goals": [
+      "Vysvětlit, kdy se osoba povinná k dani stává plátcem DPH (§ 6 zákona o DPH).",
+      "Porovnat fakturu neplátce a plátce a pojmenovat rozdíly.",
+      "Ověřit IČO v ARES a DIČ ve VIES a vysvětlit, co znamená nespolehlivý plátce.",
+      "Popsat, proč se vyplatí kontrolovat zveřejněný bankovní účet dodavatele."
+    ],
+    "teacherNotes": [
+      "Obratový limit se od roku 2025 počítá za kalendářní rok: plátcem se osoba stává od 1. ledna roku následujícího po roce, kdy obrat přesáhl 2 000 000 Kč. Přesáhne-li obrat během roku 2 536 500 Kč, je plátcem už ode dne následujícího po překročení (§ 6 odst. 1 a 2). Přihlášku podává do 10 pracovních dnů (§ 94 odst. 1).",
+      "Ruční výpočet limitu nechte studenty dělat na papíře z tabulky měsíčních tržeb. Aplikace limit hlídá, ale smysl hodiny je pochopit pravidlo.",
+      "Ručení za daň (§ 109) je pro studenty překvapivé: odběratel může zaplatit DPH za dodavatele, když platí na nezveřejněný účet nebo nespolehlivému plátci. Dobrá příležitost ukázat, proč se partner kontroluje před platbou, ne až po ní.",
+      "VIES ověřuje DIČ pro obchod v rámci EU. Registr plátců DPH ověřuje stav v Česku včetně zveřejněných účtů. Jsou to dva různé nástroje."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka do třídy: Proč by někdo chtěl být plátcem DPH dobrovolně?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: obratový limit, povinná registrace, co se změní na faktuře."
+      },
+      {
+        "min": "15–22",
+        "text": "Výpočet limitu na papíře (první část pracovního listu)."
+      },
+      {
+        "min": "22–38",
+        "text": "Úkol v demu: faktura neplátce a ověření partnerů v registrech."
+      },
+      {
+        "min": "38–45",
+        "text": "Kontrola odpovědí, shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Obratový limit",
+        "body": "Osoba povinná k dani se sídlem v Česku se stává plátcem od 1. ledna následujícího roku, pokud její obrat za kalendářní rok přesáhl 2 000 000 Kč (§ 6 odst. 1). Když obrat v běžném roce přesáhne 2 536 500 Kč, je plátcem už od následujícího dne (§ 6 odst. 2 písm. b)."
+      },
+      {
+        "title": "Faktura neplátce a plátce",
+        "body": "Neplátce neuvádí DIČ jako plátce, sazbu ani výši DPH a zákazníkovi DPH neúčtuje. Plátce vystavuje daňový doklad se základem daně, sazbou a daní (§ 29). Pro zákazníka-plátce je to rozdíl: z faktury neplátce si DPH neodečte."
+      },
+      {
+        "title": "ARES a registr plátců",
+        "body": "ARES je veřejný rejstřík ekonomických subjektů: ověříte v něm IČO, název, sídlo a zápis v rejstříku. Registr plátců DPH na webu Finanční správy ukáže, zda je subjekt plátcem, zda není nespolehlivým plátcem (§ 106a) a jaké bankovní účty zveřejnil."
+      },
+      {
+        "title": "Ručení odběratele",
+        "body": "Odběratel ručí za nezaplacenou DPH dodavatele mimo jiné tehdy, když v době plnění ví, že dodavatel je nespolehlivý plátce, nebo když platí na účet, který dodavatel nezveřejnil (§ 109)."
+      },
+      {
+        "title": "VIES",
+        "body": "Systém Evropské komise pro ověření DIČ plátce v jiném členském státě EU. Platné DIČ ve VIES je jedním z předpokladů pro dodání zboží do EU bez daně a pro přenesení daňové povinnosti u služeb."
+      }
+    ],
+    "task": {
+      "intro": "Pracujete pro Terezu Málkovou, OSVČ a neplátce DPH. Druhou část úkolu uděláte za firmu, která plátcem je.",
+      "steps": [
+        "Otevřete demo za Terezu Málkovou. V menu Faktury otevřete libovolnou vystavenou fakturu a stáhněte PDF. Zapište si, které údaje z § 29 odst. 1 na ní chybějí a proč.",
+        "Otevřete Kontakty a klikněte na Nový kontakt. Do pole IČO napište IČO libovolné známé české firmy (najdete ho na jejím webu) a klikněte na Načíst údaje z ARES. Porovnejte načtené údaje s webem firmy.",
+        "Ten samý subjekt vyhledejte ručně na ares.gov.cz a v registru plátců DPH na webu Finanční správy. Je plátcem? Má zveřejněný účet? Není nespolehlivý plátce?",
+        "Vraťte se na stránku /demo a založte demo firmy „s.r.o., plátce DPH“. V Kontaktech otevřete německého odběratele Holzwerk Neumann a podívejte se na stav DIČ. Ověřte totéž DIČ ručně ve VIES.",
+        "Porovnejte fakturu plátce s fakturou neplátce z kroku 1. Doplňte do pracovního listu tabulku rozdílů."
+      ],
+      "check": "Hotovo je, když má student vyplněnou tabulku rozdílů faktur a u jedné české a jedné zahraniční firmy zapsaný výsledek ověření (ARES, registr plátců, VIES) s datem ověření."
+    },
+    "worksheet": [
+      {
+        "q": "Živnostník měl v roce 2025 obrat 1 950 000 Kč. V roce 2026 má k 31. srpnu obrat 2 100 000 Kč. Od kdy je plátcem?",
+        "a": "Za rok 2025 limit 2 000 000 Kč nepřekročil, takže od 1. 1. 2026 plátcem není. V roce 2026 překročil 2 000 000 Kč, ne však 2 536 500 Kč, takže se stane plátcem od 1. 1. 2027 (§ 6 odst. 1). Pokud by během roku 2026 přesáhl 2 536 500 Kč, byl by plátcem od následujícího dne."
+      },
+      {
+        "q": "Do kdy musí podat přihlášku k registraci ten, kdo překročil limit?",
+        "a": "Do 10 pracovních dnů ode dne překročení (§ 94 odst. 1)."
+      },
+      {
+        "q": "Co ověříte v ARES a co v registru plátců DPH?",
+        "a": "V ARES identitu subjektu (IČO, název, sídlo, zápis v rejstříku). V registru plátců, zda je plátcem, zda není nespolehlivý a jaké účty zveřejnil."
+      },
+      {
+        "q": "Proč nezaplatit na účet, který dodavatel nemá v registru plátců zveřejněný?",
+        "a": "Pokud částka přesáhne zákonný limit, odběratel by ručil za DPH, kterou dodavatel nezaplatí (§ 109)."
+      },
+      {
+        "q": "K čemu je VIES?",
+        "a": "K ověření DIČ plátce v jiném členském státě EU, např. před dodáním zboží do EU bez daně nebo před fakturací služby s přenesením daňové povinnosti."
+      },
+      {
+        "q": "Je neplátce povinen uvádět na faktuře IČO?",
+        "a": "Ano, pokud mu bylo přiděleno (§ 435 OZ)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 6 – osoby povinné k dani jako plátci",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p6"
+      },
+      {
+        "label": "Zákon o DPH, § 94 – povinná registrace",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p94"
+      },
+      {
+        "label": "Zákon o DPH, § 106a – nespolehlivý plátce",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p106a"
+      },
+      {
+        "label": "Zákon o DPH, § 109 – ručení příjemce zdanitelného plnění",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p109"
+      },
+      {
+        "label": "ARES – Administrativní registr ekonomických subjektů",
+        "href": "https://ares.gov.cz/"
+      },
+      {
+        "label": "VIES – ověření DIČ v EU (Evropská komise)",
+        "href": "https://ec.europa.eu/taxation_customs/vies/"
+      },
+      {
+        "label": "Finanční správa – registr plátců DPH a další služby",
+        "href": "https://financnisprava.gov.cz/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Vyhledání firmy podle IČO",
+        "href": "/calculators/company-lookup"
+      },
+      {
+        "label": "Vyhledání firem v ARES a registrech",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "tax-point-and-due-dates": {
+    "name": "DUZP a splatnost",
+    "title": "Datum uskutečnění plnění, datum vystavení a splatnost",
+    "lead": "Tři data na každé faktuře znamenají tři různé věci. Studenti se naučí určit DUZP u zboží a služeb, spočítat lhůtu pro vystavení a nastavit rozumnou splatnost.",
+    "metaDescription": "Vyučovací hodina: DUZP podle § 21 zákona o DPH, lhůta 15 dnů pro daňový doklad, splatnost podle § 1963 OZ. Úkol v demu s víkendy a svátky, pracovní list s řešením.",
+    "goals": [
+      "Určit den uskutečnění zdanitelného plnění u zboží, služby a dílčího plnění.",
+      "Spočítat poslední den, kdy musí být daňový doklad vystaven.",
+      "Vysvětlit výchozí splatnost mezi podnikateli a hranici 60 dnů podle § 1963 OZ.",
+      "Rozpoznat splatnost připadající na víkend nebo svátek."
+    ],
+    "teacherNotes": [
+      "Nejčastější chyba studentů: zaměňují DUZP s datem vystavení. Ukažte příklad, kdy služba skončila 28. dubna a faktura se vystavuje 5. května. DPH patří do dubna.",
+      "U služeb platí, že plnění je uskutečněno dnem poskytnutí nebo dnem vystavení dokladu, podle toho, co nastane dřív (§ 21 odst. 3). Studenti často nevědí, že dřívější faktura posune DUZP dopředu.",
+      "Splatnost není daňový pojem, ale smluvní. Výchozí pravidla jsou v občanském zákoníku (§ 1963). Splatnost připadající na víkend nebo svátek se v praxi posouvá na nejbližší pracovní den; aplikace na to upozorní.",
+      "Neplátce DUZP na faktuře uvádět nemusí, zákon o účetnictví ale chce okamžik uskutečnění účetního případu, pokud se liší od vystavení."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Úvod: tři data na faktuře, každé pro jiného čtenáře (finanční úřad, účetní, zákazník)."
+      },
+      {
+        "min": "5–17",
+        "text": "Výklad: DUZP u zboží, služeb a dílčích plnění, lhůta 15 dnů, splatnost."
+      },
+      {
+        "min": "17–35",
+        "text": "Úkol v demu: tři faktury s různými daty."
+      },
+      {
+        "min": "35–43",
+        "text": "Pracovní list (výpočty dat)."
+      },
+      {
+        "min": "43–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "DUZP u zboží",
+        "body": "Dodání zboží se uskutečňuje dnem jeho dodání (§ 21 odst. 1 zákona o DPH)."
+      },
+      {
+        "title": "DUZP u služeb",
+        "body": "Služba je uskutečněna dnem jejího poskytnutí nebo dnem vystavení daňového dokladu, podle toho, který nastane dříve (§ 21 odst. 3). U dílčích plnění a opakovaných služeb platí zvláštní pravidla (§ 21 odst. 7 a 8)."
+      },
+      {
+        "title": "Lhůta pro vystavení",
+        "body": "Daňový doklad musí být vystaven do 15 dnů ode dne, kdy vznikla povinnost přiznat daň (§ 28 odst. 8)."
+      },
+      {
+        "title": "Splatnost",
+        "body": "Mezi podnikateli platí, že bez dohody je cena splatná do 30 dnů od doručení faktury nebo od plnění, podle toho, co nastane později. Delší splatnost než 60 dnů platí jen při výslovné dohodě, která není vůči věřiteli hrubě nespravedlivá (§ 1963 OZ)."
+      }
+    ],
+    "task": {
+      "intro": "Jste fakturantka firmy Lipová stezka s.r.o. Vystavíte tři koncepty faktur s různými daty a ověříte, jak s nimi aplikace pracuje.",
+      "steps": [
+        "Otevřete Faktury a klikněte na Nová faktura. Vyberte libovolného českého odběratele.",
+        "Faktura A (zboží): přidejte položku Dřevěná lavice, 1 kus, 8 000 Kč. Zboží bylo předáno 28. dne minulého měsíce. Nastavte DUZP na toto datum a Vystaveno na dnešek. Uložte koncept.",
+        "Zkontrolujte, zda dnešní datum vystavení splňuje lhůtu 15 dnů. Pokud ne, zapište si, o kolik dní je faktura pozdě.",
+        "Faktura B (služba): nová faktura, položka Údržba zahrady, 6 hodin po 450 Kč. Služba skončí až za týden, fakturu ale vystavujete dnes. Jaké DUZP zadáte a proč? Uložte koncept.",
+        "Faktura C (splatnost): u kterékoli faktury nastavte Splatnost na nejbližší sobotu. Aplikace zobrazí upozornění. Klikněte na Posunout na pracovní den a zapište si nové datum.",
+        "Pro zajímavost nastavte splatnost na státní svátek (třeba 28. října) a podívejte se, co aplikace napíše."
+      ],
+      "check": "Hotovo je, když má student uložené tři koncepty a u každého zapsané DUZP, datum vystavení a splatnost s krátkým zdůvodněním podle paragrafu."
+    },
+    "worksheet": [
+      {
+        "q": "Truhlář dodal stůl 12. května, fakturu vystavil 20. května. Jaké je DUZP a do kdy musel fakturu vystavit?",
+        "a": "DUZP je 12. května (§ 21 odst. 1). Doklad musí vystavit do 15 dnů, tedy nejpozději 27. května (§ 28 odst. 8). Vystavení 20. května je v pořádku."
+      },
+      {
+        "q": "Grafik vystaví fakturu 3. června za logo, které odevzdá 10. června. Jaké je DUZP?",
+        "a": "3. června. U služby je to den poskytnutí nebo den vystavení dokladu, podle toho, co nastane dřív (§ 21 odst. 3)."
+      },
+      {
+        "q": "Smlouva mezi dvěma firmami splatnost neuvádí. Faktura byla doručena 2. září, plnění proběhlo 30. srpna. Kdy je splatná?",
+        "a": "Do 30 dnů od pozdější z obou událostí, tedy od doručení faktury 2. září, tedy 2. října (§ 1963 OZ)."
+      },
+      {
+        "q": "Může si velký odběratel ve smlouvě vyjednat splatnost 90 dnů?",
+        "a": "Jen pokud je to výslovně dohodnuto a není to vůči dodavateli hrubě nespravedlivé (§ 1963 OZ). Jinak se k delší lhůtě nepřihlíží."
+      },
+      {
+        "q": "Splatnost vychází na neděli 1. listopadu. Co uděláte?",
+        "a": "Posunu ji na nejbližší pracovní den, aby zákazník mohl zaplatit včas, nebo ji domluvím jinak. Aplikace na víkend upozorní."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 21 – den uskutečnění plnění",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p21"
+      },
+      {
+        "label": "Zákon o DPH, § 28 – lhůta pro vystavení daňového dokladu",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p28"
+      },
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 1963 – splatnost mezi podnikateli",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1963"
+      },
+      {
+        "label": "Zákon o účetnictví č. 563/1991 Sb., § 11 – okamžik uskutečnění účetního případu",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka data splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Kontrola povinných údajů na faktuře",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "vat-rates-and-rounding": {
+    "name": "Sazby DPH a zaokrouhlování",
+    "title": "Sazby DPH, výpočet daně a zaokrouhlování",
+    "lead": "Jak se počítá DPH zdola i shora, proč se faktura s více sazbami rozpadá do rekapitulace a proč zaokrouhlení celkové částky na koruny nepatří do základu daně.",
+    "metaDescription": "Vyučovací hodina: sazby 21 % a 12 % (§ 47 ZDPH), výpočet daně podle § 37, zaokrouhlení podle § 36 odst. 5. Úkol v demu s cenami s DPH a bez DPH.",
+    "goals": [
+      "Znát platné sazby DPH v Česku a umět je přiřadit k typickým příkladům.",
+      "Spočítat DPH ze základu (zdola) i z ceny s daní (shora).",
+      "Sestavit rekapitulaci DPH podle sazeb.",
+      "Vysvětlit, jak se zachází se zaokrouhlením celkové částky."
+    ],
+    "teacherNotes": [
+      "Od roku 2024 má Česko dvě sazby: základní 21 % a sníženou 12 % (§ 47). Přílohy zákona se seznamy zboží a služeb se sníženou sazbou nechte studenty jen prolistovat, učit je nazpaměť nemá smysl.",
+      "Výpočet shora podle § 37 písm. b: daň = cena s daní − cena s daní / 1,21 (nebo 1,12). Dřívější koeficienty už neplatí; starší učebnice je mohou uvádět.",
+      "Aplikace zaokrouhluje každý řádek na haléře a rekapitulace sčítá základy podle sazeb. Zaokrouhlení celkové částky na koruny aplikace nedělá. Ruční výpočet zaokrouhlení proto udělejte na papíře.",
+      "Pokud se zaokrouhlí celková částka na koruny, rozdíl není součástí základu daně (§ 36 odst. 5). Je to častý dotaz u hotovostních plateb."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Hádanka: kolik DPH obsahuje káva za 59 Kč?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: sazby, výpočet zdola a shora, rekapitulace."
+      },
+      {
+        "min": "15–33",
+        "text": "Úkol v demu: faktura se dvěma sazbami, ceny s DPH."
+      },
+      {
+        "min": "33–43",
+        "text": "Pracovní list: výpočty a zaokrouhlení."
+      },
+      {
+        "min": "43–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Sazby",
+        "body": "Základní sazba je 21 %, snížená 12 % (§ 47 zákona o DPH). Některá plnění jsou od daně osvobozena (bez sazby)."
+      },
+      {
+        "title": "Výpočet zdola",
+        "body": "Daň = základ daně × sazba (§ 37 písm. a). Příklad: 1 000 Kč × 21 % = 210 Kč, celkem 1 210 Kč."
+      },
+      {
+        "title": "Výpočet shora",
+        "body": "Daň = cena s daní − cena s daní / 1,21 (u snížené sazby / 1,12) (§ 37 písm. b). Příklad: 1 210 − 1 210 / 1,21 = 210 Kč."
+      },
+      {
+        "title": "Zaokrouhlení",
+        "body": "Celkovou částku k úhradě lze zaokrouhlit, ale rozdíl ze zaokrouhlení nepatří do základu daně (§ 36 odst. 5)."
+      }
+    ],
+    "task": {
+      "intro": "Firma Lipová stezka s.r.o. pořádá kurz s občerstvením. Vystavíte fakturu se dvěma položkami a zkontrolujete výpočet.",
+      "steps": [
+        "Otevřete Faktury a klikněte na Nová faktura. Vyberte libovolného českého odběratele.",
+        "Přidejte položku Kurz bylinkaření, 1 kus, 3 500 Kč bez DPH, sazba 21 %.",
+        "Přidejte položku podle vlastního výběru se sníženou sazbou 12 % (zjistěte v příloze zákona, co do ní patří), 1 kus, 480 Kč bez DPH.",
+        "Podívejte se na rekapitulaci pod položkami. Přepočítejte základ, daň a celkovou částku na kalkulačce a porovnejte.",
+        "Zapněte přepínač Zadávám ceny s DPH a přepište cenu první položky na 4 235 Kč. Jakou daň aplikace spočítala? Ověřte výpočtem shora.",
+        "Uložte koncept. V pracovním listu zaokrouhlete celkovou částku na celé koruny a zapište, jak velký je rozdíl a kam patří."
+      ],
+      "check": "Hotovo je, když se studentův ruční výpočet rekapitulace shoduje s aplikací na haléř a když umí říct, proč zaokrouhlení nepatří do základu daně."
+    },
+    "worksheet": [
+      {
+        "q": "Spočítejte DPH a cenu celkem: základ 2 450 Kč, sazba 21 %.",
+        "a": "DPH 514,50 Kč, celkem 2 964,50 Kč."
+      },
+      {
+        "q": "Cena s DPH je 1 344 Kč při sazbě 12 %. Jaký je základ a daň?",
+        "a": "Základ 1 344 / 1,12 = 1 200 Kč, daň 144 Kč (§ 37 písm. b)."
+      },
+      {
+        "q": "Faktura má položky 1 000 Kč (21 %) a 500 Kč (12 %). Sestavte rekapitulaci.",
+        "a": "21 %: základ 1 000, daň 210. 12 %: základ 500, daň 60. Celkem základ 1 500, daň 270, k úhradě 1 770 Kč."
+      },
+      {
+        "q": "Celková částka je 2 964,50 Kč a zákazník platí hotově, zaokrouhlíte na 2 965 Kč. Změní se základ daně?",
+        "a": "Nezmění. Rozdíl 0,50 Kč ze zaokrouhlení není součástí základu daně (§ 36 odst. 5)."
+      },
+      {
+        "q": "Proč je výpočet shora užitečný?",
+        "a": "Když znám jen konečnou cenu (třeba z ceníku pro spotřebitele), spočítám z ní daň a základ bez dalších údajů."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 47 – sazby daně",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p47"
+      },
+      {
+        "label": "Zákon o DPH, § 37 – výpočet daně",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p37"
+      },
+      {
+        "label": "Zákon o DPH, § 36 – základ daně a zaokrouhlení",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p36"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      },
+      {
+        "label": "Kontrola povinných údajů na faktuře",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "advances-and-proforma": {
+    "name": "Zálohy a zálohové faktury",
+    "title": "Zálohová faktura, daňový doklad k přijaté platbě a vyúčtování",
+    "lead": "Zálohová faktura není daňový doklad. Studenti projdou celý řetězec: nabídka, záloha, platba, daňový doklad k platbě a konečná faktura s odečtenou zálohou.",
+    "metaDescription": "Vyučovací hodina o zálohách: zálohová faktura jako výzva k platbě, daň z přijaté úplaty (§ 20a ZDPH), daňový doklad do 15 dnů (§ 28), vyúčtování. Úkol v demu a na papíře.",
+    "goals": [
+      "Vysvětlit rozdíl mezi zálohovou fakturou a daňovým dokladem.",
+      "Určit, kdy u přijaté zálohy vzniká povinnost přiznat daň.",
+      "Sestavit konečnou fakturu s odečtením zaplacené zálohy.",
+      "Projít v demu převod nabídky na zálohovou fakturu a zálohové faktury na fakturu."
+    ],
+    "teacherNotes": [
+      "Zálohová faktura (proforma) je jen výzva k platbě. Daňovou povinnost nezakládá její vystavení, ale přijetí platby (§ 20a odst. 2), a to jen když je plnění dostatečně určité: je známo zboží nebo služba, sazba a místo plnění (§ 20a odst. 3).",
+      "Po přijetí platby musí plátce vystavit daňový doklad k přijaté platbě do 15 dnů (§ 28 odst. 1 písm. d a odst. 8). Aplikace Billanta tento doklad zatím neumí, proto ho studenti sestaví na papíře. Řekněte to otevřeně, je to dobrá příležitost ukázat, že software není zákon.",
+      "Konečná faktura pak obsahuje celé plnění a odečítá zálohu včetně daně, která už byla přiznána.",
+      "Neplátce DPH tento problém nemá: záloha je jen platba a konečná faktura ji odečte."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Příběh: zákazník chce kuchyň na míru a platí polovinu předem. Kdy má truhlář odvést DPH?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: zálohová faktura, přijatá úplata, daňový doklad k platbě, vyúčtování."
+      },
+      {
+        "min": "15–30",
+        "text": "Úkol v demu: nabídka, záloha, faktura."
+      },
+      {
+        "min": "30–40",
+        "text": "Na papíře: daňový doklad k přijaté platbě a vyúčtování."
+      },
+      {
+        "min": "40–45",
+        "text": "Kontrola a shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Zálohová faktura",
+        "body": "Výzva k zaplacení zálohy. Není daňovým dokladem, nemá DUZP a z jejího vystavení daň nevzniká."
+      },
+      {
+        "title": "Daň z přijaté úplaty",
+        "body": "Přijme-li plátce platbu před uskutečněním plnění, vzniká mu povinnost přiznat daň ke dni přijetí platby (§ 20a odst. 2), pokud je plnění v tu chvíli dostatečně určité (§ 20a odst. 3)."
+      },
+      {
+        "title": "Daňový doklad k přijaté platbě",
+        "body": "Plátce ho vystaví do 15 dnů od přijetí platby (§ 28 odst. 1 písm. d a odst. 8). Nemusí obsahovat rozsah plnění, pokud ještě není znám (§ 29 odst. 3 písm. c)."
+      },
+      {
+        "title": "Vyúčtování",
+        "body": "Konečná faktura uvádí celé plnění a odečte zálohy, z nichž už byla daň přiznána. Doplatí se jen rozdíl."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. připravuje pro obec zakázku za 60 500 Kč s DPH a chce zálohu 50 %.",
+      "steps": [
+        "Otevřete Faktury a vyhledejte doklad typu Cenová nabídka. Otevřete ho a prohlédněte si tlačítka nahoře.",
+        "Klikněte na Vytvořit zálohovou. Upravte zálohu na polovinu celkové částky a uložte. Všimněte si, že doklad je typu Zálohová faktura.",
+        "Najděte v demu zálohovou fakturu, ke které už existuje faktura (najdete ji v seznamu Faktury). Otevřete obě a porovnejte: co mají stejné a čím se liší?",
+        "U vaší nové zálohové faktury klikněte na Vytvořit fakturu. Podívejte se na pole Již uhrazeno a Zbývá uhradit.",
+        "Na papíře sestavte daňový doklad k přijaté platbě za zálohu 30 250 Kč s DPH (sazba 21 %): dopočítejte základ a daň výpočtem shora. Aplikace tento doklad zatím nevystavuje.",
+        "Na papíře sestavte vyúčtování: celé plnění, odečet zálohy, doplatek, a to zvlášť pro základ, daň i celkovou částku."
+      ],
+      "check": "Hotovo je, když má student v demu řetězec nabídka – zálohová faktura – faktura a na papíře správně spočítaný daňový doklad k platbě i vyúčtování (záloha: základ 25 000 Kč, daň 5 250 Kč)."
+    },
+    "worksheet": [
+      {
+        "q": "Je zálohová faktura daňovým dokladem?",
+        "a": "Ne. Je to výzva k platbě, daň z jejího vystavení nevzniká."
+      },
+      {
+        "q": "Plátce vystavil zálohovou fakturu 1. března, zákazník zaplatil 10. března, zboží dodá 2. dubna. Kdy vzniká povinnost přiznat daň ze zálohy?",
+        "a": "10. března, dnem přijetí platby (§ 20a odst. 2), pokud je plnění dostatečně určité."
+      },
+      {
+        "q": "Do kdy musí vystavit daňový doklad k přijaté platbě?",
+        "a": "Do 15 dnů od přijetí platby, tedy do 25. března (§ 28 odst. 8)."
+      },
+      {
+        "q": "Záloha 30 250 Kč s DPH 21 %. Jaký je základ a daň?",
+        "a": "Základ 25 000 Kč, daň 5 250 Kč (30 250 − 30 250 / 1,21)."
+      },
+      {
+        "q": "Celá zakázka je 50 000 Kč bez DPH, záloha z otázky 4 byla zaplacena. Kolik činí doplatek?",
+        "a": "Celkem 60 500 Kč s DPH (základ 50 000, daň 10 500). Po odečtení zálohy zbývá základ 25 000, daň 5 250, doplatek 30 250 Kč."
+      },
+      {
+        "q": "Zákazník zaplatil zálohu „na něco z katalogu“, ale ještě nevybral co. Vzniká daň?",
+        "a": "Ne, protože plnění není dostatečně určité: není známo zboží ani sazba (§ 20a odst. 3)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 20a – daň z přijaté úplaty",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p20a"
+      },
+      {
+        "label": "Zákon o DPH, § 28 – daňový doklad k přijaté platbě a lhůta",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p28"
+      },
+      {
+        "label": "Zákon o DPH, § 29 odst. 3 – údaje, které doklad nemusí obsahovat",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p29"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Nabídky a zálohové faktury v aplikaci",
+        "href": "/features/quotes-and-proforma-invoices"
+      },
+      {
+        "label": "Částečné platby",
+        "href": "/features/partial-payments"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "credit-notes": {
+    "name": "Dobropis a oprava faktury",
+    "title": "Dobropis, opravný daňový doklad a storno",
+    "lead": "Faktura už odešla a zákazník vrací zboží. Studenti se naučí, kdy vystavit opravný daňový doklad, co na něm musí být a proč se vystavená faktura nemaže.",
+    "metaDescription": "Vyučovací hodina: oprava základu daně (§ 42 ZDPH), náležitosti opravného daňového dokladu (§ 45), lhůta 15 dnů, rozdíl dobropisu a storna. Úkol v demu.",
+    "goals": [
+      "Rozpoznat situace, kdy je třeba opravit základ daně.",
+      "Vyjmenovat náležitosti opravného daňového dokladu.",
+      "Vystavit v demu dobropis k existující faktuře.",
+      "Vysvětlit, proč se vystavená faktura nesmí smazat ani přepsat."
+    ],
+    "teacherNotes": [
+      "V praxi se používá slovo dobropis, zákon mluví o opravném daňovém dokladu (§ 45). Na začátku hodiny tyto pojmy sjednoťte.",
+      "Oprava je samostatné zdanitelné plnění uskutečněné dnem, kdy nastaly rozhodné skutečnosti (§ 42 odst. 3), a doklad má být vystaven a doručen do 15 dnů (§ 42 odst. 5). Opravu nelze provést po konci sedmého roku od původního plnění (§ 42 odst. 8).",
+      "V aplikaci najdete u vystavené faktury tři akce: Vystavit dobropis (vrácení nebo sleva), Nová faktura s opravou (chyba v údajích) a Stornovat. Ukažte rozdíl na tabuli dřív, než studenti začnou klikat.",
+      "Pozor na sazbu: při opravě se použije sazba platná u původního plnění (§ 42 odst. 7)."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Situace: zákazník vrátil dvě ze deseti židlí. Smažeme fakturu a vystavíme novou?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: oprava základu daně, náležitosti, lhůty, dobropis a storno."
+      },
+      {
+        "min": "15–33",
+        "text": "Úkol v demu: dobropis a faktura s opravou."
+      },
+      {
+        "min": "33–43",
+        "text": "Pracovní list."
+      },
+      {
+        "min": "43–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Kdy opravit základ daně",
+        "body": "Plátce opraví základ daně, když po uskutečnění plnění nastane skutečnost, která ho mění: vrácení zboží, sleva, zrušení části dodávky (§ 42 odst. 1)."
+      },
+      {
+        "title": "Opravný daňový doklad",
+        "body": "Obsahuje údaje o dodavateli a odběrateli včetně DIČ, číslo původního dokladu, vlastní číslo, důvod opravy, rozdíl základu, rozdíl daně, rozdíl celkové částky a den, kdy nastaly skutečnosti rozhodné pro opravu (§ 45 odst. 1)."
+      },
+      {
+        "title": "Lhůty",
+        "body": "Doklad je třeba vystavit a doručit příjemci do 15 dnů ode dne rozhodné skutečnosti (§ 42 odst. 5). Opravu nelze provést po uplynutí sedmi let od konce roku původního plnění (§ 42 odst. 8)."
+      },
+      {
+        "title": "Proč fakturu nemazat",
+        "body": "Vystavená faktura je účetní záznam s pořadovým číslem. Smazání by vytvořilo mezeru v řadě a zmizel by doklad, podle kterého už mohl odběratel uplatnit odpočet. Chyba se proto opravuje novým dokladem."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. dodala zákazníkovi zboží a zákazník část vrací. Opravíte to správně.",
+      "steps": [
+        "Otevřete Faktury a najděte existující dobropis v demu. Otevřete ho a najděte na něm údaje z § 45 odst. 1. Které z nich najdete a jak se odkazuje na původní fakturu?",
+        "Otevřete libovolnou vystavenou fakturu se dvěma a více položkami. Klikněte na Vystavit dobropis.",
+        "V dobropisu ponechte jen položku, kterou zákazník vrací, a upravte množství podle zadání učitele. Částky jsou záporné. Uložte a vystavte.",
+        "U jiné faktury vyzkoušejte akci Nová faktura s opravou. V čem se liší od dobropisu? Kdy byste ji použili?",
+        "Zkuste u vystavené faktury najít tlačítko Smazat. Proč tam není? Zapište si odpověď."
+      ],
+      "check": "Hotovo je, když má student vystavený dobropis odkazující na původní fakturu a umí vysvětlit rozdíl mezi dobropisem, fakturou s opravou a stornem."
+    },
+    "worksheet": [
+      {
+        "q": "Zákazník vrátil 2 z 10 židlí po 1 500 Kč bez DPH (sazba 21 %). Jaký je rozdíl základu, daně a celkové částky na dobropisu?",
+        "a": "Základ −3 000 Kč, daň −630 Kč, celkem −3 630 Kč."
+      },
+      {
+        "q": "Vyjmenujte aspoň pět náležitostí opravného daňového dokladu.",
+        "a": "Údaje o dodavateli a odběrateli, jejich DIČ, číslo původního dokladu, číslo opravného dokladu, důvod opravy, rozdíl základu, rozdíl daně, rozdíl celkové částky, den rozhodné skutečnosti (§ 45 odst. 1)."
+      },
+      {
+        "q": "Zboží bylo vráceno 4. dubna. Do kdy musí být opravný doklad doručen zákazníkovi?",
+        "a": "Do 15 dnů od rozhodné skutečnosti, tedy do 19. dubna (§ 42 odst. 5)."
+      },
+      {
+        "q": "Původní faktura byla se sazbou, která se mezitím změnila. Jakou sazbu použijete na dobropisu?",
+        "a": "Sazbu platnou ke dni původního plnění (§ 42 odst. 7)."
+      },
+      {
+        "q": "Fakturantka zjistila, že na faktuře je překlep v názvu odběratele. Je to oprava základu daně?",
+        "a": "Není, základ se nemění. Vystaví se nová faktura s opravou nebo opravný doklad podle interních pravidel; vystavená faktura se nemaže."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 42 – oprava základu daně",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p42"
+      },
+      {
+        "label": "Zákon o DPH, § 45 – opravný daňový doklad",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p45"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kontrola povinných údajů na faktuře",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "foreign-customers-reverse-charge": {
+    "name": "Zahraniční odběratelé a přenesená daňová povinnost",
+    "title": "Zahraniční odběratelé: služby do EU, zboží do EU a základy OSS",
+    "lead": "Kdy se na faktuře do zahraničí neúčtuje DPH, co tam napsat místo ní a proč se DPH uvádí v korunách i na faktuře v eurech. Na konci krátce režim OSS pro prodej spotřebitelům v EU.",
+    "metaDescription": "Vyučovací hodina: místo plnění služby (§ 9 ZDPH), „daň odvede zákazník“ (§ 29 odst. 2), dodání zboží do EU (§ 64), souhrnné hlášení, základy OSS. Úkol v demu s fakturou v EUR.",
+    "goals": [
+      "Určit místo plnění u služby pro podnikatele z jiného státu EU.",
+      "Vystavit fakturu s přenesením daňové povinnosti a správným textem.",
+      "Vysvětlit, proč se daň a základ uvádějí v korunách i na faktuře v cizí měně.",
+      "Popsat, k čemu slouží souhrnné hlášení a režim OSS."
+    ],
+    "teacherNotes": [
+      "Hlavní pravidlo pro služby mezi podnikateli: místem plnění je sídlo příjemce (§ 9 odst. 1). Daň tedy přiznává odběratel ve své zemi a na faktuře je text „daň odvede zákazník“ (§ 29 odst. 2 písm. c), bez sazby a výše daně (§ 29 odst. 3 písm. e).",
+      "Dodání zboží do jiného členského státu plátci je osvobozeno (§ 64), pokud jsou splněny podmínky (DIČ odběratele, přeprava do jiného státu). Doklad se vystavuje do 15 dnů od konce měsíce (§ 28 odst. 9).",
+      "OSS (zvláštní režim jednoho správního místa, § 110a a násl.) se týká hlavně prodeje zboží na dálku a služeb spotřebitelům v jiných státech EU. Aplikace OSS nepodporuje, proto stačí pojem vysvětlit a příklad spočítat na papíře.",
+      "Kurz pro přepočet určuje § 4 odst. 8 zákona o DPH: kurz devizového trhu vyhlášený ČNB, nebo referenční kurz ECB, platný ke dni vzniku povinnosti přiznat daň. V hodině stačí, že aplikace kurz ČNB nabídne. Detaily přepočtu nechte na seminář o účetnictví."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka: firma z Brna fakturuje firmě z Vídně za webdesign. Účtuje českou DPH?"
+      },
+      {
+        "min": "5–17",
+        "text": "Výklad: místo plnění, přenesení daňové povinnosti, zboží do EU, třetí země, souhrnné hlášení."
+      },
+      {
+        "min": "17–35",
+        "text": "Úkol v demu: faktura do Německa v EUR."
+      },
+      {
+        "min": "35–42",
+        "text": "OSS na příkladu a pracovní list."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Místo plnění služby",
+        "body": "U služby pro osobu povinnou k dani je místem plnění místo, kde má příjemce sídlo (§ 9 odst. 1). Česká DPH se pak neúčtuje."
+      },
+      {
+        "title": "Daň odvede zákazník",
+        "body": "Když daň přiznává odběratel, musí být na dokladu text „daň odvede zákazník“ (§ 29 odst. 2 písm. c). Sazba a výše daně se neuvádějí (§ 29 odst. 3 písm. e)."
+      },
+      {
+        "title": "Zboží do EU",
+        "body": "Dodání zboží plátci z jiného členského státu, které je odesláno do tohoto státu, je od daně osvobozeno (§ 64). Na faktuře se uvede odkaz na osvobození (§ 29 odst. 2 písm. a). Plnění se hlásí v souhrnném hlášení (§ 102)."
+      },
+      {
+        "title": "OSS",
+        "body": "Prodává-li firma zboží na dálku nebo služby spotřebitelům v jiných státech EU, platí DPH státu zákazníka. Režim jednoho správního místa (§ 110a a násl.) umožní tuto daň přiznat a zaplatit v Česku bez registrace v každém státě."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. připravila školení pro německou firmu Holzwerk Neumann. Fakturuje v eurech.",
+      "steps": [
+        "Otevřete Kontakty a najděte Holzwerk Neumann. Ověřte stav DIČ (štítek ve VIES) a zapište si ho.",
+        "Otevřete Faktury a vyhledejte existující fakturu s přenesenou daňovou povinností v EUR. Najděte na ní text o přenesení a údaje v korunách.",
+        "Klikněte na Nová faktura, vyberte Holzwerk Neumann a nastavte Měna na EUR. Všimněte si nabídnutého kurzu ČNB.",
+        "Přidejte položku Školení – návrh dřevostaveb, 1 den, 1 200 EUR. Zapněte Přenesená daňová povinnost. Co se stalo se sazbou DPH na řádku?",
+        "Uložte koncept a stáhněte PDF. Najděte na něm text pro zákazníka a přepočet do korun.",
+        "Na papíře: česká firma prodá přes e-shop slovenskému spotřebiteli zboží za 100 EUR bez daně. Spočítejte DPH se slovenskou základní sazbou 23 % a napište, jak by ji firma v režimu OSS zaplatila."
+      ],
+      "check": "Hotovo je, když má student koncept faktury v EUR s přenesenou daňovou povinností, umí ukázat text „daň odvede zákazník“ a má na papíře spočítaný příklad OSS (23 EUR DPH, platba přes OSS v Česku)."
+    },
+    "worksheet": [
+      {
+        "q": "Česká firma (plátce) fakturuje rakouské firmě za překlad. Kde je místo plnění a kdo přizná daň?",
+        "a": "V Rakousku, v sídle příjemce (§ 9 odst. 1). Daň přizná rakouský odběratel; na faktuře je „daň odvede zákazník“."
+      },
+      {
+        "q": "Co se na takové faktuře neuvádí?",
+        "a": "Sazba daně a výše daně (§ 29 odst. 3 písm. e)."
+      },
+      {
+        "q": "Česká firma prodá stroj firmě v Polsku a doveze ho do Polska. Jaký je režim?",
+        "a": "Osvobozené dodání zboží do jiného členského státu (§ 64), pokud má odběratel platné DIČ a zboží bylo přepraveno. Na faktuře je odkaz na osvobození; plnění se uvede v souhrnném hlášení (§ 102)."
+      },
+      {
+        "q": "Do kdy se vystaví doklad za dodání zboží do EU uskutečněné 10. května?",
+        "a": "Do 15 dnů od konce měsíce, tedy do 15. června (§ 28 odst. 9)."
+      },
+      {
+        "q": "Na faktuře v EUR je daň nulová kvůli přenesení. V jaké měně by se jinak uváděla výše daně?",
+        "a": "V české měně (§ 29 odst. 1 písm. l)."
+      },
+      {
+        "q": "Co je OSS jednou větou?",
+        "a": "Režim, ve kterém firma přizná a zaplatí DPH z prodeje spotřebitelům v jiných státech EU v jednom přiznání v Česku, místo aby se registrovala v každém státě."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 9 – místo plnění při poskytnutí služby",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p9"
+      },
+      {
+        "label": "Zákon o DPH, § 29 – „daň odvede zákazník“ a údaje v Kč",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p29"
+      },
+      {
+        "label": "Zákon o DPH, § 64 – dodání zboží do jiného členského státu",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p64"
+      },
+      {
+        "label": "Zákon o DPH, § 102 – souhrnné hlášení",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p102"
+      },
+      {
+        "label": "Zákon o DPH, § 110a – zvláštní režimy jednoho správního místa",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p110a"
+      },
+      {
+        "label": "VIES – ověření DIČ v EU",
+        "href": "https://ec.europa.eu/taxation_customs/vies/"
+      },
+      {
+        "label": "Evropská komise – portál OSS",
+        "href": "https://vat-one-stop-shop.ec.europa.eu/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Faktury v cizí měně",
+        "href": "/features/foreign-currency-invoices"
+      },
+      {
+        "label": "Kurzy ČNB",
+        "href": "/calculators/cnb-exchange-rates"
+      },
+      {
+        "label": "Přiznání k DPH a kontrolní hlášení",
+        "href": "/guides/vat-return-control-statement"
+      },
+      {
+        "label": "Identifikovaná osoba",
+        "href": "/guides/identified-person"
+      }
+    ]
+  },
+  "payment-reminders-late-interest": {
+    "name": "Upomínky a úrok z prodlení",
+    "title": "Upomínky, úrok z prodlení a promlčení",
+    "lead": "Faktura je po splatnosti. Studenti napíšou zdvořilou upomínku, spočítají úrok z prodlení podle nařízení vlády a zjistí, jak dlouho lze dluh vymáhat.",
+    "metaDescription": "Vyučovací hodina: úrok z prodlení (§ 1970 OZ, nařízení vlády 351/2013 Sb.), minimální náklady 1 200 Kč, promlčení (§ 629 OZ), automatické upomínky v demu.",
+    "goals": [
+      "Rozpoznat fakturu po splatnosti a odeslat upomínku.",
+      "Spočítat zákonný úrok z prodlení mezi podnikateli.",
+      "Vysvětlit nárok na minimální náklady spojené s uplatněním pohledávky.",
+      "Znát obecnou promlčecí lhůtu."
+    ],
+    "teacherNotes": [
+      "Výši úroku z prodlení stanoví nařízení vlády 351/2013 Sb.: repo sazba ČNB platná první den kalendářního pololetí, v němž prodlení nastalo, zvýšená o 8 procentních bodů (§ 2 odst. 1). Aktuální repo sazbu nechte studenty dohledat na webu ČNB, ať s ní pracují sami.",
+      "Mezi podnikateli má věřitel také nárok na minimální náklady spojené s uplatněním pohledávky 1 200 Kč (§ 3 nařízení).",
+      "Aplikace upomínky posílá (i automaticky podle nastavení), úrok z prodlení ale nepočítá. Výpočet úroku proto udělejte na papíře.",
+      "Obecná promlčecí lhůta je tři roky (§ 629 OZ). Dobrá otázka: od kdy běží? Od okamžiku, kdy mohlo být právo uplatněno poprvé, typicky ode dne po splatnosti."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Hraní rolí: zavolejte zákazníkovi, který nezaplatil. Co mu řeknete?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: prodlení, úrok, minimální náklady, promlčení."
+      },
+      {
+        "min": "15–30",
+        "text": "Úkol v demu: upomínka a nastavení automatických upomínek."
+      },
+      {
+        "min": "30–42",
+        "text": "Výpočet úroku na papíře."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Prodlení",
+        "body": "Dlužník je v prodlení, když nezaplatí řádně a včas. Věřitel pak může požadovat úrok z prodlení (§ 1970 OZ), aniž by ho musel předem upozorňovat."
+      },
+      {
+        "title": "Výše úroku",
+        "body": "Repo sazba ČNB platná první den kalendářního pololetí, v němž prodlení nastalo, plus 8 procentních bodů (nařízení vlády 351/2013 Sb., § 2 odst. 1). Sazba se nemění po celou dobu prodlení v daném pololetí."
+      },
+      {
+        "title": "Výpočet",
+        "body": "Úrok = dlužná částka × roční sazba × počet dnů prodlení / 365. Pokud smlouva sjednává jinou sazbu, použije se smluvní."
+      },
+      {
+        "title": "Minimální náklady a promlčení",
+        "body": "Mezi podnikateli má věřitel nárok na 1 200 Kč jako minimální náklady spojené s uplatněním pohledávky (§ 3 nařízení). Obecná promlčecí lhůta je tři roky (§ 629 OZ)."
+      }
+    ],
+    "task": {
+      "intro": "Firma Lipová stezka s.r.o. má několik faktur po splatnosti. Pošlete upomínku a nastavíte automatiku.",
+      "steps": [
+        "Otevřete Faktury a vyfiltrujte faktury po splatnosti. Zapište si, kolik jich je a jaká je jejich celková částka.",
+        "Otevřete jednu z nich a klikněte na Poslat upomínku. Přečtěte si předvyplněný text. Je zdvořilý? Co byste změnili?",
+        "Otevřete Nastavení, sekci Faktury, a najděte Upomínky. Zjistěte, jak se nastavuje automatické odesílání, počet dní mezi upomínkami a jejich maximální počet. Nastavte vlastní hodnoty a zapište si, proč jste je zvolili.",
+        "Najděte v nastavení šablonu e-mailu Upomínka odběrateli a upravte ji tak, aby obsahovala číslo faktury a částku.",
+        "Na papíře spočítejte úrok z prodlení u vybrané faktury: dohledejte repo sazbu ČNB k prvnímu dni pololetí, přičtěte 8 procentních bodů a spočítejte úrok za skutečný počet dnů prodlení."
+      ],
+      "check": "Hotovo je, když má student odeslanou upomínku, vlastní nastavení automatických upomínek se zdůvodněním a správně spočítaný úrok z prodlení včetně uvedené repo sazby a jejího zdroje."
+    },
+    "worksheet": [
+      {
+        "q": "Faktura na 50 000 Kč byla splatná 31. března, zaplaceno 30. dubna (30 dnů prodlení). Repo sazba k 1. lednu byla pro účely příkladu 3,5 %. Jaký je úrok z prodlení?",
+        "a": "Sazba 3,5 + 8 = 11,5 % ročně. Úrok = 50 000 × 0,115 × 30 / 365 = 472,60 Kč."
+      },
+      {
+        "q": "Na co má věřitel-podnikatel nárok kromě úroku?",
+        "a": "Na minimální náklady spojené s uplatněním pohledávky 1 200 Kč (§ 3 nařízení vlády 351/2013 Sb.)."
+      },
+      {
+        "q": "Prodlení začalo v srpnu a trvá do listopadu. Kterou repo sazbu použijete?",
+        "a": "Sazbu platnou 1. července, tedy první den pololetí, v němž prodlení nastalo (§ 2 odst. 1)."
+      },
+      {
+        "q": "Faktura byla splatná 15. června 2026. Zhruba do kdy je třeba pohledávku uplatnit u soudu, aby nebyla promlčená?",
+        "a": "Promlčecí lhůta je tři roky (§ 629 OZ) a běží od chvíle, kdy šlo pohledávku uplatnit poprvé, tedy ode dne po splatnosti. Skončí tedy v polovině června 2029 (obecné pravidlo; zákon zná i případy, kdy lhůta neběží)."
+      },
+      {
+        "q": "Proč nastavit maximální počet automatických upomínek?",
+        "a": "Aby zákazník nedostával nekonečně e-mailů; po posledním upomínání má smysl přejít k telefonu, osobnímu jednání nebo vymáhání."
+      }
+    ],
+    "law": [
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 1970 – úrok z prodlení",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1970"
+      },
+      {
+        "label": "Občanský zákoník, § 629 – promlčecí lhůta",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p629"
+      },
+      {
+        "label": "Nařízení vlády č. 351/2013 Sb. – výše úroku a minimální náklady",
+        "href": "https://www.zakonyprolidi.cz/cs/2013-351"
+      },
+      {
+        "label": "Česká národní banka – repo sazba",
+        "href": "https://www.cnb.cz/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Automatické upomínky",
+        "href": "/features/payment-reminders"
+      },
+      {
+        "label": "Kalkulačka data splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Částečné platby",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "flat-tax": {
+    "name": "Paušální daň",
+    "title": "Paušální daň pro OSVČ: kdo do ní smí a jak se hlídá limit",
+    "lead": "Paušální režim nahradí daňové přiznání a přehledy jednou měsíční platbou. Studenti zjistí, kdo do něj smí vstoupit, jak fungují pásma a jak v aplikaci hlídat limit příjmů.",
+    "metaDescription": "Vyučovací hodina o paušální dani: podmínky (§ 2a ZDP), pásma podle výše a druhu příjmů, oznámení o vstupu do 10. ledna, platba do 20. dne měsíce. Úkol v demu OSVČ v paušálním režimu.",
+    "goals": [
+      "Vyjmenovat podmínky vstupu do paušálního režimu.",
+      "Zařadit OSVČ do správného pásma podle výše a druhu příjmů.",
+      "Znát termíny oznámení o vstupu a měsíčních plateb.",
+      "Sledovat v demu příjmy vůči limitu pásma."
+    ],
+    "teacherNotes": [
+      "Paušální daň je jen česká. Slovensko podobný režim nemá; pro slovenské OSVČ nabízíme kalkulačku daně a odvodů SZČO.",
+      "Měsíční částky se mění každý rok podle minimální a průměrné mzdy. Proto je na stránce záměrně neuvádíme: nechte studenty dohledat aktuální výši na webu Finanční správy nebo v naší kalkulačce paušální daně.",
+      "Pásma (§ 2a odst. 5 ZDP): první pásmo do 1 000 000 Kč příjmů bez ohledu na druh, nebo do 1 500 000 Kč, pokud aspoň 75 % příjmů spadá pod výdajový paušál 80 % nebo 60 %, nebo do 2 000 000 Kč, pokud aspoň 75 % spadá pod paušál 80 %. Druhé pásmo do 1 500 000 Kč, nebo do 2 000 000 Kč při příjmech s paušálem 80 % a 60 %. Třetí pásmo do 2 000 000 Kč.",
+      "Podmínky (§ 2a odst. 1): OSVČ, která není plátcem DPH (výjimka: identifikovaná osoba), není v insolvenci a nemá příjmy ze závislé činnosti (s výjimkami). Oznámení o vstupu se podává do 10. ledna (§ 38lc odst. 1), záloha je splatná do 20. dne měsíce (§ 38lk odst. 5)."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka: proč by si OSVČ chtěla platit každý měsíc stejnou částku místo daňového přiznání?"
+      },
+      {
+        "min": "5–17",
+        "text": "Výklad: podmínky, pásma, termíny, co paušální daň obsahuje (daň, sociální a zdravotní pojištění)."
+      },
+      {
+        "min": "17–33",
+        "text": "Úkol v demu: OSVČ v paušálním režimu."
+      },
+      {
+        "min": "33–42",
+        "text": "Pracovní list: zařazení do pásma."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Co paušální daň obsahuje",
+        "body": "Jednu měsíční platbu, ve které je daň z příjmů, sociální pojištění a zdravotní pojištění (§ 7a a § 38li ZDP). Kdo je v režimu celý rok, nepodává daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu."
+      },
+      {
+        "title": "Kdo smí vstoupit",
+        "body": "OSVČ, která není plátcem DPH (s výjimkou identifikované osoby), není v insolvenci, nemá příjmy ze zaměstnání (až na výjimky) a vejde se do limitu příjmů (§ 2a odst. 1)."
+      },
+      {
+        "title": "Pásma",
+        "body": "Tři pásma se liší výší měsíční platby. Do kterého OSVČ patří, závisí na výši příjmů a na tom, jaký výdajový paušál by se na ně vztahoval (§ 2a odst. 5)."
+      },
+      {
+        "title": "Termíny",
+        "body": "Oznámení o vstupu do 10. ledna daného roku (§ 38lc odst. 1). Měsíční platba je splatná do 20. dne kalendářního měsíce (§ 38lk odst. 5)."
+      }
+    ],
+    "task": {
+      "intro": "Pracujete pro Ondřeje Kalinu, OSVČ v paušálním režimu a neplátce DPH.",
+      "steps": [
+        "Na stránce /demo založte demo „OSVČ v paušálním režimu“. V menu Faktury sečtěte (nebo vyčtěte z přehledu), kolik Ondřej vyfakturoval za posledních dvanáct měsíců.",
+        "Otevřete Nastavení, sekci Fakturační údaje, a najděte otázku Jste v paušálním režimu? a druh činnosti. Zapište si, co je vyplněno a proč na tom záleží pro pásmo.",
+        "Otevřete naši kalkulačku paušální daně (odkaz níže), zadejte Ondřejovy roční příjmy a druh činnosti. Ve kterém pásmu je a kolik měsíčně platí?",
+        "Vystavte novou fakturu na 150 000 Kč a znovu spočítejte roční příjmy. Vejde se Ondřej stále do svého pásma? Hrozí přechod do vyššího pásma nebo vypadnutí z režimu?",
+        "Na webu Finanční správy (odkaz níže) dohledejte aktuální měsíční částky pro všechna tři pásma a zapište je do pracovního listu."
+      ],
+      "check": "Hotovo je, když student umí říct, v jakém pásmu Ondřej je, kolik platí měsíčně (podle aktuálních údajů Finanční správy) a kolik mu zbývá do limitu pásma."
+    },
+    "worksheet": [
+      {
+        "q": "Grafička (neplátce, bez zaměstnání) měla loni příjmy 900 000 Kč. Může vstoupit do paušálního režimu a do kterého pásma?",
+        "a": "Ano, splňuje podmínky (§ 2a odst. 1). Patří do prvního pásma, protože příjmy nepřesáhly 1 000 000 Kč."
+      },
+      {
+        "q": "Řemeslník s živností (paušál 80 %) má příjmy 1 800 000 Kč. Které pásmo?",
+        "a": "První pásmo, protože aspoň 75 % jeho příjmů spadá pod paušál 80 % a příjmy nepřesáhly 2 000 000 Kč (§ 2a odst. 5)."
+      },
+      {
+        "q": "Programátor (paušál 60 %) má příjmy 1 800 000 Kč. Které pásmo?",
+        "a": "Druhé pásmo: první pásmo pro paušál 60 % končí na 1 500 000 Kč, druhé pásmo pro paušál 80 % a 60 % sahá do 2 000 000 Kč."
+      },
+      {
+        "q": "Do kdy se podává oznámení o vstupu do paušálního režimu?",
+        "a": "Do 10. ledna roku, od kterého chce OSVČ v režimu být (§ 38lc odst. 1)."
+      },
+      {
+        "q": "Do kdy je splatná měsíční platba?",
+        "a": "Do 20. dne kalendářního měsíce (§ 38lk odst. 5)."
+      },
+      {
+        "q": "Může do paušálního režimu vstoupit plátce DPH?",
+        "a": "Ne, s výjimkou identifikované osoby (§ 2a odst. 1)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o daních z příjmů č. 586/1992 Sb., § 2a – paušální režim",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p2a"
+      },
+      {
+        "label": "Zákon o daních z příjmů, § 7a – paušální daň",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p7a"
+      },
+      {
+        "label": "Zákon o daních z příjmů, § 38lc – oznámení o vstupu",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p38lc"
+      },
+      {
+        "label": "Zákon o daních z příjmů, § 38lk – placení paušální zálohy",
+        "href": "https://www.zakonyprolidi.cz/cs/1992-586#p38lk"
+      },
+      {
+        "label": "Finanční správa – paušální daň, aktuální částky",
+        "href": "https://financnisprava.gov.cz/cs/dane/dane/dan-z-prijmu/pausalni-dan"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka paušální daně",
+        "href": "/calculators/flat-tax"
+      },
+      {
+        "label": "Kalkulačka daně a odvodů OSVČ",
+        "href": "/calculators/self-employed-tax"
+      },
+      {
+        "label": "Identifikovaná osoba",
+        "href": "/guides/identified-person"
+      }
+    ]
+  }
+}
