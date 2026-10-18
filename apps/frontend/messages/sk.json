@@ -1894,7 +1894,18 @@
       "editPermissions": "Upraviť oprávnenia",
       "editPermissionsFor": "Oprávnenia – {name}",
       "permissionsHint": "Úpravy zahŕňajú aj čítanie. Tím, údaje firmy a predplatné spravujú len administrátori.",
-      "save": "Uložiť"
+      "save": "Uložiť",
+      "directory": {
+        "toggle": "Nemáte účtovníka? Vyberte si z overených",
+        "hint": "Účtovníci z nášho adresára, ktorých sme preverili a schválili. Pozvať iba vyplní e-mail, pozvánku odošlete sami.",
+        "region": "Kraj",
+        "anyRegion": "Všetky kraje",
+        "invite": "Pozvať",
+        "contact": "Kontaktovať",
+        "empty": "V tomto kraji zatiaľ nikoho nemáme.",
+        "all": "Celý adresár účtovníkov",
+        "picked": "E-mail {email} je vyplnený. Skontrolujte rolu a pošlite pozvánku."
+      }
     },
     "exports": {
       "title": "Exporty pre účtovníka",
@@ -7375,5 +7386,36 @@
       "VIES": "Podľa európskeho systému VIES",
       "none": "Zdroj neznámy"
     }
+  },
+  "adminAccountants": {
+    "title": "Adresár účtovníkov – schvaľovanie",
+    "description": "Nové ani upravené záznamy sa v adresári nezobrazia, kým ich neschválite.",
+    "loadError": "Záznamy sa nepodarilo načítať.",
+    "statusLabel": "Stav záznamu",
+    "status": {
+      "pending": "Na schválenie",
+      "approved": "Schválené",
+      "rejected": "Zamietnuté",
+      "withdrawn": "Stiahnuté"
+    },
+    "empty": "Nič tu nie je.",
+    "updated": "upravené {date}",
+    "ico": "IČO",
+    "fields": {
+      "places": "Pôsobnosť",
+      "services": "Služby",
+      "languages": "Jazyky",
+      "price": "Cena",
+      "contact": "Kontakt"
+    },
+    "note": "Poznámka pre účtovníka",
+    "notePlaceholder": "Nepovinné. Pri zamietnutí napíšte prečo.",
+    "approve": "Schváliť",
+    "reject": "Zamietnuť",
+    "approved": "Záznam schválený.",
+    "rejected": "Záznam zamietnutý.",
+    "changed": "Účtovník medzitým záznam upravil. Načítali sme novú verziu, prejdite ju znova.",
+    "failed": "Akcia zlyhala",
+    "withdrawnHint": "Účtovník záznam stiahol. Znova ho posúdite, keď ho opäť uloží."
   }
 }

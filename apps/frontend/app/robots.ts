@@ -29,6 +29,7 @@ const PRIVATE = [
   'time',
   'invite',
   'welcome',
+  'admin',
   'i/',
   'c/',
   'unsubscribe/',

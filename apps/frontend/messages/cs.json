@@ -1894,7 +1894,18 @@
       "editPermissions": "Upravit oprávnění",
       "editPermissionsFor": "Oprávnění – {name}",
       "permissionsHint": "Úpravy zahrnují i čtení. Tým, údaje firmy a předplatné spravují jen administrátoři.",
-      "save": "Uložit"
+      "save": "Uložit",
+      "directory": {
+        "toggle": "Nemáte účetní? Vyberte z ověřených",
+        "hint": "Účetní z našeho adresáře, které jsme prošli a schválili. Pozvat jen vyplní e-mail, pozvánku odešlete sami.",
+        "region": "Kraj",
+        "anyRegion": "Všechny kraje",
+        "invite": "Pozvat",
+        "contact": "Kontaktovat",
+        "empty": "V tomto kraji zatím nikoho nemáme.",
+        "all": "Celý adresář účetních",
+        "picked": "E-mail {email} je vyplněný. Zkontrolujte roli a pošlete pozvánku."
+      }
     },
     "exports": {
       "title": "Exporty pro účetní",
@@ -7520,5 +7531,36 @@
       "VIES": "Podle evropského systému VIES",
       "none": "Zdroj neznámý"
     }
+  },
+  "adminAccountants": {
+    "title": "Adresář účetních – schvalování",
+    "description": "Žádné nové ani upravené záznamy se v adresáři nezobrazí, dokud je neschválíte.",
+    "loadError": "Záznamy se nepodařilo načíst.",
+    "statusLabel": "Stav záznamu",
+    "status": {
+      "pending": "Ke schválení",
+      "approved": "Schválené",
+      "rejected": "Zamítnuté",
+      "withdrawn": "Stažené"
+    },
+    "empty": "Tady nic není.",
+    "updated": "upraveno {date}",
+    "ico": "IČO",
+    "fields": {
+      "places": "Působnost",
+      "services": "Služby",
+      "languages": "Jazyky",
+      "price": "Cena",
+      "contact": "Kontakt"
+    },
+    "note": "Poznámka pro účetní",
+    "notePlaceholder": "Nepovinné. U zamítnutí napište proč.",
+    "approve": "Schválit",
+    "reject": "Zamítnout",
+    "approved": "Záznam schválen.",
+    "rejected": "Záznam zamítnut.",
+    "changed": "Účetní záznam mezitím upravil. Načetli jsme novou verzi, projděte ji znovu.",
+    "failed": "Akce selhala",
+    "withdrawnHint": "Účetní záznam stáhl. Znovu ho posoudíte, až ho zase uloží."
   }
 }

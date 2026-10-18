@@ -1894,7 +1894,18 @@
       "editPermissions": "Edit permissions",
       "editPermissionsFor": "Permissions – {name}",
       "permissionsHint": "Edit includes read. Only administrators manage the team, company details and billing.",
-      "save": "Save"
+      "save": "Save",
+      "directory": {
+        "toggle": "Don't have an accountant? Pick a verified one",
+        "hint": "Accountants from our directory that we have reviewed and approved. Invite only fills in the e-mail; you still send the invitation yourself.",
+        "region": "Region",
+        "anyRegion": "All regions",
+        "invite": "Invite",
+        "contact": "Contact",
+        "empty": "Nobody in this region yet.",
+        "all": "Full accountant directory",
+        "picked": "{email} is filled in. Check the role and send the invitation."
+      }
     },
     "exports": {
       "title": "Accountant exports",
@@ -7519,5 +7530,36 @@
       "VIES": "From the EU VIES system",
       "none": "Unknown source"
     }
+  },
+  "adminAccountants": {
+    "title": "Accountant directory – review",
+    "description": "New and edited listings stay off the directory until you approve them.",
+    "loadError": "Could not load the listings.",
+    "statusLabel": "Listing status",
+    "status": {
+      "pending": "To review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "empty": "Nothing here.",
+    "updated": "edited {date}",
+    "ico": "Company ID",
+    "fields": {
+      "places": "Area",
+      "services": "Services",
+      "languages": "Languages",
+      "price": "Price",
+      "contact": "Contact"
+    },
+    "note": "Note for the accountant",
+    "notePlaceholder": "Optional. When rejecting, say why.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approved": "Listing approved.",
+    "rejected": "Listing rejected.",
+    "changed": "The accountant edited the listing in the meantime. The new version is loaded, please review it again.",
+    "failed": "Action failed",
+    "withdrawnHint": "The accountant withdrew the listing. You can review it again once they save it."
   }
 }
