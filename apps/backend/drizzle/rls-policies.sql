@@ -851,7 +851,8 @@ CREATE OR REPLACE FUNCTION list_tenant_memberships_for_user(p_user_id uuid)
 RETURNS TABLE (
   tenant_id uuid,
   company_name text,
-  role text
+  role text,
+  classroom boolean
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -860,7 +861,8 @@ AS $$
   SELECT
     tm.tenant_id,
     t.company_name,
-    tm.role::text
+    tm.role::text,
+    t.classroom_class_id IS NOT NULL
   FROM tenant_memberships tm
   JOIN tenants t ON t.id = tm.tenant_id
   WHERE tm.user_id = p_user_id
@@ -1285,6 +1287,7 @@ $$;
 REVOKE ALL ON FUNCTION report_invoice_abuse(uuid, text, text, text, text, integer) FROM PUBLIC;
 DROP FUNCTION IF EXISTS public_invoice_blocked(uuid);
 -- Whether the company behind a share link is suspended (portal shows a notice instead of the document).
+-- A practice company of a class (migration 0071) never shares documents publicly.
 CREATE OR REPLACE FUNCTION public_invoice_blocked(p_public_token uuid)
 RETURNS boolean
 LANGUAGE sql
@@ -1293,7 +1296,8 @@ SET search_path = public
 AS $$
   SELECT EXISTS (
     SELECT 1 FROM invoices i JOIN tenants t ON t.id = i.tenant_id
-    WHERE i.public_token = p_public_token AND t.suspended_at IS NOT NULL
+    WHERE i.public_token = p_public_token
+      AND (t.suspended_at IS NOT NULL OR t.classroom_class_id IS NOT NULL)
   );
 $$;
 REVOKE ALL ON FUNCTION public_invoice_blocked(uuid) FROM PUBLIC;

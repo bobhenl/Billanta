@@ -7,6 +7,8 @@ export interface TenantMembershipSummary {
   id: string;
   companyName: string;
   role: string;
+  /** A practice company of a class; a teacher sees their students' ones as viewer. */
+  classroom: boolean;
 }
 
 /** Raw column shape returned by `list_tenant_memberships_for_user` (see
@@ -22,6 +24,7 @@ type TenantMembershipRow = {
   tenant_id: string;
   company_name: string;
   role: string;
+  classroom: boolean;
 };
 
 /**
@@ -56,6 +59,7 @@ export class MeService {
       id: row.tenant_id,
       companyName: row.company_name,
       role: row.role,
+      classroom: row.classroom === true,
     }));
   }
 
@@ -65,14 +69,14 @@ export class MeService {
    * acceptance). Capped so a free account can't mint unlimited companies.
    */
   async createTenant(userId: string, companyName: string, tosVersion: string, ipAddress: string | null) {
-    const owned = (await this.listTenantMemberships(userId)).filter((m) => m.role === "owner").length;
+    const owned = (await this.listTenantMemberships(userId)).filter((m) => m.role === "owner" && !m.classroom).length;
     if (owned >= MAX_OWNED_TENANTS) {
       throw new BadRequestException({ error: "tenant_limit", message: `At most ${MAX_OWNED_TENANTS} companies per account` });
     }
     const [row] = await this.dbService.db.execute<{ tenant_id: string }>(
       sql`SELECT bootstrap_tenant_for_user(${userId}, ${companyName}, ${tosVersion}, ${ipAddress}, ${trialDays()}) AS tenant_id`,
     );
-    return { id: row!.tenant_id, companyName: companyName.trim(), role: "owner" };
+    return { id: row!.tenant_id, companyName: companyName.trim(), role: "owner", classroom: false };
   }
 }
 

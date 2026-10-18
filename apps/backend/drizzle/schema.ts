@@ -293,6 +293,9 @@ export const tenants = pgTable("tenants", {
   isDemo: boolean("is_demo").notNull().default(false),
   demoExpiresAt: timestamp("demo_expires_at", { withTimezone: true }),
   demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro">(),
+  // Classroom mode (0071, `src/classroom/`): a practice company of a class.
+  // Always a demo tenant too; set only by classroom_join.
+  classroomClassId: uuid("classroom_class_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1683,3 +1686,154 @@ export const demoSessions = pgTable("demo_sessions", {
   transferTokenHash: char("transfer_token_hash", { length: 64 }),
   transferredAt: timestamp("transferred_at", { withTimezone: true }),
 });
+
+// ---------------------------------------------------------------------------
+// Classroom mode (0071, `src/classroom/`, docs/classroom-mode-plan.md).
+// Global tables: the backend checks who may see what. Students, their
+// companies and the teachers' viewer memberships change only through the
+// classroom_* functions of that migration.
+// ---------------------------------------------------------------------------
+export type ClassroomSchoolLevel = "zs" | "ss" | "vos" | "vs" | "course";
+export type ClassroomTrack = "basic" | "standard" | "advanced";
+
+export const classroomSchools = pgTable(
+  "classroom_schools",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    country: char("country", { length: 2 }).$type<"CZ" | "SK">().notNull(),
+    ico: varchar("ico", { length: 12 }).notNull(),
+    name: text("name").notNull(),
+    level: text("level").$type<ClassroomSchoolLevel>().notNull(),
+    legalForm: text("legal_form"),
+    address: text("address"),
+    webUrl: text("web_url"),
+    emailDomain: text("email_domain"),
+    verification: text("verification").$type<"pending" | "verified" | "rejected">().notNull().default("pending"),
+    maxActiveStudents: integer("max_active_students").notNull().default(2000),
+    suspendedAt: timestamp("suspended_at", { withTimezone: true }),
+    reviewNote: text("review_note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+  },
+  (table) => ({
+    countryIcoUnique: uniqueIndex("classroom_schools_country_ico_unique").on(table.country, table.ico),
+  }),
+);
+
+export const classroomTeachers = pgTable(
+  "classroom_teachers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    schoolId: uuid("school_id")
+      .notNull()
+      .references(() => classroomSchools.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    subject: text("subject"),
+    expectedStudents: integer("expected_students"),
+    status: text("status").$type<"pending" | "approved" | "rejected">().notNull().default("pending"),
+    invitedBy: uuid("invited_by").references((): AnyPgColumn => classroomTeachers.id, { onDelete: "set null" }),
+    termsVersion: text("terms_version").notNull(),
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+  },
+  (table) => ({
+    userUnique: uniqueIndex("classroom_teachers_user_unique").on(table.userId),
+    schoolIdx: index("classroom_teachers_school_idx").on(table.schoolId),
+  }),
+);
+
+// An approved teacher vouches for a colleague of the same school.
+export const classroomTeacherInvites = pgTable("classroom_teacher_invites", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  schoolId: uuid("school_id")
+    .notNull()
+    .references(() => classroomSchools.id, { onDelete: "cascade" }),
+  email: varchar("email", { length: 320 }).notNull(),
+  invitedBy: uuid("invited_by")
+    .notNull()
+    .references(() => classroomTeachers.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const classroomClasses = pgTable(
+  "classroom_classes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    schoolId: uuid("school_id")
+      .notNull()
+      .references(() => classroomSchools.id, { onDelete: "cascade" }),
+    ownerTeacherId: uuid("owner_teacher_id")
+      .notNull()
+      .references(() => classroomTeachers.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    track: text("track").$type<ClassroomTrack>().notNull(),
+    language: text("language").$type<"cs" | "sk" | "en">().notNull(),
+    kinds: text("kinds").array().notNull(),
+    seeded: boolean("seeded").notNull().default(true),
+    modules: jsonb("modules").notNull().default({}),
+    // Stored without the dash; a stub until the shared group codes land.
+    joinCode: varchar("join_code", { length: 16 }).notNull(),
+    enrolmentOpen: boolean("enrolment_open").notNull().default(true),
+    maxStudents: integer("max_students").notNull().default(60),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    // Smallest "days before deletion" reminder already sent.
+    remindedDays: integer("reminded_days"),
+    failedReentries: integer("failed_reentries").notNull().default(0),
+    reentryLockedUntil: timestamp("reentry_locked_until", { withTimezone: true }),
+    cleanupStartedAt: timestamp("cleanup_started_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    joinCodeUnique: uniqueIndex("classroom_classes_join_code_unique").on(table.joinCode),
+    ownerIdx: index("classroom_classes_owner_idx").on(table.ownerTeacherId),
+    endsIdx: index("classroom_classes_ends_idx").on(table.endsAt),
+  }),
+);
+
+export const classroomClassTeachers = pgTable(
+  "classroom_class_teachers",
+  {
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    teacherId: uuid("teacher_id")
+      .notNull()
+      .references(() => classroomTeachers.id, { onDelete: "cascade" }),
+    addedAt: timestamp("added_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.classId, table.teacherId] }),
+  }),
+);
+
+export const classroomStudents = pgTable(
+  "classroom_students",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    nickname: text("nickname").notNull(),
+    kind: text("kind").notNull(),
+    // HMAC for the lookup, AES-GCM so the teacher can show the code.
+    reentryCodeHash: char("reentry_code_hash", { length: 64 }).notNull(),
+    reentryCodeEncrypted: text("reentry_code_encrypted").notNull(),
+    // When the dataset was in: what is newer is the student's own work.
+    seededAt: timestamp("seeded_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    userUnique: uniqueIndex("classroom_students_user_unique").on(table.userId),
+    tenantUnique: uniqueIndex("classroom_students_tenant_unique").on(table.tenantId),
+  }),
+);

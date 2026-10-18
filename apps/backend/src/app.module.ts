@@ -55,6 +55,8 @@ import { DemoErrorFilter } from "./demo/demo-error.filter";
 import { DemoGuard } from "./demo/demo.guard";
 import { DemoModule } from "./demo/demo.module";
 import { DemoTenantController } from "./demo/demo-tenant.controller";
+import { ClassroomModule } from "./classroom/classroom.module";
+import { ClassroomStudentController } from "./classroom/classroom-student.controller";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
@@ -139,6 +141,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     LegislationModule,
     // Public demo playground: start, seed and the 15-minute cleanup (no tenant context).
     DemoModule,
+    // Classroom mode: teachers, classes, student joins and the cleanup (docs/classroom-mode-plan.md).
+    ClassroomModule,
   ],
   providers: [
     // Viewers are read-only and accountants stay out of company administration.
@@ -238,6 +242,7 @@ export class AppModule implements NestModule {
         AccountantListingController,
         SubscriptionController,
         DemoTenantController,
+        ClassroomStudentController,
       );
 
     // InvoicesController: same tenant-context requirement as every

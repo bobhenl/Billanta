@@ -9,6 +9,9 @@ import { verifyBearerToken } from "../auth/verify-bearer-token";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 
+/** How long the companies of an ended class stay (read-only), as in migration 0071. */
+const CLASSROOM_GRACE_MS = 30 * 24 * 3600 * 1000;
+
 export type DashboardRole = "owner" | "admin" | "accountant" | "viewer";
 
 export interface AuthenticatedUser {
@@ -53,6 +56,10 @@ export interface AuthenticatedUser {
   twoFactor?: boolean;
   /** The company is a demo playground (see `src/demo/`); `DemoGuard` narrows what it may do. */
   demo?: boolean;
+  /** A practice company of a class (see `src/classroom/`); always `demo` too. */
+  classroom?: boolean;
+  /** The class has ended: its companies are read-only until they are deleted. */
+  classroomReadOnly?: boolean;
 }
 
 export interface TenantScopedRequest extends Request {
@@ -254,7 +261,11 @@ export class TenantContextMiddleware implements NestMiddleware {
       }
 
       const [tenant] = await membershipDb
-        .select({ isDemo: schema.tenants.isDemo, demoExpiresAt: schema.tenants.demoExpiresAt })
+        .select({
+          isDemo: schema.tenants.isDemo,
+          demoExpiresAt: schema.tenants.demoExpiresAt,
+          classroomClassId: schema.tenants.classroomClassId,
+        })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, candidateTenantId))
         .limit(1);
@@ -262,6 +273,10 @@ export class TenantContextMiddleware implements NestMiddleware {
       if (tenant?.isDemo && (!tenant.demoExpiresAt || tenant.demoExpiresAt.getTime() <= Date.now())) {
         throw new HttpException("demo_expired", HttpStatus.GONE);
       }
+      const classroom = tenant?.isDemo === true && tenant.classroomClassId !== null;
+      // A practice company is deleted CLASSROOM_GRACE_DAYS after its class ends (classroom_join).
+      const classroomReadOnly =
+        classroom && tenant!.demoExpiresAt!.getTime() - CLASSROOM_GRACE_MS <= Date.now();
 
       req.user = {
         id: userId,
@@ -271,6 +286,8 @@ export class TenantContextMiddleware implements NestMiddleware {
         permissions: membership.permissions,
         twoFactor,
         demo: tenant?.isDemo === true,
+        classroom,
+        classroomReadOnly,
       };
       req.tenantDb = membershipDb;
 

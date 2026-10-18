@@ -346,7 +346,7 @@ export class InvoicePdfService {
     if (qr) this.renderPaymentQr(doc, qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
-    if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR);
+    if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
 
     doc.end();
     return finished;

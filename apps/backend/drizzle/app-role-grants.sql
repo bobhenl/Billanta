@@ -36,6 +36,11 @@ REVOKE UPDATE, DELETE ON platform_proformas FROM faktur_app;
 -- Demo bookkeeping (per-IP hashes, AI counts) only through the demo
 -- functions of migration 0068.
 REVOKE ALL ON demo_sessions FROM faktur_app;
+-- Classroom (0071): which teacher teaches a class and which student owns
+-- which company change only through the classroom_* functions, which also
+-- keep the viewer memberships in step. The app may rotate a re-entry code.
+REVOKE INSERT, UPDATE, DELETE ON classroom_class_teachers FROM faktur_app;
+REVOKE INSERT, DELETE ON classroom_students FROM faktur_app;
 
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
