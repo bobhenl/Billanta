@@ -401,21 +401,45 @@ RLS for anything else.
 Optional tuning: `EMAIL_BATCH_WINDOW_MINUTES` (15), `EMAIL_MAX_ATTEMPTS`
 (6), `EMAIL_OUTBOX_MAX_AGE_HOURS` (72), `EMAIL_OUTBOX_BATCH_SIZE` (50).
 
-## Bank reconciliation (CSV import + auto-match)
+## Bank reconciliation (statement upload + auto-match)
 
 `src/bank-reconciliation/` implements bank-statement reconciliation against
-`bank_statement_imports`/`bank_transactions` (`drizzle/schema.ts`). This is
-an **MVP: CSV import + auto-match, NOT live PSD2/open-banking** — a real
-open-banking integration requires bank-specific certifications and is out of
-scope for this pass. `bank_statement_source` reserves an `mt940` enum value
-for the SWIFT MT940 statement format, but no MT940 parser is implemented
-here — only `source = 'csv'` is ever written by this module today.
+`bank_statement_imports`/`bank_transactions` (`drizzle/schema.ts`). Payments
+reach Billanta in two ways only: the **Fio API** (below) and an **uploaded
+statement** in one of three formats:
+
+- **camt.053** XML (ISO 20022, every larger CZ/SK bank exports it);
+- **GPC / ABO** (`.gpc`, `.abo`), the Czech fixed-width format, CP1250;
+- **CSV** (described below).
+
+The camt.053 and GPC parsers are pure functions in `@faktur/cz-compliance`
+(`bank-statements.ts`); `statement-upload.ts` detects the format and keeps
+incoming payments only. `bank_statement_source` records which format an
+import came from (`csv`, `camt053`, `gpc`, `fio`; `mt940` is reserved and
+unused).
+
+### Duplicates
+
+The same payment can arrive twice: Fio API plus an uploaded statement of the
+same account, overlapping statements, or one file uploaded again.
+`dedupe.ts` (`splitDuplicates`) drops a movement when
+
+1. its bank id (`external_id`: `fio:<ID pohybu>`, `camt053:<account>:<ref>`,
+   `gpc:<account>:<doc number>`) is already stored, or
+2. a stored movement has the same day, amount, currency, VS and payer account
+   (account compared in canonical form, so an IBAN and `prefix-number/bank`
+   agree). Each stored row absorbs one incoming row only, so two identical
+   payments on one day stay two. A stored row with an id from the same
+   source never absorbs a row with another id from that source.
+
+A stored row without an id that absorbs one with an id takes it over. The
+import summary reports `duplicates`.
 
 ### Endpoints
 
 | Endpoint | What it does |
 |---|---|
-| `POST /api/v1/bank-reconciliation/import` | Multipart CSV upload (`file` field). Parses in-memory, discards the raw upload, persists one `bank_statement_imports` row + one `bank_transactions` row per line, then runs auto-match (see below) on every newly-created transaction. |
+| `POST /api/v1/bank-reconciliation/import` | Multipart upload (`file` field): `.csv`, `.xml` (camt.053), `.gpc`/`.abo`. Max 5 MB. Parses in-memory, discards the raw upload, persists one `bank_statement_imports` row + one `bank_transactions` row per line, then runs auto-match (see below) on every newly-created transaction. |
 | `GET /api/v1/bank-reconciliation/transactions?status=unmatched\|matched\|ignored` | Tenant-scoped list, optionally filtered by status. |
 | `POST /api/v1/bank-reconciliation/transactions/:id/match` | Manual override — body `{ "invoiceId": "<uuid>" }`. Links the transaction to a specific `status = 'issued'` invoice and marks it paid, same as an auto-match. For the leftovers the algorithm below correctly declined to guess on. |
 | `POST /api/v1/bank-reconciliation/transactions/:id/ignore` | Marks a transaction `ignored` (e.g. a transfer that isn't an invoice payment at all — a refund, a bank fee, an owner's own transfer between accounts). |
@@ -490,17 +514,15 @@ Implemented as a pure, DB-free function (`src/bank-reconciliation/matching.ts`
 hand-built candidate lists — no database or mocking required to exercise the
 whole decision table:
 
-1. **Exact variable-symbol match**: if the transaction has a
-   `variable_symbol` and exactly one `status = 'issued'` invoice for the
-   tenant has the same `variable_symbol`, match it — **without** also
-   requiring the amount to agree. This is a deliberate tradeoff: variable
-   symbols are the primary payment-identification mechanism in CZ/SK bank
-   transfers and are trusted on their own once uniquely resolved, so a
-   partial payment (transaction amount less than the invoice total) still
-   auto-matches and marks the invoice fully paid — a false positive this
-   MVP accepts rather than block on. If two or more issued invoices happen
-   to share the same variable symbol, the transaction is left `unmatched`
-   rather than picking one (logged as ambiguous).
+1. **Variable symbol + amount**: if the transaction has a
+   `variable_symbol` and exactly one `status = 'issued'` invoice (quotes
+   excluded) has the same one (leading zeros ignored on both sides), it is
+   matched only when the currency agrees and the amount equals what is still
+   due (total minus `amount_paid`) to the cent. A partial payment, an
+   overpayment or a payment in another currency is left `unmatched` with
+   reason `amount_mismatch` for a human to decide. Two issued invoices with
+   the same VS are `ambiguous`. The invoice is marked paid with `paid_at` =
+   the bank's booking day.
 2. **Fallback — amount + currency + due-date window**: if there's no
    variable-symbol match, look for `status = 'issued'` invoices with the
    same currency, a due date within **±60 days** of the transaction date,
@@ -522,14 +544,10 @@ whole decision table:
    30-second human decision** — precision over recall, explicitly, per the
    task this module was built against.
 
-What this tradeoff does NOT cover (known gaps, not silently swept under the
-rug): a genuine partial payment against a correct variable-symbol match is
-still marked fully "paid" (case 1 above); the amount/date fallback has no
-signal at all for an invoice with no `due_date` set (those invoices are
-simply never fallback-candidates, variable-symbol match remains their only
-path); and there's no reconciliation UI for "this transaction is a partial
-payment, apply it and leave the invoice open" — only the binary matched/
-unmatched/ignored states the schema defines.
+A partial payment matched by hand (`.../match`) is added to `amount_paid`
+and the invoice stays issued; the next payment of the rest then matches
+automatically. The amount/date fallback never considers an invoice without a
+`due_date`.
 
 ## Automatic bank sync (Fio API)
 
@@ -539,16 +557,28 @@ sledovat účet") via `POST /api/v1/bank-reconciliation/connections`. It is
 encrypted with `AI_KEY_ENCRYPTION_KEY` (falls back to
 `BACKUP_CONFIG_ENCRYPTION_KEY`) and never returned.
 
-- `BankSyncCron` runs hourly over `list_tenant_ids()` and pulls
-  `periods/{token}/{from}/{to}/transactions.json` (first sync: last 30 days,
-  then from the last sync minus 3 days).
-- Only incoming payments are kept. Each row stores `external_id`
-  (`fio:<ID pohybu>`), and a partial unique index on
-  `(tenant_id, external_id)` makes overlapping windows harmless.
-- New rows go through the same `persistAndMatch` as the CSV import.
-- `POST .../connections/:id/sync` runs it on demand. Fio allows one request
-  per token every 30 s, and the endpoint answers 429 (`bank_sync_too_soon`)
-  before that.
+- Fio keeps a server-side cursor ("zarážka") per token. We read with
+  `last/{token}/transactions.json` and move the cursor with
+  `set-last-id` / `set-last-date`. Fio allows one request per token every
+  30 s for all of these together, so every sync makes exactly one request
+  (`planFioStep`): when the cursor is in place it downloads, otherwise it
+  only moves the cursor and answers `pending: true`; the movements come with
+  the next sync.
+- `bank_connections.fio_last_id` is the newest movement id we stored and
+  `fio_cursor_ready` says whether Fio's cursor stands there. Creating a
+  connection checks the token by putting the cursor 30 days back. If Fio
+  reports a cursor we did not leave (`info.idLastDownload`, e.g. another app
+  using the same token), the next sync rewinds to `fio_last_id`
+  (`fioCursorAfterFetch`). Fio answers 422 for history older than 90 days
+  without a strong authorisation: we then start again from a date at most
+  89 days back (`history_locked`).
+- `last_request_at` enforces the 30 s limit: the manual
+  `POST .../connections/:id/sync` answers 429 (`bank_sync_too_soon`), the
+  hourly `BankSyncCron` (over `list_tenant_ids()`) skips the connection.
+- Only incoming payments are kept, with `external_id` `fio:<ID pohybu>`.
+  New rows go through the same `persistAndMatch` and duplicate check as an
+  upload. The token is decrypted only for the request and never logged;
+  Fio errors carry fixed messages without the URL.
 - `FIO_API_BASE_URL` overrides the API base, for a local mock in development.
 
 ## PSD2 bank sync (Enable Banking)

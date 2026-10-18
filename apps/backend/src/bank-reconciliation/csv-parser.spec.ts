@@ -21,6 +21,7 @@ describe("parseBankStatementCsv", () => {
       variableSymbol: "1234567890",
       counterpartyAccount: "19-2000145399/0800",
       counterpartyName: "Novak Consulting sro",
+      message: null,
     });
     expect(rows[1]).toEqual({
       transactionDate: new Date("2026-08-03T00:00:00.000Z"),
@@ -29,6 +30,7 @@ describe("parseBankStatementCsv", () => {
       variableSymbol: null,
       counterpartyAccount: null,
       counterpartyName: null,
+      message: null,
     });
   });
 
@@ -106,6 +108,7 @@ describe("parseBankStatementCsv with bank export formats", () => {
         variableSymbol: "2026001",
         counterpartyAccount: "2000145399/0800",
         counterpartyName: "Novák s.r.o.",
+        message: "faktura",
       },
       {
         transactionDate: new Date("2026-08-06T00:00:00.000Z"),
@@ -114,6 +117,7 @@ describe("parseBankStatementCsv with bank export formats", () => {
         variableSymbol: null,
         counterpartyAccount: null,
         counterpartyName: null,
+        message: null,
       },
     ]);
   });

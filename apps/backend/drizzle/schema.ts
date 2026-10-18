@@ -119,7 +119,15 @@ export const recurringFrequencyEnum = pgEnum("recurring_frequency", [
   "yearly",
 ]);
 
-export const bankStatementSourceEnum = pgEnum("bank_statement_source", ["csv", "mt940", "fio", "psd2", "paypal"]);
+export const bankStatementSourceEnum = pgEnum("bank_statement_source", [
+  "csv",
+  "mt940",
+  "fio",
+  "psd2",
+  "paypal",
+  "camt053",
+  "gpc",
+]);
 
 export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
   "unmatched",
@@ -1086,10 +1094,13 @@ export const bankTransactions = pgTable("bank_transactions", {
   status: bankTransactionStatusEnum("status").notNull().default("unmatched"),
   // Bank-side movement id (e.g. Fio "ID pohybu") for synced rows; unique per
   // tenant so a re-sync of an overlapping period inserts nothing twice.
-  // Null for CSV imports.
+  // Uploaded camt.053/GPC rows carry the bank's reference when the file has
+  // one ("camt:…", "gpc:…"); null for CSV imports.
   externalId: text("external_id"),
   /** Fee kept by the payment provider (PayPal), in `currency`. Null for bank rows. */
   fee: numeric("fee", { precision: 14, scale: 2 }),
+  /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
+  message: text("message"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1120,6 +1131,12 @@ export const bankConnections = pgTable("bank_connections", {
   enabled: boolean("enabled").notNull().default(true),
   lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }),
   lastError: text("last_error"),
+  /** Fio: highest "ID pohybu" stored, where `set-last-id` rewinds Fio's cursor to. Migration 0063. */
+  fioLastId: bigint("fio_last_id", { mode: "number" }),
+  /** Fio: whether Fio's server-side cursor is known to sit at `fioLastId` (false until set-last-id/-date ran). */
+  fioCursorReady: boolean("fio_cursor_ready").notNull().default(false),
+  /** Last call to the provider with this token; Fio refuses a second one within 30 s. */
+  lastRequestAt: timestamp("last_request_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

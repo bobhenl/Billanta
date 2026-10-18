@@ -17,9 +17,9 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nes
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankReconciliationService } from "./bank-reconciliation.service";
-import { decodeBankStatement } from "./csv-parser";
 import { ListBankTransactionsQueryDto } from "./dto/list-transactions-query.dto";
 import { ManualMatchDto } from "./dto/manual-match.dto";
+import { hasStatementExtension } from "./statement-upload";
 
 /** Plenty for a monthly bank-statement CSV; guards against an accidental
  * (or hostile) huge upload being buffered entirely in memory — this module
@@ -50,8 +50,8 @@ export class BankReconciliationController {
   constructor(private readonly bankReconciliationService: BankReconciliationService) {}
 
   /**
-   * Accepts a bank-statement CSV upload — see `apps/backend/README.md`'s
-   * "Bank reconciliation" section for the exact expected column format.
+   * Accepts a bank statement: CSV, camt.053 XML or GPC/ABO (.gpc, .abo).
+   * See `apps/backend/README.md`'s "Bank reconciliation" section.
    * `FileInterceptor` uses multer's default `MemoryStorage` (no `storage`/
    * `dest` option configured), so the upload is held in `file.buffer` only
    * for the duration of this request and never written to disk or object
@@ -68,24 +68,17 @@ export class BankReconciliationController {
     },
   })
   @ApiOperation({
-    summary: "Import a bank-statement CSV and auto-match transactions against issued invoices",
+    summary: "Import a bank statement (CSV, camt.053, GPC) and auto-match transactions against issued invoices",
   })
-  async importCsv(@Req() req: TenantScopedRequest, @UploadedFile() file?: UploadedCsvFile) {
+  async importStatement(@Req() req: TenantScopedRequest, @UploadedFile() file?: UploadedCsvFile) {
     if (!file) {
       throw new BadRequestException('No file uploaded — expected a multipart form field named "file"');
     }
-    if (!file.originalname.toLowerCase().endsWith(".csv")) {
-      throw new BadRequestException(
-        "Only .csv files are supported by this endpoint (MT940 import is not implemented in this MVP)",
-      );
+    if (!hasStatementExtension(file.originalname)) {
+      throw new BadRequestException("bank_statement_unknown_format");
     }
 
-    return this.bankReconciliationService.importCsv(
-      req.tenantDb!,
-      req.user!.tenantId,
-      file.originalname,
-      decodeBankStatement(file.buffer),
-    );
+    return this.bankReconciliationService.importStatement(req.tenantDb!, req.user!.tenantId, file.originalname, file.buffer);
   }
 
   @Get("transactions")

@@ -22,7 +22,18 @@ import {
   type Aspsp,
   type Psd2SyncedRow,
 } from "./enable-banking-client";
-import { FIO_MIN_INTERVAL_MS, FIO_TOKEN_PATTERN, FioApiError, fetchFioStatement, type FioSyncedRow } from "./fio-client";
+import {
+  FIO_MIN_INTERVAL_MS,
+  FIO_TOKEN_PATTERN,
+  FioApiError,
+  fetchFioLast,
+  fioCursorAfterFetch,
+  planFioStep,
+  setFioLastDate,
+  setFioLastId,
+  type FioStatement,
+  type FioSyncedRow,
+} from "./fio-client";
 import { PaypalApiError, PaypalClient, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -86,6 +97,16 @@ export interface BankSyncSummary {
   total: number;
   matched: number;
   unmatched: number;
+  /**
+   * Fio only: this sync just positioned Fio's cursor (one request per 30 s),
+   * the movements come with the next one.
+   */
+  pending?: boolean;
+}
+
+/** Fio's per-token limit, counted from our last request of any kind. */
+function fioTooSoon(row: BankConnectionRow, now: Date): boolean {
+  return row.lastRequestAt !== null && now.getTime() - row.lastRequestAt.getTime() < FIO_MIN_INTERVAL_MS;
 }
 
 @Injectable()
@@ -307,12 +328,43 @@ export class BankConnectionsService {
     const key = encryptionKey();
     if (!key) throw new ServiceUnavailableException({ error: "encryption_not_configured" });
 
+    // Puts Fio's cursor 30 days back, so the first sync already brings movements.
+    // It doubles as the token check: a rejected token is never stored.
+    const now = new Date();
+    let cursorReady = false;
+    let lastError: string | null = null;
+    try {
+      const step = planFioStep({ fioLastId: null, fioCursorReady: false, lastSyncedAt: null }, now);
+      if (step.kind === "set-last-date") await this.fioApi.setLastDate(trimmed, step.day);
+      cursorReady = true;
+    } catch (err) {
+      const code = err instanceof FioApiError ? err.code : "unavailable";
+      if (code === "invalid_token") throw new BadRequestException({ error: "fio_token_invalid" });
+      // Fio busy or down: keep the connection, the next sync positions the cursor.
+      lastError = code;
+    }
+
     const [row] = await db
       .insert(schema.bankConnections)
-      .values({ tenantId, provider: "fio", label, tokenEncrypted: encryptSecret(trimmed, key) })
+      .values({
+        tenantId,
+        provider: "fio",
+        label,
+        tokenEncrypted: encryptSecret(trimmed, key),
+        fioCursorReady: cursorReady,
+        lastRequestAt: now,
+        lastError,
+      })
       .returning();
     return toPublic(row!);
   }
+
+  /** Overridable in tests. */
+  protected readonly fioApi = {
+    last: (token: string) => fetchFioLast(token),
+    setLastId: (token: string, id: number) => setFioLastId(token, id),
+    setLastDate: (token: string, day: Date) => setFioLastDate(token, day),
+  };
 
   /** Overridable in tests. */
   protected paypalClient(credentials: PaypalCredentials): PaypalClient {
@@ -382,11 +434,12 @@ export class BankConnectionsService {
     if (!row) throw new NotFoundException("Bank connection not found");
     if (row.status === "pending") throw new BadRequestException({ error: "psd2_pending" });
     if (row.status === "expired") throw new BadRequestException({ error: "consent_expired" });
-    const minInterval =
-      row.provider === "fio" ? FIO_MIN_INTERVAL_MS : row.provider === "paypal" ? PAYPAL_MANUAL_INTERVAL_MS : PSD2_MANUAL_INTERVAL_MS;
-    if (row.lastSyncedAt && Date.now() - row.lastSyncedAt.getTime() < minInterval) {
-      throw new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
-    }
+    const tooSoon =
+      row.provider === "fio"
+        ? fioTooSoon(row, new Date())
+        : row.lastSyncedAt !== null &&
+          Date.now() - row.lastSyncedAt.getTime() < (row.provider === "paypal" ? PAYPAL_MANUAL_INTERVAL_MS : PSD2_MANUAL_INTERVAL_MS);
+    if (tooSoon) throw new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
     return this.sync(db, tenantId, row, true);
   }
 
@@ -408,6 +461,8 @@ export class BankConnectionsService {
         }
         if (row.lastSyncedAt && Date.now() - row.lastSyncedAt.getTime() < PSD2_BACKGROUND_INTERVAL_MS) continue;
       }
+      // Someone pressed "sync now" seconds ago; the next sweep picks it up.
+      if (row.provider === "fio" && fioTooSoon(row, new Date())) continue;
       try {
         await this.sync(db, tenantId, row, false);
         synced++;
@@ -471,29 +526,67 @@ export class BankConnectionsService {
       return { connectionId: row.id, ...summary };
     }
 
-    let statement;
+    return this.syncFio(db, tenantId, row, now, throwErrors);
+  }
+
+  /**
+   * One Fio request per call (see `planFioStep`): either move Fio's cursor
+   * to where our stored movements end, or download what came after it. The
+   * token is decrypted only for the request and never logged; FioApiError
+   * messages never contain it.
+   */
+  private async syncFio(
+    db: TenantDb,
+    tenantId: string,
+    row: BankConnectionRow,
+    now: Date,
+    throwErrors: boolean,
+  ): Promise<BankSyncSummary> {
+    const step = planFioStep(row, now);
+    const connection = eq(schema.bankConnections.id, row.id);
+    await db.update(schema.bankConnections).set({ lastRequestAt: now }).where(connection);
+
+    let statement: FioStatement;
     try {
       const token = decryptSecret(row.tokenEncrypted ?? "", encryptionKey());
-      statement = await fetchFioStatement(token, from, now);
+      if (step.kind !== "last") {
+        if (step.kind === "set-last-id") await this.fioApi.setLastId(token, step.id);
+        else await this.fioApi.setLastDate(token, step.day);
+        await db.update(schema.bankConnections).set({ fioCursorReady: true, lastError: null }).where(connection);
+        return { connectionId: row.id, total: 0, matched: 0, unmatched: 0, pending: true };
+      }
+      statement = await this.fioApi.last(token);
     } catch (err) {
       const code = err instanceof FioApiError ? err.code : "unavailable";
       await db
         .update(schema.bankConnections)
-        .set({ lastError: code, ...(code === "rate_limited" ? {} : { lastSyncedAt: now }) })
-        .where(eq(schema.bankConnections.id, row.id));
+        .set({
+          lastError: code,
+          // Fio's cursor is older than it serves without a strong authorisation:
+          // start again from a date (at most 89 days back).
+          ...(code === "history_locked" ? { fioCursorReady: false, fioLastId: null } : {}),
+        })
+        .where(connection);
       if (throwErrors) {
         if (code === "rate_limited") throw new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
         if (code === "invalid_token") throw new BadRequestException({ error: "fio_token_invalid" });
+        if (code === "history_locked") throw new BadRequestException({ error: "history_locked" });
         throw new ServiceUnavailableException({ error: "bank_unavailable" });
       }
       throw err;
     }
 
-    const summary = await this.storeFresh(db, tenantId, `Fio ${statement.accountNumber ?? ""} ${period}`, "fio", statement.rows);
+    const title = `Fio ${statement.accountNumber ?? ""} ${now.toISOString().slice(0, 10)}`;
+    const summary = await this.storeFresh(db, tenantId, title, "fio", statement.rows);
     await db
       .update(schema.bankConnections)
-      .set({ lastSyncedAt: now, lastError: null, accountNumber: statement.accountNumber ?? row.accountNumber })
-      .where(eq(schema.bankConnections.id, row.id));
+      .set({
+        ...fioCursorAfterFetch(row.fioLastId, statement),
+        lastSyncedAt: now,
+        lastError: null,
+        accountNumber: statement.accountNumber ?? row.accountNumber,
+      })
+      .where(connection);
     return { connectionId: row.id, ...summary };
   }
 
@@ -510,8 +603,10 @@ export class BankConnectionsService {
   }
 
   /**
-   * Skips movements already stored by an earlier, overlapping sync (so a
-   * quiet hour leaves no empty import behind), then stores and matches the rest.
+   * Skips movements already stored by an earlier, overlapping sync (a cheap
+   * id lookup that also catches a movement whose booking day changed), then
+   * lets `persistAndMatch` drop copies of uploaded statements and store and
+   * match the rest. A quiet hour leaves no empty import behind.
    */
   private async storeFresh(
     db: TenantDb,
@@ -530,9 +625,9 @@ export class BankConnectionsService {
     const knownIds = new Set(known.map((k) => k.externalId));
     const fresh = rows.filter((r) => !knownIds.has(r.externalId));
 
-    const result = fresh.length === 0
-      ? { summary: { total: 0, matched: 0, unmatched: 0 } }
-      : await this.reconciliation.persistAndMatch(db, tenantId, title.replace(/\s+/g, " ").trim(), source, fresh);
+    const result = await this.reconciliation.persistAndMatch(db, tenantId, title.replace(/\s+/g, " ").trim(), source, fresh, {
+      skipEmpty: true,
+    });
 
     if (result.summary.total > 0) {
       this.notifications?.notify(tenantId, "bank_import", {
