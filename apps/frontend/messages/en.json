@@ -8509,7 +8509,10 @@
       "empty": "Empty company",
       "filledHint": "Invoices, contacts, expenses and reports are already filled in.",
       "emptyHint": "Just the company and its settings. You create everything yourself, e.g. to move it into your own account later.",
-      "viewTitle": "Look at it as"
+      "viewTitle": "Look at it as",
+      "businessTitle": "Type of business",
+      "businessAuto": "Match the company",
+      "businessAutoHint": "Each sample company has on what its type of business usually uses. In the demo you can switch anything in Settings → Modules too."
     },
     "transfer": {
       "title": "Bring in your work from the demo?",
@@ -8531,6 +8534,7 @@
       "leadView": "The demo opens straight in the {role} view, no sign-up.",
       "button": "Open the demo",
       "buttonView": "Demo as {role}"
-    }
+    },
+    "signOutAndStart": "Sign out and open the demo"
   }
 }

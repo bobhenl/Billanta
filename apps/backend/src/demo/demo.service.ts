@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { DbService } from "../db/db.service";
+import type { AppModule } from "../tenants/modules";
 import { buildDemoDataset, type DemoKind, type DemoLanguage } from "./dataset";
 import { demoConfig } from "./demo-config";
 import { DemoSeedService } from "./demo-seed.service";
@@ -26,9 +27,16 @@ export class DemoService {
 
   /**
    * `empty`: the company and its settings only, for a visitor who wants to
-   * start from nothing. `language` is the site the visitor came from.
+   * start from nothing. `language` is the site the visitor came from,
+   * `modules` the business type they picked (what the dashboard shows).
    */
-  async create(kind: DemoKind, ipBucket: string, empty = false, language?: DemoLanguage): Promise<DemoStart> {
+  async create(
+    kind: DemoKind,
+    ipBucket: string,
+    empty = false,
+    language?: DemoLanguage,
+    modules?: Partial<Record<AppModule, boolean>>,
+  ): Promise<DemoStart> {
     const cfg = demoConfig();
     // The company's settings (invoice language, bank labels) follow the visitor's language too.
     const { supplier: sup, language: lang } = buildDemoDataset(kind, new Date(), language);
@@ -48,6 +56,7 @@ export class DemoService {
 
     try {
       if (!empty) await this.seeder.seed(row.tenant_id, row.user_id, kind, lang);
+      if (modules) await this.seeder.setModules(row.tenant_id, row.user_id, modules);
       // Whatever is created from here on is the visitor's, and can go to their own account.
       await this.dbService.sql`SELECT mark_demo_seeded(${row.tenant_id})`;
     } catch (err) {

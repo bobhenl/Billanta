@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const session = await auth();
   if (session?.user && !session.isDemo) return fail('demo_signed_in', 409);
 
-  const body = (await request.json().catch(() => null)) as { kind?: unknown; locale?: unknown; empty?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { kind?: unknown; locale?: unknown; empty?: unknown; modules?: unknown } | null;
   if (!isDemoKind(body?.kind)) return fail('invalid_kind', 400);
   const locale = routing.locales.find((l) => l === body?.locale) ?? routing.defaultLocale;
 
@@ -44,7 +44,8 @@ export async function POST(request: Request) {
         ...(ip ? { 'x-guest-ip': ip } : {})
       },
       // `empty`: the company and its settings, no documents ("start from scratch").
-      body: JSON.stringify({ kind: body.kind, empty: body.empty === true, language: locale }),
+      // `modules`: the business type; the backend validates it.
+      body: JSON.stringify({ kind: body.kind, empty: body.empty === true, language: locale, modules: body.modules }),
       cache: 'no-store',
       // Seeding a company with ~20 invoices takes a moment.
       signal: AbortSignal.timeout(20000)

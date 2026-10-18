@@ -3,6 +3,7 @@ import { ApiExcludeController } from "@nestjs/swagger";
 import type { Request } from "express";
 import { timingSafeEqual } from "node:crypto";
 import { visitorIp } from "../guest-invoices/guest-limits";
+import { enabledModulesSchema, type AppModule } from "../tenants/modules";
 import { isDemoKind, isDemoLanguage } from "./dataset";
 import { demoConfig } from "./demo-config";
 import { DemoService } from "./demo.service";
@@ -21,7 +22,7 @@ export class DemoController {
 
   @Post()
   @HttpCode(201)
-  async start(@Body() body: { kind?: unknown; empty?: unknown; language?: unknown } | undefined, @Headers("x-demo-provision-secret") secret: string | undefined, @Ip() ip: string, @Req() req: Request) {
+  async start(@Body() body: { kind?: unknown; empty?: unknown; language?: unknown; modules?: unknown } | undefined, @Headers("x-demo-provision-secret") secret: string | undefined, @Ip() ip: string, @Req() req: Request) {
     const cfg = demoConfig();
     // Off, or misconfigured: look like a route that doesn't exist.
     if (!cfg.enabled || !cfg.provisionSecret || !cfg.ipSalt) throw new NotFoundException();
@@ -30,7 +31,10 @@ export class DemoController {
     if (!isDemoKind(kind)) throw new BadRequestException("invalid_kind");
     // An unknown language falls back to the company's own.
     const language = isDemoLanguage(body?.language) ? body.language : undefined;
-    return this.demo.create(kind, ipBucket(visitorIp(ip, req), cfg.ipSalt), body?.empty === true, language);
+    // The business type picked on /demo (the signup presets); invalid = everything on.
+    const parsed = enabledModulesSchema.safeParse(body?.modules);
+    const modules: Partial<Record<AppModule, boolean>> | undefined = parsed.success ? parsed.data : undefined;
+    return this.demo.create(kind, ipBucket(visitorIp(ip, req), cfg.ipSalt), body?.empty === true, language, modules);
   }
 }
 

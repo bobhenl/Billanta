@@ -7,6 +7,7 @@ import { drizzleTx } from "../db/drizzle-tx";
 import { createInvoiceSchema, updateInvoiceSchema } from "../invoices/dto/create-invoice.dto";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
 import { InvoicesService } from "../invoices/invoices.service";
+import type { AppModule } from "../tenants/modules";
 import { buildBankTransactions, buildDemoDataset, type DemoInvoice, type DemoKind, type DemoLanguage, type SeededInvoice } from "./dataset";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -25,6 +26,15 @@ export class DemoSeedService {
     private readonly dbService: DbService,
     private readonly invoices: InvoicesService,
   ) {}
+
+  /** Through RLS like the content: the company's own row, as its owner would set it in Settings. */
+  async setModules(tenantId: string, userId: string, modules: Partial<Record<AppModule, boolean>>): Promise<void> {
+    await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
+      await drizzleTx(tx, schema).update(schema.tenants).set({ enabledModules: modules }).where(eq(schema.tenants.id, tenantId));
+    });
+  }
 
   async seed(tenantId: string, userId: string, kind: DemoKind, language: DemoLanguage, now = new Date()): Promise<void> {
     const ds = buildDemoDataset(kind, now, language);

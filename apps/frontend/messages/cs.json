@@ -6066,7 +6066,7 @@
       "subject": "Poptávka – {company}",
       "body": "Dobrý den,\n\nmám zájem o:\n\n"
     },
-    "poweredBy": "Profil vytvořen v <brand>Billanta</brand> – fakturace pro živnostníky a firmy",
+    "poweredBy": "Profil vytvořen v <brand>Billantě</brand> – fakturace pro živnostníky a firmy",
     "order": {
       "button": "Objednat",
       "title": "Objednávka",
@@ -8356,7 +8356,7 @@
     },
     "page": {
       "eyebrow": "Demo bez registrace",
-      "title": "Vyzkoušejte si {site} na ukázkové firmě",
+      "title": "Vyzkoušejte si Billantu na ukázkové firmě",
       "lead": "Vyberte typ firmy a za pár vteřin jste v aplikaci. Faktury, kontakty i přehledy už jsou vyplněné, můžete cokoli upravit, vystavit nebo smazat.",
       "points": {
         "time": "Firma vydrží 24 hodin, potom se celá smaže.",
@@ -8474,7 +8474,7 @@
       "again": "Otevřít nové demo",
       "register": "Založit účet"
     },
-    "publicNotice": "Ukázková faktura z dema {site}. Firma i všechny údaje jsou smyšlené – nic neplaťte.",
+    "publicNotice": "Ukázková faktura z dema Billanty. Firma i všechny údaje jsou smyšlené – nic neplaťte.",
     "watermark": "DEMO",
     "errors": {
       "demo_locked": "V demu nejde měnit identitu firmy (název, IČO, DIČ, adresu). Ve vlastním účtu samozřejmě ano.",
@@ -8510,7 +8510,10 @@
       "empty": "Prázdná firma",
       "filledHint": "Faktury, kontakty, náklady a přehledy už jsou vyplněné.",
       "emptyHint": "Jen firma a nastavení. Vše si vytvoříte sami, třeba pro pozdější převod do vlastního účtu.",
-      "viewTitle": "Dívat se jako"
+      "viewTitle": "Dívat se jako",
+      "businessTitle": "Typ podnikání",
+      "businessAuto": "Podle firmy",
+      "businessAutoHint": "Každá ukázková firma má zapnuté to, co její typ podnikání obvykle používá. V demu jde všechno přepnout i v Nastavení → Moduly."
     },
     "transfer": {
       "title": "Převzít práci z dema?",
@@ -8532,6 +8535,7 @@
       "leadView": "Demo se otevře rovnou z pohledu role {role}, bez registrace.",
       "button": "Otevřít demo",
       "buttonView": "Demo jako {role}"
-    }
+    },
+    "signOutAndStart": "Odhlásit se a otevřít demo"
   }
 }

@@ -2,14 +2,21 @@
 
 import { useState } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
 import { cn } from '@/lib/utils';
 
 const COUNTRY: Record<DemoKind, 'CZ' | 'SK'> = { cz_vat_sro: 'CZ', cz_freelancer: 'CZ', cz_pausal: 'CZ', sk_vat_sro: 'SK' };
 
+/** "Match the company": the signup preset a business like it would pick. */
+const KIND_PRESET: Record<DemoKind, string> = { cz_vat_sro: 'withAccountant', cz_freelancer: 'tradesman', cz_pausal: 'flatTax', sk_vat_sro: 'withAccountant' };
+const presetModules = (key: string): ModuleSet | undefined => BUSINESS_PRESETS.find((p) => p.key === key)?.modules;
+
 /**
- * Four cards, one per demo company, plus two choices: filled with sample
+ * Four cards, one per demo company, plus three choices: the type of business
+ * (the signup presets, which decide the modules shown), filled with sample
  * documents or empty, and whose eyes to look through first (feature pages
  * link here with `?view=accountant` and the like). A click asks
  * /api/demo/start for a fresh company, switches the view if needed and then
@@ -18,10 +25,14 @@ const COUNTRY: Record<DemoKind, 'CZ' | 'SK'> = { cz_vat_sro: 'CZ', cz_freelancer
  */
 export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: string; initialView?: DemoViewRole }) {
   const t = useTranslations('demo');
+  const tm = useTranslations('settings.modules');
   const [busy, setBusy] = useState<DemoKind | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [empty, setEmpty] = useState(false);
   const [view, setView] = useState<DemoViewRole>(initialView);
+  const [preset, setPreset] = useState<string | null>(null);
+  // Set when the visitor is signed in to a real account and may sign out to continue.
+  const [signedInKind, setSignedInKind] = useState<DemoKind | null>(null);
 
   // Slovak visitors look for the Slovak company first.
   const kinds = locale === 'sk' ? [...DEMO_KINDS].sort((a, b) => Number(COUNTRY[b] === 'SK') - Number(COUNTRY[a] === 'SK')) : DEMO_KINDS;
@@ -29,11 +40,12 @@ export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: stri
   async function start(kind: DemoKind) {
     setBusy(kind);
     setError(null);
+    setSignedInKind(null);
     try {
       const res = await fetch('/api/demo/start', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ kind, locale, empty })
+        body: JSON.stringify({ kind, locale, empty, modules: presetModules(preset ?? KIND_PRESET[kind]) })
       });
       const data = (await res.json().catch(() => ({}))) as { redirect?: string; error?: string };
       if (res.ok && data.redirect) {
@@ -45,6 +57,7 @@ export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: stri
         return;
       }
       const code = data.error && t.has(`errors.${data.error}`) ? data.error : 'demo_unavailable';
+      if (code === 'demo_signed_in') setSignedInKind(kind);
       setError(t(`errors.${code}`));
     } catch {
       setError(t('errors.demo_unavailable'));
@@ -52,9 +65,27 @@ export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: stri
     setBusy(null);
   }
 
+  async function signOutAndStart(kind: DemoKind) {
+    setBusy(kind);
+    await signOut({ redirect: false }).catch(() => null);
+    await start(kind);
+  }
+
   return (
     <div className="mt-4">
       <div className="mb-4 grid gap-3 sm:grid-cols-2">
+        <fieldset className="rounded-xl border border-border bg-card p-3 sm:col-span-2">
+          <legend className="px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('picker.businessTitle')}</legend>
+          <div className="flex flex-wrap gap-2">
+            {[null, ...BUSINESS_PRESETS.map((p) => p.key)].map((key) => (
+              <label key={key ?? 'auto'} className={chip(preset === key)}>
+                <input type="radio" name="demo-business" className="sr-only" checked={preset === key} onChange={() => setPreset(key)} />
+                {key ? tm(`presets.${key}.title`) : t('picker.businessAuto')}
+              </label>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{preset ? tm(`presets.${preset}.description`) : t('picker.businessAutoHint')}</p>
+        </fieldset>
         <fieldset className="rounded-xl border border-border bg-card p-3">
           <legend className="px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('picker.dataTitle')}</legend>
           <div className="flex flex-wrap gap-2">
@@ -115,6 +146,16 @@ export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: stri
       {error && (
         <p role="alert" className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">
           {error}
+          {signedInKind && (
+            <button
+              type="button"
+              disabled={busy !== null}
+              onClick={() => signOutAndStart(signedInKind)}
+              className="ml-2 font-semibold text-primary underline underline-offset-2 hover:no-underline disabled:opacity-60"
+            >
+              {t('signOutAndStart')}
+            </button>
+          )}
         </p>
       )}
     </div>

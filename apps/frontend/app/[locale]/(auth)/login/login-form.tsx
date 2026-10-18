@@ -68,17 +68,9 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <label htmlFor="password" className="text-sm font-medium">
-              {t('passwordLabel')}
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline"
-            >
-              {t('forgotPasswordLink')}
-            </Link>
-          </div>
+          <label htmlFor="password" className="text-sm font-medium">
+            {t('passwordLabel')}
+          </label>
           <input
             id="password"
             name="password"
@@ -90,6 +82,13 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
             onChange={(event) => setPassword(event.target.value)}
             className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
           />
+          {/* After the field, so Tab goes from the e-mail straight to the password. */}
+          <Link
+            href="/forgot-password"
+            className="self-end text-sm font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground hover:no-underline"
+          >
+            {t('forgotPasswordLink')}
+          </Link>
         </div>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
