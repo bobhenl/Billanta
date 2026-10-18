@@ -6,6 +6,7 @@ import {
   isEuCountry,
   type VatPayerCheck,
   getRpoSubjectByIco,
+  getRuzSubjectByIco,
   getSubjectByIco,
   lookupPoland,
   lookupVies,
@@ -32,7 +33,15 @@ import { AuditService } from "../audit/audit.service";
 import { DbService } from "../db/db.service";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
 import { contactsToCsv, decodeCsvBuffer, mapContactRows, parseCsv, type CsvContact, type CsvSkip } from "./contacts-csv.util";
-import { mapAresSubjectToContactPrefill, mapRegistryHitToContactPrefill, mapRpoSubjectToContactPrefill, type AresContactPrefill } from "./ares-mapper.util";
+import {
+  mapAresSubjectToContactPrefill,
+  mapRegistryHitToContactPrefill,
+  mapRpoSubjectToContactPrefill,
+  mapRuzSubjectToContactPrefill,
+  withRuzDic,
+  type AresContactPrefill,
+} from "./ares-mapper.util";
+import { SkCompaniesService } from "./sk-companies/sk-companies.service";
 import type { CreateContactDto } from "./dto/create-contact.dto";
 import type { UpdateContactDto } from "./dto/update-contact.dto";
 
@@ -90,10 +99,13 @@ const REGISTRY_SEARCH_TTL_MS = 60 * 60 * 1000;
 const REGISTRY_SEARCH_MAX = 2000;
 /**
  * RPO answers the production VPS in 6.6-8.7 s, by IČO as well as by name, so
- * anything shorter means Slovak companies are never found. Only the "slow"
- * half of a typeahead and SK lookups wait for it.
+ * anything shorter means Slovak companies are never found. Asked live only
+ * when the local copy (sk_companies) is not usable and, by IČO, when RÚZ
+ * does not know the company either.
  */
 const RPO_TIMEOUT_MS = 12_000;
+/** RÚZ answers in ~0.1 s per call (two per IČO); past this the company comes without its DIČ. */
+const RUZ_TIMEOUT_MS = 3000;
 /** RPO by IČO: a found company for as long as ARES rows (24 h), "unknown" for 10 min. */
 const RPO_MISS_TTL_MS = 10 * 60 * 1000;
 /** ARES "finished words" pools (up to 1000 subjects each, see searchSubjectsTypeahead): a few, briefly. */
@@ -125,6 +137,7 @@ export class ContactsService {
   constructor(
     private readonly dbService: DbService,
     @Optional() private readonly audit?: AuditService,
+    @Optional() private readonly skCompanies?: SkCompaniesService,
   ) {}
 
   /**
@@ -435,7 +448,7 @@ export class ContactsService {
     try {
       const hits =
         part === "slow"
-          ? (await searchRpoSubjects(q, { limit: 3, timeoutMs: RPO_TIMEOUT_MS })).map(mapRpoSubjectToContactPrefill)
+          ? await this.skNameSearch(q, 3)
           : await this.fastRegistrySearch(q, registry);
       // A timeout or outage throws past this line, so it is never cached as "no hits".
       this.rememberRegistryHits(cacheKey, hits);
@@ -452,12 +465,23 @@ export class ContactsService {
       const hit = await this.findByIco(q.padStart(8, "0"), registry === "SK" ? "SK" : "CZ");
       return hit ? [hit] : [];
     }
-    if (registry === "SK") return (await searchRpoSubjects(q, { limit: 6, timeoutMs: RPO_TIMEOUT_MS })).map(mapRpoSubjectToContactPrefill);
+    if (registry === "SK") return this.skNameSearch(q, 6);
     // "auto", "CZ" and a name typed into "EU" (VIES has no name search) ask ARES here; RPO is the slow half.
     if (q.length >= 3 && !/^\d+$/.test(q)) {
       return (await searchSubjectsTypeahead(q, { limit: 6, pool: this.aresPool })).map(mapAresSubjectToContactPrefill);
     }
     return [];
+  }
+
+  /**
+   * Slovak companies by name: the local RPO copy when it is current (a few
+   * ms), live RPO otherwise (3-9 s). A failed local query is not a reason to
+   * wait for RPO: registrySearch turns it into "no hits, not remembered".
+   */
+  private async skNameSearch(q: string, limit: number): Promise<AresContactPrefill[]> {
+    const local = this.skCompanies ? await this.skCompanies.search(q, limit) : undefined;
+    const subjects = local ?? (await searchRpoSubjects(q, { limit, timeoutMs: RPO_TIMEOUT_MS }));
+    return subjects.map(mapRpoSubjectToContactPrefill);
   }
 
   /**
@@ -668,20 +692,40 @@ export class ContactsService {
   }
 
   /**
-   * Slovak register (RPO) by IČO; null when unknown or the company no longer
-   * exists. Kept in memory like ARES rows are in `ares_cache`, since every
+   * Slovak register by IČO; null when unknown or the company no longer
+   * exists. Kept in memory like ARES rows are in `ares_cache`, since a live
    * RPO call costs seconds; an outage throws and is not remembered.
    */
   private async rpoLookup(ico: string): Promise<AresContactPrefill | null> {
     const cached = this.rpoByIco.get(ico);
     if (cached && cached.at > Date.now() - (cached.hit ? ARES_CACHE_TTL_MS : RPO_MISS_TTL_MS)) return cached.hit;
-    const subject = await getRpoSubjectByIco(ico, { timeoutMs: RPO_TIMEOUT_MS });
-    const hit = subject && !subject.terminatedAt ? mapRpoSubjectToContactPrefill(subject) : null;
+    const hit = await this.skCompanyByIco(ico);
     if (this.rpoByIco.size >= REGISTRY_SEARCH_MAX) {
       const oldest = this.rpoByIco.keys().next().value;
       if (oldest !== undefined) this.rpoByIco.delete(oldest);
     }
     this.rpoByIco.set(ico, { at: Date.now(), hit });
     return hit;
+  }
+
+  /**
+   * Fastest source first. The local RPO copy is at most a day behind, so it
+   * decides whether the company exists, and RÚZ only adds the DIČ (RPO does
+   * not publish one). Without a usable copy RÚZ answers (~0.2 s, but weeks
+   * behind RPO, so it may still list a company dissolved since), and live
+   * RPO (6-9 s from the VPS) only when RÚZ does not know the IČO, e.g. a
+   * company founded this quarter.
+   */
+  private async skCompanyByIco(ico: string): Promise<AresContactPrefill | null> {
+    const ruz = () => getRuzSubjectByIco(ico, { timeoutMs: RUZ_TIMEOUT_MS });
+    const indexed = this.skCompanies ? await this.skCompanies.findByIco(ico).catch(() => undefined) : undefined;
+    if (indexed !== undefined) {
+      if (!indexed) return null;
+      return withRuzDic(mapRpoSubjectToContactPrefill(indexed), await ruz().catch(() => null));
+    }
+    const fromRuz = await ruz().catch(() => null);
+    if (fromRuz) return mapRuzSubjectToContactPrefill(fromRuz);
+    const subject = await getRpoSubjectByIco(ico, { timeoutMs: RPO_TIMEOUT_MS });
+    return subject && !subject.terminatedAt ? mapRpoSubjectToContactPrefill(subject) : null;
   }
 }

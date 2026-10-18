@@ -2,10 +2,12 @@ import { NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DbService } from "../db/db.service";
 import { ContactsService, hasSlowPart } from "./contacts.service";
+import type { SkCompaniesService } from "./sk-companies/sk-companies.service";
 
-const { getSubjectByIcoMock, getRpoSubjectByIcoMock, searchRpoSubjectsMock, searchSubjectsTypeaheadMock } = vi.hoisted(() => ({
+const { getSubjectByIcoMock, getRpoSubjectByIcoMock, getRuzSubjectByIcoMock, searchRpoSubjectsMock, searchSubjectsTypeaheadMock } = vi.hoisted(() => ({
   getSubjectByIcoMock: vi.fn(),
   getRpoSubjectByIcoMock: vi.fn(),
+  getRuzSubjectByIcoMock: vi.fn(),
   searchRpoSubjectsMock: vi.fn(),
   searchSubjectsTypeaheadMock: vi.fn(),
 }));
@@ -15,6 +17,7 @@ vi.mock("@faktur/cz-compliance", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@faktur/cz-compliance")>()),
   getSubjectByIco: getSubjectByIcoMock,
   getRpoSubjectByIco: getRpoSubjectByIcoMock,
+  getRuzSubjectByIco: getRuzSubjectByIcoMock,
   searchRpoSubjects: searchRpoSubjectsMock,
   searchSubjectsTypeahead: searchSubjectsTypeaheadMock,
 }));
@@ -130,6 +133,8 @@ function serviceWithEmptyCache() {
 describe("ContactsService registry order", () => {
   beforeEach(() => {
     for (const m of [getSubjectByIcoMock, getRpoSubjectByIcoMock, searchRpoSubjectsMock, searchSubjectsTypeaheadMock]) m.mockReset();
+    // These cases are about ARES vs RPO; RÚZ not knowing the IČO keeps the old live-RPO path.
+    getRuzSubjectByIcoMock.mockReset().mockResolvedValue(null);
   });
 
   it("never asks RPO for an IČO that ARES knows", async () => {
@@ -216,6 +221,91 @@ describe("ContactsService registry order", () => {
     expect(await service.registrySearch("kofola", "auto", "slow")).toHaveLength(1);
     expect(await service.registrySearch("kofola", "auto", "slow")).toHaveLength(1);
     expect(searchRpoSubjectsMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+const RUZ_TELEKOM = { ico: "35763469", dic: "2020273893", name: "Slovak Telekom, a.s.", street: "Bajkalská 28", city: "Bratislava", postalCode: "81762", legalForm: "121", terminatedAt: null, updatedAt: "2026-07-03" };
+
+/** `findByIco`/`search` resolve `undefined` when the index is not usable, like the real service. */
+function serviceWithIndex(index: { findByIco?: unknown; search?: unknown }) {
+  const { insert } = makeInsertChain();
+  const select = vi.fn(() => makeSelectChain([]));
+  const fake = { findByIco: vi.fn(async () => undefined), search: vi.fn(async () => undefined), ...index } as unknown as SkCompaniesService;
+  return new ContactsService({ db: { select, insert } } as unknown as DbService, undefined, fake);
+}
+
+describe("ContactsService Slovak index", () => {
+  beforeEach(() => {
+    for (const m of [getSubjectByIcoMock, getRpoSubjectByIcoMock, getRuzSubjectByIcoMock, searchRpoSubjectsMock, searchSubjectsTypeaheadMock]) m.mockReset();
+  });
+
+  it("answers an IČO from the index and takes only the DIČ from RÚZ", async () => {
+    getRuzSubjectByIcoMock.mockResolvedValue({ ...RUZ_TELEKOM, name: "Old name a.s.", street: "Old street 1" });
+    const hit = await serviceWithIndex({ findByIco: vi.fn(async () => RPO_SUBJECT) }).lookupById("35763469", "SK");
+    expect([hit.legalName, hit.addressStreet, hit.dic, hit.addressCountry]).toEqual(["Slovak Telekom, a.s.", "Bajkalská 28", "2020273893", "SK"]);
+    expect(getRpoSubjectByIcoMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps the index hit when RÚZ is down", async () => {
+    getRuzSubjectByIcoMock.mockRejectedValue(new Error("timeout"));
+    const hit = await serviceWithIndex({ findByIco: vi.fn(async () => RPO_SUBJECT) }).lookupById("35763469", "SK");
+    expect([hit.legalName, hit.dic]).toEqual(["Slovak Telekom, a.s.", null]);
+  });
+
+  it("trusts a usable index that does not know the IČO, without asking RÚZ or RPO", async () => {
+    getSubjectByIcoMock.mockResolvedValue(null);
+    getRuzSubjectByIcoMock.mockResolvedValue(RUZ_TELEKOM);
+    const service = serviceWithIndex({ findByIco: vi.fn(async () => null) });
+    await expect(service.lookupById("35763469", "SK")).rejects.toBeInstanceOf(NotFoundException);
+    expect(getRuzSubjectByIcoMock).not.toHaveBeenCalled();
+    expect(getRpoSubjectByIcoMock).not.toHaveBeenCalled();
+  });
+
+  it("asks RÚZ, then live RPO, when the index is not usable", async () => {
+    getRuzSubjectByIcoMock.mockResolvedValue(RUZ_TELEKOM);
+    const fromRuz = await serviceWithIndex({}).lookupById("35763469", "SK");
+    expect([fromRuz.legalName, fromRuz.dic]).toEqual(["Slovak Telekom, a.s.", "2020273893"]);
+    expect(getRuzSubjectByIcoMock).toHaveBeenCalledWith("35763469", { timeoutMs: 3000 });
+    expect(getRpoSubjectByIcoMock).not.toHaveBeenCalled();
+
+    getRuzSubjectByIcoMock.mockResolvedValue(null);
+    getRpoSubjectByIcoMock.mockResolvedValue(RPO_KOFOLA);
+    expect((await serviceWithIndex({}).lookupById("36319198", "SK")).legalName).toBe("KOFOLA a.s.");
+
+    // An RÚZ outage is not "unknown": RPO still gets asked.
+    getRuzSubjectByIcoMock.mockRejectedValue(new Error("403"));
+    expect((await serviceWithIndex({}).lookupById("36319198", "SK")).legalName).toBe("KOFOLA a.s.");
+    expect(getRpoSubjectByIcoMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not offer a company that RPO lists as dissolved", async () => {
+    getRuzSubjectByIcoMock.mockResolvedValue(null);
+    getRpoSubjectByIcoMock.mockResolvedValue({ ...RPO_KOFOLA, terminatedAt: "2026-10-17" });
+    getSubjectByIcoMock.mockResolvedValue(null);
+    await expect(serviceWithIndex({}).lookupById("36319198", "SK")).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it("searches names in the index and goes to live RPO only when it is not usable", async () => {
+    searchSubjectsTypeaheadMock.mockResolvedValue([]);
+    const search = vi.fn(async () => [RPO_KOFOLA]);
+    const slow = await serviceWithIndex({ search }).registrySearch("kofola", "auto", "slow");
+    expect(slow.map((h) => h.legalName)).toEqual(["KOFOLA a.s."]);
+    expect(search).toHaveBeenCalledWith("kofola", 3);
+    const sk = await serviceWithIndex({ search }).registrySearch("kofola", "SK");
+    expect(sk).toHaveLength(1);
+    expect(search).toHaveBeenLastCalledWith("kofola", 6);
+    expect(searchRpoSubjectsMock).not.toHaveBeenCalled();
+
+    searchRpoSubjectsMock.mockResolvedValue([RPO_SUBJECT]);
+    const live = await serviceWithIndex({}).registrySearch("telekom", "auto", "slow");
+    expect(live.map((h) => h.legalName)).toEqual(["Slovak Telekom, a.s."]);
+    expect(searchRpoSubjectsMock).toHaveBeenCalledWith("telekom", { limit: 3, timeoutMs: 12_000 });
+  });
+
+  it("treats an empty index result as no hits, not as a reason to ask RPO", async () => {
+    const hits = await serviceWithIndex({ search: vi.fn(async () => []) }).registrySearch("zzzz neexistuje", "SK");
+    expect(hits).toEqual([]);
+    expect(searchRpoSubjectsMock).not.toHaveBeenCalled();
   });
 });
 

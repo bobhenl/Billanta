@@ -419,6 +419,13 @@
       "when": 1792901200000,
       "tag": "0059_custom_link_slugs",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1792901300000,
+      "tag": "0060_sk_companies",
+      "breakpoints": true
     }
   ]
 }
