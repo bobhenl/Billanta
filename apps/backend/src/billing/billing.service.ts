@@ -186,7 +186,7 @@ export class BillingService {
         const extra = {
           ...(customerId ? { stripeCustomerId: customerId } : {}),
           ...(isPaidPlan(plan) ? { subscriptionPlan: plan } : {}),
-          ...(interval === "month" || interval === "year" ? { subscriptionInterval: interval } : {}),
+          ...(interval === "month" || interval === "year" ? { subscriptionInterval: interval as "month" | "year" } : {}),
         };
         await this.tenantBilling.updateSubscriptionStatus(tenantId, "active", Object.keys(extra).length ? extra : undefined);
         return;
