@@ -26,6 +26,13 @@ export const BRANDS = [
 
 export type BrandKey = (typeof BRANDS)[number]['key'];
 
+/** The brands with their own /compare/<key> page; the key doubles as the slug. */
+export const COMPARED_BRANDS = BRANDS.filter((b) => b.key !== 'billanta');
+
+export function getComparedBrand(slug: string) {
+  return COMPARED_BRANDS.find((b) => b.key === slug);
+}
+
 /** Row keys in display order. `good` marks brands that come out best on the row (highlighted). */
 export const COMPETITOR_ROWS: { key: string; good: BrandKey[] }[] = [
   { key: 'free', good: ['billanta'] },

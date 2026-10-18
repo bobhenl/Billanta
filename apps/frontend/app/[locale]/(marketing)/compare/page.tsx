@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight, Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { BRANDS, COMPETITOR_ROWS, comparedAtLabel } from '@/lib/competitors';
+import { BRANDS, COMPARED_BRANDS, COMPETITOR_ROWS, comparedAtLabel } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
@@ -40,6 +40,20 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
         <p className="mt-3 text-muted-foreground">{t('lead')}</p>
       </div>
+      <nav aria-label={t('brand.othersTitle')} className="mt-5">
+        <ul className="flex flex-wrap gap-2">
+          {COMPARED_BRANDS.map((b) => (
+            <li key={b.key}>
+              <Link
+                href={`/compare/${b.key}`}
+                className="inline-flex rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium hover:border-primary/40 hover:text-primary"
+              >
+                {t('brand.versus', { brand: b.name })}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {/* Phones: one card per feature instead of a table that scrolls sideways. */}
       <div className="mt-8 space-y-3 sm:hidden">

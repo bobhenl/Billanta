@@ -6219,7 +6219,206 @@
     "signupCta": "Začít zdarma",
     "notStated": "– = v ceníku neuvádí (nemusí znamenat, že funkce chybí)",
     "verified": "Ověřeno v ceníku {date}",
-    "sourcesTitle": "Zdroje"
+    "sourcesTitle": "Zdroje",
+    "brand": {
+      "suitsUsTitle": "Kdy se vyplatí Billanta",
+      "suitsThemTitle": "Kdy dává větší smysl {brand}",
+      "priceTitle": "Cena",
+      "tableTitle": "Billanta a {brand} bod po bodu",
+      "source": "Zdroj: {brand}, ceník",
+      "versus": "Billanta vs. {brand}",
+      "importCta": "Jak funguje import",
+      "faqTitle": "Časté otázky",
+      "othersTitle": "Další srovnání",
+      "all": "Celé srovnání"
+    },
+    "brands": {
+      "fakturoid": {
+        "seoTitle": "Alternativa k Fakturoidu: srovnání s Billantou",
+        "title": "Billanta, nebo Fakturoid?",
+        "lead": "Fakturoid je zavedená česká fakturace, kterou zná spousta živnostníků i účetních. Billanta stojí na jiném modelu: zdarma bez limitu odběratelů a s AI v ceně. Co z toho plyne pro vás?",
+        "suitsUs": [
+          "Fakturujete víc než pěti odběratelům a nechcete kvůli tomu hned platit tarif.",
+          "Chcete fotit účtenky nebo nadiktovat fakturu do telefonu bez doplňku navíc.",
+          "Potřebujete opakované faktury, ale nejvyšší tarif ne.",
+          "Podnikáte v Česku i na Slovensku, nebo posíláte e-faktury v UBL (Peppol)."
+        ],
+        "suitsThem": [
+          "Chcete nativní aplikaci z App Storu nebo Google Play, ne webovou aplikaci na plochu.",
+          "Napojujete vlastní systém a API potřebujete už v tarifu zdarma.",
+          "Vaše účetní s Fakturoidem pracuje roky a změna by vám nic neušetřila."
+        ],
+        "price": "Ve Fakturoidu tarif zdarma omezuje počet odběratelů, v Billantě počet dokladů za měsíc. Kdo fakturuje pár stálým klientům, vystačí si zdarma v obou. Kdo má hodně menších zakázek pro různé lidi, ušetří v Billantě, protože doklady nad limit se platí po kusech.",
+        "switchTitle": "Jak přejít z Fakturoidu",
+        "switchSteps": [
+          "Ve Fakturoidu vyexportujte kontakty a faktury do CSV, klidně celou historii.",
+          "V Billantě otevřete Nastavení → Import z jiného systému a zvolte Fakturoid.",
+          "Nahrajte nejdřív kontakty, potom faktury. Před uložením uvidíte náhled."
+        ],
+        "faq": [
+          {
+            "q": "Přenesu si z Fakturoidu i starší faktury?",
+            "a": "Ano. Export z Fakturoidu do CSV nahrajete v Billantě a faktury se uloží jako historie, i s odběrateli. Kontakty se spárují podle IČO, jinak podle názvu."
+          },
+          {
+            "q": "Je Billanta levnější než Fakturoid?",
+            "a": "Nejlevnější placený tarif Billanty stojí méně a tarif zdarma neomezuje počet odběratelů. Ceny obou ceníků najdete výše, i s datem, kdy jsme je ověřili."
+          },
+          {
+            "q": "Můžu chvíli používat obě aplikace?",
+            "a": "Můžete. Billantu vyzkoušíte zdarma na pár fakturách a historii přenesete, až se rozhodnete. Hlídejte jen, aby číselná řada faktur navazovala a čísla se neopakovala."
+          }
+        ]
+      },
+      "idoklad": {
+        "seoTitle": "Alternativa k iDokladu: srovnání s Billantou",
+        "title": "Billanta, nebo iDoklad?",
+        "lead": "iDoklad je rozšířená online fakturace od výrobce účetního programu Money. Porovnali jsme, v čem se od Billanty liší a komu sedne víc která.",
+        "suitsUs": [
+          "Máte víc než pět odběratelů a chcete zůstat v tarifu zdarma.",
+          "Chcete párovat platby z banky a posílat upomínky už v nejlevnějším placeném tarifu.",
+          "AI čtení dokladů chcete používat běžně, ne jen na pár zkušebních kusů.",
+          "Chcete u každé faktury vidět odhad daně a odvodů."
+        ],
+        "suitsThem": [
+          "Účtujete v Money a chcete fakturaci od stejného výrobce.",
+          "Chcete nativní mobilní aplikaci pro iOS nebo Android.",
+          "iDoklad už máte nastavený a jeho limity vám nevadí."
+        ],
+        "price": "Oba tarify zdarma jsou použitelné, každý ale omezuje něco jiného: iDoklad počet odběratelů, Billanta počet dokladů za měsíc. U placených tarifů je rozdíl hlavně v obsahu toho nejlevnějšího. V Billantě je v něm párování plateb i upomínky, v iDokladu na ně potřebujete vyšší tarif.",
+        "switchTitle": "Jak přejít z iDokladu",
+        "switchSteps": [
+          "V iDokladu označte vydané faktury a vyexportujte je do Excelu nebo CSV.",
+          "Soubor z Excelu uložte jako CSV (UTF-8). Stejně vyexportujte kontakty z adresáře.",
+          "V Billantě v Nastavení → Import z jiného systému zvolte iDoklad a nahrajte nejdřív kontakty, potom faktury."
+        ],
+        "faq": [
+          {
+            "q": "Jde převést data z iDokladu?",
+            "a": "Ano, přes export do CSV. Billanta načte odběratele i faktury a před uložením ukáže náhled, takže vidíte, co se přenese."
+          },
+          {
+            "q": "Funguje Billanta i pro slovenské firmy?",
+            "a": "Ano. V jednom účtu můžete mít českou i slovenskou firmu, doklady v korunách i eurech a pro Slovensko i odhad odvodů."
+          },
+          {
+            "q": "Proč iDoklad počítá odběratele a Billanta doklady?",
+            "a": "Každý ceník měří tarif zdarma jinak. iDoklad omezuje, kolika odběratelům fakturujete, Billanta kolik dokladů za měsíc vystavíte. Kdo má hodně různých klientů a méně faktur, vyjde v Billantě lépe."
+          }
+        ]
+      },
+      "superfaktura": {
+        "seoTitle": "Alternativa k SuperFaktuře: srovnání s Billantou",
+        "title": "Billanta, nebo SuperFaktura?",
+        "lead": "SuperFaktura pochází ze Slovenska a má i českou verzi. Billanta je novější fakturace pro Česko i Slovensko s AI v ceně. Kde se liší a kdy se vyplatí která?",
+        "suitsUs": [
+          "Fakturujete víc než pěti odběratelům a nechcete hned platit.",
+          "Opakované faktury chcete i bez vyššího tarifu.",
+          "API potřebujete v běžném placeném tarifu, ne až v nejvyšším.",
+          "Chcete fakturu nadiktovat do telefonu nebo poslat zprávou na Telegram či WhatsApp."
+        ],
+        "suitsThem": [
+          "Upomínky chcete posílat i jako SMS.",
+          "Chcete nativní aplikaci pro iOS nebo Android.",
+          "SuperFakturu máte napojenou na další služby a přepojovat je nechcete."
+        ],
+        "price": "Nejlevnější placené tarify jsou cenou blízko. Rozdíl je spíš v tom, co obsahují: opakované faktury a API má SuperFaktura až ve vyšších tarifech, Billanta v nejlevnějším placeném. Dvě opakované faktury má Billanta i zdarma.",
+        "switchTitle": "Jak přejít ze SuperFaktury",
+        "switchSteps": [
+          "V SuperFaktuře vyexportujte faktury a kontakty do tabulky (CSV nebo Excel).",
+          "V Billantě v Nastavení → Import z jiného systému zvolte Excel / jiný systém a podle šablony zkontrolujte sloupce.",
+          "Nahrajte nejdřív kontakty, potom faktury, a před uložením si projděte náhled."
+        ],
+        "faq": [
+          {
+            "q": "Přenesu si data ze SuperFaktury?",
+            "a": "Ano, přes tabulku. Faktury a kontakty vyexportované do CSV nahrajete v Billantě přes import z Excelu. Jeden řádek je jedna faktura, víc řádků se stejným číslem se spojí do faktury s více položkami."
+          },
+          {
+            "q": "Hodí se Billanta pro slovenského živnostníka?",
+            "a": "Ano. Billanta má slovenské rozhraní i doklady, dohledá firmu ve slovenském registru, fakturuje v eurech a odhadne slovenské odvody."
+          },
+          {
+            "q": "Posílá Billanta upomínky?",
+            "a": "Ano, e-mailem a automaticky v placených tarifech. SMS upomínky Billanta zatím neposílá, to SuperFaktura umí."
+          }
+        ]
+      },
+      "vyfakturuj": {
+        "seoTitle": "Alternativa k Vyfakturuj: srovnání s Billantou",
+        "title": "Billanta, nebo Vyfakturuj?",
+        "lead": "Vyfakturuj je česká online fakturace s mobilními aplikacemi a cizími měnami i v tarifu zdarma. Srovnali jsme ji s Billantou bod po bodu.",
+        "suitsUs": [
+          "Chcete tarif zdarma bez limitu odběratelů.",
+          "Hledáte levnější vstupní tarif s párováním plateb z banky.",
+          "Opakované faktury chcete i v tarifu zdarma.",
+          "Čtete účtenky z fotky nebo diktujete faktury do telefonu."
+        ],
+        "suitsThem": [
+          "Fakturujete v cizích měnách a chcete to i v tarifu zdarma.",
+          "Chcete nativní aplikaci pro iOS nebo Android.",
+          "Vyfakturuj vám vyhovuje a víc odběratelů, než dovolí tarif zdarma, nemáte."
+        ],
+        "price": "Nejlevnější placený tarif Vyfakturuj je dražší a opakované faktury nabízí až ve vyšším tarifu. V Billantě jsou dvě opakované faktury i zdarma a tarif zdarma neomezuje počet odběratelů.",
+        "switchTitle": "Jak přejít z Vyfakturuj",
+        "switchSteps": [
+          "Ve Vyfakturuj vyexportujte faktury a kontakty do tabulky (CSV nebo Excel).",
+          "V Billantě v Nastavení → Import z jiného systému zvolte Excel / jiný systém a stáhněte si šablonu sloupců.",
+          "Nahrajte nejdřív kontakty, potom faktury. Před uložením uvidíte náhled."
+        ],
+        "faq": [
+          {
+            "q": "Jak převést faktury z Vyfakturuj?",
+            "a": "Vyexportujte je do CSV nebo Excelu a nahrajte v Billantě přes import z Excelu. Sloupce zkontrolujete podle šablony, kterou si tam stáhnete, a před uložením uvidíte náhled."
+          },
+          {
+            "q": "Umí Billanta faktury v cizí měně?",
+            "a": "Ano. U faktury v eurech nebo jiné měně Billanta sama doplní kurz ČNB."
+          },
+          {
+            "q": "Je Billanta i v mobilu?",
+            "a": "Ano, jako webová aplikace, kterou si nainstalujete na plochu telefonu. Funguje na iOS i Androidu bez stahování z obchodu."
+          }
+        ]
+      },
+      "bitfaktura": {
+        "seoTitle": "Alternativa k BitFaktuře: srovnání s Billantou",
+        "title": "Billanta, nebo BitFaktura?",
+        "lead": "BitFaktura má hodně funkcí už v základu, její tarif zdarma je ale velmi úzký. A z BitFaktury se do Billanty přechází nejsnáz, i s původními PDF.",
+        "suitsUs": [
+          "Vystavujete víc než jednu fakturu měsíčně a nechcete kvůli tomu platit.",
+          "Chcete párovat platby z banky už v nejlevnějším placeném tarifu.",
+          "Opakované faktury potřebujete i v tarifu zdarma.",
+          "Chcete fakturu nadiktovat do telefonu nebo vyfotit účtenku."
+        ],
+        "suitsThem": [
+          "Chcete automatické upomínky i v tarifu zdarma.",
+          "API potřebujete už v tarifu zdarma.",
+          "Fakturujete v cizí měně a chcete volit mezi kurzem ČNB a ECB."
+        ],
+        "price": "Tarif zdarma v BitFaktuře stačí zhruba na jednu fakturu měsíčně, v Billantě na deset dokladů a každý další se platí po kusech. Nejlevnější placené tarify jsou cenou blízko, v Billantě v něm ale už funguje párování plateb z banky.",
+        "switchTitle": "Jak přejít z BitFaktury",
+        "switchSteps": [
+          "V BitFaktuře otevřete Nastavení → Nastavení účtu → Integrace a zkopírujte autorizační kód API.",
+          "V Billantě v Nastavení → Import z jiného systému zvolte BitFakturu a vyplňte název účtu a kód.",
+          "Billanta načte faktury i s původními PDF a celý adresář kontaktů. Před uložením uvidíte náhled."
+        ],
+        "faq": [
+          {
+            "q": "Přenesou se z BitFaktury i PDF faktur?",
+            "a": "Ano. Při přímém propojení přes API Billanta stáhne faktury i s původními PDF, adresář kontaktů, kurzy a způsob úhrady."
+          },
+          {
+            "q": "Jde to i bez kódu API?",
+            "a": "Jde. Faktury vyexportujte z BitFaktury do CSV a nahrajte je v Billantě. Původní PDF se tak ale nepřenesou."
+          },
+          {
+            "q": "Kolik faktur vystavím v Billantě zdarma?",
+            "a": "Deset dokladů měsíčně bez ohledu na počet odběratelů. Každý další se platí zvlášť, takže při občasném přesahu nemusíte hned měnit tarif."
+          }
+        ]
+      }
+    }
   },
   "tools": {
     "menu": {

@@ -6219,7 +6219,206 @@
     "signupCta": "Začať zadarmo",
     "notStated": "– = v cenníku neuvádza (nemusí znamenať, že funkcia chýba)",
     "verified": "Overené v cenníku {date}",
-    "sourcesTitle": "Zdroje"
+    "sourcesTitle": "Zdroje",
+    "brand": {
+      "suitsUsTitle": "Kedy sa oplatí Billanta",
+      "suitsThemTitle": "Kedy dáva väčší zmysel {brand}",
+      "priceTitle": "Cena",
+      "tableTitle": "Billanta a {brand} bod po bode",
+      "source": "Zdroj: {brand}, cenník",
+      "versus": "Billanta vs. {brand}",
+      "importCta": "Ako funguje import",
+      "faqTitle": "Časté otázky",
+      "othersTitle": "Ďalšie porovnania",
+      "all": "Celé porovnanie"
+    },
+    "brands": {
+      "fakturoid": {
+        "seoTitle": "Alternatíva k Fakturoidu: porovnanie s Billantou",
+        "title": "Billanta, alebo Fakturoid?",
+        "lead": "Fakturoid je zabehnutá česká fakturácia, ktorú pozná veľa živnostníkov aj účtovníkov. Billanta stavia na inom modeli: zadarmo bez limitu odberateľov a s AI v cene. Čo z toho vyplýva pre vás?",
+        "suitsUs": [
+          "Fakturujete viac ako piatim odberateľom a nechcete kvôli tomu hneď platiť tarif.",
+          "Chcete fotiť bločky alebo nadiktovať faktúru do telefónu bez doplnku navyše.",
+          "Potrebujete opakované faktúry, ale najvyšší tarif nie.",
+          "Podnikáte na Slovensku aj v Česku, alebo posielate e-faktúry v UBL (Peppol)."
+        ],
+        "suitsThem": [
+          "Chcete natívnu aplikáciu z App Storu alebo Google Play, nie webovú aplikáciu na plochu.",
+          "Prepájate vlastný systém a API potrebujete už v bezplatnom tarife.",
+          "Vaša účtovníčka s Fakturoidom pracuje roky a zmena by vám nič neušetrila."
+        ],
+        "price": "Vo Fakturoide bezplatný tarif obmedzuje počet odberateľov, v Billante počet dokladov za mesiac. Kto fakturuje pár stálym klientom, vystačí si zadarmo v oboch. Kto má veľa menších zákaziek pre rôznych ľudí, ušetrí v Billante, pretože doklady nad limit sa platia po kusoch.",
+        "switchTitle": "Ako prejsť z Fakturoidu",
+        "switchSteps": [
+          "Vo Fakturoide vyexportujte kontakty a faktúry do CSV, pokojne celú históriu.",
+          "V Billante otvorte Nastavenia → Import z iného systému a zvoľte Fakturoid.",
+          "Nahrajte najprv kontakty, potom faktúry. Pred uložením uvidíte náhľad."
+        ],
+        "faq": [
+          {
+            "q": "Prenesiem si z Fakturoidu aj staršie faktúry?",
+            "a": "Áno. Export z Fakturoidu do CSV nahráte v Billante a faktúry sa uložia ako história, aj s odberateľmi. Kontakty sa spárujú podľa IČO, inak podľa názvu."
+          },
+          {
+            "q": "Je Billanta lacnejšia ako Fakturoid?",
+            "a": "Najlacnejší platený tarif Billanty stojí menej a bezplatný tarif neobmedzuje počet odberateľov. Ceny oboch cenníkov nájdete vyššie, aj s dátumom, kedy sme ich overili."
+          },
+          {
+            "q": "Môžem chvíľu používať obe aplikácie?",
+            "a": "Môžete. Billantu si vyskúšate zadarmo na pár faktúrach a históriu prenesiete, keď sa rozhodnete. Strážte len, aby číselný rad faktúr nadväzoval a čísla sa neopakovali."
+          }
+        ]
+      },
+      "idoklad": {
+        "seoTitle": "Alternatíva k iDokladu: porovnanie s Billantou",
+        "title": "Billanta, alebo iDoklad?",
+        "lead": "iDoklad je rozšírená online fakturácia od výrobcu účtovného programu Money. Porovnali sme, v čom sa od Billanty líši a komu sedí viac ktorá.",
+        "suitsUs": [
+          "Máte viac ako päť odberateľov a chcete zostať v bezplatnom tarife.",
+          "Chcete párovať platby z banky a posielať upomienky už v najlacnejšom platenom tarife.",
+          "AI čítanie dokladov chcete používať bežne, nie len na pár skúšobných kusov.",
+          "Chcete pri každej faktúre vidieť odhad dane a odvodov."
+        ],
+        "suitsThem": [
+          "Účtujete v Money a chcete fakturáciu od rovnakého výrobcu.",
+          "Chcete natívnu mobilnú aplikáciu pre iOS alebo Android.",
+          "iDoklad už máte nastavený a jeho limity vám neprekážajú."
+        ],
+        "price": "Oba bezplatné tarify sú použiteľné, každý však obmedzuje niečo iné: iDoklad počet odberateľov, Billanta počet dokladov za mesiac. Pri platených tarifoch je rozdiel hlavne v tom, čo obsahuje ten najlacnejší. V Billante je v ňom párovanie platieb aj upomienky, v iDoklade na ne potrebujete vyšší tarif.",
+        "switchTitle": "Ako prejsť z iDokladu",
+        "switchSteps": [
+          "V iDoklade označte vydané faktúry a vyexportujte ich do Excelu alebo CSV.",
+          "Súbor z Excelu uložte ako CSV (UTF-8). Rovnako vyexportujte kontakty z adresára.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte iDoklad a nahrajte najprv kontakty, potom faktúry."
+        ],
+        "faq": [
+          {
+            "q": "Dajú sa previesť dáta z iDokladu?",
+            "a": "Áno, cez export do CSV. Billanta načíta odberateľov aj faktúry a pred uložením ukáže náhľad, takže vidíte, čo sa prenesie."
+          },
+          {
+            "q": "Funguje Billanta aj pre slovenské firmy?",
+            "a": "Áno. V jednom účte môžete mať slovenskú aj českú firmu, doklady v eurách aj korunách a pre Slovensko aj odhad odvodov."
+          },
+          {
+            "q": "Prečo iDoklad počíta odberateľov a Billanta doklady?",
+            "a": "Každý cenník meria bezplatný tarif inak. iDoklad obmedzuje, koľkým odberateľom fakturujete, Billanta koľko dokladov za mesiac vystavíte. Kto má veľa rôznych klientov a menej faktúr, vyjde v Billante lepšie."
+          }
+        ]
+      },
+      "superfaktura": {
+        "seoTitle": "Alternatíva k SuperFaktúre: porovnanie s Billantou",
+        "title": "Billanta, alebo SuperFaktúra?",
+        "lead": "SuperFaktúra pochádza zo Slovenska a má aj českú verziu. Billanta je novšia fakturácia pre Slovensko aj Česko s AI v cene. Kde sa líšia a kedy sa oplatí ktorá?",
+        "suitsUs": [
+          "Fakturujete viac ako piatim odberateľom a nechcete hneď platiť.",
+          "Opakované faktúry chcete aj bez vyššieho tarifu.",
+          "API potrebujete v bežnom platenom tarife, nie až v najvyššom.",
+          "Chcete faktúru nadiktovať do telefónu alebo poslať správou na Telegram či WhatsApp."
+        ],
+        "suitsThem": [
+          "Upomienky chcete posielať aj ako SMS.",
+          "Chcete natívnu aplikáciu pre iOS alebo Android.",
+          "SuperFaktúru máte prepojenú s ďalšími službami a prepájať ich nanovo nechcete."
+        ],
+        "price": "Najlacnejšie platené tarify sú cenou blízko. Rozdiel je skôr v tom, čo obsahujú: opakované faktúry a API má SuperFaktúra až vo vyšších tarifoch, Billanta v najlacnejšom platenom. Dve opakované faktúry má Billanta aj zadarmo.",
+        "switchTitle": "Ako prejsť zo SuperFaktúry",
+        "switchSteps": [
+          "V SuperFaktúre vyexportujte faktúry a kontakty do tabuľky (CSV alebo Excel).",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte Excel / iný systém a podľa šablóny skontrolujte stĺpce.",
+          "Nahrajte najprv kontakty, potom faktúry, a pred uložením si prejdite náhľad."
+        ],
+        "faq": [
+          {
+            "q": "Prenesiem si dáta zo SuperFaktúry?",
+            "a": "Áno, cez tabuľku. Faktúry a kontakty vyexportované do CSV nahráte v Billante cez import z Excelu. Jeden riadok je jedna faktúra, viac riadkov s rovnakým číslom sa spojí do faktúry s viacerými položkami."
+          },
+          {
+            "q": "Hodí sa Billanta pre slovenského živnostníka?",
+            "a": "Áno. Billanta má slovenské rozhranie aj doklady, dohľadá firmu v slovenskom registri, fakturuje v eurách a odhadne slovenské odvody."
+          },
+          {
+            "q": "Posiela Billanta upomienky?",
+            "a": "Áno, e-mailom a automaticky v platených tarifoch. SMS upomienky Billanta zatiaľ neposiela, to SuperFaktúra vie."
+          }
+        ]
+      },
+      "vyfakturuj": {
+        "seoTitle": "Alternatíva k Vyfakturuj: porovnanie s Billantou",
+        "title": "Billanta, alebo Vyfakturuj?",
+        "lead": "Vyfakturuj je česká online fakturácia s mobilnými aplikáciami a cudzími menami aj v bezplatnom tarife. Porovnali sme ju s Billantou bod po bode.",
+        "suitsUs": [
+          "Chcete bezplatný tarif bez limitu odberateľov.",
+          "Hľadáte lacnejší vstupný tarif s párovaním platieb z banky.",
+          "Opakované faktúry chcete aj v bezplatnom tarife.",
+          "Čítate bločky z fotky alebo diktujete faktúry do telefónu."
+        ],
+        "suitsThem": [
+          "Fakturujete v cudzích menách a chcete to aj v bezplatnom tarife.",
+          "Chcete natívnu aplikáciu pre iOS alebo Android.",
+          "Vyfakturuj vám vyhovuje a viac odberateľov, ako dovolí bezplatný tarif, nemáte."
+        ],
+        "price": "Najlacnejší platený tarif Vyfakturuj je drahší a opakované faktúry ponúka až vo vyššom tarife. V Billante sú dve opakované faktúry aj zadarmo a bezplatný tarif neobmedzuje počet odberateľov.",
+        "switchTitle": "Ako prejsť z Vyfakturuj",
+        "switchSteps": [
+          "Vo Vyfakturuj vyexportujte faktúry a kontakty do tabuľky (CSV alebo Excel).",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte Excel / iný systém a stiahnite si šablónu stĺpcov.",
+          "Nahrajte najprv kontakty, potom faktúry. Pred uložením uvidíte náhľad."
+        ],
+        "faq": [
+          {
+            "q": "Ako previesť faktúry z Vyfakturuj?",
+            "a": "Vyexportujte ich do CSV alebo Excelu a nahrajte v Billante cez import z Excelu. Stĺpce skontrolujete podľa šablóny, ktorú si tam stiahnete, a pred uložením uvidíte náhľad."
+          },
+          {
+            "q": "Vie Billanta faktúry v cudzej mene?",
+            "a": "Áno. Pri faktúre v cudzej mene Billanta sama doplní kurz."
+          },
+          {
+            "q": "Je Billanta aj v mobile?",
+            "a": "Áno, ako webová aplikácia, ktorú si nainštalujete na plochu telefónu. Funguje na iOS aj Androide bez sťahovania z obchodu."
+          }
+        ]
+      },
+      "bitfaktura": {
+        "seoTitle": "Alternatíva k BitFakture: porovnanie s Billantou",
+        "title": "Billanta, alebo BitFaktura?",
+        "lead": "BitFaktura má veľa funkcií už v základe, jej bezplatný tarif je však veľmi úzky. A z BitFaktury sa do Billanty prechádza najľahšie, aj s pôvodnými PDF.",
+        "suitsUs": [
+          "Vystavujete viac ako jednu faktúru mesačne a nechcete kvôli tomu platiť.",
+          "Chcete párovať platby z banky už v najlacnejšom platenom tarife.",
+          "Opakované faktúry potrebujete aj v bezplatnom tarife.",
+          "Chcete faktúru nadiktovať do telefónu alebo odfotiť bloček."
+        ],
+        "suitsThem": [
+          "Chcete automatické upomienky aj v bezplatnom tarife.",
+          "API potrebujete už v bezplatnom tarife.",
+          "Fakturujete v cudzej mene a chcete voliť medzi kurzom ČNB a ECB."
+        ],
+        "price": "Bezplatný tarif v BitFakture stačí zhruba na jednu faktúru mesačne, v Billante na desať dokladov a každý ďalší sa platí po kusoch. Najlacnejšie platené tarify sú cenou blízko, v Billante v ňom však už funguje párovanie platieb z banky.",
+        "switchTitle": "Ako prejsť z BitFaktury",
+        "switchSteps": [
+          "V BitFakture otvorte Nastavenia → Nastavenia účtu → Integrácie a skopírujte autorizačný kód API.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte BitFakturu a vyplňte názov účtu a kód.",
+          "Billanta načíta faktúry aj s pôvodnými PDF a celý adresár kontaktov. Pred uložením uvidíte náhľad."
+        ],
+        "faq": [
+          {
+            "q": "Prenesú sa z BitFaktury aj PDF faktúr?",
+            "a": "Áno. Pri priamom prepojení cez API Billanta stiahne faktúry aj s pôvodnými PDF, adresár kontaktov, kurzy a spôsob úhrady."
+          },
+          {
+            "q": "Dá sa to aj bez kódu API?",
+            "a": "Dá. Faktúry vyexportujte z BitFaktury do CSV a nahrajte ich v Billante. Pôvodné PDF sa tak však neprenesú."
+          },
+          {
+            "q": "Koľko faktúr vystavím v Billante zadarmo?",
+            "a": "Desať dokladov mesačne bez ohľadu na počet odberateľov. Každý ďalší sa platí zvlášť, takže pri občasnom prekročení nemusíte hneď meniť tarif."
+          }
+        ]
+      }
+    }
   },
   "tools": {
     "menu": {

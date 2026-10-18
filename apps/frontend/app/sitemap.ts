@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
+import { COMPARED_BRANDS } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { getAllMunicipalities, municipalityLocale } from '@/lib/municipalities';
@@ -46,6 +47,7 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/legal/cookies', changeFrequency: 'yearly', priority: 0.2 },
   { path: '/pricing', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/compare', changeFrequency: 'monthly', priority: 0.7 },
+  ...COMPARED_BRANDS.map((b): UrlEntry => ({ path: `/compare/${b.key}`, changeFrequency: 'monthly', priority: 0.6 })),
   // Czech towns in cs, Slovak in sk; the English directory is noindex.
   { path: '/invoicing', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/features', changeFrequency: 'monthly', priority: 0.8 },
