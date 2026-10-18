@@ -58,7 +58,7 @@ export function ReferralNudge({ code, link, welcome, reward }: { code: string; l
         <Gift className="h-4 w-4 text-primary" aria-hidden="true" />
         {t('title')}
       </h2>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('body', { welcome, reward })}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t('body', { welcome, reward })}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" onClick={copy} className={buttonClass.primary}>
           {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}

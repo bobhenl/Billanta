@@ -3688,7 +3688,8 @@
       "addCompany": "Add a business",
       "manageCompanies": "Manage companies",
       "activity": "Change history",
-      "referrals": "Invite and earn credits"
+      "referrals": "Invite and earn credits",
+      "website": "Billanta website"
     },
     "installApp": {
       "label": "Install app",
@@ -7753,7 +7754,7 @@
   },
   "referrals": {
     "title": "Invite and earn credits",
-    "description": "Invite businesses you know or your clients. For each one that starts paying you get credits to pay your own plan.",
+    "description": "Invite businesses you know or your clients. For each one that takes a paid plan you get credits towards your own subscription.",
     "loadError": "Could not load the referral programme.",
     "failed": "Failed",
     "readOnly": "Only the company owner or an admin can spend credits or change the programme.",
@@ -7762,7 +7763,7 @@
     "copyFailed": "Could not copy the link. Select it and copy it by hand.",
     "link": {
       "title": "Your invite link",
-      "body": "A new company gets {welcome} credits right after signing up. You get {reward} credits once it starts paying. 1 credit = 1 CZK.",
+      "body": "A new company gets {welcome} credits right after signing up, and you get {reward} credits once it takes a paid plan. 1 credit = 1 CZK.",
       "copy": "Copy",
       "copied": "Copied",
       "code": "Code: {code}"
@@ -7821,7 +7822,7 @@
     },
     "nudge": {
       "title": "Your first invoice got paid. Pass Billanta on",
-      "body": "Send the link to someone who runs a business. They get {welcome, plural, one {# credit} other {# credits}} when they sign up, and you get {reward, plural, one {# credit} other {# credits}} once they pay for a plan for the first time. One credit is 1 CZK off a subscription.",
+      "body": "Send the link to someone who runs a business. They get {welcome, plural, one {# credit} other {# credits}} when they sign up, and you get {reward, plural, one {# credit} other {# credits}} once they take a paid plan. One credit is 1 CZK off a subscription.",
       "copy": "Copy link",
       "copied": "Copied",
       "more": "How referrals work",

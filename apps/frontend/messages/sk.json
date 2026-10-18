@@ -3688,7 +3688,8 @@
       "addCompany": "Pridať firmu alebo živnosť",
       "manageCompanies": "Spravovať firmy",
       "activity": "História zmien",
-      "referrals": "Pozvať a získať kredity"
+      "referrals": "Pozvať a získať kredity",
+      "website": "Web Billanty"
     },
     "installApp": {
       "label": "Stiahnuť aplikáciu",
@@ -7660,7 +7661,7 @@
   },
   "referrals": {
     "title": "Pozvať a získať kredity",
-    "description": "Pozvite známe firmy alebo klientov. Za každú, ktorá začne platiť, dostanete kredity a zaplatíte nimi tarif.",
+    "description": "Pozvite známe firmy alebo klientov. Za každú, ktorá si kúpi platený tarif, dostanete kredity na vlastné predplatné.",
     "loadError": "Program odporúčaní sa nepodarilo načítať.",
     "failed": "Nepodarilo sa",
     "readOnly": "Kredity míňa a program mení len vlastník alebo administrátor firmy.",
@@ -7669,7 +7670,7 @@
     "copyFailed": "Odkaz sa nepodarilo skopírovať, označte ho a skopírujte ručne.",
     "link": {
       "title": "Váš odkaz na pozvanie",
-      "body": "Nová firma dostane {welcome} kreditov hneď po registrácii. Vy {reward} kreditov, keď začne platiť. 1 kredit = 1 Kč.",
+      "body": "Nová firma dostane {welcome} kreditov hneď po registrácii, vy {reward} kreditov, keď si kúpi platený tarif. 1 kredit = 1 Kč.",
       "copy": "Kopírovať",
       "copied": "Skopírované",
       "code": "Kód: {code}"
@@ -7728,7 +7729,7 @@
     },
     "nudge": {
       "title": "Prvá faktúra je zaplatená. Odporučte Billantu ďalej",
-      "body": "Pošlite odkaz známemu podnikateľovi. Po registrácii dostane {welcome, plural, one {# kredit} few {# kredity} other {# kreditov}} a vy {reward, plural, one {# kredit} few {# kredity} other {# kreditov}}, keď si prvýkrát zaplatí tarif. Kredit = 1 Kč na predplatné.",
+      "body": "Pošlite odkaz známemu podnikateľovi. Po registrácii dostane {welcome, plural, one {# kredit} few {# kredity} other {# kreditov}} a vy {reward, plural, one {# kredit} few {# kredity} other {# kreditov}}, keď si kúpi platený tarif. Kredit = 1 Kč na predplatné.",
       "copy": "Skopírovať odkaz",
       "copied": "Skopírované",
       "more": "Ako odporúčanie funguje",

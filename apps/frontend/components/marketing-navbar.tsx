@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { LanguageSwitcher } from '@/components/language-switcher';
-import { HeaderAccountLink } from '@/components/marketing-account-links';
+import { CreateInvoiceLink, HeaderAccountLink } from '@/components/marketing-account-links';
 import { MarketingNavMenu } from '@/components/marketing-nav-menu';
 import { MarketingSearch } from '@/components/marketing-search';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -69,13 +69,10 @@ export async function MarketingNavbar() {
           <LanguageSwitcher />
           <ThemeToggle />
           <HeaderAccountLink />
-          <Link
-            href="/create-invoice"
-            className="hidden items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-flex"
-          >
+          <CreateInvoiceLink className="hidden items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-flex">
             <Plus className="h-4 w-4" aria-hidden="true" />
             {t('createInvoice')}
-          </Link>
+          </CreateInvoiceLink>
         </div>
       </div>
     </header>
