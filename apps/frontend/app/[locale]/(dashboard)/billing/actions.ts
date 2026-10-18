@@ -27,6 +27,32 @@ export async function openPortal() {
   return post<{ url: string }>('/api/v1/billing/subscription/portal', { locale });
 }
 
+export interface SubscriptionInfo {
+  interval: 'month' | 'year' | null;
+  currency: 'CZK' | 'EUR' | null;
+  periodEnd: string | null;
+  cancelAt: string | null;
+}
+
+async function changeSubscription(path: string, body: unknown = {}) {
+  const result = await post<SubscriptionInfo & { url?: undefined }>(`/api/v1/billing/subscription/${path}`, body);
+  if (result.ok) revalidatePath('/[locale]/(dashboard)/billing', 'page');
+  return result;
+}
+
+/** Stops renewal; the plan runs to the end of the paid period. */
+export async function cancelSubscription() {
+  return changeSubscription('cancel');
+}
+
+export async function resumeSubscription() {
+  return changeSubscription('resume');
+}
+
+export async function switchInterval(interval: 'month' | 'year') {
+  return changeSubscription('interval', { interval });
+}
+
 export async function requestBankTransfer(plan: PaidPlanKey, months: 1 | 12) {
   const result = await post<{ id: string; url?: undefined }>('/api/v1/billing/subscription/bank-transfer', { plan, months });
   if (result.ok) revalidatePath('/[locale]/(dashboard)/billing', 'page');

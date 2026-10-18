@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Check, Minus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
-import { PAYG_PRICE, type Plan, type PlanCurrency } from '@/lib/plans';
+import { PAYG_PRICE, transferPrice, type Plan, type PlanCurrency } from '@/lib/plans';
 
 export type PlanCopy = { name: string; tagline: string; cta: string; features: string[] };
 
@@ -32,6 +32,8 @@ type Labels = {
   /** Contains `{payg}`, replaced with the per-document price. */
   paygNote: string;
   aiCreditNote: string;
+  /** Contains `{price}`, replaced with the per-month bank-transfer price. */
+  transferPrice: string;
 };
 
 /**
@@ -118,6 +120,11 @@ export function PricingPlans({
               </p>
               <p className="mt-0.5 h-4 text-xs text-muted-foreground">
                 {free ? '' : yearly ? labels.billedYearly.replace('{total}', money(price.yearly * 12)) : labels.billedMonthly}
+              </p>
+              {/* The headline is the card price; transfer is CZK-only, so the
+                  dearer line only shows next to koruna prices. */}
+              <p className="mt-0.5 h-4 text-xs text-muted-foreground">
+                {free || currency !== 'CZK' ? '' : labels.transferPrice.replace('{price}', money(transferPrice(shown, currency)))}
               </p>
               <ul className="mt-4 flex-1 space-y-1.5 text-sm">
                 {text.features.map((feature) => (

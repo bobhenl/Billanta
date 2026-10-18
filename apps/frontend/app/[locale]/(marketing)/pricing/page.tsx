@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { ArrowRight, Gift, Sparkles } from 'lucide-react';
+import { ArrowRight, CreditCard, Gift, Landmark, Sparkles } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { trialDays } from '@/lib/plan';
-import { COMPARISON, defaultCurrency, PLANS } from '@/lib/plans';
+import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, defaultCurrency, PLANS } from '@/lib/plans';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { PricingPlans, type CompareCopy, type PlanCopy } from './pricing-plans';
 
@@ -55,7 +55,9 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   };
 
   // One Offer per plan at its yearly-billed monthly price, in the currency
-  // this locale shows first.
+  // this locale shows first. That is the card-subscription price, the one the
+  // cards show as the headline; the dearer bank-transfer price is a secondary
+  // line on the page and deliberately not a second Offer.
   const structuredData = [
     {
       '@context': 'https://schema.org',
@@ -109,10 +111,30 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           forever: t('forever'),
           popular: t('popular'),
           paygNote: t.raw('paygNote') as string,
-          aiCreditNote: t('aiCreditNote')
+          aiCreditNote: t('aiCreditNote'),
+          transferPrice: t.raw('transferPrice') as string
         }}
         comparison={comparison}
       />
+
+      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('methods.title')}</h2>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-2xl border border-primary/40 bg-card p-5">
+          <h3 className="flex items-center gap-2 font-bold">
+            <CreditCard className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+            {t('methods.card.title')}
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">{t('methods.card.body')}</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <h3 className="flex items-center gap-2 font-bold">
+            <Landmark className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            {t('methods.transfer.title')}
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">{t('methods.transfer.body', { percent: BANK_TRANSFER_SURCHARGE_PERCENT })}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t('transferCzkOnly')}</p>
+        </div>
+      </div>
 
       <div className="mt-6 flex flex-col gap-2 text-sm text-muted-foreground">
         <p className="flex items-start gap-2">

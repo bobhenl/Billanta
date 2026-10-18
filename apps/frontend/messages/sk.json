@@ -3191,15 +3191,20 @@
       "billedMonthly": "platba každý mesiac",
       "payCard": "Zaplatiť kartou",
       "renewCard": "Predĺžiť kartou",
-      "cardUnavailable": "Platba kartou zatiaľ nie je zapnutá."
+      "cardUnavailable": "Platba kartou zatiaľ nie je zapnutá.",
+      "cardTitle": "Predplatné kartou – automatické obnovenie, lacnejšie",
+      "cardBody": "Kartou, Apple Pay alebo Google Pay. Obnovuje sa samo a zrušíte ho tu jedným kliknutím.",
+      "transferTitle": "Prevodom – bez automatického obnovenia",
+      "transferBody": "Zálohová faktúra s QR kódom na mesiac alebo rok dopredu, o {percent} % drahšie. Pred koncom obdobia pošleme pripomienku.",
+      "transferPrice": "Prevodom {price} / mesiac ({total})"
     },
     "terms": {
       "renewYearly": "Predplatné sa obnovuje automaticky každý rok za rovnakú cenu, kým ho nezrušíte.",
       "renewMonthly": "Predplatné sa obnovuje automaticky každý mesiac za rovnakú cenu, kým ho nezrušíte.",
-      "cancel": "Zrušiť ho môžete kedykoľvek jedným krokom v portáli predplatného. Tarif potom pobeží do konca zaplateného obdobia.",
+      "cancel": "Zrušiť ho môžete kedykoľvek jedným krokom priamo na tejto stránke. Tarif potom pobeží do konca zaplateného obdobia.",
       "methods": "Platiť môžete kartou, Apple Pay, Google Pay alebo inou metódou, ktorú vám platobná brána ponúkne.",
-      "transfer": "Platba prevodom je jednorazová na rok dopredu a sama sa neobnovuje. Tarif zapneme, hneď ako platba príde na účet.",
-      "transferMonthly": "Prevodom platíte vždy len jeden mesiac dopredu. Nič sa neobnovuje samo a pripomienku neposielame, preto si ďalší mesiac zaplaťte ručne ešte pred koncom zaplateného obdobia.",
+      "transfer": "Prevodom platíte rok dopredu, o {percent} % drahšie ako kartou. Nič sa samo neobnovuje: 14 a 3 dni pred koncom vám pošleme e-mail s novou zálohovou faktúrou a QR kódom. Tarif zapneme, hneď ako platba príde na účet.",
+      "transferMonthly": "Prevodom platíte mesiac dopredu, o {percent} % drahšie ako kartou. Nič sa samo neobnovuje: 14 a 3 dni pred koncom vám pošleme e-mail s novou zálohovou faktúrou a QR kódom.",
       "transferCzkOnly": "Prevodom sa dá platiť len v korunách.",
       "vat": "Ceny sú bez DPH."
     },
@@ -3228,11 +3233,32 @@
     "errors": {
       "generic": "Niečo sa nepodarilo. Skúste to, prosím, znova.",
       "billing_not_configured": "Platba kartou zatiaľ nie je zapnutá.",
-      "already_subscribed": "Firma už predplatné má. Zmeníte ho v portáli predplatného.",
+      "already_subscribed": "Firma už predplatné má. Spravujete ho hore na tejto stránke.",
       "no_stripe_customer": "Firma zatiaľ nemá predplatné v Stripe.",
       "bank_transfer_not_configured": "Platba prevodom zatiaľ nie je zapnutá.",
       "too_many_pending_proformas": "Máte už tri nezaplatené zálohové faktúry. Zaplaťte niektorú z nich alebo počkajte, kým ju spárujeme.",
-      "forbidden": "Platiť môže len vlastník alebo správca firmy."
+      "forbidden": "Platiť môže len vlastník alebo správca firmy.",
+      "no_subscription": "Firma teraz nemá aktívne predplatné kartou.",
+      "same_interval": "Predplatné už takto platíte.",
+      "subscription_past_due": "Posledná platba neprešla. Najskôr v portáli predplatného zmeňte kartu.",
+      "subscription_not_changeable": "Toto predplatné sa tu zmeniť nedá. Napíšte nám a vyriešime to."
+    },
+    "portalHint": "V portáli Stripe zmeníte kartu alebo fakturačné údaje a stiahnete faktúry.",
+    "sub": {
+      "renewsOn": "Ďalšia platba a obnovenie {date}.",
+      "endsOn": "Predplatné je zrušené a skončí {date}. Dovtedy tarif beží ďalej.",
+      "cancel": "Zrušiť predplatné",
+      "cancelConfirm": "Predplatné sa už neobnoví. Tarif pobeží do {date}, potom firma prejde na tarif Zadarmo. Údaje zostanú.",
+      "cancelConfirmNoDate": "Predplatné sa už neobnoví. Tarif pobeží do konca zaplateného obdobia, potom firma prejde na tarif Zadarmo. Údaje zostanú.",
+      "cancelYes": "Áno, zrušiť",
+      "keep": "Ponechať predplatné",
+      "canceled": "Predplatné sa už neobnoví. Tarif beží do konca zaplateného obdobia.",
+      "resume": "Pokračovať v predplatnom",
+      "resumed": "Predplatné sa bude znova obnovovať.",
+      "switchToYear": "Prejsť na ročnú platbu ({price} / mesiac)",
+      "switchToMonth": "Prejsť na mesačnú platbu ({price} / mesiac)",
+      "switchNote": "Nové obdobie sa začne hneď. Nevyčerpanú časť súčasného vám odpočítame z prvej platby.",
+      "switched": "Hotovo, predplatné teraz platíte {interval, select, year {ročne} other {mesačne}}."
     }
   },
   "auth": {
@@ -3796,7 +3822,20 @@
       }
     },
     "compareCompetitors": "Ako si Billanta stojí oproti SuperFaktúre, Fakturoidu a ďalším",
-    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty: vyskúšajte celý tarif Firma."
+    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty: vyskúšajte celý tarif Firma.",
+    "methods": {
+      "title": "Ako platiť",
+      "card": {
+        "title": "Predplatné kartou – automatické obnovenie, lacnejšie",
+        "body": "Ceny vyššie platia pre predplatné kartou, Apple Pay alebo Google Pay. Obnovuje sa samo, zrušiť ho môžete kedykoľvek a tarif pobeží do konca zaplateného obdobia."
+      },
+      "transfer": {
+        "title": "Prevodom – bez automatického obnovenia",
+        "body": "Mesiac alebo rok dopredu podľa zálohovej faktúry s QR kódom, o {percent} % drahšie, pretože každú platbu párujeme ručne. Nič sa samo nestrhne a pred koncom obdobia vám pošleme pripomienku s ďalšou zálohovou faktúrou."
+      }
+    },
+    "transferPrice": "prevodom {price} / mesiac",
+    "transferCzkOnly": "Prevodom sa dá platiť len v korunách."
   },
   "cookies": {
     "banner": {
