@@ -8,6 +8,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { parseReportFilters, type ReportFilters } from "../dashboard/report-filters";
 import { type ExportDateBy, type ExportPeriod, ExportsService, VatRateUnavailableError } from "./exports.service";
+import { ReportRates } from "./uniform-rate";
 import type { VatPeriod } from "./vat-returns";
 import { FLAT_RATES, paidAdvances, type FlatRate } from "./annual-summary";
 import {
@@ -235,6 +236,7 @@ export class ExportsController {
         paidSocial: paid.paidSocial,
         paidHealth: paid.paidHealth,
         basis,
+        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs),
       });
       return { ...summary, paidSource: paid.source };
     } catch (err) {

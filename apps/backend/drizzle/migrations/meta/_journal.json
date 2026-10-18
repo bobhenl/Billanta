@@ -384,6 +384,13 @@
       "when": 1792900700000,
       "tag": "0054_registries_buyer_details",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1792900800000,
+      "tag": "0055_report_rate_mode",
+      "breakpoints": true
     }
   ]
 }

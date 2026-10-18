@@ -12,7 +12,7 @@ import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne,
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { fuzzyScore } from "../common/fuzzy";
 import { getCnbDay } from "../exports/cnb-rates";
-import { annualRateFor, exchangeRateSettingsOf, rateYearOf, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
+import { exchangeRateSettingsOf, isCnbRate, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
 import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
@@ -137,6 +137,27 @@ export function rateModeAfterEdit(
   const after = values.exchangeRate == null ? null : Number(values.exchangeRate);
   if (before === after || after == null || invoice.exchangeRateMode === "none") return {};
   return { exchangeRateMode: "manual", exchangeRateDate: null };
+}
+
+/**
+ * `rateModeAfterEdit`, except that a new rate equal to ČNB's for the
+ * document's day (the "Načíst z ČNB" button) is stored as the ČNB rate with
+ * its list day instead of as a plain typed rate.
+ */
+export async function rateAfterEdit(
+  invoice: Pick<InvoiceRow, "currency" | "exchangeRate" | "exchangeRateMode" | "taxableSupplyDate" | "issueDate">,
+  values: Partial<typeof schema.invoices.$inferInsert>,
+): Promise<Partial<typeof schema.invoices.$inferInsert>> {
+  const change = rateModeAfterEdit(invoice, values);
+  if (change.exchangeRateMode !== "manual" || values.exchangeRate == null) return change;
+  const currency = (values.currency ?? invoice.currency).toUpperCase();
+  const supply = values.taxableSupplyDate !== undefined ? values.taxableSupplyDate : invoice.taxableSupplyDate;
+  const day = supply ?? values.issueDate ?? invoice.issueDate;
+  if (currency === "CZK" || !day) return change;
+  const cnb = await getCnbDay(new Date(day));
+  const cnbRate = cnb?.rates.get(currency)?.rate ?? null;
+  if (!isCnbRate(Number(values.exchangeRate), cnbRate)) return change;
+  return { exchangeRate: cnbRate!.toFixed(6), exchangeRateMode: "cnb_daily", exchangeRateDate: cnb!.date };
 }
 
 /** Per-field audit entries ("seller.dic: CZ1 → CZ2") between two party snapshots. */
@@ -500,7 +521,7 @@ export class InvoicesService {
     const values = invoiceFieldValues(dto);
     // A rate changed by hand on an issued document is no longer the ČNB or
     // annual rate it was printed as; label it as a plain rate from now on.
-    if (issued) Object.assign(values, rateModeAfterEdit(invoice, values));
+    if (issued) Object.assign(values, await rateAfterEdit(invoice, values));
     const changes = this.audit?.diff(invoice as Record<string, unknown>, values as Record<string, unknown>) ?? [];
     if (issued) changes.push(...(await this.snapshotAfterEdit(db, tenantId, invoice, values)));
 
@@ -1302,9 +1323,11 @@ export class InvoicesService {
 
   /**
    * The CZK rate a document gets at issue and how it was chosen: a rate typed
-   * on the draft, the company's annual rate for the year of the taxable
-   * supply date (issue date when there is none), or the ČNB list valid on
-   * that day. Nothing for CZK documents.
+   * on the draft, or the ČNB list valid on the taxable supply date (issue
+   * date when there is none). A typed rate that is ČNB's for that day (the
+   * form's "Načíst z ČNB" button) is stored as the ČNB rate, with its list
+   * day. The jednotný kurz never goes on a document (exchange-rate-mode.ts).
+   * Nothing for CZK documents.
    */
   private async issueRate(
     db: TenantDb,
@@ -1321,20 +1344,18 @@ export class InvoicesService {
       .limit(1);
     const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
     const day = new Date(invoice.taxableSupplyDate ?? issueDate);
-    const year = rateYearOf(day);
-    const annualRate = annualRateFor(settings.annualRates, invoice.currency, year);
+    const cnb = await getCnbDay(day);
+    const cnbRate = cnb?.rates.get(invoice.currency.toUpperCase())?.rate ?? null;
+    const manualRate = invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
     const { mode, source } = resolveRateMode({
       setting: settings.mode,
       vatStatus: tenant?.vatStatus ?? "non_payer",
       totalVat: computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
-      manualRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
-      annualRate,
+      manualRate,
+      manualIsCnb: manualRate != null && isCnbRate(manualRate, cnbRate),
     });
     if (source === "manual") return { exchangeRate: invoice.exchangeRate, exchangeRateMode: mode, exchangeRateDate: null };
-    if (source === "annual") return { exchangeRate: annualRate!.toFixed(6), exchangeRateMode: mode, exchangeRateDate: `${year}-01-01` };
-    const cnb = await getCnbDay(day);
-    const rate = cnb?.rates.get(invoice.currency.toUpperCase())?.rate ?? null;
-    return { exchangeRate: rate == null ? null : rate.toFixed(6), exchangeRateMode: mode, exchangeRateDate: rate == null ? null : cnb!.date };
+    return { exchangeRate: cnbRate == null ? null : cnbRate.toFixed(6), exchangeRateMode: mode, exchangeRateDate: cnbRate == null ? null : cnb!.date };
   }
 
   /**

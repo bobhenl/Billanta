@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { DEFAULT_SHOWN, PDF_ACCENTS, type Contact, type DocLanguage, type InvoiceFormPrefs, type OptionalField } from '../../invoices/new/types';
 import { updateInvoiceFormPrefs } from '../actions';
 import { InvoiceDefaultsFields, parseNumber, type DefaultsDraft } from './invoice-defaults';
-import { annualRatesOf, ExchangeRateSettings, type AnnualRateDraft } from './exchange-rate-settings';
+import { annualRatesOf, ExchangeRateSettings, type AnnualRateDraft, type UniformYear } from './exchange-rate-settings';
 import type { VatStatus } from '@faktur/cz-compliance';
 
 /** Toggles grouped the way the invoice form lays them out. */
@@ -29,6 +29,7 @@ export function InvoiceFormSettings({
   bankAccounts,
   vatPayer,
   vatStatus,
+  uniformRates,
   readOnly
 }: {
   prefs: InvoiceFormPrefs;
@@ -38,6 +39,8 @@ export function InvoiceFormSettings({
   bankAccounts: { id: string; label: string; line: string }[];
   vatPayer: boolean;
   vatStatus: VatStatus;
+  /** Computed jednotný kurz per year; null when ČNB could not be reached. */
+  uniformRates: UniformYear[] | null;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices');
@@ -54,6 +57,7 @@ export function InvoiceFormSettings({
   const [reminderInterval, setReminderInterval] = useState(prefs.reminderIntervalDays);
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
   const [rateMode, setRateMode] = useState(prefs.exchangeRateMode);
+  const [reportRateMode, setReportRateMode] = useState(prefs.reportRateMode);
   const [annualRates, setAnnualRates] = useState<AnnualRateDraft[]>(() =>
     prefs.annualRates.map((r) => ({ year: String(r.year), currency: r.currency, rate: String(r.rate) }))
   );
@@ -85,6 +89,7 @@ export function InvoiceFormSettings({
       }
       const result = await updateInvoiceFormPrefs({
         exchange_rate_mode: rateMode,
+        report_rate_mode: reportRateMode,
         annual_rates: rates,
         show,
         custom_field_labels: labels.map((l) => l.trim()).filter(Boolean),
@@ -240,6 +245,9 @@ export function InvoiceFormSettings({
         className={card}
         mode={rateMode}
         onModeChange={setRateMode}
+        reportMode={reportRateMode}
+        onReportModeChange={setReportRateMode}
+        uniform={uniformRates}
         rates={annualRates}
         onRatesChange={setAnnualRates}
         vatStatus={vatStatus}

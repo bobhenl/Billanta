@@ -1996,7 +1996,8 @@
         "epoLink": "Formuláře EPO (Finanční správa)",
         "failed": "Odhad se nepodařilo spočítat.",
         "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
-        "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat."
+        "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat.",
+        "uniformRate": "Cizí měny jsou přepočtené jednotným kurzem za rok {year} (průměr kurzů ČNB ke konci měsíců). Změníte to v Nastavení → Formulář faktury."
       },
       "epo": {
         "title": "Jak podat přiznání, kontrolní a souhrnné hlášení",
@@ -2171,26 +2172,40 @@
       "fieldsHint": "Zaškrtnutá pole jsou ve formuláři vždy vidět. Pole, které už má na dokladu hodnotu, se zobrazí vždy.",
       "rate": {
         "title": "Kurz u faktur v cizí měně",
-        "hint": "Jak se částka v cizí měně přepočítá na koruny. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
+        "hint": "Jak se částky v cizí měně přepočítají na koruny, zvlášť na faktuře a zvlášť ve vašich přehledech. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
+        "invoiceTitle": "Na faktuře",
         "modes": {
           "cnb_daily": "Denní kurz ČNB",
-          "annual": "Jednotný kurz na rok",
           "none": "Přepočet na CZK netisknout"
         },
-        "cnbDailyHint": "Kurz ČNB ze dne uskutečnění plnění (DUZP). Když ČNB ten den kurz nevyhlásila, použije se poslední předchozí.",
-        "annualHint": "Jeden kurz pro celý rok podle § 38 zákona o DPH. Zadáte ho níže pro každý rok a měnu. Pro rok bez zadaného kurzu se použije denní kurz ČNB.",
+        "cnbDailyHint": "Kurz ČNB platný ke dni uskutečnění zdanitelného plnění (DUZP), jak to pro DPH žádá § 38 zákona o DPH. Když ČNB ten den kurz nevyhlásila, použije se poslední předchozí. Doklad s DPH má vždy tento kurz.",
         "noneHint": "Na dokladu nebude přepočet na koruny. Kurz ČNB se i tak uloží pro vaše přehledy.",
         "noneIdentified": "Platí jen pro doklady bez DPH. Když doklad DPH obsahuje, přepočet se vytiskne.",
         "nonePayer": "Plátce DPH musí mít na dokladu přepočet na koruny, proto tuhle volbu použít nejde. Faktury se vystaví s kurzem ČNB.",
-        "annualTitle": "Jednotné kurzy",
-        "annualEmpty": "Zatím žádný kurz. Přidejte rok a měnu.",
+        "reportTitle": "V přehledech a odhadu daně z příjmů",
+        "reportModes": {
+          "daily": "Denní kurz z dokladu",
+          "annual": "Jednotný kurz za rok"
+        },
+        "reportDailyHint": "Každý doklad se přepočte kurzem, který je na něm uložený.",
+        "annualHint": "Jednotný kurz podle § 38 odst. 1 zákona o daních z příjmů. Spočítáme ho sami jako průměr kurzů ČNB k poslednímu dni každého měsíce, stejně jako ho po konci roku vyhlašuje GFŘ.",
+        "invoiceStaysDaily": "Na fakturách se i tak tiskne denní kurz ČNB, protože ho pro DPH vyžaduje zákon, a jednotný kurz se použije jen ve vašich přehledech.",
+        "computedTitle": "Spočítané jednotné kurzy",
+        "computedError": "Kurzy ČNB se teď nepodařilo načíst. Přehledy použijí váš vlastní kurz, jinak kurz z dokladu.",
+        "computedEmpty": "Zatím neskončil žádný měsíc, ze kterého by šel kurz spočítat.",
+        "final": "konečný",
+        "running": "průběžný, zatím {n, plural, one {# měsíc} few {# měsíce} other {# měsíců}}",
+        "computedValue": "Spočítaný kurz: {rate} ({status})",
+        "annualTitle": "Vlastní kurz pro rok",
+        "annualEmpty": "Nemusíte nic zadávat. Vlastní kurz přidejte, jen když chcete jiný než spočítaný, třeba přesně ten z pokynu GFŘ.",
+        "annualOverrideHint": "Váš kurz má pro daný rok a měnu přednost před spočítaným.",
         "year": "Rok",
         "currency": "Měna",
         "rate": "Kurz",
         "perUnit": "CZK za 1 {currency}",
         "remove": "Odebrat kurz",
         "duplicate": "Každý rok a měna smí být v seznamu jen jednou.",
-        "add": "Přidat kurz"
+        "add": "Přidat vlastní kurz"
       },
       "groups": {
         "items": "Položky",
@@ -3927,7 +3942,6 @@
       "more": "Konstantní / specifický symbol, objednávka",
       "exchangeRate": "Kurz CZK/{currency}",
       "exchangeRateAuto": "Kurz ČNB při vystavení",
-      "exchangeRateAnnual": "Jednotný kurz {rate} (rok {year})",
       "exchangeRateLoad": "Načíst z ČNB",
       "exchangeRateFailed": "Kurz ČNB se nepodařilo načíst.",
       "inCzk": "≈ {amount} celkem",

@@ -181,13 +181,20 @@ export interface InvoiceFormPrefs {
   defaultContactId: string | null;
   defaultItems: DefaultItem[];
   defaultNoteAbove: string | null;
-  /** Kurz pro cizí měny (backend invoices/exchange-rate-mode.ts). */
+  /** Kurz u faktur v cizí měně (backend invoices/exchange-rate-mode.ts): what invoices print… */
   exchangeRateMode: ExchangeRateSetting;
+  /** …and which rate reports and the income-tax estimate use. */
+  reportRateMode: ReportRateMode;
+  /** The company's own jednotný kurz per year, over the computed one. */
   annualRates: AnnualRate[];
 }
 
-/** Daily ČNB rate, the company's annual rate (§38 odst. 2 ZDPH), or no conversion printed (non-payers only). */
-export type ExchangeRateSetting = 'cnb_daily' | 'annual' | 'none';
+/** Printed on invoices: the daily ČNB rate (§ 38 ZDPH), or no conversion (non-payers only). */
+export type ExchangeRateSetting = 'cnb_daily' | 'none';
+/** Reports and the income-tax estimate: each document's rate, or the jednotný kurz (§ 38 odst. 1 ZDP). */
+export type ReportRateMode = 'daily' | 'annual';
+/** Currencies the rate settings offer (and show a computed jednotný kurz for) by default. */
+export const RATE_CURRENCIES = ['EUR', 'USD', 'GBP', 'PLN'];
 /** What an issued document stored; null = issued before the setting existed. */
 export type StoredRateMode = 'cnb_daily' | 'annual' | 'manual' | 'none';
 
