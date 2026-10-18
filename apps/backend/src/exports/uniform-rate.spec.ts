@@ -48,7 +48,9 @@ describe("finishedMonthEnds", () => {
 });
 
 describe("computeUniformRates", () => {
-  beforeEach(() => cnb.getCnbDay.mockClear());
+  beforeEach(() => {
+    cnb.getCnbDay.mockClear();
+  });
   it("asks ČNB for each month end and averages per currency", async () => {
     const rates = await computeUniformRates(2025, new Date(2026, 0, 5));
     expect(cnb.getCnbDay).toHaveBeenCalledTimes(12);
