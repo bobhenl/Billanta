@@ -134,7 +134,7 @@ export const listInvoicesQuerySchema = z.object({
   amount_min: z.coerce.number().min(0).optional(),
   amount_max: z.coerce.number().min(0).optional(),
   // How it was created: "ai" covers every AI channel (Telegram, WhatsApp).
-  source: z.enum(["manual", "ai", "api", "recurring", "import"]).optional(),
+  source: z.enum(["manual", "ai", "api", "recurring", "import", "profile_order"]).optional(),
   language: z.enum(["cs", "sk", "en"]).optional(),
   reverse_charge: z.enum(["yes", "no"]).optional(),
   // At least one line item with this VAT rate (percent).

@@ -50,7 +50,9 @@ export default async function PublicProfileSettingsPage() {
     about: stored.about ?? null,
     services: stored.services ?? [],
     show: { ...SHOW_DEFAULTS, ...(stored.show ?? {}) },
-    contactCta: stored.contactCta ?? true
+    contactCta: stored.contactCta ?? true,
+    orders: { enabled: false, customItems: false, prepay: false, ...(stored.orders ?? {}) },
+    contactForm: stored.contactForm ?? false
   };
 
   return (
@@ -65,7 +67,7 @@ export default async function PublicProfileSettingsPage() {
         initial={initial}
         readOnly={!canManage(role)}
         suggestedSlug={suggestSlug(tenant.companyName)}
-        company={{ name: tenant.companyName, email: tenant.email, phone: tenant.phone, website: tenant.website, hasLogo: tenant.hasLogo, hasAddress: Boolean(tenant.addressStreet || tenant.addressCity), ico: tenant.ico }}
+        company={{ name: tenant.companyName, email: tenant.email, phone: tenant.phone, website: tenant.website, hasLogo: tenant.hasLogo, hasAddress: Boolean(tenant.addressStreet || tenant.addressCity), ico: tenant.ico, hasBankAccount: Boolean(tenant.bankAccountIban || tenant.bankAccountNumber) }}
       />
     </div>
   );

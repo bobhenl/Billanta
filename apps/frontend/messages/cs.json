@@ -603,6 +603,10 @@
         "isPerson": "soukromá osoba",
         "contactId": "kontakt"
       }
+    },
+    "profileOrder": {
+      "badge": "Objednávka z profilu",
+      "banner": "Tento koncept vytvořil zákazník objednávkou z vašeho veřejného profilu. Zkontrolujte položky a ceny, pak ho vystavte. Zákazníkovi jsme nic neposlali."
     }
   },
   "publicInvoice": {
@@ -2223,6 +2227,10 @@
         "buyer_details": {
           "label": "Odběratel doplnil údaje",
           "hint": "Odběratel vyplnil fakturační údaje přes odkaz, který jste mu poslali."
+        },
+        "profile_message": {
+          "label": "Zpráva z profilu",
+          "hint": "Návštěvník vám napsal přes formulář Kontaktovat na veřejném profilu."
         }
       },
       "browserTitle": "Oznámení v prohlížeči",
@@ -2563,7 +2571,25 @@
       "publish": "Uložit a zveřejnit",
       "saved": "Profil uložen",
       "savedLive": "Profil je zveřejněn",
-      "saveFailed": "Uložení se nepodařilo"
+      "saveFailed": "Uložení se nepodařilo",
+      "serviceUnitPrice": "Cena za jednotku",
+      "serviceUnitPriceHint": "Číslo bez DPH, které se dá do objednávky. Bez něj doplníte cenu sami.",
+      "serviceUnit": "Jednotka (ks, hod)",
+      "copyOrderLink": "Kopírovat odkaz na objednávku",
+      "copyOrderLinkSaveFirst": "Odkaz bude k dispozici po uložení a zveřejnění profilu.",
+      "orders": {
+        "title": "Objednávky a zprávy",
+        "enabled": "Přijímat objednávky z profilu",
+        "enabledHint": "U každé služby bude tlačítko Objednat. Objednávka se vám uloží jako koncept faktury ke kontrole, nic se samo nevystaví ani neodešle.",
+        "customItems": "Povolit vlastní položky",
+        "customItemsHint": "Zákazník může připsat, co dalšího chce. Tyto položky přijdou bez ceny a doplníte ji sami.",
+        "prepay": "Platba předem",
+        "prepayHint": "Po odeslání objednávky uvidí zákazník číslo účtu, částku, variabilní symbol a QR kód. Platí jen pro služby s cenou za jednotku. Fakturu vystavíte ručně.",
+        "prepayNoAccount": "Pro platbu předem doplňte bankovní účet firmy.",
+        "contactForm": "Formulář Kontaktovat",
+        "contactFormHint": "Návštěvník vám napíše zprávu přímo z profilu. Přijde vám do upozornění v aplikaci, zákazníkovi nic neposíláme.",
+        "linksHint": "Odkaz na objednávku konkrétní služby zkopírujete ikonou řetězu u služby. Hodí se do e-mailu nebo na sociální sítě."
+      }
     },
     "import": {
       "title": "Přechod z jiného systému",
@@ -3894,7 +3920,8 @@
         "ai": "AI (Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Pravidelná faktura",
-        "import": "Import"
+        "import": "Import",
+        "profile_order": "Objednávka z profilu"
       },
       "bankAccount": "Bankovní účet",
       "attachments": "Má přílohy",
@@ -5475,7 +5502,72 @@
       "subject": "Poptávka – {company}",
       "body": "Dobrý den,\n\nmám zájem o:\n\n"
     },
-    "poweredBy": "Profil vytvořen v <brand>Billanta</brand> – fakturace pro živnostníky a firmy"
+    "poweredBy": "Profil vytvořen v <brand>Billanta</brand> – fakturace pro živnostníky a firmy",
+    "order": {
+      "button": "Objednat",
+      "title": "Objednávka",
+      "hint": "Vyberte službu a vyplňte fakturační údaje. {company} objednávku zkontroluje a ozve se vám.",
+      "service": "Služba",
+      "noService": "Jen vlastní položky",
+      "quantity": "Množství",
+      "estimate": "Orientačně {amount}. Konečnou cenu potvrdí dodavatel.",
+      "priceLater": "Cenu doplní dodavatel.",
+      "customItems": "Další položky",
+      "customItemsHint": "Napište, co dalšího potřebujete. Cenu doplní dodavatel.",
+      "itemDescription": "Co potřebujete",
+      "addItem": "Přidat položku",
+      "removeItem": "Odebrat položku",
+      "buyerTitle": "Fakturační údaje",
+      "note": "Poznámka",
+      "notePlaceholder": "Termín, upřesnění, cokoli dalšího",
+      "submit": "Odeslat objednávku",
+      "legal": "Odesláním předáte své údaje dodavateli, aby mohl objednávku vyřídit a vystavit fakturu.",
+      "doneTitle": "Objednávka je odeslaná",
+      "doneText": "{company} ji teď zkontroluje a fakturu vám vystaví sám. Nic dalšího dělat nemusíte.",
+      "payTitle": "Platba předem",
+      "payHint": "{company} žádá o platbu předem. Zaplaťte prosím podle těchto údajů nebo načtěte QR kód v aplikaci banky.",
+      "payAmount": "Částka",
+      "payAccount": "Číslo účtu",
+      "payVs": "Variabilní symbol",
+      "payRecipient": "Příjemce",
+      "payNote": "Uveďte prosím přesně tento variabilní symbol, podle něj dodavatel platbu spáruje. Fakturu dostanete od dodavatele.",
+      "errors": {
+        "invalid": "Zkontrolujte prosím zvýrazněná pole.",
+        "closed": "Tato firma teď objednávky nepřijímá.",
+        "limit": "Příliš mnoho pokusů, zkuste to prosím za chvíli.",
+        "daily_cap": "Firma dnes už přijala hodně objednávek. Zkuste to prosím zítra.",
+        "unknown_service": "Tuto službu už firma nenabízí. Obnovte prosím stránku.",
+        "custom_items_disabled": "Vlastní položky tato firma nepřijímá. Obnovte prosím stránku.",
+        "empty_order": "Vyberte službu nebo přidejte položku.",
+        "items": "Zkontrolujte prosím položky (popis aspoň 2 znaky).",
+        "failed": "Něco se nepovedlo, zkuste to prosím znovu."
+      }
+    },
+    "message": {
+      "button": "Kontaktovat",
+      "title": "Napište nám",
+      "hint": "Zpráva přijde přímo firmě {company}. Odpoví vám na váš e-mail.",
+      "name": "Jméno",
+      "email": "E-mail",
+      "about": "Téma",
+      "aboutGeneral": "Obecný dotaz",
+      "message": "Zpráva",
+      "submit": "Odeslat zprávu",
+      "legal": "Odesláním předáte jméno, e-mail a zprávu firmě, aby vám mohla odpovědět.",
+      "doneTitle": "Zpráva je odeslaná",
+      "doneText": "{company} ji dostala a odpoví vám na e-mail.",
+      "errors": {
+        "invalid": "Zkontrolujte prosím zvýrazněná pole.",
+        "closed": "Tato firma teď zprávy přes profil nepřijímá.",
+        "limit": "Příliš mnoho zpráv, zkuste to prosím za chvíli.",
+        "daily_cap": "Firma dnes už dostala hodně zpráv. Zkuste to prosím zítra.",
+        "failed": "Něco se nepovedlo, zkuste to prosím znovu.",
+        "name": "Napište jméno (aspoň 2 znaky).",
+        "email": "Zadejte platný e-mail.",
+        "message": "Zpráva musí mít 5 až 2000 znaků.",
+        "serviceId": "Vyberte téma znovu."
+      }
+    }
   },
   "time": {
     "title": "Evidence času",
@@ -5838,7 +5930,8 @@
         "sent_corrected": "poslal(a) opravenou verzi",
         "buyer_details_requested": "poslal(a) odběrateli k doplnění údajů",
         "buyer_details_submitted": "doplnil(a) fakturační údaje k",
-        "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k"
+        "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k",
+        "profile_order": "vytvořil(a) objednávkou z veřejného profilu koncept"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -6531,7 +6624,8 @@
         "ico_required": "Firma z Česka nebo Slovenska potřebuje IČO.",
         "ico_format": "IČO má 8 číslic.",
         "ico_foreign": "IČO se vyplňuje jen u českých a slovenských firem.",
-        "dic_format": "DIČ nemá správný tvar."
+        "dic_format": "DIČ nemá správný tvar.",
+        "email_required": "Vyplňte e-mail, ať se vám dodavatel může ozvat."
       }
     }
   },

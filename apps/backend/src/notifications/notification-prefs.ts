@@ -17,6 +17,9 @@ export const NOTIFICATION_EVENTS = [
   "member_joined",
   "quote_response",
   "buyer_details",
+  // A visitor's message from the public profile ("Kontaktovat"). In-app only
+  // unless the member opts into e-mail; nothing is ever sent to the visitor.
+  "profile_message",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 export const NOTIFICATION_CHANNELS = ["app", "email"] as const;

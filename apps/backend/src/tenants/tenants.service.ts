@@ -10,7 +10,7 @@ import { findBankAccount, listBankAccounts } from "./bank-accounts";
 import type { BankAccountDto } from "./dto/bank-account.dto";
 import type { UpdateTenantDto } from "./dto/update-tenant.dto";
 import { getNumberFormats, saveNumberFormats, type NumberFormatsInput } from "./number-formats";
-import { RESERVED_PROFILE_SLUGS, SLUG_PATTERN } from "./public-profile";
+import { RESERVED_PROFILE_SLUGS, SLUG_PATTERN, withServiceIds } from "./public-profile";
 import { NUMBER_DOCUMENT_TYPES } from "@faktur/cz-compliance";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -112,7 +112,7 @@ export class TenantsService {
       emailPrefs: dto.email_prefs,
       templateVars: dto.template_vars,
       paymentMethods: dto.payment_methods,
-      publicProfile: dto.public_profile,
+      publicProfile: dto.public_profile && withServiceIds(dto.public_profile),
       enabledModules: dto.enabled_modules,
     };
     for (const key of Object.keys(values) as Array<keyof TenantInsert>) {

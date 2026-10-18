@@ -69,7 +69,7 @@ export function contactToIsdocParty(contact: ContactRow): IsdocParty {
 
 /** `invoices.source`'s DB enum includes `"recurring"` and `"import"`, which have no equivalent in ISDOC's (narrower, optional) `source` field — omitted rather than misrepresented as `manual`. */
 function toIsdocSource(source: InvoiceRow["source"]): IsdocInvoiceInput["source"] {
-  return source === "recurring" || source === "import" ? undefined : source;
+  return source === "recurring" || source === "import" || source === "profile_order" ? undefined : source;
 }
 
 /**

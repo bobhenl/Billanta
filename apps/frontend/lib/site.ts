@@ -30,3 +30,9 @@ export const PROFILE_DOMAIN = (process.env.NEXT_PUBLIC_PROFILE_DOMAIN ?? '').tri
 export function profileUrl(slug: string, locale = 'cs', origin = SITE_URL): string {
   return PROFILE_DOMAIN ? `https://${slug}.${PROFILE_DOMAIN}` : `${origin}/${locale}/p/${slug}`;
 }
+
+/** Link straight to the order form with one service picked, for the owner to share. */
+export function profileOrderUrl(slug: string, serviceId: string, locale = 'cs', origin = SITE_URL): string {
+  const base = profileUrl(slug, locale, origin);
+  return `${base}${PROFILE_DOMAIN ? '/' : ''}?service=${encodeURIComponent(serviceId)}#order`;
+}

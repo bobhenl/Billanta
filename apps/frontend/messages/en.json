@@ -603,6 +603,10 @@
         "isPerson": "private person",
         "contactId": "contact"
       }
+    },
+    "profileOrder": {
+      "badge": "Profile order",
+      "banner": "A customer created this draft by ordering from your public profile. Check the items and prices, then issue it. Nothing was sent to the customer."
     }
   },
   "publicInvoice": {
@@ -2223,6 +2227,10 @@
         "buyer_details": {
           "label": "Customer filled in their details",
           "hint": "The customer filled in their billing details using the link you sent."
+        },
+        "profile_message": {
+          "label": "Profile message",
+          "hint": "A visitor wrote to you through the Contact form on your public profile."
         }
       },
       "browserTitle": "Browser notifications",
@@ -2563,7 +2571,25 @@
       "publish": "Save and publish",
       "saved": "Profile saved",
       "savedLive": "Profile is live",
-      "saveFailed": "Saving failed"
+      "saveFailed": "Saving failed",
+      "serviceUnitPrice": "Unit price",
+      "serviceUnitPriceHint": "A number without VAT that goes on the order. Without it, you add the price yourself.",
+      "serviceUnit": "Unit (pcs, hrs)",
+      "copyOrderLink": "Copy order link",
+      "copyOrderLinkSaveFirst": "The link is available once the profile is saved and published.",
+      "orders": {
+        "title": "Orders and messages",
+        "enabled": "Take orders from the profile",
+        "enabledHint": "Each service gets an Order button. Orders are saved as draft invoices for you to review; nothing is issued or sent automatically.",
+        "customItems": "Allow custom items",
+        "customItemsHint": "Customers can add what else they want. These items come without a price and you add it yourself.",
+        "prepay": "Payment in advance",
+        "prepayHint": "After ordering, the customer sees the account number, amount, variable symbol and a QR code. Only for services with a unit price. You still issue the invoice by hand.",
+        "prepayNoAccount": "Add the company bank account to ask for payment in advance.",
+        "contactForm": "Contact form",
+        "contactFormHint": "Visitors can write to you straight from the profile. Messages land in your in-app notifications; we send nothing to the visitor.",
+        "linksHint": "Copy a link to order a specific service with the chain icon next to it. Handy for e-mails or social media."
+      }
     },
     "import": {
       "title": "Switch from another system",
@@ -3893,7 +3919,8 @@
         "ai": "AI (Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Recurring invoice",
-        "import": "Import"
+        "import": "Import",
+        "profile_order": "Profile order"
       },
       "bankAccount": "Bank account",
       "attachments": "Has attachments",
@@ -5474,7 +5501,72 @@
       "subject": "Enquiry – {company}",
       "body": "Hello,\n\nI'm interested in:\n\n"
     },
-    "poweredBy": "Profile made with <brand>Billanta</brand> – invoicing for freelancers and businesses"
+    "poweredBy": "Profile made with <brand>Billanta</brand> – invoicing for freelancers and businesses",
+    "order": {
+      "button": "Order",
+      "title": "Order",
+      "hint": "Pick a service and fill in your billing details. {company} will review the order and get back to you.",
+      "service": "Service",
+      "noService": "Only my own items",
+      "quantity": "Quantity",
+      "estimate": "About {amount}. The supplier confirms the final price.",
+      "priceLater": "The supplier will add the price.",
+      "customItems": "Other items",
+      "customItemsHint": "Tell us what else you need. The supplier will add the price.",
+      "itemDescription": "What you need",
+      "addItem": "Add item",
+      "removeItem": "Remove item",
+      "buyerTitle": "Billing details",
+      "note": "Note",
+      "notePlaceholder": "Deadline, details, anything else",
+      "submit": "Send order",
+      "legal": "By sending, you share your details with the supplier so they can handle the order and issue an invoice.",
+      "doneTitle": "Order sent",
+      "doneText": "{company} will now review it and issue the invoice themselves. Nothing else to do.",
+      "payTitle": "Payment in advance",
+      "payHint": "{company} asks for payment in advance. Please pay using these details or scan the QR code in your banking app.",
+      "payAmount": "Amount",
+      "payAccount": "Account number",
+      "payVs": "Variable symbol",
+      "payRecipient": "Recipient",
+      "payNote": "Please use exactly this variable symbol so the supplier can match your payment. The invoice will come from the supplier.",
+      "errors": {
+        "invalid": "Please check the highlighted fields.",
+        "closed": "This company is not taking orders right now.",
+        "limit": "Too many attempts, please try again in a moment.",
+        "daily_cap": "This company has had a lot of orders today. Please try again tomorrow.",
+        "unknown_service": "This service is no longer offered. Please reload the page.",
+        "custom_items_disabled": "This company does not take custom items. Please reload the page.",
+        "empty_order": "Pick a service or add an item.",
+        "items": "Please check the items (description of at least 2 characters).",
+        "failed": "Something went wrong, please try again."
+      }
+    },
+    "message": {
+      "button": "Contact",
+      "title": "Write to us",
+      "hint": "Your message goes straight to {company}. They will reply to your e-mail.",
+      "name": "Name",
+      "email": "E-mail",
+      "about": "Topic",
+      "aboutGeneral": "General question",
+      "message": "Message",
+      "submit": "Send message",
+      "legal": "By sending, you share your name, e-mail and message with the company so they can reply.",
+      "doneTitle": "Message sent",
+      "doneText": "{company} has received it and will reply to your e-mail.",
+      "errors": {
+        "invalid": "Please check the highlighted fields.",
+        "closed": "This company is not taking messages through its profile right now.",
+        "limit": "Too many messages, please try again in a moment.",
+        "daily_cap": "This company has had a lot of messages today. Please try again tomorrow.",
+        "failed": "Something went wrong, please try again.",
+        "name": "Enter your name (at least 2 characters).",
+        "email": "Enter a valid e-mail.",
+        "message": "The message must be 5 to 2000 characters long.",
+        "serviceId": "Pick the topic again."
+      }
+    }
   },
   "time": {
     "title": "Time tracking",
@@ -5837,7 +5929,8 @@
         "sent_corrected": "sent the corrected version of",
         "buyer_details_requested": "sent to the customer to fill in their details:",
         "buyer_details_submitted": "filled in their billing details for",
-        "buyer_details_cancelled": "closed the customer details request for"
+        "buyer_details_cancelled": "closed the customer details request for",
+        "profile_order": "created by ordering from the public profile:"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -6530,7 +6623,8 @@
         "ico_required": "A Czech or Slovak company needs a company ID.",
         "ico_format": "A company ID has 8 digits.",
         "ico_foreign": "A company ID (IČO) is only for Czech and Slovak companies.",
-        "dic_format": "The VAT ID doesn't look right."
+        "dic_format": "The VAT ID doesn't look right.",
+        "email_required": "Enter your e-mail so the supplier can get back to you."
       }
     }
   },

@@ -56,6 +56,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const t = await getTranslations('doc');
   const tStatus = await getTranslations('invoices.status');
   const tBuyer = await getTranslations('invoices.buyerDetails');
+  const tProfileOrder = await getTranslations('invoices.profileOrder');
   const tGloss = await getTranslations('glossary');
 
   let detail: InvoiceDetail;
@@ -151,6 +152,9 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               {t(`type.${invoice.documentType}`)}
             </span>
             <span title={tGloss(`status.${status}`)} className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>{statusLabel}</span>
+            {invoice.source === 'profile_order' && (
+              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{tProfileOrder('badge')}</span>
+            )}
             {buyerDetailsState(invoice) && (
               <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', buyerDetailsState(invoice) === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
                 {tBuyer(`badge.${buyerDetailsState(invoice)}`)}
@@ -204,6 +208,11 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         )}
       </div>
 
+      {invoice.source === 'profile_order' && invoice.status === 'pending_review' && (
+        <Banner tone="info" className="mt-4">
+          {tProfileOrder('banner')}
+        </Banner>
+      )}
       {invoice.source.startsWith('ai_') && invoice.status === 'pending_review' && (
         <Banner tone="warn" className="mt-4">
           {t('aiDisclaimer')}

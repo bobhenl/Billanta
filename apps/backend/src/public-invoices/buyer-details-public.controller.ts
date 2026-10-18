@@ -1,11 +1,11 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, HttpStatus, Ip, NotFoundException, Param, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
-import { lookupVies, parseVatId } from "@faktur/cz-compliance";
 import { ContactsService } from "../contacts/contacts.service";
 import { DailyCap, SlidingWindowLimiter, visitorBucket } from "../guest-invoices/guest-limits";
 import { BuyerDetailsService } from "../invoices/buyer-details.service";
 import { TOKEN_PATTERN } from "../invoices/buyer-details.util";
+import { registryLookup, registryQueryOf } from "./registry-lookup";
 
 /** The visitor's IP; the frontend's server action / route forwards it as x-guest-ip, trusted only from local addresses. */
 function visitorOf(ip: string, req: Request): string {
@@ -64,30 +64,11 @@ export class BuyerDetailsPublicController {
     @Req() req: Request,
   ) {
     this.throttle(this.lookupLimiter, visitorOf(ip, req));
-    const ico = (rawIco ?? "").replace(/\s+/g, "");
-    const vat = (rawVat ?? "").replace(/[\s.-]/g, "").toUpperCase();
-    if (ico ? !/^\d{6,8}$/.test(ico) : !parseVatId(vat)) throw new BadRequestException({ error: "invalid_id" });
+    const query = registryQueryOf(rawIco, rawVat);
+    if (!query) throw new BadRequestException({ error: "invalid_id" });
     await this.buyerDetails.assertOpen(token);
     if (!this.lookupDaily.take()) throw new HttpException({ error: "busy" }, HttpStatus.SERVICE_UNAVAILABLE);
-    try {
-      if (ico) {
-        const hit = await this.contacts.aresLookup(ico.padStart(8, "0"));
-        return {
-          name: hit.legalName,
-          ico: hit.ico || null,
-          dic: hit.dic,
-          street: hit.addressStreet,
-          city: hit.addressCity,
-          postalCode: hit.addressPostalCode,
-          country: hit.addressCountry,
-        };
-      }
-      const [hit] = await lookupVies(vat);
-      if (!hit) throw new Error("not found");
-      return { name: hit.name || null, ico: null, dic: hit.vatId, street: hit.street, city: hit.city, postalCode: hit.postalCode, country: hit.country };
-    } catch {
-      throw new NotFoundException({ error: "not_found" });
-    }
+    return registryLookup(this.contacts, query);
   }
 
   private throttle(limiter: SlidingWindowLimiter, visitor: string) {
