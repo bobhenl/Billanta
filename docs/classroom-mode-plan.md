@@ -17,20 +17,24 @@ and watermark the demo has applies without new code; classroom mode adds the
 school/class/student structure on top and closes the few doors a demo leaves
 open on purpose (public links, accounting exports, demo transfer).
 
-Status: **proposal, waiting for approval.** Nothing below is built yet.
+Status: **proposal, second round, waiting for approval.** Nothing below is
+built yet. Round two takes in the owner's feedback: e-mail domain only
+optional, practice of several company types and the accountant role,
+modules per class, co-teachers, renewal across school years, generous
+limits, and a DPA draft (`docs/classroom-dpa-draft.md`).
 
 ---
 
 ## 1. Roles and flow
 
 ```
-Teacher (real Billanta user, school e-mail)
-  └─ applies: school name, school IČO, school e-mail domain, DPA consent
-       └─ Billanta staff approves (PlatformAdminGuard, /admin/classroom)
+Teacher (real Billanta user, any e-mail)
+  └─ applies: school (IČO via ARES), level, DPA consent
+       └─ Billanta staff verify the teacher and approve the school
             └─ teacher creates classes → join code + QR + printable sheet
-                 └─ student opens /class/join, types code + nickname
+                 └─ student scans the QR (/join/CODE), types a nickname
                       └─ gets own practice company (seeded like a demo)
-                         and a personal student code to sign in again
+                         and a personal re-entry code for other devices
 Teacher sees every company in the class read-only, sees progress per lesson,
 can reset a company, regenerate a student's code, remove a student, close
 enrolment or end the class early.
@@ -38,51 +42,76 @@ enrolment or end the class early.
 
 ### 1.1 Teacher onboarding
 
-1. Teacher signs up as any user (e-mail + password or Google) and opens
-   `/{locale}/for-schools/apply` (also linked from the `/for-schools` landing
-   page the lessons session is building).
-2. Application form: school name, school IČO (looked up in ARES with the
-   existing `company-lookup` so the name is pre-filled and checked), school
-   e-mail domain (e.g. `gymnazium-xy.cz`), the teacher's subject (free text,
-   optional), expected number of students, and two checkboxes:
-   - acceptance of the **data processing agreement** (school = controller,
-     Billanta = processor, see §6),
-   - "I understand classroom companies are fictional and cannot be used for
+1. Teacher signs up as any user (e-mail + password or Google; **any
+   e-mail**, a school address is not required) and opens
+   `/{locale}/for-schools/apply` (also linked from the `/for-schools`
+   landing page the lessons session is building).
+2. Application form:
+   - school IČO, looked up with the existing `company-lookup` (ARES for CZ,
+     the SK registry for SK), so name, address and legal form are pre-filled
+     and checked;
+   - **school level**: ZŠ, SŠ (incl. obchodní akademie), VOŠ, VŠ, course
+     (retraining, adult education). Used for sensible defaults (which
+     company types, seeded or empty) and for our own statistics, not as
+     separate products;
+   - the school web page where the teacher is listed (optional) and the
+     school e-mail domain (optional);
+   - subject (free text, optional), expected number of students;
+   - two checkboxes: acceptance of the **data processing agreement**
+     (school = controller, Billanta = processor, §6 and the DPA draft), and
+     "I understand classroom companies are fictional and cannot be used for
      real invoicing."
-3. Automatic checks before it reaches staff:
-   - the teacher's e-mail is **verified** (or a Google account) and its
-     domain equals the school domain or is a subdomain of it;
-   - the domain is not a free-mail provider (gmail, seznam, centrum, email,
-     post, azet, zoznam, outlook, …: a list in code);
-   - one pending application per user, at most 3 applications per school IČO
-     per week (stops spraying).
-4. Billanta staff (`PlatformAdminGuard`) review at `/admin/classroom`: ARES
-   data for the IČO (legal form should be a school: "školská právnická
+3. Verification is **light and human**, because schools differ (many small
+   schools have no own domain, teachers use seznam.cz or gmail):
+   - **fast path:** the teacher's verified e-mail is on the school's domain
+     → staff see a green "domain matches" badge and approve in one click;
+   - **otherwise** staff verify by hand: the teacher on the school web page,
+     a short call or e-mail to the school office, or an agreement with the
+     school (e.g. a partnership with an obchodní akademie). A free-mail
+     address is **not** rejected, only shown to staff;
+   - anti-spam only: one pending application per user, at most 3 per school
+     IČO per week.
+4. Billanta staff (`PlatformAdminGuard`) review at `/admin/classroom`: the
+   registry data (legal form should be a school: "školská právnická
    osoba", "příspěvková organizace", "obecně prospěšná společnost", SK
-   equivalents; staff decide, the UI only highlights), the domain, the
-   teacher's name. Approve / reject with a note. The teacher gets one e-mail
-   (normal outbox, real account) either way.
+   equivalents; the UI only highlights, staff decide), the domain badge,
+   the note of how they verified. Approve / reject with a note. The teacher
+   gets one e-mail (normal outbox, real account) either way.
 5. Approved teacher gets a "Classroom" entry in the account menu leading to
    `/{locale}/classroom`.
 
-The approval is per **school** (`classroom_schools`) with the teacher as a
-member (`classroom_teachers`), so a second teacher of an approved school
-whose e-mail matches the domain is approved automatically – staff approve
-each school once. Staff can suspend a school, which closes all its classes.
+The approval is per **school** (`classroom_schools`) with teachers as
+members (`classroom_teachers`). Another teacher of an approved school is
+approved automatically when their e-mail is on the school domain, or when
+an already approved teacher of that school **invites** them; otherwise
+staff confirm them like the first one. Staff can suspend a school, which
+closes all its classes.
 
 ### 1.2 Classes
 
 A teacher creates a class with:
 
-- name ("4.A – Ekonomika"), language of the companies (`cs`/`sk`/`en`),
-- company kind (one of the demo kinds: `cz_vat_sro`, `cz_freelancer`,
-  `cz_pausal`, `sk_vat_sro` – and whatever the Slovak demo-kinds session
-  adds), the same for every student so the lessons fit,
+- name ("4.A – Ekonomika"), language of the companies (`cs`/`sk`/`en`);
+- **company types the class practises**: one or more of the demo kinds
+  (`cz_freelancer` OSVČ, `cz_pausal` OSVČ v paušálním režimu, `cz_vat_sro`
+  s.r.o. plátce DPH, `sk_vat_sro`, and whatever the Slovak demo-kinds
+  session adds). With one type every student gets it; with several the
+  student picks one when joining, or the teacher assigns them (useful for
+  "half the class is OSVČ, half is s.r.o." lessons);
 - start empty or seeded (seeded = the demo dataset; empty = company and
-  settings only, for lessons that start from zero),
+  settings only, for lessons that start from zero);
+- **modules** the class uses (expenses, bank, recurring, quotes, reports,
+  time). The teacher switches them on and off at any time, e.g. only
+  invoices and contacts for the first lessons, bank and expenses later;
+  the change is copied to every company in the class. AI stays off
+  regardless (§2.1);
+- **working mode**: everyone their own company (default) or **teams**
+  (the teacher names teams, a student picks one when joining, the team
+  shares one company; phase 2, see §5);
 - end date: default **31 August of the current school year** (classes made
-  in July/August default to the next one), at most 13 months ahead,
-- max students (default 35, hard cap 40).
+  in July/August default to the next one), at most 13 months ahead, and
+  **renewable** (below);
+- max students (default 35).
 
 Each class gets a **join code** on the shared group-code mechanism the
 promo-codes session is building (§1.5): a `kind: school_class` code with
@@ -93,8 +122,19 @@ mechanism offers one). Enrolment can be **closed** (code stops working,
 existing students unaffected) and the code **rotated**. The code expires
 with the class.
 
-Limits per teacher: 10 active classes. Per school: 600 active students
-(staff can raise it).
+**Renewal across school years.** Multi-year subjects (e.g. a 3rd and 4th
+year of an obchodní akademie) keep their companies: the teacher
+**extends** the class by up to one more school year at a time, as often
+as needed, and may rename it ("3.A" → "4.A"). Students keep their
+companies, codes and history. 30 days and again 7 days before the end the
+teacher gets an e-mail ("Class 3.A ends on 31 August, extend it or
+download the progress CSV"). After the end the companies stay read-only
+for 30 days (the teacher can still extend), then they are deleted.
+
+**Limits** are generous and exist only as brakes against filling the
+database by a script or a mistake, never as a sales lever: 60 students
+per class, 30 active classes per teacher, 2 000 active students per
+school. Staff can raise any of them for a school with one field.
 
 ### 1.3 Students
 
@@ -133,7 +173,22 @@ and as a hash for the lookup.
 
 The student is the **owner** of their company in the app's role model (so
 the whole UI works), but every classroom restriction below applies to the
-company, not the role.
+company, not the role. The owner role does not let them remove the
+teacher: team management is closed for demo tenants already, and a new
+trigger refuses deleting or downgrading the teacher's membership in a
+classroom tenant (the classroom functions are the only way to change it).
+
+**Practising roles** (phase 2 unless noted):
+
+- *OSVČ vs. s.r.o. vs. plátce DPH*: the company types above (MVP).
+- *Several companies per student*: the teacher can give a student a second
+  company of another type ("now do the same as a VAT payer"); the data
+  model has companies separate from students for this.
+- *Accountant*: the student gets the `accountant` role in a seeded client
+  company or in a classmate's company (the teacher pairs them) and does
+  the accountant's work there: checks documents, records expenses, runs
+  the reports. The role model and RLS already support it; classroom only
+  creates the membership.
 
 ### 1.4 Teacher's access to student companies
 
@@ -152,6 +207,16 @@ company of *nickname* – read-only – back to class").
 Reset, removing a student and progress counting cross tenants and go
 through narrow `SECURITY DEFINER` functions that check the teacher's
 membership of the class (§3.3).
+
+**More teachers.** No shared login: every teacher has their own account,
+and a class has an owner teacher plus **co-teachers**
+(`classroom_class_teachers`). The owner adds a colleague who is an
+approved teacher of the same school; a co-teacher sees the class, the
+nicknames and re-entry codes, opens companies read-only and can reset a
+company, but cannot delete the class or remove the owner. Each teacher
+gets their own `viewer` membership in the student companies, so access
+is per person and leaves with them. Nicknames are visible only to the
+teachers of that class and the classmates of a team.
 
 ### 1.5 Dependency: shared group codes (promo-codes branch)
 
@@ -209,20 +274,23 @@ for `faktur_app`, so a forgotten check in a controller cannot open a door.
 | API, automation | No API keys, webhooks, channel links (Telegram/WhatsApp), invitations, backup destinations | reused triggers (`api_keys`, `channel_links`, `tenant_invitations`, `backup_destinations`) + admin prefixes closed |
 | AI | AI features off: `consume_demo_ai_call` finds no `demo_sessions` row and returns –1; module `ai` forced off in `enabled_modules` | reused + new module lock |
 | Exports to accounting tools | **Pohoda, Money S3, CSV exports and tax XML (DPH, KH, SH, DPFDP, ...) blocked** (the demo allows them; here they would be a way out) | new guard rule on `v1/exports/*` except `annual-summary` (on screen) |
-| Imports of real data | Fakturoid/iDoklad/Bitfaktura imports and attachments blocked | reused `DISABLED` rules |
-| Filling the database | Row caps: invoices 150, contacts 200, expenses 200, time entries 500, bank lines 300 per company | reused `demo_row_cap` (invoices cap raised for a school year: new trigger argument for classroom) |
-| Keeping it after school | Hard **expiry** at the class end date: middleware returns `classroom_expired` (410), a cron deletes the companies 14 days later (the grace lets the teacher download the progress CSV) | reused middleware check on `demo_expires_at`, `delete_demo_tenant`; new cron for classes |
+| Imports of real data | Fakturoid/iDoklad/Bitfaktura imports (they need a real account's API key) and attachments blocked; **file imports allowed**: bank statements and CSV (contacts, items), because they teach and nothing leaves the app | reused `DISABLED` rules; classroom relaxes the demo's block for the file imports |
+| Registries | ARES, RES, VIES and the SK registry lookups **allowed** (only an IČO/DIČ goes out, it is how real invoicing works) | design |
+| Filling the database | Generous row caps, only against scripts: invoices 1 000, contacts 500, expenses 1 000, time entries 2 000, bank lines 2 000 per company (a multi-year class needs room) | reused `demo_row_cap`, with classroom values |
+| Keeping it after school | **Expiry** at the class end date, renewable by the teacher (§1.2): after the end the companies are read-only for 30 days, then a cron deletes them; reminder e-mails to the teacher at 30 and 7 days before the end | reused middleware check on `demo_expires_at`, `delete_demo_tenant`; new cron for classes |
 | Turning it into a real account | **No conversion.** Demo transfer (`issue_demo_transfer` / `claim_demo_transfer`) works only for rows in `demo_sessions`, and classroom companies never get one; `v1/demo/*` is closed for classroom tenants; the student user is password-less with an `.invalid` address and cannot add an e-mail, password or Google login | reused definer checks + `me.controller` demo block; new guard rule |
 | Teacher using the class for their own business | The teacher is only a `viewer` in student companies; the teacher's own company (if any) is a normal paid/trial account, separate | design |
-| Many free "students" as a free tier | Students only through a staff-approved school; caps per class/school; one company per student; nickname-only users can't sign in anywhere else | design |
+| Many free "students" as a free tier | Students only through a staff-approved school; caps per class/school; nickname-only users can't sign in anywhere else; nothing they make works outside the class | design |
+| Student locking the teacher out | Teacher membership protected by a trigger; team endpoints closed | new trigger, reused guard |
 | Unattended abuse | Staff dashboard: per school active students, documents, last activity; suspend button | new |
 
 ### 2.1 What a classroom tenant forces off
 
 `enabled_modules` is set at creation and **locked** by a classroom trigger:
-`ai: false`. Everything else stays on (expenses, bank, recurring, quotes,
-reports, time) because the lessons use them; the teacher may switch modules
-for the class (stored on the class, copied to every company).
+`ai: false`, and the other modules can be changed only by the class (the
+student cannot switch modules in their company). The teacher picks the
+modules per class (§1.2); they are stored on the class and copied to every
+company of the class.
 
 Forced settings on the tenant row (inside the existing demo lock):
 `ai_mode`, `card_payments_enabled = false`, `webhooks = null`,
@@ -238,37 +306,56 @@ what limits it).
 
 ```sql
 classroom_schools (
-  id uuid pk, name text, ico text, country 'CZ'|'SK', email_domain text,
+  id uuid pk, name text, ico text, country 'CZ'|'SK',
+  level 'zs'|'ss'|'vos'|'vs'|'course',
+  email_domain text null, web_url text null,
   status 'pending'|'approved'|'rejected'|'suspended',
-  max_active_students int default 600,
+  verification text null,           -- how staff verified ("domain", "phoned office", ...)
+  max_active_students int default 2000,
   dpa_accepted_at timestamptz, dpa_version text,
   reviewed_by_email text, reviewed_at timestamptz, review_note text,
   created_at timestamptz
-)  -- unique (ico, email_domain)
+)  -- unique (country, ico)
 
 classroom_teachers (
   id uuid pk, school_id → classroom_schools, user_id → users,
   status 'pending'|'approved'|'rejected', subject text,
+  invited_by → classroom_teachers null,
   created_at, approved_at
 )  -- unique (school_id, user_id)
 
 classroom_classes (
-  id uuid pk, school_id, teacher_id → classroom_teachers,
-  name text, language 'cs'|'sk'|'en', kind text (demo kind), seeded boolean,
-  modules jsonb, max_students int,
+  id uuid pk, school_id, owner_teacher_id → classroom_teachers,
+  name text, language 'cs'|'sk'|'en',
+  kinds text[] (allowed demo kinds), seeded boolean,
+  modules jsonb, team_mode boolean default false, max_students int,
   join_code text unique (stub; later code_id → the shared code row),
   enrolment_open boolean,
   ends_at timestamptz, closed_at timestamptz, deleted_at timestamptz,
-  created_at
+  reminded_at timestamptz, created_at
+)
+
+classroom_class_teachers (
+  class_id, teacher_id, role 'owner'|'co_teacher', added_at
+)  -- pk (class_id, teacher_id)
+
+classroom_companies (
+  id uuid pk, class_id, tenant_id → tenants unique, kind text,
+  team_name text null, seeded_at timestamptz, reset_count int, created_at
 )
 
 classroom_students (
-  id uuid pk, class_id → classroom_classes, user_id → users, tenant_id → tenants,
+  id uuid pk, class_id → classroom_classes, user_id → users unique,
   nickname text, reentry_code_hash char(64), reentry_code_encrypted text,
   failed_logins int, locked_until timestamptz,
-  created_at, last_seen_at, reset_count int
-)  -- unique (tenant_id), unique (user_id)
+  created_at, last_seen_at
+)
 ```
+
+A student reaches their company (or companies, or the team's company)
+through ordinary `memberships` rows: `owner` in their own, `accountant`
+in the one they keep books for. `classroom_companies` is what the teacher
+sees and what progress is counted on; the student list joins the two.
 
 `tenants` gets `classroom_class_id uuid null` (with `is_demo = true`,
 `demo_kind`, `demo_expires_at = class.ends_at`). `users.is_demo = true` for
@@ -293,14 +380,16 @@ gets the second domain).
 
 | Function | What | Checks |
 |---|---|---|
-| `classroom_join(p_join_code, p_nickname, p_code_hash, p_tenant jsonb, p_bank jsonb)` → user, tenant, ends_at | creates student user, tenant (via the same inserts as `create_demo_tenant`), owner membership, teacher `viewer` membership, `classroom_students` row | class exists, enrolment open, not ended, school approved, class and school caps (advisory lock per class) |
+| `classroom_join(p_join_code, p_nickname, p_kind, p_code_hash, p_code_encrypted, p_tenant jsonb, p_bank jsonb)` → user, tenant, ends_at | creates student user, tenant (via the same inserts as `create_demo_tenant`), owner membership, a `viewer` membership for every teacher of the class, `classroom_companies` and `classroom_students` rows | class exists, enrolment open, not ended, school approved, kind allowed, class and school caps (advisory lock per class) |
 | `classroom_student_login(p_join_code, p_code_hash)` → user, tenant, ends_at | re-entry on another device | lockout counter, class active |
-| `classroom_students_of(p_teacher_user, p_class_id)` → nickname, encrypted code, dates | the teacher's student list | caller teaches the class |
+| `classroom_students_of(p_teacher_user, p_class_id)` → nickname, encrypted code, companies, dates | the teacher's student list | caller teaches the class |
+| `classroom_add_teacher(p_owner_user, p_class_id, p_teacher_id)` / `classroom_remove_teacher(...)` | co-teachers; adds or removes their `viewer` memberships in all companies of the class | caller owns the class, teacher approved at the same school |
+| `classroom_extend(p_teacher_user, p_class_id, p_ends_at)` | new end date on the class and every company (`demo_expires_at`) | caller owns the class, at most one school year ahead of today |
 | `classroom_reset_student(p_teacher_user, p_student_id)` | wipes the company's content (same delete order as `delete_demo_tenant`, keeps tenant, users, memberships), then the backend reseeds through RLS like `DemoSeedService` | caller teaches the class |
 | `classroom_regenerate_code(p_teacher_user, p_student_id, p_code_hash, p_code_encrypted)` | new re-entry code, deletes the student's other sessions | caller teaches the class |
 | `classroom_remove_student(p_teacher_user, p_student_id)` | `delete_demo_tenant` + row | caller teaches the class |
 | `classroom_progress(p_teacher_user, p_class_id)` → per student: counts only | §4 | caller teaches the class; returns **counts and dates, never document content** |
-| `classroom_claim_expired(p_limit)` | cron work list (ended + 14 days) | – |
+| `classroom_claim_expired(p_limit)` | cron work list (ended + 30 days) | – |
 
 `p_teacher_user` comes from the verified JWT in the backend, the same trust
 model `create_demo_tenant` uses for its inputs.
@@ -316,9 +405,10 @@ the promo-codes and Slovak demo sessions may add migrations first):
 3. the definer functions above, grants;
 4. extend `demo_email_outbox_drop` with the `@class.billanta.invalid`
    domain; a `classroom_tenant_lock` trigger on `tenants` for
-   `classroom_class_id` and `enabled_modules.ai`; `classroom_class_id`
+   `classroom_class_id` and `enabled_modules`; a trigger on `memberships`
+   protecting the teachers' memberships in classroom tenants; `classroom_class_id`
    added to the `demo_tenants_lock` row so it cannot be cleared;
-5. classroom variants of the row cap for `invoices` (150);
+5. classroom values for the row caps;
 6. public-link definer functions (`get_public_invoice_*`,
    portal, feeds) return nothing for classroom tenants.
 
@@ -335,7 +425,7 @@ src/classroom/
   join-kind.ts                 JoinKindHandler interface (§1.5) + the school_class handler
   join-code.ts (+spec)         code alphabet, "abcd 2345" → "ABCD-2345"; stub until promo-codes
   school-year.ts (+spec)       default end date
-  email-domain.ts (+spec)      free-mail list, domain matching
+  email-domain.ts (+spec)      domain matching for the staff badge
   lessons.ts (+spec)           lesson → milestone predicates over counts (§4)
   classroom.service.ts         teacher: apply, classes, students, reset
   classroom-join.service.ts    join/login → definer functions + DemoSeedService
@@ -384,8 +474,9 @@ src/classroom/
   note –").
 - **Per student actions:** show/print re-entry code, open company
   (read-only), reset company, new re-entry code, remove.
-- **Class actions:** close/open enrolment, rotate join code, extend end date
-  (once, up to 31 Aug), end class now, download progress CSV.
+- **Class actions:** close/open enrolment, rotate join code, modules,
+  co-teachers, extend to the next school year (and rename), end class now,
+  download progress CSV.
 - **Totals:** documents issued in the class this week (a teacher sees the
   class is working).
 
@@ -429,20 +520,23 @@ work.
 In:
 
 1. Migration, schema, grants, definer functions, triggers (§3).
-2. Teacher application + staff approval (API + simple pages).
-3. Classes: create, list, join code, QR, close enrolment, rotate code.
-4. Student join by QR/passphrase + nickname, device-bound session,
-   re-entry code the teacher can see, behind the `JoinKindHandler`
-   interface (stubbed code until promo-codes lands).
+2. Teacher application + staff approval with the domain fast path and
+   manual verification (API + simple pages).
+3. Classes: create (several company types, modules), list, join code, QR,
+   close enrolment, rotate code, extend/renew, co-teachers.
+4. Student join by QR/passphrase + nickname (+ company type when the class
+   has several), device-bound session, re-entry code the teacher can see,
+   behind the `JoinKindHandler` interface (stubbed code until promo-codes
+   lands).
 5. Student companies seeded via `DemoSeedService`, teacher `viewer`
-   membership, "open company" read-only.
+   memberships, "open company" read-only, teacher membership protected.
 6. All safeguards in §2 (guard + triggers), classroom watermark texts,
    e-mail preview instead of sending (preview of the existing e-mail text
    and the PDF; no in-app inbox yet).
 7. Reset, regenerate code, remove student.
 8. Progress grid from milestones with a first `lessons.ts` mapping (adjusted
    when the lessons land).
-9. Expiry + cleanup cron.
+9. Expiry, reminder e-mails to the teacher, cleanup cron.
 10. Tests: policy spec (every blocked route), join code, school year,
     e-mail domain, lessons mapping; a DB integration check of the definer
     functions and triggers in a rolled-back transaction as `faktur_app`
@@ -450,6 +544,9 @@ In:
 
 Later:
 
+- Teams sharing one company; a second company per student; the accountant
+  exercise (accountant role in a client or classmate's company). The data
+  model in §3.1 already allows all three.
 - In-app inbox where students "send" invoices to each other (a classmate
   receives it, can accept a quote or record it as an expense) – a great
   lesson, but its own design.
@@ -470,7 +567,8 @@ Later:
 - **Roles:** the school is the controller (it decides to use Billanta in
   teaching), Billanta is the processor. The teacher accepts a data
   processing agreement on behalf of the school when applying (versioned,
-  stored with the school). Legal text to be prepared/reviewed separately.
+  stored with the school). Draft: `docs/classroom-dpa-draft.md`, to be
+  reviewed by a lawyer before the first school signs.
 - **Minimal data:** nickname (teacher instructs: no full name), the
   practice company content, a hashed login code, technical timestamps. No
   e-mail, phone, birth date, photo, address or IP; the re-entry code is
@@ -483,31 +581,39 @@ Later:
   offered to the child), which is why no age gate is required; the teacher
   confirms the school informs students/parents. Still to be confirmed by a
   lawyer – flagged as an open question.
-- **Retention:** student companies and users are deleted 14 days after the
-  class ends; removing a student deletes immediately; the teacher's account
-  and the school record stay (they are adults' data under the normal terms).
+- **Retention:** as long as the class runs (the teacher may renew it for
+  the next school year), then 30 days read-only and deletion; removing a
+  student deletes immediately; nightly backups roll the deleted data out
+  within their 30-day retention. The teacher's account and the school
+  record stay (adults' data under the normal terms).
 - **No marketing:** student users never get e-mails (they have none), no
-  tracking/analytics cookies on `/class/*` pages, no referral or upsell
+  tracking/analytics cookies on `/join/*` and in classroom companies, no referral or upsell
   banners in classroom companies.
 - **Rights:** the teacher can show/export a student's company (PDFs) and
   delete it on request.
 
 ---
 
-## 7. Open questions for the user
+## 7. Decisions and what is still open
 
-1. **Teacher identity:** is school e-mail domain + staff approval enough,
-   or do you also want a signed paper/PDF from the school (head teacher)
-   before the first class? (Plan: domain + approval; paper later if abuse
-   shows up.)
-2. **ARES lookups** for buyers in student companies: allowed (real company
-   names on watermarked practice invoices that never leave the app) or
-   forced fictional contacts only? (Plan: allowed – it's how real invoicing
-   works.)
-3. **Bank statement file import:** allowed (plan) or blocked?
-4. **Who may see student nicknames:** teacher only (plan), or other
-   teachers of the same school too?
-5. **Pricing/limits:** free for approved schools with the caps above –
-   confirm the numbers (40 per class, 10 classes per teacher, 600 per
-   school, 150 invoices per company).
-6. The DPA text – do you have a lawyer, or should I draft one for review?
+Decided in round two:
+
+- E-mail domain is optional; staff verify by hand otherwise.
+- School level is a field, not a separate product.
+- ARES and the other registries allowed; bank statement and CSV file
+  imports allowed, API imports from other invoicing apps blocked.
+- Nicknames visible to the teachers of the class only; more teachers work
+  as co-teachers with their own accounts.
+- Limits generous, only against abuse, staff can raise them.
+- Classes renewable across school years.
+
+Still open:
+
+1. The DPA: lawyer review of the draft (and whether to offer it as a
+   click-through or also as a signed PDF for schools that want one).
+2. Teams, second companies and the accountant exercise: phase 2 as
+   proposed, or some of it in the MVP?
+3. Hosting provider and the backup destination for the sub-processor list
+   (the platform backups currently go to Google Drive, which is a
+   transfer outside the EU under the EU–US Data Privacy Framework; for
+   school data an EU object store would be easier to defend).
