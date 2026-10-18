@@ -769,6 +769,11 @@
       "noCategory": "Bez kategórie",
       "amountSection": "Suma",
       "vatBreakdown": "Základ {base} + DPH {vat}",
+      "reverseChargeLabel": "Prenesenie daňovej povinnosti (§ 92a)",
+      "reverseChargeHint": "Dodávateľ fakturoval bez DPH a daň priznávate vy. Zadajte sumu bez DPH; DPH sa odvedie aj odpočíta v českom priznaní (r. 10/11 a 43/44) a doklad pôjde do oddielu B.1 kontrolného výkazu.",
+      "amountLabelReverseCharge": "Suma bez DPH",
+      "vatBreakdownReverseCharge": "Základ {base}, DPH na priznanie {vat}",
+      "reverseChargeRequiredHint": "Oddiel B.1 potrebuje DIČ dodávateľa a číslo dokladu.",
       "datesSection": "Dátumy a úhrada",
       "dueDateLabel": "Splatnosť",
       "paidLabel": "Už uhradené",
@@ -1971,7 +1976,10 @@
         "guideLink": "Návod na podanie (CZ)",
         "warnings": {
           "reverse_charge_code_missing": "Doklady bez kódu predmetu plnenia: {documents}. Doplňte kód na doklade a stiahnite súbor znova, inak ho EPO odmietne.",
-          "reverse_charge_dic_missing": "Doklady s prenesením daňovej povinnosti bez DIČ odberateľa, v oddiele A.1 chýbajú: {documents}."
+          "reverse_charge_dic_missing": "Doklady s prenesením daňovej povinnosti bez DIČ odberateľa, v oddiele A.1 chýbajú: {documents}.",
+          "received_reverse_charge_code_missing": "Prijaté doklady s prenesením daňovej povinnosti bez kódu predmetu plnenia: {documents}. Doplňte kód pri náklade a stiahnite súbor znova, inak ho EPO odmietne.",
+          "received_reverse_charge_dic_missing": "Prijaté doklady s prenesením daňovej povinnosti bez DIČ dodávateľa, v oddiele B.1 chýbajú: {documents}.",
+          "received_reverse_charge_number_missing": "Prijaté doklady s prenesením daňovej povinnosti bez čísla dokladu (podľa dátumu), v oddiele B.1 chýbajú: {documents}."
         }
       },
       "annual": {

@@ -2,6 +2,7 @@ import { netAfterTaxes } from "../invoices/amount-vars";
 import { displayCustomField, resolveVars } from "../invoices/custom-fields";
 import { type TemplateVar, templateVarsOf } from "../tenants/template-vars";
 import { applyBuyerSnapshot } from "../invoices/party-snapshot";
+import { expenseVatParts } from "../expenses/expense-vat";
 import { matchesFilters, type ReportFilters } from "../dashboard/report-filters";
 import { Injectable } from "@nestjs/common";
 import { and, asc, eq, gte, inArray, isNotNull, lt, ne, notInArray, sql } from "drizzle-orm";
@@ -401,7 +402,9 @@ export class ExportsService {
     }
 
     for (const e of expenses) {
-      const rate = Number(e.vatRate);
+      // Reverse charge: the supplier's document carries no VAT, like our own
+      // reverse-charge invoices above. The accountant books the self-assessment.
+      const rate = e.reverseCharge ? 0 : Number(e.vatRate);
       const foreign = e.currency !== "CZK";
       const priceTag = foreign ? "inv:foreignCurrency" : "inv:homeCurrency";
       const ref = e.documentNumber || e.id.slice(0, 8);
@@ -512,7 +515,7 @@ export class ExportsService {
     });
 
     const received = expenses.map((e) => {
-      const rate = Number(e.vatRate);
+      const rate = e.reverseCharge ? 0 : Number(e.vatRate);
       const total = Number(e.amount);
       const base = total / (1 + rate / 100);
       const foreign = e.currency !== "CZK";
@@ -622,15 +625,16 @@ export class ExportsService {
     const received: VatReceivedDoc[] = [];
     for (const { expense, contact } of expenseRows) {
       const rate = await this.rateFor(expense.currency, expense.exchangeRate, expense.expenseDate);
-      const total = Number(expense.amount) * rate;
       const vatRate = Number(expense.vatRate);
-      const base = total / (1 + vatRate / 100);
+      const { base, vat } = expenseVatParts(Number(expense.amount) * rate, vatRate, expense.reverseCharge);
       received.push({
         number: expense.documentNumber ?? "",
         supplierDic: expense.supplierDic ?? contact?.dic ?? null,
         taxableDate: expense.expenseDate,
-        parts: [{ ratePercent: vatRate, base, vat: total - base }],
-        totalCzk: total,
+        reverseCharge: expense.reverseCharge,
+        reverseChargeCode: expense.reverseChargeCode,
+        parts: [{ ratePercent: vatRate, base, vat }],
+        totalCzk: base + vat,
       });
     }
     return { issued, received };
@@ -713,7 +717,7 @@ export class ExportsService {
         continue;
       }
       const total = Number(e.amount) * rate;
-      actualExpenses += opts.vatPayer ? total / (1 + Number(e.vatRate) / 100) : total;
+      actualExpenses += opts.vatPayer ? expenseVatParts(total, Number(e.vatRate), e.reverseCharge).base : total;
     }
 
     return {

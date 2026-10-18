@@ -15,6 +15,8 @@ export interface ExpenseInput {
   description?: string;
   amount?: number;
   vatRate?: number;
+  reverseCharge?: boolean;
+  reverseChargeCode?: string | null;
   currency?: string;
   expenseDate?: string;
   dueDate?: string | null;

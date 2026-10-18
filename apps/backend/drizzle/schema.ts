@@ -952,6 +952,12 @@ export const expenses = pgTable("expenses", {
   supplierDic: varchar("supplier_dic", { length: 14 }),
   /** CZK per 1 unit of `currency`; null for CZK (looked up from ČNB when missing). */
   exchangeRate: numeric("exchange_rate", { precision: 14, scale: 6 }),
+  // Received in domestic reverse charge (§92a ZDPH): the supplier charged no
+  // VAT, so `amount` is the net and the company self-assesses `vatRate` on
+  // it (DPHDP3 ř. 10/11, deduction ř. 43/44, KH B.1). Migration 0058.
+  reverseCharge: boolean("reverse_charge").notNull().default(false),
+  /** Kód předmětu plnění for KH B.1 (REVERSE_CHARGE_CODES); null = not chosen, the export warns. */
+  reverseChargeCode: text("reverse_charge_code"),
   dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   note: text("note"),

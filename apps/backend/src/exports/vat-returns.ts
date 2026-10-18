@@ -64,8 +64,13 @@ export interface VatIssuedDoc {
  * can be reviewed in EPO) and lists these next to it.
  */
 export interface VatExportWarning {
-  code: "reverse_charge_code_missing" | "reverse_charge_dic_missing";
-  /** Document number. */
+  code:
+    | "reverse_charge_code_missing"
+    | "reverse_charge_dic_missing"
+    | "received_reverse_charge_code_missing"
+    | "received_reverse_charge_dic_missing"
+    | "received_reverse_charge_number_missing";
+  /** Document number (a received one without a number: its date). */
   document: string;
 }
 
@@ -73,6 +78,10 @@ export interface VatReceivedDoc {
   number: string;
   supplierDic: string | null;
   taxableDate: Date;
+  /** Received in domestic reverse charge (§ 92a ZDPH): `parts` hold the self-assessed VAT. */
+  reverseCharge: boolean;
+  /** Kód předmětu plnění for KH B.1; null = not chosen. */
+  reverseChargeCode: string | null;
   parts: VatRatePart[];
   totalCzk: number;
 }
@@ -190,17 +199,34 @@ export function generateDphDp3(input: {
   let odp23 = 0;
   let pln5 = 0;
   let odp5 = 0;
+  // Received in domestic reverse charge (§ 92a ZDPH): the company owes the
+  // VAT as output tax (ř. 10/11, Veta1 rez_pren / dan_rpren) and deducts it
+  // in full (ř. 43/44, Veta4 nar_zdp / od_zdp). Field names from the DPHDP3
+  // structure description on adisspr.mfcr.cz (read 2026-10-18).
+  let rezPren23 = 0;
+  let danRpren23 = 0;
+  let rezPren5 = 0;
+  let danRpren5 = 0;
   for (const doc of input.received) {
     const b = bands(doc.parts);
+    if (doc.reverseCharge) {
+      rezPren23 += b.base1;
+      danRpren23 += b.vat1;
+      rezPren5 += b.base2;
+      danRpren5 += b.vat2;
+      continue;
+    }
     pln23 += b.base1;
     odp23 += b.vat1;
     pln5 += b.base2;
     odp5 += b.vat2;
   }
 
-  // Totals from the rounded line values, as EPO re-checks them.
-  const danZocelk = Math.round(dan23) + Math.round(dan5);
-  const odpZocelk = Math.round(odp23) + Math.round(odp5);
+  // Totals from the rounded line values, as EPO re-checks them: ř. 62 sums
+  // ř. 1–13, ř. 46 (and with it ř. 63) sums ř. 40–45.
+  const danZocelk = Math.round(dan23) + Math.round(dan5) + Math.round(danRpren23) + Math.round(danRpren5);
+  const odpSumNar = Math.round(odp23) + Math.round(odp5) + Math.round(danRpren23) + Math.round(danRpren5);
+  const odpZocelk = odpSumNar;
   const diff = danZocelk - odpZocelk;
 
   const attrs = (pairs: [string, number][]) =>
@@ -221,6 +247,10 @@ export function generateDphDp3(input: {
     ["dan23", dan23],
     ["obrat5", obrat5],
     ["dan5", dan5],
+    ["rez_pren23", rezPren23],
+    ["dan_rpren23", danRpren23],
+    ["rez_pren5", rezPren5],
+    ["dan_rpren5", danRpren5],
   ])}${veta("Veta2", [
     ["pln_sluzby", plnSluzby],
     ["pln_rez_pren", plnRezPren],
@@ -230,7 +260,11 @@ export function generateDphDp3(input: {
     ["odp_tuz23_nar", odp23],
     ["pln5", pln5],
     ["odp_tuz5_nar", odp5],
-    ["odp_sum_nar", Math.round(odp23) + Math.round(odp5)],
+    ["nar_zdp23", rezPren23],
+    ["od_zdp23", danRpren23],
+    ["nar_zdp5", rezPren5],
+    ["od_zdp5", danRpren5],
+    ["odp_sum_nar", odpSumNar],
   ])}
   <Veta6 dan_zocelk="${danZocelk}" odp_zocelk="${odpZocelk}" dano_da="${Math.max(0, diff)}" dano_no="${Math.max(0, -diff)}" />
 </DPHDP3>
@@ -241,8 +275,10 @@ export function generateDphDp3(input: {
 /**
  * Kontrolní hlášení (DPHKH1).
  *
- * Received documents all go to B.2/B.3: expenses carry no reverse-charge
- * flag yet, so B.1 (the customer's side of § 92a) is not generated.
+ * Received documents in domestic reverse charge go to B.1, one row each with
+ * no threshold; the rest to B.2/B.3. VetaC rez_pren23/rez_pren5 repeat the
+ * B.1 bases (DPHDP3 ř. 10/11). Source: the DPHKH1 structure description on
+ * adisspr.mfcr.cz (read 2026-10-18).
  */
 export function generateDphKh1(input: {
   issued: VatIssuedDoc[];
@@ -254,7 +290,7 @@ export function generateDphKh1(input: {
   const a1: string[] = [];
   const a4: string[] = [];
   const a5 = { base1: 0, vat1: 0, base2: 0, vat2: 0 };
-  const c = { obrat23: 0, obrat5: 0, plnRezPren: 0, pln23: 0, pln5: 0 };
+  const c = { obrat23: 0, obrat5: 0, plnRezPren: 0, pln23: 0, pln5: 0, rezPren23: 0, rezPren5: 0 };
   const warnings: VatExportWarning[] = [];
 
   for (const doc of input.issued) {
@@ -294,10 +330,32 @@ export function generateDphKh1(input: {
     }
   }
 
+  const b1: string[] = [];
   const b2: string[] = [];
   const b3 = { base1: 0, vat1: 0, base2: 0, vat2: 0 };
   for (const doc of input.received) {
     const b = bands(doc.parts);
+    if (doc.reverseCharge) {
+      const label = doc.number || czDate(doc.taxableDate);
+      // B.1 is keyed on the supplier's DIČ and document number, and EPO
+      // refuses a row without either. Same handling as A.1 above.
+      if (!doc.supplierDic) {
+        warnings.push({ code: "received_reverse_charge_dic_missing", document: label });
+        continue;
+      }
+      if (!doc.number) {
+        warnings.push({ code: "received_reverse_charge_number_missing", document: label });
+        continue;
+      }
+      c.rezPren23 += b.base1;
+      c.rezPren5 += b.base2;
+      if (!doc.reverseChargeCode) warnings.push({ code: "received_reverse_charge_code_missing", document: label });
+      const code = doc.reverseChargeCode ? ` kod_pred_pl="${xmlAttr(doc.reverseChargeCode)}"` : "";
+      b1.push(
+        `<VetaB1 c_radku="${b1.length + 1}" dic_dod="${xmlAttr(dicNumber(doc.supplierDic))}" c_evid_dd="${xmlAttr(doc.number)}" duzp="${czDate(doc.taxableDate)}" zakl_dane1="${int(b.base1)}" dan1="${int(b.vat1)}" zakl_dane2="${int(b.base2)}" dan2="${int(b.vat2)}"${code} />`,
+      );
+      continue;
+    }
     if (b.vat1 === 0 && b.vat2 === 0) continue; // Nothing to deduct.
     c.pln23 += b.base1;
     c.pln5 += b.base2;
@@ -320,9 +378,10 @@ export function generateDphKh1(input: {
     ...a1,
     ...a4,
     ...(a5.base1 || a5.base2 ? [`<VetaA5 ${sum(a5)} />`] : []),
+    ...b1,
     ...b2,
     ...(b3.base1 || b3.base2 ? [`<VetaB3 ${sum(b3)} />`] : []),
-    `<VetaC obrat23="${int(c.obrat23)}" obrat5="${int(c.obrat5)}" pln23="${int(c.pln23)}" pln5="${int(c.pln5)}" pln_rez_pren="${int(c.plnRezPren)}" />`,
+    `<VetaC obrat23="${int(c.obrat23)}" obrat5="${int(c.obrat5)}" pln23="${int(c.pln23)}" pln5="${int(c.pln5)}" pln_rez_pren="${int(c.plnRezPren)}" rez_pren23="${int(c.rezPren23)}" rez_pren5="${int(c.rezPren5)}" />`,
   ];
 
   const xml = `${header("41.16.3")}
