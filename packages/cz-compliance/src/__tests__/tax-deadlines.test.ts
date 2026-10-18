@@ -72,9 +72,16 @@ describe('taxDeadlinesFor', () => {
     expect(first?.date).toEqual(new Date(2026, 9, 26));
   });
 
-  it('identified person: return flagged "only if" without a seen foreign purchase, plain with one', () => {
+  it('identified person: return plain with a foreign purchase that month, "only if" for a regular buyer, gone for someone who never buys abroad', () => {
     const none = profile({ vatStatus: 'identified', activity: { euSalesMonths: [], foreignPurchaseMonths: [] } });
-    expect(taxDeadlinesFor(kinds, none, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([['vat_identified', true]]);
+    expect(taxDeadlinesFor(kinds, none, null, today, 30)).toEqual([]);
+    const earlier = profile({ vatStatus: 'identified', activity: { euSalesMonths: [], foreignPurchaseMonths: ['2026-03'] } });
+    expect(taxDeadlinesFor(kinds, earlier, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([['vat_identified', true]]);
+    const unknown = profile({ vatStatus: 'identified' });
+    expect(taxDeadlinesFor(kinds, unknown, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([
+      ['vat_identified', true],
+      ['ec_sales_list', true]
+    ]);
     const seen = profile({ vatStatus: 'identified', activity: { euSalesMonths: ['2026-09'], foreignPurchaseMonths: ['2026-09'] } });
     expect(taxDeadlinesFor(kinds, seen, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([
       ['vat_identified', false],

@@ -57,7 +57,7 @@ export interface TaxProfile {
   activity?: {
     /** Months with an issued invoice for a service to a business in another EU state. */
     euSalesMonths: string[];
-    /** Months with an expense from a supplier abroad (identified person: VAT due under reverse charge). */
+    /** Months with an expense from a supplier abroad (identified person: VAT due under reverse charge), over the last year. */
     foreignPurchaseMonths: string[];
   };
 }
@@ -114,9 +114,11 @@ const monthKeyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).p
 /**
  * Applies the account's activity to the conditional kinds; a deadline on the
  * 25th covers the month before it. Souhrnné hlášení without an EU service
- * that month is dropped. An identified person's return without a seen
- * foreign purchase stays, flagged "only if …" (ads bought abroad are often
- * not booked as an expense).
+ * that month is dropped. An identified person's return without a foreign
+ * purchase that month stays, flagged "only if …", only when the account has
+ * bought abroad at all in the window `activity` covers (a year): a regular
+ * ad buyer may simply not have booked this month's invoice yet, while
+ * someone who never buys abroad would only be nagged by it.
  */
 export function applyTaxActivity(deadlines: TaxDeadline[], profile: TaxProfile): TaxDeadline[] {
   const out: TaxDeadline[] = [];
@@ -128,7 +130,7 @@ export function applyTaxActivity(deadlines: TaxDeadline[], profile: TaxProfile):
     const period = monthKeyOf(new Date(d.date.getFullYear(), d.date.getMonth() - 1, 1));
     const months = profile.activity ? (d.kind === 'ec_sales_list' ? profile.activity.euSalesMonths : profile.activity.foreignPurchaseMonths) : null;
     if (months?.includes(period)) out.push(d);
-    else if (d.kind === 'vat_identified' || !months) out.push({ ...d, conditional: true });
+    else if (!months || (d.kind === 'vat_identified' && months.length > 0)) out.push({ ...d, conditional: true });
   }
   return out;
 }

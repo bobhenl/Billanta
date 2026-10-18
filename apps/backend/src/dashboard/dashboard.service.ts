@@ -324,7 +324,9 @@ export class DashboardService {
 
   /** Months (last three) with EU service sales and purchases from abroad, for the conditional VAT deadlines. */
   async vatActivity(db: Db, tenantId: string, now = new Date()): Promise<VatActivity> {
-    const since = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+    // A year back: whether the account buys abroad at all decides if an
+    // identified person's return shows in a month without such an expense.
+    const since = new Date(now.getFullYear(), now.getMonth() - 12, 1);
     const [tenant] = await db.select({ country: schema.tenants.addressCountry }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
     const invoices = await db
       .select({
