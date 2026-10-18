@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight, Clock } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { LESSON_MINUTES, SCHOOL_LESSONS, lessonContent, lessonPublishedIn } from '@/lib/school-lessons';
+import { LESSON_MINUTES, LESSON_TRACKS, SCHOOL_LESSONS, lessonContent, lessonPublishedIn } from '@/lib/school-lessons';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { buttonClass } from '@/lib/ui-classes';
 
@@ -23,6 +23,7 @@ export default async function SchoolLessonsIndex({ params }: { params: Promise<P
   const lessons = await Promise.all(
     SCHOOL_LESSONS.filter((l) => lessonPublishedIn(l, locale)).map(async (l) => ({ ...l, content: (await lessonContent(l.slug, locale))! }))
   );
+  const tracks = LESSON_TRACKS.map((track) => ({ track, lessons: lessons.filter((l) => l.track === track) })).filter((g) => g.lessons.length);
 
   return (
     <article className="container py-12 sm:py-16">
@@ -47,33 +48,52 @@ export default async function SchoolLessonsIndex({ params }: { params: Promise<P
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{t('lawBasis')}</p>
 
-      <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {lessons.map(({ slug, icon: Icon, content }, i) => (
-          <li key={slug}>
-            <Link
-              href={`${PATH}/${slug}`}
-              className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
-            >
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('lessonNumber', { n: i + 1 })}</span>
-                <span className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                  {t('minutes', { n: LESSON_MINUTES })}
-                </span>
-              </div>
-              <h2 className="mt-4 font-semibold">{content.name}</h2>
-              <p className="mt-2 flex-1 text-sm text-muted-foreground">{content.lead}</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                {t('openLesson')}
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </span>
-            </Link>
-          </li>
+      <nav aria-label={t('levelNav')} className="mt-8 flex flex-wrap gap-2">
+        {tracks.map(({ track }) => (
+          <a
+            key={track}
+            href={`#${track}`}
+            className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary/40 hover:text-primary"
+          >
+            {t(`tracks.${track}.name`)}
+          </a>
         ))}
-      </ol>
+      </nav>
+
+      {tracks.map(({ track, lessons: group }) => (
+        <section key={track} id={track} className="mt-12 scroll-mt-24">
+          <h2 className="text-2xl font-semibold tracking-tight">{t(`tracks.${track}.name`)}</h2>
+          <p className="mt-1 text-sm font-medium text-primary">{t(`tracks.${track}.audience`)}</p>
+          <p className="mt-2 max-w-2xl text-muted-foreground">{t(`tracks.${track}.lead`)}</p>
+          <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {group.map(({ slug, icon: Icon, content }, i) => (
+              <li key={slug}>
+                <Link
+                  href={`${PATH}/${slug}`}
+                  className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('lessonNumber', { n: i + 1 })}</span>
+                    <span className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t('minutes', { n: LESSON_MINUTES })}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-semibold">{content.name}</h3>
+                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{content.lead}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                    {t('openLesson')}
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
 
       <section className="mt-14 max-w-3xl">
         <h2 className="text-xl font-semibold">{t('howTitle')}</h2>

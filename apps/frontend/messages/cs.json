@@ -8550,17 +8550,17 @@
   "schoolLessons": {
     "hubName": "Pro školy",
     "indexName": "Lekce",
-    "indexTitle": "Hotové lekce fakturace pro obchodní akademie",
-    "indexMetaTitle": "Lekce fakturace pro střední školy – hotové hodiny s pracovními listy",
-    "indexLead": "Devět vyučovacích hodin po 45 minutách: cíle, poznámky pro učitele, úkol v demu bez registrace a pracovní list s řešením. Zdarma, k tisku i na projektor.",
-    "indexMeta": "Hotové 45minutové lekce fakturace a DPH pro obchodní akademie: náležitosti faktury, DUZP, sazby DPH, dobropisy, zálohy, přenesená daňová povinnost, upomínky a paušální daň. Pracovní listy s řešením.",
+    "indexTitle": "Hotové lekce fakturace pro školy",
+    "indexMetaTitle": "Lekce fakturace pro ZŠ, SŠ i VŠ – hotové hodiny s pracovními listy",
+    "indexLead": "Vyučovací hodiny po 45 minutách pro tři úrovně: od finanční gramotnosti na základní škole po přiznání k DPH a spolupráci s účetní na vyšší a vysoké škole. Cíle, poznámky pro učitele, úkol v demu bez registrace a pracovní list s řešením. Zdarma, k tisku i na projektor.",
+    "indexMeta": "Hotové 45minutové lekce fakturace a DPH pro základní, střední i vysoké školy: co je faktura, náležitosti, DUZP, sazby DPH, dobropisy, zálohy, upomínky, přiznání k DPH, kontrolní hlášení a párování banky. Pracovní listy s řešením.",
     "howTitle": "Jak lekce fungují",
     "how": [
       "Každá lekce má cíle, časový plán hodiny, výklad pojmů s odkazy na konkrétní paragrafy a poznámky pro učitele.",
       "Žáci plní úkol krok za krokem v demu Billanty. Demo nevyžaduje registraci ani e-mail a každý žák dostane vlastní firmu s ukázkovými daty.",
       "Pracovní list vytisknete ve verzi pro žáky (bez řešení), nebo pro sebe s řešením."
     ],
-    "rvpNote": "Lekce navazují na ekonomické a účetní vzdělávací obsahy rámcových vzdělávacích programů obchodních akademií. Rozdělení do ročníků a předmětů necháváme na škole.",
+    "rvpNote": "Lekce pro základní školy se hodí do finanční gramotnosti, lekce pro střední školy navazují na ekonomické a účetní vzdělávací obsahy rámcových vzdělávacích programů obchodních akademií. Rozdělení do ročníků a předmětů necháváme na škole.",
     "lawBasis": "Lekce vycházejí z českého práva.",
     "minutes": "{n} min",
     "lessonNumber": "Lekce {n}",
@@ -8584,6 +8584,24 @@
     "printStudent": "Tisk pro žáky",
     "printTeacher": "Tisk s řešením",
     "checked": "Právní odkazy jsme naposledy ověřili {date}. Zákony se mění, před hodinou proto zkontrolujte aktuální znění. Lekce slouží k výuce a nenahrazují daňové poradenství.",
-    "skAlternative": "Kalkulačka daní a odvodů pro SZČO"
+    "skAlternative": "Kalkulačka daní a odvodů pro SZČO",
+    "levelNav": "Úroveň",
+    "tracks": {
+      "basic": {
+        "name": "Základní škola",
+        "audience": "Finanční gramotnost, 8. a 9. ročník",
+        "lead": "Co je faktura, jak ji vystavit, kdy je zaplacená a jak slušně upomenout. Bez daní a paragrafů pro žáky."
+      },
+      "standard": {
+        "name": "Střední škola",
+        "audience": "Obchodní akademie a ekonomické obory",
+        "lead": "Náležitosti faktury, DPH, zálohy, dobropisy a upomínky podle zákona."
+      },
+      "advanced": {
+        "name": "Vyšší a vysoká škola, kurzy",
+        "audience": "VOŠ, VŠ a rekvalifikační kurzy",
+        "lead": "Přiznání k DPH a kontrolní hlášení, zahraniční odběratelé, párování banky a spolupráce s účetní."
+      }
+    }
   }
 }

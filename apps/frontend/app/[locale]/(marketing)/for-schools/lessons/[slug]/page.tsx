@@ -12,7 +12,9 @@ import {
   getLesson,
   lessonContent,
   lessonDemoKind,
-  lessonPublishedIn
+  lessonNumberInTrack,
+  lessonPublishedIn,
+  type LessonTrack
 } from '@/lib/school-lessons';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
@@ -21,6 +23,12 @@ import { buttonClass } from '@/lib/ui-classes';
 type Params = { locale: string; slug: string };
 
 const HUB = '/for-schools/lessons';
+
+const EDUCATIONAL_LEVEL: Record<LessonTrack, string> = {
+  basic: 'lower secondary',
+  standard: 'upper secondary',
+  advanced: 'higher education'
+};
 
 export function generateStaticParams() {
   return SCHOOL_LESSONS.map((l) => ({ slug: l.slug }));
@@ -91,8 +99,7 @@ export default async function SchoolLessonPage({ params }: { params: Promise<Par
   const path = `${HUB}/${slug}`;
   const kind = tDemo(`${lessonDemoKind(lesson, locale)}.title`);
   const checked = format.dateTime(new Date(`${LESSONS_CHECKED}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
-  const published = SCHOOL_LESSONS.filter((l) => lessonPublishedIn(l, locale));
-  const number = published.findIndex((l) => l.slug === slug) + 1;
+  const number = lessonNumberInTrack(lesson, locale);
 
   const learningResource = {
     '@context': 'https://schema.org',
@@ -102,7 +109,7 @@ export default async function SchoolLessonPage({ params }: { params: Promise<Par
     inLanguage: locale,
     url: `${SITE_URL}/${locale}${path}`,
     learningResourceType: 'lesson plan',
-    educationalLevel: 'secondary',
+    educationalLevel: EDUCATIONAL_LEVEL[lesson.track],
     timeRequired: `PT${LESSON_MINUTES}M`,
     isAccessibleForFree: true,
     teaches: c.goals,
@@ -140,6 +147,10 @@ export default async function SchoolLessonPage({ params }: { params: Promise<Par
         </span>
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <Link href={`${HUB}#${lesson.track}`} className="hover:text-foreground print:hidden">
+              {t(`tracks.${lesson.track}.name`)}
+            </Link>
+            <span className="mx-2 print:hidden">·</span>
             {t('lessonNumber', { n: number })}
             <span className="mx-2">·</span>
             <Clock className="-mt-0.5 inline h-3.5 w-3.5" aria-hidden="true" /> {t('minutes', { n: LESSON_MINUTES })}

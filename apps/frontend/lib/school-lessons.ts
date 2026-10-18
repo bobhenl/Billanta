@@ -1,10 +1,17 @@
 import {
+  ArrowLeftRight,
   BadgeCheck,
   Banknote,
   CalendarClock,
+  CircleCheck,
   FileMinus,
+  FilePen,
+  FileQuestion,
   FileText,
   Globe,
+  Handshake,
+  Landmark,
+  Mail,
   Percent,
   Receipt,
   BellRing,
@@ -13,7 +20,8 @@ import {
 import type { DemoKind } from '@/lib/demo';
 
 /**
- * Ready-to-teach lessons for business schools (/for-schools/lessons).
+ * Ready-to-teach lessons for schools (/for-schools/lessons), grouped by
+ * track: financial literacy at ZŠ, business schools, and VOŠ/VŠ or courses.
  *
  * The lesson text itself lives in content/school-lessons/<locale>.json and
  * is read only by server components: it is long, and the dashboard layout
@@ -40,12 +48,14 @@ export interface SchoolLesson {
   milestones: readonly string[];
   /**
    * Classroom-mode track: basic (ZŠ), standard (SŠ/OA), advanced (VOŠ/VŠ).
-   * All lessons so far are written for business schools.
+   * The index groups lessons by it and numbers them within the track.
    */
   track: LessonTrack;
 }
 
 export type LessonTrack = 'basic' | 'standard' | 'advanced';
+
+export const LESSON_TRACKS: readonly LessonTrack[] = ['basic', 'standard', 'advanced'];
 
 const CZ_ONLY = ['cs', 'en'] as const;
 
@@ -63,12 +73,23 @@ export const SCHOOL_LESSONS: SchoolLesson[] = [
   { slug: 'credit-notes', icon: FileMinus, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['credit_note_issued'], track: 'standard' },
   { slug: 'foreign-customers-reverse-charge', icon: Globe, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_foreign_currency', 'invoice_reverse_charge'], track: 'advanced' },
   { slug: 'payment-reminders-late-interest', icon: BellRing, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
-  { slug: 'flat-tax', icon: Banknote, locales: CZ_ONLY, demo: { cz: 'cz_pausal', sk: 'cz_pausal' }, milestones: ['invoice_issued'], track: 'standard' }
+  { slug: 'flat-tax', icon: Banknote, locales: CZ_ONLY, demo: { cz: 'cz_pausal', sk: 'cz_pausal' }, milestones: ['invoice_issued'], track: 'standard' },
+  { slug: 'what-is-an-invoice', icon: FileQuestion, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: [], track: 'basic' },
+  { slug: 'first-invoice', icon: FilePen, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['contact_created', 'invoice_issued'], track: 'basic' },
+  { slug: 'paid-or-unpaid', icon: CircleCheck, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['invoice_paid'], track: 'basic' },
+  { slug: 'simple-reminder', icon: Mail, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: [], track: 'basic' },
+  { slug: 'vat-return-control-statement', icon: Landmark, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['expense_recorded'], track: 'advanced' },
+  { slug: 'bank-matching-expenses', icon: ArrowLeftRight, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['bank_matched', 'expense_recorded'], track: 'advanced' },
+  { slug: 'working-with-accountant', icon: Handshake, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['expense_recorded'], track: 'advanced' }
 ];
 
 export const getLesson = (slug: string) => SCHOOL_LESSONS.find((l) => l.slug === slug);
 
 export const lessonPublishedIn = (lesson: SchoolLesson, locale: string) => !lesson.locales || lesson.locales.includes(locale);
+
+/** Position of the lesson within its track among the lessons published in this language (1-based). */
+export const lessonNumberInTrack = (lesson: SchoolLesson, locale: string) =>
+  SCHOOL_LESSONS.filter((l) => l.track === lesson.track && lessonPublishedIn(l, locale)).indexOf(lesson) + 1;
 
 /** The demo company for the lesson in this language: Slovak law in sk, Czech law elsewhere. */
 export const lessonDemoKind = (lesson: SchoolLesson, locale: string): DemoKind => (locale === 'sk' ? lesson.demo.sk : lesson.demo.cz);

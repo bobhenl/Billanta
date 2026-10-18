@@ -1143,5 +1143,847 @@
         "href": "/guides/identified-person"
       }
     ]
+  },
+  "what-is-an-invoice": {
+    "name": "What an invoice is",
+    "title": "What an invoice is and why businesses issue one",
+    "lead": "Students find out what an invoice is for, who issues it and to whom, and spot the key details on a real invoice in the demo.",
+    "metaDescription": "Financial literacy lesson for lower secondary school: what an invoice is, supplier and customer, amount, issue date and due date. A task in the no-signup demo and a worksheet with answers.",
+    "goals": [
+      "Explain in their own words what an invoice is.",
+      "Tell the supplier from the customer.",
+      "Find the invoice number, amount, issue date and due date.",
+      "Know why invoices are kept."
+    ],
+    "teacherNotes": [
+      "The lesson is for students aged about 13 to 15 and fits financial literacy. It is not about tax or accounting; the aim is that students recognise an invoice when they see one at home or in their first job.",
+      "Do not dictate paragraphs to students. For you (Czech law): the details a business puts on its business documents (name, registered office, ID number) are set by § 435 of the Civil Code, and an accounting document by § 11 of the Accounting Act.",
+      "The demo is Tereza Málková, a graphic designer who is not a VAT payer. Her invoices are therefore simple: one price with no tax added.",
+      "A difference students know: they get a receipt in a shop straight away when they pay. An invoice usually comes when payment happens later, most often by bank transfer."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Question for the class: have you seen an invoice at home? What was it for (electricity, internet, phone)?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: who sells, who buys, what is on an invoice and why it is not just a note on a scrap of paper."
+      },
+      {
+        "min": "15–33",
+        "text": "Demo task: find the details on one invoice."
+      },
+      {
+        "min": "33–42",
+        "text": "Worksheet."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary: one sentence on what an invoice is."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Invoice",
+        "body": "A written document in which the seller tells the buyer: this is what I supplied, this is what it costs, and pay me by this date."
+      },
+      {
+        "title": "Supplier and customer",
+        "body": "The supplier sold the goods or service and issues the invoice. The customer bought it, receives the invoice and pays."
+      },
+      {
+        "title": "What is on an invoice",
+        "body": "The invoice number, who issued it and to whom, what was sold, what it costs, when it was issued and by when it must be paid (the due date). A business also adds its company ID number."
+      },
+      {
+        "title": "Why keep invoices",
+        "body": "An invoice proves that a sale happened and for how much. A business needs it for accounting and tax, a buyer for a complaint, for example."
+      }
+    ],
+    "task": {
+      "intro": "In the demo you are Tereza Málková, a graphic designer. You look at the invoices she has already issued.",
+      "steps": [
+        "Open Invoices. How many invoices do you see in the list?",
+        "Open one paid invoice. Write down the invoice number, the supplier, the customer and the total.",
+        "Find the issue date and the due date. How many days did the customer have to pay?",
+        "Look at the invoice lines. What exactly did Tereza sell?",
+        "Find the sentence about VAT on the invoice. What do you think it means?"
+      ],
+      "check": "Done when the student correctly writes down the invoice number, supplier, customer, amount and both dates and says in their own words what an invoice is for."
+    },
+    "worksheet": [
+      {
+        "q": "Who issues the invoice: the supplier or the customer?",
+        "a": "The supplier, the one who sold or did something."
+      },
+      {
+        "q": "A family received an invoice for internet. Who is the supplier and who is the customer?",
+        "a": "The supplier is the internet provider. The customer is the family member whose name is on the contract."
+      },
+      {
+        "q": "An invoice was issued on 1 March and is due on 15 March. How many days are there to pay?",
+        "a": "14 days."
+      },
+      {
+        "q": "What is the difference between a shop receipt and an invoice?",
+        "a": "We get a receipt when we pay on the spot. An invoice arrives and is paid later, usually by bank transfer."
+      },
+      {
+        "q": "Why not throw an invoice away as soon as it is paid?",
+        "a": "It proves what was bought and for how much, which helps with a complaint. A business also needs it for accounting and tax."
+      }
+    ],
+    "law": [
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 435 – details on business documents (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p435"
+      },
+      {
+        "label": "Accounting Act No. 563/1991 Coll., § 11 – accounting document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Required-details check on invoices",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Due date calculator",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "first-invoice": {
+    "name": "My first invoice",
+    "title": "My first invoice: a sole trader who is not a VAT payer",
+    "lead": "Students try issuing an invoice as a new sole trader who is not a VAT payer: they add a customer, fill in the lines and issue the invoice.",
+    "metaDescription": "Lesson for lower secondary school: a first invoice from a non-VAT-payer step by step – customer, lines, due date, issuing. A task in the no-signup demo and a worksheet with answers. Czech rules.",
+    "goals": [
+      "Create a new customer.",
+      "Fill in the invoice lines: what, how many and at what price.",
+      "Set the due date.",
+      "Issue the invoice and check it."
+    ],
+    "teacherNotes": [
+      "A business that is not a VAT payer adds no tax to its price, so its invoice is simpler. Under Czech law a business becomes a payer once its turnover for 12 consecutive months exceeds CZK 2,000,000 (§ 6 of the VAT Act). One sentence is enough for students.",
+      "The law does not require the sentence “I am not a VAT payer”, but it is common practice: the customer sees at once that the price contains no tax. The app adds it to a non-payer's invoice automatically.",
+      "The trader's name, address and ID number on the invoice are required by § 435 of the Civil Code. The app fills them in from the company settings.",
+      "In classroom mode invoices are not sent by email. Issuing the invoice and looking at it on screen is enough.",
+      "Make up a job with the class, such as a logo for the school band or a poster for a fair, and let students invoice it."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Story: Tereza drew a logo for a new café. How does she get paid?"
+      },
+      {
+        "min": "5–12",
+        "text": "Explanation: customer, lines, due date and what happens once the invoice is issued."
+      },
+      {
+        "min": "12–35",
+        "text": "Demo task: a new customer and an invoice."
+      },
+      {
+        "min": "35–42",
+        "text": "Check in pairs and the worksheet."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Not a VAT payer",
+        "body": "A sole trader with smaller sales adds no value added tax to the price. The invoice has one price, and that is what the customer pays."
+      },
+      {
+        "title": "Customer",
+        "body": "Who you invoice. For a company, entering its ID number is enough: the app fills in the name and address from the register."
+      },
+      {
+        "title": "Line",
+        "body": "One row of the invoice: what you supplied, how much of it and the unit price. The app adds up the total."
+      },
+      {
+        "title": "Due date",
+        "body": "The day by which the customer should pay. It is often 14 days after the invoice is issued."
+      },
+      {
+        "title": "Issuing",
+        "body": "While the invoice is a draft you can change anything. Once issued it is a finished invoice, and mistakes are no longer fixed by overwriting it but with a new document."
+      }
+    ],
+    "task": {
+      "intro": "You are Tereza Málková. You drew a logo for a new company and arranged business card printing too.",
+      "steps": [
+        "Open Contacts and click New contact. Create the customer: a company by the ID number your teacher writes on the board, or a made-up company with details typed in by hand.",
+        "Open Invoices and create a new invoice. Choose your new contact as the customer.",
+        "Add a line “Logo design”: quantity 1, price CZK 6,000. Add a second line “Business card printing”: 200 pieces at CZK 3.",
+        "Check that the total is CZK 6,600 and that the due date is 14 days from today.",
+        "Issue the invoice. In the preview find your ID number, the customer, the invoice number and the sentence about VAT."
+      ],
+      "check": "Done when the student has issued an invoice for CZK 6,600 to a new customer with the right due date and can point to the invoice number, the ID number and the amount on it."
+    },
+    "worksheet": [
+      {
+        "q": "Tereza is not a VAT payer. The logo costs CZK 6,000. How much does the customer pay?",
+        "a": "CZK 6,000. A non-payer adds nothing to the price."
+      },
+      {
+        "q": "Line: 200 business cards at CZK 3. What is the total?",
+        "a": "CZK 600."
+      },
+      {
+        "q": "An invoice is issued on 10 May and due in 14 days. By when should it be paid?",
+        "a": "By 24 May."
+      },
+      {
+        "q": "Why do you enter a company's ID number?",
+        "a": "The ID number identifies the company in the register without doubt, even if another company has the same name."
+      },
+      {
+        "q": "A classmate forgot to write what they sold on the invoice. Why is that a problem?",
+        "a": "The customer does not know what they are paying for, and the invoice does not prove what was supplied."
+      }
+    ],
+    "law": [
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 435 – details on business documents (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p435"
+      },
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 6 – when a business becomes a payer (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p6"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Company lookup in ARES and other registers",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Due date calculator",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Required-details check on invoices",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "paid-or-unpaid": {
+    "name": "Paid or not?",
+    "title": "Paid or not? The due date in practice",
+    "lead": "Students learn to tell which invoices are paid, which are still waiting and which are overdue, and mark one invoice as paid themselves.",
+    "metaDescription": "Lesson for lower secondary school: the due date, paid, unpaid and partly paid invoices, overdue invoices. A task in the no-signup demo and a worksheet on counting days. Czech rules.",
+    "goals": [
+      "Explain what a due date is.",
+      "Tell a paid, an unpaid and an overdue invoice apart.",
+      "Work out how many days an invoice is overdue.",
+      "Record a received payment in the app."
+    ],
+    "teacherNotes": [
+      "One rule for students: an invoice not paid by its due date is overdue, and the customer is in delay. The supplier can then claim late-payment interest (§ 1970 of the Czech Civil Code); the reminder lesson covers the details.",
+      "The parties agree the due date. Between businesses Czech law allows more than 60 days only if it is not grossly unfair to the creditor (§ 1963 of the Civil Code). For students it is enough that the due date should always be on the invoice.",
+      "The demo has paid, unpaid and overdue invoices, and one that is only partly paid. Students tell them apart by the status in the list.",
+      "In real life an invoice is marked as paid only once the money has actually arrived. In class you play it out: the teacher announces which payment has “just come in”."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Question: you lent a friend CZK 100 and they promised to pay it back by Friday. It is Monday and nothing. What now?"
+      },
+      {
+        "min": "5–15",
+        "text": "Explanation: the due date, invoice statuses, overdue, partial payment."
+      },
+      {
+        "min": "15–33",
+        "text": "Demo task: the invoice list, a filter, marking a payment."
+      },
+      {
+        "min": "33–42",
+        "text": "Worksheet: counting days."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Due date",
+        "body": "The last day by which the customer should pay. It is written on the invoice."
+      },
+      {
+        "title": "Paid invoice",
+        "body": "The full amount has arrived. The invoice is settled."
+      },
+      {
+        "title": "Unpaid invoice",
+        "body": "The money has not arrived yet, but the due date has not passed. Nothing is wrong; you wait."
+      },
+      {
+        "title": "Overdue",
+        "body": "The due date has passed and the money has not arrived, or only part of it has. The rest is still a debt and the supplier should get in touch."
+      }
+    ],
+    "task": {
+      "intro": "You are Tereza Málková and want to know who still owes you money.",
+      "steps": [
+        "Open Invoices. Find the status of each invoice. How many are paid and how many unpaid?",
+        "In the filter choose Overdue. Which invoices are they and how much do they add up to?",
+        "Find the invoice that is only partly paid. How much is still left to pay?",
+        "The teacher announces that one unpaid invoice has just been paid into the account. Open it and click Mark as paid, Paid today.",
+        "Go back to the list. How did the invoice status change, and how much do customers owe you in total now?"
+      ],
+      "check": "Done when the student lists the overdue invoices and their total, finds the partly paid invoice and marks one invoice as paid."
+    },
+    "worksheet": [
+      {
+        "q": "An invoice is due on 20 April. Today is 18 April and no money has come. Is it overdue?",
+        "a": "No. The due date has not passed yet; the invoice is unpaid but fine."
+      },
+      {
+        "q": "An invoice was due on 10 June and today is 25 June. How many days overdue is it?",
+        "a": "15 days."
+      },
+      {
+        "q": "An invoice is for CZK 4,000 and the customer sent CZK 3,000. Is it paid?",
+        "a": "Only partly. CZK 1,000 is still to be paid."
+      },
+      {
+        "q": "Why is an invoice marked as paid only when the money arrives, not when the customer promises to pay?",
+        "a": "A promise is not a payment. Until the money is in the account, the debt remains."
+      },
+      {
+        "q": "An invoice is issued on 1 September and due in 30 days. By when should it be paid?",
+        "a": "By 1 October (September has 30 days)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 1963 – due dates between businesses (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1963"
+      },
+      {
+        "label": "Civil Code, § 1970 – late-payment interest (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1970"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Due date calculator",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Partial payments",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "simple-reminder": {
+    "name": "A simple reminder",
+    "title": "A simple reminder: asking politely for your money",
+    "lead": "A customer has not paid. Students write a short, polite reminder with nothing important missing and compare it with the template in the app.",
+    "metaDescription": "Lesson for lower secondary school: what a payment reminder is, what it must include and what tone it should take. A task in the no-signup demo, writing a reminder and a worksheet with answers. Czech rules.",
+    "goals": [
+      "Explain what a reminder is for.",
+      "Write a polite reminder with all the important details.",
+      "Tell a polite tone from an unsuitable one.",
+      "Know what can follow when the debtor still does not pay."
+    ],
+    "teacherNotes": [
+      "A reminder is not compulsory and the law does not say what it should look like. It is a polite nudge; often the customer simply forgot or made a mistake with the payment.",
+      "Between businesses the supplier can claim late-payment interest (§ 1970 of the Czech Civil Code) and at least CZK 1,200 as costs of recovering the debt (Government Decree No. 351/2013 Coll.). Students only need to know that paying late can get expensive. The interest calculation is in the secondary-school lesson.",
+      "Students write the reminder on paper. They do not send it from the demo; classroom mode sends no emails.",
+      "A good reminder has six things: who is writing, the invoice number, the amount owed, the original due date, how to pay and a new deadline. No threats."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Two sample reminders on the projector: one polite, one aggressive. Which would make you pay?"
+      },
+      {
+        "min": "5–12",
+        "text": "Explanation: what a reminder contains and what tone it should take."
+      },
+      {
+        "min": "12–25",
+        "text": "In the demo: find an overdue invoice and read the reminder template."
+      },
+      {
+        "min": "25–40",
+        "text": "Students write their own reminder and correct it in pairs."
+      },
+      {
+        "min": "40–45",
+        "text": "Summary: what to do when even a reminder does not help."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Reminder",
+        "body": "A short message telling the customer that an invoice is overdue and has not been paid yet."
+      },
+      {
+        "title": "What it must include",
+        "body": "The invoice number, the amount owed, the original due date, the account number or another way to pay, and a new date to pay by."
+      },
+      {
+        "title": "Tone",
+        "body": "Polite and to the point. The customer may have forgotten or sent the payment wrongly. Threats and insults spoil the relationship and do not bring the money in."
+      },
+      {
+        "title": "If it does not help",
+        "body": "Next comes a phone call, a second reminder, perhaps an agreement to pay in instalments, and in the end debt collection. The supplier can also ask for interest for the late payment."
+      }
+    ],
+    "task": {
+      "intro": "You are Tereza Málková. One of your invoices is overdue and you want to remind the customer to pay.",
+      "steps": [
+        "Open Invoices and filter Overdue. Pick one invoice and write down its number, the customer, the amount and the due date.",
+        "Work out how many days overdue the invoice is.",
+        "Open Settings, the Emails section, and read the reminder template. Which details does the app fill in by itself?",
+        "Write your own reminder on paper: greeting, invoice number, amount, original due date, account number, a new deadline (for example in 7 days) and your name.",
+        "Swap reminders with your neighbour. Is anything missing? Is it polite?"
+      ],
+      "check": "Done when the student has written a polite reminder with all six details and can say what they will do if the customer still does not pay."
+    },
+    "worksheet": [
+      {
+        "q": "What does it mean that an invoice is overdue?",
+        "a": "The due date has passed and the invoice is still not paid."
+      },
+      {
+        "q": "Which details must a reminder include so the customer knows what to pay and how?",
+        "a": "The invoice number, the amount, the original due date, payment details and a new deadline."
+      },
+      {
+        "q": "Is “Pay now or else!” a suitable sentence? Why?",
+        "a": "No. It is threatening, harms the relationship with the customer and explains nothing."
+      },
+      {
+        "q": "The reminder did not work. What can the supplier do next?",
+        "a": "Call, send a second reminder, agree on instalments and finally pursue the debt."
+      },
+      {
+        "q": "Does the supplier get anything extra for a late payment?",
+        "a": "Between businesses they can claim late-payment interest and at least CZK 1,200 as recovery costs."
+      }
+    ],
+    "law": [
+      {
+        "label": "Civil Code No. 89/2012 Coll., § 1970 – late-payment interest (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1970"
+      },
+      {
+        "label": "Government Decree No. 351/2013 Coll. – interest rate and minimum costs (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2013-351"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Automatic payment reminders",
+        "href": "/features/payment-reminders"
+      },
+      {
+        "label": "Due date calculator",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "vat-return-control-statement": {
+    "name": "VAT return and control statement",
+    "title": "VAT return and control statement: from documents to the form",
+    "lead": "From one month of issued and received invoices, students build a VAT return on paper, sort the documents into the sections of the control statement and work out the fines for filing late.",
+    "metaDescription": "Lesson for colleges, universities and courses: tax periods, deadlines, the VAT liability, control statement sections and fines under § 101h of the Czech VAT Act. A demo task and a worksheet with answers.",
+    "goals": [
+      "Determine a payer's tax period and the deadline for the return and the control statement.",
+      "Calculate output VAT, input VAT deduction and the resulting liability.",
+      "Put a document into the right section of the control statement.",
+      "Explain when a control statement fine applies and how high it is."
+    ],
+    "teacherNotes": [
+      "The tax period is a calendar month (§ 99 of the Czech VAT Act). A payer with turnover up to CZK 15,000,000 that is not an unreliable payer or a group member may choose quarters if it notifies by the end of January, but not in the year of registration or the year after (§ 99a).",
+      "The return is due within 25 days after the tax period ends (§ 136(4) of the Tax Procedure Code) and must be filed electronically (§ 101a of the VAT Act). A legal entity files the control statement monthly within 25 days of the month end, a natural person within the return deadline (§ 101e). The deadline cannot be extended.",
+      "Fines under § 101h(1): CZK 1,000 for filing late without a notice, CZK 10,000 for filing only in the substitute deadline after a notice, CZK 30,000 for not amending, completing or confirming it when asked, and CZK 50,000 for not filing at all. Fines b) to d) are halved for natural persons and quarterly payers, among others (para. 2). The first late filing under a) in a calendar year is not fined (§ 101j).",
+      "The CZK 10,000 incl. VAT threshold splitting sections A.4/A.5 and B.2/B.3 comes from the form instructions, not directly from the Act. Return lines: output VAT at 21 % and 12 % on lines 1 and 2, deduction on lines 40 and 41.",
+      "The demo is Lipová stezka s.r.o., a monthly payer. The return and control statement export is an XML file for the Czech tax portal; classroom mode does not download it, so students calculate on paper. The teacher can show the export in the public demo."
+    ],
+    "timeline": [
+      {
+        "min": "0–8",
+        "text": "Explanation: tax periods, deadlines, electronic filing."
+      },
+      {
+        "min": "8–15",
+        "text": "The structure of the return and the control statement on the projector."
+      },
+      {
+        "min": "15–35",
+        "text": "Demo task: last month's documents, recording a received invoice, calculating and sorting into sections."
+      },
+      {
+        "min": "35–42",
+        "text": "Worksheet: calculation and fines."
+      },
+      {
+        "min": "42–45",
+        "text": "Summary: what happens if the control statement is not filed."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Tax period",
+        "body": "A month, or a quarter under the conditions of § 99a. For each period the payer files a return and pays the tax within 25 days of its end."
+      },
+      {
+        "title": "Output VAT and deduction",
+        "body": "The payer pays over the VAT on issued invoices and deducts the VAT on received ones. The difference is the liability; a negative difference is an excess deduction refunded to the payer."
+      },
+      {
+        "title": "Control statement",
+        "body": "A list of the individual documents behind the return. The tax administration uses it to pair suppliers with customers and find documents that one side reported and the other did not."
+      },
+      {
+        "title": "Sections",
+        "body": "A.4 issued documents over CZK 10,000 incl. VAT, A.5 other issued documents in total; B.2 received over CZK 10,000, B.3 other received in total; A.1 and B.1 supplies under the reverse charge."
+      },
+      {
+        "title": "Right to deduct",
+        "body": "It arises only with a tax document (§ 73(1)). It can be claimed at the latest in the return for a period ending by the end of the second calendar year after the year it arose."
+      }
+    ],
+    "task": {
+      "intro": "You are the accountant of Lipová stezka s.r.o. preparing the data for last month's return.",
+      "steps": [
+        "Open Invoices and filter issued invoices with a tax point in the previous month. List the tax base and VAT by rate.",
+        "Open Expenses, click New expense and record a received invoice: supplier Kancelář Plus s.r.o., description Meeting room rental, amount incl. VAT CZK 14,520, VAT rate 21 %, tax date in the previous month, document number FV-2026-118.",
+        "List the VAT on all received documents with a tax point in the previous month. Mark the reverse-charge document from Montáže Kraus separately.",
+        "On paper, calculate output VAT, the deduction and the resulting liability.",
+        "Put each document into a control statement section (A.4, A.5, B.2, B.3 or B.1) and explain why.",
+        "Write down the date by which the company must file the return and the control statement and pay the tax."
+      ],
+      "check": "Done when the student has recorded the new expense, calculated the month's liability correctly and put each document into the right control statement section with a reason."
+    },
+    "worksheet": [
+      {
+        "q": "For August 2026 a payer has issued invoices with a tax base of CZK 100,000 at 21 % and CZK 20,000 at 12 %, and received invoices with a base of CZK 50,000 at 21 %. What is the liability?",
+        "a": "Output 21,000 + 2,400 = CZK 23,400, deduction CZK 10,500, payable CZK 12,900."
+      },
+      {
+        "q": "By when must an s.r.o. file the return and the control statement for August 2026?",
+        "a": "By 25 September 2026, both electronically."
+      },
+      {
+        "q": "Which section does a received invoice for CZK 14,520 incl. VAT from a domestic payer go into?",
+        "a": "B.2, because it is over CZK 10,000 incl. VAT. It is listed individually with the supplier's VAT number and the document number."
+      },
+      {
+        "q": "An s.r.o. filed its control statement three days late, for the first time this year and without a notice. What fine does it face?",
+        "a": "None. The CZK 1,000 fine under § 101h(1)(a) is not imposed for the first such delay in a calendar year (§ 101j)."
+      },
+      {
+        "q": "A company registered for VAT in March 2026. Can it file quarterly from January 2027?",
+        "a": "No. Quarters cannot be chosen in the year of registration or the following year, so 2028 at the earliest."
+      },
+      {
+        "q": "An invoice with a 2026 tax point arrived late. What is the latest the deduction can be claimed?",
+        "a": "In the return for a period ending no later than 31 December 2028."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 99 and 99a – tax period (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p99a"
+      },
+      {
+        "label": "VAT Act, § 101a – electronic filing (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101a"
+      },
+      {
+        "label": "VAT Act, § 101e – control statement deadlines (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101e"
+      },
+      {
+        "label": "VAT Act, § 101h and 101j – control statement fines (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101h"
+      },
+      {
+        "label": "VAT Act, § 73 – conditions for deduction (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p73"
+      },
+      {
+        "label": "Tax Procedure Code No. 280/2009 Coll., § 136 – return deadline (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2009-280#p136"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Guide: VAT return and control statement",
+        "href": "/guides/vat-return-control-statement"
+      },
+      {
+        "label": "VAT return and control statement export",
+        "href": "/features/vat-returns-epo"
+      },
+      {
+        "label": "VAT calculator",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "bank-matching-expenses": {
+    "name": "Bank matching and expenses",
+    "title": "Matching bank payments and recording expenses",
+    "lead": "Students go through a company's bank transactions, match payments to invoices, decide what to do with a short payment, a payment without a variable symbol and a bank fee, and record a received document as an expense.",
+    "metaDescription": "Lesson for colleges, universities and courses: matching payments by variable symbol, short payments, payments without a reference, bank fees and recording received documents. A demo task and a worksheet with answers. Czech rules.",
+    "goals": [
+      "Match an incoming payment to an invoice and explain what the match is based on.",
+      "Decide what to do with a short payment, a payment without a variable symbol and a bank fee.",
+      "Record a received document as an expense with the right base and VAT.",
+      "Explain why and for how long documents are archived."
+    ],
+    "teacherNotes": [
+      "The demo bank transactions are prepared: one payment covered only 90 % of the invoice, an advance of CZK 2,500 from Petr Novotný came without a variable symbol, and a bank fee of −CZK 199 is already ignored. Each one leads to a different question.",
+      "Ignoring the fee in matching does not remove it from the books. The accountant books it from the bank statement as a cost; it just is not matched to an invoice.",
+      "Deducting VAT on a received document requires a tax document (§ 73(1)(a) of the Czech VAT Act). A payer keeps tax documents for 10 years from the end of the tax period in which the supply took place (§ 35(2)). Accounting records are archived for at least 5 years, the financial statements for 10 (§ 31 of the Accounting Act).",
+      "Classroom mode has no real bank connection. Students work with sample transactions and match them by hand."
+    ],
+    "timeline": [
+      {
+        "min": "0–8",
+        "text": "Explanation: the statement, the variable symbol, what matching means."
+      },
+      {
+        "min": "8–28",
+        "text": "Demo task: go through Bank and resolve each unmatched transaction."
+      },
+      {
+        "min": "28–37",
+        "text": "Recording a received document as an expense and checking the report."
+      },
+      {
+        "min": "37–43",
+        "text": "Worksheet."
+      },
+      {
+        "min": "43–45",
+        "text": "Summary."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Matching",
+        "body": "Assigning a bank transaction to an invoice. The app suggests matches by variable symbol and amount; once matched, the invoice becomes paid or partly paid."
+      },
+      {
+        "title": "Short payment",
+        "body": "Less arrived than the invoice amount. The invoice stays partly paid and the rest is chased, unless it is an agreed discount, which then needs a proper document."
+      },
+      {
+        "title": "Payment without a variable symbol",
+        "body": "Without the variable symbol (the Czech payment reference) a payment cannot be matched automatically. You look it up by payer name and amount, or ask the payer."
+      },
+      {
+        "title": "Expense and received document",
+        "body": "Every purchase is recorded with its document: supplier, date, amount, VAT rate and document number. A VAT payer claims the VAT deduction from it."
+      }
+    ],
+    "task": {
+      "intro": "You are the accountant of Lipová stezka s.r.o., checking the bank and documents at month end.",
+      "steps": [
+        "Open Bank. How many transactions are to match? Go through them one by one.",
+        "Match each transaction whose variable symbol and amount fit an invoice: click Match and choose the invoice.",
+        "Find the payment that covered only 90 %. Match it and look at the invoice status now. How much is left to pay?",
+        "Find the CZK 2,500 payment from Petr Novotný without a variable symbol. Which invoice or advance do you think it belongs to? Write down how you would check.",
+        "Find the ignored −CZK 199 fee. Why is it not matched to an invoice, and where does it show up in the books?",
+        "Open Expenses, click New expense and record a document: supplier Papírnictví Pod Lipou, description Office supplies, amount incl. VAT CZK 6,050, VAT rate 21 %, date today, document number 2026-0412. What are the base and the VAT?",
+        "Find this month's costs in Reports and check that the new expense is included. Which expense is still unpaid?"
+      ],
+      "check": "Done when the student has matched the payments, can say what to do with the short payment, the payment without a variable symbol and the fee and why, and has recorded an expense with a base of CZK 5,000 and VAT of CZK 1,050."
+    },
+    "worksheet": [
+      {
+        "q": "An invoice is for CZK 12,100 and CZK 10,890 arrived. How much is outstanding and what status does the invoice keep?",
+        "a": "CZK 1,210. The invoice stays partly paid until the rest arrives."
+      },
+      {
+        "q": "What is a payment most often matched to an invoice by?",
+        "a": "The variable symbol, which is usually the invoice number, and the amount."
+      },
+      {
+        "q": "A document is for CZK 6,050 incl. 21 % VAT. What are the base and the VAT?",
+        "a": "Base CZK 5,000, VAT CZK 1,050."
+      },
+      {
+        "q": "A payment arrived without a variable symbol. What do you do?",
+        "a": "Assign it to an invoice or advance by payer name, amount and date; if that is not clear-cut, ask the payer. Do not guess."
+      },
+      {
+        "q": "How long must a VAT payer keep tax documents?",
+        "a": "10 years from the end of the tax period in which the supply took place (§ 35 of the VAT Act)."
+      }
+    ],
+    "law": [
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 73 – conditions for deduction (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p73"
+      },
+      {
+        "label": "VAT Act, § 35 – keeping tax documents (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p35"
+      },
+      {
+        "label": "Accounting Act No. 563/1991 Coll., § 11 – accounting document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      },
+      {
+        "label": "Accounting Act, § 31 – archiving accounting records (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p31"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Payment matching",
+        "href": "/features/payment-matching"
+      },
+      {
+        "label": "Expense tracking",
+        "href": "/features/expense-tracking"
+      },
+      {
+        "label": "Partial payments",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "working-with-accountant": {
+    "name": "Working with an accountant",
+    "title": "Working with an accountant: month-end close in pairs",
+    "lead": "In pairs, students play a business owner and their accountant. They go through the month, add a missing document, clear up unclear payments and write a handover record.",
+    "metaDescription": "Lesson for colleges, universities and courses: what an accountant needs from a business, VAT deadlines, missing documents, team permissions and a handover record. A demo task for pairs and a worksheet with answers. Czech rules.",
+    "goals": [
+      "List what an accountant needs to close the month and by when.",
+      "Find and add a missing document.",
+      "Explain why the accountant has different permissions in the app from the owner.",
+      "Write a handover record for the month's documents."
+    ],
+    "teacherNotes": [
+      "Students work in pairs. One starts the demo with the Owner role, the other with the Accountant role. Each has their own copy of the same company, so they pass findings on verbally and on paper, as in real life.",
+      "In the demo the accountant sees documents, VAT, exports and reports but does not touch company settings, the team or the subscription. In a real account the role is set in Settings, Team. Classroom mode invites nobody.",
+      "Deadlines the accountant watches: the VAT return within 25 days after the tax period (§ 136(4) of the Czech Tax Procedure Code) and an s.r.o.'s control statement every month within 25 days (§ 101e of the VAT Act). That is why accountants usually ask for documents by the 10th to 15th of the following month.",
+      "A document must have the details required by § 11 of the Accounting Act. The company, not the accountant, is responsible for its documents being correct: the accountant books what they receive. Accounting records are archived for at least 5 years (§ 31), a payer's tax documents for 10 years (§ 35 of the VAT Act)."
+    ],
+    "timeline": [
+      {
+        "min": "0–7",
+        "text": "Explanation: what the accountant does, what the owner does and where it goes wrong."
+      },
+      {
+        "min": "7–30",
+        "text": "Demo task in pairs: checking the month, a missing document, questions about the bank."
+      },
+      {
+        "min": "30–40",
+        "text": "Handover record and worksheet."
+      },
+      {
+        "min": "40–45",
+        "text": "Summary: the three things that save an accountant the most time."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Month-end close",
+        "body": "The accountant checks that every bank transaction has a document and every document a payment, and prepares the VAT figures."
+      },
+      {
+        "title": "Missing document",
+        "body": "A payment went out but its document is missing. Without it the payment cannot be booked as a cost and a VAT payer cannot claim the VAT."
+      },
+      {
+        "title": "Roles and permissions",
+        "body": "The accountant needs documents, the bank and exports. Company settings, the team and the subscription stay with the owner, so nobody changes the details printed on invoices by mistake."
+      },
+      {
+        "title": "Handover record",
+        "body": "A list of what the owner handed over for the month: the number of issued and received documents, statements, unclear payments and questions. Both sides then know what is missing."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. is closing the month. One of the pair is the owner, the other the accountant.",
+      "steps": [
+        "Accountant: open Bank and list the transactions that are not matched. Write a question for the owner about each.",
+        "Accountant: in Expenses find unpaid expenses and expenses without a document number. Add them to the list of questions.",
+        "Owner: answer the questions. You “found one receipt in the car”: open Expenses, New expense and record supplier Autoservis Brázda, description Tyre change, amount incl. VAT CZK 8,470, rate 21 %, document number 2026-077.",
+        "Accountant: open Settings and try to change the Business details. What happens? Why is that?",
+        "Together: write a handover record for the month on paper: number of issued invoices, number of received documents, unmatched payments, added documents and open questions. Both of you sign it."
+      ],
+      "check": "Done when the pair has recorded the added expense, has a list of bank questions with answers and a signed handover record, and can explain why the accountant does not change company settings."
+    },
+    "worksheet": [
+      {
+        "q": "By when must an s.r.o. file its control statement for March? Why does the accountant want the documents earlier?",
+        "a": "By 25 April. The accountant needs time to check and book the documents and sort out questions, so they want them by about 10 to 15 April."
+      },
+      {
+        "q": "CZK 8,470 left the account and the document is missing. What does that mean for the company?",
+        "a": "The payment cannot be booked as a supported cost and a VAT payer cannot claim the VAT deduction until the document is there."
+      },
+      {
+        "q": "Why does the accountant not change company details or the team in the app?",
+        "a": "Company details go on every invoice and the team decides who can see the data. That is the owner's responsibility."
+      },
+      {
+        "q": "What belongs in a handover record?",
+        "a": "The period, the numbers of issued and received documents, statements, unmatched payments, added documents and open questions, the date and signatures."
+      },
+      {
+        "q": "Who is responsible for documents being complete and true?",
+        "a": "The company, meaning the owner or the statutory body. The accountant processes what they receive."
+      }
+    ],
+    "law": [
+      {
+        "label": "Accounting Act No. 563/1991 Coll., § 11 – accounting document (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      },
+      {
+        "label": "Accounting Act, § 31 – archiving accounting records (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p31"
+      },
+      {
+        "label": "VAT Act No. 235/2004 Coll., § 101e – control statement deadlines (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101e"
+      },
+      {
+        "label": "VAT Act, § 35 – keeping tax documents (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p35"
+      },
+      {
+        "label": "Tax Procedure Code No. 280/2009 Coll., § 136 – return deadline (in Czech)",
+        "href": "https://www.zakonyprolidi.cz/cs/2009-280#p136"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Team and roles",
+        "href": "/features/team-and-roles"
+      },
+      {
+        "label": "Export for your accountant",
+        "href": "/features/accountant-export"
+      },
+      {
+        "label": "Payment matching",
+        "href": "/features/payment-matching"
+      }
+    ]
   }
 }

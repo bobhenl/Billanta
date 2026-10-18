@@ -1143,5 +1143,847 @@
         "href": "/guides/identified-person"
       }
     ]
+  },
+  "what-is-an-invoice": {
+    "name": "Co je faktura",
+    "title": "Co je faktura a proč se vystavuje",
+    "lead": "Žáci zjistí, k čemu faktura slouží, kdo ji vystavuje a komu, a na skutečné faktuře v demu najdou ty nejdůležitější údaje.",
+    "metaDescription": "Lekce finanční gramotnosti pro ZŠ: co je faktura, dodavatel a odběratel, částka, datum vystavení a splatnost. Úkol v demu bez registrace a pracovní list s řešením.",
+    "goals": [
+      "Vlastními slovy vysvětlit, co je faktura.",
+      "Rozlišit dodavatele a odběratele.",
+      "Najít na faktuře číslo, částku, datum vystavení a splatnost.",
+      "Vědět, proč se faktury schovávají."
+    ],
+    "teacherNotes": [
+      "Lekce je pro 8. a 9. ročník a hodí se do finanční gramotnosti. Nejde o daně ani účetnictví, ale o to, aby žáci fakturu poznali, až ji uvidí doma nebo v první práci.",
+      "Paragrafy žákům nediktujte. Pro vás: údaje, které podnikatel uvádí na obchodních listinách (jméno, sídlo, IČO), stanoví § 435 občanského zákoníku, náležitosti účetního dokladu § 11 zákona o účetnictví.",
+      "Demo je grafička Tereza Málková, která není plátcem DPH. Její faktury jsou proto jednoduché: jedna cena bez daně navíc.",
+      "Rozdíl, který žáci znají: účtenku dostanou v obchodě hned při placení. Faktura obvykle přijde, když se platí později, nejčastěji převodem z účtu."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka do třídy: viděli jste doma fakturu? Za co to bylo (elektřina, internet, telefon)?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: kdo prodává, kdo kupuje, co na faktuře je a proč se nepíše jen tak na papírek."
+      },
+      {
+        "min": "15–33",
+        "text": "Úkol v demu: najít údaje na jedné faktuře."
+      },
+      {
+        "min": "33–42",
+        "text": "Pracovní list."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí: jednou větou, co je faktura."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Faktura",
+        "body": "Písemný doklad, kterým prodávající říká kupujícímu: tohle jsem ti dodal, tolik to stojí a do tohoto dne mi to zaplať."
+      },
+      {
+        "title": "Dodavatel a odběratel",
+        "body": "Dodavatel věc nebo službu prodal a fakturu vystavuje. Odběratel ji koupil, fakturu dostane a zaplatí."
+      },
+      {
+        "title": "Co na faktuře najdu",
+        "body": "Číslo faktury, kdo ji vystavil a komu, co se prodalo, kolik to stojí, kdy byla vystavena a do kdy se má zaplatit (datum splatnosti). Podnikatel na ni píše i své IČO."
+      },
+      {
+        "title": "Proč faktury schovávat",
+        "body": "Faktura dokazuje, že se obchod stal a za kolik. Podnikatel ji potřebuje pro účetnictví a daně, kupující třeba při reklamaci."
+      }
+    ],
+    "task": {
+      "intro": "V demu jste grafička Tereza Málková. Podíváte se na faktury, které už vystavila.",
+      "steps": [
+        "Otevřete Faktury. Kolik faktur v seznamu vidíte?",
+        "Otevřete jednu zaplacenou fakturu. Opište si číslo faktury, dodavatele, odběratele a celkovou částku.",
+        "Najděte datum vystavení a datum splatnosti. Kolik dní měl odběratel na zaplacení?",
+        "Podívejte se na řádky faktury. Co přesně Tereza prodala?",
+        "Najděte na faktuře větu o DPH. Co podle vás znamená?"
+      ],
+      "check": "Hotovo, když žák správně opíše číslo faktury, dodavatele, odběratele, částku a obě data a vlastními slovy řekne, k čemu faktura je."
+    },
+    "worksheet": [
+      {
+        "q": "Kdo fakturu vystavuje: dodavatel, nebo odběratel?",
+        "a": "Dodavatel, tedy ten, kdo něco prodal nebo udělal."
+      },
+      {
+        "q": "Rodina dostala fakturu za internet. Kdo je dodavatel a kdo odběratel?",
+        "a": "Dodavatel je firma, která internet poskytuje. Odběratel je člen rodiny, na kterého je smlouva."
+      },
+      {
+        "q": "Faktura byla vystavena 1. března a je splatná 15. března. Kolik dní je na zaplacení?",
+        "a": "14 dní."
+      },
+      {
+        "q": "Jaký je rozdíl mezi účtenkou z obchodu a fakturou?",
+        "a": "Účtenku dostaneme, když platíme hned na místě. Faktura přijde a platí se později, obvykle převodem."
+      },
+      {
+        "q": "Proč fakturu nevyhodit hned po zaplacení?",
+        "a": "Dokazuje, co a za kolik se koupilo, a hodí se při reklamaci. Podnikatel ji navíc potřebuje pro účetnictví a daně."
+      }
+    ],
+    "law": [
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 435 – údaje na obchodních listinách",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p435"
+      },
+      {
+        "label": "Zákon o účetnictví č. 563/1991 Sb., § 11 – účetní doklad",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kontrola povinných údajů na faktuře",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Kalkulačka data splatnosti",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "first-invoice": {
+    "name": "Moje první faktura",
+    "title": "Moje první faktura: živnostnice bez DPH",
+    "lead": "Žáci si vyzkouší, jak vystavit fakturu jako začínající živnostnice, která není plátcem DPH: přidají odběratele, vyplní položky a fakturu vystaví.",
+    "metaDescription": "Lekce pro ZŠ: první faktura neplátce DPH krok za krokem – odběratel, položky, splatnost a vystavení. Úkol v demu bez registrace a pracovní list s řešením.",
+    "goals": [
+      "Založit nového odběratele.",
+      "Vyplnit položky faktury: co, kolik kusů a za kolik.",
+      "Nastavit splatnost.",
+      "Fakturu vystavit a zkontrolovat."
+    ],
+    "teacherNotes": [
+      "Neplátce DPH k ceně daň nepřipočítává, a jeho faktura je proto jednodušší. Plátcem se podnikatel stane, až když jeho obrat za 12 po sobě jdoucích měsíců přesáhne 2 000 000 Kč (§ 6 zákona o DPH). Žákům to stačí říct jednou větou.",
+      "Větu „Nejsem plátce DPH“ zákon nepředepisuje, ale je zvykem: odběratel hned ví, že v ceně žádná daň není. Aplikace ji na fakturu neplátce přidá sama.",
+      "Jméno, adresu a IČO podnikatele na faktuře vyžaduje § 435 občanského zákoníku. Aplikace je doplní z nastavení firmy.",
+      "Ve třídním režimu se faktury nikam neposílají e-mailem. Stačí fakturu vystavit a prohlédnout si ji na obrazovce.",
+      "Vymyslete se třídou zakázku, třeba logo pro školní kapelu nebo plakát na jarmark. Žáci si ji pak „vyfakturují“."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Příběh: Tereza nakreslila logo pro novou kavárnu. Jak dostane zaplaceno?"
+      },
+      {
+        "min": "5–12",
+        "text": "Výklad: odběratel, položky, splatnost, co se stane po vystavení."
+      },
+      {
+        "min": "12–35",
+        "text": "Úkol v demu: nový odběratel a faktura."
+      },
+      {
+        "min": "35–42",
+        "text": "Kontrola ve dvojicích a pracovní list."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Neplátce DPH",
+        "body": "Živnostník s menšími tržbami k ceně nepřipočítává daň z přidané hodnoty. Na faktuře je jedna cena a tu odběratel zaplatí."
+      },
+      {
+        "title": "Odběratel",
+        "body": "Komu fakturu vystavujete. U firmy stačí zadat IČO a aplikace doplní název a adresu z registru."
+      },
+      {
+        "title": "Položka",
+        "body": "Jeden řádek faktury: co jste dodali, kolik toho bylo a cena za kus. Celkovou částku spočítá aplikace."
+      },
+      {
+        "title": "Splatnost",
+        "body": "Den, do kterého má odběratel zaplatit. Často to bývá 14 dní od vystavení."
+      },
+      {
+        "title": "Vystavení",
+        "body": "Dokud je faktura koncept, můžete ji libovolně měnit. Vystavením se z ní stane hotová faktura a chyby se pak už neopravují přepsáním, ale novým dokladem."
+      }
+    ],
+    "task": {
+      "intro": "Jste Tereza Málková. Nakreslili jste logo pro novou firmu a k tomu zařídili tisk vizitek.",
+      "steps": [
+        "Otevřete Kontakty a klikněte na Nový kontakt. Založte odběratele: firmu podle IČO, které napíše učitel na tabuli, nebo vymyšlenou firmu s ručně vyplněnými údaji.",
+        "Otevřete Faktury a vytvořte novou fakturu. Jako odběratele vyberte svůj nový kontakt.",
+        "Přidejte položku „Návrh loga“: množství 1, cena 6 000 Kč. Přidejte druhou položku „Tisk vizitek“: 200 kusů po 3 Kč.",
+        "Zkontrolujte, že celkem vychází 6 600 Kč a že splatnost je 14 dní od dneška.",
+        "Fakturu vystavte. V náhledu najděte své IČO, odběratele, číslo faktury a větu o DPH."
+      ],
+      "check": "Hotovo, když má žák vystavenou fakturu na 6 600 Kč pro nového odběratele se správnou splatností a umí na ní ukázat číslo faktury, IČO a částku."
+    },
+    "worksheet": [
+      {
+        "q": "Tereza není plátcem DPH. Logo stojí 6 000 Kč. Kolik zaplatí odběratel?",
+        "a": "6 000 Kč. Neplátce DPH k ceně nic nepřipočítává."
+      },
+      {
+        "q": "Položka: 200 vizitek po 3 Kč. Kolik je to celkem?",
+        "a": "600 Kč."
+      },
+      {
+        "q": "Faktura je vystavena 10. května se splatností 14 dní. Do kdy se má zaplatit?",
+        "a": "Do 24. května."
+      },
+      {
+        "q": "Proč se u firmy vyplňuje IČO?",
+        "a": "Podle IČO se firma jednoznačně najde v registru, i kdyby měla stejný název jako jiná firma."
+      },
+      {
+        "q": "Spolužák zapomněl na faktuře napsat, co prodal. Proč je to problém?",
+        "a": "Odběratel neví, za co platí, a faktura nedokazuje, co bylo dodáno."
+      }
+    ],
+    "law": [
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 435 – údaje na obchodních listinách",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p435"
+      },
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 6 – kdy se podnikatel stává plátcem",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p6"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Vyhledání firem v ARES a registrech",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Kalkulačka data splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Kontrola povinných údajů na faktuře",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "paid-or-unpaid": {
+    "name": "Zaplaceno, nebo ne?",
+    "title": "Zaplaceno, nebo ne? Datum splatnosti v praxi",
+    "lead": "Žáci se naučí poznat, které faktury jsou zaplacené, které čekají a které jsou po splatnosti, a jednu fakturu sami označí jako zaplacenou.",
+    "metaDescription": "Lekce pro ZŠ: datum splatnosti, zaplacená, nezaplacená a částečně zaplacená faktura, faktura po splatnosti. Úkol v demu bez registrace a pracovní list s počítáním dnů.",
+    "goals": [
+      "Vysvětlit, co je datum splatnosti.",
+      "Rozlišit fakturu zaplacenou, nezaplacenou a po splatnosti.",
+      "Spočítat, kolik dní je faktura po splatnosti.",
+      "Zaznamenat přijatou platbu v aplikaci."
+    ],
+    "teacherNotes": [
+      "Jedno pravidlo pro žáky: když faktura není zaplacená do data splatnosti, je po splatnosti a odběratel je v prodlení. Dodavatel pak může žádat úrok z prodlení (§ 1970 občanského zákoníku); podrobnosti řeší lekce o upomínce.",
+      "Splatnost si strany domlouvají. Mezi podnikateli zákon připouští splatnost delší než 60 dní, jen pokud to není vůči věřiteli hrubě nespravedlivé (§ 1963 občanského zákoníku). Žákům stačí, že splatnost má být na faktuře vždy napsaná.",
+      "V demu jsou faktury zaplacené, nezaplacené, po splatnosti i jedna zaplacená jen zčásti. Žáci je rozliší podle stavu v seznamu.",
+      "Označit fakturu jako zaplacenou se v praxi smí, až když peníze opravdu přijdou. Ve třídě to hrajete: učitel oznámí, která platba „právě přišla“."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka: půjčil sis kamarádovi 100 Kč, má je vrátit do pátku. Je pondělí a nic. Co teď?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: datum splatnosti, stavy faktury, po splatnosti, částečná platba."
+      },
+      {
+        "min": "15–33",
+        "text": "Úkol v demu: seznam faktur, filtr, označení platby."
+      },
+      {
+        "min": "33–42",
+        "text": "Pracovní list: počítání dnů."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Datum splatnosti",
+        "body": "Poslední den, kdy má odběratel zaplatit. Je napsané na faktuře."
+      },
+      {
+        "title": "Zaplacená faktura",
+        "body": "Peníze přišly v plné výši. Faktura je vyřízená."
+      },
+      {
+        "title": "Nezaplacená faktura",
+        "body": "Peníze ještě nepřišly, ale splatnost ještě neuběhla. Nic se neděje, čeká se."
+      },
+      {
+        "title": "Po splatnosti",
+        "body": "Splatnost uběhla a peníze nepřišly, nebo přišla jen část. Zbytek je pořád dluh a dodavatel by se měl ozvat."
+      }
+    ],
+    "task": {
+      "intro": "Jste Tereza Málková a chcete vědět, kdo vám ještě dluží.",
+      "steps": [
+        "Otevřete Faktury. U každé faktury najděte její stav. Kolik je zaplacených a kolik nezaplacených?",
+        "Ve filtru vyberte Po splatnosti. Které faktury to jsou a kolik dohromady dluží?",
+        "Najděte fakturu, která je zaplacená jen zčásti. Kolik ještě zbývá doplatit?",
+        "Učitel oznámí, že jedna nezaplacená faktura právě přišla na účet. Otevřete ji a klikněte na Označit jako zaplacené, Zaplaceno dnes.",
+        "Vraťte se do seznamu. Jak se změnil stav faktury a kolik vám teď odběratelé dluží celkem?"
+      ],
+      "check": "Hotovo, když žák vyjmenuje faktury po splatnosti a jejich celkovou částku, najde částečně zaplacenou fakturu a jednu fakturu označí jako zaplacenou."
+    },
+    "worksheet": [
+      {
+        "q": "Faktura je splatná 20. dubna. Dnes je 18. dubna a peníze nepřišly. Je po splatnosti?",
+        "a": "Ne. Splatnost ještě neuběhla, faktura je nezaplacená, ale v pořádku."
+      },
+      {
+        "q": "Faktura byla splatná 10. června, dnes je 25. června. Kolik dní je po splatnosti?",
+        "a": "15 dní."
+      },
+      {
+        "q": "Faktura zní na 4 000 Kč a odběratel poslal 3 000 Kč. Je zaplacená?",
+        "a": "Jen zčásti. Zbývá doplatit 1 000 Kč."
+      },
+      {
+        "q": "Proč se faktura označí jako zaplacená až po příchodu peněz, a ne po slibu?",
+        "a": "Slib není platba. Dokud peníze nejsou na účtu, dluh trvá."
+      },
+      {
+        "q": "Faktura je vystavena 1. září se splatností 30 dní. Do kdy se má zaplatit?",
+        "a": "Do 1. října (září má 30 dní)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 1963 – splatnost mezi podnikateli",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1963"
+      },
+      {
+        "label": "Občanský zákoník, § 1970 – úrok z prodlení",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1970"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka data splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Částečné platby",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "simple-reminder": {
+    "name": "Jednoduchá upomínka",
+    "title": "Jednoduchá upomínka: jak si slušně říct o peníze",
+    "lead": "Odběratel nezaplatil. Žáci napíšou krátkou a zdvořilou upomínku, ve které nechybí nic podstatného, a porovnají ji se šablonou v aplikaci.",
+    "metaDescription": "Lekce pro ZŠ: co je upomínka, co v ní nesmí chybět a jaký má mít tón. Úkol v demu bez registrace, psaní upomínky a pracovní list s řešením.",
+    "goals": [
+      "Vysvětlit, k čemu je upomínka.",
+      "Napsat zdvořilou upomínku se všemi důležitými údaji.",
+      "Rozlišit zdvořilý a nevhodný tón.",
+      "Vědět, co může následovat, když dlužník neplatí dál."
+    ],
+    "teacherNotes": [
+      "Upomínka není povinná a zákon nepředepisuje, jak má vypadat. Je to slušné připomenutí; často jde jen o zapomnění nebo chybu v platbě.",
+      "Mezi podnikateli může dodavatel za prodlení žádat úrok (§ 1970 občanského zákoníku) a nejméně 1 200 Kč jako náklady spojené s vymáháním (nařízení vlády č. 351/2013 Sb.). Žákům stačí vědět, že pozdní placení se může prodražit. Výpočet úroku je v lekci pro střední školy.",
+      "Upomínku žáci píšou na papír. V demu ji neodesílají; ve třídním režimu se e-maily nikam neposílají.",
+      "Dobrá upomínka má šest údajů: kdo píše, číslo faktury, dlužnou částku, původní splatnost, jak zaplatit a nový termín. Bez výhrůžek."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Dvě ukázky upomínky na projektoru: jedna zdvořilá, druhá útočná. Na kterou byste spíš zaplatili?"
+      },
+      {
+        "min": "5–12",
+        "text": "Výklad: co upomínka obsahuje a jaký má mít tón."
+      },
+      {
+        "min": "12–25",
+        "text": "V demu: najít fakturu po splatnosti a přečíst si šablonu upomínky."
+      },
+      {
+        "min": "25–40",
+        "text": "Žáci píšou vlastní upomínku a ve dvojicích si ji opraví."
+      },
+      {
+        "min": "40–45",
+        "text": "Shrnutí: co dělat, když nepomůže ani upomínka."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Upomínka",
+        "body": "Krátká zpráva odběrateli, že faktura je po splatnosti a ještě nebyla zaplacena."
+      },
+      {
+        "title": "Co v ní nesmí chybět",
+        "body": "Číslo faktury, dlužná částka, původní datum splatnosti, číslo účtu nebo jiný způsob platby a nový termín, do kdy zaplatit."
+      },
+      {
+        "title": "Tón",
+        "body": "Zdvořile a věcně. Odběratel mohl zapomenout nebo poslat platbu špatně. Výhrůžky a urážky vztah zkazí a k penězům nepomohou."
+      },
+      {
+        "title": "Když nepomůže",
+        "body": "Následuje telefonát, druhá upomínka, případně dohoda o splátkách a nakonec vymáhání. Za pozdní placení si dodavatel může říct o úrok."
+      }
+    ],
+    "task": {
+      "intro": "Jste Tereza Málková. Jedna vaše faktura je po splatnosti a vy chcete odběrateli připomenout, že má zaplatit.",
+      "steps": [
+        "Otevřete Faktury a vyfiltrujte Po splatnosti. Vyberte jednu fakturu a opište si číslo, odběratele, částku a datum splatnosti.",
+        "Spočítejte, kolik dní je faktura po splatnosti.",
+        "Otevřete Nastavení, sekci E-maily, a přečtěte si šablonu upomínky. Které údaje do ní aplikace doplňuje sama?",
+        "Na papír napište vlastní upomínku: oslovení, číslo faktury, částka, původní splatnost, číslo účtu, nový termín (třeba za 7 dní) a podpis.",
+        "Vyměňte si upomínku se sousedem. Chybí v ní něco? Je zdvořilá?"
+      ],
+      "check": "Hotovo, když má žák napsanou zdvořilou upomínku se všemi šesti údaji a umí říct, co udělá, když odběratel nezaplatí ani pak."
+    },
+    "worksheet": [
+      {
+        "q": "Co znamená, že faktura je po splatnosti?",
+        "a": "Uplynul den splatnosti a faktura pořád není zaplacená."
+      },
+      {
+        "q": "Které údaje musí upomínka obsahovat, aby odběratel věděl, co a jak zaplatit?",
+        "a": "Číslo faktury, částku, původní splatnost, platební údaje a nový termín."
+      },
+      {
+        "q": "Je věta „Okamžitě zaplaťte, nebo uvidíte!“ vhodná? Proč?",
+        "a": "Není. Je výhrůžná, zhorší vztah se zákazníkem a nic nevysvětluje."
+      },
+      {
+        "q": "Upomínka nepomohla. Co může dodavatel udělat dál?",
+        "a": "Zavolat, poslat druhou upomínku, domluvit splátky a nakonec dluh vymáhat."
+      },
+      {
+        "q": "Dostane dodavatel za pozdní platbu něco navíc?",
+        "a": "Mezi podnikateli může žádat úrok z prodlení a nejméně 1 200 Kč jako náklady na vymáhání."
+      }
+    ],
+    "law": [
+      {
+        "label": "Občanský zákoník č. 89/2012 Sb., § 1970 – úrok z prodlení",
+        "href": "https://www.zakonyprolidi.cz/cs/2012-89#p1970"
+      },
+      {
+        "label": "Nařízení vlády č. 351/2013 Sb. – výše úroku a minimální náklady",
+        "href": "https://www.zakonyprolidi.cz/cs/2013-351"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Automatické upomínky",
+        "href": "/features/payment-reminders"
+      },
+      {
+        "label": "Kalkulačka data splatnosti",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "vat-return-control-statement": {
+    "name": "Přiznání k DPH a kontrolní hlášení",
+    "title": "Přiznání k DPH a kontrolní hlášení: z dokladů do formuláře",
+    "lead": "Studenti z vydaných a přijatých faktur jednoho měsíce sestaví na papíře přiznání k DPH, roztřídí doklady do oddílů kontrolního hlášení a spočítají, co hrozí za pozdní podání.",
+    "metaDescription": "Lekce pro VOŠ, VŠ a kurzy: zdaňovací období, lhůty, výpočet daňové povinnosti, oddíly kontrolního hlášení a pokuty podle § 101h zákona o DPH. Úkol v demu a pracovní list s řešením.",
+    "goals": [
+      "Určit zdaňovací období plátce a lhůtu pro podání přiznání a kontrolního hlášení.",
+      "Spočítat daň na výstupu, nárok na odpočet a výslednou daňovou povinnost.",
+      "Zařadit doklad do správného oddílu kontrolního hlášení.",
+      "Vysvětlit, kdy a jak vysoká pokuta za kontrolní hlášení hrozí."
+    ],
+    "teacherNotes": [
+      "Zdaňovacím obdobím je kalendářní měsíc (§ 99 zákona o DPH). Čtvrtletí si může zvolit plátce s obratem do 15 000 000 Kč, který není nespolehlivým plátcem ani členem skupiny, pokud to oznámí do konce ledna; neplatí to v roce registrace a v roce následujícím (§ 99a).",
+      "Přiznání se podává do 25 dnů po skončení zdaňovacího období (§ 136 odst. 4 daňového řádu) a jen elektronicky (§ 101a zákona o DPH). Kontrolní hlášení podává právnická osoba vždy za měsíc do 25 dnů po jeho skončení, fyzická osoba ve lhůtě pro přiznání (§ 101e). Lhůtu nelze prodloužit.",
+      "Pokuty podle § 101h odst. 1: 1 000 Kč za podání po lhůtě bez výzvy, 10 000 Kč za podání až v náhradní lhůtě po výzvě, 30 000 Kč, když plátce na výzvu hlášení nezmění, nedoplní nebo nepotvrdí, a 50 000 Kč, když nepodá vůbec. Pokuty b) až d) se snižují na polovinu mimo jiné u fyzických osob a u čtvrtletních plátců (odst. 2). První pozdní podání podle písm. a) v kalendářním roce se nepokutuje (§ 101j).",
+      "Hranice 10 000 Kč včetně DPH pro rozdělení oddílů A.4/A.5 a B.2/B.3 vychází z pokynů k formuláři, ne přímo ze zákona. Řádky přiznání: daň na výstupu 21 % a 12 % na ř. 1 a 2, odpočet na ř. 40 a 41.",
+      "Demo je Lipová stezka s.r.o., měsíční plátce. Export přiznání a kontrolního hlášení je XML soubor pro EPO; ve třídním režimu se nestahuje, studenti počítají na papíře. Učitel může export ukázat ve veřejném demu."
+    ],
+    "timeline": [
+      {
+        "min": "0–8",
+        "text": "Výklad: zdaňovací období, lhůty, elektronické podání."
+      },
+      {
+        "min": "8–15",
+        "text": "Struktura přiznání a kontrolního hlášení na projektoru."
+      },
+      {
+        "min": "15–35",
+        "text": "Úkol v demu: doklady za minulý měsíc, zápis přijaté faktury, výpočet a třídění do oddílů."
+      },
+      {
+        "min": "35–42",
+        "text": "Pracovní list: výpočet a pokuty."
+      },
+      {
+        "min": "42–45",
+        "text": "Shrnutí: co se děje, když se kontrolní hlášení nepodá."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Zdaňovací období",
+        "body": "Měsíc, nebo za podmínek § 99a čtvrtletí. Za každé období plátce podá přiznání a zaplatí daň do 25 dnů po jeho konci."
+      },
+      {
+        "title": "Daň na výstupu a odpočet",
+        "body": "Daň z vydaných faktur plátce odvádí, daň z přijatých faktur si odečte. Rozdíl je vlastní daňová povinnost, záporný rozdíl nadměrný odpočet."
+      },
+      {
+        "title": "Kontrolní hlášení",
+        "body": "Seznam jednotlivých dokladů, ze kterých přiznání vychází. Finanční správa podle něj páruje dodavatele a odběratele a hledá doklady, které jedna strana přiznala a druhá ne."
+      },
+      {
+        "title": "Oddíly",
+        "body": "A.4 vydané doklady nad 10 000 Kč včetně DPH, A.5 ostatní vydané souhrnně; B.2 přijaté nad 10 000 Kč, B.3 ostatní přijaté souhrnně; A.1 a B.1 plnění v režimu přenesení daňové povinnosti."
+      },
+      {
+        "title": "Nárok na odpočet",
+        "body": "Vzniká až s daňovým dokladem (§ 73 odst. 1). Uplatnit ho lze nejpozději v přiznání za období, které skončí do konce druhého kalendářního roku po roce, kdy nárok vznikl."
+      }
+    ],
+    "task": {
+      "intro": "Jste účetní Lipové stezky s.r.o. a připravujete podklady k přiznání za minulý měsíc.",
+      "steps": [
+        "Otevřete Faktury a vyfiltrujte vystavené faktury s DUZP v minulém měsíci. Sepište základ a DPH podle sazeb.",
+        "Otevřete Výdaje, klikněte na Nový výdaj a zapište přijatou fakturu: dodavatel Kancelář Plus s.r.o., popis Pronájem zasedačky, částka s DPH 14 520 Kč, sazba DPH 21 %, DUZP v minulém měsíci, číslo dokladu FV-2026-118.",
+        "Sepište DPH ze všech přijatých dokladů s DUZP v minulém měsíci. Doklad s přenesenou daňovou povinností od Montáže Kraus si označte zvlášť.",
+        "Na papíře spočítejte daň na výstupu, odpočet a výslednou daňovou povinnost.",
+        "Každý doklad zařaďte do oddílu kontrolního hlášení (A.4, A.5, B.2, B.3, nebo B.1) a zdůvodněte proč.",
+        "Napište termín, do kdy musí firma přiznání i kontrolní hlášení podat a daň zaplatit."
+      ],
+      "check": "Hotovo, když student má zapsaný nový výdaj, správně spočítanou daňovou povinnost za měsíc a každý doklad zařazený do správného oddílu kontrolního hlášení se zdůvodněním."
+    },
+    "worksheet": [
+      {
+        "q": "Plátce má za srpen 2026 vydané faktury se základem 100 000 Kč při 21 % a 20 000 Kč při 12 %, přijaté se základem 50 000 Kč při 21 %. Jaká je daňová povinnost?",
+        "a": "Výstup 21 000 + 2 400 = 23 400 Kč, odpočet 10 500 Kč, k zaplacení 12 900 Kč."
+      },
+      {
+        "q": "Do kdy musí s.r.o. podat přiznání a kontrolní hlášení za srpen 2026?",
+        "a": "Do 25. září 2026, obojí elektronicky."
+      },
+      {
+        "q": "Do kterého oddílu patří přijatá faktura na 14 520 Kč včetně DPH od tuzemského plátce?",
+        "a": "B.2, protože je nad 10 000 Kč včetně DPH. Uvádí se jednotlivě s DIČ dodavatele a evidenčním číslem dokladu."
+      },
+      {
+        "q": "S.r.o. podala kontrolní hlášení o tři dny později, poprvé v roce a bez výzvy. Jaká pokuta jí hrozí?",
+        "a": "Žádná. Pokuta 1 000 Kč podle § 101h odst. 1 písm. a) se za první takové prodlení v kalendářním roce neuloží (§ 101j)."
+      },
+      {
+        "q": "Firma se zaregistrovala k DPH v březnu 2026. Může od ledna 2027 podávat čtvrtletně?",
+        "a": "Ne. Čtvrtletí nelze zvolit v roce registrace ani v roce následujícím, nejdříve tedy od roku 2028."
+      },
+      {
+        "q": "Faktura s DUZP v roce 2026 přišla pozdě. Do kdy lze odpočet uplatnit nejpozději?",
+        "a": "V přiznání za období, které skončí nejpozději 31. prosince 2028."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 99 a 99a – zdaňovací období",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p99a"
+      },
+      {
+        "label": "Zákon o DPH, § 101a – elektronické podání",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101a"
+      },
+      {
+        "label": "Zákon o DPH, § 101e – lhůty kontrolního hlášení",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101e"
+      },
+      {
+        "label": "Zákon o DPH, § 101h a 101j – pokuty za kontrolní hlášení",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101h"
+      },
+      {
+        "label": "Zákon o DPH, § 73 – podmínky nároku na odpočet",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p73"
+      },
+      {
+        "label": "Daňový řád č. 280/2009 Sb., § 136 – lhůta pro přiznání",
+        "href": "https://www.zakonyprolidi.cz/cs/2009-280#p136"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Průvodce: přiznání k DPH a kontrolní hlášení",
+        "href": "/guides/vat-return-control-statement"
+      },
+      {
+        "label": "Přiznání k DPH a kontrolní hlášení pro EPO",
+        "href": "/features/vat-returns-epo"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "bank-matching-expenses": {
+    "name": "Párování banky a výdaje",
+    "title": "Párování bankovních plateb a evidence výdajů",
+    "lead": "Studenti projdou bankovní pohyby firmy, spárují platby s fakturami, rozhodnou, co s nedoplatkem, platbou bez variabilního symbolu a poplatkem banky, a zapíšou přijatý doklad mezi výdaje.",
+    "metaDescription": "Lekce pro VOŠ, VŠ a kurzy: párování plateb podle variabilního symbolu, nedoplatky, platby bez VS, bankovní poplatky a evidence přijatých dokladů. Úkol v demu a pracovní list s řešením.",
+    "goals": [
+      "Spárovat příchozí platbu s fakturou a vysvětlit, podle čeho se páruje.",
+      "Rozhodnout, co dělat s nedoplatkem, platbou bez VS a bankovním poplatkem.",
+      "Zapsat přijatý doklad mezi výdaje se správným základem a DPH.",
+      "Vysvětlit, proč a jak dlouho se doklady archivují."
+    ],
+    "teacherNotes": [
+      "Bankovní pohyby v demu jsou připravené: jedna platba přišla jen z 90 %, záloha 2 500 Kč od Petra Novotného přišla bez variabilního symbolu a poplatek bance −199 Kč je už ignorovaný. Každý z nich vede k jiné otázce.",
+      "Ignorovat poplatek v párování neznamená, že zmizí z účetnictví. Účetní ho zaúčtuje z bankovního výpisu jako náklad; jen se nepáruje s žádnou fakturou.",
+      "Odpočet DPH z přijatého dokladu vyžaduje daňový doklad (§ 73 odst. 1 písm. a) zákona o DPH). Plátce daňové doklady uchovává 10 let od konce zdaňovacího období, ve kterém se plnění uskutečnilo (§ 35 odst. 2). Účetní záznamy se archivují nejméně 5 let, účetní závěrka 10 let (§ 31 zákona o účetnictví).",
+      "Ve třídním režimu není napojená skutečná banka. Pracuje se s ukázkovými pohyby a párování se dělá ručně."
+    ],
+    "timeline": [
+      {
+        "min": "0–8",
+        "text": "Výklad: výpis, variabilní symbol, co znamená spárovat."
+      },
+      {
+        "min": "8–28",
+        "text": "Úkol v demu: projít Banku a vyřešit každý nespárovaný pohyb."
+      },
+      {
+        "min": "28–37",
+        "text": "Zápis přijatého dokladu mezi výdaje a kontrola v přehledu."
+      },
+      {
+        "min": "37–43",
+        "text": "Pracovní list."
+      },
+      {
+        "min": "43–45",
+        "text": "Shrnutí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Párování",
+        "body": "Přiřazení bankovního pohybu k faktuře. Aplikace navrhuje podle variabilního symbolu a částky; po spárování se faktura označí jako zaplacená nebo částečně zaplacená."
+      },
+      {
+        "title": "Nedoplatek",
+        "body": "Přišlo méně, než zní faktura. Faktura zůstane částečně uhrazená a zbytek se upomíná, pokud nejde o dohodnutou slevu, kterou je pak potřeba řádně zachytit dokladem."
+      },
+      {
+        "title": "Platba bez VS",
+        "body": "Bez variabilního symbolu se platba nedá spárovat automaticky. Podle jména plátce a částky se dohledá, ke které faktuře nebo záloze patří, případně se plátce zeptá."
+      },
+      {
+        "title": "Výdaj a přijatý doklad",
+        "body": "Každý nákup firmy se zapisuje s dokladem: dodavatel, datum, částka, sazba DPH a číslo dokladu. Plátce z něj uplatní odpočet DPH."
+      }
+    ],
+    "task": {
+      "intro": "Jste účetní Lipové stezky s.r.o. a na konci měsíce kontrolujete banku a doklady.",
+      "steps": [
+        "Otevřete Banka. Kolik pohybů je ke spárování? Projděte je jeden po druhém.",
+        "Pohyb, který odpovídá faktuře variabilním symbolem i částkou, spárujte: klikněte na Spárovat a vyberte fakturu.",
+        "Najděte platbu, která přišla jen z 90 %. Spárujte ji a podívejte se, jaký stav má teď faktura. Kolik zbývá doplatit?",
+        "Najděte platbu 2 500 Kč od Petra Novotného bez variabilního symbolu. Ke které faktuře nebo záloze podle vás patří? Napište, jak byste to ověřili.",
+        "Najděte ignorovaný poplatek −199 Kč. Proč se nepáruje s fakturou a kde se v účetnictví objeví?",
+        "Otevřete Výdaje, klikněte na Nový výdaj a zapište doklad: dodavatel Papírnictví Pod Lipou, popis Kancelářské potřeby, částka s DPH 6 050 Kč, sazba DPH 21 %, datum dnes, číslo dokladu 2026-0412. Kolik je základ a kolik DPH?",
+        "Najděte v Reportech náklady za tento měsíc a ověřte, že se nový výdaj započítal. Který výdaj je ještě nezaplacený?"
+      ],
+      "check": "Hotovo, když student spáruje platby, u nedoplatku, platby bez VS a poplatku umí říct, co s nimi a proč, a má zapsaný výdaj se základem 5 000 Kč a DPH 1 050 Kč."
+    },
+    "worksheet": [
+      {
+        "q": "Faktura zní na 12 100 Kč, přišlo 10 890 Kč. Kolik je nedoplatek a v jakém stavu faktura zůstane?",
+        "a": "1 210 Kč. Faktura je částečně uhrazená, dokud zbytek nepřijde."
+      },
+      {
+        "q": "Podle čeho se platba nejčastěji páruje s fakturou?",
+        "a": "Podle variabilního symbolu, kterým bývá číslo faktury, a podle částky."
+      },
+      {
+        "q": "Doklad zní na 6 050 Kč včetně DPH 21 %. Jaký je základ a DPH?",
+        "a": "Základ 5 000 Kč, DPH 1 050 Kč."
+      },
+      {
+        "q": "Přišla platba bez variabilního symbolu. Co uděláte?",
+        "a": "Podle jména plátce, částky a data ji přiřadím k faktuře nebo záloze; když to nejde jednoznačně, zeptám se plátce. Nehádám."
+      },
+      {
+        "q": "Jak dlouho musí plátce uchovávat daňové doklady?",
+        "a": "10 let od konce zdaňovacího období, ve kterém se plnění uskutečnilo (§ 35 zákona o DPH)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 73 – podmínky nároku na odpočet",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p73"
+      },
+      {
+        "label": "Zákon o DPH, § 35 – uchovávání daňových dokladů",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p35"
+      },
+      {
+        "label": "Zákon o účetnictví č. 563/1991 Sb., § 11 – účetní doklad",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      },
+      {
+        "label": "Zákon o účetnictví, § 31 – úschova účetních záznamů",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p31"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Párování plateb",
+        "href": "/features/payment-matching"
+      },
+      {
+        "label": "Evidence výdajů",
+        "href": "/features/expense-tracking"
+      },
+      {
+        "label": "Částečné platby",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "working-with-accountant": {
+    "name": "Spolupráce s účetní",
+    "title": "Spolupráce s účetní: měsíční uzávěrka ve dvojici",
+    "lead": "Studenti ve dvojicích hrají majitele firmy a její účetní. Projdou měsíc, doplní chybějící doklad, vyjasní nejasné platby a sepíšou předávací protokol.",
+    "metaDescription": "Lekce pro VOŠ, VŠ a kurzy: co účetní od podnikatele potřebuje, lhůty DPH, chybějící doklady, oprávnění v týmu a předávací protokol. Úkol v demu pro dvojice a pracovní list s řešením.",
+    "goals": [
+      "Vyjmenovat, co účetní potřebuje k uzavření měsíce a do kdy.",
+      "Najít a doplnit chybějící doklad.",
+      "Vysvětlit, proč má účetní v aplikaci jiná oprávnění než majitel.",
+      "Sepsat předávací protokol k dokladům za měsíc."
+    ],
+    "teacherNotes": [
+      "Studenti pracují ve dvojicích. Jeden si spustí demo s rolí Majitel, druhý s rolí Účetní. Každý má vlastní kopii stejné firmy, takže si zjištění předávají ústně a na papíře, stejně jako v praxi.",
+      "Účetní v demu vidí doklady, DPH, exporty a přehledy, ale nesahá na nastavení firmy, tým ani předplatné. Ve vlastním účtu se role nastavuje v Nastavení, Tým. Ve třídním režimu nikoho nezvete.",
+      "Termíny, které účetní hlídá: přiznání k DPH do 25 dnů po skončení zdaňovacího období (§ 136 odst. 4 daňového řádu) a kontrolní hlášení s.r.o. každý měsíc do 25 dnů (§ 101e zákona o DPH). Proto si účetní doklady obvykle vyžádá do 10. až 15. dne následujícího měsíce.",
+      "Doklad musí mít náležitosti podle § 11 zákona o účetnictví. Za správnost dokladů odpovídá firma, ne účetní: účetní dokládá, co dostane. Účetní záznamy se archivují nejméně 5 let (§ 31), daňové doklady plátce 10 let (§ 35 zákona o DPH)."
+    ],
+    "timeline": [
+      {
+        "min": "0–7",
+        "text": "Výklad: co dělá účetní, co dělá majitel a kde to drhne."
+      },
+      {
+        "min": "7–30",
+        "text": "Úkol v demu ve dvojicích: kontrola měsíce, chybějící doklad, otázky k bance."
+      },
+      {
+        "min": "30–40",
+        "text": "Předávací protokol a pracovní list."
+      },
+      {
+        "min": "40–45",
+        "text": "Shrnutí: tři věci, které účetní ušetří nejvíc času."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Měsíční uzávěrka",
+        "body": "Účetní za měsíc zkontroluje, že ke každému pohybu na účtu je doklad a ke každému dokladu platba, a připraví podklady k DPH."
+      },
+      {
+        "title": "Chybějící doklad",
+        "body": "Platba odešla, ale doklad k ní chybí. Bez dokladu ji nelze zaúčtovat jako náklad a plátce si z ní neuplatní DPH."
+      },
+      {
+        "title": "Role a oprávnění",
+        "body": "Účetní potřebuje doklady, banku a exporty. Nastavení firmy, tým a předplatné zůstávají majiteli, aby omylem nikdo nezměnil údaje na fakturách."
+      },
+      {
+        "title": "Předávací protokol",
+        "body": "Seznam toho, co majitel za měsíc předal: počet vydaných a přijatých dokladů, výpisy, nejasné platby a otázky. Obě strany pak vědí, co chybí."
+      }
+    ],
+    "task": {
+      "intro": "Lipová stezka s.r.o. uzavírá měsíc. Jeden z dvojice je majitel, druhý účetní.",
+      "steps": [
+        "Účetní: otevřete Banka a sepište pohyby, které nejsou spárované. Ke každému napište otázku pro majitele.",
+        "Účetní: v Výdajích najděte nezaplacené výdaje a výdaje bez čísla dokladu. Zapište je do seznamu otázek.",
+        "Majitel: odpovězte na otázky. Jeden doklad „jste našli v autě“: otevřete Výdaje, Nový výdaj a zapište dodavatel Autoservis Brázda, popis Výměna pneumatik, částka s DPH 8 470 Kč, sazba 21 %, číslo dokladu 2026-077.",
+        "Účetní: otevřete Nastavení a zkuste změnit Fakturační údaje firmy. Co se stane? Proč to tak je?",
+        "Spolu: sepište na papír předávací protokol za měsíc: počet vydaných faktur, počet přijatých dokladů, nespárované platby, doplněné doklady a otevřené otázky. Podepište ho oba."
+      ],
+      "check": "Hotovo, když dvojice má zapsaný doplněný výdaj, seznam otázek k bance s odpověďmi a podepsaný předávací protokol a umí vysvětlit, proč účetní nemění nastavení firmy."
+    },
+    "worksheet": [
+      {
+        "q": "Do kdy musí s.r.o. podat kontrolní hlášení za březen? Proč chce účetní doklady dřív?",
+        "a": "Do 25. dubna. Účetní potřebuje čas doklady zkontrolovat, zaúčtovat a vyřešit dotazy, proto je chce zhruba do 10. až 15. dubna."
+      },
+      {
+        "q": "Z účtu odešlo 8 470 Kč a doklad chybí. Co to znamená pro firmu?",
+        "a": "Platbu nelze zaúčtovat jako náklad podloženě a plátce z ní neuplatní odpočet DPH, dokud doklad nemá."
+      },
+      {
+        "q": "Proč účetní v aplikaci nemění údaje firmy ani tým?",
+        "a": "Údaje firmy jdou na každou fakturu a tým určuje, kdo má přístup k datům. To je odpovědnost majitele."
+      },
+      {
+        "q": "Co patří do předávacího protokolu?",
+        "a": "Za jaké období, počty vydaných a přijatých dokladů, výpisy, nespárované platby, doplněné doklady a otevřené otázky, datum a podpisy."
+      },
+      {
+        "q": "Kdo odpovídá za to, že doklady jsou úplné a pravdivé?",
+        "a": "Firma, tedy majitel nebo statutární orgán. Účetní zpracuje to, co dostane."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o účetnictví č. 563/1991 Sb., § 11 – účetní doklad",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p11"
+      },
+      {
+        "label": "Zákon o účetnictví, § 31 – úschova účetních záznamů",
+        "href": "https://www.zakonyprolidi.cz/cs/1991-563#p31"
+      },
+      {
+        "label": "Zákon o DPH č. 235/2004 Sb., § 101e – lhůty kontrolního hlášení",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p101e"
+      },
+      {
+        "label": "Zákon o DPH, § 35 – uchovávání daňových dokladů",
+        "href": "https://www.zakonyprolidi.cz/cs/2004-235#p35"
+      },
+      {
+        "label": "Daňový řád č. 280/2009 Sb., § 136 – lhůta pro přiznání",
+        "href": "https://www.zakonyprolidi.cz/cs/2009-280#p136"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Tým a role",
+        "href": "/features/team-and-roles"
+      },
+      {
+        "label": "Export pro účetní",
+        "href": "/features/accountant-export"
+      },
+      {
+        "label": "Párování plateb",
+        "href": "/features/payment-matching"
+      }
+    ]
   }
 }
