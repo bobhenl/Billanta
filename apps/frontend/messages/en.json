@@ -6983,6 +6983,14 @@
       "insufficient_credits": "You don’t have enough credits for this plan.",
       "other_plan_running": "Credits already pay for a different plan. Only the running one can be extended.",
       "ico_required": "The partner programme needs the company ID (Settings → Company)."
+    },
+    "nudge": {
+      "title": "Your first invoice got paid. Pass Billanta on",
+      "body": "Send the link to someone who runs a business. They get {welcome, plural, one {# credit} other {# credits}} when they sign up, and you get {reward, plural, one {# credit} other {# credits}} once they pay for a plan for the first time. One credit is 1 CZK off a subscription.",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "more": "How referrals work",
+      "dismiss": "Hide"
     }
   },
   "partners": {

@@ -9,6 +9,8 @@ import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
 import { normalizeTaxAdvances } from '@faktur/cz-compliance';
 import type { TimeSummary } from '@/lib/time-ui';
 import type { Usage } from '@/lib/usage-defaults';
+import { REFERRAL_REWARDS } from '@/lib/referral';
+import { SITE_URL } from '@/lib/site';
 import { DashboardView } from './dashboard-view';
 import { presetRange } from '@/lib/period-presets';
 import type { DashboardConfig, DashboardSummary, PeriodStats } from './types';
@@ -29,6 +31,7 @@ export default async function DashboardHomePage() {
   let time: TimeSummary | null = null;
   let stats: PeriodStats | null = null;
   let usage: Usage | null = null;
+  let referral: { code: string; link: string; welcome: number; reward: number } | null = null;
   try {
     let tenant, access;
     [summary, config, tenant, access, usage] = await Promise.all([
@@ -43,6 +46,14 @@ export default async function DashboardHomePage() {
     country = tenant?.addressCountry ?? 'CZ';
     profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName) };
     advances = normalizeTaxAdvances(tenant?.taxAdvances);
+    // Only after money has actually come in (last 12 months is close enough to "ever").
+    if ((stats?.current.paidCount ?? 0) > 0) {
+      const overview = await apiFetch<{ code: string; program: keyof typeof REFERRAL_REWARDS; stats: { invited: number } }>('/api/v1/referrals').catch(() => null);
+      if (overview && overview.stats.invited === 0) {
+        const rewards = REFERRAL_REWARDS[overview.program] ?? REFERRAL_REWARDS.friend;
+        referral = { code: overview.code, link: `${SITE_URL}/${locale}/signup?ref=${overview.code}`, ...rewards };
+      }
+    }
     if (!hiddenSections(access).includes('time')) {
       time = await apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null);
     }
@@ -64,5 +75,5 @@ export default async function DashboardHomePage() {
   const session = await auth().catch(() => null);
   const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? null;
 
-  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} />;
+  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} referral={referral} />;
 }

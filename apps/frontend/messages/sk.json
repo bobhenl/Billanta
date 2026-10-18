@@ -6841,6 +6841,14 @@
       "insufficient_credits": "Na tento tarif nemáte dosť kreditov.",
       "other_plan_running": "Kreditmi už máte zaplatený iný tarif. Predĺžiť sa dá len ten bežiaci.",
       "ico_required": "Partnerský program vyžaduje IČO firmy (Nastavenia → Firma)."
+    },
+    "nudge": {
+      "title": "Prvá faktúra je zaplatená. Odporučte Billantu ďalej",
+      "body": "Pošlite odkaz známemu podnikateľovi. Po registrácii dostane {welcome, plural, one {# kredit} few {# kredity} other {# kreditov}} a vy {reward, plural, one {# kredit} few {# kredity} other {# kreditov}}, keď si prvýkrát zaplatí tarif. Kredit = 1 Kč na predplatné.",
+      "copy": "Skopírovať odkaz",
+      "copied": "Skopírované",
+      "more": "Ako odporúčanie funguje",
+      "dismiss": "Skryť"
     }
   },
   "partners": {

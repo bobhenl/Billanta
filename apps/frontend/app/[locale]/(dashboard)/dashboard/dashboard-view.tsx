@@ -76,6 +76,7 @@ import {
   type QuickTile
 } from './types';
 import { PeriodReport } from './period-report';
+import { ReferralNudge } from '@/components/referral-nudge';
 
 const DEFAULT_CONFIG: DashboardConfig = {
   cards: ['revenue_month', 'unpaid', 'overdue', 'expenses_month'],
@@ -151,7 +152,8 @@ export function DashboardView({
   country = 'CZ',
   time = null,
   stats = null,
-  usage = null
+  usage = null,
+  referral = null
 }: {
   summary: DashboardSummary;
   initialConfig: DashboardConfig | null;
@@ -167,6 +169,8 @@ export function DashboardView({
   stats?: PeriodStats | null;
   /** What the company uses: decides the defaults the member hasn't overridden. */
   usage?: Usage | null;
+  /** Invite card after the first paid invoice, while nobody has been invited yet. */
+  referral?: { code: string; link: string; welcome: number; reward: number } | null;
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
@@ -306,6 +310,7 @@ export function DashboardView({
         </section>
       )}
 
+      {referral && <ReferralNudge {...referral} />}
       {time && <TimeCard time={time} />}
       {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile.vatStatus)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
       {(config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
