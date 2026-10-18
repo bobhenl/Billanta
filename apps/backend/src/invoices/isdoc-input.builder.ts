@@ -107,6 +107,9 @@ export function buildIsdocInvoiceInput(
     // DUZP defaults to the issue date (goods/services delivered at invoicing time).
     taxableSupplyDate: (invoice.taxableSupplyDate ?? invoice.issueDate).toISOString().slice(0, 10),
     currency: invoice.currency,
+    // Same home-currency rule as the Pohoda export; SK suppliers keep EUR as local.
+    localCurrency: tenant.addressCountry === "SK" ? "EUR" : "CZK",
+    exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
     supplier: tenantToIsdocParty(tenant),
     customer: contactToIsdocParty(contact),
     lineItems: lineItems.map((item) => {
