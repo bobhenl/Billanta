@@ -51,6 +51,22 @@ describe("mapAresSubjectToContactPrefill", () => {
     expect(result.addressStreet).toBe("Náměstí Míru 1, 120 00 Praha 2");
   });
 
+  it("builds the street of a village without street names from the village part and house number", () => {
+    const result = mapAresSubjectToContactPrefill(
+      makeSubject({
+        sidlo: {
+          textovaAdresa: "Lhota 12, 25001 Kostelec",
+          nazevObce: "Kostelec",
+          nazevCastiObce: "Lhota",
+          cisloDomovni: 12,
+          psc: 25001,
+          kodStatu: "CZ",
+        },
+      }),
+    );
+    expect([result.addressStreet, result.addressCity, result.addressPostalCode]).toEqual(["Lhota 12", "Kostelec", "25001"]);
+  });
+
   it("never fabricates isVatPayer=false from dic presence alone — stays null (unknown) unless ARES explicitly says so", () => {
     const result = mapAresSubjectToContactPrefill(makeSubject({ dic: "CZ27604977", platceDph: undefined }));
     expect(result.isVatPayer).toBeNull();
