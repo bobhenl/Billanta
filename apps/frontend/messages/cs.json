@@ -872,22 +872,27 @@
   },
   "bank": {
     "title": "Banka",
-    "description": "Nahrajte bankovní výpis (CSV) a spárujte příchozí platby s vystavenými fakturami.",
+    "description": "Nahrajte bankovní výpis (camt.053, GPC nebo CSV) a spárujte příchozí platby s vystavenými fakturami.",
     "import": {
       "label": "Import výpisu",
-      "selectFile": "Vybrat CSV soubor",
+      "selectFile": "Vybrat soubor s výpisem",
       "noFileSelected": "Nevybrán žádný soubor",
       "submit": "Nahrát a spárovat",
       "importing": "Nahrávám a párovám…",
-      "formatHint": "CSV výpis z internetového bankovnictví. Stačí sloupce s datem, částkou a měnou.",
+      "formatHint": "Výpis z internetového bankovnictví ve formátu camt.053 (XML), GPC/ABO nebo CSV.",
       "success": "Naimportováno {total} transakcí, {matched} spárováno automaticky.",
-      "invalidFile": "Vyberte prosím soubor ve formátu .csv.",
+      "invalidFile": "Vyberte prosím výpis ve formátu .xml (camt.053), .gpc, .abo nebo .csv.",
       "parseError": "Soubor se nepodařilo zpracovat: {message}",
       "formatHelpLabel": "Jaký soubor nahrát?",
-      "formatHelp": "Nahrajte CSV výpis tak, jak ho stáhnete z internetového bankovnictví. Poznáme běžné exporty českých a slovenských bank (Fio, ČSOB, KB, Raiffeisen, Tatra banka a další): oddělení středníkem i čárkou, datum 31.12.2026 i 2026-12-31 a částky s desetinnou čárkou. Nutné jsou sloupce s datem, částkou a měnou. Variabilní symbol a protiúčet pomáhají se spárováním. Když export vaší banky nepoznáme, upravte soubor podle vzoru.",
-      "sample": "Stáhnout vzorový CSV"
+      "formatHelp": "Nejlépe funguje výpis ve formátu camt.053 (XML) nebo GPC/ABO (.gpc), které nabízí většina českých a slovenských bank. Stáhnete ho v internetovém bankovnictví u výpisů nebo exportu pohybů. Poradíme si i s CSV: poznáme běžné exporty (Fio, ČSOB, KB, Raiffeisen, Tatra banka a další), oddělení středníkem i čárkou, datum 31.12.2026 i 2026-12-31 a částky s desetinnou čárkou. Platby, které už v Billantě jsou (z jiného výpisu nebo z Fio API), poznáme a podruhé je nenahrajeme.",
+      "sample": "Stáhnout vzorový CSV",
+      "successWithDuplicates": "Naimportováno {total} transakcí, {matched} spárováno automaticky. {duplicates, plural, one {# platbu už Billanta měla} few {# platby už Billanta měla} other {# plateb už Billanta měla}}, ty jsme přeskočili.",
+      "errors": {
+        "bank_statement_unknown_format": "Tento formát neznáme. Nahrajte výpis jako camt.053 (XML), GPC/ABO nebo CSV.",
+        "bank_statement_invalid": "Výpis je poškozený nebo neúplný."
+      }
     },
-    "empty": "Zatím zde nejsou žádné bankovní transakce. Nahrajte výpis (CSV) tlačítkem vpravo nahoře.",
+    "empty": "Zatím zde nejsou žádné bankovní transakce. Nahrajte výpis tlačítkem vpravo nahoře.",
     "filterLabel": "Zobrazit",
     "filterAll": "Vše",
     "columns": {
@@ -954,12 +959,13 @@
       "matchedDone": "Spárováno, faktura je uhrazená.",
       "ignoredDone": "Transakce ignorována.",
       "restoredDone": "Transakce vrácena ke spárování.",
-      "actionFailed": "Akce selhala"
+      "actionFailed": "Akce selhala",
+      "message": "Zpráva pro příjemce"
     },
     "connections": {
       "title": "Napojení na banku",
       "hint": "Billanta každou hodinu stáhne nové příchozí platby přímo z banky nebo z PayPalu a sama je spáruje s fakturami podle variabilního symbolu a částky. Spárované faktury se označí jako zaplacené, u PayPalu i se strženým poplatkem. Odchozí platby se nestahují.",
-      "empty": "Zatím žádný účet. Připojte Fio nebo PayPal a platby se budou párovat samy. Z ostatních bank zatím nahrajte CSV výpis.",
+      "empty": "Zatím žádný účet. Připojte Fio nebo PayPal a platby se budou párovat samy. Z ostatních bank nahrajte výpis (camt.053, GPC nebo CSV).",
       "token": "API token z Fio",
       "tokenHint": "V internetovém bankovnictví Fio otevřete Nastavení → API, přidejte token s oprávněním „Pouze sledovat účet“ a zkopírujte ho sem (64 znaků). S takovým tokenem nejde nic zaplatit. Token ukládáme šifrovaně a už ho nikdy nezobrazíme.",
       "tokenPlaceholder": "64 znaků",
@@ -978,7 +984,7 @@
       "resume": "Obnovit",
       "disconnect": "Odpojit účet",
       "disconnectConfirm": "Odpojit účet a smazat uložený token? Už stažené platby zůstanou.",
-      "otherBanks": "Další banky (ČSOB, KB, Česká spořitelna, Raiffeisen…) zatím přes import CSV výpisu, dokud na serveru není zapnuté napojení přes PSD2.",
+      "otherBanks": "Další banky (ČSOB, KB, Česká spořitelna, Raiffeisen…) zatím přes nahrání výpisu (camt.053, GPC nebo CSV), dokud na serveru není zapnuté napojení přes PSD2.",
       "errors": {
         "fio_token_format": "Token musí mít přesně 64 písmen a číslic.",
         "fio_token_invalid": "Fio token odmítlo. Zkontrolujte, že je platný a není zrušený.",
@@ -1002,7 +1008,8 @@
         "paypal_credentials_invalid": "PayPal odmítl Client ID nebo Secret. Zkontrolujte je a zda nepatří do sandboxu.",
         "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin).",
         "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení.",
-        "plan_required": "Tahle funkce patří do placeného tarifu. Vyberte si ho v sekci Tarif a platby."
+        "plan_required": "Tahle funkce patří do placeného tarifu. Vyberte si ho v sekci Tarif a platby.",
+        "history_locked": "Fio vydá pohyby starší než 90 dní jen po silném ověření v internetovém bankovnictví. Příště začneme stahovat od posledních 89 dní."
       },
       "psd2": {
         "hint": "Billanta stahuje nové příchozí platby přímo z banky nebo z PayPalu a sama je páruje s fakturami podle variabilního symbolu a částky. Fio připojíte API tokenem, PayPal údaji své REST aplikace, ostatní banky přes PSD2: přihlásíte se u své banky a udělíte souhlas jen ke čtení účtu (nejvýše na 180 dní, u mnoha bank 90). Banky dovolují jen pár automatických čtení denně, proto se PSD2 účty stahují zhruba každých 6 hodin. Odchozí platby se nestahují a zaplatit přes napojení nejde nic.",
@@ -1055,7 +1062,8 @@
           "title": "PayPal",
           "text": "Přes Client ID a Secret vaší REST aplikace. K faktuře se zapíše i poplatek."
         }
-      }
+      },
+      "syncPending": "Fio jsme připravili. Platby stáhneme při další synchronizaci, zkuste to za 30 sekund."
     },
     "fee": "poplatek {amount}"
   },

@@ -45,6 +45,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
     [t('columns.date'), formatDate(tx.transactionDate, locale)],
     [t('columns.variableSymbol'), tx.variableSymbol],
     [t('detail.account'), tx.counterpartyAccount],
+    [t('detail.message'), tx.message ?? null],
     [t('detail.importFile'), tx.import.filename],
     [t('detail.importedAt'), formatDate(tx.import.importedAt, locale)]
   ];

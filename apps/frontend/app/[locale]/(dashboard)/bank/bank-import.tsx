@@ -7,7 +7,11 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
 
-/** "Nahrát výpis" — posts the CSV through `/api/bank/import`, then refreshes the list. */
+/** What the backend parses: CSV, camt.053 XML and GPC/ABO. */
+const STATEMENT_EXTENSIONS = ['.csv', '.xml', '.gpc', '.abo'];
+const STATEMENT_ERRORS = ['bank_statement_unknown_format', 'bank_statement_invalid'];
+
+/** "Nahrát výpis" – posts the statement through `/api/bank/import`, then refreshes the list. */
 export function BankImport() {
   const t = useTranslations('bank.import');
   const router = useRouter();
@@ -15,7 +19,8 @@ export function BankImport() {
   const [busy, setBusy] = useState(false);
 
   async function upload(file: File) {
-    if (!file.name.toLowerCase().endsWith('.csv')) {
+    const name = file.name.toLowerCase();
+    if (!STATEMENT_EXTENSIONS.some((ext) => name.endsWith(ext))) {
       toast({ text: t('invalidFile'), tone: 'err' });
       return;
     }
@@ -24,13 +29,28 @@ export function BankImport() {
       const body = new FormData();
       body.set('file', file);
       const res = await fetch('/api/bank/import', { method: 'POST', body });
-      const json = (await res.json().catch(() => ({}))) as { summary?: { total: number; matched: number }; message?: unknown };
+      const json = (await res.json().catch(() => ({}))) as {
+        summary?: { total: number; matched: number; duplicates?: number };
+        message?: unknown;
+        errors?: unknown;
+      };
       if (!res.ok || !json.summary) {
-        const message = Array.isArray(json.message) ? json.message.join(', ') : String(json.message ?? `HTTP ${res.status}`);
+        const code = typeof json.message === 'string' && STATEMENT_ERRORS.includes(json.message) ? json.message : null;
+        // Row-level problems (CSV and camt/GPC alike) come in `errors`; a plain code alone gets its own text.
+        const details = Array.isArray(json.errors) ? json.errors.slice(0, 5).join(', ') : null;
+        const message = code
+          ? [t(`errors.${code}`), details].filter(Boolean).join(' ')
+          : Array.isArray(json.message)
+            ? json.message.join(', ')
+            : String(json.message ?? `HTTP ${res.status}`);
         toast({ text: t('parseError', { message }), tone: 'err' });
         return;
       }
-      toast({ text: t('success', json.summary), tone: 'ok' });
+      const { total, matched, duplicates = 0 } = json.summary;
+      toast({
+        text: duplicates > 0 ? t('successWithDuplicates', { total, matched, duplicates }) : t('success', { total, matched }),
+        tone: 'ok'
+      });
       router.refresh();
     } finally {
       setBusy(false);
@@ -43,7 +63,7 @@ export function BankImport() {
       <input
         ref={input}
         type="file"
-        accept=".csv,text/csv"
+        accept=".csv,.xml,.gpc,.abo,text/csv,application/xml,text/xml"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
