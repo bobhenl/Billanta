@@ -8521,6 +8521,8 @@
       }
     },
     "picker": {
+      "countryTitle": "Country",
+      "countryHint": "The country sets the currency, VAT rates, registries and how documents look.",
       "dataTitle": "Data",
       "filled": "With sample documents",
       "empty": "Empty company",

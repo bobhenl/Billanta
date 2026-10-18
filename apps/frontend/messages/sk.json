@@ -8428,6 +8428,8 @@
       }
     },
     "picker": {
+      "countryTitle": "Krajina",
+      "countryHint": "Krajina určuje menu, sadzby DPH, registre a podobu dokladov.",
       "dataTitle": "Dáta",
       "filled": "S ukážkovými dokladmi",
       "empty": "Prázdna firma",

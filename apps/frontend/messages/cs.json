@@ -8522,6 +8522,8 @@
       }
     },
     "picker": {
+      "countryTitle": "Země",
+      "countryHint": "Země určuje měnu, sazby DPH, registry a podobu dokladů.",
       "dataTitle": "Data",
       "filled": "S ukázkovými doklady",
       "empty": "Prázdná firma",
