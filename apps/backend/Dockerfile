@@ -70,12 +70,11 @@ ENV NODE_ENV=production
 WORKDIR /repo
 
 COPY --from=prod-deps /repo/node_modules ./node_modules
-# No packages/cz-compliance/node_modules copy: that package declares zero
-# runtime `dependencies` (only devDependencies — typescript, vitest, neither
-# needed at runtime), so `pnpm install --prod` never creates a
-# node_modules dir for it at all (verified: COPYing it fails the build with
-# "not found" otherwise). Its compiled dist/*.js has no external runtime
-# imports to resolve.
+# cz-compliance has a runtime dependency (bysquare for PAY by square), and
+# pnpm resolves it from the package's own node_modules (symlinks into the
+# root .pnpm store copied above). Without this the backend fails at startup
+# with ERR_MODULE_NOT_FOUND.
+COPY --from=prod-deps /repo/packages/cz-compliance/node_modules ./packages/cz-compliance/node_modules
 COPY --from=prod-deps /repo/apps/backend/node_modules ./apps/backend/node_modules
 
 COPY --from=build /repo/packages/cz-compliance/package.json ./packages/cz-compliance/package.json
