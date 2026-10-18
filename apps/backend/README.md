@@ -365,7 +365,7 @@ RLS for anything else.
 
 - **Account e-mails** (password reset, sign-in e-mail change) are queued by
   the frontend through the SECURITY DEFINER `enqueue_account_email()`
-  (migration `0059_account_email_outbox.sql`). They have no tenant
+  (migration `0062_account_email_outbox.sql`). They have no tenant
   (`tenant_id` NULL, invisible to every tenant context), are always
   transactional, are claimed before tenant mail, and die as `expired` once
   `expires_at` (the link's lifetime) has passed. The daily sending caps in
