@@ -17,7 +17,7 @@ import { ContactActions } from './contact-actions';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-type ContactDetail = Contact & { aresVerifiedAt: string | null; createdAt?: string; portalLink?: string | null };
+type ContactDetail = Contact & { aresVerifiedAt: string | null; createdAt?: string; portalLink?: string | null; portalLinkDefault?: string | null; portalSlug?: string | null };
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('contacts.detail');
@@ -207,7 +207,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
               </div>
             </dl>
           </section>
-          <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} />
+          <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} defaultLink={contact.portalLinkDefault ?? null} slug={contact.portalSlug ?? null} />
           {contact.ico && (
             <a
               href={`https://ares.gov.cz/ekonomicke-subjekty?ico=${contact.ico}`}

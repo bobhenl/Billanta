@@ -412,6 +412,13 @@
       "when": 1792901100000,
       "tag": "0058_data_box_id",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1792901200000,
+      "tag": "0059_custom_link_slugs",
+      "breakpoints": true
     }
   ]
 }

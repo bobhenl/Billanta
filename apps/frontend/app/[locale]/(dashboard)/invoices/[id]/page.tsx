@@ -25,6 +25,7 @@ import { lawUrl } from '@faktur/cz-compliance';
 import { AttachmentsPanel, type Attachment } from './attachments-panel';
 import { InvoiceActions } from './invoice-actions';
 import { BuyerDetailsRequest } from './buyer-details-request';
+import { PublicLinkPanel } from './public-link-panel';
 
 /** A rule reference such as "§29/1c ZDPH", linked to the law text when lawUrl knows it. */
 function LawRef({ rule }: { rule?: string }) {
@@ -202,6 +203,14 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           sentAt={invoice.sentAt}
           editedAfterSend={editedAfterSend}
         />
+        {invoice.invoiceNumber && detail.links?.public && (
+          <PublicLinkPanel
+            id={invoice.id}
+            link={detail.links.public}
+            defaultLink={detail.links.publicDefault ?? detail.links.public}
+            slug={invoice.publicSlug ?? null}
+          />
+        )}
         {(invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
           <BuyerDetailsRequest
             id={invoice.id}

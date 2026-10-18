@@ -124,7 +124,7 @@ export class InvoiceRemindersRepository {
       const cooldownCutoff = new Date(Date.now() - rules.intervalDays * 24 * 60 * 60 * 1000);
 
       const rows = await db
-        .select({ invoice: schema.invoices, contactEmail: schema.contacts.email, contactName: schema.contacts.legalName, contactIco: schema.contacts.ico, contactPortalToken: schema.contacts.portalToken, contactPortalKey: schema.contacts.portalKey })
+        .select({ invoice: schema.invoices, contactEmail: schema.contacts.email, contactName: schema.contacts.legalName, contactIco: schema.contacts.ico, contactPortalToken: schema.contacts.portalToken, contactPortalKey: schema.contacts.portalKey, contactPortalSlug: schema.contacts.portalSlug })
         .from(schema.invoices)
         .leftJoin(schema.contacts, eq(schema.invoices.contactId, schema.contacts.id))
         .where(
@@ -150,7 +150,7 @@ export class InvoiceRemindersRepository {
         // Variables as on the document: its supplier/buyer snapshot when it has one.
         const docTenant = tenant ? applySellerSnapshot(tenant, row.invoice.sellerSnapshot) : tenant;
         const buyer = row.contactName
-          ? applyBuyerSnapshot({ legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken, portalKey: row.contactPortalKey }, row.invoice.buyerSnapshot)
+          ? applyBuyerSnapshot({ legalName: row.contactName, ico: row.contactIco ?? null, portalToken: row.contactPortalToken, portalKey: row.contactPortalKey, portalSlug: row.contactPortalSlug }, row.invoice.buyerSnapshot)
           : null;
         const vars = templateValues(docTenant, row.invoice, buyer);
         const custom = emailCustomizationOf(emailPrefsOf(tenant?.emailPrefs), "reminder", tenant, buyer?.legalName ?? undefined, vars);

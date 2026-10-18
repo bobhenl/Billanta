@@ -38,6 +38,7 @@ import { InvoiceImportService } from "./invoice-import.service";
 import { InvoicesService } from "./invoices.service";
 import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
 import { BuyerDetailsService } from "./buyer-details.service";
+import { customSlugSchema } from "../public-links/public-link";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
 
@@ -58,6 +59,8 @@ class BitfakturaImportDto extends createZodDto(
     sellerIco: z.string().regex(/^\d{8}$/).optional(),
   }),
 ) {}
+
+class PublicSlugDto extends createZodDto(z.object({ slug: customSlugSchema })) {}
 
 class RefreshPartiesDto extends createZodDto(
   z.object({
@@ -242,6 +245,13 @@ export class InvoicesController {
   @ApiOperation({ summary: "Issue a new secret client link for the document (the old link stops working)" })
   rotatePublicLink(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.invoicesService.rotatePublicToken(req.tenantDb!, id);
+  }
+
+  @Patch(":id/public-link")
+  @UseGuards(CombinedAuthGuard)
+  @ApiOperation({ summary: "Set or clear the custom readable name in front of the client link's key (cosmetic; the key stays the secret)" })
+  setPublicSlug(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PublicSlugDto) {
+    return this.invoicesService.setPublicSlug(req.tenantDb!, id, dto.slug);
   }
 
   @Post(":id/buyer-details-request")

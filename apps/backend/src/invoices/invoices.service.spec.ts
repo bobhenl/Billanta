@@ -750,3 +750,33 @@ describe("InvoicesService.latestDuplicateTemplate", () => {
     await expect(service.latestDuplicateTemplate(db as never)).rejects.toBeInstanceOf(NotFoundException);
   });
 });
+
+describe("InvoicesService.setPublicSlug", () => {
+  const KEY = "k3Fq9Xa2Lm7P";
+  const tenant = { companyName: "Firma s.r.o.", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "number" } };
+  const setup = (invoice: ReturnType<typeof makeInvoice>, updated: Record<string, unknown> = invoice) => {
+    const audit = { record: vi.fn(async () => undefined) };
+    const service = new InvoicesService({} as EmailService, {} as InvoicePdfService, undefined, undefined, audit as never);
+    const select = vi.fn(() => makeSelectChain([tenant])).mockReturnValueOnce(makeSelectChain([invoice]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
+    return { service, audit, update, db: { select, update } as never };
+  };
+
+  it("stores the name, logs old and new, and returns the link with it in front of the same key", async () => {
+    const invoice = makeInvoice({ publicKey: KEY, publicSlug: null });
+    const { service, audit, update, db } = setup(invoice, { ...invoice, publicSlug: "web-redesign" });
+    const result = await service.setPublicSlug(db, "inv-1", "web-redesign");
+    expect((update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0]).toMatchObject({ publicSlug: "web-redesign" });
+    // Only the name: the key and the token are the secret and stay.
+    expect(Object.keys((update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0])).not.toContain("publicKey");
+    expect(audit.record).toHaveBeenCalledWith(db, "tenant-1", expect.objectContaining({ action: "link_renamed", changes: [{ field: "publicSlug", from: null, to: "web-redesign" }] }));
+    expect(result).toEqual({ id: "inv-1", publicSlug: "web-redesign", link: `web-redesign-${KEY}`, defaultLink: `2026-0001-${KEY}` });
+  });
+
+  it("writes and logs nothing when the name is unchanged", async () => {
+    const { service, audit, update, db } = setup(makeInvoice({ publicKey: KEY, publicSlug: "web" }));
+    expect((await service.setPublicSlug(db, "inv-1", "web")).link).toBe(`web-${KEY}`);
+    expect(update).not.toHaveBeenCalled();
+    expect(audit.record).not.toHaveBeenCalled();
+  });
+});

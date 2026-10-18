@@ -10,6 +10,7 @@ type PortalRow = { customer_name: string; company_name: string; profile_slug: st
 type PortalDocumentRow = {
   public_token: string;
   public_key: string | null;
+  public_slug: string | null;
   invoice_number: string | null;
   document_type: string;
   status: string;
@@ -76,7 +77,7 @@ export class ClientPortalService {
       const payable = (r.document_type === "invoice" || r.document_type === "proforma") && r.status === "issued";
       const balance = payable ? Math.max(0, Math.round((total - amountPaid) * 100) / 100) : 0;
       return {
-        token: invoiceLinkOf(linkTenant, { publicKey: r.public_key, publicToken: r.public_token, invoiceNumber: r.invoice_number }),
+        token: invoiceLinkOf(linkTenant, { publicKey: r.public_key, publicSlug: r.public_slug, publicToken: r.public_token, invoiceNumber: r.invoice_number }),
         number: r.invoice_number,
         documentType: r.document_type,
         status: r.status,

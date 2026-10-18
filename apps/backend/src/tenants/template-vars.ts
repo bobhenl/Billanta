@@ -104,8 +104,8 @@ export function clientPortalUrlOf(link: string): string {
  */
 export function templateValues(
   tenant: (Pick<TenantRow, "companyName" | "ico" | "dic" | "email" | "phone" | "website" | "addressStreet" | "addressCity" | "addressPostalCode" | "bankAccountNumber" | "bankAccountBankCode" | "bankAccountIban" | "templateVars"> & LinkTenant) | undefined,
-  invoice?: (Pick<InvoiceRow, "invoiceNumber" | "variableSymbol" | "issueDate" | "dueDate" | "publicToken"> & { publicKey?: string | null }) | null,
-  contact?: (Pick<ContactRow, "legalName" | "ico"> & { portalToken?: string | null; portalKey?: string | null }) | null,
+  invoice?: (Pick<InvoiceRow, "invoiceNumber" | "variableSymbol" | "issueDate" | "dueDate" | "publicToken"> & { publicKey?: string | null; publicSlug?: string | null }) | null,
+  contact?: (Pick<ContactRow, "legalName" | "ico"> & { portalToken?: string | null; portalKey?: string | null; portalSlug?: string | null }) | null,
   now: Date = new Date(),
 ): Record<string, string> {
   const own = Object.fromEntries(templateVarsOf(tenant?.templateVars).map((v) => [v.key, v.value]));

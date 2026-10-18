@@ -1988,7 +1988,8 @@
         "paidFromSettings": "Predvyplnené z mesačných preddavkov vo Fakturačných údajoch. Môžete prepísať.",
         "uniformRate": "Cudzie meny sú prepočítané jednotným kurzom za rok {year} (priemer kurzov ČNB ku koncu mesiacov). Zmeníte to v Nastaveniach → Formulár faktúry.",
         "titleSk": "Ročný odhad dane a odvodov (SZČO)",
-        "hintSk": "Vypočíta daň z príjmov, zdravotné a sociálne poistenie podľa slovenských pravidiel z uhradených faktúr a výdavkov za rok, v eurách."
+        "hintSk": "Vypočíta daň z príjmov, zdravotné a sociálne poistenie podľa slovenských pravidiel z uhradených faktúr a výdavkov za rok, v eurách.",
+        "modes": {}
       },
       "epo": {
         "title": "Ako podať priznanie, kontrolné a súhrnné hlásenie (CZ)",
@@ -6368,7 +6369,8 @@
         "buyer_details_requested": "poslal(a) odberateľovi na doplnenie údajov",
         "buyer_details_submitted": "doplnil(a) fakturačné údaje k",
         "buyer_details_cancelled": "zrušil(a) žiadosť o údaje odberateľa k",
-        "profile_order": "vytvoril(a) objednávkou z verejného profilu koncept"
+        "profile_order": "vytvoril(a) objednávkou z verejného profilu koncept",
+        "link_renamed": "premenoval(a) verejný odkaz"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -6479,7 +6481,8 @@
       "archivedPdfs": "Uložené pôvodné PDF",
       "skippedRows": "Preskočené riadky",
       "numberFormat": "Formát čísla",
-      "nextNumber": "Ďalšie číslo"
+      "nextNumber": "Ďalšie číslo",
+      "publicSlug": "Názov odkazu"
     },
     "values": {
       "invoice": "Faktúra",
@@ -7610,5 +7613,18 @@
       "paidSocialHint": "Sociálne poistné zaplatené počas roka. Znižuje základ dane.",
       "paidHealthHint": "Preddavky na zdravotné poistenie zaplatené počas roka. Znižujú základ dane a odpočítajú sa v ročnom zúčtovaní."
     }
+  },
+  "linkName": {
+    "title": "Odkaz pre zákazníka",
+    "label": "Vlastný názov odkazu",
+    "placeholder": "napr. web-redesign",
+    "hint": "Len pre lepšiu čitateľnosť. Odkaz otvára iba kľúč na konci, preto skôr poslané odkazy naďalej fungujú. Prázdne pole vráti predvolený tvar.",
+    "save": "Uložiť",
+    "saved": "Názov odkazu je uložený",
+    "cleared": "Odkaz má opäť predvolený tvar",
+    "invalid": "Použite písmená, číslice alebo pomlčky.",
+    "failed": "Uloženie sa nepodarilo",
+    "copy": "Kopírovať",
+    "copied": "Odkaz je skopírovaný"
   }
 }

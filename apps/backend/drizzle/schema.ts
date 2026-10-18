@@ -460,6 +460,10 @@ export const contacts = pgTable("contacts", {
   // portalToken, which stays valid for links sent before. Set and cleared with
   // portalToken. Unique index in migration 0057.
   portalKey: text("portal_key"),
+  // A name the user picked for the portal link instead of the customer's
+  // name (/c/{slug}-{key}). Cosmetic like the rest of the prefix, so it is
+  // not unique. Migration 0058.
+  portalSlug: text("portal_slug"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -545,6 +549,9 @@ export const invoices = pgTable(
     // ~71 bits; public-links/public-link.ts). Only the key is looked up, the
     // prefix is cosmetic. Old /i/{publicToken} links keep working.
     publicKey: text("public_key").default(sql`gen_public_key()`),
+    // The user's own name for this link (/i/web-redesign-{key}), replacing the
+    // prefix from Settings → Faktury. Cosmetic and not unique. Migration 0058.
+    publicSlug: text("public_slug"),
     // Set when the invoice is actually emailed/delivered to the contact;
     // null means "never sent" (e.g. still a draft, or issued but not yet
     // dispatched). Distinct from `issuedAt` — an invoice can be issued

@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import {
   buyerDetailsLinkOf,
   clientPortalLinkOf,
+  CUSTOM_SLUG_MAX,
+  customSlugOf,
+  customSlugSchema,
   documentPrefix,
   invoiceLinkOf,
   newShortKey,
@@ -140,5 +143,73 @@ describe("resolving a link to the uuid token", () => {
     const db = fakeDb(UUID);
     expect(await resolvePortalToken(db as never, "not a link")).toBeNull();
     expect(db.execute).not.toHaveBeenCalled();
+  });
+
+  it("looks up only the key behind a custom name", async () => {
+    const db = fakeDb(UUID);
+    expect(await resolveInvoiceToken(db as never, `web-redesign-${KEY}`)).toBe(UUID);
+    expect(JSON.stringify(db.execute.mock.calls[0][0])).not.toContain("redesign");
+  });
+});
+
+describe("custom link names", () => {
+  const tenant = { companyName: "Vejtom s.r.o.", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "company_number" } };
+  const none = { ...tenant, invoiceFormPrefs: { publicLinkPrefix: "none" } };
+  const parse = (value: unknown) => customSlugSchema.safeParse(value);
+
+  it("normalises what the user types: lower case, no diacritics, single dashes, at most 40", () => {
+    expect(customSlugOf("Web Redesign")).toBe("web-redesign");
+    expect(customSlugOf("  Účetnictví – Říjen 2026!! ")).toBe("ucetnictvi-rijen-2026");
+    expect(customSlugOf("x".repeat(60))).toHaveLength(CUSTOM_SLUG_MAX);
+    expect(customSlugOf("ab ".repeat(30))).not.toMatch(/-$/);
+  });
+
+  it("refuses a name that would read as the head of a legacy UUID link", () => {
+    expect(customSlugOf("deadbeef-dead-beef-dead")).toBeNull();
+    expect(customSlugOf("deadbeef-dead-beef-dead-x")).toBe("deadbeef-dead-beef-dead-x");
+  });
+
+  it("clears on null or blank, rejects text with nothing usable, and caps the raw input", () => {
+    expect(parse(null)).toEqual({ success: true, data: null });
+    expect(parse("   ")).toEqual({ success: true, data: null });
+    expect(parse("Web Redesign")).toEqual({ success: true, data: "web-redesign" });
+    const bad = parse("§§§");
+    expect(bad.success).toBe(false);
+    expect(bad.error?.issues[0]?.message).toBe("invalid_slug");
+    expect(parse("a".repeat(201)).success).toBe(false);
+    expect(parse(42).success).toBe(false);
+  });
+
+  it("wins over the company setting for /i/, /d/ and /c/, even when the setting is 'none'", () => {
+    const invoice = { publicKey: KEY, publicToken: UUID, invoiceNumber: "2026-0012", publicSlug: "web-redesign" };
+    expect(invoiceLinkOf(tenant, invoice)).toBe(`web-redesign-${KEY}`);
+    expect(invoiceLinkOf(none, invoice)).toBe(`web-redesign-${KEY}`);
+    expect(buyerDetailsLinkOf(tenant, invoice, KEY)).toBe(`web-redesign-${KEY}`);
+    const contact = { portalKey: KEY, portalToken: UUID, legalName: "Novák a syn", portalSlug: "acme-projekty" };
+    expect(clientPortalLinkOf(tenant, contact)).toBe(`acme-projekty-${KEY}`);
+    expect(clientPortalLinkOf(none, contact)).toBe(`acme-projekty-${KEY}`);
+  });
+
+  it("falls back to the setting when the name is empty or unusable", () => {
+    for (const publicSlug of [null, "", "§§§"]) {
+      expect(invoiceLinkOf(tenant, { publicKey: KEY, publicToken: UUID, invoiceNumber: "2026-0012", publicSlug })).toBe(`vejtom-s-r-o-2026-0012-${KEY}`);
+    }
+    expect(clientPortalLinkOf(tenant, { portalKey: KEY, portalToken: UUID, legalName: "Novák", portalSlug: null })).toBe(`novak-${KEY}`);
+  });
+
+  it("never replaces the key or the legacy UUID: a name is only decoration", () => {
+    expect(invoiceLinkOf(tenant, { publicKey: null, publicToken: UUID, invoiceNumber: "1", publicSlug: "web" })).toBe(UUID);
+    expect(buyerDetailsLinkOf(tenant, { publicSlug: "web" }, UUID)).toBe(UUID);
+    expect(clientPortalLinkOf(tenant, { portalKey: KEY, portalToken: null, portalSlug: "web" })).toBeNull();
+  });
+
+  it("parses back to each link's own key, so two invoices with one name never collide", () => {
+    const other = "Zz9Yy8Xx7Ww6";
+    const a = invoiceLinkOf(tenant, { publicKey: KEY, publicToken: UUID, publicSlug: "web-redesign" });
+    const b = invoiceLinkOf(tenant, { publicKey: other, publicToken: UUID, publicSlug: "web-redesign" });
+    expect(parseLinkSegment(a)).toEqual({ kind: "key", value: KEY });
+    expect(parseLinkSegment(b)).toEqual({ kind: "key", value: other });
+    // The name alone opens nothing.
+    expect(parseLinkSegment("web-redesign")).toBeNull();
   });
 });

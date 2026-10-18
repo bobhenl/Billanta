@@ -25,6 +25,7 @@ import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { COMPANY_REGISTRIES, ContactsService, registryPartOf, type CompanyRegistry } from "./contacts.service";
 import { AresLookupDto } from "./dto/ares-lookup.dto";
 import { CreateContactDto } from "./dto/create-contact.dto";
+import { PortalSlugDto } from "./dto/portal-slug.dto";
 import { StarContactDto } from "./dto/star-contact.dto";
 import { UpdateContactDto } from "./dto/update-contact.dto";
 
@@ -110,6 +111,12 @@ export class ContactsController {
   @ApiOperation({ summary: "Turn on the customer's client portal, or issue a new link (the old one stops working)" })
   enablePortal(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     return this.contactsService.setPortal(req.tenantDb!, id, true);
+  }
+
+  @Patch(":id/portal")
+  @ApiOperation({ summary: "Set or clear the custom readable name in front of the portal link's key (cosmetic; the key stays the secret)" })
+  setPortalSlug(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PortalSlugDto) {
+    return this.contactsService.setPortalSlug(req.tenantDb!, id, dto.slug);
   }
 
   @Delete(":id/portal")

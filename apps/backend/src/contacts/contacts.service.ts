@@ -193,9 +193,10 @@ export class ContactsService {
 
   async findOne(db: TenantDb, id: string) {
     const rows = await db.select().from(schema.contacts).where(eq(schema.contacts.id, id)).limit(1);
-    if (!rows[0]?.portalToken) return rows.map((r) => ({ ...r, portalLink: null }));
+    if (!rows[0]?.portalToken) return rows.map((r) => ({ ...r, portalLink: null, portalLinkDefault: null }));
     const tenant = await this.linkTenant(db, rows[0].tenantId);
-    return rows.map((r) => ({ ...r, portalLink: clientPortalLinkOf(tenant, r) }));
+    // The default form too, so the custom-name editor can preview clearing it.
+    return rows.map((r) => ({ ...r, portalLink: clientPortalLinkOf(tenant, r), portalLinkDefault: clientPortalLinkOf(tenant, { ...r, portalSlug: null }) }));
   }
 
   /** What the readable prefix of a customer's portal link needs (Settings → Faktury). */
@@ -268,6 +269,22 @@ export class ContactsService {
       .returning();
     if (!row) throw new NotFoundException("Contact not found");
     return { portalToken: row.portalToken, portalLink: clientPortalLinkOf(await this.linkTenant(db, row.tenantId), row) };
+  }
+
+  /**
+   * The user's own name in front of the portal key instead of the customer's
+   * name (null goes back to the default). Kept when the portal is renewed or
+   * turned off: it is decoration, not part of the secret.
+   */
+  async setPortalSlug(db: TenantDb, id: string, slug: string | null) {
+    const [row] = await db
+      .update(schema.contacts)
+      .set({ portalSlug: slug, updatedAt: new Date() })
+      .where(eq(schema.contacts.id, id))
+      .returning();
+    if (!row) throw new NotFoundException("Contact not found");
+    const tenant = await this.linkTenant(db, row.tenantId);
+    return { portalSlug: row.portalSlug, portalLink: clientPortalLinkOf(tenant, row), portalLinkDefault: clientPortalLinkOf(tenant, { ...row, portalSlug: null }) };
   }
 
   async create(db: TenantDb, tenantId: string, dto: CreateContactDto) {
