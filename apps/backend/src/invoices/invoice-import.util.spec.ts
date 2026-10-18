@@ -182,11 +182,14 @@ describe("mapInvoiceRows: document details", () => {
     }
   });
 
-  it("puts the buyer's phone on the contact and the contact person into its internal note", () => {
+  it("puts the buyer's phone and contact person on the contact, and the person on the document", () => {
     const [a, b] = map(`${head};Telefon;Kontaktní osoba\nA1;Alfa;1.1.2025;100;121;CZK;+420 777 000 111;Petr Malý\nA2;Beta;1.1.2025;100;121;CZK;;\n`).invoices;
-    expect(a!.customer).toMatchObject({ phone: "+420 777 000 111", internalNote: "Kontaktní osoba: Petr Malý" });
+    expect(a!.customer).toMatchObject({ phone: "+420 777 000 111", contactPerson: "Petr Malý" });
+    expect(a!.customer.internalNote).toBeUndefined();
+    expect(a!.buyerContactPerson).toBe("Petr Malý");
     expect(b!.customer.phone).toBeUndefined();
-    expect(b!.customer.internalNote).toBeUndefined();
+    expect(b!.customer.contactPerson).toBeUndefined();
+    expect(b!.buyerContactPerson).toBeUndefined();
   });
 });
 

@@ -1141,7 +1141,8 @@
       "fromRegistry": "Load from register",
       "phone": "Phone",
       "vatSuggestYes": "The register lists them as a VAT payer. Set to \"Yes\"?",
-      "vatSuggestNo": "The register does not list them as a VAT payer. Set to \"No\"?"
+      "vatSuggestNo": "The register does not list them as a VAT payer. Set to \"No\"?",
+      "contactPerson": "Contact person"
     },
     "detail": {
       "title": "Contact detail",
@@ -1199,7 +1200,8 @@
         "disable": "Turn off",
         "disabled": "Portal is off",
         "failed": "Something went wrong"
-      }
+      },
+      "contactPerson": "Contact person"
     },
     "csv": {
       "import": "Import CSV",
@@ -3989,7 +3991,8 @@
       "aresWillSave": "Will be added to your contacts when you save.",
       "starred": "Starred customers",
       "searchingRegisters": "Searching company registers…",
-      "internalNote": "Internal note on this contact"
+      "internalNote": "Internal note on this contact",
+      "contactPerson": "Contact person"
     },
     "dates": {
       "issue": "Issued",

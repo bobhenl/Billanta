@@ -454,6 +454,9 @@ export const contacts = pgTable("contacts", {
   email: text("email"),
   // Filled in by the customer on a buyer-details link or typed by the user (0054); never printed.
   phone: text("phone"),
+  // The person to deal with at the customer (0065). Copied onto each new
+  // document (invoices.buyer_contact_person), where it can be changed.
+  contactPerson: text("contact_person"),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
@@ -659,6 +662,11 @@ export const invoices = pgTable(
     // 0040: renderers then read the live tenant / contact. See `invoices/party-snapshot.ts`.
     sellerSnapshot: jsonb("seller_snapshot"),
     buyerSnapshot: jsonb("buyer_snapshot"),
+    // "Kontaktní osoba odběratele" printed in the buyer block (0065). Taken from
+    // contacts.contact_person when the customer is picked, then the document's
+    // own value: editing the contact later never changes it, so issued
+    // documents keep what they were issued with without a snapshot key.
+    buyerContactPerson: text("buyer_contact_person"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

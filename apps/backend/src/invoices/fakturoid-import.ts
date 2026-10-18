@@ -442,9 +442,11 @@ export function mapFakturoidSubjects(source: FakturoidSubject[]): ImportedContac
     const key = contact.ico ?? name.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    // full_name is the contact person; contacts keep that in the internal note.
-    const internalNote = [text(raw.full_name, 255), longText(raw.private_note, 2000)].filter(Boolean).join("\n") || null;
-    out.push({ ...contact, ...(internalNote ? { internalNote } : {}) });
+    // full_name is the contact person. Fakturoid invoices carry no such field,
+    // so imported invoices keep none; new ones for this customer get it prefilled.
+    const contactPerson = text(raw.full_name, 255);
+    const internalNote = longText(raw.private_note, 2000);
+    out.push({ ...contact, ...(contactPerson ? { contactPerson } : {}), ...(internalNote ? { internalNote } : {}) });
   }
   return out;
 }

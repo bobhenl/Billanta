@@ -176,8 +176,11 @@ function partyXml(party: IsdocParty, isSupplier: boolean, supplierIsVatPayer: bo
     el('cbc:RegistrationName', escapeXml(party.legalName)) +
     opt('cbc:CompanyID', party.ico) +
     '</cac:PartyLegalEntity>';
+  // UBL ContactType order: ID, Name, Telephone, Telefax, ElectronicMail.
   const contact =
-    party.email || party.phone ? `<cac:Contact>${opt('cbc:Telephone', party.phone)}${opt('cbc:ElectronicMail', party.email)}</cac:Contact>` : '';
+    party.contactName || party.email || party.phone
+      ? `<cac:Contact>${opt('cbc:Name', party.contactName)}${opt('cbc:Telephone', party.phone)}${opt('cbc:ElectronicMail', party.email)}</cac:Contact>`
+      : '';
   return (
     '<cac:Party>' +
     endpoint +

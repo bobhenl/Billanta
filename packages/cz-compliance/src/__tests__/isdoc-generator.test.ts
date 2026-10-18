@@ -326,6 +326,27 @@ describe('generateIsdocXml', () => {
   });
 });
 
+describe('generateIsdocXml buyer contact person', () => {
+  it('writes the contact person as the first element of the customer Contact block', () => {
+    const base = buildRealisticInvoice();
+    const xml = generateIsdocXml(
+      buildRealisticInvoice({ customer: { ...base.customer, contactName: 'Jana <Nováková>', email: 'jana@odberatel.cz' } }),
+    );
+    expect(XMLValidator.validate(xml)).toBe(true);
+    expect(xml).toContain('<Contact><Name>Jana &lt;Nováková&gt;</Name><ElectronicMail>jana@odberatel.cz</ElectronicMail></Contact>');
+    const party = new XMLParser().parse(xml).Invoice.AccountingCustomerParty.Party;
+    expect(party.Contact.Name).toBe('Jana <Nováková>');
+  });
+
+  it('adds a Contact block for the person alone and leaves it out without one', () => {
+    const base = buildRealisticInvoice();
+    const withPerson = generateIsdocXml(buildRealisticInvoice({ customer: { ...base.customer, contactName: 'Jan Novák' } }));
+    expect(new XMLParser().parse(withPerson).Invoice.AccountingCustomerParty.Party.Contact).toEqual({ Name: 'Jan Novák' });
+    const without = new XMLParser().parse(generateIsdocXml(base)).Invoice.AccountingCustomerParty.Party;
+    expect(without.Contact).toBeUndefined();
+  });
+});
+
 describe('generateIsdocXml foreign currency', () => {
   it('writes CZK as local, the invoice currency as foreign and the real rate', () => {
     const xml = generateIsdocXml(buildRealisticInvoice({ currency: 'EUR', exchangeRate: 25 }));

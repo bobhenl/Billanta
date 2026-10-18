@@ -9,6 +9,8 @@ export interface Contact {
   dic: string | null;
   email: string | null;
   phone?: string | null;
+  /** Person to address at the customer; prefills the invoice's own copy. */
+  contactPerson?: string | null;
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;
@@ -104,6 +106,8 @@ export interface InvoiceDraftInput {
   constantSymbol: string;
   specificSymbol: string;
   orderNumber: string;
+  /** The document's own copy, prefilled from the contact. */
+  buyerContactPerson: string;
   language: DocLanguage;
   reverseCharge: boolean;
   /** Kód předmětu plnění (REVERSE_CHARGE_CODES); null = none chosen or not a domestic reverse charge. */
@@ -274,6 +278,8 @@ export interface InvoiceTemplate {
   reverseCharge?: boolean;
   reverseChargeCode?: string | null;
   orderNumber?: string | null;
+  /** undefined = take the contact's contact person. */
+  buyerContactPerson?: string | null;
   issuePlace?: string | null;
   issuedByName?: string | null;
   customFields?: CustomField[];

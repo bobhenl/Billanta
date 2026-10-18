@@ -529,6 +529,7 @@ export class InvoiceImportService {
           ...rate,
           internalNote: inv.internalNote ?? null,
           orderNumber: inv.orderNumber ?? null,
+          buyerContactPerson: inv.buyerContactPerson ?? null,
           issuePlace: inv.issuePlace ?? null,
           issuedByName: inv.issuedByName ?? null,
           reverseCharge: inv.reverseCharge ?? false,

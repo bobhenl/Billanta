@@ -541,6 +541,45 @@ describe("InvoicesService – drafts without a customer", () => {
     expect((values.mock.calls[0] as unknown[])[0]).toMatchObject({ contactId: null, status: "draft" });
   });
 
+  const createWith = async (dto: Record<string, unknown>, contact: Record<string, unknown>) => {
+    const values = vi.fn(() => ({ returning: vi.fn(async () => [{ id: "inv-1", tenantId: "tenant-1", invoiceNumber: null, documentType: "invoice" }]) }));
+    const select = vi.fn(() => makeSelectChain([contact]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { insert: vi.fn(() => ({ values })), select, update: vi.fn() } as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await service.create(db, "tenant-1", { document_type: "invoice", currency: "CZK", line_items: [{ description: "Kurz", quantity: 1, unit_price: 100 }], ...dto } as any);
+    return (values.mock.calls[0] as unknown[])[0] as Record<string, unknown>;
+  };
+
+  it("create() prefills the customer's contact person unless the request says otherwise", async () => {
+    const contact = { id: "contact-1", contactPerson: "Jana Nováková" };
+    expect(await createWith({ contact_id: "contact-1" }, contact)).toMatchObject({ buyerContactPerson: "Jana Nováková" });
+    expect(await createWith({ contact_id: "contact-1", buyer_contact_person: "Petr Malý" }, contact)).toMatchObject({ buyerContactPerson: "Petr Malý" });
+    expect(await createWith({ contact_id: "contact-1", buyer_contact_person: "" }, contact)).toMatchObject({ buyerContactPerson: null });
+  });
+
+  const updateWith = async (invoice: Record<string, unknown>, dto: Record<string, unknown>, contact: Record<string, unknown> = {}) => {
+    const select = vi.fn(() => makeSelectChain([contact])).mockReturnValueOnce(makeSelectChain([invoice]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, update, insert: vi.fn(() => ({ values: vi.fn() })) } as any;
+    await service.update(db, "tenant-1", "inv-1", dto as never);
+    return (update.mock.results[0]!.value.set as ReturnType<typeof vi.fn>).mock.calls[0]![0] as Record<string, unknown>;
+  };
+
+  it("update() takes the new customer's contact person when the customer changes, and leaves it alone otherwise", async () => {
+    const draft = makeInvoice({ status: "draft", invoiceNumber: null, buyerContactPerson: "Starý Kontakt" });
+    expect(await updateWith(draft, { contact_id: "contact-2" }, { id: "contact-2", contactPerson: "Nový Kontakt" })).toMatchObject({
+      buyerContactPerson: "Nový Kontakt",
+    });
+    expect(await updateWith(draft, { contact_id: "contact-2", buyer_contact_person: "Ručně" }, { id: "contact-2", contactPerson: "Nový Kontakt" })).toMatchObject({
+      buyerContactPerson: "Ručně",
+    });
+    expect(await updateWith(draft, { contact_id: "contact-1", note_below: "díky" }, { id: "contact-1", contactPerson: "Nový Kontakt" })).not.toHaveProperty(
+      "buyerContactPerson",
+    );
+  });
+
   it("update() refuses to remove the customer from an issued document", async () => {
     const select = vi.fn().mockReturnValueOnce(makeSelectChain([makeInvoice({ status: "issued" })]));
     const update = vi.fn();

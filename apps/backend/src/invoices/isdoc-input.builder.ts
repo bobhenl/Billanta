@@ -111,7 +111,8 @@ export function buildIsdocInvoiceInput(
     localCurrency: tenant.addressCountry === "SK" ? "EUR" : "CZK",
     exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
     supplier: tenantToIsdocParty(tenant),
-    customer: contactToIsdocParty(contact),
+    // The contact person belongs to the document, not to the contact row.
+    customer: { ...contactToIsdocParty(contact), contactName: invoice.buyerContactPerson ?? undefined },
     lineItems: lineItems.map((item) => {
       const vatRatePercent = invoice.reverseCharge ? 0 : item.vatRate != null ? Number(item.vatRate) : 0;
       // ISDOC has no per-line discount field here; the discounted unit price

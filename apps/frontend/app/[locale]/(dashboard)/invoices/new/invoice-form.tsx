@@ -231,6 +231,14 @@ export function InvoiceForm({
     return contact ? { kind: 'contact', id: contact.id, contact } : null;
   });
   const [customerQuery, setCustomerQuery] = useState('');
+  // The document keeps its own copy: an edit or a copy shows what it had, a fresh pick the contact's.
+  const [buyerContactPerson, setBuyerContactPerson] = useState(
+    () => template?.buyerContactPerson ?? (template?.contact ?? blank?.contact)?.contactPerson ?? ''
+  );
+  const chooseCustomer = (next: SelectedCustomer) => {
+    setCustomer(next);
+    setBuyerContactPerson(next.kind === 'contact' ? (next.contact.contactPerson ?? '') : '');
+  };
   const [registry, setRegistry] = useCompanyRegistry();
   const [issueDate, setIssueDate] = useState(() => isoDate(template?.issueDate) || today());
   const [dueDate, setDueDate] = useState(
@@ -480,9 +488,9 @@ export function InvoiceForm({
 
   const applySuggestion = ({ suggestion, contact, ares }: SuggestionResult) => {
     if (contact) {
-      setCustomer({ kind: 'contact', id: contact.id, contact });
+      chooseCustomer({ kind: 'contact', id: contact.id, contact });
     } else if (ares) {
-      setCustomer({ kind: 'ares', ares });
+      chooseCustomer({ kind: 'ares', ares });
     } else if (suggestion.customer.ico || suggestion.customer.name) {
       // Not found anywhere: put what was said into the search box so the
       // person can pick or create the right company.
@@ -603,6 +611,7 @@ export function InvoiceForm({
           constantSymbol,
           specificSymbol,
           orderNumber,
+          buyerContactPerson,
           language,
           reverseCharge: vatPayer && reverseCharge,
           reverseChargeCode: domesticReverseCharge && isReverseChargeCode(reverseChargeCode) ? reverseChargeCode : null,
@@ -875,7 +884,14 @@ export function InvoiceForm({
                 <X className="h-4 w-4" />
               </button>
             </div>
-          ) : (
+          ) : null}
+          {customer && (
+            <label data-field="buyerContactPerson" className="mt-3 block space-y-1.5">
+              <span className="text-sm font-medium">{t('customer.contactPerson')}</span>
+              <input maxLength={255} value={buyerContactPerson} onChange={(e) => setBuyerContactPerson(e.target.value)} className={field} />
+            </label>
+          )}
+          {customer ? null : (
             <>
               {starred.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5" aria-label={t('customer.starred')}>
@@ -883,7 +899,7 @@ export function InvoiceForm({
                     <button
                       key={contact.id}
                       type="button"
-                      onClick={() => setCustomer({ kind: 'contact', id: contact.id, contact })}
+                      onClick={() => chooseCustomer({ kind: 'contact', id: contact.id, contact })}
                       className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-semibold transition-colors hover:border-primary hover:text-primary"
                     >
                       <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden="true" />
@@ -905,7 +921,7 @@ export function InvoiceForm({
                 fetchMoreGroups={registryFetchers}
                 moreLoadingHint={[t('customer.searchingRegisters'), tLookup('searchingSlovak')]}
                 getKey={(o) => (o.kind === 'contact' ? `c-${o.contact.id}` : `a-${o.ares.addressCountry}-${o.ares.ico ||o.ares.dic || o.ares.regNumber || o.ares.legalName}`)}
-                onPick={(o) => setCustomer(o.kind === 'contact' ? { kind: 'contact', id: o.contact.id, contact: o.contact } : o)}
+                onPick={(o) => chooseCustomer(o.kind === 'contact' ? { kind: 'contact', id: o.contact.id, contact: o.contact } : o)}
                 renderItem={(o) => {
                   const name = o.kind === 'contact' ? o.contact.legalName : o.ares.legalName;
                   const ico = o.kind === 'contact' ? o.contact.ico : o.ares.ico;

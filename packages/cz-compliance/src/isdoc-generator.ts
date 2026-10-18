@@ -64,6 +64,8 @@ export interface IsdocParty {
   email?: string;
   /** Contact phone, used for ISDOC's optional contact block. */
   phone?: string;
+  /** Contact person ("kontaktní osoba"), the `Name` of the contact block. */
+  contactName?: string;
 }
 
 /**
@@ -329,7 +331,12 @@ function buildPartyXml(party: IsdocParty): string {
     ? `<PartyTaxScheme>${xmlElement('CompanyID', escapeXml(party.dic))}${xmlElement('TaxScheme', 'VAT')}</PartyTaxScheme>`
     : '';
 
-  const contactFields = [xmlElementIfDefined('Telephone', party.phone), xmlElementIfDefined('ElectronicMail', party.email)]
+  // ISDOC 6.0.2 `ContactType`: Name (the contact person), Telephone, ElectronicMail, in that order, all optional.
+  const contactFields = [
+    xmlElementIfDefined('Name', party.contactName),
+    xmlElementIfDefined('Telephone', party.phone),
+    xmlElementIfDefined('ElectronicMail', party.email),
+  ]
     .filter(Boolean)
     .join('');
   const contact = contactFields ? `<Contact>${contactFields}</Contact>` : '';

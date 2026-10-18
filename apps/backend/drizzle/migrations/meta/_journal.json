@@ -454,14 +454,21 @@
       "idx": 65,
       "version": "7",
       "when": 1792901800000,
-      "tag": "0065_blog_posts",
+      "tag": "0065_buyer_contact_person",
       "breakpoints": true
     },
     {
       "idx": 66,
       "version": "7",
       "when": 1792901900000,
-      "tag": "0066_home_currency_rates",
+      "tag": "0066_blog_posts",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1792902000000,
+      "tag": "0067_home_currency_rates",
       "breakpoints": true
     }
   ]

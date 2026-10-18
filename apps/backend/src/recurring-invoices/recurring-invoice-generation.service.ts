@@ -138,11 +138,18 @@ export class RecurringInvoiceGenerationService {
     // generated recurring invoice leaves `invoiceNumber` unset, exactly
     // like a manually-created draft — there is no numbering logic to reuse
     // yet, and this job does not invent its own.
+    // Each run takes the customer's current contact person, as a new invoice in the form would.
+    const [contact] = await db
+      .select({ contactPerson: schema.contacts.contactPerson })
+      .from(schema.contacts)
+      .where(eq(schema.contacts.id, template.contactId))
+      .limit(1);
     const [invoice] = await db
       .insert(schema.invoices)
       .values({
         tenantId,
         contactId: template.contactId,
+        buyerContactPerson: contact?.contactPerson ?? null,
         currency: template.currency,
         status: "draft",
         source: "recurring",

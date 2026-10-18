@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ColorDot } from '@/components/color-dot';
-import { ArrowLeft, BadgeCheck, Lock, Mail, MapPin, Phone, Star } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Lock, Mail, MapPin, Phone, Star, UserRound } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -163,6 +163,13 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           <section className="rounded-xl border border-border bg-card p-4 text-sm">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('info')}</h2>
             <dl className="mt-3 space-y-2.5">
+              {contact.contactPerson && (
+                <div className="flex gap-2">
+                  <dt className="sr-only">{t('contactPerson')}</dt>
+                  <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <dd>{contact.contactPerson}</dd>
+                </div>
+              )}
               {address && (
                 <div className="flex gap-2">
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />

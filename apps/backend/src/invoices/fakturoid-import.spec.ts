@@ -336,12 +336,14 @@ describe("mapFakturoidSubjects", () => {
     expect(contacts.map((c) => c.legalName)).toEqual(["Apple Czech s.r.o.", "Slovenská firma s.r.o."]);
     expect(contacts[0]).toMatchObject({ ico: "28897501", dic: "CZ28897501", email: "pokus@test.cz", addressPostalCode: "11000", addressCountry: "CZ" });
     expect(contacts[0]!.internalNote).toBeUndefined();
+    expect(contacts[0]!.contactPerson).toBeUndefined();
     expect(contacts[1]).toMatchObject({
       ico: "12345678",
       dic: "SK2023513470",
       phone: "+421 900 123 456",
       addressCountry: "SK",
-      internalNote: "Ján Kováč\nPlatí vždy pozdě.",
+      contactPerson: "Ján Kováč",
+      internalNote: "Platí vždy pozdě.",
     });
   });
 });

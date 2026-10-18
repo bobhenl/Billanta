@@ -26,6 +26,9 @@ export const invoiceFieldsSchema = z.object({
   related_invoice_id: z.string().uuid().nullish(),
   /** Null/missing = no customer yet: allowed for a draft, issuing still needs one. */
   contact_id: z.string().uuid().nullish(),
+  // "Kontaktní osoba odběratele" for this document. Omitted on create = the
+  // customer's contacts.contact_person; null or "" = none.
+  buyer_contact_person: optionalText(255),
   issue_date: z.coerce.date().optional(),
   due_date: z.coerce.date().nullish(),
   // DUZP; null/omitted = same as the issue date.

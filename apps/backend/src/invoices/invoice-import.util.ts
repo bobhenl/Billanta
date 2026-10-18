@@ -52,7 +52,9 @@ export interface ImportedInvoice {
     addressCountry: string;
     /** `contacts.phone`, for a contact the import creates. */
     phone?: string | null;
-    /** E.g. the contact person; the internal note of a contact the import creates. */
+    /** `contacts.contact_person`, for a contact the import creates. */
+    contactPerson?: string | null;
+    /** The internal note of a contact the import creates. */
     internalNote?: string | null;
   };
   note: string | null;
@@ -73,6 +75,8 @@ export interface ImportedInvoice {
   /** Never printed (the printed note is `note`). */
   internalNote?: string | null;
   orderNumber?: string | null;
+  /** "Kontaktní osoba odběratele" as on the source document (`invoices.buyer_contact_person`). */
+  buyerContactPerson?: string | null;
   issuePlace?: string | null;
   issuedByName?: string | null;
   /** The document's id in the source system, to fetch its original PDF. */
@@ -389,8 +393,7 @@ export function mapInvoiceRows(rows: string[][]): { invoices: ImportedInvoice[];
         addressPostalCode: clean(raw.postalCode, 10),
         addressCountry: normalizeCountry(raw.country) ?? "CZ",
         ...(raw.phone ? { phone: clean(raw.phone, 32) } : {}),
-        // Contacts have no contact-person column; the contact's internal note keeps it.
-        ...(contactPerson ? { internalNote: `Kontaktní osoba: ${contactPerson}` } : {}),
+        ...(contactPerson ? { contactPerson } : {}),
       },
       note: clean(raw.note, 2000),
       lines,
@@ -399,6 +402,7 @@ export function mapInvoiceRows(rows: string[][]): { invoices: ImportedInvoice[];
       ...paymentMethodOf(raw.paymentMethod),
       ...(/^\d{1,4}$/.test(constantSymbol) ? { constantSymbol: constantSymbol.padStart(4, "0") } : {}),
       ...(raw.orderNumber ? { orderNumber: clean(raw.orderNumber, 64) } : {}),
+      ...(contactPerson ? { buyerContactPerson: contactPerson } : {}),
       ...(raw.internalNote ? { internalNote: clean(raw.internalNote, 4000) } : {}),
       ...(raw.issuePlace ? { issuePlace: clean(raw.issuePlace, 255) } : {}),
       ...(raw.issuedBy ? { issuedByName: clean(raw.issuedBy, 255) } : {}),

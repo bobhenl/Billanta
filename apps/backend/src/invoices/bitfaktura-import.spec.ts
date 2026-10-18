@@ -99,6 +99,7 @@ describe("mapBitfakturaInvoices", () => {
         oid: " OBJ-77 ",
         place: "Olomouc",
         seller_person: "Petra Malá",
+        buyer_person: " Jan Dvořák ",
       }),
     ]).invoices;
     expect(inv).toMatchObject({
@@ -107,10 +108,11 @@ describe("mapBitfakturaInvoices", () => {
       orderNumber: "OBJ-77",
       issuePlace: "Olomouc",
       issuedByName: "Petra Malá",
+      buyerContactPerson: "Jan Dvořák",
       variableSymbol: "122026",
     });
     const [bare] = mapBitfakturaInvoices([invoice({ description: "", internal_note: null, oid: "", place: null })]).invoices;
-    expect(bare).toMatchObject({ note: null, internalNote: null, orderNumber: null, issuePlace: null, issuedByName: null });
+    expect(bare).toMatchObject({ note: null, internalNote: null, orderNumber: null, issuePlace: null, issuedByName: null, buyerContactPerson: null });
   });
 
   it("reads reverse charge from the flag, or from the sentence on an invoice without VAT", () => {

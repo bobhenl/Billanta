@@ -253,6 +253,31 @@ describe("InvoicePdfService exchange rate line", () => {
   });
 });
 
+describe("InvoicePdfService buyer contact person", () => {
+  async function printed(invoice: InvoiceRow, contact: ContactRow = makeContact()) {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const lineItems = makeLineItems();
+    await new InvoicePdfService().generate(invoice, contact, makeTenant(), lineItems, computeVatBreakdown(lineItems));
+    const out = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    return out;
+  }
+
+  it("prints the document's contact person in the buyer block, in the document language", async () => {
+    expect(await printed(makeInvoice({ buyerContactPerson: "Jana Nováková" }))).toContain("Kontaktní osoba: Jana Nováková");
+    expect(await printed(makeInvoice({ buyerContactPerson: "Ján Kováč", language: "sk" }))).toContain("Kontaktná osoba: Ján Kováč");
+    expect(await printed(makeInvoice({ buyerContactPerson: "John Smith", language: "en" }))).toContain("Contact person: John Smith");
+  });
+
+  it("uses the document's value, not the contact's current one, and prints nothing when empty", async () => {
+    const contact = makeContact({ contactPerson: "Někdo Jiný" });
+    const out = await printed(makeInvoice({ buyerContactPerson: "Jana Nováková" }), contact);
+    expect(out).toContain("Kontaktní osoba: Jana Nováková");
+    expect(out.some((s) => s.includes("Někdo Jiný"))).toBe(false);
+    expect((await printed(makeInvoice({ buyerContactPerson: null }), contact)).some((s) => s.startsWith("Kontaktní osoba"))).toBe(false);
+  });
+});
+
 describe("mentionsReverseCharge", () => {
   it("spots the reverse-charge wording an imported note already carries", () => {
     expect(mentionsReverseCharge("584611057\r\nDaň odvede zákazník v režimu přenesené daňové povinnosti.")).toBe(true);
