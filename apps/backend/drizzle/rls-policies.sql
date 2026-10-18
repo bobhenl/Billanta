@@ -1317,6 +1317,7 @@ CREATE OR REPLACE FUNCTION get_client_portal_documents(p_portal_token uuid)
 RETURNS TABLE (
   public_token uuid,
   public_key text,
+  public_slug text,
   invoice_number varchar(32),
   document_type text,
   status text,
@@ -1335,6 +1336,7 @@ AS $$
   SELECT
     i.public_token,
     i.public_key,
+    i.public_slug,
     i.invoice_number,
     i.document_type::text,
     i.status::text,

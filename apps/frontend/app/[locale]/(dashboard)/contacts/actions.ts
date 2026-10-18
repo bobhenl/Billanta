@@ -30,6 +30,14 @@ export async function setContactPortal(id: string, enabled: boolean): Promise<Ac
   }
 }
 
+/** The custom name in front of the portal key; null goes back to the customer's name. The key does not change. */
+export async function setContactPortalName(id: string, slug: string | null) {
+  return run<{ portalSlug: string | null; portalLink: string | null; portalLinkDefault: string | null }>(
+    `/api/v1/contacts/${encodeURIComponent(id)}/portal`,
+    json('PATCH', { slug })
+  );
+}
+
 export interface ContactInput {
   legalName?: string;
   ico?: string | null;

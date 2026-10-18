@@ -65,6 +65,11 @@ export async function rotateInvoiceLink(id: string) {
   return run<{ id: string; publicToken: string; link: string }>(`/api/v1/invoices/${id}/public-link/rotate`);
 }
 
+/** The custom name in front of the client link's key; null goes back to the Settings prefix. The key does not change. */
+export async function setInvoiceLinkName(id: string, slug: string | null) {
+  return run<{ id: string; publicSlug: string | null; link: string; defaultLink: string }>(`/api/v1/invoices/${id}/public-link`, json('PATCH', { slug }));
+}
+
 /** Sends the draft to the customer to fill in their own billing details (a fresh /d/{token} link each time). */
 export async function requestBuyerDetails(
   id: string,

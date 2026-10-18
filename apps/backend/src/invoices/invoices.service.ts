@@ -257,6 +257,8 @@ export class InvoicesService {
     const { tenant, contact: buyer } = documentParties(invoice, live ?? {}, contact);
     return {
       public: invoiceLinkOf(tenant, invoice),
+      // The same link without the custom name, so the editor can preview "back to default".
+      publicDefault: invoiceLinkOf(tenant, { ...invoice, publicSlug: null }),
       portal: buyer ? clientPortalLinkOf(tenant, buyer) : null,
       buyerDetails: invoice.buyerDetailsToken ? buyerDetailsLinkOf(tenant, invoice, invoice.buyerDetailsToken) : null,
     };
@@ -776,6 +778,26 @@ export class InvoicesService {
       .returning();
     await this.log(db, invoice, "link_rotated");
     return { id: updated.id, publicToken: updated.publicToken, link: (await this.publicLinks(db, updated)).public };
+  }
+
+  /**
+   * The user's own name in front of the link key (`slug` already normalised
+   * by `customSlugSchema`; null goes back to the Settings prefix). Only the
+   * key is a secret, so links sent with the old name keep opening.
+   */
+  async setPublicSlug(db: TenantDb, id: string, slug: string | null) {
+    const invoice = await this.requireInvoice(db, id);
+    let row = invoice;
+    if ((invoice.publicSlug ?? null) !== slug) {
+      [row] = await db
+        .update(schema.invoices)
+        .set({ publicSlug: slug, updatedAt: new Date() })
+        .where(eq(schema.invoices.id, id))
+        .returning();
+      await this.log(db, invoice, "link_renamed", [{ field: "publicSlug", from: invoice.publicSlug ?? null, to: slug }]);
+    }
+    const links = await this.publicLinks(db, row);
+    return { id: row.id, publicSlug: row.publicSlug, link: links.public, defaultLink: links.publicDefault };
   }
 
   /**

@@ -6388,7 +6388,8 @@
         "buyer_details_requested": "sent to the customer to fill in their details:",
         "buyer_details_submitted": "filled in their billing details for",
         "buyer_details_cancelled": "closed the customer details request for",
-        "profile_order": "created by ordering from the public profile:"
+        "profile_order": "created by ordering from the public profile:",
+        "link_renamed": "renamed the public link"
       },
       "tenant": {
         "updated": "edited the company details",
@@ -6499,7 +6500,8 @@
       "archivedPdfs": "Original PDFs stored",
       "skippedRows": "Skipped rows",
       "numberFormat": "Number format",
-      "nextNumber": "Next number"
+      "nextNumber": "Next number",
+      "publicSlug": "Link name"
     },
     "values": {
       "invoice": "Invoice",
@@ -7572,5 +7574,18 @@
     "changed": "The accountant edited the listing in the meantime. The new version is loaded, please review it again.",
     "failed": "Action failed",
     "withdrawnHint": "The accountant withdrew the listing. You can review it again once they save it."
+  },
+  "linkName": {
+    "title": "Customer link",
+    "label": "Custom link name",
+    "placeholder": "e.g. web-redesign",
+    "hint": "Only for readability. The key at the end is what opens the link, so links you already sent keep working. Leave it empty for the default form.",
+    "save": "Save",
+    "saved": "Link name saved",
+    "cleared": "The link is back to its default form",
+    "invalid": "Use letters, digits or dashes.",
+    "failed": "Could not save",
+    "copy": "Copy",
+    "copied": "Link copied"
   }
 }

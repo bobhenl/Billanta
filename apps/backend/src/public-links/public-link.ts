@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { z } from "zod";
 
 /**
  * Links people send to their customers (/i/ invoice, /c/ client portal,
@@ -65,6 +66,38 @@ export type PublicLinkPrefix = (typeof PUBLIC_LINK_PREFIXES)[number];
 /** The longest prefix we generate, so a link still fits on one line of a text message. */
 export const PREFIX_MAX = 40;
 
+/**
+ * A name the user picked for one invoice's or customer's link, e.g.
+ * `web-redesign` → /i/web-redesign-k3Fq9Xa2Lm7P. It replaces the prefix
+ * from Settings and is just as cosmetic: the key behind it is still the only
+ * thing looked up, so it can repeat across invoices and never makes a link
+ * guessable. Normalised with `slugify`; empty means "use the setting".
+ */
+export const CUSTOM_SLUG_MAX = 40;
+// A slug shaped like the first four groups of a UUID would, with an all-hex
+// key behind it, read as a legacy UUID link and miss the key lookup.
+const UUID_HEAD = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/;
+
+export function customSlugOf(raw: string | null | undefined): string | null {
+  const slug = slugify(raw, CUSTOM_SLUG_MAX);
+  return slug && !UUID_HEAD.test(slug) ? slug : null;
+}
+
+/** Request body field: null or blank clears it; text that slugifies to nothing is `invalid_slug`. */
+export const customSlugSchema = z
+  .string()
+  .max(200)
+  .nullable()
+  .transform((value, ctx) => {
+    if (value === null || !value.trim()) return null;
+    const slug = customSlugOf(value);
+    if (!slug) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "invalid_slug" });
+      return z.NEVER;
+    }
+    return slug;
+  });
+
 /** The tenant columns a link needs; `invoiceFormPrefs.publicLinkPrefix` holds the setting. */
 export type LinkTenant = { companyName?: string | null; publicProfile?: unknown; invoiceFormPrefs?: unknown };
 
@@ -90,28 +123,37 @@ export function documentPrefix(mode: PublicLinkPrefix, invoiceNumber: string | n
 
 const join = (prefix: string, key: string) => (prefix ? `${prefix}-${key}` : key);
 
+type LinkInvoice = { invoiceNumber?: string | null; publicSlug?: string | null };
+
+/** The invoice's own link name when it has one, else the prefix from Settings. */
+function invoicePrefix(tenant: LinkTenant | null | undefined, invoice: LinkInvoice): string {
+  return customSlugOf(invoice.publicSlug) ?? documentPrefix(publicLinkPrefixOf(tenant?.invoiceFormPrefs), invoice.invoiceNumber, companySlugOf(tenant));
+}
+
 /** The path segment after /i/ for an invoice; its UUID when it has no key (rows the migration has not reached). */
 export function invoiceLinkOf(
   tenant: LinkTenant | null | undefined,
-  invoice: { publicKey?: string | null; publicToken: string; invoiceNumber?: string | null },
+  invoice: LinkInvoice & { publicKey?: string | null; publicToken: string },
 ): string {
   if (!invoice.publicKey) return invoice.publicToken;
-  return join(documentPrefix(publicLinkPrefixOf(tenant?.invoiceFormPrefs), invoice.invoiceNumber, companySlugOf(tenant)), invoice.publicKey);
+  return join(invoicePrefix(tenant, invoice), invoice.publicKey);
 }
 
 /** The path segment after /d/. A UUID token from before 0054 stays bare: a prefix would hide its dashes. */
-export function buyerDetailsLinkOf(tenant: LinkTenant | null | undefined, invoice: { invoiceNumber?: string | null }, token: string): string {
+export function buyerDetailsLinkOf(tenant: LinkTenant | null | undefined, invoice: LinkInvoice, token: string): string {
   if (UUID.test(token)) return token;
-  return join(documentPrefix(publicLinkPrefixOf(tenant?.invoiceFormPrefs), invoice.invoiceNumber, companySlugOf(tenant)), token);
+  return join(invoicePrefix(tenant, invoice), token);
 }
 
 /** The path segment after /c/ (the customer's name in front), or null when the portal is off. */
 export function clientPortalLinkOf(
   tenant: LinkTenant | null | undefined,
-  contact: { portalKey?: string | null; portalToken?: string | null; legalName?: string | null },
+  contact: { portalKey?: string | null; portalToken?: string | null; portalSlug?: string | null; legalName?: string | null },
 ): string | null {
   if (!contact.portalToken) return null;
   if (!contact.portalKey) return contact.portalToken;
+  const custom = customSlugOf(contact.portalSlug);
+  if (custom) return join(custom, contact.portalKey);
   const mode = publicLinkPrefixOf(tenant?.invoiceFormPrefs);
   return join(mode === "none" ? "" : slugify(contact.legalName, PREFIX_MAX), contact.portalKey);
 }

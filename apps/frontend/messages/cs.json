@@ -6389,7 +6389,8 @@
         "buyer_details_requested": "poslal(a) odběrateli k doplnění údajů",
         "buyer_details_submitted": "doplnil(a) fakturační údaje k",
         "buyer_details_cancelled": "zrušil(a) žádost o údaje odběratele k",
-        "profile_order": "vytvořil(a) objednávkou z veřejného profilu koncept"
+        "profile_order": "vytvořil(a) objednávkou z veřejného profilu koncept",
+        "link_renamed": "přejmenoval(a) veřejný odkaz"
       },
       "tenant": {
         "updated": "upravil(a) údaje firmy",
@@ -6500,7 +6501,8 @@
       "archivedPdfs": "Uložená původní PDF",
       "skippedRows": "Přeskočené řádky",
       "numberFormat": "Formát čísla",
-      "nextNumber": "Další číslo"
+      "nextNumber": "Další číslo",
+      "publicSlug": "Název odkazu"
     },
     "values": {
       "invoice": "Faktura",
@@ -7573,5 +7575,18 @@
     "changed": "Účetní záznam mezitím upravil. Načetli jsme novou verzi, projděte ji znovu.",
     "failed": "Akce selhala",
     "withdrawnHint": "Účetní záznam stáhl. Znovu ho posoudíte, až ho zase uloží."
+  },
+  "linkName": {
+    "title": "Odkaz pro zákazníka",
+    "label": "Vlastní název odkazu",
+    "placeholder": "např. web-redesign",
+    "hint": "Jen pro čitelnost. Odkaz otevírá jen klíč na konci, takže dříve poslané odkazy dál fungují. Prázdné pole vrátí výchozí tvar.",
+    "save": "Uložit",
+    "saved": "Název odkazu uložen",
+    "cleared": "Odkaz má zase výchozí tvar",
+    "invalid": "Použijte písmena, číslice nebo pomlčky.",
+    "failed": "Uložení se nezdařilo",
+    "copy": "Kopírovat",
+    "copied": "Odkaz zkopírován"
   }
 }
