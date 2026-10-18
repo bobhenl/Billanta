@@ -9,16 +9,31 @@ export interface TypeaheadGroup<T> {
   items: T[];
 }
 
+export type TypeaheadFetcher<T> = (query: string) => Promise<TypeaheadGroup<T>[]>;
+
+/** Joins neighbouring groups with the same label, e.g. Czech and Slovak register hits. */
+function mergeGroups<T>(groups: TypeaheadGroup<T>[]): TypeaheadGroup<T>[] {
+  const out: TypeaheadGroup<T>[] = [];
+  for (const group of groups) {
+    const last = out[out.length - 1];
+    if (last && group.label && last.label === group.label) out[out.length - 1] = { label: last.label, items: [...last.items, ...group.items] };
+    else out.push(group);
+  }
+  return out;
+}
+
 /**
  * Text input with a suggestion list underneath: debounced async lookup,
  * arrow keys + Enter to pick, Escape to close (WAI-ARIA combobox pattern).
  * Used for customers (contacts + ARES), line items (previous invoices) and
  * anywhere else a field can be completed from known data.
  *
- * `fetchGroups` is typically a server action; results for a stale query are
- * dropped so a slow response can never overwrite a newer one. A slower
- * second source (`fetchMoreGroups`, e.g. company registers) runs alongside and
- * its groups are appended when they arrive, so fast results show at once.
+ * Results for a stale query are dropped so a slow response can never
+ * overwrite a newer one. Slower sources (`fetchMoreGroups`, e.g. company
+ * registers, or ARES and then the much slower Slovak RPO) run alongside and
+ * their groups are appended when they arrive, so fast results show at once.
+ * Each source keeps its place in the list, so a late answer never pushes
+ * earlier hits down, and neighbouring groups with the same label are merged.
  */
 export function Typeahead<T>({
   value,
@@ -40,10 +55,10 @@ export function Typeahead<T>({
   value: string;
   onChange: (value: string) => void;
   onPick: (item: T) => void;
-  fetchGroups: (query: string) => Promise<TypeaheadGroup<T>[]>;
-  fetchMoreGroups?: (query: string) => Promise<TypeaheadGroup<T>[]>;
-  /** Shown under the fast results while `fetchMoreGroups` is still running. */
-  moreLoadingHint?: ReactNode;
+  fetchGroups: TypeaheadFetcher<T>;
+  fetchMoreGroups?: TypeaheadFetcher<T> | TypeaheadFetcher<T>[];
+  /** Shown under the results while a `fetchMoreGroups` source is still running; one per source, or one for all. */
+  moreLoadingHint?: ReactNode | ReactNode[];
   renderItem: (item: T) => ReactNode;
   getKey: (item: T) => string;
   placeholder?: string;
@@ -57,13 +72,16 @@ export function Typeahead<T>({
 }) {
   const listId = useId();
   const [fastGroups, setFastGroups] = useState<TypeaheadGroup<T>[]>([]);
-  const [moreGroups, setMoreGroups] = useState<TypeaheadGroup<T>[]>([]);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const groups = [...fastGroups, ...moreGroups];
+  // One slot per `fetchMoreGroups` source; undefined while it is still running.
+  const [moreGroups, setMoreGroups] = useState<(TypeaheadGroup<T>[] | undefined)[]>([]);
+  const groups = mergeGroups([...fastGroups, ...moreGroups.flatMap((g) => g ?? [])]);
+  const pendingMore = moreGroups.findIndex((g) => g === undefined);
+  const loadingMore = pendingMore >= 0;
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [active, setActive] = useState(0);
-  const latest = useRef('');
+  // Bumped per lookup, so a changed refreshKey also drops answers for the same text.
+  const latest = useRef(0);
   // Held in a ref so an inline (re-created every render) fetcher cannot re-trigger the lookup.
   const fetcher = useRef(fetchGroups);
   fetcher.current = fetchGroups;
@@ -79,37 +97,35 @@ export function Typeahead<T>({
       return;
     }
     const q = value.trim();
-    latest.current = q;
+    const run = ++latest.current;
     if (q.length < minChars) {
       setFastGroups([]);
       setMoreGroups([]);
       setLoading(false);
-      setLoadingMore(false);
       return;
     }
     setLoading(true);
     const timer = setTimeout(() => {
       const nonEmpty = (r: TypeaheadGroup<T>[]) => r.filter((g) => g.items.length > 0);
-      setMoreGroups([]);
+      const more = moreFetcher.current;
+      const sources = more ? (Array.isArray(more) ? more : [more]) : [];
+      setMoreGroups(sources.map(() => undefined));
       void fetcher.current(q)
         .catch(() => [])
         .then((result) => {
-          if (latest.current !== q) return;
+          if (latest.current !== run) return;
           setFastGroups(nonEmpty(result));
           setActive(0);
           setLoading(false);
         });
-      const more = moreFetcher.current;
-      if (more) {
-        setLoadingMore(true);
-        void more(q)
+      sources.forEach((source, slot) => {
+        void source(q)
           .catch(() => [])
           .then((result) => {
-            if (latest.current !== q) return;
-            setMoreGroups(nonEmpty(result));
-            setLoadingMore(false);
+            if (latest.current !== run) return;
+            setMoreGroups((prev) => prev.map((g, i) => (i === slot ? nonEmpty(result) : g)));
           });
-      }
+      });
     }, 250);
     return () => clearTimeout(timer);
   }, [value, minChars, refreshKey]);
@@ -123,7 +139,8 @@ export function Typeahead<T>({
   };
 
   const busy = loading || loadingMore;
-  const showList = open && value.trim().length >= minChars && (flat.length > 0 || (busy && moreLoadingHint) || (!busy && emptyHint));
+  const moreHint = Array.isArray(moreLoadingHint) ? moreLoadingHint[pendingMore] : moreLoadingHint;
+  const showList = open && value.trim().length >= minChars && (flat.length > 0 || (busy && moreHint) || (!busy && emptyHint));
   let index = -1;
 
   return (
@@ -203,10 +220,10 @@ export function Typeahead<T>({
                   })}
                 </div>
               ))}
-          {loadingMore && moreLoadingHint && (
+          {loadingMore && moreHint && (
             <div className="flex items-center gap-2 px-3 py-2 text-xs text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-              {moreLoadingHint}
+              {moreHint}
             </div>
           )}
         </div>

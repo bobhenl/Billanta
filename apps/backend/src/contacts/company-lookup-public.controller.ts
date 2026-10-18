@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 import { DailyCap, SlidingWindowLimiter, visitorIp } from "../guest-invoices/guest-limits";
 import type { AresContactPrefill } from "./ares-mapper.util";
-import { COMPANY_REGISTRIES, ContactsService, registryForCountry, type CompanyRegistry } from "./contacts.service";
+import { COMPANY_REGISTRIES, ContactsService, hasSlowPart, registryForCountry, registryPartOf, type CompanyRegistry } from "./contacts.service";
 
 /** One company from a public register, in the shape the public forms fill in. */
 export interface PublicCompanyHit {
@@ -41,29 +41,36 @@ export const toPublicHit = (h: AresContactPrefill): PublicCompanyHit => ({
 @ApiTags("public-company-lookup")
 @Controller("v1/public/company-lookup")
 export class CompanyLookupPublicController {
-  private readonly searchLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 80);
+  // A pause in typing is two requests (the fast and the slow half, see RegistryPart), hence twice the old 80 / 5000.
+  private readonly searchLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 160);
   private readonly vatLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 20);
-  private readonly daily = new DailyCap(Number(process.env.PUBLIC_LOOKUP_DAILY_LIMIT ?? 5000));
+  private readonly daily = new DailyCap(Number(process.env.PUBLIC_LOOKUP_DAILY_LIMIT ?? 10000));
 
   constructor(private readonly contacts: ContactsService) {}
 
   @Get()
-  @ApiOperation({ summary: "Typeahead over public company registers: ?q= (name, IČO or VAT number) and optional ?country= or ?registry=" })
+  @ApiOperation({
+    summary: "Typeahead over public company registers: ?q= (name, IČO or VAT number) and optional ?country= or ?registry=",
+    description: "?part=fast leaves out the slow Slovak name search, ?part=slow returns only it (default: both).",
+  })
   async search(
     @Query("q") q = "",
     @Query("country") country: string | undefined,
     @Query("registry") registry: string | undefined,
+    @Query("part") rawPart: string | undefined,
     @Ip() ip: string,
     @Req() req: Request,
   ): Promise<{ hits: PublicCompanyHit[] }> {
     const query = q.trim().slice(0, 120);
     if (query.length < 2) return { hits: [] };
-    this.take(this.searchLimiter, ip, req);
     const picked: CompanyRegistry =
       registry && (COMPANY_REGISTRIES as readonly string[]).includes(registry) && registry !== "none"
         ? (registry as CompanyRegistry)
         : registryForCountry(country);
-    const hits = await this.contacts.registrySearch(query, picked);
+    const part = registryPartOf(rawPart);
+    if (part === "slow" && !hasSlowPart(query, picked)) return { hits: [] };
+    this.take(this.searchLimiter, ip, req);
+    const hits = await this.contacts.registrySearch(query, picked, part);
     return { hits: hits.slice(0, 8).map(toPublicHit) };
   }
 

@@ -7516,7 +7516,8 @@
     "group": "Z registru",
     "placeholder": "Název firmy, jméno OSVČ nebo IČO",
     "empty": "Nic jsme nenašli. Zkuste IČO nebo jiný tvar názvu.",
-    "ico": "IČO"
+    "ico": "IČO",
+    "searchingSlovak": "Prohledávám i slovenský registr…"
   },
   "vatCheck": {
     "checking": "Ověřuji DIČ…",

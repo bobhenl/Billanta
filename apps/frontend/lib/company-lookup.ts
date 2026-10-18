@@ -1,7 +1,7 @@
 /**
  * Shared shape and helpers for the company-register lookup ("Načíst z
- * registru"). Used by the dashboard forms (through server actions in
- * `company-lookup-actions.ts`) and by public pages without a session
+ * registru"). Used by the dashboard forms (through `/api/contacts/search` and
+ * the actions in `company-lookup-actions.ts`) and by public pages without a session
  * (through `/api/public/company-lookup` or a link-scoped route). No server or
  * client-only imports, so both sides can use it.
  */
@@ -37,6 +37,24 @@ export function registryForCountry(country: string | null | undefined): CompanyR
   if (!c || c === 'CZ') return 'auto';
   if (REGISTRIES.includes(c)) return c as CompanyRegistry;
   return EU.has(c) ? 'EU' : 'auto';
+}
+
+/**
+ * Half of a register search (backend `RegistryPart`). A name in "auto" or
+ * "EU" asks ARES (well under a second) and the Slovak RPO (several seconds),
+ * so typeaheads ask for "fast" and "slow" separately and show ARES hits
+ * without waiting for RPO.
+ */
+export type RegistryPart = 'all' | 'fast' | 'slow';
+
+/**
+ * Whether a query can have a slow half at all. Looser than the backend's
+ * `hasSlowPart` on purpose: a needless request is answered empty at once,
+ * a missing one would lose Slovak hits.
+ */
+export function hasSlowRegistryPart(query: string, registry: CompanyRegistry): boolean {
+  const q = query.trim();
+  return (registry === 'auto' || registry === 'EU') && q.length >= 3 && !/^\d+$/.test(q);
 }
 
 /** The register's own prefill shape (contacts API) to a hit. */

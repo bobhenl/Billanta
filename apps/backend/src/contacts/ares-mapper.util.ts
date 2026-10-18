@@ -55,13 +55,16 @@ function buildStreet(subject: AresSubject): string | null {
     return null;
   }
 
+  let houseNumber = address.cisloDomovni != null ? String(address.cisloDomovni) : "";
+  if (address.cisloOrientacni != null) {
+    houseNumber += `/${address.cisloOrientacni}${address.cisloOrientacniPismeno ?? ""}`;
+  }
   if (address.nazevUlice) {
-    let houseNumber = address.cisloDomovni != null ? String(address.cisloDomovni) : "";
-    if (address.cisloOrientacni != null) {
-      houseNumber += `/${address.cisloOrientacni}${address.cisloOrientacniPismeno ?? ""}`;
-    }
     return houseNumber ? `${address.nazevUlice} ${houseNumber}` : address.nazevUlice;
   }
+  // A village without street names: the address is "Lhota 12". textovaAdresa would put PSČ and town into the street field too.
+  const place = address.nazevCastiObce || address.nazevObce;
+  if (place && houseNumber) return `${place} ${houseNumber}`;
 
   return address.textovaAdresa ?? null;
 }

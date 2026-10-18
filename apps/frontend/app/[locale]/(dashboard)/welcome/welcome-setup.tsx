@@ -9,9 +9,9 @@ import { toast } from '@/components/toaster';
 import { BUSINESS_PRESETS, presetForModules, TOGGLEABLE_MODULES, type ModuleSet, type ToggleableModule } from '@/lib/business-presets';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { Typeahead } from '@/components/typeahead';
-import { registryForCountry } from '@/lib/company-lookup';
+import { fetchContactSearch } from '@/components/company-lookup';
+import { hasSlowRegistryPart, registryForCountry, type RegistryPart } from '@/lib/company-lookup';
 import { cn } from '@/lib/utils';
-import { searchCustomers } from '../invoices/new/actions';
 import type { AresPrefill } from '../invoices/new/types';
 import { updateCompany, updateModules } from '../settings/actions';
 
@@ -39,6 +39,7 @@ export function WelcomeSetup({
 }) {
   const t = useTranslations('welcome');
   const tm = useTranslations('settings.modules');
+  const tLookup = useTranslations('companyLookup');
   const router = useRouter();
   const [query, setQuery] = useState(company.ico);
   const [registry, setRegistry] = useCompanyRegistry();
@@ -49,8 +50,11 @@ export function WelcomeSetup({
   const preset = presetForModules(modules);
 
   // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
-  const fetchCompanies = async (q: string) => {
-    const { ares } = await searchCustomers(q, registry === 'auto' ? registryForCountry(company.country) : registry);
+  // ARES hits at once, the slow Slovak name search appended when it answers.
+  const effectiveRegistry = registry === 'auto' ? registryForCountry(company.country) : registry;
+  const fetchCompanies = (part: RegistryPart) => async (q: string) => {
+    if (part === 'slow' && !hasSlowRegistryPart(q, effectiveRegistry)) return [];
+    const { ares } = await fetchContactSearch(q, effectiveRegistry, part);
     return [{ items: ares }];
   };
 
@@ -117,8 +121,10 @@ export function WelcomeSetup({
             ariaLabel={t('searchLabel')}
             placeholder={t('searchPlaceholder')}
             emptyHint={t('searchEmpty')}
-            fetchGroups={fetchCompanies}
-            getKey={(o) => o.ico || o.dic || o.regNumber || o.legalName}
+            fetchGroups={fetchCompanies('fast')}
+            fetchMoreGroups={fetchCompanies('slow')}
+            moreLoadingHint={tLookup('searchingSlovak')}
+            getKey={(o) => `${o.addressCountry}-${o.ico || o.dic || o.regNumber || o.legalName}`}
             onPick={pick}
             renderItem={(o) => (
               <span className="flex items-center gap-2">

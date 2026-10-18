@@ -18,12 +18,15 @@ export async function GET(request: Request) {
   const registry = search.get('registry');
   if (country && /^[A-Za-z]{2}$/.test(country)) query.set('country', country.toUpperCase());
   if (registry && /^[A-Za-z]{2,5}$/.test(registry)) query.set('registry', registry);
+  const part = search.get('part');
+  if (part === 'fast' || part === 'slow') query.set('part', part);
   const ip = clientIp(request);
   try {
     const upstream = await fetch(`${BACKEND_URL}/api/v1/public/company-lookup?${query}`, {
       headers: ip ? { 'x-guest-ip': ip } : {},
       cache: 'no-store',
-      signal: AbortSignal.timeout(12000)
+      // Above the backend's 12 s RPO timeout, so a slow Slovak answer still gets through.
+      signal: AbortSignal.timeout(15000)
     });
     if (!upstream.ok) return NextResponse.json({ hits: [], error: upstream.status === 429 ? 'rate_limited' : 'failed' }, { status: upstream.status === 429 ? 429 : 200 });
     return new NextResponse(await upstream.text(), { status: 200, headers: { 'content-type': 'application/json' } });
