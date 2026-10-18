@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { Briefcase, Building2, Check, CreditCard, Download, Gift, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
+import { Briefcase, Building2, Check, CreditCard, Download, Gift, Globe, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { signOut, useSession } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -21,7 +21,10 @@ const ITEMS = [
   { key: 'activity', href: '/activity', icon: History },
   { key: 'billing', href: '/billing', icon: CreditCard },
   { key: 'referrals', href: '/settings/referrals', icon: Gift },
-  { key: 'settings', href: '/settings', icon: Settings }
+  { key: 'settings', href: '/settings', icon: Settings },
+  // Logo and "Billanta" lead to the dashboard, as in most apps; the public
+  // site (pricing, calculators, guides) is one click away from here.
+  { key: 'website', href: '/', icon: Globe }
 ] as const;
 
 /**
