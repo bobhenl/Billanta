@@ -32,7 +32,43 @@ http://:8090 {
 		reverse_proxy localhost:3111
 	}
 
-	handle {
+	# Cache-Control, ready for Cloudflare. The rule throughout: only a
+	# response Next.js itself marked static is offered to a shared cache;
+	# everything else stays private.
+
+	# Next.js route handlers send no Cache-Control unless they set one, and
+	# most of them answer for a signed-in user. `?` only fills it in when
+	# missing, so Auth.js and the public routes that chose their own keep it.
+	handle /api/* {
+		header ?Cache-Control "private, no-store"
 		reverse_proxy localhost:3110
+	}
+
+	# Sitemaps and robots.txt are read by crawlers that come back tomorrow:
+	# an hour at the edge, a day served stale while it refreshes (as on
+	# VoxelRank). Only the normal answer is rewritten; an error page says
+	# `private, no-cache, …` and does not match.
+	@crawlerFiles path /sitemap/* /robots.txt
+	handle @crawlerFiles {
+		reverse_proxy localhost:3110 {
+			header_down Cache-Control "^(public, max-age=0, must-revalidate|s-maxage=\d+(, stale-while-revalidate=\d+)?)$" "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
+		}
+	}
+
+	# Static and ISR pages come out of Next as `s-maxage=<revalidate>,
+	# stale-while-revalidate=<a year minus that>`. Passed on as is, an edge
+	# could keep a page for 30 days (the municipality pages) and serve it stale
+	# for a year, long after a deploy has deleted the /_next/static chunks it
+	# links to. Next's own ISR cache already spares the server the renders, so
+	# the edge only needs a short copy: 5 minutes fresh plus 10 stale, and
+	# `max-age=0` so a browser still revalidates (ETag, 304). Dynamic pages
+	# (dashboard, login, search) say `private, no-cache, no-store, …`, and the
+	# middleware marks anything that sets a cookie `private, no-store`; neither
+	# matches, so they pass through untouched. /_next/static keeps Next's own
+	# `public, max-age=31536000, immutable`.
+	handle {
+		reverse_proxy localhost:3110 {
+			header_down Cache-Control "^s-maxage=\d+(, stale-while-revalidate=\d+)?$" "public, max-age=0, s-maxage=300, stale-while-revalidate=600"
+		}
 	}
 }

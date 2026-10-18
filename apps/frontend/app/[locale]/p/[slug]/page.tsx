@@ -1,6 +1,6 @@
 import { Building2, Globe, Mail, MapPin, MessageSquare, Phone, Send, ShoppingCart } from 'lucide-react';
 import type { Metadata } from 'next';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { getPublicProfile, type PublicProfile } from '@/lib/public-profiles';
@@ -11,11 +11,19 @@ import { ProfileOrderForm } from './profile-order-form';
 
 interface Props {
   params: Promise<{ locale: string; slug: string }>;
-  /** `?service=<id>` preselects the order form (the owner's shareable link), `?ask=<id>` the message form. */
-  searchParams?: Promise<{ service?: string | string[]; ask?: string | string[] }>;
 }
 
-const one = (v: string | string[] | undefined) => (typeof v === 'string' && /^[a-z0-9]{6,24}$/.test(v) ? v : null);
+// Rendered on the first visit, then served from the ISR cache like the
+// other public pages. The owner's edits show within a minute, the same
+// window as getPublicProfile's fetch cache. No profile is known at build
+// time; the empty list is what makes Next cache on-demand renders instead
+// of treating the route as dynamic. The `?service=` / `?ask=` preselection
+// is read by the forms on the client, because reading searchParams here
+// would make every visit a fresh server render.
+export const revalidate = 60;
+export function generateStaticParams() {
+  return [];
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, locale } = await params;
@@ -64,14 +72,13 @@ function organizationLd(p: PublicProfile, url: string) {
  * or `<slug>.<NEXT_PUBLIC_PROFILE_DOMAIN>` via middleware. Shows only what
  * the company published in Settings → Veřejný profil; 404 otherwise.
  */
-export default async function PublicProfilePage({ params, searchParams }: Props) {
-  const { slug } = await params;
-  const query = (await searchParams) ?? {};
+export default async function PublicProfilePage({ params }: Props) {
+  const { slug, locale } = await params;
+  setRequestLocale(locale);
   const profile = await getPublicProfile(slug.toLowerCase());
   if (!profile) notFound();
 
   const t = await getTranslations('publicProfile');
-  const locale = await getLocale();
   const country = profile.address?.country ? new Intl.DisplayNames([locale], { type: 'region' }).of(profile.address.country) : null;
   const address = profile.address
     ? [profile.address.street, [profile.address.postalCode, profile.address.city].filter(Boolean).join(' '), profile.address.country !== 'CZ' ? country : null]
@@ -161,14 +168,13 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               services={orderable}
               customItemsAllowed={Boolean(profile.orders?.customItems)}
               currency={profile.orders?.currency ?? 'CZK'}
-              initialServiceId={one(query.service)}
             />
           </section>
         )}
 
         {profile.contactForm && (
           <section id="contact" className="mt-6 scroll-mt-6">
-            <ProfileMessageForm slug={profile.slug} companyName={profile.companyName} services={askable} initialServiceId={one(query.ask)} />
+            <ProfileMessageForm slug={profile.slug} companyName={profile.companyName} services={askable} />
           </section>
         )}
 

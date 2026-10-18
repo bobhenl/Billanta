@@ -13,9 +13,18 @@ export interface PublicPartner {
 }
 
 /**
+ * The footer's partner list is cached for a day, not five minutes. The
+ * footer is on every public page, and a fetch's revalidate caps the ISR
+ * window of the whole page: at 300 s the ~9,000 municipality pages (meant
+ * to keep for 30 days) were re-rendered every five minutes a crawler came
+ * by. A new footer partner showing up a day later is fine.
+ */
+const FOOTER_REVALIDATE = 86400;
+
+/**
  * Active partners from the public backend endpoint, cached for five
- * minutes. An unreachable backend just means no partners on the page (the
- * marketing site must render without it).
+ * minutes (a day for the footer list). An unreachable backend just means
+ * no partners on the page (the marketing site must render without it).
  */
 export async function fetchPartners(opts: { category?: PartnerCategory; footer?: boolean } = {}): Promise<PublicPartner[]> {
   const query = new URLSearchParams();
@@ -23,7 +32,7 @@ export async function fetchPartners(opts: { category?: PartnerCategory; footer?:
   if (opts.footer) query.set('footer', '1');
   try {
     const res = await fetch(`${BACKEND_URL}/api/v1/public/partners${query.size ? `?${query}` : ''}`, {
-      next: { revalidate: 300 },
+      next: { revalidate: opts.footer ? FOOTER_REVALIDATE : 300 },
       signal: AbortSignal.timeout(3000)
     });
     return res.ok ? ((await res.json()) as PublicPartner[]) : [];

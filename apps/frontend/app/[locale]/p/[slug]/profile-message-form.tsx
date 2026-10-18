@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, Loader2, MessageSquare } from 'lucide-react';
 import { buyerInputClass } from '@/components/buyer-fields';
@@ -10,16 +10,19 @@ import { sendProfileMessage } from '@/lib/public-profile-actions';
 export function ProfileMessageForm({
   slug,
   companyName,
-  services,
-  initialServiceId
+  services
 }: {
   slug: string;
   companyName: string;
   services: { id: string; title: string }[];
-  initialServiceId: string | null;
 }) {
   const t = useTranslations('publicProfile.message');
-  const [serviceId, setServiceId] = useState(initialServiceId && services.some((s) => s.id === initialServiceId) ? initialServiceId : '');
+  const [serviceId, setServiceId] = useState('');
+  // `?ask=<id>` is read on the client so the profile page stays static.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('ask');
+    if (id && services.some((s) => s.id === id)) setServiceId(id);
+  }, [services]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
