@@ -29,8 +29,25 @@ const MINIMUMS: Record<'CZ' | 'SK', Period[]> = {
     // Novela: the social minimum back to 35 % of the average wage.
     { from: '2026-07', values: { social: 5005, flat_tax: 9162 } }
   ],
-  // socpoist.sk, vszp.sk (SZČO bez zdravotného postihnutia)
-  SK: [{ from: '2026-01', values: { health: 121.92, social: 303.11 } }]
+  // Povinne poistená SZČO: social = "Spolu" at the minimum base in Sociálna
+  // poisťovňa's yearly tables; health = minimum preddavok bez zdravotného
+  // postihnutia (§ 13 ods. 9 zákona č. 580/2004 Z. z.: 50 % of the average
+  // wage two years earlier × the SZČO rate). Neither changed mid-year.
+  SK: [
+    // 605,50 € base. Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1
+    // Health (14 %): https://www.union.sk/payment-archive/vyska-preddavkov-na-poistne-v-cleneni-podla-platitelov-poistneho-za-rok-2023/
+    { from: '2023-01', values: { health: 84.77, social: 200.72 } },
+    // 652 € base. Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1-4
+    // Health (15 %): https://www.vszp.sk/platitelia/platenie-poistneho/oznamenia-zmeny/zmeny-od-01-01.2024/
+    { from: '2024-01', values: { health: 97.8, social: 216.13 } },
+    // 715 € base. Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1-5
+    // Health (15 %): https://www.vszp.sk/platitelia/platenie-poistneho/oznamenia-zmeny/zmeny-od-01-01.2025/
+    { from: '2025-01', values: { health: 107.25, social: 237.02 } },
+    // 914,40 € social base, 762 € health base (16 %).
+    // Social: https://www.socpoist.sk/socialne-poistenie/platenie-poistneho/tabulky-platenia-poistneho/tabulky-platenia-poistneho-od-1-6
+    // Health: https://www.vszp.sk/platitelia/platenie-poistneho/oznamenia-zmeny/zmeny-od-01-01.2026/
+    { from: '2026-01', values: { health: 121.92, social: 303.11 } }
+  ]
 };
 
 /**

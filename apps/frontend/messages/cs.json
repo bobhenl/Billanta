@@ -222,7 +222,8 @@
       "account": {
         "title": "Účet",
         "login": "Přihlásit se",
-        "signup": "Registrovat se"
+        "signup": "Registrovat se",
+        "openApp": "Přejít do aplikace"
       },
       "partners": {
         "title": "Partneři",
@@ -6898,7 +6899,8 @@
           "notesSk": [
             "Na Slovensku se odvody platí do 8. dne následujícího měsíce, sociální poistné Sociálnej poisťovni a zdravotné poistné své zdravotní pojišťovně."
           ],
-          "none": "Pro tento rok zatím nemáme údaje."
+          "none": "Pro tento rok zatím nemáme údaje.",
+          "previousYears": "Předchozí roky"
         },
         "fx": {
           "name": "Převodník kurzů ČNB",
@@ -6924,7 +6926,14 @@
             "Pro účetnictví můžete místo denního kurzu používat i pevný kurz, pokud to máte ve vnitřní směrnici."
           ],
           "source": "Zdroj: Česká národní banka",
-          "crossRate": "Křížový kurz přes korunu podle kurzovního lístku ČNB."
+          "crossRate": "Křížový kurz přes korunu podle kurzovního lístku ČNB.",
+          "date": {
+            "label": "Kurzy ke dni",
+            "show": "Zobrazit",
+            "today": "Dnešní kurzy",
+            "fallback": "Dne {day} ČNB kurzy nevyhlásila (víkend nebo svátek), proto platí lístek ze dne {date}.",
+            "notYet": "Dnešní kurzy ČNB ještě nevyhlásila (vyhlašuje je v pracovní dny po 14:30), proto platí lístek ze dne {date}."
+          }
         },
         "qrPayment": {
           "name": "Generátor QR platby",

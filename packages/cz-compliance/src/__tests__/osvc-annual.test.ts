@@ -110,6 +110,24 @@ describe('statutory minimums', () => {
     expect(minimumsAt('SK', '2026-08')!.values.social).toBe(303.11);
   });
 
+  it.each([
+    // Sociálna poisťovňa "Spolu" at the minimum base; health insurer minimum preddavok.
+    [2023, 200.72, 84.77],
+    [2024, 216.13, 97.8],
+    [2025, 237.02, 107.25],
+    [2026, 303.11, 121.92]
+  ])('SK %i minimums: one January period, social %d and health %d', (year, social, health) => {
+    expect(minimumPeriods('SK', year)).toEqual([{ from: `${year}-01`, values: { social, health } }]);
+  });
+
+  it('SK health minimum is the base times the SZČO rate', () => {
+    // 605,50 € × 14 %, 652 € × 15 %, 715 € × 15 %, 762 € × 16 %.
+    expect(minimumsAt('SK', '2023-05')!.values.health).toBeCloseTo(605.5 * 0.14, 2);
+    expect(minimumsAt('SK', '2024-05')!.values.health).toBeCloseTo(652 * 0.15, 2);
+    expect(minimumsAt('SK', '2025-05')!.values.health).toBeCloseTo(715 * 0.15, 2);
+    expect(minimumsAt('SK', '2026-05')!.values.health).toBeCloseTo(762 * 0.16, 2);
+  });
+
   it('paušální daň band 1 for 2026 is 12 × 9 162, the cut applies from January', () => {
     expect(flatTaxBand1ForYear(2026)).toBe(12 * 9162);
     expect(flatTaxBand1ForYear(2025)).toBe(12 * 8716);

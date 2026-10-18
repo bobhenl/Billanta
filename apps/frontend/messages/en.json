@@ -222,7 +222,8 @@
       "account": {
         "title": "Account",
         "login": "Log in",
-        "signup": "Sign up"
+        "signup": "Sign up",
+        "openApp": "Go to the app"
       },
       "partners": {
         "title": "Partners",
@@ -6897,7 +6898,8 @@
           "notesSk": [
             "In Slovakia both are due by the 8th of the following month: social insurance to the Sociálna poisťovňa and health insurance to your health insurer."
           ],
-          "none": "No data for this year yet."
+          "none": "No data for this year yet.",
+          "previousYears": "Previous years"
         },
         "fx": {
           "name": "ČNB exchange rate converter",
@@ -6923,7 +6925,14 @@
             "For accounting you can use a fixed rate instead of the daily one if your internal rules say so."
           ],
           "source": "Source: Czech National Bank",
-          "crossRate": "Cross rate through CZK, from the ČNB rate list."
+          "crossRate": "Cross rate through CZK, from the ČNB rate list.",
+          "date": {
+            "label": "Rates on",
+            "show": "Show",
+            "today": "Today's rates",
+            "fallback": "The ČNB published no rates on {day} (weekend or public holiday), so the list of {date} applies.",
+            "notYet": "The ČNB has not published today's rates yet (it does so on working days after 14:30), so the list of {date} applies."
+          }
         },
         "qrPayment": {
           "name": "QR payment generator",

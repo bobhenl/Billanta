@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 import { cn } from '@/lib/utils';
+import { ToolTabsStrip } from '@/components/public-tools/tool-tabs-strip';
 
 /**
  * Tab row at the top of the calculators (and guides) hub and every page in
@@ -11,7 +12,8 @@ import { cn } from '@/lib/utils';
  * drawn when there is just one, since a single tab switches nothing.
  *
  * Scrolls sideways inside its own box on a phone, so a long row never
- * widens the page.
+ * widens the page. `ToolTabsStrip` keeps that sideways position from page
+ * to page and keeps the active tab in view.
  */
 export async function ToolTabs({ kind, current }: { kind: 'calculators' | 'guides'; current?: string }) {
   const t = await getTranslations('tools');
@@ -24,7 +26,7 @@ export async function ToolTabs({ kind, current }: { kind: 'calculators' | 'guide
     ...tools.map((x) => ({ href: `/${kind}/${x.slug}`, label: t(`${kind}.items.${x.key}.name`), active: x.slug === current }))
   ];
   return (
-    <nav aria-label={t(`menu.${kind}`)} className="mb-8 max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
+    <ToolTabsStrip storageKey={kind} label={t(`menu.${kind}`)} className="mb-8 max-w-full overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
       <ul className="flex w-max gap-1 rounded-xl border border-border bg-card p-1">
         {tabs.map((tab) => (
           <li key={tab.href}>
@@ -41,6 +43,6 @@ export async function ToolTabs({ kind, current }: { kind: 'calculators' | 'guide
           </li>
         ))}
       </ul>
-    </nav>
+    </ToolTabsStrip>
   );
 }
