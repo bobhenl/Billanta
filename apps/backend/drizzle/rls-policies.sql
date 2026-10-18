@@ -590,12 +590,16 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_line_items(uuid) TO faktur_app;
 -- render a payment QR code, and the latter three in particular are exactly
 -- the kind of internal/billing-provider data this function's siblings
 -- above are careful to keep out of the public-portal surface.
+-- `address_country` (the registered country, never anything finer) picks
+-- the QR standard: PAY by square for a Slovak supplier, SPAYD otherwise.
+DROP FUNCTION IF EXISTS get_public_invoice_supplier_info(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_supplier_info(p_public_token uuid)
 RETURNS TABLE (
   company_name text,
   bank_account_iban text,
   bank_account_number text,
-  bank_account_bank_code varchar(4)
+  bank_account_bank_code varchar(4),
+  address_country varchar
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -613,7 +617,8 @@ AS $$
     CASE WHEN i.seller_snapshot -> 'bankAccountNumber' IS NOT NULL THEN i.seller_snapshot->>'bankAccountNumber'
       ELSE coalesce(a.account_number, CASE WHEN a.id IS NULL THEN t.bank_account_number END) END,
     CASE WHEN i.seller_snapshot -> 'bankAccountBankCode' IS NOT NULL THEN (i.seller_snapshot->>'bankAccountBankCode')::varchar(4)
-      ELSE coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END) END
+      ELSE coalesce(a.bank_code, CASE WHEN a.id IS NULL THEN t.bank_account_bank_code END) END,
+    coalesce(nullif(i.seller_snapshot->>'addressCountry', ''), t.address_country)::varchar
   FROM tenants t
   JOIN invoices i ON i.tenant_id = t.id
   LEFT JOIN LATERAL (

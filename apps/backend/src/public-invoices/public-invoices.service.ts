@@ -48,6 +48,7 @@ type PublicInvoiceSupplierRow = {
   bank_account_iban: string | null;
   bank_account_number: string | null;
   bank_account_bank_code: string | null;
+  address_country: string | null;
 };
 
 type PublicQrDetailsRow = {
@@ -76,6 +77,8 @@ export interface PublicInvoiceSupplierView {
   bankAccountIban: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
+  /** Registered country: SK gets a PAY by square code instead of SPAYD. */
+  country: string | null;
 }
 
 export interface PublicInvoiceView {
@@ -324,6 +327,7 @@ export class PublicInvoicesService {
             bankAccountIban: supplierRow.bank_account_iban,
             bankAccountNumber: supplierRow.bank_account_number,
             bankAccountBankCode: supplierRow.bank_account_bank_code,
+            country: supplierRow.address_country,
           }
         : null,
       attachments: attachmentRows.map((r) => ({ id: r.id, filename: r.filename, mime: r.mime, sizeBytes: r.size_bytes })),

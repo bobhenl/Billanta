@@ -29,6 +29,8 @@ export interface PublicInvoiceSupplier {
   bankAccountIban: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
+  /** Registered country: SK gets a PAY by square code instead of SPAYD. */
+  country?: string | null;
 }
 
 export interface PublicInvoice {

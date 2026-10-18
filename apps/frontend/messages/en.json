@@ -626,6 +626,7 @@
     "paymentTitle": "Pay this invoice",
     "paymentInstructions": "Scan the QR code with your banking app to pre-fill an instant bank transfer.",
     "paymentDisclaimer": "This is a standard Czech/Slovak instant bank-transfer QR code (SPAYD / \"QR Platba\"), not a card payment.",
+    "paymentDisclaimerSk": "This is a Slovak PAY by square bank-transfer QR code, read by every Slovak banking app. It is not a card payment.",
     "noBankAccount": "The issuer hasn't set up a bank account for online payment yet. Please contact them directly to arrange payment.",
     "notFoundTitle": "Invoice not found",
     "notFoundBody": "This link is invalid or has expired. Please contact the sender for a new one.",

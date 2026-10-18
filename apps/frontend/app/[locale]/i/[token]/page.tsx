@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import {
   czechAccountToIban,
   generateQrInvoiceString,
+  generatePayBySquare,
   generateSpaydString,
   qrInvoiceForSpayd,
 } from "@faktur/cz-compliance";
@@ -126,7 +127,20 @@ export default async function PublicInvoicePage({
       : null);
   // Same rule as the PDF: QR/account only for (custom methods behaving as) bank transfer.
   const isTransfer = !invoice.paymentMethod || invoice.paymentMethod === "bank_transfer";
-  if (iban && !invoice.quote && isTransfer) {
+  // Slovak banking apps read PAY by square, not SPAYD.
+  const payBySquare = supplier?.country === "SK";
+  if (iban && !invoice.quote && isTransfer && payBySquare) {
+    const code = generatePayBySquare({
+      iban,
+      amount: remainingToPay > 0 ? remainingToPay : invoice.total,
+      currency: invoice.currency,
+      variableSymbol: invoice.variableSymbol ?? undefined,
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate) : undefined,
+      note: invoice.invoiceNumber ?? undefined,
+      beneficiaryName: supplier?.companyName,
+    });
+    qrCodeSvg = await QRCode.toString(code, { type: "svg", margin: 1 });
+  } else if (iban && !invoice.quote && isTransfer) {
     const spayd = generateSpaydString({
       iban,
       // Only what is left after partial payments.
@@ -398,7 +412,7 @@ export default async function PublicInvoicePage({
                   <p>{t("paymentInstructions")}</p>
                   <p className="flex items-start gap-1.5">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span>{t("paymentDisclaimer")}</span>
+                    <span>{t(payBySquare ? "paymentDisclaimerSk" : "paymentDisclaimer")}</span>
                   </p>
                 </div>
               </div>

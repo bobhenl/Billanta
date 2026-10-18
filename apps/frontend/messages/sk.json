@@ -626,6 +626,7 @@
     "paymentTitle": "Uhradiť faktúru",
     "paymentInstructions": "Naskenujte QR kód v bankovej aplikácii a predvyplňte si okamžitý bankový prevod.",
     "paymentDisclaimer": "Ide o štandardný český/slovenský QR kód pre bankový prevod (SPAYD / „QR Platba“), nie o platbu kartou.",
+    "paymentDisclaimerSk": "Ide o slovenský QR kód PAY by square pre bankový prevod, ktorý načíta každá slovenská banková aplikácia. Nejde o platbu kartou.",
     "noBankAccount": "Vystaviteľ zatiaľ nemá nastavený bankový účet na online platbu. Ohľadom úhrady ho prosím kontaktujte priamo.",
     "notFoundTitle": "Faktúra nenájdená",
     "notFoundBody": "Tento odkaz je neplatný alebo už vypršal. Pre nový odkaz kontaktujte odosielateľa.",

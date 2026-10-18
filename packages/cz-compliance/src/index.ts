@@ -20,3 +20,4 @@ export * from './vat-rates.js';
 export * from './cnb-rates.js';
 export * from './vat-filing.js';
 export * from './home-currency.js';
+export * from './pay-by-square.js';

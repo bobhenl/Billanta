@@ -4,7 +4,7 @@ import { displayCustomField, documentVars } from "./custom-fields";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { Injectable } from "@nestjs/common";
-import { czechAccountToIban, generateQrInvoiceString, generateSpaydString, homeCurrencyOf, isEuReverseChargeService, qrInvoiceForSpayd, type HomeCurrency } from "@faktur/cz-compliance";
+import { czechAccountToIban, generatePayBySquare, generateQrInvoiceString, generateSpaydString, homeCurrencyOf, isEuReverseChargeService, qrInvoiceForSpayd, type HomeCurrency } from "@faktur/cz-compliance";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
@@ -311,7 +311,7 @@ export class InvoicePdfService {
     }
     this.renderLineItemsTable(doc, t, lineItems, invoice);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), homeCurrencyOf(tenant.addressCountry));
-    if (qr) this.renderPaymentQr(doc, qr.payment ? t.qr : t.qrInvoice, qr.png, totalsTop);
+    if (qr) this.renderPaymentQr(doc, qr.label ?? (qr.payment ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     this.renderCredit(doc, lang);
 
@@ -331,11 +331,30 @@ export class InvoicePdfService {
     tenant: TenantRow,
     totals: InvoiceVatBreakdown,
     payable: boolean,
-  ): Promise<{ png: Buffer; payment: boolean } | null> {
+  ): Promise<{ png: Buffer; payment: boolean; label?: string } | null> {
     // Same gate as the client-portal page (apps/frontend/app/[locale]/i/[token]/page.tsx):
     // prefer the stored IBAN, otherwise derive it from the domestic
     // account number + bank code, and omit the payment part when neither is on file.
     const iban = this.iban(tenant);
+    // A Slovak supplier's customers pay from Slovak banking apps, which read
+    // PAY by square. QR Faktura is a Czech standard, so there is no
+    // invoice-only code for them.
+    if (tenant.addressCountry === "SK") {
+      if (!(payable && iban && invoice.paymentMethod === "bank_transfer")) return null;
+      const code = generatePayBySquare({
+        iban,
+        amount: Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100) || totals.totalWithVat,
+        currency: invoice.currency,
+        variableSymbol: invoice.variableSymbol ?? undefined,
+        dueDate: invoice.dueDate ?? undefined,
+        note: invoice.invoiceNumber ?? undefined,
+        beneficiaryName: tenant.legalName,
+        beneficiaryAddressLine1: tenant.addressStreet ?? undefined,
+        beneficiaryAddressLine2: [tenant.addressPostalCode, tenant.addressCity].filter(Boolean).join(" ") || undefined,
+      });
+      // The brand name is written exactly so ("PAY by square"), never uppercased.
+      return { png: await QRCode.toBuffer(code, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), payment: true, label: "PAY by square" };
+    }
     const sid = invoice.invoiceNumber
       ? generateQrInvoiceString({
           invoiceNumber: invoice.invoiceNumber,
@@ -670,7 +689,7 @@ export class InvoicePdfService {
 
   /** Sits to the left of the totals block, level with its top (`top`). */
   private renderPaymentQr(doc: PDFKit.PDFDocument, label: string, qrPngBuffer: Buffer, top: number): void {
-    doc.font(BOLD).fontSize(8).fillColor(MUTED).text(label.toUpperCase(), 50, top);
+    doc.font(BOLD).fontSize(8).fillColor(MUTED).text(label, 50, top);
     doc.image(qrPngBuffer, 50, top + 12, { width: 100, height: 100 });
     doc.fillColor("black");
     doc.y = Math.max(doc.y, top + 120);
