@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Get, HttpCode, HttpException, Ht
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
 import { toPublicHit } from "../contacts/company-lookup-public.controller";
-import { ContactsService, registryForCountry } from "../contacts/contacts.service";
+import { ContactsService, hasSlowPart, registryForCountry, registryPartOf } from "../contacts/contacts.service";
 import { DailyCap, SlidingWindowLimiter, visitorBucket } from "../guest-invoices/guest-limits";
 import { BuyerDetailsService } from "../invoices/buyer-details.service";
 import { sameCompanyName, TOKEN_PATTERN } from "../invoices/buyer-details.util";
@@ -29,9 +29,9 @@ export class BuyerDetailsPublicController {
   private readonly viewLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 60);
   private readonly submitLimiter = new SlidingWindowLimiter(60 * 60 * 1000, 10);
   private readonly lookupLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 20);
-  // Typeahead: one request per pause in typing, so a looser limit than the exact lookup.
-  private readonly searchLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 80);
-  private readonly lookupDaily = new DailyCap(Number(process.env.BUYER_LOOKUP_DAILY_LIMIT ?? 2000));
+  // Typeahead: two requests per pause in typing (fast and slow half), so a looser limit than the exact lookup.
+  private readonly searchLimiter = new SlidingWindowLimiter(10 * 60 * 1000, 160);
+  private readonly lookupDaily = new DailyCap(Number(process.env.BUYER_LOOKUP_DAILY_LIMIT ?? 4000));
 
   constructor(
     private readonly buyerDetails: BuyerDetailsService,
@@ -76,7 +76,9 @@ export class BuyerDetailsPublicController {
   @Get(":token/lookup")
   @ApiOperation({
     summary: "Company details by Czech/Slovak IČO (ARES/RPO) or EU VAT ID (VIES), for this link only",
-    description: "With ?q= instead: a name typeahead in the register of ?country= (CZ + SK when unknown), returning { hits }.",
+    description:
+      "With ?q= instead: a name typeahead in the register of ?country= (CZ + SK when unknown), returning { hits }. " +
+      "?part=fast leaves out the slow Slovak name search, ?part=slow returns only it.",
   })
   async lookup(
     @Param("token") token: string,
@@ -84,16 +86,20 @@ export class BuyerDetailsPublicController {
     @Query("vat") rawVat: string | undefined,
     @Query("q") rawQ: string | undefined,
     @Query("country") country: string | undefined,
+    @Query("part") rawPart: string | undefined,
     @Ip() ip: string,
     @Req() req: Request,
   ) {
     const q = (rawQ ?? "").trim().slice(0, 120);
     if (q) {
       if (q.length < 2) return { hits: [] };
+      const registry = registryForCountry(country);
+      const part = registryPartOf(rawPart);
+      if (part === "slow" && !hasSlowPart(q, registry)) return { hits: [] };
       this.throttle(this.searchLimiter, visitorOf(ip, req));
       await this.buyerDetails.assertOpen(token);
       if (!this.lookupDaily.take()) throw new HttpException({ error: "busy" }, HttpStatus.SERVICE_UNAVAILABLE);
-      const hits = await this.contacts.registrySearch(q, registryForCountry(country));
+      const hits = await this.contacts.registrySearch(q, registry, part);
       return { hits: hits.slice(0, 8).map(toPublicHit) };
     }
     this.throttle(this.lookupLimiter, visitorOf(ip, req));

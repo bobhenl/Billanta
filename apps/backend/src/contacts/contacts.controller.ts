@@ -22,7 +22,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nes
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
-import { COMPANY_REGISTRIES, ContactsService, type CompanyRegistry } from "./contacts.service";
+import { COMPANY_REGISTRIES, ContactsService, registryPartOf, type CompanyRegistry } from "./contacts.service";
 import { AresLookupDto } from "./dto/ares-lookup.dto";
 import { CreateContactDto } from "./dto/create-contact.dto";
 import { StarContactDto } from "./dto/star-contact.dto";
@@ -52,10 +52,13 @@ export class ContactsController {
 
   // Declared before `:id` so "search" is never captured as an id.
   @Get("search")
-  @ApiOperation({ summary: "Customer typeahead: own contacts + a company register (ARES/RPO, FR, NO, PL or EU VIES)" })
-  search(@Req() req: TenantScopedRequest, @Query("q") q = "", @Query("registry") registry = "auto") {
+  @ApiOperation({
+    summary: "Customer typeahead: own contacts + a company register (ARES/RPO, FR, NO, PL or EU VIES)",
+    description: "?part=fast leaves out the Slovak name search that registry=auto adds, ?part=slow returns only it (default: both).",
+  })
+  search(@Req() req: TenantScopedRequest, @Query("q") q = "", @Query("registry") registry = "auto", @Query("part") part?: string) {
     const picked = (COMPANY_REGISTRIES as readonly string[]).includes(registry) ? (registry as CompanyRegistry) : "auto";
-    return this.contactsService.search(req.tenantDb!, q, picked);
+    return this.contactsService.search(req.tenantDb!, q, picked, registryPartOf(part));
   }
 
   @Get("vat-check")

@@ -203,14 +203,35 @@ const fold = (s: string) =>
     .toLowerCase();
 
 /**
+ * Somewhere to keep the "finished words" pool of `searchSubjectsTypeahead`
+ * between keystrokes, keyed by those words. This module stays stateless, so
+ * the caller owns it (size, expiry).
+ */
+export interface AresPoolCache {
+  get(words: string): AresSubject[] | undefined;
+  set(words: string, subjects: AresSubject[]): void;
+}
+
+/**
+ * The pool has to be the whole match set: ARES refuses any query with more
+ * than 1000 matches (400 CHYBA_VSTUPU, whatever `pocet` says) and returns the
+ * rest in no useful order, so a smaller page drops real matches ("pekárna"
+ * has 179 subjects; the first 100 hold only one of the two "kr…" ones).
+ */
+const POOL_LIMIT = 1000;
+
+/**
  * Typeahead-friendly name search. ARES only matches whole words ("tom vejm"
  * finds nothing, "Tom Vejmelka" does), so when the exact query is empty and the
  * last word looks unfinished, ask ARES for the finished words only and keep the
  * subjects that have a word starting with the unfinished one.
+ *
+ * That pool can be ~2 MB (1000 subjects), so `options.pool` lets the caller
+ * keep it: "pekárna k", "pekárna kr", "pekárna kru" then cost one download.
  */
 export async function searchSubjectsTypeahead(
   name: string,
-  options: { limit?: number } = {},
+  options: { limit?: number; pool?: AresPoolCache } = {},
 ): Promise<AresSubject[]> {
   const limit = options.limit ?? 20;
   const exact = await searchSubjects(name, { limit });
@@ -219,7 +240,12 @@ export async function searchSubjectsTypeahead(
   const words = name.trim().split(/\s+/);
   const partial = fold(words.pop() ?? '');
   if (!words.length || partial.length < 2) return [];
-  const pool = await searchSubjects(words.join(' '), { limit: 1000 });
+  const key = fold(words.join(' '));
+  let pool = options.pool?.get(key);
+  if (!pool) {
+    pool = await searchSubjects(words.join(' '), { limit: POOL_LIMIT });
+    options.pool?.set(key, pool);
+  }
   return pool
     .filter((s) => fold(s.obchodniJmeno).split(/[\s,.()-]+/).some((w) => w.startsWith(partial)))
     .slice(0, limit);
