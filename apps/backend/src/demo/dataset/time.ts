@@ -100,6 +100,41 @@ const PLANS: Record<DemoKind, Plan> = {
       ["anniversary", "Koordinácia dodávateľov", 1, 120],
     ],
   },
+  sk_freelancer: {
+    projects: [
+      { key: "manual", name: "Návod k CNC stroju – Strojárne Považie", contactKey: "povazie", hourlyRate: 30, color: "indigo" },
+      { key: "wine", name: "Etikety a technické listy – vinárstvo", contactKey: "zobor", hourlyRate: 30, color: "pink" },
+    ],
+    entries: [
+      ["manual", "Terminológia a glosár", 16, 150],
+      ["manual", "Preklad kapitol 1–3", 15, 300],
+      ["wine", "Preklad etikiet", 13, 180],
+      ["manual", "Preklad kapitol 4–6", 12, 330],
+      ["wine", "Konzultácia s enológom", 10, 60],
+      ["manual", "Kontrola rozmerov a jednotiek", 8, 120],
+      ["wine", "Technické listy – preklad", 6, 240],
+      ["manual", "Webinár o strojnom preklade", 4, 90, false],
+      ["wine", "Korektúra a odovzdanie", 2, 120],
+      ["manual", "Preklad kapitol 7–8", 1, 270],
+    ],
+  },
+  sk_vat_freelancer: {
+    projects: [
+      { key: "ovens", name: "Pekáreň Gazdovská – pripojenie pecí", contactKey: "gazdovska", hourlyRate: 32, color: "amber" },
+      { key: "charger", name: "Nabíjacia stanica – Kováč", contactKey: "kovac", hourlyRate: 32, color: "teal" },
+    ],
+    entries: [
+      ["ovens", "Obhliadka a zameranie", 14, 120],
+      ["ovens", "Ťahanie káblov", 12, 420],
+      ["charger", "Návrh pripojenia a istenia", 10, 90],
+      ["ovens", "Zapojenie rozvádzača", 9, 360],
+      ["ovens", "Skúška a uvedenie do prevádzky", 7, 180],
+      ["charger", "Montáž wallboxu", 5, 240],
+      ["charger", "Revízia a protokol", 4, 120],
+      ["ovens", "Nákup materiálu", 3, 60, false],
+      ["charger", "Nastavenie aplikácie s klientom", 1, 45],
+    ],
+  },
 };
 
 export function buildTime(kind: DemoKind, now: Date): DemoTime {

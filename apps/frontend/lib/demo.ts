@@ -1,5 +1,5 @@
 /** The demo playground (docs/demo-playground-plan.md): kinds and the master switch. */
-export const DEMO_KINDS = ['cz_vat_sro', 'cz_freelancer', 'cz_pausal', 'sk_vat_sro'] as const;
+export const DEMO_KINDS = ['cz_vat_sro', 'cz_freelancer', 'cz_pausal', 'sk_vat_sro', 'sk_freelancer', 'sk_vat_freelancer'] as const;
 export type DemoKind = (typeof DEMO_KINDS)[number];
 
 /** Whose eyes a demo visitor can look through (the banner's picker, /api/demo/role). */

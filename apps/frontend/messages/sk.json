@@ -8362,6 +8362,14 @@
       "sk_vat_sro": {
         "title": "s.r.o., platiteľ DPH",
         "description": "Slovenská firma v eurách so slovenskou DPH a faktúrami v slovenčine."
+      },
+      "sk_freelancer": {
+        "title": "Živnostník, neplatiteľ DPH",
+        "description": "Prekladateľka bez DPH, faktúry v eurách, klienti aj z Veľkej Británie a USA."
+      },
+      "sk_vat_freelancer": {
+        "title": "Živnostník, platiteľ DPH",
+        "description": "Elektrikár s DPH, prenesenie daňovej povinnosti pri stavebných prácach pre firmy."
       }
     },
     "country": {

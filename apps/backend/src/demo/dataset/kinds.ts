@@ -1,11 +1,13 @@
 /**
- * The four demo companies a visitor can pick on /demo. Everything here is
- * made up. IČOs are mod-11 valid but were checked as unused (2026-10-18):
- * 27639142, 29184070, 26047292 not found in ARES; 59172649 not found in the
- * Slovak RPO nor in ARES. The bank accounts pass the checksum but could
- * belong to a real person, so a demo never prints a payment QR code.
+ * The demo companies a visitor can pick on /demo. Everything here is made
+ * up. IČOs are mod-11 valid but were checked as unused: 27639142, 29184070,
+ * 26047292 not found in ARES; 59172649 (2026-10-18), 58264159 and 58392700
+ * (2026-10-19) found neither in the Slovak RPO nor in ARES. The bank
+ * accounts pass the checksum but could belong to a real person, so a demo
+ * never prints a payment QR code. Slovakia has no flat-tax regime like the
+ * Czech paušální daň, so its kinds are a company and two živnostníci.
  */
-export const DEMO_KINDS = ["cz_vat_sro", "cz_freelancer", "cz_pausal", "sk_vat_sro"] as const;
+export const DEMO_KINDS = ["cz_vat_sro", "cz_freelancer", "cz_pausal", "sk_vat_sro", "sk_freelancer", "sk_vat_freelancer"] as const;
 export type DemoKind = (typeof DEMO_KINDS)[number];
 
 /** The site language a demo is started from; `en` translates the data. */
@@ -66,6 +68,8 @@ export interface DemoSupplier {
 
 const CZ_NOTE = "Smyšlená firma z dema Billanta – není zapsána v žádném rejstříku.";
 const CZ_PERSON_NOTE = "Smyšlená osoba z dema Billanta – není zapsána v živnostenském rejstříku.";
+// A real one reads "Zapísaná v živnostenskom registri Okresného úradu Nitra, č. ŽR 430-…".
+const SK_PERSON_NOTE = "Vymyslená osoba z dema Billanta – nie je zapísaná v živnostenskom registri žiadneho okresného úradu.";
 
 export const SUPPLIERS: Record<DemoKind, DemoSupplier> = {
   cz_vat_sro: {
@@ -192,6 +196,70 @@ export const SUPPLIERS: Record<DemoKind, DemoSupplier> = {
     bank: [
       { label: "Hlavný účet", account_number: "2938475006", bank_code: "1100", iban: "SK6711000000002938475006", swift: "TATRSKBX", currency: "EUR" },
       { label: "Rezervný účet", account_number: "2938412005", bank_code: "1100", iban: "SK0511000000002938412005", swift: "TATRSKBX", currency: "EUR" },
+    ],
+    home: "EUR",
+    payer: true,
+    language: "sk",
+    vatRate: 23,
+  },  sk_freelancer: {
+    tenant: {
+      owner_name: "Katarína Ďurišová",
+      company_name: "Katarína Ďurišová",
+      legal_name: "Katarína Ďurišová",
+      ico: "58264159",
+      // A non-payer's DIČ is not required on the invoice; leaving it out keeps it from matching a real person.
+      dic: null,
+      vat_status: "non_payer",
+      flat_tax_regime: false,
+      activity_kind: "main",
+      address_street: "Štefánikova 1874/36",
+      address_city: "Nitra",
+      address_postal_code: "949 01",
+      address_country: "SK",
+      default_locale: "sk",
+      email: "katarina@durisova-preklady.example",
+      phone: null,
+      website: "https://durisova-preklady.example",
+      registry_note: SK_PERSON_NOTE,
+      bank_account_number: "5182736408",
+      bank_account_bank_code: "0900",
+      bank_account_iban: "SK1509000000005182736408",
+      bank_account_swift: "GIBASKBX",
+    },
+    bank: [
+      { label: "Účet", account_number: "5182736408", bank_code: "0900", iban: "SK1509000000005182736408", swift: "GIBASKBX", currency: "EUR" },
+    ],
+    home: "EUR",
+    payer: false,
+    language: "sk",
+    vatRate: null,
+  },
+  sk_vat_freelancer: {
+    tenant: {
+      owner_name: "Tomáš Hrivnák",
+      company_name: "Elektro Hrivnák",
+      legal_name: "Tomáš Hrivnák – Elektro Hrivnák",
+      ico: "58392700",
+      dic: "SK1083947205",
+      vat_status: "payer",
+      flat_tax_regime: false,
+      activity_kind: "main",
+      address_street: "Tajovského 2251/14",
+      address_city: "Banská Bystrica",
+      address_postal_code: "974 01",
+      address_country: "SK",
+      default_locale: "sk",
+      email: "elektro@hrivnak.example",
+      phone: null,
+      website: null,
+      registry_note: SK_PERSON_NOTE,
+      bank_account_number: "4729183006",
+      bank_account_bank_code: "0200",
+      bank_account_iban: "SK7802000000004729183006",
+      bank_account_swift: "SUBASKBX",
+    },
+    bank: [
+      { label: "Podnikateľský účet", account_number: "4729183006", bank_code: "0200", iban: "SK7802000000004729183006", swift: "SUBASKBX", currency: "EUR" },
     ],
     home: "EUR",
     payer: true,

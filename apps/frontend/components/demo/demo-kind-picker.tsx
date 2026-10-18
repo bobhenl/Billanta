@@ -8,14 +8,28 @@ import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
 import { cn } from '@/lib/utils';
 
-const COUNTRY: Record<DemoKind, 'CZ' | 'SK'> = { cz_vat_sro: 'CZ', cz_freelancer: 'CZ', cz_pausal: 'CZ', sk_vat_sro: 'SK' };
+const COUNTRY: Record<DemoKind, 'CZ' | 'SK'> = {
+  cz_vat_sro: 'CZ',
+  cz_freelancer: 'CZ',
+  cz_pausal: 'CZ',
+  sk_vat_sro: 'SK',
+  sk_freelancer: 'SK',
+  sk_vat_freelancer: 'SK'
+};
 
 /** "Match the company": the signup preset a business like it would pick. */
-const KIND_PRESET: Record<DemoKind, string> = { cz_vat_sro: 'withAccountant', cz_freelancer: 'tradesman', cz_pausal: 'flatTax', sk_vat_sro: 'withAccountant' };
+const KIND_PRESET: Record<DemoKind, string> = {
+  cz_vat_sro: 'withAccountant',
+  cz_freelancer: 'tradesman',
+  cz_pausal: 'flatTax',
+  sk_vat_sro: 'withAccountant',
+  sk_freelancer: 'tradesman',
+  sk_vat_freelancer: 'withAccountant'
+};
 const presetModules = (key: string): ModuleSet | undefined => BUSINESS_PRESETS.find((p) => p.key === key)?.modules;
 
 /**
- * Four cards, one per demo company, plus three choices: the type of business
+ * One card per demo company, plus three choices: the type of business
  * (the signup presets, which decide the modules shown), filled with sample
  * documents or empty, and whose eyes to look through first (feature pages
  * link here with `?view=accountant` and the like). A click asks
@@ -34,7 +48,7 @@ export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: stri
   // Set when the visitor is signed in to a real account and may sign out to continue.
   const [signedInKind, setSignedInKind] = useState<DemoKind | null>(null);
 
-  // Slovak visitors look for the Slovak company first.
+  // Slovak visitors look for the Slovak companies first.
   const kinds = locale === 'sk' ? [...DEMO_KINDS].sort((a, b) => Number(COUNTRY[b] === 'SK') - Number(COUNTRY[a] === 'SK')) : DEMO_KINDS;
 
   async function start(kind: DemoKind) {
