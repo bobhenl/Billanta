@@ -17,7 +17,7 @@ import {
   mapBitfakturaSeller,
   type ImportedBusinessDetails,
 } from "./bitfaktura-import";import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
-import { getCnbRate } from "../exports/cnb-rates";
+import { getCnbDay, type CnbDay } from "../exports/cnb-rates";
 import { AuditService } from "../audit/audit.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
 
@@ -169,6 +169,30 @@ const PDF_CONCURRENCY = 4;
  * record of the past, not new work. Own-format numbers bump the sequence so
  * the next invoice continues the row instead of colliding with it.
  */
+/**
+ * Foreign-currency documents need the CZK rate for VAT and income-tax
+ * reports: the source's own rate when it has one, else ČNB on the DUZP. A
+ * rate we looked up ourselves is a ČNB rate, so it is stored as one with its
+ * list day; that keeps the PDF's "kurz ČNB ze dne" line and the exports from
+ * treating it as typed in by hand.
+ */
+export async function importedRate(
+  inv: Pick<ImportedInvoice, "currency" | "exchangeRate" | "exchangeRateMode" | "exchangeRateDate" | "taxableSupplyDate" | "issueDate">,
+  cnbDay: (date: Date) => Promise<CnbDay | null>,
+): Promise<Pick<typeof schema.invoices.$inferInsert, "exchangeRate" | "exchangeRateMode" | "exchangeRateDate">> {
+  if (inv.currency === "CZK") return { exchangeRate: null };
+  if (inv.exchangeRate != null) {
+    return {
+      exchangeRate: String(inv.exchangeRate),
+      ...(inv.exchangeRateMode ? { exchangeRateMode: inv.exchangeRateMode, exchangeRateDate: inv.exchangeRateDate ?? null } : {}),
+    };
+  }
+  const day = await cnbDay(inv.taxableSupplyDate ?? inv.issueDate);
+  const rate = day?.rates.get(inv.currency.toUpperCase())?.rate ?? null;
+  if (rate === null) return { exchangeRate: null };
+  return { exchangeRate: String(rate), exchangeRateMode: "cnb_daily", exchangeRateDate: day!.date };
+}
+
 @Injectable()
 export class InvoiceImportService {
   constructor(@Optional() private readonly audit?: AuditService) {}
@@ -411,10 +435,7 @@ export class InvoiceImportService {
       const contactId = findContact(inv.customer) ?? (await createContact(inv.customer));
       const total = totalOf(inv);
       const issuedAt = inv.issueDate;
-      // Foreign-currency documents need the CZK rate for VAT and income-tax
-      // reports: the source's own rate when it has one, else ČNB on the DUZP.
-      const exchangeRate =
-        inv.currency === "CZK" ? null : inv.exchangeRate ?? (await getCnbRate(inv.currency, inv.taxableSupplyDate ?? inv.issueDate));
+      const rate = await importedRate(inv, getCnbDay);
       const [created] = await db
         .insert(schema.invoices)
         .values({
@@ -435,10 +456,7 @@ export class InvoiceImportService {
           amountPaid: String(inv.status === "paid" ? total : Math.max(0, Math.min(inv.amountPaid, total))),
           paidAt: inv.paidAt,
           cancelledAt: inv.status === "cancelled" ? issuedAt : null,
-          exchangeRate: exchangeRate === null ? null : String(exchangeRate),
-          ...(inv.exchangeRate != null && inv.exchangeRateMode
-            ? { exchangeRateMode: inv.exchangeRateMode, exchangeRateDate: inv.exchangeRateDate ?? null }
-            : {}),
+          ...rate,
           internalNote: inv.internalNote ?? null,
           orderNumber: inv.orderNumber ?? null,
           issuePlace: inv.issuePlace ?? null,

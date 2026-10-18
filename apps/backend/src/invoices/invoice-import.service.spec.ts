@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
-import { businessFill, csvBuyerSnapshot, distinctSellers, InvoiceImportService, sellerProfileUpdate } from "./invoice-import.service";
+import { businessFill, csvBuyerSnapshot, distinctSellers, importedRate, InvoiceImportService, sellerProfileUpdate } from "./invoice-import.service";
 import type { ImportedContact, ImportedInvoice } from "./invoice-import.util";
 
 const source = (id: number, number: string) => ({ id, number }) as never;
@@ -447,5 +447,26 @@ describe("sellerProfileUpdate", () => {
       { field: "dic", from: "CZ12345678", to: "CZ8001011234" },
     ]);
     expect(sellerProfileUpdate(profile, newest({ addressStreet: "Nová 9", addressCity: null }))).toBeNull();
+  });
+});
+
+describe("importedRate", () => {
+  const doc = { currency: "EUR", exchangeRate: undefined, exchangeRateMode: undefined, exchangeRateDate: undefined, taxableSupplyDate: new Date("2025-03-09"), issueDate: new Date("2025-03-10") };
+  // A Sunday DUZP: ČNB's list is Friday's, and that day is what gets stored.
+  const cnb = vi.fn(async () => ({ date: "2025-03-07", rates: new Map([["EUR", { rate: 25.06, amount: 1 }]]) }) as never);
+
+  it("stores a rate it looked up as a ČNB rate with the list day", async () => {
+    expect(await importedRate(doc, cnb)).toEqual({ exchangeRate: "25.06", exchangeRateMode: "cnb_daily", exchangeRateDate: "2025-03-07" });
+    expect(cnb).toHaveBeenCalledWith(doc.taxableSupplyDate);
+  });
+
+  it("keeps the source's own rate and its origin", async () => {
+    expect(await importedRate({ ...doc, exchangeRate: 24.5, exchangeRateMode: "manual" }, cnb)).toEqual({ exchangeRate: "24.5", exchangeRateMode: "manual", exchangeRateDate: null });
+    expect(await importedRate({ ...doc, exchangeRate: 24.5 }, cnb)).toEqual({ exchangeRate: "24.5" });
+  });
+
+  it("leaves the rate empty when ČNB has none and for koruna documents", async () => {
+    expect(await importedRate({ ...doc, currency: "XYZ" }, cnb)).toEqual({ exchangeRate: null });
+    expect(await importedRate({ ...doc, currency: "CZK" }, cnb)).toEqual({ exchangeRate: null });
   });
 });
