@@ -19,6 +19,17 @@ export interface CzTaxYear {
   taxpayerCredit: number;
   /** Spouse credit with income under the limit, § 35ba (1) b) ZDP (Kč / year). */
   spouseCredit: number;
+  /**
+   * Daňové zvýhodnění na vyživované dítě, § 35c (1) ZDP: the 1st, the 2nd,
+   * the 3rd and each further child (Kč / year).
+   */
+  childCredits: readonly [number, number, number];
+  /**
+   * Minimální mzda (Kč / month). The part of the child credit above the tax
+   * is paid out as a daňový bonus only with § 6 or § 7 income of at least
+   * six times this, § 35c (4) ZDP.
+   */
+  minimumWage: number;
   /** 23 % applies above this multiple of the average wage, § 16 ZDP. */
   taxHighMultiple: number;
   /** Share of profit that is the social base, § 5b zákona č. 589/1992 Sb. */
@@ -58,6 +69,9 @@ export const CZ_TAX_YEARS: Record<number, CzTaxYear> = {
     // https://www.zakonyprolidi.cz/cs/1992-586#p35ba
     taxpayerCredit: 30_840,
     spouseCredit: 24_840,
+    // https://www.zakonyprolidi.cz/cs/1992-586#p35c (unchanged 2022–2026)
+    childCredits: [15_204, 22_320, 27_840],
+    minimumWage: 17_300, // nařízení vlády č. 465/2022 Sb.
     // https://www.zakonyprolidi.cz/cs/1992-586#p16 (2023: 48× the average wage, 1 935 552 Kč)
     taxHighMultiple: 48,
     // https://www.zakonyprolidi.cz/cs/1992-589#p5b (50 % until 2023)
@@ -79,6 +93,8 @@ export const CZ_TAX_YEARS: Record<number, CzTaxYear> = {
     averageWage: 43_967, // https://www.cssz.gov.cz/vyse-minimalnich-vymerovacich-zakladu-osvc
     taxpayerCredit: 30_840, // https://www.zakonyprolidi.cz/cs/1992-586#p35ba
     spouseCredit: 24_840,
+    childCredits: [15_204, 22_320, 27_840], // https://www.zakonyprolidi.cz/cs/1992-586#p35c
+    minimumWage: 18_900, // https://mpsv.gov.cz/minimalni-mzda
     taxHighMultiple: 36, // https://www.zakonyprolidi.cz/cs/1992-586#p16 (consolidation package, 1 582 812 Kč)
     socialBaseShare: 0.55, // https://www.zakonyprolidi.cz/cs/1992-589#p5b
     socialMaxMultiple: 48,
@@ -97,6 +113,8 @@ export const CZ_TAX_YEARS: Record<number, CzTaxYear> = {
     averageWage: 46_557, // https://www.cssz.gov.cz/vyse-minimalnich-vymerovacich-zakladu-osvc
     taxpayerCredit: 30_840, // https://www.zakonyprolidi.cz/cs/1992-586#p35ba
     spouseCredit: 24_840,
+    childCredits: [15_204, 22_320, 27_840], // https://www.zakonyprolidi.cz/cs/1992-586#p35c
+    minimumWage: 20_800, // https://mpsv.gov.cz/minimalni-mzda
     taxHighMultiple: 36, // https://www.zakonyprolidi.cz/cs/1992-586#p16 (1 676 052 Kč)
     socialBaseShare: 0.55, // https://www.zakonyprolidi.cz/cs/1992-589#p5b
     socialMaxMultiple: 48, // ČSSZ zadání přehledu 2025: maximum 2 234 736 Kč
@@ -116,6 +134,9 @@ export const CZ_TAX_YEARS: Record<number, CzTaxYear> = {
     averageWage: 48_967, // https://www.cssz.gov.cz/vyse-minimalnich-vymerovacich-zakladu-osvc
     taxpayerCredit: 30_840, // https://www.zakonyprolidi.cz/cs/1992-586#p35ba
     spouseCredit: 24_840,
+    childCredits: [15_204, 22_320, 27_840], // https://www.zakonyprolidi.cz/cs/1992-586#p35c
+    // https://mpsv.gov.cz/minimalni-mzda-od-ledna-2026-vzroste-o-1-600-korun-na-22-400-korun-mesicne
+    minimumWage: 22_400,
     taxHighMultiple: 36, // https://www.zakonyprolidi.cz/cs/1992-586#p16 (1 762 812 Kč)
     socialBaseShare: 0.55, // https://www.zakonyprolidi.cz/cs/1992-589#p5b
     socialMaxMultiple: 48,
