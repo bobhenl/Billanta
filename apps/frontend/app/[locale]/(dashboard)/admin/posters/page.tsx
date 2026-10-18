@@ -100,6 +100,7 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
           <label className={field}>
             {t('fields.promo')}
             <input name="promo" defaultValue={o.promo} maxLength={20} autoComplete="off" className={`${inputClass} font-mono uppercase`} />
+            <span className="text-xs font-normal text-muted-foreground">{t('promoHint')}</span>
           </label>
           <label className={field}>
             {t('fields.event')}

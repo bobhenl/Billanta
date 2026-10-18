@@ -1,7 +1,7 @@
 import { Scissors } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import QRCode from 'qrcode';
-import { displayUrl, POSTER_SIZES, posterUrl, type PosterOptions, type PosterSize } from '@/lib/posters';
+import { displayUrl, joinUrl, POSTER_SIZES, posterUrl, type PosterOptions, type PosterSize } from '@/lib/posters';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { cn } from '@/lib/utils';
 import { PosterFit } from './poster-fit';
@@ -54,6 +54,14 @@ function Qr({ svg, className }: { svg: string; className?: string }) {
   return <div className={className} dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
+/**
+ * The code is a passphrase people copy by hand, so it stays as large as its
+ * column allows: about 23 em of mono at ~0.66 em per character, capped at 2.5 em.
+ */
+function codeEm(code: string): string {
+  return `${Math.min(2.5, 23 / (code.length * 0.66)).toFixed(2)}em`;
+}
+
 function Sheet({ copy, size, qrSvg, url, host, promo, tabs }: SheetProps) {
   const dims = POSTER_SIZES[size];
   return (
@@ -98,7 +106,9 @@ function Sheet({ copy, size, qrSvg, url, host, promo, tabs }: SheetProps) {
             {promo && (
               <div className={s.code}>
                 <span className={s.codeLabel}>{copy.codeLabel}</span>
-                <span className={cn(s.codeValue, promo.length > 10 && s.long)}>{promo}</span>
+                <span className={s.codeValue} style={{ fontSize: codeEm(promo) }}>
+                  {promo}
+                </span>
               </div>
             )}
           </div>
@@ -139,16 +149,16 @@ export async function PosterSheet({ options: o }: { options: PosterOptions }) {
       headline: p(`${tpl}.headline`),
       lead: p(`${tpl}.lead`),
       benefits: p.raw(`${tpl}.benefits`) as PosterCopy['benefits'],
-      scan: p('scan'),
+      scan: p(o.promo ? 'scanOrType' : 'scan'),
       codeLabel: p('codeLabel'),
       foot: p('foot'),
       tabTitle: p('tabTitle')
     },
     size: o.size,
     qrSvg: await QRCode.toString(posterUrl(o), { type: 'svg', errorCorrectionLevel: 'M', margin: 0 }),
-    // The code is printed on its own, so the address people type stays short.
-    url: displayUrl(posterUrl({ ...o, promo: '' })),
-    host: displayUrl(SITE_URL),
+    // With a code, the printed address is where people type it by hand.
+    url: displayUrl(o.promo ? joinUrl() : posterUrl(o)),
+    host: displayUrl(o.promo ? joinUrl() : SITE_URL),
     promo: o.promo,
     tabs: o.tabs
   };

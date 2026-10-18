@@ -209,10 +209,6 @@
   overflow-wrap: anywhere;
 }
 
-.codeValue.long {
-  font-size: 1.7em;
-}
-
 .foot {
   margin: 1.2em 0 0;
   color: var(--muted);

@@ -8560,9 +8560,13 @@
     },
     "templates": {
       "school": "Schools",
+      "courses": "Retraining and start-a-business courses",
       "creators": "Creators and freelancers",
-      "event": "Events and coworking",
+      "communities": "Small-business communities",
+      "event": "Events (workshop, meetup)",
+      "coworking": "Coworking (for members)",
       "local": "Local tradespeople (notice board)",
+      "expats": "Expats (English)",
       "generic": "General"
     },
     "langs": {
@@ -8577,7 +8581,10 @@
       "home": "Home page",
       "forSchools": "Schools page",
       "forCreators": "Creators page",
-      "events": "Events page"
+      "events": "Events page",
+      "forCourses": "For courses (/for-courses)",
+      "forCommunities": "For communities (/for-communities)",
+      "forExpats": "For expats (/for-expats)"
     },
     "sizes": {
       "a4": "A4 poster",
@@ -8590,11 +8597,12 @@
     "apply": "Update preview",
     "print": "Print",
     "printHint": "In the print dialog set the scale to 100 % and turn off headers and footers. Choose Save as PDF for a PDF.",
-    "qrTarget": "The QR code leads to:"
+    "qrTarget": "The QR code leads to:",
+    "promoHint": "With a code, the QR leads to /join/CODE and the code is printed large so people can type it."
   },
   "posters": {
     "scan": "Scan or visit",
-    "codeLabel": "Sign-up code",
+    "codeLabel": "Your code",
     "eventLine": "For attendees of {event}",
     "foot": "Free for up to 10 documents a month. No card required.",
     "tabTitle": "Online invoicing",
@@ -8638,7 +8646,7 @@
         ]
       },
       "event": {
-        "eyebrow": "For coworking and community",
+        "eyebrow": "For workshops and meetups",
         "headline": "Invoice right from here. On a laptop or your phone.",
         "lead": "Czech and Slovak invoicing for freelancers and small businesses. ISDOC, VAT, business registers and VIES on every plan.",
         "benefits": [
@@ -8693,7 +8701,84 @@
             "text": "Once an invoice is overdue, we remind the customer by e-mail."
           }
         ]
+      },
+      "courses": {
+        "eyebrow": "For start-a-business courses",
+        "headline": "A business starts with its first invoice. Send yours today.",
+        "lead": "Practise on a sample company, then carry on for real once you have your company ID.",
+        "benefits": [
+          {
+            "title": "Demo, no sign-up",
+            "text": "A sample company for 24 hours, no e-mail or password."
+          },
+          {
+            "title": "Client from the company ID",
+            "text": "Type the ID and the details fill in from the business register."
+          },
+          {
+            "title": "Limits and deadlines",
+            "text": "Turnover towards VAT registration and a tax calendar with deadlines."
+          }
+        ]
+      },
+      "communities": {
+        "eyebrow": "For small-business communities",
+        "headline": "Less paperwork, more time for the work.",
+        "lead": "Invoicing for sole traders and small businesses in Czechia and Slovakia. On your phone or computer.",
+        "benefits": [
+          {
+            "title": "Invoices with a QR payment",
+            "text": "Clients pay from their banking app without retyping the account number."
+          },
+          {
+            "title": "Your accountant gets what they need",
+            "text": "ISDOC plus exports for Pohoda and Money S3."
+          },
+          {
+            "title": "Reminders go out on their own",
+            "text": "Once an invoice is overdue, we remind the customer by e-mail."
+          }
+        ]
+      },
+      "coworking": {
+        "eyebrow": "For coworking members",
+        "headline": "Your invoice is done before your coffee cools.",
+        "lead": "Czech and Slovak invoicing for freelancers and small businesses. On a laptop or your phone.",
+        "benefits": [
+          {
+            "title": "Type the company ID, the rest fills in",
+            "text": "Client details from Czech and Slovak business registers."
+          },
+          {
+            "title": "Invoices with a QR payment",
+            "text": "Clients pay from their banking app without retyping the account number."
+          },
+          {
+            "title": "Your accountant gets what they need",
+            "text": "ISDOC plus exports for Pohoda and Money S3."
+          }
+        ]
+      },
+      "expats": {
+        "eyebrow": "For expats in Czechia and Slovakia",
+        "headline": "Czech invoices, in English.",
+        "lead": "The whole app runs in English. The invoices follow Czech and Slovak rules.",
+        "benefits": [
+          {
+            "title": "Bilingual invoices",
+            "text": "Labels in Czech and English, e.g. Datum vystavení / Issue date."
+          },
+          {
+            "title": "Euros, dollars and more",
+            "text": "The ČNB rate for the supply date fills in and VAT is converted to CZK."
+          },
+          {
+            "title": "Client from the company ID",
+            "text": "Type the IČO and the details fill in from the register."
+          }
+        ]
       }
-    }
+    },
+    "scanOrType": "Scan, or enter the code at"
   }
 }
