@@ -1561,6 +1561,58 @@ export const partners = pgTable("partners", {
 });
 
 // ---------------------------------------------------------------------------
+// promo_codes — GLOBAL (no tenant, no RLS), like partners. Codes Billanta
+// staff hand out at events, to creators and to schools (`src/promo-codes/`).
+// `code` is stored upper case; the unique index is on upper(code) (0070).
+// redemption_count is bumped in the redeeming company's transaction under a
+// row lock, so max_redemptions holds without counting other tenants' rows.
+// ---------------------------------------------------------------------------
+export const promoCodes = pgTable("promo_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: varchar("code", { length: 32 }).notNull(),
+  kind: varchar("kind", { length: 16 }).$type<"event" | "creator" | "school" | "other">().notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  /** Days for trial_days, months for free_months. */
+  benefitValue: integer("benefit_value").notNull(),
+  maxRedemptions: integer("max_redemptions"),
+  redemptionCount: integer("redemption_count").notNull().default(0),
+  /** Inclusive `YYYY-MM-DD` bounds; null = open. */
+  validFrom: date("valid_from"),
+  validUntil: date("valid_until"),
+  active: boolean("active").notNull().default(true),
+  /** Who the code belongs to: the creator, event or school. */
+  ownerLabel: text("owner_label"),
+  note: text("note"),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// promo_redemptions — tenant-scoped (RLS), one per company: which code it
+// came with (attribution for events and creators) and what it got, copied
+// so a later edit of the code doesn't rewrite history. The app may insert
+// its own row; nothing changes or deletes one afterwards. Per-code totals
+// across companies only through promo_code_stats() (0070).
+// ---------------------------------------------------------------------------
+export const promoRedemptions = pgTable("promo_redemptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  promoCodeId: uuid("promo_code_id")
+    .notNull()
+    .references(() => promoCodes.id),
+  code: varchar("code", { length: 32 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  benefitValue: integer("benefit_value").notNull(),
+  source: varchar("source", { length: 16 }).$type<"signup" | "billing">().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // blog_posts — GLOBAL (no tenant, no RLS) articles behind /blog. AI writes
 // only drafts; a platform admin publishes (`src/blog/`). One row per locale,
 // rows of the same article share `translation_key` (hreflang).
