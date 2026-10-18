@@ -13,6 +13,7 @@
  * Pure functions; amounts in CZK.
  */
 import { czTaxYear, OSVC_FLAT_EXPENSE_CAPS, type OsvcFlatRate } from "@faktur/cz-compliance";
+import { withXmlDisclaimer } from "./disclaimer";
 import { dicNumber, header, xmlAttr, type VatSubmitter } from "./vat-returns";
 import type { AccountingBasis } from "./annual-summary";
 
@@ -299,7 +300,7 @@ export function generateCsszOsvc(lines: CsszLines, person: FilingPerson & { vari
   const e = (v: string | number | undefined | null) => xmlAttr(v == null ? "" : String(v));
   const street = [s.cPop, s.cOrient].filter(Boolean).join("/");
   const hv = (v: number) => (main ? `h="${v}" v=""` : `h="" v="${v}"`);
-  return `<?xml version="1.0" encoding="UTF-8"?>
+  return withXmlDisclaimer(`<?xml version="1.0" encoding="UTF-8"?>
 <OSVC xmlns="http://schemas.cssz.cz/OSVC${lines.year}" version="1.0">
   <VENDOR productName="Billanta" productVersion="1.0" />
   <SENDER EmailNotifikace="${e(s.email)}" ISDSreport="3" VerzeProtokolu="1" />
@@ -355,7 +356,7 @@ export function generateCsszOsvc(lines: CsszLines, person: FilingPerson & { vari
     <dat dre="${today.toISOString().slice(0, 10)}" />
   </prehledosvc>
 </OSVC>
-`;
+`);
 }
 
 // ── Přehled pro zdravotní pojišťovnu ────────────────────────────────────

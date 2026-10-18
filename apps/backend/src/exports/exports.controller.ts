@@ -218,7 +218,7 @@ export class ExportsController {
       ...(s.paidSource.social === "settings" || s.paidSource.health === "settings"
         ? ([["Zaplacené zálohy", "podle nastavení měsíčních záloh (výše platná v jednotlivých měsících)"]] as [string, string][])
         : []),
-      ["Pozn.", "Orientační odhad, nenahrazuje daňové přiznání ani přehledy pro ČSSZ a ZP."],
+      ["Pozn.", "Orientační odhad bez záruky. Nenahrazuje daňové přiznání, přehledy pro ČSSZ a ZP ani daňového poradce. Údaje si před použitím ověřte."],
     ];
     const body = "﻿" + rows.map(([k, v]) => `${k};${v.includes(";") ? `"${v}"` : v}`).join("\r\n") + "\r\n";
     this.send(res, body, "text/csv; charset=utf-8", `rocni-prehled-${s.year}.csv`);

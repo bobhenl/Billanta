@@ -10,6 +10,9 @@ import {
   type VatReceivedDoc,
 } from "./vat-returns";
 
+// Prolog, then the caveat comment (no "--" inside, or the XML is malformed), then the root element.
+const DISCLAIMED = /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<!-- (?:(?!--)[^])+ -->\n<Pisemnost[ >]/;
+
 const submitter = submitterFromTenant({
   legalName: "Jan Novák",
   dic: "CZ8001011234",
@@ -87,6 +90,7 @@ describe("generateDphDp3", () => {
     expect(xml).toContain('mesic="9"');
     expect(xml).toContain('d_poddp="10.10.2026"');
     expect(xml).toContain('dic="8001011234"');
+    expect(xml).toMatch(DISCLAIMED);
   });
   it("self-assesses received reverse charge on ř. 10/11 and deducts it on ř. 43/44", () => {
     const xml = generateDphDp3({
@@ -132,6 +136,7 @@ describe("generateDphKh1", () => {
     });
     expect(xml).toContain('<VetaA1 c_radku="1" dic_odb="12345678" c_evid_dd="rc" duzp="15.09.2026" zakl_dane1="50000" kod_pred_pl="4" />');
     expect(warnings).toEqual([]);
+    expect(xml).toMatch(DISCLAIMED);
     expect(xml).toMatch(/<VetaA4 c_radku="1" dic_odb="12345678" c_evid_dd="2026-001" [^>]*zakl_dane1="20000" dan1="4200"/);
     expect(xml).toContain('<VetaA5 zakl_dane1="1000" dan1="210" zakl_dane2="0" dan2="0" />');
     expect(xml).toMatch(/<VetaB2 c_radku="1" dic_dod="87654321" c_evid_dd="FV-9"/);
@@ -240,6 +245,7 @@ describe("generateDphShv", () => {
     const xml = generateDphShv({ issued: [issued(eu), issued({ ...eu, number: "x" }), issued({})], submitter, period, today })!;
     expect(xml).toContain('k_stat="DE" c_vat="123456789" k_pln_eu="3" pln_pocet="2" pln_hodnota="6000"');
     expect(xml.match(/<VetaR /g)).toHaveLength(1);
+    expect(xml).toMatch(DISCLAIMED);
   });
   it("returns null with nothing to report", () => {
     expect(generateDphShv({ issued: [issued({})], submitter, period, today })).toBeNull();
