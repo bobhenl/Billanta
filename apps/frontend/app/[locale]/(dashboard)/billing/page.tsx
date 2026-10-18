@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { auth } from '@/auth';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
@@ -26,12 +27,14 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
   let status: BillingStatus;
   let role: string | null;
   let promo: { redemption: PromoRedemption | null } | null;
+  // A demo company can't redeem a code, so it doesn't get the card at all.
+  const isDemo = Boolean((await auth().catch(() => null))?.isDemo);
   try {
     [status, role, promo] = await Promise.all([
       apiFetch<BillingStatus>('/api/v1/billing/subscription'),
       fetchMyRole(),
       // The promo card is optional: the page still works without it.
-      apiFetch<{ redemption: PromoRedemption | null }>('/api/v1/billing/promo-code').catch(() => null)
+      isDemo ? null : apiFetch<{ redemption: PromoRedemption | null }>('/api/v1/billing/promo-code').catch(() => null)
     ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
