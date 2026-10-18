@@ -200,18 +200,30 @@ migration `0051_trial_billing.sql`.
   `payment_method_types`**, so Stripe shows whatever the dashboard enables
   for the currency and device. `STRIPE_PAYMENT_METHOD_CONFIGURATION`
   (`pmc_...`) picks a specific configuration. `POST .../portal` opens the
-  Customer Portal.
+  Customer Portal. The card subscription is the default and the cheaper
+  way to pay. `POST .../cancel` and `POST .../resume` set or clear cancel
+  at period end, and `POST .../interval` switches monthly/yearly on the
+  same product with a new inline price (`proration_behavior:
+  always_invoice`). Prices are inline `price_data`, so there are no Stripe
+  Price ids to create. The webhook stores the subscription id, currency,
+  period end and cancel date on the tenant (0063), so the panel needs no
+  Stripe call to render.
 - **Bank transfer** (a month or a year, CZK): `POST .../bank-transfer`
   with `months: 1 | 12` (default 12) issues a proforma from
-  `PLATFORM_BILLING_*` at the monthly price or the yearly rate, with a QR
+  `PLATFORM_BILLING_*` at the monthly price or the yearly rate plus
+  `BANK_TRANSFER_SURCHARGE_PERCENT` (`src/billing/plans.ts`, mirrored in
+  the frontend's `lib/plans.ts` and checked by a spec), with a QR
   Platba code and a variable symbol (`YYYY` + 6-digit sequence). A platform
   admin (`PLATFORM_ADMIN_EMAILS`) checks the bank statement and calls
   `POST /v1/admin/billing/proformas/:id/mark-paid`, which extends
   `prepaid_until` by the proforma's months (calendar months, the day
   clamped to the month's end; from the current end while the same plan
   still runs, otherwise from today), pays the referral reward and notifies
-  the company. Nothing renews and no reminder goes out, so a monthly payer
-  requests a new proforma every month. The proforma is a payment request;
+  the company. Nothing renews. `PrepaidRemindersCron` (08:15 Prague) mails
+  the company 14 and 3 days before `prepaid_until` through the outbox,
+  with a renewal proforma (same plan and length as the last one, reused if
+  one is already open) and its QR code attached. It skips companies with a
+  running card subscription. The proforma is a payment request;
   issue the tax document for the payment in your own accounting.
 
 ### Stripe dashboard setup
@@ -222,7 +234,8 @@ migration `0051_trial_billing.sql`.
    Stripe's own bank transfer method is not offered for subscriptions in
    Checkout, which is why transfers go through our proformas.
 2. **Settings > Billing > Customer portal**: allow updating the payment
-   method, viewing invoices and cancelling (at the end of the period).
+   method and viewing invoices. Cancelling there (at the end of the
+   period) can stay on; the billing panel offers it too.
    Leave plan switching off, the plan comes from Checkout metadata.
 3. **Developers > Webhooks**: endpoint
    `https://<domain>/api/v1/billing/stripe/webhook` with

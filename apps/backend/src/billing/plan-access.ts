@@ -81,6 +81,31 @@ export function planAllows(summary: Pick<PlanSummary, "plan" | "enforced">, feat
   return planRank(summary.plan) >= planRank(FEATURE_MIN_PLAN[feature]);
 }
 
+/** Days before a prepaid period's last day that the renewal e-mail goes out. */
+export const PREPAID_REMINDER_DAYS = [14, 3] as const;
+
+/**
+ * Which "prepaid period ends" e-mail is due: 14 or 3 days before
+ * `prepaidUntil` (the last day still paid), counted in calendar days. A
+ * stage counts as sent only for the `prepaidUntil` it was sent for, so a
+ * payment that moves the date starts afresh. Nothing for a company that also
+ * has a live card subscription (it renews by itself) or a period already over.
+ * Within 3 days a company that never got the 14-day one gets the 3-day one.
+ */
+export function prepaidReminderDue(
+  period: { prepaidUntil: string | null; subscriptionLive: boolean },
+  sent: { until: string | null; days: number | null },
+  today: string,
+): 14 | 3 | null {
+  const until = period.prepaidUntil;
+  if (!until || period.subscriptionLive || until < today) return null;
+  const left = Math.round((Date.parse(`${until}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / DAY_MS);
+  const stage = left <= 3 ? 3 : left <= 14 ? 14 : null;
+  if (stage === null) return null;
+  if (sent.until === until && sent.days !== null && sent.days <= stage) return null;
+  return stage;
+}
+
 /**
  * Which "trial ends" message is due: 3 or 1 days before the end, 0 once it
  * ended. `remindedDays` is the stage already sent. Nothing for a company that

@@ -17,6 +17,7 @@ export class CheckoutDto extends createZodDto(
     locale,
   }),
 ) {}
+export class IntervalDto extends createZodDto(z.object({ interval: z.enum(["month", "year"]) })) {}
 export class PortalDto extends createZodDto(z.object({ locale })) {}
 // Without `months` it is a year, as before monthly transfers existed.
 export class BankTransferDto extends createZodDto(z.object({ plan, months: z.union([z.literal(1), z.literal(12)]).default(12) })) {}
@@ -50,6 +51,24 @@ export class SubscriptionController {
   @ApiOperation({ summary: "Stripe Customer Portal URL (payment method, invoices, cancellation)" })
   portal(@Req() req: TenantScopedRequest, @Body() dto: PortalDto) {
     return this.subscriptions.portal(req.tenantDb!, req.user!.tenantId, dto.locale);
+  }
+
+  @Post("cancel")
+  @ApiOperation({ summary: "Stop the card subscription from renewing; the plan runs to the end of the paid period" })
+  cancel(@Req() req: TenantScopedRequest) {
+    return this.subscriptions.setCancelAtPeriodEnd(req.tenantDb!, req.user!.tenantId, true);
+  }
+
+  @Post("resume")
+  @ApiOperation({ summary: "Take back a pending cancellation, so the subscription renews again" })
+  resume(@Req() req: TenantScopedRequest) {
+    return this.subscriptions.setCancelAtPeriodEnd(req.tenantDb!, req.user!.tenantId, false);
+  }
+
+  @Post("interval")
+  @ApiOperation({ summary: "Switch the card subscription between monthly and yearly billing" })
+  changeInterval(@Req() req: TenantScopedRequest, @Body() dto: IntervalDto) {
+    return this.subscriptions.changeInterval(req.tenantDb!, req.user!.tenantId, dto.interval);
   }
 
   @Post("bank-transfer")

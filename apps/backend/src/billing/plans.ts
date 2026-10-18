@@ -30,10 +30,45 @@ export const PLAN_PRICES_MINOR: Record<PaidPlan, Record<PlanCurrency, { monthly:
   business: { CZK: { monthly: 57900, yearly: 47900 }, EUR: { monthly: 2399, yearly: 1999 } },
 };
 
+/**
+ * The prices above are what a card subscription costs (Stripe, renews by
+ * itself). A period paid by bank transfer costs this much more, because each
+ * renewal is a proforma, a reminder and a payment someone pairs by hand.
+ * Change it here only; apps/frontend/lib/plans.ts mirrors it (a spec checks).
+ */
+export const BANK_TRANSFER_SURCHARGE_PERCENT = 10;
+
+export type PaymentMethod = "card" | "transfer";
+
+/**
+ * A per-month card price with the transfer surcharge, rounded up to a whole
+ * koruna (CZK) or cent (EUR), so the price list shows 164 Kč, not 163,90 Kč.
+ */
+export function transferPriceMinor(cardMinor: number, currency: PlanCurrency): number {
+  const step = currency === "CZK" ? 100 : 1;
+  return Math.ceil((cardMinor * (100 + BANK_TRANSFER_SURCHARGE_PERCENT)) / (100 * step)) * step;
+}
+
+/** Per-month prices for a period paid by bank transfer, same shape as PLAN_PRICES_MINOR. */
+export function transferPricesMinor(): Record<PaidPlan, Record<PlanCurrency, { monthly: number; yearly: number }>> {
+  const out = {} as Record<PaidPlan, Record<PlanCurrency, { monthly: number; yearly: number }>>;
+  for (const plan of PAID_PLANS) {
+    const row = {} as Record<PlanCurrency, { monthly: number; yearly: number }>;
+    for (const currency of ["CZK", "EUR"] as const) {
+      const p = PLAN_PRICES_MINOR[plan][currency];
+      row[currency] = { monthly: transferPriceMinor(p.monthly, currency), yearly: transferPriceMinor(p.yearly, currency) };
+    }
+    out[plan] = row;
+  }
+  return out;
+}
+
 /** What one billing period costs: a month, or twelve months at the yearly rate. */
-export function periodPriceMinor(plan: PaidPlan, currency: PlanCurrency, interval: BillingInterval): number {
-  const p = PLAN_PRICES_MINOR[plan][currency];
-  return interval === "year" ? p.yearly * 12 : p.monthly;
+export function periodPriceMinor(plan: PaidPlan, currency: PlanCurrency, interval: BillingInterval, method: PaymentMethod = "card"): number {
+  const card = PLAN_PRICES_MINOR[plan][currency];
+  const perMonth = interval === "year" ? card.yearly : card.monthly;
+  const price = method === "transfer" ? transferPriceMinor(perMonth, currency) : perMonth;
+  return interval === "year" ? price * 12 : price;
 }
 
 export function isPaidPlan(value: unknown): value is PaidPlan {

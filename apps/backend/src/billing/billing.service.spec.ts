@@ -208,7 +208,10 @@ describe("BillingService", () => {
 
       await service.handleStripeWebhook(Buffer.from("{}"), "sig");
 
-      expect(tenantBilling.updateSubscriptionStatus).toHaveBeenCalledWith("tenant-1", "canceled");
+      expect(tenantBilling.updateSubscriptionStatus).toHaveBeenCalledWith("tenant-1", "canceled", {
+        stripeSubscriptionId: null,
+        subscriptionCancelAt: null,
+      });
     });
 
     it("invoice.paid clears past_due via clearPastDue (not a blind set to active)", async () => {

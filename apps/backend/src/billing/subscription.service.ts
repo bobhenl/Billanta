@@ -14,8 +14,18 @@ import type Stripe from "stripe";
 import * as schema from "../../drizzle/schema";
 import { platformBillingEntity, proformaAmounts, proformaIdentifiers, proformaSpayd, type ProformaMonths } from "./bank-transfer";
 import { planSummary } from "./plan-access";
-import { PLAN_PRICES_MINOR, periodPriceMinor, type BillingInterval, type PaidPlan, type PlanCurrency } from "./plans";
+import {
+  BANK_TRANSFER_SURCHARGE_PERCENT,
+  PLAN_PRICES_MINOR,
+  isPaidPlan,
+  periodPriceMinor,
+  transferPricesMinor,
+  type BillingInterval,
+  type PaidPlan,
+  type PlanCurrency,
+} from "./plans";
 import { STRIPE_CLIENT } from "./stripe-client.provider";
+import { stripeSubscriptionDetails, subscriptionItem } from "./stripe-subscription";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -59,11 +69,25 @@ export class SubscriptionService {
   async status(db: TenantDb, tenantId: string) {
     const t = await this.tenant(db, tenantId);
     const payee = platformBillingEntity();
+    const plan = planSummary(t, new Date());
     return {
-      plan: planSummary(t, new Date()),
+      plan,
       subscriptionInterval: t.subscriptionInterval,
+      // Only while it is the company's live plan; a canceled one has nothing to manage.
+      subscription:
+        plan.source === "subscription"
+          ? {
+              interval: t.subscriptionInterval,
+              currency: t.subscriptionCurrency,
+              periodEnd: t.subscriptionPeriodEnd?.toISOString() ?? null,
+              cancelAt: t.subscriptionCancelAt?.toISOString() ?? null,
+            }
+          : null,
       hasStripeCustomer: Boolean(t.stripeCustomerId),
+      // Card subscription prices (the headline) and the dearer bank-transfer ones.
       prices: PLAN_PRICES_MINOR,
+      transferPrices: transferPricesMinor(),
+      transferSurchargePercent: BANK_TRANSFER_SURCHARGE_PERCENT,
       card: { enabled: this.stripeConfigured },
       bankTransfer: payee
         ? {
@@ -153,13 +177,114 @@ export class SubscriptionService {
   }
 
   /**
+   * The company's live Stripe subscription. The stored id is checked against
+   * the company's own customer, so a stale or foreign id can't be acted on;
+   * without one (subscribed before 0063) the customer's subscriptions are
+   * searched for the one still running.
+   */
+  private async liveSubscription(db: TenantDb, tenantId: string) {
+    if (!this.stripeConfigured) throw new ServiceUnavailableException("billing_not_configured");
+    const t = await this.tenant(db, tenantId);
+    if (!t.stripeCustomerId) throw new BadRequestException("no_stripe_customer");
+    const running = (s: Stripe.Subscription) =>
+      (s.status === "active" || s.status === "trialing" || s.status === "past_due") &&
+      (typeof s.customer === "string" ? s.customer : s.customer.id) === t.stripeCustomerId;
+    let sub: Stripe.Subscription | null = null;
+    if (t.stripeSubscriptionId) {
+      sub = await this.stripe.subscriptions.retrieve(t.stripeSubscriptionId).catch(() => null);
+    }
+    if (!sub || !running(sub)) {
+      const list = await this.stripe.subscriptions.list({ customer: t.stripeCustomerId, status: "all", limit: 10 });
+      sub = list.data.find(running) ?? null;
+    }
+    if (!sub) throw new BadRequestException("no_subscription");
+    return { t, sub };
+  }
+
+  /** Writes what Stripe answered, so the panel is right before the webhook arrives. */
+  private async saveSubscription(db: TenantDb, tenantId: string, sub: Stripe.Subscription) {
+    const { subscriptionInterval, ...details } = stripeSubscriptionDetails(sub);
+    await db
+      .update(schema.tenants)
+      .set({ ...details, ...(subscriptionInterval ? { subscriptionInterval } : {}), updatedAt: new Date() })
+      .where(eq(schema.tenants.id, tenantId));
+    return {
+      interval: subscriptionInterval,
+      currency: details.subscriptionCurrency,
+      periodEnd: details.subscriptionPeriodEnd?.toISOString() ?? null,
+      cancelAt: details.subscriptionCancelAt?.toISOString() ?? null,
+    };
+  }
+
+  /**
+   * Stop renewing (the plan runs to the end of the paid period) or take that
+   * back. Nothing is refunded and nothing is charged.
+   */
+  async setCancelAtPeriodEnd(db: TenantDb, tenantId: string, cancel: boolean) {
+    const { sub } = await this.liveSubscription(db, tenantId);
+    // An end date set some other way (API, newer portal) is a plain cancel_at; clear that too.
+    const plainCancelAt = !cancel && sub.cancel_at && !sub.cancel_at_period_end;
+    const updated = await this.stripe.subscriptions.update(
+      sub.id,
+      plainCancelAt ? { cancel_at: "" } : { cancel_at_period_end: cancel },
+    );
+    this.logger.log(`tenant ${tenantId} ${cancel ? "set" : "cleared"} cancel at period end on ${sub.id}`);
+    return this.saveSubscription(db, tenantId, updated);
+  }
+
+  /**
+   * Monthly <-> yearly on the same plan and currency. The subscription's own
+   * product is reused with a new inline price at today's card rate, the same
+   * way Checkout prices it, so no Stripe Price objects have to exist. Stripe
+   * restarts the billing period on an interval change; the unused part of the
+   * old one is credited on the invoice issued right away.
+   */
+  async changeInterval(db: TenantDb, tenantId: string, interval: BillingInterval) {
+    const { t, sub } = await this.liveSubscription(db, tenantId);
+    const item = subscriptionItem(sub);
+    if (!item) throw new BadRequestException("no_subscription");
+    if (sub.status === "past_due") throw new ConflictException("subscription_past_due");
+    if (item.price.recurring?.interval === interval) throw new ConflictException("same_interval");
+    const metaPlan = sub.metadata?.plan;
+    const plan = isPaidPlan(metaPlan) ? metaPlan : t.subscriptionPlan;
+    const currency = item.price.currency.toUpperCase();
+    if (!isPaidPlan(plan) || (currency !== "CZK" && currency !== "EUR")) throw new BadRequestException("subscription_not_changeable");
+    const product = typeof item.price.product === "string" ? item.price.product : item.price.product.id;
+    const updated = await this.stripe.subscriptions.update(sub.id, {
+      items: [
+        {
+          id: item.id,
+          price_data: {
+            currency: item.price.currency,
+            product,
+            unit_amount: periodPriceMinor(plan, currency, interval),
+            recurring: { interval },
+          },
+        },
+      ],
+      proration_behavior: "always_invoice",
+      metadata: { ...sub.metadata, interval },
+    });
+    this.logger.log(`tenant ${tenantId} switched ${sub.id} to ${interval}ly billing`);
+    return this.saveSubscription(db, tenantId, updated);
+  }
+
+  /**
    * Issues a proforma for a month or a year of `plan` payable by bank
    * transfer. It is a request for payment, not a tax document; the plan
    * starts (or the running prepaid period grows by `months`) when a platform
    * admin marks the payment received (`AdminBillingController`). Nothing
-   * renews by itself: the next month is a new proforma.
+   * renews by itself: the next period is a new proforma, which
+   * `PrepaidRemindersCron` issues ahead of the end with `dueDate` set.
    */
-  async requestProforma(db: TenantDb, tenantId: string, userId: string | undefined, plan: PaidPlan, months: ProformaMonths) {
+  async requestProforma(
+    db: TenantDb,
+    tenantId: string,
+    userId: string | undefined,
+    plan: PaidPlan,
+    months: ProformaMonths,
+    opts: { dueDate?: string } = {},
+  ) {
     const payee = platformBillingEntity();
     if (!payee) throw new ServiceUnavailableException("bank_transfer_not_configured");
     const [{ pending }] = await db
@@ -183,7 +308,7 @@ export class SubscriptionService {
       amountMinor: amounts.amountMinor,
       vatRate: payee.vatRate,
       totalMinor: amounts.totalMinor,
-      dueDate: isoDate(due),
+      dueDate: opts.dueDate ?? isoDate(due),
       createdByUserId: userId ?? null,
     });
     this.logger.log(`tenant ${tenantId} requested proforma ${ids.number} (${plan}, ${months} months)`);
