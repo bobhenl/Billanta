@@ -8545,5 +8545,78 @@
       "buttonView": "Demo as {role}"
     },
     "signOutAndStart": "Sign out and open the demo"
+  },
+  "promo": {
+    "signupNote": "Promo code {code} will be applied as soon as you set up your company.",
+    "appliedToast": "Promo code {code} applied: {benefit}.",
+    "notAppliedToast": "The promo code could not be applied. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# day} other {# days}} of the {plan} plan to try",
+      "free_months": "{count, plural, one {# month} other {# months}} of the {plan} plan free"
+    },
+    "card": {
+      "title": "I have a promo code",
+      "hint": "A code from an event, a creator or a school. Each company can redeem one.",
+      "label": "Promo code",
+      "placeholder": "e.g. STARTUP-WEEK",
+      "submit": "Apply",
+      "applied": "Code {code} applied ({date})"
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "promo_invalid": "This code isn't valid. Check that it is typed correctly.",
+      "promo_expired": "This code has expired.",
+      "promo_used_up": "This code has reached its redemption limit.",
+      "promo_already_applied": "Your company has already redeemed a promo code. Codes can't be combined.",
+      "promo_subscription_active": "The company pays by card subscription, so free months can't be added. Write to us and we'll sort it out.",
+      "promo_plan_conflict": "The company has another plan paid for. The code can be redeemed once that period ends.",
+      "promo_rate_limited": "Too many attempts. Please try again in an hour.",
+      "forbidden": "Only the company's owner or an admin can redeem a promo code."
+    }
+  },
+  "adminPromoCodes": {
+    "title": "Promo codes",
+    "description": "Codes for events, creators and schools. A code is switched off, never deleted – companies that redeemed it keep it.",
+    "loadError": "Could not load the promo codes.",
+    "empty": "No promo codes yet.",
+    "failed": "Failed",
+    "created": "Code created.",
+    "activated": "Code switched on.",
+    "deactivated": "Code switched off.",
+    "activate": "Switch on",
+    "deactivate": "Switch off",
+    "inactive": "off",
+    "validity": "valid {from} – {until}",
+    "used": "{used} redeemed",
+    "usedOf": "{used} / {max} redeemed",
+    "paying": "{count, plural, one {# paying} other {# paying}}",
+    "kind": {
+      "event": "Event",
+      "creator": "Creator",
+      "school": "School",
+      "other": "Other"
+    },
+    "form": {
+      "title": "New code",
+      "code": "Code",
+      "kind": "Type",
+      "benefitType": "Benefit",
+      "trialDays": "Trial days",
+      "freeMonths": "Free months",
+      "value": "Amount",
+      "plan": "Plan",
+      "maxRedemptions": "Max. redemptions",
+      "unlimited": "unlimited",
+      "ownerLabel": "Belongs to",
+      "ownerPlaceholder": "e.g. Startup Week Brno",
+      "validFrom": "Valid from",
+      "validUntil": "Valid until",
+      "note": "Note",
+      "submit": "Create code"
+    },
+    "errors": {
+      "code_taken": "That code already exists.",
+      "invalid_dates": "The end date is before the start date."
+    }
   }
 }

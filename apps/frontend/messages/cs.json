@@ -8546,5 +8546,78 @@
       "buttonView": "Demo jako {role}"
     },
     "signOutAndStart": "Odhlásit se a otevřít demo"
+  },
+  "promo": {
+    "signupNote": "Promo kód {code} se uplatní hned po založení firmy.",
+    "appliedToast": "Promo kód {code} je uplatněný: {benefit}.",
+    "notAppliedToast": "Promo kód se nepodařilo uplatnit. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} na zkoušku",
+      "free_months": "{count, plural, one {# měsíc} few {# měsíce} other {# měsíců}} tarifu {plan} zdarma"
+    },
+    "card": {
+      "title": "Mám promo kód",
+      "hint": "Kód z akce, od tvůrce nebo ze školy. Každá firma může uplatnit jen jeden.",
+      "label": "Promo kód",
+      "placeholder": "např. STARTUP-WEEK",
+      "submit": "Uplatnit",
+      "applied": "Uplatněný kód {code} ({date})"
+    },
+    "errors": {
+      "generic": "Něco se nepovedlo. Zkuste to prosím znovu.",
+      "promo_invalid": "Tento kód neplatí. Zkontrolujte, jestli je opsaný správně.",
+      "promo_expired": "Platnost tohoto kódu už skončila.",
+      "promo_used_up": "Tento kód už si uplatnil maximální počet firem.",
+      "promo_already_applied": "Vaše firma už jeden promo kód uplatnila. Kódy se nedají kombinovat.",
+      "promo_subscription_active": "Firma platí předplatné kartou, takže volné měsíce nejdou přidat. Napište nám a domluvíme se.",
+      "promo_plan_conflict": "Firma má zaplacený jiný tarif. Kód půjde uplatnit, až to období skončí.",
+      "promo_rate_limited": "Příliš mnoho pokusů. Zkuste to prosím za hodinu.",
+      "forbidden": "Promo kód může uplatnit jen vlastník nebo správce firmy."
+    }
+  },
+  "adminPromoCodes": {
+    "title": "Promo kódy",
+    "description": "Kódy pro akce, tvůrce a školy. Kód se nemaže, jen vypne – firmy, které ho uplatnily, si ho ponechají.",
+    "loadError": "Promo kódy se nepodařilo načíst.",
+    "empty": "Zatím žádné promo kódy.",
+    "failed": "Nepovedlo se",
+    "created": "Kód je vytvořený.",
+    "activated": "Kód je zapnutý.",
+    "deactivated": "Kód je vypnutý.",
+    "activate": "Zapnout",
+    "deactivate": "Vypnout",
+    "inactive": "vypnutý",
+    "validity": "platí {from} – {until}",
+    "used": "{used} uplatnění",
+    "usedOf": "{used} / {max} uplatnění",
+    "paying": "{count, plural, one {# platí} few {# platí} other {# platí}}",
+    "kind": {
+      "event": "Akce",
+      "creator": "Tvůrce",
+      "school": "Škola",
+      "other": "Jiné"
+    },
+    "form": {
+      "title": "Nový kód",
+      "code": "Kód",
+      "kind": "Typ",
+      "benefitType": "Výhoda",
+      "trialDays": "Dny zkušební doby",
+      "freeMonths": "Měsíce zdarma",
+      "value": "Počet",
+      "plan": "Tarif",
+      "maxRedemptions": "Max. uplatnění",
+      "unlimited": "bez omezení",
+      "ownerLabel": "Komu patří",
+      "ownerPlaceholder": "např. Startup Week Brno",
+      "validFrom": "Platí od",
+      "validUntil": "Platí do",
+      "note": "Poznámka",
+      "submit": "Vytvořit kód"
+    },
+    "errors": {
+      "code_taken": "Takový kód už existuje.",
+      "invalid_dates": "Konec platnosti je před jejím začátkem."
+    }
   }
 }
