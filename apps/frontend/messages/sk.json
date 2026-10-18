@@ -6809,7 +6809,8 @@
           "notesSk": [
             "Na Slovensku sa poistné platí do 8. dňa nasledujúceho mesiaca: sociálne Sociálnej poisťovni a zdravotné vašej zdravotnej poisťovni."
           ],
-          "none": "Pre tento rok zatiaľ nemáme údaje."
+          "none": "Pre tento rok zatiaľ nemáme údaje.",
+          "previousYears": "Predchádzajúce roky"
         },
         "fx": {
           "name": "Prevodník kurzov ČNB",

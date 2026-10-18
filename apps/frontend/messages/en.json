@@ -6876,7 +6876,8 @@
           "notesSk": [
             "In Slovakia both are due by the 8th of the following month: social insurance to the Sociálna poisťovňa and health insurance to your health insurer."
           ],
-          "none": "No data for this year yet."
+          "none": "No data for this year yet.",
+          "previousYears": "Previous years"
         },
         "fx": {
           "name": "ČNB exchange rate converter",

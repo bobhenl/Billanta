@@ -6877,7 +6877,8 @@
           "notesSk": [
             "Na Slovensku se odvody platí do 8. dne následujícího měsíce, sociální poistné Sociálnej poisťovni a zdravotné poistné své zdravotní pojišťovně."
           ],
-          "none": "Pro tento rok zatím nemáme údaje."
+          "none": "Pro tento rok zatím nemáme údaje.",
+          "previousYears": "Předchozí roky"
         },
         "fx": {
           "name": "Převodník kurzů ČNB",
