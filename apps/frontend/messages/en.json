@@ -4518,7 +4518,16 @@
       "related": "Linked document",
       "relatedHint": "Linked to another document: a credit note to an invoice, an invoice from a proforma or a quote.",
       "needsAttention": "Needs review",
-      "needsAttentionHint": "Documents flagged for review, typically AI drafts with lower confidence."
+      "needsAttentionHint": "Documents flagged for review, typically AI drafts with lower confidence.",
+      "find": "Search filters…",
+      "findNone": "No filter matches.",
+      "groups": {
+        "customer": "Customer",
+        "money": "Amounts and payment",
+        "communication": "Sending and customer response",
+        "content": "Document content",
+        "origin": "Origin and links"
+      }
     },
     "remindersSent": "{count, plural, one {# reminder sent} other {# reminders sent}}, last on {date}.",
     "attachments": {

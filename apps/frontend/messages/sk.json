@@ -4519,7 +4519,16 @@
       "related": "Naviazaný doklad",
       "relatedHint": "Doklad má väzbu na iný: dobropis k faktúre, faktúra zo zálohy alebo z ponuky.",
       "needsAttention": "Vyžaduje kontrolu",
-      "needsAttentionHint": "Doklady označené na kontrolu, typicky AI koncepty s nižšou istotou."
+      "needsAttentionHint": "Doklady označené na kontrolu, typicky AI koncepty s nižšou istotou.",
+      "find": "Hľadať filter…",
+      "findNone": "Žiadny filter nezodpovedá.",
+      "groups": {
+        "customer": "Zákazník",
+        "money": "Sumy a úhrada",
+        "communication": "Odoslanie a reakcia zákazníka",
+        "content": "Obsah dokladu",
+        "origin": "Pôvod a väzby"
+      }
     },
     "remindersSent": "{count, plural, one {Odoslaná # upomienka} few {Odoslané # upomienky} other {Odoslaných # upomienok}}, naposledy {date}.",
     "attachments": {

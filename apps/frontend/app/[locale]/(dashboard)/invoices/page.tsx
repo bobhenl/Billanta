@@ -11,7 +11,7 @@ import { CONTACT_COLORS, isContactColor } from '@/lib/contact-colors';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { StatusLegend } from '@/components/status-legend';
-import { AmountRange, amountParam, FilterField, filterFieldClass as field, FilterPanel, type FilterPill } from '@/components/filter-panel';
+import { AmountRange, amountParam, FilterField, filterFieldClass as field, FilterGroup, FilterPanel, type FilterPill } from '@/components/filter-panel';
 import { DismissableDetails } from '@/components/dismissable-details';
 import { DATE_PRESETS, isDatePreset, parseQuickPrefs, presetFilters, QUICK_COOKIE } from '@/lib/invoice-list-prefs';
 import { bankAccountLine, type BankAccount } from '@/lib/bank-account';
@@ -436,250 +436,260 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
         keep={{ type: filters.type, status: filters.status, q: filters.q, date_field: filters.date_field, from: filters.from, to: filters.to }}
         clearHref={hrefWith(filters, Object.fromEntries(MODAL_KEYS.map((k) => [k, undefined])))}
       >
-        <FilterField label={tDoc('filters.customer')}>
-          <select name="contact_id" defaultValue={filters.contact_id ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {[...customers]
-              .sort((a, b) => a.legalName.localeCompare(b.legalName, locale))
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.legalName}
-                </option>
-              ))}
-          </select>
-        </FilterField>
-        {customers.some((c) => c.color) && (
-          <FilterField label={tDoc('filters.customerColor')}>
-            <select name="contact_color" defaultValue={filters.contact_color ?? ''} className={field}>
+        <FilterGroup title={tDoc('filters.groups.customer')}>
+          <FilterField label={tDoc('filters.customer')}>
+            <select name="contact_id" defaultValue={filters.contact_id ?? ''} className={field}>
               <option value="">{tDoc('filters.any')}</option>
-              {CONTACT_COLORS.filter((c) => customers.some((x) => x.color === c)).map((c) => (
+              {[...customers]
+                .sort((a, b) => a.legalName.localeCompare(b.legalName, locale))
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.legalName}
+                  </option>
+                ))}
+            </select>
+          </FilterField>
+          {customers.some((c) => c.color) && (
+            <FilterField label={tDoc('filters.customerColor')}>
+              <select name="contact_color" defaultValue={filters.contact_color ?? ''} className={field}>
+                <option value="">{tDoc('filters.any')}</option>
+                {CONTACT_COLORS.filter((c) => customers.some((x) => x.color === c)).map((c) => (
+                  <option key={c} value={c}>
+                    {tColors(c)}
+                  </option>
+                ))}
+              </select>
+            </FilterField>
+          )}
+          <FilterField label={tDoc('filters.country')}>
+            <select name="country" defaultValue={filters.country ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {COUNTRIES.map((c) => (
                 <option key={c} value={c}>
-                  {tColors(c)}
+                  {tDoc(`filters.countries.${c}`)}
                 </option>
               ))}
             </select>
           </FilterField>
-        )}
-        <FilterField label={tDoc('filters.item')}>
-          <input name="item" defaultValue={filters.item} placeholder={tDoc('filters.itemPlaceholder')} className={cn(field, 'w-full')} />
-        </FilterField>
-        <AmountRange label={tDoc('filters.amount')} min={filters.amount_min} max={filters.amount_max} minLabel={tDoc('filters.min')} maxLabel={tDoc('filters.max')} />
-        <FilterField label={tDoc('filters.currency')}>
-          <select name="currency" defaultValue={filters.currency ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {CURRENCIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField label={tDoc('fields.paymentMethod')}>
-          <select name="payment_method" defaultValue={filters.payment_method ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {PAYMENT_METHODS.map((m) => (
-              <option key={m} value={m}>
-                {tDoc(`payment.${m}`)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField label={tDoc('filters.paidState')}>
-          <select name="paid_state" defaultValue={filters.paid_state ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {PAID_STATES.map((p) => (
-              <option key={p} value={p}>
-                {tDoc(`filters.paidStates.${p}`)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.overdueDaysHint')}>
-              <span>{tDoc('filters.overdueDays')}</span>
-            </InfoHint>
-          }
-        >
-          <select name="overdue_days" defaultValue={filters.overdue_days ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {['1', '7', '14', '30', '60', '90'].concat(filters.overdue_days && !['1', '7', '14', '30', '60', '90'].includes(filters.overdue_days) ? [filters.overdue_days] : []).map((d) => (
-              <option key={d} value={d}>
-                {tDoc('filters.overduePill').replace('#', d)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField label={tDoc('filters.sent')}>{yesNoSelect('sent', tDoc('filters.sentYes'), tDoc('filters.sentNo'))}</FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.viewedHint')}>
-              <span>{tDoc('filters.viewed')}</span>
-            </InfoHint>
-          }
-        >
-          {yesNoSelect('viewed')}
-        </FilterField>
-        <FilterField label={tDoc('filters.reminded')}>{yesNoSelect('reminded')}</FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.vatRateHint')}>
-              <span>{tDoc('filters.vatRate')}</span>
-            </InfoHint>
-          }
-        >
-          <select name="vat_rate" defaultValue={filters.vat_rate ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {VAT_RATES.map((r) => (
-              <option key={r} value={r}>
-                {r} %
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField label={tDoc('filters.reverseCharge')}>{yesNoSelect('reverse_charge')}</FilterField>
-        <FilterField label={tDoc('filters.language')}>
-          <select name="language" defaultValue={filters.language ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {LANGUAGES.map((l) => (
-              <option key={l} value={l}>
-                {tDoc(`filters.languages.${l}`)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField label={tDoc('filters.source')}>
-          <select name="source" defaultValue={filters.source ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {SOURCES.map((src) => (
-              <option key={src} value={src}>
-                {tDoc(`filters.sources.${src}`)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        {bankAccounts.length > 0 && (
-          <FilterField label={tDoc('filters.bankAccount')}>
-            <select name="bank_account_id" defaultValue={filters.bank_account_id ?? ''} className={field}>
+        </FilterGroup>
+        <FilterGroup title={tDoc('filters.groups.money')}>
+          <AmountRange label={tDoc('filters.amount')} min={filters.amount_min} max={filters.amount_max} minLabel={tDoc('filters.min')} maxLabel={tDoc('filters.max')} />
+          <AmountRange
+            label={
+              <InfoHint hint={tDoc('filters.netHint')}>
+                <span>{tDoc('filters.net')}</span>
+              </InfoHint>
+            }
+            names={['net_min', 'net_max']}
+            min={filters.net_min}
+            max={filters.net_max}
+            minLabel={tDoc('filters.min')}
+            maxLabel={tDoc('filters.max')}
+          />
+          <FilterField label={tDoc('filters.currency')}>
+            <select name="currency" defaultValue={filters.currency ?? ''} className={field}>
               <option value="">{tDoc('filters.any')}</option>
-              {bankAccounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.label} ({bankAccountLine(a)})
+              {CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
                 </option>
               ))}
             </select>
           </FilterField>
-        )}
-        <FilterField label={tDoc('filters.attachments')}>{yesNoSelect('attachments')}</FilterField>
-        <FilterField label={tDoc('filters.internalNote')}>{yesNoSelect('internal_note')}</FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.clientResponseHint')}>
-              <span>{tDoc('filters.clientResponse')}</span>
-            </InfoHint>
-          }
-        >
-          <select name="client_response" defaultValue={filters.client_response ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {CLIENT_RESPONSES.map((r) => (
-              <option key={r} value={r}>
-                {tDoc(`filters.clientResponses.${r}`)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.noteHint')}>
-              <span>{tDoc('filters.note')}</span>
-            </InfoHint>
-          }
-        >
-          <input name="note" defaultValue={filters.note} placeholder={tDoc('filters.notePlaceholder')} className={cn(field, 'w-full')} />
-        </FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.symbolHint')}>
-              <span>{tDoc('filters.symbol')}</span>
-            </InfoHint>
-          }
-        >
-          <input name="symbol" inputMode="numeric" pattern="[0-9]{1,10}" defaultValue={filters.symbol} className={cn(field, 'w-full')} />
-        </FilterField>
-        <FilterField label={tDoc('fields.orderNumber')}>
-          <input name="order_number" defaultValue={filters.order_number} className={cn(field, 'w-full')} />
-        </FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.customFieldHint')}>
-              <span>{tDoc('filters.customField')}</span>
-            </InfoHint>
-          }
-        >
-          <input name="custom_field" defaultValue={filters.custom_field} placeholder={tDoc('filters.customFieldPlaceholder')} className={cn(field, 'w-full')} />
-        </FilterField>
-        <FilterField label={tDoc('filters.hasCustomFields')}>{yesNoSelect('has_custom_fields')}</FilterField>
-        <AmountRange
-          label={
-            <InfoHint hint={tDoc('filters.netHint')}>
-              <span>{tDoc('filters.net')}</span>
-            </InfoHint>
-          }
-          names={['net_min', 'net_max']}
-          min={filters.net_min}
-          max={filters.net_max}
-          minLabel={tDoc('filters.min')}
-          maxLabel={tDoc('filters.max')}
-        />
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.dueMinHint')}>
-              <span>{tDoc('filters.dueMin')}</span>
-            </InfoHint>
-          }
-        >
-          <input type="number" name="due_min" min={0} step="any" inputMode="decimal" defaultValue={filters.due_min} className={cn(field, 'w-full')} />
-        </FilterField>
-        <FilterField label={tDoc('filters.country')}>
-          <select name="country" defaultValue={filters.country ?? ''} className={field}>
-            <option value="">{tDoc('filters.any')}</option>
-            {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
-                {tDoc(`filters.countries.${c}`)}
-              </option>
-            ))}
-          </select>
-        </FilterField>
-        {team.members.length > 1 && (
-          <FilterField label={tDoc('filters.issuedBy')}>
-            <select name="issued_by" defaultValue={filters.issued_by ?? ''} className={field}>
+          <FilterField label={tDoc('fields.paymentMethod')}>
+            <select name="payment_method" defaultValue={filters.payment_method ?? ''} className={field}>
               <option value="">{tDoc('filters.any')}</option>
-              {team.members.map((m) => (
-                <option key={m.userId} value={m.userId}>
-                  {m.name || m.email}
+              {PAYMENT_METHODS.map((m) => (
+                <option key={m} value={m}>
+                  {tDoc(`payment.${m}`)}
                 </option>
               ))}
             </select>
           </FilterField>
-        )}
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.relatedHint')}>
-              <span>{tDoc('filters.related')}</span>
-            </InfoHint>
-          }
-        >
-          {yesNoSelect('related')}
-        </FilterField>
-        <FilterField
-          label={
-            <InfoHint hint={tDoc('filters.needsAttentionHint')}>
-              <span>{tDoc('filters.needsAttention')}</span>
-            </InfoHint>
-          }
-        >
-          {yesNoSelect('needs_attention')}
-        </FilterField>
+          <FilterField label={tDoc('filters.paidState')}>
+            <select name="paid_state" defaultValue={filters.paid_state ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {PAID_STATES.map((p) => (
+                <option key={p} value={p}>
+                  {tDoc(`filters.paidStates.${p}`)}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.overdueDaysHint')}>
+                <span>{tDoc('filters.overdueDays')}</span>
+              </InfoHint>
+            }
+          >
+            <select name="overdue_days" defaultValue={filters.overdue_days ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {['1', '7', '14', '30', '60', '90'].concat(filters.overdue_days && !['1', '7', '14', '30', '60', '90'].includes(filters.overdue_days) ? [filters.overdue_days] : []).map((d) => (
+                <option key={d} value={d}>
+                  {tDoc('filters.overduePill').replace('#', d)}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.dueMinHint')}>
+                <span>{tDoc('filters.dueMin')}</span>
+              </InfoHint>
+            }
+          >
+            <input type="number" name="due_min" min={0} step="any" inputMode="decimal" defaultValue={filters.due_min} className={cn(field, 'w-full')} />
+          </FilterField>
+          {bankAccounts.length > 0 && (
+            <FilterField label={tDoc('filters.bankAccount')}>
+              <select name="bank_account_id" defaultValue={filters.bank_account_id ?? ''} className={field}>
+                <option value="">{tDoc('filters.any')}</option>
+                {bankAccounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.label} ({bankAccountLine(a)})
+                  </option>
+                ))}
+              </select>
+            </FilterField>
+          )}
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.vatRateHint')}>
+                <span>{tDoc('filters.vatRate')}</span>
+              </InfoHint>
+            }
+          >
+            <select name="vat_rate" defaultValue={filters.vat_rate ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {VAT_RATES.map((r) => (
+                <option key={r} value={r}>
+                  {r} %
+                </option>
+              ))}
+            </select>
+          </FilterField>
+          <FilterField label={tDoc('filters.reverseCharge')}>{yesNoSelect('reverse_charge')}</FilterField>
+        </FilterGroup>
+        <FilterGroup title={tDoc('filters.groups.communication')}>
+          <FilterField label={tDoc('filters.sent')}>{yesNoSelect('sent', tDoc('filters.sentYes'), tDoc('filters.sentNo'))}</FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.viewedHint')}>
+                <span>{tDoc('filters.viewed')}</span>
+              </InfoHint>
+            }
+          >
+            {yesNoSelect('viewed')}
+          </FilterField>
+          <FilterField label={tDoc('filters.reminded')}>{yesNoSelect('reminded')}</FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.clientResponseHint')}>
+                <span>{tDoc('filters.clientResponse')}</span>
+              </InfoHint>
+            }
+          >
+            <select name="client_response" defaultValue={filters.client_response ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {CLIENT_RESPONSES.map((r) => (
+                <option key={r} value={r}>
+                  {tDoc(`filters.clientResponses.${r}`)}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+        </FilterGroup>
+        <FilterGroup title={tDoc('filters.groups.content')}>
+          <FilterField label={tDoc('filters.item')}>
+            <input name="item" defaultValue={filters.item} placeholder={tDoc('filters.itemPlaceholder')} className={cn(field, 'w-full')} />
+          </FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.noteHint')}>
+                <span>{tDoc('filters.note')}</span>
+              </InfoHint>
+            }
+          >
+            <input name="note" defaultValue={filters.note} placeholder={tDoc('filters.notePlaceholder')} className={cn(field, 'w-full')} />
+          </FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.symbolHint')}>
+                <span>{tDoc('filters.symbol')}</span>
+              </InfoHint>
+            }
+          >
+            <input name="symbol" inputMode="numeric" pattern="[0-9]{1,10}" defaultValue={filters.symbol} className={cn(field, 'w-full')} />
+          </FilterField>
+          <FilterField label={tDoc('fields.orderNumber')}>
+            <input name="order_number" defaultValue={filters.order_number} className={cn(field, 'w-full')} />
+          </FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.customFieldHint')}>
+                <span>{tDoc('filters.customField')}</span>
+              </InfoHint>
+            }
+          >
+            <input name="custom_field" defaultValue={filters.custom_field} placeholder={tDoc('filters.customFieldPlaceholder')} className={cn(field, 'w-full')} />
+          </FilterField>
+          <FilterField label={tDoc('filters.hasCustomFields')}>{yesNoSelect('has_custom_fields')}</FilterField>
+          <FilterField label={tDoc('filters.attachments')}>{yesNoSelect('attachments')}</FilterField>
+          <FilterField label={tDoc('filters.internalNote')}>{yesNoSelect('internal_note')}</FilterField>
+          <FilterField label={tDoc('filters.language')}>
+            <select name="language" defaultValue={filters.language ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {LANGUAGES.map((l) => (
+                <option key={l} value={l}>
+                  {tDoc(`filters.languages.${l}`)}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+        </FilterGroup>
+        <FilterGroup title={tDoc('filters.groups.origin')}>
+          <FilterField label={tDoc('filters.source')}>
+            <select name="source" defaultValue={filters.source ?? ''} className={field}>
+              <option value="">{tDoc('filters.any')}</option>
+              {SOURCES.map((src) => (
+                <option key={src} value={src}>
+                  {tDoc(`filters.sources.${src}`)}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+          {team.members.length > 1 && (
+            <FilterField label={tDoc('filters.issuedBy')}>
+              <select name="issued_by" defaultValue={filters.issued_by ?? ''} className={field}>
+                <option value="">{tDoc('filters.any')}</option>
+                {team.members.map((m) => (
+                  <option key={m.userId} value={m.userId}>
+                    {m.name || m.email}
+                  </option>
+                ))}
+              </select>
+            </FilterField>
+          )}
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.relatedHint')}>
+                <span>{tDoc('filters.related')}</span>
+              </InfoHint>
+            }
+          >
+            {yesNoSelect('related')}
+          </FilterField>
+          <FilterField
+            label={
+              <InfoHint hint={tDoc('filters.needsAttentionHint')}>
+                <span>{tDoc('filters.needsAttention')}</span>
+              </InfoHint>
+            }
+          >
+            {yesNoSelect('needs_attention')}
+          </FilterField>
+        </FilterGroup>
       </FilterPanel>
 
       <InvoicesTable rows={invoices} filtered={Boolean(query)} home={home} />

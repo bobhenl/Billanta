@@ -3,17 +3,28 @@ import { SlidersHorizontal, X } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { DismissableDetails } from './dismissable-details';
+import { FilterFind } from './filter-find';
 
 /** Classes for the selects / inputs inside a filter panel. */
 export const filterFieldClass = 'mt-1 block h-9 rounded-lg border border-input bg-background px-2 text-sm text-foreground outline-none focus:border-primary';
 
-/** A labelled field of the filter panel. */
+/** A labelled field of the filter panel (`data-filter-field`: what the dialog's search shows or hides). */
 export function FilterField({ label, children }: { label: ReactNode; children: ReactNode }) {
   return (
-    <label className="block text-xs font-semibold text-muted-foreground">
+    <label data-filter-field className="block text-xs font-semibold text-muted-foreground">
       {label}
       {children}
     </label>
+  );
+}
+
+/** A titled row of related fields in the modal panel; the search hides it when none of its fields match. */
+export function FilterGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section data-filter-group className="sm:col-span-2 lg:col-span-3">
+      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">{title}</h3>
+      <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+    </section>
   );
 }
 
@@ -105,7 +116,8 @@ export async function FilterPanel({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="grid flex-1 gap-x-4 gap-y-3 overflow-y-auto p-4 sm:grid-cols-2 lg:grid-cols-3 [&_select]:w-full [&_input:not([type=hidden])]:min-w-0">
+            <FilterFind placeholder={t('find')} none={t('findNone')} />
+            <div className="grid flex-1 gap-x-4 gap-y-5 overflow-y-auto p-4 sm:grid-cols-2 lg:grid-cols-3 [&_select]:w-full [&_input:not([type=hidden])]:min-w-0">
               {hidden}
               {children}
             </div>
@@ -150,7 +162,7 @@ export function AmountRange({
   names?: [string, string];
 }) {
   return (
-    <div>
+    <div data-filter-field>
       <span className="text-xs font-semibold text-muted-foreground">{label}</span>
       <div className="flex items-center gap-1.5">
         <input
