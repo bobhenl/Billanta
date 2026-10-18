@@ -3096,7 +3096,7 @@
     "security": {
       "title": "Security",
       "description": "Two-factor authentication and account protection.",
-      "usedRecovery": "You signed in with a recovery code. {n, plural, one {# code left} other {# codes left}} — consider generating new ones.",
+      "usedRecovery": "You signed in with a recovery code. {n, plural, one {# code left} other {# codes left}}. Consider generating new ones.",
       "twoFactorTitle": "Two-factor authentication (2FA)",
       "statusOn": "On · {n, plural, one {# recovery code} other {# recovery codes}}",
       "statusOff": "Off",
@@ -4358,7 +4358,7 @@
         "credit_note": "Issue credit note"
       },
       "remind": "Send reminder",
-      "ublHint": "Also as a UBL e-invoice (Peppol BIS 3.0) for Slovak customers and the mandatory Slovak e-invoicing from 1 January 2027.",
+      "ublHint": "Also as a UBL e-invoice file (Peppol BIS 3.0) for Slovak customers. Sending over the Peppol network, which the Slovak mandate requires from 1 January 2027, is in the works.",
       "duplicateToFix": "New invoice with the fix",
       "rotateLink": "New client link",
       "editAnyway": "Edit anyway"
@@ -5000,7 +5000,7 @@
           "Includes supplier, customer, line items, VAT rates and payment details",
           "Useful for accountants, large customers and public bodies",
           "PDF and CSV downloads are available too",
-          "UBL 2.1 e-invoice (Peppol BIS 3.0) for Slovak customers and the 2027 SK mandate"
+          "UBL 2.1 e-invoice file (Peppol BIS 3.0) for Slovak customers; sending over Peppol for the 2027 SK mandate is in the works"
         ],
         "steps": [
           "Issue an invoice as usual.",
@@ -6655,7 +6655,9 @@
         "idoklad": "5 customers",
         "superfaktura": "5 customers",
         "vyfakturuj": "5 customers",
-        "bitfaktura": "1 invoice/mo"
+        "bitfaktura": "1 invoice/mo",
+        "kros": "5 customers, non-VAT payers only",
+        "billdu": "No, trial only"
       },
       "entry": {
         "label": "Cheapest plan",
@@ -6664,7 +6666,9 @@
         "idoklad": "CZK 187/mo",
         "superfaktura": "CZK 129/mo",
         "vyfakturuj": "CZK 175/mo",
-        "bitfaktura": "CZK 129/mo"
+        "bitfaktura": "CZK 129/mo",
+        "kros": "€5.90/mo",
+        "billdu": "€4.99/mo, 10 customers"
       },
       "bank": {
         "label": "Bank matching",
@@ -6673,7 +6677,9 @@
         "idoklad": "From 2nd paid plan",
         "superfaktura": "Paid plans",
         "vyfakturuj": "Paid plans",
-        "bitfaktura": "Import from 1st, matching from 2nd paid plan"
+        "bitfaktura": "Import from 1st, matching from 2nd paid plan",
+        "kros": "Paid plans",
+        "billdu": "–"
       },
       "ai": {
         "label": "AI document reading",
@@ -6682,7 +6688,9 @@
         "idoklad": "3 free, then paid",
         "superfaktura": "20 free, then paid",
         "vyfakturuj": "–",
-        "bitfaktura": "Limited"
+        "bitfaktura": "Limited",
+        "kros": "Data capture on the top plan only",
+        "billdu": "–"
       },
       "voice": {
         "label": "Invoice by voice / message",
@@ -6691,7 +6699,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
       },
       "taxEstimate": {
         "label": "Tax and levy estimate",
@@ -6700,7 +6710,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "Income tax return (type A and B)",
+        "billdu": "–"
       },
       "import": {
         "label": "Import from another app",
@@ -6709,7 +6721,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "From Fakturoid and iDoklad",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
       },
       "api": {
         "label": "API",
@@ -6718,7 +6732,9 @@
         "idoklad": "From 2nd paid plan",
         "superfaktura": "Top plan only",
         "vyfakturuj": "From 2nd paid plan",
-        "bitfaktura": "Even free"
+        "bitfaktura": "Even free",
+        "kros": "€4.90 add-on, included in KROS Firma",
+        "billdu": "Top plan only"
       },
       "recurring": {
         "label": "Recurring invoices",
@@ -6727,7 +6743,9 @@
         "idoklad": "Yes",
         "superfaktura": "From 2nd paid plan",
         "vyfakturuj": "From 2nd paid plan",
-        "bitfaktura": "Paid plans"
+        "bitfaktura": "Paid plans",
+        "kros": "€1.90 add-on, included in KROS Firma",
+        "billdu": "Top plan only"
       },
       "reminders": {
         "label": "Automatic reminders",
@@ -6736,16 +6754,31 @@
         "idoklad": "From 2nd paid plan",
         "superfaktura": "From 2nd paid plan, SMS too",
         "vyfakturuj": "Paid plans",
-        "bitfaktura": "Yes, even free"
+        "bitfaktura": "Yes, even free",
+        "kros": "Paid plans",
+        "billdu": "From the 2nd paid plan"
       },
       "einvoice": {
         "label": "ISDOC / e-invoice",
-        "billanta": "ISDOC and UBL (Peppol)",
+        "billanta": "ISDOC and UBL files",
         "fakturoid": "ISDOC",
         "idoklad": "ISDOC",
         "superfaktura": "ISDOC",
         "vyfakturuj": "ISDOC",
-        "bitfaktura": "ISDOC, paid plans"
+        "bitfaktura": "ISDOC, paid plans",
+        "kros": "Announced, 50 sent/mo from Základ",
+        "billdu": "Announced before 1 Jan 2027"
+      },
+      "vatReports": {
+        "label": "Slovak VAT filings (return, control and EC sales list)",
+        "billanta": "XML to file, from Plus",
+        "superfaktura": "–",
+        "kros": "–",
+        "idoklad": "–",
+        "billdu": "–",
+        "fakturoid": "Not for Slovakia",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
       },
       "qr": {
         "label": "QR payment",
@@ -6754,7 +6787,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "Yes",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "Yes, free plan too",
+        "billdu": "–"
       },
       "currencies": {
         "label": "Foreign currencies",
@@ -6763,7 +6798,9 @@
         "idoklad": "Yes, with rate",
         "superfaktura": "–",
         "vyfakturuj": "Yes, even free",
-        "bitfaktura": "Yes, ČNB or ECB rate"
+        "bitfaktura": "Yes, ČNB or ECB rate",
+        "kros": "Paid plans, current exchange rates",
+        "billdu": "–"
       },
       "czsk": {
         "label": "Czechia and Slovakia",
@@ -6772,7 +6809,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
       },
       "mobile": {
         "label": "Mobile",
@@ -6781,7 +6820,9 @@
         "idoklad": "iOS, Android",
         "superfaktura": "iOS, Android",
         "vyfakturuj": "iOS, Android",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "iOS, Android"
       },
       "history": {
         "label": "Change history",
@@ -6790,7 +6831,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "Yes"
+        "bitfaktura": "Yes",
+        "kros": "–",
+        "billdu": "–"
       }
     },
     "disclaimer": "Based on the public Czech price lists as of {date}. Monthly prices with yearly billing, excl. VAT unless stated. \"2nd paid plan\" = the second cheapest paid plan. Free-plan limits are shown as customers, even where a price list calls them contacts. Approximate, check with the provider. Names are trademarks of their owners.",
@@ -7023,6 +7066,82 @@
           {
             "q": "How many invoices can I issue in Billanta for free?",
             "a": "Ten documents a month, however many customers you have. Each one beyond is paid separately, so an occasional busy month doesn’t force a plan change."
+          }
+        ]
+      },
+      "kros": {
+        "seoTitle": "KROS Fakturácia alternative: compared with Billanta",
+        "title": "Billanta or KROS Fakturácia?",
+        "lead": "KROS Fakturácia is the invoicing program of KROS, a Slovak company that also makes accounting software. Billanta is a newer invoicing app for Slovakia and Czechia with AI included. Where do they differ and when does each make sense?",
+        "suitsUs": [
+          "You are a VAT payer and want to start free. The KROS free plan is for non-VAT payers only.",
+          "You invoice more than five customers and do not want to pay straight away.",
+          "You want recurring invoices and the API in the plan price, not as add-ons.",
+          "You want the Slovak VAT return, control statement and EC sales list prepared straight from your invoices.",
+          "You want to dictate an invoice into your phone or send it as a Telegram or WhatsApp message."
+        ],
+        "suitsThem": [
+          "Your accountant uses KROS accounting software (Alfa plus, Omega) and you want a direct link.",
+          "You want to file your income tax return from the same program.",
+          "You invoice rarely, are not a VAT payer and five customers are enough."
+        ],
+        "price": "The cheapest paid KROS plan is €5.90 a month billed yearly, Billanta Start €4.99. Recurring invoices (€1.90) and the API (€4.90) are extra add-ons on the lower KROS plans; Billanta includes them in every paid plan, and two recurring invoices are free.",
+        "switchTitle": "How to switch from KROS Fakturácia",
+        "switchSteps": [
+          "In KROS, export your invoices and contacts to Excel (XLSX) and save them as CSV in Excel.",
+          "In Billanta, go to Settings → Switch from another system, choose Excel / other and check the columns against the template.",
+          "Upload contacts first, then invoices, and review the preview before saving."
+        ],
+        "faq": [
+          {
+            "q": "Can I bring my data over from KROS Fakturácia?",
+            "a": "Yes, as a spreadsheet. Save the invoices and contacts you exported to Excel as CSV and upload them through the import in Billanta. Several rows with the same invoice number become one invoice with several lines."
+          },
+          {
+            "q": "Will Billanta handle the mandatory Slovak eFaktúra from 2027?",
+            "a": "Billanta already creates a UBL e-invoice file in the Peppol BIS 3.0 format. Sending over the Peppol network, which the mandate requires from 1 January 2027, is in the works. KROS announced it for autumn 2026."
+          },
+          {
+            "q": "Does Billanta prepare the Slovak VAT filings?",
+            "a": "Yes. From the Plus plan it builds the XML for the VAT return, the control statement and the EC sales list from your invoices and expenses, ready to file on the Slovak Financial Administration portal."
+          }
+        ]
+      },
+      "billdu": {
+        "seoTitle": "Billdu alternative: compared with Billanta",
+        "title": "Billanta or Billdu?",
+        "lead": "Billdu is a mobile-first Slovak invoicing app that is also used abroad. Billanta is a newer invoicing app for Slovakia and Czechia with AI included. Where do they differ and when does each make sense?",
+        "suitsUs": [
+          "You want to invoice for free for good, not just during a trial.",
+          "You have more than ten customers and do not want a higher plan just for that.",
+          "You want recurring invoices and the API without the top plan.",
+          "You want bank payment matching, PAY by square and the Slovak VAT return with the control statement.",
+          "You want to dictate an invoice into your phone or send it as a Telegram or WhatsApp message."
+        ],
+        "suitsThem": [
+          "You want a native iOS or Android app and invoice mostly from your phone.",
+          "You need a barcode scanner or cash receipts for a shop.",
+          "You also invoice customers outside Slovakia and Czechia and want an app known abroad."
+        ],
+        "price": "The cheapest Billdu plan, Lite, is €4.99 a month billed yearly, the same as Billanta Start, but it is capped at ten customers. Paid monthly, Billdu Lite is €7.99 and Billanta Start €5.99. Billdu keeps recurring invoices and the API for its top plan.",
+        "switchTitle": "How to switch from Billdu",
+        "switchSteps": [
+          "In Billdu, export your invoices and contacts to a spreadsheet (CSV or Excel) if your plan allows it. Save Excel files as CSV.",
+          "In Billanta, go to Settings → Switch from another system, choose Excel / other and check the columns against the template.",
+          "Upload contacts first, then invoices, and review the preview before saving."
+        ],
+        "faq": [
+          {
+            "q": "Can I bring my data over from Billdu?",
+            "a": "Yes, as a spreadsheet. Upload invoices and contacts saved as CSV through the import in Billanta. Several rows with the same invoice number become one invoice with several lines."
+          },
+          {
+            "q": "Does Billanta work on a phone?",
+            "a": "Yes. Billanta is a web app you install on your home screen, where it works like an app. It has no native app in the App Store or Google Play yet; Billdu does."
+          },
+          {
+            "q": "Will Billanta handle the mandatory Slovak eFaktúra from 2027?",
+            "a": "Billanta already creates a UBL e-invoice file in the Peppol BIS 3.0 format. Sending over the Peppol network, which the mandate requires from 1 January 2027, is in the works. Billdu has also announced it before the start of 2027."
           }
         ]
       }

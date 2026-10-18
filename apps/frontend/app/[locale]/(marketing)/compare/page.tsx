@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight, Check } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { BRANDS, COMPARED_BRANDS, COMPETITOR_ROWS, comparedAtLabel } from '@/lib/competitors';
+import { brandsFor, comparedAtLabel, rowsFor } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
@@ -24,6 +24,9 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
   const t = await getTranslations('comparePage');
   const comparedAt = comparedAtLabel(locale);
   const reasons = t.raw('reasons') as { title: string; body: string }[];
+  const BRANDS = brandsFor(locale);
+  const COMPARED_BRANDS = BRANDS.filter((b) => b.key !== 'billanta');
+  const COMPETITOR_ROWS = rowsFor(locale);
 
   return (
     <section className="container py-12 sm:py-16">

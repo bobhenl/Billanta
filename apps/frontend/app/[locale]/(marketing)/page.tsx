@@ -35,7 +35,7 @@ import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { HintCard } from '@/components/hint-card';
 import { MarketingInvoiceMockup } from '@/components/marketing-invoice-mockup';
-import { BRANDS, COMPETITOR_ROWS, TEASER_ROW_KEYS, comparedAtLabel } from '@/lib/competitors';
+import { TEASER_ROW_KEYS, brandsFor, comparedAtLabel, rowsFor } from '@/lib/competitors';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -137,6 +137,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const tFeatures = await getTranslations('featurePages');
   const tCompare = await getTranslations('comparePage');
   const tDemo = await getTranslations('demo');
+  const BRANDS = brandsFor(locale);
+  const TEASER_ROWS = rowsFor(locale).filter((r) => (TEASER_ROW_KEYS as readonly string[]).includes(r.key));
 
   const structuredData = [
     {
@@ -391,8 +393,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     </>
   );
 }
-
-const TEASER_ROWS = COMPETITOR_ROWS.filter((r) => (TEASER_ROW_KEYS as readonly string[]).includes(r.key));
 
 function SectionHeading({ title, lead }: { title: string; lead?: string }) {
   return (

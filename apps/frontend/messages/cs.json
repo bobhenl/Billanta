@@ -4359,7 +4359,7 @@
         "credit_note": "Vystavit dobropis"
       },
       "remind": "Poslat upomínku",
-      "ublHint": "Také jako e-faktura UBL (Peppol BIS 3.0) pro slovenské odběratele a povinnou e-fakturaci na Slovensku od 1. 1. 2027.",
+      "ublHint": "Také jako soubor e-faktury UBL (Peppol BIS 3.0) pro slovenské odběratele. Odesílání přes síť Peppol, které na Slovensku od 1. 1. 2027 vyžaduje povinná e-fakturace, připravujeme.",
       "duplicateToFix": "Nová faktura s opravou",
       "rotateLink": "Nový odkaz pro klienta",
       "editAnyway": "Přesto upravit"
@@ -5001,7 +5001,7 @@
           "Obsahuje dodavatele, odběratele, položky, sazby DPH i platební údaje",
           "Hodí se pro účetní, velké odběratele i veřejnou správu",
           "Kromě ISDOC můžete stáhnout i PDF a CSV přehledy",
-          "E-faktura UBL 2.1 (Peppol BIS 3.0) pro slovenské odběratele a povinnou SK e-fakturaci od 2027"
+          "Soubor e-faktury UBL 2.1 (Peppol BIS 3.0) pro slovenské odběratele; odesílání přes Peppol pro SK povinnost od 2027 připravujeme"
         ],
         "steps": [
           "Vystavíte fakturu jako obvykle.",
@@ -6656,7 +6656,9 @@
         "idoklad": "5 odběratelů",
         "superfaktura": "5 odběratelů",
         "vyfakturuj": "5 odběratelů",
-        "bitfaktura": "1 faktura/měs."
+        "bitfaktura": "1 faktura/měs.",
+        "kros": "5 odběratelů, jen pro neplátce DPH",
+        "billdu": "Ne, jen zkušební verze"
       },
       "entry": {
         "label": "Nejlevnější tarif",
@@ -6665,7 +6667,9 @@
         "idoklad": "187 Kč/měs.",
         "superfaktura": "129 Kč/měs.",
         "vyfakturuj": "175 Kč/měs.",
-        "bitfaktura": "129 Kč/měs."
+        "bitfaktura": "129 Kč/měs.",
+        "kros": "5,90 €/měs.",
+        "billdu": "4,99 €/měs., 10 odběratelů"
       },
       "bank": {
         "label": "Párování z banky",
@@ -6674,7 +6678,9 @@
         "idoklad": "Od 2. placeného",
         "superfaktura": "Placené tarify",
         "vyfakturuj": "Placené tarify",
-        "bitfaktura": "Import od 1., párování od 2. placeného"
+        "bitfaktura": "Import od 1., párování od 2. placeného",
+        "kros": "Placené tarify",
+        "billdu": "–"
       },
       "ai": {
         "label": "AI čtení dokladů",
@@ -6683,7 +6689,9 @@
         "idoklad": "3 zdarma, pak placené",
         "superfaktura": "20 zdarma, pak placené",
         "vyfakturuj": "–",
-        "bitfaktura": "S limitem"
+        "bitfaktura": "S limitem",
+        "kros": "Vytěžování jen v nejvyšším",
+        "billdu": "–"
       },
       "voice": {
         "label": "Faktura hlasem / zprávou",
@@ -6692,7 +6700,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
       },
       "taxEstimate": {
         "label": "Odhad daně a odvodů",
@@ -6701,7 +6711,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "Daňové přiznání typu A a B",
+        "billdu": "–"
       },
       "import": {
         "label": "Import z jiné aplikace",
@@ -6710,7 +6722,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "Z Fakturoidu a iDokladu",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
       },
       "api": {
         "label": "API",
@@ -6719,7 +6733,9 @@
         "idoklad": "Od 2. placeného",
         "superfaktura": "Jen nejvyšší",
         "vyfakturuj": "Od 2. placeného",
-        "bitfaktura": "I zdarma"
+        "bitfaktura": "I zdarma",
+        "kros": "Doplněk 4,90 €, v KROS Firma v ceně",
+        "billdu": "Jen nejvyšší"
       },
       "recurring": {
         "label": "Opakované faktury",
@@ -6728,7 +6744,9 @@
         "idoklad": "Ano",
         "superfaktura": "Od 2. placeného",
         "vyfakturuj": "Od 2. placeného",
-        "bitfaktura": "Placené tarify"
+        "bitfaktura": "Placené tarify",
+        "kros": "Doplněk 1,90 €, v KROS Firma v ceně",
+        "billdu": "Jen nejvyšší"
       },
       "reminders": {
         "label": "Automatické upomínky",
@@ -6737,16 +6755,31 @@
         "idoklad": "Od 2. placeného",
         "superfaktura": "Od 2. placeného, i SMS",
         "vyfakturuj": "Placené tarify",
-        "bitfaktura": "Ano, i zdarma"
+        "bitfaktura": "Ano, i zdarma",
+        "kros": "Placené tarify",
+        "billdu": "Od 2. placeného"
       },
       "einvoice": {
         "label": "ISDOC / e-faktura",
-        "billanta": "ISDOC i UBL (Peppol)",
+        "billanta": "ISDOC i UBL",
         "fakturoid": "ISDOC",
         "idoklad": "ISDOC",
         "superfaktura": "ISDOC",
         "vyfakturuj": "ISDOC",
-        "bitfaktura": "ISDOC, placené tarify"
+        "bitfaktura": "ISDOC, placené tarify",
+        "kros": "Ohlášeno, 50 odeslaných/měs. od Základ",
+        "billdu": "Ohlášeno před 1. 1. 2027"
+      },
+      "vatReports": {
+        "label": "Slovenské výkazy DPH (přiznání, KV, SV)",
+        "billanta": "XML k podání, od Plus",
+        "superfaktura": "–",
+        "kros": "–",
+        "idoklad": "–",
+        "billdu": "–",
+        "fakturoid": "Pro Slovensko ne",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
       },
       "qr": {
         "label": "QR platba",
@@ -6755,7 +6788,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "Ano",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "Ano, i zdarma",
+        "billdu": "–"
       },
       "currencies": {
         "label": "Cizí měny",
@@ -6764,7 +6799,9 @@
         "idoklad": "Ano, s kurzem",
         "superfaktura": "–",
         "vyfakturuj": "Ano, i zdarma",
-        "bitfaktura": "Ano, kurz ČNB nebo ECB"
+        "bitfaktura": "Ano, kurz ČNB nebo ECB",
+        "kros": "Placené tarify, s aktuálním kurzem",
+        "billdu": "–"
       },
       "czsk": {
         "label": "Česko i Slovensko",
@@ -6773,7 +6810,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
       },
       "mobile": {
         "label": "Mobil",
@@ -6782,7 +6821,9 @@
         "idoklad": "iOS, Android",
         "superfaktura": "iOS, Android",
         "vyfakturuj": "iOS, Android",
-        "bitfaktura": "–"
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "iOS, Android"
       },
       "history": {
         "label": "Historie změn",
@@ -6791,7 +6832,9 @@
         "idoklad": "–",
         "superfaktura": "–",
         "vyfakturuj": "–",
-        "bitfaktura": "Ano"
+        "bitfaktura": "Ano",
+        "kros": "–",
+        "billdu": "–"
       }
     },
     "disclaimer": "Podle veřejných ceníků ke stavu {date}. Ceny měsíčně při roční platbě, bez DPH, pokud není uvedeno jinak. „Od 2. placeného“ = druhý nejlevnější placený tarif. Limity tarifů zdarma uvádíme jako počet odběratelů, i když je ceník někde nazývá kontakty. Orientační, ověřte si je u poskytovatele. Názvy jsou ochranné známky svých vlastníků.",
@@ -7024,6 +7067,82 @@
           {
             "q": "Kolik faktur vystavím v Billantě zdarma?",
             "a": "Deset dokladů měsíčně bez ohledu na počet odběratelů. Každý další se platí zvlášť, takže při občasném přesahu nemusíte hned měnit tarif."
+          }
+        ]
+      },
+      "kros": {
+        "seoTitle": "Alternativa ke KROS Fakturácii: srovnání s Billantou",
+        "title": "Billanta, nebo KROS Fakturácia?",
+        "lead": "KROS Fakturácia je fakturační program slovenské firmy KROS, která dělá i účetnictví. Billanta je novější fakturace pro Slovensko i Česko s AI v ceně. V čem se liší a kdy se vyplatí která?",
+        "suitsUs": [
+          "Jste plátce DPH a chcete začít zdarma. Tarif zdarma v KROS je jen pro neplátce.",
+          "Fakturujete víc než pěti odběratelům a nechcete hned platit.",
+          "Opakované faktury a API chcete v ceně tarifu, ne jako doplňky.",
+          "Slovenské přiznání k DPH, kontrolní a souhrnný výkaz chcete připravit přímo z faktur.",
+          "Chcete fakturu nadiktovat do telefonu nebo poslat zprávou na Telegram či WhatsApp."
+        ],
+        "suitsThem": [
+          "Účetnictví vám vede někdo v programech KROS (Alfa plus, Omega) a chcete přímé propojení.",
+          "Ze stejného programu chcete podávat i přiznání k dani z příjmů.",
+          "Fakturujete zřídka, jste neplátce DPH a vystačíte si s pěti odběrateli."
+        ],
+        "price": "Nejlevnější placený tarif KROS stojí 5,90 € měsíčně při roční platbě, Billanta Start 4,99 €. Opakované faktury (1,90 €) a API (4,90 €) jsou v nižších tarifech KROS doplňky navíc, v Billantě jsou v ceně každého placeného tarifu a dvě opakované faktury jsou i zdarma.",
+        "switchTitle": "Jak přejít z KROS Fakturácie",
+        "switchSteps": [
+          "V KROS vyexportujte faktury a kontakty do Excelu (XLSX) a v Excelu je uložte jako CSV.",
+          "V Billantě v Nastavení → Přechod z jiného systému zvolte Excel / jiný systém a podle šablony zkontrolujte sloupce.",
+          "Nahrajte nejdřív kontakty, pak faktury, a před uložením si projděte náhled."
+        ],
+        "faq": [
+          {
+            "q": "Přenesu si data z KROS Fakturácie?",
+            "a": "Ano, přes tabulku. Faktury a kontakty vyexportované do Excelu uložte jako CSV a nahrajte v Billantě přes import. Více řádků se stejným číslem faktury se spojí do jedné faktury s více položkami."
+          },
+          {
+            "q": "Zvládne Billanta povinnou slovenskou eFaktúru od roku 2027?",
+            "a": "Billanta už teď vytvoří soubor e-faktury UBL ve formátu Peppol BIS 3.0. Odesílání přes síť Peppol, které povinnost od 1. 1. 2027 vyžaduje, připravujeme. KROS ho ohlásil na podzim 2026."
+          },
+          {
+            "q": "Připraví Billanta slovenské výkazy DPH?",
+            "a": "Ano. Od tarifu Plus připraví z faktur a výdajů XML přiznání k DPH, kontrolního výkazu i souhrnného výkazu, které podáte na portálu slovenské Finanční správy."
+          }
+        ]
+      },
+      "billdu": {
+        "seoTitle": "Alternativa k Billdu: srovnání s Billantou",
+        "title": "Billanta, nebo Billdu?",
+        "lead": "Billdu je slovenská fakturační aplikace postavená hlavně na mobil, kterou používají i v zahraničí. Billanta je novější fakturace pro Slovensko i Česko s AI v ceně. V čem se liší a kdy se vyplatí která?",
+        "suitsUs": [
+          "Chcete fakturovat zdarma natrvalo, ne jen během zkušební verze.",
+          "Máte víc než deset odběratelů a nechcete kvůli tomu vyšší tarif.",
+          "Opakované faktury a API chcete i bez nejvyššího tarifu.",
+          "Chcete párování plateb z banky, PAY by square a slovenské přiznání k DPH s kontrolním výkazem.",
+          "Chcete fakturu nadiktovat do telefonu nebo poslat zprávou na Telegram či WhatsApp."
+        ],
+        "suitsThem": [
+          "Chcete nativní aplikaci pro iOS nebo Android a fakturujete hlavně z mobilu.",
+          "Potřebujete skener čárových kódů nebo příjmové doklady pro prodejnu.",
+          "Fakturujete i zákazníkům mimo Slovensko a Česko a chcete aplikaci známou v zahraničí."
+        ],
+        "price": "Nejlevnější tarif Billdu Lite stojí 4,99 € měsíčně při roční platbě, stejně jako Billanta Start, ale je omezený na deset odběratelů. Při měsíční platbě stojí Billdu Lite 7,99 €, Billanta Start 5,99 €. Opakované faktury a API má Billdu až v nejvyšším tarifu.",
+        "switchTitle": "Jak přejít z Billdu",
+        "switchSteps": [
+          "V Billdu vyexportujte faktury a kontakty do tabulky (CSV nebo Excel), pokud to váš tarif umožňuje. Excel uložte jako CSV.",
+          "V Billantě v Nastavení → Přechod z jiného systému zvolte Excel / jiný systém a podle šablony zkontrolujte sloupce.",
+          "Nahrajte nejdřív kontakty, pak faktury, a před uložením si projděte náhled."
+        ],
+        "faq": [
+          {
+            "q": "Přenesu si data z Billdu?",
+            "a": "Ano, přes tabulku. Faktury a kontakty uložené jako CSV nahrajete v Billantě přes import. Více řádků se stejným číslem faktury se spojí do jedné faktury s více položkami."
+          },
+          {
+            "q": "Funguje Billanta na mobilu?",
+            "a": "Ano. Billanta je webová aplikace, kterou si nainstalujete na plochu telefonu a funguje jako aplikace. Nativní aplikaci v App Store nebo Google Play zatím nemá, to Billdu má."
+          },
+          {
+            "q": "Zvládne Billanta povinnou slovenskou eFaktúru od roku 2027?",
+            "a": "Billanta už teď vytvoří soubor e-faktury UBL ve formátu Peppol BIS 3.0. Odesílání přes síť Peppol, které povinnost od 1. 1. 2027 vyžaduje, připravujeme. Billdu ho také ohlásilo před začátkem roku 2027."
           }
         ]
       }

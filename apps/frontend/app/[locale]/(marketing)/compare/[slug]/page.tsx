@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { ArrowRight, Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { BRANDS, COMPARED_BRANDS, COMPETITOR_ROWS, comparedAtLabel, getComparedBrand } from '@/lib/competitors';
+import { routing } from '@/i18n/routing';
+import { brandsFor, comparedAtLabel, comparedBrandsFor, comparedPages, getComparedBrand, rowsFor } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
@@ -17,20 +18,22 @@ import { SITE_NAME } from '@/lib/site';
 type Params = { locale: string; slug: string };
 type Faq = { q: string; a: string };
 
-export function generateStaticParams() {
-  return COMPARED_BRANDS.map((b) => ({ slug: b.key }));
+// A brand only has pages in the locales of its market (KROS and Billdu: Slovak only).
+export function generateStaticParams({ params }: { params: { locale: string } }) {
+  return comparedBrandsFor(params.locale).map((b) => ({ slug: b.key }));
 }
 
 export const dynamicParams = false;
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const brand = getComparedBrand(slug);
+  const brand = getComparedBrand(locale, slug);
   if (!brand) return {};
   const t = await getTranslations({ locale, namespace: 'comparePage' });
   return publicPageMetadata({
     locale,
     path: `/compare/${slug}`,
+    locales: comparedPages().find((p) => p.key === brand.key)?.locales ?? routing.locales,
     title: t(`brands.${brand.key}.seoTitle`),
     description: t(`brands.${brand.key}.lead`)
   });
@@ -38,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function CompareBrandPage({ params }: { params: Promise<Params> }) {
   const { locale, slug } = await params;
-  const brand = getComparedBrand(slug);
+  const brand = getComparedBrand(locale, slug);
   if (!brand) notFound();
 
   const t = await getTranslations('comparePage');
@@ -48,7 +51,8 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
   const steps = t.raw(`${k}.switchSteps`) as string[];
   const faq = t.raw(`${k}.faq`) as Faq[];
   const comparedAt = comparedAtLabel(locale);
-  const billanta = BRANDS[0];
+  // Every market's column list starts with Billanta.
+  const billanta = brandsFor(locale)[0]!;
   const path = `/compare/${slug}`;
   const title = t(`${k}.title`);
   const cell = (row: string, b: string) => t(`rows.${row}.${b}`);
@@ -147,7 +151,7 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
             </tr>
           </thead>
           <tbody>
-            {COMPETITOR_ROWS.map((row) => (
+            {rowsFor(locale).map((row) => (
               <tr key={row.key} className="border-b border-border align-top last:border-0">
                 <th scope="row" className="px-3 py-2.5 text-left font-semibold">
                   {t(`rows.${row.key}.label`)}
@@ -217,7 +221,7 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
       <nav aria-label={t('brand.othersTitle')} className="mt-12 border-t border-border pt-8">
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('brand.othersTitle')}</h2>
         <ul className="mt-4 flex flex-wrap gap-2">
-          {COMPARED_BRANDS.filter((b) => b.key !== brand.key).map((b) => (
+          {comparedBrandsFor(locale).filter((b) => b.key !== brand.key).map((b) => (
             <li key={b.key}>
               <Link
                 href={`/compare/${b.key}`}
