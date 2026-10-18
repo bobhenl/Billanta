@@ -12,6 +12,7 @@ import type Stripe from "stripe";
 // explicitly tagged with `@Inject(STRIPE_CLIENT)` below, so no type
 // reflection is needed for it — see `stripe-client.provider.ts`).
 import { GopayClient, type GopayPaymentStatus } from "./gopay.client";
+import { isPaidPlan } from "./plans";
 import { STRIPE_CLIENT } from "./stripe-client.provider";
 import { SubscriptionEventsRepository } from "./subscription-events.repository";
 import { TenantBillingRepository, type SubscriptionStatus } from "./tenant-billing.repository";
@@ -179,18 +180,24 @@ export class BillingService {
         const session = event.data.object as Stripe.Checkout.Session;
         const customerId =
           typeof session.customer === "string" ? session.customer : session.customer?.id;
-        await this.tenantBilling.updateSubscriptionStatus(
-          tenantId,
-          "active",
-          customerId ? { stripeCustomerId: customerId } : undefined,
-        );
+        // Our own Checkout (SubscriptionService) puts the plan in metadata.
+        const plan = session.metadata?.plan;
+        const interval = session.metadata?.interval;
+        const extra = {
+          ...(customerId ? { stripeCustomerId: customerId } : {}),
+          ...(isPaidPlan(plan) ? { subscriptionPlan: plan } : {}),
+          ...(interval === "month" || interval === "year" ? { subscriptionInterval: interval as "month" | "year" } : {}),
+        };
+        await this.tenantBilling.updateSubscriptionStatus(tenantId, "active", Object.keys(extra).length ? extra : undefined);
         return;
       }
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
+        const plan = subscription.metadata?.plan;
         await this.tenantBilling.updateSubscriptionStatus(
           tenantId,
           mapStripeSubscriptionStatus(subscription.status),
+          isPaidPlan(plan) ? { subscriptionPlan: plan } : undefined,
         );
         return;
       }

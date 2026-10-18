@@ -21,6 +21,7 @@ import {
 
 const KNOWN_ERRORS = [
   'two_factor_required',
+  'plan_required',
   'fio_token_format',
   'fio_token_invalid',
   'bank_sync_too_soon',

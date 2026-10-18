@@ -243,6 +243,19 @@ export const tenants = pgTable("tenants", {
   // A plan paid with credits (`credit_ledger`), see ReferralsService.redeem.
   prepaidPlan: varchar("prepaid_plan", { length: 16 }),
   prepaidUntil: date("prepaid_until"),
+  // Free trial of the top plan (0051, `billing/plan-access.ts`): granted once by
+  // bootstrap_tenant_for_user and never cleared, so it can't be started twice.
+  trialPlan: varchar("trial_plan", { length: 16 }),
+  trialStartedAt: timestamp("trial_started_at", { withTimezone: true }),
+  trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
+  // Smallest "days left" the ending reminder already went out for (3, 1, 0 = ended).
+  trialRemindedDays: integer("trial_reminded_days"),
+  // Plan limits apply (features above the plan turn read-only). False for
+  // companies created before 0051, which keep everything as before.
+  planEnforced: boolean("plan_enforced").notNull().default(false),
+  // Plan and interval of the Stripe subscription, from the Checkout metadata.
+  subscriptionPlan: varchar("subscription_plan", { length: 16 }),
+  subscriptionInterval: varchar("subscription_interval", { length: 8 }).$type<"month" | "year">(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1362,6 +1375,36 @@ export const creditLedger = pgTable("credit_ledger", {
   referralId: uuid("referral_id").references(() => referrals.id, { onDelete: "set null" }),
   plan: varchar("plan", { length: 16 }),
   months: integer("months"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// platform_proformas – tenant-scoped (RLS). A proforma from Billanta itself
+// for a plan paid by bank transfer (`billing/bank-transfer.service.ts`). The
+// app only inserts pending rows; a platform admin marks one paid through
+// mark_platform_proforma_paid (0051), which also extends tenants.prepaid_*.
+// trial_claims (one trial per user and e-mail) has no Drizzle model on
+// purpose: only bootstrap_tenant_for_user reads or writes it.
+// ---------------------------------------------------------------------------
+export const platformProformas = pgTable("platform_proformas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  number: varchar("number", { length: 20 }).notNull(),
+  variableSymbol: varchar("variable_symbol", { length: 10 }).notNull(),
+  plan: varchar("plan", { length: 16 }).notNull(),
+  months: integer("months").notNull(),
+  currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
+  // Without VAT; total = amount + VAT at vat_rate (percent).
+  amountMinor: integer("amount_minor").notNull(),
+  vatRate: integer("vat_rate").notNull().default(0),
+  totalMinor: integer("total_minor").notNull(),
+  status: varchar("status", { length: 10 }).$type<"pending" | "paid" | "canceled">().notNull().default("pending"),
+  dueDate: date("due_date").notNull(),
+  createdByUserId: uuid("created_by_user_id"),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  paidBy: text("paid_by"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

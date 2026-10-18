@@ -12,6 +12,7 @@ import { BankReconciliationController } from "./bank-reconciliation/bank-reconci
 import { BankConnectionsController } from "./bank-reconciliation/bank-connections.controller";
 import { BankReconciliationModule } from "./bank-reconciliation/bank-reconciliation.module";
 import { BillingModule } from "./billing/billing.module";
+import { SubscriptionController } from "./billing/subscription.controller";
 import { ChannelLinksController } from "./channel-links/channel-links.controller";
 import { ChannelLinksModule } from "./channel-links/channel-links.module";
 import { ContactsController } from "./contacts/contacts.controller";
@@ -217,6 +218,7 @@ export class AppModule implements NestModule {
         AuditController,
         ReferralsController,
         AccountantListingController,
+        SubscriptionController,
       );
 
     // InvoicesController: same tenant-context requirement as every

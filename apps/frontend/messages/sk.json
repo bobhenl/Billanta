@@ -981,7 +981,8 @@
         "psd2_state_invalid": "Odkaz z banky je neplatný alebo už bol použitý. Začnite napojenie znova.",
         "paypal_credentials_invalid": "PayPal odmietol Client ID alebo Secret. Skontrolujte ich a či nepatria do sandboxu.",
         "paypal_reporting_disabled": "Aplikácia v PayPale nemá zapnutú funkciu Transaction search. Zapnite ju v nastaveniach aplikácie (zmena sa prejaví do niekoľkých hodín).",
-        "two_factor_required": "Najprv si zapnite dvojfázové overenie v Nastavenia → Zabezpečenie."
+        "two_factor_required": "Najprv si zapnite dvojfázové overenie v Nastavenia → Zabezpečenie.",
+        "plan_required": "Táto funkcia patrí do plateného tarifu. Vyberte si ho v sekcii Tarif a platby."
       },
       "psd2": {
         "hint": "Billanta sťahuje nové prichádzajúce platby priamo z banky alebo z PayPalu a sama ich páruje s faktúrami podľa variabilného symbolu a sumy. Fio pripojíte API tokenom, PayPal údajmi svojej REST aplikácie, ostatné banky cez PSD2: prihlásite sa vo svojej banke a udelíte súhlas len na čítanie účtu (najviac na 180 dní, v mnohých bankách 90). Banky dovoľujú len pár automatických čítaní denne, preto sa PSD2 účty sťahujú zhruba každých 6 hodín. Odchádzajúce platby sa nesťahujú a zaplatiť cez napojenie nejde nič.",
@@ -2937,8 +2938,85 @@
     }
   },
   "billing": {
-    "title": "Predplatné",
-    "comingSoon": "Správa predplatného bude čoskoro k dispozícii."
+    "title": "Tarif a platby",
+    "description": "Aký tarif firma má, koľko zostáva zo skúšobnej verzie a ako za tarif platíte.",
+    "loadError": "Údaje o tarife sa nepodarilo načítať. Skúste stránku obnoviť.",
+    "checkoutSuccess": "Ďakujeme, platba prebehla. Tarif sa zapne o pár sekúnd.",
+    "checkoutCanceled": "Platbu ste nedokončili. Nič sme nestiahli.",
+    "planNames": {
+      "free": "Zadarmo",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Firma"
+    },
+    "trialBanner": {
+      "active": "Skúšate tarif {plan} zadarmo, {days, plural, one {zostáva # deň} few {zostávajú # dni} other {zostáva # dní}}.",
+      "ended": "Skúšobná verzia tarifu {plan} skončila. Dáta zostali, platené funkcie sú len na čítanie.",
+      "choose": "Vybrať tarif",
+      "upgrade": "Prejsť na platený tarif"
+    },
+    "current": {
+      "label": "Súčasný tarif",
+      "trial": "Skúšobná verzia zadarmo, {days, plural, one {zostáva # deň} few {zostávajú # dni} other {zostáva # dní}} (do {date}). Bez karty, nič sa samo nestiahne.",
+      "trialEnded": "Skúšobná verzia tarifu {plan} skončila. Firma beží na tarife Zadarmo, nič sa nezmazalo a funkcie nad jeho rámec sú len na čítanie.",
+      "prepaid": "Zaplatené do {date}.",
+      "subscriptionMonth": "Predplatné s mesačnou platbou.",
+      "subscriptionYear": "Predplatné s ročnou platbou.",
+      "free": "Tarif Zadarmo. Na vyšší prejdete, keď ho budete potrebovať.",
+      "pastDue": "Posledná platba neprešla. Stripe ju skúsi znova, medzitým si v portáli môžete zmeniť platobnú metódu."
+    },
+    "portal": "Spravovať predplatné",
+    "choose": {
+      "title": "Vyberte tarif",
+      "yearly": "Ročne",
+      "monthly": "Mesačne",
+      "perMonth": "/ mesiac",
+      "billedYearly": "{total} za rok",
+      "billedMonthly": "platba každý mesiac",
+      "payCard": "Zaplatiť kartou",
+      "renewCard": "Predĺžiť kartou",
+      "cardUnavailable": "Platba kartou zatiaľ nie je zapnutá."
+    },
+    "terms": {
+      "renewYearly": "Predplatné sa obnovuje automaticky každý rok za rovnakú cenu, kým ho nezrušíte.",
+      "renewMonthly": "Predplatné sa obnovuje automaticky každý mesiac za rovnakú cenu, kým ho nezrušíte.",
+      "cancel": "Zrušiť ho môžete kedykoľvek jedným krokom v portáli predplatného. Tarif potom pobeží do konca zaplateného obdobia.",
+      "methods": "Platiť môžete kartou, Apple Pay, Google Pay alebo inou metódou, ktorú vám platobná brána ponúkne.",
+      "transfer": "Platba prevodom je jednorazová na rok dopredu a sama sa neobnovuje. Tarif zapneme, hneď ako platba príde na účet.",
+      "transferYearlyOnly": "Prevodom sa dá zaplatiť len ročný tarif v korunách.",
+      "vat": "Ceny sú bez DPH."
+    },
+    "transfer": {
+      "title": "Platby prevodom",
+      "button": "Zaplatiť prevodom",
+      "created": "Zálohová faktúra je pripravená. Údaje na platbu nájdete nižšie.",
+      "months": "{n, plural, one {# mesiac} few {# mesiace} other {# mesiacov}}",
+      "status": {
+        "pending": "Čaká na platbu",
+        "paid": "Zaplatené",
+        "canceled": "Zrušené"
+      },
+      "qrAlt": "QR kód na platbu",
+      "amount": "Suma",
+      "vat": "z toho DPH {rate} %",
+      "vs": "Variabilný symbol",
+      "account": "Číslo účtu",
+      "due": "Splatnosť",
+      "payee": "Príjemca",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "note": "Naskenujte QR kód v bankovej aplikácii alebo zadajte účet a variabilný symbol ručne. Tarif zapneme, hneď ako platbu spárujeme, zvyčajne do jedného pracovného dňa.",
+      "paidOn": "Platba prijatá {date}."
+    },
+    "errors": {
+      "generic": "Niečo sa nepodarilo. Skúste to, prosím, znova.",
+      "billing_not_configured": "Platba kartou zatiaľ nie je zapnutá.",
+      "already_subscribed": "Firma už predplatné má. Zmeníte ho v portáli predplatného.",
+      "no_stripe_customer": "Firma zatiaľ nemá predplatné v Stripe.",
+      "bank_transfer_not_configured": "Platba prevodom zatiaľ nie je zapnutá.",
+      "too_many_pending_proformas": "Máte už tri nezaplatené zálohové faktúry. Zaplaťte niektorú z nich alebo počkajte, kým ju spárujeme.",
+      "forbidden": "Platiť môže len vlastník alebo správca firmy."
+    }
   },
   "auth": {
     "signup": {
@@ -3500,7 +3578,8 @@
         "priority": "Prednostná"
       }
     },
-    "compareCompetitors": "Ako si Billanta stojí oproti SuperFaktúre, Fakturoidu a ďalším"
+    "compareCompetitors": "Ako si Billanta stojí oproti SuperFaktúre, Fakturoidu a ďalším",
+    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty: vyskúšajte celý tarif Firma."
   },
   "cookies": {
     "banner": {

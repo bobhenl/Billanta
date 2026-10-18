@@ -166,6 +166,36 @@ describe("BillingService", () => {
       });
     });
 
+    it("checkout.session.completed stores the plan and interval from our own Checkout metadata", async () => {
+      stripe.webhooks.constructEvent.mockReturnValue({
+        id: "evt_checkout_plan",
+        type: "checkout.session.completed",
+        data: { object: { customer: "cus_p", metadata: { tenantId: "tenant-7", plan: "plus", interval: "year" } } },
+      });
+      subscriptionEvents.insertIfNew.mockResolvedValue(true);
+
+      await service.handleStripeWebhook(Buffer.from("{}"), "sig");
+
+      expect(tenantBilling.updateSubscriptionStatus).toHaveBeenCalledWith("tenant-7", "active", {
+        stripeCustomerId: "cus_p",
+        subscriptionPlan: "plus",
+        subscriptionInterval: "year",
+      });
+    });
+
+    it("checkout.session.completed ignores a plan key it doesn't know", async () => {
+      stripe.webhooks.constructEvent.mockReturnValue({
+        id: "evt_checkout_bad",
+        type: "checkout.session.completed",
+        data: { object: { customer: "cus_q", metadata: { tenantId: "tenant-8", plan: "gold", interval: "week" } } },
+      });
+      subscriptionEvents.insertIfNew.mockResolvedValue(true);
+
+      await service.handleStripeWebhook(Buffer.from("{}"), "sig");
+
+      expect(tenantBilling.updateSubscriptionStatus).toHaveBeenCalledWith("tenant-8", "active", { stripeCustomerId: "cus_q" });
+    });
+
     it("customer.subscription.deleted downgrades the tenant to canceled", async () => {
       const event = {
         id: "evt_del",

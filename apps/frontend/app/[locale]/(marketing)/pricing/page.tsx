@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Gift, Sparkles } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
+import { trialDays } from '@/lib/plan';
 import { COMPARISON, defaultCurrency, PLANS } from '@/lib/plans';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { PricingPlans, type CompareCopy, type PlanCopy } from './pricing-plans';
@@ -23,6 +24,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   setRequestLocale(locale);
   const t = await getTranslations('pricing');
   const currency = defaultCurrency(locale);
+  const trial = trialDays();
 
   const copy: Record<string, PlanCopy> = Object.fromEntries(
     PLANS.map((plan) => [
@@ -82,6 +84,12 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
       <div className="max-w-2xl">
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
         <p className="mt-3 text-muted-foreground">{t('lead')}</p>
+        {trial > 0 && (
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/[0.06] px-3 py-1 text-sm font-semibold text-primary">
+            <Gift className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {t('trialNote', { days: trial })}
+          </p>
+        )}
       </div>
 
       <PricingPlans

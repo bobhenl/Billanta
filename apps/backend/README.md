@@ -172,6 +172,63 @@ Session; the CLI's synthetic event won't have it, so `BillingService`
 will log `tenant-not-resolved` and skip, which is expected without a real
 tenant/`stripe_customer_id` row in the DB to match against).
 
+## Plans, free trial and paying for Billanta
+
+Code: `src/billing/` (`plans.ts`, `plan-access.ts`, `plan.guard.ts`,
+`subscription.*`, `admin-billing.controller.ts`, `bank-transfer.ts`),
+migration `0052_trial_billing.sql`.
+
+- **Effective plan** is computed on every read (`planSummary`): the best of
+  a live Stripe subscription (`active`/`past_due`), a prepaid period
+  (`prepaid_plan`/`prepaid_until`, from credits or a paid proforma) and a
+  running trial, else free. Nothing flips when a trial ends.
+- **Trial**: `bootstrap_tenant_for_user(..., p_trial_days)` gives a new
+  company `TRIAL_DAYS` (default 14, 0 = off, max 90) of Business, no card.
+  One trial per user account and per normalised e-mail (`trial_claims`,
+  lowercased, `+tag` and Gmail dots removed, stored as a SHA-256 hash).
+  `TrialRemindersCron` (08:00 Prague) sends the 3-day, 1-day and "ended"
+  notices to owners and admins in the bell, and by e-mail only when Resend
+  is configured.
+- **Limits** (`@RequirePlan`, `FEATURE_MIN_PLAN`): bank and PayPal sync, new
+  API keys need Start, card payments need Plus, and free keeps 2 active
+  recurring templates. Only companies created after 0051 are limited
+  (`plan_enforced`). Nothing is deleted when a plan lapses: existing data
+  stays readable, only creating or syncing more is refused with
+  `plan_required`.
+- **Card / wallets**: `POST /v1/billing/subscription/checkout` creates a
+  Checkout Session in `subscription` mode **without
+  `payment_method_types`**, so Stripe shows whatever the dashboard enables
+  for the currency and device. `STRIPE_PAYMENT_METHOD_CONFIGURATION`
+  (`pmc_...`) picks a specific configuration. `POST .../portal` opens the
+  Customer Portal.
+- **Bank transfer** (yearly, CZK): `POST .../bank-transfer` issues a
+  proforma from `PLATFORM_BILLING_*` with a QR Platba code and a variable
+  symbol (`YYYY` + 6-digit sequence). A platform admin
+  (`PLATFORM_ADMIN_EMAILS`) checks the bank statement and calls
+  `POST /v1/admin/billing/proformas/:id/mark-paid`, which extends
+  `prepaid_until` by 12 months, pays the referral reward and notifies the
+  company. The proforma is a payment request; issue the tax document for
+  the payment in your own accounting.
+
+### Stripe dashboard setup
+
+1. **Settings > Payment methods**: turn on Cards, Apple Pay, Google Pay and
+   Link. Turn on SEPA Direct Debit for EUR subscriptions. Hosted Checkout
+   runs on Stripe's domain, so wallets need no domain verification there.
+   Stripe's own bank transfer method is not offered for subscriptions in
+   Checkout, which is why yearly transfers go through our proformas.
+2. **Settings > Billing > Customer portal**: allow updating the payment
+   method, viewing invoices and cancelling (at the end of the period).
+   Leave plan switching off, the plan comes from Checkout metadata.
+3. **Developers > Webhooks**: endpoint
+   `https://<domain>/api/v1/billing/stripe/webhook` with
+   `checkout.session.completed`, `customer.subscription.updated`,
+   `customer.subscription.deleted`, `invoice.paid` and
+   `invoice.payment_failed`. Put its signing secret in
+   `STRIPE_WEBHOOK_SECRET`.
+4. Optional: a payment method configuration for Billanta only, its id in
+   `STRIPE_PAYMENT_METHOD_CONFIGURATION`; Stripe Tax if you charge VAT.
+
 ### GoPay
 
 GoPay's notification callback does not sign its payload the way Stripe

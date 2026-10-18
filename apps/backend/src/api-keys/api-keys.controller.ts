@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nes
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { TwoFactorGuard } from "../auth/two-factor.guard";
+import { RequirePlan } from "../billing/plan.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { ApiKeysService } from "./api-keys.service";
 import { CreateApiKeyDto } from "./dto/create-api-key.dto";
@@ -22,6 +23,7 @@ export class ApiKeysController {
 
   @Post()
   @UseGuards(TwoFactorGuard)
+  @RequirePlan("api_keys")
   @ApiOperation({
     summary: "Generate a new public-API key",
     description:

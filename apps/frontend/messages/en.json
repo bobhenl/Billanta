@@ -981,7 +981,8 @@
         "psd2_state_invalid": "The link from the bank is invalid or already used. Start the connection again.",
         "paypal_credentials_invalid": "PayPal rejected the Client ID or Secret. Check them, and whether they belong to the sandbox.",
         "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply).",
-        "two_factor_required": "Turn on two-factor authentication in Settings → Security first."
+        "two_factor_required": "Turn on two-factor authentication in Settings → Security first.",
+        "plan_required": "This feature is part of a paid plan. Pick one under Plan and billing."
       },
       "psd2": {
         "hint": "Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Fio connects with an API token, PayPal with your REST app credentials, other banks over PSD2: you sign in at your bank and grant read-only access to the account (up to 180 days, 90 at many banks). Banks allow only a few unattended reads a day, so PSD2 accounts are synced about every 6 hours. Outgoing payments are not downloaded and nothing can be paid through the connection.",
@@ -2937,8 +2938,85 @@
     }
   },
   "billing": {
-    "title": "Billing",
-    "comingSoon": "Subscription management is coming soon."
+    "title": "Plan and billing",
+    "description": "Which plan the company is on, how much of the trial is left and how you pay.",
+    "loadError": "Couldn't load your plan. Try reloading the page.",
+    "checkoutSuccess": "Thanks, the payment went through. Your plan switches on in a few seconds.",
+    "checkoutCanceled": "You didn't finish the payment. Nothing was charged.",
+    "planNames": {
+      "free": "Free",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "trialBanner": {
+      "active": "You're trying the {plan} plan for free, {days, plural, one {# day} other {# days}} left.",
+      "ended": "Your {plan} trial has ended. Your data is all there; paid features are read-only.",
+      "choose": "Choose a plan",
+      "upgrade": "Upgrade"
+    },
+    "current": {
+      "label": "Current plan",
+      "trial": "Free trial, {days, plural, one {# day} other {# days}} left (until {date}). No card, nothing is charged automatically.",
+      "trialEnded": "Your {plan} trial has ended. The company is on the Free plan now. Nothing was deleted; features above it are read-only.",
+      "prepaid": "Paid until {date}.",
+      "subscriptionMonth": "Subscription, billed monthly.",
+      "subscriptionYear": "Subscription, billed yearly.",
+      "free": "Free plan. Upgrade whenever you need more.",
+      "pastDue": "The last payment failed. Stripe will retry it; meanwhile you can change the payment method in the portal."
+    },
+    "portal": "Manage subscription",
+    "choose": {
+      "title": "Choose a plan",
+      "yearly": "Yearly",
+      "monthly": "Monthly",
+      "perMonth": "/ month",
+      "billedYearly": "{total} per year",
+      "billedMonthly": "billed every month",
+      "payCard": "Pay by card",
+      "renewCard": "Renew by card",
+      "cardUnavailable": "Card payments aren't switched on yet."
+    },
+    "terms": {
+      "renewYearly": "The subscription renews automatically every year at the same price until you cancel it.",
+      "renewMonthly": "The subscription renews automatically every month at the same price until you cancel it.",
+      "cancel": "You can cancel at any time in one step in the subscription portal. The plan then runs until the end of the paid period.",
+      "methods": "Pay by card, Apple Pay, Google Pay or any other method the checkout offers you.",
+      "transfer": "A bank transfer pays one year up front and doesn't renew by itself. We switch the plan on as soon as the money arrives.",
+      "transferYearlyOnly": "Bank transfer is available for yearly plans in CZK only.",
+      "vat": "Prices exclude VAT."
+    },
+    "transfer": {
+      "title": "Bank transfer payments",
+      "button": "Pay by bank transfer",
+      "created": "Your proforma invoice is ready. The payment details are below.",
+      "months": "{n, plural, one {# month} other {# months}}",
+      "status": {
+        "pending": "Awaiting payment",
+        "paid": "Paid",
+        "canceled": "Cancelled"
+      },
+      "qrAlt": "QR code for the payment",
+      "amount": "Amount",
+      "vat": "incl. VAT {rate} %",
+      "vs": "Variable symbol",
+      "account": "Account number",
+      "due": "Due",
+      "payee": "Payee",
+      "ico": "Company ID",
+      "dic": "VAT ID",
+      "note": "Scan the QR code in your banking app, or enter the account and variable symbol by hand. We switch the plan on once we match the payment, usually within one business day.",
+      "paidOn": "Payment received on {date}."
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "billing_not_configured": "Card payments aren't switched on yet.",
+      "already_subscribed": "The company already has a subscription. Change it in the subscription portal.",
+      "no_stripe_customer": "The company has no Stripe subscription yet.",
+      "bank_transfer_not_configured": "Bank transfer isn't switched on yet.",
+      "too_many_pending_proformas": "You already have three unpaid proformas. Pay one of them, or wait until we match it.",
+      "forbidden": "Only the company's owner or an admin can pay."
+    }
   },
   "auth": {
     "signup": {
@@ -3499,7 +3577,8 @@
         "priority": "Priority"
       }
     },
-    "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others"
+    "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
+    "trialNote": "{days, plural, one {# day} other {# days}} free, no card: try the whole Business plan."
   },
   "cookies": {
     "banner": {

@@ -25,6 +25,7 @@ import { clientIp } from "@/lib/client-ip";
 import { db } from "@/lib/db";
 import { AUTH_LIMITS, allow } from "@/lib/rate-limit";
 import { users } from "@/lib/auth-schema";
+import { trialDays } from "@/lib/plan";
 
 const MIN_PASSWORD_LENGTH = 8;
 const BCRYPT_COST_FACTOR = 12;
@@ -80,7 +81,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
 
       const [bootstrapped] = await tx.execute<{ tenant_id: string }>(
-        sql`SELECT bootstrap_tenant_for_user(${created.id}, ${companyName}, ${tosVersionAccepted}, ${ipAddress}) AS tenant_id`,
+        sql`SELECT bootstrap_tenant_for_user(${created.id}, ${companyName}, ${tosVersionAccepted}, ${ipAddress}, ${trialDays()}) AS tenant_id`,
       );
 
       if (!bootstrapped?.tenant_id) {

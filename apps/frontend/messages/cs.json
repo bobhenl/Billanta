@@ -981,7 +981,8 @@
         "psd2_state_invalid": "Odkaz z banky je neplatný nebo už byl použitý. Začněte napojení znovu.",
         "paypal_credentials_invalid": "PayPal odmítl Client ID nebo Secret. Zkontrolujte je a zda nepatří do sandboxu.",
         "paypal_reporting_disabled": "Aplikace v PayPalu nemá zapnutou funkci Transaction search. Zapněte ji v nastavení aplikace (změna se projeví do několika hodin).",
-        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení."
+        "two_factor_required": "Nejdřív si zapněte dvoufázové ověření v Nastavení → Zabezpečení.",
+        "plan_required": "Tahle funkce patří do placeného tarifu. Vyberte si ho v sekci Tarif a platby."
       },
       "psd2": {
         "hint": "Billanta stahuje nové příchozí platby přímo z banky nebo z PayPalu a sama je páruje s fakturami podle variabilního symbolu a částky. Fio připojíte API tokenem, PayPal údaji své REST aplikace, ostatní banky přes PSD2: přihlásíte se u své banky a udělíte souhlas jen ke čtení účtu (nejvýše na 180 dní, u mnoha bank 90). Banky dovolují jen pár automatických čtení denně, proto se PSD2 účty stahují zhruba každých 6 hodin. Odchozí platby se nestahují a zaplatit přes napojení nejde nic.",
@@ -2937,8 +2938,85 @@
     }
   },
   "billing": {
-    "title": "Předplatné",
-    "comingSoon": "Správa předplatného bude brzy k dispozici."
+    "title": "Tarif a platby",
+    "description": "Jaký tarif firma má, kolik zbývá ze zkušební verze a jak za tarif platíte.",
+    "loadError": "Údaje o tarifu se nepodařilo načíst. Zkuste stránku obnovit.",
+    "checkoutSuccess": "Děkujeme, platba proběhla. Tarif se zapne během pár vteřin.",
+    "checkoutCanceled": "Platbu jste nedokončili. Nic jsme nestrhli.",
+    "planNames": {
+      "free": "Zdarma",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Firma"
+    },
+    "trialBanner": {
+      "active": "Zkoušíte tarif {plan} zdarma, {days, plural, one {zbývá # den} few {zbývají # dny} other {zbývá # dní}}.",
+      "ended": "Zkušební verze tarifu {plan} skončila. Data zůstala, placené funkce jsou jen pro čtení.",
+      "choose": "Vybrat tarif",
+      "upgrade": "Přejít na placený tarif"
+    },
+    "current": {
+      "label": "Současný tarif",
+      "trial": "Zkušební verze zdarma, {days, plural, one {zbývá # den} few {zbývají # dny} other {zbývá # dní}} (do {date}). Bez karty, nic se samo nestrhne.",
+      "trialEnded": "Zkušební verze tarifu {plan} skončila. Firma běží na tarifu Zdarma, nic se nesmazalo a funkce nad jeho rámec jsou jen pro čtení.",
+      "prepaid": "Zaplaceno do {date}.",
+      "subscriptionMonth": "Předplatné s měsíční platbou.",
+      "subscriptionYear": "Předplatné s roční platbou.",
+      "free": "Tarif Zdarma. Na vyšší přejdete, až ho budete potřebovat.",
+      "pastDue": "Poslední platba neprošla. Stripe ji zkusí znovu, mezitím si v portálu můžete změnit platební metodu."
+    },
+    "portal": "Spravovat předplatné",
+    "choose": {
+      "title": "Vyberte tarif",
+      "yearly": "Ročně",
+      "monthly": "Měsíčně",
+      "perMonth": "/ měsíc",
+      "billedYearly": "{total} za rok",
+      "billedMonthly": "platba každý měsíc",
+      "payCard": "Zaplatit kartou",
+      "renewCard": "Prodloužit kartou",
+      "cardUnavailable": "Platba kartou zatím není zapnutá."
+    },
+    "terms": {
+      "renewYearly": "Předplatné se obnovuje automaticky každý rok za stejnou cenu, dokud ho nezrušíte.",
+      "renewMonthly": "Předplatné se obnovuje automaticky každý měsíc za stejnou cenu, dokud ho nezrušíte.",
+      "cancel": "Zrušit ho můžete kdykoli jedním krokem v portálu předplatného. Tarif pak poběží do konce zaplaceného období.",
+      "methods": "Platit můžete kartou, Apple Pay, Google Pay nebo jinou metodou, kterou vám platební brána nabídne.",
+      "transfer": "Platba převodem je jednorázová na rok dopředu a sama se neobnovuje. Tarif zapneme, jakmile platba dorazí na účet.",
+      "transferYearlyOnly": "Převodem jde zaplatit jen roční tarif v korunách.",
+      "vat": "Ceny jsou bez DPH."
+    },
+    "transfer": {
+      "title": "Platby převodem",
+      "button": "Zaplatit převodem",
+      "created": "Zálohová faktura je připravená. Údaje k platbě najdete níže.",
+      "months": "{n, plural, one {# měsíc} few {# měsíce} other {# měsíců}}",
+      "status": {
+        "pending": "Čeká na platbu",
+        "paid": "Zaplaceno",
+        "canceled": "Zrušeno"
+      },
+      "qrAlt": "QR kód pro platbu",
+      "amount": "Částka",
+      "vat": "z toho DPH {rate} %",
+      "vs": "Variabilní symbol",
+      "account": "Číslo účtu",
+      "due": "Splatnost",
+      "payee": "Příjemce",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "note": "Naskenujte QR kód v bankovní aplikaci, nebo zadejte účet a variabilní symbol ručně. Tarif zapneme, jakmile platbu spárujeme, obvykle do jednoho pracovního dne.",
+      "paidOn": "Platba přijata {date}."
+    },
+    "errors": {
+      "generic": "Něco se nepovedlo. Zkuste to prosím znovu.",
+      "billing_not_configured": "Platba kartou zatím není zapnutá.",
+      "already_subscribed": "Firma už předplatné má. Změníte ho v portálu předplatného.",
+      "no_stripe_customer": "Firma zatím nemá předplatné u Stripe.",
+      "bank_transfer_not_configured": "Platba převodem zatím není zapnutá.",
+      "too_many_pending_proformas": "Máte už tři nezaplacené zálohové faktury. Zaplaťte některou z nich, nebo počkejte, až ji spárujeme.",
+      "forbidden": "Platit může jen vlastník nebo správce firmy."
+    }
   },
   "auth": {
     "signup": {
@@ -3500,7 +3578,8 @@
         "priority": "Přednostní"
       }
     },
-    "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším"
+    "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším",
+    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} zdarma, bez karty: vyzkoušejte celý tarif Firma."
   },
   "cookies": {
     "banner": {

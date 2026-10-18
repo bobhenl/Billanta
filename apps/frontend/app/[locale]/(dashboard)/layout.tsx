@@ -15,6 +15,7 @@ import { NavProgress } from '@/components/nav-progress';
 import { NotificationBell } from '@/components/notification-bell';
 import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
 import { fetchMyAccess, hiddenSections } from '@/lib/tenant';
@@ -99,6 +100,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {role === 'viewer' && (
             <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
           )}
+          <TrialBanner plan={access?.plan} />
           {children}
         </main>
 
