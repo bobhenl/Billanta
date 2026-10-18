@@ -4,11 +4,11 @@ import { signIn } from 'next-auth/react';
 import type { OAuthProviderId } from '@/lib/oauth-providers';
 
 /** One "Continue with …" button, with the provider's own mark. */
-export function OAuthButton({ provider, label }: { provider: OAuthProviderId; label: string }) {
+export function OAuthButton({ provider, label, callbackUrl = '/dashboard' }: { provider: OAuthProviderId; label: string; callbackUrl?: string }) {
   return (
     <button
       type="button"
-      onClick={() => signIn(provider, { callbackUrl: '/dashboard' })}
+      onClick={() => signIn(provider, { callbackUrl })}
       className="inline-flex items-center justify-center gap-2.5 rounded-full border border-border bg-background px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-secondary"
     >
       <ProviderMark provider={provider} />

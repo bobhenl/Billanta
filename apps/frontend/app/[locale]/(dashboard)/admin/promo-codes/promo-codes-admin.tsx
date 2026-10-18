@@ -7,8 +7,10 @@ import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/components/modal';
 import { usePromoText } from '@/components/promo-text';
 import { toast } from '@/components/toaster';
+import { BUSINESS_PRESETS } from '@/lib/business-presets';
 import { cn } from '@/lib/utils';
 import { createPromoCode, setPromoCodeActive, type NewPromoCode } from './actions';
+import { JoinLink } from './join-link';
 
 /** A row of `GET /v1/admin/promo-codes`. */
 export interface AdminPromoCode {
@@ -26,11 +28,15 @@ export interface AdminPromoCode {
   active: boolean;
   ownerLabel: string | null;
   note: string | null;
+  referralCode: string | null;
+  businessPreset: string | null;
+  defaultLocale: NewPromoCode['default_locale'];
   createdAt: string;
 }
 
 const KINDS = ['event', 'creator', 'school', 'other'] as const;
 const PLANS = ['start', 'plus', 'business'] as const;
+const LOCALES = ['cs', 'sk', 'en'] as const;
 
 const EMPTY = {
   code: '',
@@ -42,12 +48,16 @@ const EMPTY = {
   valid_from: '',
   valid_until: '',
   owner_label: '',
-  note: ''
+  note: '',
+  referral_code: '',
+  business_preset: '',
+  default_locale: '' as NewPromoCode['default_locale'] | ''
 };
 
 export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
   const t = useTranslations('adminPromoCodes');
   const tPlan = useTranslations('billing.planNames');
+  const tModules = useTranslations('settings.modules');
   const format = useFormatter();
   const router = useRouter();
   const { benefit } = usePromoText();
@@ -72,7 +82,10 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
         valid_from: form.valid_from || null,
         valid_until: form.valid_until || null,
         owner_label: form.owner_label.trim() || null,
-        note: form.note.trim() || null
+        note: form.note.trim() || null,
+        referral_code: form.referral_code.trim() || null,
+        business_preset: form.business_preset || null,
+        default_locale: form.default_locale || null
       });
       if (!result.ok) return failed(result.error);
       toast({ text: t('created'), tone: 'ok' });
@@ -153,6 +166,38 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
             <input value={form.owner_label} onChange={set('owner_label')} maxLength={120} placeholder={t('form.ownerPlaceholder')} className={inputClass} />
           </label>
           <label className={field}>
+            {t('form.referralCode')}
+            <input
+              value={form.referral_code}
+              onChange={set('referral_code')}
+              maxLength={16}
+              placeholder={t('form.referralPlaceholder')}
+              className={cn(inputClass, 'font-mono uppercase')}
+            />
+          </label>
+          <label className={field}>
+            {t('form.businessPreset')}
+            <select value={form.business_preset} onChange={set('business_preset')} className={inputClass}>
+              <option value="">{t('form.presetNone')}</option>
+              {BUSINESS_PRESETS.map((p) => (
+                <option key={p.key} value={p.key}>
+                  {tModules(`presets.${p.key}.title`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={field}>
+            {t('form.defaultLocale')}
+            <select value={form.default_locale ?? ''} onChange={set('default_locale')} className={inputClass}>
+              <option value="">{t('form.localeVisitor')}</option>
+              {LOCALES.map((l) => (
+                <option key={l} value={l}>
+                  {t(`locale.${l}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={field}>
             {t('form.validFrom')}
             <input type="date" value={form.valid_from} onChange={set('valid_from')} className={inputClass} />
           </label>
@@ -187,12 +232,16 @@ export function PromoCodesAdmin({ codes }: { codes: AdminPromoCode[] }) {
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {[
                     c.ownerLabel,
+                    c.businessPreset && tModules.has(`presets.${c.businessPreset}.title`) ? tModules(`presets.${c.businessPreset}.title`) : null,
+                    c.defaultLocale ? t(`locale.${c.defaultLocale}`) : null,
+                    c.referralCode ? t('referrer', { code: c.referralCode }) : null,
                     c.validFrom || c.validUntil ? t('validity', { from: c.validFrom ? day(c.validFrom) : '…', until: c.validUntil ? day(c.validUntil) : '…' }) : null,
                     c.note
                   ]
                     .filter(Boolean)
                     .join(' · ')}
                 </p>
+                {c.active && <JoinLink code={c.code} />}
               </div>
               <div className="flex items-center gap-4">
                 <p className="text-right text-sm tabular-nums">

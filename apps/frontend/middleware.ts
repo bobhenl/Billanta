@@ -1,7 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
-import { PROMO_CODE, PROMO_COOKIE } from './lib/promo';
+import { JOIN_PATH, PROMO_CODE, PROMO_COOKIE } from './lib/promo';
 import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN, SITE_URL } from './lib/site';
 
@@ -54,12 +54,12 @@ function rememberReferral(request: NextRequest, response: NextResponse) {
 }
 
 /**
- * `?promo=` on any page: remember the code for the company the visitor is
- * about to found. Unlike an invite, the latest link wins: it is the event
- * or creator the visitor just came from.
+ * `?promo=` on any page, or a `/join/CODE` link: remember the code for the
+ * company the visitor is about to found. Unlike an invite, the latest link
+ * wins: it is the event or creator the visitor just came from.
  */
 function rememberPromo(request: NextRequest, response: NextResponse) {
-  const promo = request.nextUrl.searchParams.get('promo')?.trim();
+  const promo = (request.nextUrl.pathname.match(JOIN_PATH)?.[2] ?? request.nextUrl.searchParams.get('promo'))?.trim();
   if (!promo || !PROMO_CODE.test(promo)) return response;
   const code = promo.toUpperCase();
   if (request.cookies.get(PROMO_COOKIE)?.value === code) return response;
@@ -70,6 +70,22 @@ function rememberPromo(request: NextRequest, response: NextResponse) {
     httpOnly: true,
     secure: request.nextUrl.protocol === 'https:'
   });
+  return response;
+}
+
+/**
+ * A poster or QR code points to `/join/CODE` without a locale. When the
+ * visitor has never picked a language, mark the locale redirect so the join
+ * page may switch to the code's own language (a Slovak event's code opens in
+ * Slovak even on an English phone).
+ */
+function markJoinLocale(request: NextRequest, response: NextResponse) {
+  const match = request.nextUrl.pathname.match(JOIN_PATH);
+  const location = response.headers.get('location');
+  if (!match || match[1] || !location || request.cookies.has('NEXT_LOCALE')) return response;
+  const url = new URL(location, request.url);
+  url.searchParams.set('auto', '1');
+  response.headers.set('location', url.toString());
   return response;
 }
 
@@ -86,7 +102,8 @@ function privateIfSettingCookies(response: NextResponse) {
 
 export default function middleware(request: NextRequest) {
   const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
-  return privateIfSettingCookies(rememberPromo(request, rememberReferral(request, profileRewrite(request) ?? locale(request))));
+  const response = profileRewrite(request) ?? markJoinLocale(request, locale(request));
+  return privateIfSettingCookies(rememberPromo(request, rememberReferral(request, response)));
 }
 
 export const config = {

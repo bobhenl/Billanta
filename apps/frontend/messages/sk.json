@@ -8519,11 +8519,52 @@
       "validFrom": "Platí od",
       "validUntil": "Platí do",
       "note": "Poznámka",
-      "submit": "Vytvoriť kód"
+      "submit": "Vytvoriť kód",
+      "referralCode": "Odporúčací kód tvorcu",
+      "referralPlaceholder": "nepovinné, dostane odmenu",
+      "businessPreset": "Typ podnikania",
+      "presetNone": "nechať vybrať",
+      "defaultLocale": "Jazyk stránky",
+      "localeVisitor": "podľa návštevníka"
     },
     "errors": {
       "code_taken": "Taký kód už existuje.",
-      "invalid_dates": "Koniec platnosti je pred jej začiatkom."
+      "invalid_dates": "Koniec platnosti je pred jej začiatkom.",
+      "referral_unknown": "Taký odporúčací kód neexistuje."
+    },
+    "referrer": "odporúčateľ {code}",
+    "copyLink": "Kopírovať odkaz",
+    "copied": "Odkaz je skopírovaný.",
+    "downloadQr": "Stiahnuť QR kód",
+    "locale": {
+      "cs": "čeština",
+      "sk": "slovenčina",
+      "en": "angličtina"
+    }
+  },
+  "join": {
+    "metaTitle": "Pripojiť sa s kódom",
+    "from": "Pozvánka od: {owner}",
+    "fromBillanta": "Pozvánka do Billanty",
+    "title": "Fakturujte v Billante",
+    "benefit": "S týmto kódom získate {benefit}.",
+    "preset": "Aplikáciu vám hneď nastavíme pre typ podnikania: {preset}.",
+    "email": "Pokračovať cez e-mail",
+    "or": "alebo",
+    "try": "Len vyskúšať",
+    "trying": "Pripravujeme ukážku…",
+    "tryHint": "Ukážková firma bez registrácie. Kód vám ostane, keď si budete zakladať účet.",
+    "remembered": "Kód {code} si zapamätáme na 30 dní.",
+    "haveAccount": "Už máte účet? Prihláste sa.",
+    "signedIn": "Ste prihlásení. Kód sa uplatní vo firme, ktorú máte otvorenú, ak v nej môžete spravovať predplatné.",
+    "toDashboard": "Pokračovať do aplikácie",
+    "invalid": "Tento kód neplatí alebo sa jeho platnosť skončila. Skontrolujte, či ste ho odpísali správne.",
+    "form": {
+      "title": "Zadajte kód",
+      "hint": "Kód alebo heslo z plagátu, prezentácie či pozvánky. Na veľkosti písmen nezáleží.",
+      "label": "Kód",
+      "placeholder": "napr. KAVIAREN-KOSICE",
+      "submit": "Pokračovať"
     }
   }
 }

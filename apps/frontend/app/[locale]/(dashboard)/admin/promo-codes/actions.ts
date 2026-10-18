@@ -16,6 +16,10 @@ export interface NewPromoCode {
   valid_until: string | null;
   owner_label: string | null;
   note: string | null;
+  /** The creator's or coworking's own referral code: they get referral credit for each company. */
+  referral_code: string | null;
+  business_preset: string | null;
+  default_locale: 'cs' | 'sk' | 'en' | null;
 }
 
 async function send(path: string, method: 'POST' | 'PATCH', body: unknown): Promise<SettingsResult> {

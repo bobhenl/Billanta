@@ -8613,11 +8613,52 @@
       "validFrom": "Platí od",
       "validUntil": "Platí do",
       "note": "Poznámka",
-      "submit": "Vytvořit kód"
+      "submit": "Vytvořit kód",
+      "referralCode": "Doporučovací kód tvůrce",
+      "referralPlaceholder": "nepovinné, dostane odměnu",
+      "businessPreset": "Typ podnikání",
+      "presetNone": "nechat vybrat",
+      "defaultLocale": "Jazyk stránky",
+      "localeVisitor": "podle návštěvníka"
     },
     "errors": {
       "code_taken": "Takový kód už existuje.",
-      "invalid_dates": "Konec platnosti je před jejím začátkem."
+      "invalid_dates": "Konec platnosti je před jejím začátkem.",
+      "referral_unknown": "Takový doporučovací kód neexistuje."
+    },
+    "referrer": "doporučitel {code}",
+    "copyLink": "Kopírovat odkaz",
+    "copied": "Odkaz je zkopírovaný.",
+    "downloadQr": "Stáhnout QR kód",
+    "locale": {
+      "cs": "čeština",
+      "sk": "slovenština",
+      "en": "angličtina"
+    }
+  },
+  "join": {
+    "metaTitle": "Připojit se s kódem",
+    "from": "Pozvánka od: {owner}",
+    "fromBillanta": "Pozvánka do Billanty",
+    "title": "Fakturujte v Billantě",
+    "benefit": "S tímto kódem dostanete {benefit}.",
+    "preset": "Aplikaci vám rovnou nastavíme pro typ podnikání: {preset}.",
+    "email": "Pokračovat přes e-mail",
+    "or": "nebo",
+    "try": "Jen vyzkoušet",
+    "trying": "Připravujeme ukázku…",
+    "tryHint": "Ukázková firma bez registrace. Kód vám zůstane, až si budete zakládat účet.",
+    "remembered": "Kód {code} si zapamatujeme na 30 dní.",
+    "haveAccount": "Už máte účet? Přihlaste se.",
+    "signedIn": "Jste přihlášeni. Kód se uplatní ve firmě, kterou máte otevřenou, pokud v ní můžete spravovat předplatné.",
+    "toDashboard": "Pokračovat do aplikace",
+    "invalid": "Tento kód neplatí nebo jeho platnost skončila. Zkontrolujte, jestli je opsaný správně.",
+    "form": {
+      "title": "Zadejte kód",
+      "hint": "Kód nebo heslo z plakátu, prezentace či pozvánky. Na velikosti písmen nezáleží.",
+      "label": "Kód",
+      "placeholder": "např. KAVARNA-BRNO",
+      "submit": "Pokračovat"
     }
   }
 }

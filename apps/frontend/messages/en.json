@@ -8612,11 +8612,52 @@
       "validFrom": "Valid from",
       "validUntil": "Valid until",
       "note": "Note",
-      "submit": "Create code"
+      "submit": "Create code",
+      "referralCode": "Creator's referral code",
+      "referralPlaceholder": "optional, earns the reward",
+      "businessPreset": "Type of business",
+      "presetNone": "let them choose",
+      "defaultLocale": "Page language",
+      "localeVisitor": "visitor's own"
     },
     "errors": {
       "code_taken": "That code already exists.",
-      "invalid_dates": "The end date is before the start date."
+      "invalid_dates": "The end date is before the start date.",
+      "referral_unknown": "No such referral code exists."
+    },
+    "referrer": "referrer {code}",
+    "copyLink": "Copy link",
+    "copied": "Link copied.",
+    "downloadQr": "Download QR code",
+    "locale": {
+      "cs": "Czech",
+      "sk": "Slovak",
+      "en": "English"
+    }
+  },
+  "join": {
+    "metaTitle": "Join with a code",
+    "from": "Invitation from {owner}",
+    "fromBillanta": "Invitation to Billanta",
+    "title": "Invoice with Billanta",
+    "benefit": "This code gets you {benefit}.",
+    "preset": "We'll set the app up for your type of business: {preset}.",
+    "email": "Continue with e-mail",
+    "or": "or",
+    "try": "Just try it",
+    "trying": "Preparing the demo…",
+    "tryHint": "A sample company, no sign-up. The code stays with you for when you create an account.",
+    "remembered": "We'll remember code {code} for 30 days.",
+    "haveAccount": "Already have an account? Sign in.",
+    "signedIn": "You're signed in. The code applies to the company you have open, if you can manage its subscription.",
+    "toDashboard": "Continue to the app",
+    "invalid": "This code isn't valid or has expired. Check that it is typed correctly.",
+    "form": {
+      "title": "Enter your code",
+      "hint": "The code or passphrase from the poster, slide or invitation. Upper or lower case doesn't matter.",
+      "label": "Code",
+      "placeholder": "e.g. KAVARNA-BRNO",
+      "submit": "Continue"
     }
   }
 }
