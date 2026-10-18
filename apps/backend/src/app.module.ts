@@ -53,6 +53,7 @@ import { RoleAccessGuard } from "./tenancy/role-access.guard";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
+import { BlogModule } from "./blog/blog.module";
 import { ReferralsController } from "./referrals/referrals.controller";
 import { ReferralsModule } from "./referrals/referrals.module";
 
@@ -122,6 +123,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     ReferralsModule,
     // Public partners directory + Billanta-staff catalogue admin (no tenant context).
     PartnersModule,
+    // Public /blog + staff review queue for AI drafts (no tenant context).
+    BlogModule,
   ],
   // Viewers are read-only and accountants stay out of company administration.
   providers: [{ provide: APP_GUARD, useClass: RoleAccessGuard }],

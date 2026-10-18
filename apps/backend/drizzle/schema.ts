@@ -1328,3 +1328,37 @@ export const partners = pgTable("partners", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// blog_posts — GLOBAL (no tenant, no RLS) articles behind /blog. AI writes
+// only drafts; a platform admin publishes (`src/blog/`). One row per locale,
+// rows of the same article share `translation_key` (hreflang).
+// ---------------------------------------------------------------------------
+export interface BlogSource {
+  title: string;
+  url: string;
+}
+
+export const blogPosts = pgTable("blog_posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  locale: varchar("locale", { length: 2 }).$type<"cs" | "sk" | "en">().notNull(),
+  slug: varchar("slug", { length: 100 }).notNull(),
+  translationKey: varchar("translation_key", { length: 100 }).notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  /** Restricted markdown: `## ` headings, `- ` lists, **bold**, [links](https://…). */
+  body: text("body").notNull(),
+  kind: varchar("kind", { length: 16 }).$type<"manual" | "tax_deadlines" | "brief">().notNull().default("manual"),
+  status: varchar("status", { length: 16 })
+    .$type<"draft" | "pending_review" | "published" | "rejected">()
+    .notNull()
+    .default("draft"),
+  sources: jsonb("sources").$type<BlogSource[]>().notNull().default([]),
+  /** Facts the AI was given; the number check compares the prose against them. */
+  facts: text("facts"),
+  /** Blocker codes from `blog-checks.ts` at the last save. */
+  warnings: jsonb("warnings").$type<string[]>().notNull().default([]),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});

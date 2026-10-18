@@ -54,6 +54,7 @@ export async function MarketingFooter() {
       title: t('company.title'),
       links: [
         { href: '/about', label: t('company.about') },
+        { href: '/blog', label: t('company.blog') },
         { href: '/for-accountants', label: t('company.accountants') },
         { href: '/partners', label: t('company.partners') },
         { href: '/invoicing', label: tMunicipalities('breadcrumbBrowse') }

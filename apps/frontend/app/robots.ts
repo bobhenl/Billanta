@@ -29,6 +29,7 @@ const PRIVATE = [
   'time',
   'invite',
   'welcome',
+  'admin',
   'i/',
   'c/',
   // Counting redirects to partner sites (VoxelRank: /partners/go/).

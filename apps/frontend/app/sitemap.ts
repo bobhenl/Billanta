@@ -3,6 +3,7 @@ import { routing } from '@/i18n/routing';
 import { COMPARED_BRANDS } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
+import { fetchBlogSitemap } from '@/lib/blog';
 import { getAllMunicipalities, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
 
@@ -110,7 +111,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
   const start = id * URLS_PER_SHARD;
   const slice = flat.slice(start, start + URLS_PER_SHARD);
 
-  return slice.map(({ path, locale, locales, changeFrequency, priority }) => {
+  return [...slice.map(({ path, locale, locales, changeFrequency, priority }) => {
     const languages: Record<string, string> = {};
     for (const l of locales) {
       languages[l] = `${SITE_URL}/${l}${path}`;
@@ -123,5 +124,34 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
       priority,
       alternates: { languages }
     };
-  });
+  }), ...(Number(id) === 0 ? await blogEntries() : [])];
+}
+
+/**
+ * Blog posts come from the backend, so they ride on the first shard instead
+ * of the synchronous count robots.txt uses. Translations of one post can
+ * have different slugs; they are grouped by translation key for hreflang.
+ */
+async function blogEntries(): Promise<MetadataRoute.Sitemap> {
+  const posts = await fetchBlogSitemap();
+  if (!posts.length) return [];
+  const groups = new Map<string, Record<string, string>>();
+  for (const p of posts) {
+    const languages = groups.get(p.translationKey) ?? {};
+    languages[p.locale] = `${SITE_URL}/${p.locale}/blog/${p.slug}`;
+    groups.set(p.translationKey, languages);
+  }
+  // The index is only indexable in a language that has a post (see blog/page.tsx).
+  const indexLocales = routing.locales.filter((l) => posts.some((p) => p.locale === l));
+  const index = Object.fromEntries(indexLocales.map((l) => [l, `${SITE_URL}/${l}/blog`]));
+  return [
+    ...indexLocales.map((l) => ({ url: index[l]!, changeFrequency: 'weekly' as const, priority: 0.6, alternates: { languages: index } })),
+    ...posts.map((p) => ({
+      url: `${SITE_URL}/${p.locale}/blog/${p.slug}`,
+      lastModified: p.updatedAt,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+      alternates: { languages: groups.get(p.translationKey)! }
+    }))
+  ];
 }

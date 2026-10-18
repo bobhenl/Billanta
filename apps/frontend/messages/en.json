@@ -209,7 +209,8 @@
         "title": "Company",
         "about": "About",
         "accountants": "For accountants",
-        "partners": "Partners"
+        "partners": "Partners",
+        "blog": "Blog"
       },
       "legal": {
         "title": "Legal",
@@ -6426,7 +6427,9 @@
       "calculatorsHint": "Tax, VAT, QR payment, company lookup, due dates",
       "guides": "Guides",
       "guidesHint": "How to file Czech VAT returns",
-      "compare": "Compare with competitors"
+      "compare": "Compare with competitors",
+      "blog": "Blog",
+      "blogHint": "Deadlines, legislation and how-tos"
     },
     "search": {
       "showAll": "Show all results for “{query}”",
@@ -7068,6 +7071,99 @@
       "title": "Two-factor authentication required",
       "body": "Because this gives access to money and data, new connections can only be added with two-factor authentication. Existing connections keep working.",
       "cta": "Turn on 2FA"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "seoTitle": "Blog on invoicing, taxes and e-invoicing",
+    "lead": "Tax deadlines, legislative changes and practical how-tos for freelancers and small businesses in Czechia and Slovakia.",
+    "empty": "Nothing here yet. The first articles are being written.",
+    "read": "Read article",
+    "updated": "updated {date}",
+    "sources": "Sources",
+    "disclaimer": "This article is a summary, not tax or legal advice. Check the sources or ask a tax adviser before you act on it.",
+    "ctaTitle": "Invoicing without the hassle",
+    "ctaBody": "Billanta tracks due dates, QR payments and exports for your accountant. Start for free.",
+    "ctaButton": "Try it free"
+  },
+  "adminBlog": {
+    "title": "Blog",
+    "description": "The queue of AI drafts and every post. Nothing goes live without a click.",
+    "empty": "No posts yet.",
+    "editTitle": "Edit post",
+    "warningCount": "{n, plural, one {# warning} other {# warnings}}",
+    "status": {
+      "draft": "Draft",
+      "pending_review": "To review",
+      "published": "Published",
+      "rejected": "Rejected"
+    },
+    "kind": {
+      "manual": "Manual",
+      "tax_deadlines": "Tax deadlines",
+      "brief": "AI from a brief"
+    },
+    "drafts": {
+      "taxTitle": "Tax deadlines for a month",
+      "taxHint": "AI writes the intro and tips; the list of deadlines is built by code from the tax calendar.",
+      "year": "Year",
+      "month": "Month",
+      "generate": "Create draft",
+      "briefTitle": "Post from a brief",
+      "briefHint": "Give a topic, verified facts and sources. AI writes a draft from them (at most 3 a week).",
+      "topic": "Topic",
+      "nothingNew": "That month already has a post or has no deadlines.",
+      "created": "Draft created."
+    },
+    "fields": {
+      "locale": "Language",
+      "slug": "Slug",
+      "translationKey": "Translation key",
+      "title": "Title",
+      "description": "Summary",
+      "body": "Body",
+      "bodyHint": "Separate paragraphs with a blank line. Allowed: ## heading, ### subheading, - bullets, **bold**, [link](https://…).",
+      "sources": "Sources",
+      "sourcesPlaceholder": "Title | https://…  (one per line)",
+      "facts": "Facts",
+      "factsHint": "Material for the checks: every number in the text must appear here or in a source title. Empty = numbers not checked."
+    },
+    "warningsTitle": "The checks found problems",
+    "warningsAfterSave": "Warnings are recomputed when you save.",
+    "edit": "Edit",
+    "preview": "Preview",
+    "save": "Save",
+    "saved": "Saved.",
+    "publishAnyway": "I have read the warnings, publish anyway",
+    "publish": "Publish",
+    "published": "The post is live.",
+    "reject": "Reject",
+    "rejected": "The post is rejected.",
+    "unpublish": "Unpublish",
+    "unpublished": "The post is back in drafts.",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this post? This cannot be undone.",
+    "deleted": "Deleted.",
+    "saveBeforePublish": "The saved version is what gets published. Save your changes first.",
+    "errors": {
+      "post_has_warnings": "The post has warnings. Tick the box to confirm you have read them.",
+      "slug_taken": "That slug already exists in this language.",
+      "weekly_draft_limit": "Three drafts from a brief were already created this week. Try again next week.",
+      "ai_platform_unavailable": "AI is not configured (no API key).",
+      "ai_refused": "The AI declined to write this post. Change the brief.",
+      "ai_unparseable": "The AI response could not be processed. Try again.",
+      "generic": "The action failed ({code})."
+    },
+    "warnings": {
+      "title_length": "The title should be 10–140 characters.",
+      "description_length": "The summary should be 50–320 characters.",
+      "body_too_short": "The body is too short.",
+      "body_truncated": "The body does not end with a full sentence; it may be cut off.",
+      "no_sources": "No sources.",
+      "banned_phrase": "The text contains a banned promise or phrase (e.g. \"guaranteed\").",
+      "raw_html": "The text contains HTML.",
+      "bad_link": "Links may only point to https:// or to a page on this site (/…).",
+      "unknown_number": "The text contains a number that is not in the facts or the sources."
     }
   }
 }

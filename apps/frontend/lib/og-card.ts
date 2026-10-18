@@ -22,10 +22,10 @@ export interface OgCard {
 const MESSAGES = { cs, sk, en } as const;
 type Locale = keyof typeof MESSAGES;
 
-const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides', string>> = {
-  cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace', calculators: 'Kalkulačky', guides: 'Návody' },
-  sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie', calculators: 'Kalkulačky', guides: 'Návody' },
-  en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up', calculators: 'Calculators', guides: 'Guides' }
+const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides' | 'blog', string>> = {
+  cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace', calculators: 'Kalkulačky', guides: 'Návody', blog: 'Blog' },
+  sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie', calculators: 'Kalkulačky', guides: 'Návody', blog: 'Blog' },
+  en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up', calculators: 'Calculators', guides: 'Guides', blog: 'Blog' }
 };
 
 const LEGAL: Record<string, string> = { terms: 'legal.terms', privacy: 'legal.privacy', dpa: 'legal.dpa', cookies: 'cookies.page' };
@@ -53,6 +53,8 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
         return { title: t('municipalityPages.indexTitle'), subtitle: t('municipalityPages.indexLead'), section: s.places };
       case 'calculators':
         return { title: t('tools.calculators.indexTitle'), subtitle: t('tools.calculators.indexDescription'), section: s.calculators };
+      case 'blog':
+        return { title: t('blog.title'), subtitle: t('blog.lead'), section: s.blog };
       case 'guides':
         // The guides hub is published only where the guides are (cs/en).
         if (!GUIDES_HUB_LOCALES.includes(l)) return null;

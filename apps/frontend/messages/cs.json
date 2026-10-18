@@ -209,7 +209,8 @@
         "title": "Společnost",
         "about": "O nás",
         "accountants": "Pro účetní",
-        "partners": "Partneři"
+        "partners": "Partneři",
+        "blog": "Blog"
       },
       "legal": {
         "title": "Právní informace",
@@ -6427,7 +6428,9 @@
       "calculatorsHint": "Daně, DPH, QR platba, IČO a splatnost",
       "guides": "Návody",
       "guidesHint": "Jak podat DPH a hlášení",
-      "compare": "Srovnání s konkurencí"
+      "compare": "Srovnání s konkurencí",
+      "blog": "Blog",
+      "blogHint": "Termíny, legislativa a návody"
     },
     "search": {
       "showAll": "Zobrazit všechny výsledky pro „{query}“",
@@ -7069,6 +7072,99 @@
       "title": "Vyžaduje dvoufázové ověření",
       "body": "Kvůli přístupu k penězům a datům jde nové připojení vytvořit jen s dvoufázovým ověřením. Stávající připojení fungují dál.",
       "cta": "Zapnout 2FA"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "seoTitle": "Blog o fakturaci, daních a e-fakturách",
+    "lead": "Daňové termíny, změny v legislativě a praktické návody pro OSVČ a malé firmy v Česku a na Slovensku.",
+    "empty": "Zatím tu nic není. První články právě píšeme.",
+    "read": "Číst článek",
+    "updated": "aktualizováno {date}",
+    "sources": "Zdroje",
+    "disclaimer": "Článek je shrnutí, ne daňové ani právní poradenství. Před rozhodnutím si údaje ověřte ve zdrojích nebo u daňového poradce.",
+    "ctaTitle": "Fakturujte bez starostí",
+    "ctaBody": "Billanta hlídá splatnosti, QR platby a exporty pro účetní. Začněte zdarma.",
+    "ctaButton": "Vyzkoušet zdarma"
+  },
+  "adminBlog": {
+    "title": "Blog",
+    "description": "Fronta konceptů od AI a všechny články. Nic se nezveřejní bez kliknutí.",
+    "empty": "Zatím žádné články.",
+    "editTitle": "Úprava článku",
+    "warningCount": "{n, plural, one {# varování} few {# varování} other {# varování}}",
+    "status": {
+      "draft": "Koncept",
+      "pending_review": "Ke kontrole",
+      "published": "Zveřejněno",
+      "rejected": "Zamítnuto"
+    },
+    "kind": {
+      "manual": "Ručně",
+      "tax_deadlines": "Daňové termíny",
+      "brief": "AI ze zadání"
+    },
+    "drafts": {
+      "taxTitle": "Daňové termíny na měsíc",
+      "taxHint": "AI napíše úvod a tipy, seznam termínů sestaví kód z daňového kalendáře.",
+      "year": "Rok",
+      "month": "Měsíc",
+      "generate": "Vytvořit koncept",
+      "briefTitle": "Článek ze zadání",
+      "briefHint": "Zadejte téma, ověřená fakta a zdroje. AI z nich napíše koncept (nejvýš 3 týdně).",
+      "topic": "Téma",
+      "nothingNew": "Pro tento měsíc už článek existuje nebo nemá žádné termíny.",
+      "created": "Koncept je vytvořený."
+    },
+    "fields": {
+      "locale": "Jazyk",
+      "slug": "Slug",
+      "translationKey": "Klíč překladu",
+      "title": "Titulek",
+      "description": "Perex",
+      "body": "Text",
+      "bodyHint": "Odstavce oddělte prázdným řádkem. Povolené: ## nadpis, ### podnadpis, - odrážky, **tučně**, [odkaz](https://…).",
+      "sources": "Zdroje",
+      "sourcesPlaceholder": "Název | https://…  (jeden na řádek)",
+      "facts": "Fakta",
+      "factsHint": "Podklady pro kontrolu: každé číslo v textu musí být tady nebo v názvu zdroje. Prázdné = bez kontroly čísel."
+    },
+    "warningsTitle": "Kontrola našla problémy",
+    "warningsAfterSave": "Varování se přepočítají po uložení.",
+    "edit": "Upravit",
+    "preview": "Náhled",
+    "save": "Uložit",
+    "saved": "Uloženo.",
+    "publishAnyway": "Varování jsem četl(a), zveřejnit i tak",
+    "publish": "Zveřejnit",
+    "published": "Článek je zveřejněný.",
+    "reject": "Zamítnout",
+    "rejected": "Článek je zamítnutý.",
+    "unpublish": "Stáhnout z webu",
+    "unpublished": "Článek je zpět mezi koncepty.",
+    "delete": "Smazat",
+    "deleteConfirm": "Opravdu článek smazat? Nejde to vrátit.",
+    "deleted": "Smazáno.",
+    "saveBeforePublish": "Zveřejní se uložená verze. Změny nejdřív uložte.",
+    "errors": {
+      "post_has_warnings": "Článek má varování. Zaškrtněte, že jste je četli.",
+      "slug_taken": "Tento slug už v daném jazyce existuje.",
+      "weekly_draft_limit": "Tento týden už vznikly 3 koncepty ze zadání. Zkuste to příští týden.",
+      "ai_platform_unavailable": "AI není nastavená (chybí API klíč).",
+      "ai_refused": "AI odmítla článek napsat. Upravte zadání.",
+      "ai_unparseable": "Odpověď AI nešla zpracovat. Zkuste to znovu.",
+      "generic": "Akce selhala ({code})."
+    },
+    "warnings": {
+      "title_length": "Titulek má mít 10–140 znaků.",
+      "description_length": "Perex má mít 50–320 znaků.",
+      "body_too_short": "Text je příliš krátký.",
+      "body_truncated": "Text nekončí větou, možná je useknutý.",
+      "no_sources": "Chybí zdroje.",
+      "banned_phrase": "Text obsahuje zakázaný slib nebo frázi (např. „garantujeme“).",
+      "raw_html": "Text obsahuje HTML.",
+      "bad_link": "Odkaz smí vést jen na https:// nebo na stránku webu (/…).",
+      "unknown_number": "Text obsahuje číslo, které není ve faktech ani ve zdrojích."
     }
   }
 }
