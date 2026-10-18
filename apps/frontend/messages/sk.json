@@ -6958,33 +6958,55 @@
           "howTitle": "Ako to funguje"
         },
         "companyLookup": {
-          "name": "Vyhľadanie firmy podľa IČO (CZ)",
-          "title": "Vyhľadanie českej firmy podľa IČO v ARES",
-          "description": "Vyhľadanie v českom registri ARES. Slovenské firmy nájdete v registri právnických osôb (RPO).",
-          "lead": "Nástroj hľadá iba v českom registri ARES.",
-          "keywords": "ares ičo česká firma",
+          "name": "Vyhľadanie firmy podľa IČO, DIČ alebo názvu",
+          "title": "Vyhľadanie firmy podľa IČO, DIČ alebo názvu (RPO, ARES, VIES)",
+          "description": "Nájdite firmu podľa IČO, IČ DPH alebo názvu v slovenskom RPO, českom ARES alebo európskom VIES. Ukážeme sídlo, IČ DPH a či je platné.",
+          "lead": "Zadajte IČO, IČ DPH alebo časť názvu. Hľadáme v slovenskom registri právnických osôb (RPO), v českom ARES, v európskom VIES a v ďalších registroch, ktoré si vyberiete.",
+          "keywords": "rpo ares ičo ič dph dič vyhľadať firmu podľa ičo podľa názvu vies overenie ič dph sídlo firmy odberateľ",
           "fields": {
-            "ico": "IČO",
-            "icoHint": "Osem číslic. Kratšie IČO doplníme nulami zľava.",
+            "query": "IČO, IČ DPH alebo názov",
+            "queryHint": "IČO (najviac 8 číslic), IČ DPH s kódom krajiny (SK…, CZ…, DE…) alebo aspoň 3 znaky názvu.",
+            "registry": "Register",
             "search": "Vyhľadať",
             "searching": "Hľadám…"
           },
           "result": {
+            "hits": "{n, plural, one {# výsledok} few {# výsledky} other {# výsledkov}}",
             "ico": "IČO",
-            "dic": "DIČ",
-            "noDic": "v ARES neuvedené",
+            "regNumber": "Registračné číslo",
+            "dic": "IČ DPH / DIČ",
+            "noDic": "neuvedené",
+            "vat": "DPH",
+            "vatChecking": "overujem…",
+            "vatState": {
+              "payer": "platiteľ DPH v Česku",
+              "unreliable": "nespoľahlivý platiteľ DPH v Česku",
+              "not_registered": "nie je platiteľ DPH v Česku",
+              "valid": "platné IČ DPH",
+              "invalid": "neplatné alebo neaktívne IČ DPH",
+              "unknown": "nepodarilo sa overiť"
+            },
+            "vatSource": {
+              "ADIS": "Register platiteľov DPH, Finančná správa ČR",
+              "VIES": "VIES, Európska komisia"
+            },
+            "unreliableNote": "Česká finančná správa vedie firmu ako nespoľahlivého platiteľa. Kto jej zaplatí DPH, môže za ňu ručiť (§ 109 českého zákona o DPH).",
             "address": "Sídlo",
-            "source": "Zdroj: ARES, Ministerstvo financií ČR.",
+            "country": "Krajina",
+            "source": "Zdroj: {source}",
             "invoice": "Vystaviť faktúru tejto firme",
-            "empty": "Zadajte IČO a výsledok sa zobrazí tu."
+            "empty": "Zadajte IČO, IČ DPH alebo názov a výsledok sa zobrazí tu."
           },
           "errors": {
-            "invalid": "IČO môže mať najviac 8 číslic.",
-            "notFound": "Firmu s týmto IČO sme v ARES nenašli.",
-            "busy": "ARES teraz neodpovedá alebo ste hľadali príliš často. Skúste to o chvíľu."
+            "invalid": "Zadajte IČO (najviac 8 číslic), IČ DPH s kódom krajiny alebo aspoň 3 znaky názvu.",
+            "notFound": "Nič sme nenašli. Skúste iný register alebo iný zápis.",
+            "busy": "Register teraz neodpovedá alebo ste hľadali príliš často. Skúste to o chvíľu."
           },
           "how": [
-            "Hľadáme iba v českom registri ARES."
+            "IČO hľadáme v RPO a v českom ARES podľa zvoleného registra. IČ DPH s kódom krajiny overíme vo VIES, české DIČ v registri platiteľov DPH českej finančnej správy.",
+            "Pri českom DIČ ukážeme, či je firma platiteľ DPH a či ju finančná správa vedie ako nespoľahlivého platiteľa. Pri ostatných krajinách VIES povie iba to, či je IČ DPH platné.",
+            "Podľa názvu hľadáme v RPO a ARES. Pre firmy z iných krajín vyberte ich register.",
+            "V Billante sa odberateľ podľa IČO alebo IČ DPH doplní sám priamo na faktúre."
           ],
           "howTitle": "Ako to funguje"
         },

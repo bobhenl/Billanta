@@ -7001,35 +7001,55 @@
           "howTitle": "How it works"
         },
         "companyLookup": {
-          "name": "Company lookup by IČO",
-          "title": "Czech company lookup by IČO (ARES)",
-          "description": "Enter a company ID (IČO) to get the name, VAT number (DIČ) and registered address from the Czech ARES registry.",
-          "lead": "Eight digits are enough. The data comes from ARES, the public registry of the Czech Ministry of Finance.",
-          "keywords": "ares ičo czech company lookup company id vat number dič registered address",
+          "name": "Company lookup by IČO, VAT number or name",
+          "title": "Company lookup by IČO, VAT number or name (ARES, RPO, VIES)",
+          "description": "Find a company by IČO, VAT number (DIČ) or name in the Czech ARES, the Slovak RPO or the EU VIES. See the address, VAT number and whether it is a VAT payer or an unreliable payer.",
+          "lead": "Enter an IČO, a VAT number or part of the name. We search the Czech ARES, the Slovak register of legal entities (RPO), the EU VIES and the other registers you pick.",
+          "keywords": "ares ičo dič company lookup vat number check vies rpo czech company search unreliable vat payer registered address",
           "fields": {
-            "ico": "IČO (company ID)",
-            "icoHint": "Eight digits. A shorter IČO is padded with zeros.",
+            "query": "IČO, VAT number or name",
+            "queryHint": "IČO (up to 8 digits), VAT number with the country code (CZ…, SK…, DE…) or at least 3 characters of the name.",
+            "registry": "Register",
             "search": "Look up",
             "searching": "Looking up…"
           },
           "result": {
+            "hits": "{n, plural, one {# result} other {# results}}",
             "ico": "IČO",
-            "dic": "DIČ",
-            "noDic": "not listed in ARES",
+            "regNumber": "Registration number",
+            "dic": "VAT number (DIČ)",
+            "noDic": "not listed",
+            "vat": "VAT",
+            "vatChecking": "checking…",
+            "vatState": {
+              "payer": "VAT payer",
+              "unreliable": "unreliable VAT payer",
+              "not_registered": "not a VAT payer",
+              "valid": "valid VAT number",
+              "invalid": "invalid or inactive VAT number",
+              "unknown": "could not be checked"
+            },
+            "vatSource": {
+              "ADIS": "VAT payer register, Czech Financial Administration",
+              "VIES": "VIES, European Commission"
+            },
+            "unreliableNote": "The Czech Financial Administration lists this company as an unreliable payer. If you pay it VAT, you can be liable for that VAT (§ 109 of the Czech VAT Act).",
             "address": "Registered address",
-            "source": "Source: ARES, Czech Ministry of Finance.",
+            "country": "Country",
+            "source": "Source: {source}",
             "invoice": "Invoice this company",
-            "empty": "Enter an IČO and the result shows here."
+            "empty": "Enter an IČO, a VAT number or a name and the result shows here."
           },
           "errors": {
-            "invalid": "An IČO has at most 8 digits.",
-            "notFound": "No company with this IČO in ARES.",
-            "busy": "ARES is not answering or you searched too often. Try again in a moment."
+            "invalid": "Enter an IČO (up to 8 digits), a VAT number with the country code or at least 3 characters of the name.",
+            "notFound": "Nothing found. Try another register or another spelling.",
+            "busy": "The register is not answering or you searched too often. Try again in a moment."
           },
           "how": [
-            "Only the Czech ARES registry is searched. Slovak companies are in the Slovak register of legal entities (RPO).",
-            "A DIČ in ARES does not say whether the company is VAT-registered. Check that in the VAT payer register of the Czech Financial Administration.",
-            "In Billanta the customer is filled in from the IČO right on the invoice."
+            "An IČO is looked up in ARES and the Slovak RPO, depending on the register you pick. A VAT number with a country code is checked in VIES, a Czech DIČ in the VAT payer register of the Czech Financial Administration.",
+            "For a Czech DIČ we show whether the company is a VAT payer and whether it is listed as an unreliable payer. For other countries VIES only says whether the VAT number is valid.",
+            "Names are searched in ARES and RPO. For companies from other countries, pick their register.",
+            "In Billanta the customer is filled in from the IČO or VAT number right on the invoice."
           ],
           "howTitle": "How it works"
         },

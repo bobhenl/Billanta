@@ -7002,35 +7002,55 @@
           "howTitle": "Jak to funguje"
         },
         "companyLookup": {
-          "name": "Vyhledání firmy podle IČO",
-          "title": "Vyhledání firmy podle IČO v ARES",
-          "description": "Zadejte IČO a zjistěte název firmy, DIČ a sídlo z registru ARES. Údaje rovnou použijete na fakturu.",
-          "lead": "Stačí osm číslic IČO. Údaje bereme z ARES, veřejného registru Ministerstva financí.",
-          "keywords": "ares ičo vyhledat firmu podle ičo dič sídlo firmy obchodní rejstřík živnostenský rejstřík odběratel",
+          "name": "Vyhledání firmy podle IČO, DIČ nebo názvu",
+          "title": "Vyhledání firmy podle IČO, DIČ nebo názvu (ARES, RPO, VIES)",
+          "description": "Najděte firmu podle IČO, DIČ nebo názvu v ARES, slovenském RPO nebo evropském VIES. Ukážeme sídlo, DIČ a jestli je plátce DPH, případně nespolehlivý plátce.",
+          "lead": "Zadejte IČO, DIČ nebo část názvu. Hledáme v českém ARES, ve slovenském registru právnických osob (RPO), v evropském VIES a v dalších registrech, které si vyberete.",
+          "keywords": "ares ičo dič vyhledat firmu podle ičo podle názvu plátce dph nespolehlivý plátce vies rpo sídlo firmy odběratel",
           "fields": {
-            "ico": "IČO",
-            "icoHint": "Osm číslic. Kratší IČO doplníme nulami zleva.",
+            "query": "IČO, DIČ nebo název",
+            "queryHint": "IČO (až 8 číslic), DIČ s kódem země (CZ…, SK…, DE…) nebo aspoň 3 znaky názvu.",
+            "registry": "Registr",
             "search": "Vyhledat",
             "searching": "Hledám…"
           },
           "result": {
+            "hits": "{n, plural, one {# výsledek} few {# výsledky} other {# výsledků}}",
             "ico": "IČO",
+            "regNumber": "Registrační číslo",
             "dic": "DIČ",
-            "noDic": "v ARES neuvedeno",
+            "noDic": "neuvedeno",
+            "vat": "DPH",
+            "vatChecking": "ověřuji…",
+            "vatState": {
+              "payer": "plátce DPH",
+              "unreliable": "nespolehlivý plátce DPH",
+              "not_registered": "není plátce DPH",
+              "valid": "platné DIČ pro DPH",
+              "invalid": "neplatné nebo neaktivní DIČ pro DPH",
+              "unknown": "nepodařilo se ověřit"
+            },
+            "vatSource": {
+              "ADIS": "Registr plátců DPH, Finanční správa ČR",
+              "VIES": "VIES, Evropská komise"
+            },
+            "unreliableNote": "Finanční správa vede firmu jako nespolehlivého plátce. Když jí zaplatíte DPH, můžete za ni ručit (§ 109 zákona o DPH).",
             "address": "Sídlo",
-            "source": "Zdroj: ARES, Ministerstvo financí ČR.",
+            "country": "Země",
+            "source": "Zdroj: {source}",
             "invoice": "Vystavit fakturu této firmě",
-            "empty": "Zadejte IČO a výsledek se ukáže tady."
+            "empty": "Zadejte IČO, DIČ nebo název a výsledek se ukáže tady."
           },
           "errors": {
-            "invalid": "IČO má mít nejvýš 8 číslic.",
-            "notFound": "Firmu s tímto IČO jsme v ARES nenašli.",
-            "busy": "ARES teď neodpovídá nebo jste hledali příliš často. Zkuste to za chvíli."
+            "invalid": "Zadejte IČO (až 8 číslic), DIČ s kódem země nebo aspoň 3 znaky názvu.",
+            "notFound": "Nic jsme nenašli. Zkuste jiný registr nebo jiný zápis.",
+            "busy": "Registr teď neodpovídá nebo jste hledali příliš často. Zkuste to za chvíli."
           },
           "how": [
-            "Hledáme jen v českém registru ARES. Slovenské firmy najdete v registru právnických osob (RPO).",
-            "DIČ v ARES neříká, jestli je firma plátce DPH. To ověříte v registru plátců DPH na webu Finanční správy.",
-            "V Billantě se odběratel podle IČO doplní sám přímo na faktuře."
+            "IČO hledáme v ARES a ve slovenském RPO podle zvoleného registru. DIČ s kódem země ověříme ve VIES, české DIČ v registru plátců DPH Finanční správy.",
+            "U českého DIČ ukážeme, jestli je firma plátce DPH a jestli ji Finanční správa vede jako nespolehlivého plátce. U ostatních zemí VIES řekne jen, jestli je DIČ platné.",
+            "Podle názvu hledáme v ARES a RPO. Pro firmy z jiných zemí vyberte jejich registr.",
+            "V Billantě se odběratel podle IČO nebo DIČ doplní sám přímo na faktuře."
           ],
           "howTitle": "Jak to funguje"
         },
