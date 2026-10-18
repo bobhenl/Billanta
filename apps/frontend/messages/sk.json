@@ -3361,7 +3361,8 @@
         {
           "title": "Nejde o daňové, účtovné ani právne poradenstvo",
           "body": [
-            "Billanta je nástroj na tvorbu dokladov. Nápovedy, predvolené sadzby DPH, texty o prenesení daňovej povinnosti, predvyplnené formuláre a ďalší obsah aplikácie majú len informatívnu povahu a nie sú daňovým, účtovným ani právnym poradenstvom."
+            "Billanta je nástroj na tvorbu dokladov. Nápovedy, predvolené sadzby DPH, texty o prenesení daňovej povinnosti, predvyplnené formuláre a ďalší obsah aplikácie majú len informatívnu povahu a nie sú daňovým, účtovným ani právnym poradenstvom.",
+            "To isté platí pre kalkulačky, návody a odhady dane a odvodov na webe aj v aplikácii a pre súbory, ktoré z nich vzniknú. Výsledky sú orientačné a bez záruky, nezohľadňujú všetky okolnosti používateľa a pred použitím ich treba overiť. V rozsahu, ktorý pripúšťa právny poriadok, prevádzkovateľ nezodpovedá za škodu, ktorá vznikne z rozhodnutia na nich založeného."
           ]
         },
         {
@@ -6775,7 +6776,9 @@
         "hint": "Ste prihlásení. Kalkulačku môžete otvoriť v aplikácii s príjmami a výdavkami z vašich dokladov.",
         "cta": "Otvoriť s mojimi číslami"
       },
-      "czOnlyTextAlt": "„{name}“ sa týka českých predpisov. Pre slovenských živnostníkov máme samostatnú kalkulačku podľa slovenských pravidiel."
+      "czOnlyTextAlt": "„{name}“ sa týka českých predpisov. Pre slovenských živnostníkov máme samostatnú kalkulačku podľa slovenských pravidiel.",
+      "noLiability": "Výsledok je bez záruky. Za rozhodnutia urobené podľa neho nezodpovedáme.",
+      "noWarranty": "Výsledok má len informatívny charakter a je bez záruky. Pred použitím si údaje overte."
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pre podnikateľov",
@@ -7638,7 +7641,9 @@
       "startHint": "Minimálny základ zdravotného poistenia sa počíta len za mesiace podnikania. Strop paušálu a nezdaniteľná časť platia v plnej výške.",
       "paidSocialHint": "Sociálne poistné zaplatené počas roka. Znižuje základ dane.",
       "paidHealthHint": "Preddavky na zdravotné poistenie zaplatené počas roka. Znižujú základ dane a odpočítajú sa v ročnom zúčtovaní."
-    }
+    },
+    "csvNote": "Pozn.",
+    "csvDisclaimer": "Orientačný odhad bez záruky. Nenahrádza daňové priznanie ani daňového poradcu. Údaje si pred použitím overte."
   },
   "linkName": {
     "title": "Odkaz pre zákazníka",

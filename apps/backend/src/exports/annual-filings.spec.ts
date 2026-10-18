@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { computeCssz, computeDpfo, computeHealth, dpfdpFormFor, FormNotPublishedError, generateCsszOsvc, generateDpfdp, type FilingPerson } from "./annual-filings";
 
+// Prolog, then the caveat comment (no "--" inside, or the XML is malformed), then the root element.
+const disclaimed = (root: string) => new RegExp(String.raw`^<\?xml version="1\.0" encoding="UTF-8"\?>\n<!-- (?:(?!--)[^])+ -->\n<${root}[ >]`);
+
 const person: FilingPerson = {
   submitter: {
     dic: "CZ8001011234",
@@ -69,6 +72,7 @@ describe("DPFDP XML", () => {
     expect(xml).toMatch(/<VetaT kc_prij7="1000000" kc_vyd7="600000" kc_hosp_rozd="400000" kc_zd7p="400000" vyd7proc="A" uc_soust="1" m_podnik="12" pr_sazba="60"/);
     expect(xml).toMatch(/<VetaP dic="8001011234" rod_c="8001011234" jmeno="Jana" prijmeni="Nováková"/);
     expect(xml).toContain('c_pop="12" c_orient="3a" psc="60200"');
+    expect(xml).toMatch(disclaimed("Pisemnost"));
   });
 
   it("marks accounting (účetnictví) and actual expenses", () => {
@@ -122,6 +126,7 @@ describe("přehled ČSSZ", () => {
     expect(x25).toContain("<m13>A</m13>");
     expect(x25).toContain("<pojposlev>64240</pojposlev>");
     expect(x25).toContain('<dat dre="2026-04-20" />');
+    expect(x25).toMatch(disclaimed("OSVC"));
     const x24 = generateCsszOsvc(computeCssz({ year: 2024, profit: 400_000, activity: "H", paidAdvances: 0 }), person);
     expect(x24).toContain("OSVC2024");
     expect(x24).not.toContain("pojposlev");

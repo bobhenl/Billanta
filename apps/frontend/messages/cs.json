@@ -3361,7 +3361,8 @@
         {
           "title": "Nejde o daňové, účetní ani právní poradenství",
           "body": [
-            "Billanta je nástroj pro tvorbu dokladů. Nápovědy, výchozí sazby DPH, texty o přenesené daňové povinnosti, předvyplněné formuláře pro EPO a další obsah aplikace mají jen informativní povahu a nejsou daňovým, účetním ani právním poradenstvím."
+            "Billanta je nástroj pro tvorbu dokladů. Nápovědy, výchozí sazby DPH, texty o přenesené daňové povinnosti, předvyplněné formuláře pro EPO a další obsah aplikace mají jen informativní povahu a nejsou daňovým, účetním ani právním poradenstvím.",
+            "Totéž platí pro kalkulačky, návody a odhady daně a pojištění na webu i v aplikaci a pro soubory, které z nich vzniknou. Výsledky jsou orientační a bez záruky, nezohledňují všechny okolnosti uživatele a před použitím je třeba je ověřit. V rozsahu, který připouští právní řád, provozovatel neodpovídá za škodu, která vznikne z rozhodnutí na nich založeného."
           ]
         },
         {
@@ -6775,7 +6776,9 @@
         "hint": "Jste přihlášeni. Kalkulačku můžete otevřít v aplikaci s příjmy a výdaji z vašich dokladů.",
         "cta": "Otevřít s mými čísly"
       },
-      "czOnlyTextAlt": "„{name}“ se týká českých předpisů. Pro slovenské živnostníky máme samostatnou kalkulačku podle slovenských pravidel."
+      "czOnlyTextAlt": "„{name}“ se týká českých předpisů. Pro slovenské živnostníky máme samostatnou kalkulačku podle slovenských pravidel.",
+      "noLiability": "Výsledek je bez záruky. Za rozhodnutí učiněná podle něj neodpovídáme.",
+      "noWarranty": "Výsledek má jen informativní charakter a je bez záruky. Před použitím si údaje ověřte."
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pro podnikatele",
@@ -7736,7 +7739,9 @@
       "startHint": "Minimální základ zdravotního pojištění se počítá jen za měsíce podnikání. Strop paušálu a nezdanitelná část platí celé.",
       "paidSocialHint": "Sociální pojistné zaplacené během roku. Snižuje základ daně.",
       "paidHealthHint": "Zdravotní zálohy zaplacené během roku. Snižují základ daně a odečtou se v ročním zúčtování."
-    }
+    },
+    "csvNote": "Pozn.",
+    "csvDisclaimer": "Orientační odhad bez záruky. Nenahrazuje daňové přiznání ani daňového poradce. Údaje si před použitím ověřte."
   },
   "linkName": {
     "title": "Odkaz pro zákazníka",

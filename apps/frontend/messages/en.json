@@ -3361,7 +3361,8 @@
         {
           "title": "No tax, accounting or legal advice",
           "body": [
-            "Billanta is a tool for creating documents. Hints, default VAT rates, reverse-charge wording, pre-filled tax forms and any other content in the app are for information only and are not tax, accounting or legal advice."
+            "Billanta is a tool for creating documents. Hints, default VAT rates, reverse-charge wording, pre-filled tax forms and any other content in the app are for information only and are not tax, accounting or legal advice.",
+            "The same applies to the calculators, guides and tax and insurance estimates on the website and in the app, and to the files they produce. Results are rough estimates with no warranty, do not take every circumstance of the user into account and must be checked before use. To the extent the law allows, the operator is not liable for loss arising from decisions based on them."
           ]
         },
         {
@@ -6774,7 +6775,9 @@
         "hint": "You are signed in. Open the calculator in the app with income and expenses from your documents.",
         "cta": "Open with my numbers"
       },
-      "czOnlyTextAlt": "“{name}” is about Czech rules. For Slovak sole traders there is a separate calculator under Slovak rules."
+      "czOnlyTextAlt": "“{name}” is about Czech rules. For Slovak sole traders there is a separate calculator under Slovak rules.",
+      "noLiability": "The result comes with no warranty, and we are not liable for decisions made based on it.",
+      "noWarranty": "The result is for information only and comes with no warranty. Check the details before you use them."
     },
     "calculators": {
       "indexTitle": "Calculators and tools for businesses",
@@ -7735,7 +7738,9 @@
       "startHint": "The minimum health base counts only the months in business. The flat-rate cap and the allowance stay in full.",
       "paidSocialHint": "Social insurance paid during the year. It lowers the tax base.",
       "paidHealthHint": "Health insurance advances paid during the year. They lower the tax base and are settled in the yearly reconciliation."
-    }
+    },
+    "csvNote": "Note",
+    "csvDisclaimer": "Rough estimate with no warranty. It does not replace a tax return or a tax adviser. Check the figures before you use them."
   },
   "linkName": {
     "title": "Customer link",

@@ -201,7 +201,9 @@ export function AnnualEstimate({
     const lines = [
       [t('year'), String(y)],
       [t('start'), months === 12 ? t('startFull') : String(months)],
-      ...rows.flat().map((r) => [r.suffix ? `${r.label} (${r.suffix})` : r.label, r.text ?? (r.value == null ? '' : num(r.value))])
+      ...rows.flat().map((r) => [r.suffix ? `${r.label} (${r.suffix})` : r.label, r.text ?? (r.value == null ? '' : num(r.value))]),
+      // A key/value sheet read by people, not imported, so the caveat can sit in its last row (as in the backend's annual-summary.csv).
+      [t('csvNote'), t('csvDisclaimer')]
     ];
     const csv = '﻿' + lines.map((l) => l.map((c) => (/[;"\n]/.test(c) ? `"${c.replace(/"/g, '""')}"` : c)).join(';')).join('\r\n') + '\r\n';
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));

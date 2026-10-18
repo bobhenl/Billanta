@@ -17,6 +17,7 @@
  */
 // Shared with the in-app export box and the public guide ("form version" line).
 import { VAT_FORM_VERSIONS } from "@faktur/cz-compliance";
+import { withXmlDisclaimer } from "./disclaimer";
 
 export interface VatSubmitter {
   /** Full DIČ incl. the CZ prefix. */
@@ -165,7 +166,8 @@ function vetaP(s: VatSubmitter, extra = "") {
   return `<VetaP ${body}${extra} />`;
 }
 
-export const header = (verzeSW: string) => `<?xml version="1.0" encoding="UTF-8"?>\n<Pisemnost nazevSW="EPO MF ČR" verzeSW="${verzeSW}">`;
+export const header = (verzeSW: string) =>
+  withXmlDisclaimer(`<?xml version="1.0" encoding="UTF-8"?>\n<Pisemnost nazevSW="EPO MF ČR" verzeSW="${verzeSW}">`);
 
 /** Přiznání k DPH (DPHDP3). */
 export function generateDphDp3(input: {
