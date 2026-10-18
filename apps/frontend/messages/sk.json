@@ -3266,7 +3266,9 @@
     "accountantsTitle": "Účtovníci v obci {name} a okolí",
     "accountantsNote": "Účtovníci sa do zoznamu zapísali sami cez svoj verejný profil v Billante. Údaje neoverujeme, výber je na vás.",
     "accountantsEmpty": "Zatiaľ sa sem nezapísal žiadny účtovník. Ak účtovníka hľadáte, Billanta mu sprístupní vaše doklady bez posielania e-mailov.",
-    "accountantsJoin": "Ste účtovník v obci {name} alebo neďaleko? Zapíšte sa zadarmo →"
+    "accountantsJoin": "Ste účtovník v obci {name} alebo neďaleko? Zapíšte sa zadarmo →",
+    "populationCz": "{count, plural, one {# obyvateľ} few {# obyvatelia} other {# obyvateľov}} (ČSÚ, k 1. 1. 2025).",
+    "populationSk": "{count, plural, one {# obyvateľ} few {# obyvatelia} other {# obyvateľov}} (ŠÚ SR, k 30. 6. 2025)."
   },
   "mobile": {
     "more": "Viac",

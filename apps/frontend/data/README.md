@@ -69,10 +69,9 @@ open-data sources that mix in postal sub-delivery zones.
   address instead of a municipality name). These were excluded rather than
   guessed. Anyone wanting full coverage should source district data directly
   from ČSÚ's official číselník (e.g. via RÚIAN VDP) and re-run the join.
-- **No population figures** are included for any municipality. Neither
-  upstream source provides them, and none were estimated or invented —
-  per the project's data-integrity rule, a missing field beats a fabricated
-  one.
+- **Population** is `null` for 21 rows (19 CZ, 2 SK) whose official row
+  could not be matched, mostly the corrupted upstream rows mentioned above.
+  None were estimated.
 - Coordinates (`lat`/`lon`) are present for most rows (from the same
   sources) but are `null` for Praha, since the source represents Prague only
   via its districts and we did not want to arbitrarily pick one district's
@@ -90,6 +89,7 @@ open-data sources that mix in postal sub-delivery zones.
   country: 'CZ' | 'SK';
   lat: number | null;
   lon: number | null;
+  population: number | null; // see "Population" below
 }
 ```
 
@@ -98,6 +98,28 @@ name (common — e.g. there are two Czech villages called "Broumov"), the
 district name is appended, then the region, then a numeric suffix as a last
 resort. All 9,041 slugs are unique by construction — see
 `apps/frontend/lib/municipalities.ts`.
+
+## Population
+
+Added 2026-10-18 by `data/add-population.py` (run it with the three files
+below; it rewrites `municipalities.json` in place and prints what it could
+not match). Used for which town pages are indexed
+(`MUNICIPALITY_INDEX_MIN_POPULATION`) and shown on each page.
+
+- **CZ**: ČSÚ, *Počet obyvatel v obcích k 1. 1. 2025*, file
+  `1300722503.xlsx` from `13007225_data.zip` on
+  https://csu.gov.cz/produkty/pocet-obyvatel-v-obcich-rlm0s92pwn. Joined
+  on name + okres. A name that is unique in both files is accepted even
+  when the okres differs, because our okres source predates a few boundary
+  changes (the Domažlice villages, for example).
+- **SK**: ŠÚ SR DATAcube `om7014rr` (*Hustota obyvateľstva – obce*),
+  indicator IN010052 *Stav trvale bývajúceho obyvateľstva k 30.6.*, year
+  2025, from
+  `https://data.statistics.sk/api/v2/dataset/om7014rr/all/2025/all?lang=sk&type=json`.
+  The first six characters of each municipality code are its okres; each
+  okres code is mapped to our okres name by where its municipality names
+  occur, then joined on name + okres. Bratislava and Košice are the sum of
+  their city districts.
 
 ## Regenerating this file
 

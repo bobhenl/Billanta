@@ -3265,7 +3265,9 @@
     "accountantsTitle": "Accountants in {name} and nearby",
     "accountantsNote": "Accountants add themselves through their public Billanta profile. We do not verify the details; the choice is yours.",
     "accountantsEmpty": "No accountant has listed themselves here yet. If you are looking for one, Billanta gives them access to your documents without emailing files around.",
-    "accountantsJoin": "Are you an accountant in or near {name}? List yourself for free →"
+    "accountantsJoin": "Are you an accountant in or near {name}? List yourself for free →",
+    "populationCz": "{count, plural, one {# inhabitant} other {# inhabitants}} (Czech Statistical Office, 1 Jan 2025).",
+    "populationSk": "{count, plural, one {# inhabitant} other {# inhabitants}} (Statistical Office of the SR, 30 Jun 2025)."
   },
   "mobile": {
     "more": "More",

@@ -196,6 +196,9 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
               <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
                 {seatLine && <li>{seatLine}</li>}
                 {regionLine && <li>{regionLine}</li>}
+                {municipality.population != null && (
+                  <li>{t(municipality.country === 'CZ' ? 'populationCz' : 'populationSk', { count: municipality.population })}</li>
+                )}
                 <li>{t('districtCount', { count: district.count, district: municipality.district })}</li>
                 {mapHref && (
                   <li>
