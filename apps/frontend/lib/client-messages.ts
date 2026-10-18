@@ -42,7 +42,13 @@ function omit(messages: AbstractIntlMessages, namespaces: string[]): AbstractInt
 }
 
 /** For the root layout: public site, auth pages and public token pages. */
-export const publicClientMessages = (messages: AbstractIntlMessages) => omit(messages, [...SERVER_ONLY, ...DASHBOARD_ONLY]);
+export const publicClientMessages = (messages: AbstractIntlMessages) => {
+  const out = omit(messages, [...SERVER_ONLY, ...DASHBOARD_ONLY]);
+  // The demo picker on the public site names the business presets; send just those, not all of `settings`.
+  const presets = ((messages.settings as AbstractIntlMessages | undefined)?.modules as AbstractIntlMessages | undefined)?.presets;
+  if (presets) out.settings = { modules: { presets } };
+  return out;
+};
 
 /** For the dashboard layout, which replaces the root provider's messages. */
 export const dashboardClientMessages = (messages: AbstractIntlMessages) => omit(messages, SERVER_ONLY);
