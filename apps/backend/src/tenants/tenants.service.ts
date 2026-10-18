@@ -67,13 +67,18 @@ export class TenantsService {
     @Optional() private readonly audit?: AuditService,
   ) {}
 
-  /** The tenant's own row, minus secrets: the encrypted AI key never leaves the backend (see src/ai/). */
+  /**
+   * The tenant's own row, minus secrets: the encrypted AI and Stripe keys
+   * never leave the backend (see src/ai/ and src/card-payments/). The page
+   * only needs to know whether a Stripe key is set.
+   */
   async findById(db: TenantDb, id: string) {
     const rows = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     // The logo is served separately (GET /tenants/me/logo) to keep this row small.
     // Advances always go out as the period list (a row not yet migrated by 0044 still holds the old single object).
-    return rows.map(({ aiApiKeyEncrypted: _secret, logoData, ...tenant }) => ({
+    return rows.map(({ aiApiKeyEncrypted: _aiKey, stripeSecretKeyEncrypted, logoData, ...tenant }) => ({
       ...tenant,
+      hasStripeKey: Boolean(stripeSecretKeyEncrypted),
       taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
       hasLogo: Boolean(logoData),
     }));
