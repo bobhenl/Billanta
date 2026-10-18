@@ -8,6 +8,7 @@ import {
   validatePeppolInvoice,
   type PeppolIssue,
   type RequirementIssue,
+  type UblOptions,
 } from "@faktur/cz-compliance";
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -1576,7 +1577,11 @@ export class InvoicesService {
     lineItems.sort((a, b) => a.sortOrder - b.sortOrder);
     const [related] = invoice.relatedInvoiceId
       ? await db
-          .select({ invoiceNumber: schema.invoices.invoiceNumber, documentType: schema.invoices.documentType })
+          .select({
+            invoiceNumber: schema.invoices.invoiceNumber,
+            documentType: schema.invoices.documentType,
+            issueDate: schema.invoices.issueDate,
+          })
           .from(schema.invoices)
           .where(eq(schema.invoices.id, invoice.relatedInvoiceId))
           .limit(1)
@@ -1620,23 +1625,40 @@ export class InvoicesService {
   }
 
   /**
-   * UBL 2.1 / Peppol BIS Billing 3.0 XML of an issued invoice, for the SK
-   * e-invoicing mandate (1 January 2027). Built from the same input as the
-   * ISDOC export. Only plain invoices: Peppol carries credit notes as a
-   * separate document, and proformas and quotes are not tax documents.
+   * UBL 2.1 / Peppol BIS Billing 3.0 XML of an issued invoice or credit note,
+   * for the SK e-invoicing mandate (1 January 2027). Built from the same
+   * input as the ISDOC export. A credit note becomes a UBL CreditNote that
+   * points at the invoice it corrects. Proformas and quotes are not tax
+   * documents, so they have no e-invoice.
    */
   async generateInvoiceUbl(db: TenantDb, tenantId: string, invoiceId: string): Promise<string> {
-    const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(
+    const { input, options } = await this.ublInput(db, tenantId, invoiceId);
+    return generateUblInvoiceXml(input, options);
+  }
+
+  private async ublInput(db: TenantDb, tenantId: string, invoiceId: string) {
+    const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
       invoiceId,
     );
-    if (invoice.documentType !== "invoice") {
+    if (invoice.documentType !== "invoice" && invoice.documentType !== "credit_note") {
       throw new BadRequestException("ubl_invoice_only");
     }
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
-    return generateUblInvoiceXml(input, { reverseCharge: invoice.reverseCharge });
+    // An invoice's related document is the proforma it came from, which is
+    // not a preceding invoice in the EN 16931 sense.
+    const preceding =
+      invoice.documentType === "credit_note" && related?.invoiceNumber
+        ? { number: related.invoiceNumber, issueDate: related.issueDate?.toISOString().slice(0, 10) }
+        : undefined;
+    const options: UblOptions = {
+      reverseCharge: invoice.reverseCharge,
+      documentType: invoice.documentType,
+      precedingInvoice: preceding,
+    };
+    return { input, options };
   }
 
   /**
@@ -1669,7 +1691,8 @@ export class InvoicesService {
     }).map((i) => ({ ...i, scheme: "law" as const }));
 
     let peppol: (PeppolIssue & { scheme: "peppol" })[] = [];
-    if (invoice.invoiceNumber && invoice.documentType === "invoice" && contact && contact.addressCountry !== "CZ" && lineItems.length) {
+    const eDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
+    if (invoice.invoiceNumber && eDocument && contact && contact.addressCountry !== "CZ" && lineItems.length) {
       const { issues } = await this.checkInvoiceUbl(db, tenantId, invoiceId);
       // The law check already reports what both would say about names and addresses.
       const seen = new Set(law.map((i) => `${i.field}:${i.code}`));
@@ -1680,10 +1703,7 @@ export class InvoicesService {
 
   /** Peppol pre-flight for the UBL export: what an access point would reject or flag. */
   async checkInvoiceUbl(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ issues: PeppolIssue[] }> {
-    const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
-    if (invoice.documentType !== "invoice") throw new BadRequestException("ubl_invoice_only");
-    const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
-    const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
-    return { issues: validatePeppolInvoice(input, { reverseCharge: invoice.reverseCharge }) };
+    const { input, options } = await this.ublInput(db, tenantId, invoiceId);
+    return { issues: validatePeppolInvoice(input, options) };
   }
 }

@@ -9,8 +9,9 @@ import { jsonLd } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site';
 
 /**
- * Hub of the public guides. They are about Czech VAT, so the hub exists in
- * cs and en; the sk URL shows the Czech-rules notice (noindex,follow).
+ * Hub of the public guides. Each language lists only the guides published
+ * in it, so the sk hub shows the Slovak e-invoicing guide and none of the
+ * Czech VAT ones.
  */
 type Params = { locale: string };
 const HUB = { locales: GUIDES_HUB_LOCALES };
