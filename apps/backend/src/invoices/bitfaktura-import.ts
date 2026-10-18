@@ -1,6 +1,7 @@
 import type { ImportedContact, ImportedInvoice, ImportedLine, ImportSkip } from "./invoice-import.util";
 import { normalizeCountry } from "../contacts/contacts-csv.util";
 import type { BuyerSnapshot, SellerSnapshot } from "./party-snapshot";
+import { deriveVariableSymbol } from "./invoice-numbering.util";
 
 /**
  * Invoice history straight from the BitFaktura API ("stěhování" without a CSV
@@ -123,7 +124,19 @@ export interface BitfakturaInvoice {
   payment_type?: string | null;
   lang?: string | null;
   reverse_charge?: boolean | null;
+  /** Printed note; people also put payment references and the reverse-charge sentence here. */
   description?: string | null;
+  description_long?: string | null;
+  description_footer?: string | null;
+  /** Never printed. */
+  internal_note?: string | null;
+  /** Order number ("číslo objednávky"). */
+  oid?: string | null;
+  /** Place of issue. */
+  place?: string | null;
+  /** "cnb" when the rate came from the ČNB list of `exchange_date`. */
+  exchange_kind?: string | null;
+  exchange_date?: string | null;
   buyer_name?: string | null;
   buyer_first_name?: string | null;
   buyer_last_name?: string | null;
@@ -145,6 +158,8 @@ export interface BitfakturaInvoice {
   seller_email?: string | null;
   seller_phone?: string | null;
   seller_www?: string | null;
+  /** The person who issued the invoice ("Vystavil"). */
+  seller_person?: string | null;
   seller_bank_account?: string | null;
   seller_iban?: string | null;
   seller_swift?: string | null;
@@ -400,6 +415,34 @@ function buyerSnapshotFrom(customer: ImportedInvoice["customer"], capturedAt: Da
   return { ...out, capturedAt: capturedAt.toISOString(), source: "import" };
 }
 
+/**
+ * The sentence BitFaktura users type (or its template prints) on a
+ * reverse-charge invoice, in Czech, Slovak or English. Older invoices often
+ * carry only this text and not the `reverse_charge` flag.
+ */
+const REVERSE_CHARGE_TEXT = /p[řr]enesen\S* da[ňn]ov\S* povinnost|da[ňn] odvede z[áa]kazn[íi]k|reverse[\s-]charge/i;
+
+/** Free text as typed, with Windows line ends and outer blank lines removed. */
+const longText = (v: string | null | undefined, max: number) => text((v ?? "").replace(/\r\n?/g, "\n"), max);
+
+/** The printed notes of an invoice (note, long description, footer) as one note, each part once. */
+function printedNote(raw: BitfakturaInvoice): string | null {
+  const parts = [raw.description, raw.description_long, raw.description_footer].map((v) => longText(v, 4000)).filter((v): v is string => !!v);
+  return [...new Set(parts)].join("\n\n").slice(0, 4000) || null;
+}
+
+/**
+ * How the rate on a foreign invoice was chosen, for the VAT and income-tax
+ * reports: BitFaktura's "cnb" with its list day, else a rate typed by hand.
+ */
+function exchangeRateOrigin(raw: BitfakturaInvoice, rate: number | null): Pick<ImportedInvoice, "exchangeRateMode" | "exchangeRateDate"> {
+  const kind = (raw.exchange_kind ?? "").trim().toLowerCase();
+  if (rate === null || !kind) return {};
+  if (kind !== "cnb") return { exchangeRateMode: "manual", exchangeRateDate: null };
+  const day = date(raw.exchange_date);
+  return { exchangeRateMode: "cnb_daily", exchangeRateDate: day ? day.toISOString().slice(0, 10) : null };
+}
+
 /** Maps API invoices to the shape the CSV import also produces, so both share one write path. */
 export function mapBitfakturaInvoices(source: BitfakturaInvoice[], capturedAt: Date = new Date()): { invoices: ImportedInvoice[]; skipped: ImportSkip[] } {
   const invoices: ImportedInvoice[] = [];
@@ -435,8 +478,14 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[], capturedAt: D
 
     const status: ImportedInvoice["status"] = raw.cancelled || raw.status === "rejected" ? "cancelled" : raw.status === "paid" ? "paid" : "issued";
     const currency = /^[A-Za-z]{3}$/.test(raw.currency ?? "") ? raw.currency.toUpperCase() : "CZK";
-    const rate = num(raw.exchange_rate);
+    const rawRate = num(raw.exchange_rate);
+    // BitFaktura stores the ČNB rate it used; 1.0 on a foreign invoice means none was set.
+    const rate = currency !== "CZK" && rawRate !== null && rawRate > 0 && rawRate !== 1 ? rawRate : null;
     const paymentType = (raw.payment_type ?? "").trim();
+    const note = printedNote(raw);
+    // The flag is authoritative. The sentence alone only counts on an invoice
+    // without VAT, so reading a note can never change what the invoice totals.
+    const reverseCharge = raw.reverse_charge === true || (!!note && REVERSE_CHARGE_TEXT.test(note) && lines.every((l) => l.vatRate === 0));
 
     seen.add(number);
     const customer = contactFrom({
@@ -456,21 +505,27 @@ export function mapBitfakturaInvoices(source: BitfakturaInvoice[], capturedAt: D
       dueDate: date(raw.payment_to),
       taxableSupplyDate: date(raw.sell_date),
       currency,
-      variableSymbol: null,
+      // BitFaktura has no VS field; its documents (and the payer's bank order)
+      // use the digits of the number, the same rule as our own invoices.
+      variableSymbol: deriveVariableSymbol(number) || null,
       status,
       paidAt: status === "paid" ? date(raw.paid_date) ?? date(raw.payment_to) ?? issueDate : null,
       amountPaid: num(raw.paid) ?? 0,
       customer,
       sellerSnapshot: mapBitfakturaInvoiceSeller(raw, capturedAt),
       buyerSnapshot: buyerSnapshotFrom(customer, capturedAt),
-      note: text(raw.description, 2000),
+      note,
+      internalNote: longText(raw.internal_note, 4000),
+      orderNumber: text(raw.oid, 64),
+      issuePlace: text(raw.place, 255),
+      issuedByName: text(raw.seller_person, 255),
       lines,
-      reverseCharge: raw.reverse_charge === true,
+      reverseCharge,
       paymentMethod: paymentType ? PAYMENT_METHODS[paymentType.toLowerCase()] ?? "other" : undefined,
       paymentMethodLabel: paymentType && !PAYMENT_METHODS[paymentType.toLowerCase()] ? text(paymentType, 64) : PAYMENT_LABELS[paymentType.toLowerCase()] ?? null,
       language: LANGUAGES[(raw.lang ?? "").split("/")[0]!.toLowerCase()],
-      // BitFaktura stores the ČNB rate it used; 1.0 on a foreign invoice means none was set.
-      exchangeRate: currency !== "CZK" && rate !== null && rate > 0 && rate !== 1 ? rate : null,
+      exchangeRate: rate,
+      ...exchangeRateOrigin(raw, rate),
       sourceId: Number.isSafeInteger(raw.id) && raw.id > 0 ? raw.id : undefined,
     });
   });

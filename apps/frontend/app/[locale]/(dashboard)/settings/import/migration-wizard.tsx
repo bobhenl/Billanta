@@ -8,6 +8,7 @@ import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
+import { updateCompany } from '../actions';
 
 const SOURCES = ['fakturoid', 'idoklad', 'bitfaktura', 'faktorio', 'invoiceNinja', 'excel'] as const;
 type Source = (typeof SOURCES)[number];
@@ -27,6 +28,14 @@ type InvoiceImportResult = {
   originalPdfs?: { archived: number; missing: number };
   source?: { invoices: number; contacts: number };
   businessFilled?: string[];
+  sellers?: { ico: string; name: string | null; invoices: number }[];
+  sellerUpdate?: SellerUpdate;
+};
+type SellerUpdate = {
+  invoiceNumber: string;
+  issueDate: string;
+  changes: { field: 'name' | 'dic' | 'address'; from: string | null; to: string }[];
+  patch: Record<string, string | null>;
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
@@ -180,7 +189,7 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
 /** A pasted https://firma.bitfaktura.cz/invoices/ becomes firma.bitfaktura.cz. */
 const bareHost = (value: string) => value.trimStart().replace(/^[a-z]+:\/\//i, '').replace(/^([^/?#]*\.[^/?#]*)[/?#].*$/, '$1');
 
-type ImportRequest = { kind: 'file'; file: File } | { kind: 'bitfaktura'; account: string; apiToken: string };
+type ImportRequest = { kind: 'file'; file: File } | { kind: 'bitfaktura'; account: string; apiToken: string; sellerIco?: string };
 
 function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source }) {
   const t = useTranslations('settings.import');
@@ -202,7 +211,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
       res = await fetch('/api/invoices/import/bitfaktura', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ account: req.account, apiToken: req.apiToken, dryRun })
+        body: JSON.stringify({ account: req.account, apiToken: req.apiToken, dryRun, ...(req.sellerIco ? { sellerIco: req.sellerIco } : {}) })
       });
     }
     const data = await res.json().catch(() => ({}));
@@ -371,6 +380,27 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               )}
             </div>
           )}
+          {request?.kind === 'bitfaktura' && preview.sellers && preview.sellers.length > 1 && (
+            <Banner tone="warn" title={t('step3.sellers.title', { count: preview.sellers.length })}>
+              <p className="text-sm">{t('step3.sellers.lead')}</p>
+              <label className="mt-2 grid gap-1 text-sm font-semibold">
+                {t('step3.sellers.choose')}
+                <select
+                  className="h-10 max-w-full rounded-lg border border-border bg-background px-3 font-normal"
+                  value={request.sellerIco ?? ''}
+                  disabled={readOnly || busy !== null}
+                  onChange={(e) => void check({ ...request, sellerIco: e.target.value || undefined })}
+                >
+                  <option value="">{t('step3.sellers.all')}</option>
+                  {preview.sellers.map((s) => (
+                    <option key={s.ico} value={s.ico}>
+                      {t('step3.sellers.row', { name: s.name ?? '–', ico: s.ico, count: s.invoices })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </Banner>
+          )}
           <Skipped rows={preview.skipped} />
           {(preview.invoices > 0 || hasExtra(preview)) && (
             <button type="button" className={primary} disabled={readOnly || busy !== null} onClick={confirm}>
@@ -409,10 +439,54 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               </Link>
             </div>
           </Banner>
+          {result.sellerUpdate && !readOnly && <SellerUpdateOffer update={result.sellerUpdate} date={date} />}
           <Skipped rows={result.skipped} />
         </div>
       )}
     </section>
+  );
+}
+
+/** The newest imported invoice shows other supplier details: offer them for the profile, applied only on click. */
+function SellerUpdateOffer({ update, date }: { update: SellerUpdate; date: (iso: string) => string }) {
+  const t = useTranslations('settings.import.step3.sellerUpdate');
+  const [state, setState] = useState<'idle' | 'busy' | 'done'>('idle');
+  const apply = async () => {
+    setState('busy');
+    const res = await updateCompany(update.patch);
+    if (res.ok) {
+      setState('done');
+      toast({ text: t('applied'), tone: 'ok' });
+    } else {
+      setState('idle');
+      toast({ text: t('failed'), tone: 'err' });
+    }
+  };
+  return (
+    <div className="rounded-lg border border-border p-4 text-sm">
+      <p className="font-semibold">{t('title', { number: update.invoiceNumber, date: date(update.issueDate) })}</p>
+      <dl className="mt-2 space-y-1">
+        {update.changes.map((c) => (
+          <div key={c.field} className="grid gap-x-3 sm:grid-cols-[8rem_1fr]">
+            <dt className="text-muted-foreground">{t(`fields.${c.field}`)}</dt>
+            <dd className="break-words">
+              <span className="text-muted-foreground line-through">{c.from ?? t('empty')}</span> <ArrowRight className="inline h-3.5 w-3.5" /> {c.to}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {state === 'done' ? (
+        <p className="mt-3 inline-flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
+          <CheckCircle2 className="h-4 w-4" />
+          {t('applied')}
+        </p>
+      ) : (
+        <button type="button" className={cn(button, 'mt-3')} disabled={state === 'busy'} onClick={apply}>
+          {state === 'busy' && <Loader2 className="h-4 w-4 animate-spin" />}
+          {t('apply')}
+        </button>
+      )}
+    </div>
   );
 }
 

@@ -54,6 +54,8 @@ class BitfakturaImportDto extends createZodDto(
     account: z.string().trim().min(1).max(200),
     apiToken: z.string().trim().min(8).max(200),
     dryRun: z.boolean().optional(),
+    /** Only the invoices of this supplier IČO (the preview lists them when there are several). */
+    sellerIco: z.string().regex(/^\d{8}$/).optional(),
   }),
 ) {}
 
@@ -204,7 +206,7 @@ export class InvoicesController {
   })
   importBitfaktura(@Req() req: TenantScopedRequest, @Body() dto: BitfakturaImportDto) {
     if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
-    return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false);
+    return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false, undefined, dto.sellerIco);
   }
 
   @Post(":id/mark-paid")

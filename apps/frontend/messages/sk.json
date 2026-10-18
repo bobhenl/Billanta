@@ -2877,7 +2877,26 @@
           "privacy": "Z BitFaktúry len čítame, nič v nej nemeníme."
         },
         "pdfs": "Pôvodné PDF z BitFaktúry: {archived} uložených ako archívna príloha (zákazníkom sa neposiela).",
-        "pdfsMissing": "{missing} sa nepodarilo stiahnuť."
+        "pdfsMissing": "{missing} sa nepodarilo stiahnuť.",
+        "sellers": {
+          "title": "Faktúry obsahujú {count, plural, one {# dodávateľa} few {# rôznych dodávateľov} other {# rôznych dodávateľov}}",
+          "lead": "Účet v BitFaktúre používa viac firiem. Vyberte, čie faktúry sem patria. Novú firmu podľa toho nezakladáme.",
+          "choose": "Importovať faktúry dodávateľa",
+          "all": "Všetkých dodávateľov",
+          "row": "{name} (IČO {ico}): {count, plural, one {# faktúra} few {# faktúry} other {# faktúr}}"
+        },
+        "sellerUpdate": {
+          "title": "Najnovšia faktúra ({number}, {date}) má iné údaje dodávateľa ako vaše Fakturačné údaje.",
+          "fields": {
+            "name": "Názov",
+            "dic": "DIČ",
+            "address": "Sídlo"
+          },
+          "empty": "nevyplnené",
+          "apply": "Použiť údaje z najnovšej faktúry",
+          "applied": "Fakturačné údaje sú aktualizované.",
+          "failed": "Údaje sa nepodarilo uložiť."
+        }
       },
       "status": {
         "issued": "Neuhradená",
@@ -2895,7 +2914,8 @@
           "duplicate_in_file": "číslo už je v súbore vyššie.",
           "already_exists": "faktúru s týmto číslom už máte.",
           "unsupported_kind": "tento typ dokladu nevieme importovať.",
-          "unsupported_discount": "faktúra má zľavu na položke, tú zatiaľ neimportujeme."
+          "unsupported_discount": "faktúra má zľavu na položke, tú zatiaľ neimportujeme.",
+          "other_seller": "faktúru vystavil iný dodávateľ (IČO), než ste vybrali."
         }
       },
       "errors": {

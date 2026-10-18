@@ -59,6 +59,14 @@ export interface ImportedInvoice {
   language?: string;
   /** CZK per unit as the source system recorded it; looked up at the ČNB when missing. */
   exchangeRate?: number | null;
+  /** How the source chose `exchangeRate` (see `invoices.exchange_rate_mode`); left out = unknown. */
+  exchangeRateMode?: "cnb_daily" | "manual";
+  exchangeRateDate?: string | null;
+  /** Never printed (the printed note is `note`). */
+  internalNote?: string | null;
+  orderNumber?: string | null;
+  issuePlace?: string | null;
+  issuedByName?: string | null;
   /** The document's id in the source system, to fetch its original PDF. */
   sourceId?: number;
   /**
@@ -73,7 +81,7 @@ export interface ImportedInvoice {
 export interface ImportSkip {
   line: number;
   number: string;
-  reason: "missing_number" | "missing_customer" | "invalid_date" | "invalid_amount" | "duplicate_in_file" | "already_exists" | "unsupported_kind" | "unsupported_discount";
+  reason: "missing_number" | "missing_customer" | "invalid_date" | "invalid_amount" | "duplicate_in_file" | "already_exists" | "unsupported_kind" | "unsupported_discount" | "other_seller";
 }
 
 type Field =

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import * as schema from "../../drizzle/schema";
-import { businessFill, csvBuyerSnapshot, InvoiceImportService } from "./invoice-import.service";
+import { businessFill, csvBuyerSnapshot, distinctSellers, InvoiceImportService, sellerProfileUpdate } from "./invoice-import.service";
 import type { ImportedContact, ImportedInvoice } from "./invoice-import.util";
 
 const source = (id: number, number: string) => ({ id, number }) as never;
@@ -23,10 +23,12 @@ async function run(
   dryRun = false,
   tenantRow: Record<string, string | null> = EMPTY_TENANT,
   audit?: { record: (...a: unknown[]) => Promise<void> },
+  sellerIco?: string,
 ) {
   const service = new InvoiceImportService(audit as never);
   const inserted: { table: unknown; values: Record<string, unknown> }[] = [];
   let contacts: unknown;
+  let mappedSeen: { invoices: ImportedInvoice[]; skipped: unknown[] } | undefined;
   const updated: Record<string, unknown>[] = [];
   const db = {
     insert: (table: unknown) => ({ values: async (values: Record<string, unknown>) => void inserted.push({ table, values }) }),
@@ -44,6 +46,7 @@ async function run(
     _contacts?: unknown,
   ) => {
     contacts = _contacts;
+    mappedSeen = mapped as never;
     if (!_dry) mapped.invoices.forEach((inv, i) => onCreated?.(inv, `inv-${i}`));
     return { dryRun: _dry, invoices: mapped.invoices.length };
   }) as never);
@@ -57,11 +60,21 @@ async function run(
   };
   // The stubbed importMapped receives whatever the mapper produced; give it complete invoices.
   vi.spyOn(await import("./bitfaktura-import"), "mapBitfakturaInvoices").mockImplementation((src) => ({
-    invoices: (src as { id: number; number: string }[]).map((s) => ({ invoiceNumber: s.number, sourceId: s.id }) as ImportedInvoice),
+    // Invoice 13 was issued by another business sharing the account.
+    invoices: (src as { id: number; number: string }[]).map(
+      (s) =>
+        ({
+          line: s.id,
+          invoiceNumber: s.number,
+          sourceId: s.id,
+          issueDate: new Date(Date.UTC(2026, 9, s.id)),
+          sellerSnapshot: { ico: s.id === 13 ? "87654321" : "12345678", legalName: s.id === 13 ? "Jiná firma" : "Jan Novák" },
+        }) as ImportedInvoice,
+    ),
     skipped: [],
   }));
-  const result = await service.importFromBitfaktura(db as never, "tenant-1", "firma", "t0ken-xyz", dryRun, fetcher as never);
-  return { result, inserted, contacts, updated };
+  const result = await service.importFromBitfaktura(db as never, "tenant-1", "firma", "t0ken-xyz", dryRun, fetcher as never, sellerIco);
+  return { result, inserted, contacts, updated, mapped: mappedSeen };
 }
 
 describe("InvoiceImportService.importFromBitfaktura – original PDFs", () => {
@@ -342,5 +355,97 @@ describe("csvBuyerSnapshot", () => {
     expect(s).toMatchObject({ legalName: "Alfa", email: "a@b.cz" });
     expect(s).not.toHaveProperty("ico");
     expect(s).not.toHaveProperty("addressCountry");
+  });
+});
+
+describe("InvoiceImportService.importFromBitfaktura – several suppliers", () => {
+  const pdf = () => new Response("%PDF-1.4", { status: 200 });
+
+  it("lists the supplier IČOs on the preview and imports everything when none is chosen", async () => {
+    const { result, mapped } = await run(pdf, true);
+    expect(result.sellers).toEqual([
+      { ico: "12345678", name: "Jan Novák", invoices: 2 },
+      { ico: "87654321", name: "Jiná firma", invoices: 1 },
+    ]);
+    expect(mapped!.invoices).toHaveLength(3);
+  });
+
+  it("imports only the chosen supplier's invoices and reports the rest as skipped", async () => {
+    const { result, mapped } = await run(pdf, false, EMPTY_TENANT, undefined, "87654321");
+    expect(mapped!.invoices.map((i) => i.invoiceNumber)).toEqual(["3/10/2026"]);
+    expect(mapped!.skipped).toEqual([
+      { line: 11, number: "1/10/2026", reason: "other_seller" },
+      { line: 12, number: "2/10/2026", reason: "other_seller" },
+    ]);
+    // Still listed, so the choice can be changed.
+    expect(result.sellers).toHaveLength(2);
+  });
+
+  it("suggests the newest imported invoice's supplier details after a real run only", async () => {
+    const profile = { ...EMPTY_TENANT, ico: "87654321", companyName: "Jiná", legalName: "Jiná" };
+    expect((await run(pdf, true, profile, undefined, "87654321")).result.sellerUpdate).toBeUndefined();
+    const { result } = await run(pdf, false, profile, undefined, "87654321");
+    expect(result.sellerUpdate).toMatchObject({ invoiceNumber: "3/10/2026", changes: [{ field: "name", from: "Jiná", to: "Jiná firma" }] });
+  });
+});
+
+describe("distinctSellers", () => {
+  const inv = (ico: string | undefined) => ({ sellerSnapshot: ico ? { ico, legalName: `F ${ico}` } : null }) as ImportedInvoice;
+
+  it("is empty with one supplier, or none known", () => {
+    expect(distinctSellers([inv("12345678"), inv("12345678"), inv(undefined)])).toEqual([]);
+    expect(distinctSellers([])).toEqual([]);
+  });
+});
+
+describe("sellerProfileUpdate", () => {
+  const profile = {
+    ico: "12345678",
+    companyName: "Lesní Studio",
+    legalName: "Lesní Studio",
+    dic: "CZ12345678",
+    addressStreet: "Stará 4",
+    addressCity: "Brno",
+    addressPostalCode: "602 00",
+    addressCountry: "CZ",
+  };
+  const newest = (seller: Record<string, unknown>) =>
+    ({ invoiceNumber: "9/2026", issueDate: new Date("2026-09-30T00:00:00Z"), sellerSnapshot: { ico: "12345678", ...seller } }) as ImportedInvoice;
+
+  it("suggests the newest invoice's address, name and DIČ where they differ", () => {
+    const update = sellerProfileUpdate(
+      profile,
+      newest({ legalName: "Lesní Studio s.r.o.", dic: "CZ12345678", addressStreet: "Nová 9", addressCity: "Olomouc", addressPostalCode: "779 00", addressCountry: "CZ" }),
+    );
+    expect(update).toEqual({
+      invoiceNumber: "9/2026",
+      issueDate: "2026-09-30",
+      changes: [
+        { field: "name", from: "Lesní Studio", to: "Lesní Studio s.r.o." },
+        { field: "address", from: "Stará 4, 602 00, Brno", to: "Nová 9, 779 00, Olomouc" },
+      ],
+      patch: {
+        legal_name: "Lesní Studio s.r.o.",
+        company_name: "Lesní Studio s.r.o.",
+        address_street: "Nová 9",
+        address_city: "Olomouc",
+        address_postal_code: "779 00",
+        address_country: "CZ",
+      },
+    });
+  });
+
+  it("stays quiet when the details agree, or the invoice is another company's", () => {
+    const sameDetails = { legalName: "lesní studio", dic: "CZ12345678", addressStreet: "Stará 4", addressCity: "Brno", addressPostalCode: "602 00", addressCountry: "CZ" };
+    expect(sellerProfileUpdate(profile, newest(sameDetails))).toBeNull();
+    expect(sellerProfileUpdate(profile, newest({ ...sameDetails, ico: "87654321", addressStreet: "Jinde 1" }))).toBeNull();
+    expect(sellerProfileUpdate(profile, undefined)).toBeNull();
+  });
+
+  it("offers a new DIČ, never a half address or an e-mail typed into the street", () => {
+    expect(sellerProfileUpdate(profile, newest({ dic: "CZ8001011234", addressStreet: "info@lesni.example", addressCity: "Brno" }))?.changes).toEqual([
+      { field: "dic", from: "CZ12345678", to: "CZ8001011234" },
+    ]);
+    expect(sellerProfileUpdate(profile, newest({ addressStreet: "Nová 9", addressCity: null }))).toBeNull();
   });
 });
