@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { clearCnbCache, getCnbDay, getCnbRate, parseCnbDay, parseCurrencyList, parseRateDate } from "./cnb-rates";
+import { clearCnbCache, eurCrossRate, getCnbDay, getCnbRate, parseCnbDay, parseCurrencyList, parseRateDate } from "./cnb-rates";
 
 // Friday's list, which ČNB also serves for the weekend after it.
 const FRIDAY =
@@ -86,6 +86,16 @@ describe("getCnbDay", () => {
     expect(await getCnbDay(friday)).toBeNull();
     expect((await getCnbDay(friday))!.date).toBe("2026-10-09");
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("euro cross rate for a Slovak company: CZK per unit over CZK per euro", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(FRIDAY)));
+    const friday = new Date(2026, 9, 9);
+    expect(await eurCrossRate("USD", friday)).toBeCloseTo(20.875 / 24.315, 10);
+    expect(await eurCrossRate("CZK", friday)).toBeCloseTo(1 / 24.315, 10);
+    expect(await eurCrossRate("eur", friday)).toBe(1);
+    // A currency ČNB does not list has no rate, rather than a guess.
+    expect(await eurCrossRate("XYZ", friday)).toBeNull();
   });
 
   it("returns 1 for CZK without fetching", async () => {

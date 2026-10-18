@@ -189,6 +189,8 @@ export class ExportsController {
   @ApiOperation({ summary: "The same year estimate as a CSV sheet" })
   async annualCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     const s = await this.loadAnnual(req, query);
+    // The sheet follows Czech rules (DPFO, ČSSZ); the card offers its own CSV for a Slovak company.
+    if (s.country !== "CZ") throw new BadRequestException("country_not_supported");
     const n = (v: number | null) => (v == null ? "" : v.toFixed(2).replace(".", ","));
     const rows: [string, string][] = [
       ["Rok", String(s.year)],
@@ -229,6 +231,7 @@ export class ExportsController {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     // Without a typed amount, the paid advances come from Settings → Měsíční zálohy (per month, as they applied then).
     const paid = paidAdvances(normalizeTaxAdvances(tenant?.taxAdvances), year, { paidSocial, paidHealth });
+    const country = tenant?.addressCountry === "SK" ? ("SK" as const) : ("CZ" as const);
     try {
       const summary = await this.exportsService.annualSummary(req.tenantDb!, year, {
         vatPayer: tenant?.dicVatPayer ?? false,
@@ -237,8 +240,12 @@ export class ExportsController {
         paidHealth: paid.paidHealth,
         basis,
         rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs),
+        homeCurrency: country === "SK" ? "EUR" : "CZK",
       });
-      return { ...summary, paidSource: paid.source };
+      // The dashboard card recomputes the figures from income, expenses and
+      // the paid advances with the same @faktur/cz-compliance functions, under
+      // the rules of the company's country.
+      return { ...summary, country, paidSource: paid.source };
     } catch (err) {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;
@@ -298,6 +305,8 @@ export class ExportsController {
     const summary = await this.loadAnnual(req, q);
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant) throw new NotFoundException("tenant_not_found");
+    // DPFO, přehled ČSSZ and ZP are Czech filings; a Slovak company's amounts are in euros.
+    if (summary.country !== "CZ") throw new BadRequestException("country_not_supported");
     const months = q.months ?? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     try {
       const dpfo = computeDpfo({
