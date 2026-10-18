@@ -243,6 +243,8 @@ CREATE POLICY tenant_isolation ON backup_runs
 --   subscription_plans — global plan catalog, same rows visible to everyone.
 --   ares_cache          — public ARES registry data, identical regardless of
 --                         which tenant looked it up.
+--   sk_companies,       – public Slovak register (RPO) copy and its import
+--   sk_companies_sync     state, same for everyone (migration 0058).
 --   tos_versions        — published VOP/ToS text, same for everyone.
 --
 -- If any of these ever gain a tenant_id column, add a matching policy above.

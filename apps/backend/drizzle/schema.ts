@@ -14,6 +14,7 @@
 import type { TaxAdvancePeriod } from "@faktur/cz-compliance";
 import { sql } from "drizzle-orm";
 import {
+  bigint,
   boolean,
   date,
   index,
@@ -24,6 +25,7 @@ import {
   pgEnum,
   pgTable,
   primaryKey,
+  smallint,
   text,
   timestamp,
   uniqueIndex,
@@ -839,6 +841,42 @@ export const aresCache = pgTable("ares_cache", {
   ico: varchar("ico", { length: 8 }).primaryKey(),
   responsePayload: jsonb("response_payload").notNull(),
   fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// sk_companies – GLOBAL, not tenant-scoped, no RLS. The active part of the
+// Slovak register (RPO), loaded from its bulk export so the SK typeahead does
+// not wait 3-9 s for the live RPO search (migration 0058,
+// src/contacts/sk-companies/). The trigram index on name_norm lives only in
+// the migration.
+// ---------------------------------------------------------------------------
+export const skCompanies = pgTable(
+  "sk_companies",
+  {
+    rpoId: bigint("rpo_id", { mode: "number" }).primaryKey(),
+    ico: varchar("ico", { length: 8 }).notNull(),
+    name: text("name").notNull(),
+    nameNorm: text("name_norm").notNull(),
+    street: text("street"),
+    city: text("city"),
+    postalCode: varchar("postal_code", { length: 10 }),
+    legalForm: varchar("legal_form", { length: 3 }),
+    establishedOn: date("established_on", { mode: "string" }),
+    syncedAt: timestamp("synced_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    icoIdx: index("sk_companies_ico_idx").on(table.ico),
+  }),
+);
+
+/** Single row (id = 1): how far the sk_companies import got. */
+export const skCompaniesSync = pgTable("sk_companies_sync", {
+  id: smallint("id").primaryKey().default(1),
+  initDate: date("init_date", { mode: "string" }),
+  dailyDate: date("daily_date", { mode: "string" }),
+  rowCount: integer("row_count").notNull().default(0),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  lastError: text("last_error"),
 });
 
 // ---------------------------------------------------------------------------

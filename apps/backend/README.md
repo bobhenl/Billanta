@@ -646,6 +646,84 @@ ISDOC export. Slovakia requires structured B2B e-invoices over Peppol from
   without one get none, and the access point has to supply it.
 - Sending over Peppol needs an access point and is not implemented.
 
+## Slovak company index
+
+The SK half of the company typeahead used to ask RPO (api.statistics.sk)
+live. From the VPS a name search took 6.6–8.7 s. Slovak companies now come
+from three sources, in this order:
+
+| Source | What it has | Speed | Licence |
+|---|---|---|---|
+| `sk_companies` (local copy of RPO) | name search and IČO, ~1 M active subjects | ms | RPO data, CC BY 4.0 |
+| RÚZ (registeruz.sk open API) | IČO only, plus the **DIČ**, which RPO lacks | ~0.1 s per call, 2 per IČO | CC0 |
+| live RPO API | name search and IČO | 2–9 s | CC BY 4.0 |
+
+- **IČO**: if the index is usable, its answer is final, including "not
+  found", and RÚZ only adds the DIČ. Otherwise RÚZ, then live RPO. RÚZ
+  alone can't decide that a company is gone, because it lags RPO by weeks
+  to months.
+- **Name**: the index (pg_trgm GIN on `name_norm`, 2 s statement timeout).
+  Live RPO is used only when the index is not usable.
+- "Usable" means at least 500 000 rows and data no older than 10 days
+  (`skIndexUsable`). Until the first import, or while the import is
+  broken, everything works as before, only slower.
+
+The API shape and the `?part=fast|slow` split of `GET /api/v1/contacts/search`
+(and the public company lookup) stay the same. The slow half is just fast now.
+
+### Where the data comes from
+
+RPO publishes a bulk export in an Oracle object storage bucket
+(`RPO_BATCH_URL` in `@faktur/cz-compliance`):
+
+- `batch-init/init_YYYY-MM-DD_NNN.json.gz`: a full snapshot, made on the
+  first Saturday of the month and uploaded about a day later. It has 23
+  files, ~930 MB gzipped and 9.8 GB of JSON (2.29 M subjects, 1.04 M
+  active). A snapshot is only taken once its `_list.txt` manifest exists.
+- `batch-daily/actual_YYYY-MM-DD.json.gz`: the day's changes, ~1 MB,
+  written at 03:00 UTC.
+- The bucket keeps files for 45 days.
+
+### The import
+
+`importSkCompanies` (`src/contacts/sk-companies/`) does three things:
+
+- It loads the newest snapshot when it is newer than the loaded one. It
+  then deletes the rows the snapshot did not touch. This deletion is
+  skipped, and the run fails, if the snapshot has under 500 k subjects or
+  under 80 % of the current rows.
+- It applies every daily delta after the snapshot. A dissolved subject is
+  deleted.
+- It saves progress after each file, so a failed run resumes where it
+  stopped. If the deltas have a gap, it reloads the snapshot.
+
+It streams one line at a time and writes in chunks of 1000. Streaming a
+whole snapshot took 270 s and ~200 MB RSS on a dev machine, before any
+database writes. A Postgres advisory lock stops the cron and a manual run
+from overlapping. The table is global: no `tenant_id`, no RLS, like
+`ares_cache`.
+
+- **Cron**: `SkCompaniesCron`, daily at 06:15 Europe/Bratislava. A normal
+  day is one small delta. It is on in production. Set
+  `SK_COMPANIES_SYNC=off` to stop it, or `SK_COMPANIES_SYNC=on` to run it
+  outside production.
+- **CLI**: `--full` reloads the newest snapshot even if it is already
+  loaded. The first run takes a few minutes, so run it by hand after
+  deploying migration 0058 rather than waiting for the cron:
+
+  ```bash
+  # production (inside the running backend container)
+  docker compose exec backend node dist/src/contacts/sk-companies/sk-companies-import.cli.js [--full]
+  # dev, from apps/backend, with DATABASE_URL set
+  node -r ts-node/register src/contacts/sk-companies/sk-companies-import.cli.ts [--full]
+  ```
+
+- **State**: `SELECT * FROM sk_companies_sync` shows the loaded snapshot,
+  the last delta, the row count, when the last run finished and the last
+  error.
+- **Expected size**: 250–400 MB in Postgres, including the trigram index.
+  This is an estimate, not a measurement.
+
 ## Per-tenant backup destinations
 
 `src/backup-destinations/` implements a per-tenant, tenant-owner-configured
