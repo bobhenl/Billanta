@@ -5,6 +5,7 @@ import { Banner } from '@/components/banner';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { LinkTelegramButton, UnlinkButton } from './link-telegram-button';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.channels');
@@ -21,6 +22,8 @@ interface ChannelLink {
 }
 
 export default async function ChannelsSettingsPage() {
+  const gate = await settingsGate('channels');
+  if (gate) return gate;
   const t = await getTranslations('settings.channels');
   const locale = await getLocale();
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });

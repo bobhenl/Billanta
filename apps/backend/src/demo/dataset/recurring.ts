@@ -38,5 +38,9 @@ export function buildRecurring(kind: DemoKind, now: Date): DemoRecurring[] {
       ];
     case "sk_vat_sro":
       return [one("tatranska", "monthly", 13, "Správa podujatí – mesačný paušál", 400)];
+    case "sk_freelancer":
+      return [one("povazie", "monthly", 13, "Preklady servisných bulletinov – mesačný paušál", 450)];
+    case "sk_vat_freelancer":
+      return [one("gazdovska", "monthly", 13, "Pohotovostná služba elektrikára – mesačný paušál", 180)];
   }
 }

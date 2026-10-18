@@ -446,7 +446,9 @@
       "quotes": "posíláte nabídky"
     },
     "customizeOrderHint": "Pořadí změníte přetažením za úchyt nebo šipkami.",
-    "dragToReorder": "Přetáhněte pro změnu pořadí"
+    "dragToReorder": "Přetáhněte pro změnu pořadí",
+    "exportsCta": "Exporty pro účetní",
+    "emptyHintReadOnly": "Zatím tu nejsou žádné doklady. Jakmile firma vystaví první fakturu, uvidíte tu tržby, graf i odběratele."
   },
   "invoices": {
     "hover": {
@@ -1516,7 +1518,8 @@
       "groups": {
         "account": "Účet a firma",
         "data": "Data",
-        "integrations": "Propojení"
+        "integrations": "Propojení",
+        "personal": "Můj účet"
       },
       "items": {
         "profile": {
@@ -1615,7 +1618,8 @@
           "title": "E-mailová upozornění",
           "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc."
         }
-      }
+      },
+      "managedByAdmins": "Údaje firmy, tým, předplatné a další nastavení firmy spravuje vlastník nebo administrátor."
     },
     "profile": {
       "title": "Můj profil",
@@ -3213,6 +3217,12 @@
       "errors": {
         "invalid_time_zone": "Neznámé časové pásmo."
       }
+    },
+    "noAccess": {
+      "title": "Tuto část spravuje vlastník nebo administrátor",
+      "body": "S rolí „{role}“ se tato nastavení firmy nedají měnit. Pokud je potřebujete upravit, požádejte vlastníka nebo administrátora firmy.",
+      "bodyGeneric": "Vaše role v této firmě k tomuto nastavení nemá přístup. Požádejte vlastníka nebo administrátora firmy.",
+      "back": "Zpět do nastavení"
     }
   },
   "billing": {
@@ -8466,6 +8476,14 @@
       "sk_vat_sro": {
         "title": "Slovenská s.r.o., plátce DPH",
         "description": "Slovenská firma v eurech se slovenským DPH a fakturami ve slovenštině."
+      },
+      "sk_freelancer": {
+        "title": "Slovenský živnostník, neplátce DPH",
+        "description": "Překladatelka ze Slovenska bez DPH, faktury v eurech, klienti z Velké Británie a USA."
+      },
+      "sk_vat_freelancer": {
+        "title": "Slovenský živnostník, plátce DPH",
+        "description": "Elektrikář s DPH, přenesená daňová povinnost u stavebních prací pro firmy."
       }
     },
     "country": {
@@ -8524,6 +8542,8 @@
       }
     },
     "picker": {
+      "countryTitle": "Země",
+      "countryHint": "Země určuje měnu, sazby DPH, registry a podobu dokladů.",
       "dataTitle": "Data",
       "filled": "S ukázkovými doklady",
       "empty": "Prázdná firma",

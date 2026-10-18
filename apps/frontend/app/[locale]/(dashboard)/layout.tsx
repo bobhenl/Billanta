@@ -21,7 +21,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
-import { fetchMyAccess, fetchTenant, hiddenSections, type TenantSettings } from '@/lib/tenant';
+import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { fetchMyCompanies } from '@/lib/api-client';
 import { REFERRAL_COOKIE } from '@/lib/referral';
 import { DEMO_TRANSFER_COOKIE } from '@/lib/demo-session';
@@ -85,7 +85,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
     if (!access.modules.quotes || p.invoices !== 'write') paletteHidden.push('quotes');
     if (!access.modules.reports || p.reports === 'none') paletteHidden.push('exports');
     if (!access.modules.ai) paletteHidden.push('ai');
+    if (!access.modules.ai || !canManage(access.role)) paletteHidden.push('aiSettings');
+    // Settings pages the role can't save (the same list the settings hub leaves out).
+    if (!canManage(access.role)) paletteHidden.push('manage');
+    if (forbiddenSettings(access).has('integrations')) paletteHidden.push('integrations');
   }
+  // The account menu's shortcuts follow the settings hub.
+  const menuHidden: string[] = [...forbiddenSettings(access)];
+  if (paletteHidden.includes('exports')) menuHidden.push('exports');
 
   // The root layout sends the browser only the public namespaces; the app
   // needs its own as well (lib/client-messages.ts).
@@ -111,6 +118,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <UserMenu
                 companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
                 activeId={companies?.active.id ?? null}
+                hidden={menuHidden}
               />
             </div>
           </div>
