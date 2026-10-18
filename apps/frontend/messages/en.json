@@ -872,22 +872,27 @@
   },
   "bank": {
     "title": "Bank",
-    "description": "Upload a bank statement (CSV) and reconcile incoming payments against issued invoices.",
+    "description": "Upload a bank statement (camt.053, GPC or CSV) and reconcile incoming payments against issued invoices.",
     "import": {
       "label": "Import statement",
-      "selectFile": "Choose CSV file",
+      "selectFile": "Choose statement file",
       "noFileSelected": "No file selected",
       "submit": "Upload and match",
       "importing": "Uploading and matching…",
-      "formatHint": "A CSV statement from your online banking. Date, amount and currency columns are enough.",
+      "formatHint": "A statement from your online banking as camt.053 (XML), GPC/ABO or CSV.",
       "success": "Imported {total} transaction(s), {matched} matched automatically.",
-      "invalidFile": "Please choose a .csv file.",
+      "invalidFile": "Please choose a statement in .xml (camt.053), .gpc, .abo or .csv format.",
       "parseError": "Couldn't process the file: {message}",
       "formatHelpLabel": "Which file to upload?",
-      "formatHelp": "Upload the CSV statement as you download it from online banking. We recognise the usual Czech and Slovak bank exports (Fio, ČSOB, KB, Raiffeisen, Tatra banka and others): semicolon or comma separated, dates like 31.12.2026 or 2026-12-31 and amounts with a decimal comma. Date, amount and currency columns are required. The variable symbol and counterparty account help with matching. If we don't recognise your bank's export, adjust the file to match the sample.",
-      "sample": "Download a sample CSV"
+      "formatHelp": "A camt.053 (XML) or GPC/ABO (.gpc) statement works best; most Czech and Slovak banks offer one under statements or transaction export in online banking. CSV works too: we recognise the usual exports (Fio, ČSOB, KB, Raiffeisen, Tatra banka and others), semicolon or comma separated, dates like 31.12.2026 or 2026-12-31 and amounts with a decimal comma. Payments already in Billanta (from another statement or the Fio API) are recognised and not added twice.",
+      "sample": "Download a sample CSV",
+      "successWithDuplicates": "Imported {total} transaction(s), {matched} matched automatically. {duplicates, plural, one {# payment was} other {# payments were}} already in Billanta and skipped.",
+      "errors": {
+        "bank_statement_unknown_format": "We don't know this format. Upload the statement as camt.053 (XML), GPC/ABO or CSV.",
+        "bank_statement_invalid": "The statement is damaged or incomplete."
+      }
     },
-    "empty": "No bank transactions yet. Upload a statement (CSV) with the button at the top right.",
+    "empty": "No bank transactions yet. Upload a statement with the button at the top right.",
     "filterLabel": "Show",
     "filterAll": "All",
     "columns": {
@@ -954,12 +959,13 @@
       "matchedDone": "Matched; the invoice is paid.",
       "ignoredDone": "Transaction ignored.",
       "restoredDone": "Transaction returned to matching.",
-      "actionFailed": "Action failed"
+      "actionFailed": "Action failed",
+      "message": "Message for the recipient"
     },
     "connections": {
       "title": "Bank connection",
       "hint": "Every hour Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Matched invoices are marked paid, with the PayPal fee included. Outgoing payments are not downloaded.",
-      "empty": "No account yet. Connect Fio or PayPal and payments get matched on their own. For other banks, upload a CSV statement for now.",
+      "empty": "No account yet. Connect Fio or PayPal and payments get matched on their own. For other banks, upload a statement (camt.053, GPC or CSV).",
       "token": "Fio API token",
       "tokenHint": "In Fio internet banking open Settings → API, add a token with the “view account only” permission and paste it here (64 characters). Such a token cannot pay anything. We store it encrypted and never show it again.",
       "tokenPlaceholder": "64 characters",
@@ -978,7 +984,7 @@
       "resume": "Resume",
       "disconnect": "Disconnect account",
       "disconnectConfirm": "Disconnect the account and delete the stored token? Payments already downloaded stay.",
-      "otherBanks": "Other banks use CSV statement import until PSD2 connections are enabled on this server.",
+      "otherBanks": "Other banks use statement upload (camt.053, GPC or CSV) until PSD2 connections are enabled on this server.",
       "errors": {
         "fio_token_format": "The token must be exactly 64 letters and digits.",
         "fio_token_invalid": "Fio rejected the token. Check that it is valid and not revoked.",
@@ -1002,7 +1008,8 @@
         "paypal_credentials_invalid": "PayPal rejected the Client ID or Secret. Check them, and whether they belong to the sandbox.",
         "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply).",
         "two_factor_required": "Turn on two-factor authentication in Settings → Security first.",
-        "plan_required": "This feature is part of a paid plan. Pick one under Plan and billing."
+        "plan_required": "This feature is part of a paid plan. Pick one under Plan and billing.",
+        "history_locked": "Fio releases movements older than 90 days only after a strong authorisation in online banking. Next time we start from the last 89 days."
       },
       "psd2": {
         "hint": "Billanta downloads new incoming payments straight from your bank or PayPal and matches them to invoices by variable symbol and amount. Fio connects with an API token, PayPal with your REST app credentials, other banks over PSD2: you sign in at your bank and grant read-only access to the account (up to 180 days, 90 at many banks). Banks allow only a few unattended reads a day, so PSD2 accounts are synced about every 6 hours. Outgoing payments are not downloaded and nothing can be paid through the connection.",
@@ -1055,7 +1062,8 @@
           "title": "PayPal",
           "text": "With the Client ID and Secret of your REST app. The fee is booked on the invoice too."
         }
-      }
+      },
+      "syncPending": "Fio is ready. Payments come with the next sync, try again in 30 seconds."
     },
     "fee": "fee {amount}"
   },

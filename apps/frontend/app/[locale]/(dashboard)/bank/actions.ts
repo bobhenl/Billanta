@@ -56,7 +56,8 @@ export interface BankConnection {
   lastError: string | null;
 }
 
-export type SyncResult = { ok: true; total: number; matched: number } | { ok: false; error: string };
+/** `pending`: Fio only moved its cursor this time, the payments come with the next sync. */
+export type SyncResult = { ok: true; total: number; matched: number; pending: boolean } | { ok: false; error: string };
 
 /** Backend error code (`{ error: "fio_token_format" }`) or the HTTP status. */
 function errorCode(error: unknown): string {
@@ -116,9 +117,11 @@ export async function disconnectBank(id: string): Promise<ActionResult> {
 /** Downloads new incoming payments now (the backend also does this every hour). */
 export async function syncBankConnection(id: string): Promise<SyncResult> {
   try {
-    const result = await apiFetch<{ total: number; matched: number }>(`${connections}/${encodeURIComponent(id)}/sync`, { method: 'POST' });
+    const result = await apiFetch<{ total: number; matched: number; pending?: boolean }>(`${connections}/${encodeURIComponent(id)}/sync`, {
+      method: 'POST'
+    });
     revalidatePath('/[locale]/(dashboard)', 'layout');
-    return { ok: true, total: result.total, matched: result.matched };
+    return { ok: true, total: result.total, matched: result.matched, pending: result.pending === true };
   } catch (error) {
     return { ok: false, error: errorCode(error) };
   }

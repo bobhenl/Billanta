@@ -1,18 +1,25 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
-import { desc, eq, inArray } from "drizzle-orm";
+import { normalizeVariableSymbol } from "@faktur/cz-compliance";
+import { and, desc, eq, gte, inArray, isNull, lt, ne } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { computeInvoiceTotal } from "../invoices/invoice-total.util";
+import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
 import { InvoicesService } from "../invoices/invoices.service";
 import { NotificationsService } from "../notifications/notifications.service";
-import { parseBankStatementCsv, type ParsedBankTransactionRow } from "./csv-parser";
+import type { ParsedBankTransactionRow } from "./csv-parser";
+import { splitDuplicates } from "./dedupe";
 import { findInvoiceMatch, type MatchCandidateInvoice } from "./matching";
+import { parseUploadedStatement } from "./statement-upload";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
 export type BankTransactionStatusFilter = "unmatched" | "matched" | "ignored";
 
 type InvoiceLineItemRow = typeof schema.invoiceLineItems.$inferSelect;
+
+export type BankImportSource = "csv" | "camt053" | "gpc" | "fio" | "psd2" | "paypal";
+type IncomingRow = ParsedBankTransactionRow & { externalId?: string | null; fee?: string | null };
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class BankReconciliationService {
@@ -24,36 +31,55 @@ export class BankReconciliationService {
   ) {}
 
   /**
-   * Parses + persists every row of an uploaded CSV, then runs auto-match
-   * against issued invoices for each newly-created transaction. Runs inside
+   * Parses + persists every row of an uploaded statement (CSV, camt.053 or
+   * GPC, see `statement-upload.ts`), then runs auto-match against issued
+   * invoices for each newly-created transaction. Runs inside
    * the single per-request transaction `TenantContextMiddleware` already
    * opened (`db` here is `req.tenantDb`), so a parse/insert failure partway
    * through rolls back the whole import — never a half-imported statement.
    */
-  async importCsv(db: TenantDb, tenantId: string, filename: string, fileContent: string) {
-    const parsedRows = parseBankStatementCsv(fileContent);
-    const result = await this.persistAndMatch(db, tenantId, filename, "csv", parsedRows);
+  async importStatement(db: TenantDb, tenantId: string, filename: string, file: Buffer) {
+    const { source, rows } = parseUploadedStatement(filename, file);
+    const result = await this.persistAndMatch(db, tenantId, filename, source, rows);
+    const { total, matched, unmatched, duplicates } = result.summary;
     this.notifications?.notify(tenantId, "bank_import", {
       title: `Výpis ${filename} naimportován`,
-      body: `${result.summary.total} pohybů, ${result.summary.matched} spárováno automaticky, ${result.summary.unmatched} čeká na vás.`,
+      body:
+        `${total} pohybů, ${matched} spárováno automaticky, ${unmatched} čeká na vás.` +
+        (duplicates > 0 ? ` ${duplicates} už v Billantě byly, ty jsme přeskočili.` : ""),
       link: "/bank",
     });
     return result;
   }
 
   /**
-   * Shared by the CSV import and the bank API sync: records one import,
-   * inserts its rows and auto-matches the new ones against issued invoices.
-   * Rows carrying an `externalId` already stored for this tenant are skipped
-   * (unique index), so overlapping sync windows are harmless.
+   * Shared by the statement upload and the bank API sync: drops movements
+   * we already have (`dedupe.ts`: the same bank id, or the same payment
+   * seen from another source), records one import, inserts the rest and
+   * auto-matches them against issued invoices. With `skipEmpty` (the API
+   * sync) nothing is recorded when every movement was known, so a quiet
+   * hour leaves no empty import behind. The unique index on external_id
+   * stays as the last guard against a concurrent sync.
    */
   async persistAndMatch(
     db: TenantDb,
     tenantId: string,
     filename: string,
-    source: "csv" | "fio" | "psd2" | "paypal",
-    parsedRows: (ParsedBankTransactionRow & { externalId?: string; fee?: string | null })[],
+    source: BankImportSource,
+    incomingRows: IncomingRow[],
+    options: { skipEmpty?: boolean } = {},
   ) {
+    const { fresh: parsedRows, duplicates, claims } = splitDuplicates(incomingRows, await this.storedAround(db, incomingRows));
+    for (const claim of claims) {
+      await db
+        .update(schema.bankTransactions)
+        .set({ externalId: claim.externalId })
+        .where(and(eq(schema.bankTransactions.id, claim.id), isNull(schema.bankTransactions.externalId)));
+    }
+    if (parsedRows.length === 0 && options.skipEmpty) {
+      return { import: null, transactions: [], summary: { total: 0, matched: 0, unmatched: 0, duplicates } };
+    }
+
     const [importRow] = await db
       .insert(schema.bankStatementImports)
       .values({ tenantId, filename, source })
@@ -71,18 +97,20 @@ export class BankReconciliationService {
                 transactionDate: row.transactionDate,
                 amount: row.amount,
                 currency: row.currency,
-                variableSymbol: row.variableSymbol,
+                // "0002026001" and "2026001" are one symbol; a non-numeric one is kept as typed.
+                variableSymbol: normalizeVariableSymbol(row.variableSymbol) ?? row.variableSymbol,
                 counterpartyAccount: row.counterpartyAccount,
                 counterpartyName: row.counterpartyName,
                 externalId: row.externalId ?? null,
                 fee: row.fee ?? null,
+                message: row.message ? row.message.slice(0, 500) : null,
                 status: "unmatched" as const,
               })),
             )
             .onConflictDoNothing()
             .returning();
 
-    const matchCandidates = await this.loadMatchCandidates(db);
+    let matchCandidates = await this.loadMatchCandidates(db);
 
     const finalTransactions: (typeof insertedTransactions)[number][] = [];
     let matchedCount = 0;
@@ -104,9 +132,16 @@ export class BankReconciliationService {
           .set({ matchedInvoiceId: outcome.invoiceId, status: "matched" })
           .where(eq(schema.bankTransactions.id, tx.id))
           .returning();
-        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, { amount: Number(tx.amount), currency: tx.currency, fee: tx.fee ? Number(tx.fee) : undefined });
+        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, {
+          amount: Number(tx.amount),
+          currency: tx.currency,
+          fee: tx.fee ? Number(tx.fee) : undefined,
+          paidAt: tx.transactionDate,
+        });
         finalTransactions.push(updated);
         matchedCount++;
+        // Settled now: a second payment in the same batch must not pay it again.
+        matchCandidates = matchCandidates.filter((c) => c.id !== outcome.invoiceId);
       } else {
         if (outcome.reason === "ambiguous") {
           // Correctness over completeness (see matching.ts doc comment):
@@ -115,6 +150,11 @@ export class BankReconciliationService {
           this.logger.warn(
             `Bank transaction ${tx.id} (import ${importRow.id}, tenant ${tenantId}) has multiple ` +
               "equally-good invoice match candidates — left unmatched for manual review.",
+          );
+        } else if (outcome.reason === "amount_mismatch") {
+          this.logger.log(
+            `Bank transaction ${tx.id} (tenant ${tenantId}) carries the VS of invoice ${outcome.invoiceId} ` +
+              "but not the amount due (partial payment, overpayment or other currency) – left for manual review.",
           );
         }
         finalTransactions.push(tx);
@@ -128,8 +168,30 @@ export class BankReconciliationService {
         total: finalTransactions.length,
         matched: matchedCount,
         unmatched: finalTransactions.length - matchedCount,
+        duplicates,
       },
     };
+  }
+
+  /** Stored movements on the days the incoming ones cover (RLS keeps them to this tenant). */
+  private async storedAround(db: TenantDb, rows: IncomingRow[]) {
+    if (rows.length === 0) return [];
+    const days = rows.map((r) =>
+      Date.UTC(r.transactionDate.getUTCFullYear(), r.transactionDate.getUTCMonth(), r.transactionDate.getUTCDate()),
+    );
+    const t = schema.bankTransactions;
+    return db
+      .select({
+        id: t.id,
+        externalId: t.externalId,
+        transactionDate: t.transactionDate,
+        amount: t.amount,
+        currency: t.currency,
+        variableSymbol: t.variableSymbol,
+        counterpartyAccount: t.counterpartyAccount,
+      })
+      .from(t)
+      .where(and(gte(t.transactionDate, new Date(Math.min(...days))), lt(t.transactionDate, new Date(Math.max(...days) + DAY_MS))));
   }
 
   list(db: TenantDb, status?: BankTransactionStatusFilter) {
@@ -209,7 +271,12 @@ export class BankReconciliationService {
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
 
-    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, { amount: Number(transaction.amount), currency: transaction.currency, fee: transaction.fee ? Number(transaction.fee) : undefined });
+    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, {
+      amount: Number(transaction.amount),
+      currency: transaction.currency,
+      fee: transaction.fee ? Number(transaction.fee) : undefined,
+      paidAt: transaction.transactionDate,
+    });
 
     return updated;
   }
@@ -228,13 +295,18 @@ export class BankReconciliationService {
 
   /**
    * Builds the candidate list `findInvoiceMatch` scores against: every
-   * `status = 'issued'` invoice for the tenant (RLS-scoped via `db`), with
-   * its total computed from `invoice_line_items`. One query for invoices +
+   * `status = 'issued'` invoice for the tenant (RLS-scoped via `db`) except
+   * quotes, with what is still due (total from `invoice_line_items` minus
+   * `amount_paid`). One query for invoices +
    * one query for all their line items (grouped in memory), rather than an
    * N+1 per-invoice query.
    */
   private async loadMatchCandidates(db: TenantDb): Promise<MatchCandidateInvoice[]> {
-    const issuedInvoices = await db.select().from(schema.invoices).where(eq(schema.invoices.status, "issued"));
+    // A quote can be "issued" (sent to the customer) but is never paid.
+    const issuedInvoices = await db
+      .select()
+      .from(schema.invoices)
+      .where(and(eq(schema.invoices.status, "issued"), ne(schema.invoices.documentType, "quote")));
 
     if (issuedInvoices.length === 0) {
       return [];
@@ -258,7 +330,10 @@ export class BankReconciliationService {
       variableSymbol: invoice.variableSymbol,
       currency: invoice.currency,
       dueDate: invoice.dueDate,
-      total: computeInvoiceTotal(lineItemsByInvoice.get(invoice.id) ?? []),
+      amountDue: round2(
+        computeInvoiceTotal(lineItemsByInvoice.get(invoice.id) ?? [], { reverseCharge: invoice.reverseCharge }) -
+          Number(invoice.amountPaid),
+      ),
     }));
   }
 }

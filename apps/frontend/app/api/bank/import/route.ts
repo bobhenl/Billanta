@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiFetchRaw, ApiError, NotSignedInError } from '@/lib/api-client';
 
 /**
- * Forwards a bank-statement CSV (multipart field "file") to
+ * Forwards a bank statement (CSV, camt.053, GPC; multipart field "file") to
  * `POST /api/v1/bank-reconciliation/import` as the signed-in user. A Route
  * Handler for the same reason as `/api/ai/receipt`: statements can exceed
  * the 1 MB server-action body cap.

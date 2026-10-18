@@ -1223,19 +1223,30 @@ export class InvoicesService {
    * but requiring it here makes the caller's intent explicit at the call
    * site. Returns `null` (not a thrown error) when no row transitioned, so
    * callers can decide for themselves whether that's worth surfacing.
+   *
+   * `received.paidAt` is the bank's booking day, which becomes `paid_at`.
+   * A payment in the invoice's currency that is less than what is still
+   * due (only possible through the manual match; auto-match leaves partial
+   * payments unmatched) is added to `amount_paid` and the invoice stays
+   * issued, like a partial payment entered by hand in `markPaid`.
    */
   async markPaidFromReconciliation(
     db: TenantDb,
     invoiceId: string,
     tenantId: string,
-    received?: { amount: number; currency: string; fee?: number },
+    received?: { amount: number; currency: string; fee?: number; paidAt?: Date },
   ) {
-    // A CZK credit settling a foreign-currency invoice is the real proceeds
-    // after the bank's conversion; keep it for the margin / exchange difference.
     const [current] = await db
-      .select({ currency: schema.invoices.currency, paymentFees: schema.invoices.paymentFees })
+      .select({
+        currency: schema.invoices.currency,
+        paymentFees: schema.invoices.paymentFees,
+        amountPaid: schema.invoices.amountPaid,
+        reverseCharge: schema.invoices.reverseCharge,
+      })
       .from(schema.invoices)
       .where(eq(schema.invoices.id, invoiceId));
+    // A CZK credit settling a foreign-currency invoice is the real proceeds
+    // after the bank's conversion; keep it for the margin / exchange difference.
     const receivedCzk =
       received && received.currency.toUpperCase() === "CZK" && current && current.currency !== "CZK" && received.amount > 0
         ? { receivedCzk: round2(received.amount).toFixed(2) }
@@ -1245,9 +1256,41 @@ export class InvoicesService {
       received?.fee && received.fee > 0 && current && received.currency.toUpperCase() === current.currency
         ? { paymentFees: round2(Number(current.paymentFees) + received.fee).toFixed(2) }
         : {};
+
+    const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
+    const total = round2(computeInvoiceTotal(lineItems, { reverseCharge: current?.reverseCharge ?? false }));
+    const sameCurrency = Boolean(received && current && received.currency.toUpperCase() === current.currency);
+    const paidSoFar = sameCurrency ? round2(Number(current!.amountPaid) + received!.amount) : total;
+    if (sameCurrency && paidSoFar < total - 0.005) {
+      const [partial] = await db
+        .update(schema.invoices)
+        .set({ amountPaid: paidSoFar.toFixed(2), ...fee, updatedAt: new Date() })
+        .where(
+          and(
+            eq(schema.invoices.id, invoiceId),
+            eq(schema.invoices.tenantId, tenantId),
+            eq(schema.invoices.status, "issued"),
+          ),
+        )
+        .returning();
+      if (partial) {
+        await this.log(db, partial, "partial_payment", [
+          { field: "amountPaid", from: Number(current!.amountPaid), to: paidSoFar },
+        ]);
+      }
+      return partial ?? null;
+    }
+
     const [updated] = await db
       .update(schema.invoices)
-      .set({ status: "paid", paidAt: new Date(), ...receivedCzk, ...fee, updatedAt: new Date() })
+      .set({
+        status: "paid",
+        paidAt: received?.paidAt ?? new Date(),
+        amountPaid: total.toFixed(2),
+        ...receivedCzk,
+        ...fee,
+        updatedAt: new Date(),
+      })
       .where(
         and(
           eq(schema.invoices.id, invoiceId),

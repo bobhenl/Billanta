@@ -10,7 +10,7 @@
 --     one prepaid_until, so paying for the next period (which moves
 --     prepaid_until) starts the reminders afresh without a reset step.
 --
--- Renumber freely if another 0063 lands first; nothing else refers to the idx.
+-- Renumbered from 0063 when the bank statement migration took that number.
 ALTER TABLE "tenants" ADD COLUMN IF NOT EXISTS "stripe_subscription_id" text;
 --> statement-breakpoint
 ALTER TABLE "tenants" ADD COLUMN IF NOT EXISTS "subscription_currency" varchar(3);

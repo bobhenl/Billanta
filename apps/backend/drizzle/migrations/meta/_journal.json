@@ -374,11 +374,6 @@
       "breakpoints": true
     },
     {
-      "when": 1792900600000,
-      "tag": "0053_osvc_regime",
-      "breakpoints": true
-    },
-    {
       "idx": 54,
       "version": "7",
       "when": 1792900700000,
@@ -444,8 +439,15 @@
     {
       "idx": 63,
       "version": "7",
+      "when": 1792901600000,
+      "tag": "0063_bank_statement_formats",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
       "when": 1792901700000,
-      "tag": "0063_card_first_billing",
+      "tag": "0064_card_first_billing",
       "breakpoints": true
     }
   ]
