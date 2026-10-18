@@ -117,6 +117,9 @@ export default async function PartnersPage({
           <Link href="/for-accountants" className={buttonClass.primary}>
             {t('become.accountants')}
           </Link>
+          <Link href="/for-partners" className={buttonClass.secondary}>
+            {t('become.programmes')}
+          </Link>
           <Link href="/signup" className={buttonClass.secondary}>
             {t('become.signup')}
           </Link>
