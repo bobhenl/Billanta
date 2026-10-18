@@ -18,6 +18,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
+    // Without it next-intl formats in the server's zone (UTC in the
+    // container), and the client inherits that: a local-midnight date then
+    // prints as the day before. Prague and Bratislava share the zone.
+    timeZone: 'Europe/Prague',
     messages: (await import(`../messages/${locale}.json`)).default
   };
 });

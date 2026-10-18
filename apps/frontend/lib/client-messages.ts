@@ -32,7 +32,6 @@ const DASHBOARD_ONLY = [
   'bulk',
   'glossary',
   'welcome',
-  'holidays',
   'invite'
 ];
 
