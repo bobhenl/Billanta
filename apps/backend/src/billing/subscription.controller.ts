@@ -18,7 +18,8 @@ export class CheckoutDto extends createZodDto(
   }),
 ) {}
 export class PortalDto extends createZodDto(z.object({ locale })) {}
-export class BankTransferDto extends createZodDto(z.object({ plan })) {}
+// Without `months` it is a year, as before monthly transfers existed.
+export class BankTransferDto extends createZodDto(z.object({ plan, months: z.union([z.literal(1), z.literal(12)]).default(12) })) {}
 
 /**
  * The company's plan and how it pays for it. Tenant-scoped
@@ -52,8 +53,8 @@ export class SubscriptionController {
   }
 
   @Post("bank-transfer")
-  @ApiOperation({ summary: "Issue a proforma for a year of a plan, paid by bank transfer (QR Platba)" })
+  @ApiOperation({ summary: "Issue a proforma for a month or a year of a plan, paid by bank transfer (QR Platba)" })
   bankTransfer(@Req() req: TenantScopedRequest, @Body() dto: BankTransferDto) {
-    return this.subscriptions.requestProforma(req.tenantDb!, req.user!.tenantId, req.user!.id, dto.plan);
+    return this.subscriptions.requestProforma(req.tenantDb!, req.user!.tenantId, req.user!.id, dto.plan, dto.months);
   }
 }

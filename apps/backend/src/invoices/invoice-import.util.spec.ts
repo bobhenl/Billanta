@@ -7,6 +7,9 @@ import {
   ownNumberSequence,
   parseAmount,
   parseDate,
+  parseFlag,
+  parseReverseChargeCode,
+  paymentMethodOf,
 } from "./invoice-import.util";
 
 const map = (csv: string) => mapInvoiceRows(parseCsv(csv));
@@ -94,6 +97,181 @@ describe("mapInvoiceRows", () => {
 
   it("rejects files that are not invoice lists", () => {
     expect(() => map("Název;IČO;E-mail\nAlfa;1;a@b.cz\n")).toThrow("unknown_columns");
+  });
+});
+
+describe("parseFlag", () => {
+  it("reads yes/no cells in Czech, Slovak and English", () => {
+    for (const yes of ["Ano", "áno", "A", "yes", "Y", "TRUE", "1", "x", "Pravda"]) expect(parseFlag(yes)).toBe(true);
+    for (const no of ["Ne", "nie", "N", "no", "false", "0", "Nepravda"]) expect(parseFlag(no)).toBe(false);
+    expect(parseFlag("")).toBeNull();
+    expect(parseFlag(undefined)).toBeNull();
+    expect(parseFlag("Přenesená daňová povinnost")).toBeNull();
+  });
+});
+
+describe("paymentMethodOf", () => {
+  it("maps the usual labels and keeps any other as the printed label", () => {
+    expect(paymentMethodOf("Převodem")).toEqual({ paymentMethod: "bank_transfer", paymentMethodLabel: null });
+    expect(paymentMethodOf("Bankový prevod")).toEqual({ paymentMethod: "bank_transfer", paymentMethodLabel: null });
+    expect(paymentMethodOf("transfer")).toEqual({ paymentMethod: "bank_transfer", paymentMethodLabel: null });
+    expect(paymentMethodOf("Hotově")).toEqual({ paymentMethod: "cash", paymentMethodLabel: null });
+    expect(paymentMethodOf("V hotovosti")).toEqual({ paymentMethod: "cash", paymentMethodLabel: null });
+    expect(paymentMethodOf("Platební kartou")).toEqual({ paymentMethod: "card", paymentMethodLabel: null });
+    expect(paymentMethodOf("Bankovní karta")).toEqual({ paymentMethod: "card", paymentMethodLabel: null });
+    expect(paymentMethodOf("Dobírka")).toEqual({ paymentMethod: "cash_on_delivery", paymentMethodLabel: null });
+    expect(paymentMethodOf("Cash on delivery")).toEqual({ paymentMethod: "cash_on_delivery", paymentMethodLabel: null });
+    expect(paymentMethodOf("PayPal")).toEqual({ paymentMethod: "other", paymentMethodLabel: "PayPal" });
+    expect(paymentMethodOf(" ")).toEqual({});
+    expect(paymentMethodOf(undefined)).toEqual({});
+  });
+});
+
+describe("parseReverseChargeCode", () => {
+  it("accepts only codes EPO takes", () => {
+    expect(parseReverseChargeCode("4")).toBe("4");
+    expect(parseReverseChargeCode(" 1A ")).toBe("1a");
+    expect(parseReverseChargeCode("4.0")).toBe("4");
+    expect(parseReverseChargeCode("2")).toBeNull();
+    expect(parseReverseChargeCode("99")).toBeNull();
+    expect(parseReverseChargeCode("stavební práce")).toBeNull();
+    expect(parseReverseChargeCode(undefined)).toBeNull();
+  });
+});
+
+describe("mapInvoiceRows: document details", () => {
+  const head = "Číslo;Odběratel;Vystaveno;Celkem bez DPH;Celkem;Měna";
+
+  it("maps order number, internal note, payment method, constant symbol, issue place and issuer (CZ headers)", () => {
+    const { invoices } = map(
+      `${head};Číslo objednávky;Interní poznámka;Způsob úhrady;Konstantní symbol;Místo vystavení;Vystavil\n` +
+        "A1;Alfa;1.1.2025;100;121;CZK;OBJ-7;platí pozdě;Hotově;308;Brno;Jana Nováková\n",
+    );
+    expect(invoices[0]).toMatchObject({
+      orderNumber: "OBJ-7",
+      internalNote: "platí pozdě",
+      paymentMethod: "cash",
+      paymentMethodLabel: null,
+      constantSymbol: "0308",
+      issuePlace: "Brno",
+      issuedByName: "Jana Nováková",
+    });
+  });
+
+  it("maps the same details from Slovak and English headers", () => {
+    const sk = map(
+      `${head};Číslo objednávky odberateľa;Interná poznámka;Spôsob úhrady;Konštantný symbol;Miesto vystavenia;Vyhotovil\n` +
+        "A1;Alfa;1.1.2025;100;120;EUR;PO-1;pozn;Dobierka;0008;Žilina;Peter\n",
+    ).invoices[0];
+    expect(sk).toMatchObject({ orderNumber: "PO-1", internalNote: "pozn", paymentMethod: "cash_on_delivery", constantSymbol: "0008", issuePlace: "Žilina", issuedByName: "Peter" });
+    const en = map(
+      "Invoice number,Client,Issue date,Total,Order number,Private notes,Payment method,Constant symbol,Place of issue,Issued by\n" +
+        "A1,Alfa,2025-01-01,100,PO-2,secret,Wise,1234,Praha,Eva\n",
+    ).invoices[0];
+    expect(en).toMatchObject({ orderNumber: "PO-2", internalNote: "secret", paymentMethod: "other", paymentMethodLabel: "Wise", constantSymbol: "1234", issuePlace: "Praha", issuedByName: "Eva" });
+  });
+
+  it("leaves the details out when the file has none, and drops an invalid constant symbol", () => {
+    const [a, b] = map(`${head};KS\nA1;Alfa;1.1.2025;100;121;CZK;\nA2;Alfa;1.1.2025;100;121;CZK;12345\n`).invoices;
+    for (const inv of [a!, b!]) {
+      expect(inv.constantSymbol).toBeUndefined();
+      expect(inv.orderNumber).toBeUndefined();
+      expect(inv.paymentMethod).toBeUndefined();
+      expect(inv.reverseCharge).toBeUndefined();
+      expect(inv.exchangeRate).toBeUndefined();
+    }
+  });
+
+  it("puts the buyer's phone on the contact and the contact person into its internal note", () => {
+    const [a, b] = map(`${head};Telefon;Kontaktní osoba\nA1;Alfa;1.1.2025;100;121;CZK;+420 777 000 111;Petr Malý\nA2;Beta;1.1.2025;100;121;CZK;;\n`).invoices;
+    expect(a!.customer).toMatchObject({ phone: "+420 777 000 111", internalNote: "Kontaktní osoba: Petr Malý" });
+    expect(b!.customer.phone).toBeUndefined();
+    expect(b!.customer.internalNote).toBeUndefined();
+  });
+});
+
+describe("mapInvoiceRows: exchange rate", () => {
+  const head = "Číslo;Odběratel;Vystaveno;Celkem;Měna";
+
+  it("takes a plain rate column as a manual rate", () => {
+    const inv = map(`${head};Kurz\nA1;Alfa;1.1.2025;100;EUR;25,125\n`).invoices[0]!;
+    expect(inv).toMatchObject({ exchangeRate: 25.125, exchangeRateMode: "manual", exchangeRateDate: null });
+    const en = map("Number,Client,Date,Total,Currency,Exchange rate\nA1,Alfa,2025-01-01,100,USD,23.4\n").invoices[0]!;
+    expect(en).toMatchObject({ exchangeRate: 23.4, exchangeRateMode: "manual" });
+  });
+
+  it("stores a ČNB rate as one, with its list day", () => {
+    const viaKind = map(`${head};Kurz;Typ kurzu;Datum kurzu\nA1;Alfa;1.1.2025;100;EUR;25,1;ČNB;31.12.2024\n`).invoices[0]!;
+    expect(viaKind).toMatchObject({ exchangeRate: 25.1, exchangeRateMode: "cnb_daily", exchangeRateDate: "2024-12-31" });
+    const viaHeader = map(`${head};Kurz ČNB\nA1;Alfa;1.1.2025;100;EUR;25,1\n`).invoices[0]!;
+    expect(viaHeader).toMatchObject({ exchangeRate: 25.1, exchangeRateMode: "cnb_daily", exchangeRateDate: null });
+    const manualKind = map(`${head};Kurz;Typ kurzu\nA1;Alfa;1.1.2025;100;EUR;25,1;vlastní\n`).invoices[0]!;
+    expect(manualKind.exchangeRateMode).toBe("manual");
+  });
+
+  it("ignores a rate on CZK invoices and the placeholder 1", () => {
+    const [czk, one] = map(`${head};Kurz\nA1;Alfa;1.1.2025;100;CZK;25\nA2;Alfa;1.1.2025;100;EUR;1\n`).invoices;
+    expect(czk!.exchangeRate).toBeUndefined();
+    expect(one!.exchangeRate).toBeUndefined();
+  });
+});
+
+describe("mapInvoiceRows: reverse charge", () => {
+  const head = "Číslo;Odběratel;Vystaveno;Celkem bez DPH;Celkem;Měna";
+
+  it("reads the flag column in each language", () => {
+    const rc = (header: string, value: string) => map(`${head};${header}\nA1;Alfa;1.1.2025;100;100;CZK;${value}\n`).invoices[0]!.reverseCharge;
+    expect(rc("Přenesená daňová povinnost", "Ano")).toBe(true);
+    expect(rc("PDP", "1")).toBe(true);
+    expect(rc("Prenesenie daňovej povinnosti", "áno")).toBe(true);
+    expect(rc("Reverse charge", "true")).toBe(true);
+    expect(rc("Reverse charge", "no")).toBe(false);
+  });
+
+  it("trusts the flag even with VAT on the lines", () => {
+    expect(map(`${head};PDP\nA1;Alfa;1.1.2025;100;121;CZK;ano\n`).invoices[0]!.reverseCharge).toBe(true);
+  });
+
+  it("lets the reverse-charge sentence set it only when no line has VAT", () => {
+    const rows = map(
+      `${head};Poznámka\n` +
+        "A1;Alfa;1.1.2025;100;100;CZK;Daň odvede zákazník\n" +
+        "A2;Alfa;1.1.2025;100;121;CZK;Daň odvede zákazník\n" +
+        "A3;Alfa;1.1.2025;100;100;CZK;Děkujeme\n",
+    ).invoices;
+    expect(rows.map((i) => i.reverseCharge)).toEqual([true, undefined, undefined]);
+  });
+
+  it("reads the sentence typed into the flag column under the same rule", () => {
+    const rows = map(`${head};Režim přenesení daňové povinnosti\nA1;Alfa;1.1.2025;100;100;CZK;Prenesenie daňovej povinnosti\nA2;Alfa;1.1.2025;100;121;CZK;reverse charge\n`).invoices;
+    expect(rows.map((i) => i.reverseCharge)).toEqual([true, undefined]);
+  });
+
+  it("lets an explicit no win over the sentence", () => {
+    expect(map(`${head};PDP;Poznámka\nA1;Alfa;1.1.2025;100;100;CZK;ne;reverse charge\n`).invoices[0]!.reverseCharge).toBe(false);
+  });
+
+  it("checks every line row of an invoice before the sentence counts", () => {
+    const rows = map(
+      "Číslo;Odběratel;Vystaveno;Položka;Cena za MJ;Sazba DPH;Poznámka\n" +
+        "A1;Alfa;1.1.2025;Práce;100;0;Daň odvede zákazník\n" +
+        "A1;;;Materiál;50;21;\n",
+    ).invoices;
+    expect(rows[0]!.lines).toHaveLength(2);
+    expect(rows[0]!.reverseCharge).toBeUndefined();
+  });
+
+  it("keeps a valid KH code on a domestic reverse charge only", () => {
+    const rows = map(
+      `${head};PDP;Kód předmětu plnění;Země\n` +
+        "A1;Alfa;1.1.2025;100;100;CZK;ano;4;CZ\n" +
+        "A2;Alfa;1.1.2025;100;100;CZK;ano;99;CZ\n" +
+        "A3;Alfa;1.1.2025;100;121;CZK;ne;4;CZ\n" +
+        "A4;Alfa;1.1.2025;100;100;EUR;ano;4;DE\n",
+    ).invoices;
+    expect(rows.map((i) => i.reverseChargeCode)).toEqual(["4", undefined, undefined, undefined]);
+    const en = map(`${head};Reverse charge;Supply code\nA1;Alfa;1.1.2025;100;100;CZK;yes;1a\n`).invoices[0]!;
+    expect(en.reverseChargeCode).toBe("1a");
   });
 });
 

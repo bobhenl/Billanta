@@ -291,6 +291,7 @@ describe("businessFill", () => {
 /** A db whose every chain resolves: selects to [], inserts to one new row; invoice inserts are recorded. */
 function recordingDb() {
   const invoices: Record<string, unknown>[] = [];
+  const contacts: Record<string, unknown>[] = [];
   const chain = (result: unknown, onValues?: (v: Record<string, unknown>) => void): unknown =>
     new Proxy(() => undefined, {
       get: (_t, prop) => {
@@ -306,9 +307,13 @@ function recordingDb() {
     select: () => chain([]),
     update: () => chain([]),
     execute: () => chain([]),
-    insert: (table: unknown) => chain([{ id: "new-id" }], (v) => void (table === schema.invoices && invoices.push(v))),
+    insert: (table: unknown) =>
+      chain([{ id: "new-id" }], (v) => {
+        if (table === schema.invoices) invoices.push(v);
+        if (table === schema.contacts) contacts.push(v);
+      }),
   };
-  return { db, invoices };
+  return { db, invoices, contacts };
 }
 
 describe("InvoiceImportService – party snapshots of imported invoices", () => {
@@ -319,6 +324,53 @@ describe("InvoiceImportService – party snapshots of imported invoices", () => 
     expect(invoices).toHaveLength(1);
     expect(invoices[0]!.sellerSnapshot).toBeNull();
     expect(invoices[0]!.buyerSnapshot).toMatchObject({ legalName: "Alfa s.r.o.", ico: "12345678", addressStreet: "info@alfa.cz", addressCity: "Praha", source: "import" });
+  });
+
+  it("passes the CSV document details through to the invoice and the new contact", async () => {
+    const { db, invoices, contacts } = recordingDb();
+    const csv =
+      "Číslo;Odběratel;Datum vystavení;Celkem;PDP;Kód předmětu plnění;KS;Způsob úhrady;Číslo objednávky;Interní poznámka;Místo vystavení;Vystavil;Telefon;Kontaktní osoba\n" +
+      "A1;Alfa s.r.o.;1.1.2025;100;ano;4;308;Hotově;OBJ-1;interní;Brno;Jana;777 000 111;Petr\n";
+    await new InvoiceImportService().importCsv(db as never, "tenant-1", Buffer.from(csv), false);
+    expect(invoices[0]).toMatchObject({
+      reverseCharge: true,
+      reverseChargeCode: "4",
+      constantSymbol: "0308",
+      paymentMethod: "cash",
+      paymentMethodLabel: null,
+      orderNumber: "OBJ-1",
+      internalNote: "interní",
+      issuePlace: "Brno",
+      issuedByName: "Jana",
+    });
+    expect(contacts[0]).toMatchObject({ legalName: "Alfa s.r.o.", phone: "777 000 111", internalNote: "Kontaktní osoba: Petr" });
+    // Phone and contact person describe the contact, not what the document printed.
+    expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("phone");
+    expect(invoices[0]!.buyerSnapshot).not.toHaveProperty("internalNote");
+  });
+
+  it("never stores a KH code without reverse charge", async () => {
+    const { db, invoices } = recordingDb();
+    const mapped = {
+      line: 1,
+      invoiceNumber: "X1",
+      variableSymbol: null,
+      issueDate: new Date("2025-01-01"),
+      dueDate: null,
+      taxableSupplyDate: null,
+      currency: "CZK",
+      status: "issued",
+      documentType: "invoice",
+      note: null,
+      amountPaid: 0,
+      paidAt: null,
+      customer: { legalName: "Beta", ico: null, dic: null, email: null, addressStreet: null, addressCity: null, addressPostalCode: null, addressCountry: "CZ" },
+      lines: [{ description: "x", quantity: 1, unit: null, unitPrice: 100, vatRate: 21 }],
+      reverseChargeCode: "4",
+    } as unknown as ImportedInvoice;
+    const service = new InvoiceImportService() as unknown as { importMapped: (...a: unknown[]) => Promise<unknown> };
+    await service.importMapped(db, "tenant-1", { invoices: [mapped], skipped: [] }, false);
+    expect(invoices[0]).toMatchObject({ reverseCharge: false, reverseChargeCode: null, constantSymbol: null });
   });
 
   it("stores the snapshots the BitFaktura mapping produced", async () => {

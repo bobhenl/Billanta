@@ -23,9 +23,16 @@ describe("platformBillingEntity", () => {
 
 describe("proformaAmounts", () => {
   it("charges a year at the yearly rate, VAT on top", () => {
-    expect(proformaAmounts("plus", 0)).toEqual({ amountMinor: 239 * 12 * 100, totalMinor: 239 * 12 * 100 });
+    expect(proformaAmounts("plus", 0, 12)).toEqual({ amountMinor: 239 * 12 * 100, totalMinor: 239 * 12 * 100 });
     // 2868 Kč + 21 % = 3470.28 Kč
-    expect(proformaAmounts("plus", 21)).toEqual({ amountMinor: 286800, totalMinor: 347028 });
+    expect(proformaAmounts("plus", 21, 12)).toEqual({ amountMinor: 286800, totalMinor: 347028 });
+  });
+
+  it("charges a month at the monthly price, VAT on top", () => {
+    expect(proformaAmounts("plus", 0, 1)).toEqual({ amountMinor: 28900, totalMinor: 28900 });
+    // 149 Kč + 21 % = 180.29 Kč
+    expect(proformaAmounts("start", 21, 1)).toEqual({ amountMinor: 14900, totalMinor: 18029 });
+    expect(proformaAmounts("business", 0, 1).amountMinor).toBe(57900);
   });
 });
 

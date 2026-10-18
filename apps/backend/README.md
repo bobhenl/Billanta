@@ -201,14 +201,18 @@ migration `0051_trial_billing.sql`.
   for the currency and device. `STRIPE_PAYMENT_METHOD_CONFIGURATION`
   (`pmc_...`) picks a specific configuration. `POST .../portal` opens the
   Customer Portal.
-- **Bank transfer** (yearly, CZK): `POST .../bank-transfer` issues a
-  proforma from `PLATFORM_BILLING_*` with a QR Platba code and a variable
-  symbol (`YYYY` + 6-digit sequence). A platform admin
-  (`PLATFORM_ADMIN_EMAILS`) checks the bank statement and calls
+- **Bank transfer** (a month or a year, CZK): `POST .../bank-transfer`
+  with `months: 1 | 12` (default 12) issues a proforma from
+  `PLATFORM_BILLING_*` at the monthly price or the yearly rate, with a QR
+  Platba code and a variable symbol (`YYYY` + 6-digit sequence). A platform
+  admin (`PLATFORM_ADMIN_EMAILS`) checks the bank statement and calls
   `POST /v1/admin/billing/proformas/:id/mark-paid`, which extends
-  `prepaid_until` by 12 months, pays the referral reward and notifies the
-  company. The proforma is a payment request; issue the tax document for
-  the payment in your own accounting.
+  `prepaid_until` by the proforma's months (calendar months, the day
+  clamped to the month's end; from the current end while the same plan
+  still runs, otherwise from today), pays the referral reward and notifies
+  the company. Nothing renews and no reminder goes out, so a monthly payer
+  requests a new proforma every month. The proforma is a payment request;
+  issue the tax document for the payment in your own accounting.
 
 ### Stripe dashboard setup
 
@@ -216,7 +220,7 @@ migration `0051_trial_billing.sql`.
    Link. Turn on SEPA Direct Debit for EUR subscriptions. Hosted Checkout
    runs on Stripe's domain, so wallets need no domain verification there.
    Stripe's own bank transfer method is not offered for subscriptions in
-   Checkout, which is why yearly transfers go through our proformas.
+   Checkout, which is why transfers go through our proformas.
 2. **Settings > Billing > Customer portal**: allow updating the payment
    method, viewing invoices and cancelling (at the end of the period).
    Leave plan switching off, the plan comes from Checkout metadata.

@@ -41,7 +41,14 @@ export interface BillingStatus {
   hasStripeCustomer: boolean;
   prices: Record<PaidPlanKey, Record<Currency, { monthly: number; yearly: number }>>;
   card: { enabled: boolean };
-  bankTransfer: { enabled: true; vatRate: number; amounts: Record<PaidPlanKey, { amountMinor: number; totalMinor: number }> } | { enabled: false };
+  bankTransfer:
+    | {
+        enabled: true;
+        vatRate: number;
+        amounts: Record<PaidPlanKey, { amountMinor: number; totalMinor: number }>;
+        monthlyAmounts: Record<PaidPlanKey, { amountMinor: number; totalMinor: number }>;
+      }
+    | { enabled: false };
   proformas: Proforma[];
 }
 
@@ -62,7 +69,8 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
   const planName = (key: string) => t(`planNames.${key}`);
   // A live Stripe subscription is changed or cancelled in the portal, not bought again.
   const subscribed = plan.source === 'subscription';
-  const transferOk = status.bankTransfer.enabled && interval === 'year' && currency === 'CZK';
+  // Proformas are in CZK only; the interval toggle picks a month or a year up front.
+  const transferOk = status.bankTransfer.enabled && currency === 'CZK';
 
   const fail = (code: string) => {
     const key = `errors.${code}`;
@@ -174,7 +182,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                         type="button"
                         disabled={readOnly || pending}
                         onClick={() =>
-                          act(`bank-${key}`, () => requestBankTransfer(key), () => toast({ text: t('transfer.created'), tone: 'ok' }))
+                          act(`bank-${key}`, () => requestBankTransfer(key, interval === 'year' ? 12 : 1), () => toast({ text: t('transfer.created'), tone: 'ok' }))
                         }
                         className={buttonClass.ghost}
                       >
@@ -193,7 +201,9 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
             <p>{t(interval === 'year' ? 'terms.renewYearly' : 'terms.renewMonthly')}</p>
             <p>{t('terms.cancel')}</p>
             <p>{t('terms.methods')}</p>
-            {status.bankTransfer.enabled && <p>{t(transferOk ? 'terms.transfer' : 'terms.transferYearlyOnly')}</p>}
+            {status.bankTransfer.enabled && (
+              <p>{t(!transferOk ? 'terms.transferCzkOnly' : interval === 'year' ? 'terms.transfer' : 'terms.transferMonthly')}</p>
+            )}
             <p>{t('terms.vat')}</p>
           </div>
         </section>

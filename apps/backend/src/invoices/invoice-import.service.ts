@@ -462,6 +462,8 @@ export class InvoiceImportService {
           issuePlace: inv.issuePlace ?? null,
           issuedByName: inv.issuedByName ?? null,
           reverseCharge: inv.reverseCharge ?? false,
+          reverseChargeCode: inv.reverseCharge ? inv.reverseChargeCode ?? null : null,
+          constantSymbol: inv.constantSymbol ?? null,
           ...(inv.paymentMethod ? { paymentMethod: inv.paymentMethod, paymentMethodLabel: inv.paymentMethodLabel ?? null } : {}),
           ...(inv.language ? { language: inv.language } : {}),
           // The parties as the source document shows them, not as the matched

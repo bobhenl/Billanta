@@ -12,7 +12,7 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import QRCode from "qrcode";
 import type Stripe from "stripe";
 import * as schema from "../../drizzle/schema";
-import { platformBillingEntity, proformaAmounts, proformaIdentifiers, proformaSpayd } from "./bank-transfer";
+import { platformBillingEntity, proformaAmounts, proformaIdentifiers, proformaSpayd, type ProformaMonths } from "./bank-transfer";
 import { planSummary } from "./plan-access";
 import { PLAN_PRICES_MINOR, periodPriceMinor, type BillingInterval, type PaidPlan, type PlanCurrency } from "./plans";
 import { STRIPE_CLIENT } from "./stripe-client.provider";
@@ -34,7 +34,7 @@ function isoDate(d: Date): string {
 
 /**
  * The company's own side of billing: what plan it is on, Stripe Checkout and
- * the Customer Portal, and proformas for a year paid by bank transfer. Every
+ * the Customer Portal, and proformas for a month or a year paid by bank transfer. Every
  * read and write goes through the request's RLS-bound connection.
  */
 @Injectable()
@@ -70,9 +70,14 @@ export class SubscriptionService {
             enabled: true,
             vatRate: payee.vatRate,
             amounts: {
-              start: proformaAmounts("start", payee.vatRate),
-              plus: proformaAmounts("plus", payee.vatRate),
-              business: proformaAmounts("business", payee.vatRate),
+              start: proformaAmounts("start", payee.vatRate, 12),
+              plus: proformaAmounts("plus", payee.vatRate, 12),
+              business: proformaAmounts("business", payee.vatRate, 12),
+            },
+            monthlyAmounts: {
+              start: proformaAmounts("start", payee.vatRate, 1),
+              plus: proformaAmounts("plus", payee.vatRate, 1),
+              business: proformaAmounts("business", payee.vatRate, 1),
             },
           }
         : { enabled: false },
@@ -148,11 +153,13 @@ export class SubscriptionService {
   }
 
   /**
-   * Issues a proforma for a year of `plan` payable by bank transfer. It is a
-   * request for payment, not a tax document; the plan starts when a platform
-   * admin marks the payment received (`AdminBillingController`).
+   * Issues a proforma for a month or a year of `plan` payable by bank
+   * transfer. It is a request for payment, not a tax document; the plan
+   * starts (or the running prepaid period grows by `months`) when a platform
+   * admin marks the payment received (`AdminBillingController`). Nothing
+   * renews by itself: the next month is a new proforma.
    */
-  async requestProforma(db: TenantDb, tenantId: string, userId: string | undefined, plan: PaidPlan) {
+  async requestProforma(db: TenantDb, tenantId: string, userId: string | undefined, plan: PaidPlan, months: ProformaMonths) {
     const payee = platformBillingEntity();
     if (!payee) throw new ServiceUnavailableException("bank_transfer_not_configured");
     const [{ pending }] = await db
@@ -164,14 +171,14 @@ export class SubscriptionService {
     const [{ seq }] = await db.execute<{ seq: string }>(sql`SELECT nextval('platform_proforma_seq')::text AS seq`);
     const now = new Date();
     const ids = proformaIdentifiers(now.getUTCFullYear(), Number(seq));
-    const amounts = proformaAmounts(plan, payee.vatRate);
+    const amounts = proformaAmounts(plan, payee.vatRate, months);
     const due = new Date(now.getTime() + payee.dueDays * 86_400_000);
     await db.insert(schema.platformProformas).values({
       tenantId,
       number: ids.number,
       variableSymbol: ids.variableSymbol,
       plan,
-      months: 12,
+      months,
       currency: "CZK",
       amountMinor: amounts.amountMinor,
       vatRate: payee.vatRate,
@@ -179,7 +186,7 @@ export class SubscriptionService {
       dueDate: isoDate(due),
       createdByUserId: userId ?? null,
     });
-    this.logger.log(`tenant ${tenantId} requested proforma ${ids.number} (${plan}, 12 months)`);
+    this.logger.log(`tenant ${tenantId} requested proforma ${ids.number} (${plan}, ${months} months)`);
     const list = await this.proformas(db, tenantId);
     return list.find((p) => p.number === ids.number) ?? null;
   }

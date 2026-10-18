@@ -1,5 +1,5 @@
 import { generateSpaydString } from "@faktur/cz-compliance";
-import { PLAN_PRICES_MINOR, type PaidPlan } from "./plans";
+import { periodPriceMinor, type PaidPlan } from "./plans";
 
 /**
  * Billanta's own billing entity, the payee on proformas for plans paid by
@@ -45,9 +45,16 @@ export function platformBillingEntity(env: Record<string, string | undefined> = 
   };
 }
 
-/** A year of `plan` at the yearly rate, in haléře, plus VAT rounded to whole haléře. */
-export function proformaAmounts(plan: PaidPlan, vatRate: number): { amountMinor: number; totalMinor: number } {
-  const amountMinor = PLAN_PRICES_MINOR[plan].CZK.yearly * 12;
+/**
+ * What a proforma can prepay. A month costs the monthly price, a year the
+ * yearly rate; the `months` CHECK on platform_proformas (0051) allows these two.
+ */
+export const PROFORMA_MONTHS = [1, 12] as const;
+export type ProformaMonths = (typeof PROFORMA_MONTHS)[number];
+
+/** `months` of `plan` in haléře, plus VAT rounded to whole haléře. */
+export function proformaAmounts(plan: PaidPlan, vatRate: number, months: ProformaMonths): { amountMinor: number; totalMinor: number } {
+  const amountMinor = periodPriceMinor(plan, "CZK", months === 12 ? "year" : "month");
   return { amountMinor, totalMinor: amountMinor + Math.round((amountMinor * vatRate) / 100) };
 }
 

@@ -3186,7 +3186,8 @@
       "cancel": "You can cancel at any time in one step in the subscription portal. The plan then runs until the end of the paid period.",
       "methods": "Pay by card, Apple Pay, Google Pay or any other method the checkout offers you.",
       "transfer": "A bank transfer pays one year up front and doesn't renew by itself. We switch the plan on as soon as the money arrives.",
-      "transferYearlyOnly": "Bank transfer is available for yearly plans in CZK only.",
+      "transferMonthly": "A bank transfer pays one month at a time. Nothing renews by itself and we don't send a reminder, so pay the next month by hand before the paid period ends.",
+      "transferCzkOnly": "Bank transfer is available in CZK only.",
       "vat": "Prices exclude VAT."
     },
     "transfer": {

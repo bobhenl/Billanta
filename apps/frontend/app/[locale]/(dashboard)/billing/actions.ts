@@ -27,8 +27,8 @@ export async function openPortal() {
   return post<{ url: string }>('/api/v1/billing/subscription/portal', { locale });
 }
 
-export async function requestBankTransfer(plan: PaidPlanKey) {
-  const result = await post<{ id: string; url?: undefined }>('/api/v1/billing/subscription/bank-transfer', { plan });
+export async function requestBankTransfer(plan: PaidPlanKey, months: 1 | 12) {
+  const result = await post<{ id: string; url?: undefined }>('/api/v1/billing/subscription/bank-transfer', { plan, months });
   if (result.ok) revalidatePath('/[locale]/(dashboard)/billing', 'page');
   return result;
 }

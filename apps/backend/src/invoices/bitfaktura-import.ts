@@ -1,4 +1,4 @@
-import type { ImportedContact, ImportedInvoice, ImportedLine, ImportSkip } from "./invoice-import.util";
+import { REVERSE_CHARGE_TEXT, type ImportedContact, type ImportedInvoice, type ImportedLine, type ImportSkip } from "./invoice-import.util";
 import { normalizeCountry } from "../contacts/contacts-csv.util";
 import type { BuyerSnapshot, SellerSnapshot } from "./party-snapshot";
 import { deriveVariableSymbol } from "./invoice-numbering.util";
@@ -414,13 +414,6 @@ function buyerSnapshotFrom(customer: ImportedInvoice["customer"], capturedAt: Da
   if (customer.email) out.email = customer.email;
   return { ...out, capturedAt: capturedAt.toISOString(), source: "import" };
 }
-
-/**
- * The sentence BitFaktura users type (or its template prints) on a
- * reverse-charge invoice, in Czech, Slovak or English. Older invoices often
- * carry only this text and not the `reverse_charge` flag.
- */
-const REVERSE_CHARGE_TEXT = /p[řr]enesen\S* da[ňn]ov\S* povinnost|da[ňn] odvede z[áa]kazn[íi]k|reverse[\s-]charge/i;
 
 /** Free text as typed, with Windows line ends and outer blank lines removed. */
 const longText = (v: string | null | undefined, max: number) => text((v ?? "").replace(/\r\n?/g, "\n"), max);
