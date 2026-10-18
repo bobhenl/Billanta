@@ -105,6 +105,7 @@ export class TenantsService {
       phone: blankToNull(dto.phone),
       website: blankToNull(dto.website),
       registryNote: blankToNull(dto.registry_note),
+      dataBoxId: blankToNull(dto.data_box_id),
       bankAccountNumber: blankToNull(dto.bank_account_number),
       bankAccountBankCode: blankToNull(dto.bank_account_bank_code),
       bankAccountIban: blankToNull(dto.bank_account_iban),

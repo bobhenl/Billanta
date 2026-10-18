@@ -1815,7 +1815,9 @@
       "registrySearch": "Nájsť v registri",
       "registrySearchPlaceholder": "Názov firmy, meno živnostníka, IČO alebo mesto",
       "loadRegistry": "Načítať z registra",
-      "dicKeepHint": "DIČ nechajte vyplnené, aj keď nie ste platiteľ alebo ste identifikovaná osoba. Uvádza sa potom na dokladoch."
+      "dicKeepHint": "DIČ nechajte vyplnené, aj keď nie ste platiteľ alebo ste identifikovaná osoba. Uvádza sa potom na dokladoch.",
+      "dataBoxId": "ID dátovej schránky",
+      "dataBoxIdHint": "Sedem znakov, napr. ab12cd3. Nie je tajné. Predvyplní sa do ročného prehľadu pre ČSSZ."
     },
     "team": {
       "title": "Tím",

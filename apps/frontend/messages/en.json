@@ -1815,7 +1815,9 @@
       "registrySearch": "Find in the register",
       "registrySearchPlaceholder": "Company name, sole trader, company ID or city",
       "loadRegistry": "Load from register",
-      "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents."
+      "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents.",
+      "dataBoxId": "Data box ID",
+      "dataBoxIdHint": "Seven characters, e.g. ab12cd3. Not a secret. Prefilled into the yearly overview for ČSSZ."
     },
     "team": {
       "title": "Team",

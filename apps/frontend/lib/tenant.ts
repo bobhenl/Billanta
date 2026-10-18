@@ -36,6 +36,8 @@ export interface TenantSettings {
   phone: string | null;
   website: string | null;
   registryNote: string | null;
+  /** ID datové schránky, lowercase; prefills the yearly přehled for ČSSZ. */
+  dataBoxId?: string | null;
   bankAccountNumber: string | null;
   bankAccountBankCode: string | null;
   bankAccountIban: string | null;

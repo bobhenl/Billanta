@@ -1815,7 +1815,9 @@
       "registrySearch": "Najít v registru",
       "registrySearchPlaceholder": "Název firmy, jméno OSVČ, IČO nebo město",
       "loadRegistry": "Načíst z registru",
-      "dicKeepHint": "DIČ nechte vyplněné i jako neplátce nebo identifikovaná osoba. Na dokladech se pak uvádí."
+      "dicKeepHint": "DIČ nechte vyplněné i jako neplátce nebo identifikovaná osoba. Na dokladech se pak uvádí.",
+      "dataBoxId": "ID datové schránky",
+      "dataBoxIdHint": "Sedm znaků, např. ab12cd3. Není tajné. Předvyplní se do ročního přehledu pro ČSSZ."
     },
     "team": {
       "title": "Tým",
