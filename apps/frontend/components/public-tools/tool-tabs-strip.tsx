@@ -34,22 +34,24 @@ export function ToolTabsStrip({ storageKey, label, className, children }: { stor
       else if (tab.right > box.right) el.scrollLeft += tab.right - box.right + pad;
     }
 
-    let frame = 0;
+    // Written straight away rather than per animation frame: a click
+    // unmounts the strip right after the last scroll, and a hidden tab runs
+    // no frames at all. One short string per scroll event is cheap.
     const save = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        try {
-          sessionStorage.setItem(key, String(Math.round(el.scrollLeft)));
-        } catch {
-          // Not stored; the active tab is still scrolled into view next time.
-        }
-      });
+      try {
+        sessionStorage.setItem(key, String(Math.round(el.scrollLeft)));
+      } catch {
+        // Not stored; the active tab is still scrolled into view next time.
+      }
     };
     save();
     el.addEventListener('scroll', save, { passive: true });
+    // Also on the click itself: scroll events are dispatched with frames, so
+    // the very last one can still be pending when the tab is clicked.
+    el.addEventListener('click', save, true);
     return () => {
-      cancelAnimationFrame(frame);
       el.removeEventListener('scroll', save);
+      el.removeEventListener('click', save, true);
     };
   }, [storageKey]);
 
