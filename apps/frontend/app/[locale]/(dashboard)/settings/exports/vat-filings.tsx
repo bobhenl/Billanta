@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Download, Landmark, Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
+import { Link } from '@/i18n/navigation';
 import { inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
@@ -112,6 +114,22 @@ export function VatFilings() {
         ))}
       </div>
       <p className="mt-4 text-xs text-muted-foreground">{t('disclaimer')}</p>
+      {/* Same constants the XML export (verzePis) and the public guide use. */}
+      <p className="mt-2 text-xs text-muted-foreground">
+        {t('formVersions', {
+          dp3: VAT_FORM_VERSIONS.DPHDP3,
+          kh1: VAT_FORM_VERSIONS.DPHKH1,
+          shv: VAT_FORM_VERSIONS.DPHSHV,
+          date: new Date(`${VAT_INFO_CHECKED}T12:00:00Z`).toLocaleDateString(locale, { dateStyle: 'long', timeZone: 'Europe/Prague' })
+        })}{' '}
+        <a href={VAT_OFFICIAL_URL} target="_blank" rel="noopener" className="font-semibold text-primary hover:underline">
+          {t('officialLink')}
+        </a>
+        {' · '}
+        <Link href="/guides/vat-return-control-statement" locale={locale === 'en' ? 'en' : 'cs'} className="font-semibold text-primary hover:underline">
+          {t('guideLink')}
+        </Link>
+      </p>
     </section>
   );
 }

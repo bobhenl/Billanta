@@ -14,7 +14,8 @@ pnpm --filter @faktur/frontend lint
 
 ```
 app/[locale]/(marketing)/   public site: home, features, pricing, create-invoice (guest invoice),
-                            for-accountants, partners, compare, invoicing (local SEO), search, legal, about
+                            for-accountants, partners, compare, invoicing (local SEO), search, legal, about,
+                            calculators, guides (registry in lib/public-tools.ts)
 app/[locale]/(auth)/        login, signup, forgot/reset password
 app/[locale]/(dashboard)/   the app (invoices, contacts, expenses, bank, reports, settings, …)
 app/[locale]/{c,d,i,p}/     public token/slug pages (client portal, documents, invoice link, profile)

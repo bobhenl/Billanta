@@ -6,6 +6,7 @@ import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { auth } from '@/auth';
 import { fetchMyAccess, fetchTenant, hiddenSections, vatStatusOf, type TaxAdvances } from '@/lib/tenant';
 import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
+import { normalizeTaxAdvances } from '@faktur/cz-compliance';
 import type { TimeSummary } from '@/lib/time-ui';
 import type { Usage } from '@/lib/usage-defaults';
 import { DashboardView } from './dashboard-view';
@@ -23,7 +24,7 @@ export default async function DashboardHomePage() {
   let summary: DashboardSummary;
   let config: DashboardConfig | null;
   let profile: TaxProfile | undefined;
-  let advances: TaxAdvances = {};
+  let advances: TaxAdvances = [];
   let country = 'CZ';
   let time: TimeSummary | null = null;
   let stats: PeriodStats | null = null;
@@ -41,7 +42,7 @@ export default async function DashboardHomePage() {
     stats = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}`).catch(() => null);
     country = tenant?.addressCountry ?? 'CZ';
     profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName) };
-    advances = tenant?.taxAdvances ?? {};
+    advances = normalizeTaxAdvances(tenant?.taxAdvances);
     if (!hiddenSections(access).includes('time')) {
       time = await apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null);
     }

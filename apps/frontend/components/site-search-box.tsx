@@ -1,14 +1,12 @@
 'use client';
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { CircleHelp, FileText, MapPin, Search, Sparkles, type LucideIcon } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import type { SearchHit, SearchKind } from '@/lib/site-search';
+import { fetchSiteHits, groupHits, KIND_ICON } from '@/components/site-search-kinds';
+import type { SearchHit } from '@/lib/site-search';
 import { cn } from '@/lib/utils';
-
-const KIND_ORDER: SearchKind[] = ['feature', 'faq', 'page', 'city'];
-const KIND_ICON: Record<SearchKind, LucideIcon> = { feature: Sparkles, faq: CircleHelp, page: FileText, city: MapPin };
 
 /**
  * The /search box with instant results, styled after the in-app command
@@ -34,27 +32,14 @@ export function SiteSearchBox({ defaultValue }: { defaultValue: string }) {
       setHits([]);
       return;
     }
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => {
-      fetch(`/api/public/site-search?locale=${encodeURIComponent(locale)}&q=${encodeURIComponent(q)}`, { signal: ctrl.signal })
-        .then((r) => (r.ok ? r.json() : { hits: [] }))
-        .then((data: { hits?: SearchHit[] }) => {
-          setHits(data.hits ?? []);
-          setActive(-1);
-        })
-        .catch(() => {});
-    }, 150);
-    return () => {
-      clearTimeout(timer);
-      ctrl.abort();
-    };
+    return fetchSiteHits(locale, q, (found) => {
+      setHits(found);
+      setActive(-1);
+    });
   }, [value, locale]);
 
   // Grouped for display; `flat` keeps the keyboard order identical to it.
-  const groups = useMemo(
-    () => KIND_ORDER.map((kind) => ({ kind, items: hits.filter((h) => h.kind === kind) })).filter((g) => g.items.length > 0),
-    [hits]
-  );
+  const groups = useMemo(() => groupHits(hits), [hits]);
   const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
   const showList = open && flat.length > 0;
 

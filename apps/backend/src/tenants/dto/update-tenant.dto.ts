@@ -1,7 +1,7 @@
 import { paymentMethodsSchema } from "../payment-methods";
 import { publicProfileSchema } from "../public-profile";
 import { templateVarsSchema } from "../template-vars";
-import { VAT_STATUSES } from "@faktur/cz-compliance";
+import { MONTH_KEY_PATTERN, TAX_ADVANCE_MAX, VAT_STATUSES } from "@faktur/cz-compliance";
 import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { emailPrefsSchema } from "../email-prefs";
@@ -9,6 +9,34 @@ import { invoiceFormPrefsSchema } from "../invoice-form-prefs";
 import { enabledModulesSchema } from "../modules";
 
 const text = (max: number) => z.string().trim().max(max).nullish();
+
+const advanceAmount = z.number().nonnegative().max(TAX_ADVANCE_MAX).nullish();
+const yearInRange = (m: string) => Number(m.slice(0, 4)) >= 2000 && Number(m.slice(0, 4)) <= 2100;
+
+/**
+ * OSVČ monthly advances with history: each entry applies from its month
+ * ("YYYY-MM") on; a missing or null kind keeps the earlier amount, 0 is a real
+ * amount. The whole list is replaced on save; months must be unique.
+ */
+export const taxAdvancesSchema = z
+  .array(
+    z
+      .object({
+        from: z.string().regex(MONTH_KEY_PATTERN).refine(yearInRange, "year_out_of_range"),
+        social: advanceAmount,
+        health: advanceAmount,
+        flat_tax: advanceAmount,
+      })
+      .strict(),
+  )
+  .max(240)
+  .superRefine((list, ctx) => {
+    const seen = new Set<string>();
+    list.forEach((entry, i) => {
+      if (seen.has(entry.from)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [i, "from"], message: "duplicate_from" });
+      seen.add(entry.from);
+    });
+  });
 
 /** Settings → Company: the issuer block printed on every document, bank details and invoice defaults. */
 export const updateTenantSchema = z
@@ -26,15 +54,8 @@ export const updateTenantSchema = z
     /** Legacy: true = payer, false = non_payer (an identified person stays identified). `vat_status` wins when both are sent. */
     dic_vat_payer: z.boolean(),
     vat_status: z.enum(VAT_STATUSES),
-    /** OSVČ monthly advances shown on the dashboard; a missing or null key = not set. */
-    tax_advances: z
-      .object({
-        social: z.number().nonnegative().max(10_000_000).nullable(),
-        health: z.number().nonnegative().max(10_000_000).nullable(),
-        flat_tax: z.number().nonnegative().max(10_000_000).nullable(),
-      })
-      .partial()
-      .strict(),
+    /** OSVČ monthly advances by period, shown on the dashboard deadlines (see taxAdvancesSchema). */
+    tax_advances: taxAdvancesSchema,
     address_street: text(200),
     address_city: text(100),
     address_postal_code: text(10),

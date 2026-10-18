@@ -4,6 +4,7 @@ import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { InstallAppButton } from '@/components/install-app-button';
 import { fetchPartners, partnerHref } from '@/lib/partners';
+import { CALCULATORS, GUIDES, isPublishedIn } from '@/lib/public-tools';
 
 /**
  * Public-site footer: a compact link grid that doubles as secondary
@@ -18,6 +19,7 @@ export async function MarketingFooter() {
   const t = await getTranslations('marketing.footer');
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
+  const tTools = await getTranslations('tools');
   const [locale, partners] = await Promise.all([getLocale(), fetchPartners({ footer: true })]);
 
   const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
@@ -30,6 +32,22 @@ export async function MarketingFooter() {
         { href: '/pricing', label: t('product.pricing') },
         { href: '/compare', label: t('product.compare') },
         { href: '/#faq', label: t('product.faq') }
+      ]
+    },
+    {
+      // Same entries as the header's Resources dropdown, spelled out; only
+      // what is published in this language (lib/public-tools.ts).
+      title: tTools('menu.resources'),
+      links: [
+        { href: '/calculators', label: tTools('menu.calculators') },
+        ...CALCULATORS.filter((c) => isPublishedIn(c, locale)).map((c) => ({
+          href: `/calculators/${c.slug}`,
+          label: tTools(`calculators.items.${c.key}.name`)
+        })),
+        ...GUIDES.filter((g) => isPublishedIn(g, locale)).map((g) => ({
+          href: `/guides/${g.slug}`,
+          label: tTools(`guides.items.${g.key}.name`)
+        }))
       ]
     },
     {
@@ -72,7 +90,7 @@ export async function MarketingFooter() {
   return (
     <footer className="border-t border-border bg-card/40">
       <div className="container py-10">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-[1.5fr_repeat(5,1fr)]">
           <div className="col-span-2 max-w-xs sm:col-span-3 lg:col-span-1">
             <p className="flex items-center gap-2 text-base font-bold tracking-tight">
               <BrandMark />

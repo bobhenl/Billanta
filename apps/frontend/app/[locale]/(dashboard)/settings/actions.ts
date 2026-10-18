@@ -20,7 +20,9 @@ async function run<T>(path: string, method: string, body?: unknown): Promise<Set
 }
 
 /** Settings → Company. Keys are the backend's snake_case `UpdateTenantDto` fields. */
-export async function updateCompany(patch: Record<string, string | number | boolean | null | Record<string, number | null>>) {
+export async function updateCompany(
+  patch: Record<string, string | number | boolean | null | Record<string, number | null> | Array<Record<string, string | number | null>>>
+) {
   return run<unknown>('/api/v1/tenants/me', 'PATCH', patch);
 }
 
@@ -52,6 +54,8 @@ export async function updateInvoiceFormPrefs(
   default_contact_id: string | null;
   default_items: { description: string; quantity: number; unit: string | null; unit_price: number; vat_rate: number | null }[];
   default_note_above: string | null;
+  exchange_rate_mode: 'cnb_daily' | 'annual' | 'none';
+  annual_rates: { year: number; currency: string; rate: number }[];
   },
   company?: {
     default_locale: 'cs' | 'sk' | 'en';

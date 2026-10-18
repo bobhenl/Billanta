@@ -394,13 +394,13 @@
       "sourceLocal": "Kalendář Finanční správy se teď nepodařilo načíst, termíny jsou dopočítané podle zákona.",
       "prepareXml": "Připravit XML",
       "amountsTitle": "Očekávané částky",
-      "amountsHint": "Vaše měsíční zálohy (najdete je v přehledu pro ČSSZ, pojišťovnu nebo v rozhodnutí o paušální dani). Ukážou se u termínu, aby bylo vidět, kolik si nachystat. Prázdné pole = bez částky.",
+      "amountsHint": "Částka, kterou každý měsíc odvádíte jako zaměstnavatel. Ukáže se u termínu, ať víte, kolik si nachystat. Prázdné pole = bez částky.",
       "bookExpense": "Zapsat jako výdaj",
       "fillAmount": "Doplnit výši",
       "onlyIfForeignPurchase": "Jen pokud jste v měsíci nakoupili služby ze zahraničí (např. reklamy).",
       "onlyIfEuSales": "Jen pokud jste v měsíci fakturovali službu firmě v jiném státě EU.",
-      "minimum": "Zákonné minimum od {from}: {amount}",
-      "useMinimum": "Použít"
+      "advancesInSettings": "Výši záloh na pojištění a paušální daň nastavíte podle období ve Fakturačních údajích.",
+      "editAdvances": "Upravit zálohy"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
@@ -439,6 +439,8 @@
     "hover": {
       "fx": "≈ {amount} (kurz ČNB {rate} ze dne {date})",
       "fxNoDate": "≈ {amount} (kurz ČNB {rate})",
+      "fxAnnual": "≈ {amount} (jednotný kurz {rate} pro rok {year})",
+      "fxManual": "≈ {amount} (kurz {rate})",
       "breakdown": "Základ {base} + DPH {vat}",
       "loading": "Načítám…",
       "error": "Souhrn se nepodařilo načíst.",
@@ -1662,11 +1664,29 @@
       },
       "advances": {
         "title": "Měsíční zálohy",
-        "hint": "Ukážou se na přehledu u daňových termínů, ať víte, kolik si nachystat. Prázdné pole = bez částky.",
+        "hint": "Každá výše platí od zvoleného měsíce, dokud ji nenahradí novější řádek. Starší řádky nechte: přehled, kalendář i roční odhad podle nich počítají minulé měsíce. Prázdné pole = platí částka z předchozího řádku, 0 = nic neplatíte.",
         "social": "Sociální pojištění",
         "health": "Zdravotní pojištění",
         "flat_tax": "Paušální daň nebo záloha na daň",
-        "placeholder": "např. 5 720"
+        "short": {
+          "social": "sociální",
+          "health": "zdravotní",
+          "flat_tax": "paušál"
+        },
+        "from": "Platí od",
+        "current": "Platí teď",
+        "inherit": "beze změny",
+        "add": "Nová výše od…",
+        "remove": "Smazat řádek od {month}",
+        "empty": "Zatím žádné zálohy. Přidejte výši a měsíc, od kterého platí.",
+        "duplicate": "Tento měsíc už má jiný řádek.",
+        "minimum": "Zákonné minimum od {from}: {amounts}.",
+        "useMinimum": "Použít",
+        "errors": {
+          "month": "U každého řádku vyplňte měsíc, od kterého platí.",
+          "duplicate": "Dva řádky mají stejný měsíc. Spojte je do jednoho.",
+          "amount": "Zálohy musí být čísla od 0 do 10 000 000."
+        }
       },
       "street": "Ulice a číslo",
       "city": "Město",
@@ -1876,7 +1896,10 @@
         "missingDic": "Doplňte DIČ firmy v Nastavení – bez něj přiznání nelze vytvořit.",
         "rateUnavailable": "Kurz ČNB se nepodařilo načíst. Zkuste to za chvíli.",
         "failed": "Soubor se nepodařilo vytvořit.",
-        "disclaimer": "Soubor před podáním zkontrolujte v EPO a doplňte finanční úřad. Plnění do EU se vykazují jako služby (kód 3); doklady bez DIČ dodavatele spadají do B.3."
+        "disclaimer": "Soubor před podáním zkontrolujte v EPO a doplňte finanční úřad. Plnění do EU se vykazují jako služby (kód 3); doklady bez DIČ dodavatele spadají do B.3.",
+        "formVersions": "Export vytváří XML ve verzích DPHDP3 {dp3}, DPHKH1 {kh1} a DPHSHV {shv}. Pravidla a verze formulářů jsme naposledy ověřili {date}.",
+        "officialLink": "Aktuální informace na webu Finanční správy",
+        "guideLink": "Návod k podání"
       },
       "annual": {
         "title": "Roční odhad daně a pojištění (OSVČ)",
@@ -1893,7 +1916,7 @@
         },
         "paidSocial": "Zaplacené zálohy – sociální",
         "paidHealth": "Zaplacené zálohy – zdravotní",
-        "paidHint": "Nepovinné. Když vyplníte, ukáže se doplatek nebo přeplatek.",
+        "paidHint": "Předvyplní se z měsíčních záloh ve Fakturačních údajích (každý měsíc roku s výší, která tehdy platila). Částku můžete přepsat, ukáže se doplatek nebo přeplatek.",
         "income": "Příjmy",
         "incomeHint": "Součet faktur uhrazených v daném roce (počet: {invoices}), dobropisy se odečítají.",
         "incomeHintVat": "Součet faktur uhrazených v daném roce bez DPH (počet: {invoices}), dobropisy se odečítají.",
@@ -1916,7 +1939,8 @@
         "downloadCsv": "Stáhnout CSV",
         "epoLink": "Formuláře EPO (Finanční správa)",
         "failed": "Odhad se nepodařilo spočítat.",
-        "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu."
+        "disclaimer": "Orientační odhad pro hlavní činnost po celý rok. Nenahrazuje daňové přiznání ani přehledy pro ČSSZ a zdravotní pojišťovnu.",
+        "paidFromSettings": "Předvyplněno z měsíčních záloh ve Fakturačních údajích. Můžete přepsat."
       },
       "epo": {
         "title": "Jak podat přiznání, kontrolní a souhrnné hlášení",
@@ -1989,6 +2013,29 @@
       "readOnly": "Nastavení může měnit jen vlastník nebo administrátor.",
       "fieldsTitle": "Zobrazená pole",
       "fieldsHint": "Zaškrtnutá pole jsou ve formuláři vždy vidět. Pole, které už má na dokladu hodnotu, se zobrazí vždy.",
+      "rate": {
+        "title": "Kurz u faktur v cizí měně",
+        "hint": "Jak se částka v cizí měně přepočítá na koruny. Kurz se uloží k dokladu při vystavení a potom se už nemění.",
+        "modes": {
+          "cnb_daily": "Denní kurz ČNB",
+          "annual": "Jednotný kurz na rok",
+          "none": "Přepočet na CZK netisknout"
+        },
+        "cnbDailyHint": "Kurz ČNB ze dne uskutečnění plnění (DUZP). Když ČNB ten den kurz nevyhlásila, použije se poslední předchozí.",
+        "annualHint": "Jeden kurz pro celý rok podle § 38 zákona o DPH. Zadáte ho níže pro každý rok a měnu. Pro rok bez zadaného kurzu se použije denní kurz ČNB.",
+        "noneHint": "Na dokladu nebude přepočet na koruny. Kurz ČNB se i tak uloží pro vaše přehledy.",
+        "noneIdentified": "Platí jen pro doklady bez DPH. Když doklad DPH obsahuje, přepočet se vytiskne.",
+        "nonePayer": "Plátce DPH musí mít na dokladu přepočet na koruny, proto tuhle volbu použít nejde. Faktury se vystaví s kurzem ČNB.",
+        "annualTitle": "Jednotné kurzy",
+        "annualEmpty": "Zatím žádný kurz. Přidejte rok a měnu.",
+        "year": "Rok",
+        "currency": "Měna",
+        "rate": "Kurz",
+        "perUnit": "CZK za 1 {currency}",
+        "remove": "Odebrat kurz",
+        "duplicate": "Každý rok a měna smí být v seznamu jen jednou.",
+        "add": "Přidat kurz"
+      },
       "groups": {
         "items": "Položky",
         "dates": "Data a platba",
@@ -3427,6 +3474,7 @@
       "setup": "Nastavit AI"
     },
     "customer": {
+      "draftWithout": "Odběratele můžete doplnit později. Koncept jde uložit i bez něj a poslat mu odkaz, ať si údaje vyplní sám.",
       "title": "Odběratel",
       "hint": "Hledejte podle názvu nebo IČO. Našeptávač ukáže vaše kontakty a firmy z registru ARES; firma z ARES se při uložení faktury přidá do kontaktů i s adresou.",
       "placeholder": "Název firmy nebo IČO",
@@ -3483,7 +3531,7 @@
     "save": "Uložit koncept",
     "saveNote": "Koncept dostane číslo až při vystavení.",
     "errors": {
-      "customer_required": "Vyberte odběratele.",
+      "customer_required": "Bez odběratele jde uložit jen koncept. Před vystavením ho vyberte.",
       "items_required": "Přidejte alespoň jednu položku.",
       "save_failed": "Fakturu se nepodařilo uložit. Zkuste to znovu.",
       "not_allowed": "Na tuto akci nemáte oprávnění nebo neaktivní předplatné.",
@@ -3544,6 +3592,7 @@
       "more": "Konstantní / specifický symbol, objednávka",
       "exchangeRate": "Kurz CZK/{currency}",
       "exchangeRateAuto": "Kurz ČNB při vystavení",
+      "exchangeRateAnnual": "Jednotný kurz {rate} (rok {year})",
       "exchangeRateLoad": "Načíst z ČNB",
       "exchangeRateFailed": "Kurz ČNB se nepodařilo načíst.",
       "inCzk": "≈ {amount} celkem",
@@ -3680,7 +3729,7 @@
     "vatAt": "DPH {rate} %",
     "reverseChargeNote": "Daň odvede zákazník (přenesená daňová povinnost).",
     "customer": "Odběratel",
-    "noCustomer": "Odběratel zatím není vybrán.",
+    "noCustomer": "Odběratel zatím nevyplněn",
     "sellerSnapshotNote": "Údaje dodavatele podle stavu ke dni vystavení",
     "buyerSnapshotNote": "Údaje odběratele podle stavu ke dni vystavení",
     "details": "Údaje dokladu",
@@ -3824,7 +3873,12 @@
       "partial": "Částečná úhrada zaznamenána.",
       "rotated": "Nový odkaz vydán, starý už nefunguje"
     },
-    "fxLine": "Kurz ČNB {rate} CZK/{currency} · DPH {vat} · celkem {total}",
+    "fxLine": "{label} {rate} CZK/{currency} · DPH {vat} · celkem {total}",
+    "fxLabel": "Kurz ČNB",
+    "fxLabelOn": "Kurz ČNB k {date}",
+    "fxLabelAnnual": "Jednotný kurz pro rok {year}",
+    "fxLabelManual": "Kurz",
+    "fxHidden": "Přepočet na CZK se na dokladu netiskne (kurz {rate} CZK/{currency} jen pro přehledy).",
     "views": {
       "title": "Sdílený odkaz",
       "count": "Zobrazeno",
@@ -5746,7 +5800,9 @@
       "page": "Stránka",
       "feature": "Funkce",
       "faq": "Časté dotazy",
-      "city": "Město / obec"
+      "city": "Město / obec",
+      "calculator": "Kalkulačky",
+      "guide": "Návody"
     },
     "suggest": {
       "isdoc": "ISDOC",
@@ -6164,6 +6220,300 @@
     "notStated": "– = v ceníku neuvádí (nemusí znamenat, že funkce chybí)",
     "verified": "Ověřeno v ceníku {date}",
     "sourcesTitle": "Zdroje"
+  },
+  "tools": {
+    "menu": {
+      "resources": "Zdroje",
+      "calculators": "Kalkulačky",
+      "calculatorsHint": "Daň, pojištění, DPH a kurzy zdarma",
+      "guides": "Návody",
+      "guidesHint": "Jak podat DPH a hlášení",
+      "compare": "Srovnání s konkurencí"
+    },
+    "search": {
+      "showAll": "Zobrazit všechny výsledky pro „{query}“",
+      "pages": "Stránky",
+      "close": "Zavřít hledání",
+      "noResults": "Rychlé návrhy nic nenašly. Zkuste jiné slovo nebo otevřete celé výsledky.",
+      "slashHint": "otevře hledání"
+    },
+    "common": {
+      "disclaimerTitle": "Orientační výpočet",
+      "disclaimer": "Výsledek je jen orientační a nenahrazuje účetní ani daňového poradce. Nepočítá s dalšími příjmy, odpočty, slevami na děti ani se zahájením nebo ukončením činnosti během roku. Než podle něj něco podáte nebo zaplatíte, ověřte si to u účetní nebo na webu Finanční správy a ČSSZ.",
+      "validFor": "Částky platí pro rok {year}.",
+      "ratesSince": "Sazby platí od {date}.",
+      "ctaTitle": "Fakturujete? Billanta to spočítá z vašich dokladů",
+      "ctaText": "V aplikaci uvidíte odhad daně a pojištění, minimální zálohy a podklady pro DPH rovnou z vystavených faktur a výdajů.",
+      "ctaButton": "Vyzkoušet zdarma",
+      "ctaNote": "Bez platební karty. Základní tarif je zdarma.",
+      "related": "Další kalkulačky",
+      "allCalculators": "Všechny kalkulačky",
+      "relatedGuides": "Návody",
+      "allGuides": "Všechny návody",
+      "howTitle": "Jak se to počítá",
+      "resultTitle": "Výsledek",
+      "perYear": "za rok",
+      "perMonth": "měsíčně",
+      "czOnlyTitle": "Tato stránka je o českých pravidlech",
+      "czOnlyText": "„{name}“ se týká českých předpisů. Na Slovensku platí jiné sazby, lhůty i formuláře, a proto slovenskou verzi nenabízíme.",
+      "czOnlyCs": "Otevřít českou verzi",
+      "czOnlySk": "Slovenská pravidla: Finančná správa SR",
+      "czTag": "česká pravidla",
+      "lastChecked": "Informace jsme naposledy ověřili {date}.",
+      "officialSource": "Závazné informace a formuláře najdete na webu Finanční správy",
+      "guideDisclaimer": "Návod shrnuje základní pravidla a nenahrazuje účetní ani daňového poradce. Zákon a formuláře se mění, proto si podrobnosti ověřte na webu Finanční správy.",
+      "updated": "Aktualizováno"
+    },
+    "calculators": {
+      "indexTitle": "Kalkulačky pro podnikatele",
+      "indexDescription": "Bezplatné kalkulačky pro OSVČ a firmy: daň a pojištění, paušální daň, DPH, minimální zálohy a kurzy ČNB. Bez registrace.",
+      "indexLead": "Rychlé orientační výpočty, které nepotřebují žádná vaše data. Čísla zadáte ručně a nic se neukládá.",
+      "items": {
+        "osvc": {
+          "name": "Daň a pojištění OSVČ",
+          "title": "Kalkulačka daně a pojištění OSVČ",
+          "description": "Spočítejte si orientačně daň z příjmů, sociální a zdravotní pojištění OSVČ a zálohy na další rok.",
+          "lead": "Zadejte příjmy a výdaje za rok. Kalkulačka spočítá daň z příjmů, sociální a zdravotní pojištění a měsíční zálohy, které vám vyjdou na další rok.",
+          "keywords": "daň z příjmů dpfo sociální zdravotní pojištění přehled čssz zálohy výdajový paušál osvč",
+          "how": [
+            "Zisk je příjem minus skutečné výdaje, nebo minus výdajový paušál (procento z příjmů, se stropem).",
+            "Daň z příjmů je 15 % ze zisku zaokrouhleného dolů na stovky a 23 % z části nad 36násobkem průměrné mzdy. Odečte se sleva na poplatníka.",
+            "Sociální pojištění je 29,2 % z 55 % zisku, nejméně z minimálního a nejvýše z maximálního vyměřovacího základu.",
+            "Zdravotní pojištění je 13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy za každý měsíc.",
+            "Zálohy na další rok vychází z letošního základu, nikdy ale nejsou nižší než minimální zálohy dalšího roku."
+          ],
+          "params": "Pro rok {year} počítáme s průměrnou mzdou {wage} Kč, slevou na poplatníka {credit} Kč a minimálním základem sociálního pojištění {share} % průměrné mzdy (hlavní činnost).",
+          "paramsShareChange": "Od {month}. {year} se minimum snižuje na {share} % (sociální záloha nejméně {advance} Kč).",
+          "fields": {
+            "year": "Rok",
+            "income": "Příjmy za rok (Kč)",
+            "expenseMode": "Výdaje",
+            "actual": "Skutečné výdaje",
+            "flat": "Výdajový paušál",
+            "expenses": "Výdaje za rok (Kč)",
+            "flatRate": "Druh činnosti",
+            "paidSocial": "Zaplacené zálohy na sociální (Kč, nepovinné)",
+            "paidHealth": "Zaplacené zálohy na zdravotní (Kč, nepovinné)"
+          },
+          "rates": {
+            "30": "30 % – pronájem obchodního majetku (max. {cap} Kč)",
+            "40": "40 % – svobodná povolání, autorské příjmy (max. {cap} Kč)",
+            "60": "60 % – ostatní živnosti (max. {cap} Kč)",
+            "80": "80 % – řemeslné živnosti, zemědělství (max. {cap} Kč)"
+          },
+          "result": {
+            "expenses": "Uplatněné výdaje",
+            "profit": "Zisk (základ daně)",
+            "tax": "Daň z příjmů po slevě",
+            "social": "Sociální pojištění",
+            "health": "Zdravotní pojištění",
+            "total": "Celkem daň a pojištění",
+            "nextSocial": "Záloha na sociální od dalšího roku",
+            "nextHealth": "Záloha na zdravotní od dalšího roku",
+            "toPay": "doplatek {amount}",
+            "overpaid": "přeplatek {amount}"
+          }
+        },
+        "flatTax": {
+          "name": "Paušální daň",
+          "title": "Kalkulačka paušální daně",
+          "description": "Vyplatí se vám paušální daň? Porovnejte první pásmo s běžnou daní a pojištěním při výdajovém paušálu.",
+          "lead": "Paušální daň nahrazuje jednou měsíční platbou daň z příjmů, sociální i zdravotní pojištění. Kalkulačka ukáže, jestli vám vychází první pásmo a kolik byste zaplatili v běžném režimu s výdajovým paušálem.",
+          "keywords": "paušální režim paušální daň pásmo osvč výdajový paušál",
+          "fields": {
+            "year": "Rok",
+            "income": "Očekávané příjmy za rok (Kč)",
+            "flatRate": "Převažující činnost"
+          },
+          "monthlyTitle": "Platba v 1. pásmu",
+          "monthlyFrom": "od {date}: {amount} měsíčně",
+          "yearTotal": "Paušální daň za rok",
+          "normalTotal": "Běžný režim s výdajovým paušálem",
+          "cheaper": "Paušální daň vychází o {amount} levněji.",
+          "dearer": "Běžný režim vychází o {amount} levněji.",
+          "notBand1": "S tímto příjmem a druhem činnosti 1. pásmo nevychází. Vyšší pásma tady nepočítáme, jejich výši najdete na webu Finanční správy.",
+          "noData": "Pro tento rok zatím nemáme výši paušální daně.",
+          "conditionsTitle": "Kdo může vstoupit do paušálního režimu",
+          "conditions": [
+            "Jste OSVČ a nejste plátce DPH (identifikovaná osoba být můžete).",
+            "Příjmy z podnikání nepřesáhnou 2 000 000 Kč za rok. Pro 1. pásmo platí do 1 000 000 Kč u jakékoli činnosti, do 1 500 000 Kč, když aspoň 75 % příjmů spadá pod 80% nebo 60% paušál, a do 2 000 000 Kč, když aspoň 75 % spadá pod 80% paušál.",
+            "Nemáte jiné příjmy kromě drobných výjimek (např. malé příjmy ze zaměstnání, úroky nebo nájem do limitu).",
+            "Nejste společníkem v. o. s. ani komplementářem k. s. a nejste v insolvenci.",
+            "Vstup do režimu oznámíte finančnímu úřadu do 10. ledna daného roku."
+          ],
+          "compareNote": "Běžný režim počítáme s výdajovým paušálem podle zvolené činnosti, bez dalších příjmů a odpočtů."
+        },
+        "vat": {
+          "name": "Kalkulačka DPH",
+          "title": "Kalkulačka DPH",
+          "description": "Přičtěte DPH k ceně bez daně nebo ji vypočítejte z ceny s DPH. České i slovenské sazby.",
+          "lead": "Zadejte částku a sazbu. Kalkulačka spočítá základ, DPH i cenu s daní, oběma směry.",
+          "keywords": "dph sazba 21 12 výpočet daně z ceny základ daně s dph bez dph",
+          "fields": {
+            "country": "Země",
+            "rate": "Sazba DPH",
+            "mode": "Zadávám",
+            "fromBase": "Cenu bez DPH",
+            "fromGross": "Cenu s DPH",
+            "amount": "Částka"
+          },
+          "result": {
+            "base": "Základ daně",
+            "vat": "DPH",
+            "gross": "Cena s DPH"
+          },
+          "how": [
+            "Z ceny bez DPH: DPH = základ × sazba / 100, zaokrouhleno na haléře.",
+            "Z ceny s DPH: základ = cena / (1 + sazba / 100), DPH je rozdíl. Od roku 2019 se už nepoužívá koeficient.",
+            "Na faktuře se DPH počítá za každou sazbu zvlášť. Zaokrouhlení celé faktury se řeší až na konci."
+          ],
+          "countries": {
+            "CZ": "Česko",
+            "SK": "Slovensko"
+          }
+        },
+        "minimums": {
+          "name": "Minimální zálohy OSVČ",
+          "title": "Minimální zálohy OSVČ na pojištění",
+          "description": "Kolik měsíčně nejméně zaplatí OSVČ na sociální a zdravotní pojištění v Česku a na Slovensku, a výše 1. pásma paušální daně.",
+          "lead": "Přehled minimálních měsíčních záloh pro OSVČ s hlavní činností. Pokud v daném roce začínáte nebo vám vyšel nízký zisk, platíte právě tyto částky.",
+          "keywords": "minimální záloha sociální zdravotní pojištění osvč paušální daň sociálna poisťovňa",
+          "cz": "Česko (Kč měsíčně)",
+          "sk": "Slovensko (€ měsíčně)",
+          "period": "Období",
+          "from": "od {date}",
+          "kinds": {
+            "health": "Zdravotní pojištění",
+            "social": "Sociální pojištění",
+            "flat_tax": "Paušální daň, 1. pásmo"
+          },
+          "notesTitle": "Kdy se platí",
+          "notesCz": [
+            "Sociální pojištění (ČSSZ) se platí za každý měsíc nejpozději jeho posledním dnem.",
+            "Zdravotní pojištění se platí do 8. dne následujícího měsíce.",
+            "Paušální daň se platí do 20. dne daného měsíce."
+          ],
+          "notesSk": [
+            "Na Slovensku se odvody platí do 8. dne následujícího měsíce, sociální poistné Sociálnej poisťovni a zdravotné poistné své zdravotní pojišťovně."
+          ],
+          "none": "Pro tento rok zatím nemáme údaje."
+        },
+        "fx": {
+          "name": "Převodník kurzů ČNB",
+          "title": "Kurzy ČNB a převodník měn",
+          "description": "Aktuální kurzy devizového trhu ČNB a převod mezi korunou a cizí měnou. Pro přepočet faktur v cizí měně.",
+          "lead": "ČNB vyhlašuje kurzy každý pracovní den po 14:30. Tyto kurzy se používají i pro přepočet faktur v cizí měně pro účely DPH.",
+          "keywords": "kurz čnb kurzovní lístek eur usd přepočet měny faktura v cizí měně",
+          "listDate": "Kurzovní lístek ČNB ze dne {date}",
+          "unavailable": "Kurzy ČNB se teď nepodařilo načíst. Zkuste to později, nebo je najdete přímo na webu ČNB.",
+          "fields": {
+            "amount": "Částka",
+            "currency": "Měna",
+            "direction": "Směr",
+            "toCzk": "Cizí měna → Kč",
+            "fromCzk": "Kč → cizí měna"
+          },
+          "rate": "Kurz: 1 {code} = {rate} Kč",
+          "tableTitle": "Kurzovní lístek",
+          "code": "Kód",
+          "perUnit": "Kč za 1 jednotku",
+          "how": [
+            "Pro DPH se faktura v cizí měně přepočte kurzem ČNB platným ke dni, kdy vznikla povinnost přiznat daň (obvykle DUZP).",
+            "Kurz vyhlášený v pracovní den po 14:30 platí do vyhlášení dalšího. O víkendu a ve svátek tedy platí poslední vyhlášený.",
+            "Pro účetnictví můžete místo denního kurzu používat i pevný kurz, pokud to máte ve vnitřní směrnici."
+          ],
+          "source": "Zdroj: Česká národní banka"
+        }
+      }
+    },
+    "guides": {
+      "indexTitle": "Návody k DPH",
+      "indexDescription": "Srozumitelné návody pro plátce DPH a identifikované osoby: přiznání k DPH, kontrolní a souhrnné hlášení, reverse charge.",
+      "indexLead": "Co a kdy podat finančnímu úřadu, krok za krokem. Platí pro českou DPH.",
+      "items": {
+        "vatFiling": {
+          "name": "Přiznání k DPH, kontrolní a souhrnné hlášení",
+          "title": "Jak podat přiznání k DPH, kontrolní a souhrnné hlášení",
+          "description": "Kdo podává přiznání k DPH, kontrolní a souhrnné hlášení, v jakých lhůtách a jak je podat elektronicky přes EPO.",
+          "lead": "Plátce DPH podává finančnímu úřadu pravidelně až tři výkazy. Tady je přehled, kdo je podává, dokdy a jak na to.",
+          "keywords": "přiznání k dph kontrolní hlášení souhrnné hlášení dphdp3 dphkh1 dphshv epo moje daně lhůta 25",
+          "deadlinesTitle": "Nejbližší termíny",
+          "monthly": "Měsíční plátci: za {period}",
+          "quarterly": "Čtvrtletní plátci: za {quarter}. čtvrtletí {year}",
+          "inDays": "{days, plural, =0 {dnes} one {za # den} few {za # dny} other {za # dní}}",
+          "deadlinesNote": "Když 25. připadne na víkend nebo svátek, posouvá se lhůta na nejbližší pracovní den.",
+          "sections": [
+            {
+              "title": "Přiznání k DPH (DPHDP3)",
+              "body": "Podává každý plátce DPH za každé zdaňovací období, i když nic nefakturoval. Zdaňovací období je měsíc, nebo čtvrtletí, pokud obrat za předchozí rok nepřesáhl 10 milionů Kč, nejste nespolehlivý plátce ani člen skupiny a čtvrtletí si zvolíte. Přiznání se podává a daň se platí do 25. dne po skončení období."
+            },
+            {
+              "title": "Kontrolní hlášení (DPHKH1)",
+              "body": "Podávají ho plátci, kteří v období uskutečnili nebo přijali tuzemská plnění. Právnické osoby (např. s. r. o.) ho podávají vždy měsíčně do 25. dne následujícího měsíce, fyzické osoby ve stejné lhůtě jako přiznání, tedy i čtvrtletně. Doklady nad 10 000 Kč včetně DPH se uvádějí jednotlivě (oddíly A.4 a B.2), menší souhrnně. Kontrolní hlášení jde podat jen elektronicky a za pozdní podání hrozí pevné pokuty od 1 000 Kč."
+            },
+            {
+              "title": "Souhrnné hlášení (DPHSHV)",
+              "body": "Podává se za měsíc, ve kterém jste dodali zboží nebo poskytli službu plátci v jiném státě EU v režimu přenesení daňové povinnosti. Lhůta je 25 dnů po skončení měsíce. Pokud poskytujete jen služby, můžete ho podávat i čtvrtletně. Hlášení podává i identifikovaná osoba, která poskytla službu do EU."
+            },
+            {
+              "title": "Jak podat elektronicky",
+              "body": "Přiznání i hlášení se podávají elektronicky ve formátu XML. Nejčastěji soubor nahrajete na portál Moje daně (aplikace EPO), zkontrolujete a odešlete přes datovou schránku nebo s uznávaným elektronickým podpisem. Daň zaplaťte na účet svého finančního úřadu s variabilním symbolem, kterým je vaše DIČ bez předpony CZ."
+            }
+          ],
+          "stepsTitle": "Postup krok za krokem",
+          "steps": [
+            "Zkontrolujte, že máte za období všechny vydané i přijaté faktury a že sedí DUZP.",
+            "Vytvořte XML soubory. V Billantě je najdete v Nastavení → Exporty → DPH.",
+            "Na portálu Moje daně otevřete EPO, zvolte „Načtení souboru“ a nahrajte XML.",
+            "Doplňte finanční úřad a údaje, které export nevyplní, a spusťte kontrolu.",
+            "Odešlete podání datovou schránkou nebo s elektronickým podpisem a uložte si potvrzení.",
+            "Zaplaťte daň do 25. dne po skončení období."
+          ],
+          "beforeTitle": "Než podáte",
+          "before": [
+            "Faktury v cizí měně přepočtěte kurzem ČNB ke dni vzniku povinnosti přiznat daň.",
+            "U přijatých faktur do kontrolního hlášení potřebujete DIČ dodavatele a evidenční číslo dokladu.",
+            "Opravné daňové doklady (dobropisy) patří do období, kdy jste je vystavili nebo obdrželi.",
+            "Služby ze zahraničí v režimu reverse charge přiznáte na výstupu a zároveň si je můžete odečíst."
+          ],
+          "formsLine": "Popsané formuláře: DPHDP3 verze {dp3}, DPHKH1 verze {kh1}, DPHSHV verze {shv}."
+        },
+        "identified": {
+          "name": "Identifikovaná osoba k DPH",
+          "title": "Identifikovaná osoba: kdy se jí stanete a co musíte podávat",
+          "description": "Neplátce DPH, který kupuje reklamu nebo služby ze zahraničí nebo prodává služby do EU, se stává identifikovanou osobou. Co to znamená a co podávat.",
+          "lead": "I když nejste plátce DPH, můžete se stát identifikovanou osobou. Typicky stačí zaplatit reklamu na Facebooku nebo Googlu. Pak musíte z nákupu přiznat a zaplatit českou DPH.",
+          "keywords": "identifikovaná osoba dph reverse charge přenesení daňové povinnosti reklama facebook google služby ze zahraničí registrace 15 dnů",
+          "sections": [
+            {
+              "title": "Kdo je identifikovaná osoba",
+              "body": "Je to podnikatel nebo firma, která není plátcem DPH, ale kvůli obchodům se zahraničím se musí k DPH registrovat. Identifikovanou osobou se stanete hlavně když:"
+            },
+            {
+              "title": "Nákup reklamy a služeb ze zahraničí",
+              "body": "Google Ads, reklama na Facebooku a Instagramu, předplatné softwaru nebo služby od zahraničního dodavatele: místo plnění je v Česku, protože jste podnikatel. Dodavatel vám vystaví fakturu bez DPH a daň (obvykle 21 %) přiznáte a zaplatíte vy. Tomu se říká přenesení daňové povinnosti neboli reverse charge. Jako identifikovaná osoba si tuto daň nemůžete odečíst, takže je to pro vás skutečný náklad."
+            },
+            {
+              "title": "Co a kdy podávat",
+              "body": "Přiznání k DPH podáváte jen za měsíce, ve kterých vám povinnost přiznat daň vznikla, do 25. dne následujícího měsíce, a ve stejné lhůtě daň zaplatíte. Pokud jste poskytli službu podnikateli v jiném státě EU, podáte za ten měsíc i souhrnné hlášení. Kontrolní hlášení identifikovaná osoba nepodává. Vše se podává elektronicky."
+            },
+            {
+              "title": "Kdy se z vás stane plátce",
+              "body": "Identifikovaná osoba zůstává neplátcem. Plátcem se stanete, až obrat za kalendářní rok přesáhne 2 000 000 Kč, a to od 1. ledna dalšího roku. Pokud během roku přesáhne 2 536 500 Kč, stáváte se plátcem hned následující den."
+            }
+          ],
+          "who": [
+            "přijmete službu od dodavatele ze zahraničí (třeba reklamu od Google nebo Meta),",
+            "poskytnete službu podnikateli v jiném státě EU,",
+            "nakoupíte zboží z jiného státu EU za více než 326 000 Kč za kalendářní rok."
+          ],
+          "registrationTitle": "Registrace",
+          "registration": "Přihlášku k registraci podejte finančnímu úřadu do 15 dnů ode dne, kdy jste se identifikovanou osobou stali. Dostanete DIČ, které pak uvádíte zahraničním dodavatelům, aby vám fakturovali bez DPH.",
+          "exampleTitle": "Příklad",
+          "example": "V březnu zaplatíte reklamu na Facebooku za 10 000 Kč. Meta vám vystaví fakturu bez DPH. Do 25. dubna podáte přiznání k DPH za březen, kde uvedete daň 2 100 Kč, a stejnou částku zaplatíte finančnímu úřadu. V měsících bez takového nákupu nepodáváte nic."
+        }
+      }
+    }
   },
   "holidays": {
     "newYear": "Nový rok",

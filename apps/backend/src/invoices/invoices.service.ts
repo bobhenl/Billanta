@@ -11,7 +11,8 @@ import {
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { fuzzyScore } from "../common/fuzzy";
-import { getCnbRate } from "../exports/cnb-rates";
+import { getCnbDay } from "../exports/cnb-rates";
+import { annualRateFor, exchangeRateSettingsOf, rateYearOf, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
 import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
@@ -84,7 +85,7 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   const v: Partial<typeof schema.invoices.$inferInsert> = {};
   if (dto.document_type !== undefined) v.documentType = dto.document_type;
   if (dto.related_invoice_id !== undefined) v.relatedInvoiceId = dto.related_invoice_id ?? null;
-  if (dto.contact_id !== undefined) v.contactId = dto.contact_id;
+  if (dto.contact_id !== undefined) v.contactId = dto.contact_id ?? null;
   if (dto.issue_date !== undefined) v.issueDate = dto.issue_date;
   if (dto.due_date !== undefined) v.dueDate = dto.due_date ?? null;
   if (dto.taxable_supply_date !== undefined) v.taxableSupplyDate = dto.taxable_supply_date ?? null;
@@ -108,6 +109,34 @@ function invoiceFieldValues(dto: UpdateInvoiceDto) {
   if (dto.language !== undefined) v.language = dto.language;
   if (dto.reverse_charge !== undefined) v.reverseCharge = dto.reverse_charge;
   return v;
+}
+
+/**
+ * Whether a document may be in this state without a customer: a draft may
+ * (the customer can still be picked, or fill in their own details through
+ * the "Poslat odběrateli k doplnění údajů" link), an issued document never.
+ * Returns the error to show, or null when it is fine.
+ */
+export function customerRequiredError(action: "save_draft" | "issue" | "edit_issued", contactId: string | null | undefined): string | null {
+  if (contactId) return null;
+  if (action === "save_draft") return null;
+  return action === "issue" ? "Invoice has no contact – assign one before issuing" : "An issued document must keep its customer";
+}
+
+/**
+ * Edit-with-reason of an issued document: a different rate than the stored
+ * one makes it `manual` (no "Kurz ČNB k …" claim for a rate that is not
+ * ČNB's). A hidden conversion stays hidden, an untouched rate stays as it was.
+ */
+export function rateModeAfterEdit(
+  invoice: Pick<InvoiceRow, "exchangeRate" | "exchangeRateMode">,
+  values: Partial<typeof schema.invoices.$inferInsert>,
+): Partial<typeof schema.invoices.$inferInsert> {
+  if (values.exchangeRate === undefined) return {};
+  const before = invoice.exchangeRate == null ? null : Number(invoice.exchangeRate);
+  const after = values.exchangeRate == null ? null : Number(values.exchangeRate);
+  if (before === after || after == null || invoice.exchangeRateMode === "none") return {};
+  return { exchangeRateMode: "manual", exchangeRateDate: null };
 }
 
 /** Per-field audit entries ("seller.dic: CZ1 → CZ2") between two party snapshots. */
@@ -401,10 +430,13 @@ export class InvoicesService {
   /**
    * A person-typed draft from the dashboard form or the public API. The
    * contact must belong to this tenant — RLS hides other tenants' contacts,
-   * so a foreign id simply isn't found.
+   * so a foreign id simply isn't found. A draft may have no contact yet
+   * (`customerRequiredError`); issuing it still needs one.
    */
   async create(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api" = "manual") {
-    await this.requireContact(db, dto.contact_id);
+    const missing = customerRequiredError("save_draft", dto.contact_id);
+    if (missing) throw new BadRequestException(missing);
+    if (dto.contact_id) await this.requireContact(db, dto.contact_id);
     await this.checkRelated(db, dto.document_type, dto.related_invoice_id);
 
     // No db.transaction here: `db` is the request's own transaction (tenant
@@ -414,7 +446,7 @@ export class InvoicesService {
       .values({
         ...invoiceFieldValues(dto),
         tenantId,
-        contactId: dto.contact_id,
+        contactId: dto.contact_id ?? null,
         issueDate: dto.issue_date ?? new Date(),
         status: "draft",
         source,
@@ -455,6 +487,10 @@ export class InvoicesService {
       if (dto.related_invoice_id !== undefined && (dto.related_invoice_id ?? null) !== invoice.relatedInvoiceId) {
         throw new BadRequestException("The linked document of an issued document cannot be changed");
       }
+      if (dto.contact_id !== undefined) {
+        const missing = customerRequiredError("edit_issued", dto.contact_id);
+        if (missing) throw new BadRequestException(missing);
+      }
     }
     if (dto.contact_id) await this.requireContact(db, dto.contact_id);
     const documentType = dto.document_type ?? invoice.documentType;
@@ -462,6 +498,9 @@ export class InvoicesService {
     await this.checkRelated(db, documentType, relatedId);
 
     const values = invoiceFieldValues(dto);
+    // A rate changed by hand on an issued document is no longer the ČNB or
+    // annual rate it was printed as; label it as a plain rate from now on.
+    if (issued) Object.assign(values, rateModeAfterEdit(invoice, values));
     const changes = this.audit?.diff(invoice as Record<string, unknown>, values as Record<string, unknown>) ?? [];
     if (issued) changes.push(...(await this.snapshotAfterEdit(db, tenantId, invoice, values)));
 
@@ -1182,9 +1221,8 @@ export class InvoicesService {
       );
     }
 
-    if (!invoice.contactId) {
-      throw new BadRequestException("Invoice has no contact — assign one before issuing");
-    }
+    const noCustomer = customerRequiredError("issue", invoice.contactId);
+    if (noCustomer) throw new BadRequestException(noCustomer);
 
     if (!invoice.dueDate && invoice.documentType !== "quote") {
       throw new BadRequestException("Invoice has no due date — set one before issuing");
@@ -1212,19 +1250,15 @@ export class InvoicesService {
     const settledByProforma =
       prepaidInFull ||
       (invoice.documentType === "invoice" && related?.documentType === "proforma" && related.status === "paid");
-    // Foreign-currency documents carry the ČNB rate of the taxable supply
-    // date, so VAT returns can convert them to CZK (§38 ZDPH). A failed
-    // lookup leaves it null; the VAT export looks it up again later.
-    const exchangeRate =
-      invoice.currency === "CZK"
-        ? null
-        : (invoice.exchangeRate ??
-          (await getCnbRate(invoice.currency, invoice.taxableSupplyDate ?? issueDate))?.toFixed(6) ??
-          null);
-
     // The supplier and buyer as they stand right now, kept with the document
     // so a later change of address or DIČ does not rewrite it (§29, §34–35 ZDPH).
     const { sellerSnapshot, buyerSnapshot } = await this.captureParties(db, tenantId, invoice, now);
+
+    // Foreign-currency documents carry their CZK rate, so the PDF and the VAT
+    // returns can convert them (§38 ZDPH); which rate follows the company's
+    // setting (exchange-rate-mode.ts). A failed ČNB lookup leaves it null;
+    // the VAT export looks it up again later.
+    const { exchangeRate, exchangeRateMode, exchangeRateDate } = await this.issueRate(db, tenantId, invoice, lineItems, issueDate);
 
     const [updated] = await db
       .update(schema.invoices)
@@ -1240,6 +1274,8 @@ export class InvoicesService {
         issuedByUserId: userId,
         issuedAt: now,
         exchangeRate,
+        exchangeRateMode,
+        exchangeRateDate,
         // Only an AI-sourced draft has a meaningful "reviewed" moment
         // distinct from "issued" (blueprint §9) — a manual/api/recurring
         // invoice was never an unreviewed AI draft in the first place, so
@@ -1255,6 +1291,43 @@ export class InvoicesService {
 
     await this.log(db, updated, "issued", [{ field: "invoiceNumber", from: null, to: updated.invoiceNumber }]);
     return updated;
+  }
+
+  /**
+   * The CZK rate a document gets at issue and how it was chosen: a rate typed
+   * on the draft, the company's annual rate for the year of the taxable
+   * supply date (issue date when there is none), or the ČNB list valid on
+   * that day. Nothing for CZK documents.
+   */
+  private async issueRate(
+    db: TenantDb,
+    tenantId: string,
+    invoice: Pick<InvoiceRow, "currency" | "exchangeRate" | "taxableSupplyDate" | "reverseCharge">,
+    lineItems: (typeof schema.invoiceLineItems.$inferSelect)[],
+    issueDate: Date,
+  ): Promise<{ exchangeRate: string | null; exchangeRateMode: StoredRateMode | null; exchangeRateDate: string | null }> {
+    if (invoice.currency === "CZK") return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
+    const [tenant] = await db
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId))
+      .limit(1);
+    const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
+    const day = new Date(invoice.taxableSupplyDate ?? issueDate);
+    const year = rateYearOf(day);
+    const annualRate = annualRateFor(settings.annualRates, invoice.currency, year);
+    const { mode, source } = resolveRateMode({
+      setting: settings.mode,
+      vatStatus: tenant?.vatStatus ?? "non_payer",
+      totalVat: computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge }).totalVat,
+      manualRate: invoice.exchangeRate == null ? null : Number(invoice.exchangeRate),
+      annualRate,
+    });
+    if (source === "manual") return { exchangeRate: invoice.exchangeRate, exchangeRateMode: mode, exchangeRateDate: null };
+    if (source === "annual") return { exchangeRate: annualRate!.toFixed(6), exchangeRateMode: mode, exchangeRateDate: `${year}-01-01` };
+    const cnb = await getCnbDay(day);
+    const rate = cnb?.rates.get(invoice.currency.toUpperCase())?.rate ?? null;
+    return { exchangeRate: rate == null ? null : rate.toFixed(6), exchangeRateMode: mode, exchangeRateDate: rate == null ? null : cnb!.date };
   }
 
   /**

@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import { DEFAULT_SHOWN, PDF_ACCENTS, type Contact, type DocLanguage, type InvoiceFormPrefs, type OptionalField } from '../../invoices/new/types';
 import { updateInvoiceFormPrefs } from '../actions';
 import { InvoiceDefaultsFields, parseNumber, type DefaultsDraft } from './invoice-defaults';
+import { annualRatesOf, ExchangeRateSettings, type AnnualRateDraft } from './exchange-rate-settings';
+import type { VatStatus } from '@faktur/cz-compliance';
 
 /** Toggles grouped the way the invoice form lays them out. */
 const GROUPS: { key: string; fields: OptionalField[] }[] = [
@@ -26,6 +28,7 @@ export function InvoiceFormSettings({
   defaultContact,
   bankAccounts,
   vatPayer,
+  vatStatus,
   readOnly
 }: {
   prefs: InvoiceFormPrefs;
@@ -34,6 +37,7 @@ export function InvoiceFormSettings({
   defaultContact: Contact | null;
   bankAccounts: { id: string; label: string; line: string }[];
   vatPayer: boolean;
+  vatStatus: VatStatus;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices');
@@ -49,6 +53,10 @@ export function InvoiceFormSettings({
   const [reminders, setReminders] = useState(prefs.remindersEnabled);
   const [reminderInterval, setReminderInterval] = useState(prefs.reminderIntervalDays);
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
+  const [rateMode, setRateMode] = useState(prefs.exchangeRateMode);
+  const [annualRates, setAnnualRates] = useState<AnnualRateDraft[]>(() =>
+    prefs.annualRates.map((r) => ({ year: String(r.year), currency: r.currency, rate: String(r.rate) }))
+  );
   const [blank, setBlank] = useState<DefaultsDraft>(() => ({
     language: company.locale,
     dueDays: String(company.dueDays),
@@ -70,7 +78,14 @@ export function InvoiceFormSettings({
 
   const save = () =>
     startSave(async () => {
+      const rates = annualRatesOf(annualRates);
+      if (!rates) {
+        toast({ text: t('rate.duplicate'), tone: 'err' });
+        return;
+      }
       const result = await updateInvoiceFormPrefs({
+        exchange_rate_mode: rateMode,
+        annual_rates: rates,
         show,
         custom_field_labels: labels.map((l) => l.trim()).filter(Boolean),
         default_issue_place: place.trim() || null,
@@ -220,6 +235,16 @@ export function InvoiceFormSettings({
           </label>
         </div>
       </section>
+
+      <ExchangeRateSettings
+        className={card}
+        mode={rateMode}
+        onModeChange={setRateMode}
+        rates={annualRates}
+        onRatesChange={setAnnualRates}
+        vatStatus={vatStatus}
+        readOnly={readOnly}
+      />
 
       <section id="reminders" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('remindersHint')}>

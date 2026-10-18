@@ -30,6 +30,8 @@ interface Summary {
   totalBurden: number;
   vatPayer: boolean;
   counts: { invoices: number; expenses: number; missingRates: number };
+  /** Where `paid` came from: the typed amount, or the advances in Settings (each month as it applied then). Missing on an older backend. */
+  paidSource?: Record<'social' | 'health', 'input' | 'settings' | null>;
 }
 
 const EXPENSE_MODES = ['60', '80', '40', '30', 'actual'] as const;
@@ -47,6 +49,8 @@ export function AnnualSummary() {
   const [mode, setMode] = useState<(typeof EXPENSE_MODES)[number]>('60');
   const [paidSocial, setPaidSocial] = useState('');
   const [paidHealth, setPaidHealth] = useState('');
+  // A paid field filled from the advances in Settings (not typed): re-filled for another year.
+  const [prefilled, setPrefilled] = useState({ social: false, health: false });
   const [data, setData] = useState<Summary | null | undefined>(undefined);
   const years = Array.from({ length: 4 }, (_, i) => String(now.getFullYear() - i));
 
@@ -69,6 +73,21 @@ export function AnnualSummary() {
     };
   }, [query]);
 
+  // An empty paid field: the backend sums the advances from Settings over the
+  // months of the year (each with the amount in force then); put that sum in
+  // the field so it can be checked and edited.
+  useEffect(() => {
+    if (!data?.paidSource) return;
+    const fill = (kind: 'social' | 'health', current: string, set: (v: string) => void) => {
+      if (current || data.paidSource![kind] !== 'settings' || data[kind].paid == null) return;
+      set(String(Math.round(data[kind].paid!)));
+      setPrefilled((p) => ({ ...p, [kind]: true }));
+    };
+    fill('social', paidSocial, setPaidSocial);
+    fill('health', paidHealth, setPaidHealth);
+    // Only a fresh response decides; the fields themselves are read as they are then.
+  }, [data]);
+
   const czk = new Intl.NumberFormat(locale, { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 });
   const row = (label: string, value: number | null, opts?: { strong?: boolean; hint?: string; tone?: string }) =>
     value == null ? null : (
@@ -77,7 +96,9 @@ export function AnnualSummary() {
         <span className={cn('tabular-nums', opts?.tone)}>{czk.format(value)}</span>
       </div>
     );
-  const balanceTone = (v: number | null) => (v == null ? undefined : v > 0 ? 'text-destructive' : 'text-success');
+  const fromSettings = (kind: 'social' | 'health') =>
+    prefilled[kind] ? <span className="block text-xs text-muted-foreground">{t('paidFromSettings')}</span> : null;
+  const balanceTone =(v: number | null) => (v == null ? undefined : v > 0 ? 'text-destructive' : 'text-success');
 
   return (
     <section className="rounded-xl border border-border bg-card p-5">
@@ -92,7 +113,16 @@ export function AnnualSummary() {
       <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
         <label className="space-y-1">
           <span className="font-semibold">{t('year')}</span>
-          <select className={inputClass} value={year} onChange={(e) => setYear(e.target.value)}>
+          <select
+            className={inputClass}
+            value={year}
+            onChange={(e) => {
+              setYear(e.target.value);
+              // Amounts from Settings belong to the old year: clear them so the new year's sum fills in.
+              if (prefilled.social) setPaidSocial('');
+              if (prefilled.health) setPaidHealth('');
+            }}
+          >
             {years.map((y) => (
               <option key={y}>{y}</option>
             ))}
@@ -114,11 +144,31 @@ export function AnnualSummary() {
           <span className="font-semibold">
             <InfoHint hint={t('paidHint')}>{t('paidSocial')}</InfoHint>
           </span>
-          <input className={inputClass} inputMode="numeric" value={paidSocial} onChange={(e) => setPaidSocial(e.target.value.replace(/[^\d]/g, ''))} placeholder="0" />
+          <input
+            className={inputClass}
+            inputMode="numeric"
+            value={paidSocial}
+            onChange={(e) => {
+              setPaidSocial(e.target.value.replace(/[^\d]/g, ''));
+              setPrefilled((p) => ({ ...p, social: false }));
+            }}
+            placeholder="0"
+          />
+          {fromSettings('social')}
         </label>
         <label className="space-y-1">
           <span className="font-semibold">{t('paidHealth')}</span>
-          <input className={inputClass} inputMode="numeric" value={paidHealth} onChange={(e) => setPaidHealth(e.target.value.replace(/[^\d]/g, ''))} placeholder="0" />
+          <input
+            className={inputClass}
+            inputMode="numeric"
+            value={paidHealth}
+            onChange={(e) => {
+              setPaidHealth(e.target.value.replace(/[^\d]/g, ''));
+              setPrefilled((p) => ({ ...p, health: false }));
+            }}
+            placeholder="0"
+          />
+          {fromSettings('health')}
         </label>
       </div>
 

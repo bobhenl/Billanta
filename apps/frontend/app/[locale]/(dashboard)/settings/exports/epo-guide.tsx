@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { CalendarClock, ChevronDown, ExternalLink, Inbox, Send } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { nextCzechWorkingDay } from '@faktur/cz-compliance';
+import { nextVatDeadlines } from '@faktur/cz-compliance';
 import { InfoHint } from '@/components/info-hint';
 import { cn } from '@/lib/utils';
 
@@ -28,27 +28,8 @@ export function EpoGuide() {
   const [channel, setChannel] = useState<Channel>('ds');
   const [open, setOpen] = useState(true);
 
-  const deadlines = useMemo(() => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    // This month's 25th if still ahead, else next month's.
-    let monthly = nextCzechWorkingDay(new Date(now.getFullYear(), now.getMonth(), 25));
-    if (monthly < today) monthly = nextCzechWorkingDay(new Date(now.getFullYear(), now.getMonth() + 1, 25));
-    const periodOf = (d: Date) => new Date(d.getFullYear(), d.getMonth() - 1, 1);
-    // Quarterly payers: 25th of Jan/Apr/Jul/Oct.
-    let q = Math.floor(now.getMonth() / 3) * 3;
-    let quarterly = nextCzechWorkingDay(new Date(now.getFullYear(), q, 25));
-    if (quarterly < today) {
-      q += 3;
-      quarterly = nextCzechWorkingDay(new Date(now.getFullYear(), q, 25));
-    }
-    const qPeriod = new Date(quarterly.getFullYear(), quarterly.getMonth() - 3, 1);
-    const days = (d: Date) => Math.round((d.getTime() - today.getTime()) / 86_400_000);
-    return {
-      monthly: { date: monthly, period: periodOf(monthly), days: days(monthly) },
-      quarterly: { date: quarterly, quarter: Math.floor(qPeriod.getMonth() / 3) + 1, year: qPeriod.getFullYear(), days: days(quarterly) }
-    };
-  }, []);
+  // Shared with the public VAT guide (@faktur/cz-compliance nextVatDeadlines).
+  const deadlines = useMemo(() => nextVatDeadlines(), []);
 
   const dateFmt = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' });
   const monthFmt = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });

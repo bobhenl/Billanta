@@ -1,10 +1,11 @@
 'use client';
 
-import { BadgePercent, Calculator, CircleHelp, Handshake, Home, LayoutDashboard, LogIn, Plus, Sparkles, UserRound } from 'lucide-react';
+import { BadgePercent, BookOpenCheck, Calculator, CircleHelp, Handshake, Home, LayoutDashboard, LogIn, Plus, Sparkles, SquarePercent, UserRound } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
+import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 
 /**
  * Phone tab bar for the public site, in VoxelRank's order: home, a
@@ -12,11 +13,14 @@ import { MobileTabBar } from '@/components/mobile-tab-bar';
  * "More". The account slot is VoxelRank's "Profile": log in for a visitor,
  * the app for someone signed in; "More" also carries sign-up and log-in
  * buttons so neither is ever more than one tap away. Language and theme stay
- * in the phone header, as on VoxelRank.
+ * in the phone header, as on VoxelRank. "More" also carries the pages of
+ * the header's Resources dropdown (calculators, guides where published).
  */
 export function MarketingTabBar() {
   const t = useTranslations('marketing.nav');
   const tMobile = useTranslations('mobile');
+  const tMenu = useTranslations('tools.menu');
+  const locale = useLocale();
   const { status } = useSession();
   const signedIn = status === 'authenticated';
 
@@ -35,6 +39,9 @@ export function MarketingTabBar() {
       panelTitle={tMobile('explore')}
       links={[
         { key: 'features', href: '/features', label: t('features'), icon: Sparkles },
+        // Calculator is taken by the accountants link, so the calculators get a percent sign.
+        { key: 'calculators', href: '/calculators', label: tMenu('calculators'), icon: SquarePercent },
+        ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ key: 'guides', href: '/guides', label: tMenu('guides'), icon: BookOpenCheck }] : []),
         { key: 'accountants', href: '/for-accountants', label: t('accountants'), icon: Calculator },
         { key: 'partners', href: '/partners', label: t('partners'), icon: Handshake },
         { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp }

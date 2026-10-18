@@ -245,7 +245,7 @@ export function InvoicesTable({ rows, filtered }: { rows: InvoiceRow[]; filtered
         return (
           <span className="inline-flex items-center gap-1.5 font-medium">
             <ColorDot color={row.contactColor} />
-            <ContactHover contactId={row.contactId}>{row.contactName ?? '–'}</ContactHover>
+            <ContactHover contactId={row.contactId}>{row.contactName ?? <span className="font-normal italic text-muted-foreground">{t('noCustomer')}</span>}</ContactHover>
           </span>
         );
       case 'issueDate':

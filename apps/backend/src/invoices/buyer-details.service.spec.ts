@@ -146,3 +146,44 @@ describe("BuyerDetailsService.submit", () => {
     expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-other", buyerDetailsOutcome: { mode: "existing", autoIssue: "skipped" } });
   });
 });
+
+describe("BuyerDetailsService.submit on a draft without a customer", () => {
+  beforeEach(() => vi.restoreAllMocks());
+
+  it("creates a new contact from the details, attaches it and auto-issues when asked", async () => {
+    const t = setup({ invoice: { contactId: null, buyerDetailsAutoIssue: true }, attached: null });
+    await t.svc.submit(TOKEN, body);
+    expect(t.insertContact).toHaveBeenCalledWith(expect.anything(), "t-1", expect.objectContaining({ legalName: "Nová firma s.r.o.", ico: "12345678" }));
+    expect(t.updateContact).not.toHaveBeenCalled();
+    expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-new", buyerDetailsOutcome: { mode: "created", conflicts: [] } });
+    expect(t.audit.record).toHaveBeenCalledWith(
+      expect.anything(),
+      "t-1",
+      expect.objectContaining({ action: "buyer_details_submitted", changes: expect.arrayContaining([{ field: "contactId", from: null, to: "c-new" }]) }),
+    );
+    expect(t.invoices.issue).toHaveBeenCalledWith(expect.anything(), "t-1", "inv-1", "user-1");
+  });
+
+  it("uses a saved contact with the same IČO but never writes to it, lists the differences and skips auto-issue", async () => {
+    const saved = contact({ id: "c-saved", ico: "12345678", dic: null, email: "jina@firma.cz", addressStreet: "Krátká 2", addressCity: "Brno", addressPostalCode: "60200" });
+    const t = setup({ invoice: { contactId: null, buyerDetailsAutoIssue: true }, attached: null, match: saved });
+    await t.svc.submit(TOKEN, body);
+    expect(t.updateContact).not.toHaveBeenCalled();
+    expect(t.insertContact).not.toHaveBeenCalled();
+    const outcome = t.invoiceUpdates[0]!.buyerDetailsOutcome as { mode: string; conflicts: { field: string }[]; autoIssue: string | null };
+    expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-saved" });
+    expect(outcome.mode).toBe("existing");
+    expect(outcome.conflicts.map((c) => c.field)).toEqual(expect.arrayContaining(["email", "dic"]));
+    expect(outcome.autoIssue).toBe("skipped");
+    expect(t.invoices.issue).not.toHaveBeenCalled();
+  });
+
+  it("skips auto-issue for a matched saved contact even when nothing differs", async () => {
+    const same = contact({ id: "c-saved", ico: "12345678", dic: "CZ12345678", email: "fakturace@firma.cz", addressStreet: "Dlouhá 1", addressCity: "Praha", addressPostalCode: "11000" });
+    const t = setup({ invoice: { contactId: null, buyerDetailsAutoIssue: true }, attached: null, match: same });
+    await t.svc.submit(TOKEN, body);
+    expect(t.updateContact).not.toHaveBeenCalled();
+    expect(t.invoices.issue).not.toHaveBeenCalled();
+    expect(t.invoiceUpdates[0]).toMatchObject({ contactId: "c-saved", buyerDetailsOutcome: { mode: "existing", conflicts: [], autoIssue: "skipped" } });
+  });
+});
