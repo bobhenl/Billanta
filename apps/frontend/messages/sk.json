@@ -222,7 +222,8 @@
       "account": {
         "title": "Účet",
         "login": "Prihlásiť sa",
-        "signup": "Registrovať sa"
+        "signup": "Registrovať sa",
+        "openApp": "Prejsť do aplikácie"
       },
       "partners": {
         "title": "Partneri",

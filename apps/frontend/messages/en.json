@@ -222,7 +222,8 @@
       "account": {
         "title": "Account",
         "login": "Log in",
-        "signup": "Sign up"
+        "signup": "Sign up",
+        "openApp": "Go to the app"
       },
       "partners": {
         "title": "Partners",

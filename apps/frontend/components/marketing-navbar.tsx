@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { HeaderAccountLink } from '@/components/marketing-account-links';
 import { MarketingNavMenu } from '@/components/marketing-nav-menu';
 import { MarketingSearch } from '@/components/marketing-search';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -20,7 +21,8 @@ import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
  * As on VoxelRank ("Log in" + "+ Add server"), the one accent button is the
  * thing people come to do, issuing an invoice (no account needed), not
  * "Sign up"; sign-up is linked from the login page, the guest invoice and
- * the footer.
+ * the footer. A signed-in visitor gets "App" in place of "Log in"
+ * (`HeaderAccountLink`, client-side so the page stays static).
  */
 export async function MarketingNavbar() {
   const t = await getTranslations('marketing.nav');
@@ -65,12 +67,7 @@ export async function MarketingNavbar() {
           <MarketingSearch />
           <LanguageSwitcher />
           <ThemeToggle />
-          <Link
-            href="/login"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground md:inline-block"
-          >
-            {t('login')}
-          </Link>
+          <HeaderAccountLink />
           <Link
             href="/create-invoice"
             className="hidden items-center gap-1 rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 md:inline-flex"
