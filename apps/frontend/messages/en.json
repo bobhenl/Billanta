@@ -7035,9 +7035,9 @@
   },
   "accountants": {
     "eyebrow": "Partner programme",
-    "title": "Billanta for accountants and bookkeeping firms",
-    "seoTitle": "Billanta for accountants – all clients in one place, credits and new leads",
-    "lead": "Invite your clients to Billanta, keep their documents in one place and earn credits towards your own plan for each paying client.",
+    "title": "Billanta for accountants, accounting firms and tax advisers",
+    "seoTitle": "Billanta for accountants and tax advisers – all clients in one place, credits",
+    "lead": "Invite clients to Billanta, keep their documents in one place and earn credits towards your own plan for every client who starts paying. For accounting firms and tax advisers alike.",
     "cta": "Register your firm",
     "partnersLink": "Our partners",
     "benefits": {
@@ -7119,6 +7119,10 @@
       {
         "q": "How much does Billanta cost for an accounting firm?",
         "a": "Signing up and joining the programme are free. From the Start plan up, access to a client’s company is included in the client’s plan. Credits for paying clients can pay for your own firm’s plan."
+      },
+      {
+        "q": "Is Billanta for tax advisers too?",
+        "a": "Yes. A tax adviser joins a client’s company the same way an accountant does, with the accountant role, and gets the same exports and reports, including the income tax summary. The partner programme and the town page listing work the same way."
       },
       {
         "q": "How do I get access to a client’s documents?",

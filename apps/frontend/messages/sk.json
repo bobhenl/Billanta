@@ -6893,9 +6893,9 @@
   },
   "accountants": {
     "eyebrow": "Partnerský program",
-    "title": "Billanta pre účtovníkov a účtovné kancelárie",
-    "seoTitle": "Billanta pre účtovníkov – klienti na jednom mieste, kredity a nové zákazky",
-    "lead": "Pozvite klientov do Billanty, majte ich doklady na jednom mieste a za každého platiaceho klienta získajte kredity na vlastný tarif.",
+    "title": "Billanta pre účtovníkov, účtovné kancelárie a daňových poradcov",
+    "seoTitle": "Billanta pre účtovníkov a daňových poradcov – klienti na jednom mieste a kredity",
+    "lead": "Pozvite klientov do Billanty, majte ich doklady na jednom mieste a za každého platiaceho klienta získajte kredity na vlastný tarif. Pre účtovné kancelárie aj daňových poradcov.",
     "cta": "Zaregistrovať kanceláriu",
     "partnersLink": "Naši partneri",
     "benefits": {
@@ -6977,6 +6977,10 @@
       {
         "q": "Koľko stojí Billanta pre účtovnícku kanceláriu?",
         "a": "Registrácia aj účasť v programe sú zadarmo. Prístup do firmy klienta je od tarifu Start súčasťou klientovho tarifu. Kredity za platiacich klientov môžete použiť na platený tarif vlastnej kancelárie."
+      },
+      {
+        "q": "Je Billanta aj pre daňových poradcov?",
+        "a": "Áno. Daňový poradca sa do firmy klienta pripojí rovnako ako účtovník, s rolou účtovníka, a má k dispozícii rovnaké exporty a prehľady vrátane podkladov k dani z príjmov. Partnerský program aj zápis na stránky miest fungujú rovnako."
       },
       {
         "q": "Ako sa dostanem k dokladom klienta?",
