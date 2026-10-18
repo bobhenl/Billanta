@@ -16,7 +16,9 @@ import {
   mapBitfakturaInvoices,
   mapBitfakturaSeller,
   type ImportedBusinessDetails,
-} from "./bitfaktura-import";import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
+} from "./bitfaktura-import";
+import { connectFakturoid, fetchFakturoidData, FakturoidError, mapFakturoidAccount, mapFakturoidInvoices, mapFakturoidSubjects, type FakturoidOptions } from "./fakturoid-import";
+import { MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { getCnbDay, type CnbDay } from "../exports/cnb-rates";
 import { AuditService } from "../audit/audit.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
@@ -162,6 +164,9 @@ export function csvBuyerSnapshot(customer: ImportedInvoice["customer"]) {
 /** Parallel PDF downloads; low enough not to hammer the source's API. */
 const PDF_CONCURRENCY = 4;
 
+/** The systems read over their API; also the audit action and the PDF file name suffix. */
+type ApiImportSource = "bitfaktura" | "fakturoid";
+
 /**
  * "Stěhování": brings the invoice history from another system in as
  * already-issued documents (`source = 'import'`). Nothing is sent, no
@@ -217,7 +222,7 @@ export class InvoiceImportService {
   private async logImport(
     db: TenantDb,
     tenantId: string,
-    source: "csv" | "bitfaktura",
+    source: "csv" | ApiImportSource,
     result: InvoiceImportResult,
     filled: ImportedBusinessDetails = {},
   ) {
@@ -258,8 +263,72 @@ export class InvoiceImportService {
     }
     // Nice to have: without the seller profile the invoices still come across.
     const seller = mapBitfakturaSeller(await fetchBitfakturaDepartments(account, apiToken, fetcher).catch(() => []));
+    return this.importFromApi(db, tenantId, {
+      source: "bitfaktura",
+      dryRun,
+      onlySellerIco,
+      counts: { invoices: source.length, contacts: clients.length },
+      mapped: mapBitfakturaInvoices(source),
+      contacts: mapBitfakturaClients(clients),
+      seller,
+      fetchPdf: (sourceId) => fetchBitfakturaPdf(account, apiToken, sourceId, MAX_ATTACHMENT_BYTES, fetcher),
+    });
+  }
+
+  /**
+   * Reads the history over the Fakturoid API with the user's Client ID and
+   * secret. They and the access token they buy live only in this request.
+   */
+  async importFromFakturoid(
+    db: TenantDb,
+    tenantId: string,
+    credentials: { clientId: string; clientSecret: string; account?: string },
+    dryRun: boolean,
+    options?: FakturoidOptions,
+    onlySellerIco?: string,
+  ): Promise<InvoiceImportResult> {
+    let conn: Awaited<ReturnType<typeof connectFakturoid>>;
+    let data: Awaited<ReturnType<typeof fetchFakturoidData>>;
+    try {
+      conn = await connectFakturoid(credentials, options);
+      data = await fetchFakturoidData(conn);
+    } catch (error) {
+      if (error instanceof FakturoidError) throw new BadRequestException({ error: error.code });
+      throw error;
+    }
+    return this.importFromApi(db, tenantId, {
+      source: "fakturoid",
+      dryRun,
+      onlySellerIco,
+      counts: { invoices: data.invoices.length, contacts: data.subjects.length },
+      mapped: mapFakturoidInvoices(data.invoices, data.account?.currency),
+      contacts: mapFakturoidSubjects(data.subjects),
+      seller: mapFakturoidAccount(data.account),
+      fetchPdf: (sourceId) => conn.pdf(sourceId, MAX_ATTACHMENT_BYTES),
+    });
+  }
+
+  /**
+   * What every API import does once the source is read: write the mapped
+   * invoices and contacts, fill empty business details, archive the original
+   * PDFs and offer the newest supplier details.
+   */
+  private async importFromApi(
+    db: TenantDb,
+    tenantId: string,
+    run: {
+      source: ApiImportSource;
+      dryRun: boolean;
+      onlySellerIco?: string;
+      counts: { invoices: number; contacts: number };
+      mapped: { invoices: ImportedInvoice[]; skipped: ImportSkip[] };
+      contacts: ImportedContact[];
+      seller: ImportedBusinessDetails | null;
+      fetchPdf: (sourceId: number) => Promise<Buffer | null>;
+    },
+  ): Promise<InvoiceImportResult> {
+    const { mapped, dryRun, onlySellerIco } = run;
     const created: { invoice: ImportedInvoice; id: string }[] = [];
-    const mapped = mapBitfakturaInvoices(source);
     // Several suppliers in one account: say so, and import one of them only on request.
     // Companies are never created from this; the user picks which one this is.
     const sellers = distinctSellers(mapped.invoices);
@@ -269,15 +338,8 @@ export class InvoiceImportService {
       mapped.invoices = own;
       mapped.skipped.push(...other.map((inv) => ({ line: inv.line, number: inv.invoiceNumber, reason: "other_seller" as const })));
     }
-    const result = await this.importMapped(
-      db,
-      tenantId,
-      mapped,
-      dryRun,
-      (invoice, id) => created.push({ invoice, id }),
-      mapBitfakturaClients(clients),
-    );
-    result.source = { invoices: source.length, contacts: clients.length };
+    const result = await this.importMapped(db, tenantId, mapped, dryRun, (invoice, id) => created.push({ invoice, id }), run.contacts);
+    result.source = run.counts;
     if (sellers.length > 0) result.sellers = sellers;
     const [tenant] = await db
       .select({
@@ -293,7 +355,7 @@ export class InvoiceImportService {
       })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));
-    const fill = tenant ? businessFill(tenant, seller) : {};
+    const fill = tenant ? businessFill(tenant, run.seller) : {};
     result.businessFilled = Object.keys(fill) as (keyof ImportedBusinessDetails)[];
     if (dryRun) return result;
     if (result.businessFilled.length > 0) {
@@ -309,9 +371,7 @@ export class InvoiceImportService {
     const queue = [...created];
     const worker = async () => {
       for (let next = queue.shift(); next; next = queue.shift()) {
-        const pdf = next.invoice.sourceId
-          ? await fetchBitfakturaPdf(account, apiToken, next.invoice.sourceId, MAX_ATTACHMENT_BYTES, fetcher)
-          : null;
+        const pdf = next.invoice.sourceId ? await run.fetchPdf(next.invoice.sourceId) : null;
         if (!pdf) {
           originalPdfs.missing++;
           continue;
@@ -319,7 +379,7 @@ export class InvoiceImportService {
         await db.insert(schema.invoiceAttachments).values({
           tenantId,
           invoiceId: next.id,
-          filename: `${next.invoice.invoiceNumber.replace(/[\\/:*?"<>|]/g, "-")}-bitfaktura.pdf`,
+          filename: `${next.invoice.invoiceNumber.replace(/[\\/:*?"<>|]/g, "-")}-${run.source}.pdf`,
           mime: "application/pdf",
           sizeBytes: pdf.length,
           data: pdf.toString("base64"),
@@ -335,7 +395,7 @@ export class InvoiceImportService {
     const newest = created.reduce<ImportedInvoice | undefined>((a, { invoice }) => (!a || invoice.issueDate >= a.issueDate ? invoice : a), undefined);
     const update = tenant ? sellerProfileUpdate({ ...tenant, ...fill }, newest) : null;
     if (update) done.sellerUpdate = update;
-    await this.logImport(db, tenantId, "bitfaktura", done, fill);
+    await this.logImport(db, tenantId, run.source, done, fill);
     return done;
   }
 

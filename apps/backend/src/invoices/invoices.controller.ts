@@ -59,6 +59,17 @@ class BitfakturaImportDto extends createZodDto(
   }),
 ) {}
 
+class FakturoidImportDto extends createZodDto(
+  z.object({
+    clientId: z.string().trim().min(8).max(200),
+    clientSecret: z.string().trim().min(8).max(200),
+    /** The account slug; only needed when the Fakturoid user has several accounts. */
+    account: z.string().trim().max(200).optional(),
+    dryRun: z.boolean().optional(),
+    sellerIco: z.string().regex(/^\d{8}$/).optional(),
+  }),
+) {}
+
 class RefreshPartiesDto extends createZodDto(
   z.object({
     party: z.enum(["seller", "buyer", "both"]).default("both"),
@@ -207,6 +218,26 @@ export class InvoicesController {
   importBitfaktura(@Req() req: TenantScopedRequest, @Body() dto: BitfakturaImportDto) {
     if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
     return this.importService.importFromBitfaktura(req.tenantDb!, req.user!.tenantId, dto.account, dto.apiToken, dto.dryRun ?? false, undefined, dto.sellerIco);
+  }
+
+  @Post("import/fakturoid")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Import invoice history straight from a Fakturoid account over API v3 (dryRun only previews)",
+    description:
+      "The Client ID and secret (Fakturoid Settings → User account) are used for this request only and never stored. " +
+      "Apart from the OAuth token request only GETs are sent. Same rules as the CSV import.",
+  })
+  importFakturoid(@Req() req: TenantScopedRequest, @Body() dto: FakturoidImportDto) {
+    if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
+    return this.importService.importFromFakturoid(
+      req.tenantDb!,
+      req.user!.tenantId,
+      { clientId: dto.clientId, clientSecret: dto.clientSecret, account: dto.account || undefined },
+      dto.dryRun ?? false,
+      undefined,
+      dto.sellerIco,
+    );
   }
 
   @Post(":id/mark-paid")

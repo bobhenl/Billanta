@@ -142,7 +142,7 @@
       },
       "migration": {
         "title": "Přechod z jiné aplikace",
-        "description": "Z BitFaktury přímo přes API i s původními PDF, z Fakturoidu, iDokladu nebo Excelu přes CSV. Před uložením uvidíte náhled."
+        "description": "Z BitFaktury a Fakturoidu přímo přes API i s původními PDF, z iDokladu nebo Excelu přes CSV. Před uložením uvidíte náhled."
       },
       "api": {
         "title": "API a webhooky",
@@ -2805,9 +2805,9 @@
         "fakturoid": {
           "name": "Fakturoid",
           "steps": [
-            "V seznamu faktur zvolte období (klidně celou historii) a stáhněte export do CSV.",
-            "Stejně vyexportujte kontakty v sekci Kontakty.",
-            "Oba soubory nahrajte níže, nejdřív kontakty."
+            "Nejrychlejší je přímé propojení: ve Fakturoidu otevřete nastavení svého uživatelského účtu a v části API v3 zkopírujte Client ID a Client secret.",
+            "Vyplňte je níže v kroku 3. Načteme faktury, zálohové faktury, opravné doklady, celý adresář, kurzy, platby i původní PDF. Krok 2 s kontakty pak můžete přeskočit.",
+            "Bez propojení vyexportujte v seznamu faktur i kontaktů CSV a nahrajte oba soubory níže, nejdřív kontakty."
           ]
         },
         "idoklad": {
@@ -2922,6 +2922,18 @@
           "apply": "Použít údaje z nejnovější faktury",
           "applied": "Fakturační údaje jsou aktualizované.",
           "failed": "Údaje se nepodařilo uložit."
+        },
+        "fakturoid": {
+          "lead": "Načtení přímo z Fakturoidu přes API: faktury, kontakty i původní PDF. Údaje se použijí jen pro tento import a neukládáme je. Pokud chcete, vygenerujte si ve Fakturoidu potom nový Client secret.",
+          "clientId": "Client ID",
+          "clientSecret": "Client secret",
+          "account": "Účet (nepovinné)",
+          "accountPlaceholder": "mojefirma",
+          "accountHint": "Vyplňte jen tehdy, když máte ve Fakturoidu víc účtů. Stačí vložit adresu z prohlížeče.",
+          "privacy": "Z Fakturoidu jen čteme, nic v něm neměníme.",
+          "source": "Z Fakturoidu jsme načetli {invoices, plural, one {# doklad} few {# doklady} other {# dokladů}} a {contacts, plural, one {# kontakt} few {# kontakty} other {# kontaktů}}.",
+          "pdfs": "Původní PDF z Fakturoidu: {archived} uloženo jako archivní příloha (zákazníkům se neposílá).",
+          "sellersLead": "Faktury ve Fakturoidu mají víc různých dodavatelů. Vyberte, čí faktury sem patří. Novou firmu podle toho nezakládáme."
         }
       },
       "status": {
@@ -2952,7 +2964,11 @@
         "failed": "Import se nepodařil, zkuste to znovu.",
         "bitfaktura_account": "Účet v BitFaktuře jsme nenašli. Zadejte adresu ve tvaru firma.bitfaktura.cz.",
         "bitfaktura_unauthorized": "BitFaktura kód nepřijala. Zkontrolujte Autorizační kód API v Nastavení → Integrace.",
-        "bitfaktura_unreachable": "BitFaktura teď neodpovídá, zkuste to za chvíli."
+        "bitfaktura_unreachable": "BitFaktura teď neodpovídá, zkuste to za chvíli.",
+        "fakturoid_unauthorized": "Fakturoid údaje nepřijal. Zkontrolujte Client ID a Client secret v nastavení uživatelského účtu.",
+        "fakturoid_account": "Ten účet ve Fakturoidu nevidíme. Zadejte ho tak, jak je v adrese app.fakturoid.cz/mojefirma, nebo pole nechte prázdné.",
+        "fakturoid_blocked": "Účet ve Fakturoidu je zablokovaný nebo nemá zaplacený tarif, proto data přes API nevydá.",
+        "fakturoid_unreachable": "Fakturoid teď neodpovídá, zkuste to za chvíli."
       }
     },
     "companies": {
@@ -5190,7 +5206,7 @@
         "lead": "Začít znovu neznamená přijít o historii. Stačí CSV export ze starého systému.",
         "points": [
           "Import kontaktů i vydaných faktur z CSV",
-          "Z BitFaktury přímo přes API: faktury, adresář i původní PDF",
+          "Z BitFaktury a Fakturoidu přímo přes API: faktury, adresář i původní PDF",
           "Sloupce Fakturoidu, iDokladu, faktoria, Invoice Ninja i vlastní tabulky poznáme samy",
           "Náhled s počtem faktur, obdobím a součty před uložením",
           "Faktury s více položkami, zálohové faktury i dobropisy",
@@ -6421,7 +6437,8 @@
       "import": {
         "bitfaktura": "naimportoval(a) data z BitFaktury",
         "csv": "naimportoval(a) doklady z CSV",
-        "contacts_csv": "naimportoval(a) kontakty z CSV"
+        "contacts_csv": "naimportoval(a) kontakty z CSV",
+        "fakturoid": "naimportoval(a) data z Fakturoidu"
       }
     },
     "fields": {
@@ -6704,7 +6721,7 @@
       },
       {
         "title": "Snadný přechod",
-        "body": "Z Fakturoidu, iDokladu nebo Excelu přes CSV, z BitFaktury rovnou přes API i s původními PDF."
+        "body": "Z iDokladu nebo Excelu přes CSV, z BitFaktury a Fakturoidu rovnou přes API i s původními PDF."
       }
     ],
     "switchTitle": "Přecházíte odjinud?",
