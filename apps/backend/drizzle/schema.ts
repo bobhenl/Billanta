@@ -292,7 +292,7 @@ export const tenants = pgTable("tenants", {
   // demo_expires_at - now. Its identity is locked by a trigger.
   isDemo: boolean("is_demo").notNull().default(false),
   demoExpiresAt: timestamp("demo_expires_at", { withTimezone: true }),
-  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro">(),
+  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro" | "sk_freelancer" | "sk_vat_freelancer">(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

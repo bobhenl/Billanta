@@ -8465,6 +8465,14 @@
       "sk_vat_sro": {
         "title": "Slovak s.r.o., VAT payer",
         "description": "A Slovak company in euros, with Slovak VAT rates and Slovak customers."
+      },
+      "sk_freelancer": {
+        "title": "Slovak freelancer, no VAT",
+        "description": "A translator without VAT, invoices in euros, clients in the UK and the US too."
+      },
+      "sk_vat_freelancer": {
+        "title": "Slovak freelancer, VAT payer",
+        "description": "An electrician with VAT, reverse charge on construction work for businesses."
       }
     },
     "country": {
@@ -8523,6 +8531,8 @@
       }
     },
     "picker": {
+      "countryTitle": "Country",
+      "countryHint": "The country sets the currency, VAT rates, registries and how documents look.",
       "dataTitle": "Data",
       "filled": "With sample documents",
       "empty": "Empty company",

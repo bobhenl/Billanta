@@ -684,12 +684,350 @@ function skVatSro(now: Date): Spec[] {
   ];
 }
 
+/**
+ * A translator who is not a VAT payer. Foreign clients sit outside the EU:
+ * a service to a business in another member state would make her register
+ * for VAT (§7a ZoDPH).
+ */
+function skFreelancer(now: Date): Spec[] {
+  const n = null;
+  return [
+    {
+      key: "paid1",
+      contactKey: "povazie",
+      state: "paid",
+      issueDate: daysAgo(now, 71),
+      paidAt: daysAgo(now, 60),
+      lines: [line("Preklad technickej dokumentácie lisovacej linky EN → SK", 64, 18, n, "NS")],
+    },
+    {
+      key: "paid2",
+      contactKey: "zobor",
+      state: "paid",
+      issueDate: daysAgo(now, 54),
+      paidAt: daysAgo(now, 47),
+      lines: [line("Preklad e-shopu vinárstva SK → DE", 22, 20, n, "NS"), line("Jazyková korektúra rodeným hovoriacim", 1, 90, n)],
+    },
+    {
+      key: "paid2_credit",
+      contactKey: "zobor",
+      documentType: "credit_note",
+      convertFrom: "paid2",
+      state: "paid",
+      issueDate: daysAgo(now, 44),
+      paidAt: daysAgo(now, 43),
+      noteAbove: "Opravný doklad. Dôvod opravy: dve normostrany sa nakoniec neprekladali.",
+      lines: [line("Preklad e-shopu vinárstva SK → DE", -2, 20, n, "NS")],
+    },
+    {
+      key: "overdue65",
+      contactKey: "balaz",
+      state: "issued",
+      issueDate: daysAgo(now, 79),
+      dueDate: daysAgo(now, 65),
+      lines: [line("Preklad životopisu a motivačného listu do angličtiny", 3, 18, n, "NS")],
+    },
+    {
+      key: "overdue20",
+      contactKey: "tatranska",
+      state: "issued",
+      issueDate: daysAgo(now, 34),
+      dueDate: daysAgo(now, 20),
+      lines: [line("Preklad webu chaty do nemčiny a poľštiny", 1, 680, n)],
+    },
+    {
+      key: "overdue3",
+      contactKey: "kovac",
+      state: "issued",
+      issueDate: daysAgo(now, 17),
+      dueDate: daysAgo(now, 3),
+      lines: [line("Jazyková korektúra diplomovej práce", 1, 140, n)],
+    },
+    {
+      key: "partial",
+      contactKey: "povazie",
+      state: "partial",
+      issueDate: daysAgo(now, 12),
+      dueDate: daysFromNow(now, 2),
+      partialAmount: 700,
+      paidAt: daysAgo(now, 5),
+      lines: [line("Preklad návodu na obsluhu CNC stroja EN → SK", 85, 18, n, "NS")],
+    },
+    {
+      key: "open",
+      contactKey: "zobor",
+      state: "issued",
+      issueDate: daysAgo(now, 4),
+      dueDate: daysFromNow(now, 10),
+      lines: [line("Preklad etikiet a technických listov vín", 12, 20, n, "NS")],
+    },
+    {
+      key: "gbp",
+      contactKey: "kestrel",
+      state: "paid",
+      issueDate: daysAgo(now, 40),
+      paidAt: daysAgo(now, 31),
+      currency: "GBP",
+      exchangeRate: 1.17,
+      language: "en",
+      lines: [line("Translation of a photo book, Slovak to English", 1, 520, n)],
+    },
+    {
+      key: "usd",
+      contactKey: "bluewater",
+      state: "issued",
+      issueDate: daysAgo(now, 20),
+      dueDate: daysFromNow(now, 6),
+      currency: "USD",
+      exchangeRate: 0.86,
+      language: "en",
+      lines: [line("Localisation of a booking app into Slovak and Czech", 1, 900, n)],
+    },
+    {
+      key: "proforma",
+      contactKey: "tatranska",
+      documentType: "proforma",
+      state: "paid",
+      issueDate: daysAgo(now, 28),
+      dueDate: daysAgo(now, 21),
+      paidAt: daysAgo(now, 23),
+      lines: [line("Záloha – preklad propagačných materiálov na zimnú sezónu", 1, 400, n)],
+    },
+    { key: "proforma_final", contactKey: "tatranska", convertFrom: "proforma", state: "paid", issueDate: daysAgo(now, 22) },
+    {
+      key: "cancelled",
+      contactKey: "balaz",
+      state: "cancelled",
+      issueDate: daysAgo(now, 66),
+      lines: [line("Preklad listu pre rakúsky úrad", 1, 60, n)],
+    },
+    {
+      key: "quote_open",
+      contactKey: "povazie",
+      documentType: "quote",
+      state: "quote_open",
+      issueDate: daysAgo(now, 2),
+      dueDate: daysFromNow(now, 28),
+      lines: [line("Preklad katalógu náhradných dielov – odhad", 140, 17, n, "NS")],
+    },
+    {
+      key: "quote_accepted",
+      contactKey: "zobor",
+      documentType: "quote",
+      state: "quote_accepted",
+      issueDate: daysAgo(now, 26),
+      dueDate: daysFromNow(now, 4),
+      respondedAt: daysAgo(now, 21),
+      lines: [line("Preklad výročnej správy do angličtiny", 1, 560, n)],
+    },
+    {
+      key: "quote_rejected",
+      contactKey: "kovac",
+      documentType: "quote",
+      state: "quote_rejected",
+      issueDate: daysAgo(now, 42),
+      dueDate: daysAgo(now, 12),
+      respondedAt: daysAgo(now, 37),
+      lines: [line("Tlmočenie na svadbe – celý deň", 1, 350, n, "deň")],
+    },
+    {
+      key: "quote_expired",
+      contactKey: "tatranska",
+      documentType: "quote",
+      state: "quote_expired",
+      issueDate: daysAgo(now, 48),
+      dueDate: daysAgo(now, 18),
+      lines: [line("Preklad jedálneho lístka do troch jazykov", 1, 240, n)],
+    },
+    {
+      key: "draft",
+      contactKey: "povazie",
+      state: "draft",
+      issueDate: daysAgo(now, 0),
+      lines: [line("Preklad bezpečnostných listov – október", 18, 18, n, "NS")],
+    },
+    {
+      key: "ai",
+      contactKey: "zobor",
+      state: "ai_draft",
+      issueDate: daysAgo(now, 0),
+      ai: {
+        transcript: "Faktúra pre vinárstvo Pod Zoborom, preklad cenníka, šesť normostrán po dvadsať eur.",
+        confidence: "0.790",
+      },
+      lines: [line("Preklad cenníka", 6, 20, n, "NS")],
+    },
+  ];
+}
+
+/**
+ * An electrician who is a VAT payer. Installation work for another payer is
+ * a construction supply, so the customer self-assesses the VAT (§69 ods. 12
+ * písm. j ZoDPH); an inspection or work for a household carries 23 %.
+ */
+function skVatFreelancer(now: Date): Spec[] {
+  const v = 23;
+  return [
+    {
+      key: "hall",
+      contactKey: "gazdovska",
+      state: "paid",
+      issueDate: daysAgo(now, 73),
+      paidAt: daysAgo(now, 61),
+      reverseCharge: true,
+      lines: [line("Elektroinštalácia výrobnej haly – práce", 64, 32, v, "hod"), line("Inštalačný materiál a rozvádzač", 1, 1_480, v)],
+    },
+    {
+      key: "flat",
+      contactKey: "kovac",
+      state: "paid",
+      issueDate: daysAgo(now, 57),
+      paidAt: daysAgo(now, 49),
+      lines: [line("Rekonštrukcia elektroinštalácie v byte", 1, 2_400, v), line("Svietidlá vrátane montáže", 6, 45, v, "ks")],
+    },
+    {
+      key: "flat_credit",
+      contactKey: "kovac",
+      documentType: "credit_note",
+      convertFrom: "flat",
+      state: "paid",
+      issueDate: daysAgo(now, 45),
+      paidAt: daysAgo(now, 44),
+      noteAbove: "Opravná faktúra. Dôvod opravy: zľava za posunutý termín dokončenia.",
+      lines: [line("Zľava za posunutý termín dokončenia", -1, 150, v)],
+    },
+    {
+      key: "overdue65",
+      contactKey: "balaz",
+      state: "issued",
+      issueDate: daysAgo(now, 79),
+      dueDate: daysAgo(now, 65),
+      lines: [line("Oprava elektroinštalácie v rodinnom dome", 1, 680, v), line("Výjazd", 1, 25, v)],
+    },
+    {
+      key: "overdue20",
+      contactKey: "tatranska",
+      state: "issued",
+      issueDate: daysAgo(now, 34),
+      dueDate: daysAgo(now, 20),
+      reverseCharge: true,
+      lines: [line("Osvetlenie terasy – rozvody a montáž", 1, 1_950, v)],
+    },
+    {
+      key: "overdue3",
+      contactKey: "zobor",
+      state: "issued",
+      issueDate: daysAgo(now, 17),
+      dueDate: daysAgo(now, 3),
+      lines: [line("Odborná prehliadka a skúška elektroinštalácie", 1, 320, v)],
+    },
+    {
+      key: "partial",
+      contactKey: "gazdovska",
+      state: "partial",
+      issueDate: daysAgo(now, 11),
+      dueDate: daysFromNow(now, 3),
+      partialAmount: 1_500,
+      paidAt: daysAgo(now, 4),
+      reverseCharge: true,
+      lines: [line("Pripojenie nových pecí – práce a materiál", 1, 2_600, v)],
+    },
+    {
+      key: "open",
+      contactKey: "kovac",
+      state: "issued",
+      issueDate: daysAgo(now, 5),
+      dueDate: daysFromNow(now, 9),
+      lines: [line("Inštalácia nabíjacej stanice pre elektromobil", 1, 890, v)],
+    },
+    {
+      key: "proforma",
+      contactKey: "balaz",
+      documentType: "proforma",
+      state: "paid",
+      issueDate: daysAgo(now, 30),
+      dueDate: daysAgo(now, 23),
+      paidAt: daysAgo(now, 25),
+      lines: [line("Záloha – elektroinštalácia v novostavbe", 1, 1_500, v)],
+    },
+    { key: "proforma_final", contactKey: "balaz", convertFrom: "proforma", state: "paid", issueDate: daysAgo(now, 24) },
+    {
+      key: "cancelled",
+      contactKey: "zobor",
+      state: "cancelled",
+      issueDate: daysAgo(now, 68),
+      lines: [line("Výmena rozvádzača v pivnici", 1, 740, v)],
+    },
+    {
+      key: "quote_open",
+      contactKey: "gazdovska",
+      documentType: "quote",
+      state: "quote_open",
+      issueDate: daysAgo(now, 3),
+      dueDate: daysFromNow(now, 27),
+      reverseCharge: true,
+      lines: [line("Nové LED osvetlenie predajne – práce a materiál", 1, 3_200, v)],
+    },
+    {
+      key: "quote_accepted",
+      contactKey: "tatranska",
+      documentType: "quote",
+      state: "quote_accepted",
+      issueDate: daysAgo(now, 25),
+      dueDate: daysFromNow(now, 5),
+      respondedAt: daysAgo(now, 22),
+      reverseCharge: true,
+      lines: [line("Bleskozvod na hlavnej budove", 1, 2_750, v)],
+    },
+    {
+      key: "quote_rejected",
+      contactKey: "balaz",
+      documentType: "quote",
+      state: "quote_rejected",
+      issueDate: daysAgo(now, 41),
+      dueDate: daysAgo(now, 11),
+      respondedAt: daysAgo(now, 36),
+      lines: [line("Inteligentná domácnosť – riadenie kúrenia a osvetlenia", 1, 3_900, v)],
+    },
+    {
+      key: "quote_expired",
+      contactKey: "kovac",
+      documentType: "quote",
+      state: "quote_expired",
+      issueDate: daysAgo(now, 50),
+      dueDate: daysAgo(now, 20),
+      lines: [line("Fotovoltická elektráreň 5 kWp na rodinný dom", 1, 6_800, v)],
+    },
+    {
+      key: "draft",
+      contactKey: "gazdovska",
+      state: "draft",
+      issueDate: daysAgo(now, 0),
+      lines: [line("Pohotovostná oprava – výpadok chladiaceho boxu", 3, 38, v, "hod"), line("Nočný výjazd", 1, 40, v)],
+    },
+    {
+      key: "ai",
+      contactKey: "kovac",
+      state: "ai_draft",
+      issueDate: daysAgo(now, 0),
+      ai: {
+        transcript: "Faktúra pre Mareka Kováča, výmena troch zásuviek a vypínača, spolu stoštyridsať eur.",
+        confidence: "0.760",
+      },
+      lines: [line("Výmena zásuviek a vypínača", 1, 140, v)],
+    },
+  ];
+}
+
+const SPECS: Record<DemoKind, (now: Date) => Spec[]> = {
+  cz_vat_sro: czVatSro,
+  cz_freelancer: (now) => czNonPayer(now, "design"),
+  cz_pausal: (now) => czNonPayer(now, "dev"),
+  sk_vat_sro: skVatSro,
+  sk_freelancer: skFreelancer,
+  sk_vat_freelancer: skVatFreelancer,
+};
+
 export function buildInvoices(kind: DemoKind, now: Date): DemoInvoice[] {
-  const specs =
-    kind === "cz_vat_sro"
-      ? czVatSro(now)
-      : kind === "sk_vat_sro"
-        ? skVatSro(now)
-        : czNonPayer(now, kind === "cz_freelancer" ? "design" : "dev");
-  return specs.map((s) => finish(kind, s));
+  return SPECS[kind](now).map((s) => finish(kind, s));
 }
