@@ -8,6 +8,8 @@ export { ADVANCE_KINDS, vatStatusOf, type TaxAdvances } from './vat-status';
 import type { TaxAdvances } from './vat-status';
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
+export type BuyerDetailsField = 'email' | 'phone' | 'ico' | 'dic';
+
 export interface TenantSettings {
   id: string;
   companyName: string;
@@ -24,6 +26,8 @@ export interface TenantSettings {
   flatTaxRegime?: boolean | null;
   /** OSVČ: hlavní / vedlejší činnost; null or missing = not answered yet. */
   activityKind?: 'main' | 'secondary' | null;
+  /** Fields a customer must fill in on a buyer-details link (0054); missing on an older backend. */
+  buyerDetailsRequired?: BuyerDetailsField[];
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;

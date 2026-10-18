@@ -29,10 +29,14 @@ export function registryQueryOf(rawIco: string | undefined, rawVat: string | und
 }
 
 /** 404 `not_found` for anything the registries don't know (or when they are down). */
-export async function registryLookup(contacts: Pick<ContactsService, "aresLookup">, query: RegistryQuery): Promise<RegistryHit> {
+export async function registryLookup(
+  contacts: Pick<ContactsService, "lookupById">,
+  query: RegistryQuery,
+  country?: string | null,
+): Promise<RegistryHit> {
   try {
     if ("ico" in query) {
-      const hit = await contacts.aresLookup(query.ico);
+      const hit = await contacts.lookupById(query.ico, country);
       return {
         name: hit.legalName,
         ico: hit.ico || null,

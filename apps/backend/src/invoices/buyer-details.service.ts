@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -12,12 +11,17 @@ import { NotificationsService } from "../notifications/notifications.service";
 import {
   buyerDetailsSchema,
   DRAFT_STATUSES,
+  missingRequired,
+  newBuyerDetailsToken,
+  normalizeToken,
   requestBlock,
+  requiredFieldsOf,
   resolveBuyerContact,
   shouldAutoIssue,
   submitBlock,
   TOKEN_PATTERN,
   type BuyerContact,
+  type BuyerDetailsField,
   type BuyerDetails,
   type ContactResolution,
 } from "./buyer-details.util";
@@ -37,6 +41,7 @@ export function buyerDetailsUrlOf(token: string): string {
 const FIELD_LABELS: Record<string, string> = {
   legalName: "název",
   email: "e-mail",
+  phone: "telefon",
   ico: "IČO",
   dic: "DIČ",
   address: "adresa",
@@ -55,6 +60,8 @@ export interface BuyerDetailsPublicView {
   totals: { withoutVat: number; vat: number; total: number };
   submitted: boolean;
   prefill: { name: string | null; email: string | null; country: string | null; isPerson: boolean };
+  /** Fields the supplier made mandatory for this link (name and address always are). */
+  required: BuyerDetailsField[];
 }
 
 /**
@@ -90,16 +97,22 @@ export class BuyerDetailsService {
    * Opens (or replaces) the request for a draft: a fresh token, so any older
    * link stops working, and optionally an e-mail with the link.
    */
-  async request(db: TenantDb, tenantId: string, userId: string, invoiceId: string, opts: { email?: string | null; autoIssue?: boolean }) {
+  async request(db: TenantDb, tenantId: string, userId: string, invoiceId: string, opts: { email?: string | null; autoIssue?: boolean; required?: BuyerDetailsField[]; saveAsDefault?: boolean }) {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, invoiceId)).limit(1);
     if (!invoice) throw new NotFoundException(`Invoice ${invoiceId} not found`);
     const block = requestBlock(invoice);
     if (block === "not_draft") throw new BadRequestException("Only a draft can be sent to the customer to fill in their details");
     if (block) throw new BadRequestException("A credit note always has the customer of its invoice");
 
-    const token = randomUUID();
+    // 12 base62 characters (~71 bits); the unique index on the column backs it up.
+    const token = newBuyerDetailsToken();
     const email = opts.email?.trim().toLowerCase() || null;
     const now = new Date();
+    // No list from the client = the company's default (null keeps following later changes of it).
+    const required = opts.required ? requiredFieldsOf(opts.required) : null;
+    if (required && opts.saveAsDefault) {
+      await db.update(schema.tenants).set({ buyerDetailsRequired: required, updatedAt: now }).where(eq(schema.tenants.id, tenantId));
+    }
     const [updated] = await db
       .update(schema.invoices)
       .set({
@@ -108,6 +121,7 @@ export class BuyerDetailsService {
         buyerDetailsRequestedBy: userId,
         buyerDetailsEmail: email,
         buyerDetailsAutoIssue: opts.autoIssue ?? false,
+        buyerDetailsRequired: required,
         buyerDetailsSubmittedAt: null,
         buyerDetailsOutcome: null,
         updatedAt: now,
@@ -124,6 +138,7 @@ export class BuyerDetailsService {
       changes: [
         ...(email ? [{ field: "email", from: null, to: email }] : []),
         { field: "autoIssue", from: null, to: opts.autoIssue ?? false },
+        ...(required ? [{ field: "required", from: null, to: required.join(",") }] : []),
       ],
     });
 
@@ -170,7 +185,7 @@ export class BuyerDetailsService {
   /** Which company and draft an open link belongs to; null for anything else. */
   async target(token: string): Promise<{ tenant_id: string; invoice_id: string } | null> {
     if (!TOKEN_PATTERN.test(token)) return null;
-    const rows = await this.dbService.db.execute<{ tenant_id: string; invoice_id: string }>(sql`SELECT * FROM get_buyer_details_target(${token})`);
+    const rows = await this.dbService.db.execute<{ tenant_id: string; invoice_id: string }>(sql`SELECT * FROM get_buyer_details_target(${normalizeToken(token)})`);
     return rows[0] ?? null;
   }
 
@@ -234,6 +249,7 @@ export class BuyerDetailsService {
           country: contact?.addressCountry ?? null,
           isPerson: contact?.isPerson ?? false,
         },
+        required: requiredFieldsOf(invoice.buyerDetailsRequired ?? tenant?.buyerDetailsRequired),
       };
     });
   }
@@ -271,6 +287,11 @@ export class BuyerDetailsService {
     const block = submitBlock(invoice, token);
     if (block === "not_found" || !invoice) throw new NotFoundException("Link not found");
     if (block) throw new ConflictException({ error: block });
+    const required = await this.requiredFor(db, tenantId, invoice);
+    const missing = missingRequired(details, required);
+    if (missing.length) {
+      throw new BadRequestException({ error: "invalid_input", issues: missing.map((field) => ({ path: field, message: "required" })) });
+    }
 
     const attached = invoice.contactId ? await this.loadContact(db, invoice.contactId) : null;
     const match = await this.findByIdentifier(db, details.ico, details.dic);
@@ -387,6 +408,13 @@ export class BuyerDetailsService {
   }
 
   // ------------------------------------------------------------ data access (small, so tests can stub it)
+
+  /** The link's own list, else the company default. */
+  async requiredFor(db: TenantDb, tenantId: string, invoice: InvoiceRow): Promise<BuyerDetailsField[]> {
+    if (invoice.buyerDetailsRequired) return requiredFieldsOf(invoice.buyerDetailsRequired);
+    const [tenant] = await db.select({ required: schema.tenants.buyerDetailsRequired }).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    return requiredFieldsOf(tenant?.required);
+  }
 
   async loadInvoice(db: TenantDb, id: string): Promise<InvoiceRow | null> {
     const [row] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);

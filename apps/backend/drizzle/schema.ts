@@ -261,6 +261,9 @@ export const tenants = pgTable("tenants", {
   // Plan and interval of the Stripe subscription, from the Checkout metadata.
   subscriptionPlan: varchar("subscription_plan", { length: 16 }),
   subscriptionInterval: varchar("subscription_interval", { length: 8 }).$type<"month" | "year">(),
+  // Fields a customer must fill in on a buyer-details link (0054): email, phone, ico, dic.
+  // A link can carry its own list (invoices.buyer_details_required); this is the default.
+  buyerDetailsRequired: text("buyer_details_required").array().notNull().default(sql`'{email,ico}'::text[]`),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -426,6 +429,8 @@ export const contacts = pgTable("contacts", {
   // `InvoicesService.sendInvoice`/`InvoiceRemindersCron` both check for this
   // explicitly rather than assuming it's always set.
   email: text("email"),
+  // Filled in by the customer on a buyer-details link or typed by the user (0054); never printed.
+  phone: text("phone"),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),
@@ -588,13 +593,16 @@ export const invoices = pgTable(
     // The token is a separate secret from `publicToken` and only works while
     // the document is a draft and nothing has been submitted yet; null = no
     // request open. `buyerDetailsOutcome` says what happened to the contact.
-    buyerDetailsToken: uuid("buyer_details_token"),
+    // Text since 0054: new links get 12 base62 characters, older ones keep their UUID.
+    buyerDetailsToken: text("buyer_details_token"),
     buyerDetailsRequestedAt: timestamp("buyer_details_requested_at", { withTimezone: true }),
     buyerDetailsRequestedBy: uuid("buyer_details_requested_by").references(() => users.id, { onDelete: "set null" }),
     buyerDetailsEmail: text("buyer_details_email"),
     buyerDetailsAutoIssue: boolean("buyer_details_auto_issue").notNull().default(false),
     buyerDetailsSubmittedAt: timestamp("buyer_details_submitted_at", { withTimezone: true }),
     buyerDetailsOutcome: jsonb("buyer_details_outcome").$type<BuyerDetailsOutcome>(),
+    // Required fields for this link; null = the company's tenants.buyer_details_required.
+    buyerDetailsRequired: text("buyer_details_required").array(),
     // Sum received so far (partial payments); the status flips to "paid" once it reaches the total.
     amountPaid: numeric("amount_paid", { precision: 14, scale: 2 }).notNull().default("0"),
     paidAt: timestamp("paid_at", { withTimezone: true }),

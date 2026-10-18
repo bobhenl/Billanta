@@ -7,6 +7,7 @@ import { z } from "zod";
 import { emailPrefsSchema } from "../email-prefs";
 import { invoiceFormPrefsSchema } from "../invoice-form-prefs";
 import { enabledModulesSchema } from "../modules";
+import { BUYER_DETAILS_FIELDS } from "../../invoices/buyer-details.util";
 
 const text = (max: number) => z.string().trim().max(max).nullish();
 
@@ -97,6 +98,8 @@ export const updateTenantSchema = z
     payment_methods: paymentMethodsSchema,
     public_profile: publicProfileSchema,
     enabled_modules: enabledModulesSchema,
+    // Default required fields on a buyer-details link (see BuyerDetailsService.request).
+    buyer_details_required: z.array(z.enum(BUYER_DETAILS_FIELDS)).max(4),
   })
   .partial();
 

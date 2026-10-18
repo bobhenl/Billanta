@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { parseVatId, VIES_COUNTRIES } from "@faktur/cz-compliance";
 import { z } from "zod";
 import type { BuyerDetailsOutcome } from "../../drizzle/schema";
@@ -7,8 +8,73 @@ import type { BuyerDetailsOutcome } from "../../drizzle/schema";
  * kept free of Nest and the database so each one can be unit-tested.
  */
 
-/** Loose UUID shape check before a token ever reaches a `::uuid` cast (real access control = 122 random bits). */
-export const TOKEN_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_TOKEN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SHORT_TOKEN = /^[0-9A-Za-z]{12}$/;
+
+/**
+ * Shape check before a token reaches the database: a 12-character base62
+ * token (new links, ~71 random bits) or a UUID (links sent before 0054).
+ * Real access control is the randomness, not the pattern.
+ */
+export const TOKEN_PATTERN = { test: (token: string) => SHORT_TOKEN.test(token) || UUID_TOKEN.test(token) };
+
+/** The form a token is stored in: UUIDs in lower case (as Postgres printed them), short tokens as they are (case matters). */
+export const normalizeToken = (token: string) => (UUID_TOKEN.test(token) ? token.toLowerCase() : token);
+
+const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+/** A new link token: 12 base62 characters from the CSPRNG, without modulo bias (bytes >= 248 are redrawn). */
+export function newBuyerDetailsToken(random: (n: number) => Buffer = randomBytes): string {
+  let out = "";
+  while (out.length < 12) {
+    for (const byte of random(16)) {
+      if (byte < 248 && out.length < 12) out += BASE62[byte % 62];
+    }
+  }
+  return out;
+}
+
+/** Fields the supplier can make mandatory on the buyer-details page (name and address always are). */
+export const BUYER_DETAILS_FIELDS = ["email", "phone", "ico", "dic"] as const;
+export type BuyerDetailsField = (typeof BUYER_DETAILS_FIELDS)[number];
+/** E-mail (to send the document to) and IČO of a Czech/Slovak company, unless the supplier picks otherwise. */
+export const DEFAULT_BUYER_DETAILS_REQUIRED: BuyerDetailsField[] = ["email", "ico"];
+
+export const requiredFieldsOf = (value: readonly string[] | null | undefined): BuyerDetailsField[] =>
+  value ? BUYER_DETAILS_FIELDS.filter((f) => value.includes(f)) : [...DEFAULT_BUYER_DETAILS_REQUIRED];
+
+/**
+ * Which required fields a submission leaves empty. IČO and DIČ only apply
+ * to a company, and IČO only to a Czech or Slovak one (other countries have
+ * no IČO field on the form).
+ */
+export function missingRequired(details: Pick<BuyerDetails, "isPerson" | "email" | "phone" | "ico" | "dic" | "addressCountry">, required: readonly BuyerDetailsField[]): BuyerDetailsField[] {
+  const domestic = details.addressCountry === "CZ" || details.addressCountry === "SK";
+  return required.filter((f) => {
+    if (f === "email") return !details.email;
+    if (f === "phone") return !details.phone;
+    if (details.isPerson) return false;
+    if (f === "ico") return domestic && !details.ico;
+    return !details.dic;
+  });
+}
+
+/**
+ * Whether the name a register gives for an IČO is the supplier's own name,
+ * ignoring case, accents, punctuation and spacing ("ABC, s.r.o." = "ABC s. r. o.").
+ * Drives the "verified in ARES" line, so it errs on the side of "no".
+ */
+export function sameCompanyName(a: string | null | undefined, b: string | null | undefined): boolean {
+  const key = (v: string) =>
+    v
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+  if (!a || !b) return false;
+  const x = key(a);
+  return x.length >= 2 && x === key(b);
+}
 
 /** Statuses in which a document is still a draft; nothing else may be touched by the link. */
 export const DRAFT_STATUSES = ["draft", "pending_review"] as const;
@@ -35,7 +101,7 @@ export function requestBlock(invoice: Pick<RequestState, "status" | "documentTyp
  */
 export function submitBlock(invoice: RequestState | null | undefined, token: string): "not_found" | "closed" | "submitted" | null {
   if (!invoice || !TOKEN_PATTERN.test(token) || !invoice.buyerDetailsToken) return "not_found";
-  if (invoice.buyerDetailsToken.toLowerCase() !== token.toLowerCase()) return "not_found";
+  if (invoice.buyerDetailsToken !== normalizeToken(token)) return "not_found";
   if (!(DRAFT_STATUSES as readonly string[]).includes(invoice.status)) return "closed";
   if (invoice.buyerDetailsSubmittedAt) return "submitted";
   return null;
@@ -66,6 +132,14 @@ export const buyerDetailsSchema = z
       .nullable()
       .transform((v) => (v ? v.toLowerCase() : null))
       .pipe(z.string().email().nullable()),
+    phone: z
+      .string()
+      .trim()
+      .max(40)
+      .optional()
+      .nullable()
+      .transform((v) => (v ? v.replace(/\s+/g, " ") : null))
+      .pipe(z.string().regex(/^\+?[0-9 ()/-]{6,40}$/, "phone_format").nullable()),
     street: z.string().trim().min(2).max(200),
     city: z.string().trim().min(1).max(120),
     postalCode: z.string().trim().min(2).max(10),
@@ -90,8 +164,6 @@ export const buyerDetailsSchema = z
       } else {
         ico = ico.padStart(8, "0");
       }
-    } else if (!v.isPerson && domestic) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["ico"], message: "ico_required" });
     }
     if (dic) {
       const vatPrefix = EU_VAT_COUNTRY[v.country] ?? v.country;
@@ -113,6 +185,7 @@ export const buyerDetailsSchema = z
       isPerson: v.isPerson,
       legalName: v.name.replace(/\s+/g, " "),
       email: v.email,
+      phone: v.phone,
       addressStreet: v.street,
       addressCity: v.city,
       addressPostalCode: v.postalCode,
@@ -130,6 +203,7 @@ export type BuyerContact = {
   legalName: string;
   isPerson: boolean;
   email: string | null;
+  phone: string | null;
   ico: string | null;
   dic: string | null;
   addressStreet: string | null;
@@ -183,6 +257,7 @@ export function resolveBuyerContact(input: { attached: BuyerContact | null; matc
         legalName: submitted.legalName,
         isPerson: submitted.isPerson,
         email: submitted.email,
+        phone: submitted.phone,
         ico: submitted.ico,
         dic: submitted.dic,
         addressStreet: submitted.addressStreet,
@@ -200,7 +275,7 @@ export function resolveBuyerContact(input: { attached: BuyerContact | null; matc
   const patch: ContactPatch = {};
   const filled: string[] = [];
   const conflicts: BuyerDetailsOutcome["conflicts"] = [];
-  const field = (key: "legalName" | "email" | "ico" | "dic", same: (a: string, b: string) => boolean) => {
+  const field = (key: "legalName" | "email" | "phone" | "ico" | "dic", same: (a: string, b: string) => boolean) => {
     const saved = target[key];
     const next = submitted[key];
     if (empty(next)) return;
@@ -215,6 +290,7 @@ export function resolveBuyerContact(input: { attached: BuyerContact | null; matc
   };
   field("legalName", (a, b) => norm(a) === norm(b));
   field("email", (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase());
+  field("phone", (a, b) => a.replace(/[^\d+]/g, "") === b.replace(/[^\d+]/g, ""));
   field("ico", (a, b) => a.trim() === b);
   field("dic", (a, b) => compact(a) === b);
 

@@ -1402,14 +1402,15 @@ REVOKE ALL ON FUNCTION get_public_card_payment_target(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION get_public_card_payment_target(uuid) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
--- "Odběratel si doplní údaje sám" (migration 0042): which company and draft a
--- buyer-details link (/d/:buyer_details_token) belongs to. One static SELECT
+-- "Odběratel si doplní údaje sám" (migrations 0042, 0054): which company and draft a
+-- buyer-details link (/d/:buyer_details_token) belongs to. The token is text
+-- since 0054 (short base62, or a UUID for links sent before). One static SELECT
 -- on the unguessable token, nothing for suspended companies, only while the
 -- document is a draft. The page and the submission then run in an ordinary
 -- tenant-scoped transaction (BuyerDetailsService), like card payments.
 -- ---------------------------------------------------------------------------
 DROP FUNCTION IF EXISTS get_buyer_details_target(uuid);
-CREATE OR REPLACE FUNCTION get_buyer_details_target(p_token uuid)
+CREATE OR REPLACE FUNCTION get_buyer_details_target(p_token text)
 RETURNS TABLE (tenant_id uuid, invoice_id uuid)
 LANGUAGE sql
 STABLE
@@ -1423,8 +1424,8 @@ AS $$
     AND i.status IN ('draft', 'pending_review')
   LIMIT 1;
 $$;
-REVOKE ALL ON FUNCTION get_buyer_details_target(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION get_buyer_details_target(uuid) TO faktur_app;
+REVOKE ALL ON FUNCTION get_buyer_details_target(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_buyer_details_target(text) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- Orders and messages from the public profile (migration 0048): which company

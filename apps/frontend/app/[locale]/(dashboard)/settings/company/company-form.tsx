@@ -2,10 +2,14 @@
 
 import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, CreditCard, FileText, Landmark, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
+import { Building2, CreditCard, FileText, Landmark, Lightbulb, Loader2, MapPin, Phone, Save, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
+import { CompanyLookup } from '@/components/company-lookup';
 import { InfoHint } from '@/components/info-hint';
+import { VatStatusBadge } from '@/components/vat-status-badge';
+import { suggestedVatStatus, type CompanyHit, type VatPayerCheck } from '@/lib/company-lookup';
+import { lookupCompanyById, searchCompanyRegistries } from '@/lib/company-lookup-actions';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
@@ -15,7 +19,6 @@ const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
 import { LogoUpload } from './logo-upload';
 import { advancesPayload, rowsFromAdvances, rowsKey, TaxAdvancesEditor, type AdvanceRow, type RegimeAnswers } from './tax-advances-editor';
-import { lookupAres } from '../../contacts/actions';
 import { updateCompany } from '../actions';
 
 /** Form field → backend snake_case key; every value is edited as a string, except the flags below. */
@@ -61,32 +64,37 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
   const advancesDirty = rowsKey(advanceRows) !== rowsKey(initialAdvances);
   const [saving, startSave] = useTransition();
   const [loadingAres, setLoadingAres] = useState(false);
+  const [search, setSearch] = useState('');
+  const [vatCheck, setVatCheck] = useState<VatPayerCheck | null>(null);
+  const suggestion = suggestedVatStatus(vatCheck, values.vatStatus);
 
   const set = (key: Field, value: string) => setValues((v) => ({ ...v, [key]: value }));
   const dirty = (Object.keys(values) as (keyof Values)[]).filter((k) => values[k] !== initial[k]);
   const dirtyCount = dirty.length + (advancesDirty ? 1 : 0);
 
+  // Fills the identity and address only. "Vztah k DPH" is never switched here: the VAT check below suggests it.
+  const fill = (d: CompanyHit) =>
+    setValues((v) => ({
+      ...v,
+      ico: d.ico ?? v.ico,
+      legalName: d.name || v.legalName,
+      companyName: v.companyName || d.name,
+      dic: d.dic ?? v.dic,
+      addressStreet: d.street ?? v.addressStreet,
+      addressCity: d.city ?? v.addressCity,
+      addressPostalCode: d.postalCode ?? v.addressPostalCode,
+      addressCountry: d.country ?? v.addressCountry
+    }));
+
   const loadAres = async () => {
     setLoadingAres(true);
-    const result = await lookupAres(values.ico.trim());
+    const result = await lookupCompanyById(values.ico.trim(), values.addressCountry);
     setLoadingAres(false);
     if (!result.ok) {
       toast({ text: result.error === 'not_found' ? t('aresNotFound') : t('aresFailed'), tone: 'err' });
       return;
     }
-    const d = result.data;
-    setValues((v) => ({
-      ...v,
-      legalName: d.legalName ?? v.legalName,
-      companyName: v.companyName || d.legalName,
-      dic: d.dic ?? v.dic,
-      addressStreet: d.addressStreet ?? v.addressStreet,
-      addressCity: d.addressCity ?? v.addressCity,
-      addressPostalCode: d.addressPostalCode ?? v.addressPostalCode,
-      addressCountry: d.addressCountry ?? v.addressCountry,
-      // ARES only knows "plátce DPH"; an identified person shows up as not a payer, so keep that choice.
-      vatStatus: d.isVatPayer === true ? 'payer' : d.isVatPayer === false ? (v.vatStatus === 'identified' ? 'identified' : 'non_payer') : v.vatStatus
-    }));
+    fill(result.data);
     toast({ text: t('aresLoaded'), tone: 'ok' });
   };
 
@@ -166,6 +174,23 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
       <Section icon={Building2} title={t('sections.identity')} hint={t('sections.identityHint')}>
         <LogoUpload hasLogo={tenant.hasLogo} readOnly={readOnly} />
         <div className="grid gap-3 sm:grid-cols-2">
+          {!readOnly && (
+            <div className="block text-sm sm:col-span-2">
+              <span className="mb-1 block font-medium">{t('registrySearch')}</span>
+              <CompanyLookup
+                value={search}
+                onChange={setSearch}
+                onPick={(hit) => {
+                  fill(hit);
+                  setSearch('');
+                  toast({ text: t('aresLoaded'), tone: 'ok' });
+                }}
+                fetchHits={(q) => searchCompanyRegistries(q, values.addressCountry)}
+                refreshKey={values.addressCountry}
+                placeholder={t('registrySearchPlaceholder')}
+              />
+            </div>
+          )}
           <label className="block text-sm">
             <span className="mb-1 block font-medium">{t('ico')}</span>
             <div className="flex gap-2">
@@ -173,12 +198,19 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
               {!readOnly && (
                 <button type="button" className={buttonClass.secondary} disabled={!/^\d{8}$/.test(values.ico) || loadingAres} onClick={loadAres}>
                   {loadingAres ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                  ARES
+                  {t('loadRegistry')}
                 </button>
               )}
             </div>
           </label>
-          {field('dic', t('dic'), { placeholder: 'CZ12345678', maxLength: 12 })}
+          <label className="block text-sm">
+            <span className="mb-1 flex flex-wrap items-center gap-2">
+              <span className="font-medium">{t('dic')}</span>
+              <VatStatusBadge dic={values.dic} onResult={setVatCheck} />
+            </span>
+            {input('dic', { placeholder: 'CZ12345678', maxLength: 12 })}
+            <span className="mt-1 block text-xs text-muted-foreground">{t('dicKeepHint')}</span>
+          </label>
           {field('companyName', t('companyName'), { required: true, maxLength: 200 }, '', t('companyNameHint'))}
           {field('legalName', t('legalName'), { required: true, maxLength: 200 }, '', t('legalNameHint'))}
           <fieldset className="text-sm sm:col-span-2">
@@ -206,6 +238,17 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
             </div>
             {values.dic.trim() && values.vatStatus === 'non_payer' && (
               <p className="mt-2 text-xs text-muted-foreground">{t('vatStatus.dicHint')}</p>
+            )}
+            {suggestion && !readOnly && (
+              <div className="mt-2 flex flex-wrap items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs">
+                <Lightbulb className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                <span className="min-w-0 flex-1">
+                  {t(`vatStatus.suggest.${suggestion}`, { source: vatCheck?.source === 'VIES' ? 'VIES' : t('vatStatus.suggest.registry') })}
+                </span>
+                <button type="button" className={buttonClass.secondary} onClick={() => setValues((v) => ({ ...v, vatStatus: suggestion }))}>
+                  {t('vatStatus.suggest.apply', { status: t(`vatStatus.${suggestion}`) })}
+                </button>
+              </div>
             )}
           </fieldset>
         </div>

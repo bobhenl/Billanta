@@ -66,10 +66,16 @@ export async function rotateInvoiceLink(id: string) {
 }
 
 /** Sends the draft to the customer to fill in their own billing details (a fresh /d/{token} link each time). */
-export async function requestBuyerDetails(id: string, email: string, autoIssue: boolean) {
+export async function requestBuyerDetails(
+  id: string,
+  email: string,
+  autoIssue: boolean,
+  required?: ('email' | 'phone' | 'ico' | 'dic')[],
+  saveAsDefault = false
+) {
   return run<{ token: string; url: string; emailed: boolean; autoIssue: boolean }>(
     `/api/v1/invoices/${id}/buyer-details-request`,
-    json('POST', { email: email.trim() || undefined, autoIssue })
+    json('POST', { email: email.trim() || undefined, autoIssue, required, saveAsDefault })
   );
 }
 

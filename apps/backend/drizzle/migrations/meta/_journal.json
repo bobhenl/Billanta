@@ -377,6 +377,13 @@
       "when": 1792900600000,
       "tag": "0053_osvc_regime",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1792900700000,
+      "tag": "0054_registries_buyer_details",
+      "breakpoints": true
     }
   ]
 }

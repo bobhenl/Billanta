@@ -116,6 +116,7 @@ export class TenantsService {
       enabledModules: dto.enabled_modules,
       flatTaxRegime: dto.flat_tax_regime,
       activityKind: dto.activity_kind,
+      buyerDetailsRequired: dto.buyer_details_required ? [...new Set(dto.buyer_details_required)] : undefined,
     };
     for (const key of Object.keys(values) as Array<keyof TenantInsert>) {
       if (values[key] === undefined) delete values[key];

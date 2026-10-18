@@ -22,6 +22,8 @@
  */
 
 const ARES_BASE_URL = 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty';
+/** ARES answers in well under a second when healthy; a hung request must not hold a typeahead or a form. */
+const ARES_TIMEOUT_MS = 8000;
 
 /** Postal/registered-seat address of a subject, as returned by ARES ("sidlo"). */
 export interface AresAddress {
@@ -131,6 +133,7 @@ export async function getSubjectByIco(ico: string): Promise<AresSubject | null> 
   const response = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(ARES_TIMEOUT_MS),
   });
 
   if (response.status === 404) {
@@ -174,6 +177,7 @@ export async function searchSubjects(
       Accept: 'application/json',
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(ARES_TIMEOUT_MS),
   });
 
   if (response.status === 404) {
@@ -254,6 +258,7 @@ export async function searchAddresses(text: string, options: { limit?: number } 
     method: 'POST',
     headers: { 'Content-Type': 'application/json; charset=utf-8', Accept: 'application/json' },
     body: JSON.stringify({ textovaAdresa: text.trim(), pocet: options.limit ?? 8, typStandardizaceAdresy: 'VYHOVUJICI_ADRESY' }),
+    signal: AbortSignal.timeout(ARES_TIMEOUT_MS),
   });
   if (response.status === 400 || response.status === 404) return [];
   if (!response.ok) throw new AresApiError(`ARES address search failed with status ${response.status}`, response.status, url);

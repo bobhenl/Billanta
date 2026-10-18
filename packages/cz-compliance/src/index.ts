@@ -21,3 +21,4 @@ export * from './cnb-rates.js';
 export * from './vat-filing.js';
 export * from './cz-tax-years.js';
 export * from './legislation-datasets.js';
+export * from './vat-payer-check.js';

@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ColorDot } from '@/components/color-dot';
-import { ArrowLeft, BadgeCheck, Lock, Mail, MapPin, Star } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, Lock, Mail, MapPin, Phone, Star } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { VatStatusBadge } from '@/components/vat-status-badge';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, type ExpensePage } from '@/lib/expense-ui';
@@ -101,6 +102,7 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
           <p className="mt-1 text-sm text-muted-foreground">
             {[contact.ico && `IČO ${contact.ico}`, contact.dic && `DIČ ${contact.dic}`].filter(Boolean).join(' · ') || t('noIco')}
           </p>
+          {contact.dic && !contact.isPerson && <VatStatusBadge dic={contact.dic} className="mt-2" />}
         </div>
         <ContactActions contact={contact} />
       </div>
@@ -173,6 +175,16 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
                   <dd>
                     <a href={`mailto:${contact.email}`} className="text-primary hover:underline">
                       {contact.email}
+                    </a>
+                  </dd>
+                </div>
+              )}
+              {contact.phone && (
+                <div className="flex gap-2">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <dd>
+                    <a href={`tel:${contact.phone.replace(/[^+0-9]/g, '')}`} className="text-primary hover:underline">
+                      {contact.phone}
                     </a>
                   </dd>
                 </div>

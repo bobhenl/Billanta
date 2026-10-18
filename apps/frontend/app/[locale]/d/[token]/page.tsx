@@ -1,10 +1,12 @@
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Lock, ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { BrandMark } from '@/components/brand-mark';
 import { getBuyerDetailsView } from '@/lib/public-buyer-details';
 import { privateLinkMetadata } from '@/lib/seo';
+import { SITE_NAME } from '@/lib/site';
 import { BuyerDetailsForm } from './buyer-details-form';
 
 // A private link for one customer: never indexed, never followed, no referrer.
@@ -29,7 +31,6 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
   if (!view) notFound();
 
   const t = await getTranslations('buyerDetails');
-  const tApp = await getTranslations('app');
   const locale = await getLocale();
   const money = new Intl.NumberFormat(locale, { style: 'currency', currency: view.currency });
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'long' });
@@ -38,10 +39,25 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-      <p className="mb-8 text-center text-sm font-medium text-muted-foreground">{tApp('name')}</p>
+      <div className="mb-8 flex items-center justify-center gap-2">
+        <BrandMark className="h-6 w-6" />
+        <span className="text-sm font-semibold tracking-tight">{SITE_NAME}</span>
+      </div>
       <div className="rounded-lg border border-border bg-card p-6 sm:p-8">
         <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{t('title')}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t('intro', { supplier: s.name, document: t(`documentType.${docKey}`) })}</p>
+        <ul className="mt-4 flex flex-col gap-1.5 text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-5">
+          {view.supplierVerified && (
+            <li className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden="true" />
+              {t(s.country === 'SK' ? 'trust.verifiedRpo' : 'trust.verifiedAres', { supplier: s.name })}
+            </li>
+          )}
+          <li className="inline-flex items-center gap-1.5">
+            <Lock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            {t('trust.private')}
+          </li>
+        </ul>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <section>
@@ -98,7 +114,7 @@ export default async function BuyerDetailsPage({ params }: { params: Promise<{ l
             </div>
           </div>
         ) : (
-          <BuyerDetailsForm token={token} supplierName={s.name} prefill={view.prefill} />
+          <BuyerDetailsForm token={token} supplierName={s.name} prefill={view.prefill} required={view.required ?? ['email', 'ico']} />
         )}
       </div>
       <p className="mt-6 text-center text-xs text-muted-foreground">{t('privacy', { supplier: s.name })}</p>

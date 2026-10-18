@@ -78,6 +78,7 @@ describe("ProfileOrdersService.submit", () => {
       legalName: "Úplně jiná firma",
       isPerson: false,
       email: "puvodni@firma.cz",
+      phone: null,
       ico: "12345678",
       dic: null,
       addressStreet: "Jinde 2",

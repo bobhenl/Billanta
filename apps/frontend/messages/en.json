@@ -606,8 +606,16 @@
         "dic": "VAT ID",
         "address": "address",
         "isPerson": "private person",
-        "contactId": "contact"
-      }
+        "contactId": "contact",
+        "phone": "phone"
+      },
+      "copyManual": "Copying is not available here. Select the link and copy it yourself.",
+      "copyManualLabel": "Link for the customer",
+      "requiredLabel": "Required details",
+      "requiredHint": "What the customer must fill in. Name and address are always required, company ID and VAT number only for companies.",
+      "requiredSaveDefault": "Use as the default for new links",
+      "requiredSummary": "Required: {fields}",
+      "pickCustomer": "Pick a customer"
     },
     "profileOrder": {
       "badge": "Profile order",
@@ -1113,7 +1121,11 @@
       },
       "internalNote": "Internal note",
       "internalNoteHint": "Only for you: never printed on documents or sent to the customer. Shown on the contact page and when you invoice this customer, and included in the CSV export.",
-      "internalNotePlaceholder": "E.g. always pays late, address invoices to Ms Nová, 5% discount…"
+      "internalNotePlaceholder": "E.g. always pays late, address invoices to Ms Nová, 5% discount…",
+      "fromRegistry": "Load from register",
+      "phone": "Phone",
+      "vatSuggestYes": "The register lists them as a VAT payer. Set to \"Yes\"?",
+      "vatSuggestNo": "The register does not list them as a VAT payer. Set to \"No\"?"
     },
     "detail": {
       "title": "Contact detail",
@@ -1674,7 +1686,13 @@
         "identifiedHint": "Not a VAT payer, but you pay VAT on ads and services bought from abroad.",
         "non_payer": "Not a VAT payer",
         "non_payerHint": "You invoice without VAT and file no VAT returns.",
-        "dicHint": "You have a VAT ID but aren't a payer? If you buy ads or services from abroad (Google, Meta), you are probably an identified person. ARES doesn't show this, so check it with your tax office."
+        "dicHint": "You have a VAT ID but aren't a payer? If you buy ads or services from abroad (Google, Meta), you are probably an identified person. ARES doesn't show this, so check it with your tax office.",
+        "suggest": {
+          "payer": "{source} lists you as a VAT payer.",
+          "non_payer": "{source} does not list you as a VAT payer.",
+          "registry": "The register of VAT payers",
+          "apply": "Set to: {status}"
+        }
       },
       "advances": {
         "title": "Monthly advances",
@@ -1792,7 +1810,11 @@
       "ibanHint": "The account number and bank code are enough – IBAN is mainly needed for payments from abroad.",
       "defaultDueDaysHint": "How many days after issue a new invoice is due. Usually 14.",
       "defaultsMoved": "Invoice defaults are in",
-      "defaultsLink": "Settings › Invoices"
+      "defaultsLink": "Settings › Invoices",
+      "registrySearch": "Find in the register",
+      "registrySearchPlaceholder": "Company name, sole trader, company ID or city",
+      "loadRegistry": "Load from register",
+      "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents."
     },
     "team": {
       "title": "Team",
@@ -7076,18 +7098,18 @@
       "title": "Billing details",
       "hint": "{supplier} will make out the document to these details.",
       "kind": "The customer is",
-      "company": "Company",
+      "company": "Company or sole trader",
       "person": "Private person",
       "country": "Country",
       "ico": "Company ID (IČO)",
       "dic": "VAT ID (DIČ)",
       "vatId": "VAT ID",
-      "lookup": "Look up",
+      "lookup": "Load from register",
       "lookupNeedsIco": "Fill in the company ID first.",
       "lookupNeedsVat": "Fill in the VAT ID first.",
       "lookupNotFound": "Nothing found in the register, please fill in the details yourself.",
       "lookupDone": "Details loaded, please check them.",
-      "companyName": "Company name",
+      "companyName": "Business name",
       "personName": "Full name",
       "street": "Street and number",
       "city": "City",
@@ -7105,8 +7127,19 @@
         "ico_format": "A company ID has 8 digits.",
         "ico_foreign": "A company ID (IČO) is only for Czech and Slovak companies.",
         "dic_format": "The VAT ID doesn't look right.",
-        "email_required": "Enter your e-mail so the supplier can get back to you."
-      }
+        "email_required": "Enter your e-mail so the supplier can get back to you.",
+        "required": "This field is required.",
+        "phone_format": "This phone number does not look right."
+      },
+      "optional": "optional",
+      "phone": "Phone",
+      "companySearch": "Find your company in the register",
+      "companySearchHint": "Start typing a name, company ID or city and pick your company. We fill in the rest."
+    },
+    "trust": {
+      "verifiedAres": "We verified {supplier} in the Czech business register (ARES).",
+      "verifiedRpo": "We verified {supplier} in the Slovak register of legal entities (RPO).",
+      "private": "This link is private. Only this supplier sees your details."
     }
   },
   "referrals": {
@@ -7399,6 +7432,27 @@
         "accountant_program_required": "Switch to the accountant programme first.",
         "generic": "Saving failed. Please try again."
       }
+    }
+  },
+  "companyLookup": {
+    "group": "From the register",
+    "placeholder": "Company name, sole trader or company ID",
+    "empty": "Nothing found. Try the company ID or a different spelling.",
+    "ico": "ID"
+  },
+  "vatCheck": {
+    "checking": "Checking VAT number…",
+    "state": {
+      "payer": "VAT payer verified",
+      "unreliable": "Unreliable VAT payer",
+      "not_registered": "Not a VAT payer",
+      "valid": "Valid in VIES",
+      "invalid": "Not valid in VIES"
+    },
+    "source": {
+      "ADIS": "From the Czech register of VAT payers",
+      "VIES": "From the EU VIES system",
+      "none": "Unknown source"
     }
   }
 }
