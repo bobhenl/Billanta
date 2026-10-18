@@ -84,36 +84,52 @@ A teacher creates a class with:
   in July/August default to the next one), at most 13 months ahead,
 - max students (default 35, hard cap 40).
 
-Each class gets a **join code**: 8 characters from an unambiguous alphabet
-(no 0/O/1/I/L), shown big, as a QR code to
-`/{locale}/class/join?code=XXXX-XXXX` and on a printable A4 sheet.
-Enrolment can be **closed** (code stops working, existing students
-unaffected) and the code **rotated**. The code expires with the class.
+Each class gets a **join code** on the shared group-code mechanism the
+promo-codes session is building (§1.5): a `kind: school_class` code with
+the join URL `/{locale}/join/CODE`, shown big, as a QR code and on a
+printable A4 sheet. The code is typed as a short passphrase (8 characters
+from an unambiguous alphabet, no 0/O/1/I/L, or a word pair if that
+mechanism offers one). Enrolment can be **closed** (code stops working,
+existing students unaffected) and the code **rotated**. The code expires
+with the class.
 
 Limits per teacher: 10 active classes. Per school: 600 active students
 (staff can raise it).
 
 ### 1.3 Students
 
-`/{locale}/class/join` (public page, no account):
+Joining is **one or two steps**; the teacher creates nothing per student:
 
-1. Enter the join code → see "Class 4.A – Ekonomika, teacher J. Novák,
-   school XY". (Rate-limited per IP; a wrong code says nothing more.)
-2. Enter a **nickname** (2–30 characters; hint: "first name and initial of
-   surname, or a nickname – no full name needed"). No e-mail, no phone, no
-   birth date, no password.
-3. Backend creates the student user and company (§3), and returns a
-   **personal student code** (`ABCD-2345`, 8 chars). The page shows it big
-   with "write it down / take a photo" and a printable card. The browser is
-   signed in right away.
-4. Coming back on another device: `/{locale}/class/login` → join code of the
-   class + personal code. Both together, rate-limited per IP and per class,
-   locked for 15 minutes after 10 failures in a class.
-5. Forgotten code: the teacher regenerates it in the class view (the old one
-   stops working, the student's open sessions are signed out).
+1. The student scans the class QR (or types the passphrase at
+   `/{locale}/join`) and lands on `/{locale}/join/CODE`: "Class 4.A –
+   Ekonomika, teacher J. Novák, school XY". (Rate-limited per IP; a wrong
+   code says nothing more.)
+2. They type a **nickname** (2–30 characters; hint: "first name and
+   initial of surname, or a nickname – no full name needed") and press
+   "Enter my company". No e-mail, no phone, no birth date, no password.
+   The backend creates the student user and company (§3) and the browser
+   is signed in on the spot, in the dashboard of their practice company.
 
-Sessions are the database sessions the demo uses (`createDemoSession`),
-valid 30 days rolling, never past the class end date.
+Coming back:
+
+- **Same device:** a device-bound session (httpOnly cookie, the database
+  session the demo uses via `createDemoSession`) that lasts until the
+  class ends. Nothing to type.
+- **Another device or a cleared browser:** a **personal re-entry code**
+  (`ABCD-2345`, 8 chars) the student sees in the classroom banner of their
+  company ("Your code to get back in"). The **teacher sees every student's
+  code** in the class view and can print them as cut-out cards, so a lost
+  code is never a problem. Re-entry: `/{locale}/join/CODE` → "I'm already
+  in this class" → re-entry code. Rate-limited per IP and per class, locked
+  for 15 minutes after 10 failures in a class.
+- The teacher can **regenerate** a code (the old one stops working and the
+  student's sessions on other devices are signed out).
+
+Why this is safe without an e-mail: the re-entry code opens only one
+practice company with fictional data, inside one class, until the end of
+the school year, and it works nowhere else in Billanta. It is stored
+encrypted (the existing `encryption.util.ts`, so the teacher can read it)
+and as a hash for the lookup.
 
 The student is the **owner** of their company in the app's role model (so
 the whole UI works), but every classroom restriction below applies to the
@@ -136,6 +152,41 @@ company of *nickname* – read-only – back to class").
 Reset, removing a student and progress counting cross tenants and go
 through narrow `SECURITY DEFINER` functions that check the teacher's
 membership of the class (§3.3).
+
+### 1.5 Dependency: shared group codes (promo-codes branch)
+
+The promo-codes session (branch `claude/promo-codes-2db91c`) is building
+generic group codes with a join URL `/join/CODE` and a pluggable `kind`,
+also for events and coworkings. Classroom mode does **not** build its own
+code system; a class code is a `kind: school_class` on it:
+
+- the code row lives in the shared catalogue (unique across all kinds, so
+  `/join/CODE` resolves to exactly one thing); `classroom_classes.code_id`
+  points to it, and the code carries no plan benefit;
+- classroom registers a **join-kind handler** with the interface below; the
+  shared `/join/CODE` page asks the handler for the preview and the form,
+  and the shared backend route dispatches the join to it.
+
+```ts
+interface JoinKindHandler {
+  kind: "school_class";
+  /** What the landing page shows; null = unknown or closed code (same answer). */
+  preview(code: string): Promise<JoinPreview | null>;
+  /** For school_class the input is the nickname; says whom to sign in and where to land. */
+  join(code: string, input: unknown, ctx: { ipBucket: string }): Promise<JoinResult>;
+  /** Re-entry with a personal code (school_class only). */
+  reenter?(code: string, personalCode: string, ctx: { ipBucket: string }): Promise<JoinResult>;
+}
+type JoinResult = { userId: string; tenantId: string; sessionExpiresAt: string; redirect: string };
+```
+
+Until that branch lands, `src/classroom/join-kind.ts` holds this interface
+and the classroom implementation; a local stub generates and stores the
+code on `classroom_classes.join_code`, and a minimal `/{locale}/join/[code]`
+page calls the classroom handler directly. When promo-codes merges, the stub
+gives way to the shared code row and the page to the shared one; the
+handler stays. I'll agree the exact shape with that session before
+implementing, so neither side has to rework.
 
 ---
 
@@ -205,14 +256,16 @@ classroom_classes (
   id uuid pk, school_id, teacher_id → classroom_teachers,
   name text, language 'cs'|'sk'|'en', kind text (demo kind), seeded boolean,
   modules jsonb, max_students int,
-  join_code text unique, enrolment_open boolean,
+  join_code text unique (stub; later code_id → the shared code row),
+  enrolment_open boolean,
   ends_at timestamptz, closed_at timestamptz, deleted_at timestamptz,
   created_at
 )
 
 classroom_students (
   id uuid pk, class_id → classroom_classes, user_id → users, tenant_id → tenants,
-  nickname text, login_code_hash char(64), failed_logins int, locked_until timestamptz,
+  nickname text, reentry_code_hash char(64), reentry_code_encrypted text,
+  failed_logins int, locked_until timestamptz,
   created_at, last_seen_at, reset_count int
 )  -- unique (tenant_id), unique (user_id)
 ```
@@ -229,7 +282,7 @@ gets the second domain).
   the existing RLS. The student works in their tenant; the teacher reads it
   as a `viewer` member of that tenant. No policy is loosened.
 - **Classroom tables** are global, like `partners`. `classroom_students`
-  holds the login-code hashes, so it is **invisible to `faktur_app`** (RLS
+  holds the re-entry codes, so it is **invisible to `faktur_app`** (RLS
   on, no policy, like `demo_sessions`) and reached only through definer
   functions. `classroom_schools`, `classroom_teachers`, `classroom_classes`
   get SELECT/INSERT/UPDATE grants for `faktur_app`; the classroom service
@@ -241,9 +294,10 @@ gets the second domain).
 | Function | What | Checks |
 |---|---|---|
 | `classroom_join(p_join_code, p_nickname, p_code_hash, p_tenant jsonb, p_bank jsonb)` → user, tenant, ends_at | creates student user, tenant (via the same inserts as `create_demo_tenant`), owner membership, teacher `viewer` membership, `classroom_students` row | class exists, enrolment open, not ended, school approved, class and school caps (advisory lock per class) |
-| `classroom_student_login(p_join_code, p_code_hash)` → user, tenant, ends_at | sign-in again | lockout counter, class active |
+| `classroom_student_login(p_join_code, p_code_hash)` → user, tenant, ends_at | re-entry on another device | lockout counter, class active |
+| `classroom_students_of(p_teacher_user, p_class_id)` → nickname, encrypted code, dates | the teacher's student list | caller teaches the class |
 | `classroom_reset_student(p_teacher_user, p_student_id)` | wipes the company's content (same delete order as `delete_demo_tenant`, keeps tenant, users, memberships), then the backend reseeds through RLS like `DemoSeedService` | caller teaches the class |
-| `classroom_regenerate_code(p_teacher_user, p_student_id, p_code_hash)` | new login code, deletes the student's sessions | caller teaches the class |
+| `classroom_regenerate_code(p_teacher_user, p_student_id, p_code_hash, p_code_encrypted)` | new re-entry code, deletes the student's other sessions | caller teaches the class |
 | `classroom_remove_student(p_teacher_user, p_student_id)` | `delete_demo_tenant` + row | caller teaches the class |
 | `classroom_progress(p_teacher_user, p_class_id)` → per student: counts only | §4 | caller teaches the class; returns **counts and dates, never document content** |
 | `classroom_claim_expired(p_limit)` | cron work list (ended + 14 days) | – |
@@ -278,7 +332,8 @@ src/classroom/
   classroom.module.ts
   classroom-config.ts          caps, TTLs (env with defaults, like demo-config)
   classroom-policy.ts (+spec)  extra blocks on top of demoBlockFor()
-  join-code.ts (+spec)         code alphabet, normalising "abcd 2345" → "ABCD-2345"
+  join-kind.ts                 JoinKindHandler interface (§1.5) + the school_class handler
+  join-code.ts (+spec)         code alphabet, "abcd 2345" → "ABCD-2345"; stub until promo-codes
   school-year.ts (+spec)       default end date
   email-domain.ts (+spec)      free-mail list, domain matching
   lessons.ts (+spec)           lesson → milestone predicates over counts (§4)
@@ -286,7 +341,8 @@ src/classroom/
   classroom-join.service.ts    join/login → definer functions + DemoSeedService
   classroom-admin.controller.ts  v1/admin/classroom (PlatformAdminGuard)
   classroom.controller.ts        v1/classroom (JwtAuthGuard, teacher, pool)
-  classroom-public.controller.ts v1/public/classroom/{join,login} (provision secret, like demo)
+  classroom-public.controller.ts v1/public/classroom/{preview,join,reenter} (provision secret,
+                                 like demo); gives way to the shared /join dispatch later
   classroom-cleanup.cron.ts
 ```
 
@@ -301,13 +357,15 @@ src/classroom/
 ### 3.6 Frontend
 
 - `/for-schools/apply` (application), `/classroom` (teacher: classes),
-  `/classroom/[classId]` (students, progress grid, join code/QR, print
-  sheet, actions), `/class/join`, `/class/login` (students), `/admin/classroom`
+  `/classroom/[classId]` (students with their re-entry codes, progress
+  grid, join code/QR, print sheet and code cards, actions),
+  `/join/[code]` (students: nickname, or "I'm already in" + re-entry code;
+  a stub until the shared page from promo-codes), `/admin/classroom`
   (staff).
 - Classroom banner in the dashboard for students ("Cvičná firma – třída
   4.A – do 31. 8. 2027") and for the teacher viewing a student company.
 - E-mail actions in classroom open the preview modal instead of sending.
-- `/api/classroom/join` and `/api/classroom/login` route handlers open the
+- `/api/classroom/join` and `/api/classroom/reenter` route handlers open the
   session like `/api/demo/start` (same-origin check, per-IP rate limit,
   provision secret to the backend).
 - All strings in `cs`, `sk`, `en`.
@@ -324,8 +382,8 @@ src/classroom/
   lessons. A cell is ✓ done, ◐ started, – not yet. Click a cell to see the
   milestones of that lesson for that student ("issued invoice ✓, credit
   note –").
-- **Per student actions:** open company (read-only), reset company,
-  new student code, remove.
+- **Per student actions:** show/print re-entry code, open company
+  (read-only), reset company, new re-entry code, remove.
 - **Class actions:** close/open enrolment, rotate join code, extend end date
   (once, up to 31 Aug), end class now, download progress CSV.
 - **Totals:** documents issued in the class this week (a teacher sees the
@@ -373,7 +431,9 @@ In:
 1. Migration, schema, grants, definer functions, triggers (§3).
 2. Teacher application + staff approval (API + simple pages).
 3. Classes: create, list, join code, QR, close enrolment, rotate code.
-4. Student join with nickname + personal code, login again, session.
+4. Student join by QR/passphrase + nickname, device-bound session,
+   re-entry code the teacher can see, behind the `JoinKindHandler`
+   interface (stubbed code until promo-codes lands).
 5. Student companies seeded via `DemoSeedService`, teacher `viewer`
    membership, "open company" read-only.
 6. All safeguards in §2 (guard + triggers), classroom watermark texts,
@@ -398,8 +458,10 @@ Later:
 - ISDOC with a "practice" note for e-invoicing lessons.
 - Bulk class creation from a CSV of nicknames (pre-generated codes on
   printable cards, for younger students without a device at hand).
-- SSO with school Google/Microsoft accounts (would let us drop personal
+- SSO with school Google/Microsoft accounts (would let us drop re-entry
   codes for schools that have it).
+- Events and coworkings on the same join mechanism are the promo-codes
+  session's; classroom only adds its kind.
 
 ---
 
@@ -411,7 +473,9 @@ Later:
   stored with the school). Legal text to be prepared/reviewed separately.
 - **Minimal data:** nickname (teacher instructs: no full name), the
   practice company content, a hashed login code, technical timestamps. No
-  e-mail, phone, birth date, photo, address or IP (rate limits use a
+  e-mail, phone, birth date, photo, address or IP; the re-entry code is
+  stored encrypted and hashed and shown only to the student and their
+  teacher (rate limits use a
   salted IP hash with a 24 h window, as the demo). Nicknames are not shown
   to anyone outside the class.
 - **No consent from the child is needed** for this processing (performed
