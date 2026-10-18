@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { auth, createDemoSession, sessionCookieName } from '@/auth';
+import { auth } from '@/auth';
 import { routing } from '@/i18n/routing';
-import { ACTIVE_TENANT_COOKIE } from '@/lib/api-client';
 import { clientIp } from '@/lib/client-ip';
-import { demoEnabled, isDemoKind, sameOrigin, secureCookies } from '@/lib/demo';
+import { demoEnabled, isDemoKind, sameOrigin } from '@/lib/demo';
+import { openDemoSession } from '@/lib/demo-session';
 import { DEMO_LIMITS, allow } from '@/lib/rate-limit';
 
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const session = await auth();
   if (session?.user && !session.isDemo) return fail('demo_signed_in', 409);
 
-  const body = (await request.json().catch(() => null)) as { kind?: unknown; locale?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { kind?: unknown; locale?: unknown; empty?: unknown } | null;
   if (!isDemoKind(body?.kind)) return fail('invalid_kind', 400);
   const locale = routing.locales.find((l) => l === body?.locale) ?? routing.defaultLocale;
 
@@ -43,7 +43,8 @@ export async function POST(request: Request) {
         'x-demo-provision-secret': process.env.DEMO_PROVISION_SECRET ?? '',
         ...(ip ? { 'x-guest-ip': ip } : {})
       },
-      body: JSON.stringify({ kind: body.kind }),
+      // `empty`: the company and its settings, no documents ("start from scratch").
+      body: JSON.stringify({ kind: body.kind, empty: body.empty === true }),
       cache: 'no-store',
       // Seeding a company with ~20 invoices takes a moment.
       signal: AbortSignal.timeout(20000)
@@ -59,12 +60,7 @@ export async function POST(request: Request) {
     return fail('demo_unavailable', 503);
   }
 
-  const expires = new Date(created.expiresAt);
-  const sessionToken = await createDemoSession(created.userId, expires);
-  const secure = secureCookies();
   const response = NextResponse.json({ redirect: `/${locale}/dashboard` });
-  const options = { httpOnly: true, sameSite: 'lax' as const, path: '/', secure, expires };
-  response.cookies.set(sessionCookieName(secure), sessionToken, options);
-  response.cookies.set(ACTIVE_TENANT_COOKIE, created.tenantId, options);
+  await openDemoSession(response, created.userId, created.tenantId, new Date(created.expiresAt));
   return response;
 }

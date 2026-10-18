@@ -4,8 +4,11 @@ import type { TenantScopedRequest } from "./tenant-context.middleware";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
-/** The member's own account and preferences: every role may change these. */
-const PERSONAL_PREFIXES = ["v1/me", "v1/dashboard/config", "v1/invitations"];
+/**
+ * The member's own account and preferences: every role may change these.
+ * `v1/demo`: switching the demo's team view, which the controller limits to demos.
+ */
+const PERSONAL_PREFIXES = ["v1/me", "v1/dashboard/config", "v1/invitations", "v1/demo"];
 
 /**
  * Company administration. Accountants work with documents, the bank and exports

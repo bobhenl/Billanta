@@ -21,14 +21,14 @@ export class DemoController {
 
   @Post()
   @HttpCode(201)
-  async start(@Body() body: { kind?: unknown } | undefined, @Headers("x-demo-provision-secret") secret: string | undefined, @Ip() ip: string, @Req() req: Request) {
+  async start(@Body() body: { kind?: unknown; empty?: unknown } | undefined, @Headers("x-demo-provision-secret") secret: string | undefined, @Ip() ip: string, @Req() req: Request) {
     const cfg = demoConfig();
     // Off, or misconfigured: look like a route that doesn't exist.
     if (!cfg.enabled || !cfg.provisionSecret || !cfg.ipSalt) throw new NotFoundException();
     if (!secret || !sameSecret(secret, cfg.provisionSecret)) throw new ForbiddenException("forbidden");
     const kind = body?.kind;
     if (!isDemoKind(kind)) throw new BadRequestException("invalid_kind");
-    return this.demo.create(kind, ipBucket(visitorIp(ip, req), cfg.ipSalt));
+    return this.demo.create(kind, ipBucket(visitorIp(ip, req), cfg.ipSalt), body?.empty === true);
   }
 }
 

@@ -477,6 +477,13 @@
       "when": 1792902100000,
       "tag": "0068_demo_playground",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1792902200000,
+      "tag": "0069_demo_roles_transfer",
+      "breakpoints": true
     }
   ]
 }

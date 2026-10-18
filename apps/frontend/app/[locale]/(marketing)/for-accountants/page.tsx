@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Building2, Calculator, Check, FileDown, Gift, Link2, MapPin, MessageSquare, Sparkles, UserPlus, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { DemoCta } from '@/components/demo/demo-cta';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -72,6 +73,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
           {t('partnersLink')}
         </Link>
       </div>
+      <DemoCta view="accountant" className="mt-6 max-w-3xl" />
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {benefits.map(({ icon: Icon, key }) => (

@@ -54,6 +54,7 @@ import { RoleAccessGuard } from "./tenancy/role-access.guard";
 import { DemoErrorFilter } from "./demo/demo-error.filter";
 import { DemoGuard } from "./demo/demo.guard";
 import { DemoModule } from "./demo/demo.module";
+import { DemoTenantController } from "./demo/demo-tenant.controller";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
@@ -236,6 +237,7 @@ export class AppModule implements NestModule {
         ReferralsController,
         AccountantListingController,
         SubscriptionController,
+        DemoTenantController,
       );
 
     // InvoicesController: same tenant-context requirement as every

@@ -9,6 +9,7 @@ import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CommandPalette } from '@/components/command-palette';
 import { DemoBanner } from '@/components/demo/demo-banner';
+import { DemoTransferClaim } from '@/components/demo/demo-transfer-claim';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -23,6 +24,8 @@ import { NOINDEX } from '@/lib/seo';
 import { fetchMyAccess, fetchTenant, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { fetchMyCompanies } from '@/lib/api-client';
 import { REFERRAL_COOKIE } from '@/lib/referral';
+import { DEMO_TRANSFER_COOKIE } from '@/lib/demo-session';
+import { DEMO_VIEW_ROLES } from '@/lib/demo';
 import { dashboardClientMessages } from '@/lib/client-messages';
 
 // The signed-in app is never a search result (robots.ts also disallows it).
@@ -67,7 +70,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const role = access?.role ?? null;
   const hidden = hiddenSections(access);
   // Arrived via someone's invite link: the owner of the (new) company claims it.
-  const claimReferral = role === 'owner' && (await cookies()).has(REFERRAL_COOKIE);
+  const jar = await cookies();
+  const claimReferral = role === 'owner' && jar.has(REFERRAL_COOKIE);
+  // Came from a demo with "take my work along": the owner of the new company decides whether it comes in.
+  const claimDemo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(DEMO_TRANSFER_COOKIE);
+  const demoRole = DEMO_VIEW_ROLES.find((r) => r === role) ?? 'owner';
   // The Ctrl+K palette also drops create actions the member can't perform and switched-off modules.
   const paletteHidden = [...hidden];
   if (access) {
@@ -114,10 +121,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
           )}
           {demo?.isDemo && demo.demoExpiresAt ? (
-            <DemoBanner expiresAt={demo.demoExpiresAt} aiLeft={demo.demoAiCallsLeft ?? null} locale={locale} />
+            <DemoBanner
+              expiresAt={demo.demoExpiresAt}
+              aiLeft={demo.demoAiCallsLeft ?? null}
+              locale={locale}
+              kind={demo.demoKind ?? null}
+              role={demoRole}
+            />
           ) : (
             <TrialBanner plan={access?.plan} />
           )}
+          {claimDemo && <DemoTransferClaim />}
           {children}
         </main>
 

@@ -3,20 +3,25 @@
 import { useState } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { DEMO_KINDS, type DemoKind } from '@/lib/demo';
+import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
 import { cn } from '@/lib/utils';
 
 const COUNTRY: Record<DemoKind, 'CZ' | 'SK'> = { cz_vat_sro: 'CZ', cz_freelancer: 'CZ', cz_pausal: 'CZ', sk_vat_sro: 'SK' };
 
 /**
- * Four cards, one per demo company. A click asks /api/demo/start for a fresh
- * company and then loads the dashboard with a full page load, so the new
- * session cookie is the one every server component sees.
+ * Four cards, one per demo company, plus two choices: filled with sample
+ * documents or empty, and whose eyes to look through first (feature pages
+ * link here with `?view=accountant` and the like). A click asks
+ * /api/demo/start for a fresh company, switches the view if needed and then
+ * loads the dashboard with a full page load, so the new session cookie is
+ * the one every server component sees.
  */
-export function DemoKindPicker({ locale }: { locale: string }) {
+export function DemoKindPicker({ locale, initialView = 'owner' }: { locale: string; initialView?: DemoViewRole }) {
   const t = useTranslations('demo');
   const [busy, setBusy] = useState<DemoKind | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [empty, setEmpty] = useState(false);
+  const [view, setView] = useState<DemoViewRole>(initialView);
 
   // Slovak visitors look for the Slovak company first.
   const kinds = locale === 'sk' ? [...DEMO_KINDS].sort((a, b) => Number(COUNTRY[b] === 'SK') - Number(COUNTRY[a] === 'SK')) : DEMO_KINDS;
@@ -28,10 +33,14 @@ export function DemoKindPicker({ locale }: { locale: string }) {
       const res = await fetch('/api/demo/start', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ kind, locale })
+        body: JSON.stringify({ kind, locale, empty })
       });
       const data = (await res.json().catch(() => ({}))) as { redirect?: string; error?: string };
       if (res.ok && data.redirect) {
+        // The demo works as the owner either way; a failed switch just lands there.
+        if (view !== 'owner') {
+          await fetch('/api/demo/role', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ role: view }) }).catch(() => null);
+        }
         window.location.assign(data.redirect);
         return;
       }
@@ -45,6 +54,32 @@ export function DemoKindPicker({ locale }: { locale: string }) {
 
   return (
     <div className="mt-4">
+      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+        <fieldset className="rounded-xl border border-border bg-card p-3">
+          <legend className="px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('picker.dataTitle')}</legend>
+          <div className="flex flex-wrap gap-2">
+            {[false, true].map((value) => (
+              <label key={String(value)} className={chip(empty === value)}>
+                <input type="radio" name="demo-data" className="sr-only" checked={empty === value} onChange={() => setEmpty(value)} />
+                {t(value ? 'picker.empty' : 'picker.filled')}
+              </label>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t(empty ? 'picker.emptyHint' : 'picker.filledHint')}</p>
+        </fieldset>
+        <fieldset className="rounded-xl border border-border bg-card p-3">
+          <legend className="px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('picker.viewTitle')}</legend>
+          <div className="flex flex-wrap gap-2">
+            {DEMO_VIEW_ROLES.map((r) => (
+              <label key={r} className={chip(view === r)}>
+                <input type="radio" name="demo-view" className="sr-only" checked={view === r} onChange={() => setView(r)} />
+                {t(`roles.${r}.label`)}
+              </label>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t(`roles.${view}.hint`)}</p>
+        </fieldset>
+      </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {kinds.map((kind) => (
           <button
@@ -85,3 +120,9 @@ export function DemoKindPicker({ locale }: { locale: string }) {
     </div>
   );
 }
+
+const chip = (active: boolean) =>
+  cn(
+    'cursor-pointer rounded-full border px-3 py-1.5 text-sm font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring',
+    active ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:border-primary/50'
+  );

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ArrowRight, Check } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { DemoCta } from '@/components/demo/demo-cta';
 import { Link } from '@/i18n/navigation';
 import { brandsFor, comparedAtLabel, rowsFor } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
@@ -163,6 +164,7 @@ export default async function ComparePage({ params }: { params: Promise<{ locale
           </Link>
         </div>
       </div>
+      <DemoCta className="mt-6" />
     </section>
   );
 }

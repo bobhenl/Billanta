@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { FEATURE_PAGES, getFeaturePage, relatedFeaturePages } from '@/lib/feature-pages';
+import { DemoCta } from '@/components/demo/demo-cta';
+import { FEATURE_PAGES, featureDemo, getFeaturePage, relatedFeaturePages } from '@/lib/feature-pages';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -48,6 +49,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
   const faq = t.raw(`${k}.faq`) as Faq[];
   const Icon = feature.icon;
   const url = `${SITE_URL}/${locale}/features/${slug}`;
+  const demo = featureDemo(feature.key);
 
   const structuredData = [
     {
@@ -123,6 +125,7 @@ export default async function FeaturePage({ params }: { params: Promise<Params> 
         </Link>
         <p className="mt-2 text-sm text-muted-foreground">{t('ctaNote')}</p>
       </div>
+      {demo && <DemoCta view={demo.view} feature={t(`${k}.name`)} className="mt-6 max-w-3xl" />}
 
       <div className="mt-14 max-w-3xl border-t border-border pt-8">
         <h2 className="text-xl font-semibold">{t('faqTitle')}</h2>

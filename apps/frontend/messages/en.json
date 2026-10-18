@@ -8349,8 +8349,8 @@
     "cta": "Try the demo",
     "ctaHint": "No sign-up, a sample company for 24 hours",
     "meta": {
-      "title": "Demo – try invoicing without signing up",
-      "description": "Open a sample company with invoices, contacts and reports. No email, no password, and everything is deleted after 24 hours."
+      "title": "Free invoicing demo – try the app live, no sign-up",
+      "description": "Open a sample company and try invoicing live: invoices with QR payments, VAT, reminders, expenses and the accountant's view. No e-mail, no password, and you can take your work into your own account later."
     },
     "page": {
       "eyebrow": "Demo, no sign-up",
@@ -8359,9 +8359,75 @@
       "points": {
         "time": "The company lasts 24 hours, then it is deleted entirely.",
         "safe": "All details are made up. Nothing is emailed and nothing is charged.",
-        "keep": "Like it? Create an account and start with your own company."
+        "keep": "Like it? Create an account and start with your own company.",
+        "empty": "Want to start from scratch? Pick an empty company and move your work into your own account after signing up."
       },
-      "pick": "Pick a kind of company"
+      "pick": "Pick a kind of company",
+      "rolesTitle": "See the app through the whole team's eyes",
+      "rolesLead": "In the demo you switch the view with one choice in the top bar. Each role sees exactly what it would in a real company.",
+      "tryTitle": "What to try in the demo",
+      "try": {
+        "invoices": {
+          "title": "Invoice with a QR payment",
+          "text": "Issue an invoice, download the PDF and share a link with a QR code."
+        },
+        "payments": {
+          "title": "Payments and partial payments",
+          "text": "Mark an invoice as paid or record a part payment."
+        },
+        "reminders": {
+          "title": "Overdue invoices",
+          "text": "See what is overdue and what a reminder looks like."
+        },
+        "expenses": {
+          "title": "Expenses",
+          "text": "Record a received bill and follow spending by category."
+        },
+        "vat": {
+          "title": "VAT and reports",
+          "text": "The VAT return and control statement from the same data."
+        },
+        "accountant": {
+          "title": "The accountant's view",
+          "text": "Exports for the accountant and what an accountant may do in the company."
+        },
+        "team": {
+          "title": "Team and roles",
+          "text": "Switch to a read-only colleague and try to change something."
+        },
+        "quotes": {
+          "title": "Quotes and proforma invoices",
+          "text": "Turn a quote into a proforma and then into a final invoice."
+        }
+      },
+      "allFeatures": "All features",
+      "faqTitle": "Demo FAQ",
+      "faq": [
+        {
+          "q": "Do I need to sign up or give an e-mail for the demo?",
+          "a": "No. Pick a kind of company and you are in the app in a few seconds. No e-mail, password or card."
+        },
+        {
+          "q": "How long does the demo last?",
+          "a": "The sample company lasts 24 hours. Then it is deleted along with everything you created in it."
+        },
+        {
+          "q": "Can I try the accountant's or a colleague's view?",
+          "a": "Yes. In the demo's top bar you switch between the owner, the accountant and a read-only colleague. Each role has the same permissions as in a real company."
+        },
+        {
+          "q": "Can I start with an empty company?",
+          "a": "Yes. Pick an empty company when starting, or use \"start with an empty company\" in the demo bar. You get a company with no documents and create everything yourself."
+        },
+        {
+          "q": "Will invoices from the demo move into my account?",
+          "a": "Yes, if you create the account straight from the demo. After signing up we offer to move the invoices, contacts and expenses you created. Invoices arrive as drafts, so you issue them under your own details and numbering."
+        },
+        {
+          "q": "Does anything from the demo reach real people?",
+          "a": "No. The demo sends no e-mails, connects no bank and charges nothing. All companies and people in it are made up."
+        }
+      ]
     },
     "kinds": {
       "cz_vat_sro": {
@@ -8391,10 +8457,13 @@
       "label": "Demo",
       "left": "Sample company, deleted in {time}.",
       "ai": "{n, plural, =0 {No AI requests left} one {# AI request left} other {# AI requests left}}",
-      "register": "Create your own account",
+      "register": "Create an account and keep my work",
       "restart": "Start over",
       "hours": "{h} h {m} min",
-      "minutes": "{m} min"
+      "minutes": "{m} min",
+      "viewAs": "View as:",
+      "empty": "Start with an empty company",
+      "emptyConfirm": "This opens a new, empty sample company with no documents. The current demo stays only until it expires. Continue?"
     },
     "expired": {
       "metaTitle": "The demo has ended",
@@ -8416,7 +8485,51 @@
       "demo_ip_limit": "Many demos have already been opened from your network today. Try tomorrow or create an account.",
       "demo_capacity": "Too many demos are running right now. Please try again in a moment.",
       "demo_unavailable": "The demo couldn't be set up right now. Please try again.",
-      "rate_limited": "Too many attempts. Try again in a few minutes."
+      "rate_limited": "Too many attempts. Try again in a few minutes.",
+      "invalid_role": "This role can't be tried in the demo."
+    },
+    "roles": {
+      "owner": {
+        "label": "Owner",
+        "hint": "Sees and does everything: invoices, expenses, bank, reports and company settings."
+      },
+      "accountant": {
+        "label": "Accountant",
+        "hint": "Works with documents, VAT, exports and reports, but can't touch company settings, the team or the subscription."
+      },
+      "viewer": {
+        "label": "Read-only colleague",
+        "hint": "Can look at invoices and reports, but can't issue or delete anything."
+      }
+    },
+    "picker": {
+      "dataTitle": "Data",
+      "filled": "With sample documents",
+      "empty": "Empty company",
+      "filledHint": "Invoices, contacts, expenses and reports are already filled in.",
+      "emptyHint": "Just the company and its settings. You create everything yourself, e.g. to move it into your own account later.",
+      "viewTitle": "Look at it as"
+    },
+    "transfer": {
+      "title": "Bring in your work from the demo?",
+      "lead": "The invoices, contacts and expenses you created in the demo move into this company as drafts. The sample data stays in the demo.",
+      "claim": "Bring it in",
+      "dismiss": "No, thanks",
+      "done": "Moved {invoices, plural, one {# invoice} other {# invoices}}, {contacts, plural, one {# contact} other {# contacts}} and {expenses, plural, one {# expense} other {# expenses}}. The invoices are among your drafts.",
+      "signupNote": "After you sign up, we'll offer to move the invoices, contacts and expenses you created in the demo.",
+      "errors": {
+        "demo_transfer_invalid": "The transfer is no longer available: the demo has expired or it was already used.",
+        "forbidden": "Only the owner or an admin of the company can bring in demo data.",
+        "generic": "The transfer didn't work just now. Please try again."
+      }
+    },
+    "ctaCard": {
+      "title": "Try it live in the demo",
+      "titleFeature": "Try {feature} live in the demo",
+      "lead": "A sample company with data filled in, in a few seconds. No sign-up.",
+      "leadView": "The demo opens straight in the {role} view, no sign-up.",
+      "button": "Open the demo",
+      "buttonView": "Demo as {role}"
     }
   }
 }

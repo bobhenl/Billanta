@@ -1677,4 +1677,9 @@ export const demoSessions = pgTable("demo_sessions", {
   aiCalls: integer("ai_calls").notNull().default(0),
   cleanupStartedAt: timestamp("cleanup_started_at", { withTimezone: true }),
   cleanedAt: timestamp("cleaned_at", { withTimezone: true }),
+  // Migration 0069: rows created after this are the visitor's own work, and
+  // the hash of the one-time token that moves them into a real account.
+  seededAt: timestamp("seeded_at", { withTimezone: true }),
+  transferTokenHash: char("transfer_token_hash", { length: 64 }),
+  transferredAt: timestamp("transferred_at", { withTimezone: true }),
 });

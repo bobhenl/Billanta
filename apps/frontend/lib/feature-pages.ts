@@ -31,6 +31,7 @@ import {
   Wallet,
   Webhook
 } from 'lucide-react';
+import type { DemoViewRole } from './demo';
 
 /**
  * Public feature landing pages (`/features/<slug>`). Each describes a feature
@@ -74,6 +75,17 @@ export const FEATURE_PAGES = [
 ] as const satisfies readonly { slug: string; key: string; icon: ComponentType<{ className?: string }> }[];
 
 export type FeaturePage = (typeof FEATURE_PAGES)[number];
+
+/** Features the demo can't show: they need a real bank, card processor, phone, import file or a second company. */
+const NOT_IN_DEMO: ReadonlySet<string> = new Set(['bankSync', 'cardPayments', 'voice', 'integrations', 'migration', 'backups', 'companies']);
+
+/** Features best seen through a colleague's eyes in the demo (`/demo?view=`). */
+const DEMO_VIEW: Readonly<Record<string, DemoViewRole>> = { accounting: 'accountant', vat: 'accountant', team: 'accountant' };
+
+/** How the feature's page offers the demo, or null when the demo can't show it. */
+export function featureDemo(key: string): { view: DemoViewRole } | null {
+  return NOT_IN_DEMO.has(key) ? null : { view: DEMO_VIEW[key] ?? 'owner' };
+}
 
 export function getFeaturePage(slug: string): FeaturePage | undefined {
   return FEATURE_PAGES.find((f) => f.slug === slug);

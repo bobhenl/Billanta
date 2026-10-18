@@ -25,7 +25,8 @@ export class DemoService {
     private readonly seeder: DemoSeedService,
   ) {}
 
-  async create(kind: DemoKind, ipBucket: string): Promise<DemoStart> {
+  /** `empty`: the company and its settings only, for a visitor who wants to start from nothing. */
+  async create(kind: DemoKind, ipBucket: string, empty = false): Promise<DemoStart> {
     const cfg = demoConfig();
     const sup = SUPPLIERS[kind];
     let row: { tenant_id: string; user_id: string; expires_at: Date };
@@ -43,7 +44,9 @@ export class DemoService {
     }
 
     try {
-      await this.seeder.seed(row.tenant_id, row.user_id, kind);
+      if (!empty) await this.seeder.seed(row.tenant_id, row.user_id, kind);
+      // Whatever is created from here on is the visitor's, and can go to their own account.
+      await this.dbService.sql`SELECT mark_demo_seeded(${row.tenant_id})`;
     } catch (err) {
       // A half-filled company is worse than none: drop it, the visitor retries.
       this.logger.error(`demo seed (${kind}) failed: ${(err as Error).message}`);

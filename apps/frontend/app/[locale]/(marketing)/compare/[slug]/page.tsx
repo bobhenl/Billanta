@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { DemoCta } from '@/components/demo/demo-cta';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { brandsFor, comparedAtLabel, comparedBrandsFor, comparedPages, getComparedBrand, rowsFor } from '@/lib/competitors';
@@ -205,6 +206,7 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
           </Link>
         </div>
       </div>
+      <DemoCta className="mt-6" />
 
       <div className="mt-14 max-w-3xl border-t border-border pt-8">
         <h2 className="text-xl font-semibold">{t('brand.faqTitle')}</h2>

@@ -1,9 +1,8 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { auth, deleteSessionByToken, sessionCookieName } from '@/auth';
+import { auth } from '@/auth';
 import { routing } from '@/i18n/routing';
-import { ACTIVE_TENANT_COOKIE } from '@/lib/api-client';
-import { sameOrigin, secureCookies } from '@/lib/demo';
+import { sameOrigin } from '@/lib/demo';
+import { closeDemoSession } from '@/lib/demo-session';
 
 /** Where a visitor may go after leaving a demo; anything else would be an open redirect. */
 const NEXT_PATHS = ['/signup', '/demo'] as const;
@@ -21,15 +20,6 @@ export async function POST(request: Request) {
   const next = NEXT_PATHS.find((p) => p === body?.next) ?? '/demo';
 
   const response = NextResponse.json({ redirect: `/${locale}${next}` });
-  const secure = secureCookies();
-  const cookieName = sessionCookieName(secure);
-  const token = (await cookies()).get(cookieName)?.value;
-  if (token && (await auth())?.isDemo) {
-    await deleteSessionByToken(token);
-    // A `__Secure-` cookie is only overwritten by one that is itself Secure.
-    const expired = { httpOnly: true, sameSite: 'lax' as const, path: '/', secure, maxAge: 0 };
-    response.cookies.set(cookieName, '', expired);
-    response.cookies.set(ACTIVE_TENANT_COOKIE, '', expired);
-  }
+  if ((await auth())?.isDemo) await closeDemoSession(response);
   return response;
 }

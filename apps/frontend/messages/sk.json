@@ -8256,8 +8256,8 @@
     "cta": "Vyskúšať demo",
     "ctaHint": "Bez registrácie, ukážková firma na 24 hodín",
     "meta": {
-      "title": "Demo – vyskúšajte fakturáciu bez registrácie",
-      "description": "Otvorte si ukážkovú firmu s faktúrami, kontaktmi a prehľadmi. Bez e-mailu a bez hesla, údaje sa po 24 hodinách vymažú."
+      "title": "Demo fakturácie zadarmo – vyskúšajte si aplikáciu naživo bez registrácie",
+      "description": "Otvorte si ukážkovú firmu a vyskúšajte fakturáciu naživo: faktúry s QR platbou, DPH, upomienky, náklady aj pohľad účtovníčky. Bez e-mailu a bez hesla, svoju prácu si potom môžete preniesť do vlastného účtu."
     },
     "page": {
       "eyebrow": "Demo bez registrácie",
@@ -8266,9 +8266,75 @@
       "points": {
         "time": "Firma vydrží 24 hodín, potom sa celá vymaže.",
         "safe": "Údaje sú vymyslené. Nič sa neposiela e-mailom a nič sa neplatí.",
-        "keep": "Páči sa vám to? Založte si účet a začnite s vlastnou firmou."
+        "keep": "Páči sa vám to? Založte si účet a začnite s vlastnou firmou.",
+        "empty": "Chcete začať od nuly? Zvoľte prázdnu firmu a svoju prácu si po registrácii preneste do vlastného účtu."
       },
-      "pick": "Vyberte typ firmy"
+      "pick": "Vyberte typ firmy",
+      "rolesTitle": "Pozrite sa na aplikáciu očami celého tímu",
+      "rolesLead": "V deme prepnete pohľad jedným výberom v hornej lište. Každá rola vidí presne to, čo by videla v skutočnej firme.",
+      "tryTitle": "Čo si v deme vyskúšať",
+      "try": {
+        "invoices": {
+          "title": "Faktúra s QR platbou",
+          "text": "Vystavte faktúru, stiahnite PDF a pošlite odkaz s QR kódom."
+        },
+        "payments": {
+          "title": "Úhrady a čiastočné platby",
+          "text": "Označte faktúru ako zaplatenú alebo zapíšte zálohu."
+        },
+        "reminders": {
+          "title": "Faktúry po splatnosti",
+          "text": "Pozrite sa, čo je po splatnosti a ako vyzerá upomienka."
+        },
+        "expenses": {
+          "title": "Náklady",
+          "text": "Zapíšte prijatý doklad a sledujte výdavky podľa kategórií."
+        },
+        "vat": {
+          "title": "DPH a prehľady",
+          "text": "Daňové priznanie k DPH a kontrolný výkaz z rovnakých dát."
+        },
+        "accountant": {
+          "title": "Pohľad účtovníčky",
+          "text": "Exporty pre účtovníčku a čo účtovníčka vo firme smie."
+        },
+        "team": {
+          "title": "Tím a roly",
+          "text": "Prepnite sa na kolegu len na čítanie a skúste niečo zmeniť."
+        },
+        "quotes": {
+          "title": "Ponuky a zálohové faktúry",
+          "text": "Z ponuky urobte zálohovú a potom ostrú faktúru."
+        }
+      },
+      "allFeatures": "Všetky funkcie",
+      "faqTitle": "Časté otázky k demu",
+      "faq": [
+        {
+          "q": "Potrebujem na demo registráciu alebo e-mail?",
+          "a": "Nie. Vyberiete typ firmy a o pár sekúnd ste v aplikácii. Nezadávate e-mail, heslo ani platobnú kartu."
+        },
+        {
+          "q": "Ako dlho demo vydrží?",
+          "a": "Ukážková firma vydrží 24 hodín. Potom sa zmaže aj so všetkými dátami, ktoré ste v nej vytvorili."
+        },
+        {
+          "q": "Môžem si v deme vyskúšať pohľad účtovníčky alebo kolegu?",
+          "a": "Áno. V hornej lište dema prepnete pohľad na majiteľa, účtovníčku alebo kolegu len na čítanie. Každá rola má rovnaké oprávnenia ako v skutočnej firme."
+        },
+        {
+          "q": "Môžem začať s prázdnou firmou?",
+          "a": "Áno. Pri spustení zvoľte prázdnu firmu alebo v lište dema kliknite na začiatok s prázdnou firmou. Dostanete firmu bez dokladov a všetko si vytvoríte sami."
+        },
+        {
+          "q": "Prenesú sa faktúry z dema do môjho účtu?",
+          "a": "Áno, ak si účet založíte priamo z dema. Faktúry, kontakty a náklady, ktoré ste sami vytvorili, vám po registrácii ponúkneme preniesť. Faktúry prídu ako koncepty, takže ich vystavíte už pod svojimi údajmi a číselným radom."
+        },
+        {
+          "q": "Odíde z dema niečo skutočným ľuďom?",
+          "a": "Nie. Demo neposiela e-maily, nepripája banku a nič sa v ňom neplatí. Všetky firmy a osoby v ňom sú vymyslené."
+        }
+      ]
     },
     "kinds": {
       "cz_vat_sro": {
@@ -8298,10 +8364,13 @@
       "label": "Demo",
       "left": "Ukážková firma, vymaže sa o {time}.",
       "ai": "{n, plural, =0 {AI otázky sú vyčerpané} one {Zostáva # AI otázka} few {Zostávajú # AI otázky} other {Zostáva # AI otázok}}",
-      "register": "Založiť vlastný účet",
+      "register": "Založiť účet a prevziať dáta",
       "restart": "Začať odznova",
       "hours": "{h} h {m} min",
-      "minutes": "{m} min"
+      "minutes": "{m} min",
+      "viewAs": "Pohľad:",
+      "empty": "Začať s prázdnou firmou",
+      "emptyConfirm": "Otvorí sa nová, prázdna ukážková firma bez dokladov. Súčasné demo zostane len do vypršania. Pokračovať?"
     },
     "expired": {
       "metaTitle": "Demo sa skončilo",
@@ -8323,7 +8392,51 @@
       "demo_ip_limit": "Z vašej siete dnes vzniklo už veľa dem. Skúste to zajtra alebo si založte účet.",
       "demo_capacity": "Práve beží priveľa dem. Skúste to, prosím, o chvíľu.",
       "demo_unavailable": "Demo sa teraz nepodarilo pripraviť. Skúste to, prosím, znova.",
-      "rate_limited": "Priveľa pokusov. Skúste to o pár minút."
+      "rate_limited": "Priveľa pokusov. Skúste to o pár minút.",
+      "invalid_role": "Túto rolu v deme vyskúšať nejde."
+    },
+    "roles": {
+      "owner": {
+        "label": "Majiteľ",
+        "hint": "Vidíte všetko a môžete všetko: faktúry, náklady, banku, prehľady aj nastavenia firmy."
+      },
+      "accountant": {
+        "label": "Účtovníčka",
+        "hint": "Účtovníčka má doklady, DPH, exporty a prehľady, ale nesiaha na nastavenia firmy, tím ani predplatné."
+      },
+      "viewer": {
+        "label": "Kolega len na čítanie",
+        "hint": "Kolega si faktúry a prehľady len prezerá. Nič nevystaví ani nezmaže."
+      }
+    },
+    "picker": {
+      "dataTitle": "Dáta",
+      "filled": "S ukážkovými dokladmi",
+      "empty": "Prázdna firma",
+      "filledHint": "Faktúry, kontakty, náklady a prehľady sú už vyplnené.",
+      "emptyHint": "Len firma a nastavenia. Všetko si vytvoríte sami, napríklad na neskorší prenos do vlastného účtu.",
+      "viewTitle": "Pozerať sa ako"
+    },
+    "transfer": {
+      "title": "Prevziať prácu z dema?",
+      "lead": "Faktúry, kontakty a náklady, ktoré ste v deme sami vytvorili, sa prenesú do tejto firmy ako koncepty. Ukážkové dáta zostanú v deme.",
+      "claim": "Prevziať",
+      "dismiss": "Nie, ďakujem",
+      "done": "Prenesené: {invoices, plural, one {# faktúra} few {# faktúry} other {# faktúr}}, {contacts, plural, one {# kontakt} few {# kontakty} other {# kontaktov}} a {expenses, plural, one {# náklad} few {# náklady} other {# nákladov}}. Faktúry nájdete medzi konceptmi.",
+      "signupNote": "Po registrácii vám ponúkneme preniesť faktúry, kontakty a náklady, ktoré ste v deme vytvorili.",
+      "errors": {
+        "demo_transfer_invalid": "Prenos už nie je k dispozícii: demo medzitým vypršalo alebo už bol raz použitý.",
+        "forbidden": "Dáta z dema môže prevziať len majiteľ alebo správca firmy.",
+        "generic": "Prenos sa teraz nepodaril. Skúste to, prosím, znova."
+      }
+    },
+    "ctaCard": {
+      "title": "Vyskúšajte si to naživo v deme",
+      "titleFeature": "Vyskúšajte si {feature} naživo v deme",
+      "lead": "Ukážková firma s vyplnenými dátami za pár sekúnd. Bez registrácie.",
+      "leadView": "Demo sa otvorí rovno z pohľadu roly {role}, bez registrácie.",
+      "button": "Otvoriť demo",
+      "buttonView": "Demo ako {role}"
     }
   }
 }
