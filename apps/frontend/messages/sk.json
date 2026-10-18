@@ -2997,6 +2997,10 @@
           "label": "Bezpečnostné upozornenia",
           "hint": "Zmena bankového účtu firmy. Chodí všetkým členom, aby nikto nemohol nenápadne podstrčiť iné číslo účtu."
         },
+        "billing_notice": {
+          "label": "Predplatné a skúšobná verzia",
+          "hint": "Koniec skúšobnej verzie, zaplatený tarif. Chodí vlastníkom a správcom firmy."
+        },
         "team_invitation": {
           "label": "Pozvánky do tímu",
           "hint": "Keď vás niekto pozve do svojej firmy."

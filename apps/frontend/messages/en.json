@@ -2997,6 +2997,10 @@
           "label": "Security alerts",
           "hint": "A change to the company’s bank account. Every member gets it, so nobody can quietly swap in another account number."
         },
+        "billing_notice": {
+          "label": "Subscription and trial",
+          "hint": "Trial ending, plan paid. Sent to the company’s owners and admins."
+        },
         "team_invitation": {
           "label": "Team invitations",
           "hint": "When someone invites you to their company."

@@ -198,6 +198,14 @@ export class EmailService {
     );
   }
 
+  /** Trial ending, plan paid: to owners and admins, transactional like a security alert. */
+  async sendBillingNoticeEmail(params: { to: string; title: string; body?: string | null; url?: string | null }, queue: EmailQueueOptions) {
+    await this.queue(
+      { kind: "billing_notice", category: "transactional", to: params.to, subject: params.title, html: simpleMessageHtml(params) },
+      queue,
+    );
+  }
+
   /**
    * Billanta's own mail to staff (abuse reports): there is no tenant, so no
    * outbox. Sent directly when Resend is configured, otherwise only logged.

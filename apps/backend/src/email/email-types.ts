@@ -23,6 +23,7 @@ export interface EmailTypeInfo {
 export const LOCKED_EMAIL_TYPES = [
   // To members, always sent.
   { type: "security_alert", group: "account" },
+  { type: "billing_notice", group: "account" },
   { type: "team_invitation", group: "account" },
   { type: "password_reset", group: "account" },
   { type: "email_change", group: "account" },
