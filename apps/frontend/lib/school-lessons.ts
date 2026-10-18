@@ -38,7 +38,14 @@ export interface SchoolLesson {
    * Empty where the task ends with drafts or paper work.
    */
   milestones: readonly string[];
+  /**
+   * Classroom-mode track: basic (ZŠ), standard (SŠ/OA), advanced (VOŠ/VŠ).
+   * All lessons so far are written for business schools.
+   */
+  track: LessonTrack;
 }
+
+export type LessonTrack = 'basic' | 'standard' | 'advanced';
 
 const CZ_ONLY = ['cs', 'en'] as const;
 
@@ -48,15 +55,15 @@ export const LESSONS_CHECKED = '2026-10-19';
 export const LESSON_MINUTES = 45;
 
 export const SCHOOL_LESSONS: SchoolLesson[] = [
-  { slug: 'invoice-essentials', icon: FileText, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_issued', 'invoice_vat'] },
-  { slug: 'vat-payers-and-registries', icon: BadgeCheck, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['contact_created'] },
-  { slug: 'tax-point-and-due-dates', icon: CalendarClock, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [] },
-  { slug: 'vat-rates-and-rounding', icon: Percent, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [] },
-  { slug: 'advances-and-proforma', icon: Receipt, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['proforma_converted'] },
-  { slug: 'credit-notes', icon: FileMinus, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['credit_note_issued'] },
-  { slug: 'foreign-customers-reverse-charge', icon: Globe, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_foreign_currency', 'invoice_reverse_charge'] },
-  { slug: 'payment-reminders-late-interest', icon: BellRing, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [] },
-  { slug: 'flat-tax', icon: Banknote, locales: CZ_ONLY, demo: { cz: 'cz_pausal', sk: 'cz_pausal' }, milestones: ['invoice_issued'] }
+  { slug: 'invoice-essentials', icon: FileText, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_issued', 'invoice_vat'], track: 'standard' },
+  { slug: 'vat-payers-and-registries', icon: BadgeCheck, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['contact_created'], track: 'standard' },
+  { slug: 'tax-point-and-due-dates', icon: CalendarClock, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
+  { slug: 'vat-rates-and-rounding', icon: Percent, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
+  { slug: 'advances-and-proforma', icon: Receipt, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['proforma_converted'], track: 'standard' },
+  { slug: 'credit-notes', icon: FileMinus, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['credit_note_issued'], track: 'standard' },
+  { slug: 'foreign-customers-reverse-charge', icon: Globe, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_foreign_currency', 'invoice_reverse_charge'], track: 'advanced' },
+  { slug: 'payment-reminders-late-interest', icon: BellRing, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
+  { slug: 'flat-tax', icon: Banknote, locales: CZ_ONLY, demo: { cz: 'cz_pausal', sk: 'cz_pausal' }, milestones: ['invoice_issued'], track: 'standard' }
 ];
 
 export const getLesson = (slug: string) => SCHOOL_LESSONS.find((l) => l.slug === slug);
