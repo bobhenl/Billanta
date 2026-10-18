@@ -26,6 +26,12 @@ export const SITE_NAME = 'Billanta';
  */
 export const PROFILE_DOMAIN = (process.env.NEXT_PUBLIC_PROFILE_DOMAIN ?? '').trim().toLowerCase().replace(/^\.+|\/+$/g, '');
 
+/**
+ * Public contact address for marketing pages. Optional: there is no shared
+ * mailbox until a domain is set up, so callers fall back to sign-up.
+ */
+export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? '').trim();
+
 /** The shareable address of a published profile. */
 export function profileUrl(slug: string, locale = 'cs', origin = SITE_URL): string {
   return PROFILE_DOMAIN ? `https://${slug}.${PROFILE_DOMAIN}` : `${origin}/${locale}/p/${slug}`;

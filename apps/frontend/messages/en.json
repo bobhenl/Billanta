@@ -7034,7 +7034,7 @@
   "accountants": {
     "eyebrow": "Partner programme",
     "title": "Billanta for accountants and bookkeeping firms",
-    "seoTitle": "Billanta for accountants – client access and rewards",
+    "seoTitle": "Billanta for accountants – all clients in one place, credits and new leads",
     "lead": "Invite your clients to Billanta, keep their documents in one place and earn credits towards your own plan for each paying client.",
     "cta": "Register your firm",
     "partnersLink": "Our partners",
@@ -7050,6 +7050,18 @@
       "credits": {
         "title": "Credits for clients",
         "body": "Your client gets {welcome} credits, you get {reward} for each one who starts paying."
+      },
+      "clients": {
+        "title": "Every client behind one login",
+        "body": "Switch between the companies that invited you from the account menu. No shared passwords."
+      },
+      "directory": {
+        "title": "Local businesses find you",
+        "body": "Turn on a public profile and your firm appears on the invoicing pages for your town and the towns nearby."
+      },
+      "shape": {
+        "title": "Features shaped by your practice",
+        "body": "Missing an export or a report you use every day? Tell us about it."
       }
     },
     "stepsTitle": "How it works",
@@ -7075,7 +7087,54 @@
         "An invite counts for companies created with your link within the last 30 days.",
         "You can’t invite your own company or one you are already a member of."
       ]
-    }
+    },
+    "clients": {
+      "title": "How you work with clients",
+      "lead": "Clients invoice in Billanta themselves, and their documents are at hand for you without emails and spreadsheets.",
+      "points": [
+        "The client invites you by email with the accountant role and can adjust the permissions.",
+        "You see issued invoices, expenses, bank transactions and tax reports.",
+        "Company settings, the plan and the team stay in the client’s hands.",
+        "From the Start plan up, accountant access is included in the client’s plan.",
+        "You can bring a new client yourself: send them your link and they get welcome credits."
+      ]
+    },
+    "directoryCta": {
+      "title": "Get listed on your town’s page",
+      "body": "Billanta has an invoicing page for every town and municipality in Czechia and Slovakia. Accountants in the partner programme who have a public profile with an address are shown there to local businesses. Listing is opt-in and you can turn it off with one click.",
+      "example": "Browse the town pages",
+      "settings": "Set up a public profile"
+    },
+    "shapeCta": {
+      "title": "We build Billanta together with accountants",
+      "body": "We are a small team and build new features around what accountants actually need when working with clients. Tell us how you work, what slows you down and which export would save you time. Ideas from accountants go to the front of the queue.",
+      "mail": "Write to us",
+      "mailSubject": "Billanta for accountants – an idea",
+      "signup": "Sign up your firm and tell us"
+    },
+    "faqTitle": "Frequently asked questions",
+    "faq": [
+      {
+        "q": "How much does Billanta cost for an accounting firm?",
+        "a": "Signing up and joining the programme are free. From the Start plan up, access to a client’s company is included in the client’s plan. Credits for paying clients can pay for your own firm’s plan."
+      },
+      {
+        "q": "How do I get access to a client’s documents?",
+        "a": "The client invites your email with the accountant role in Settings → Team. Once you accept, their company shows up in the company switcher in your account."
+      },
+      {
+        "q": "Which exports does Billanta support?",
+        "a": "Czech VAT return, control statement and EC sales list for the tax portal, ISDOC invoices, exports for Pohoda and Money S3, and CSV."
+      },
+      {
+        "q": "How do I get onto the town pages?",
+        "a": "Join the accountant programme, publish a public profile with your address in Settings → Public profile and tick the accountant directory option. The pages refresh once a day."
+      },
+      {
+        "q": "How many credits do I get?",
+        "a": "The client gets {welcome} credits when signing up through your link, and you get {reward} credits when they first pay. 1 credit = CZK 1."
+      }
+    ]
   },
   "twoFactor": {
     "notice": {

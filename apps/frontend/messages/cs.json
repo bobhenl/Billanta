@@ -7035,7 +7035,7 @@
   "accountants": {
     "eyebrow": "Partnerský program",
     "title": "Billanta pro účetní a účetní kanceláře",
-    "seoTitle": "Billanta pro účetní – přístup ke klientům a odměny",
+    "seoTitle": "Billanta pro účetní – klienti na jednom místě, kredity a nové zakázky",
     "lead": "Pozvěte klienty do Billanty, mějte jejich doklady na jednom místě a za každého platícího klienta získejte kredity na vlastní tarif.",
     "cta": "Zaregistrovat kancelář",
     "partnersLink": "Naši partneři",
@@ -7051,6 +7051,18 @@
       "credits": {
         "title": "Kredity za klienty",
         "body": "Klient dostane {welcome} kreditů, vy {reward} za každého, kdo začne platit."
+      },
+      "clients": {
+        "title": "Všichni klienti pod jedním přihlášením",
+        "body": "Mezi firmami klientů, kteří vás pozvali, přepínáte v menu účtu. Žádná sdílená hesla."
+      },
+      "directory": {
+        "title": "Klienti z okolí vás najdou",
+        "body": "Zapněte veřejný profil a kancelář se ukáže na stránkách fakturace ve vašem městě a okolí."
+      },
+      "shape": {
+        "title": "Funkce podle vaší praxe",
+        "body": "Chybí vám export nebo přehled, se kterým denně pracujete? Řekněte nám o něm."
       }
     },
     "stepsTitle": "Jak to funguje",
@@ -7076,7 +7088,54 @@
         "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
         "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
       ]
-    }
+    },
+    "clients": {
+      "title": "Jak pracujete s klienty",
+      "lead": "Klient fakturuje v Billantě sám, vy máte jeho doklady po ruce bez posílání e-mailů a tabulek.",
+      "points": [
+        "Klient vás pozve e-mailem a vybere roli účetní. Oprávnění může upravit.",
+        "Vidíte vydané faktury, náklady, bankovní pohyby a daňové přehledy.",
+        "Nastavení firmy, tarif a správu týmu má dál v rukou klient.",
+        "Od tarifu Start je přístup pro účetní v ceně klientova tarifu.",
+        "Nového klienta můžete přivést sami: pošlete mu svůj odkaz a dostane uvítací kredity."
+      ]
+    },
+    "directoryCta": {
+      "title": "Ukažte se na stránkách svého města",
+      "body": "Billanta má stránku o fakturaci pro každé město a obec v Česku a na Slovensku. Účetní z partnerského programu, kteří mají veřejný profil s adresou, se na nich zobrazují podnikatelům z okolí. Zápis je dobrovolný a vypnete ho jedním kliknutím.",
+      "example": "Podívat se na stránky měst",
+      "settings": "Nastavit veřejný profil"
+    },
+    "shapeCta": {
+      "title": "Billantu ladíme spolu s účetními",
+      "body": "Jsme malý tým a nové funkce stavíme podle toho, co účetní při práci s klienty opravdu potřebují. Napište nám, jak pracujete, co vás zdržuje a jaký export by vám ušetřil čas. Návrhy od účetních bereme přednostně.",
+      "mail": "Napsat nám",
+      "mailSubject": "Billanta pro účetní – návrh",
+      "signup": "Zaregistrovat kancelář a napsat nám"
+    },
+    "faqTitle": "Časté otázky",
+    "faq": [
+      {
+        "q": "Kolik stojí Billanta pro účetní kancelář?",
+        "a": "Registrace i účast v programu jsou zdarma. Přístup do firmy klienta je od tarifu Start součástí klientova tarifu. Kredity za platící klienty můžete použít na placený tarif vlastní kanceláře."
+      },
+      {
+        "q": "Jak se dostanu k dokladům klienta?",
+        "a": "Klient vás v Nastavení → Tým pozve na váš e-mail s rolí účetní. Po přijetí pozvánky se jeho firma objeví v přepínači firem ve vašem účtu."
+      },
+      {
+        "q": "Jaké exporty Billanta umí?",
+        "a": "Přiznání k DPH, kontrolní a souhrnné hlášení ve formátu pro EPO, faktury v ISDOC, export pro Pohodu a Money S3 a CSV s doklady."
+      },
+      {
+        "q": "Jak se dostanu na stránky měst?",
+        "a": "Zapněte program pro účetní, v Nastavení → Veřejný profil zveřejněte profil s adresou a zaškrtněte zobrazení v seznamu účetních. Stránky se obnovují jednou denně."
+      },
+      {
+        "q": "Kolik kreditů získám?",
+        "a": "Klient dostane {welcome} kreditů při registraci přes váš odkaz a vy {reward} kreditů, když poprvé zaplatí. 1 kredit = 1 Kč."
+      }
+    ]
   },
   "twoFactor": {
     "notice": {

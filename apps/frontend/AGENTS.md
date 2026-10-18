@@ -66,7 +66,8 @@ adding it there.
 ## UI conventions
 
 - Use `buttonClass.primary/secondary/…` and `inputClass` from
-  `@/components/modal`, `toast({ text, tone })` from `@/components/toaster`,
+  `@/lib/ui-classes` (server components must import them from there, not
+  from the client module `@/components/modal`), `toast({ text, tone })` from `@/components/toaster`,
   `Banner`, `SettingsHeader`, and `cn()` from `@/lib/utils`.
 - Roles: `fetchMyRole()` and `canManage(role)` from `@/lib/tenant`. Hide
   or disable actions the role can't do. The backend enforces it anyway.

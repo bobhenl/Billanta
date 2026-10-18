@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowUpRight, Handshake } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { cn } from '@/lib/utils';
