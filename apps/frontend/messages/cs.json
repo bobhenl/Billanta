@@ -9247,5 +9247,240 @@
       "contactTitle": "Pojďme se pobavit o partnerství",
       "contactBody": "Napište nám kontaktní osobu a co máte na mysli. Připravíme návrh na míru vaší bance."
     }
+  },
+  "adminPosters": {
+    "title": "Plakáty a letáky",
+    "description": "Plakáty A4 a A5 a letáky A6 s QR kódem pro školy, tvůrce, akce a obecní nástěnky. Připravené k tisku i na černobílé tiskárně.",
+    "fields": {
+      "template": "Publikum",
+      "lang": "Jazyk plakátu",
+      "target": "Kam vede QR kód",
+      "size": "Formát",
+      "promo": "Promo kód (nepovinné)",
+      "event": "Název akce (nepovinné)",
+      "tabs": "Útržky dole"
+    },
+    "templates": {
+      "school": "Školy",
+      "courses": "Rekvalifikace a kurzy podnikání",
+      "creators": "Tvůrci a freelanceři",
+      "communities": "Komunity a spolky OSVČ",
+      "event": "Akce (workshop, meetup)",
+      "coworking": "Coworking (pro členy)",
+      "local": "Živnostníci z obce (nástěnka)",
+      "expats": "Cizinci (anglicky)",
+      "generic": "Obecný"
+    },
+    "langs": {
+      "cs": "Čeština",
+      "sk": "Slovenština",
+      "en": "Angličtina"
+    },
+    "targets": {
+      "demo": "Demo",
+      "pricing": "Ceník",
+      "signup": "Registrace",
+      "home": "Úvodní stránka",
+      "forSchools": "Stránka pro školy",
+      "forCreators": "Stránka pro tvůrce",
+      "events": "Stránka pro akce",
+      "forCourses": "Pro kurzy podnikání (/for-courses)",
+      "forCommunities": "Pro komunity (/for-communities)",
+      "forExpats": "Pro cizince (/for-expats)"
+    },
+    "sizes": {
+      "a4": "A4 plakát",
+      "a5": "A5 plakát",
+      "a6": "A6 leták",
+      "a6x4": "A6 leták, 4 na listu A4"
+    },
+    "eventPlaceholder": "např. Startup Weekend Brno",
+    "tabsHint": "Proužky s QR kódem a adresou k odtržení, na nástěnky.",
+    "apply": "Zobrazit náhled",
+    "print": "Vytisknout",
+    "printHint": "V dialogu tisku nastavte měřítko 100 % a vypněte záhlaví a zápatí. PDF získáte volbou Uložit jako PDF.",
+    "qrTarget": "QR kód vede na:",
+    "promoHint": "S kódem vede QR na /join/KÓD a kód se tiskne velkým písmem, aby ho šlo opsat."
+  },
+  "posters": {
+    "scan": "Naskenujte, nebo otevřete",
+    "codeLabel": "Váš kód",
+    "eventLine": "Pro účastníky: {event}",
+    "foot": "Zdarma do 10 dokladů měsíčně. Bez platební karty.",
+    "tabTitle": "Fakturace online",
+    "templates": {
+      "school": {
+        "eyebrow": "Pro studenty a učitele",
+        "headline": "První fakturu vystavíte ještě o přestávce.",
+        "lead": "Demo s ukázkovou firmou, bez e-mailu a bez hesla. Vyzkoušíte DPH, QR platbu i upomínky na smyšlených datech.",
+        "benefits": [
+          {
+            "title": "Demo bez registrace",
+            "text": "Ukázková firma na 24 hodin. Nic se neodesílá a nic se neplatí."
+          },
+          {
+            "title": "Jako v praxi",
+            "text": "Náležitosti faktury, DPH, ISDOC a pohled účetní ze stejných dat."
+          },
+          {
+            "title": "Až začnete podnikat",
+            "text": "Ukázku zahodíte a pokračujete na vlastním účtu se svým IČO."
+          }
+        ]
+      },
+      "creators": {
+        "eyebrow": "Pro tvůrce a freelancery",
+        "headline": "Spolupráce domluvená. Faktura za 30 vteřin.",
+        "lead": "Fakturujte značkám a agenturám v korunách i eurech, s QR platbou a kontrolou DIČ v EU.",
+        "benefits": [
+          {
+            "title": "QR platba na faktuře",
+            "text": "Klient zaplatí z bankovní aplikace, bez opisování čísla účtu."
+          },
+          {
+            "title": "Klienti z EU",
+            "text": "Ověření DIČ ve VIES a přenesená daňová povinnost na faktuře."
+          },
+          {
+            "title": "Faktura z hlasové zprávy",
+            "text": "Nadiktujte ji do Telegramu nebo WhatsAppu. Billanta připraví koncept, vy ho zkontrolujete."
+          }
+        ]
+      },
+      "event": {
+        "eyebrow": "Pro workshopy a meetupy",
+        "headline": "Fakturujte rovnou odsud. Z notebooku i z mobilu.",
+        "lead": "Česká a slovenská fakturace pro OSVČ a malé firmy. ISDOC, DPH, ARES a VIES v každém tarifu.",
+        "benefits": [
+          {
+            "title": "Zadáte IČO, zbytek se doplní",
+            "text": "Údaje odběratele z českých i slovenských registrů."
+          },
+          {
+            "title": "Účetní dostane, co potřebuje",
+            "text": "ISDOC a exporty pro Pohodu a Money S3."
+          },
+          {
+            "title": "Hlídá limity za vás",
+            "text": "Obrat pro registraci k DPH a daňový kalendář s termíny."
+          }
+        ]
+      },
+      "local": {
+        "eyebrow": "Pro řemeslníky a živnostníky",
+        "headline": "Fakturujte z mobilu, klidně přímo na zakázce.",
+        "lead": "Zadáte IČO zákazníka, položky a cenu. Billanta dopočítá DPH, přidá QR platbu a fakturu pošle e-mailem.",
+        "benefits": [
+          {
+            "title": "Zdarma na občasné faktury",
+            "text": "10 dokladů měsíčně v ceně, bez platební karty."
+          },
+          {
+            "title": "QR kód pro zákazníka",
+            "text": "Zaplatí hned z mobilu, bez opisování čísla účtu."
+          },
+          {
+            "title": "Nic se neinstaluje",
+            "text": "Funguje v telefonu i v počítači, data se zálohují."
+          }
+        ]
+      },
+      "generic": {
+        "eyebrow": "Fakturace pro CZ a SK",
+        "headline": "Faktura s QR platbou za 30 vteřin.",
+        "lead": "Pro OSVČ a malé firmy v Česku i na Slovensku. Bez papírování a bez instalace.",
+        "benefits": [
+          {
+            "title": "ISDOC, DPH, CZ i SK",
+            "text": "Faktury v korunách i eurech, podle českých i slovenských pravidel."
+          },
+          {
+            "title": "Údaje z ARES",
+            "text": "Zadáte IČO a odběratel se vyplní sám."
+          },
+          {
+            "title": "Upomínky odejdou samy",
+            "text": "Po splatnosti zákazníkovi připomeneme platbu e-mailem."
+          }
+        ]
+      },
+      "courses": {
+        "eyebrow": "Pro rekvalifikace a kurzy podnikání",
+        "headline": "Podnikání začíná první fakturou. Tu zvládnete hned.",
+        "lead": "Vyzkoušejte si fakturaci na ukázkové firmě. Až budete mít IČO, pokračujete naostro.",
+        "benefits": [
+          {
+            "title": "Demo bez registrace",
+            "text": "Ukázková firma na 24 hodin, bez e-mailu a hesla."
+          },
+          {
+            "title": "Odběratel z IČO",
+            "text": "Zadáte IČO a údaje se doplní z ARES."
+          },
+          {
+            "title": "Limity a termíny",
+            "text": "Obrat pro registraci k DPH a daňový kalendář s termíny."
+          }
+        ]
+      },
+      "communities": {
+        "eyebrow": "Pro komunity živnostníků",
+        "headline": "Méně papírování, víc času na zakázky.",
+        "lead": "Fakturace pro OSVČ a malé firmy v Česku i na Slovensku. Z mobilu i z počítače.",
+        "benefits": [
+          {
+            "title": "Faktura s QR platbou",
+            "text": "Klient zaplatí z bankovní aplikace bez přepisování čísla účtu."
+          },
+          {
+            "title": "Účetní dostane, co potřebuje",
+            "text": "ISDOC a exporty pro Pohodu a Money S3."
+          },
+          {
+            "title": "Upomínky odejdou samy",
+            "text": "Po splatnosti zákazníkovi připomeneme platbu e-mailem."
+          }
+        ]
+      },
+      "coworking": {
+        "eyebrow": "Pro členy coworkingu",
+        "headline": "Faktura hotová dřív, než vychladne káva.",
+        "lead": "Česká a slovenská fakturace pro OSVČ a malé firmy. Z notebooku i z mobilu.",
+        "benefits": [
+          {
+            "title": "Zadáte IČO, zbytek se doplní",
+            "text": "Údaje odběratele z českých i slovenských registrů."
+          },
+          {
+            "title": "Faktura s QR platbou",
+            "text": "Klient zaplatí z bankovní aplikace bez přepisování čísla účtu."
+          },
+          {
+            "title": "Účetní dostane, co potřebuje",
+            "text": "ISDOC a exporty pro Pohodu a Money S3."
+          }
+        ]
+      },
+      "expats": {
+        "eyebrow": "Pro cizince v Česku a na Slovensku",
+        "headline": "České faktury v angličtině.",
+        "lead": "Celá aplikace funguje anglicky. Faktury odpovídají českým a slovenským pravidlům.",
+        "benefits": [
+          {
+            "title": "Dvojjazyčné faktury",
+            "text": "Popisky česky i anglicky, např. Datum vystavení / Issue date."
+          },
+          {
+            "title": "Eura, dolary a další",
+            "text": "Kurz ČNB ke dni plnění se doplní a DPH se přepočte na koruny."
+          },
+          {
+            "title": "Odběratel z IČO",
+            "text": "Zadáte IČO a údaje se doplní z registru."
+          }
+        ]
+      }
+    },
+    "scanOrType": "Naskenujte, nebo zadejte kód na"
   }
 }

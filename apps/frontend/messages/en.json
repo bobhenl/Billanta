@@ -9246,5 +9246,240 @@
       "contactTitle": "Let's talk about a partnership",
       "contactBody": "Write to us with the contact person and what you have in mind. We prepare a proposal tailored to your bank."
     }
+  },
+  "adminPosters": {
+    "title": "Posters and flyers",
+    "description": "A4 and A5 posters and A6 flyers with a QR code for schools, creators, events and municipal notice boards. Ready to print, also in black and white.",
+    "fields": {
+      "template": "Audience",
+      "lang": "Poster language",
+      "target": "Where the QR code leads",
+      "size": "Format",
+      "promo": "Promo code (optional)",
+      "event": "Event name (optional)",
+      "tabs": "Tear-off strips"
+    },
+    "templates": {
+      "school": "Schools",
+      "courses": "Retraining and start-a-business courses",
+      "creators": "Creators and freelancers",
+      "communities": "Small-business communities",
+      "event": "Events (workshop, meetup)",
+      "coworking": "Coworking (for members)",
+      "local": "Local tradespeople (notice board)",
+      "expats": "Expats (English)",
+      "generic": "General"
+    },
+    "langs": {
+      "cs": "Czech",
+      "sk": "Slovak",
+      "en": "English"
+    },
+    "targets": {
+      "demo": "Demo",
+      "pricing": "Pricing",
+      "signup": "Sign-up",
+      "home": "Home page",
+      "forSchools": "Schools page",
+      "forCreators": "Creators page",
+      "events": "Events page",
+      "forCourses": "For courses (/for-courses)",
+      "forCommunities": "For communities (/for-communities)",
+      "forExpats": "For expats (/for-expats)"
+    },
+    "sizes": {
+      "a4": "A4 poster",
+      "a5": "A5 poster",
+      "a6": "A6 flyer",
+      "a6x4": "A6 flyer, 4 on an A4 sheet"
+    },
+    "eventPlaceholder": "e.g. Startup Weekend Brno",
+    "tabsHint": "Strips with the QR code and address to tear off, for notice boards.",
+    "apply": "Update preview",
+    "print": "Print",
+    "printHint": "In the print dialog set the scale to 100 % and turn off headers and footers. Choose Save as PDF for a PDF.",
+    "qrTarget": "The QR code leads to:",
+    "promoHint": "With a code, the QR leads to /join/CODE and the code is printed large so people can type it."
+  },
+  "posters": {
+    "scan": "Scan or visit",
+    "codeLabel": "Your code",
+    "eventLine": "For attendees of {event}",
+    "foot": "Free for up to 10 documents a month. No card required.",
+    "tabTitle": "Online invoicing",
+    "templates": {
+      "school": {
+        "eyebrow": "For students and teachers",
+        "headline": "Issue your first invoice before the bell rings.",
+        "lead": "A demo company with no email and no password. Try VAT, QR payments and reminders on made-up data.",
+        "benefits": [
+          {
+            "title": "Demo, no sign-up",
+            "text": "A sample company for 24 hours. Nothing is emailed and nothing is charged."
+          },
+          {
+            "title": "Like the real thing",
+            "text": "Invoice requirements, VAT, ISDOC and the accountant's view from the same data."
+          },
+          {
+            "title": "When you start a business",
+            "text": "Drop the sample and carry on in your own account with your company ID."
+          }
+        ]
+      },
+      "creators": {
+        "eyebrow": "For creators and freelancers",
+        "headline": "Deal agreed. Invoice out in 30 seconds.",
+        "lead": "Invoice brands and agencies in crowns or euros, with a QR payment and EU VAT ID checks.",
+        "benefits": [
+          {
+            "title": "QR payment on the invoice",
+            "text": "Clients pay from their banking app without retyping your account number."
+          },
+          {
+            "title": "Clients in the EU",
+            "text": "VAT ID check in VIES and reverse charge on the invoice."
+          },
+          {
+            "title": "Invoice from a voice message",
+            "text": "Dictate it to Telegram or WhatsApp. Billanta drafts it, you check it."
+          }
+        ]
+      },
+      "event": {
+        "eyebrow": "For workshops and meetups",
+        "headline": "Invoice right from here. On a laptop or your phone.",
+        "lead": "Czech and Slovak invoicing for freelancers and small businesses. ISDOC, VAT, business registers and VIES on every plan.",
+        "benefits": [
+          {
+            "title": "Type the company ID, the rest fills in",
+            "text": "Client details from Czech and Slovak business registers."
+          },
+          {
+            "title": "Your accountant gets what they need",
+            "text": "ISDOC plus exports for Pohoda and Money S3."
+          },
+          {
+            "title": "Keeps an eye on limits",
+            "text": "Turnover towards VAT registration and a tax calendar with deadlines."
+          }
+        ]
+      },
+      "local": {
+        "eyebrow": "For tradespeople and sole traders",
+        "headline": "Invoice from your phone, right at the job.",
+        "lead": "Enter the customer's company ID, the items and the price. Billanta works out VAT, adds a QR payment and emails the invoice.",
+        "benefits": [
+          {
+            "title": "Free for occasional invoices",
+            "text": "10 documents a month included, no card required."
+          },
+          {
+            "title": "A QR code for your customer",
+            "text": "They pay on the spot from their phone, no retyping account numbers."
+          },
+          {
+            "title": "Nothing to install",
+            "text": "Works on your phone and computer, with your data backed up."
+          }
+        ]
+      },
+      "generic": {
+        "eyebrow": "Invoicing for CZ and SK",
+        "headline": "An invoice with a QR payment in 30 seconds.",
+        "lead": "For freelancers and small businesses in Czechia and Slovakia. No paperwork, nothing to install.",
+        "benefits": [
+          {
+            "title": "ISDOC, VAT, CZ and SK",
+            "text": "Invoices in crowns or euros, under Czech and Slovak rules."
+          },
+          {
+            "title": "Details from ARES",
+            "text": "Type the company ID and the client fills in."
+          },
+          {
+            "title": "Reminders go out on their own",
+            "text": "Once an invoice is overdue, we remind the customer by e-mail."
+          }
+        ]
+      },
+      "courses": {
+        "eyebrow": "For start-a-business courses",
+        "headline": "A business starts with its first invoice. Send yours today.",
+        "lead": "Practise on a sample company, then carry on for real once you have your company ID.",
+        "benefits": [
+          {
+            "title": "Demo, no sign-up",
+            "text": "A sample company for 24 hours, no e-mail or password."
+          },
+          {
+            "title": "Client from the company ID",
+            "text": "Type the ID and the details fill in from the business register."
+          },
+          {
+            "title": "Limits and deadlines",
+            "text": "Turnover towards VAT registration and a tax calendar with deadlines."
+          }
+        ]
+      },
+      "communities": {
+        "eyebrow": "For small-business communities",
+        "headline": "Less paperwork, more time for the work.",
+        "lead": "Invoicing for sole traders and small businesses in Czechia and Slovakia. On your phone or computer.",
+        "benefits": [
+          {
+            "title": "Invoices with a QR payment",
+            "text": "Clients pay from their banking app without retyping the account number."
+          },
+          {
+            "title": "Your accountant gets what they need",
+            "text": "ISDOC plus exports for Pohoda and Money S3."
+          },
+          {
+            "title": "Reminders go out on their own",
+            "text": "Once an invoice is overdue, we remind the customer by e-mail."
+          }
+        ]
+      },
+      "coworking": {
+        "eyebrow": "For coworking members",
+        "headline": "Your invoice is done before your coffee cools.",
+        "lead": "Czech and Slovak invoicing for freelancers and small businesses. On a laptop or your phone.",
+        "benefits": [
+          {
+            "title": "Type the company ID, the rest fills in",
+            "text": "Client details from Czech and Slovak business registers."
+          },
+          {
+            "title": "Invoices with a QR payment",
+            "text": "Clients pay from their banking app without retyping the account number."
+          },
+          {
+            "title": "Your accountant gets what they need",
+            "text": "ISDOC plus exports for Pohoda and Money S3."
+          }
+        ]
+      },
+      "expats": {
+        "eyebrow": "For expats in Czechia and Slovakia",
+        "headline": "Czech invoices, in English.",
+        "lead": "The whole app runs in English. The invoices follow Czech and Slovak rules.",
+        "benefits": [
+          {
+            "title": "Bilingual invoices",
+            "text": "Labels in Czech and English, e.g. Datum vystavení / Issue date."
+          },
+          {
+            "title": "Euros, dollars and more",
+            "text": "The ČNB rate for the supply date fills in and VAT is converted to CZK."
+          },
+          {
+            "title": "Client from the company ID",
+            "text": "Type the IČO and the details fill in from the register."
+          }
+        ]
+      }
+    },
+    "scanOrType": "Scan, or enter the code at"
   }
 }
