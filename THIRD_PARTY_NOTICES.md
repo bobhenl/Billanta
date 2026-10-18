@@ -56,6 +56,12 @@ SOFTWARE.
 The QR Faktura (SID) and QR Platba (SPAYD) formats are public specifications
 of the Czech Banking Association (qr-faktura.cz, qr-platba.cz).
 
+- **bysquare** (Filip Seman, Apache-2.0, https://github.com/xseman/bysquare),
+  npm dependency of `packages/cz-compliance` that encodes PAY by square, the
+  Slovak Banking Association's payment QR format (bsqr.co/schema), in
+  `src/pay-by-square.ts`. It brings in **lzma1** (Apache-2.0) and
+  **validator** (MIT).
+
 ## Backup libraries (npm dependencies of apps/backend)
 
 - **age-encryption** (Filippo Valsorda, BSD-3-Clause): encrypts backup files in

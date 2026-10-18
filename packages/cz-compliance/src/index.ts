@@ -23,3 +23,4 @@ export * from './cz-tax-years.js';
 export * from './legislation-datasets.js';
 export * from './vat-payer-check.js';
 export * from './reverse-charge-codes.js';
+export * from './payment-qr-scheme.js';

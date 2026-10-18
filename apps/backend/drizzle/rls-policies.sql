@@ -1044,6 +1044,10 @@ GRANT EXECUTE ON FUNCTION find_feed_owner(uuid) TO faktur_app;
 -- IČO/DIČ, DUZP, document kind, reverse charge, ČNB rate, order number), so
 -- the client's accounting software can import the invoice by scanning it.
 -- Nothing beyond what the PDF shows; same hardening as its siblings above.
+-- customer_country picks the payment QR standard (SPAYD or PAY by square,
+-- paymentQrScheme in cz-compliance). Adding it changed the row type, hence
+-- the DROP: CREATE OR REPLACE cannot change a function's result columns.
+DROP FUNCTION IF EXISTS get_public_invoice_qr_details(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_qr_details(p_public_token uuid)
 RETURNS TABLE (
   supplier_ico varchar,
@@ -1055,7 +1059,8 @@ RETURNS TABLE (
   document_type text,
   reverse_charge boolean,
   exchange_rate numeric,
-  order_number varchar
+  order_number varchar,
+  customer_country varchar
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -1068,7 +1073,8 @@ AS $$
     CASE WHEN jsonb_typeof(i.seller_snapshot -> 'dicVatPayer') = 'boolean' THEN (i.seller_snapshot->>'dicVatPayer')::boolean ELSE t.dic_vat_payer END,
     CASE WHEN i.buyer_snapshot -> 'ico' IS NOT NULL THEN (i.buyer_snapshot->>'ico')::varchar ELSE c.ico END,
     CASE WHEN i.buyer_snapshot -> 'dic' IS NOT NULL THEN (i.buyer_snapshot->>'dic')::varchar ELSE c.dic END,
-    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number
+    i.taxable_supply_date, i.document_type::text, i.reverse_charge, i.exchange_rate, i.order_number,
+    CASE WHEN i.buyer_snapshot -> 'addressCountry' IS NOT NULL THEN (i.buyer_snapshot->>'addressCountry')::varchar ELSE c.address_country END
   FROM invoices i
   JOIN tenants t ON t.id = i.tenant_id
   LEFT JOIN contacts c ON c.id = i.contact_id

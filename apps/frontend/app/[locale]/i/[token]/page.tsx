@@ -6,8 +6,10 @@ import {
   czechAccountToIban,
   generateQrInvoiceString,
   generateSpaydString,
+  paymentQrScheme,
   qrInvoiceForSpayd,
 } from "@faktur/cz-compliance";
+import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import {
   confirmCardPayment,
   getPublicInvoice,
@@ -119,6 +121,7 @@ export default async function PublicInvoicePage({
   // offer the button — see apps/backend/src/card-payments.
   const remainingToPay = Math.max(0, Math.round((invoice.total - (invoice.amountPaid ?? 0)) * 100) / 100);
   let qrCodeSvg: string | null = null;
+  let qrBySquare = false;
   const supplier = invoice.supplier;
   const iban =
     supplier?.bankAccountIban ??
@@ -130,11 +133,37 @@ export default async function PublicInvoicePage({
       : null);
   // Same rule as the PDF: QR/account only for (custom methods behaving as) bank transfer.
   const isTransfer = !invoice.paymentMethod || invoice.paymentMethod === "bank_transfer";
-  if (iban && !invoice.quote && isTransfer) {
+  // Only what is left after partial payments.
+  const amountToPay = remainingToPay > 0 ? remainingToPay : invoice.total;
+  // Slovak payers get PAY by square, same rule as the PDF (paymentQrScheme).
+  // It validates the IBAN; on failure we fall back to SPAYD like the PDF does.
+  if (
+    iban &&
+    !invoice.quote &&
+    isTransfer &&
+    paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: invoice.buyerCountry }) === "pay_by_square"
+  ) {
+    try {
+      const bysquare = generatePayBySquareString({
+        iban,
+        amount: amountToPay,
+        currency: invoice.currency,
+        variableSymbol: invoice.variableSymbol ?? undefined,
+        dueDate: invoice.dueDate ? new Date(invoice.dueDate) : undefined,
+        message: invoice.invoiceNumber ?? undefined,
+        invoiceId: invoice.invoiceNumber ?? undefined,
+        beneficiaryName: supplier?.companyName ?? "",
+      });
+      qrCodeSvg = await QRCode.toString(bysquare, { type: "svg", margin: 1 });
+      qrBySquare = true;
+    } catch {
+      qrCodeSvg = null;
+    }
+  }
+  if (iban && !invoice.quote && isTransfer && !qrCodeSvg) {
     const spayd = generateSpaydString({
       iban,
-      // Only what is left after partial payments.
-      amount: remainingToPay > 0 ? remainingToPay : invoice.total,
+      amount: amountToPay,
       currency: invoice.currency,
       variableSymbol: invoice.variableSymbol ?? undefined,
       dueDate: invoice.dueDate ? new Date(invoice.dueDate) : undefined,
@@ -392,7 +421,7 @@ export default async function PublicInvoicePage({
                 <div
                   className="h-48 w-48 shrink-0 [&_svg]:h-full [&_svg]:w-full"
                   // `qrCodeSvg` is generated server-side by the trusted `qrcode`
-                  // library from a SPAYD string we just built above — not
+                  // library from a SPAYD or PAY by square string we just built above — not
                   // user-supplied HTML — so injecting it directly is safe and
                   // is the only way to render actual SVG markup as an image
                   // rather than escaped text.
@@ -402,7 +431,7 @@ export default async function PublicInvoicePage({
                   <p>{t("paymentInstructions")}</p>
                   <p className="flex items-start gap-1.5">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span>{t("paymentDisclaimer")}</span>
+                    <span>{t(qrBySquare ? "paymentDisclaimerBySquare" : "paymentDisclaimer")}</span>
                   </p>
                 </div>
               </div>

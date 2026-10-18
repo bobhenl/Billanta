@@ -11,6 +11,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./pay-by-square": {
+      "types": "./dist/pay-by-square.d.ts",
+      "default": "./dist/pay-by-square.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "pay-by-square": [
+        "./dist/pay-by-square.d.ts"
+      ]
     }
   },
   "files": [
@@ -26,6 +37,9 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "bysquare": "4.1.0"
   },
   "devDependencies": {
     "fast-xml-parser": "^4.5.0",
