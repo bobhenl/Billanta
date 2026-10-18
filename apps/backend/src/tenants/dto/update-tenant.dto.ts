@@ -56,6 +56,10 @@ export const updateTenantSchema = z
     vat_status: z.enum(VAT_STATUSES),
     /** OSVČ monthly advances by period, shown on the dashboard deadlines (see taxAdvancesSchema). */
     tax_advances: taxAdvancesSchema,
+    /** OSVČ: paušální režim yes / no, null = not answered (decides the suggested minimums and default deadlines). */
+    flat_tax_regime: z.boolean().nullable(),
+    /** OSVČ: hlavní or vedlejší činnost, null = not answered. */
+    activity_kind: z.enum(["main", "secondary"]).nullable(),
     address_street: text(200),
     address_city: text(100),
     address_postal_code: text(10),

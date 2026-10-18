@@ -54,7 +54,7 @@ export class DashboardController {
   @Get("stats")
   @ApiOperation({
     summary:
-      "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series, top customers and pie shares. Optional filters: currency, language, contactId, documentType (invoice|proforma|credit_note), status (paid|unpaid|overdue|cancelled)",
+      "Period report: totals for from..to (YYYY-MM-DD, inclusive) vs the same-length period before, a revenue/expense series, top customers and pie shares. Optional filters: currency, language, contactId, documentType (invoice|proforma|credit_note), status (paid|unpaid|overdue|cancelled). period=all: from the first document or expense on (from is ignored)",
   })
   stats(@Req() req: TenantScopedRequest, @Query() query: Record<string, unknown>) {
     const from = typeof query.from === "string" ? query.from : undefined;
@@ -71,13 +71,15 @@ export class DashboardController {
       return d && !Number.isNaN(d.getTime()) ? d : null;
     };
     const now = new Date();
+    // "Celkem": from the first document or expense on, so no five-year cap and no from.
+    const allTime = query.period === "all";
     const end = day(to) ?? now;
     let start = day(from) ?? new Date(now.getFullYear(), now.getMonth() - 11, 1);
     if (start > end) throw new BadRequestException("from must not be after to");
     // At most five years in one report.
     const earliest = new Date(end.getFullYear() - 5, end.getMonth(), end.getDate());
-    if (start < earliest) start = earliest;
-    return this.dashboardService.stats(req.tenantDb!, start, end, filters);
+    if (start < earliest && !allTime) start = earliest;
+    return this.dashboardService.stats(req.tenantDb!, start, end, filters, { allTime });
   }
 
   @Get("config")

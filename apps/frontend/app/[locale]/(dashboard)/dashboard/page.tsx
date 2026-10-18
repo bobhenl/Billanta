@@ -44,7 +44,7 @@ export default async function DashboardHomePage() {
       access.then((a) => (hiddenSections(a).includes('time') ? null : apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null)))
     ]);
     country = tenant?.addressCountry ?? 'CZ';
-    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName) };
+    profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName), flatTax: tenant?.flatTaxRegime ?? null };
     advances = normalizeTaxAdvances(tenant?.taxAdvances);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });

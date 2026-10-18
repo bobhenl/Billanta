@@ -52,6 +52,8 @@ export interface TaxProfile {
   vatStatus: VatStatus;
   /** s.r.o., a.s. …: no OSVČ insurance advances, no flat tax, no overviews. */
   legalEntity: boolean;
+  /** Paušální režim from Settings (null = not answered). Only changes the default kinds, see defaultTaxDeadlineKinds. */
+  flatTax?: boolean | null;
   activity?: {
     /** Months with an issued invoice for a service to a business in another EU state. */
     euSalesMonths: string[];
@@ -72,10 +74,18 @@ export interface OfficialTaxEvent {
 /** Kinds the official calendar covers; the rest are always computed locally. */
 const OFFICIAL_KINDS: readonly TaxDeadlineKind[] = ['vat_monthly', 'vat_quarterly', 'vat_other', 'income_tax', 'flat_tax', 'payroll', 'road_tax', 'property_tax'];
 
-/** What a company sees until it picks its own set in the dashboard customizer (`true`/`false` = legacy plátce/neplátce). */
-export function defaultTaxDeadlineKinds(status: VatStatus | boolean): TaxDeadlineKind[] {
+/**
+ * What a company sees until it picks its own set in the dashboard customizer
+ * (`true`/`false` = legacy plátce/neplátce). `flatTax` is the paušální režim
+ * answer from Settings: there the one monthly flat tax replaces the social
+ * and health advances, and there is no income tax return and no overviews
+ * (§ 2a and § 7a ZDP). Unknown keeps the classic OSVČ set. Payroll, road and
+ * property tax can't be told from the data, so they are never on by default.
+ */
+export function defaultTaxDeadlineKinds(status: VatStatus | boolean, flatTax: boolean | null = null): TaxDeadlineKind[] {
   const s: VatStatus = isVatStatus(status) ? status : status ? 'payer' : 'non_payer';
   const vat: TaxDeadlineKind[] = s === 'payer' ? ['vat_monthly', 'ec_sales_list'] : s === 'identified' ? ['vat_identified', 'ec_sales_list'] : [];
+  if (flatTax === true) return [...vat, 'flat_tax'];
   return [...vat, 'health', 'social', 'income_tax', 'overviews'];
 }
 

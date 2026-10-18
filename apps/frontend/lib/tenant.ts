@@ -20,6 +20,10 @@ export interface TenantSettings {
   vatStatus?: VatStatus;
   /** OSVČ monthly advances by period for the dashboard deadlines (an old backend may still send the single-set object: read via normalizeTaxAdvances). */
   taxAdvances?: TaxAdvances;
+  /** OSVČ: paušální režim yes / no; null or missing = not answered yet. */
+  flatTaxRegime?: boolean | null;
+  /** OSVČ: hlavní / vedlejší činnost; null or missing = not answered yet. */
+  activityKind?: 'main' | 'secondary' | null;
   addressStreet: string | null;
   addressCity: string | null;
   addressPostalCode: string | null;

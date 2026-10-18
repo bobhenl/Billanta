@@ -109,8 +109,8 @@ export function recommendReportKpis(usage: Usage | null): ReportKpi[] {
   return REPORT_KPIS.filter((k) => (k === 'vat' ? usage.has.vat : EXPENSE_KPIS.includes(k) ? usage.has.expenses : true));
 }
 
-/** The member's saved list (unknown ids dropped), else the recommendation. */
+/** The member's saved list in their order (unknown ids and repeats dropped), else the recommendation. */
 export function reportKpisOf(saved: readonly string[] | null | undefined, usage: Usage | null): ReportKpi[] {
   if (!saved) return recommendReportKpis(usage);
-  return REPORT_KPIS.filter((k) => saved.includes(k));
+  return [...new Set(saved)].filter((k): k is ReportKpi => (REPORT_KPIS as readonly string[]).includes(k));
 }

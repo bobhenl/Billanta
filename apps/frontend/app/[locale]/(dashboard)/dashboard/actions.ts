@@ -24,10 +24,12 @@ export async function saveDashboardConfig(config: DashboardConfigPatch): Promise
 export async function fetchPeriodStats(
   from: string,
   to: string,
-  filters: ReportFilters = {}
+  filters: ReportFilters = {},
+  /** "Celkem": the backend starts at the first document or expense and skips its five-year cap. */
+  allTime = false
 ): Promise<{ ok: true; stats: PeriodStats } | { ok: false; error: string }> {
   try {
-    const qs = reportQuery(from, to, filters);
+    const qs = reportQuery(from, to, filters, allTime ? { period: 'all' } : {});
     return { ok: true, stats: await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?${qs}`) };
   } catch (error) {
     return { ok: false, error: backendMessage(error) };

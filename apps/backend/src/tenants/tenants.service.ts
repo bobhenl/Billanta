@@ -114,6 +114,8 @@ export class TenantsService {
       paymentMethods: dto.payment_methods,
       publicProfile: dto.public_profile && withServiceIds(dto.public_profile),
       enabledModules: dto.enabled_modules,
+      flatTaxRegime: dto.flat_tax_regime,
+      activityKind: dto.activity_kind,
     };
     for (const key of Object.keys(values) as Array<keyof TenantInsert>) {
       if (values[key] === undefined) delete values[key];

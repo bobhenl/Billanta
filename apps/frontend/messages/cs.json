@@ -400,7 +400,10 @@
       "onlyIfForeignPurchase": "Jen pokud jste v měsíci nakoupili služby ze zahraničí (např. reklamy).",
       "onlyIfEuSales": "Jen pokud jste v měsíci fakturovali službu firmě v jiném státě EU.",
       "advancesInSettings": "Výši záloh na pojištění a paušální daň nastavíte podle období ve Fakturačních údajích.",
-      "editAdvances": "Upravit zálohy"
+      "editAdvances": "Upravit zálohy",
+      "manualKindsHint": "Zaměstnance, silniční daň a daň z nemovitých věcí Billanta nepozná, ty si zaškrtněte sami.",
+      "regimeUnknown": "Nevíme, jestli jste v paušálním režimu, proto hlídáme běžné zálohy na pojištění.",
+      "regimeAnswer": "Doplnit v nastavení"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
@@ -433,7 +436,9 @@
       "bank": "máte propojenou banku",
       "proformas": "vystavujete zálohovky",
       "quotes": "posíláte nabídky"
-    }
+    },
+    "customizeOrderHint": "Pořadí změníte přetažením za úchyt nebo šipkami.",
+    "dragToReorder": "Přetáhněte pro změnu pořadí"
   },
   "invoices": {
     "hover": {
@@ -1695,7 +1700,27 @@
           "month": "U každého řádku vyplňte měsíc, od kterého platí.",
           "duplicate": "Dva řádky mají stejný měsíc. Spojte je do jednoho.",
           "amount": "Zálohy musí být čísla od 0 do 10 000 000."
-        }
+        },
+        "flatTaxLabel": {
+          "flat": "Paušální daň",
+          "advance": "Záloha na daň",
+          "unknown": "Paušální daň / záloha"
+        },
+        "regime": {
+          "flatTax": "Jste v paušálním režimu?",
+          "flatTaxHint": "V paušálním režimu platíte jednu měsíční platbu, která zahrnuje daň, sociální i zdravotní pojištění. Zálohy na pojištění zvlášť neplatíte.",
+          "activity": "Hlavní, nebo vedlejší činnost?",
+          "activityHint": "Vedlejší činnost máte, když vedle podnikání třeba chodíte do zaměstnání, studujete nebo pobíráte důchod či rodičovský příspěvek. Pak je minimální záloha na sociální pojištění nižší a minimální záloha na zdravotní pojištění žádná.",
+          "yes": "Ano",
+          "no": "Ne",
+          "main": "Hlavní",
+          "secondary": "Vedlejší"
+        },
+        "minimumAsk": {
+          "flatTax": "Pro zákonné minimum potřebujeme vědět, jestli jste v paušálním režimu:",
+          "activity": "Pro zákonné minimum potřebujeme vědět, jestli je podnikání vaše hlavní, nebo vedlejší činnost:"
+        },
+        "useMinimumHint": "Vyplní do řádku zákonné minimum. Ostatní prázdná pole nastaví na 0."
       },
       "street": "Ulice a číslo",
       "city": "Město",
@@ -6104,7 +6129,8 @@
       "lastQuarter": "Minulé čtvrtletí",
       "thisYear": "Letos",
       "lastYear": "Loni",
-      "last12": "12 měsíců"
+      "last12": "12 měsíců",
+      "all": "Celkem"
     },
     "grain": {
       "day": "po dnech",
@@ -6133,13 +6159,18 @@
       "noVatIdentified": "Jste identifikovaná osoba bez faktur v režimu přenesení daňové povinnosti, takže DPH skrýváme.",
       "noExpenses": "Výdaje zatím nezapisujete, takže náklady a zisk skrýváme.",
       "allRelevant": "Ukazujeme vše, co se vás týká.",
-      "notRecommended": "zatím se vás netýká",
       "noExpensesHint": "Zatím bez zapsaných výdajů",
       "reset": "Obnovit doporučené",
       "cancel": "Zrušit",
       "save": "Uložit",
       "saved": "Uloženo",
-      "failed": "Nepodařilo se uložit: {reason}"
+      "failed": "Nepodařilo se uložit: {reason}",
+      "notUsed": "zatím nevyužíváte",
+      "notVatPayer": "nejste plátce DPH",
+      "orderHint": "Pořadí tady určuje pořadí karet v přehledu. Změníte ho přetažením za úchyt nebo šipkami.",
+      "moveUp": "Posunout dopředu",
+      "moveDown": "Posunout dozadu",
+      "dragToReorder": "Přetáhněte pro změnu pořadí"
     }
   },
   "siteSearch": {

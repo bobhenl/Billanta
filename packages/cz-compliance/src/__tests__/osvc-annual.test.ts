@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applicableMinimums,
   computeOsvcAnnualSummary,
   fitsFlatTaxBand1,
   flatTaxBand1ForYear,
@@ -59,6 +60,39 @@ describe('OSVČ minimum social base', () => {
   it('years without a mid-year change keep one share', () => {
     const r = computeOsvcAnnualSummary({ year: 2025, income: 0, actualExpenses: 0, flatRate: null });
     expect(r.social.base).toBe(12 * Math.ceil(46_557 * 0.35));
+  });
+});
+
+describe('applicableMinimums', () => {
+  const regime = (flatTax: boolean | null, activity: 'main' | 'secondary' | null = null) => ({ flatTax, activity });
+
+  it('paušální režim fills only the flat tax (it already covers social and health)', () => {
+    expect(applicableMinimums('CZ', '2026-03', regime(true))).toEqual({ from: '2026-01', values: { flat_tax: 9984 } });
+    expect(applicableMinimums('CZ', '2026-08', regime(true, 'secondary'))).toEqual({ from: '2026-07', values: { flat_tax: 9162 } });
+  });
+
+  it('outside it: social and health for a main activity', () => {
+    expect(applicableMinimums('CZ', '2026-08', regime(false, 'main'))).toEqual({ from: '2026-07', values: { social: 5005, health: 3306 } });
+  });
+
+  it('a secondary activity: the lower social minimum and no health minimum', () => {
+    expect(applicableMinimums('CZ', '2026-08', regime(false, 'secondary'))).toEqual({ from: '2026-01', values: { social: 1574 } });
+    // 11 % of the 2026 average wage, both steps rounded up (§ 5b odst. 2 zákona č. 589/1992 Sb.).
+    expect(Math.ceil(Math.ceil(osvcParamsFor(2026).averageWage * 0.11) * 0.292)).toBe(1574);
+  });
+
+  it('asks first instead of guessing', () => {
+    expect(applicableMinimums('CZ', '2026-03', regime(null))).toEqual({ ask: 'flat_tax' });
+    expect(applicableMinimums('CZ', '2026-03', regime(false))).toEqual({ ask: 'activity' });
+  });
+
+  it('SK has no paušální daň: always social and health, no questions', () => {
+    expect(applicableMinimums('SK', '2026-03', regime(null))).toEqual({ from: '2026-01', values: { social: 303.11, health: 121.92 } });
+  });
+
+  it('a year without figures gives nothing', () => {
+    expect(applicableMinimums('CZ', '2027-01', regime(false, 'secondary'))).toBeNull();
+    expect(applicableMinimums('CZ', '2027-01', regime(null))).toBeNull();
   });
 });
 

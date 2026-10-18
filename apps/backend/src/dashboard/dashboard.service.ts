@@ -1,16 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { and, count, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, isNull, min, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { isOverdue } from "../invoices/invoices.service";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
-import { filterOptions, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
+import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
 import { summarizeUsage, type Usage } from "./usage";
 import { vatActivity, type VatActivity } from "./vat-activity";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
+const DAY_MS = 86_400_000;
 
 /** Tiles a member can pin to the dashboard, in the default order. */
 export const DASHBOARD_WIDGETS = [
@@ -231,18 +232,20 @@ export class DashboardService {
    * shares. Amounts are in CZK (foreign documents at their stored rate), or
    * in the filtered currency when the report is narrowed to one. `db` is
    * the tenant's RLS-scoped connection, so only its own rows ever load.
+   * `allTime` ("Celkem") ignores `from` and starts on the first day with
+   * any document or expense (`earliest`, also sent for every report).
    */
-  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}) {
+  async stats(db: Db, from: Date, to: Date, filters: ReportFilters = {}, opts: { allTime?: boolean } = {}) {
     const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
-    const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-    const length = end.getTime() - start.getTime();
-    const prevStart = new Date(start.getTime() - length);
     const currency = filters.currency ?? "CZK";
+    let start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+    // "Celkem" has no comparison period, so it simply loads every expense.
+    const prevStart = opts.allTime ? null : new Date(start.getTime() - (end.getTime() - start.getTime()));
 
     const counted = inArray(schema.invoices.status, ["issued", "paid"]);
     // Sent together, like in `summary`; the line items come via a subquery
     // with the same condition instead of a (possibly huge) id list.
-    const [rows, items, expenseRows] = await Promise.all([
+    const [rows, items, expenseRows, [firstExpense]] = await Promise.all([
       db
         .select({ invoice: schema.invoices, contactName: schema.contacts.legalName })
         .from(schema.invoices)
@@ -252,7 +255,8 @@ export class DashboardService {
         .select()
         .from(schema.invoiceLineItems)
         .where(inArray(schema.invoiceLineItems.invoiceId, db.select({ id: schema.invoices.id }).from(schema.invoices).where(counted))),
-      db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart)),
+      prevStart ? db.select().from(schema.expenses).where(gte(schema.expenses.expenseDate, prevStart)) : db.select().from(schema.expenses),
+      db.select({ date: min(schema.expenses.expenseDate) }).from(schema.expenses),
     ]);
     const byInvoice = new Map<string, LineItemRow[]>();
     for (const item of items) byInvoice.set(item.invoiceId, [...(byInvoice.get(item.invoiceId) ?? []), item]);
@@ -279,6 +283,9 @@ export class DashboardService {
     });
     const today = new Date();
     const docs = allDocs.filter((d) => matchesFilters(d, filters, today));
+    const earliest = earliestDay([...allDocs.map((d) => d.date), firstExpense?.date ? new Date(firstExpense.date) : null]);
+    if (opts.allTime) start = earliest && earliest < end ? earliest : new Date(end.getTime() - DAY_MS);
+    const previousFrom = prevStart ?? new Date(start.getTime() - (end.getTime() - start.getTime()));
     // Expense amounts are stored including VAT; revenue is compared without it.
     // Expenses have no customer, type or status, so only the currency filter applies.
     const expenses: StatsExpense[] = expenseRows
@@ -294,12 +301,14 @@ export class DashboardService {
       currency,
       from: start.toISOString(),
       to: new Date(end.getTime() - 1).toISOString(),
+      /** First day with any document or expense (YYYY-MM-DD), null with no data. */
+      earliest: earliest ? localDay(earliest) : null,
       filters,
       /** False when a customer / type / status / language filter is on: expenses then stay unfiltered. */
       expensesFiltered: !hasDocumentFilters(filters),
       options: filterOptions(allDocs),
       current: periodTotals(docs, expenses, start, end, currency, today),
-      previous: periodTotals(docs, expenses, prevStart, start, currency, today),
+      previous: periodTotals(docs, expenses, previousFrom, start, currency, today),
       ...periodBreakdown(docs, expenses, start, end, currency, today),
     };
   }

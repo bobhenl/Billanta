@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { ArrowDown, ArrowUp, Download, Loader2, Settings2, X } from 'lucide-react';
+import { DragHandle, moveBy, useDragSort } from '@/components/drag-sort';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { formatMoney } from '@/lib/invoice-ui';
@@ -42,7 +43,7 @@ export function PeriodReport({
   const locale = useLocale();
   const [stats, setStats] = useState(initial);
   const [preset, setPreset] = useState<PeriodPreset | 'custom'>(initialPreset);
-  const [range, setRange] = useState(() => presetRange(initialPreset));
+  const [range, setRange] = useState(() => presetRange(initialPreset, new Date(), initial.earliest));
   const [filters, setFilters] = useState<ReportFilters>({});
   const [chartKind, setChartKindState] = useState<ChartKind>('bars');
   // Read after mount, so the server render and the first client render agree.
@@ -70,18 +71,21 @@ export function PeriodReport({
     }
   };
 
-  const load = (next: { from: string; to: string }, nextFilters = filters) => {
+  /** `allTime`: the "Celkem" chip, whose start the backend finds (and which has nothing to compare with). */
+  const load = (next: { from: string; to: string }, nextFilters = filters, allTime = preset === 'all') => {
     setRange(next);
     setFilters(nextFilters);
     if (!next.from || !next.to || next.from > next.to) return;
     start(async () => {
-      const res = await fetchPeriodStats(next.from, next.to, nextFilters);
+      const res = await fetchPeriodStats(next.from, next.to, nextFilters, allTime);
       if (res.ok) {
         setStats(res.stats);
         setError(null);
+        if (allTime && res.stats.earliest) setRange((r) => ({ ...r, from: res.stats.earliest! }));
       } else setError(res.error);
     });
   };
+  const allTime = preset === 'all';
   const setFilter = <K extends keyof ReportFilters>(key: K, value: string) =>
     load(range, { ...filters, [key]: value || undefined } as ReportFilters);
   const anyFilter = Object.values(filters).some(Boolean);
@@ -191,7 +195,7 @@ export function PeriodReport({
             aria-pressed={preset === p}
             onClick={() => {
               setPreset(p);
-              load(presetRange(p));
+              load(presetRange(p, new Date(), stats.earliest), filters, p === 'all');
             }}
             className={cn(
               'rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors',
@@ -208,7 +212,7 @@ export function PeriodReport({
             value={range.from}
             onChange={(e) => {
               setPreset('custom');
-              load({ ...range, from: e.target.value });
+              load({ ...range, from: e.target.value }, filters, false);
             }}
             className="rounded-md border border-border bg-background px-1.5 py-0.5"
           />
@@ -219,7 +223,7 @@ export function PeriodReport({
             value={range.to}
             onChange={(e) => {
               setPreset('custom');
-              load({ ...range, to: e.target.value });
+              load({ ...range, to: e.target.value }, filters, false);
             }}
             className="rounded-md border border-border bg-background px-1.5 py-0.5"
           />
@@ -302,7 +306,8 @@ export function PeriodReport({
               {dim ? (
                 <p className="text-[11px] text-muted-foreground">{t('customize.noExpensesHint')}</p>
               ) : (
-                <Change now={k.now} before={k.before} invert={k.invert} label={t('vsPrevious')} />
+                // All time has no period before it to compare with.
+                !allTime && <Change now={k.now} before={k.before} invert={k.invert} label={t('vsPrevious')} />
               )}
               {k.sub && <p className="text-[11px] text-muted-foreground">{k.sub}</p>}
             </div>
@@ -422,7 +427,7 @@ export function PeriodReport({
   );
 }
 
-/** Show / hide the report's KPI cards, saved with the member's dashboard layout. */
+/** Show, hide and order the report's KPI cards, saved with the member's dashboard layout. */
 function KpiCustomizer({
   open,
   onClose,
@@ -444,8 +449,17 @@ function KpiCustomizer({
   const recommended = recommendReportKpis(usage);
   const toggle = (key: ReportKpi) => {
     setTouched(true);
-    setChosen((cur) => (cur.includes(key) ? cur.filter((k) => k !== key) : REPORT_KPIS.filter((k) => k === key || cur.includes(k))));
+    setChosen((cur) => (cur.includes(key) ? cur.filter((k) => k !== key) : [...cur, key]));
   };
+  const reorder = (next: ReportKpi[]) => {
+    setTouched(true);
+    setChosen(next);
+  };
+  const sort = useDragSort(chosen, reorder);
+  const rest = REPORT_KPIS.filter((k) => !chosen.includes(k));
+  /** Why the usage-based defaults leave a figure out. */
+  const tagOf = (key: ReportKpi) =>
+    recommended.includes(key) ? null : key === 'vat' && usage?.vatStatus === 'non_payer' ? t('customize.notVatPayer') : t('customize.notUsed');
   const save = () =>
     start(async () => {
       const next = touched ? chosen : null;
@@ -498,15 +512,56 @@ function KpiCustomizer({
           </p>
         </div>
       )}
-      <div className="grid gap-2 text-sm sm:grid-cols-2">
-        {REPORT_KPIS.map((key) => (
-          <label key={key} className="flex cursor-pointer items-center gap-2">
-            <input type="checkbox" className="h-4 w-4 accent-primary" checked={chosen.includes(key)} onChange={() => toggle(key)} />
-            {t(`kpi.${key}`)}
-            {!recommended.includes(key) && <span className="text-[11px] text-muted-foreground">({t('customize.notRecommended')})</span>}
-          </label>
-        ))}
-      </div>
+      {chosen.length > 1 && <p className="mb-2 text-xs text-muted-foreground">{t('customize.orderHint')}</p>}
+      <ul className="grid gap-2 text-sm sm:grid-cols-2">
+        {[...chosen, ...rest].map((key) => {
+          const on = chosen.includes(key);
+          const i = chosen.indexOf(key);
+          const tag = tagOf(key);
+          return (
+            <li
+              key={key}
+              {...(on ? sort.itemProps(key) : {})}
+              className={cn(
+                'flex min-h-11 items-center gap-1 rounded-lg border py-1 pr-1',
+                on ? 'border-border bg-card' : 'border-dashed border-border pl-2 opacity-70',
+                sort.dragging === key && 'border-primary shadow-md ring-2 ring-primary/20'
+              )}
+            >
+              {on && <DragHandle label={t('customize.dragToReorder')} {...sort.handleProps(key)} />}
+              <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2">
+                <input type="checkbox" className="h-4 w-4 shrink-0 accent-primary" checked={on} onChange={() => toggle(key)} />
+                <span className="min-w-0">
+                  {t(`kpi.${key}`)}
+                  {tag && <span className="ml-1 text-[11px] text-muted-foreground">({tag})</span>}
+                </span>
+              </label>
+              {on && (
+                <span className="flex shrink-0">
+                  <button
+                    type="button"
+                    aria-label={t('customize.moveUp')}
+                    disabled={i === 0}
+                    onClick={() => reorder(moveBy(chosen, key, -1))}
+                    className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30"
+                  >
+                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t('customize.moveDown')}
+                    disabled={i === chosen.length - 1}
+                    onClick={() => reorder(moveBy(chosen, key, 1))}
+                    className="rounded p-1 text-muted-foreground hover:bg-secondary disabled:opacity-30"
+                  >
+                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </Modal>
   );
 }

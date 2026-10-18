@@ -171,6 +171,10 @@ export const tenants = pgTable("tenants", {
   // OSVČ monthly advances typed in by the owner, with history (0044): [{ from: "YYYY-MM", social?, health?, flat_tax? }]
   // in the tenant's currency, each valid from its month on. Read through normalizeTaxAdvances / advancesFor (@faktur/cz-compliance).
   taxAdvances: jsonb("tax_advances").$type<TaxAdvancePeriod[]>().notNull().default([]),
+  // OSVČ answers in Settings (0053), null = not answered: paušální režim (decides which
+  // minimums "Použít" fills and the default deadlines) and hlavní / vedlejší činnost ('main' | 'secondary').
+  flatTaxRegime: boolean("flat_tax_regime"),
+  activityKind: text("activity_kind").$type<"main" | "secondary">(),
   addressStreet: text("address_street"),
   addressCity: text("address_city"),
   addressPostalCode: varchar("address_postal_code", { length: 10 }),

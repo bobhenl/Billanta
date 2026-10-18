@@ -372,6 +372,11 @@
       "when": 1792900500000,
       "tag": "0052_legislation_monitor",
       "breakpoints": true
+    },
+    {
+      "when": 1792900600000,
+      "tag": "0053_osvc_regime",
+      "breakpoints": true
     }
   ]
 }

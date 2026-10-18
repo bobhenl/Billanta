@@ -247,11 +247,12 @@ export class IntegrationsService {
         vatStatus: schema.tenants.vatStatus,
         country: schema.tenants.addressCountry,
         taxAdvances: schema.tenants.taxAdvances,
+        flatTaxRegime: schema.tenants.flatTaxRegime,
       })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));
     const lang: Lang = t?.locale === "sk" || t?.locale === "en" ? t.locale : "cs";
-    const profile: TaxProfile = { country: t?.country ?? "CZ", vatStatus: t?.vatStatus ?? "non_payer", legalEntity: isLegalEntityName(t?.legalName) };
+    const profile: TaxProfile = { country: t?.country ?? "CZ", vatStatus: t?.vatStatus ?? "non_payer", legalEntity: isLegalEntityName(t?.legalName), flatTax: t?.flatTaxRegime ?? null };
     return { company: t?.company ?? "Billanta", lang, vatPayer: Boolean(t?.vatPayer), profile, advances: normalizeTaxAdvances(t?.taxAdvances) };
   }
 
@@ -275,7 +276,7 @@ export class IntegrationsService {
         | undefined;
       const kinds = Array.isArray(chosen)
         ? chosen.filter((k): k is TaxDeadlineKind => (TAX_DEADLINE_KINDS as readonly string[]).includes(k))
-        : defaultTaxDeadlineKinds(profile.vatStatus);
+        : defaultTaxDeadlineKinds(profile.vatStatus, profile.flatTax);
 
       const events: IcsEvent[] = [];
       // No activity here (unknown months ahead): conditional rows come flagged "only if …".
