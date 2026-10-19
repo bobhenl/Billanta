@@ -6419,7 +6419,8 @@
       "moveDown": "Move later",
       "dragToReorder": "Drag to reorder"
     },
-    "flatTaxLink": "Does the flat-rate tax pay off? →"
+    "flatTaxLink": "Does the flat-rate tax pay off? →",
+    "taxReturnLink": "Tax return summary"
   },
   "siteSearch": {
     "title": "Search the site",
@@ -9642,6 +9643,212 @@
       "label": "Code",
       "placeholder": "e.g. KAVARNA-BRNO",
       "submit": "Continue"
+    }
+  },
+  "taxReturn": {
+    "metaTitle": "Tax return summary",
+    "title": "Tax return summary {year}",
+    "titleSk": "Tax return summary {year} (Slovakia)",
+    "back": "Reports",
+    "lead": "Income, expenses and flat-rate expenses for the tax year from your own documents, the filing deadlines and a rough tax estimate. Free on every plan.",
+    "notAdvice": "This is a summary of your own documents to prepare the income tax return, not tax advice. Check the figures before filing, with an accountant or tax advisor if needed.",
+    "noTenant": "Fill in your company's billing details first.",
+    "loadError": "The summary could not be loaded. Please try again in a moment.",
+    "ratesUnavailable": "Some foreign-currency documents have no exchange rate and it could not be looked up. Please try again in a moment.",
+    "yearLabel": "Year",
+    "downloadPdf": "Download PDF",
+    "downloadCsv": "Download CSV",
+    "runningYear": "{year} is still running: the figures will change until it ends, and its return is filed next year.",
+    "income": "Income from paid invoices",
+    "incomeAccrual": "Income from issued invoices",
+    "invoiceCount": "{count, plural, one {# document} other {# documents}}, credit notes subtracted",
+    "actualExpenses": "Actual expenses in total",
+    "expenseCount": "{count, plural, one {# expense} other {# expenses}}",
+    "basisCash": "Cash-basis records: income by the day paid, expenses by the day of payment.",
+    "basisAccrual": "Accounting: income by the date of supply.",
+    "vatPayerYes": "You are VAT-registered, amounts are without VAT.",
+    "vatPayerNo": "You are not VAT-registered, amounts are gross.",
+    "missingRates": "{count, plural, one {# foreign-currency document without a rate is left out.} other {# foreign-currency documents without a rate are left out.}}",
+    "categoriesTitle": "Expenses by category",
+    "uncategorised": "Uncategorised",
+    "noExpenses": "No expenses in this year.",
+    "legalEntity": "A company files the corporate income tax return (DPPO). Flat-rate expenses and the flat tax don't apply, and the accounts decide the profit – use these sums as a cross-check.",
+    "legalEntitySk": "A company files the corporate income tax return (DPPO). Flat-rate expenses don't apply, and the accounts decide the profit – use these sums as a cross-check.",
+    "flatTitle": "Flat-rate expenses vs. actual expenses",
+    "flatTitleSk": "Flat-rate expenses vs. actual expenses",
+    "flatLead": "Under § 7 (7) of the Czech Income Tax Act you can claim a share of income instead of actual expenses. The rate depends on the activity, each with a yearly cap.",
+    "flatLeadSk": "In Slovakia there is one flat rate (§ 6 (10) ZDP) with a yearly cap; the insurance paid is deducted on top.",
+    "rateLabel": "Your activity",
+    "rates": {
+      "80": "80 % – crafts trades, agriculture, forestry and water management.",
+      "60": "60 % – other trades (most unqualified, qualified and licensed trades).",
+      "40": "40 % – liberal professions and other business under special laws, copyright income.",
+      "30": "30 % – renting out business property."
+    },
+    "flatRow": "Flat rate {rate} % (max. {cap})",
+    "capped": "cap",
+    "better": {
+      "flat": "The {rate} % flat rate gives you higher expenses than your actual expenses.",
+      "actual": "Your actual expenses are higher than the {rate} % flat rate.",
+      "equal": "The {rate} % flat rate and actual expenses come out the same."
+    },
+    "estimateTitle": "Rough tax and insurance estimate",
+    "estimateLead": "Income tax after the basic taxpayer credit, and social and health insurance for the year at this year's rates and minimums.",
+    "estimateLeadSk": "Income tax after the basic personal allowance, and insurance for the year at this year's rates.",
+    "option": {
+      "flat_expenses": "Flat rate",
+      "actual_expenses": "Actual expenses"
+    },
+    "expenses": "Expenses",
+    "profit": "Profit",
+    "tax": "Income tax",
+    "social": "Social insurance",
+    "health": "Health insurance",
+    "socialSk": "Social insurance paid",
+    "healthSk": "Health insurance for the year",
+    "total": "Total for the year",
+    "skInsuranceNote": "The insurance paid is taken from the advances in Settings → Billing details and lowers the tax base in both options.",
+    "noParams": "Rates and limits for {year} aren't published yet, so there is no tax estimate. The sums and deadlines apply.",
+    "flatTaxTitle": "Flat tax (paušální daň)",
+    "flatTaxLead": "One monthly payment covering income tax, social and health insurance (§ 2a ZDP). For non-VAT payers with income up to CZK 2 million; you join by notifying by 10 January.",
+    "flatTaxBand": "With this income you would be in band {band}: {total} for the year.",
+    "flatTaxNo": {
+      "vat_payer": "A VAT payer cannot use the flat tax.",
+      "over_limit": "The flat tax isn't available with this income (limit CZK 2 million, less at the lower flat rates).",
+      "no_data": "The flat tax amounts for this year are missing."
+    },
+    "best": {
+      "flat_tax": "By this estimate, the flat tax is the cheapest.",
+      "flat_expenses": "By this estimate, the regular regime with flat-rate expenses is the cheapest.",
+      "actual_expenses": "By this estimate, the regular regime with actual expenses is the cheapest."
+    },
+    "inFlatTaxRegime": "Your settings say you are in the flat-tax regime. If you didn't leave it during the year or exceed the limit, you usually file neither the return nor the insurance statements.",
+    "flatTaxCalculator": "Full comparison in the flat tax calculator",
+    "deadlinesTitle": "Filing deadlines",
+    "deadline": {
+      "CZ": {
+        "paper": "On paper",
+        "electronic": "Electronically (data box, Moje daně)",
+        "advisor": "Through a tax advisor (power of attorney filed by the first deadline)"
+      },
+      "SK": {
+        "paper": "Regular deadline",
+        "extended": "After notifying an extension"
+      }
+    },
+    "diffTitle": "Czechia vs. Slovakia – the differences",
+    "diff": {
+      "cz": "Czechia",
+      "sk": "Slovakia",
+      "flatLabel": "Flat-rate expenses",
+      "flatCz": "By activity: {caps}.",
+      "flatSk": "One flat rate of {rate} %, at most {cap} a year.",
+      "deadlineLabel": "Return due",
+      "deadlineCz": "{paper} on paper, {electronic} electronically, {advisor} through a tax advisor.",
+      "deadlineSk": "{paper}; after notifying the tax office, {extended} (up to 6 months with foreign income).",
+      "insuranceLabel": "Insurance",
+      "insuranceCz": "A sole trader's own insurance is not a tax expense (§ 25 ZDP).",
+      "insuranceSk": "The insurance paid is deducted from the tax base, on top of the flat rate too.",
+      "flatTaxLabel": "Flat tax",
+      "flatTaxCz": "Yes, for non-VAT payers with income up to CZK 2 million.",
+      "flatTaxSk": "No. A reduced 15 % income tax rate applies at lower income.",
+      "formLabel": "What you file",
+      "formCz": "The personal income tax return, then within a month the statements for ČSSZ and the health insurer.",
+      "formSk": "Tax return type B; the Social Insurance Agency takes the income from the tax office."
+    },
+    "notesTitle": "Notes",
+    "noteInsurance": "A sole trader's social and health insurance advances are not a tax expense (§ 25 (1) h) ZDP), so they are not among the expenses.",
+    "noteInsuranceSk": "Social and health insurance paid is deducted from the tax base next to both the flat rate and actual expenses (§ 6 (10) and (11) ZDP).",
+    "noteEstimate": "The estimate uses only the basic taxpayer credit, without other credits, deductions or other income (employment, rent).",
+    "noteEstimateSk": "The estimate uses only the basic personal allowance, without other deductions, the child bonus or other income.",
+    "noteData": "The figures come only from the documents in the app. Add any income and expenses that aren't here (cash without a document, other activities) yourself.",
+    "disclaimer": "This summary is for information only, comes without warranty and does not replace a tax advisor or accountant. You are responsible for what you file.",
+    "nudge": {
+      "title": "Tax return for {year}",
+      "body": "Your {year} income, expenses by category, flat rates and deadlines are ready from your documents. PDF and CSV for your accountant, free.",
+      "cta": "Open the summary",
+      "dismiss": "Hide"
+    },
+    "landing": {
+      "seoTitle": "Free tax return summary {year} for the self-employed in Czechia and Slovakia",
+      "eyebrow": "Income tax return",
+      "title": "Tax return summary {year}",
+      "lead": "Billanta adds up the income from paid invoices and the expenses by category, compares them with the flat-rate expenses and shows the filing deadlines. For Czechia and Slovakia, as a PDF and CSV.",
+      "cta": "Start for free",
+      "demo": "Try the demo",
+      "free": "The summary is included in every plan, the free one too.",
+      "featuresTitle": "What's in the summary",
+      "features": {
+        "income": {
+          "title": "Income from paid invoices",
+          "body": "For the whole year by the day paid, credit notes subtracted, foreign currencies converted at the document's rate."
+        },
+        "categories": {
+          "title": "Expenses by category",
+          "body": "Material, services, software, travel and more – uncategorised expenses included."
+        },
+        "flat": {
+          "title": "Flat rate or actual expenses",
+          "body": "Every flat-rate expense rate with its yearly cap, next to your actual expenses."
+        },
+        "flatTax": {
+          "title": "Flat tax",
+          "body": "For Czech sole traders, a comparison with the flat tax and a rough tax and insurance estimate."
+        },
+        "deadlines": {
+          "title": "Filing deadlines",
+          "body": "On paper, electronically and through an advisor, moved past weekends and holidays."
+        },
+        "export": {
+          "title": "PDF and CSV for your accountant",
+          "body": "In one click, clearly marked as a basis for the return, not tax advice."
+        }
+      },
+      "country": {
+        "CZ": {
+          "title": "Czechia – return for {year}",
+          "deadline": {
+            "paper": "On paper",
+            "electronic": "Electronically",
+            "advisor": "Through a tax advisor"
+          },
+          "flat": "Flat-rate expenses: {caps}.",
+          "extra": "Flat tax for non-VAT payers with income up to CZK 2 million; insurance statements for ČSSZ and the health insurer within a month of the return."
+        },
+        "SK": {
+          "title": "Slovakia – return for {year}",
+          "deadline": {
+            "paper": "Regular deadline",
+            "extended": "After notifying an extension"
+          },
+          "flat": "Flat-rate expenses of {rate} % of income, at most {cap} a year.",
+          "extra": "Insurance paid is deducted on top of the flat rate; Slovakia has no flat tax."
+        }
+      },
+      "calculatorsTitle": "Tax calculators",
+      "calculatorsLead": "No sign-up: tax and insurance for Czech and Slovak sole traders, the flat tax comparison and the minimum advances.",
+      "ctaTitle": "A summary from your own invoices",
+      "ctaBody": "When you invoice in Billanta, the basis for your return is ready without retyping anything. Just add what isn't in the app.",
+      "faqTitle": "FAQ",
+      "faq": [
+        {
+          "q": "Is this tax advice?",
+          "a": "No. It sums up your own documents with a rough calculation at the statutory rates. Check the figures before filing, with an accountant or tax advisor if needed."
+        },
+        {
+          "q": "When are flat-rate expenses better than actual expenses?",
+          "a": "When your actual expenses are lower than the share of income your activity allows. The summary shows both numbers side by side, with the yearly cap."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, on every plan including the free one, for Czech and Slovak sole traders alike."
+        },
+        {
+          "q": "What if I invoice in another currency?",
+          "a": "Foreign-currency invoices are converted at the rate stored with the document. Documents without a rate are listed separately so nothing gets lost."
+        }
+      ],
+      "disclaimer": "Rates, caps and deadlines follow the Czech and Slovak income tax acts and tax procedure codes for the given year. The information is indicative and does not replace a tax advisor."
     }
   }
 }

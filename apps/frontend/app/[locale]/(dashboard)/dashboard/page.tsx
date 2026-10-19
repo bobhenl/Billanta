@@ -6,7 +6,7 @@ import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { auth } from '@/auth';
 import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
 import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
-import { normalizeTaxAdvances } from '@faktur/cz-compliance';
+import { normalizeTaxAdvances, taxReturnSeason } from '@faktur/cz-compliance';
 import type { TimeSummary } from '@/lib/time-ui';
 import type { Usage } from '@/lib/usage-defaults';
 import { REFERRAL_REWARDS } from '@/lib/referral';
@@ -50,6 +50,7 @@ export default async function DashboardHomePage() {
   let usage: Usage | null = null;
   let referral: { code: string; link: string; welcome: number; reward: number } | null = null;
   let abilities = FULL_ABILITIES;
+  let taxReturnYear: number | null = null;
   try {
     let tenant;
     const { from, to } = presetRange('last12');
@@ -77,6 +78,14 @@ export default async function DashboardHomePage() {
         referral = { code: overview.code, link: `${SITE_URL}/${locale}/signup?ref=${overview.code}`, ...rewards };
       }
     }
+    // January to March: the "Podklady pro daňové přiznání" card, only when
+    // the company invoiced in the year that just ended (same rule as the digest).
+    const season = taxReturnSeason(new Date());
+    if (season && abilities.exports) {
+      const y = season.taxYear;
+      const last = await apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${y}-01-01&to=${y}-12-31`).catch(() => null);
+      if ((last?.current.invoiceCount ?? 0) > 0) taxReturnYear = y;
+    }
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     if (error instanceof NoTenantError) {
@@ -95,5 +104,5 @@ export default async function DashboardHomePage() {
   const session = await auth().catch(() => null);
   const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? null;
 
-  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} referral={referral} abilities={abilities} />;
+  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} referral={referral} taxReturnYear={taxReturnYear} abilities={abilities} />;
 }
