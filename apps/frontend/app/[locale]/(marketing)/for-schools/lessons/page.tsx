@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ArrowRight, Clock } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { LessonTrackTabs } from '@/components/school-lessons/track-tabs';
 import { Link } from '@/i18n/navigation';
 import { LESSON_MINUTES, LESSON_TRACKS, SCHOOL_LESSONS, lessonContent, lessonPublishedIn } from '@/lib/school-lessons';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
@@ -48,20 +49,13 @@ export default async function SchoolLessonsIndex({ params }: { params: Promise<P
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{t('lawBasis')}</p>
 
-      <nav aria-label={t('levelNav')} className="mt-8 flex flex-wrap gap-2">
-        {tracks.map(({ track }) => (
-          <a
-            key={track}
-            href={`#${track}`}
-            className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary/40 hover:text-primary"
-          >
-            {t(`tracks.${track}.name`)}
-          </a>
-        ))}
-      </nav>
+      <LessonTrackTabs
+        label={t('levelNav')}
+        tabs={tracks.map(({ track }) => ({ id: track, label: t(`tracks.${track}.name`), short: t(`tracks.${track}.short`) }))}
+      />
 
       {tracks.map(({ track, lessons: group }) => (
-        <section key={track} id={track} className="mt-12 scroll-mt-24">
+        <section key={track} id={track} className="mt-10 scroll-mt-32">
           <h2 className="text-2xl font-semibold tracking-tight">{t(`tracks.${track}.name`)}</h2>
           <p className="mt-1 text-sm font-medium text-primary">{t(`tracks.${track}.audience`)}</p>
           <p className="mt-2 max-w-2xl text-muted-foreground">{t(`tracks.${track}.lead`)}</p>

@@ -9545,6 +9545,17 @@
       "firstInvoice": "Nastaveno pro první fakturu: prázdná firma neplátce, jen fakturace.",
       "beginners": "Nastaveno pro začínající: živnostník s ukázkovými doklady.",
       "advanced": "Nastaveno pro pokročilé: plátce DPH s účetní a bankou."
+    },
+    "scenarios": {
+      "firstInvoice": "Připraveno pro lekci: prázdná firma bez dokladů. Po spuštění začnete v Kontaktech.",
+      "invoices": "Připraveno pro lekci: firma s ukázkovými fakturami. Po spuštění začnete na seznamu faktur.",
+      "overdue": "Připraveno pro lekci: firma s ukázkovými fakturami. Po spuštění uvidíte faktury po splatnosti.",
+      "registries": "Připraveno pro lekci: firma s ukázkovými doklady a kontakty. Po spuštění začnete na seznamu faktur.",
+      "vatInvoices": "Připraveno pro lekci: plátce DPH s ukázkovými doklady. Po spuštění začnete na seznamu faktur.",
+      "vatOverdue": "Připraveno pro lekci: plátce DPH s ukázkovými doklady. Po spuštění uvidíte faktury po splatnosti.",
+      "bank": "Připraveno pro lekci: plátce DPH s bankovními pohyby ke spárování. Po spuštění začnete v Bance.",
+      "accountant": "Připraveno pro lekci: firma plátce DPH očima účetní. Po spuštění začnete v Bance.",
+      "flatTax": "Připraveno pro lekci: OSVČ v paušálním režimu s ukázkovými doklady. Po spuštění začnete na seznamu faktur."
     }
   },
   "offline": {
@@ -10296,6 +10307,7 @@
     },
     "sizes": {
       "a4": "A4 plakát",
+      "a3": "A3 plakát",
       "a5": "A5 plakát",
       "a6": "A6 leták",
       "a6x4": "A6 leták, 4 na listu A4"
@@ -11249,10 +11261,10 @@
     "flatLeadSk": "Na Slovensku je jeden paušál (§ 6 odst. 10 ZDP) s ročním stropem; zaplacené pojistné se odečítá navíc.",
     "rateLabel": "Vaše činnost",
     "rates": {
-      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství.",
-      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "30": "30 % – pronájem majetku zařazeného v obchodním majetku.",
       "40": "40 % – jiné podnikání podle zvláštních předpisů (svobodná povolání) a autorská práva.",
-      "30": "30 % – pronájem majetku zařazeného v obchodním majetku."
+      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství."
     },
     "flatRow": "Paušál {rate} % (max. {cap})",
     "capped": "strop",
@@ -12675,7 +12687,7 @@
     "how": [
       "Každá lekce má cíle, časový plán hodiny, výklad pojmů s odkazy na konkrétní paragrafy a poznámky pro učitele.",
       "Žáci plní úkol krok za krokem v demu Billanty. Demo nevyžaduje registraci ani e-mail a každý žák dostane vlastní firmu s ukázkovými daty.",
-      "Pracovní list vytisknete ve verzi pro žáky (bez řešení), nebo pro sebe s řešením."
+      "Pracovní list vytisknete ve verzi pro žáky (bez řešení). Řešení a tisk s řešením uvidíte po přihlášení do účtu učitele."
     ],
     "rvpNote": "Lekce pro základní školy se hodí do finanční gramotnosti, lekce pro střední školy navazují na ekonomické a účetní vzdělávací obsahy rámcových vzdělávacích programů obchodních akademií. Rozdělení do ročníků a předmětů necháváme na škole.",
     "lawBasis": "Lekce vycházejí z českého práva.",
@@ -12707,18 +12719,42 @@
       "basic": {
         "name": "Základní škola",
         "audience": "Finanční gramotnost, 8. a 9. ročník",
-        "lead": "Co je faktura, jak ji vystavit, kdy je zaplacená a jak slušně upomenout. Bez daní a paragrafů pro žáky."
+        "lead": "Co je faktura, jak ji vystavit, kdy je zaplacená a jak slušně upomenout. Bez daní a paragrafů pro žáky.",
+        "short": "ZŠ"
       },
       "standard": {
         "name": "Střední škola",
         "audience": "Obchodní akademie a ekonomické obory",
-        "lead": "Náležitosti faktury, DPH, zálohy, dobropisy a upomínky podle zákona."
+        "lead": "Náležitosti faktury, DPH, zálohy, dobropisy a upomínky podle zákona.",
+        "short": "SŠ"
       },
       "advanced": {
         "name": "Vyšší a vysoká škola, kurzy",
         "audience": "VOŠ, VŠ a rekvalifikační kurzy",
-        "lead": "Přiznání k DPH a kontrolní hlášení, zahraniční odběratelé, párování banky a spolupráce s účetní."
+        "lead": "Přiznání k DPH a kontrolní hlášení, zahraniční odběratelé, párování banky a spolupráce s účetní.",
+        "short": "VŠ"
       }
-    }
+    },
+    "answersLocked": "Řešení vidí učitelé po přihlášení.",
+    "answersLogin": "Přihlásit se",
+    "answersSignup": "Založit účet učitele"
+  },
+  "coworkingPoster": {
+    "title": "Plakát pro coworking",
+    "lead": "Plakát s QR kódem do kuchyňky, na recepci nebo do zasedačky. Vytiskněte ho rovnou z prohlížeče, nebo si ho uložte jako PDF.",
+    "back": "Zpět na stránku pro coworkingy",
+    "sizeLabel": "Velikost",
+    "download": "Stáhnout plakát",
+    "printHint": "Otevře se dialog tisku: vyberte tiskárnu, nebo Uložit jako PDF. Měřítko nechte na 100 %.",
+    "withInvite": "QR kód na plakátu nese kód pozvánky vaší firmy ({code}). Za každou firmu, která se přes něj zaregistruje a začne platit, dostanete kredit.",
+    "generic": "QR kód teď vede na náš web. Po přihlášení ponese kód pozvánky vaší firmy a za nové firmy dostanete kredit.",
+    "login": "Přihlásit se",
+    "groupCode": "Chcete jeden trvalý kód pro všechny členy i s výhodou navíc? Připravíme ho a dáme na plakát.",
+    "contact": "Napište nám",
+    "mailSubject": "Kód a plakát pro náš coworking",
+    "qrTarget": "QR vede na:",
+    "ctaTitle": "Plakát na zeď ke stažení",
+    "ctaBody": "A4 nebo A3, připravený k tisku. Když jste přihlášení, QR kód na něm nese kód pozvánky vaší firmy.",
+    "ctaButton": "Stáhnout plakát"
   }
 }
