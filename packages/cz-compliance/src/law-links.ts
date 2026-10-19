@@ -22,7 +22,7 @@ const LAWS: Record<string, (p: string, odst?: string) => string> = {
  * of these, so an AI draft can't cite a law we have no link for.
  */
 const LAW_PROSE =
-  /^(?:ZDPH|ZoDPH|OZ|ObZ)\b|^z[áa]kon(?:a|u|e|om)? o (?:DPH|dani z p[řr]idan[éej]+ hodnoty)|^ob[čc]ansk\p{L}* z[áa]kon[ií]k|^obchodn\p{L}* z[áa]konn[ií]k|^(?:of )?the (?:Czech |Slovak )?(?:VAT Act|Civil Code|Commercial Code)/iu;
+  /^(?:ZDPH|ZoDPH|OZ|ObZ)\b|^(?:(?:česk|slovensk)\p{L}* )?z[áa]kon(?:a|u|e|om)? o (?:DPH|dani z p[řr]idan[éej]+ hodnoty)|^ob[čc]ansk\p{L}* z[áa]kon[ií]k|^obchodn\p{L}* z[áa]konn[ií]k|^(?:of )?the (?:Czech |Slovak )?(?:VAT Act|Civil Code|Commercial Code)/iu;
 
 /** True when `text` (what follows a § number) starts with the name of a law in LAWS. */
 export function isKnownLawName(text: string): boolean {

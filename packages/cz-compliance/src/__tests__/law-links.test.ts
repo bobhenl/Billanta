@@ -29,6 +29,8 @@ describe('isKnownLawName', () => {
       'zákona o DPH',
       'zákona o dani z přidané hodnoty',
       'zákona o dani z pridanej hodnoty',
+      'slovenského zákona o DPH',
+      'českého zákona o DPH',
       'občanského zákoníku',
       'Obchodného zákonníka',
       'ObZ',

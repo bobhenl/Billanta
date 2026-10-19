@@ -24,6 +24,8 @@ describe("lawProse", () => {
   });
 });
 
+const UNNAMED_PARAGRAPHS = new Set(["how-to-e-invoicing-slovakia-2027", "how-to-flat-tax"]);
+
 describe("topics", () => {
   it("follow each tool's locales: Czech-rule tools have no Slovak post", () => {
     expect(toolTopic("flat-tax", "cs")).not.toBeNull();
@@ -55,9 +57,11 @@ describe("topics", () => {
   });
 
   it("let a post that quotes its facts pass the § and number checks", () => {
-    for (const t of [...allTopics("trade_invoicing", "cs"), ...allTopics("tool_howto", "sk")]) {
+    for (const t of [...allTopics("trade_invoicing", "cs"), ...allTopics("tool_howto", "cs"), ...allTopics("tool_howto", "sk")]) {
       const warnings = blogWarnings({ title: t.subject, description: t.subject, body: t.facts, sources: t.sources, facts: t.facts });
-      expect(warnings.filter((w) => w === "law_reference" || w === "unknown_number"), t.slug).toEqual([]);
+      // These pages cite a § without naming the law ("§ 28 až 43 a § 47") or name one law-links has no link for (ZDP): a post quoting that must wait for a person.
+      const expected = UNNAMED_PARAGRAPHS.has(t.slug) ? ["law_reference"] : [];
+      expect(warnings.filter((w) => w === "law_reference" || w === "unknown_number"), t.slug).toEqual(expected);
     }
   });
 

@@ -71,7 +71,7 @@ describe("blogWarnings", () => {
 
   it("accepts a § from the facts that names a law in law-links", () => {
     const facts = `${post().facts}\nFaktura musí obsahovat údaje podle § 435 OZ a § 29 odst. 1 ZDPH.`;
-    for (const ref of ["§ 435 občanského zákoníku", "§ 29 odst. 1 zákona o DPH", "§ 29/1 ZDPH", "§ 435 a § 29 zákona o DPH"]) {
+    for (const ref of ["§ 435 občanského zákoníku", "§ 29 odst. 1 zákona o DPH", "§ 29/1 ZDPH", "§ 435 a § 29 zákona o DPH", "§ 435 nebo 29 zákona o DPH"]) {
       expect(blogWarnings(post({ facts, body: `${post().body} Viz ${ref}.` })), ref).toEqual([]);
     }
   });

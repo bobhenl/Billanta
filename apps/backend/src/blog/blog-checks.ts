@@ -91,8 +91,8 @@ function numbers(text: string): Set<string> {
 
 const word = (w: string) => new RegExp(String.raw`(?<!\p{L})${w}(?!\p{L})`, "iu");
 
-/** "odst. 1", "písm. c)", "/1c", "a § 30": what can stand between "§ 29" and the law's name. */
-const PARAGRAPH_TAIL = /^(?:\s*\/\s*\d+[a-z]?|\s*,?\s*(?:odst\.|ods\.|odsek|odstavec|písm\.|pism\.|section|para\.)\s*[0-9a-z]+\)?|\s*(?:,|a|and|or|nebo|alebo)\s*§\s*\d+[a-z]?)+/iu;
+/** "odst. 1", "písm. c)", "/1c", "a § 30", ", 4b nebo 4c": what can stand between "§ 29" and the law's name. */
+const PARAGRAPH_TAIL = /^(?:\s*\/\s*\d+[a-z]?|\s*(?:,|a|and|or|nebo|alebo|až|to)\s*\d+[a-z]?(?![\d\s]*%)|\s*,?\s*(?:odst\.|ods\.|odsek|odstavec|písm\.|pism\.|section|para\.)\s*[0-9a-z]+\)?|\s*(?:,|a|and|or|nebo|alebo)\s*§\s*\d+[a-z]?)+/iu;
 
 /**
  * Every "§ N" must name a law from law-links (so readers get a link we trust)
