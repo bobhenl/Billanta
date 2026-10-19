@@ -3,6 +3,7 @@ import { ArrowRight, Building2, Calculator, CalendarDays, Globe2, GraduationCap,
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { EmbedSection } from '@/components/embed-section';
 import { PartnerContactCta, PartnerHowItWorks } from '@/components/partner-segment';
+import { SkEinvoicingCallout } from '@/components/public-tools/sk-einvoicing-callout';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
@@ -68,6 +69,9 @@ export default async function ForPartnersPage({ params }: { params: Promise<{ lo
           </li>
         ))}
       </ul>
+
+      {/* Accountants and associations get asked about the 2027 mandate first. */}
+      <SkEinvoicingCallout partner className="mt-8" />
 
       <PartnerHowItWorks className="mt-12" />
 

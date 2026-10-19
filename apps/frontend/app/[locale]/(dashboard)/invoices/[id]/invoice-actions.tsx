@@ -169,7 +169,7 @@ export function InvoiceActions({
               <FileCode2 className="h-4 w-4" />
               ISDOC
             </a>
-            {documentType === 'invoice' && (
+            {(documentType === 'invoice' || documentType === 'credit_note') && (
               <a href={`/api/files/invoices/${id}/ubl`} title={t('actions.ublHint')} className={buttonClass.secondary}>
                 <FileCode2 className="h-4 w-4" />
                 UBL
@@ -374,7 +374,7 @@ export function InvoiceActions({
               <Copy className="h-4 w-4" />
               {t('actions.duplicateToFix')}
             </Link>
-            {documentType === 'invoice' && (
+            {(documentType === 'invoice' || documentType === 'credit_note') && (
               <button
                 type="button"
                 className={buttonClass.primary}
@@ -434,7 +434,7 @@ export function InvoiceActions({
         title={t('confirm.cancelTitle')}
         footer={
           <>
-            {documentType === 'invoice' && (
+            {(documentType === 'invoice' || documentType === 'credit_note') && (
               <button
                 type="button"
                 className={buttonClass.secondary}
