@@ -30,7 +30,7 @@ export function GET() {
 ${FEATURE_PAGES.map((f) => `  - [${FEATURE_TEXT[f.key]!.name}](${SITE_URL}/${l}/features/${f.slug}): ${FEATURE_TEXT[f.key]!.description}`).join('\n')}
 - [Calculators](${SITE_URL}/${l}/calculators): free tax, insurance, VAT and exchange-rate calculators, no sign-up
 ${CALCULATORS.map((c) => `  - [${CALC_TEXT[c.key]!.name}](${SITE_URL}/${l}/calculators/${c.slug}): ${CALC_TEXT[c.key]!.description}`).join('\n')}
-- [Guides](${SITE_URL}/${l}/guides): Czech VAT filing guides
+- [Guides](${SITE_URL}/${l}/guides): Czech VAT filing and Slovak e-invoicing guides
 ${GUIDES.map((g) => `  - [${GUIDE_TEXT[g.key]!.name}](${SITE_URL}/${l}/guides/${g.slug}): ${GUIDE_TEXT[g.key]!.description}`).join('\n')}
 - [About](${SITE_URL}/${l}/about): who it is for and why it exists
 - [Invoicing by municipality](${SITE_URL}/${l}/invoicing): index of Czech and Slovak municipalities
