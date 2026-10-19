@@ -166,6 +166,51 @@ describe('generateUblInvoiceXml', () => {
     expect(totals['cbc:PayableAmount']['#text']).toBe('50.00');
   });
 
+  it('puts the note and the variable symbol into a single Note (PEPPOL-EN16931-R002)', () => {
+    const xml = generateUblInvoiceXml(invoice({ note: 'Ďakujeme.' }));
+    expect(xml.match(/<cbc:Note>/g)).toHaveLength(1);
+    expect(parser.parse(xml).Invoice['cbc:Note']).toBe('Ďakujeme.\nVS: 2027001');
+    const credit = generateUblInvoiceXml(invoice({ note: 'Oprava' }), { documentType: 'credit_note' });
+    expect(credit.match(/<cbc:Note>/g)).toHaveLength(1);
+    expect(generateUblInvoiceXml(invoice({ variableSymbol: undefined }))).not.toContain('<cbc:Note>');
+  });
+
+  it('turns a negative price into a negative quantity so the item price stays positive (BR-27)', () => {
+    const xml = generateUblInvoiceXml(
+      invoice({
+        lineItems: [
+          { description: 'Služba', quantity: 1, unitPriceWithoutVat: 100, vatRate: 'base', vatRatePercent: 23 },
+          { description: 'Zľava', quantity: 2, unitPriceWithoutVat: -5, vatRate: 'base', vatRatePercent: 23 }
+        ],
+        totals: { totalWithoutVat: 90, totalVat: 20.7, totalWithVat: 110.7, vatRecapitulation: [] }
+      })
+    );
+    const discount = parser.parse(xml).Invoice['cac:InvoiceLine'][1];
+    expect(discount['cbc:InvoicedQuantity']['#text']).toBe('-2');
+    expect(discount['cac:Price']['cbc:PriceAmount']['#text']).toBe('5');
+    expect(discount['cbc:LineExtensionAmount']['#text']).toBe('-10.00');
+    expect(parser.parse(xml).Invoice['cac:LegalMonetaryTotal']['cbc:LineExtensionAmount']['#text']).toBe('90.00');
+  });
+
+  it('keeps the full precision of quantities and prices so quantity × price matches the line (PEPPOL-EN16931-R120)', () => {
+    const xml = generateUblInvoiceXml(
+      invoice({
+        lineItems: [
+          { description: 'Elektrina', quantity: 1000, unit: 'kWh', unitPriceWithoutVat: 0.123456, vatRate: 'base', vatRatePercent: 23 },
+          { description: 'Paušál', quantity: 1 / 3, unitPriceWithoutVat: 1000, vatRate: 'base', vatRatePercent: 23 }
+        ],
+        totals: { totalWithoutVat: 456.79, totalVat: 105.06, totalWithVat: 561.85, vatRecapitulation: [] }
+      })
+    );
+    const [energy, flat] = parser.parse(xml).Invoice['cac:InvoiceLine'];
+    expect(energy['cac:Price']['cbc:PriceAmount']['#text']).toBe('0.123456');
+    expect(energy['cbc:LineExtensionAmount']['#text']).toBe('123.46');
+    expect(flat['cbc:InvoicedQuantity']['#text']).toBe('0.3333333333');
+    expect(flat['cbc:LineExtensionAmount']['#text']).toBe('333.33');
+    // xs:decimal has no exponent form.
+    expect(xml).not.toMatch(/>-?\d+(\.\d+)?e[-+]?\d+</i);
+  });
+
   it('maps Czech and Slovak units to UN/ECE codes', () => {
     expect(ublUnitCode('ks')).toBe('H87');
     expect(ublUnitCode('hod.')).toBe('HUR');

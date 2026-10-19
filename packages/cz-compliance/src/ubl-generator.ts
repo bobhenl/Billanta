@@ -156,6 +156,18 @@ function date(value: string): string {
   return value.slice(0, 10);
 }
 
+/**
+ * A quantity or unit price in plain decimal notation (xs:decimal has no
+ * exponent form). It keeps up to 10 decimals: EN 16931 sets no limit for
+ * BT-129 and BT-146, and Peppol checks each line's net amount against
+ * quantity × price within 0.02 (PEPPOL-EN16931-R120), so rounding a fine
+ * price such as 0.123456 €/kWh to four places would break that check.
+ */
+function decimal(value: number): string {
+  const fixed = value.toFixed(10).replace(/\.?0+$/, '');
+  return fixed === '-0' ? '0' : fixed;
+}
+
 /** Percent without trailing zeros, e.g. 21, 12.5. */
 function percent(value: number): string {
   return String(Math.round(value * 100) / 100);
@@ -286,9 +298,14 @@ export function generateUblInvoiceXml(input: IsdocInvoiceInput, options: UblOpti
 
   const lines = input.lineItems.map((item, index) => {
     const category = categoryOf(item.vatRatePercent);
-    const quantity = sign * item.quantity;
-    const net = round2(quantity * item.unitPriceWithoutVat);
-    return { item, index, category, quantity, net };
+    // The item net price must not be negative (BR-27), so a discount typed
+    // as a line with a negative price becomes a negative quantity at a
+    // positive price. The line amount stays the same.
+    const priceSign = item.unitPriceWithoutVat < 0 ? -1 : 1;
+    const price = priceSign * item.unitPriceWithoutVat;
+    const quantity = sign * priceSign * item.quantity;
+    const net = round2(quantity * price);
+    return { item, index, category, quantity, price, net };
   });
 
   const groups = new Map<string, { category: Category; taxable: number }>();
@@ -308,7 +325,9 @@ export function generateUblInvoiceXml(input: IsdocInvoiceInput, options: UblOpti
   const prepaid = round2(Math.max(0, options.prepaidAmount ?? 0));
   const payable = round2(inclusive + rounding - prepaid);
 
-  const notes = [input.note, input.variableSymbol ? `VS: ${input.variableSymbol}` : undefined].filter((n): n is string => Boolean(n));
+  // Peppol allows a single document-level note (PEPPOL-EN16931-R002), so
+  // the free text and the variable symbol share one.
+  const note = [input.note, input.variableSymbol ? `VS: ${input.variableSymbol}` : undefined].filter(Boolean).join('\n');
 
   const account = input.bankAccount;
   const accountId = account?.iban?.replace(/\s+/g, '') || account?.accountNumber;
@@ -331,16 +350,16 @@ export function generateUblInvoiceXml(input: IsdocInvoiceInput, options: UblOpti
   const quantityTag = creditNote ? 'CreditedQuantity' : 'InvoicedQuantity';
   const invoiceLines = lines
     .map(
-      ({ item, index, category, quantity, net }) =>
+      ({ item, index, category, quantity, price, net }) =>
         `<cac:${lineTag}>` +
         el('cbc:ID', String(index + 1)) +
-        `<cbc:${quantityTag} unitCode="${ublUnitCode(item.unit)}">${Math.round(quantity * 10000) / 10000}</cbc:${quantityTag}>` +
+        `<cbc:${quantityTag} unitCode="${ublUnitCode(item.unit)}">${decimal(quantity)}</cbc:${quantityTag}>` +
         amountEl('cbc:LineExtensionAmount', net, currency) +
         '<cac:Item>' +
         el('cbc:Name', escapeXml(item.description.slice(0, 200) || '-')) +
         categoryXml('cac:ClassifiedTaxCategory', category) +
         '</cac:Item>' +
-        `<cac:Price><cbc:PriceAmount currencyID="${escapeXml(currency)}">${Math.round(item.unitPriceWithoutVat * 10000) / 10000}</cbc:PriceAmount></cac:Price>` +
+        `<cac:Price><cbc:PriceAmount currencyID="${escapeXml(currency)}">${decimal(price)}</cbc:PriceAmount></cac:Price>` +
         `</cac:${lineTag}>`
     )
     .join('');
@@ -379,7 +398,7 @@ export function generateUblInvoiceXml(input: IsdocInvoiceInput, options: UblOpti
     : '';
   const root = creditNote ? 'CreditNote' : 'Invoice';
   const taxPoint = vatPayer ? el('cbc:TaxPointDate', date(input.taxableSupplyDate)) : '';
-  const noteXml = notes.map((n) => el('cbc:Note', escapeXml(n))).join('');
+  const noteXml = opt('cbc:Note', note);
   // The two UBL 2.1 roots order their headers differently. An Invoice has
   // DueDate, the type code, notes, then TaxPointDate. A CreditNote puts
   // TaxPointDate before its type code and has no DueDate.

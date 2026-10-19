@@ -32,8 +32,9 @@
     "dev": "tsc -p tsconfig.json --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.validation.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "validate:peppol": "vitest run --config vitest.validation.config.ts"
   },
   "engines": {
     "node": ">=20"
@@ -42,6 +43,7 @@
     "bysquare": "4.1.0"
   },
   "devDependencies": {
+    "@types/node": "^20.14.15",
     "fast-xml-parser": "^4.5.0",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"
