@@ -7599,6 +7599,134 @@
             "Zdravotní pojištění je 15 % (od roku 2026 16 %) ze zisku děleného 1,486, nejméně z minimálního základu za každý měsíc. Rozdíl proti zaplaceným zálohám se doplatí v ročním zúčtování.",
             "Sociální pojištění vzniká až od července dalšího roku, a jen když příjem přesáhne zákonnou hranici. Základ je zisk děleno 1,486 a počtem měsíců, mezi minimálním a maximálním základem."
           ]
+        },
+        "invoiceRequirements": {
+          "name": "Náležitosti faktury",
+          "title": "Náležitosti faktury 2026 – co musí faktura obsahovat",
+          "description": "Zjistěte, co musí obsahovat vaše faktura: plátce i neplátce DPH, dobropis, zálohová faktura, přenesená daňová povinnost, odběratel v EU. Pro Česko i Slovensko, s odkazy na zákon.",
+          "lead": "Řekněte nám, kdo jste a co vystavujete. Ukážeme povinné náležitosti přesně pro váš případ a můžete si odškrtat, co na vaší faktuře už je.",
+          "keywords": "náležitosti faktury co musí obsahovat faktura neplátce DPH plátce daňový doklad dobropis zálohová faktura přenesená daňová povinnost § 29 zákon o DPH § 435 občanský zákoník",
+          "scenarioTitle": "Kdo jste a co vystavujete",
+          "progressTitle": "Vaše faktura",
+          "progress": "{done} z {total} povinných",
+          "allDone": "Všechny povinné náležitosti máte.",
+          "missingTitle": "{n, plural, one {Chybí # povinná položka:} few {Chybí # povinné položky:} other {Chybí # povinných položek:}}",
+          "tickHint": "Odškrtejte, co na faktuře máte. Zaškrtnutí zůstanou, i když změníte situaci.",
+          "reset": "Zrušit zaškrtnutí",
+          "howTitle": "Jak to funguje",
+          "how": [
+            "Plátce DPH vystavuje daňový doklad s náležitostmi podle § 29 zákona o DPH (na Slovensku § 74 ZoDPH). Neplátce a zálohová faktura se řídí jen občanským zákoníkem (§ 435) a dobrou praxí.",
+            "Podmíněné položky jsou povinné jen v uvedeném případě, doporučené zákon nevyžaduje, ale bez nich se faktury platí pomaleji.",
+            "U každé položky je odkaz na paragraf, ze kterého povinnost plyne. Hotovou fakturu v ISDOC můžete zkontrolovat v našem prohlížeči ISDOC."
+          ]
+        },
+        "isdocViewer": {
+          "name": "Prohlížeč ISDOC",
+          "title": "Prohlížeč a kontrola faktury ISDOC online",
+          "description": "Otevřete fakturu ve formátu ISDOC nebo ISDOCX a zkontrolujte ji: IČO, DIČ, číslo účtu, součty DPH a povinné náležitosti. Soubor zůstává ve vašem prohlížeči.",
+          "lead": "Nahrajte soubor .isdoc nebo .isdocx. Zobrazíme ho jako čitelnou fakturu a rovnou zkontrolujeme, jestli v ní nic nechybí a jestli sedí čísla.",
+          "keywords": "ISDOC prohlížeč otevřít ISDOC soubor isdocx zobrazit fakturu kontrola faktury IČO DIČ DPH elektronická faktura",
+          "dropTitle": "Přetáhněte sem fakturu ISDOC",
+          "dropHint": "Soubor .isdoc, .isdocx nebo .xml. Čteme ho jen ve vašem prohlížeči, nikam ho neposíláme.",
+          "choose": "Vybrat soubor",
+          "reading": "Načítáme…",
+          "sample": "Zkusit ukázkovou fakturu",
+          "sampleName": "ukazka.isdoc",
+          "privacy": "Soubor se nikam nenahrává.",
+          "errors": {
+            "not_xml": "Soubor se nedá přečíst jako XML. Je to opravdu ISDOC?",
+            "not_isdoc": "Soubor je XML, ale není to faktura ISDOC.",
+            "too_big": "Soubor je větší než 25 MB, to faktura nebývá.",
+            "read": "Soubor se nepodařilo přečíst. Zkuste ho stáhnout znovu."
+          },
+          "another": "Otevřít jiný soubor",
+          "verdictOk": "Faktura vypadá v pořádku.",
+          "verdictIssues": "{missing, plural, =0 {Nic povinného nechybí} one {Chybí # povinná položka} few {Chybí # povinné položky} other {Chybí # povinných položek}}{problems, plural, =0 {.} one {, našli jsme # problém.} few {, našli jsme # problémy.} other {, našli jsme # problémů.}}",
+          "verdictHint": "Podívejte se níže, co přesně chybí. Některé položky (zápis v rejstříku, odkaz na osvobození) mohou být v poznámce, kterou nepoznáme.",
+          "findings": {
+            "supplierIcoInvalid": "IČO dodavatele {value} nemá platný kontrolní součet.",
+            "customerIcoInvalid": "IČO odběratele {value} nemá platný kontrolní součet.",
+            "supplierDicInvalid": "DIČ dodavatele {value} nemá platný tvar nebo kontrolní číslici.",
+            "customerDicInvalid": "DIČ odběratele {value} nemá platný tvar nebo kontrolní číslici.",
+            "bankAccountInvalid": "Číslo účtu {value} neprošlo kontrolou podle vyhlášky ČNB.",
+            "ibanInvalid": "IBAN {value} nemá platný kontrolní součet.",
+            "noLines": "Faktura nemá žádné položky.",
+            "lineAmountMismatch": "Položka {value}: množství × cena dává {expected}, ve faktuře je {actual}.",
+            "linesTotalMismatch": "Součet položek je {expected}, ale základ celkem je {actual}.",
+            "subtotalVatMismatch": "DPH v sazbě {value} % má být {expected}, ve faktuře je {actual}.",
+            "vatTotalMismatch": "Součet DPH podle sazeb je {expected}, ale DPH celkem je {actual}.",
+            "inclusiveMismatch": "Základ + DPH dává {expected}, ale celkem s DPH je {actual}.",
+            "payableMismatch": "K úhradě má být {expected}, ve faktuře je {actual}.",
+            "invalidDate": "Datum „{value}“ není platné.",
+            "dueBeforeIssue": "Splatnost {value} je dřív než datum vystavení.",
+            "vatOnNonPayer": "Neplátce DPH nesmí DPH vyčíslit, ale faktura ji obsahuje.",
+            "simplifiedOverLimit": "Zjednodušený doklad je jen do {expected}, tato faktura je na {actual}."
+          },
+          "scenarioTitle": "Situace dodavatele",
+          "scenarioHint": "Odhadli jsme ji ze souboru. Když nesedí, upravte ji a kontrola se přepočítá.",
+          "status": {
+            "ok": "V pořádku",
+            "missing": "Chybí",
+            "invalid": "Chybná hodnota",
+            "unknown": "Nedá se ověřit"
+          },
+          "kinds": {
+            "invoice": "Faktura",
+            "credit_note": "Dobropis",
+            "debit_note": "Vrubopis",
+            "proforma": "Zálohová faktura",
+            "advance_tax": "Daňový doklad k přijaté platbě",
+            "advance_credit": "Opravný doklad k přijaté platbě",
+            "simplified": "Zjednodušený daňový doklad",
+            "unknown": "Doklad"
+          },
+          "supplier": "Dodavatel",
+          "customer": "Odběratel",
+          "noCustomer": "Odběratel není uveden.",
+          "ico": "IČO",
+          "dic": "DIČ",
+          "issueDate": "Vystaveno",
+          "taxPointDate": "DUZP",
+          "dueDate": "Splatnost",
+          "currency": "Měna",
+          "corrects": "Opravuje doklad",
+          "order": "Objednávka",
+          "lines": "Položky",
+          "noLines": "Bez položek.",
+          "lineNoText": "Položka bez popisu",
+          "vatRate": "DPH {rate} %",
+          "reverseCharge": "přenesená daň",
+          "vatRecap": "Rekapitulace DPH",
+          "recapRow": "základ {base}, DPH {vat}",
+          "taxExclusive": "Celkem bez DPH",
+          "vatTotal": "DPH celkem",
+          "rounding": "Zaokrouhlení",
+          "alreadyClaimed": "Odečtené zálohy",
+          "paidDeposits": "Uhrazeno předem",
+          "payable": "K úhradě",
+          "payment": "Platba",
+          "noPayment": "Platební údaje v souboru nejsou.",
+          "account": "Číslo účtu",
+          "variableSymbol": "Variabilní symbol",
+          "constantSymbol": "Konstantní symbol",
+          "specificSymbol": "Specifický symbol",
+          "method": "Způsob platby",
+          "methods": {
+            "10": "Hotově",
+            "20": "Šekem",
+            "31": "Převodem",
+            "42": "Převodem na účet",
+            "48": "Kartou",
+            "49": "Inkasem",
+            "50": "Dobírkou",
+            "97": "Zápočtem"
+          },
+          "howTitle": "Jak to funguje",
+          "how": [
+            "ISDOC je český formát elektronické faktury. Soubor .isdocx je zip, ve kterém je kromě faktury i PDF a přílohy – rozbalíme ho za vás.",
+            "Soubor čteme jen ve vašem prohlížeči. Nic se nenahrává na server a po zavření stránky nic nezůstane.",
+            "Kontrolujeme kontrolní součty IČO, DIČ, čísla účtu a IBAN, součty položek a DPH a povinné náležitosti podle toho, kdo fakturu vystavil. Plátcovství DPH ani existenci firmy v registrech neověřujeme."
+          ]
         }
       }
     },
@@ -7688,6 +7816,193 @@
           "exampleTitle": "Příklad",
           "example": "V březnu zaplatíte reklamu na Facebooku za 10 000 Kč. Meta vám vystaví fakturu bez DPH. Do 25. dubna podáte přiznání k DPH za březen, kde uvedete daň 2 100 Kč, a stejnou částku zaplatíte finančnímu úřadu. V měsících bez takového nákupu nepodáváte nic."
         }
+      }
+    },
+    "invoiceChecklist": {
+      "scenario": {
+        "country": "Podle práva",
+        "vatStatus": "Vy jste",
+        "document": "Doklad",
+        "customer": "Odběratel",
+        "reverseCharge": "Přenesená daňová povinnost (§ 92a)",
+        "reverseYes": "Ano",
+        "reverseNo": "Ne",
+        "euSupply": "Co dodáváte do EU",
+        "euService": "Službu",
+        "euGoods": "Zboží",
+        "countries": {
+          "CZ": "Česko",
+          "SK": "Slovensko"
+        },
+        "vatStatuses": {
+          "payer": "Plátce DPH",
+          "identified": "Identifikovaná osoba",
+          "non_payer": "Neplátce DPH"
+        },
+        "documents": {
+          "invoice": "Faktura",
+          "proforma": "Zálohová (proforma)",
+          "credit_note": "Dobropis",
+          "simplified": "Zjednodušený doklad"
+        },
+        "customers": {
+          "business": "Firma v tuzemsku",
+          "consumer": "Spotřebitel",
+          "eu_business": "Firma v EU",
+          "non_eu": "Mimo EU"
+        }
+      },
+      "taxDocument": "Je to daňový doklad podle zákona o DPH.",
+      "notTaxDocument": "Není to daňový doklad – stačí náležitosti podle občanského zákoníku a dobrá praxe.",
+      "notices": {
+        "simplifiedNotForNonPayer": "Zjednodušený daňový doklad vystavuje jen plátce DPH. Ukazujeme náležitosti běžné faktury.",
+        "simplifiedLimitCz": "Zjednodušený daňový doklad smíte vystavit jen do 10 000 Kč včetně DPH (§ 30 ZDPH).",
+        "simplifiedLimitSk": "Na Slovensku jde zjednodušená faktura jen do 1 000 € včetně DPH (§ 74 odst. 3 ZoDPH).",
+        "simplifiedNotCrossBorder": "Pro dodání do jiného státu EU a vývoz zjednodušený doklad vystavit nelze. Ukazujeme běžnou fakturu.",
+        "proformaTaxDocument": "Zálohová faktura není daňový doklad. Až záloha přijde, do 15 dnů vystavte daňový doklad k přijaté platbě.",
+        "identifiedNoTaxDocument": "Identifikovaná osoba v tuzemsku DPH nepřičítá – fakturuje jako neplátce.",
+        "identifiedEuService": "Za službu firmě v jiném státě EU vystavuje i identifikovaná osoba daňový doklad, bez DPH a s poznámkou o přenesení daně.",
+        "reverseChargeDomesticOnly": "Tuzemské přenesení daňové povinnosti platí jen pro vyjmenovaná plnění (stavební práce, šrot, zlato, mobilní telefony nad 100 000 Kč …).",
+        "consumerNoTaxDocumentDuty": "Spotřebiteli daňový doklad vystavit nemusíte, pokud o něj nepožádá. Když ho vystavíte, musí obsahovat vše níže.",
+        "nonPayerNoVat": "Neplátce DPH na faktuře DPH neuvádí a nesmí ji ani vyčíslit."
+      },
+      "groups": {
+        "supplier": "Dodavatel",
+        "customer": "Odběratel",
+        "document": "Doklad",
+        "amounts": "Částky a DPH",
+        "payment": "Platba"
+      },
+      "items": {
+        "supplierName": {
+          "label": "Jméno nebo obchodní firma dodavatele",
+          "hint": "Přesně podle obchodního nebo živnostenského rejstříku."
+        },
+        "supplierAddress": {
+          "label": "Sídlo nebo adresa dodavatele",
+          "hint": "Adresa sídla z rejstříku, ne jen korespondenční."
+        },
+        "supplierIco": {
+          "label": "IČO dodavatele",
+          "hint": "Osm číslic, kontrolní součet ověříme."
+        },
+        "supplierRegistry": {
+          "label": "Zápis v rejstříku",
+          "hint": "Např. „Zapsáno v obchodním rejstříku u Městského soudu v Praze, oddíl C, vložka 123“. Živnostník zapsaný jen v živnostenském rejstříku to psát nemusí."
+        },
+        "supplierDic": {
+          "label": "DIČ dodavatele",
+          "hint": "Daňové identifikační číslo s předponou CZ."
+        },
+        "customerName": {
+          "label": "Jméno nebo firma odběratele",
+          "hint": "U spotřebitele stačí jméno."
+        },
+        "customerAddress": {
+          "label": "Sídlo nebo adresa odběratele",
+          "hint": "Adresa sídla nebo bydliště."
+        },
+        "customerIco": {
+          "label": "IČO odběratele",
+          "hint": "Zákon ho nevyžaduje, ale firmy ho na faktuře chtějí kvůli účetnictví."
+        },
+        "customerDic": {
+          "label": "DIČ odběratele",
+          "hint": "Včetně předpony státu, např. CZ12345678 nebo DE123456789."
+        },
+        "documentLabel": {
+          "label": "Označení dokladu",
+          "hint": "Aby bylo jasné, o jaký doklad jde."
+        },
+        "number": {
+          "label": "Evidenční číslo dokladu",
+          "hint": "Jedinečné v rámci řady, kterou vedete. Nesmí se opakovat."
+        },
+        "originalNumber": {
+          "label": "Číslo opravovaného dokladu",
+          "hint": "Evidenční číslo původní faktury, kterou dobropis opravuje."
+        },
+        "issueDate": {
+          "label": "Datum vystavení",
+          "hint": "Den, kdy jste doklad vystavili."
+        },
+        "taxPointDate": {
+          "label": "Datum uskutečnění zdanitelného plnění (DUZP)",
+          "hint": "Kdy jste zboží dodali nebo službu poskytli."
+        },
+        "subject": {
+          "label": "Rozsah a předmět plnění",
+          "hint": "Co dodáváte a kolik – konkrétně, ne jen „služby“."
+        },
+        "unitPrice": {
+          "label": "Jednotková cena bez DPH",
+          "hint": "Cena za kus, hodinu nebo jinou jednotku a případná sleva, pokud není v ceně."
+        },
+        "taxBase": {
+          "label": "Základ daně",
+          "hint": "Součet bez DPH."
+        },
+        "vatRate": {
+          "label": "Sazba DPH",
+          "hint": "21 % nebo 12 %, případně 0 % u osvobozeného plnění."
+        },
+        "vatAmount": {
+          "label": "Výše DPH",
+          "hint": "Zaokrouhlená na haléře nebo podle § 37."
+        },
+        "total": {
+          "label": "Celková částka k úhradě",
+          "hint": "Kolik má odběratel zaplatit."
+        },
+        "correctionReason": {
+          "label": "Důvod opravy",
+          "hint": "Např. vrácení zboží, sleva, chyba v ceně."
+        },
+        "correctionDifference": {
+          "label": "Rozdíl základu daně a DPH",
+          "hint": "O kolik se mění základ a daň oproti původnímu dokladu (se znaménkem minus)."
+        },
+        "reverseChargeNote": {
+          "label": "Poznámka „daň odvede zákazník“",
+          "hint": "Doslova tato slova. Odběratel si DPH dopočítá a přizná sám."
+        },
+        "exemptionNote": {
+          "label": "Odkaz na osvobození od daně",
+          "hint": "Např. „Osvobozeno od daně dle § 64 ZDPH“ – nebo odkaz na směrnici."
+        },
+        "nonPayerNote": {
+          "label": "Poznámka „Nejsem plátce DPH“",
+          "hint": "Zákon ji nevyžaduje, ale odběratel hned ví, proč na faktuře DPH chybí."
+        },
+        "dueDate": {
+          "label": "Datum splatnosti",
+          "hint": "Bez něj platí splatnost podle zákona a o upomínce se hůř mluví."
+        },
+        "paymentDetails": {
+          "label": "Číslo účtu a variabilní symbol",
+          "hint": "Případně i QR Platba – odběratel zaplatí bez přepisování."
+        }
+      },
+      "notes": {
+        "ifAssigned": "Pokud bylo přiděleno.",
+        "ifRegistered": "Jen pokud jste zapsaní v obchodním nebo jiném veřejném rejstříku.",
+        "ifBuyerHasDic": "Pokud odběratel DIČ má.",
+        "ifDifferent": "Jen pokud se liší od data vystavení.",
+        "buyerVatId": "DIČ v jiném státě EU (ověřte ho ve VIES).",
+        "perRate": "Za každou sazbu zvlášť.",
+        "inHomeCurrency": "V korunách, i když fakturujete v cizí měně.",
+        "noVatAmountReverse": "Jen pro informaci – DPH nevyčíslujete, odvede ji odběratel.",
+        "totalOrBase": "Celková cena s DPH, nebo základ a DPH zvlášť.",
+        "proformaLabel": "Např. „Zálohová faktura – není daňovým dokladem“.",
+        "creditLabel": "Např. „Opravný daňový doklad“ nebo „Dobropis“.",
+        "simplifiedLabel": "Např. „Zjednodušený daňový doklad“.",
+        "exemptEuGoods": "Dodání zboží do EU je od daně osvobozené (§ 64 ZDPH).",
+        "exportOrAbroad": "U vývozu zboží nebo služby s místem plnění mimo EU."
+      },
+      "levels": {
+        "required": "Povinné",
+        "conditional": "Podmíněné",
+        "recommended": "Doporučené"
       }
     }
   },

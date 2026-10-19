@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, Globe2, Landmark, Percent, QrCode, Scale, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, FileSearch, Globe2, Landmark, ListChecks, Percent, QrCode, Scale, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -41,7 +41,11 @@ export const CALCULATORS = [
   { slug: 'qr-payment', key: 'qrPayment', icon: QrCode, locales: CZ_ONLY },
   { slug: 'company-lookup', key: 'companyLookup', icon: Building2, locales: ALL },
   { slug: 'iban', key: 'iban', icon: Landmark, locales: CZ_ONLY },
-  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL }
+  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL },
+  // What an invoice must contain (CZ and SK law) and an ISDOC viewer that
+  // checks a received invoice against the same list.
+  { slug: 'invoice-requirements', key: 'invoiceRequirements', icon: ListChecks, locales: ALL },
+  { slug: 'isdoc-viewer', key: 'isdocViewer', icon: FileSearch, locales: ALL }
 ] as const satisfies readonly PublicTool[];
 
 export const GUIDES = [
