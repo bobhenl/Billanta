@@ -58,6 +58,8 @@ import { DemoTenantController } from "./demo/demo-tenant.controller";
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
+import { PromoCodesController } from "./promo-codes/promo-codes.controller";
+import { PromoCodesModule } from "./promo-codes/promo-codes.module";
 import { BlogModule } from "./blog/blog.module";
 import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
 import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
@@ -131,6 +133,7 @@ import { ReferralsModule } from "./referrals/referrals.module";
     ReferralsModule,
     // Public partners directory + Billanta-staff catalogue admin (no tenant context).
     PartnersModule,
+    PromoCodesModule,
     // Public /blog + staff review queue for AI drafts (no tenant context).
     BlogModule,
     // Accountant directory (/accountants): own listing, public list, admin review.
@@ -235,6 +238,7 @@ export class AppModule implements NestModule {
         CardPaymentsSettingsController,
         AuditController,
         ReferralsController,
+        PromoCodesController,
         AccountantListingController,
         SubscriptionController,
         DemoTenantController,

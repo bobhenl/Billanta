@@ -17,6 +17,7 @@ import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { NavProgress } from '@/components/nav-progress';
 import { NotificationBell } from '@/components/notification-bell';
 import { OfflineIndicator, OfflineProvider } from '@/components/offline-sync';
+import { PromoClaim } from '@/components/promo-claim';
 import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { TrialBanner } from '@/components/trial-banner';
@@ -24,6 +25,7 @@ import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
 import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { fetchMyCompanies } from '@/lib/api-client';
+import { PROMO_COOKIE } from '@/lib/promo';
 import { REFERRAL_COOKIE } from '@/lib/referral';
 import { DEMO_TRANSFER_COOKIE } from '@/lib/demo-session';
 import { DEMO_VIEW_ROLES } from '@/lib/demo';
@@ -73,6 +75,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Arrived via someone's invite link: the owner of the (new) company claims it.
   const jar = await cookies();
   const claimReferral = role === 'owner' && jar.has(REFERRAL_COOKIE);
+  // Signed up through a `?promo=` link: whoever may manage billing redeems it (never into a demo).
+  const claimPromo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(PROMO_COOKIE);
   // Came from a demo with "take my work along": the owner of the new company decides whether it comes in.
   const claimDemo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(DEMO_TRANSFER_COOKIE);
   const demoRole = DEMO_VIEW_ROLES.find((r) => r === role) ?? 'owner';
@@ -154,6 +158,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </Suspense>
           <KeyboardShortcuts hidden={paletteHidden} />
           {claimReferral && <ReferralClaim />}
+          {claimPromo && <PromoClaim />}
         </div>
       </OfflineProvider>
     </NextIntlClientProvider>

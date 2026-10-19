@@ -52,7 +52,11 @@
       "app": "Aplikácia",
       "account": "Účet",
       "accountants": "Pre účtovníkov",
-      "partners": "Partneri"
+      "partners": "Partneri",
+      "schools": "Pre školy",
+      "creators": "Pre tvorcov",
+      "events": "Pre podujatia a komunity",
+      "forPartners": "Pre partnerov"
     },
     "hero": {
       "title": "Fakturácia pre českých a slovenských podnikateľov bez papierovania",
@@ -210,7 +214,11 @@
         "about": "O nás",
         "accountants": "Pre účtovníkov",
         "partners": "Partneri",
-        "blog": "Blog"
+        "blog": "Blog",
+        "schools": "Pre školy",
+        "creators": "Pre tvorcov",
+        "events": "Pre podujatia a komunity",
+        "forPartners": "Pre partnerov"
       },
       "legal": {
         "title": "Právne informácie",
@@ -7753,6 +7761,10 @@
       "copied": "Skopírované",
       "more": "Ako odporúčanie funguje",
       "dismiss": "Skryť"
+    },
+    "qr": {
+      "title": "QR kód s vaším odkazom",
+      "hint": "Vytlačte ho alebo ho ukážte na mobile. Kto ho naskenuje, zaregistruje sa cez váš odkaz."
     }
   },
   "partners": {
@@ -7775,7 +7787,8 @@
       "title": "Chcete byť partnerom?",
       "body": "Účtovníci a účtovné kancelárie získavajú kredity za každého platiaceho klienta. Ostatné firmy môžu pozvať známych cez odkaz v Nastaveniach.",
       "accountants": "Program pre účtovníkov",
-      "signup": "Založiť účet"
+      "signup": "Založiť účet",
+      "programmes": "Partnerské programy"
     },
     "disclosure": "Odkazy na partnerov sú partnerské. Za preklik alebo registráciu môžeme dostať odmenu, cenu pre vás to nemení."
   },
@@ -8372,6 +8385,14 @@
       "sk_vat_sro": {
         "title": "s.r.o., platiteľ DPH",
         "description": "Slovenská firma v eurách so slovenskou DPH a faktúrami v slovenčine."
+      },
+      "sk_freelancer": {
+        "title": "Živnostník, neplatiteľ DPH",
+        "description": "Prekladateľka bez DPH, faktúry v eurách, klienti aj z Veľkej Británie a USA."
+      },
+      "sk_vat_freelancer": {
+        "title": "Živnostník, platiteľ DPH",
+        "description": "Elektrikár s DPH, prenesenie daňovej povinnosti pri stavebných prácach pre firmy."
       }
     },
     "country": {
@@ -8438,7 +8459,9 @@
       "viewTitle": "Pozerať sa ako",
       "businessTitle": "Typ podnikania",
       "businessAuto": "Podľa firmy",
-      "businessAutoHint": "Každá ukážková firma má zapnuté to, čo jej typ podnikania zvyčajne používa. V deme sa dá všetko prepnúť aj v Nastaveniach → Moduly."
+      "businessAutoHint": "Každá ukážková firma má zapnuté to, čo jej typ podnikania zvyčajne používa. V deme sa dá všetko prepnúť aj v Nastaveniach → Moduly.",
+      "countryTitle": "Krajina",
+      "countryHint": "Krajina určuje menu, sadzby DPH, registre a podobu dokladov."
     },
     "transfer": {
       "title": "Prevziať prácu z dema?",
@@ -8461,7 +8484,17 @@
       "button": "Otvoriť demo",
       "buttonView": "Demo ako {role}"
     },
-    "signOutAndStart": "Odhlásiť sa a otvoriť demo"
+    "signOutAndStart": "Odhlásiť sa a otvoriť demo",
+    "audiences": {
+      "courses": "Pripravené pre kurz: prázdna nová firma, pripravená na prvú faktúru.",
+      "coworkings": "Pripravené pre členov coworkingu: freelancer s ukážkovými dokladmi.",
+      "communities": "Pripravené pre členov komunity: paušalista s ukážkovými dokladmi.",
+      "expats": "Pripravené pre freelancera, ktorý pracuje po anglicky, s ukážkovými dokladmi.",
+      "banks": "Pripravené pre firmu s účtovníkom a prepojenou bankou.",
+      "schools": "Pripravené na hodinu: prázdna firma len s fakturáciou.",
+      "creators": "Pripravené pre tvorcov: paušalista s ukážkovými dokladmi.",
+      "events": "Pripravené pre účastníkov podujatia: živnostník len s fakturáciou."
+    }
   },
   "offline": {
     "offline": "Offline",
@@ -8508,6 +8541,1013 @@
       "voice_too_large": "Nahrávka je na spracovanie príliš veľká.",
       "ai_disabled": "AI je vo firme vypnuté. Zapnite ho v Nastaveniach → AI alebo poznámku zahoďte.",
       "ai_key_missing": "Chýba vlastný AI kľúč. Doplňte ho v Nastaveniach → AI."
+    }
+  },
+  "shareQr": {
+    "button": "Zdieľať / QR kód",
+    "title": "Zdieľať stránku",
+    "lead": "Naskenujte QR kód mobilom alebo si ho stiahnite na plagát či slajd.",
+    "alt": "QR kód s odkazom {url}",
+    "promoLabel": "Promo kód (nepovinné)",
+    "promoPlaceholder": "napr. MEETUP26",
+    "promoHint": "S kódom vedie QR na stránku na pripojenie ku skupine, napríklad k podujatiu alebo coworkingu. Kódy vydávame my, vymyslený kód nebude fungovať.",
+    "copy": "Skopírovať odkaz",
+    "copied": "Odkaz je v schránke.",
+    "failed": "Nepodarilo sa to, skúste to, prosím, znova.",
+    "share": "Zdieľať cez mobil"
+  },
+  "schools": {
+    "seoTitle": "Billanta pre školy – fakturácia vo výučbe zadarmo",
+    "eyebrow": "Pre školy a učiteľov",
+    "title": "Fakturácia, ktorú si študenti naozaj vyskúšajú",
+    "lead": "Vo výučbe je Billanta zadarmo. Študenti si na cvičných firmách prejdú celý život faktúry: vystavenie, opravu, upomienku aj zahraničného odberateľa, a to podľa slovenských aj českých pravidiel.",
+    "freeBadge": "Pre výučbu zadarmo",
+    "lessonsLink": "Hodiny a pracovné listy",
+    "practiceTitle": "Čo si študenti precvičia",
+    "practiceLead": "Rovnaké kroky, aké čakajú každú živnostníčku a každého účtovníka, len bez rizika, že sa pokazí niečo skutočné.",
+    "practice": {
+      "vatInvoice": {
+        "title": "Faktúra s DPH",
+        "body": "Povinné náležitosti, sadzby DPH, dátum dodania a prečo na nich záleží. Kontrola povinných údajov hneď ukáže, čo chýba."
+      },
+      "creditNote": {
+        "title": "Dobropis",
+        "body": "Zľava po vystavení, vrátený tovar alebo chyba v cene. Študenti uvidia, ako sa pôvodná faktúra opravuje a čo sa tým mení v DPH."
+      },
+      "reminder": {
+        "title": "Upomienka a platba",
+        "body": "Faktúra po splatnosti, upomienka, čiastočná úhrada a spárovanie platby. Kus praxe, na ktorý sa v škole často nedostane."
+      },
+      "foreign": {
+        "title": "Zahraničný odberateľ",
+        "body": "Faktúra v inej mene, prepočet kurzom, prenesenie daňovej povinnosti a dvojjazyčný doklad pre odberateľa z inej krajiny EÚ."
+      },
+      "czsk": {
+        "title": "Slovensko vs. Česko",
+        "body": "Tá istá faktúra podľa slovenských a podľa českých pravidiel: iné sadzby DPH, iné identifikátory (IČ DPH, DIČ) aj iné QR platby."
+      },
+      "roles": {
+        "title": "Firma, účtovník, kolega",
+        "body": "Kto smie čo vidieť a upraviť. Študenti si vyskúšajú rolu majiteľa, účtovníka aj spolupracovníka len na čítanie."
+      }
+    },
+    "access": {
+      "title": "Ako sa k Billante pre výučbu dostanete",
+      "lead": "Režim pre triedy práve dokončujeme. Učiteľom, ktorí sa ozvú teraz, ho zapneme medzi prvými.",
+      "steps": {
+        "request": {
+          "title": "Napíšte nám",
+          "body": "Zo školského e-mailu: názov školy, predmet, ročník a približný počet študentov."
+        },
+        "setup": {
+          "title": "Pripravíme triedu",
+          "body": "Dostanete prístup pre učiteľa a cvičné firmy, na ktorých študenti pracujú. Čoskoro si ich budete zakladať sami."
+        },
+        "teach": {
+          "title": "Učíte",
+          "body": "Študenti vystavujú doklady na svojich cvičných firmách, vy vidíte ich prácu a môžete ju s nimi prejsť."
+        }
+      },
+      "soon": "Dovtedy môžete študentom na projektore ukázať ukážkový účet (demo), ktorý funguje bez registrácie.",
+      "cta": "Požiadať o prístup pre školu",
+      "signup": "Založiť účet učiteľa",
+      "mailSubject": "Billanta pre školy – žiadosť o prístup"
+    },
+    "safeguardsTitle": "Cvičné prostredie, nie skutočné podnikanie",
+    "safeguards": {
+      "practice": {
+        "title": "Cvičné firmy",
+        "body": "Študenti pracujú na vymyslených firmách a odberateľoch. Nemusia zadávať žiadne skutočné osobné údaje."
+      },
+      "watermark": {
+        "title": "Doklady s vodoznakom",
+        "body": "Doklady z režimu pre triedy budú mať viditeľné označenie cvičného dokladu, aby si ich nikto nepomýlil so skutočnou faktúrou."
+      },
+      "notReal": {
+        "title": "Len na výučbu",
+        "body": "Výučbový prístup nie je určený na skutočné podnikanie. Kto začne fakturovať naozaj, založí si bežný účet."
+      }
+    },
+    "resourcesTitle": "Materiály na výučbu",
+    "resourcesLead": "Hodiny a pracovné listy a stránky, ktoré jednotlivé témy vysvetľujú podrobne.",
+    "resources": {
+      "requiredFields": "Povinné údaje na faktúre",
+      "currencies": "Faktúry v cudzej mene",
+      "reminders": "Upomienky a platby po splatnosti",
+      "vatCalculator": "Kalkulačka DPH"
+    },
+    "faqTitle": "Časté otázky učiteľov",
+    "faq": [
+      {
+        "q": "Je Billanta pre školy naozaj zadarmo?",
+        "a": "Áno. Za výučbu neplatí škola, učiteľ ani študenti. Platí sa len bežný účet na skutočné podnikanie."
+      },
+      {
+        "q": "Pre aké školy je výučbový prístup?",
+        "a": "Pre obchodné akadémie a ďalšie stredné školy s ekonomickými predmetmi, vyššie odborné a vysoké školy aj rekvalifikačné kurzy. Ak učíte fakturáciu inde, napíšte nám tiež."
+      },
+      {
+        "q": "Kedy bude režim pre triedy hotový?",
+        "a": "Čoskoro. Učitelia, ktorí o prístup požiadajú teraz, ho dostanú medzi prvými a môžu nám povedať, čo vo výučbe potrebujú."
+      },
+      {
+        "q": "Môžu študenti Billantu použiť aj na vlastnú živnosť?",
+        "a": "Výučbový prístup nie, je len na cvičenie. Na skutočnú fakturáciu si študent založí bežný účet, ktorý funguje nezávisle od školy."
+      },
+      {
+        "q": "Čo s osobnými údajmi študentov?",
+        "a": "Na cvičenie nie sú potrebné. Firmy aj odberatelia sú vymyslení a k triede stačí školský e-mail študenta."
+      }
+    ]
+  },
+  "creators": {
+    "seoTitle": "Fakturácia pre tvorcov a influencerov – značky, agentúry, eurá",
+    "eyebrow": "Pre tvorcov obsahu",
+    "title": "Fakturujte spolupráce so značkami bez stresu",
+    "lead": "Kampaň pre značku, odmena od agentúry, výplata od zahraničnej platformy. Billanta vystaví faktúru v eurách aj v korunách, postráži prenesenie daňovej povinnosti a pripomenie, keď niekto neplatí.",
+    "cta": "Začať fakturovať zadarmo",
+    "demo": "Vyskúšať bez registrácie",
+    "topicsTitle": "Čo tvorcovia riešia najčastejšie",
+    "topics": {
+      "brands": {
+        "title": "Značky a agentúry",
+        "body": "Jedna faktúra za kampaň alebo za každý výstup. Do položiek napíšete, čo presne dodávate: počet príspevkov, videí, licenciu na použitie obsahu."
+      },
+      "eur": {
+        "title": "Eurá aj iné meny",
+        "body": "Fakturujte v EUR, CZK, USD a ďalších menách. Kurz sa doplní sám a na faktúre je vidieť aj prepočet."
+      },
+      "reverseCharge": {
+        "title": "Prenesenie daňovej povinnosti",
+        "body": "Firma z inej krajiny EÚ zvyčajne odvádza DPH sama. Faktúra potom obsahuje IČ DPH odberateľa a poznámku „prenesenie daňovej povinnosti“. Neplatiteľ sa kvôli tomu často musí registrovať podľa § 7a."
+      },
+      "abroad": {
+        "title": "Klienti mimo EÚ",
+        "body": "Spolupráca s americkou značkou alebo platformou: faktúra v angličtine, v dolároch alebo eurách a so správnym textom o mieste dodania."
+      },
+      "advance": {
+        "title": "Zálohy a ponuky",
+        "body": "Pošlite ponuku, nechajte si zaplatiť zálohu a po kampani vystavte vyúčtovanie. Všetko na jednom mieste a prepojené."
+      },
+      "recurring": {
+        "title": "Pravidelné spolupráce",
+        "body": "Ambasádorská zmluva s mesačným paušálom? Opakovaná faktúra sa vystaví a odošle sama."
+      }
+    },
+    "flatTax": {
+      "title": "Paušálne výdavky a paušálna daň",
+      "body": "Väčšina tvorcov podniká ako SZČO a uplatňuje paušálne výdavky. Billanta vám ukáže, koľko ste tento rok vyfakturovali, takže viete, kde ste voči limitom.",
+      "points": [
+        "Na Slovensku paušálne výdavky a odhad dane a odvodov pre SZČO priamo v aplikácii.",
+        "V Česku paušálna daň: jedna mesačná platba za daň aj poistenie, ak nie ste platiteľ DPH a zmestíte sa do limitu príjmov.",
+        "Faktúry pre slovenských aj českých klientov v jednom účte.",
+        "Konkrétnu situáciu si vždy overte u účtovníka, fakturačné údaje mu ľahko sprístupníte priamo z Billanty."
+      ]
+    },
+    "linksTitle": "Na ďalšie čítanie",
+    "links": {
+      "currencies": "Faktúry v cudzej mene",
+      "bilingual": "Dvojjazyčné faktúry",
+      "quotes": "Ponuky a zálohové faktúry",
+      "taxEstimate": "Odhad dane a odvodov"
+    },
+    "partner": {
+      "title": "Chcete vlastný kód pre svoje publikum?",
+      "body": "Spolupracujeme s tvorcami, ktorí so svojimi sledovateľmi hovoria o podnikaní a peniazoch. Vaše publikum dostane výhodu pri registrácii a vy prehľad, koľko ľudí váš kód použilo.",
+      "points": [
+        "Kód vydávame my, po krátkej dohode.",
+        "Výhodu pre sledovateľov aj podmienky spolupráce nastavíme spoločne.",
+        "Faktúru za spoluprácu nám, samozrejme, môžete poslať z Billanty."
+      ],
+      "cta": "Dohodnúť sa na kóde",
+      "mailSubject": "Billanta – promo kód pre tvorcov"
+    },
+    "faqTitle": "Časté otázky tvorcov",
+    "faq": [
+      {
+        "q": "Musím byť platiteľ DPH, keď fakturujem zahraničným firmám?",
+        "a": "Nie nevyhnutne. Neplatiteľ, ktorý poskytuje služby firme z inej krajiny EÚ, sa však zvyčajne musí registrovať podľa § 7a a podávať súhrnný výkaz. Billanta na faktúru doplní správnu poznámku, registráciu a podania však riešite so svojím účtovníkom alebo daňovým úradom."
+      },
+      {
+        "q": "Môžem českej agentúre fakturovať v eurách?",
+        "a": "Áno, ak sa tak dohodnete. Faktúru vystavíte v mene, ktorú chce klient, a Billanta doplní kurz."
+      },
+      {
+        "q": "Čo ak mi značka zaplatí produktmi namiesto peňazí?",
+        "a": "Aj barterová spolupráca je zvyčajne zdaniteľný príjem. Ako ju vyúčtovať, závisí od konkrétnej dohody, preto sa poraďte s účtovníkom. Doklad potom vystavíte v Billante ako akúkoľvek inú faktúru."
+      },
+      {
+        "q": "Ako získam promo kód pre svojich sledovateľov?",
+        "a": "Napíšte nám. Kódy vydávame sami, po dohode na podmienkach, a potom ich už stačí zdieľať, napríklad ako QR kód z tejto stránky."
+      }
+    ]
+  },
+  "events": {
+    "seoTitle": "Billanta pre meetupy, coworkingy a komunity",
+    "eyebrow": "Pre organizátorov podujatí",
+    "title": "Dajte svojim účastníkom fakturáciu na skúšku",
+    "lead": "Organizujete meetup, kurz pre začínajúcich podnikateľov alebo vediete coworking? Pre účastníkov vám pripravíme vlastný kód a QR kód. Billantu si vyskúšajú za 30 sekúnd, bez registrácie.",
+    "demoCta": "Vyskúšať demo",
+    "offerTitle": "Čo od nás dostanete",
+    "offer": {
+      "code": {
+        "title": "Kód pre účastníkov",
+        "body": "Výhoda pri registrácii, napríklad niekoľko mesiacov zadarmo. Podmienky dohodneme podľa podujatia."
+      },
+      "qr": {
+        "title": "QR kód na plagát aj slajd",
+        "body": "Stiahnete si ho ako PNG alebo SVG a vytlačíte v akejkoľvek veľkosti. Kód je priamo v odkaze."
+      },
+      "demo": {
+        "title": "Demo za 30 sekúnd",
+        "body": "Účastníci naskenujú QR kód a sú v ukážkovej firme s faktúrami, platbami aj DPH. Žiadny e-mail, žiadne heslo."
+      }
+    },
+    "stepsTitle": "Ako to prebieha",
+    "steps": {
+      "write": {
+        "title": "Napíšte nám",
+        "body": "Kedy a kde podujatie bude, koľko ľudí čakáte a kto naň chodí."
+      },
+      "print": {
+        "title": "Pošleme kód",
+        "body": "Dostanete kód a QR kód. Rovnaký QR si môžete vygenerovať aj tu cez tlačidlo Zdieľať."
+      },
+      "scan": {
+        "title": "Účastníci skenujú",
+        "body": "Kto chce, skúsi demo hneď na mieste. Kto sa rozhodne zostať, zaregistruje sa s vaším kódom."
+      }
+    },
+    "contact": {
+      "title": "Dohodnime sa",
+      "body": "Pre organizátorov je to zadarmo. Stačí pár riadkov o vašom podujatí a ozveme sa s návrhom.",
+      "cta": "Napísať o podujatí",
+      "mailSubject": "Billanta – kód pre podujatie",
+      "schools": "Učíte? Billanta pre školy"
+    },
+    "faqTitle": "Časté otázky organizátorov",
+    "faq": [
+      {
+        "q": "Koľko to stojí?",
+        "a": "Organizátorov nič. Kód pre účastníkov aj QR kód vám pripravíme zadarmo."
+      },
+      {
+        "q": "Musia si účastníci niečo inštalovať?",
+        "a": "Nie. Demo beží v prehliadači mobilu aj počítača a nepotrebuje registráciu."
+      },
+      {
+        "q": "Čo presne účastníci s kódom získajú?",
+        "a": "Výhodu pri registrácii, na ktorej sa dohodneme, napríklad niekoľko mesiacov zadarmo. Kód zadajú pri registrácii alebo je už v odkaze z QR kódu."
+      }
+    ],
+    "coworking": {
+      "title": "Pre coworkingy: jeden QR kód pre všetkých členov",
+      "body": "Coworking nepotrebuje podujatie, stačí stály kód. Zaveste QR kód na recepciu alebo do kuchynky, prípadne členom povedzte heslo.",
+      "points": [
+        "Jeden trvalý QR kód alebo heslo pre všetkých členov.",
+        "Naskenujú a sú dnu. Nikomu nezakladáte účet ručne.",
+        "Za členov, ktorí s Billantou zostanú, môže coworking získavať kredity z programu odporúčaní."
+      ]
+    }
+  },
+  "partnerSegments": {
+    "common": {
+      "contact": "Ozvite sa nám",
+      "hubCrumb": "Pre partnerov",
+      "faqTitle": "Na čo sa partneri pýtajú",
+      "allSegments": "Všetky partnerské programy"
+    },
+    "how": {
+      "title": "Ako to funguje pre partnerov",
+      "lead": "Žiadne zoznamy mien, žiadne zakladanie účtov po jednom. Vaši ľudia sa zaregistrujú sami a výhodu dostanú hneď.",
+      "steps": {
+        "code": {
+          "title": "Vydáme vám kód",
+          "body": "Jeden skupinový kód s výhodou, na ktorej sa dohodneme: obdobie zadarmo, zľava alebo kredit navyše."
+        },
+        "share": {
+          "title": "Dostanete QR, plagát a odkaz",
+          "body": "Plagát vytlačíte, QR dáte do prezentácie a odkaz pošlete v newsletteri alebo do skupiny."
+        },
+        "scan": {
+          "title": "Členovia naskenujú a sú dnu",
+          "body": "Každý otvorí odkaz, založí si vlastnú firmu a začne fakturovať. Predtým si môže bez registrácie vyskúšať demo."
+        },
+        "track": {
+          "title": "Vidíte registrácie a dostávate kredit",
+          "body": "Vidíte, koľko ľudí prišlo cez váš kód, a za každého, kto začne platiť, dostanete kredit (štandardne {reward} kreditov, 1 kredit = 1 Kč)."
+        }
+      }
+    },
+    "contact": {
+      "title": "Poďme to nastaviť",
+      "body": "Napíšte nám pár riadkov o vašej skupine a koľko má ľudí. Do dvoch pracovných dní pošleme kód a návrh výhody.",
+      "mail": "Napísať e-mail",
+      "about": "Kontakty"
+    },
+    "hub": {
+      "eyebrow": "Partnerské programy",
+      "title": "Prineste Billantu svojim ľuďom",
+      "seoTitle": "Partnerské programy – kurzy, coworkingy, komunity, banky",
+      "lead": "Kurzy, coworkingy, komunity, školy, tvorcovia, účtovníci aj banky: každý dostane jeden kód pre celú skupinu, výhodu pre členov a kredit za každú firmu, ktorá začne platiť.",
+      "more": "Pozrieť ponuku",
+      "mailSubject": "Partnerstvo s Billantou",
+      "directory": "Adresár partnerov",
+      "segments": {
+        "courses": {
+          "title": "Kurzy podnikania",
+          "body": "Rekvalifikácie, kurzy „začni podnikať“ a inkubátory. Účastníci počas kurzu fakturujú zadarmo."
+        },
+        "coworkings": {
+          "title": "Coworkingy",
+          "body": "Jeden trvalý QR kód pre všetkých členov, plagát na stenu a kredit pre coworking."
+        },
+        "communities": {
+          "title": "Komunity a združenia",
+          "body": "Združenia živnostníkov, zväzy, skupiny na Facebooku a Discorde. Členský kód a podľa záujmu aj prednáška."
+        },
+        "expats": {
+          "title": "Cudzinci a digitálni nomádi",
+          "body": "Faktúry v angličtine, EUR aj CZK, prenesenie daňovej povinnosti. Pre relokačné agentúry a expat skupiny."
+        },
+        "schools": {
+          "title": "Školy",
+          "body": "Hodiny o fakturácii a podnikaní s demom pre celú triedu."
+        },
+        "creators": {
+          "title": "Tvorcovia",
+          "body": "Vlastný kód pre vaše publikum a kredit za každú firmu, ktorá zostane."
+        },
+        "events": {
+          "title": "Podujatia a veľtrhy",
+          "body": "Kód pre účastníkov konferencie, veľtrhu alebo meetupu."
+        },
+        "accountants": {
+          "title": "Účtovníci",
+          "body": "Prístup do firiem klientov, exporty a kredit za každého klienta."
+        },
+        "banks": {
+          "title": "Banky",
+          "body": "Ponuka pre klientov s podnikateľským účtom, prepojenie s bankou a spoločné kódy."
+        }
+      }
+    },
+    "courses": {
+      "eyebrow": "Pre rekvalifikačné kurzy a kurzy podnikania",
+      "title": "Vaši účastníci práve zakladajú podnikanie. Fakturovať môžu začať už na hodine.",
+      "seoTitle": "Fakturácia pre kurzy podnikania, rekvalifikácie a inkubátory",
+      "lead": "Pre rekvalifikačné kurzy cez ÚPSVaR alebo Úrad práce, programy pre začínajúcich podnikateľov a inkubátory. Účastníci vystavia prvú faktúru ešte počas kurzu, zadarmo, s kódom, ktorý rozdáte na prvej hodine.",
+      "demoButton": "Otvoriť prázdne demo",
+      "offerTitle": "Čo ponúkame vášmu kurzu",
+      "offers": {
+        "free": {
+          "title": "Zadarmo počas kurzu",
+          "body": "Účastníci majú platený balík zadarmo počas celého kurzu a ešte chvíľu potom, takže pokryje aj prvé skutočné faktúry."
+        },
+        "code": {
+          "title": "Jeden kód pre celú skupinu",
+          "body": "Jeden QR kód alebo heslo pre každý beh kurzu. Nikto nemusí zbierať e-maily ani zakladať účty."
+        },
+        "lessons": {
+          "title": "Hotové hodiny",
+          "body": "Krátke hodiny o fakturácii, DPH a platbách. Lektor ich môže použiť celé alebo si vybrať len časti."
+        },
+        "empty": {
+          "title": "Štart „práve založené“",
+          "body": "Demo sa otvorí ako prázdna nová firma: žiadne ukážkové doklady, len nastavenia, ktoré začiatočník potrebuje."
+        },
+        "noAccounts": {
+          "title": "Každý si založí vlastnú firmu",
+          "body": "Účastníci zadajú svoje IČO a bankový účet. Údaje patria im, nie kurzu."
+        },
+        "lecturer": {
+          "title": "Pomoc pre lektorov",
+          "body": "Lektorom aplikáciu radi ukážeme pred prvým behom kurzu, online a zhruba za pol hodiny."
+        }
+      },
+      "lesson": {
+        "title": "Hodina, ktorá sa skončí skutočnou faktúrou",
+        "lead": "Jednoduchá osnova, ktorá sa zmestí do jedného stretnutia:",
+        "points": [
+          "Čo musí mať správna faktúra a prečo",
+          "Nastavenie novej firmy: IČO, adresa, bankový účet",
+          "Prvá faktúra s QR platbou",
+          "Zaznamenanie platby a slušná upomienka",
+          "Čo bude na konci roka chcieť účtovník alebo daňový úrad"
+        ],
+        "link": "Hodiny pre školy a kurzy"
+      },
+      "faq": [
+        {
+          "q": "Kto môže ponuku pre kurzy využiť?",
+          "a": "Každý kurz, ktorý ľuďom pomáha začať podnikať: rekvalifikácie, programy pre začínajúcich podnikateľov, inkubátory aj akcelerátory. Napíšte nám a kód pripravíme na váš ďalší beh."
+        },
+        {
+          "q": "Čo sa stane, keď sa obdobie zadarmo skončí?",
+          "a": "Účastníci môžu zostať na bezplatnom balíku alebo si vybrať platený. Nič sa nestrháva automaticky a nikto o svoje faktúry nepríde."
+        },
+        {
+          "q": "Môžu si účastníci skúšať fakturáciu ešte bez živnosti?",
+          "a": "Áno. Prázdne demo funguje bez registrácie a ukážkovú firmu možno neskôr previesť do skutočného účtu."
+        },
+        {
+          "q": "Vidí kurz faktúry účastníkov?",
+          "a": "Nie. Kurz vidí len to, koľko ľudí prišlo cez jeho kód. Údaje každej firmy zostávajú súkromné."
+        }
+      ],
+      "mailSubject": "Billanta pre náš kurz",
+      "contactTitle": "Získajte kód pre ďalší kurz",
+      "contactBody": "Napíšte nám, kedy kurz začína a koľko má účastníkov. Kód, plagát a hodiny pošleme pred prvým stretnutím."
+    },
+    "coworkings": {
+      "eyebrow": "Pre coworkingy",
+      "title": "Jeden QR kód na stene, výhoda pre každého člena",
+      "seoTitle": "Fakturácia ako benefit pre členov coworkingu",
+      "lead": "Väčšina členov coworkingu sú freelanceri, ktorí fakturujú každý mesiac. Dajte im ako súčasť členstva lepší štart v Billante, s jedným trvalým kódom, ktorý nikdy nemusíte meniť.",
+      "demoButton": "Vyskúšať demo",
+      "offerTitle": "Čo ponúkame vášmu coworkingu",
+      "offers": {
+        "permanent": {
+          "title": "Trvalý kód",
+          "body": "Jeden QR kód a heslo pre všetkých členov, teraz aj neskôr. Noví členovia jednoducho použijú ten istý."
+        },
+        "benefit": {
+          "title": "Výhoda pre členov",
+          "body": "Obdobie zadarmo alebo zľava na platený balík, ktorú môžete uviesť medzi benefitmi členstva."
+        },
+        "credit": {
+          "title": "Kredit pre coworking",
+          "body": "Za každú firmu člena, ktorá začne platiť, dostane coworking kredit (štandardne {reward} kreditov). Väčšiu spoluprácu dohodneme individuálne."
+        },
+        "poster": {
+          "title": "Plagát na stenu",
+          "body": "Plagát A4 alebo A3 s vaším kódom na vytlačenie, do kuchynky, na recepciu alebo do zasadačky."
+        },
+        "qr": {
+          "title": "QR pre obrazovky a chaty",
+          "body": "Ten istý kód funguje na obrazovke pri vchode, v newsletteri aj v skupinovom chate členov."
+        },
+        "members": {
+          "title": "Žiadna práca navyše",
+          "body": "Členovia sa registrujú sami. Nespravujete účty, licencie ani odchody."
+        }
+      },
+      "faq": [
+        {
+          "q": "Platí kód navždy?",
+          "a": "Áno, kód coworkingu je trvalý, kým nás nepožiadate o zmenu. Plagáty, ktoré vytlačíte dnes, budú fungovať ďalej."
+        },
+        {
+          "q": "Musíme Billantu používať sami?",
+          "a": "Nie. Kredit môžete využiť na vlastné predplatné, ak ju používate. Pri väčších komunitách sa dohodneme na inej odmene."
+        },
+        {
+          "q": "Uvidíme, kto sa zaregistroval?",
+          "a": "Uvidíte počet registrácií a platiacich firiem, nie ich mená ani faktúry."
+        }
+      ],
+      "mailSubject": "Billanta pre náš coworking",
+      "contactTitle": "Získajte kód pre svoj coworking",
+      "contactBody": "Napíšte nám názov priestoru a zhruba koľko má členov. Pošleme kód a plagát na vytlačenie."
+    },
+    "communities": {
+      "eyebrow": "Pre komunity a združenia",
+      "title": "Členská výhoda, ktorú vaša komunita naozaj využije",
+      "seoTitle": "Fakturácia ako výhoda pre združenia a komunity živnostníkov",
+      "lead": "Pre združenia živnostníkov, odborové a profesijné zväzy a komunity freelancerov na Facebooku alebo Discorde. Jeden členský kód, podľa záujmu prednáška o fakturácii a kredit pre komunitu.",
+      "demoButton": "Vyskúšať demo",
+      "offerTitle": "Čo ponúkame vašej komunite",
+      "offers": {
+        "code": {
+          "title": "Členský kód",
+          "body": "Jeden kód pre všetkých členov. Zdieľate ho v newsletteri, členskej sekcii alebo v pripnutom príspevku."
+        },
+        "benefit": {
+          "title": "Výhoda pre členov",
+          "body": "Obdobie zadarmo alebo zľava na platený balík, teda konkrétny benefit, ktorý môžete uviesť v ponuke členstva."
+        },
+        "talk": {
+          "title": "Prednáška alebo webinár (podľa záujmu)",
+          "body": "Krátke praktické rozprávanie o fakturácii, termínoch DPH a o tom, ako dostať zaplatené včas. Bez predajnej prezentácie."
+        },
+        "credit": {
+          "title": "Kredit pre komunitu",
+          "body": "Za každú firmu člena, ktorá začne platiť, získa komunita kredit (štandardne {reward} kreditov)."
+        },
+        "online": {
+          "title": "Stavané pre online skupiny",
+          "body": "Odkaz a QR, ktoré fungujú v príspevku, chate aj v streame. Členovia si môžu najprv bez registrácie vyskúšať demo."
+        },
+        "members": {
+          "title": "Členovia zostávajú nezávislí",
+          "body": "Každý člen má vlastnú firmu aj údaje. Komunita nikomu účet nespravuje."
+        }
+      },
+      "faq": [
+        {
+          "q": "Je nejaká minimálna veľkosť skupiny?",
+          "a": "Nie je. Miestne združenie s tridsiatimi členmi je rovnako vítané ako skupina s tisíckami ľudí."
+        },
+        {
+          "q": "O čom je prednáška?",
+          "a": "O tom, čo vaši členovia potrebujú: prvá faktúra, hranica registrácie za platiteľa DPH, upomienky, spolupráca s účtovníkom. Asi 30 až 45 minút, online alebo osobne."
+        },
+        {
+          "q": "Uvidíme, čo naši členovia fakturujú?",
+          "a": "Nie. Uvidíte len, koľko členov prišlo a koľkí platia. Ich firmy zostávajú súkromné."
+        }
+      ],
+      "mailSubject": "Billanta pre našu komunitu",
+      "contactTitle": "Získajte členský kód",
+      "contactBody": "Napíšte nám o svojej komunite a či by ste chceli prednášku. Pošleme kód, QR a krátky text pre členov."
+    },
+    "expats": {
+      "eyebrow": "Pre cudzincov a digitálnych nomádov",
+      "title": "Fakturácia v Česku a na Slovensku, po anglicky",
+      "seoTitle": "Fakturácia pre cudzincov a freelancerov v Česku a na Slovensku",
+      "lead": "Pre cudzincov, ktorí majú na Slovensku alebo v Česku živnosť či firmu, a pre relokačné agentúry, expat skupiny a coworkingy, ktoré im pomáhajú. Aplikácia aj faktúry hovoria po anglicky, pravidlá sú miestne.",
+      "demoButton": "Otvoriť demo v angličtine",
+      "offerTitle": "Čo dostanete",
+      "offers": {
+        "english": {
+          "title": "Aplikácia aj faktúry v angličtine",
+          "body": "Celú aplikáciu môžete používať po anglicky a faktúry vystavovať po anglicky alebo dvojjazyčne."
+        },
+        "currencies": {
+          "title": "EUR, CZK aj ďalšie meny",
+          "body": "Fakturujte v eurách, korunách alebo inej mene. Pri českých faktúrach sa DPH v korunách doplní podľa kurzu ČNB."
+        },
+        "reverseCharge": {
+          "title": "Prenesenie daňovej povinnosti pre klientov z EÚ",
+          "body": "Faktúry platiteľom DPH v iných krajinách EÚ majú správnu poznámku a DPH nechávajú na klientovi."
+        },
+        "checks": {
+          "title": "Kontrola pred odoslaním",
+          "body": "Aplikácia upozorní, keď chýba niečo, čo vyžaduje zákon, takže vám účtovník faktúru nevráti."
+        },
+        "recurring": {
+          "title": "Pravidelné faktúry",
+          "body": "Mesačný paušál pre zahraničného klienta odíde sám, pre domácich klientov s QR platbou."
+        },
+        "remote": {
+          "title": "Odkiaľkoľvek",
+          "body": "V prehliadači aj v mobile, z Bratislavy, Prahy alebo odinakiaľ."
+        }
+      },
+      "musts": {
+        "title": "Čo musí obsahovať slovenská alebo česká faktúra",
+        "lead": "Stručne, pre živnostníka alebo malú firmu:",
+        "points": [
+          "Vaše meno alebo obchodné meno, adresu a IČO",
+          "Meno a adresu odberateľa, jeho IČO a DIČ alebo IČ DPH, ak ich má",
+          "Jedinečné číslo faktúry, dátum vyhotovenia a splatnosť",
+          "Čo ste dodali, množstvo a cenu",
+          "Ak ste platiteľ DPH: vaše IČ DPH, dátum dodania, sadzbu a výšku DPH, na Slovensku v eurách, v Česku v korunách",
+          "Ak nie ste platiteľ DPH, je dobré to na faktúre uviesť",
+          "Pre klienta z EÚ registrovaného pre DPH: obe IČ DPH a poznámku o prenesení daňovej povinnosti"
+        ],
+        "note": "Ide o zhrnutie, nie o daňové poradenstvo. Podrobnosti závisia od vašej situácie, viac nájdete v návodoch nižšie.",
+        "readMore": "Čítajte ďalej",
+        "links": {
+          "requiredFields": "Kontrola povinných údajov",
+          "currencies": "Faktúry v cudzej mene",
+          "bilingual": "Dvojjazyčné faktúry",
+          "fx": "Kurzy ČNB",
+          "identified": "Identifikovaná osoba pre DPH (CZ, po anglicky)",
+          "vatFiling": "Daňové priznanie k DPH a kontrolný výkaz (CZ, po anglicky)"
+        }
+      },
+      "faq": [
+        {
+          "q": "Musím vedieť po slovensky alebo po česky?",
+          "a": "Nemusíte. Aplikácia, faktúry, e-maily klientom aj nápoveda sú v angličtine."
+        },
+        {
+          "q": "Môžem fakturovať v eurách aj v korunách?",
+          "a": "Áno. Fakturovať môžete v EUR, CZK alebo inej mene. Ak ste platiteľ DPH, výška DPH sa uvádza aj v domácej mene a aplikácia ju doplní podľa kurzu."
+        },
+        {
+          "q": "Môj klient je firma v Nemecku. Čo sa zmení?",
+          "a": "Ak je platiteľom DPH, faktúra zvyčajne ide bez domácej DPH v režime prenesenia daňovej povinnosti a s oboma IČ DPH. Možno budete podávať aj súhrnný výkaz."
+        },
+        {
+          "q": "Pomáhame cudzincom s relokáciou. Môžeme to ponúknuť klientom?",
+          "a": "Áno. Pre vašich klientov vydáme kód s výhodou a vy dostanete kredit za každú firmu, ktorá začne platiť."
+        }
+      ],
+      "mailSubject": "Billanta pre cudzincov",
+      "contactTitle": "Pomáhate cudzincom usadiť sa?",
+      "contactBody": "Relokačné agentúry, expat komunity a coworkingy dostanú kód pre svojich klientov alebo členov. Napíšte nám po slovensky, česky alebo anglicky."
+    },
+    "banks": {
+      "eyebrow": "Pre banky",
+      "title": "Fakturácia pre vašich klientov s podnikateľským účtom",
+      "seoTitle": "Partnerstvo pre banky – fakturácia pre firemných klientov",
+      "lead": "Malé firmy si u vás otvoria účet a hneď potom hľadajú, ako fakturovať. Ponúknite im Billantu ako súčasť účtu: faktúry s vaším číslom účtu a QR platbou, automatické párovanie platieb a spoločný kód.",
+      "demoButton": "Vyskúšať demo",
+      "offerTitle": "Čo môže partnerstvo zahŕňať",
+      "offers": {
+        "clients": {
+          "title": "Ponuka k novým podnikateľským účtom",
+          "body": "Obdobie zadarmo alebo zľava pre klientov, ktorí si otvoria podnikateľský účet, odovzdaná v aplikácii, na pobočke alebo v uvítacom e-maile."
+        },
+        "sync": {
+          "title": "Prepojenie s bankou a párovanie platieb",
+          "body": "Prichádzajúce platby sa k faktúram spárujú samy, takže klienti vidia, čo je zaplatené, bez exportu výpisov."
+        },
+        "cobranded": {
+          "title": "Spoločné kódy",
+          "body": "Kód a vstupná stránka s oboma značkami a výhodou, ktorú pre svojich klientov zvolíte."
+        },
+        "onboarding": {
+          "title": "Rýchly štart pre nové firmy",
+          "body": "Veľa nových majiteľov účtu práve zakladá podnikanie. Za pár minút majú hotovú faktúru s vaším účtom a QR kódom."
+        },
+        "api": {
+          "title": "Integrácie",
+          "body": "API a webhooky pre faktúry a platby a priame prepojenie výpisov tam, kde ho vaša banka ponúka."
+        },
+        "security": {
+          "title": "Ochrana údajov od základov",
+          "body": "Údaje každej firmy sú oddelené priamo v databáze, hostované v EÚ, so zálohami a auditným záznamom."
+        }
+      },
+      "models": {
+        "title": "Ako môžeme spolupracovať",
+        "lead": "Rozsah prispôsobíme banke, od jednoduchého kódu po hlbšiu integráciu:",
+        "points": [
+          "Kód s výhodou pre klientov s podnikateľským účtom, s prehľadom registrácií",
+          "Spoločná vstupná stránka a materiály pre pobočky",
+          "Prepojenie výpisov pre automatické párovanie platieb",
+          "Pilot s obmedzenou skupinou klientov pred širším spustením"
+        ]
+      },
+      "faq": [
+        {
+          "q": "Musia mať klienti účet vo vašej banke, aby mohli Billantu používať?",
+          "a": "Nemusia. Billanta funguje s akoukoľvek bankou. Partnerstvo dáva vašim klientom výhodu a jednoduchší štart s vaším účtom."
+        },
+        {
+          "q": "Vidí Billanta bankové údaje klientov?",
+          "a": "Len to, čo si klient sám pripojí, a len kvôli párovaniu platieb s faktúrami. Údaje každej firmy zostávajú súkromné."
+        },
+        {
+          "q": "Ako dlho trvá pilot?",
+          "a": "Kód s výhodou môže fungovať za pár dní. Prepojenie výpisov závisí od rozhrania banky, plán dohodneme spoločne."
+        }
+      ],
+      "mailSubject": "Billanta a naša banka",
+      "contactTitle": "Porozprávajme sa o partnerstve",
+      "contactBody": "Napíšte nám kontaktnú osobu a čo máte na mysli. Pripravíme návrh na mieru vašej banke."
+    }
+  },
+  "adminPosters": {
+    "title": "Plagáty a letáky",
+    "description": "Plagáty A4 a A5 a letáky A6 s QR kódom pre školy, tvorcov, podujatia a obecné nástenky. Pripravené na tlač aj na čiernobielej tlačiarni.",
+    "fields": {
+      "template": "Publikum",
+      "lang": "Jazyk plagátu",
+      "target": "Kam vedie QR kód",
+      "size": "Formát",
+      "promo": "Promo kód (nepovinné)",
+      "event": "Názov podujatia (nepovinné)",
+      "tabs": "Odtrhávacie pásiky"
+    },
+    "templates": {
+      "school": "Školy",
+      "courses": "Rekvalifikácie a kurzy podnikania",
+      "creators": "Tvorcovia a freelanceri",
+      "communities": "Komunity a združenia živnostníkov",
+      "event": "Podujatia (workshop, meetup)",
+      "coworking": "Coworking (pre členov)",
+      "local": "Živnostníci z obce (nástenka)",
+      "expats": "Cudzinci (po anglicky)",
+      "generic": "Všeobecný"
+    },
+    "langs": {
+      "cs": "Čeština",
+      "sk": "Slovenčina",
+      "en": "Angličtina"
+    },
+    "targets": {
+      "demo": "Demo",
+      "pricing": "Cenník",
+      "signup": "Registrácia",
+      "home": "Úvodná stránka",
+      "forSchools": "Stránka pre školy",
+      "forCreators": "Stránka pre tvorcov",
+      "events": "Stránka pre podujatia",
+      "forCourses": "Pre kurzy podnikania (/for-courses)",
+      "forCommunities": "Pre komunity (/for-communities)",
+      "forExpats": "Pre cudzincov (/for-expats)"
+    },
+    "sizes": {
+      "a4": "A4 plagát",
+      "a5": "A5 plagát",
+      "a6": "A6 leták",
+      "a6x4": "A6 leták, 4 na hárku A4"
+    },
+    "eventPlaceholder": "napr. Startup Weekend Bratislava",
+    "tabsHint": "Pásiky s QR kódom a adresou na odtrhnutie, na nástenky.",
+    "apply": "Zobraziť náhľad",
+    "print": "Vytlačiť",
+    "printHint": "V dialógu tlače nastavte mierku 100 % a vypnite hlavičku a pätu. PDF získate voľbou Uložiť ako PDF.",
+    "qrTarget": "QR kód vedie na:",
+    "promoHint": "S kódom vedie QR na /join/KÓD a kód sa tlačí veľkým písmom, aby sa dal odpísať."
+  },
+  "posters": {
+    "scan": "Naskenujte alebo otvorte",
+    "codeLabel": "Váš kód",
+    "eventLine": "Pre účastníkov: {event}",
+    "foot": "Zadarmo do 10 dokladov mesačne. Bez platobnej karty.",
+    "tabTitle": "Fakturácia online",
+    "templates": {
+      "school": {
+        "eyebrow": "Pre študentov a učiteľov",
+        "headline": "Prvú faktúru vystavíte ešte cez prestávku.",
+        "lead": "Demo s ukážkovou firmou, bez e-mailu a bez hesla. Vyskúšate si DPH, QR platbu aj upomienky na vymyslených údajoch.",
+        "benefits": [
+          {
+            "title": "Demo bez registrácie",
+            "text": "Ukážková firma na 24 hodín. Nič sa neodosiela a nič sa neplatí."
+          },
+          {
+            "title": "Ako v praxi",
+            "text": "Náležitosti faktúry, DPH, ISDOC a pohľad účtovníka z rovnakých údajov."
+          },
+          {
+            "title": "Keď začnete podnikať",
+            "text": "Ukážku zahodíte a pokračujete na vlastnom účte so svojím IČO."
+          }
+        ]
+      },
+      "creators": {
+        "eyebrow": "Pre tvorcov a freelancerov",
+        "headline": "Spolupráca dohodnutá. Faktúra za 30 sekúnd.",
+        "lead": "Fakturujte značkám a agentúram v eurách aj korunách, s QR platbou a overením IČ DPH v EÚ.",
+        "benefits": [
+          {
+            "title": "QR platba na faktúre",
+            "text": "Klient zaplatí z bankovej aplikácie bez prepisovania čísla účtu."
+          },
+          {
+            "title": "Klienti z EÚ",
+            "text": "Overenie IČ DPH vo VIES a prenesenie daňovej povinnosti na faktúre."
+          },
+          {
+            "title": "Faktúra z hlasovej správy",
+            "text": "Nadiktujte ju do Telegramu alebo WhatsAppu. Billanta pripraví koncept, vy ho skontrolujete."
+          }
+        ]
+      },
+      "event": {
+        "eyebrow": "Pre workshopy a meetupy",
+        "headline": "Fakturujte rovno odtiaľto. Z notebooku aj z mobilu.",
+        "lead": "Slovenská a česká fakturácia pre živnostníkov a malé firmy. ISDOC, DPH, obchodné registre a VIES v každom tarife.",
+        "benefits": [
+          {
+            "title": "Zadáte IČO, zvyšok sa doplní",
+            "text": "Údaje odberateľa zo slovenských aj českých registrov."
+          },
+          {
+            "title": "Účtovník dostane, čo potrebuje",
+            "text": "ISDOC a exporty pre Pohodu a Money S3."
+          },
+          {
+            "title": "Stráži limity za vás",
+            "text": "Obrat pre registráciu k DPH a daňový kalendár s termínmi."
+          }
+        ]
+      },
+      "local": {
+        "eyebrow": "Pre remeselníkov a živnostníkov",
+        "headline": "Fakturujte z mobilu, pokojne priamo na zákazke.",
+        "lead": "Zadáte IČO zákazníka, položky a cenu. Billanta dopočíta DPH, pridá QR platbu a faktúru pošle e-mailom.",
+        "benefits": [
+          {
+            "title": "Zadarmo na občasné faktúry",
+            "text": "10 dokladov mesačne v cene, bez platobnej karty."
+          },
+          {
+            "title": "QR kód pre zákazníka",
+            "text": "Zaplatí hneď z mobilu, bez prepisovania čísla účtu."
+          },
+          {
+            "title": "Nič sa neinštaluje",
+            "text": "Funguje v telefóne aj v počítači, údaje sa zálohujú."
+          }
+        ]
+      },
+      "generic": {
+        "eyebrow": "Fakturácia pre SK a CZ",
+        "headline": "Faktúra s QR platbou za 30 sekúnd.",
+        "lead": "Pre živnostníkov a malé firmy na Slovensku aj v Česku. Bez papierovania a bez inštalácie.",
+        "benefits": [
+          {
+            "title": "ISDOC, DPH, SK aj CZ",
+            "text": "Faktúry v eurách aj korunách, podľa slovenských aj českých pravidiel."
+          },
+          {
+            "title": "Údaje z registra",
+            "text": "Zadáte IČO a odberateľ sa vyplní sám."
+          },
+          {
+            "title": "Upomienky odídu samy",
+            "text": "Po splatnosti zákazníkovi pripomenieme platbu e-mailom."
+          }
+        ]
+      },
+      "courses": {
+        "eyebrow": "Pre rekvalifikácie a kurzy podnikania",
+        "headline": "Podnikanie sa začína prvou faktúrou. Tú zvládnete hneď.",
+        "lead": "Vyskúšajte si fakturáciu na ukážkovej firme. Keď budete mať IČO, pokračujete naostro.",
+        "benefits": [
+          {
+            "title": "Demo bez registrácie",
+            "text": "Ukážková firma na 24 hodín, bez e-mailu a hesla."
+          },
+          {
+            "title": "Odberateľ z IČO",
+            "text": "Zadáte IČO a údaje sa doplnia z obchodného registra."
+          },
+          {
+            "title": "Limity a termíny",
+            "text": "Obrat pre registráciu k DPH a daňový kalendár s termínmi."
+          }
+        ]
+      },
+      "communities": {
+        "eyebrow": "Pre komunity živnostníkov",
+        "headline": "Menej papierovania, viac času na zákazky.",
+        "lead": "Fakturácia pre živnostníkov a malé firmy na Slovensku aj v Česku. Z mobilu aj z počítača.",
+        "benefits": [
+          {
+            "title": "Faktúra s QR platbou",
+            "text": "Klient zaplatí z bankovej aplikácie bez prepisovania čísla účtu."
+          },
+          {
+            "title": "Účtovník dostane, čo potrebuje",
+            "text": "ISDOC a exporty pre Pohodu a Money S3."
+          },
+          {
+            "title": "Upomienky odídu samy",
+            "text": "Po splatnosti zákazníkovi pripomenieme platbu e-mailom."
+          }
+        ]
+      },
+      "coworking": {
+        "eyebrow": "Pre členov coworkingu",
+        "headline": "Faktúra hotová skôr, než vychladne káva.",
+        "lead": "Slovenská a česká fakturácia pre živnostníkov a malé firmy. Z notebooku aj z mobilu.",
+        "benefits": [
+          {
+            "title": "Zadáte IČO, zvyšok sa doplní",
+            "text": "Údaje odberateľa zo slovenských aj českých registrov."
+          },
+          {
+            "title": "Faktúra s QR platbou",
+            "text": "Klient zaplatí z bankovej aplikácie bez prepisovania čísla účtu."
+          },
+          {
+            "title": "Účtovník dostane, čo potrebuje",
+            "text": "ISDOC a exporty pre Pohodu a Money S3."
+          }
+        ]
+      },
+      "expats": {
+        "eyebrow": "Pre cudzincov na Slovensku a v Česku",
+        "headline": "Slovenské faktúry v angličtine.",
+        "lead": "Celá aplikácia funguje po anglicky. Faktúry zodpovedajú slovenským a českým pravidlám.",
+        "benefits": [
+          {
+            "title": "Dvojjazyčné faktúry",
+            "text": "Popisy po slovensky aj po anglicky, napr. Dátum vyhotovenia / Issue date."
+          },
+          {
+            "title": "Klienti z celej EÚ",
+            "text": "Overenie IČ DPH vo VIES a prenesenie daňovej povinnosti na faktúre."
+          },
+          {
+            "title": "Odberateľ z IČO",
+            "text": "Zadáte IČO a údaje sa doplnia z registra."
+          }
+        ]
+      }
+    },
+    "scanOrType": "Naskenujte alebo zadajte kód na"
+  },
+  "promo": {
+    "signupNote": "Promo kód {code} sa uplatní hneď po založení firmy.",
+    "appliedToast": "Promo kód {code} je uplatnený: {benefit}.",
+    "notAppliedToast": "Promo kód sa nepodarilo uplatniť. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# deň} few {# dni} other {# dní}} programu {plan} na vyskúšanie",
+      "free_months": "{count, plural, one {# mesiac} few {# mesiace} other {# mesiacov}} programu {plan} zadarmo"
+    },
+    "card": {
+      "title": "Mám promo kód",
+      "hint": "Kód z podujatia, od tvorcu alebo zo školy. Každá firma môže uplatniť iba jeden.",
+      "label": "Promo kód",
+      "placeholder": "napr. STARTUP-WEEK",
+      "submit": "Uplatniť",
+      "applied": "Uplatnený kód {code} ({date})"
+    },
+    "errors": {
+      "generic": "Niečo sa nepodarilo. Skúste to, prosím, znova.",
+      "promo_invalid": "Tento kód neplatí. Skontrolujte, či ste ho odpísali správne.",
+      "promo_expired": "Platnosť tohto kódu sa už skončila.",
+      "promo_used_up": "Tento kód si už uplatnil maximálny počet firiem.",
+      "promo_already_applied": "Vaša firma už jeden promo kód uplatnila. Kódy sa nedajú kombinovať.",
+      "promo_subscription_active": "Firma platí predplatné kartou, takže voľné mesiace sa pridať nedajú. Napíšte nám a dohodneme sa.",
+      "promo_plan_conflict": "Firma má zaplatený iný program. Kód pôjde uplatniť, keď sa toto obdobie skončí.",
+      "promo_rate_limited": "Priveľa pokusov. Skúste to, prosím, o hodinu.",
+      "forbidden": "Promo kód môže uplatniť iba vlastník alebo správca firmy."
+    }
+  },
+  "adminPromoCodes": {
+    "title": "Promo kódy",
+    "description": "Kódy pre podujatia, tvorcov a školy. Kód sa nemaže, iba vypne – firmy, ktoré ho uplatnili, si ho ponechajú.",
+    "loadError": "Promo kódy sa nepodarilo načítať.",
+    "empty": "Zatiaľ žiadne promo kódy.",
+    "failed": "Nepodarilo sa",
+    "created": "Kód je vytvorený.",
+    "activated": "Kód je zapnutý.",
+    "deactivated": "Kód je vypnutý.",
+    "activate": "Zapnúť",
+    "deactivate": "Vypnúť",
+    "inactive": "vypnutý",
+    "validity": "platí {from} – {until}",
+    "used": "{used} uplatnení",
+    "usedOf": "{used} / {max} uplatnení",
+    "paying": "{count, plural, one {# platí} few {# platia} other {# platí}}",
+    "kind": {
+      "event": "Podujatie",
+      "creator": "Tvorca",
+      "school": "Škola",
+      "other": "Iné"
+    },
+    "form": {
+      "title": "Nový kód",
+      "code": "Kód",
+      "kind": "Typ",
+      "benefitType": "Výhoda",
+      "trialDays": "Dni skúšobnej doby",
+      "freeMonths": "Mesiace zadarmo",
+      "value": "Počet",
+      "plan": "Program",
+      "maxRedemptions": "Max. uplatnení",
+      "unlimited": "bez obmedzenia",
+      "ownerLabel": "Komu patrí",
+      "ownerPlaceholder": "napr. Startup Week Bratislava",
+      "validFrom": "Platí od",
+      "validUntil": "Platí do",
+      "note": "Poznámka",
+      "submit": "Vytvoriť kód",
+      "referralCode": "Odporúčací kód tvorcu",
+      "referralPlaceholder": "nepovinné, dostane odmenu",
+      "businessPreset": "Typ podnikania",
+      "presetNone": "nechať vybrať",
+      "defaultLocale": "Jazyk stránky",
+      "localeVisitor": "podľa návštevníka"
+    },
+    "errors": {
+      "code_taken": "Taký kód už existuje.",
+      "invalid_dates": "Koniec platnosti je pred jej začiatkom.",
+      "referral_unknown": "Taký odporúčací kód neexistuje."
+    },
+    "referrer": "odporúčateľ {code}",
+    "copyLink": "Kopírovať odkaz",
+    "copied": "Odkaz je skopírovaný.",
+    "downloadQr": "Stiahnuť QR kód",
+    "locale": {
+      "cs": "čeština",
+      "sk": "slovenčina",
+      "en": "angličtina"
+    }
+  },
+  "join": {
+    "metaTitle": "Pripojiť sa s kódom",
+    "from": "Pozvánka od: {owner}",
+    "fromBillanta": "Pozvánka do Billanty",
+    "title": "Fakturujte v Billante",
+    "benefit": "S týmto kódom získate {benefit}.",
+    "preset": "Aplikáciu vám hneď nastavíme pre typ podnikania: {preset}.",
+    "email": "Pokračovať cez e-mail",
+    "or": "alebo",
+    "try": "Len vyskúšať",
+    "trying": "Pripravujeme ukážku…",
+    "tryHint": "Ukážková firma bez registrácie. Kód vám ostane, keď si budete zakladať účet.",
+    "remembered": "Kód {code} si zapamätáme na 30 dní.",
+    "haveAccount": "Už máte účet? Prihláste sa.",
+    "signedIn": "Ste prihlásení. Kód sa uplatní vo firme, ktorú máte otvorenú, ak v nej môžete spravovať predplatné.",
+    "toDashboard": "Pokračovať do aplikácie",
+    "invalid": "Tento kód neplatí alebo sa jeho platnosť skončila. Skontrolujte, či ste ho odpísali správne.",
+    "form": {
+      "title": "Zadajte kód",
+      "hint": "Kód alebo heslo z plagátu, prezentácie či pozvánky. Na veľkosti písmen nezáleží.",
+      "label": "Kód",
+      "placeholder": "napr. KAVIAREN-KOSICE",
+      "submit": "Pokračovať"
     }
   }
 }

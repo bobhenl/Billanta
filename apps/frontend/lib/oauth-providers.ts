@@ -15,6 +15,15 @@ export const OAUTH_PROVIDERS = [
 
 export type OAuthProviderId = (typeof OAUTH_PROVIDERS)[number]['id'];
 
+export const PROVIDER_NAMES: Record<OAuthProviderId, string> = {
+  google: 'Google',
+  'microsoft-entra-id': 'Microsoft',
+  apple: 'Apple',
+  seznam: 'Seznam',
+  discord: 'Discord',
+  github: 'GitHub'
+};
+
 export function isOAuthProviderEnabled(id: OAuthProviderId): boolean {
   const provider = OAUTH_PROVIDERS.find((p) => p.id === id);
   return Boolean(provider?.env.every((key) => process.env[key]?.trim()));

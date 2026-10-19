@@ -295,7 +295,7 @@ export const tenants = pgTable("tenants", {
   // demo_expires_at - now. Its identity is locked by a trigger.
   isDemo: boolean("is_demo").notNull().default(false),
   demoExpiresAt: timestamp("demo_expires_at", { withTimezone: true }),
-  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro">(),
+  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro" | "sk_freelancer" | "sk_vat_freelancer">(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1561,6 +1561,64 @@ export const partners = pgTable("partners", {
   clicks: integer("clicks").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// promo_codes — GLOBAL (no tenant, no RLS), like partners. Codes Billanta
+// staff hand out at events, to creators and to schools (`src/promo-codes/`).
+// `code` is stored upper case; the unique index is on upper(code) (0070).
+// redemption_count is bumped in the redeeming company's transaction under a
+// row lock, so max_redemptions holds without counting other tenants' rows.
+// ---------------------------------------------------------------------------
+export const promoCodes = pgTable("promo_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: varchar("code", { length: 32 }).notNull(),
+  /** Other modules (class codes) add their own kinds with a PromoKindHandler. */
+  kind: varchar("kind", { length: 16 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  /** Days for trial_days, months for free_months. */
+  benefitValue: integer("benefit_value").notNull(),
+  maxRedemptions: integer("max_redemptions"),
+  redemptionCount: integer("redemption_count").notNull().default(0),
+  /** Inclusive `YYYY-MM-DD` bounds; null = open. */
+  validFrom: date("valid_from"),
+  validUntil: date("valid_until"),
+  active: boolean("active").notNull().default(true),
+  /** Who the code belongs to: the creator, event or school. */
+  ownerLabel: text("owner_label"),
+  note: text("note"),
+  /** The creator or coworking's invite code (tenants.referral_code): they get the referral credit. */
+  referralCode: varchar("referral_code", { length: 16 }),
+  /** A BUSINESS_PRESETS key (frontend): the join link preselects that company type. */
+  businessPreset: varchar("business_preset", { length: 32 }),
+  defaultLocale: varchar("default_locale", { length: 2 }).$type<"cs" | "sk" | "en">(),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// promo_redemptions — tenant-scoped (RLS), one per company: which code it
+// came with (attribution for events and creators) and what it got, copied
+// so a later edit of the code doesn't rewrite history. The app may insert
+// its own row; nothing changes or deletes one afterwards. Per-code totals
+// across companies only through promo_code_stats() (0070).
+// ---------------------------------------------------------------------------
+export const promoRedemptions = pgTable("promo_redemptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  promoCodeId: uuid("promo_code_id")
+    .notNull()
+    .references(() => promoCodes.id),
+  code: varchar("code", { length: 32 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  benefitValue: integer("benefit_value").notNull(),
+  source: varchar("source", { length: 16 }).$type<"signup" | "billing">().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // ---------------------------------------------------------------------------
