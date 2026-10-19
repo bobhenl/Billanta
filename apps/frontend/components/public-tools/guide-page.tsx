@@ -45,6 +45,9 @@ export interface GuideSourcesOverride {
  * No BreadcrumbList: the
  * visible trail has two rungs (see ToolHeader).
  */
+/** The SK e-invoicing guide signs readers up for the SK mandate updates, not the general topics. */
+const SK_EINVOICING_GUIDE = 'e-invoicing-slovakia-2027';
+
 export async function GuidePage({
   slug,
   locale,
@@ -94,7 +97,11 @@ export async function GuidePage({
         <SignupCta />
       </div>
       <div className="mt-12 max-w-3xl">
-        <NewsletterSignup source="guides" />
+        {slug === SK_EINVOICING_GUIDE ? (
+          <NewsletterSignup source="sk_einvoicing" country="SK" topics={['sk_einvoicing', 'deadlines']} />
+        ) : (
+          <NewsletterSignup source="guides" />
+        )}
       </div>
       <div className="mt-12">
         <RelatedTools current={slug} />
