@@ -65,6 +65,7 @@ export async function MarketingFooter() {
         ...featured.map((c) => ({ href: `/calculators/${c.slug}`, label: tTools(`calculators.items.${c.key}.name`) })),
         { href: '/accountants', label: tTools('menu.findAccountant') },
         { href: '/invoice-templates', label: tTemplates('menu'), hub: true },
+        { href: '/payment-reminder-templates', label: tTools('menu.reminders'), hub: true },
         { href: '/calculators', label: tTools('common.allCalculators'), hub: true },
         ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tTools('common.allGuides'), hub: true }] : [])
       ]

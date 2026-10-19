@@ -7208,7 +7208,9 @@
       "blogHint": "Termíny, legislatíva a návody",
       "findAccountant": "Hľadáte účtovníka?",
       "findAccountantHint": "Odporúčaní účtovníci podľa kraja",
-      "templatesHint": "Vzor pre neplatiteľa, platiteľa, zálohu aj dobropis"
+      "templatesHint": "Vzor pre neplatiteľa, platiteľa, zálohu aj dobropis",
+      "reminders": "Vzory upomienok",
+      "remindersHint": "Upomienka a výzva na úhradu"
     },
     "search": {
       "showAll": "Zobraziť všetky výsledky pre „{query}“",
@@ -9761,7 +9763,10 @@
       "ZU": "českého zákona o účtovníctve",
       "ZoDPH": "zákona o DPH",
       "ObZ": "Obchodného zákonníka",
-      "ZoU": "zákona o účtovníctve"
+      "ZoU": "zákona o účtovníctve",
+      "OSR": "českého Občianskeho súdneho poriadku",
+      "NVU": "českého nariadenia vlády č. 351/2013 Zb.",
+      "NVUO": "nariadenia vlády č. 21/2013 Z. z."
     },
     "doc": {
       "supplier": "Dodávateľ",
@@ -10251,6 +10256,266 @@
           "Ak fakturujete súkromnej osobe v EÚ, registrácia podľa § 7a sa nevyžaduje a postupujete ako pri tuzemskej faktúre neplatiteľa.",
           "Za služby prijaté od zahraničných firiem (reklama na Facebooku, Google) sa registrujete podľa § 7a a daň odvádzate vy – to je druhá strana tej istej povinnosti."
         ]
+      }
+    }
+  },
+  "paymentReminders": {
+    "indexTitle": "Vzor upomienky a výzvy na úhradu zadarmo",
+    "indexName": "Vzory upomienok",
+    "indexDescription": "Vzor upomienky a výzvy na úhradu podľa slovenského Obchodného zákonníka. Doplňte dlžníka a sumu, zvoľte tón a skopírujte text alebo si stiahnite PDF.",
+    "indexLead": "Dva listy pre faktúru po splatnosti, od priateľskej upomienky po dôraznú výzvu na úhradu. Generátor nižšie ich za vás vyplní – text skopírujete do e-mailu, alebo si stiahnete PDF. Bez registrácie.",
+    "step": "{n}. krok",
+    "howTitle": "Ako postupovať pri nezaplatenej faktúre",
+    "how": [
+      "Pár dní po splatnosti pošlite zdvorilú upomienku. Často ide len o prehliadnutie.",
+      "Ak platba nepríde ani potom, pošlite výzvu na úhradu s novou lehotou, úrokmi z omeškania a paušálnou náhradou 40 eur.",
+      "Ak ani výzva nepomôže, zvážte vymáhanie cez súd alebo platobný rozkaz. Pri vysokých sumách sa poraďte s advokátom.",
+      "Každý list si odložte aj s dokladom o odoslaní."
+    ],
+    "common": {
+      "whenTitle": "Kedy list poslať",
+      "fieldsTitle": "Čo do listu patrí",
+      "fieldsLead": "Kde niečo ustanovuje zákon, je pri údaji odkaz na príslušné ustanovenie.",
+      "pitfallsTitle": "Na čo si dať pozor",
+      "otherTitle": "Ďalšie vzory",
+      "allTemplates": "Všetky vzory upomienok",
+      "invoiceTemplates": "Vzory faktúr",
+      "rulesNote": "Vzory vychádzajú zo slovenského Obchodného zákonníka, teda zo vzťahov medzi podnikateľmi. Pri spotrebiteľoch sa tieto ustanovenia nepoužijú. Vzory nenahrádzajú právnu radu."
+    },
+    "auto": {
+      "title": "Upomienky za vás pošle Billanta",
+      "text": "Keď faktúra vystavená v Billante prejde splatnosť, odberateľ automaticky dostane e-mailom zdvorilú upomienku s odkazom na faktúru a QR platbou. Interval aj najvyšší počet upomienok si nastavíte sami a keď je faktúra zaplatená, upomienky prestanú chodiť.",
+      "cta": "Vyskúšať zadarmo",
+      "more": "Ako fungujú automatické upomienky"
+    },
+    "fromInvoices": {
+      "title": "Faktúra po splatnosti? Vzory upomienok",
+      "text": "Upomienka aj výzva na úhradu. Vyplníte ich online a skopírujete alebo stiahnete ako PDF."
+    },
+    "items": {
+      "reminder": {
+        "name": "Upomienka",
+        "title": "Vzor upomienky neuhradenej faktúry",
+        "description": "Vzor zdvorilej alebo dôraznej upomienky faktúry po splatnosti. Vyplňte údaje a skopírujte text do e-mailu alebo si stiahnite PDF zadarmo.",
+        "lead": "Prvý list po splatnosti: pripomenie faktúru a dá novú lehotu.",
+        "when": [
+          "Upomienku pošlite pár dní po splatnosti, zvyčajne po 3 až 7 dňoch. Odberateľ je v omeškaní hneď deň po splatnosti, prvý list má však najmä pripomenúť, že faktúra existuje.",
+          "Zákon pre upomienku žiadnu formu nepredpisuje. Stačí e-mail, ak zo zmluvy nevyplýva niečo iné."
+        ],
+        "fields": [
+          {
+            "name": "Číslo faktúry, suma a dátum splatnosti",
+            "text": "Aby odberateľ platbu ľahko dohľadal a spároval."
+          },
+          {
+            "name": "Upozornenie, že je dlžník v omeškaní",
+            "text": "Kto nesplní záväzok riadne a včas, je v omeškaní. V prvej upomienke to stačí spomenúť vecne.",
+            "rule": "§365 ObZ"
+          },
+          {
+            "name": "Nová lehota a platobné údaje",
+            "text": "Konkrétny dátum a IBAN, ideálne s variabilným symbolom (číslo faktúry)."
+          },
+          {
+            "name": "Prosba ozvať sa, ak už je zaplatené",
+            "text": "Platby sa míňajú s upomienkami. Zdvorilá veta predíde zbytočnej hádke."
+          }
+        ],
+        "pitfalls": [
+          "Skôr ako upomienku pošlete, skontrolujte výpis z účtu. Upomienka na zaplatenú faktúru kazí vzťah s klientom.",
+          "Píšte vecne a bez vyhrážok. Na dôraznejší tón je čas vo výzve na úhradu.",
+          "Upomienka nič nepredlžuje: úroky z omeškania bežia odo dňa po splatnosti bez ohľadu na novú lehotu."
+        ]
+      },
+      "demand": {
+        "name": "Výzva na úhradu",
+        "title": "Vzor výzvy na úhradu faktúry s úrokmi z omeškania",
+        "description": "Vzor výzvy na úhradu s úrokmi z omeškania a paušálnou náhradou 40 eur podľa Obchodného zákonníka. Vyplňte online, skopírujte alebo si stiahnite PDF.",
+        "lead": "Druhý list: dôraznejší, s úrokmi z omeškania a paušálnou náhradou nákladov.",
+        "when": [
+          "Výzvu na úhradu pošlite, keď upomienka nezabrala, zvyčajne 2 až 4 týždne po splatnosti.",
+          "Upozorní dlžníka, že okrem dlžnej sumy dlží aj úroky z omeškania a paušálnu náhradu nákladov spojených s uplatnením pohľadávky."
+        ],
+        "fields": [
+          {
+            "name": "Dlžná suma a faktúra",
+            "text": "Číslo faktúry, suma a dátum splatnosti, po ktorom je dlžník v omeškaní.",
+            "rule": "§365 ObZ"
+          },
+          {
+            "name": "Úroky z omeškania",
+            "text": "Pri omeškaní s peňažným záväzkom má veriteľ nárok na úroky z omeškania. Ročne ide o základnú úrokovú sadzbu ECB platnú k prvému dňu omeškania zvýšenú o 9 percentuálnych bodov.",
+            "rule": "§369/1 ObZ, §1/1 NVUO"
+          },
+          {
+            "name": "Paušálna náhrada nákladov",
+            "text": "40 eur za uplatnenie pohľadávky, bez ohľadu na jej výšku.",
+            "rule": "§369c ObZ"
+          },
+          {
+            "name": "Nová lehota a platobné údaje",
+            "text": "Konkrétny dátum, dokedy má platba prísť, a kam."
+          }
+        ],
+        "pitfalls": [
+          "Úroky počítajte odo dňa nasledujúceho po dni splatnosti, nie od dátumu upomienky.",
+          "Ak máte v zmluve vlastnú sadzbu úrokov alebo zmluvnú pokutu, odkážte na zmluvu namiesto zákonnej sadzby.",
+          "Paušálnu náhradu 40 eur nepožadujte od spotrebiteľov."
+        ]
+      },
+      "preAction": {
+        "name": "Predžalobná výzva",
+        "title": "Vzor predžalobnej výzvy na zaplatenie faktúry",
+        "description": "Vzor predžalobnej výzvy (výzvy na plnenie podľa § 142a českého Občianskeho súdneho poriadku). Pošlite ju najmenej 7 dní pred žalobou.",
+        "lead": "Posledný list pred žalobou na českom súde.",
+        "when": [
+          "Predžalobnú výzvu pošlite, keď ste sa rozhodli pohľadávku vymáhať na českom súde.",
+          "Žalobca, ktorý spor vyhrá, má nárok na náhradu trov konania, len ak dlžníkovi najmenej 7 dní pred podaním žaloby poslal výzvu na plnenie na adresu na doručovanie, trvalého pobytu alebo sídla."
+        ],
+        "fields": [
+          {
+            "name": "Výslovná výzva na plnenie",
+            "text": "Z listu musí byť jasné, čo presne a dokedy má dlžník zaplatiť.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Adresa dlžníka",
+            "text": "Adresa na doručovanie, trvalého pobytu alebo sídla.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Upozornenie na žalobu",
+            "text": "Že po márnom uplynutí lehoty podáte žalobu a budete požadovať aj náhradu trov konania."
+          },
+          {
+            "name": "Úroky z omeškania a náklady",
+            "text": "Dlžnú sumu doplňte o zákonné úroky z omeškania a medzi podnikateľmi o náklady spojené s uplatnením pohľadávky.",
+            "rule": "§1970 OZ, §3 NVU"
+          }
+        ],
+        "pitfalls": [
+          "Medzi odoslaním výzvy a podaním žaloby musí uplynúť najmenej 7 dní.",
+          "Pošlite ju doporučene alebo do dátovej schránky a odložte si doklad o odoslaní."
+        ]
+      }
+    }
+  },
+  "reminderGenerator": {
+    "title": "Vyplňte list",
+    "preview": "Náhľad",
+    "copy": "Kopírovať text",
+    "copied": "Skopírované",
+    "pdf": "Stiahnuť PDF",
+    "note": "Nič neukladáme. PDF sa vytvorí len pre vás a hneď sa zahodí.",
+    "preActionHint": "Výzvu pošlite doporučene alebo do dátovej schránky a odložte si doklad o odoslaní.",
+    "fields": {
+      "kind": "List",
+      "tone": "Tón",
+      "polite": "Zdvorilý",
+      "firm": "Dôrazný",
+      "creditor": "Veriteľ (vy)",
+      "creditorPh": "Ján Novák, IČO 12345678",
+      "debtor": "Dlžník",
+      "debtorPh": "Firma s.r.o., IČO 87654321",
+      "invoice": "Číslo faktúry",
+      "due": "Dátum splatnosti",
+      "amount": "Dlžná suma",
+      "currency": "Mena",
+      "account": "Číslo účtu (IBAN)",
+      "accountPh": "SK31 1200 0000 1987 4263 7541",
+      "accountHint": "Nepovinné. Inak odkážeme na účet z faktúry.",
+      "deadline": "Nová lehota na úhradu",
+      "days": "{n, plural, one {# deň} few {# dni} other {# dní}}"
+    },
+    "blank": {
+      "invoice": "[číslo faktúry]",
+      "amount": "[suma]",
+      "due": "[dátum splatnosti]",
+      "dayAfter": "[deň po splatnosti]",
+      "deadline": "[nová lehota]",
+      "creditor": "[vaše meno]",
+      "debtor": "[dlžník]",
+      "date": "[dátum]"
+    },
+    "file": {
+      "reminder": "upomienka",
+      "demand": "vyzva-na-uhradu",
+      "preAction": "predzalobna-vyzva"
+    },
+    "errors": {
+      "copy": "Text sa nepodarilo skopírovať. Označte ho v náhľade ručne.",
+      "rateLimited": "Príliš veľa PDF za krátky čas. Skúste to o chvíľu.",
+      "busy": "Server je teraz vyťažený. Skúste to o chvíľu.",
+      "failed": "PDF sa nepodarilo vytvoriť. Skúste to znova."
+    },
+    "letter": {
+      "from": "Odosielateľ: {creditor}",
+      "to": "Adresát: {debtor}",
+      "date": "Dátum: {date}",
+      "subject": "Vec: {title} – faktúra č. {invoice}",
+      "payAccount": "na účet {account}",
+      "payInvoice": "na účet uvedený na faktúre",
+      "closing": "S pozdravom",
+      "reminder": {
+        "title": "Upomienka",
+        "polite": {
+          "greeting": "Dobrý deň,",
+          "body": [
+            "dovoľujeme si pripomenúť, že faktúra č. {invoice} na sumu {amount} bola splatná {due} a platbu sme zatiaľ nedostali.",
+            "Prosíme o úhradu {pay} najneskôr do {deadline}. Ako variabilný symbol uveďte číslo faktúry.",
+            "Ak ste už zaplatili, považujte, prosím, túto upomienku za bezpredmetnú. Ďakujeme."
+          ]
+        },
+        "firm": {
+          "greeting": "Dobrý deň,",
+          "body": [
+            "faktúra č. {invoice} na sumu {amount} bola splatná {due} a doteraz nebola uhradená. Od {dayAfter} ste v omeškaní.",
+            "Žiadame vás o úhradu {pay} najneskôr do {deadline}.",
+            "Ak platba do tejto lehoty nepríde, budeme požadovať aj úroky z omeškania."
+          ]
+        }
+      },
+      "demand": {
+        "title": "Výzva na úhradu",
+        "polite": {
+          "greeting": "Dobrý deň,",
+          "body": [
+            "ani po upomienke sme zatiaľ nedostali platbu faktúry č. {invoice} na sumu {amount}, splatnej {due}.",
+            "Vyzývame vás preto na úhradu {pay} najneskôr do {deadline}.",
+            "Upozorňujeme, že od {dayAfter} ste v omeškaní a okrem dlžnej sumy môžeme požadovať úroky z omeškania a paušálnu náhradu nákladov 40 eur.",
+            "Ak máte s úhradou ťažkosti, ozvite sa nám, prosím. Radi sa dohodneme na riešení."
+          ]
+        },
+        "firm": {
+          "greeting": "Dobrý deň,",
+          "body": [
+            "vyzývame vás na úhradu faktúry č. {invoice} na sumu {amount}, ktorá bola splatná {due}. Od {dayAfter} ste v omeškaní.",
+            "Dlžnú sumu uhraďte {pay} najneskôr do {deadline}.",
+            "Okrem dlžnej sumy požadujeme úroky z omeškania vo výške základnej úrokovej sadzby ECB zvýšenej o 9 percentuálnych bodov a paušálnu náhradu nákladov spojených s uplatnením pohľadávky vo výške 40 eur.",
+            "Ak platba do tejto lehoty nepríde, odovzdáme pohľadávku na vymáhanie."
+          ]
+        }
+      },
+      "preAction": {
+        "title": "Predžalobná výzva",
+        "polite": {
+          "greeting": "Dobrý deň,",
+          "body": [
+            "touto cestou vás vyzývame na plnenie podľa § 142a českého Občianskeho súdneho poriadku.",
+            "Doteraz ste neuhradili faktúru č. {invoice} na sumu {amount}, splatnú {due}. Od {dayAfter} ste v omeškaní.",
+            "Dlžnú sumu uhraďte {pay} najneskôr do {deadline}, spolu so zákonnými úrokmi z omeškania.",
+            "Ak platba v tejto lehote nepríde, podáme žalobu a budeme požadovať aj náhradu trov konania. Radi by sme sa tomu vyhli, preto sa nám v prípade ťažkostí ozvite."
+          ]
+        },
+        "firm": {
+          "greeting": "Dobrý deň,",
+          "body": [
+            "touto cestou vás vyzývame na plnenie podľa § 142a českého Občianskeho súdneho poriadku.",
+            "Neuhradili ste faktúru č. {invoice} na sumu {amount}, splatnú {due}, a to ani po predchádzajúcich upomienkach. Od {dayAfter} ste v omeškaní.",
+            "Dlžnú sumu uhraďte {pay} najneskôr do {deadline}, spolu so zákonnými úrokmi z omeškania a náhradou nákladov spojených s uplatnením pohľadávky vo výške 1 200 Kč.",
+            "Ak platba v tejto lehote nepríde, podáme bez ďalšieho upozornenia žalobu a budeme požadovať aj náhradu trov konania."
+          ]
+        }
       }
     }
   }

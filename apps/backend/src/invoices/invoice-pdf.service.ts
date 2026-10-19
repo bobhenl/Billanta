@@ -353,6 +353,36 @@ export class InvoicePdfService {
   }
 
   /**
+   * A plain A4 letter: a bold title and paragraphs separated by blank lines,
+   * with the same font and footer credit as the invoices. The public payment
+   * reminder generator uses it; the text is the visitor's, nothing is stored.
+   */
+  async generateLetter(input: { language: Lang; title: string; body: string }): Promise<Buffer> {
+    const doc = new PDFDocument({ size: "A4", margin: 60, bufferPages: true, info: { Title: input.title, Creator: "Billanta" } });
+    if (FONTS) {
+      doc.registerFont(REGULAR, FONTS.regular);
+      doc.registerFont(BOLD, FONTS.bold);
+    }
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    const finished = new Promise<Buffer>((resolve, reject) => {
+      doc.on("end", () => resolve(Buffer.concat(chunks)));
+      doc.on("error", reject);
+    });
+    const width = doc.page.width - 120;
+    doc.font(BOLD).fontSize(15).fillColor("black").text(input.title, 60, 60, { width });
+    doc.moveDown(1.2);
+    doc.font(REGULAR).fontSize(10.5);
+    for (const paragraph of input.body.replace(/\r\n/g, "\n").split(/\n{2,}/)) {
+      doc.text(paragraph.trim(), { width, lineGap: 2 });
+      doc.moveDown(0.8);
+    }
+    this.renderCredit(doc, input.language);
+    doc.end();
+    return finished;
+  }
+
+  /**
    * "QR Platba + Faktura": the SPAYD payment code with the invoice itself
    * embedded as QR Faktura (X-INV), so the customer's bank app pays it and
    * their accounting app imports it from the same scan. Without a payable

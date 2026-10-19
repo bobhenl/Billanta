@@ -28,6 +28,14 @@ const partySchema = z.object({
   dic: optionalText(20),
 });
 
+/** A payment reminder letter from the public generator: its title and the text the visitor sees and may edit. */
+export const guestLetterSchema = z.object({
+  language: z.enum(["cs", "sk", "en"]).default("cs"),
+  title: text(200).min(1),
+  body: text(8000).min(1),
+});
+export type GuestLetterInput = z.infer<typeof guestLetterSchema>;
+
 export const guestInvoiceSchema = z.object({
   language: z.enum(["cs", "sk", "en"]).default("cs"),
   invoiceNumber: text(40).min(1),
@@ -83,6 +91,10 @@ export type GuestInvoiceInput = z.infer<typeof guestInvoiceSchema>;
 @Injectable()
 export class GuestInvoicesService {
   constructor(private readonly pdf: InvoicePdfService) {}
+
+  generateLetterPdf(input: GuestLetterInput): Promise<Buffer> {
+    return this.pdf.generateLetter(input);
+  }
 
   async generatePdf(input: GuestInvoiceInput): Promise<Buffer> {
     const s = input.supplier;

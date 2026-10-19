@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { GuideSection } from '@/components/public-tools/guide-page';
 import { InvoiceTemplateSample, LawLink, TemplateTabs, templateMetadata } from '@/components/public-tools/invoice-template';
 import { RelatedTools, SignupCta, ToolHeader } from '@/components/public-tools/parts';
+import { RemindersLink } from '@/components/public-tools/payment-reminder';
 import { getTemplate, isPublishedIn, TEMPLATES } from '@/lib/public-tools';
 import { breadcrumbLd, jsonLd, webPageLd } from '@/lib/seo';
 import { buttonClass } from '@/lib/ui-classes';
@@ -126,6 +127,9 @@ export default async function InvoiceTemplatePage({ params }: { params: Promise<
           </li>
         </ul>
       </nav>
+      <div className="mt-12">
+        <RemindersLink />
+      </div>
       <div className="mt-12">
         <SignupCta />
       </div>

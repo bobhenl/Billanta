@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
-import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, TEMPLATES } from '@/lib/public-tools';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, REMINDERS, TEMPLATES } from '@/lib/public-tools';
 import { fetchBlogSitemap } from '@/lib/blog';
 import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
@@ -77,7 +77,10 @@ const STATIC_ENTRIES: UrlEntry[] = [
   ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales })),
   // Invoice templates: cs/en follow Czech law, sk Slovak law.
   { path: '/invoice-templates', changeFrequency: 'monthly', priority: 0.8 },
-  ...TEMPLATES.map((x): UrlEntry => ({ path: '/invoice-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.8, locales: x.locales }))
+  ...TEMPLATES.map((x): UrlEntry => ({ path: '/invoice-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.8, locales: x.locales })),
+  // Payment reminders: cs/en Czech law, sk Slovak; the pre-action notice is Czech only.
+  { path: '/payment-reminder-templates', changeFrequency: 'monthly', priority: 0.7 },
+  ...REMINDERS.map((x): UrlEntry => ({ path: '/payment-reminder-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.7, locales: x.locales }))
 ];
 
 function buildAllEntries(): UrlEntry[] {

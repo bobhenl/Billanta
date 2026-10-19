@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { SignupCta } from '@/components/public-tools/parts';
+import { RemindersLink } from '@/components/public-tools/payment-reminder';
 import { TemplateTabs } from '@/components/public-tools/invoice-template';
 import { isPublishedIn, TEMPLATES } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
@@ -95,6 +96,9 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
         <p className="mt-6 text-xs text-muted-foreground">{t('common.rulesNote')}</p>
       </div>
 
+      <div className="mt-12">
+        <RemindersLink />
+      </div>
       <div className="mt-12">
         <SignupCta />
       </div>

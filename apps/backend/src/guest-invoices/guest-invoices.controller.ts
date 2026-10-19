@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import { AiService } from "../ai/ai.service";
 import { ContactsService } from "../contacts/contacts.service";
-import { GuestInvoicesService, guestInvoiceSchema } from "./guest-invoices.service";
+import { GuestInvoicesService, guestInvoiceSchema, guestLetterSchema } from "./guest-invoices.service";
 import { ConcurrencyGate, DailyCap, GATE_BUSY, SlidingWindowLimiter, visitorIp } from "./guest-limits";
 
 const WINDOW_MS = 10 * 60 * 1000;
@@ -104,6 +104,27 @@ export class GuestInvoicesController {
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${filename}"`,
+      "Cache-Control": "no-store",
+    });
+    res.send(buffer);
+  }
+
+  @Post("letter")
+  @HttpCode(200)
+  @ApiOperation({
+    summary: "Render a payment reminder letter PDF for a visitor without an account",
+    description: "No authentication. Nothing is stored; the PDF is the title and text from the request body. Shares the PDF limits with the invoice.",
+  })
+  async letter(@Body() body: unknown, @Ip() ip: string, @Req() req: Request, @Res() res: Response) {
+    this.throttle(visitorIp(ip, req));
+    const parsed = guestLetterSchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException({ error: "invalid_input", issues: parsed.error.issues });
+    if (!this.pdfDaily.take()) throw new HttpException({ error: "busy" }, HttpStatus.SERVICE_UNAVAILABLE);
+    const buffer = await this.pdfGate.run(() => this.guestInvoices.generateLetterPdf(parsed.data));
+    if (buffer === GATE_BUSY) throw new HttpException({ error: "busy" }, HttpStatus.SERVICE_UNAVAILABLE);
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="letter.pdf"',
       "Cache-Control": "no-store",
     });
     res.send(buffer);

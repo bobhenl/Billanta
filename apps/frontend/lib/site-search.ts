@@ -2,7 +2,7 @@ import cs from '@/messages/cs.json';
 import en from '@/messages/en.json';
 import sk from '@/messages/sk.json';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
-import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn, TEMPLATES } from '@/lib/public-tools';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn, REMINDERS, TEMPLATES } from '@/lib/public-tools';
 import { getAllMunicipalities, isDistrictSeat, municipalityLocale, type Municipality } from '@/lib/municipalities';
 
 type Messages = typeof cs;
@@ -90,6 +90,13 @@ function indexFor(locale: string): Entry[] {
     const text = templates.items[x.key];
     if (!text || !isPublishedIn(x, locale)) continue;
     entries.push(entry('guide', `/invoice-templates/${x.slug}`, text.title, text.description, `${text.name} ${text.lead ?? ''}`));
+  }
+  const reminders = m.paymentReminders as unknown as { indexTitle: string; indexDescription: string; items: Record<string, ToolText & { title: string }> };
+  entries.push(entry('page', '/payment-reminder-templates', reminders.indexTitle, reminders.indexDescription));
+  for (const x of REMINDERS) {
+    const text = reminders.items[x.key];
+    if (!text || !isPublishedIn(x, locale)) continue;
+    entries.push(entry('guide', `/payment-reminder-templates/${x.slug}`, text.title, text.description, `${text.name} ${text.lead ?? ''}`));
   }
   INDEX.set(locale, entries);
   return entries;

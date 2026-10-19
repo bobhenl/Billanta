@@ -37,6 +37,7 @@ export async function MarketingNavbar() {
   ];
   const resources = [
     { href: '/invoice-templates', label: tTemplates('menu'), hint: tMenu('templatesHint') },
+    { href: '/payment-reminder-templates', label: tMenu('reminders'), hint: tMenu('remindersHint') },
     { href: '/calculators', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
     ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
     { href: '/accountants', label: tMenu('findAccountant'), hint: tMenu('findAccountantHint') },
