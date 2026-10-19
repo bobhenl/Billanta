@@ -52,7 +52,7 @@ function useErrorText() {
   return (code: string) => ((KNOWN_ERRORS as readonly string[]).includes(code) ? t(code as (typeof KNOWN_ERRORS)[number]) : t('generic', { code }));
 }
 
-const label = 'block text-xs font-bold uppercase tracking-wider text-muted-foreground';
+const label = 'mb-1 block text-xs font-bold uppercase tracking-wider text-muted-foreground';
 
 /**
  * Generators that write from our own data: a switch per kind to let clean
