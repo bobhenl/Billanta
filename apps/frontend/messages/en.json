@@ -726,7 +726,11 @@
       }
     },
     "paymentDisclaimerBySquare": "This is a standard Slovak bank-transfer QR code (PAY by square), not a card payment.",
-    "madeWith": "Made with {name}"
+    "madeWith": "Made with {name}",
+    "cta": {
+      "question": "Do you send invoices too?",
+      "action": "Try {name} for free"
+    }
   },
   "expenses": {
     "title": "Expenses",
@@ -2366,7 +2370,7 @@
         }
       },
       "brandCredit": "Show “Made with {name}” under invoices",
-      "brandCreditHint": "A small link in the footer of the PDF, the email and the online invoice. Paid plans can turn it off.",
+      "brandCreditHint": "A small link in the footer of the PDF, the email and the online invoice, which also invites your customer to try it. Paid plans can turn it off.",
       "brandCreditFree": "On the free plan the line is always shown.",
       "brandCreditUpgrade": "Upgrade to a paid plan"
     },

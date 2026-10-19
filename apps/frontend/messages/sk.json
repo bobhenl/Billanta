@@ -726,7 +726,11 @@
       }
     },
     "paymentDisclaimerBySquare": "Ide o štandardný slovenský QR kód pre bankový prevod (PAY by square), nie o platbu kartou.",
-    "madeWith": "Vystavené v aplikácii {name}"
+    "madeWith": "Vystavené v aplikácii {name}",
+    "cta": {
+      "question": "Aj vy fakturujete?",
+      "action": "Vyskúšajte aplikáciu {name} zadarmo"
+    }
   },
   "expenses": {
     "title": "Výdavky",
@@ -2366,7 +2370,7 @@
         }
       },
       "brandCredit": "Zobrazovať pod faktúrami riadok „Vystavené v aplikácii {name}“",
-      "brandCreditHint": "Malý odkaz v pätičke PDF, e-mailu a online faktúry. Na platenom tarife ho môžete vypnúť.",
+      "brandCreditHint": "Malý odkaz v pätičke PDF, e-mailu a online faktúry, kde je aj pozvánka pre odberateľa. Na platenom tarife ho môžete vypnúť.",
       "brandCreditFree": "Na bezplatnom tarife sa riadok zobrazuje vždy.",
       "brandCreditUpgrade": "Prejsť na platený tarif"
     },
