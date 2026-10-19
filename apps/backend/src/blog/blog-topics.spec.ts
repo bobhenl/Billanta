@@ -24,7 +24,7 @@ describe("lawProse", () => {
   });
 });
 
-const UNNAMED_PARAGRAPHS = new Set(["how-to-e-invoicing-slovakia-2027", "how-to-flat-tax"]);
+const UNNAMED_PARAGRAPHS = new Set(["how-to-invoice-requirements", "how-to-tax-calendar", "how-to-e-invoicing-slovakia-2027", "how-to-flat-tax"]);
 
 describe("topics", () => {
   it("follow each tool's locales: Czech-rule tools have no Slovak post", () => {

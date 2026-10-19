@@ -22,7 +22,7 @@ import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
 import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
 import { rateLineLabel } from "./exchange-rate-mode";
-import { brandCreditFor, siteUrl, type BrandCredit } from "./brand-credit";
+import { brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -379,7 +379,8 @@ export class InvoicePdfService {
       doc.text(paragraph.trim(), { width, lineGap: 2 });
       doc.moveDown(0.8);
     }
-    this.renderCredit(doc, input.language);
+    // No company behind a public letter, so no referral code and no opt-out.
+    this.renderCredit(doc, { label: CREDIT_LABELS[input.language], url: brandCreditUrl(input.language, "pdf", null) });
     doc.end();
     return finished;
   }
