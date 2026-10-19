@@ -1342,7 +1342,7 @@ export const emailOutbox = pgTable("email_outbox", {
   // The member it goes to (notifications, digest); null for customers and invitees.
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   kind: varchar("kind", { length: 40 }).notNull(),
-  // transactional | notification | digest — decides quiet hours, batching and List-Unsubscribe.
+  // transactional | notification | digest | newsletter – decides quiet hours, batching and List-Unsubscribe.
   category: varchar("category", { length: 16 }).notNull(),
   idempotencyKey: varchar("idempotency_key", { length: 200 }).notNull(),
   batchKey: varchar("batch_key", { length: 120 }),
@@ -1655,6 +1655,57 @@ export const blogPosts = pgTable("blog_posts", {
   /** Blocker codes from `blog-checks.ts` at the last save. */
   warnings: jsonb("warnings").$type<string[]>().notNull().default([]),
   publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// newsletter_subscribers / newsletter_issues – GLOBAL (no tenant), like
+// blog_posts: the "we'll let you know when something changes" newsletter
+// (migration 0074). A subscriber row is also the consent record (wording
+// shown, when given, when confirmed, when withdrawn). Issues are mailed
+// only through enqueue_newsletter_email, which checks the opt-in itself.
+// ---------------------------------------------------------------------------
+export const NEWSLETTER_TOPICS = ["tax_rates", "limits", "deadlines", "sk_einvoicing"] as const;
+export type NewsletterTopic = (typeof NEWSLETTER_TOPICS)[number];
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 320 }).notNull(),
+  locale: varchar("locale", { length: 2 }).$type<"cs" | "sk" | "en">().notNull().default("cs"),
+  country: varchar("country", { length: 2 }).$type<"CZ" | "SK">().notNull().default("CZ"),
+  topics: text("topics").array().$type<NewsletterTopic[]>().notNull().default(sql`'{}'`),
+  status: varchar("status", { length: 16 }).$type<"pending" | "confirmed" | "unsubscribed">().notNull().default("pending"),
+  /** Where the form was: blog, guides, calculators, sk_einvoicing, settings. */
+  source: varchar("source", { length: 24 }).notNull().default("blog"),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  /** The consent wording exactly as shown next to the form or toggle. */
+  consentText: text("consent_text").notNull(),
+  consentAt: timestamp("consent_at", { withTimezone: true }).notNull().defaultNow(),
+  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+  /** sha256 (hex) of the double opt-in link's token; cleared once confirmed. */
+  confirmTokenHash: varchar("confirm_token_hash", { length: 64 }),
+  confirmSentAt: timestamp("confirm_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const newsletterIssues = pgTable("newsletter_issues", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  locale: varchar("locale", { length: 2 }).$type<"cs" | "sk" | "en">().notNull().default("cs"),
+  /** Null = subscribers from both countries. */
+  country: varchar("country", { length: 2 }).$type<"CZ" | "SK">(),
+  /** Goes to subscribers who chose at least one of these. */
+  topics: text("topics").array().$type<NewsletterTopic[]>().notNull().default(sql`'{}'`),
+  subject: varchar("subject", { length: 200 }).notNull(),
+  /** Restricted markdown like blog_posts.body. */
+  body: text("body").notNull(),
+  status: varchar("status", { length: 16 }).$type<"draft" | "sending" | "sent">().notNull().default("draft"),
+  queuedCount: integer("queued_count").notNull().default(0),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  sendStartedAt: timestamp("send_started_at", { withTimezone: true }),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

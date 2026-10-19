@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 import { CzOnlyNotice, GuideSources, RelatedTools, SignupCta, ToolHeader } from '@/components/public-tools/parts';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { checkedDate } from '@/lib/legislation-checked';
@@ -44,6 +45,9 @@ export interface GuideSourcesOverride {
  * No BreadcrumbList: the
  * visible trail has two rungs (see ToolHeader).
  */
+/** The SK e-invoicing guide signs readers up for the SK mandate updates, not the general topics. */
+const SK_EINVOICING_GUIDE = 'e-invoicing-slovakia-2027';
+
 export async function GuidePage({
   slug,
   locale,
@@ -91,6 +95,13 @@ export async function GuidePage({
       </div>
       <div className="mt-12">
         <SignupCta />
+      </div>
+      <div className="mt-12 max-w-3xl">
+        {slug === SK_EINVOICING_GUIDE ? (
+          <NewsletterSignup source="sk_einvoicing" country="SK" topics={['sk_einvoicing', 'deadlines']} />
+        ) : (
+          <NewsletterSignup source="guides" />
+        )}
       </div>
       <div className="mt-12">
         <RelatedTools current={slug} />

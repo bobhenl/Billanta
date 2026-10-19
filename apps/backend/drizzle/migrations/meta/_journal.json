@@ -528,6 +528,13 @@
       "breakpoints": true
     },
     {
+      "idx": 74,
+      "version": "7",
+      "when": 1792902540000,
+      "tag": "0074_newsletter",
+      "breakpoints": true
+    },
+    {
       "idx": 75,
       "version": "7",
       "when": 1792902600000,

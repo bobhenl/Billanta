@@ -8259,7 +8259,8 @@
       "quote_response": "e-maily o odpovediach na ponuky",
       "buyer_details": "e-maily o údajoch, ktoré doplnili odberatelia",
       "weekly_digest": "týždenný prehľad",
-      "all": "všetky nepovinné upozornenia e-mailom"
+      "all": "všetky nepovinné upozornenia e-mailom",
+      "newsletter": "novinky Billanty o zmenách v daniach a fakturácii"
     },
     "errors": {
       "invalid": "Odkaz je neplatný alebo neúplný. Skúste ho z e-mailu skopírovať celý.",
@@ -10608,6 +10609,114 @@
         }
       ],
       "disclaimer": "Sadzby, stropy a termíny zodpovedajú zákonom o daniach z príjmov a daňovým poriadkom SR a ČR pre daný rok. Informácie sú orientačné a nenahrádzajú daňového poradcu."
+    }
+  },
+  "newsletter": {
+    "signup": {
+      "title": "Novinky o zmenách v daniach a fakturácii",
+      "body": "Raz za čas krátky e-mail, keď sa menia sadzby, limity, termíny alebo e-fakturácia na Slovensku. Žiadny spam.",
+      "email": "E-mail",
+      "emailPlaceholder": "vas@email.sk",
+      "country": "Krajina",
+      "countries": {
+        "CZ": "Česko",
+        "SK": "Slovensko"
+      },
+      "topicsLabel": "Čo vás zaujíma",
+      "topics": {
+        "tax_rates": "Sadzby daní a DPH",
+        "limits": "Limity (DPH, paušál, hotovosť)",
+        "deadlines": "Daňové termíny",
+        "sk_einvoicing": "E-fakturácia na Slovensku 2027"
+      },
+      "consent": "Súhlasím so zasielaním e-mailových noviniek Billanty o zmenách daní, limitov, termínov a e-fakturácie na zadanú adresu. Súhlas môžem kedykoľvek odvolať odkazom v každom e-maile.",
+      "privacy": "Spracúvanie opisujú <link>Zásady ochrany osobných údajov</link>. Odber sa začne až po potvrdení odkazom v e-maile.",
+      "submit": "Odoberať novinky",
+      "sentTitle": "Skontrolujte e-mail",
+      "sentBody": "Poslali sme vám odkaz na potvrdenie odberu. Bez potvrdenia vám nič posielať nebudeme.",
+      "errors": {
+        "invalid_email": "Zadajte platný e-mail.",
+        "no_topics": "Vyberte aspoň jednu tému.",
+        "consent_required": "Na odber je potrebný súhlas.",
+        "rate_limited": "Príliš veľa pokusov. Skúste to, prosím, neskôr.",
+        "failed": "Prihlásenie sa nepodarilo. Skúste to, prosím, znova."
+      }
+    },
+    "confirm": {
+      "metaTitle": "Potvrdenie odberu noviniek",
+      "title": "Potvrďte odber noviniek",
+      "intro": "Potvrďte, že chcete na adresu {email} dostávať novinky Billanty o témach:",
+      "button": "Potvrdiť odber",
+      "doneTitle": "Odber je potvrdený",
+      "doneBody": "Ďakujeme! Novinky vám pošleme, keď sa bude niečo meniť. Odhlásiť sa môžete jedným kliknutím v každom e-maile.",
+      "backHome": "Späť na Billantu",
+      "errors": {
+        "invalid_confirm_link": "Odkaz je neplatný alebo už bol použitý na odhlásenie. Prihláste sa na odber znova.",
+        "confirm_link_expired": "Platnosť odkazu vypršala. Prihláste sa na odber znova, pošleme nový.",
+        "rate_limited": "Príliš veľa pokusov. Skúste to, prosím, neskôr.",
+        "unavailable": "Potvrdenie sa teraz nepodarilo. Skúste to, prosím, o chvíľu znova."
+      }
+    },
+    "settings": {
+      "title": "Novinky Billanty",
+      "hint": "Krátky e-mail, keď sa menia sadzby, limity, daňové termíny alebo e-fakturácia na Slovensku. Je to obchodná komunikácia, preto chodí len so súhlasom.",
+      "toggle": "Posielať novinky o zmenách",
+      "consent": "Súhlasím so zasielaním e-mailových noviniek Billanty o zmenách daní, limitov, termínov a e-fakturácie na e-mail svojho účtu (zapnuté v Nastaveniach). Súhlas môžem kedykoľvek odvolať.",
+      "pending": "Poslali sme vám potvrdzovací e-mail. Odber sa začne po kliknutí na odkaz v ňom.",
+      "country": "Krajina",
+      "topics": "Témy",
+      "saved": "Uložené",
+      "errors": {
+        "consent_required": "Na zapnutie odberu je potrebný súhlas.",
+        "user_not_found": "Účet sa nepodarilo nájsť.",
+        "failed": "Uloženie sa nepodarilo."
+      }
+    }
+  },
+  "adminNewsletter": {
+    "title": "Newsletter",
+    "description": "Novinky pre odberateľov s potvrdeným súhlasom. Vydanie sa posiela po dávkach cez frontu e-mailov, vždy s odkazom na odhlásenie.",
+    "loadError": "Newsletter sa nepodarilo načítať.",
+    "stats": "Odberatelia",
+    "statuses": {
+      "pending": "Čaká na potvrdenie",
+      "confirmed": "Potvrdené",
+      "unsubscribed": "Odhlásené"
+    },
+    "topicCounts": "Podľa tém (potvrdení)",
+    "newIssue": "Nové vydanie",
+    "draftFromBlog": "Návrh z blogu a termínov",
+    "locale": "Jazyk",
+    "country": "Krajina",
+    "allCountries": "Česko aj Slovensko",
+    "topics": "Témy (komu príde)",
+    "subject": "Predmet",
+    "body": "Text (markdown: ## nadpis, - odrážky, **tučne**, [odkaz](https://…))",
+    "save": "Uložiť koncept",
+    "delete": "Zmazať",
+    "deleteConfirm": "Zmazať tento koncept?",
+    "preview": "Náhľad",
+    "send": "Odoslať",
+    "sendConfirm": "Odoslať vydanie {count} odberateľom? Nedá sa to vrátiť.",
+    "audience": "Príjemcovia: {count}",
+    "queued": "Vo fronte: {count}",
+    "issues": "Vydania",
+    "noIssues": "Zatiaľ žiadne vydania.",
+    "issueStatuses": {
+      "draft": "Koncept",
+      "sending": "Odosiela sa",
+      "sent": "Odoslané"
+    },
+    "edit": "Upraviť",
+    "close": "Zavrieť",
+    "saved": "Uložené",
+    "sendStarted": "Odosielanie sa začalo",
+    "errors": {
+      "issue_not_editable": "Odoslané vydanie sa už nedá upraviť.",
+      "issue_already_sent": "Vydanie už bolo odoslané.",
+      "issue_not_found": "Vydanie sa nenašlo.",
+      "unsubscribe_unavailable": "Chýba podpisový kľúč pre odhlasovacie odkazy.",
+      "failed": "Akcia sa nepodarila."
     }
   }
 }

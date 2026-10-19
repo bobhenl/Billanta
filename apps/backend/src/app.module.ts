@@ -63,6 +63,8 @@ import { PartnersModule } from "./partners/partners.module";
 import { PromoCodesController } from "./promo-codes/promo-codes.controller";
 import { PromoCodesModule } from "./promo-codes/promo-codes.module";
 import { BlogModule } from "./blog/blog.module";
+import { NewsletterModule } from "./newsletter/newsletter.module";
+import { MeNewsletterController } from "./newsletter/newsletter.controller";
 import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
 import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
 import { LegislationModule } from "./legislation/legislation.module";
@@ -140,6 +142,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     PromoCodesModule,
     // Public /blog + staff review queue for AI drafts (no tenant context).
     BlogModule,
+    // Double opt-in newsletter (global subscribers table) + staff compose-and-send.
+    NewsletterModule,
     // Accountant directory (/accountants): own listing, public list, admin review.
     AccountantDirectoryModule,
     // Weekly check of the official tax form and minimum pages; alerts for staff (no tenant context).
@@ -236,6 +240,7 @@ export class AppModule implements NestModule {
         DashboardController,
         ExportsController,
         NotificationsController,
+        MeNewsletterController,
         IntegrationsController,
         ApiKeysController,
         ChannelLinksController,
