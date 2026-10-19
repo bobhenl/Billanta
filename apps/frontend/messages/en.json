@@ -56,7 +56,9 @@
       "schools": "For schools",
       "creators": "For creators",
       "events": "For events and communities",
-      "forPartners": "For partners"
+      "forPartners": "For partners",
+      "firstInvoice": "First invoice",
+      "teamRoles": "Team roles"
     },
     "hero": {
       "title": "Invoicing for Czech and Slovak businesses, without the paperwork",
@@ -207,7 +209,11 @@
         "pricing": "Pricing",
         "faq": "FAQ",
         "guestInvoice": "Invoice without sign-up",
-        "compare": "Compare with others"
+        "compare": "Compare with others",
+        "firstInvoice": "Your first invoice",
+        "beginners": "For beginners",
+        "advanced": "For advanced users",
+        "teamRoles": "Team roles"
       },
       "company": {
         "title": "Company",
@@ -8751,7 +8757,10 @@
       "banks": "Set up for a company with an accountant and bank sync.",
       "schools": "Set up for a lesson: an empty business with invoicing only.",
       "creators": "Set up for creators: a freelancer on the flat-rate regime.",
-      "events": "Set up for attendees: a freelancer with invoicing only."
+      "events": "Set up for attendees: a freelancer with invoicing only.",
+      "firstInvoice": "Set up for a first invoice: an empty non-VAT business, invoicing only.",
+      "beginners": "Set up for beginners: a sole trader with sample documents.",
+      "advanced": "Set up for advanced users: a VAT payer with an accountant and bank sync."
     }
   },
   "offline": {
@@ -8889,6 +8898,8 @@
     "resourcesTitle": "Teaching materials",
     "resourcesLead": "Lessons and worksheets, guides to the legislation and pages that explain each topic in detail.",
     "resources": {
+      "firstInvoice": "Your first invoice: what it must contain",
+      "beginners": "Invoicing for beginners",
       "requiredFields": "Required fields on an invoice",
       "currencies": "Invoices in foreign currencies",
       "reminders": "Reminders and overdue payments",
@@ -9806,6 +9817,617 @@
       "label": "Code",
       "placeholder": "e.g. KAVARNA-BRNO",
       "submit": "Continue"
+    }
+  },
+  "learnPages": {
+    "common": {
+      "toolsTitle": "Tools and guides",
+      "toolsLead": "Free and without sign-up. Calculate, check and read more.",
+      "nextTitle": "Where next",
+      "faqTitle": "Frequently asked questions",
+      "signup": "Start for free",
+      "demo": "Try the demo",
+      "more": "More",
+      "allRoles": "All roles",
+      "pages": {
+        "first": {
+          "title": "Your first invoice",
+          "body": "What an invoice must contain in Czechia and Slovakia, and how to issue one step by step."
+        },
+        "beginners": {
+          "title": "Invoicing for beginners",
+          "body": "Not a VAT payer, the first customer, numbering, payments and reminders."
+        },
+        "advanced": {
+          "title": "Invoicing for advanced users",
+          "body": "VAT payers, reverse charge, foreign customers, recurring invoices and the API."
+        },
+        "schools": {
+          "title": "For schools",
+          "body": "Teach invoicing in a real app, with an empty company for every student."
+        },
+        "roles": {
+          "title": "Team roles",
+          "body": "Owner, admin, accountant and read only: who sees what and who may change it."
+        },
+        "accountants": {
+          "title": "For accountants",
+          "body": "Client access, bookkeeping exports and VAT data in one place."
+        },
+        "owners": {
+          "title": "For business owners",
+          "body": "The full overview, your team, the subscription, data backups and several companies under one login."
+        },
+        "assistants": {
+          "title": "For assistants and office managers",
+          "body": "The admin role, or narrower access to invoices or expenses only."
+        }
+      },
+      "basicsTitle": "Invoicing basics"
+    },
+    "firstInvoice": {
+      "seoTitle": "Your first invoice: what it must contain and how to issue it",
+      "eyebrow": "A guide for newcomers",
+      "title": "Your first invoice",
+      "lead": "What an invoice must contain in Czechia and Slovakia, how to issue one step by step, and which mistakes to avoid. No legal jargon.",
+      "guestCta": "Issue an invoice without sign-up",
+      "demoCta": "Try it on an empty company",
+      "contentTitle": "What must be on the invoice",
+      "contentLead": "A business that is not a VAT payer needs fewer details than a payer. Billanta checks against your settings that nothing is missing.",
+      "alwaysLabel": "Always",
+      "vatLabel": "Also for VAT payers",
+      "countries": {
+        "cz": {
+          "title": "Czechia",
+          "always": [
+            "Your name or company name, registered address and company ID (IČO)",
+            "Your registry entry (a sole trader can state the entry in the trade register)",
+            "The customer: name, address and, for a business, its IČO",
+            "A unique invoice number from your number series",
+            "The issue date and the due date",
+            "What you are invoicing, the quantity and the price",
+            "The total and how to pay; for a transfer, the account number and variable symbol"
+          ],
+          "vat": [
+            "Your VAT number (DIČ) and the customer's",
+            "The date of the taxable supply (DUZP)",
+            "The unit price without VAT and any discount",
+            "The tax base, the rate (21 % or 12 %) and the VAT amount in CZK",
+            "For reverse charge, a sentence saying the customer accounts for the tax"
+          ],
+          "law": "Under § 435 of the Civil Code and § 29 of the VAT Act."
+        },
+        "sk": {
+          "title": "Slovakia",
+          "always": [
+            "Your name or business name, registered address and IČO",
+            "Your entry in the commercial or trade register, including the entry number",
+            "The customer: name, address and, for a business, its IČO",
+            "A unique sequential invoice number",
+            "The issue date and the due date",
+            "What you are invoicing, the quantity and the price",
+            "The total and how to pay; for a transfer, the IBAN and variable symbol"
+          ],
+          "vat": [
+            "Your VAT number (IČ DPH) and the customer's",
+            "The date of supply of the goods or service",
+            "The unit price without VAT and any discount",
+            "The tax base, the rate (23 %, 19 % or 5 %) and the VAT amount in euros",
+            "For reverse charge, the words \"prenesenie daňovej povinnosti\""
+          ],
+          "law": "Under § 3a of the Commercial Code and § 74 of the VAT Act."
+        }
+      },
+      "stepsTitle": "Step by step",
+      "steps": [
+        {
+          "title": "Fill in your details",
+          "body": "Enter your IČO and your company details load from the Czech or Slovak business register. Add your bank account."
+        },
+        {
+          "title": "Add the customer",
+          "body": "The customer's IČO is enough too. For a private person, enter a name and address."
+        },
+        {
+          "title": "Describe what you invoice",
+          "body": "The work or goods, the quantity and the price. Be specific: \"Logo design, 3 variants\" rather than \"services\"."
+        },
+        {
+          "title": "Check the dates",
+          "body": "The issue date is today, the due date usually 14 days later. A VAT payer adds the supply date and issues within 15 days of it."
+        },
+        {
+          "title": "Issue and send",
+          "body": "The invoice gets the next number in your series and a QR code for payment. Email it or download the PDF."
+        },
+        {
+          "title": "Watch for the payment",
+          "body": "Mark it paid when the money arrives, or let bank payments match themselves. After the due date, send a reminder."
+        }
+      ],
+      "mistakesTitle": "Common mistakes",
+      "mistakes": {
+        "vatShown": {
+          "title": "VAT on a non-payer's invoice",
+          "body": "If you are not a VAT payer, leave VAT out. Write it on the invoice and you owe it to the state."
+        },
+        "numbering": {
+          "title": "Gaps and duplicate numbers",
+          "body": "Numbers should follow on without repeats. Billanta assigns them itself when you issue."
+        },
+        "buyer": {
+          "title": "Wrong customer details",
+          "body": "A typo in the name or IČO delays payment. Details loaded from the register are exact."
+        },
+        "dates": {
+          "title": "Late or wrong dates",
+          "body": "A VAT payer needs the right supply date and must issue within 15 days of the supply."
+        },
+        "editing": {
+          "title": "Rewriting an issued invoice",
+          "body": "Don't overwrite an issued invoice. Fix a mistake with a credit note and a new invoice."
+        },
+        "copies": {
+          "title": "Lost copies",
+          "body": "Invoices must be kept for years. They stay in the app, and you can set up backups."
+        }
+      },
+      "ctaBox": {
+        "title": "Try it out first",
+        "body": "The demo gives you an empty company, and your first invoice takes a few minutes. Nothing is sent anywhere."
+      },
+      "faq": [
+        {
+          "q": "Do I need a Billanta account for my first invoice?",
+          "a": "No. You can issue a one-off invoice without signing up. An account helps once you want numbered series, payment tracking and everything in one place."
+        },
+        {
+          "q": "Does an invoice need a stamp or a signature?",
+          "a": "No, the law requires neither. The mandatory details are what count."
+        },
+        {
+          "q": "Can I invoice without an IČO?",
+          "a": "Invoices are issued by businesses, so you need an IČO. A private person without a trade licence handles occasional income differently."
+        },
+        {
+          "q": "What due date should I set?",
+          "a": "14 days is common. Between businesses the law assumes a limit (30 days in Czechia, 60 in Slovakia) unless you explicitly agree otherwise."
+        },
+        {
+          "q": "Is a PDF by email enough?",
+          "a": "Yes. An electronic invoice is as valid as a paper one if the customer agrees to it, which is normal today."
+        },
+        {
+          "q": "What if I made a mistake on the invoice?",
+          "a": "While it is a draft, just edit it. An issued invoice is corrected with a credit note, followed by a new invoice."
+        }
+      ]
+    },
+    "beginners": {
+      "seoTitle": "Invoicing for beginners: not a VAT payer, first customer",
+      "eyebrow": "Invoicing for beginners",
+      "title": "Starting a business? Invoice like this",
+      "lead": "The basics for sole traders who are not VAT payers: the first customer, numbering, payments, reminders and when you become a VAT payer.",
+      "topicsTitle": "What you need to know",
+      "topics": {
+        "nonVat": {
+          "title": "Not a VAT payer",
+          "body": "You invoice without VAT and leave VAT off the invoice entirely. Just add a line saying you are not a payer."
+        },
+        "firstCustomer": {
+          "title": "The first customer",
+          "body": "Agree the price, scope and due date upfront. An email that makes the deal clear is enough."
+        },
+        "numbering": {
+          "title": "Numbering",
+          "body": "Pick a series, such as year and sequence (2026001). Billanta assigns numbers itself and carries on into the new year."
+        },
+        "payment": {
+          "title": "Getting paid",
+          "body": "Give your account number and variable symbol. The customer scans the QR code in their banking app and types nothing."
+        },
+        "reminders": {
+          "title": "Reminders",
+          "body": "When a payment doesn't arrive, Billanta sends the customer a polite reminder after the due date. You choose when."
+        },
+        "tax": {
+          "title": "Taxes and contributions",
+          "body": "Invoices are the basis of your tax return. Work out flat-rate expenses or the flat tax with the calculators below."
+        }
+      },
+      "vatTitle": "When you become a VAT payer",
+      "vatLead": "The threshold counts your turnover over a calendar year. Billanta can show how far from it you are.",
+      "vat": {
+        "cz": {
+          "title": "Czechia",
+          "points": [
+            "The threshold is CZK 2,000,000 of turnover in a calendar year",
+            "Cross it and you become a payer from 1 January of the next year",
+            "If turnover exceeds CZK 2,536,500, you are a payer from the day after",
+            "You can also register voluntarily, for example if you sell mostly to VAT payers"
+          ]
+        },
+        "sk": {
+          "title": "Slovakia",
+          "points": [
+            "The threshold is EUR 50,000 of turnover in a calendar year",
+            "Cross it and you must apply for registration; you are a payer from the day after it is granted",
+            "If turnover exceeds EUR 62,500, you become a payer with the very supply that crossed it",
+            "You can also register voluntarily"
+          ]
+        }
+      },
+      "monthTitle": "Your first month of invoicing",
+      "month": [
+        {
+          "title": "Set up your company",
+          "body": "IČO, address, bank account and number series. With the register it takes minutes."
+        },
+        {
+          "title": "Issue your first invoice",
+          "body": "Ideally right after the work is done, so the payment isn't delayed."
+        },
+        {
+          "title": "Record expenses",
+          "body": "Photograph or upload receipts. They feed your overview and your tax return."
+        },
+        {
+          "title": "Check payments",
+          "body": "Connect your bank or mark payments by hand. The overview shows who owes you."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Do I have to write that I am not a VAT payer?",
+          "a": "The law doesn't strictly require it, but it is good practice and saves questions. Billanta adds it for you."
+        },
+        {
+          "q": "Can I make invoices in Excel or Word?",
+          "a": "You can, but you have to watch numbering, dates and copies yourself. An app does it for you and forgets nothing."
+        },
+        {
+          "q": "What is the Czech flat tax?",
+          "a": "One monthly payment covering income tax, social and health insurance for Czech sole traders below a certain income. It doesn't suit everyone, so do the maths."
+        },
+        {
+          "q": "Do I need an accountant?",
+          "a": "Often not at first, especially with flat-rate expenses. When the business grows, invite your accountant to Billanta and they see the records themselves."
+        },
+        {
+          "q": "How much does Billanta cost?",
+          "a": "Basic invoicing is free. Higher plans add things like bank matching or more users. See pricing for details."
+        }
+      ]
+    },
+    "advanced": {
+      "seoTitle": "Invoicing for advanced users: VAT, foreign customers, recurring invoices, API",
+      "eyebrow": "Invoicing for advanced users",
+      "title": "When invoicing is part of the daily routine",
+      "lead": "For VAT payers and growing companies: reverse charge, foreign customers, recurring invoices, payment matching, the API, several companies and team roles.",
+      "topicsTitle": "Topics you will meet sooner or later",
+      "topics": {
+        "vat": {
+          "title": "VAT payers",
+          "body": "Rates, supply dates and the data for your return. Czech VAT returns, control statements and EC sales lists download as XML for EPO."
+        },
+        "reverseCharge": {
+          "title": "Reverse charge",
+          "body": "For some supplies and for EU VAT payers the customer accounts for the tax. Billanta asks for their VAT number and adds the required wording."
+        },
+        "foreign": {
+          "title": "Foreign customers",
+          "body": "Invoices in euros or dollars, the exchange rate for the supply date and the conversion for VAT. Invoices can be bilingual too."
+        },
+        "recurring": {
+          "title": "Recurring invoices",
+          "body": "Invoice rent or a retainer from one template. Each month brings an invoice with the next number in the series."
+        },
+        "bank": {
+          "title": "Payment matching",
+          "body": "Bank payments match by variable symbol and amount. Paid invoices are marked by themselves."
+        },
+        "api": {
+          "title": "API and webhooks",
+          "body": "Connect your shop or your own system. Webhooks report when an invoice is paid, viewed or overdue."
+        },
+        "companies": {
+          "title": "Several companies",
+          "body": "One login, separate books. You can hold a different role in each company. Depends on your plan."
+        },
+        "roles": {
+          "title": "Team roles",
+          "body": "An accountant, an assistant or a read-only colleague sees and changes only what they should."
+        },
+        "isdoc": {
+          "title": "ISDOC and e-invoices",
+          "body": "Customers' accounting software reads ISDOC invoices by itself, with no retyping."
+        }
+      },
+      "switch": {
+        "title": "Moving from another app?",
+        "body": "Bring contacts and issued invoices over from CSV, Fakturoid or BitFaktura. Numbering carries on where you left off.",
+        "cta": "How to switch",
+        "compare": "Compare with others"
+      },
+      "faq": [
+        {
+          "q": "Does Billanta know when to use reverse charge?",
+          "a": "For a customer with a VAT number from another EU country it offers reverse charge and checks the number in VIES. For domestic cases, such as construction work, you switch it on for the invoice."
+        },
+        {
+          "q": "Can I invoice in a foreign currency?",
+          "a": "Yes. For Czech companies the ČNB rate for the supply date fills in at issue and can be adjusted by hand. VAT is converted to CZK."
+        },
+        {
+          "q": "Does Billanta handle the Czech control statement?",
+          "a": "Yes. For Czech VAT payers it prepares the control statement XML with every document, as well as the VAT return and the EC sales list."
+        },
+        {
+          "q": "Is the API in every plan?",
+          "a": "The API and webhooks are in the paid plans. See pricing for details."
+        },
+        {
+          "q": "Can I manage several companies?",
+          "a": "Yes, on the top plan. Each company has its own data, number series, bank and team."
+        }
+      ]
+    },
+    "roles": {
+      "seoTitle": "Team roles: owner, admin, accountant and read only",
+      "eyebrow": "Team and roles",
+      "title": "Team roles",
+      "lead": "Invite your accountant, an assistant or a colleague. Everyone sees only what they need and changes only what they may. Here is exactly what.",
+      "featureLink": "The Team and roles feature",
+      "cards": {
+        "owner": {
+          "who": "Whoever created the company in Billanta",
+          "body": "Sees and does everything. Answers for the company and is the only one who sets up data backups.",
+          "points": [
+            "All invoicing, expenses, bank and reports",
+            "The team, subscription, company settings and API keys",
+            "Data backups, and nobody else",
+            "The owner's role can't be changed and the owner can't be removed"
+          ],
+          "link": "More for owners"
+        },
+        "admin": {
+          "who": "Office manager, partner, right hand",
+          "body": "Runs the company on the owner's behalf. May do almost everything except set up data backups.",
+          "points": [
+            "All invoicing, expenses, bank and reports",
+            "Invites colleagues and sets their access",
+            "Company settings, subscription, API keys, history import",
+            "Connects bank accounts"
+          ],
+          "link": "More for assistants"
+        },
+        "accountant": {
+          "who": "External accountant or tax advisor",
+          "body": "Works with documents and exports, and stays out of company administration.",
+          "points": [
+            "Invoices, contacts, expenses and reports",
+            "Syncs the bank but doesn't connect new accounts",
+            "Bookkeeping exports up front",
+            "Doesn't see the team, subscription or API keys"
+          ],
+          "link": "More for accountants"
+        },
+        "viewer": {
+          "who": "Partner, investor, reviewer",
+          "body": "Looks, changes nothing. Suits anyone who needs the overview.",
+          "points": [
+            "Reads invoices, contacts, expenses, bank and reports",
+            "Can't issue, edit or delete anything",
+            "Doesn't see company settings"
+          ]
+        }
+      },
+      "tableTitle": "Who may do what",
+      "tableLead": "The default access of each role. For the accountant and read-only roles, the owner or an admin can adjust access area by area.",
+      "table": {
+        "area": "Area",
+        "rows": {
+          "invoices": "Invoices",
+          "contacts": "Contacts",
+          "expenses": "Expenses",
+          "bank": "Bank and payments",
+          "reports": "Reports and exports",
+          "settings": "Company settings",
+          "team": "Team and subscription",
+          "import": "History import",
+          "backups": "Data backups"
+        },
+        "levels": {
+          "write": "Edits",
+          "read": "Reads",
+          "none": "No"
+        }
+      },
+      "tableNote": "The accountant syncs the bank; new accounts are connected by the owner or an admin. Accountants can switch on the due-date calendar in integrations themselves. Anyone can leave a company or create their own.",
+      "presetsTitle": "Ready-made profiles",
+      "presetsLead": "Pick a profile when you invite someone and access is set for you. You can adjust it at any time.",
+      "presets": {
+        "invoicer": {
+          "title": "Invoicer",
+          "body": "Issues invoices and manages contacts, reads the bank. No access to expenses or reports."
+        },
+        "expenses": {
+          "title": "Expenses assistant",
+          "body": "Records expenses and receipts, reads invoices and contacts."
+        },
+        "auditor": {
+          "title": "Tax advisor / auditor",
+          "body": "Reads everything, changes nothing. Ideal for a review or the year-end close."
+        },
+        "viewer": {
+          "title": "Read only",
+          "body": "Sees invoices, contacts and expenses. Not the bank or reports."
+        }
+      },
+      "demoTitle": "See it through each role's eyes",
+      "demoLead": "Open the demo as the owner, the accountant or a read-only colleague. The overview, menu and settings show only what that role can do.",
+      "faq": [
+        {
+          "q": "How many people can I invite?",
+          "a": "It depends on your plan, from a single user to a whole team. See pricing for details."
+        },
+        {
+          "q": "Does my accountant pay for an account?",
+          "a": "No. You invite them by email and they sign in with their own account, which can serve several clients."
+        },
+        {
+          "q": "What does a member see on a page they can't use?",
+          "a": "The menu and overview only offer what they can do. If they open a hidden page from a link, they see a note that they have no access to it."
+        },
+        {
+          "q": "Can I find out who changed what?",
+          "a": "Yes. The change history shows the author, the time, and the old and new value of each change."
+        },
+        {
+          "q": "Can one person hold different roles in different companies?",
+          "a": "Yes. For example, owner of their own company and accountant at a client's."
+        }
+      ]
+    },
+    "owners": {
+      "seoTitle": "Billanta for business owners: overview, team and control",
+      "eyebrow": "For owners",
+      "title": "For business owners",
+      "lead": "You create the company in Billanta and you have the final say. You see everything, invite your team and decide who may do what.",
+      "cardsTitle": "What you get as the owner",
+      "cards": {
+        "overview": {
+          "title": "The full overview",
+          "body": "Who owes you, what is overdue, turnover and expenses. All on one screen, on your phone too."
+        },
+        "team": {
+          "title": "Your team in check",
+          "body": "In Settings → Team, invite your accountant or an assistant and adjust their access area by area."
+        },
+        "audit": {
+          "title": "Change history",
+          "body": "For every invoice you see who changed it, when and why. Even when it was AI or the API."
+        },
+        "billing": {
+          "title": "Subscription and settings",
+          "body": "You, or an admin, manage the plan, company details, number series and API keys."
+        },
+        "backups": {
+          "title": "Backups only through you",
+          "body": "Only the owner sets where and how often the company's data is backed up. Nobody else can redirect it."
+        },
+        "companies": {
+          "title": "Several companies",
+          "body": "Add another company under the same login. Data and teams stay separate. Depends on your plan."
+        }
+      },
+      "stepsTitle": "How to build your team",
+      "steps": [
+        {
+          "title": "Invite your accountant",
+          "body": "Enter their email and the Accountant role. They take exports and records themselves, so you send nothing."
+        },
+        {
+          "title": "Invite an assistant",
+          "body": "Give an office manager the Admin role. Someone who only invoices gets the Invoicer profile."
+        },
+        {
+          "title": "Adjust access",
+          "body": "For the accountant and read-only roles, switch single areas on or off, such as the bank or reports."
+        },
+        {
+          "title": "Check the history",
+          "body": "Activity shows who changed what. An issued invoice can only be corrected with a stated reason."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can someone on the team remove me?",
+          "a": "No. The owner can't be removed from the company and the owner's role can't be changed."
+        },
+        {
+          "q": "Why does only the owner set up backups?",
+          "a": "A backup holds all of the company's data, so only the person who answers for the company decides where it goes."
+        },
+        {
+          "q": "What if my accountant leaves?",
+          "a": "Remove them in Settings → Team and their access ends at once. The data stays with the company."
+        },
+        {
+          "q": "Can I see the company the way my accountant does?",
+          "a": "In the demo, yes: open it in the accountant or read-only view."
+        }
+      ]
+    },
+    "assistants": {
+      "seoTitle": "Billanta for assistants and office managers",
+      "eyebrow": "For assistants",
+      "title": "For assistants and office managers",
+      "lead": "Handling invoices and paperwork for someone else? Billanta gives you access that fits: the whole company, or just invoices or expenses.",
+      "cardsTitle": "The access you can get",
+      "cards": {
+        "admin": {
+          "title": "Admin",
+          "body": "You run the company for the owner: invoices, expenses, bank, team and settings. Only data backups stay with the owner."
+        },
+        "invoicer": {
+          "title": "Invoicer",
+          "body": "You issue invoices and keep contacts. You see bank payments, but not expenses or reports."
+        },
+        "expenses": {
+          "title": "Expenses assistant",
+          "body": "You record expenses and receipts. You see invoices and contacts but don't change them."
+        },
+        "contacts": {
+          "title": "Contacts from the register",
+          "body": "Add a new customer by IČO and the details load from the business register. No retyping."
+        },
+        "tailored": {
+          "title": "An app that fits your role",
+          "body": "The overview, menu, search and mobile navigation show only the actions you may take."
+        },
+        "limits": {
+          "title": "Clear limits",
+          "body": "Settings you can't use show a note that admins manage them. You can't break anything."
+        }
+      },
+      "stepsTitle": "Getting started",
+      "steps": [
+        {
+          "title": "Accept the invitation",
+          "body": "The owner invites you by email. Sign in with your account or create one on the spot."
+        },
+        {
+          "title": "Look around the overview",
+          "body": "The home screen shows only what you have access to: drafts, due dates or expenses."
+        },
+        {
+          "title": "Issue or record",
+          "body": "An invoicer issues an invoice, an expenses assistant uploads a receipt. Everything goes into the change history."
+        },
+        {
+          "title": "Need more?",
+          "body": "Ask the owner or an admin to widen your access. The change applies at once."
+        }
+      ],
+      "faq": [
+        {
+          "q": "What is the difference between an admin and the owner?",
+          "a": "An admin may do almost everything the owner can, but doesn't set up data backups and can't remove the owner or change the owner's role."
+        },
+        {
+          "q": "Can I work for several companies?",
+          "a": "Yes. One login can belong to several companies, with a different role in each."
+        },
+        {
+          "q": "As an invoicer, will I see expenses or profit?",
+          "a": "No. The Invoicer profile has no access to expenses or reports."
+        },
+        {
+          "q": "What if I leave the company?",
+          "a": "You can leave a company yourself at any time. The invoices you issued stay with the company."
+        }
+      ]
     }
   }
 }

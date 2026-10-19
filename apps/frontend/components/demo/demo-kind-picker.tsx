@@ -5,7 +5,7 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
-import { DEMO_AUDIENCES, type DemoAudienceKey } from '@/lib/demo-audiences';
+import { audienceKind, DEMO_AUDIENCES, type DemoAudience, type DemoAudienceKey } from '@/lib/demo-audiences';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
 import { clearOfflineData } from '@/lib/offline-outbox';
 import { cn } from '@/lib/utils';
@@ -57,10 +57,11 @@ export function DemoKindPicker({
   initialView?: DemoViewRole;
   audience?: DemoAudienceKey | null;
 }) {
-  const preselected = audience ? DEMO_AUDIENCES[audience] : null;
+  const preselected: DemoAudience | null = audience ? DEMO_AUDIENCES[audience] : null;
+  const preselectedKind = preselected ? audienceKind(preselected, locale) : null;
   const t = useTranslations('demo');
   // Slovak visitors look for the Slovak companies first; everyone else starts in Czechia, unless the audience's company is Slovak.
-  const [country, setCountry] = useState<Country>(preselected ? COUNTRY[preselected.kind] : locale === 'sk' ? 'SK' : 'CZ');
+  const [country, setCountry] = useState<Country>(preselectedKind ? COUNTRY[preselectedKind] : locale === 'sk' ? 'SK' : 'CZ');
   const [busy, setBusy] = useState<DemoKind | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [empty, setEmpty] = useState<boolean>(preselected?.empty ?? false);
@@ -70,7 +71,7 @@ export function DemoKindPicker({
   const [signedInKind, setSignedInKind] = useState<DemoKind | null>(null);
 
   const inCountry = DEMO_KINDS.filter((kind) => COUNTRY[kind] === country);
-  const kinds = preselected && inCountry.includes(preselected.kind) ? [preselected.kind, ...inCountry.filter((k) => k !== preselected.kind)] : inCountry;
+  const kinds = preselectedKind && inCountry.includes(preselectedKind) ? [preselectedKind, ...inCountry.filter((k) => k !== preselectedKind)] : inCountry;
 
   async function start(kind: DemoKind) {
     setBusy(kind);

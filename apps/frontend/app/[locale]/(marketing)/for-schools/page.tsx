@@ -49,6 +49,8 @@ const SAFEGUARDS = [
 
 /** Related public pages a teacher can hand out with a lesson; guides only where they are published. */
 const RESOURCES = [
+  { href: '/your-first-invoice', key: 'firstInvoice' },
+  { href: '/invoicing-for-beginners', key: 'beginners' },
   { href: '/features/required-fields-check', key: 'requiredFields' },
   { href: '/features/foreign-currency-invoices', key: 'currencies' },
   { href: '/features/payment-reminders', key: 'reminders' },

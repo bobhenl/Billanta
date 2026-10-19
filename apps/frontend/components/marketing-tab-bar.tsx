@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePercent, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
+import { BadgePercent, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, FileText, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, UserRound, Users, UserSearch } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -46,6 +46,8 @@ export function MarketingTabBar() {
         ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ key: 'guides', href: '/guides', label: tMenu('guides'), icon: BookOpenCheck }] : []),
         { key: 'find-accountant', href: '/accountants', label: tMenu('findAccountant'), icon: UserSearch },
         { key: 'blog', href: '/blog', label: tMenu('blog'), icon: Newspaper },
+        { key: 'first-invoice', href: '/your-first-invoice', label: t('firstInvoice'), icon: FileText },
+        { key: 'team-roles', href: '/team-roles', label: t('teamRoles'), icon: Users },
         { key: 'accountants', href: '/for-accountants', label: t('accountants'), icon: Calculator },
         { key: 'schools', href: '/for-schools', label: t('schools'), icon: GraduationCap },
         { key: 'creators', href: '/for-creators', label: t('creators'), icon: Clapperboard },

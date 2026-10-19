@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Building2, Calculator, Check, FileDown, Gift, Link2, MapPin, MessageSquare, Sparkles, UserPlus, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { DemoCta } from '@/components/demo/demo-cta';
+import { NextPages } from '@/components/learn-page';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -25,6 +26,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('accountants');
+  const tLearn = await getTranslations('learnPages.common');
   const credits = REFERRAL_REWARDS.accountant;
   const faq = (t.raw('faq') as { q: string; a: string }[]).map(({ q, a }) => ({
     q,
@@ -149,6 +151,15 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
           )}
         </div>
       </div>
+
+      <NextPages
+        title={tLearn('nextTitle')}
+        items={(['roles', 'owners', 'assistants', 'advanced'] as const).map((key) => ({
+          href: { roles: '/team-roles', owners: '/for-owners', assistants: '/for-assistants', advanced: '/invoicing-for-advanced' }[key],
+          title: tLearn(`pages.${key}.title`),
+          body: tLearn(`pages.${key}.body`)
+        }))}
+      />
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('faqTitle')}</h2>
       <div className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">

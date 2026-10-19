@@ -3,6 +3,8 @@ import type { DemoKind } from './demo';
 export interface DemoAudience {
   /** The demo company shown first. */
   kind: DemoKind;
+  /** The Slovak counterpart for an sk visitor, for audiences that aren't tied to one country. */
+  skKind?: DemoKind;
   /** A key of BUSINESS_PRESETS. */
   preset: string;
   empty: boolean;
@@ -24,8 +26,17 @@ export const DEMO_AUDIENCES = {
   // The segment pages (/for-schools, /for-creators, /events) can link here too.
   schools: { kind: 'cz_freelancer', preset: 'invoicingOnly', empty: true },
   creators: { kind: 'cz_pausal', preset: 'flatTax', empty: false },
-  events: { kind: 'cz_freelancer', preset: 'invoicingOnly', empty: false }
+  events: { kind: 'cz_freelancer', preset: 'invoicingOnly', empty: false },
+  // The pages by experience level (/your-first-invoice, /invoicing-for-*).
+  firstInvoice: { kind: 'cz_freelancer', skKind: 'sk_freelancer', preset: 'invoicingOnly', empty: true },
+  beginners: { kind: 'cz_pausal', skKind: 'sk_freelancer', preset: 'flatTax', empty: false },
+  advanced: { kind: 'cz_vat_sro', skKind: 'sk_vat_sro', preset: 'withAccountant', empty: false }
 } as const satisfies Record<string, DemoAudience>;
+
+/** The company an audience starts with in this locale. */
+export function audienceKind(audience: DemoAudience, locale: string): DemoKind {
+  return locale === 'sk' && audience.skKind ? audience.skKind : audience.kind;
+}
 
 export type DemoAudienceKey = keyof typeof DEMO_AUDIENCES;
 
