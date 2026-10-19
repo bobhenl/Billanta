@@ -9465,6 +9465,17 @@
       "firstInvoice": "Nastavené pre prvú faktúru: prázdna firma neplatiteľa, len fakturácia.",
       "beginners": "Nastavené pre začínajúcich: živnostník s ukážkovými dokladmi.",
       "advanced": "Nastavené pre pokročilých: platiteľ DPH s účtovníkom a bankou."
+    },
+    "scenarios": {
+      "firstInvoice": "Pripravené na lekciu: prázdna firma bez dokladov. Po spustení začnete v Kontaktoch.",
+      "invoices": "Pripravené na lekciu: firma s ukážkovými faktúrami. Po spustení začnete v zozname faktúr.",
+      "overdue": "Pripravené na lekciu: firma s ukážkovými faktúrami. Po spustení uvidíte faktúry po splatnosti.",
+      "registries": "Pripravené na lekciu: firma s ukážkovými dokladmi a kontaktmi. Po spustení začnete v zozname faktúr.",
+      "vatInvoices": "Pripravené na lekciu: platiteľ DPH s ukážkovými dokladmi. Po spustení začnete v zozname faktúr.",
+      "vatOverdue": "Pripravené na lekciu: platiteľ DPH s ukážkovými dokladmi. Po spustení uvidíte faktúry po splatnosti.",
+      "bank": "Pripravené na lekciu: platiteľ DPH s pohybmi na účte, ktoré treba spárovať. Po spustení začnete v Banke.",
+      "accountant": "Pripravené na lekciu: firma platiteľa DPH očami účtovníčky. Po spustení začnete v Banke.",
+      "flatTax": "Pripravené na lekciu: český živnostník v paušálnom režime s ukážkovými dokladmi. Po spustení začnete v zozname faktúr."
     }
   },
   "offline": {
@@ -10216,6 +10227,7 @@
     },
     "sizes": {
       "a4": "A4 plagát",
+      "a3": "A3 plagát",
       "a5": "A5 plagát",
       "a6": "A6 leták",
       "a6x4": "A6 leták, 4 na hárku A4"
@@ -12597,7 +12609,7 @@
     "how": [
       "Každá lekcia má ciele, časový plán hodiny, výklad pojmov s odkazmi na konkrétne paragrafy a poznámky pre učiteľa.",
       "Žiaci plnia úlohu krok za krokom v deme Billanty. Demo nepotrebuje registráciu ani e-mail a každý žiak dostane vlastnú firmu s ukážkovými údajmi.",
-      "Pracovný list vytlačíte vo verzii pre žiakov (bez riešenia) alebo pre seba s riešením."
+      "Pracovný list vytlačíte vo verzii pre žiakov (bez riešenia). Riešenia a tlač s riešením uvidíte po prihlásení do účtu učiteľa."
     ],
     "rvpNote": "Lekcie pre základné školy sa hodia do finančnej gramotnosti, lekcie pre stredné školy nadväzujú na ekonomické a účtovné vzdelávacie oblasti štátnych vzdelávacích programov obchodných akadémií. Zaradenie do ročníkov a predmetov nechávame na škole.",
     "lawBasis": "Lekcie vychádzajú zo slovenského práva.",
@@ -12629,18 +12641,42 @@
       "basic": {
         "name": "Základná škola",
         "audience": "Finančná gramotnosť, 8. a 9. ročník",
-        "lead": "Čo je faktúra, ako ju vystaviť, kedy je zaplatená a ako slušne upomenúť. Bez daní a paragrafov pre žiakov."
+        "lead": "Čo je faktúra, ako ju vystaviť, kedy je zaplatená a ako slušne upomenúť. Bez daní a paragrafov pre žiakov.",
+        "short": "ZŠ"
       },
       "standard": {
         "name": "Stredná škola",
         "audience": "Obchodné akadémie a ekonomické odbory",
-        "lead": "Náležitosti faktúry, DPH, zálohy, dobropisy a upomienky podľa zákona."
+        "lead": "Náležitosti faktúry, DPH, zálohy, dobropisy a upomienky podľa zákona.",
+        "short": "SŠ"
       },
       "advanced": {
         "name": "Vysoká škola a kurzy",
         "audience": "VŠ, pomaturitné štúdium a rekvalifikačné kurzy",
-        "lead": "Daňové priznanie a kontrolný výkaz, zahraniční odberatelia, párovanie banky a spolupráca s účtovníčkou."
+        "lead": "Daňové priznanie a kontrolný výkaz, zahraniční odberatelia, párovanie banky a spolupráca s účtovníčkou.",
+        "short": "VŠ"
       }
-    }
+    },
+    "answersLocked": "Riešenia vidia učitelia po prihlásení.",
+    "answersLogin": "Prihlásiť sa",
+    "answersSignup": "Založiť účet učiteľa"
+  },
+  "coworkingPoster": {
+    "title": "Plagát pre coworking",
+    "lead": "Plagát s QR kódom do kuchynky, na recepciu alebo do zasadačky. Vytlačte ho priamo z prehliadača alebo si ho uložte ako PDF.",
+    "back": "Späť na stránku pre coworkingy",
+    "sizeLabel": "Veľkosť",
+    "download": "Stiahnuť plagát",
+    "printHint": "Otvorí sa dialóg tlače: vyberte tlačiareň alebo Uložiť ako PDF. Mierku nechajte na 100 %.",
+    "withInvite": "QR kód na plagáte nesie kód pozvánky vašej firmy ({code}). Za každú firmu, ktorá sa cez neho zaregistruje a začne platiť, dostanete kredit.",
+    "generic": "QR kód teraz vedie na náš web. Po prihlásení ponesie kód pozvánky vašej firmy a za nové firmy dostanete kredit.",
+    "login": "Prihlásiť sa",
+    "groupCode": "Chcete jeden trvalý kód pre všetkých členov aj s výhodou navyše? Pripravíme ho a dáme na plagát.",
+    "contact": "Napíšte nám",
+    "mailSubject": "Kód a plagát pre náš coworking",
+    "qrTarget": "QR vedie na:",
+    "ctaTitle": "Plagát na stenu na stiahnutie",
+    "ctaBody": "A4 alebo A3, pripravený na tlač. Keď ste prihlásení, QR kód na ňom nesie kód pozvánky vašej firmy.",
+    "ctaButton": "Stiahnuť plagát"
   }
 }

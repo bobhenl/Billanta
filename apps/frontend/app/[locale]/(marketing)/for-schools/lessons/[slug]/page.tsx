@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getFormatter, getTranslations, setRequestLocale } from 'next-intl/server';
 import { CzOnlyNotice } from '@/components/public-tools/parts';
 import { LessonPrintButtons } from '@/components/school-lessons/print-buttons';
+import { LessonWorksheet } from '@/components/school-lessons/worksheet';
 import { Link } from '@/i18n/navigation';
 import {
   LESSON_MINUTES,
@@ -162,11 +163,11 @@ export default async function SchoolLessonPage({ params }: { params: Promise<Par
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2 print:hidden">
-        <Link href="/demo" className={buttonClass.primary}>
+        <Link href={{ pathname: '/demo', query: { scenario: lesson.scenario } }} className={buttonClass.primary}>
           {t('demoCta')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
-        <LessonPrintButtons student={t('printStudent')} teacher={t('printTeacher')} />
+        <LessonPrintButtons slug={slug} locale={locale} student={t('printStudent')} teacher={t('printTeacher')} />
       </div>
 
       <div className="mt-10 max-w-3xl space-y-10 print:mt-6 print:space-y-6">
@@ -225,18 +226,13 @@ export default async function SchoolLessonPage({ params }: { params: Promise<Par
           <p className="hidden print:block">
             {t('worksheetName')} ______________________________
           </p>
-          <ol className="list-decimal space-y-5 pl-5">
-            {c.worksheet.map((w) => (
-              <li key={w.q} className="break-inside-avoid">
-                <p className="font-medium">{w.q}</p>
-                <div className="answer-lines hidden print:block" aria-hidden="true" />
-                <details className="teacher-only mt-2 rounded-xl border border-border bg-card px-3 py-2">
-                  <summary className="cursor-pointer text-sm font-semibold text-primary">{t('answer')}</summary>
-                  <p className="mt-2">{w.a}</p>
-                </details>
-              </li>
-            ))}
-          </ol>
+          {/* Only the questions leave the server: the answers are for teachers (components/school-lessons/worksheet.tsx). */}
+          <LessonWorksheet
+            slug={slug}
+            locale={locale}
+            questions={c.worksheet.map((w) => w.q)}
+            labels={{ answer: t('answer'), locked: t('answersLocked'), login: t('answersLogin'), signup: t('answersSignup') }}
+          />
         </Section>
 
         <Section title={t('law')}>

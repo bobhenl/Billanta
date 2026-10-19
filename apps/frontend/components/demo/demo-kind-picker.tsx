@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
 import { audienceKind, DEMO_AUDIENCES, type DemoAudience, type DemoAudienceKey } from '@/lib/demo-audiences';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
+import { DEMO_SCENARIOS, scenarioKind, type DemoScenarioKey } from '@/lib/demo-scenarios';
 import { clearOfflineData } from '@/lib/offline-outbox';
 import { cn } from '@/lib/utils';
 
@@ -44,21 +45,25 @@ export type DemoPresetLabels = Record<string, { title: string; description: stri
  * loads the dashboard with a full page load, so the new session cookie is
  * the one every server component sees. Partner pages link with `?for=`
  * (lib/demo-audiences.ts), which preselects the business type and data and
- * puts that audience's company first.
+ * puts that audience's company first. School lessons link with `?scenario=`
+ * (lib/demo-scenarios.ts), which does the same for the lesson's company and
+ * also lands on the page the lesson's task starts on.
  */
 export function DemoKindPicker({
   locale,
   presets,
   initialView = 'owner',
-  audience
+  audience,
+  scenario
 }: {
   locale: string;
   presets: DemoPresetLabels;
   initialView?: DemoViewRole;
   audience?: DemoAudienceKey | null;
+  scenario?: DemoScenarioKey | null;
 }) {
-  const preselected: DemoAudience | null = audience ? DEMO_AUDIENCES[audience] : null;
-  const preselectedKind = preselected ? audienceKind(preselected, locale) : null;
+  const preselected: Pick<DemoAudience, 'preset' | 'empty'> | null = scenario ? DEMO_SCENARIOS[scenario] : audience ? DEMO_AUDIENCES[audience] : null;
+  const preselectedKind = scenario ? scenarioKind(scenario, locale) : audience ? audienceKind(DEMO_AUDIENCES[audience], locale) : null;
   const t = useTranslations('demo');
   // Slovak visitors look for the Slovak companies first; everyone else starts in Czechia, unless the audience's company is Slovak.
   const [country, setCountry] = useState<Country>(preselectedKind ? COUNTRY[preselectedKind] : locale === 'sk' ? 'SK' : 'CZ');
@@ -81,7 +86,14 @@ export function DemoKindPicker({
       const res = await fetch('/api/demo/start', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ kind, locale, empty, modules: presetModules(preset ?? KIND_PRESET[kind]) })
+        body: JSON.stringify({
+          kind,
+          locale,
+          empty,
+          modules: presetModules(preset ?? KIND_PRESET[kind]),
+          // The lesson's landing page fits only the company its task is written for.
+          scenario: scenario && kind === preselectedKind ? scenario : undefined
+        })
       });
       const data = (await res.json().catch(() => ({}))) as { redirect?: string; error?: string };
       if (res.ok && data.redirect) {

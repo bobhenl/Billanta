@@ -22,6 +22,7 @@ import { Link } from '@/i18n/navigation';
 import { GUIDES, isPublishedIn } from '@/lib/public-tools';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
+import { TEACHER_SIGNUP_HREF } from '@/lib/teacher';
 import { buttonClass } from '@/lib/ui-classes';
 
 const PATH = '/for-schools';
@@ -97,7 +98,7 @@ export default async function SchoolsPage({ params }: { params: Promise<{ locale
             {t('access.cta')}
           </a>
         ) : (
-          <Link href="/signup" className={buttonClass.primary}>
+          <Link href={TEACHER_SIGNUP_HREF} className={buttonClass.primary}>
             {t('access.signup')}
           </Link>
         )}
@@ -131,7 +132,7 @@ export default async function SchoolsPage({ params }: { params: Promise<{ locale
               {t('access.cta')}
             </a>
           ) : (
-            <Link href="/signup" className={buttonClass.primary}>
+            <Link href={TEACHER_SIGNUP_HREF} className={buttonClass.primary}>
               {t('access.signup')}
             </Link>
           )}

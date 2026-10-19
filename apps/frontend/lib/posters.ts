@@ -38,10 +38,11 @@ export type PosterTarget = keyof typeof POSTER_TARGETS;
 /**
  * `a6x4` is four A6 flyers on one A4 sheet with cut lines, for an office
  * printer. Everything on the sheet is sized in `em`, so `fontMm` alone scales
- * a layout between sizes (A5 and A6 are A4 shrunk by √2 and 2).
+ * a layout between sizes (A3 is A4 grown by √2, A5 and A6 are A4 shrunk by √2 and 2).
  */
 export const POSTER_SIZES = {
   a4: { page: 'A4', widthMm: 210, heightMm: 297, fontMm: 4.6, tabs: 8 },
+  a3: { page: 'A3', widthMm: 297, heightMm: 420, fontMm: 6.5, tabs: 8 },
   a5: { page: 'A5', widthMm: 148, heightMm: 210, fontMm: 3.25, tabs: 6 },
   a6: { page: 'A6', widthMm: 105, heightMm: 148, fontMm: 2.3, tabs: 4 },
   a6x4: { page: 'A4', widthMm: 105, heightMm: 148, fontMm: 2.3, tabs: 4 }
@@ -56,6 +57,8 @@ export interface PosterOptions {
   promo: string;
   event: string;
   tabs: boolean;
+  /** A signed-in user's invite code (Settings → Invite): the QR then signs people up with it. */
+  ref?: string;
 }
 
 /** The segment page that fits each audience best, picked when the form has no target yet. */
@@ -95,11 +98,28 @@ export function parsePosterOptions(q: Record<string, string | undefined>, uiLoca
 
 /**
  * The URL the QR code encodes. With a code it is that code's join page, which
- * applies the code; without one, the chosen target page.
+ * applies the code; with an invite code, the signup that credits the
+ * inviter; otherwise the chosen target page.
  */
-export function posterUrl(o: Pick<PosterOptions, 'lang' | 'target' | 'promo'>, origin = SITE_URL): string {
+export function posterUrl(o: Pick<PosterOptions, 'lang' | 'target' | 'promo' | 'ref'>, origin = SITE_URL): string {
   if (o.promo) return `${origin}/${o.lang}/join/${encodeURIComponent(o.promo)}`;
+  // The same link as Settings → Invite; middleware.ts keeps `?ref=` for the signup.
+  if (o.ref) return `${origin}/${o.lang}/signup?ref=${encodeURIComponent(o.ref)}`;
   return `${origin}/${o.lang}${POSTER_TARGETS[o.target]}`;
+}
+
+/**
+ * Prints only the sheet: everything that is not the sheet or one of its
+ * ancestors disappears, and the ancestors lose their spacing, so the sheet
+ * lands at the page's top-left corner at 100 %.
+ */
+export function posterPrintCss(page: string): string {
+  return `@page { size: ${page}; margin: 0; }
+@media print {
+  html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  body *:not(:has(.poster-print)):not(.poster-print):not(.poster-print *) { display: none !important; }
+  body *:has(.poster-print) { margin: 0 !important; padding: 0 !important; border: 0 !important; max-width: none !important; min-height: 0 !important; overflow: visible !important; position: static !important; box-shadow: none !important; background: none !important; }
+}`;
 }
 
 /** Where people type a code by hand, printed next to it. */

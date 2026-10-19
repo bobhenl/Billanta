@@ -9559,6 +9559,17 @@
       "firstInvoice": "Set up for a first invoice: an empty non-VAT business, invoicing only.",
       "beginners": "Set up for beginners: a sole trader with sample documents.",
       "advanced": "Set up for advanced users: a VAT payer with an accountant and bank sync."
+    },
+    "scenarios": {
+      "firstInvoice": "Set up for the lesson: an empty company with no documents. You start in Contacts.",
+      "invoices": "Set up for the lesson: a company with sample invoices. You start on the invoice list.",
+      "overdue": "Set up for the lesson: a company with sample invoices. You start on the overdue invoices.",
+      "registries": "Set up for the lesson: a company with sample documents and contacts. You start on the invoice list.",
+      "vatInvoices": "Set up for the lesson: a VAT payer with sample documents. You start on the invoice list.",
+      "vatOverdue": "Set up for the lesson: a VAT payer with sample documents. You start on the overdue invoices.",
+      "bank": "Set up for the lesson: a VAT payer with bank transactions to match. You start in Bank.",
+      "accountant": "Set up for the lesson: a VAT-registered company seen through the accountant’s eyes. You start in Bank.",
+      "flatTax": "Set up for the lesson: a sole trader on the flat-tax scheme with sample documents. You start on the invoice list."
     }
   },
   "offline": {
@@ -10310,6 +10321,7 @@
     },
     "sizes": {
       "a4": "A4 poster",
+      "a3": "A3 poster",
       "a5": "A5 poster",
       "a6": "A6 flyer",
       "a6x4": "A6 flyer, 4 on an A4 sheet"
@@ -12693,7 +12705,7 @@
     "how": [
       "Each lesson has goals, a lesson plan, an explanation of the key terms with links to the exact provisions, and notes for the teacher.",
       "Students work through a step-by-step task in the Billanta demo. The demo needs no signup or e-mail, and every student gets their own company with sample data.",
-      "Print the worksheet in the student version (without answers) or for yourself with the answers."
+      "Print the worksheet in the student version (without answers). The answers and the print with answers appear once you sign in with a teacher account."
     ],
     "rvpNote": "The lower secondary lessons fit financial literacy, and the upper secondary ones the economics and accounting content of the Czech framework curricula (RVP) for business academies. How they map to years and subjects is up to the school.",
     "lawBasis": "The lessons follow Czech law. Links to the legislation lead to the Czech texts.",
@@ -12725,18 +12737,42 @@
       "basic": {
         "name": "Lower secondary school",
         "audience": "Financial literacy, ages 13 to 15",
-        "lead": "What an invoice is, how to issue one, when it is paid and how to send a polite reminder. No tax law for students."
+        "lead": "What an invoice is, how to issue one, when it is paid and how to send a polite reminder. No tax law for students.",
+        "short": "Lower sec."
       },
       "standard": {
         "name": "Upper secondary school",
         "audience": "Business academies and economics courses",
-        "lead": "Invoice details, VAT, advances, credit notes and reminders under the law."
+        "lead": "Invoice details, VAT, advances, credit notes and reminders under the law.",
+        "short": "Upper sec."
       },
       "advanced": {
         "name": "College, university and courses",
         "audience": "Colleges, universities and retraining courses",
-        "lead": "VAT return and control statement, foreign customers, bank matching and working with an accountant."
+        "lead": "VAT return and control statement, foreign customers, bank matching and working with an accountant.",
+        "short": "University"
       }
-    }
+    },
+    "answersLocked": "Teachers see the answers once they sign in.",
+    "answersLogin": "Log in",
+    "answersSignup": "Create a teacher account"
+  },
+  "coworkingPoster": {
+    "title": "Coworking poster",
+    "lead": "A poster with a QR code for the kitchen, the front desk or the meeting room. Print it straight from the browser or save it as a PDF.",
+    "back": "Back to the coworking page",
+    "sizeLabel": "Size",
+    "download": "Download poster",
+    "printHint": "This opens the print dialog: pick a printer or Save as PDF. Keep the scale at 100%.",
+    "withInvite": "The QR code on the poster carries your company’s invite code ({code}). You get credit for every company that signs up through it and starts paying.",
+    "generic": "Right now the QR code leads to our website. Sign in and it carries your company’s invite code, so new companies earn you credit.",
+    "login": "Log in",
+    "groupCode": "Want one permanent code for all members, with a member benefit? We set it up and put it on the poster.",
+    "contact": "Write to us",
+    "mailSubject": "A code and poster for our coworking space",
+    "qrTarget": "The QR leads to:",
+    "ctaTitle": "A poster for your wall",
+    "ctaBody": "A4 or A3, ready to print. When you are signed in, its QR code carries your company’s invite code.",
+    "ctaButton": "Download poster"
   }
 }

@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { routing } from '@/i18n/routing';
 import { clientIp } from '@/lib/client-ip';
 import { demoEnabled, isDemoKind, sameOrigin } from '@/lib/demo';
+import { DEMO_SCENARIOS, demoScenario, scenarioKind } from '@/lib/demo-scenarios';
 import { openDemoSession } from '@/lib/demo-session';
 import { DEMO_LIMITS, allow } from '@/lib/rate-limit';
 
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
   const session = await auth();
   if (session?.user && !session.isDemo) return fail('demo_signed_in', 409);
 
-  const body = (await request.json().catch(() => null)) as { kind?: unknown; locale?: unknown; empty?: unknown; modules?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { kind?: unknown; locale?: unknown; empty?: unknown; modules?: unknown; scenario?: unknown } | null;
   if (!isDemoKind(body?.kind)) return fail('invalid_kind', 400);
   const locale = routing.locales.find((l) => l === body?.locale) ?? routing.defaultLocale;
 
@@ -61,7 +62,11 @@ export async function POST(request: Request) {
     return fail('demo_unavailable', 503);
   }
 
-  const response = NextResponse.json({ redirect: `/${locale}/dashboard` });
+  // A school lesson's demo opens where its task starts; the key is checked against
+  // the list and must match the company actually started, or it is ignored.
+  const scenario = demoScenario(body.scenario);
+  const landing = scenario && scenarioKind(scenario, locale) === body.kind ? DEMO_SCENARIOS[scenario].landing : '/dashboard';
+  const response = NextResponse.json({ redirect: `/${locale}${landing}` });
   await openDemoSession(response, created.userId, created.tenantId, new Date(created.expiresAt));
   return response;
 }

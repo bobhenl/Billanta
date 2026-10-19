@@ -10,6 +10,7 @@ import {
   POSTER_SIZES,
   POSTER_TARGETS,
   POSTER_TEMPLATES,
+  posterPrintCss,
   posterUrl,
   type PosterTarget
 } from '@/lib/posters';
@@ -19,20 +20,6 @@ import { buttonClass, inputClass } from '@/lib/ui-classes';
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('adminPosters');
   return { title: t('title'), robots: NOINDEX };
-}
-
-/**
- * Prints only the sheet: everything that is not the sheet or one of its
- * ancestors disappears, and the ancestors lose their spacing, so the sheet
- * lands at the page's top-left corner at 100 %.
- */
-function printCss(page: string): string {
-  return `@page { size: ${page}; margin: 0; }
-@media print {
-  html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
-  body *:not(:has(.poster-print)):not(.poster-print):not(.poster-print *) { display: none !important; }
-  body *:has(.poster-print) { margin: 0 !important; padding: 0 !important; border: 0 !important; max-width: none !important; min-height: 0 !important; overflow: visible !important; position: static !important; box-shadow: none !important; background: none !important; }
-}`;
 }
 
 /**
@@ -51,7 +38,7 @@ export default async function AdminPostersPage({ searchParams }: { searchParams:
   const field = 'flex flex-col gap-1 text-sm font-semibold';
   return (
     <div className="mx-auto max-w-6xl">
-      <style dangerouslySetInnerHTML={{ __html: printCss(POSTER_SIZES[o.size].page) }} />
+      <style dangerouslySetInnerHTML={{ __html: posterPrintCss(POSTER_SIZES[o.size].page) }} />
       <SettingsHeader title={t('title')} description={t('description')} />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[18rem_1fr]">

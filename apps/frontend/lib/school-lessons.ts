@@ -18,6 +18,7 @@ import {
   type LucideIcon
 } from 'lucide-react';
 import type { DemoKind } from '@/lib/demo';
+import { scenarioKind, type DemoScenarioKey } from '@/lib/demo-scenarios';
 
 /**
  * Ready-to-teach lessons for schools (/for-schools/lessons), grouped by
@@ -38,8 +39,8 @@ export interface SchoolLesson {
   icon: LucideIcon;
   /** Languages the lesson is published in (default: all). */
   locales?: readonly string[];
-  /** Demo company the student task uses, per legal system. */
-  demo: { cz: DemoKind; sk: DemoKind };
+  /** Demo preset the student task starts (company and landing page), see lib/demo-scenarios.ts. */
+  scenario: DemoScenarioKey;
   /**
    * Classroom-mode milestones the task should produce in the student's
    * practice company (docs/classroom-mode-plan.md on the classroom branch).
@@ -65,22 +66,22 @@ export const LESSONS_CHECKED = '2026-10-19';
 export const LESSON_MINUTES = 45;
 
 export const SCHOOL_LESSONS: SchoolLesson[] = [
-  { slug: 'invoice-essentials', icon: FileText, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_issued', 'invoice_vat'], track: 'standard' },
-  { slug: 'vat-payers-and-registries', icon: BadgeCheck, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['contact_created'], track: 'standard' },
-  { slug: 'tax-point-and-due-dates', icon: CalendarClock, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
-  { slug: 'vat-rates-and-rounding', icon: Percent, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
-  { slug: 'advances-and-proforma', icon: Receipt, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['proforma_converted'], track: 'standard' },
-  { slug: 'credit-notes', icon: FileMinus, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['credit_note_issued'], track: 'standard' },
-  { slug: 'foreign-customers-reverse-charge', icon: Globe, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['invoice_foreign_currency', 'invoice_reverse_charge'], track: 'advanced' },
-  { slug: 'payment-reminders-late-interest', icon: BellRing, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: [], track: 'standard' },
-  { slug: 'flat-tax', icon: Banknote, locales: CZ_ONLY, demo: { cz: 'cz_pausal', sk: 'cz_pausal' }, milestones: ['invoice_issued'], track: 'standard' },
-  { slug: 'what-is-an-invoice', icon: FileQuestion, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: [], track: 'basic' },
-  { slug: 'first-invoice', icon: FilePen, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['contact_created', 'invoice_issued'], track: 'basic' },
-  { slug: 'paid-or-unpaid', icon: CircleCheck, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: ['invoice_paid'], track: 'basic' },
-  { slug: 'simple-reminder', icon: Mail, demo: { cz: 'cz_freelancer', sk: 'sk_vat_sro' }, milestones: [], track: 'basic' },
-  { slug: 'vat-return-control-statement', icon: Landmark, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['expense_recorded'], track: 'advanced' },
-  { slug: 'bank-matching-expenses', icon: ArrowLeftRight, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['bank_matched', 'expense_recorded'], track: 'advanced' },
-  { slug: 'working-with-accountant', icon: Handshake, demo: { cz: 'cz_vat_sro', sk: 'sk_vat_sro' }, milestones: ['expense_recorded'], track: 'advanced' }
+  { slug: 'invoice-essentials', icon: FileText, scenario: 'vatInvoices', milestones: ['invoice_issued', 'invoice_vat'], track: 'standard' },
+  { slug: 'vat-payers-and-registries', icon: BadgeCheck, scenario: 'registries', milestones: ['contact_created'], track: 'standard' },
+  { slug: 'tax-point-and-due-dates', icon: CalendarClock, scenario: 'vatInvoices', milestones: [], track: 'standard' },
+  { slug: 'vat-rates-and-rounding', icon: Percent, scenario: 'vatInvoices', milestones: [], track: 'standard' },
+  { slug: 'advances-and-proforma', icon: Receipt, scenario: 'vatInvoices', milestones: ['proforma_converted'], track: 'standard' },
+  { slug: 'credit-notes', icon: FileMinus, scenario: 'vatInvoices', milestones: ['credit_note_issued'], track: 'standard' },
+  { slug: 'foreign-customers-reverse-charge', icon: Globe, scenario: 'vatInvoices', milestones: ['invoice_foreign_currency', 'invoice_reverse_charge'], track: 'advanced' },
+  { slug: 'payment-reminders-late-interest', icon: BellRing, scenario: 'vatOverdue', milestones: [], track: 'standard' },
+  { slug: 'flat-tax', icon: Banknote, locales: CZ_ONLY, scenario: 'flatTax', milestones: ['invoice_issued'], track: 'standard' },
+  { slug: 'what-is-an-invoice', icon: FileQuestion, scenario: 'invoices', milestones: [], track: 'basic' },
+  { slug: 'first-invoice', icon: FilePen, scenario: 'firstInvoice', milestones: ['contact_created', 'invoice_issued'], track: 'basic' },
+  { slug: 'paid-or-unpaid', icon: CircleCheck, scenario: 'overdue', milestones: ['invoice_paid'], track: 'basic' },
+  { slug: 'simple-reminder', icon: Mail, scenario: 'overdue', milestones: [], track: 'basic' },
+  { slug: 'vat-return-control-statement', icon: Landmark, scenario: 'vatInvoices', milestones: ['expense_recorded'], track: 'advanced' },
+  { slug: 'bank-matching-expenses', icon: ArrowLeftRight, scenario: 'bank', milestones: ['bank_matched', 'expense_recorded'], track: 'advanced' },
+  { slug: 'working-with-accountant', icon: Handshake, scenario: 'accountant', milestones: ['expense_recorded'], track: 'advanced' }
 ];
 
 export const getLesson = (slug: string) => SCHOOL_LESSONS.find((l) => l.slug === slug);
@@ -92,7 +93,7 @@ export const lessonNumberInTrack = (lesson: SchoolLesson, locale: string) =>
   SCHOOL_LESSONS.filter((l) => l.track === lesson.track && lessonPublishedIn(l, locale)).indexOf(lesson) + 1;
 
 /** The demo company for the lesson in this language: Slovak law in sk, Czech law elsewhere. */
-export const lessonDemoKind = (lesson: SchoolLesson, locale: string): DemoKind => (locale === 'sk' ? lesson.demo.sk : lesson.demo.cz);
+export const lessonDemoKind = (lesson: SchoolLesson, locale: string): DemoKind => scenarioKind(lesson.scenario, locale);
 
 export interface LessonLink {
   label: string;

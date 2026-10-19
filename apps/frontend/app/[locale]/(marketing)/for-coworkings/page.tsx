@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { Coins, Gift, Infinity as Permanent, Printer, QrCode, Users } from 'lucide-react';
+import { Coins, Download, Gift, Infinity as Permanent, Printer, QrCode, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { PartnerSegmentPage } from '@/components/partner-segment';
+import { Link } from '@/i18n/navigation';
 import { publicPageMetadata } from '@/lib/seo';
+import { buttonClass } from '@/lib/ui-classes';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -14,6 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ForCoworkingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('coworkingPoster');
   return (
     <PartnerSegmentPage
       locale={locale}
@@ -26,6 +29,18 @@ export default async function ForCoworkingsPage({ params }: { params: Promise<{ 
         { key: 'qr', icon: QrCode },
         { key: 'members', icon: Users }
       ]}
-    />
+    >
+      {/* The poster the offers promise, printable right away (./poster). */}
+      <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight">{t('ctaTitle')}</h2>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('ctaBody')}</p>
+        </div>
+        <Link href="/for-coworkings/poster" className={`${buttonClass.primary} shrink-0`}>
+          <Download className="h-4 w-4" aria-hidden="true" />
+          {t('ctaButton')}
+        </Link>
+      </div>
+    </PartnerSegmentPage>
   );
 }
