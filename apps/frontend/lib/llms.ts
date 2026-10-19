@@ -1,6 +1,8 @@
 import { routing } from '@/i18n/routing';
 import { brandsFor, comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
+import { GLOSSARY } from '@/lib/glossary';
+import { glossaryText } from '@/lib/glossary-content';
 import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, formatPlanPrice, PAYG_PRICE, PLANS, type PlanCurrency } from '@/lib/plans';
 import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { REFERRAL_REWARDS } from '@/lib/referral';
@@ -76,7 +78,12 @@ function toolLines(): string[] {
     `- [Calculators](${url('en', '/calculators')}): free, no sign-up`,
     ...CALCULATORS.map((c) => `  - [${calc[c.key]!.name}](${url(enLocale(c.locales), `/calculators/${c.slug}`)}): ${calc[c.key]!.description}`),
     `- [Guides](${url(enLocale(GUIDES_HUB_LOCALES), '/guides')})`,
-    ...GUIDES.map((g) => `  - [${guide[g.key]!.name}](${url(enLocale(g.locales), `/guides/${g.slug}`)}): ${guide[g.key]!.description}`)
+    ...GUIDES.map((g) => `  - [${guide[g.key]!.name}](${url(enLocale(g.locales), `/guides/${g.slug}`)}): ${guide[g.key]!.description}`),
+    `- [Glossary](${url(routing.defaultLocale, '/glossary')}): Czech and Slovak invoicing and VAT terms, each with a definition, an example and the law`,
+    ...GLOSSARY.map((term) => {
+      const text = glossaryText('en', term.slug)!;
+      return `  - [${text.term}](${url(term.market === 'sk' ? 'sk' : routing.defaultLocale, `/glossary/${term.slug}`)}): ${text.definition}`;
+    })
   ];
 }
 
@@ -111,7 +118,9 @@ function described(): Set<string> {
     '/calculators',
     ...CALCULATORS.map((c) => `/calculators/${c.slug}`),
     '/guides',
-    ...GUIDES.map((g) => `/guides/${g.slug}`)
+    ...GUIDES.map((g) => `/guides/${g.slug}`),
+    '/glossary',
+    ...GLOSSARY.map((t) => `/glossary/${t.slug}`)
   ]);
 }
 

@@ -15,6 +15,13 @@ describe('lawUrl', () => {
     expect(lawUrl('§3a ObZ')).toBe('https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/1991/513/#paragraf-3a');
   });
 
+  it('links the income tax acts and the Czech tax code', () => {
+    expect(lawUrl('§2a ZDP')).toBe('https://www.zakonyprolidi.cz/cs/1992-586#p2a');
+    expect(lawUrl('§7/7 ZDP')).toBe('https://www.zakonyprolidi.cz/cs/1992-586#p7-7');
+    expect(lawUrl('§33 DR')).toBe('https://www.zakonyprolidi.cz/cs/2009-280#p33');
+    expect(lawUrl('§6/10 ZoDP')).toBe('https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/2003/595/#paragraf-6.odsek-10');
+  });
+
   it('returns null for Peppol ids, unknown laws and nothing', () => {
     expect(lawUrl('BR-CO-26')).toBeNull();
     expect(lawUrl('§1 XYZ')).toBeNull();

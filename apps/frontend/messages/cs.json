@@ -6629,7 +6629,8 @@
       "faq": "Časté dotazy",
       "city": "Město / obec",
       "calculator": "Kalkulačky",
-      "guide": "Návody"
+      "guide": "Návody",
+      "glossary": "Slovník pojmů"
     },
     "suggest": {
       "isdoc": "ISDOC",
@@ -7382,7 +7383,9 @@
       "blog": "Blog",
       "blogHint": "Termíny, legislativa a návody",
       "findAccountant": "Sháníte účetní?",
-      "findAccountantHint": "Doporučené účetní podle kraje"
+      "findAccountantHint": "Doporučené účetní podle kraje",
+      "glossary": "Slovník pojmů",
+      "glossaryHint": "DUZP, přenesená daňová povinnost a další"
     },
     "search": {
       "showAll": "Zobrazit všechny výsledky pro „{query}“",
@@ -11168,6 +11171,48 @@
         "extra": "S API kódem načteme i kontakty, kterým jste zatím nefakturovali, kurzy a způsob úhrady.",
         "seoTitle": "Přechod z BitFaktury na Billantu – návod k exportu a importu dat"
       }
+    }
+  },
+  "glossaryPages": {
+    "breadcrumb": "Slovník pojmů",
+    "indexTitle": "Slovník pojmů: faktury a DPH",
+    "indexLead": "Krátká vysvětlení pojmů, na které narazíte při fakturaci a u DPH v Česku. Každý pojem má definici, příklad a odkaz na zákon.",
+    "indexDescription": "Co je DUZP, přenesená daňová povinnost, kontrolní hlášení nebo zálohová faktura. Stručně, s příkladem a odkazem na zákon.",
+    "groupBoth": "Faktury a DPH",
+    "groupCz": "České pojmy",
+    "groupSk": "Slovenské pojmy",
+    "metaTitle": "{term} – co to je",
+    "definition": "Definice",
+    "explanation": "Vysvětlení",
+    "example": "Příklad",
+    "law": "Zákon",
+    "related": "Související pojmy",
+    "allTerms": "Všechny pojmy",
+    "disclaimer": "Stručné vysvětlení, ne daňové poradenství. Rozhoduje znění zákona v odkazu.",
+    "lawRef": "§ {p}",
+    "lawRefOdst": "§ {p} odst. {o}",
+    "laws": {
+      "ZDPH": "zákon č. 235/2004 Sb., o dani z přidané hodnoty",
+      "OZ": "zákon č. 89/2012 Sb., občanský zákoník",
+      "ZDP": "zákon č. 586/1992 Sb., o daních z příjmů",
+      "DR": "zákon č. 280/2009 Sb., daňový řád",
+      "ZoDPH": "zákon č. 222/2004 Z. z. o dani z pridanej hodnoty (Slovensko)",
+      "ZoDP": "zákon č. 595/2003 Z. z. o dani z príjmov (Slovensko)",
+      "ObZ": "zákon č. 513/1991 Zb. Obchodný zákonník (Slovensko)"
+    },
+    "otherTitle": "Tento pojem patří do slovenského práva",
+    "otherText": "Stránka „{term}“ vysvětluje slovenská pravidla, a proto je psaná slovensky.",
+    "otherOriginal": "Číst slovensky",
+    "otherEnglish": "Číst anglicky",
+    "otherCounterpart": "V Česku odpovídá pojem {term}",
+    "marketCz": "Česko",
+    "marketSk": "Slovensko",
+    "onlyCz": "Pojem českého práva. Hlavní verze stránky je česká.",
+    "onlySk": "Pojem slovenského práva. Hlavní verze stránky je slovenská.",
+    "readOriginal": "Číst v originále",
+    "tools": {
+      "heading": "Nástroje a návody",
+      "createInvoice": "Vystavit fakturu bez registrace"
     }
   }
 }

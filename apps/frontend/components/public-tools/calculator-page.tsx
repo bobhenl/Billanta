@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader, ToolNote } from '@/components/public-tools/parts';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
+import { glossaryLinker } from '@/components/glossary-linker';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
 import { jsonLd, webPageLd } from '@/lib/seo';
@@ -66,11 +67,13 @@ export async function CalculatorPage({
 
   const how = t.has(`${k}.how`) ? (t.raw(`${k}.how`) as string[]) : [];
   const path = `/calculators/${slug}`;
+  // Glossary terms are linked where they first appear: lead, then the "how" list.
+  const link = glossaryLinker(locale);
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
       <ToolTabs kind="calculators" current={slug} />
-      <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={c.icon} />
+      <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={link(t(`${k}.lead`))} icon={c.icon} />
       <div className="mt-10">{children}</div>
       <div className="mt-6">
         {disclaimer ? <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} /> : <ToolNote />}
@@ -78,7 +81,7 @@ export async function CalculatorPage({
       {after && <div className="mt-12 space-y-10">{after}</div>}
       {how.length > 0 && (
         <div className="mt-12 max-w-3xl">
-          <HowList title={t.has(`${k}.howTitle`) ? t(`${k}.howTitle`) : t('common.howTitle')} items={how} />
+          <HowList title={t.has(`${k}.howTitle`) ? t(`${k}.howTitle`) : t('common.howTitle')} items={how} link={link} />
         </div>
       )}
       <div className="mt-12">
