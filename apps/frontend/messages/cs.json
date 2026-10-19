@@ -248,7 +248,11 @@
       "items": {
         "free": {
           "q": "Kolik stojí Billanta?",
-          "a": "Začít můžete zdarma a bez platební karty, s 10 doklady měsíčně. Placené tarify začínají na 119 Kč měsíčně bez DPH při roční platbě, podrobnosti najdete v ceníku."
+          "a": "Začít můžete zdarma a bez platební karty, s 10 doklady měsíčně. Placené tarify začínají na {price} měsíčně bez DPH při roční platbě, podrobnosti najdete v ceníku."
+        },
+        "slovakia": {
+          "q": "Funguje Billanta i pro Slovensko?",
+          "a": "Ano. Aplikace je i ve slovenštině, odběratele načte ze slovenského registru RPO, na faktury dává QR kód PAY by square a tarif platíte v eurech. V tarifu Plus připraví přiznání k DPH, kontrolní a souhrnný výkaz pro eDane. Soubor e-faktury UBL (Peppol BIS 3.0) vytvoří už teď, odesílání přes síť Peppol pro povinnou e-fakturaci od roku 2027 připravujeme."
         },
         "isdoc": {
           "q": "Co je ISDOC a proč ho potřebuji?",
@@ -3920,7 +3924,36 @@
       }
     },
     "transferPrice": "převodem {price} / měsíc",
-    "transferCzkOnly": "Převodem jde platit jen v korunách."
+    "transferCzkOnly": "Převodem jde platit jen v korunách.",
+    "faq": {
+      "title": "Časté dotazy k cenám",
+      "items": [
+        {
+          "q": "Je Billanta zdarma?",
+          "a": "Ano. Tarif Zdarma nemá časový limit a nepotřebuje platební kartu. Zahrnuje 10 dokladů měsíčně, každý další stojí {payg}. ISDOC, QR platba a načítání firem z ARES jsou ve všech tarifech."
+        },
+        {
+          "q": "Jsou ceny včetně DPH?",
+          "a": "Ne, všechny ceny jsou uvedené bez DPH."
+        },
+        {
+          "q": "Můžu tarif kdykoli změnit nebo zrušit?",
+          "a": "Ano. Předplatné kartou zrušíte kdykoli a tarif poběží do konce zaplaceného období. Zálohu svých dat si můžete stáhnout v každém tarifu."
+        },
+        {
+          "q": "Dá se platit převodem?",
+          "a": "Ano, měsíc nebo rok dopředu podle zálohové faktury, o {percent} % dráž než kartou, protože tyto platby párujeme ručně. Převodem jde platit jen v korunách."
+        },
+        {
+          "q": "Co je AI kredit?",
+          "a": "Jedna faktura připravená z hlasové nebo textové zprávy, nebo jedna přečtená účtenka. S vlastním klíčem k AI platíte AI přímo svému poskytovateli, bez limitů tarifu."
+        },
+        {
+          "q": "Potřebuje moje účetní vlastní tarif?",
+          "a": "Ne. Od tarifu Start má jedna účetní přístup do vaší firmy zdarma, v ceně vašeho tarifu."
+        }
+      ]
+    }
   },
   "cookies": {
     "banner": {
@@ -6081,6 +6114,31 @@
       "login": "Přihlásit se",
       "signedIn": "Jste přihlášeni. Fakturu si můžete uložit rovnou v aplikaci.",
       "openApp": "Nová faktura v aplikaci"
+    },
+    "faq": {
+      "title": "Časté dotazy",
+      "items": [
+        {
+          "q": "Je vystavení faktury opravdu zdarma?",
+          "a": "Ano. Fakturu vyplníte a stáhnete v PDF bez registrace, bez e-mailu a bez poplatku."
+        },
+        {
+          "q": "Ukládáte údaje z faktury?",
+          "a": "Ne. PDF vygenerujeme a nic z něj na serveru nezůstává. Pokud budete fakturu potřebovat znovu, uložte si PDF, nebo si založte účet."
+        },
+        {
+          "q": "Bude na faktuře QR kód pro platbu?",
+          "a": "Ano, když vyplníte bankovní účet. K českému účtu dáme QR Platbu, ke slovenskému IBAN kód PAY by square, který čtou slovenské banky."
+        },
+        {
+          "q": "Hodí se formulář pro plátce DPH a pro Slovensko?",
+          "a": "Ano. Umí faktury plátce i neplátce DPH a vystaví je česky, slovensky nebo anglicky. Českou firmu načte podle IČO z ARES, slovenského odběratele vyplníte ručně."
+        },
+        {
+          "q": "Kdy se vyplatí založit si účet?",
+          "a": "Když fakturujete pravidelně. Účet hlídá číselnou řadu, eviduje úhrady, pomáhá s upomínkami a exportuje faktury do ISDOC pro účetní. Tarif Zdarma zahrnuje 10 dokladů měsíčně."
+        }
+      ]
     }
   },
   "publicProfile": {

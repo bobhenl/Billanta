@@ -248,7 +248,11 @@
       "items": {
         "free": {
           "q": "Koľko stojí Billanta?",
-          "a": "Začať môžete zadarmo a bez platobnej karty, s 10 dokladmi mesačne. Platené tarify začínajú na 4,99 € mesačne bez DPH pri ročnej platbe, podrobnosti nájdete v cenníku."
+          "a": "Začať môžete zadarmo a bez platobnej karty, s 10 dokladmi mesačne. Platené tarify začínajú na {price} mesačne bez DPH pri ročnej platbe, podrobnosti nájdete v cenníku."
+        },
+        "slovakia": {
+          "q": "Funguje Billanta aj na Slovensku?",
+          "a": "Áno. Aplikácia je aj v slovenčine, odberateľa načíta zo slovenského registra RPO, na faktúry dáva QR kód PAY by square a tarif platíte v eurách. V tarife Plus pripraví daňové priznanie k DPH, kontrolný a súhrnný výkaz pre eDane. Súbor e-faktúry UBL (Peppol BIS 3.0) vytvorí už teraz, odosielanie cez sieť Peppol pre povinnú e-fakturáciu od roku 2027 pripravujeme."
         },
         "isdoc": {
           "q": "Čo je ISDOC a prečo ho potrebujem?",
@@ -3920,7 +3924,36 @@
       }
     },
     "transferPrice": "prevodom {price} / mesiac",
-    "transferCzkOnly": "Prevodom sa dá platiť len v korunách."
+    "transferCzkOnly": "Prevodom sa dá platiť len v korunách.",
+    "faq": {
+      "title": "Časté otázky k cenám",
+      "items": [
+        {
+          "q": "Je Billanta zadarmo?",
+          "a": "Áno. Tarif Zadarmo nemá časové obmedzenie a nepotrebuje platobnú kartu. Zahŕňa 10 dokladov mesačne, každý ďalší stojí {payg}. ISDOC, QR platba a vyhľadanie firiem v registroch sú vo všetkých tarifoch."
+        },
+        {
+          "q": "Sú ceny vrátane DPH?",
+          "a": "Nie, všetky ceny sú uvedené bez DPH."
+        },
+        {
+          "q": "Môžem tarif kedykoľvek zmeniť alebo zrušiť?",
+          "a": "Áno. Predplatné kartou zrušíte kedykoľvek a tarif pobeží do konca zaplateného obdobia. Zálohu svojich údajov si môžete stiahnuť v každom tarife."
+        },
+        {
+          "q": "Dá sa platiť prevodom?",
+          "a": "Áno, mesiac alebo rok dopredu podľa zálohovej faktúry, o {percent} % drahšie než kartou, pretože tieto platby párujeme ručne. Prevodom sa dá platiť len v českých korunách."
+        },
+        {
+          "q": "Čo je AI kredit?",
+          "a": "Jedna faktúra pripravená z hlasovej alebo textovej správy, alebo jeden prečítaný bloček. S vlastným kľúčom k AI platíte AI priamo svojmu poskytovateľovi, bez limitov tarifu."
+        },
+        {
+          "q": "Potrebuje môj účtovník vlastný tarif?",
+          "a": "Nie. Od tarifu Start má jeden účtovník prístup do vašej firmy zadarmo, v cene vášho tarifu."
+        }
+      ]
+    }
   },
   "cookies": {
     "banner": {
@@ -6081,6 +6114,31 @@
       "login": "Prihlásiť sa",
       "signedIn": "Ste prihlásení. Faktúru si môžete uložiť rovno v aplikácii.",
       "openApp": "Nová faktúra v aplikácii"
+    },
+    "faq": {
+      "title": "Časté otázky",
+      "items": [
+        {
+          "q": "Je vystavenie faktúry naozaj zadarmo?",
+          "a": "Áno. Faktúru vyplníte a stiahnete v PDF bez registrácie, bez e-mailu a bez poplatku."
+        },
+        {
+          "q": "Ukladáte údaje z faktúry?",
+          "a": "Nie. PDF vygenerujeme a nič z neho na serveri nezostáva. Ak budete faktúru potrebovať znova, uložte si PDF, alebo si založte účet."
+        },
+        {
+          "q": "Bude na faktúre QR kód na platbu?",
+          "a": "Áno, keď vyplníte bankový účet. K slovenskému IBAN dáme kód PAY by square, ktorý čítajú slovenské banky, k českému účtu QR Platbu."
+        },
+        {
+          "q": "Hodí sa formulár pre platiteľov DPH a pre Slovensko?",
+          "a": "Áno. Vie faktúry platiteľa aj neplatiteľa DPH a vystaví ich po slovensky, česky alebo anglicky. Českú firmu načíta podľa IČO z ARES, slovenského odberateľa vyplníte ručne."
+        },
+        {
+          "q": "Kedy sa oplatí založiť si účet?",
+          "a": "Keď fakturujete pravidelne. Účet stráži číselný rad, eviduje úhrady, pomáha s upomienkami a exportuje faktúry do ISDOC pre účtovníka. Tarif Zadarmo zahŕňa 10 dokladov mesačne."
+        }
+      ]
     }
   },
   "publicProfile": {

@@ -248,7 +248,11 @@
       "items": {
         "free": {
           "q": "How much does Billanta cost?",
-          "a": "You can start free, with no card, for 10 documents a month. Paid plans start at €4.99 a month excl. VAT billed yearly; see the pricing page for details."
+          "a": "You can start free, with no card, for 10 documents a month. Paid plans start at {price} a month excl. VAT billed yearly; see the pricing page for details."
+        },
+        "slovakia": {
+          "q": "Does Billanta work for Slovakia?",
+          "a": "Yes. The app is available in Slovak, looks customers up in the Slovak RPO register, puts a PAY by square QR code on invoices and plans are priced in euro. On the Plus plan it prepares the Slovak VAT return, control statement and EC sales list for eDane. It already creates UBL e-invoice files (Peppol BIS 3.0); sending over the Peppol network for the e-invoicing mandate from 2027 is in progress."
         },
         "isdoc": {
           "q": "What is ISDOC and why do I need it?",
@@ -3920,7 +3924,36 @@
       }
     },
     "transferPrice": "by transfer {price} / month",
-    "transferCzkOnly": "Bank transfer is in Czech koruna only."
+    "transferCzkOnly": "Bank transfer is in Czech koruna only.",
+    "faq": {
+      "title": "Pricing questions",
+      "items": [
+        {
+          "q": "Is Billanta free?",
+          "a": "Yes. The Free plan has no time limit and needs no card. It includes 10 documents a month; each extra one costs {payg}. ISDOC, QR payments and company lookup in the ARES registry are in every plan."
+        },
+        {
+          "q": "Do the prices include VAT?",
+          "a": "No, all prices are shown excluding VAT."
+        },
+        {
+          "q": "Can I change or cancel my plan at any time?",
+          "a": "Yes. A card subscription can be cancelled any time and the plan runs until the end of the paid period. You can download a backup of your data on every plan."
+        },
+        {
+          "q": "Can I pay by bank transfer?",
+          "a": "Yes, a month or a year ahead against a proforma invoice, {percent} % more than by card, because we pair those payments by hand. Bank transfer is in Czech koruna only."
+        },
+        {
+          "q": "What is an AI credit?",
+          "a": "One invoice drafted from a voice or text message, or one receipt read. With your own AI key you pay your AI provider directly, without the plan limits."
+        },
+        {
+          "q": "Does my accountant need their own plan?",
+          "a": "No. From the Start plan, one accountant gets access to your company for free, as part of your plan."
+        }
+      ]
+    }
   },
   "cookies": {
     "banner": {
@@ -6081,6 +6114,31 @@
       "login": "Sign in",
       "signedIn": "You are signed in. You can save the invoice straight in the app.",
       "openApp": "New invoice in the app"
+    },
+    "faq": {
+      "title": "Questions",
+      "items": [
+        {
+          "q": "Is creating the invoice really free?",
+          "a": "Yes. You fill in the invoice and download it as a PDF with no sign-up, no email and no fee."
+        },
+        {
+          "q": "Do you store the invoice details?",
+          "a": "No. We generate the PDF and nothing from it stays on the server. If you will need the invoice again, keep the PDF or create an account."
+        },
+        {
+          "q": "Will the invoice have a QR payment code?",
+          "a": "Yes, when you fill in a bank account. A Czech account gets a QR Platba code, a Slovak IBAN gets PAY by square, which Slovak banks read."
+        },
+        {
+          "q": "Does it work for VAT payers and for Slovakia?",
+          "a": "Yes. It handles invoices from VAT payers and non-payers, in Czech, Slovak or English. A Czech company is loaded from ARES by its ID number; a Slovak customer is filled in by hand."
+        },
+        {
+          "q": "When is an account worth it?",
+          "a": "When you invoice regularly. An account keeps the number series, records payments, helps with reminders and exports invoices to ISDOC for your accountant. The Free plan includes 10 documents a month."
+        }
+      ]
     }
   },
   "publicProfile": {

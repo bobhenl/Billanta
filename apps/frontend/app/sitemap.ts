@@ -77,6 +77,11 @@ const STATIC_ENTRIES: UrlEntry[] = [
   ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales }))
 ];
 
+/** The static public pages with their locales, for llms.txt to list whatever it doesn't describe itself. */
+export function staticSitemapPages(): { path: string; locales: readonly string[] }[] {
+  return STATIC_ENTRIES.map((e) => ({ path: e.path, locales: e.locales ?? routing.locales }));
+}
+
 function buildAllEntries(): UrlEntry[] {
   // Only indexed municipality pages, each in its own language (see
   // isIndexedMunicipality); a noindex URL in a sitemap is a contradiction.

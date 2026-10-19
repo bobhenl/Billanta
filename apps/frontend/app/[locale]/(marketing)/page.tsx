@@ -37,6 +37,7 @@ import { routing } from '@/i18n/routing';
 import { HintCard } from '@/components/hint-card';
 import { MarketingInvoiceMockup } from '@/components/marketing-invoice-mockup';
 import { TEASER_ROW_KEYS, brandsFor, comparedAtLabel, rowsFor } from '@/lib/competitors';
+import { defaultCurrency, formatPlanPrice, startingPrice } from '@/lib/plans';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -126,7 +127,7 @@ const STEPS: { key: StepKey; icon: Icon }[] = [
   { key: 'getPaid', icon: Landmark }
 ];
 
-const FAQ_KEYS = ['free', 'isdoc', 'ares', 'voice', 'data'] as const;
+const FAQ_KEYS = ['free', 'slovakia', 'isdoc', 'ares', 'voice', 'data'] as const;
 const HERO_POINTS = ['isdoc', 'ares', 'qr'] as const;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -139,6 +140,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const tCompare = await getTranslations('comparePage');
   const tDemo = await getTranslations('demo');
   const BRANDS = brandsFor(locale);
+  // The "how much" answer quotes the price list, so a price change can't leave it stale.
+  const currency = defaultCurrency(locale);
+  const faqParams = { price: formatPlanPrice(startingPrice(currency), currency, locale) };
   const TEASER_ROWS = rowsFor(locale).filter((r) => (TEASER_ROW_KEYS as readonly string[]).includes(r.key));
 
   const structuredData = [
@@ -174,7 +178,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       mainEntity: FAQ_KEYS.map((key) => ({
         '@type': 'Question',
         name: t(`faq.items.${key}.q`),
-        acceptedAnswer: { '@type': 'Answer', text: t(`faq.items.${key}.a`) }
+        acceptedAnswer: { '@type': 'Answer', text: t(`faq.items.${key}.a`, faqParams) }
       }))
     }
   ];
@@ -369,7 +373,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     +
                   </span>
                 </summary>
-                <p className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground">{t(`faq.items.${key}.a`)}</p>
+                <p className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground">{t(`faq.items.${key}.a`, faqParams)}</p>
               </details>
             ))}
           </div>

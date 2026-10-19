@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { GuestAccountCta } from '@/components/account-cta';
+import { FaqList, faqLd } from '@/components/segment-page';
 import { GuestInvoiceForm } from './guest-invoice-form';
 
 /**
@@ -24,16 +25,21 @@ export default async function GuestInvoicePage({ params }: { params: Promise<{ l
   const t = await getTranslations('guestInvoice');
   const points = t.raw('points') as string[];
 
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: `${t('heading')} – ${SITE_NAME}`,
-    url: `${SITE_URL}/${locale}/create-invoice`,
-    applicationCategory: 'BusinessApplication',
-    operatingSystem: 'Web',
-    inLanguage: locale,
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'CZK' }
-  };
+  const faq = t.raw('faq.items') as { q: string; a: string }[];
+
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: `${t('heading')} – ${SITE_NAME}`,
+      url: `${SITE_URL}/${locale}/create-invoice`,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      inLanguage: locale,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'CZK' }
+    },
+    faqLd(faq)
+  ];
 
   return (
     <section className="container max-w-5xl py-10 sm:py-14">
@@ -55,6 +61,7 @@ export default async function GuestInvoicePage({ params }: { params: Promise<{ l
       <div data-clarity-mask="true">
         <GuestInvoiceForm />
       </div>
+      <FaqList title={t('faq.title')} faq={faq} />
     </section>
   );
 }
