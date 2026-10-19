@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, CalendarDays, FileCode2, Globe2, Landmark, Percent, QrCode, Scale, ShieldCheck, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, CalendarDays, FileCode2, FileSearch, Globe2, Landmark, ListChecks, Percent, QrCode, Scale, ShieldCheck, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -45,7 +45,11 @@ export const CALCULATORS = [
   // Deadlines by month for CZ or SK, the same rules as the dashboard reminder.
   { slug: 'tax-calendar', key: 'taxCalendar', icon: CalendarDays, locales: ALL },
   // The CZ register of VAT payers (nespolehlivý plátce, published accounts): Czech law.
-  { slug: 'unreliable-vat-payer', key: 'vatReliability', icon: ShieldCheck, locales: CZ_ONLY }
+  { slug: 'unreliable-vat-payer', key: 'vatReliability', icon: ShieldCheck, locales: CZ_ONLY },
+  // What an invoice must contain (CZ and SK law) and an ISDOC viewer that
+  // checks a received invoice against the same list.
+  { slug: 'invoice-requirements', key: 'invoiceRequirements', icon: ListChecks, locales: ALL },
+  { slug: 'isdoc-viewer', key: 'isdocViewer', icon: FileSearch, locales: ALL }
 ] as const satisfies readonly PublicTool[];
 
 export const GUIDES = [

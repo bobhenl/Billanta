@@ -8038,6 +8038,134 @@
             "busy": "Too many checks in a short time. Try again in a moment.",
             "unavailable": "The register of VAT payers is not answering right now. Try again in a moment or check the company on the Financial Administration's website."
           }
+        },
+        "invoiceRequirements": {
+          "name": "Invoice requirements",
+          "title": "Invoice requirements in Czechia and Slovakia 2026",
+          "description": "Find out what your invoice must contain: VAT payer or not, credit note, pro forma, reverse charge, EU customer. For Czechia and Slovakia, with links to the law.",
+          "lead": "Tell us who you are and what you issue. We list the mandatory items for exactly your case, and you can tick off what your invoice already has.",
+          "keywords": "invoice requirements Czech invoice mandatory items Slovak invoice VAT payer tax document credit note pro forma reverse charge",
+          "scenarioTitle": "Who you are and what you issue",
+          "progressTitle": "Your invoice",
+          "progress": "{done} of {total} required",
+          "allDone": "You have all the required items.",
+          "missingTitle": "{n, plural, one {# required item missing:} other {# required items missing:}}",
+          "tickHint": "Tick what your invoice has. Ticks stay when you change the situation.",
+          "reset": "Clear ticks",
+          "howTitle": "How it works",
+          "how": [
+            "A VAT payer issues a tax document with the items of § 29 of the Czech VAT act (§ 74 in Slovakia). A non-payer and a pro forma only follow business law (§ 435 of the Civil Code, § 3a of the Slovak Commercial Code) and good practice.",
+            "Conditional items are required only in the case stated; recommended ones aren't required by law, but invoices without them get paid more slowly.",
+            "Each item links to the section of the law it comes from. You can check a finished ISDOC invoice in our ISDOC viewer."
+          ]
+        },
+        "isdocViewer": {
+          "name": "ISDOC viewer",
+          "title": "ISDOC invoice viewer and checker online",
+          "description": "Open an ISDOC or ISDOCX invoice and check it: company ID, VAT ID, bank account, VAT totals and mandatory items. The file never leaves your browser.",
+          "lead": "Upload an .isdoc or .isdocx file. We show it as a readable invoice and check straight away that nothing is missing and the numbers add up.",
+          "keywords": "ISDOC viewer open ISDOC file isdocx view invoice check invoice Czech e-invoice VAT ID",
+          "dropTitle": "Drop an ISDOC invoice here",
+          "dropHint": "An .isdoc, .isdocx or .xml file. We read it in your browser only and send it nowhere.",
+          "choose": "Choose a file",
+          "reading": "Reading…",
+          "sample": "Try a sample invoice",
+          "sampleName": "sample.isdoc",
+          "privacy": "The file is not uploaded anywhere.",
+          "errors": {
+            "not_xml": "The file can't be read as XML. Is it really ISDOC?",
+            "not_isdoc": "The file is XML, but not an ISDOC invoice.",
+            "too_big": "The file is larger than 25 MB, which an invoice never is.",
+            "read": "The file could not be read. Try downloading it again."
+          },
+          "another": "Open another file",
+          "verdictOk": "The invoice looks fine.",
+          "verdictIssues": "{missing, plural, =0 {No required item is missing} one {# required item is missing} other {# required items are missing}}{problems, plural, =0 {.} one {, and we found # problem.} other {, and we found # problems.}}",
+          "verdictHint": "See below what exactly is missing. Some items (the register entry, the exemption reference) may sit in a note we can't recognise.",
+          "findings": {
+            "supplierIcoInvalid": "The supplier's company ID {value} has an invalid check digit.",
+            "customerIcoInvalid": "The customer's company ID {value} has an invalid check digit.",
+            "supplierDicInvalid": "The supplier's VAT ID {value} has an invalid format or check digit.",
+            "customerDicInvalid": "The customer's VAT ID {value} has an invalid format or check digit.",
+            "bankAccountInvalid": "The account number {value} fails the Czech National Bank check.",
+            "ibanInvalid": "The IBAN {value} has an invalid checksum.",
+            "noLines": "The invoice has no lines.",
+            "lineAmountMismatch": "Line {value}: quantity × price gives {expected}, the invoice says {actual}.",
+            "linesTotalMismatch": "The lines add up to {expected}, but the total excluding VAT is {actual}.",
+            "subtotalVatMismatch": "VAT at {value} % should be {expected}, the invoice says {actual}.",
+            "vatTotalMismatch": "VAT per rate adds up to {expected}, but the VAT total is {actual}.",
+            "inclusiveMismatch": "Base plus VAT gives {expected}, but the total including VAT is {actual}.",
+            "payableMismatch": "The amount to pay should be {expected}, the invoice says {actual}.",
+            "invalidDate": "The date “{value}” is not valid.",
+            "dueBeforeIssue": "The due date {value} is before the issue date.",
+            "vatOnNonPayer": "A non-payer must not charge VAT, but the invoice contains VAT.",
+            "simplifiedOverLimit": "A simplified document is allowed only up to {expected}; this one is for {actual}."
+          },
+          "scenarioTitle": "The supplier's situation",
+          "scenarioHint": "We guessed it from the file. If it's wrong, change it and the check updates.",
+          "status": {
+            "ok": "OK",
+            "missing": "Missing",
+            "invalid": "Invalid value",
+            "unknown": "Can't be verified"
+          },
+          "kinds": {
+            "invoice": "Invoice",
+            "credit_note": "Credit note",
+            "debit_note": "Debit note",
+            "proforma": "Pro forma invoice",
+            "advance_tax": "Tax document for a received payment",
+            "advance_credit": "Correction of a received payment",
+            "simplified": "Simplified tax document",
+            "unknown": "Document"
+          },
+          "supplier": "Supplier",
+          "customer": "Customer",
+          "noCustomer": "No customer given.",
+          "ico": "ID",
+          "dic": "VAT ID",
+          "issueDate": "Issued",
+          "taxPointDate": "Date of supply",
+          "dueDate": "Due",
+          "currency": "Currency",
+          "corrects": "Corrects",
+          "order": "Order",
+          "lines": "Lines",
+          "noLines": "No lines.",
+          "lineNoText": "Line without a description",
+          "vatRate": "VAT {rate} %",
+          "reverseCharge": "reverse charge",
+          "vatRecap": "VAT summary",
+          "recapRow": "base {base}, VAT {vat}",
+          "taxExclusive": "Total excluding VAT",
+          "vatTotal": "VAT total",
+          "rounding": "Rounding",
+          "alreadyClaimed": "Advances deducted",
+          "paidDeposits": "Paid in advance",
+          "payable": "To pay",
+          "payment": "Payment",
+          "noPayment": "The file has no payment details.",
+          "account": "Account number",
+          "variableSymbol": "Variable symbol",
+          "constantSymbol": "Constant symbol",
+          "specificSymbol": "Specific symbol",
+          "method": "Payment method",
+          "methods": {
+            "10": "Cash",
+            "20": "Cheque",
+            "31": "Credit transfer",
+            "42": "Bank transfer",
+            "48": "Card",
+            "49": "Direct debit",
+            "50": "Cash on delivery",
+            "97": "Offset"
+          },
+          "howTitle": "How it works",
+          "how": [
+            "ISDOC is the Czech e-invoice format. An .isdocx file is a zip holding the invoice plus a PDF and attachments – we unpack it for you.",
+            "We read the file in your browser only. Nothing is uploaded to a server and nothing stays once you close the page.",
+            "We check the company ID, VAT ID, bank account and IBAN checksums, the line and VAT totals, and the mandatory items for whoever issued the invoice. We don't look up VAT registration or the company in public registers."
+          ]
         }
       }
     },
@@ -8288,6 +8416,193 @@
             "cta": "Read the guide"
           }
         }
+      }
+    },
+    "invoiceChecklist": {
+      "scenario": {
+        "country": "Under the law of",
+        "vatStatus": "You are",
+        "document": "Document",
+        "customer": "Customer",
+        "reverseCharge": "Domestic reverse charge",
+        "reverseYes": "Yes",
+        "reverseNo": "No",
+        "euSupply": "What you supply to the EU",
+        "euService": "A service",
+        "euGoods": "Goods",
+        "countries": {
+          "CZ": "Czechia",
+          "SK": "Slovakia"
+        },
+        "vatStatuses": {
+          "payer": "VAT payer",
+          "identified": "Identified person",
+          "non_payer": "Not a VAT payer"
+        },
+        "documents": {
+          "invoice": "Invoice",
+          "proforma": "Pro forma",
+          "credit_note": "Credit note",
+          "simplified": "Simplified invoice"
+        },
+        "customers": {
+          "business": "Domestic business",
+          "consumer": "Consumer",
+          "eu_business": "EU business",
+          "non_eu": "Outside the EU"
+        }
+      },
+      "taxDocument": "This is a tax document under the VAT act.",
+      "notTaxDocument": "This is not a tax document – business-law items and good practice are enough.",
+      "notices": {
+        "simplifiedNotForNonPayer": "Only a VAT payer issues a simplified tax document. Showing a regular invoice instead.",
+        "simplifiedLimitCz": "A simplified tax document is allowed only up to CZK 10,000 including VAT (§ 30 of the Czech VAT act).",
+        "simplifiedLimitSk": "In Slovakia a simplified invoice is allowed only up to €1,000 including VAT (§ 74(3) of the Slovak VAT act).",
+        "simplifiedNotCrossBorder": "Supplies to another EU state and exports cannot use a simplified document. Showing a regular invoice instead.",
+        "proformaTaxDocument": "A pro forma is not a tax document. Once the payment arrives, issue a tax document for it within 15 days.",
+        "identifiedNoTaxDocument": "An identified person charges no domestic VAT and invoices like a non-payer.",
+        "identifiedEuService": "For a service to a business in another EU state, an identified person also issues a tax document – without VAT and with the reverse-charge note.",
+        "reverseChargeDomesticOnly": "The domestic reverse charge applies only to listed supplies (construction work, scrap, gold, mobile phones over a threshold …).",
+        "consumerNoTaxDocumentDuty": "You don't have to issue a tax document to a consumer unless they ask for one. If you do, it must contain everything below.",
+        "nonPayerNoVat": "A non-payer shows no VAT on the invoice and must not charge it."
+      },
+      "groups": {
+        "supplier": "Supplier",
+        "customer": "Customer",
+        "document": "Document",
+        "amounts": "Amounts and VAT",
+        "payment": "Payment"
+      },
+      "items": {
+        "supplierName": {
+          "label": "Supplier's name or business name",
+          "hint": "Exactly as in the business or trade register."
+        },
+        "supplierAddress": {
+          "label": "Supplier's registered address",
+          "hint": "The registered seat, not just a mailing address."
+        },
+        "supplierIco": {
+          "label": "Supplier's company ID (IČO)",
+          "hint": "Eight digits; we verify the check digit."
+        },
+        "supplierRegistry": {
+          "label": "Register entry",
+          "hint": "E.g. “Registered in the Commercial Register at the Municipal Court in Prague, section C, file 123”. A sole trader only in the trade register can leave it out in Czechia."
+        },
+        "supplierDic": {
+          "label": "Supplier's VAT ID",
+          "hint": "With the country prefix, e.g. CZ or SK."
+        },
+        "customerName": {
+          "label": "Customer's name or business name",
+          "hint": "For a consumer the name is enough."
+        },
+        "customerAddress": {
+          "label": "Customer's address",
+          "hint": "Registered seat or home address."
+        },
+        "customerIco": {
+          "label": "Customer's company ID",
+          "hint": "The law doesn't ask for it, but businesses want it for their books."
+        },
+        "customerDic": {
+          "label": "Customer's VAT ID",
+          "hint": "With the country prefix, e.g. CZ12345678 or DE123456789."
+        },
+        "documentLabel": {
+          "label": "Document title",
+          "hint": "So it is clear what kind of document it is."
+        },
+        "number": {
+          "label": "Document number",
+          "hint": "Unique within your numbering series; it must never repeat."
+        },
+        "originalNumber": {
+          "label": "Number of the corrected invoice",
+          "hint": "The number of the original invoice the credit note corrects."
+        },
+        "issueDate": {
+          "label": "Issue date",
+          "hint": "The day you issued the document."
+        },
+        "taxPointDate": {
+          "label": "Date of supply (tax point)",
+          "hint": "When you delivered the goods or provided the service."
+        },
+        "subject": {
+          "label": "What and how much was supplied",
+          "hint": "Specific – not just “services”."
+        },
+        "unitPrice": {
+          "label": "Unit price excluding VAT",
+          "hint": "Price per piece, hour or other unit, plus any discount not already in the price."
+        },
+        "taxBase": {
+          "label": "Tax base",
+          "hint": "The total excluding VAT."
+        },
+        "vatRate": {
+          "label": "VAT rate",
+          "hint": "The rate that applies, or 0 % for an exempt supply."
+        },
+        "vatAmount": {
+          "label": "VAT amount",
+          "hint": "The VAT charged, rounded."
+        },
+        "total": {
+          "label": "Total to pay",
+          "hint": "How much the customer should pay."
+        },
+        "correctionReason": {
+          "label": "Reason for the correction",
+          "hint": "E.g. returned goods, a discount, a wrong price."
+        },
+        "correctionDifference": {
+          "label": "Change in tax base and VAT",
+          "hint": "By how much the base and the VAT change against the original invoice (with a minus sign)."
+        },
+        "reverseChargeNote": {
+          "label": "Reverse-charge note",
+          "hint": "“Daň odvede zákazník” (CZ) or “prenesenie daňovej povinnosti” (SK), or “Reverse charge” for an EU customer. The customer accounts for the VAT."
+        },
+        "exemptionNote": {
+          "label": "Reference to the VAT exemption",
+          "hint": "E.g. “Exempt under § 64 of the VAT act”, or a reference to the VAT directive."
+        },
+        "nonPayerNote": {
+          "label": "“Not a VAT payer” note",
+          "hint": "Not required by law, but the customer immediately knows why there's no VAT."
+        },
+        "dueDate": {
+          "label": "Due date",
+          "hint": "Without it the statutory term applies and a reminder is harder to argue."
+        },
+        "paymentDetails": {
+          "label": "Bank account and payment reference",
+          "hint": "Ideally with a payment QR code so the customer pays without retyping."
+        }
+      },
+      "notes": {
+        "ifAssigned": "If one was assigned.",
+        "ifRegistered": "Only if you are entered in the commercial or another public register.",
+        "ifBuyerHasDic": "If the customer has one.",
+        "ifDifferent": "Only if it differs from the issue date.",
+        "buyerVatId": "The VAT ID from another EU state (check it in VIES).",
+        "perRate": "Separately for each VAT rate.",
+        "inHomeCurrency": "In the home currency (CZK or EUR) even if you invoice in another currency.",
+        "noVatAmountReverse": "For information only – you don't calculate the VAT, the customer does.",
+        "totalOrBase": "The total including VAT, or the base and the VAT separately.",
+        "proformaLabel": "E.g. “Pro forma invoice – not a tax document”.",
+        "creditLabel": "E.g. “Credit note” or “Corrective tax document”.",
+        "simplifiedLabel": "E.g. “Simplified tax document”.",
+        "exemptEuGoods": "Supplying goods to the EU is exempt from VAT.",
+        "exportOrAbroad": "For exported goods or a service supplied outside the EU."
+      },
+      "levels": {
+        "required": "Required",
+        "conditional": "Conditional",
+        "recommended": "Recommended"
       }
     }
   },
