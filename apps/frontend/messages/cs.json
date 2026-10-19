@@ -8741,7 +8741,7 @@
     },
     "program": {
       "title": "Program",
-      "hint": "Účetní a účetní kanceláře dostávají za klienty víc. Partnerský program pro účetní schvalujeme ručně.",
+      "hint": "Partnerský program je pro účetní a účetní kanceláře, kterým jsme schválili zápis v adresáři účetních. Kredity jsou stejné jako u doporučení známým.",
       "saved": "Program změněn.",
       "friend": {
         "title": "Doporučení známým",
@@ -8749,7 +8749,7 @@
       },
       "accountant": {
         "title": "Partnerský program pro účetní",
-        "body": "Klient {welcome} kreditů, vy až {reward} za každého platícího klienta.",
+        "body": "Klient {welcome} kreditů, vy až {reward} za každého platícího klienta, stejně jako u doporučení známým.",
         "needsApproval": "Po schválení vašeho zápisu v Profilu účetního."
       }
     },
@@ -8827,7 +8827,7 @@
     "visit": "Navštívit",
     "become": {
       "title": "Chcete být partnerem?",
-      "body": "Účetní a účetní kanceláře získávají kredity za každého platícího klienta. Ostatní firmy mohou pozvat známé přes odkaz v Nastavení.",
+      "body": "Účetní a účetní kanceláře se mohou zapsat do adresáře účetních, kde je najdou firmy. Kredity za platící klienty jsou pro všechny stejné a pozvat známé přes odkaz v Nastavení může každá firma.",
       "accountants": "Program pro účetní",
       "signup": "Založit účet",
       "programmes": "Partnerské programy"
@@ -8852,7 +8852,7 @@
       },
       "credits": {
         "title": "Kredity za klienty",
-        "body": "Klient dostane {welcome} kreditů, vy až {reward} za každého, kdo začne platit."
+        "body": "Klient dostane {welcome} kreditů, vy až {reward} za každého, kdo začne platit. Stejně jako u běžného doporučení."
       },
       "clients": {
         "title": "Všichni klienti pod jedním přihlášením",
@@ -8860,7 +8860,7 @@
       },
       "directory": {
         "title": "Klienti z okolí vás najdou",
-        "body": "Zapněte veřejný profil a kancelář se ukáže na stránkách fakturace ve vašem městě a okolí."
+        "body": "Po schválení zápisu v Profilu účetního se kancelář ukáže v adresáři účetních a na stránkách o fakturaci ve vašem kraji."
       },
       "shape": {
         "title": "Funkce podle vaší praxe",
@@ -8875,7 +8875,7 @@
       },
       "program": {
         "title": "Požádejte o partnerský program",
-        "body": "V Nastavení → Profil účetního vyplňte zápis do adresáře a požádejte o partnerský program. Po schválení dostáváte za klienty víc."
+        "body": "V Nastavení → Profil účetního vyplňte zápis do adresáře a požádejte o partnerský program. Každý zápis ručně schvalujeme. Po schválení vás firmy najdou v adresáři účetních a na stránkách svého města."
       },
       "share": {
         "title": "Pošlete odkaz klientům",
@@ -8906,9 +8906,9 @@
     },
     "directoryCta": {
       "title": "Ukažte se na stránkách svého města",
-      "body": "Billanta má stránku o fakturaci pro každé město a obec v Česku a na Slovensku. Účetní z partnerského programu, kteří mají veřejný profil s adresou, se na nich zobrazují podnikatelům z okolí. Zápis je dobrovolný a vypnete ho jedním kliknutím.",
+      "body": "Billanta má stránku o fakturaci pro každé město a obec v Česku a na Slovensku. Účetní se schváleným zápisem v adresáři účetních se na nich zobrazují podnikatelům ze stejného kraje. Zápis je dobrovolný a stáhnete ho jedním kliknutím.",
       "example": "Podívat se na stránky měst",
-      "settings": "Nastavit veřejný profil"
+      "settings": "Vyplnit profil účetního"
     },
     "shapeCta": {
       "title": "Billantu ladíme spolu s účetními",
@@ -8937,11 +8937,11 @@
       },
       {
         "q": "Jak se dostanu na stránky měst?",
-        "a": "Zapněte program pro účetní, v Nastavení → Veřejný profil zveřejněte profil s adresou a zaškrtněte zobrazení v seznamu účetních. Stránky se obnovují jednou denně."
+        "a": "V Nastavení → Profil účetního vyplňte zápis do adresáře účetních s krajem, kde působíte, a odešlete ho. Každý zápis ručně schvalujeme. Po schválení se kancelář zobrazí v adresáři účetních a na stránkách měst ve vašem kraji, obvykle do hodiny."
       },
       {
         "q": "Kolik kreditů získám?",
-        "a": "V partnerském programu pro účetní dostane klient {welcome} kreditů při registraci přes váš odkaz. Vy dostanete tolik kreditů, kolik korun klient zaplatí za první platbu tarifu, nejvýš {reward}. U měsíčního tarifu je připíšeme po druhé platbě, u roční platby 30 dní po zaplacení. Když klient platbu vrátí nebo tarif dřív zruší, odměna propadá. 1 kredit = 1 Kč."
+        "a": "Stejně jako u běžného doporučení, i bez partnerského programu: klient dostane {welcome} kreditů při registraci přes váš odkaz. Vy dostanete tolik kreditů, kolik korun klient zaplatí za první platbu tarifu, nejvýš {reward}. U měsíčního tarifu je připíšeme po druhé platbě, u roční platby 30 dní po zaplacení. Když klient platbu vrátí nebo tarif dřív zruší, odměna propadá. 1 kredit = 1 Kč."
       }
     ]
   },
@@ -9219,9 +9219,9 @@
       "needIco": "Pro zápis do adresáře potřebujeme IČO vaší firmy. Doplňte ho v Nastavení → Firma."
     },
     "partner": {
-      "approved": "Partnerský program pro účetní máte schválený. Za klienty dostáváte vyšší odměnu.",
+      "approved": "Partnerský program pro účetní máte schválený. Kredity za klienty jsou stejné jako u běžného doporučení.",
       "pending": "Žádost o partnerský program čeká na schválení. Posoudíme ji spolu s vaším zápisem v adresáři.",
-      "intro": "V partnerském programu dostanou vaši klienti víc uvítacích kreditů a vy vyšší odměnu za každého platícího klienta. Program zapínáme ručně, až schválíme váš zápis v adresáři účetních.",
+      "intro": "Partnerský program označuje účetní, které jsme ověřili. Kredity za klienty jsou stejné jako u běžného doporučení. Firmy vás najdou v adresáři účetních a s klienty pracujete přes roli účetní a exporty. Program zapínáme ručně, až schválíme váš zápis v adresáři účetních.",
       "rejected": "Žádost jsme tentokrát neschválili. Můžete ji poslat znovu.",
       "rejectedNote": "Žádost jsme neschválili: {note}. Můžete ji poslat znovu.",
       "needListing": "Nejdřív odešlete zápis do adresáře účetních.",
@@ -9993,7 +9993,7 @@
         },
         "accountants": {
           "title": "Účetní",
-          "body": "Přístup do firem klientů, exporty a kredit za každého klienta."
+          "body": "Zápis v adresáři účetních, přístup do firem klientů a exporty."
         },
         "banks": {
           "title": "Banky",

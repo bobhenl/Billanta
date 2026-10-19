@@ -15,8 +15,10 @@
 --     anyone can flip. A company asks for it, a platform admin approves it
 --     in the accountant directory queue (approving the listing can approve
 --     both). RLS lets the company store only 'pending'. claim_referral()
---     pays accountant rates only to an approved partner, so a direct write
---     to tenants.referral_program earns nothing extra.
+--     keeps the accountant programme only for an approved partner, so a
+--     direct write to tenants.referral_program changes nothing. The amounts
+--     come from the caller (REFERRAL_REWARDS) and are the same for both
+--     programmes today: the tier marks a vetted accountant, not a payout.
 --   * The directory no longer requires the partner tier (it is now the way
 --     in), so public_accountant_listings() drops that filter.
 --   * users.manages_clients / users.is_teacher: optional signup checkboxes.
@@ -208,7 +210,8 @@ UPDATE "tenants" SET "referral_program" = 'friend'
 WHERE "referral_program" = 'accountant'
   AND NOT EXISTS (SELECT 1 FROM accountant_partner_requests p WHERE p.tenant_id = tenants.id AND p.status = 'approved');
 --> statement-breakpoint
--- Same as 0044, except that accountant rates need an approved partner.
+-- Same as 0044, except that the accountant programme needs an approved
+-- partner. The welcome amounts are parameters, so equal tiers need no SQL change.
 CREATE OR REPLACE FUNCTION claim_referral(p_code text, p_welcome_friend integer, p_welcome_accountant integer)
 RETURNS TABLE (program varchar, credits integer)
 LANGUAGE plpgsql

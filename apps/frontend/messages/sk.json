@@ -8647,7 +8647,7 @@
     },
     "program": {
       "title": "Program",
-      "hint": "Účtovníci a účtovné kancelárie dostávajú za klientov viac. Partnerský program pre účtovníkov schvaľujeme ručne.",
+      "hint": "Partnerský program je pre účtovníkov a účtovné kancelárie, ktorým sme schválili zápis v adresári účtovníkov. Kredity sú rovnaké ako pri odporúčaní známym.",
       "saved": "Program zmenený.",
       "friend": {
         "title": "Odporúčanie známym",
@@ -8655,7 +8655,7 @@
       },
       "accountant": {
         "title": "Partnerský program pre účtovníkov",
-        "body": "Klient {welcome} kreditov, vy až {reward} za každého platiaceho klienta.",
+        "body": "Klient {welcome} kreditov, vy až {reward} za každého platiaceho klienta, rovnako ako pri odporúčaní známym.",
         "needsApproval": "Po schválení vášho zápisu v Profile účtovníka."
       }
     },
@@ -8733,7 +8733,7 @@
     "visit": "Navštíviť",
     "become": {
       "title": "Chcete byť partnerom?",
-      "body": "Účtovníci a účtovné kancelárie získavajú kredity za každého platiaceho klienta. Ostatné firmy môžu pozvať známych cez odkaz v Nastaveniach.",
+      "body": "Účtovníci a účtovné kancelárie sa môžu zapísať do adresára účtovníkov, kde si ich nájdu firmy. Kredity za platiacich klientov sú pre všetkých rovnaké a pozvať známych cez odkaz v Nastaveniach môže každá firma.",
       "accountants": "Program pre účtovníkov",
       "signup": "Založiť účet",
       "programmes": "Partnerské programy"
@@ -8758,7 +8758,7 @@
       },
       "credits": {
         "title": "Kredity za klientov",
-        "body": "Klient dostane {welcome} kreditov, vy až {reward} za každého, kto začne platiť."
+        "body": "Klient dostane {welcome} kreditov, vy až {reward} za každého, kto začne platiť. Rovnako ako pri bežnom odporúčaní."
       },
       "clients": {
         "title": "Všetci klienti pod jedným prihlásením",
@@ -8766,7 +8766,7 @@
       },
       "directory": {
         "title": "Klienti z okolia si vás nájdu",
-        "body": "Zapnite verejný profil a kancelária sa zobrazí na stránkach o fakturácii vo vašom meste a okolí."
+        "body": "Po schválení zápisu v Profile účtovníka sa kancelária zobrazí v adresári účtovníkov a na stránkach o fakturácii vo vašom kraji."
       },
       "shape": {
         "title": "Funkcie podľa vašej praxe",
@@ -8781,7 +8781,7 @@
       },
       "program": {
         "title": "Požiadajte o partnerský program",
-        "body": "V Nastaveniach → Profil účtovníka vyplňte zápis do adresára a požiadajte o partnerský program. Po schválení dostávate za klientov viac."
+        "body": "V Nastaveniach → Profil účtovníka vyplňte zápis do adresára a požiadajte o partnerský program. Každý zápis ručne schvaľujeme. Po schválení si vás firmy nájdu v adresári účtovníkov a na stránkach svojho mesta."
       },
       "share": {
         "title": "Pošlite odkaz klientom",
@@ -8812,9 +8812,9 @@
     },
     "directoryCta": {
       "title": "Ukážte sa na stránkach svojho mesta",
-      "body": "Billanta má stránku o fakturácii pre každé mesto a obec v Česku a na Slovensku. Účtovníci z partnerského programu, ktorí majú verejný profil s adresou, sa na nich zobrazujú podnikateľom z okolia. Zápis je dobrovoľný a vypnete ho jedným kliknutím.",
+      "body": "Billanta má stránku o fakturácii pre každé mesto a obec v Česku a na Slovensku. Účtovníci so schváleným zápisom v adresári účtovníkov sa na nich zobrazujú podnikateľom z rovnakého kraja. Zápis je dobrovoľný a stiahnete ho jedným kliknutím.",
       "example": "Pozrieť stránky miest",
-      "settings": "Nastaviť verejný profil"
+      "settings": "Vyplniť profil účtovníka"
     },
     "shapeCta": {
       "title": "Billantu ladíme spolu s účtovníkmi",
@@ -8843,11 +8843,11 @@
       },
       {
         "q": "Ako sa dostanem na stránky miest?",
-        "a": "Zapnite program pre účtovníkov, v Nastaveniach → Verejný profil zverejnite profil s adresou a zaškrtnite zobrazenie v zozname účtovníkov. Stránky sa obnovujú raz denne."
+        "a": "V Nastaveniach → Profil účtovníka vyplňte zápis do adresára účtovníkov s krajom, v ktorom pôsobíte, a odošlite ho. Každý zápis ručne schvaľujeme. Po schválení sa kancelária zobrazí v adresári účtovníkov a na stránkach miest vo vašom kraji, zvyčajne do hodiny."
       },
       {
         "q": "Koľko kreditov získam?",
-        "a": "V partnerskom programe pre účtovníkov dostane klient {welcome} kreditov pri registrácii cez váš odkaz. Vy dostanete toľko kreditov, koľko korún klient zaplatí pri prvej platbe tarifu, najviac {reward}. Pri mesačnom tarife ich pripíšeme po druhej platbe, pri ročnej platbe 30 dní po zaplatení. Ak klient platbu vráti alebo tarif skôr zruší, odmena prepadá. 1 kredit = 1 Kč."
+        "a": "Rovnako ako pri bežnom odporúčaní, aj bez partnerského programu: klient dostane {welcome} kreditov pri registrácii cez váš odkaz. Vy dostanete toľko kreditov, koľko korún klient zaplatí pri prvej platbe tarifu, najviac {reward}. Pri mesačnom tarife ich pripíšeme po druhej platbe, pri ročnej platbe 30 dní po zaplatení. Ak klient platbu vráti alebo tarif skôr zruší, odmena prepadá. 1 kredit = 1 Kč."
       }
     ]
   },
@@ -9125,9 +9125,9 @@
       "needIco": "Na zápis do adresára potrebujeme IČO vašej firmy. Doplňte ho v Nastaveniach → Firma."
     },
     "partner": {
-      "approved": "Partnerský program pre účtovníkov máte schválený. Za klientov dostávate vyššiu odmenu.",
+      "approved": "Partnerský program pre účtovníkov máte schválený. Kredity za klientov sú rovnaké ako pri bežnom odporúčaní.",
       "pending": "Žiadosť o partnerský program čaká na schválenie. Posúdime ju spolu s vaším zápisom v adresári.",
-      "intro": "V partnerskom programe dostanú vaši klienti viac uvítacích kreditov a vy vyššiu odmenu za každého platiaceho klienta. Program zapíname ručne, keď schválime váš zápis v adresári účtovníkov.",
+      "intro": "Partnerský program označuje účtovníkov, ktorých sme overili. Kredity za klientov sú rovnaké ako pri bežnom odporúčaní. Firmy si vás nájdu v adresári účtovníkov a s klientmi pracujete cez rolu účtovníka a exporty. Program zapíname ručne, keď schválime váš zápis v adresári účtovníkov.",
       "rejected": "Žiadosť sme tentoraz neschválili. Môžete ju poslať znova.",
       "rejectedNote": "Žiadosť sme neschválili: {note}. Môžete ju poslať znova.",
       "needListing": "Najprv odošlite zápis do adresára účtovníkov.",
@@ -9899,7 +9899,7 @@
         },
         "accountants": {
           "title": "Účtovníci",
-          "body": "Prístup do firiem klientov, exporty a kredit za každého klienta."
+          "body": "Zápis v adresári účtovníkov, prístup do firiem klientov a exporty."
         },
         "banks": {
           "title": "Banky",

@@ -222,8 +222,9 @@ migration `0051_trial_billing.sql`.
   reward and notifies the company. Nothing renews.
 
   Referral rewards (migration 0079): the inviter gets the invited company's
-  first payment without VAT in credits, capped at 289 (friend) or 579
-  (approved accountant partner). It is held back first: a monthly plan
+  first payment without VAT in credits, capped at 289 for both programmes
+  (the approved accountant partner tier marks a vetted accountant, it does
+  not pay more). It is held back first: a monthly plan
   releases it with its second paid invoice, a plan paid for a year (or a
   12-month proforma) after 30 days (`ReferralRewardsCron`, 08:30 Prague).
   A refund (`charge.refunded`) or cancellation before then voids it. Only

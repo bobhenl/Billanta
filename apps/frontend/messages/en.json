@@ -8741,7 +8741,7 @@
     },
     "program": {
       "title": "Programme",
-      "hint": "Accountants and bookkeeping firms get more per client. We approve the accountant partner programme by hand.",
+      "hint": "The partner programme is for accountants and bookkeeping firms whose directory listing we have approved. The credits are the same as for referring friends.",
       "saved": "Programme changed.",
       "friend": {
         "title": "Refer a friend",
@@ -8749,7 +8749,7 @@
       },
       "accountant": {
         "title": "Accountant partner programme",
-        "body": "Your client gets {welcome} credits, you get up to {reward} for each paying client.",
+        "body": "Your client gets {welcome} credits, you get up to {reward} for each paying client, the same as for referring friends.",
         "needsApproval": "Once we approve your listing in Accountant profile."
       }
     },
@@ -8827,7 +8827,7 @@
     "visit": "Visit",
     "become": {
       "title": "Want to become a partner?",
-      "body": "Accountants and bookkeeping firms earn credits for each paying client. Any other company can invite people it knows with the link in Settings.",
+      "body": "Accountants and bookkeeping firms can join the accountant directory, where businesses find them. Credits for paying clients are the same for everyone, and any company can invite people it knows with the link in Settings.",
       "accountants": "Accountant programme",
       "signup": "Create an account",
       "programmes": "Partner programmes"
@@ -8852,7 +8852,7 @@
       },
       "credits": {
         "title": "Credits for clients",
-        "body": "Your client gets {welcome} credits, you get up to {reward} for each one who starts paying."
+        "body": "Your client gets {welcome} credits, you get up to {reward} for each one who starts paying. The same as a normal referral."
       },
       "clients": {
         "title": "Every client behind one login",
@@ -8860,7 +8860,7 @@
       },
       "directory": {
         "title": "Local businesses find you",
-        "body": "Turn on a public profile and your firm appears on the invoicing pages for your town and the towns nearby."
+        "body": "Once we approve your listing in Accountant profile, your firm appears in the accountant directory and on the invoicing pages for your region."
       },
       "shape": {
         "title": "Features shaped by your practice",
@@ -8875,7 +8875,7 @@
       },
       "program": {
         "title": "Apply for the partner programme",
-        "body": "In Settings → Accountant profile, fill in your directory listing and apply for the partner programme. Once approved, you get more per client."
+        "body": "In Settings → Accountant profile, fill in your directory listing and apply for the partner programme. We review every listing by hand. Once approved, businesses find you in the accountant directory and on their town pages."
       },
       "share": {
         "title": "Send the link to clients",
@@ -8906,9 +8906,9 @@
     },
     "directoryCta": {
       "title": "Get listed on your town’s page",
-      "body": "Billanta has an invoicing page for every town and municipality in Czechia and Slovakia. Accountants in the partner programme who have a public profile with an address are shown there to local businesses. Listing is opt-in and you can turn it off with one click.",
+      "body": "Billanta has an invoicing page for every town and municipality in Czechia and Slovakia. Accountants with an approved directory listing are shown there to businesses in the same region. Listing is optional and you can withdraw it with one click.",
       "example": "Browse the town pages",
-      "settings": "Set up a public profile"
+      "settings": "Fill in your accountant profile"
     },
     "shapeCta": {
       "title": "We build Billanta together with accountants",
@@ -8937,11 +8937,11 @@
       },
       {
         "q": "How do I get onto the town pages?",
-        "a": "Join the accountant programme, publish a public profile with your address in Settings → Public profile and tick the accountant directory option. The pages refresh once a day."
+        "a": "In Settings → Accountant profile, fill in your directory listing with the region you work in and send it. We review every listing by hand. Once approved, your firm shows up in the accountant directory and on the town pages in your region, usually within an hour."
       },
       {
         "q": "How many credits do I get?",
-        "a": "In the accountant partner programme, the client gets {welcome} credits when signing up through your link. You get as many credits as the client pays in CZK for the first plan payment, up to {reward}. On a monthly plan we add them after the second payment, on a yearly one 30 days after payment. If the client gets a refund or cancels before that, there is no reward. 1 credit = CZK 1."
+        "a": "The same as a normal referral, partner programme or not: the client gets {welcome} credits when signing up through your link. You get as many credits as the client pays in CZK for the first plan payment, up to {reward}. On a monthly plan we add them after the second payment, on a yearly one 30 days after payment. If the client gets a refund or cancels before that, there is no reward. 1 credit = CZK 1."
       }
     ]
   },
@@ -9219,9 +9219,9 @@
       "needIco": "A directory listing needs your company ID (IČO). Add it in Settings → Company."
     },
     "partner": {
-      "approved": "Your accountant partner programme is approved. You get a higher reward for clients.",
+      "approved": "Your accountant partner programme is approved. Credits for clients are the same as for a normal referral.",
       "pending": "Your partner programme request is waiting for approval. We review it together with your directory listing.",
-      "intro": "In the partner programme your clients get more welcome credits and you get a higher reward for each paying client. We turn it on by hand once we approve your accountant directory listing.",
+      "intro": "The partner programme marks accountants we have vetted. Credits for clients are the same as for a normal referral. Businesses find you in the accountant directory, and you work with clients through the accountant role and exports. We turn it on by hand once we approve your accountant directory listing.",
       "rejected": "We did not approve the request this time. You can send it again.",
       "rejectedNote": "We did not approve the request: {note}. You can send it again.",
       "needListing": "Send your accountant directory listing first.",
@@ -9993,7 +9993,7 @@
         },
         "accountants": {
           "title": "Accountants",
-          "body": "Access to your clients' companies, exports and credit for each client."
+          "body": "A listing in the accountant directory, access to your clients’ companies and exports."
         },
         "banks": {
           "title": "Banks",

@@ -114,7 +114,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
             <Link href="/invoicing" className={buttonClass.secondary}>
               {t('directoryCta.example')}
             </Link>
-            <Link href="/settings/public-profile" className={buttonClass.ghost}>
+            <Link href="/settings/accountant-profile" className={buttonClass.ghost}>
               {t('directoryCta.settings')}
             </Link>
           </div>

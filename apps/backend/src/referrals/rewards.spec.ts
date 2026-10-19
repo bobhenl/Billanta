@@ -38,8 +38,13 @@ describe("referral reward", () => {
     expect(referralRewardCredits("friend", 289)).toBe(289);
     // A year of Plus paid at once is far over the cap.
     expect(referralRewardCredits("friend", 2868)).toBe(289);
-    expect(referralRewardCredits("accountant", 2868)).toBe(579);
+    expect(referralRewardCredits("accountant", 2868)).toBe(289);
     expect(referralRewardCredits("accountant", 289)).toBe(289);
+  });
+
+  it("pays an approved accountant the same as anyone else", () => {
+    expect(REFERRAL_REWARDS.accountant).toEqual({ welcome: 149, reward: 289 });
+    expect(REFERRAL_REWARDS.accountant).toEqual(REFERRAL_REWARDS.friend);
   });
 
   it("is nothing for a zero or broken amount", () => {
@@ -63,7 +68,7 @@ describe("referral reward", () => {
     expect(rewardReleaseAfter(true, paidAt)!.getTime()).toBe(paidAt.getTime() + 30 * DAY);
 
     const yearly = referralPaymentArgs({ amountMinor: 286_800, currency: "CZK", longPeriod: true }, paidAt)!;
-    expect(yearly).toEqual({ friend: 289, accountant: 579, releaseAfter: new Date(paidAt.getTime() + 30 * DAY) });
+    expect(yearly).toEqual({ friend: 289, accountant: 289, releaseAfter: new Date(paidAt.getTime() + 30 * DAY) });
     const monthly = referralPaymentArgs({ amountMinor: 14_900, currency: "CZK", longPeriod: false }, paidAt)!;
     expect(monthly).toEqual({ friend: 149, accountant: 149, releaseAfter: null });
   });
@@ -137,9 +142,8 @@ describe("planCost", () => {
     expect(planCost("plus", 12)).toBe(239 * 12);
   });
 
-  it("pays the inviter more than the welcome bonus, and the accountant more than a friend", () => {
+  it("caps the inviter above the welcome bonus", () => {
     expect(REFERRAL_REWARDS.friend.reward).toBeGreaterThan(REFERRAL_REWARDS.friend.welcome);
-    expect(REFERRAL_REWARDS.accountant.reward).toBeGreaterThan(REFERRAL_REWARDS.friend.reward);
   });
 });
 

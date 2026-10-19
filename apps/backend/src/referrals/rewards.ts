@@ -8,8 +8,7 @@ import { PLAN_PRICES_MINOR, type PlanCurrency } from "../billing/plans";
  *   inviter gets the invited company's first payment, up to a month of Plus.
  * - accountant: the partner programme for accountants and bookkeeping firms,
  *   approved by Billanta staff (accountant_partner_requests, migration 0079).
- *   Their clients get a month of Plus; the accountant gets the client's first
- *   payment, up to a month of Business.
+ *   Same amounts as friend (see below).
  *
  * `welcome` lands on the new company at once. `reward` is a CAP: the inviter
  * gets what the invited company actually paid first, never more, and only
@@ -18,10 +17,14 @@ import { PLAN_PRICES_MINOR, type PlanCurrency } from "../billing/plans";
  * `record_referral_payment` (migrations 0044, 0079) clamp these values.
  *
  * Prices mirror apps/frontend/lib/plans.ts (CZK, monthly and yearly-per-month).
+ *
+ * The accountant tier pays the same as friend on purpose (owner decision):
+ * it marks a vetted accountant, it is not a bigger payout. The two keys stay
+ * so the SQL and the UI can still tell the tiers apart.
  */
 export const REFERRAL_REWARDS = {
   friend: { welcome: 149, reward: 289 },
-  accountant: { welcome: 289, reward: 579 },
+  accountant: { welcome: 149, reward: 289 },
 } as const;
 
 export type ReferralProgram = keyof typeof REFERRAL_REWARDS;
