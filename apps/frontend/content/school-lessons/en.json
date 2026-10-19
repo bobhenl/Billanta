@@ -904,7 +904,7 @@
     "teacherNotes": [
       "The interest rate is set by Government Decree No. 351/2013 Coll.: the ČNB repo rate valid on the first day of the calendar half-year in which the delay began, plus 8 percentage points (§ 2(1)). Have students look up the current repo rate on the ČNB website themselves.",
       "Between businesses the creditor is also entitled to minimum recovery costs of CZK 1,200 (§ 3 of the decree).",
-      "The app sends reminders (automatically too, if set up) but does not calculate late interest. Do the interest calculation on paper.",
+      "The app can send reminders, automatically too, but does not calculate late interest. Do the interest calculation on paper. Classroom mode sends no emails (Send reminder ends with an error), so students write the reminder text and show it to the teacher.",
       "The general limitation period is three years (§ 629 of the Civil Code). A good question: when does it start? When the right could first be exercised, typically the day after the due date."
     ],
     "timeline": [
@@ -948,15 +948,15 @@
       }
     ],
     "task": {
-      "intro": "Lipová stezka s.r.o. has several overdue invoices. You send a reminder and set up automation.",
+      "intro": "Lipová stezka s.r.o. has several overdue invoices. You write a reminder and set up automation.",
       "steps": [
         "Open Invoices and filter the overdue ones. Write down how many there are and their total.",
-        "Open one and click Send reminder. Read the prefilled text. Is it polite? What would you change?",
+        "Open one and find out how many days it is overdue and how many reminders the customer has had. Write the reminder text on paper and show it to the teacher. Don't press Send reminder: a class company sends no emails.",
         "Open Settings, the Invoices section, and find Reminders. Find out how automatic sending, the days between reminders and their maximum number are set. Choose your own values and write down why.",
         "In the settings find the email template Reminder to a customer and edit it so it includes the invoice number and amount.",
         "On paper, calculate late interest on the chosen invoice: look up the ČNB repo rate on the first day of the half-year, add 8 percentage points and calculate the interest for the actual days of delay."
       ],
-      "check": "Done when the student has sent a reminder, set up automatic reminders with reasons, and correctly calculated late interest with the repo rate and its source stated."
+      "check": "Done when the student has written a reminder checked by the teacher, set up automatic reminders with reasons, and correctly calculated late interest with the repo rate and its source stated."
     },
     "worksheet": [
       {
@@ -1613,7 +1613,8 @@
       "The return is due within 25 days after the tax period ends (§ 136(4) of the Tax Procedure Code) and must be filed electronically (§ 101a of the VAT Act). A legal entity files the control statement monthly within 25 days of the month end, a natural person within the return deadline (§ 101e). The deadline cannot be extended.",
       "Fines under § 101h(1): CZK 1,000 for filing late without a notice, CZK 10,000 for filing only in the substitute deadline after a notice, CZK 30,000 for not amending, completing or confirming it when asked, and CZK 50,000 for not filing at all. Fines b) to d) are halved for natural persons and quarterly payers, among others (para. 2). The first late filing under a) in a calendar year is not fined (§ 101j).",
       "The CZK 10,000 incl. VAT threshold splitting sections A.4/A.5 and B.2/B.3 comes from the form instructions, not directly from the Act. Return lines: output VAT at 21 % and 12 % on lines 1 and 2, deduction on lines 40 and 41.",
-      "The demo is Lipová stezka s.r.o., a monthly payer. The return and control statement export is an XML file for the Czech tax portal; classroom mode does not download it, so students calculate on paper. The teacher can show the export in the public demo."
+      "The demo is Lipová stezka s.r.o., a monthly payer. The return and control statement export is an XML file for the Czech tax portal; classroom mode does not download it, so students calculate on paper. The teacher can show the export in the public demo.",
+      "In classroom mode, create a class with the Standard or Advanced level for this lesson. The Basics level switches off Expenses, Bank and Reports."
     ],
     "timeline": [
       {
@@ -1753,7 +1754,8 @@
       "The demo bank transactions are prepared: one payment covered only 90 % of the invoice, an advance of CZK 2,500 from Petr Novotný came without a variable symbol, and a bank fee of −CZK 199 is already ignored. Each one leads to a different question.",
       "Ignoring the fee in matching does not remove it from the books. The accountant books it from the bank statement as a cost; it just is not matched to an invoice.",
       "Deducting VAT on a received document requires a tax document (§ 73(1)(a) of the Czech VAT Act). A payer keeps tax documents for 10 years from the end of the tax period in which the supply took place (§ 35(2)). Accounting records are archived for at least 5 years, the financial statements for 10 (§ 31 of the Accounting Act).",
-      "Classroom mode has no real bank connection. Students work with sample transactions and match them by hand."
+      "Classroom mode has no real bank connection. Students work with sample transactions and match them by hand.",
+      "In classroom mode, create a class with the Standard or Advanced level for this lesson. The Basics level switches off Expenses, Bank and Reports."
     ],
     "timeline": [
       {
@@ -1878,7 +1880,8 @@
       "Students work in pairs. One starts the demo with the Owner role, the other with the Accountant role. Each has their own copy of the same company, so they pass findings on verbally and on paper, as in real life.",
       "In the demo the accountant sees documents, VAT, exports and reports but does not touch company settings, the team or the subscription. In a real account the role is set in Settings, Team. Classroom mode invites nobody.",
       "Deadlines the accountant watches: the VAT return within 25 days after the tax period (§ 136(4) of the Czech Tax Procedure Code) and an s.r.o.'s control statement every month within 25 days (§ 101e of the VAT Act). That is why accountants usually ask for documents by the 10th to 15th of the following month.",
-      "A document must have the details required by § 11 of the Accounting Act. The company, not the accountant, is responsible for its documents being correct: the accountant books what they receive. Accounting records are archived for at least 5 years (§ 31), a payer's tax documents for 10 years (§ 35 of the VAT Act)."
+      "A document must have the details required by § 11 of the Accounting Act. The company, not the accountant, is responsible for its documents being correct: the accountant books what they receive. Accounting records are archived for at least 5 years (§ 31), a payer's tax documents for 10 years (§ 35 of the VAT Act).",
+      "In classroom mode, create a class with the Standard or Advanced level for this lesson. The Basics level switches off Expenses, Bank and Reports."
     ],
     "timeline": [
       {

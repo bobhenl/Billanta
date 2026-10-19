@@ -896,7 +896,7 @@
     "teacherNotes": [
       "Ak si strany výšku úrokov nedohodli, platia sa v sadzbe podľa nariadenia vlády (§ 369 ods. 2 Obchodného zákonníka). Nariadenie vlády č. 21/2013 Z. z.: základná úroková sadzba ECB platná k prvému dňu príslušného kalendárneho polroka zvýšená o 8 percentuálnych bodov (§ 1 ods. 1). Aktuálnu sadzbu ECB nechajte žiakov dohľadať.",
       "Veriteľ má navyše nárok na paušálnu náhradu nákladov spojených s uplatnením pohľadávky (§ 369c Obchodného zákonníka), ktorej výška je 40 eur (§ 2 nariadenia).",
-      "Aplikácia upomienky posiela (aj automaticky podľa nastavenia), úroky z omeškania však nepočíta. Výpočet preto urobte na papieri.",
+      "Aplikácia vie upomienky posielať aj automaticky, úroky z omeškania však nepočíta. Výpočet preto urobte na papieri. V triednom režime sa e-maily neodosielajú (Poslať upomienku skončí chybou), preto žiaci text upomienky píšu a ukazujú učiteľovi.",
       "Všeobecná premlčacia doba v obchodných vzťahoch je štyri roky (§ 397 Obchodného zákonníka). V občianskoprávnych vzťahoch platia iné lehoty."
     ],
     "timeline": [
@@ -940,15 +940,15 @@
       }
     ],
     "task": {
-      "intro": "Horský potok s.r.o. má niekoľko faktúr po splatnosti. Pošlete upomienku a nastavíte automatiku.",
+      "intro": "Horský potok s.r.o. má niekoľko faktúr po splatnosti. Napíšete upomienku a nastavíte automatiku.",
       "steps": [
         "Otvorte Faktúry a vyfiltrujte faktúry po splatnosti. Zapíšte si, koľko ich je a aká je ich celková suma.",
-        "Otvorte jednu z nich a kliknite na Poslať upomienku. Prečítajte si predvyplnený text. Je zdvorilý? Čo by ste zmenili?",
+        "Otvorte jednu z nich a zistite, koľko dní je po splatnosti a koľko upomienok už odberateľ dostal. Napíšte text upomienky na papier a ukážte ho učiteľovi. Tlačidlo Poslať upomienku nestláčajte: triedna firma e-maily neodosiela.",
         "Otvorte Nastavenia, sekciu Faktúry, a nájdite Upomienky. Zistite, ako sa nastavuje automatické odosielanie, počet dní medzi upomienkami a ich maximálny počet. Nastavte vlastné hodnoty a zapíšte si, prečo ste ich zvolili.",
         "V nastaveniach nájdite e-mailovú šablónu Upomienka odberateľovi a upravte ju tak, aby obsahovala číslo faktúry a sumu.",
         "Na papieri vypočítajte úroky z omeškania pri vybranej faktúre: dohľadajte základnú úrokovú sadzbu ECB k prvému dňu polroka, pripočítajte 8 percentuálnych bodov a vypočítajte úrok za skutočný počet dní omeškania."
       ],
-      "check": "Hotovo je, keď má žiak odoslanú upomienku, vlastné nastavenie automatických upomienok so zdôvodnením a správne vypočítané úroky z omeškania vrátane uvedenej sadzby ECB a jej zdroja."
+      "check": "Hotovo je, keď má žiak upomienku napísanú a skontrolovanú učiteľom, vlastné nastavenie automatických upomienok so zdôvodnením a správne vypočítané úroky z omeškania vrátane uvedenej sadzby ECB a jej zdroja."
     },
     "worksheet": [
       {
@@ -1478,7 +1478,8 @@
       "Priznanie sa podáva a daň platí do 25 dní po skončení zdaňovacieho obdobia (§ 78). Kontrolný výkaz sa podáva elektronicky za každé obdobie, za ktoré sa podáva priznanie, v tej istej lehote (§ 78a ods. 1).",
       "Chybu pred uplynutím lehoty opraví opravný kontrolný výkaz, po lehote dodatočný kontrolný výkaz len so zmenenými údajmi (§ 78a ods. 12). Na výzvu správcu dane treba reagovať do 5 pracovných dní (ods. 13). Za porušenie hrozí pokuta do 10 000 €, pri opakovaní do 100 000 € (ods. 15).",
       "Časti kontrolného výkazu: A.1 vydané faktúry, A.2 vydané faktúry v režime prenesenia daňovej povinnosti, B.1 prijaté plnenia, pri ktorých je platiteľ osobou povinnou platiť daň, B.2 prijaté faktúry s odpočtom od tuzemských platiteľov, B.3 zjednodušené faktúry a pokladničné doklady, C.1 opravy.",
-      "Demo je Horský potok s.r.o., mesačný platiteľ, sadzba 23 %. Export priznania sa v triednom režime nesťahuje, študenti počítajú na papieri."
+      "Demo je Horský potok s.r.o., mesačný platiteľ, sadzba 23 %. Export priznania sa v triednom režime nesťahuje, študenti počítajú na papieri.",
+      "V triednom režime založte na túto hodinu triedu s úrovňou Štandard alebo Pokročilé. V úrovni Základy sú Výdavky, Banka a Reporty vypnuté."
     ],
     "timeline": [
       {
@@ -1606,7 +1607,8 @@
       "Bankové pohyby v deme sú pripravené: záloha 120 € od Jána Baláža prišla bez variabilného symbolu, poplatok banke −9,90 € je ignorovaný a niektoré faktúry sú uhradené len čiastočne. Každý z nich vedie k inej otázke.",
       "Ignorovať poplatok pri párovaní neznamená, že zmizne z účtovníctva. Účtovník ho zaúčtuje z bankového výpisu ako náklad; len sa nepáruje so žiadnou faktúrou.",
       "Odpočítanie DPH z prijatého dokladu vyžaduje faktúru podľa § 71 (§ 51 ods. 1 písm. a) zákona o DPH). Platiteľ uchováva faktúry 10 rokov nasledujúcich po roku, ktorého sa týkajú (§ 76). Účtovnú dokumentáciu účtovná jednotka uchováva 10 rokov po roku, ktorého sa týka (§ 35 zákona o účtovníctve).",
-      "V triednom režime nie je napojená skutočná banka. Pracuje sa s ukážkovými pohybmi a párovanie sa robí ručne."
+      "V triednom režime nie je napojená skutočná banka. Pracuje sa s ukážkovými pohybmi a párovanie sa robí ručne.",
+      "V triednom režime založte na túto hodinu triedu s úrovňou Štandard alebo Pokročilé. V úrovni Základy sú Výdavky, Banka a Reporty vypnuté."
     ],
     "timeline": [
       {
@@ -1731,7 +1733,8 @@
       "Študenti pracujú vo dvojiciach. Jeden si spustí demo s rolou Majiteľ, druhý s rolou Účtovníčka. Každý má vlastnú kópiu tej istej firmy, takže si zistenia odovzdávajú ústne a na papieri, rovnako ako v praxi.",
       "Účtovníčka v deme vidí doklady, DPH, exporty a prehľady, ale nesiaha na nastavenia firmy, tím ani predplatné. Vo vlastnom účte sa rola nastavuje v Nastavenia, Tím. V triednom režime nikoho nepozývate.",
       "Termíny, ktoré účtovníčka stráži: priznanie a platba DPH do 25 dní po skončení zdaňovacieho obdobia (§ 78 zákona o DPH) a v tej istej lehote kontrolný výkaz (§ 78a). Preto si doklady zvyčajne vyžiada do 10. až 15. dňa nasledujúceho mesiaca.",
-      "Doklad musí mať náležitosti podľa § 10 zákona o účtovníctve. Za správnosť dokladov zodpovedá firma, nie účtovníčka. Účtovnú dokumentáciu firma uchováva 10 rokov (§ 35 zákona o účtovníctve), faktúry platiteľ tiež 10 rokov (§ 76 zákona o DPH)."
+      "Doklad musí mať náležitosti podľa § 10 zákona o účtovníctve. Za správnosť dokladov zodpovedá firma, nie účtovníčka. Účtovnú dokumentáciu firma uchováva 10 rokov (§ 35 zákona o účtovníctve), faktúry platiteľ tiež 10 rokov (§ 76 zákona o DPH).",
+      "V triednom režime založte na túto hodinu triedu s úrovňou Štandard alebo Pokročilé. V úrovni Základy sú Výdavky, Banka a Reporty vypnuté."
     ],
     "timeline": [
       {

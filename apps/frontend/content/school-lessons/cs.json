@@ -904,7 +904,7 @@
     "teacherNotes": [
       "Výši úroku z prodlení stanoví nařízení vlády 351/2013 Sb.: repo sazba ČNB platná první den kalendářního pololetí, v němž prodlení nastalo, zvýšená o 8 procentních bodů (§ 2 odst. 1). Aktuální repo sazbu nechte studenty dohledat na webu ČNB, ať s ní pracují sami.",
       "Mezi podnikateli má věřitel také nárok na minimální náklady spojené s uplatněním pohledávky 1 200 Kč (§ 3 nařízení).",
-      "Aplikace upomínky posílá (i automaticky podle nastavení), úrok z prodlení ale nepočítá. Výpočet úroku proto udělejte na papíře.",
+      "Aplikace umí upomínky posílat i automaticky, úrok z prodlení ale nepočítá. Výpočet úroku proto udělejte na papíře. Ve třídním režimu se e-maily neodesílají (Poslat upomínku skončí chybou), proto studenti text upomínky píšou a ukazují učiteli.",
       "Obecná promlčecí lhůta je tři roky (§ 629 OZ). Dobrá otázka: od kdy běží? Od okamžiku, kdy mohlo být právo uplatněno poprvé, typicky ode dne po splatnosti."
     ],
     "timeline": [
@@ -948,15 +948,15 @@
       }
     ],
     "task": {
-      "intro": "Firma Lipová stezka s.r.o. má několik faktur po splatnosti. Pošlete upomínku a nastavíte automatiku.",
+      "intro": "Firma Lipová stezka s.r.o. má několik faktur po splatnosti. Napíšete upomínku a nastavíte automatiku.",
       "steps": [
         "Otevřete Faktury a vyfiltrujte faktury po splatnosti. Zapište si, kolik jich je a jaká je jejich celková částka.",
-        "Otevřete jednu z nich a klikněte na Poslat upomínku. Přečtěte si předvyplněný text. Je zdvořilý? Co byste změnili?",
+        "Otevřete jednu z nich a zjistěte, kolik dní je po splatnosti a kolik upomínek už odběratel dostal. Napište text upomínky na papír a ukažte ho učiteli. Tlačítko Poslat upomínku nemačkejte: třídní firma e-maily neodesílá.",
         "Otevřete Nastavení, sekci Faktury, a najděte Upomínky. Zjistěte, jak se nastavuje automatické odesílání, počet dní mezi upomínkami a jejich maximální počet. Nastavte vlastní hodnoty a zapište si, proč jste je zvolili.",
         "Najděte v nastavení šablonu e-mailu Upomínka odběrateli a upravte ji tak, aby obsahovala číslo faktury a částku.",
         "Na papíře spočítejte úrok z prodlení u vybrané faktury: dohledejte repo sazbu ČNB k prvnímu dni pololetí, přičtěte 8 procentních bodů a spočítejte úrok za skutečný počet dnů prodlení."
       ],
-      "check": "Hotovo je, když má student odeslanou upomínku, vlastní nastavení automatických upomínek se zdůvodněním a správně spočítaný úrok z prodlení včetně uvedené repo sazby a jejího zdroje."
+      "check": "Hotovo je, když má student upomínku napsanou a zkontrolovanou učitelem, vlastní nastavení automatických upomínek se zdůvodněním a správně spočítaný úrok z prodlení včetně uvedené repo sazby a jejího zdroje."
     },
     "worksheet": [
       {
@@ -1613,7 +1613,8 @@
       "Přiznání se podává do 25 dnů po skončení zdaňovacího období (§ 136 odst. 4 daňového řádu) a jen elektronicky (§ 101a zákona o DPH). Kontrolní hlášení podává právnická osoba vždy za měsíc do 25 dnů po jeho skončení, fyzická osoba ve lhůtě pro přiznání (§ 101e). Lhůtu nelze prodloužit.",
       "Pokuty podle § 101h odst. 1: 1 000 Kč za podání po lhůtě bez výzvy, 10 000 Kč za podání až v náhradní lhůtě po výzvě, 30 000 Kč, když plátce na výzvu hlášení nezmění, nedoplní nebo nepotvrdí, a 50 000 Kč, když nepodá vůbec. Pokuty b) až d) se snižují na polovinu mimo jiné u fyzických osob a u čtvrtletních plátců (odst. 2). První pozdní podání podle písm. a) v kalendářním roce se nepokutuje (§ 101j).",
       "Hranice 10 000 Kč včetně DPH pro rozdělení oddílů A.4/A.5 a B.2/B.3 vychází z pokynů k formuláři, ne přímo ze zákona. Řádky přiznání: daň na výstupu 21 % a 12 % na ř. 1 a 2, odpočet na ř. 40 a 41.",
-      "Demo je Lipová stezka s.r.o., měsíční plátce. Export přiznání a kontrolního hlášení je XML soubor pro EPO; ve třídním režimu se nestahuje, studenti počítají na papíře. Učitel může export ukázat ve veřejném demu."
+      "Demo je Lipová stezka s.r.o., měsíční plátce. Export přiznání a kontrolního hlášení je XML soubor pro EPO; ve třídním režimu se nestahuje, studenti počítají na papíře. Učitel může export ukázat ve veřejném demu.",
+      "Ve třídním režimu založte pro tuto hodinu třídu s úrovní Standard nebo Pokročilé. V úrovni Základy jsou Výdaje, Banka a Reporty vypnuté."
     ],
     "timeline": [
       {
@@ -1753,7 +1754,8 @@
       "Bankovní pohyby v demu jsou připravené: jedna platba přišla jen z 90 %, záloha 2 500 Kč od Petra Novotného přišla bez variabilního symbolu a poplatek bance −199 Kč je už ignorovaný. Každý z nich vede k jiné otázce.",
       "Ignorovat poplatek v párování neznamená, že zmizí z účetnictví. Účetní ho zaúčtuje z bankovního výpisu jako náklad; jen se nepáruje s žádnou fakturou.",
       "Odpočet DPH z přijatého dokladu vyžaduje daňový doklad (§ 73 odst. 1 písm. a) zákona o DPH). Plátce daňové doklady uchovává 10 let od konce zdaňovacího období, ve kterém se plnění uskutečnilo (§ 35 odst. 2). Účetní záznamy se archivují nejméně 5 let, účetní závěrka 10 let (§ 31 zákona o účetnictví).",
-      "Ve třídním režimu není napojená skutečná banka. Pracuje se s ukázkovými pohyby a párování se dělá ručně."
+      "Ve třídním režimu není napojená skutečná banka. Pracuje se s ukázkovými pohyby a párování se dělá ručně.",
+      "Ve třídním režimu založte pro tuto hodinu třídu s úrovní Standard nebo Pokročilé. V úrovni Základy jsou Výdaje, Banka a Reporty vypnuté."
     ],
     "timeline": [
       {
@@ -1878,7 +1880,8 @@
       "Studenti pracují ve dvojicích. Jeden si spustí demo s rolí Majitel, druhý s rolí Účetní. Každý má vlastní kopii stejné firmy, takže si zjištění předávají ústně a na papíře, stejně jako v praxi.",
       "Účetní v demu vidí doklady, DPH, exporty a přehledy, ale nesahá na nastavení firmy, tým ani předplatné. Ve vlastním účtu se role nastavuje v Nastavení, Tým. Ve třídním režimu nikoho nezvete.",
       "Termíny, které účetní hlídá: přiznání k DPH do 25 dnů po skončení zdaňovacího období (§ 136 odst. 4 daňového řádu) a kontrolní hlášení s.r.o. každý měsíc do 25 dnů (§ 101e zákona o DPH). Proto si účetní doklady obvykle vyžádá do 10. až 15. dne následujícího měsíce.",
-      "Doklad musí mít náležitosti podle § 11 zákona o účetnictví. Za správnost dokladů odpovídá firma, ne účetní: účetní dokládá, co dostane. Účetní záznamy se archivují nejméně 5 let (§ 31), daňové doklady plátce 10 let (§ 35 zákona o DPH)."
+      "Doklad musí mít náležitosti podle § 11 zákona o účetnictví. Za správnost dokladů odpovídá firma, ne účetní: účetní dokládá, co dostane. Účetní záznamy se archivují nejméně 5 let (§ 31), daňové doklady plátce 10 let (§ 35 zákona o DPH).",
+      "Ve třídním režimu založte pro tuto hodinu třídu s úrovní Standard nebo Pokročilé. V úrovni Základy jsou Výdaje, Banka a Reporty vypnuté."
     ],
     "timeline": [
       {
