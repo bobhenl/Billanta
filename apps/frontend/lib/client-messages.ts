@@ -32,7 +32,9 @@ const DASHBOARD_ONLY = [
   'bulk',
   'glossary',
   'welcome',
-  'invite'
+  'invite',
+  'classroom',
+  'adminClassroom'
 ];
 
 function omit(messages: AbstractIntlMessages, namespaces: string[]): AbstractIntlMessages {

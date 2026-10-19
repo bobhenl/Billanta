@@ -1,7 +1,7 @@
 # Smlouva o zpracování osobních údajů – Billanta pro školy (NÁVRH)
 
-> **Pracovní návrh k právní kontrole, ne hotový právní text.** Připraveno
-> jako podklad pro advokáta / pověřence pro ochranu osobních údajů. Hranaté
+> **Pracovní návrh, ne hotový právní text.** Advokáta zatím nemáme;
+> připomínky získáme od pověřence (DPO) spřátelené školy. Hranaté
 > závorky `[...]` jsou údaje k doplnění. Verze návrhu: `classroom-dpa-0.1`.
 > Poznámky pro revizi jsou na konci (oddíl „K revizi“).
 
@@ -18,8 +18,9 @@ k tomu škola pověřila (dále „Škola“).
 [...], provozovatel služby Billanta (dále „Billanta“).
 
 Smlouvu uzavírá učitel jménem Školy při podání žádosti o školní režim.
-Učitel potvrzuje, že je k tomu Školou oprávněn; Billanta mu na požádání
-pošle tuto smlouvu i ve formě PDF k podpisu statutárním orgánem Školy.
+Učitel potvrzuje, že je k tomu Školou oprávněn. Smlouva se uzavírá
+kliknutím, nic se nepodepisuje; pokud ji Škola chce mít jako PDF, Billanta
+ji na požádání pošle.
 
 ## 2. Předmět a účel zpracování
 
@@ -124,7 +125,7 @@ odst. 3 GDPR, které jsou v tu chvíli známé.
 ## 9. Odpovědnost a trvání smlouvy
 
 9.1 Odpovědnost stran se řídí čl. 82 GDPR. [Omezení odpovědnosti
-Billanty: k posouzení advokátem, viz K revizi bod 6.]
+Billanty: k posouzení, viz K revizi bod 6.]
 
 9.2 Smlouva se uzavírá na dobu, po kterou má Škola v Billantě aktivní
 třídu. Kterákoli strana ji může vypovědět e-mailem; účinností výpovědi se
@@ -166,35 +167,40 @@ a analytika se ve školním režimu nepoužívají.
 
 ---
 
-## K revizi (možné problémy, které by měl posoudit právník)
+## K revizi (možné problémy pro pověřence spřátelené školy)
 
 1. **Kdo smlouvu uzavírá.** Učitel obvykle nemá oprávnění jednat za školu.
    Klikací souhlas učitele je praktický, ale pro veřejné školy (příspěvkové
-   organizace) může být potřeba podpis ředitele. Návrh to řeší prohlášením
-   učitele a nabídkou PDF k podpisu; právník by měl říct, zda to stačí,
-   nebo zda vyžadovat podpis před první třídou.
+   organizace) může být potřeba podpis ředitele. Rozhodnuto: co
+   nejjednodušeji, klikací souhlas s prohlášením učitele a bez podpisu;
+   PDF jen na požádání. Pokud škola podpis nebo vlastní vzor vyžaduje,
+   vyřešíme to s ní jednotlivě. Pověřenec by měl říct, zda je to pro
+   běžnou školu přijatelné.
 2. **Právní základ na straně školy.** U veřejných škol typicky čl. 6
    odst. 1 písm. e) (vzdělávání), u soukromých oprávněný zájem nebo
    smlouva. Souhlas dětí ani rodičů by neměl být potřeba, protože nejde
    o službu informační společnosti nabízenou přímo dítěti (čl. 8 GDPR),
    ale o nástroj, který používá škola. To je klíčový předpoklad celého
-   návrhu (žádné ověřování věku) a měl by ho potvrdit právník.
+   návrhu (žádné ověřování věku, žádný souhlas rodičů, žáci jsou
+   anonymní pod přezdívkou) a měl by ho potvrdit pověřenec.
 3. **Pověřenec školy.** Veřejné školy mají povinně pověřence (DPO), který
    bude chtít smlouvu vidět; někteří zřizovatelé mají vlastní vzor smlouvy
    o zpracování a budou trvat na něm. Počítat s tím, že část škol pošle
-   svůj text; mít připravené, které odchylky jsou přijatelné.
+   svůj text. Rozhodnuto: nabízíme vlastní vzor, cizí text řešíme, až
+   nějaký přijde; mít připravené, které odchylky jsou přijatelné.
 4. **Zálohy na Google Drive.** Platformní zálohy dnes jdou na Google Drive,
    tedy potenciálně mimo EU (předání podle EU–US Data Privacy Framework).
    U dat dětí to pověřenci rádi neuvidí. Doporučení: zálohy přesunout do
-   EU úložiště (Hetzner / Backblaze EU), než se připojí první škola, nebo
-   to v příloze 2 výslovně uvést.
+   EU úložiště (Hetzner / Backblaze EU), nebo to v příloze 2 výslovně
+   uvést. Rozhodnuto: riziko je malé, protože v datech nejsou jména, jen
+   přezdívky; přesun do EU úložiště uděláme později.
 5. **Jsou přezdívky vůbec osobní údaj?** Přezdívka spolu s třídou a školou
    většinou identifikuje konkrétní dítě, takže ano. Návrh s tím počítá;
    minimalizace (žádný e-mail, IP jen jako otisk) snižuje riziko, ale
    GDPR se uplatní.
 6. **Odpovědnost a bezplatnost.** Služba je zdarma, ale omezení odpovědnosti
    zpracovatele vůči správci je podle GDPR omezené (vůči subjektům údajů
-   je nelze vyloučit). Formulaci oddílu 9.1 nechat na advokátovi.
+   je nelze vyloučit). Formulaci oddílu 9.1 dát přečíst pověřenci.
 7. **Slovensko.** Pro SK školy ověřit odkazy na zákon č. 18/2018 Z. z.
    a připravit slovenské znění; formálně stačí jedna smlouva, ale školy
    budou chtít text ve svém jazyce.

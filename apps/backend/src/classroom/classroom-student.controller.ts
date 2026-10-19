@@ -22,6 +22,7 @@ export class ClassroomStudentController {
     if (!req.user!.classroom) throw new NotFoundException();
     const [row] = await req
       .tenantDb!.select({
+        classId: schema.classroomStudents.classId,
         nickname: schema.classroomStudents.nickname,
         kind: schema.classroomStudents.kind,
         userId: schema.classroomStudents.userId,
@@ -37,6 +38,8 @@ export class ClassroomStudentController {
     if (!row) throw new NotFoundException();
     const own = row.userId === req.user!.id;
     return {
+      // The teacher's "back to the class" link.
+      classId: row.classId,
       className: row.className,
       nickname: row.nickname,
       kind: row.kind,

@@ -51,6 +51,8 @@ export interface CurrentTenant {
   id: string;
   companyName: string;
   role: string;
+  /** A practice company of a class; a teacher is a viewer there. */
+  classroom?: boolean;
 }
 
 export interface MeResponse {
@@ -141,9 +143,18 @@ const resolveIdentity = cache(async (): Promise<ResolvedIdentity> => {
   return { token, tenantId: active.id, me };
 });
 
-/** The cookie's company if the user belongs to it, else the oldest membership. */
+/**
+ * The cookie's company if the user belongs to it, else the oldest
+ * membership. A teacher's students' companies are only opened on purpose,
+ * from the class page, never as the fallback.
+ */
 export function pickActiveTenant(tenants: CurrentTenant[], cookieValue: string | undefined): CurrentTenant | null {
-  return tenants.find((t) => t.id === cookieValue) ?? tenants[0] ?? null;
+  return tenants.find((t) => t.id === cookieValue) ?? tenants.find((t) => !isStudentCompanyOfOthers(t)) ?? tenants[0] ?? null;
+}
+
+/** A practice company the user only looks into (as the teacher). */
+export function isStudentCompanyOfOthers(t: CurrentTenant): boolean {
+  return t.classroom === true && t.role !== 'owner';
 }
 
 /** Every company of the signed-in user plus the active one (same choice as `apiFetch`). */

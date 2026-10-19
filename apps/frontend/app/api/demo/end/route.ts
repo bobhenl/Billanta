@@ -5,10 +5,10 @@ import { sameOrigin } from '@/lib/demo';
 import { closeDemoSession } from '@/lib/demo-session';
 
 /** Where a visitor may go after leaving a demo; anything else would be an open redirect. */
-const NEXT_PATHS = ['/signup', '/demo'] as const;
+const NEXT_PATHS = ['/signup', '/demo', '/join'] as const;
 
 /**
- * Leaves a demo: drops the session and the cookies. The company itself stays
+ * Leaves a demo (or a practice company of a class): drops the session and the cookies. The company itself stays
  * until the cleanup job deletes it. Only a demo session is ever deleted here;
  * a real one is left alone.
  */

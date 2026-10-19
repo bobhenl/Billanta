@@ -3689,7 +3689,8 @@
       "manageCompanies": "Manage companies",
       "activity": "Change history",
       "referrals": "Invite and earn credits",
-      "website": "Billanta website"
+      "website": "Billanta website",
+      "classroom": "Classroom"
     },
     "installApp": {
       "label": "Install app",
@@ -8545,5 +8546,286 @@
       "buttonView": "Demo as {role}"
     },
     "signOutAndStart": "Sign out and open the demo"
+  },
+  "classroom": {
+    "title": "Classroom",
+    "description": "Classes where students practise invoicing on a company of their own.",
+    "loadError": "Couldn't load the classroom. Try reloading the page.",
+    "backToClasses": "Back to classes",
+    "rejected": {
+      "title": "Your application wasn't approved",
+      "body": "If this was a mistake, send a new application with a link to the school's website, or write to us."
+    },
+    "pending": {
+      "title": "Your application is waiting for approval",
+      "body": "We are checking {school}. It usually takes up to one working day; you'll get the result by e-mail."
+    },
+    "suspended": {
+      "title": "The school's account is suspended",
+      "body": "Students can't join classes right now. If you don't know why, get in touch with us."
+    },
+    "signedInAs": "{name} · {school}",
+    "classes": {
+      "title": "Your classes",
+      "empty": "No classes yet. Create the first one below.",
+      "students": "{n, plural, one {# student} other {# students}}",
+      "coTeaching": "co-teacher",
+      "ended": "ended, deleted on {date}",
+      "until": "until {date}"
+    },
+    "tracks": {
+      "basic": {
+        "title": "Basics",
+        "body": "The first invoice, contacts and a sole trader without VAT. For primary schools."
+      },
+      "standard": {
+        "title": "Standard",
+        "body": "VAT, proformas, credit notes, bank, expenses and quotes. For secondary and business schools."
+      },
+      "advanced": {
+        "title": "Advanced",
+        "body": "Adds reverse charge, foreign currencies and VAT reports. For colleges, universities and courses."
+      }
+    },
+    "apply": {
+      "title": "Teacher sign-up",
+      "intro": "The classroom is free for teachers. We check that the school exists and that you teach there, then you can create classes.",
+      "country": "Country",
+      "countryCZ": "Czechia",
+      "countrySK": "Slovakia",
+      "ico": "School ID (IČO)",
+      "lookup": "Look up",
+      "schoolName": "School name",
+      "address": "Address",
+      "level": "School type",
+      "levels": {
+        "zs": "Primary school",
+        "ss": "Secondary school",
+        "vos": "Tertiary professional school",
+        "vs": "University",
+        "course": "Course or other education"
+      },
+      "webUrl": "School website",
+      "name": "Your name",
+      "subject": "Subject",
+      "expectedStudents": "Roughly how many students",
+      "terms": "By sending this you agree to the <link>terms for schools</link>, including the data processing agreement. Nothing to sign.",
+      "emailHint": "A school e-mail speeds up approval. Colleagues on the same domain then get in without waiting.",
+      "submit": "Send application"
+    },
+    "create": {
+      "title": "New class",
+      "name": "Class name",
+      "namePlaceholder": "e.g. 3A – economics",
+      "track": "Level",
+      "suggested": "suggested",
+      "kinds": "Company types for students",
+      "kindsHint": "Each student picks one when joining. With only one, there's nothing to pick.",
+      "language": "Language",
+      "endsAt": "Teaching ends",
+      "endsAtHint": "After that the class is read-only for 30 days and then deleted. Leave empty for the end of the school year.",
+      "seeded": "Start with sample data",
+      "seededHint": "The company gets a few customers and invoices so students have something to work with. Otherwise they start empty.",
+      "submit": "Create class"
+    },
+    "invite": {
+      "title": "Invite a colleague",
+      "body": "A colleague from {school} becomes an approved teacher as soon as they sign up.",
+      "placeholder": "colleague@school.cz",
+      "submit": "Send invitation",
+      "sent": "Invitation sent."
+    },
+    "detail": {
+      "copied": "Copied.",
+      "owner": "Created by {name}",
+      "endedTitle": "Teaching has ended",
+      "endedBody": "The class is read-only now. It will be deleted on {date} unless you extend it.",
+      "join": {
+        "title": "Join code",
+        "body": "Students open the link or enter the code at /join. They need no e-mail or password.",
+        "copy": "Copy link",
+        "rotate": "New code",
+        "rotateConfirm": "The old code will stop working. Students already in the class are not affected. Continue?",
+        "open": "Joining is open ({n} of {max})"
+      },
+      "retention": {
+        "title": "Class lifetime",
+        "endsAt": "Teaching ends",
+        "deletesAt": "Deleted on",
+        "body": "After the end, students' companies stay viewable for 30 days and are then deleted. We e-mail you a month and a week before teaching ends.",
+        "pickDate": "New end date (optional)",
+        "extend": "Extend by a school year",
+        "extendTo": "Extend to the chosen date",
+        "extended": "The class has been extended.",
+        "download": "Download progress (CSV)"
+      },
+      "students": {
+        "title": "{n, plural, one {Students (#)} other {Students (#)}}",
+        "empty": "Nobody has joined yet. Send your students the link or the code.",
+        "nickname": "Nickname",
+        "code": "Personal code",
+        "open": "Open company",
+        "newCode": "New code",
+        "newCodeConfirm": "Create a new personal code for {name}? The old one stops working and the student is signed out.",
+        "newCodeTitle": "New personal code",
+        "newCodeBody": "Give it to the student. They enter it at /join under “I have a personal code”.",
+        "remove": "Remove",
+        "removeConfirm": "Remove {name} together with their company? This can't be undone.",
+        "kinds": "Company types: {kinds}"
+      },
+      "teachers": {
+        "title": "Teachers",
+        "ownerLabel": "owner",
+        "remove": "Remove",
+        "pick": "Choose a colleague",
+        "add": "Add co-teacher",
+        "none": "Nobody else from your school is here yet. You can invite a colleague on the class overview."
+      },
+      "delete": {
+        "title": "Delete class",
+        "body": "Deletes the class and every student's company. This can't be undone.",
+        "confirm": "Really delete {name} and all its students' companies?",
+        "submit": "Delete class"
+      }
+    },
+    "milestones": {
+      "contact_created": "Contact",
+      "invoice_issued": "Invoice",
+      "invoice_vat": "VAT invoice",
+      "invoice_foreign_currency": "Foreign currency",
+      "invoice_reverse_charge": "Reverse charge",
+      "proforma_converted": "Proforma → invoice",
+      "quote_created": "Quote",
+      "credit_note_issued": "Credit note",
+      "invoice_paid": "Payment",
+      "bank_matched": "Matched payment",
+      "expense_recorded": "Expense",
+      "recurring_created": "Recurring invoice",
+      "time_logged": "Timesheet"
+    },
+    "banner": {
+      "student": "{nickname} · class {className}",
+      "teacher": "{nickname}'s company · class {className}",
+      "practice": "A practice company; nothing is really sent. Deleted on {date}.",
+      "showCode": "Show personal code",
+      "leave": "Sign out",
+      "leaveConfirm": "Sign out? You can come back with your personal code.",
+      "backToClass": "Back to class"
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "classroom_already_teacher": "This account is already registered as a teacher.",
+      "classroom_application_pending": "Your application is already waiting for approval.",
+      "classroom_too_many_applications": "Too many applications from this account. Please try again later.",
+      "classroom_too_many_invites": "You have invited too many colleagues today. Try again tomorrow.",
+      "classroom_not_teacher": "Only an approved teacher can do this.",
+      "classroom_class_limit": "You have reached the limit of active classes. Delete an older one or let it run out.",
+      "classroom_invalid_end": "The end date must be in the future and at most 13 months ahead.",
+      "classroom_owner_only": "Only the teacher who created the class can do this.",
+      "classroom_invalid_teacher": "This colleague can't be added. They must be an approved teacher at the same school.",
+      "classroom_school_suspended": "The school's account is suspended. Please get in touch with us.",
+      "classroom_not_found": "The class or student no longer exists.",
+      "classroom_ended": "The class has ended and is read-only now.",
+      "not_found": "Not found.",
+      "forbidden": "You don't have permission to do that."
+    }
+  },
+  "classroomJoin": {
+    "title": "Join a class",
+    "notFound": {
+      "title": "We couldn't find that class",
+      "body": "Check the code, or ask your teacher for a new link.",
+      "retry": "Enter the code again"
+    },
+    "signedIn": {
+      "title": "You are signed in to your account",
+      "body": "Classes are joined without an account. Sign out, or open the link in a private window."
+    },
+    "codeTitle": "Join a class",
+    "codeBody": "Enter the code your teacher gave you.",
+    "codeLabel": "Class code",
+    "codeSubmit": "Continue",
+    "heading": "Class {className}",
+    "ended": "Teaching in this class has ended. You can only look at your company.",
+    "closed": "The teacher has closed joining. If you are already in the class, use your personal code.",
+    "nickname": "Nickname",
+    "nicknameHint": "Don't use your full name. A nickname your teacher will recognise is enough.",
+    "kind": "What company do you want to run?",
+    "join": "Join the class",
+    "joining": "Setting up your company…",
+    "privacy": "No e-mail or password needed. The company is for practice and is deleted when the class ends.",
+    "haveCode": "I'm already in the class and have a personal code",
+    "personalCode": "Personal code",
+    "personalCodeHint": "You got the code when you first joined. If you don't have it, ask your teacher for a new one.",
+    "reenter": "Continue with my company",
+    "newHere": "I'm new here",
+    "done": {
+      "title": "Welcome, {nickname}!",
+      "body": "This is your personal code. Write it down: it gets you back to your company on another device or after signing out.",
+      "copy": "Copy code",
+      "copied": "Code copied.",
+      "continue": "I've written it down, continue"
+    },
+    "errors": {
+      "classroom_not_found": "We couldn't find a class with this code.",
+      "classroom_closed": "Joining this class is closed.",
+      "classroom_class_full": "The class is full. Please tell your teacher.",
+      "classroom_school_full": "The school has reached its student limit. Please tell your teacher.",
+      "classroom_nickname_taken": "Someone in the class already has this nickname. Pick another one.",
+      "classroom_invalid_nickname": "A nickname needs 2 to 30 characters: letters, digits, spaces or a dot.",
+      "classroom_invalid_kind": "Pick one of the company types offered.",
+      "classroom_reenter_invalid": "We don't know this personal code. Check it, or ask your teacher for a new one.",
+      "classroom_locked_out": "Too many attempts. Try again in a moment.",
+      "classroom_signed_in": "You are signed in to your account. Sign out, or use a private window.",
+      "classroom_unavailable": "Joining doesn't work right now. Please try again in a moment.",
+      "rate_limited": "Too many attempts from this network. Try again in a few minutes.",
+      "not_found": "Classes are not switched on.",
+      "forbidden": "The request was refused. Reload the page and try again."
+    }
+  },
+  "adminClassroom": {
+    "title": "Classroom – teacher applications",
+    "description": "Check the school and the teacher. Approving also verifies the school and its e-mail domain.",
+    "loadError": "Couldn't load the applications.",
+    "empty": "No applications.",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "emailVerified": "e-mail verified",
+    "emailUnverified": "e-mail not verified",
+    "ico": "ID",
+    "fields": {
+      "school": "School",
+      "address": "Address",
+      "web": "Website",
+      "schoolState": "School status",
+      "subject": "Subject",
+      "expectedStudents": "Students",
+      "invited": "Invitation",
+      "note": "Note"
+    },
+    "verification": {
+      "pending": "unverified",
+      "verified": "verified",
+      "rejected": "rejected"
+    },
+    "suspended": "suspended",
+    "invitedYes": "invited by a colleague from the school",
+    "domain": "School e-mail domain",
+    "domainHint": "Colleagues on this domain are approved automatically. Clear it for gmail and the like.",
+    "note": "Note",
+    "noteHint": "On rejection it is e-mailed to the teacher.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approved": "Teacher approved.",
+    "rejected": "Application rejected.",
+    "suspend": "Suspend school",
+    "unsuspend": "Restore school",
+    "suspendConfirm": "Suspend {school}? All its classes close to new students.",
+    "suspendedDone": "School suspended.",
+    "unsuspended": "School restored.",
+    "failed": "Failed"
   }
 }

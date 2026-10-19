@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { Briefcase, Building2, Check, CreditCard, Download, Gift, Globe, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
+import { Briefcase, Building2, Check, CreditCard, Download, Gift, Globe, GraduationCap, History, LogOut, Plus, Settings, User, UserCog, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { signOut, useSession } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
@@ -34,7 +34,16 @@ const ITEMS = [
  * company you switch here, `switchTenant`, see lib/api-client.ts), and "Log out" (Auth.js
  * `signOut`, back to the homepage).
  */
-export function UserMenu({ companies = [], activeId = null }: { companies?: MenuCompany[]; activeId?: string | null }) {
+export function UserMenu({
+  companies = [],
+  activeId = null,
+  classroom = false
+}: {
+  companies?: MenuCompany[];
+  activeId?: string | null;
+  /** Classroom mode is on: the teachers' entry point (docs/classroom-mode-plan.md). */
+  classroom?: boolean;
+}) {
   const t = useTranslations('common');
   const tMenu = useTranslations('common.userMenu');
   const { data: session } = useSession();
@@ -148,6 +157,17 @@ export function UserMenu({ companies = [], activeId = null }: { companies?: Menu
                 {tMenu(key)}
               </Link>
             ))}
+            {classroom && (
+              <Link
+                href="/classroom"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                {tMenu('classroom')}
+              </Link>
+            )}
             <InstallAppButton
               onDone={() => setOpen(false)}
               className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"

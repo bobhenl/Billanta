@@ -8,6 +8,7 @@ import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CommandPalette } from '@/components/command-palette';
+import { ClassroomBanner } from '@/components/classroom/classroom-banner';
 import { DemoBanner } from '@/components/demo/demo-banner';
 import { DemoTransferClaim } from '@/components/demo/demo-transfer-claim';
 import { DashboardNav } from '@/components/dashboard-nav';
@@ -22,7 +23,8 @@ import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
 import { fetchMyAccess, fetchTenant, hiddenSections, type TenantSettings } from '@/lib/tenant';
-import { fetchMyCompanies } from '@/lib/api-client';
+import { apiFetch, fetchMyCompanies, isStudentCompanyOfOthers } from '@/lib/api-client';
+import { classroomEnabled, type StudentCompany } from '@/lib/classroom';
 import { REFERRAL_COOKIE } from '@/lib/referral';
 import { DEMO_TRANSFER_COOKIE } from '@/lib/demo-session';
 import { DEMO_VIEW_ROLES } from '@/lib/demo';
@@ -68,6 +70,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // viewer up front that they can only look.
   const [access, companies] = await Promise.all([fetchMyAccess().catch(() => null), fetchMyCompanies().catch(() => null)]);
   const role = access?.role ?? null;
+  // A practice company of a class shows the class strip instead of the demo countdown.
+  const classroom = companies?.active.classroom ? await apiFetch<StudentCompany>('/api/v1/classroom/student').catch(() => null) : null;
+  // A teacher's students' companies are opened from the class page, not listed in the menu.
+  const menuCompanies = (companies?.tenants ?? []).filter((c) => c.id === companies?.active.id || !isStudentCompanyOfOthers(c));
   const hidden = hiddenSections(access);
   // Arrived via someone's invite link: the owner of the (new) company claims it.
   const jar = await cookies();
@@ -109,8 +115,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <LanguageSwitcher className="hidden md:inline-flex" />
               <ThemeToggle className="hidden md:inline-flex" />
               <UserMenu
-                companies={companies?.tenants.map((c) => ({ id: c.id, companyName: c.companyName })) ?? []}
+                companies={menuCompanies.map((c) => ({ id: c.id, companyName: c.companyName }))}
                 activeId={companies?.active.id ?? null}
+                classroom={classroomEnabled() && !session.isDemo}
               />
             </div>
           </div>
@@ -120,7 +127,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {role === 'viewer' && (
             <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
           )}
-          {demo?.isDemo && demo.demoExpiresAt ? (
+          {classroom ? (
+            <ClassroomBanner info={classroom} />
+          ) : demo?.isDemo && demo.demoExpiresAt ? (
             <DemoBanner
               expiresAt={demo.demoExpiresAt}
               aiLeft={demo.demoAiCallsLeft ?? null}

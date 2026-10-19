@@ -13,6 +13,7 @@ const ALLOWED = [
   /^invoices\/[0-9a-fA-F-]{36}\/attachments\/[0-9a-fA-F-]{36}$/,
   /^tenants\/me\/logo$/,
   /^contacts\/export\.csv$/,
+  /^classroom\/classes\/[0-9a-fA-F-]{36}\/progress\.csv$/,
   /^exports\/(invoices\.csv|expenses\.csv|pohoda\.xml|money-s3\.xml|dphdp3\.xml|dphkh1\.xml|dphshv\.xml|sk\/dphv25\.xml|sk\/kvdph\.xml|sk\/svdph\.xml|annual-summary|annual-summary\.csv|annual-filings)$/
 ];
 

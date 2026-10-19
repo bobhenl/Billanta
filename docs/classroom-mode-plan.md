@@ -17,11 +17,13 @@ and watermark the demo has applies without new code; classroom mode adds the
 school/class/student structure on top and closes the few doors a demo leaves
 open on purpose (public links, accounting exports, demo transfer).
 
-Status: **proposal, second round, waiting for approval.** Nothing below is
-built yet. Round two takes in the owner's feedback: e-mail domain only
-optional, practice of several company types and the accountant role,
-modules per class, co-teachers, renewal across school years, generous
-limits, and a DPA draft (`docs/classroom-dpa-draft.md`).
+Status: **approved, MVP built** (round three). Round two took in the
+owner's feedback: e-mail domain only optional, practice of several company
+types and the accountant role, modules per class, co-teachers, renewal
+across school years, generous limits, and a DPA draft
+(`docs/classroom-dpa-draft.md`). Round three settled the difficulty tracks,
+co-teacher approval, retention and the DPA process (section 7). Where the
+build differs from the text below, section 7.2 says how.
 
 ---
 
@@ -607,13 +609,53 @@ Decided in round two:
 - Limits generous, only against abuse, staff can raise them.
 - Classes renewable across school years.
 
-Still open:
+Decided in round three:
 
-1. The DPA: lawyer review of the draft (and whether to offer it as a
-   click-through or also as a signed PDF for schools that want one).
-2. Teams, second companies and the accountant exercise: phase 2 as
-   proposed, or some of it in the MVP?
-3. Hosting provider and the backup destination for the sub-processor list
-   (the platform backups currently go to Google Drive, which is a
-   transfer outside the EU under the EU–US Data Privacy Framework; for
-   school data an EU object store would be easier to defend).
+- **Difficulty tracks, picked per class.** *Basic* (primary schools): the
+  first invoice, contacts, a sole trader without VAT. *Standard*
+  (secondary and business schools): VAT, proformas, credit notes, bank,
+  expenses, quotes. *Advanced*: adds reverse charge, foreign currencies
+  and the VAT reports. The school level only pre-fills the choice; any
+  school can pick any track, so there is no restriction to secondary
+  schools or universities.
+- **Co-teachers.** A colleague of the same school invited by an approved
+  teacher is approved automatically. Only the class owner adds or removes
+  co-teachers and deletes the class.
+- **Retention.** The class page has a status card with the end and
+  deletion dates, "extend" and the progress download; the owner gets an
+  e-mail 30 and 7 days before the class ends (deletion follows 30 days
+  later). No AI anywhere in a class.
+- **Storage.** PDFs are rendered on demand and never stored, Postgres
+  TOAST compresses the text, backups are gzipped, and the per-class and
+  per-school caps bound the growth.
+- **DPA as a click-through.** No signature; a PDF only when a school asks.
+  A school's own DPA template is handled when one actually arrives.
+- **No parent consent.** Students are anonymous under a nickname and the
+  school is the controller.
+- **Backups** stay where they are for now: without names the risk is low.
+  Moving them to an EU object store is a later step.
+- **No lawyer for now.** The draft goes to the data protection officer of
+  a friendly school for feedback.
+
+### 7.1 Still open
+
+1. The DPA: feedback from the friendly school's DPO, then publish the
+   school terms (the application form links the general DPA until then).
+2. Teams, second companies and the accountant exercise: phase 2.
+3. The EU backup destination for the sub-processor list.
+
+### 7.2 Deviations of the MVP from this plan
+
+- `classroom_students` is readable by the application role. The progress
+  grid and the re-entry check read it directly; the rows hold nicknames
+  and code hashes only, and RLS still guards every tenant's data.
+- There is no `classroom_companies` table. A student company is a demo
+  tenant with `tenants.classroom_class_id` set, which is all the joins
+  need.
+- Accounting exports stay open in a class company: everything in it is
+  watermarked practice data, and students learn the export too.
+- Modules are fixed when the class is created (from the track); the
+  teacher cannot change them later.
+- The join code is a stub on `classroom_classes.join_code` until the
+  shared group codes from the promo-codes branch land; `join-kind.ts`
+  (`JoinKindHandler`) is the seam they will plug into.

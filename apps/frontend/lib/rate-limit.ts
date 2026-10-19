@@ -54,6 +54,12 @@ export const DEMO_LIMITS = {
   startPerIp: { limit: 5, windowMs: 10 * MINUTE }
 } as const;
 
+/** A whole class joins from one school IP within minutes, so these are roomy. */
+export const CLASSROOM_LIMITS = {
+  joinPerIp: { limit: 80, windowMs: 10 * MINUTE },
+  reenterPerIp: { limit: 60, windowMs: 10 * MINUTE }
+} as const;
+
 export function allow(key: string, rule: { limit: number; windowMs: number }): boolean {
   return takeToken(key, rule.limit, rule.windowMs);
 }

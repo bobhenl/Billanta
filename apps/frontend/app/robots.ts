@@ -30,6 +30,8 @@ const PRIVATE = [
   'invite',
   'welcome',
   'admin',
+  'classroom',
+  'join',
   'i/',
   'c/',
   'unsubscribe/',

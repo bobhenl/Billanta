@@ -3689,7 +3689,8 @@
       "manageCompanies": "Spravovať firmy",
       "activity": "História zmien",
       "referrals": "Pozvať a získať kredity",
-      "website": "Web Billanty"
+      "website": "Web Billanty",
+      "classroom": "Výučba"
     },
     "installApp": {
       "label": "Stiahnuť aplikáciu",
@@ -8452,5 +8453,286 @@
       "buttonView": "Demo ako {role}"
     },
     "signOutAndStart": "Odhlásiť sa a otvoriť demo"
+  },
+  "classroom": {
+    "title": "Výučba",
+    "description": "Triedy, v ktorých si žiaci vyskúšajú fakturáciu na vlastnej cvičnej firme.",
+    "loadError": "Výučbu sa nepodarilo načítať. Skúste obnoviť stránku.",
+    "backToClasses": "Späť na triedy",
+    "rejected": {
+      "title": "Žiadosť nebola schválená",
+      "body": "Ak išlo o omyl, pošlite, prosím, novú žiadosť s odkazom na web školy, alebo nám napíšte."
+    },
+    "pending": {
+      "title": "Žiadosť čaká na schválenie",
+      "body": "Overujeme školu {school}. Zvyčajne to trvá do jedného pracovného dňa, výsledok vám príde e-mailom."
+    },
+    "suspended": {
+      "title": "Účet školy je pozastavený",
+      "body": "Žiaci sa teraz nemôžu prihlasovať do tried. Ak neviete prečo, ozvite sa nám."
+    },
+    "signedInAs": "{name} · {school}",
+    "classes": {
+      "title": "Vaše triedy",
+      "empty": "Zatiaľ tu nie je žiadna trieda. Založte prvú nižšie.",
+      "students": "{n, plural, one {# žiak} few {# žiaci} other {# žiakov}}",
+      "coTeaching": "spoluučiteľ",
+      "ended": "skončila, zmaže sa {date}",
+      "until": "do {date}"
+    },
+    "tracks": {
+      "basic": {
+        "title": "Základy",
+        "body": "Prvá faktúra, kontakty a podnikanie živnostníka bez DPH. Pre základné školy."
+      },
+      "standard": {
+        "title": "Štandard",
+        "body": "DPH, zálohy, dobropisy, banka, výdavky a ponuky. Pre stredné školy a obchodné akadémie."
+      },
+      "advanced": {
+        "title": "Pokročilé",
+        "body": "Navyše prenesenie daňovej povinnosti, cudzie meny a prehľady DPH. Pre vysoké školy a kurzy."
+      }
+    },
+    "apply": {
+      "title": "Prihlásenie učiteľa",
+      "intro": "Výučba je pre učiteľov zadarmo. Overíme, že škola existuje a že na nej učíte, a potom môžete zakladať triedy.",
+      "country": "Krajina",
+      "countryCZ": "Česko",
+      "countrySK": "Slovensko",
+      "ico": "IČO školy",
+      "lookup": "Vyhľadať",
+      "schoolName": "Názov školy",
+      "address": "Adresa",
+      "level": "Typ školy",
+      "levels": {
+        "zs": "Základná škola",
+        "ss": "Stredná škola",
+        "vos": "Vyššia odborná škola",
+        "vs": "Vysoká škola",
+        "course": "Kurz alebo iné vzdelávanie"
+      },
+      "webUrl": "Web školy",
+      "name": "Vaše meno",
+      "subject": "Predmet",
+      "expectedStudents": "Koľko žiakov približne očakávate",
+      "terms": "Odoslaním súhlasíte s <link>podmienkami pre školy</link> vrátane zmluvy o spracúvaní. Nič sa nepodpisuje.",
+      "emailHint": "Školský e-mail urýchli schválenie. Kolegovia z tej istej domény potom prejdú bez čakania.",
+      "submit": "Odoslať žiadosť"
+    },
+    "create": {
+      "title": "Nová trieda",
+      "name": "Názov triedy",
+      "namePlaceholder": "napr. 3.A – ekonomika",
+      "track": "Úroveň",
+      "suggested": "odporúčané",
+      "kinds": "Typy firiem pre žiakov",
+      "kindsHint": "Žiak si pri vstupe vyberie jeden z nich. Ak necháte jeden, nevyberá.",
+      "language": "Jazyk",
+      "endsAt": "Koniec výučby",
+      "endsAtHint": "Potom je trieda 30 dní iba na čítanie a potom sa zmaže. Prázdne pole znamená koniec školského roka.",
+      "seeded": "Začať s ukážkovými údajmi",
+      "seededHint": "Firma dostane zopár odberateľov a faktúr, aby mali žiaci s čím pracovať. Bez toho začnú s prázdnou firmou.",
+      "submit": "Založiť triedu"
+    },
+    "invite": {
+      "title": "Pozvať kolegu",
+      "body": "Kolega zo školy {school} sa po registrácii rovno stane schváleným učiteľom.",
+      "placeholder": "kolega@skola.sk",
+      "submit": "Poslať pozvánku",
+      "sent": "Pozvánka odoslaná."
+    },
+    "detail": {
+      "copied": "Skopírované.",
+      "owner": "Triedu založil(a) {name}",
+      "endedTitle": "Výučba sa skončila",
+      "endedBody": "Trieda je teraz iba na čítanie. Zmaže sa {date}, ak ju nepredĺžite.",
+      "join": {
+        "title": "Kód na vstup",
+        "body": "Žiaci otvoria odkaz alebo zadajú kód na stránke /join. Nepotrebujú e-mail ani heslo.",
+        "copy": "Kopírovať odkaz",
+        "rotate": "Nový kód",
+        "rotateConfirm": "Starý kód prestane fungovať. Žiakom, ktorí už v triede sú, to neprekáža. Pokračovať?",
+        "open": "Prihlasovanie je otvorené ({n} z {max})"
+      },
+      "retention": {
+        "title": "Platnosť triedy",
+        "endsAt": "Koniec výučby",
+        "deletesAt": "Zmazanie",
+        "body": "Firmy žiakov sa po skončení dajú 30 dní prezerať a potom sa zmažú. Mesiac a týždeň pred koncom výučby vám pošleme e-mail.",
+        "pickDate": "Nový dátum konca (nepovinné)",
+        "extend": "Predĺžiť o školský rok",
+        "extendTo": "Predĺžiť do zvoleného dátumu",
+        "extended": "Trieda je predĺžená.",
+        "download": "Stiahnuť pokrok (CSV)"
+      },
+      "students": {
+        "title": "{n, plural, one {Žiaci (#)} few {Žiaci (#)} other {Žiaci (#)}}",
+        "empty": "Zatiaľ sa nikto nepripojil. Pošlite žiakom odkaz alebo kód.",
+        "nickname": "Prezývka",
+        "code": "Osobný kód",
+        "open": "Otvoriť firmu",
+        "newCode": "Nový kód",
+        "newCodeConfirm": "Vytvoriť pre žiaka {name} nový osobný kód? Starý prestane fungovať a žiak bude odhlásený.",
+        "newCodeTitle": "Nový osobný kód",
+        "newCodeBody": "Odovzdajte ho žiakovi. Zadá ho na stránke /join pod voľbou „Mám osobný kód“.",
+        "remove": "Odobrať",
+        "removeConfirm": "Odobrať žiaka {name} aj s jeho firmou? Nedá sa to vrátiť.",
+        "kinds": "Typy firiem: {kinds}"
+      },
+      "teachers": {
+        "title": "Učitelia",
+        "ownerLabel": "zakladateľ",
+        "remove": "Odobrať",
+        "pick": "Vyberte kolegu",
+        "add": "Pridať spoluučiteľa",
+        "none": "Z tej istej školy tu zatiaľ nikto ďalší nie je. Kolegu môžete pozvať v prehľade tried."
+      },
+      "delete": {
+        "title": "Zmazať triedu",
+        "body": "Zmaže sa trieda aj všetky firmy žiakov. Nedá sa to vrátiť.",
+        "confirm": "Naozaj zmazať triedu {name} so všetkými firmami žiakov?",
+        "submit": "Zmazať triedu"
+      }
+    },
+    "milestones": {
+      "contact_created": "Kontakt",
+      "invoice_issued": "Faktúra",
+      "invoice_vat": "Faktúra s DPH",
+      "invoice_foreign_currency": "Cudzia mena",
+      "invoice_reverse_charge": "Prenesenie daňovej povinnosti",
+      "proforma_converted": "Zálohová → faktúra",
+      "quote_created": "Ponuka",
+      "credit_note_issued": "Dobropis",
+      "invoice_paid": "Úhrada",
+      "bank_matched": "Spárovaná platba",
+      "expense_recorded": "Výdavok",
+      "recurring_created": "Opakovaná faktúra",
+      "time_logged": "Výkaz práce"
+    },
+    "banner": {
+      "student": "{nickname} · trieda {className}",
+      "teacher": "Firma žiaka {nickname} · trieda {className}",
+      "practice": "Cvičná firma, nič sa naozaj neodosiela. Zmaže sa {date}.",
+      "showCode": "Zobraziť osobný kód",
+      "leave": "Odhlásiť sa",
+      "leaveConfirm": "Odhlásiť sa? Späť sa dostanete s osobným kódom.",
+      "backToClass": "Späť do triedy"
+    },
+    "errors": {
+      "generic": "Niečo sa nepodarilo. Skúste to, prosím, znova.",
+      "classroom_already_teacher": "Tento účet je už prihlásený ako učiteľ.",
+      "classroom_application_pending": "Vaša žiadosť už čaká na schválenie.",
+      "classroom_too_many_applications": "Z tohto účtu prišlo priveľa žiadostí. Skúste to neskôr.",
+      "classroom_too_many_invites": "Dnes ste už pozvali priveľa kolegov. Skúste to zajtra.",
+      "classroom_not_teacher": "Túto akciu môže vykonať iba schválený učiteľ.",
+      "classroom_class_limit": "Dosiahli ste limit aktívnych tried. Zmažte niektorú zo starších alebo ju nechajte dobehnúť.",
+      "classroom_invalid_end": "Dátum konca musí byť v budúcnosti a najviac 13 mesiacov dopredu.",
+      "classroom_owner_only": "Toto môže urobiť iba učiteľ, ktorý triedu založil.",
+      "classroom_invalid_teacher": "Tohto kolegu nemožno pridať. Musí byť schváleným učiteľom tej istej školy.",
+      "classroom_school_suspended": "Účet školy je pozastavený. Ozvite sa nám, prosím.",
+      "classroom_not_found": "Trieda alebo žiak už neexistuje.",
+      "classroom_ended": "Trieda sa už skončila, dá sa iba prezerať.",
+      "not_found": "Nenašlo sa.",
+      "forbidden": "Na to nemáte oprávnenie."
+    }
+  },
+  "classroomJoin": {
+    "title": "Vstup do triedy",
+    "notFound": {
+      "title": "Triedu sme nenašli",
+      "body": "Skontrolujte kód alebo požiadajte učiteľa o nový odkaz.",
+      "retry": "Zadať kód znova"
+    },
+    "signedIn": {
+      "title": "Ste prihlásení do svojho účtu",
+      "body": "Do triedy sa vstupuje bez účtu. Odhláste sa alebo otvorte odkaz v anonymnom okne."
+    },
+    "codeTitle": "Vstup do triedy",
+    "codeBody": "Zadajte kód, ktorý vám dal učiteľ.",
+    "codeLabel": "Kód triedy",
+    "codeSubmit": "Pokračovať",
+    "heading": "Trieda {className}",
+    "ended": "Výučba v tejto triede sa skončila. Svoju firmu si môžete iba pozrieť.",
+    "closed": "Učiteľ prihlasovanie nových žiakov zavrel. Ak už v triede ste, použite osobný kód.",
+    "nickname": "Prezývka",
+    "nicknameHint": "Neuvádzajte celé meno. Stačí prezývka, podľa ktorej vás učiteľ spozná.",
+    "kind": "Akú firmu chcete viesť?",
+    "join": "Vstúpiť do triedy",
+    "joining": "Zakladáme vašu firmu…",
+    "privacy": "Nechceme e-mail ani heslo. Firma je cvičná a po skončení výučby sa zmaže.",
+    "haveCode": "Už som v triede a mám osobný kód",
+    "personalCode": "Osobný kód",
+    "personalCodeHint": "Kód ste dostali pri prvom vstupe. Ak ho nemáte, požiadajte učiteľa o nový.",
+    "reenter": "Pokračovať vo svojej firme",
+    "newHere": "Som tu prvýkrát",
+    "done": {
+      "title": "Vitajte, {nickname}!",
+      "body": "Toto je váš osobný kód. Zapíšte si ho, s ním sa k svojej firme vrátite z iného zariadenia alebo po odhlásení.",
+      "copy": "Kopírovať kód",
+      "copied": "Kód skopírovaný.",
+      "continue": "Mám zapísané, pokračovať"
+    },
+    "errors": {
+      "classroom_not_found": "Triedu s týmto kódom sme nenašli.",
+      "classroom_closed": "Do triedy sa už nedá prihlásiť.",
+      "classroom_class_full": "Trieda je plná. Povedzte to, prosím, učiteľovi.",
+      "classroom_school_full": "Škola dosiahla limit žiakov. Povedzte to, prosím, učiteľovi.",
+      "classroom_nickname_taken": "Túto prezývku už v triede niekto má. Zvoľte inú.",
+      "classroom_invalid_nickname": "Prezývka musí mať 2 až 30 znakov: písmená, číslice, medzery alebo bodku.",
+      "classroom_invalid_kind": "Vyberte jeden z ponúkaných typov firmy.",
+      "classroom_reenter_invalid": "Tento osobný kód nepoznáme. Skontrolujte ho alebo požiadajte učiteľa o nový.",
+      "classroom_locked_out": "Priveľa pokusov. Skúste to o chvíľu znova.",
+      "classroom_signed_in": "Ste prihlásení do svojho účtu. Odhláste sa alebo použite anonymné okno.",
+      "classroom_unavailable": "Vstup do triedy teraz nefunguje. Skúste to, prosím, o chvíľu.",
+      "rate_limited": "Priveľa pokusov z tejto siete. Skúste to o pár minút.",
+      "not_found": "Vstup do tried nie je zapnutý.",
+      "forbidden": "Požiadavka bola odmietnutá. Obnovte stránku a skúste to znova."
+    }
+  },
+  "adminClassroom": {
+    "title": "Výučba – žiadosti učiteľov",
+    "description": "Overte školu a učiteľa. Schválením sa overí aj škola a jej e-mailová doména.",
+    "loadError": "Žiadosti sa nepodarilo načítať.",
+    "empty": "Žiadne žiadosti.",
+    "status": {
+      "pending": "Čaká",
+      "approved": "Schválené",
+      "rejected": "Zamietnuté"
+    },
+    "emailVerified": "e-mail overený",
+    "emailUnverified": "e-mail neoverený",
+    "ico": "IČO",
+    "fields": {
+      "school": "Škola",
+      "address": "Adresa",
+      "web": "Web",
+      "schoolState": "Stav školy",
+      "subject": "Predmet",
+      "expectedStudents": "Počet žiakov",
+      "invited": "Pozvánka",
+      "note": "Poznámka"
+    },
+    "verification": {
+      "pending": "neoverená",
+      "verified": "overená",
+      "rejected": "zamietnutá"
+    },
+    "suspended": "pozastavená",
+    "invitedYes": "pozvaný kolegom zo školy",
+    "domain": "E-mailová doména školy",
+    "domainHint": "Kolegovia z tejto domény budú schválení automaticky. Pri gmaili a podobných pole vymažte.",
+    "note": "Poznámka",
+    "noteHint": "Pri zamietnutí sa pošle učiteľovi e-mailom.",
+    "approve": "Schváliť",
+    "reject": "Zamietnuť",
+    "approved": "Učiteľ schválený.",
+    "rejected": "Žiadosť zamietnutá.",
+    "suspend": "Pozastaviť školu",
+    "unsuspend": "Obnoviť školu",
+    "suspendConfirm": "Pozastaviť školu {school}? Všetky jej triedy sa zatvoria pre nových žiakov.",
+    "suspendedDone": "Škola pozastavená.",
+    "unsuspended": "Škola obnovená.",
+    "failed": "Nepodarilo sa"
   }
 }
