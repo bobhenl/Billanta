@@ -528,17 +528,17 @@
       "breakpoints": true
     },
     {
-      "idx": 74,
-      "version": "7",
-      "when": 1792902540000,
-      "tag": "0074_newsletter",
-      "breakpoints": true
-    },
-    {
       "idx": 75,
       "version": "7",
       "when": 1792902600000,
       "tag": "0075_brand_credit_signup_attribution",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1792902660000,
+      "tag": "0076_newsletter",
       "breakpoints": true
     }
   ]
