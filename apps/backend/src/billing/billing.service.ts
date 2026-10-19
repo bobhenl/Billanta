@@ -14,7 +14,7 @@ import type Stripe from "stripe";
 import { GopayClient, type GopayPaymentStatus } from "./gopay.client";
 import { isPaidPlan } from "./plans";
 import { STRIPE_CLIENT } from "./stripe-client.provider";
-import { stripeSubscriptionDetails } from "./stripe-subscription";
+import { stripeInvoiceReferralPayment, stripeSubscriptionDetails } from "./stripe-subscription";
 import { SubscriptionEventsRepository } from "./subscription-events.repository";
 import { TenantBillingRepository, type SubscriptionStatus } from "./tenant-billing.repository";
 
@@ -203,15 +203,20 @@ export class BillingService {
         // Period end, cancel-at-period-end and interval, so the billing panel
         // reflects a change made in the Customer Portal too.
         const { subscriptionInterval, ...details } = stripeSubscriptionDetails(subscription);
-        await this.tenantBilling.updateSubscriptionStatus(tenantId, mapStripeSubscriptionStatus(subscription.status), {
+        const status = mapStripeSubscriptionStatus(subscription.status);
+        await this.tenantBilling.updateSubscriptionStatus(tenantId, status, {
           ...(isPaidPlan(plan) ? { subscriptionPlan: plan } : {}),
           ...(subscriptionInterval ? { subscriptionInterval } : {}),
           ...details,
         });
+        // Ended before the reward was released. A plan merely set to cancel
+        // at period end was still paid for in full, so it keeps the reward.
+        if (status === "canceled") await this.tenantBilling.voidReferralReward(tenantId, "canceled");
         return;
       }
       case "customer.subscription.deleted": {
         await this.tenantBilling.updateSubscriptionStatus(tenantId, "canceled", { stripeSubscriptionId: null, subscriptionCancelAt: null });
+        await this.tenantBilling.voidReferralReward(tenantId, "canceled");
         return;
       }
       case "invoice.payment_failed": {
@@ -220,6 +225,14 @@ export class BillingService {
       }
       case "invoice.paid": {
         await this.tenantBilling.clearPastDue(tenantId);
+        // Only paid invoices count towards the inviter's reward, never the
+        // checkout event: both arrive for the first payment.
+        const payment = stripeInvoiceReferralPayment(event.data.object as Stripe.Invoice);
+        if (payment) await this.tenantBilling.recordReferralPayment(tenantId, payment);
+        return;
+      }
+      case "charge.refunded": {
+        await this.tenantBilling.voidReferralReward(tenantId, "refunded");
         return;
       }
       default:
@@ -290,6 +303,14 @@ export class BillingService {
     switch (status.state) {
       case "PAID":
         await this.tenantBilling.updateSubscriptionStatus(tenantId, "active");
+        // Counts for a referral only once the client reports what was paid.
+        if (status.amountMinor && (status.currency === "CZK" || status.currency === "EUR")) {
+          await this.tenantBilling.recordReferralPayment(tenantId, {
+            amountMinor: status.amountMinor,
+            currency: status.currency,
+            longPeriod: status.longPeriod === true,
+          });
+        }
         return;
       case "FAILED":
       case "TIMEOUTED":
@@ -297,6 +318,11 @@ export class BillingService {
         return;
       case "CANCELED":
         await this.tenantBilling.updateSubscriptionStatus(tenantId, "canceled");
+        await this.tenantBilling.voidReferralReward(tenantId, "canceled");
+        return;
+      case "REFUNDED":
+      case "PARTIALLY_REFUNDED":
+        await this.tenantBilling.voidReferralReward(tenantId, "refunded");
         return;
       default:
         this.logger.debug(

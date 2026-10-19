@@ -20,7 +20,7 @@ const isoDate = (d: Date) => d.toISOString().slice(0, 10);
  * Referral programme and credit wallet of the company in `tenantDb`
  * (Settings → Pozvat a získat kredity). Cross-company steps (finding the
  * inviter by code, paying the inviter) go through the claim_referral /
- * reward_referral SECURITY DEFINER functions; everything else is ordinary
+ * record_referral_payment SECURITY DEFINER functions; everything else is ordinary
  * RLS-scoped reads and spends.
  */
 @Injectable()
@@ -38,13 +38,17 @@ export class ReferralsService {
       })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));
-    const [invited, ledger, balance] = await Promise.all([
+    const [invited, ledger, balance, partner] = await Promise.all([
       db
         .select({
           createdAt: schema.referrals.createdAt,
           program: schema.referrals.program,
           rewardedAt: schema.referrals.rewardedAt,
           rewardCredits: schema.referrals.rewardCredits,
+          firstPaidAt: schema.referrals.firstPaidAt,
+          pendingCredits: schema.referrals.pendingCredits,
+          releaseAfter: schema.referrals.releaseAfter,
+          voidedAt: schema.referrals.voidedAt,
         })
         .from(schema.referrals)
         .orderBy(desc(schema.referrals.createdAt))
@@ -62,13 +66,16 @@ export class ReferralsService {
         .orderBy(desc(schema.creditLedger.createdAt))
         .limit(100),
       this.balance(db),
+      this.partnerState(db, tenantId),
     ]);
     const today = isoDate(new Date());
     const prepaidActive = Boolean(tenant?.prepaidPlan && tenant.prepaidUntil && tenant.prepaidUntil >= today);
     return {
       code,
       program: (tenant?.program ?? "friend") as ReferralProgram,
-      canBeAccountant: Boolean(tenant?.ico),
+      // The accountant tier is approved by Billanta staff, never self-service.
+      canBeAccountant: partner.status === "approved",
+      partner: { ...partner, hasIco: Boolean(tenant?.ico) },
       balance,
       rewards: REFERRAL_REWARDS,
       plans: CREDIT_PLANS,
@@ -77,7 +84,10 @@ export class ReferralsService {
         createdAt: r.createdAt,
         program: r.program,
         paying: Boolean(r.rewardedAt),
+        state: r.rewardedAt ? "rewarded" : r.voidedAt ? "voided" : r.firstPaidAt ? "pending" : "waiting",
         rewardCredits: r.rewardCredits,
+        pendingCredits: r.rewardedAt || r.voidedAt ? null : r.pendingCredits,
+        releaseAfter: r.rewardedAt || r.voidedAt ? null : r.releaseAfter,
       })),
       stats: {
         invited: invited.length,
@@ -135,13 +145,66 @@ export class ReferralsService {
 
   async setProgram(db: TenantDb, tenantId: string, program: ReferralProgram) {
     if (program === "accountant") {
-      const [tenant] = await db.select({ ico: schema.tenants.ico }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
-      // The partner programme is for businesses: an IČO keeps it from being
-      // a free upgrade anyone can tick.
-      if (!tenant?.ico) throw new BadRequestException("ico_required");
+      // Only after Billanta staff approved the company as an accountant
+      // (claim_referral checks the same, so a stale flag pays friend rates).
+      const partner = await this.partnerState(db, tenantId);
+      if (partner.status !== "approved") throw new BadRequestException("partner_not_approved");
     }
     await db.update(schema.tenants).set({ referralProgram: program, updatedAt: new Date() }).where(eq(schema.tenants.id, tenantId));
     return { program };
+  }
+
+  /**
+   * The company's accountant partner request and whether it has a directory
+   * listing yet. The listing is what staff check before approving.
+   */
+  async partnerState(db: TenantDb, tenantId: string) {
+    const [[request], [listing]] = await Promise.all([
+      db
+        .select({
+          status: schema.accountantPartnerRequests.status,
+          requestedAt: schema.accountantPartnerRequests.requestedAt,
+          reviewNote: schema.accountantPartnerRequests.reviewNote,
+        })
+        .from(schema.accountantPartnerRequests)
+        .where(eq(schema.accountantPartnerRequests.tenantId, tenantId)),
+      db
+        .select({ status: schema.accountantListings.status })
+        .from(schema.accountantListings)
+        .where(eq(schema.accountantListings.tenantId, tenantId)),
+    ]);
+    return {
+      status: (request?.status ?? "none") as "none" | "pending" | "approved" | "rejected",
+      requestedAt: request?.requestedAt ?? null,
+      reviewNote: request?.status === "rejected" ? (request.reviewNote ?? null) : null,
+      listingStatus: listing?.status ?? null,
+    };
+  }
+
+  /**
+   * "Požádat o partnerský program pro účetní": a pending request staff see
+   * next to the company's directory listing. Needs an IČO and a listing (the
+   * profile is how staff tell an accountant from anyone else). Asking again
+   * after a rejection is allowed; an approved company has nothing to ask for.
+   */
+  async requestPartner(db: TenantDb, tenantId: string) {
+    const [tenant] = await db.select({ ico: schema.tenants.ico }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
+    if (!tenant?.ico) throw new BadRequestException("ico_required");
+    const current = await this.partnerState(db, tenantId);
+    if (current.status === "approved") return { status: "approved" as const };
+    if (!current.listingStatus || current.listingStatus === "withdrawn") throw new BadRequestException("listing_required");
+    if (current.status === "pending") return { status: "pending" as const };
+    const now = new Date();
+    if (current.status === "rejected") {
+      await db
+        .update(schema.accountantPartnerRequests)
+        .set({ status: "pending", requestedAt: now, reviewedAt: null, reviewNote: null })
+        .where(eq(schema.accountantPartnerRequests.tenantId, tenantId));
+    } else {
+      await db.insert(schema.accountantPartnerRequests).values({ tenantId, status: "pending", requestedAt: now }).onConflictDoNothing();
+    }
+    this.logger.log(`tenant ${tenantId} asked for the accountant partner programme`);
+    return { status: "pending" as const };
   }
 
   /** Pays `months` of `plan` with credits, extending a running prepaid plan of the same kind. */

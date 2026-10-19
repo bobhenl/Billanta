@@ -218,8 +218,16 @@ migration `0051_trial_billing.sql`.
   `POST /v1/admin/billing/proformas/:id/mark-paid`, which extends
   `prepaid_until` by the proforma's months (calendar months, the day
   clamped to the month's end; from the current end while the same plan
-  still runs, otherwise from today), pays the referral reward and notifies
-  the company. Nothing renews. `PrepaidRemindersCron` (08:15 Prague) mails
+  still runs, otherwise from today), counts the payment towards a referral
+  reward and notifies the company. Nothing renews.
+
+  Referral rewards (migration 0079): the inviter gets the invited company's
+  first payment without VAT in credits, capped at 289 (friend) or 579
+  (approved accountant partner). It is held back first: a monthly plan
+  releases it with its second paid invoice, a plan paid for a year (or a
+  12-month proforma) after 30 days (`ReferralRewardsCron`, 08:30 Prague).
+  A refund (`charge.refunded`) or cancellation before then voids it. Only
+  `invoice.paid` counts on the Stripe side, never the checkout event. `PrepaidRemindersCron` (08:15 Prague) mails
   the company 14 and 3 days before `prepaid_until` through the outbox,
   with a renewal proforma (same plan and length as the last one, reused if
   one is already open) and its QR code attached. It skips companies with a
@@ -240,8 +248,9 @@ migration `0051_trial_billing.sql`.
 3. **Developers > Webhooks**: endpoint
    `https://<domain>/api/v1/billing/stripe/webhook` with
    `checkout.session.completed`, `customer.subscription.updated`,
-   `customer.subscription.deleted`, `invoice.paid` and
-   `invoice.payment_failed`. Put its signing secret in
+   `customer.subscription.deleted`, `invoice.paid`,
+   `invoice.payment_failed` and `charge.refunded` (a refund voids a
+   referral reward that is still held back). Put its signing secret in
    `STRIPE_WEBHOOK_SECRET`.
 4. Optional: a payment method configuration for Billanta only, its id in
    `STRIPE_PAYMENT_METHOD_CONFIGURATION`; Stripe Tax if you charge VAT.

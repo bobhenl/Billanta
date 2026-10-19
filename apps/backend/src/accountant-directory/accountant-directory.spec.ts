@@ -28,13 +28,16 @@ function latestFunction(name: string): string {
 describe("public accountant directory", () => {
   // Team → invite and /accountants both read this function. A listing that
   // is pending, rejected or withdrawn must never reach either.
-  it("lists only approved listings of active accountant-programme companies", () => {
+  // The listing no longer depends on the partner tier (0079): staff approve
+  // the listing first, and only then the tier.
+  it("lists only approved listings of active companies", () => {
     const body = latestFunction("public_accountant_listings").replace(/\s+/g, " ");
     expect(body).toMatch(/SECURITY DEFINER/);
     expect(body).toMatch(/WHERE l\.status = 'approved'/);
     expect(body).toMatch(/t\.suspended_at IS NULL/);
-    expect(body).toMatch(/t\.referral_program = 'accountant'/);
+    expect(body).not.toMatch(/referral_program/);
   });
+
 
   it("reads through the SECURITY DEFINER function, not the RLS-protected table", async () => {
     const execute = vi.fn(async (_query: SQL) => [] as unknown[]);
@@ -47,6 +50,32 @@ describe("public accountant directory", () => {
   it("is open, while the review queue needs a signed-in platform admin", () => {
     expect(Reflect.getMetadata(GUARDS_METADATA, PublicAccountantsController) ?? []).toEqual([]);
     expect(Reflect.getMetadata(GUARDS_METADATA, AdminAccountantsController)).toEqual([JwtAuthGuard, PlatformAdminGuard]);
+  });
+});
+
+describe("accountant partner tier", () => {
+  it("is approved only by staff, and only for a company with an approved listing", () => {
+    const partner = latestFunction("review_accountant_partner").replace(/\s+/g, " ");
+    expect(partner).toMatch(/SECURITY DEFINER/);
+    expect(partner).toMatch(/p_status = 'approved' AND NOT EXISTS \( SELECT 1 FROM accountant_listings WHERE tenant_id = p_tenant AND status = 'approved' \) THEN RETURN false/);
+    const listing = latestFunction("review_accountant_listing").replace(/\s+/g, " ");
+    // Approving a listing touches the tier only when asked to, and only a pending request.
+    expect(listing).toMatch(/IF p_partner THEN/);
+    expect(listing).toMatch(/WHERE tenant_id = v_tenant AND status = 'pending'/);
+  });
+
+  it("pays friend rates for an accountant flag nobody approved", () => {
+    const claim = latestFunction("claim_referral").replace(/\s+/g, " ");
+    expect(claim).toMatch(
+      /IF v_program = 'accountant' AND NOT EXISTS \( SELECT 1 FROM accountant_partner_requests p WHERE p\.tenant_id = v_referrer AND p\.status = 'approved' \) THEN v_program := 'friend';/,
+    );
+  });
+
+  it("keeps companies from approving their own request (RLS allows only 'pending')", () => {
+    const sql = readFileSync(join(MIGRATIONS, "0079_referral_release_partner_requests.sql"), "utf8").replace(/\s+/g, " ");
+    expect(sql).toMatch(/ALTER TABLE "accountant_partner_requests" FORCE ROW LEVEL SECURITY/);
+    expect(sql).toMatch(/accountant_partner_requests_insert ON "accountant_partner_requests" FOR INSERT WITH CHECK \([^)]*\)::uuid AND status = 'pending'\)/);
+    expect(sql).toMatch(/accountant_partner_requests_update ON "accountant_partner_requests" FOR UPDATE USING \([^)]*\)::uuid\) WITH CHECK \([^)]*\)::uuid AND status = 'pending'\)/);
   });
 });
 
