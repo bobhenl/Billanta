@@ -35,13 +35,9 @@ export interface AdminBlogPost extends AdminBlogListItem {
   facts: string | null;
 }
 
-/** Generated kinds that may publish on their own; briefs and hand-written posts always wait for a click. */
-export const AUTO_PUBLISH_KINDS = ['tax_deadlines', 'tool_howto', 'trade_invoicing'] as const;
-export type AutoPublishKind = (typeof AUTO_PUBLISH_KINDS)[number];
+import type { AutoPublishKind } from '@/lib/admin-blog-kinds';
 
-/** Kinds the "next topic" generator writes, in cs and sk. */
-export const TOPIC_KINDS = ['tool_howto', 'trade_invoicing'] as const;
-export type TopicKind = (typeof TOPIC_KINDS)[number];
+export { AUTO_PUBLISH_KINDS, TOPIC_KINDS, type AutoPublishKind, type TopicKind } from '@/lib/admin-blog-kinds';
 
 /** `GET /v1/admin/blog/autopublish`. */
 export interface BlogAutopublish {

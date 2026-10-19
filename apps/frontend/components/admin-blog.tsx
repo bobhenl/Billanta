@@ -20,7 +20,8 @@ import { BlogMarkdown } from '@/components/blog-markdown';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
-import { AUTO_PUBLISH_KINDS, TOPIC_KINDS, type AdminBlogPost, type BlogAutopublish, type TopicKind } from '@/lib/admin-blog';
+import type { AdminBlogPost, BlogAutopublish } from '@/lib/admin-blog';
+import { AUTO_PUBLISH_KINDS, TOPIC_KINDS, type TopicKind } from '@/lib/admin-blog-kinds';
 import type { BlogSource } from '@/lib/blog';
 
 /** One source per line as "Title | https://…", the easiest shape to paste. */
