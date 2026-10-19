@@ -1,0 +1,787 @@
+{
+  "tools": [
+    {
+      "slug": "self-employed-tax",
+      "key": "osvc",
+      "locales": [
+        "cs"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Daň a pojištění OSVČ",
+          "title": "Kalkulačka daně a pojištění OSVČ",
+          "description": "Spočítejte si orientačně daň z příjmů, sociální a zdravotní pojištění OSVČ a zálohy na další rok.",
+          "lines": [
+            "Zadejte příjmy a výdaje za rok. Kalkulačka spočítá daň z příjmů, sociální a zdravotní pojištění a měsíční zálohy, které vám vyjdou na další rok.",
+            "Zisk je příjem minus skutečné výdaje, nebo minus výdajový paušál (procento z příjmů, se stropem).",
+            "Daň z příjmů je 15 % ze zisku zaokrouhleného dolů na stovky a 23 % z části nad 36násobkem průměrné mzdy. Odečte se sleva na poplatníka.",
+            "Sociální pojištění je 29,2 % z 55 % zisku, nejméně z minimálního a nejvýše z maximálního vyměřovacího základu.",
+            "Zdravotní pojištění je 13,5 % z 50 % zisku, nejméně z poloviny průměrné mzdy za každý měsíc.",
+            "Zálohy na další rok vychází z letošního základu, nikdy ale nejsou nižší než minimální zálohy dalšího roku."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "slovak-self-employed-tax",
+      "key": "szco",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Daň a odvody SZČO (Slovensko)",
+          "title": "Kalkulačka dane a odvodů SZČO na Slovensku",
+          "description": "Orientační slovenská daň z příjmů, zdravotní a sociální pojištění živnostníka (SZČO) za rok, s paušálními výdaji 60 %.",
+          "lines": [
+            "Zadejte příjmy za rok. Kalkulačka spočítá daň z příjmů fyzické osoby, zdravotní pojištění, sociální odvody od července dalšího roku a novou zálohu na zdravotní pojištění podle slovenských pravidel.",
+            "Zisk je příjem minus paušální výdaje 60 % (nejvýš 20 000 € za rok) nebo minus skutečné výdaje.",
+            "Základ daně je zisk minus sociální a zdravotní pojištění zaplacené během roku. Odečte se nezdanitelná část na daňovníka, která nad hranicí příjmů postupně klesá.",
+            "Daň je 15 %, když příjmy nepřesáhnou 100 000 € (za rok 2024 60 000 €). Jinak 19 % a 25 % z části nad 176,8násobkem životního minima, od roku 2026 navíc 30 % a 35 %.",
+            "Zdravotní pojištění je 15 % (od roku 2026 16 %) ze zisku děleného 1,486, nejméně z minimálního základu za každý měsíc. Rozdíl proti zaplaceným zálohám se doplatí v ročním zúčtování.",
+            "Sociální pojištění vzniká až od července dalšího roku, a jen když příjem přesáhne zákonnou hranici. Základ je zisk děleno 1,486 a počtem měsíců, mezi minimálním a maximálním základem."
+          ]
+        },
+        "sk": {
+          "name": "Daň a odvody SZČO",
+          "title": "Kalkulačka dane a odvodov SZČO",
+          "description": "Orientačná daň z príjmov, zdravotné a sociálne poistenie živnostníka (SZČO) za rok, s paušálnymi výdavkami 60 % a nezdaniteľnou časťou.",
+          "lines": [
+            "Zadajte príjmy za rok. Kalkulačka vypočíta daň z príjmov fyzickej osoby, zdravotné poistenie, sociálne odvody od júla nasledujúceho roka a nový preddavok na zdravotné poistenie.",
+            "Zisk sú príjmy mínus paušálne výdavky 60 % (najviac 20 000 € za rok) alebo mínus skutočné výdavky.",
+            "Základ dane je zisk mínus sociálne a zdravotné poistenie zaplatené počas roka. Odpočíta sa nezdaniteľná časť na daňovníka, ktorá nad hranicou príjmov postupne klesá.",
+            "Daň je 15 %, ak príjmy neprekročia 100 000 € (za rok 2024 60 000 €). Inak 19 % a 25 % z časti nad 176,8-násobkom životného minima, od roku 2026 aj 30 % a 35 %.",
+            "Zdravotné poistenie je 15 % (od roku 2026 16 %) zo zisku deleného 1,486, najmenej z minimálneho základu za každý mesiac. Rozdiel oproti zaplateným preddavkom sa vyrovná v ročnom zúčtovaní.",
+            "Sociálne poistenie vzniká až od júla nasledujúceho roka, a len keď príjem prekročí zákonnú hranicu. Základ je zisk delený 1,486 a počtom mesiacov, medzi minimálnym a maximálnym základom."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "flat-tax",
+      "key": "flatTax",
+      "locales": [
+        "cs"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Vyplatí se paušální daň?",
+          "title": "Vyplatí se paušální daň? Srovnání s výdajovým paušálem a skutečnými výdaji",
+          "description": "Porovnejte paušální daň s výdajovým paušálem a skutečnými výdaji. Daň a pojištění pro každou variantu, slevy na děti a jasné doporučení.",
+          "lines": [
+            "Zadejte roční příjmy, případně skutečné výdaje. Kalkulačka spočítá daň, sociální a zdravotní pojištění v paušálním režimu, s výdajovým paušálem i se skutečnými výdaji a řekne, co vychází nejlépe.",
+            "Obě možnosti vycházejí stejně.",
+            "Do paušálního režimu vstoupit nemůžete, zbývá běžný režim.",
+            "Snížení platí zpětně od ledna, co jste zaplatili navíc, vám finanční úřad vrátí jako přeplatek.",
+            "Slevy na dítě a na manželku/manžela se v paušálním režimu neuplatní. Běžný režim proto mohou zlevnit natolik, že vyjde lépe.",
+            "Běžný režim počítáme jen z příjmů z podnikání, se slevou na poplatníka a se zvolenými slevami. Další příjmy ani odpočty nezohledňujeme a pojistné počítáme jako u hlavní činnosti.",
+            "Kdo může vstoupit do paušálního režimu",
+            "Jste OSVČ a nejste plátce DPH (identifikovaná osoba být můžete).",
+            "Příjmy z podnikání nepřesáhnou 2 000 000 Kč za rok.",
+            "1. pásmo: příjmy do 1 000 000 Kč u jakékoli činnosti, do 1 500 000 Kč, když aspoň 75 % příjmů spadá pod 80% nebo 60% paušál, a do 2 000 000 Kč, když aspoň 75 % spadá pod 80% paušál.",
+            "2. pásmo: do 1 500 000 Kč u jakékoli činnosti a do 2 000 000 Kč, když aspoň 75 % příjmů spadá pod 80% nebo 60% paušál. 3. pásmo: do 2 000 000 Kč.",
+            "Nemáte jiné příjmy kromě drobných výjimek (např. malé příjmy ze zaměstnání, úroky nebo nájem do limitu).",
+            "Nejste společníkem v. o. s. ani komplementářem k. s. a nejste v insolvenci.",
+            "Vstup do režimu oznámíte finančnímu úřadu do 10. ledna daného roku.",
+            "Paušální daň je jedna měsíční částka podle pásma. Pásmo určují příjmy a převažující činnost (§ 2a zákona o daních z příjmů).",
+            "V běžném režimu odečteme výdaje (paušál nejvýš do limitu podle činnosti, nebo skutečné výdaje), z daně odečteme slevy a pojistné počítáme z poloviny zisku, nejméně z minimálního vyměřovacího základu.",
+            "Sleva na dítě snižuje daň a co zbude, dostanete jako daňový bonus. Bonus se vyplácí od 100 Kč a jen při příjmech aspoň ve výši šestinásobku minimální mzdy (§ 35c).",
+            "Jde o odhad za celý rok. Nic neukládáme, výpočet běží ve vašem prohlížeči."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "vat",
+      "key": "vat",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Kalkulačka DPH",
+          "title": "Kalkulačka DPH",
+          "description": "Přičtěte DPH k ceně bez daně nebo ji vypočítejte z ceny s DPH. České i slovenské sazby.",
+          "lines": [
+            "Zadejte částku a sazbu. Kalkulačka spočítá základ, DPH i cenu s daní, oběma směry.",
+            "Z ceny bez DPH: DPH = základ × sazba / 100, zaokrouhleno na haléře.",
+            "Z ceny s DPH: základ = cena / (1 + sazba / 100), DPH je rozdíl. Od roku 2019 se už nepoužívá koeficient.",
+            "Na faktuře se DPH počítá za každou sazbu zvlášť. Zaokrouhlení celé faktury se řeší až na konci."
+          ]
+        },
+        "sk": {
+          "name": "Kalkulačka DPH",
+          "title": "Kalkulačka DPH",
+          "description": "Pripočítajte DPH k cene bez dane alebo ju vypočítajte z ceny s DPH. Slovenské aj české sadzby.",
+          "lines": [
+            "Zadajte sumu a sadzbu. Kalkulačka spočíta základ, DPH aj cenu s daňou, oboma smermi.",
+            "Z ceny bez DPH: DPH = základ × sadzba / 100, zaokrúhlené na centy.",
+            "Z ceny s DPH: základ = cena / (1 + sadzba / 100), DPH je rozdiel.",
+            "Na faktúre sa DPH počíta za každú sadzbu zvlášť."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "minimum-advances",
+      "key": "minimums",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Minimální zálohy OSVČ",
+          "title": "Minimální zálohy OSVČ na pojištění",
+          "description": "Kolik měsíčně nejméně zaplatí OSVČ na sociální a zdravotní pojištění v Česku a na Slovensku, a výše 1. pásma paušální daně.",
+          "lines": [
+            "Přehled minimálních měsíčních záloh pro OSVČ s hlavní činností. Pokud v daném roce začínáte nebo vám vyšel nízký zisk, platíte právě tyto částky.",
+            "Česko (Kč měsíčně)",
+            "Slovensko (€ měsíčně)",
+            "Období",
+            "Zdravotní pojištění",
+            "Sociální pojištění",
+            "Paušální daň, 1. pásmo",
+            "Kdy se platí",
+            "Sociální pojištění (ČSSZ) se platí za každý měsíc nejpozději jeho posledním dnem.",
+            "Zdravotní pojištění se platí do 8. dne následujícího měsíce.",
+            "Paušální daň se platí do 20. dne daného měsíce.",
+            "Na Slovensku se odvody platí do 8. dne následujícího měsíce, sociální poistné Sociálnej poisťovni a zdravotné poistné své zdravotní pojišťovně.",
+            "Pro tento rok zatím nemáme údaje.",
+            "Předchozí roky"
+          ]
+        },
+        "sk": {
+          "name": "Minimálne preddavky SZČO",
+          "title": "Minimálne preddavky na odvody SZČO a OSVČ",
+          "description": "Koľko mesačne najmenej zaplatí živnostník na sociálne a zdravotné poistenie na Slovensku a v Česku.",
+          "lines": [
+            "Prehľad minimálnych mesačných preddavkov. Ak tento rok začínate alebo vám vyšiel nízky zisk, platíte práve tieto sumy.",
+            "Česko (Kč mesačne)",
+            "Slovensko (€ mesačne)",
+            "Obdobie",
+            "Zdravotné poistenie",
+            "Sociálne poistenie",
+            "Česká paušálna daň, 1. pásmo",
+            "Kedy sa platí",
+            "V Česku sa sociálne poistenie (ČSSZ) platí za každý mesiac najneskôr jeho posledný deň, zdravotné do 8. dňa nasledujúceho mesiaca a paušálna daň do 20. dňa daného mesiaca.",
+            "Na Slovensku sa poistné platí do 8. dňa nasledujúceho mesiaca: sociálne Sociálnej poisťovni a zdravotné vašej zdravotnej poisťovni.",
+            "Pre tento rok zatiaľ nemáme údaje.",
+            "Predchádzajúce roky"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "cnb-exchange-rates",
+      "key": "fx",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Převodník kurzů ČNB",
+          "title": "Kurzy ČNB a převodník měn",
+          "description": "Aktuální kurzy devizového trhu ČNB a převod mezi korunou a cizími měnami i mezi dvěma cizími měnami. Pro přepočet faktur v cizí měně.",
+          "lines": [
+            "ČNB vyhlašuje kurzy každý pracovní den po 14:30. Tyto kurzy se používají i pro přepočet faktur v cizí měně pro účely DPH.",
+            "Pro DPH se faktura v cizí měně přepočte kurzem ČNB platným ke dni, kdy vznikla povinnost přiznat daň (obvykle DUZP).",
+            "Kurz vyhlášený v pracovní den po 14:30 platí do vyhlášení dalšího. O víkendu a ve svátek tedy platí poslední vyhlášený.",
+            "Pro účetnictví můžete místo denního kurzu používat i pevný kurz, pokud to máte ve vnitřní směrnici.",
+            "Zdroj: Česká národní banka",
+            "Křížový kurz přes korunu podle kurzovního lístku ČNB."
+          ]
+        },
+        "sk": {
+          "name": "Prevodník kurzov ČNB",
+          "title": "Kurzy ČNB a prevodník mien",
+          "description": "Aktuálne kurzy Českej národnej banky a prevod medzi ľubovoľnými menami z kurzového lístka vrátane eura a českej koruny, napríklad pre faktúry českým odberateľom.",
+          "lines": [
+            "ČNB vyhlasuje kurzy každý pracovný deň po 14:30. V Česku sa podľa nich prepočítavajú faktúry v cudzej mene pre DPH. Na Slovensku sa pre DPH používa referenčný kurz ECB.",
+            "Pre českú DPH sa faktúra v cudzej mene prepočíta kurzom ČNB platným ku dňu, keď vznikla povinnosť priznať daň.",
+            "Kurz vyhlásený v pracovný deň po 14:30 platí do vyhlásenia ďalšieho, cez víkend a sviatky teda platí posledný vyhlásený.",
+            "Slovenskí platitelia DPH používajú referenčný kurz ECB, nie kurz ČNB.",
+            "Zdroj: Česká národná banka",
+            "Krížový kurz cez českú korunu podľa kurzového lístka ČNB."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "qr-payment",
+      "key": "qrPayment",
+      "locales": [
+        "cs"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Generátor QR platby",
+          "title": "Generátor QR platby zdarma (SPAYD)",
+          "description": "Vytvořte QR kód pro platbu z čísla účtu nebo IBANu, částky a variabilního symbolu. Stáhnete ho jako PNG, nic se neukládá.",
+          "lines": [
+            "Vyplňte účet a částku, QR kód se vykreslí hned. Plátce ho naskenuje v bankovní aplikaci a platba se mu předvyplní.",
+            "QR kód je ve formátu QR Platba (SPAYD) České bankovní asociace, který čtou všechny české bankovní aplikace.",
+            "Domácí číslo účtu převedeme na IBAN a obě části ověříme kontrolním součtem, takže překlep odhalíte dřív, než kód pošlete.",
+            "Kód se vytváří ve vašem prohlížeči. Číslo účtu ani částka se nikam neodesílají.",
+            "Platbu v eurech použijte jen u eurového účtu. Slovenské banky místo QR Platby používají formát PAY by square.",
+            "Jak to funguje"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "company-lookup",
+      "key": "companyLookup",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Vyhledání firmy podle IČO, DIČ nebo názvu",
+          "title": "Vyhledání firmy podle IČO, DIČ nebo názvu (ARES, RPO, VIES)",
+          "description": "Najděte firmu podle IČO, DIČ nebo názvu v ARES, slovenském RPO nebo evropském VIES. Ukážeme sídlo, DIČ a jestli je plátce DPH, případně nespolehlivý plátce.",
+          "lines": [
+            "Zadejte IČO, DIČ nebo část názvu. Hledáme v českém ARES, ve slovenském registru právnických osob (RPO), v evropském VIES a v dalších registrech, které si vyberete.",
+            "IČO hledáme v ARES a ve slovenském RPO podle zvoleného registru. DIČ s kódem země ověříme ve VIES, české DIČ v registru plátců DPH Finanční správy.",
+            "U českého DIČ ukážeme, jestli je firma plátce DPH a jestli ji Finanční správa vede jako nespolehlivého plátce. U ostatních zemí VIES řekne jen, jestli je DIČ platné.",
+            "Podle názvu hledáme v ARES a RPO. Pro firmy z jiných zemí vyberte jejich registr.",
+            "V Billantě se odběratel podle IČO nebo DIČ doplní sám přímo na faktuře.",
+            "Jak to funguje"
+          ]
+        },
+        "sk": {
+          "name": "Vyhľadanie firmy podľa IČO, DIČ alebo názvu",
+          "title": "Vyhľadanie firmy podľa IČO, DIČ alebo názvu (RPO, ARES, VIES)",
+          "description": "Nájdite firmu podľa IČO, IČ DPH alebo názvu v slovenskom RPO, českom ARES alebo európskom VIES. Ukážeme sídlo, IČ DPH a či je platné.",
+          "lines": [
+            "Zadajte IČO, IČ DPH alebo časť názvu. Hľadáme v slovenskom registri právnických osôb (RPO), v českom ARES, v európskom VIES a v ďalších registroch, ktoré si vyberiete.",
+            "IČO hľadáme v RPO a v českom ARES podľa zvoleného registra. IČ DPH s kódom krajiny overíme vo VIES, české DIČ v registri platiteľov DPH českej finančnej správy.",
+            "Pri českom DIČ ukážeme, či je firma platiteľ DPH a či ju finančná správa vedie ako nespoľahlivého platiteľa. Pri ostatných krajinách VIES povie iba to, či je IČ DPH platné.",
+            "Podľa názvu hľadáme v RPO a ARES. Pre firmy z iných krajín vyberte ich register.",
+            "V Billante sa odberateľ podľa IČO alebo IČ DPH doplní sám priamo na faktúre.",
+            "Ako to funguje"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "iban",
+      "key": "iban",
+      "locales": [
+        "cs"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Převod čísla účtu na IBAN",
+          "title": "Převod čísla účtu na IBAN a kontrola účtu",
+          "description": "Převeďte české číslo účtu na IBAN nebo IBAN zpět na číslo účtu. Nástroj zároveň ověří kontrolní součet.",
+          "lines": [
+            "Napište domácí číslo účtu nebo IBAN. Nástroj pozná, co jste zadali, a ukáže druhý tvar.",
+            "Český IBAN má 24 znaků: CZ, dvě kontrolní číslice, kód banky, předčíslí na 6 míst a číslo účtu na 10 míst.",
+            "Předčíslí i číslo účtu mají vlastní kontrolní součet (modulo 11), IBAN ještě jeden navíc (modulo 97).",
+            "Platné číslo znamená, že účet může existovat. Jestli je otevřený a čí je, kontrola neřekne.",
+            "Jak to funguje"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "due-date",
+      "key": "dueDate",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "calculator",
+      "texts": {
+        "cs": {
+          "name": "Kalkulačka splatnosti faktury",
+          "title": "Kalkulačka splatnosti faktury",
+          "description": "Spočítejte datum splatnosti faktury z data vystavení a počtu dní. Upozorníme na víkend i státní svátek v Česku a na Slovensku.",
+          "lines": [
+            "Vyberte datum vystavení a splatnost ve dnech. Uvidíte přesné datum a jestli nepřipadá na víkend nebo svátek.",
+            "Splatnost se počítá v kalendářních dnech od data vystavení, víkendy a svátky se nepřeskakují.",
+            "Svátky počítáme pro každý rok zvlášť, včetně Velkého pátku a Velikonočního pondělí.",
+            "Mezi podnikateli lze splatnost delší než 60 dní sjednat jen výslovně a jen tehdy, když není vůči věřiteli hrubě nespravedlivá (§ 1963 občanského zákoníku).",
+            "Jak to funguje"
+          ]
+        },
+        "sk": {
+          "name": "Kalkulačka splatnosti faktúry",
+          "title": "Kalkulačka splatnosti faktúry",
+          "description": "Vypočítajte dátum splatnosti faktúry z dátumu vyhotovenia a počtu dní. Upozorníme na víkend aj štátny sviatok na Slovensku a v Česku.",
+          "lines": [
+            "Vyberte dátum vyhotovenia a splatnosť v dňoch. Uvidíte presný dátum a či nepripadá na víkend alebo sviatok.",
+            "Splatnosť sa počíta v kalendárnych dňoch od dátumu vyhotovenia, víkendy a sviatky sa nepreskakujú.",
+            "Sviatky počítame pre každý rok zvlášť vrátane Veľkého piatku a Veľkonočného pondelka. Zohľadňujeme aj to, že 1. september a 17. november už od roku 2025 nie sú dňami pracovného pokoja.",
+            "Medzi podnikateľmi možno splatnosť dlhšiu ako 60 dní dohodnúť len výslovne a len vtedy, ak nie je voči veriteľovi hrubo nespravodlivá (§ 340b Obchodného zákonníka).",
+            "Ako to funguje"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "vat-return-control-statement",
+      "key": "vatFiling",
+      "locales": [
+        "cs"
+      ],
+      "type": "guide",
+      "texts": {
+        "cs": {
+          "name": "Přiznání k DPH, kontrolní a souhrnné hlášení",
+          "title": "Jak podat přiznání k DPH, kontrolní a souhrnné hlášení",
+          "description": "Kdo podává přiznání k DPH, kontrolní a souhrnné hlášení, v jakých lhůtách a jak je podat elektronicky přes EPO.",
+          "lines": [
+            "Plátce DPH podává finančnímu úřadu pravidelně až tři výkazy. Tady je přehled, kdo je podává, dokdy a jak na to.",
+            "Nejbližší termíny",
+            "Když 25. připadne na víkend nebo svátek, posouvá se lhůta na nejbližší pracovní den.",
+            "Přiznání k DPH (DPHDP3)",
+            "Podává každý plátce DPH za každé zdaňovací období, i když nic nefakturoval. Zdaňovací období je měsíc, nebo čtvrtletí, pokud obrat za předchozí rok nepřesáhl 10 milionů Kč, nejste nespolehlivý plátce ani člen skupiny a čtvrtletí si zvolíte. Přiznání se podává a daň se platí do 25. dne po skončení období.",
+            "Kontrolní hlášení (DPHKH1)",
+            "Podávají ho plátci, kteří v období uskutečnili nebo přijali tuzemská plnění. Právnické osoby (např. s. r. o.) ho podávají vždy měsíčně do 25. dne následujícího měsíce, fyzické osoby ve stejné lhůtě jako přiznání, tedy i čtvrtletně. Doklady nad 10 000 Kč včetně DPH se uvádějí jednotlivě (oddíly A.4 a B.2), menší souhrnně. Kontrolní hlášení jde podat jen elektronicky a za pozdní podání hrozí pevné pokuty od 1 000 Kč.",
+            "Souhrnné hlášení (DPHSHV)",
+            "Podává se za měsíc, ve kterém jste dodali zboží nebo poskytli službu plátci v jiném státě EU v režimu přenesení daňové povinnosti. Lhůta je 25 dnů po skončení měsíce. Pokud poskytujete jen služby, můžete ho podávat i čtvrtletně. Hlášení podává i identifikovaná osoba, která poskytla službu do EU.",
+            "Jak podat elektronicky",
+            "Přiznání i hlášení se podávají elektronicky ve formátu XML. Nejčastěji soubor nahrajete na portál Moje daně (aplikace EPO), zkontrolujete a odešlete přes datovou schránku nebo s uznávaným elektronickým podpisem. Daň zaplaťte na účet svého finančního úřadu s variabilním symbolem, kterým je vaše DIČ bez předpony CZ.",
+            "Postup krok za krokem",
+            "Zkontrolujte, že máte za období všechny vydané i přijaté faktury a že sedí DUZP.",
+            "Vytvořte XML soubory. V Billantě je najdete v Nastavení → Exporty → DPH.",
+            "Na portálu Moje daně otevřete EPO, zvolte „Načtení souboru“ a nahrajte XML.",
+            "Doplňte finanční úřad a údaje, které export nevyplní, a spusťte kontrolu.",
+            "Odešlete podání datovou schránkou nebo s elektronickým podpisem a uložte si potvrzení.",
+            "Zaplaťte daň do 25. dne po skončení období.",
+            "Než podáte",
+            "Faktury v cizí měně přepočtěte kurzem ČNB ke dni vzniku povinnosti přiznat daň.",
+            "U přijatých faktur do kontrolního hlášení potřebujete DIČ dodavatele a evidenční číslo dokladu.",
+            "Opravné daňové doklady (dobropisy) patří do období, kdy jste je vystavili nebo obdrželi.",
+            "Služby ze zahraničí v režimu reverse charge přiznáte na výstupu a zároveň si je můžete odečíst."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "identified-person",
+      "key": "identified",
+      "locales": [
+        "cs"
+      ],
+      "type": "guide",
+      "texts": {
+        "cs": {
+          "name": "Identifikovaná osoba k DPH",
+          "title": "Identifikovaná osoba: kdy se jí stanete a co musíte podávat",
+          "description": "Neplátce DPH, který kupuje reklamu nebo služby ze zahraničí nebo prodává služby do EU, se stává identifikovanou osobou. Co to znamená a co podávat.",
+          "lines": [
+            "I když nejste plátce DPH, můžete se stát identifikovanou osobou. Typicky stačí zaplatit reklamu na Facebooku nebo Googlu. Pak musíte z nákupu přiznat a zaplatit českou DPH.",
+            "Kdo je identifikovaná osoba",
+            "Je to podnikatel nebo firma, která není plátcem DPH, ale kvůli obchodům se zahraničím se musí k DPH registrovat. Identifikovanou osobou se stanete hlavně když:",
+            "Nákup reklamy a služeb ze zahraničí",
+            "Google Ads, reklama na Facebooku a Instagramu, předplatné softwaru nebo služby od zahraničního dodavatele: místo plnění je v Česku, protože jste podnikatel. Dodavatel vám vystaví fakturu bez DPH a daň (obvykle 21 %) přiznáte a zaplatíte vy. Tomu se říká přenesení daňové povinnosti neboli reverse charge. Jako identifikovaná osoba si tuto daň nemůžete odečíst, takže je to pro vás skutečný náklad.",
+            "Co a kdy podávat",
+            "Přiznání k DPH podáváte jen za měsíce, ve kterých vám povinnost přiznat daň vznikla, do 25. dne následujícího měsíce, a ve stejné lhůtě daň zaplatíte. Pokud jste poskytli službu podnikateli v jiném státě EU, podáte za ten měsíc i souhrnné hlášení. Kontrolní hlášení identifikovaná osoba nepodává. Vše se podává elektronicky.",
+            "Kdy se z vás stane plátce",
+            "Identifikovaná osoba zůstává neplátcem. Plátcem se stanete, až obrat za kalendářní rok přesáhne 2 000 000 Kč, a to od 1. ledna dalšího roku. Pokud během roku přesáhne 2 536 500 Kč, stáváte se plátcem hned následující den.",
+            "přijmete službu od dodavatele ze zahraničí (třeba reklamu od Google nebo Meta),",
+            "poskytnete službu podnikateli v jiném státě EU,",
+            "nakoupíte zboží z jiného státu EU za více než 326 000 Kč za kalendářní rok.",
+            "Registrace",
+            "Přihlášku k registraci podejte finančnímu úřadu do 15 dnů ode dne, kdy jste se identifikovanou osobou stali. Dostanete DIČ, které pak uvádíte zahraničním dodavatelům, aby vám fakturovali bez DPH.",
+            "Příklad",
+            "V březnu zaplatíte reklamu na Facebooku za 10 000 Kč. Meta vám vystaví fakturu bez DPH. Do 25. dubna podáte přiznání k DPH za březen, kde uvedete daň 2 100 Kč, a stejnou částku zaplatíte finančnímu úřadu. V měsících bez takového nákupu nepodáváte nic."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "e-invoicing-slovakia-2027",
+      "key": "skEinvoicing",
+      "locales": [
+        "cs",
+        "sk"
+      ],
+      "type": "guide",
+      "texts": {
+        "cs": {
+          "name": "Elektronická fakturace na Slovensku 2027",
+          "title": "E-faktura na Slovensku od roku 2027: koho se týká, kdy a jak se připravit",
+          "description": "Od 1. 1. 2027 musí slovenští plátci DPH posílat tuzemským firmám e-faktury přes síť Peppol a každá slovenská firma je musí umět přijmout. Termíny, výjimky, pokuty a co to znamená pro české firmy.",
+          "lines": [
+            "Od 1. ledna 2027 na Slovensku končí faktura v PDF poslaná e-mailem. Plátci DPH budou firmám posílat strukturované e-faktury přes certifikovaného poskytovatele a přijímat je musí každý podnikatel, i neplátce. Přehled podle slovenského zákona o DPH a materiálů Finanční správy SR.",
+            "Co se mění a kdy",
+            "Dobrovolná fáze. E-faktury přes certifikovaného poskytovatele lze posílat už teď, pokud ho má i odběratel. Povinné to zatím není.",
+            "Povinná tuzemská fáze. Slovenští plátci DPH musí na plnění od tohoto dne vystavovat e-faktury do 15 dnů a každý podnikatel a právnická osoba na Slovensku je musí umět přijmout.",
+            "Druhá fáze podle evropské směrnice ViDA: e-faktury i u přeshraničních plnění v rámci EU, lhůta se zkrátí na 10 dnů a slovenský kontrolní a souhrnný výkaz zaniknou.",
+            "Koho se to týká",
+            "E-fakturu musí vystavit:",
+            "slovenský plátce DPH (registrovaný podle § 4, 4b nebo 4c slovenského zákona o DPH),",
+            "při dodání zboží nebo služby s místem plnění na Slovensku,",
+            "jiné osobě povinné k dani (firmě nebo živnostníkovi, i neplátci DPH) nebo právnické osobě, například obci či spolku.",
+            "Platí to pro faktury, dobropisy, vrubopisy i faktury na přijaté zálohy.",
+            "E-fakturu musí umět přijmout:",
+            "každý podnikatel a každá právnická osoba na Slovensku, i když není plátcem DPH. Prakticky to znamená mít od 1. 1. 2027 smlouvu s certifikovaným poskytovatelem. Souhlas odběratele se u povinné e-faktury nevyžaduje.",
+            "Mimo povinnost zůstává:",
+            "prodej soukromým osobám (B2C),",
+            "plnění osvobozená od daně podle § 28 až 43 a § 47 (například finanční a pojišťovací služby),",
+            "prodej doložený pokladním dokladem z eKasy do 400 € nebo zjednodušenou fakturou do 100 €,",
+            "plnění v rámci skupiny DPH a utajovaná plnění,",
+            "přeshraniční plnění (do 30. 6. 2030),",
+            "zálohová faktura (proforma), která není daňovým dokladem.",
+            "Česká firma, která není na Slovensku registrovaná k DPH, slovenské e-faktury do 30. 6. 2030 vystavovat nemusí. Pokud jste na Slovensku registrovaný plátce DPH, ověřte si u daňového poradce, zda se povinnost týká i vás.",
+            "Jak to funguje",
+            "E-faktura není PDF ani sken. Je to soubor XML ve formátu Peppol BIS Billing 3.0 (evropská norma EN 16931). Neposílá se e-mailem ani na státní portál, ale přes síť Peppol:",
+            "Uzavřete smlouvu s certifikovaným poskytovatelem doručovací služby. Finanční správa SR jich k 16. 10. 2026 eviduje 80 a cenu jednoduché služby odhaduje na 5 – 12 € měsíčně.",
+            "Vaší adresou v síti je 0245:DIČ, tedy slovenské DIČ s předponou 0245.",
+            "Fakturační program vytvoří XML a předá ho vašemu poskytovateli. Ten ho doručí poskytovateli odběratele.",
+            "Poskytovatelé automaticky nahlásí údaje z faktury slovenské finanční správě: dodavatel při vystavení, odběratel do 5 dnů od přijetí.",
+            "E-faktury se uchovávají 10 let.",
+            "Opravy a zálohy",
+            "Chybnou fakturu opravíte dobropisem (e-faktura typu 381) s odkazem na původní fakturu a podle potřeby novou fakturou. Typ 384 (opravená faktura) se na Slovensku zatím nepoužívá. Faktura na přijatou zálohu je daňový doklad a posílá se jako e-faktura s kódem 388. Zálohová faktura (proforma) daňovým dokladem není.",
+            "Pokuty",
+            "Za nenahlášení údajů, pozdní nebo nesprávné hlášení může slovenský daňový úřad uložit pokutu do 10 000 €, při opakovaném porušení do 100 000 €. Zjevnou chybu opravenou bez zbytečného odkladu ani prokázaný výpadek u poskytovatele nepokutuje.",
+            "Navrženo, zatím neschváleno",
+            "Ve slovenském parlamentu je návrh novely, který by zavedl období od 1. 1. do 30. 6. 2027 bez pokut a zrušil by hlášení přijatých faktur odběratelem. Dokud ho parlament neschválí, platí to, co je uvedeno výše.",
+            "Kontrolní seznam pro přípravu",
+            "Zjistěte, zda jste slovenský plátce DPH a komu fakturujete. Pomůže vám kontrola níže.",
+            "Vyberte si certifikovaného poskytovatele ze seznamu slovenské finanční správy a porovnejte ceny.",
+            "Ověřte, že váš fakturační program umí vytvořit XML ve formátu Peppol BIS 3.0 a předat ho poskytovateli.",
+            "Doplňte odběratelům IČO a DIČ. Bez DIČ e-fakturu nedoručíte.",
+            "Domluvte se s účetní, jak budete přijímat a evidovat došlé e-faktury.",
+            "Upravte postup u oprav (dobropis 381) a faktur na zálohy (388).",
+            "Vyzkoušejte posílání ještě v roce 2026, kdy je fáze dobrovolná.",
+            "Zajistěte archivaci XML na 10 let.",
+            "Týká se to vás? Rychlá kontrola",
+            "Odpovězte na pár otázek. Výsledek platí pro běžnou fakturu od 1. 1. 2027.",
+            "Kde má vaše firma sídlo?",
+            "Slovensko",
+            "Česko",
+            "Jste na Slovensku plátce DPH?",
+            "Fakturujete slovenským firmám, živnostníkům nebo úřadům?",
+            "Jsou vaše plnění osvobozená od DPH (například finanční služby)?",
+            "Ano",
+            "Ne",
+            "Vystavování",
+            "Přijímání",
+            "Od 1. 1. 2027 musíte umět e-faktury přijímat, i jako neplátce DPH. Potřebujete k tomu certifikovaného poskytovatele.",
+            "Povinnost přijímat se týká podnikatelů a právnických osob na Slovensku, ne vás.",
+            "Jak pomůže Billanta",
+            "Export faktur a dobropisů do XML ve formátu UBL / Peppol BIS Billing 3.0 se slovenskou adresou 0245:DIČ a odkazem na původní fakturu u dobropisu.",
+            "Kontrola před vystavením upozorní na chybějící DIČ, IČ DPH, adresu nebo odkaz na původní fakturu.",
+            "Vyhledání slovenských firem podle IČO a QR platba PAY by square na faktuře.",
+            "Odesílání e-faktur přes certifikovaného poskytovatele přímo z Billanty.",
+            "Přijímání došlých e-faktur jako návrhů výdajů, které jen zkontrolujete.",
+            "Stav doručení a nahlášení finanční správě u každé faktury.",
+            "připravujeme",
+            "Časté otázky",
+            "Stačí od roku 2027 poslat slovenskému odběrateli fakturu v PDF e-mailem?",
+            "Ne, pokud se na fakturu povinnost vztahuje. PDF ani sken není e-faktura. Daňovým dokladem je XML ve formátu Peppol BIS 3.0 doručené přes certifikovaného poskytovatele. PDF můžete poslat navíc jako čitelnou kopii.",
+            "Nejsem plátce DPH. Musím něco dělat?",
+            "Pokud podnikáte na Slovensku, tak ano, ale jen přijímat. Od 1. 1. 2027 musí každý podnikatel a právnická osoba na Slovensku umět e-fakturu přijmout, takže potřebujete certifikovaného poskytovatele. Vystavovat e-faktury nemusíte.",
+            "Potřebuji k e-faktuře souhlas odběratele?",
+            "Ne. U povinné e-faktury se souhlas odběratele nevyžaduje.",
+            "Posílá se e-faktura na portál finanční správy?",
+            "Ne. Faktura jde od vašeho poskytovatele k poskytovateli odběratele přes síť Peppol. Finanční správě poskytovatelé automaticky posílají vybrané údaje z faktury.",
+            "Týká se to českých firem, které fakturují na Slovensko?",
+            "Do 30. 6. 2030 přeshraniční faktury pod povinnost nespadají, takže česká firma bez registrace k DPH na Slovensku je vystavovat nemusí. Od 1. 7. 2030 se e-fakturace rozšíří na obchod v rámci EU.",
+            "Odkládá se začátek povinnosti?",
+            "Ne. Termín 1. 1. 2027 platí. Návrh novely ve slovenském parlamentu (tisk 1454) navrhuje jen půlroční období bez pokut a k 19. 10. 2026 nebyl schválen.",
+            "Zdroje",
+            "Finanční správa SR: časté otázky k e-faktuře (PDF, slovensky)",
+            "Seznam certifikovaných poskytovatelů",
+            "Slovenský zákon o DPH ve znění od 1. 1. 2027 (Slov-Lex)",
+            "Návrh novely, tisk 1454 (NR SR)",
+            "Závazné informace najdete na webu Finanční správy SR",
+            "Návod shrnuje základní pravidla podle slovenského zákona o DPH a materiálů Finanční správy SR a nenahrazuje účetní ani daňového poradce. Pravidla se ještě mohou změnit, proto si podrobnosti ověřte na webu Finanční správy SR.",
+            "Slovenská e-faktura od 1. 1. 2027",
+            "Slovenští plátci DPH budou firmám posílat e-faktury přes síť Peppol a přijímat je musí každá slovenská firma. Podívejte se, co se mění a koho se to týká.",
+            "Od roku 2027 musí každá slovenská firma umět přijímat e-faktury. Pošlete svým klientům nebo členům náš návod s rychlou kontrolou, zda se jich povinnost týká.",
+            "Přečíst návod"
+          ]
+        },
+        "sk": {
+          "name": "Elektronická fakturácia na Slovensku 2027",
+          "title": "E-faktúra na Slovensku od 2027: kto musí, kedy a ako sa pripraviť",
+          "description": "Od 1. 1. 2027 musia slovenskí platitelia DPH posielať tuzemským firmám e-faktúry cez sieť Peppol a každá firma ich musí vedieť prijať. Termíny, výnimky, pokuty a kontrolný zoznam.",
+          "lines": [
+            "Od 1. januára 2027 sa na Slovensku končí faktúra v PDF poslaná e-mailom. Platitelia DPH budú firmám posielať štruktúrované e-faktúry cez certifikovaného poskytovateľa a prijímať ich musí každý podnikateľ, aj neplatiteľ. Prehľad podľa zákona o DPH a materiálov Finančnej správy SR.",
+            "Čo sa mení a kedy",
+            "Dobrovoľná fáza. E-faktúry cez certifikovaného poskytovateľa môžete posielať už teraz, ak ho má aj odberateľ. Povinné to ešte nie je.",
+            "Povinná tuzemská fáza. Platitelia DPH musia na dodania od tohto dňa vystavovať e-faktúry do 15 dní a každý podnikateľ a právnická osoba ich musí vedieť prijať.",
+            "Druhá fáza podľa smernice EÚ ViDA: e-faktúry aj pri cezhraničných dodaniach v rámci EÚ, lehota sa skráti na 10 dní a kontrolný a súhrnný výkaz zaniknú.",
+            "Koho sa to týka",
+            "E-faktúru musí vystaviť:",
+            "slovenský platiteľ DPH (registrovaný podľa § 4, 4b alebo 4c zákona o DPH),",
+            "pri dodaní tovaru alebo služby s miestom dodania na Slovensku,",
+            "inej zdaniteľnej osobe (firme alebo živnostníkovi, aj neplatiteľovi DPH) alebo právnickej osobe, napríklad obci či združeniu.",
+            "Platí to pre faktúry, dobropisy, ťarchopisy aj faktúry na prijaté zálohy.",
+            "E-faktúru musí vedieť prijať:",
+            "každý podnikateľ a každá právnická osoba na Slovensku, aj keď nie je platiteľom DPH. Prakticky to znamená mať od 1. 1. 2027 zmluvu s certifikovaným poskytovateľom. Súhlas odberateľa sa pri povinnej e-faktúre nevyžaduje.",
+            "Mimo povinnosti zostáva:",
+            "predaj súkromným osobám (B2C),",
+            "plnenia oslobodené od dane podľa § 28 až 43 a § 47 (napríklad finančné a poisťovacie služby),",
+            "predaj zdokladovaný pokladničným dokladom z eKasy do 400 € alebo zjednodušenou faktúrou do 100 €,",
+            "plnenia v rámci skupiny DPH a utajované plnenia,",
+            "cezhraničné dodania (do 30. 6. 2030),",
+            "zálohová faktúra (proforma), ktorá nie je daňovým dokladom.",
+            "Česká firma, ktorá nie je na Slovensku registrovaná k DPH, slovenské e-faktúry do 30. 6. 2030 vystavovať nemusí. Ak ste na Slovensku registrovaný platiteľ DPH, overte si u daňového poradcu, či sa povinnosť týka aj vás.",
+            "Ako to funguje",
+            "E-faktúra nie je PDF ani sken. Je to súbor XML vo formáte Peppol BIS Billing 3.0 (európska norma EN 16931). Neposiela sa e-mailom ani na portál štátu, ale cez sieť Peppol:",
+            "Uzavriete zmluvu s certifikovaným poskytovateľom doručovacej služby. Finančná správa ich k 16. 10. 2026 eviduje 80 a cenu jednoduchej služby odhaduje na 5 – 12 € mesačne.",
+            "Vašou adresou v sieti je 0245:DIČ, teda vaše DIČ s predponou 0245.",
+            "Fakturačný program vytvorí XML a odovzdá ho vášmu poskytovateľovi. Ten ho doručí poskytovateľovi odberateľa.",
+            "Poskytovatelia automaticky nahlásia údaje z faktúry finančnej správe: dodávateľ pri vystavení, odberateľ do 5 dní od prijatia.",
+            "E-faktúry uchovávate 10 rokov.",
+            "Opravy a zálohy",
+            "Chybnú faktúru opravíte dobropisom (e-faktúra typu 381) s odkazom na pôvodnú faktúru a podľa potreby novou faktúrou. Typ 384 (opravená faktúra) sa na Slovensku zatiaľ nepoužíva. Faktúra na prijatú zálohu je daňový doklad a posiela sa ako e-faktúra s kódom 388. Zálohová faktúra (proforma) daňovým dokladom nie je.",
+            "Pokuty",
+            "Za nenahlásenie údajov, neskoré alebo nesprávne nahlásenie môže daňový úrad uložiť pokutu do 10 000 €, pri opakovanom porušení do 100 000 €. Zjavnú chybu opravenú bez zbytočného odkladu ani preukázaný výpadok u poskytovateľa nepokutuje.",
+            "Navrhované, zatiaľ neschválené",
+            "V parlamente je návrh novely, ktorý by zaviedol obdobie od 1. 1. do 30. 6. 2027 bez pokút a zrušil by nahlasovanie prijatých faktúr odberateľom. Kým ho parlament neschváli, platí to, čo je uvedené vyššie.",
+            "Kontrolný zoznam na prípravu",
+            "Zistite, či ste platiteľ DPH a komu fakturujete. Pomôže vám kontrola nižšie.",
+            "Vyberte si certifikovaného poskytovateľa zo zoznamu finančnej správy a porovnajte ceny.",
+            "Overte, že váš fakturačný program vie vytvoriť XML vo formáte Peppol BIS 3.0 a odovzdať ho poskytovateľovi.",
+            "Doplňte odberateľom IČO a DIČ. Bez DIČ e-faktúru nedoručíte.",
+            "Dohodnite sa s účtovníkom, ako budete prijímať a evidovať došlé e-faktúry.",
+            "Upravte postup pri opravách (dobropis 381) a faktúrach na zálohy (388).",
+            "Vyskúšajte posielanie ešte v roku 2026, kým je fáza dobrovoľná.",
+            "Zabezpečte archiváciu XML na 10 rokov.",
+            "Týka sa to vás? Rýchla kontrola",
+            "Odpovedzte na pár otázok. Výsledok platí pre bežnú faktúru od 1. 1. 2027.",
+            "Kde má vaša firma sídlo?",
+            "Slovensko",
+            "Česko",
+            "Ste na Slovensku platiteľ DPH?",
+            "Fakturujete slovenským firmám, živnostníkom alebo úradom?",
+            "Sú vaše plnenia oslobodené od DPH (napríklad finančné služby)?",
+            "Áno",
+            "Nie",
+            "Vystavovanie",
+            "Prijímanie",
+            "Od 1. 1. 2027 musíte vedieť e-faktúry prijímať, aj ako neplatiteľ DPH. Potrebujete na to certifikovaného poskytovateľa.",
+            "Povinnosť prijímať sa týka podnikateľov a právnických osôb na Slovensku, nie vás.",
+            "Ako pomôže Billanta",
+            "Export faktúr a dobropisov do XML vo formáte UBL / Peppol BIS Billing 3.0 so slovenskou adresou 0245:DIČ a odkazom na pôvodnú faktúru pri dobropise.",
+            "Kontrola pred vystavením upozorní na chýbajúce DIČ, IČ DPH, adresu alebo odkaz na pôvodnú faktúru.",
+            "Vyhľadanie slovenských firiem podľa IČO a QR platba PAY by square na faktúre.",
+            "Odosielanie e-faktúr cez certifikovaného poskytovateľa priamo z Billanty.",
+            "Prijímanie došlých e-faktúr ako návrhov výdavkov, ktoré len skontrolujete.",
+            "Stav doručenia a nahlásenia finančnej správe pri každej faktúre.",
+            "pripravujeme",
+            "Časté otázky",
+            "Stačí od roku 2027 poslať faktúru v PDF e-mailom?",
+            "Nie, ak sa na faktúru povinnosť vzťahuje. PDF ani sken nie je e-faktúra. Daňovým dokladom je XML vo formáte Peppol BIS 3.0 doručené cez certifikovaného poskytovateľa. PDF môžete poslať navyše ako čitateľnú kópiu.",
+            "Nie som platiteľ DPH. Musím niečo robiť?",
+            "Áno, ale len prijímať. Od 1. 1. 2027 musí každý podnikateľ a právnická osoba na Slovensku vedieť e-faktúru prijať, takže potrebujete certifikovaného poskytovateľa. Vystavovať e-faktúry nemusíte.",
+            "Potrebujem na e-faktúru súhlas odberateľa?",
+            "Nie. Pri povinnej e-faktúre sa súhlas odberateľa nevyžaduje.",
+            "Posiela sa e-faktúra na portál finančnej správy?",
+            "Nie. Faktúra ide od vášho poskytovateľa k poskytovateľovi odberateľa cez sieť Peppol. Finančnej správe poskytovatelia automaticky posielajú vybrané údaje z faktúry.",
+            "Týka sa to českých firiem, ktoré fakturujú na Slovensko?",
+            "Do 30. 6. 2030 cezhraničné faktúry pod povinnosť nespadajú, takže česká firma bez registrácie k DPH na Slovensku ich vystavovať nemusí. Od 1. 7. 2030 sa e-fakturácia rozšíri na obchod v rámci EÚ.",
+            "Odkladá sa začiatok povinnosti?",
+            "Nie. Termín 1. 1. 2027 platí. Návrh novely v parlamente (tlač 1454) navrhuje len polročné obdobie bez pokút a k 19. 10. 2026 nebol schválený.",
+            "Zdroje",
+            "Finančná správa SR: najčastejšie otázky k e-faktúre (PDF)",
+            "Zoznam certifikovaných poskytovateľov",
+            "Zákon o DPH v znení od 1. 1. 2027 (Slov-Lex)",
+            "Návrh novely, tlač 1454 (NR SR)",
+            "Záväzné informácie nájdete na webe Finančnej správy SR",
+            "Návod zhŕňa základné pravidlá podľa zákona o DPH a materiálov Finančnej správy SR a nenahrádza účtovníka ani daňového poradcu. Pravidlá sa ešte môžu zmeniť, preto si podrobnosti overte na webe Finančnej správy SR.",
+            "E-faktúra od 1. 1. 2027: ste pripravení?",
+            "Slovenskí platitelia DPH budú firmám posielať e-faktúry cez sieť Peppol a prijímať ich musí každá firma, aj neplatiteľ. Pozrite si, čo sa mení, a overte si to za minútu.",
+            "Od roku 2027 musí každá slovenská firma vedieť prijímať e-faktúry. Pošlite svojim klientom alebo členom náš návod s rýchlou kontrolou, či sa ich povinnosť týka.",
+            "Prečítať návod"
+          ]
+        }
+      }
+    }
+  ],
+  "presets": [
+    {
+      "key": "invoicingOnly",
+      "modules": [],
+      "texts": {
+        "cs": {
+          "title": "Jen fakturace",
+          "description": "Faktury a kontakty, nic navíc."
+        },
+        "sk": {
+          "title": "Len fakturácia",
+          "description": "Faktúry a kontakty, nič navyše."
+        }
+      }
+    },
+    {
+      "key": "flatTax",
+      "modules": [
+        "bank",
+        "quotes",
+        "time",
+        "ai"
+      ],
+      "texts": {
+        "cs": {
+          "title": "Paušalista / freelancer",
+          "description": "Bez evidence výdajů, s kontrolou plateb v bance a nabídkami."
+        },
+        "sk": {
+          "title": "Paušalista / freelancer",
+          "description": "Bez evidencie výdavkov, s kontrolou platieb v banke a ponukami."
+        }
+      }
+    },
+    {
+      "key": "tradesman",
+      "modules": [
+        "expenses",
+        "bank",
+        "quotes",
+        "time",
+        "ai"
+      ],
+      "texts": {
+        "cs": {
+          "title": "Živnostník s výdaji",
+          "description": "Faktury, výdaje a účtenky, banka i cenové nabídky."
+        },
+        "sk": {
+          "title": "Živnostník s výdavkami",
+          "description": "Faktúry, výdavky a bločky, banka aj cenové ponuky."
+        }
+      }
+    },
+    {
+      "key": "withAccountant",
+      "modules": [
+        "expenses",
+        "bank",
+        "quotes",
+        "time",
+        "reports",
+        "ai"
+      ],
+      "texts": {
+        "cs": {
+          "title": "Firma s účetní",
+          "description": "Všechno včetně exportů pro účetní (Pohoda, Money S3, CSV)."
+        },
+        "sk": {
+          "title": "Firma s účtovníkom",
+          "description": "Všetko vrátane exportov pre účtovníka (Pohoda, Money S3, CSV)."
+        }
+      }
+    },
+    {
+      "key": "eshop",
+      "modules": [
+        "expenses",
+        "bank",
+        "reports"
+      ],
+      "texts": {
+        "cs": {
+          "title": "E-shop",
+          "description": "Faktury, výdaje, banka a exporty – bez cenových nabídek."
+        },
+        "sk": {
+          "title": "E-shop",
+          "description": "Faktúry, výdavky, banka a exporty – bez cenových ponúk."
+        }
+      }
+    }
+  ],
+  "modules": {
+    "cs": {
+      "expenses": {
+        "title": "Výdaje",
+        "description": "Přijaté faktury, účtenky a jejich vytěžení."
+      },
+      "bank": {
+        "title": "Banka",
+        "description": "Párování plateb s fakturami z bankovních výpisů."
+      },
+      "quotes": {
+        "title": "Cenové nabídky",
+        "description": "Nabídky, které jedním klikem převedete na fakturu."
+      },
+      "reports": {
+        "title": "Exporty pro účetní",
+        "description": "CSV a XML pro Pohodu a Money S3 za měsíc, kvartál nebo rok."
+      },
+      "ai": {
+        "title": "AI asistent",
+        "description": "Hlasová fakturace a čtení účtenek."
+      },
+      "time": {
+        "title": "Evidence času",
+        "description": "Časovač, projekty s hodinovou sazbou a fakturace odpracovaných hodin."
+      }
+    },
+    "sk": {
+      "expenses": {
+        "title": "Výdavky",
+        "description": "Prijaté faktúry, bločky a ich vyťaženie."
+      },
+      "bank": {
+        "title": "Banka",
+        "description": "Párovanie platieb s faktúrami z bankových výpisov."
+      },
+      "quotes": {
+        "title": "Cenové ponuky",
+        "description": "Ponuky, ktoré jedným klikom prevediete na faktúru."
+      },
+      "reports": {
+        "title": "Exporty pre účtovníka",
+        "description": "CSV a XML pre Pohodu a Money S3 za mesiac, kvartál alebo rok."
+      },
+      "ai": {
+        "title": "AI asistent",
+        "description": "Hlasová fakturácia a čítanie bločkov."
+      },
+      "time": {
+        "title": "Evidencia času",
+        "description": "Časovač, projekty s hodinovou sadzbou a fakturácia odpracovaných hodín."
+      }
+    }
+  },
+  "requirements": {
+    "cs": {
+      "nameMissing": "chybí název nebo jméno",
+      "addressIncomplete": "chybí sídlo (ulice nebo město)",
+      "icoMissing": "chybí IČO",
+      "dicMissing": "chybí DIČ",
+      "dicMissingReverse": "u přenesení daňové povinnosti musí být uvedeno DIČ odběratele",
+      "registryMissing": "chybí údaj o zápisu do rejstříku (např. „Fyzická osoba zapsaná v živnostenském rejstříku“), doplňte v Nastavení › Firma",
+      "customerMissing": "není vybrán odběratel",
+      "noLines": "doklad nemá žádnou položku",
+      "lineNameMissing": "některá položka nemá popis (předmět plnění)",
+      "zeroQuantity": "některá položka má nulové množství"
+    },
+    "sk": {
+      "nameMissing": "chýba názov alebo meno",
+      "addressIncomplete": "chýba sídlo (ulica alebo mesto)",
+      "icoMissing": "chýba IČO",
+      "dicMissing": "chýba IČ DPH",
+      "dicMissingReverse": "pri prenesení daňovej povinnosti musí byť uvedené IČ DPH odberateľa",
+      "registryMissing": "chýba údaj o zápise do registra, doplňte v Nastavenia › Firma",
+      "customerMissing": "nie je vybraný odberateľ",
+      "noLines": "doklad nemá žiadnu položku",
+      "lineNameMissing": "niektorá položka nemá popis (predmet plnenia)",
+      "zeroQuantity": "niektorá položka má nulové množstvo"
+    }
+  }
+}

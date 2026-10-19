@@ -8945,7 +8945,9 @@
     "kind": {
       "manual": "Manual",
       "tax_deadlines": "Tax deadlines",
-      "brief": "AI from a brief"
+      "brief": "AI from a brief",
+      "tool_howto": "Tool how-to",
+      "trade_invoicing": "Invoicing by trade"
     },
     "drafts": {
       "taxTitle": "Tax deadlines for a month",
@@ -9007,7 +9009,27 @@
       "banned_phrase": "The text contains a banned promise or phrase (e.g. \"guaranteed\").",
       "raw_html": "The text contains HTML.",
       "bad_link": "Links may only point to https:// or to a page on this site (/…).",
-      "unknown_number": "The text contains a number that is not in the facts or the sources."
+      "unknown_number": "The text contains a number that is not in the facts or the sources.",
+      "absolute_claim": "The text says \"always\" or \"never\" where the facts do not.",
+      "em_dash": "The text contains an em dash. Use the en dash \"–\".",
+      "law_reference": "The text cites a paragraph that is not in the facts, or a law without a known link."
+    },
+    "autopublish": {
+      "title": "Automatic posts",
+      "hint": "Drafts from our own data (tax calendar, tools, kinds of business). A switched-on kind goes live on its own only when it passes every check, is not about a law changing, and no more than {n} automatic posts went out in that language in the last 7 days. Everything else waits for approval.",
+      "kinds": {
+        "tax_deadlines": "Every month on the 20th, Czech only.",
+        "tool_howto": "One new how-to every Tuesday, in Czech and Slovak.",
+        "trade_invoicing": "One new trade every Tuesday, in Czech and Slovak."
+      },
+      "thisWeek": "Auto-published in the last 7 days: cs {cs}/{n}, sk {sk}/{n}.",
+      "on": "Auto-publishing is on.",
+      "off": "Auto-publishing is off.",
+      "topic": "Post type",
+      "draftNext": "Write the next topic",
+      "allWritten": "Every topic of this type already has a post in that language.",
+      "published": "The post passed every check and is live.",
+      "badge": "auto"
     }
   },
   "unsubscribe": {

@@ -1635,6 +1635,9 @@ export interface BlogSource {
   url: string;
 }
 
+/** manual: written by a person; brief: AI from an admin's facts; the rest: AI from our own data (blog-drafts.service.ts). */
+export type BlogPostKind = "manual" | "brief" | "tax_deadlines" | "tool_howto" | "trade_invoicing";
+
 export const blogPosts = pgTable("blog_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
   locale: varchar("locale", { length: 2 }).$type<"cs" | "sk" | "en">().notNull(),
@@ -1644,7 +1647,7 @@ export const blogPosts = pgTable("blog_posts", {
   description: text("description").notNull(),
   /** Restricted markdown: `## ` headings, `- ` lists, **bold**, [links](https://…). */
   body: text("body").notNull(),
-  kind: varchar("kind", { length: 16 }).$type<"manual" | "tax_deadlines" | "brief">().notNull().default("manual"),
+  kind: varchar("kind", { length: 16 }).$type<BlogPostKind>().notNull().default("manual"),
   status: varchar("status", { length: 16 })
     .$type<"draft" | "pending_review" | "published" | "rejected">()
     .notNull()
@@ -1655,7 +1658,19 @@ export const blogPosts = pgTable("blog_posts", {
   /** Blocker codes from `blog-checks.ts` at the last save. */
   warnings: jsonb("warnings").$type<string[]>().notNull().default([]),
   publishedAt: timestamp("published_at", { withTimezone: true }),
+  /** Went live without a click (blog_autopublish); counts towards the weekly cap. */
+  autoPublished: boolean("auto_published").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Auto-publish switch per generated kind, set in /admin/blog (migration 0074).
+ * A missing row means off. Briefs and hand-written posts have no switch.
+ */
+export const blogAutopublish = pgTable("blog_autopublish", {
+  kind: varchar("kind", { length: 16 }).$type<BlogPostKind>().primaryKey(),
+  enabled: boolean("enabled").notNull().default(false),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

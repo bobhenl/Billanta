@@ -8945,7 +8945,9 @@
     "kind": {
       "manual": "Ručně",
       "tax_deadlines": "Daňové termíny",
-      "brief": "AI ze zadání"
+      "brief": "AI ze zadání",
+      "tool_howto": "Návod k nástroji",
+      "trade_invoicing": "Fakturace podle oboru"
     },
     "drafts": {
       "taxTitle": "Daňové termíny na měsíc",
@@ -9007,7 +9009,27 @@
       "banned_phrase": "Text obsahuje zakázaný slib nebo frázi (např. „garantujeme“).",
       "raw_html": "Text obsahuje HTML.",
       "bad_link": "Odkaz smí vést jen na https:// nebo na stránku webu (/…).",
-      "unknown_number": "Text obsahuje číslo, které není ve faktech ani ve zdrojích."
+      "unknown_number": "Text obsahuje číslo, které není ve faktech ani ve zdrojích.",
+      "absolute_claim": "Text tvrdí „vždy“ nebo „nikdy“, i když to fakta neříkají.",
+      "em_dash": "Text obsahuje dlouhou pomlčku (em dash). Používejte krátkou „–“.",
+      "law_reference": "Text cituje paragraf, který není ve faktech, nebo zákon bez známého odkazu."
+    },
+    "autopublish": {
+      "title": "Automatické články",
+      "hint": "Koncepty z našich dat (daňový kalendář, nástroje, typy podnikání). Zapnutý typ se zveřejní sám, jen když projde všemi kontrolami, netýká se změny zákona a v daném jazyce za posledních 7 dní nevyšlo víc než {n} automatických článků. Ostatní čekají na schválení.",
+      "kinds": {
+        "tax_deadlines": "Každý měsíc 20. dne, jen česky.",
+        "tool_howto": "Každé úterý jeden nový návod, česky a slovensky.",
+        "trade_invoicing": "Každé úterý jeden nový obor, česky a slovensky."
+      },
+      "thisWeek": "Automaticky zveřejněno za 7 dní: cs {cs}/{n}, sk {sk}/{n}.",
+      "on": "Automatické zveřejňování je zapnuté.",
+      "off": "Automatické zveřejňování je vypnuté.",
+      "topic": "Typ článku",
+      "draftNext": "Napsat další téma",
+      "allWritten": "Všechna témata tohoto typu už v tomto jazyce mají článek.",
+      "published": "Článek prošel kontrolami a je zveřejněný.",
+      "badge": "automaticky"
     }
   },
   "unsubscribe": {

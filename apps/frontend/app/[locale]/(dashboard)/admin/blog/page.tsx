@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { AlertTriangle } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { BlogDraftForms } from '@/components/admin-blog';
+import { BlogAutomation, BlogDraftForms } from '@/components/admin-blog';
 import { Link } from '@/i18n/navigation';
-import { adminBlogFetch, BLOG_STATUS_TONE, type AdminBlogListItem, type BlogStatus } from '@/lib/admin-blog';
+import { adminBlogFetch, BLOG_STATUS_TONE, type AdminBlogListItem, type BlogAutopublish, type BlogStatus } from '@/lib/admin-blog';
 import { formatBlogDate } from '@/lib/blog';
 import { NOINDEX } from '@/lib/seo';
 import { cn } from '@/lib/utils';
@@ -19,7 +19,10 @@ const ORDER: BlogStatus[] = ['pending_review', 'draft', 'published', 'rejected']
 export default async function AdminBlogPage() {
   const t = await getTranslations('adminBlog');
   const locale = await getLocale();
-  const posts = await adminBlogFetch<AdminBlogListItem[]>('');
+  const [posts, autopublish] = await Promise.all([
+    adminBlogFetch<AdminBlogListItem[]>(''),
+    adminBlogFetch<BlogAutopublish>('/autopublish')
+  ]);
   const sorted = [...posts].sort((a, b) => ORDER.indexOf(a.status) - ORDER.indexOf(b.status));
 
   return (
@@ -27,7 +30,8 @@ export default async function AdminBlogPage() {
       <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-4">
+        <BlogAutomation autopublish={autopublish} />
         <BlogDraftForms />
       </div>
 
@@ -50,7 +54,10 @@ export default async function AdminBlogPage() {
                       {t('warningCount', { n: p.warnings.length })}
                     </span>
                   )}
-                  <span>{t(`kind.${p.kind}`)}</span>
+                  <span>
+                    {t(`kind.${p.kind}`)}
+                    {p.autoPublished && ` · ${t('autopublish.badge')}`}
+                  </span>
                   <time dateTime={p.updatedAt}>{formatBlogDate(locale, p.updatedAt)}</time>
                 </span>
               </Link>
