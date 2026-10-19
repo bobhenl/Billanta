@@ -67,7 +67,7 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
       case PRIVATE_CARD:
         return { title: t('og.privateTitle'), subtitle: t('og.privateSubtitle'), section: t('og.privateSection') };
       case 'guides':
-        // The guides hub is published only where the guides are (cs/en).
+        // The guides hub is published only where some guide is.
         if (!GUIDES_HUB_LOCALES.includes(l)) return null;
         return { title: t('tools.guides.indexTitle'), subtitle: t('tools.guides.indexDescription'), section: s.guides };
     }

@@ -82,7 +82,20 @@ export async function ToolNote() {
 }
 
 /** Guide footer: what the info is based on, when it was last checked, and the official source. */
-export async function GuideSources({ checked, officialUrl, extra }: { checked: string; officialUrl: string; extra?: string }) {
+export async function GuideSources({
+  checked,
+  officialUrl,
+  extra,
+  officialLabel,
+  disclaimer
+}: {
+  checked: string;
+  officialUrl: string;
+  extra?: string;
+  /** Replace the Czech wording ("Finanční správa") for a guide about other rules. */
+  officialLabel?: string;
+  disclaimer?: string;
+}) {
   const t = await getTranslations('tools.common');
   const format = await getFormatter();
   const date = format.dateTime(new Date(`${checked}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
@@ -92,10 +105,10 @@ export async function GuideSources({ checked, officialUrl, extra }: { checked: s
       <div className="space-y-1">
         <p className="font-semibold">{t('lastChecked', { date })}</p>
         {extra && <p className="text-muted-foreground">{extra}</p>}
-        <p className="leading-relaxed text-muted-foreground">{t('guideDisclaimer')}</p>
+        <p className="leading-relaxed text-muted-foreground">{disclaimer ?? t('guideDisclaimer')}</p>
         <p>
           <a href={officialUrl} target="_blank" rel="noopener" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-            {t('officialSource')}
+            {officialLabel ?? t('officialSource')}
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
         </p>

@@ -4588,13 +4588,14 @@
     "internalField": "Interné pole – vidí len váš tím",
     "peppol": {
       "title": "E-faktúra (Peppol) by neprešla kontrolou",
-      "intro": "Odberateľ je v zahraničí, takže faktúru možno budete chcieť poslať ako UBL cez sieť Peppol. Prístupový bod by ju odmietol alebo označil pre tieto body:",
+      "intro": "Doklad možno budete chcieť poslať ako e-faktúru UBL cez sieť Peppol (na Slovensku ju platitelia DPH od 1. 1. 2027 musia vyhotovovať tuzemským firmám). Prístupový bod by ju odmietol alebo označil pre tieto body:",
       "field": {
         "supplier": "Dodávateľ",
         "customer": "Odberateľ",
         "lines": "Položky",
         "payment": "Platba",
-        "currency": "Mena"
+        "currency": "Mena",
+        "document": "Doklad"
       },
       "code": {
         "nameMissing": "chýba názov",
@@ -4607,7 +4608,9 @@
         "lineNameMissing": "niektorá položka nemá popis",
         "currencyInvalid": "neplatný kód meny",
         "noAccount": "nie je uvedený bankový účet",
-        "noIban": "účet nemá IBAN"
+        "noIban": "účet nemá IBAN",
+        "skDicMissing": "chýba slovenské DIČ (10 číslic), z ktorého sa tvorí adresa Peppol 0245",
+        "precedingMissing": "dobropis neodkazuje na pôvodnú faktúru, ktorú opravuje"
       }
     },
     "requirements": {
@@ -7186,7 +7189,7 @@
       "calculators": "Kalkulačky",
       "calculatorsHint": "Dane, DPH, kurzy a splatnosť faktúry",
       "guides": "Návody",
-      "guidesHint": "Ako podať DPH a hlásenia",
+      "guidesHint": "E-faktúra 2027 a česká DPH",
       "compare": "Porovnanie s konkurenciou",
       "blog": "Blog",
       "blogHint": "Termíny, legislatíva a návody",
@@ -7784,9 +7787,9 @@
       }
     },
     "guides": {
-      "indexTitle": "Návody k českej DPH",
-      "indexDescription": "Návody k českej DPH: priznanie, kontrolné a súhrnné hlásenie, identifikovaná osoba.",
-      "indexLead": "Návody sa týkajú českej DPH.",
+      "indexTitle": "Návody k DPH a e-faktúre",
+      "indexDescription": "Návody pre podnikateľov: povinná e-faktúra na Slovensku od roku 2027 a pravidlá českej DPH pre firmy, ktoré obchodujú s Českom.",
+      "indexLead": "Čo sa mení a čo treba podať, krok za krokom.",
       "items": {
         "vatFiling": {
           "name": "Priznanie k DPH, kontrolné a súhrnné hlásenie (Česko)",
@@ -7797,6 +7800,167 @@
           "name": "Identifikovaná osoba k DPH (Česko)",
           "title": "Identifikovaná osoba k DPH v Česku",
           "description": "Návod k českej DPH. Platí len podľa českých pravidiel."
+        },
+        "skEinvoicing": {
+          "name": "Elektronická fakturácia na Slovensku 2027",
+          "title": "E-faktúra na Slovensku od 2027: kto musí, kedy a ako sa pripraviť",
+          "description": "Od 1. 1. 2027 musia slovenskí platitelia DPH posielať tuzemským firmám e-faktúry cez sieť Peppol a každá firma ich musí vedieť prijať. Termíny, výnimky, pokuty a kontrolný zoznam.",
+          "lead": "Od 1. januára 2027 sa na Slovensku končí faktúra v PDF poslaná e-mailom. Platitelia DPH budú firmám posielať štruktúrované e-faktúry cez certifikovaného poskytovateľa a prijímať ich musí každý podnikateľ, aj neplatiteľ. Prehľad podľa zákona o DPH a materiálov Finančnej správy SR.",
+          "keywords": "e-faktúra 2027 elektronická fakturácia slovensko peppol povinná e-fakturácia zákon 385/2025 § 85o doručovacia služba certifikovaný poskytovateľ 0245 dič finančná správa",
+          "whenTitle": "Čo sa mení a kedy",
+          "timeline": [
+            {
+              "date": "2026",
+              "text": "Dobrovoľná fáza. E-faktúry cez certifikovaného poskytovateľa môžete posielať už teraz, ak ho má aj odberateľ. Povinné to ešte nie je."
+            },
+            {
+              "date": "1. 1. 2027",
+              "text": "Povinná tuzemská fáza. Platitelia DPH musia na dodania od tohto dňa vystavovať e-faktúry do 15 dní a každý podnikateľ a právnická osoba ich musí vedieť prijať."
+            },
+            {
+              "date": "1. 7. 2030",
+              "text": "Druhá fáza podľa smernice EÚ ViDA: e-faktúry aj pri cezhraničných dodaniach v rámci EÚ, lehota sa skráti na 10 dní a kontrolný a súhrnný výkaz zaniknú."
+            }
+          ],
+          "whoTitle": "Koho sa to týka",
+          "issueLabel": "E-faktúru musí vystaviť:",
+          "issuers": [
+            "slovenský platiteľ DPH (registrovaný podľa § 4, 4b alebo 4c zákona o DPH),",
+            "pri dodaní tovaru alebo služby s miestom dodania na Slovensku,",
+            "inej zdaniteľnej osobe (firme alebo živnostníkovi, aj neplatiteľovi DPH) alebo právnickej osobe, napríklad obci či združeniu.",
+            "Platí to pre faktúry, dobropisy, ťarchopisy aj faktúry na prijaté zálohy."
+          ],
+          "receiveLabel": "E-faktúru musí vedieť prijať:",
+          "receivers": "každý podnikateľ a každá právnická osoba na Slovensku, aj keď nie je platiteľom DPH. Prakticky to znamená mať od 1. 1. 2027 zmluvu s certifikovaným poskytovateľom. Súhlas odberateľa sa pri povinnej e-faktúre nevyžaduje.",
+          "outsideLabel": "Mimo povinnosti zostáva:",
+          "outside": [
+            "predaj súkromným osobám (B2C),",
+            "plnenia oslobodené od dane podľa § 28 až 43 a § 47 (napríklad finančné a poisťovacie služby),",
+            "predaj zdokladovaný pokladničným dokladom z eKasy do 400 € alebo zjednodušenou faktúrou do 100 €,",
+            "plnenia v rámci skupiny DPH a utajované plnenia,",
+            "cezhraničné dodania (do 30. 6. 2030),",
+            "zálohová faktúra (proforma), ktorá nie je daňovým dokladom."
+          ],
+          "czNote": "Česká firma, ktorá nie je na Slovensku registrovaná k DPH, slovenské e-faktúry do 30. 6. 2030 vystavovať nemusí. Ak ste na Slovensku registrovaný platiteľ DPH, overte si u daňového poradcu, či sa povinnosť týka aj vás.",
+          "howTitle": "Ako to funguje",
+          "howBody": "E-faktúra nie je PDF ani sken. Je to súbor XML vo formáte Peppol BIS Billing 3.0 (európska norma EN 16931). Neposiela sa e-mailom ani na portál štátu, ale cez sieť Peppol:",
+          "howSteps": [
+            "Uzavriete zmluvu s certifikovaným poskytovateľom doručovacej služby. Finančná správa ich k 16. 10. 2026 eviduje 80 a cenu jednoduchej služby odhaduje na 5 – 12 € mesačne.",
+            "Vašou adresou v sieti je 0245:DIČ, teda vaše DIČ s predponou 0245.",
+            "Fakturačný program vytvorí XML a odovzdá ho vášmu poskytovateľovi. Ten ho doručí poskytovateľovi odberateľa.",
+            "Poskytovatelia automaticky nahlásia údaje z faktúry finančnej správe: dodávateľ pri vystavení, odberateľ do 5 dní od prijatia.",
+            "E-faktúry uchovávate 10 rokov."
+          ],
+          "correctionsTitle": "Opravy a zálohy",
+          "corrections": "Chybnú faktúru opravíte dobropisom (e-faktúra typu 381) s odkazom na pôvodnú faktúru a podľa potreby novou faktúrou. Typ 384 (opravená faktúra) sa na Slovensku zatiaľ nepoužíva. Faktúra na prijatú zálohu je daňový doklad a posiela sa ako e-faktúra s kódom 388. Zálohová faktúra (proforma) daňovým dokladom nie je.",
+          "penaltiesTitle": "Pokuty",
+          "penalties": "Za nenahlásenie údajov, neskoré alebo nesprávne nahlásenie môže daňový úrad uložiť pokutu do 10 000 €, pri opakovanom porušení do 100 000 €. Zjavnú chybu opravenú bez zbytočného odkladu ani preukázaný výpadok u poskytovateľa nepokutuje.",
+          "pendingTitle": "Navrhované, zatiaľ neschválené",
+          "pending": "V parlamente je návrh novely, ktorý by zaviedol obdobie od 1. 1. do 30. 6. 2027 bez pokút a zrušil by nahlasovanie prijatých faktúr odberateľom. Kým ho parlament neschváli, platí to, čo je uvedené vyššie.",
+          "checklistTitle": "Kontrolný zoznam na prípravu",
+          "checklist": [
+            "Zistite, či ste platiteľ DPH a komu fakturujete. Pomôže vám kontrola nižšie.",
+            "Vyberte si certifikovaného poskytovateľa zo zoznamu finančnej správy a porovnajte ceny.",
+            "Overte, že váš fakturačný program vie vytvoriť XML vo formáte Peppol BIS 3.0 a odovzdať ho poskytovateľovi.",
+            "Doplňte odberateľom IČO a DIČ. Bez DIČ e-faktúru nedoručíte.",
+            "Dohodnite sa s účtovníkom, ako budete prijímať a evidovať došlé e-faktúry.",
+            "Upravte postup pri opravách (dobropis 381) a faktúrach na zálohy (388).",
+            "Vyskúšajte posielanie ešte v roku 2026, kým je fáza dobrovoľná.",
+            "Zabezpečte archiváciu XML na 10 rokov."
+          ],
+          "checkTitle": "Týka sa to vás? Rýchla kontrola",
+          "checkLead": "Odpovedzte na pár otázok. Výsledok platí pre bežnú faktúru od 1. 1. 2027.",
+          "check": {
+            "country": "Kde má vaša firma sídlo?",
+            "countrySk": "Slovensko",
+            "countryCz": "Česko",
+            "payer": "Ste na Slovensku platiteľ DPH?",
+            "b2b": "Fakturujete slovenským firmám, živnostníkom alebo úradom?",
+            "exempt": "Sú vaše plnenia oslobodené od DPH (napríklad finančné služby)?",
+            "yes": "Áno",
+            "no": "Nie",
+            "issueTitle": "Vystavovanie",
+            "receiveTitle": "Prijímanie",
+            "result": {
+              "mandatory": "Od 1. 1. 2027 musíte týmto odberateľom posielať e-faktúry cez sieť Peppol, a to do 15 dní od dodania.",
+              "nonPayer": "Ako neplatiteľ DPH e-faktúry vystavovať nemusíte. Ak chcete, môžete.",
+              "exempt": "Na oslobodené plnenia sa povinnosť nevzťahuje. Ak máte aj zdaniteľné plnenia, pre ne platí.",
+              "noB2b": "Súkromným osobám e-faktúry posielať nemusíte. Ak fakturujete aj firmám, povinnosť sa týka týchto faktúr.",
+              "cz": "Česká firma bez registrácie k DPH na Slovensku slovenské e-faktúry do 30. 6. 2030 vystavovať nemusí."
+            },
+            "receiveSk": "Od 1. 1. 2027 musíte vedieť e-faktúry prijímať, aj ako neplatiteľ DPH. Potrebujete na to certifikovaného poskytovateľa.",
+            "receiveCz": "Povinnosť prijímať sa týka podnikateľov a právnických osôb na Slovensku, nie vás."
+          },
+          "billantaTitle": "Ako pomôže Billanta",
+          "billanta": [
+            {
+              "text": "Export faktúr a dobropisov do XML vo formáte UBL / Peppol BIS Billing 3.0 so slovenskou adresou 0245:DIČ a odkazom na pôvodnú faktúru pri dobropise.",
+              "soon": false
+            },
+            {
+              "text": "Kontrola pred vystavením upozorní na chýbajúce DIČ, IČ DPH, adresu alebo odkaz na pôvodnú faktúru.",
+              "soon": false
+            },
+            {
+              "text": "Vyhľadanie slovenských firiem podľa IČO a QR platba PAY by square na faktúre.",
+              "soon": false
+            },
+            {
+              "text": "Odosielanie e-faktúr cez certifikovaného poskytovateľa priamo z Billanty.",
+              "soon": true
+            },
+            {
+              "text": "Prijímanie došlých e-faktúr ako návrhov výdavkov, ktoré len skontrolujete.",
+              "soon": true
+            },
+            {
+              "text": "Stav doručenia a nahlásenia finančnej správe pri každej faktúre.",
+              "soon": true
+            }
+          ],
+          "soon": "pripravujeme",
+          "faqTitle": "Časté otázky",
+          "faq": [
+            {
+              "q": "Stačí od roku 2027 poslať faktúru v PDF e-mailom?",
+              "a": "Nie, ak sa na faktúru povinnosť vzťahuje. PDF ani sken nie je e-faktúra. Daňovým dokladom je XML vo formáte Peppol BIS 3.0 doručené cez certifikovaného poskytovateľa. PDF môžete poslať navyše ako čitateľnú kópiu."
+            },
+            {
+              "q": "Nie som platiteľ DPH. Musím niečo robiť?",
+              "a": "Áno, ale len prijímať. Od 1. 1. 2027 musí každý podnikateľ a právnická osoba na Slovensku vedieť e-faktúru prijať, takže potrebujete certifikovaného poskytovateľa. Vystavovať e-faktúry nemusíte."
+            },
+            {
+              "q": "Potrebujem na e-faktúru súhlas odberateľa?",
+              "a": "Nie. Pri povinnej e-faktúre sa súhlas odberateľa nevyžaduje."
+            },
+            {
+              "q": "Posiela sa e-faktúra na portál finančnej správy?",
+              "a": "Nie. Faktúra ide od vášho poskytovateľa k poskytovateľovi odberateľa cez sieť Peppol. Finančnej správe poskytovatelia automaticky posielajú vybrané údaje z faktúry."
+            },
+            {
+              "q": "Týka sa to českých firiem, ktoré fakturujú na Slovensko?",
+              "a": "Do 30. 6. 2030 cezhraničné faktúry pod povinnosť nespadajú, takže česká firma bez registrácie k DPH na Slovensku ich vystavovať nemusí. Od 1. 7. 2030 sa e-fakturácia rozšíri na obchod v rámci EÚ."
+            },
+            {
+              "q": "Odkladá sa začiatok povinnosti?",
+              "a": "Nie. Termín 1. 1. 2027 platí. Návrh novely v parlamente (tlač 1454) navrhuje len polročné obdobie bez pokút a k 19. 10. 2026 nebol schválený."
+            }
+          ],
+          "linksTitle": "Zdroje",
+          "links": {
+            "faq": "Finančná správa SR: najčastejšie otázky k e-faktúre (PDF)",
+            "providers": "Zoznam certifikovaných poskytovateľov",
+            "law": "Zákon o DPH v znení od 1. 1. 2027 (Slov-Lex)",
+            "bill": "Návrh novely, tlač 1454 (NR SR)"
+          },
+          "officialSource": "Záväzné informácie nájdete na webe Finančnej správy SR",
+          "disclaimer": "Návod zhŕňa základné pravidlá podľa zákona o DPH a materiálov Finančnej správy SR a nenahrádza účtovníka ani daňového poradcu. Pravidlá sa ešte môžu zmeniť, preto si podrobnosti overte na webe Finančnej správy SR.",
+          "callout": {
+            "title": "E-faktúra od 1. 1. 2027: ste pripravení?",
+            "body": "Slovenskí platitelia DPH budú firmám posielať e-faktúry cez sieť Peppol a prijímať ich musí každá firma, aj neplatiteľ. Pozrite si, čo sa mení, a overte si to za minútu.",
+            "partnerBody": "Od roku 2027 musí každá slovenská firma vedieť prijímať e-faktúry. Pošlite svojim klientom alebo členom náš návod s rýchlou kontrolou, či sa ich povinnosť týka.",
+            "cta": "Prečítať návod"
+          }
         }
       }
     }

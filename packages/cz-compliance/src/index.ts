@@ -3,6 +3,7 @@ export * from './bank-account-validator.js';
 export * from './spayd.js';
 export * from './isdoc-generator.js';
 export * from './ubl-generator.js';
+export * from './sk-einvoicing.js';
 export * from './invoice-requirements.js';
 export * from './public-holidays.js';
 export * from './vat-status.js';
