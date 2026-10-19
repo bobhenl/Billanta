@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, useTransition } from 'react';
-import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Eye, Globe, Link2, Loader2, Plus, Save, ShoppingCart, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Eye, Globe, Link2, Loader2, MapPin, Plus, Save, ShoppingCart, Trash2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
@@ -9,6 +9,7 @@ import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
 import { PROFILE_DOMAIN, profileOrderUrl, profileUrl } from '@/lib/site';
 import type { PublicProfileSettings } from '@/lib/tenant';
+import { DIRECTORY_TRADES } from '@/lib/business-presets';
 import { cn } from '@/lib/utils';
 import { checkProfileSlug, updatePublicProfile } from '../actions';
 import { copyText } from '@/lib/clipboard';
@@ -41,11 +42,14 @@ export function PublicProfileEditor({
   initial,
   readOnly,
   suggestedSlug,
+  towns,
   company
 }: {
   initial: PublicProfileSettings;
   readOnly: boolean;
   suggestedSlug: string;
+  /** Municipalities the company address can mean (the directory town picker). */
+  towns: { slug: string; name: string; district: string }[];
   company: CompanyFacts;
 }) {
   const t = useTranslations('settings.publicProfile');
@@ -84,8 +88,11 @@ export function PublicProfileEditor({
     set({ services: next });
   };
 
+  const setDirectory = (patch: Partial<PublicProfileSettings['directory']>) => set({ directory: { ...p.directory, ...patch } });
+  const directoryIncomplete = p.directory.enabled && (!p.directory.trade || !p.directory.town);
+
   const dirty = JSON.stringify(p) !== JSON.stringify(saved);
-  const invalid = (p.enabled && !slug) || (slug !== '' && !SLUG.test(slug)) || slugState.state === 'bad' || p.services.some((s) => !s.title.trim());
+  const invalid = directoryIncomplete || (p.enabled && !slug) || (slug !== '' && !SLUG.test(slug)) || slugState.state === 'bad' || p.services.some((s) => !s.title.trim());
   const url = slug && SLUG.test(slug) ? profileUrl(slug, locale, origin || undefined) : null;
   const live = saved.enabled && saved.slug ? profileUrl(saved.slug, locale, origin || undefined) : null;
   // Only a service that is already saved on a live profile taking orders has a working link.
@@ -406,6 +413,74 @@ export function PublicProfileEditor({
           </p>
         )}
         <p className="mt-2 text-xs text-muted-foreground">{t('neverShown')}</p>
+      </section>
+
+      <section className={cn(card, p.directory.enabled ? 'border-primary/40' : '')}>
+        <label className={cn('flex cursor-pointer items-start gap-3', towns.length === 0 && !p.directory.enabled && 'cursor-not-allowed opacity-60')}>
+          <span className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-lg', p.directory.enabled ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary')}>
+            <MapPin className="h-5 w-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold">{t('directory.enabled')}</span>
+            <span className="block text-xs text-muted-foreground">{t('directory.enabledHint')}</span>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            className="mt-1 h-5 w-5 accent-primary"
+            checked={p.directory.enabled}
+            disabled={towns.length === 0 && !p.directory.enabled}
+            onChange={(e) =>
+              // A single matching town is the obvious pick; with several the owner chooses by district.
+              setDirectory({ enabled: e.target.checked, town: p.directory.town ?? (towns.length === 1 ? towns[0]!.slug : null) })
+            }
+          />
+        </label>
+        {towns.length === 0 && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {t('directory.noTown')}{' '}
+            <Link href="/settings/company" className="font-semibold text-primary hover:underline">
+              {t('missingLink')}
+            </Link>
+          </p>
+        )}
+        {p.directory.enabled && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <label className="block text-sm font-semibold">
+              {t('directory.trade')}
+              <select value={p.directory.trade ?? ''} onChange={(e) => setDirectory({ trade: e.target.value || null })} className={cn(inputClass, 'mt-1', !p.directory.trade && 'border-destructive')}>
+                <option value="">{t('directory.pickTrade')}</option>
+                {DIRECTORY_TRADES.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`directory.trades.${key}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block text-sm font-semibold">
+              {t('directory.town')}
+              <select value={p.directory.town ?? ''} onChange={(e) => setDirectory({ town: e.target.value || null })} className={cn(inputClass, 'mt-1', !p.directory.town && 'border-destructive')}>
+                {towns.length !== 1 && <option value="">{t('directory.pickTown')}</option>}
+                {towns.map((m) => (
+                  <option key={m.slug} value={m.slug}>
+                    {towns.length > 1 ? t('directory.townWithDistrict', { name: m.name, district: m.district }) : m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
+        <div className="mt-4 rounded-lg bg-muted/50 px-3 py-3 text-xs text-muted-foreground">
+          <p className="font-semibold text-foreground">{t('directory.consentTitle')}</p>
+          <ul className="mt-1.5 list-disc space-y-1 pl-4">
+            <li>{p.show.address ? t('directory.consentShown') : t('directory.consentShownNoCity')}</li>
+            <li>{t('directory.consentNever')}</li>
+            <li>{t('directory.consentSearch')}</li>
+            <li>{t('directory.consentWithdraw')}</li>
+          </ul>
+          <p className="mt-1.5">{t('directory.consentBasis')}</p>
+        </div>
+        {p.directory.enabled && !p.enabled && <p className="mt-3 text-xs text-destructive">{t('directory.needsProfile')}</p>}
       </section>
 
       {!readOnly && (

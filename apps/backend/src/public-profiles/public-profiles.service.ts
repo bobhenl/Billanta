@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import { DbService } from "../db/db.service";
-import { SERVICE_ID_PATTERN, SLUG_PATTERN } from "../tenants/public-profile";
+import { DIRECTORY_TRADES, SERVICE_ID_PATTERN, SLUG_PATTERN, TOWN_SLUG_PATTERN, type DirectoryTrade } from "../tenants/public-profile";
 import { orderCurrency } from "./profile-orders.util";
 
 // `type`, not `interface` — see the note in public-invoices.service.ts.
@@ -42,10 +42,19 @@ export interface PublicProfileView {
   orders: { enabled: boolean; customItems: boolean; prepay: boolean; currency: "CZK" | "EUR" };
   /** "Kontaktovat": a message form whose messages land in the owner's notifications. */
   contactForm: boolean;
+  /** Set only when the owner lists the profile in the business directory: links the profile to its trade and town pages. */
+  directory: { trade: DirectoryTrade; town: string } | null;
 }
 
 const str = (v: unknown) => (typeof v === "string" && v.trim() ? v : null);
 const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null);
+
+function directoryOf(v: unknown): PublicProfileView["directory"] {
+  const d = (v ?? {}) as Record<string, unknown>;
+  const trade = DIRECTORY_TRADES.find((t) => t === d.trade);
+  const town = typeof d.town === "string" ? d.town.toLowerCase() : "";
+  return d.enabled === true && trade && TOWN_SLUG_PATTERN.test(town) ? { trade, town } : null;
+}
 
 /**
  * Anonymous read of a published company profile. Never touches
@@ -95,6 +104,7 @@ export class PublicProfilesService {
       contactCta: p.contactCta !== false && Boolean(row.email),
       orders: { enabled: ordersEnabled, customItems: ordersEnabled && orders.customItems === true, prepay: ordersEnabled && orders.prepay === true, currency: orderCurrency(row.address_country) },
       contactForm: p.contactForm === true,
+      directory: directoryOf(p.directory),
     };
   }
 

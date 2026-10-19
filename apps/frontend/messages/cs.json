@@ -2865,6 +2865,41 @@
         "contactForm": "Formulář Kontaktovat",
         "contactFormHint": "Návštěvník vám napíše zprávu přímo z profilu. Přijde vám do upozornění v aplikaci, zákazníkovi nic neposíláme.",
         "linksHint": "Odkaz na objednávku konkrétní služby zkopírujete ikonou řetězu u služby. Hodí se do e-mailu nebo na sociální sítě."
+      },
+      "directory": {
+        "enabled": "Zobrazit v katalogu firem",
+        "enabledHint": "Profil se objeví v katalogu firem podle oboru a obce a na stránce vaší obce.",
+        "noTown": "Zápis do katalogu potřebuje obec z adresy firmy. Doplňte adresu v údajích o firmě.",
+        "trade": "Obor",
+        "pickTrade": "Vyberte obor",
+        "town": "Obec",
+        "pickTown": "Vyberte obec",
+        "townWithDistrict": "{name} (okres {district})",
+        "needsProfile": "Katalog ukazuje jen zveřejněné profily. Zapněte nahoře i zveřejnění profilu.",
+        "consentTitle": "Co zapnutím zveřejníte",
+        "consentShown": "V katalogu se ukáže název firmy, podtitul, logo, obor a obec s odkazem na tento profil.",
+        "consentShownNoCity": "V katalogu se ukáže název firmy, podtitul, logo, obor a obec s odkazem na tento profil (i když adresu na profilu skrýváte).",
+        "consentNever": "IČO, e-mail ani telefon se v katalogu nikdy nezobrazí.",
+        "consentSearch": "Stránky katalogu mohou indexovat vyhledávače (Google, Seznam a další).",
+        "consentWithdraw": "Zápis můžete kdykoli vypnout. Z katalogu zmizí do několika minut, ze stránek obcí do hodiny; vyhledávačům to může trvat déle.",
+        "consentBasis": "Zveřejnění je dobrovolné a právním základem je váš souhlas (čl. 6 odst. 1 písm. a GDPR), který zapnutím přepínače udělujete a vypnutím odvoláváte.",
+        "trades": {
+          "tradesman": "Řemeslníci",
+          "construction": "Stavebnictví",
+          "it": "IT a vývoj",
+          "design": "Design a grafika",
+          "marketing": "Marketing a reklama",
+          "photo": "Foto a video",
+          "consulting": "Poradenství",
+          "education": "Vzdělávání a kurzy",
+          "beauty": "Kosmetika a kadeřnictví",
+          "health": "Zdraví a terapie",
+          "transport": "Doprava a stěhování",
+          "gastro": "Gastro a catering",
+          "eshop": "E-shopy a obchod",
+          "cleaning": "Úklid a údržba",
+          "other": "Ostatní služby"
+        }
       }
     },
     "import": {
@@ -7385,7 +7420,9 @@
       "findAccountant": "Sháníte účetní?",
       "findAccountantHint": "Doporučené účetní podle kraje",
       "glossary": "Slovník pojmů",
-      "glossaryHint": "DUZP, přenesená daňová povinnost a další"
+      "glossaryHint": "DUZP, přenesená daňová povinnost a další",
+      "businessDirectory": "Katalog firem",
+      "businessDirectoryHint": "Živnostníci a firmy podle oboru a obce"
     },
     "search": {
       "showAll": "Zobrazit všechny výsledky pro „{query}“",
@@ -11417,6 +11454,70 @@
     "tools": {
       "heading": "Nástroje a návody",
       "createInvoice": "Vystavit fakturu bez registrace"
+    }
+  },
+  "businessDirectory": {
+    "title": "Katalog firem",
+    "seoTitle": "Katalog živnostníků a firem podle oboru a obce",
+    "metaDescription": "Živnostníci a firmy, kteří fakturují s {site}. Hledejte podle oboru a obce a ozvěte se jim napřímo z jejich veřejného profilu.",
+    "lead": "Živnostníci a firmy, kteří fakturují s {site} a sami se rozhodli zobrazit v katalogu. Hledejte podle oboru nebo obce.",
+    "byTrade": "Podle oboru",
+    "byTown": "Podle obce",
+    "latest": "V katalogu",
+    "emptyAll": "Katalog se teprve plní. Buďte mezi prvními, kdo se v něm zobrazí.",
+    "emptyTrade": "V tomto oboru zatím nikdo není. Fakturujete s Billantou? Zapněte si zobrazení v katalogu.",
+    "emptyTown": "Z obce {name} zatím v katalogu nikdo není.",
+    "count": "{n, plural, one {# firma} few {# firmy} other {# firem}}",
+    "tradeSeoTitle": "{trade} – katalog firem",
+    "tradeTowns": "{trade} podle obce",
+    "otherTrades": "Další obory",
+    "townSeoTitle": "{name}: živnostníci a firmy",
+    "townMetaDescription": "Živnostníci a firmy z obce {name}, kteří fakturují s {site}. Jejich služby a kontakty na jednom místě.",
+    "townTitle": "{name}: živnostníci a firmy, kteří fakturují s Billantou",
+    "townIntro": "Firmy a živnostníci z obce {name} (okres {district}, {region}), kteří fakturují s {site} a zobrazují se v katalogu. Každý profil zveřejnila firma sama.",
+    "townTrades": "Obory v této obci",
+    "townInvoicing": "Fakturace v obci {name}: místní informace",
+    "townSection": "Živnostníci a firmy z obce {name}, kteří fakturují s {site}",
+    "townSectionAll": "{n, plural, one {Zobrazit # firmu v katalogu} few {Zobrazit všechny # firmy v katalogu} other {Zobrazit všech # firem v katalogu}}",
+    "howTitle": "Jak se do katalogu dostat",
+    "howBody": "V katalogu jsou jen firmy, které mají v Billantě zveřejněný profil a samy si zapnuly zobrazení v katalogu. Nikoho nepřidáváme bez souhlasu a zápis jde kdykoli vypnout.",
+    "joinTitle": "Chcete tu být taky?",
+    "joinBody": "Založte si Billantu zdarma, zveřejněte firemní profil a zapněte si zobrazení v katalogu v Nastavení → Veřejný profil.",
+    "joinCta": "Začít zdarma",
+    "profileListed": "V katalogu firem:",
+    "trades": {
+      "tradesman": "Řemeslníci",
+      "construction": "Stavebnictví",
+      "it": "IT a vývoj",
+      "design": "Design a grafika",
+      "marketing": "Marketing a reklama",
+      "photo": "Foto a video",
+      "consulting": "Poradenství",
+      "education": "Vzdělávání a kurzy",
+      "beauty": "Kosmetika a kadeřnictví",
+      "health": "Zdraví a terapie",
+      "transport": "Doprava a stěhování",
+      "gastro": "Gastro a catering",
+      "eshop": "E-shopy a obchod",
+      "cleaning": "Úklid a údržba",
+      "other": "Ostatní služby"
+    },
+    "tradeIntro": {
+      "tradesman": "Elektrikáři, instalatéři, truhláři a další řemeslníci, kteří vystavují faktury s Billantou. Podívejte se na jejich veřejný profil a ozvěte se jim napřímo.",
+      "construction": "Stavební firmy a živnostníci – od zednických prací po rekonstrukce na klíč. Každý profil ukazuje služby a kontakt, který firma sama zveřejnila.",
+      "it": "Vývojáři, správci sítí a IT konzultanti na volné noze i menší IT firmy. Najděte si dodavatele z okolí nebo z celé republiky.",
+      "design": "Grafici, webdesignéři a ilustrátoři, kteří fakturují s Billantou. Na profilu najdete jejich služby a odkaz na portfolio.",
+      "marketing": "Marketéři, copywriteři a reklamní agentury pro malé i větší firmy. Kampaně, sociální sítě, texty a PPC.",
+      "photo": "Fotografové a kameramani pro svatby, firmy, produkty i eventy. Napište jim přímo z jejich profilu.",
+      "consulting": "Poradci pro podnikání, finance, právo a HR. Malé kanceláře i samostatní konzultanti.",
+      "education": "Lektoři, kurzy a soukromí učitelé – jazyky, doučování, sport i firemní školení.",
+      "beauty": "Kosmetičky, kadeřnice, manikérky a další služby péče o krásu ve vašem okolí.",
+      "health": "Fyzioterapeuti, maséři, terapeuti a další poskytovatelé péče o zdraví a pohodu.",
+      "transport": "Dopravci, kurýři a stěhovací služby. Od malých zakázek po pravidelnou přepravu.",
+      "gastro": "Restaurace, kavárny, catering a cukrárny, které fakturují s Billantou.",
+      "eshop": "Malé e-shopy a obchody – od rukodělných výrobků po specializované zboží.",
+      "cleaning": "Úklidové firmy, údržba domů a zahrad, mytí oken a další služby kolem domu.",
+      "other": "Další živnostníci a firmy, kteří se do ostatních oborů nevešli."
     }
   }
 }

@@ -85,6 +85,8 @@ export interface PublicProfileSettings {
   orders: { enabled: boolean; customItems: boolean; prepay: boolean };
   /** "Kontaktovat": a message form whose messages land in the notifications. */
   contactForm: boolean;
+  /** "Zobrazit v katalogu firem": opt-in listing on /directory and the town page of `town` (a municipality slug). */
+  directory: { enabled: boolean; trade: string | null; town: string | null };
 }
 
 export interface PaymentMethodDef {
