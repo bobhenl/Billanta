@@ -4498,7 +4498,7 @@
       "source": "Vznik",
       "sources": {
         "manual": "Ručně",
-        "ai": "AI (Telegram/WhatsApp)",
+        "ai": "AI (hlas, Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Pravidelná faktura",
         "import": "Import",
@@ -8709,8 +8709,6 @@
       }
     },
     "picker": {
-      "countryTitle": "Země",
-      "countryHint": "Země určuje měnu, sazby DPH, registry a podobu dokladů.",
       "dataTitle": "Data",
       "filled": "S ukázkovými doklady",
       "empty": "Prázdná firma",
@@ -8719,7 +8717,9 @@
       "viewTitle": "Dívat se jako",
       "businessTitle": "Typ podnikání",
       "businessAuto": "Podle firmy",
-      "businessAutoHint": "Každá ukázková firma má zapnuté to, co její typ podnikání obvykle používá. V demu jde všechno přepnout i v Nastavení → Moduly."
+      "businessAutoHint": "Každá ukázková firma má zapnuté to, co její typ podnikání obvykle používá. V demu jde všechno přepnout i v Nastavení → Moduly.",
+      "countryTitle": "Země",
+      "countryHint": "Země určuje měnu, sazby DPH, registry a podobu dokladů."
     },
     "transfer": {
       "title": "Převzít práci z dema?",
@@ -8752,6 +8752,53 @@
       "schools": "Připraveno pro hodinu: prázdná firma jen s fakturací.",
       "creators": "Připraveno pro tvůrce: paušalista s ukázkovými doklady.",
       "events": "Připraveno pro účastníky akce: živnostník jen s fakturací."
+    }
+  },
+  "offline": {
+    "offline": "Offline",
+    "offlineHint": "Bez připojení. Koncepty se uloží v zařízení a odešlou se po připojení.",
+    "waiting": "{count, plural, one {# čeká} few {# čekají} other {# čeká}}",
+    "title": "Čeká na odeslání",
+    "onlineNote": "Odesílá se automaticky. Koncepty se zákazníkům neposílají a nedostávají číslo.",
+    "offlineNote": "Odešle se, až se zařízení připojí.",
+    "kindContact": "Kontakt",
+    "kindInvoice": "Koncept",
+    "statusPending": "Čeká na odeslání",
+    "statusFailed": "Nepodařilo se uložit ({code})",
+    "statusConflict": "Kontakt se stejným IČO už existuje: {name}",
+    "useExisting": "Použít existující kontakt",
+    "retry": "Zkusit znovu",
+    "discard": "Zahodit",
+    "discardConfirm": "Zahodit tuto položku? Smaže se ze zařízení a na server se už neodešle.",
+    "leaveConfirm": "{count, plural, one {# koncept ještě nebyl odeslán} few {# koncepty ještě nebyly odeslány} other {# konceptů ještě nebylo odesláno}}. Pokračováním se z tohoto zařízení smaže vše, co čeká na odeslání. Pokračovat?",
+    "contactQueued": "Kontakt je uložen v zařízení a odešle se po připojení.",
+    "invoiceQueued": "Koncept faktury je uložen v zařízení a odešle se při nejbližším připojení.",
+    "noCustomer": "Bez odběratele",
+    "queuedContact": "Kontakt čeká na odeslání",
+    "issueNeedsConnection": "Vystavit fakturu jde jen online. Uložte ji jako koncept a vystavte ji po připojení.",
+    "issueNeedsSyncedCustomer": "Odběratel ještě není odeslán na server. Uložte fakturu jako koncept a vystavte ji, až se odešle.",
+    "editNeedsConnection": "Úpravy uložených dokladů vyžadují připojení.",
+    "searchNeedsConnection": "Hledání odběratelů a registrů vyžaduje připojení. Offline můžete vybrat oblíbený kontakt nebo kontakt vytvořený offline.",
+    "formNote": "Jste offline: koncept se uloží v zařízení a odešle se po připojení. Číslo dostane až při vystavení.",
+    "aiNeedsConnection": "AI a hlasové zadání potřebují připojení. Text tu zůstane, spustíte ho po připojení.",
+    "copyNeedsConnection": "Kopírování z jiné faktury potřebuje připojení.",
+    "kindVoice": "Hlasová poznámka",
+    "voiceRecord": "Nahrát hlasovou poznámku",
+    "voiceStop": "Ukončit nahrávání {time} / {max}",
+    "voiceLabel": "Hlasová poznámka ({duration})",
+    "voiceQueued": "Hlasová poznámka je uložená v tomto zařízení. Po připojení z ní vznikne koncept faktury ke kontrole.",
+    "voiceHint": "Jste offline. Nadiktujte fakturu do hlasové poznámky – po připojení ji přepíšeme a připravíme z ní koncept ke kontrole. Vystavíte ho sami.",
+    "voiceUnsupported": "Tento prohlížeč neumí nahrávat zvuk.",
+    "voiceMicDenied": "Bez přístupu k mikrofonu to nepůjde. Povolte ho v nastavení prohlížeče.",
+    "voiceTooShort": "Nahrávka je příliš krátká.",
+    "voiceTooLong": "Nahrávka je příliš velká, zkraťte ji.",
+    "voiceNotSaved": "Hlasovou poznámku se nepodařilo uložit v tomto zařízení.",
+    "voiceErrors": {
+      "voice_unavailable": "Hlasové poznámky teď nejsou k dispozici. Zkuste to později, nebo poznámku zahoďte.",
+      "voice_empty": "V nahrávce nebyla slyšet žádná řeč.",
+      "voice_too_large": "Nahrávka je na zpracování příliš velká.",
+      "ai_disabled": "AI je ve firmě vypnuté. Zapněte ho v Nastavení → AI, nebo poznámku zahoďte.",
+      "ai_key_missing": "Chybí vlastní AI klíč. Doplňte ho v Nastavení → AI."
     }
   },
   "shareQr": {
@@ -9646,5 +9693,119 @@
       }
     },
     "scanOrType": "Naskenujte, nebo zadejte kód na"
+  },
+  "promo": {
+    "signupNote": "Promo kód {code} se uplatní hned po založení firmy.",
+    "appliedToast": "Promo kód {code} je uplatněný: {benefit}.",
+    "notAppliedToast": "Promo kód se nepodařilo uplatnit. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} na zkoušku",
+      "free_months": "{count, plural, one {# měsíc} few {# měsíce} other {# měsíců}} tarifu {plan} zdarma"
+    },
+    "card": {
+      "title": "Mám promo kód",
+      "hint": "Kód z akce, od tvůrce nebo ze školy. Každá firma může uplatnit jen jeden.",
+      "label": "Promo kód",
+      "placeholder": "např. STARTUP-WEEK",
+      "submit": "Uplatnit",
+      "applied": "Uplatněný kód {code} ({date})"
+    },
+    "errors": {
+      "generic": "Něco se nepovedlo. Zkuste to prosím znovu.",
+      "promo_invalid": "Tento kód neplatí. Zkontrolujte, jestli je opsaný správně.",
+      "promo_expired": "Platnost tohoto kódu už skončila.",
+      "promo_used_up": "Tento kód už si uplatnil maximální počet firem.",
+      "promo_already_applied": "Vaše firma už jeden promo kód uplatnila. Kódy se nedají kombinovat.",
+      "promo_subscription_active": "Firma platí předplatné kartou, takže volné měsíce nejdou přidat. Napište nám a domluvíme se.",
+      "promo_plan_conflict": "Firma má zaplacený jiný tarif. Kód půjde uplatnit, až to období skončí.",
+      "promo_rate_limited": "Příliš mnoho pokusů. Zkuste to prosím za hodinu.",
+      "forbidden": "Promo kód může uplatnit jen vlastník nebo správce firmy."
+    }
+  },
+  "adminPromoCodes": {
+    "title": "Promo kódy",
+    "description": "Kódy pro akce, tvůrce a školy. Kód se nemaže, jen vypne – firmy, které ho uplatnily, si ho ponechají.",
+    "loadError": "Promo kódy se nepodařilo načíst.",
+    "empty": "Zatím žádné promo kódy.",
+    "failed": "Nepovedlo se",
+    "created": "Kód je vytvořený.",
+    "activated": "Kód je zapnutý.",
+    "deactivated": "Kód je vypnutý.",
+    "activate": "Zapnout",
+    "deactivate": "Vypnout",
+    "inactive": "vypnutý",
+    "validity": "platí {from} – {until}",
+    "used": "{used} uplatnění",
+    "usedOf": "{used} / {max} uplatnění",
+    "paying": "{count, plural, one {# platí} few {# platí} other {# platí}}",
+    "kind": {
+      "event": "Akce",
+      "creator": "Tvůrce",
+      "school": "Škola",
+      "other": "Jiné"
+    },
+    "form": {
+      "title": "Nový kód",
+      "code": "Kód",
+      "kind": "Typ",
+      "benefitType": "Výhoda",
+      "trialDays": "Dny zkušební doby",
+      "freeMonths": "Měsíce zdarma",
+      "value": "Počet",
+      "plan": "Tarif",
+      "maxRedemptions": "Max. uplatnění",
+      "unlimited": "bez omezení",
+      "ownerLabel": "Komu patří",
+      "ownerPlaceholder": "např. Startup Week Brno",
+      "validFrom": "Platí od",
+      "validUntil": "Platí do",
+      "note": "Poznámka",
+      "submit": "Vytvořit kód",
+      "referralCode": "Doporučovací kód tvůrce",
+      "referralPlaceholder": "nepovinné, dostane odměnu",
+      "businessPreset": "Typ podnikání",
+      "presetNone": "nechat vybrat",
+      "defaultLocale": "Jazyk stránky",
+      "localeVisitor": "podle návštěvníka"
+    },
+    "errors": {
+      "code_taken": "Takový kód už existuje.",
+      "invalid_dates": "Konec platnosti je před jejím začátkem.",
+      "referral_unknown": "Takový doporučovací kód neexistuje."
+    },
+    "referrer": "doporučitel {code}",
+    "copyLink": "Kopírovat odkaz",
+    "copied": "Odkaz je zkopírovaný.",
+    "downloadQr": "Stáhnout QR kód",
+    "locale": {
+      "cs": "čeština",
+      "sk": "slovenština",
+      "en": "angličtina"
+    }
+  },
+  "join": {
+    "metaTitle": "Připojit se s kódem",
+    "from": "Pozvánka od: {owner}",
+    "fromBillanta": "Pozvánka do Billanty",
+    "title": "Fakturujte v Billantě",
+    "benefit": "S tímto kódem dostanete {benefit}.",
+    "preset": "Aplikaci vám rovnou nastavíme pro typ podnikání: {preset}.",
+    "email": "Pokračovat přes e-mail",
+    "or": "nebo",
+    "try": "Jen vyzkoušet",
+    "trying": "Připravujeme ukázku…",
+    "tryHint": "Ukázková firma bez registrace. Kód vám zůstane, až si budete zakládat účet.",
+    "remembered": "Kód {code} si zapamatujeme na 30 dní.",
+    "haveAccount": "Už máte účet? Přihlaste se.",
+    "signedIn": "Jste přihlášeni. Kód se uplatní ve firmě, kterou máte otevřenou, pokud v ní můžete spravovat předplatné.",
+    "toDashboard": "Pokračovat do aplikace",
+    "invalid": "Tento kód neplatí nebo jeho platnost skončila. Zkontrolujte, jestli je opsaný správně.",
+    "form": {
+      "title": "Zadejte kód",
+      "hint": "Kód nebo heslo z plakátu, prezentace či pozvánky. Na velikosti písmen nezáleží.",
+      "label": "Kód",
+      "placeholder": "např. KAVARNA-BRNO",
+      "submit": "Pokračovat"
+    }
   }
 }

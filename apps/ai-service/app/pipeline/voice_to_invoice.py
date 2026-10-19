@@ -48,6 +48,7 @@ from pydantic import ValidationError
 
 from app.config import Settings, get_settings
 from app.pipeline.errors import (
+    EmptyTranscriptError,
     ExtractionError,
     MediaDownloadError,
     MediaTooLargeError,
@@ -427,6 +428,7 @@ async def transcribe_audio(
     audio_bytes: bytes,
     *,
     mime_type: str,
+    language: str | None = None,
     settings: Settings | None = None,
 ) -> str:
     """Transcode (if needed) and transcribe a voice note to text.
@@ -456,9 +458,12 @@ async def transcribe_audio(
         client = AsyncOpenAI(api_key=settings.openai_api_key)
         try:
             with wav_path.open("rb") as wav_file:
+                # A language hint (from the dashboard locale) keeps short
+                # Czech/Slovak notes from being detected as another language.
                 transcription = await client.audio.transcriptions.create(
                     model="whisper-1",
                     file=wav_file,
+                    **({"language": language} if language else {}),
                 )
         except TranscriptionError:
             raise
@@ -467,7 +472,7 @@ async def transcribe_audio(
 
     text = (transcription.text or "").strip()
     if not text:
-        raise TranscriptionError("Whisper returned an empty transcript")
+        raise EmptyTranscriptError("Whisper returned an empty transcript")
     return text
 
 

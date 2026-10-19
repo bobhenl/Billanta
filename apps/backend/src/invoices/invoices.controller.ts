@@ -5,6 +5,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  Headers,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -24,6 +25,8 @@ import { z } from "zod";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RequireActiveSubscription } from "../billing/require-active-subscription.guard";
+import { parseIdempotencyKey } from "../common/idempotency";
+import { MAX_VOICE_NOTE_BYTES, voiceNoteType } from "../ai/voice-transcription";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import {
   ConvertInvoiceDto,
@@ -145,14 +148,17 @@ export class InvoicesController {
   @RequireActiveSubscription()
   @ApiOperation({
     summary: "Create a draft document (invoice, proforma, credit note or quote; status=draft, no number yet)",
-    description: "Accepts either a dashboard JWT or a public-API key. Issue it with POST /:id/issue.",
+    description:
+      "Accepts either a dashboard JWT or a public-API key. Issue it with POST /:id/issue. " +
+      "With an Idempotency-Key header a retry returns the draft the first request created.",
   })
-  create(@Req() req: TenantScopedRequest, @Body() dto: CreateInvoiceDto) {
+  create(@Req() req: TenantScopedRequest, @Body() dto: CreateInvoiceDto, @Headers("idempotency-key") idempotencyKey?: string) {
     return this.invoicesService.create(
       req.tenantDb!,
       req.user!.tenantId,
       dto,
       req.user!.email ? "manual" : "api",
+      parseIdempotencyKey(idempotencyKey),
     );
   }
 
@@ -380,6 +386,47 @@ export class InvoicesController {
     // RLS's WITH CHECK policy rejects the insert outright if these two ever
     // disagreed.
     return this.invoicesService.createDraft(req.tenantDb!, dto.tenant_id, dto);
+  }
+
+  /**
+   * A voice note recorded in the dashboard, usually without a connection and
+   * sent from the offline queue later (docs/offline-drafts-plan.md). JWT
+   * only: it runs on the member's company AI mode, like the form's AI
+   * fill-in. Always a `pending_review` draft, never issued.
+   */
+  @Post("voice-drafts")
+  @UseGuards(JwtAuthGuard)
+  @RequireActiveSubscription()
+  @UseInterceptors(FileInterceptor("audio", { limits: { fileSize: MAX_VOICE_NOTE_BYTES } }))
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: { audio: { type: "string", format: "binary" }, language: { type: "string", enum: ["cs", "sk", "en"] } },
+      required: ["audio"],
+    },
+  })
+  @ApiOperation({
+    summary: "Voice note -> transcribed invoice draft for review (status=pending_review)",
+    description:
+      "WebM/Ogg/MP4/MP3/WAV up to 5 MB, multipart field \"audio\". " +
+      "With an Idempotency-Key header a retry returns the draft the first request created.",
+  })
+  createVoiceDraft(
+    @Req() req: TenantScopedRequest,
+    @UploadedFile() file: { mimetype: string; size: number; buffer: Buffer } | undefined,
+    @Body("language") language: string | undefined,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ) {
+    if (!file || file.size === 0) throw new BadRequestException({ error: "no_file" });
+    const mimeType = voiceNoteType(file.mimetype);
+    if (!mimeType) throw new BadRequestException({ error: "unsupported_file_type" });
+    return this.invoicesService.createVoiceDraft(
+      req.tenantDb!,
+      req.user!.tenantId,
+      { buffer: file.buffer, mimeType, language: language === "cs" || language === "sk" || language === "en" ? language : null },
+      parseIdempotencyKey(idempotencyKey),
+    );
   }
 
   /**

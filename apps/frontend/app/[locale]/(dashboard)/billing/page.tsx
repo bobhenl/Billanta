@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { auth } from '@/auth';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { BillingPanel, type BillingStatus } from './billing-panel';
+import { PromoCodeCard, type PromoRedemption } from './promo-code-card';
 import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,8 +29,16 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
 
   let status: BillingStatus;
   let role: string | null;
+  let promo: { redemption: PromoRedemption | null } | null;
+  // A demo company can't redeem a code, so it doesn't get the card at all.
+  const isDemo = Boolean((await auth().catch(() => null))?.isDemo);
   try {
-    [status, role] = await Promise.all([apiFetch<BillingStatus>('/api/v1/billing/subscription'), fetchMyRole()]);
+    [status, role, promo] = await Promise.all([
+      apiFetch<BillingStatus>('/api/v1/billing/subscription'),
+      fetchMyRole(),
+      // The promo card is optional: the page still works without it.
+      isDemo ? null : apiFetch<{ redemption: PromoRedemption | null }>('/api/v1/billing/promo-code').catch(() => null)
+    ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     return <Banner tone="err" title={t('loadError')} className="mt-6" />;
@@ -41,6 +51,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
       {checkout === 'success' && <Banner tone="ok" title={t('checkoutSuccess')} className="mt-4" />}
       {checkout === 'canceled' && <Banner tone="info" title={t('checkoutCanceled')} className="mt-4" />}
       <BillingPanel status={status} locale={locale} readOnly={!canManage(role)} />
+      {promo && <PromoCodeCard redemption={promo.redemption} readOnly={!canManage(role)} />}
     </div>
   );
 }

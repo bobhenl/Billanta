@@ -3733,6 +3733,7 @@
     "indexTitle": "Invoicing software by town and municipality",
     "indexLead": "Billanta works just as reliably for businesses anywhere in Czechia and Slovakia. Pick a region to find the page for your town or municipality.",
     "indexCoverageNote": "Currently {count, plural, one {# municipality} other {# municipalities}}.",
+    "otherCountry": "Slovak municipalities are in the Slovak version →",
     "regionMunicipalityCount": "{count, plural, one {# town or municipality} other {# towns and municipalities}}",
     "expandListLabel": "Show list",
     "backToIndex": "Back to the town & municipality directory",
@@ -4497,7 +4498,7 @@
       "source": "Created via",
       "sources": {
         "manual": "Manually",
-        "ai": "AI (Telegram/WhatsApp)",
+        "ai": "AI (voice, Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Recurring invoice",
         "import": "Import",
@@ -8708,8 +8709,6 @@
       }
     },
     "picker": {
-      "countryTitle": "Country",
-      "countryHint": "The country sets the currency, VAT rates, registries and how documents look.",
       "dataTitle": "Data",
       "filled": "With sample documents",
       "empty": "Empty company",
@@ -8718,7 +8717,9 @@
       "viewTitle": "Look at it as",
       "businessTitle": "Type of business",
       "businessAuto": "Match the company",
-      "businessAutoHint": "Each sample company has on what its type of business usually uses. In the demo you can switch anything in Settings → Modules too."
+      "businessAutoHint": "Each sample company has on what its type of business usually uses. In the demo you can switch anything in Settings → Modules too.",
+      "countryTitle": "Country",
+      "countryHint": "The country sets the currency, VAT rates, registries and how documents look."
     },
     "transfer": {
       "title": "Bring in your work from the demo?",
@@ -8751,6 +8752,53 @@
       "schools": "Set up for a lesson: an empty business with invoicing only.",
       "creators": "Set up for creators: a freelancer on the flat-rate regime.",
       "events": "Set up for attendees: a freelancer with invoicing only."
+    }
+  },
+  "offline": {
+    "offline": "Offline",
+    "offlineHint": "No connection. Drafts are kept on this device and sent once you are back online.",
+    "waiting": "{count, plural, one {# waiting} other {# waiting}}",
+    "title": "Waiting to sync",
+    "onlineNote": "Sent automatically. Drafts are not sent to customers and get no number.",
+    "offlineNote": "Sent once this device is back online.",
+    "kindContact": "Contact",
+    "kindInvoice": "Draft",
+    "statusPending": "Waiting to sync",
+    "statusFailed": "Could not be saved ({code})",
+    "statusConflict": "A contact with this company ID already exists: {name}",
+    "useExisting": "Use the existing contact",
+    "retry": "Try again",
+    "discard": "Discard",
+    "discardConfirm": "Discard this item? It is deleted from this device and never sent.",
+    "leaveConfirm": "{count, plural, one {# draft has not been synced yet} other {# drafts have not been synced yet}}. If you continue, everything waiting to sync is deleted from this device. Continue?",
+    "contactQueued": "The contact is saved on this device and will be sent once you are online.",
+    "invoiceQueued": "The invoice draft is saved on this device and will be sent as soon as you are online.",
+    "noCustomer": "No customer",
+    "queuedContact": "Contact waiting to sync",
+    "issueNeedsConnection": "Issuing an invoice needs a connection. Save it as a draft and issue it once you are online.",
+    "issueNeedsSyncedCustomer": "The customer has not reached the server yet. Save the invoice as a draft and issue it once the customer has synced.",
+    "editNeedsConnection": "Editing a saved document needs a connection.",
+    "searchNeedsConnection": "Searching customers and registers needs a connection. Offline you can pick a starred contact or one created offline.",
+    "formNote": "You are offline: the draft is kept on this device and sent once you are online. It gets its number when it is issued.",
+    "aiNeedsConnection": "AI and voice input need a connection. The text stays here – run it once you are back online.",
+    "copyNeedsConnection": "Copying from another invoice needs a connection.",
+    "kindVoice": "Voice note",
+    "voiceRecord": "Record a voice note",
+    "voiceStop": "Stop recording {time} / {max}",
+    "voiceLabel": "Voice note ({duration})",
+    "voiceQueued": "The voice note is saved on this device. Once you are online it becomes an invoice draft for you to review.",
+    "voiceHint": "You are offline. Dictate the invoice as a voice note – once you are online we transcribe it and prepare a draft for review. You issue it yourself.",
+    "voiceUnsupported": "This browser cannot record audio.",
+    "voiceMicDenied": "Billanta needs access to the microphone. Allow it in your browser settings.",
+    "voiceTooShort": "The recording is too short.",
+    "voiceTooLong": "The recording is too large, please keep it shorter.",
+    "voiceNotSaved": "The voice note could not be saved on this device.",
+    "voiceErrors": {
+      "voice_unavailable": "Voice notes are not available right now. Try again later or discard the note.",
+      "voice_empty": "No speech could be heard in the recording.",
+      "voice_too_large": "The recording is too large to process.",
+      "ai_disabled": "AI is turned off for this company. Turn it on in Settings → AI or discard the note.",
+      "ai_key_missing": "Your own AI key is missing. Add it in Settings → AI."
     }
   },
   "shareQr": {
@@ -9645,5 +9693,119 @@
       }
     },
     "scanOrType": "Scan, or enter the code at"
+  },
+  "promo": {
+    "signupNote": "Promo code {code} will be applied as soon as you set up your company.",
+    "appliedToast": "Promo code {code} applied: {benefit}.",
+    "notAppliedToast": "The promo code could not be applied. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# day} other {# days}} of the {plan} plan to try",
+      "free_months": "{count, plural, one {# month} other {# months}} of the {plan} plan free"
+    },
+    "card": {
+      "title": "I have a promo code",
+      "hint": "A code from an event, a creator or a school. Each company can redeem one.",
+      "label": "Promo code",
+      "placeholder": "e.g. STARTUP-WEEK",
+      "submit": "Apply",
+      "applied": "Code {code} applied ({date})"
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "promo_invalid": "This code isn't valid. Check that it is typed correctly.",
+      "promo_expired": "This code has expired.",
+      "promo_used_up": "This code has reached its redemption limit.",
+      "promo_already_applied": "Your company has already redeemed a promo code. Codes can't be combined.",
+      "promo_subscription_active": "The company pays by card subscription, so free months can't be added. Write to us and we'll sort it out.",
+      "promo_plan_conflict": "The company has another plan paid for. The code can be redeemed once that period ends.",
+      "promo_rate_limited": "Too many attempts. Please try again in an hour.",
+      "forbidden": "Only the company's owner or an admin can redeem a promo code."
+    }
+  },
+  "adminPromoCodes": {
+    "title": "Promo codes",
+    "description": "Codes for events, creators and schools. A code is switched off, never deleted – companies that redeemed it keep it.",
+    "loadError": "Could not load the promo codes.",
+    "empty": "No promo codes yet.",
+    "failed": "Failed",
+    "created": "Code created.",
+    "activated": "Code switched on.",
+    "deactivated": "Code switched off.",
+    "activate": "Switch on",
+    "deactivate": "Switch off",
+    "inactive": "off",
+    "validity": "valid {from} – {until}",
+    "used": "{used} redeemed",
+    "usedOf": "{used} / {max} redeemed",
+    "paying": "{count, plural, one {# paying} other {# paying}}",
+    "kind": {
+      "event": "Event",
+      "creator": "Creator",
+      "school": "School",
+      "other": "Other"
+    },
+    "form": {
+      "title": "New code",
+      "code": "Code",
+      "kind": "Type",
+      "benefitType": "Benefit",
+      "trialDays": "Trial days",
+      "freeMonths": "Free months",
+      "value": "Amount",
+      "plan": "Plan",
+      "maxRedemptions": "Max. redemptions",
+      "unlimited": "unlimited",
+      "ownerLabel": "Belongs to",
+      "ownerPlaceholder": "e.g. Startup Week Brno",
+      "validFrom": "Valid from",
+      "validUntil": "Valid until",
+      "note": "Note",
+      "submit": "Create code",
+      "referralCode": "Creator's referral code",
+      "referralPlaceholder": "optional, earns the reward",
+      "businessPreset": "Type of business",
+      "presetNone": "let them choose",
+      "defaultLocale": "Page language",
+      "localeVisitor": "visitor's own"
+    },
+    "errors": {
+      "code_taken": "That code already exists.",
+      "invalid_dates": "The end date is before the start date.",
+      "referral_unknown": "No such referral code exists."
+    },
+    "referrer": "referrer {code}",
+    "copyLink": "Copy link",
+    "copied": "Link copied.",
+    "downloadQr": "Download QR code",
+    "locale": {
+      "cs": "Czech",
+      "sk": "Slovak",
+      "en": "English"
+    }
+  },
+  "join": {
+    "metaTitle": "Join with a code",
+    "from": "Invitation from {owner}",
+    "fromBillanta": "Invitation to Billanta",
+    "title": "Invoice with Billanta",
+    "benefit": "This code gets you {benefit}.",
+    "preset": "We'll set the app up for your type of business: {preset}.",
+    "email": "Continue with e-mail",
+    "or": "or",
+    "try": "Just try it",
+    "trying": "Preparing the demo…",
+    "tryHint": "A sample company, no sign-up. The code stays with you for when you create an account.",
+    "remembered": "We'll remember code {code} for 30 days.",
+    "haveAccount": "Already have an account? Sign in.",
+    "signedIn": "You're signed in. The code applies to the company you have open, if you can manage its subscription.",
+    "toDashboard": "Continue to the app",
+    "invalid": "This code isn't valid or has expired. Check that it is typed correctly.",
+    "form": {
+      "title": "Enter your code",
+      "hint": "The code or passphrase from the poster, slide or invitation. Upper or lower case doesn't matter.",
+      "label": "Code",
+      "placeholder": "e.g. KAVARNA-BRNO",
+      "submit": "Continue"
+    }
   }
 }

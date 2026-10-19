@@ -82,6 +82,9 @@ export const invoiceSourceEnum = pgEnum("invoice_source", [
   // A visitor ordered from the company's public profile (Služby a ceník).
   // Always a draft for the owner to review; see public-profiles/profile-orders.service.ts.
   "profile_order",
+  // A voice note recorded in the dashboard (often offline), transcribed into a
+  // pending_review draft once it synced. See docs/offline-drafts-plan.md.
+  "ai_voice",
 ]);
 
 // What kind of document an `invoices` row is. Quotes and proformas are not
@@ -1561,6 +1564,64 @@ export const partners = pgTable("partners", {
 });
 
 // ---------------------------------------------------------------------------
+// promo_codes — GLOBAL (no tenant, no RLS), like partners. Codes Billanta
+// staff hand out at events, to creators and to schools (`src/promo-codes/`).
+// `code` is stored upper case; the unique index is on upper(code) (0070).
+// redemption_count is bumped in the redeeming company's transaction under a
+// row lock, so max_redemptions holds without counting other tenants' rows.
+// ---------------------------------------------------------------------------
+export const promoCodes = pgTable("promo_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: varchar("code", { length: 32 }).notNull(),
+  /** Other modules (class codes) add their own kinds with a PromoKindHandler. */
+  kind: varchar("kind", { length: 16 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  /** Days for trial_days, months for free_months. */
+  benefitValue: integer("benefit_value").notNull(),
+  maxRedemptions: integer("max_redemptions"),
+  redemptionCount: integer("redemption_count").notNull().default(0),
+  /** Inclusive `YYYY-MM-DD` bounds; null = open. */
+  validFrom: date("valid_from"),
+  validUntil: date("valid_until"),
+  active: boolean("active").notNull().default(true),
+  /** Who the code belongs to: the creator, event or school. */
+  ownerLabel: text("owner_label"),
+  note: text("note"),
+  /** The creator or coworking's invite code (tenants.referral_code): they get the referral credit. */
+  referralCode: varchar("referral_code", { length: 16 }),
+  /** A BUSINESS_PRESETS key (frontend): the join link preselects that company type. */
+  businessPreset: varchar("business_preset", { length: 32 }),
+  defaultLocale: varchar("default_locale", { length: 2 }).$type<"cs" | "sk" | "en">(),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// promo_redemptions — tenant-scoped (RLS), one per company: which code it
+// came with (attribution for events and creators) and what it got, copied
+// so a later edit of the code doesn't rewrite history. The app may insert
+// its own row; nothing changes or deletes one afterwards. Per-code totals
+// across companies only through promo_code_stats() (0070).
+// ---------------------------------------------------------------------------
+export const promoRedemptions = pgTable("promo_redemptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  promoCodeId: uuid("promo_code_id")
+    .notNull()
+    .references(() => promoCodes.id),
+  code: varchar("code", { length: 32 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  benefitValue: integer("benefit_value").notNull(),
+  source: varchar("source", { length: 16 }).$type<"signup" | "billing">().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // blog_posts — GLOBAL (no tenant, no RLS) articles behind /blog. AI writes
 // only drafts; a platform admin publishes (`src/blog/`). One row per locale,
 // rows of the same article share `translation_key` (hreflang).
@@ -1683,3 +1744,27 @@ export const demoSessions = pgTable("demo_sessions", {
   transferTokenHash: char("transfer_token_hash", { length: 64 }),
   transferredAt: timestamp("transferred_at", { withTimezone: true }),
 });
+
+// ---------------------------------------------------------------------------
+// idempotency_keys — tenant-scoped (migration 0070). One row per
+// Idempotency-Key a client sent with a create (offline drafts, see
+// docs/offline-drafts-plan.md); a retry with the same key returns
+// `resource_id` instead of creating another row. Kept for 30 days.
+// ---------------------------------------------------------------------------
+export const idempotencyKeys = pgTable(
+  "idempotency_keys",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    key: varchar("key", { length: 100 }).notNull(),
+    // What the key created ("invoice", "contact"): the same key can't replay into another kind.
+    scope: varchar("scope", { length: 40 }).notNull(),
+    resourceId: uuid("resource_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tenantId, table.key] }),
+    createdIdx: index("idempotency_keys_created_idx").on(table.tenantId, table.createdAt),
+  }),
+);

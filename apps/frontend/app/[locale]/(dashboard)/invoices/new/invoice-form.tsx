@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState, useTransition, type ReactNode } from 'react';
 import { AI_PROMPT_KEY } from '@/components/command-palette';
-import { BadgeCheck, Building2, ChevronDown, Copy, FileCheck2, Loader2, Lock, LockOpen, Plus, SlidersHorizontal, Sparkles, Star, Trash2, Wand2, X } from 'lucide-react';
+import { BadgeCheck, Building2, ChevronDown, CloudOff, Copy, FileCheck2, Loader2, Lock, LockOpen, Plus, SlidersHorizontal, Sparkles, Star, Trash2, Wand2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { DictationButton } from '@/components/dictation-button';
 import { FieldFinder, type FinderEntry } from '@/components/field-finder';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
+import { useOffline } from '@/components/offline-sync';
+import { VoiceNoteRecorder } from '@/components/voice-note-recorder';
+import { OFFLINE_CONTACT_PREFIX, queueOffline } from '@/lib/offline-outbox';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { fetchContactSearch } from '@/components/company-lookup';
@@ -27,6 +30,7 @@ import type {
   DocLanguage,
   DocumentType,
   FormDefaults,
+  InvoiceDraftInput,
   InvoiceTemplate,
   ItemSuggestion,
   OptionalField,
@@ -208,6 +212,34 @@ export function InvoiceForm({
   const tDoc = useTranslations('doc');
   const tHoliday = useTranslations('holidays');
   const tLookup = useTranslations('companyLookup');
+  const tOffline = useTranslations('offline');
+  const offline = useOffline();
+  // Contacts written offline and not synced yet: pickable like starred ones (docs/offline-drafts-plan.md).
+  const queuedContacts = useMemo(
+    () =>
+      offline.items.flatMap((item): Contact[] =>
+        item.kind === 'contact'
+          ? [
+              {
+                id: OFFLINE_CONTACT_PREFIX + item.id,
+                legalName: item.payload.legalName ?? item.label,
+                ico: item.payload.ico ?? null,
+                dic: item.payload.dic ?? null,
+                email: item.payload.email ?? null,
+                contactPerson: item.payload.contactPerson ?? null,
+                addressStreet: item.payload.addressStreet ?? null,
+                addressCity: item.payload.addressCity ?? null,
+                addressPostalCode: item.payload.addressPostalCode ?? null,
+                addressCountry: item.payload.addressCountry ?? 'CZ',
+                isVatPayer: item.payload.isVatPayer ?? null,
+                isStarred: false,
+                isPerson: item.payload.isPerson
+              }
+            ]
+          : []
+      ),
+    [offline.items]
+  );
   const sellerCountry = defaults.sellerCountry ?? 'CZ';
   const home = homeCurrencyOf(sellerCountry);
   // The rate field shows the rate the way its source quotes it (ČNB: CZK per unit, ECB: units per
@@ -372,6 +404,9 @@ export function InvoiceForm({
   const aiUsable = Boolean(ai && ai.mode !== 'off' && (ai.mode === 'own' ? ai.hasOwnKey : ai.platformAvailable));
 
   const isQuote = documentType === 'quote';
+  // Offline, a new invoice can still take a voice note: it is queued and becomes a draft for review once synced.
+  // Not for quotes, the backend turns a note into an invoice.
+  const voiceOffline = !offline.online && Boolean(offline.scope) && mode.kind === 'create' && !isQuote;
   const money = useMemo(() => new Intl.NumberFormat(locale, { style: 'currency', currency }), [locale, currency]);
   const totals = useMemo(() => {
     const byRate = new Map<string, { base: number; vat: number }>();
@@ -520,8 +555,16 @@ export function InvoiceForm({
   const runAi = (text: string = aiText) => {
     setAiError(null);
     setAiNote(null);
+    // The text stays in the box, so it can be run once the connection is back.
+    if (!navigator.onLine) return setAiError(tOffline('aiNeedsConnection'));
     startAi(async () => {
-      const response = await suggestInvoice(text);
+      let response: Awaited<ReturnType<typeof suggestInvoice>>;
+      try {
+        response = await suggestInvoice(text);
+      } catch {
+        setAiError(navigator.onLine ? t('errors.ai_provider_unavailable') : tOffline('aiNeedsConnection'));
+        return;
+      }
       if (response.ok) applySuggestion(response.result);
       else setAiError(t.has(`errors.${response.error}`) ? t(`errors.${response.error}`) : t('errors.ai_provider_unavailable'));
     });
@@ -548,6 +591,13 @@ export function InvoiceForm({
     setAiOpen(true);
     setAiText(prompt);
     if (aiUsable && prompt.trim().length >= 3) runAi(prompt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (editing || navigator.onLine) return;
+    const type = new URLSearchParams(window.location.search).get('type');
+    if (type === 'invoice' || type === 'proforma' || type === 'quote') setDocumentType(type);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -591,10 +641,7 @@ export function InvoiceForm({
 
     if (issuedEdit && !editReason.trim()) return setError(t('errors.reason_required'));
 
-    setSavingIntent(issue ? 'issue' : 'draft');
-    startSaving(async () => {
-      const result = await saveInvoice(
-        {
+    const input: InvoiceDraftInput = {
           customer: !customer ? null : customer.kind === 'contact' ? { kind: 'contact', id: customer.id } : { kind: 'ares', ares: customer.ares },
           documentType,
           issueDate,
@@ -626,9 +673,52 @@ export function InvoiceForm({
           items,
           prefilledByAi,
           templateId: mode.kind === 'create' ? mode.templateId : null
-        },
-        { editId: mode.kind === 'edit' ? mode.id : undefined, issue: issue && !issuedEdit, editReason: issuedEdit ? editReason.trim() : undefined }
-      );
+    };
+
+    // Offline, or the customer itself still waits in the queue: a new draft goes into the
+    // offline queue. Numbering, issuing and edits need the server, so they wait for a connection.
+    const queuedCustomer = customer?.kind === 'contact' && customer.id.startsWith(OFFLINE_CONTACT_PREFIX);
+    const canQueue = mode.kind === 'create' && !issue && Boolean(offline.scope);
+    const queue = async () => {
+      const name = customer ? (customer.kind === 'contact' ? customer.contact.legalName : customer.ares.legalName) : tOffline('noCustomer');
+      await queueOffline({ kind: 'invoice', scope: offline.scope!, label: `${name} – ${items[0]?.description ?? ''}`, payload: input });
+      setSavingIntent(null);
+      toast({ text: tOffline('invoiceQueued'), tone: 'ok' });
+      offline.sync();
+      // The invoice list is not kept offline; the dashboard is.
+      router.push(navigator.onLine ? '/invoices' : '/dashboard');
+    };
+    if (!navigator.onLine || queuedCustomer) {
+      if (!canQueue) {
+        return setError(
+          !issue
+            ? tOffline('editNeedsConnection')
+            : queuedCustomer && navigator.onLine
+              ? tOffline('issueNeedsSyncedCustomer')
+              : tOffline('issueNeedsConnection')
+        );
+      }
+      setSavingIntent('draft');
+      startSaving(queue);
+      return;
+    }
+
+    setSavingIntent(issue ? 'issue' : 'draft');
+    startSaving(async () => {
+      let result: Awaited<ReturnType<typeof saveInvoice>>;
+      try {
+        result = await saveInvoice(input, {
+          editId: mode.kind === 'edit' ? mode.id : undefined,
+          issue: issue && !issuedEdit,
+          editReason: issuedEdit ? editReason.trim() : undefined
+        });
+      } catch {
+        // The request itself failed (the connection dropped meanwhile): keep a new draft locally.
+        if (canQueue) return queue();
+        setSavingIntent(null);
+        setError(navigator.onLine ? t('errors.save_failed') : tOffline('issueNeedsConnection'));
+        return;
+      }
       setSavingIntent(null);
       if (!result.ok) {
         setError(t.has(`errors.${result.error}`) ? t(`errors.${result.error}`) : t('errors.save_failed'));
@@ -806,7 +896,7 @@ export function InvoiceForm({
             </div>
             {copyOpen && (
               <section className="mt-2 rounded-xl border border-border bg-card p-4">
-                <CopyFromInvoicePanel />
+                {offline.online ? <CopyFromInvoicePanel /> : <p className="text-sm text-muted-foreground">{tOffline('copyNeedsConnection')}</p>}
               </section>
             )}
             {aiOpen && (
@@ -829,24 +919,31 @@ export function InvoiceForm({
                     <button
                       type="button"
                       onClick={() => runAi()}
-                      disabled={aiBusy || aiText.trim().length < 3}
+                      disabled={aiBusy || aiText.trim().length < 3 || !offline.online}
                       className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
                     >
                       {aiBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       {aiBusy ? t('ai.working') : t('ai.run')}
                     </button>
-                    <DictationButton
-                      base={aiText}
-                      autoStart={dictateNow}
-                      disabled={aiBusy}
-                      onText={setAiText}
-                      onDone={(text) => {
-                        setDictateNow(false);
-                        if (text.length >= 3) runAi(text);
-                      }}
-                    />
+                    {voiceOffline ? (
+                      <VoiceNoteRecorder />
+                    ) : (
+                      <DictationButton
+                        base={aiText}
+                        autoStart={dictateNow && offline.online}
+                        disabled={aiBusy || !offline.online}
+                        onText={setAiText}
+                        onDone={(text) => {
+                          setDictateNow(false);
+                          if (text.length >= 3) runAi(text);
+                        }}
+                      />
+                    )}
                     <span className="text-xs text-muted-foreground">{ai?.mode === 'own' ? t('ai.usingOwn') : t('ai.usingPlatform')}</span>
                   </div>
+                  {!offline.online && !aiError && (
+                    <p className="mt-2 text-xs text-muted-foreground">{tOffline(voiceOffline ? 'voiceHint' : 'aiNeedsConnection')}</p>
+                  )}
                   {aiError && (
                     <Banner tone="err" className="mt-2">
                       {aiError}
@@ -893,21 +990,27 @@ export function InvoiceForm({
           )}
           {customer ? null : (
             <>
-              {starred.length > 0 && (
+              {(starred.length > 0 || queuedContacts.length > 0) && (
                 <div className="mt-3 flex flex-wrap gap-1.5" aria-label={t('customer.starred')}>
-                  {starred.map((contact) => (
+                  {[...queuedContacts, ...starred].map((contact) => (
                     <button
                       key={contact.id}
                       type="button"
                       onClick={() => chooseCustomer({ kind: 'contact', id: contact.id, contact })}
+                      title={contact.id.startsWith(OFFLINE_CONTACT_PREFIX) ? tOffline('queuedContact') : undefined}
                       className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-semibold transition-colors hover:border-primary hover:text-primary"
                     >
-                      <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden="true" />
+                      {contact.id.startsWith(OFFLINE_CONTACT_PREFIX) ? (
+                        <CloudOff className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                      ) : (
+                        <Star className="h-3.5 w-3.5 shrink-0 fill-warning text-warning" aria-hidden="true" />
+                      )}
                       <span className="truncate">{contact.legalName}</span>
                     </button>
                   ))}
                 </div>
               )}
+              {!offline.online && <p className="mt-3 text-xs text-muted-foreground">{tOffline('searchNeedsConnection')}</p>}
               <div className="mt-3 flex gap-2">
               <Typeahead<CustomerOption>
                 className="min-w-0 flex-1"
@@ -1439,7 +1542,7 @@ export function InvoiceForm({
                     setLoadingRate(true);
                     // The day the backend converts with at issue (the DUZP is only saved for a payer),
                     // so it recognises this as ČNB's rate and labels it as such.
-                    const rate = await fetchExchangeRate(currency, (vatPayer && !isQuote && taxableSupplyDate) || issueDate);
+                    const rate = await fetchExchangeRate(currency, (vatPayer && !isQuote && taxableSupplyDate) || issueDate).catch(() => null);
                     setLoadingRate(false);
                     if (rate) setExchangeRate(String(Number(quoted(rate).toFixed(4))));
                     else toast({ text: t('payment.exchangeRateFailed', { source: rateSource }), tone: 'err' });
@@ -1648,7 +1751,7 @@ export function InvoiceForm({
             <button
               type="button"
               onClick={() => submit(true)}
-              disabled={saving}
+              disabled={saving || !offline.online}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {savingIntent === 'issue' ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCheck2 className="h-4 w-4" />}
@@ -1671,7 +1774,7 @@ export function InvoiceForm({
               {t('cancel')}
             </Link>
           </div>
-          <p className="mt-1 text-center text-xs text-muted-foreground">{t('saveNote')}</p>
+          <p className="mt-1 text-center text-xs text-muted-foreground">{offline.online ? t('saveNote') : tOffline('formNote')}</p>
         </section>
       </aside>
     </div>
