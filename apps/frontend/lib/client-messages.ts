@@ -33,6 +33,7 @@ const DASHBOARD_ONLY = [
   'glossary',
   'welcome',
   'invite',
+  'offline',
   'promo',
   'adminPromoCodes'
 ];

@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { demoEnabled } from '@/lib/demo';
 import { enabledOAuthProviders } from '@/lib/oauth-providers';
+import { ClearCachedPages } from '@/components/offline-sync';
 import { LoginForm } from './login-form';
 
 /**
@@ -20,6 +21,8 @@ export default async function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <div className="w-full max-w-md">
+        {/* Covers sign-outs that skipped the menu (expired session, another tab). */}
+        <ClearCachedPages />
         <LoginForm providers={enabledOAuthProviders()} />
         {demoEnabled() && <DemoHint />}
       </div>

@@ -498,6 +498,20 @@
       "when": 1792902360000,
       "tag": "0071_promo_codes",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1792902420000,
+      "tag": "0072_idempotency_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1792902480000,
+      "tag": "0073_invoice_source_ai_voice",
+      "breakpoints": true
     }
   ]
 }

@@ -14,7 +14,7 @@ import logging
 from fastapi import FastAPI
 
 from app.config import get_settings
-from app.webhooks import telegram, whatsapp
+from app.webhooks import internal, telegram, whatsapp
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,6 +30,7 @@ app = FastAPI(
 
 app.include_router(telegram.router)
 app.include_router(whatsapp.router)
+app.include_router(internal.router)
 
 
 @app.get("/health")

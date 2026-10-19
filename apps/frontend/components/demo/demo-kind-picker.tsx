@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { BUSINESS_PRESETS, type ModuleSet } from '@/lib/business-presets';
 import { audienceKind, DEMO_AUDIENCES, type DemoAudience, type DemoAudienceKey } from '@/lib/demo-audiences';
 import { DEMO_KINDS, DEMO_VIEW_ROLES, type DemoKind, type DemoViewRole } from '@/lib/demo';
+import { clearOfflineData } from '@/lib/offline-outbox';
 import { cn } from '@/lib/utils';
 
 type Country = 'CZ' | 'SK';
@@ -103,6 +104,8 @@ export function DemoKindPicker({
   async function signOutAndStart(kind: DemoKind) {
     setBusy(kind);
     await signOut({ redirect: false }).catch(() => null);
+    // The demo is another account: no offline drafts or cached pages of the real one may stay behind.
+    await clearOfflineData();
     await start(kind);
   }
 

@@ -69,6 +69,9 @@ services:
       DATABASE_URL: postgres://faktur_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}
       REDIS_URL: redis://redis:6379
       PORT: "3000"
+      # Dashboard voice notes; only answers when the `ai` profile is up and
+      # AI_SERVICE_INTERNAL_TOKEN is set in .env.
+      AI_SERVICE_URL: http://ai-service:8000
     ports:
       - "127.0.0.1:3111:3000"
     depends_on:

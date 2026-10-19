@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -21,6 +22,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { parseIdempotencyKey } from "../common/idempotency";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { COMPANY_REGISTRIES, ContactsService, registryPartOf, type CompanyRegistry } from "./contacts.service";
 import { AresLookupDto } from "./dto/ares-lookup.dto";
@@ -126,9 +128,14 @@ export class ContactsController {
   }
 
   @Post()
-  @ApiOperation({ summary: "Create a contact" })
-  create(@Req() req: TenantScopedRequest, @Body() dto: CreateContactDto) {
-    return this.contactsService.create(req.tenantDb!, req.user!.tenantId, dto);
+  @ApiOperation({
+    summary: "Create a contact",
+    description:
+      "An IČO that is already saved returns the existing contact, or 409 ico_taken with onDuplicateIco=conflict. " +
+      "With an Idempotency-Key header a retry returns the contact the first request created.",
+  })
+  create(@Req() req: TenantScopedRequest, @Body() dto: CreateContactDto, @Headers("idempotency-key") idempotencyKey?: string) {
+    return this.contactsService.create(req.tenantDb!, req.user!.tenantId, dto, parseIdempotencyKey(idempotencyKey));
   }
 
   @Get(":id/summary")

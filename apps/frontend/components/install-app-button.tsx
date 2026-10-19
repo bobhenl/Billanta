@@ -18,7 +18,7 @@ let wired = false;
 function wire() {
   if (wired || typeof window === 'undefined') return;
   wired = true;
-  // Installability needs an active worker; registered unconditionally, it caches nothing.
+  // Installability needs an active worker; it also keeps the offline draft pages (public/sw.js).
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
   }

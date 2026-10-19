@@ -4504,7 +4504,7 @@
       "source": "Vznik",
       "sources": {
         "manual": "Ručne",
-        "ai": "AI (Telegram/WhatsApp)",
+        "ai": "AI (hlas, Telegram/WhatsApp)",
         "api": "API",
         "recurring": "Pravidelná faktúra",
         "import": "Import",
@@ -8457,8 +8457,6 @@
       }
     },
     "picker": {
-      "countryTitle": "Krajina",
-      "countryHint": "Krajina určuje menu, sadzby DPH, registre a podobu dokladov.",
       "dataTitle": "Dáta",
       "filled": "S ukážkovými dokladmi",
       "empty": "Prázdna firma",
@@ -8467,7 +8465,9 @@
       "viewTitle": "Pozerať sa ako",
       "businessTitle": "Typ podnikania",
       "businessAuto": "Podľa firmy",
-      "businessAutoHint": "Každá ukážková firma má zapnuté to, čo jej typ podnikania zvyčajne používa. V deme sa dá všetko prepnúť aj v Nastaveniach → Moduly."
+      "businessAutoHint": "Každá ukážková firma má zapnuté to, čo jej typ podnikania zvyčajne používa. V deme sa dá všetko prepnúť aj v Nastaveniach → Moduly.",
+      "countryTitle": "Krajina",
+      "countryHint": "Krajina určuje menu, sadzby DPH, registre a podobu dokladov."
     },
     "transfer": {
       "title": "Prevziať prácu z dema?",
@@ -8503,6 +8503,53 @@
       "firstInvoice": "Nastavené pre prvú faktúru: prázdna firma neplatiteľa, len fakturácia.",
       "beginners": "Nastavené pre začínajúcich: živnostník s ukážkovými dokladmi.",
       "advanced": "Nastavené pre pokročilých: platiteľ DPH s účtovníkom a bankou."
+    }
+  },
+  "offline": {
+    "offline": "Offline",
+    "offlineHint": "Bez pripojenia. Koncepty sa uložia v zariadení a odošlú sa po pripojení.",
+    "waiting": "{count, plural, one {# čaká} few {# čakajú} other {# čaká}}",
+    "title": "Čaká na odoslanie",
+    "onlineNote": "Odosiela sa automaticky. Koncepty sa zákazníkom neposielajú a nedostávajú číslo.",
+    "offlineNote": "Odošle sa, keď sa zariadenie pripojí.",
+    "kindContact": "Kontakt",
+    "kindInvoice": "Koncept",
+    "statusPending": "Čaká na odoslanie",
+    "statusFailed": "Nepodarilo sa uložiť ({code})",
+    "statusConflict": "Kontakt s rovnakým IČO už existuje: {name}",
+    "useExisting": "Použiť existujúci kontakt",
+    "retry": "Skúsiť znova",
+    "discard": "Zahodiť",
+    "discardConfirm": "Zahodiť túto položku? Zo zariadenia sa vymaže a na server sa už neodošle.",
+    "leaveConfirm": "{count, plural, one {# koncept ešte nebol odoslaný} few {# koncepty ešte neboli odoslané} other {# konceptov ešte nebolo odoslaných}}. Ak budete pokračovať, zo zariadenia sa vymaže všetko, čo čaká na odoslanie. Pokračovať?",
+    "contactQueued": "Kontakt je uložený v zariadení a odošle sa po pripojení.",
+    "invoiceQueued": "Koncept faktúry je uložený v zariadení a odošle sa pri najbližšom pripojení.",
+    "noCustomer": "Bez odberateľa",
+    "queuedContact": "Kontakt čaká na odoslanie",
+    "issueNeedsConnection": "Vystaviť faktúru sa dá len online. Uložte ju ako koncept a vystavte ju po pripojení.",
+    "issueNeedsSyncedCustomer": "Odberateľ ešte nie je odoslaný na server. Uložte faktúru ako koncept a vystavte ju, keď sa odošle.",
+    "editNeedsConnection": "Úpravy uložených dokladov si vyžadujú pripojenie.",
+    "searchNeedsConnection": "Vyhľadávanie odberateľov a registrov si vyžaduje pripojenie. Offline môžete vybrať obľúbený kontakt alebo kontakt vytvorený offline.",
+    "formNote": "Ste offline: koncept sa uloží v zariadení a odošle sa po pripojení. Číslo dostane až pri vystavení.",
+    "aiNeedsConnection": "AI a hlasové zadávanie potrebujú pripojenie. Text tu zostane, spustíte ho po pripojení.",
+    "copyNeedsConnection": "Kopírovanie z inej faktúry potrebuje pripojenie.",
+    "kindVoice": "Hlasová poznámka",
+    "voiceRecord": "Nahrať hlasovú poznámku",
+    "voiceStop": "Ukončiť nahrávanie {time} / {max}",
+    "voiceLabel": "Hlasová poznámka ({duration})",
+    "voiceQueued": "Hlasová poznámka je uložená v tomto zariadení. Po pripojení z nej vznikne koncept faktúry na kontrolu.",
+    "voiceHint": "Ste offline. Nadiktujte faktúru do hlasovej poznámky – po pripojení ju prepíšeme a pripravíme z nej koncept na kontrolu. Vystavíte ho sami.",
+    "voiceUnsupported": "Tento prehliadač nevie nahrávať zvuk.",
+    "voiceMicDenied": "Bez prístupu k mikrofónu to nepôjde. Povoľte ho v nastaveniach prehliadača.",
+    "voiceTooShort": "Nahrávka je príliš krátka.",
+    "voiceTooLong": "Nahrávka je príliš veľká, skráťte ju.",
+    "voiceNotSaved": "Hlasovú poznámku sa nepodarilo uložiť v tomto zariadení.",
+    "voiceErrors": {
+      "voice_unavailable": "Hlasové poznámky teraz nie sú k dispozícii. Skúste to neskôr alebo poznámku zahoďte.",
+      "voice_empty": "V nahrávke nebolo počuť žiadnu reč.",
+      "voice_too_large": "Nahrávka je na spracovanie príliš veľká.",
+      "ai_disabled": "AI je vo firme vypnuté. Zapnite ho v Nastaveniach → AI alebo poznámku zahoďte.",
+      "ai_key_missing": "Chýba vlastný AI kľúč. Doplňte ho v Nastaveniach → AI."
     }
   },
   "shareQr": {
