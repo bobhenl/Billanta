@@ -121,8 +121,9 @@ export function DemoKindPicker({
     await start(kind);
   }
 
-  return (
-    <div className="mt-4">
+  // A lesson link has already made every choice, so its start comes first and the settings fold away.
+  const quick = scenario && preselectedKind ? preselectedKind : null;
+  const settings = (
       <div className="mb-4 grid gap-3 sm:grid-cols-2">
         <fieldset className="rounded-xl border border-border bg-card p-3 sm:col-span-2">
           <legend className="px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('picker.countryTitle')}</legend>
@@ -173,6 +174,8 @@ export function DemoKindPicker({
           <p className="mt-2 text-xs text-muted-foreground">{t(`roles.${view}.hint`)}</p>
         </fieldset>
       </div>
+  );
+  const kindButtons = (
       <div className="grid gap-3 sm:grid-cols-2">
         {kinds.map((kind) => (
           <button
@@ -204,6 +207,44 @@ export function DemoKindPicker({
           </button>
         ))}
       </div>
+  );
+
+  return (
+    <div className="mt-4">
+      {quick ? (
+        <>
+          <button
+            type="button"
+            disabled={busy !== null}
+            onClick={() => start(quick)}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-wait disabled:opacity-60 sm:w-auto"
+          >
+            {busy === quick ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                {t('starting')}
+              </>
+            ) : (
+              <>
+                {t('picker.quickStart')}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </>
+            )}
+          </button>
+          <details className="mt-4">
+            <summary className="cursor-pointer text-sm font-semibold text-primary">{t('picker.customize')}</summary>
+            <div className="mt-4">
+              {settings}
+              {kindButtons}
+            </div>
+          </details>
+        </>
+      ) : (
+        <>
+          {settings}
+          {kindButtons}
+        </>
+      )}
       {error && (
         <p role="alert" className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">
           {error}

@@ -9584,7 +9584,9 @@
       "businessAuto": "Podle firmy",
       "businessAutoHint": "Každá ukázková firma má zapnuté to, co její typ podnikání obvykle používá. V demu jde všechno přepnout i v Nastavení → Moduly.",
       "countryTitle": "Země",
-      "countryHint": "Země určuje měnu, sazby DPH, registry a podobu dokladů."
+      "countryHint": "Země určuje měnu, sazby DPH, registry a podobu dokladů.",
+      "quickStart": "Spustit demo pro lekci",
+      "customize": "Změnit nastavení dema"
     },
     "transfer": {
       "title": "Převzít práci z dema?",

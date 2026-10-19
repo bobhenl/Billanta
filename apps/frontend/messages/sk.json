@@ -9490,7 +9490,9 @@
       "businessAuto": "Podľa firmy",
       "businessAutoHint": "Každá ukážková firma má zapnuté to, čo jej typ podnikania zvyčajne používa. V deme sa dá všetko prepnúť aj v Nastaveniach → Moduly.",
       "countryTitle": "Krajina",
-      "countryHint": "Krajina určuje menu, sadzby DPH, registre a podobu dokladov."
+      "countryHint": "Krajina určuje menu, sadzby DPH, registre a podobu dokladov.",
+      "quickStart": "Spustiť demo pre lekciu",
+      "customize": "Zmeniť nastavenie dema"
     },
     "transfer": {
       "title": "Prevziať prácu z dema?",

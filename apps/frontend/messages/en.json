@@ -9584,7 +9584,9 @@
       "businessAuto": "Match the company",
       "businessAutoHint": "Each sample company has on what its type of business usually uses. In the demo you can switch anything in Settings → Modules too.",
       "countryTitle": "Country",
-      "countryHint": "The country sets the currency, VAT rates, registries and how documents look."
+      "countryHint": "The country sets the currency, VAT rates, registries and how documents look.",
+      "quickStart": "Start the lesson demo",
+      "customize": "Change the demo settings"
     },
     "transfer": {
       "title": "Bring in your work from the demo?",
