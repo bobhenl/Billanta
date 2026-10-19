@@ -46,6 +46,7 @@ export async function updateInvoiceFormPrefs(
   prices_include_vat: boolean;
   pdf_accent: string;
   pdf_second_language: 'cs' | 'sk' | 'en' | null;
+  brand_credit: boolean;
   reminders_enabled: boolean;
   reminder_interval_days: number;
   reminder_max: number;

@@ -6,6 +6,7 @@ import { NotificationsService } from "../notifications/notifications.service";
 import { EmailService } from "../email/email.service";
 import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
 import { resolveInvoiceToken } from "../public-links/resolve";
+import { showsBrandCredit } from "../invoices/brand-credit";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -123,7 +124,27 @@ export interface PublicInvoiceView {
   cardPayment: boolean;
   /** Issued in the demo playground: fictional, no payment details (src/demo/). */
   demo: boolean;
+  /**
+   * The "Vystaveno v Billantě" line under the page, with the issuer's
+   * referral code for its link; null when a paid company switched it off
+   * (src/invoices/brand-credit.ts).
+   */
+  brandCredit: { ref: string | null } | null;
 }
+
+type BrandCreditRow = {
+  plan_enforced: boolean;
+  trial_plan: string | null;
+  trial_started_at: string | Date | null;
+  trial_ends_at: string | Date | null;
+  prepaid_plan: string | null;
+  prepaid_until: string | null;
+  subscription_plan: string | null;
+  subscription_status: string;
+  is_demo: boolean;
+  brand_credit_off: boolean | null;
+  referral_code: string | null;
+};
 
 type PublicAttachmentRow = { id: string; filename: string; mime: string; size_bytes: number };
 
@@ -243,7 +264,7 @@ export class PublicInvoicesService {
       throw new NotFoundException("Invoice not found");
     }
 
-    const [lineItemRows, supplierRows, attachmentRows, qrRows, quoteRows, cardRows, demoRows] = await Promise.all([
+    const [lineItemRows, supplierRows, attachmentRows, qrRows, quoteRows, cardRows, demoRows, creditRows] = await Promise.all([
       this.dbService.db.execute<PublicInvoiceLineItemRow>(
         sql`SELECT * FROM get_public_invoice_line_items(${token})`,
       ),
@@ -257,6 +278,7 @@ export class PublicInvoicesService {
       ),
       this.dbService.db.execute<{ document_type: string }>(sql`SELECT document_type FROM get_public_card_payment_target(${token})`),
       this.dbService.db.execute<{ demo: boolean }>(sql`SELECT public_invoice_demo(${token}) AS demo`),
+      this.dbService.db.execute<BrandCreditRow>(sql`SELECT * FROM get_public_invoice_brand_credit(${token})`),
     ]);
     const demo = demoRows[0]?.demo === true;
     const quoteRow = quoteRows[0];
@@ -357,6 +379,7 @@ export class PublicInvoicesService {
         ["invoice", "proforma"].includes(cardRows[0]?.document_type ?? "") &&
         total - Number(header.amount_paid ?? 0) > 0.005,
       demo,
+      brandCredit: brandCreditOfRow(creditRows[0]),
     };
   }
 
@@ -375,4 +398,27 @@ export class PublicInvoicesService {
 
 function roundMinor(amount: number): number {
   return Math.round(amount * 100) / 100;
+}
+
+/** Whether the /i/ page shows the "Vystaveno v Billantě" line, from `get_public_invoice_brand_credit`. */
+export function brandCreditOfRow(row: BrandCreditRow | undefined, now: Date = new Date()): { ref: string | null } | null {
+  // No row only if the tenant vanished; the line is the default.
+  if (!row) return { ref: null };
+  const date = (v: string | Date | null) => (v == null ? null : new Date(v));
+  const shown = showsBrandCredit(
+    {
+      planEnforced: row.plan_enforced,
+      trialPlan: row.trial_plan,
+      trialStartedAt: date(row.trial_started_at),
+      trialEndsAt: date(row.trial_ends_at),
+      prepaidPlan: row.prepaid_plan,
+      prepaidUntil: row.prepaid_until,
+      subscriptionPlan: row.subscription_plan,
+      subscriptionStatus: row.subscription_status,
+      isDemo: row.is_demo,
+      invoiceFormPrefs: { brandCredit: row.brand_credit_off ? false : true },
+    },
+    now,
+  );
+  return shown ? { ref: row.referral_code } : null;
 }

@@ -48,6 +48,7 @@ import Discord from "next-auth/providers/discord";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+import { ATTRIBUTION_COOKIE, signupAttributionColumns } from "./lib/attribution";
 import * as authSchema from "./lib/auth-schema";
 import { clientIp } from "./lib/client-ip";
 import { db } from "./lib/db";
@@ -104,6 +105,21 @@ const adapter: typeof drizzleAdapter = {
   },
   async deleteSession(sessionToken) {
     await drizzleAdapter.deleteSession!(hashSessionToken(sessionToken));
+  },
+  // A first social sign-in creates the account here: keep where the
+  // visitor first came from (middleware.ts), as the signup route does.
+  async createUser(user) {
+    let attribution: ReturnType<typeof signupAttributionColumns> = { signupAttribution: null, signupSource: null };
+    try {
+      attribution = signupAttributionColumns((await cookies()).get(ATTRIBUTION_COOKIE)?.value);
+    } catch {
+      // Outside a request (no cookies to read): created without it.
+    }
+    const created = await drizzleAdapter.createUser!(user);
+    if (attribution.signupSource || attribution.signupAttribution) {
+      await db.update(authSchema.users).set(attribution).where(eq(authSchema.users.id, created.id));
+    }
+    return created;
   },
   // Social sign-in only proves who the user is; nothing ever calls Google,
   // GitHub & co. on their behalf (Drive backups run their own, encrypted

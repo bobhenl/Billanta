@@ -725,7 +725,8 @@
         "failed": "Couldn't open the payment page. Please try again in a moment."
       }
     },
-    "paymentDisclaimerBySquare": "This is a standard Slovak bank-transfer QR code (PAY by square), not a card payment."
+    "paymentDisclaimerBySquare": "This is a standard Slovak bank-transfer QR code (PAY by square), not a card payment.",
+    "madeWith": "Made with {name}"
   },
   "expenses": {
     "title": "Expenses",
@@ -2363,7 +2364,11 @@
           "company_number": "Company and document number",
           "none": "Random code only"
         }
-      }
+      },
+      "brandCredit": "Show “Made with {name}” under invoices",
+      "brandCreditHint": "A small link in the footer of the PDF, the email and the online invoice. Paid plans can turn it off.",
+      "brandCreditFree": "On the free plan the line is always shown.",
+      "brandCreditUpgrade": "Upgrade to a paid plan"
     },
     "modules": {
       "title": "Modules & business type",

@@ -10,6 +10,7 @@ import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, type BrandCredit } from "./brand-credit";
 
 export interface OverdueInvoiceForReminder {
   invoice: typeof schema.invoices.$inferSelect;
@@ -20,6 +21,8 @@ export interface OverdueInvoiceForReminder {
   lineItems: (typeof schema.invoiceLineItems.$inferSelect)[];
   /** Settings → E-maily wording/sender for this tenant's reminder. */
   custom?: EmailCustomization;
+  /** The "Vystaveno v Billantě" line, or null when the company switched it off. */
+  credit?: BrandCredit | null;
 }
 
 /**
@@ -112,9 +115,9 @@ export class InvoiceRemindersRepository {
           bankAccountBankCode: schema.tenants.bankAccountBankCode,
           bankAccountIban: schema.tenants.bankAccountIban,
           templateVars: schema.tenants.templateVars,
-          // for the readable prefix of the links
-          invoiceFormPrefs: schema.tenants.invoiceFormPrefs,
           publicProfile: schema.tenants.publicProfile,
+          // plan, prefs (also the readable link prefix) and referral code for the "Vystaveno v Billantě" line
+          ...BRAND_CREDIT_TENANT_FIELDS,
         })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, tenantId))
@@ -141,6 +144,7 @@ export class InvoiceRemindersRepository {
           ),
         );
 
+      const credit = tenant ? brandCreditFor(tenant, "cs", "email") : null;
       const results: OverdueInvoiceForReminder[] = [];
       for (const row of rows) {
         const lineItems = await db
@@ -161,6 +165,7 @@ export class InvoiceRemindersRepository {
           clientPortalLink: buyer ? clientPortalLinkOf(docTenant, buyer) : null,
           lineItems,
           custom,
+          credit,
         });
       }
       return results;

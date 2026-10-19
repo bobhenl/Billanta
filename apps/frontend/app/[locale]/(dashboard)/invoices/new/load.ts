@@ -62,6 +62,7 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
     pricesIncludeVat: raw?.pricesIncludeVat === true,
     pdfAccent: PDF_ACCENTS.find((c) => c === raw?.pdfAccent) ?? PDF_ACCENTS[0],
     pdfSecondLanguage: raw?.pdfSecondLanguage === 'cs' || raw?.pdfSecondLanguage === 'sk' || raw?.pdfSecondLanguage === 'en' ? raw.pdfSecondLanguage : null,
+    brandCredit: raw?.brandCredit !== false,
     remindersEnabled: raw?.remindersEnabled !== false,
     reminderIntervalDays: typeof raw?.reminderIntervalDays === 'number' ? raw.reminderIntervalDays : 7,
     reminderMax: typeof raw?.reminderMax === 'number' ? raw.reminderMax : 3,

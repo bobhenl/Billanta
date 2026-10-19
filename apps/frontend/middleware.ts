@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
+import { ATTRIBUTION_COOKIE, ATTRIBUTION_MAX_AGE, attributionFrom, serializeAttribution } from './lib/attribution';
 import { JOIN_PATH, PROMO_CODE, PROMO_COOKIE } from './lib/promo';
 import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN, SITE_URL } from './lib/site';
@@ -54,6 +55,25 @@ function rememberReferral(request: NextRequest, response: NextResponse) {
 }
 
 /**
+ * First touch only: the utm tags or the external site that first brought
+ * the visitor, saved with the account at signup (lib/attribution.ts).
+ */
+function rememberAttribution(request: NextRequest, response: NextResponse) {
+  if (request.cookies.has(ATTRIBUTION_COOKIE)) return response;
+  const own = [request.nextUrl.hostname.toLowerCase(), new URL(SITE_URL).hostname.toLowerCase()];
+  const attribution = attributionFrom(request.nextUrl, request.headers.get('referer'), own);
+  if (!attribution) return response;
+  response.cookies.set(ATTRIBUTION_COOKIE, serializeAttribution(attribution), {
+    maxAge: ATTRIBUTION_MAX_AGE,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: request.nextUrl.protocol === 'https:'
+  });
+  return response;
+}
+
+/**
  * `?promo=` on any page, or a `/join/CODE` link: remember the code for the
  * company the visitor is about to found. Unlike an invite, the latest link
  * wins: it is the event or creator the visitor just came from.
@@ -90,7 +110,7 @@ function markJoinLocale(request: NextRequest, response: NextResponse) {
 }
 
 /**
- * A response that sets a cookie (the referral or promo code, the locale for a visitor
+ * A response that sets a cookie (the referral or promo code, the attribution, the locale for a visitor
  * who has cookies) must never reach a shared cache, whatever Next would
  * say about the page. Next keeps a Cache-Control it finds on the response,
  * so this wins over the page's ISR one.
@@ -103,7 +123,7 @@ function privateIfSettingCookies(response: NextResponse) {
 export default function middleware(request: NextRequest) {
   const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
   const response = profileRewrite(request) ?? markJoinLocale(request, locale(request));
-  return privateIfSettingCookies(rememberPromo(request, rememberReferral(request, response)));
+  return privateIfSettingCookies(rememberAttribution(request, rememberPromo(request, rememberReferral(request, response))));
 }
 
 export const config = {

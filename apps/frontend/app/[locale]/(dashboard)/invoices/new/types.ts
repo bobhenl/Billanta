@@ -179,6 +179,8 @@ export interface InvoiceFormPrefs {
   pdfAccent: string;
   /** Bilingual PDF: labels also in this language; null = off. */
   pdfSecondLanguage: 'cs' | 'sk' | 'en' | null;
+  /** The small "made with" line under invoices; only a paid plan can switch it off. */
+  brandCredit: boolean;
   /** Automatic overdue reminders: on/off, days between them, at most this many. */
   remindersEnabled: boolean;
   reminderIntervalDays: number;

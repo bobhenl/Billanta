@@ -18,11 +18,19 @@ import {
 } from "@/lib/public-invoices";
 import type { Metadata } from "next";
 import { privateLinkMetadata } from "@/lib/seo";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { PublicDemoNotice } from "@/components/demo/public-demo-notice";
 import { QuoteResponse } from "./quote-response";
 import { ReportAbuse } from "./report-abuse";
 import { PayerNote } from "./payer-note";
 import { CardPayButton } from "./card-pay-button";
+
+/** The footer link, tagged like brandCreditUrl in the backend (src/invoices/brand-credit.ts); `ref` credits the issuer's referral. */
+function brandCreditHref(locale: string, ref: string | null): string {
+  const params = new URLSearchParams({ utm_source: "invoice", utm_medium: "footer", utm_content: "page" });
+  if (ref && /^[A-Za-z0-9]{4,12}$/.test(ref)) params.set("ref", ref);
+  return `${SITE_URL.replace(/\/$/, "")}/${locale}?${params.toString()}`;
+}
 
 // A client's private invoice link: never indexed, never followed.
 // Generic, non-revealing preview card; see privateLinkMetadata.
@@ -448,6 +456,14 @@ export default async function PublicInvoicePage({
         )}
 
         {!preview && <ReportAbuse token={token} initiallyOpen={report === '1'} />}
+
+        {invoice.brandCredit && (
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            <a href={brandCreditHref(locale, invoice.brandCredit.ref)} className="hover:text-foreground hover:underline">
+              {t("madeWith", { name: SITE_NAME })}
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

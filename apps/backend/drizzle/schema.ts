@@ -332,6 +332,10 @@ export const users = pgTable(
     totpLastStep: integer("totp_last_step"),
     // The password-less owner of a demo company (0068); deleted with it.
     isDemo: boolean("is_demo").notNull().default(false),
+    // First-touch utm_* / referrer of the signup (0074), from the frontend's
+    // billanta_src cookie; signup_source is its source alone, for counting.
+    signupAttribution: jsonb("signup_attribution"),
+    signupSource: varchar("signup_source", { length: 100 }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

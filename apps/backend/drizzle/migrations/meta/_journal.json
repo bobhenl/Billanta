@@ -512,6 +512,13 @@
       "when": 1792902480000,
       "tag": "0073_invoice_source_ai_voice",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1792902540000,
+      "tag": "0074_brand_credit_signup_attribution",
+      "breakpoints": true
     }
   ]
 }
