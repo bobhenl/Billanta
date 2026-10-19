@@ -524,13 +524,6 @@
       "idx": 74,
       "version": "7",
       "when": 1792902540000,
-      "tag": "0074_blog_autopublish",
-      "breakpoints": true
-    },
-    {
-      "idx": 74,
-      "version": "7",
-      "when": 1792902540000,
       "tag": "0074_einvoicing",
       "breakpoints": true
     },
@@ -553,6 +546,13 @@
       "version": "7",
       "when": 1792988880000,
       "tag": "0077_business_directory",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1792988940000,
+      "tag": "0078_blog_autopublish",
       "breakpoints": true
     }
   ]
