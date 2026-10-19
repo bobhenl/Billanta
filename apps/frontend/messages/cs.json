@@ -2855,7 +2855,7 @@
       "template": "Stáhnout šablonu CSV",
       "step1": {
         "title": "Export ze starého systému",
-        "hint": "Stačí obyčejný CSV soubor (oddělený středníkem, čárkou nebo tabulátorem, v UTF-8 i Windows-1250). Názvy sloupců poznáme samy: české, slovenské i anglické."
+        "hint": "Stačí soubor CSV nebo Excel (.xlsx). U CSV nevadí oddělovač (středník, čárka, tabulátor) ani kódování (UTF-8, Windows-1250). Názvy sloupců poznáme samy, české, slovenské i anglické; co nepoznáme, přiřadíte v náhledu."
       },
       "sources": {
         "fakturoid": {
@@ -2869,9 +2869,41 @@
         "idoklad": {
           "name": "iDoklad",
           "steps": [
-            "Ve výpisu vydaných faktur označte faktury a použijte export do Excelu nebo CSV.",
-            "Pokud máte soubor Excelu, uložte ho jako CSV (UTF-8).",
-            "Kontakty vyexportujte z adresáře stejným způsobem."
+            "V seznamu vydaných faktur vyberte faktury, které chcete přenést, a zvolte export do Excelu nebo CSV.",
+            "Soubor nahrajte níže tak, jak je, převádět ho nemusíte.",
+            "Kontakty vyexportujte stejně ze seznamu kontaktů a nahrajte je jako první."
+          ]
+        },
+        "superfaktura": {
+          "name": "SuperFaktura",
+          "steps": [
+            "V přehledu faktur si filtrem nastavte období, které chcete přenést.",
+            "Seznam stáhněte jako Excel (.xlsx) nebo CSV.",
+            "Adresář klientů vyexportujte stejným způsobem a nahrajte ho jako první."
+          ]
+        },
+        "vyfakturuj": {
+          "name": "Vyfakturuj",
+          "steps": [
+            "V seznamu dokladů vyfiltrujte vydané faktury za období, které chcete přenést.",
+            "Stáhněte je do CSV nebo Excelu. Když export nabídne i položky, vezměte ho s nimi, přeneseme pak jednotlivé řádky faktur.",
+            "Kontakty vyexportujte zvlášť a nahrajte je jako první."
+          ]
+        },
+        "kros": {
+          "name": "KROS Fakturácia",
+          "steps": [
+            "V seznamu vydaných faktur označte doklady, které chcete přenést.",
+            "Seznam vyexportujte do Excelu (.xlsx) nebo CSV.",
+            "Odběratele vyexportujte ze seznamu partnerů a nahrajte je jako první."
+          ]
+        },
+        "billdu": {
+          "name": "Billdu",
+          "steps": [
+            "Ve webové verzi Billdu otevřete seznam faktur a najděte export dokumentů.",
+            "Zvolte CSV nebo Excel a období, které chcete přenést.",
+            "Klienty vyexportujte zvlášť a nahrajte je jako první."
           ]
         },
         "bitfaktura": {
@@ -2901,7 +2933,7 @@
           "steps": [
             "Stáhněte si šablonu níže, nebo použijte vlastní tabulku s číslem faktury, odběratelem, datem vystavení a částkou.",
             "Jeden řádek = jedna faktura. Víc řádků se stejným číslem se spojí do jedné faktury s více položkami (sloupce Položka, Množství, Cena za jednotku).",
-            "Tabulku uložte jako CSV a nahrajte ji níže."
+            "Tabulku uložte jako CSV nebo .xlsx a nahrajte ji níže."
           ]
         }
       },
@@ -3015,7 +3047,7 @@
       "errors": {
         "unknown_columns": "Soubor nevypadá jako seznam faktur: chybí sloupec s číslem faktury, odběratelem nebo částkou.",
         "too_many_rows": "Soubor je moc velký, rozdělte ho na menší části (max. 5 000 faktur).",
-        "no_file": "Vyberte soubor CSV.",
+        "no_file": "Vyberte soubor CSV nebo Excel (.xlsx).",
         "forbidden": "Import může spustit jen vlastník nebo správce.",
         "failed": "Import se nepodařil, zkuste to znovu.",
         "bitfaktura_account": "Účet v BitFaktuře jsme nenašli. Zadejte adresu ve tvaru firma.bitfaktura.cz.",
@@ -3024,7 +3056,87 @@
         "fakturoid_unauthorized": "Fakturoid údaje nepřijal. Zkontrolujte Client ID a Client secret v nastavení uživatelského účtu.",
         "fakturoid_account": "Ten účet ve Fakturoidu nevidíme. Zadejte ho tak, jak je v adrese app.fakturoid.cz/mojefirma, nebo pole nechte prázdné.",
         "fakturoid_blocked": "Účet ve Fakturoidu je zablokovaný nebo nemá zaplacený tarif, proto data přes API nevydá.",
-        "fakturoid_unreachable": "Fakturoid teď neodpovídá, zkuste to za chvíli."
+        "fakturoid_unreachable": "Fakturoid teď neodpovídá, zkuste to za chvíli.",
+        "xls_unsupported": "Starý formát .xls neumíme přečíst. Otevřete soubor v Excelu a uložte ho jako .xlsx nebo CSV.",
+        "xlsx_unreadable": "Soubor .xlsx se nepodařilo přečíst. Uložte ho znovu, případně jako CSV.",
+        "invalid_mapping": "Přiřazení sloupců je neplatné. Nahrajte soubor znovu.",
+        "pattern_clash": "Řadu z importu nejde převzít, protože se kryje s jinou řadou. Upravte ji v Nastavení → Číslování."
+      },
+      "mapping": {
+        "detected": "Soubor vypadá jako export z aplikace {source}, sloupce jsme přiřadili sami.",
+        "notDetected": "Zdroj souboru jsme nepoznali, sloupce jsme přiřadili podle jejich názvů.",
+        "title": "Jak čteme sloupce souboru",
+        "requiredTitle": "Přiřaďte sloupce",
+        "requiredLead": "Nevíme, ve kterém sloupci je {fields}. Vyberte to níže a dejte Znovu zkontrolovat.",
+        "required": {
+          "number": "číslo faktury",
+          "customer": "odběratel",
+          "amount": "částka (celkem, základ nebo cena za jednotku)"
+        },
+        "noHeader": "Sloupec {n}",
+        "empty": "(prázdný)",
+        "selectLabel": "Údaj ve sloupci {column}",
+        "ignore": "Nenačítat",
+        "apply": "Znovu zkontrolovat",
+        "fields": {
+          "number": "Číslo faktury",
+          "customer": "Odběratel",
+          "issueDate": "Datum vystavení",
+          "dueDate": "Datum splatnosti",
+          "taxableSupplyDate": "DUZP",
+          "totalNet": "Základ celkem",
+          "totalVat": "DPH celkem",
+          "totalGross": "Celkem s DPH",
+          "vatRate": "Sazba DPH",
+          "currency": "Měna",
+          "status": "Stav",
+          "paidDate": "Datum úhrady",
+          "paidAmount": "Uhrazeno",
+          "variableSymbol": "Variabilní symbol",
+          "documentType": "Typ dokladu",
+          "ico": "IČO",
+          "dic": "DIČ",
+          "vatId": "IČ DPH",
+          "email": "E-mail",
+          "phone": "Telefon",
+          "street": "Ulice",
+          "city": "Město",
+          "postalCode": "PSČ",
+          "country": "Země",
+          "contactPerson": "Kontaktní osoba",
+          "description": "Položka",
+          "quantity": "Množství",
+          "unit": "Jednotka",
+          "unitPrice": "Cena za jednotku",
+          "lineVatRate": "Sazba DPH položky",
+          "note": "Poznámka",
+          "internalNote": "Interní poznámka",
+          "orderNumber": "Číslo objednávky",
+          "constantSymbol": "Konstantní symbol",
+          "paymentMethod": "Způsob úhrady",
+          "issuePlace": "Místo vystavení",
+          "issuedBy": "Vystavil",
+          "reverseCharge": "Přenesená daňová povinnost",
+          "reverseChargeCode": "Kód přenesené daňové povinnosti",
+          "exchangeRate": "Kurz",
+          "exchangeRateCnb": "Kurz ČNB",
+          "exchangeRateKind": "Druh kurzu",
+          "exchangeRateDate": "Datum kurzu"
+        }
+      },
+      "numbering": {
+        "title": "Číselná řada",
+        "row": "{type}: čísla ve tvaru {pattern}, poslední {current}, další bude {next}.",
+        "types": {
+          "invoice": "Faktury",
+          "proforma": "Zálohové faktury",
+          "credit_note": "Opravné doklady",
+          "quote": "Nabídky"
+        },
+        "existing": "{count, plural, one {V Billantě už máte # vlastní doklad v jiné řadě.} few {V Billantě už máte # vlastní doklady v jiné řadě.} other {V Billantě už máte # vlastních dokladů v jiné řadě.}}",
+        "adopt": "Pokračovat v číselné řadě z importu (změní se nastavení číslování)",
+        "adopted": "Číslování teď pokračuje v řadě z importu.",
+        "check": "Zkontrolovat číslování"
       }
     },
     "companies": {
@@ -4937,7 +5049,7 @@
   },
   "welcome": {
     "title": "Vítejte v Billantě",
-    "subtitle": "Tři rychlé otázky a aplikace ukáže jen to, co opravdu použijete. Vše jde později změnit v Nastavení.",
+    "subtitle": "Pár rychlých otázek a aplikace ukáže jen to, co opravdu použijete. Vše jde později změnit v Nastavení.",
     "companyTitle": "Vaše podnikání",
     "companyHint": "Zadejte název firmy, své jméno (OSVČ) nebo IČO a údaje na fakturu načteme z ARES, slovenského RPO nebo zahraničních registrů. Můžete i přeskočit.",
     "vatQuestion": "Jste plátce DPH?",
@@ -4954,7 +5066,12 @@
     "failed": "Uložení se nepovedlo",
     "searchLabel": "Firma, jméno nebo IČO",
     "searchPlaceholder": "Název firmy, vaše jméno nebo IČO",
-    "searchEmpty": "Nic jsme nenašli. Zkuste jiný název nebo IČO, nebo jiný registr."
+    "searchEmpty": "Nic jsme nenašli. Zkuste jiný název nebo IČO, nebo jiný registr.",
+    "importTitle": "Přecházíte z jiné aplikace?",
+    "importHint": "Vyberte ji a po uložení vás provedeme importem kontaktů, faktur i číselné řady.",
+    "importNone": "Začínám od nuly",
+    "importOther": "Jiná aplikace / Excel",
+    "finishImport": "Hotovo, jdeme importovat"
   },
   "registry": {
     "label": "Registr firem",
@@ -6910,7 +7027,8 @@
       "importCta": "Jak funguje import",
       "faqTitle": "Časté otázky",
       "othersTitle": "Další srovnání",
-      "all": "Celé srovnání"
+      "all": "Celé srovnání",
+      "switchGuide": "Podrobný návod k přechodu"
     },
     "brands": {
       "fakturoid": {
@@ -9642,6 +9760,141 @@
       "label": "Kód",
       "placeholder": "např. KAVARNA-BRNO",
       "submit": "Pokračovat"
+    }
+  },
+  "switchBanner": {
+    "title": "Přecházíte odjinud? Importujte data za pár minut",
+    "text": "Kontakty, vydané faktury i číselnou řadu přenesete z exportu Fakturoidu, iDokladu, SuperFaktury a dalších aplikací.",
+    "cta": "Importovat data",
+    "dismiss": "Skrýt"
+  },
+  "switchPage": {
+    "seoTitle": "Přechod na Billantu z jiné fakturační aplikace",
+    "navTitle": "Přechod na Billantu",
+    "title": "Přejděte na Billantu, data si vezměte s sebou",
+    "lead": "Kontakty, vydané faktury i číselnou řadu přenesete z exportu, který vám dá vaše dosavadní aplikace. Import pozná, odkud soubor je, a než se cokoli uloží, ukáže náhled.",
+    "pickTitle": "Odkud přecházíte?",
+    "cardCta": "Návod k přechodu",
+    "otherTitle": "Jiná aplikace nebo Excel",
+    "otherText": "Import přečte i vlastní tabulku. Sloupce, které nepozná, přiřadíte v náhledu sami.",
+    "howTitle": "Jak přechod probíhá",
+    "how": [
+      "Ve staré aplikaci si stáhnete export faktur a kontaktů jako CSV nebo Excel.",
+      "V Billantě soubor nahrajete. Poznáme, ze které aplikace je, a sloupce přiřadíme sami.",
+      "V náhledu zkontrolujete faktury, odběratele a číslování. Uloží se až po potvrzení."
+    ],
+    "exportTitle": "Jak stáhnout data",
+    "transfersTitle": "Co se přenese",
+    "transfers": [
+      "Odběratelé s IČO, DIČ a adresou. Ty, které už v Billantě máte, spárujeme a nezdvojíme.",
+      "Vydané faktury s daty, částkami, měnou a stavem úhrady. Nic se znovu neodešle a nepůjdou žádné upomínky.",
+      "Číselná řada: další faktura naváže na poslední importovanou a pokud chcete, převezmeme i tvar čísla.",
+      "Položky faktur, pokud je export obsahuje. Jinak vznikne jedna položka na celou částku."
+    ],
+    "note": "Postup popisujeme obecně, názvy tlačítek se mohou v jednotlivých verzích aplikace lišit.",
+    "ctaTitle": "Založte si účet zdarma a nahrajte export",
+    "ctaLead": "Po registraci vás provedeme rovnou importem. V původní aplikaci se nic nezmění.",
+    "ctaButton": "Vytvořit účet a importovat",
+    "haveAccount": "Účet už máte? Otevřít import",
+    "compareLink": "Srovnání s aplikací {brand}",
+    "othersTitle": "Přechod z dalších aplikací",
+    "faqTitle": "Časté otázky",
+    "faq": [
+      {
+        "q": "Přijdu o něco v původní aplikaci?",
+        "a": "Ne. Import jen čte soubor, který si stáhnete. V původní aplikaci se nic nemění a můžete ji používat, dokud si nebudete jistí."
+      },
+      {
+        "q": "Co když import nepozná některé sloupce?",
+        "a": "V náhledu u každého sloupce vyberete, co obsahuje, a necháte soubor zkontrolovat znovu. Bez vašeho potvrzení se nic neuloží."
+      },
+      {
+        "q": "Naváže číslování faktur?",
+        "a": "Ano. Další faktura dostane číslo po nejvyšším importovaném. Když stará aplikace používala jiný tvar čísla, náhled nabídne jeho převzetí."
+      },
+      {
+        "q": "Musím soubor z Excelu převádět do CSV?",
+        "a": "Ne, soubor .xlsx nahrajete přímo. Jen starý formát .xls je potřeba v Excelu uložit znovu jako .xlsx."
+      }
+    ],
+    "brands": {
+      "fakturoid": {
+        "title": "Přechod z Fakturoidu na Billantu",
+        "lead": "Z Fakturoidu se dá přejít dvěma cestami: přímým propojením přes API, nebo exportem do CSV. Obě skončí náhledem, ve kterém vše zkontrolujete.",
+        "steps": [
+          "V nastavení svého uživatelského účtu ve Fakturoidu najdete přístup k API v3 (Client ID a Client secret).",
+          "V Billantě je zadáte v importu a načteme faktury, zálohy, opravné doklady i adresář najednou.",
+          "Bez API stačí export seznamu faktur a kontaktů do CSV; nahrajte nejdřív kontakty."
+        ],
+        "extra": "Při propojení přes API přeneseme navíc zálohové faktury, opravné doklady, platby a původní PDF.",
+        "seoTitle": "Přechod z Fakturoidu na Billantu – návod k exportu a importu dat"
+      },
+      "idoklad": {
+        "title": "Přechod z iDokladu na Billantu",
+        "lead": "Z iDokladu stačí vyexportovat seznam vydaných faktur a kontaktů. Soubor z Excelu nahrajete rovnou, bez převodu.",
+        "steps": [
+          "V seznamu vydaných faktur vyberte doklady, které chcete přenést.",
+          "Použijte export do Excelu nebo CSV.",
+          "Stejně vyexportujte kontakty a v Billantě je nahrajte jako první."
+        ],
+        "extra": "Sazbu DPH dopočítáme z částek, i když ji export nemá ve zvláštním sloupci.",
+        "seoTitle": "Přechod z iDokladu na Billantu – návod k exportu a importu dat"
+      },
+      "superfaktura": {
+        "title": "Přechod ze SuperFaktury na Billantu",
+        "lead": "Ze SuperFaktury si stáhnete přehled faktur a adresář klientů. Import pozná české i slovenské exporty, včetně faktur v eurech.",
+        "steps": [
+          "V přehledu faktur si filtrem nastavte období, které chcete přenést.",
+          "Seznam stáhněte jako Excel nebo CSV.",
+          "Stejně vyexportujte klienty a v Billantě je nahrajte jako první."
+        ],
+        "extra": "Slovenské IČ DPH zůstane u odběratele zvlášť od DIČ.",
+        "seoTitle": "Přechod ze SuperFaktury na Billantu – návod k exportu a importu dat"
+      },
+      "vyfakturuj": {
+        "title": "Přechod z Vyfakturuj na Billantu",
+        "lead": "Z Vyfakturuj přenesete vydané faktury i s položkami. Stačí export seznamu dokladů a kontaktů.",
+        "steps": [
+          "V seznamu dokladů vyfiltrujte vydané faktury za období, které chcete přenést.",
+          "Stáhněte je do CSV nebo Excelu, ideálně i s položkami.",
+          "Kontakty vyexportujte zvlášť a v Billantě je nahrajte jako první."
+        ],
+        "extra": "Export s položkami přeneseme řádek po řádku, i s množstvím, cenou a sazbou DPH.",
+        "seoTitle": "Přechod z Vyfakturuj na Billantu – návod k exportu a importu dat"
+      },
+      "kros": {
+        "title": "Přechod z KROS Fakturácie na Billantu",
+        "lead": "Z KROS Fakturácie si vyexportujete vydané faktury a partnery do Excelu. Import přečte slovenské názvy sloupců i faktury v eurech.",
+        "steps": [
+          "V seznamu vydaných faktur označte doklady, které chcete přenést.",
+          "Seznam vyexportujte do Excelu nebo CSV.",
+          "Partnery vyexportujte stejně a v Billantě je nahrajte jako první."
+        ],
+        "extra": "Slovenské IČ DPH zůstane u odběratele zvlášť od DIČ a sazbu DPH dopočítáme z částek.",
+        "seoTitle": "Přechod z KROS Fakturácie na Billantu – návod k exportu a importu dat"
+      },
+      "billdu": {
+        "title": "Přechod z Billdu na Billantu",
+        "lead": "Z Billdu stáhnete export dokumentů ve webové verzi. Import rozumí i anglickým názvům sloupců.",
+        "steps": [
+          "Ve webové verzi Billdu otevřete seznam faktur a najděte export dokumentů.",
+          "Zvolte CSV nebo Excel a období, které chcete přenést.",
+          "Klienty vyexportujte zvlášť a v Billantě je nahrajte jako první."
+        ],
+        "extra": "Stav úhrady i data ve formátu RRRR-MM-DD převedeme sami.",
+        "seoTitle": "Přechod z Billdu na Billantu – návod k exportu a importu dat"
+      },
+      "bitfaktura": {
+        "title": "Přechod z BitFaktury na Billantu",
+        "lead": "Z BitFaktury se dá přejít přes API kód, nebo exportem faktur do CSV. Číselná řada typu 1/09/2025 naváže.",
+        "steps": [
+          "V nastavení účtu BitFaktury najdete v integracích autorizační kód API.",
+          "V Billantě ho zadáte v importu spolu s názvem účtu a načteme faktury i celý adresář.",
+          "Bez kódu stačí export faktur do CSV, který nahrajete v importu."
+        ],
+        "extra": "S API kódem načteme i kontakty, kterým jste zatím nefakturovali, kurzy a způsob úhrady.",
+        "seoTitle": "Přechod z BitFaktury na Billantu – návod k exportu a importu dat"
+      }
     }
   }
 }

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { apiFetchRaw, ApiError, NotSignedInError } from '@/lib/api-client';
 
 /**
- * Forwards an invoice-history CSV (multipart field "file") to
+ * Forwards an invoice-history CSV or .xlsx (multipart field "file") to
  * `POST /api/v1/invoices/import` as the signed-in user; `?dryRun=1` only
  * previews. A Route Handler because exports can exceed the server-action
  * body cap (same as `/api/contacts/import`).
@@ -17,6 +17,11 @@ export async function POST(request: Request) {
     }
     const body = new FormData();
     body.set('file', file, file instanceof File ? file.name : 'invoices.csv');
+    // The column mapping fixed in the preview (JSON) and the numbering switch, passed through as they are.
+    for (const key of ['mapping', 'adoptNumbering'] as const) {
+      const value = incoming.get(key);
+      if (typeof value === 'string' && value) body.set(key, value);
+    }
     const res = await apiFetchRaw(`/api/v1/invoices/import${dryRun ? '?dryRun=1' : ''}`, { method: 'POST', body });
     return NextResponse.json(await res.json());
   } catch (error) {

@@ -210,3 +210,103 @@ export function findNumberPatternClash(formats: NumberFormats | null | undefined
   }
   return null;
 }
+
+export interface NumberSample {
+  number: string;
+  /** The document's issue date; the year (and month) a pattern reads must match it. */
+  issueDate: Date;
+}
+
+/** At most this many distinct number shapes are tried as candidates. */
+const MAX_CANDIDATE_SAMPLES = 12;
+/** Share of the numbers a guessed pattern must read, with the right year. */
+const MIN_PATTERN_COVERAGE = 0.9;
+
+const sequenceTokens = (digits: string): string[] => {
+  if (!digits || digits.length > 6) return [];
+  const padded = digits.length <= 5 ? `{${'N'.repeat(digits.length)}}` : null;
+  // Leading zero: the source pads to that width. Otherwise it may not pad at all.
+  if (digits.startsWith('0')) return padded ? [padded] : [];
+  return padded && digits.length > 1 ? [padded, '{N}'] : ['{N}'];
+};
+
+/** What one run of digits in a number could be, given when the document was issued. */
+function digitRunTokens(run: string, year: number, month: number): string[] {
+  const yyyy = String(year);
+  const yy = String(year % 100).padStart(2, '0');
+  const mm = String(month).padStart(2, '0');
+  const out: string[] = [...sequenceTokens(run)];
+  if (run === yyyy) out.push('{YYYY}');
+  if (run === yy) out.push('{YY}');
+  if (run === mm || run === String(month)) out.push('{MM}');
+  for (const [prefix, token] of [
+    [yyyy, '{YYYY}'],
+    [yy, '{YY}'],
+  ] as const) {
+    if (!run.startsWith(prefix) || run.length === prefix.length) continue;
+    const rest = run.slice(prefix.length);
+    for (const seq of sequenceTokens(rest)) out.push(token + seq);
+    if (rest.startsWith(mm) && rest.length > 2) for (const seq of sequenceTokens(rest.slice(2))) out.push(token + '{MM}' + seq);
+  }
+  return out;
+}
+
+/** Every valid pattern that renders `number` as issued on `date`. */
+function candidatePatterns(number: string, date: Date): string[] {
+  const runs = number.match(/\d+|\D+/g) ?? [];
+  let patterns = [''];
+  for (const run of runs) {
+    if (/^\d/.test(run)) {
+      const tokens = digitRunTokens(run, date.getUTCFullYear(), date.getUTCMonth() + 1);
+      patterns = patterns.flatMap((p) => tokens.map((t) => p + t));
+    } else {
+      if (!LITERAL.test(run)) return [];
+      patterns = patterns.map((p) => p + run);
+    }
+    if (patterns.length > 200) return [];
+  }
+  return patterns.filter((p) => validateNumberPattern(p) === null);
+}
+
+/** Does `number` read in `pattern` with the year (and month) it was issued in? */
+function fitsSample(pattern: string, sample: NumberSample): boolean {
+  const parts = parseDocumentNumber(pattern, sample.number);
+  if (!parts) return false;
+  if (parts.year !== sample.issueDate.getUTCFullYear()) return false;
+  return parts.month === 0 || parts.month === sample.issueDate.getUTCMonth() + 1;
+}
+
+/**
+ * Guesses the pattern a list of numbers from another invoicing tool was
+ * written in (`FV2025017` → `FV{YYYY}{NNN}`, `1/10/2025` → `{N}/{MM}/{YYYY}`),
+ * so the company can carry on in the same row after an import. Null when no
+ * single pattern reads at least 90 % of them with the right year.
+ *
+ * Ties go to a yearly counter over a monthly one, then to the padded width
+ * the source used.
+ */
+export function inferNumberPattern(samples: NumberSample[]): string | null {
+  if (samples.length === 0) return null;
+  const shapes = new Map<string, NumberSample>();
+  for (const s of samples) {
+    const shape = s.number.replace(/\d/g, '9');
+    if (!shapes.has(shape)) shapes.set(shape, s);
+    if (shapes.size >= MAX_CANDIDATE_SAMPLES) break;
+  }
+  const candidates = new Set<string>();
+  for (const s of shapes.values()) for (const p of candidatePatterns(s.number, s.issueDate)) candidates.add(p);
+
+  let best: { pattern: string; hits: number; monthly: boolean; width: number } | null = null;
+  for (const pattern of candidates) {
+    const hits = samples.filter((s) => fitsSample(pattern, s)).length;
+    if (hits / samples.length < MIN_PATTERN_COVERAGE) continue;
+    const monthly = pattern.includes('{MM}');
+    const width = /\{(N+)\}/.exec(pattern)?.[1]?.length ?? 0;
+    const better =
+      !best ||
+      hits > best.hits ||
+      (hits === best.hits && (best.monthly && !monthly || (best.monthly === monthly && width > best.width)));
+    if (better) best = { pattern, hits, monthly, width };
+  }
+  return best?.pattern ?? null;
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { redirect } from '@/i18n/navigation';
@@ -12,6 +13,8 @@ import type { Usage } from '@/lib/usage-defaults';
 import { REFERRAL_REWARDS } from '@/lib/referral';
 import { SITE_URL } from '@/lib/site';
 import { DashboardView } from './dashboard-view';
+import { SwitchBanner } from '@/components/switch-banner';
+import { isSwitchBrand, SWITCH_COOKIE } from '@/lib/switch';
 import { presetRange } from '@/lib/period-presets';
 import { FULL_ABILITIES, type DashboardAbilities, type DashboardConfig, type DashboardSummary, type PeriodStats } from './types';
 
@@ -95,5 +98,14 @@ export default async function DashboardHomePage() {
   const session = await auth().catch(() => null);
   const firstName = session?.user?.name?.trim().split(/\s+/)[0] ?? null;
 
-  return <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} referral={referral} abilities={abilities} />;
+  // Nothing issued yet: offer the import of the history from the previous app.
+  const from = (await cookies()).get(SWITCH_COOKIE)?.value;
+  const switchBanner = abilities.manage && summary.recent.length === 0 ? <SwitchBanner source={isSwitchBrand(from) ? from : null} /> : null;
+
+  return (
+    <>
+      {switchBanner}
+      <DashboardView summary={summary} initialConfig={config} firstName={firstName} profile={profile} advances={advances} country={country} time={time} stats={stats} usage={usage} referral={referral} abilities={abilities} />
+    </>
+  );
 }

@@ -2855,7 +2855,7 @@
       "template": "Download CSV template",
       "step1": {
         "title": "Export from the old system",
-        "hint": "A plain CSV file is enough (semicolon, comma or tab separated, UTF-8 or Windows-1250). Column names are recognised automatically: Czech, Slovak and English."
+        "hint": "A CSV or Excel (.xlsx) file is all it takes. For CSV, any separator (semicolon, comma, tab) and encoding (UTF-8, Windows-1250) works. We recognise Czech, Slovak and English column names; anything we miss you can match in the preview."
       },
       "sources": {
         "fakturoid": {
@@ -2869,9 +2869,41 @@
         "idoklad": {
           "name": "iDoklad",
           "steps": [
-            "In the list of issued invoices, select the invoices and export them to Excel or CSV.",
-            "If you got an Excel file, save it as CSV (UTF-8).",
-            "Export contacts from the address book the same way."
+            "In the list of issued invoices, select the ones to move and export them to Excel or CSV.",
+            "Upload the file below as it is; there is no need to convert it.",
+            "Export contacts the same way from the contact list and upload them first."
+          ]
+        },
+        "superfaktura": {
+          "name": "SuperFaktura",
+          "steps": [
+            "In the invoice overview, filter the period you want to move.",
+            "Download the list as Excel (.xlsx) or CSV.",
+            "Export the client directory the same way and upload it first."
+          ]
+        },
+        "vyfakturuj": {
+          "name": "Vyfakturuj",
+          "steps": [
+            "In the document list, filter issued invoices for the period you want to move.",
+            "Download them as CSV or Excel. If the export offers line items, include them and we will bring over every invoice line.",
+            "Export contacts separately and upload them first."
+          ]
+        },
+        "kros": {
+          "name": "KROS Fakturácia",
+          "steps": [
+            "In the list of issued invoices, select the documents to move.",
+            "Export the list to Excel (.xlsx) or CSV.",
+            "Export your customers from the partner list and upload them first."
+          ]
+        },
+        "billdu": {
+          "name": "Billdu",
+          "steps": [
+            "In the Billdu web app, open the invoice list and find the document export.",
+            "Choose CSV or Excel and the period you want to move.",
+            "Export clients separately and upload them first."
           ]
         },
         "bitfaktura": {
@@ -2901,7 +2933,7 @@
           "steps": [
             "Download the template below, or use your own sheet with invoice number, customer, issue date and amount.",
             "One row = one invoice. Several rows with the same number become one invoice with several items (columns Item, Quantity, Unit price).",
-            "Save the sheet as CSV and upload it below."
+            "Save the sheet as CSV or .xlsx and upload it below."
           ]
         }
       },
@@ -3015,7 +3047,7 @@
       "errors": {
         "unknown_columns": "This doesn't look like an invoice list: no column with the invoice number, customer or amount.",
         "too_many_rows": "The file is too big; split it into smaller parts (max 5,000 invoices).",
-        "no_file": "Choose a CSV file.",
+        "no_file": "Choose a CSV or Excel (.xlsx) file.",
         "forbidden": "Only the owner or an admin can run an import.",
         "failed": "The import failed, please try again.",
         "bitfaktura_account": "We couldn't find that BitFaktura account. Enter it as company.bitfaktura.cz.",
@@ -3024,7 +3056,87 @@
         "fakturoid_unauthorized": "Fakturoid didn't accept the credentials. Check the Client ID and Client secret in your user account settings.",
         "fakturoid_account": "We can't see that Fakturoid account. Enter it as it appears in app.fakturoid.cz/mycompany, or leave the field empty.",
         "fakturoid_blocked": "The Fakturoid account is blocked or its plan is unpaid, so it won't hand out data over the API.",
-        "fakturoid_unreachable": "Fakturoid isn't responding right now, please try again shortly."
+        "fakturoid_unreachable": "Fakturoid isn't responding right now, please try again shortly.",
+        "xls_unsupported": "We cannot read the old .xls format. Open the file in Excel and save it as .xlsx or CSV.",
+        "xlsx_unreadable": "We could not read this .xlsx file. Save it again, or as CSV.",
+        "invalid_mapping": "The column mapping is invalid. Upload the file again.",
+        "pattern_clash": "The imported sequence cannot be adopted because it overlaps another one. Adjust it in Settings → Numbering."
+      },
+      "mapping": {
+        "detected": "This file looks like an export from {source}; we matched the columns ourselves.",
+        "notDetected": "We could not tell where the file comes from, so we matched the columns by their names.",
+        "title": "How we read the columns",
+        "requiredTitle": "Match the columns",
+        "requiredLead": "We could not find which column holds the {fields}. Pick it below and check the file again.",
+        "required": {
+          "number": "invoice number",
+          "customer": "customer",
+          "amount": "amount (total, net or unit price)"
+        },
+        "noHeader": "Column {n}",
+        "empty": "(empty)",
+        "selectLabel": "Data in column {column}",
+        "ignore": "Do not import",
+        "apply": "Check again",
+        "fields": {
+          "number": "Invoice number",
+          "customer": "Customer",
+          "issueDate": "Issue date",
+          "dueDate": "Due date",
+          "taxableSupplyDate": "Tax point date",
+          "totalNet": "Net total",
+          "totalVat": "VAT total",
+          "totalGross": "Total incl. VAT",
+          "vatRate": "VAT rate",
+          "currency": "Currency",
+          "status": "Status",
+          "paidDate": "Paid on",
+          "paidAmount": "Amount paid",
+          "variableSymbol": "Variable symbol",
+          "documentType": "Document type",
+          "ico": "Company ID (IČO)",
+          "dic": "Tax ID (DIČ)",
+          "vatId": "VAT ID (IČ DPH)",
+          "email": "Email",
+          "phone": "Phone",
+          "street": "Street",
+          "city": "City",
+          "postalCode": "Postal code",
+          "country": "Country",
+          "contactPerson": "Contact person",
+          "description": "Item",
+          "quantity": "Quantity",
+          "unit": "Unit",
+          "unitPrice": "Unit price",
+          "lineVatRate": "Item VAT rate",
+          "note": "Note",
+          "internalNote": "Internal note",
+          "orderNumber": "Order number",
+          "constantSymbol": "Constant symbol",
+          "paymentMethod": "Payment method",
+          "issuePlace": "Place of issue",
+          "issuedBy": "Issued by",
+          "reverseCharge": "Reverse charge",
+          "reverseChargeCode": "Reverse charge code",
+          "exchangeRate": "Exchange rate",
+          "exchangeRateCnb": "CNB rate",
+          "exchangeRateKind": "Rate type",
+          "exchangeRateDate": "Rate date"
+        }
+      },
+      "numbering": {
+        "title": "Number sequence",
+        "row": "{type}: numbers like {pattern}, last {current}, next will be {next}.",
+        "types": {
+          "invoice": "Invoices",
+          "proforma": "Proforma invoices",
+          "credit_note": "Credit notes",
+          "quote": "Quotes"
+        },
+        "existing": "{count, plural, one {You already have # document of your own in another sequence.} other {You already have # documents of your own in another sequence.}}",
+        "adopt": "Continue the imported number sequence (changes your numbering settings)",
+        "adopted": "Numbering now continues the imported sequence.",
+        "check": "Check numbering"
       }
     },
     "companies": {
@@ -4937,7 +5049,7 @@
   },
   "welcome": {
     "title": "Welcome to Billanta",
-    "subtitle": "Three quick questions and the app shows only what you'll actually use. You can change everything later in Settings.",
+    "subtitle": "A few quick questions and the app shows only what you will actually use. You can change everything later in Settings.",
     "companyTitle": "Your business",
     "companyHint": "Type your company name, your own name (sole trader) or IČO and we fill in the invoice details from ARES, the Slovak RPO or foreign registers. You can also skip this.",
     "vatQuestion": "Are you VAT registered?",
@@ -4954,7 +5066,12 @@
     "failed": "Couldn't save",
     "searchLabel": "Company, name or IČO",
     "searchPlaceholder": "Company name, your name or IČO",
-    "searchEmpty": "Nothing found. Try another name or IČO, or another register."
+    "searchEmpty": "Nothing found. Try another name or IČO, or another register.",
+    "importTitle": "Coming from another app?",
+    "importHint": "Pick it and once you save, we will walk you through importing contacts, invoices and your number sequence.",
+    "importNone": "Starting fresh",
+    "importOther": "Another app / Excel",
+    "finishImport": "Done, let us import"
   },
   "registry": {
     "label": "Company register",
@@ -6910,7 +7027,8 @@
       "importCta": "How import works",
       "faqTitle": "Frequently asked questions",
       "othersTitle": "More comparisons",
-      "all": "Full comparison"
+      "all": "Full comparison",
+      "switchGuide": "Step-by-step switching guide"
     },
     "brands": {
       "fakturoid": {
@@ -9642,6 +9760,141 @@
       "label": "Code",
       "placeholder": "e.g. KAVARNA-BRNO",
       "submit": "Continue"
+    }
+  },
+  "switchBanner": {
+    "title": "Switching from another app? Import your data in minutes",
+    "text": "Bring over contacts, issued invoices and your number sequence from a Fakturoid, iDoklad, SuperFaktura or other export.",
+    "cta": "Import data",
+    "dismiss": "Hide"
+  },
+  "switchPage": {
+    "seoTitle": "Switch to Billanta from another invoicing app",
+    "navTitle": "Switch to Billanta",
+    "title": "Switch to Billanta and take your data with you",
+    "lead": "Bring over contacts, issued invoices and your number sequence from the export your current app gives you. The import recognises where the file comes from and shows a preview before anything is saved.",
+    "pickTitle": "Where are you coming from?",
+    "cardCta": "Switching guide",
+    "otherTitle": "Another app or Excel",
+    "otherText": "The import reads your own spreadsheet too. Any column it does not recognise you match in the preview.",
+    "howTitle": "How switching works",
+    "how": [
+      "Download an export of invoices and contacts from your old app as CSV or Excel.",
+      "Upload the file to Billanta. We recognise which app it comes from and match the columns.",
+      "Check invoices, customers and numbering in the preview. Nothing is saved until you confirm."
+    ],
+    "exportTitle": "How to get your data out",
+    "transfersTitle": "What comes over",
+    "transfers": [
+      "Customers with company ID, tax ID and address. Ones you already have in Billanta are matched, not duplicated.",
+      "Issued invoices with dates, amounts, currency and payment status. Nothing is sent again and no reminders go out.",
+      "Your number sequence: the next invoice follows the last imported one and, if you like, we adopt the number format too.",
+      "Invoice line items when the export includes them; otherwise one line for the full amount."
+    ],
+    "note": "We describe the steps in general terms; button names can differ between versions of the app.",
+    "ctaTitle": "Create a free account and upload your export",
+    "ctaLead": "After signing up we take you straight to the import. Nothing changes in your old app.",
+    "ctaButton": "Create account and import",
+    "haveAccount": "Already have an account? Open the import",
+    "compareLink": "Billanta compared with {brand}",
+    "othersTitle": "Switching from other apps",
+    "faqTitle": "Frequently asked questions",
+    "faq": [
+      {
+        "q": "Will I lose anything in my old app?",
+        "a": "No. The import only reads the file you download. Nothing changes in the old app and you can keep using it until you are sure."
+      },
+      {
+        "q": "What if the import does not recognise some columns?",
+        "a": "In the preview you pick what each column contains and check the file again. Nothing is saved without your confirmation."
+      },
+      {
+        "q": "Will invoice numbering continue?",
+        "a": "Yes. The next invoice gets the number after the highest imported one. If your old app used a different number format, the preview offers to adopt it."
+      },
+      {
+        "q": "Do I need to convert an Excel file to CSV?",
+        "a": "No, upload the .xlsx file directly. Only the old .xls format needs to be saved again as .xlsx in Excel."
+      }
+    ],
+    "brands": {
+      "fakturoid": {
+        "title": "Switching from Fakturoid to Billanta",
+        "lead": "There are two ways to leave Fakturoid: a direct API connection or a CSV export. Both end in a preview where you check everything.",
+        "steps": [
+          "Your Fakturoid user account settings give you API v3 access (Client ID and Client secret).",
+          "Enter them in the Billanta import and we load invoices, proformas, credit notes and the address book at once.",
+          "Without the API, export the invoice and contact lists to CSV; upload the contacts first."
+        ],
+        "extra": "With the API connection we also bring over proforma invoices, credit notes, payments and the original PDFs.",
+        "seoTitle": "Switching from Fakturoid to Billanta – export and import guide"
+      },
+      "idoklad": {
+        "title": "Switching from iDoklad to Billanta",
+        "lead": "From iDoklad, export the list of issued invoices and your contacts. You upload the Excel file directly, no conversion needed.",
+        "steps": [
+          "In the list of issued invoices, select the documents to move.",
+          "Use the export to Excel or CSV.",
+          "Export contacts the same way and upload them to Billanta first."
+        ],
+        "extra": "We work out the VAT rate from the amounts even when the export has no separate column for it.",
+        "seoTitle": "Switching from iDoklad to Billanta – export and import guide"
+      },
+      "superfaktura": {
+        "title": "Switching from SuperFaktura to Billanta",
+        "lead": "From SuperFaktura, download the invoice overview and client directory. The import reads both Czech and Slovak exports, including invoices in euro.",
+        "steps": [
+          "In the invoice overview, filter the period you want to move.",
+          "Download the list as Excel or CSV.",
+          "Export clients the same way and upload them to Billanta first."
+        ],
+        "extra": "A Slovak VAT ID (IČ DPH) stays with the customer, separate from the tax ID (DIČ).",
+        "seoTitle": "Switching from SuperFaktura to Billanta – export and import guide"
+      },
+      "vyfakturuj": {
+        "title": "Switching from Vyfakturuj to Billanta",
+        "lead": "From Vyfakturuj you bring over issued invoices including their line items. An export of documents and contacts is all it takes.",
+        "steps": [
+          "In the document list, filter issued invoices for the period you want to move.",
+          "Download them as CSV or Excel, ideally with line items.",
+          "Export contacts separately and upload them to Billanta first."
+        ],
+        "extra": "An export with line items comes over line by line, with quantity, price and VAT rate.",
+        "seoTitle": "Switching from Vyfakturuj to Billanta – export and import guide"
+      },
+      "kros": {
+        "title": "Switching from KROS Fakturácia to Billanta",
+        "lead": "From KROS Fakturácia, export issued invoices and partners to Excel. The import reads Slovak column names and invoices in euro.",
+        "steps": [
+          "In the list of issued invoices, select the documents to move.",
+          "Export the list to Excel or CSV.",
+          "Export partners the same way and upload them to Billanta first."
+        ],
+        "extra": "The Slovak VAT ID (IČ DPH) stays separate from the tax ID (DIČ), and we work out the VAT rate from the amounts.",
+        "seoTitle": "Switching from KROS Fakturácia to Billanta – export and import guide"
+      },
+      "billdu": {
+        "title": "Switching from Billdu to Billanta",
+        "lead": "From Billdu, download the document export in the web app. The import understands English column names too.",
+        "steps": [
+          "In the Billdu web app, open the invoice list and find the document export.",
+          "Choose CSV or Excel and the period you want to move.",
+          "Export clients separately and upload them to Billanta first."
+        ],
+        "extra": "Payment status and dates in YYYY-MM-DD format are converted for you.",
+        "seoTitle": "Switching from Billdu to Billanta – export and import guide"
+      },
+      "bitfaktura": {
+        "title": "Switching from BitFaktura to Billanta",
+        "lead": "You can leave BitFaktura with an API code or with a CSV export of invoices. A sequence like 1/09/2025 carries on.",
+        "steps": [
+          "The integrations in your BitFaktura account settings show an API authorisation code.",
+          "Enter it in the Billanta import with your account name and we load invoices and the whole address book.",
+          "Without the code, export invoices to CSV and upload the file in the import."
+        ],
+        "extra": "With the API code we also load contacts you have not invoiced yet, exchange rates and payment methods.",
+        "seoTitle": "Switching from BitFaktura to Billanta – export and import guide"
+      }
     }
   }
 }

@@ -33,7 +33,8 @@ import { AuditService } from "../audit/audit.service";
 import { withIdempotencyKey } from "../common/idempotency";
 import { DbService } from "../db/db.service";
 import { summarizeContactInvoices, type ContactSummaryBucket } from "./contact-summary.util";
-import { contactsToCsv, decodeCsvBuffer, mapContactRows, parseCsv, type CsvContact, type CsvSkip } from "./contacts-csv.util";
+import { contactsToCsv, mapContactRows, type CsvContact, type CsvSkip } from "./contacts-csv.util";
+import { readTableFile, TableFileError } from "../common/table-file";
 import {
   mapAresSubjectToContactPrefill,
   mapRegistryHitToContactPrefill,
@@ -368,8 +369,10 @@ export class ContactsService {
   async importCsv(db: TenantDb, tenantId: string, buffer: Buffer): Promise<{ created: number; updated: number; skipped: CsvSkip[] }> {
     let mapped: ReturnType<typeof mapContactRows>;
     try {
-      mapped = mapContactRows(parseCsv(decodeCsvBuffer(buffer)));
-    } catch {
+      // CSV or an .xlsx address book export.
+      mapped = mapContactRows(readTableFile(buffer));
+    } catch (error) {
+      if (error instanceof TableFileError) throw new BadRequestException({ error: error.code });
       throw new BadRequestException({ error: "unknown_columns" });
     }
     if (mapped.contacts.length + mapped.skipped.length > MAX_IMPORT_ROWS) throw new BadRequestException({ error: "too_many_rows" });

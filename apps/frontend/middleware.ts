@@ -4,6 +4,7 @@ import { routing } from './i18n/routing';
 import { JOIN_PATH, PROMO_CODE, PROMO_COOKIE } from './lib/promo';
 import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN, SITE_URL } from './lib/site';
+import { isSwitchBrand, SWITCH_COOKIE } from './lib/switch';
 
 const intl = createMiddleware(routing);
 /**
@@ -74,6 +75,24 @@ function rememberPromo(request: NextRequest, response: NextResponse) {
 }
 
 /**
+ * `?from=<app>` (the signup links on /switch and /compare pages): remember
+ * the app the visitor is leaving, so the welcome screen offers its import.
+ * Not set by the guide pages themselves, which stay cacheable.
+ */
+function rememberSwitchSource(request: NextRequest, response: NextResponse) {
+  const from = request.nextUrl.searchParams.get('from');
+  if (!isSwitchBrand(from) || request.cookies.get(SWITCH_COOKIE)?.value === from) return response;
+  response.cookies.set(SWITCH_COOKIE, from, {
+    maxAge: 60 * 60 * 24 * 30,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: request.nextUrl.protocol === 'https:'
+  });
+  return response;
+}
+
+/**
  * A poster or QR code points to `/join/CODE` without a locale. When the
  * visitor has never picked a language, mark the locale redirect so the join
  * page may switch to the code's own language (a Slovak event's code opens in
@@ -103,7 +122,7 @@ function privateIfSettingCookies(response: NextResponse) {
 export default function middleware(request: NextRequest) {
   const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
   const response = profileRewrite(request) ?? markJoinLocale(request, locale(request));
-  return privateIfSettingCookies(rememberPromo(request, rememberReferral(request, response)));
+  return privateIfSettingCookies(rememberSwitchSource(request, rememberPromo(request, rememberReferral(request, response))));
 }
 
 export const config = {

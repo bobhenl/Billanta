@@ -6,6 +6,7 @@ import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 import { fetchBlogSitemap } from '@/lib/blog';
 import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
+import { SWITCH_BRANDS } from '@/lib/switch';
 
 import { fetchAccountants } from '@/lib/accountant-directory';
 
@@ -54,6 +55,8 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/pricing', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/compare', changeFrequency: 'monthly', priority: 0.7 },
   ...comparedPages().map((b): UrlEntry => ({ path: `/compare/${b.key}`, changeFrequency: 'monthly', priority: 0.6, locales: b.locales })),
+  { path: '/switch', changeFrequency: 'monthly', priority: 0.7 },
+  ...SWITCH_BRANDS.map((key): UrlEntry => ({ path: `/switch/${key}`, changeFrequency: 'monthly', priority: 0.6 })),
   // Czech towns in cs, Slovak in sk; the English directory is noindex.
   { path: '/invoicing', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/features', changeFrequency: 'monthly', priority: 0.8 },

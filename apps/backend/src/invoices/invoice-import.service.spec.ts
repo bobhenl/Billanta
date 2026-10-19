@@ -179,7 +179,10 @@ describe("InvoiceImportService.importMapped – address-book contacts", () => {
     const created: Record<string, unknown>[] = [];
     const db = {
       select: () => ({
-        from: (table: unknown) => Object.assign(Promise.resolve(table === schema.contacts ? existing : []), { where: async () => [] }),
+        from: (table: unknown) =>
+          Object.assign(Promise.resolve(table === schema.contacts ? existing : []), {
+            where: () => Object.assign(Promise.resolve([]), { limit: async () => [] }),
+          }),
       }),
       insert: () => ({
         values: (v: Record<string, unknown>) => ({

@@ -8,6 +8,7 @@ import { PROMO_CODE, PROMO_COOKIE } from '@/lib/promo';
 import { lookupJoinCode } from '@/lib/promo-join';
 import { canManage, fetchMyAccess, fetchTenant } from '@/lib/tenant';
 import { BUSINESS_PRESETS, TOGGLEABLE_MODULES, type ModuleSet } from '@/lib/business-presets';
+import { isSwitchBrand, SWITCH_COOKIE, switchBrandsFor } from '@/lib/switch';
 import { WelcomeSetup } from './welcome-setup';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -32,7 +33,9 @@ async function promoPreset(): Promise<string | null> {
 export default async function WelcomePage() {
   const locale = await getLocale();
   try {
-    const [access, tenant, preset] = await Promise.all([fetchMyAccess(), fetchTenant(), promoPreset()]);
+    const [access, tenant, preset, jar] = await Promise.all([fetchMyAccess(), fetchTenant(), promoPreset(), cookies()]);
+    // The app the visitor said they are leaving (a /switch page's signup link).
+    const from = jar.get(SWITCH_COOKIE)?.value;
     if (!canManage(access.role)) redirect({ href: '/dashboard', locale });
     // Only preselected: nothing is saved until the visitor finishes the screen.
     const modules =
@@ -42,6 +45,8 @@ export default async function WelcomePage() {
       <WelcomeSetup
         initialModules={modules}
         company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: tenant?.addressCountry ?? 'CZ' }}
+        importApps={switchBrandsFor(locale)}
+        initialImportFrom={isSwitchBrand(from) ? from : null}
       />
     );
   } catch (error) {

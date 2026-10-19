@@ -8,6 +8,7 @@ import { routing } from '@/i18n/routing';
 import { brandsFor, comparedAtLabel, comparedBrandsFor, comparedPages, getComparedBrand, rowsFor } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
+import { isSwitchBrand } from '@/lib/switch';
 
 /**
  * Billanta next to one competitor. The table reuses the cells of the full
@@ -194,10 +195,18 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
           ))}
         </ol>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/signup" className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+          <Link href={isSwitchBrand(brand.key) ? `/signup?from=${brand.key}` : '/signup'} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
             {t('signupCta')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
+          {isSwitchBrand(brand.key) && (
+            <Link
+              href={`/switch/${brand.key}`}
+              className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
+            >
+              {t('brand.switchGuide')}
+            </Link>
+          )}
           <Link
             href="/features/switch-from-another-app"
             className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, FileText, Loader2, Upload, Users } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, CloudDownload, Download, FileSpreadsheet, FileText, Hash, Loader2, Sparkles, Upload, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
@@ -9,9 +9,20 @@ import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { updateCompany } from '../actions';
+import { isSource, SOURCES, type Source } from './import-sources';
 
-const SOURCES = ['fakturoid', 'idoklad', 'bitfaktura', 'faktorio', 'invoiceNinja', 'excel'] as const;
-type Source = (typeof SOURCES)[number];
+
+/** What the file import reads a column as (the backend's IMPORT_FIELDS), in the order the mapping editor lists them. */
+const IMPORT_FIELDS = [
+  'number', 'customer', 'issueDate', 'dueDate', 'taxableSupplyDate', 'totalNet', 'totalVat', 'totalGross', 'vatRate', 'currency',
+  'status', 'paidDate', 'paidAmount', 'variableSymbol', 'documentType', 'ico', 'dic', 'vatId', 'email', 'phone', 'street', 'city',
+  'postalCode', 'country', 'contactPerson', 'description', 'quantity', 'unit', 'unitPrice', 'lineVatRate', 'note', 'internalNote',
+  'orderNumber', 'constantSymbol', 'paymentMethod', 'issuePlace', 'issuedBy', 'reverseCharge', 'reverseChargeCode', 'exchangeRate',
+  'exchangeRateCnb', 'exchangeRateKind', 'exchangeRateDate'
+] as const;
+type ImportField = (typeof IMPORT_FIELDS)[number];
+
+const FILE_ACCEPT = '.csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
 type InvoiceSkip = { line: number; number: string; reason: string };
 type InvoiceImportResult = {
@@ -30,7 +41,16 @@ type InvoiceImportResult = {
   businessFilled?: string[];
   sellers?: { ico: string; name: string | null; invoices: number }[];
   sellerUpdate?: SellerUpdate;
+  /** File imports: the tool the file looks like an export of. */
+  detectedSource?: string | null;
+  columns?: ImportColumn[];
+  /** Required fields no column maps to; the preview is otherwise empty. */
+  mappingRequired?: ('number' | 'customer' | 'amount')[];
+  numbering?: NumberingSuggestion[];
+  numberingAdopted?: string[];
 };
+type ImportColumn = { header: string; field: ImportField | null; samples: string[] };
+type NumberingSuggestion = { documentType: string; pattern: string; current: string; nextNumber: string; existingDocuments: number };
 type SellerUpdate = {
   invoiceNumber: string;
   issueDate: string;
@@ -54,9 +74,9 @@ const primary =
  * "Stěhování" in three steps: how to export from the old system, contacts,
  * then invoice history (preview first, import on confirmation).
  */
-export function MigrationWizard({ readOnly }: { readOnly: boolean }) {
+export function MigrationWizard({ readOnly, initialSource }: { readOnly: boolean; initialSource?: Source }) {
   const t = useTranslations('settings.import');
-  const [source, setSource] = useState<Source>('fakturoid');
+  const [source, setSource] = useState<Source>(initialSource ?? 'fakturoid');
   const steps = t.raw(`sources.${source}.steps`) as string[];
 
   const downloadTemplate = () => {
@@ -118,14 +138,14 @@ function StepTitle({ n, title, hint }: { n: number; title: string; hint: string 
   );
 }
 
-function FilePicker({ disabled, busy, label, onFile }: { disabled: boolean; busy: boolean; label: string; onFile: (file: File) => void }) {
+function FilePicker({ disabled, busy, label, onFile, accept = '.csv,text/csv' }: { disabled: boolean; busy: boolean; label: string; onFile: (file: File) => void; accept?: string }) {
   const input = useRef<HTMLInputElement>(null);
   return (
     <>
       <input
         ref={input}
         type="file"
-        accept=".csv,text/csv"
+        accept={accept}
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
@@ -170,7 +190,7 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
       <StepTitle n={2} title={t('step2.title')} hint={t('step2.hint')} />
       <p className="mt-2 text-sm text-muted-foreground">{t('step2.lead')}</p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <FilePicker disabled={readOnly} busy={busy} label={t('step2.upload')} onFile={upload} />
+        <FilePicker disabled={readOnly} busy={busy} label={t('step2.upload')} onFile={upload} accept={FILE_ACCEPT} />
         {done && (
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
             <Users className="h-4 w-4" />
@@ -190,7 +210,7 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
 const bareHost = (value: string) => value.trimStart().replace(/^[a-z]+:\/\//i, '').replace(/^([^/?#]*\.[^/?#]*)[/?#].*$/, '$1');
 
 type ImportRequest =
-  | { kind: 'file'; file: File }
+  | { kind: 'file'; file: File; mapping?: (ImportField | null)[] }
   | { kind: 'bitfaktura'; account: string; apiToken: string; sellerIco?: string }
   | { kind: 'fakturoid'; clientId: string; clientSecret: string; account: string; sellerIco?: string };
 
@@ -207,12 +227,16 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
   const [preview, setPreview] = useState<InvoiceImportResult | null>(null);
   const [result, setResult] = useState<InvoiceImportResult | null>(null);
   const [busy, setBusy] = useState<'preview' | 'import' | null>(null);
+  // Continue the imported number row (see `numbering` in the preview).
+  const [adoptNumbering, setAdoptNumbering] = useState(false);
 
   const send = async (req: ImportRequest, dryRun: boolean) => {
     let res: Response;
     if (req.kind === 'file') {
       const body = new FormData();
       body.set('file', req.file);
+      if (req.mapping) body.set('mapping', JSON.stringify(req.mapping));
+      if (!dryRun && adoptNumbering) body.set('adoptNumbering', '1');
       res = await fetch(`/api/invoices/import${dryRun ? '?dryRun=1' : ''}`, { method: 'POST', body });
     } else if (req.kind === 'fakturoid') {
       res = await fetch('/api/invoices/import/fakturoid', {
@@ -244,7 +268,10 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
     setPreview(null);
     setRequest(req);
     try {
-      setPreview(await send(req, true));
+      const found = await send(req, true);
+      setPreview(found);
+      // Switching the pattern is the default only while the company has no numbers of its own in the old one.
+      setAdoptNumbering((found.numbering ?? []).length > 0 && (found.numbering ?? []).every((n) => n.existingDocuments === 0));
     } catch (e) {
       toast({ text: (e as Error).message, tone: 'err' });
     } finally {
@@ -377,6 +404,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
           busy={busy === 'preview' && request?.kind === 'file'}
           label={t('step3.upload')}
           onFile={(file) => void check({ kind: 'file', file })}
+          accept={FILE_ACCEPT}
         />
         {request?.kind === 'file' && (
           <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
@@ -388,6 +416,25 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
 
       {preview && (
         <div className="mt-4 space-y-3">
+          {request?.kind === 'file' && preview.columns && (
+            <p className="flex items-start gap-1.5 text-sm">
+              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span>
+                {preview.detectedSource && isSource(preview.detectedSource)
+                  ? t('mapping.detected', { source: t(`sources.${preview.detectedSource}.name`) })
+                  : t('mapping.notDetected')}
+              </span>
+            </p>
+          )}
+          {request?.kind === 'file' && preview.columns && (
+            <ColumnMapping
+              key={`${request.file.name}-${request.file.size}-${request.file.lastModified}`}
+              columns={preview.columns}
+              missing={preview.mappingRequired ?? []}
+              disabled={readOnly || busy !== null}
+              onApply={(mapping) => void check({ ...request, mapping })}
+            />
+          )}
           {preview.source && (
             <p className="flex items-start gap-1.5 text-sm">
               {preview.skipped.length === 0 ? (
@@ -401,7 +448,7 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               </span>
             </p>
           )}
-          {preview.invoices === 0 && !hasExtra(preview) ? (
+          {preview.mappingRequired && preview.mappingRequired.length > 0 ? null : preview.invoices === 0 && !hasExtra(preview) ? (
             <Banner tone="warn" title={t('step3.nothing')} />
           ) : preview.invoices === 0 ? (
             <div className="rounded-lg bg-secondary/60 p-4 text-sm">
@@ -473,6 +520,32 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               </label>
             </Banner>
           )}
+          {preview.numbering && preview.numbering.length > 0 && (
+            <div className="rounded-lg border border-border p-4 text-sm">
+              <p className="flex items-center gap-1.5 font-semibold">
+                <Hash className="h-4 w-4 text-primary" />
+                {t('numbering.title')}
+              </p>
+              <ul className="mt-2 space-y-1 text-muted-foreground">
+                {preview.numbering.map((n) => (
+                  <li key={n.documentType}>
+                    {t('numbering.row', { type: t(`numbering.types.${n.documentType}`), pattern: n.pattern, next: n.nextNumber, current: n.current })}
+                    {n.existingDocuments > 0 && <> {t('numbering.existing', { count: n.existingDocuments })}</>}
+                  </li>
+                ))}
+              </ul>
+              <label className="mt-3 flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 accent-primary"
+                  checked={adoptNumbering}
+                  disabled={readOnly || busy !== null}
+                  onChange={(e) => setAdoptNumbering(e.target.checked)}
+                />
+                <span>{t('numbering.adopt')}</span>
+              </label>
+            </div>
+          )}
           <Skipped rows={preview.skipped} />
           {(preview.invoices > 0 || hasExtra(preview)) && (
             <button type="button" className={primary} disabled={readOnly || busy !== null} onClick={confirm}>
@@ -511,6 +584,15 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
               </Link>
             </div>
           </Banner>
+          {result.numberingAdopted && result.numberingAdopted.length > 0 && (
+            <p className="flex items-center gap-1.5 text-sm">
+              <Hash className="h-4 w-4 text-primary" />
+              {t('numbering.adopted')}{' '}
+              <Link href="/settings/numbering" className="font-semibold text-primary hover:underline">
+                {t('numbering.check')}
+              </Link>
+            </p>
+          )}
           {result.sellerUpdate && !readOnly && <SellerUpdateOffer update={result.sellerUpdate} date={date} />}
           <Skipped rows={result.skipped} />
         </div>
@@ -562,6 +644,66 @@ function SellerUpdateOffer({ update, date }: { update: SellerUpdate; date: (iso:
   );
 }
 
+/**
+ * How each column of the file is read, with a few values from it. Opens by
+ * itself when a required column was not recognised; otherwise it is there to
+ * fix a wrong guess. "Apply" previews again with the user's mapping.
+ */
+function ColumnMapping({
+  columns,
+  missing,
+  disabled,
+  onApply
+}: {
+  columns: ImportColumn[];
+  missing: ('number' | 'customer' | 'amount')[];
+  disabled: boolean;
+  onApply: (mapping: (ImportField | null)[]) => void;
+}) {
+  const t = useTranslations('settings.import.mapping');
+  const [fields, setFields] = useState<(ImportField | null)[]>(() => columns.map((c) => c.field));
+  const changed = fields.some((f, i) => f !== columns[i]?.field);
+  const required = missing.length > 0;
+  return (
+    <details open={required} className={cn('rounded-lg border p-3 text-sm', required ? 'border-amber-500/60' : 'border-border')}>
+      <summary className="cursor-pointer font-semibold">{required ? t('requiredTitle') : t('title')}</summary>
+      {required && <p className="mt-2 text-muted-foreground">{t('requiredLead', { fields: missing.map((m) => t(`required.${m}`)).join(', ') })}</p>}
+      <div className="mt-3 max-h-[28rem] space-y-2 overflow-y-auto">
+        {columns.map((col, i) => (
+          <div key={i} className="grid gap-1 rounded-md bg-secondary/40 p-2 sm:grid-cols-[1fr_14rem] sm:items-center sm:gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-semibold">{col.header || t('noHeader', { n: i + 1 })}</p>
+              <p className="truncate text-xs text-muted-foreground">{col.samples.length > 0 ? col.samples.join(' · ') : t('empty')}</p>
+            </div>
+            <select
+              aria-label={t('selectLabel', { column: col.header || String(i + 1) })}
+              className="h-9 w-full rounded-lg border border-border bg-background px-2"
+              value={fields[i] ?? ''}
+              disabled={disabled}
+              onChange={(e) => {
+                const next = [...fields];
+                next[i] = (e.target.value || null) as ImportField | null;
+                setFields(next);
+              }}
+            >
+              <option value="">{t('ignore')}</option>
+              {IMPORT_FIELDS.map((f) => (
+                <option key={f} value={f}>
+                  {t(`fields.${f}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
+      <button type="button" className={cn(button, 'mt-3')} disabled={disabled || (!changed && !required)} onClick={() => onApply(fields)}>
+        <ArrowRight className="h-4 w-4" />
+        {t('apply')}
+      </button>
+    </details>
+  );
+}
+
 function Skipped({ rows }: { rows: InvoiceSkip[] }) {
   const t = useTranslations('settings.import');
   if (rows.length === 0) return null;
@@ -582,6 +724,10 @@ function Skipped({ rows }: { rows: InvoiceSkip[] }) {
 function errorText(t: ReturnType<typeof useTranslations>, error: unknown): string {
   const known = [
     'unknown_columns',
+    'xls_unsupported',
+    'xlsx_unreadable',
+    'invalid_mapping',
+    'pattern_clash',
     'too_many_rows',
     'no_file',
     'forbidden',
