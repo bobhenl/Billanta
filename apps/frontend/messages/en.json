@@ -4588,13 +4588,14 @@
     "internalField": "Internal field – team only",
     "peppol": {
       "title": "This e-invoice (Peppol) would fail validation",
-      "intro": "The customer is abroad, so you may want to send this as UBL over the Peppol network. An access point would reject or flag it because of:",
+      "intro": "You may want to send this as a UBL e-invoice over the Peppol network (in Slovakia, VAT payers must issue them to domestic businesses from 1 January 2027). An access point would reject or flag it because of:",
       "field": {
         "supplier": "Supplier",
         "customer": "Customer",
         "lines": "Items",
         "payment": "Payment",
-        "currency": "Currency"
+        "currency": "Currency",
+        "document": "Document"
       },
       "code": {
         "nameMissing": "name is missing",
@@ -4607,7 +4608,9 @@
         "lineNameMissing": "an item has no description",
         "currencyInvalid": "invalid currency code",
         "noAccount": "no bank account given",
-        "noIban": "the account has no IBAN"
+        "noIban": "the account has no IBAN",
+        "skDicMissing": "the Slovak DIČ (10 digits) is missing; the Peppol address 0245 is built from it",
+        "precedingMissing": "the credit note does not reference the original invoice it corrects"
       }
     },
     "requirements": {
@@ -7195,7 +7198,7 @@
       "calculators": "Calculators",
       "calculatorsHint": "Tax, VAT, QR payment, company lookup, due dates",
       "guides": "Guides",
-      "guidesHint": "How to file Czech VAT returns",
+      "guidesHint": "Czech VAT and Slovak e-invoicing",
       "compare": "Compare with competitors",
       "blog": "Blog",
       "blogHint": "Deadlines, legislation and how-tos",
@@ -7617,9 +7620,9 @@
       }
     },
     "guides": {
-      "indexTitle": "Czech VAT guides",
-      "indexDescription": "Plain guides for Czech VAT payers and identified persons: VAT return, control statement, recapitulative statement and reverse charge.",
-      "indexLead": "What to file with the Czech tax office and when, step by step. These guides cover Czech VAT.",
+      "indexTitle": "VAT and e-invoicing guides",
+      "indexDescription": "Plain guides for Czech VAT payers and identified persons (VAT return, control statement, recapitulative statement, reverse charge) and for Slovak mandatory e-invoicing from 2027.",
+      "indexLead": "What to file and what changes, step by step. Most guides cover Czech VAT, one covers Slovak e-invoicing.",
       "items": {
         "vatFiling": {
           "name": "VAT return, control and recapitulative statement",
@@ -7701,6 +7704,167 @@
           "registration": "File the registration with your tax office within 15 days of becoming an identified person. You get a VAT number (DIČ), which you then give to foreign suppliers so they invoice you without VAT.",
           "exampleTitle": "Example",
           "example": "In March you pay CZK 10,000 for Facebook ads. Meta invoices you without VAT. By 25 April you file a VAT return for March showing tax of CZK 2,100 and pay the same amount to the tax office. In months without such purchases you file nothing."
+        },
+        "skEinvoicing": {
+          "name": "E-invoicing in Slovakia 2027",
+          "title": "E-invoicing in Slovakia from 2027: who must comply, when and how to prepare",
+          "description": "From 1 January 2027 Slovak VAT payers must send domestic B2B invoices as e-invoices over Peppol, and every Slovak business must be able to receive them. Dates, exemptions, penalties and a checklist.",
+          "lead": "From 1 January 2027 a PDF invoice sent by email is no longer enough in Slovakia. VAT payers will send structured e-invoices to businesses through a certified provider, and every business must be able to receive them, VAT-registered or not. A summary based on the Slovak VAT Act and the Slovak Financial Administration's guidance.",
+          "keywords": "slovakia e-invoicing 2027 mandatory e-invoicing slovakia peppol act 385/2025 § 85o certified provider 0245 dic slovak vat e-invoice",
+          "whenTitle": "What changes and when",
+          "timeline": [
+            {
+              "date": "2026",
+              "text": "Voluntary phase. You can already send e-invoices through a certified provider if the buyer has one too. Nothing is mandatory yet."
+            },
+            {
+              "date": "1 Jan 2027",
+              "text": "Mandatory domestic phase. Slovak VAT payers must issue e-invoices within 15 days for supplies made from this day, and every business and legal person in Slovakia must be able to receive them."
+            },
+            {
+              "date": "1 Jul 2030",
+              "text": "Second phase under the EU ViDA directive: e-invoices for intra-EU supplies too, the deadline drops to 10 days, and the Slovak control statement and recapitulative statement are abolished."
+            }
+          ],
+          "whoTitle": "Who is affected",
+          "issueLabel": "Must issue an e-invoice:",
+          "issuers": [
+            "a Slovak VAT payer (registered under § 4, 4b or 4c of the Slovak VAT Act),",
+            "for a supply of goods or services whose place of supply is Slovakia,",
+            "to another taxable person (a company or sole trader, VAT-registered or not) or a legal person such as a municipality or an association.",
+            "This covers invoices, credit notes, debit notes and invoices for advance payments received."
+          ],
+          "receiveLabel": "Must be able to receive e-invoices:",
+          "receivers": "every business and every legal person in Slovakia, even if it is not VAT-registered. In practice that means a contract with a certified provider from 1 January 2027. The buyer's consent is not needed when the e-invoice is mandatory.",
+          "outsideLabel": "Outside the mandate:",
+          "outside": [
+            "sales to private individuals (B2C),",
+            "supplies exempt under § 28 to 43 and § 47 (such as financial and insurance services),",
+            "sales documented by an eKasa till receipt up to €400 or a simplified invoice up to €100,",
+            "supplies within a VAT group and classified supplies,",
+            "cross-border supplies (until 30 June 2030),",
+            "a proforma invoice, which is not a tax document."
+          ],
+          "czNote": "A Czech company that is not VAT-registered in Slovakia does not have to issue Slovak e-invoices until 30 June 2030. If you are VAT-registered in Slovakia, ask a tax adviser whether the mandate applies to you.",
+          "howTitle": "How it works",
+          "howBody": "An e-invoice is not a PDF or a scan. It is an XML file in the Peppol BIS Billing 3.0 format (European standard EN 16931). It is not emailed or uploaded to a government portal but delivered over the Peppol network:",
+          "howSteps": [
+            "You sign up with a certified delivery provider. The Slovak Financial Administration listed 80 of them on 16 October 2026 and estimates a simple plan at €5 – 12 a month.",
+            "Your address on the network is 0245:DIČ, your Slovak tax number with the prefix 0245.",
+            "Your invoicing software creates the XML and hands it to your provider, which delivers it to the buyer's provider.",
+            "The providers report the invoice data to the tax administration automatically: the supplier's on issue, the buyer's within 5 days of receipt.",
+            "E-invoices are kept for 10 years."
+          ],
+          "correctionsTitle": "Corrections and advance payments",
+          "corrections": "You correct an invoice with a credit note (e-invoice type 381) that references the original invoice, plus a new invoice if needed. Type 384 (corrected invoice) is not used in Slovakia yet. An invoice for an advance payment received is a tax document and goes out as an e-invoice with code 388. A proforma invoice is not a tax document.",
+          "penaltiesTitle": "Penalties",
+          "penalties": "For not reporting the data, or reporting it late or wrongly, the tax office can impose a fine of up to €10,000, or up to €100,000 for a repeated breach. An obvious mistake corrected promptly, or a proven outage at the provider, is not fined.",
+          "pendingTitle": "Proposed, not yet law",
+          "pending": "An amendment before the Slovak parliament would add a period without fines from 1 January to 30 June 2027 and drop the buyer's reporting of received invoices. Until parliament passes it, the rules above apply.",
+          "checklistTitle": "Readiness checklist",
+          "checklist": [
+            "Find out whether you are a Slovak VAT payer and who you invoice. The check below helps.",
+            "Pick a certified provider from the Financial Administration's list and compare prices.",
+            "Make sure your invoicing software can produce Peppol BIS 3.0 XML and pass it to the provider.",
+            "Add the IČO and DIČ to your customers. Without the DIČ the e-invoice cannot be delivered.",
+            "Agree with your accountant how incoming e-invoices will be received and booked.",
+            "Update how you handle corrections (credit note 381) and advance payment invoices (388).",
+            "Try sending in 2026 while the phase is still voluntary.",
+            "Set up 10-year archiving of the XML files."
+          ],
+          "checkTitle": "Does it apply to you? Quick check",
+          "checkLead": "Answer a few questions. The result is for an ordinary invoice from 1 January 2027.",
+          "check": {
+            "country": "Where is your company based?",
+            "countrySk": "Slovakia",
+            "countryCz": "Czechia",
+            "payer": "Are you a VAT payer in Slovakia?",
+            "b2b": "Do you invoice Slovak companies, sole traders or public bodies?",
+            "exempt": "Are your supplies VAT-exempt (such as financial services)?",
+            "yes": "Yes",
+            "no": "No",
+            "issueTitle": "Issuing",
+            "receiveTitle": "Receiving",
+            "result": {
+              "mandatory": "From 1 January 2027 you must send these customers e-invoices over Peppol, within 15 days of the supply.",
+              "nonPayer": "As a non-VAT payer you do not have to issue e-invoices. You can if you want to.",
+              "exempt": "The mandate does not cover exempt supplies. If you also make taxable supplies, it applies to those.",
+              "noB2b": "You do not have to send e-invoices to private individuals. If you also invoice businesses, those invoices are covered.",
+              "cz": "A Czech company without Slovak VAT registration does not have to issue Slovak e-invoices until 30 June 2030."
+            },
+            "receiveSk": "From 1 January 2027 you must be able to receive e-invoices, even as a non-VAT payer. You need a certified provider for that.",
+            "receiveCz": "The duty to receive applies to businesses and legal persons in Slovakia, not to you."
+          },
+          "billantaTitle": "How Billanta helps",
+          "billanta": [
+            {
+              "text": "Export of invoices and credit notes as UBL / Peppol BIS Billing 3.0 XML, with the Slovak 0245:DIČ address and a reference to the original invoice on credit notes.",
+              "soon": false
+            },
+            {
+              "text": "A check before issuing flags a missing DIČ, VAT ID, address or reference to the original invoice.",
+              "soon": false
+            },
+            {
+              "text": "Slovak company lookup by IČO and PAY by square QR payments on the invoice.",
+              "soon": false
+            },
+            {
+              "text": "Sending e-invoices through a certified provider straight from Billanta.",
+              "soon": true
+            },
+            {
+              "text": "Receiving incoming e-invoices as draft expenses for you to review.",
+              "soon": true
+            },
+            {
+              "text": "Delivery and reporting status on every invoice.",
+              "soon": true
+            }
+          ],
+          "soon": "coming soon",
+          "faqTitle": "FAQ",
+          "faq": [
+            {
+              "q": "Can I still email a PDF invoice from 2027?",
+              "a": "Not for an invoice the mandate covers. A PDF or a scan is not an e-invoice. The tax document is the Peppol BIS 3.0 XML delivered through a certified provider. You can send a PDF as well, as a readable copy."
+            },
+            {
+              "q": "I am not VAT-registered. Do I need to do anything?",
+              "a": "If you do business in Slovakia, yes, but only receive. From 1 January 2027 every business and legal person in Slovakia must be able to receive e-invoices, so you need a certified provider. You do not have to issue them."
+            },
+            {
+              "q": "Do I need the buyer's consent?",
+              "a": "No. When the e-invoice is mandatory, the buyer's consent is not required."
+            },
+            {
+              "q": "Is the e-invoice sent to a tax administration portal?",
+              "a": "No. It goes from your provider to the buyer's provider over the Peppol network. The providers send selected invoice data to the tax administration automatically."
+            },
+            {
+              "q": "Does it apply to Czech companies invoicing Slovak customers?",
+              "a": "Cross-border invoices are outside the mandate until 30 June 2030, so a Czech company without Slovak VAT registration does not have to issue them. From 1 July 2030 e-invoicing extends to trade within the EU."
+            },
+            {
+              "q": "Has the start been postponed?",
+              "a": "No. The 1 January 2027 date stands. An amendment in the Slovak parliament (print 1454) only proposes a six-month period without fines, and it had not been passed as of 19 October 2026."
+            }
+          ],
+          "linksTitle": "Sources",
+          "links": {
+            "faq": "Slovak Financial Administration: e-invoice FAQ (PDF, Slovak)",
+            "providers": "List of certified providers",
+            "law": "Slovak VAT Act as in force from 1 January 2027 (Slov-Lex)",
+            "bill": "Draft amendment, print 1454 (Slovak parliament)"
+          },
+          "officialSource": "Binding information is on the Slovak Financial Administration's website",
+          "disclaimer": "This guide summarises the basic rules of the Slovak VAT Act and the Slovak Financial Administration's guidance. It does not replace an accountant or tax adviser. The rules may still change, so check the details on the Financial Administration's website.",
+          "callout": {
+            "title": "Slovak e-invoicing from 1 January 2027",
+            "body": "Slovak VAT payers will send e-invoices to businesses over Peppol, and every Slovak business must be able to receive them. See what changes and who it applies to.",
+            "partnerBody": "From 2027 every Slovak business must be able to receive e-invoices. Share our guide with your clients or members, with a quick check of whether the mandate applies to them.",
+            "cta": "Read the guide"
+          }
         }
       }
     }

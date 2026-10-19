@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, FileMinus2, FileText, Globe2, HandCoins, Landmark, Percent, QrCode, Receipt, Repeat, Scale, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, FileCode2, FileMinus2, FileText, Globe2, HandCoins, Landmark, Percent, QrCode, Receipt, Repeat, Scale, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -46,7 +46,10 @@ export const CALCULATORS = [
 
 export const GUIDES = [
   { slug: 'vat-return-control-statement', key: 'vatFiling', icon: BookOpenCheck, locales: CZ_ONLY },
-  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: CZ_ONLY }
+  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: CZ_ONLY },
+  // Slovak rules, so published in Slovak (primary) as well as cs and en for
+  // Czech companies that invoice Slovak customers.
+  { slug: 'e-invoicing-slovakia-2027', key: 'skEinvoicing', icon: FileCode2, locales: ALL }
 ] as const satisfies readonly PublicTool[];
 
 /**
@@ -69,8 +72,8 @@ export type Calculator = (typeof CALCULATORS)[number];
 export type Guide = (typeof GUIDES)[number];
 export type InvoiceTemplate = (typeof TEMPLATES)[number];
 
-/** The guides hub only lists Czech-rule guides, so it exists where they do. */
-export const GUIDES_HUB_LOCALES: readonly string[] = CZ_ONLY;
+/** The guides hub exists in every language at least one guide is published in. */
+export const GUIDES_HUB_LOCALES: readonly string[] = ALL.filter((l) => GUIDES.some((g) => (g.locales as readonly string[]).includes(l)));
 
 export function getCalculator(slug: string): Calculator | undefined {
   return CALCULATORS.find((c) => c.slug === slug);
