@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowRight, BadgePercent, FilePlus2, Loader2, Search, Sparkles, X, type LucideIcon } from 'lucide-react';
+import { ArrowRight, BadgePercent, BookA, FilePlus2, Loader2, Search, Sparkles, X, type LucideIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { fetchSiteHits, groupHits, KIND_ICON } from '@/components/site-search-kinds';
@@ -111,7 +111,8 @@ export function MarketingSearch() {
     rows.push(
       { id: 'page:features', href: '/features', label: tNav('features'), icon: Sparkles, group: 'page' },
       { id: 'page:pricing', href: '/pricing', label: tNav('pricing'), icon: BadgePercent, group: 'page' },
-      { id: 'page:guest', href: '/create-invoice', label: tNav('guestInvoice'), icon: FilePlus2, group: 'page' }
+      { id: 'page:guest', href: '/create-invoice', label: tNav('guestInvoice'), icon: FilePlus2, group: 'page' },
+      { id: 'page:glossary', href: '/glossary', label: tTools('menu.glossary'), icon: BookA, group: 'page' }
     );
     return rows;
   }, [locale, tTools, tNav]);

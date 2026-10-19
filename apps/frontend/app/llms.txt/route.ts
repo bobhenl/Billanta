@@ -1,5 +1,7 @@
 import { routing } from '@/i18n/routing';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
+import { GLOSSARY } from '@/lib/glossary';
+import { glossaryText } from '@/lib/glossary-content';
 import { CALCULATORS, GUIDES } from '@/lib/public-tools';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import en from '@/messages/en.json';
@@ -32,6 +34,8 @@ ${FEATURE_PAGES.map((f) => `  - [${FEATURE_TEXT[f.key]!.name}](${SITE_URL}/${l}/
 ${CALCULATORS.map((c) => `  - [${CALC_TEXT[c.key]!.name}](${SITE_URL}/${l}/calculators/${c.slug}): ${CALC_TEXT[c.key]!.description}`).join('\n')}
 - [Guides](${SITE_URL}/${l}/guides): Czech VAT filing guides
 ${GUIDES.map((g) => `  - [${GUIDE_TEXT[g.key]!.name}](${SITE_URL}/${l}/guides/${g.slug}): ${GUIDE_TEXT[g.key]!.description}`).join('\n')}
+- [Glossary](${SITE_URL}/${l}/glossary): Czech and Slovak invoicing and VAT terms, each with a definition, an example and the law
+${GLOSSARY.map((term) => `  - [${glossaryText('en', term.slug)!.term}](${SITE_URL}/${term.market === 'sk' ? 'sk' : l}/glossary/${term.slug}): ${glossaryText('en', term.slug)!.definition}`).join('\n')}
 - [About](${SITE_URL}/${l}/about): who it is for and why it exists
 - [Invoicing by municipality](${SITE_URL}/${l}/invoicing): index of Czech and Slovak municipalities
 - [Terms](${SITE_URL}/${l}/legal/terms)

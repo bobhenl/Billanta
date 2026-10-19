@@ -6435,7 +6435,8 @@
       "faq": "FAQ",
       "city": "Municipality",
       "calculator": "Calculators",
-      "guide": "Guides"
+      "guide": "Guides",
+      "glossary": "Glossary"
     },
     "suggest": {
       "isdoc": "ISDOC",
@@ -7187,7 +7188,9 @@
       "blog": "Blog",
       "blogHint": "Deadlines, legislation and how-tos",
       "findAccountant": "Looking for an accountant?",
-      "findAccountantHint": "Recommended accountants by region"
+      "findAccountantHint": "Recommended accountants by region",
+      "glossary": "Glossary",
+      "glossaryHint": "Invoicing and VAT terms explained"
     },
     "search": {
       "showAll": "Show all results for “{query}”",
@@ -9642,6 +9645,48 @@
       "label": "Code",
       "placeholder": "e.g. KAVARNA-BRNO",
       "submit": "Continue"
+    }
+  },
+  "glossaryPages": {
+    "breadcrumb": "Glossary",
+    "indexTitle": "Glossary: invoicing and VAT in Czechia and Slovakia",
+    "indexLead": "Short explanations of the terms you meet when invoicing and dealing with VAT in Czechia and Slovakia. Each term has a definition, an example and a link to the law.",
+    "indexDescription": "What DUZP, reverse charge, the control statement or a proforma invoice mean in Czechia and Slovakia. Short, with an example and a link to the law.",
+    "groupBoth": "Both countries",
+    "groupCz": "Czech terms",
+    "groupSk": "Slovak terms",
+    "metaTitle": "{term} – meaning",
+    "definition": "Definition",
+    "explanation": "Explanation",
+    "example": "Example",
+    "law": "Law",
+    "related": "Related terms",
+    "allTerms": "All terms",
+    "disclaimer": "A short explanation, not tax advice. The wording of the linked law is what counts.",
+    "lawRef": "Section {p}",
+    "lawRefOdst": "Section {p}({o})",
+    "laws": {
+      "ZDPH": "Czech VAT Act (Act No. 235/2004 Coll.)",
+      "OZ": "Czech Civil Code (Act No. 89/2012 Coll.)",
+      "ZDP": "Czech Income Tax Act (Act No. 586/1992 Coll.)",
+      "DR": "Czech Tax Code (Act No. 280/2009 Coll.)",
+      "ZoDPH": "Slovak VAT Act (Act No. 222/2004 Coll.)",
+      "ZoDP": "Slovak Income Tax Act (Act No. 595/2003 Coll.)",
+      "ObZ": "Slovak Commercial Code (Act No. 513/1991 Coll.)"
+    },
+    "otherTitle": "This term belongs to the other country",
+    "otherText": "The page “{term}” explains the rules of one country.",
+    "otherOriginal": "Read the original",
+    "otherEnglish": "Read in English",
+    "otherCounterpart": "The matching term is {term}",
+    "marketCz": "Czechia",
+    "marketSk": "Slovakia",
+    "onlyCz": "A term of Czech law. The main version of this page is in Czech.",
+    "onlySk": "A term of Slovak law. The main version of this page is in Slovak.",
+    "readOriginal": "Read the original",
+    "tools": {
+      "heading": "Tools and guides",
+      "createInvoice": "Create an invoice without sign-up"
     }
   }
 }

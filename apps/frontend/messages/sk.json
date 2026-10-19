@@ -6435,7 +6435,8 @@
       "faq": "Časté otázky",
       "city": "Mesto / obec",
       "calculator": "Kalkulačky",
-      "guide": "Návody"
+      "guide": "Návody",
+      "glossary": "Slovník pojmov"
     },
     "suggest": {
       "isdoc": "ISDOC",
@@ -7191,7 +7192,9 @@
       "blog": "Blog",
       "blogHint": "Termíny, legislatíva a návody",
       "findAccountant": "Hľadáte účtovníka?",
-      "findAccountantHint": "Odporúčaní účtovníci podľa kraja"
+      "findAccountantHint": "Odporúčaní účtovníci podľa kraja",
+      "glossary": "Slovník pojmov",
+      "glossaryHint": "Kontrolný výkaz, IČ DPH a ďalšie"
     },
     "search": {
       "showAll": "Zobraziť všetky výsledky pre „{query}“",
@@ -9548,6 +9551,48 @@
       "label": "Kód",
       "placeholder": "napr. KAVIAREN-KOSICE",
       "submit": "Pokračovať"
+    }
+  },
+  "glossaryPages": {
+    "breadcrumb": "Slovník pojmov",
+    "indexTitle": "Slovník pojmov: faktúry a DPH",
+    "indexLead": "Krátke vysvetlenia pojmov, s ktorými sa stretnete pri fakturácii a pri DPH na Slovensku. Každý pojem má definíciu, príklad a odkaz na zákon.",
+    "indexDescription": "Čo je kontrolný výkaz, prenesenie daňovej povinnosti, zálohová faktúra alebo IČ DPH. Stručne, s príkladom a odkazom na zákon.",
+    "groupBoth": "Faktúry a DPH",
+    "groupCz": "České pojmy",
+    "groupSk": "Slovenské pojmy",
+    "metaTitle": "{term} – čo to je",
+    "definition": "Definícia",
+    "explanation": "Vysvetlenie",
+    "example": "Príklad",
+    "law": "Zákon",
+    "related": "Súvisiace pojmy",
+    "allTerms": "Všetky pojmy",
+    "disclaimer": "Stručné vysvetlenie, nie daňové poradenstvo. Rozhoduje znenie zákona v odkaze.",
+    "lawRef": "§ {p}",
+    "lawRefOdst": "§ {p} ods. {o}",
+    "laws": {
+      "ZDPH": "zákon č. 235/2004 Sb., o dani z přidané hodnoty (Česko)",
+      "OZ": "zákon č. 89/2012 Sb., občanský zákoník (Česko)",
+      "ZDP": "zákon č. 586/1992 Sb., o daních z příjmů (Česko)",
+      "DR": "zákon č. 280/2009 Sb., daňový řád (Česko)",
+      "ZoDPH": "zákon č. 222/2004 Z. z. o dani z pridanej hodnoty",
+      "ZoDP": "zákon č. 595/2003 Z. z. o dani z príjmov",
+      "ObZ": "zákon č. 513/1991 Zb. Obchodný zákonník"
+    },
+    "otherTitle": "Tento pojem patrí do českého práva",
+    "otherText": "Stránka „{term}“ vysvetľuje české pravidlá, a preto je písaná po česky.",
+    "otherOriginal": "Čítať po česky",
+    "otherEnglish": "Čítať po anglicky",
+    "otherCounterpart": "Na Slovensku zodpovedá pojem {term}",
+    "marketCz": "Česko",
+    "marketSk": "Slovensko",
+    "onlyCz": "Pojem českého práva. Hlavná verzia stránky je česká.",
+    "onlySk": "Pojem slovenského práva. Hlavná verzia stránky je slovenská.",
+    "readOriginal": "Čítať v origináli",
+    "tools": {
+      "heading": "Nástroje a návody",
+      "createInvoice": "Vystaviť faktúru bez registrácie"
     }
   }
 }

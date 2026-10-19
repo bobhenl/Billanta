@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePercent, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
+import { BadgePercent, BookA, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, UserRound, UserSearch } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -44,6 +44,7 @@ export function MarketingTabBar() {
         // Calculator is taken by the accountants link, so the calculators get a percent sign.
         { key: 'calculators', href: '/calculators', label: tMenu('calculators'), icon: SquarePercent },
         ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ key: 'guides', href: '/guides', label: tMenu('guides'), icon: BookOpenCheck }] : []),
+        { key: 'glossary', href: '/glossary', label: tMenu('glossary'), icon: BookA },
         { key: 'find-accountant', href: '/accountants', label: tMenu('findAccountant'), icon: UserSearch },
         { key: 'blog', href: '/blog', label: tMenu('blog'), icon: Newspaper },
         { key: 'accountants', href: '/for-accountants', label: t('accountants'), icon: Calculator },

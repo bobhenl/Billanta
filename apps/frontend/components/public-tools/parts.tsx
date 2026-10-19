@@ -28,7 +28,7 @@ export function ToolHeader({
   hubLabel: string;
   name: string;
   title: string;
-  lead: string;
+  lead: React.ReactNode;
   icon: LucideIcon;
 }) {
   return (
@@ -184,8 +184,8 @@ export async function RelatedTools({ current }: { current: string }) {
   );
 }
 
-/** Ordered "how it is calculated" list. */
-export function HowList({ title, items }: { title: string; items: string[] }) {
+/** Ordered "how it is calculated" list; `link` marks up glossary terms (see glossaryLinker). */
+export function HowList({ title, items, link }: { title: string; items: string[]; link?: (text: string) => React.ReactNode }) {
   return (
     <div>
       <h2 className="text-xl font-semibold">{title}</h2>
@@ -193,7 +193,7 @@ export function HowList({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex gap-3 text-sm leading-relaxed">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
-            {item}
+            <span>{link ? link(item) : item}</span>
           </li>
         ))}
       </ul>

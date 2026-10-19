@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Check } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { GuidePage, GuideSection, guideMetadata } from '@/components/public-tools/guide-page';
+import { glossaryLinker } from '@/components/glossary-linker';
 import { VatDeadlines } from '@/components/public-tools/vat-deadlines';
 import { getGuide, isPublishedIn } from '@/lib/public-tools';
 
@@ -25,13 +26,15 @@ export default async function VatFilingGuide({ params }: { params: Promise<Param
   const sections = t.raw('sections') as Section[];
   const steps = t.raw('steps') as string[];
   const before = t.raw('before') as string[];
+  // Glossary terms are linked where they first appear on the page.
+  const link = glossaryLinker(locale);
 
   return (
     <GuidePage slug={SLUG} locale={locale}>
       <VatDeadlines />
       {sections.map((s) => (
         <GuideSection key={s.title} title={s.title}>
-          <p>{s.body}</p>
+          <p>{link(s.body)}</p>
         </GuideSection>
       ))}
       <GuideSection title={t('stepsTitle')}>
@@ -39,7 +42,7 @@ export default async function VatFilingGuide({ params }: { params: Promise<Param
           {steps.map((s, i) => (
             <li key={s} className="flex gap-3">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">{i + 1}</span>
-              {s}
+              <span>{link(s)}</span>
             </li>
           ))}
         </ol>
@@ -49,7 +52,7 @@ export default async function VatFilingGuide({ params }: { params: Promise<Param
           {before.map((s) => (
             <li key={s} className="flex gap-3">
               <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-              {s}
+              <span>{link(s)}</span>
             </li>
           ))}
         </ul>
