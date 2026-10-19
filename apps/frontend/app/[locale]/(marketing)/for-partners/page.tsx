@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ArrowRight, Building2, Calculator, CalendarDays, Globe2, GraduationCap, Landmark, Megaphone, School, UsersRound } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { EmbedSection } from '@/components/embed-section';
 import { PartnerContactCta, PartnerHowItWorks } from '@/components/partner-segment';
 import { SkEinvoicingCallout } from '@/components/public-tools/sk-einvoicing-callout';
 import { Link } from '@/i18n/navigation';
@@ -73,6 +74,8 @@ export default async function ForPartnersPage({ params }: { params: Promise<{ lo
       <SkEinvoicingCallout partner className="mt-8" />
 
       <PartnerHowItWorks className="mt-12" />
+
+      <EmbedSection section="partners" tabs={['badge']} badgeKinds={['partner', 'customer']} className="mt-12" />
 
       <PartnerContactCta subject={t('mailSubject')} className="mt-12" />
 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { EmbedSection } from '@/components/embed-section';
 import { SettingsHeader } from '@/components/settings-header';
 import { QrLinkPanel } from '@/components/share-qr';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
@@ -50,6 +51,13 @@ export default async function ReferralsPage() {
         <p className="mt-1 text-sm text-muted-foreground">{t('qr.hint')}</p>
         <QrLinkPanel url={link} fileSlug={`ref-${overview.code.toLowerCase()}`} className="mx-auto max-w-sm" />
       </section>
+      <EmbedSection
+        section="settings"
+        tabs={['badge', 'qr', 'pay', 'vat']}
+        badgeKinds={overview.program === 'accountant' || overview.canBeAccountant ? ['customer', 'partner'] : ['customer']}
+        refCode={overview.code}
+        className="mt-6 sm:p-4"
+      />
       {listing && (listing.eligible || listing.listing || overview.canBeAccountant) && <ListingForm own={listing} readOnly={!canManage(role)} />}
 
       <section className="mt-6 rounded-xl border border-border bg-card p-4">

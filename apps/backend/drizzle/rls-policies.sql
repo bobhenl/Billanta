@@ -1318,7 +1318,7 @@ REVOKE ALL ON FUNCTION public_invoice_demo(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public_invoice_demo(uuid) TO faktur_app;
 
 -- The issuer's plan, "Vystaveno v Billantě" opt-out and referral code
--- (migration 0074): the /i/ page shows the line unless a paid company
+-- (migration 0075): the /i/ page shows the line unless a paid company
 -- switched it off (src/invoices/brand-credit.ts) and links it with the code.
 DROP FUNCTION IF EXISTS get_public_invoice_brand_credit(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_brand_credit(p_public_token uuid)

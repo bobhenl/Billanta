@@ -332,7 +332,7 @@ export const users = pgTable(
     totpLastStep: integer("totp_last_step"),
     // The password-less owner of a demo company (0068); deleted with it.
     isDemo: boolean("is_demo").notNull().default(false),
-    // First-touch utm_* / referrer of the signup (0074), from the frontend's
+    // First-touch utm_* / referrer of the signup (0075), from the frontend's
     // billanta_src cookie; signup_source is its source alone, for counting.
     signupAttribution: jsonb("signup_attribution"),
     signupSource: varchar("signup_source", { length: 100 }),
@@ -1662,7 +1662,7 @@ export const blogPosts = pgTable("blog_posts", {
 // ---------------------------------------------------------------------------
 // newsletter_subscribers / newsletter_issues – GLOBAL (no tenant), like
 // blog_posts: the "we'll let you know when something changes" newsletter
-// (migration 0074). A subscriber row is also the consent record (wording
+// (migration 0076). A subscriber row is also the consent record (wording
 // shown, when given, when confirmed, when withdrawn). Issues are mailed
 // only through enqueue_newsletter_email, which checks the opt-in itself.
 // ---------------------------------------------------------------------------

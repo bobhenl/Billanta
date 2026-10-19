@@ -45,6 +45,21 @@ const nextConfig = {
   async redirects() {
     return legacyRedirects();
   },
+  // Other sites may frame only the widgets under /embed (lib/embeds.ts).
+  // Everything else, the app above all, stays same-origin; Caddy adds the
+  // older X-Frame-Options on top, except for /embed.
+  async headers() {
+    return [
+      { source: '/:path((?!embed/|badges/).*)', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self'" }] },
+      {
+        source: '/embed/:path*',
+        headers: [
+          { key: 'Content-Security-Policy', value: "frame-ancestors *; form-action 'none'; base-uri 'none'" },
+          { key: 'X-Robots-Tag', value: 'noindex' }
+        ]
+      }
+    ];
+  },
   async rewrites() {
     return [
       { source: '/api/v1/feeds/:path*', destination: `${backendUrl}/api/v1/feeds/:path*` },

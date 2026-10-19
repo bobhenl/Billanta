@@ -3,6 +3,8 @@ import { Building2, Calculator, Check, FileDown, Gift, Link2, MapPin, MessageSqu
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { DemoCta } from '@/components/demo/demo-cta';
 import { NextPages } from '@/components/learn-page';
+
+import { EmbedSection } from '@/components/embed-section';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -170,6 +172,8 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
           </details>
         ))}
       </div>
+
+      <EmbedSection section="accountants" tabs={['badge']} badgeKinds={['partner']} className="mt-12" />
 
       <div className="mt-12 rounded-xl border border-border p-6">
         <h2 className="text-lg font-bold tracking-tight">{t('fine.title')}</h2>
