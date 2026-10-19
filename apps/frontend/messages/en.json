@@ -2,7 +2,12 @@
   "app": {
     "name": "Billanta",
     "tagline": "Invoicing and accounting SaaS for Czech and Slovak businesses",
-    "readOnlyRole": "Your role is Read-only – you can view documents but not change them."
+    "readOnlyRole": "Your role is Read-only – you can view documents but not change them.",
+    "readOnly": {
+      "title": "You can only view this",
+      "body": "Your access in this company doesn't let you create or change documents. Ask the owner or an admin if you need to.",
+      "back": "Back"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -11249,10 +11254,10 @@
     "flatLeadSk": "In Slovakia there is one flat rate (§ 6 (10) ZDP) with a yearly cap; the insurance paid is deducted on top.",
     "rateLabel": "Your activity",
     "rates": {
-      "80": "80 % – crafts trades, agriculture, forestry and water management.",
-      "60": "60 % – other trades (most unqualified, qualified and licensed trades).",
+      "30": "30 % – renting out business property.",
       "40": "40 % – liberal professions and other business under special laws, copyright income.",
-      "30": "30 % – renting out business property."
+      "60": "60 % – other trades (most unqualified, qualified and licensed trades).",
+      "80": "80 % – crafts trades, agriculture, forestry and water management."
     },
     "flatRow": "Flat rate {rate} % (max. {cap})",
     "capped": "cap",

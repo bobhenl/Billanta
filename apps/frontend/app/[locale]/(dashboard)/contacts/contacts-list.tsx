@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ArrowUpDown, BadgeCheck, ChevronRight, FilePlus2, Plus, Search, Star, User } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { Link, useRouter } from '@/i18n/navigation';
 import { fuzzyScore } from '@/lib/fuzzy';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
@@ -87,6 +88,8 @@ export function ContactsList({
   const [creating, setCreating] = useState(startCreating);
   const [skipped, setSkipped] = useState<Skip[]>([]);
   const router = useRouter();
+  const canEdit = useCanWrite('contacts');
+  const canInvoice = useCanWrite('invoices');
   // A CSV import refreshes the server component; pick up the new list.
   useEffect(() => setRows(initial), [initial]);
 
@@ -112,8 +115,8 @@ export function ContactsList({
     }
   };
 
-  const editor = creating && <ContactEditor open onClose={() => setCreating(false)} onSaved={(c) => router.push(`/contacts/${c.id}`)} />;
-  const newButton = (
+  const editor = canEdit && creating && <ContactEditor open onClose={() => setCreating(false)} onSaved={(c) => router.push(`/contacts/${c.id}`)} />;
+  const newButton = canEdit && (
     <button
       type="button"
       onClick={() => setCreating(true)}
@@ -128,9 +131,11 @@ export function ContactsList({
     return (
       <div className="mt-6 rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
         {t('empty')}{' '}
-        <Link href="/invoices/new" className="font-semibold text-primary hover:underline">
-          {t('emptyCta')}
-        </Link>
+        {canInvoice && (
+          <Link href="/invoices/new" className="font-semibold text-primary hover:underline">
+            {t('emptyCta')}
+          </Link>
+        )}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           {newButton}
           <ContactsCsvButtons showExport={false} onSkipped={setSkipped} />
@@ -208,16 +213,23 @@ export function ContactsList({
       <ul className="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
         {visible.map((row) => (
           <li key={row.id} className="flex items-center gap-2 px-2 py-2 sm:px-3">
-            <button
-              type="button"
-              onClick={() => toggle(row)}
-              aria-pressed={row.isStarred}
-              aria-label={row.isStarred ? t('unstar') : t('star')}
-              title={row.isStarred ? t('unstar') : t('star')}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-secondary"
-            >
-              <Star className={cn('h-4 w-4', row.isStarred ? 'fill-warning text-warning' : 'text-muted-foreground')} />
-            </button>
+            {canEdit ? (
+              <button
+                type="button"
+                onClick={() => toggle(row)}
+                aria-pressed={row.isStarred}
+                aria-label={row.isStarred ? t('unstar') : t('star')}
+                title={row.isStarred ? t('unstar') : t('star')}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-secondary"
+              >
+                <Star className={cn('h-4 w-4', row.isStarred ? 'fill-warning text-warning' : 'text-muted-foreground')} />
+              </button>
+            ) : (
+              // Starring is saved on the contact; read-only keeps the star as a marker in the same slot so the rows stay aligned.
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center">
+                {row.isStarred && <Star className="h-4 w-4 fill-warning text-warning" />}
+              </span>
+            )}
             <Link href={`/contacts/${row.id}`} className="group flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1">
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 truncate text-sm font-semibold">
@@ -246,6 +258,7 @@ export function ContactsList({
               )}
               <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
             </Link>
+            {canInvoice && (
             <Link
               href={`/invoices/new?contact=${row.id}`}
               title={t('invoice')}
@@ -255,6 +268,7 @@ export function ContactsList({
               <FilePlus2 className="h-4 w-4" />
               <span className="hidden sm:inline">{t('invoice')}</span>
             </Link>
+            )}
           </li>
         ))}
       </ul>

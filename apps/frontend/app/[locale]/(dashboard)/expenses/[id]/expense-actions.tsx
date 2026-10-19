@@ -6,15 +6,17 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { deleteExpense, setExpensePaid, type ActionResult } from '../actions';
 
-/** Toolbar of the expense detail. */
+/** Toolbar of the expense detail (every action changes the expense, so none for a read-only member). */
 export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
   const t = useTranslations('expenses.detail');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [dialog, setDialog] = useState<null | 'paid' | 'delete'>(null);
   const [paidAt, setPaidAt] = useState(() => new Date().toISOString().slice(0, 10));
+  const canEdit = useCanWrite('expenses');
 
   const act = (fn: () => Promise<ActionResult<unknown>>, okText: string, after?: () => void) =>
     startTransition(async () => {
@@ -28,6 +30,8 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
       if (after) after();
       else router.refresh();
     });
+
+  if (!canEdit) return null;
 
   return (
     <>

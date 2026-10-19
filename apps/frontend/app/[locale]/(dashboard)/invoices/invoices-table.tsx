@@ -24,6 +24,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { ColorDot } from '@/components/color-dot';
 import {
   buyerDetailsState,
@@ -163,6 +164,9 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
   const [sort, setSort] = useState<Sort>(null);
   const [inline, setInline] = useState(false);
   const [pending, startTransition] = useTransition();
+  // Selecting only feeds the bulk mark-paid/delete bar, so a read-only member gets no checkboxes at all.
+  const canEdit = useCanWrite('invoices');
+  const span = columns.length + (canEdit ? 2 : 1);
 
   useEffect(() => {
     // Re-read when a saved view is applied (invoice-view-bar.tsx).
@@ -410,15 +414,17 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
         <table className="w-full min-w-[720px] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="w-10 px-3 py-3">
-                <input
-                  type="checkbox"
-                  aria-label={t('selectAll')}
-                  checked={rows.length > 0 && selected.size === rows.length}
-                  onChange={(e) => setSelected(e.target.checked ? new Set(rows.map((r) => r.id)) : new Set())}
-                  className="accent-[hsl(var(--primary))]"
-                />
-              </th>
+              {canEdit && (
+                <th className="w-10 px-3 py-3">
+                  <input
+                    type="checkbox"
+                    aria-label={t('selectAll')}
+                    checked={rows.length > 0 && selected.size === rows.length}
+                    onChange={(e) => setSelected(e.target.checked ? new Set(rows.map((r) => r.id)) : new Set())}
+                    className="accent-[hsl(var(--primary))]"
+                  />
+                </th>
+              )}
               {columns.map((column) => {
                 const active = sort?.key === column;
                 const Icon = !active ? ArrowUpDown : sort.dir === 'asc' ? ArrowUp : ArrowDown;
@@ -449,7 +455,7 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={columns.length + 2} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={span} className="px-4 py-10 text-center text-muted-foreground">
                   {filtered ? t('emptyFiltered') : tList('empty')}
                 </td>
               </tr>
@@ -467,22 +473,24 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
                     row.status === 'cancelled' && 'opacity-60'
                   )}
                 >
-                  <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      aria-label={row.invoiceNumber ?? t('unnumbered')}
-                      checked={selected.has(row.id)}
-                      onChange={(e) =>
-                        setSelected((s) => {
-                          const next = new Set(s);
-                          if (e.target.checked) next.add(row.id);
-                          else next.delete(row.id);
-                          return next;
-                        })
-                      }
-                      className="accent-[hsl(var(--primary))]"
-                    />
-                  </td>
+                  {canEdit && (
+                    <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        aria-label={row.invoiceNumber ?? t('unnumbered')}
+                        checked={selected.has(row.id)}
+                        onChange={(e) =>
+                          setSelected((s) => {
+                            const next = new Set(s);
+                            if (e.target.checked) next.add(row.id);
+                            else next.delete(row.id);
+                            return next;
+                          })
+                        }
+                        className="accent-[hsl(var(--primary))]"
+                      />
+                    </td>
+                  )}
                   {columns.map((column) => (
                     <td key={column} className={cn('px-3 py-3', NUMERIC.includes(column) && 'text-right')}>
                       {cell(row, column)}
@@ -494,7 +502,7 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
                 </tr>
                 {row.source.startsWith('ai_') && row.status === 'pending_review' && (
                   <tr className="border-b border-border bg-warning/10 last:border-b-0">
-                    <td colSpan={columns.length + 2} className="px-4 py-2">
+                    <td colSpan={span} className="px-4 py-2">
                       <div className="flex items-center gap-2 text-xs font-medium text-warning">
                         <AlertTriangle className="h-4 w-4 shrink-0" />
                         <span>{tList('aiDisclaimer')}</span>
@@ -508,7 +516,7 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
           {totalsByCurrency.length > 0 && (
             <tfoot>
               <tr className="border-t border-border bg-muted/30 text-sm">
-                <td colSpan={columns.length + 2} className="px-4 py-3 text-right">
+                <td colSpan={span} className="px-4 py-3 text-right">
                   <span className="text-muted-foreground">{t('sumLabel')}: </span>
                   {totalsByCurrency.map(([currency, sum], i) => (
                     <span key={currency} className="font-bold tabular-nums">
@@ -533,6 +541,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
   const [pending, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
+  const canEdit = useCanWrite('invoices');
 
   useEffect(() => {
     if (!pos) return;
@@ -571,31 +580,34 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const conversions = row.status === 'cancelled' || (!numbered && row.documentType !== 'quote') ? [] : CONVERSIONS[row.documentType];
 
   // `quick` items also get an icon button right in the row when inline actions are on.
-  type Item = { icon: typeof Copy; label: string; onSelect: () => void; danger?: boolean; href?: string; quick?: boolean };
-  const items: Item[] = [
+  // `write` items change the document, so a read-only member never sees them (open and PDF stay).
+  type Item = { icon: typeof Copy; label: string; onSelect: () => void; danger?: boolean; href?: string; quick?: boolean; write?: boolean };
+  const all: Item[] = [
     { icon: ExternalLink, label: t('actions.open'), onSelect: () => router.push(`/invoices/${row.id}`) },
     ...(isDraft
       ? [
-          { icon: Pencil, label: t('actions.edit'), quick: true, onSelect: () => router.push(`/invoices/${row.id}/edit`) },
+          { icon: Pencil, label: t('actions.edit'), quick: true, write: true, onSelect: () => router.push(`/invoices/${row.id}/edit`) },
           {
             icon: Stamp,
             quick: true,
+            write: true,
             label: row.documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue'),
             onSelect: () => act(() => issueInvoice(row.id), t('done.issued'))
           }
         ]
       : []),
     ...(row.status === 'issued' && row.documentType !== 'quote'
-      ? [{ icon: CheckCircle2, label: t('actions.markPaidToday'), quick: true, onSelect: () => act(() => markInvoicePaid(row.id), t('done.paid')) }]
+      ? [{ icon: CheckCircle2, label: t('actions.markPaidToday'), quick: true, write: true, onSelect: () => act(() => markInvoicePaid(row.id), t('done.paid')) }]
       : []),
     ...(numbered ? [{ icon: Download, label: t('actions.downloadPdf'), quick: true, href: `/api/files/invoices/${row.id}/pdf`, onSelect: () => setPos(null) }] : []),
     ...(numbered && row.status !== 'cancelled'
-      ? [{ icon: Send, label: t('actions.send'), quick: true, onSelect: () => act(() => sendInvoice(row.id), t('done.sent')) }]
+      ? [{ icon: Send, label: t('actions.send'), quick: true, write: true, onSelect: () => act(() => sendInvoice(row.id), t('done.sent')) }]
       : []),
-    { icon: Copy, label: t('actions.duplicate'), onSelect: () => router.push(`/invoices/new?from=${row.id}`) },
+    { icon: Copy, label: t('actions.duplicate'), write: true, onSelect: () => router.push(`/invoices/new?from=${row.id}`) },
     ...conversions.map((to) => ({
       icon: Repeat2,
       label: t(`actions.convertTo.${to}`),
+      write: true,
       onSelect: () => act(() => convertInvoice(row.id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))
     })),
     ...(row.status === 'issued'
@@ -604,6 +616,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
             icon: Ban,
             label: t('actions.cancel'),
             danger: true,
+            write: true,
             onSelect: () => window.confirm(t('confirm.cancelBody')) && act(() => cancelInvoice(row.id), t('done.cancelled'))
           }
         ]
@@ -614,11 +627,13 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
             icon: Trash2,
             label: t('actions.delete'),
             danger: true,
+            write: true,
             onSelect: () => window.confirm(t('confirm.deleteBody')) && act(() => deleteInvoice(row.id), t('done.deleted'))
           }
         ]
       : [])
   ];
+  const items = canEdit ? all : all.filter((item) => !item.write);
 
   const quickClass =
     'inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-primary disabled:opacity-50';

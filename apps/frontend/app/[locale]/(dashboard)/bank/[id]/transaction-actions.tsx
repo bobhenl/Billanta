@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import type { TransactionStatus } from '@/lib/bank-ui';
 import { ignoreTransaction, matchTransaction, restoreTransaction, type ActionResult } from '../actions';
 
@@ -17,6 +18,7 @@ export function TransactionActions({ id, status, matchInvoiceId }: { id: string;
   const t = useTranslations('bank.detail');
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const canEdit = useCanWrite('bank');
 
   const run = (fn: () => Promise<ActionResult>, done: string) =>
     startTransition(async () => {
@@ -24,6 +26,9 @@ export function TransactionActions({ id, status, matchInvoiceId }: { id: string;
       toast(result.ok ? { text: done, tone: 'ok' } : { text: `${t('actionFailed')}: ${result.error}`, tone: 'err' });
       router.refresh();
     });
+
+  // Matching, ignoring and restoring all change the statement line.
+  if (!canEdit) return null;
 
   const spin = pending && <Loader2 className="h-4 w-4 animate-spin" />;
 

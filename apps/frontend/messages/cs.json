@@ -2,7 +2,12 @@
   "app": {
     "name": "Billanta",
     "tagline": "Fakturační a účetní SaaS pro české a slovenské podnikatele",
-    "readOnlyRole": "Máte roli Jen čtení – doklady můžete prohlížet, ale ne měnit."
+    "readOnlyRole": "Máte roli Jen čtení – doklady můžete prohlížet, ale ne měnit.",
+    "readOnly": {
+      "title": "Tady můžete jen prohlížet",
+      "body": "Vaše přístupová práva v této firmě nedovolují doklady vytvářet ani měnit. Pokud to potřebujete, požádejte vlastníka nebo administrátora firmy.",
+      "back": "Zpět"
+    }
   },
   "nav": {
     "dashboard": "Přehled",
@@ -11249,10 +11254,10 @@
     "flatLeadSk": "Na Slovensku je jeden paušál (§ 6 odst. 10 ZDP) s ročním stropem; zaplacené pojistné se odečítá navíc.",
     "rateLabel": "Vaše činnost",
     "rates": {
-      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství.",
-      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "30": "30 % – pronájem majetku zařazeného v obchodním majetku.",
       "40": "40 % – jiné podnikání podle zvláštních předpisů (svobodná povolání) a autorská práva.",
-      "30": "30 % – pronájem majetku zařazeného v obchodním majetku."
+      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství."
     },
     "flatRow": "Paušál {rate} % (max. {cap})",
     "capped": "strop",

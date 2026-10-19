@@ -6,6 +6,7 @@ import { TEMPLATE_PRESETS } from '../templates/presets';
 import { InvoiceForm } from './invoice-form';
 import { UUID, loadContact, loadFormContext } from './load';
 import type { DocumentType, DocLanguage, InvoiceTemplate, PaymentMethod } from './types';
+import { writeGate } from '@/components/write-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('invoiceForm');
@@ -103,6 +104,8 @@ export default async function NewInvoicePage(
   }
 ) {
   const searchParams = await props.searchParams;
+  const gate = await writeGate('invoices', '/invoices');
+  if (gate) return gate;
   const t = await getTranslations('invoiceForm');
   const [{ defaults, ai, starred }, { template: loaded, templateId }] = await Promise.all([loadFormContext(), loadTemplate(searchParams)]);
 

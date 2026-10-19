@@ -5,7 +5,7 @@ import { Banner } from '@/components/banner';
 import { FilterField, filterFieldClass as field, FilterPanel } from '@/components/filter-panel';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney } from '@/lib/invoice-ui';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
 import { formatMinutes, type Project, type TimeEntry, type TimeSummary } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
 import type { Contact } from '../invoices/new/types';
@@ -132,6 +132,9 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
       active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary'
     );
 
+  // Time entries and projects sit under the invoices permission on the API.
+  const canEdit = await fetchCanWrite('invoices');
+
   return (
     <div>
       <div>
@@ -139,7 +142,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
         <p className="mt-1 text-muted-foreground">{t('description')}</p>
       </div>
 
-      <TimerBar running={summary.running} projects={projects.filter((p) => !p.archived)} />
+      {canEdit && <TimerBar running={summary.running} projects={projects.filter((p) => !p.archived)} />}
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         {cards.map((card) => (

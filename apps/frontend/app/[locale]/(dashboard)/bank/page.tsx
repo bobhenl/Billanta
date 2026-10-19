@@ -5,7 +5,7 @@ import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { TRANSACTION_STATUSES, type BankTransaction, type TransactionStatus } from '@/lib/bank-ui';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import type { BankConnection } from './actions';
 import { BankConnections } from './bank-connections';
@@ -28,7 +28,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
   let invoices: InvoiceRow[];
   let connections: BankConnection[];
   let psd2: { available: boolean; countries: string[] };
-  const home = await fetchHomeCurrency();
+  const [home, canEdit] = await Promise.all([fetchHomeCurrency(), fetchCanWrite('bank')]);
   try {
     [transactions, invoices, connections, psd2] = await Promise.all([
       apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions'),
@@ -92,7 +92,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
           <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-muted-foreground">{t('description')}</p>
         </div>
-        <BankImport />
+        {canEdit && <BankImport />}
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
