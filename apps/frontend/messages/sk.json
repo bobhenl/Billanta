@@ -56,7 +56,9 @@
       "schools": "Pre školy",
       "creators": "Pre tvorcov",
       "events": "Pre podujatia a komunity",
-      "forPartners": "Pre partnerov"
+      "forPartners": "Pre partnerov",
+      "firstInvoice": "Prvá faktúra",
+      "teamRoles": "Roly v tíme"
     },
     "hero": {
       "title": "Fakturácia pre českých a slovenských podnikateľov bez papierovania",
@@ -207,7 +209,11 @@
         "pricing": "Cenník",
         "faq": "Časté otázky",
         "guestInvoice": "Faktúra bez registrácie",
-        "compare": "Porovnanie s konkurenciou"
+        "compare": "Porovnanie s konkurenciou",
+        "firstInvoice": "Vaša prvá faktúra",
+        "beginners": "Pre začiatočníkov",
+        "advanced": "Pre pokročilých",
+        "teamRoles": "Roly v tíme"
       },
       "company": {
         "title": "Spoločnosť",
@@ -8493,7 +8499,10 @@
       "banks": "Pripravené pre firmu s účtovníkom a prepojenou bankou.",
       "schools": "Pripravené na hodinu: prázdna firma len s fakturáciou.",
       "creators": "Pripravené pre tvorcov: paušalista s ukážkovými dokladmi.",
-      "events": "Pripravené pre účastníkov podujatia: živnostník len s fakturáciou."
+      "events": "Pripravené pre účastníkov podujatia: živnostník len s fakturáciou.",
+      "firstInvoice": "Nastavené pre prvú faktúru: prázdna firma neplatiteľa, len fakturácia.",
+      "beginners": "Nastavené pre začínajúcich: živnostník s ukážkovými dokladmi.",
+      "advanced": "Nastavené pre pokročilých: platiteľ DPH s účtovníkom a bankou."
     }
   },
   "shareQr": {
@@ -9501,6 +9510,616 @@
       "label": "Kód",
       "placeholder": "napr. KAVIAREN-KOSICE",
       "submit": "Pokračovať"
+    }
+  },
+  "learnPages": {
+    "common": {
+      "toolsTitle": "Nástroje a návody",
+      "toolsLead": "Zadarmo a bez registrácie. Vypočítajte, overte a dočítajte sa viac.",
+      "nextTitle": "Kam ďalej",
+      "faqTitle": "Časté otázky",
+      "signup": "Začať zadarmo",
+      "demo": "Vyskúšať demo",
+      "more": "Viac",
+      "allRoles": "Všetky roly",
+      "pages": {
+        "first": {
+          "title": "Vaša prvá faktúra",
+          "body": "Čo musí faktúra obsahovať na Slovensku a v Česku a ako ju vystaviť krok za krokom."
+        },
+        "beginners": {
+          "title": "Fakturácia pre začiatočníkov",
+          "body": "Neplatiteľ DPH, prvý zákazník, číslovanie, platby a upomienky."
+        },
+        "advanced": {
+          "title": "Fakturácia pre pokročilých",
+          "body": "Platiteľ DPH, prenesenie daňovej povinnosti, zahraničie, opakované faktúry a API."
+        },
+        "schools": {
+          "title": "Pre školy",
+          "body": "Výučba fakturácie v skutočnej aplikácii, s prázdnou firmou pre každého žiaka."
+        },
+        "roles": {
+          "title": "Roly v tíme",
+          "body": "Vlastník, administrátor, účtovník a len čítanie: kto čo vidí a čo smie meniť."
+        },
+        "accountants": {
+          "title": "Pre účtovníkov",
+          "body": "Prístup ku klientom, exporty pre účtovníctvo a podklady k DPH na jednom mieste."
+        },
+        "owners": {
+          "title": "Pre vlastníkov firmy",
+          "body": "Celý prehľad, tím, predplatné, zálohy dát a viac firiem pod jedným prihlásením."
+        },
+        "assistants": {
+          "title": "Pre asistentov a office manažérov",
+          "body": "Rola administrátora alebo užší prístup len k faktúram či výdavkom."
+        }
+      }
+    },
+    "firstInvoice": {
+      "seoTitle": "Vaša prvá faktúra: čo musí obsahovať a ako ju vystaviť",
+      "eyebrow": "Sprievodca pre začínajúcich",
+      "title": "Vaša prvá faktúra",
+      "lead": "Čo musí faktúra obsahovať na Slovensku a v Česku, ako ju vystaviť krok za krokom a akým chybám sa vyhnúť. Bez právnických kľučiek.",
+      "guestCta": "Vystaviť faktúru bez registrácie",
+      "demoCta": "Vyskúšať na prázdnej firme",
+      "contentTitle": "Čo musí byť na faktúre",
+      "contentLead": "Neplatiteľ DPH potrebuje menej údajov ako platiteľ. Billanta podľa vášho nastavenia stráži, aby nič nechýbalo.",
+      "alwaysLabel": "Vždy",
+      "vatLabel": "Navyše pri platiteľovi DPH",
+      "countries": {
+        "cz": {
+          "title": "Česko",
+          "always": [
+            "Vaše meno alebo názov firmy, sídlo a IČO",
+            "Údaj o zápise do registra (živnostníkovi stačí veta o zápise v živnostenskom registri)",
+            "Odberateľ: meno alebo názov, adresa, pri firme IČO",
+            "Jednoznačné číslo faktúry z vášho číselného radu",
+            "Dátum vystavenia a dátum splatnosti",
+            "Čo fakturujete, množstvo a cena",
+            "Celková suma a spôsob platby, pri prevode číslo účtu a variabilný symbol"
+          ],
+          "vat": [
+            "DIČ vaše aj odberateľa",
+            "Dátum uskutočnenia zdaniteľného plnenia (DUZP)",
+            "Jednotková cena bez dane a prípadná zľava",
+            "Základ dane, sadzba (21 % alebo 12 %) a výška dane v korunách",
+            "Pri prenesenej daňovej povinnosti veta, že daň odvedie zákazník"
+          ],
+          "law": "Podľa § 435 českého Občianskeho zákonníka a § 29 českého zákona o DPH."
+        },
+        "sk": {
+          "title": "Slovensko",
+          "always": [
+            "Vaše meno alebo obchodné meno, sídlo a IČO",
+            "Údaj o zápise v obchodnom alebo živnostenskom registri vrátane čísla zápisu",
+            "Odberateľ: meno alebo názov, adresa, pri firme IČO",
+            "Jednoznačné poradové číslo faktúry",
+            "Dátum vyhotovenia a dátum splatnosti",
+            "Čo fakturujete, množstvo a cena",
+            "Celková suma a spôsob platby, pri prevode IBAN a variabilný symbol"
+          ],
+          "vat": [
+            "IČ DPH vaše aj odberateľa",
+            "Dátum dodania tovaru alebo služby",
+            "Jednotková cena bez dane a prípadná zľava",
+            "Základ dane, sadzba (23 %, 19 % alebo 5 %) a výška dane v eurách",
+            "Pri prenesení daňovej povinnosti text „prenesenie daňovej povinnosti“"
+          ],
+          "law": "Podľa § 3a Obchodného zákonníka a § 74 zákona o DPH."
+        }
+      },
+      "stepsTitle": "Krok za krokom",
+      "steps": [
+        {
+          "title": "Vyplňte svoje údaje",
+          "body": "Zadajte IČO a údaje o firme sa načítajú z registra právnických osôb alebo z ARES. Doplňte IBAN."
+        },
+        {
+          "title": "Pridajte odberateľa",
+          "body": "Aj pri zákazníkovi stačí IČO. Pri občanovi bez IČO napíšte meno a adresu."
+        },
+        {
+          "title": "Napíšte, čo fakturujete",
+          "body": "Popis práce alebo tovaru, množstvo a cenu. Radšej konkrétne: „Návrh loga, 3 varianty“ namiesto „služby“."
+        },
+        {
+          "title": "Skontrolujte dátumy",
+          "body": "Dátum vyhotovenia je dnes, splatnosť zvyčajne 14 dní. Platiteľ DPH doplní dátum dodania a faktúru vyhotoví do 15 dní."
+        },
+        {
+          "title": "Vystavte a pošlite",
+          "body": "Faktúra dostane číslo z vášho radu a QR kód na platbu. Pošlite ju e-mailom alebo si stiahnite PDF."
+        },
+        {
+          "title": "Strážte platbu",
+          "body": "Po zaplatení ju označte ako uhradenú, alebo nechajte platby párovať z banky. Po splatnosti pošlite upomienku."
+        }
+      ],
+      "mistakesTitle": "Časté chyby",
+      "mistakes": {
+        "vatShown": {
+          "title": "DPH na faktúre neplatiteľa",
+          "body": "Kto nie je platiteľ, DPH neuvádza. Ak ju na faktúru napíše, musí ju štátu odviesť."
+        },
+        "numbering": {
+          "title": "Diery a duplicity v číslach",
+          "body": "Čísla majú ísť za sebou bez opakovania. Billanta ich prideľuje sama pri vystavení."
+        },
+        "buyer": {
+          "title": "Chybné údaje odberateľa",
+          "body": "Preklep v názve alebo IČO zdrží platbu. Údaje načítané z registra sú presné."
+        },
+        "dates": {
+          "title": "Neskoré alebo zlé dátumy",
+          "body": "Platiteľ DPH musí mať správny dátum dodania a faktúru vyhotoviť do 15 dní."
+        },
+        "editing": {
+          "title": "Prepisovanie vystavenej faktúry",
+          "body": "Vystavenú faktúru neprepisujte. Chybu opravte dobropisom a novou faktúrou."
+        },
+        "copies": {
+          "title": "Stratené kópie",
+          "body": "Faktúry musíte archivovať roky. V aplikácii zostávajú a môžete si nastaviť zálohy."
+        }
+      },
+      "ctaBox": {
+        "title": "Vyskúšajte si to nanečisto",
+        "body": "V deme dostanete prázdnu firmu a prvú faktúru vystavíte za pár minút. Nič sa nikam neodošle."
+      },
+      "faq": [
+        {
+          "q": "Potrebujem na prvú faktúru účet v Billante?",
+          "a": "Nie. Jednorazovú faktúru vystavíte aj bez registrácie. Účet sa hodí, keď chcete faktúry číslovať v rade, strážiť platby a mať ich na jednom mieste."
+        },
+        {
+          "q": "Musí byť na faktúre pečiatka alebo podpis?",
+          "a": "Nie, zákon pečiatku ani podpis nevyžaduje. Rozhodujú povinné údaje."
+        },
+        {
+          "q": "Môžem fakturovať bez IČO?",
+          "a": "Fakturuje podnikateľ, takže IČO potrebujete. Občan bez živnosti faktúru nevystavuje, príležitostný príjem rieši inak."
+        },
+        {
+          "q": "Akú splatnosť zvoliť?",
+          "a": "Bežne 14 dní. Medzi podnikateľmi zákon počíta najviac so 60 dňami, dlhšiu lehotu treba výslovne dohodnúť."
+        },
+        {
+          "q": "Stačí poslať faktúru v PDF e-mailom?",
+          "a": "Áno, elektronická faktúra je rovnocenná papierovej, ak s ňou odberateľ súhlasí. To je dnes bežné."
+        },
+        {
+          "q": "Čo ak som na faktúre urobil chybu?",
+          "a": "Kým je to koncept, upravte ho. Vystavenú faktúru opravíte dobropisom (opravnou faktúrou) a vystavíte novú."
+        }
+      ]
+    },
+    "beginners": {
+      "seoTitle": "Fakturácia pre začiatočníkov: neplatiteľ DPH a prvý zákazník",
+      "eyebrow": "Fakturácia pre začiatočníkov",
+      "title": "Začínate podnikať? Takto fakturujte",
+      "lead": "Základy pre živnostníkov, ktorí nie sú platitelia DPH: prvý zákazník, číslovanie, platby, upomienky a kedy sa stanete platiteľom.",
+      "topicsTitle": "Čo potrebujete vedieť",
+      "topics": {
+        "nonVat": {
+          "title": "Neplatiteľ DPH",
+          "body": "Fakturujete bez DPH a na faktúre DPH vôbec neuvádzate. Pridajte len vetu, že nie ste platiteľ."
+        },
+        "firstCustomer": {
+          "title": "Prvý zákazník",
+          "body": "Vopred sa dohodnite na cene, rozsahu a splatnosti. Stačí e-mail, z ktorého je dohoda jasná."
+        },
+        "numbering": {
+          "title": "Číslovanie",
+          "body": "Zvoľte rad, napríklad rok a poradie (2026001). Billanta čísla prideľuje sama a pokračuje aj v novom roku."
+        },
+        "payment": {
+          "title": "Platby",
+          "body": "Uveďte IBAN a variabilný symbol. QR kód na faktúre zákazník naskenuje v banke a nič neprepisuje."
+        },
+        "reminders": {
+          "title": "Upomienky",
+          "body": "Keď platba nepríde, Billanta po splatnosti pošle zákazníkovi slušnú pripomienku. Kedy, si nastavíte sami."
+        },
+        "tax": {
+          "title": "Dane a odvody",
+          "body": "Faktúry sú podkladom pre daňové priznanie. Paušálne výdavky a odvody si vypočítajte v kalkulačkách nižšie."
+        }
+      },
+      "vatTitle": "Kedy sa stanete platiteľom DPH",
+      "vatLead": "Hranica sa počíta z obratu za kalendárny rok. V prehľade Billanty vidíte, ako ďaleko od nej ste.",
+      "vat": {
+        "cz": {
+          "title": "Česko",
+          "points": [
+            "Hranica je obrat 2 000 000 Kč za kalendárny rok",
+            "Po prekročení ste platiteľom od 1. januára nasledujúceho roka",
+            "Ak obrat presiahne 2 536 500 Kč, ste platiteľom už odo dňa nasledujúceho po prekročení",
+            "Registrovať sa môžete aj dobrovoľne"
+          ]
+        },
+        "sk": {
+          "title": "Slovensko",
+          "points": [
+            "Hranica je obrat 50 000 € za kalendárny rok",
+            "Po prekročení musíte požiadať o registráciu a platiteľom ste od nasledujúceho dňa po jej pridelení",
+            "Ak obrat presiahne 62 500 €, stávate sa platiteľom už dodaním, ktorým ste hranicu prekročili",
+            "Registrovať sa môžete aj dobrovoľne, napríklad keď predávate najmä platiteľom"
+          ]
+        }
+      },
+      "monthTitle": "Váš prvý mesiac s faktúrami",
+      "month": [
+        {
+          "title": "Nastavte firmu",
+          "body": "IČO, adresa, IBAN a číselný rad. S registrom to trvá pár minút."
+        },
+        {
+          "title": "Vystavte prvú faktúru",
+          "body": "Ideálne hneď po dokončení práce, nech sa platba nezdržiava."
+        },
+        {
+          "title": "Zapisujte výdavky",
+          "body": "Bločky odfoťte alebo nahrajte. Hodia sa do prehľadu aj k daňovému priznaniu."
+        },
+        {
+          "title": "Skontrolujte platby",
+          "body": "Napojte banku, alebo platby označujte ručne. Prehľad ukáže, kto dlhuje."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Musím na faktúru písať, že nie som platiteľ DPH?",
+          "a": "Zákon to výslovne nevyžaduje, ale je to dobrý zvyk a predíde otázkam. Billanta to doplní sama."
+        },
+        {
+          "q": "Môžem vystavovať faktúry v Exceli alebo vo Worde?",
+          "a": "Môžete, ale číslovanie, dátumy a kópie musíte strážiť sami. Aplikácia to robí za vás a nič nezabudne."
+        },
+        {
+          "q": "Čo sú paušálne výdavky?",
+          "a": "Namiesto skutočných výdavkov si uplatníte percento z príjmov do ročného limitu. Či sa vám to oplatí, si vypočítajte v kalkulačke."
+        },
+        {
+          "q": "Potrebujem účtovníka?",
+          "a": "Na začiatku často nie, najmä s paušálnymi výdavkami. Keď podnikanie narastie, účtovníka pozvete do Billanty a podklady uvidí sám."
+        },
+        {
+          "q": "Koľko stojí Billanta?",
+          "a": "Základná fakturácia je zadarmo. Vyššie tarify pridávajú napríklad párovanie z banky alebo viac používateľov. Podrobnosti nájdete v cenníku."
+        }
+      ]
+    },
+    "advanced": {
+      "seoTitle": "Fakturácia pre pokročilých: DPH, zahraničie, opakované faktúry a API",
+      "eyebrow": "Fakturácia pre pokročilých",
+      "title": "Keď už fakturujete naplno",
+      "lead": "Pre platiteľov DPH a rastúce firmy: prenesenie daňovej povinnosti, zahraniční zákazníci, opakované faktúry, párovanie platieb, API, viac firiem a roly v tíme.",
+      "topicsTitle": "Témy, na ktoré skôr či neskôr narazíte",
+      "topics": {
+        "vat": {
+          "title": "Platiteľ DPH",
+          "body": "Sadzby, dátum dodania a podklady k priznaniu. Českým platiteľom Billanta pripraví XML pre portál EPO."
+        },
+        "reverseCharge": {
+          "title": "Prenesenie daňovej povinnosti",
+          "body": "Pri niektorých dodaniach a pri platiteľoch z EÚ daň platí odberateľ. Billanta si vyžiada jeho IČ DPH a doplní povinný text."
+        },
+        "foreign": {
+          "title": "Zahraniční zákazníci",
+          "body": "Faktúry v cudzej mene s kurzom a prepočtom pre DPH. Faktúra môže byť aj dvojjazyčná."
+        },
+        "recurring": {
+          "title": "Opakované faktúry",
+          "body": "Nájom alebo paušál fakturujte jednou šablónou. Každý mesiac vznikne faktúra s ďalším číslom z radu."
+        },
+        "bank": {
+          "title": "Párovanie platieb",
+          "body": "Platby z banky sa párujú podľa variabilného symbolu a sumy. Zaplatené faktúry sa označia samy."
+        },
+        "api": {
+          "title": "API a webhooky",
+          "body": "Napojte e-shop alebo vlastný systém. Webhooky ohlásia zaplatenie, zobrazenie alebo omeškanie faktúry."
+        },
+        "companies": {
+          "title": "Viac firiem",
+          "body": "Jedno prihlásenie, oddelené knihy. V každej firme môžete mať inú rolu. Dostupnosť závisí od tarifu."
+        },
+        "roles": {
+          "title": "Roly v tíme",
+          "body": "Účtovník, asistent alebo kolega len na čítanie vidí a mení len to, čo má."
+        },
+        "isdoc": {
+          "title": "ISDOC a e-faktúry",
+          "body": "Faktúry vo formáte ISDOC si účtovný program odberateľa načíta sám, bez prepisovania."
+        }
+      },
+      "switch": {
+        "title": "Prechádzate z inej aplikácie?",
+        "body": "Kontakty a vystavené faktúry prevezmete z CSV, z Fakturoidu alebo BitFaktúry. Číslovanie pokračuje tam, kde ste skončili.",
+        "cta": "Ako prejsť",
+        "compare": "Porovnanie s ostatnými"
+      },
+      "faq": [
+        {
+          "q": "Spozná Billanta, kedy použiť prenesenie daňovej povinnosti?",
+          "a": "Pri odberateľovi s IČ DPH z inej krajiny EÚ ho ponúkne a IČ DPH overí vo VIES. Pri tuzemských prípadoch, napríklad stavebných prácach, ho zapnete pri faktúre."
+        },
+        {
+          "q": "Môžem fakturovať v cudzej mene?",
+          "a": "Áno. Kurz sa doplní pri vystavení a dá sa ručne upraviť."
+        },
+        {
+          "q": "Pripraví Billanta podklady k DPH?",
+          "a": "Českým platiteľom pripraví XML priznania, kontrolného a súhrnného hlásenia. Slovenským platiteľom dá prehľad dokladov a exporty pre účtovníka."
+        },
+        {
+          "q": "Je API v každom tarife?",
+          "a": "API a webhooky sú v platených tarifoch. Podrobnosti nájdete v cenníku."
+        },
+        {
+          "q": "Môžem spravovať viac firiem?",
+          "a": "Áno, v najvyššom tarife. Každá firma má vlastné dáta, číselné rady, banku aj tím."
+        }
+      ]
+    },
+    "roles": {
+      "seoTitle": "Roly v tíme: vlastník, administrátor, účtovník a len čítanie",
+      "eyebrow": "Tím a roly",
+      "title": "Roly v tíme",
+      "lead": "Pozvite účtovníka, asistenta alebo kolegu. Každý vidí len to, čo potrebuje, a mení len to, čo smie. Tu je presne čo.",
+      "featureLink": "Funkcia Tím a roly",
+      "cards": {
+        "owner": {
+          "who": "Zakladateľ firmy v Billante",
+          "body": "Vidí a robí všetko. Zodpovedá za firmu a ako jediný nastavuje zálohy dát.",
+          "points": [
+            "Celá fakturácia, výdavky, banka a prehľady",
+            "Tím, predplatné, nastavenia firmy a API kľúče",
+            "Zálohy dát len on",
+            "Jeho rolu nemožno zmeniť a nemožno ho odobrať"
+          ],
+          "link": "Viac pre vlastníkov"
+        },
+        "admin": {
+          "who": "Office manažér, spoločník, pravá ruka",
+          "body": "Spravuje firmu za vlastníka. Smie takmer všetko okrem nastavenia záloh dát.",
+          "points": [
+            "Celá fakturácia, výdavky, banka a prehľady",
+            "Pozýva kolegov a nastavuje im prístup",
+            "Nastavenia firmy, predplatné, API kľúče, import histórie",
+            "Napája bankové účty"
+          ],
+          "link": "Viac pre asistentov"
+        },
+        "accountant": {
+          "who": "Externý účtovník alebo daňový poradca",
+          "body": "Pracuje s dokladmi a exportmi, do správy firmy nezasahuje.",
+          "points": [
+            "Faktúry, kontakty, výdavky a prehľady",
+            "Synchronizuje banku, ale nenapája nové účty",
+            "Exporty pre účtovníctvo na prvom mieste",
+            "Nevidí tím, predplatné ani API kľúče"
+          ],
+          "link": "Viac pre účtovníkov"
+        },
+        "viewer": {
+          "who": "Spoločník, investor, kontrola",
+          "body": "Pozerá sa, nič nemení. Hodí sa pre každého, kto potrebuje prehľad.",
+          "points": [
+            "Číta faktúry, kontakty, výdavky, banku aj prehľady",
+            "Nič nevystaví, neupraví ani nezmaže",
+            "Nastavenia firmy nevidí"
+          ]
+        }
+      },
+      "tableTitle": "Kto čo smie",
+      "tableLead": "Predvolený prístup každej roly. Pri účtovníkovi a pri role len čítanie môže vlastník alebo administrátor prístup upraviť podľa oblastí.",
+      "table": {
+        "area": "Oblasť",
+        "rows": {
+          "invoices": "Faktúry",
+          "contacts": "Kontakty",
+          "expenses": "Výdavky",
+          "bank": "Banka a platby",
+          "reports": "Prehľady a exporty",
+          "settings": "Nastavenia firmy",
+          "team": "Tím a predplatné",
+          "import": "Import histórie",
+          "backups": "Zálohy dát"
+        },
+        "levels": {
+          "write": "Mení",
+          "read": "Číta",
+          "none": "Nie"
+        }
+      },
+      "tableNote": "Účtovník banku synchronizuje, nové účty napája vlastník alebo administrátor. Kalendár splatností si účtovník zapne sám v integráciách. Ktokoľvek môže firmu opustiť alebo si založiť vlastnú.",
+      "presetsTitle": "Pripravené profily",
+      "presetsLead": "Pri pozvaní vyberiete profil a prístup sa nastaví sám. Kedykoľvek ho potom upravíte.",
+      "presets": {
+        "invoicer": {
+          "title": "Fakturant",
+          "body": "Vystavuje faktúry a spravuje kontakty, banku len číta. K výdavkom ani prehľadom sa nedostane."
+        },
+        "expenses": {
+          "title": "Asistent výdavkov",
+          "body": "Zapisuje výdavky a bločky, faktúry a kontakty len číta."
+        },
+        "auditor": {
+          "title": "Daňový poradca / audítor",
+          "body": "Číta všetko, nič nemení. Ideálne na kontrolu alebo ročnú závierku."
+        },
+        "viewer": {
+          "title": "Len čítanie",
+          "body": "Vidí faktúry, kontakty a výdavky. Banku a prehľady nie."
+        }
+      },
+      "demoTitle": "Pozrite sa očami každej roly",
+      "demoLead": "Demo otvoríte ako vlastník, účtovník alebo kolega len na čítanie. Prehľad, menu aj nastavenia ukazujú len to, čo daná rola môže.",
+      "faq": [
+        {
+          "q": "Koľko ľudí môžem pozvať?",
+          "a": "Závisí od tarifu, od jedného používateľa po celý tím. Podrobnosti nájdete v cenníku."
+        },
+        {
+          "q": "Platí účtovník za vlastný účet?",
+          "a": "Nie. Účtovníka pozvete e-mailom a prihlási sa svojím účtom, s ktorým môže obsluhovať viac klientov."
+        },
+        {
+          "q": "Čo uvidí člen tímu na stránke, ku ktorej nemá prístup?",
+          "a": "Menu a prehľad mu ponúkajú len to, čo môže. Keď otvorí skrytú stránku cez odkaz, uvidí vysvetlenie, že k nej nemá prístup."
+        },
+        {
+          "q": "Dá sa zistiť, kto čo zmenil?",
+          "a": "Áno. História zmien ukazuje pri každej zmene autora, čas a pôvodnú aj novú hodnotu."
+        },
+        {
+          "q": "Môže mať jeden človek v rôznych firmách rôzne roly?",
+          "a": "Áno. Napríklad vo svojej firme je vlastník a u klienta účtovník."
+        }
+      ]
+    },
+    "owners": {
+      "seoTitle": "Billanta pre vlastníkov firmy: prehľad, tím a kontrola",
+      "eyebrow": "Pre vlastníkov",
+      "title": "Pre vlastníkov firmy",
+      "lead": "Firmu v Billante zakladáte vy a máte v nej posledné slovo. Vidíte všetko, pozvete tím a rozhodnete, kto k čomu smie.",
+      "cardsTitle": "Čo máte ako vlastník",
+      "cards": {
+        "overview": {
+          "title": "Celý prehľad",
+          "body": "Kto dlhuje, čo je po splatnosti, obrat a výdavky. Všetko na jednej obrazovke aj v mobile."
+        },
+        "team": {
+          "title": "Tím pod kontrolou",
+          "body": "V Nastaveniach → Tím pozvete účtovníka alebo asistenta a prístup upravíte podľa oblastí."
+        },
+        "audit": {
+          "title": "História zmien",
+          "body": "Pri každej faktúre vidíte, kto ju kedy zmenil a prečo. Aj keď to bola AI alebo API."
+        },
+        "billing": {
+          "title": "Predplatné a nastavenia",
+          "body": "Tarif, údaje firmy, číselné rady a API kľúče spravujete vy, prípadne administrátor."
+        },
+        "backups": {
+          "title": "Zálohy len cez vás",
+          "body": "Kam a ako často sa zálohujú dáta firmy, nastavuje len vlastník. Nikto iný ich neodkloní."
+        },
+        "companies": {
+          "title": "Viac firiem",
+          "body": "Ďalšiu firmu pridáte pod rovnaké prihlásenie. Dáta aj tímy zostávajú oddelené. Závisí od tarifu."
+        }
+      },
+      "stepsTitle": "Ako zostaviť tím",
+      "steps": [
+        {
+          "title": "Pozvite účtovníka",
+          "body": "Zadajte jeho e-mail a rolu Účtovník. Exporty a podklady si potom berie sám a nemusíte nič posielať."
+        },
+        {
+          "title": "Pozvite asistenta",
+          "body": "Office manažérovi dajte rolu Administrátor. Kto len fakturuje, dostane profil Fakturant."
+        },
+        {
+          "title": "Upravte prístup",
+          "body": "Pri účtovníkovi a role len čítanie zapnete alebo vypnete jednotlivé oblasti, napríklad banku alebo prehľady."
+        },
+        {
+          "title": "Kontrolujte históriu",
+          "body": "V Aktivite vidíte, kto čo zmenil. Vystavenú faktúru možno opraviť len s uvedeným dôvodom."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Môže ma niekto z tímu odobrať?",
+          "a": "Nie. Vlastníka nemožno z firmy odobrať a jeho rolu nemožno zmeniť."
+        },
+        {
+          "q": "Prečo zálohy nastavuje len vlastník?",
+          "a": "Záloha obsahuje všetky dáta firmy. Preto o tom, kam sa posielajú, rozhoduje len ten, kto za firmu zodpovedá."
+        },
+        {
+          "q": "Čo ak účtovník skončí?",
+          "a": "V Nastaveniach → Tím ho odoberiete a prístup okamžite stratí. Dáta zostávajú vo firme."
+        },
+        {
+          "q": "Môžem vidieť firmu tak, ako ju vidí účtovník?",
+          "a": "V deme áno, otvorte ho v pohľade účtovníka alebo len na čítanie."
+        }
+      ]
+    },
+    "assistants": {
+      "seoTitle": "Billanta pre asistentov a office manažérov",
+      "eyebrow": "Pre asistentov",
+      "title": "Pre asistentov a office manažérov",
+      "lead": "Staráte sa o faktúry a papiere za niekoho iného? V Billante dostanete prístup presne na mieru: celú správu firmy, alebo len faktúry či výdavky.",
+      "cardsTitle": "Aký prístup môžete dostať",
+      "cards": {
+        "admin": {
+          "title": "Administrátor",
+          "body": "Spravujete firmu za vlastníka: faktúry, výdavky, banku, tím aj nastavenia. Len zálohy dát zostávajú vlastníkovi."
+        },
+        "invoicer": {
+          "title": "Fakturant",
+          "body": "Vystavujete faktúry a vediete kontakty. Platby v banke vidíte, výdavky a prehľady nie."
+        },
+        "expenses": {
+          "title": "Asistent výdavkov",
+          "body": "Zapisujete výdavky a bločky. Faktúry a kontakty vidíte, ale nemeníte."
+        },
+        "contacts": {
+          "title": "Kontakty z registra",
+          "body": "Nového zákazníka pridáte podľa IČO, údaje sa načítajú z registra. Žiadne prepisovanie."
+        },
+        "tailored": {
+          "title": "Aplikácia na mieru role",
+          "body": "Prehľad, menu, vyhľadávanie aj mobilná navigácia ukazujú len akcie, ktoré smiete urobiť."
+        },
+        "limits": {
+          "title": "Jasné hranice",
+          "body": "Nastavenia, ku ktorým nemáte prístup, vidíte s poznámkou, že ich spravujú administrátori. Nič nepokazíte."
+        }
+      },
+      "stepsTitle": "Ako začať",
+      "steps": [
+        {
+          "title": "Prijmite pozvánku",
+          "body": "Vlastník vás pozve e-mailom. Prihlásite sa svojím účtom, alebo si ho rovno založíte."
+        },
+        {
+          "title": "Prejdite si prehľad",
+          "body": "Na úvodnej obrazovke uvidíte len to, k čomu máte prístup: koncepty, splatnosti alebo výdavky."
+        },
+        {
+          "title": "Vystavte alebo zapíšte",
+          "body": "Fakturant vystaví faktúru, asistent výdavkov nahrá bloček. Všetko sa zapíše do histórie zmien."
+        },
+        {
+          "title": "Potrebujete viac?",
+          "body": "Požiadajte vlastníka alebo administrátora o rozšírenie prístupu. Zmena platí okamžite."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Aký je rozdiel medzi administrátorom a vlastníkom?",
+          "a": "Administrátor smie takmer všetko čo vlastník. Nenastavuje však zálohy dát a nemôže vlastníka odobrať ani mu zmeniť rolu."
+        },
+        {
+          "q": "Môžem pracovať pre viac firiem?",
+          "a": "Áno. Pod jedným prihlásením môžete byť v niekoľkých firmách, v každej s inou rolou."
+        },
+        {
+          "q": "Uvidím ako fakturant výdavky alebo zisk firmy?",
+          "a": "Nie. Profil Fakturant nemá prístup k výdavkom ani prehľadom."
+        },
+        {
+          "q": "Čo ak z firmy odídem?",
+          "a": "Firmu môžete kedykoľvek opustiť sami. Faktúry, ktoré ste vystavili, vo firme zostávajú."
+        }
+      ]
     }
   }
 }

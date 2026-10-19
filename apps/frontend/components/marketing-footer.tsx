@@ -55,6 +55,10 @@ export async function MarketingFooter() {
         { href: '/create-invoice', label: t('product.guestInvoice') },
         { href: '/pricing', label: t('product.pricing') },
         { href: '/compare', label: t('product.compare') },
+        { href: '/your-first-invoice', label: t('product.firstInvoice') },
+        { href: '/invoicing-for-beginners', label: t('product.beginners') },
+        { href: '/invoicing-for-advanced', label: t('product.advanced') },
+        { href: '/team-roles', label: t('product.teamRoles') },
         { href: '/#faq', label: t('product.faq') }
       ]
     },
