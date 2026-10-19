@@ -13,6 +13,7 @@
  * back as `unknown`, never as "not a payer": callers show a badge, and a
  * wrong "Neplátce" badge is worse than none.
  */
+import { czechAccountToIban, normalizeIban } from './bank-account-validator.js';
 import { parseVatId } from './foreign-registries.js';
 
 export type VatPayerState = 'payer' | 'unreliable' | 'not_registered' | 'valid' | 'invalid' | 'unknown';
@@ -115,4 +116,26 @@ export async function checkVatPayer(input: string, opts: { timeoutMs?: number } 
   } catch {
     return { vatId, state: 'unknown', source: null, name: null, bankAccounts: [] };
   }
+}
+
+/** A domestic "[prefix-]number/bank" or an IBAN, as one comparable IBAN string (null = neither). */
+function accountKey(account: string): string | null {
+  const compact = account.replace(/\s+/g, '');
+  if (compact.includes('/')) return czechAccountToIban(compact);
+  const iban = normalizeIban(compact);
+  return /^[A-Z]{2}\d{2}[A-Z0-9]{8,30}$/.test(iban) ? iban : null;
+}
+
+/**
+ * Whether `account` is one of the accounts a payer published in the CZ
+ * register (§ 96 and § 109 odst. 2 písm. c) ZDPH: paying a supplier more than
+ * twice the cash-payment limit to an unpublished account makes the buyer
+ * liable for the VAT). Domestic numbers and IBANs compare as the same
+ * account, leading zeros don't matter. Null when `account` is not an account
+ * number at all.
+ */
+export function isPublishedAccount(published: readonly string[], account: string): boolean | null {
+  const key = accountKey(account);
+  if (!key) return null;
+  return published.some((p) => accountKey(p) === key);
 }

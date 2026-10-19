@@ -85,7 +85,11 @@ export async function CalculatorPage({
         </div>
       )}
       <div className="mt-12">
-        {cta === 'invoice' ? <InvoiceCta /> : <SignupCta />}
+        {cta === 'invoice' ? (
+          <InvoiceCta />
+        ) : (
+          <SignupCta title={t.has(`${k}.ctaTitle`) ? t(`${k}.ctaTitle`) : undefined} text={t.has(`${k}.ctaText`) ? t(`${k}.ctaText`) : undefined} />
+        )}
       </div>
       <div className="mt-12 max-w-3xl">
         <NewsletterSignup source="calculators" />

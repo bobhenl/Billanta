@@ -33,3 +33,4 @@ export * from './ruz-client.js';
 export * from './rpo-batch.js';
 export * from './payment-qr-scheme.js';
 export * from './bank-statements.js';
+export * from './ics.js';

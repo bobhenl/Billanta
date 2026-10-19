@@ -117,12 +117,13 @@ export async function GuideSources({
   );
 }
 
-export async function SignupCta() {
+/** `title` / `text` replace the generic copy where a tool has its own (what Billanta does with it automatically). */
+export async function SignupCta({ title, text }: { title?: string; text?: string } = {}) {
   const t = await getTranslations('tools.common');
   return (
     <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
-      <h2 className="text-lg font-semibold">{t('ctaTitle')}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t('ctaText')}</p>
+      <h2 className="text-lg font-semibold">{title ?? t('ctaTitle')}</h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{text ?? t('ctaText')}</p>
       <Link
         href="/signup"
         className="mt-4 inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"

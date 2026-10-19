@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, FileCode2, Globe2, Landmark, Percent, QrCode, Scale, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, CalendarDays, FileCode2, Globe2, Landmark, Percent, QrCode, Scale, ShieldCheck, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -41,7 +41,11 @@ export const CALCULATORS = [
   { slug: 'qr-payment', key: 'qrPayment', icon: QrCode, locales: CZ_ONLY },
   { slug: 'company-lookup', key: 'companyLookup', icon: Building2, locales: ALL },
   { slug: 'iban', key: 'iban', icon: Landmark, locales: CZ_ONLY },
-  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL }
+  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL },
+  // Deadlines by month for CZ or SK, the same rules as the dashboard reminder.
+  { slug: 'tax-calendar', key: 'taxCalendar', icon: CalendarDays, locales: ALL },
+  // The CZ register of VAT payers (nespolehlivý plátce, published accounts): Czech law.
+  { slug: 'unreliable-vat-payer', key: 'vatReliability', icon: ShieldCheck, locales: CZ_ONLY }
 ] as const satisfies readonly PublicTool[];
 
 export const GUIDES = [

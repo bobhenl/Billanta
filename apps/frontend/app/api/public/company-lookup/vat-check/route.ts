@@ -8,13 +8,18 @@ const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace
  * number, answered from the CZ register of VAT payers (with the
  * nespolehlivý plátce flag) or VIES. Rate-limited per visitor by the backend
  * (a stricter limit than the search, every call reaches ADIS or VIES).
+ * Optional `?account=` (the unreliable-payer tool): the answer then says
+ * whether that account is among the published ones, never which they are.
  */
 export async function GET(request: Request) {
   const dic = (new URL(request.url).searchParams.get('dic') ?? '').replace(/[\s.-]/g, '').toUpperCase();
   if (!/^[A-Z]{2}[0-9A-Z+*]{2,12}$/.test(dic)) return NextResponse.json(null);
+  const account = (new URL(request.url).searchParams.get('account') ?? '').trim().slice(0, 60);
+  const query = new URLSearchParams({ dic });
+  if (account) query.set('account', account);
   const ip = clientIp(request);
   try {
-    const upstream = await fetch(`${BACKEND_URL}/api/v1/public/company-lookup/vat-check?dic=${encodeURIComponent(dic)}`, {
+    const upstream = await fetch(`${BACKEND_URL}/api/v1/public/company-lookup/vat-check?${query}`, {
       headers: ip ? { 'x-guest-ip': ip } : {},
       cache: 'no-store',
       signal: AbortSignal.timeout(10000)
