@@ -8,6 +8,8 @@ import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from 
 import { SITE_URL } from '@/lib/site';
 
 import { fetchAccountants } from '@/lib/accountant-directory';
+import { fetchDirectory, isThin, MIN_INDEXED_LISTINGS, townsOf } from '@/lib/business-directory';
+import { DIRECTORY_TRADES } from '@/lib/business-presets';
 
 /**
  * Sitemap for the whole public site, sharded via Next's `generateSitemaps()`.
@@ -145,7 +147,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
       priority,
       alternates: { languages }
     };
-  }), ...(Number(id) === 0 ? await blogEntries() : [])];
+  }), ...(Number(id) === 0 ? [...(await blogEntries()), ...(await directoryEntries())] : [])];
 }
 
 /**
@@ -174,5 +176,30 @@ async function blogEntries(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
       alternates: { languages: groups.get(p.translationKey)! }
     }))
+  ];
+}
+
+/**
+ * The business directory also comes from the backend. Only pages with at
+ * least MIN_INDEXED_LISTINGS listings are nominated (thinner ones are
+ * noindex); a town page only in the language of its country.
+ */
+async function directoryEntries(): Promise<MetadataRoute.Sitemap> {
+  const listings = await fetchDirectory();
+  if (isThin(listings)) return [];
+  const everywhere = (path: string, priority: number) => {
+    const languages: Record<string, string> = Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}${path}`]));
+    languages['x-default'] = languages[routing.defaultLocale]!;
+    return routing.locales.map((l) => ({ url: `${SITE_URL}/${l}${path}`, changeFrequency: 'weekly' as const, priority, alternates: { languages } }));
+  };
+  const trades = DIRECTORY_TRADES.filter((k) => !isThin(listings.filter((l) => l.trade === k)));
+  const towns = townsOf(listings).filter((t) => t.count >= MIN_INDEXED_LISTINGS);
+  return [
+    ...everywhere('/directory', 0.6),
+    ...trades.flatMap((k) => everywhere(`/directory/${k}`, 0.5)),
+    ...towns.map(({ municipality: m }) => {
+      const url = `${SITE_URL}/${municipalityLocale(m)}/directory/town/${m.slug}`;
+      return { url, changeFrequency: 'weekly' as const, priority: 0.4, alternates: { languages: { [municipalityLocale(m)]: url, 'x-default': url } } };
+    })
   ];
 }

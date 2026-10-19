@@ -38,6 +38,7 @@ export async function MarketingNavbar() {
     { href: '/calculators', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
     ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
     { href: '/accountants', label: tMenu('findAccountant'), hint: tMenu('findAccountantHint') },
+    { href: '/directory', label: tMenu('businessDirectory'), hint: tMenu('businessDirectoryHint') },
     { href: '/blog', label: tMenu('blog'), hint: tMenu('blogHint') },
     { href: '/#faq', label: t('faq') },
     { href: '/compare', label: tMenu('compare') }
