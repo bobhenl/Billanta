@@ -12567,5 +12567,62 @@
         }
       }
     }
+  },
+  "schoolLessons": {
+    "hubName": "Pre školy",
+    "indexName": "Lekcie",
+    "indexTitle": "Hotové lekcie fakturácie pre školy",
+    "indexMetaTitle": "Lekcie fakturácie pre ZŠ, SŠ aj VŠ – hotové hodiny s pracovnými listami",
+    "indexLead": "Vyučovacie hodiny po 45 minútach pre tri úrovne podľa slovenského práva: od finančnej gramotnosti na základnej škole po daňové priznanie a spoluprácu s účtovníčkou na vysokej škole. Ciele, poznámky pre učiteľa, úloha v deme bez registrácie a pracovný list s riešením. Zadarmo, na tlač aj na projektor.",
+    "indexMeta": "Hotové 45-minútové lekcie fakturácie a DPH pre základné, stredné aj vysoké školy podľa slovenského práva: čo je faktúra, náležitosti, dátum dodania, sadzby DPH, dobropisy, zálohy, upomienky, daňové priznanie, kontrolný výkaz a párovanie banky. Pracovné listy s riešením.",
+    "howTitle": "Ako lekcie fungujú",
+    "how": [
+      "Každá lekcia má ciele, časový plán hodiny, výklad pojmov s odkazmi na konkrétne paragrafy a poznámky pre učiteľa.",
+      "Žiaci plnia úlohu krok za krokom v deme Billanty. Demo nepotrebuje registráciu ani e-mail a každý žiak dostane vlastnú firmu s ukážkovými údajmi.",
+      "Pracovný list vytlačíte vo verzii pre žiakov (bez riešenia) alebo pre seba s riešením."
+    ],
+    "rvpNote": "Lekcie pre základné školy sa hodia do finančnej gramotnosti, lekcie pre stredné školy nadväzujú na ekonomické a účtovné vzdelávacie oblasti štátnych vzdelávacích programov obchodných akadémií. Zaradenie do ročníkov a predmetov nechávame na škole.",
+    "lawBasis": "Lekcie vychádzajú zo slovenského práva.",
+    "minutes": "{n} min",
+    "lessonNumber": "Lekcia {n}",
+    "openLesson": "Otvoriť lekciu",
+    "allLessons": "Všetky lekcie",
+    "goals": "Ciele hodiny",
+    "timeline": "Priebeh hodiny",
+    "teacherNotes": "Poznámky pre učiteľa",
+    "concepts": "Výklad",
+    "task": "Úloha v deme",
+    "check": "Hotovo, keď",
+    "worksheet": "Pracovný list",
+    "worksheetName": "Meno a trieda:",
+    "answer": "Riešenie pre učiteľa",
+    "law": "Právne predpisy",
+    "lawNote": "Odkazy vedú na aktuálne znenie predpisov na slov-lex.sk.",
+    "tools": "Súvisiace návody a kalkulačky",
+    "demoCta": "Otvoriť demo",
+    "demoPick": "V deme vyberte firmu „{kind}“. Registrácia nie je potrebná.",
+    "teacherOnly": "Len pre učiteľa – pri tlači pre žiakov sa skryje.",
+    "printStudent": "Tlač pre žiakov",
+    "printTeacher": "Tlač s riešením",
+    "checked": "Právne odkazy sme naposledy overili {date}. Zákony sa menia, pred hodinou preto skontrolujte aktuálne znenie. Lekcie slúžia na výučbu a nenahrádzajú daňové poradenstvo.",
+    "skAlternative": "Kalkulačka daní a odvodov pre SZČO",
+    "levelNav": "Úroveň",
+    "tracks": {
+      "basic": {
+        "name": "Základná škola",
+        "audience": "Finančná gramotnosť, 8. a 9. ročník",
+        "lead": "Čo je faktúra, ako ju vystaviť, kedy je zaplatená a ako slušne upomenúť. Bez daní a paragrafov pre žiakov."
+      },
+      "standard": {
+        "name": "Stredná škola",
+        "audience": "Obchodné akadémie a ekonomické odbory",
+        "lead": "Náležitosti faktúry, DPH, zálohy, dobropisy a upomienky podľa zákona."
+      },
+      "advanced": {
+        "name": "Vysoká škola a kurzy",
+        "audience": "VŠ, pomaturitné štúdium a rekvalifikačné kurzy",
+        "lead": "Daňové priznanie a kontrolný výkaz, zahraniční odberatelia, párovanie banky a spolupráca s účtovníčkou."
+      }
+    }
   }
 }

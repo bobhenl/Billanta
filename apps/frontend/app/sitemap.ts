@@ -12,6 +12,7 @@ import { SWITCH_BRANDS } from '@/lib/switch';
 import { fetchAccountants } from '@/lib/accountant-directory';
 import { fetchDirectory, isThin, MIN_INDEXED_LISTINGS, townsOf } from '@/lib/business-directory';
 import { DIRECTORY_TRADES } from '@/lib/business-presets';
+import { SCHOOL_LESSONS } from '@/lib/school-lessons';
 
 /**
  * Sitemap for the whole public site, sharded via Next's `generateSitemaps()`.
@@ -98,7 +99,10 @@ const STATIC_ENTRIES: UrlEntry[] = [
   ...TEMPLATES.map((x): UrlEntry => ({ path: '/invoice-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.8, locales: x.locales })),
   // Payment reminders: cs/en Czech law, sk Slovak; the pre-action notice is Czech only.
   { path: '/payment-reminder-templates', changeFrequency: 'monthly', priority: 0.7 },
-  ...REMINDERS.map((x): UrlEntry => ({ path: '/payment-reminder-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.7, locales: x.locales }))
+  ...REMINDERS.map((x): UrlEntry => ({ path: '/payment-reminder-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.7, locales: x.locales })),
+  // School lessons; the Czech-only ones (flat tax) are noindex in sk.
+  { path: '/for-schools/lessons', changeFrequency: 'monthly', priority: 0.6 },
+  ...SCHOOL_LESSONS.map((l): UrlEntry => ({ path: '/for-schools/lessons/' + l.slug, changeFrequency: 'yearly', priority: 0.5, locales: l.locales }))
 ];
 
 /** The static public pages with their locales, for llms.txt to list whatever it doesn't describe itself. */

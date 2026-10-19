@@ -1,0 +1,1845 @@
+{
+  "invoice-essentials": {
+    "name": "Náležitosti faktúry",
+    "title": "Náležitosti faktúry podľa slovenských predpisov",
+    "lead": "Žiaci spoznajú povinné údaje faktúry podľa zákona o DPH, zákona o účtovníctve a Obchodného zákonníka a nájdu ich na skutočnom doklade v deme.",
+    "metaDescription": "Hotová vyučovacia hodina pre obchodné akadémie: obsah faktúry podľa § 74 zákona o DPH, § 10 zákona o účtovníctve a § 3a Obchodného zákonníka. Úloha v deme, pracovný list s riešením.",
+    "goals": [
+      "Vymenovať povinné údaje faktúry podľa § 74 ods. 1 zákona o DPH.",
+      "Vysvetliť rozdiel medzi IČO, DIČ a IČ DPH a kde sa na faktúre uvádzajú.",
+      "Zdôvodniť, prečo musí byť na faktúre firmy údaj o zápise v obchodnom registri.",
+      "Nájsť chýbajúci alebo chybný údaj na vzorovej faktúre."
+    ],
+    "teacherNotes": [
+      "Faktúru upravujú tri predpisy: zákon o DPH č. 222/2004 Z. z. (faktúra platiteľa), zákon o účtovníctve č. 431/2002 Z. z. (účtovný doklad) a Obchodný zákonník (obchodný dokument). Pomôže, keď ich nakreslíte na tabuľu ako tri prekrývajúce sa kruhy.",
+      "Žiaci si často pletú IČO (identifikačné číslo organizácie), DIČ (daňové identifikačné číslo) a IČ DPH (s predponou SK, prideľuje sa platiteľovi). Na faktúre platiteľa musí byť IČ DPH dodávateľa aj odberateľa (§ 74 ods. 1 písm. a a b).",
+      "V aplikácii sa číslo faktúry prideľuje až pri vystavení, koncept číslo nemá. Dobrá otázka do diskusie: prečo musí byť číselný rad bez medzier a duplicít?",
+      "Zjednodušenú faktúru do 100 eur vrátane dane (§ 74 ods. 3 písm. a) stačí spomenúť. Žiaci ju poznajú ako doklad z pokladnice."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Motivácia: premietnite dve faktúry, na jednej chýba IČ DPH odberateľa. Kto nájde rozdiel a prečo prekáža?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: tri predpisy a ich požiadavky, IČO, DIČ a IČ DPH."
+      },
+      {
+        "min": "15–35",
+        "text": "Úloha v deme: rozbor hotovej faktúry a vystavenie novej."
+      },
+      {
+        "min": "35–43",
+        "text": "Pracovný list vo dvojiciach."
+      },
+      {
+        "min": "43–45",
+        "text": "Zhrnutie a kontrola odpovedí."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Faktúra platiteľa DPH",
+        "body": "Podľa § 74 ods. 1 obsahuje okrem iného: meno alebo názov, adresu a IČ DPH dodávateľa aj odberateľa, poradové číslo faktúry, dátum dodania (ak sa líši od dátumu vyhotovenia), dátum vyhotovenia, množstvo a druh tovaru alebo rozsah a druh služby, základ dane pre každú sadzbu, jednotkovú cenu bez dane a zľavy, sadzbu dane alebo oslobodenie a výšku dane spolu v eurách."
+      },
+      {
+        "title": "Lehota",
+        "body": "Faktúru treba vyhotoviť do 15 dní odo dňa dodania tovaru alebo služby (§ 73 ods. 1 písm. a). Kópie faktúr uchováva platiteľ desať rokov nasledujúcich po roku, ktorého sa týkajú (§ 76)."
+      },
+      {
+        "title": "Účtovný doklad",
+        "body": "Podľa § 10 ods. 1 zákona o účtovníctve obsahuje označenie dokladu, obsah účtovného prípadu a jeho účastníkov, peňažnú sumu alebo cenu za mernú jednotku a množstvo, dátum vyhotovenia, dátum uskutočnenia účtovného prípadu (ak sa líši) a podpisový záznam zodpovednej osoby."
+      },
+      {
+        "title": "Obchodný dokument",
+        "body": "Podľa § 3a Obchodného zákonníka uvádza podnikateľ na obchodných dokumentoch obchodné meno, sídlo alebo miesto podnikania, právnu formu, IČO a pri zápise v obchodnom registri alebo inej evidencii aj označenie registra a číslo zápisu."
+      }
+    ],
+    "task": {
+      "intro": "Pracujete ako asistent účtovníčky vo firme Horský potok s.r.o. z Bratislavy, ktorá je platiteľom DPH. Najprv skontrolujete hotovú faktúru, potom vystavíte novú.",
+      "steps": [
+        "V menu otvorte Faktúry a kliknite na ľubovoľnú zaplatenú faktúru pre slovenského odberateľa.",
+        "Na náhľade nájdite údaje z § 74 ods. 1 písm. a až i a odškrtnite ich v tabuľke v pracovnom liste. Ku každému si poznačte, kde na doklade je.",
+        "Nájdite na faktúre IČO, DIČ a IČ DPH dodávateľa. Ktorý z nich vyžaduje zákon o DPH a ktorý Obchodný zákonník?",
+        "Kliknite na Nová faktúra. Vyberte odberateľa Tatranská chata s.r.o. a pridajte dve položky: Sprievodca na túru, 2 dni po 180 eur, a Požičanie výstroja, 1 ks za 60 eur.",
+        "Pozrite sa na pole Dátum dodania. Keď ho necháte prázdne, použije sa dátum vystavenia. Prečo to zákon dovoľuje? (Pomôcka: § 74 ods. 1 písm. d.)",
+        "Kliknite na Uložiť koncept a potom na Vystaviť. Pred vystavením aplikácia skontroluje povinné údaje. Ak niečo hlási, zapíšte si čo a opravte to.",
+        "Stiahnite PDF a porovnajte ho so svojou tabuľkou z kroku 2."
+      ],
+      "check": "Hotovo je, keď má žiak vystavenú faktúru s prideleným číslom a v tabuľke odškrtnuté údaje z § 74 ods. 1 písm. a až i aj s miestom, kde na doklade sú."
+    },
+    "worksheet": [
+      {
+        "q": "Vymenujte aspoň osem povinných údajov faktúry platiteľa.",
+        "a": "Meno alebo názov, adresa a IČ DPH dodávateľa; meno alebo názov, adresa a IČ DPH odberateľa; poradové číslo; dátum dodania; dátum vyhotovenia; množstvo a druh tovaru alebo rozsah a druh služby; základ dane pre každú sadzbu, jednotková cena bez dane a zľavy; sadzba dane alebo oslobodenie; výška dane spolu v eurách (§ 74 ods. 1 písm. a až i)."
+      },
+      {
+        "q": "Čím sa líši IČ DPH od DIČ?",
+        "a": "DIČ je daňové identifikačné číslo, ktoré má každý daňový subjekt. IČ DPH má len ten, kto je registrovaný pre DPH; začína predponou SK a uvádza sa na faktúre platiteľa."
+      },
+      {
+        "q": "Na faktúre chýba dátum dodania. Kedy je to v poriadku?",
+        "a": "Keď je rovnaký ako dátum vyhotovenia faktúry (§ 74 ods. 1 písm. d)."
+      },
+      {
+        "q": "Prečo musí s.r.o. na faktúre uviesť obchodný register a číslo zápisu?",
+        "a": "Faktúra je obchodný dokument a § 3a ods. 1 Obchodného zákonníka vyžaduje pri podnikateľoch zapísaných v obchodnom registri označenie registra a číslo zápisu."
+      },
+      {
+        "q": "Platiteľ dodal tovar 3. marca. Do kedy musí vyhotoviť faktúru?",
+        "a": "Do 15 dní odo dňa dodania, teda do 18. marca (§ 73 ods. 1 písm. a)."
+      },
+      {
+        "q": "Zákazník zaplatil 85 eur a chce doklad. Musí na ňom byť jeho meno?",
+        "a": "Nemusí. Pri cene do 100 eur vrátane dane stačí zjednodušená faktúra, ktorá nemusí obsahovať údaje o odberateľovi ani jednotkovú cenu (§ 74 ods. 3 písm. a)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 74 – obsah faktúry",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-74"
+      },
+      {
+        "label": "Zákon o DPH, § 73 – lehota na vyhotovenie faktúry",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-73"
+      },
+      {
+        "label": "Zákon o DPH, § 76 – uchovávanie faktúr",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-76"
+      },
+      {
+        "label": "Zákon o účtovníctve č. 431/2002 Z. z., § 10 – účtovný doklad",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2002/431/#paragraf-10"
+      },
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 3a – údaje na obchodných dokumentoch",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-3a"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kontrola povinných údajov na faktúre",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Vyhľadanie firiem v registroch",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Vyhľadanie firmy podľa IČO",
+        "href": "/calculators/company-lookup"
+      }
+    ]
+  },
+  "vat-payers-and-registries": {
+    "name": "Platiteľ a neplatiteľ DPH, overenie partnera",
+    "title": "Platiteľ, neplatiteľ a overenie obchodného partnera v registroch",
+    "lead": "Kedy sa podnikateľ stáva platiteľom DPH, ako sa to prejaví na faktúre a ako si za pár minút overiť IČO a IČ DPH odberateľa v obchodnom registri, RPO a VIES.",
+    "metaDescription": "Vyučovacia hodina: obrat 50 000 eur a 62 500 eur (§ 4 zákona o DPH), rozdiel na faktúre platiteľa a neplatiteľa, overenie IČO v ORSR a RPO, IČ DPH vo VIES.",
+    "goals": [
+      "Vysvetliť, kedy sa zdaniteľná osoba stáva platiteľom DPH (§ 4 zákona o DPH).",
+      "Porovnať faktúru neplatiteľa a platiteľa a pomenovať rozdiely.",
+      "Overiť firmu v obchodnom registri alebo RPO a IČ DPH vo VIES.",
+      "Vysvetliť, prečo sa partner overuje pred platbou, nie až po nej."
+    ],
+    "teacherNotes": [
+      "Od roku 2025 sa obrat počíta za kalendárny rok: platiteľom sa osoba stáva od 1. januára nasledujúceho roka, ak jej obrat za kalendárny rok presiahol 50 000 eur (§ 4 ods. 1 písm. a). Ak obrat v priebehu roka presiahne 62 500 eur, stáva sa platiteľom už dodaním, ktorým hranicu prekročila (§ 4 ods. 1 písm. b). Žiadosť o registráciu podáva do piatich pracovných dní (§ 4 ods. 2).",
+      "Výpočet obratu nechajte žiakov robiť na papieri z tabuľky mesačných tržieb. Zmysel hodiny je pochopiť pravidlo, nie kliknúť na tlačidlo.",
+      "Demo Horský potok s.r.o. je platiteľ. Faktúru neplatiteľa žiaci zostavia na papieri zo vzoru, ktorý vytvoria v kroku 5.",
+      "Zoznamy platiteľov DPH a ďalšie zoznamy zverejňuje Finančná správa na svojom webe. VIES overuje IČ DPH pre obchod v rámci EU. Sú to dva rôzne nástroje."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka do triedy: prečo by sa niekto chcel stať platiteľom DPH dobrovoľne?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: obrat, povinná registrácia, čo sa zmení na faktúre."
+      },
+      {
+        "min": "15–22",
+        "text": "Výpočet obratu na papieri (prvá časť pracovného listu)."
+      },
+      {
+        "min": "22–38",
+        "text": "Úloha v deme: overenie partnerov v registroch."
+      },
+      {
+        "min": "38–45",
+        "text": "Kontrola odpovedí, zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Obrat",
+        "body": "Zdaniteľná osoba so sídlom alebo miestom podnikania na Slovensku sa stáva platiteľom od 1. januára nasledujúceho roka, ak jej obrat za kalendárny rok presiahol 50 000 eur (§ 4 ods. 1 písm. a). Ak v bežnom roku presiahne 62 500 eur, je platiteľom už od dodania, ktorým hranicu prekročila (§ 4 ods. 1 písm. b)."
+      },
+      {
+        "title": "Faktúra neplatiteľa a platiteľa",
+        "body": "Neplatiteľ neuvádza IČ DPH, sadzbu ani výšku dane a DPH neúčtuje. Platiteľ uvádza základ dane, sadzbu a daň v eurách (§ 74 ods. 1). Pre odberateľa-platiteľa je rozdiel podstatný: z faktúry neplatiteľa si DPH neodpočíta."
+      },
+      {
+        "title": "Obchodný register a RPO",
+        "body": "Obchodný register (orsr.sk) a Register právnických osôb (RPO) overia IČO, obchodné meno, sídlo a štatutárov. Údaje o registrácii pre DPH zverejňuje Finančná správa."
+      },
+      {
+        "title": "VIES",
+        "body": "Systém Európskej komisie na overenie IČ DPH v inom členskom štáte EU. Platné IČ DPH je jedným z predpokladov dodania tovaru do EU bez dane a prenesenia daňovej povinnosti pri službách."
+      }
+    ],
+    "task": {
+      "intro": "Pracujete pre Horský potok s.r.o., platiteľa DPH. Overíte si odberateľov skôr, než im vystavíte faktúru.",
+      "steps": [
+        "V menu otvorte Kontakty a nájdite Tatranská chata s.r.o. Zapíšte si IČO, DIČ a IČ DPH.",
+        "Kliknite na Nový kontakt. Do vyhľadávania Obchodné registre (ARES, RPO, VIES…) napíšte IČO ľubovoľnej známej slovenskej firmy (nájdete ho na jej webe). Porovnajte načítané údaje s webom firmy.",
+        "Ten istý subjekt vyhľadajte ručne na orsr.sk alebo v RPO a v zozname platiteľov DPH na webe Finančnej správy. Je platiteľom? Zhodujú sa údaje?",
+        "V Kontaktoch otvorte rakúskeho odberateľa Bergquelle Reisen GmbH a pozrite sa na stav IČ DPH. Overte to isté číslo ručne vo VIES.",
+        "Otvorte ľubovoľnú vystavenú faktúru, stiahnite PDF a na papieri z nej urobte faktúru neplatiteľa: prečiarknite všetko, čo by neplatiteľ neuvádzal. Doplňte tabuľku rozdielov v pracovnom liste."
+      ],
+      "check": "Hotovo je, keď má žiak vyplnenú tabuľku rozdielov faktúr a pri jednej slovenskej a jednej zahraničnej firme zapísaný výsledok overenia (register, Finančná správa, VIES) aj s dátumom."
+    },
+    "worksheet": [
+      {
+        "q": "Živnostník mal v roku 2025 obrat 48 000 eur. V roku 2026 má k 31. augustu obrat 55 000 eur. Od kedy je platiteľom?",
+        "a": "Za rok 2025 hranicu 50 000 eur neprekročil. V roku 2026 prekročil 50 000 eur, nie však 62 500 eur, takže sa stane platiteľom od 1. 1. 2027 (§ 4 ods. 1 písm. a). Keby v roku 2026 presiahol 62 500 eur, bol by platiteľom už od dodania, ktorým hranicu prekročil (písm. b)."
+      },
+      {
+        "q": "Do kedy musí podať žiadosť o registráciu ten, kto prekročil hranicu?",
+        "a": "Do piatich pracovných dní odo dňa prekročenia (§ 4 ods. 2)."
+      },
+      {
+        "q": "Čo overíte v obchodnom registri a čo vo VIES?",
+        "a": "V obchodnom registri identitu firmy (IČO, obchodné meno, sídlo, štatutárov). Vo VIES platnosť IČ DPH partnera z iného štátu EU."
+      },
+      {
+        "q": "Môže neplatiteľ na faktúre uviesť DPH 23 %?",
+        "a": "Nie. Neplatiteľ DPH neúčtuje a na faktúre ju neuvádza."
+      },
+      {
+        "q": "Musí neplatiteľ na faktúre uviesť IČO?",
+        "a": "Áno, ak mu bolo pridelené (§ 3a ods. 1 Obchodného zákonníka)."
+      },
+      {
+        "q": "Prečo overiť partnera pred platbou alebo pred dodaním?",
+        "a": "Aby sme vedeli, či je platiteľ, či existuje a či má platné IČ DPH. Na tom závisí, aká faktúra sa vystaví a či si odberateľ môže odpočítať daň."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 4 – platiteľ dane a registrácia",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-4"
+      },
+      {
+        "label": "Zákon o DPH, § 74 – obsah faktúry",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-74"
+      },
+      {
+        "label": "Obchodný zákonník, § 3a – IČO na obchodných dokumentoch",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-3a"
+      },
+      {
+        "label": "Obchodný register SR",
+        "href": "https://www.orsr.sk/"
+      },
+      {
+        "label": "Register právnických osôb (RPO)",
+        "href": "https://rpo.statistics.sk/"
+      },
+      {
+        "label": "VIES – overenie IČ DPH v EU (Európska komisia)",
+        "href": "https://ec.europa.eu/taxation_customs/vies/"
+      },
+      {
+        "label": "Finančná správa SR",
+        "href": "https://www.financnasprava.sk/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Vyhľadanie firmy podľa IČO",
+        "href": "/calculators/company-lookup"
+      },
+      {
+        "label": "Vyhľadanie firiem v registroch",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "tax-point-and-due-dates": {
+    "name": "Dátum dodania a splatnosť",
+    "title": "Dátum dodania, dátum vyhotovenia a splatnosť faktúry",
+    "lead": "Tri dátumy na faktúre znamenajú tri rôzne veci. Žiaci sa naučia určiť deň dodania tovaru a služby, vypočítať lehotu na vyhotovenie faktúry a nastaviť primeranú splatnosť.",
+    "metaDescription": "Vyučovacia hodina: vznik daňovej povinnosti podľa § 19 zákona o DPH, lehota 15 dní na faktúru (§ 73), splatnosť a hranica 60 dní (§ 340a Obchodného zákonníka). Úloha v deme.",
+    "goals": [
+      "Určiť deň dodania tovaru, služby a čiastkového plnenia.",
+      "Vypočítať posledný deň na vyhotovenie faktúry.",
+      "Vysvetliť hranicu 60 dní pre zmluvnú splatnosť podľa § 340a Obchodného zákonníka.",
+      "Rozpoznať splatnosť, ktorá pripadá na víkend alebo sviatok."
+    ],
+    "teacherNotes": [
+      "Najčastejšia chyba: žiaci zamieňajú dátum dodania s dátumom vyhotovenia. Ukážte príklad, keď služba skončila 28. apríla a faktúra sa vyhotovuje 5. mája. Daňová povinnosť vznikla v apríli.",
+      "Pri tovare je dňom dodania deň, keď kupujúci nadobudne právo nakladať s tovarom ako vlastník (§ 19 ods. 1). Pri službe vzniká daňová povinnosť dňom dodania služby (§ 19 ods. 2). Čiastkové a opakované dodania má § 19 ods. 3.",
+      "Splatnosť je zmluvná vec. Obchodný zákonník obmedzuje zmluvnú lehotu na 60 dní od doručenia faktúry alebo od plnenia, ak sa strany výslovne nedohodnú inak a dohoda nie je v hrubom nepomere (§ 340a ods. 1). Pri verejných obstarávateľoch je hranica prísnejšia (§ 340b).",
+      "Splatnosť na víkend alebo sviatok sa v praxi posúva na najbližší pracovný deň; aplikácia na to upozorní."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Úvod: tri dátumy na faktúre, každý pre iného čitateľa (daňový úrad, účtovník, zákazník)."
+      },
+      {
+        "min": "5–17",
+        "text": "Výklad: deň dodania tovaru a služby, lehota 15 dní, splatnosť."
+      },
+      {
+        "min": "17–35",
+        "text": "Úloha v deme: tri faktúry s rôznymi dátumami."
+      },
+      {
+        "min": "35–43",
+        "text": "Pracovný list (výpočty dátumov)."
+      },
+      {
+        "min": "43–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Dodanie tovaru",
+        "body": "Daňová povinnosť vzniká dňom dodania tovaru, teda dňom, keď kupujúci nadobudne právo nakladať s tovarom ako vlastník (§ 19 ods. 1)."
+      },
+      {
+        "title": "Dodanie služby",
+        "body": "Daňová povinnosť vzniká dňom dodania služby (§ 19 ods. 2). Pri čiastkovom alebo opakovanom dodaní sa služba považuje za dodanú najneskôr posledným dňom obdobia, na ktoré sa platba vzťahuje (§ 19 ods. 3)."
+      },
+      {
+        "title": "Lehota na faktúru",
+        "body": "Faktúra musí byť vyhotovená do 15 dní odo dňa dodania tovaru alebo služby (§ 73 ods. 1 písm. a)."
+      },
+      {
+        "title": "Splatnosť",
+        "body": "Zmluvná lehota splatnosti nesmie presiahnuť 60 dní od doručenia faktúry alebo od plnenia, podľa toho, čo nastalo neskôr, pokiaľ sa strany výslovne nedohodnú na dlhšej lehote a dohoda nie je v hrubom nepomere k právam veriteľa (§ 340a ods. 1 Obchodného zákonníka)."
+      }
+    ],
+    "task": {
+      "intro": "Ste fakturantka firmy Horský potok s.r.o. Vystavíte tri koncepty faktúr s rôznymi dátumami a overíte, ako s nimi aplikácia pracuje.",
+      "steps": [
+        "Otvorte Faktúry a kliknite na Nová faktúra. Vyberte odberateľa Tatranská chata s.r.o.",
+        "Faktúra A (tovar): položka Turistické mapy, 20 ks po 6 eur. Tovar bol odovzdaný 28. dňa minulého mesiaca. Nastavte Dátum dodania na tento deň a Vystavené na dnešok. Uložte koncept.",
+        "Skontrolujte, či dnešný dátum vyhotovenia spĺňa lehotu 15 dní. Ak nie, zapíšte si, o koľko dní je faktúra neskoro.",
+        "Faktúra B (služba): nová faktúra, položka Vedenie túry, 1 deň za 180 eur. Túra sa konala predvčerom. Aký dátum dodania zadáte? Uložte koncept.",
+        "Faktúra C (splatnosť): pri ľubovoľnej faktúre nastavte Splatnosť na najbližšiu sobotu. Aplikácia zobrazí upozornenie. Kliknite na Posunúť na pracovný deň a zapíšte si nový dátum.",
+        "Pre zaujímavosť nastavte splatnosť na 25. decembra a pozrite sa, čo aplikácia napíše."
+      ],
+      "check": "Hotovo je, keď má žiak uložené tri koncepty a pri každom zapísaný dátum dodania, dátum vyhotovenia a splatnosť s krátkym zdôvodnením podľa paragrafu."
+    },
+    "worksheet": [
+      {
+        "q": "Stolár odovzdal stôl 12. mája, faktúru vyhotovil 20. mája. Aký je dátum dodania a do kedy musel faktúru vyhotoviť?",
+        "a": "Dátum dodania je 12. máj (§ 19 ods. 1). Faktúru musí vyhotoviť do 15 dní, teda najneskôr 27. mája (§ 73 ods. 1 písm. a). Vyhotovenie 20. mája je v poriadku."
+      },
+      {
+        "q": "Účtovníčka vedie firme účtovníctvo a fakturuje každý mesiac. Kedy je služba za marec dodaná?",
+        "a": "Najneskôr posledným dňom obdobia, na ktoré sa platba vzťahuje, teda 31. marca (§ 19 ods. 3)."
+      },
+      {
+        "q": "Môže si veľký odberateľ v zmluve vyjednať splatnosť 90 dní?",
+        "a": "Len ak je to výslovne dohodnuté a nie je to v hrubom nepomere k právam dodávateľa (§ 340a ods. 1 Obchodného zákonníka)."
+      },
+      {
+        "q": "Faktúra bola doručená 2. septembra, plnenie bolo 30. augusta. Od ktorého dňa sa počíta 60-dňová hranica?",
+        "a": "Od neskoršieho z oboch dní, teda od doručenia faktúry 2. septembra (§ 340a ods. 1)."
+      },
+      {
+        "q": "Splatnosť vychádza na nedeľu. Čo urobíte?",
+        "a": "Posuniem ju na najbližší pracovný deň, aby mohol zákazník zaplatiť včas. Aplikácia na víkend upozorní."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 19 – vznik daňovej povinnosti",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-19"
+      },
+      {
+        "label": "Zákon o DPH, § 73 – lehota na vyhotovenie faktúry",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-73"
+      },
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 340a – lehota splatnosti",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-340a"
+      },
+      {
+        "label": "Obchodný zákonník, § 340b – splatnosť pri verejných obstarávateľoch",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-340b"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka dátumu splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Kontrola povinných údajov na faktúre",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "vat-rates-and-rounding": {
+    "name": "Sadzby DPH a zaokrúhľovanie",
+    "title": "Sadzby DPH, výpočet dane a zaokrúhľovanie",
+    "lead": "Ako sa počíta DPH zo základu aj z ceny s daňou, prečo sa faktúra s viacerými sadzbami rozpadá do rekapitulácie a prečo sa daň zaokrúhľuje na centy.",
+    "metaDescription": "Vyučovacia hodina: sadzby 23 %, 19 % a 5 % (§ 27 zákona o DPH), výpočet dane zdola a zhora, rekapitulácia podľa sadzieb. Úloha v deme s cenami s DPH a bez DPH.",
+    "goals": [
+      "Poznať platné sadzby DPH na Slovensku a priradiť ich k typickým príkladom.",
+      "Vypočítať DPH zo základu (zdola) aj z ceny s daňou (zhora).",
+      "Zostaviť rekapituláciu DPH podľa sadzieb.",
+      "Vysvetliť, prečo sa výsledok líši pri zaokrúhľovaní po riadkoch a zo súčtu."
+    ],
+    "teacherNotes": [
+      "Od roku 2025 má Slovensko základnú sadzbu 23 % a znížené sadzby 19 % a 5 % (§ 27). Prílohy č. 7 a 7a so zoznamom tovarov a služieb so zníženou sadzbou nechajte žiakov len prelistovať.",
+      "Výpočet zhora: základ = cena s daňou / 1,23 (alebo 1,19, 1,05), daň = cena s daňou − základ. Staršie učebnice uvádzajú sadzby 20 % a 10 %, tie už neplatia.",
+      "Aplikácia zaokrúhľuje daň na každom riadku na centy a rekapitulácia sčítava základy podľa sadzieb. Rozdiel oproti výpočtu zo súčtu môže byť jeden alebo dva centy – je to dobrý príklad na diskusiu.",
+      "Zaokrúhlenie celkovej sumy na 5 centov pri platbe v hotovosti aplikácia nerobí. Ak ho chcete precvičiť, urobte ho na papieri."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Hádanka: koľko DPH je v káve za 2,90 eura?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: sadzby, výpočet zdola a zhora, rekapitulácia."
+      },
+      {
+        "min": "15–33",
+        "text": "Úloha v deme: faktúra s dvoma sadzbami, ceny s DPH."
+      },
+      {
+        "min": "33–43",
+        "text": "Pracovný list: výpočty."
+      },
+      {
+        "min": "43–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Sadzby",
+        "body": "Základná sadzba je 23 %, znížené sadzby sú 19 % a 5 % (§ 27 zákona o DPH). Niektoré dodania sú od dane oslobodené."
+      },
+      {
+        "title": "Výpočet zdola",
+        "body": "Daň = základ dane × sadzba. Príklad: 100 € × 23 % = 23 €, spolu 123 €."
+      },
+      {
+        "title": "Výpočet zhora",
+        "body": "Základ = cena s daňou / (1 + sadzba), daň = cena s daňou − základ. Príklad: 123 / 1,23 = 100 €, daň 23 €."
+      },
+      {
+        "title": "Rekapitulácia",
+        "body": "Faktúra uvádza základ dane pre každú sadzbu (§ 74 ods. 1 písm. g) a výšku dane spolu v eurách (§ 74 ods. 1 písm. i)."
+      }
+    ],
+    "task": {
+      "intro": "Horský potok s.r.o. organizuje víkendový pobyt s ubytovaním a sprievodcom. Vystavíte faktúru s dvoma sadzbami a skontrolujete výpočet.",
+      "steps": [
+        "Otvorte Faktúry a kliknite na Nová faktúra. Vyberte odberateľa Tatranská chata s.r.o.",
+        "Pridajte položku Sprievodca na túru, 2 dni po 180 eur bez DPH, sadzba 23 %.",
+        "Pridajte položku podľa vlastného výberu so zníženou sadzbou (v prílohe č. 7a zistite, ktoré služby do nej patria), 1 ks, 240 eur bez DPH.",
+        "Pozrite sa na rekapituláciu pod položkami. Prepočítajte základ, daň a celkovú sumu na kalkulačke a porovnajte.",
+        "Zapnite prepínač Zadávam ceny s DPH a prepíšte cenu prvej položky na 221,40 eura. Akú daň aplikácia vypočítala? Overte výpočtom zhora.",
+        "Uložte koncept. V pracovnom liste vypočítajte, koľko by bola daň, keby ste ju počítali zo súčtu základov, a porovnajte s rekapituláciou."
+      ],
+      "check": "Hotovo je, keď sa ručný výpočet rekapitulácie zhoduje s aplikáciou na cent a žiak vie vysvetliť prípadný rozdiel pri zaokrúhľovaní po riadkoch."
+    },
+    "worksheet": [
+      {
+        "q": "Vypočítajte DPH a cenu spolu: základ 245 €, sadzba 23 %.",
+        "a": "DPH 56,35 €, spolu 301,35 €."
+      },
+      {
+        "q": "Cena s DPH je 119 € pri sadzbe 19 %. Aký je základ a daň?",
+        "a": "Základ 119 / 1,19 = 100 €, daň 19 €."
+      },
+      {
+        "q": "Faktúra má položky 100 € (23 %) a 50 € (5 %). Zostavte rekapituláciu.",
+        "a": "23 %: základ 100, daň 23. 5 %: základ 50, daň 2,50. Spolu základ 150, daň 25,50, na úhradu 175,50 €."
+      },
+      {
+        "q": "Tri položky po 0,99 € bez DPH so sadzbou 23 %. Aká je daň pri zaokrúhľovaní po riadkoch a zo súčtu?",
+        "a": "Po riadkoch: 0,99 × 0,23 = 0,2277, teda 0,23 € na riadok, spolu 0,69 €. Zo súčtu: 2,97 × 0,23 = 0,6831, teda 0,68 €. Rozdiel je jeden cent."
+      },
+      {
+        "q": "Prečo je výpočet zhora užitočný?",
+        "a": "Keď poznám len konečnú cenu (napríklad z cenníka pre spotrebiteľov), vypočítam z nej základ a daň bez ďalších údajov."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 27 – sadzby dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-27"
+      },
+      {
+        "label": "Zákon o DPH, § 74 – základ dane a výška dane na faktúre",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-74"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      },
+      {
+        "label": "Kontrola povinných údajov na faktúre",
+        "href": "/features/required-fields-check"
+      }
+    ]
+  },
+  "advances-and-proforma": {
+    "name": "Zálohy a zálohové faktúry",
+    "title": "Zálohová faktúra, faktúra k prijatej platbe a vyúčtovanie",
+    "lead": "Zálohová faktúra nie je faktúrou podľa zákona o DPH. Žiaci prejdú celý reťazec: ponuka, záloha, platba, faktúra k prijatej platbe a konečná faktúra s odpočítanou zálohou.",
+    "metaDescription": "Vyučovacia hodina o zálohách: daňová povinnosť z prijatej platby (§ 19 ods. 4 zákona o DPH), faktúra k platbe (§ 72 a § 73), vyúčtovanie. Úloha v deme a na papieri.",
+    "goals": [
+      "Vysvetliť rozdiel medzi zálohovou faktúrou (výzvou na platbu) a faktúrou podľa zákona o DPH.",
+      "Určiť, kedy pri prijatej zálohe vzniká daňová povinnosť.",
+      "Zostaviť konečnú faktúru s odpočítaním zaplatenej zálohy.",
+      "Prejsť v deme prevod ponuky na zálohovú faktúru a zálohovej faktúry na faktúru."
+    ],
+    "teacherNotes": [
+      "Zálohová faktúra je len výzva na platbu. Daňová povinnosť nevzniká jej vystavením, ale prijatím platby (§ 19 ods. 4).",
+      "Pri prijatí platby pred dodaním je platiteľ povinný vyhotoviť faktúru (§ 72 ods. 1 písm. f a g) v lehote podľa § 73 ods. 1 písm. b. Aplikácia Billanta túto faktúru k prijatej platbe zatiaľ nevystavuje, preto ju žiaci zostavia na papieri. Povedzte to otvorene – je to dobrá príležitosť ukázať, že softvér nie je zákon.",
+      "Konečná faktúra potom obsahuje celé dodanie a odpočíta zálohu vrátane dane, ktorá už bola priznaná.",
+      "Pri neplatiteľovi je záloha len platba a konečná faktúra ju odpočíta."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Príbeh: firma si objedná teambuilding a polovicu zaplatí vopred. Kedy má organizátor odviesť DPH?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: zálohová faktúra, prijatá platba, faktúra k platbe, vyúčtovanie."
+      },
+      {
+        "min": "15–30",
+        "text": "Úloha v deme: ponuka, záloha, faktúra."
+      },
+      {
+        "min": "30–40",
+        "text": "Na papieri: faktúra k prijatej platbe a vyúčtovanie."
+      },
+      {
+        "min": "40–45",
+        "text": "Kontrola a zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Zálohová faktúra",
+        "body": "Výzva na zaplatenie zálohy. Nie je faktúrou podľa zákona o DPH a z jej vystavenia daň nevzniká."
+      },
+      {
+        "title": "Daňová povinnosť z prijatej platby",
+        "body": "Ak je platba prijatá pred dodaním tovaru alebo služby, daňová povinnosť z prijatej platby vzniká dňom jej prijatia (§ 19 ods. 4)."
+      },
+      {
+        "title": "Faktúra k prijatej platbe",
+        "body": "Platiteľ ju vyhotoví pri prijatí platby pred dodaním (§ 72 ods. 1 písm. f a g) v lehote podľa § 73 ods. 1 písm. b: do 15 dní od prijatia platby alebo do konca kalendárneho mesiaca, v ktorom bola platba prijatá."
+      },
+      {
+        "title": "Vyúčtovanie",
+        "body": "Konečná faktúra uvádza celé dodanie a odpočíta zálohy, z ktorých už bola daň priznaná. Doplatí sa len rozdiel."
+      }
+    ],
+    "task": {
+      "intro": "Horský potok s.r.o. pripravuje pre firmu teambuilding za 2 460 eur s DPH a chce zálohu 50 %.",
+      "steps": [
+        "Otvorte Faktúry a vyhľadajte doklad typu Cenová ponuka. Otvorte ho a prezrite si tlačidlá hore.",
+        "Kliknite na Vytvoriť zálohovú. Upravte zálohu na polovicu celkovej sumy a uložte. Všimnite si, že doklad je typu Zálohová faktúra.",
+        "Nájdite v deme zaplatenú zálohovú faktúru pre Tatranskú chatu (záloha na vianočný večierok), ku ktorej už existuje faktúra. Otvorte obe a porovnajte: čo majú spoločné a čím sa líšia?",
+        "Pri vašej novej zálohovej faktúre kliknite na Vytvoriť faktúru. Pozrite sa na polia Už uhradené a Zostáva uhradiť.",
+        "Na papieri zostavte faktúru k prijatej platbe za zálohu 1 230 eur s DPH (sadzba 23 %): dopočítajte základ a daň výpočtom zhora. Aplikácia túto faktúru zatiaľ nevystavuje.",
+        "Na papieri zostavte vyúčtovanie: celé dodanie, odpočet zálohy a doplatok, zvlášť pre základ, daň aj celkovú sumu."
+      ],
+      "check": "Hotovo je, keď má žiak v deme reťazec ponuka – zálohová faktúra – faktúra a na papieri správne vypočítanú faktúru k platbe aj vyúčtovanie (záloha: základ 1 000 eur, daň 230 eur)."
+    },
+    "worksheet": [
+      {
+        "q": "Je zálohová faktúra faktúrou podľa zákona o DPH?",
+        "a": "Nie. Je to výzva na platbu, daňová povinnosť z jej vystavenia nevzniká."
+      },
+      {
+        "q": "Platiteľ vystavil zálohovú faktúru 1. marca, zákazník zaplatil 10. marca, služba bude dodaná 2. apríla. Kedy vzniká daňová povinnosť zo zálohy?",
+        "a": "10. marca, dňom prijatia platby (§ 19 ods. 4)."
+      },
+      {
+        "q": "Záloha 1 230 € s DPH 23 %. Aký je základ a daň?",
+        "a": "Základ 1 000 €, daň 230 € (1 230 / 1,23 = 1 000)."
+      },
+      {
+        "q": "Celé dodanie je 2 000 € bez DPH, záloha z otázky 3 bola zaplatená. Koľko je doplatok?",
+        "a": "Spolu 2 460 € s DPH (základ 2 000, daň 460). Po odpočítaní zálohy zostáva základ 1 000, daň 230, doplatok 1 230 €."
+      },
+      {
+        "q": "Musí platiteľ po prijatí zálohy vyhotoviť faktúru?",
+        "a": "Áno, pri prijatí platby pred dodaním (§ 72 ods. 1 písm. f a g), v lehote podľa § 73 ods. 1 písm. b."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 19 – daňová povinnosť z prijatej platby",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-19"
+      },
+      {
+        "label": "Zákon o DPH, § 72 – povinnosť vyhotoviť faktúru",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-72"
+      },
+      {
+        "label": "Zákon o DPH, § 73 – lehota na vyhotovenie faktúry",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-73"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Ponuky a zálohové faktúry v aplikácii",
+        "href": "/features/quotes-and-proforma-invoices"
+      },
+      {
+        "label": "Čiastočné platby",
+        "href": "/features/partial-payments"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "credit-notes": {
+    "name": "Dobropis a oprava faktúry",
+    "title": "Dobropis, oprava základu dane a storno",
+    "lead": "Faktúra už odišla a zákazník vracia tovar. Žiaci sa naučia, kedy vyhotoviť dobropis, čo na ňom musí byť a prečo sa vystavená faktúra nemaže.",
+    "metaDescription": "Vyučovacia hodina: oprava základu dane (§ 25 zákona o DPH), dobropis ako faktúra podľa § 71 ods. 2, obsah podľa § 74 ods. 3 písm. c, lehota 15 dní od konca mesiaca. Úloha v deme.",
+    "goals": [
+      "Rozpoznať situácie, keď sa opravuje základ dane.",
+      "Vymenovať, čo musí obsahovať dobropis.",
+      "Vystaviť v deme dobropis k existujúcej faktúre.",
+      "Vysvetliť, prečo sa vystavená faktúra nesmie zmazať ani prepísať."
+    ],
+    "teacherNotes": [
+      "Zákon o DPH nepoužíva slovo dobropis. Hovorí o oprave základu dane (§ 25) a doklad, ktorý mení pôvodnú faktúru a jednoznačne sa na ňu vzťahuje, považuje za faktúru (§ 71 ods. 2). Pri zvýšení ceny sa v praxi hovorí o ťarchopise.",
+      "Dobropis musí obsahovať poradové číslo pôvodnej faktúry a údaje, ktoré sa menia (§ 74 ods. 3 písm. c). Vyhotoviť ho treba do 15 dní od konca kalendárneho mesiaca, v ktorom nastala skutočnosť rozhodná pre opravu (§ 73 ods. 1 písm. e).",
+      "Rozdiel základu a dane sa uvedie v daňovom priznaní za obdobie, v ktorom sa doklad o oprave vyhotovil (§ 25 ods. 3).",
+      "V aplikácii nájdete pri vystavenej faktúre tri akcie: Vystaviť dobropis (vrátenie alebo zľava), Nová faktúra s opravou (chyba v údajoch) a Stornovať. Ukážte rozdiel na tabuli skôr, než žiaci začnú klikať."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Situácia: zákazník vrátil dve z desiatich stoličiek. Zmažeme faktúru a vystavíme novú?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: oprava základu dane, obsah dobropisu, lehoty, dobropis a storno."
+      },
+      {
+        "min": "15–33",
+        "text": "Úloha v deme: dobropis a faktúra s opravou."
+      },
+      {
+        "min": "33–43",
+        "text": "Pracovný list."
+      },
+      {
+        "min": "43–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Kedy opraviť základ dane",
+        "body": "Pri úplnom alebo čiastočnom zrušení alebo vrátení dodávky, pri znížení ceny po vzniku daňovej povinnosti a pri zvýšení ceny (§ 25 ods. 1)."
+      },
+      {
+        "title": "Dobropis ako faktúra",
+        "body": "Doklad, ktorý mení pôvodnú faktúru a osobitne a jednoznačne sa na ňu vzťahuje, sa považuje za faktúru (§ 71 ods. 2). Musí obsahovať poradové číslo pôvodnej faktúry a údaje, ktoré sa menia (§ 74 ods. 3 písm. c)."
+      },
+      {
+        "title": "Lehoty",
+        "body": "Doklad treba vyhotoviť do 15 dní od konca kalendárneho mesiaca, v ktorom nastala skutočnosť rozhodná pre opravu (§ 73 ods. 1 písm. e). Rozdiel sa uvedie v priznaní za obdobie, v ktorom bol doklad vyhotovený (§ 25 ods. 3)."
+      },
+      {
+        "title": "Prečo faktúru nemazať",
+        "body": "Vystavená faktúra je účtovný záznam s poradovým číslom. Zmazaním by vznikla medzera v číselnom rade a zmizol by doklad, podľa ktorého si odberateľ mohol odpočítať daň. Chyba sa preto opravuje novým dokladom."
+      }
+    ],
+    "task": {
+      "intro": "Horský potok s.r.o. dodal zákazníkovi službu a časť ceny vracia. Opravíte to správne.",
+      "steps": [
+        "Otvorte Faktúry a nájdite existujúci dobropis v deme. Otvorte ho a nájdite na ňom číslo pôvodnej faktúry a údaje, ktoré sa menia.",
+        "Otvorte ľubovoľnú vystavenú faktúru s dvoma a viac položkami. Kliknite na Vystaviť dobropis.",
+        "V dobropise ponechajte len položku, ktorej sa oprava týka, a upravte množstvo podľa zadania učiteľa. Sumy sú záporné. Uložte a vystavte.",
+        "Pri inej faktúre vyskúšajte akciu Nová faktúra s opravou. V čom sa líši od dobropisu? Kedy by ste ju použili?",
+        "Skúste pri vystavenej faktúre nájsť tlačidlo Zmazať. Prečo tam nie je? Zapíšte si odpoveď."
+      ],
+      "check": "Hotovo je, keď má žiak vystavený dobropis s odkazom na pôvodnú faktúru a vie vysvetliť rozdiel medzi dobropisom, faktúrou s opravou a stornom."
+    },
+    "worksheet": [
+      {
+        "q": "Zákazník vrátil 2 z 10 stoličiek po 60 € bez DPH (sadzba 23 %). Aký je rozdiel základu, dane a celkovej sumy na dobropise?",
+        "a": "Základ −120 €, daň −27,60 €, spolu −147,60 €."
+      },
+      {
+        "q": "Čo musí dobropis obsahovať navyše oproti bežnej faktúre?",
+        "a": "Poradové číslo pôvodnej faktúry a údaje, ktoré sa menia (§ 74 ods. 3 písm. c)."
+      },
+      {
+        "q": "Tovar bol vrátený 4. apríla. Do kedy treba vyhotoviť dobropis?",
+        "a": "Do 15 dní od konca apríla, teda do 15. mája (§ 73 ods. 1 písm. e)."
+      },
+      {
+        "q": "Dobropis bol vyhotovený v máji k aprílovej faktúre. Do ktorého priznania patrí rozdiel?",
+        "a": "Do priznania za obdobie, v ktorom sa dobropis vyhotovil, teda za máj (§ 25 ods. 3)."
+      },
+      {
+        "q": "Fakturantka zistila preklep v názve odberateľa. Je to oprava základu dane?",
+        "a": "Nie, základ sa nemení. Vystaví sa doklad, ktorý opravuje údaje a odkazuje na pôvodnú faktúru; vystavená faktúra sa nemaže."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 25 – oprava základu dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-25"
+      },
+      {
+        "label": "Zákon o DPH, § 71 – faktúra a doklad meniaci pôvodnú faktúru",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-71"
+      },
+      {
+        "label": "Zákon o DPH, § 73 – lehota pri oprave základu dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-73"
+      },
+      {
+        "label": "Zákon o DPH, § 74 – obsah faktúry",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-74"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kontrola povinných údajov na faktúre",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "foreign-customers-reverse-charge": {
+    "name": "Zahraniční odberatelia a prenesenie daňovej povinnosti",
+    "title": "Zahraniční odberatelia: služby a tovar do EU a základy OSS",
+    "lead": "Kedy sa na faktúre do zahraničia neúčtuje slovenská DPH, čo tam napísať namiesto nej a ako funguje režim OSS pri predaji spotrebiteľom v iných štátoch EU.",
+    "metaDescription": "Vyučovacia hodina: miesto dodania služby (§ 15 zákona o DPH), „prenesenie daňovej povinnosti“ (§ 74), dodanie tovaru do EU (§ 43), súhrnný výkaz (§ 80), základy OSS (§ 68b).",
+    "goals": [
+      "Určiť miesto dodania služby pre podnikateľa z iného štátu EU.",
+      "Vystaviť faktúru s prenesením daňovej povinnosti a správnym textom.",
+      "Vysvetliť, kedy sa podáva súhrnný výkaz.",
+      "Popísať, na čo slúži režim OSS."
+    ],
+    "teacherNotes": [
+      "Základné pravidlo pri službách medzi podnikateľmi: miestom dodania je sídlo príjemcu (§ 15 ods. 1). Daň platí odberateľ vo svojom štáte a na faktúre je text „prenesenie daňovej povinnosti“ (§ 74 ods. 1 písm. k). Takáto faktúra nemusí obsahovať základ, sadzbu a výšku dane, ak sa dá základ určiť z množstva a druhu (§ 74 ods. 2).",
+      "Dodanie tovaru platiteľovi z iného štátu EU je oslobodené (§ 43), ak sú splnené podmienky. Na faktúre sa uvedie odkaz na oslobodenie alebo text „dodanie je oslobodené od dane“ (§ 74 ods. 1 písm. h). Faktúra sa vyhotoví do 15 dní od konca mesiaca (§ 73 ods. 1 písm. c) a dodanie sa uvedie v súhrnnom výkaze (§ 80).",
+      "OSS (osobitná úprava, § 68b) sa týka najmä predaja tovaru na diaľku a služieb spotrebiteľom v iných štátoch EU. Aplikácia OSS nepodporuje, preto stačí pojem vysvetliť a príklad vypočítať na papieri.",
+      "Demo firma fakturuje v eurách, faktúry pre českých a britských odberateľov má aj v CZK a GBP. Výška dane sa na faktúre vždy uvádza v eurách (§ 74 ods. 1 písm. i)."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka: firma z Bratislavy fakturuje firme z Viedne za sprievodcovské služby v Tatrách. Účtuje slovenskú DPH? (Pozor, chyták: služby spojené s nehnuteľnosťou alebo podujatím môžu mať iné miesto dodania.)"
+      },
+      {
+        "min": "5–17",
+        "text": "Výklad: miesto dodania, prenesenie daňovej povinnosti, tovar do EU, súhrnný výkaz."
+      },
+      {
+        "min": "17–35",
+        "text": "Úloha v deme: faktúra do Rakúska."
+      },
+      {
+        "min": "35–42",
+        "text": "OSS na príklade a pracovný list."
+      },
+      {
+        "min": "42–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Miesto dodania služby",
+        "body": "Pri službe pre zdaniteľnú osobu je miestom dodania miesto, kde má príjemca sídlo alebo miesto podnikania (§ 15 ods. 1). Slovenská DPH sa vtedy neúčtuje."
+      },
+      {
+        "title": "Prenesenie daňovej povinnosti",
+        "body": "Ak je osobou povinnou platiť daň príjemca, faktúra obsahuje text „prenesenie daňovej povinnosti“ (§ 74 ods. 1 písm. k). Pri dodaní do iného členského štátu nemusí obsahovať základ, sadzbu a výšku dane, ak sa dá základ určiť (§ 74 ods. 2)."
+      },
+      {
+        "title": "Tovar do EU",
+        "body": "Dodanie tovaru osobe identifikovanej pre daň v inom členskom štáte, ktorý je tam odoslaný alebo prepravený, je oslobodené od dane (§ 43). Platiteľ ho uvedie v súhrnnom výkaze (§ 80)."
+      },
+      {
+        "title": "OSS",
+        "body": "Pri predaji tovaru na diaľku alebo služieb spotrebiteľom v iných štátoch EU sa platí DPH štátu zákazníka. Osobitná úprava (§ 68b) umožní túto daň priznať a zaplatiť na Slovensku bez registrácie v každom štáte."
+      }
+    ],
+    "task": {
+      "intro": "Horský potok s.r.o. pripravil pre rakúsku cestovnú kanceláriu Bergquelle Reisen GmbH návrh programu zájazdu (služba vykonaná v kancelárii v Bratislave).",
+      "steps": [
+        "Otvorte Kontakty a nájdite Bergquelle Reisen GmbH. Overte stav IČ DPH a zapíšte si ho.",
+        "Otvorte Faktúry a nájdite existujúcu faktúru pre Bergquelle Reisen. Nájdite na nej text o prenesení daňovej povinnosti a IČ DPH oboch strán.",
+        "Kliknite na Nová faktúra, vyberte Bergquelle Reisen GmbH. Pridajte položku Návrh programu zájazdu, 1 ks, 900 eur. Zapnite Prenesenie daňovej povinnosti. Čo sa stalo so sadzbou DPH na riadku?",
+        "Uložte koncept a stiahnite PDF. Nájdite na ňom text pre zákazníka.",
+        "Otvorte faktúru v CZK pre Ateliér Sedmikráska. V akej mene je na nej uvedená daň alebo údaj o prenesení?",
+        "Na papieri: slovenský e-shop predá českému spotrebiteľovi tovar za 100 eur bez dane. Predpokladajte, že jej predaje spotrebiteľom do iných štátov EU za rok presiahli 10 000 eur, takže sa uplatní DPH štátu zákazníka. Vypočítajte DPH s českou základnou sadzbou 21 % a napíšte, ako by ju firma v režime OSS zaplatila."
+      ],
+      "check": "Hotovo je, keď má žiak koncept faktúry s prenesením daňovej povinnosti, vie ukázať text „prenesenie daňovej povinnosti“ a má na papieri vypočítaný príklad OSS (21 eur DPH, platba cez OSS na Slovensku)."
+    },
+    "worksheet": [
+      {
+        "q": "Slovenská firma (platiteľ) fakturuje nemeckej firme za preklad. Kde je miesto dodania a kto platí daň?",
+        "a": "V Nemecku, v sídle príjemcu (§ 15 ods. 1). Daň platí nemecký odberateľ; na faktúre je „prenesenie daňovej povinnosti“ (§ 74 ods. 1 písm. k)."
+      },
+      {
+        "q": "Čo takáto faktúra nemusí obsahovať?",
+        "a": "Základ dane, sadzbu a výšku dane, ak sa dá základ určiť z množstva alebo rozsahu a druhu služby (§ 74 ods. 2)."
+      },
+      {
+        "q": "Slovenská firma predá stroj firme v Poľsku a dovezie ho tam. Aký je režim?",
+        "a": "Oslobodené dodanie tovaru do iného členského štátu (§ 43), ak má odberateľ platné IČ DPH a tovar bol prepravený. Na faktúre je odkaz na oslobodenie alebo text „dodanie je oslobodené od dane“; dodanie sa uvedie v súhrnnom výkaze (§ 80)."
+      },
+      {
+        "q": "Do kedy sa vyhotoví faktúra za dodanie tovaru do EU uskutočnené 10. mája?",
+        "a": "Do 15 dní od konca mesiaca, teda do 15. júna (§ 73 ods. 1 písm. c)."
+      },
+      {
+        "q": "V akej mene sa uvádza výška dane na faktúre v CZK?",
+        "a": "V eurách (§ 74 ods. 1 písm. i)."
+      },
+      {
+        "q": "Čo je OSS jednou vetou?",
+        "a": "Režim, v ktorom firma prizná a zaplatí DPH z predaja spotrebiteľom v iných štátoch EU v jednom priznaní na Slovensku namiesto registrácie v každom štáte."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 15 – miesto dodania služby",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-15"
+      },
+      {
+        "label": "Zákon o DPH, § 43 – oslobodenie pri dodaní tovaru do iného členského štátu",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-43"
+      },
+      {
+        "label": "Zákon o DPH, § 74 – „prenesenie daňovej povinnosti“ a daň v eurách",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-74"
+      },
+      {
+        "label": "Zákon o DPH, § 80 – súhrnný výkaz",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-80"
+      },
+      {
+        "label": "Zákon o DPH, § 68b – osobitná úprava (OSS)",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-68b"
+      },
+      {
+        "label": "VIES – overenie IČ DPH v EU",
+        "href": "https://ec.europa.eu/taxation_customs/vies/"
+      },
+      {
+        "label": "Európska komisia – portál OSS",
+        "href": "https://vat-one-stop-shop.ec.europa.eu/"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Faktúry v cudzej mene",
+        "href": "/features/foreign-currency-invoices"
+      },
+      {
+        "label": "Dvojjazyčné faktúry",
+        "href": "/features/bilingual-invoices"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "payment-reminders-late-interest": {
+    "name": "Upomienky a úroky z omeškania",
+    "title": "Upomienky, úroky z omeškania a premlčanie",
+    "lead": "Faktúra je po splatnosti. Žiaci napíšu zdvorilú upomienku, vypočítajú úroky z omeškania podľa nariadenia vlády a zistia, ako dlho sa dá dlh vymáhať.",
+    "metaDescription": "Vyučovacia hodina: úroky z omeškania (§ 369 Obchodného zákonníka, nariadenie vlády 21/2013 Z. z.), paušálna náhrada 40 eur, premlčanie 4 roky (§ 397). Automatické upomienky v deme.",
+    "goals": [
+      "Rozpoznať faktúru po splatnosti a poslať upomienku.",
+      "Vypočítať zákonné úroky z omeškania medzi podnikateľmi.",
+      "Vysvetliť nárok na paušálnu náhradu nákladov spojených s uplatnením pohľadávky.",
+      "Poznať všeobecnú premlčaciu dobu v obchodných vzťahoch."
+    ],
+    "teacherNotes": [
+      "Ak si strany výšku úrokov nedohodli, platia sa v sadzbe podľa nariadenia vlády (§ 369 ods. 2 Obchodného zákonníka). Nariadenie vlády č. 21/2013 Z. z.: základná úroková sadzba ECB platná k prvému dňu príslušného kalendárneho polroka zvýšená o 8 percentuálnych bodov (§ 1 ods. 1). Aktuálnu sadzbu ECB nechajte žiakov dohľadať.",
+      "Veriteľ má navyše nárok na paušálnu náhradu nákladov spojených s uplatnením pohľadávky (§ 369c Obchodného zákonníka), ktorej výška je 40 eur (§ 2 nariadenia).",
+      "Aplikácia vie upomienky posielať aj automaticky, úroky z omeškania však nepočíta. Výpočet preto urobte na papieri. V triednom režime sa e-maily neodosielajú (Poslať upomienku skončí chybou), preto žiaci text upomienky píšu a ukazujú učiteľovi.",
+      "Všeobecná premlčacia doba v obchodných vzťahoch je štyri roky (§ 397 Obchodného zákonníka). V občianskoprávnych vzťahoch platia iné lehoty."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Hranie rolí: zavolajte zákazníkovi, ktorý nezaplatil. Čo mu poviete?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: omeškanie, úroky, paušálna náhrada, premlčanie."
+      },
+      {
+        "min": "15–30",
+        "text": "Úloha v deme: upomienka a nastavenie automatických upomienok."
+      },
+      {
+        "min": "30–42",
+        "text": "Výpočet úrokov na papieri."
+      },
+      {
+        "min": "42–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Omeškanie",
+        "body": "Ak je dlžník v omeškaní, veriteľ môže požadovať úroky z omeškania vo výške dohodnutej v zmluve, a to bez osobitného upozornenia (§ 369 ods. 1 Obchodného zákonníka)."
+      },
+      {
+        "title": "Výška úrokov",
+        "body": "Ak nie sú dohodnuté, platí sadzba podľa nariadenia vlády č. 21/2013 Z. z.: základná úroková sadzba ECB k prvému dňu kalendárneho polroka, v ktorom omeškanie nastalo, plus 8 percentuálnych bodov (§ 1 ods. 1)."
+      },
+      {
+        "title": "Výpočet",
+        "body": "Úrok = dlžná suma × ročná sadzba × počet dní omeškania / 365."
+      },
+      {
+        "title": "Paušálna náhrada a premlčanie",
+        "body": "Veriteľ má nárok na paušálnu náhradu 40 eur (§ 369c Obchodného zákonníka a § 2 nariadenia). Všeobecná premlčacia doba je štyri roky (§ 397 Obchodného zákonníka)."
+      }
+    ],
+    "task": {
+      "intro": "Horský potok s.r.o. má niekoľko faktúr po splatnosti. Napíšete upomienku a nastavíte automatiku.",
+      "steps": [
+        "Otvorte Faktúry a vyfiltrujte faktúry po splatnosti. Zapíšte si, koľko ich je a aká je ich celková suma.",
+        "Otvorte jednu z nich a zistite, koľko dní je po splatnosti a koľko upomienok už odberateľ dostal. Napíšte text upomienky na papier a ukážte ho učiteľovi. Tlačidlo Poslať upomienku nestláčajte: triedna firma e-maily neodosiela.",
+        "Otvorte Nastavenia, sekciu Faktúry, a nájdite Upomienky. Zistite, ako sa nastavuje automatické odosielanie, počet dní medzi upomienkami a ich maximálny počet. Nastavte vlastné hodnoty a zapíšte si, prečo ste ich zvolili.",
+        "V nastaveniach nájdite e-mailovú šablónu Upomienka odberateľovi a upravte ju tak, aby obsahovala číslo faktúry a sumu.",
+        "Na papieri vypočítajte úroky z omeškania pri vybranej faktúre: dohľadajte základnú úrokovú sadzbu ECB k prvému dňu polroka, pripočítajte 8 percentuálnych bodov a vypočítajte úrok za skutočný počet dní omeškania."
+      ],
+      "check": "Hotovo je, keď má žiak upomienku napísanú a skontrolovanú učiteľom, vlastné nastavenie automatických upomienok so zdôvodnením a správne vypočítané úroky z omeškania vrátane uvedenej sadzby ECB a jej zdroja."
+    },
+    "worksheet": [
+      {
+        "q": "Faktúra na 2 000 € bola splatná 31. marca, zaplatená 30. apríla (30 dní omeškania). Sadzba ECB k 1. januáru bola pre účely príkladu 2,15 %. Aké sú úroky z omeškania?",
+        "a": "Sadzba 2,15 + 8 = 10,15 % ročne. Úrok = 2 000 × 0,1015 × 30 / 365 = 16,68 €."
+      },
+      {
+        "q": "Na čo má veriteľ nárok okrem úrokov?",
+        "a": "Na paušálnu náhradu nákladov spojených s uplatnením pohľadávky 40 eur (§ 369c Obchodného zákonníka, § 2 nariadenia vlády 21/2013 Z. z.)."
+      },
+      {
+        "q": "Omeškanie začalo v auguste a trvá do novembra. Ktorú sadzbu ECB použijete?",
+        "a": "Sadzbu platnú k 1. júlu, teda k prvému dňu polroka, v ktorom omeškanie nastalo (§ 1 ods. 1 nariadenia)."
+      },
+      {
+        "q": "Aká je všeobecná premlčacia doba v obchodných vzťahoch?",
+        "a": "Štyri roky (§ 397 Obchodného zákonníka)."
+      },
+      {
+        "q": "Prečo nastaviť maximálny počet automatických upomienok?",
+        "a": "Aby zákazník nedostával nekonečne veľa e-mailov; po poslednej upomienke má zmysel prejsť na telefón, osobné rokovanie alebo vymáhanie."
+      }
+    ],
+    "law": [
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 369 – úroky z omeškania",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-369"
+      },
+      {
+        "label": "Obchodný zákonník, § 369c – paušálna náhrada nákladov",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-369c"
+      },
+      {
+        "label": "Obchodný zákonník, § 397 – premlčacia doba",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-397"
+      },
+      {
+        "label": "Nariadenie vlády č. 21/2013 Z. z. – výška úrokov a paušálnej náhrady",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2013/21/"
+      },
+      {
+        "label": "Európska centrálna banka – kľúčové úrokové sadzby",
+        "href": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Automatické upomienky",
+        "href": "/features/payment-reminders"
+      },
+      {
+        "label": "Kalkulačka dátumu splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Čiastočné platby",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "what-is-an-invoice": {
+    "name": "Čo je faktúra",
+    "title": "Čo je faktúra a prečo sa vystavuje",
+    "lead": "Žiaci zistia, na čo faktúra slúži, kto ju vystavuje a komu, a na skutočnej faktúre v deme nájdu najdôležitejšie údaje.",
+    "metaDescription": "Lekcia finančnej gramotnosti pre ZŠ: čo je faktúra, dodávateľ a odberateľ, suma, dátum vyhotovenia a splatnosť. Úloha v deme bez registrácie a pracovný list s riešením.",
+    "goals": [
+      "Vlastnými slovami vysvetliť, čo je faktúra.",
+      "Rozlíšiť dodávateľa a odberateľa.",
+      "Nájsť na faktúre číslo, sumu, dátum vyhotovenia a splatnosť.",
+      "Vedieť, prečo sa faktúry odkladajú."
+    ],
+    "teacherNotes": [
+      "Lekcia je pre 8. a 9. ročník a hodí sa do finančnej gramotnosti. Nejde o dane ani účtovníctvo, ale o to, aby žiaci faktúru spoznali, keď ju uvidia doma alebo v prvej práci.",
+      "Paragrafy žiakom nediktujte. Pre vás: údaje, ktoré podnikateľ uvádza na obchodných dokumentoch (obchodné meno, sídlo, IČO, zápis v registri), určuje § 3a Obchodného zákonníka, náležitosti účtovného dokladu § 10 zákona o účtovníctve.",
+      "Demo je firma Horský potok s.r.o. z Bratislavy. Je platiteľom DPH, preto na faktúrach uvidíte aj daň. Žiakom stačí povedať, že DPH je daň, ktorú firma pripočíta k cene a odvedie štátu.",
+      "Rozdiel, ktorý žiaci poznajú: pokladničný doklad dostanú v obchode hneď pri platení. Faktúra zvyčajne príde, keď sa platí neskôr, najčastejšie prevodom z účtu."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka do triedy: videli ste doma faktúru? Za čo to bolo (elektrina, internet, telefón)?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: kto predáva, kto kupuje, čo je na faktúre a prečo sa nepíše len tak na papierik."
+      },
+      {
+        "min": "15–33",
+        "text": "Úloha v deme: nájsť údaje na jednej faktúre."
+      },
+      {
+        "min": "33–42",
+        "text": "Pracovný list."
+      },
+      {
+        "min": "42–45",
+        "text": "Zhrnutie: jednou vetou, čo je faktúra."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Faktúra",
+        "body": "Písomný doklad, ktorým predávajúci hovorí kupujúcemu: toto som ti dodal, toľko to stojí a do tohto dňa mi to zaplať."
+      },
+      {
+        "title": "Dodávateľ a odberateľ",
+        "body": "Dodávateľ tovar alebo službu predal a faktúru vystavuje. Odberateľ ju kúpil, faktúru dostane a zaplatí."
+      },
+      {
+        "title": "Čo na faktúre nájdem",
+        "body": "Číslo faktúry, kto ju vystavil a komu, čo sa predalo, koľko to stojí, kedy bola vyhotovená a dokedy sa má zaplatiť (dátum splatnosti). Podnikateľ na ňu píše aj svoje IČO."
+      },
+      {
+        "title": "Prečo faktúry odkladať",
+        "body": "Faktúra dokazuje, že obchod prebehol a za koľko. Podnikateľ ju potrebuje na účtovníctvo a dane, kupujúci napríklad pri reklamácii."
+      }
+    ],
+    "task": {
+      "intro": "V deme ste firma Horský potok s.r.o. Pozriete sa na faktúry, ktoré už vystavila.",
+      "steps": [
+        "Otvorte Faktúry. Koľko faktúr v zozname vidíte?",
+        "Otvorte jednu zaplatenú faktúru. Odpíšte si číslo faktúry, dodávateľa, odberateľa a celkovú sumu.",
+        "Nájdite dátum vyhotovenia a dátum splatnosti. Koľko dní mal odberateľ na zaplatenie?",
+        "Pozrite sa na riadky faktúry. Čo presne firma predala?",
+        "Nájdite na faktúre sumu bez DPH, samotnú DPH a sumu na úhradu. Ktorú z nich odberateľ zaplatí?"
+      ],
+      "check": "Hotovo, keď žiak správne odpíše číslo faktúry, dodávateľa, odberateľa, sumu a oba dátumy a vlastnými slovami povie, na čo je faktúra."
+    },
+    "worksheet": [
+      {
+        "q": "Kto faktúru vystavuje: dodávateľ, alebo odberateľ?",
+        "a": "Dodávateľ, teda ten, kto niečo predal alebo urobil."
+      },
+      {
+        "q": "Rodina dostala faktúru za internet. Kto je dodávateľ a kto odberateľ?",
+        "a": "Dodávateľ je firma, ktorá internet poskytuje. Odberateľ je člen rodiny, na ktorého je zmluva."
+      },
+      {
+        "q": "Faktúra bola vyhotovená 1. marca a je splatná 15. marca. Koľko dní je na zaplatenie?",
+        "a": "14 dní."
+      },
+      {
+        "q": "Aký je rozdiel medzi pokladničným dokladom z obchodu a faktúrou?",
+        "a": "Pokladničný doklad dostaneme, keď platíme hneď na mieste. Faktúra príde a platí sa neskôr, zvyčajne prevodom."
+      },
+      {
+        "q": "Prečo faktúru nevyhodiť hneď po zaplatení?",
+        "a": "Dokazuje, čo a za koľko sa kúpilo, a hodí sa pri reklamácii. Podnikateľ ju navyše potrebuje na účtovníctvo a dane."
+      }
+    ],
+    "law": [
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 3a – údaje na obchodných dokumentoch",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-3a"
+      },
+      {
+        "label": "Zákon o účtovníctve č. 431/2002 Z. z., § 10 – účtovný doklad",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2002/431/#paragraf-10"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kontrola povinných údajov na faktúre",
+        "href": "/features/required-fields-check"
+      },
+      {
+        "label": "Kalkulačka dátumu splatnosti",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "first-invoice": {
+    "name": "Moja prvá faktúra",
+    "title": "Moja prvá faktúra: s DPH a bez nej",
+    "lead": "Žiaci vystavia prvú faktúru v deme: pridajú odberateľa, vyplnia položky a faktúru vystavia. Potom ju na papieri prepíšu tak, ako by ju vystavil živnostník, ktorý nie je platiteľom DPH.",
+    "metaDescription": "Lekcia pre ZŠ: prvá faktúra krok za krokom – odberateľ, položky, splatnosť, vystavenie – a rozdiel medzi platiteľom a neplatiteľom DPH. Úloha v deme bez registrácie a pracovný list s riešením.",
+    "goals": [
+      "Založiť nového odberateľa.",
+      "Vyplniť položky faktúry: čo, koľko kusov a za koľko.",
+      "Nastaviť splatnosť a faktúru vystaviť.",
+      "Vysvetliť, čím sa líši faktúra platiteľa a neplatiteľa DPH."
+    ],
+    "teacherNotes": [
+      "Slovenské demo je firma Horský potok s.r.o., ktorá je platiteľom DPH. Faktúra v deme preto bude s DPH 23 %. Neplatiteľ DPH, s ktorým začína väčšina živnostníkov, k cene daň nepripočítava; tento variant žiaci napíšu na papier.",
+      "Platiteľom sa podnikateľ stane, keď jeho obrat za najviac 12 predchádzajúcich po sebe idúcich kalendárnych mesiacov dosiahne 50 000 € (§ 4 zákona o DPH). Žiakom to stačí povedať jednou vetou.",
+      "Obchodné meno, sídlo, IČO a zápis v registri na faktúre vyžaduje § 3a Obchodného zákonníka. Aplikácia ich doplní z nastavení firmy.",
+      "V triednom režime sa faktúry nikam neposielajú e-mailom. Stačí faktúru vystaviť a pozrieť si ju na obrazovke."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Príbeh: grafička nakreslila logo pre novú kaviareň. Ako dostane zaplatené?"
+      },
+      {
+        "min": "5–12",
+        "text": "Výklad: odberateľ, položky, splatnosť, čo sa stane po vystavení."
+      },
+      {
+        "min": "12–30",
+        "text": "Úloha v deme: nový odberateľ a faktúra."
+      },
+      {
+        "min": "30–40",
+        "text": "Na papieri: tá istá faktúra od neplatiteľa DPH. Pracovný list."
+      },
+      {
+        "min": "40–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Platiteľ a neplatiteľ DPH",
+        "body": "Platiteľ k cene pripočíta daň z pridanej hodnoty a odvedie ju štátu. Neplatiteľ, najčastejšie začínajúci živnostník, daň nepripočítava a na faktúre má jednu cenu."
+      },
+      {
+        "title": "Odberateľ",
+        "body": "Komu faktúru vystavujete. Pri firme stačí zadať IČO a aplikácia doplní názov a adresu z registra."
+      },
+      {
+        "title": "Položka",
+        "body": "Jeden riadok faktúry: čo ste dodali, koľko toho bolo a cena za kus. Celkovú sumu vypočíta aplikácia."
+      },
+      {
+        "title": "Splatnosť",
+        "body": "Deň, do ktorého má odberateľ zaplatiť. Často to býva 14 dní od vyhotovenia."
+      },
+      {
+        "title": "Vystavenie",
+        "body": "Kým je faktúra koncept, môžete ju ľubovoľne meniť. Vystavením sa z nej stane hotová faktúra a chyby sa potom už neopravujú prepísaním, ale novým dokladom."
+      }
+    ],
+    "task": {
+      "intro": "Ste Horský potok s.r.o. Pre novú firmu ste navrhli logo a zariadili tlač vizitiek.",
+      "steps": [
+        "Otvorte Kontakty a kliknite na Nový kontakt. Založte odberateľa: firmu podľa IČO, ktoré napíše učiteľ na tabuľu, alebo vymyslenú firmu s ručne vyplnenými údajmi.",
+        "Otvorte Faktúry a vytvorte novú faktúru. Ako odberateľa vyberte svoj nový kontakt.",
+        "Pridajte položku „Návrh loga“: množstvo 1, cena 300 € bez DPH. Pridajte druhú položku „Tlač vizitiek“: 200 kusov po 0,15 €. Pri oboch nechajte sadzbu DPH 23 %.",
+        "Skontrolujte, že základ dane je 330 €, DPH 75,90 € a suma na úhradu 405,90 €, a že splatnosť je 14 dní od dnes.",
+        "Faktúru vystavte. V náhľade nájdite IČO a IČ DPH firmy, odberateľa, číslo faktúry a rekapituláciu DPH.",
+        "Na papier napíšte tú istú faktúru tak, ako by ju vystavila živnostníčka, ktorá nie je platiteľkou DPH. Čo na nej nebude a koľko zaplatí odberateľ?"
+      ],
+      "check": "Hotovo, keď má žiak vystavenú faktúru na 405,90 € pre nového odberateľa so správnou splatnosťou a na papieri správne napísanú faktúru neplatiteľa na 330 €."
+    },
+    "worksheet": [
+      {
+        "q": "Logo stojí 300 €. Koľko zaplatí odberateľ, ak faktúru vystaví neplatiteľ DPH, a koľko pri platiteľovi s DPH 23 %?",
+        "a": "Neplatiteľ: 300 €. Platiteľ: 300 € + 69 € DPH = 369 €."
+      },
+      {
+        "q": "Položka: 200 vizitiek po 0,15 €. Koľko je to spolu bez DPH?",
+        "a": "30 €."
+      },
+      {
+        "q": "Čo nebude na faktúre neplatiteľa DPH?",
+        "a": "Sadzba a suma DPH ani rekapitulácia dane. Neuvedie ani IČ DPH, pretože ho nemá."
+      },
+      {
+        "q": "Faktúra je vyhotovená 10. mája so splatnosťou 14 dní. Dokedy sa má zaplatiť?",
+        "a": "Do 24. mája."
+      },
+      {
+        "q": "Prečo sa pri firme vypĺňa IČO?",
+        "a": "Podľa IČO sa firma jednoznačne nájde v registri, aj keby mala rovnaký názov ako iná firma."
+      }
+    ],
+    "law": [
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 3a – údaje na obchodných dokumentoch",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-3a"
+      },
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 4 – kedy sa podnikateľ stáva platiteľom",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-4"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Vyhľadanie firiem v registroch",
+        "href": "/features/company-lookup-ares"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      },
+      {
+        "label": "Kalkulačka dátumu splatnosti",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "paid-or-unpaid": {
+    "name": "Zaplatené, alebo nie?",
+    "title": "Zaplatené, alebo nie? Dátum splatnosti v praxi",
+    "lead": "Žiaci sa naučia rozoznať, ktoré faktúry sú zaplatené, ktoré čakajú a ktoré sú po splatnosti, a jednu faktúru sami označia ako zaplatenú.",
+    "metaDescription": "Lekcia pre ZŠ: dátum splatnosti, zaplatená, nezaplatená a čiastočne zaplatená faktúra, faktúra po splatnosti. Úloha v deme bez registrácie a pracovný list s počítaním dní.",
+    "goals": [
+      "Vysvetliť, čo je dátum splatnosti.",
+      "Rozlíšiť faktúru zaplatenú, nezaplatenú a po splatnosti.",
+      "Vypočítať, koľko dní je faktúra po splatnosti.",
+      "Zaznamenať prijatú platbu v aplikácii."
+    ],
+    "teacherNotes": [
+      "Jedno pravidlo pre žiakov: keď faktúra nie je zaplatená do dátumu splatnosti, je po splatnosti a odberateľ je v omeškaní. Dodávateľ potom môže žiadať úroky z omeškania (§ 369 Obchodného zákonníka); podrobnosti rieši lekcia o upomienke.",
+      "Splatnosť si strany dohodnú. Medzi podnikateľmi zákon spravidla obmedzuje dohodnutú lehotu splatnosti na 60 dní (§ 340a Obchodného zákonníka). Žiakom stačí, že splatnosť má byť na faktúre vždy napísaná.",
+      "V deme sú faktúry zaplatené, nezaplatené, po splatnosti aj jedna zaplatená len čiastočne. Žiaci ich rozlíšia podľa stavu v zozname.",
+      "Označiť faktúru ako zaplatenú sa v praxi smie, až keď peniaze naozaj prídu. V triede to hráte: učiteľ oznámi, ktorá platba „práve prišla“."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Otázka: požičal si kamarátovi 5 €, má ich vrátiť do piatku. Je pondelok a nič. Čo teraz?"
+      },
+      {
+        "min": "5–15",
+        "text": "Výklad: dátum splatnosti, stavy faktúry, po splatnosti, čiastočná platba."
+      },
+      {
+        "min": "15–33",
+        "text": "Úloha v deme: zoznam faktúr, filter, označenie platby."
+      },
+      {
+        "min": "33–42",
+        "text": "Pracovný list: počítanie dní."
+      },
+      {
+        "min": "42–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Dátum splatnosti",
+        "body": "Posledný deň, keď má odberateľ zaplatiť. Je napísaný na faktúre."
+      },
+      {
+        "title": "Zaplatená faktúra",
+        "body": "Peniaze prišli v plnej výške. Faktúra je vybavená."
+      },
+      {
+        "title": "Nezaplatená faktúra",
+        "body": "Peniaze ešte neprišli, ale splatnosť ešte neuplynula. Nič sa nedeje, čaká sa."
+      },
+      {
+        "title": "Po splatnosti",
+        "body": "Splatnosť uplynula a peniaze neprišli, alebo prišla len časť. Zvyšok je stále dlh a dodávateľ by sa mal ozvať."
+      }
+    ],
+    "task": {
+      "intro": "Ste Horský potok s.r.o. a chcete vedieť, kto vám ešte dlží.",
+      "steps": [
+        "Otvorte Faktúry. Pri každej faktúre nájdite jej stav. Koľko je zaplatených a koľko nezaplatených?",
+        "Vo filtri vyberte Po splatnosti. Ktoré faktúry to sú a koľko spolu dlžia?",
+        "Nájdite faktúru, ktorá je zaplatená len čiastočne. Koľko ešte zostáva doplatiť?",
+        "Učiteľ oznámi, že jedna nezaplatená faktúra práve prišla na účet. Otvorte ju a kliknite na Označiť ako zaplatené, Zaplatené dnes.",
+        "Vráťte sa do zoznamu. Ako sa zmenil stav faktúry a koľko vám teraz odberatelia dlžia spolu?"
+      ],
+      "check": "Hotovo, keď žiak vymenuje faktúry po splatnosti a ich celkovú sumu, nájde čiastočne zaplatenú faktúru a jednu faktúru označí ako zaplatenú."
+    },
+    "worksheet": [
+      {
+        "q": "Faktúra je splatná 20. apríla. Dnes je 18. apríla a peniaze neprišli. Je po splatnosti?",
+        "a": "Nie. Splatnosť ešte neuplynula, faktúra je nezaplatená, ale v poriadku."
+      },
+      {
+        "q": "Faktúra bola splatná 10. júna, dnes je 25. júna. Koľko dní je po splatnosti?",
+        "a": "15 dní."
+      },
+      {
+        "q": "Faktúra znie na 400 € a odberateľ poslal 300 €. Je zaplatená?",
+        "a": "Len čiastočne. Zostáva doplatiť 100 €."
+      },
+      {
+        "q": "Prečo sa faktúra označí ako zaplatená až po príchode peňazí, a nie po sľube?",
+        "a": "Sľub nie je platba. Kým peniaze nie sú na účte, dlh trvá."
+      },
+      {
+        "q": "Faktúra je vyhotovená 1. septembra so splatnosťou 30 dní. Dokedy sa má zaplatiť?",
+        "a": "Do 1. októbra (september má 30 dní)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 340a – lehota splatnosti",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-340a"
+      },
+      {
+        "label": "Obchodný zákonník, § 369 – úroky z omeškania",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-369"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Kalkulačka dátumu splatnosti",
+        "href": "/calculators/due-date"
+      },
+      {
+        "label": "Čiastočné platby",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "simple-reminder": {
+    "name": "Jednoduchá upomienka",
+    "title": "Jednoduchá upomienka: ako si slušne povedať o peniaze",
+    "lead": "Odberateľ nezaplatil. Žiaci napíšu krátku a zdvorilú upomienku, v ktorej nechýba nič podstatné, a porovnajú ju so šablónou v aplikácii.",
+    "metaDescription": "Lekcia pre ZŠ: čo je upomienka, čo v nej nesmie chýbať a aký má mať tón. Úloha v deme bez registrácie, písanie upomienky a pracovný list s riešením.",
+    "goals": [
+      "Vysvetliť, na čo je upomienka.",
+      "Napísať zdvorilú upomienku so všetkými dôležitými údajmi.",
+      "Rozlíšiť zdvorilý a nevhodný tón.",
+      "Vedieť, čo môže nasledovať, keď dlžník neplatí ďalej."
+    ],
+    "teacherNotes": [
+      "Upomienka nie je povinná a zákon neurčuje, ako má vyzerať. Je to slušné pripomenutie; často ide len o zabudnutie alebo chybu v platbe.",
+      "Medzi podnikateľmi môže dodávateľ za omeškanie žiadať úroky (§ 369 Obchodného zákonníka) a paušálnu náhradu nákladov spojených s uplatnením pohľadávky 40 € (§ 369c Obchodného zákonníka). Žiakom stačí vedieť, že neskoré platenie sa môže predražiť. Výpočet úrokov je v lekcii pre stredné školy.",
+      "Upomienku žiaci píšu na papier. V deme ju neodosielajú; v triednom režime sa e-maily nikam neposielajú.",
+      "Dobrá upomienka má šesť údajov: kto píše, číslo faktúry, dlžnú sumu, pôvodnú splatnosť, ako zaplatiť a nový termín. Bez vyhrážok."
+    ],
+    "timeline": [
+      {
+        "min": "0–5",
+        "text": "Dve ukážky upomienky na projektore: jedna zdvorilá, druhá útočná. Na ktorú by ste skôr zaplatili?"
+      },
+      {
+        "min": "5–12",
+        "text": "Výklad: čo upomienka obsahuje a aký má mať tón."
+      },
+      {
+        "min": "12–25",
+        "text": "V deme: nájsť faktúru po splatnosti a prečítať si šablónu upomienky."
+      },
+      {
+        "min": "25–40",
+        "text": "Žiaci píšu vlastnú upomienku a vo dvojiciach si ju opravia."
+      },
+      {
+        "min": "40–45",
+        "text": "Zhrnutie: čo robiť, keď nepomôže ani upomienka."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Upomienka",
+        "body": "Krátka správa odberateľovi, že faktúra je po splatnosti a ešte nebola zaplatená."
+      },
+      {
+        "title": "Čo v nej nesmie chýbať",
+        "body": "Číslo faktúry, dlžná suma, pôvodný dátum splatnosti, číslo účtu alebo iný spôsob platby a nový termín, dokedy zaplatiť."
+      },
+      {
+        "title": "Tón",
+        "body": "Zdvorilo a vecne. Odberateľ mohol zabudnúť alebo poslať platbu zle. Vyhrážky a urážky vzťah pokazia a k peniazom nepomôžu."
+      },
+      {
+        "title": "Keď nepomôže",
+        "body": "Nasleduje telefonát, druhá upomienka, prípadne dohoda o splátkach a nakoniec vymáhanie. Za neskoré platenie si dodávateľ môže povedať o úroky."
+      }
+    ],
+    "task": {
+      "intro": "Ste Horský potok s.r.o. Jedna vaša faktúra je po splatnosti a chcete odberateľovi pripomenúť, že má zaplatiť.",
+      "steps": [
+        "Otvorte Faktúry a vyfiltrujte Po splatnosti. Vyberte jednu faktúru a odpíšte si číslo, odberateľa, sumu a dátum splatnosti.",
+        "Vypočítajte, koľko dní je faktúra po splatnosti.",
+        "Otvorte Nastavenia, sekciu E-maily, a prečítajte si šablónu upomienky. Ktoré údaje do nej aplikácia dopĺňa sama?",
+        "Na papier napíšte vlastnú upomienku: oslovenie, číslo faktúry, suma, pôvodná splatnosť, číslo účtu, nový termín (napríklad o 7 dní) a podpis.",
+        "Vymeňte si upomienku so susedom. Chýba v nej niečo? Je zdvorilá?"
+      ],
+      "check": "Hotovo, keď má žiak napísanú zdvorilú upomienku so všetkými šiestimi údajmi a vie povedať, čo urobí, keď odberateľ nezaplatí ani potom."
+    },
+    "worksheet": [
+      {
+        "q": "Čo znamená, že faktúra je po splatnosti?",
+        "a": "Uplynul deň splatnosti a faktúra stále nie je zaplatená."
+      },
+      {
+        "q": "Ktoré údaje musí upomienka obsahovať, aby odberateľ vedel, čo a ako zaplatiť?",
+        "a": "Číslo faktúry, sumu, pôvodnú splatnosť, platobné údaje a nový termín."
+      },
+      {
+        "q": "Je veta „Okamžite zaplaťte, inak uvidíte!“ vhodná? Prečo?",
+        "a": "Nie je. Je vyhrážajúca, zhorší vzťah so zákazníkom a nič nevysvetľuje."
+      },
+      {
+        "q": "Upomienka nepomohla. Čo môže dodávateľ urobiť ďalej?",
+        "a": "Zavolať, poslať druhú upomienku, dohodnúť splátky a nakoniec dlh vymáhať."
+      },
+      {
+        "q": "Dostane dodávateľ za neskorú platbu niečo navyše?",
+        "a": "Medzi podnikateľmi môže žiadať úroky z omeškania a paušálnu náhradu nákladov 40 €."
+      }
+    ],
+    "law": [
+      {
+        "label": "Obchodný zákonník č. 513/1991 Zb., § 369 – úroky z omeškania",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-369"
+      },
+      {
+        "label": "Obchodný zákonník, § 369c – paušálna náhrada nákladov",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/#paragraf-369c"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Automatické upomienky",
+        "href": "/features/payment-reminders"
+      },
+      {
+        "label": "Kalkulačka dátumu splatnosti",
+        "href": "/calculators/due-date"
+      }
+    ]
+  },
+  "vat-return-control-statement": {
+    "name": "Daňové priznanie a kontrolný výkaz",
+    "title": "Daňové priznanie k DPH a kontrolný výkaz: z dokladov do formulára",
+    "lead": "Študenti z vydaných a prijatých faktúr jedného mesiaca zostavia na papieri daňové priznanie k DPH, roztriedia doklady do častí kontrolného výkazu a zistia, čo hrozí za oneskorené podanie.",
+    "metaDescription": "Lekcia pre VŠ a kurzy: zdaňovacie obdobie, lehoty, výpočet vlastnej daňovej povinnosti, časti kontrolného výkazu a pokuty podľa § 78a zákona o DPH. Úloha v deme a pracovný list s riešením.",
+    "goals": [
+      "Určiť zdaňovacie obdobie platiteľa a lehotu na podanie priznania a kontrolného výkazu.",
+      "Vypočítať daň na výstupe, odpočet a vlastnú daňovú povinnosť.",
+      "Zaradiť doklad do správnej časti kontrolného výkazu.",
+      "Vysvetliť rozdiel medzi opravným a dodatočným kontrolným výkazom."
+    ],
+    "teacherNotes": [
+      "Zdaňovacím obdobím je kalendárny mesiac (§ 77 ods. 1 zákona o DPH). Štvrťrok si môže zvoliť platiteľ, od ktorého registrácie uplynulo 12 mesiacov a ktorého obrat za predchádzajúcich 12 mesiacov bol nižší ako 100 000 €; zmenu oznámi do 25 dní po skončení obdobia (§ 77 ods. 2 a 3).",
+      "Priznanie sa podáva a daň platí do 25 dní po skončení zdaňovacieho obdobia (§ 78). Kontrolný výkaz sa podáva elektronicky za každé obdobie, za ktoré sa podáva priznanie, v tej istej lehote (§ 78a ods. 1).",
+      "Chybu pred uplynutím lehoty opraví opravný kontrolný výkaz, po lehote dodatočný kontrolný výkaz len so zmenenými údajmi (§ 78a ods. 12). Na výzvu správcu dane treba reagovať do 5 pracovných dní (ods. 13). Za porušenie hrozí pokuta do 10 000 €, pri opakovaní do 100 000 € (ods. 15).",
+      "Časti kontrolného výkazu: A.1 vydané faktúry, A.2 vydané faktúry v režime prenesenia daňovej povinnosti, B.1 prijaté plnenia, pri ktorých je platiteľ osobou povinnou platiť daň, B.2 prijaté faktúry s odpočtom od tuzemských platiteľov, B.3 zjednodušené faktúry a pokladničné doklady, C.1 opravy.",
+      "Demo je Horský potok s.r.o., mesačný platiteľ, sadzba 23 %. Export priznania sa v triednom režime nesťahuje, študenti počítajú na papieri.",
+      "V triednom režime založte na túto hodinu triedu s úrovňou Štandard alebo Pokročilé. V úrovni Základy sú Výdavky, Banka a Reporty vypnuté."
+    ],
+    "timeline": [
+      {
+        "min": "0–8",
+        "text": "Výklad: zdaňovacie obdobie, lehoty, elektronické podanie."
+      },
+      {
+        "min": "8–15",
+        "text": "Štruktúra priznania a kontrolného výkazu na projektore."
+      },
+      {
+        "min": "15–35",
+        "text": "Úloha v deme: doklady za minulý mesiac, zápis prijatej faktúry, výpočet a triedenie do častí."
+      },
+      {
+        "min": "35–42",
+        "text": "Pracovný list: výpočet a lehoty."
+      },
+      {
+        "min": "42–45",
+        "text": "Zhrnutie: opravný a dodatočný kontrolný výkaz."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Zdaňovacie obdobie",
+        "body": "Mesiac, alebo za podmienok § 77 ods. 2 štvrťrok. Za každé obdobie platiteľ podá priznanie a zaplatí daň do 25 dní po jeho skončení."
+      },
+      {
+        "title": "Daň na výstupe a odpočet",
+        "body": "Daň z vydaných faktúr platiteľ odvedie, daň z prijatých faktúr si odpočíta. Kladný rozdiel je vlastná daňová povinnosť, záporný nadmerný odpočet."
+      },
+      {
+        "title": "Kontrolný výkaz",
+        "body": "Prehľad jednotlivých faktúr, z ktorých priznanie vychádza. Finančná správa podľa neho porovnáva údaje dodávateľov a odberateľov."
+      },
+      {
+        "title": "Časti",
+        "body": "A.1 vydané faktúry, B.2 prijaté faktúry od tuzemských platiteľov, B.1 prijaté plnenia s prenesením daňovej povinnosti, B.3 zjednodušené faktúry, C.1 opravy."
+      },
+      {
+        "title": "Kedy odpočítať",
+        "body": "Právo na odpočet treba podložiť faktúrou (§ 51 ods. 1). Uplatní sa najskôr za obdobie, v ktorom vzniklo, a najneskôr za posledné obdobie toho kalendárneho roka, ak faktúra príde do lehoty na podanie priznania; inak za obdobie, v ktorom faktúru platiteľ dostal (§ 51 ods. 2)."
+      }
+    ],
+    "task": {
+      "intro": "Ste účtovníčka firmy Horský potok s.r.o. a pripravujete podklady k priznaniu za minulý mesiac.",
+      "steps": [
+        "Otvorte Faktúry a vyfiltrujte vystavené faktúry s dátumom dodania v minulom mesiaci. Spíšte základ dane a DPH.",
+        "Otvorte Výdavky, kliknite na Nový výdavok a zapíšte prijatú faktúru: dodávateľ Kancelária Plus s.r.o., popis Prenájom zasadačky, suma s DPH 492 €, sadzba DPH 23 %, DUZP v minulom mesiaci, číslo dokladu FA-2026-118.",
+        "Spíšte DPH zo všetkých prijatých dokladov s dátumom dodania v minulom mesiaci. Doklad od rakúskej firmy Anmeldewerk Salzach GmbH si označte zvlášť.",
+        "Na papieri vypočítajte daň na výstupe, odpočet a vlastnú daňovú povinnosť.",
+        "Každý doklad zaraďte do časti kontrolného výkazu (A.1, B.1, B.2 alebo B.3) a zdôvodnite prečo.",
+        "Napíšte termín, dokedy musí firma priznanie aj kontrolný výkaz podať a daň zaplatiť."
+      ],
+      "check": "Hotovo, keď má študent zapísaný nový výdavok, správne vypočítanú vlastnú daňovú povinnosť za mesiac a každý doklad zaradený do správnej časti kontrolného výkazu so zdôvodnením."
+    },
+    "worksheet": [
+      {
+        "q": "Platiteľ má za august 2026 vydané faktúry so základom 10 000 € pri 23 % a prijaté s DPH 920 €. Aká je vlastná daňová povinnosť?",
+        "a": "Výstup 2 300 €, odpočet 920 €, vlastná daňová povinnosť 1 380 €."
+      },
+      {
+        "q": "Dokedy musí s.r.o. podať priznanie a kontrolný výkaz za august 2026?",
+        "a": "Do 25. septembra 2026, v tej istej lehote zaplatí aj daň."
+      },
+      {
+        "q": "Do ktorej časti kontrolného výkazu patrí prijatá faktúra od tuzemského platiteľa, z ktorej si firma odpočíta DPH?",
+        "a": "B.2."
+      },
+      {
+        "q": "Firma zistí chybu v kontrolnom výkaze 20. septembra, lehota je 25. septembra. Aký výkaz podá?",
+        "a": "Opravný kontrolný výkaz, pretože lehota ešte neuplynula. Po lehote by podala dodatočný kontrolný výkaz len so zmenenými údajmi."
+      },
+      {
+        "q": "Firma je registrovaná od marca 2026 a má malý obrat. Môže od januára 2027 podávať štvrťročne?",
+        "a": "Nie. Musí od registrácie uplynúť 12 mesiacov, najskôr teda po marci 2027, a obrat za 12 mesiacov musí byť nižší ako 100 000 €."
+      },
+      {
+        "q": "Čo hrozí, keď platiteľ nereaguje na výzvu k kontrolnému výkazu?",
+        "a": "Pokuta do 10 000 €, pri opakovaní do 100 000 €."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 77 – zdaňovacie obdobie",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-77"
+      },
+      {
+        "label": "Zákon o DPH, § 78 – daňové priznanie a platenie dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-78"
+      },
+      {
+        "label": "Zákon o DPH, § 78a – kontrolný výkaz",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-78a"
+      },
+      {
+        "label": "Zákon o DPH, § 51 – uplatnenie odpočítania dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-51"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Daňové priznanie k DPH a kontrolný výkaz",
+        "href": "/features/vat-returns-epo"
+      },
+      {
+        "label": "Kalkulačka DPH",
+        "href": "/calculators/vat"
+      }
+    ]
+  },
+  "bank-matching-expenses": {
+    "name": "Párovanie banky a výdavky",
+    "title": "Párovanie bankových platieb a evidencia výdavkov",
+    "lead": "Študenti prejdú bankové pohyby firmy, spárujú platby s faktúrami, rozhodnú, čo s nedoplatkom, platbou bez variabilného symbolu a poplatkom banky, a zapíšu prijatý doklad medzi výdavky.",
+    "metaDescription": "Lekcia pre VŠ a kurzy: párovanie platieb podľa variabilného symbolu, nedoplatky, platby bez VS, bankové poplatky a evidencia prijatých dokladov. Úloha v deme a pracovný list s riešením.",
+    "goals": [
+      "Spárovať prichádzajúcu platbu s faktúrou a vysvetliť, podľa čoho sa páruje.",
+      "Rozhodnúť, čo robiť s nedoplatkom, platbou bez VS a bankovým poplatkom.",
+      "Zapísať prijatý doklad medzi výdavky so správnym základom a DPH.",
+      "Vysvetliť, prečo a ako dlho sa doklady archivujú."
+    ],
+    "teacherNotes": [
+      "Bankové pohyby v deme sú pripravené: záloha 120 € od Jána Baláža prišla bez variabilného symbolu, poplatok banke −9,90 € je ignorovaný a niektoré faktúry sú uhradené len čiastočne. Každý z nich vedie k inej otázke.",
+      "Ignorovať poplatok pri párovaní neznamená, že zmizne z účtovníctva. Účtovník ho zaúčtuje z bankového výpisu ako náklad; len sa nepáruje so žiadnou faktúrou.",
+      "Odpočítanie DPH z prijatého dokladu vyžaduje faktúru podľa § 71 (§ 51 ods. 1 písm. a) zákona o DPH). Platiteľ uchováva faktúry 10 rokov nasledujúcich po roku, ktorého sa týkajú (§ 76). Účtovnú dokumentáciu účtovná jednotka uchováva 10 rokov po roku, ktorého sa týka (§ 35 zákona o účtovníctve).",
+      "V triednom režime nie je napojená skutočná banka. Pracuje sa s ukážkovými pohybmi a párovanie sa robí ručne.",
+      "V triednom režime založte na túto hodinu triedu s úrovňou Štandard alebo Pokročilé. V úrovni Základy sú Výdavky, Banka a Reporty vypnuté."
+    ],
+    "timeline": [
+      {
+        "min": "0–8",
+        "text": "Výklad: výpis, variabilný symbol, čo znamená spárovať."
+      },
+      {
+        "min": "8–28",
+        "text": "Úloha v deme: prejsť Banku a vyriešiť každý nespárovaný pohyb."
+      },
+      {
+        "min": "28–37",
+        "text": "Zápis prijatého dokladu medzi výdavky a kontrola v prehľade."
+      },
+      {
+        "min": "37–43",
+        "text": "Pracovný list."
+      },
+      {
+        "min": "43–45",
+        "text": "Zhrnutie."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Párovanie",
+        "body": "Priradenie bankového pohybu k faktúre. Aplikácia navrhuje podľa variabilného symbolu a sumy; po spárovaní sa faktúra označí ako zaplatená alebo čiastočne zaplatená."
+      },
+      {
+        "title": "Nedoplatok",
+        "body": "Prišlo menej, než znie faktúra. Faktúra zostane čiastočne uhradená a zvyšok sa upomína, ak nejde o dohodnutú zľavu, ktorú treba riadne zachytiť dokladom."
+      },
+      {
+        "title": "Platba bez VS",
+        "body": "Bez variabilného symbolu sa platba nedá spárovať automaticky. Podľa mena platiteľa a sumy sa dohľadá, ku ktorej faktúre alebo zálohe patrí, prípadne sa platiteľa opýtate."
+      },
+      {
+        "title": "Výdavok a prijatý doklad",
+        "body": "Každý nákup firmy sa zapisuje s dokladom: dodávateľ, dátum, suma, sadzba DPH a číslo dokladu. Platiteľ z neho uplatní odpočítanie DPH."
+      }
+    ],
+    "task": {
+      "intro": "Ste účtovníčka firmy Horský potok s.r.o. a na konci mesiaca kontrolujete banku a doklady.",
+      "steps": [
+        "Otvorte Banka. Koľko pohybov je na spárovanie? Prejdite ich jeden po druhom.",
+        "Pohyb, ktorý zodpovedá faktúre variabilným symbolom aj sumou, spárujte: kliknite na Spárovať a vyberte faktúru.",
+        "Nájdite čiastočne uhradenú faktúru. Koľko zostáva doplatiť a čo urobíte so zvyškom?",
+        "Nájdite platbu 120 € od Jána Baláža bez variabilného symbolu. Ku ktorej faktúre alebo zálohe podľa vás patrí? Napíšte, ako by ste to overili.",
+        "Nájdite ignorovaný poplatok −9,90 €. Prečo sa nepáruje s faktúrou a kde sa v účtovníctve objaví?",
+        "Otvorte Výdavky, kliknite na Nový výdavok a zapíšte doklad: dodávateľ Papiernictvo Pod Hradom, popis Kancelárske potreby, suma s DPH 61,50 €, sadzba DPH 23 %, dátum dnes, číslo dokladu 2026-0412. Koľko je základ a koľko DPH?",
+        "Nájdite v Reportoch náklady za tento mesiac a overte, že sa nový výdavok započítal."
+      ],
+      "check": "Hotovo, keď študent spáruje platby, pri nedoplatku, platbe bez VS a poplatku vie povedať, čo s nimi a prečo, a má zapísaný výdavok so základom 50 € a DPH 11,50 €."
+    },
+    "worksheet": [
+      {
+        "q": "Faktúra znie na 492 €, prišlo 442,80 €. Koľko je nedoplatok a v akom stave faktúra zostane?",
+        "a": "49,20 €. Faktúra je čiastočne uhradená, kým zvyšok nepríde."
+      },
+      {
+        "q": "Podľa čoho sa platba najčastejšie páruje s faktúrou?",
+        "a": "Podľa variabilného symbolu, ktorým býva číslo faktúry, a podľa sumy."
+      },
+      {
+        "q": "Doklad znie na 61,50 € vrátane DPH 23 %. Aký je základ a DPH?",
+        "a": "Základ 50 €, DPH 11,50 €."
+      },
+      {
+        "q": "Prišla platba bez variabilného symbolu. Čo urobíte?",
+        "a": "Podľa mena platiteľa, sumy a dátumu ju priradím k faktúre alebo zálohe; keď to nejde jednoznačne, opýtam sa platiteľa. Nehádam."
+      },
+      {
+        "q": "Ako dlho musí platiteľ uchovávať faktúry?",
+        "a": "10 rokov nasledujúcich po roku, ktorého sa týkajú (§ 76 zákona o DPH)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 51 – uplatnenie odpočítania dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-51"
+      },
+      {
+        "label": "Zákon o DPH, § 76 – uchovávanie faktúr",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-76"
+      },
+      {
+        "label": "Zákon o účtovníctve č. 431/2002 Z. z., § 10 – účtovný doklad",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2002/431/#paragraf-10"
+      },
+      {
+        "label": "Zákon o účtovníctve, § 35 – úschova účtovnej dokumentácie",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2002/431/#paragraf-35"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Párovanie platieb",
+        "href": "/features/payment-matching"
+      },
+      {
+        "label": "Evidencia výdavkov",
+        "href": "/features/expense-tracking"
+      },
+      {
+        "label": "Čiastočné platby",
+        "href": "/features/partial-payments"
+      }
+    ]
+  },
+  "working-with-accountant": {
+    "name": "Spolupráca s účtovníčkou",
+    "title": "Spolupráca s účtovníčkou: mesačná uzávierka vo dvojici",
+    "lead": "Študenti vo dvojiciach hrajú majiteľa firmy a jej účtovníčku. Prejdú mesiac, doplnia chýbajúci doklad, vyjasnia nejasné platby a spíšu preberací protokol.",
+    "metaDescription": "Lekcia pre VŠ a kurzy: čo účtovníčka od podnikateľa potrebuje, lehoty DPH, chýbajúce doklady, oprávnenia v tíme a preberací protokol. Úloha v deme pre dvojice a pracovný list s riešením.",
+    "goals": [
+      "Vymenovať, čo účtovníčka potrebuje na uzavretie mesiaca a dokedy.",
+      "Nájsť a doplniť chýbajúci doklad.",
+      "Vysvetliť, prečo má účtovníčka v aplikácii iné oprávnenia ako majiteľ.",
+      "Spísať preberací protokol k dokladom za mesiac."
+    ],
+    "teacherNotes": [
+      "Študenti pracujú vo dvojiciach. Jeden si spustí demo s rolou Majiteľ, druhý s rolou Účtovníčka. Každý má vlastnú kópiu tej istej firmy, takže si zistenia odovzdávajú ústne a na papieri, rovnako ako v praxi.",
+      "Účtovníčka v deme vidí doklady, DPH, exporty a prehľady, ale nesiaha na nastavenia firmy, tím ani predplatné. Vo vlastnom účte sa rola nastavuje v Nastavenia, Tím. V triednom režime nikoho nepozývate.",
+      "Termíny, ktoré účtovníčka stráži: priznanie a platba DPH do 25 dní po skončení zdaňovacieho obdobia (§ 78 zákona o DPH) a v tej istej lehote kontrolný výkaz (§ 78a). Preto si doklady zvyčajne vyžiada do 10. až 15. dňa nasledujúceho mesiaca.",
+      "Doklad musí mať náležitosti podľa § 10 zákona o účtovníctve. Za správnosť dokladov zodpovedá firma, nie účtovníčka. Účtovnú dokumentáciu firma uchováva 10 rokov (§ 35 zákona o účtovníctve), faktúry platiteľ tiež 10 rokov (§ 76 zákona o DPH).",
+      "V triednom režime založte na túto hodinu triedu s úrovňou Štandard alebo Pokročilé. V úrovni Základy sú Výdavky, Banka a Reporty vypnuté."
+    ],
+    "timeline": [
+      {
+        "min": "0–7",
+        "text": "Výklad: čo robí účtovníčka, čo robí majiteľ a kde to škrípe."
+      },
+      {
+        "min": "7–30",
+        "text": "Úloha v deme vo dvojiciach: kontrola mesiaca, chýbajúci doklad, otázky k banke."
+      },
+      {
+        "min": "30–40",
+        "text": "Preberací protokol a pracovný list."
+      },
+      {
+        "min": "40–45",
+        "text": "Zhrnutie: tri veci, ktoré účtovníčke ušetria najviac času."
+      }
+    ],
+    "concepts": [
+      {
+        "title": "Mesačná uzávierka",
+        "body": "Účtovníčka za mesiac skontroluje, že ku každému pohybu na účte je doklad a ku každému dokladu platba, a pripraví podklady k DPH."
+      },
+      {
+        "title": "Chýbajúci doklad",
+        "body": "Platba odišla, ale doklad k nej chýba. Bez dokladu ju nemožno zaúčtovať ako náklad a platiteľ si z nej neuplatní DPH."
+      },
+      {
+        "title": "Roly a oprávnenia",
+        "body": "Účtovníčka potrebuje doklady, banku a exporty. Nastavenia firmy, tím a predplatné zostávajú majiteľovi, aby omylom nikto nezmenil údaje na faktúrach."
+      },
+      {
+        "title": "Preberací protokol",
+        "body": "Zoznam toho, čo majiteľ za mesiac odovzdal: počet vydaných a prijatých dokladov, výpisy, nejasné platby a otázky. Obe strany potom vedia, čo chýba."
+      }
+    ],
+    "task": {
+      "intro": "Horský potok s.r.o. uzatvára mesiac. Jeden z dvojice je majiteľ, druhý účtovníčka.",
+      "steps": [
+        "Účtovníčka: otvorte Banka a spíšte pohyby, ktoré nie sú spárované. Ku každému napíšte otázku pre majiteľa.",
+        "Účtovníčka: vo Výdavkoch nájdite výdavky bez čísla dokladu alebo nezaplatené výdavky. Zapíšte ich do zoznamu otázok.",
+        "Majiteľ: odpovedzte na otázky. Jeden doklad „ste našli v aute“: otvorte Výdavky, Nový výdavok a zapíšte dodávateľ Autoservis Brázda, popis Výmena pneumatík, suma s DPH 344,40 €, sadzba 23 %, číslo dokladu 2026-077.",
+        "Účtovníčka: otvorte Nastavenia a skúste zmeniť fakturačné údaje firmy. Čo sa stane? Prečo je to tak?",
+        "Spolu: spíšte na papier preberací protokol za mesiac: počet vydaných faktúr, počet prijatých dokladov, nespárované platby, doplnené doklady a otvorené otázky. Podpíšte ho obaja."
+      ],
+      "check": "Hotovo, keď má dvojica zapísaný doplnený výdavok, zoznam otázok k banke s odpoveďami a podpísaný preberací protokol a vie vysvetliť, prečo účtovníčka nemení nastavenia firmy."
+    },
+    "worksheet": [
+      {
+        "q": "Dokedy musí s.r.o. podať kontrolný výkaz za marec? Prečo chce účtovníčka doklady skôr?",
+        "a": "Do 25. apríla. Účtovníčka potrebuje čas doklady skontrolovať, zaúčtovať a vyriešiť otázky, preto ich chce približne do 10. až 15. apríla."
+      },
+      {
+        "q": "Z účtu odišlo 344,40 € a doklad chýba. Čo to znamená pre firmu?",
+        "a": "Platbu nemožno podložene zaúčtovať ako náklad a platiteľ si z nej neuplatní odpočítanie DPH, kým doklad nemá."
+      },
+      {
+        "q": "Prečo účtovníčka v aplikácii nemení údaje firmy ani tím?",
+        "a": "Údaje firmy idú na každú faktúru a tím určuje, kto má prístup k dátam. To je zodpovednosť majiteľa."
+      },
+      {
+        "q": "Čo patrí do preberacieho protokolu?",
+        "a": "Za aké obdobie, počty vydaných a prijatých dokladov, výpisy, nespárované platby, doplnené doklady a otvorené otázky, dátum a podpisy."
+      },
+      {
+        "q": "Ako dlho firma uchováva účtovnú dokumentáciu?",
+        "a": "10 rokov nasledujúcich po roku, ktorého sa týka (§ 35 zákona o účtovníctve)."
+      }
+    ],
+    "law": [
+      {
+        "label": "Zákon o účtovníctve č. 431/2002 Z. z., § 10 – účtovný doklad",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2002/431/#paragraf-10"
+      },
+      {
+        "label": "Zákon o účtovníctve, § 35 – úschova účtovnej dokumentácie",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2002/431/#paragraf-35"
+      },
+      {
+        "label": "Zákon o DPH č. 222/2004 Z. z., § 78 – daňové priznanie a platenie dane",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-78"
+      },
+      {
+        "label": "Zákon o DPH, § 78a – kontrolný výkaz",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-78a"
+      },
+      {
+        "label": "Zákon o DPH, § 76 – uchovávanie faktúr",
+        "href": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/222/#paragraf-76"
+      }
+    ],
+    "tools": [
+      {
+        "label": "Tím a roly",
+        "href": "/features/team-and-roles"
+      },
+      {
+        "label": "Export pre účtovníčku",
+        "href": "/features/accountant-export"
+      },
+      {
+        "label": "Párovanie platieb",
+        "href": "/features/payment-matching"
+      }
+    ]
+  }
+}
