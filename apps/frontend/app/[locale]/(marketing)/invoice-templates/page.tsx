@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ListChecks } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { SignupCta } from '@/components/public-tools/parts';
@@ -96,7 +96,20 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
         <p className="mt-6 text-xs text-muted-foreground">{t('common.rulesNote')}</p>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-12 grid gap-4 md:grid-cols-2">
+        <Link
+          href="/calculators/invoice-requirements"
+          className="group flex items-center gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+            <ListChecks className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="min-w-0">
+            <span className="block font-semibold group-hover:text-primary">{t('requirementsLink.title')}</span>
+            <span className="mt-1 block text-sm text-muted-foreground">{t('requirementsLink.text')}</span>
+          </span>
+          <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
+        </Link>
         <RemindersLink />
       </div>
       <div className="mt-12">

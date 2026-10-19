@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 export default async function InvoiceRequirementsPage({ params }: { params: Promise<Params> }) {
   const { locale } = await params;
   return (
-    <CalculatorPage slug={SLUG} locale={locale} disclaimer={false} cta="invoice">
+    <CalculatorPage slug={SLUG} locale={locale} disclaimer={false} cta="invoice" ctaFirst ctaTemplates>
       <InvoiceRequirementsChecker defaultCountry={locale === 'sk' ? 'SK' : 'CZ'} />
     </CalculatorPage>
   );

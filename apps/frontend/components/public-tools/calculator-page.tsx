@@ -35,6 +35,8 @@ export async function CalculatorPage({
   after,
   disclaimer = true,
   cta = 'signup',
+  ctaFirst = false,
+  ctaTemplates = false,
   skAlternative
 }: {
   slug: string;
@@ -48,6 +50,10 @@ export async function CalculatorPage({
   disclaimer?: boolean | string;
   /** Invoice tools lead to the guest invoice, which needs no account. */
   cta?: 'signup' | 'invoice';
+  /** CTA straight under the widget instead of at the end, for checkers whose result is the moment to act. */
+  ctaFirst?: boolean;
+  /** Offer the invoice templates next to the guest invoice. */
+  ctaTemplates?: boolean;
   /** Slug of the same calculator under Slovak rules, linked from the sk notice. */
   skAlternative?: string;
 }) {
@@ -69,12 +75,17 @@ export async function CalculatorPage({
   const path = `/calculators/${slug}`;
   // Glossary terms are linked where they first appear: lead, then the "how" list.
   const link = glossaryLinker(locale);
+  const ctaTitle = t.has(`${k}.ctaTitle`) ? t(`${k}.ctaTitle`) : undefined;
+  const ctaText = t.has(`${k}.ctaText`) ? t(`${k}.ctaText`) : undefined;
+  const ctaBox =
+    cta === 'invoice' ? <InvoiceCta title={ctaTitle} text={ctaText} templates={ctaTemplates} /> : <SignupCta title={ctaTitle} text={ctaText} />;
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
       <ToolTabs kind="calculators" current={slug} />
       <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={link(t(`${k}.lead`))} icon={c.icon} />
       <div className="mt-10">{children}</div>
+      {ctaFirst && <div className="mt-8">{ctaBox}</div>}
       <div className="mt-6">
         {disclaimer ? <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} /> : <ToolNote />}
       </div>
@@ -84,13 +95,7 @@ export async function CalculatorPage({
           <HowList title={t.has(`${k}.howTitle`) ? t(`${k}.howTitle`) : t('common.howTitle')} items={how} link={link} />
         </div>
       )}
-      <div className="mt-12">
-        {cta === 'invoice' ? (
-          <InvoiceCta />
-        ) : (
-          <SignupCta title={t.has(`${k}.ctaTitle`) ? t(`${k}.ctaTitle`) : undefined} text={t.has(`${k}.ctaText`) ? t(`${k}.ctaText`) : undefined} />
-        )}
-      </div>
+      {!ctaFirst && <div className="mt-12">{ctaBox}</div>}
       <div className="mt-12 max-w-3xl">
         <NewsletterSignup source="calculators" />
       </div>

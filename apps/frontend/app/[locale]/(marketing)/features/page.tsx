@@ -6,6 +6,14 @@ import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site';
 
+/** The audience pages, for visitors who are not the ones invoicing (an accountant, a coworking, a teacher). */
+const AUDIENCES = [
+  ['accountants', '/for-accountants'],
+  ['partners', '/for-partners'],
+  ['coworkings', '/for-coworkings'],
+  ['schools', '/for-schools']
+] as const;
+
 /** Hub of the feature landing pages — one card (and one crawlable link) per feature. */
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -64,7 +72,23 @@ export default async function FeaturesIndexPage({ params }: { params: Promise<{ 
           {t('cta')}
         </Link>
         <p className="mt-2 text-sm text-muted-foreground">{t('ctaNote')}</p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          {t('demo.text')}{' '}
+          <Link href="/demo" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+            {t('demo.link')}
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </p>
       </div>
+
+      <nav aria-label={t('audiences.title')} className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-6 text-sm">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('audiences.title')}</h2>
+        {AUDIENCES.map(([key, href]) => (
+          <Link key={key} href={href} className="font-medium text-primary hover:underline">
+            {t(`audiences.${key}`)}
+          </Link>
+        ))}
+      </nav>
     </section>
   );
 }

@@ -6098,7 +6098,18 @@
         ]
       }
     },
-    "indexSeoTitle": "Funkce fakturace pro OSVČ a firmy"
+    "indexSeoTitle": "Funkce fakturace pro OSVČ a firmy",
+    "demo": {
+      "text": "Chcete si to nejdřív vyzkoušet? Otevřete živé demo s ukázkovou firmou, bez registrace.",
+      "link": "Vyzkoušet demo"
+    },
+    "audiences": {
+      "title": "Pro koho dalšího",
+      "accountants": "Pro účetní",
+      "partners": "Pro partnery",
+      "coworkings": "Pro coworkingy",
+      "schools": "Pro školy a učitele"
+    }
   },
   "guestInvoice": {
     "seoTitle": "Faktura online zdarma bez registrace, PDF s QR",
@@ -7483,7 +7494,8 @@
       },
       "czOnlyTextAlt": "„{name}“ se týká českých předpisů. Pro slovenské živnostníky máme samostatnou kalkulačku podle slovenských pravidel.",
       "noLiability": "Výsledek je bez záruky. Za rozhodnutí učiněná podle něj neodpovídáme.",
-      "noWarranty": "Výsledek má jen informativní charakter a je bez záruky. Před použitím si údaje ověřte."
+      "noWarranty": "Výsledek má jen informativní charakter a je bez záruky. Před použitím si údaje ověřte.",
+      "invoiceCtaTemplates": "Vzory faktur s vyplněním online"
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pro podnikatele",
@@ -8073,7 +8085,9 @@
             "Plátce DPH vystavuje daňový doklad s náležitostmi podle § 29 zákona o DPH (na Slovensku § 74 ZoDPH). Neplátce a zálohová faktura se řídí jen občanským zákoníkem (§ 435) a dobrou praxí.",
             "Podmíněné položky jsou povinné jen v uvedeném případě, doporučené zákon nevyžaduje, ale bez nich se faktury platí pomaleji.",
             "U každé položky je odkaz na paragraf, ze kterého povinnost plyne. Hotovou fakturu v ISDOC můžete zkontrolovat v našem prohlížeči ISDOC."
-          ]
+          ],
+          "ctaTitle": "Vystavte fakturu, které nic nechybí",
+          "ctaText": "Ve formuláři Billanty máte povinné údaje připravené, takže na nic nezapomenete. Fakturu stáhnete jako PDF zdarma a bez registrace."
         },
         "isdocViewer": {
           "name": "Prohlížeč ISDOC",
@@ -11249,10 +11263,10 @@
     "flatLeadSk": "Na Slovensku je jeden paušál (§ 6 odst. 10 ZDP) s ročním stropem; zaplacené pojistné se odečítá navíc.",
     "rateLabel": "Vaše činnost",
     "rates": {
-      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství.",
-      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "30": "30 % – pronájem majetku zařazeného v obchodním majetku.",
       "40": "40 % – jiné podnikání podle zvláštních předpisů (svobodná povolání) a autorská práva.",
-      "30": "30 % – pronájem majetku zařazeného v obchodním majetku."
+      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství."
     },
     "flatRow": "Paušál {rate} % (max. {cap})",
     "capped": "strop",
@@ -12401,6 +12415,10 @@
           "Za služby přijaté od zahraničních firem (reklama na Facebooku, Google) přiznáváte českou DPH vy – to je druhá strana téže povinnosti."
         ]
       }
+    },
+    "requirementsLink": {
+      "title": "Co musí faktura obsahovat?",
+      "text": "Zadejte, kdo jste a co vystavujete, a ukážeme povinné náležitosti přesně pro váš případ."
     }
   },
   "paymentReminders": {

@@ -6098,7 +6098,18 @@
         ]
       }
     },
-    "indexSeoTitle": "Invoicing features for freelancers and SMEs"
+    "indexSeoTitle": "Invoicing features for freelancers and SMEs",
+    "demo": {
+      "text": "Want to try it first? Open the live demo with a sample company, no sign-up needed.",
+      "link": "Try the demo"
+    },
+    "audiences": {
+      "title": "Also for",
+      "accountants": "Accountants",
+      "partners": "Partners",
+      "coworkings": "Coworking spaces",
+      "schools": "Schools and teachers"
+    }
   },
   "guestInvoice": {
     "seoTitle": "Free online invoice, no sign-up – PDF with QR",
@@ -7483,7 +7494,8 @@
       },
       "czOnlyTextAlt": "“{name}” is about Czech rules. For Slovak sole traders there is a separate calculator under Slovak rules.",
       "noLiability": "The result comes with no warranty, and we are not liable for decisions made based on it.",
-      "noWarranty": "The result is for information only and comes with no warranty. Check the details before you use them."
+      "noWarranty": "The result is for information only and comes with no warranty. Check the details before you use them.",
+      "invoiceCtaTemplates": "Invoice templates to fill in online"
     },
     "calculators": {
       "indexTitle": "Calculators and tools for businesses",
@@ -8073,7 +8085,9 @@
             "A VAT payer issues a tax document with the items of § 29 of the Czech VAT act (§ 74 in Slovakia). A non-payer and a pro forma only follow business law (§ 435 of the Civil Code, § 3a of the Slovak Commercial Code) and good practice.",
             "Conditional items are required only in the case stated; recommended ones aren't required by law, but invoices without them get paid more slowly.",
             "Each item links to the section of the law it comes from. You can check a finished ISDOC invoice in our ISDOC viewer."
-          ]
+          ],
+          "ctaTitle": "Issue an invoice with nothing missing",
+          "ctaText": "Billanta's invoice form already has the required fields in place, so nothing gets left out. Download the PDF for free, no account needed."
         },
         "isdocViewer": {
           "name": "ISDOC viewer",
@@ -11249,10 +11263,10 @@
     "flatLeadSk": "In Slovakia there is one flat rate (§ 6 (10) ZDP) with a yearly cap; the insurance paid is deducted on top.",
     "rateLabel": "Your activity",
     "rates": {
-      "80": "80 % – crafts trades, agriculture, forestry and water management.",
-      "60": "60 % – other trades (most unqualified, qualified and licensed trades).",
+      "30": "30 % – renting out business property.",
       "40": "40 % – liberal professions and other business under special laws, copyright income.",
-      "30": "30 % – renting out business property."
+      "60": "60 % – other trades (most unqualified, qualified and licensed trades).",
+      "80": "80 % – crafts trades, agriculture, forestry and water management."
     },
     "flatRow": "Flat rate {rate} % (max. {cap})",
     "capped": "cap",
@@ -12401,6 +12415,10 @@
           "For services you buy from foreign companies (Facebook or Google ads) you account for Czech VAT yourself – the other side of the same obligation."
         ]
       }
+    },
+    "requirementsLink": {
+      "title": "What must an invoice contain?",
+      "text": "Tell us who you are and what you issue, and we list the required items for exactly your case."
     }
   },
   "paymentReminders": {

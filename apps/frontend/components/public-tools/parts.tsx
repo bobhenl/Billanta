@@ -136,18 +136,30 @@ export async function SignupCta({ title, text }: { title?: string; text?: string
   );
 }
 
-/** CTA of the invoice tools: the guest invoice, then the account as the second step. */
-export async function InvoiceCta() {
+/**
+ * CTA of the invoice tools: the guest invoice, then the account as the
+ * second step. `templates` adds the filled-in samples as a middle option,
+ * for tools that answer "what goes on an invoice".
+ */
+export async function InvoiceCta({ title, text, templates = false }: { title?: string; text?: string; templates?: boolean } = {}) {
   const t = await getTranslations('tools.common');
   return (
     <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
-      <h2 className="text-lg font-semibold">{t('invoiceCtaTitle')}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t('invoiceCtaText')}</p>
+      <h2 className="text-lg font-semibold">{title ?? t('invoiceCtaTitle')}</h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{text ?? t('invoiceCtaText')}</p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <CreateInvoiceLink className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90">
           {t('invoiceCtaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </CreateInvoiceLink>
+        {templates && (
+          <Link
+            href="/invoice-templates"
+            className="inline-flex items-center justify-center rounded-md border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:border-primary/40 hover:text-primary"
+          >
+            {t('invoiceCtaTemplates')}
+          </Link>
+        )}
         <Link href="/signup" className="text-sm font-semibold text-primary hover:underline">
           {t('ctaButton')}
         </Link>

@@ -6098,7 +6098,18 @@
         ]
       }
     },
-    "indexSeoTitle": "Funkcie fakturácie pre živnostníkov a firmy"
+    "indexSeoTitle": "Funkcie fakturácie pre živnostníkov a firmy",
+    "demo": {
+      "text": "Chcete si to najprv vyskúšať? Otvorte živé demo s ukážkovou firmou, bez registrácie.",
+      "link": "Vyskúšať demo"
+    },
+    "audiences": {
+      "title": "Pre koho ešte",
+      "accountants": "Pre účtovníkov",
+      "partners": "Pre partnerov",
+      "coworkings": "Pre coworkingy",
+      "schools": "Pre školy a učiteľov"
+    }
   },
   "guestInvoice": {
     "seoTitle": "Faktúra online zadarmo bez registrácie, PDF s QR",
@@ -7487,7 +7498,8 @@
       },
       "czOnlyTextAlt": "„{name}“ sa týka českých predpisov. Pre slovenských živnostníkov máme samostatnú kalkulačku podľa slovenských pravidiel.",
       "noLiability": "Výsledok je bez záruky. Za rozhodnutia urobené podľa neho nezodpovedáme.",
-      "noWarranty": "Výsledok má len informatívny charakter a je bez záruky. Pred použitím si údaje overte."
+      "noWarranty": "Výsledok má len informatívny charakter a je bez záruky. Pred použitím si údaje overte.",
+      "invoiceCtaTemplates": "Vzory faktúr s vyplnením online"
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pre podnikateľov",
@@ -8050,7 +8062,9 @@
             "Platiteľ DPH vyhotovuje faktúru s náležitosťami podľa § 74 zákona o DPH (v Česku § 29 ZDPH). Neplatiteľ a zálohová faktúra sa riadia len Obchodným zákonníkom (§ 3a) a dobrou praxou.",
             "Podmienené položky sú povinné len v uvedenom prípade, odporúčané zákon nevyžaduje, ale bez nich sa faktúry platia pomalšie.",
             "Pri každej položke je odkaz na paragraf, z ktorého povinnosť vyplýva. Hotovú faktúru v ISDOC si môžete skontrolovať v našom prehliadači ISDOC."
-          ]
+          ],
+          "ctaTitle": "Vystavte faktúru, ktorej nič nechýba",
+          "ctaText": "Vo formulári Billanty máte povinné údaje pripravené, takže na nič nezabudnete. Faktúru si stiahnete ako PDF zadarmo a bez registrácie."
         },
         "isdocViewer": {
           "name": "Prehliadač ISDOC",
@@ -11155,10 +11169,10 @@
     "flatLeadSk": "Paušálne výdavky (§ 6 ods. 10 ZDP) sú percento z príjmov s ročným stropom; zaplatené poistné si odpočítate navyše.",
     "rateLabel": "Vaša činnosť",
     "rates": {
-      "80": "80 % – remeselné živnosti, poľnohospodárska výroba, lesné a vodné hospodárstvo.",
-      "60": "60 % – ostatné živnosti (väčšina voľných, viazaných a koncesovaných živností).",
+      "30": "30 % – prenájom majetku zaradeného v obchodnom majetku.",
       "40": "40 % – iné podnikanie podľa osobitných predpisov (slobodné povolania) a autorské práva.",
-      "30": "30 % – prenájom majetku zaradeného v obchodnom majetku."
+      "60": "60 % – ostatné živnosti (väčšina voľných, viazaných a koncesovaných živností).",
+      "80": "80 % – remeselné živnosti, poľnohospodárska výroba, lesné a vodné hospodárstvo."
     },
     "flatRow": "Paušál {rate} % (max. {cap})",
     "capped": "strop",
@@ -12306,6 +12320,10 @@
           "Za služby prijaté od zahraničných firiem (reklama na Facebooku, Google) sa registrujete podľa § 7a a daň odvádzate vy – to je druhá strana tej istej povinnosti."
         ]
       }
+    },
+    "requirementsLink": {
+      "title": "Čo musí faktúra obsahovať?",
+      "text": "Zadajte, kto ste a čo vystavujete, a ukážeme vám povinné náležitosti presne pre váš prípad."
     }
   },
   "paymentReminders": {
