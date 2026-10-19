@@ -1,9 +1,19 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { PlatformAdminGuard } from "../partners/platform-admin.guard";
 import { BlogDraftsService } from "./blog-drafts.service";
-import { BriefDraftDto, CreateBlogPostDto, PublishBlogPostDto, TaxDeadlinesDraftDto, UpdateBlogPostDto } from "./blog.dto";
+import { WEEKLY_AUTOPUBLISH_LIMIT } from "./blog-autopublish";
+import {
+  AutopublishKindParam,
+  BriefDraftDto,
+  CreateBlogPostDto,
+  NextTopicDraftDto,
+  PublishBlogPostDto,
+  SetAutopublishDto,
+  TaxDeadlinesDraftDto,
+  UpdateBlogPostDto,
+} from "./blog.dto";
 import { BlogService } from "./blog.service";
 
 /** Blog management and the AI draft queue for Billanta staff (`PLATFORM_ADMIN_EMAILS`). */
@@ -21,6 +31,21 @@ export class AdminBlogController {
   @ApiOperation({ summary: "All posts in every status, without bodies" })
   list() {
     return this.blog.listAll();
+  }
+
+  // Static routes before ":id" (ParseUUIDPipe would reject them).
+  @Get("autopublish")
+  @ApiOperation({ summary: "Auto-publish switch per generated kind, plus this week's auto-published count per locale and the cap" })
+  async autopublish() {
+    const [settings, thisWeek] = await Promise.all([this.blog.autopublishSettings(), this.blog.autoPublishedThisWeek()]);
+    return { settings, thisWeek, weeklyLimit: WEEKLY_AUTOPUBLISH_LIMIT };
+  }
+
+  @Put("autopublish/:kind")
+  @ApiOperation({ summary: "Switch auto-publishing of one generated kind on or off" })
+  async setAutopublish(@Param() params: AutopublishKindParam, @Body() dto: SetAutopublishDto) {
+    await this.blog.setAutopublish(params.kind, dto.enabled);
+    return this.autopublish();
   }
 
   @Get(":id")
@@ -66,6 +91,12 @@ export class AdminBlogController {
   @ApiOperation({ summary: "AI draft of the Czech tax deadlines post for one month (null if it exists or the month has none)" })
   taxDeadlines(@Body() dto: TaxDeadlinesDraftDto) {
     return this.drafts.taxDeadlines(dto.year, dto.month);
+  }
+
+  @Post("drafts/next")
+  @ApiOperation({ summary: "AI draft of the next unwritten tool how-to or trade invoicing topic (null when all are written)" })
+  next(@Body() dto: NextTopicDraftDto) {
+    return this.drafts.nextDraft(dto.kind, dto.locale);
   }
 
   @Post("drafts/brief")

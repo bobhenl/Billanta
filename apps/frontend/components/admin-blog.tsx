@@ -6,10 +6,12 @@ import { useTranslations } from 'next-intl';
 import {
   deleteBlogPost,
   draftBrief,
+  draftNextTopic,
   draftTaxDeadlines,
   publishBlogPost,
   rejectBlogPost,
   saveBlogPost,
+  setBlogAutopublish,
   unpublishBlogPost,
   type AdminBlogResult
 } from '@/app/[locale]/(dashboard)/admin/blog/actions';
@@ -18,7 +20,7 @@ import { BlogMarkdown } from '@/components/blog-markdown';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
-import type { AdminBlogPost } from '@/lib/admin-blog';
+import { AUTO_PUBLISH_KINDS, TOPIC_KINDS, type AdminBlogPost, type BlogAutopublish, type TopicKind } from '@/lib/admin-blog';
 import type { BlogSource } from '@/lib/blog';
 
 /** One source per line as "Title | https://…", the easiest shape to paste. */
@@ -51,7 +53,100 @@ function useErrorText() {
 
 const label = 'block text-xs font-bold uppercase tracking-wider text-muted-foreground';
 
-/** The two AI generators. Both only create drafts; nothing goes live from here. */
+/**
+ * Generators that write from our own data: a switch per kind to let clean
+ * drafts go live on their own, and a button to draft the next topic now.
+ * Whatever the switch says, a draft with warnings or about a changing law
+ * waits for a click, and at most `weeklyLimit` posts a week per language
+ * publish on their own.
+ */
+export function BlogAutomation({ autopublish }: { autopublish: BlogAutopublish }) {
+  const t = useTranslations('adminBlog');
+  const errorText = useErrorText();
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [settings, setSettings] = useState(autopublish.settings);
+  const [kind, setKind] = useState<TopicKind>('tool_howto');
+  const [locale, setLocale] = useState<'cs' | 'sk'>('cs');
+
+  return (
+    <section className="rounded-xl border border-border bg-card p-4">
+      <h2 className="flex items-center gap-1.5 font-bold">
+        <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+        {t('autopublish.title')}
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">{t('autopublish.hint', { n: autopublish.weeklyLimit })}</p>
+      <ul className="mt-3 divide-y divide-border rounded-lg border border-border">
+        {AUTO_PUBLISH_KINDS.map((k) => (
+          <li key={k}>
+            <label className="flex cursor-pointer items-center gap-3 px-3 py-2.5">
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">{t(`kind.${k}`)}</span>
+                <span className="block text-xs text-muted-foreground">{t(`autopublish.kinds.${k}`)}</span>
+              </span>
+              <input
+                type="checkbox"
+                role="switch"
+                className="h-5 w-5 accent-primary"
+                checked={settings[k]}
+                disabled={pending}
+                onChange={(e) => {
+                  const enabled = e.target.checked;
+                  start(async () => {
+                    const res = await setBlogAutopublish(k, enabled);
+                    if (!res.ok) return toast({ text: errorText(res.error), tone: 'err' });
+                    setSettings(res.data.settings);
+                    toast({ text: t(enabled ? 'autopublish.on' : 'autopublish.off'), tone: 'ok' });
+                  });
+                }}
+              />
+            </label>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-xs text-muted-foreground">
+        {t('autopublish.thisWeek', { cs: autopublish.thisWeek.cs, sk: autopublish.thisWeek.sk, n: autopublish.weeklyLimit })}
+      </p>
+
+      <form
+        className="mt-4 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-end"
+        onSubmit={(e) => {
+          e.preventDefault();
+          start(async () => {
+            const res = await draftNextTopic(kind, locale);
+            if (!res.ok) return toast({ text: errorText(res.error), tone: 'err' });
+            if (!res.data) return toast({ text: t('autopublish.allWritten'), tone: 'info' });
+            toast({ text: t(res.data.status === 'published' ? 'autopublish.published' : 'drafts.created'), tone: 'ok' });
+            router.push(`/admin/blog/${res.data.id}`);
+          });
+        }}
+      >
+        <label className="flex-1">
+          <span className={label}>{t('autopublish.topic')}</span>
+          <select value={kind} onChange={(e) => setKind(e.target.value as TopicKind)} className={inputClass}>
+            {TOPIC_KINDS.map((k) => (
+              <option key={k} value={k}>
+                {t(`kind.${k}`)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span className={label}>{t('fields.locale')}</span>
+          <select value={locale} onChange={(e) => setLocale(e.target.value as 'cs' | 'sk')} className={inputClass}>
+            <option value="cs">cs</option>
+            <option value="sk">sk</option>
+          </select>
+        </label>
+        <button type="submit" disabled={pending} className={buttonClass.primary}>
+          {t('autopublish.draftNext')}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+/** The two on-demand AI generators. Their drafts go live only by the rules in BlogAutomation. */
 export function BlogDraftForms() {
   const t = useTranslations('adminBlog');
   const errorText = useErrorText();

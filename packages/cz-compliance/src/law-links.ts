@@ -15,6 +15,20 @@ const LAWS: Record<string, (p: string, odst?: string) => string> = {
   ObZ: (p, o) => `https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/1991/513/#paragraf-${p}${o ? `.odsek-${o}` : ''}`,
 };
 
+/**
+ * How the laws in LAWS are written in cs/sk/en prose after "§ 29 odst. 1"
+ * ("zákona o DPH", "občanského zákoníku", "Obchodného zákonníka", "the VAT
+ * Act") or as the abbreviation. The blog check accepts a § only before one
+ * of these, so an AI draft can't cite a law we have no link for.
+ */
+const LAW_PROSE =
+  /^(?:ZDPH|ZoDPH|OZ|ObZ)\b|^z[áa]kon(?:a|u|e|om)? o (?:DPH|dani z p[řr]idan[éej]+ hodnoty)|^ob[čc]ansk\p{L}* z[áa]kon[ií]k|^obchodn\p{L}* z[áa]konn[ií]k|^(?:of )?the (?:Czech |Slovak )?(?:VAT Act|Civil Code|Commercial Code)/iu;
+
+/** True when `text` (what follows a § number) starts with the name of a law in LAWS. */
+export function isKnownLawName(text: string): boolean {
+  return LAW_PROSE.test(text.trim());
+}
+
 export function lawUrl(rule: string | null | undefined): string | null {
   // "§29/1c ZDPH" → § 29, odst. 1, (letter c is not anchored), law ZDPH.
   const m = /^§\s*(\d+[a-z]?)(?:\/(\d+)[a-z]?)?\s+(ZDPH|OZ|ZoDPH|ObZ)$/.exec((rule ?? '').trim());

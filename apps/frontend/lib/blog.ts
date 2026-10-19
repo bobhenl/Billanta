@@ -5,11 +5,14 @@ export interface BlogSource {
   url: string;
 }
 
+/** manual: written by a person; brief: AI from an admin's facts; the rest: AI from our own data. */
+export type BlogKind = 'manual' | 'brief' | 'tax_deadlines' | 'tool_howto' | 'trade_invoicing';
+
 export interface BlogListItem {
   slug: string;
   title: string;
   description: string;
-  kind: 'manual' | 'tax_deadlines' | 'brief';
+  kind: BlogKind;
   publishedAt: string;
 }
 

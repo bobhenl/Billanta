@@ -7936,7 +7936,9 @@
     "kind": {
       "manual": "Ručne",
       "tax_deadlines": "Daňové termíny",
-      "brief": "AI zo zadania"
+      "brief": "AI zo zadania",
+      "tool_howto": "Návod k nástroju",
+      "trade_invoicing": "Fakturácia podľa odboru"
     },
     "drafts": {
       "taxTitle": "Daňové termíny na mesiac",
@@ -7998,7 +8000,27 @@
       "banned_phrase": "Text obsahuje zakázaný sľub alebo frázu (napr. „garantujeme“).",
       "raw_html": "Text obsahuje HTML.",
       "bad_link": "Odkaz smie viesť len na https:// alebo na stránku webu (/…).",
-      "unknown_number": "Text obsahuje číslo, ktoré nie je vo faktoch ani v zdrojoch."
+      "unknown_number": "Text obsahuje číslo, ktoré nie je vo faktoch ani v zdrojoch.",
+      "absolute_claim": "Text tvrdí „vždy“ alebo „nikdy“, hoci to fakty nehovoria.",
+      "em_dash": "Text obsahuje dlhú pomlčku (em dash). Používajte krátku „–“.",
+      "law_reference": "Text cituje paragraf, ktorý nie je vo faktoch, alebo zákon bez známeho odkazu."
+    },
+    "autopublish": {
+      "title": "Automatické články",
+      "hint": "Koncepty z našich dát (daňový kalendár, nástroje, typy podnikania). Zapnutý typ sa zverejní sám, len keď prejde všetkými kontrolami, netýka sa zmeny zákona a v danom jazyku za posledných 7 dní nevyšlo viac ako {n} automatických článkov. Ostatné čakajú na schválenie.",
+      "kinds": {
+        "tax_deadlines": "Každý mesiac 20. dňa, len po česky.",
+        "tool_howto": "Každý utorok jeden nový návod, po česky a po slovensky.",
+        "trade_invoicing": "Každý utorok jeden nový odbor, po česky a po slovensky."
+      },
+      "thisWeek": "Automaticky zverejnené za 7 dní: cs {cs}/{n}, sk {sk}/{n}.",
+      "on": "Automatické zverejňovanie je zapnuté.",
+      "off": "Automatické zverejňovanie je vypnuté.",
+      "topic": "Typ článku",
+      "draftNext": "Napísať ďalšiu tému",
+      "allWritten": "Všetky témy tohto typu už v tomto jazyku majú článok.",
+      "published": "Článok prešiel kontrolami a je zverejnený.",
+      "badge": "automaticky"
     }
   },
   "unsubscribe": {

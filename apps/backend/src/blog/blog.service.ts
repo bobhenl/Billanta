@@ -1,8 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, count, desc, eq, gte, ne } from "drizzle-orm";
 import { z } from "zod";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
+import { AUTO_PUBLISH_KINDS, type AutoPublishKind } from "./blog-autopublish";
 import { blogWarnings } from "./blog-checks";
 
 export const BLOG_LOCALES = ["cs", "sk", "en"] as const;
@@ -49,6 +50,7 @@ const listColumns = {
   kind: schema.blogPosts.kind,
   status: schema.blogPosts.status,
   warnings: schema.blogPosts.warnings,
+  autoPublished: schema.blogPosts.autoPublished,
   publishedAt: schema.blogPosts.publishedAt,
   createdAt: schema.blogPosts.createdAt,
   updatedAt: schema.blogPosts.updatedAt,
@@ -186,13 +188,17 @@ export class BlogService {
     }
   }
 
-  /** A post with warnings needs `force`: someone has to have read why. */
-  async publish(id: string, force: boolean): Promise<BlogPostRow> {
+  /**
+   * A post with warnings needs `force`: someone has to have read why.
+   * `auto` is the generator publishing without a click (it never forces);
+   * those posts count towards the weekly cap.
+   */
+  async publish(id: string, force: boolean, auto = false): Promise<BlogPostRow> {
     const current = await this.get(id);
-    if (current.warnings.length > 0 && !force) throw new ConflictException("post_has_warnings");
+    if (current.warnings.length > 0 && (!force || auto)) throw new ConflictException("post_has_warnings");
     const [row] = await this.db
       .update(schema.blogPosts)
-      .set({ status: "published", publishedAt: current.publishedAt ?? new Date(), updatedAt: new Date() })
+      .set({ status: "published", publishedAt: current.publishedAt ?? new Date(), autoPublished: auto, updatedAt: new Date() })
       .where(eq(schema.blogPosts.id, id))
       .returning();
     return row!;
@@ -213,6 +219,37 @@ export class BlogService {
     const [row] = await this.db.delete(schema.blogPosts).where(eq(schema.blogPosts.id, id)).returning({ id: schema.blogPosts.id });
     if (!row) throw new NotFoundException("Post not found");
     return { deleted: true };
+  }
+
+  /** Auto-publish switches for every kind that has one; a missing row is off. */
+  async autopublishSettings(): Promise<Record<AutoPublishKind, boolean>> {
+    const rows = await this.db.select().from(schema.blogAutopublish);
+    return Object.fromEntries(AUTO_PUBLISH_KINDS.map((k) => [k, rows.some((r) => r.kind === k && r.enabled)])) as Record<AutoPublishKind, boolean>;
+  }
+
+  async setAutopublish(kind: AutoPublishKind, enabled: boolean) {
+    await this.db
+      .insert(schema.blogAutopublish)
+      .values({ kind, enabled })
+      .onConflictDoUpdate({ target: schema.blogAutopublish.kind, set: { enabled, updatedAt: new Date() } });
+    return this.autopublishSettings();
+  }
+
+  /** Posts the generator published on its own in the last 7 days, per locale. */
+  async autoPublishedThisWeek(): Promise<Record<BlogLocale, number>> {
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const rows = await this.db
+      .select({ locale: schema.blogPosts.locale, n: count() })
+      .from(schema.blogPosts)
+      .where(and(eq(schema.blogPosts.autoPublished, true), gte(schema.blogPosts.publishedAt, weekAgo)))
+      .groupBy(schema.blogPosts.locale);
+    return Object.fromEntries(BLOG_LOCALES.map((l) => [l, rows.find((r) => r.locale === l)?.n ?? 0])) as Record<BlogLocale, number>;
+  }
+
+  /** Slugs already used in a locale, in any status (a rejected topic is not drafted again). */
+  async slugsIn(locale: BlogLocale): Promise<Set<string>> {
+    const rows = await this.db.select({ slug: schema.blogPosts.slug }).from(schema.blogPosts).where(eq(schema.blogPosts.locale, locale));
+    return new Set(rows.map((r) => r.slug));
   }
 
   async slugExists(locale: BlogLocale, slug: string): Promise<boolean> {
