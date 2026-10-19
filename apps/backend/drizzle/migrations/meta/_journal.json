@@ -299,21 +299,21 @@
     {
       "idx": 42,
       "version": "7",
-      "when": 1792800600000,
+      "when": 1792800860000,
       "tag": "0042_buyer_details_request",
       "breakpoints": true
     },
     {
       "idx": 43,
       "version": "7",
-      "when": 1792800700000,
+      "when": 1792800920000,
       "tag": "0043_contact_summary_indexes",
       "breakpoints": true
     },
     {
       "idx": 44,
       "version": "7",
-      "when": 1792800900000,
+      "when": 1792800980000,
       "tag": "0044_referrals_credits_partners",
       "breakpoints": true
     },
@@ -371,6 +371,13 @@
       "version": "7",
       "when": 1792900500000,
       "tag": "0052_legislation_monitor",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1792900560000,
+      "tag": "0053_osvc_regime",
       "breakpoints": true
     },
     {
