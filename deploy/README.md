@@ -42,7 +42,13 @@ Cloudflare, switch to the Cloudflare block described in
 
 Each run:
 
-- takes a `pg_dump` into `backups/` and keeps 14 days of dumps (`KEEP_DAYS`);
+- takes a `pg_dump` into `backups/` and keeps 14 days of dumps (`KEEP_DAYS`).
+  With `BACKUP_AGE_RECIPIENT` (an [age](https://age-encryption.org) public
+  key) in `.env` the dump is encrypted for that key and saved as
+  `.dump.age`. With `BACKUP_REMOTE` (an rclone `remote:path`) too, it is
+  copied there and remote copies older than 60 days are deleted
+  (`REMOTE_KEEP_DAYS`). The private key never goes on the server; restore
+  with `age -d -i billanta-backup.key billanta-….dump.age | pg_restore …`;
 - deletes logs older than 30 days;
 - prunes unused Docker images, build cache and stopped containers older
   than 3 days.
