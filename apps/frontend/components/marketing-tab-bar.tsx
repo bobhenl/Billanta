@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePercent, BookA, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, FileText, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, Store, UserRound, Users, UserSearch } from 'lucide-react';
+import { BadgePercent, BellRing, BookA, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, FileText, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, Store, UserRound, Users, UserSearch } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -15,12 +15,13 @@ import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
  * the app for someone signed in; "More" also carries sign-up and log-in
  * buttons so neither is ever more than one tap away. Language and theme stay
  * in the phone header, as on VoxelRank. "More" also carries the pages of
- * the header's Resources dropdown (calculators, guides where published).
+ * the header's Resources dropdown (invoice templates, reminder templates, calculators, guides where published).
  */
 export function MarketingTabBar() {
   const t = useTranslations('marketing.nav');
   const tMobile = useTranslations('mobile');
   const tMenu = useTranslations('tools.menu');
+  const tTemplates = useTranslations('invoiceTemplates');
   const locale = useLocale();
   const { status } = useSession();
   const signedIn = status === 'authenticated';
@@ -41,6 +42,8 @@ export function MarketingTabBar() {
       panelTitle={tMobile('explore')}
       links={[
         { key: 'features', href: '/features', label: t('features'), icon: Sparkles },
+        { key: 'templates', href: '/invoice-templates', label: tTemplates('menu'), icon: FileText },
+        { key: 'reminders', href: '/payment-reminder-templates', label: tMenu('reminders'), icon: BellRing },
         // Calculator is taken by the accountants link, so the calculators get a percent sign.
         { key: 'calculators', href: '/calculators', label: tMenu('calculators'), icon: SquarePercent },
         ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ key: 'guides', href: '/guides', label: tMenu('guides'), icon: BookOpenCheck }] : []),

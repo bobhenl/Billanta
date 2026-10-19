@@ -287,3 +287,15 @@ describe("mentionsReverseCharge", () => {
     expect(mentionsReverseCharge(null)).toBe(false);
   });
 });
+
+describe("InvoicePdfService.generateLetter", () => {
+  it("renders a reminder letter with Czech diacritics and CRLF input", async () => {
+    const pdf = await new InvoicePdfService().generateLetter({
+      language: "cs",
+      title: "Výzva k úhradě",
+      body: "Odesílatel: Jan Novák\r\nAdresát: Firma s.r.o.\r\n\r\nDobrý den,\r\n\r\nvyzýváme vás k úhradě faktury č. 2026-0042."
+    });
+    expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+    expect(pdf.subarray(-6).toString("latin1").trim()).toBe("%%EOF");
+  });
+});

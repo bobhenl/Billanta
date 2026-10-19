@@ -3,7 +3,7 @@ import { routing } from '@/i18n/routing';
 import { comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { GLOSSARY, glossaryLocales } from '@/lib/glossary';
-import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, REMINDERS, TEMPLATES } from '@/lib/public-tools';
 import { fetchBlogSitemap } from '@/lib/blog';
 import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
@@ -92,7 +92,13 @@ const STATIC_ENTRIES: UrlEntry[] = [
   ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales })),
   // Glossary: one-country terms only in their own language (lib/glossary.ts).
   { path: '/glossary', changeFrequency: 'monthly', priority: 0.6 },
-  ...GLOSSARY.map((term): UrlEntry => ({ path: '/glossary/' + term.slug, changeFrequency: 'monthly', priority: 0.6, locales: glossaryLocales(term) }))
+  ...GLOSSARY.map((term): UrlEntry => ({ path: '/glossary/' + term.slug, changeFrequency: 'monthly', priority: 0.6, locales: glossaryLocales(term) })),
+  // Invoice templates: cs/en follow Czech law, sk Slovak law.
+  { path: '/invoice-templates', changeFrequency: 'monthly', priority: 0.8 },
+  ...TEMPLATES.map((x): UrlEntry => ({ path: '/invoice-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.8, locales: x.locales })),
+  // Payment reminders: cs/en Czech law, sk Slovak; the pre-action notice is Czech only.
+  { path: '/payment-reminder-templates', changeFrequency: 'monthly', priority: 0.7 },
+  ...REMINDERS.map((x): UrlEntry => ({ path: '/payment-reminder-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.7, locales: x.locales }))
 ];
 
 /** The static public pages with their locales, for llms.txt to list whatever it doesn't describe itself. */

@@ -1665,7 +1665,7 @@ export const blogPosts = pgTable("blog_posts", {
 });
 
 /**
- * Auto-publish switch per generated kind, set in /admin/blog (migration 0074).
+ * Auto-publish switch per generated kind, set in /admin/blog (migration 0078).
  * A missing row means off. Briefs and hand-written posts have no switch.
  */
 export const blogAutopublish = pgTable("blog_autopublish", {

@@ -6309,6 +6309,19 @@
           "a": "Když fakturujete pravidelně. Účet hlídá číselnou řadu, eviduje úhrady, pomáhá s upomínkami a exportuje faktury do ISDOC pro účetní. Tarif Zdarma zahrnuje 10 dokladů měsíčně."
         }
       ]
+    },
+    "template": {
+      "documentType": "Typ dokladu",
+      "documentTypes": {
+        "invoice": "Faktura",
+        "proforma": "Zálohová faktura",
+        "credit_note": "Opravný daňový doklad (dobropis)"
+      },
+      "reverseCharge": "Přenesená daňová povinnost (daň odvede zákazník)",
+      "relatedInvoiceNumber": "Číslo opravované faktury",
+      "hintReverseCharge": "Faktura bude bez DPH s textem „daň odvede zákazník“ (§ 92a zákona o DPH). Jen mezi plátci DPH.",
+      "hintCreditNote": "U snížení ceny zadejte zápornou cenu za jednotku, např. -2000.",
+      "identifiedNote": "Daň odvede zákazník."
     }
   },
   "publicProfile": {
@@ -7422,7 +7435,10 @@
       "glossary": "Slovník pojmů",
       "glossaryHint": "DUZP, přenesená daňová povinnost a další",
       "businessDirectory": "Katalog firem",
-      "businessDirectoryHint": "Živnostníci a firmy podle oboru a obce"
+      "businessDirectoryHint": "Živnostníci a firmy podle oboru a obce",
+      "templatesHint": "Vzor pro neplátce, plátce, zálohu i dobropis",
+      "reminders": "Vzory upomínek",
+      "remindersHint": "Upomínka, výzva k úhradě, předžalobní výzva"
     },
     "search": {
       "showAll": "Zobrazit všechny výsledky pro „{query}“",
@@ -11855,6 +11871,797 @@
       "eshop": "Malé e-shopy a obchody – od rukodělných výrobků po specializované zboží.",
       "cleaning": "Úklidové firmy, údržba domů a zahrad, mytí oken a další služby kolem domu.",
       "other": "Další živnostníci a firmy, kteří se do ostatních oborů nevešli."
+    }
+  },
+  "invoiceTemplates": {
+    "menu": "Vzory faktur",
+    "indexTitle": "Vzor faktury 2026 – šablony pro neplátce i plátce DPH",
+    "indexName": "Vzory faktur",
+    "indexDescription": "Vzory faktur podle českých zákonů: neplátce a plátce DPH, zálohová faktura, opravný doklad, přenesená daňová povinnost i identifikovaná osoba. Každý vzor s povinnými údaji a vyplněním online zdarma.",
+    "indexLead": "Vyberte situaci a uvidíte vyplněnou ukázku, seznam povinných údajů s odkazem na zákon a tlačítko, které otevře editor s předvyplněným typem dokladu. PDF stáhnete zdarma a bez registrace.",
+    "howTitle": "Jak vzor použít",
+    "how": [
+      "Podle ukázky zjistíte, co na fakturu patří a kde to bude.",
+      "Tlačítkem otevřete editor s nastaveným typem dokladu a doplníte své údaje.",
+      "Stáhnete hotové PDF s QR platbou. Nic se neukládá, účet není potřeba."
+    ],
+    "common": {
+      "sample": "Ukázka",
+      "fictional": "Vymyšlené údaje, jen pro ukázku.",
+      "whenTitle": "Kdy tento doklad použít",
+      "fieldsTitle": "Povinné údaje",
+      "fieldsLead": "U každého údaje je odkaz na ustanovení zákona, které ho vyžaduje.",
+      "pitfallsTitle": "Na co si dát pozor",
+      "useButton": "Vyplnit tento vzor online",
+      "useNote": "Editor se otevře s nastaveným typem dokladu. PDF stáhnete zdarma, bez registrace.",
+      "otherTitle": "Další vzory",
+      "allTemplates": "Všechny vzory faktur",
+      "lawRef": "§ {p} odst. {o} {law}",
+      "lawRefShort": "§ {p} {law}",
+      "rulesNote": "Vzory vycházejí z českých předpisů. Pro jednotlivé případy (zahraničí, osvobozená plnění) si ověřte podrobnosti v zákoně nebo u daňového poradce."
+    },
+    "laws": {
+      "ZDPH": "zákona o DPH",
+      "OZ": "občanského zákoníku",
+      "ZU": "zákona o účetnictví",
+      "ZoDPH": "zákona o DPH (SR)",
+      "ObZ": "Obchodného zákonníka",
+      "ZoU": "zákona o účtovníctve",
+      "OSR": "občanského soudního řádu",
+      "NVU": "nařízení vlády č. 351/2013 Sb.",
+      "NVUO": "slovenského nařízení vlády č. 21/2013 Z. z."
+    },
+    "doc": {
+      "supplier": "Dodavatel",
+      "customer": "Odběratel",
+      "number": "Číslo dokladu",
+      "issueDate": "Datum vystavení",
+      "duzp": "Datum zdanitelného plnění",
+      "dueDate": "Datum splatnosti",
+      "payment": "Platba",
+      "bankTransfer": "Převodem na účet",
+      "vs": "Variabilní symbol",
+      "description": "Popis",
+      "quantity": "Množství",
+      "unitPrice": "Cena za j.",
+      "rate": "DPH",
+      "amount": "Celkem",
+      "base": "Základ",
+      "vat": "DPH",
+      "recap": "Rekapitulace DPH",
+      "totalDue": "Celkem k úhradě",
+      "related": "K dokladu",
+      "reason": "Důvod opravy",
+      "reverseBase": "Základ daně (daň odvede zákazník)"
+    },
+    "currency": "CZK",
+    "bank": {
+      "account": "1920014539/0800",
+      "iban": "CZ65 0800 0000 0019 2001 4539"
+    },
+    "parties": {
+      "nonPayer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "IČO: 12345678",
+          "Nejsem plátce DPH."
+        ]
+      },
+      "payer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "IČO: 12345678",
+          "DIČ: CZ7356120123"
+        ]
+      },
+      "identified": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "IČO: 12345678",
+          "DIČ: CZ7356120123",
+          "Identifikovaná osoba k DPH"
+        ]
+      },
+      "contractor": {
+        "name": "Stavby Kučera s.r.o.",
+        "lines": [
+          "Lidická 45",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "IČO: 24681357",
+          "DIČ: CZ24681357",
+          "C 98765 vedená u Krajského soudu v Brně"
+        ]
+      },
+      "domestic": {
+        "name": "Pekárna U Mlýna s.r.o.",
+        "lines": [
+          "Mlýnská 8",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "IČO: 87654321",
+          "DIČ: CZ87654321"
+        ]
+      },
+      "developer": {
+        "name": "Rezidence Hájek s.r.o.",
+        "lines": [
+          "Na Pankráci 30",
+          "140 00 Praha 4"
+        ],
+        "ids": [
+          "IČO: 13579246",
+          "DIČ: CZ13579246"
+        ]
+      },
+      "eu": {
+        "name": "Hafenstadt Media GmbH",
+        "lines": [
+          "Speicherstraße 4",
+          "20457 Hamburg",
+          "Německo"
+        ],
+        "ids": [
+          "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "items": {
+      "nonPayer": {
+        "name": "Neplátce DPH",
+        "title": "Vzor faktury pro neplátce DPH",
+        "description": "Vzor faktury pro neplátce DPH: vyplněná ukázka, povinné údaje podle občanského zákoníku a zákona o účetnictví a vyplnění online s PDF zdarma.",
+        "lead": "Nejčastější faktura živnostníka. Neplátce neuvádí DPH ani datum zdanitelného plnění, musí ale na fakturu napsat, kdo ji vystavil, komu a za co.",
+        "docTitle": "Faktura",
+        "number": "2026-0018",
+        "notes": [
+          "Nejsem plátce DPH.",
+          "Fyzická osoba zapsaná v živnostenském rejstříku."
+        ],
+        "lines": [
+          {
+            "d": "Fotografie produktů pro e-shop (40 snímků)",
+            "q": 1,
+            "u": "ks",
+            "p": 8500,
+            "r": 0
+          },
+          {
+            "d": "Retuš a úprava fotografií",
+            "q": 4,
+            "u": "hod",
+            "p": 600,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Nejste registrovaní k DPH (obrat za kalendářní rok do 2 000 000 Kč) a fakturujete tuzemskému odběrateli.",
+          "Platí pro OSVČ i pro s.r.o., které nejsou plátci. Pro služby firmám v jiném státě EU se ale často stáváte identifikovanou osobou – viz samostatný vzor."
+        ],
+        "fields": [
+          {
+            "name": "Jméno nebo název, sídlo a IČO dodavatele",
+            "text": "Podnikatel je uvádí na každé obchodní listině, tedy i na faktuře.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Zápis ve veřejném rejstříku",
+            "text": "Jen pokud v něm jste: s.r.o. uvede soud a spisovou značku. Živnostník zapsaný jen v živnostenském rejstříku ho uvádět nemusí.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Odběratel",
+            "text": "Jméno nebo název a adresa, u firmy i IČO, aby bylo jasné, kdo je účastníkem obchodu.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Číslo dokladu",
+            "text": "Jednoznačné označení faktury, nejlépe vzestupná číselná řada.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Popis plnění a částka",
+            "text": "Co jste dodali, v jakém množství a za kolik. Celková částka k úhradě.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Datum vystavení",
+            "text": "Okamžik vyhotovení dokladu.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Informace, že nejste plátce DPH",
+            "text": "Zákon ji výslovně nevyžaduje, ale předejde dotazům, proč na faktuře chybí daň."
+          }
+        ],
+        "pitfalls": [
+          "Neuvádějte DIČ ve tvaru „CZ…“, pokud nejste plátce ani identifikovaná osoba – odběratel by mohl čekat daňový doklad.",
+          "Splatnost a číslo účtu zákon nevyžaduje, bez nich ale peníze přijdou později."
+        ]
+      },
+      "vatPayer": {
+        "name": "Plátce DPH",
+        "title": "Vzor faktury pro plátce DPH (daňový doklad)",
+        "description": "Vzor faktury plátce DPH: daňový doklad s DIČ, datem zdanitelného plnění a rekapitulací DPH. Povinné údaje podle § 29 zákona o DPH a vyplnění online zdarma.",
+        "lead": "Faktura plátce je daňovým dokladem. Kromě běžných údajů musí obsahovat DIČ obou stran, datum zdanitelného plnění, základ daně, sazbu a výši DPH.",
+        "docTitle": "Faktura – daňový doklad",
+        "number": "2026-0042",
+        "notes": [
+          "Fyzická osoba zapsaná v živnostenském rejstříku."
+        ],
+        "lines": [
+          {
+            "d": "Grafický návrh loga a vizuální identity",
+            "q": 1,
+            "u": "ks",
+            "p": 12000,
+            "r": 21
+          },
+          {
+            "d": "Konzultace k tisku obalů",
+            "q": 3,
+            "u": "hod",
+            "p": 900,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Jste plátce DPH a dodáváte zboží nebo službu v tuzemsku, kde daň přiznáváte vy.",
+          "Daňový doklad vystavte do 15 dnů ode dne zdanitelného plnění nebo přijetí platby."
+        ],
+        "fields": [
+          {
+            "name": "Označení a DIČ dodavatele",
+            "text": "Jméno nebo název, sídlo a daňové identifikační číslo.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Označení a DIČ odběratele",
+            "text": "Pokud je odběratel plátce, uvádí se i jeho DIČ.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Evidenční číslo dokladu",
+            "text": "Jedinečné v rámci jedné nebo více řad.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Rozsah a předmět plnění",
+            "text": "Co a kolik jste dodali.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Datum vystavení a datum zdanitelného plnění",
+            "text": "DUZP se uvádí, pokud se liší od data vystavení – v praxi ho uvádějte vždy.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Jednotková cena bez daně a sleva",
+            "text": "Cena za jednotku bez DPH, případná sleva, pokud není v jednotkové ceně.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Základ daně, sazba a výše daně",
+            "text": "Za každou sazbu zvlášť; výše daně v korunách i u faktury v cizí měně.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Údaje podle občanského zákoníku",
+            "text": "Sídlo, IČO a případný zápis ve veřejném rejstříku.",
+            "rule": "§435/1 OZ"
+          }
+        ],
+        "pitfalls": [
+          "U faktury v eurech uveďte daň i v korunách a použitý kurz.",
+          "Splatnost není povinný údaj daňového dokladu, ale bez ní se těžko vymáhá."
+        ]
+      },
+      "proforma": {
+        "name": "Zálohová faktura",
+        "title": "Zálohová faktura – vzor a co na ní musí být",
+        "description": "Vzor zálohové faktury (proformy): co na ní uvést, proč není daňovým dokladem a jaký doklad vystavit po přijetí platby. Vyplnění online a PDF zdarma.",
+        "lead": "Zálohová faktura je výzva k platbě předem. Není daňovým dokladem, a proto z ní odběratel nemůže uplatnit odpočet DPH. Po přijetí platby vystavuje plátce daňový doklad.",
+        "docTitle": "Zálohová faktura",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "Zálohová faktura není daňový doklad.",
+          "Daňový doklad k přijaté platbě vám pošleme po jejím připsání na účet."
+        ],
+        "lines": [
+          {
+            "d": "Záloha 50 % na tvorbu webových stránek",
+            "q": 1,
+            "u": "ks",
+            "p": 20000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Chcete zaplatit předem, než začnete práci nebo odešlete zboží.",
+          "Plátce DPH po přijetí platby obvykle vystaví daňový doklad k přijaté platbě a v konečné faktuře zálohu odečte. Neplátce zálohu jen odečte v konečné faktuře."
+        ],
+        "fields": [
+          {
+            "name": "Dodavatel a odběratel",
+            "text": "Jméno nebo název, sídlo a IČO; jde o obchodní listinu.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Číslo zálohové faktury",
+            "text": "Používejte samostatnou řadu, aby se nepletla s daňovými doklady."
+          },
+          {
+            "name": "Částka zálohy a splatnost",
+            "text": "Kolik a do kdy má odběratel zaplatit, a číslo účtu."
+          },
+          {
+            "name": "Upozornění, že nejde o daňový doklad",
+            "text": "Doporučený údaj: odběratel podle něj pozná, že si z dokladu nemůže nárokovat DPH."
+          },
+          {
+            "name": "Daňový doklad po přijetí platby",
+            "text": "Přijetím úplaty plátci zpravidla vzniká povinnost přiznat daň; o přijaté platbě vystavuje daňový doklad.",
+            "rule": "§28/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Neuvádějte na zálohové faktuře DUZP – vzniká až přijetím platby.",
+          "V konečné faktuře nezapomeňte zálohu odečíst, jinak bude odběratel platit dvakrát."
+        ]
+      },
+      "creditNote": {
+        "name": "Dobropis",
+        "title": "Opravný daňový doklad (dobropis) – vzor",
+        "description": "Vzor opravného daňového dokladu (dobropisu): odkaz na původní fakturu, důvod opravy a rozdíl základu i daně. Povinné údaje podle § 46 zákona o DPH.",
+        "lead": "Když po vystavení faktury snížíte cenu (sleva, reklamace, vrácené zboží) nebo ji zvýšíte, vystavíte opravný daňový doklad. Opravuje původní fakturu, nenahrazuje ji.",
+        "docTitle": "Opravný daňový doklad",
+        "number": "OD-2026-0003",
+        "related": "2026-0042",
+        "reason": "Sleva z ceny po reklamaci grafického návrhu",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Sleva z ceny – grafický návrh loga",
+            "q": 1,
+            "u": "ks",
+            "p": -2000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Sleva poskytnutá po vystavení faktury, uznaná reklamace, vrácení zboží nebo zrušení části plnění.",
+          "Původní faktura zůstává platná, opravný doklad zachycuje jen rozdíl."
+        ],
+        "fields": [
+          {
+            "name": "Označení a DIČ obou stran",
+            "text": "Stejně jako u běžného daňového dokladu.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Evidenční číslo opravného dokladu",
+            "text": "Vlastní číslo z vaší řady.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Číslo původního dokladu",
+            "text": "Faktura, kterou opravujete.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Důvod opravy",
+            "text": "Stručně a konkrétně, např. sleva po reklamaci.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Rozdíl základu daně a daně",
+            "text": "Rozdíl mezi opraveným a původním základem i daní, při snížení se zápornými čísly.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Oprava základu daně",
+            "text": "Kdy a za jakých podmínek se oprava provádí.",
+            "rule": "§42/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Neplátce DPH opravný daňový doklad nevystavuje – stačí dobropis jako účetní doklad s odkazem na původní fakturu.",
+          "Původní fakturu nestornujte ani nepřepisujte; zůstává v evidenci."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Přenesená daňová povinnost",
+        "title": "Faktura s přenesenou daňovou povinností – vzor",
+        "description": "Vzor faktury v režimu přenesené daňové povinnosti (§ 92a ZDPH), např. za stavební práce: text „daň odvede zákazník“, DIČ odběratele a částka bez DPH.",
+        "lead": "U stavebních a montážních prací, odpadu, kovů a dalších plnění podle § 92a zákona o DPH přiznává daň odběratel. Dodavatel fakturuje bez daně a na doklad napíše „daň odvede zákazník“.",
+        "docTitle": "Faktura – daňový doklad",
+        "number": "2026-0115",
+        "notes": [
+          "Daň odvede zákazník.",
+          "Přenesená daňová povinnost podle § 92e zákona o DPH (stavební a montážní práce)."
+        ],
+        "lines": [
+          {
+            "d": "Zednické práce – rekonstrukce koupelny, byt 2.04",
+            "q": 1,
+            "u": "ks",
+            "p": 84000,
+            "r": 21
+          },
+          {
+            "d": "Obklady a dlažby, včetně materiálu",
+            "q": 26,
+            "u": "m²",
+            "p": 1250,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Oba jste plátci DPH v Česku a plnění patří mezi ta, na která se režim vztahuje (§ 92b až § 92e a nařízení vlády).",
+          "Nejčastěji stavební a montážní práce (CZ-CPA 41 až 43), dodání odpadu a šrotu nebo povolenek."
+        ],
+        "fields": [
+          {
+            "name": "Text „daň odvede zákazník“",
+            "text": "Povinné sdělení na daňovém dokladu, když daň přiznává odběratel.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "DIČ dodavatele i odběratele",
+            "text": "Režim platí jen mezi plátci, proto je DIČ odběratele nezbytné.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Základ daně bez DPH",
+            "text": "Výši daně neuvádíte, daň vypočte a přizná odběratel. Uvést sazbu pomůže odběrateli.",
+            "rule": "§92a/1 ZDPH"
+          },
+          {
+            "name": "Ostatní údaje daňového dokladu",
+            "text": "Číslo, data, předmět a rozsah plnění, jednotková cena.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Kontrolní hlášení",
+            "text": "Dodavatel plnění vykáže v oddílu A.1, odběratel v oddílu B.1 kontrolního hlášení."
+          }
+        ],
+        "pitfalls": [
+          "Pokud odběratel není plátce (např. soukromá osoba), režim se nepoužije a fakturujete s DPH.",
+          "Než fakturu pošlete, ověřte v registru plátců DPH, že odběratel plátcem opravdu je."
+        ]
+      },
+      "identified": {
+        "name": "Identifikovaná osoba",
+        "title": "Vzor faktury pro identifikovanou osobu (služby do EU)",
+        "description": "Vzor faktury identifikované osoby za službu firmě v jiném státě EU: DIČ obou stran, bez DPH, text „daň odvede zákazník“. Povinné údaje a vyplnění online.",
+        "lead": "Neplátce, který poskytne službu firmě v jiném státě EU, se stává identifikovanou osobou. Fakturuje bez české DPH, uvede DIČ své i zákazníka a sdělení, že daň odvede zákazník.",
+        "docTitle": "Faktura – daňový doklad",
+        "number": "2026-0021",
+        "notes": [
+          "Daň odvede zákazník.",
+          "Reverse charge – Article 196, Council Directive 2006/112/EC."
+        ],
+        "lines": [
+          {
+            "d": "Webdesign – úprava šablony e-shopu, říjen 2026",
+            "q": 1,
+            "u": "ks",
+            "p": 18000,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Nejste plátce DPH a poskytujete službu (programování, grafika, marketing) firmě registrované k DPH v jiném státě EU.",
+          "Registraci identifikované osoby podáte do 15 dnů od poskytnutí služby; plátcem se nestáváte."
+        ],
+        "fields": [
+          {
+            "name": "DIČ dodavatele",
+            "text": "Identifikovaná osoba dostane DIČ ve tvaru CZ… a uvádí ho na doklad.",
+            "rule": "§6i/1 ZDPH"
+          },
+          {
+            "name": "DIČ zákazníka z jiného státu",
+            "text": "Ověřte ho v systému VIES; bez platného DIČ se nejedná o přenesení daně.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Text „daň odvede zákazník“",
+            "text": "Daň přizná zákazník ve svém státě; na faktuře je částka bez DPH.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Datum uskutečnění plnění",
+            "text": "Den poskytnutí služby; podle něj se služba vykazuje.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Souhrnné hlášení",
+            "text": "Za měsíc, ve kterém jste službu poskytli, podáte souhrnné hlášení.",
+            "rule": "§102/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Fakturujete-li soukromé osobě v EU, identifikovanou osobou se nestáváte a postupujete jako u tuzemské faktury neplátce.",
+          "Za služby přijaté od zahraničních firem (reklama na Facebooku, Google) přiznáváte českou DPH vy – to je druhá strana téže povinnosti."
+        ]
+      }
+    }
+  },
+  "paymentReminders": {
+    "indexTitle": "Vzor upomínky a výzvy k úhradě zdarma",
+    "indexName": "Vzory upomínek",
+    "indexDescription": "Vzor upomínky, výzvy k úhradě a předžalobní výzvy podle českého práva. Doplňte dlužníka a částku, zvolte tón a zkopírujte text nebo stáhněte PDF.",
+    "indexLead": "Tři dopisy pro fakturu po splatnosti, od přátelské upomínky po předžalobní výzvu. Generátor níže je za vás vyplní – text zkopírujete do e-mailu, nebo si stáhnete PDF. Bez registrace.",
+    "step": "{n}. krok",
+    "howTitle": "Jak postupovat u nezaplacené faktury",
+    "how": [
+      "Pár dní po splatnosti pošlete zdvořilou upomínku. Často jde jen o přehlédnutí.",
+      "Když platba nepřijde ani potom, pošlete výzvu k úhradě s novou lhůtou a upozorněním na úrok z prodlení.",
+      "Než podáte žalobu, pošlete nejméně 7 dní předem předžalobní výzvu. Bez ní vám soud nemusí přiznat náhradu nákladů řízení.",
+      "Každý dopis si uschovejte i s dokladem o odeslání."
+    ],
+    "common": {
+      "whenTitle": "Kdy dopis poslat",
+      "fieldsTitle": "Co do dopisu patří",
+      "fieldsLead": "Kde něco stanoví zákon, je u údaje odkaz na příslušné ustanovení.",
+      "pitfallsTitle": "Na co si dát pozor",
+      "otherTitle": "Další vzory",
+      "allTemplates": "Všechny vzory upomínek",
+      "invoiceTemplates": "Vzory faktur",
+      "rulesNote": "Vzory vycházejí z českého práva a nenahrazují právní radu. U vysokých nebo sporných pohledávek se poraďte s advokátem."
+    },
+    "auto": {
+      "title": "Upomínky za vás pošle Billanta",
+      "text": "Když faktura vystavená v Billantě přejde splatnost, odběratel automaticky dostane e-mailem zdvořilou upomínku s odkazem na fakturu a QR platbou. Interval i nejvyšší počet upomínek si nastavíte sami a jakmile je faktura zaplacená, upomínky přestanou chodit.",
+      "cta": "Vyzkoušet zdarma",
+      "more": "Jak fungují automatické upomínky"
+    },
+    "fromInvoices": {
+      "title": "Faktura po splatnosti? Vzory upomínek",
+      "text": "Upomínka, výzva k úhradě i předžalobní výzva. Vyplníte je online a zkopírujete nebo stáhnete jako PDF."
+    },
+    "items": {
+      "reminder": {
+        "name": "Upomínka",
+        "title": "Vzor upomínky neuhrazené faktury",
+        "description": "Vzor zdvořilé nebo důrazné upomínky faktury po splatnosti. Vyplňte údaje a zkopírujte text do e-mailu nebo stáhněte PDF zdarma.",
+        "lead": "První dopis po splatnosti: připomene fakturu a dá novou lhůtu.",
+        "when": [
+          "Upomínku pošlete pár dní po splatnosti, typicky po 3 až 7 dnech. Odběratel je v prodlení hned den po splatnosti, ale první dopis má hlavně připomenout, že faktura existuje.",
+          "Zákon pro upomínku žádnou formu nepředepisuje. Stačí e-mail, pokud ze smlouvy nevyplývá něco jiného."
+        ],
+        "fields": [
+          {
+            "name": "Číslo faktury, částka a datum splatnosti",
+            "text": "Aby odběratel platbu snadno dohledal a spároval."
+          },
+          {
+            "name": "Upozornění, že je dlužník v prodlení",
+            "text": "Kdo nezaplatí včas, je v prodlení. V první upomínce to stačí zmínit věcně.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Nová lhůta a platební údaje",
+            "text": "Konkrétní datum a číslo účtu, ideálně s variabilním symbolem (číslo faktury)."
+          },
+          {
+            "name": "Prosba ozvat se, pokud už je zaplaceno",
+            "text": "Platby se míjejí s upomínkami. Zdvořilá věta předejde zbytečné hádce."
+          }
+        ],
+        "pitfalls": [
+          "Než upomínku pošlete, zkontrolujte výpis z účtu. Upomínka na zaplacenou fakturu kazí vztah s klientem.",
+          "Pište věcně a bez výhrůžek. Na důraznější tón je čas ve výzvě k úhradě.",
+          "Upomínka nic neprodlužuje: úrok z prodlení běží ode dne po splatnosti bez ohledu na novou lhůtu."
+        ]
+      },
+      "demand": {
+        "name": "Výzva k úhradě",
+        "title": "Vzor výzvy k úhradě faktury s úrokem z prodlení",
+        "description": "Vzor výzvy k úhradě s upozorněním na zákonný úrok z prodlení a náhradu nákladů 1 200 Kč. Vyplňte online, zkopírujte nebo stáhněte PDF.",
+        "lead": "Druhý dopis: důraznější, s úrokem z prodlení a náklady spojenými s uplatněním pohledávky.",
+        "when": [
+          "Výzvu k úhradě pošlete, když upomínka nezabrala, obvykle 2 až 4 týdny po splatnosti.",
+          "Upozorní dlužníka, že kromě dlužné částky může dlužit i úrok z prodlení a mezi podnikateli i náhradu nákladů spojených s uplatněním pohledávky."
+        ],
+        "fields": [
+          {
+            "name": "Dlužná částka a faktura",
+            "text": "Číslo faktury, částka a datum splatnosti, po kterém je dlužník v prodlení.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Úrok z prodlení",
+            "text": "Věřitel může požadovat zákonný úrok z prodlení. Ročně činí repo sazbu ČNB platnou pro první den kalendářního pololetí, v němž prodlení nastalo, zvýšenou o 8 procentních bodů.",
+            "rule": "§1970 OZ, §2 NVU"
+          },
+          {
+            "name": "Náklady spojené s uplatněním pohledávky",
+            "text": "Nejméně 1 200 Kč za každou pohledávku. Požadujte je jen po podnikatelích.",
+            "rule": "§3 NVU"
+          },
+          {
+            "name": "Nová lhůta a platební údaje",
+            "text": "Konkrétní datum, do kdy má platba dorazit, a kam."
+          }
+        ],
+        "pitfalls": [
+          "Úrok počítejte ode dne následujícího po dni splatnosti, ne od data upomínky.",
+          "Pokud máte ve smlouvě vlastní úrok nebo smluvní pokutu, odkažte na smlouvu místo zákonné sazby.",
+          "Náhradu 1 200 Kč nepožadujte po spotřebitelích."
+        ]
+      },
+      "preAction": {
+        "name": "Předžalobní výzva",
+        "title": "Vzor předžalobní výzvy k zaplacení faktury",
+        "description": "Vzor předžalobní výzvy (výzvy k plnění podle § 142a o. s. ř.). Pošlete ji nejméně 7 dní před žalobou, jinak nemusíte dostat náhradu nákladů řízení.",
+        "lead": "Poslední dopis před žalobou: bez něj nemusíte dostat zpět náklady soudního řízení.",
+        "when": [
+          "Předžalobní výzvu pošlete, když jste se rozhodli pohledávku vymáhat u soudu.",
+          "Žalobce, který spor vyhraje, má nárok na náhradu nákladů řízení jen tehdy, když dlužníkovi nejméně 7 dní před podáním žaloby poslal výzvu k plnění na adresu pro doručování, trvalého pobytu nebo sídla."
+        ],
+        "fields": [
+          {
+            "name": "Výslovná výzva k plnění",
+            "text": "Z dopisu musí být jasné, co přesně a do kdy má dlužník zaplatit.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Adresa dlužníka",
+            "text": "Adresa pro doručování, trvalého pobytu nebo sídla. Ověřte ji v obchodním rejstříku nebo v ARES.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Upozornění na žalobu",
+            "text": "Že po marném uplynutí lhůty podáte žalobu a budete požadovat i náhradu nákladů řízení."
+          },
+          {
+            "name": "Úrok z prodlení a náklady",
+            "text": "Dlužnou částku doplňte o zákonný úrok z prodlení a mezi podnikateli o náklady spojené s uplatněním pohledávky.",
+            "rule": "§1970 OZ, §3 NVU"
+          }
+        ],
+        "pitfalls": [
+          "Mezi odesláním výzvy a podáním žaloby musí uplynout nejméně 7 dní.",
+          "Pošlete ji doporučeně nebo do datové schránky a schovejte si doklad o odeslání. U soudu ho budete potřebovat.",
+          "Výzva poslaná jen e-mailem se prokazuje hůř."
+        ]
+      }
+    }
+  },
+  "reminderGenerator": {
+    "title": "Vyplňte dopis",
+    "preview": "Náhled",
+    "copy": "Kopírovat text",
+    "copied": "Zkopírováno",
+    "pdf": "Stáhnout PDF",
+    "note": "Nic neukládáme. PDF se vytvoří jen pro vás a hned se zahodí.",
+    "preActionHint": "Výzvu pošlete doporučeně nebo do datové schránky a schovejte si doklad o odeslání.",
+    "fields": {
+      "kind": "Dopis",
+      "tone": "Tón",
+      "polite": "Zdvořilý",
+      "firm": "Důrazný",
+      "creditor": "Věřitel (vy)",
+      "creditorPh": "Jan Novák, IČO 12345678",
+      "debtor": "Dlužník",
+      "debtorPh": "Firma s.r.o., IČO 87654321",
+      "invoice": "Číslo faktury",
+      "due": "Datum splatnosti",
+      "amount": "Dlužná částka",
+      "currency": "Měna",
+      "account": "Číslo účtu",
+      "accountPh": "123456789/0100",
+      "accountHint": "Nepovinné. Jinak odkážeme na účet z faktury.",
+      "deadline": "Nová lhůta k úhradě",
+      "days": "{n, plural, one {# den} few {# dny} other {# dní}}"
+    },
+    "blank": {
+      "invoice": "[číslo faktury]",
+      "amount": "[částka]",
+      "due": "[datum splatnosti]",
+      "dayAfter": "[den po splatnosti]",
+      "deadline": "[nová lhůta]",
+      "creditor": "[vaše jméno]",
+      "debtor": "[dlužník]",
+      "date": "[datum]"
+    },
+    "file": {
+      "reminder": "upominka",
+      "demand": "vyzva-k-uhrade",
+      "preAction": "predzalobni-vyzva"
+    },
+    "errors": {
+      "copy": "Text se nepodařilo zkopírovat. Označte ho v náhledu ručně.",
+      "rateLimited": "Příliš mnoho PDF za krátkou dobu. Zkuste to za chvíli.",
+      "busy": "Server je teď vytížený. Zkuste to za chvíli.",
+      "failed": "PDF se nepodařilo vytvořit. Zkuste to znovu."
+    },
+    "letter": {
+      "from": "Odesílatel: {creditor}",
+      "to": "Adresát: {debtor}",
+      "date": "Datum: {date}",
+      "subject": "Věc: {title} – faktura č. {invoice}",
+      "payAccount": "na účet {account}",
+      "payInvoice": "na účet uvedený na faktuře",
+      "closing": "S pozdravem",
+      "reminder": {
+        "title": "Upomínka",
+        "polite": {
+          "greeting": "Dobrý den,",
+          "body": [
+            "dovolujeme si připomenout, že faktura č. {invoice} na částku {amount} byla splatná {due} a platbu jsme zatím neobdrželi.",
+            "Prosíme o úhradu {pay} nejpozději do {deadline}. Jako variabilní symbol uveďte číslo faktury.",
+            "Pokud jste již zaplatili, považujte prosím tuto upomínku za bezpředmětnou. Děkujeme."
+          ]
+        },
+        "firm": {
+          "greeting": "Dobrý den,",
+          "body": [
+            "faktura č. {invoice} na částku {amount} byla splatná {due} a dosud nebyla uhrazena. Od {dayAfter} jste v prodlení.",
+            "Žádáme vás o úhradu {pay} nejpozději do {deadline}.",
+            "Pokud platba do této lhůty nedorazí, budeme požadovat i zákonný úrok z prodlení."
+          ]
+        }
+      },
+      "demand": {
+        "title": "Výzva k úhradě",
+        "polite": {
+          "greeting": "Dobrý den,",
+          "body": [
+            "ani po upomínce jsme zatím neobdrželi platbu faktury č. {invoice} na částku {amount}, splatné {due}.",
+            "Vyzýváme vás proto k úhradě {pay} nejpozději do {deadline}.",
+            "Upozorňujeme, že od {dayAfter} jste v prodlení a vedle dlužné částky můžeme požadovat zákonný úrok z prodlení.",
+            "Pokud máte s úhradou potíže, ozvěte se nám prosím. Rádi se domluvíme na řešení."
+          ]
+        },
+        "firm": {
+          "greeting": "Dobrý den,",
+          "body": [
+            "vyzýváme vás k úhradě faktury č. {invoice} na částku {amount}, která byla splatná {due}. Od {dayAfter} jste v prodlení.",
+            "Dlužnou částku uhraďte {pay} nejpozději do {deadline}.",
+            "Vedle dlužné částky požadujeme zákonný úrok z prodlení ve výši repo sazby ČNB zvýšené o 8 procentních bodů a náhradu nákladů spojených s uplatněním pohledávky ve výši 1 200 Kč.",
+            "Pokud platba do této lhůty nedorazí, předáme pohledávku k vymáhání."
+          ]
+        }
+      },
+      "preAction": {
+        "title": "Předžalobní výzva",
+        "polite": {
+          "greeting": "Dobrý den,",
+          "body": [
+            "touto cestou vás vyzýváme k plnění podle § 142a občanského soudního řádu.",
+            "Dosud jste neuhradili fakturu č. {invoice} na částku {amount}, splatnou {due}. Od {dayAfter} jste v prodlení.",
+            "Dlužnou částku uhraďte {pay} nejpozději do {deadline}, spolu se zákonným úrokem z prodlení.",
+            "Pokud platba v této lhůtě nedorazí, podáme žalobu a budeme požadovat i náhradu nákladů řízení. Rádi bychom se tomu vyhnuli, proto se nám v případě potíží ozvěte."
+          ]
+        },
+        "firm": {
+          "greeting": "Dobrý den,",
+          "body": [
+            "touto cestou vás vyzýváme k plnění podle § 142a občanského soudního řádu.",
+            "Neuhradili jste fakturu č. {invoice} na částku {amount}, splatnou {due}, a to ani po předchozích upomínkách. Od {dayAfter} jste v prodlení.",
+            "Dlužnou částku uhraďte {pay} nejpozději do {deadline}, spolu se zákonným úrokem z prodlení a náhradou nákladů spojených s uplatněním pohledávky ve výši 1 200 Kč.",
+            "Pokud platba v této lhůtě nedorazí, podáme bez dalšího upozornění žalobu a budeme požadovat i náhradu nákladů řízení."
+          ]
+        }
+      }
     }
   }
 }

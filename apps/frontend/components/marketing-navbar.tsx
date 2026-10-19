@@ -28,6 +28,7 @@ export async function MarketingNavbar() {
   const t = await getTranslations('marketing.nav');
   const tApp = await getTranslations('app');
   const tMenu = await getTranslations('tools.menu');
+  const tTemplates = await getTranslations('invoiceTemplates');
   const locale = await getLocale();
 
   const links = [
@@ -35,6 +36,8 @@ export async function MarketingNavbar() {
     { href: '/pricing', label: t('pricing') }
   ];
   const resources = [
+    { href: '/invoice-templates', label: tTemplates('menu'), hint: tMenu('templatesHint') },
+    { href: '/payment-reminder-templates', label: tMenu('reminders'), hint: tMenu('remindersHint') },
     { href: '/calculators', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
     ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
     { href: '/glossary', label: tMenu('glossary'), hint: tMenu('glossaryHint') },

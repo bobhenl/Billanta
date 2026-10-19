@@ -42,6 +42,9 @@ type Item = { description: string; quantity: string; unit: string; unitPrice: st
 type UseCase = 'freelancer' | 'vat' | 'foreign' | 'oneoff';
 type Billing = 'hours' | 'goods' | 'project';
 type Profile = { useCase: UseCase; billing: Billing };
+type DocumentType = 'invoice' | 'proforma' | 'credit_note';
+/** `?template=<slug>` from the public invoice templates (/invoice-templates/<slug>). */
+type TemplateSlug = 'non-vat-payer' | 'vat-payer' | 'proforma-invoice' | 'credit-note' | 'reverse-charge' | 'identified-person';
 type AiQuota = { available: boolean; limit: number; remaining: number };
 type AresPrefill = { ico: string; dic: string | null; legalName: string; addressStreet: string | null; addressCity: string | null; addressPostalCode: string | null };
 
@@ -57,6 +60,16 @@ const USE_CASES: { id: UseCase; icon: typeof User }[] = [
   { id: 'oneoff', icon: Sparkles }
 ];
 const BILLINGS: Billing[] = ['hours', 'goods', 'project'];
+const DOCUMENT_TYPES: DocumentType[] = ['invoice', 'proforma', 'credit_note'];
+const FILE_PREFIX: Record<DocumentType, string> = { invoice: 'faktura', proforma: 'zalohova-faktura', credit_note: 'dobropis' };
+const TEMPLATE_PROFILE: Record<TemplateSlug, Profile> = {
+  'non-vat-payer': { useCase: 'freelancer', billing: 'project' },
+  'vat-payer': { useCase: 'vat', billing: 'project' },
+  'proforma-invoice': { useCase: 'vat', billing: 'project' },
+  'credit-note': { useCase: 'vat', billing: 'project' },
+  'reverse-charge': { useCase: 'vat', billing: 'project' },
+  'identified-person': { useCase: 'freelancer', billing: 'project' }
+};
 const FEATURES = [
   { key: 'recurring', icon: RefreshCw },
   { key: 'reminders', icon: BellRing },
@@ -104,6 +117,9 @@ export function GuestInvoiceForm() {
   const [currency, setCurrency] = useState(locale === 'sk' ? 'EUR' : 'CZK');
   const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
   const [vatPayer, setVatPayer] = useState(false);
+  const [documentType, setDocumentType] = useState<DocumentType>('invoice');
+  const [reverseCharge, setReverseCharge] = useState(false);
+  const [relatedInvoiceNumber, setRelatedInvoiceNumber] = useState('');
   const [supplier, setSupplier] = useState<Supplier>(emptySupplier);
   const [customer, setCustomer] = useState<Party>(emptyParty);
   const [items, setItems] = useState<Item[]>([{ description: '', quantity: '1', unit: '', unitPrice: '', vatRate: '21' }]);
@@ -123,7 +139,9 @@ export function GuestInvoiceForm() {
     const saved = readStorage<Partial<Supplier>>(STORAGE_KEY);
     if (saved) setSupplier({ ...emptySupplier, ...saved });
     const savedProfile = readStorage<Profile>(PROFILE_KEY);
-    if (savedProfile?.useCase && savedProfile.billing) applyProfile(savedProfile, false);
+    const template = new URLSearchParams(window.location.search).get('template');
+    if (template && template in TEMPLATE_PROFILE) applyTemplate(template as TemplateSlug);
+    else if (savedProfile?.useCase && savedProfile.billing) applyProfile(savedProfile, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -137,6 +155,21 @@ export function GuestInvoiceForm() {
     }
     const unit = UNIT_BY_BILLING[next.billing];
     setItems((list) => list.map((it) => (it.unit ? it : { ...it, unit })));
+  }
+
+  /** Presets the form for one public invoice template; the visitor's saved profile is left alone. */
+  function applyTemplate(slug: TemplateSlug) {
+    applyProfile(TEMPLATE_PROFILE[slug], false);
+    if (slug === 'proforma-invoice') setDocumentType('proforma');
+    if (slug === 'credit-note') {
+      setDocumentType('credit_note');
+      setShowAll(true);
+    }
+    if (slug === 'reverse-charge') setReverseCharge(true);
+    if (slug === 'identified-person') {
+      setShowAll(true);
+      setNote(t('template.identifiedNote'));
+    }
   }
 
   // Which optional parts are visible for the chosen profile ("all fields" shows everything).
@@ -158,9 +191,9 @@ export function GuestInvoiceForm() {
     () =>
       items.reduce((sum, i) => {
         const base = (num(i.quantity) || 0) * (num(i.unitPrice) || 0);
-        return sum + base * (1 + (vatPayer ? num(i.vatRate) || 0 : 0) / 100);
+        return sum + base * (1 + (vatPayer && !reverseCharge ? num(i.vatRate) || 0 : 0) / 100);
       }, 0),
-    [items, vatPayer]
+    [items, vatPayer, reverseCharge]
   );
 
   const setItem = (index: number, patch: Partial<Item>) => setItems((list) => list.map((it, i) => (i === index ? { ...it, ...patch } : it)));
@@ -208,6 +241,9 @@ export function GuestInvoiceForm() {
           currency,
           paymentMethod,
           vatPayer,
+          documentType,
+          reverseCharge: vatPayer && reverseCharge,
+          relatedInvoiceNumber: documentType === 'credit_note' ? relatedInvoiceNumber.trim() : undefined,
           supplier: { ...supplier, iban: supplier.iban.replace(/\s/g, '') },
           customer,
           note,
@@ -230,7 +266,7 @@ export function GuestInvoiceForm() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `faktura-${invoiceNumber.trim().replace(/[^\w.-]+/g, '_')}.pdf`;
+      a.download = `${FILE_PREFIX[documentType]}-${invoiceNumber.trim().replace(/[^\w.-]+/g, '_')}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
       setDone(true);
@@ -408,6 +444,22 @@ export function GuestInvoiceForm() {
                 ))}
               </select>
             </Field>
+            {(showAll || documentType !== 'invoice') && (
+              <Field label={t('template.documentType')}>
+                <select className={inputClass} value={documentType} onChange={(e) => setDocumentType(e.target.value as DocumentType)}>
+                  {DOCUMENT_TYPES.map((d) => (
+                    <option key={d} value={d}>
+                      {t(`template.documentTypes.${d}`)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
+            {documentType === 'credit_note' && (
+              <Field label={t('template.relatedInvoiceNumber')}>
+                <input maxLength={40} className={inputClass} value={relatedInvoiceNumber} onChange={(e) => setRelatedInvoiceNumber(e.target.value)} />
+              </Field>
+            )}
             {visible.language && (
               <Field label={t('fields.language')}>
                 <select className={inputClass} value={language} onChange={(e) => setLanguage(e.target.value)}>
@@ -426,6 +478,15 @@ export function GuestInvoiceForm() {
               </InfoHint>
             </label>
           )}
+          {vatPayer && (showAll || reverseCharge) && (
+            <label className="mt-3 flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={reverseCharge} onChange={(e) => setReverseCharge(e.target.checked)} />
+              <InfoHint label={t('template.reverseCharge')} hint={t('template.hintReverseCharge')}>
+                <span>{t('template.reverseCharge')}</span>
+              </InfoHint>
+            </label>
+          )}
+          {documentType === 'credit_note' && <p className="mt-3 text-xs text-muted-foreground">{t('template.hintCreditNote')}</p>}
         </section>
 
         <div className="grid gap-6 lg:grid-cols-2">

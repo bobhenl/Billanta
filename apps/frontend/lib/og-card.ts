@@ -5,7 +5,7 @@ import sk from '@/messages/sk.json';
 import { routing } from '@/i18n/routing';
 import { getFeaturePage } from '@/lib/feature-pages';
 import { getMunicipalityBySlug } from '@/lib/municipalities';
-import { getCalculator, getGuide, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
+import { getCalculator, getGuide, getReminder, getTemplate, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
 import { PRIVATE_CARD } from '@/lib/site';
 
 /**
@@ -23,10 +23,10 @@ export interface OgCard {
 const MESSAGES = { cs, sk, en } as const;
 type Locale = keyof typeof MESSAGES;
 
-const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides' | 'blog', string>> = {
-  cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace', calculators: 'Kalkulačky', guides: 'Návody', blog: 'Blog' },
-  sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie', calculators: 'Kalkulačky', guides: 'Návody', blog: 'Blog' },
-  en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up', calculators: 'Calculators', guides: 'Guides', blog: 'Blog' }
+const SECTIONS: Record<Locale, Record<'features' | 'pricing' | 'legal' | 'about' | 'places' | 'tool' | 'calculators' | 'guides' | 'templates' | 'reminders' | 'blog', string>> = {
+  cs: { features: 'Funkce', pricing: 'Ceník', legal: 'Právní informace', about: 'O nás', places: 'Fakturace podle obcí', tool: 'Zdarma bez registrace', calculators: 'Kalkulačky', guides: 'Návody', templates: 'Vzory faktur', reminders: 'Vzory upomínek', blog: 'Blog' },
+  sk: { features: 'Funkcie', pricing: 'Cenník', legal: 'Právne informácie', about: 'O nás', places: 'Fakturácia podľa obcí', tool: 'Zadarmo bez registrácie', calculators: 'Kalkulačky', guides: 'Návody', templates: 'Vzory faktúr', reminders: 'Vzory upomienok', blog: 'Blog' },
+  en: { features: 'Features', pricing: 'Pricing', legal: 'Legal', about: 'About', places: 'Invoicing by municipality', tool: 'Free, no sign-up', calculators: 'Calculators', guides: 'Guides', templates: 'Invoice templates', reminders: 'Payment reminders', blog: 'Blog' }
 };
 
 const LEGAL: Record<string, string> = { terms: 'legal.terms', privacy: 'legal.privacy', dpa: 'legal.dpa', cookies: 'cookies.page' };
@@ -70,6 +70,10 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
         // The guides hub is published only where some guide is.
         if (!GUIDES_HUB_LOCALES.includes(l)) return null;
         return { title: t('tools.guides.indexTitle'), subtitle: t('tools.guides.indexDescription'), section: s.guides };
+      case 'invoice-templates':
+        return { title: t('invoiceTemplates.indexTitle'), subtitle: t('invoiceTemplates.indexDescription'), section: s.templates };
+      case 'payment-reminder-templates':
+        return { title: t('paymentReminders.indexTitle'), subtitle: t('paymentReminders.indexDescription'), section: s.reminders };
     }
     return null;
   }
@@ -92,6 +96,16 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
     const g = getGuide(second);
     if (!g || !isPublishedIn(g, l)) return null;
     return { title: t('tools.guides.items.' + g.key + '.name'), subtitle: t('tools.guides.items.' + g.key + '.description'), section: s.guides };
+  }
+  if (first === 'invoice-templates') {
+    const x = getTemplate(second);
+    if (!x || !isPublishedIn(x, l)) return null;
+    return { title: t('invoiceTemplates.items.' + x.key + '.title'), subtitle: t('invoiceTemplates.items.' + x.key + '.description'), section: s.templates };
+  }
+  if (first === 'payment-reminder-templates') {
+    const x = getReminder(second);
+    if (!x || !isPublishedIn(x, l)) return null;
+    return { title: t('paymentReminders.items.' + x.key + '.title'), subtitle: t('paymentReminders.items.' + x.key + '.description'), section: s.reminders };
   }
   if (first === 'legal' && LEGAL[second]) {
     return { title: t(`${LEGAL[second]}.title`), section: s.legal };

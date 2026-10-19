@@ -6309,6 +6309,19 @@
           "a": "When you invoice regularly. An account keeps the number series, records payments, helps with reminders and exports invoices to ISDOC for your accountant. The Free plan includes 10 documents a month."
         }
       ]
+    },
+    "template": {
+      "documentType": "Document type",
+      "documentTypes": {
+        "invoice": "Invoice",
+        "proforma": "Proforma invoice",
+        "credit_note": "Credit note"
+      },
+      "reverseCharge": "Reverse charge (the customer accounts for the VAT)",
+      "relatedInvoiceNumber": "Number of the corrected invoice",
+      "hintReverseCharge": "The invoice shows no VAT and states that the customer accounts for it (Section 92a of the Czech VAT Act). Only between VAT payers.",
+      "hintCreditNote": "For a price reduction enter a negative unit price, e.g. -2000.",
+      "identifiedNote": "Reverse charge – the customer accounts for the VAT."
     }
   },
   "publicProfile": {
@@ -7422,7 +7435,10 @@
       "glossary": "Glossary",
       "glossaryHint": "Invoicing and VAT terms explained",
       "businessDirectory": "Business directory",
-      "businessDirectoryHint": "Sole traders and companies by trade and town"
+      "businessDirectoryHint": "Sole traders and companies by trade and town",
+      "templatesHint": "Samples for every type of invoice",
+      "reminders": "Payment reminder templates",
+      "remindersHint": "Reminder, demand for payment, pre-action notice"
     },
     "search": {
       "showAll": "Show all results for “{query}”",
@@ -11855,6 +11871,797 @@
       "eshop": "Small e-shops and stores – from handmade goods to specialist products.",
       "cleaning": "Cleaning companies, home and garden maintenance, window cleaning and other services around the house.",
       "other": "Other sole traders and companies that do not fit the other trades."
+    }
+  },
+  "invoiceTemplates": {
+    "menu": "Invoice templates",
+    "indexTitle": "Czech invoice templates – for VAT payers and non-payers",
+    "indexName": "Invoice templates",
+    "indexDescription": "Invoice templates under Czech law: non-VAT payer and VAT payer invoices, proforma, credit note, domestic reverse charge and identified person. Each with the required details and a free online editor.",
+    "indexLead": "Pick your situation to see a filled-in sample, the required details with links to the law, and a button that opens the editor preset for that document. The PDF is free, no sign-up needed.",
+    "howTitle": "How to use a template",
+    "how": [
+      "Check the sample to see what belongs on the invoice and where.",
+      "Open the editor with the document type already set and add your own details.",
+      "Download the finished PDF with a QR payment code. Nothing is stored, no account needed."
+    ],
+    "common": {
+      "sample": "Sample",
+      "fictional": "Made-up details, for illustration only.",
+      "whenTitle": "When to use this document",
+      "fieldsTitle": "Required details",
+      "fieldsLead": "Each item links to the section of Czech law that requires it (in Czech).",
+      "pitfallsTitle": "Watch out for",
+      "useButton": "Fill in this template online",
+      "useNote": "The editor opens with the document type set. The PDF is free, no sign-up needed.",
+      "otherTitle": "Other templates",
+      "allTemplates": "All invoice templates",
+      "lawRef": "Section {p}({o}) {law}",
+      "lawRefShort": "Section {p} {law}",
+      "rulesNote": "These templates follow Czech law. For special cases (foreign customers, exempt supplies) check the details in the law or with a tax adviser."
+    },
+    "laws": {
+      "ZDPH": "of the VAT Act",
+      "OZ": "of the Civil Code",
+      "ZU": "of the Accounting Act",
+      "ZoDPH": "of the Slovak VAT Act",
+      "ObZ": "of the Slovak Commercial Code",
+      "ZoU": "of the Slovak Accounting Act",
+      "OSR": "of the Civil Procedure Code",
+      "NVU": "of Government Regulation No. 351/2013 Coll.",
+      "NVUO": "of Slovak Government Regulation No. 21/2013 Coll."
+    },
+    "doc": {
+      "supplier": "Supplier",
+      "customer": "Customer",
+      "number": "Document no.",
+      "issueDate": "Issue date",
+      "duzp": "Date of taxable supply",
+      "dueDate": "Due date",
+      "payment": "Payment",
+      "bankTransfer": "Bank transfer",
+      "vs": "Variable symbol",
+      "description": "Description",
+      "quantity": "Qty",
+      "unitPrice": "Unit price",
+      "rate": "VAT",
+      "amount": "Amount",
+      "base": "Base",
+      "vat": "VAT",
+      "recap": "VAT summary",
+      "totalDue": "Total due",
+      "related": "Corrects invoice",
+      "reason": "Reason for correction",
+      "reverseBase": "Tax base (reverse charge)"
+    },
+    "currency": "CZK",
+    "bank": {
+      "account": "1920014539/0800",
+      "iban": "CZ65 0800 0000 0019 2001 4539"
+    },
+    "parties": {
+      "nonPayer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "Company ID (IČO): 12345678",
+          "Not a VAT payer."
+        ]
+      },
+      "payer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "Company ID (IČO): 12345678",
+          "VAT ID (DIČ): CZ7356120123"
+        ]
+      },
+      "identified": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "Company ID (IČO): 12345678",
+          "VAT ID (DIČ): CZ7356120123",
+          "Identified person for VAT"
+        ]
+      },
+      "contractor": {
+        "name": "Stavby Kučera s.r.o.",
+        "lines": [
+          "Lidická 45",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "Company ID (IČO): 24681357",
+          "VAT ID (DIČ): CZ24681357",
+          "File C 98765, Regional Court in Brno"
+        ]
+      },
+      "domestic": {
+        "name": "Pekárna U Mlýna s.r.o.",
+        "lines": [
+          "Mlýnská 8",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "Company ID (IČO): 87654321",
+          "VAT ID (DIČ): CZ87654321"
+        ]
+      },
+      "developer": {
+        "name": "Rezidence Hájek s.r.o.",
+        "lines": [
+          "Na Pankráci 30",
+          "140 00 Praha 4"
+        ],
+        "ids": [
+          "Company ID (IČO): 13579246",
+          "VAT ID (DIČ): CZ13579246"
+        ]
+      },
+      "eu": {
+        "name": "Hafenstadt Media GmbH",
+        "lines": [
+          "Speicherstraße 4",
+          "20457 Hamburg",
+          "Germany"
+        ],
+        "ids": [
+          "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "items": {
+      "nonPayer": {
+        "name": "Non-VAT payer",
+        "title": "Invoice template for non-VAT payers (Czech Republic)",
+        "description": "Czech invoice template for non-VAT payers: a filled-in sample, the details required by the Civil Code and the Accounting Act, and a free online editor with PDF.",
+        "lead": "The most common invoice of a Czech freelancer. A non-payer shows no VAT and no date of taxable supply, but must say who issued the invoice, to whom and for what.",
+        "docTitle": "Invoice",
+        "number": "2026-0018",
+        "notes": [
+          "Not a VAT payer.",
+          "Sole trader registered in the Trade Register."
+        ],
+        "lines": [
+          {
+            "d": "Product photography for an online shop (40 shots)",
+            "q": 1,
+            "u": "pcs",
+            "p": 8500,
+            "r": 0
+          },
+          {
+            "d": "Photo retouching",
+            "q": 4,
+            "u": "h",
+            "p": 600,
+            "r": 0
+          }
+        ],
+        "when": [
+          "You are not registered for VAT (turnover up to CZK 2,000,000 in a calendar year) and invoice a customer in the Czech Republic.",
+          "This applies to sole traders and companies that are not VAT payers. For services to businesses in another EU country you usually become an identified person – see the separate template."
+        ],
+        "fields": [
+          {
+            "name": "Supplier's name, registered address and company ID (IČO)",
+            "text": "A business shows them on every business document, invoices included.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Entry in a public register",
+            "text": "Only if you are in one: a company shows the court and file number. A sole trader only in the Trade Register does not have to.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Customer",
+            "text": "Name and address, plus the company ID for a business, so it is clear who the parties are.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Document number",
+            "text": "A unique number for the invoice, ideally from an ascending series.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "What was supplied and the amount",
+            "text": "What you delivered, how much and for what price. The total amount due.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Issue date",
+            "text": "When the document was made.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "A note that you are not a VAT payer",
+            "text": "Not strictly required, but it saves questions about why there is no VAT."
+          }
+        ],
+        "pitfalls": [
+          "Do not show a \"CZ…\" VAT ID if you are neither a payer nor an identified person – the customer could expect a tax document.",
+          "A due date and bank account are not legally required, but without them you get paid later."
+        ]
+      },
+      "vatPayer": {
+        "name": "VAT payer",
+        "title": "Invoice template for VAT payers (Czech tax document)",
+        "description": "Czech VAT invoice template: a tax document with VAT IDs, date of taxable supply and VAT summary. Required details under Section 29 of the VAT Act and a free online editor.",
+        "lead": "A VAT payer's invoice is a tax document. On top of the usual details it must show both VAT IDs, the date of taxable supply, the tax base, the rate and the VAT amount.",
+        "docTitle": "Tax invoice",
+        "number": "2026-0042",
+        "notes": [
+          "Sole trader registered in the Trade Register."
+        ],
+        "lines": [
+          {
+            "d": "Logo and visual identity design",
+            "q": 1,
+            "u": "pcs",
+            "p": 12000,
+            "r": 21
+          },
+          {
+            "d": "Packaging print consultation",
+            "q": 3,
+            "u": "h",
+            "p": 900,
+            "r": 21
+          }
+        ],
+        "when": [
+          "You are a Czech VAT payer supplying goods or services in the Czech Republic, where you account for the VAT.",
+          "Issue the tax document within 15 days of the taxable supply or of receiving payment."
+        ],
+        "fields": [
+          {
+            "name": "Supplier and its VAT ID",
+            "text": "Name, registered address and tax identification number (DIČ).",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Customer and its VAT ID",
+            "text": "If the customer is a VAT payer, its VAT ID is shown too.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Document number",
+            "text": "Unique within one or more series.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Scope and subject of the supply",
+            "text": "What and how much you supplied.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Issue date and date of taxable supply",
+            "text": "The date of taxable supply is required when it differs from the issue date – in practice, always show it.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Unit price without VAT and discount",
+            "text": "Unit price excluding VAT and any discount not already in it.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Tax base, rate and VAT amount",
+            "text": "Per rate; the VAT amount in CZK even on a foreign-currency invoice.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Civil Code details",
+            "text": "Registered address, company ID and any public register entry.",
+            "rule": "§435/1 OZ"
+          }
+        ],
+        "pitfalls": [
+          "On a EUR invoice, show the VAT in CZK as well, with the exchange rate used.",
+          "The due date is not a required detail of a tax document, but without it a debt is hard to chase."
+        ]
+      },
+      "proforma": {
+        "name": "Proforma invoice",
+        "title": "Proforma invoice template (Czech zálohová faktura)",
+        "description": "Czech proforma invoice template: what to put on it, why it is not a tax document and which document to issue once paid. Free online editor and PDF.",
+        "lead": "A proforma invoice asks for payment in advance. It is not a tax document, so the customer cannot deduct VAT from it. Once paid, a VAT payer issues a tax document.",
+        "docTitle": "Proforma invoice",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "This proforma invoice is not a tax document.",
+          "We will send a tax document for the payment once it reaches our account."
+        ],
+        "lines": [
+          {
+            "d": "50% advance for a website build",
+            "q": 1,
+            "u": "pcs",
+            "p": 20000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "You want payment up front before starting work or shipping goods.",
+          "Once paid, a VAT payer usually issues a tax document for the payment and deducts the advance on the final invoice. A non-payer just deducts it on the final invoice."
+        ],
+        "fields": [
+          {
+            "name": "Supplier and customer",
+            "text": "Name, registered address and company ID; it is a business document.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Proforma number",
+            "text": "Use a separate series so it is not mixed up with tax documents."
+          },
+          {
+            "name": "Advance amount and due date",
+            "text": "How much and by when, and the bank account."
+          },
+          {
+            "name": "A note that it is not a tax document",
+            "text": "Recommended: it tells the customer they cannot claim VAT from it."
+          },
+          {
+            "name": "Tax document after payment",
+            "text": "Receiving an advance payment usually makes the VAT due; the payer issues a tax document for it.",
+            "rule": "§28/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Do not show a date of taxable supply on a proforma – it only arises when the payment is received.",
+          "Remember to deduct the advance on the final invoice, or the customer pays twice."
+        ]
+      },
+      "creditNote": {
+        "name": "Credit note",
+        "title": "Credit note template (Czech corrective tax document)",
+        "description": "Czech credit note template: a reference to the original invoice, the reason for the correction and the difference in base and VAT. Required details under Section 46 of the VAT Act.",
+        "lead": "When you lower the price after invoicing (discount, complaint, returned goods) or raise it, you issue a corrective tax document. It corrects the original invoice, it does not replace it.",
+        "docTitle": "Credit note",
+        "number": "OD-2026-0003",
+        "related": "2026-0042",
+        "reason": "Price discount after a complaint about the logo design",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Discount – logo design",
+            "q": 1,
+            "u": "pcs",
+            "p": -2000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "A discount given after invoicing, an accepted complaint, returned goods or a cancelled part of the supply.",
+          "The original invoice stays valid; the credit note records only the difference."
+        ],
+        "fields": [
+          {
+            "name": "Both parties and their VAT IDs",
+            "text": "Same as on an ordinary tax document.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Credit note number",
+            "text": "Its own number from your series.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Original document number",
+            "text": "The invoice you are correcting.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Reason for the correction",
+            "text": "Short and specific, e.g. a discount after a complaint.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Difference in base and VAT",
+            "text": "The difference between the corrected and the original base and VAT, negative for a reduction.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Correcting the tax base",
+            "text": "When and under what conditions the correction is made.",
+            "rule": "§42/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "A non-VAT payer does not issue a corrective tax document – a plain credit note as an accounting document, referring to the original invoice, is enough.",
+          "Do not cancel or overwrite the original invoice; it stays in your records."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Reverse charge",
+        "title": "Domestic reverse charge invoice template (Czech Republic)",
+        "description": "Czech domestic reverse charge invoice template (Section 92a of the VAT Act), e.g. for construction work: the \"daň odvede zákazník\" note, the customer's VAT ID and the amount without VAT.",
+        "lead": "For construction and assembly work, waste, metals and other supplies under Section 92a of the Czech VAT Act, the customer accounts for the VAT. The supplier invoices without VAT and adds \"daň odvede zákazník\" (the customer will pay the tax).",
+        "docTitle": "Tax invoice",
+        "number": "2026-0115",
+        "notes": [
+          "Daň odvede zákazník (reverse charge).",
+          "Reverse charge under Section 92e of the VAT Act (construction and assembly work)."
+        ],
+        "lines": [
+          {
+            "d": "Masonry – bathroom renovation, flat 2.04",
+            "q": 1,
+            "u": "pcs",
+            "p": 84000,
+            "r": 21
+          },
+          {
+            "d": "Wall and floor tiling, materials included",
+            "q": 26,
+            "u": "m²",
+            "p": 1250,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Both of you are Czech VAT payers and the supply is one the regime covers (Sections 92b to 92e and the government decree).",
+          "Most often construction and assembly work (CZ-CPA 41 to 43), supplies of waste and scrap, or emission allowances."
+        ],
+        "fields": [
+          {
+            "name": "The note \"daň odvede zákazník\"",
+            "text": "A required statement on the tax document when the customer accounts for the VAT.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Supplier's and customer's VAT IDs",
+            "text": "The regime applies only between VAT payers, so the customer's VAT ID is essential.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Tax base without VAT",
+            "text": "You do not show the VAT amount; the customer calculates and declares it. Showing the rate helps them.",
+            "rule": "§92a/1 ZDPH"
+          },
+          {
+            "name": "Other tax document details",
+            "text": "Number, dates, subject and scope of the supply, unit price.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Control statement",
+            "text": "The supplier reports the supply in section A.1 of the control statement, the customer in section B.1."
+          }
+        ],
+        "pitfalls": [
+          "If the customer is not a VAT payer (e.g. a private person), the regime does not apply and you charge VAT.",
+          "Before sending, check in the VAT payer register that the customer really is a payer."
+        ]
+      },
+      "identified": {
+        "name": "Identified person",
+        "title": "Invoice template for an identified person (services to the EU)",
+        "description": "Czech invoice template for an identified person billing a business in another EU country: both VAT IDs, no VAT, the \"daň odvede zákazník\" note. Required details and a free online editor.",
+        "lead": "A Czech non-VAT payer who supplies a service to a business in another EU country becomes an identified person. They invoice without Czech VAT, show their own and the customer's VAT IDs and state that the customer accounts for the tax.",
+        "docTitle": "Tax invoice",
+        "number": "2026-0021",
+        "notes": [
+          "Daň odvede zákazník (reverse charge).",
+          "Reverse charge – Article 196, Council Directive 2006/112/EC."
+        ],
+        "lines": [
+          {
+            "d": "Web design – online shop theme update, October 2026",
+            "q": 1,
+            "u": "pcs",
+            "p": 18000,
+            "r": 0
+          }
+        ],
+        "when": [
+          "You are not a VAT payer and supply a service (programming, design, marketing) to a business registered for VAT in another EU country.",
+          "Register as an identified person within 15 days of the supply; you do not become a VAT payer."
+        ],
+        "fields": [
+          {
+            "name": "Supplier's VAT ID",
+            "text": "An identified person gets a CZ… VAT ID and shows it on the invoice.",
+            "rule": "§6i/1 ZDPH"
+          },
+          {
+            "name": "Customer's VAT ID from another country",
+            "text": "Check it in VIES; without a valid VAT ID there is no reverse charge.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "The note \"daň odvede zákazník\"",
+            "text": "The customer declares the VAT in their country; the invoice shows the amount without VAT.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Date of the supply",
+            "text": "The day the service was supplied; it decides when you report it.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "EC Sales List",
+            "text": "File the EC Sales List (souhrnné hlášení) for the month you supplied the service.",
+            "rule": "§102/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "If you invoice a private person in the EU, you do not become an identified person; it is an ordinary non-payer invoice.",
+          "For services you buy from foreign companies (Facebook or Google ads) you account for Czech VAT yourself – the other side of the same obligation."
+        ]
+      }
+    }
+  },
+  "paymentReminders": {
+    "indexTitle": "Free payment reminder and demand letter templates",
+    "indexName": "Payment reminder templates",
+    "indexDescription": "Payment reminder, demand for payment and pre-action notice templates under Czech law. Fill in the debtor and amount, pick a tone, then copy the text or download a PDF.",
+    "indexLead": "Three letters for an overdue invoice, from a friendly reminder to a notice before legal action. The generator below fills them in for you – copy the text into an email or download a PDF. No sign-up.",
+    "step": "Step {n}",
+    "howTitle": "What to do about an unpaid invoice",
+    "how": [
+      "A few days after the due date, send a polite reminder. Often it was simply overlooked.",
+      "If the payment still doesn't arrive, send a demand for payment with a new deadline and a note on late-payment interest.",
+      "Before you sue, send a pre-action notice at least 7 days in advance. Without it the court may not award you your legal costs.",
+      "Keep every letter together with proof that you sent it."
+    ],
+    "common": {
+      "whenTitle": "When to send it",
+      "fieldsTitle": "What the letter should contain",
+      "fieldsLead": "Where the law sets a requirement, the item links to the provision.",
+      "pitfallsTitle": "Watch out for",
+      "otherTitle": "Other templates",
+      "allTemplates": "All reminder templates",
+      "invoiceTemplates": "Invoice templates",
+      "rulesNote": "These templates follow Czech law and are not legal advice. For large or disputed claims, talk to a lawyer."
+    },
+    "auto": {
+      "title": "Let Billanta send the reminders for you",
+      "text": "When an invoice issued in Billanta goes overdue, your customer automatically gets a polite email reminder with a link to the invoice and its QR payment. You set the interval and the maximum number of reminders, and they stop as soon as the invoice is paid.",
+      "cta": "Try it free",
+      "more": "How automatic reminders work"
+    },
+    "fromInvoices": {
+      "title": "Invoice overdue? Payment reminder templates",
+      "text": "A reminder, a demand for payment and a pre-action notice. Fill them in online, then copy them or download a PDF."
+    },
+    "items": {
+      "reminder": {
+        "name": "Payment reminder",
+        "title": "Payment reminder template for an unpaid invoice",
+        "description": "A polite or firm reminder for an overdue invoice. Fill in the details, then copy the text into an email or download a free PDF.",
+        "lead": "The first letter after the due date: it points to the invoice and sets a new deadline.",
+        "when": [
+          "Send a reminder a few days after the due date, typically 3 to 7 days. The customer is in default from the day after the due date, but the first letter is mainly a nudge that the invoice exists.",
+          "The law prescribes no form for a reminder. An email is enough unless your contract says otherwise."
+        ],
+        "fields": [
+          {
+            "name": "Invoice number, amount and due date",
+            "text": "So the customer can find and match the payment easily."
+          },
+          {
+            "name": "A note that the debtor is in default",
+            "text": "Whoever doesn't pay on time is in default. In the first reminder a factual mention is enough.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "New deadline and payment details",
+            "text": "A specific date and the account number, ideally with the invoice number as the payment reference."
+          },
+          {
+            "name": "A request to get in touch if already paid",
+            "text": "Payments and reminders cross in the post. A polite line avoids a pointless argument."
+          }
+        ],
+        "pitfalls": [
+          "Check your bank statement before sending. A reminder for a paid invoice hurts the relationship.",
+          "Keep it factual and free of threats. The firmer tone belongs in the demand for payment.",
+          "A reminder doesn't extend anything: late-payment interest runs from the day after the due date, whatever the new deadline."
+        ]
+      },
+      "demand": {
+        "name": "Demand for payment",
+        "title": "Demand for payment template with late-payment interest",
+        "description": "A demand for payment citing statutory late-payment interest and the CZK 1,200 recovery costs. Fill it in online, then copy it or download a PDF.",
+        "lead": "The second letter: firmer, with late-payment interest and the costs of recovering the debt.",
+        "when": [
+          "Send a demand for payment when the reminder didn't work, usually 2 to 4 weeks after the due date.",
+          "It tells the debtor that on top of the amount owed they may owe late-payment interest and, between businesses, the costs of recovering the debt."
+        ],
+        "fields": [
+          {
+            "name": "Amount owed and the invoice",
+            "text": "Invoice number, amount and the due date after which the debtor is in default.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Late-payment interest",
+            "text": "The creditor can claim statutory late-payment interest. The annual rate is the Czech National Bank repo rate valid on the first day of the calendar half-year in which the default began, plus 8 percentage points.",
+            "rule": "§1970 OZ, §2 NVU"
+          },
+          {
+            "name": "Costs of recovering the debt",
+            "text": "At least CZK 1,200 per claim. Only claim them from businesses.",
+            "rule": "§3 NVU"
+          },
+          {
+            "name": "New deadline and payment details",
+            "text": "A specific date by which the payment must arrive, and where to send it."
+          }
+        ],
+        "pitfalls": [
+          "Count interest from the day after the due date, not from the date of the reminder.",
+          "If your contract sets its own interest rate or a contractual penalty, refer to the contract instead of the statutory rate.",
+          "Don't claim the CZK 1,200 from consumers."
+        ]
+      },
+      "preAction": {
+        "name": "Pre-action notice",
+        "title": "Pre-action notice template for an unpaid invoice",
+        "description": "A pre-action notice (demand for performance under § 142a of the Czech Civil Procedure Code). Send it at least 7 days before suing, or you may not recover your legal costs.",
+        "lead": "The last letter before going to court: without it you may not get your legal costs back.",
+        "when": [
+          "Send a pre-action notice once you've decided to take the debt to court.",
+          "A claimant who wins is entitled to their legal costs only if they sent the defendant a demand for performance at least 7 days before filing, to their delivery address, residence or registered office."
+        ],
+        "fields": [
+          {
+            "name": "An explicit demand for performance",
+            "text": "The letter must make clear exactly what the debtor has to pay and by when.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Debtor's address",
+            "text": "The delivery address, residence or registered office. Check it in the commercial register or ARES.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Notice of legal action",
+            "text": "That if the deadline passes without payment you will sue and claim your legal costs."
+          },
+          {
+            "name": "Late-payment interest and costs",
+            "text": "Add the statutory late-payment interest to the amount owed and, between businesses, the costs of recovering the debt.",
+            "rule": "§1970 OZ, §3 NVU"
+          }
+        ],
+        "pitfalls": [
+          "At least 7 days must pass between sending the notice and filing the claim.",
+          "Send it by registered post or to the debtor's data box and keep proof of sending. You will need it in court.",
+          "A notice sent only by email is harder to prove."
+        ]
+      }
+    }
+  },
+  "reminderGenerator": {
+    "title": "Fill in the letter",
+    "preview": "Preview",
+    "copy": "Copy text",
+    "copied": "Copied",
+    "pdf": "Download PDF",
+    "note": "We store nothing. The PDF is made just for you and discarded right away.",
+    "preActionHint": "Send the notice by registered post or to the debtor's data box and keep proof of sending.",
+    "fields": {
+      "kind": "Letter",
+      "tone": "Tone",
+      "polite": "Polite",
+      "firm": "Firm",
+      "creditor": "Creditor (you)",
+      "creditorPh": "Jan Novák, Company ID 12345678",
+      "debtor": "Debtor",
+      "debtorPh": "Firma s.r.o., Company ID 87654321",
+      "invoice": "Invoice number",
+      "due": "Due date",
+      "amount": "Amount owed",
+      "currency": "Currency",
+      "account": "Account number",
+      "accountPh": "123456789/0100",
+      "accountHint": "Optional. Otherwise we refer to the account on the invoice.",
+      "deadline": "New payment deadline",
+      "days": "{n, plural, one {# day} other {# days}}"
+    },
+    "blank": {
+      "invoice": "[invoice number]",
+      "amount": "[amount]",
+      "due": "[due date]",
+      "dayAfter": "[day after due date]",
+      "deadline": "[new deadline]",
+      "creditor": "[your name]",
+      "debtor": "[debtor]",
+      "date": "[date]"
+    },
+    "file": {
+      "reminder": "payment-reminder",
+      "demand": "demand-for-payment",
+      "preAction": "pre-action-notice"
+    },
+    "errors": {
+      "copy": "Couldn't copy the text. Select it in the preview instead.",
+      "rateLimited": "Too many PDFs in a short time. Try again in a moment.",
+      "busy": "The server is busy right now. Try again in a moment.",
+      "failed": "Couldn't create the PDF. Please try again."
+    },
+    "letter": {
+      "from": "From: {creditor}",
+      "to": "To: {debtor}",
+      "date": "Date: {date}",
+      "subject": "Re: {title} – invoice no. {invoice}",
+      "payAccount": "to account {account}",
+      "payInvoice": "to the account stated on the invoice",
+      "closing": "Kind regards",
+      "reminder": {
+        "title": "Payment reminder",
+        "polite": {
+          "greeting": "Hello,",
+          "body": [
+            "this is a friendly reminder that invoice no. {invoice} for {amount} was due on {due} and we haven't received the payment yet.",
+            "Please pay {pay} by {deadline} at the latest, using the invoice number as the payment reference.",
+            "If you have already paid, please disregard this reminder. Thank you."
+          ]
+        },
+        "firm": {
+          "greeting": "Hello,",
+          "body": [
+            "invoice no. {invoice} for {amount} was due on {due} and remains unpaid. You have been in default since {dayAfter}.",
+            "We ask you to pay {pay} by {deadline} at the latest.",
+            "If the payment doesn't arrive by then, we will also claim statutory late-payment interest."
+          ]
+        }
+      },
+      "demand": {
+        "title": "Demand for payment",
+        "polite": {
+          "greeting": "Hello,",
+          "body": [
+            "despite our reminder, we still haven't received payment of invoice no. {invoice} for {amount}, due on {due}.",
+            "We therefore ask you to pay {pay} by {deadline} at the latest.",
+            "Please note that you have been in default since {dayAfter} and that, on top of the amount owed, we may claim statutory late-payment interest.",
+            "If you are having trouble paying, please get in touch. We are happy to agree on a solution."
+          ]
+        },
+        "firm": {
+          "greeting": "Hello,",
+          "body": [
+            "we demand payment of invoice no. {invoice} for {amount}, which was due on {due}. You have been in default since {dayAfter}.",
+            "Pay the amount owed {pay} by {deadline} at the latest.",
+            "On top of the amount owed, we claim statutory late-payment interest at the Czech National Bank repo rate plus 8 percentage points and CZK 1,200 as the costs of recovering the debt.",
+            "If the payment doesn't arrive by then, we will pass the debt on for collection."
+          ]
+        }
+      },
+      "preAction": {
+        "title": "Pre-action notice",
+        "polite": {
+          "greeting": "Hello,",
+          "body": [
+            "we hereby demand performance under § 142a of the Czech Civil Procedure Code.",
+            "You have not yet paid invoice no. {invoice} for {amount}, due on {due}. You have been in default since {dayAfter}.",
+            "Pay the amount owed {pay} by {deadline} at the latest, together with statutory late-payment interest.",
+            "If the payment doesn't arrive by then, we will file a claim and seek our legal costs as well. We would rather avoid that, so please get in touch if you are having trouble paying."
+          ]
+        },
+        "firm": {
+          "greeting": "Hello,",
+          "body": [
+            "we hereby demand performance under § 142a of the Czech Civil Procedure Code.",
+            "You have not paid invoice no. {invoice} for {amount}, due on {due}, despite our earlier reminders. You have been in default since {dayAfter}.",
+            "Pay the amount owed {pay} by {deadline} at the latest, together with statutory late-payment interest and CZK 1,200 as the costs of recovering the debt.",
+            "If the payment doesn't arrive by then, we will file a claim without further notice and seek our legal costs as well."
+          ]
+        }
+      }
     }
   }
 }
