@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { auth } from '@/auth';
 import { redirect } from '@/i18n/navigation';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { clientIp } from '@/lib/client-ip';
@@ -33,7 +34,7 @@ async function promoPreset(): Promise<string | null> {
 export default async function WelcomePage() {
   const locale = await getLocale();
   try {
-    const [access, tenant, preset, jar] = await Promise.all([fetchMyAccess(), fetchTenant(), promoPreset(), cookies()]);
+    const [access, tenant, preset, jar, session] = await Promise.all([fetchMyAccess(), fetchTenant(), promoPreset(), cookies(), auth()]);
     // The app the visitor said they are leaving (a /switch page's signup link).
     const from = jar.get(SWITCH_COOKIE)?.value;
     if (!canManage(access.role)) redirect({ href: '/dashboard', locale });
@@ -47,6 +48,7 @@ export default async function WelcomePage() {
         company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: tenant?.addressCountry ?? 'CZ' }}
         importApps={switchBrandsFor(locale)}
         initialImportFrom={isSwitchBrand(from) ? from : null}
+        managesClients={session?.managesClients ?? false}
       />
     );
   } catch (error) {

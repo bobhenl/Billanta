@@ -53,23 +53,3 @@ export async function setReferralProgram(program: 'friend' | 'accountant') {
 export async function redeemCredits(plan: 'start' | 'plus' | 'business', months: 1 | 12) {
   return run<{ plan: string; until: string; balance: number }>('/api/v1/referrals/redeem', 'POST', { plan, months });
 }
-
-export interface ListingInput {
-  displayName: string;
-  bio: string;
-  regions: string[];
-  remote: boolean;
-  services: string[];
-  languages: string[];
-  priceHint: string;
-  contactEmail: string;
-  website: string;
-}
-
-export async function saveListing(listing: ListingInput) {
-  return run<{ status: string }>('/api/v1/referrals/listing', 'PUT', listing);
-}
-
-export async function withdrawListing() {
-  return run<{ status: string }>('/api/v1/referrals/listing/withdraw', 'POST', {});
-}

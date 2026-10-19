@@ -293,13 +293,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // `types/next-auth.d.ts` for the matching type augmentation.
     session({ session, user }) {
       const row = session as unknown as { twoFactorPending?: boolean; twoFactorAt?: Date | null };
-      const fullUser = user as typeof user & { totpEnabledAt?: Date | null; isDemo?: boolean };
+      const fullUser = user as typeof user & { totpEnabledAt?: Date | null; isDemo?: boolean; isTeacher?: boolean; managesClients?: boolean };
       const twoFactor = row.twoFactorPending ? "pending" : fullUser.totpEnabledAt && row.twoFactorAt ? "verified" : "off";
       return {
         user: { id: user.id, name: user.name ?? null, email: user.email, image: user.image ?? null },
         expires: session.expires.toISOString?.() ?? session.expires,
         twoFactor,
         isDemo: fullUser.isDemo === true,
+        isTeacher: fullUser.isTeacher === true,
+        managesClients: fullUser.managesClients === true,
       } as typeof session;
     },
     // With database sessions, an OAuth sign-in while signed in LINKS the

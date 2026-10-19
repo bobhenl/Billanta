@@ -1634,6 +1634,10 @@
         "emailNotifications": {
           "title": "E-mailová upozornění",
           "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc."
+        },
+        "accountantProfile": {
+          "title": "Profil účetního",
+          "description": "Zápis do adresáře účetních a partnerský program pro účetní."
         }
       },
       "managedByAdmins": "Údaje firmy, tým, předplatné a další nastavení firmy spravuje vlastník nebo administrátor."
@@ -3518,7 +3522,10 @@
       "rateLimitedError": "Příliš mnoho pokusů. Zkuste to prosím za chvíli.",
       "hasAccount": "Už máte účet?",
       "loginLink": "Přihlaste se",
-      "companyNameHint": "Jako OSVČ stačí vaše jméno a příjmení. IČO a fakturační údaje doplníte v dalším kroku."
+      "companyNameHint": "Jako OSVČ stačí vaše jméno a příjmení. IČO a fakturační údaje doplníte v dalším kroku.",
+      "aboutYouLegend": "O vás (nepovinné)",
+      "managesClientsLabel": "Spravuji účetnictví pro klienty",
+      "isTeacherLabel": "Jsem učitel/ka"
     },
     "login": {
       "title": "Přihlásit se",
@@ -8713,7 +8720,7 @@
   },
   "referrals": {
     "title": "Pozvat a získat kredity",
-    "description": "Pozvěte známé firmy nebo klienty. Za každou, která si pořídí placený tarif, dostanete kredity na vlastní předplatné.",
+    "description": "Pozvěte známé firmy nebo klienty. Za každou, která si pořídí placený tarif a zůstane, dostanete kredity na vlastní předplatné.",
     "loadError": "Program doporučení se nepodařilo načíst.",
     "failed": "Nepodařilo se",
     "readOnly": "Kredity utrácí a program mění jen vlastník nebo administrátor firmy.",
@@ -8722,7 +8729,7 @@
     "copyFailed": "Odkaz se nepodařilo zkopírovat, označte ho a zkopírujte ručně.",
     "link": {
       "title": "Váš odkaz pro pozvání",
-      "body": "Nová firma dostane {welcome} kreditů hned po registraci, vy {reward} kreditů, jakmile si pořídí placený tarif. 1 kredit = 1 Kč.",
+      "body": "Nová firma dostane {welcome} kreditů hned po registraci. Vy dostanete tolik kreditů, kolik korun zaplatí za první platbu tarifu, nejvýš {reward}. Kredity připíšeme po druhé měsíční platbě, u roční platby po 30 dnech. 1 kredit = 1 Kč.",
       "copy": "Kopírovat",
       "copied": "Zkopírováno",
       "code": "Kód: {code}"
@@ -8734,15 +8741,16 @@
     },
     "program": {
       "title": "Program",
-      "hint": "Účetní a účetní kanceláře dostávají za klienty víc.",
+      "hint": "Účetní a účetní kanceláře dostávají za klienty víc. Partnerský program pro účetní schvalujeme ručně.",
       "saved": "Program změněn.",
       "friend": {
         "title": "Doporučení známým",
-        "body": "Pozvaná firma {welcome} kreditů, vy {reward} za každou platící."
+        "body": "Pozvaná firma {welcome} kreditů, vy až {reward} za každou platící."
       },
       "accountant": {
         "title": "Partnerský program pro účetní",
-        "body": "Klient {welcome} kreditů, vy {reward} za každého platícího klienta."
+        "body": "Klient {welcome} kreditů, vy až {reward} za každého platícího klienta.",
+        "needsApproval": "Po schválení vašeho zápisu v Profilu účetního."
       }
     },
     "redeem": {
@@ -8762,7 +8770,10 @@
       "empty": "Zatím se přes váš odkaz nikdo nezaregistroval.",
       "company": "Firma č. {n}",
       "paying": "Platí · +{credits} kr.",
-      "waiting": "Zatím neplatí"
+      "waiting": "Zatím neplatí",
+      "heldUntil": "Zaplaceno · +{credits} kr. připíšeme {date}",
+      "heldMonthly": "Zaplaceno · +{credits} kr. připíšeme po druhé platbě",
+      "voided": "Platba vrácena nebo zrušena · bez odměny"
     },
     "ledger": {
       "title": "Historie kreditů",
@@ -8777,11 +8788,13 @@
     "errors": {
       "insufficient_credits": "Na tento tarif nemáte dost kreditů.",
       "other_plan_running": "Kredity už máte zaplacený jiný tarif. Prodloužit jde jen ten běžící.",
-      "ico_required": "Partnerský program vyžaduje IČO firmy (Nastavení → Firma)."
+      "ico_required": "Partnerský program vyžaduje IČO firmy (Nastavení → Firma).",
+      "partner_not_approved": "Partnerský program pro účetní se zapne, až schválíme váš zápis v Profilu účetního.",
+      "listing_required": "Nejdřív vyplňte a odešlete zápis v Profilu účetního."
     },
     "nudge": {
       "title": "První faktura je zaplacená. Doporučte Billantu dál",
-      "body": "Pošlete odkaz známému podnikateli. Po registraci dostane {welcome, plural, one {# kredit} few {# kredity} other {# kreditů}} a vy {reward, plural, one {# kredit} few {# kredity} other {# kreditů}}, jakmile si pořídí placený tarif. Kredit = 1 Kč na předplatné.",
+      "body": "Pošlete odkaz známému podnikateli. Po registraci dostane {welcome, plural, one {# kredit} few {# kredity} other {# kreditů}} a vy až {reward, plural, one {# kredit} few {# kredity} other {# kreditů}}, jakmile začne platit tarif. Kredit = 1 Kč na předplatné.",
       "copy": "Zkopírovat odkaz",
       "copied": "Zkopírováno",
       "more": "Jak doporučení funguje",
@@ -8790,6 +8803,10 @@
     "qr": {
       "title": "QR kód s vaším odkazem",
       "hint": "Vytiskněte ho, nebo ho ukažte na mobilu. Kdo ho naskenuje, zaregistruje se přes váš odkaz."
+    },
+    "profileLink": {
+      "body": "Jste účetní? Zápis do adresáře účetních a žádost o partnerský program najdete v Profilu účetního.",
+      "cta": "Otevřít Profil účetního"
     }
   },
   "partners": {
@@ -8835,7 +8852,7 @@
       },
       "credits": {
         "title": "Kredity za klienty",
-        "body": "Klient dostane {welcome} kreditů, vy {reward} za každého, kdo začne platit."
+        "body": "Klient dostane {welcome} kreditů, vy až {reward} za každého, kdo začne platit."
       },
       "clients": {
         "title": "Všichni klienti pod jedním přihlášením",
@@ -8857,8 +8874,8 @@
         "body": "Registrace je zdarma. Vyplňte IČO kanceláře v nastavení firmy."
       },
       "program": {
-        "title": "Zapněte program pro účetní",
-        "body": "V Nastavení → Pozvat a získat kredity přepněte na partnerský program."
+        "title": "Požádejte o partnerský program",
+        "body": "V Nastavení → Profil účetního vyplňte zápis do adresáře a požádejte o partnerský program. Po schválení dostáváte za klienty víc."
       },
       "share": {
         "title": "Pošlete odkaz klientům",
@@ -8869,9 +8886,11 @@
       "title": "Pravidla",
       "points": [
         "1 kredit = 1 Kč. Kredity zaplatí tarif Start, Plus nebo Business na měsíc nebo rok.",
-        "Odměnu dostanete jednou za každou pozvanou firmu, když poprvé zaplatí.",
+        "Odměnou je jednorázově tolik kreditů, kolik korun pozvaná firma zaplatí za první platbu tarifu, nejvýš do limitu programu.",
+        "Kredity připíšeme u měsíčního tarifu po druhé platbě, u roční platby 30 dní po zaplacení. Když firma platbu vrátí nebo tarif dřív zruší, odměna propadá.",
         "Pozvánka platí pro firmy založené přes váš odkaz během posledních 30 dnů.",
-        "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde."
+        "Pozvat vlastní firmu nebo firmu, ve které už jste členem, nejde.",
+        "Partnerský program pro účetní zapínáme po schválení zápisu v adresáři účetních."
       ]
     },
     "clients": {
@@ -8922,7 +8941,7 @@
       },
       {
         "q": "Kolik kreditů získám?",
-        "a": "Klient dostane {welcome} kreditů při registraci přes váš odkaz a vy {reward} kreditů, když poprvé zaplatí. 1 kredit = 1 Kč."
+        "a": "V partnerském programu pro účetní dostane klient {welcome} kreditů při registraci přes váš odkaz. Vy dostanete tolik kreditů, kolik korun klient zaplatí za první platbu tarifu, nejvýš {reward}. U měsíčního tarifu je připíšeme po druhé platbě, u roční platby 30 dní po zaplacení. Když klient platbu vrátí nebo tarif dřív zruší, odměna propadá. 1 kredit = 1 Kč."
       }
     ]
   },
@@ -9110,12 +9129,17 @@
     "price": "Cena",
     "contact": "Napsat",
     "website": "Web",
-    "profile": "Profil firmy",
+    "profile": {
+      "title": "Profil účetního",
+      "description": "Zápis do veřejného adresáře účetních a partnerský program pro účetní. Obojí ručně schvalujeme.",
+      "loadError": "Profil účetního se nepodařilo načíst.",
+      "partnerTitle": "Partnerský program pro účetní"
+    },
     "emailSubject": "Poptávka účetních služeb ({site})",
     "howTitle": "Jak se sem účetní dostanou",
-    "howBody": "Účetní se přidávají sami v programu pro účetní a každý zápis před zveřejněním ručně schvalujeme. Za zařazení se neplatí. Cenu a podmínky si domluvíte přímo s účetní, Billanta do toho nevstupuje.",
+    "howBody": "Účetní se přidávají sami v Nastavení → Profil účetního a každý zápis před zveřejněním ručně schvalujeme. Za zařazení se neplatí. Cenu a podmínky si domluvíte přímo s účetní, Billanta do toho nevstupuje.",
     "joinTitle": "Jste účetní?",
-    "joinBody": "Přidejte se do programu pro účetní a nabídněte své služby firmám, které fakturují v Billantě.",
+    "joinBody": "Vyplňte profil účetního a nabídněte své služby firmám, které fakturují v Billantě.",
     "joinCta": "Program pro účetní",
     "regions": {
       "CZ-10": "Hlavní město Praha",
@@ -9159,7 +9183,6 @@
     "settings": {
       "title": "Zápis do adresáře účetních",
       "intro": "Firmy, které hledají účetní, vás najdou na stránce „Sháníte účetní?“. Zápis zveřejníme po kontrole.",
-      "needProgram": "Zápis do adresáře patří k programu pro účetní. Přepněte se na něj výše.",
       "displayName": "Jméno nebo název kanceláře",
       "bio": "Krátce o vás",
       "regions": "Kraje, kde působíte",
@@ -9190,8 +9213,25 @@
         "region_required": "Vyberte kraj, nebo zaškrtněte práci na dálku.",
         "contact_required": "Vyplňte e-mail nebo web.",
         "invalid_website": "Web nevypadá jako platná adresa.",
-        "accountant_program_required": "Nejdřív se přepněte na program pro účetní.",
-        "generic": "Uložení se nepovedlo. Zkuste to prosím znovu."
+        "generic": "Uložení se nepovedlo. Zkuste to prosím znovu.",
+        "ico_required": "Nejdřív doplňte IČO firmy v Nastavení → Firma."
+      },
+      "needIco": "Pro zápis do adresáře potřebujeme IČO vaší firmy. Doplňte ho v Nastavení → Firma."
+    },
+    "partner": {
+      "approved": "Partnerský program pro účetní máte schválený. Za klienty dostáváte vyšší odměnu.",
+      "pending": "Žádost o partnerský program čeká na schválení. Posoudíme ji spolu s vaším zápisem v adresáři.",
+      "intro": "V partnerském programu dostanou vaši klienti víc uvítacích kreditů a vy vyšší odměnu za každého platícího klienta. Program zapínáme ručně, až schválíme váš zápis v adresáři účetních.",
+      "rejected": "Žádost jsme tentokrát neschválili. Můžete ji poslat znovu.",
+      "rejectedNote": "Žádost jsme neschválili: {note}. Můžete ji poslat znovu.",
+      "needListing": "Nejdřív odešlete zápis do adresáře účetních.",
+      "ask": "Požádat o partnerský program pro účetní",
+      "profileLink": "Profil účetního",
+      "sent": "Žádost je odeslaná. Ozveme se po kontrole.",
+      "errors": {
+        "listing_required": "Nejdřív odešlete zápis do adresáře účetních v Profilu účetního.",
+        "ico_required": "Nejdřív doplňte IČO firmy v Nastavení → Firma.",
+        "generic": "Žádost se nepodařilo odeslat. Zkuste to prosím znovu."
       }
     }
   },
@@ -9246,7 +9286,23 @@
     "rejected": "Záznam zamítnut.",
     "changed": "Účetní záznam mezitím upravil. Načetli jsme novou verzi, projděte ji znovu.",
     "failed": "Akce selhala",
-    "withdrawnHint": "Účetní záznam stáhl. Znovu ho posoudíte, až ho zase uloží."
+    "withdrawnHint": "Účetní záznam stáhl. Znovu ho posoudíte, až ho zase uloží.",
+    "partner": {
+      "label": "Partnerský program",
+      "status": {
+        "none": "Nežádá",
+        "pending": "Čeká na schválení",
+        "approved": "Schválený",
+        "rejected": "Zamítnutý"
+      },
+      "withListing": "Schválit i partnerský program pro účetní",
+      "approve": "Schválit partnerský program",
+      "reject": "Zamítnout partnerský program",
+      "revoke": "Zrušit partnerský program",
+      "approvedToast": "Partnerský program schválen.",
+      "rejectedToast": "Partnerský program zamítnut.",
+      "notReviewable": "Partnerský program jde schválit jen se schváleným zápisem."
+    }
   },
   "annualEstimate": {
     "year": "Rok",
@@ -9888,7 +9944,7 @@
         },
         "track": {
           "title": "Vidíte registrace a dostáváte kredit",
-          "body": "Vidíte, kolik lidí přišlo přes váš kód, a za každého, kdo začne platit, dostanete kredit (standardně {reward} kreditů, 1 kredit = 1 Kč)."
+          "body": "Vidíte, kolik lidí přišlo přes váš kód, a za každého, kdo začne platit, dostanete kredit (standardně až {reward} kreditů podle první platby, 1 kredit = 1 Kč)."
         }
       }
     },
@@ -10030,7 +10086,7 @@
         },
         "credit": {
           "title": "Kredit pro coworking",
-          "body": "Za každou firmu člena, která začne platit, dostane coworking kredit (standardně {reward} kreditů). Větší spolupráci domluvíme individuálně."
+          "body": "Za každou firmu člena, která začne platit, dostane coworking kredit (standardně až {reward} kreditů podle první platby). Větší spolupráci domluvíme individuálně."
         },
         "poster": {
           "title": "Plakát na zeď",
@@ -10085,7 +10141,7 @@
         },
         "credit": {
           "title": "Kredit pro komunitu",
-          "body": "Za každou firmu člena, která začne platit, získá komunita kredit (standardně {reward} kreditů)."
+          "body": "Za každou firmu člena, která začne platit, získá komunita kredit (standardně až {reward} kreditů podle první platby)."
         },
         "online": {
           "title": "Stavěné pro online skupiny",
@@ -11249,10 +11305,10 @@
     "flatLeadSk": "Na Slovensku je jeden paušál (§ 6 odst. 10 ZDP) s ročním stropem; zaplacené pojistné se odečítá navíc.",
     "rateLabel": "Vaše činnost",
     "rates": {
-      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství.",
-      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "30": "30 % – pronájem majetku zařazeného v obchodním majetku.",
       "40": "40 % – jiné podnikání podle zvláštních předpisů (svobodná povolání) a autorská práva.",
-      "30": "30 % – pronájem majetku zařazeného v obchodním majetku."
+      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství."
     },
     "flatRow": "Paušál {rate} % (max. {cap})",
     "capped": "strop",

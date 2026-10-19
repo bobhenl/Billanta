@@ -97,7 +97,7 @@ export default async function SchoolsPage({ params }: { params: Promise<{ locale
             {t('access.cta')}
           </a>
         ) : (
-          <Link href="/signup" className={buttonClass.primary}>
+          <Link href="/signup?for=teacher" className={buttonClass.primary}>
             {t('access.signup')}
           </Link>
         )}
@@ -131,7 +131,7 @@ export default async function SchoolsPage({ params }: { params: Promise<{ locale
               {t('access.cta')}
             </a>
           ) : (
-            <Link href="/signup" className={buttonClass.primary}>
+            <Link href="/signup?for=teacher" className={buttonClass.primary}>
               {t('access.signup')}
             </Link>
           )}

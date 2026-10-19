@@ -15,12 +15,15 @@ import { SignupForm } from './signup-form';
  * all form state and the ToS acceptance logic live in the client component
  * below (`signup-form.tsx`), per blueprint §9's signup-gate requirement.
  */
-export default async function SignupPage({ searchParams }: { searchParams: Promise<{ promo?: string }> }) {
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ promo?: string; for?: string }> }) {
   const jar = await cookies();
+  const query = await searchParams;
   // Came from the demo's "create an account": say that the work comes along.
   const fromDemo = jar.has(DEMO_TRANSFER_COOKIE);
+  // `?for=` from the accountants / schools pages pre-ticks the matching box.
+  const audience = query.for === 'accountant' || query.for === 'teacher' ? query.for : null;
   // `?promo=` sets the cookie in this very response (middleware.ts), so read the query first.
-  const queryPromo = (await searchParams).promo?.trim();
+  const queryPromo = query.promo?.trim();
   const promo = (queryPromo && PROMO_CODE.test(queryPromo) ? queryPromo.toUpperCase() : null) ?? jar.get(PROMO_COOKIE)?.value ?? null;
   const t = await getTranslations('demo.transfer');
   const tPromo = await getTranslations('promo');
@@ -39,7 +42,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
             {tPromo('signupNote', { code: promo })}
           </p>
         )}
-        <SignupForm />
+        <SignupForm audience={audience} />
       </div>
     </div>
   );
