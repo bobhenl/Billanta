@@ -31,7 +31,6 @@ import {
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { HintCard } from '@/components/hint-card';
@@ -213,24 +212,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
               >
                 {t('hero.cta')}
               </Link>
               <Link
                 href="/create-invoice"
-                className="inline-flex items-center justify-center rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 {t('hero.guestCta')}
               </Link>
               <Link
                 href="/demo"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:text-primary"
+                className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:text-primary"
               >
                 {tDemo('cta')}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
-              <ShareQr className="rounded-full" />
             </div>
           </div>
 
