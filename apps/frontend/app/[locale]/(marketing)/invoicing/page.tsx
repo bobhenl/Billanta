@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { SkEinvoicingCallout } from '@/components/public-tools/sk-einvoicing-callout';
 import { getAllMunicipalities, getRegionGroups, isMajorMunicipality, regionAnchorId } from '@/lib/municipalities';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
@@ -63,6 +64,8 @@ export default async function MunicipalityIndexPage({ params }: { params: Promis
               </>
             )}
           </p>
+
+          {country === 'SK' && <SkEinvoicingCallout className="mt-8 max-w-2xl" />}
 
           <div className="mt-12 grid gap-10 lg:grid-cols-2">
             {groups.map((group) => {

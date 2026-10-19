@@ -20,6 +20,19 @@ export function guideMetadata(slug: string, locale: string): Promise<Metadata> {
 }
 
 /**
+ * A guide about other rules than Czech VAT (the Slovak e-invoicing one)
+ * passes its own `sources`: the date its facts were checked, the official
+ * page and the wording of the sources box. Without it the Czech VAT
+ * defaults apply.
+ */
+export interface GuideSourcesOverride {
+  checked: string;
+  officialUrl: string;
+  officialLabel: string;
+  disclaimer: string;
+}
+
+/**
  * Shell of one guide: header with an "updated" date, the body, and the
  * sources box (last checked, form versions, link to Finanční správa).
  *
@@ -31,7 +44,17 @@ export function guideMetadata(slug: string, locale: string): Promise<Metadata> {
  * No BreadcrumbList: the
  * visible trail has two rungs (see ToolHeader).
  */
-export async function GuidePage({ slug, locale, children }: { slug: string; locale: string; children: React.ReactNode }) {
+export async function GuidePage({
+  slug,
+  locale,
+  sources,
+  children
+}: {
+  slug: string;
+  locale: string;
+  sources?: GuideSourcesOverride;
+  children: React.ReactNode;
+}) {
   const g = getGuide(slug)!;
   const t = await getTranslations('tools');
   const format = await getFormatter();
@@ -39,23 +62,32 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
   if (!isPublishedIn(g, locale)) return <CzOnlyNotice name={t(`${k}.name`)} path={`/guides/${slug}`} />;
 
   const path = `/guides/${slug}`;
-  const updated = format.dateTime(new Date(`${VAT_INFO_CHECKED}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
-  const checked = await checkedDate('vat_forms');
-  const forms = t('guides.items.vatFiling.formsLine', { dp3: VAT_FORM_VERSIONS.DPHDP3, kh1: VAT_FORM_VERSIONS.DPHKH1, shv: VAT_FORM_VERSIONS.DPHSHV });
+  const updatedOn = sources?.checked ?? VAT_INFO_CHECKED;
+  const updated = format.dateTime(new Date(`${updatedOn}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
+  const checked = sources?.checked ?? (await checkedDate('vat_forms'));
+  const forms = sources
+    ? undefined
+    : t('guides.items.vatFiling.formsLine', { dp3: VAT_FORM_VERSIONS.DPHDP3, kh1: VAT_FORM_VERSIONS.DPHKH1, shv: VAT_FORM_VERSIONS.DPHSHV });
   return (
     <article className="container py-12 sm:py-16">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLd(guideArticleLd(locale, path, t(`${k}.title`), t(`${k}.description`), VAT_INFO_CHECKED))}
+        dangerouslySetInnerHTML={jsonLd(guideArticleLd(locale, path, t(`${k}.title`), t(`${k}.description`), updatedOn))}
       />
       <ToolTabs kind="guides" current={slug} />
       <ToolHeader hubHref="/guides" hubLabel={t('menu.guides')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={t(`${k}.lead`)} icon={g.icon} />
       <p className="mt-3 text-sm text-muted-foreground">
-        {t('common.updated')}: <time dateTime={VAT_INFO_CHECKED}>{updated}</time>
+        {t('common.updated')}: <time dateTime={updatedOn}>{updated}</time>
       </p>
       <div className="mt-10 max-w-3xl space-y-10">{children}</div>
       <div className="mt-12 max-w-3xl">
-        <GuideSources checked={checked} officialUrl={VAT_OFFICIAL_URL} extra={forms} />
+        <GuideSources
+          checked={checked}
+          officialUrl={sources?.officialUrl ?? VAT_OFFICIAL_URL}
+          extra={forms}
+          officialLabel={sources?.officialLabel}
+          disclaimer={sources?.disclaimer}
+        />
       </div>
       <div className="mt-12">
         <SignupCta />
