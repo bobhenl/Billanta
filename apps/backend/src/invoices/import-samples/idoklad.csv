@@ -1,0 +1,4 @@
+Číslo dokladu;Odběratel - název;Odběratel - IČ;Odběratel - DIČ;Datum vystavení;Datum splatnosti;Celkem bez DPH;Celkem DPH;Celkem s DPH;Stav úhrady
+250031;Zahradnictví Květa s.r.o.;23456789;CZ23456789;05.08.2025;19.08.2025;8 000,00;1 680,00;9 680,00;Uhrazeno
+250032;Autoservis Rychlík;34567890;;20.08.2025;03.09.2025;3 000,00;630,00;3 630,00;Neuhrazeno
+250033;Studio Mrak z.s.;45678901;CZ45678901;11.09.2025;25.09.2025;1 500,00;315,00;1 815,00;Neuhrazeno

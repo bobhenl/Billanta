@@ -123,3 +123,9 @@ export const TEASER_ROW_KEYS = ['free', 'entry', 'ai', 'bank', 'taxEstimate', 'i
 export function comparedAtLabel(locale: string): string {
   return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(new Date(`${COMPARED_AT}-15T12:00:00Z`));
 }
+
+/** A brand's name as this locale's market writes it (SuperFaktúra in Slovak). */
+export function brandName(key: BrandKey, locale: string): string {
+  const data: { name: string; nameSk?: string } = BRAND_DATA[key];
+  return (marketOf(locale) === 'sk' && data.nameSk) || data.name;
+}

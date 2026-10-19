@@ -1,9 +1,12 @@
 import { BadRequestException, Injectable, Optional } from "@nestjs/common";
-import { eq, inArray } from "drizzle-orm";
+import { and, count as countRows, eq, inArray, isNotNull, ne } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
-import { decodeCsvBuffer, parseCsv } from "../contacts/contacts-csv.util";
-import { highestImportedSequences, mapInvoiceRows, type ImportedContact, type ImportedInvoice, type ImportSkip } from "./invoice-import.util";
+import { readTableFile, TableFileError } from "../common/table-file";
+import { highestImportedSequences, mapInvoiceRows, type ImportField, type ImportedContact, type ImportedInvoice, type ImportSkip, type RequiredImportField } from "./invoice-import.util";
+import { describeColumns, planImport, type ImportColumn, type ImportSource } from "./invoice-import-sources";
+import { numberingSuggestions, type NumberingSuggestion } from "./import-numbering";
+import { saveNumberFormats } from "../tenants/number-formats";
 import { bumpInvoiceSequences, loadNumberFormats } from "./invoice-numbering.util";
 import { computeInvoiceTotal, round2 } from "./invoice-total.util";
 import {
@@ -51,7 +54,37 @@ export interface InvoiceImportResult {
   sellers?: ImportSeller[];
   /** API imports only, after a real run: the newest imported invoice shows other supplier details than the profile. */
   sellerUpdate?: SellerProfileUpdate;
+  /** File imports: the tool the file looks like an export of (null = not recognised). */
+  detectedSource?: ImportSource | null;
+  /** File imports: each column, the field it is read as, and sample values. */
+  columns?: ImportColumn[];
+  /** File previews only: required fields no column maps to. Nothing else is filled; the user maps columns first. */
+  mappingRequired?: RequiredImportField[];
+  /** Imported numbers our numbering would not continue: the pattern they are written in, per type. */
+  numbering?: NumberingSuggestion[];
+  /** After a real run with `adoptNumbering`: the types whose number pattern was switched. */
+  numberingAdopted?: NumberingSuggestion["documentType"][];
 }
+
+export interface FileImportOptions {
+  /** The field per column, as fixed by the user in the preview; default = guessed from the header. */
+  mapping?: (ImportField | null)[] | null;
+  /** Switch the number pattern to the one the imported numbers use (see `numbering`). */
+  adoptNumbering?: boolean;
+}
+
+const emptyResult = (dryRun: boolean): InvoiceImportResult => ({
+  dryRun,
+  invoices: 0,
+  contactsCreated: 0,
+  contactsMatched: 0,
+  byStatus: { issued: 0, paid: 0, cancelled: 0 },
+  totals: {},
+  dateFrom: null,
+  dateTo: null,
+  skipped: [],
+  preview: [],
+});
 
 export interface ImportSeller {
   ico: string;
@@ -211,16 +244,35 @@ export async function importedRate(
 export class InvoiceImportService {
   constructor(@Optional() private readonly audit?: AuditService) {}
 
-  async importCsv(db: TenantDb, tenantId: string, buffer: Buffer, dryRun: boolean): Promise<InvoiceImportResult> {
+  /**
+   * A CSV or .xlsx export of another tool. The preview says which tool it
+   * looks like and how each column is read; when a required column is not
+   * recognised it returns `mappingRequired` instead of failing, so the user
+   * can point the columns at fields and preview again with `mapping`.
+   */
+  async importCsv(db: TenantDb, tenantId: string, buffer: Buffer, dryRun: boolean, options: FileImportOptions = {}): Promise<InvoiceImportResult> {
+    let rows: string[][];
+    try {
+      rows = readTableFile(buffer);
+    } catch (error) {
+      if (error instanceof TableFileError) throw new BadRequestException({ error: error.code });
+      throw error;
+    }
+    const plan = planImport(rows, options.mapping);
+    const described = { detectedSource: plan.source, columns: describeColumns(rows, plan.columns) };
+    if (plan.missing.length > 0) {
+      if (!dryRun || rows.length < 2) throw new BadRequestException({ error: "unknown_columns", missing: plan.missing });
+      return { ...emptyResult(true), ...described, mappingRequired: plan.missing };
+    }
     let mapped: ReturnType<typeof mapInvoiceRows>;
     try {
-      mapped = mapInvoiceRows(parseCsv(decodeCsvBuffer(buffer)));
+      mapped = mapInvoiceRows(rows, plan.columns);
     } catch {
       throw new BadRequestException({ error: "unknown_columns" });
     }
-    const result = await this.importMapped(db, tenantId, mapped, dryRun);
+    const result = await this.importMapped(db, tenantId, mapped, dryRun, undefined, [], options.adoptNumbering ?? false);
     await this.logImport(db, tenantId, "csv", result);
-    return result;
+    return { ...result, ...described };
   }
 
   /**
@@ -416,6 +468,7 @@ export class InvoiceImportService {
     onCreated?: (invoice: ImportedInvoice, id: string) => void,
     /** Contacts from the source's address book, also those never invoiced. */
     contacts: ImportedContact[] = [],
+    adoptNumbering = false,
   ): Promise<InvoiceImportResult> {
     if (mapped.invoices.length > MAX_IMPORT_INVOICES || contacts.length > MAX_IMPORT_INVOICES) throw new BadRequestException({ error: "too_many_rows" });
 
@@ -444,18 +497,10 @@ export class InvoiceImportService {
     const totalOf = (inv: ImportedInvoice) =>
       computeInvoiceTotal(inv.lines.map((l) => ({ quantity: String(l.quantity), unitPrice: String(l.unitPrice), vatRate: String(l.vatRate) })));
 
-    const result: InvoiceImportResult = {
-      dryRun,
-      invoices: invoices.length,
-      contactsCreated: 0,
-      contactsMatched: 0,
-      byStatus: { issued: 0, paid: 0, cancelled: 0 },
-      totals: {},
-      dateFrom: null,
-      dateTo: null,
-      skipped,
-      preview: [],
-    };
+    const result: InvoiceImportResult = { ...emptyResult(dryRun), invoices: invoices.length, skipped };
+    const formats = invoices.length > 0 ? await loadNumberFormats(db, tenantId) : {};
+    const suggestions = invoices.length > 0 ? await this.numberingSuggestions(db, tenantId, invoices, formats) : [];
+    if (suggestions.length > 0) result.numbering = suggestions;
     const newCustomers = new Set<string>();
     const matchedCustomers = new Set<string>();
     // Names the import will create: a buyer found by name in the address book counts once,
@@ -564,7 +609,40 @@ export class InvoiceImportService {
     if (invoices.length === 0) return result;
     // Continue numbering after the highest imported number per counter, read
     // with the company's own pattern (e.g. `N/MM/YYYY`) or our built-in format.
-    await bumpInvoiceSequences(db, tenantId, highestImportedSequences(invoices, await loadNumberFormats(db, tenantId)));
+    await bumpInvoiceSequences(db, tenantId, highestImportedSequences(invoices, formats));
+    if (adoptNumbering && suggestions.length > 0) {
+      // Saving a pattern raises its counters past every number already written in it, the imported ones included.
+      const adopted = Object.fromEntries(suggestions.map((s) => [s.documentType, s.pattern]));
+      const { before, after } = await saveNumberFormats(db, tenantId, { formats: adopted, nextNumbers: {} });
+      const changes: schema.AuditChange[] = suggestions.map((s) => ({ field: `numberFormat.${s.documentType}`, from: before[s.documentType] ?? null, to: after[s.documentType] ?? null }));
+      await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "number_formats_updated", changes });
+      result.numberingAdopted = suggestions.map((s) => s.documentType);
+    }
     return result;
+  }
+
+  /** `numberingSuggestions` plus how many of the company's own documents each type already has. */
+  private async numberingSuggestions(
+    db: TenantDb,
+    tenantId: string,
+    invoices: ImportedInvoice[],
+    formats: Awaited<ReturnType<typeof loadNumberFormats>>,
+  ): Promise<NumberingSuggestion[]> {
+    const out: NumberingSuggestion[] = [];
+    for (const s of numberingSuggestions(invoices, formats)) {
+      const [row] = await db
+        .select({ n: countRows() })
+        .from(schema.invoices)
+        .where(
+          and(
+            eq(schema.invoices.tenantId, tenantId),
+            eq(schema.invoices.documentType, s.documentType),
+            ne(schema.invoices.source, "import"),
+            isNotNull(schema.invoices.invoiceNumber),
+          ),
+        );
+      out.push({ ...s, existingDocuments: Number(row?.n ?? 0) });
+    }
+    return out;
   }
 }

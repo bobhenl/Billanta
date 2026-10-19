@@ -39,12 +39,38 @@ import { getHomeRate } from "../exports/home-rates";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
+import { IMPORT_FIELDS } from "./invoice-import.util";
 import { InvoicesService } from "./invoices.service";
 import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
 import { BuyerDetailsService } from "./buyer-details.service";
 import { customSlugSchema } from "../public-links/public-link";
 
 const MAX_IMPORT_CSV_BYTES = 5 * 1024 * 1024;
+
+/** The multipart text fields next to an import file: the user's column mapping (JSON) and the numbering switch. */
+const fileImportFieldsSchema = z.object({
+  mapping: z
+    .string()
+    .max(20_000)
+    .optional()
+    .transform((raw, ctx) => {
+      if (!raw) return null;
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "invalid_mapping" });
+        return z.NEVER;
+      }
+      const result = z.array(z.enum(IMPORT_FIELDS).nullable()).max(200).safeParse(parsed);
+      if (!result.success) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "invalid_mapping" });
+        return z.NEVER;
+      }
+      return result.data;
+    }),
+  adoptNumbering: z.enum(["1", "true", "0", "false"]).optional(),
+});
 
 const buyerDetailsRequestSchema = z.object({
   email: z.string().trim().max(200).email().optional().or(z.literal("")),
@@ -209,18 +235,39 @@ export class InvoicesController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_IMPORT_CSV_BYTES } }))
   @ApiConsumes("multipart/form-data")
-  @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } }, required: ["file"] } })
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: { type: "string", format: "binary" },
+        mapping: { type: "string", description: "JSON array, one import field (or null = ignore) per column; default = guessed from the header" },
+        adoptNumbering: { type: "string", enum: ["1", "0"], description: "Switch the number pattern to the one the imported numbers use" },
+      },
+      required: ["file"],
+    },
+  })
   @ApiOperation({
-    summary: "Import invoice history from another system (CSV; ?dryRun=1 only previews)",
+    summary: "Import invoice history from another system (CSV or .xlsx; ?dryRun=1 only previews)",
     description:
+      "The preview detects the source tool by its columns and lists how each column is read; mappingRequired lists required fields no column maps to. " +
       "Rows are matched by invoice number (several rows = several line items); existing numbers are skipped. " +
       "Imported invoices are issued as-is with source=import: nothing is sent and no reminders go out.",
   })
-  importCsv(@Req() req: TenantScopedRequest, @Query("dryRun") dryRun?: string, @UploadedFile() file?: { buffer: Buffer }) {
+  importCsv(
+    @Req() req: TenantScopedRequest,
+    @Query("dryRun") dryRun?: string,
+    @UploadedFile() file?: { buffer: Buffer },
+    @Body() body?: Record<string, unknown>,
+  ) {
     if (!file) throw new BadRequestException({ error: "no_file" });
     // Bulk history rewrites the books' past: owner/admin only, even for members with invoice write access.
     if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
-    return this.importService.importCsv(req.tenantDb!, req.user!.tenantId, file.buffer, dryRun === "1" || dryRun === "true");
+    const fields = fileImportFieldsSchema.safeParse(body ?? {});
+    if (!fields.success) throw new BadRequestException({ error: "invalid_mapping" });
+    return this.importService.importCsv(req.tenantDb!, req.user!.tenantId, file.buffer, dryRun === "1" || dryRun === "true", {
+      mapping: fields.data.mapping,
+      adoptNumbering: fields.data.adoptNumbering === "1" || fields.data.adoptNumbering === "true",
+    });
   }
 
   @Post("import/bitfaktura")
