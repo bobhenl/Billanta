@@ -8734,6 +8734,8 @@
     "resourcesTitle": "Teaching materials",
     "resourcesLead": "Lessons and worksheets, guides to the legislation and pages that explain each topic in detail.",
     "resources": {
+      "firstInvoice": "Your first invoice: what it must contain",
+      "beginners": "Invoicing for beginners",
       "requiredFields": "Required fields on an invoice",
       "currencies": "Invoices in foreign currencies",
       "reminders": "Reminders and overdue payments",
@@ -9696,7 +9698,8 @@
           "title": "For assistants and office managers",
           "body": "The admin role, or narrower access to invoices or expenses only."
         }
-      }
+      },
+      "basicsTitle": "Invoicing basics"
     },
     "firstInvoice": {
       "seoTitle": "Your first invoice: what it must contain and how to issue it",

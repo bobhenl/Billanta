@@ -8734,6 +8734,8 @@
     "resourcesTitle": "Materiály k výuce",
     "resourcesLead": "Hodiny a pracovní listy, návody k legislativě a stránky, které jednotlivá témata vysvětlují podrobně.",
     "resources": {
+      "firstInvoice": "Vaše první faktura: co musí obsahovat",
+      "beginners": "Fakturace pro začátečníky",
       "requiredFields": "Povinné údaje na faktuře",
       "currencies": "Faktury v cizí měně",
       "reminders": "Upomínky a platby po splatnosti",
@@ -9696,7 +9698,8 @@
           "title": "Pro asistenty a office manažery",
           "body": "Role administrátora nebo užší přístup jen k fakturám či výdajům."
         }
-      }
+      },
+      "basicsTitle": "Základy fakturace"
     },
     "firstInvoice": {
       "seoTitle": "Vaše první faktura: co musí obsahovat a jak ji vystavit",

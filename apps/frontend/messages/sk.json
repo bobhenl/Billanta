@@ -8640,6 +8640,8 @@
     "resourcesTitle": "Materiály na výučbu",
     "resourcesLead": "Hodiny a pracovné listy a stránky, ktoré jednotlivé témy vysvetľujú podrobne.",
     "resources": {
+      "firstInvoice": "Vaša prvá faktúra: čo musí obsahovať",
+      "beginners": "Fakturácia pre začiatočníkov",
       "requiredFields": "Povinné údaje na faktúre",
       "currencies": "Faktúry v cudzej mene",
       "reminders": "Upomienky a platby po splatnosti",
@@ -9602,7 +9604,8 @@
           "title": "Pre asistentov a office manažérov",
           "body": "Rola administrátora alebo užší prístup len k faktúram či výdavkom."
         }
-      }
+      },
+      "basicsTitle": "Základy fakturácie"
     },
     "firstInvoice": {
       "seoTitle": "Vaša prvá faktúra: čo musí obsahovať a ako ju vystaviť",

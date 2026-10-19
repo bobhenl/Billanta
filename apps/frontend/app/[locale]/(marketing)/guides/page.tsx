@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
+import { NextPages } from '@/components/learn-page';
 import { CzOnlyNotice, SignupCta } from '@/components/public-tools/parts';
 import { GUIDES, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
 import { toolPageMetadata } from '@/lib/public-tool-meta';
@@ -24,6 +25,7 @@ export default async function GuidesHub({ params }: { params: Promise<Params> })
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('tools');
+  const tLearn = await getTranslations('learnPages.common');
   if (!isPublishedIn(HUB, locale)) return <CzOnlyNotice name={t('guides.indexTitle')} path="/guides" />;
   const guides = GUIDES.filter((g) => isPublishedIn(g, locale));
 
@@ -63,6 +65,14 @@ export default async function GuidesHub({ params }: { params: Promise<Params> })
           );
         })}
       </ul>
+      <NextPages
+        title={tLearn('basicsTitle')}
+        items={(['first', 'beginners', 'advanced'] as const).map((key) => ({
+          href: { first: '/your-first-invoice', beginners: '/invoicing-for-beginners', advanced: '/invoicing-for-advanced' }[key],
+          title: tLearn(`pages.${key}.title`),
+          body: tLearn(`pages.${key}.body`)
+        }))}
+      />
       <p className="mt-8 text-sm">
         <Link href="/calculators" className="font-medium text-primary hover:underline">
           {t('common.allCalculators')} →
