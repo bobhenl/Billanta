@@ -41,6 +41,20 @@ describe("renderWeeklyDigest", () => {
   });
 });
 
+describe("renderWeeklyDigest – tax-return line", () => {
+  it("adds the link in spring when the cron passes one", () => {
+    const { text, html } = renderWeeklyDigest({ ...base, taxReturn: { year: 2025, url: "https://x.cz/cs/reports/tax-return?year=2025" } }, "cs");
+    expect(text).toContain("Daňové přiznání za 2025");
+    expect(html).toContain('href="https://x.cz/cs/reports/tax-return?year=2025"');
+    expect(renderWeeklyDigest({ ...base, taxReturn: { year: 2025, url: "https://x.cz" } }, "sk").text).toContain("Daňové priznanie za 2025");
+  });
+
+  it("no line without it", () => {
+    expect(renderWeeklyDigest(base, "cs").text).not.toContain("Daňové přiznání");
+    expect(renderWeeklyDigest({ ...base, taxReturn: null }, "en").text).not.toContain("Tax return");
+  });
+});
+
 describe("chosenTaxKinds", () => {
   const profile = { country: "CZ", vatStatus: "non_payer", legalEntity: false } as const;
   it("uses the member's dashboard choice, dropping unknown kinds", () => {

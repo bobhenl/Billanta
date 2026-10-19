@@ -62,6 +62,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
               {t('flatTaxLink')}
             </Link>
           )}
+          <Link href="/reports/tax-return" className="text-sm font-semibold text-primary hover:underline">
+            {t('taxReturnLink')}
+          </Link>
           <Link href="/settings/exports" className="text-sm font-semibold text-primary hover:underline">
             {t('exportsLink')}
           </Link>

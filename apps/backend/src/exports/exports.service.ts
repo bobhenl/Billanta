@@ -757,6 +757,8 @@ export class ExportsService {
       .from(schema.expenses)
       .where(and(sql`${paidOn} >= ${from.toISOString()}`, sql`${paidOn} < ${to.toISOString()}`));
     let actualExpenses = 0;
+    /** The same sums by expense category ("" = none), for the tax-return basis. */
+    const byCategory: Record<string, number> = {};
     for (const e of expenses) {
       const rate = await toHome(e.currency, Number(e.exchangeRate) || null, e.paidAt ?? e.expenseDate);
       if (rate == null) {
@@ -764,7 +766,10 @@ export class ExportsService {
         continue;
       }
       const total = Number(e.amount) * rate;
-      actualExpenses += opts.vatPayer ? expenseVatParts(total, Number(e.vatRate), e.reverseCharge).base : total;
+      const counted = opts.vatPayer ? expenseVatParts(total, Number(e.vatRate), e.reverseCharge).base : total;
+      actualExpenses += counted;
+      const key = e.category ?? "";
+      byCategory[key] = (byCategory[key] ?? 0) + counted;
     }
 
     return {
@@ -775,6 +780,7 @@ export class ExportsService {
       rateMode: rates.annual && !eur ? ("annual" as const) : ("daily" as const),
       currency: eur ? ("EUR" as const) : ("CZK" as const),
       counts: { invoices: invoices.length, expenses: expenses.length, missingRates },
+      byCategory,
     };
   }
 

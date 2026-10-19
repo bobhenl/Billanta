@@ -27,6 +27,8 @@ export interface DigestData {
   deadlines: { label: string; date: Date; conditional?: boolean }[];
   dashboardUrl: string;
   unsubscribeUrl: string | null;
+  /** January to March, when the company invoiced in the year just ended: a link to its tax-return basis. */
+  taxReturn?: { year: number; url: string } | null;
 }
 
 const T: Record<EmailLocale, Record<string, string>> = {
@@ -48,6 +50,9 @@ const T: Record<EmailLocale, Record<string, string>> = {
     paidOn: "uhrazeno",
     open: "Otevřít Billantu",
     invoices: "faktur",
+    taxReturn: "Daňové přiznání za {year}",
+    taxReturnLine: "Podklady z vašich faktur a nákladů (příjmy, výdaje, paušál vs. skutečné výdaje) najdete v Billantě. Stáhnete je i jako PDF nebo CSV pro účetní.",
+    taxReturnLink: "Otevřít podklady",
   },
   sk: {
     subject: "Týždenný prehľad",
@@ -67,6 +72,9 @@ const T: Record<EmailLocale, Record<string, string>> = {
     paidOn: "uhradené",
     open: "Otvoriť Billantu",
     invoices: "faktúr",
+    taxReturn: "Daňové priznanie za {year}",
+    taxReturnLine: "Podklady z vašich faktúr a nákladov (príjmy, výdavky, paušál vs. skutočné výdavky) nájdete v Billante. Stiahnete si ich aj ako PDF alebo CSV pre účtovníka.",
+    taxReturnLink: "Otvoriť podklady",
   },
   en: {
     subject: "Weekly summary",
@@ -86,6 +94,9 @@ const T: Record<EmailLocale, Record<string, string>> = {
     paidOn: "paid",
     open: "Open Billanta",
     invoices: "invoices",
+    taxReturn: "Tax return for {year}",
+    taxReturnLine: "The basis from your invoices and expenses (income, expenses, flat-rate vs. actual expenses) is ready in Billanta, also as a PDF or CSV for your accountant.",
+    taxReturnLink: "Open the tax-return basis",
   },
 };
 
@@ -142,6 +153,13 @@ export function renderWeeklyDigest(d: DigestData, locale: EmailLocale): { subjec
         )
       : muted(t.noneDeadlines!),
   );
+
+  if (d.taxReturn) {
+    sections.push(h2(t.taxReturn!.replace("{year}", String(d.taxReturn.year))));
+    sections.push(
+      `<p style="margin:0;">${escapeHtml(t.taxReturnLine!)} <a href="${escapeHtml(d.taxReturn.url)}" style="color:#4f46e5;">${escapeHtml(t.taxReturnLink!)}</a></p>`,
+    );
+  }
 
   const html = `<!doctype html><html lang="${locale}"><body style="font-family:Arial,sans-serif;background:#f6f7f9;padding:24px;">
       <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;font-size:14px;color:#374151;">

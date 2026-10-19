@@ -6495,7 +6495,8 @@
       "moveDown": "Posunout dozadu",
       "dragToReorder": "Přetáhněte pro změnu pořadí"
     },
-    "flatTaxLink": "Vyplatí se paušální daň? →"
+    "flatTaxLink": "Vyplatí se paušální daň? →",
+    "taxReturnLink": "Podklady pro daňové přiznání"
   },
   "siteSearch": {
     "title": "Hledat na webu",
@@ -10495,6 +10496,212 @@
           "a": "Firmu můžete kdykoli opustit sami. Faktury, které jste vystavili, ve firmě zůstávají."
         }
       ]
+    }
+  },
+  "taxReturn": {
+    "metaTitle": "Podklady pro daňové přiznání",
+    "title": "Podklady pro daňové přiznání {year}",
+    "titleSk": "Podklady pro daňové přiznání {year} (Slovensko)",
+    "back": "Přehledy",
+    "lead": "Příjmy, výdaje a výdajové paušály za zdaňovací období z vašich dokladů, termíny podání a orientační odhad daně. Zdarma ve všech tarifech.",
+    "notAdvice": "Jde o podklad pro daňové přiznání sestavený z vašich dokladů, nikoli o daňové poradenství. Před podáním údaje ověřte, případně s účetní nebo daňovým poradcem.",
+    "noTenant": "Nejdřív vyplňte fakturační údaje firmy.",
+    "loadError": "Podklady se nepodařilo načíst. Zkuste to prosím za chvíli.",
+    "ratesUnavailable": "U některých dokladů v cizí měně chybí kurz a nepodařilo se ho dohledat. Zkuste to prosím za chvíli.",
+    "yearLabel": "Rok",
+    "downloadPdf": "Stáhnout PDF",
+    "downloadCsv": "Stáhnout CSV",
+    "runningYear": "Rok {year} ještě běží: čísla se do jeho konce změní a přiznání za něj se podává až příští rok.",
+    "income": "Příjmy z uhrazených faktur",
+    "incomeAccrual": "Příjmy z vystavených faktur",
+    "invoiceCount": "{count, plural, one {# doklad} few {# doklady} other {# dokladů}}, dobropisy odečteny",
+    "actualExpenses": "Skutečné výdaje celkem",
+    "expenseCount": "{count, plural, one {# výdaj} few {# výdaje} other {# výdajů}}",
+    "basisCash": "Daňová evidence: příjmy podle data úhrady, výdaje podle data platby.",
+    "basisAccrual": "Účetnictví: příjmy podle DUZP.",
+    "vatPayerYes": "Jste plátce DPH, částky jsou bez DPH.",
+    "vatPayerNo": "Nejste plátce DPH, částky jsou celkové.",
+    "missingRates": "{count, plural, one {# doklad v cizí měně bez kurzu není započten.} few {# doklady v cizí měně bez kurzu nejsou započteny.} other {# dokladů v cizí měně bez kurzu není započteno.}}",
+    "categoriesTitle": "Výdaje podle kategorií",
+    "uncategorised": "Bez kategorie",
+    "noExpenses": "V tomto roce nemáte žádné výdaje.",
+    "legalEntity": "Společnost podává přiznání k dani z příjmů právnických osob (DPPO). Výdajové paušály ani paušální daň se na ni nevztahují a výsledek hospodaření určuje účetnictví – tyto součty berte jako kontrolu proti němu.",
+    "legalEntitySk": "Společnost podává přiznání k dani z příjmů právnických osob (DPPO). Paušální výdaje se na ni nevztahují a výsledek hospodaření určuje účetnictví – tyto součty berte jako kontrolu proti němu.",
+    "flatTitle": "Výdajové paušály a skutečné výdaje",
+    "flatTitleSk": "Paušální výdaje a skutečné výdaje",
+    "flatLead": "Podle § 7 odst. 7 ZDP si můžete místo skutečných výdajů uplatnit procento z příjmů. Sazba závisí na druhu činnosti, každá má roční strop.",
+    "flatLeadSk": "Na Slovensku je jeden paušál (§ 6 odst. 10 ZDP) s ročním stropem; zaplacené pojistné se odečítá navíc.",
+    "rateLabel": "Vaše činnost",
+    "rates": {
+      "80": "80 % – řemeslné živnosti, zemědělská výroba, lesní a vodní hospodářství.",
+      "60": "60 % – ostatní živnosti (většina volných, vázaných a koncesovaných živností).",
+      "40": "40 % – jiné podnikání podle zvláštních předpisů (svobodná povolání) a autorská práva.",
+      "30": "30 % – pronájem majetku zařazeného v obchodním majetku."
+    },
+    "flatRow": "Paušál {rate} % (max. {cap})",
+    "capped": "strop",
+    "better": {
+      "flat": "Paušál {rate} % vám dává vyšší výdaje než skutečné výdaje.",
+      "actual": "Skutečné výdaje jsou vyšší než paušál {rate} %.",
+      "equal": "Paušál {rate} % a skutečné výdaje vycházejí stejně."
+    },
+    "estimateTitle": "Orientační odhad daně a pojistného",
+    "estimateLead": "Daň po slevě na poplatníka a sociální a zdravotní pojištění za rok podle sazeb a minim pro tento rok.",
+    "estimateLeadSk": "Daň po nezdanitelné části na daňovníka a odvody za rok podle sazeb pro tento rok.",
+    "option": {
+      "flat_expenses": "S paušálem",
+      "actual_expenses": "Skutečné výdaje"
+    },
+    "expenses": "Výdaje",
+    "profit": "Zisk",
+    "tax": "Daň z příjmů",
+    "social": "Sociální pojištění",
+    "health": "Zdravotní pojištění",
+    "socialSk": "Sociální pojištění zaplacené",
+    "healthSk": "Zdravotní pojištění za rok",
+    "total": "Celkem za rok",
+    "skInsuranceNote": "Zaplacené pojistné bereme ze záloh v Nastavení → Fakturační údaje a v obou variantách snižuje základ daně.",
+    "noParams": "Pro rok {year} zatím nemáme zveřejněné sazby a limity, proto chybí odhad daně. Součty a termíny platí.",
+    "flatTaxTitle": "Paušální daň",
+    "flatTaxLead": "Jedna měsíční platba za daň, sociální i zdravotní pojištění (§ 2a ZDP). Pro neplátce DPH s příjmy do 2 mil. Kč; do režimu se vstupuje oznámením do 10. ledna.",
+    "flatTaxBand": "S těmito příjmy byste byli v {band}. pásmu: za rok {total}.",
+    "flatTaxNo": {
+      "vat_payer": "Plátce DPH paušální daň využít nemůže.",
+      "over_limit": "S těmito příjmy paušální daň využít nelze (limit 2 mil. Kč, u nižších sazeb paušálu méně).",
+      "no_data": "Pro tento rok chybí částky paušální daně."
+    },
+    "best": {
+      "flat_tax": "Podle odhadu vychází nejlevněji paušální daň.",
+      "flat_expenses": "Podle odhadu vychází nejlevněji běžný režim s paušálem.",
+      "actual_expenses": "Podle odhadu vychází nejlevněji běžný režim se skutečnými výdaji."
+    },
+    "inFlatTaxRegime": "V nastavení máte paušální režim. Pokud jste ho v roce neopustili a nepřekročili limit, přiznání ani přehledy obvykle nepodáváte.",
+    "flatTaxCalculator": "Podrobné srovnání v kalkulačce paušální daně",
+    "deadlinesTitle": "Termíny podání přiznání",
+    "deadline": {
+      "CZ": {
+        "paper": "Listinně",
+        "electronic": "Elektronicky (datová schránka, Moje daně)",
+        "advisor": "S daňovým poradcem (plnou moc podat do prvního termínu)"
+      },
+      "SK": {
+        "paper": "Řádný termín",
+        "extended": "Po oznámení o prodloužení lhůty"
+      }
+    },
+    "diffTitle": "Česko a Slovensko – v čem se liší",
+    "diff": {
+      "cz": "Česko",
+      "sk": "Slovensko",
+      "flatLabel": "Výdajové paušály",
+      "flatCz": "Podle činnosti: {caps}.",
+      "flatSk": "Jeden paušál {rate} %, nejvýš {cap} za rok.",
+      "deadlineLabel": "Termín přiznání",
+      "deadlineCz": "{paper} listinně, {electronic} elektronicky, {advisor} s daňovým poradcem.",
+      "deadlineSk": "{paper}; po oznámení správci daně do {extended} (s příjmy ze zahraničí až o 6 měsíců).",
+      "insuranceLabel": "Pojistné",
+      "insuranceCz": "Pojistné OSVČ není daňový výdaj (§ 25 ZDP).",
+      "insuranceSk": "Zaplacené pojistné se odečítá od základu daně i vedle paušálu.",
+      "flatTaxLabel": "Paušální daň",
+      "flatTaxCz": "Ano, pro neplátce DPH s příjmy do 2 mil. Kč.",
+      "flatTaxSk": "Ne. Při nižších příjmech platí snížená sazba daně 15 %.",
+      "formLabel": "Co se podává",
+      "formCz": "Přiznání DPFO a do měsíce po jeho termínu přehledy pro ČSSZ a zdravotní pojišťovnu.",
+      "formSk": "Daňové přiznání typu B; Sociálna poisťovňa si příjmy převezme od finanční správy."
+    },
+    "notesTitle": "Poznámky",
+    "noteInsurance": "Zálohy na sociální a zdravotní pojištění OSVČ nejsou daňový výdaj (§ 25 odst. 1 písm. h) ZDP), a proto mezi výdaji nejsou.",
+    "noteInsuranceSk": "Zaplacené sociální a zdravotní pojištění se odečítá od základu daně vedle paušálu i skutečných výdajů (§ 6 odst. 10 a 11 ZDP).",
+    "noteEstimate": "Odhad počítá jen se slevou na poplatníka, bez dalších slev, odpočtů a příjmů z jiných zdrojů (zaměstnání, nájem).",
+    "noteEstimateSk": "Odhad počítá jen s nezdanitelnou částí na daňovníka, bez dalších odpočtů, daňového bonusu a příjmů z jiných zdrojů.",
+    "noteData": "Čísla jsou jen z dokladů v aplikaci. Příjmy a výdaje, které tu nemáte (hotovost bez dokladu, jiné činnosti), přidejte sami.",
+    "disclaimer": "Podklady mají jen informativní charakter, jsou bez záruky a nenahrazují daňového poradce ani účetní. Za obsah podání odpovídáte vy.",
+    "nudge": {
+      "title": "Daňové přiznání za rok {year}",
+      "body": "Příjmy, výdaje podle kategorií, paušály a termíny za rok {year} máme připravené z vašich dokladů. PDF i CSV pro účetní zdarma.",
+      "cta": "Otevřít podklady",
+      "dismiss": "Skrýt"
+    },
+    "landing": {
+      "seoTitle": "Podklady pro daňové přiznání {year} zdarma – OSVČ a SZČO",
+      "eyebrow": "Daňové přiznání",
+      "title": "Podklady pro daňové přiznání {year}",
+      "lead": "Billanta sečte příjmy z uhrazených faktur a výdaje podle kategorií, porovná je s výdajovými paušály a ukáže termíny podání. Pro Česko i Slovensko, ke stažení v PDF a CSV.",
+      "cta": "Začít zdarma",
+      "demo": "Vyzkoušet demo",
+      "free": "Podklady jsou součástí všech tarifů včetně bezplatného.",
+      "featuresTitle": "Co v podkladech najdete",
+      "features": {
+        "income": {
+          "title": "Příjmy z uhrazených faktur",
+          "body": "Za celý rok podle data úhrady, dobropisy odečtené, cizí měny přepočtené kurzem z dokladu."
+        },
+        "categories": {
+          "title": "Výdaje podle kategorií",
+          "body": "Materiál, služby, software, cestovné a další – i s výdaji bez kategorie."
+        },
+        "flat": {
+          "title": "Paušál, nebo skutečné výdaje",
+          "body": "Všechny sazby výdajových paušálů s ročními stropy vedle vašich skutečných výdajů."
+        },
+        "flatTax": {
+          "title": "Paušální daň",
+          "body": "U české OSVČ srovnání s paušální daní a orientační odhad daně a pojistného."
+        },
+        "deadlines": {
+          "title": "Termíny podání",
+          "body": "Listinně, elektronicky i s daňovým poradcem, posunuté přes víkendy a svátky."
+        },
+        "export": {
+          "title": "PDF a CSV pro účetní",
+          "body": "Jedním kliknutím, s upozorněním, že jde o podklad, ne o daňové poradenství."
+        }
+      },
+      "country": {
+        "CZ": {
+          "title": "Česko – přiznání za rok {year}",
+          "deadline": {
+            "paper": "Listinně",
+            "electronic": "Elektronicky",
+            "advisor": "S daňovým poradcem"
+          },
+          "flat": "Výdajové paušály: {caps}.",
+          "extra": "Paušální daň pro neplátce DPH s příjmy do 2 mil. Kč; do měsíce po přiznání přehledy pro ČSSZ a zdravotní pojišťovnu."
+        },
+        "SK": {
+          "title": "Slovensko – přiznání za rok {year}",
+          "deadline": {
+            "paper": "Řádný termín",
+            "extended": "Po oznámení o prodloužení"
+          },
+          "flat": "Paušální výdaje {rate} % z příjmů, nejvýš {cap} za rok.",
+          "extra": "Zaplacené pojistné se odečítá i vedle paušálu; paušální daň Slovensko nemá."
+        }
+      },
+      "calculatorsTitle": "Daňové kalkulačky",
+      "calculatorsLead": "Bez registrace: daň a pojistné OSVČ a SZČO, srovnání s paušální daní a minimální zálohy.",
+      "ctaTitle": "Podklady z vašich vlastních faktur",
+      "ctaBody": "Když fakturujete v Billantě, podklady pro přiznání máte hotové bez přepisování. Stačí doplnit, co v aplikaci nemáte.",
+      "faqTitle": "Časté otázky",
+      "faq": [
+        {
+          "q": "Je to daňové poradenství?",
+          "a": "Ne. Jde o souhrn vašich vlastních dokladů s orientačním výpočtem podle zákonných sazeb. Před podáním údaje ověřte, případně s účetní nebo daňovým poradcem."
+        },
+        {
+          "q": "Kdy se vyplatí paušál a kdy skutečné výdaje?",
+          "a": "Paušál se vyplatí, když jsou vaše skutečné výdaje nižší než procento z příjmů pro vaši činnost. Podklady ukážou obě čísla vedle sebe i s ročním stropem paušálu."
+        },
+        {
+          "q": "Jsou podklady zdarma?",
+          "a": "Ano, ve všech tarifech včetně bezplatného, pro české OSVČ i slovenské SZČO."
+        },
+        {
+          "q": "Co když fakturuji v eurech?",
+          "a": "Faktury v cizí měně se přepočtou kurzem uloženým u dokladu. Doklady bez kurzu podklady vypíší zvlášť, aby nic nezapadlo."
+        }
+      ],
+      "disclaimer": "Sazby, stropy a termíny odpovídají zákonům o daních z příjmů a daňovým řádům ČR a SR pro daný rok. Informace jsou orientační a nenahrazují daňového poradce."
     }
   }
 }

@@ -65,6 +65,9 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/team-roles', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/for-owners', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/for-assistants', changeFrequency: 'monthly', priority: 0.5 },
+
+  // Seasonal (January to June), the year in the title changes on its own.
+  { path: '/tax-return-basis', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/for-accountants', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/for-schools', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/for-creators', changeFrequency: 'monthly', priority: 0.6 },

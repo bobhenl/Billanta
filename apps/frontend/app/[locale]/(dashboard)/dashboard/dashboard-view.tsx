@@ -80,6 +80,7 @@ import {
 } from './types';
 import { PeriodReport } from './period-report';
 import { ReferralNudge } from '@/components/referral-nudge';
+import { TaxReturnNudge } from '@/components/tax-return-nudge';
 
 const DEFAULT_CONFIG: DashboardConfig = {
   cards: ['revenue_month', 'unpaid', 'overdue', 'expenses_month'],
@@ -204,6 +205,7 @@ export function DashboardView({
   stats = null,
   usage = null,
   referral = null,
+  taxReturnYear = null,
   abilities = FULL_ABILITIES
 }: {
   summary: DashboardSummary;
@@ -222,6 +224,8 @@ export function DashboardView({
   usage?: Usage | null;
   /** Invite card after the first paid invoice, while nobody has been invited yet. */
   referral?: { code: string; link: string; welcome: number; reward: number } | null;
+  /** January to March: the tax year whose return-basis card shows (the company invoiced in it). */
+  taxReturnYear?: number | null;
   /** What the member's role allows: actions they can't take are not offered. */
   abilities?: DashboardAbilities;
 }) {
@@ -375,6 +379,7 @@ export function DashboardView({
         </section>
       )}
 
+      {taxReturnYear != null && <TaxReturnNudge year={taxReturnYear} />}
       {referral && <ReferralNudge {...referral} />}
       {time && <TimeCard time={time} />}
       {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} abilities={abilities} />}
