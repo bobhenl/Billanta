@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
-import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, TEMPLATES } from '@/lib/public-tools';
 import { fetchBlogSitemap } from '@/lib/blog';
 import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
@@ -74,7 +74,10 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/calculators', changeFrequency: 'monthly', priority: 0.7 },
   ...CALCULATORS.map((c): UrlEntry => ({ path: '/calculators/' + c.slug, changeFrequency: 'monthly', priority: 0.7, locales: c.locales })),
   { path: '/guides', changeFrequency: 'monthly', priority: 0.6, locales: GUIDES_HUB_LOCALES },
-  ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales }))
+  ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales })),
+  // Invoice templates: cs/en follow Czech law, sk Slovak law.
+  { path: '/invoice-templates', changeFrequency: 'monthly', priority: 0.8 },
+  ...TEMPLATES.map((x): UrlEntry => ({ path: '/invoice-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.8, locales: x.locales }))
 ];
 
 function buildAllEntries(): UrlEntry[] {

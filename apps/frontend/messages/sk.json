@@ -6081,6 +6081,19 @@
       "login": "Prihlásiť sa",
       "signedIn": "Ste prihlásení. Faktúru si môžete uložiť rovno v aplikácii.",
       "openApp": "Nová faktúra v aplikácii"
+    },
+    "template": {
+      "documentType": "Typ dokladu",
+      "documentTypes": {
+        "invoice": "Faktúra",
+        "proforma": "Zálohová faktúra",
+        "credit_note": "Dobropis"
+      },
+      "reverseCharge": "Prenesenie daňovej povinnosti (daň odvedie odberateľ)",
+      "relatedInvoiceNumber": "Číslo pôvodnej faktúry",
+      "hintReverseCharge": "Faktúra bude bez DPH s údajom „prenesenie daňovej povinnosti“ (§ 69 ods. 12 zákona o DPH). Len medzi platiteľmi DPH.",
+      "hintCreditNote": "Pri znížení ceny zadajte zápornú cenu za jednotku, napr. -100.",
+      "identifiedNote": "Prenesenie daňovej povinnosti."
     }
   },
   "publicProfile": {
@@ -7191,7 +7204,8 @@
       "blog": "Blog",
       "blogHint": "Termíny, legislatíva a návody",
       "findAccountant": "Hľadáte účtovníka?",
-      "findAccountantHint": "Odporúčaní účtovníci podľa kraja"
+      "findAccountantHint": "Odporúčaní účtovníci podľa kraja",
+      "templatesHint": "Vzor pre neplatiteľa, platiteľa, zálohu aj dobropis"
     },
     "search": {
       "showAll": "Zobraziť všetky výsledky pre „{query}“",
@@ -9548,6 +9562,532 @@
       "label": "Kód",
       "placeholder": "napr. KAVIAREN-KOSICE",
       "submit": "Pokračovať"
+    }
+  },
+  "invoiceTemplates": {
+    "menu": "Vzory faktúr",
+    "indexTitle": "Vzor faktúry 2026 – pre neplatiteľa aj platiteľa DPH",
+    "indexName": "Vzory faktúr",
+    "indexDescription": "Vzory faktúr podľa slovenských predpisov: neplatiteľ a platiteľ DPH, zálohová faktúra, dobropis, prenesenie daňovej povinnosti aj služby do EÚ. Každý vzor s povinnými údajmi a vyplnením online zadarmo.",
+    "indexLead": "Vyberte si situáciu a uvidíte vyplnenú ukážku, zoznam povinných údajov s odkazom na zákon a tlačidlo, ktoré otvorí editor s prednastaveným typom dokladu. PDF si stiahnete zadarmo a bez registrácie.",
+    "howTitle": "Ako vzor použiť",
+    "how": [
+      "Podľa ukážky zistíte, čo na faktúru patrí a kde to bude.",
+      "Tlačidlom otvoríte editor s nastaveným typom dokladu a doplníte svoje údaje.",
+      "Stiahnete hotové PDF. Nič sa neukladá, účet nepotrebujete."
+    ],
+    "common": {
+      "sample": "Ukážka",
+      "fictional": "Vymyslené údaje, len na ukážku.",
+      "whenTitle": "Kedy tento doklad použiť",
+      "fieldsTitle": "Povinné údaje",
+      "fieldsLead": "Pri každom údaji je odkaz na ustanovenie zákona, ktoré ho vyžaduje.",
+      "pitfallsTitle": "Na čo si dať pozor",
+      "useButton": "Vyplniť tento vzor online",
+      "useNote": "Editor sa otvorí s nastaveným typom dokladu. PDF si stiahnete zadarmo, bez registrácie.",
+      "otherTitle": "Ďalšie vzory",
+      "allTemplates": "Všetky vzory faktúr",
+      "lawRef": "§ {p} ods. {o} {law}",
+      "lawRefShort": "§ {p} {law}",
+      "rulesNote": "Vzory vychádzajú zo slovenských predpisov. Pri osobitných prípadoch (zahraničie, oslobodené plnenia) si podrobnosti overte v zákone alebo u daňového poradcu."
+    },
+    "laws": {
+      "ZDPH": "českého zákona o DPH",
+      "OZ": "českého Občianskeho zákonníka",
+      "ZU": "českého zákona o účtovníctve",
+      "ZoDPH": "zákona o DPH",
+      "ObZ": "Obchodného zákonníka",
+      "ZoU": "zákona o účtovníctve"
+    },
+    "doc": {
+      "supplier": "Dodávateľ",
+      "customer": "Odberateľ",
+      "number": "Číslo dokladu",
+      "issueDate": "Dátum vyhotovenia",
+      "duzp": "Dátum dodania",
+      "dueDate": "Dátum splatnosti",
+      "payment": "Platba",
+      "bankTransfer": "Prevodom na účet",
+      "vs": "Variabilný symbol",
+      "description": "Popis",
+      "quantity": "Množstvo",
+      "unitPrice": "Cena za j.",
+      "rate": "DPH",
+      "amount": "Spolu",
+      "base": "Základ",
+      "vat": "DPH",
+      "recap": "Rekapitulácia DPH",
+      "totalDue": "Spolu na úhradu",
+      "related": "K faktúre",
+      "reason": "Dôvod opravy",
+      "reverseBase": "Základ dane (daň odvedie odberateľ)"
+    },
+    "currency": "EUR",
+    "bank": {
+      "account": "SK31 1200 0000 1987 4263 7541",
+      "iban": "SK31 1200 0000 1987 4263 7541"
+    },
+    "parties": {
+      "nonPayer": {
+        "name": "Peter Horváth",
+        "lines": [
+          "Obchodná 15",
+          "811 06 Bratislava"
+        ],
+        "ids": [
+          "IČO: 50123456",
+          "DIČ: 1081234567",
+          "Nie je platiteľ DPH."
+        ]
+      },
+      "payer": {
+        "name": "Peter Horváth",
+        "lines": [
+          "Obchodná 15",
+          "811 06 Bratislava"
+        ],
+        "ids": [
+          "IČO: 50123456",
+          "DIČ: 1081234567",
+          "IČ DPH: SK1081234567"
+        ]
+      },
+      "identified": {
+        "name": "Peter Horváth",
+        "lines": [
+          "Obchodná 15",
+          "811 06 Bratislava"
+        ],
+        "ids": [
+          "IČO: 50123456",
+          "DIČ: 1081234567",
+          "IČ DPH: SK1081234567 (§ 7a)"
+        ]
+      },
+      "contractor": {
+        "name": "Stavmont Juhás s. r. o.",
+        "lines": [
+          "Priemyselná 8",
+          "917 01 Trnava"
+        ],
+        "ids": [
+          "IČO: 52345678",
+          "DIČ: 2121234567",
+          "IČ DPH: SK2121234567",
+          "OR Okresného súdu Trnava, oddiel Sro, vložka č. 45678/T"
+        ]
+      },
+      "domestic": {
+        "name": "Kaviareň Pod Hradom s. r. o.",
+        "lines": [
+          "Hradná 3",
+          "949 01 Nitra"
+        ],
+        "ids": [
+          "IČO: 51234567",
+          "DIČ: 2120123456",
+          "IČ DPH: SK2120123456"
+        ]
+      },
+      "developer": {
+        "name": "Rezidencia Pri parku s. r. o.",
+        "lines": [
+          "Karadžičova 20",
+          "821 08 Bratislava"
+        ],
+        "ids": [
+          "IČO: 53456789",
+          "DIČ: 2121345678",
+          "IČ DPH: SK2121345678"
+        ]
+      },
+      "eu": {
+        "name": "Hafenstadt Media GmbH",
+        "lines": [
+          "Speicherstraße 4",
+          "20457 Hamburg",
+          "Nemecko"
+        ],
+        "ids": [
+          "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "items": {
+      "nonPayer": {
+        "name": "Neplatiteľ DPH",
+        "title": "Vzor faktúry pre neplatiteľa DPH",
+        "description": "Vzor faktúry pre neplatiteľa DPH: vyplnená ukážka, povinné údaje podľa Obchodného zákonníka a zákona o účtovníctve a vyplnenie online s PDF zadarmo.",
+        "lead": "Najčastejšia faktúra živnostníka. Neplatiteľ neuvádza DPH ani IČ DPH, musí však na faktúre uviesť, kto ju vystavil, komu a za čo.",
+        "docTitle": "Faktúra",
+        "number": "2026-0018",
+        "notes": [
+          "Nie som platiteľ DPH.",
+          "Zapísaný v živnostenskom registri Okresného úradu Bratislava, č. 110-123456."
+        ],
+        "lines": [
+          {
+            "d": "Fotografie produktov pre e-shop (40 záberov)",
+            "q": 1,
+            "u": "ks",
+            "p": 350,
+            "r": 0
+          },
+          {
+            "d": "Retuš a úprava fotografií",
+            "q": 4,
+            "u": "hod.",
+            "p": 25,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Nie ste registrovaný pre DPH (obrat za kalendárny rok do 50 000 €) a fakturujete odberateľovi na Slovensku.",
+          "Platí pre SZČO aj pre s. r. o., ktoré nie sú platiteľmi. Pri službách firmám v inom štáte EÚ sa však registrujete podľa § 7a – pozrite samostatný vzor."
+        ],
+        "fields": [
+          {
+            "name": "Obchodné meno, sídlo a IČO dodávateľa",
+            "text": "Podnikateľ ich uvádza na všetkých obchodných listinách, teda aj na faktúre.",
+            "rule": "§3a/1 ObZ"
+          },
+          {
+            "name": "Údaj o zápise do registra",
+            "text": "Obchodný register vrátane oddielu a vložky, živnostník zápis v živnostenskom registri.",
+            "rule": "§3a/1 ObZ"
+          },
+          {
+            "name": "Odberateľ",
+            "text": "Meno alebo názov a adresa, pri firme aj IČO, aby bolo jasné, kto je účastníkom obchodu.",
+            "rule": "§10/1 ZoU"
+          },
+          {
+            "name": "Číslo dokladu",
+            "text": "Jednoznačné označenie faktúry, najlepšie vzostupný číselný rad.",
+            "rule": "§10/1 ZoU"
+          },
+          {
+            "name": "Popis plnenia a suma",
+            "text": "Čo ste dodali, v akom množstve a za koľko. Celková suma na úhradu.",
+            "rule": "§10/1 ZoU"
+          },
+          {
+            "name": "Dátum vyhotovenia",
+            "text": "Dátum vyhotovenia účtovného dokladu.",
+            "rule": "§10/1 ZoU"
+          },
+          {
+            "name": "Informácia, že nie ste platiteľ DPH",
+            "text": "Zákon ju výslovne nevyžaduje, ale predíde otázkam, prečo na faktúre chýba daň."
+          }
+        ],
+        "pitfalls": [
+          "Neuvádzajte IČ DPH (SK…), ak ho nemáte – odberateľ by čakal faktúru platiteľa.",
+          "Splatnosť a číslo účtu zákon nevyžaduje, bez nich však peniaze prídu neskôr."
+        ]
+      },
+      "vatPayer": {
+        "name": "Platiteľ DPH",
+        "title": "Vzor faktúry pre platiteľa DPH",
+        "description": "Vzor faktúry platiteľa DPH: IČ DPH oboch strán, dátum dodania, základ dane a DPH podľa sadzieb. Povinné údaje podľa § 74 zákona o DPH a vyplnenie online zadarmo.",
+        "lead": "Faktúra platiteľa musí okrem bežných údajov obsahovať IČ DPH dodávateľa aj odberateľa, dátum dodania, základ dane, sadzbu a výšku DPH.",
+        "docTitle": "Faktúra",
+        "number": "2026-0042",
+        "notes": [
+          "Zapísaný v živnostenskom registri Okresného úradu Bratislava, č. 110-123456."
+        ],
+        "lines": [
+          {
+            "d": "Návrh loga a vizuálnej identity",
+            "q": 1,
+            "u": "ks",
+            "p": 900,
+            "r": 23
+          },
+          {
+            "d": "Grafická úprava jedálneho lístka",
+            "q": 3,
+            "u": "hod.",
+            "p": 40,
+            "r": 23
+          }
+        ],
+        "when": [
+          "Ste platiteľ DPH a dodávate tovar alebo službu na Slovensku, kde daň platíte vy.",
+          "Faktúru vyhotovte do 15 dní odo dňa dodania tovaru alebo služby alebo prijatia platby."
+        ],
+        "fields": [
+          {
+            "name": "Dodávateľ a jeho IČ DPH",
+            "text": "Meno alebo názov, adresa sídla a identifikačné číslo pre daň.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Odberateľ a jeho IČ DPH",
+            "text": "Ak je odberateľ platiteľ, uvádza sa aj jeho IČ DPH.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Poradové číslo faktúry",
+            "text": "Jedinečné v rámci jedného alebo viacerých radov.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Dátum vyhotovenia a dátum dodania",
+            "text": "Dátum dodania sa uvádza, ak sa dá určiť a líši sa od dátumu vyhotovenia.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Množstvo a druh plnenia",
+            "text": "Čo a koľko ste dodali.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Základ dane, jednotková cena, sadzba a DPH",
+            "text": "Za každú sadzbu zvlášť, výška dane spolu v eurách.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Údaje podľa Obchodného zákonníka",
+            "text": "Obchodné meno, sídlo, IČO a údaj o zápise do registra.",
+            "rule": "§3a/1 ObZ"
+          }
+        ],
+        "pitfalls": [
+          "Pri faktúre v cudzej mene uveďte výšku dane aj v eurách.",
+          "Od roku 2025 je základná sadzba 23 %, znížené sadzby 19 % a 5 %."
+        ]
+      },
+      "proforma": {
+        "name": "Zálohová faktúra",
+        "title": "Zálohová faktúra – vzor a náležitosti",
+        "description": "Vzor zálohovej (preddavkovej) faktúry: čo na nej uviesť, prečo nie je daňovým dokladom a akú faktúru vyhotoviť po prijatí platby. Vyplnenie online a PDF zadarmo.",
+        "lead": "Zálohová faktúra je výzva na platbu vopred. Nie je faktúrou podľa zákona o DPH, a preto si z nej odberateľ nemôže odpočítať daň. Po prijatí platby vyhotoví platiteľ faktúru k prijatej platbe.",
+        "docTitle": "Zálohová faktúra",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "Zálohová faktúra nie je daňový doklad.",
+          "Faktúru k prijatej platbe vám pošleme po pripísaní platby na účet."
+        ],
+        "lines": [
+          {
+            "d": "Preddavok 50 % na tvorbu webovej stránky",
+            "q": 1,
+            "u": "ks",
+            "p": 800,
+            "r": 23
+          }
+        ],
+        "when": [
+          "Chcete platbu vopred, skôr ako začnete prácu alebo odošlete tovar.",
+          "Platiteľ DPH po prijatí platby vyhotoví faktúru k prijatej platbe a v konečnej faktúre preddavok odpočíta. Neplatiteľ preddavok len odpočíta v konečnej faktúre."
+        ],
+        "fields": [
+          {
+            "name": "Dodávateľ a odberateľ",
+            "text": "Obchodné meno, sídlo a IČO; ide o obchodnú listinu.",
+            "rule": "§3a/1 ObZ"
+          },
+          {
+            "name": "Číslo zálohovej faktúry",
+            "text": "Používajte samostatný rad, aby sa nemiešala s faktúrami."
+          },
+          {
+            "name": "Suma preddavku a splatnosť",
+            "text": "Koľko a dokedy má odberateľ zaplatiť a číslo účtu."
+          },
+          {
+            "name": "Upozornenie, že nejde o daňový doklad",
+            "text": "Odporúčaný údaj: odberateľ podľa neho spozná, že si z dokladu nemôže uplatniť DPH."
+          },
+          {
+            "name": "Daňová povinnosť pri prijatí platby",
+            "text": "Ak platiteľ prijme platbu pred dodaním, daňová povinnosť vzniká dňom prijatia platby.",
+            "rule": "§19/4 ZoDPH"
+          },
+          {
+            "name": "Faktúra k prijatej platbe",
+            "text": "Platiteľ je povinný vyhotoviť faktúru aj pri prijatí platby pred dodaním.",
+            "rule": "§71/1 ZoDPH"
+          }
+        ],
+        "pitfalls": [
+          "Neuvádzajte na zálohovej faktúre dátum dodania – plnenie ešte nebolo dodané.",
+          "V konečnej faktúre nezabudnite preddavok odpočítať, inak by odberateľ platil dvakrát."
+        ]
+      },
+      "creditNote": {
+        "name": "Dobropis",
+        "title": "Dobropis (opravná faktúra) – vzor",
+        "description": "Vzor dobropisu: odkaz na pôvodnú faktúru, dôvod opravy a rozdiel základu dane aj DPH. Povinné údaje podľa § 71 a § 25 zákona o DPH a vyplnenie online.",
+        "lead": "Keď po vyhotovení faktúry znížite cenu (zľava, reklamácia, vrátený tovar), vyhotovíte dobropis. Opravuje pôvodnú faktúru a jednoznačne na ňu odkazuje, nenahrádza ju.",
+        "docTitle": "Dobropis",
+        "number": "DB-2026-0003",
+        "related": "2026-0042",
+        "reason": "Zľava z ceny po reklamácii návrhu loga",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Zľava z ceny – návrh loga",
+            "q": 1,
+            "u": "ks",
+            "p": -100,
+            "r": 23
+          }
+        ],
+        "when": [
+          "Zľava poskytnutá po vyhotovení faktúry, uznaná reklamácia, vrátenie tovaru alebo zrušenie časti dodania.",
+          "Pôvodná faktúra zostáva platná, dobropis zachytáva len rozdiel."
+        ],
+        "fields": [
+          {
+            "name": "Odkaz na pôvodnú faktúru",
+            "text": "Doklad, ktorý mení pôvodnú faktúru a určite a jednoznačne na ňu odkazuje, je tiež faktúrou.",
+            "rule": "§71/2 ZoDPH"
+          },
+          {
+            "name": "Oprava základu dane",
+            "text": "Kedy a ako dodávateľ opraví základ dane, napríklad pri zľave alebo vrátení tovaru.",
+            "rule": "§25/1 ZoDPH"
+          },
+          {
+            "name": "Údaje dodávateľa a odberateľa",
+            "text": "Meno alebo názov, adresa a IČ DPH oboch strán.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Poradové číslo a dátum vyhotovenia",
+            "text": "Vlastné číslo dobropisu z vášho radu.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Dôvod opravy a rozdiel súm",
+            "text": "Rozdiel základu dane a dane, pri znížení so zápornými číslami."
+          }
+        ],
+        "pitfalls": [
+          "Neplatiteľ DPH vyhotovuje dobropis len ako účtovný doklad s odkazom na pôvodnú faktúru.",
+          "Pôvodnú faktúru nestornujte ani neprepisujte; zostáva v evidencii."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Prenesenie daňovej povinnosti",
+        "title": "Faktúra s prenesením daňovej povinnosti – vzor",
+        "description": "Vzor faktúry v režime tuzemského prenesenia daňovej povinnosti (§ 69 ods. 12 zákona o DPH), napr. za stavebné práce: údaj „prenesenie daňovej povinnosti“, IČ DPH odberateľa, suma bez DPH.",
+        "lead": "Pri stavebných prácach, dodaní kovov, mobilných telefónov a ďalších plneniach podľa § 69 ods. 12 zákona o DPH platí daň odberateľ. Dodávateľ fakturuje bez dane a uvedie „prenesenie daňovej povinnosti“.",
+        "docTitle": "Faktúra",
+        "number": "2026-0115",
+        "notes": [
+          "Prenesenie daňovej povinnosti.",
+          "Stavebné práce podľa § 69 ods. 12 písm. j) zákona o DPH."
+        ],
+        "lines": [
+          {
+            "d": "Murárske práce – rekonštrukcia kúpeľne, byt 2.04",
+            "q": 1,
+            "u": "ks",
+            "p": 3400,
+            "r": 23
+          },
+          {
+            "d": "Obklady a dlažby vrátane materiálu",
+            "q": 26,
+            "u": "m²",
+            "p": 52,
+            "r": 23
+          }
+        ],
+        "when": [
+          "Obaja ste platitelia DPH na Slovensku a plnenie patrí medzi tie, na ktoré sa režim vzťahuje.",
+          "Najčastejšie stavebné práce (oddiel F klasifikácie produkcie), dodanie odpadu a šrotu, kovov alebo mobilných telefónov nad 5 000 €."
+        ],
+        "fields": [
+          {
+            "name": "Údaj „prenesenie daňovej povinnosti“",
+            "text": "Povinný údaj na faktúre, keď daň platí odberateľ.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "IČ DPH dodávateľa aj odberateľa",
+            "text": "Režim platí len medzi platiteľmi, preto je IČ DPH odberateľa nevyhnutné.",
+            "rule": "§69/12 ZoDPH"
+          },
+          {
+            "name": "Základ dane bez DPH",
+            "text": "Daň na faktúre neuvádzate, vypočíta a odvedie ju odberateľ. Uvedenie sadzby mu pomôže.",
+            "rule": "§69/12 ZoDPH"
+          },
+          {
+            "name": "Ostatné údaje faktúry",
+            "text": "Číslo, dátumy, množstvo a druh plnenia, jednotková cena.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Kontrolný výkaz",
+            "text": "Dodávateľ plnenie uvedie v časti A.2, odberateľ v časti B.1 kontrolného výkazu."
+          }
+        ],
+        "pitfalls": [
+          "Ak odberateľ nie je platiteľ (napr. súkromná osoba), režim sa nepoužije a fakturujete s DPH.",
+          "Pred odoslaním si v zozname platiteľov DPH overte, že odberateľ platiteľom naozaj je."
+        ]
+      },
+      "identified": {
+        "name": "Registrácia podľa § 7a",
+        "title": "Vzor faktúry za služby do EÚ pre osobu registrovanú podľa § 7a",
+        "description": "Vzor faktúry neplatiteľa registrovaného podľa § 7a za službu firme v inom štáte EÚ: IČ DPH oboch strán, bez DPH, údaj „prenesenie daňovej povinnosti“. Povinné údaje a vyplnenie online.",
+        "lead": "Neplatiteľ, ktorý dodá službu firme v inom štáte EÚ, sa musí registrovať podľa § 7a a dostane IČ DPH. Fakturuje bez slovenskej DPH, uvedie IČ DPH svoje aj zákazníka a údaj o prenesení daňovej povinnosti.",
+        "docTitle": "Faktúra",
+        "number": "2026-0021",
+        "notes": [
+          "Prenesenie daňovej povinnosti.",
+          "Reverse charge – Article 196, Council Directive 2006/112/EC."
+        ],
+        "lines": [
+          {
+            "d": "Webdizajn – úprava šablóny e-shopu, október 2026",
+            "q": 1,
+            "u": "ks",
+            "p": 750,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Nie ste platiteľ DPH a dodávate službu (programovanie, grafika, marketing) firme registrovanej pre DPH v inom štáte EÚ.",
+          "Žiadosť o registráciu podľa § 7a podajte ešte pred dodaním služby; platiteľom DPH sa tým nestávate."
+        ],
+        "fields": [
+          {
+            "name": "IČ DPH dodávateľa",
+            "text": "Registráciou podľa § 7a dostanete IČ DPH a uvádzate ho na faktúre.",
+            "rule": "§7a/1 ZoDPH"
+          },
+          {
+            "name": "IČ DPH zákazníka z iného štátu",
+            "text": "Overte ho v systéme VIES; bez platného IČ DPH nejde o prenesenie dane.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Údaj „prenesenie daňovej povinnosti“",
+            "text": "Daň priznáva zákazník vo svojom štáte; na faktúre je suma bez DPH.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Dátum dodania služby",
+            "text": "Podľa neho sa služba vykazuje.",
+            "rule": "§74/1 ZoDPH"
+          },
+          {
+            "name": "Súhrnný výkaz",
+            "text": "Za kalendárny mesiac, v ktorom ste službu dodali, podáte súhrnný výkaz.",
+            "rule": "§80/1 ZoDPH"
+          }
+        ],
+        "pitfalls": [
+          "Ak fakturujete súkromnej osobe v EÚ, registrácia podľa § 7a sa nevyžaduje a postupujete ako pri tuzemskej faktúre neplatiteľa.",
+          "Za služby prijaté od zahraničných firiem (reklama na Facebooku, Google) sa registrujete podľa § 7a a daň odvádzate vy – to je druhá strana tej istej povinnosti."
+        ]
+      }
     }
   }
 }

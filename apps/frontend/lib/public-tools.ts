@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, Globe2, Landmark, Percent, QrCode, Scale, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, FileMinus2, FileText, Globe2, HandCoins, Landmark, Percent, QrCode, Receipt, Repeat, Scale, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -49,8 +49,25 @@ export const GUIDES = [
   { slug: 'identified-person', key: 'identified', icon: Globe2, locales: CZ_ONLY }
 ] as const satisfies readonly PublicTool[];
 
+/**
+ * Invoice templates (`/invoice-templates/<slug>`): a rendered sample, the
+ * required fields with links to the law, and a button that opens
+ * `/create-invoice?template=<slug>` preset for that document. Published in
+ * every language: the cs and en pages follow Czech law, the sk page Slovak
+ * law (the sample data and rule references live in the message files).
+ */
+export const TEMPLATES = [
+  { slug: 'non-vat-payer', key: 'nonPayer', icon: FileText, locales: ALL },
+  { slug: 'vat-payer', key: 'vatPayer', icon: Receipt, locales: ALL },
+  { slug: 'proforma-invoice', key: 'proforma', icon: HandCoins, locales: ALL },
+  { slug: 'credit-note', key: 'creditNote', icon: FileMinus2, locales: ALL },
+  { slug: 'reverse-charge', key: 'reverseCharge', icon: Repeat, locales: ALL },
+  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: ALL }
+] as const satisfies readonly PublicTool[];
+
 export type Calculator = (typeof CALCULATORS)[number];
 export type Guide = (typeof GUIDES)[number];
+export type InvoiceTemplate = (typeof TEMPLATES)[number];
 
 /** The guides hub only lists Czech-rule guides, so it exists where they do. */
 export const GUIDES_HUB_LOCALES: readonly string[] = CZ_ONLY;
@@ -61,6 +78,10 @@ export function getCalculator(slug: string): Calculator | undefined {
 
 export function getGuide(slug: string): Guide | undefined {
   return GUIDES.find((g) => g.slug === slug);
+}
+
+export function getTemplate(slug: string): InvoiceTemplate | undefined {
+  return TEMPLATES.find((x) => x.slug === slug);
 }
 
 export function isPublishedIn(tool: { locales: readonly string[] }, locale: string): boolean {

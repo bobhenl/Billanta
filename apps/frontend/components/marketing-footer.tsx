@@ -39,6 +39,7 @@ export async function MarketingFooter() {
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
   const tTools = await getTranslations('tools');
+  const tTemplates = await getTranslations('invoiceTemplates');
   const [locale, partners] = await Promise.all([getLocale(), fetchPartners({ footer: true })]);
 
   const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
@@ -63,6 +64,7 @@ export async function MarketingFooter() {
       links: [
         ...featured.map((c) => ({ href: `/calculators/${c.slug}`, label: tTools(`calculators.items.${c.key}.name`) })),
         { href: '/accountants', label: tTools('menu.findAccountant') },
+        { href: '/invoice-templates', label: tTemplates('menu'), hub: true },
         { href: '/calculators', label: tTools('common.allCalculators'), hub: true },
         ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tTools('common.allGuides'), hub: true }] : [])
       ]
