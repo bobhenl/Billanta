@@ -6,7 +6,7 @@ import { filterDirectory, toDirectoryListing, type DirectoryListing, type Direct
 /**
  * The business directory (/directory and the town pages): public profiles
  * whose owners opted in. Read only through the SECURITY DEFINER function of
- * migration 0074, which returns nothing but the listed, public fields.
+ * migration 0077, which returns nothing but the listed, public fields.
  */
 @Injectable()
 export class PublicDirectoryService {

@@ -33,7 +33,7 @@ const siteUrl = () => (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:310
  * The newsletter: double opt-in sign-up, the logged-in toggle, and the
  * admin compose-and-send. Every table it touches is global (no tenant), so
  * it uses the pool; e-mail goes into the outbox only through
- * enqueue_newsletter_email (migration 0074), which re-checks the opt-in in
+ * enqueue_newsletter_email (migration 0076), which re-checks the opt-in in
  * the database.
  */
 @Injectable()

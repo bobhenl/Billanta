@@ -37,7 +37,7 @@ REVOKE UPDATE, DELETE ON platform_proformas FROM faktur_app;
 -- functions of migration 0068.
 REVOKE ALL ON demo_sessions FROM faktur_app;
 
--- A company's promo redemption is its attribution record (migration 0070):
+-- A company's promo redemption is its attribution record (migration 0071):
 -- inserted once, never edited. Codes are switched off, not deleted.
 REVOKE UPDATE, DELETE ON promo_redemptions FROM faktur_app;
 REVOKE DELETE ON promo_codes FROM faktur_app;

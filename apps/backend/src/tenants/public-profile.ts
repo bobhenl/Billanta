@@ -110,7 +110,7 @@ export const publicProfileSchema = z
     // "Zobrazit v katalogu firem": lists the profile on /directory and on the
     // town page of `town` (the municipality of the company's address, picked
     // by the owner). Strictly opt-in and off by default; the public listing
-    // is read only through public_directory_profiles() (migration 0074).
+    // is read only through public_directory_profiles() (migration 0077).
     directory: z
       .object({
         enabled: z.boolean().default(false),

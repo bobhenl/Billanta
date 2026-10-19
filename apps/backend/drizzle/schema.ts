@@ -1570,7 +1570,7 @@ export const partners = pgTable("partners", {
 // ---------------------------------------------------------------------------
 // promo_codes — GLOBAL (no tenant, no RLS), like partners. Codes Billanta
 // staff hand out at events, to creators and to schools (`src/promo-codes/`).
-// `code` is stored upper case; the unique index is on upper(code) (0070).
+// `code` is stored upper case; the unique index is on upper(code) (0071).
 // redemption_count is bumped in the redeeming company's transaction under a
 // row lock, so max_redemptions holds without counting other tenants' rows.
 // ---------------------------------------------------------------------------
@@ -1607,7 +1607,7 @@ export const promoCodes = pgTable("promo_codes", {
 // came with (attribution for events and creators) and what it got, copied
 // so a later edit of the code doesn't rewrite history. The app may insert
 // its own row; nothing changes or deletes one afterwards. Per-code totals
-// across companies only through promo_code_stats() (0070).
+// across companies only through promo_code_stats() (0071).
 // ---------------------------------------------------------------------------
 export const promoRedemptions = pgTable("promo_redemptions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -1801,7 +1801,7 @@ export const demoSessions = pgTable("demo_sessions", {
 });
 
 // ---------------------------------------------------------------------------
-// idempotency_keys — tenant-scoped (migration 0070). One row per
+// idempotency_keys — tenant-scoped (migration 0072). One row per
 // Idempotency-Key a client sent with a create (offline drafts, see
 // docs/offline-drafts-plan.md); a retry with the same key returns
 // `resource_id` instead of creating another row. Kept for 30 days.
