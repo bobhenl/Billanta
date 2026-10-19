@@ -582,7 +582,9 @@
             "Jak to funguje",
             "Plátce DPH vystavuje daňový doklad s náležitostmi podle § 29 zákona o DPH (na Slovensku § 74 ZoDPH). Neplátce a zálohová faktura se řídí jen občanským zákoníkem (§ 435) a dobrou praxí.",
             "Podmíněné položky jsou povinné jen v uvedeném případě, doporučené zákon nevyžaduje, ale bez nich se faktury platí pomaleji.",
-            "U každé položky je odkaz na paragraf, ze kterého povinnost plyne. Hotovou fakturu v ISDOC můžete zkontrolovat v našem prohlížeči ISDOC."
+            "U každé položky je odkaz na paragraf, ze kterého povinnost plyne. Hotovou fakturu v ISDOC můžete zkontrolovat v našem prohlížeči ISDOC.",
+            "Vystavte fakturu, které nic nechybí",
+            "Ve formuláři Billanty máte povinné údaje připravené, takže na nic nezapomenete. Fakturu stáhnete jako PDF zdarma a bez registrace."
           ]
         },
         "sk": {
@@ -599,7 +601,9 @@
             "Ako to funguje",
             "Platiteľ DPH vyhotovuje faktúru s náležitosťami podľa § 74 zákona o DPH (v Česku § 29 ZDPH). Neplatiteľ a zálohová faktúra sa riadia len Obchodným zákonníkom (§ 3a) a dobrou praxou.",
             "Podmienené položky sú povinné len v uvedenom prípade, odporúčané zákon nevyžaduje, ale bez nich sa faktúry platia pomalšie.",
-            "Pri každej položke je odkaz na paragraf, z ktorého povinnosť vyplýva. Hotovú faktúru v ISDOC si môžete skontrolovať v našom prehliadači ISDOC."
+            "Pri každej položke je odkaz na paragraf, z ktorého povinnosť vyplýva. Hotovú faktúru v ISDOC si môžete skontrolovať v našom prehliadači ISDOC.",
+            "Vystavte faktúru, ktorej nič nechýba",
+            "Vo formulári Billanty máte povinné údaje pripravené, takže na nič nezabudnete. Faktúru si stiahnete ako PDF zadarmo a bez registrácie."
           ]
         }
       }
