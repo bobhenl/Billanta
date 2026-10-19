@@ -9643,5 +9643,109 @@
       "placeholder": "e.g. KAVARNA-BRNO",
       "submit": "Continue"
     }
+  },
+  "embeds": {
+    "qr": {
+      "title": "QR payment",
+      "alt": "Payment QR code",
+      "scan": "Scan it in your banking app.",
+      "account": "Account",
+      "vs": "Variable symbol",
+      "message": "Message",
+      "invalid": "The account number in this link is not valid."
+    },
+    "vat": {
+      "frameTitle": "VAT calculator"
+    },
+    "builder": {
+      "tabs": {
+        "badge": "Badge",
+        "qr": "QR payment",
+        "pay": "Pay button",
+        "vat": "VAT calculator"
+      },
+      "lang": "Language",
+      "langs": {
+        "cs": "Czech",
+        "sk": "Slovak",
+        "en": "English"
+      },
+      "theme": "Style",
+      "light": "Light",
+      "dark": "Dark",
+      "kind": "Badge",
+      "format": "Format",
+      "image": "Image",
+      "html": "Plain HTML",
+      "account": "Account number or IBAN",
+      "name": "Payee",
+      "nameHint": "Slovak banks (PAY by square) require it.",
+      "amount": "Amount (optional)",
+      "currency": "Currency",
+      "vs": "Variable symbol",
+      "message": "Message for the payee",
+      "invoice": "Public invoice link",
+      "invoiceHint": "Copy it from the invoice detail (Share link).",
+      "invalidAccount": "The account number or IBAN is not valid.",
+      "needAccount": "Fill in an account number to see the preview and code.",
+      "invalidInvoice": "This is not a public invoice link.",
+      "needInvoice": "Paste a public invoice link to see the button and code.",
+      "preview": "Preview",
+      "code": "Code for your website",
+      "copy": "Copy code",
+      "copied": "Copied",
+      "copyFailed": "Could not copy the code.",
+      "keepLink": "Please keep the link under the widget – it is what keeps the widget free."
+    },
+    "sections": {
+      "settings": {
+        "title": "Badges and widgets for your website",
+        "description": "Put a badge, a QR payment or a calculator on your site. The links carry your code, so signups from them count for you."
+      },
+      "partners": {
+        "title": "A badge for your website",
+        "description": "Show visitors that you work with us. Just copy the code into your site."
+      },
+      "accountants": {
+        "title": "Billanta Partner badge",
+        "description": "Show clients you know the app. Put the code in the footer of your website or on your services page."
+      },
+      "calculator": {
+        "title": "Put the calculator on your website",
+        "description": "Writing about tax or running a business? Embed the VAT calculator in an article with one snippet, free, without ads or tracking."
+      }
+    },
+    "snippet": {
+      "cs": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR plateb – {name}",
+        "payButton": "Zaplatit fakturu",
+        "payLink": "Online platby faktur – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "sk": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR platieb – {name}",
+        "payButton": "Zaplatiť faktúru",
+        "payLink": "Online platby faktúr – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "en": {
+        "customer": "We invoice with Billanta",
+        "partner": "Billanta Partner",
+        "qrTitle": "QR payment",
+        "qrLink": "QR payment generator – {name}",
+        "payButton": "Pay invoice",
+        "payLink": "Online invoice payments – {name}",
+        "vatTitle": "VAT calculator",
+        "vatLink": "VAT calculator – {name}"
+      }
+    }
   }
 }

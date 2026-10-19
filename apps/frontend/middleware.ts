@@ -107,7 +107,8 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match all paths except Next.js internals, API routes, and files with
-  // an extension (static assets).
-  matcher: ['/((?!api|trpc|_next|_vercel|og/|.*\\..*).*)']
+  // Match all paths except Next.js internals, API routes, the iframe
+  // widgets (their own root layout without a locale: app/embed) and files
+  // with an extension (static assets).
+  matcher: ['/((?!api|trpc|_next|_vercel|og/|embed/|.*\\..*).*)']
 };

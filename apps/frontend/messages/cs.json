@@ -9643,5 +9643,109 @@
       "placeholder": "např. KAVARNA-BRNO",
       "submit": "Pokračovat"
     }
+  },
+  "embeds": {
+    "qr": {
+      "title": "QR platba",
+      "alt": "QR kód pro platbu",
+      "scan": "Naskenujte v bankovní aplikaci.",
+      "account": "Účet",
+      "vs": "VS",
+      "message": "Zpráva",
+      "invalid": "Číslo účtu v odkazu není platné."
+    },
+    "vat": {
+      "frameTitle": "Kalkulačka DPH"
+    },
+    "builder": {
+      "tabs": {
+        "badge": "Odznak",
+        "qr": "QR platba",
+        "pay": "Tlačítko k platbě",
+        "vat": "Kalkulačka DPH"
+      },
+      "lang": "Jazyk",
+      "langs": {
+        "cs": "Čeština",
+        "sk": "Slovenčina",
+        "en": "Angličtina"
+      },
+      "theme": "Vzhled",
+      "light": "Světlý",
+      "dark": "Tmavý",
+      "kind": "Odznak",
+      "format": "Formát",
+      "image": "Obrázek",
+      "html": "Čisté HTML",
+      "account": "Číslo účtu nebo IBAN",
+      "name": "Příjemce",
+      "nameHint": "Slovenské banky (PAY by square) ho vyžadují.",
+      "amount": "Částka (nepovinné)",
+      "currency": "Měna",
+      "vs": "Variabilní symbol",
+      "message": "Zpráva pro příjemce",
+      "invoice": "Veřejný odkaz na fakturu",
+      "invoiceHint": "Zkopírujte ho z detailu faktury (Sdílet odkaz).",
+      "invalidAccount": "Číslo účtu nebo IBAN není platné.",
+      "needAccount": "Vyplňte číslo účtu a uvidíte náhled i kód.",
+      "invalidInvoice": "Tohle není veřejný odkaz na fakturu.",
+      "needInvoice": "Vložte veřejný odkaz na fakturu a uvidíte tlačítko i kód.",
+      "preview": "Náhled",
+      "code": "Kód pro váš web",
+      "copy": "Zkopírovat kód",
+      "copied": "Zkopírováno",
+      "copyFailed": "Kód se nepodařilo zkopírovat.",
+      "keepLink": "Odkaz pod widgetem prosím ponechte – díky němu je widget zdarma."
+    },
+    "sections": {
+      "settings": {
+        "title": "Odznaky a widgety na váš web",
+        "description": "Vložte na svůj web odznak, QR platbu nebo kalkulačku. Odkazy nesou váš kód, takže registrace z nich se vám počítají."
+      },
+      "partners": {
+        "title": "Odznak pro váš web",
+        "description": "Ukažte návštěvníkům, že s námi spolupracujete. Stačí zkopírovat kód do webu."
+      },
+      "accountants": {
+        "title": "Odznak Partner Billanty",
+        "description": "Klientům ukážete, že s aplikací umíte pracovat. Kód vložte do patičky webu nebo na stránku služeb."
+      },
+      "calculator": {
+        "title": "Vložte kalkulačku na svůj web",
+        "description": "Píšete o daních nebo podnikání? Kalkulačku DPH vložíte do článku jedním kódem, zdarma, bez reklam a sledování."
+      }
+    },
+    "snippet": {
+      "cs": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR plateb – {name}",
+        "payButton": "Zaplatit fakturu",
+        "payLink": "Online platby faktur – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "sk": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR platieb – {name}",
+        "payButton": "Zaplatiť faktúru",
+        "payLink": "Online platby faktúr – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "en": {
+        "customer": "We invoice with Billanta",
+        "partner": "Billanta Partner",
+        "qrTitle": "QR payment",
+        "qrLink": "QR payment generator – {name}",
+        "payButton": "Pay invoice",
+        "payLink": "Online invoice payments – {name}",
+        "vatTitle": "VAT calculator",
+        "vatLink": "VAT calculator – {name}"
+      }
+    }
   }
 }

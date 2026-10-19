@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getFormatter, getTranslations, setRequestLocale } from 'next-intl/server';
 import { VAT_RATES } from '@faktur/cz-compliance';
+import { EmbedSection } from '@/components/embed-section';
 import { CalculatorPage, calculatorMetadata } from '@/components/public-tools/calculator-page';
 import { VatCalculator } from '@/components/public-tools/vat-calculator';
 
@@ -22,7 +23,7 @@ export default async function VatCalculatorPage({ params }: { params: Promise<Pa
     .map((c) => `${t(`calculators.items.vat.countries.${c}`)}: ${VAT_RATES[c].rates.join(', ')} %. ${t('common.ratesSince', { date: since(VAT_RATES[c].since) })}`)
     .join(' ');
   return (
-    <CalculatorPage slug={SLUG} locale={locale} validity={validity}>
+    <CalculatorPage slug={SLUG} locale={locale} validity={validity} after={<EmbedSection section="calculator" tabs={['vat']} />}>
       <VatCalculator defaultCountry={locale === 'sk' ? 'SK' : 'CZ'} />
     </CalculatorPage>
   );

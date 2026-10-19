@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ArrowRight, Building2, Calculator, CalendarDays, Globe2, GraduationCap, Landmark, Megaphone, School, UsersRound } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { EmbedSection } from '@/components/embed-section';
 import { PartnerContactCta, PartnerHowItWorks } from '@/components/partner-segment';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -69,6 +70,8 @@ export default async function ForPartnersPage({ params }: { params: Promise<{ lo
       </ul>
 
       <PartnerHowItWorks className="mt-12" />
+
+      <EmbedSection section="partners" tabs={['badge']} badgeKinds={['partner', 'customer']} className="mt-12" />
 
       <PartnerContactCta subject={t('mailSubject')} className="mt-12" />
 
