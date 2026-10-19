@@ -17,8 +17,9 @@ import type { ImportedBusinessDetails } from "./bitfaktura-import";
  * changed. Requests only ever go to app.fakturoid.cz.
  */
 const API = "https://app.fakturoid.cz/api/v3";
-// Fakturoid answers 400 without a User-Agent in the "App (e-mail)" form.
-const USER_AGENT = "Billanta import (faktury@billanta.cz)";
+// Fakturoid answers 400 without a User-Agent in the "App (e-mail)" form. The
+// address is the public contact one, the same variable the frontend's /contact reads.
+const USER_AGENT = `Billanta import (${process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "hello@billanta.com"})`;
 const PER_PAGE = 40;
 const MAX_PAGES = 150;
 /** Retries of one request after a 429 (rate limit, 400 requests a minute) or a 503 (maintenance). */

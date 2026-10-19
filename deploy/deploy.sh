@@ -12,7 +12,8 @@ cd "$(dirname "$0")/.."
 if [ -z "${SKIP_BUILD:-}" ]; then
   docker build -q -f apps/backend/Dockerfile --target runtime -t billanta-backend:latest .
   docker build -q -f apps/backend/Dockerfile --target migrate -t billanta-migrate:latest .
-  docker build -q -f apps/frontend/Dockerfile --build-arg NEXT_PUBLIC_SITE_URL="$SITE_URL" -t billanta-frontend:latest .
+  docker build -q -f apps/frontend/Dockerfile --build-arg NEXT_PUBLIC_SITE_URL="$SITE_URL" \
+    --build-arg NEXT_PUBLIC_CONTACT_EMAIL="${NEXT_PUBLIC_CONTACT_EMAIL:-}" -t billanta-frontend:latest .
   if [ -n "${WITH_AI:-}" ]; then docker build -q -f apps/ai-service/Dockerfile -t billanta-ai:latest .; fi
 fi
 IMAGES="billanta-backend:latest billanta-migrate:latest billanta-frontend:latest"

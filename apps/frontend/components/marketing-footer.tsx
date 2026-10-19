@@ -96,7 +96,8 @@ export async function MarketingFooter() {
         { href: '/legal/terms', label: t('legal.terms') },
         { href: '/legal/privacy', label: t('legal.privacy') },
         { href: '/legal/dpa', label: t('legal.dpa') },
-        { href: '/legal/cookies', label: t('legal.cookies') }
+        { href: '/legal/cookies', label: t('legal.cookies') },
+        { href: '/contact', label: t('legal.contact') }
       ],
       extra: (
         <li>

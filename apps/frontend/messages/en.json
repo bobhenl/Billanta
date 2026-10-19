@@ -237,7 +237,8 @@
         "privacy": "Privacy Policy",
         "cookies": "Cookie Policy",
         "cookieSettings": "Cookie settings",
-        "dpa": "Data Processing Agreement"
+        "dpa": "Data Processing Agreement",
+        "contact": "Contact"
       },
       "account": {
         "title": "Account",
@@ -12837,5 +12838,36 @@
     "ctaTitle": "A poster for your wall",
     "ctaBody": "A4 or A3, ready to print. When you are signed in, its QR code carries your company’s invite code.",
     "ctaButton": "Download poster"
+  },
+  "contact": {
+    "title": "Contact",
+    "lead": "How to reach us, who runs Billanta and where to find quick answers.",
+    "emailTitle": "Write to us",
+    "emailBody": "Send questions about invoicing, your account or working with us by email.",
+    "noEmailTitle": "Where to find help",
+    "noEmailBody": "We don’t have a public email address yet. The FAQ answers the most common questions, and you can try the app without an account in the demo.",
+    "helpTitle": "Quick answers",
+    "links": {
+      "faq": {
+        "title": "FAQ",
+        "body": "Pricing, VAT, exports for accountants and other common questions."
+      },
+      "demo": {
+        "title": "Try the demo",
+        "body": "The app with sample data, no sign-up."
+      },
+      "accountants": {
+        "title": "Find an accountant",
+        "body": "Accountants and firms who work with Billanta."
+      },
+      "partners": {
+        "title": "For partners",
+        "body": "Courses, coworkings, communities and others who want to recommend Billanta."
+      }
+    },
+    "operatorTitle": "Operator",
+    "privacyTitle": "Personal data",
+    "privacyBody": "The operator named above is the controller of your personal data. The privacy policy explains what we process and how to use your rights (access, correction, erasure and more).",
+    "legalTitle": "Legal documents"
   }
 }
