@@ -1683,3 +1683,85 @@ export const demoSessions = pgTable("demo_sessions", {
   transferTokenHash: char("transfer_token_hash", { length: 64 }),
   transferredAt: timestamp("transferred_at", { withTimezone: true }),
 });
+
+// ---------------------------------------------------------------------------
+// E-invoicing over Peppol (migration 0071, docs/sk-einvoicing-2027.md). A
+// certified provider is the access point; these tables record what went
+// through it. Tenant-scoped with the standard policy. Never deleted by the
+// app (10-year archive, § 85o ods. 15 ZoDPH).
+// ---------------------------------------------------------------------------
+export type EInvoiceParticipantStatus = "pending" | "registered" | "failed" | "deregistered";
+export type OutgoingEInvoiceStatus = "queued" | "sent" | "delivered" | "reported" | "rejected" | "failed";
+export type IncomingEInvoiceReviewStatus = "pending_review" | "accepted" | "rejected";
+export type EInvoiceDocumentType = "invoice" | "credit_note";
+
+export const einvoiceParticipants = pgTable("einvoice_participants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  provider: varchar("provider", { length: 32 }).notNull(),
+  /** `0245:<DIČ>` for a Slovak company. Unique among active registrations across all tenants. */
+  participantId: varchar("participant_id", { length: 64 }).notNull(),
+  status: varchar("status", { length: 16 }).$type<EInvoiceParticipantStatus>().notNull().default("pending"),
+  /** The provider's own ID of the registration, for later calls. */
+  providerRef: varchar("provider_ref", { length: 128 }),
+  lastError: text("last_error"),
+  registeredAt: timestamp("registered_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const outgoingEInvoices = pgTable("outgoing_einvoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  invoiceId: uuid("invoice_id").notNull().references(() => invoices.id, { onDelete: "restrict" }),
+  provider: varchar("provider", { length: 32 }).notNull(),
+  senderParticipantId: varchar("sender_participant_id", { length: 64 }).notNull(),
+  receiverParticipantId: varchar("receiver_participant_id", { length: 64 }).notNull(),
+  documentType: varchar("document_type", { length: 16 }).$type<EInvoiceDocumentType>().notNull(),
+  /** The exact XML handed to the provider: the archived tax document. */
+  xml: text("xml").notNull(),
+  xmlSha256: char("xml_sha256", { length: 64 }).notNull(),
+  providerMessageId: varchar("provider_message_id", { length: 128 }),
+  status: varchar("status", { length: 16 }).$type<OutgoingEInvoiceStatus>().notNull().default("queued"),
+  statusReason: text("status_reason"),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+  /** When the provider confirmed the report to FR SR. */
+  reportedAt: timestamp("reported_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const incomingEInvoices = pgTable("incoming_einvoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  provider: varchar("provider", { length: 32 }).notNull(),
+  providerMessageId: varchar("provider_message_id", { length: 128 }).notNull(),
+  senderParticipantId: varchar("sender_participant_id", { length: 64 }).notNull(),
+  receiverParticipantId: varchar("receiver_participant_id", { length: 64 }).notNull(),
+  documentType: varchar("document_type", { length: 16 }).$type<EInvoiceDocumentType>().notNull(),
+  documentNumber: varchar("document_number", { length: 128 }),
+  issueDate: date("issue_date"),
+  supplierName: text("supplier_name"),
+  currency: varchar("currency", { length: 3 }),
+  total: numeric("total", { precision: 14, scale: 2 }),
+  xml: text("xml").notNull(),
+  xmlSha256: char("xml_sha256", { length: 64 }).notNull(),
+  /** Expense fields read from the UBL; becomes an expense only when a person accepts it. */
+  draft: jsonb("draft").$type<Record<string, unknown>>().notNull(),
+  reviewStatus: varchar("review_status", { length: 16 }).$type<IncomingEInvoiceReviewStatus>().notNull().default("pending_review"),
+  expenseId: uuid("expense_id").references(() => expenses.id, { onDelete: "set null" }),
+  reviewedBy: uuid("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const einvoiceStatusEvents = pgTable("einvoice_status_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  outgoingEInvoiceId: uuid("outgoing_einvoice_id").notNull().references(() => outgoingEInvoices.id, { onDelete: "restrict" }),
+  status: varchar("status", { length: 16 }).$type<OutgoingEInvoiceStatus>().notNull(),
+  reason: text("reason"),
+  occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

@@ -491,6 +491,13 @@
       "when": 1792902300000,
       "tag": "0070_demo_sk_freelancers",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1792902400000,
+      "tag": "0071_einvoicing",
+      "breakpoints": true
     }
   ]
 }

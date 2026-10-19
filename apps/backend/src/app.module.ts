@@ -25,6 +25,8 @@ import { DbModule } from "./db/db.module";
 import { EmailModule } from "./email/email.module";
 import { ExpensesController } from "./expenses/expenses.controller";
 import { ExpensesModule } from "./expenses/expenses.module";
+import { EInvoicingSettingsController, IncomingEInvoicesController, InvoiceEInvoiceController } from "./einvoicing/einvoicing.controller";
+import { EInvoicingModule } from "./einvoicing/einvoicing.module";
 import { ExportsController } from "./exports/exports.controller";
 import { ExportsModule } from "./exports/exports.module";
 import { InvoiceTemplatesController } from "./invoice-templates/invoice-templates.controller";
@@ -107,6 +109,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     EmailModule,
     InvoicesModule,
     ExpensesModule,
+    // Slovak e-invoicing over Peppol (2027 mandate); off unless EINVOICING_ENABLED=true.
+    EInvoicingModule,
     ChannelLinksModule,
     BillingModule,
     PublicInvoicesModule,
@@ -238,6 +242,10 @@ export class AppModule implements NestModule {
         AccountantListingController,
         SubscriptionController,
         DemoTenantController,
+        // JWT only, unlike InvoicesController: sending over Peppol is not in the public API yet.
+        InvoiceEInvoiceController,
+        IncomingEInvoicesController,
+        EInvoicingSettingsController,
       );
 
     // InvoicesController: same tenant-context requirement as every
