@@ -1,0 +1,352 @@
+import { createHash } from "node:crypto";
+import { BadRequestException, ConflictException, Inject, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { skDic } from "@faktur/cz-compliance";
+import { and, desc, eq, notInArray } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import * as schema from "../../drizzle/schema";
+import { DbService } from "../db/db.service";
+import { drizzleTx } from "../db/drizzle-tx";
+import { createExpenseSchema } from "../expenses/dto/create-expense.dto";
+import { ExpensesService } from "../expenses/expenses.service";
+import { InvoicesService } from "../invoices/invoices.service";
+import type { DeliveryStatusUpdate, EInvoiceProvider, IncomingDocument, WebhookRequest } from "./einvoice-provider";
+import { applyStatusUpdate } from "./einvoice-status";
+import { parseIncomingUbl, partyEndpoint, type IncomingExpenseDraft } from "./incoming-ubl";
+
+type TenantDb = PostgresJsDatabase<typeof schema>;
+
+export const EINVOICE_PROVIDER = Symbol("EINVOICE_PROVIDER");
+
+const sha256 = (s: string) => createHash("sha256").update(s, "utf8").digest("hex");
+
+@Injectable()
+export class EInvoicingService {
+  private readonly logger = new Logger(EInvoicingService.name);
+
+  constructor(
+    // Null while EINVOICING_ENABLED is off: then every entry point answers 404.
+    @Inject(EINVOICE_PROVIDER) private readonly configured: EInvoiceProvider | null,
+    private readonly dbService: DbService,
+    private readonly invoices: InvoicesService,
+    private readonly expenses: ExpensesService,
+  ) {}
+
+  private get provider(): EInvoiceProvider {
+    if (!this.configured) throw new NotFoundException("einvoicing_disabled");
+    return this.configured;
+  }
+
+  // ---- Participant (the company's own Peppol address) -------------------
+
+  async getParticipant(db: TenantDb) {
+    const [row] = await db
+      .select()
+      .from(schema.einvoiceParticipants)
+      .where(and(eq(schema.einvoiceParticipants.provider, this.provider.key), notInArray(schema.einvoiceParticipants.status, ["deregistered"])))
+      .limit(1);
+    return row ?? null;
+  }
+
+  /** Registers the company as `0245:<DIČ>`. Only Slovak companies are in scope of the 2027 mandate. */
+  async registerParticipant(db: TenantDb, tenantId: string) {
+    const [tenant] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    if (!tenant) throw new NotFoundException("tenant_not_found");
+    if (tenant.addressCountry !== "SK") throw new BadRequestException("einvoicing_sk_only");
+    const dic = skDic({ dic: tenant.dic ?? undefined });
+    if (!dic) throw new BadRequestException("einvoicing_dic_required");
+    const participantId = `0245:${dic}`;
+
+    const existing = await this.getParticipant(db);
+    if (existing?.status === "registered" || existing?.status === "pending") return existing;
+
+    const result = await this.provider.registerParticipant({ participantId, legalName: tenant.legalName, countryCode: "SK", companyId: tenant.ico });
+    const values = {
+      participantId,
+      status: result.status,
+      providerRef: result.providerRef ?? null,
+      lastError: result.error ?? null,
+      registeredAt: result.status === "registered" ? new Date() : null,
+      updatedAt: new Date(),
+    };
+    try {
+      if (existing) {
+        const [row] = await db.update(schema.einvoiceParticipants).set(values).where(eq(schema.einvoiceParticipants.id, existing.id)).returning();
+        return row;
+      }
+      const [row] = await db.insert(schema.einvoiceParticipants).values({ tenantId, provider: this.provider.key, ...values }).returning();
+      return row;
+    } catch (err) {
+      // The global unique index: another company already holds this DIČ.
+      if (isUniqueViolation(err)) throw new ConflictException("einvoice_participant_taken");
+      throw err;
+    }
+  }
+
+  // ---- Outgoing ----------------------------------------------------------
+
+  async getInvoiceStatus(db: TenantDb, invoiceId: string) {
+    void this.provider;
+    const rows = await db
+      .select({
+        id: schema.outgoingEInvoices.id,
+        status: schema.outgoingEInvoices.status,
+        statusReason: schema.outgoingEInvoices.statusReason,
+        receiverParticipantId: schema.outgoingEInvoices.receiverParticipantId,
+        sentAt: schema.outgoingEInvoices.sentAt,
+        deliveredAt: schema.outgoingEInvoices.deliveredAt,
+        reportedAt: schema.outgoingEInvoices.reportedAt,
+        createdAt: schema.outgoingEInvoices.createdAt,
+      })
+      .from(schema.outgoingEInvoices)
+      .where(eq(schema.outgoingEInvoices.invoiceId, invoiceId))
+      .orderBy(desc(schema.outgoingEInvoices.createdAt));
+    // The newest attempt is the one that counts; earlier ones are history.
+    return { current: rows[0] ?? null, attempts: rows };
+  }
+
+  /**
+   * Sends an issued invoice or credit note through the provider. The UBL is
+   * generated by the same code as the download, checked first, and stored
+   * byte for byte: that copy is the tax document we must archive.
+   */
+  async sendInvoice(db: TenantDb, tenantId: string, invoiceId: string) {
+    const sender = await this.getParticipant(db);
+    if (sender?.status !== "registered") throw new BadRequestException("einvoice_participant_not_registered");
+
+    const { issues } = await this.invoices.checkInvoiceUbl(db, tenantId, invoiceId);
+    const errors = issues.filter((i) => i.severity === "error");
+    if (errors.length) throw new BadRequestException({ message: "einvoice_ubl_invalid", issues: errors });
+
+    const xml = await this.invoices.generateInvoiceUbl(db, tenantId, invoiceId);
+    const receiver = partyEndpoint(xml, "AccountingCustomerParty");
+    if (!receiver) throw new BadRequestException("einvoice_receiver_unknown");
+    const documentType = /<(?:[\w-]+:)?CreditNote\b/.test(xml) ? "credit_note" : "invoice";
+
+    let outgoing: typeof schema.outgoingEInvoices.$inferSelect;
+    try {
+      [outgoing] = await db
+        .insert(schema.outgoingEInvoices)
+        .values({
+          tenantId,
+          invoiceId,
+          provider: this.provider.key,
+          senderParticipantId: sender.participantId,
+          receiverParticipantId: receiver,
+          documentType,
+          xml,
+          xmlSha256: sha256(xml),
+        })
+        .returning();
+    } catch (err) {
+      // Partial unique index: one live transmission per invoice. A rejected
+      // or failed one may be retried; a delivered one needs a credit note.
+      if (isUniqueViolation(err)) throw new ConflictException("einvoice_already_sent");
+      throw err;
+    }
+
+    const result = await this.provider.sendDocument({
+      senderParticipantId: sender.participantId,
+      receiverParticipantId: receiver,
+      documentType,
+      xml,
+      idempotencyKey: outgoing.id,
+    });
+    await db
+      .update(schema.outgoingEInvoices)
+      .set({ providerMessageId: result.messageId, updatedAt: new Date() })
+      .where(eq(schema.outgoingEInvoices.id, outgoing.id));
+    await this.applyStatus(db, tenantId, { ...outgoing, providerMessageId: result.messageId }, {
+      messageId: result.messageId,
+      status: result.status,
+      reason: result.reason,
+      occurredAt: new Date(),
+    });
+    return this.getInvoiceStatus(db, invoiceId);
+  }
+
+  private async applyStatus(db: TenantDb, tenantId: string, row: typeof schema.outgoingEInvoices.$inferSelect, update: DeliveryStatusUpdate) {
+    await db.insert(schema.einvoiceStatusEvents).values({
+      tenantId,
+      outgoingEInvoiceId: row.id,
+      status: update.status,
+      reason: update.reason ?? null,
+      occurredAt: update.occurredAt,
+    });
+    const patch = applyStatusUpdate(row, update);
+    if (Object.keys(patch).length) {
+      await db
+        .update(schema.outgoingEInvoices)
+        .set({ ...patch, updatedAt: new Date() })
+        .where(eq(schema.outgoingEInvoices.id, row.id));
+    }
+  }
+
+  // ---- Incoming ----------------------------------------------------------
+
+  listIncoming(db: TenantDb, reviewStatus?: schema.IncomingEInvoiceReviewStatus) {
+    void this.provider;
+    const t = schema.incomingEInvoices;
+    return db
+      .select({
+        id: t.id,
+        senderParticipantId: t.senderParticipantId,
+        documentType: t.documentType,
+        documentNumber: t.documentNumber,
+        issueDate: t.issueDate,
+        supplierName: t.supplierName,
+        currency: t.currency,
+        total: t.total,
+        draft: t.draft,
+        reviewStatus: t.reviewStatus,
+        expenseId: t.expenseId,
+        receivedAt: t.receivedAt,
+      })
+      .from(t)
+      .where(reviewStatus ? eq(t.reviewStatus, reviewStatus) : undefined)
+      .orderBy(desc(t.receivedAt))
+      .limit(200);
+  }
+
+  /**
+   * Turns a received document into an expense. This is the human step:
+   * the reviewer's corrections win over what we read from the XML, and the
+   * result goes through the same validation as a hand-typed expense.
+   */
+  async acceptIncoming(db: TenantDb, tenantId: string, userId: string, id: string, overrides: object) {
+    const row = await this.pendingIncoming(db, id);
+    const draft = row.draft as unknown as IncomingExpenseDraft;
+    const parsed = createExpenseSchema.safeParse({
+      supplierNameRaw: draft.supplierName,
+      description: draft.description ?? draft.documentNumber ?? undefined,
+      amount: draft.amount ?? undefined,
+      vatRate: draft.vatRate ?? undefined,
+      currency: draft.currency ?? undefined,
+      expenseDate: draft.issueDate ?? undefined,
+      documentNumber: draft.documentNumber,
+      variableSymbol: draft.variableSymbol,
+      supplierIco: draft.supplierIco,
+      supplierDic: draft.supplierDic,
+      reverseCharge: draft.reverseCharge,
+      dueDate: draft.dueDate,
+      ...overrides,
+    });
+    if (!parsed.success) throw new BadRequestException({ message: "einvoice_draft_incomplete", issues: parsed.error.issues });
+
+    const expense = await this.expenses.create(db, tenantId, parsed.data);
+    await db
+      .update(schema.incomingEInvoices)
+      .set({ reviewStatus: "accepted", expenseId: expense.id, reviewedBy: userId, reviewedAt: new Date() })
+      .where(eq(schema.incomingEInvoices.id, id));
+    return expense;
+  }
+
+  /** Not ours, a duplicate, spam: it stays archived, it just never becomes an expense. */
+  async rejectIncoming(db: TenantDb, userId: string, id: string) {
+    await this.pendingIncoming(db, id);
+    await db
+      .update(schema.incomingEInvoices)
+      .set({ reviewStatus: "rejected", reviewedBy: userId, reviewedAt: new Date() })
+      .where(eq(schema.incomingEInvoices.id, id));
+    return { ok: true };
+  }
+
+  private async pendingIncoming(db: TenantDb, id: string) {
+    void this.provider;
+    const [row] = await db.select().from(schema.incomingEInvoices).where(eq(schema.incomingEInvoices.id, id)).limit(1);
+    if (!row) throw new NotFoundException("einvoice_not_found");
+    if (row.reviewStatus !== "pending_review") throw new ConflictException("einvoice_already_reviewed");
+    return row;
+  }
+
+  // ---- Webhook -------------------------------------------------------------
+
+  /**
+   * Provider callbacks arrive without a tenant. The provider adapter checks
+   * the signature first; then a SECURITY DEFINER lookup names the company,
+   * and everything else runs inside that company's RLS scope.
+   */
+  async handleWebhook(providerKey: string, request: WebhookRequest) {
+    if (providerKey !== this.provider.key) throw new NotFoundException("einvoicing_unknown_provider");
+    const events = this.provider.parseWebhook(request);
+    let handled = 0;
+    for (const event of events) {
+      if (event.kind === "status") handled += (await this.webhookStatus(event.update)) ? 1 : 0;
+      else if (event.kind === "incoming") handled += (await this.webhookIncoming(event.document)) ? 1 : 0;
+      // Asynchronous registrations need a lookup of pending participants,
+      // which is added with the first provider that registers asynchronously.
+      else this.logger.warn(`Ignoring e-invoicing participant event from ${providerKey}`);
+    }
+    return { ok: true, received: events.length, handled };
+  }
+
+  private async webhookStatus(update: DeliveryStatusUpdate): Promise<boolean> {
+    const [found] = await this.dbService.sql<{ tenant_id: string | null }[]>`
+      SELECT einvoice_tenant_for_message(${this.provider.key}, ${update.messageId}) AS tenant_id`;
+    if (!found?.tenant_id) {
+      this.logger.warn("E-invoice status for an unknown message");
+      return false;
+    }
+    await this.inTenant(found.tenant_id, async (db) => {
+      const [row] = await db
+        .select()
+        .from(schema.outgoingEInvoices)
+        .where(and(eq(schema.outgoingEInvoices.provider, this.provider.key), eq(schema.outgoingEInvoices.providerMessageId, update.messageId)))
+        .for("update")
+        .limit(1);
+      if (row) await this.applyStatus(db, found.tenant_id!, row, update);
+    });
+    return true;
+  }
+
+  private async webhookIncoming(doc: IncomingDocument): Promise<boolean> {
+    const [found] = await this.dbService.sql<{ tenant_id: string | null }[]>`
+      SELECT einvoice_tenant_for_participant(${this.provider.key}, ${doc.receiverParticipantId}) AS tenant_id`;
+    if (!found?.tenant_id) {
+      this.logger.warn("Incoming e-invoice for an unregistered participant");
+      return false;
+    }
+    let draft: IncomingExpenseDraft;
+    try {
+      draft = parseIncomingUbl(doc.xml);
+    } catch {
+      // Still archived: the law counts it as received whatever we make of it.
+      draft = { documentType: "invoice", documentNumber: null, issueDate: null, dueDate: null, currency: null, supplierName: null, supplierIco: null, supplierDic: null, amount: null, vatRate: null, reverseCharge: false, variableSymbol: null, description: null, warnings: ["unreadable_document"] };
+    }
+    await this.inTenant(found.tenant_id, (db) =>
+      db
+        .insert(schema.incomingEInvoices)
+        .values({
+          tenantId: found.tenant_id!,
+          provider: this.provider.key,
+          providerMessageId: doc.messageId,
+          senderParticipantId: doc.senderParticipantId,
+          receiverParticipantId: doc.receiverParticipantId,
+          documentType: draft.documentType,
+          documentNumber: draft.documentNumber,
+          issueDate: draft.issueDate && /^\d{4}-\d{2}-\d{2}$/.test(draft.issueDate) ? draft.issueDate : null,
+          supplierName: draft.supplierName,
+          currency: draft.currency && /^[A-Z]{3}$/.test(draft.currency) ? draft.currency : null,
+          total: draft.amount,
+          xml: doc.xml,
+          xmlSha256: sha256(doc.xml),
+          draft: draft as unknown as Record<string, unknown>,
+          receivedAt: doc.receivedAt,
+        })
+        // Providers redeliver; the message ID (and the supplier's document number) dedupes.
+        .onConflictDoNothing(),
+    );
+    return true;
+  }
+
+  private inTenant<T>(tenantId: string, fn: (db: TenantDb) => Promise<T>) {
+    return this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      return fn(drizzleTx(tx, schema));
+    }) as Promise<T>;
+  }
+}
+
+function isUniqueViolation(err: unknown): boolean {
+  const e = err as { code?: string; cause?: { code?: string } };
+  return e?.code === "23505" || e?.cause?.code === "23505";
+}

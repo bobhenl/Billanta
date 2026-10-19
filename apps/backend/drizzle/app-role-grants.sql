@@ -42,6 +42,12 @@ REVOKE ALL ON demo_sessions FROM faktur_app;
 REVOKE UPDATE, DELETE ON promo_redemptions FROM faktur_app;
 REVOKE DELETE ON promo_codes FROM faktur_app;
 
+-- E-invoices are tax documents with a 10-year archive duty (§ 85o ods. 15
+-- ZoDPH, migration 0071): the app may never delete them, and the status log
+-- is append-only.
+REVOKE DELETE ON einvoice_participants, outgoing_einvoices, incoming_einvoices FROM faktur_app;
+REVOKE UPDATE, DELETE ON einvoice_status_events FROM faktur_app;
+
 -- Global catalogs the app only reads; plans and terms change via migrations.
 REVOKE INSERT, UPDATE, DELETE ON subscription_plans, tos_versions FROM faktur_app;
 

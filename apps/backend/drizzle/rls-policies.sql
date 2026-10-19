@@ -1590,3 +1590,34 @@ CREATE POLICY tenant_isolation ON email_outbox
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 ALTER TABLE email_suppressions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_suppressions FORCE ROW LEVEL SECURITY;
+
+-- ---------------------------------------------------------------------------
+-- E-invoicing over Peppol (migration 0071): standard tenant isolation on all
+-- four tables. Provider webhooks resolve the tenant through
+-- einvoice_tenant_for_participant / einvoice_tenant_for_message (defined in
+-- that migration) and then write in an RLS-scoped transaction.
+-- ---------------------------------------------------------------------------
+ALTER TABLE einvoice_participants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE einvoice_participants FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON einvoice_participants;
+CREATE POLICY tenant_isolation ON einvoice_participants
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE outgoing_einvoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE outgoing_einvoices FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON outgoing_einvoices;
+CREATE POLICY tenant_isolation ON outgoing_einvoices
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE incoming_einvoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE incoming_einvoices FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON incoming_einvoices;
+CREATE POLICY tenant_isolation ON incoming_einvoices
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE einvoice_status_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE einvoice_status_events FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON einvoice_status_events;
+CREATE POLICY tenant_isolation ON einvoice_status_events
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
