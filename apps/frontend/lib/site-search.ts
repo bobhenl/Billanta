@@ -57,6 +57,7 @@ function indexFor(locale: string): Entry[] {
     entry('page', '/features', m.featurePages.indexHeading, m.featurePages.indexDescription),
     entry('page', '/invoicing', m.municipalityPages.indexTitle, m.municipalityPages.indexLead),
     entry('page', '/about', m.about.title, m.about.lead, `${m.about.whatBody} ${m.about.whoBody}`),
+    entry('page', '/contact', m.contact.title, m.contact.lead),
     entry('page', '/legal/terms', m.legal.terms.title, m.legal.terms.intro),
     entry('page', '/legal/privacy', m.legal.privacy.title, m.legal.privacy.intro),
     entry('page', '/legal/dpa', m.legal.dpa.title, m.legal.dpa.intro)

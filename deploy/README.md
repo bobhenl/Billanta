@@ -28,6 +28,13 @@ because the disk is small and every deploy ships that image again.
 `SKIP_BUILD=1` ships the images that are already built. `WITH_AI=1` also
 builds and ships `ai-service`.
 
+`NEXT_PUBLIC_*` values are baked into the frontend image at build time, so
+they come from the environment of the machine running `deploy.sh`, not
+from the server `.env`. Set the public contact address that way, e.g.
+`NEXT_PUBLIC_CONTACT_EMAIL=hello@billanta.com deploy/deploy.sh` (empty: the
+contact page shows no e-mail). Put the same value in the server `.env` too,
+where the backend reads it for the Fakturoid import User-Agent.
+
 Port 8090 is opened in ufw for access by IP. Once there is a domain behind
 Cloudflare, switch to the Cloudflare block described in
 `Caddyfile.billanta` and remove that rule.

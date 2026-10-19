@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePercent, BellRing, BookA, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, FileText, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, Store, UserRound, Users, UserSearch } from 'lucide-react';
+import { BadgePercent, BellRing, BookA, BookOpenCheck, Calculator, CalendarDays, CircleHelp, Clapperboard, FileText, GraduationCap, Handshake, Home, LayoutDashboard, LogIn, Mail, Megaphone, Newspaper, Plus, Sparkles, SquarePercent, Store, UserRound, Users, UserSearch } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -22,6 +22,7 @@ export function MarketingTabBar() {
   const tMobile = useTranslations('mobile');
   const tMenu = useTranslations('tools.menu');
   const tTemplates = useTranslations('invoiceTemplates');
+  const tLegal = useTranslations('marketing.footer.legal');
   const locale = useLocale();
   const { status } = useSession();
   const signedIn = status === 'authenticated';
@@ -59,7 +60,8 @@ export function MarketingTabBar() {
         { key: 'events', href: '/events', label: t('events'), icon: CalendarDays },
         { key: 'for-partners', href: '/for-partners', label: t('forPartners'), icon: Megaphone },
         { key: 'partners', href: '/partners', label: t('partners'), icon: Handshake },
-        { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp }
+        { key: 'faq', href: '/#faq', label: t('faq'), icon: CircleHelp },
+        { key: 'contact', href: '/contact', label: tLegal('contact'), icon: Mail }
       ]}
       panelFooter={
         signedIn ? undefined : (

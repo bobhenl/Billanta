@@ -44,6 +44,8 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
     switch (first) {
       case 'about':
         return { title: t('about.title'), subtitle: t('about.lead'), section: s.about };
+      case 'contact':
+        return { title: t('contact.title'), subtitle: t('contact.lead'), section: s.legal };
       case 'pricing':
         return { title: t('pricing.title'), subtitle: t('pricing.metaDescription'), section: s.pricing };
       case 'features':

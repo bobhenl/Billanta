@@ -237,7 +237,8 @@
         "privacy": "Ochrana osobních údajů",
         "cookies": "Zásady cookies",
         "cookieSettings": "Nastavení cookies",
-        "dpa": "Zpracovatelská smlouva (DPA)"
+        "dpa": "Zpracovatelská smlouva (DPA)",
+        "contact": "Kontakt"
       },
       "account": {
         "title": "Účet",
@@ -12837,5 +12838,36 @@
     "ctaTitle": "Plakát na zeď ke stažení",
     "ctaBody": "A4 nebo A3, připravený k tisku. Když jste přihlášení, QR kód na něm nese kód pozvánky vaší firmy.",
     "ctaButton": "Stáhnout plakát"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "lead": "Jak se s námi spojit, kdo službu Billanta provozuje a kde rychle najdete odpovědi.",
+    "emailTitle": "Napište nám",
+    "emailBody": "Dotazy k fakturaci, účtu nebo spolupráci posílejte na e-mail.",
+    "noEmailTitle": "Kde najdete pomoc",
+    "noEmailBody": "Veřejnou e-mailovou adresu zatím nemáme. Odpovědi na nejčastější otázky najdete v Častých dotazech a aplikaci si můžete bez účtu vyzkoušet v ukázce.",
+    "helpTitle": "Rychlé odpovědi",
+    "links": {
+      "faq": {
+        "title": "Časté dotazy",
+        "body": "Ceny, DPH, export pro účetní a další běžné otázky."
+      },
+      "demo": {
+        "title": "Vyzkoušet ukázku",
+        "body": "Aplikace s ukázkovými daty, bez registrace."
+      },
+      "accountants": {
+        "title": "Najít účetní",
+        "body": "Účetní a kanceláře, které s Billantou pracují."
+      },
+      "partners": {
+        "title": "Pro partnery",
+        "body": "Kurzy, coworkingy, komunity a další, kteří chtějí Billantu doporučovat."
+      }
+    },
+    "operatorTitle": "Provozovatel",
+    "privacyTitle": "Osobní údaje",
+    "privacyBody": "Správcem osobních údajů je provozovatel uvedený výše. Jaké údaje zpracováváme a jak uplatnit svá práva (přístup, oprava, výmaz a další), popisují Zásady ochrany osobních údajů.",
+    "legalTitle": "Právní dokumenty"
   }
 }
