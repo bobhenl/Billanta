@@ -7599,6 +7599,210 @@
             "Zdravotní pojištění je 15 % (od roku 2026 16 %) ze zisku děleného 1,486, nejméně z minimálního základu za každý měsíc. Rozdíl proti zaplaceným zálohám se doplatí v ročním zúčtování.",
             "Sociální pojištění vzniká až od července dalšího roku, a jen když příjem přesáhne zákonnou hranici. Základ je zisk děleno 1,486 a počtem měsíců, mezi minimálním a maximálním základem."
           ]
+        },
+        "taxCalendar": {
+          "name": "Daňový kalendář",
+          "title": "Daňový kalendář pro OSVČ a firmy: termíny DPH, pojištění a přiznání",
+          "description": "Daňové termíny na celý rok po měsících: DPH, kontrolní hlášení, zálohy na pojištění a daňové přiznání. Pro Česko i Slovensko, posunuté na pracovní dny, s odběrem do kalendáře v telefonu.",
+          "lead": "Vyberte zemi, jak podnikáte a jaký máte vztah k DPH. Uvidíte všechny termíny roku po měsících a můžete si je přidat do svého kalendáře.",
+          "keywords": "daňový kalendář 2026 daňový kalendář 2027 termíny dph kontrolní hlášení zálohy osvč sociální zdravotní pojištění termín daňového přiznání paušální daň daňový kalendár slovensko",
+          "how": [
+            "Termíny počítáme podle zákona pro Česko nebo Slovensko. Když lhůta připadne na víkend nebo svátek, posouváme ji na nejbližší pracovní den (§ 33 daňového řádu, na Slovensku § 27 daňového poriadku).",
+            "U každého termínu ukazujeme, za jaké období se podává nebo platí.",
+            "Souhrnné hlášení a přiznání identifikované osoby se podávají jen za měsíc, ve kterém se něco stalo, proto jsou označené „jen pokud“.",
+            "Odběr do kalendáře funguje bez registrace. Adresa obsahuje jen vaše volby, nic o vás neukládáme, a s novým rokem se kalendář doplní sám."
+          ],
+          "howTitle": "Jak to funguje",
+          "ctaTitle": "Billanta vám termíny pohlídá sama",
+          "ctaText": "V Billantě vidíte nejbližší termíny na nástěnce, vybrané podle vašeho vztahu k DPH a právní formy, a kalendář si propojíte s telefonem. Z vystavených faktur a výdajů připraví XML pro přiznání k DPH a kontrolní hlášení.",
+          "disclaimer": "Termíny počítáme podle zákona a posouváme je z víkendu a svátku na nejbližší pracovní den. Oficiální kalendář Finanční správy obsahuje i další podání (OSS, CESOP, spotřební daně). Je to kalendář, nesledujeme, co už máte podáno.",
+          "explainedTitle": "Co jednotlivé termíny znamenají ({country})",
+          "fields": {
+            "country": "Země",
+            "year": "Rok",
+            "entity": "Podnikám jako",
+            "vat": "DPH",
+            "extras": "Další termíny"
+          },
+          "countries": {
+            "CZ": "Česko",
+            "SK": "Slovensko"
+          },
+          "entities": {
+            "CZ": {
+              "osvc": "OSVČ",
+              "flat": "OSVČ v paušálním režimu",
+              "company": "Firma (s.r.o., a.s.)"
+            },
+            "SK": {
+              "osvc": "SZČO (živnostník)",
+              "flat": "Paušální režim",
+              "company": "Firma (s.r.o., a.s.)"
+            }
+          },
+          "vat": {
+            "none": "Neplátce",
+            "monthly": "Měsíční plátce",
+            "quarterly": "Čtvrtletní plátce",
+            "identified": "Identifikovaná osoba"
+          },
+          "extras": {
+            "payroll": "Mám zaměstnance",
+            "road_tax": "Silniční daň",
+            "property_tax": "Daň z nemovitostí"
+          },
+          "flatNotPossible": "Paušální režim nejde spojit s registrací k DPH, ukazujeme termíny běžné OSVČ.",
+          "khMonthly": "Firma podává kontrolní hlášení každý měsíc do 25. dne, i když přiznává DPH čtvrtletně (§ 101e zákona o DPH).",
+          "heading": "Daňový kalendář {year} – {country}",
+          "count": "{n, plural, =0 {Pro tuto volbu nejsou žádné termíny.} one {# termín} few {# termíny} other {# termínů}}",
+          "noDeadlines": "Žádný termín",
+          "nextBadge": "Nejbližší termín",
+          "movedShort": "posunuto z {date}",
+          "moved": "Zákonná lhůta připadá na {date}, což je víkend nebo svátek, proto se posouvá na nejbližší pracovní den.",
+          "onlyIf": {
+            "ec_sales_list": "Jen pokud jste v předchozím měsíci fakturovali zboží nebo službu firmě v jiném státě EU.",
+            "vat_identified": "Jen pokud jste v předchozím měsíci nakoupili službu ze zahraničí (např. reklamu)."
+          },
+          "period": {
+            "month": "za {month}",
+            "quarter": "za {quarter}. čtvrtletí {year}",
+            "year": "za rok {year}",
+            "yearAhead": "na rok {year}"
+          },
+          "kinds": {
+            "CZ": {
+              "vat_monthly": "DPH a kontrolní hlášení",
+              "vat_quarterly": "DPH a kontrolní hlášení (čtvrtletní)",
+              "vat_other": "DPH: OSS, CESOP a další hlášení",
+              "vat_identified": "Přiznání k DPH (identifikovaná osoba)",
+              "ec_sales_list": "Souhrnné hlášení",
+              "health": "Záloha na zdravotní pojištění",
+              "social": "Záloha na sociální pojištění",
+              "income_tax": "Daňové přiznání a daň z příjmů",
+              "flat_tax": "Paušální daň",
+              "overviews": "Přehledy pro ČSSZ a pojišťovnu",
+              "payroll": "Odvod daně za zaměstnance",
+              "road_tax": "Silniční daň",
+              "property_tax": "Daň z nemovitých věcí"
+            },
+            "SK": {
+              "vat_monthly": "DPH a kontrolní výkaz",
+              "vat_quarterly": "DPH a kontrolní výkaz (čtvrtletní)",
+              "vat_other": "DPH: OSS a další hlášení",
+              "vat_identified": "Přiznání k DPH (registrovaná osoba)",
+              "ec_sales_list": "Souhrnný výkaz",
+              "health": "Záloha na zdravotní pojištění",
+              "social": "Sociální pojištění SZČO",
+              "income_tax": "Daňové přiznání a daň z příjmů",
+              "flat_tax": "Paušální daň (jen v Česku)",
+              "overviews": "Přehledy OSVČ (jen v Česku)",
+              "payroll": "Odvod daně za zaměstnance",
+              "road_tax": "Daň z motorových vozidel",
+              "property_tax": "Daň z nemovitostí"
+            }
+          },
+          "kindHints": {
+            "CZ": {
+              "vat_monthly": "Měsíční plátce podává přiznání k DPH a kontrolní hlášení do 25. dne po skončení měsíce a ve stejné lhůtě daň platí (§ 101 a § 101e zákona o DPH).",
+              "vat_quarterly": "Čtvrtletně může přiznávat plátce s obratem za minulý rok do 10 milionů Kč, který není nespolehlivým plátcem (§ 99a zákona o DPH). Přiznání i daň do 25. dne po skončení čtvrtletí. Kontrolní hlášení podává čtvrtletně jen fyzická osoba, firma ho podává každý měsíc.",
+              "vat_other": "Podání ve zvláštních režimech (OSS, CESOP) podle oficiálního kalendáře Finanční správy.",
+              "vat_identified": "Identifikovaná osoba podává přiznání jen za měsíc, ve kterém jí vznikla povinnost přiznat daň, typicky po nákupu služby ze zahraničí (reklamy, software), do 25 dnů po jeho skončení (§ 101 zákona o DPH).",
+              "ec_sales_list": "Souhrnné hlášení podává ten, kdo v měsíci dodal zboží nebo službu podnikateli v jiném státě EU, do 25 dnů po skončení měsíce (§ 102 zákona o DPH).",
+              "health": "Záloha OSVČ na zdravotní pojištění za měsíc se platí do 8. dne následujícího měsíce (§ 7 zákona č. 592/1992 Sb.).",
+              "social": "Záloha OSVČ na sociální pojištění za měsíc se platí do 20. dne následujícího měsíce (§ 14a zákona č. 589/1992 Sb.).",
+              "income_tax": "Elektronické přiznání k dani z příjmů se podává a daň platí do 1. května; protože je to svátek, fakticky nejbližší pracovní den po něm. Papírové přiznání do 1. dubna, s daňovým poradcem do 1. července (§ 136 daňového řádu). Platí pro OSVČ i firmy.",
+              "flat_tax": "V paušálním režimu se místo záloh na pojištění a přiznání platí jedna měsíční záloha, do 20. dne měsíce, za který se platí (§ 2a a § 38lc zákona o daních z příjmů).",
+              "overviews": "Přehledy OSVČ pro ČSSZ a zdravotní pojišťovnu se podávají do měsíce po lhůtě pro přiznání, při elektronickém přiznání tedy začátkem června.",
+              "payroll": "Zaměstnavatel odvádí zálohy na daň ze mzdy za předchozí měsíc do 20. dne (§ 38h zákona o daních z příjmů). Pojistné za zaměstnance se platí ve stejné lhůtě.",
+              "road_tax": "Silniční daň za předchozí rok se přiznává a platí do 31. ledna (zákon č. 16/1993 Sb.).",
+              "property_tax": "Daň z nemovitých věcí je splatná do 31. května, nad 5 000 Kč ji lze zaplatit ve dvou splátkách (do 31. května a 30. listopadu). Přiznání se podává do 31. ledna, jen když se něco změnilo (zákon č. 338/1992 Sb.)."
+            },
+            "SK": {
+              "vat_monthly": "Měsíční plátce podává přiznání k DPH a kontrolní výkaz do 25 dnů po skončení měsíce a ve stejné lhůtě daň platí (§ 78 a § 78a zákona č. 222/2004 Z. z.).",
+              "vat_quarterly": "Čtvrtletní zdaňovací období může mít plátce s nižším obratem (§ 77 zákona o DPH). Přiznání i kontrolní výkaz do 25 dnů po skončení čtvrtletí.",
+              "vat_other": "Podání ve zvláštních režimech (OSS) podle kalendáře slovenské Finanční správy.",
+              "vat_identified": "Osoba registrovaná podle § 7 nebo § 7a podává přiznání jen za měsíc, ve kterém jí vznikla daňová povinnost, například po nákupu služby ze zahraničí, do 25 dnů po jeho skončení.",
+              "ec_sales_list": "Souhrnný výkaz podává ten, kdo v měsíci dodal zboží nebo službu podnikateli v jiném státě EU, do 25 dnů po skončení měsíce (§ 80 zákona o DPH).",
+              "health": "Záloha SZČO na zdravotní pojištění se platí do 8. dne následujícího měsíce (§ 24 zákona č. 580/2004 Z. z.).",
+              "social": "Pojistné na sociální pojištění platí povinně pojištěná SZČO do 8. dne měsíce následujícího po měsíci, za který se platí (§ 139 zákona č. 461/2003 Z. z.).",
+              "income_tax": "Daňové přiznání k dani z příjmů fyzické i právnické osoby se podává a daň platí do 31. března. Lhůtu lze oznámením prodloužit o 3 měsíce, při příjmech ze zahraničí o 6 měsíců (§ 49 zákona č. 595/2003 Z. z.).",
+              "flat_tax": "Paušální režim je český, na Slovensku neexistuje.",
+              "overviews": "Přehledy OSVČ jsou české; na Slovensku Sociálna poisťovňa a zdravotní pojišťovna vycházejí z daňového přiznání.",
+              "payroll": "Zaměstnavatel odvádí preddavky na daň do 5 dnů po výplatě mzdy, pevný den v měsíci proto není.",
+              "road_tax": "Přiznání k dani z motorových vozidel za předchozí rok se podává a daň platí do 31. ledna (zákon č. 361/2014 Z. z.).",
+              "property_tax": "Daň z nemovitostí se na Slovensku platí podle rozhodnutí obce, pevný termín pro všechny není."
+            }
+          },
+          "subscribe": {
+            "title": "Přidat do kalendáře",
+            "text": "Odebírejte termíny ve svém kalendáři (iPhone, Android, Outlook, Google). Bez registrace a s vašimi volbami; s novým rokem se kalendář doplní sám.",
+            "webcal": "Odebírat v kalendáři",
+            "google": "Google Kalendář",
+            "download": "Stáhnout .ics",
+            "urlLabel": "Adresa kalendáře pro ruční přidání"
+          },
+          "ics": {
+            "name": "Daňový kalendář – {country}",
+            "footer": "Orientační termíny podle zákona, posunuté na pracovní dny. Nesledujeme, co už máte podáno.",
+            "category": "Daně"
+          }
+        },
+        "vatReliability": {
+          "name": "Nespolehlivý plátce DPH",
+          "title": "Nespolehlivý plátce DPH: ověření DIČ a zveřejněného účtu",
+          "description": "Ověřte zdarma, jestli je dodavatel nespolehlivý plátce DPH a jestli je jeho bankovní účet zveřejněný v registru plátců. Podle DIČ nebo IČO, přímo z registru Finanční správy.",
+          "lead": "Zadejte DIČ nebo IČO dodavatele a případně účet, na který máte platit. Ověříme ho v registru plátců DPH Finanční správy.",
+          "keywords": "nespolehlivý plátce dph ověření dič registr plátců dph zveřejněný bankovní účet ručení za dph § 109 kontrola dodavatele",
+          "how": [
+            "Ptáme se přímo registru plátců DPH Finanční správy. Výsledek platí k okamžiku ověření.",
+            "Když zaplatíte nespolehlivému plátci, ručíte za DPH, kterou neodvede. Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a zákona o DPH).",
+            "Ručíte i tehdy, když za plnění nad 540 000 Kč (dvojnásobek limitu pro platby v hotovosti) zaplatíte na účet, který plátce nezveřejnil (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "Zadaný účet porovnáme se zveřejněnými účty, ať ho napíšete jako číslo s kódem banky nebo jako IBAN. Seznam zveřejněných účtů neukazujeme, jen jejich počet."
+          ],
+          "howTitle": "Jak to funguje",
+          "ctaTitle": "Billanta ověřuje plátce DPH sama",
+          "ctaText": "Když v Billantě načtete odběratele nebo dodavatele podle IČO či DIČ, ověří jeho status v registru plátců DPH a na nespolehlivého plátce upozorní. Nemusíte nic kontrolovat ručně.",
+          "fields": {
+            "id": "DIČ nebo IČO",
+            "idHint": "České DIČ (CZ12345678) nebo IČO.",
+            "account": "Bankovní účet (nepovinné)",
+            "accountHint": "Účet, na který máte platit, jako 123456789/0800 nebo IBAN.",
+            "check": "Ověřit",
+            "checking": "Ověřuji v registru…"
+          },
+          "result": {
+            "state": {
+              "payer": "Spolehlivý plátce DPH",
+              "unreliable": "Nespolehlivý plátce DPH",
+              "not_registered": "Není plátce DPH",
+              "valid": "Platné DIČ",
+              "invalid": "Neplatné DIČ",
+              "unknown": "Nepodařilo se ověřit"
+            },
+            "stateNote": {
+              "payer": "Finanční správa firmu nevede jako nespolehlivého plátce.",
+              "unreliable": "Když jí zaplatíte za plnění s DPH, ručíte za DPH, kterou neodvede (§ 109 zákona o DPH). DPH můžete zaplatit rovnou jejímu finančnímu úřadu (§ 109a).",
+              "not_registered": "Toto DIČ v registru plátců DPH není. Firma by vám neměla účtovat DPH.",
+              "valid": "DIČ je platné.",
+              "invalid": "DIČ v registru není nebo už není aktivní.",
+              "unknown": "Registr teď neodpověděl."
+            },
+            "name": "Název",
+            "vatId": "DIČ",
+            "published": "Zveřejněné účty",
+            "publishedCount": "{n, plural, =0 {žádný} one {# účet} few {# účty} other {# účtů}}",
+            "accountYes": "Účet {account} je mezi zveřejněnými účty.",
+            "accountNo": "Účet {account} mezi zveřejněnými účty není.",
+            "accountNoNote": "Když za plnění nad 540 000 Kč zaplatíte na účet, který plátce nezveřejnil, ručíte za DPH z této platby (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "accountInvalid": "„{account}“ nevypadá jako číslo účtu ani IBAN.",
+            "source": "Zdroj: Registr plátců DPH, Finanční správa ČR. Výsledek platí k okamžiku ověření.",
+            "empty": "Zadejte DIČ nebo IČO a výsledek se ukáže tady."
+          },
+          "errors": {
+            "invalid": "Zadejte české DIČ (CZ a 8 až 10 číslic) nebo IČO.",
+            "busy": "Ověřovali jste příliš často. Zkuste to za chvíli.",
+            "unavailable": "Registr plátců DPH teď neodpovídá. Zkuste to za chvíli nebo ověřte firmu přímo na webu Finanční správy."
+          }
         }
       }
     },

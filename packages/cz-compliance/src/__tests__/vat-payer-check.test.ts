@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { checkVatPayer, parseAdisResponse } from '../vat-payer-check.js';
+import { czechAccountToIban } from '../bank-account-validator.js';
+import { checkVatPayer, isPublishedAccount, parseAdisResponse } from '../vat-payer-check.js';
 
 // Trimmed from a real ADIS answer (2026-10) for two DIČ in one request.
 const ADIS_XML =
@@ -66,5 +67,27 @@ describe('checkVatPayer', () => {
     expect((await checkVatPayer('DE123456789'))?.state).toBe('unknown');
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ valid: false, userError: 'MS_UNAVAILABLE' }), { status: 200 })));
     expect((await checkVatPayer('DE123456789'))?.state).toBe('unknown');
+  });
+});
+
+describe('isPublishedAccount', () => {
+  const published = ['2047300106/2600', '19-123457/0100', 'SK3112000000198742637541'];
+
+  it('matches the domestic form, with or without leading zeros and spaces', () => {
+    expect(isPublishedAccount(published, '2047300106/2600')).toBe(true);
+    expect(isPublishedAccount(published, '000019-0000123457 / 0100')).toBe(true);
+  });
+
+  it('matches a domestic account typed as an IBAN, and an IBAN in any case and spacing', () => {
+    const iban = czechAccountToIban('2047300106/2600')!;
+    expect(isPublishedAccount(published, iban.replace(/(.{4})/g, '$1 ').toLowerCase())).toBe(true);
+    expect(isPublishedAccount(['CZ' + iban.slice(2)], '2047300106/2600')).toBe(true);
+    expect(isPublishedAccount(published, 'sk31 1200 0000 1987 4263 7541')).toBe(true);
+  });
+
+  it('is false for an account that is not published, null for something that is not an account', () => {
+    expect(isPublishedAccount(published, '123/0300')).toBe(false);
+    expect(isPublishedAccount([], '2047300106/2600')).toBe(false);
+    expect(isPublishedAccount(published, 'hello')).toBeNull();
   });
 });

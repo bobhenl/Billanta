@@ -1,4 +1,5 @@
 import { isVatStatus, type VatStatus } from './vat-status.js';
+import { nextWorkingDay } from './public-holidays.js';
 import { nextCzechWorkingDay } from './working-days.js';
 
 /**
@@ -158,8 +159,40 @@ export const isLegalEntityName = (legalName: string | null | undefined) => LEGAL
 
 const day = (y: number, m: number, d: number) => new Date(y, m, d);
 
+/**
+ * Slovak due days where they differ from the Czech ones; `[]` = no fixed day
+ * worth a calendar row. Sociálne poistenie SZČO do 8. dňa nasledujúceho
+ * mesiaca (§ 139 zákona č. 461/2003 Z. z.); zdravotné poistenie do 8. dňa
+ * like the Czech one (§ 24 zákona č. 580/2004 Z. z.); daňové priznanie FO
+ * a PO do 31. marca (§ 49 ods. 1 zákona č. 595/2003 Z. z.); daň
+ * z motorových vozidiel do 31. januára (zákon č. 361/2014 Z. z.). Payroll
+ * (preddavky do 5 dní po výplate) and property tax (paid on the municipality's
+ * decision) have no fixed day. VAT, kontrolný výkaz and súhrnný výkaz are due
+ * on the 25th like in Czechia (§ 78, § 78a, § 80 zákona č. 222/2004 Z. z.).
+ */
+function rawDatesSk(kind: TaxDeadlineKind, year: number): Date[] | null {
+  const months = Array.from({ length: 12 }, (_, m) => m);
+  switch (kind) {
+    case 'social':
+      return months.map((m) => day(year, m, 8));
+    case 'income_tax':
+      return [day(year, 2, 31)];
+    case 'payroll':
+    case 'property_tax':
+    case 'flat_tax':
+    case 'overviews':
+      return [];
+    default:
+      return null;
+  }
+}
+
 /** Statutory (unshifted) due days of one kind falling in `year`. */
-function rawDates(kind: TaxDeadlineKind, year: number): Date[] {
+function rawDates(kind: TaxDeadlineKind, year: number, country = 'CZ'): Date[] {
+  if (country.toUpperCase() === 'SK') {
+    const sk = rawDatesSk(kind, year);
+    if (sk) return sk;
+  }
   const months = Array.from({ length: 12 }, (_, m) => m);
   switch (kind) {
     // DPH přiznání + kontrolní hlášení (+ souhrnné hlášení) za předchozí měsíc.
@@ -262,4 +295,35 @@ export function upcomingTaxDeadlines(kinds: readonly TaxDeadlineKind[], today = 
     }
   }
   return out.sort((a, b) => a.daysLeft - b.daysLeft || TAX_DEADLINE_KINDS.indexOf(a.kind) - TAX_DEADLINE_KINDS.indexOf(b.kind));
+}
+
+/** One row of a whole-year calendar (`taxCalendarYear`). */
+export interface TaxCalendarEntry {
+  kind: TaxDeadlineKind;
+  /** The due day, moved to the next working day when needed. */
+  date: Date;
+  /** The day the law names, before the move. */
+  statutory: Date;
+}
+
+/**
+ * Every deadline of the chosen kinds falling in `year` (the public tax
+ * calendar and its iCal feed), computed by law for `country` (CZ or SK). A
+ * due day on a weekend or public holiday moves to the next working day there
+ * (CZ § 33 daňového řádu, SK § 27 daňového poriadku). Unlike the dashboard it
+ * does not use the official Czech calendar, so a Slovak and a Czech year come
+ * out of the same rules and need no network.
+ */
+export function taxCalendarYear(kinds: readonly TaxDeadlineKind[], year: number, country = 'CZ'): TaxCalendarEntry[] {
+  const out: TaxCalendarEntry[] = [];
+  for (const kind of kinds) {
+    // A row moved past New Year belongs to the next year; one from December of the year before can land here.
+    for (const y of [year - 1, year]) {
+      for (const statutory of rawDates(kind, y, country)) {
+        const date = nextWorkingDay(statutory, country);
+        if (date.getFullYear() === year) out.push({ kind, date, statutory });
+      }
+    }
+  }
+  return out.sort((a, b) => a.date.getTime() - b.date.getTime() || TAX_DEADLINE_KINDS.indexOf(a.kind) - TAX_DEADLINE_KINDS.indexOf(b.kind));
 }

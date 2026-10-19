@@ -7599,6 +7599,210 @@
             "Health insurance is 15 % (16 % from 2026) of profit divided by 1.486, at least the minimum base for every month. The difference to the advances paid is settled in the yearly reconciliation.",
             "Social insurance starts only in July of the next year, and only if income exceeds the legal threshold. The base is profit divided by 1.486 and by the months, between the minimum and the maximum base."
           ]
+        },
+        "taxCalendar": {
+          "name": "Tax calendar",
+          "title": "Tax calendar for sole traders and companies: VAT, insurance and tax return deadlines",
+          "description": "A year of tax deadlines by month: VAT, control statements, insurance advances and the tax return. For Czechia and Slovakia, moved to working days, with a subscription for your phone's calendar.",
+          "lead": "Pick the country, how you do business and your VAT status. You will see every deadline of the year by month and can add them to your own calendar.",
+          "keywords": "czech tax calendar 2026 2027 slovak tax deadlines vat return deadline control statement social health insurance self-employed income tax return deadline ics",
+          "how": [
+            "Deadlines follow the law of Czechia or Slovakia. When one falls on a weekend or public holiday, we move it to the next working day (§ 33 of the Czech Tax Code, § 27 of the Slovak Tax Procedure Act).",
+            "Each deadline shows which period it is filed or paid for.",
+            "The EC sales list and the identified person's return are only due for a month in which something happened, so they are marked \"only if\".",
+            "The calendar subscription needs no sign-up. The address holds only your choices, we store nothing about you, and it rolls into the new year by itself."
+          ],
+          "howTitle": "How it works",
+          "ctaTitle": "Let Billanta keep track of your deadlines",
+          "ctaText": "Billanta shows your next deadlines on the dashboard, picked for your VAT status and legal form, and syncs them to your phone's calendar. From your invoices and expenses it prepares the XML for the Czech VAT return and control statement.",
+          "disclaimer": "Deadlines are computed from the law and moved off weekends and public holidays to the next working day. The official Financial Administration calendar also lists other filings (OSS, CESOP, excise duties). This is a calendar; we don't track what you have already filed.",
+          "explainedTitle": "What each deadline means ({country})",
+          "fields": {
+            "country": "Country",
+            "year": "Year",
+            "entity": "I do business as",
+            "vat": "VAT",
+            "extras": "Other deadlines"
+          },
+          "countries": {
+            "CZ": "Czechia",
+            "SK": "Slovakia"
+          },
+          "entities": {
+            "CZ": {
+              "osvc": "Sole trader",
+              "flat": "Sole trader, flat-rate regime",
+              "company": "Company (s.r.o., a.s.)"
+            },
+            "SK": {
+              "osvc": "Sole trader (SZČO)",
+              "flat": "Flat-rate regime",
+              "company": "Company (s.r.o., a.s.)"
+            }
+          },
+          "vat": {
+            "none": "Not a VAT payer",
+            "monthly": "Monthly payer",
+            "quarterly": "Quarterly payer",
+            "identified": "Identified person"
+          },
+          "extras": {
+            "payroll": "I have employees",
+            "road_tax": "Road tax",
+            "property_tax": "Property tax"
+          },
+          "flatNotPossible": "The flat-rate regime can't be combined with VAT registration, so these are a regular sole trader's deadlines.",
+          "khMonthly": "A company files the control statement every month by the 25th, even when it files VAT quarterly (§ 101e of the VAT Act).",
+          "heading": "Tax calendar {year} – {country}",
+          "count": "{n, plural, =0 {No deadlines for this choice.} one {# deadline} other {# deadlines}}",
+          "noDeadlines": "No deadline",
+          "nextBadge": "Next deadline",
+          "movedShort": "moved from {date}",
+          "moved": "The statutory deadline is {date}, a weekend or public holiday, so it moves to the next working day.",
+          "onlyIf": {
+            "ec_sales_list": "Only if you invoiced goods or services to a business in another EU country in the previous month.",
+            "vat_identified": "Only if you bought a service from abroad (e.g. ads) in the previous month."
+          },
+          "period": {
+            "month": "for {month}",
+            "quarter": "for Q{quarter} {year}",
+            "year": "for {year}",
+            "yearAhead": "for {year}"
+          },
+          "kinds": {
+            "CZ": {
+              "vat_monthly": "VAT return and control statement",
+              "vat_quarterly": "VAT return and control statement (quarterly)",
+              "vat_other": "VAT: OSS, CESOP and other filings",
+              "vat_identified": "VAT return (identified person)",
+              "ec_sales_list": "EC sales list",
+              "health": "Health insurance advance",
+              "social": "Social security advance",
+              "income_tax": "Income tax return and payment",
+              "flat_tax": "Flat-rate tax",
+              "overviews": "Annual statements for social and health insurance",
+              "payroll": "Payroll tax for employees",
+              "road_tax": "Road tax",
+              "property_tax": "Property tax"
+            },
+            "SK": {
+              "vat_monthly": "VAT return and control statement",
+              "vat_quarterly": "VAT return and control statement (quarterly)",
+              "vat_other": "VAT: OSS and other filings",
+              "vat_identified": "VAT return (registered person)",
+              "ec_sales_list": "EC sales list",
+              "health": "Health insurance advance",
+              "social": "Social insurance for the self-employed",
+              "income_tax": "Income tax return and payment",
+              "flat_tax": "Flat-rate tax (Czechia only)",
+              "overviews": "Annual statements (Czechia only)",
+              "payroll": "Payroll tax for employees",
+              "road_tax": "Motor vehicle tax",
+              "property_tax": "Property tax"
+            }
+          },
+          "kindHints": {
+            "CZ": {
+              "vat_monthly": "A monthly VAT payer files the VAT return and the control statement (kontrolní hlášení) by the 25th day after the month ends and pays the tax by the same day (§ 101 and § 101e of the Czech VAT Act).",
+              "vat_quarterly": "A payer with last year's turnover up to CZK 10 million that is not an unreliable payer can file quarterly (§ 99a of the VAT Act). Return and payment by the 25th day after the quarter ends. Only individuals file the control statement quarterly; companies file it every month.",
+              "vat_other": "Filings under special schemes (OSS, CESOP) follow the official calendar of the Czech Financial Administration.",
+              "vat_identified": "An identified person files a return only for a month in which they had to self-assess VAT, typically after buying a service from abroad (ads, software), within 25 days after it ends (§ 101 of the VAT Act).",
+              "ec_sales_list": "The EC sales list is filed by anyone who supplied goods or services to a business in another EU country that month, within 25 days after the month ends (§ 102 of the VAT Act).",
+              "health": "A self-employed person's monthly health insurance advance is due by the 8th of the following month (§ 7 of Act No. 592/1992 Coll.).",
+              "social": "A self-employed person's monthly social security advance is due by the 20th of the following month (§ 14a of Act No. 589/1992 Coll.).",
+              "income_tax": "An electronic income tax return is filed and the tax paid by 1 May; since that is a public holiday, in practice the next working day. Paper returns by 1 April, with a tax advisor by 1 July (§ 136 of the Tax Code). Applies to sole traders and companies.",
+              "flat_tax": "In the flat-rate regime (paušální režim) a single monthly payment replaces insurance advances and the tax return, due by the 20th of the month it covers (§ 2a and § 38lc of the Income Tax Act).",
+              "overviews": "Self-employed people file annual statements (přehledy) with the Czech Social Security Administration and their health insurer within a month after the tax return deadline, so in early June with an electronic return.",
+              "payroll": "An employer pays withheld income tax for the previous month by the 20th (§ 38h of the Income Tax Act). Employee insurance contributions are due on the same day.",
+              "road_tax": "Road tax for the previous year is filed and paid by 31 January (Act No. 16/1993 Coll.).",
+              "property_tax": "Property tax is due by 31 May; above CZK 5,000 it can be paid in two instalments (by 31 May and 30 November). A return is filed by 31 January only when something changed (Act No. 338/1992 Coll.)."
+            },
+            "SK": {
+              "vat_monthly": "A monthly VAT payer files the VAT return and the control statement (kontrolný výkaz) within 25 days after the month ends and pays the tax by the same day (§ 78 and § 78a of Act No. 222/2004 Coll.).",
+              "vat_quarterly": "A payer with lower turnover can have a quarterly tax period (§ 77 of the VAT Act). Return and control statement within 25 days after the quarter ends.",
+              "vat_other": "Filings under special schemes (OSS) follow the calendar of the Slovak Financial Administration.",
+              "vat_identified": "A person registered under § 7 or § 7a files a return only for a month in which they owed VAT, for example after buying a service from abroad, within 25 days after it ends.",
+              "ec_sales_list": "The EC sales list (súhrnný výkaz) is filed by anyone who supplied goods or services to a business in another EU country that month, within 25 days after the month ends (§ 80 of the VAT Act).",
+              "health": "A self-employed person's health insurance advance is due by the 8th of the following month (§ 24 of Act No. 580/2004 Coll.).",
+              "social": "A compulsorily insured self-employed person pays social insurance by the 8th of the month after the month it covers (§ 139 of Act No. 461/2003 Coll.).",
+              "income_tax": "The income tax return of individuals and companies is filed and the tax paid by 31 March. A notice extends it by 3 months, or by 6 months with foreign income (§ 49 of Act No. 595/2003 Coll.).",
+              "flat_tax": "The flat-rate regime is Czech; Slovakia has nothing like it.",
+              "overviews": "The annual statements are Czech; in Slovakia the Social Insurance Agency and health insurers work from the tax return.",
+              "payroll": "An employer pays withheld tax within 5 days after paying wages, so there is no fixed day in the month.",
+              "road_tax": "The motor vehicle tax return for the previous year is filed and the tax paid by 31 January (Act No. 361/2014 Coll.).",
+              "property_tax": "In Slovakia property tax is paid according to the municipality's decision, so there is no single fixed date."
+            }
+          },
+          "subscribe": {
+            "title": "Add to calendar",
+            "text": "Subscribe to the deadlines in your calendar (iPhone, Android, Outlook, Google). No sign-up, with your choices; it rolls into the new year by itself.",
+            "webcal": "Subscribe in calendar",
+            "google": "Google Calendar",
+            "download": "Download .ics",
+            "urlLabel": "Calendar address to add by hand"
+          },
+          "ics": {
+            "name": "Tax calendar – {country}",
+            "footer": "Indicative deadlines from the law, moved to working days. We don't track what you have already filed.",
+            "category": "Taxes"
+          }
+        },
+        "vatReliability": {
+          "name": "Unreliable VAT payer check",
+          "title": "Unreliable VAT payer check: Czech VAT ID and published bank account",
+          "description": "Check for free whether a Czech supplier is an unreliable VAT payer and whether its bank account is published in the register of VAT payers. By VAT ID or company ID, straight from the Czech Financial Administration's register.",
+          "lead": "Enter the supplier's Czech VAT ID (DIČ) or company ID (IČO) and, optionally, the account you are asked to pay. We check it in the Czech register of VAT payers.",
+          "keywords": "unreliable vat payer czech check dic vat payer register czech published bank account vat liability supplier check",
+          "how": [
+            "We ask the Czech Financial Administration's register of VAT payers directly. The result is valid at the moment of the check.",
+            "If you pay an unreliable payer, you are liable for the VAT it doesn't pay. You avoid that by paying the VAT straight to its tax office (§ 109a of the Czech VAT Act).",
+            "You are also liable when you pay more than CZK 540,000 (twice the cash payment limit) for a supply to an account the payer has not published (§ 109(2)(c) of the VAT Act).",
+            "We compare the account you enter with the published ones, whether you type it as a number with a bank code or as an IBAN. We don't show the list of published accounts, only how many there are."
+          ],
+          "howTitle": "How it works",
+          "ctaTitle": "Billanta checks VAT payers for you",
+          "ctaText": "When you load a customer or supplier in Billanta by company or VAT ID, it checks their status in the register of VAT payers and warns you about an unreliable payer. No manual checks needed.",
+          "fields": {
+            "id": "VAT ID or company ID",
+            "idHint": "Czech VAT ID (CZ12345678) or company ID (IČO).",
+            "account": "Bank account (optional)",
+            "accountHint": "The account you are asked to pay, as 123456789/0800 or an IBAN.",
+            "check": "Check",
+            "checking": "Checking the register…"
+          },
+          "result": {
+            "state": {
+              "payer": "Reliable VAT payer",
+              "unreliable": "Unreliable VAT payer",
+              "not_registered": "Not a VAT payer",
+              "valid": "Valid VAT ID",
+              "invalid": "Invalid VAT ID",
+              "unknown": "Could not check"
+            },
+            "stateNote": {
+              "payer": "The Financial Administration does not list this company as an unreliable payer.",
+              "unreliable": "If you pay it for a supply with VAT, you are liable for the VAT it doesn't pay (§ 109 of the VAT Act). You can pay the VAT straight to its tax office instead (§ 109a).",
+              "not_registered": "This VAT ID is not in the register of VAT payers. The company should not charge you VAT.",
+              "valid": "The VAT ID is valid.",
+              "invalid": "The VAT ID is not in the register or no longer active.",
+              "unknown": "The register did not answer just now."
+            },
+            "name": "Name",
+            "vatId": "VAT ID",
+            "published": "Published accounts",
+            "publishedCount": "{n, plural, =0 {none} one {# account} other {# accounts}}",
+            "accountYes": "Account {account} is among the published accounts.",
+            "accountNo": "Account {account} is not among the published accounts.",
+            "accountNoNote": "If you pay more than CZK 540,000 for a supply to an account the payer has not published, you are liable for the VAT on that payment (§ 109(2)(c) of the VAT Act).",
+            "accountInvalid": "\"{account}\" doesn't look like an account number or an IBAN.",
+            "source": "Source: Register of VAT payers, Czech Financial Administration. The result is valid at the moment of the check.",
+            "empty": "Enter a VAT ID or company ID and the result shows up here."
+          },
+          "errors": {
+            "invalid": "Enter a Czech VAT ID (CZ and 8 to 10 digits) or a company ID.",
+            "busy": "Too many checks in a short time. Try again in a moment.",
+            "unavailable": "The register of VAT payers is not answering right now. Try again in a moment or check the company on the Financial Administration's website."
+          }
         }
       }
     },
