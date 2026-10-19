@@ -502,13 +502,6 @@
     {
       "idx": 71,
       "version": "7",
-      "when": 1792902400000,
-      "tag": "0071_einvoicing",
-      "breakpoints": true
-    },
-    {
-      "idx": 71,
-      "version": "7",
       "when": 1792902360000,
       "tag": "0071_promo_codes",
       "breakpoints": true
@@ -525,6 +518,13 @@
       "version": "7",
       "when": 1792902480000,
       "tag": "0073_invoice_source_ai_voice",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1792902540000,
+      "tag": "0074_einvoicing",
       "breakpoints": true
     }
   ]

@@ -1592,7 +1592,7 @@ ALTER TABLE email_suppressions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_suppressions FORCE ROW LEVEL SECURITY;
 
 -- ---------------------------------------------------------------------------
--- E-invoicing over Peppol (migration 0071): standard tenant isolation on all
+-- E-invoicing over Peppol (migration 0074): standard tenant isolation on all
 -- four tables. Provider webhooks resolve the tenant through
 -- einvoice_tenant_for_participant / einvoice_tenant_for_message (defined in
 -- that migration) and then write in an RLS-scoped transaction.

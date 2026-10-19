@@ -1769,7 +1769,7 @@ export const idempotencyKeys = pgTable(
   }),
 );
 
-// E-invoicing over Peppol (migration 0071, docs/sk-einvoicing-2027.md). A
+// E-invoicing over Peppol (migration 0074, docs/sk-einvoicing-2027.md). A
 // certified provider is the access point; these tables record what went
 // through it. Tenant-scoped with the standard policy. Never deleted by the
 // app (10-year archive, § 85o ods. 15 ZoDPH).
