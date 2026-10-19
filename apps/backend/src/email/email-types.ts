@@ -7,10 +7,12 @@ import { NOTIFICATION_EVENTS, type NotificationEvent, type NotificationPrefs, ty
  *     (security alerts, invitations, the company's own mail to customers);
  *   - notification: activity e-mails a member can turn off; batched per
  *     member and held over quiet hours;
- *   - digest: the opt-in weekly summary; held over quiet hours.
+ *   - digest: the opt-in weekly summary; held over quiet hours;
+ *   - newsletter: issues to double opt-in subscribers (src/newsletter/),
+ *     queued only by enqueue_newsletter_email and claimed after all other mail.
  * Locked rows are shown on the settings page but cannot be switched off.
  */
-export type EmailCategory = "transactional" | "notification" | "digest";
+export type EmailCategory = "transactional" | "notification" | "digest" | "newsletter";
 export type EmailTypeGroup = "activity" | "digest" | "account" | "customers";
 
 export interface EmailTypeInfo {

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 import { CzOnlyNotice, HowList, InvoiceCta, RelatedTools, SignupCta, ToolDisclaimer, ToolHeader, ToolNote } from '@/components/public-tools/parts';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { getCalculator, isPublishedIn } from '@/lib/public-tools';
@@ -82,6 +83,9 @@ export async function CalculatorPage({
       )}
       <div className="mt-12">
         {cta === 'invoice' ? <InvoiceCta /> : <SignupCta />}
+      </div>
+      <div className="mt-12 max-w-3xl">
+        <NewsletterSignup source="calculators" />
       </div>
       <div className="mt-12">
         <RelatedTools current={slug} />

@@ -7,7 +7,8 @@ import { Banner } from '@/components/banner';
 import { buttonClass } from '@/components/modal';
 import { Link } from '@/i18n/navigation';
 
-export function UnsubscribeButton({ token, already }: { token: string; already: boolean }) {
+/** `manage`: link to the e-mail settings afterwards (not for the newsletter, which needs no account). */
+export function UnsubscribeButton({ token, already, manage = true }: { token: string; already: boolean; manage?: boolean }) {
   const t = useTranslations('unsubscribe');
   const [state, setState] = useState<'idle' | 'busy' | 'done' | 'failed'>(already ? 'done' : 'idle');
 
@@ -29,9 +30,11 @@ export function UnsubscribeButton({ token, already }: { token: string; already: 
           <CheckCircle2 className="h-4 w-4 text-success" />
           {already ? t('already') : t('done')}
         </p>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {t.rich('manage', { link: (chunks) => <Link href="/settings/email-notifications" className="text-primary hover:underline">{chunks}</Link> })}
-        </p>
+        {manage && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            {t.rich('manage', { link: (chunks) => <Link href="/settings/email-notifications" className="text-primary hover:underline">{chunks}</Link> })}
+          </p>
+        )}
       </div>
     );
   }

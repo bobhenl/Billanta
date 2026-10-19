@@ -8115,7 +8115,8 @@
       "quote_response": "emails about replies to quotes",
       "buyer_details": "emails about details filled in by customers",
       "weekly_digest": "the weekly digest",
-      "all": "all optional email notifications"
+      "all": "all optional email notifications",
+      "newsletter": "Billanta updates on tax and invoicing changes"
     },
     "errors": {
       "invalid": "This link is invalid or incomplete. Try copying the whole link from the email.",
@@ -9642,6 +9643,114 @@
       "label": "Code",
       "placeholder": "e.g. KAVARNA-BRNO",
       "submit": "Continue"
+    }
+  },
+  "newsletter": {
+    "signup": {
+      "title": "Updates on tax and invoicing changes",
+      "body": "A short e-mail now and then when rates, limits, deadlines or Slovak e-invoicing change. No spam.",
+      "email": "E-mail",
+      "emailPlaceholder": "you@example.com",
+      "country": "Country",
+      "countries": {
+        "CZ": "Czechia",
+        "SK": "Slovakia"
+      },
+      "topicsLabel": "What interests you",
+      "topics": {
+        "tax_rates": "Tax and VAT rates",
+        "limits": "Limits (VAT, flat tax, cash)",
+        "deadlines": "Tax deadlines",
+        "sk_einvoicing": "Slovak e-invoicing 2027"
+      },
+      "consent": "I agree to receive Billanta e-mail updates about changes to taxes, limits, deadlines and e-invoicing at this address. I can withdraw this consent at any time with the link in every e-mail.",
+      "privacy": "Processing is described in the <link>Privacy Policy</link>. The subscription starts only after you confirm it from the e-mail.",
+      "submit": "Subscribe",
+      "sentTitle": "Check your e-mail",
+      "sentBody": "We sent you a link to confirm the subscription. Nothing is sent until you confirm.",
+      "errors": {
+        "invalid_email": "Enter a valid e-mail.",
+        "no_topics": "Choose at least one topic.",
+        "consent_required": "Consent is needed to subscribe.",
+        "rate_limited": "Too many attempts. Please try again later.",
+        "failed": "Subscribing failed. Please try again."
+      }
+    },
+    "confirm": {
+      "metaTitle": "Confirm your subscription",
+      "title": "Confirm your subscription",
+      "intro": "Confirm that {email} should get Billanta updates on:",
+      "button": "Confirm subscription",
+      "doneTitle": "Subscription confirmed",
+      "doneBody": "Thanks! We will write when something changes. You can unsubscribe with one click in every e-mail.",
+      "backHome": "Back to Billanta",
+      "errors": {
+        "invalid_confirm_link": "The link is invalid or was already used to unsubscribe. Please subscribe again.",
+        "confirm_link_expired": "The link has expired. Subscribe again and we will send a new one.",
+        "rate_limited": "Too many attempts. Please try again later.",
+        "unavailable": "Confirmation failed. Please try again in a moment."
+      }
+    },
+    "settings": {
+      "title": "Billanta updates",
+      "hint": "A short e-mail when rates, limits, tax deadlines or Slovak e-invoicing change. It is a commercial communication, so it is sent only with your consent.",
+      "toggle": "Send me updates about changes",
+      "consent": "I agree to receive Billanta e-mail updates about changes to taxes, limits, deadlines and e-invoicing at my account e-mail (turned on in Settings). I can withdraw this consent at any time.",
+      "pending": "We sent you a confirmation e-mail. The subscription starts once you click the link in it.",
+      "country": "Country",
+      "topics": "Topics",
+      "saved": "Saved",
+      "errors": {
+        "consent_required": "Consent is needed to subscribe.",
+        "user_not_found": "Account not found.",
+        "failed": "Saving failed."
+      }
+    }
+  },
+  "adminNewsletter": {
+    "title": "Newsletter",
+    "description": "Updates for subscribers with confirmed consent. An issue goes out in batches through the e-mail queue, always with an unsubscribe link.",
+    "loadError": "Could not load the newsletter.",
+    "stats": "Subscribers",
+    "statuses": {
+      "pending": "Awaiting confirmation",
+      "confirmed": "Confirmed",
+      "unsubscribed": "Unsubscribed"
+    },
+    "topicCounts": "By topic (confirmed)",
+    "newIssue": "New issue",
+    "draftFromBlog": "Draft from blog and deadlines",
+    "locale": "Language",
+    "country": "Country",
+    "allCountries": "Czechia and Slovakia",
+    "topics": "Topics (who gets it)",
+    "subject": "Subject",
+    "body": "Body (markdown: ## heading, - bullets, **bold**, [link](https://…))",
+    "save": "Save draft",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this draft?",
+    "preview": "Preview",
+    "send": "Send",
+    "sendConfirm": "Send this issue to {count} subscribers? This cannot be undone.",
+    "audience": "Recipients: {count}",
+    "queued": "Queued: {count}",
+    "issues": "Issues",
+    "noIssues": "No issues yet.",
+    "issueStatuses": {
+      "draft": "Draft",
+      "sending": "Sending",
+      "sent": "Sent"
+    },
+    "edit": "Edit",
+    "close": "Close",
+    "saved": "Saved",
+    "sendStarted": "Sending started",
+    "errors": {
+      "issue_not_editable": "A sent issue cannot be edited.",
+      "issue_already_sent": "The issue was already sent.",
+      "issue_not_found": "Issue not found.",
+      "unsubscribe_unavailable": "The signing key for unsubscribe links is missing.",
+      "failed": "The action failed."
     }
   }
 }

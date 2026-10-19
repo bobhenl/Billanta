@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 import { CzOnlyNotice, GuideSources, RelatedTools, SignupCta, ToolHeader } from '@/components/public-tools/parts';
 import { ToolTabs } from '@/components/public-tools/tool-tabs';
 import { checkedDate } from '@/lib/legislation-checked';
@@ -59,6 +60,9 @@ export async function GuidePage({ slug, locale, children }: { slug: string; loca
       </div>
       <div className="mt-12">
         <SignupCta />
+      </div>
+      <div className="mt-12 max-w-3xl">
+        <NewsletterSignup source="guides" />
       </div>
       <div className="mt-12">
         <RelatedTools current={slug} />

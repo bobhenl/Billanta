@@ -5,11 +5,15 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { BlogMarkdown } from '@/components/blog-markdown';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 import { fetchBlogPost, formatBlogDate, type BlogPost } from '@/lib/blog';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
 type Params = { locale: string; slug: string };
+
+/** translation_key of the article on Slovak e-invoicing from 2027 (same in every language). */
+const SK_EINVOICING_KEY = 'slovakia-e-invoicing-2027';
 
 /** hreflang from the post's own published translations, which may use other slugs. */
 function alternates(locale: string, post: BlogPost): NonNullable<Metadata['alternates']> {
@@ -104,6 +108,13 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </div>
+
+      {/* The SK e-invoicing article signs people up for exactly that topic. */}
+      {post.translationKey === SK_EINVOICING_KEY ? (
+        <NewsletterSignup source="sk_einvoicing" country="SK" topics={['sk_einvoicing', 'deadlines']} className="mt-10" />
+      ) : (
+        <NewsletterSignup source="blog" className="mt-10" />
+      )}
     </article>
   );
 }

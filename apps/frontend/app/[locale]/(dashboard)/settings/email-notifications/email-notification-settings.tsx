@@ -149,7 +149,7 @@ export function EmailNotificationSettings({ prefs: initial }: { prefs: EmailPref
   );
 }
 
-function Toggle({ on, onChange, label }: { on: boolean; onChange: () => void; label: string }) {
+export function Toggle({ on, onChange, label }: { on: boolean; onChange: () => void; label: string }) {
   return (
     <button
       type="button"
