@@ -163,6 +163,14 @@ export interface MyAccess {
 // The dashboard layout and most pages both ask for it; one call per request.
 export const fetchMyAccess = cache(async (): Promise<MyAccess> => apiFetch<MyAccess>('/api/v1/tenants/me/access'));
 
+export { canWrite } from './access';
+import { canWrite } from './access';
+
+/** Server components: whether the member may change things in `area` (see `canWrite`; a failed access fetch allows). */
+export async function fetchCanWrite(area: PermissionArea | null): Promise<boolean> {
+  return canWrite(await fetchMyAccess().catch(() => null), area);
+}
+
 /** Dashboard sections to leave out of the navigation for this member/company. */
 export function hiddenSections(access: MyAccess | null): string[] {
   if (!access) return [];

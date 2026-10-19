@@ -2,6 +2,7 @@ import { fetchHomeCurrency } from '@/lib/tenant';
 import { apiFetch } from '@/lib/api-client';
 import type { Expense } from '@/lib/expense-ui';
 import { ExpenseForm, type SupplierOption } from '../expense-form';
+import { writeGate } from '@/components/write-gate';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -11,6 +12,8 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  */
 export default async function NewExpensePage(props: { searchParams: Promise<{ from?: string; scan?: string; description?: string; amount?: string }> }) {
   const searchParams = await props.searchParams;
+  const gate = await writeGate('expenses', '/expenses');
+  if (gate) return gate;
   const [suppliers, source] = await Promise.all([
     apiFetch<SupplierOption[]>('/api/v1/contacts').catch(() => []),
     searchParams.from && UUID.test(searchParams.from)

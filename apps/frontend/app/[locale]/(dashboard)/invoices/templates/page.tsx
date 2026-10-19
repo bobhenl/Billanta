@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { apiFetch } from '@/lib/api-client';
 import { TEMPLATE_PRESETS } from './presets';
 import { TemplateGallery, type SavedTemplateRow } from './template-gallery';
+import { writeGate } from '@/components/write-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('templates');
@@ -18,6 +19,9 @@ export async function generateMetadata(): Promise<Metadata> {
  * offers bulk invoicing, rename and delete.
  */
 export default async function TemplatesPage() {
+  // Every card and menu item here makes or changes something.
+  const gate = await writeGate('invoices', '/invoices');
+  if (gate) return gate;
   const t = await getTranslations('templates');
   const tInv = await getTranslations('invoices');
   let loadError = false;

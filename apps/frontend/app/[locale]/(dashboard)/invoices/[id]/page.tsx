@@ -8,7 +8,7 @@ import { Banner } from '@/components/banner';
 import { fetchAuditLog, type AuditPage } from '@/lib/audit';
 import { NetEstimate } from '@/components/net-estimate';
 import { displayCustomField, documentVars } from '@/lib/custom-fields';
-import { fetchTenant, type BuyerDetailsField } from '@/lib/tenant';
+import { fetchCanWrite, fetchTenant, type BuyerDetailsField } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
   buyerDetailsState,
@@ -91,6 +91,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   }
 
   const { invoice, contact, items, totals, parent, children } = detail;
+  // Asking the customer for their details changes the draft, so a read-only member doesn't get the box.
+  const canEdit = await fetchCanWrite('invoices');
   // The buyer as printed on the document (issue-date snapshot); older backends send only `contact`.
   const buyer = detail.buyer ?? contact;
   // Mandatory-content check (CZ/SK law; Peppol for an issued invoice to a foreign buyer).
@@ -217,7 +219,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
             slug={invoice.publicSlug ?? null}
           />
         )}
-        {(invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
+        {canEdit && (invoice.status === 'draft' || invoice.status === 'pending_review') && invoice.documentType !== 'credit_note' && (
           <BuyerDetailsRequest
             id={invoice.id}
             token={invoice.buyerDetailsToken ? (detail.links?.buyerDetails ?? invoice.buyerDetailsToken) : null}
@@ -257,7 +259,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               </li>
             ))}
           </ul>
-          {customerMissing && (
+          {canEdit && customerMissing && (
             <BuyerDetailsRequest
               variant="inline"
               id={invoice.id}

@@ -2,7 +2,12 @@
   "app": {
     "name": "Billanta",
     "tagline": "Fakturačný a účtovný SaaS pre českých a slovenských podnikateľov",
-    "readOnlyRole": "Máte rolu Len čítanie – doklady môžete prezerať, ale nie meniť."
+    "readOnlyRole": "Máte rolu Len čítanie – doklady môžete prezerať, ale nie meniť.",
+    "readOnly": {
+      "title": "Tu môžete iba prezerať",
+      "body": "Vaše prístupové práva v tejto firme nedovoľujú doklady vytvárať ani meniť. Ak to potrebujete, požiadajte vlastníka alebo administrátora firmy.",
+      "back": "Späť"
+    }
   },
   "nav": {
     "dashboard": "Prehľad",

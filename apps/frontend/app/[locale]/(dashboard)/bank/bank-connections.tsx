@@ -5,6 +5,7 @@ import { Building2, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wal
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import {
@@ -65,6 +66,8 @@ export function BankConnections({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Read-only still sees which accounts are connected and when they last synced.
+  const canEdit = useCanWrite('bank');
   const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal'>(null);
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
@@ -194,7 +197,7 @@ export function BankConnections({
             {t('title')}
           </h2>
         </InfoHint>
-        {mode === null && (
+        {canEdit && mode === null && (
           <button type="button" onClick={() => setMode('choose')} className={cn(primaryButton, 'px-3.5')}>
             <Plus className="h-3.5 w-3.5" />
             {t('connectBank')}
@@ -271,6 +274,7 @@ export function BankConnections({
                     )}
                   </div>
                 </div>
+                {canEdit && (
                 <div className="flex items-center gap-1.5">
                   {(expired || expiringSoon) && (
                     <button type="button" disabled={pending || !c.bankName} onClick={() => renew(c)} className={primaryButton}>
@@ -305,6 +309,7 @@ export function BankConnections({
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
+                )}
               </li>
             );
           })}

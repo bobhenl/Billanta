@@ -2,7 +2,12 @@
   "app": {
     "name": "Billanta",
     "tagline": "Invoicing and accounting SaaS for Czech and Slovak businesses",
-    "readOnlyRole": "Your role is Read-only – you can view documents but not change them."
+    "readOnlyRole": "Your role is Read-only – you can view documents but not change them.",
+    "readOnly": {
+      "title": "You can only view this",
+      "body": "Your access in this company doesn't let you create or change documents. Ask the owner or an admin if you need to.",
+      "back": "Back"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",

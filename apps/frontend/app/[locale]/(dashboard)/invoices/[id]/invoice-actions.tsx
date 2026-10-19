@@ -23,6 +23,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
 import {
   cancelInvoice,
@@ -43,6 +44,8 @@ type Dialog = null | 'issue' | 'paid' | 'cancel' | 'delete' | 'template' | 'send
 /**
  * Everything one can do with a document, shown according to its state —
  * the toolbar of the invoice detail (after Fakturoid's/iDoklad's detail).
+ * A read-only member keeps only what doesn't change the document: the files
+ * and the customer's view.
  */
 export function InvoiceActions({
   id,
@@ -102,9 +105,10 @@ export function InvoiceActions({
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
   const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
-  const isDraft = status === 'draft' || status === 'pending_review';
-  const canPay = status === 'issued' && documentType !== 'quote';
-  const conversions = status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
+  const canEdit = useCanWrite('invoices');
+  const isDraft = canEdit && (status === 'draft' || status === 'pending_review');
+  const canPay = canEdit && status === 'issued' && documentType !== 'quote';
+  const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
     startTransition(async () => {
@@ -136,7 +140,7 @@ export function InvoiceActions({
         )}
         {/* An issued document is final by law, but people still look for
             "edit" on it: the button explains that and offers the right fix. */}
-        {!isDraft && numbered && status !== 'cancelled' && (
+        {canEdit && !isDraft && numbered && status !== 'cancelled' && (
           <button type="button" className={buttonClass.secondary} onClick={() => setDialog('edit')}>
             <Pencil className="h-4 w-4" />
             {t('actions.edit')}
@@ -148,7 +152,7 @@ export function InvoiceActions({
             {t('actions.markPaid')}
           </button>
         )}
-        {status === 'paid' && (
+        {canEdit && status === 'paid' && (
           <button
             type="button"
             className={buttonClass.secondary}
@@ -177,7 +181,7 @@ export function InvoiceActions({
             )}
           </>
         )}
-        {numbered && status !== 'cancelled' && (
+        {canEdit && numbered && status !== 'cancelled' && (
           <button type="button" className={buttonClass.secondary} disabled={pending || !hasEmail} title={hasEmail ? undefined : t('noEmail')} onClick={() => setDialog('send')}>
             <Send className="h-4 w-4" />
             {t('actions.send')}
@@ -201,34 +205,38 @@ export function InvoiceActions({
             {t(`actions.convertTo.${to}`)}
           </button>
         ))}
-        <Link href={`/invoices/new?from=${id}`} className={buttonClass.ghost}>
-          <Copy className="h-4 w-4" />
-          {t('actions.duplicate')}
-        </Link>
+        {canEdit && (
+          <Link href={`/invoices/new?from=${id}`} className={buttonClass.ghost}>
+            <Copy className="h-4 w-4" />
+            {t('actions.duplicate')}
+          </Link>
+        )}
         {/* Same copy, but the due date follows the default term ("Podle faktury" in the new-invoice form). */}
-        {documentType !== 'credit_note' && (
+        {canEdit && documentType !== 'credit_note' && (
           <Link href={`/invoices/new?from=${id}&similar=1`} className={buttonClass.ghost}>
             <FilePlus2 className="h-4 w-4" />
             {t('actions.issueSimilar')}
           </Link>
         )}
-        <button type="button" className={buttonClass.ghost} onClick={() => setDialog('template')}>
-          <BookmarkPlus className="h-4 w-4" />
-          {t('actions.saveTemplate')}
-        </button>
+        {canEdit && (
+          <button type="button" className={buttonClass.ghost} onClick={() => setDialog('template')}>
+            <BookmarkPlus className="h-4 w-4" />
+            {t('actions.saveTemplate')}
+          </button>
+        )}
         {numbered && (
           <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={buttonClass.ghost}>
             <ExternalLink className="h-4 w-4" />
             {t('actions.publicLink')}
           </a>
         )}
-        {numbered && (
+        {canEdit && numbered && (
           <button type="button" className={buttonClass.ghost} onClick={() => setDialog('rotate')}>
             <RotateCcw className="h-4 w-4" />
             {t('actions.rotateLink')}
           </button>
         )}
-        {status === 'issued' && (
+        {canEdit && status === 'issued' && (
           <button type="button" className={buttonClass.ghost} onClick={() => setDialog('cancel')}>
             <Ban className="h-4 w-4" />
             {t('actions.cancel')}
@@ -242,7 +250,7 @@ export function InvoiceActions({
         )}
       </div>
 
-      {editedAfterSend && (
+      {canEdit && editedAfterSend && (
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm dark:border-amber-500/30 dark:bg-amber-500/10">
           <div className="min-w-0">
             <p className="font-semibold">{t('correction.title')}</p>

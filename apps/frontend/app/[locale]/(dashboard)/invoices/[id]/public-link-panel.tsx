@@ -5,12 +5,15 @@ import { Copy, Link2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { LinkNameField } from '@/components/link-name-field';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { copyText } from '@/lib/clipboard';
 import { setInvoiceLinkName } from '../actions';
 
 /** The client link of an issued document: copy it, and give it a readable name of its own. */
 export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; link: string; defaultLink: string; slug: string | null }) {
   const t = useTranslations('linkName');
+  // Copying the link is for everyone; renaming it changes the document.
+  const canEdit = useCanWrite('invoices');
   // Same form as the {link} in e-mails (no locale: the page picks it up).
   const [base, setBase] = useState('/i/');
   useEffect(() => setBase(`${window.location.origin}/i/`), []);
@@ -48,7 +51,7 @@ export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; l
           {t('copy')}
         </button>
       </div>
-      <LinkNameField className="mt-3" base={base} link={link} defaultLink={defaultLink} slug={slug} onSave={(s) => setInvoiceLinkName(id, s)} />
+      {canEdit && <LinkNameField className="mt-3" base={base} link={link} defaultLink={defaultLink} slug={slug} onSave={(s) => setInvoiceLinkName(id, s)} />}
     </section>
   );
 }

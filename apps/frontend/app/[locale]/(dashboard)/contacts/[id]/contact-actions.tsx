@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { buttonClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { cn } from '@/lib/utils';
 import type { Contact } from '../../invoices/new/types';
 import { deleteContact, lookupAres, setContactStarred, updateContact } from '../actions';
@@ -18,6 +19,8 @@ export function ContactActions({ contact }: { contact: Contact }) {
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pending, startTransition] = useTransition();
+  const canEdit = useCanWrite('contacts');
+  const canInvoice = useCanWrite('invoices');
 
   const pill = 'inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary disabled:opacity-50';
 
@@ -54,8 +57,11 @@ export function ContactActions({ contact }: { contact: Contact }) {
       router.push('/contacts');
     });
 
+  if (!canEdit && !canInvoice) return null;
+
   return (
     <div className="flex flex-wrap gap-2">
+      {canInvoice && (
       <Link
         href={`/invoices/new?contact=${contact.id}`}
         className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90"
@@ -63,6 +69,9 @@ export function ContactActions({ contact }: { contact: Contact }) {
         <FilePlus2 className="h-4 w-4" />
         {t('newInvoice')}
       </Link>
+      )}
+      {canEdit && (
+      <>
       <button type="button" className={pill} onClick={star} disabled={pending}>
         <Star className={cn('h-4 w-4', contact.isStarred && 'fill-warning text-warning')} />
         {contact.isStarred ? t('unstar') : t('star')}
@@ -81,8 +90,10 @@ export function ContactActions({ contact }: { contact: Contact }) {
         <Trash2 className="h-4 w-4" />
         {t('delete')}
       </button>
+      </>
+      )}
 
-      {editing && (
+      {canEdit && editing && (
         <ContactEditor
           open
           contact={contact}

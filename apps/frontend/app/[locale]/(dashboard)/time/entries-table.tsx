@@ -8,6 +8,7 @@ import { ColorDot } from '@/components/color-dot';
 import { InfoHint } from '@/components/info-hint';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { ENTRY_STATE_CLASSES, entryState, formatMinutes, type Project, type TimeEntry } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
@@ -59,6 +60,8 @@ export function EntriesTable({
   const [contactId, setContactId] = useState('');
   const [editing, setEditing] = useState<TimeEntry | null>(null);
   const [pending, startTransition] = useTransition();
+  // Selection only feeds "invoice these", so read-only gets no checkboxes or row actions.
+  const canEdit = useCanWrite('invoices');
   const { sort, cycle, sorted } = useListSort('billanta:time:sort', SORTABLE, rows, sortValue, ['duration', 'amount']);
 
   const sums = useMemo(() => {
@@ -132,7 +135,7 @@ export function EntriesTable({
   };
 
   const rowActions = (e: TimeEntry) =>
-    !e.invoiceId && (
+    canEdit && !e.invoiceId && (
       <div className="flex justify-end gap-0.5">
         <button type="button" onClick={() => setEditing(e)} className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary" aria-label={t('editEntry')}>
           <Pencil className="h-3.5 w-3.5" />
@@ -147,7 +150,7 @@ export function EntriesTable({
 
   return (
     <div className="mt-5">
-      {selected.size > 0 && (
+      {canEdit && selected.size > 0 && (
         <div className="sticky top-2 z-10 mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-card px-3 py-2 text-sm shadow-sm">
           <span className="font-semibold">
             {t('selected', { count: selected.size })} · {formatMinutes(pickedMinutes)} h
@@ -202,18 +205,20 @@ export function EntriesTable({
       {/* Phones: cards. */}
       <ul className="space-y-2 sm:hidden">
         {sorted.map((e) => {
-          const canPick = entryState(e) === 'unbilled';
+          const canPick = canEdit && entryState(e) === 'unbilled';
           return (
             <li key={e.id} className={cn('rounded-xl border border-border bg-card p-3', selected.has(e.id) && 'border-primary/50 bg-primary/5')}>
               <div className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  className="mt-1 h-4 w-4 accent-primary disabled:opacity-30"
-                  disabled={!canPick}
-                  checked={selected.has(e.id)}
-                  onChange={() => toggle(e.id)}
-                  aria-label={t('select')}
-                />
+                {canEdit && (
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 accent-primary disabled:opacity-30"
+                    disabled={!canPick}
+                    checked={selected.has(e.id)}
+                    onChange={() => toggle(e.id)}
+                    aria-label={t('select')}
+                  />
+                )}
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-semibold">{e.description || t('noDescription')}</div>
                   <div className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-muted-foreground">
@@ -240,16 +245,18 @@ export function EntriesTable({
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="w-10 px-3 py-2.5">
-                <input
-                  type="checkbox"
-                  aria-label={t('selectAll')}
-                  className="h-4 w-4 accent-primary"
-                  disabled={selectable.length === 0}
-                  checked={allSelected}
-                  onChange={() => setSelected(allSelected ? new Set() : new Set(selectable.map((r) => r.id)))}
-                />
-              </th>
+              {canEdit && (
+                <th className="w-10 px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    aria-label={t('selectAll')}
+                    className="h-4 w-4 accent-primary"
+                    disabled={selectable.length === 0}
+                    checked={allSelected}
+                    onChange={() => setSelected(allSelected ? new Set() : new Set(selectable.map((r) => r.id)))}
+                  />
+                </th>
+              )}
               {SORTABLE.map((key) => (
                 <SortHeader
                   key={key}
@@ -266,23 +273,25 @@ export function EntriesTable({
           </thead>
           <tbody>
             {sorted.map((e) => {
-              const canPick = entryState(e) === 'unbilled';
+              const canPick = canEdit && entryState(e) === 'unbilled';
               return (
                 <tr
                   key={e.id}
                   onClick={() => canPick && toggle(e.id)}
                   className={cn('border-b border-border/60 last:border-b-0 hover:bg-accent/60', canPick && 'cursor-pointer', selected.has(e.id) && 'bg-primary/5')}
                 >
-                  <td className="px-3 py-2.5" onClick={(ev) => ev.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 accent-primary disabled:opacity-30"
-                      disabled={!canPick}
-                      checked={selected.has(e.id)}
-                      onChange={() => toggle(e.id)}
-                      aria-label={t('select')}
-                    />
-                  </td>
+                  {canEdit && (
+                    <td className="px-3 py-2.5" onClick={(ev) => ev.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-primary disabled:opacity-30"
+                        disabled={!canPick}
+                        checked={selected.has(e.id)}
+                        onChange={() => toggle(e.id)}
+                        aria-label={t('select')}
+                      />
+                    </td>
+                  )}
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(e.startedAt, locale)}</td>
                   <td className="max-w-[260px] truncate px-2 py-2.5 font-semibold">{e.description || <span className="font-normal text-muted-foreground">{t('noDescription')}</span>}</td>
                   <td className="px-2 py-2.5">
@@ -311,7 +320,7 @@ export function EntriesTable({
           </tbody>
           <tfoot>
             <tr className="border-t border-border bg-muted/40 text-sm">
-              <td colSpan={5} className="px-3 py-2 text-right text-muted-foreground">
+              <td colSpan={canEdit ? 5 : 4} className="px-3 py-2 text-right text-muted-foreground">
                 {t('sumLabel', { count: rows.length })}
               </td>
               <td className="whitespace-nowrap px-2 py-2 text-right font-mono font-extrabold tabular-nums">{formatMinutes(sums.minutes)}</td>

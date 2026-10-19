@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api-client';
 import { InvoiceForm } from '../../new/invoice-form';
 import { UUID, loadFormContext } from '../../new/load';
 import type { Contact, DocLanguage, DocumentType, InvoiceTemplate, PaymentMethod } from '../../new/types';
+import { writeGate } from '@/components/write-gate';
 
 export async function generateMetadata(props: { searchParams: Promise<{ issued?: string }> }): Promise<Metadata> {
   const t = await getTranslations('invoiceForm');
@@ -61,6 +62,8 @@ export default async function EditInvoicePage(props: {
 }) {
   const params = await props.params;
   const searchParams = await props.searchParams;
+  const gate = await writeGate('invoices', `/invoices/${params.id}`);
+  if (gate) return gate;
   if (!UUID.test(params.id)) notFound();
   const t = await getTranslations('invoiceForm');
   const [detail, { defaults, ai, starred }] = await Promise.all([

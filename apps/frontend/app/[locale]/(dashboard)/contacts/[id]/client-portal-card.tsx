@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { LinkNameField } from '@/components/link-name-field';
 import { setContactPortal, setContactPortalName } from '../actions';
 import { copyText } from '@/lib/clipboard';
@@ -27,6 +28,8 @@ export function ClientPortalCard({
   const locale = useLocale();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  // Copy and open are for everyone; switching, renewing and renaming change the contact.
+  const canEdit = useCanWrite('contacts');
   const [origin, setOrigin] = useState('');
   useEffect(() => setOrigin(window.location.origin), []);
   const base = `${origin}/${locale}/c/`;
@@ -81,6 +84,8 @@ export function ClientPortalCard({
               <ExternalLink className="h-3.5 w-3.5" />
               {t('open')}
             </a>
+            {canEdit && (
+            <>
             <button type="button" disabled={pending} onClick={() => window.confirm(t('renewConfirm')) && set(true, t('renewed'))} className={small}>
               <RefreshCw className="h-3.5 w-3.5" />
               {t('renew')}
@@ -93,7 +98,10 @@ export function ClientPortalCard({
             >
               {t('disable')}
             </button>
+            </>
+            )}
           </div>
+          {canEdit && (
           <LinkNameField
             className="mt-3"
             base={base}
@@ -102,10 +110,12 @@ export function ClientPortalCard({
             slug={slug}
             onSave={(s) => setContactPortalName(contactId, s)}
           />
+          )}
         </>
       ) : (
         <>
           <p className="mt-2 text-muted-foreground">{t('off')}</p>
+          {canEdit && (
           <button
             type="button"
             disabled={pending}
@@ -114,6 +124,7 @@ export function ClientPortalCard({
           >
             {t('enable')}
           </button>
+          )}
         </>
       )}
     </section>

@@ -9,6 +9,7 @@ import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { TX_STATUS_CLASSES, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
 import { ignoreTransaction } from './actions';
+import { useCanWrite } from '@/components/access-provider';
 
 export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null };
 
@@ -19,6 +20,8 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
+  // Selection only feeds bulk ignore, so read-only gets the plain list.
+  const canEdit = useCanWrite('bank');
 
   if (rows.length === 0) {
     return (
@@ -49,7 +52,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
 
   return (
     <div className="mt-5">
-      {selected.size > 0 && (
+      {canEdit && selected.size > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
           <span className="font-semibold">{t('selected', { count: selected.size })}</span>
           <button
@@ -70,16 +73,18 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="w-10 px-3 py-2.5">
-                <input
-                  type="checkbox"
-                  aria-label={t('selectAll')}
-                  className="h-4 w-4 accent-primary"
-                  disabled={selectable.length === 0}
-                  checked={selectable.length > 0 && selected.size === selectable.length}
-                  onChange={(e) => setSelected(e.target.checked ? new Set(selectable.map((r) => r.id)) : new Set())}
-                />
-              </th>
+              {canEdit && (
+                <th className="w-10 px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    aria-label={t('selectAll')}
+                    className="h-4 w-4 accent-primary"
+                    disabled={selectable.length === 0}
+                    checked={selectable.length > 0 && selected.size === selectable.length}
+                    onChange={(e) => setSelected(e.target.checked ? new Set(selectable.map((r) => r.id)) : new Set())}
+                  />
+                </th>
+              )}
               <th className="px-2 py-2.5 font-medium">{t('columns.date')}</th>
               <th className="px-2 py-2.5 font-medium">{t('columns.counterparty')}</th>
               <th className="px-2 py-2.5 font-medium">{t('columns.variableSymbol')}</th>
@@ -96,11 +101,13 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                   onClick={() => router.push(`/bank/${tx.id}`)}
                   className={cn('cursor-pointer border-b border-border/60 last:border-b-0 hover:bg-accent/60', selected.has(tx.id) && 'bg-primary/5')}
                 >
-                  <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
-                    {tx.status === 'unmatched' && (
-                      <input type="checkbox" className="h-4 w-4 accent-primary" checked={selected.has(tx.id)} onChange={() => toggle(tx.id)} />
-                    )}
-                  </td>
+                  {canEdit && (
+                    <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+                      {tx.status === 'unmatched' && (
+                        <input type="checkbox" className="h-4 w-4 accent-primary" checked={selected.has(tx.id)} onChange={() => toggle(tx.id)} />
+                      )}
+                    </td>
+                  )}
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(tx.transactionDate, locale)}</td>
                   <td className="px-2 py-2.5">
                     <Link href={`/bank/${tx.id}`} onClick={(e) => e.stopPropagation()} className="font-semibold hover:text-primary">

@@ -8,6 +8,7 @@ import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CommandPalette } from '@/components/command-palette';
+import { AccessProvider } from '@/components/access-provider';
 import { DemoBanner } from '@/components/demo/demo-banner';
 import { DemoTransferClaim } from '@/components/demo/demo-transfer-claim';
 import { DashboardNav } from '@/components/dashboard-nav';
@@ -107,6 +108,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <AccessProvider access={access}>
       <OfflineProvider scope={offlineScope}>
         <div className="flex min-h-screen flex-col">
           <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
@@ -161,6 +163,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {claimPromo && <PromoClaim />}
         </div>
       </OfflineProvider>
+      </AccessProvider>
     </NextIntlClientProvider>
   );
 }
