@@ -57,6 +57,21 @@ export const defaultCurrency = (locale: string): PlanCurrency => (locale === 'cs
 /** Free plan: price of each document beyond the 10 included per month. */
 export const PAYG_PRICE: Record<PlanCurrency, number> = { CZK: 5, EUR: 0.2 };
 
+/** "119 Kč", "4,99 €", "€0.20": whole amounts without decimals, the rest with two. */
+export function formatPlanPrice(value: number, currency: PlanCurrency, locale: string): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2
+  }).format(value);
+}
+
+/** The cheapest paid plan's yearly-billed monthly price, for "paid plans start at …" copy. */
+export function startingPrice(currency: PlanCurrency): number {
+  return Math.min(...PLANS.filter((p) => p.price[currency].yearly > 0).map((p) => p.price[currency].yearly));
+}
+
 /**
  * The comparison table under the cards: per row the value for free, start,
  * plus, business. `true`/`false` render as a tick or a dash, a string is a
