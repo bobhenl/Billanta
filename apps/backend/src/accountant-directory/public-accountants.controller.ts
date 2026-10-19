@@ -4,7 +4,7 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { PUBLIC_LIST } from "../common/cache-control";
 import { PlatformAdminGuard } from "../partners/platform-admin.guard";
 import { AccountantDirectoryService } from "./accountant-directory.service";
-import { ReviewListingDto } from "./dto";
+import { ReviewListingDto, ReviewPartnerDto } from "./dto";
 
 /** PUBLIC accountant directory behind /accountants. No JWT, no tenant context. */
 @ApiTags("public-accountants")
@@ -34,9 +34,16 @@ export class AdminAccountantsController {
     return this.directory.listForReview(status);
   }
 
+  // Declared before ":id" so "partner" is never parsed as a listing id.
+  @Patch("partner/:tenantId")
+  @ApiOperation({ summary: "Approve, reject or revoke a company's accountant partner tier (approving needs an approved listing)" })
+  reviewPartner(@Param("tenantId", ParseUUIDPipe) tenantId: string, @Body() dto: ReviewPartnerDto) {
+    return this.directory.reviewPartner(tenantId, dto.status, dto.note);
+  }
+
   @Patch(":id")
-  @ApiOperation({ summary: "Approve or reject one listing (409 listing_changed if it was edited meanwhile)" })
+  @ApiOperation({ summary: "Approve or reject one listing, optionally with its partner request (409 listing_changed if it was edited meanwhile)" })
   review(@Param("id", ParseUUIDPipe) id: string, @Body() dto: ReviewListingDto) {
-    return this.directory.review(id, dto.status, dto.note, dto.updatedAt);
+    return this.directory.review(id, dto.status, dto.note, dto.updatedAt, dto.partner === true);
   }
 }

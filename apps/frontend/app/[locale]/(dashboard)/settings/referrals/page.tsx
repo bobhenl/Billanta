@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
-import { redirect } from '@/i18n/navigation';
+import { Calculator } from 'lucide-react';
+import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { EmbedSection } from '@/components/embed-section';
 import { SettingsHeader } from '@/components/settings-header';
@@ -8,7 +9,6 @@ import { QrLinkPanel } from '@/components/share-qr';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { SITE_URL } from '@/lib/site';
 import { canManage, fetchMyRole } from '@/lib/tenant';
-import { ListingForm, type OwnListing } from './listing-form';
 import { ReferralsPanel, type ReferralOverview } from './referrals-panel';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -27,14 +27,8 @@ export default async function ReferralsPage() {
 
   let overview: ReferralOverview;
   let role: string | null;
-  let listing: OwnListing | null;
   try {
-    [overview, role, listing] = await Promise.all([
-      apiFetch<ReferralOverview>('/api/v1/referrals'),
-      fetchMyRole(),
-      // The directory form is an extra; a failure here must not hide the wallet.
-      apiFetch<OwnListing>('/api/v1/referrals/listing').catch(() => null)
-    ]);
+    [overview, role] = await Promise.all([apiFetch<ReferralOverview>('/api/v1/referrals'), fetchMyRole()]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
     return <Banner tone="err" title={t('loadError')} className="mt-6" />;
@@ -58,7 +52,13 @@ export default async function ReferralsPage() {
         refCode={overview.code}
         className="mt-6 sm:p-4"
       />
-      {listing && (listing.eligible || listing.listing || overview.canBeAccountant) && <ListingForm own={listing} readOnly={!canManage(role)} />}
+      <p className="mt-6 rounded-xl border border-border bg-card p-4 text-sm">
+        <Calculator className="mr-1.5 inline h-4 w-4 align-[-2px] text-primary" aria-hidden="true" />
+        {t('profileLink.body')}{' '}
+        <Link href="/settings/accountant-profile" className="font-semibold text-primary hover:underline">
+          {t('profileLink.cta')}
+        </Link>
+      </p>
 
       <section className="mt-6 rounded-xl border border-border bg-card p-4">
         <h2 className="font-bold">{t('invited.title')}</h2>
@@ -72,8 +72,19 @@ export default async function ReferralsPage() {
                   {t('invited.company', { n: overview.invited.length - i })}
                   <span className="ml-2 text-xs text-muted-foreground">{format.dateTime(new Date(r.createdAt), { dateStyle: 'medium' })}</span>
                 </span>
-                <span className={r.paying ? 'font-semibold text-primary' : 'text-muted-foreground'}>
-                  {r.paying ? t('invited.paying', { credits: r.rewardCredits ?? 0 }) : t('invited.waiting')}
+                <span className={r.state === 'rewarded' ? 'font-semibold text-primary' : 'text-muted-foreground'}>
+                  {r.state === 'rewarded'
+                    ? t('invited.paying', { credits: r.rewardCredits ?? 0 })
+                    : r.state === 'pending'
+                      ? r.releaseAfter
+                        ? t('invited.heldUntil', {
+                            credits: r.pendingCredits ?? 0,
+                            date: format.dateTime(new Date(r.releaseAfter), { dateStyle: 'medium' })
+                          })
+                        : t('invited.heldMonthly', { credits: r.pendingCredits ?? 0 })
+                      : r.state === 'voided'
+                        ? t('invited.voided')
+                        : t('invited.waiting')}
                 </span>
               </li>
             ))}

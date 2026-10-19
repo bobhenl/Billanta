@@ -46,6 +46,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   // The signup checkbox confirms the user is 18+ and acts as a business;
   // the service is not for children (COPPA / GDPR art. 8) or consumers.
   const adultConfirmed = body?.adultConfirmed === true;
+  // Optional "about you" boxes (migration 0079); anything but a true is no.
+  const managesClients = body?.managesClients === true;
+  const isTeacher = body?.isTeacher === true;
 
   if (
     !email ||
@@ -78,7 +81,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const { tenantId, userId } = await db.transaction(async (tx) => {
       const [created] = await tx
         .insert(users)
-        .values({ email, passwordHash, ...attribution })
+        .values({ email, passwordHash, managesClients, isTeacher, ...attribution })
         .returning({ id: users.id, email: users.email });
 
       if (!created) {

@@ -8,7 +8,7 @@ import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { formatDate } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
-import { reviewListing } from './actions';
+import { reviewListing, reviewPartner } from './actions';
 
 /** A row of `admin_accountant_listings()` (snake_case, straight from SQL). */
 export interface ReviewListing {
@@ -28,6 +28,10 @@ export interface ReviewListing {
   review_note: string | null;
   reviewed_at: string | null;
   updated_at: string;
+  tenant_id: string;
+  /** The company's accountant partner request, null when it never asked. */
+  partner_status: 'pending' | 'approved' | 'rejected' | null;
+  partner_requested_at: string | null;
 }
 
 export function ReviewQueue({ listings }: { listings: ReviewListing[] }) {
@@ -50,13 +54,23 @@ function ListingCard({ listing: l }: { listing: ReviewListing }) {
   const locale = useLocale();
   const router = useRouter();
   const [note, setNote] = useState(l.review_note ?? '');
+  // Asked for the partner tier too: by default the listing decision covers both.
+  const [withPartner, setWithPartner] = useState(l.partner_status === 'pending');
   const [pending, startTransition] = useTransition();
 
   const review = (status: 'approved' | 'rejected') =>
     startTransition(async () => {
-      const result = await reviewListing(l.id, status, note.trim() || null, l.updated_at);
+      const result = await reviewListing(l.id, status, note.trim() || null, l.updated_at, withPartner && l.partner_status === 'pending');
       if (result.ok) toast({ text: t(status === 'approved' ? 'approved' : 'rejected'), tone: 'ok' });
       else toast({ text: result.error === 'listing_changed' ? t('changed') : `${t('failed')}: ${result.error}`, tone: 'err' });
+      router.refresh();
+    });
+
+  const decidePartner = (status: 'approved' | 'rejected') =>
+    startTransition(async () => {
+      const result = await reviewPartner(l.tenant_id, status, note.trim() || null);
+      if (result.ok) toast({ text: t(status === 'approved' ? 'partner.approvedToast' : 'partner.rejectedToast'), tone: 'ok' });
+      else toast({ text: result.error === 'partner_not_reviewable' ? t('partner.notReviewable') : `${t('failed')}: ${result.error}`, tone: 'err' });
       router.refresh();
     });
 
@@ -99,6 +113,10 @@ function ListingCard({ listing: l }: { listing: ReviewListing }) {
           {/* Plain text, not links: the address is unreviewed until the admin approves it. */}
           <dd className="break-all">{[l.contact_email, l.website].filter(Boolean).join(' · ')}</dd>
         </div>
+        <div className={row}>
+          <dt className="text-muted-foreground">{t('partner.label')}</dt>
+          <dd>{t(`partner.status.${l.partner_status ?? 'none'}`)}</dd>
+        </div>
       </dl>
       {l.status === 'withdrawn' ? (
         <p className="mt-4 text-xs text-muted-foreground">{t('withdrawnHint')}</p>
@@ -115,6 +133,12 @@ function ListingCard({ listing: l }: { listing: ReviewListing }) {
               onChange={(e) => setNote(e.target.value)}
             />
           </label>
+          {l.partner_status === 'pending' && l.status !== 'approved' && (
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={withPartner} disabled={pending} onChange={(e) => setWithPartner(e.target.checked)} />
+              {t('partner.withListing')}
+            </label>
+          )}
           <div className="flex flex-wrap gap-2">
             {l.status !== 'approved' && (
               <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => review('approved')}>
@@ -129,6 +153,23 @@ function ListingCard({ listing: l }: { listing: ReviewListing }) {
               </button>
             )}
           </div>
+          {/* The tier on its own: for an approved listing, or to revoke a partner. */}
+          {l.status === 'approved' && l.partner_status && (
+            <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+              {l.partner_status !== 'approved' && (
+                <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => decidePartner('approved')}>
+                  <Check className="h-4 w-4" />
+                  {t('partner.approve')}
+                </button>
+              )}
+              {l.partner_status !== 'rejected' && (
+                <button type="button" className={buttonClass.secondary} disabled={pending} onClick={() => decidePartner('rejected')}>
+                  <X className="h-4 w-4" />
+                  {l.partner_status === 'approved' ? t('partner.revoke') : t('partner.reject')}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </li>

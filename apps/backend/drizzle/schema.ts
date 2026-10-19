@@ -336,6 +336,9 @@ export const users = pgTable(
     // billanta_src cookie; signup_source is its source alone, for counting.
     signupAttribution: jsonb("signup_attribution"),
     signupSource: varchar("signup_source", { length: 100 }),
+    // Optional signup checkboxes (0079): keeps clients' books, teaches.
+    managesClients: boolean("manages_clients").notNull().default(false),
+    isTeacher: boolean("is_teacher").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -1476,8 +1479,9 @@ export const auditLog = pgTable(
 
 // ---------------------------------------------------------------------------
 // referrals — tenant-scoped, OWNED BY THE INVITER (tenant_id). Read-only for
-// the app role; written by the claim_referral / reward_referral SECURITY
-// DEFINER functions (migration 0044).
+// the app role; written by claim_referral (0044) and the reward functions of
+// 0079. The reward is fixed by the first payment (pending_credits) and paid
+// once the invited company is past the refund window (rewards.ts).
 // ---------------------------------------------------------------------------
 export const referrals = pgTable("referrals", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -1490,6 +1494,13 @@ export const referrals = pgTable("referrals", {
   program: varchar("program", { length: 16 }).$type<"friend" | "accountant">().notNull(),
   rewardedAt: timestamp("rewarded_at", { withTimezone: true }),
   rewardCredits: integer("reward_credits"),
+  firstPaidAt: timestamp("first_paid_at", { withTimezone: true }),
+  paidCount: smallint("paid_count").notNull().default(0),
+  pendingCredits: integer("pending_credits"),
+  // Annual plans: paid by the daily cron after this. Monthly: null, paid on the second payment.
+  releaseAfter: timestamp("release_after", { withTimezone: true }),
+  voidedAt: timestamp("voided_at", { withTimezone: true }),
+  voidReason: varchar("void_reason", { length: 16 }).$type<"refunded" | "canceled">(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1727,7 +1738,7 @@ export const newsletterIssues = pgTable("newsletter_issues", {
 
 // ---------------------------------------------------------------------------
 // accountant_listings — an accountant's entry in the public directory
-// (/accountants), one per company in the accountant programme. RLS: the
+// (/accountants), one per company. RLS: the
 // company may only store 'pending' or 'withdrawn'; approval goes through
 // review_accountant_listing (platform admins, migration 0050).
 // ---------------------------------------------------------------------------
@@ -1757,6 +1768,22 @@ export const accountantListings = pgTable(
     tenantUnique: uniqueIndex("accountant_listings_tenant_unique").on(table.tenantId),
   }),
 );
+
+// ---------------------------------------------------------------------------
+// accountant_partner_requests: a company asking for the accountant partner
+// tier (higher referral rates). One row per company. RLS: the company may
+// only store 'pending'; review_accountant_listing / review_accountant_partner
+// (platform admins, migration 0079) approve it and switch the tier.
+// ---------------------------------------------------------------------------
+export const accountantPartnerRequests = pgTable("accountant_partner_requests", {
+  tenantId: uuid("tenant_id")
+    .primaryKey()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  status: varchar("status", { length: 12 }).$type<"pending" | "approved" | "rejected">().notNull().default("pending"),
+  requestedAt: timestamp("requested_at", { withTimezone: true }).notNull().defaultNow(),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  reviewNote: text("review_note"),
+});
 
 /**
  * NOT tenant-scoped. Official pages the tax constants come from, with a hash

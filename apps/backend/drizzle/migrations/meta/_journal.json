@@ -554,6 +554,13 @@
       "when": 1792988940000,
       "tag": "0078_blog_autopublish",
       "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1792989000000,
+      "tag": "0079_referral_release_partner_requests",
+      "breakpoints": true
     }
   ]
 }

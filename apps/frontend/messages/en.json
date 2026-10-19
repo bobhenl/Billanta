@@ -1634,6 +1634,10 @@
         "emailNotifications": {
           "title": "Email notifications",
           "description": "Which emails you get, the weekly digest and quiet hours at night."
+        },
+        "accountantProfile": {
+          "title": "Accountant profile",
+          "description": "Accountant directory listing and the accountant partner programme."
         }
       },
       "managedByAdmins": "Company details, the team, the subscription and other company settings are managed by the owner or an admin."
@@ -3518,7 +3522,10 @@
       "rateLimitedError": "Too many attempts. Please try again in a moment.",
       "hasAccount": "Already have an account?",
       "loginLink": "Sign in",
-      "companyNameHint": "Self-employed? Your own name is enough. You add your IČO and billing details in the next step."
+      "companyNameHint": "Self-employed? Your own name is enough. You add your IČO and billing details in the next step.",
+      "aboutYouLegend": "About you (optional)",
+      "managesClientsLabel": "I keep the books for clients",
+      "isTeacherLabel": "I am a teacher"
     },
     "login": {
       "title": "Log in",
@@ -8727,7 +8734,7 @@
   },
   "referrals": {
     "title": "Invite and earn credits",
-    "description": "Invite businesses you know or your clients. For each one that takes a paid plan you get credits towards your own subscription.",
+    "description": "Invite businesses you know or your clients. For each one that takes a paid plan and stays, you get credits towards your own subscription.",
     "loadError": "Could not load the referral programme.",
     "failed": "Failed",
     "readOnly": "Only the company owner or an admin can spend credits or change the programme.",
@@ -8736,7 +8743,7 @@
     "copyFailed": "Could not copy the link. Select it and copy it by hand.",
     "link": {
       "title": "Your invite link",
-      "body": "A new company gets {welcome} credits right after signing up, and you get {reward} credits once it takes a paid plan. 1 credit = 1 CZK.",
+      "body": "A new company gets {welcome} credits right after signing up. You get as many credits as it pays in CZK for its first plan payment, up to {reward}. We add them after the second monthly payment, or 30 days after a yearly payment. 1 credit = 1 CZK.",
       "copy": "Copy",
       "copied": "Copied",
       "code": "Code: {code}"
@@ -8748,15 +8755,16 @@
     },
     "program": {
       "title": "Programme",
-      "hint": "Accountants and bookkeeping firms get more per client.",
+      "hint": "The partner programme is for accountants and bookkeeping firms whose directory listing we have approved. The credits are the same as for referring friends.",
       "saved": "Programme changed.",
       "friend": {
         "title": "Refer a friend",
-        "body": "The invited company gets {welcome} credits, you get {reward} for each paying one."
+        "body": "The invited company gets {welcome} credits, you get up to {reward} for each paying one."
       },
       "accountant": {
         "title": "Accountant partner programme",
-        "body": "Your client gets {welcome} credits, you get {reward} for each paying client."
+        "body": "Your client gets {welcome} credits, you get up to {reward} for each paying client, the same as for referring friends.",
+        "needsApproval": "Once we approve your listing in Accountant profile."
       }
     },
     "redeem": {
@@ -8776,7 +8784,10 @@
       "empty": "Nobody has signed up with your link yet.",
       "company": "Company #{n}",
       "paying": "Paying · +{credits} cr.",
-      "waiting": "Not paying yet"
+      "waiting": "Not paying yet",
+      "heldUntil": "Paid · +{credits} cr. on {date}",
+      "heldMonthly": "Paid · +{credits} cr. after the second payment",
+      "voided": "Payment refunded or cancelled · no reward"
     },
     "ledger": {
       "title": "Credit history",
@@ -8791,11 +8802,13 @@
     "errors": {
       "insufficient_credits": "You don’t have enough credits for this plan.",
       "other_plan_running": "Credits already pay for a different plan. Only the running one can be extended.",
-      "ico_required": "The partner programme needs the company ID (Settings → Company)."
+      "ico_required": "The partner programme needs the company ID (Settings → Company).",
+      "partner_not_approved": "The accountant partner programme turns on once we approve your listing in Accountant profile.",
+      "listing_required": "Fill in and send your listing in Accountant profile first."
     },
     "nudge": {
       "title": "Your first invoice got paid. Pass Billanta on",
-      "body": "Send the link to someone who runs a business. They get {welcome, plural, one {# credit} other {# credits}} when they sign up, and you get {reward, plural, one {# credit} other {# credits}} once they take a paid plan. One credit is 1 CZK off a subscription.",
+      "body": "Send the link to someone who runs a business. They get {welcome, plural, one {# credit} other {# credits}} when they sign up, and you get up to {reward, plural, one {# credit} other {# credits}} once they start paying for a plan. One credit is 1 CZK off a subscription.",
       "copy": "Copy link",
       "copied": "Copied",
       "more": "How referrals work",
@@ -8804,6 +8817,10 @@
     "qr": {
       "title": "A QR code with your link",
       "hint": "Print it or show it on your phone. Whoever scans it signs up through your link."
+    },
+    "profileLink": {
+      "body": "Are you an accountant? Your directory listing and the partner programme request are in Accountant profile.",
+      "cta": "Open Accountant profile"
     }
   },
   "partners": {
@@ -8824,7 +8841,7 @@
     "visit": "Visit",
     "become": {
       "title": "Want to become a partner?",
-      "body": "Accountants and bookkeeping firms earn credits for each paying client. Any other company can invite people it knows with the link in Settings.",
+      "body": "Accountants and bookkeeping firms can join the accountant directory, where businesses find them. Credits for paying clients are the same for everyone, and any company can invite people it knows with the link in Settings.",
       "accountants": "Accountant programme",
       "signup": "Create an account",
       "programmes": "Partner programmes"
@@ -8849,7 +8866,7 @@
       },
       "credits": {
         "title": "Credits for clients",
-        "body": "Your client gets {welcome} credits, you get {reward} for each one who starts paying."
+        "body": "Your client gets {welcome} credits, you get up to {reward} for each one who starts paying. The same as a normal referral."
       },
       "clients": {
         "title": "Every client behind one login",
@@ -8857,7 +8874,7 @@
       },
       "directory": {
         "title": "Local businesses find you",
-        "body": "Turn on a public profile and your firm appears on the invoicing pages for your town and the towns nearby."
+        "body": "Once we approve your listing in Accountant profile, your firm appears in the accountant directory and on the invoicing pages for your region."
       },
       "shape": {
         "title": "Features shaped by your practice",
@@ -8871,8 +8888,8 @@
         "body": "Signing up is free. Fill in your firm’s company ID in the company settings."
       },
       "program": {
-        "title": "Turn on the accountant programme",
-        "body": "In Settings → Invite and earn credits, switch to the partner programme."
+        "title": "Apply for the partner programme",
+        "body": "In Settings → Accountant profile, fill in your directory listing and apply for the partner programme. We review every listing by hand. Once approved, businesses find you in the accountant directory and on their town pages."
       },
       "share": {
         "title": "Send the link to clients",
@@ -8883,9 +8900,11 @@
       "title": "Rules",
       "points": [
         "1 credit = 1 CZK. Credits pay the Start, Plus or Business plan for a month or a year.",
-        "You are rewarded once per invited company, when it pays for the first time.",
+        "The reward is one-off: as many credits as the invited company pays in CZK for its first plan payment, up to the programme limit.",
+        "We add the credits after the second payment on a monthly plan, or 30 days after a yearly payment. If the company gets a refund or cancels before that, there is no reward.",
         "An invite counts for companies created with your link within the last 30 days.",
-        "You can’t invite your own company or one you are already a member of."
+        "You can’t invite your own company or one you are already a member of.",
+        "We turn on the accountant partner programme once we approve your accountant directory listing."
       ]
     },
     "clients": {
@@ -8901,9 +8920,9 @@
     },
     "directoryCta": {
       "title": "Get listed on your town’s page",
-      "body": "Billanta has an invoicing page for every town and municipality in Czechia and Slovakia. Accountants in the partner programme who have a public profile with an address are shown there to local businesses. Listing is opt-in and you can turn it off with one click.",
+      "body": "Billanta has an invoicing page for every town and municipality in Czechia and Slovakia. Accountants with an approved directory listing are shown there to businesses in the same region. Listing is optional and you can withdraw it with one click.",
       "example": "Browse the town pages",
-      "settings": "Set up a public profile"
+      "settings": "Fill in your accountant profile"
     },
     "shapeCta": {
       "title": "We build Billanta together with accountants",
@@ -8932,11 +8951,11 @@
       },
       {
         "q": "How do I get onto the town pages?",
-        "a": "Join the accountant programme, publish a public profile with your address in Settings → Public profile and tick the accountant directory option. The pages refresh once a day."
+        "a": "In Settings → Accountant profile, fill in your directory listing with the region you work in and send it. We review every listing by hand. Once approved, your firm shows up in the accountant directory and on the town pages in your region, usually within an hour."
       },
       {
         "q": "How many credits do I get?",
-        "a": "The client gets {welcome} credits when signing up through your link, and you get {reward} credits when they first pay. 1 credit = CZK 1."
+        "a": "The same as a normal referral, partner programme or not: the client gets {welcome} credits when signing up through your link. You get as many credits as the client pays in CZK for the first plan payment, up to {reward}. On a monthly plan we add them after the second payment, on a yearly one 30 days after payment. If the client gets a refund or cancels before that, there is no reward. 1 credit = CZK 1."
       }
     ]
   },
@@ -9124,12 +9143,17 @@
     "price": "Price",
     "contact": "Contact",
     "website": "Website",
-    "profile": "Company profile",
+    "profile": {
+      "title": "Accountant profile",
+      "description": "Your entry in the public accountant directory and the accountant partner programme. We approve both by hand.",
+      "loadError": "Could not load the accountant profile.",
+      "partnerTitle": "Accountant partner programme"
+    },
     "emailSubject": "Accounting services enquiry ({site})",
     "howTitle": "How accountants get listed",
-    "howBody": "Accountants add themselves through the accountant programme, and we approve every entry by hand before it goes live. Nobody pays to be listed. You agree the price and terms with the accountant directly; Billanta is not part of that.",
+    "howBody": "Accountants add themselves in Settings → Accountant profile, and we approve every entry by hand before it goes live. Nobody pays to be listed. You agree the price and terms with the accountant directly; Billanta is not part of that.",
     "joinTitle": "Are you an accountant?",
-    "joinBody": "Join the accountant programme and offer your services to businesses that invoice with Billanta.",
+    "joinBody": "Fill in an accountant profile and offer your services to businesses that invoice with Billanta.",
     "joinCta": "Accountant programme",
     "regions": {
       "CZ-10": "Prague",
@@ -9173,7 +9197,6 @@
     "settings": {
       "title": "Accountant directory listing",
       "intro": "Businesses looking for an accountant will find you on the “Looking for an accountant?” page. We publish your entry after a check.",
-      "needProgram": "The directory is part of the accountant programme. Switch to it above.",
       "displayName": "Your name or firm name",
       "bio": "A few words about you",
       "regions": "Regions you cover",
@@ -9204,8 +9227,25 @@
         "region_required": "Pick a region or tick remote work.",
         "contact_required": "Fill in an email or a website.",
         "invalid_website": "The website does not look like a valid address.",
-        "accountant_program_required": "Switch to the accountant programme first.",
-        "generic": "Saving failed. Please try again."
+        "generic": "Saving failed. Please try again.",
+        "ico_required": "Add your company ID in Settings → Company first."
+      },
+      "needIco": "A directory listing needs your company ID (IČO). Add it in Settings → Company."
+    },
+    "partner": {
+      "approved": "Your accountant partner programme is approved. Credits for clients are the same as for a normal referral.",
+      "pending": "Your partner programme request is waiting for approval. We review it together with your directory listing.",
+      "intro": "The partner programme marks accountants we have vetted. Credits for clients are the same as for a normal referral. Businesses find you in the accountant directory, and you work with clients through the accountant role and exports. We turn it on by hand once we approve your accountant directory listing.",
+      "rejected": "We did not approve the request this time. You can send it again.",
+      "rejectedNote": "We did not approve the request: {note}. You can send it again.",
+      "needListing": "Send your accountant directory listing first.",
+      "ask": "Apply for the accountant partner programme",
+      "profileLink": "Accountant profile",
+      "sent": "Request sent. We will get back to you after a check.",
+      "errors": {
+        "listing_required": "Send your accountant directory listing in Accountant profile first.",
+        "ico_required": "Add your company ID in Settings → Company first.",
+        "generic": "Could not send the request. Please try again."
       }
     }
   },
@@ -9260,7 +9300,23 @@
     "rejected": "Listing rejected.",
     "changed": "The accountant edited the listing in the meantime. The new version is loaded, please review it again.",
     "failed": "Action failed",
-    "withdrawnHint": "The accountant withdrew the listing. You can review it again once they save it."
+    "withdrawnHint": "The accountant withdrew the listing. You can review it again once they save it.",
+    "partner": {
+      "label": "Partner programme",
+      "status": {
+        "none": "Not requested",
+        "pending": "Waiting for approval",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "withListing": "Also approve the accountant partner programme",
+      "approve": "Approve partner programme",
+      "reject": "Reject partner programme",
+      "revoke": "Revoke partner programme",
+      "approvedToast": "Partner programme approved.",
+      "rejectedToast": "Partner programme rejected.",
+      "notReviewable": "The partner programme can only be approved with an approved listing."
+    }
   },
   "annualEstimate": {
     "year": "Year",
@@ -9913,7 +9969,7 @@
         },
         "track": {
           "title": "You see sign-ups and earn credit",
-          "body": "You see how many people joined through your code and get credit for each one who starts paying (by default {reward} credits, 1 credit = CZK 1)."
+          "body": "You see how many people joined through your code and get credit for each one who starts paying (by default up to {reward} credits, based on the first payment, 1 credit = CZK 1)."
         }
       }
     },
@@ -9962,7 +10018,7 @@
         },
         "accountants": {
           "title": "Accountants",
-          "body": "Access to your clients' companies, exports and credit for each client."
+          "body": "A listing in the accountant directory, access to your clients’ companies and exports."
         },
         "banks": {
           "title": "Banks",
@@ -10055,7 +10111,7 @@
         },
         "credit": {
           "title": "Credit for the coworking",
-          "body": "For each member company that starts paying, the coworking gets credit (by default {reward} credits). Larger arrangements we agree individually."
+          "body": "For each member company that starts paying, the coworking gets credit (by default up to {reward} credits, based on the first payment). Larger arrangements we agree individually."
         },
         "poster": {
           "title": "A poster for the wall",
@@ -10110,7 +10166,7 @@
         },
         "credit": {
           "title": "Credit for the community",
-          "body": "For each member company that starts paying, the community earns credit (by default {reward} credits)."
+          "body": "For each member company that starts paying, the community earns credit (by default up to {reward} credits, based on the first payment)."
         },
         "online": {
           "title": "Made for online groups",

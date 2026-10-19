@@ -36,6 +36,12 @@ export class ReferralsController {
     return this.referrals.setProgram(req.tenantDb!, req.user!.tenantId, dto.program);
   }
 
+  @Post("partner-request")
+  @ApiOperation({ summary: "Ask Billanta staff for the accountant partner programme (needs an accountant directory listing)" })
+  requestPartner(@Req() req: TenantScopedRequest) {
+    return this.referrals.requestPartner(req.tenantDb!, req.user!.tenantId);
+  }
+
   @Post("redeem")
   @ApiOperation({ summary: "Pay 1 or 12 months of a plan with credits" })
   redeem(@Req() req: TenantScopedRequest, @Body() dto: RedeemCreditsDto) {

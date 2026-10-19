@@ -33,6 +33,15 @@ export interface GopayPaymentStatus {
    * confirmed contract.
    */
   payerId: string | null;
+  /**
+   * What was paid, without VAT, in minor units, plus whether it covered more
+   * than a month. Feeds the referral reward (migration 0079); left out until
+   * the real client maps GoPay's `amount`/`currency`, and a payment without
+   * it does not count towards one.
+   */
+  amountMinor?: number | null;
+  currency?: string | null;
+  longPeriod?: boolean;
 }
 
 /**

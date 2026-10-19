@@ -12,6 +12,7 @@ import {
   Bot,
   Briefcase,
   Building2,
+  Calculator,
   CreditCard,
   DatabaseBackup,
   Download,
@@ -127,6 +128,7 @@ const PAGES: Entry[] = [
   { key: 'variables', href: '/settings/variables', icon: Braces, label: 'settings.hub.items.variables.title', section: 'manage' },
   { key: 'paymentMethods', href: '/settings/payment-methods', icon: Wallet, label: 'settings.hub.items.paymentMethods.title', section: 'manage' },
   { key: 'publicProfile', href: '/settings/public-profile', icon: Globe, label: 'settings.hub.items.publicProfile.title', section: 'manage' },
+  { key: 'accountantProfile', href: '/settings/accountant-profile', icon: Calculator, label: 'settings.hub.items.accountantProfile.title', section: 'manage' },
   { key: 'import', href: '/settings/import', icon: FolderInput, label: 'settings.hub.items.import.title', section: 'manage' },
   { key: 'integrations', href: '/settings/integrations', icon: Webhook, label: 'settings.hub.items.integrations.title', section: 'integrations' }
 ];

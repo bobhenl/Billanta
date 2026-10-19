@@ -77,6 +77,10 @@ export const users = pgTable(
     // Where the signup came from (migration 0075, lib/attribution.ts).
     signupAttribution: jsonb("signup_attribution"),
     signupSource: varchar("signup_source", { length: 100 }),
+    // Optional signup boxes (migration 0079): "I keep the books for clients"
+    // and "I am a teacher". They tailor onboarding, they unlock nothing.
+    managesClients: boolean("manages_clients").notNull().default(false),
+    isTeacher: boolean("is_teacher").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

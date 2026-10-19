@@ -70,7 +70,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
       <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
       <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup?for=accountant" className={buttonClass.primary}>
           {t('cta')}
         </Link>
         <Link href="/partners" className={buttonClass.secondary}>
@@ -114,7 +114,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
             <Link href="/invoicing" className={buttonClass.secondary}>
               {t('directoryCta.example')}
             </Link>
-            <Link href="/settings/public-profile" className={buttonClass.ghost}>
+            <Link href="/settings/accountant-profile" className={buttonClass.ghost}>
               {t('directoryCta.settings')}
             </Link>
           </div>
@@ -147,7 +147,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
               {t('shapeCta.mail')}
             </a>
           ) : (
-            <Link href="/signup" className={buttonClass.primary}>
+            <Link href="/signup?for=accountant" className={buttonClass.primary}>
               {t('shapeCta.signup')}
             </Link>
           )}

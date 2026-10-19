@@ -194,6 +194,7 @@ export const MANAGER_SETTINGS = [
   'team',
   'billing',
   'referrals',
+  'accountantProfile',
   'backup',
   'import',
   'channels',

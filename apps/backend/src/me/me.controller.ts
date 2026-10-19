@@ -51,10 +51,21 @@ export class MeController {
       "before the signup bootstrap flow existed), not an error.",
   })
   async getMe(@Req() req: TenantScopedRequest) {
-    const tenants = await this.meService.listTenantMemberships(req.user!.id);
+    const [tenants, [flags]] = await Promise.all([
+      this.meService.listTenantMemberships(req.user!.id),
+      // What the user ticked at sign-up (migration 0079). `users` has no
+      // tenant, so the pool is the right connection, as in refuseDemoUser.
+      this.dbService.db
+        .select({ isTeacher: schema.users.isTeacher, managesClients: schema.users.managesClients })
+        .from(schema.users)
+        .where(eq(schema.users.id, req.user!.id))
+        .limit(1),
+    ]);
     return {
       userId: req.user!.id,
       email: req.user!.email,
+      isTeacher: flags?.isTeacher === true,
+      managesClients: flags?.managesClients === true,
       tenants,
     };
   }

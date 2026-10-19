@@ -36,13 +36,17 @@ export function WelcomeSetup({
   initialModules,
   company,
   importApps,
-  initialImportFrom
+  initialImportFrom,
+  managesClients = false
 }: {
   initialModules: ModuleSet;
   company: { ico: string; vatPayer: boolean; country: string };
   importApps: { key: string; name: string }[];
   initialImportFrom: string | null;
+  /** Ticked "Spravuji účetnictví pro klienty" at sign-up: land on the accountant profile, not the dashboard. */
+  managesClients?: boolean;
 }) {
+  const nextPage = managesClients ? '/settings/accountant-profile' : '/dashboard';
   const t = useTranslations('welcome');
   const tm = useTranslations('settings.modules');
   const tLookup = useTranslations('companyLookup');
@@ -91,7 +95,7 @@ export function WelcomeSetup({
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });
-      router.push(importFrom ? `/settings/import?source=${importFrom}` : '/dashboard');
+      router.push(importFrom ? `/settings/import?source=${importFrom}` : nextPage);
       router.refresh();
     });
 
@@ -242,7 +246,7 @@ export function WelcomeSetup({
       </section>
 
       <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={() => router.push('/dashboard')}>
+        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={() => router.push(nextPage)}>
           {t('skip')}
         </button>
         <button type="button" className={buttonClass.primary} disabled={saving} onClick={finish}>
