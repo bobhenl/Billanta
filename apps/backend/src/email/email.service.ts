@@ -5,6 +5,7 @@ import { fillTemplate } from "../tenants/email-prefs";
 import { clientPortalUrlOf, portalUrlOf } from "../tenants/template-vars";
 import { escapeHtml, htmlToText } from "./email-render";
 import { EmailOutboxService, type OutgoingEmail, type QueueContext } from "./email-outbox.service";
+import type { BrandCredit } from "../invoices/brand-credit";
 
 export interface SendInvoiceEmailParams {
   to: string;
@@ -20,6 +21,8 @@ export interface SendInvoiceEmailParams {
   custom?: EmailCustomization;
   /** The customer already has this invoice and it was edited since: say it replaces the earlier copy. */
   corrected?: boolean;
+  /** The "Vystaveno v Billantě" line under the card; null when the company switched it off (invoices/brand-credit.ts). */
+  credit?: BrandCredit | null;
 }
 
 export interface EmailAttachment {
@@ -157,6 +160,7 @@ export class EmailService {
       signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
       accent: c?.accent,
       attachmentNames: c?.attachments?.map((a) => a.filename),
+      credit: params.credit,
     });
     await this.queue({ kind: "invoice", category: "transactional", to: params.to, subject, html, ...sendOptions(c) }, queue);
   }
@@ -182,6 +186,7 @@ export class EmailService {
       signature: c?.signature ? fillTemplate(c.signature, values) : undefined,
       accent: c?.accent,
       attachmentNames: c?.attachments?.map((a) => a.filename),
+      credit: params.credit,
     });
     await this.queue({ kind: "reminder", category: "transactional", to: params.to, subject, html, ...sendOptions(c) }, queue);
   }
@@ -384,6 +389,7 @@ function renderInvoiceEmailHtml(params: {
   signature?: string;
   accent?: string;
   attachmentNames?: string[];
+  credit?: BrandCredit | null;
 }): string {
   const portalUrl = portalUrlOf(params.publicLink);
   const accent = params.accent && /^#[0-9a-fA-F]{6}$/.test(params.accent) ? params.accent : "#111827";
@@ -437,6 +443,11 @@ function renderInvoiceEmailHtml(params: {
         </td>
       </tr>
     </table>
+    ${
+      params.credit
+        ? `<p style="font-size:11px; color:#9ca3af; text-align:center; margin:16px 0 0;"><a href="${escapeHtml(params.credit.url)}" style="color:#9ca3af; text-decoration:none;">${escapeHtml(params.credit.label)}</a></p>`
+        : ""
+    }
   </body>
 </html>`;
 }

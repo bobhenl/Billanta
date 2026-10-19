@@ -1317,6 +1317,37 @@ $$;
 REVOKE ALL ON FUNCTION public_invoice_demo(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public_invoice_demo(uuid) TO faktur_app;
 
+-- The issuer's plan, "Vystaveno v Billantě" opt-out and referral code
+-- (migration 0074): the /i/ page shows the line unless a paid company
+-- switched it off (src/invoices/brand-credit.ts) and links it with the code.
+DROP FUNCTION IF EXISTS get_public_invoice_brand_credit(uuid);
+CREATE OR REPLACE FUNCTION get_public_invoice_brand_credit(p_public_token uuid)
+RETURNS TABLE (
+  plan_enforced boolean,
+  trial_plan text,
+  trial_started_at timestamptz,
+  trial_ends_at timestamptz,
+  prepaid_plan text,
+  prepaid_until text,
+  subscription_plan text,
+  subscription_status text,
+  is_demo boolean,
+  brand_credit_off boolean,
+  referral_code text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.plan_enforced, t.trial_plan::text, t.trial_started_at, t.trial_ends_at,
+         t.prepaid_plan::text, t.prepaid_until::text, t.subscription_plan::text, t.subscription_status::text,
+         t.is_demo, (t.invoice_form_prefs->>'brandCredit') = 'false', t.referral_code::text
+  FROM invoices i JOIN tenants t ON t.id = i.tenant_id
+  WHERE i.public_token = p_public_token;
+$$;
+REVOKE ALL ON FUNCTION get_public_invoice_brand_credit(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_invoice_brand_credit(uuid) TO faktur_app;
+
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER read functions — per-customer client portal
 -- (apps/backend/src/public-invoices/client-portal.*), keyed by

@@ -50,6 +50,7 @@ import {
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
+import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -1246,6 +1247,7 @@ export class InvoicesService {
         amount: formatInvoiceAmount(total, invoice.currency),
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
+        credit: await this.emailCredit(db, invoice.tenantId),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
       },
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
@@ -1267,6 +1269,12 @@ export class InvoicesService {
   private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {
     const links = await this.publicLinks(db, invoice, contact);
     return { publicLink: links.public, clientPortalLink: links.portal };
+  }
+
+  /** The "Vystaveno v Billantě" line for the company's e-mails (brand-credit.ts). */
+  private async emailCredit(db: TenantDb, tenantId: string) {
+    const [tenant] = await db.select(BRAND_CREDIT_TENANT_FIELDS).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    return tenant ? brandCreditFor(tenant, "cs", "email") : null;
   }
 
   /** Whether the issued invoice was edited in place after `since` (its last send). */
@@ -1311,6 +1319,7 @@ export class InvoicesService {
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
+        credit: await this.emailCredit(db, invoice.tenantId),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
       },
       { tenantId: invoice.tenantId, db, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },

@@ -524,6 +524,13 @@
       "idx": 74,
       "version": "7",
       "when": 1792902540000,
+      "tag": "0074_brand_credit_signup_attribution",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1792902540000,
       "tag": "0074_einvoicing",
       "breakpoints": true
     }

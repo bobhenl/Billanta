@@ -731,7 +731,12 @@
         "failed": "Platobnú bránu sa nepodarilo otvoriť. Skúste to prosím o chvíľu."
       }
     },
-    "paymentDisclaimerBySquare": "Ide o štandardný slovenský QR kód pre bankový prevod (PAY by square), nie o platbu kartou."
+    "paymentDisclaimerBySquare": "Ide o štandardný slovenský QR kód pre bankový prevod (PAY by square), nie o platbu kartou.",
+    "madeWith": "Vystavené v aplikácii {name}",
+    "cta": {
+      "question": "Aj vy fakturujete?",
+      "action": "Vyskúšajte aplikáciu {name} zadarmo"
+    }
   },
   "expenses": {
     "title": "Výdavky",
@@ -2369,7 +2374,11 @@
           "company_number": "Firma a číslo dokladu",
           "none": "Iba náhodný kód"
         }
-      }
+      },
+      "brandCredit": "Zobrazovať pod faktúrami riadok „Vystavené v aplikácii {name}“",
+      "brandCreditHint": "Malý odkaz v pätičke PDF, e-mailu a online faktúry, kde je aj pozvánka pre odberateľa. Na platenom tarife ho môžete vypnúť.",
+      "brandCreditFree": "Na bezplatnom tarife sa riadok zobrazuje vždy.",
+      "brandCreditUpgrade": "Prejsť na platený tarif"
     },
     "modules": {
       "title": "Moduly a typ podnikania",
