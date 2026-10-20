@@ -1,8 +1,11 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
+import { ATTRIBUTION_COOKIE, ATTRIBUTION_MAX_AGE, attributionFrom, serializeAttribution } from './lib/attribution';
+import { JOIN_PATH, PROMO_CODE, PROMO_COOKIE } from './lib/promo';
 import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN, SITE_URL } from './lib/site';
+import { isSwitchBrand, SWITCH_COOKIE } from './lib/switch';
 
 const intl = createMiddleware(routing);
 /**
@@ -53,7 +56,80 @@ function rememberReferral(request: NextRequest, response: NextResponse) {
 }
 
 /**
- * A response that sets a cookie (the referral, the locale for a visitor
+ * First touch only: the utm tags or the external site that first brought
+ * the visitor, saved with the account at signup (lib/attribution.ts).
+ */
+function rememberAttribution(request: NextRequest, response: NextResponse) {
+  if (request.cookies.has(ATTRIBUTION_COOKIE)) return response;
+  const own = [request.nextUrl.hostname.toLowerCase(), new URL(SITE_URL).hostname.toLowerCase()];
+  const attribution = attributionFrom(request.nextUrl, request.headers.get('referer'), own);
+  if (!attribution) return response;
+  response.cookies.set(ATTRIBUTION_COOKIE, serializeAttribution(attribution), {
+    maxAge: ATTRIBUTION_MAX_AGE,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: request.nextUrl.protocol === 'https:'
+  });
+  return response;
+}
+
+/**
+ * `?promo=` on any page, or a `/join/CODE` link: remember the code for the
+ * company the visitor is about to found. Unlike an invite, the latest link
+ * wins: it is the event or creator the visitor just came from.
+ */
+function rememberPromo(request: NextRequest, response: NextResponse) {
+  const promo = (request.nextUrl.pathname.match(JOIN_PATH)?.[2] ?? request.nextUrl.searchParams.get('promo'))?.trim();
+  if (!promo || !PROMO_CODE.test(promo)) return response;
+  const code = promo.toUpperCase();
+  if (request.cookies.get(PROMO_COOKIE)?.value === code) return response;
+  response.cookies.set(PROMO_COOKIE, code, {
+    maxAge: 60 * 60 * 24 * 30,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: request.nextUrl.protocol === 'https:'
+  });
+  return response;
+}
+
+/**
+ * `?from=<app>` (the signup links on /switch and /compare pages): remember
+ * the app the visitor is leaving, so the welcome screen offers its import.
+ * Not set by the guide pages themselves, which stay cacheable.
+ */
+function rememberSwitchSource(request: NextRequest, response: NextResponse) {
+  const from = request.nextUrl.searchParams.get('from');
+  if (!isSwitchBrand(from) || request.cookies.get(SWITCH_COOKIE)?.value === from) return response;
+  response.cookies.set(SWITCH_COOKIE, from, {
+    maxAge: 60 * 60 * 24 * 30,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: request.nextUrl.protocol === 'https:'
+  });
+  return response;
+}
+
+/**
+ * A poster or QR code points to `/join/CODE` without a locale. When the
+ * visitor has never picked a language, mark the locale redirect so the join
+ * page may switch to the code's own language (a Slovak event's code opens in
+ * Slovak even on an English phone).
+ */
+function markJoinLocale(request: NextRequest, response: NextResponse) {
+  const match = request.nextUrl.pathname.match(JOIN_PATH);
+  const location = response.headers.get('location');
+  if (!match || match[1] || !location || request.cookies.has('NEXT_LOCALE')) return response;
+  const url = new URL(location, request.url);
+  url.searchParams.set('auto', '1');
+  response.headers.set('location', url.toString());
+  return response;
+}
+
+/**
+ * A response that sets a cookie (the referral or promo code, the attribution, the locale for a visitor
  * who has cookies) must never reach a shared cache, whatever Next would
  * say about the page. Next keeps a Cache-Control it finds on the response,
  * so this wins over the page's ISR one.
@@ -65,11 +141,13 @@ function privateIfSettingCookies(response: NextResponse) {
 
 export default function middleware(request: NextRequest) {
   const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
-  return privateIfSettingCookies(rememberReferral(request, profileRewrite(request) ?? locale(request)));
+  const response = profileRewrite(request) ?? markJoinLocale(request, locale(request));
+  return privateIfSettingCookies(rememberSwitchSource(request, rememberAttribution(request, rememberPromo(request, rememberReferral(request, response)))));
 }
 
 export const config = {
-  // Match all paths except Next.js internals, API routes, and files with
-  // an extension (static assets).
-  matcher: ['/((?!api|trpc|_next|_vercel|og/|.*\\..*).*)']
+  // Match all paths except Next.js internals, API routes, the iframe
+  // widgets (their own root layout without a locale: app/embed) and files
+  // with an extension (static assets).
+  matcher: ['/((?!api|trpc|_next|_vercel|og/|embed/|.*\\..*).*)']
 };

@@ -36,6 +36,8 @@ export interface PublicInvoiceSupplier {
 export interface PublicInvoice {
   /** Issued in the demo playground: made up, shown with a notice (backend src/demo/); missing on an older backend. */
   demo?: boolean;
+  /** The "made with" footer line with the issuer's referral code; null when a paid plan switched it off, missing on an older backend. */
+  brandCredit?: { ref: string | null } | null;
   invoiceNumber: string | null;
   variableSymbol: string | null;
   issueDate: string | null;

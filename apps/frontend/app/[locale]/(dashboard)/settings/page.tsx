@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { Bell, BellRing, Blocks, Braces, Bot, Briefcase, Building2, ChevronRight, CreditCard, DatabaseBackup, Download, FileSliders, FolderInput, Gift, Globe, Hash, History, KeyRound, Mail, MessageCircle, ShieldCheck, UserCog, Users, Wallet, Webhook, type LucideIcon } from 'lucide-react';
+import { Bell, BellRing, Blocks, Braces, Bot, Briefcase, Building2, Calculator, ChevronRight, CreditCard, DatabaseBackup, Download, FileSliders, FolderInput, Gift, Globe, Hash, History, KeyRound, Mail, MessageCircle, ShieldCheck, UserCog, Users, Wallet, Webhook, type LucideIcon } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { fetchMyAccess } from '@/lib/tenant';
+import { canManage, fetchMyAccess, forbiddenSettings } from '@/lib/tenant';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings');
@@ -28,7 +28,8 @@ const GROUPS: { key: string; items: { key: string; href: string; icon: LucideIco
       { key: 'modules', href: '/settings/modules', icon: Blocks },
       { key: 'team', href: '/settings/team', icon: Users },
       { key: 'billing', href: '/billing', icon: CreditCard },
-      { key: 'referrals', href: '/settings/referrals', icon: Gift }
+      { key: 'referrals', href: '/settings/referrals', icon: Gift },
+      { key: 'accountantProfile', href: '/settings/accountant-profile', icon: Calculator }
     ]
   },
   {
@@ -55,21 +56,24 @@ const GROUPS: { key: string; items: { key: string; href: string; icon: LucideIco
 export default async function SettingsPage() {
   const t = await getTranslations('settings.hub');
   const access = await fetchMyAccess().catch(() => null);
+  // Pages the role can't use are left out; opened by URL, they say who manages them (settingsGate).
   // Switched-off modules drop their settings card too (the page itself stays reachable by URL).
-  const hidden = new Set<string>();
+  const hidden = new Set<string>(forbiddenSettings(access));
   if (access && !access.modules.reports) hidden.add('exports');
   if (access && !access.modules.ai) hidden.add('ai');
+  const manager = !access || canManage(access.role);
+  const groups = GROUPS.map((group) => ({ ...group, items: group.items.filter((item) => !hidden.has(item.key)) })).filter((group) => group.items.length > 0);
 
   return (
     <div className="mx-auto max-w-4xl">
       <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
 
-      {GROUPS.map((group) => (
+      {groups.map((group) => (
         <section key={group.key} className="mt-7">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t(`groups.${group.key}`)}</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t(`groups.${group.key === 'account' && !manager ? 'personal' : group.key}`)}</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {group.items.filter((item) => !hidden.has(item.key)).map(({ key, href, icon: Icon }) => (
+            {group.items.map(({ key, href, icon: Icon }) => (
               <Link
                 key={key}
                 href={href}
@@ -88,6 +92,8 @@ export default async function SettingsPage() {
           </div>
         </section>
       ))}
+
+      {!manager && <p className="mt-7 text-sm text-muted-foreground">{t('managedByAdmins')}</p>}
     </div>
   );
 }

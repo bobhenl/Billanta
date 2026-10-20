@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import type { HomeCurrency } from '@faktur/cz-compliance';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
 import { DOCUMENT_TYPES, type InvoiceRow } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
 import { CONTACT_COLORS, isContactColor } from '@/lib/contact-colors';
@@ -202,13 +202,15 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   let bankAccounts: BankAccount[];
   let team: { members: { userId: string; name: string | null; email: string }[] };
   let home: HomeCurrency;
+  let canEdit: boolean;
   try {
-    [invoices, customers, bankAccounts, team, home] = await Promise.all([
+    [invoices, customers, bankAccounts, team, home, canEdit] = await Promise.all([
       apiFetch<InvoiceRow[]>(`/api/v1/invoices${query ? `?${query}` : ''}`),
       apiFetch<{ id: string; legalName: string; color?: string | null }[]>('/api/v1/contacts').catch(() => []),
       apiFetch<BankAccount[]>('/api/v1/tenants/me/bank-accounts').catch(() => []),
       apiFetch<{ members: { userId: string; name: string | null; email: string }[] }>('/api/v1/team').catch(() => ({ members: [] })),
-      fetchHomeCurrency()
+      fetchHomeCurrency(),
+      fetchCanWrite('invoices')
     ]);
   } catch (err) {
     if (err instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -301,6 +303,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
           <p className="mt-1 text-muted-foreground">{t('description')}</p>
           <StatusLegend className="mt-2" />
         </div>
+        {/* Templates, bulk and new all create documents: nothing here for a read-only member. */}
+        {canEdit && (
         <div className="flex flex-wrap gap-2">
           <Link
             href="/invoices/templates"
@@ -324,6 +328,7 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
             {t('newInvoice')}
           </Link>
         </div>
+        )}
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-2">

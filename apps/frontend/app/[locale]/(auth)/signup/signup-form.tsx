@@ -27,10 +27,12 @@ import { TOS_VERSION } from '@/lib/tos';
  * form's own ToS-acceptance gating logic (the required, non-preselected
  * checkbox) is unchanged and still enforced client-side regardless.
  */
-export function SignupForm() {
+export function SignupForm({ audience = null }: { audience?: 'accountant' | 'teacher' | null }) {
   const t = useTranslations('auth.signup');
   const router = useRouter();
 
+  const [managesClients, setManagesClients] = useState(audience === 'accountant');
+  const [isTeacher, setIsTeacher] = useState(audience === 'teacher');
   const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,7 +59,9 @@ export function SignupForm() {
       // The same checkbox confirms the age (18+, see tosLabel); the route
       // refuses a signup without it.
       adultConfirmed: tosAccepted,
-      acceptedAt: new Date().toISOString()
+      acceptedAt: new Date().toISOString(),
+      managesClients,
+      isTeacher
     };
 
     try {
@@ -188,6 +192,35 @@ export function SignupForm() {
             })}
           </span>
         </label>
+
+        {/* Optional, so both start unticked unless the visitor came from the
+            accountants or schools page (`?for=`). They only tailor what the
+            app shows; nothing is unlocked by them. */}
+        <fieldset className="flex flex-col gap-2 border-t border-border pt-4">
+          <legend className="sr-only">{t('aboutYouLegend')}</legend>
+          <label htmlFor="managesClients" className="flex items-start gap-2 text-sm text-muted-foreground">
+            <input
+              id="managesClients"
+              name="managesClients"
+              type="checkbox"
+              checked={managesClients}
+              onChange={(event) => setManagesClients(event.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-input"
+            />
+            <span>{t('managesClientsLabel')}</span>
+          </label>
+          <label htmlFor="isTeacher" className="flex items-start gap-2 text-sm text-muted-foreground">
+            <input
+              id="isTeacher"
+              name="isTeacher"
+              type="checkbox"
+              checked={isTeacher}
+              onChange={(event) => setIsTeacher(event.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-input"
+            />
+            <span>{t('isTeacherLabel')}</span>
+          </label>
+        </fieldset>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 

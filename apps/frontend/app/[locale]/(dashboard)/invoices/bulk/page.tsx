@@ -6,6 +6,7 @@ import { apiFetch } from '@/lib/api-client';
 import type { Contact } from '../new/types';
 import type { SavedTemplateRow } from '../templates/template-gallery';
 import { BulkForm } from './bulk-form';
+import { writeGate } from '@/components/write-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('bulk');
@@ -15,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Bulk invoicing: one document per chosen customer from a saved template (`?template=<id>` preselects it). */
 export default async function BulkInvoicePage(props: { searchParams: Promise<{ template?: string }> }) {
   const searchParams = await props.searchParams;
+  const gate = await writeGate('invoices', '/invoices');
+  if (gate) return gate;
   const t = await getTranslations('bulk');
   const tTpl = await getTranslations('templates');
   const [templates, contacts] = await Promise.all([

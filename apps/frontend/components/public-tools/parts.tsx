@@ -28,7 +28,7 @@ export function ToolHeader({
   hubLabel: string;
   name: string;
   title: string;
-  lead: string;
+  lead: React.ReactNode;
   icon: LucideIcon;
 }) {
   return (
@@ -82,7 +82,20 @@ export async function ToolNote() {
 }
 
 /** Guide footer: what the info is based on, when it was last checked, and the official source. */
-export async function GuideSources({ checked, officialUrl, extra }: { checked: string; officialUrl: string; extra?: string }) {
+export async function GuideSources({
+  checked,
+  officialUrl,
+  extra,
+  officialLabel,
+  disclaimer
+}: {
+  checked: string;
+  officialUrl: string;
+  extra?: string;
+  /** Replace the Czech wording ("Finanční správa") for a guide about other rules. */
+  officialLabel?: string;
+  disclaimer?: string;
+}) {
   const t = await getTranslations('tools.common');
   const format = await getFormatter();
   const date = format.dateTime(new Date(`${checked}T12:00:00Z`), { dateStyle: 'long', timeZone: 'Europe/Prague' });
@@ -92,10 +105,10 @@ export async function GuideSources({ checked, officialUrl, extra }: { checked: s
       <div className="space-y-1">
         <p className="font-semibold">{t('lastChecked', { date })}</p>
         {extra && <p className="text-muted-foreground">{extra}</p>}
-        <p className="leading-relaxed text-muted-foreground">{t('guideDisclaimer')}</p>
+        <p className="leading-relaxed text-muted-foreground">{disclaimer ?? t('guideDisclaimer')}</p>
         <p>
           <a href={officialUrl} target="_blank" rel="noopener" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-            {t('officialSource')}
+            {officialLabel ?? t('officialSource')}
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </a>
         </p>
@@ -104,12 +117,13 @@ export async function GuideSources({ checked, officialUrl, extra }: { checked: s
   );
 }
 
-export async function SignupCta() {
+/** `title` / `text` replace the generic copy where a tool has its own (what Billanta does with it automatically). */
+export async function SignupCta({ title, text }: { title?: string; text?: string } = {}) {
   const t = await getTranslations('tools.common');
   return (
     <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
-      <h2 className="text-lg font-semibold">{t('ctaTitle')}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t('ctaText')}</p>
+      <h2 className="text-lg font-semibold">{title ?? t('ctaTitle')}</h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{text ?? t('ctaText')}</p>
       <Link
         href="/signup"
         className="mt-4 inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
@@ -122,18 +136,30 @@ export async function SignupCta() {
   );
 }
 
-/** CTA of the invoice tools: the guest invoice, then the account as the second step. */
-export async function InvoiceCta() {
+/**
+ * CTA of the invoice tools: the guest invoice, then the account as the
+ * second step. `templates` adds the filled-in samples as a middle option,
+ * for tools that answer "what goes on an invoice".
+ */
+export async function InvoiceCta({ title, text, templates = false }: { title?: string; text?: string; templates?: boolean } = {}) {
   const t = await getTranslations('tools.common');
   return (
     <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
-      <h2 className="text-lg font-semibold">{t('invoiceCtaTitle')}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t('invoiceCtaText')}</p>
+      <h2 className="text-lg font-semibold">{title ?? t('invoiceCtaTitle')}</h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{text ?? t('invoiceCtaText')}</p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <CreateInvoiceLink className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90">
           {t('invoiceCtaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </CreateInvoiceLink>
+        {templates && (
+          <Link
+            href="/invoice-templates"
+            className="inline-flex items-center justify-center rounded-md border border-border bg-card px-5 py-3 text-sm font-semibold transition-colors hover:border-primary/40 hover:text-primary"
+          >
+            {t('invoiceCtaTemplates')}
+          </Link>
+        )}
         <Link href="/signup" className="text-sm font-semibold text-primary hover:underline">
           {t('ctaButton')}
         </Link>
@@ -184,8 +210,8 @@ export async function RelatedTools({ current }: { current: string }) {
   );
 }
 
-/** Ordered "how it is calculated" list. */
-export function HowList({ title, items }: { title: string; items: string[] }) {
+/** Ordered "how it is calculated" list; `link` marks up glossary terms (see glossaryLinker). */
+export function HowList({ title, items, link }: { title: string; items: string[]; link?: (text: string) => React.ReactNode }) {
   return (
     <div>
       <h2 className="text-xl font-semibold">{title}</h2>
@@ -193,7 +219,7 @@ export function HowList({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex gap-3 text-sm leading-relaxed">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
-            {item}
+            <span>{link ? link(item) : item}</span>
           </li>
         ))}
       </ul>

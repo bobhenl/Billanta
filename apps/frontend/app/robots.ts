@@ -29,12 +29,14 @@ const PRIVATE = [
   'time',
   'invite',
   'welcome',
+  'join',
   'admin',
   'classroom',
   'join',
   'i/',
   'c/',
   'unsubscribe/',
+  'newsletter/',
   'demo/expired',
   // Counting redirects to partner sites (VoxelRank: /partners/go/).
   'partners/go/'

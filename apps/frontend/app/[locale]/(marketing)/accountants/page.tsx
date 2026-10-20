@@ -83,9 +83,9 @@ export default async function AccountantsDirectoryPage({ params, searchParams }:
       <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
 
       <form method="get" aria-label={t('filters.label')} className="mt-6 grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-        <label className="block text-sm font-semibold">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
           {t('filters.region')}
-          <select name="region" defaultValue={region ?? ''} className={`${inputClass} mt-1`}>
+          <select name="region" defaultValue={region ?? ''} className={inputClass}>
             <option value="">{t('filters.anyRegion')}</option>
             {(['CZ', 'SK'] as const).map((country) => (
               <optgroup key={country} label={countries.of(country)}>
@@ -98,9 +98,9 @@ export default async function AccountantsDirectoryPage({ params, searchParams }:
             ))}
           </select>
         </label>
-        <label className="block text-sm font-semibold">
+        <label className="flex flex-col gap-1.5 text-sm font-semibold">
           {t('filters.service')}
-          <select name="service" defaultValue={service ?? ''} className={`${inputClass} mt-1`}>
+          <select name="service" defaultValue={service ?? ''} className={inputClass}>
             <option value="">{t('filters.anyService')}</option>
             {LISTING_SERVICES.map((s) => (
               <option key={s} value={s}>

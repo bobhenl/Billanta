@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
@@ -42,6 +43,8 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
+  // The checkboxes only feed bulk mark-paid/delete, so read-only gets a plain list.
+  const canEdit = useCanWrite('expenses');
   const { sort, cycle, sorted } = useListSort('billanta:expenses:sort', SORTABLE, rows, sortValue, ['amount']);
 
   const sums = useMemo(() => {
@@ -59,7 +62,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
     return (
       <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
         {filtered ? t('emptyFiltered') : t('empty')}
-        {!filtered && (
+        {!filtered && canEdit && (
           <div className="mt-3">
             <Link href="/expenses/new" className="font-semibold text-primary hover:underline">
               {t('newExpense')}
@@ -133,15 +136,17 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-              <th className="w-10 px-3 py-2.5">
-                <input
-                  type="checkbox"
-                  aria-label={t('selectAll')}
-                  className="h-4 w-4 accent-primary"
-                  checked={allSelected}
-                  onChange={() => setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))}
-                />
-              </th>
+              {canEdit && (
+                <th className="w-10 px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    aria-label={t('selectAll')}
+                    className="h-4 w-4 accent-primary"
+                    checked={allSelected}
+                    onChange={() => setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))}
+                  />
+                </th>
+              )}
               {SORTABLE.map((key) => (
                 <SortHeader
                   key={key}
@@ -165,9 +170,11 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                   onClick={() => router.push(`/expenses/${e.id}`)}
                   className={cn('cursor-pointer border-b border-border/60 last:border-b-0 hover:bg-accent/60', selected.has(e.id) && 'bg-primary/5')}
                 >
-                  <td className="px-3 py-2.5" onClick={(ev) => ev.stopPropagation()}>
-                    <input type="checkbox" className="h-4 w-4 accent-primary" checked={selected.has(e.id)} onChange={() => toggle(e.id)} />
-                  </td>
+                  {canEdit && (
+                    <td className="px-3 py-2.5" onClick={(ev) => ev.stopPropagation()}>
+                      <input type="checkbox" className="h-4 w-4 accent-primary" checked={selected.has(e.id)} onChange={() => toggle(e.id)} />
+                    </td>
+                  )}
                   <td className="whitespace-nowrap px-2 py-2.5 tabular-nums">{formatDate(e.expenseDate, locale)}</td>
                   <td className="px-2 py-2.5 font-semibold">
                     <Link href={`/expenses/${e.id}`} onClick={(ev) => ev.stopPropagation()} className="hover:text-primary">
@@ -191,7 +198,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
           <tfoot>
             {sums.map(([currency, s]) => (
               <tr key={currency} className="border-t border-border bg-muted/40 text-sm">
-                <td colSpan={6} className="px-3 py-2 text-right text-muted-foreground">
+                <td colSpan={canEdit ? 6 : 5} className="px-3 py-2 text-right text-muted-foreground">
                   {t('sumLabel', {
                     count: rows.filter((r) => r.currency === currency).length
                   })}{' '}

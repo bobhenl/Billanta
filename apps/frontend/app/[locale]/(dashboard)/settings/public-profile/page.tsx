@@ -4,8 +4,11 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
+import { townCandidates } from '@/lib/business-directory';
+import { getMunicipalityBySlug } from '@/lib/municipalities';
 import { canManage, fetchMyRole, fetchTenant, type PublicProfileSettings, type TenantSettings } from '@/lib/tenant';
 import { PublicProfileEditor } from './public-profile-editor';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.publicProfile');
@@ -29,6 +32,8 @@ function suggestSlug(name: string) {
 
 /** Settings → Veřejný profil: the company's public business-card page. */
 export default async function PublicProfileSettingsPage() {
+  const gate = await settingsGate('publicProfile');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.publicProfile');
 
@@ -52,8 +57,13 @@ export default async function PublicProfileSettingsPage() {
     show: { ...SHOW_DEFAULTS, ...(stored.show ?? {}) },
     contactCta: stored.contactCta ?? true,
     orders: { enabled: false, customItems: false, prepay: false, ...(stored.orders ?? {}) },
-    contactForm: stored.contactForm ?? false
+    contactForm: stored.contactForm ?? false,
+    directory: { enabled: false, trade: null, town: null, ...(stored.directory ?? {}) }
   };
+  // Directory towns the company address can mean; the stored one stays pickable even after the address changed.
+  const towns = townCandidates(tenant.addressCity, tenant.addressCountry);
+  const storedTown = initial.directory.town ? getMunicipalityBySlug(initial.directory.town) : undefined;
+  if (storedTown && !towns.some((c) => c.slug === storedTown.slug)) towns.push({ slug: storedTown.slug, name: storedTown.name, district: storedTown.district });
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -67,6 +77,7 @@ export default async function PublicProfileSettingsPage() {
         initial={initial}
         readOnly={!canManage(role)}
         suggestedSlug={suggestSlug(tenant.companyName)}
+        towns={towns}
         company={{ name: tenant.companyName, email: tenant.email, phone: tenant.phone, website: tenant.website, hasLogo: tenant.hasLogo, hasAddress: Boolean(tenant.addressStreet || tenant.addressCity), ico: tenant.ico, hasBankAccount: Boolean(tenant.bankAccountIban || tenant.bankAccountNumber) }}
       />
     </div>

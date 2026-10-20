@@ -14,6 +14,8 @@ import { fetchContactSearch } from '@/components/company-lookup';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/toaster';
+import { useOffline } from '@/components/offline-sync';
+import { queueOffline } from '@/lib/offline-outbox';
 import type { AresPrefill, Contact } from '../invoices/new/types';
 import { CONTACT_COLORS, CONTACT_COLOR_DOT } from '@/lib/contact-colors';
 import { createContact, updateContact, type ContactInput } from './actions';
@@ -49,6 +51,8 @@ export function ContactEditor({
   onSaved: (contact: Contact) => void;
 }) {
   const t = useTranslations('contacts.editor');
+  const tOffline = useTranslations('offline');
+  const offline = useOffline();
   const tColors = useTranslations('contacts.colors');
   const tLookup = useTranslations('companyLookup');
   const [form, setForm] = useState<ContactInput>(() => (contact ? { ...EMPTY, ...stripNulls(contact) } : EMPTY));
@@ -138,11 +142,30 @@ export function ContactEditor({
       internalNote: clean(form.internalNote),
       ...(aresVerified !== undefined && { aresVerified })
     };
+    // POST's schema has no nullable ico/dic/email — omit empty ones there.
+    const created = Object.fromEntries(Object.entries(input).filter(([, v]) => v !== null)) as ContactInput;
+    // Without a connection a new contact waits in the offline queue; edits stay online only.
+    const queue = async () => {
+      if (!offline.scope) return false;
+      await queueOffline({ kind: 'contact', scope: offline.scope, label: created.legalName ?? '', payload: created });
+      toast({ text: tOffline('contactQueued'), tone: 'ok' });
+      onClose();
+      return true;
+    };
+    if (!contact && !navigator.onLine && offline.scope) {
+      startTransition(async () => void (await queue()));
+      return;
+    }
     startTransition(async () => {
-      // POST's schema has no nullable ico/dic/email — omit empty ones there.
-      const result = contact
-        ? await updateContact(contact.id, input)
-        : await createContact(Object.fromEntries(Object.entries(input).filter(([, v]) => v !== null)) as ContactInput);
+      let result;
+      try {
+        result = contact ? await updateContact(contact.id, input) : await createContact(created);
+      } catch {
+        // The request itself failed (the connection dropped meanwhile).
+        if (!contact && (await queue())) return;
+        toast({ text: t('saveFailed'), tone: 'err' });
+        return;
+      }
       if (!result.ok) {
         toast({ text: result.error === 'ico_taken' ? t('icoTaken') : `${t('saveFailed')}: ${result.error}`, tone: 'err' });
         return;

@@ -48,6 +48,7 @@ import Discord from "next-auth/providers/discord";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+import { ATTRIBUTION_COOKIE, signupAttributionColumns } from "./lib/attribution";
 import * as authSchema from "./lib/auth-schema";
 import { clientIp } from "./lib/client-ip";
 import { db } from "./lib/db";
@@ -112,6 +113,21 @@ const adapter: typeof drizzleAdapter = {
   },
   async deleteSession(sessionToken) {
     await drizzleAdapter.deleteSession!(hashSessionToken(sessionToken));
+  },
+  // A first social sign-in creates the account here: keep where the
+  // visitor first came from (middleware.ts), as the signup route does.
+  async createUser(user) {
+    let attribution: ReturnType<typeof signupAttributionColumns> = { signupAttribution: null, signupSource: null };
+    try {
+      attribution = signupAttributionColumns((await cookies()).get(ATTRIBUTION_COOKIE)?.value);
+    } catch {
+      // Outside a request (no cookies to read): created without it.
+    }
+    const created = await drizzleAdapter.createUser!(user);
+    if (attribution.signupSource || attribution.signupAttribution) {
+      await db.update(authSchema.users).set(attribution).where(eq(authSchema.users.id, created.id));
+    }
+    return created;
   },
   // Social sign-in only proves who the user is; nothing ever calls Google,
   // GitHub & co. on their behalf (Drive backups run their own, encrypted
@@ -285,13 +301,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // `types/next-auth.d.ts` for the matching type augmentation.
     session({ session, user }) {
       const row = session as unknown as { twoFactorPending?: boolean; twoFactorAt?: Date | null };
-      const fullUser = user as typeof user & { totpEnabledAt?: Date | null; isDemo?: boolean };
+      const fullUser = user as typeof user & { totpEnabledAt?: Date | null; isDemo?: boolean; isTeacher?: boolean; managesClients?: boolean };
       const twoFactor = row.twoFactorPending ? "pending" : fullUser.totpEnabledAt && row.twoFactorAt ? "verified" : "off";
       return {
         user: { id: user.id, name: user.name ?? null, email: user.email, image: user.image ?? null },
         expires: session.expires.toISOString?.() ?? session.expires,
         twoFactor,
         isDemo: fullUser.isDemo === true,
+        isTeacher: fullUser.isTeacher === true,
+        managesClients: fullUser.managesClients === true,
       } as typeof session;
     },
     // With database sessions, an OAuth sign-in while signed in LINKS the

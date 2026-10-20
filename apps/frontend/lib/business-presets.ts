@@ -27,3 +27,17 @@ export const sameModules = (a: ModuleSet, b: ModuleSet) => TOGGLEABLE_MODULES.ev
 export function presetForModules(modules: ModuleSet): string | null {
   return BUSINESS_PRESETS.find((p) => sameModules(p.modules, modules))?.key ?? null;
 }
+
+/**
+ * Trades of the business directory (/directory): what a listed company
+ * does, picked by the owner in Settings → Public profile. Not the presets
+ * above (those are module bundles), though tradesman and eshop share their
+ * keys. Same list as DIRECTORY_TRADES in apps/backend/src/tenants/public-profile.ts.
+ */
+export const DIRECTORY_TRADES = [
+  'tradesman', 'construction', 'it', 'design', 'marketing', 'photo', 'consulting', 'education',
+  'beauty', 'health', 'transport', 'gastro', 'eshop', 'cleaning', 'other'
+] as const;
+export type DirectoryTrade = (typeof DIRECTORY_TRADES)[number];
+
+export const isDirectoryTrade = (v: string | null | undefined): v is DirectoryTrade => (DIRECTORY_TRADES as readonly string[]).includes(v ?? '');

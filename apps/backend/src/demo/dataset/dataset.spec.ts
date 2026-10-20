@@ -107,14 +107,35 @@ describe.each(DEMO_KINDS)("demo dataset %s", (kind) => {
   });
 });
 
-describe("demo dataset sk_vat_sro", () => {
-  const ds = buildDemoDataset("sk_vat_sro", NOW);
+describe.each(["sk_vat_sro", "sk_freelancer", "sk_vat_freelancer"] as const)("demo dataset %s", (kind) => {
+  const ds = buildDemoDataset(kind, NOW);
   it("is a Slovak EUR company", () => {
     expect(ds.supplier.home).toBe("EUR");
     expect(ds.supplier.tenant.default_locale).toBe("sk");
-    expect(ds.supplier.tenant.dic).toMatch(/^SK\d{10}$/);
+    if (ds.supplier.payer) expect(ds.supplier.tenant.dic).toMatch(/^SK\d{10}$/);
+    else expect(ds.supplier.tenant.dic).toBeNull();
     const domestic = ds.invoices.filter((i) => i.currency === "EUR" && !i.reverseCharge);
     expect(domestic.every((i) => i.language === "sk")).toBe(true);
+    for (const b of ds.supplier.bank) expect(b.iban).toMatch(/^SK/);
+  });
+});
+
+describe.each(["sk_freelancer", "sk_vat_freelancer"] as const)("demo dataset %s", (kind) => {
+  const ds = buildDemoDataset(kind, NOW);
+  it("is a živnostník with a Slovak registry note", () => {
+    expect(ds.supplier.tenant.registry_note).toContain("živnostenskom registri");
+    expect(ds.supplier.tenant.registry_note).toContain("okresného úradu");
+  });
+});
+
+describe("demo dataset sk_freelancer", () => {
+  const ds = buildDemoDataset("sk_freelancer", NOW);
+  it("sells to no business in another EU state (that would need VAT registration, §7a ZoDPH)", () => {
+    const foreign = ds.contacts.filter((c) => c.addressCountry !== "SK");
+    expect(foreign.length).toBeGreaterThan(0);
+    for (const c of foreign) expect(["GB", "US", "CH", "NO"], c.legalName).toContain(c.addressCountry);
+    expect(ds.invoices.every((i) => !i.reverseCharge)).toBe(true);
+    expect(ds.expenses.every((e) => !e.reverseCharge && e.currency === "EUR")).toBe(true);
   });
 });
 

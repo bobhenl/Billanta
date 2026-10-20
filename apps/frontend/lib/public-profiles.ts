@@ -24,6 +24,8 @@ export interface PublicProfile {
   orders?: { enabled: boolean; customItems: boolean; prepay: boolean; currency: 'CZK' | 'EUR' };
   /** "Kontaktovat" message form. */
   contactForm?: boolean;
+  /** Set when the profile is listed in the business directory (trade key, municipality slug). */
+  directory?: { trade: string; town: string } | null;
 }
 
 /** `null` for an unknown or unpublished slug. Cached briefly — the owner sees changes within a minute. */

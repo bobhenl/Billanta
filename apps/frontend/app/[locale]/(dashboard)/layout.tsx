@@ -9,6 +9,7 @@ import { Link, redirect } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CommandPalette } from '@/components/command-palette';
 import { ClassroomBanner } from '@/components/classroom/classroom-banner';
+import { AccessProvider } from '@/components/access-provider';
 import { DemoBanner } from '@/components/demo/demo-banner';
 import { DemoTransferClaim } from '@/components/demo/demo-transfer-claim';
 import { DashboardNav } from '@/components/dashboard-nav';
@@ -17,14 +18,17 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import { NavProgress } from '@/components/nav-progress';
 import { NotificationBell } from '@/components/notification-bell';
+import { OfflineIndicator, OfflineProvider } from '@/components/offline-sync';
+import { PromoClaim } from '@/components/promo-claim';
 import { ReferralClaim } from '@/components/referral-claim';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { TrialBanner } from '@/components/trial-banner';
 import { UserMenu } from '@/components/user-menu';
 import { NOINDEX } from '@/lib/seo';
-import { fetchMyAccess, fetchTenant, hiddenSections, type TenantSettings } from '@/lib/tenant';
+import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, type TenantSettings } from '@/lib/tenant';
 import { apiFetch, fetchMyCompanies, isStudentCompanyOfOthers } from '@/lib/api-client';
 import { classroomEnabled, type StudentCompany } from '@/lib/classroom';
+import { PROMO_COOKIE } from '@/lib/promo';
 import { REFERRAL_COOKIE } from '@/lib/referral';
 import { DEMO_TRANSFER_COOKIE } from '@/lib/demo-session';
 import { DEMO_VIEW_ROLES } from '@/lib/demo';
@@ -78,6 +82,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Arrived via someone's invite link: the owner of the (new) company claims it.
   const jar = await cookies();
   const claimReferral = role === 'owner' && jar.has(REFERRAL_COOKIE);
+  // Signed up through a `?promo=` link: whoever may manage billing redeems it (never into a demo).
+  const claimPromo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(PROMO_COOKIE);
   // Came from a demo with "take my work along": the owner of the new company decides whether it comes in.
   const claimDemo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(DEMO_TRANSFER_COOKIE);
   const demoRole = DEMO_VIEW_ROLES.find((r) => r === role) ?? 'owner';
@@ -91,66 +97,82 @@ export default async function DashboardLayout({ children }: { children: React.Re
     if (!access.modules.quotes || p.invoices !== 'write') paletteHidden.push('quotes');
     if (!access.modules.reports || p.reports === 'none') paletteHidden.push('exports');
     if (!access.modules.ai) paletteHidden.push('ai');
+    if (!access.modules.ai || !canManage(access.role)) paletteHidden.push('aiSettings');
+    // Settings pages the role can't save (the same list the settings hub leaves out).
+    if (!canManage(access.role)) paletteHidden.push('manage');
+    if (forbiddenSettings(access).has('integrations')) paletteHidden.push('integrations');
   }
+  // The account menu's shortcuts follow the settings hub.
+  const menuHidden: string[] = [...forbiddenSettings(access)];
+  if (paletteHidden.includes('exports')) menuHidden.push('exports');
 
   // The root layout sends the browser only the public namespaces; the app
   // needs its own as well (lib/client-messages.ts).
   const messages = dashboardClientMessages(await getMessages());
+  // Who offline drafts belong to; a different value on this device wipes the queue (docs/offline-drafts-plan.md).
+  const offlineScope = companies ? `${session.user.id}:${companies.active.id}` : null;
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <div className="flex min-h-screen flex-col">
-        <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
-          <div className="container flex h-14 items-center justify-between gap-3">
-            <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
-              <BrandMark />
-              {tApp('name')}
-            </Link>
+      <AccessProvider access={access}>
+      <OfflineProvider scope={offlineScope}>
+        <div className="flex min-h-screen flex-col">
+          <header className="site-header sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
+            <div className="container flex h-14 items-center justify-between gap-3">
+              <Link href="/dashboard" className="flex shrink-0 items-center gap-2 text-base font-bold tracking-tight">
+                <BrandMark />
+                {tApp('name')}
+              </Link>
 
-            <DashboardNav hidden={hidden} />
+              <DashboardNav hidden={hidden} />
 
-            <div className="flex items-center gap-1.5">
-              <CommandPalette hidden={paletteHidden} />
-              <NotificationBell />
-              <LanguageSwitcher className="hidden md:inline-flex" />
-              <ThemeToggle className="hidden md:inline-flex" />
-              <UserMenu
-                companies={menuCompanies.map((c) => ({ id: c.id, companyName: c.companyName }))}
-                activeId={companies?.active.id ?? null}
-                classroom={classroomEnabled() && !session.isDemo}
-              />
+              <div className="flex items-center gap-1.5">
+                <OfflineIndicator />
+                <CommandPalette hidden={paletteHidden} />
+                <NotificationBell />
+                <LanguageSwitcher className="hidden md:inline-flex" />
+                <ThemeToggle className="hidden md:inline-flex" />
+                <UserMenu
+                  companies={menuCompanies.map((c) => ({ id: c.id, companyName: c.companyName }))}
+                  activeId={companies?.active.id ?? null}
+                  hidden={menuHidden}
+                  classroom={classroomEnabled() && !session.isDemo}
+                />
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
-          {role === 'viewer' && (
-            <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
-          )}
-          {classroom ? (
-            <ClassroomBanner info={classroom} />
-          ) : demo?.isDemo && demo.demoExpiresAt ? (
-            <DemoBanner
-              expiresAt={demo.demoExpiresAt}
-              aiLeft={demo.demoAiCallsLeft ?? null}
-              locale={locale}
-              kind={demo.demoKind ?? null}
-              role={demoRole}
-            />
-          ) : (
-            <TrialBanner plan={access?.plan} />
-          )}
-          {claimDemo && <DemoTransferClaim />}
-          {children}
-        </main>
+          <main className="container pb-tabbar flex-1 overflow-x-auto py-6 md:py-8">
+            {role === 'viewer' && (
+              <p className="mb-4 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">{tApp('readOnlyRole')}</p>
+            )}
+            {classroom ? (
+              <ClassroomBanner info={classroom} />
+            ) : demo?.isDemo && demo.demoExpiresAt ? (
+              <DemoBanner
+                expiresAt={demo.demoExpiresAt}
+                aiLeft={demo.demoAiCallsLeft ?? null}
+                locale={locale}
+                kind={demo.demoKind ?? null}
+                role={demoRole}
+              />
+            ) : (
+              <TrialBanner plan={access?.plan} />
+            )}
+            {claimDemo && <DemoTransferClaim />}
+            {children}
+          </main>
 
-        <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
-        <Suspense fallback={null}>
-          <NavProgress />
-        </Suspense>
-        <KeyboardShortcuts hidden={paletteHidden} />
-        {claimReferral && <ReferralClaim />}
-      </div>
+          <MobileBottomNav hidden={hidden} actionsHidden={paletteHidden} />
+          <Suspense fallback={null}>
+            <NavProgress />
+          </Suspense>
+          <KeyboardShortcuts hidden={paletteHidden} />
+          {claimReferral && <ReferralClaim />}
+          {claimPromo && <PromoClaim />}
+        </div>
+      </OfflineProvider>
+      </AccessProvider>
     </NextIntlClientProvider>
   );
 }

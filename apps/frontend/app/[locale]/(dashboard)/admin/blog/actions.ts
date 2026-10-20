@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { apiFetch } from '@/lib/api-client';
 import { backendMessage } from '@/lib/action-error';
-import type { AdminBlogPost, AdminBlogPostInput } from '@/lib/admin-blog';
+import type { AdminBlogPost, AdminBlogPostInput, AutoPublishKind, BlogAutopublish, TopicKind } from '@/lib/admin-blog';
 
 export type AdminBlogResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -47,6 +47,15 @@ export async function deleteBlogPost(id: string) {
 /** Null when that month's post already exists or the month has no deadlines. */
 export async function draftTaxDeadlines(year: number, month: number) {
   return run<AdminBlogPost | null>('/drafts/tax-deadlines', 'POST', { year, month });
+}
+
+/** Null when every topic of that kind already has a post in that locale. */
+export async function draftNextTopic(kind: TopicKind, locale: 'cs' | 'sk') {
+  return run<AdminBlogPost | null>('/drafts/next', 'POST', { kind, locale });
+}
+
+export async function setBlogAutopublish(kind: AutoPublishKind, enabled: boolean) {
+  return run<BlogAutopublish>(`/autopublish/${kind}`, 'PUT', { enabled });
 }
 
 export async function draftBrief(input: { locale: string; topic: string; facts: string; sources: { title: string; url: string }[] }) {

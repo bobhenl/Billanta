@@ -66,8 +66,10 @@ import { saveDashboardConfig } from './actions';
 import { USAGE_DRIVEN_KEYS, recommendDashboard, withUsageDefaults, type DashboardRecommendation, type Usage, type UsageDrivenKey } from '@/lib/usage-defaults';
 import {
   DEFAULT_TILES,
+  FULL_ABILITIES,
   KPI_CARDS,
   QUICK_TILES,
+  type DashboardAbilities,
   type DashboardConfig,
   type DashboardConfigPatch,
   type DashboardDoc,
@@ -78,6 +80,7 @@ import {
 } from './types';
 import { PeriodReport } from './period-report';
 import { ReferralNudge } from '@/components/referral-nudge';
+import { TaxReturnNudge } from '@/components/tax-return-nudge';
 
 const DEFAULT_CONFIG: DashboardConfig = {
   cards: ['revenue_month', 'unpaid', 'overdue', 'expenses_month'],
@@ -121,6 +124,53 @@ function dueSoonHref() {
   return `/invoices?status=issued&date_field=due&from=${isoDay(from)}&to=${isoDay(to)}`;
 }
 
+/** A tile whose page the member can't use is left out (also of a saved choice). */
+function tileAllowed(tile: QuickTile, a: DashboardAbilities): boolean {
+  switch (tile) {
+    case 'new_invoice':
+    case 'new_proforma':
+    case 'new_quote':
+    case 'dictate_invoice':
+    case 'templates':
+    case 'bulk':
+      return a.createInvoices;
+    case 'new_expense':
+    case 'scan_invoice':
+      return a.createExpenses;
+    case 'new_contact':
+      return a.createContacts;
+    case 'bank':
+    case 'bank_sync':
+      return !a.hidden.includes('bank');
+    case 'exports':
+      return a.exports;
+    case 'calendar_feed':
+      return a.integrations;
+    case 'public_profile':
+    case 'migration':
+      return a.manage;
+  }
+}
+
+function cardAllowed(card: KpiCard, a: DashboardAbilities): boolean {
+  if (card === 'expenses_month' || card === 'profit_month' || card === 'missing_receipts') return !a.hidden.includes('expenses');
+  return !a.hidden.includes('invoices');
+}
+
+/**
+ * An accountant opens the overview to close the books: what is unpaid or
+ * overdue, receipts still missing, VAT and the exports, before any sales
+ * figures. Their own saved choice still wins (withUsageDefaults).
+ */
+function forRole(rec: DashboardRecommendation, a: DashboardAbilities): DashboardRecommendation {
+  if (a.role !== 'accountant') return rec;
+  return {
+    ...rec,
+    cards: ['unpaid', 'overdue', 'missing_receipts', 'vat_month'],
+    tiles: ['exports', 'new_expense', 'scan_invoice', 'bank', 'new_invoice']
+  };
+}
+
 const TILE_META: Record<QuickTile, { href: string; icon: LucideIcon }> = {
   new_invoice: { href: '/invoices/new', icon: FilePlus2 },
   new_proforma: { href: '/invoices/new?type=proforma', icon: Banknote },
@@ -154,7 +204,9 @@ export function DashboardView({
   time = null,
   stats = null,
   usage = null,
-  referral = null
+  referral = null,
+  taxReturnYear = null,
+  abilities = FULL_ABILITIES
 }: {
   summary: DashboardSummary;
   initialConfig: DashboardConfig | null;
@@ -172,18 +224,30 @@ export function DashboardView({
   usage?: Usage | null;
   /** Invite card after the first paid invoice, while nobody has been invited yet. */
   referral?: { code: string; link: string; welcome: number; reward: number } | null;
+  /** January to March: the tax year whose return-basis card shows (the company invoiced in it). */
+  taxReturnYear?: number | null;
+  /** What the member's role allows: actions they can't take are not offered. */
+  abilities?: DashboardAbilities;
 }) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
   const [stored, setStored] = useState(() => normalize(initialConfig));
   const [savedKeys, setSavedKeys] = useState<string[] | undefined>(initialConfig?.savedKeys);
-  const recommendation = useMemo(() => recommendDashboard(usage), [usage]);
+  const recommendation = useMemo(() => forRole(recommendDashboard(usage), abilities), [usage, abilities]);
   // Saved choices win; every key the member never touched follows usage.
   const config = useMemo(() => normalize(withUsageDefaults(stored, savedKeys, recommendation)), [stored, savedKeys, recommendation]);
+  const cards = config.cards.filter((card) => cardAllowed(card, abilities));
   const [customizing, setCustomizing] = useState(false);
   const money = (n: number) => formatMoney(n, summary.currency, locale);
   const { kpi } = summary;
-  const tiles = (config.tiles ?? DEFAULT_TILES).filter((id): id is QuickTile => (QUICK_TILES as readonly string[]).includes(id));
+  const tiles = (config.tiles ?? DEFAULT_TILES).filter((id): id is QuickTile => (QUICK_TILES as readonly string[]).includes(id) && tileAllowed(id as QuickTile, abilities));
+  // The accountant's main job here is the exports; others issue invoices.
+  const primary =
+    abilities.role === 'accountant' && abilities.exports
+      ? { href: '/settings/exports', icon: Download, label: t('exportsCta') }
+      : abilities.createInvoices
+        ? { href: '/invoices/new', icon: Plus, label: t('newInvoice') }
+        : null;
 
   const cardValue: Record<KpiCard, { value: string; sub: string }> = {
     revenue_month: { value: money(kpi.revenueMonth), sub: t('cards.revenue_month.sub') },
@@ -213,23 +277,25 @@ export function DashboardView({
             <Settings2 className="h-4 w-4" />
             {t('customize')}
           </button>
-          <Link href="/invoices/new" className={buttonClass.primary}>
-            <Plus className="h-4 w-4" />
-            {t('newInvoice')}
-          </Link>
+          {primary && (
+            <Link href={primary.href} className={buttonClass.primary}>
+              <primary.icon className="h-4 w-4" />
+              {primary.label}
+            </Link>
+          )}
         </div>
       </div>
 
-      {config.cards.length > 0 && (
+      {cards.length > 0 && (
         <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {config.cards.map((card) => {
+          {cards.map((card) => {
             const meta = CARD_META[card];
             const Icon = meta.icon;
             const alert = card === 'overdue' && kpi.overdueCount > 0;
             return (
               <Link
                 key={card}
-                href={card === 'due_soon' ? dueSoonHref() : meta.href}
+                href={card === 'due_soon' ? dueSoonHref() : card === 'vat_month' && !abilities.exports ? '/invoices?type=invoice' : meta.href}
                 className={cn(
                   'group rounded-xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md',
                   alert ? 'border-destructive/40' : 'border-border'
@@ -274,10 +340,12 @@ export function DashboardView({
       {!hasData && (
         <div className="mt-6 rounded-xl border border-dashed border-border p-8 text-center">
           <p className="font-bold">{t('emptyTitle')}</p>
-          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{t('emptyHint')}</p>
-          <Link href="/invoices/new" className={cn(buttonClass.primary, 'mt-4')}>
-            {t('newInvoice')}
-          </Link>
+          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{t(abilities.createInvoices ? 'emptyHint' : 'emptyHintReadOnly')}</p>
+          {abilities.createInvoices && (
+            <Link href="/invoices/new" className={cn(buttonClass.primary, 'mt-4')}>
+              {t('newInvoice')}
+            </Link>
+          )}
         </div>
       )}
 
@@ -311,9 +379,10 @@ export function DashboardView({
         </section>
       )}
 
+      {taxReturnYear != null && <TaxReturnNudge year={taxReturnYear} />}
       {referral && <ReferralNudge {...referral} />}
       {time && <TimeCard time={time} />}
-      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} />}
+      {config.showTaxDeadlines && <TaxDeadlines kinds={taxKindsOf(config, profile)} profile={profile} advances={advances} amounts={config.taxAmounts ?? {}} country={country} abilities={abilities} />}
       {country !== 'SK' && (config.showFxRates ?? true) && <FxRates currencies={config.fxCurrencies ?? DEFAULT_FX} />}
 
       <div className={cn('mt-6 grid gap-4', config.showChart && config.showTopCustomers && 'lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]')}>
@@ -367,6 +436,7 @@ export function DashboardView({
         usage={usage}
         recommendation={recommendation}
         savedKeys={savedKeys}
+        abilities={abilities}
         onSaved={(patch) => {
           const kept = Object.fromEntries(Object.entries(patch).filter(([, v]) => v != null)) as Partial<DashboardConfig>;
           setStored((cur) => normalize({ ...cur, ...kept }));
@@ -475,7 +545,8 @@ function CustomizeModal({
   country,
   usage,
   recommendation,
-  savedKeys
+  savedKeys,
+  abilities
 }: {
   open: boolean;
   onClose: () => void;
@@ -486,6 +557,7 @@ function CustomizeModal({
   usage: Usage | null;
   recommendation: DashboardRecommendation;
   savedKeys: string[] | undefined;
+  abilities: DashboardAbilities;
 }) {
   const t = useTranslations('dashboard');
   const router = useRouter();
@@ -529,7 +601,7 @@ function CustomizeModal({
   const [saving, start] = useTransition();
 
   // Cards keep the user's order; unchecked ones are listed after, in default order.
-  const ordered = [...cards, ...KPI_CARDS.filter((c) => !cards.includes(c))];
+  const ordered = [...cards, ...KPI_CARDS.filter((c) => !cards.includes(c))].filter((c) => cardAllowed(c, abilities));
   const toggleCard = (card: KpiCard) => {
     touch('cards');
     setCards((cur) => (cur.includes(card) ? cur.filter((c) => c !== card) : [...cur, card]));
@@ -658,7 +730,7 @@ function CustomizeModal({
 
       <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('customizeTiles')}</h3>
       <div className="mt-2 flex flex-wrap gap-1.5">
-        {QUICK_TILES.map((tile) => {
+        {QUICK_TILES.filter((tile) => tileAllowed(tile, abilities)).map((tile) => {
           const on = tiles.includes(tile);
           return (
             <button
@@ -772,18 +844,22 @@ function CustomizeModal({
           {!profile.legalEntity && profile.country.toUpperCase() !== 'SK' && profile.flatTax == null && (
             <p className="mt-1 text-xs text-muted-foreground">
               {t('taxDeadlines.regimeUnknown')}{' '}
-              <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
-                {t('taxDeadlines.regimeAnswer')}
-              </Link>
+              {abilities.manage && (
+                <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
+                  {t('taxDeadlines.regimeAnswer')}
+                </Link>
+              )}
             </p>
           )}
           {/* Social / health / flat tax amounts live in Settings, by period (one source for the dashboard, iCal and reports). */}
           {relevantTaxDeadlineKinds(taxKinds, profile).some(isTaxAdvanceKind) && (
             <p className="mt-4 text-xs text-muted-foreground">
               {t('taxDeadlines.advancesInSettings')}{' '}
-              <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
-                {t('taxDeadlines.editAdvances')}
-              </Link>
+              {abilities.manage && (
+                <Link href="/settings/company#zalohy" className="font-semibold text-primary hover:underline" onClick={onClose}>
+                  {t('taxDeadlines.editAdvances')}
+                </Link>
+              )}
             </p>
           )}
           {AMOUNT_KINDS.some((k) => taxKinds.includes(k)) && (
@@ -867,7 +943,8 @@ function TaxDeadlines({
   profile,
   advances,
   amounts,
-  country
+  country,
+  abilities
 }: {
   kinds: TaxDeadlineKind[];
   profile: TaxProfile;
@@ -876,6 +953,7 @@ function TaxDeadlines({
   /** The member's own amounts for the other kinds (e.g. payroll). */
   amounts: Record<string, number | undefined>;
   country: string;
+  abilities: DashboardAbilities;
 }) {
   const t = useTranslations('dashboard.taxDeadlines');
   const locale = useLocale();
@@ -956,18 +1034,18 @@ function TaxDeadlines({
             {amountOf(item) !== undefined ? (
               <span className="shrink-0 text-sm font-semibold tabular-nums">{formatMoney(amountOf(item)!, currency, locale)}</span>
             ) : (
-              isTaxAdvanceKind(item.kind) && (
+              isTaxAdvanceKind(item.kind) && abilities.manage && (
                 <Link href="/settings/company#zalohy" className="shrink-0 text-xs font-semibold text-primary hover:underline">
                   {t('fillAmount')}
                 </Link>
               )
             )}
-            {country === 'SK' && SK_EXPENSE_KINDS.includes(item.kind) && (
+            {country === 'SK' && SK_EXPENSE_KINDS.includes(item.kind) && abilities.createExpenses && (
               <Link href={expenseHref(item)}className="shrink-0 text-xs font-semibold text-primary hover:underline">
                 {t('bookExpense')}
               </Link>
             )}
-            {item.kind.startsWith('vat_') && (
+            {item.kind.startsWith('vat_') && abilities.exports && (
               <Link href="/settings/exports#epo" className="hidden shrink-0 text-xs font-semibold text-primary hover:underline sm:inline">
                 {t('prepareXml')}
               </Link>

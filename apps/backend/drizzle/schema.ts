@@ -82,6 +82,9 @@ export const invoiceSourceEnum = pgEnum("invoice_source", [
   // A visitor ordered from the company's public profile (Služby a ceník).
   // Always a draft for the owner to review; see public-profiles/profile-orders.service.ts.
   "profile_order",
+  // A voice note recorded in the dashboard (often offline), transcribed into a
+  // pending_review draft once it synced. See docs/offline-drafts-plan.md.
+  "ai_voice",
 ]);
 
 // What kind of document an `invoices` row is. Quotes and proformas are not
@@ -292,8 +295,8 @@ export const tenants = pgTable("tenants", {
   // demo_expires_at - now. Its identity is locked by a trigger.
   isDemo: boolean("is_demo").notNull().default(false),
   demoExpiresAt: timestamp("demo_expires_at", { withTimezone: true }),
-  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro">(),
-  // Classroom mode (0071, `src/classroom/`): a practice company of a class.
+  demoKind: text("demo_kind").$type<"cz_vat_sro" | "cz_freelancer" | "cz_pausal" | "sk_vat_sro" | "sk_freelancer" | "sk_vat_freelancer">(),
+  // Classroom mode (0080, `src/classroom/`): a practice company of a class.
   // Always a demo tenant too; set only by classroom_join.
   classroomClassId: uuid("classroom_class_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -332,6 +335,13 @@ export const users = pgTable(
     totpLastStep: integer("totp_last_step"),
     // The password-less owner of a demo company (0068); deleted with it.
     isDemo: boolean("is_demo").notNull().default(false),
+    // First-touch utm_* / referrer of the signup (0075), from the frontend's
+    // billanta_src cookie; signup_source is its source alone, for counting.
+    signupAttribution: jsonb("signup_attribution"),
+    signupSource: varchar("signup_source", { length: 100 }),
+    // Optional signup checkboxes (0079): keeps clients' books, teaches.
+    managesClients: boolean("manages_clients").notNull().default(false),
+    isTeacher: boolean("is_teacher").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -1338,7 +1348,7 @@ export const emailOutbox = pgTable("email_outbox", {
   // The member it goes to (notifications, digest); null for customers and invitees.
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   kind: varchar("kind", { length: 40 }).notNull(),
-  // transactional | notification | digest — decides quiet hours, batching and List-Unsubscribe.
+  // transactional | notification | digest | newsletter – decides quiet hours, batching and List-Unsubscribe.
   category: varchar("category", { length: 16 }).notNull(),
   idempotencyKey: varchar("idempotency_key", { length: 200 }).notNull(),
   batchKey: varchar("batch_key", { length: 120 }),
@@ -1472,8 +1482,9 @@ export const auditLog = pgTable(
 
 // ---------------------------------------------------------------------------
 // referrals — tenant-scoped, OWNED BY THE INVITER (tenant_id). Read-only for
-// the app role; written by the claim_referral / reward_referral SECURITY
-// DEFINER functions (migration 0044).
+// the app role; written by claim_referral (0044) and the reward functions of
+// 0079. The reward is fixed by the first payment (pending_credits) and paid
+// once the invited company is past the refund window (rewards.ts).
 // ---------------------------------------------------------------------------
 export const referrals = pgTable("referrals", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -1486,6 +1497,13 @@ export const referrals = pgTable("referrals", {
   program: varchar("program", { length: 16 }).$type<"friend" | "accountant">().notNull(),
   rewardedAt: timestamp("rewarded_at", { withTimezone: true }),
   rewardCredits: integer("reward_credits"),
+  firstPaidAt: timestamp("first_paid_at", { withTimezone: true }),
+  paidCount: smallint("paid_count").notNull().default(0),
+  pendingCredits: integer("pending_credits"),
+  // Annual plans: paid by the daily cron after this. Monthly: null, paid on the second payment.
+  releaseAfter: timestamp("release_after", { withTimezone: true }),
+  voidedAt: timestamp("voided_at", { withTimezone: true }),
+  voidReason: varchar("void_reason", { length: 16 }).$type<"refunded" | "canceled">(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1564,6 +1582,64 @@ export const partners = pgTable("partners", {
 });
 
 // ---------------------------------------------------------------------------
+// promo_codes — GLOBAL (no tenant, no RLS), like partners. Codes Billanta
+// staff hand out at events, to creators and to schools (`src/promo-codes/`).
+// `code` is stored upper case; the unique index is on upper(code) (0071).
+// redemption_count is bumped in the redeeming company's transaction under a
+// row lock, so max_redemptions holds without counting other tenants' rows.
+// ---------------------------------------------------------------------------
+export const promoCodes = pgTable("promo_codes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: varchar("code", { length: 32 }).notNull(),
+  /** Other modules (class codes) add their own kinds with a PromoKindHandler. */
+  kind: varchar("kind", { length: 16 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  /** Days for trial_days, months for free_months. */
+  benefitValue: integer("benefit_value").notNull(),
+  maxRedemptions: integer("max_redemptions"),
+  redemptionCount: integer("redemption_count").notNull().default(0),
+  /** Inclusive `YYYY-MM-DD` bounds; null = open. */
+  validFrom: date("valid_from"),
+  validUntil: date("valid_until"),
+  active: boolean("active").notNull().default(true),
+  /** Who the code belongs to: the creator, event or school. */
+  ownerLabel: text("owner_label"),
+  note: text("note"),
+  /** The creator or coworking's invite code (tenants.referral_code): they get the referral credit. */
+  referralCode: varchar("referral_code", { length: 16 }),
+  /** A BUSINESS_PRESETS key (frontend): the join link preselects that company type. */
+  businessPreset: varchar("business_preset", { length: 32 }),
+  defaultLocale: varchar("default_locale", { length: 2 }).$type<"cs" | "sk" | "en">(),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// promo_redemptions — tenant-scoped (RLS), one per company: which code it
+// came with (attribution for events and creators) and what it got, copied
+// so a later edit of the code doesn't rewrite history. The app may insert
+// its own row; nothing changes or deletes one afterwards. Per-code totals
+// across companies only through promo_code_stats() (0071).
+// ---------------------------------------------------------------------------
+export const promoRedemptions = pgTable("promo_redemptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  promoCodeId: uuid("promo_code_id")
+    .notNull()
+    .references(() => promoCodes.id),
+  code: varchar("code", { length: 32 }).notNull(),
+  benefitType: varchar("benefit_type", { length: 16 }).$type<"trial_days" | "free_months">().notNull(),
+  benefitPlan: varchar("benefit_plan", { length: 16 }).$type<"start" | "plus" | "business">().notNull(),
+  benefitValue: integer("benefit_value").notNull(),
+  source: varchar("source", { length: 16 }).$type<"signup" | "billing">().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // blog_posts — GLOBAL (no tenant, no RLS) articles behind /blog. AI writes
 // only drafts; a platform admin publishes (`src/blog/`). One row per locale,
 // rows of the same article share `translation_key` (hreflang).
@@ -1572,6 +1648,9 @@ export interface BlogSource {
   title: string;
   url: string;
 }
+
+/** manual: written by a person; brief: AI from an admin's facts; the rest: AI from our own data (blog-drafts.service.ts). */
+export type BlogPostKind = "manual" | "brief" | "tax_deadlines" | "tool_howto" | "trade_invoicing";
 
 export const blogPosts = pgTable("blog_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -1582,7 +1661,7 @@ export const blogPosts = pgTable("blog_posts", {
   description: text("description").notNull(),
   /** Restricted markdown: `## ` headings, `- ` lists, **bold**, [links](https://…). */
   body: text("body").notNull(),
-  kind: varchar("kind", { length: 16 }).$type<"manual" | "tax_deadlines" | "brief">().notNull().default("manual"),
+  kind: varchar("kind", { length: 16 }).$type<BlogPostKind>().notNull().default("manual"),
   status: varchar("status", { length: 16 })
     .$type<"draft" | "pending_review" | "published" | "rejected">()
     .notNull()
@@ -1593,13 +1672,76 @@ export const blogPosts = pgTable("blog_posts", {
   /** Blocker codes from `blog-checks.ts` at the last save. */
   warnings: jsonb("warnings").$type<string[]>().notNull().default([]),
   publishedAt: timestamp("published_at", { withTimezone: true }),
+  /** Went live without a click (blog_autopublish); counts towards the weekly cap. */
+  autoPublished: boolean("auto_published").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Auto-publish switch per generated kind, set in /admin/blog (migration 0078).
+ * A missing row means off. Briefs and hand-written posts have no switch.
+ */
+export const blogAutopublish = pgTable("blog_autopublish", {
+  kind: varchar("kind", { length: 16 }).$type<BlogPostKind>().primaryKey(),
+  enabled: boolean("enabled").notNull().default(false),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// newsletter_subscribers / newsletter_issues – GLOBAL (no tenant), like
+// blog_posts: the "we'll let you know when something changes" newsletter
+// (migration 0076). A subscriber row is also the consent record (wording
+// shown, when given, when confirmed, when withdrawn). Issues are mailed
+// only through enqueue_newsletter_email, which checks the opt-in itself.
+// ---------------------------------------------------------------------------
+export const NEWSLETTER_TOPICS = ["tax_rates", "limits", "deadlines", "sk_einvoicing"] as const;
+export type NewsletterTopic = (typeof NEWSLETTER_TOPICS)[number];
+
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 320 }).notNull(),
+  locale: varchar("locale", { length: 2 }).$type<"cs" | "sk" | "en">().notNull().default("cs"),
+  country: varchar("country", { length: 2 }).$type<"CZ" | "SK">().notNull().default("CZ"),
+  topics: text("topics").array().$type<NewsletterTopic[]>().notNull().default(sql`'{}'`),
+  status: varchar("status", { length: 16 }).$type<"pending" | "confirmed" | "unsubscribed">().notNull().default("pending"),
+  /** Where the form was: blog, guides, calculators, sk_einvoicing, settings. */
+  source: varchar("source", { length: 24 }).notNull().default("blog"),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  /** The consent wording exactly as shown next to the form or toggle. */
+  consentText: text("consent_text").notNull(),
+  consentAt: timestamp("consent_at", { withTimezone: true }).notNull().defaultNow(),
+  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  unsubscribedAt: timestamp("unsubscribed_at", { withTimezone: true }),
+  /** sha256 (hex) of the double opt-in link's token; cleared once confirmed. */
+  confirmTokenHash: varchar("confirm_token_hash", { length: 64 }),
+  confirmSentAt: timestamp("confirm_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const newsletterIssues = pgTable("newsletter_issues", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  locale: varchar("locale", { length: 2 }).$type<"cs" | "sk" | "en">().notNull().default("cs"),
+  /** Null = subscribers from both countries. */
+  country: varchar("country", { length: 2 }).$type<"CZ" | "SK">(),
+  /** Goes to subscribers who chose at least one of these. */
+  topics: text("topics").array().$type<NewsletterTopic[]>().notNull().default(sql`'{}'`),
+  subject: varchar("subject", { length: 200 }).notNull(),
+  /** Restricted markdown like blog_posts.body. */
+  body: text("body").notNull(),
+  status: varchar("status", { length: 16 }).$type<"draft" | "sending" | "sent">().notNull().default("draft"),
+  queuedCount: integer("queued_count").notNull().default(0),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  sendStartedAt: timestamp("send_started_at", { withTimezone: true }),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // ---------------------------------------------------------------------------
 // accountant_listings — an accountant's entry in the public directory
-// (/accountants), one per company in the accountant programme. RLS: the
+// (/accountants), one per company. RLS: the
 // company may only store 'pending' or 'withdrawn'; approval goes through
 // review_accountant_listing (platform admins, migration 0050).
 // ---------------------------------------------------------------------------
@@ -1629,6 +1771,22 @@ export const accountantListings = pgTable(
     tenantUnique: uniqueIndex("accountant_listings_tenant_unique").on(table.tenantId),
   }),
 );
+
+// ---------------------------------------------------------------------------
+// accountant_partner_requests: a company asking for the accountant partner
+// tier (higher referral rates). One row per company. RLS: the company may
+// only store 'pending'; review_accountant_listing / review_accountant_partner
+// (platform admins, migration 0079) approve it and switch the tier.
+// ---------------------------------------------------------------------------
+export const accountantPartnerRequests = pgTable("accountant_partner_requests", {
+  tenantId: uuid("tenant_id")
+    .primaryKey()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  status: varchar("status", { length: 12 }).$type<"pending" | "approved" | "rejected">().notNull().default("pending"),
+  requestedAt: timestamp("requested_at", { withTimezone: true }).notNull().defaultNow(),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  reviewNote: text("review_note"),
+});
 
 /**
  * NOT tenant-scoped. Official pages the tax constants come from, with a hash
@@ -1688,7 +1846,7 @@ export const demoSessions = pgTable("demo_sessions", {
 });
 
 // ---------------------------------------------------------------------------
-// Classroom mode (0071, `src/classroom/`, docs/classroom-mode-plan.md).
+// Classroom mode (0080, `src/classroom/`, docs/classroom-mode-plan.md).
 // Global tables: the backend checks who may see what. Students, their
 // companies and the teachers' viewer memberships change only through the
 // classroom_* functions of that migration.
@@ -1837,3 +1995,107 @@ export const classroomStudents = pgTable(
     tenantUnique: uniqueIndex("classroom_students_tenant_unique").on(table.tenantId),
   }),
 );
+
+// idempotency_keys — tenant-scoped (migration 0072). One row per
+// Idempotency-Key a client sent with a create (offline drafts, see
+// docs/offline-drafts-plan.md); a retry with the same key returns
+// `resource_id` instead of creating another row. Kept for 30 days.
+// ---------------------------------------------------------------------------
+export const idempotencyKeys = pgTable(
+  "idempotency_keys",
+  {
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    key: varchar("key", { length: 100 }).notNull(),
+    // What the key created ("invoice", "contact"): the same key can't replay into another kind.
+    scope: varchar("scope", { length: 40 }).notNull(),
+    resourceId: uuid("resource_id"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.tenantId, table.key] }),
+    createdIdx: index("idempotency_keys_created_idx").on(table.tenantId, table.createdAt),
+  }),
+);
+
+// E-invoicing over Peppol (migration 0074, docs/sk-einvoicing-2027.md). A
+// certified provider is the access point; these tables record what went
+// through it. Tenant-scoped with the standard policy. Never deleted by the
+// app (10-year archive, § 85o ods. 15 ZoDPH).
+// ---------------------------------------------------------------------------
+export type EInvoiceParticipantStatus = "pending" | "registered" | "failed" | "deregistered";
+export type OutgoingEInvoiceStatus = "queued" | "sent" | "delivered" | "reported" | "rejected" | "failed";
+export type IncomingEInvoiceReviewStatus = "pending_review" | "accepted" | "rejected";
+export type EInvoiceDocumentType = "invoice" | "credit_note";
+
+export const einvoiceParticipants = pgTable("einvoice_participants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  provider: varchar("provider", { length: 32 }).notNull(),
+  /** `0245:<DIČ>` for a Slovak company. Unique among active registrations across all tenants. */
+  participantId: varchar("participant_id", { length: 64 }).notNull(),
+  status: varchar("status", { length: 16 }).$type<EInvoiceParticipantStatus>().notNull().default("pending"),
+  /** The provider's own ID of the registration, for later calls. */
+  providerRef: varchar("provider_ref", { length: 128 }),
+  lastError: text("last_error"),
+  registeredAt: timestamp("registered_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const outgoingEInvoices = pgTable("outgoing_einvoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  invoiceId: uuid("invoice_id").notNull().references(() => invoices.id, { onDelete: "restrict" }),
+  provider: varchar("provider", { length: 32 }).notNull(),
+  senderParticipantId: varchar("sender_participant_id", { length: 64 }).notNull(),
+  receiverParticipantId: varchar("receiver_participant_id", { length: 64 }).notNull(),
+  documentType: varchar("document_type", { length: 16 }).$type<EInvoiceDocumentType>().notNull(),
+  /** The exact XML handed to the provider: the archived tax document. */
+  xml: text("xml").notNull(),
+  xmlSha256: char("xml_sha256", { length: 64 }).notNull(),
+  providerMessageId: varchar("provider_message_id", { length: 128 }),
+  status: varchar("status", { length: 16 }).$type<OutgoingEInvoiceStatus>().notNull().default("queued"),
+  statusReason: text("status_reason"),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+  /** When the provider confirmed the report to FR SR. */
+  reportedAt: timestamp("reported_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const incomingEInvoices = pgTable("incoming_einvoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  provider: varchar("provider", { length: 32 }).notNull(),
+  providerMessageId: varchar("provider_message_id", { length: 128 }).notNull(),
+  senderParticipantId: varchar("sender_participant_id", { length: 64 }).notNull(),
+  receiverParticipantId: varchar("receiver_participant_id", { length: 64 }).notNull(),
+  documentType: varchar("document_type", { length: 16 }).$type<EInvoiceDocumentType>().notNull(),
+  documentNumber: varchar("document_number", { length: 128 }),
+  issueDate: date("issue_date"),
+  supplierName: text("supplier_name"),
+  currency: varchar("currency", { length: 3 }),
+  total: numeric("total", { precision: 14, scale: 2 }),
+  xml: text("xml").notNull(),
+  xmlSha256: char("xml_sha256", { length: 64 }).notNull(),
+  /** Expense fields read from the UBL; becomes an expense only when a person accepts it. */
+  draft: jsonb("draft").$type<Record<string, unknown>>().notNull(),
+  reviewStatus: varchar("review_status", { length: 16 }).$type<IncomingEInvoiceReviewStatus>().notNull().default("pending_review"),
+  expenseId: uuid("expense_id").references(() => expenses.id, { onDelete: "set null" }),
+  reviewedBy: uuid("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const einvoiceStatusEvents = pgTable("einvoice_status_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "restrict" }),
+  outgoingEInvoiceId: uuid("outgoing_einvoice_id").notNull().references(() => outgoingEInvoices.id, { onDelete: "restrict" }),
+  status: varchar("status", { length: 16 }).$type<OutgoingEInvoiceStatus>().notNull(),
+  reason: text("reason"),
+  occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { BadRequestException, Injectable, NotFoundException, Optional } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional, UnprocessableEntityException } from "@nestjs/common";
 import {
   checkInvoiceRequirements,
   generateIsdocXml,
@@ -8,6 +8,7 @@ import {
   validatePeppolInvoice,
   type PeppolIssue,
   type RequirementIssue,
+  type UblOptions,
 } from "@faktur/cz-compliance";
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, ne, notInArray, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -16,12 +17,15 @@ import { getCnbDay } from "../exports/cnb-rates";
 import { getHomeRateDay } from "../exports/home-rates";
 import { exchangeRateSettingsOf, isCnbRate, resolveRateMode, type StoredRateMode } from "./exchange-rate-mode";
 import * as schema from "../../drizzle/schema";
+import { withIdempotencyKey } from "../common/idempotency";
 import { EmailService, type EmailAttachment, type EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
 import { templateValues, templateVarsOf } from "../tenants/template-vars";
 import { InvoiceAttachmentsService } from "./invoice-attachments.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { AuditService } from "../audit/audit.service";
+import { AiService, type InvoiceSuggestion } from "../ai/ai.service";
+import { transcribeVoiceNote } from "../ai/voice-transcription";
 import type { NotificationEvent } from "../notifications/notification-prefs";
 import type { CreateInvoiceDto, ListInvoicesQuery, UpdateInvoiceDto } from "./dto/create-invoice.dto";
 import type { CreateInvoiceDraftDto } from "./dto/create-invoice-draft.dto";
@@ -46,6 +50,7 @@ import {
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
+import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -199,6 +204,13 @@ function toInvoiceSource(channel: "telegram" | "whatsapp"): "ai_telegram" | "ai_
   return channel === "telegram" ? "ai_telegram" : "ai_whatsapp";
 }
 
+/** Drafts written by AI from a voice note or a chat message; issuing one stamps `ai_draft_reviewed_at`. */
+export const AI_SOURCES = ["ai_telegram", "ai_whatsapp", "ai_voice"] as const;
+
+function isAiSource(source: InvoiceRow["source"]): boolean {
+  return (AI_SOURCES as readonly string[]).includes(source);
+}
+
 @Injectable()
 export class InvoicesService {
   constructor(
@@ -207,6 +219,7 @@ export class InvoicesService {
     @Optional() private readonly attachmentsService?: InvoiceAttachmentsService,
     @Optional() private readonly notifications?: NotificationsService,
     @Optional() private readonly audit?: AuditService,
+    @Optional() private readonly ai?: AiService,
   ) {}
 
   /** One line in the document's history (Settings → Historie změn). */
@@ -338,7 +351,7 @@ export class InvoicesService {
       if (query.to) conditions.push(lt(column, new Date(Date.parse(`${query.to}T00:00:00Z`) + 86_400_000)));
     }
 
-    if (query.source === "ai") conditions.push(inArray(schema.invoices.source, ["ai_telegram", "ai_whatsapp"]));
+    if (query.source === "ai") conditions.push(inArray(schema.invoices.source, [...AI_SOURCES]));
     else if (query.source) conditions.push(eq(schema.invoices.source, query.source));
     if (query.language) conditions.push(eq(schema.invoices.language, query.language));
     if (query.reverse_charge) conditions.push(eq(schema.invoices.reverseCharge, query.reverse_charge === "yes"));
@@ -490,7 +503,24 @@ export class InvoicesService {
    * so a foreign id simply isn't found. A draft may have no contact yet
    * (`customerRequiredError`); issuing it still needs one.
    */
-  async create(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api" = "manual") {
+  async create(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api" = "manual", idempotencyKey: string | null = null) {
+    return withIdempotencyKey(
+      db,
+      tenantId,
+      idempotencyKey,
+      "invoice",
+      () => this.insertDraft(db, tenantId, dto, source),
+      (invoice) => invoice.id,
+      // The first try's draft may since have been deleted; the client must not resend it either way.
+      (id) =>
+        this.requireInvoice(db, id).catch((error: unknown) => {
+          if (error instanceof NotFoundException) throw new ConflictException({ error: "idempotent_resource_deleted" });
+          throw error;
+        }),
+    );
+  }
+
+  private async insertDraft(db: TenantDb, tenantId: string, dto: CreateInvoiceDto, source: "manual" | "api") {
     const missing = customerRequiredError("save_draft", dto.contact_id);
     if (missing) throw new BadRequestException(missing);
     const contact = dto.contact_id ? await this.requireContact(db, dto.contact_id) : null;
@@ -1094,6 +1124,84 @@ export class InvoicesService {
   }
 
   /**
+   * `POST /api/v1/invoices/voice-drafts`: a voice note recorded in the
+   * dashboard (usually offline, sent once the connection is back) becomes a
+   * `pending_review` draft, like a Telegram or WhatsApp voice note. The
+   * ai-service transcribes it; the text goes through the same extraction as
+   * the form's AI fill-in, on the company's own AI mode and limits. Never
+   * numbered or issued here: the member reviews and issues it by hand.
+   *
+   * With an Idempotency-Key the whole run, transcription included, happens
+   * once; a retry gets the draft the first request created.
+   */
+  async createVoiceDraft(
+    db: TenantDb,
+    tenantId: string,
+    audio: { buffer: Buffer; mimeType: string; language: string | null },
+    idempotencyKey: string | null,
+  ) {
+    return withIdempotencyKey(
+      db,
+      tenantId,
+      idempotencyKey,
+      "voice_draft",
+      async () => {
+        if (!this.ai) throw new UnprocessableEntityException({ error: "voice_unavailable" });
+        const transcript = await transcribeVoiceNote(audio.buffer, audio.mimeType, audio.language);
+        const { suggestion, contact } = await this.ai.suggestInvoice(db, tenantId, transcript);
+        return this.insertVoiceDraft(db, tenantId, transcript, suggestion, contact?.id ?? null);
+      },
+      (invoice) => invoice.id,
+      (id) =>
+        this.requireInvoice(db, id).catch((error: unknown) => {
+          if (error instanceof NotFoundException) throw new ConflictException({ error: "idempotent_resource_deleted" });
+          throw error;
+        }),
+    );
+  }
+
+  private async insertVoiceDraft(
+    db: TenantDb,
+    tenantId: string,
+    transcript: string,
+    suggestion: InvoiceSuggestion,
+    contactId: string | null,
+  ) {
+    const items = suggestion.items.filter((item) => Number.isFinite(item.quantity) && Number.isFinite(item.unit_price));
+    const [invoice] = await db
+      .insert(schema.invoices)
+      .values({
+        tenantId,
+        contactId,
+        currency: suggestion.currency,
+        status: "pending_review",
+        source: "ai_voice",
+        issueDate: new Date(),
+        // A customer the model could not match to a saved contact, or no items: the reviewer has to look.
+        needsAttention: !contactId || items.length === 0,
+        // What was said, for the reviewer; internal notes never reach the PDF.
+        internalNote: transcript,
+        rawAiPayload: { rawTranscript: transcript, suggestion },
+      })
+      .returning();
+    if (items.length > 0) {
+      await db.insert(schema.invoiceLineItems).values(
+        items.map((item, index) => ({
+          tenantId,
+          invoiceId: invoice.id,
+          description: item.description,
+          quantity: item.quantity.toString(),
+          unitPrice: item.unit_price.toString(),
+          vatRate: item.vat_rate != null ? item.vat_rate.toString() : null,
+          sortOrder: index,
+        })),
+      );
+    }
+    this.ping(invoice, "draft_ready", "Nový návrh faktury ke kontrole", suggestion.customer.name ? `Odběratel: ${suggestion.customer.name}` : undefined);
+    return invoice;
+  }
+
+  /**
    * `POST /api/v1/invoices/:id/send` — loads the invoice + its contact
    * through the normal RLS-scoped `db` (never the public
    * `get_public_invoice_view` SECURITY DEFINER function, which exists only
@@ -1139,6 +1247,7 @@ export class InvoicesService {
         amount: formatInvoiceAmount(total, invoice.currency),
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
+        credit: await this.emailCredit(db, invoice.tenantId),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
       },
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
@@ -1160,6 +1269,12 @@ export class InvoicesService {
   private async emailLinks(db: TenantDb, invoice: typeof schema.invoices.$inferSelect, contact: typeof schema.contacts.$inferSelect) {
     const links = await this.publicLinks(db, invoice, contact);
     return { publicLink: links.public, clientPortalLink: links.portal };
+  }
+
+  /** The "Vystaveno v Billantě" line for the company's e-mails (brand-credit.ts). */
+  private async emailCredit(db: TenantDb, tenantId: string) {
+    const [tenant] = await db.select(BRAND_CREDIT_TENANT_FIELDS).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
+    return tenant ? brandCreditFor(tenant, "cs", "email") : null;
   }
 
   /** Whether the issued invoice was edited in place after `since` (its last send). */
@@ -1204,6 +1319,7 @@ export class InvoicesService {
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
+        credit: await this.emailCredit(db, invoice.tenantId),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
       },
       { tenantId: invoice.tenantId, db, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },
@@ -1429,7 +1545,7 @@ export class InvoicesService {
         // invoice was never an unreviewed AI draft in the first place, so
         // leave this null for those rather than fabricating a value.
         aiDraftReviewedAt:
-          invoice.source === "ai_telegram" || invoice.source === "ai_whatsapp"
+          isAiSource(invoice.source)
             ? (invoice.aiDraftReviewedAt ?? now)
             : invoice.aiDraftReviewedAt,
         updatedAt: now,
@@ -1576,7 +1692,11 @@ export class InvoicesService {
     lineItems.sort((a, b) => a.sortOrder - b.sortOrder);
     const [related] = invoice.relatedInvoiceId
       ? await db
-          .select({ invoiceNumber: schema.invoices.invoiceNumber, documentType: schema.invoices.documentType })
+          .select({
+            invoiceNumber: schema.invoices.invoiceNumber,
+            documentType: schema.invoices.documentType,
+            issueDate: schema.invoices.issueDate,
+          })
           .from(schema.invoices)
           .where(eq(schema.invoices.id, invoice.relatedInvoiceId))
           .limit(1)
@@ -1620,23 +1740,40 @@ export class InvoicesService {
   }
 
   /**
-   * UBL 2.1 / Peppol BIS Billing 3.0 XML of an issued invoice, for the SK
-   * e-invoicing mandate (1 January 2027). Built from the same input as the
-   * ISDOC export. Only plain invoices: Peppol carries credit notes as a
-   * separate document, and proformas and quotes are not tax documents.
+   * UBL 2.1 / Peppol BIS Billing 3.0 XML of an issued invoice or credit note,
+   * for the SK e-invoicing mandate (1 January 2027). Built from the same
+   * input as the ISDOC export. A credit note becomes a UBL CreditNote that
+   * points at the invoice it corrects. Proformas and quotes are not tax
+   * documents, so they have no e-invoice.
    */
   async generateInvoiceUbl(db: TenantDb, tenantId: string, invoiceId: string): Promise<string> {
-    const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(
+    const { input, options } = await this.ublInput(db, tenantId, invoiceId);
+    return generateUblInvoiceXml(input, options);
+  }
+
+  private async ublInput(db: TenantDb, tenantId: string, invoiceId: string) {
+    const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
       invoiceId,
     );
-    if (invoice.documentType !== "invoice") {
+    if (invoice.documentType !== "invoice" && invoice.documentType !== "credit_note") {
       throw new BadRequestException("ubl_invoice_only");
     }
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
-    return generateUblInvoiceXml(input, { reverseCharge: invoice.reverseCharge });
+    // An invoice's related document is the proforma it came from, which is
+    // not a preceding invoice in the EN 16931 sense.
+    const preceding =
+      invoice.documentType === "credit_note" && related?.invoiceNumber
+        ? { number: related.invoiceNumber, issueDate: related.issueDate?.toISOString().slice(0, 10) }
+        : undefined;
+    const options: UblOptions = {
+      reverseCharge: invoice.reverseCharge,
+      documentType: invoice.documentType,
+      precedingInvoice: preceding,
+    };
+    return { input, options };
   }
 
   /**
@@ -1669,7 +1806,8 @@ export class InvoicesService {
     }).map((i) => ({ ...i, scheme: "law" as const }));
 
     let peppol: (PeppolIssue & { scheme: "peppol" })[] = [];
-    if (invoice.invoiceNumber && invoice.documentType === "invoice" && contact && contact.addressCountry !== "CZ" && lineItems.length) {
+    const eDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
+    if (invoice.invoiceNumber && eDocument && contact && contact.addressCountry !== "CZ" && lineItems.length) {
       const { issues } = await this.checkInvoiceUbl(db, tenantId, invoiceId);
       // The law check already reports what both would say about names and addresses.
       const seen = new Set(law.map((i) => `${i.field}:${i.code}`));
@@ -1680,10 +1818,7 @@ export class InvoicesService {
 
   /** Peppol pre-flight for the UBL export: what an access point would reject or flag. */
   async checkInvoiceUbl(db: TenantDb, tenantId: string, invoiceId: string): Promise<{ issues: PeppolIssue[] }> {
-    const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(db, tenantId, invoiceId);
-    if (invoice.documentType !== "invoice") throw new BadRequestException("ubl_invoice_only");
-    const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
-    const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
-    return { issues: validatePeppolInvoice(input, { reverseCharge: invoice.reverseCharge }) };
+    const { input, options } = await this.ublInput(db, tenantId, invoiceId);
+    return { issues: validatePeppolInvoice(input, options) };
   }
 }

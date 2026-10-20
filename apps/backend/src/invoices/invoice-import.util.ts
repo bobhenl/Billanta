@@ -96,12 +96,16 @@ export interface ImportSkip {
   reason: "missing_number" | "missing_customer" | "invalid_date" | "invalid_amount" | "duplicate_in_file" | "already_exists" | "unsupported_kind" | "unsupported_discount" | "other_seller";
 }
 
-type Field =
-  | "number" | "documentType" | "issueDate" | "dueDate" | "taxableSupplyDate" | "currency" | "variableSymbol"
-  | "status" | "paidDate" | "paidAmount" | "customer" | "ico" | "dic" | "email" | "street" | "city" | "postalCode" | "country"
-  | "note" | "description" | "quantity" | "unit" | "unitPrice" | "lineVatRate" | "totalNet" | "totalGross" | "totalVat" | "vatRate"
-  | "reverseCharge" | "reverseChargeCode" | "exchangeRate" | "exchangeRateCnb" | "exchangeRateKind" | "exchangeRateDate"
-  | "orderNumber" | "internalNote" | "paymentMethod" | "constantSymbol" | "issuePlace" | "issuedBy" | "phone" | "contactPerson";
+/** The invoice fields a column can map to (also what the mapping editor offers). */
+export const IMPORT_FIELDS = [
+  "number", "documentType", "issueDate", "dueDate", "taxableSupplyDate", "currency", "variableSymbol",
+  "status", "paidDate", "paidAmount", "customer", "ico", "dic", "vatId", "email", "street", "city", "postalCode", "country",
+  "note", "description", "quantity", "unit", "unitPrice", "lineVatRate", "totalNet", "totalGross", "totalVat", "vatRate",
+  "reverseCharge", "reverseChargeCode", "exchangeRate", "exchangeRateCnb", "exchangeRateKind", "exchangeRateDate",
+  "orderNumber", "internalNote", "paymentMethod", "constantSymbol", "issuePlace", "issuedBy", "phone", "contactPerson",
+] as const;
+export type ImportField = (typeof IMPORT_FIELDS)[number];
+type Field = ImportField;
 
 const ALIASES: Record<string, Field> = {};
 const alias = (field: Field, ...names: string[]) => names.forEach((n) => (ALIASES[normalizeHeader(n)] = field));
@@ -117,7 +121,9 @@ alias("paidDate", "Zaplaceno dne", "Datum úhrady", "Uhrazeno", "Datum zaplacen�
 alias("paidAmount", "Zaplacená částka", "Uhrazená částka", "Uhrazeno celkem", "Paid amount", "Amount paid", "Paid", "Uhradená suma");
 alias("customer", "Odběratel", "Odberatel", "Zákazník", "Klient", "Firma", "Název odběratele", "Customer", "Client", "Client name", "client_name", "Odberateľ");
 alias("ico", "IČO", "IČ", "ICO", "IČO odběratele", "Registration no", "client_registration_no", "Company ID", "Client ID number");
-alias("dic", "DIČ", "DIC", "DIČ odběratele", "IČ DPH", "VAT no", "client_vat_no", "VAT ID", "Client VAT number");
+alias("dic", "DIČ", "DIC", "DIČ odběratele", "VAT no", "client_vat_no", "Client VAT number");
+// The Slovak IČ DPH (SK + DIČ) is the VAT number; next to a plain DIČ it wins.
+alias("vatId", "IČ DPH", "VAT ID", "IČ DPH odberateľa");
 alias("email", "E-mail", "Email", "E-mail odběratele", "Client email", "client_email");
 alias("street", "Ulice", "Adresa", "Street", "client_street", "Address", "Address 1", "Ulica");
 alias("city", "Město", "Obec", "City", "client_city", "Mesto");
@@ -148,6 +154,28 @@ alias("issuePlace", "Místo vystavení", "Vystaveno v", "Issue place", "Place of
 alias("issuedBy", "Vystavil", "Vystavila", "Fakturu vystavil", "Vyhotovil", "Issued by", "seller_person", "Vyhotovila");
 alias("phone", "Telefon", "Tel.", "Mobil", "Telefon odběratele", "Phone", "client_phone", "Telefón", "Telefón odberateľa");
 alias("contactPerson", "Kontaktní osoba", "Kontakt", "Contact person", "Contact name", "client_contact", "Kontaktná osoba");
+
+// Column names as the usual exports of other tools write them (see invoice-import-sources.ts).
+alias("number", "Číslo dokladu", "Document No.", "Document number", "Číslo faktury/dokladu");
+alias("documentType", "Kind", "Druh");
+alias("issueDate", "Vystavená", "Dátum vyhotovenia", "Datum vyhotovení", "Vystavená dňa");
+alias("dueDate", "Splatná", "Splatnosť", "Payment to", "Splatná dňa");
+alias("taxableSupplyDate", "Datum zdan. plnění", "DUZP datum", "Delivery date", "Sell date", "Dátum zdaniteľného plnenia");
+alias("status", "Stav úhrady", "Payment status", "Stav platby");
+alias("paidDate", "Zaplaceno", "Uhrazeno dne", "Zaplaceno dne", "Uhradené", "Uhradená dňa", "Paid date", "Dátum platby");
+alias("customer", "Klient", "Odběratel - název", "Odběratel název", "Odberateľ - názov", "Odberateľ názov", "Buyer name", "Buyer", "Název klienta", "Názov klienta", "Company name");
+alias("ico", "IČO klienta", "Odběratel - IČ", "Odběratel IČ", "Odběratel - IČO", "Odberateľ - IČO", "Odberateľ IČO", "Buyer company id", "Client registration number");
+alias("dic", "DIČ klienta", "Odběratel - DIČ", "Odběratel DIČ", "Odberateľ - DIČ", "Odberateľ DIČ", "Buyer tax no", "Client Tax ID");
+alias("vatId", "Odberateľ - IČ DPH", "Odberateľ IČ DPH", "Client VAT ID");
+alias("email", "E-mail klienta", "Odběratel - e-mail", "Odběratel e-mail", "Odberateľ - e-mail", "Buyer email", "Client e-mail");
+alias("street", "Ulice klienta", "Odběratel - ulice", "Odběratel ulice", "Odberateľ - ulica", "Buyer street", "Client address");
+alias("city", "Město klienta", "Odběratel - město", "Odběratel město", "Odberateľ - mesto", "Buyer city");
+alias("postalCode", "PSČ klienta", "Odběratel - PSČ", "Odběratel PSČ", "Odberateľ - PSČ", "Buyer post code");
+alias("country", "Země klienta", "Odběratel - stát", "Odběratel země", "Odberateľ - štát", "Odberateľ - krajina", "Buyer country");
+alias("totalNet", "Cena bez DPH", "Suma bez DPH", "Základ DPH spolu", "Celkom bez DPH", "Price net", "Celkem bez DPH v měně");
+alias("totalGross", "Cena s DPH", "Suma s DPH", "Celkom s DPH", "Celkom", "Price gross", "Celkem s DPH v měně", "K úhrade");
+alias("totalVat", "Celkem DPH", "DPH spolu", "Price tax", "DPH celkom");
+alias("unitPrice", "Cena za MJ bez DPH", "Jednotková cena bez DPH v měně");
 
 /** Known statutory rates the derived rate snaps to (CZ, SK, and common EU). */
 const KNOWN_RATES = [0, 5, 7, 9, 10, 12, 13, 15, 19, 20, 21, 23, 24, 25, 27];
@@ -192,7 +220,7 @@ function parseRate(raw: string | undefined): number | null {
 function documentTypeOf(raw: string | undefined, number: string, gross: number | null): ImportedInvoice["documentType"] {
   const v = normalizeHeader(raw ?? "");
   if (/zaloh|proforma|zf/.test(v)) return "proforma";
-  if (/dobropis|opravn|credit|storno/.test(v)) return "credit_note";
+  if (/dobropis|opravn|credit|storno|correct|korekt/.test(v)) return "credit_note";
   if (!v && gross !== null && gross < 0) return "credit_note";
   if (!v && /^ZF/i.test(number)) return "proforma";
   return "invoice";
@@ -207,6 +235,7 @@ function statusOf(raw: string | undefined, paidAt: Date | null): "issued" | "pai
 }
 
 const clean = (v: string | undefined, max: number) => (v ? v.trim().slice(0, max) || null : null);
+const dicOf = (v: string | undefined) => (v ? v.replace(/\s/g, "").toUpperCase().slice(0, 14) || null : null);
 
 /**
  * The sentence people type (or a template prints) on a reverse-charge
@@ -285,19 +314,36 @@ function reverseChargeOf(raw: Partial<Record<Field, string>>): boolean | "hint" 
   return [raw.reverseCharge, raw.note].some((v) => !!v && REVERSE_CHARGE_TEXT.test(v)) ? "hint" : undefined;
 }
 
+/** The field a column header maps to; `extra` (a source's own names, normalised) is tried first. */
+export function fieldForHeader(header: string, extra?: Record<string, ImportField>): ImportField | null {
+  const key = normalizeHeader(header);
+  return extra?.[key] ?? ALIASES[key] ?? null;
+}
+
+/** What an invoice list must have: a number, a customer and some amount. */
+export type RequiredImportField = "number" | "customer" | "amount";
+
+/** The required fields the column mapping lacks (empty = the file can be imported). */
+export function missingImportFields(columns: (ImportField | null)[]): RequiredImportField[] {
+  const has = (f: Field) => columns.includes(f);
+  const missing: RequiredImportField[] = [];
+  if (!has("number")) missing.push("number");
+  if (!has("customer")) missing.push("customer");
+  if (!(has("totalGross") || has("totalNet") || has("unitPrice"))) missing.push("amount");
+  return missing;
+}
+
 /**
- * Maps parsed CSV rows (first row = header) to invoices. Throws
- * `unknown_columns` when the file has no recognisable number + customer +
- * amount columns, i.e. it is clearly not an invoice list.
+ * Maps parsed CSV rows (first row = header) to invoices, with `columns`
+ * saying which field each column is (default: guessed from the header).
+ * Throws `unknown_columns` when there is no number + customer + amount
+ * column, i.e. it is clearly not an invoice list.
  */
-export function mapInvoiceRows(rows: string[][]): { invoices: ImportedInvoice[]; skipped: ImportSkip[] } {
+export function mapInvoiceRows(rows: string[][], mapping?: (ImportField | null)[]): { invoices: ImportedInvoice[]; skipped: ImportSkip[] } {
   const [header, ...body] = rows;
   if (!header) return { invoices: [], skipped: [] };
-  const columns = header.map((h) => ALIASES[normalizeHeader(h)] ?? null);
-  const has = (f: Field) => columns.includes(f);
-  if (!has("number") || !has("customer") || !(has("totalGross") || has("totalNet") || has("unitPrice"))) {
-    throw new Error("unknown_columns");
-  }
+  const columns = mapping ? header.map((_, i) => mapping[i] ?? null) : header.map((h) => fieldForHeader(h));
+  if (missingImportFields(columns).length > 0) throw new Error("unknown_columns");
 
   const byNumber = new Map<string, ImportedInvoice>();
   const skipped: ImportSkip[] = [];
@@ -386,7 +432,7 @@ export function mapInvoiceRows(rows: string[][]): { invoices: ImportedInvoice[];
       customer: {
         legalName: customerName,
         ico: ico && /^\d{1,8}$/.test(ico) ? ico.padStart(8, "0") : null,
-        dic: raw.dic ? raw.dic.replace(/\s/g, "").toUpperCase().slice(0, 14) : null,
+        dic: dicOf(raw.vatId ?? raw.dic),
         email: raw.email && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(raw.email.split(/[,;\s]+/)[0]!) ? raw.email.split(/[,;\s]+/)[0]! : null,
         addressStreet: clean(raw.street, 255),
         addressCity: clean(raw.city, 255),

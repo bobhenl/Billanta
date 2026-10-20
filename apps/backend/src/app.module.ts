@@ -25,6 +25,8 @@ import { DbModule } from "./db/db.module";
 import { EmailModule } from "./email/email.module";
 import { ExpensesController } from "./expenses/expenses.controller";
 import { ExpensesModule } from "./expenses/expenses.module";
+import { EInvoicingSettingsController, IncomingEInvoicesController, InvoiceEInvoiceController } from "./einvoicing/einvoicing.controller";
+import { EInvoicingModule } from "./einvoicing/einvoicing.module";
 import { ExportsController } from "./exports/exports.controller";
 import { ExportsModule } from "./exports/exports.module";
 import { InvoiceTemplatesController } from "./invoice-templates/invoice-templates.controller";
@@ -60,7 +62,11 @@ import { ClassroomStudentController } from "./classroom/classroom-student.contro
 import { TenantsController } from "./tenants/tenants.controller";
 import { TenantsModule } from "./tenants/tenants.module";
 import { PartnersModule } from "./partners/partners.module";
+import { PromoCodesController } from "./promo-codes/promo-codes.controller";
+import { PromoCodesModule } from "./promo-codes/promo-codes.module";
 import { BlogModule } from "./blog/blog.module";
+import { NewsletterModule } from "./newsletter/newsletter.module";
+import { MeNewsletterController } from "./newsletter/newsletter.controller";
 import { AccountantDirectoryModule } from "./accountant-directory/accountant-directory.module";
 import { AccountantListingController } from "./accountant-directory/accountant-listing.controller";
 import { LegislationModule } from "./legislation/legislation.module";
@@ -109,6 +115,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     EmailModule,
     InvoicesModule,
     ExpensesModule,
+    // Slovak e-invoicing over Peppol (2027 mandate); off unless EINVOICING_ENABLED=true.
+    EInvoicingModule,
     ChannelLinksModule,
     BillingModule,
     PublicInvoicesModule,
@@ -133,8 +141,11 @@ import { ReferralsModule } from "./referrals/referrals.module";
     ReferralsModule,
     // Public partners directory + Billanta-staff catalogue admin (no tenant context).
     PartnersModule,
+    PromoCodesModule,
     // Public /blog + staff review queue for AI drafts (no tenant context).
     BlogModule,
+    // Double opt-in newsletter (global subscribers table) + staff compose-and-send.
+    NewsletterModule,
     // Accountant directory (/accountants): own listing, public list, admin review.
     AccountantDirectoryModule,
     // Weekly check of the official tax form and minimum pages; alerts for staff (no tenant context).
@@ -233,16 +244,22 @@ export class AppModule implements NestModule {
         DashboardController,
         ExportsController,
         NotificationsController,
+        MeNewsletterController,
         IntegrationsController,
         ApiKeysController,
         ChannelLinksController,
         CardPaymentsSettingsController,
         AuditController,
         ReferralsController,
+        PromoCodesController,
         AccountantListingController,
         SubscriptionController,
         DemoTenantController,
         ClassroomStudentController,
+        // JWT only, unlike InvoicesController: sending over Peppol is not in the public API yet.
+        InvoiceEInvoiceController,
+        IncomingEInvoicesController,
+        EInvoicingSettingsController,
       );
 
     // InvoicesController: same tenant-context requirement as every

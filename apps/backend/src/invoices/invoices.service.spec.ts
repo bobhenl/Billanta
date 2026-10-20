@@ -155,7 +155,9 @@ describe("InvoicesService.sendInvoice", () => {
       .mockReturnValueOnce(makeSelectChain([contact]))
       .mockReturnValueOnce(makeSelectChain(lineItems))
       // the company's link prefix setting
-      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "number" } }]));
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: { publicLinkPrefix: "number" } }]))
+      // the plan and referral code for the "made with" line: a free company shows it
+      .mockReturnValueOnce(makeSelectChain([{ planEnforced: true, invoiceFormPrefs: {}, referralCode: "AbCd1234" }]));
     const update = vi.fn().mockReturnValue(makeUpdateChain([updated]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, update } as any;
@@ -171,6 +173,10 @@ describe("InvoicesService.sendInvoice", () => {
       // the readable links, never the bare key or uuid
       publicLink: "2026-0001-aZ09bY18cX27",
       clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
+      credit: {
+        label: "Vystaveno v aplikaci Billanta",
+        url: expect.stringMatching(/\/cs\?utm_source=invoice&utm_medium=footer&utm_content=email&ref=AbCd1234$/),
+      },
     }, expect.objectContaining({ tenantId: invoice.tenantId, db, idempotencyKey: expect.stringMatching(/^invoice:inv-1:\d+$/) }));
     expect(update).toHaveBeenCalled();
     expect(result).toEqual(updated);
@@ -217,7 +223,8 @@ describe("InvoicesService.sendInvoice", () => {
       .mockReturnValueOnce(makeSelectChain([invoice]))
       .mockReturnValueOnce(makeSelectChain([contact]))
       .mockReturnValueOnce(makeSelectChain(lineItems))
-      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {} }]));
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {} }]))
+      .mockReturnValueOnce(makeSelectChain([{ planEnforced: true, invoiceFormPrefs: {}, referralCode: null }]));
     const update = vi.fn();
     emailService.sendInvoiceEmail.mockRejectedValueOnce(new Error("Resend outage"));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

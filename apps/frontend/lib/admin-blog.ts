@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import type { BlogSource } from '@/lib/blog';
+import type { BlogKind, BlogSource } from '@/lib/blog';
 
 export type BlogStatus = 'draft' | 'pending_review' | 'published' | 'rejected';
 
@@ -18,9 +18,11 @@ export interface AdminBlogListItem {
   slug: string;
   translationKey: string;
   title: string;
-  kind: 'manual' | 'tax_deadlines' | 'brief';
+  kind: BlogKind;
   status: BlogStatus;
   warnings: string[];
+  /** Went live without a click (the per-kind switch in BlogAutomation). */
+  autoPublished: boolean;
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -31,6 +33,18 @@ export interface AdminBlogPost extends AdminBlogListItem {
   body: string;
   sources: BlogSource[];
   facts: string | null;
+}
+
+import type { AutoPublishKind } from '@/lib/admin-blog-kinds';
+
+export { AUTO_PUBLISH_KINDS, TOPIC_KINDS, type AutoPublishKind, type TopicKind } from '@/lib/admin-blog-kinds';
+
+/** `GET /v1/admin/blog/autopublish`. */
+export interface BlogAutopublish {
+  settings: Record<AutoPublishKind, boolean>;
+  /** Auto-published posts in the last 7 days, per locale. */
+  thisWeek: Record<'cs' | 'sk' | 'en', number>;
+  weeklyLimit: number;
 }
 
 /** The backend's `blogPostSchema` (snake_case keys). */

@@ -299,21 +299,21 @@
     {
       "idx": 42,
       "version": "7",
-      "when": 1792800600000,
+      "when": 1792800860000,
       "tag": "0042_buyer_details_request",
       "breakpoints": true
     },
     {
       "idx": 43,
       "version": "7",
-      "when": 1792800700000,
+      "when": 1792800920000,
       "tag": "0043_contact_summary_indexes",
       "breakpoints": true
     },
     {
       "idx": 44,
       "version": "7",
-      "when": 1792800900000,
+      "when": 1792800980000,
       "tag": "0044_referrals_credits_partners",
       "breakpoints": true
     },
@@ -371,6 +371,13 @@
       "version": "7",
       "when": 1792900500000,
       "tag": "0052_legislation_monitor",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1792900560000,
+      "tag": "0053_osvc_regime",
       "breakpoints": true
     },
     {
@@ -486,10 +493,80 @@
       "breakpoints": true
     },
     {
+      "idx": 70,
+      "version": "7",
+      "when": 1792902300000,
+      "tag": "0070_demo_sk_freelancers",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1792902360000,
+      "tag": "0071_promo_codes",
+      "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1792902420000,
+      "tag": "0072_idempotency_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1792902480000,
+      "tag": "0073_invoice_source_ai_voice",
+      "breakpoints": true
+    },
+    {
       "idx": 74,
       "version": "7",
+      "when": 1792902540000,
+      "tag": "0074_einvoicing",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
       "when": 1792902600000,
-      "tag": "0074_classroom_mode",
+      "tag": "0075_brand_credit_signup_attribution",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1792902660000,
+      "tag": "0076_newsletter",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1792988880000,
+      "tag": "0077_business_directory",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1792988940000,
+      "tag": "0078_blog_autopublish",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1792989000000,
+      "tag": "0079_referral_release_partner_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1792989060000,
+      "tag": "0080_classroom_mode",
       "breakpoints": true
     }
   ]

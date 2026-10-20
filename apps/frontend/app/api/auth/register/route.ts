@@ -20,7 +20,9 @@
  */
 import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { ATTRIBUTION_COOKIE, signupAttributionColumns } from "@/lib/attribution";
 import { clientIp } from "@/lib/client-ip";
 import { db } from "@/lib/db";
 import { AUTH_LIMITS, allow } from "@/lib/rate-limit";
@@ -44,6 +46,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   // The signup checkbox confirms the user is 18+ and acts as a business;
   // the service is not for children (COPPA / GDPR art. 8) or consumers.
   const adultConfirmed = body?.adultConfirmed === true;
+  // Optional "about you" boxes (migration 0079); anything but a true is no.
+  const managesClients = body?.managesClients === true;
+  const isTeacher = body?.isTeacher === true;
 
   if (
     !email ||
@@ -69,11 +74,14 @@ export async function POST(request: Request): Promise<NextResponse> {
   const ipAddress =
     clientIp(request) || null;
 
+  // Where the visitor first came from (middleware.ts), for signups per source.
+  const attribution = signupAttributionColumns((await cookies()).get(ATTRIBUTION_COOKIE)?.value);
+
   try {
     const { tenantId, userId } = await db.transaction(async (tx) => {
       const [created] = await tx
         .insert(users)
-        .values({ email, passwordHash })
+        .values({ email, passwordHash, managesClients, isTeacher, ...attribution })
         .returning({ id: users.id, email: users.email });
 
       if (!created) {

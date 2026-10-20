@@ -114,6 +114,8 @@ export const invoiceFormPrefsSchema = z
       .refine((rates) => new Set(rates.map((r) => `${r.year}:${r.currency}`)).size === rates.length, "One rate per year and currency"),
     /** What goes in front of the key in customer links (public-links/public-link.ts). */
     public_link_prefix: z.enum(PUBLIC_LINK_PREFIXES).default("number"),
+    /** The "Vystaveno v Billantě" line; only a paid plan can switch it off (invoices/brand-credit.ts). */
+    brand_credit: z.boolean().default(true),
   })
   .transform((p) => ({
     show: p.show as Partial<Record<OptionalInvoiceField, boolean>>,
@@ -135,6 +137,7 @@ export const invoiceFormPrefsSchema = z
     reportRateMode: p.report_rate_mode ?? (p.exchange_rate_mode === "annual" ? ("annual" as const) : ("daily" as const)),
     annualRates: [...p.annual_rates].sort((a, b) => b.year - a.year || a.currency.localeCompare(b.currency)),
     publicLinkPrefix: p.public_link_prefix,
+    brandCredit: p.brand_credit,
   }));
 
 /** The tenant's PDF accent, falling back to the default for old or unknown values. */

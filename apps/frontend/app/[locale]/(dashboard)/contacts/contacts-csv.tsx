@@ -9,6 +9,7 @@ import { Download, Loader2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { useRouter } from '@/i18n/navigation';
 
 export type Skip = { line: number; reason: string; name: string };
@@ -22,6 +23,8 @@ export function ContactsCsvButtons({ showExport, onSkipped }: { showExport: bool
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  // Export is a read; import creates and updates contacts.
+  const canImport = useCanWrite('contacts');
 
   const upload = async (file: File) => {
     setBusy(true);
@@ -49,6 +52,8 @@ export function ContactsCsvButtons({ showExport, onSkipped }: { showExport: bool
 
   return (
     <>
+      {canImport && (
+      <>
       <input
         ref={input}
         type="file"
@@ -63,6 +68,8 @@ export function ContactsCsvButtons({ showExport, onSkipped }: { showExport: bool
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
         {t('import')}
       </button>
+      </>
+      )}
       {showExport && (
         <a href="/api/files/contacts/export.csv" className={iconButton} download>
           <Download className="h-4 w-4" />

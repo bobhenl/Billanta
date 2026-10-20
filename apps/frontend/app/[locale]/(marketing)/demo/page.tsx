@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import { Check, Eye, Calculator, UserCog } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { DemoKindPicker } from '@/components/demo/demo-kind-picker';
+import { DemoKindPicker, type DemoPresetLabels } from '@/components/demo/demo-kind-picker';
+import { BUSINESS_PRESETS } from '@/lib/business-presets';
+import { ShareQr } from '@/components/share-qr';
 import { Link, redirect } from '@/i18n/navigation';
-import { DEMO_VIEW_ROLES, demoEnabled } from '@/lib/demo';
+import { DEMO_VIEW_ROLES, demoEnabled, type DemoViewRole } from '@/lib/demo';
+import { demoAudience } from '@/lib/demo-audiences';
+import { DEMO_SCENARIOS, demoScenario, type DemoScenario } from '@/lib/demo-scenarios';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -12,7 +16,7 @@ type Faq = { q: string; a: string };
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'demo' });
-  // `?view=` only preselects the picker; every variant shares this one canonical page.
+  // `?view=`, `?for=` and `?scenario=` only preselect the picker; every variant shares this one canonical page.
   return publicPageMetadata({ locale, path: '/demo', title: t('meta.title'), description: t('meta.description') });
 }
 
@@ -39,17 +43,25 @@ export default async function DemoPage({
   searchParams
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ view?: string | string[] }>;
+  searchParams: Promise<{ view?: string | string[]; for?: string | string[]; scenario?: string | string[] }>;
 }) {
   const { locale } = await params;
   // The links to this page are baked into static pages; with the demo off they still lead somewhere useful.
   if (!demoEnabled()) redirect({ href: '/signup', locale });
   setRequestLocale(locale);
-  const { view } = await searchParams;
-  const initialView = DEMO_VIEW_ROLES.find((r) => r === view) ?? 'owner';
+  const { view, for: audienceParam, scenario: scenarioParam } = await searchParams;
+  // A lesson's scenario is more specific than an audience, so it wins when a link carries both.
+  const scenario = demoScenario(scenarioParam);
+  const scenarioView: DemoViewRole | undefined = scenario ? (DEMO_SCENARIOS[scenario] as DemoScenario).view : undefined;
+  const initialView = DEMO_VIEW_ROLES.find((r) => r === view) ?? scenarioView ?? 'owner';
+  const audience = scenario ? null : demoAudience(audienceParam);
   const t = await getTranslations('demo');
   const title = t('page.title', { site: SITE_NAME });
   const faq = t.raw('page.faq') as Faq[];
+  const tm = await getTranslations('settings.modules');
+  const presets: DemoPresetLabels = Object.fromEntries(
+    BUSINESS_PRESETS.map((p) => [p.key, { title: tm(`presets.${p.key}.title`), description: tm(`presets.${p.key}.description`) }])
+  );
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 md:py-16">
@@ -92,9 +104,12 @@ export default async function DemoPage({
           </li>
         ))}
       </ul>
+      <ShareQr className="mt-6" />
 
       <h2 className="mt-10 text-base font-semibold">{t('page.pick')}</h2>
-      <DemoKindPicker locale={locale} initialView={initialView} />
+      {audience && <p className="mt-1 text-sm text-muted-foreground">{t(`audiences.${audience}`)}</p>}
+      {scenario && <p className="mt-1 text-sm text-muted-foreground">{t(`scenarios.${scenario}`)}</p>}
+      <DemoKindPicker locale={locale} presets={presets} initialView={initialView} audience={audience} scenario={scenario} />
 
       <h2 className="mt-14 text-xl font-semibold tracking-tight">{t('page.rolesTitle')}</h2>
       <p className="mt-2 text-sm text-muted-foreground">{t('page.rolesLead')}</p>

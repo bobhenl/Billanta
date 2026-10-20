@@ -5,6 +5,7 @@ import { Download, Loader2, Mail, Paperclip, Trash2, Upload, Users } from 'lucid
 import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { cn } from '@/lib/utils';
 
 export interface Attachment {
@@ -30,6 +31,7 @@ function formatSize(bytes: number, locale: string) {
 /**
  * Files attached to the invoice: sent along with the invoice email and/or
  * offered for download in the client portal (each switchable per file).
+ * A read-only member can download them and see both switches, nothing more.
  */
 export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: string; initial: Attachment[]; portal: boolean }) {
   const t = useTranslations('doc.attachments');
@@ -38,6 +40,7 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const canEdit = useCanWrite('invoices');
   const base = `/api/invoices/${invoiceId}/attachments`;
 
   const fail = (code?: string) => toast({ text: t(`errors.${['bad_type', 'too_big', 'too_many'].includes(code ?? '') ? code : 'generic'}`), tone: 'err' });
@@ -90,17 +93,19 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
     else fail();
   }
 
+  if (!canEdit && rows.length === 0) return null;
+
   const toggleClass = (on: boolean) =>
     cn(
       'inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors',
-      on ? 'bg-primary/15 text-primary' : 'text-muted-foreground/50 hover:bg-accent hover:text-muted-foreground'
+      on ? 'bg-primary/15 text-primary' : 'text-muted-foreground/50 enabled:hover:bg-accent enabled:hover:text-muted-foreground'
     );
 
   return (
     <section
       className={cn('rounded-xl border bg-card p-4', dragging ? 'border-primary border-dashed' : 'border-border')}
       onDragOver={(e) => {
-        if (!e.dataTransfer.types.includes('Files')) return;
+        if (!canEdit || !e.dataTransfer.types.includes('Files')) return;
         e.preventDefault();
         setDragging(true);
       }}
@@ -108,7 +113,7 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
       onDrop={(e) => {
         e.preventDefault();
         setDragging(false);
-        if (rows.length < MAX) void upload(e.dataTransfer.files);
+        if (canEdit && rows.length < MAX) void upload(e.dataTransfer.files);
       }}
     >
       <div className="flex items-center justify-between gap-2">
@@ -119,7 +124,7 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
             {rows.length > 0 && <span className="text-xs font-semibold text-muted-foreground">{rows.length}</span>}
           </h2>
         </InfoHint>
-        {rows.length < MAX && (
+        {canEdit && rows.length < MAX && (
           <button
             type="button"
             onClick={() => input.current?.click()}
@@ -158,6 +163,7 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
               <button
                 type="button"
                 onClick={() => toggle(row, 'sendWithEmail')}
+                disabled={!canEdit}
                 className={toggleClass(row.sendWithEmail)}
                 title={row.sendWithEmail ? t('emailOn') : t('emailOff')}
                 aria-pressed={row.sendWithEmail}
@@ -167,12 +173,14 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
               <button
                 type="button"
                 onClick={() => toggle(row, 'showInPortal')}
+                disabled={!canEdit}
                 className={toggleClass(row.showInPortal)}
                 title={row.showInPortal ? t('portalOn') : t('portalOff')}
                 aria-pressed={row.showInPortal}
               >
                 <Users className="h-3.5 w-3.5" />
               </button>
+              {canEdit && (
               <button
                 type="button"
                 onClick={() => remove(row)}
@@ -181,6 +189,7 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
+              )}
             </li>
           ))}
         </ul>

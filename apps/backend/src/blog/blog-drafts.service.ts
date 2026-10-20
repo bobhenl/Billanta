@@ -7,9 +7,10 @@ import { z } from "zod/v4";
 import * as schema from "../../drizzle/schema";
 import { getTaxCalendarYear, type TaxEventKind } from "../dashboard/tax-calendar";
 import { DbService } from "../db/db.service";
+import { autoPublishDecision } from "./blog-autopublish";
+import { BriefPostSchema, LOCALE_NAMES, MODEL, STYLE_RULES, TaxPostSchema, TopicPostSchema, topicPost, topicPrompt } from "./blog-prompts";
+import { nextTopic, TOPIC_LOCALES, type TopicKind, type TopicLocale } from "./blog-topics";
 import { BlogService, blogSlug, type BlogLocale } from "./blog.service";
-
-const MODEL = process.env.AI_MODEL ?? "claude-opus-5";
 
 /** Briefs per rolling week, so the blog grows at a pace someone can still review. */
 export const WEEKLY_BRIEF_LIMIT = 3;
@@ -18,32 +19,6 @@ export const WEEKLY_BRIEF_LIMIT = 3;
 const TAX_KINDS: readonly TaxEventKind[] = ["vat", "income_tax", "flat_tax", "payroll", "road_tax", "property_tax"];
 
 const MONTH_IN = ["v lednu", "v únoru", "v březnu", "v dubnu", "v květnu", "v červnu", "v červenci", "v srpnu", "v září", "v říjnu", "v listopadu", "v prosinci"];
-
-const LOCALE_NAMES: Record<BlogLocale, string> = { cs: "Czech", sk: "Slovak (real Slovak, not Czech with a few words changed)", en: "English" };
-
-const STYLE_RULES = `You write articles for the blog of Billanta, an invoicing app for Czech and Slovak sole traders and small companies.
-
-Rules:
-- Use ONLY the facts given in <facts>. Never add a date, amount, rate, paragraph number or law number that is not in the facts. If something is not in the facts, leave it out.
-- No promises: never write that the reader saves tax, is guaranteed anything or never has to do something. This is general information, not tax advice.
-- Plain, friendly, concrete. Short sentences. No marketing superlatives, no emoji.
-- Formatting is a restricted markdown: plain paragraphs, "## " headings, "- " bullet lists, **bold**. Links only as [text](https://...) and only to URLs given in the facts or sources. No HTML, no tables, no images.
-- Mention Billanta at most once, briefly and without claims beyond what the facts say.`;
-
-const TaxPostSchema = z.object({
-  title: z.string().describe("Headline, under 90 characters, containing the month and year"),
-  description: z.string().describe("Meta description, 120-200 characters"),
-  intro: z.string().describe("One or two short paragraphs introducing the month's deadlines"),
-  tips: z.array(z.string()).describe("Two to four practical reminders, one sentence each, no new numbers"),
-  closing: z.string().describe("One short closing paragraph ending with a full stop"),
-});
-
-const BriefPostSchema = z.object({
-  slug: z.string().describe("English kebab-case URL slug, at most 80 characters"),
-  title: z.string().describe("Headline, under 100 characters"),
-  description: z.string().describe("Meta description, 120-200 characters"),
-  body: z.string().describe("The article in restricted markdown, 600-1200 words, ending with a full stop"),
-});
 
 export interface BriefInput {
   locale: BlogLocale;
@@ -59,10 +34,16 @@ const czDate = (iso: string) => {
 
 /**
  * AI drafts for the blog. Code builds the facts (for tax posts the whole
- * list of deadlines straight from Finanční správa's calendar); the model only
- * writes the prose around them. Everything lands as `pending_review` with
- * the automatic checks attached. Only a monthly tax post without warnings
- * can go live on its own, and only with BLOG_AUTOPUBLISH_TAX_DEADLINES=1.
+ * list of deadlines straight from Finanční správa's calendar, for tool and
+ * trade posts our own pages and the invoice requirements check, see
+ * blog-topics.ts); the model only writes the prose around them. Everything
+ * lands as `pending_review` with the automatic checks attached. A generated
+ * kind can go live on its own when its switch in /admin/blog is on, the
+ * checks passed, the post isn't about a changing law and the weekly cap
+ * isn't reached (blog-autopublish.ts). Briefs always wait for a person.
+ *
+ * Tax deadline posts are Czech only: the calendar we have is Finanční
+ * správa's, and there is no Slovak equivalent to build facts from.
  */
 @Injectable()
 export class BlogDraftsService {
@@ -132,8 +113,49 @@ export class BlogDraftsService {
       },
       { kind: "tax_deadlines", status: "pending_review" },
     );
-    if (process.env.BLOG_AUTOPUBLISH_TAX_DEADLINES === "1" && post.warnings.length === 0) return this.blog.publish(post.id, false);
-    return post;
+    return this.maybeAutoPublish(post);
+  }
+
+  /** Tuesday morning: the next tool and trade topic in each locale, at most four drafts a week. */
+  @Cron("0 7 * * 2", { timeZone: "Europe/Prague" })
+  async weekly(): Promise<void> {
+    if (!process.env.ANTHROPIC_API_KEY?.trim()) return;
+    for (const kind of ["tool_howto", "trade_invoicing"] as const) {
+      for (const locale of TOPIC_LOCALES) {
+        try {
+          const post = await this.nextDraft(kind, locale);
+          if (post) this.logger.log(`${kind} draft ${locale}/${post.slug}: ${post.status}, warnings ${post.warnings.join(", ") || "none"}`);
+        } catch (error) {
+          this.logger.warn(`${kind} draft for ${locale} failed: ${(error as Error).message}`);
+        }
+      }
+    }
+  }
+
+  /** The first topic of `kind` not on the blog yet in `locale` (in any status); null when all are written. */
+  async nextDraft(kind: TopicKind, locale: TopicLocale) {
+    const topic = nextTopic(kind, locale, await this.blog.slugsIn(locale));
+    if (!topic) return null;
+    const draft = await this.parse(TopicPostSchema, 6000, topicPrompt(topic));
+    const post = await this.blog.create(topicPost(topic, draft), { kind, status: "pending_review" });
+    return this.maybeAutoPublish(post);
+  }
+
+  /** Publishes a fresh generated draft when autoPublishDecision allows it; otherwise it stays in the queue. */
+  private async maybeAutoPublish(post: typeof schema.blogPosts.$inferSelect) {
+    const [settings, thisWeek] = await Promise.all([this.blog.autopublishSettings(), this.blog.autoPublishedThisWeek()]);
+    const verdict = autoPublishDecision({
+      kind: post.kind,
+      enabled: (settings as Record<string, boolean>)[post.kind] ?? false,
+      warnings: post.warnings,
+      post,
+      publishedThisWeek: thisWeek[post.locale],
+    });
+    if (!verdict.publish) {
+      if (verdict.reason !== "switched_off" && verdict.reason !== "kind_not_auto") this.logger.log(`Not auto-publishing ${post.locale}/${post.slug}: ${verdict.reason}`);
+      return post;
+    }
+    return this.blog.publish(post.id, false, true);
   }
 
   /** An article from an admin's topic and facts, at most WEEKLY_BRIEF_LIMIT a week. */

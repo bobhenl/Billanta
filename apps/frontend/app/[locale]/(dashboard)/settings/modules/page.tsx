@@ -7,6 +7,7 @@ import { NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyAccess, type MyAccess } from '@/lib/tenant';
 import { TOGGLEABLE_MODULES, type ModuleSet } from '@/lib/business-presets';
 import { ModulesSettings } from './modules-settings';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.modules');
@@ -15,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Modules: pick a business-type preset or switch individual parts of the app off. */
 export default async function ModulesPage() {
+  const gate = await settingsGate('modules');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.modules');
 

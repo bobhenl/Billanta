@@ -21,6 +21,8 @@ import {
   type Municipality
 } from '@/lib/municipalities';
 import { accountantsForTown, regionLabel } from '@/lib/public-accountants';
+import { listingsForTown } from '@/lib/business-directory';
+import { DirectoryListings } from '@/components/directory-listings';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -34,7 +36,8 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
  * makes each page its own is real data computed from the dataset — the
  * nearest places with distances, where the town lies against its district
  * and regional seat, the district's other municipalities and the competent
- * tax office — plus accountants who listed themselves for the town.
+ * tax office — plus accountants who listed themselves for the town and
+ * the companies from it that opted into the business directory.
  * The page deliberately does NOT:
  *   - claim any town-specific customer count, testimonial, or usage stat
  *     (there is no such data, and inventing it would be a false claim);
@@ -62,9 +65,9 @@ export function generateStaticParams() {
 // 404ing.
 export const dynamicParams = true;
 
-// Daily, so a newly listed accountant shows up; everything else on the page
-// only changes on redeploy.
-export const revalidate = 86400;
+// Hourly, so a newly listed (or withdrawn) company or accountant shows up
+// soon; everything else on the page only changes on redeploy.
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params
@@ -113,7 +116,8 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
     .filter((n) => !nearbySlugs.has(n.municipality.slug))
     .slice(0, 6);
   const district = getDistrictNeighbours(municipality, nearbySlugs);
-  const accountants = await accountantsForTown(municipality);
+  const [accountants, businesses] = await Promise.all([accountantsForTown(municipality), listingsForTown(municipality)]);
+  const tDir = await getTranslations('businessDirectory');
 
   /** "12 km north-east of X", or null when the coordinates are missing or it is X itself. */
   const position = (from: Municipality | undefined, key: 'seatPosition' | 'regionPosition') => {
@@ -247,6 +251,18 @@ export default async function MunicipalityPage({ params }: { params: Promise<Par
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {businesses.length > 0 && (
+            <div className="mt-10 max-w-3xl">
+              <h2 className="text-base font-semibold text-foreground">{tDir('townSection', { name: municipality.name, site: SITE_NAME })}</h2>
+              <div className="mt-3">
+                <DirectoryListings listings={businesses.slice(0, 8)} locale={locale} tradeLabel={(k) => tDir(`trades.${k}`)} showTown={false} />
+              </div>
+              <Link href={`/directory/town/${municipality.slug}`} className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
+                {tDir('townSectionAll', { n: businesses.length })}
+              </Link>
             </div>
           )}
 

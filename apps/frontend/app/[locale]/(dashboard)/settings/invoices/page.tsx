@@ -5,12 +5,13 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
-import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
 import { formPrefs, loadContact } from '../../invoices/new/load';
 import { RATE_CURRENCIES } from '../../invoices/new/types';
 import type { UniformYear } from './exchange-rate-settings';
 import { InvoiceFormSettings } from './invoice-form-settings';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.invoices');
@@ -19,6 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Invoices: tailor the invoice form to what this company actually fills in. */
 export default async function InvoiceSettingsPage() {
+  const gate = await settingsGate('invoices');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.invoices');
 
@@ -38,12 +41,17 @@ export default async function InvoiceSettingsPage() {
   const currencies = [...new Set([...RATE_CURRENCIES, ...prefs.annualRates.map((r) => r.currency), ...(prefs.defaultCurrency ? [prefs.defaultCurrency] : [])])]
     .filter((c) => c !== 'CZK')
     .slice(0, 12);
-  const [defaultContact, uniformRates] = await Promise.all([
+  const [defaultContact, uniformRates, plan] = await Promise.all([
     loadContact(prefs.defaultContactId),
     apiFetch<{ years: UniformYear[] }>(`/api/v1/dashboard/fx-rates/uniform?years=${year - 1},${year}&currencies=${currencies.join(',')}`)
       .then((r) => r.years)
+      .catch(() => null),
+    fetchMyAccess()
+      .then((a) => a.plan ?? null)
       .catch(() => null)
   ]);
+  // Same rule as showsBrandCredit in the backend: only an enforced free plan must keep the line.
+  const canHideCredit = !plan || !plan.enforced || plan.plan !== 'free';
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -68,6 +76,7 @@ export default async function InvoiceSettingsPage() {
         home={homeCurrencyOf(tenant.addressCountry)}
         uniformRates={uniformRates}
         linkCompany={tenant.publicProfile?.slug || tenant.companyName}
+        canHideCredit={canHideCredit}
         readOnly={!canManage(role)}
       />
     </div>

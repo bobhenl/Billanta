@@ -3,7 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
-import { REFERRAL_REWARDS } from "../referrals/rewards";
+import { referralPaymentArgs, type ReferralPayment } from "../referrals/rewards";
 
 export type SubscriptionStatus = (typeof schema.subscriptionStatusEnum.enumValues)[number];
 
@@ -104,13 +104,36 @@ export class TenantBillingRepository {
           updatedAt: new Date(),
         })
         .where(eq(schema.tenants.id, tenantId));
-      // First payment of an invited company pays its inviter (once; the
-      // function is a no-op for an already rewarded or unreferred company).
-      if (status === "active") {
-        await tx`SELECT reward_referral(${tenantId}, ${REFERRAL_REWARDS.friend.reward}, ${REFERRAL_REWARDS.accountant.reward})`;
-      }
     });
     this.logger.log(`tenant ${tenantId} subscription_status -> ${status}`);
+  }
+
+  /**
+   * A real payment by `tenantId`, for its inviter's reward (migration 0079).
+   * The first payment fixes the reward (what was paid, capped) and holds it
+   * back; a second monthly payment or the daily job after the hold pays it.
+   * A no-op for an unreferred company or one already rewarded or voided.
+   * Callers dedupe by event, so one payment is never counted twice.
+   */
+  async recordReferralPayment(tenantId: string, payment: ReferralPayment, paidAt = new Date()): Promise<number> {
+    const args = referralPaymentArgs(payment, paidAt);
+    if (!args) return 0;
+    const rows = await this.dbService.db.execute<{ paid: number | null }>(
+      sql`SELECT record_referral_payment(${tenantId}::uuid, ${args.friend}::integer, ${args.accountant}::integer, ${args.releaseAfter?.toISOString() ?? null}::timestamptz) AS paid`,
+    );
+    const paid = Number(rows[0]?.paid ?? 0);
+    if (paid > 0) this.logger.log(`tenant ${tenantId}: referral reward of ${paid} credits released to its inviter`);
+    return paid;
+  }
+
+  /** A refund or cancellation before the reward was paid: the inviter gets nothing. */
+  async voidReferralReward(tenantId: string, reason: "refunded" | "canceled"): Promise<boolean> {
+    const rows = await this.dbService.db.execute<{ voided: boolean | null }>(
+      sql`SELECT void_referral_reward(${tenantId}::uuid, ${reason}) AS voided`,
+    );
+    const voided = rows[0]?.voided === true;
+    if (voided) this.logger.log(`tenant ${tenantId}: pending referral reward voided (${reason})`);
+    return voided;
   }
 
   /**

@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Building2, Calculator, Check, FileDown, Gift, Link2, MapPin, MessageSquare, Sparkles, UserPlus, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { DemoCta } from '@/components/demo/demo-cta';
+import { NextPages } from '@/components/learn-page';
+
+import { EmbedSection } from '@/components/embed-section';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
@@ -25,6 +28,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('accountants');
+  const tLearn = await getTranslations('learnPages.common');
   const credits = REFERRAL_REWARDS.accountant;
   const faq = (t.raw('faq') as { q: string; a: string }[]).map(({ q, a }) => ({
     q,
@@ -66,7 +70,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
       <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
       <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup?for=accountant" className={buttonClass.primary}>
           {t('cta')}
         </Link>
         <Link href="/partners" className={buttonClass.secondary}>
@@ -110,7 +114,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
             <Link href="/invoicing" className={buttonClass.secondary}>
               {t('directoryCta.example')}
             </Link>
-            <Link href="/settings/public-profile" className={buttonClass.ghost}>
+            <Link href="/settings/accountant-profile" className={buttonClass.ghost}>
               {t('directoryCta.settings')}
             </Link>
           </div>
@@ -143,12 +147,21 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
               {t('shapeCta.mail')}
             </a>
           ) : (
-            <Link href="/signup" className={buttonClass.primary}>
+            <Link href="/signup?for=accountant" className={buttonClass.primary}>
               {t('shapeCta.signup')}
             </Link>
           )}
         </div>
       </div>
+
+      <NextPages
+        title={tLearn('nextTitle')}
+        items={(['roles', 'owners', 'assistants', 'advanced'] as const).map((key) => ({
+          href: { roles: '/team-roles', owners: '/for-owners', assistants: '/for-assistants', advanced: '/invoicing-for-advanced' }[key],
+          title: tLearn(`pages.${key}.title`),
+          body: tLearn(`pages.${key}.body`)
+        }))}
+      />
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('faqTitle')}</h2>
       <div className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">
@@ -159,6 +172,8 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
           </details>
         ))}
       </div>
+
+      <EmbedSection section="accountants" tabs={['badge']} badgeKinds={['partner']} className="mt-12" />
 
       <div className="mt-12 rounded-xl border border-border p-6">
         <h2 className="text-lg font-bold tracking-tight">{t('fine.title')}</h2>

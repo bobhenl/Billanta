@@ -23,7 +23,8 @@ import {
   HEALTH_INSURERS,
 } from "./annual-filings";
 import { submitterFromTenant } from "./vat-returns";
-import { homeCurrencyOf, normalizeTaxAdvances } from "@faktur/cz-compliance";
+import { computeTaxReturnBasis, homeCurrencyOf, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
+import { taxReturnCsv, taxReturnFileName, taxReturnPdf, type TaxReturnReport } from "./tax-return-basis";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -105,6 +106,14 @@ const annualQuerySchema = z.object({
   paidHealth: z.coerce.number().min(0).max(10_000_000).optional(),
   // Paid date (daňová evidence) or DUZP (účetnictví).
   basis: z.enum(["cash", "accrual"]).default("cash"),
+});
+
+const calendarDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+const taxReturnQuerySchema = z.object({
+  year: z.coerce.number().int().min(2000).max(2100),
+  // CZ: the activity's paušál (80/60/40/30). SK has one 60 % paušál.
+  rate: z.enum(["80", "60", "40", "30"]).default("60"),
 });
 
 const monthsSchema = z
@@ -246,6 +255,80 @@ export class ExportsController {
       // the paid advances with the same @faktur/cz-compliance functions, under
       // the rules of the company's country.
       return { ...summary, country, paidSource: paid.source };
+    } catch (err) {
+      if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
+      throw err;
+    }
+  }
+
+  @Get("tax-return-basis")
+  @ApiOperation({ summary: "Podklady pro daňové přiznání: the year's income, expenses by category, paušály vs. actual expenses, paušální daň and deadlines (?year=&rate=80|60|40|30)" })
+  async taxReturnBasis(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>) {
+    const r = await this.loadTaxReturn(req, query);
+    // Calendar days, not instants: a Date would shift a day in the browser's zone.
+    return { ...r, deadlines: r.deadlines.map((d) => ({ kind: d.kind, date: calendarDay(d.date) })) };
+  }
+
+  @Get("tax-return-basis.csv")
+  @ApiOperation({ summary: "The same tax-return basis as a CSV sheet for the accountant" })
+  async taxReturnBasisCsv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
+    const r = await this.loadTaxReturn(req, query);
+    this.send(res, taxReturnCsv(r), "text/csv; charset=utf-8", `${taxReturnFileName(r)}.csv`);
+  }
+
+  @Get("tax-return-basis.pdf")
+  @ApiOperation({ summary: "The same tax-return basis as a PDF" })
+  async taxReturnBasisPdf(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
+    const r = await this.loadTaxReturn(req, query);
+    const pdf = await taxReturnPdf(r);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${taxReturnFileName(r)}.pdf"`);
+    res.send(pdf);
+  }
+
+  /**
+   * One year's own figures (annualSummary: paid invoices, expenses by
+   * category, home currency) run through computeTaxReturnBasis, which holds
+   * every rate and limit. A company is summed by DUZP (it keeps accounts),
+   * a sole trader by the day paid.
+   */
+  private async loadTaxReturn(req: TenantScopedRequest, query: unknown): Promise<TaxReturnReport> {
+    const parsed = taxReturnQuerySchema.safeParse(query);
+    if (!parsed.success) throw new BadRequestException("invalid_tax_return_query");
+    const { year, rate } = parsed.data;
+    const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
+    const country = tenant?.addressCountry === "SK" ? ("SK" as const) : ("CZ" as const);
+    const legalEntity = isLegalEntityName(tenant?.legalName);
+    const basis = legalEntity ? ("accrual" as const) : ("cash" as const);
+    const vatPayer = tenant?.dicVatPayer ?? false;
+    const paid = paidAdvances(normalizeTaxAdvances(tenant?.taxAdvances), year, {});
+    try {
+      const s = await this.exportsService.annualSummary(req.tenantDb!, year, {
+        vatPayer,
+        flatRate: null,
+        basis,
+        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), homeCurrencyOf(tenant?.addressCountry)),
+        homeCurrency: homeCurrencyOf(tenant?.addressCountry),
+      });
+      const b = computeTaxReturnBasis({
+        country,
+        year,
+        income: s.income,
+        expensesByCategory: s.byCategory,
+        vatPayer,
+        legalEntity,
+        flatRate: Number(rate) as FlatRate,
+        paidSocial: paid.paidSocial,
+        paidHealth: paid.paidHealth,
+      });
+      return {
+        ...b,
+        companyName: tenant?.legalName ?? "",
+        basis,
+        vatPayer,
+        flatTaxRegime: tenant?.flatTaxRegime === true,
+        counts: s.counts,
+      };
     } catch (err) {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;

@@ -5,6 +5,7 @@ import {
   defaultTaxDeadlineKinds,
   isLegalEntityName,
   taxDeadlinesFor,
+  taxReturnSeason,
   type TaxDeadlineKind,
   type TaxProfile,
 } from "@faktur/cz-compliance";
@@ -93,11 +94,13 @@ export class WeeklyDigestCron {
       const locale = emailLocaleOf(t?.locale);
       const profile: TaxProfile = { country: t?.country ?? "CZ", vatStatus: t?.vatStatus ?? "non_payer", legalEntity: isLegalEntityName(t?.legalName) };
       const invoices = await this.invoiceSummary(db, locale, now);
+      const taxReturn = await this.taxReturnNudge(db, locale, now);
 
       let queued = 0;
       for (const m of subscribers) {
         const prefs = notificationPrefsOf(m.prefs);
-        const seesInvoices = effectivePermissions(m.role, m.permissions).invoices !== "none";
+        const permissions = effectivePermissions(m.role, m.permissions);
+        const seesInvoices = permissions.invoices !== "none";
         const unsub = unsubscribeFor(tenantId, m.userId, "weekly_digest", locale);
         const data: DigestData = {
           companyName: t?.company ?? "Billanta",
@@ -109,6 +112,8 @@ export class WeeklyDigestCron {
           })),
           dashboardUrl: `${siteUrl()}/${locale}/dashboard`,
           unsubscribeUrl: unsub.pageUrl,
+          // The basis page sits under reports; a member without them gets no link.
+          taxReturn: permissions.reports !== "none" ? taxReturn : null,
         };
         if (digestIsEmpty(data)) continue;
         const rendered = renderWeeklyDigest(data, locale);
@@ -130,6 +135,29 @@ export class WeeklyDigestCron {
       }
       return queued;
     }) as Promise<number>;
+  }
+
+  /**
+   * January to March: a line pointing to last year's tax-return basis, only
+   * when the company issued an invoice in that year (nothing to sum otherwise).
+   */
+  private async taxReturnNudge(db: Db, locale: EmailLocale, now: Date): Promise<{ year: number; url: string } | null> {
+    const season = taxReturnSeason(now);
+    if (!season) return null;
+    const year = season.taxYear;
+    const [row] = await db
+      .select({ id: schema.invoices.id })
+      .from(schema.invoices)
+      .where(
+        and(
+          eq(schema.invoices.documentType, "invoice"),
+          sql`${schema.invoices.invoiceNumber} IS NOT NULL`,
+          sql`${schema.invoices.issueDate} >= ${`${year}-01-01 00:00:00 Europe/Prague`}::timestamptz`,
+          sql`${schema.invoices.issueDate} < ${`${year + 1}-01-01 00:00:00 Europe/Prague`}::timestamptz`,
+        ),
+      )
+      .limit(1);
+    return row ? { year, url: `${siteUrl()}/${locale}/reports/tax-return?year=${year}` } : null;
   }
 
   /** Unpaid and overdue issued invoices, and the ones paid in the last 7 days (quotes and credit notes left out). */

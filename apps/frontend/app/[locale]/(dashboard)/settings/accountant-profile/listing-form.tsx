@@ -22,9 +22,13 @@ export interface OwnListing {
         reviewNote: string | null;
       })
     | null;
+  partnerStatus: PartnerStatus;
+  partnerNote: string | null;
 }
 
-const ERROR_CODES = ['services_required', 'languages_required', 'region_required', 'contact_required', 'invalid_website', 'accountant_program_required'];
+export type PartnerStatus = 'none' | 'pending' | 'approved' | 'rejected';
+
+const ERROR_CODES = ['services_required', 'languages_required', 'region_required', 'contact_required', 'invalid_website', 'ico_required'];
 
 const STATUS_TONE = {
   pending: 'bg-warning/10 text-warning',
@@ -103,7 +107,7 @@ export function ListingForm({ own, readOnly }: { own: OwnListing; readOnly: bool
         {l && <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_TONE[l.status])}>{t(`settings.status.${l.status}`)}</span>}
       </div>
       <p className="mt-1 text-sm text-muted-foreground">{t('settings.intro')}</p>
-      {!own.eligible && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{t('settings.needProgram')}</p>}
+      {!own.eligible && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{t('settings.needIco')}</p>}
       {l?.reviewNote && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{t('settings.reviewNote', { note: l.reviewNote })}</p>}
 
       <form onSubmit={submit} className="mt-4 space-y-4">

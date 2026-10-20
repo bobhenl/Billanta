@@ -1,11 +1,12 @@
-import { BookOpenCheck, Calculator, CircleHelp, FileText, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
+import { BookA, BookOpenCheck, Calculator, CircleHelp, FileText, MapPin, Sparkles, type LucideIcon } from 'lucide-react';
 import type { SearchHit, SearchKind } from '@/lib/site-search';
 
 /** Display order and icons of public search hits, shared by the /search box and the header search. */
-export const KIND_ORDER: SearchKind[] = ['calculator', 'guide', 'feature', 'faq', 'page', 'city'];
+export const KIND_ORDER: SearchKind[] = ['calculator', 'guide', 'glossary', 'feature', 'faq', 'page', 'city'];
 export const KIND_ICON: Record<SearchKind, LucideIcon> = {
   calculator: Calculator,
   guide: BookOpenCheck,
+  glossary: BookA,
   feature: Sparkles,
   faq: CircleHelp,
   page: FileText,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { BadgeCheck, Bot, Check, Download, FileQuestion, Landmark, Loader2, Receipt, Timer, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Bot, Check, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Timer, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
@@ -27,16 +27,26 @@ const ICONS: Record<ToggleableModule, LucideIcon> = {
 type AresPatch = Record<string, string | boolean | null>;
 
 /**
- * Three quick questions right after signup — no tour. The answers only set
- * Settings → Company / Modules, so everything stays changeable later.
+ * A few quick questions right after signup, no tour. The answers only set
+ * Settings → Company / Modules, so everything stays changeable later. The
+ * last one, the app the company is leaving (preset from a /switch page),
+ * sends "finish" on to that app's import instead of the dashboard.
  */
 export function WelcomeSetup({
   initialModules,
-  company
+  company,
+  importApps,
+  initialImportFrom,
+  managesClients = false
 }: {
   initialModules: ModuleSet;
   company: { ico: string; vatPayer: boolean; country: string };
+  importApps: { key: string; name: string }[];
+  initialImportFrom: string | null;
+  /** Ticked "Spravuji účetnictví pro klienty" at sign-up: land on the accountant profile, not the dashboard. */
+  managesClients?: boolean;
 }) {
+  const nextPage = managesClients ? '/settings/accountant-profile' : '/dashboard';
   const t = useTranslations('welcome');
   const tm = useTranslations('settings.modules');
   const tLookup = useTranslations('companyLookup');
@@ -47,6 +57,7 @@ export function WelcomeSetup({
   const [vatPayer, setVatPayer] = useState(company.vatPayer);
   const [modules, setModules] = useState<ModuleSet>(initialModules);
   const [saving, startSave] = useTransition();
+  const [importFrom, setImportFrom] = useState<string | null>(initialImportFrom); // an import source key, or null = starting fresh
   const preset = presetForModules(modules);
 
   // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
@@ -84,7 +95,7 @@ export function WelcomeSetup({
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });
-      router.push('/dashboard');
+      router.push(importFrom ? `/settings/import?source=${importFrom}` : nextPage);
       router.refresh();
     });
 
@@ -213,13 +224,34 @@ export function WelcomeSetup({
         <p className="text-xs text-muted-foreground">{t('later')}</p>
       </section>
 
+      <section className="space-y-3 rounded-xl border border-border bg-card p-4">
+        {step(4, t('importTitle'), t('importHint'))}
+        <div className="flex flex-wrap gap-2">
+          {[{ key: null, name: t('importNone') }, ...importApps, { key: 'excel', name: t('importOther') }].map((app) => (
+            <button
+              key={app.key ?? 'none'}
+              type="button"
+              aria-pressed={importFrom === app.key}
+              onClick={() => setImportFrom(app.key)}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                importFrom === app.key ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {importFrom === app.key ? <Check className="h-4 w-4" /> : app.key === 'excel' && <FileSpreadsheet className="h-4 w-4" />}
+              {app.name}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={() => router.push('/dashboard')}>
+        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={() => router.push(nextPage)}>
           {t('skip')}
         </button>
         <button type="button" className={buttonClass.primary} disabled={saving} onClick={finish}>
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-          {t('finish')}
+          {importFrom ? t('finishImport') : t('finish')}
         </button>
       </div>
     </div>

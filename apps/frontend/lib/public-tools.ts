@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ArrowLeftRight, BookOpenCheck, Building2, Calculator, CalendarClock, Globe2, Landmark, Percent, QrCode, Scale, Wallet } from 'lucide-react';
+import { ArrowLeftRight, BellRing, BookOpenCheck, Building2, Calculator, CalendarClock, CalendarDays, FileCode2, FileMinus2, FileSearch, FileText, Gavel, Globe2, HandCoins, Landmark, ListChecks, MailWarning, Percent, QrCode, Receipt, Repeat, Scale, ShieldCheck, Wallet } from 'lucide-react';
 import { routing } from '@/i18n/routing';
 
 /**
@@ -41,19 +41,61 @@ export const CALCULATORS = [
   { slug: 'qr-payment', key: 'qrPayment', icon: QrCode, locales: CZ_ONLY },
   { slug: 'company-lookup', key: 'companyLookup', icon: Building2, locales: ALL },
   { slug: 'iban', key: 'iban', icon: Landmark, locales: CZ_ONLY },
-  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL }
+  { slug: 'due-date', key: 'dueDate', icon: CalendarClock, locales: ALL },
+  // Deadlines by month for CZ or SK, the same rules as the dashboard reminder.
+  { slug: 'tax-calendar', key: 'taxCalendar', icon: CalendarDays, locales: ALL },
+  // The CZ register of VAT payers (nespolehlivý plátce, published accounts): Czech law.
+  { slug: 'unreliable-vat-payer', key: 'vatReliability', icon: ShieldCheck, locales: CZ_ONLY },
+  // What an invoice must contain (CZ and SK law) and an ISDOC viewer that
+  // checks a received invoice against the same list.
+  { slug: 'invoice-requirements', key: 'invoiceRequirements', icon: ListChecks, locales: ALL },
+  { slug: 'isdoc-viewer', key: 'isdocViewer', icon: FileSearch, locales: ALL }
 ] as const satisfies readonly PublicTool[];
 
 export const GUIDES = [
   { slug: 'vat-return-control-statement', key: 'vatFiling', icon: BookOpenCheck, locales: CZ_ONLY },
-  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: CZ_ONLY }
+  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: CZ_ONLY },
+  // Slovak rules, so published in Slovak (primary) as well as cs and en for
+  // Czech companies that invoice Slovak customers.
+  { slug: 'e-invoicing-slovakia-2027', key: 'skEinvoicing', icon: FileCode2, locales: ALL }
+] as const satisfies readonly PublicTool[];
+
+/**
+ * Invoice templates (`/invoice-templates/<slug>`): a rendered sample, the
+ * required fields with links to the law, and a button that opens
+ * `/create-invoice?template=<slug>` preset for that document. Published in
+ * every language: the cs and en pages follow Czech law, the sk page Slovak
+ * law (the sample data and rule references live in the message files).
+ */
+export const TEMPLATES = [
+  { slug: 'non-vat-payer', key: 'nonPayer', icon: FileText, locales: ALL },
+  { slug: 'vat-payer', key: 'vatPayer', icon: Receipt, locales: ALL },
+  { slug: 'proforma-invoice', key: 'proforma', icon: HandCoins, locales: ALL },
+  { slug: 'credit-note', key: 'creditNote', icon: FileMinus2, locales: ALL },
+  { slug: 'reverse-charge', key: 'reverseCharge', icon: Repeat, locales: ALL },
+  { slug: 'identified-person', key: 'identified', icon: Globe2, locales: ALL }
+] as const satisfies readonly PublicTool[];
+
+/**
+ * Payment reminder templates (`/payment-reminder-templates/<slug>`): when to
+ * send each letter, what belongs in it with links to the law, and a
+ * generator that fills in the letter and gives it as text or PDF. The
+ * pre-action notice is a Czech institution (§ 142a o.s.ř.), so it is cs + en
+ * only; the sk URL points to the Slovak payment demand instead.
+ */
+export const REMINDERS = [
+  { slug: 'payment-reminder', key: 'reminder', icon: BellRing, locales: ALL },
+  { slug: 'payment-demand', key: 'demand', icon: MailWarning, locales: ALL },
+  { slug: 'pre-action-notice', key: 'preAction', icon: Gavel, locales: CZ_ONLY }
 ] as const satisfies readonly PublicTool[];
 
 export type Calculator = (typeof CALCULATORS)[number];
 export type Guide = (typeof GUIDES)[number];
+export type InvoiceTemplate = (typeof TEMPLATES)[number];
+export type ReminderTemplate = (typeof REMINDERS)[number];
 
-/** The guides hub only lists Czech-rule guides, so it exists where they do. */
-export const GUIDES_HUB_LOCALES: readonly string[] = CZ_ONLY;
+/** The guides hub exists in every language at least one guide is published in. */
+export const GUIDES_HUB_LOCALES: readonly string[] = ALL.filter((l) => GUIDES.some((g) => (g.locales as readonly string[]).includes(l)));
 
 export function getCalculator(slug: string): Calculator | undefined {
   return CALCULATORS.find((c) => c.slug === slug);
@@ -61,6 +103,14 @@ export function getCalculator(slug: string): Calculator | undefined {
 
 export function getGuide(slug: string): Guide | undefined {
   return GUIDES.find((g) => g.slug === slug);
+}
+
+export function getTemplate(slug: string): InvoiceTemplate | undefined {
+  return TEMPLATES.find((x) => x.slug === slug);
+}
+
+export function getReminder(slug: string): ReminderTemplate | undefined {
+  return REMINDERS.find((x) => x.slug === slug);
 }
 
 export function isPublishedIn(tool: { locales: readonly string[] }, locale: string): boolean {

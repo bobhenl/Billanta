@@ -6,6 +6,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { canManage, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { VariablesEditor } from './variables-editor';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.variables');
@@ -14,6 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → Proměnné: the company's own `{placeholders}` plus a reference of the built-in ones. */
 export default async function VariablesPage() {
+  const gate = await settingsGate('variables');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.variables');
 

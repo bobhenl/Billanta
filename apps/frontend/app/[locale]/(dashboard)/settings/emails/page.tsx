@@ -6,6 +6,7 @@ import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
 import { canManage, emailPrefsOf, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { EmailSettings } from './email-settings';
+import { settingsGate } from '@/components/settings-gate';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('settings.emails');
@@ -14,6 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings → E-maily: how the invoice and reminder emails to customers look and who they come from. */
 export default async function EmailSettingsPage() {
+  const gate = await settingsGate('emails');
+  if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('settings.emails');
 

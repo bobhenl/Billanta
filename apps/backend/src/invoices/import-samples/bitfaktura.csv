@@ -1,0 +1,4 @@
+Number,Kind,Issue date,Sell date,Payment to,Buyer name,Buyer tax no,Price net,Price tax,Price gross,Currency,Status
+1/09/2025,vat,2025-09-03,2025-09-03,2025-09-17,Malířství Barva s.r.o.,CZ67890123,6000.00,1260.00,7260.00,CZK,paid
+2/09/2025,vat,2025-09-24,2025-09-24,2025-10-08,Eva Černá,,1000.00,210.00,1210.00,CZK,issued
+1/10/2025,vat,2025-10-06,2025-10-06,2025-10-20,Sklenářství Čirý s.r.o.,CZ78901234,2500.00,525.00,3025.00,CZK,issued

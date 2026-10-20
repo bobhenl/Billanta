@@ -38,7 +38,7 @@ on:
 
 jobs:
   node:
-    name: Node (lint, build, cz-compliance tests)
+    name: Node (lint, build, cz-compliance tests, Peppol validation)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -68,6 +68,25 @@ jobs:
 
       - name: Test cz-compliance (vitest)
         run: pnpm --filter @faktur/cz-compliance test
+
+      # Saxon and the UBL schema check run on the JVM. Pinning the JDK keeps
+      # the run independent of what the runner image happens to ship.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # The official artefacts are downloaded by pinned URL and checked against
+      # their SHA-256; caching them spares Maven Central and GitHub each run.
+      - name: Cache Peppol validation artefacts
+        uses: actions/cache@v4
+        with:
+          path: packages/cz-compliance/validation/.cache
+          key: peppol-artefacts-${{ hashFiles('packages/cz-compliance/validation/artefacts.ts') }}
+
+      - name: Validate UBL against EN 16931 and Peppol BIS 3.0 schematron
+        run: pnpm --filter @faktur/cz-compliance validate:peppol
 
   ai-service:
     name: AI service (Python compile check)

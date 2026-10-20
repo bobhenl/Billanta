@@ -17,6 +17,8 @@ type MockTenantBilling = {
   findTenantIdByGopayPayerId: ReturnType<typeof vi.fn>;
   updateSubscriptionStatus: ReturnType<typeof vi.fn>;
   clearPastDue: ReturnType<typeof vi.fn>;
+  recordReferralPayment: ReturnType<typeof vi.fn>;
+  voidReferralReward: ReturnType<typeof vi.fn>;
 };
 type MockSubscriptionEvents = {
   insertIfNew: ReturnType<typeof vi.fn>;
@@ -39,6 +41,8 @@ describe("BillingService", () => {
       findTenantIdByGopayPayerId: vi.fn(),
       updateSubscriptionStatus: vi.fn().mockResolvedValue(undefined),
       clearPastDue: vi.fn().mockResolvedValue(undefined),
+      recordReferralPayment: vi.fn().mockResolvedValue(0),
+      voidReferralReward: vi.fn().mockResolvedValue(false),
     };
     subscriptionEvents = {
       insertIfNew: vi.fn(),
@@ -228,6 +232,64 @@ describe("BillingService", () => {
 
       expect(tenantBilling.clearPastDue).toHaveBeenCalledWith("tenant-1");
       expect(tenantBilling.updateSubscriptionStatus).not.toHaveBeenCalled();
+      // No billing reason: not a plan period, so no referral payment.
+      expect(tenantBilling.recordReferralPayment).not.toHaveBeenCalled();
+    });
+
+    it("invoice.paid for a plan period records a referral payment without VAT", async () => {
+      const start = 1_790_000_000;
+      stripe.webhooks.constructEvent.mockReturnValue({
+        id: "evt_paid_ref",
+        type: "invoice.paid",
+        data: {
+          object: {
+            customer: "cus_1",
+            billing_reason: "subscription_cycle",
+            currency: "czk",
+            amount_paid: 34_969,
+            total_excluding_tax: 28_900,
+            lines: { data: [{ period: { start, end: start + 365 * 86_400 } }] },
+          },
+        },
+      });
+      tenantBilling.findTenantIdByStripeCustomerId.mockResolvedValue("tenant-1");
+      subscriptionEvents.insertIfNew.mockResolvedValue(true);
+
+      await service.handleStripeWebhook(Buffer.from("{}"), "sig");
+
+      expect(tenantBilling.recordReferralPayment).toHaveBeenCalledWith("tenant-1", {
+        amountMinor: 28_900,
+        currency: "CZK",
+        longPeriod: true,
+      });
+    });
+
+    it("charge.refunded voids a held-back referral reward", async () => {
+      stripe.webhooks.constructEvent.mockReturnValue({
+        id: "evt_refund",
+        type: "charge.refunded",
+        data: { object: { customer: "cus_1" } },
+      });
+      tenantBilling.findTenantIdByStripeCustomerId.mockResolvedValue("tenant-1");
+      subscriptionEvents.insertIfNew.mockResolvedValue(true);
+
+      await service.handleStripeWebhook(Buffer.from("{}"), "sig");
+
+      expect(tenantBilling.voidReferralReward).toHaveBeenCalledWith("tenant-1", "refunded");
+    });
+
+    it("customer.subscription.deleted voids a held-back referral reward", async () => {
+      stripe.webhooks.constructEvent.mockReturnValue({
+        id: "evt_del_ref",
+        type: "customer.subscription.deleted",
+        data: { object: { customer: "cus_1" } },
+      });
+      tenantBilling.findTenantIdByStripeCustomerId.mockResolvedValue("tenant-1");
+      subscriptionEvents.insertIfNew.mockResolvedValue(true);
+
+      await service.handleStripeWebhook(Buffer.from("{}"), "sig");
+
+      expect(tenantBilling.voidReferralReward).toHaveBeenCalledWith("tenant-1", "canceled");
     });
 
     it("returns skipped=tenant-not-resolved and never inserts an event when no tenant can be found", async () => {

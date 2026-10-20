@@ -85,6 +85,8 @@ export interface PublicProfileSettings {
   orders: { enabled: boolean; customItems: boolean; prepay: boolean };
   /** "Kontaktovat": a message form whose messages land in the notifications. */
   contactForm: boolean;
+  /** "Zobrazit v katalogu firem": opt-in listing on /directory and the town page of `town` (a municipality slug). */
+  directory: { enabled: boolean; trade: string | null; town: string | null };
 }
 
 export interface PaymentMethodDef {
@@ -161,6 +163,14 @@ export interface MyAccess {
 // The dashboard layout and most pages both ask for it; one call per request.
 export const fetchMyAccess = cache(async (): Promise<MyAccess> => apiFetch<MyAccess>('/api/v1/tenants/me/access'));
 
+export { canWrite } from './access';
+import { canWrite } from './access';
+
+/** Server components: whether the member may change things in `area` (see `canWrite`; a failed access fetch allows). */
+export async function fetchCanWrite(area: PermissionArea | null): Promise<boolean> {
+  return canWrite(await fetchMyAccess().catch(() => null), area);
+}
+
 /** Dashboard sections to leave out of the navigation for this member/company. */
 export function hiddenSections(access: MyAccess | null): string[] {
   if (!access) return [];
@@ -173,6 +183,43 @@ export function hiddenSections(access: MyAccess | null): string[] {
   if (p.invoices === 'none' || !access.modules.time) hidden.push('time');
   if (!canManage(access.role)) hidden.push('billing');
   return hidden;
+}
+
+/**
+ * Settings pages that save under the backend's `ADMIN_PREFIXES`
+ * (apps/backend/src/tenancy/role-access.guard.ts): only owners and admins
+ * can use them, so other roles don't get a form that fails on save.
+ */
+export const MANAGER_SETTINGS = [
+  'company',
+  'invoices',
+  'numbering',
+  'emails',
+  'variables',
+  'paymentMethods',
+  'publicProfile',
+  'modules',
+  'team',
+  'billing',
+  'referrals',
+  'accountantProfile',
+  'backup',
+  'import',
+  'channels',
+  'ai',
+  'apiKeys'
+] as const;
+export type SettingsKey = (typeof MANAGER_SETTINGS)[number] | 'integrations' | 'exports';
+
+/** Settings pages this member's role can't use (switched-off modules are not counted here). */
+export function forbiddenSettings(access: MyAccess | null): Set<SettingsKey> {
+  const out = new Set<SettingsKey>();
+  if (!access || canManage(access.role)) return out;
+  for (const key of MANAGER_SETTINGS) out.add(key);
+  // The calendar feed is the only part of Integrace a non-admin can switch on, and the guard lets only accountants write there.
+  if (access.role !== 'accountant') out.add('integrations');
+  if (access.permissions.reports === 'none') out.add('exports');
+  return out;
 }
 
 export type { BankAccount } from './bank-account';

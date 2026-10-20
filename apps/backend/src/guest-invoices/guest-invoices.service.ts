@@ -28,6 +28,14 @@ const partySchema = z.object({
   dic: optionalText(20),
 });
 
+/** A payment reminder letter from the public generator: its title and the text the visitor sees and may edit. */
+export const guestLetterSchema = z.object({
+  language: z.enum(["cs", "sk", "en"]).default("cs"),
+  title: text(200).min(1),
+  body: text(8000).min(1),
+});
+export type GuestLetterInput = z.infer<typeof guestLetterSchema>;
+
 export const guestInvoiceSchema = z.object({
   language: z.enum(["cs", "sk", "en"]).default("cs"),
   invoiceNumber: text(40).min(1),
@@ -42,6 +50,12 @@ export const guestInvoiceSchema = z.object({
     .optional()
     .transform((v) => v || null),
   vatPayer: z.boolean().default(false),
+  // The public invoice templates (/invoice-templates) open the form with one of these preset.
+  documentType: z.enum(["invoice", "proforma", "credit_note"]).default("invoice"),
+  /** Domestic reverse charge (§92a ZDPH, §69/12 ZoDPH); only a VAT payer can use it. */
+  reverseCharge: z.boolean().default(false),
+  /** Number of the invoice a credit note corrects ("K dokladu" on the PDF). */
+  relatedInvoiceNumber: optionalText(40),
   supplier: partySchema.extend({
     email: optionalText(200),
     phone: optionalText(40),
@@ -78,6 +92,10 @@ export type GuestInvoiceInput = z.infer<typeof guestInvoiceSchema>;
 export class GuestInvoicesService {
   constructor(private readonly pdf: InvoicePdfService) {}
 
+  generateLetterPdf(input: GuestLetterInput): Promise<Buffer> {
+    return this.pdf.generateLetter(input);
+  }
+
   async generatePdf(input: GuestInvoiceInput): Promise<Buffer> {
     const s = input.supplier;
     const c = input.customer;
@@ -110,8 +128,9 @@ export class GuestInvoicesService {
       dic: c.dic,
     } as unknown as ContactRow;
 
+    const reverseCharge = input.vatPayer && input.reverseCharge;
     const invoice = {
-      documentType: "invoice",
+      documentType: input.documentType,
       status: "issued",
       language: input.language,
       invoiceNumber: input.invoiceNumber,
@@ -125,7 +144,7 @@ export class GuestInvoicesService {
       specificSymbol: null,
       orderNumber: null,
       issuePlace: null,
-      reverseCharge: false,
+      reverseCharge,
       exchangeRate: null,
       amountPaid: "0",
       customFields: [],
@@ -148,7 +167,8 @@ export class GuestInvoicesService {
         }) as unknown as LineItemRow,
     );
 
-    const totals = computeVatBreakdown(lineItems);
-    return this.pdf.generate(invoice, contact, tenant, lineItems, totals, null);
+    const totals = computeVatBreakdown(lineItems, { reverseCharge });
+    const related = input.documentType === "credit_note" && input.relatedInvoiceNumber ? { invoiceNumber: input.relatedInvoiceNumber, documentType: "invoice" as const } : null;
+    return this.pdf.generate(invoice, contact, tenant, lineItems, totals, related);
   }
 }

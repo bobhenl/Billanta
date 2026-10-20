@@ -5,6 +5,7 @@ import {
   defaultTaxDeadlineKinds,
   isLegalEntityName,
   relevantTaxDeadlineKinds,
+  taxCalendarYear,
   taxDeadlinesFor,
   type TaxProfile
 } from '../tax-deadlines.js';
@@ -119,5 +120,43 @@ describe('isLegalEntityName', () => {
   it('tells a company from an OSVČ by the legal form', () => {
     for (const n of ['Firma s.r.o.', 'Firma, spol. s r.o.', 'Firma a.s.', 'Firma s. r. o.', 'Bytové družstvo', 'Firma k.s.']) expect(isLegalEntityName(n)).toBe(true);
     for (const n of ['Jan Novák', 'Jan Novák – grafika', '', null]) expect(isLegalEntityName(n)).toBe(false);
+  });
+});
+
+describe('taxCalendarYear', () => {
+  const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  it('CZ monthly VAT: twelve rows, a Sunday 25th moves to Monday', () => {
+    const rows = taxCalendarYear(['vat_monthly'], 2026, 'CZ');
+    expect(rows).toHaveLength(12);
+    expect(ymd(rows[0]!.date)).toBe('2026-01-26');
+    expect(ymd(rows[0]!.statutory)).toBe('2026-01-25');
+  });
+
+  it('CZ income tax 2027: 1 May is a Saturday and a holiday, so Monday 3 May', () => {
+    expect(taxCalendarYear(['income_tax'], 2027, 'CZ').map((r) => ymd(r.date))).toEqual(['2027-05-03']);
+  });
+
+  it('SK: social advance on the 8th, return on 31 March, no Czech-only rows', () => {
+    const social = taxCalendarYear(['social'], 2026, 'SK');
+    expect(social).toHaveLength(12);
+    // 8 February 2026 is a Sunday.
+    expect(ymd(social[1]!.date)).toBe('2026-02-09');
+    expect(taxCalendarYear(['income_tax'], 2026, 'SK').map((r) => ymd(r.date))).toEqual(['2026-03-31']);
+    expect(taxCalendarYear(['flat_tax', 'overviews', 'payroll', 'property_tax'], 2026, 'SK')).toEqual([]);
+  });
+
+  it('CZ social advance stays on the 20th', () => {
+    expect(taxCalendarYear(['social'], 2026, 'CZ').map((r) => r.statutory.getDate())).toEqual(Array(12).fill(20));
+  });
+
+  it('sorted by date, then by kind order', () => {
+    const rows = taxCalendarYear(['ec_sales_list', 'vat_monthly', 'health'], 2026, 'CZ');
+    expect(rows.slice(0, 3).map((r) => r.kind)).toEqual(['health', 'vat_monthly', 'ec_sales_list']);
+  });
+
+  it('quarterly VAT: four rows, each moved off the weekend', () => {
+    const rows = taxCalendarYear(['vat_quarterly'], 2026, 'CZ');
+    expect(rows.map((r) => ymd(r.date))).toEqual(['2026-01-26', '2026-04-27', '2026-07-27', '2026-10-26']);
   });
 });

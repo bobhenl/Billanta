@@ -1,6 +1,7 @@
 import { Controller, Get, HttpException, HttpStatus, Ip, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { Request } from "express";
+import { isPublishedAccount, type VatPayerCheck } from "@faktur/cz-compliance";
 import { DailyCap, SlidingWindowLimiter, visitorIp } from "../guest-invoices/guest-limits";
 import type { AresContactPrefill } from "./ares-mapper.util";
 import { COMPANY_REGISTRIES, ContactsService, hasSlowPart, registryForCountry, registryPartOf, type CompanyRegistry } from "./contacts.service";
@@ -29,6 +30,35 @@ export const toPublicHit = (h: AresContactPrefill): PublicCompanyHit => ({
   source: h.source ?? (h.addressCountry === "SK" ? "RPO" : "ARES"),
   regNumber: h.regNumber ?? null,
 });
+
+export interface PublicVatCheck {
+  vatId: string;
+  state: VatPayerCheck["state"];
+  source: VatPayerCheck["source"];
+  name: string | null;
+  /**
+   * The bank accounts published in the CZ register of VAT payers (§ 96 ZDPH),
+   * as a count and whether the asked `account` is one of them. Never the
+   * list itself: that is for a signed-in supplier checking a customer, not
+   * for anonymous visitors. `match` is null when no (valid) account was
+   * asked; the whole thing is null outside the CZ register (VIES has none).
+   */
+  accounts: { published: number; match: boolean | null } | null;
+}
+
+export function toPublicVatCheck(check: VatPayerCheck, account?: string): PublicVatCheck {
+  const asked = account?.trim().slice(0, 60);
+  return {
+    vatId: check.vatId,
+    state: check.state,
+    source: check.source,
+    name: check.name,
+    accounts:
+      check.source === "ADIS"
+        ? { published: check.bankAccounts.length, match: asked ? isPublishedAccount(check.bankAccounts, asked) : null }
+        : null,
+  };
+}
 
 /**
  * PUBLIC company lookup for forms filled in without an account (the buyer
@@ -75,12 +105,19 @@ export class CompanyLookupPublicController {
   }
 
   @Get("vat-check")
-  @ApiOperation({ summary: "Whether a DIČ / EU VAT number is registered for VAT (CZ register of VAT payers, VIES)" })
-  async vatCheck(@Query("dic") dic = "", @Ip() ip: string, @Req() req: Request) {
+  @ApiOperation({
+    summary: "Whether a DIČ / EU VAT number is registered for VAT (CZ register of VAT payers, VIES)",
+    description: "Optional ?account= (domestic number or IBAN) says whether it is among the accounts the payer published.",
+  })
+  async vatCheck(
+    @Query("dic") dic = "",
+    @Query("account") account: string | undefined,
+    @Ip() ip: string,
+    @Req() req: Request,
+  ): Promise<PublicVatCheck | null> {
     this.take(this.vatLimiter, ip, req);
     const check = await this.contacts.vatCheck(dic);
-    // The published bank accounts are for a signed-in supplier checking a customer, not for anonymous visitors.
-    return check ? { vatId: check.vatId, state: check.state, source: check.source, name: check.name } : null;
+    return check ? toPublicVatCheck(check, account) : null;
   }
 
   private take(limiter: SlidingWindowLimiter, ip: string, req: Request) {

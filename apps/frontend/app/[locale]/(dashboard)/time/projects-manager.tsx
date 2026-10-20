@@ -8,6 +8,7 @@ import { ColorDot } from '@/components/color-dot';
 import { InfoHint } from '@/components/info-hint';
 import { Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { useCanWrite } from '@/components/access-provider';
 import { formatMoney } from '@/lib/invoice-ui';
 import { formatMinutes, type Project } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
   const [pending, startTransition] = useTransition();
   const [editing, setEditing] = useState<Project | 'new' | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const canEdit = useCanWrite('invoices');
   const [form, setForm] = useState<Required<Omit<ProjectInput, 'archived' | 'hourly_rate'>>>({ name: '', contact_id: null, currency: home, color: COLORS[0] ?? null });
   const [rate, setRate] = useState('');
 
@@ -70,6 +72,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
               {showArchived ? t('projects.hideArchived') : t('projects.showArchived', { count: archivedCount })}
             </button>
           )}
+          {canEdit && (
           <button
             type="button"
             onClick={() => setEditing('new')}
@@ -78,6 +81,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
             <Plus className="h-4 w-4" />
             {t('projects.new')}
           </button>
+          )}
         </div>
       </div>
 
@@ -95,6 +99,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
                   </Link>
                   <div className="truncate text-xs text-muted-foreground">{p.contactName ?? t('projects.noContact')}</div>
                 </div>
+                {canEdit && (
                 <div className="flex shrink-0">
                   <button type="button" onClick={() => setEditing(p)} className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary" aria-label={t('projects.edit')}>
                     <Pencil className="h-3.5 w-3.5" />
@@ -119,6 +124,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
+                )}
               </div>
               <dl className="mt-2 grid grid-cols-3 gap-2 text-xs">
                 <div>

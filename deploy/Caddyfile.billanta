@@ -9,10 +9,14 @@ http://:8090 {
 	header {
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
-		X-Frame-Options "SAMEORIGIN"
 		Permissions-Policy "camera=(self), geolocation=(), microphone=(self)"
 		-Server
 	}
+
+	# Only the widgets under /embed may sit in an iframe on other sites
+	# (apps/frontend/lib/embeds.ts), which send their own frame-ancestors.
+	@notFramable not path /embed/*
+	header @notFramable X-Frame-Options "SAMEORIGIN"
 
 	# Public /ai-webhook/telegram|whatsapp -> ai-service /webhook/telegram|whatsapp.
 	handle /ai-webhook/* {

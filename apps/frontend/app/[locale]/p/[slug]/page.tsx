@@ -5,7 +5,9 @@ import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { getPublicProfile, type PublicProfile } from '@/lib/public-profiles';
 import { jsonLd, ogImage } from '@/lib/seo';
-import { profileUrl, SITE_NAME } from '@/lib/site';
+import { isDirectoryTrade } from '@/lib/business-presets';
+import { getMunicipalityBySlug } from '@/lib/municipalities';
+import { profileUrl, SITE_NAME, SITE_URL } from '@/lib/site';
 import { ProfileMessageForm } from './profile-message-form';
 import { ProfileOrderForm } from './profile-order-form';
 
@@ -48,7 +50,8 @@ const href = (website: string) => (/^https?:\/\//i.test(website) ? website : `ht
 function organizationLd(p: PublicProfile, url: string) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    // A company listed in the business directory with an address is a local business; anything else stays an Organization.
+    '@type': p.directory && p.address ? 'LocalBusiness' : 'Organization',
     name: p.companyName,
     legalName: p.legalName,
     url,
@@ -79,6 +82,9 @@ export default async function PublicProfilePage({ params }: Props) {
   if (!profile) notFound();
 
   const t = await getTranslations('publicProfile');
+  const tDir = await getTranslations('businessDirectory');
+  const directoryTrade = isDirectoryTrade(profile.directory?.trade) ? profile.directory.trade : null;
+  const directoryTown = profile.directory ? getMunicipalityBySlug(profile.directory.town) : undefined;
   const country = profile.address?.country ? new Intl.DisplayNames([locale], { type: 'region' }).of(profile.address.country) : null;
   const address = profile.address
     ? [profile.address.street, [profile.address.postalCode, profile.address.city].filter(Boolean).join(' '), profile.address.country !== 'CZ' ? country : null]
@@ -234,6 +240,19 @@ export default async function PublicProfilePage({ params }: Props) {
             )}
           </div>
         </section>
+
+        {directoryTown && directoryTrade && (
+          // Absolute links: on a profile subdomain (PROFILE_DOMAIN) the directory lives on the main site.
+          <nav aria-label={tDir('title')} className="mt-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span>{tDir('profileListed')}</span>
+            <a href={`${SITE_URL}/${locale}/directory/${directoryTrade}`} className="rounded-full border border-border bg-card px-3 py-1 hover:border-primary hover:text-primary">
+              {tDir(`trades.${directoryTrade}`)}
+            </a>
+            <a href={`${SITE_URL}/${locale}/directory/town/${directoryTown.slug}`} className="rounded-full border border-border bg-card px-3 py-1 hover:border-primary hover:text-primary">
+              {directoryTown.name}
+            </a>
+          </nav>
+        )}
 
         <footer className="mt-8 text-center text-xs text-muted-foreground">
           {t.rich('poweredBy', {

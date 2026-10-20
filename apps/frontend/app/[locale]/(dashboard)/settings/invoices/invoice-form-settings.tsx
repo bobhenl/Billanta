@@ -9,7 +9,7 @@ import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { slugify } from '@/lib/public-link';
-import { SITE_URL } from '@/lib/site';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
 import {
   DEFAULT_SHOWN,
   PDF_ACCENTS,
@@ -53,6 +53,7 @@ export function InvoiceFormSettings({
   home = 'CZK',
   uniformRates,
   linkCompany,
+  canHideCredit,
   readOnly
 }: {
   prefs: InvoiceFormPrefs;
@@ -68,6 +69,8 @@ export function InvoiceFormSettings({
   uniformRates: UniformYear[] | null;
   /** Public profile slug or company name, for the example links. */
   linkCompany: string;
+  /** A paid plan or a trial: the free plan always shows the "made with" line. */
+  canHideCredit: boolean;
   readOnly: boolean;
 }) {
   const t = useTranslations('settings.invoices');
@@ -80,6 +83,7 @@ export function InvoiceFormSettings({
   const [grossPrices, setGrossPrices] = useState(prefs.pricesIncludeVat);
   const [accent, setAccent] = useState(prefs.pdfAccent);
   const [secondLanguage, setSecondLanguage] = useState<'' | 'cs' | 'sk' | 'en'>(prefs.pdfSecondLanguage ?? '');
+  const [brandCredit, setBrandCredit] = useState(prefs.brandCredit);
   const [reminders, setReminders] = useState(prefs.remindersEnabled);
   const [reminderInterval, setReminderInterval] = useState(prefs.reminderIntervalDays);
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
@@ -127,6 +131,7 @@ export function InvoiceFormSettings({
         prices_include_vat: grossPrices,
         pdf_accent: accent,
         pdf_second_language: secondLanguage === '' ? null : secondLanguage,
+        brand_credit: brandCredit,
         reminders_enabled: reminders,
         reminder_interval_days: Math.min(60, Math.max(1, Math.round(reminderInterval) || 7)),
         reminder_max: Math.min(10, Math.max(1, Math.round(reminderMax) || 3)),
@@ -267,6 +272,28 @@ export function InvoiceFormSettings({
               ))}
             </select>
           </label>
+          <div>
+            <InfoHint hint={t('brandCreditHint')} className={cn('text-sm', (readOnly || !canHideCredit) && 'opacity-70')}>
+              <label className="flex items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={canHideCredit ? brandCredit : true}
+                  disabled={readOnly || !canHideCredit}
+                  onChange={(e) => setBrandCredit(e.target.checked)}
+                  className="h-4 w-4 accent-primary"
+                />
+                <span className="font-medium">{t('brandCredit', { name: SITE_NAME })}</span>
+              </label>
+            </InfoHint>
+            {!canHideCredit && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t('brandCreditFree')}{' '}
+                <Link href="/settings/billing" className="font-medium text-primary hover:underline">
+                  {t('brandCreditUpgrade')}
+                </Link>
+              </p>
+            )}
+          </div>
         </div>
       </section>
 

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { ArrowRight, CreditCard, Gift, Landmark, Sparkles } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { FaqList, faqLd } from '@/components/segment-page';
+import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { trialDays } from '@/lib/plan';
-import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, defaultCurrency, PLANS } from '@/lib/plans';
+import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, defaultCurrency, formatPlanPrice, PAYG_PRICE, PLANS } from '@/lib/plans';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { PricingPlans, type CompareCopy, type PlanCopy } from './pricing-plans';
 
@@ -55,6 +57,10 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
     }))
   };
 
+  // Questions people ask before paying, mirrored 1:1 in FAQPage data.
+  const faqParams = { payg: formatPlanPrice(PAYG_PRICE[currency], currency, locale), percent: BANK_TRANSFER_SURCHARGE_PERCENT };
+  const faq = (t.raw('faq.items') as { q: string }[]).map(({ q }, i) => ({ q, a: t(`faq.items.${i}.a`, faqParams) }));
+
   // One Offer per plan at its yearly-billed monthly price, in the currency
   // this locale shows first. That is the card-subscription price, the one the
   // cards show as the headline; the dearer bank-transfer price is a secondary
@@ -78,7 +84,8 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
     breadcrumbLd(locale, [
       [SITE_NAME, '/'],
       [t('title'), '/pricing']
-    ])
+    ]),
+    faqLd(faq)
   ];
 
   return (
@@ -100,6 +107,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           </Link>
           <span className="ml-2 text-muted-foreground">{tDemo('ctaHint')}</span>
         </p>
+        <ShareQr className="mt-4" />
       </div>
 
       <PricingPlans
@@ -151,6 +159,8 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         </p>
         <p className="text-xs">{t('vatNote')}</p>
       </div>
+
+      <FaqList title={t('faq.title')} faq={faq} />
 
       <Link href="/compare" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
         {t('compareCompetitors')}

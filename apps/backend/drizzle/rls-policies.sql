@@ -1321,6 +1321,37 @@ $$;
 REVOKE ALL ON FUNCTION public_invoice_demo(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public_invoice_demo(uuid) TO faktur_app;
 
+-- The issuer's plan, "Vystaveno v Billantě" opt-out and referral code
+-- (migration 0075): the /i/ page shows the line unless a paid company
+-- switched it off (src/invoices/brand-credit.ts) and links it with the code.
+DROP FUNCTION IF EXISTS get_public_invoice_brand_credit(uuid);
+CREATE OR REPLACE FUNCTION get_public_invoice_brand_credit(p_public_token uuid)
+RETURNS TABLE (
+  plan_enforced boolean,
+  trial_plan text,
+  trial_started_at timestamptz,
+  trial_ends_at timestamptz,
+  prepaid_plan text,
+  prepaid_until text,
+  subscription_plan text,
+  subscription_status text,
+  is_demo boolean,
+  brand_credit_off boolean,
+  referral_code text
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT t.plan_enforced, t.trial_plan::text, t.trial_started_at, t.trial_ends_at,
+         t.prepaid_plan::text, t.prepaid_until::text, t.subscription_plan::text, t.subscription_status::text,
+         t.is_demo, (t.invoice_form_prefs->>'brandCredit') = 'false', t.referral_code::text
+  FROM invoices i JOIN tenants t ON t.id = i.tenant_id
+  WHERE i.public_token = p_public_token;
+$$;
+REVOKE ALL ON FUNCTION get_public_invoice_brand_credit(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_public_invoice_brand_credit(uuid) TO faktur_app;
+
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER read functions — per-customer client portal
 -- (apps/backend/src/public-invoices/client-portal.*), keyed by
@@ -1594,3 +1625,34 @@ CREATE POLICY tenant_isolation ON email_outbox
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 ALTER TABLE email_suppressions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE email_suppressions FORCE ROW LEVEL SECURITY;
+
+-- ---------------------------------------------------------------------------
+-- E-invoicing over Peppol (migration 0074): standard tenant isolation on all
+-- four tables. Provider webhooks resolve the tenant through
+-- einvoice_tenant_for_participant / einvoice_tenant_for_message (defined in
+-- that migration) and then write in an RLS-scoped transaction.
+-- ---------------------------------------------------------------------------
+ALTER TABLE einvoice_participants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE einvoice_participants FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON einvoice_participants;
+CREATE POLICY tenant_isolation ON einvoice_participants
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE outgoing_einvoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE outgoing_einvoices FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON outgoing_einvoices;
+CREATE POLICY tenant_isolation ON outgoing_einvoices
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE incoming_einvoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE incoming_einvoices FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON incoming_einvoices;
+CREATE POLICY tenant_isolation ON incoming_einvoices
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+ALTER TABLE einvoice_status_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE einvoice_status_events FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant_isolation ON einvoice_status_events;
+CREATE POLICY tenant_isolation ON einvoice_status_events
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);

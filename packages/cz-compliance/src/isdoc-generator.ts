@@ -147,7 +147,7 @@ export interface IsdocInvoiceInput {
    * the caller to thread through (e.g. to decide whether to embed an
    * AI-draft disclaimer as a `Note`).
    */
-  source?: 'manual' | 'ai_telegram' | 'ai_whatsapp' | 'api';
+  source?: 'manual' | 'ai_telegram' | 'ai_whatsapp' | 'ai_voice' | 'api';
 }
 
 // ---------------------------------------------------------------------------

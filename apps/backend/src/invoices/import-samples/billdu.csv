@@ -1,0 +1,4 @@
+Document No.,Client,Client ID,Client Tax ID,Client VAT ID,Issue date,Delivery date,Due date,Total without VAT,Total,Currency,Status
+2025/0007,Kvetinárstvo Ruža s.r.o.,50567890,2120567890,SK2120567890,2025-09-02,2025-09-02,2025-09-16,200.00,246.00,EUR,Paid
+2025/0008,Peter Malý,,,,2025-09-19,2025-09-19,2025-10-03,90.00,110.70,EUR,Unpaid
+2025/0009,Fotoateliér Blesk,50678901,2120678901,,2025-10-01,2025-10-01,2025-10-15,500.00,615.00,EUR,Unpaid

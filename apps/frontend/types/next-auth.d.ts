@@ -17,5 +17,9 @@ declare module "next-auth" {
     twoFactor: "pending" | "verified" | "off";
     /** The throwaway user of a /demo company. */
     isDemo: boolean;
+    /** Ticked "Jsem učitel/ka" at sign-up (users.is_teacher). */
+    isTeacher: boolean;
+    /** Ticked "Spravuji účetnictví pro klienty" at sign-up (users.manages_clients). */
+    managesClients: boolean;
   }
 }

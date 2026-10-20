@@ -2,13 +2,15 @@ import cs from '@/messages/cs.json';
 import en from '@/messages/en.json';
 import sk from '@/messages/sk.json';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
-import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn } from '@/lib/public-tools';
+import { glossaryTermsFor } from '@/lib/glossary';
+import { glossaryText } from '@/lib/glossary-content';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn, REMINDERS, TEMPLATES } from '@/lib/public-tools';
 import { getAllMunicipalities, isDistrictSeat, municipalityLocale, type Municipality } from '@/lib/municipalities';
 
 type Messages = typeof cs;
 const MESSAGES: Record<string, Messages> = { cs, sk: sk as Messages, en: en as Messages };
 
-export type SearchKind = 'page' | 'feature' | 'calculator' | 'guide' | 'faq' | 'city';
+export type SearchKind = 'page' | 'feature' | 'calculator' | 'guide' | 'faq' | 'city' | 'glossary';
 
 export interface SearchHit {
   kind: SearchKind;
@@ -55,6 +57,7 @@ function indexFor(locale: string): Entry[] {
     entry('page', '/features', m.featurePages.indexHeading, m.featurePages.indexDescription),
     entry('page', '/invoicing', m.municipalityPages.indexTitle, m.municipalityPages.indexLead),
     entry('page', '/about', m.about.title, m.about.lead, `${m.about.whatBody} ${m.about.whoBody}`),
+    entry('page', '/contact', m.contact.title, m.contact.lead),
     entry('page', '/legal/terms', m.legal.terms.title, m.legal.terms.intro),
     entry('page', '/legal/privacy', m.legal.privacy.title, m.legal.privacy.intro),
     entry('page', '/legal/dpa', m.legal.dpa.title, m.legal.dpa.intro)
@@ -83,6 +86,29 @@ function indexFor(locale: string): Entry[] {
     if (!text || !isPublishedIn(g, locale)) continue;
     entries.push(entry('guide', `/guides/${g.slug}`, text.name, text.description, `${text.lead ?? ''} ${text.keywords ?? ''}`));
   }
+  // Glossary terms of this language (a Czech-only term has no Slovak text).
+  const gloss = m.glossaryPages;
+  entries.push(entry('page', '/glossary', gloss.indexTitle, gloss.indexDescription));
+  for (const term of glossaryTermsFor(locale)) {
+    const text = glossaryText(locale, term.slug);
+    if (!text) continue;
+    entries.push(entry('glossary', `/glossary/${term.slug}`, text.term, text.definition, `${text.aka ?? ''} ${text.explanation.join(' ')}`));
+  }
+  // Invoice templates: a document sample is closest to a guide.
+  const templates = m.invoiceTemplates as unknown as { indexTitle: string; indexDescription: string; items: Record<string, ToolText & { title: string }> };
+  entries.push(entry('page', '/invoice-templates', templates.indexTitle, templates.indexDescription));
+  for (const x of TEMPLATES) {
+    const text = templates.items[x.key];
+    if (!text || !isPublishedIn(x, locale)) continue;
+    entries.push(entry('guide', `/invoice-templates/${x.slug}`, text.title, text.description, `${text.name} ${text.lead ?? ''}`));
+  }
+  const reminders = m.paymentReminders as unknown as { indexTitle: string; indexDescription: string; items: Record<string, ToolText & { title: string }> };
+  entries.push(entry('page', '/payment-reminder-templates', reminders.indexTitle, reminders.indexDescription));
+  for (const x of REMINDERS) {
+    const text = reminders.items[x.key];
+    if (!text || !isPublishedIn(x, locale)) continue;
+    entries.push(entry('guide', `/payment-reminder-templates/${x.slug}`, text.title, text.description, `${text.name} ${text.lead ?? ''}`));
+  }
   INDEX.set(locale, entries);
   return entries;
 }
@@ -109,7 +135,7 @@ export function searchSite(locale: string, query: string, limit = 30): SearchHit
         break;
       }
     }
-    if (all) scored.push({ hit: { kind: e.kind, href: e.href, title: e.title, snippet: e.snippet }, score: score + (e.kind === 'feature' || e.kind === 'calculator' || e.kind === 'guide' ? 1 : 0) });
+    if (all) scored.push({ hit: { kind: e.kind, href: e.href, title: e.title, snippet: e.snippet }, score: score + (e.kind === 'feature' || e.kind === 'calculator' || e.kind === 'guide' || e.kind === 'glossary' ? 1 : 0) });
   }
 
   const cities = searchMunicipalities(words.join(' '), 8, locale).map(

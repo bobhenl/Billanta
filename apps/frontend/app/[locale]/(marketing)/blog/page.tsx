@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 import { fetchBlogPosts, formatBlogDate } from '@/lib/blog';
 import { breadcrumbLd, jsonLd, NOINDEX, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
@@ -59,6 +60,8 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
           ))}
         </ul>
       )}
+
+      <NewsletterSignup source="blog" className="mt-10" />
     </section>
   );
 }

@@ -2,12 +2,17 @@ import type { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
-import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES } from '@/lib/public-tools';
+import { GLOSSARY, glossaryLocales } from '@/lib/glossary';
+import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, REMINDERS, TEMPLATES } from '@/lib/public-tools';
 import { fetchBlogSitemap } from '@/lib/blog';
 import { getAllMunicipalities, isIndexedMunicipality, municipalityLocale } from '@/lib/municipalities';
 import { SITE_URL } from '@/lib/site';
+import { SWITCH_BRANDS } from '@/lib/switch';
 
 import { fetchAccountants } from '@/lib/accountant-directory';
+import { fetchDirectory, isThin, MIN_INDEXED_LISTINGS, townsOf } from '@/lib/business-directory';
+import { DIRECTORY_TRADES } from '@/lib/business-presets';
+import { SCHOOL_LESSONS } from '@/lib/school-lessons';
 
 /**
  * Sitemap for the whole public site, sharded via Next's `generateSitemaps()`.
@@ -51,16 +56,33 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/legal/privacy', changeFrequency: 'yearly', priority: 0.3 },
   { path: '/legal/dpa', changeFrequency: 'yearly', priority: 0.2 },
   { path: '/legal/cookies', changeFrequency: 'yearly', priority: 0.2 },
+  { path: '/contact', changeFrequency: 'yearly', priority: 0.4 },
   { path: '/pricing', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/compare', changeFrequency: 'monthly', priority: 0.7 },
   ...comparedPages().map((b): UrlEntry => ({ path: `/compare/${b.key}`, changeFrequency: 'monthly', priority: 0.6, locales: b.locales })),
+  { path: '/switch', changeFrequency: 'monthly', priority: 0.7 },
+  ...SWITCH_BRANDS.map((key): UrlEntry => ({ path: `/switch/${key}`, changeFrequency: 'monthly', priority: 0.6 })),
   // Czech towns in cs, Slovak in sk; the English directory is noindex.
   { path: '/invoicing', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/features', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/create-invoice', changeFrequency: 'monthly', priority: 0.9 },
   { path: '/demo', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/your-first-invoice', changeFrequency: 'monthly', priority: 0.8 },
+  { path: '/invoicing-for-beginners', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/invoicing-for-advanced', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/team-roles', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/for-owners', changeFrequency: 'monthly', priority: 0.5 },
+  { path: '/for-assistants', changeFrequency: 'monthly', priority: 0.5 },
+
+  // Seasonal (January to June), the year in the title changes on its own.
+  { path: '/tax-return-basis', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/for-accountants', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/for-schools', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/for-creators', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/events', changeFrequency: 'monthly', priority: 0.5 },
   { path: '/partners', changeFrequency: 'weekly', priority: 0.5 },
+  { path: '/for-partners', changeFrequency: 'monthly', priority: 0.6 },
+  ...['courses', 'coworkings', 'communities', 'expats', 'banks'].map((s): UrlEntry => ({ path: `/for-${s}`, changeFrequency: 'monthly', priority: 0.6 })),
   // Dropped in sitemap() while no accountant is approved (see there).
   { path: ACCOUNTANTS_PATH, changeFrequency: 'weekly', priority: 0.6 },
   ...FEATURE_PAGES.map((f): UrlEntry => ({ path: `/features/${f.slug}`, changeFrequency: 'monthly', priority: 0.7 })),
@@ -69,8 +91,25 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/calculators', changeFrequency: 'monthly', priority: 0.7 },
   ...CALCULATORS.map((c): UrlEntry => ({ path: '/calculators/' + c.slug, changeFrequency: 'monthly', priority: 0.7, locales: c.locales })),
   { path: '/guides', changeFrequency: 'monthly', priority: 0.6, locales: GUIDES_HUB_LOCALES },
-  ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales }))
+  ...GUIDES.map((g): UrlEntry => ({ path: '/guides/' + g.slug, changeFrequency: 'monthly', priority: 0.7, locales: g.locales })),
+  // Glossary: one-country terms only in their own language (lib/glossary.ts).
+  { path: '/glossary', changeFrequency: 'monthly', priority: 0.6 },
+  ...GLOSSARY.map((term): UrlEntry => ({ path: '/glossary/' + term.slug, changeFrequency: 'monthly', priority: 0.6, locales: glossaryLocales(term) })),
+  // Invoice templates: cs/en follow Czech law, sk Slovak law.
+  { path: '/invoice-templates', changeFrequency: 'monthly', priority: 0.8 },
+  ...TEMPLATES.map((x): UrlEntry => ({ path: '/invoice-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.8, locales: x.locales })),
+  // Payment reminders: cs/en Czech law, sk Slovak; the pre-action notice is Czech only.
+  { path: '/payment-reminder-templates', changeFrequency: 'monthly', priority: 0.7 },
+  ...REMINDERS.map((x): UrlEntry => ({ path: '/payment-reminder-templates/' + x.slug, changeFrequency: 'monthly', priority: 0.7, locales: x.locales })),
+  // School lessons; the Czech-only ones (flat tax) are noindex in sk.
+  { path: '/for-schools/lessons', changeFrequency: 'monthly', priority: 0.6 },
+  ...SCHOOL_LESSONS.map((l): UrlEntry => ({ path: '/for-schools/lessons/' + l.slug, changeFrequency: 'yearly', priority: 0.5, locales: l.locales }))
 ];
+
+/** The static public pages with their locales, for llms.txt to list whatever it doesn't describe itself. */
+export function staticSitemapPages(): { path: string; locales: readonly string[] }[] {
+  return STATIC_ENTRIES.map((e) => ({ path: e.path, locales: e.locales ?? routing.locales }));
+}
 
 function buildAllEntries(): UrlEntry[] {
   // Only indexed municipality pages, each in its own language (see
@@ -140,7 +179,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
       priority,
       alternates: { languages }
     };
-  }), ...(Number(id) === 0 ? await blogEntries() : [])];
+  }), ...(Number(id) === 0 ? [...(await blogEntries()), ...(await directoryEntries())] : [])];
 }
 
 /**
@@ -169,5 +208,30 @@ async function blogEntries(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
       alternates: { languages: groups.get(p.translationKey)! }
     }))
+  ];
+}
+
+/**
+ * The business directory also comes from the backend. Only pages with at
+ * least MIN_INDEXED_LISTINGS listings are nominated (thinner ones are
+ * noindex); a town page only in the language of its country.
+ */
+async function directoryEntries(): Promise<MetadataRoute.Sitemap> {
+  const listings = await fetchDirectory();
+  if (isThin(listings)) return [];
+  const everywhere = (path: string, priority: number) => {
+    const languages: Record<string, string> = Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}${path}`]));
+    languages['x-default'] = languages[routing.defaultLocale]!;
+    return routing.locales.map((l) => ({ url: `${SITE_URL}/${l}${path}`, changeFrequency: 'weekly' as const, priority, alternates: { languages } }));
+  };
+  const trades = DIRECTORY_TRADES.filter((k) => !isThin(listings.filter((l) => l.trade === k)));
+  const towns = townsOf(listings).filter((t) => t.count >= MIN_INDEXED_LISTINGS);
+  return [
+    ...everywhere('/directory', 0.6),
+    ...trades.flatMap((k) => everywhere(`/directory/${k}`, 0.5)),
+    ...towns.map(({ municipality: m }) => {
+      const url = `${SITE_URL}/${municipalityLocale(m)}/directory/town/${m.slug}`;
+      return { url, changeFrequency: 'weekly' as const, priority: 0.4, alternates: { languages: { [municipalityLocale(m)]: url, 'x-default': url } } };
+    })
   ];
 }

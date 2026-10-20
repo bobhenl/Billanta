@@ -33,7 +33,7 @@ export default async function UnsubscribePage({ params }: { params: Promise<{ lo
             <p className="mt-3 text-sm text-muted-foreground">
               {preview.companyName ? t('intro', { what, company: preview.companyName }) : t('introNoCompany', { what })}
             </p>
-            <UnsubscribeButton token={token} already={preview.unsubscribed} />
+            <UnsubscribeButton token={token} already={preview.unsubscribed} manage={preview.type !== 'newsletter'} />
           </>
         )}
       </div>

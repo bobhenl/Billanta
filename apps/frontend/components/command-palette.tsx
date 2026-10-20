@@ -12,6 +12,7 @@ import {
   Bot,
   Briefcase,
   Building2,
+  Calculator,
   CreditCard,
   DatabaseBackup,
   Download,
@@ -94,7 +95,7 @@ export const ACTIONS: Entry[] = [
   { key: 'newContact', href: '/contacts?new=1', icon: UserPlus, label: 'palette.actions.newContact', section: 'createContacts', shortcut: 'Z' },
   { key: 'bulk', href: '/invoices/bulk', icon: FileText, label: 'palette.actions.bulk', section: 'createInvoices' },
   { key: 'exportData', href: '/settings/exports', icon: Download, label: 'palette.actions.export', section: 'exports' },
-  { key: 'invite', href: '/settings/team', icon: Users, label: 'palette.actions.invite', section: 'billing' }
+  { key: 'invite', href: '/settings/team', icon: Users, label: 'palette.actions.invite', section: 'manage' }
 ];
 
 const PAGES: Entry[] = [
@@ -109,26 +110,27 @@ const PAGES: Entry[] = [
   { key: 'settings', href: '/settings', icon: Settings, label: 'nav.settings', shortcut: 'G S' },
   { key: 'activity', href: '/activity', icon: History, label: 'nav.activity' },
   { key: 'profile', href: '/settings/profile', icon: UserCog, label: 'settings.hub.items.profile.title' },
-  { key: 'company', href: '/settings/company', icon: Building2, label: 'settings.hub.items.company.title' },
+  { key: 'company', href: '/settings/company', icon: Building2, label: 'settings.hub.items.company.title', section: 'manage' },
   { key: 'companies', href: '/settings/companies', icon: Briefcase, label: 'settings.hub.items.companies.title' },
-  { key: 'invoiceSettings', href: '/settings/invoices', icon: FileSliders, label: 'settings.hub.items.invoices.title' },
-  { key: 'modules', href: '/settings/modules', icon: Blocks, label: 'settings.hub.items.modules.title' },
-  { key: 'team', href: '/settings/team', icon: Users, label: 'settings.hub.items.team.title' },
+  { key: 'invoiceSettings', href: '/settings/invoices', icon: FileSliders, label: 'settings.hub.items.invoices.title', section: 'manage' },
+  { key: 'modules', href: '/settings/modules', icon: Blocks, label: 'settings.hub.items.modules.title', section: 'manage' },
+  { key: 'team', href: '/settings/team', icon: Users, label: 'settings.hub.items.team.title', section: 'manage' },
   { key: 'billing', href: '/billing', icon: CreditCard, label: 'nav.billing', section: 'billing' },
   { key: 'exports', href: '/settings/exports', icon: Download, label: 'settings.hub.items.exports.title', section: 'exports' },
-  { key: 'backup', href: '/settings/backup', icon: DatabaseBackup, label: 'settings.hub.items.backup.title' },
-  { key: 'channels', href: '/settings/channels', icon: MessageCircle, label: 'settings.hub.items.channels.title' },
-  { key: 'ai', href: '/settings/ai', icon: Bot, label: 'settings.hub.items.ai.title', section: 'ai' },
-  { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title' },
+  { key: 'backup', href: '/settings/backup', icon: DatabaseBackup, label: 'settings.hub.items.backup.title', section: 'manage' },
+  { key: 'channels', href: '/settings/channels', icon: MessageCircle, label: 'settings.hub.items.channels.title', section: 'manage' },
+  { key: 'ai', href: '/settings/ai', icon: Bot, label: 'settings.hub.items.ai.title', section: 'aiSettings' },
+  { key: 'apiKeys', href: '/settings/api-keys', icon: KeyRound, label: 'settings.hub.items.apiKeys.title', section: 'manage' },
   { key: 'notifications', href: '/settings/notifications', icon: Bell, label: 'settings.hub.items.notifications.title' },
   { key: 'emailNotifications', href: '/settings/email-notifications', icon: BellRing, label: 'settings.hub.items.emailNotifications.title' },
-  { key: 'numbering', href: '/settings/numbering', icon: Hash, label: 'settings.hub.items.numbering.title' },
-  { key: 'emails', href: '/settings/emails', icon: Mail, label: 'settings.hub.items.emails.title' },
-  { key: 'variables', href: '/settings/variables', icon: Braces, label: 'settings.hub.items.variables.title' },
-  { key: 'paymentMethods', href: '/settings/payment-methods', icon: Wallet, label: 'settings.hub.items.paymentMethods.title' },
-  { key: 'publicProfile', href: '/settings/public-profile', icon: Globe, label: 'settings.hub.items.publicProfile.title' },
-  { key: 'import', href: '/settings/import', icon: FolderInput, label: 'settings.hub.items.import.title' },
-  { key: 'integrations', href: '/settings/integrations', icon: Webhook, label: 'settings.hub.items.integrations.title' }
+  { key: 'numbering', href: '/settings/numbering', icon: Hash, label: 'settings.hub.items.numbering.title', section: 'manage' },
+  { key: 'emails', href: '/settings/emails', icon: Mail, label: 'settings.hub.items.emails.title', section: 'manage' },
+  { key: 'variables', href: '/settings/variables', icon: Braces, label: 'settings.hub.items.variables.title', section: 'manage' },
+  { key: 'paymentMethods', href: '/settings/payment-methods', icon: Wallet, label: 'settings.hub.items.paymentMethods.title', section: 'manage' },
+  { key: 'publicProfile', href: '/settings/public-profile', icon: Globe, label: 'settings.hub.items.publicProfile.title', section: 'manage' },
+  { key: 'accountantProfile', href: '/settings/accountant-profile', icon: Calculator, label: 'settings.hub.items.accountantProfile.title', section: 'manage' },
+  { key: 'import', href: '/settings/import', icon: FolderInput, label: 'settings.hub.items.import.title', section: 'manage' },
+  { key: 'integrations', href: '/settings/integrations', icon: Webhook, label: 'settings.hub.items.integrations.title', section: 'integrations' }
 ];
 
 /**
@@ -136,16 +138,16 @@ const PAGES: Entry[] = [
  * Fakturační údaje). Shown with the page they belong to as the hint.
  */
 const SECTIONS: (Entry & { parent: string })[] = [
-  { key: 'bankAccounts', href: '/settings/company#bank-accounts', icon: Landmark, label: 'palette.sections.bankAccounts', parent: 'settings.hub.items.company.title' },
-  { key: 'logo', href: '/settings/company', icon: Building2, label: 'palette.sections.logo', parent: 'settings.hub.items.company.title' },
-  { key: 'invoiceFields', href: '/settings/invoices#fields', icon: FileSliders, label: 'palette.sections.invoiceFields', parent: 'settings.hub.items.invoices.title' },
-  { key: 'reminders', href: '/settings/invoices#reminders', icon: Bell, label: 'palette.sections.reminders', parent: 'settings.hub.items.invoices.title' },
-  { key: 'invoiceDefaults', href: '/settings/invoices#defaults', icon: FileSliders, label: 'palette.sections.invoiceDefaults', parent: 'settings.hub.items.invoices.title' },
+  { key: 'bankAccounts', href: '/settings/company#bank-accounts', icon: Landmark, label: 'palette.sections.bankAccounts', parent: 'settings.hub.items.company.title', section: 'manage' },
+  { key: 'logo', href: '/settings/company', icon: Building2, label: 'palette.sections.logo', parent: 'settings.hub.items.company.title', section: 'manage' },
+  { key: 'invoiceFields', href: '/settings/invoices#fields', icon: FileSliders, label: 'palette.sections.invoiceFields', parent: 'settings.hub.items.invoices.title', section: 'manage' },
+  { key: 'reminders', href: '/settings/invoices#reminders', icon: Bell, label: 'palette.sections.reminders', parent: 'settings.hub.items.invoices.title', section: 'manage' },
+  { key: 'invoiceDefaults', href: '/settings/invoices#defaults', icon: FileSliders, label: 'palette.sections.invoiceDefaults', parent: 'settings.hub.items.invoices.title', section: 'manage' },
   { key: 'password', href: '/settings/profile#password', icon: KeyRound, label: 'palette.sections.password', parent: 'settings.hub.items.profile.title' },
   { key: 'preferences', href: '/settings/profile#preferences', icon: UserCog, label: 'palette.sections.preferences', parent: 'settings.hub.items.profile.title' },
-  { key: 'cardPayments', href: '/settings/payment-methods', icon: CreditCard, label: 'palette.sections.cardPayments', parent: 'settings.hub.items.paymentMethods.title' },
-  { key: 'webhooks', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.webhooks', parent: 'settings.hub.items.integrations.title' },
-  { key: 'calendar', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.calendar', parent: 'settings.hub.items.integrations.title' },
+  { key: 'cardPayments', href: '/settings/payment-methods', icon: CreditCard, label: 'palette.sections.cardPayments', parent: 'settings.hub.items.paymentMethods.title', section: 'manage' },
+  { key: 'webhooks', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.webhooks', parent: 'settings.hub.items.integrations.title', section: 'integrations' },
+  { key: 'calendar', href: '/settings/integrations', icon: Webhook, label: 'palette.sections.calendar', parent: 'settings.hub.items.integrations.title', section: 'integrations' },
   { key: 'epo', href: '/settings/exports#epo', icon: Download, label: 'palette.sections.epo', parent: 'settings.hub.items.exports.title', section: 'exports' },
   { key: 'bankConnections', href: '/bank', icon: Landmark, label: 'palette.sections.bankConnections', parent: 'nav.bank', section: 'bank' }
 ];

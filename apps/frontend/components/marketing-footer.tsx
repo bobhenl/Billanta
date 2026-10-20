@@ -39,6 +39,7 @@ export async function MarketingFooter() {
   const tApp = await getTranslations('app');
   const tMunicipalities = await getTranslations('municipalityPages');
   const tTools = await getTranslations('tools');
+  const tTemplates = await getTranslations('invoiceTemplates');
   const [locale, partners] = await Promise.all([getLocale(), fetchPartners({ footer: true })]);
 
   const linkClass = 'text-left text-foreground/80 transition-colors hover:text-primary';
@@ -55,6 +56,10 @@ export async function MarketingFooter() {
         { href: '/create-invoice', label: t('product.guestInvoice') },
         { href: '/pricing', label: t('product.pricing') },
         { href: '/compare', label: t('product.compare') },
+        { href: '/your-first-invoice', label: t('product.firstInvoice') },
+        { href: '/invoicing-for-beginners', label: t('product.beginners') },
+        { href: '/invoicing-for-advanced', label: t('product.advanced') },
+        { href: '/team-roles', label: t('product.teamRoles') },
         { href: '/#faq', label: t('product.faq') }
       ]
     },
@@ -63,8 +68,12 @@ export async function MarketingFooter() {
       links: [
         ...featured.map((c) => ({ href: `/calculators/${c.slug}`, label: tTools(`calculators.items.${c.key}.name`) })),
         { href: '/accountants', label: tTools('menu.findAccountant') },
+        { href: '/directory', label: tTools('menu.businessDirectory') },
+        { href: '/invoice-templates', label: tTemplates('menu'), hub: true },
+        { href: '/payment-reminder-templates', label: tTools('menu.reminders'), hub: true },
         { href: '/calculators', label: tTools('common.allCalculators'), hub: true },
-        ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tTools('common.allGuides'), hub: true }] : [])
+        ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tTools('common.allGuides'), hub: true }] : []),
+        { href: '/glossary', label: tTools('menu.glossary'), hub: true }
       ]
     },
     {
@@ -73,6 +82,10 @@ export async function MarketingFooter() {
         { href: '/about', label: t('company.about') },
         { href: '/blog', label: t('company.blog') },
         { href: '/for-accountants', label: t('company.accountants') },
+        { href: '/for-schools', label: t('company.schools') },
+        { href: '/for-creators', label: t('company.creators') },
+        { href: '/events', label: t('company.events') },
+        { href: '/for-partners', label: t('company.forPartners') },
         { href: '/partners', label: t('company.partners') },
         { href: '/invoicing', label: tMunicipalities('breadcrumbBrowse') }
       ]
@@ -83,7 +96,8 @@ export async function MarketingFooter() {
         { href: '/legal/terms', label: t('legal.terms') },
         { href: '/legal/privacy', label: t('legal.privacy') },
         { href: '/legal/dpa', label: t('legal.dpa') },
-        { href: '/legal/cookies', label: t('legal.cookies') }
+        { href: '/legal/cookies', label: t('legal.cookies') },
+        { href: '/contact', label: t('legal.contact') }
       ],
       extra: (
         <li>

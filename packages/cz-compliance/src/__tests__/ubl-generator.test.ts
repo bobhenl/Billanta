@@ -61,12 +61,66 @@ describe('generateUblInvoiceXml', () => {
     expect(doc['cac:PaymentMeans']['cac:PayeeFinancialAccount']['cbc:ID']).toBe('SK3112000000198742637541');
   });
 
-  it('sets Peppol endpoints from VAT numbers and escapes text', () => {
+  it('addresses Slovak parties as 0245:DIČ and keeps the IČ DPH in PartyTaxScheme', () => {
     const xml = generateUblInvoiceXml(invoice());
     const doc = parser.parse(xml).Invoice;
     const supplier = doc['cac:AccountingSupplierParty']['cac:Party'];
-    expect(supplier['cbc:EndpointID']).toEqual({ '#text': 'SK2020123456', '@schemeID': '9950' });
+    expect(supplier['cbc:EndpointID']).toEqual({ '#text': '2020123456', '@schemeID': '0245' });
+    expect(supplier['cac:PartyTaxScheme']['cbc:CompanyID']).toBe('SK2020123456');
+    expect(doc['cac:AccountingCustomerParty']['cac:Party']['cbc:EndpointID']).toEqual({ '#text': '2020654321', '@schemeID': '0245' });
     expect(xml).toContain('Odberateľ &amp; syn a.s.');
+  });
+
+  it('reaches a Slovak non-VAT-payer buyer by its bare DIČ without inventing an IČ DPH', () => {
+    const base = invoice();
+    const xml = generateUblInvoiceXml(invoice({ customer: { ...base.customer, dic: '1020304050', isVatPayer: false } }));
+    const buyer = parser.parse(xml).Invoice['cac:AccountingCustomerParty']['cac:Party'];
+    expect(buyer['cbc:EndpointID']).toEqual({ '#text': '1020304050', '@schemeID': '0245' });
+    expect(buyer['cac:PartyTaxScheme']).toBeUndefined();
+  });
+
+  it('keeps VAT-number endpoints for other countries', () => {
+    const base = invoice();
+    const xml = generateUblInvoiceXml(
+      invoice({ customer: { ...base.customer, dic: 'CZ12345678', address: { ...base.customer.address, countryCode: 'CZ' } } })
+    );
+    const buyer = parser.parse(xml).Invoice['cac:AccountingCustomerParty']['cac:Party'];
+    expect(buyer['cbc:EndpointID']).toEqual({ '#text': 'CZ12345678', '@schemeID': '9929' });
+  });
+
+  it('references the corrected invoice (BT-25, BT-26) on an invoice', () => {
+    const xml = generateUblInvoiceXml(invoice(), { precedingInvoice: { number: '2026999', issueDate: '2026-12-20' } });
+    expect(XMLValidator.validate(xml)).toBe(true);
+    const ref = parser.parse(xml).Invoice['cac:BillingReference']['cac:InvoiceDocumentReference'];
+    expect(ref).toEqual({ 'cbc:ID': '2026999', 'cbc:IssueDate': '2026-12-20' });
+  });
+
+  it('writes a credit note as a UBL CreditNote with positive amounts and the original invoice', () => {
+    const base = invoice();
+    const xml = generateUblInvoiceXml(
+      invoice({
+        invoiceNumber: 'D2027001',
+        lineItems: base.lineItems.map((l) => ({ ...l, quantity: -l.quantity })),
+        totals: { ...base.totals, totalWithoutVat: -201, totalVat: -42.45, totalWithVat: -243.45 }
+      }),
+      { documentType: 'credit_note', precedingInvoice: { number: '2027001', issueDate: '2027-01-15' } }
+    );
+    expect(XMLValidator.validate(xml)).toBe(true);
+    const parsed = parser.parse(xml);
+    expect(parsed.Invoice).toBeUndefined();
+    const doc = parsed.CreditNote;
+    expect(doc['@xmlns']).toBe('urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2');
+    expect(doc['cbc:CreditNoteTypeCode']).toBe('381');
+    expect(doc['cbc:DueDate']).toBeUndefined();
+    expect(doc['cac:PaymentMeans']['cbc:PaymentDueDate']).toBe('2027-01-29');
+    expect(doc['cac:BillingReference']['cac:InvoiceDocumentReference']['cbc:ID']).toBe('2027001');
+    expect(doc['cac:CreditNoteLine'][0]['cbc:CreditedQuantity']).toEqual({ '#text': '3', '@unitCode': 'HUR' });
+    const totals = doc['cac:LegalMonetaryTotal'];
+    expect(totals['cbc:PayableAmount']['#text']).toBe('243.45');
+    expect(totals['cbc:PayableRoundingAmount']).toBeUndefined();
+    // UBL 2.1 CreditNote order: TaxPointDate comes before the type code.
+    expect(xml.indexOf('<cbc:TaxPointDate>')).toBeLessThan(xml.indexOf('<cbc:CreditNoteTypeCode>'));
+    expect(xml.indexOf('<cac:BillingReference>')).toBeGreaterThan(xml.indexOf('<cbc:BuyerReference>'));
   });
 
   it('puts the buyer contact person into AccountingCustomerParty/Party/Contact/Name', () => {
@@ -112,6 +166,51 @@ describe('generateUblInvoiceXml', () => {
     expect(totals['cbc:PayableAmount']['#text']).toBe('50.00');
   });
 
+  it('puts the note and the variable symbol into a single Note (PEPPOL-EN16931-R002)', () => {
+    const xml = generateUblInvoiceXml(invoice({ note: 'Ďakujeme.' }));
+    expect(xml.match(/<cbc:Note>/g)).toHaveLength(1);
+    expect(parser.parse(xml).Invoice['cbc:Note']).toBe('Ďakujeme.\nVS: 2027001');
+    const credit = generateUblInvoiceXml(invoice({ note: 'Oprava' }), { documentType: 'credit_note' });
+    expect(credit.match(/<cbc:Note>/g)).toHaveLength(1);
+    expect(generateUblInvoiceXml(invoice({ variableSymbol: undefined }))).not.toContain('<cbc:Note>');
+  });
+
+  it('turns a negative price into a negative quantity so the item price stays positive (BR-27)', () => {
+    const xml = generateUblInvoiceXml(
+      invoice({
+        lineItems: [
+          { description: 'Služba', quantity: 1, unitPriceWithoutVat: 100, vatRate: 'base', vatRatePercent: 23 },
+          { description: 'Zľava', quantity: 2, unitPriceWithoutVat: -5, vatRate: 'base', vatRatePercent: 23 }
+        ],
+        totals: { totalWithoutVat: 90, totalVat: 20.7, totalWithVat: 110.7, vatRecapitulation: [] }
+      })
+    );
+    const discount = parser.parse(xml).Invoice['cac:InvoiceLine'][1];
+    expect(discount['cbc:InvoicedQuantity']['#text']).toBe('-2');
+    expect(discount['cac:Price']['cbc:PriceAmount']['#text']).toBe('5');
+    expect(discount['cbc:LineExtensionAmount']['#text']).toBe('-10.00');
+    expect(parser.parse(xml).Invoice['cac:LegalMonetaryTotal']['cbc:LineExtensionAmount']['#text']).toBe('90.00');
+  });
+
+  it('keeps the full precision of quantities and prices so quantity × price matches the line (PEPPOL-EN16931-R120)', () => {
+    const xml = generateUblInvoiceXml(
+      invoice({
+        lineItems: [
+          { description: 'Elektrina', quantity: 1000, unit: 'kWh', unitPriceWithoutVat: 0.123456, vatRate: 'base', vatRatePercent: 23 },
+          { description: 'Paušál', quantity: 1 / 3, unitPriceWithoutVat: 1000, vatRate: 'base', vatRatePercent: 23 }
+        ],
+        totals: { totalWithoutVat: 456.79, totalVat: 105.06, totalWithVat: 561.85, vatRecapitulation: [] }
+      })
+    );
+    const [energy, flat] = parser.parse(xml).Invoice['cac:InvoiceLine'];
+    expect(energy['cac:Price']['cbc:PriceAmount']['#text']).toBe('0.123456');
+    expect(energy['cbc:LineExtensionAmount']['#text']).toBe('123.46');
+    expect(flat['cbc:InvoicedQuantity']['#text']).toBe('0.3333333333');
+    expect(flat['cbc:LineExtensionAmount']['#text']).toBe('333.33');
+    // xs:decimal has no exponent form.
+    expect(xml).not.toMatch(/>-?\d+(\.\d+)?e[-+]?\d+</i);
+  });
+
   it('maps Czech and Slovak units to UN/ECE codes', () => {
     expect(ublUnitCode('ks')).toBe('H87');
     expect(ublUnitCode('hod.')).toBe('HUR');
@@ -131,9 +230,24 @@ describe('validatePeppolInvoice', () => {
     expect(validatePeppolInvoice(invoice())).toEqual([]);
   });
 
-  it('needs an electronic address for a buyer without a VAT number', () => {
+  it('needs a 10-digit DIČ as the electronic address of a Slovak buyer', () => {
     const base = invoice();
-    expect(rules(invoice({ customer: { ...base.customer, dic: undefined } }))).toEqual(['PEPPOL-EN16931-R010']);
+    const issues = validatePeppolInvoice(invoice({ customer: { ...base.customer, dic: undefined } }));
+    expect(issues).toEqual([{ rule: 'PEPPOL-EN16931-R010', field: 'customer', code: 'skDicMissing', severity: 'error' }]);
+    expect(rules(invoice({ customer: { ...base.customer, dic: '12345' } }))).toContain('PEPPOL-EN16931-R010');
+  });
+
+  it('needs a VAT number as the electronic address of a buyer elsewhere', () => {
+    const base = invoice();
+    const issues = validatePeppolInvoice(
+      invoice({ customer: { ...base.customer, dic: undefined, address: { ...base.customer.address, countryCode: 'AT' } } })
+    );
+    expect(issues.map((i) => i.code)).toEqual(['endpointMissing']);
+  });
+
+  it('wants the original invoice on a credit note', () => {
+    expect(validatePeppolInvoice(invoice(), { documentType: 'credit_note' }).map((i) => i.rule)).toEqual(['BT-25']);
+    expect(validatePeppolInvoice(invoice(), { documentType: 'credit_note', precedingInvoice: { number: '1' } })).toEqual([]);
   });
 
   it('needs both VAT numbers for reverse charge', () => {

@@ -21,6 +21,19 @@ export const SERVICE_ID_PATTERN = /^[a-z0-9]{6,24}$/;
 /** Highest unit price a service may carry (per unit, in the profile's currency). */
 export const MAX_SERVICE_PRICE = 10_000_000;
 
+/**
+ * Trades of the business directory (`/directory/<trade>`). Same keys as
+ * `DIRECTORY_TRADES` in the frontend's lib/business-presets.ts; `tradesman`
+ * and `eshop` are the business presets of the same name.
+ */
+export const DIRECTORY_TRADES = [
+  "tradesman", "construction", "it", "design", "marketing", "photo", "consulting", "education",
+  "beauty", "health", "transport", "gastro", "eshop", "cleaning", "other",
+] as const;
+export type DirectoryTrade = (typeof DIRECTORY_TRADES)[number];
+/** A municipality slug of the frontend's data/municipalities.json ("praha", "lhota-u-pribrami"). */
+export const TOWN_SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,78}[a-z0-9])?$/;
+
 const text = (max: number) =>
   z
     .string()
@@ -94,6 +107,24 @@ export const publicProfileSchema = z
     // "Kontaktovat": a message form on the profile that lands in the owner's
     // in-app notifications (public-profiles/profile-messages.service.ts). Off by default.
     contactForm: z.boolean().default(false),
+    // "Zobrazit v katalogu firem": lists the profile on /directory and on the
+    // town page of `town` (the municipality of the company's address, picked
+    // by the owner). Strictly opt-in and off by default; the public listing
+    // is read only through public_directory_profiles() (migration 0077).
+    directory: z
+      .object({
+        enabled: z.boolean().default(false),
+        trade: z.enum(DIRECTORY_TRADES).nullish().transform((v) => v ?? null),
+        town: z
+          .string()
+          .trim()
+          .toLowerCase()
+          .regex(TOWN_SLUG_PATTERN)
+          .nullish()
+          .transform((v) => v || null),
+      })
+      .default({})
+      .refine((d) => !d.enabled || (d.trade && d.town), { message: "trade and town are required to list", path: ["enabled"] }),
   })
   .refine((p) => !p.enabled || p.slug, { message: "slug is required to publish", path: ["slug"] });
 

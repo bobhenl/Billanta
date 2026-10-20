@@ -18,10 +18,10 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { DbService } from "../db/db.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { PlatformAdminGuard } from "../partners/platform-admin.guard";
-import { REFERRAL_REWARDS } from "../referrals/rewards";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { planPaidMessage } from "./billing-messages";
 import { isPaidPlan } from "./plans";
+import { TenantBillingRepository } from "./tenant-billing.repository";
 
 /**
  * Proformas across all companies. Companies are tenants, so both the list
@@ -35,6 +35,7 @@ export class AdminBillingService {
   constructor(
     private readonly dbService: DbService,
     private readonly notifications: NotificationsService,
+    private readonly tenantBilling: TenantBillingRepository,
   ) {}
 
   list(status: string | undefined) {
@@ -54,13 +55,23 @@ export class AdminBillingService {
     this.logger.log(`proforma ${id} marked paid by a platform admin; tenant ${tenantId} prepaid ${r.plan} until ${until}`);
 
     let locale: string | null = null;
-    await this.dbService.sql.begin(async (tx) => {
+    const proforma = await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
-      // First payment of an invited company pays its inviter, same as a Stripe payment.
-      await tx`SELECT reward_referral(${tenantId}, ${REFERRAL_REWARDS.friend.reward}, ${REFERRAL_REWARDS.accountant.reward})`;
       const [t] = await tx<{ default_locale: string | null }[]>`SELECT default_locale FROM tenants WHERE id = ${tenantId}`;
       locale = t?.default_locale ?? null;
+      const [p] = await tx<{ amount_minor: number; currency: string; months: number }[]>`
+        SELECT amount_minor, currency, months FROM platform_proformas WHERE id = ${id}`;
+      return p;
     });
+    // A bank transfer counts towards the inviter's reward like a card payment:
+    // a month waits for the next one, a prepaid year for the refund window.
+    if (proforma && (proforma.currency === "CZK" || proforma.currency === "EUR")) {
+      await this.tenantBilling.recordReferralPayment(tenantId, {
+        amountMinor: Number(proforma.amount_minor),
+        currency: proforma.currency,
+        longPeriod: Number(proforma.months) > 1,
+      });
+    }
     if (isPaidPlan(r.plan)) {
       await this.notifications.deliverBilling(tenantId, planPaidMessage(locale, r.plan, until)).catch((err: Error) => {
         this.logger.warn(`plan-paid notice for tenant ${tenantId} failed: ${err.message}`);

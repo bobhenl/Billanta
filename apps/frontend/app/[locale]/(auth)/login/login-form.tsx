@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { OAuthButton } from '@/components/oauth-button';
-import type { OAuthProviderId } from '@/lib/oauth-providers';
+import { PROVIDER_NAMES, type OAuthProviderId } from '@/lib/oauth-providers';
 
 /**
  * Login form — email/password via NextAuth's Credentials provider, plus a
@@ -128,12 +128,3 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
     </div>
   );
 }
-
-const PROVIDER_NAMES: Record<OAuthProviderId, string> = {
-  google: 'Google',
-  'microsoft-entra-id': 'Microsoft',
-  apple: 'Apple',
-  seznam: 'Seznam',
-  discord: 'Discord',
-  github: 'GitHub'
-};

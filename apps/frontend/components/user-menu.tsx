@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { signOut, useSession } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { InstallAppButton } from '@/components/install-app-button';
+import { useLeaveOffline } from '@/components/offline-sync';
 import { switchTenant } from '@/lib/tenant-actions';
 
 export interface MenuCompany {
@@ -37,10 +38,13 @@ const ITEMS = [
 export function UserMenu({
   companies = [],
   activeId = null,
+  hidden = [],
   classroom = false
 }: {
   companies?: MenuCompany[];
   activeId?: string | null;
+  /** Item keys this member can't use (their role, a switched-off module). */
+  hidden?: string[];
   /** Classroom mode is on: the teachers' entry point (docs/classroom-mode-plan.md). */
   classroom?: boolean;
 }) {
@@ -55,9 +59,11 @@ export function UserMenu({
   const router = useRouter();
   const [switching, startSwitch] = useTransition();
   const activeCompany = companies.find((c) => c.id === activeId);
+  const leaveOffline = useLeaveOffline();
 
   function handleSwitch(id: string) {
     startSwitch(async () => {
+      if (!(await leaveOffline())) return;
       const result = await switchTenant(id);
       if (!result.ok) return;
       setOpen(false);
@@ -145,7 +151,7 @@ export function UserMenu({
             </div>
           )}
           <div className="py-1">
-            {ITEMS.map(({ key, href, icon: Icon }) => (
+            {ITEMS.filter((item) => !hidden.includes(item.key)).map(({ key, href, icon: Icon }) => (
               <Link
                 key={key}
                 href={href}
@@ -176,7 +182,8 @@ export function UserMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={() => {
+            onClick={async () => {
+              if (!(await leaveOffline())) return;
               setOpen(false);
               void signOut({ callbackUrl: '/' });
             }}

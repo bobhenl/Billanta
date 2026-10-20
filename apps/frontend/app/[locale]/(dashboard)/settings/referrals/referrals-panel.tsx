@@ -9,6 +9,8 @@ import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { redeemCredits, setReferralProgram } from './actions';
 import { copyText } from '@/lib/clipboard';
+import { PartnerRequest } from '../accountant-profile/partner-request';
+import type { PartnerStatus } from '../accountant-profile/listing-form';
 
 type Program = 'friend' | 'accountant';
 type CreditPlan = 'start' | 'plus' | 'business';
@@ -16,12 +18,23 @@ type CreditPlan = 'start' | 'plus' | 'business';
 export interface ReferralOverview {
   code: string;
   program: Program;
+  /** True only once Billanta staff approved the company as an accountant partner. */
   canBeAccountant: boolean;
+  partner: { status: PartnerStatus; reviewNote: string | null; listingStatus: string | null; hasIco: boolean };
   balance: number;
   rewards: Record<Program, { welcome: number; reward: number }>;
   plans: Record<CreditPlan, { monthly: number; yearly: number }>;
   prepaid: { plan: CreditPlan; until: string } | null;
-  invited: { createdAt: string; program: Program; paying: boolean; rewardCredits: number | null }[];
+  invited: {
+    createdAt: string;
+    program: Program;
+    paying: boolean;
+    /** waiting: no payment yet; pending: paid, reward held back; voided: refunded or cancelled first. */
+    state: 'waiting' | 'pending' | 'rewarded' | 'voided';
+    rewardCredits: number | null;
+    pendingCredits: number | null;
+    releaseAfter: string | null;
+  }[];
   stats: { invited: number; paying: number; earned: number };
   ledger: { id: string; amount: number; reason: string; plan: CreditPlan | null; months: number | null; createdAt: string }[];
 }
@@ -133,13 +146,23 @@ export function ReferralsPanel({ overview, link, readOnly }: { overview: Referra
                     {t(`program.${p}.body`, { welcome: overview.rewards[p].welcome, reward: overview.rewards[p].reward })}
                   </span>
                   {p === 'accountant' && !overview.canBeAccountant && (
-                    <span className="mt-1 block text-xs font-semibold text-muted-foreground">{t('errors.ico_required')}</span>
+                    <span className="mt-1 block text-xs font-semibold text-muted-foreground">{t('program.accountant.needsApproval')}</span>
                   )}
                 </span>
               </button>
             );
           })}
         </div>
+        {!overview.canBeAccountant && (
+          <PartnerRequest
+            status={overview.partner.status}
+            note={overview.partner.reviewNote}
+            hasListing={Boolean(overview.partner.listingStatus && overview.partner.listingStatus !== 'withdrawn')}
+            readOnly={readOnly}
+            showProfileLink
+            className="mt-3"
+          />
+        )}
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4">

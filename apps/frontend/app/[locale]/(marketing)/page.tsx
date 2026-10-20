@@ -36,6 +36,7 @@ import { routing } from '@/i18n/routing';
 import { HintCard } from '@/components/hint-card';
 import { MarketingInvoiceMockup } from '@/components/marketing-invoice-mockup';
 import { TEASER_ROW_KEYS, brandsFor, comparedAtLabel, rowsFor } from '@/lib/competitors';
+import { defaultCurrency, formatPlanPrice, startingPrice } from '@/lib/plans';
 import { jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -125,7 +126,7 @@ const STEPS: { key: StepKey; icon: Icon }[] = [
   { key: 'getPaid', icon: Landmark }
 ];
 
-const FAQ_KEYS = ['free', 'isdoc', 'ares', 'voice', 'data'] as const;
+const FAQ_KEYS = ['free', 'slovakia', 'isdoc', 'ares', 'voice', 'data'] as const;
 const HERO_POINTS = ['isdoc', 'ares', 'qr'] as const;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -138,6 +139,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const tCompare = await getTranslations('comparePage');
   const tDemo = await getTranslations('demo');
   const BRANDS = brandsFor(locale);
+  // The "how much" answer quotes the price list, so a price change can't leave it stale.
+  const currency = defaultCurrency(locale);
+  const faqParams = { price: formatPlanPrice(startingPrice(currency), currency, locale) };
   const TEASER_ROWS = rowsFor(locale).filter((r) => (TEASER_ROW_KEYS as readonly string[]).includes(r.key));
 
   const structuredData = [
@@ -173,7 +177,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       mainEntity: FAQ_KEYS.map((key) => ({
         '@type': 'Question',
         name: t(`faq.items.${key}.q`),
-        acceptedAnswer: { '@type': 'Answer', text: t(`faq.items.${key}.a`) }
+        acceptedAnswer: { '@type': 'Answer', text: t(`faq.items.${key}.a`, faqParams) }
       }))
     }
   ];
@@ -208,19 +212,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
               >
                 {t('hero.cta')}
               </Link>
               <Link
                 href="/create-invoice"
-                className="inline-flex items-center justify-center rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 {t('hero.guestCta')}
               </Link>
               <Link
                 href="/demo"
-                className="inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:text-primary"
+                className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:text-primary"
               >
                 {tDemo('cta')}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -367,7 +371,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     +
                   </span>
                 </summary>
-                <p className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground">{t(`faq.items.${key}.a`)}</p>
+                <p className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground">{t(`faq.items.${key}.a`, faqParams)}</p>
               </details>
             ))}
           </div>

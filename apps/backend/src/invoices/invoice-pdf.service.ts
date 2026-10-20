@@ -22,6 +22,7 @@ import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
 import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
 import { rateLineLabel } from "./exchange-rate-mode";
+import { brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -345,9 +346,41 @@ export class InvoicePdfService {
     // The brand name is written exactly so ("PAY by square"), never uppercased.
     if (qr) this.renderPaymentQr(doc, qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
-    this.renderCredit(doc, lang);
+    const credit = brandCreditFor(tenant, lang, "pdf");
+    if (credit) this.renderCredit(doc, credit);
     if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
 
+    doc.end();
+    return finished;
+  }
+
+  /**
+   * A plain A4 letter: a bold title and paragraphs separated by blank lines,
+   * with the same font and footer credit as the invoices. The public payment
+   * reminder generator uses it; the text is the visitor's, nothing is stored.
+   */
+  async generateLetter(input: { language: Lang; title: string; body: string }): Promise<Buffer> {
+    const doc = new PDFDocument({ size: "A4", margin: 60, bufferPages: true, info: { Title: input.title, Creator: "Billanta" } });
+    if (FONTS) {
+      doc.registerFont(REGULAR, FONTS.regular);
+      doc.registerFont(BOLD, FONTS.bold);
+    }
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+    const finished = new Promise<Buffer>((resolve, reject) => {
+      doc.on("end", () => resolve(Buffer.concat(chunks)));
+      doc.on("error", reject);
+    });
+    const width = doc.page.width - 120;
+    doc.font(BOLD).fontSize(15).fillColor("black").text(input.title, 60, 60, { width });
+    doc.moveDown(1.2);
+    doc.font(REGULAR).fontSize(10.5);
+    for (const paragraph of input.body.replace(/\r\n/g, "\n").split(/\n{2,}/)) {
+      doc.text(paragraph.trim(), { width, lineGap: 2 });
+      doc.moveDown(0.8);
+    }
+    // No company behind a public letter, so no referral code and no opt-out.
+    this.renderCredit(doc, { label: CREDIT_LABELS[input.language], url: brandCreditUrl(input.language, "pdf", null) });
     doc.end();
     return finished;
   }
@@ -785,26 +818,25 @@ export class InvoicePdfService {
 
   /**
    * One small grey line at the very bottom of every page, the way Fakturoid
-   * and iDoklad sign their PDFs. Drawn inside the bottom margin, so the
-   * margin is lifted for the moment or pdfkit would start a new page.
+   * and iDoklad sign their PDFs (brand-credit.ts decides whether). Drawn
+   * inside the bottom margin, so the margin is lifted for the moment or
+   * pdfkit would start a new page.
    */
-  private renderCredit(doc: PDFKit.PDFDocument, lang: Lang): void {
-    const label = { cs: "Vystaveno v aplikaci Billanta", sk: "Vystavené v aplikácii Billanta", en: "Made with Billanta" }[lang];
-    const url = (process.env.PUBLIC_SITE_URL ?? "https://billanta.com").replace(/\/$/, "");
+  private renderCredit(doc: PDFKit.PDFDocument, credit: BrandCredit): void {
     const range = doc.bufferedPageRange();
     for (let i = range.start; i < range.start + range.count; i++) {
       doc.switchToPage(i);
       const bottom = doc.page.margins.bottom;
       doc.page.margins.bottom = 0;
       // Mark + text centred together as one line.
-      const text = `${label} · ${url.replace(/^https?:\/\//, "")}`;
+      const text = `${credit.label} · ${siteUrl().replace(/^https?:\/\//, "")}`;
       doc.font(REGULAR).fontSize(7.5);
       const mark = 11;
       const width = Math.ceil(doc.widthOfString(text)) + 1;
       const left = 50 + (495 - (mark + 5 + width)) / 2;
       this.renderBrandMark(doc, left, doc.page.height - 31, mark);
       // pdfkit needs an explicit width to size the link annotation.
-      doc.fillColor("#4b5563").text(text, left + mark + 5, doc.page.height - 28.5, { width, link: url, lineBreak: false });
+      doc.fillColor("#4b5563").text(text, left + mark + 5, doc.page.height - 28.5, { width, link: credit.url, lineBreak: false });
       doc.page.margins.bottom = bottom;
     }
     doc.fillColor("black");

@@ -2,48 +2,11 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { copyText } from '@/lib/clipboard';
 import type { JoinPreview } from '@/lib/classroom';
-
-/** The class code typed by hand; the class page does the rest. */
-export function CodeEntry() {
-  const t = useTranslations('classroomJoin');
-  const router = useRouter();
-  const [code, setCode] = useState('');
-  const clean = code.replace(/[\s-]+/g, '').toUpperCase();
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (clean) router.push(`/join/${encodeURIComponent(clean)}`);
-      }}
-      className="rounded-2xl border border-border bg-card p-6 shadow-sm"
-    >
-      <h1 className="text-xl font-extrabold tracking-tight">{t('codeTitle')}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{t('codeBody')}</p>
-      <input
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        required
-        autoFocus
-        autoCapitalize="characters"
-        autoComplete="off"
-        spellCheck={false}
-        aria-label={t('codeLabel')}
-        placeholder="ABCD-EFGH"
-        className={`${inputClass} mt-4 font-mono text-lg tracking-widest`}
-      />
-      <button type="submit" className={`${buttonClass.primary} mt-4 w-full`}>
-        {t('codeSubmit')}
-      </button>
-    </form>
-  );
-}
 
 type Entered = { redirect: string; nickname: string | null; reentryCode: string | null };
 

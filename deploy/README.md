@@ -28,6 +28,13 @@ because the disk is small and every deploy ships that image again.
 `SKIP_BUILD=1` ships the images that are already built. `WITH_AI=1` also
 builds and ships `ai-service`.
 
+`NEXT_PUBLIC_*` values are baked into the frontend image at build time, so
+they come from the environment of the machine running `deploy.sh`, not
+from the server `.env`. Set the public contact address that way, e.g.
+`NEXT_PUBLIC_CONTACT_EMAIL=hello@billanta.com deploy/deploy.sh` (empty: the
+contact page shows no e-mail). Put the same value in the server `.env` too,
+where the backend reads it for the Fakturoid import User-Agent.
+
 Port 8090 is opened in ufw for access by IP. Once there is a domain behind
 Cloudflare, switch to the Cloudflare block described in
 `Caddyfile.billanta` and remove that rule.
@@ -42,7 +49,13 @@ Cloudflare, switch to the Cloudflare block described in
 
 Each run:
 
-- takes a `pg_dump` into `backups/` and keeps 14 days of dumps (`KEEP_DAYS`);
+- takes a `pg_dump` into `backups/` and keeps 14 days of dumps (`KEEP_DAYS`).
+  With `BACKUP_AGE_RECIPIENT` (an [age](https://age-encryption.org) public
+  key) in `.env` the dump is encrypted for that key and saved as
+  `.dump.age`. With `BACKUP_REMOTE` (an rclone `remote:path`) too, it is
+  copied there and remote copies older than 60 days are deleted
+  (`REMOTE_KEEP_DAYS`). The private key never goes on the server; restore
+  with `age -d -i billanta-backup.key billanta-….dump.age | pg_restore …`;
 - deletes logs older than 30 days;
 - prunes unused Docker images, build cache and stopped containers older
   than 3 days.

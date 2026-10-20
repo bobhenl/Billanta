@@ -399,7 +399,7 @@ model `create_demo_tenant` uses for its inputs.
 
 ### 3.4 Migrations
 
-One migration `0074_classroom_mode.sql` (number taken when implementing;
+One migration `0080_classroom_mode.sql` (number taken when implementing;
 the promo-codes and Slovak demo sessions may add migrations first):
 
 1. the four tables, indexes, RLS on `classroom_students`;
