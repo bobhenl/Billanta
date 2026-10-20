@@ -8707,6 +8707,7 @@
       "student": "{nickname} · class {className}",
       "teacher": "{nickname}'s company · class {className}",
       "practice": "A practice company; nothing is really sent. Deleted on {date}.",
+      "ended": "The class has ended. You can still look around and download PDFs, but nothing can be changed. Deleted on {date}.",
       "showCode": "Show personal code",
       "leave": "Sign out",
       "leaveConfirm": "Sign out? You can come back with your personal code.",

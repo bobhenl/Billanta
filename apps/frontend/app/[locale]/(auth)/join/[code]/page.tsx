@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
@@ -6,6 +7,7 @@ import { Banner } from '@/components/banner';
 import { Link } from '@/i18n/navigation';
 import { classroomEnabled } from '@/lib/classroom';
 import { fetchJoinPreview } from '@/lib/classroom-join';
+import { clientIpFrom } from '@/lib/client-ip';
 import { JoinForm } from '../join-form';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,7 +24,7 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
   if (!classroomEnabled()) notFound();
   const { code } = await params;
   const t = await getTranslations('classroomJoin');
-  const [preview, session] = await Promise.all([fetchJoinPreview(decodeURIComponent(code)), auth().catch(() => null)]);
+  const [preview, session] = await Promise.all([fetchJoinPreview(decodeURIComponent(code), clientIpFrom(await headers())), auth().catch(() => null)]);
   const signedIn = Boolean(session?.user && !session.isDemo);
 
   return (

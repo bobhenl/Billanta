@@ -51,7 +51,12 @@ export function ClassroomBanner({ info }: { info: StudentCompany }) {
           <p className="font-semibold">
             {info.own ? t('student', { nickname: info.nickname, className: info.className }) : t('teacher', { nickname: info.nickname, className: info.className })}
           </p>
-          <p className="text-xs text-muted-foreground">{t('practice', { date: deletes })}</p>
+          {/* After the end every write fails with classroom_ended; say why here, once, rather than in each form. */}
+          {info.readOnly ? (
+            <p className="text-xs font-medium text-foreground">{t('ended', { date: deletes })}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t('practice', { date: deletes })}</p>
+          )}
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-2">

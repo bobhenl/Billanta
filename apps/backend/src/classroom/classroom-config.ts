@@ -23,3 +23,14 @@ export const CLASSROOM_TERMS_VERSION = "classroom-dpa-0.1";
 
 /** After the class ends its companies are read-only this long, then deleted (classroom_join). */
 export const CLASSROOM_GRACE_DAYS = 30;
+
+/**
+ * A student session lasts two weeks at most, not until the class is
+ * deleted: school computers are shared, and the personal code brings the
+ * student back in. Covers a weekly lesson with one to spare.
+ */
+export const STUDENT_SESSION_DAYS = 14;
+
+export function studentSessionEnd(companyExpiresAt: Date, now = Date.now()): string {
+  return new Date(Math.min(new Date(companyExpiresAt).getTime(), now + STUDENT_SESSION_DAYS * 86_400_000)).toISOString();
+}

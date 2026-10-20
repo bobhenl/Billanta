@@ -99,7 +99,15 @@ const adapter: typeof drizzleAdapter = {
     return found ? { ...found, session: { ...found.session, sessionToken } } : null;
   },
   async updateSession(session) {
-    const updated = await drizzleAdapter.updateSession!({ ...session, sessionToken: hashSessionToken(session.sessionToken) });
+    const hashed = hashSessionToken(session.sessionToken);
+    // Auth.js slides every session forward by maxAge. A demo or student
+    // session keeps the end it was opened with (lib/demo-session.ts), so a
+    // shared school computer doesn't stay signed in to a pupil's company.
+    if (session.expires) {
+      const found = await drizzleAdapter.getSessionAndUser!(hashed);
+      if ((found?.user as { isDemo?: boolean } | undefined)?.isDemo) return { ...found!.session, sessionToken: session.sessionToken };
+    }
+    const updated = await drizzleAdapter.updateSession!({ ...session, sessionToken: hashed });
     return updated ? { ...updated, sessionToken: session.sessionToken } : updated;
   },
   async deleteSession(sessionToken) {

@@ -155,8 +155,9 @@ Joining is **one or two steps**; the teacher creates nothing per student:
 Coming back:
 
 - **Same device:** a device-bound session (httpOnly cookie, the database
-  session the demo uses via `createDemoSession`) that lasts until the
-  class ends. Nothing to type.
+  session the demo uses via `createDemoSession`) that lasts two weeks
+  at most and never past the company's deletion. Nothing to type until
+  then; school computers are shared, so it doesn't last longer.
 - **Another device or a cleared browser:** a **personal re-entry code**
   (`ABCD-2345`, 8 chars) the student sees in the classroom banner of their
   company ("Your code to get back in"). The **teacher sees every student's
@@ -398,7 +399,7 @@ model `create_demo_tenant` uses for its inputs.
 
 ### 3.4 Migrations
 
-One migration `00NN_classroom_mode.sql` (number taken when implementing;
+One migration `0074_classroom_mode.sql` (number taken when implementing;
 the promo-codes and Slovak demo sessions may add migrations first):
 
 1. the four tables, indexes, RLS on `classroom_students`;
@@ -659,3 +660,11 @@ Decided in round three:
 - The join code is a stub on `classroom_classes.join_code` until the
   shared group codes from the promo-codes branch land; `join-kind.ts`
   (`JoinKindHandler`) is the seam they will plug into.
+- Deleting a teacher's account first deletes the classes they own, with
+  every student company (`classroom_delete_class`); co-taught classes
+  stay with their owner.
+- The public join routes are limited per visitor in the backend too
+  (preview 300, join 100, re-entry 80 per 10 minutes), loose because a
+  whole class joins from one school IP.
+- Demo and student sessions are not slid forward by Auth.js; they end
+  when they were opened to end.

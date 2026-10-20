@@ -9,7 +9,7 @@ import { verifyBearerToken } from "../auth/verify-bearer-token";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
 
-/** How long the companies of an ended class stay (read-only), as in migration 0071. */
+/** How long the companies of an ended class stay (read-only), as in migration 0074. */
 const CLASSROOM_GRACE_MS = 30 * 24 * 3600 * 1000;
 
 export type DashboardRole = "owner" | "admin" | "accountant" | "viewer";

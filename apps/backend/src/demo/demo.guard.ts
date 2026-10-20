@@ -8,7 +8,7 @@ import { demoBlockFor } from "./demo-policy";
  * Closes the features a demo company must not use, with codes the frontend
  * can explain, and the extra rules of a class's practice company. Runs
  * after `RoleAccessGuard`; the database triggers of migrations 0068 and
- * 0071 are the backstop.
+ * 0074 are the backstop.
  */
 @Injectable()
 export class DemoGuard implements CanActivate {

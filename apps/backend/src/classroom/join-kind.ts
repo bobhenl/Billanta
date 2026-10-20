@@ -5,7 +5,7 @@ import { encryptSecret } from "../backup-destinations/encryption.util";
 import { DbService } from "../db/db.service";
 import { buildDemoDataset, isDemoKind } from "../demo/dataset";
 import { DemoSeedService } from "../demo/demo-seed.service";
-import { CLASSROOM_GRACE_DAYS, classroomConfig } from "./classroom-config";
+import { CLASSROOM_GRACE_DAYS, classroomConfig, studentSessionEnd } from "./classroom-config";
 import { normalizeNickname } from "./classroom.dto";
 import { formatCode, generateCode, hashCode, normalizeCode } from "./codes";
 
@@ -123,7 +123,7 @@ export class ClassroomJoinHandler implements JoinKindHandler {
     return {
       userId: row.user_id,
       tenantId: row.tenant_id,
-      sessionExpiresAt: new Date(row.expires_at).toISOString(),
+      sessionExpiresAt: studentSessionEnd(row.expires_at),
       redirect: `/${cls.language}/dashboard`,
       nickname,
       reentryCode: formatCode(personal),
@@ -148,7 +148,7 @@ export class ClassroomJoinHandler implements JoinKindHandler {
     return {
       userId: row.user_id,
       tenantId: row.tenant_id,
-      sessionExpiresAt: new Date(row.expires_at).toISOString(),
+      sessionExpiresAt: studentSessionEnd(row.expires_at),
       redirect: `/${found.cls.language}/dashboard`,
     };
   }

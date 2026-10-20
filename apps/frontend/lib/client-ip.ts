@@ -4,7 +4,12 @@
  * sent by the client and can be forged, so it is never used for rate limits.
  */
 export function clientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
+  return clientIpFrom(request.headers);
+}
+
+/** The same for a server component, from `await headers()`. */
+export function clientIpFrom(headers: Headers): string {
+  const forwarded = headers.get('x-forwarded-for');
   const last = forwarded?.split(',').map((part) => part.trim()).filter(Boolean).pop();
-  return last ?? request.headers.get('x-real-ip') ?? '';
+  return last ?? headers.get('x-real-ip') ?? '';
 }

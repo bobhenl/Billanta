@@ -8614,6 +8614,7 @@
       "student": "{nickname} · trieda {className}",
       "teacher": "Firma žiaka {nickname} · trieda {className}",
       "practice": "Cvičná firma, nič sa naozaj neodosiela. Zmaže sa {date}.",
+      "ended": "Výučba sa skončila. Firmu si môžete prezerať a sťahovať PDF, ale nič už nezmeníte. Zmaže sa {date}.",
       "showCode": "Zobraziť osobný kód",
       "leave": "Odhlásiť sa",
       "leaveConfirm": "Odhlásiť sa? Späť sa dostanete s osobným kódom.",

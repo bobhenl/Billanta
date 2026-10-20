@@ -8708,6 +8708,7 @@
       "student": "{nickname} · třída {className}",
       "teacher": "Firma žáka {nickname} · třída {className}",
       "practice": "Cvičná firma, nic se doopravdy neodesílá. Smaže se {date}.",
+      "ended": "Výuka skončila. Firmu si můžete prohlížet a stahovat PDF, ale nic už nezměníte. Smaže se {date}.",
       "showCode": "Zobrazit osobní kód",
       "leave": "Odhlásit se",
       "leaveConfirm": "Odhlásit se? Zpátky se dostanete s osobním kódem.",

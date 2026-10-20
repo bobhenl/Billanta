@@ -19,7 +19,8 @@ const BACKEND_CODES: Record<string, number> = {
   classroom_school_full: 409,
   classroom_nickname_taken: 409,
   classroom_reenter_invalid: 401,
-  classroom_locked_out: 429
+  classroom_locked_out: 429,
+  rate_limited: 429
 };
 
 export const fail = (error: string, status: number) => NextResponse.json({ error }, { status });
@@ -70,12 +71,17 @@ export async function forwardStudentEntry(request: Request, path: 'join' | 'reen
 }
 
 /** The class preview for the /join page; fails soft to "not found". */
-export async function fetchJoinPreview(code: string) {
+export async function fetchJoinPreview(code: string, ip: string) {
   if (!classroomEnabled()) return null;
   try {
     const res = await fetch(`${BACKEND_URL}/api/v1/public/classroom/preview`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-demo-provision-secret': process.env.DEMO_PROVISION_SECRET ?? '' },
+      headers: {
+        'content-type': 'application/json',
+        'x-demo-provision-secret': process.env.DEMO_PROVISION_SECRET ?? '',
+        // Without it every visitor would share the frontend server's bucket.
+        ...(ip ? { 'x-guest-ip': ip } : {})
+      },
       body: JSON.stringify({ code }),
       cache: 'no-store',
       signal: AbortSignal.timeout(5000)

@@ -26,6 +26,16 @@ export class AccountDeletionService {
   constructor(private readonly dbService: DbService) {}
 
   async deleteAccountData(userId: string): Promise<{ wiped: string[]; left: string[] }> {
+    // A teacher's classes go first: their student companies point at the class
+    // (tenants.classroom_class_id, no cascade) and would block the users row.
+    // Co-taught classes stay with their owner; the viewer seats are left below.
+    const owned = await this.dbService.db
+      .select({ id: schema.classroomClasses.id })
+      .from(schema.classroomClasses)
+      .innerJoin(schema.classroomTeachers, eq(schema.classroomTeachers.id, schema.classroomClasses.ownerTeacherId))
+      .where(eq(schema.classroomTeachers.userId, userId));
+    for (const c of owned) await this.dbService.sql`SELECT classroom_delete_class(${c.id})`;
+
     const memberships = await this.dbService.db.execute<{ tenant_id: string; company_name: string }>(
       sql`SELECT tenant_id, company_name FROM list_tenant_memberships_for_user(${userId})`,
     );
