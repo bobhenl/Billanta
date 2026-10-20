@@ -1532,8 +1532,9 @@ export const creditLedger = pgTable("credit_ledger", {
 // for a plan paid by bank transfer (`billing/bank-transfer.service.ts`). The
 // app only inserts pending rows; a platform admin marks one paid through
 // mark_platform_proforma_paid (0051), which also extends tenants.prepaid_*.
-// trial_claims (one trial per user and e-mail) has no Drizzle model on
-// purpose: only bootstrap_tenant_for_user reads or writes it.
+// trial_claims (one trial per user and e-mail) and trial_icos (one per IČO,
+// 0082) have no Drizzle model on purpose: only grant_welcome_trial reads or
+// writes them.
 // ---------------------------------------------------------------------------
 export const platformProformas = pgTable("platform_proformas", {
   id: uuid("id").primaryKey().defaultRandom(),

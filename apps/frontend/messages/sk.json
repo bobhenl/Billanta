@@ -3532,7 +3532,7 @@
       "aboutYouLegend": "O vás (nepovinné)",
       "managesClientsLabel": "Vediem účtovníctvo pre klientov",
       "isTeacherLabel": "Som učiteľ/ka",
-      "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} {plan} zadarmo, bez karty. Potom pokračujete na tarife Zadarmo, nič sa samo nestiahne."
+      "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} {plan} zadarmo, bez karty. Skúšobná doba začne, keď v nastaveniach vyplníte IČO firmy (raz pre každé IČO). Potom pokračujete na tarife Zadarmo, nič sa samo nestiahne."
     },
     "login": {
       "title": "Prihlásiť sa",
@@ -4088,7 +4088,7 @@
       }
     },
     "compareCompetitors": "Ako si Billanta stojí oproti SuperFaktúre, Fakturoidu a ďalším",
-    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} tarifu {plan} zadarmo, bez karty. Potom firma sama prejde na Zadarmo a dáta jej zostanú.",
+    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} tarifu {plan} zadarmo, bez karty, raz pre každé IČO. Skúšobná doba začne, keď firma vyplní IČO, a potom sama prejde na Zadarmo. Dáta zostanú.",
     "trialCard": "Prvých {days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty",
     "methods": {
       "title": "Ako platiť",

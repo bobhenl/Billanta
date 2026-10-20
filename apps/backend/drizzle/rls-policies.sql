@@ -747,8 +747,9 @@ GRANT EXECUTE ON FUNCTION find_active_api_key_by_hash(text) TO faktur_app;
 -- 0051 added p_trial_days (the free trial, one per user and e-mail via
 -- trial_claims) and plan_enforced on new companies. The old four-argument
 -- version is dropped so a four-argument call stays unambiguous.
--- 0081 made the trial Plus instead of Business (TRIAL_PLAN in
--- src/billing/plans.ts; plans.spec.ts checks the two match).
+-- 0081 made the trial Plus instead of Business. Since 0082 the trial is no
+-- longer started here: p_trial_days is ignored and grant_welcome_trial
+-- (below) starts it once the company has a checked IČO.
 DROP FUNCTION IF EXISTS bootstrap_tenant_for_user(uuid, text, text, text);
 CREATE OR REPLACE FUNCTION bootstrap_tenant_for_user(
   p_user_id uuid,
@@ -765,9 +766,6 @@ AS $$
 DECLARE
   v_tenant_id uuid;
   v_tos_version_id uuid;
-  v_email text;
-  v_days integer := least(greatest(coalesce(p_trial_days, 0), 0), 90);
-  v_claim uuid;
 BEGIN
   IF p_company_name IS NULL OR btrim(p_company_name) = '' THEN
     RAISE EXCEPTION 'company name is required';
@@ -789,28 +787,109 @@ BEGIN
   INSERT INTO tos_acceptances (user_id, tenant_id, tos_version_id, ip_address)
   VALUES (p_user_id, v_tenant_id, v_tos_version_id, p_ip_address);
 
-  -- One trial per user account and per e-mail address, whichever was used first.
-  IF v_days > 0 THEN
-    SELECT email INTO v_email FROM users WHERE id = p_user_id;
-    IF v_email IS NOT NULL THEN
-      INSERT INTO trial_claims (user_id, email_hash, tenant_id)
-      VALUES (p_user_id, encode(sha256(convert_to(trial_email_key(v_email), 'UTF8')), 'hex'), v_tenant_id)
-      ON CONFLICT DO NOTHING
-      RETURNING id INTO v_claim;
-      IF v_claim IS NOT NULL THEN
-        UPDATE tenants
-          SET trial_plan = 'plus', trial_started_at = now(), trial_ends_at = now() + make_interval(days => v_days)
-          WHERE id = v_tenant_id;
-      END IF;
-    END IF;
-  END IF;
-
   RETURN v_tenant_id;
 END;
 $$;
 
 REVOKE ALL ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text, integer) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION bootstrap_tenant_for_user(uuid, text, text, text, integer) TO faktur_app;
+
+-- ---------------------------------------------------------------------------
+-- SECURITY DEFINER grant of the welcome trial (0082)
+-- ---------------------------------------------------------------------------
+-- One trial per IČO ever (trial_icos), per user account and per e-mail
+-- (trial_claims, checked for every owner), never for demo or classroom
+-- companies. Called by billing/welcome-trial.service.ts once the company of
+-- the current request saves an IČO the app checked against ARES / RPO.
+-- trial_plan is TRIAL_PLAN in src/billing/plans.ts; plans.spec.ts checks
+-- the two match. Returns 'granted' or why not.
+CREATE OR REPLACE FUNCTION grant_welcome_trial(p_tenant_id uuid, p_trial_days integer)
+RETURNS text
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_days integer := least(greatest(coalesce(p_trial_days, 0), 0), 90);
+  v_tenant tenants%ROWTYPE;
+  v_owner uuid;
+  v_email text;
+  v_ico text;
+  v_claim uuid;
+BEGIN
+  IF v_days = 0 THEN
+    RETURN 'trial_off';
+  END IF;
+  -- Only for the company of the current request.
+  IF p_tenant_id IS DISTINCT FROM nullif(current_setting('app.current_tenant_id', true), '')::uuid THEN
+    RETURN 'wrong_tenant';
+  END IF;
+
+  SELECT * INTO v_tenant FROM tenants WHERE id = p_tenant_id FOR UPDATE;
+  IF NOT FOUND OR v_tenant.is_demo OR v_tenant.classroom_class_id IS NOT NULL THEN
+    RETURN 'not_eligible';
+  END IF;
+  IF v_tenant.trial_started_at IS NOT NULL THEN
+    RETURN 'tenant_had_trial';
+  END IF;
+  IF v_tenant.ico IS NULL OR v_tenant.ico !~ '^\d{8}$' THEN
+    RETURN 'no_ico';
+  END IF;
+  v_ico := v_tenant.ico;
+
+  IF EXISTS (SELECT 1 FROM trial_icos WHERE ico = v_ico) THEN
+    RETURN 'ico_had_trial';
+  END IF;
+
+  -- Any owner who already had a trial (by account or e-mail) blocks it.
+  IF EXISTS (
+    SELECT 1
+    FROM tenant_memberships m
+    JOIN users u ON u.id = m.user_id
+    JOIN trial_claims c
+      ON c.user_id = u.id
+      OR c.email_hash = encode(sha256(convert_to(trial_email_key(u.email), 'UTF8')), 'hex')
+    WHERE m.tenant_id = p_tenant_id AND m.role = 'owner'
+  ) THEN
+    RETURN 'user_had_trial';
+  END IF;
+
+  -- The claim goes to the owner who created the company (accepted the terms for it).
+  SELECT m.user_id, u.email INTO v_owner, v_email
+  FROM tenant_memberships m
+  JOIN users u ON u.id = m.user_id
+  LEFT JOIN tos_acceptances a ON a.tenant_id = m.tenant_id AND a.user_id = m.user_id
+  WHERE m.tenant_id = p_tenant_id AND m.role = 'owner' AND NOT u.is_demo
+  ORDER BY (a.user_id IS NULL), m.user_id
+  LIMIT 1;
+  IF v_owner IS NULL OR v_email IS NULL THEN
+    RETURN 'not_eligible';
+  END IF;
+
+  INSERT INTO trial_icos (ico, tenant_id) VALUES (v_ico, p_tenant_id)
+  ON CONFLICT (ico) DO NOTHING;
+  IF NOT FOUND THEN
+    RETURN 'ico_had_trial';
+  END IF;
+
+  INSERT INTO trial_claims (user_id, email_hash, tenant_id)
+  VALUES (v_owner, encode(sha256(convert_to(trial_email_key(v_email), 'UTF8')), 'hex'), p_tenant_id)
+  ON CONFLICT DO NOTHING
+  RETURNING id INTO v_claim;
+  IF v_claim IS NULL THEN
+    -- Lost a race with another company of the same person.
+    DELETE FROM trial_icos WHERE ico = v_ico AND tenant_id = p_tenant_id;
+    RETURN 'user_had_trial';
+  END IF;
+
+  UPDATE tenants
+    SET trial_plan = 'plus', trial_started_at = now(), trial_ends_at = now() + make_interval(days => v_days), trial_reminded_days = NULL
+    WHERE id = p_tenant_id;
+  RETURN 'granted';
+END;
+$$;
+REVOKE ALL ON FUNCTION grant_welcome_trial(uuid, integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION grant_welcome_trial(uuid, integer) TO faktur_app;
 
 -- ---------------------------------------------------------------------------
 -- SECURITY DEFINER lookup function — resolving a user's OWN tenant

@@ -31,10 +31,12 @@ REVOKE DELETE ON accountant_partner_requests FROM faktur_app;
 -- through that migration's functions.
 REVOKE DELETE ON email_outbox FROM faktur_app;
 REVOKE ALL ON email_suppressions FROM faktur_app;
--- Trial claims are read and written only by bootstrap_tenant_for_user, and
+-- Trial claims and the IČOs that had a trial are read and written only by
+-- grant_welcome_trial (migrations 0051, 0082), and
 -- Billanta's own proformas are marked paid only by mark_platform_proforma_paid
 -- (migration 0051); the app may request (insert) a pending one for its tenant.
 REVOKE ALL ON trial_claims FROM faktur_app;
+REVOKE ALL ON trial_icos FROM faktur_app;
 REVOKE UPDATE, DELETE ON platform_proformas FROM faktur_app;
 -- Demo bookkeeping (per-IP hashes, AI counts) only through the demo
 -- functions of migration 0068.

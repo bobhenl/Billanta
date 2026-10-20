@@ -3532,7 +3532,7 @@
       "aboutYouLegend": "About you (optional)",
       "managesClientsLabel": "I keep the books for clients",
       "isTeacherLabel": "I am a teacher",
-      "trialNote": "{days, plural, one {# day} other {# days}} of {plan} free, no card. After that you carry on with the Free plan; nothing is charged automatically."
+      "trialNote": "{days, plural, one {# day} other {# days}} of {plan} free, no card. The trial starts once you enter your company ID (IČO) in the settings, once per IČO. After that you carry on with the Free plan; nothing is charged automatically."
     },
     "login": {
       "title": "Log in",
@@ -4088,7 +4088,7 @@
       }
     },
     "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
-    "trialNote": "{days, plural, one {# day} other {# days}} of {plan} free, no card. After that the company moves to Free by itself and keeps its data.",
+    "trialNote": "{days, plural, one {# day} other {# days}} of {plan} free, no card, once per company ID (IČO). The trial starts when the company fills in its IČO, and afterwards it moves to Free by itself. The data stays.",
     "trialCard": "First {days, plural, one {# day} other {# days}} free, no card",
     "methods": {
       "title": "How to pay",

@@ -76,11 +76,11 @@ describe("welcome trial", () => {
     expect(trialDays("abc")).toBe(DEFAULT_TRIAL_DAYS);
   });
 
-  // The SQL bootstrap grants the trial and the frontend advertises it (the
-  // signup runs in the frontend without the backend), so each carries a copy.
-  it("is granted as TRIAL_PLAN by bootstrap_tenant_for_user", () => {
+  // grant_welcome_trial (SQL) starts the trial and the frontend advertises it (the
+  // pricing and signup pages read no backend), so each carries a copy.
+  it("is granted as TRIAL_PLAN by grant_welcome_trial", () => {
     const src = readFileSync(join(__dirname, "../../drizzle/rls-policies.sql"), "utf8");
-    const fn = src.slice(src.indexOf("CREATE OR REPLACE FUNCTION bootstrap_tenant_for_user("));
+    const fn = src.slice(src.indexOf("CREATE OR REPLACE FUNCTION grant_welcome_trial("));
     const m = /SET trial_plan = '(\w+)'/.exec(fn);
     expect(m?.[1]).toBe(TRIAL_PLAN);
   });

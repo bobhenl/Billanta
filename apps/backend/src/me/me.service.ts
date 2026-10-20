@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { sql } from "drizzle-orm";
-import { trialDays } from "../billing/plans";
 import { DbService } from "../db/db.service";
 
 export interface TenantMembershipSummary {
@@ -74,7 +73,7 @@ export class MeService {
       throw new BadRequestException({ error: "tenant_limit", message: `At most ${MAX_OWNED_TENANTS} companies per account` });
     }
     const [row] = await this.dbService.db.execute<{ tenant_id: string }>(
-      sql`SELECT bootstrap_tenant_for_user(${userId}, ${companyName}, ${tosVersion}, ${ipAddress}, ${trialDays()}) AS tenant_id`,
+      sql`SELECT bootstrap_tenant_for_user(${userId}, ${companyName}, ${tosVersion}, ${ipAddress}) AS tenant_id`,
     );
     return { id: row!.tenant_id, companyName: companyName.trim(), role: "owner", classroom: false };
   }

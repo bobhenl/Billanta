@@ -3532,7 +3532,7 @@
       "aboutYouLegend": "O vás (nepovinné)",
       "managesClientsLabel": "Spravuji účetnictví pro klienty",
       "isTeacherLabel": "Jsem učitel/ka",
-      "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} {plan} zdarma, bez karty. Pak pokračujete na tarifu Zdarma, nic se samo nestrhne."
+      "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} {plan} zdarma, bez karty. Zkušební doba začne, jakmile v nastavení vyplníte IČO firmy (jednou pro každé IČO). Pak pokračujete na tarifu Zdarma, nic se samo nestrhne."
     },
     "login": {
       "title": "Přihlásit se",
@@ -4088,7 +4088,7 @@
       }
     },
     "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším",
-    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} zdarma, bez karty. Pak firma sama přejde na Zdarma a data zůstanou.",
+    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} zdarma, bez karty, jednou pro každé IČO. Zkušební doba začne, jakmile firma vyplní IČO, a pak sama přejde na Zdarma. Data zůstanou.",
     "trialCard": "Prvních {days, plural, one {# den} few {# dny} other {# dní}} zdarma, bez karty",
     "methods": {
       "title": "Jak platit",

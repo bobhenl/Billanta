@@ -182,18 +182,24 @@ migration `0051_trial_billing.sql`.
   a live Stripe subscription (`active`/`past_due`), a prepaid period
   (`prepaid_plan`/`prepaid_until`, from credits or a paid proforma) and a
   running trial, else free. Nothing flips when a trial ends.
-- **Trial**: `bootstrap_tenant_for_user(..., p_trial_days)` gives a new
-  company `TRIAL_DAYS` (default 14, 0 = off, max 90) of Plus, no card
-  (`TRIAL_PLAN` / `DEFAULT_TRIAL_DAYS` in `src/billing/plans.ts`; the SQL and
-  `apps/frontend/lib/plan.ts` copies are checked by `plans.spec.ts`). When it
-  ends the company is on Free: data stays, features above Free are
-  read-only. One trial per user account and per normalised e-mail
-  (`trial_claims`, lowercased, `+tag` and Gmail dots removed, stored as a
-  SHA-256 hash), so a second company of the same person (`POST /me/tenants`)
-  or a re-signup with `jan+2@…` starts on Free: otherwise a new company every
-  two weeks would be Plus for free forever. A promo code still works on top
-  of the trial (`promo-logic.ts`): trial days extend it, a better plan's code
-  upgrades it, free months of Plus or lower start after it.
+- **Trial**: a company gets `TRIAL_DAYS` (default 14, 0 = off, max 90) of
+  Plus, no card (`TRIAL_PLAN` / `DEFAULT_TRIAL_DAYS` in
+  `src/billing/plans.ts`; the SQL and `apps/frontend/lib/plan.ts` copies are
+  checked by `plans.spec.ts`). It is not started at sign-up but when the
+  company first saves an IČO (Settings → Company, or an import that fills it
+  in), counted from then. The rules are in `src/billing/welcome-trial.ts`:
+  the IČO passes the checksum and exists in ARES / RPO; one trial per IČO
+  ever (`trial_icos`); one per user account and per normalised e-mail of
+  every owner (`trial_claims`, lowercased, `+tag` and Gmail dots removed,
+  SHA-256); never for demo or classroom companies. `grant_welcome_trial`
+  (SECURITY DEFINER, the only writer of both tables) enforces them
+  atomically. So a re-signup with a new e-mail, a second company of the
+  same person (`POST /me/tenants`) or a company with an IČO that already had
+  a trial starts on Free: otherwise a new account every two weeks would be
+  Plus for free forever. When it ends the company is on Free: data stays,
+  features above Free are read-only. A promo code still works on top
+  (`promo-logic.ts`): trial days extend it, a better plan's code upgrades
+  it, free months of Plus or lower start after it.
   `TrialRemindersCron` (08:00 Prague) sends the 3-day, 1-day and "ended"
   notices to owners and admins in the bell, and by e-mail only when Resend
   is configured.

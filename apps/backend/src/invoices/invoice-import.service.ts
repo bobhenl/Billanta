@@ -27,6 +27,7 @@ import { getHomeRateDay } from "../exports/home-rates";
 import type { HomeCurrency } from "@faktur/cz-compliance";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { AuditService } from "../audit/audit.service";
+import { WelcomeTrialService } from "../billing/welcome-trial.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -242,7 +243,10 @@ export async function importedRate(
 
 @Injectable()
 export class InvoiceImportService {
-  constructor(@Optional() private readonly audit?: AuditService) {}
+  constructor(
+    @Optional() private readonly audit?: AuditService,
+    @Optional() private readonly welcomeTrial?: WelcomeTrialService,
+  ) {}
 
   /**
    * A CSV or .xlsx export of another tool. The preview says which tool it
@@ -424,6 +428,7 @@ export class InvoiceImportService {
         .update(schema.tenants)
         .set({ ...fill, updatedAt: new Date() })
         .where(eq(schema.tenants.id, tenantId));
+      if (fill.ico) await this.welcomeTrial?.grantIfEligible(db, tenantId);
     }
 
     // Archive copy of what the customer received. Not e-mailed again and not
