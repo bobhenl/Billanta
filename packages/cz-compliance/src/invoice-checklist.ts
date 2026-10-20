@@ -14,7 +14,7 @@ import type { VatStatus } from './vat-status.js';
  *   a–l of odst. 1, notes of odst. 2, "označení osoby" = name + seat, odst. 4) /
  *   §74 ods. 1 zákona č. 222/2004 Z. z. o DPH (SK, letters a–m);
  * - simplified tax document: §30 ZDPH (up to 10 000 Kč incl. VAT) /
- *   §74 ods. 3 ZoDPH (zjednodušená faktúra up to 1 000 € incl. VAT);
+ *   §74 ods. 3 písm. a) ZoDPH (zjednodušená faktúra up to 100 € incl. VAT);
  * - correction (credit note): §45 ZDPH (opravný daňový doklad) / §71 ZoDPH;
  * - domestic reverse charge: §92a ZDPH ("daň odvede zákazník", no VAT amount) /
  *   §69 ods. 12 ZoDPH ("prenesenie daňovej povinnosti", a note under §74 ods. 1);

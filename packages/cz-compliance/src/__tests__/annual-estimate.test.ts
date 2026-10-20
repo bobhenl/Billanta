@@ -111,6 +111,13 @@ describe('SK estimate', () => {
     expect(r24.tax.reducedRate).toBe(false);
   });
 
+  it('2026 bands in euros match § 15 písm. a) ZDP as amended by 261/2025 Z. z.', () => {
+    const p = skTaxParamsFor(2026);
+    const limits = p.brackets.map((b) => (b.upTo == null ? null : Math.round(b.upTo * p.subsistenceMinimum * 100) / 100));
+    expect(limits).toEqual([43_983.32, 60_349.21, 75_010.32, null]);
+    expect(p.brackets.map((b) => b.rate)).toEqual([0.19, 0.25, 0.3, 0.35]);
+  });
+
   it('social from July 2026: nothing, mikroodvod or the normal regime by income', () => {
     expect(computeSkSzcoAnnualSummary({ ...base, income: 2_500 }).social).toMatchObject({ mode: 'none', monthly: 0 });
     expect(computeSkSzcoAnnualSummary({ ...base, income: 5_000 }).social).toMatchObject({ mode: 'micro', monthly: 131.34 });

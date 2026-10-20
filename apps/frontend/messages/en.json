@@ -8032,7 +8032,7 @@
           "keywords": "unreliable vat payer czech check dic vat payer register czech published bank account vat liability supplier check",
           "how": [
             "We ask the Czech Financial Administration's register of VAT payers directly. The result is valid at the moment of the check.",
-            "If you pay an unreliable payer, you are liable for the VAT it doesn't pay. You avoid that by paying the VAT straight to its tax office (§ 109a of the Czech VAT Act).",
+            "If you are a Czech VAT payer and the supplier is listed as unreliable on the taxable supply date or on the day you pay, you are liable for the VAT it doesn't pay (§ 109 of the Czech VAT Act). You avoid that by paying the VAT straight to its tax office (§ 109a).",
             "You are also liable when you pay more than CZK 540,000 (twice the cash payment limit) for a supply to an account the payer has not published (§ 109(2)(c) of the VAT Act).",
             "We compare the account you enter with the published ones, whether you type it as a number with a bank code or as an IBAN. We don't show the list of published accounts, only how many there are."
           ],
@@ -8058,7 +8058,7 @@
             },
             "stateNote": {
               "payer": "The Financial Administration does not list this company as an unreliable payer.",
-              "unreliable": "If you pay it for a supply with VAT, you are liable for the VAT it doesn't pay (§ 109 of the VAT Act). You can pay the VAT straight to its tax office instead (§ 109a).",
+              "unreliable": "If you are a Czech VAT payer, you are liable for the VAT on its supplies to you that it doesn't pay (§ 109 of the VAT Act). It is enough that it is listed on the taxable supply date or on the day you pay. You can pay the VAT straight to its tax office instead (§ 109a).",
               "not_registered": "This VAT ID is not in the register of VAT payers. The company should not charge you VAT.",
               "valid": "The VAT ID is valid.",
               "invalid": "The VAT ID is not in the register or no longer active.",
@@ -8501,7 +8501,7 @@
       "notices": {
         "simplifiedNotForNonPayer": "Only a VAT payer issues a simplified tax document. Showing a regular invoice instead.",
         "simplifiedLimitCz": "A simplified tax document is allowed only up to CZK 10,000 including VAT (§ 30 of the Czech VAT act).",
-        "simplifiedLimitSk": "In Slovakia a simplified invoice is allowed only up to €1,000 including VAT (§ 74(3) of the Slovak VAT act).",
+        "simplifiedLimitSk": "In Slovakia a simplified invoice is allowed only up to €100 including VAT (§ 74(3)(a) of the Slovak VAT act).",
         "simplifiedNotCrossBorder": "Supplies to another EU state and exports cannot use a simplified document. Showing a regular invoice instead.",
         "proformaTaxDocument": "A pro forma is not a tax document. Once the payment arrives, issue a tax document for it within 15 days.",
         "identifiedNoTaxDocument": "An identified person charges no domestic VAT and invoices like a non-payer.",
@@ -9379,7 +9379,7 @@
       "taxable": "Taxable amount",
       "incomeTax": "Income tax",
       "incomeTaxReduced": "Income tax (15 %)",
-      "incomeTaxHint": "15 % with income up to EUR 100,000 (EUR 60,000 for 2024), otherwise 19 % and 25 % (from 2026 also 30 % and 35 %). No child bonus or other deductions.",
+      "incomeTaxHint": "15 % with income up to EUR 100,000 (EUR 60,000 for 2024), otherwise 19 % and 25 % on the tax base above 176.8 times the subsistence minimum. From 2026 the bands are 19 % up to EUR 43,983, 25 % up to EUR 60,349, 30 % up to EUR 75,010 and 35 % above. No child bonus or other deductions.",
       "health": "Health insurance for the year",
       "healthHint": "{rate} % of the assessment base (profit divided by 1.486), at least the minimum base for every month in business.",
       "social": "Social insurance from July {year}",

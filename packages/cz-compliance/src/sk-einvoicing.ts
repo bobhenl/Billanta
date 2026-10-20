@@ -39,7 +39,7 @@ export type SkEInvoiceReason =
   | 'supplier_not_vat_payer'
   /** A supply exempt under § 28–43 or § 47, which § 85o leaves out. */
   | 'exempt_supply'
-  /** The supply was documented by an eKasa receipt (up to €400) or a simplified invoice up to €100 (§ 85o ods. 1). */
+  /** The supply was documented by an eKasa receipt (up to €400) or a simplified invoice up to €100 (§ 85o ods. 2, § 74 ods. 3 a), b)). */
   | 'simplified'
   /** The supplier isn't Slovak. */
   | 'supplier_not_sk'

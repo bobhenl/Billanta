@@ -180,7 +180,7 @@ describe('invoiceChecklist – Slovakia (§74 ZoDPH, §3a ObZ)', () => {
     expect(item('correctionDifference', { country: 'SK', document: 'credit_note' })?.rule).toBe('§71 ZoDPH');
   });
 
-  it('simplified invoice (§74 ods. 3) carries the 1 000 € notice', () => {
+  it('simplified invoice (§74 ods. 3) carries the 100 € notice', () => {
     const c = list({ country: 'SK', document: 'simplified' });
     expect(c.items.find((i) => i.id === 'total')?.rule).toBe('§74/3 ZoDPH');
     expect(c.notices).toContain('simplifiedLimitSk');
