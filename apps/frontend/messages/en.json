@@ -8984,7 +8984,9 @@
     "disclaimer": "This article is a summary, not tax or legal advice. Check the sources or ask a tax adviser before you act on it.",
     "ctaTitle": "Invoicing without the hassle",
     "ctaBody": "Billanta tracks due dates, QR payments and exports for your accountant. Start for free.",
-    "ctaButton": "Create a free account"
+    "ctaButton": "Create a free account",
+    "aiAuto": "This article was written by AI from our own data and only checked automatically before publishing. If you spot a mistake, <contact>let us know</contact>.",
+    "aiReviewed": "This article was drafted with the help of AI and reviewed by a person before publishing. If you spot a mistake, <contact>let us know</contact>."
   },
   "adminBlog": {
     "title": "Blog",
@@ -9072,9 +9074,8 @@
     },
     "autopublish": {
       "title": "Automatic posts",
-      "hint": "Drafts from our own data (tax calendar, tools, kinds of business). A switched-on kind goes live on its own only when it passes every check, is not about a law changing, and no more than {n} automatic posts went out in that language in the last 7 days. Everything else waits for approval.",
+      "hint": "Drafts from our own data (tools, kinds of business). A switched-on kind goes live on its own only when it passes every check, is not about a law changing, and no more than {n} automatic posts went out in that language in the last 7 days. Everything else waits for approval, tax deadline posts always do.",
       "kinds": {
-        "tax_deadlines": "Every month on the 20th, Czech only.",
         "tool_howto": "One new how-to every Tuesday, in Czech and Slovak.",
         "trade_invoicing": "One new trade every Tuesday, in Czech and Slovak."
       },

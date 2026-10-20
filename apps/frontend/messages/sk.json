@@ -8890,7 +8890,9 @@
     "disclaimer": "Článok je zhrnutie, nie daňové ani právne poradenstvo. Pred rozhodnutím si údaje overte v zdrojoch alebo u daňového poradcu.",
     "ctaTitle": "Fakturujte bez starostí",
     "ctaBody": "Billanta stráži splatnosti, QR platby a exporty pre účtovníkov. Začnite zadarmo.",
-    "ctaButton": "Založiť účet zadarmo"
+    "ctaButton": "Založiť účet zadarmo",
+    "aiAuto": "Článok napísala umelá inteligencia z našich podkladov a pred zverejnením prešiel iba automatickou kontrolou. Ak nájdete chybu, <contact>napíšte nám</contact>.",
+    "aiReviewed": "Článok sme pripravili s pomocou umelej inteligencie, pred zverejnením ho skontroloval človek. Ak nájdete chybu, <contact>napíšte nám</contact>."
   },
   "adminBlog": {
     "title": "Blog",
@@ -8978,9 +8980,8 @@
     },
     "autopublish": {
       "title": "Automatické články",
-      "hint": "Koncepty z našich dát (daňový kalendár, nástroje, typy podnikania). Zapnutý typ sa zverejní sám, len keď prejde všetkými kontrolami, netýka sa zmeny zákona a v danom jazyku za posledných 7 dní nevyšlo viac ako {n} automatických článkov. Ostatné čakajú na schválenie.",
+      "hint": "Koncepty z našich dát (nástroje, typy podnikania). Zapnutý typ sa zverejní sám, len keď prejde všetkými kontrolami, netýka sa zmeny zákona a v danom jazyku za posledných 7 dní nevyšlo viac ako {n} automatických článkov. Ostatné čakajú na schválenie, články o daňových termínoch vždy.",
       "kinds": {
-        "tax_deadlines": "Každý mesiac 20. dňa, len po česky.",
         "tool_howto": "Každý utorok jeden nový návod, po česky a po slovensky.",
         "trade_invoicing": "Každý utorok jeden nový odbor, po česky a po slovensky."
       },

@@ -109,6 +109,8 @@ export class BlogService {
         body: schema.blogPosts.body,
         kind: schema.blogPosts.kind,
         sources: schema.blogPosts.sources,
+        // With `kind`, tells the reader whether a person reviewed an AI post (EU AI Act art. 50).
+        autoPublished: schema.blogPosts.autoPublished,
         publishedAt: schema.blogPosts.publishedAt,
         updatedAt: schema.blogPosts.updatedAt,
       })

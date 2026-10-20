@@ -1,8 +1,12 @@
 import type { BlogPostKind } from "../../drizzle/schema";
 import { isLegislativeTopic, type CheckablePost } from "./blog-checks";
 
-/** Kinds that may go live without a click, each behind its own switch in /admin/blog. Briefs and hand-written posts never do. */
-export const AUTO_PUBLISH_KINDS = ["tax_deadlines", "tool_howto", "trade_invoicing"] as const satisfies readonly BlogPostKind[];
+/**
+ * Kinds that may go live without a click, each behind its own switch in /admin/blog.
+ * Briefs and hand-written posts never do, and neither do tax deadline posts: a wrong
+ * date there costs a reader a fine, so a person checks every one against the calendar.
+ */
+export const AUTO_PUBLISH_KINDS = ["tool_howto", "trade_invoicing"] as const satisfies readonly BlogPostKind[];
 export type AutoPublishKind = (typeof AUTO_PUBLISH_KINDS)[number];
 
 /** Auto-published posts per locale per rolling week, so readers (and Google) see a steady pace, not a dump. */
