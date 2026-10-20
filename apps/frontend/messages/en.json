@@ -8212,7 +8212,7 @@
           "keywords": "unreliable vat payer czech check dic vat payer register czech published bank account vat liability supplier check",
           "how": [
             "We ask the Czech Financial Administration's register of VAT payers directly. The result is valid at the moment of the check.",
-            "If you are a Czech VAT payer and the supplier is listed as unreliable on the taxable supply date or on the day you pay, you are liable for the VAT it doesn't pay (§ 109 of the Czech VAT Act). You avoid that by paying the VAT straight to its tax office (§ 109a).",
+            "If you are a Czech VAT payer and the supplier is listed as unreliable on the taxable supply date or on the day you pay, you are liable for the VAT it doesn't pay (§ 109 of the Czech VAT Act). You avoid that by paying the VAT straight to its tax office (§ 109a of the VAT Act).",
             "You are also liable when you pay for a supply to an account the payer has not published, whatever the amount (§ 109(2)(c) of the VAT Act).",
             "We compare the account you enter with the published ones, whether you type it as a number with a bank code or as an IBAN. We don't show the list of published accounts, only how many there are."
           ],
@@ -8238,7 +8238,7 @@
             },
             "stateNote": {
               "payer": "The Financial Administration does not list this company as an unreliable payer.",
-              "unreliable": "If you are a Czech VAT payer, you are liable for the VAT on its supplies to you that it doesn't pay (§ 109 of the VAT Act). It is enough that it is listed on the taxable supply date or on the day you pay. You can pay the VAT straight to its tax office instead (§ 109a).",
+              "unreliable": "If you are a Czech VAT payer, you are liable for the VAT on its supplies to you that it doesn't pay (§ 109 of the VAT Act). It is enough that it is listed on the taxable supply date or on the day you pay. You can pay the VAT straight to its tax office instead (§ 109a of the VAT Act).",
               "not_registered": "This VAT ID is not in the register of VAT payers. The company should not charge you VAT.",
               "valid": "The VAT ID is valid.",
               "invalid": "The VAT ID is not in the register or no longer active.",

@@ -8189,7 +8189,7 @@
           "keywords": "nespoľahlivý platiteľ dph overenie dič register platiteľov dph česko zverejnený bankový účet ručenie za dph kontrola dodávateľa",
           "how": [
             "Pýtame sa priamo registra platiteľov DPH českej Finančnej správy. Výsledok platí k okamihu overenia.",
-            "Ak ste platiteľ DPH v Česku a dodávateľ je ku dňu uskutočnenia plnenia alebo ku dňu vašej platby vedený ako nespoľahlivý platiteľ, ručíte za DPH, ktorú neodvedie (§ 109 českého zákona o DPH). Ručeniu sa vyhnete, keď DPH zaplatíte rovno jeho finančnému úradu (§ 109a).",
+            "Ak ste platiteľ DPH v Česku a dodávateľ je ku dňu uskutočnenia plnenia alebo ku dňu vašej platby vedený ako nespoľahlivý platiteľ, ručíte za DPH, ktorú neodvedie (§ 109 českého zákona o DPH). Ručeniu sa vyhnete, keď DPH zaplatíte rovno jeho finančnému úradu (§ 109a zákona o DPH).",
             "Ručíte aj vtedy, keď za plnenie zaplatíte na účet, ktorý platiteľ nezverejnil, a to bez ohľadu na sumu (§ 109 ods. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme so zverejnenými účtami, či ho napíšete ako číslo s kódom banky alebo ako IBAN. Zoznam zverejnených účtov neukazujeme, len ich počet."
           ],
@@ -8215,7 +8215,7 @@
             },
             "stateNote": {
               "payer": "Finančná správa firmu nevedie ako nespoľahlivého platiteľa.",
-              "unreliable": "Ak ste platiteľ DPH v Česku, ručíte za DPH z plnenia od tejto firmy, ktorú neodvedie (§ 109 zákona o DPH). Stačí, ak je tak vedená ku dňu uskutočnenia plnenia alebo ku dňu platby. DPH môžete zaplatiť rovno jej finančnému úradu (§ 109a).",
+              "unreliable": "Ak ste platiteľ DPH v Česku, ručíte za DPH z plnenia od tejto firmy, ktorú neodvedie (§ 109 zákona o DPH). Stačí, ak je tak vedená ku dňu uskutočnenia plnenia alebo ku dňu platby. DPH môžete zaplatiť rovno jej finančnému úradu (§ 109a zákona o DPH).",
               "not_registered": "Toto DIČ v registri platiteľov DPH nie je. Firma by vám nemala účtovať DPH.",
               "valid": "DIČ je platné.",
               "invalid": "DIČ v registri nie je alebo už nie je aktívne.",

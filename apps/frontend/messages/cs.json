@@ -8212,7 +8212,7 @@
           "keywords": "nespolehlivý plátce dph ověření dič registr plátců dph zveřejněný bankovní účet ručení za dph § 109 kontrola dodavatele",
           "how": [
             "Ptáme se přímo registru plátců DPH Finanční správy. Výsledek platí k okamžiku ověření.",
-            "Jste-li plátce DPH a dodavatel je ke dni uskutečnění plnění nebo ke dni vaší platby veden jako nespolehlivý plátce, ručíte za DPH, kterou neodvede (§ 109 zákona o DPH). Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a).",
+            "Jste-li plátce DPH a dodavatel je ke dni uskutečnění plnění nebo ke dni vaší platby veden jako nespolehlivý plátce, ručíte za DPH, kterou neodvede (§ 109 zákona o DPH). Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a zákona o DPH).",
             "Ručíte i tehdy, když za plnění zaplatíte na účet, který plátce nezveřejnil, a to bez ohledu na částku (§ 109 odst. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme se zveřejněnými účty, ať ho napíšete jako číslo s kódem banky nebo jako IBAN. Seznam zveřejněných účtů neukazujeme, jen jejich počet."
           ],
@@ -8238,7 +8238,7 @@
             },
             "stateNote": {
               "payer": "Finanční správa firmu nevede jako nespolehlivého plátce.",
-              "unreliable": "Jste-li plátce DPH, ručíte za DPH z plnění od této firmy, kterou neodvede (§ 109 zákona o DPH). Stačí, aby tak byla vedena ke dni uskutečnění plnění nebo ke dni platby. DPH můžete zaplatit rovnou jejímu finančnímu úřadu (§ 109a).",
+              "unreliable": "Jste-li plátce DPH, ručíte za DPH z plnění od této firmy, kterou neodvede (§ 109 zákona o DPH). Stačí, aby tak byla vedena ke dni uskutečnění plnění nebo ke dni platby. DPH můžete zaplatit rovnou jejímu finančnímu úřadu (§ 109a zákona o DPH).",
               "not_registered": "Toto DIČ v registru plátců DPH není. Firma by vám neměla účtovat DPH.",
               "valid": "DIČ je platné.",
               "invalid": "DIČ v registru není nebo už není aktivní.",
