@@ -255,6 +255,26 @@ describe('checkIsdoc', () => {
     expect(checkIsdoc(big).findings).toContainEqual(expect.objectContaining({ code: 'simplifiedOverLimit', expected: 10000, actual: 12100 }));
   });
 
+  it('caps a Slovak simplified invoice at 100 € incl. VAT (§74/3 a) ZoDPH)', () => {
+    const sk = { country: 'SK', vatStatus: 'payer', document: 'simplified', customer: 'business', reverseCharge: false } as const;
+    const doc = (net: number) => {
+      const vat = Math.round(net * 23) / 100;
+      const parsed = parseIsdoc(
+        generateIsdocXml(
+          input({
+            lineItems: [{ description: 'Tovar', quantity: 1, unitPriceWithoutVat: net, vatRate: 'base', vatRatePercent: 23 }],
+            totals: { totalWithoutVat: net, totalVat: vat, totalWithVat: net + vat, vatRecapitulation: [{ vatRate: 'base', vatRatePercent: 23, totalWithoutVat: net, vatAmount: vat, totalWithVat: net + vat }] }
+          })
+        )
+      );
+      parsed.localCurrency = 'EUR';
+      return parsed;
+    };
+    const codes = (net: number) => checkIsdoc(doc(net), sk).findings.map((f) => f.code);
+    expect(codes(80)).not.toContain('simplifiedOverLimit'); // 98.40 €
+    expect(checkIsdoc(doc(100), sk).findings).toContainEqual(expect.objectContaining({ code: 'simplifiedOverLimit', expected: 100, actual: 123 }));
+  });
+
   it('a reverse-charge invoice needs the note; the line flag counts', () => {
     const doc = parseIsdoc(generateIsdocXml(input({ note: undefined })));
     const scenario = { country: 'CZ', vatStatus: 'payer', document: 'invoice', customer: 'business', reverseCharge: true } as const;

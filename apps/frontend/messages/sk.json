@@ -8009,7 +8009,7 @@
           "keywords": "nespoľahlivý platiteľ dph overenie dič register platiteľov dph česko zverejnený bankový účet ručenie za dph kontrola dodávateľa",
           "how": [
             "Pýtame sa priamo registra platiteľov DPH českej Finančnej správy. Výsledok platí k okamihu overenia.",
-            "Keď zaplatíte nespoľahlivému platiteľovi, ručíte za DPH, ktorú neodvedie. Ručeniu sa vyhnete, keď DPH zaplatíte rovno jeho finančnému úradu (§ 109a českého zákona o DPH).",
+            "Ak ste platiteľ DPH v Česku a dodávateľ je ku dňu uskutočnenia plnenia alebo ku dňu vašej platby vedený ako nespoľahlivý platiteľ, ručíte za DPH, ktorú neodvedie (§ 109 českého zákona o DPH). Ručeniu sa vyhnete, keď DPH zaplatíte rovno jeho finančnému úradu (§ 109a).",
             "Ručíte aj vtedy, keď za plnenie nad 540 000 Kč (dvojnásobok limitu pre platby v hotovosti) zaplatíte na účet, ktorý platiteľ nezverejnil (§ 109 ods. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme so zverejnenými účtami, či ho napíšete ako číslo s kódom banky alebo ako IBAN. Zoznam zverejnených účtov neukazujeme, len ich počet."
           ],
@@ -8035,7 +8035,7 @@
             },
             "stateNote": {
               "payer": "Finančná správa firmu nevedie ako nespoľahlivého platiteľa.",
-              "unreliable": "Keď jej zaplatíte za plnenie s DPH, ručíte za DPH, ktorú neodvedie (§ 109 zákona o DPH). DPH môžete zaplatiť rovno jej finančnému úradu (§ 109a).",
+              "unreliable": "Ak ste platiteľ DPH v Česku, ručíte za DPH z plnenia od tejto firmy, ktorú neodvedie (§ 109 zákona o DPH). Stačí, ak je tak vedená ku dňu uskutočnenia plnenia alebo ku dňu platby. DPH môžete zaplatiť rovno jej finančnému úradu (§ 109a).",
               "not_registered": "Toto DIČ v registri platiteľov DPH nie je. Firma by vám nemala účtovať DPH.",
               "valid": "DIČ je platné.",
               "invalid": "DIČ v registri nie je alebo už nie je aktívne.",
@@ -8407,7 +8407,7 @@
       "notices": {
         "simplifiedNotForNonPayer": "Zjednodušenú faktúru vyhotovuje len platiteľ DPH. Zobrazujeme náležitosti bežnej faktúry.",
         "simplifiedLimitCz": "V Česku smiete zjednodušený daňový doklad vystaviť len do 10 000 Kč vrátane DPH (§ 30 ZDPH).",
-        "simplifiedLimitSk": "Zjednodušenú faktúru môžete vyhotoviť len do 1 000 € vrátane DPH (§ 74 ods. 3 ZoDPH).",
+        "simplifiedLimitSk": "Zjednodušenú faktúru môžete vyhotoviť len do 100 € vrátane DPH (§ 74 ods. 3 písm. a) ZoDPH).",
         "simplifiedNotCrossBorder": "Pri dodaní do iného štátu EÚ a pri vývoze zjednodušenú faktúru vyhotoviť nemožno. Zobrazujeme bežnú faktúru.",
         "proformaTaxDocument": "Zálohová faktúra nie je faktúra podľa zákona o DPH. Keď platba príde, do 15 dní vyhotovte faktúru k prijatej platbe.",
         "identifiedNoTaxDocument": "Osoba registrovaná podľa § 7 alebo § 7a v tuzemsku DPH neúčtuje – fakturuje ako neplatiteľ.",
@@ -9286,7 +9286,7 @@
       "taxable": "Zdaniteľný základ",
       "incomeTax": "Daň z príjmov",
       "incomeTaxReduced": "Daň z príjmov (15 %)",
-      "incomeTaxHint": "15 % pri príjmoch do 100 000 € (za rok 2024 do 60 000 €), inak 19 % a 25 % (od roku 2026 aj 30 % a 35 %). Bez daňového bonusu na deti a ďalších odpočtov.",
+      "incomeTaxHint": "15 % pri príjmoch do 100 000 € (za rok 2024 do 60 000 €), inak 19 % a 25 % zo základu dane nad 176,8-násobok životného minima. Od roku 2026 platia pásma 19 % do 43 983 €, 25 % do 60 349 €, 30 % do 75 010 € a 35 % nad túto sumu. Bez daňového bonusu na deti a ďalších odpočtov.",
       "health": "Zdravotné poistenie za rok",
       "healthHint": "{rate} % z vymeriavacieho základu (zisk delený 1,486), najmenej z minimálneho základu za každý mesiac podnikania.",
       "social": "Sociálne poistenie od júla {year}",
