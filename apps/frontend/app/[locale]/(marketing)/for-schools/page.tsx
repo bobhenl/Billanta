@@ -141,6 +141,15 @@ export default async function SchoolsPage({ params }: { params: Promise<{ locale
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('safeguardsTitle')}</h2>
       <IconCards items={SAFEGUARDS.map(({ icon, key }) => ({ icon, title: t(`safeguards.${key}.title`), body: t(`safeguards.${key}.body`) }))} />
+      <p className="mt-4 max-w-3xl text-sm text-muted-foreground">
+        {t.rich('privacyLink', {
+          link: (chunks) => (
+            <Link href="/legal/classroom-privacy" className="font-semibold text-primary hover:underline">
+              {chunks}
+            </Link>
+          )
+        })}
+      </p>
 
       <DemoCta className="mt-12" />
 

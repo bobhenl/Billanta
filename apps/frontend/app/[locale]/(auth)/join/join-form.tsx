@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { Link } from '@/i18n/navigation';
 import { copyText } from '@/lib/clipboard';
 import type { JoinPreview } from '@/lib/classroom';
 
@@ -116,7 +117,17 @@ export function JoinForm({ code, preview, disabled }: { code: string; preview: J
           <button type="submit" disabled={busy || disabled} className={`${buttonClass.primary} w-full`}>
             {busy ? t('joining') : t('join')}
           </button>
-          <p className="text-xs text-muted-foreground">{t('privacy')}</p>
+          <p className="text-xs text-muted-foreground">
+            {t('privacy')}{' '}
+            {/* A new tab, so a pupil reading it does not lose the half-filled form. */}
+            {t.rich('privacyLink', {
+              link: (chunks) => (
+                <Link href="/legal/classroom-privacy" target="_blank" className="font-semibold text-primary hover:underline">
+                  {chunks}
+                </Link>
+              )
+            })}
+          </p>
           <button type="button" onClick={() => setMode('reenter')} className="text-sm font-semibold text-primary hover:underline">
             {t('haveCode')}
           </button>

@@ -135,8 +135,8 @@ export function ApplyForm() {
         <span>
           {t.rich('terms', {
             link: (chunks) => (
-              // The school terms are drafted in docs/classroom-dpa-draft.md; until they are published, the general DPA applies.
-              <Link href="/legal/dpa" target="_blank" className="font-semibold text-primary hover:underline">
+              // The school contract is drafted in docs/classroom-dpa-draft.md; the page says so until it is published.
+              <Link href="/legal/school-contract" target="_blank" className="font-semibold text-primary hover:underline">
                 {chunks}
               </Link>
             )

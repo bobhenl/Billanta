@@ -3609,7 +3609,7 @@
           "title": "Businesses only (B2B)",
           "body": [
             "The service is intended solely for businesses and legal entities using it in the course of their trade or profession (sections 420 et seq. of the Czech Civil Code, Act No. 89/2012 Coll.). It is not intended for consumers.",
-            "By creating an account the user declares that they are at least 18 years old and act as a business. The service is not intended for anyone under 18, and the operator does not knowingly collect their personal data. Consumer protection rules, including the right to withdraw from a distance contract, therefore do not apply. If the operator finds that a user is a consumer, it may close the account."
+            "By creating an account the user declares that they are at least 18 years old and act as a business. The service is not intended for anyone under 18, and the operator does not knowingly collect their personal data, except in the classroom mode for schools under section 17. Consumer protection rules, including the right to withdraw from a distance contract, therefore do not apply. If the operator finds that a user is a consumer, it may close the account."
           ]
         },
         {
@@ -3725,6 +3725,34 @@
             "These terms are issued in Czech, Slovak and English. In case of conflict the Czech version prevails.",
             "If any provision is invalid, the rest remain in force."
           ]
+        },
+        {
+          "title": "Classroom mode (schools)",
+          "body": [
+            "As an exception to section 2, the operator offers schools a separate educational classroom mode. A class is set up by a teacher whom the operator has verified, and pupils under 18 may join it. Pupils are not users under these terms and do not create their own account with an email and password.",
+            "Pupils join a class with only the class code and a nickname, without an email. They work in practice companies with made-up data, AI features are off in classes, and documents carry a practice-document watermark. They are not tax documents, and the classroom mode must not be used for real business.",
+            "For pupils’ personal data the school, acting through the teacher, is the controller and the operator is only a processor under a separate school data processing contract. The teacher confirms that they may act for the school and tells pupils not to enter real personal data.",
+            "A class’s practice companies are read-only for 30 days after the class ends and are then deleted. A pupil whom the teacher removes from the class is deleted at once. The classroom mode is free."
+          ]
+        },
+        {
+          "title": "The “Made with Billanta” line",
+          "body": [
+            "Documents issued in the service carry a short line in the footer, “Made with Billanta” (“Vystaveno v aplikaci Billanta” in Czech, “Vystavené v aplikácii Billanta” in Slovak), linking to the Billanta website. It appears in the PDF, in emails with documents and reminders, and on the online document page.",
+            "The link carries the issuer’s referral code, so a business that signs up through it counts towards the referral programme under section 19. It contains no data about the customer or the document.",
+            "On the free plan the line is always shown. On a paid plan and during a trial the user can turn it off in Settings under invoices. When the paid plan ends, the line is shown again. Documents made with public tools without an account (such as the reminder generator) always carry it."
+          ]
+        },
+        {
+          "title": "Referral and partner programme",
+          "body": [
+            "Users can invite other businesses with their invite link. A new business that signs up through it gets welcome credits. The inviter gets as many credits as the new business pays, excluding VAT, for its first plan payment, up to the amount shown in the app. The current rewards are always shown on the referral page in the app. 1 credit equals CZK 1.",
+            "The reward is credited after the new business’s second monthly payment, or 30 days after the first payment for a yearly or prepaid plan. If the new business refunds or cancels the payment before then, no reward arises.",
+            "The partner programme for accountants and accounting firms works the same way. It is only for accountants whose listing in the accountant directory the operator has approved.",
+            "Self-referral is not allowed. No reward arises for a business the inviter owns, or for a business that shares a user with the inviter. Each business counts at most once. If the programme is abused, the operator may withdraw the reward and end the user’s participation.",
+            "Credits can only be used to pay for Billanta plans. They have no cash value and cannot be paid out or transferred to another business. Credits do not expire while the business’s account exists and lapse when the account is closed.",
+            "The operator may change or end the programme. It will announce the change at least 30 days in advance in the app or by email. Credits granted until then can still be used under this section."
+          ]
         }
       ]
     },
@@ -3736,7 +3764,8 @@
           "title": "Controller and processor",
           "body": [
             "The controller of personal data of account users and website visitors is {operator}.",
-            "For customer data that users put into the service (contacts, invoices), the user is the controller and Billanta is only a processor under the Data Processing Agreement (DPA)."
+            "For customer data that users put into the service (contacts, invoices), the user is the controller and Billanta is only a processor under the Data Processing Agreement (DPA).",
+            "For pupils in the classroom mode the school is the controller, see section 15."
           ]
         },
         {
@@ -3765,7 +3794,7 @@
             "Resend: sending email (invoices, reminders, account verification).",
             "Stripe and GoPay: subscription payments. Card details are processed only by these gateways; Billanta never sees them.",
             "Anthropic: AI invoice drafts from text and images. OpenAI: transcribing voice messages to text. Both only when the user uses an AI feature.",
-            "Google: Google sign-in and backups to Google Drive, only if the user enables them.",
+            "Google: Google sign-in and backups to the user’s own Google Drive, only if the user enables them. We also keep encrypted nightly backups of the whole database on the operator’s Google Drive, see section 10.",
             "Telegram and Meta (WhatsApp): only if the user links their account to a chat app.",
             "Microsoft (Clarity): analytics on public pages (only with consent where it is required).",
             "Beyond that, data goes only where the user sends it: their bank or PayPal through a connection they enabled (Fio, PSD2 via Enable Banking, PayPal), their own webhooks and backup storage, and emails to their customers. Lookups in public registries (ARES, RPO, VIES) contain only a company ID or VAT number.",
@@ -3804,6 +3833,53 @@
           "title": "Security",
           "body": [
             "Data is encrypted in transit (TLS). Each company's data is isolated in the database (row-level security). Sensitive keys (bank tokens, AI keys, backup configurations) are stored encrypted. Access to production data is limited to the people who need it."
+          ]
+        },
+        {
+          "title": "Backups",
+          "body": [
+            "We back up the whole database of the service every night. The backup is encrypted on the server with age, using a public key. The private key that opens a backup is not on the server; the operator keeps it offline. The encrypted backups are kept on the server, with a copy on the operator’s Google Drive. Without the private key nobody can read them, not even someone with access to the server or the Google account. Backups are deleted after 90 days at the latest (section 6).",
+            "Separately, a business can turn on backups of its own data: to its own Google Drive, to its own SFTP server, through a webhook, or as a download. These backups go only where the user sets them to, and the user can encrypt them with their own age key or a passphrase. On Google Drive, Billanta can only access the files it created. The user is responsible for the storage they choose."
+          ]
+        },
+        {
+          "title": "Newsletter",
+          "body": [
+            "We send the newsletter only to people who sign up and confirm through a link in an email (double opt-in). Unconfirmed sign-ups are deleted within 30 days.",
+            "We store the email address, language, country, chosen topics, where you signed up, the consent wording and the times of sign-up and confirmation. The legal basis is consent (Art. 6(1)(a) GDPR).",
+            "You can unsubscribe at any time with one click in the footer of every issue. After that we send nothing more and keep only a record of the consent and the unsubscribe, so we can show we wrote to you lawfully."
+          ]
+        },
+        {
+          "title": "Where new users come from",
+          "body": [
+            "When you reach the website from a link with campaign parameters (utm) or from another website, we remember the source of the visit in the billanta_src cookie for 90 days: the utm parameters, only the domain of the referring site (no path or query), the first page you visited and the time. If you then create an account, we store this with it so we know which channels bring us users.",
+            "We set this cookie only if you have allowed analytics cookies. The legal basis is consent (Art. 6(1)(a) GDPR)."
+          ]
+        },
+        {
+          "title": "Referral programme",
+          "body": [
+            "When you arrive through an invite link, we keep the inviter’s code in the billanta_ref cookie for 30 days so the invite counts when you sign up.",
+            "For the business we then record who invited it, when it signed up, when and how much it paid for a plan, the reward status and credit movements. The purpose is to grant rewards and prevent abuse of the programme (contract and legitimate interest, Art. 6(1)(b) and (f) GDPR).",
+            "The inviter does not see the name or details of the invited business, only a sequence number, whether it pays and how many credits they got for it."
+          ]
+        },
+        {
+          "title": "Public directories",
+          "body": [
+            "Business directory: a business appears in it only if it turns on its public profile and, in it, the directory listing (off by default). The listing shows the business name, a short description, trade, town, country, logo, and the city only if the business shows its address on the profile. The directory never shows the company ID, email or phone.",
+            "Accountant directory: the accountant or accounting firm submits the listing itself, and it is published only after the operator approves it. It shows the name, description, regions, whether they work remotely, services, languages, an indicative price, a contact email or website, and a link to the public profile if that is on.",
+            "We publish both listings at the business’s request, and the business can edit, turn off or withdraw them at any time."
+          ]
+        },
+        {
+          "title": "Classroom mode",
+          "body": [
+            "In the classroom mode the controller of pupils’ personal data is the school, acting through the teacher who sets up the class. The operator is only a processor under the school data processing contract, which we will publish on the School contract page.",
+            "Pupils join a class with only the class code and a nickname, without an email or password. We store the nickname, the content of the practice company with made-up data, the personal code for coming back (encrypted and as a hash) and technical data needed to run the service and prevent abuse. AI features are off and pupils’ pages have no analytics.",
+            "A class’s practice companies are deleted 30 days after the class ends, and a pupil removed by the teacher at once. A simplified Classroom privacy notice is meant for pupils and parents. Requests about pupils’ data are handled by the school.",
+            "Teachers’ data (name, email, school, subject) is processed by the operator as controller under this policy, to verify teachers and run their accounts."
           ]
         }
       ]
@@ -3853,6 +3929,62 @@
             "After the agreement ends, the processor lets the controller export the data for 30 days. Then, at the controller's choice, it deletes them or returns them as an export, unless the law requires them to be kept. Data are removed from backups within 90 days at the latest.",
             "The processor will give the controller the information needed to show compliance with this agreement. An on-site audit is possible by prior arrangement, at the controller's cost and at most once a year.",
             "The limitation of liability in the Terms (section 10) applies to the parties' liability under this agreement. It does not apply to claims of data subjects under Art. 82 GDPR to the extent they cannot be limited by contract."
+          ]
+        }
+      ]
+    },
+    "classroomPrivacy": {
+      "title": "Privacy in class",
+      "intro": "A short explanation for pupils, students and their parents: what Billanta stores when you join a class, and who can see it.",
+      "sections": [
+        {
+          "title": "What we store",
+          "body": [
+            "The nickname you choose. Don’t use your full name; a nickname your teacher will recognise is enough.",
+            "Your practice company and everything you create in it: invoices, customers, expenses and other records. The data is made up, so don’t enter real details about yourself or anyone else.",
+            "Your personal code for getting back to your company. We store it encrypted.",
+            "A few technical details the service needs to run and to prevent abuse, such as how many attempts to get in failed."
+          ]
+        },
+        {
+          "title": "What we don’t store or use",
+          "body": [
+            "We don’t ask for your email, phone number or a password.",
+            "There is no artificial intelligence (AI), analytics or advertising in class. We don’t send you anything and don’t use your data for marketing."
+          ]
+        },
+        {
+          "title": "Who can see your data",
+          "body": [
+            "Your teacher, and any other teachers of the same class, can see your company. They can only look; they don’t change anything in it. Your classmates can’t see your company.",
+            "People at Billanta only access the data when it is necessary for support or security."
+          ]
+        },
+        {
+          "title": "When your data is deleted",
+          "body": [
+            "After the class ends you can still look at your company for 30 days. Then it is deleted, together with your nickname and personal code. It disappears from encrypted backups within 90 days at the latest.",
+            "If your teacher removes you from the class, your company is deleted straight away."
+          ]
+        },
+        {
+          "title": "Who to contact",
+          "body": [
+            "Your school decides about your data in class. Billanta only processes it for the school under a contract with the school. With a question or a request to delete your data, talk to your teacher or the school.",
+            "Parents can ask the school for details, or write to the operator of Billanta: {operator}."
+          ]
+        }
+      ]
+    },
+    "schoolContract": {
+      "title": "School data processing contract",
+      "intro": "The terms for schools and the contract on processing pupils’ personal data in the classroom mode.",
+      "sections": [
+        {
+          "title": "Coming soon",
+          "body": [
+            "The school data processing contract will be published on this page before the classroom mode launches.",
+            "Until then, the Classroom privacy notice and section 17 of the terms summarise how we handle pupils’ data. For questions, contact {operator}."
           ]
         }
       ]
@@ -4127,6 +4259,10 @@
         {
           "q": "Does my accountant need their own plan?",
           "a": "No. From the Start plan, one accountant gets access to your company for free, as part of your plan."
+        },
+        {
+          "q": "Why do invoices say “Made with Billanta”?",
+          "a": "On the free plan every document carries a small link to Billanta in the footer of the PDF, the email and the online invoice. That is how the Free plan pays for itself. On a paid plan and during a trial you can turn it off in Settings under invoices."
         }
       ]
     }
@@ -9841,7 +9977,8 @@
     "kind": "What company do you want to run?",
     "join": "Join the class",
     "joining": "Setting up your company…",
-    "privacy": "No e-mail or password needed. The company is for practice and is deleted when the class ends.",
+    "privacy": "No e-mail or password needed. The company is for practice and is deleted 30 days after the class ends.",
+    "privacyLink": "<link>What we store and who sees it</link>",
     "haveCode": "I'm already in the class and have a personal code",
     "personalCode": "Personal code",
     "personalCodeHint": "You got the code when you first joined. If you don't have it, ask your teacher for a new one.",
@@ -10005,11 +10142,11 @@
       },
       "czsk": {
         "title": "Czech vs. Slovak rules",
-        "body": "The same invoice under Czech and Slovak rules: different VAT rates, different tax IDs and different payment QR codes."
+        "body": "The same invoice under Czech and Slovak rules: different VAT rates and different tax IDs."
       },
       "roles": {
-        "title": "Owner, accountant, colleague",
-        "body": "Who may see and change what. Students try the owner, the accountant and a read-only colleague."
+        "title": "Owner and teacher",
+        "body": "Who may see and change what. Each student runs their company as the owner, and the teacher can look in read-only. An exercise with accountant access is in the works."
       }
     },
     "access": {
@@ -10018,7 +10155,7 @@
       "steps": {
         "request": {
           "title": "Write to us",
-          "body": "From your school e-mail: the school, the subject, the year and roughly how many students."
+          "body": "The school, the subject, the year and roughly how many students. We can verify you faster from a school email."
         },
         "setup": {
           "title": "We set up the class",
@@ -10049,6 +10186,7 @@
         "body": "Teaching access is not meant for a real business. Anyone who starts invoicing for real opens a regular account."
       }
     },
+    "privacyLink": "A short <link>privacy notice for pupils and parents</link> explains what is stored about pupils and who can see it.",
     "resourcesTitle": "Teaching materials",
     "resourcesLead": "Lessons and worksheets, guides to the legislation and pages that explain each topic in detail.",
     "resources": {
@@ -10067,7 +10205,7 @@
       },
       {
         "q": "Which schools is teaching access for?",
-        "a": "Business academies and other secondary schools with economics subjects, colleges and universities, and retraining courses. If you teach invoicing elsewhere, write to us too."
+        "a": "Primary and secondary schools, especially business academies and schools with economics subjects, colleges and universities, and retraining courses. If you teach invoicing elsewhere, write to us too."
       },
       {
         "q": "When will the classroom mode be ready?",
@@ -10079,7 +10217,7 @@
       },
       {
         "q": "What about students’ personal data?",
-        "a": "Practice does not need any. The companies and customers are made up, and a student’s school e-mail is enough to join a class."
+        "a": "Practice does not need any. Pupils join a class with only the class code and a nickname, without an email or password. The companies and customers are made up, and practice companies are deleted 30 days after the class ends."
       }
     ]
   },
@@ -10140,7 +10278,8 @@
       "points": [
         "We issue the code after a short chat.",
         "We agree the perk for your followers and the terms together.",
-        "And yes, you can invoice us for the collaboration from Billanta."
+        "And yes, you can invoice us for the collaboration from Billanta.",
+        "You must clearly label paid and partner posts as advertising or a collaboration."
       ],
       "cta": "Ask for a code",
       "mailSubject": "Billanta – promo code for creators"
