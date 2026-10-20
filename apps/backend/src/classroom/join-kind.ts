@@ -112,7 +112,11 @@ export class ClassroomJoinHandler implements JoinKindHandler {
     try {
       if (cls.seeded) {
         await this.seeder.seed(row.tenant_id, row.user_id, kind, language);
-        await this.dbService.sql`UPDATE classroom_students SET seeded_at = now() WHERE id = ${row.student_id}`;
+        // classroom_students is under RLS: the student's row is visible inside their company.
+        await this.dbService.sql.begin(async (tx) => {
+          await tx`SELECT set_config('app.current_tenant_id', ${row.tenant_id}, true)`;
+          await tx`UPDATE classroom_students SET seeded_at = now() WHERE id = ${row.student_id}`;
+        });
       }
     } catch (err) {
       // A half-filled company is worse than none; the student tries again.
@@ -130,15 +134,19 @@ export class ClassroomJoinHandler implements JoinKindHandler {
     };
   }
 
-  /** Same answer for an unknown class and a wrong code; the function counts the misses. */
-  async reenter(code: string, personalCode: string): Promise<JoinResult> {
+  /**
+   * Same answer for an unknown class and a wrong code; the function counts
+   * the misses per network (`ctx.ipBucket`), so one visitor guessing does
+   * not lock the rest of the class out.
+   */
+  async reenter(code: string, personalCode: string, ctx: { ipBucket: string }): Promise<JoinResult> {
     const found = await this.findClass(code);
     const personal = normalizeCode(personalCode);
     if (!found || !personal) throw new UnauthorizedException("classroom_reenter_invalid");
     let rows: { tenant_id: string; user_id: string; expires_at: Date }[];
     try {
       rows = await this.dbService.sql<{ tenant_id: string; user_id: string; expires_at: Date }[]>`
-        SELECT * FROM classroom_reenter(${found.cls.id}, ${hashCode(personal, classroomConfig().codeSecret)})`;
+        SELECT * FROM classroom_reenter(${found.cls.id}, ${hashCode(personal, classroomConfig().codeSecret)}, ${ctx.ipBucket})`;
     } catch (err) {
       if ((err as Error).message === "classroom_locked_out") throw new HttpException("classroom_locked_out", HttpStatus.TOO_MANY_REQUESTS);
       throw err;

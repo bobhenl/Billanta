@@ -60,8 +60,8 @@ function TeacherCard({ teacher: x }: { teacher: AdminTeacher }) {
   const router = useRouter();
   const s = x.school;
   const [note, setNote] = useState('');
-  // The domain of the applicant's e-mail is the usual answer; staff correct it for a gmail address.
-  const [domain, setDomain] = useState(s.emailDomain ?? x.email.split('@')[1] ?? '');
+  // Never pre-filled from the applicant's address: one click would let them pick who is approved automatically.
+  const [domain, setDomain] = useState(s.emailDomain ?? '');
   const [pending, startTransition] = useTransition();
 
   const run = (action: () => Promise<{ ok: boolean; error?: string }>, done: string) =>
@@ -109,9 +109,14 @@ function TeacherCard({ teacher: x }: { teacher: AdminTeacher }) {
           <div className={row}>
             <dt className="text-muted-foreground">{t('fields.web')}</dt>
             <dd className="break-all">
-              <a href={s.webUrl} target="_blank" rel="noopener noreferrer nofollow" className="text-primary hover:underline">
-                {s.webUrl}
-              </a>
+              {/* Older rows predate the backend check; anything but http(s) stays plain text. */}
+              {/^https?:\/\//i.test(s.webUrl) ? (
+                <a href={s.webUrl} target="_blank" rel="noopener noreferrer nofollow" className="text-primary hover:underline">
+                  {s.webUrl}
+                </a>
+              ) : (
+                s.webUrl
+              )}
             </dd>
           </div>
         )}
@@ -178,7 +183,10 @@ function TeacherCard({ teacher: x }: { teacher: AdminTeacher }) {
             <button
               type="button"
               disabled={pending}
-              onClick={() => run(() => decideTeacher(x.id, 'reject', note.trim(), ''), t('rejected'))}
+              onClick={() => {
+                if (x.status === 'approved' && !window.confirm(t('rejectConfirm', { name: x.name }))) return;
+                run(() => decideTeacher(x.id, 'reject', note.trim(), ''), t('rejected'));
+              }}
               className={buttonClass.secondary}
             >
               <X className="h-4 w-4" />

@@ -2,6 +2,7 @@ import { Body, Controller, ForbiddenException, Headers, HttpCode, HttpException,
 import { ApiExcludeController } from "@nestjs/swagger";
 import type { Request } from "express";
 import { timingSafeEqual } from "node:crypto";
+import { ipBucket } from "../demo/ip-bucket";
 import { SlidingWindowLimiter, visitorIp } from "../guest-invoices/guest-limits";
 import { classroomConfig } from "./classroom-config";
 import { ClassroomJoinHandler } from "./join-kind";
@@ -63,8 +64,11 @@ export class PublicClassroomController {
     @Req() req: Request,
   ) {
     this.check(secret);
-    this.throttle(this.reenterLimiter, visitorIp(ip, req));
-    return this.handler.reenter(typeof body?.code === "string" ? body.code : "", typeof body?.personalCode === "string" ? body.personalCode : "");
+    const visitor = visitorIp(ip, req);
+    this.throttle(this.reenterLimiter, visitor);
+    return this.handler.reenter(typeof body?.code === "string" ? body.code : "", typeof body?.personalCode === "string" ? body.personalCode : "", {
+      ipBucket: ipBucket(visitor, classroomConfig().ipSalt),
+    });
   }
 
   private check(secret: string | undefined) {

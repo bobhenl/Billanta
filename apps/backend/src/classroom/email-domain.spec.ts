@@ -14,6 +14,15 @@ describe("email domains", () => {
     expect(isFreemail("oa-praha.cz")).toBe(false);
   });
 
+  it("knows the big providers under any country domain", () => {
+    for (const d of ["GMX.de", "gmx.at", "yahoo.co.uk", "hotmail.cz", "outlook.sk", "yandex.ru", "web.de", "tuta.io", "pm.me", "post.sk."]) {
+      expect(isFreemail(d), d).toBe(true);
+    }
+    expect(isFreemail("gymnazium.yahoo-skola.cz")).toBe(false);
+    expect(isFreemail("gmx.oa-praha.cz")).toBe(false);
+    expect(isFreemail("zs-live.sk")).toBe(false);
+  });
+
   it("derives the school domain from its web address", () => {
     expect(domainFromUrl("https://www.oa-praha.cz/kontakt")).toBe("oa-praha.cz");
     expect(domainFromUrl("zsjihlava.cz")).toBe("zsjihlava.cz");
