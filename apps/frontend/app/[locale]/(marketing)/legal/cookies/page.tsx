@@ -13,17 +13,33 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 /**
  * Cookie policy. Unlike terms/privacy this is not a placeholder: it lists
  * the cookies this app actually sets, which is a technical fact. Keep the
- * table in step with the code — Auth.js session cookies (auth.ts), the
- * next-intl locale cookie, the consent cookie (lib/consent.ts) and
- * Clarity's cookies (components/clarity.tsx).
+ * table in step with the code: Auth.js cookies (auth.ts; the demo and
+ * classroom sessions in lib/demo-session.ts use the same session cookie),
+ * the active company (lib/tenant-actions.ts), the demo hand-over
+ * (app/api/demo/transfer), the next-intl locale cookie (a session cookie,
+ * no maxAge in i18n/routing.ts), the consent cookie and region answer
+ * (lib/consent.ts), the invoice list filters (lib/invoice-list-prefs.ts),
+ * the link cookies (middleware.ts), the attribution cookie
+ * (components/signup-attribution.tsx) and Clarity's cookies
+ * (components/clarity.tsx).
  */
 const ROWS = [
   { name: 'authjs.session-token', category: 'necessary', key: 'session' },
   { name: 'authjs.csrf-token, authjs.callback-url', category: 'necessary', key: 'csrf' },
+  { name: 'authjs.pkce.code_verifier, authjs.state, authjs.nonce', category: 'necessary', key: 'oauth' },
+  { name: 'billanta_tenant', category: 'necessary', key: 'tenant' },
+  { name: 'billanta_demo_transfer', category: 'necessary', key: 'demoTransfer' },
   { name: 'NEXT_LOCALE', category: 'necessary', key: 'locale' },
   { name: 'billanta_consent', category: 'necessary', key: 'consent' },
+  { name: 'billanta-region (localStorage)', category: 'necessary', key: 'region' },
   { name: 'theme (localStorage)', category: 'necessary', key: 'theme' },
-  { name: '_clck, _clsk, CLID, MUID', category: 'analytics', key: 'clarity' }
+  { name: 'billanta_ref', category: 'functional', key: 'referral' },
+  { name: 'billanta_promo', category: 'functional', key: 'promo' },
+  { name: 'billanta_switch_from', category: 'functional', key: 'switch' },
+  { name: 'billanta_inv_quick', category: 'functional', key: 'invoiceFilters' },
+  { name: 'localStorage, sessionStorage', category: 'functional', key: 'preferences' },
+  { name: 'billanta_src', category: 'analytics', key: 'attribution' },
+  { name: '_clck, _clsk, CLID, ANONCHK, MR, MUID, SM', category: 'analytics', key: 'clarity' }
 ] as const;
 
 export default async function CookiesPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -64,9 +80,9 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
                 <td className="px-4 py-3">
                   <span
                     className={
-                      row.category === 'necessary'
-                        ? 'rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold'
-                        : 'rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground'
+                      row.category === 'analytics'
+                        ? 'rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground'
+                        : 'rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold'
                     }
                   >
                     {t(`categories.${row.category}`)}
@@ -80,7 +96,10 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
       </div>
 
       <div className="mt-8 space-y-3 text-sm leading-relaxed text-muted-foreground">
+        <p>{t('functionalNote')}</p>
         <p>{t('analyticsNote')}</p>
+        <p>{t('attributionNote')}</p>
+        <p>{t('schoolsNote')}</p>
         <p>{t('withdraw')}</p>
       </div>
 

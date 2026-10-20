@@ -4134,18 +4134,18 @@
   "cookies": {
     "banner": {
       "title": "Cookies",
-      "body": "Nevyhnutné cookies potrebujeme, aby web fungoval. Analytické (Microsoft Clarity) nám pomáhajú web zlepšovať – zapneme ich len s vaším súhlasom.",
+      "body": "Nevyhnutné cookies potrebujeme, aby web fungoval. Analytické (Microsoft Clarity a údaj, odkiaľ ste k nám prišli) nám pomáhajú web zlepšovať – zapneme ich len s vaším súhlasom.",
       "more": "Viac informácií",
       "accept": "Prijať všetko",
       "reject": "Len nevyhnutné",
       "settings": "Nastavenia",
       "save": "Uložiť voľbu",
       "necessary": "Nevyhnutné",
-      "necessaryHint": "Prihlásenie, jazyk, vaša voľba cookies. Nedá sa vypnúť.",
+      "necessaryHint": "Prihlásenie, jazyk, vaša voľba cookies, kód z odkazu, cez ktorý ste prišli. Nedá sa vypnúť.",
       "analytics": "Analytické",
-      "analyticsHint": "Microsoft Clarity: anonymné heatmapy a záznamy návštev verejných stránok.",
+      "analyticsHint": "Microsoft Clarity: anonymné heatmapy a záznamy návštev verejných stránok. A odkiaľ ste k nám prvýkrát prišli (zdroj kampane alebo web s odkazom), uložené k účtu, ak sa zaregistrujete.",
       "saved": "Nastavenia cookies uložené",
-      "bodyDefault": "Nevyhnutné cookies potrebujeme, aby web fungoval. Analytické (Microsoft Clarity) nám pomáhajú web zlepšovať a vo vašej oblasti ich máme zapnuté predvoleným nastavením – tu ich môžete vypnúť."
+      "bodyDefault": "Nevyhnutné cookies potrebujeme, aby web fungoval. Analytické (Microsoft Clarity a údaj, odkiaľ ste k nám prišli) nám pomáhajú web zlepšovať a vo vašej oblasti ich máme zapnuté predvoleným nastavením – tu ich môžete vypnúť."
     },
     "page": {
       "title": "Zásady cookies",
@@ -4158,35 +4158,79 @@
       },
       "categories": {
         "necessary": "Nevyhnutné",
+        "functional": "Funkčné",
         "analytics": "Analytické"
       },
       "rows": {
         "session": {
-          "purpose": "Udržiava vás prihlásených.",
-          "duration": "30 dní"
+          "purpose": "Udržiava vás prihlásených. Ukážka a žiacky prístup do triedy používajú rovnaký súbor cookie.",
+          "duration": "30 dní; pri ukážke a triede do ich konca"
         },
         "csrf": {
           "purpose": "Ochrana prihlasovacieho formulára pred podvrhnutím a návrat na pôvodnú stránku.",
           "duration": "Do zatvorenia prehliadača"
         },
+        "oauth": {
+          "purpose": "Zabezpečenie prihlásenia cez Google alebo iného poskytovateľa. Len počas prihlasovania.",
+          "duration": "15 minút"
+        },
+        "tenant": {
+          "purpose": "Pamätá si, v ktorej firme v aplikácii práve pracujete.",
+          "duration": "1 rok; pri ukážke a triede do ich konca"
+        },
+        "demoTransfer": {
+          "purpose": "Umožní preniesť údaje z ukážky do novo založeného účtu.",
+          "duration": "Do konca ukážky"
+        },
         "locale": {
           "purpose": "Pamätá si zvolený jazyk.",
-          "duration": "1 rok"
+          "duration": "Do zatvorenia prehliadača"
         },
         "consent": {
           "purpose": "Ukladá vašu voľbu v tomto okne cookies.",
           "duration": "6 mesiacov"
         },
+        "region": {
+          "purpose": "Pamätá si, či vo vašej oblasti potrebujeme na analytiku súhlas, aby sa to nezisťovalo pri každej návšteve (v prehliadači, neodosiela sa na server).",
+          "duration": "7 dní"
+        },
         "theme": {
           "purpose": "Pamätá si svetlý alebo tmavý motív (v prehliadači, neodosiela sa na server).",
           "duration": "Do zmazania"
+        },
+        "referral": {
+          "purpose": "Kód odporúčania z odkazu, ktorým vás pozval iný používateľ, aby sa odmena pripísala po registrácii. Len keď prídete cez taký odkaz.",
+          "duration": "30 dní alebo do uplatnenia"
+        },
+        "promo": {
+          "purpose": "Promo kód alebo kód podujatia z odkazu (?promo= alebo /join/KÓD), aby sa uplatnil na novú firmu. Len keď prídete cez taký odkaz.",
+          "duration": "30 dní alebo do uplatnenia"
+        },
+        "switch": {
+          "purpose": "Aplikácia, z ktorej prechádzate (odkaz „Prejsť z…“ na registráciu), aby vám úvodná obrazovka ponúkla import. Len pri registrácii cez taký odkaz.",
+          "duration": "30 dní"
+        },
+        "invoiceFilters": {
+          "purpose": "Rýchle filtre zoznamu faktúr v aplikácii.",
+          "duration": "1 rok"
+        },
+        "preferences": {
+          "purpose": "Drobné voľby a rozpracované údaje v aplikácii a nástrojoch: zbalené sekcie, typ grafu, skryté upozornenia, údaje dodávateľa vo formulári faktúry bez registrácie. Zostávajú v prehliadači a neodosielajú sa na server.",
+          "duration": "Do zmazania alebo zatvorenia karty"
+        },
+        "attribution": {
+          "purpose": "Odkiaľ ste k nám prvýkrát prišli: značky kampane (utm_*), web, ktorý na nás odkázal (len doména), a prvá stránka. Pri registrácii sa uloží k účtu, aby sme vedeli, ktoré kanály fungujú. Len so súhlasom s analytikou.",
+          "duration": "90 dní"
         },
         "clarity": {
           "purpose": "Microsoft Clarity: meranie návštevnosti, heatmapy a záznamy návštev. Len so súhlasom.",
           "duration": "1 deň až 1 rok"
         }
       },
+      "functionalNote": "Funkčné cookies vznikajú len vtedy, keď sami použijete odkaz, ktorý ich potrebuje (pozvánka, promo kód, prechod z inej aplikácie), alebo voľbu v aplikácii, a slúžia len na to, čo ste týmto odkazom alebo voľbou chceli. Preto na ne nežiadame súhlas. Nikomu ich neposkytujeme.",
       "analyticsNote": "Analytické cookies používame len na verejných stránkach (úvod, cenník, informačné stránky). V aplikácii, kde pracujete s faktúrami a údajmi o odberateľoch, sa žiadna analytika nespúšťa. V EÚ/EHP, Spojenom kráľovstve, Švajčiarsku, Brazílii, Kanade a v amerických štátoch, kde nahrávanie návštevy vyžaduje súhlas všetkých strán (napr. Kalifornia, Pensylvánia, Florida, Washington), ich zapneme len s vaším súhlasom; ak vašu polohu nespoznáme, pýtame sa tiež. Inde bežia predvoleným nastavením a môžete ich kedykoľvek vypnúť. Polohu odhadujeme len podľa krajiny a štátu, ktoré hlási sieť doručujúca web – neukladáme ju. Clarity prevádzkuje Microsoft; údaje môžu byť spracované aj mimo EÚ v rámci EU-US Data Privacy Framework. Ak váš prehliadač posiela signál Global Privacy Control (GPC), berieme ho všade ako „Len nevyhnutné“ a okno s cookies vôbec nezobrazíme.",
+      "attributionNote": "Údaj o tom, odkiaľ ste prišli (billanta_src), si pred udelením súhlasu nikam neukladáme: len ho držíme v pamäti otvorenej stránky a súbor cookie zapíšeme až po súhlase s analytikou. Keď súhlas odmietnete alebo odvoláte, cookie zmažeme.",
+      "schoolsNote": "Na stránkach pre školy (/for-schools) a na vstup do triedy (/join) ani v žiackom prístupe do triedy nespúšťame žiadnu analytiku, a to ani so súhlasom: používajú ich deti, ktoré samy platný súhlas dať nemôžu. Okno s cookies sa tam samo neotvára.",
       "withdraw": "Súhlas môžete kedykoľvek zmeniť alebo odvolať tlačidlom nižšie alebo odkazom „Nastavenia cookies“ v pätičke webu.",
       "change": "Zmeniť nastavenia cookies",
       "seoTitle": "Zásady používania cookies"

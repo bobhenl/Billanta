@@ -4134,18 +4134,18 @@
   "cookies": {
     "banner": {
       "title": "Cookies",
-      "body": "We need essential cookies for the site to work. Analytics cookies (Microsoft Clarity) help us improve it – we only turn them on with your consent.",
+      "body": "We need essential cookies for the site to work. Analytics (Microsoft Clarity and a note of where you came from) help us improve it – we only turn them on with your consent.",
       "more": "Learn more",
       "accept": "Accept all",
       "reject": "Essential only",
       "settings": "Settings",
       "save": "Save choice",
       "necessary": "Essential",
-      "necessaryHint": "Sign-in, language, your cookie choice. Always on.",
+      "necessaryHint": "Sign-in, language, your cookie choice, the code from a link you followed. Always on.",
       "analytics": "Analytics",
-      "analyticsHint": "Microsoft Clarity: anonymous heatmaps and session recordings of the public pages.",
+      "analyticsHint": "Microsoft Clarity: anonymous heatmaps and session recordings of the public pages. Plus where you first came from (campaign source or linking site), saved with your account if you sign up.",
       "saved": "Cookie preferences saved",
-      "bodyDefault": "We need essential cookies for the site to work. Analytics cookies (Microsoft Clarity) help us improve it and are on by default in your region – you can turn them off here."
+      "bodyDefault": "We need essential cookies for the site to work. Analytics (Microsoft Clarity and a note of where you came from) help us improve it and are on by default in your region – you can turn them off here."
     },
     "page": {
       "title": "Cookie Policy",
@@ -4158,35 +4158,79 @@
       },
       "categories": {
         "necessary": "Essential",
+        "functional": "Functional",
         "analytics": "Analytics"
       },
       "rows": {
         "session": {
-          "purpose": "Keeps you signed in.",
-          "duration": "30 days"
+          "purpose": "Keeps you signed in. The demo and pupils joining a class use the same cookie.",
+          "duration": "30 days; for a demo or class, until it ends"
         },
         "csrf": {
           "purpose": "Protects the sign-in form against forgery and returns you to the page you came from.",
           "duration": "Until the browser closes"
         },
+        "oauth": {
+          "purpose": "Secures signing in with Google or another provider. Only while you sign in.",
+          "duration": "15 minutes"
+        },
+        "tenant": {
+          "purpose": "Remembers which company you are working in inside the app.",
+          "duration": "1 year; for a demo or class, until it ends"
+        },
+        "demoTransfer": {
+          "purpose": "Lets you carry the demo data over into a newly created account.",
+          "duration": "Until the demo ends"
+        },
         "locale": {
           "purpose": "Remembers your language.",
-          "duration": "1 year"
+          "duration": "Until the browser closes"
         },
         "consent": {
           "purpose": "Stores your choice in this cookie dialog.",
           "duration": "6 months"
         },
+        "region": {
+          "purpose": "Remembers whether analytics needs consent in your region, so it is not looked up on every visit (in the browser, never sent to the server).",
+          "duration": "7 days"
+        },
         "theme": {
           "purpose": "Remembers light or dark theme (in the browser, never sent to the server).",
           "duration": "Until deleted"
+        },
+        "referral": {
+          "purpose": "The referral code from a link another user invited you with, so their reward is credited when you sign up. Only when you arrive through such a link.",
+          "duration": "30 days or until used"
+        },
+        "promo": {
+          "purpose": "A promo or event code from a link (?promo= or /join/CODE), so it applies to your new company. Only when you arrive through such a link.",
+          "duration": "30 days or until used"
+        },
+        "switch": {
+          "purpose": "The app you are moving from (a \"Switch from…\" link to signup), so the welcome screen offers its import. Only when you sign up through such a link.",
+          "duration": "30 days"
+        },
+        "invoiceFilters": {
+          "purpose": "Quick filters of the invoice list in the app.",
+          "duration": "1 year"
+        },
+        "preferences": {
+          "purpose": "Small choices and unfinished input in the app and tools: collapsed sections, chart type, dismissed tips, supplier details in the no-signup invoice form. They stay in the browser and are never sent to the server.",
+          "duration": "Until deleted or the tab closes"
+        },
+        "attribution": {
+          "purpose": "Where you first came from: campaign tags (utm_*), the site that linked here (domain only) and the first page. Saved with your account when you sign up, so we know which channels work. Only with analytics consent.",
+          "duration": "90 days"
         },
         "clarity": {
           "purpose": "Microsoft Clarity: traffic measurement, heatmaps and session recordings. Only with consent.",
           "duration": "1 day to 1 year"
         }
       },
+      "functionalNote": "Functional cookies are created only when you use a link that needs them (an invite, a promo code, moving from another app) or a choice in the app, and serve only what you meant by that link or choice. That is why we do not ask for consent for them. We do not share them with anyone.",
       "analyticsNote": "Analytics cookies are used only on the public pages (home, pricing, information pages). No analytics ever runs inside the app, where you work with invoices and customer data. In the EU/EEA, the UK, Switzerland, Brazil, Canada and the US states where recording a visit needs every party's consent (e.g. California, Pennsylvania, Florida, Washington), we turn them on only with your consent; if we cannot tell where you are, we ask too. Elsewhere they run by default and you can turn them off at any time. Your location is estimated only from the country and state reported by the network that delivers the site, and is not stored. Clarity is operated by Microsoft; data may be processed outside the EU under the EU-US Data Privacy Framework. If your browser sends a Global Privacy Control (GPC) signal, we treat it everywhere as \"Essential only\" and do not show the cookie banner at all.",
+      "attributionNote": "Where you came from (billanta_src) is not stored anywhere before you consent: it is only held in the open page's memory, and the cookie is written once you allow analytics. If you refuse or withdraw consent, we delete it.",
+      "schoolsNote": "On the pages for schools (/for-schools), for joining a class (/join) and in a pupil's class access we run no analytics at all, even with consent: children use them and cannot give valid consent themselves. The cookie banner does not open there by itself.",
       "withdraw": "You can change or withdraw consent at any time with the button below or the “Cookie settings” link in the site footer.",
       "change": "Change cookie settings",
       "seoTitle": "Cookie and storage policy"

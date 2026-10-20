@@ -115,7 +115,7 @@ const adapter: typeof drizzleAdapter = {
     await drizzleAdapter.deleteSession!(hashSessionToken(sessionToken));
   },
   // A first social sign-in creates the account here: keep where the
-  // visitor first came from (middleware.ts), as the signup route does.
+  // visitor first came from (lib/attribution.ts), as the signup route does.
   async createUser(user) {
     let attribution: ReturnType<typeof signupAttributionColumns> = { signupAttribution: null, signupSource: null };
     try {

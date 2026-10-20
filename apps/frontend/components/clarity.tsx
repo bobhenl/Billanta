@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { CONSENT_CHANGED_EVENT, resolveConsent, type ConsentState } from '@/lib/consent';
+import { usePathname } from '@/i18n/navigation';
+import { CONSENT_CHANGED_EVENT, isNoAnalyticsPath, resolveConsent, type ConsentState } from '@/lib/consent';
 
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
@@ -13,21 +14,35 @@ declare global {
 
 /**
  * Microsoft Clarity (heatmaps + session recordings), loaded only when
- * analytics is on — after the visitor's "accept", or by default in a region
- * that needs no banner (lib/consent-region.ts) — and only when
- * `NEXT_PUBLIC_CLARITY_ID` is set — so local dev and any environment without
+ * analytics is on (after the visitor's "accept", or by default in a region
+ * that needs no banner, lib/consent-region.ts) and only when
+ * `NEXT_PUBLIC_CLARITY_ID` is set, so local dev and any environment without
  * an ID load nothing.
  *
  * Mounted on the public marketing pages only (app/[locale]/(marketing)/
  * layout.tsx), never in the dashboard: recordings there would capture
- * invoice contents, customers' names and amounts.
+ * invoice contents, customers' names and amounts. Nor on the school pages,
+ * whatever the consent says: pupils use them, and a child's visit must not
+ * be recorded on a "yes" nobody could validly give (isNoAnalyticsPath).
  *
  * Withdrawing consent tells Clarity to stop (`consent`, false) and deletes
  * its first-party cookies; the script itself goes away on the next load.
  */
 export function Clarity() {
+  const blocked = isNoAnalyticsPath(usePathname());
+
   useEffect(() => {
     if (!CLARITY_ID) return;
+    if (blocked) {
+      // Loaded on an earlier page and then navigated here client-side: the
+      // tag would record this page too, so it stops and the page loads
+      // afresh without it.
+      if (document.getElementById('ms-clarity')) {
+        window.clarity?.('stop');
+        window.location.reload();
+      }
+      return;
+    }
 
     const apply = (state: ConsentState | null) => {
       if (state?.analytics) {
@@ -51,7 +66,7 @@ export function Clarity() {
       live = false;
       window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);
     };
-  }, []);
+  }, [blocked]);
 
   return null;
 }
