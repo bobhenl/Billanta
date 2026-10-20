@@ -2,8 +2,9 @@
  * First-touch signup attribution: where a visitor first came from (utm_*
  * tags, or another site that linked here), kept 90 days and saved with the
  * account when they sign up (`users.signup_attribution` / `signup_source`),
- * so signups can be counted per source. Set by middleware.ts, read by the
- * signup route and the OAuth `createUser`.
+ * so signups can be counted per source. Analytics, so only with consent:
+ * written in the browser by components/signup-attribution.tsx once analytics
+ * is on, read by the signup route and the OAuth `createUser`.
  */
 export const ATTRIBUTION_COOKIE = 'billanta_src';
 export const ATTRIBUTION_MAX_AGE = 60 * 60 * 24 * 90;

@@ -74,7 +74,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   const ipAddress =
     clientIp(request) || null;
 
-  // Where the visitor first came from (middleware.ts), for signups per source.
+  // Where the visitor first came from (lib/attribution.ts; only set with consent), for signups per source.
   const attribution = signupAttributionColumns((await cookies()).get(ATTRIBUTION_COOKIE)?.value);
 
   try {
