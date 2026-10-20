@@ -67,14 +67,54 @@ export interface ClassDetail extends Omit<ClassSummary, 'students'> {
   coTeachers: { id: string; name: string }[];
   milestones: string[];
   students: ClassStudent[];
+  // Phase 2 (docs/classroom-mode-plan.md §8).
+  accountantModes: AccountantMode[];
+  teams: ClassTeam[];
+  companies: ClassCompany[];
+  accountants: ClassAccountant[];
+}
+
+export const ACCOUNTANT_MODES = ['review', 'bookkeeper', 'full'] as const;
+export type AccountantMode = (typeof ACCOUNTANT_MODES)[number];
+
+export interface ClassTeam {
+  id: string;
+  name: string;
+  studentIds: string[];
+}
+
+/** A company beyond the students' home ones: a second one of a student, or a team's. */
+export interface ClassCompany {
+  id: string;
+  tenantId: string;
+  kind: string;
+  label: string | null;
+  studentId: string | null;
+  teamId: string | null;
+  createdAt: string;
+  progress: Record<string, number>;
+}
+
+export interface ClassAccountant {
+  id: string;
+  tenantId: string;
+  studentId: string;
+  mode: AccountantMode;
 }
 
 /** GET /api/v1/classroom/student: the banner inside a practice company. */
 export interface StudentCompany {
   classId: string;
   className: string;
-  nickname: string;
-  kind: string;
+  /** The owning student's; null in a team's company. */
+  nickname: string | null;
+  company: 'home' | 'team' | 'second';
+  label: string | null;
+  team: string | null;
+  /** Who is looking: its student owner (or a team member), a student keeping its books, or a teacher. */
+  relation: 'owner' | 'accountant' | 'teacher';
+  mode: AccountantMode | null;
+  /** A student here (owner or accountant), not a teacher. */
   own: boolean;
   joinUrl: string;
   reentryCode: string | null;

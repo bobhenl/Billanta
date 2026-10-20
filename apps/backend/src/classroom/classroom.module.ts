@@ -7,6 +7,7 @@ import { PlatformAdminGuard } from "../partners/platform-admin.guard";
 import { AdminClassroomController } from "./admin-classroom.controller";
 import { ClassroomAdminService } from "./classroom-admin.service";
 import { ClassroomClassesService } from "./classroom-classes.service";
+import { ClassroomGroupsService } from "./classroom-groups.service";
 import { ClassroomStudentController } from "./classroom-student.controller";
 import { ClassroomTeachersService } from "./classroom-teachers.service";
 import { ClassroomController } from "./classroom.controller";
@@ -19,6 +20,6 @@ import { PublicClassroomController } from "./public-classroom.controller";
   // The seeder fills a student's company like a demo one; it needs the invoice and contact services.
   imports: [InvoicesModule, ContactsModule, EmailModule],
   controllers: [ClassroomController, ClassroomStudentController, PublicClassroomController, AdminClassroomController],
-  providers: [ClassroomTeachersService, ClassroomClassesService, ClassroomAdminService, ClassroomJoinHandler, DemoSeedService, PlatformAdminGuard, ClassroomCron],
+  providers: [ClassroomTeachersService, ClassroomClassesService, ClassroomGroupsService, ClassroomAdminService, ClassroomJoinHandler, DemoSeedService, PlatformAdminGuard, ClassroomCron],
 })
 export class ClassroomModule {}

@@ -62,6 +62,30 @@ export const newStudentCode = async (id: string, studentId: string) =>
 export const removeStudent = async (id: string, studentId: string) => call(`${cls(id)}/students/${encodeURIComponent(studentId)}`, 'DELETE');
 export const deleteClass = async (id: string) => call(cls(id), 'DELETE');
 
+// Phase 2: teams, extra companies, trading partners and student accountants.
+const team = (id: string, teamId: string) => `${cls(id)}/teams/${encodeURIComponent(teamId)}`;
+export const createTeam = async (id: string, name: string) => call(`${cls(id)}/teams`, 'POST', { name });
+export const renameTeam = async (id: string, teamId: string, name: string) => call(team(id, teamId), 'PATCH', { name });
+export const deleteTeam = async (id: string, teamId: string) => call(team(id, teamId), 'DELETE');
+export const addTeamMember = async (id: string, teamId: string, studentId: string) => call(`${team(id, teamId)}/members`, 'POST', { studentId });
+export const removeTeamMember = async (id: string, teamId: string, studentId: string) =>
+  call(`${team(id, teamId)}/members/${encodeURIComponent(studentId)}`, 'DELETE');
+
+export interface CreateCompanyInput {
+  studentId?: string;
+  teamId?: string;
+  kind: string;
+  label?: string;
+}
+
+export const createCompany = async (id: string, input: CreateCompanyInput) => call(`${cls(id)}/companies`, 'POST', input);
+export const deleteCompany = async (id: string, companyId: string) => call(`${cls(id)}/companies/${encodeURIComponent(companyId)}`, 'DELETE');
+export const pairPartners = async (id: string, tenantA: string, tenantB: string) =>
+  call<{ added: number }>(`${cls(id)}/partners`, 'POST', { tenantA, tenantB });
+export const assignAccountant = async (id: string, input: { tenantId: string; studentId: string; mode: string }) =>
+  call(`${cls(id)}/accountants`, 'POST', input);
+export const unassignAccountant = async (id: string, linkId: string) => call(`${cls(id)}/accountants/${encodeURIComponent(linkId)}`, 'DELETE');
+
 /** Opens a student's practice company, where the teacher is a viewer. */
 export async function openStudentCompany(tenantId: string): Promise<SettingsResult> {
   const result = await switchTenant(tenantId);

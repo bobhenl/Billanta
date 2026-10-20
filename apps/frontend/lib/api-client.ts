@@ -152,9 +152,13 @@ export function pickActiveTenant(tenants: CurrentTenant[], cookieValue: string |
   return tenants.find((t) => t.id === cookieValue) ?? tenants.find((t) => !isStudentCompanyOfOthers(t)) ?? tenants[0] ?? null;
 }
 
-/** A practice company the user only looks into (as the teacher). */
+/**
+ * A practice company the user only looks into (as the teacher). A student
+ * keeping a classmate's books is an accountant there and switches to it
+ * like to any company of theirs.
+ */
 export function isStudentCompanyOfOthers(t: CurrentTenant): boolean {
-  return t.classroom === true && t.role !== 'owner';
+  return t.classroom === true && t.role === 'viewer';
 }
 
 /** Every company of the signed-in user plus the active one (same choice as `apiFetch`). */

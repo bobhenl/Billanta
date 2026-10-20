@@ -11,8 +11,9 @@ import { buttonClass } from '@/lib/ui-classes';
 /**
  * The strip above a practice company, in place of the demo countdown. The
  * student sees their class, the personal code for another device and when
- * the company goes away; a teacher looking in sees whose company it is and
- * the way back to the class.
+ * the company goes away; in a team's or a classmate's company also whose it
+ * is and, as its accountant, what they may do there. A teacher looking in
+ * sees whose company it is and the way back to the class.
  */
 export function ClassroomBanner({ info }: { info: StudentCompany }) {
   const t = useTranslations('classroom.banner');
@@ -22,6 +23,18 @@ export function ClassroomBanner({ info }: { info: StudentCompany }) {
   const [showCode, setShowCode] = useState(false);
   const [pending, start] = useTransition();
   const deletes = format.dateTime(new Date(info.deletesAt), { dateStyle: 'medium' });
+  const who = info.team ? t('teamName', { team: info.team }) : (info.nickname ?? '');
+  const base =
+    info.relation === 'accountant'
+      ? t('accountant', { who, className: info.className })
+      : info.relation === 'teacher'
+        ? info.team
+          ? t('teacherTeam', { team: info.team, className: info.className })
+          : t('teacher', { nickname: who, className: info.className })
+        : info.team
+          ? t('team', { team: info.team, className: info.className })
+          : t('student', { nickname: who, className: info.className });
+  const title = info.label ? `${info.label} · ${base}` : base;
 
   /** Ends the student session only; the company stays until the class is deleted. */
   async function leave() {
@@ -48,9 +61,8 @@ export function ClassroomBanner({ info }: { info: StudentCompany }) {
       <div className="flex items-start gap-2">
         <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
         <div>
-          <p className="font-semibold">
-            {info.own ? t('student', { nickname: info.nickname, className: info.className }) : t('teacher', { nickname: info.nickname, className: info.className })}
-          </p>
+          <p className="font-semibold">{title}</p>
+          {info.relation === 'accountant' && info.mode && <p className="text-xs text-foreground">{t(`modes.${info.mode}`)}</p>}
           {/* After the end every write fails with classroom_ended; say why here, once, rather than in each form. */}
           {info.readOnly ? (
             <p className="text-xs font-medium text-foreground">{t('ended', { date: deletes })}</p>

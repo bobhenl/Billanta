@@ -259,7 +259,7 @@ export class ClassroomClassesService {
   }
 
   /** The class if the teacher teaches it; 404 otherwise, so ids reveal nothing. */
-  private async access(teacher: Teacher, classId: string): Promise<ClassRow> {
+  async access(teacher: Teacher, classId: string): Promise<ClassRow> {
     const [cls] = await this.dbService.db
       .select()
       .from(schema.classroomClasses)
@@ -291,15 +291,18 @@ export class ClassroomClassesService {
 
   private async progress(userId: string, students: (typeof schema.classroomStudents.$inferSelect)[]) {
     const out = new Map<string, MilestoneCounts>();
-    for (const s of students) {
-      const [row] = await this.dbService.sql.begin(async (tx) => {
-        await tx`SELECT set_config('app.current_tenant_id', ${s.tenantId}, true)`;
-        await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
-        return tx.unsafe(MILESTONE_SQL, [(s.seededAt ?? s.createdAt).toISOString()]);
-      });
-      out.set(s.id, toMilestoneCounts(row as Record<string, unknown> | undefined));
-    }
+    for (const s of students) out.set(s.id, await this.companyProgress(userId, s.tenantId, s.seededAt ?? s.createdAt));
     return out;
+  }
+
+  /** One company's milestones since `since`, read as the teacher who is a viewer there. */
+  async companyProgress(userId: string, tenantId: string, since: Date): Promise<MilestoneCounts> {
+    const [row] = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
+      return tx.unsafe(MILESTONE_SQL, [since.toISOString()]);
+    });
+    return toMilestoneCounts(row as Record<string, unknown> | undefined);
   }
 
   /** Join codes are unique; a clash (one in a billion) just draws again. */

@@ -1996,6 +1996,98 @@ export const classroomStudents = pgTable(
   }),
 );
 
+// Classroom phase 2 (migration 0083). Members, companies and accountants
+// change only through the classroom_* functions, which keep the
+// memberships in step.
+export const classroomTeams = pgTable(
+  "classroom_teams",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    classNameUnique: uniqueIndex("classroom_teams_class_name_unique").on(
+      table.classId,
+      sql`lower(${table.name})`,
+    ),
+  }),
+);
+
+export const classroomTeamMembers = pgTable(
+  "classroom_team_members",
+  {
+    studentId: uuid("student_id")
+      .primaryKey()
+      .references(() => classroomStudents.id, { onDelete: "cascade" }),
+    teamId: uuid("team_id")
+      .notNull()
+      .references(() => classroomTeams.id, { onDelete: "cascade" }),
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    teamIdx: index("classroom_team_members_team_idx").on(table.teamId),
+  }),
+);
+
+// A company beyond a student's home one: a second company of a student or
+// the company of a team (exactly one of the two is set).
+export const classroomCompanies = pgTable(
+  "classroom_companies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull(),
+    label: text("label"),
+    studentId: uuid("student_id").references(() => classroomStudents.id, { onDelete: "cascade" }),
+    teamId: uuid("team_id").references(() => classroomTeams.id, { onDelete: "cascade" }),
+    seededAt: timestamp("seeded_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantUnique: uniqueIndex("classroom_companies_tenant_unique").on(table.tenantId),
+    classIdx: index("classroom_companies_class_idx").on(table.classId),
+  }),
+);
+
+// A student keeping the books of another company of the class; the mode
+// decides the membership's permissions (src/classroom/accountants.ts).
+export const classroomAccountants = pgTable(
+  "classroom_accountants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    studentId: uuid("student_id")
+      .notNull()
+      .references(() => classroomStudents.id, { onDelete: "cascade" }),
+    mode: text("mode").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantStudentUnique: uniqueIndex("classroom_accountants_tenant_student_unique").on(
+      table.tenantId,
+      table.studentId,
+    ),
+    classIdx: index("classroom_accountants_class_idx").on(table.classId),
+  }),
+);
+
 // idempotency_keys — tenant-scoped (migration 0072). One row per
 // Idempotency-Key a client sent with a create (offline drafts, see
 // docs/offline-drafts-plan.md); a retry with the same key returns

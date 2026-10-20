@@ -9801,7 +9801,16 @@
       "showCode": "Show personal code",
       "leave": "Sign out",
       "leaveConfirm": "Sign out? You can come back with your personal code.",
-      "backToClass": "Back to class"
+      "backToClass": "Back to class",
+      "team": "Team {team} · class {className}",
+      "teacherTeam": "Team {team}'s company · class {className}",
+      "teamName": "team {team}",
+      "accountant": "You keep the books for {who} · class {className}",
+      "modes": {
+        "review": "You only check: you see everything and change nothing.",
+        "bookkeeper": "You record costs and payments and prepare reports. The owner issues the invoices.",
+        "full": "You run all of the company's paperwork, invoices included."
+      }
     },
     "errors": {
       "generic": "Something went wrong. Please try again.",
@@ -9818,7 +9827,82 @@
       "classroom_not_found": "The class or student no longer exists.",
       "classroom_ended": "The class has ended and is read-only now.",
       "not_found": "Not found.",
-      "forbidden": "You don't have permission to do that."
+      "forbidden": "You don't have permission to do that.",
+      "classroom_closed": "The class has ended or is suspended; nothing new can be created in it.",
+      "classroom_invalid_kind": "The class doesn't use this company type.",
+      "classroom_unavailable": "The company couldn't be filled just now. Please try again.",
+      "classroom_team_limit": "The class already has as many teams as it can.",
+      "classroom_team_name_taken": "The class already has a team with this name.",
+      "classroom_team_taken": "The student is already in another team.",
+      "classroom_team_full": "The team is full.",
+      "classroom_team_empty": "The team has no members yet. Add someone first.",
+      "classroom_company_limit": "No more companies can be created. A student or team can have three at most.",
+      "classroom_company_owner": "Choose a student or a team.",
+      "classroom_partner_same": "Choose two different companies.",
+      "classroom_accountant_member": "The student is already in this company as its owner or a team member.",
+      "classroom_accountant_limit": "The student already keeps the books for as many companies as allowed.",
+      "classroom_invalid_mode": "The class doesn't allow this mode."
+    },
+    "groups": {
+      "teamOwner": "Team {name}",
+      "teams": {
+        "title": "Teams",
+        "body": "A team's members work in one shared company. Each student can be in one team at most.",
+        "empty": "No teams yet.",
+        "name": "Team name",
+        "create": "Create team",
+        "addMember": "Add student",
+        "removeMember": "Remove {name} from the team",
+        "delete": "Delete team",
+        "deleteConfirm": "Delete team {name} and its companies? The students keep their own companies."
+      },
+      "companies": {
+        "title": "More companies",
+        "body": "A student or team can have another company, such as a customer for a supplier. It is filled like the students' companies and deleted with the class.",
+        "empty": "No other companies yet.",
+        "owner": "For whom",
+        "kind": "Company type",
+        "label": "Company name (optional)",
+        "create": "Create company",
+        "created": "The company has been created.",
+        "open": "Open company",
+        "delete": "Delete company",
+        "deleteConfirm": "Delete company {name}? This cannot be undone.",
+        "progress": "{n} of {max} done"
+      },
+      "partners": {
+        "title": "Trading partners",
+        "body": "Two companies of the class add each other as contacts so they can invoice each other. The other company then records a partner's invoice as a cost.",
+        "a": "First company",
+        "b": "Second company",
+        "submit": "Connect",
+        "done": "{n, plural, =0 {The companies already know each other.} one {Added # contact.} other {Added # contacts.}}"
+      },
+      "accountants": {
+        "title": "Students as accountants",
+        "body": "A student becomes the accountant of another company of the class and switches to it like to their own. The mode sets what they may do there.",
+        "empty": "Nobody keeps another company's books yet.",
+        "student": "Student",
+        "company": "Company",
+        "mode": "Mode",
+        "assign": "Assign",
+        "remove": "Remove",
+        "row": "{student} keeps the books: {company}",
+        "modes": {
+          "review": {
+            "title": "Review",
+            "hint": "The accountant sees everything but changes nothing. Good for checking a classmate's documents."
+          },
+          "bookkeeper": {
+            "title": "Bookkeeper",
+            "hint": "The accountant records costs, bank and reports and only reads invoices. The owner issues them."
+          },
+          "full": {
+            "title": "Full access",
+            "hint": "The accountant may do everything the owner can, including issuing and cancelling invoices."
+          }
+        }
+      }
     }
   },
   "classroomJoin": {
