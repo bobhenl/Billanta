@@ -8010,7 +8010,7 @@
           "how": [
             "Pýtame sa priamo registra platiteľov DPH českej Finančnej správy. Výsledok platí k okamihu overenia.",
             "Ak ste platiteľ DPH v Česku a dodávateľ je ku dňu uskutočnenia plnenia alebo ku dňu vašej platby vedený ako nespoľahlivý platiteľ, ručíte za DPH, ktorú neodvedie (§ 109 českého zákona o DPH). Ručeniu sa vyhnete, keď DPH zaplatíte rovno jeho finančnému úradu (§ 109a).",
-            "Ručíte aj vtedy, keď za plnenie nad 540 000 Kč (dvojnásobok limitu pre platby v hotovosti) zaplatíte na účet, ktorý platiteľ nezverejnil (§ 109 ods. 2 písm. c) zákona o DPH).",
+            "Ručíte aj vtedy, keď za plnenie zaplatíte na účet, ktorý platiteľ nezverejnil, a to bez ohľadu na sumu (§ 109 ods. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme so zverejnenými účtami, či ho napíšete ako číslo s kódom banky alebo ako IBAN. Zoznam zverejnených účtov neukazujeme, len ich počet."
           ],
           "howTitle": "Ako to funguje",
@@ -8047,7 +8047,7 @@
             "publishedCount": "{n, plural, =0 {žiadny} one {# účet} few {# účty} other {# účtov}}",
             "accountYes": "Účet {account} je medzi zverejnenými účtami.",
             "accountNo": "Účet {account} medzi zverejnenými účtami nie je.",
-            "accountNoNote": "Keď za plnenie nad 540 000 Kč zaplatíte na účet, ktorý platiteľ nezverejnil, ručíte za DPH z tejto platby (§ 109 ods. 2 písm. c) zákona o DPH).",
+            "accountNoNote": "Keď za plnenie zaplatíte na účet, ktorý platiteľ nezverejnil, ručíte za DPH z tejto platby, a to bez ohľadu na sumu (§ 109 ods. 2 písm. c) zákona o DPH).",
             "accountInvalid": "„{account}“ nevyzerá ako číslo účtu ani IBAN.",
             "source": "Zdroj: Register platiteľov DPH, Finančná správa ČR. Výsledok platí k okamihu overenia.",
             "empty": "Zadajte DIČ alebo IČO a výsledok sa ukáže tu."

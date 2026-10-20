@@ -8033,7 +8033,7 @@
           "how": [
             "Ptáme se přímo registru plátců DPH Finanční správy. Výsledek platí k okamžiku ověření.",
             "Jste-li plátce DPH a dodavatel je ke dni uskutečnění plnění nebo ke dni vaší platby veden jako nespolehlivý plátce, ručíte za DPH, kterou neodvede (§ 109 zákona o DPH). Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a).",
-            "Ručíte i tehdy, když za plnění nad 540 000 Kč (dvojnásobek limitu pro platby v hotovosti) zaplatíte na účet, který plátce nezveřejnil (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "Ručíte i tehdy, když za plnění zaplatíte na účet, který plátce nezveřejnil, a to bez ohledu na částku (§ 109 odst. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme se zveřejněnými účty, ať ho napíšete jako číslo s kódem banky nebo jako IBAN. Seznam zveřejněných účtů neukazujeme, jen jejich počet."
           ],
           "howTitle": "Jak to funguje",
@@ -8070,7 +8070,7 @@
             "publishedCount": "{n, plural, =0 {žádný} one {# účet} few {# účty} other {# účtů}}",
             "accountYes": "Účet {account} je mezi zveřejněnými účty.",
             "accountNo": "Účet {account} mezi zveřejněnými účty není.",
-            "accountNoNote": "Když za plnění nad 540 000 Kč zaplatíte na účet, který plátce nezveřejnil, ručíte za DPH z této platby (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "accountNoNote": "Když za plnění zaplatíte na účet, který plátce nezveřejnil, ručíte za DPH z této platby, a to bez ohledu na částku (§ 109 odst. 2 písm. c) zákona o DPH).",
             "accountInvalid": "„{account}“ nevypadá jako číslo účtu ani IBAN.",
             "source": "Zdroj: Registr plátců DPH, Finanční správa ČR. Výsledek platí k okamžiku ověření.",
             "empty": "Zadejte DIČ nebo IČO a výsledek se ukáže tady."

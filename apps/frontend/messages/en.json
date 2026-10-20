@@ -8033,7 +8033,7 @@
           "how": [
             "We ask the Czech Financial Administration's register of VAT payers directly. The result is valid at the moment of the check.",
             "If you are a Czech VAT payer and the supplier is listed as unreliable on the taxable supply date or on the day you pay, you are liable for the VAT it doesn't pay (§ 109 of the Czech VAT Act). You avoid that by paying the VAT straight to its tax office (§ 109a).",
-            "You are also liable when you pay more than CZK 540,000 (twice the cash payment limit) for a supply to an account the payer has not published (§ 109(2)(c) of the VAT Act).",
+            "You are also liable when you pay for a supply to an account the payer has not published, whatever the amount (§ 109(2)(c) of the VAT Act).",
             "We compare the account you enter with the published ones, whether you type it as a number with a bank code or as an IBAN. We don't show the list of published accounts, only how many there are."
           ],
           "howTitle": "How it works",
@@ -8070,7 +8070,7 @@
             "publishedCount": "{n, plural, =0 {none} one {# account} other {# accounts}}",
             "accountYes": "Account {account} is among the published accounts.",
             "accountNo": "Account {account} is not among the published accounts.",
-            "accountNoNote": "If you pay more than CZK 540,000 for a supply to an account the payer has not published, you are liable for the VAT on that payment (§ 109(2)(c) of the VAT Act).",
+            "accountNoNote": "If you pay for a supply to an account the payer has not published, you are liable for the VAT on that payment, whatever the amount (§ 109(2)(c) of the VAT Act).",
             "accountInvalid": "\"{account}\" doesn't look like an account number or an IBAN.",
             "source": "Source: Register of VAT payers, Czech Financial Administration. The result is valid at the moment of the check.",
             "empty": "Enter a VAT ID or company ID and the result shows up here."
