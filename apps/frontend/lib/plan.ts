@@ -15,6 +15,12 @@ export interface PlanSummary {
   subscriptionStatus: string;
 }
 
+/**
+ * The welcome trial every new company gets, no card. Copies of TRIAL_PLAN /
+ * DEFAULT_TRIAL_DAYS in apps/backend/src/billing/plans.ts, the one place it
+ * is defined; plans.spec.ts there fails if these drift.
+ */
+export const TRIAL_PLAN: PaidPlanKey = 'plus';
 export const DEFAULT_TRIAL_DAYS = 14;
 
 /** TRIAL_DAYS (server env, shared with the backend); 0 turns the trial off. Same clamp as the SQL bootstrap. */

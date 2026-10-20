@@ -12,8 +12,16 @@ export const PAID_PLANS: readonly PaidPlan[] = ["start", "plus", "business"];
 export type PlanCurrency = "CZK" | "EUR";
 export type BillingInterval = "month" | "year";
 
-/** The plan a new company tries for free. */
-export const TRIAL_PLAN: PaidPlan = "business";
+/**
+ * The welcome trial every new company gets, no card: Plus, the plan most
+ * companies end up on, rather than Business, so the drop to Free afterwards
+ * is smaller and the upgrade it asks for is the one people buy. These two
+ * are the only place the trial is defined: `bootstrap_tenant_for_user`
+ * (rls-policies.sql) and apps/frontend/lib/plan.ts carry copies that
+ * plans.spec.ts keeps in step. TRIAL_DAYS in the env can still shorten or
+ * switch it off per deployment.
+ */
+export const TRIAL_PLAN: PaidPlan = "plus";
 export const DEFAULT_TRIAL_DAYS = 14;
 
 /** TRIAL_DAYS from env (0 turns the trial off), clamped like the SQL bootstrap does. */

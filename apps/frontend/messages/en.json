@@ -3531,7 +3531,8 @@
       "companyNameHint": "Self-employed? Your own name is enough. You add your IČO and billing details in the next step.",
       "aboutYouLegend": "About you (optional)",
       "managesClientsLabel": "I keep the books for clients",
-      "isTeacherLabel": "I am a teacher"
+      "isTeacherLabel": "I am a teacher",
+      "trialNote": "{days, plural, one {# day} other {# days}} of {plan} free, no card. After that you carry on with the Free plan; nothing is charged automatically."
     },
     "login": {
       "title": "Log in",
@@ -4087,7 +4088,8 @@
       }
     },
     "compareCompetitors": "How Billanta compares with Fakturoid, iDoklad and others",
-    "trialNote": "{days, plural, one {# day} other {# days}} free, no card: try the whole Business plan.",
+    "trialNote": "{days, plural, one {# day} other {# days}} of {plan} free, no card. After that the company moves to Free by itself and keeps its data.",
+    "trialCard": "First {days, plural, one {# day} other {# days}} free, no card",
     "methods": {
       "title": "How to pay",
       "card": {

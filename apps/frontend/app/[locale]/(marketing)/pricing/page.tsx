@@ -5,7 +5,7 @@ import { FaqList, faqLd } from '@/components/segment-page';
 import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
-import { trialDays } from '@/lib/plan';
+import { TRIAL_PLAN, trialDays } from '@/lib/plan';
 import { BANK_TRANSFER_SURCHARGE_PERCENT, COMPARISON, defaultCurrency, formatPlanPrice, PAYG_PRICE, PLANS } from '@/lib/plans';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import { PricingPlans, type CompareCopy, type PlanCopy } from './pricing-plans';
@@ -97,7 +97,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         {trial > 0 && (
           <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/[0.06] px-3 py-1 text-sm font-semibold text-primary">
             <Gift className="h-4 w-4 shrink-0" aria-hidden="true" />
-            {t('trialNote', { days: trial })}
+            {t('trialNote', { days: trial, plan: t(`plans.${TRIAL_PLAN}.name`) })}
           </p>
         )}
         <p className="mt-4 text-sm">
@@ -131,6 +131,7 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           transferPrice: t.raw('transferPrice') as string
         }}
         comparison={comparison}
+        trial={trial > 0 ? { plan: TRIAL_PLAN, label: t('trialCard', { days: trial }) } : null}
       />
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('methods.title')}</h2>

@@ -3531,7 +3531,8 @@
       "companyNameHint": "Jako OSVČ stačí vaše jméno a příjmení. IČO a fakturační údaje doplníte v dalším kroku.",
       "aboutYouLegend": "O vás (nepovinné)",
       "managesClientsLabel": "Spravuji účetnictví pro klienty",
-      "isTeacherLabel": "Jsem učitel/ka"
+      "isTeacherLabel": "Jsem učitel/ka",
+      "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} {plan} zdarma, bez karty. Pak pokračujete na tarifu Zdarma, nic se samo nestrhne."
     },
     "login": {
       "title": "Přihlásit se",
@@ -4087,7 +4088,8 @@
       }
     },
     "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším",
-    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} zdarma, bez karty: vyzkoušejte celý tarif Firma.",
+    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} zdarma, bez karty. Pak firma sama přejde na Zdarma a data zůstanou.",
+    "trialCard": "Prvních {days, plural, one {# den} few {# dny} other {# dní}} zdarma, bez karty",
     "methods": {
       "title": "Jak platit",
       "card": {

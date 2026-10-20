@@ -747,6 +747,8 @@ GRANT EXECUTE ON FUNCTION find_active_api_key_by_hash(text) TO faktur_app;
 -- 0051 added p_trial_days (the free trial, one per user and e-mail via
 -- trial_claims) and plan_enforced on new companies. The old four-argument
 -- version is dropped so a four-argument call stays unambiguous.
+-- 0081 made the trial Plus instead of Business (TRIAL_PLAN in
+-- src/billing/plans.ts; plans.spec.ts checks the two match).
 DROP FUNCTION IF EXISTS bootstrap_tenant_for_user(uuid, text, text, text);
 CREATE OR REPLACE FUNCTION bootstrap_tenant_for_user(
   p_user_id uuid,
@@ -797,7 +799,7 @@ BEGIN
       RETURNING id INTO v_claim;
       IF v_claim IS NOT NULL THEN
         UPDATE tenants
-          SET trial_plan = 'business', trial_started_at = now(), trial_ends_at = now() + make_interval(days => v_days)
+          SET trial_plan = 'plus', trial_started_at = now(), trial_ends_at = now() + make_interval(days => v_days)
           WHERE id = v_tenant_id;
       END IF;
     END IF;
