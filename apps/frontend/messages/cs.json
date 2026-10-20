@@ -9902,7 +9902,7 @@
     "suspended": "pozastavená",
     "invitedYes": "pozván kolegou ze školy",
     "domain": "E-mailová doména školy",
-    "domainHint": "Kolegové z této domény budou schváleni automaticky. U gmailu a podobných pole vymažte.",
+    "domainHint": "Kolegové z této domény budou schváleni automaticky. Doménu vyplňte, jen když jste ověřili, že patří škole (ne gmail a podobné).",
     "note": "Poznámka",
     "noteHint": "U zamítnutí se pošle učiteli e-mailem.",
     "approve": "Schválit",
@@ -9911,10 +9911,11 @@
     "rejected": "Žádost zamítnuta.",
     "suspend": "Pozastavit školu",
     "unsuspend": "Obnovit školu",
-    "suspendConfirm": "Pozastavit školu {school}? Všechny její třídy se zavřou pro nové žáky.",
+    "suspendConfirm": "Pozastavit školu {school}? Všechny její třídy se zavřou pro nové žáky a učitelé ztratí přístup k firmám žáků.",
     "suspendedDone": "Škola pozastavena.",
     "unsuspended": "Škola obnovena.",
-    "failed": "Nepovedlo se"
+    "failed": "Nepovedlo se",
+    "rejectConfirm": "Zamítnout učitele {name}? Jeho třídy skončí a zůstanou 30 dní jen ke čtení, z ostatních tříd bude odebrán."
   },
   "offline": {
     "offline": "Offline",

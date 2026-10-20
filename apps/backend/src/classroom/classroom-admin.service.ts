@@ -54,6 +54,8 @@ export class ClassroomAdminService {
 
     if (dto.decision === "approve") {
       await db.update(schema.classroomTeachers).set({ status: "approved", decidedAt: now }).where(eq(schema.classroomTeachers.id, teacherId));
+      // Approved again after a rejection: their classes let them look in again.
+      await this.dbService.sql`SELECT classroom_sync_teacher(${teacherId})`;
       await db
         .update(schema.classroomSchools)
         .set({
@@ -65,13 +67,19 @@ export class ClassroomAdminService {
         .where(eq(schema.classroomSchools.id, row.school.id));
       await this.send(row.email, approvedMail(lang, classroomConfig().siteUrl));
     } else {
-      await db.update(schema.classroomTeachers).set({ status: "rejected", decidedAt: now }).where(eq(schema.classroomTeachers.id, teacherId));
+      // Also for one approved before: off every class, their own classes end (migration 0081).
+      await this.dbService.sql`SELECT classroom_reject_teacher(${teacherId})`;
       await this.send(row.email, rejectedMail(lang, dto.note));
     }
     return { ok: true };
   }
 
-  /** Closes (or reopens) every class of a school; classroom_join refuses a suspended school. */
+  /**
+   * Closes every class of a school to new students and takes its teachers'
+   * look into the companies away; lifting it gives the look back, enrolment
+   * stays closed until a teacher opens it. classroom_join refuses a
+   * suspended school.
+   */
   async suspend(schoolId: string, suspended: boolean, note?: string) {
     const db = this.dbService.db;
     const [school] = await db
@@ -81,6 +89,7 @@ export class ClassroomAdminService {
       .returning({ id: schema.classroomSchools.id });
     if (!school) throw new NotFoundException();
     if (suspended) await db.update(schema.classroomClasses).set({ enrolmentOpen: false }).where(eq(schema.classroomClasses.schoolId, schoolId));
+    await this.dbService.sql`SELECT classroom_sync_school(${schoolId})`;
     return { ok: true };
   }
 

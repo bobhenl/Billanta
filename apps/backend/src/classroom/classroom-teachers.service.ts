@@ -7,14 +7,18 @@ import { platformAdminEmails } from "../partners/platform-admin.guard";
 import { CLASSROOM_TERMS_VERSION, classroomConfig } from "./classroom-config";
 import { approvedMail, inviteMail, mailLanguage, staffApplicationMail } from "./classroom-mail";
 import type { ApplyDto } from "./classroom.dto";
-import { domainFromUrl, onSchoolDomain } from "./email-domain";
+import { domainFromUrl, emailDomain, isFreemail, onSchoolDomain } from "./email-domain";
 import { suggestedTrack } from "./tracks";
 
 export type Teacher = typeof schema.classroomTeachers.$inferSelect;
 export type School = typeof schema.classroomSchools.$inferSelect;
 
-/** Applications per school (IČO) a week that wait for staff; more is somebody trying names. */
-const PENDING_PER_SCHOOL_WEEKLY = 3;
+/**
+ * Applications a week from one proven mail domain that wait for staff; more
+ * is somebody trying names. Counted per domain, not per school: anyone may
+ * type any IČO, so a cap per school would let a stranger block it.
+ */
+const PENDING_PER_DOMAIN_WEEKLY = 3;
 const INVITES_PER_TEACHER_DAILY = 20;
 
 /**
@@ -84,18 +88,23 @@ export class ClassroomTeachersService {
     const approved =
       proven && open && (Boolean(invite) || (school.verification === "verified" && onSchoolDomain(email, school.emailDomain)));
 
-    if (!approved) {
+    const capDomain = approved ? null : applicationCapDomain(email, proven);
+    if (capDomain) {
+      // Only proven addresses count, so nobody fills a domain's quota with addresses they don't own.
       const [{ n }] = await db
         .select({ n: sql<number>`count(*)::int` })
         .from(schema.classroomTeachers)
+        .innerJoin(schema.users, eq(schema.users.id, schema.classroomTeachers.userId))
         .where(
           and(
-            eq(schema.classroomTeachers.schoolId, school.id),
             eq(schema.classroomTeachers.status, "pending"),
-            gt(schema.classroomTeachers.createdAt, sql`now() - interval '7 days'`),
+            gt(schema.classroomTeachers.termsAcceptedAt, sql`now() - interval '7 days'`),
+            sql`lower(split_part(${schema.users.email}, '@', 2)) = ${capDomain}`,
+            sql`(${schema.users.emailVerified} IS NOT NULL OR EXISTS (
+              SELECT 1 FROM ${schema.accounts} WHERE ${schema.accounts.userId} = ${schema.users.id} AND ${schema.accounts.provider} = 'google'))`,
           ),
         );
-      if (n >= PENDING_PER_SCHOOL_WEEKLY) throw new HttpException("classroom_too_many_applications", HttpStatus.TOO_MANY_REQUESTS);
+      if (n >= PENDING_PER_DOMAIN_WEEKLY) throw new HttpException("classroom_too_many_applications", HttpStatus.TOO_MANY_REQUESTS);
     }
 
     const fields = {
@@ -226,8 +235,24 @@ export class ClassroomTeachersService {
   }
 }
 
-/** For staff: the school's mail domain to trust, from what they confirmed or the school's web. */
-export function schoolDomainOnApproval(confirmed: string | undefined, school: Pick<School, "emailDomain" | "webUrl">): string | null {
-  const domain = confirmed?.trim().toLowerCase() || school.emailDomain || domainFromUrl(school.webUrl);
+/**
+ * For staff: the school's mail domain to trust, only what they typed (or one
+ * set before). Nothing comes from the application itself: the first
+ * applicant writes the school's web address, and a domain taken from it
+ * would let a stranger pick who is approved automatically.
+ */
+export function schoolDomainOnApproval(confirmed: string | undefined, school: Pick<School, "emailDomain">): string | null {
+  const domain = confirmed?.trim().toLowerCase() || school.emailDomain;
   return domain && domainFromUrl(domain) === domain ? domain : null;
+}
+
+/**
+ * The domain whose weekly quota of waiting applications this one counts
+ * against: a proven address on a domain of its own. A free mailbox or an
+ * unproven address has no quota to share; one waiting application per user
+ * holds for them as for everyone.
+ */
+export function applicationCapDomain(email: string, proven: boolean): string | null {
+  const domain = emailDomain(email);
+  return proven && domain && !isFreemail(domain) ? domain : null;
 }

@@ -3,9 +3,10 @@ import { and, asc, eq, gt, inArray, or, sql } from "drizzle-orm";
 import * as schema from "../../drizzle/schema";
 import { decryptSecret, encryptSecret } from "../backup-destinations/encryption.util";
 import { DbService } from "../db/db.service";
+import { drizzleTx } from "../db/drizzle-tx";
 import { CLASSROOM_GRACE_DAYS, classroomConfig } from "./classroom-config";
 import type { CreateClassDto, ExtendClassDto, UpdateClassDto } from "./classroom.dto";
-import { ClassroomTeachersService, type Teacher } from "./classroom-teachers.service";
+import { ClassroomTeachersService, type School, type Teacher } from "./classroom-teachers.service";
 import { formatCode, generateCode, hashCode } from "./codes";
 import { MILESTONES, MILESTONE_SQL, toMilestoneCounts, type MilestoneCounts } from "./milestones";
 import { defaultClassEnd, nextSchoolYearEnd, validClassEnd } from "./school-year";
@@ -16,9 +17,10 @@ type ClassRow = typeof schema.classroomClasses.$inferSelect;
 const GRACE_MS = CLASSROOM_GRACE_DAYS * 86_400_000;
 
 /**
- * A teacher's classes. The class rows are global (pool); a student's
- * progress is read inside that student's company, through RLS, as the
- * teacher who is a viewer there.
+ * A teacher's classes. The class rows are global (pool). The student rows
+ * are under RLS (migration 0081) and read as the teacher
+ * (`app.current_user_id`); a student's progress is read inside that
+ * student's company, as the teacher who is a viewer there.
  */
 @Injectable()
 export class ClassroomClassesService {
@@ -36,16 +38,18 @@ export class ClassroomClassesService {
       .where(or(eq(schema.classroomClasses.ownerTeacherId, teacher.id), inArray(schema.classroomClasses.id, this.coTaught(teacher.id))))
       .orderBy(asc(schema.classroomClasses.name));
     const counts = classes.length
-      ? await db
-          .select({ classId: schema.classroomStudents.classId, n: sql<number>`count(*)::int` })
-          .from(schema.classroomStudents)
-          .where(
-            inArray(
-              schema.classroomStudents.classId,
-              classes.map((c) => c.id),
-            ),
-          )
-          .groupBy(schema.classroomStudents.classId)
+      ? await this.asTeacher(userId, (tdb) =>
+          tdb
+            .select({ classId: schema.classroomStudents.classId, n: sql<number>`count(*)::int` })
+            .from(schema.classroomStudents)
+            .where(
+              inArray(
+                schema.classroomStudents.classId,
+                classes.map((c) => c.id),
+              ),
+            )
+            .groupBy(schema.classroomStudents.classId),
+        )
       : [];
     const byClass = new Map(counts.map((c) => [c.classId, c.n]));
     return classes.map((c) => ({ ...this.summary(c, teacher), students: byClass.get(c.id) ?? 0 }));
@@ -89,13 +93,11 @@ export class ClassroomClassesService {
   /** The class with every student: re-entry code, company type and what they have done so far. */
   async get(userId: string, classId: string) {
     const { teacher, school } = await this.teachers.approved(userId);
-    const cls = await this.access(teacher, classId);
+    const cls = await this.access(teacher, school, classId);
     const db = this.dbService.db;
-    const students = await db
-      .select()
-      .from(schema.classroomStudents)
-      .where(eq(schema.classroomStudents.classId, classId))
-      .orderBy(asc(schema.classroomStudents.nickname));
+    const students = await this.asTeacher(userId, (tdb) =>
+      tdb.select().from(schema.classroomStudents).where(eq(schema.classroomStudents.classId, classId)).orderBy(asc(schema.classroomStudents.nickname)),
+    );
     const key = classroomConfig().encryptionKey;
     const progress = await this.progress(userId, students);
     const coTeachers = await db
@@ -135,8 +137,7 @@ export class ClassroomClassesService {
 
   async update(userId: string, classId: string, dto: UpdateClassDto) {
     const { teacher, school } = await this.teachers.approved(userId);
-    const cls = await this.access(teacher, classId);
-    if (dto.enrolmentOpen && school.suspendedAt) throw new ForbiddenException("classroom_school_suspended");
+    const cls = await this.access(teacher, school, classId);
     const [row] = await this.dbService.db
       .update(schema.classroomClasses)
       .set({
@@ -152,8 +153,8 @@ export class ClassroomClassesService {
 
   /** A new class code, when the old one got out of the classroom. */
   async rotateJoinCode(userId: string, classId: string) {
-    const { teacher } = await this.teachers.approved(userId);
-    await this.access(teacher, classId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    await this.access(teacher, school, classId);
     const [row] = await this.withFreshJoinCode((joinCode) =>
       this.dbService.db.update(schema.classroomClasses).set({ joinCode }).where(eq(schema.classroomClasses.id, classId)).returning(),
     );
@@ -162,8 +163,8 @@ export class ClassroomClassesService {
 
   /** Another school year, or the date the teacher picked; the companies' deletion moves with it. */
   async extend(userId: string, classId: string, dto: ExtendClassDto) {
-    const { teacher } = await this.teachers.approved(userId);
-    const cls = await this.access(teacher, classId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    const cls = await this.access(teacher, school, classId);
     const now = new Date();
     const endsAt = dto.endsAt ?? nextSchoolYearEnd(cls.endsAt, now);
     if (!validClassEnd(endsAt, now)) throw new BadRequestException("classroom_invalid_end");
@@ -172,8 +173,8 @@ export class ClassroomClassesService {
   }
 
   async addCoTeacher(userId: string, classId: string, colleagueId: string) {
-    const { teacher } = await this.teachers.approved(userId);
-    const cls = await this.ownClass(teacher, classId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    const cls = await this.ownClass(teacher, school, classId);
     if (colleagueId === teacher.id) throw new BadRequestException("classroom_invalid_teacher");
     const [colleague] = await this.dbService.db
       .select({ id: schema.classroomTeachers.id })
@@ -191,20 +192,22 @@ export class ClassroomClassesService {
   }
 
   async removeCoTeacher(userId: string, classId: string, colleagueId: string) {
-    const { teacher } = await this.teachers.approved(userId);
-    await this.ownClass(teacher, classId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    // Taking access away is fine in a suspended school too.
+    await this.ownClass(teacher, school, classId, { suspended: true });
     await this.dbService.sql`SELECT classroom_remove_teacher(${classId}, ${colleagueId})`;
     return { ok: true };
   }
 
   /** A forgotten code: the old one stops working and signs the student out everywhere. */
   async regenerateStudentCode(userId: string, classId: string, studentId: string) {
-    const { teacher } = await this.teachers.approved(userId);
-    await this.access(teacher, classId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    await this.access(teacher, school, classId);
     const cfg = classroomConfig();
-    const student = await this.student(classId, studentId);
+    const student = await this.student(userId, classId, studentId);
     const code = generateCode();
     await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
       await tx`
         UPDATE classroom_students
         SET reentry_code_hash = ${hashCode(code, cfg.codeSecret)}, reentry_code_encrypted = ${encryptSecret(code, cfg.encryptionKey)}
@@ -215,16 +218,16 @@ export class ClassroomClassesService {
   }
 
   async removeStudent(userId: string, classId: string, studentId: string) {
-    const { teacher } = await this.teachers.approved(userId);
-    await this.access(teacher, classId);
-    const student = await this.student(classId, studentId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    await this.access(teacher, school, classId, { suspended: true });
+    const student = await this.student(userId, classId, studentId);
     await this.dbService.sql`SELECT classroom_remove_student(${student.id})`;
     return { ok: true };
   }
 
   async remove(userId: string, classId: string) {
-    const { teacher } = await this.teachers.approved(userId);
-    await this.ownClass(teacher, classId);
+    const { teacher, school } = await this.teachers.approved(userId);
+    await this.ownClass(teacher, school, classId, { suspended: true });
     await this.dbService.sql`SELECT classroom_delete_class(${classId})`;
     return { ok: true };
   }
@@ -258,8 +261,13 @@ export class ClassroomClassesService {
       .where(eq(schema.classroomClassTeachers.teacherId, teacherId));
   }
 
-  /** The class if the teacher teaches it; 404 otherwise, so ids reveal nothing. */
-  private async access(teacher: Teacher, classId: string): Promise<ClassRow> {
+  /**
+   * The class if the teacher teaches it; 404 otherwise, so ids reveal
+   * nothing. The caller is an approved teacher (`approved()`); in a
+   * suspended school only taking things away is left (`suspended: true`).
+   */
+  private async access(teacher: Teacher, school: School, classId: string, opts: { suspended?: boolean } = {}): Promise<ClassRow> {
+    if (school.suspendedAt && !opts.suspended) throw new ForbiddenException("classroom_school_suspended");
     const [cls] = await this.dbService.db
       .select()
       .from(schema.classroomClasses)
@@ -274,17 +282,19 @@ export class ClassroomClassesService {
   }
 
   /** Co-teachers and deleting the class are the owner's. */
-  private async ownClass(teacher: Teacher, classId: string): Promise<ClassRow> {
-    const cls = await this.access(teacher, classId);
+  private async ownClass(teacher: Teacher, school: School, classId: string, opts: { suspended?: boolean } = {}): Promise<ClassRow> {
+    const cls = await this.access(teacher, school, classId, opts);
     if (cls.ownerTeacherId !== teacher.id) throw new ForbiddenException("classroom_owner_only");
     return cls;
   }
 
-  private async student(classId: string, studentId: string) {
-    const [student] = await this.dbService.db
-      .select()
-      .from(schema.classroomStudents)
-      .where(and(eq(schema.classroomStudents.id, studentId), eq(schema.classroomStudents.classId, classId)));
+  private async student(userId: string, classId: string, studentId: string) {
+    const [student] = await this.asTeacher(userId, (db) =>
+      db
+        .select()
+        .from(schema.classroomStudents)
+        .where(and(eq(schema.classroomStudents.id, studentId), eq(schema.classroomStudents.classId, classId))),
+    );
     if (!student) throw new NotFoundException();
     return student;
   }
@@ -300,6 +310,14 @@ export class ClassroomClassesService {
       out.set(s.id, toMilestoneCounts(row as Record<string, unknown> | undefined));
     }
     return out;
+  }
+
+  /** classroom_students is under RLS: the teacher sees the rows of the classes they teach. */
+  private asTeacher<T>(userId: string, read: (db: ReturnType<typeof drizzleTx<typeof schema>>) => Promise<T>): Promise<T> {
+    return this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
+      return read(drizzleTx(tx, schema));
+    }) as Promise<T>;
   }
 
   /** Join codes are unique; a clash (one in a billion) just draws again. */

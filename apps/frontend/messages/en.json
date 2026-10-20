@@ -9902,7 +9902,7 @@
     "suspended": "suspended",
     "invitedYes": "invited by a colleague from the school",
     "domain": "School e-mail domain",
-    "domainHint": "Colleagues on this domain are approved automatically. Clear it for gmail and the like.",
+    "domainHint": "Colleagues on this domain are approved automatically. Fill it in only once you have checked that it belongs to the school (not gmail and the like).",
     "note": "Note",
     "noteHint": "On rejection it is e-mailed to the teacher.",
     "approve": "Approve",
@@ -9911,10 +9911,11 @@
     "rejected": "Application rejected.",
     "suspend": "Suspend school",
     "unsuspend": "Restore school",
-    "suspendConfirm": "Suspend {school}? All its classes close to new students.",
+    "suspendConfirm": "Suspend {school}? All its classes close to new students and its teachers lose access to the students' companies.",
     "suspendedDone": "School suspended.",
     "unsuspended": "School restored.",
-    "failed": "Failed"
+    "failed": "Failed",
+    "rejectConfirm": "Reject {name}? Their classes end and stay read-only for 30 days, and they are removed from other classes."
   },
   "offline": {
     "offline": "Offline",

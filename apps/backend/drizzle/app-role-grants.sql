@@ -44,6 +44,8 @@ REVOKE ALL ON demo_sessions FROM faktur_app;
 -- keep the viewer memberships in step. The app may rotate a re-entry code.
 REVOKE INSERT, UPDATE, DELETE ON classroom_class_teachers FROM faktur_app;
 REVOKE INSERT, DELETE ON classroom_students FROM faktur_app;
+-- Wrong re-entry codes per network (0081) only through classroom_reenter.
+REVOKE ALL ON classroom_reentry_misses FROM faktur_app;
 
 -- A company's promo redemption is its attribution record (migration 0071):
 -- inserted once, never edited. Codes are switched off, not deleted.
