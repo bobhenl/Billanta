@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import PDFDocument from "pdfkit";
 import type { TaxReturnBasis } from "@faktur/cz-compliance";
+import { csvNumber as csvAmount, csvText } from "./csv-cell";
 
 /**
  * "Podklady pro daňové přiznání" as files for the accountant: a CSV sheet and
@@ -164,7 +165,7 @@ const T = {
 /** File name without the extension, ASCII only. */
 export const taxReturnFileName = (r: Pick<TaxReturnReport, "country" | "year">) => T[langOf(r)].file(r.year);
 
-const csvNumber = (v: number | null | undefined) => (v == null ? "" : v.toFixed(2).replace(".", ","));
+const csvNumber = (v: number | null | undefined) => (v == null ? "" : csvAmount(v));
 const ymd = (d: Date) => `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}`;
 // Plain spaces: pdfkit's Helvetica fallback has no NBSP / narrow NBSP glyphs.
 const money = (v: number | null | undefined, currency: "CZK" | "EUR") =>
@@ -260,7 +261,9 @@ export function taxReturnSections(r: TaxReturnReport, format: (v: number | null 
 /** Semicolon CSV with a BOM, like the other exports (Excel in CZ/SK opens it as is). */
 export function taxReturnCsv(r: TaxReturnReport): string {
   const t = T[langOf(r)];
-  const cell = (v: string) => (/[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+  // The sections are already strings: a cell that is exactly a formatted amount stays a number
+  // (a negative profit must not get the ' prefix); anything else, e.g. a free-text category, is defused.
+  const cell = (v: string) => (/^-?\d+(?:,\d+)?$/.test(v) ? v : csvText(v));
   const lines: string[] = [];
   for (const s of taxReturnSections(r, csvNumber)) {
     if (lines.length) lines.push("");
