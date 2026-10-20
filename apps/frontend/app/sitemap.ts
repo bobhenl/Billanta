@@ -56,6 +56,7 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/legal/privacy', changeFrequency: 'yearly', priority: 0.3 },
   { path: '/legal/dpa', changeFrequency: 'yearly', priority: 0.2 },
   { path: '/legal/cookies', changeFrequency: 'yearly', priority: 0.2 },
+  { path: '/legal/classroom-privacy', changeFrequency: 'yearly', priority: 0.2 },
   { path: '/contact', changeFrequency: 'yearly', priority: 0.4 },
   { path: '/pricing', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/compare', changeFrequency: 'monthly', priority: 0.7 },

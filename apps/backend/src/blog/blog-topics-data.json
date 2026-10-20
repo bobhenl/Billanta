@@ -550,7 +550,7 @@
             "Zadejte DIČ nebo IČO dodavatele a případně účet, na který máte platit. Ověříme ho v registru plátců DPH Finanční správy.",
             "Ptáme se přímo registru plátců DPH Finanční správy. Výsledek platí k okamžiku ověření.",
             "Když zaplatíte nespolehlivému plátci, ručíte za DPH, kterou neodvede. Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a zákona o DPH).",
-            "Ručíte i tehdy, když za plnění nad 540 000 Kč (dvojnásobek limitu pro platby v hotovosti) zaplatíte na účet, který plátce nezveřejnil (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "Ručíte i tehdy, když za plnění zaplatíte na účet, který plátce nezveřejnil, a to bez ohledu na částku (§ 109 odst. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme se zveřejněnými účty, ať ho napíšete jako číslo s kódem banky nebo jako IBAN. Seznam zveřejněných účtů neukazujeme, jen jejich počet.",
             "Jak to funguje",
             "Billanta ověřuje plátce DPH sama",

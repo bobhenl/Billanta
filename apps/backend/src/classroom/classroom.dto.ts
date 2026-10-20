@@ -7,6 +7,16 @@ import { CLASSROOM_TRACKS, SCHOOL_LEVELS } from "./tracks";
 
 const text = (max: number) => z.string().trim().min(1).max(max);
 
+/** An http(s) address with a dotted host. Staff open it as a link, so never javascript: or data:. */
+export function isWebUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (url.protocol === "http:" || url.protocol === "https:") && url.hostname.includes(".");
+  } catch {
+    return false;
+  }
+}
+
 export const applySchema = z.object({
   country: z.enum(["CZ", "SK"]),
   ico: z.string().trim().regex(/^\d{6,8}$/),
@@ -14,7 +24,13 @@ export const applySchema = z.object({
   level: z.enum(SCHOOL_LEVELS),
   legalForm: z.string().trim().max(120).optional(),
   address: z.string().trim().max(300).optional(),
-  webUrl: z.string().trim().max(300).optional(),
+  webUrl: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((v) => v === "" || isWebUrl(v), "invalid_url")
+    .transform((v) => v || undefined)
+    .optional(),
   name: text(120),
   subject: z.string().trim().max(120).optional(),
   expectedStudents: z.number().int().min(1).max(2000).optional(),

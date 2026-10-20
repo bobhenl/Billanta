@@ -71,6 +71,14 @@ describe("taxReturnCsv", () => {
     expect(taxReturnCsv(report({}, { companyName: "A; B" }))).toContain('Firma;"A; B"');
   });
 
+  it("defuses free-text categories that Excel would run as a formula, but keeps negative amounts as numbers", () => {
+    const csv = taxReturnCsv(report({ expensesByCategory: { '=HYPERLINK("http://x";"y")': 100, "-2+3": 200, "@SUM(A1)": -50 } }));
+    const lines = csv.split("\r\n");
+    expect(lines).toContain(`"'=HYPERLINK(""http://x"";""y"")";100,00`);
+    expect(lines).toContain("'-2+3;200,00");
+    expect(lines).toContain("'@SUM(A1);-50,00");
+  });
+
   it("Slovak sheet in Slovak, with the SK deadlines and the 20 000 € paušál", () => {
     const csv = taxReturnCsv(report({ country: "SK", income: 30_000, expensesByCategory: { rent: 6_000 } }));
     expect(csv.startsWith("﻿Podklady k daňovému priznaniu 2025")).toBe(true);

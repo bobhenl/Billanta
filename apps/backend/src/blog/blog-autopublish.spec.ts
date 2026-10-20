@@ -11,7 +11,11 @@ const ok = { kind: "tool_howto" as const, enabled: true, warnings: [], post, pub
 describe("autoPublishDecision", () => {
   it("publishes a clean post of a switched-on kind under the weekly cap", () => {
     expect(autoPublishDecision(ok)).toEqual({ publish: true });
-    expect(autoPublishDecision({ ...ok, kind: "tax_deadlines", publishedThisWeek: WEEKLY_AUTOPUBLISH_LIMIT - 1 })).toEqual({ publish: true });
+    expect(autoPublishDecision({ ...ok, kind: "trade_invoicing", publishedThisWeek: WEEKLY_AUTOPUBLISH_LIMIT - 1 })).toEqual({ publish: true });
+  });
+
+  it("never publishes tax deadline posts, even with a switch left on", () => {
+    expect(autoPublishDecision({ ...ok, kind: "tax_deadlines" })).toEqual({ publish: false, reason: "kind_not_auto" });
   });
 
   it("never publishes briefs or hand-written posts", () => {

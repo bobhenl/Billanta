@@ -4,18 +4,27 @@ import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 
-export type LegalDocKey = 'terms' | 'privacy' | 'dpa';
+export type LegalDocKey = 'terms' | 'privacy' | 'dpa' | 'classroomPrivacy' | 'schoolContract';
 
 interface LegalSection {
   title: string;
   body: string[];
 }
 
-const DOCS: { key: LegalDocKey; href: string }[] = [
+const DOCS: { key: 'terms' | 'privacy' | 'dpa'; href: string }[] = [
   { key: 'terms', href: '/legal/terms' },
   { key: 'privacy', href: '/legal/privacy' },
   { key: 'dpa', href: '/legal/dpa' }
 ];
+
+/** The classroom texts are not in the footer, so their URL is not their key. */
+const PATHS: Record<LegalDocKey, string> = {
+  terms: '/legal/terms',
+  privacy: '/legal/privacy',
+  dpa: '/legal/dpa',
+  classroomPrivacy: '/legal/classroom-privacy',
+  schoolContract: '/legal/school-contract'
+};
 
 /**
  * Shared renderer for the terms, privacy policy and DPA. The text lives in
@@ -33,7 +42,7 @@ export async function LegalDocument({ doc }: { doc: LegalDocKey }) {
   const sections = t.raw(`${doc}.sections`) as LegalSection[];
   const operator = t('operator');
   const locale = await getLocale();
-  const path = `/legal/${doc}`;
+  const path = PATHS[doc];
 
   return (
     <article className="container max-w-3xl py-12 sm:py-16">

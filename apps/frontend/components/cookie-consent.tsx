@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Cookie } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
-import { OPEN_CONSENT_EVENT, isRegionDefault, readConsent, resolveConsent, writeConsent } from '@/lib/consent';
+import { OPEN_CONSENT_EVENT, isNoAnalyticsPath, isRegionDefault, readConsent, resolveConsent, writeConsent } from '@/lib/consent';
 import { cn } from '@/lib/utils';
 
 /**
@@ -21,9 +21,14 @@ import { cn } from '@/lib/utils';
  * It opens by itself only where the region needs an explicit yes
  * (lib/consent-region.ts). Elsewhere analytics runs by default, and the
  * footer link opens it with a body that says so.
+ *
+ * On the pages pupils use (isNoAnalyticsPath) it waits instead: nothing
+ * optional runs there anyway, and a child should not be asked for a consent
+ * they cannot give. The footer link still opens it.
  */
 export function CookieConsent() {
   const t = useTranslations('cookies.banner');
+  const pupilPage = isNoAnalyticsPath(usePathname());
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -48,7 +53,8 @@ export function CookieConsent() {
     };
   }, []);
 
-  if (!open) return null;
+  // `settings` is set only when the visitor opened it themselves.
+  if (!open || (pupilPage && !settings)) return null;
 
   const save = (value: boolean) => {
     writeConsent(value);

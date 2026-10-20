@@ -123,14 +123,14 @@ export class ClassroomGroupsService {
 
   /** The team goes with its companies; the members keep their home companies. */
   async deleteTeam(userId: string, classId: string, teamId: string) {
-    const cls = await this.cls(userId, classId);
+    const cls = await this.cls(userId, classId, { suspended: true });
     await this.team(cls.id, teamId);
     await this.dbService.sql`SELECT classroom_delete_team(${teamId})`;
     return { ok: true };
   }
 
   async setTeamMember(userId: string, classId: string, teamId: string, studentId: string, add: boolean) {
-    const cls = add ? await this.open(userId, classId) : await this.cls(userId, classId);
+    const cls = add ? await this.open(userId, classId) : await this.cls(userId, classId, { suspended: true });
     await this.team(cls.id, teamId);
     await mapped(this.dbService.sql`SELECT classroom_team_member(${teamId}, ${studentId}, ${add})`);
     return { ok: true };
@@ -171,7 +171,7 @@ export class ClassroomGroupsService {
   }
 
   async deleteCompany(userId: string, classId: string, companyId: string) {
-    const cls = await this.cls(userId, classId);
+    const cls = await this.cls(userId, classId, { suspended: true });
     const [company] = await this.dbService.db
       .select({ id: schema.classroomCompanies.id })
       .from(schema.classroomCompanies)
@@ -188,7 +188,7 @@ export class ClassroomGroupsService {
    */
   async pairPartners(userId: string, classId: string, dto: PartnersDto) {
     const cls = await this.open(userId, classId);
-    const tenants = await this.classTenants(cls.id);
+    const tenants = await this.classTenants(userId, cls.id);
     if (!tenants.has(dto.tenantA) || !tenants.has(dto.tenantB)) throw new NotFoundException();
     const added = await this.dbService.sql.begin(async (tx) => {
       const as = async (tenantId: string) => {
@@ -239,7 +239,7 @@ export class ClassroomGroupsService {
   }
 
   async unassignAccountant(userId: string, classId: string, linkId: string) {
-    const cls = await this.cls(userId, classId);
+    const cls = await this.cls(userId, classId, { suspended: true });
     const [link] = await this.dbService.db
       .select({ id: schema.classroomAccountants.id })
       .from(schema.classroomAccountants)
@@ -249,9 +249,10 @@ export class ClassroomGroupsService {
     return { ok: true };
   }
 
-  private async cls(userId: string, classId: string): Promise<ClassRow> {
-    const { teacher } = await this.teachers.approved(userId);
-    return this.classes.access(teacher, classId);
+  /** As ClassroomClassesService: in a suspended school only taking things away is left. */
+  private async cls(userId: string, classId: string, opts: { suspended?: boolean } = {}): Promise<ClassRow> {
+    const { teacher, school } = await this.teachers.approved(userId);
+    return this.classes.access(teacher, school, classId, opts);
   }
 
   /** New teams, companies and pairings only while the class runs; the functions check the school too. */
@@ -270,11 +271,12 @@ export class ClassroomGroupsService {
     return team;
   }
 
-  /** Every practice company of the class: the home ones and the extra ones. */
-  private async classTenants(classId: string): Promise<Set<string>> {
-    const db = this.dbService.db;
-    const home = await db.select({ id: schema.classroomStudents.tenantId }).from(schema.classroomStudents).where(eq(schema.classroomStudents.classId, classId));
-    const extra = await db.select({ id: schema.classroomCompanies.tenantId }).from(schema.classroomCompanies).where(eq(schema.classroomCompanies.classId, classId));
+  /** Every practice company of the class: the home ones (read as the teacher, RLS) and the extra ones. */
+  private async classTenants(userId: string, classId: string): Promise<Set<string>> {
+    const home = await this.classes.asTeacher(userId, (db) =>
+      db.select({ id: schema.classroomStudents.tenantId }).from(schema.classroomStudents).where(eq(schema.classroomStudents.classId, classId)),
+    );
+    const extra = await this.dbService.db.select({ id: schema.classroomCompanies.tenantId }).from(schema.classroomCompanies).where(eq(schema.classroomCompanies.classId, classId));
     return new Set([...home, ...extra].map((r) => r.id));
   }
 }

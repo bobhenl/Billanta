@@ -3609,7 +3609,7 @@
           "title": "Jen pro podnikatele (B2B)",
           "body": [
             "Služba je určena výhradně podnikatelům a právnickým osobám, které ji užívají v rámci své podnikatelské činnosti nebo povolání (§ 420 a násl. zákona č. 89/2012 Sb., občanský zákoník). Spotřebitelům služba určena není.",
-            "Založením účtu uživatel prohlašuje, že je mu alespoň 18 let a jedná jako podnikatel. Osobám mladším 18 let služba určena není a provozovatel od nich vědomě nesbírá osobní údaje. Ustanovení občanského zákoníku o ochraně spotřebitele, včetně práva na odstoupení od smlouvy uzavřené distančně, se proto nepoužijí. Zjistí-li provozovatel, že uživatel je spotřebitel, může účet zrušit."
+            "Založením účtu uživatel prohlašuje, že je mu alespoň 18 let a jedná jako podnikatel. Osobám mladším 18 let služba určena není a provozovatel od nich vědomě nesbírá osobní údaje, s výjimkou výukového režimu pro třídy podle článku 17. Ustanovení občanského zákoníku o ochraně spotřebitele, včetně práva na odstoupení od smlouvy uzavřené distančně, se proto nepoužijí. Zjistí-li provozovatel, že uživatel je spotřebitel, může účet zrušit."
           ]
         },
         {
@@ -3725,6 +3725,34 @@
             "Podmínky jsou vydány v češtině, slovenštině a angličtině. V případě rozporu rozhoduje česká verze.",
             "Je-li některé ustanovení neplatné, ostatní zůstávají v platnosti."
           ]
+        },
+        {
+          "title": "Režim pro třídy (školy)",
+          "body": [
+            "Odchylně od článku 2 nabízí provozovatel školám samostatný výukový režim pro třídy. Třídu zakládá učitel, kterého provozovatel ověřil, a do třídy mohou vstoupit i žáci mladší 18 let. Žáci nejsou uživateli podle těchto podmínek a vlastní účet s e-mailem a heslem si nezakládají.",
+            "Žáci vstupují do třídy jen s kódem třídy a přezdívkou, bez e-mailu. Pracují na cvičných firmách s vymyšlenými údaji, AI funkce jsou ve třídách vypnuté a doklady nesou vodoznak cvičného dokladu. Nejde o daňové doklady a výukový režim se nesmí používat pro skutečné podnikání.",
+            "Pro osobní údaje žáků je správcem škola, za kterou jedná učitel, a provozovatel je jen zpracovatelem podle samostatné smlouvy se školou o zpracování osobních údajů. Učitel potvrzuje, že je oprávněn jednat za školu, a žáky poučí, aby nezadávali skutečné osobní údaje.",
+            "Cvičné firmy třídy jsou po skončení třídy 30 dní jen ke čtení a potom se smažou. Žáka, kterého učitel ze třídy odebere, smaže provozovatel hned. Výukový režim je zdarma."
+          ]
+        },
+        {
+          "title": "Řádek „Vystaveno v aplikaci Billanta“",
+          "body": [
+            "Doklady vystavené ve službě nesou v patičce krátký řádek „Vystaveno v aplikaci Billanta“ (ve slovenštině „Vystavené v aplikácii Billanta“, v angličtině „Made with Billanta“) s odkazem na web Billanty. Zobrazuje se v PDF, v e-mailech s doklady a upomínkami a na online stránce dokladu.",
+            "Odkaz nese doporučovací kód vystavitele, takže firma, která se přes něj zaregistruje, se započítá do programu doporučení podle článku 19. Údaje o odběrateli ani o dokladu odkaz neobsahuje.",
+            "Na bezplatném tarifu se řádek zobrazuje vždy. Na placeném tarifu a během zkušebního období ho uživatel může vypnout v Nastavení u faktur. Když placený tarif skončí, řádek se znovu zobrazuje. Dokumenty z veřejných nástrojů bez účtu (např. generátor upomínek) řádek nesou vždy."
+          ]
+        },
+        {
+          "title": "Program doporučení a partnerský program",
+          "body": [
+            "Uživatel může zvát další firmy svým odkazem pro pozvání. Nová firma, která se přes něj zaregistruje, dostane uvítací kredity. Pozvatel dostane tolik kreditů, kolik nová firma zaplatí bez DPH při první platbě za tarif, nejvýše však částku uvedenou v aplikaci. Aktuální výše odměn je vždy na stránce doporučení v aplikaci. 1 kredit odpovídá 1 Kč.",
+            "Odměna se připíše po druhé měsíční platbě nové firmy, u roční nebo předplacené platby 30 dní po první platbě. Pokud nová firma platbu před připsáním vrátí nebo zruší, odměna nevznikne.",
+            "Partnerský program pro účetní a účetní kanceláře funguje stejně. Je jen pro účetní, kterým provozovatel schválil zápis v adresáři účetních.",
+            "Doporučit sám sebe nelze. Odměna nevzniká za firmu, kterou pozvatel sám vlastní, ani za firmu, se kterou má společného uživatele. Každá firma se započítá nejvýše jednou. Při zneužití programu může provozovatel odměnu odebrat a účast v programu ukončit.",
+            "Kredity lze použít jen na platbu tarifů Billanty. Nemají peněžní hodnotu, nelze je vyplatit ani převést na jinou firmu. Kredity nepropadají, dokud účet firmy existuje, a zrušením účtu zanikají.",
+            "Provozovatel může program změnit nebo ukončit. Změnu oznámí nejméně 30 dní předem v aplikaci nebo e-mailem. Kredity připsané do té doby lze dál využít podle tohoto článku."
+          ]
         }
       ]
     },
@@ -3736,7 +3764,8 @@
           "title": "Správce a zpracovatel",
           "body": [
             "Správcem osobních údajů uživatelů účtu a návštěvníků webu je {operator}.",
-            "U údajů o odběratelích, které uživatel do služby vloží (kontakty, faktury), je správcem uživatel a provozovatel je jen zpracovatelem podle Zpracovatelské smlouvy (DPA)."
+            "U údajů o odběratelích, které uživatel do služby vloží (kontakty, faktury), je správcem uživatel a provozovatel je jen zpracovatelem podle Zpracovatelské smlouvy (DPA).",
+            "U žáků v režimu pro třídy je správcem škola, viz článek 15."
           ]
         },
         {
@@ -3765,7 +3794,7 @@
             "Resend: odesílání e-mailů (faktury, upomínky, ověření účtu).",
             "Stripe a GoPay: platby předplatného. Údaje o platebních kartách zpracovávají jen tyto brány, Billanta je nevidí.",
             "Anthropic: AI návrhy faktur z textu a obrázků. OpenAI: přepis hlasových zpráv na text. Obojí jen tehdy, když uživatel AI funkci použije.",
-            "Google: přihlášení přes Google a zálohy na Google Disk, jen pokud je uživatel zapne.",
+            "Google: přihlášení přes Google a zálohy na vlastní Google Disk uživatele, jen pokud je uživatel zapne. Na Google Disk provozovatele ukládáme také šifrované noční zálohy celé databáze, viz článek 10.",
             "Telegram a Meta (WhatsApp): jen pokud uživatel propojí účet s chatovou aplikací.",
             "Microsoft (Clarity): analytika veřejných stránek (jen se souhlasem tam, kde se vyžaduje).",
             "Údaje se dále předávají jen tam, kam je pošle sám uživatel: banka nebo PayPal přes zapnuté napojení (Fio, PSD2 přes Enable Banking, PayPal), vlastní webhooky a úložiště záloh, e-maily odběratelům. Dotazy do veřejných registrů (ARES, VIES) obsahují jen IČO nebo DIČ.",
@@ -3804,6 +3833,53 @@
           "title": "Zabezpečení",
           "body": [
             "Data jsou šifrována při přenosu (TLS). Data jednotlivých firem jsou v databázi oddělena (row-level security). Citlivé klíče (bankovní tokeny, klíče k AI, konfigurace záloh) ukládáme šifrovaně. Přístup k produkčním datům má jen nezbytně nutný okruh osob."
+          ]
+        },
+        {
+          "title": "Zálohy",
+          "body": [
+            "Celou databázi služby zálohujeme každou noc. Záloha se ještě na serveru zašifruje nástrojem age veřejným klíčem. Soukromý klíč, kterým jde zálohu otevřít, na serveru není, provozovatel ho uchovává offline. Zašifrované zálohy jsou na serveru a jejich kopie na Google Disku provozovatele. Bez soukromého klíče je nepřečte ani ten, kdo má přístup k serveru nebo k účtu Google. Zálohy mažeme nejpozději po 90 dnech (článek 6).",
+            "Vedle toho si firma může sama zapnout zálohy svých dat: na vlastní Google Disk, na vlastní SFTP server, přes webhook, nebo si zálohu stáhnout. Takové zálohy jdou jen tam, kam je uživatel nastaví, a může je zašifrovat vlastním klíčem age nebo heslem. U Google Disku má Billanta přístup jen k souborům, které sama vytvořila. Za úložiště, které si uživatel zvolí, odpovídá on."
+          ]
+        },
+        {
+          "title": "Newsletter",
+          "body": [
+            "Newsletter posíláme jen tomu, kdo se přihlásí a přihlášení potvrdí odkazem v e-mailu (dvojí potvrzení). Nepotvrzené přihlášky mažeme do 30 dní.",
+            "Ukládáme e-mail, jazyk, zemi, zvolená témata, místo přihlášení, znění souhlasu a čas přihlášení a potvrzení. Právním základem je souhlas (čl. 6 odst. 1 písm. a GDPR).",
+            "Odhlásit se můžete kdykoli jedním kliknutím v patičce každého vydání. Potom už nic nepošleme a ponecháme si jen záznam o souhlasu a odhlášení, abychom mohli doložit, že jsme vám psali oprávněně."
+          ]
+        },
+        {
+          "title": "Odkud přicházejí noví uživatelé",
+          "body": [
+            "Když na web přijdete z odkazu s parametry kampaně (utm) nebo z jiného webu, zapamatujeme si v cookie billanta_src na 90 dní zdroj návštěvy: parametry utm, jen doménu odkazujícího webu (bez cesty a parametrů), první navštívenou stránku a čas. Když si pak založíte účet, uložíme tyto údaje k němu, abychom věděli, které kanály nám přivádějí uživatele.",
+            "Tuto cookie nastavujeme jen tehdy, když jste povolili analytické cookies. Právním základem je souhlas (čl. 6 odst. 1 písm. a GDPR)."
+          ]
+        },
+        {
+          "title": "Program doporučení",
+          "body": [
+            "Když přijdete přes odkaz pro pozvání, uložíme kód pozvatele na 30 dní do cookie billanta_ref, aby se pozvánka po registraci započítala.",
+            "K firmě pak evidujeme, kdo ji pozval, kdy se zaregistrovala, kdy a kolik zaplatila za tarif, stav odměny a pohyby kreditů. Účelem je připsat odměny a zabránit zneužití programu (smlouva a oprávněný zájem, čl. 6 odst. 1 písm. b a f GDPR).",
+            "Pozvatel nevidí název ani údaje pozvané firmy. Vidí jen pořadové číslo, zda firma už platí a kolik kreditů za ni dostal."
+          ]
+        },
+        {
+          "title": "Veřejné adresáře",
+          "body": [
+            "Adresář firem: firma se do něj dostane, jen když si zapne veřejný profil a v něm zápis do adresáře (výchozí stav je vypnuto). Zobrazí se název firmy, krátký popis, obor, obec, země, logo a město jen tehdy, když firma na profilu zobrazuje adresu. IČO, e-mail ani telefon adresář neukazuje.",
+            "Adresář účetních: zápis podává účetní nebo účetní kancelář sama a zveřejní se až po schválení provozovatelem. Zobrazí se jméno nebo název, popis, regiony, zda pracuje na dálku, služby, jazyky, orientační cena, kontaktní e-mail nebo web a odkaz na veřejný profil, pokud ho má zapnutý.",
+            "Oba zápisy zveřejňujeme na žádost firmy a firma je může kdykoli upravit, vypnout nebo stáhnout."
+          ]
+        },
+        {
+          "title": "Režim pro třídy",
+          "body": [
+            "V režimu pro třídy je správcem osobních údajů žáků škola, za kterou jedná učitel, jenž třídu zakládá. Provozovatel je jen zpracovatelem podle smlouvy se školou o zpracování osobních údajů, kterou zveřejníme na stránce Smlouva se školou.",
+            "Žáci vstupují do třídy jen s kódem třídy a přezdívkou, bez e-mailu a hesla. Ukládáme přezdívku, obsah cvičné firmy s vymyšlenými údaji, osobní kód pro návrat (šifrovaně a jako otisk) a technické údaje potřebné k chodu a k ochraně proti zneužití. AI funkce jsou vypnuté a na stránkách pro žáky není analytika.",
+            "Cvičné firmy třídy se smažou 30 dní po skončení třídy, žák odebraný učitelem hned. Žákům a rodičům je určena zjednodušená Informace o soukromí ve třídě. Žádosti týkající se údajů žáků vyřizuje škola.",
+            "Údaje učitelů (jméno, e-mail, škola, předmět) zpracovává provozovatel jako správce podle těchto zásad, aby mohl učitele ověřit a vést jeho účet."
           ]
         }
       ]
@@ -3853,6 +3929,62 @@
             "Po skončení smlouvy umožní zpracovatel správci po dobu 30 dní export údajů. Poté je podle volby správce smaže, nebo je předá správci formou exportu, pokud jejich uložení nevyžaduje zákon. Ze záloh se údaje odstraní nejpozději do 90 dní.",
             "Zpracovatel poskytne správci informace potřebné k doložení plnění této smlouvy. Audit na místě je možný po předchozí dohodě, na náklady správce a nejvýše jednou ročně.",
             "Pro odpovědnost stran podle této smlouvy platí omezení odpovědnosti z obchodních podmínek (článek 10). Omezení se nevztahuje na nároky subjektů údajů podle čl. 82 GDPR v rozsahu, v jakém je nelze smluvně omezit."
+          ]
+        }
+      ]
+    },
+    "classroomPrivacy": {
+      "title": "Soukromí ve třídě",
+      "intro": "Krátké vysvětlení pro žáky, studenty a jejich rodiče: co Billanta ukládá, když vstoupíte do třídy, a kdo to vidí.",
+      "sections": [
+        {
+          "title": "Co ukládáme",
+          "body": [
+            "Přezdívku, kterou si zvolíte. Celé jméno nepište, stačí přezdívka, podle které vás pozná učitel.",
+            "Vaši cvičnou firmu a všechno, co v ní vytvoříte: faktury, odběratele, výdaje a další záznamy. Údaje jsou vymyšlené, nezadávejte skutečné údaje o sobě ani o nikom jiném.",
+            "Váš osobní kód pro návrat do firmy. Ukládáme ho zašifrovaný.",
+            "Pár technických údajů, které služba potřebuje k chodu a k ochraně proti zneužití, například kolik bylo neúspěšných pokusů o vstup."
+          ]
+        },
+        {
+          "title": "Co neukládáme a nepoužíváme",
+          "body": [
+            "Nechceme od vás e-mail, telefon ani heslo.",
+            "Ve třídě není umělá inteligence (AI), analytika ani reklama. Nic vám neposíláme a vaše údaje nepoužíváme k marketingu."
+          ]
+        },
+        {
+          "title": "Kdo vaše údaje vidí",
+          "body": [
+            "Vaši firmu vidí váš učitel, případně další učitelé téže třídy. Mohou se do ní jen dívat, nic v ní nemění. Spolužáci vaši firmu nevidí.",
+            "Lidé z Billanty se k údajům dostanou jen tehdy, když je to nutné kvůli podpoře nebo bezpečnosti."
+          ]
+        },
+        {
+          "title": "Kdy se údaje smažou",
+          "body": [
+            "Po skončení třídy můžete svou firmu ještě 30 dní prohlížet. Potom se smaže i s přezdívkou a osobním kódem. Ze šifrovaných záloh zmizí nejpozději do 90 dní.",
+            "Když vás učitel ze třídy odebere, firma se smaže hned."
+          ]
+        },
+        {
+          "title": "Na koho se obrátit",
+          "body": [
+            "O vašich údajích ve třídě rozhoduje vaše škola. Billanta je pro ni jen zpracovává podle smlouvy se školou. S dotazem nebo žádostí o smazání se obraťte na učitele nebo na školu.",
+            "Rodiče se mohou obrátit na školu, která jim řekne podrobnosti, nebo napsat provozovateli Billanty: {operator}."
+          ]
+        }
+      ]
+    },
+    "schoolContract": {
+      "title": "Smlouva se školou o zpracování osobních údajů",
+      "intro": "Podmínky pro školy a smlouva o zpracování osobních údajů žáků v režimu pro třídy.",
+      "sections": [
+        {
+          "title": "Připravujeme",
+          "body": [
+            "Smlouvu se školou o zpracování osobních údajů zveřejníme na této stránce před spuštěním režimu pro třídy.",
+            "Do té doby shrnuje, jak s údaji žáků zacházíme, Informace o soukromí ve třídě a článek 17 obchodních podmínek. S dotazy se obraťte na {operator}."
           ]
         }
       ]
@@ -4127,6 +4259,10 @@
         {
           "q": "Potřebuje moje účetní vlastní tarif?",
           "a": "Ne. Od tarifu Start má jedna účetní přístup do vaší firmy zdarma, v ceně vašeho tarifu."
+        },
+        {
+          "q": "Proč je na fakturách řádek „Vystaveno v aplikaci Billanta“?",
+          "a": "Na bezplatném tarifu nese každý doklad v patičce PDF, e-mailu a online faktury malý odkaz na Billantu. Tak tarif Zdarma platí. Na placeném tarifu a během zkušebního období ho vypnete v Nastavení u faktur."
         }
       ]
     }
@@ -4134,18 +4270,18 @@
   "cookies": {
     "banner": {
       "title": "Cookies",
-      "body": "Nezbytné cookies potřebujeme, aby web fungoval. Analytické (Microsoft Clarity) nám pomáhají web zlepšovat – zapneme je jen s vaším souhlasem.",
+      "body": "Nezbytné cookies potřebujeme, aby web fungoval. Analytické (Microsoft Clarity a údaj, odkud jste k nám přišli) nám pomáhají web zlepšovat – zapneme je jen s vaším souhlasem.",
       "more": "Více informací",
       "accept": "Přijmout vše",
       "reject": "Jen nezbytné",
       "settings": "Nastavení",
       "save": "Uložit volbu",
       "necessary": "Nezbytné",
-      "necessaryHint": "Přihlášení, jazyk, vaše volba cookies. Nelze vypnout.",
+      "necessaryHint": "Přihlášení, jazyk, vaše volba cookies, kód z odkazu, kterým jste přišli. Nelze vypnout.",
       "analytics": "Analytické",
-      "analyticsHint": "Microsoft Clarity: anonymní heatmapy a záznamy návštěv veřejných stránek.",
+      "analyticsHint": "Microsoft Clarity: anonymní heatmapy a záznamy návštěv veřejných stránek. A odkud jste k nám poprvé přišli (zdroj kampaně nebo web s odkazem), uložené k účtu, pokud se zaregistrujete.",
       "saved": "Nastavení cookies uloženo",
-      "bodyDefault": "Nezbytné cookies potřebujeme, aby web fungoval. Analytické (Microsoft Clarity) nám pomáhají web zlepšovat a ve vaší oblasti je máme zapnuté výchozím nastavením – tady je můžete vypnout."
+      "bodyDefault": "Nezbytné cookies potřebujeme, aby web fungoval. Analytické (Microsoft Clarity a údaj, odkud jste k nám přišli) nám pomáhají web zlepšovat a ve vaší oblasti je máme zapnuté výchozím nastavením – tady je můžete vypnout."
     },
     "page": {
       "title": "Zásady cookies",
@@ -4158,35 +4294,79 @@
       },
       "categories": {
         "necessary": "Nezbytné",
+        "functional": "Funkční",
         "analytics": "Analytické"
       },
       "rows": {
         "session": {
-          "purpose": "Udržuje vás přihlášené.",
-          "duration": "30 dní"
+          "purpose": "Udržuje vás přihlášené. Ukázka a žákovský přístup do třídy používají stejnou cookie.",
+          "duration": "30 dní; u ukázky a třídy do jejich konce"
         },
         "csrf": {
           "purpose": "Ochrana přihlašovacího formuláře před podvržením a návrat na původní stránku.",
           "duration": "Do zavření prohlížeče"
         },
+        "oauth": {
+          "purpose": "Zabezpečení přihlášení přes Google nebo jiného poskytovatele. Jen během přihlašování.",
+          "duration": "15 minut"
+        },
+        "tenant": {
+          "purpose": "Pamatuje si, ve které firmě v aplikaci právě pracujete.",
+          "duration": "1 rok; u ukázky a třídy do jejich konce"
+        },
+        "demoTransfer": {
+          "purpose": "Umožní převést data z ukázky do nově založeného účtu.",
+          "duration": "Do konce ukázky"
+        },
         "locale": {
           "purpose": "Pamatuje si zvolený jazyk.",
-          "duration": "1 rok"
+          "duration": "Do zavření prohlížeče"
         },
         "consent": {
           "purpose": "Ukládá vaši volbu v tomto okně cookies.",
           "duration": "6 měsíců"
         },
+        "region": {
+          "purpose": "Pamatuje si, zda ve vaší oblasti potřebujeme k analytice souhlas, aby se to nezjišťovalo při každé návštěvě (v prohlížeči, neodesílá se na server).",
+          "duration": "7 dní"
+        },
         "theme": {
           "purpose": "Pamatuje si světlý nebo tmavý motiv (v prohlížeči, neodesílá se na server).",
           "duration": "Do smazání"
+        },
+        "referral": {
+          "purpose": "Kód doporučení z odkazu, kterým vás pozval jiný uživatel, aby se odměna připsala po registraci. Jen když přijdete přes takový odkaz.",
+          "duration": "30 dní nebo do uplatnění"
+        },
+        "promo": {
+          "purpose": "Promo kód nebo kód akce z odkazu (?promo= nebo /join/KÓD), aby se uplatnil na novou firmu. Jen když přijdete přes takový odkaz.",
+          "duration": "30 dní nebo do uplatnění"
+        },
+        "switch": {
+          "purpose": "Aplikace, ze které přecházíte (odkaz „Přejít z…“ na registraci), aby vám úvodní obrazovka nabídla import. Jen při registraci přes takový odkaz.",
+          "duration": "30 dní"
+        },
+        "invoiceFilters": {
+          "purpose": "Rychlé filtry seznamu faktur v aplikaci.",
+          "duration": "1 rok"
+        },
+        "preferences": {
+          "purpose": "Drobné volby a rozpracované údaje v aplikaci a nástrojích: sbalené sekce, typ grafu, skrytá upozornění, údaje dodavatele ve formuláři faktury bez registrace. Zůstávají v prohlížeči a neodesílají se na server.",
+          "duration": "Do smazání nebo zavření karty"
+        },
+        "attribution": {
+          "purpose": "Odkud jste k nám poprvé přišli: značky kampaně (utm_*), web, který na nás odkázal (jen doména), a první stránka. Při registraci se uloží k účtu, abychom věděli, které kanály fungují. Jen se souhlasem s analytikou.",
+          "duration": "90 dní"
         },
         "clarity": {
           "purpose": "Microsoft Clarity: měření návštěvnosti, heatmapy a záznamy návštěv. Jen se souhlasem.",
           "duration": "1 den až 1 rok"
         }
       },
+      "functionalNote": "Funkční cookies vznikají jen tehdy, když sami použijete odkaz, který je potřebuje (pozvánka, promo kód, přechod z jiné aplikace), nebo volbu v aplikaci, a slouží jen k tomu, co jste tím odkazem nebo volbou chtěli. Proto pro ně nežádáme souhlas. Nikomu je nepředáváme.",
       "analyticsNote": "Analytické cookies používáme jen na veřejných stránkách (úvod, ceník, informační stránky). V aplikaci, kde pracujete s fakturami a údaji o odběratelích, se žádná analytika nespouští. V EU/EHP, Spojeném království, Švýcarsku, Brazílii, Kanadě a v amerických státech, kde nahrávání návštěvy vyžaduje souhlas všech stran (např. Kalifornie, Pensylvánie, Florida, Washington), je zapneme jen s vaším souhlasem; pokud vaši polohu nepoznáme, ptáme se také. Jinde běží výchozím nastavením a můžete je kdykoli vypnout. Polohu odhadujeme jen podle země a státu, které hlásí síť doručující web – neukládáme ji. Clarity provozuje Microsoft; údaje mohou být zpracovány i mimo EU v rámci EU-US Data Privacy Framework. Pokud váš prohlížeč posílá signál Global Privacy Control (GPC), bereme ho všude jako „Jen nezbytné“ a okno s cookies vůbec nezobrazíme.",
+      "attributionNote": "Údaj o tom, odkud jste přišli (billanta_src), si do souhlasu nikam neukládáme: jen ho držíme v paměti otevřené stránky a cookie zapíšeme až po souhlasu s analytikou. Když souhlas odmítnete nebo odvoláte, cookie smažeme.",
+      "schoolsNote": "Na stránkách pro školy (/for-schools) a pro vstup do třídy (/join) ani v žákovském přístupu do třídy nespouštíme žádnou analytiku, a to ani se souhlasem: používají je děti, které samy platný souhlas dát nemohou. Okno s cookies se tam samo neotevírá.",
       "withdraw": "Souhlas můžete kdykoli změnit nebo odvolat tlačítkem níže nebo odkazem „Nastavení cookies“ v patičce webu.",
       "change": "Změnit nastavení cookies",
       "seoTitle": "Zásady cookies a úložišť"
@@ -8032,8 +8212,8 @@
           "keywords": "nespolehlivý plátce dph ověření dič registr plátců dph zveřejněný bankovní účet ručení za dph § 109 kontrola dodavatele",
           "how": [
             "Ptáme se přímo registru plátců DPH Finanční správy. Výsledek platí k okamžiku ověření.",
-            "Když zaplatíte nespolehlivému plátci, ručíte za DPH, kterou neodvede. Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a zákona o DPH).",
-            "Ručíte i tehdy, když za plnění nad 540 000 Kč (dvojnásobek limitu pro platby v hotovosti) zaplatíte na účet, který plátce nezveřejnil (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "Jste-li plátce DPH a dodavatel je ke dni uskutečnění plnění nebo ke dni vaší platby veden jako nespolehlivý plátce, ručíte za DPH, kterou neodvede (§ 109 zákona o DPH). Ručení se vyhnete, když DPH zaplatíte rovnou jeho finančnímu úřadu (§ 109a).",
+            "Ručíte i tehdy, když za plnění zaplatíte na účet, který plátce nezveřejnil, a to bez ohledu na částku (§ 109 odst. 2 písm. c) zákona o DPH).",
             "Zadaný účet porovnáme se zveřejněnými účty, ať ho napíšete jako číslo s kódem banky nebo jako IBAN. Seznam zveřejněných účtů neukazujeme, jen jejich počet."
           ],
           "howTitle": "Jak to funguje",
@@ -8058,7 +8238,7 @@
             },
             "stateNote": {
               "payer": "Finanční správa firmu nevede jako nespolehlivého plátce.",
-              "unreliable": "Když jí zaplatíte za plnění s DPH, ručíte za DPH, kterou neodvede (§ 109 zákona o DPH). DPH můžete zaplatit rovnou jejímu finančnímu úřadu (§ 109a).",
+              "unreliable": "Jste-li plátce DPH, ručíte za DPH z plnění od této firmy, kterou neodvede (§ 109 zákona o DPH). Stačí, aby tak byla vedena ke dni uskutečnění plnění nebo ke dni platby. DPH můžete zaplatit rovnou jejímu finančnímu úřadu (§ 109a).",
               "not_registered": "Toto DIČ v registru plátců DPH není. Firma by vám neměla účtovat DPH.",
               "valid": "DIČ je platné.",
               "invalid": "DIČ v registru není nebo už není aktivní.",
@@ -8070,7 +8250,7 @@
             "publishedCount": "{n, plural, =0 {žádný} one {# účet} few {# účty} other {# účtů}}",
             "accountYes": "Účet {account} je mezi zveřejněnými účty.",
             "accountNo": "Účet {account} mezi zveřejněnými účty není.",
-            "accountNoNote": "Když za plnění nad 540 000 Kč zaplatíte na účet, který plátce nezveřejnil, ručíte za DPH z této platby (§ 109 odst. 2 písm. c) zákona o DPH).",
+            "accountNoNote": "Když za plnění zaplatíte na účet, který plátce nezveřejnil, ručíte za DPH z této platby, a to bez ohledu na částku (§ 109 odst. 2 písm. c) zákona o DPH).",
             "accountInvalid": "„{account}“ nevypadá jako číslo účtu ani IBAN.",
             "source": "Zdroj: Registr plátců DPH, Finanční správa ČR. Výsledek platí k okamžiku ověření.",
             "empty": "Zadejte DIČ nebo IČO a výsledek se ukáže tady."
@@ -8501,7 +8681,7 @@
       "notices": {
         "simplifiedNotForNonPayer": "Zjednodušený daňový doklad vystavuje jen plátce DPH. Ukazujeme náležitosti běžné faktury.",
         "simplifiedLimitCz": "Zjednodušený daňový doklad smíte vystavit jen do 10 000 Kč včetně DPH (§ 30 ZDPH).",
-        "simplifiedLimitSk": "Na Slovensku jde zjednodušená faktura jen do 1 000 € včetně DPH (§ 74 odst. 3 ZoDPH).",
+        "simplifiedLimitSk": "Na Slovensku jde zjednodušená faktura jen do 100 € včetně DPH (§ 74 odst. 3 písm. a) ZoDPH).",
         "simplifiedNotCrossBorder": "Pro dodání do jiného státu EU a vývoz zjednodušený doklad vystavit nelze. Ukazujeme běžnou fakturu.",
         "proformaTaxDocument": "Zálohová faktura není daňový doklad. Až záloha přijde, do 15 dnů vystavte daňový doklad k přijaté platbě.",
         "identifiedNoTaxDocument": "Identifikovaná osoba v tuzemsku DPH nepřičítá – fakturuje jako neplátce.",
@@ -8984,7 +9164,9 @@
     "disclaimer": "Článek je shrnutí, ne daňové ani právní poradenství. Před rozhodnutím si údaje ověřte ve zdrojích nebo u daňového poradce.",
     "ctaTitle": "Fakturujte bez starostí",
     "ctaBody": "Billanta hlídá splatnosti, QR platby a exporty pro účetní. Začněte zdarma.",
-    "ctaButton": "Založit účet zdarma"
+    "ctaButton": "Založit účet zdarma",
+    "aiAuto": "Článek napsala umělá inteligence z našich podkladů a před zveřejněním prošel jen automatickou kontrolou. Pokud najdete chybu, <contact>napište nám</contact>.",
+    "aiReviewed": "Článek jsme připravili s pomocí umělé inteligence, před zveřejněním ho zkontroloval člověk. Pokud najdete chybu, <contact>napište nám</contact>."
   },
   "adminBlog": {
     "title": "Blog",
@@ -9072,9 +9254,8 @@
     },
     "autopublish": {
       "title": "Automatické články",
-      "hint": "Koncepty z našich dat (daňový kalendář, nástroje, typy podnikání). Zapnutý typ se zveřejní sám, jen když projde všemi kontrolami, netýká se změny zákona a v daném jazyce za posledních 7 dní nevyšlo víc než {n} automatických článků. Ostatní čekají na schválení.",
+      "hint": "Koncepty z našich dat (nástroje, typy podnikání). Zapnutý typ se zveřejní sám, jen když projde všemi kontrolami, netýká se změny zákona a v daném jazyce za posledních 7 dní nevyšlo víc než {n} automatických článků. Ostatní čekají na schválení, články o daňových termínech vždy.",
       "kinds": {
-        "tax_deadlines": "Každý měsíc 20. dne, jen česky.",
         "tool_howto": "Každé úterý jeden nový návod, česky a slovensky.",
         "trade_invoicing": "Každé úterý jeden nový obor, česky a slovensky."
       },
@@ -9379,7 +9560,7 @@
       "taxable": "Zdanitelný základ",
       "incomeTax": "Daň z příjmů",
       "incomeTaxReduced": "Daň z příjmů (15 %)",
-      "incomeTaxHint": "15 % při příjmech do 100 000 € (za rok 2024 do 60 000 €), jinak 19 % a 25 % (od roku 2026 také 30 % a 35 %). Bez daňového bonusu na děti a dalších odpočtů.",
+      "incomeTaxHint": "15 % při příjmech do 100 000 € (za rok 2024 do 60 000 €), jinak 19 % a 25 % ze základu daně nad 176,8násobek životního minima. Od roku 2026 platí pásma 19 % do 43 983 €, 25 % do 60 349 €, 30 % do 75 010 € a 35 % nad tuto částku. Bez daňového bonusu na děti a dalších odpočtů.",
       "health": "Zdravotní pojištění za rok",
       "healthHint": "{rate} % z vyměřovacího základu (zisk děleno 1,486), nejméně z minimálního základu za každý měsíc podnikání.",
       "social": "Sociální pojištění od července {year}",
@@ -9924,7 +10105,8 @@
     "kind": "Jakou firmu chcete vést?",
     "join": "Vstoupit do třídy",
     "joining": "Zakládáme vaši firmu…",
-    "privacy": "Nechceme e-mail ani heslo. Firma je cvičná a smaže se po skončení výuky.",
+    "privacy": "Nechceme e-mail ani heslo. Firma je cvičná a smaže se 30 dní po skončení výuky.",
+    "privacyLink": "<link>Co ukládáme a kdo to vidí</link>",
     "haveCode": "Už jsem ve třídě a mám osobní kód",
     "personalCode": "Osobní kód",
     "personalCodeHint": "Kód jste dostali po prvním vstupu. Když ho nemáte, požádejte učitele o nový.",
@@ -9985,7 +10167,7 @@
     "suspended": "pozastavená",
     "invitedYes": "pozván kolegou ze školy",
     "domain": "E-mailová doména školy",
-    "domainHint": "Kolegové z této domény budou schváleni automaticky. U gmailu a podobných pole vymažte.",
+    "domainHint": "Kolegové z této domény budou schváleni automaticky. Doménu vyplňte, jen když jste ověřili, že patří škole (ne gmail a podobné).",
     "note": "Poznámka",
     "noteHint": "U zamítnutí se pošle učiteli e-mailem.",
     "approve": "Schválit",
@@ -9994,10 +10176,11 @@
     "rejected": "Žádost zamítnuta.",
     "suspend": "Pozastavit školu",
     "unsuspend": "Obnovit školu",
-    "suspendConfirm": "Pozastavit školu {school}? Všechny její třídy se zavřou pro nové žáky.",
+    "suspendConfirm": "Pozastavit školu {school}? Všechny její třídy se zavřou pro nové žáky a učitelé ztratí přístup k firmám žáků.",
     "suspendedDone": "Škola pozastavena.",
     "unsuspended": "Škola obnovena.",
-    "failed": "Nepovedlo se"
+    "failed": "Nepovedlo se",
+    "rejectConfirm": "Zamítnout učitele {name}? Jeho třídy skončí a zůstanou 30 dní jen ke čtení, z ostatních tříd bude odebrán."
   },
   "offline": {
     "offline": "Offline",
@@ -10087,11 +10270,11 @@
       },
       "czsk": {
         "title": "Česko vs. Slovensko",
-        "body": "Stejná faktura podle českých a podle slovenských pravidel: jiné sazby DPH, jiné identifikátory (IČ DPH) i jiné QR platby."
+        "body": "Stejná faktura podle českých a podle slovenských pravidel: jiné sazby DPH a jiné identifikátory (IČ DPH)."
       },
       "roles": {
-        "title": "Firma, účetní, kolega",
-        "body": "Kdo smí co vidět a upravit. Studenti si vyzkouší roli majitele, účetní i spolupracovníka jen pro čtení."
+        "title": "Majitel a učitel",
+        "body": "Kdo smí co vidět a upravit. Student vede svou firmu jako majitel a učitel do ní nahlíží jen pro čtení. Cvičení s přístupem pro účetní připravujeme."
       }
     },
     "access": {
@@ -10100,7 +10283,7 @@
       "steps": {
         "request": {
           "title": "Napište nám",
-          "body": "Ze školního e-mailu: název školy, předmět, ročník a přibližný počet studentů."
+          "body": "Název školy, předmět, ročník a přibližný počet studentů. Ze školního e-mailu vás ověříme rychleji."
         },
         "setup": {
           "title": "Připravíme třídu",
@@ -10131,6 +10314,7 @@
         "body": "Výukový přístup není určený pro skutečné podnikání. Kdo začne fakturovat doopravdy, založí si běžný účet."
       }
     },
+    "privacyLink": "Co se o žácích ukládá a kdo to vidí, vysvětluje krátká <link>informace o soukromí pro žáky a rodiče</link>.",
     "resourcesTitle": "Materiály k výuce",
     "resourcesLead": "Hodiny a pracovní listy, návody k legislativě a stránky, které jednotlivá témata vysvětlují podrobně.",
     "resources": {
@@ -10149,7 +10333,7 @@
       },
       {
         "q": "Pro jaké školy je výukový přístup?",
-        "a": "Pro obchodní akademie a další střední školy s ekonomickými předměty, vyšší odborné a vysoké školy i rekvalifikační kurzy. Pokud učíte fakturaci jinde, napište nám také."
+        "a": "Pro základní i střední školy, zejména obchodní akademie a školy s ekonomickými předměty, pro vyšší odborné a vysoké školy i rekvalifikační kurzy. Pokud učíte fakturaci jinde, napište nám také."
       },
       {
         "q": "Kdy bude režim pro třídy hotový?",
@@ -10161,7 +10345,7 @@
       },
       {
         "q": "Co s osobními údaji studentů?",
-        "a": "Ke cvičení nejsou potřeba. Firmy i odběratelé jsou vymyšlení a ke třídě stačí školní e-mail studenta."
+        "a": "Ke cvičení nejsou potřeba. Žáci vstupují do třídy jen s kódem třídy a přezdívkou, bez e-mailu a hesla. Firmy i odběratelé jsou vymyšlení a cvičné firmy se smažou 30 dní po skončení třídy."
       }
     ]
   },
@@ -10222,7 +10406,8 @@
       "points": [
         "Kód vydáváme my, po krátké domluvě.",
         "Výhodu pro sledující i podmínky spolupráce nastavíme společně.",
-        "Fakturu za spolupráci nám samozřejmě můžete poslat z Billanty."
+        "Fakturu za spolupráci nám samozřejmě můžete poslat z Billanty.",
+        "Placené a partnerské příspěvky musíte jasně označit jako reklamu nebo spolupráci."
       ],
       "cta": "Domluvit se na kódu",
       "mailSubject": "Billanta – promo kód pro tvůrce"

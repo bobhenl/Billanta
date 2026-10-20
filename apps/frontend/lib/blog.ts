@@ -20,6 +20,8 @@ export interface BlogPost extends BlogListItem {
   translationKey: string;
   body: string;
   sources: BlogSource[];
+  /** Went live without a person reading it (only generated kinds can). */
+  autoPublished: boolean;
   updatedAt: string;
   alternates: { locale: string; slug: string }[];
 }
@@ -48,7 +50,10 @@ async function getJson<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-export const fetchBlogPosts = (locale: string) => getJson<BlogListItem[]>(`/${locale}`, []);
+/** Everything but a hand-written post was drafted by AI (EU AI Act art. 50 asks us to say so). */
+export const isAiWritten = (kind: BlogKind) => kind !== 'manual';
+
+export const fetchBlogPosts =(locale: string) => getJson<BlogListItem[]>(`/${locale}`, []);
 
 export const fetchBlogPost = (locale: string, slug: string) =>
   /^[a-z0-9-]{1,100}$/.test(slug) ? getJson<BlogPost | null>(`/${locale}/${slug}`, null) : Promise.resolve(null);

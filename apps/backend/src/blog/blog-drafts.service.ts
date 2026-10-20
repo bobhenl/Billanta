@@ -40,7 +40,8 @@ const czDate = (iso: string) => {
  * lands as `pending_review` with the automatic checks attached. A generated
  * kind can go live on its own when its switch in /admin/blog is on, the
  * checks passed, the post isn't about a changing law and the weekly cap
- * isn't reached (blog-autopublish.ts). Briefs always wait for a person.
+ * isn't reached (blog-autopublish.ts). Briefs and tax deadline posts always
+ * wait for a person.
  *
  * Tax deadline posts are Czech only: the calendar we have is Finanční
  * správa's, and there is no Slovak equivalent to build facts from.

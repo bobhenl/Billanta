@@ -62,8 +62,12 @@ const EXEMPT_RE = /osvobozen|oslobod|exempt|steuerfrei|§\s*6[4-6]\b|§\s*4[37]\
 const NON_PAYER_RE = /nen[íi] pl[áa]tce|nepl[áa]tce|nie je platite[ľl]|neplatite[ľl]|not (?:a )?vat[- ]payer|not registered for vat/i;
 const REGISTRY_RE = /zaps[áa]n|zap[íi]san|spisov[áa] zna[čc]ka|odd[íi]l|odd\.|vlo[žz]ka|obchodn[íi]m rejst|obchodnom registri|živnostensk|živnostenskom/i;
 
-/** Simplified tax document limits: 10 000 Kč (§30/1 ZDPH), 1 000 € (§74/3 ZoDPH), both incl. VAT. */
-const SIMPLIFIED_LIMIT = { CZ: { amount: 10000, currency: 'CZK' }, SK: { amount: 1000, currency: 'EUR' } } as const;
+/**
+ * Simplified tax document limits, both incl. VAT: 10 000 Kč (§30/1 ZDPH) and
+ * 100 € (§74/3 a) ZoDPH). The SK 400 € limit of §74/3 b) applies only to
+ * eKasa receipts, which an invoice is not.
+ */
+const SIMPLIFIED_LIMIT = { CZ: { amount: 10000, currency: 'CZK' }, SK: { amount: 100, currency: 'EUR' } } as const;
 
 const isDate = (v: string | undefined) => !!v && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v));
 const near = (a: number, b: number, tol: number) => Math.abs(a - b) <= tol + 1e-9;

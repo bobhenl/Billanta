@@ -4,6 +4,7 @@ import { Link } from '@/i18n/navigation';
 import { BrandMark } from '@/components/brand-mark';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { AttributionCookie } from '@/components/signup-attribution';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 // Sign-in, sign-up and password forms have no search value; keep them out
@@ -42,6 +43,10 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         </Link>
         <CookieSettingsButton label={tFooter('legal.cookieSettings')} className="transition-colors hover:text-foreground" />
       </footer>
+      {/* A visitor who lands straight on /signup from a tagged link and
+          consented on an earlier visit (or needs no banner) is still counted. */}
+      <AttributionCookie />
+
     </div>
   );
 }

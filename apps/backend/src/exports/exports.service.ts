@@ -13,6 +13,7 @@ import { type AccountingBasis, computeAnnualSummary, type FlatRate } from "./ann
 import { getHomeRate } from "./home-rates";
 import { homeCurrencyOf, type HomeCurrency } from "@faktur/cz-compliance";
 import { ReportRates } from "./uniform-rate";
+import { csvCell } from "./csv-cell";
 import {
   generateDphDp3,
   generateDphKh1,
@@ -79,13 +80,7 @@ function csDate(d: Date | null | undefined): string {
 
 /** Czech Excel opens `;`-separated, comma-decimal, BOM-prefixed UTF-8 cleanly. */
 function csv(rows: (string | number | null | undefined)[][]): string {
-  const cell = (v: string | number | null | undefined) => {
-    if (v == null) return "";
-    // Text starting like a formula (=, +, @) is prefixed with ' so Excel shows it instead of running it.
-    const s = typeof v === "number" ? v.toFixed(2).replace(".", ",") : String(v).replace(/^([=+@\t\r])/, "'$1");
-    return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
-  return "﻿" + rows.map((r) => r.map(cell).join(";")).join("\r\n") + "\r\n";
+  return "﻿" + rows.map((r) => r.map(csvCell).join(";")).join("\r\n") + "\r\n";
 }
 
 function xml(v: string | number | null | undefined): string {

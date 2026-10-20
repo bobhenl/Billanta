@@ -160,12 +160,8 @@ BEGIN
 
   INSERT INTO tenant_memberships (tenant_id, user_id, role)
   SELECT v_tenant, u, 'owner' FROM unnest(v_owners) AS u;
-  INSERT INTO tenant_memberships (tenant_id, user_id, role)
-  SELECT v_tenant, t.user_id, 'viewer'
-  FROM classroom_teachers t
-  WHERE t.id = v_class.owner_teacher_id
-     OR t.id IN (SELECT ct.teacher_id FROM classroom_class_teachers ct WHERE ct.class_id = p_class_id)
-  ON CONFLICT DO NOTHING;
+  -- The teachers look in as 0081 decides: approved, school not suspended.
+  PERFORM classroom_sync_class(p_class_id);
 
   FOR v_bank IN SELECT * FROM jsonb_array_elements(coalesce(p_bank, '[]'::jsonb)) LOOP
     INSERT INTO tenant_bank_accounts (tenant_id, label, account_number, bank_code, iban, swift, currency, sort_order)
@@ -408,8 +404,9 @@ DROP TRIGGER IF EXISTS classroom_student_cleanup_after ON classroom_students;
 CREATE TRIGGER classroom_student_cleanup_after AFTER DELETE ON classroom_students
   FOR EACH ROW EXECUTE FUNCTION classroom_student_cleanup();
 --> statement-breakpoint
--- classroom_add_teacher / classroom_remove_teacher look into home companies;
--- this does the same for the extra ones.
+-- classroom_add_teacher adds the viewers through classroom_sync_class (0081),
+-- which covers every company of the class; classroom_remove_teacher (0080)
+-- only knows the home companies, so this takes the teacher out of the others.
 CREATE OR REPLACE FUNCTION classroom_class_teachers_sync()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -417,14 +414,6 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF TG_OP = 'INSERT' THEN
-    INSERT INTO tenant_memberships (tenant_id, user_id, role)
-    SELECT c.tenant_id, t.user_id, 'viewer'
-    FROM classroom_companies c, classroom_teachers t
-    WHERE c.class_id = NEW.class_id AND t.id = NEW.teacher_id
-    ON CONFLICT DO NOTHING;
-    RETURN NEW;
-  END IF;
   DELETE FROM tenant_memberships m
   USING classroom_companies c, classroom_teachers t
   WHERE c.class_id = OLD.class_id AND t.id = OLD.teacher_id
@@ -435,7 +424,7 @@ $$;
 --> statement-breakpoint
 DROP TRIGGER IF EXISTS classroom_class_teachers_sync ON classroom_class_teachers;
 --> statement-breakpoint
-CREATE TRIGGER classroom_class_teachers_sync AFTER INSERT OR DELETE ON classroom_class_teachers
+CREATE TRIGGER classroom_class_teachers_sync AFTER DELETE ON classroom_class_teachers
   FOR EACH ROW EXECUTE FUNCTION classroom_class_teachers_sync();
 --> statement-breakpoint
 REVOKE ALL ON FUNCTION classroom_class_open(uuid) FROM PUBLIC;

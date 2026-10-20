@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { BlogMarkdown } from '@/components/blog-markdown';
 import { NewsletterSignup } from '@/components/newsletter-signup';
-import { fetchBlogPost, formatBlogDate, type BlogPost } from '@/lib/blog';
+import { fetchBlogPost, formatBlogDate, isAiWritten, type BlogPost } from '@/lib/blog';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -41,6 +41,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
   if (!post) notFound();
   const t = await getTranslations('blog');
   const path = `/blog/${post.slug}`;
+  const ai = isAiWritten(post.kind);
 
   return (
     <article className="container max-w-3xl py-10 sm:py-14">
@@ -56,7 +57,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
             dateModified: post.updatedAt,
             inLanguage: locale,
             url: `${SITE_URL}/${locale}${path}`,
-            author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+            // No author for AI posts: claiming one would pass machine text off as someone's work.
+            ...(ai ? {} : { author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL } }),
             publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL }
           },
           breadcrumbLd(locale, [
@@ -78,6 +80,21 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
           <> · {t('updated', { date: formatBlogDate(locale, post.updatedAt) })}</>
         )}
       </p>
+      {ai && (
+        <p className="mt-4 flex gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
+          <Sparkles className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>
+            {/* Claim a human review only when the backend says so (an older backend sends no flag). */}
+            {t.rich(post.autoPublished === false ? 'aiReviewed' : 'aiAuto', {
+              contact: (chunks) => (
+                <Link href="/contact" className="text-primary underline underline-offset-2 hover:no-underline">
+                  {chunks}
+                </Link>
+              )
+            })}
+          </span>
+        </p>
+      )}
       <p className="mt-6 text-lg text-muted-foreground">{post.description}</p>
 
       <div className="mt-8">

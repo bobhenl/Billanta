@@ -1,7 +1,8 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routing } from './i18n/routing';
-import { ATTRIBUTION_COOKIE, ATTRIBUTION_MAX_AGE, attributionFrom, serializeAttribution } from './lib/attribution';
+import { ATTRIBUTION_COOKIE } from './lib/attribution';
+import { CONSENT_COOKIE, parseConsent } from './lib/consent';
 import { JOIN_PATH, PROMO_CODE, PROMO_COOKIE } from './lib/promo';
 import { REFERRAL_CODE, REFERRAL_COOKIE } from './lib/referral';
 import { PROFILE_DOMAIN, SITE_URL } from './lib/site';
@@ -41,12 +42,20 @@ function profileRewrite(request: NextRequest) {
   return NextResponse.rewrite(url);
 }
 
-/** `?ref=` on any page: remember who invited the visitor (first invite wins). */
-function rememberReferral(request: NextRequest, response: NextResponse) {
-  const ref = request.nextUrl.searchParams.get('ref');
-  if (!ref || !REFERRAL_CODE.test(ref) || request.cookies.has(REFERRAL_COOKIE)) return response;
-  response.cookies.set(REFERRAL_COOKIE, ref.toUpperCase(), {
-    maxAge: 60 * 60 * 24 * 30,
+/**
+ * The referral, promo and switch cookies carry a link the visitor chose to
+ * open (an invite, a promo or event code, "switch from X") through to the
+ * signup it was meant for. They are set only by such a link, never on a
+ * plain visit, and need no consent as storage the visitor asked for
+ * (ePrivacy art. 5(3), second sentence); the cookie policy lists them as
+ * functional. 30 days is the longest a signup reasonably follows the link.
+ */
+const LINK_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
+const SIGNUP_PATH = /^\/(?:(?:cs|sk|en)\/)?signup\/?$/;
+
+function setLinkCookie(request: NextRequest, response: NextResponse, name: string, value: string) {
+  response.cookies.set(name, value, {
+    maxAge: LINK_COOKIE_MAX_AGE,
     path: '/',
     sameSite: 'lax',
     httpOnly: true,
@@ -56,21 +65,27 @@ function rememberReferral(request: NextRequest, response: NextResponse) {
 }
 
 /**
- * First touch only: the utm tags or the external site that first brought
- * the visitor, saved with the account at signup (lib/attribution.ts).
+ * `?ref=` on any page: remember who invited the visitor (first invite wins).
+ * Any page, because badges, embeds and invoice footers link to the page
+ * they are about, not to /signup.
  */
-function rememberAttribution(request: NextRequest, response: NextResponse) {
-  if (request.cookies.has(ATTRIBUTION_COOKIE)) return response;
-  const own = [request.nextUrl.hostname.toLowerCase(), new URL(SITE_URL).hostname.toLowerCase()];
-  const attribution = attributionFrom(request.nextUrl, request.headers.get('referer'), own);
-  if (!attribution) return response;
-  response.cookies.set(ATTRIBUTION_COOKIE, serializeAttribution(attribution), {
-    maxAge: ATTRIBUTION_MAX_AGE,
-    path: '/',
-    sameSite: 'lax',
-    httpOnly: true,
-    secure: request.nextUrl.protocol === 'https:'
-  });
+function rememberReferral(request: NextRequest, response: NextResponse) {
+  const ref = request.nextUrl.searchParams.get('ref');
+  if (!ref || !REFERRAL_CODE.test(ref) || request.cookies.has(REFERRAL_COOKIE)) return response;
+  return setLinkCookie(request, response, REFERRAL_COOKIE, ref.toUpperCase());
+}
+
+/**
+ * The signup attribution cookie is analytics and needs consent first, so it
+ * is no longer set here, where the first request comes before any answer
+ * (components/signup-attribution.tsx writes it after a yes). What this does
+ * is drop one when the visitor has said no: older ones were set here before
+ * consent and are httpOnly, out of the page's reach.
+ */
+function forgetRefusedAttribution(request: NextRequest, response: NextResponse) {
+  if (!request.cookies.has(ATTRIBUTION_COOKIE)) return response;
+  if (parseConsent(request.cookies.get(CONSENT_COOKIE)?.value)?.analytics !== false) return response;
+  response.cookies.set(ATTRIBUTION_COOKIE, '', { maxAge: 0, path: '/' });
   return response;
 }
 
@@ -84,32 +99,20 @@ function rememberPromo(request: NextRequest, response: NextResponse) {
   if (!promo || !PROMO_CODE.test(promo)) return response;
   const code = promo.toUpperCase();
   if (request.cookies.get(PROMO_COOKIE)?.value === code) return response;
-  response.cookies.set(PROMO_COOKIE, code, {
-    maxAge: 60 * 60 * 24 * 30,
-    path: '/',
-    sameSite: 'lax',
-    httpOnly: true,
-    secure: request.nextUrl.protocol === 'https:'
-  });
-  return response;
+  return setLinkCookie(request, response, PROMO_COOKIE, code);
 }
 
 /**
- * `?from=<app>` (the signup links on /switch and /compare pages): remember
- * the app the visitor is leaving, so the welcome screen offers its import.
- * Not set by the guide pages themselves, which stay cacheable.
+ * `/signup?from=<app>` (the signup links on /switch and /compare pages):
+ * remember the app the visitor is leaving, so the welcome screen offers its
+ * import. Only on /signup, the one place those links go; not set by the
+ * guide pages themselves, which stay cacheable.
  */
 function rememberSwitchSource(request: NextRequest, response: NextResponse) {
   const from = request.nextUrl.searchParams.get('from');
+  if (!SIGNUP_PATH.test(request.nextUrl.pathname)) return response;
   if (!isSwitchBrand(from) || request.cookies.get(SWITCH_COOKIE)?.value === from) return response;
-  response.cookies.set(SWITCH_COOKIE, from, {
-    maxAge: 60 * 60 * 24 * 30,
-    path: '/',
-    sameSite: 'lax',
-    httpOnly: true,
-    secure: request.nextUrl.protocol === 'https:'
-  });
-  return response;
+  return setLinkCookie(request, response, SWITCH_COOKIE, from);
 }
 
 /**
@@ -129,8 +132,9 @@ function markJoinLocale(request: NextRequest, response: NextResponse) {
 }
 
 /**
- * A response that sets a cookie (the referral or promo code, the attribution, the locale for a visitor
- * who has cookies) must never reach a shared cache, whatever Next would
+ * A response that sets a cookie (a link cookie, a refused attribution's
+ * removal, the locale for a visitor who has cookies) must never reach a
+ * shared cache, whatever Next would
  * say about the page. Next keeps a Cache-Control it finds on the response,
  * so this wins over the page's ISR one.
  */
@@ -142,7 +146,7 @@ function privateIfSettingCookies(response: NextResponse) {
 export default function middleware(request: NextRequest) {
   const locale = request.headers.get('cookie')?.trim() ? intl : intlNoCookie;
   const response = profileRewrite(request) ?? markJoinLocale(request, locale(request));
-  return privateIfSettingCookies(rememberSwitchSource(request, rememberAttribution(request, rememberPromo(request, rememberReferral(request, response)))));
+  return privateIfSettingCookies(rememberSwitchSource(request, forgetRefusedAttribution(request, rememberPromo(request, rememberReferral(request, response)))));
 }
 
 export const config = {

@@ -4,6 +4,7 @@ import { CookieConsent } from '@/components/cookie-consent';
 import { MarketingFooter } from '@/components/marketing-footer';
 import { MarketingNavbar } from '@/components/marketing-navbar';
 import { MarketingTabBar } from '@/components/marketing-tab-bar';
+import { AttributionCookie } from '@/components/signup-attribution';
 
 /**
  * Shared chrome for every public, indexable page (home, pricing, about,
@@ -24,10 +25,11 @@ export default async function MarketingLayout({ children, params }: { children: 
         <MarketingFooter />
       </div>
       <MarketingTabBar />
-      {/* Consent + analytics live on the public pages only — never in the
+      {/* Consent + analytics live on the public pages only – never in the
           dashboard, where Clarity would record invoice contents. */}
       <CookieConsent />
       <Clarity />
+      <AttributionCookie />
     </div>
   );
 }

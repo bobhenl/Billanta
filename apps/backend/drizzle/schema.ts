@@ -1940,8 +1940,6 @@ export const classroomClasses = pgTable(
     endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
     // Smallest "days before deletion" reminder already sent.
     remindedDays: integer("reminded_days"),
-    failedReentries: integer("failed_reentries").notNull().default(0),
-    reentryLockedUntil: timestamp("reentry_locked_until", { withTimezone: true }),
     cleanupStartedAt: timestamp("cleanup_started_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -2085,6 +2083,26 @@ export const classroomAccountants = pgTable(
       table.studentId,
     ),
     classIdx: index("classroom_accountants_class_idx").on(table.classId),
+  }),
+);
+
+// Wrong re-entry codes per class and network (salted IP hash, migration
+// 0081); only classroom_reenter reads and writes it.
+export const classroomReentryMisses = pgTable(
+  "classroom_reentry_misses",
+  {
+    classId: uuid("class_id")
+      .notNull()
+      .references(() => classroomClasses.id, { onDelete: "cascade" }),
+    ipHash: char("ip_hash", { length: 64 }).notNull(),
+    misses: integer("misses").notNull().default(0),
+    windowStartedAt: timestamp("window_started_at", { withTimezone: true }),
+    lockedUntil: timestamp("locked_until", { withTimezone: true }),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.classId, table.ipHash] }),
+    updatedIdx: index("classroom_reentry_misses_updated_idx").on(table.updatedAt),
   }),
 );
 
