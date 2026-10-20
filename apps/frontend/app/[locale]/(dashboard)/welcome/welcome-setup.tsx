@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { BadgeCheck, Bot, Check, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Timer, type LucideIcon } from 'lucide-react';
+import { useEffect, useState, useTransition } from 'react';
+import { BadgeCheck, Bot, Check, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Save, Timer, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/components/modal';
@@ -12,8 +12,10 @@ import { Typeahead } from '@/components/typeahead';
 import { fetchContactSearch } from '@/components/company-lookup';
 import { hasSlowRegistryPart, registryForCountry, type RegistryPart } from '@/lib/company-lookup';
 import { cn } from '@/lib/utils';
+import { forgetGuestInvoices, readGuestInvoices, type GuestInvoiceBody } from '@/lib/guest-invoices';
 import type { AresPrefill } from '../invoices/new/types';
 import { updateCompany, updateModules } from '../settings/actions';
+import { importGuestInvoices } from './actions';
 
 const ICONS: Record<ToggleableModule, LucideIcon> = {
   expenses: Receipt,
@@ -31,6 +33,8 @@ type AresPatch = Record<string, string | boolean | null>;
  * Settings → Company / Modules, so everything stays changeable later. The
  * last one, the app the company is leaving (preset from a /switch page),
  * sends "finish" on to that app's import instead of the dashboard.
+ * Invoices made as a guest on /create-invoice in this browser come along
+ * (unless unticked) on finish and on skip alike.
  */
 export function WelcomeSetup({
   initialModules,
@@ -59,6 +63,40 @@ export function WelcomeSetup({
   const [saving, startSave] = useTransition();
   const [importFrom, setImportFrom] = useState<string | null>(initialImportFrom); // an import source key, or null = starting fresh
   const preset = presetForModules(modules);
+  const [guest, setGuest] = useState<GuestInvoiceBody[]>([]);
+  const [carryGuest, setCarryGuest] = useState(true);
+
+  // localStorage only exists in the browser. A fresh company starts from the guest's supplier block.
+  useEffect(() => {
+    const kept = readGuestInvoices();
+    setGuest(kept);
+    const last = kept.at(-1);
+    if (!last || company.ico) return;
+    if (last.supplier.ico) setQuery(last.supplier.ico);
+    if (last.vatPayer) setVatPayer(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** Runs before the company patch, so what the user picks here wins over the guest copy. */
+  const carryOver = async () => {
+    if (!carryGuest || guest.length === 0) return true;
+    const r = await importGuestInvoices(guest);
+    if (!r.ok) {
+      toast({ text: `${t('guest.failed')}${r.error ? `: ${r.error}` : ''}`, tone: 'err' });
+      return false;
+    }
+    forgetGuestInvoices();
+    setGuest([]);
+    toast({ text: t('guest.done', { invoices: r.data.invoices, contacts: r.data.contactsCreated }), tone: 'ok' });
+    return true;
+  };
+
+  const skip = () =>
+    startSave(async () => {
+      await carryOver();
+      router.push(nextPage);
+      router.refresh();
+    });
 
   // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
   // ARES hits at once, the slow Slovak name search appended when it answers.
@@ -87,6 +125,7 @@ export function WelcomeSetup({
 
   const finish = () =>
     startSave(async () => {
+      await carryOver();
       const patch: AresPatch = { dic_vat_payer: vatPayer, ...(picked ? companyPatch(picked) : {}) };
       if (!picked && /^\d{8}$/.test(query.trim())) patch.ico = query.trim();
       const [c, m] = await Promise.all([updateCompany(patch), updateModules(modules)]);
@@ -117,6 +156,20 @@ export function WelcomeSetup({
         <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
       </header>
+
+      {guest.length > 0 && (
+        <section className="flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+          <Save className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+          <div className="min-w-0 flex-1">
+            <h2 className="font-bold">{t('guest.title', { n: guest.length })}</h2>
+            <p className="text-xs text-muted-foreground">{t('guest.hint')}</p>
+            <label className="mt-2 flex items-center gap-2 text-sm font-medium">
+              <input type="checkbox" className="h-4 w-4 accent-primary" checked={carryGuest} onChange={(e) => setCarryGuest(e.target.checked)} />
+              {t('guest.toggle')}
+            </label>
+          </div>
+        </section>
+      )}
 
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
         {step(1, t('companyTitle'), t('companyHint'))}
@@ -246,7 +299,7 @@ export function WelcomeSetup({
       </section>
 
       <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={() => router.push(nextPage)}>
+        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={skip}>
           {t('skip')}
         </button>
         <button type="button" className={buttonClass.primary} disabled={saving} onClick={finish}>

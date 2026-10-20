@@ -5171,7 +5171,14 @@
     "importHint": "Vyberte ju a po uložení vás prevedieme importom kontaktov, faktúr aj číselného radu.",
     "importNone": "Začínam od nuly",
     "importOther": "Iná aplikácia / Excel",
-    "finishImport": "Hotovo, ideme importovať"
+    "finishImport": "Hotovo, ideme importovať",
+    "guest": {
+      "title": "{n, plural, one {# faktúra vystavená bez účtu} few {# faktúry vystavené bez účtu} other {# faktúr vystavených bez účtu}}",
+      "hint": "Uložíme ich ako vystavené doklady, odberateľov ako kontakty a číslovanie bude pokračovať za poslednou z nich. Prázdne údaje o firme doplníme z dodávateľa.",
+      "toggle": "Prevziať do účtu",
+      "done": "Prevzaté: {invoices, plural, one {# faktúra} few {# faktúry} other {# faktúr}}, {contacts, plural, one {# nový kontakt} few {# nové kontakty} other {# nových kontaktov}}.",
+      "failed": "Faktúry bez účtu sa teraz nepodarilo prevziať"
+    }
   },
   "registry": {
     "label": "Register firiem",
@@ -6193,7 +6200,6 @@
     "download": "Stiahnuť faktúru v PDF",
     "privacy": "Faktúru vygenerujeme a hneď zabudneme, na serveri nič nezostáva.",
     "doneTitle": "Faktúra je stiahnutá.",
-    "doneText": "S účtom zadarmo by ste ju mohli uložiť, poslať e-mailom, sledovať úhradu a nabudúce ju vystaviť na pár kliknutí.",
     "signup": "Založiť účet zadarmo",
     "errors": {
       "invalid": "Niektoré údaje nie sú v poriadku. Skontrolujte povinné polia, dátumy a čísla.",
@@ -6347,6 +6353,13 @@
       "hintReverseCharge": "Faktúra bude bez DPH s údajom „prenesenie daňovej povinnosti“ (§ 69 ods. 12 zákona o DPH). Len medzi platiteľmi DPH.",
       "hintCreditNote": "Pri znížení ceny zadajte zápornú cenu za jednotku, napr. -100.",
       "identifiedNote": "Prenesenie daňovej povinnosti."
+    },
+    "carryOver": {
+      "title": "Uložte si faktúry do účtu – číslovanie a odberateľov prevezmeme.",
+      "kept": "V tomto prehliadači {n, plural, one {je uložená # faktúra} few {sú uložené # faktúry} other {je uložených # faktúr}}.",
+      "cta": "Uložiť do účtu zadarmo",
+      "forget": "Zabudnúť",
+      "signupNote": "Po registrácii prevezmeme faktúry, ktoré ste v tomto prehliadači vystavili bez účtu: číslovanie bude pokračovať a odberatelia sa uložia ako kontakty."
     }
   },
   "publicProfile": {
@@ -6831,7 +6844,8 @@
         "bitfaktura": "naimportoval(a) dáta z BitFaktúry",
         "csv": "naimportoval(a) doklady z CSV",
         "contacts_csv": "naimportoval(a) kontakty z CSV",
-        "fakturoid": "naimportoval(a) dáta z Fakturoidu"
+        "fakturoid": "naimportoval(a) dáta z Fakturoidu",
+        "guest": "prevzal(a) faktúry vystavené bez účtu"
       }
     },
     "fields": {

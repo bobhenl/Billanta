@@ -5171,7 +5171,14 @@
     "importHint": "Vyberte ji a po uložení vás provedeme importem kontaktů, faktur i číselné řady.",
     "importNone": "Začínám od nuly",
     "importOther": "Jiná aplikace / Excel",
-    "finishImport": "Hotovo, jdeme importovat"
+    "finishImport": "Hotovo, jdeme importovat",
+    "guest": {
+      "title": "{n, plural, one {# faktura vystavená bez účtu} few {# faktury vystavené bez účtu} other {# faktur vystavených bez účtu}}",
+      "hint": "Uložíme je jako vystavené doklady, odběratele jako kontakty a číslování bude pokračovat za poslední z nich. Prázdné údaje o firmě doplníme z dodavatele.",
+      "toggle": "Převzít do účtu",
+      "done": "Převzato: {invoices, plural, one {# faktura} few {# faktury} other {# faktur}}, {contacts, plural, one {# nový kontakt} few {# nové kontakty} other {# nových kontaktů}}.",
+      "failed": "Faktury bez účtu se teď převzít nepodařilo"
+    }
   },
   "registry": {
     "label": "Registr firem",
@@ -6193,7 +6200,6 @@
     "download": "Stáhnout fakturu v PDF",
     "privacy": "Fakturu vygenerujeme a hned zapomeneme, na serveru nic nezůstává.",
     "doneTitle": "Faktura je stažená.",
-    "doneText": "S účtem zdarma byste ji mohli uložit, poslat e-mailem, hlídat úhradu a příště ji vystavit na pár kliknutí.",
     "signup": "Založit účet zdarma",
     "errors": {
       "invalid": "Některé údaje nejsou v pořádku. Zkontrolujte povinná pole, data a čísla.",
@@ -6347,6 +6353,13 @@
       "hintReverseCharge": "Faktura bude bez DPH s textem „daň odvede zákazník“ (§ 92a zákona o DPH). Jen mezi plátci DPH.",
       "hintCreditNote": "U snížení ceny zadejte zápornou cenu za jednotku, např. -2000.",
       "identifiedNote": "Daň odvede zákazník."
+    },
+    "carryOver": {
+      "title": "Uložte si faktury do účtu – číslování a odběratele převezmeme.",
+      "kept": "V tomto prohlížeči {n, plural, one {je uložená # faktura} few {jsou uložené # faktury} other {je uloženo # faktur}}.",
+      "cta": "Uložit do účtu zdarma",
+      "forget": "Zapomenout",
+      "signupNote": "Po registraci převezmeme faktury, které jste v tomto prohlížeči vystavili bez účtu: číslování bude pokračovat a odběratelé se uloží jako kontakty."
     }
   },
   "publicProfile": {
@@ -6831,7 +6844,8 @@
         "bitfaktura": "naimportoval(a) data z BitFaktury",
         "csv": "naimportoval(a) doklady z CSV",
         "contacts_csv": "naimportoval(a) kontakty z CSV",
-        "fakturoid": "naimportoval(a) data z Fakturoidu"
+        "fakturoid": "naimportoval(a) data z Fakturoidu",
+        "guest": "převzal(a) faktury vystavené bez účtu"
       }
     },
     "fields": {

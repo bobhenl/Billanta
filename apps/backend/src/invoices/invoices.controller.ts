@@ -39,6 +39,7 @@ import { getHomeRate } from "../exports/home-rates";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { InvoiceAttachmentsService, MAX_ATTACHMENT_BYTES } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
+import { guestInvoiceSchema } from "../guest-invoices/guest-invoices.service";
 import { IMPORT_FIELDS } from "./invoice-import.util";
 import { InvoicesService } from "./invoices.service";
 import { BUYER_DETAILS_FIELDS } from "./buyer-details.util";
@@ -102,6 +103,9 @@ class FakturoidImportDto extends createZodDto(
     sellerIco: z.string().regex(/^\d{8}$/).optional(),
   }),
 ) {}
+
+/** What `/create-invoice` kept in the visitor's browser (the same body the guest PDF was made from). */
+class GuestImportDto extends createZodDto(z.object({ invoices: z.array(guestInvoiceSchema).min(1).max(50) })) {}
 
 class RefreshPartiesDto extends createZodDto(
   z.object({
@@ -299,6 +303,19 @@ export class InvoicesController {
       undefined,
       dto.sellerIco,
     );
+  }
+
+  @Post("import/guest")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Bring the invoices made as a guest on /create-invoice into the account as issued history",
+    description:
+      "Sent once right after signup from the browser that kept them. Numbers already in the account are skipped, " +
+      "customers become contacts, empty company details are filled from the newest supplier block and numbering continues after the last guest number.",
+  })
+  importGuest(@Req() req: TenantScopedRequest, @Body() dto: GuestImportDto) {
+    if (req.user!.role !== "owner" && req.user!.role !== "admin") throw new ForbiddenException({ error: "forbidden" });
+    return this.importService.importFromGuest(req.tenantDb!, req.user!.tenantId, dto.invoices);
   }
 
   @Post(":id/mark-paid")

@@ -5171,7 +5171,14 @@
     "importHint": "Pick it and once you save, we will walk you through importing contacts, invoices and your number sequence.",
     "importNone": "Starting fresh",
     "importOther": "Another app / Excel",
-    "finishImport": "Done, let us import"
+    "finishImport": "Done, let us import",
+    "guest": {
+      "title": "{n, plural, one {# invoice made without an account} other {# invoices made without an account}}",
+      "hint": "We save them as issued documents and the customers as contacts, and numbering continues after the last one. Empty company details are filled from the supplier.",
+      "toggle": "Bring them into the account",
+      "done": "Brought over {invoices, plural, one {# invoice} other {# invoices}} and {contacts, plural, one {# new contact} other {# new contacts}}.",
+      "failed": "The invoices made without an account couldn't be brought over just now"
+    }
   },
   "registry": {
     "label": "Company register",
@@ -6193,7 +6200,6 @@
     "download": "Download PDF invoice",
     "privacy": "We generate the invoice and forget it right away; nothing stays on the server.",
     "doneTitle": "Your invoice has been downloaded.",
-    "doneText": "With a free account you could save it, email it, track the payment and issue the next one in a few clicks.",
     "signup": "Create a free account",
     "errors": {
       "invalid": "Some details aren't valid. Check the required fields, dates and numbers.",
@@ -6347,6 +6353,13 @@
       "hintReverseCharge": "The invoice shows no VAT and states that the customer accounts for it (Section 92a of the Czech VAT Act). Only between VAT payers.",
       "hintCreditNote": "For a price reduction enter a negative unit price, e.g. -2000.",
       "identifiedNote": "Reverse charge – the customer accounts for the VAT."
+    },
+    "carryOver": {
+      "title": "Save your invoices to an account – we carry over the numbering and the customers.",
+      "kept": "{n, plural, one {# invoice is} other {# invoices are}} kept in this browser.",
+      "cta": "Save to a free account",
+      "forget": "Forget them",
+      "signupNote": "After you sign up, we bring over the invoices you made in this browser without an account: the numbering continues and the customers are saved as contacts."
     }
   },
   "publicProfile": {
@@ -6831,7 +6844,8 @@
         "bitfaktura": "imported data from BitFaktura",
         "csv": "imported documents from CSV",
         "contacts_csv": "imported contacts from CSV",
-        "fakturoid": "imported data from Fakturoid"
+        "fakturoid": "imported data from Fakturoid",
+        "guest": "brought over invoices made without an account"
       }
     },
     "fields": {
