@@ -110,7 +110,7 @@ export class TenantsController {
   @UseInterceptors(FileInterceptor("file", { limits: { fileSize: MAX_LOGO_BYTES } }))
   @ApiConsumes("multipart/form-data")
   @ApiBody({ schema: { type: "object", properties: { file: { type: "string", format: "binary" } }, required: ["file"] } })
-  @ApiOperation({ summary: "Upload the company logo — PNG or JPEG up to 512 kB, multipart field \"file\" (owner/admin)" })
+  @ApiOperation({ summary: "Upload the company logo – PNG or JPEG up to 512 kB, multipart field \"file\" (owner/admin)" })
   uploadLogo(@Req() req: TenantScopedRequest, @UploadedFile() file?: { buffer: Buffer; size: number }) {
     if (!file) throw new BadRequestException({ error: "no_file" });
     return this.tenantsService.setLogo(req.tenantDb!, req.user!.tenantId, req.user!.role, file.buffer);
@@ -164,7 +164,7 @@ export class TenantsController {
   // (and its owning user) comes into existence, so there is no tenant JWT
   // yet at this point — see the bootstrap TODO in TenantsService.signup().
   @Post()
-  @ApiOperation({ summary: "Tenant signup (TODO: not yet implemented — bootstrap path)" })
+  @ApiOperation({ summary: "Tenant signup (TODO: not yet implemented – bootstrap path)" })
   signup() {
     return this.tenantsService.signup();
   }

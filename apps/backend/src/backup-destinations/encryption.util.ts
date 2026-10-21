@@ -54,7 +54,7 @@ const AUTH_TAG_LENGTH_BYTES = 16;
 function resolveKey(rawKey: string | undefined): Buffer {
   if (!rawKey) {
     throw new Error(
-      "BACKUP_CONFIG_ENCRYPTION_KEY is not set — see .env.example. Generate one with " +
+      "BACKUP_CONFIG_ENCRYPTION_KEY is not set – see .env.example. Generate one with " +
         "`openssl rand -hex 32`.",
     );
   }
@@ -63,7 +63,7 @@ function resolveKey(rawKey: string | undefined): Buffer {
   if (key.length !== KEY_LENGTH_BYTES) {
     throw new Error(
       `BACKUP_CONFIG_ENCRYPTION_KEY must decode to exactly ${KEY_LENGTH_BYTES} bytes as hex ` +
-        `(64 hex characters) — got ${key.length} byte(s). Generate one with \`openssl rand -hex 32\`.`,
+        `(64 hex characters) – got ${key.length} byte(s). Generate one with \`openssl rand -hex 32\`.`,
     );
   }
   return key;
@@ -102,7 +102,7 @@ export function decryptSecret(stored: string, rawKey: string | undefined): strin
   const parts = stored.split(":");
   if (parts.length !== 3) {
     throw new Error(
-      "Malformed encrypted value: expected '<iv>:<authTag>:<ciphertext>' (all hex) — got " +
+      "Malformed encrypted value: expected '<iv>:<authTag>:<ciphertext>' (all hex) – got " +
         `${parts.length} part(s)`,
     );
   }

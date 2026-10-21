@@ -229,7 +229,7 @@ export class TenantContextMiddleware implements NestMiddleware {
 
     if (!candidateTenantId) {
       throw new UnauthorizedException(
-        "Missing X-Tenant-Id header — a user may belong to multiple tenants, so every " +
+        "Missing X-Tenant-Id header – a user may belong to multiple tenants, so every " +
           "request must say which one it's acting as",
       );
     }
@@ -255,7 +255,7 @@ export class TenantContextMiddleware implements NestMiddleware {
 
       if (!membership) {
         throw new ForbiddenException(
-          "User does not belong to the requested tenant (X-Tenant-Id) — a JWT proves who " +
+          "User does not belong to the requested tenant (X-Tenant-Id) – a JWT proves who " +
             "you are, never which tenant you're allowed to act as",
         );
       }

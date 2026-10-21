@@ -52,7 +52,7 @@ export class BillingController {
     description:
       "Accepts a GoPay payment id (query `id` or JSON body `id`/`payment_id`), then calls " +
       "back GoPay's status-check API (GopayClient) for the authoritative payment state " +
-      "before updating tenants/subscription_events — GoPay's notification payload itself " +
+      "before updating tenants/subscription_events – GoPay's notification payload itself " +
       "is never trusted directly (blueprint §5). NOTE: GopayClient's HTTP call is a TODO " +
       "stub pending verification against GoPay's live API docs.",
   })

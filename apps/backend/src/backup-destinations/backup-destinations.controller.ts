@@ -43,7 +43,7 @@ export class BackupDestinationsController {
   @ApiOperation({
     summary: "Create a webhook backup destination",
     description:
-      "Only type: 'webhook' is createable here — a Google Drive destination is connected via " +
+      "Only type: 'webhook' is createable here – a Google Drive destination is connected via " +
       "GET .../google-drive/authorize instead. Returns the plaintext signing secret in THIS " +
       "response only, same reveal-once UX as POST /api/v1/api-keys.",
   })

@@ -310,7 +310,7 @@ export class InvoicePdfService {
     related: RelatedDocument = null,
   ): Promise<Buffer> {
     if (!invoice.invoiceNumber) {
-      throw new Error("InvoicePdfService.generate: invoice has no invoiceNumber — has it been issued?");
+      throw new Error("InvoicePdfService.generate: invoice has no invoiceNumber – has it been issued?");
     }
     const lang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
     const second = pdfSecondLanguageOf(tenant.invoiceFormPrefs);

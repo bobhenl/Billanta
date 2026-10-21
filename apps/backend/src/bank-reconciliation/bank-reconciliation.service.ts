@@ -149,7 +149,7 @@ export class BankReconciliationService {
           // via the manual match endpoint.
           this.logger.warn(
             `Bank transaction ${tx.id} (import ${importRow.id}, tenant ${tenantId}) has multiple ` +
-              "equally-good invoice match candidates — left unmatched for manual review.",
+              "equally-good invoice match candidates – left unmatched for manual review.",
           );
         } else if (outcome.reason === "amount_mismatch") {
           this.logger.log(
@@ -260,7 +260,7 @@ export class BankReconciliationService {
     }
     if (invoice.status !== "issued") {
       throw new BadRequestException(
-        `Invoice ${invoiceId} is not in "issued" status (currently "${invoice.status}") — only issued ` +
+        `Invoice ${invoiceId} is not in "issued" status (currently "${invoice.status}") – only issued ` +
           "invoices can be reconciled against a payment.",
       );
     }

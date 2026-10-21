@@ -17,7 +17,7 @@ import * as authSchema from "./auth-schema";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error("DATABASE_URL is not set — see .env.example");
+  throw new Error("DATABASE_URL is not set – see .env.example");
 }
 
 // A small dedicated pool, distinct from the backend's — Next.js may run

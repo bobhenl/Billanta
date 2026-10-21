@@ -207,7 +207,7 @@ export function parseBankStatementCsv(content: string): ParsedBankTransactionRow
 
   if (errors.length > 0) {
     throw new BadRequestException({
-      message: "CSV contains invalid rows — no rows were imported",
+      message: "CSV contains invalid rows – no rows were imported",
       errors,
     });
   }

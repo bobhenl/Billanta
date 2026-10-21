@@ -55,7 +55,7 @@ function buildFixtureBundle(): ExportBundle {
             id: "55555555-5555-5555-5555-555555555555",
             tenantId: "11111111-1111-1111-1111-111111111111",
             invoiceId: "22222222-2222-2222-2222-222222222222",
-            description: "Consulting services — September",
+            description: "Consulting services – September",
             quantity: "10.000",
             unitPrice: "1500.00",
             vatRate: "21.00",
@@ -146,7 +146,7 @@ describe("SqliteExportService", () => {
           .prepare("SELECT * FROM invoice_line_items WHERE invoice_id = ?")
           .all("22222222-2222-2222-2222-222222222222") as Record<string, unknown>[];
         expect(lineItems).toHaveLength(1);
-        expect(lineItems[0].description).toBe("Consulting services — September");
+        expect(lineItems[0].description).toBe("Consulting services – September");
         expect(lineItems[0].unit_price).toBe("1500.00");
 
         // Real relational join, not just a JSON blob — confirms the FK
@@ -159,7 +159,7 @@ describe("SqliteExportService", () => {
           )
           .all() as Record<string, unknown>[];
         expect(joined).toEqual([
-          { invoice_number: "2026-0001", description: "Consulting services — September" },
+          { invoice_number: "2026-0001", description: "Consulting services – September" },
         ]);
 
         const expenses = db.prepare("SELECT * FROM expenses").all() as Record<string, unknown>[];

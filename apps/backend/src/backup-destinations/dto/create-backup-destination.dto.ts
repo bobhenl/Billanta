@@ -62,7 +62,7 @@ export const createBackupDestinationSchema = z
   })
   .refine((data) => data.type !== "local" || data.schedule === "manual", {
     message:
-      "type 'local' destinations can only use schedule 'manual' — there is no way to push a " +
+      "type 'local' destinations can only use schedule 'manual' – there is no way to push a " +
       "file to a browser download on a timer, someone must be present to click download",
     path: ["schedule"],
   });

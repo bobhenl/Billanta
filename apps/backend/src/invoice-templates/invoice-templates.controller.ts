@@ -62,7 +62,7 @@ export class InvoiceTemplatesController {
   @RequireActiveSubscription()
   @ApiOperation({
     summary: "Bulk invoicing: one document per customer from this template",
-    description: "Body { contact_ids[], issue_date?, issue? } — issue=true issues every draft right away.",
+    description: "Body { contact_ids[], issue_date?, issue? } – issue=true issues every draft right away.",
   })
   bulk(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: BulkInvoiceDto) {
     return this.templatesService.bulk(req.tenantDb!, req.user!.tenantId, req.user!.id, id, dto);

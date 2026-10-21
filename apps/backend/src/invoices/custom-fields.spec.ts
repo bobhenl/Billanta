@@ -56,7 +56,7 @@ describe("displayCustomField", () => {
   it("formats each kind", () => {
     expect(displayCustomField({ label: "x", value: "{base} - {tax}", kind: "formula" }, vars, fmt, (s) => s)).toBe(fmt(10_000 - vars.tax!));
     expect(displayCustomField({ label: "x", value: "20", kind: "percent" }, vars, fmt, (s) => s)).toBe("20 % (2000.00)");
-    expect(displayCustomField({ label: "x", value: "oops +", kind: "formula" }, vars, fmt, (s) => s)).toBe("—");
+    expect(displayCustomField({ label: "x", value: "oops +", kind: "formula" }, vars, fmt, (s) => s)).toBe("–");
   });
 });
 

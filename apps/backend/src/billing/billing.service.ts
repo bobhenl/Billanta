@@ -77,7 +77,7 @@ export class BillingService {
     const tenantId = await this.resolveStripeTenantId(event);
     if (!tenantId) {
       this.logger.warn(
-        `Stripe event ${event.id} (${event.type}): could not resolve a tenant — skipping`,
+        `Stripe event ${event.id} (${event.type}): could not resolve a tenant – skipping`,
       );
       return { received: true, skipped: "tenant-not-resolved" };
     }
@@ -90,7 +90,7 @@ export class BillingService {
       event.data.object,
     );
     if (!isNewEvent) {
-      this.logger.log(`Stripe event ${event.id} already recorded — skipping duplicate delivery`);
+      this.logger.log(`Stripe event ${event.id} already recorded – skipping duplicate delivery`);
       return { received: true, skipped: "duplicate" };
     }
 
@@ -129,7 +129,7 @@ export class BillingService {
     const webhookSecret = this.config.get<string>("STRIPE_WEBHOOK_SECRET");
     if (!webhookSecret) {
       // Misconfiguration, not a client error — surfaces as a 500, not 400.
-      throw new Error("STRIPE_WEBHOOK_SECRET is not set — see .env.example");
+      throw new Error("STRIPE_WEBHOOK_SECRET is not set – see .env.example");
     }
 
     try {
@@ -263,7 +263,7 @@ export class BillingService {
 
     if (!status.payerId) {
       this.logger.warn(
-        `GoPay payment ${paymentId}: status response had no payer id — cannot resolve a tenant`,
+        `GoPay payment ${paymentId}: status response had no payer id – cannot resolve a tenant`,
       );
       return { received: true, skipped: "tenant-not-resolved" };
     }
@@ -271,7 +271,7 @@ export class BillingService {
     const tenantId = await this.tenantBilling.findTenantIdByGopayPayerId(status.payerId);
     if (!tenantId) {
       this.logger.warn(
-        `GoPay payment ${paymentId}: payer ${status.payerId} did not match any tenant — skipping`,
+        `GoPay payment ${paymentId}: payer ${status.payerId} did not match any tenant – skipping`,
       );
       return { received: true, skipped: "tenant-not-resolved" };
     }
@@ -284,7 +284,7 @@ export class BillingService {
       status,
     );
     if (!isNewEvent) {
-      this.logger.log(`GoPay payment ${status.id} already recorded — skipping duplicate notification`);
+      this.logger.log(`GoPay payment ${status.id} already recorded – skipping duplicate notification`);
       return { received: true, skipped: "duplicate" };
     }
 

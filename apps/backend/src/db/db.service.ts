@@ -27,7 +27,7 @@ export class DbService implements OnModuleDestroy {
   constructor(config: ConfigService) {
     const connectionString = config.get<string>("DATABASE_URL");
     if (!connectionString) {
-      throw new Error("DATABASE_URL is not set — see .env.example");
+      throw new Error("DATABASE_URL is not set – see .env.example");
     }
 
     this.sql = postgres(connectionString, { max: 10 });

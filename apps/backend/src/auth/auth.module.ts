@@ -29,7 +29,7 @@ import { JwtAuthGuard } from "./jwt-auth.guard";
       useFactory: (config: ConfigService) => {
         const secret = config.get<string>("JWT_SECRET");
         if (!secret) {
-          throw new Error("JWT_SECRET is not set — see .env.example");
+          throw new Error("JWT_SECRET is not set – see .env.example");
         }
         return {
           secret,

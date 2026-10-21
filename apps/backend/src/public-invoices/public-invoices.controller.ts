@@ -59,11 +59,11 @@ export class PublicInvoicesController {
     summary: "Get a client-portal view of an invoice by its public token",
     description:
       "No authentication required. `token` is the invoice's unguessable `public_token` " +
-      "(see `invoices.publicToken` in `drizzle/schema.ts`) — the id embedded in the " +
+      "(see `invoices.publicToken` in `drizzle/schema.ts`) – the id embedded in the " +
       "shareable link a client is sent, distinct from the invoice's internal `id`. " +
       "Returns 404 for both an unmatched and a malformed token (never a different error " +
       "shape that would let a caller distinguish the two). Only fields explicitly reviewed " +
-      "as safe for an external client are returned — see the `get_public_invoice_view` / " +
+      "as safe for an external client are returned – see the `get_public_invoice_view` / " +
       "`get_public_invoice_line_items` / `get_public_invoice_supplier_info` SECURITY DEFINER " +
       "functions in `drizzle/rls-policies.sql` for exactly what is excluded (AI-draft " +
       "transcript/extraction metadata, the liability audit trail, dunning bookkeeping, " +
@@ -111,7 +111,7 @@ export class PublicInvoicesController {
   @ApiOperation({
     summary: "Count one client-portal view of an invoice",
     description:
-      "No authentication required. Always 204 — an unknown token, a draft, or a malformed " +
+      "No authentication required. Always 204 – an unknown token, a draft, or a malformed " +
       "value is silently ignored so the endpoint reveals nothing about which tokens exist.",
   })
   recordView(@Param("token") token: string) {

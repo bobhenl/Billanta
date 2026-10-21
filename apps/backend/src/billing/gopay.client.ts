@@ -90,7 +90,7 @@ export class GopayClient {
   async getPaymentStatus(paymentId: string): Promise<GopayPaymentStatus> {
     void this.config; // referenced once real HTTP calls read GOPAY_CLIENT_ID/SECRET from it
     this.logger.error(
-      `GopayClient.getPaymentStatus(${paymentId}) called but not implemented — ` +
+      `GopayClient.getPaymentStatus(${paymentId}) called but not implemented – ` +
         "see the TODO in gopay.client.ts. GoPay's exact API contract needs verification " +
         "against https://doc.gopay.com/ before this can process a real webhook.",
     );

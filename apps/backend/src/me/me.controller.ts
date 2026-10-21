@@ -46,7 +46,7 @@ export class MeController {
     summary: "Get the current user's identity and tenant memberships",
     description:
       "Returns the verified JWT's user id/email plus every tenant the user belongs to " +
-      "(id, company name, role) via list_tenant_memberships_for_user — never any other " +
+      "(id, company name, role) via list_tenant_memberships_for_user – never any other " +
       "tenants column. An empty tenants array is a valid response (e.g. a user created " +
       "before the signup bootstrap flow existed), not an error.",
   })
