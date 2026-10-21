@@ -28,6 +28,8 @@ import type { HomeCurrency } from "@faktur/cz-compliance";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { AuditService } from "../audit/audit.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
+import { guestBusinessFill, mapGuestInvoices, newestSupplier, type GuestBusinessFill } from "./guest-import";
+import type { GuestInvoiceInput } from "../guest-invoices/guest-invoices.service";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -283,9 +285,9 @@ export class InvoiceImportService {
   private async logImport(
     db: TenantDb,
     tenantId: string,
-    source: "csv" | ApiImportSource,
+    source: "csv" | "guest" | ApiImportSource,
     result: InvoiceImportResult,
-    filled: ImportedBusinessDetails = {},
+    filled: ImportedBusinessDetails | GuestBusinessFill = {},
   ) {
     if (result.dryRun) return;
     const filledFields = Object.entries(filled).filter(([, value]) => value);
@@ -300,6 +302,43 @@ export class InvoiceImportService {
     count("skippedRows", result.skipped?.length);
     for (const [field, value] of filledFields) changes.push({ field, from: null, to: value });
     await this.audit?.record(db, tenantId, { entityType: "import", action: source, changes });
+  }
+
+  /**
+   * The invoices the user made as a guest on `/create-invoice`, sent from
+   * their browser right after signup. They come in as issued history, the
+   * customers as contacts, empty company details are filled from the newest
+   * supplier block, and numbering continues after the last guest number
+   * (the guest pattern is adopted only while the company has issued nothing
+   * of that type itself).
+   */
+  async importFromGuest(db: TenantDb, tenantId: string, inputs: GuestInvoiceInput[]): Promise<InvoiceImportResult> {
+    const [tenant] = await db
+      .select({
+        ico: schema.tenants.ico,
+        dic: schema.tenants.dic,
+        addressStreet: schema.tenants.addressStreet,
+        addressCity: schema.tenants.addressCity,
+        addressPostalCode: schema.tenants.addressPostalCode,
+        addressCountry: schema.tenants.addressCountry,
+        email: schema.tenants.email,
+        phone: schema.tenants.phone,
+        bankAccountNumber: schema.tenants.bankAccountNumber,
+        bankAccountBankCode: schema.tenants.bankAccountBankCode,
+        bankAccountIban: schema.tenants.bankAccountIban,
+      })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId));
+    const fill = tenant ? guestBusinessFill(tenant, newestSupplier(inputs)) : {};
+    if (Object.keys(fill).length > 0) {
+      await db
+        .update(schema.tenants)
+        .set({ ...fill, updatedAt: new Date() })
+        .where(eq(schema.tenants.id, tenantId));
+    }
+    const result = await this.importMapped(db, tenantId, mapGuestInvoices(inputs, tenant?.addressCountry ?? "CZ"), false, undefined, [], "unused");
+    await this.logImport(db, tenantId, "guest", result, fill);
+    return result;
   }
 
   /** Reads the history over the BitFaktura API with the user's token (used for this request only, never stored). */
@@ -468,7 +507,8 @@ export class InvoiceImportService {
     onCreated?: (invoice: ImportedInvoice, id: string) => void,
     /** Contacts from the source's address book, also those never invoiced. */
     contacts: ImportedContact[] = [],
-    adoptNumbering = false,
+    /** `"unused"`: only for types the company has issued nothing in yet. */
+    adoptNumbering: boolean | "unused" = false,
   ): Promise<InvoiceImportResult> {
     if (mapped.invoices.length > MAX_IMPORT_INVOICES || contacts.length > MAX_IMPORT_INVOICES) throw new BadRequestException({ error: "too_many_rows" });
 
@@ -610,13 +650,14 @@ export class InvoiceImportService {
     // Continue numbering after the highest imported number per counter, read
     // with the company's own pattern (e.g. `N/MM/YYYY`) or our built-in format.
     await bumpInvoiceSequences(db, tenantId, highestImportedSequences(invoices, formats));
-    if (adoptNumbering && suggestions.length > 0) {
+    const adopt = adoptNumbering === "unused" ? suggestions.filter((s) => s.existingDocuments === 0) : adoptNumbering ? suggestions : [];
+    if (adopt.length > 0) {
       // Saving a pattern raises its counters past every number already written in it, the imported ones included.
-      const adopted = Object.fromEntries(suggestions.map((s) => [s.documentType, s.pattern]));
+      const adopted = Object.fromEntries(adopt.map((s) => [s.documentType, s.pattern]));
       const { before, after } = await saveNumberFormats(db, tenantId, { formats: adopted, nextNumbers: {} });
-      const changes: schema.AuditChange[] = suggestions.map((s) => ({ field: `numberFormat.${s.documentType}`, from: before[s.documentType] ?? null, to: after[s.documentType] ?? null }));
+      const changes: schema.AuditChange[] = adopt.map((s) => ({ field: `numberFormat.${s.documentType}`, from: before[s.documentType] ?? null, to: after[s.documentType] ?? null }));
       await this.audit?.record(db, tenantId, { entityType: "tenant", entityId: tenantId, action: "number_formats_updated", changes });
-      result.numberingAdopted = suggestions.map((s) => s.documentType);
+      result.numberingAdopted = adopt.map((s) => s.documentType);
     }
     return result;
   }

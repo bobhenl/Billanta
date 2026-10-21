@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { PackageOpen, Ticket } from 'lucide-react';
+import { PackageOpen, Save, Ticket } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { DEMO_TRANSFER_COOKIE } from '@/lib/demo-session';
 import { PROMO_CODE, PROMO_COOKIE } from '@/lib/promo';
@@ -15,11 +15,13 @@ import { SignupForm } from './signup-form';
  * all form state and the ToS acceptance logic live in the client component
  * below (`signup-form.tsx`), per blueprint §9's signup-gate requirement.
  */
-export default async function SignupPage({ searchParams }: { searchParams: Promise<{ promo?: string; for?: string }> }) {
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ promo?: string; for?: string; from?: string }> }) {
   const jar = await cookies();
   const query = await searchParams;
   // Came from the demo's "create an account": say that the work comes along.
   const fromDemo = jar.has(DEMO_TRANSFER_COOKIE);
+  // Came from /create-invoice: the invoices kept in this browser come along on the welcome screen.
+  const fromGuest = query.from === 'guest';
   // `?for=` from the accountants / schools pages pre-ticks the matching box.
   const audience = query.for === 'accountant' || query.for === 'teacher' ? query.for : null;
   // `?promo=` sets the cookie in this very response (middleware.ts), so read the query first.
@@ -27,6 +29,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
   const promo = (queryPromo && PROMO_CODE.test(queryPromo) ? queryPromo.toUpperCase() : null) ?? jar.get(PROMO_COOKIE)?.value ?? null;
   const t = await getTranslations('demo.transfer');
   const tPromo = await getTranslations('promo');
+  const tGuest = await getTranslations('guestInvoice.carryOver');
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <div className="w-full max-w-md">
@@ -34,6 +37,12 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
           <p className="mb-4 flex gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm">
             <PackageOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
             {t('signupNote')}
+          </p>
+        )}
+        {fromGuest && !fromDemo && (
+          <p className="mb-4 flex gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm">
+            <Save className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+            {tGuest('signupNote')}
           </p>
         )}
         {promo && (

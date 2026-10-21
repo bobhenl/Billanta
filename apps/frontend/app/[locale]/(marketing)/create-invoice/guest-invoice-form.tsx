@@ -15,6 +15,7 @@ import {
   Plus,
   Receipt,
   RefreshCw,
+  Save,
   Search,
   Settings2,
   Sparkles,
@@ -25,13 +26,16 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
+import { forgetGuestInvoices, nextGuestNumber, readGuestInvoices, rememberGuestInvoice, type GuestInvoiceBody } from '@/lib/guest-invoices';
 
 /**
  * "Make an invoice without an account" — everything stays in the browser
  * until the visitor clicks download; the backend renders the PDF and keeps
  * nothing. A short "what is it for" step tailors which fields show and
  * their defaults; the visitor can always switch to all fields. The supplier
- * block and the chosen profile are remembered in localStorage.
+ * block and the chosen profile are remembered in localStorage, and so is
+ * each downloaded invoice (`lib/guest-invoices.ts`), so an account opened
+ * later takes over the numbering and the customers.
  *
  * Showcase extras: ARES lookup by IČO and an AI fill from free text or
  * voice, capped per visitor (and globally) by the backend.
@@ -128,12 +132,18 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  /** Invoices kept in this browser for an account opened later. */
+  const [kept, setKept] = useState(0);
 
   // Defaults depend on the visitor's clock, so they're set after mount
   // (server and browser may be in different time zones).
   useEffect(() => {
     const today = isoDate(new Date());
-    setInvoiceNumber(`${today.slice(0, 4)}0001`);
+    const history = readGuestInvoices();
+    setKept(history.length);
+    // Continue after the last downloaded number instead of starting the year again.
+    const last = history.at(-1)?.invoiceNumber;
+    setInvoiceNumber((last && nextGuestNumber(last)) || `${today.slice(0, 4)}0001`);
     setIssueDate(today);
     setTaxableSupplyDate(today);
     setDueDate(addDays(today, 14));
@@ -232,34 +242,35 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
     setBusy(true);
     writeStorage(STORAGE_KEY, supplier);
     try {
+      const body: GuestInvoiceBody = {
+        language,
+        invoiceNumber: invoiceNumber.trim(),
+        issueDate,
+        taxableSupplyDate: vatPayer && taxableSupplyDate ? taxableSupplyDate : undefined,
+        dueDate: dueDate || undefined,
+        currency,
+        paymentMethod,
+        vatPayer,
+        documentType,
+        reverseCharge: vatPayer && reverseCharge,
+        relatedInvoiceNumber: documentType === 'credit_note' ? relatedInvoiceNumber.trim() : undefined,
+        supplier: { ...supplier, iban: supplier.iban.replace(/\s/g, '') },
+        customer,
+        note,
+        items: items
+          .filter((i) => i.description.trim())
+          .map((i) => ({
+            description: i.description.trim(),
+            quantity: num(i.quantity),
+            unit: i.unit,
+            unitPrice: num(i.unitPrice),
+            vatRate: vatPayer ? num(i.vatRate) || 0 : 0
+          }))
+      };
       const res = await fetch('/api/public/guest-invoice', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          language,
-          invoiceNumber: invoiceNumber.trim(),
-          issueDate,
-          taxableSupplyDate: vatPayer && taxableSupplyDate ? taxableSupplyDate : undefined,
-          dueDate: dueDate || undefined,
-          currency,
-          paymentMethod,
-          vatPayer,
-          documentType,
-          reverseCharge: vatPayer && reverseCharge,
-          relatedInvoiceNumber: documentType === 'credit_note' ? relatedInvoiceNumber.trim() : undefined,
-          supplier: { ...supplier, iban: supplier.iban.replace(/\s/g, '') },
-          customer,
-          note,
-          items: items
-            .filter((i) => i.description.trim())
-            .map((i) => ({
-              description: i.description.trim(),
-              quantity: num(i.quantity),
-              unit: i.unit,
-              unitPrice: num(i.unitPrice),
-              vatRate: vatPayer ? num(i.vatRate) || 0 : 0
-            }))
-        })
+        body: JSON.stringify(body)
       });
       if (!res.ok) {
         setError(res.status === 429 ? t('errors.rateLimited') : res.status === 503 ? t('errors.busy') : res.status === 400 ? t('errors.invalid') : t('errors.failed'));
@@ -272,6 +283,7 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
       a.download = `${FILE_PREFIX[documentType]}-${invoiceNumber.trim().replace(/[^\w.-]+/g, '_')}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
+      setKept(rememberGuestInvoice(body).length);
       setDone(true);
     } catch {
       setError(t('errors.failed'));
@@ -367,6 +379,30 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
 
   return (
     <>
+      {kept > 0 && !done && (
+        <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-primary/30 bg-accent/40 px-4 py-3 text-sm">
+          <Save className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+          <p className="min-w-0 flex-1">
+            <span className="font-semibold">{t('carryOver.title')}</span>{' '}
+            <span className="text-muted-foreground">
+              {t('carryOver.kept', { n: kept })} {t('carryOver.where')}
+            </span>
+          </p>
+          <Link href="/signup?from=guest" className="font-semibold text-primary hover:underline">
+            {t('carryOver.cta')}
+          </Link>
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+            onClick={() => {
+              forgetGuestInvoices();
+              setKept(0);
+            }}
+          >
+            {t('carryOver.forget')}
+          </button>
+        </div>
+      )}
       <div className="mt-8 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-secondary/50 px-4 py-3 text-sm">
         <span className="text-muted-foreground">{t('setup.current')}</span>
         <span className="font-semibold">
@@ -619,10 +655,25 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
           {done && (
             <div role="status" className="w-full rounded-xl border border-primary/30 bg-accent/50 p-4 text-sm">
               <p className="font-semibold">{t('doneTitle')}</p>
-              <p className="mt-1 text-muted-foreground">{t('doneText')}</p>
+              <p className="mt-1 text-muted-foreground">{t('carryOver.title')}</p>
+              {kept > 0 && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('carryOver.where')}{' '}
+                  <button
+                    type="button"
+                    className="underline hover:text-foreground"
+                    onClick={() => {
+                      forgetGuestInvoices();
+                      setKept(0);
+                    }}
+                  >
+                    {t('carryOver.forget')}
+                  </button>
+                </p>
+              )}
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link href="/signup" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
-                  {t('signup')}
+                <Link href="/signup?from=guest" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
+                  {t('carryOver.cta')}
                 </Link>
                 <Link href="/demo" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
                   {tDemo('cta')}

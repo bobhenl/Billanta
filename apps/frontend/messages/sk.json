@@ -5354,7 +5354,17 @@
     "importHint": "Vyberte ju a po uložení vás prevedieme importom kontaktov, faktúr aj číselného radu.",
     "importNone": "Začínam od nuly",
     "importOther": "Iná aplikácia / Excel",
-    "finishImport": "Hotovo, ideme importovať"
+    "finishImport": "Hotovo, ideme importovať",
+    "guest": {
+      "title": "{n, plural, one {# faktúra vystavená bez účtu} few {# faktúry vystavené bez účtu} other {# faktúr vystavených bez účtu}}",
+      "hint": "Uložíme ich ako vystavené doklady, odberateľov ako kontakty a číslovanie bude pokračovať za poslednou z nich. Prázdne údaje o firme doplníme z dodávateľa.",
+      "toggle": "Prevziať do účtu",
+      "done": "Prevzaté: {invoices, plural, one {# faktúra} few {# faktúry} other {# faktúr}}, {contacts, plural, one {# nový kontakt} few {# nové kontakty} other {# nových kontaktov}}.",
+      "failed": "Faktúry bez účtu sa teraz nepodarilo prevziať",
+      "claim": "Prevziať do účtu",
+      "dismiss": "Zabudnúť",
+      "bannerHint": "Vystavili ste ich v tomto prehliadači bez účtu. Uložíme ich ako vystavené doklady a odberateľov ako kontakty."
+    }
   },
   "registry": {
     "label": "Register firiem",
@@ -6376,7 +6386,6 @@
     "download": "Stiahnuť faktúru v PDF",
     "privacy": "Faktúru vygenerujeme a hneď zabudneme, na serveri nič nezostáva.",
     "doneTitle": "Faktúra je stiahnutá.",
-    "doneText": "S účtom zadarmo by ste ju mohli uložiť, poslať e-mailom, sledovať úhradu a nabudúce ju vystaviť na pár kliknutí.",
     "signup": "Založiť účet zadarmo",
     "errors": {
       "invalid": "Niektoré údaje nie sú v poriadku. Skontrolujte povinné polia, dátumy a čísla.",
@@ -6504,7 +6513,7 @@
         },
         {
           "q": "Ukladáte údaje z faktúry?",
-          "a": "Nie. PDF vygenerujeme a nič z neho na serveri nezostáva. Ak budete faktúru potrebovať znova, uložte si PDF, alebo si založte účet."
+          "a": "Nie. PDF vygenerujeme a nič z neho na serveri nezostáva. Stiahnuté faktúry si pamätá len váš prehliadač, aby ste ich mohli prevziať do účtu – zmažete ich tlačidlom Zabudnúť, inak zmiznú po 90 dňoch. Ak budete faktúru potrebovať znova, uložte si PDF, alebo si založte účet."
         },
         {
           "q": "Bude na faktúre QR kód na platbu?",
@@ -6539,6 +6548,14 @@
       "heading": "Nadiktujte faktúru",
       "lead": "Stlačte mikrofón a povedzte, komu a za čo fakturujete. Formulár sa vyplní sám, vy ho len skontrolujete a stiahnete PDF.",
       "example": "Skúste napríklad: „Faktúra pre IČO 27604977, návrh loga za 600 eur, splatnosť 14 dní.“"
+    },
+    "carryOver": {
+      "title": "Uložte si faktúry do účtu – číslovanie a odberateľov prevezmeme.",
+      "kept": "V tomto prehliadači {n, plural, one {je uložená # faktúra} few {sú uložené # faktúry} other {je uložených # faktúr}}.",
+      "cta": "Uložiť do účtu zadarmo",
+      "forget": "Zabudnúť",
+      "signupNote": "Po registrácii prevezmeme faktúry, ktoré ste v tomto prehliadači vystavili bez účtu: číslovanie bude pokračovať a odberatelia sa uložia ako kontakty.",
+      "where": "Pamätá si ich len tento prehliadač a po 90 dňoch ich sám zmaže – na zdieľanom počítači ich zmažte tlačidlom Zabudnúť."
     }
   },
   "publicProfile": {
@@ -7023,7 +7040,8 @@
         "bitfaktura": "naimportoval(a) dáta z BitFaktúry",
         "csv": "naimportoval(a) doklady z CSV",
         "contacts_csv": "naimportoval(a) kontakty z CSV",
-        "fakturoid": "naimportoval(a) dáta z Fakturoidu"
+        "fakturoid": "naimportoval(a) dáta z Fakturoidu",
+        "guest": "prevzal(a) faktúry vystavené bez účtu"
       }
     },
     "fields": {
