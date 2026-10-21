@@ -8,6 +8,8 @@
 export const GUEST_HISTORY_KEY = 'billanta.guestInvoice.history';
 /** A handful is enough to carry the numbering and the regular customers over. */
 const MAX_GUEST_INVOICES = 20;
+/** Not a deadline for the visitor: a shared computer just shouldn't hold customers' details for years. */
+const KEEP_DAYS = 90;
 
 export type GuestInvoiceBody = {
   invoiceNumber: string;
@@ -16,6 +18,8 @@ export type GuestInvoiceBody = {
   customer: { name: string };
   supplier: { name: string; ico?: string; dic?: string; [key: string]: unknown };
   vatPayer?: boolean;
+  /** When this browser kept it (the backend schema drops the field). */
+  keptAt?: string;
   [key: string]: unknown;
 };
 
@@ -23,7 +27,17 @@ export function readGuestInvoices(): GuestInvoiceBody[] {
   try {
     const raw = localStorage.getItem(GUEST_HISTORY_KEY);
     const list: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list.filter((i): i is GuestInvoiceBody => typeof i?.invoiceNumber === 'string' && typeof i?.issueDate === 'string') : [];
+    if (!Array.isArray(list)) return [];
+    const cutoff = Date.now() - KEEP_DAYS * 86_400_000;
+    const fresh = list.filter(
+      (i): i is GuestInvoiceBody =>
+        typeof i?.invoiceNumber === 'string' && typeof i?.issueDate === 'string' && !(Date.parse(i.keptAt ?? '') < cutoff)
+    );
+    if (fresh.length < list.length) {
+      if (fresh.length) localStorage.setItem(GUEST_HISTORY_KEY, JSON.stringify(fresh));
+      else localStorage.removeItem(GUEST_HISTORY_KEY);
+    }
+    return fresh;
   } catch {
     return [];
   }
@@ -31,7 +45,9 @@ export function readGuestInvoices(): GuestInvoiceBody[] {
 
 /** Adds one downloaded invoice; a number downloaded again replaces its earlier copy. */
 export function rememberGuestInvoice(body: GuestInvoiceBody): GuestInvoiceBody[] {
-  const list = [...readGuestInvoices().filter((i) => i.invoiceNumber !== body.invoiceNumber), body].slice(-MAX_GUEST_INVOICES);
+  const list = [...readGuestInvoices().filter((i) => i.invoiceNumber !== body.invoiceNumber), { ...body, keptAt: new Date().toISOString() }].slice(
+    -MAX_GUEST_INVOICES
+  );
   try {
     localStorage.setItem(GUEST_HISTORY_KEY, JSON.stringify(list));
   } catch {

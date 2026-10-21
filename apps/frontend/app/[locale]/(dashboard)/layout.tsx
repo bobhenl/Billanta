@@ -13,6 +13,7 @@ import { AccessProvider } from '@/components/access-provider';
 import { DemoBanner } from '@/components/demo/demo-banner';
 import { DemoTransferClaim } from '@/components/demo/demo-transfer-claim';
 import { DashboardNav } from '@/components/dashboard-nav';
+import { GuestInvoiceClaim } from '@/components/guest/guest-invoice-claim';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { MobileBottomNav } from '@/components/mobile-bottom-nav';
@@ -86,6 +87,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const claimPromo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(PROMO_COOKIE);
   // Came from a demo with "take my work along": the owner of the new company decides whether it comes in.
   const claimDemo = !session.isDemo && (role === 'owner' || role === 'admin') && jar.has(DEMO_TRANSFER_COOKIE);
+  // Invoices made on /create-invoice before logging in: only someone who may import can take them in.
+  const claimGuest = !session.isDemo && !classroom && (role === 'owner' || role === 'admin');
   const demoRole = DEMO_VIEW_ROLES.find((r) => r === role) ?? 'owner';
   // The Ctrl+K palette also drops create actions the member can't perform and switched-off modules.
   const paletteHidden = [...hidden];
@@ -160,6 +163,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <TrialBanner plan={access?.plan} />
             )}
             {claimDemo && <DemoTransferClaim />}
+            {claimGuest && <GuestInvoiceClaim />}
             {children}
           </main>
 

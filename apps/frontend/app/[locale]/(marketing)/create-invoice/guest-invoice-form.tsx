@@ -381,7 +381,9 @@ export function GuestInvoiceForm() {
           <Save className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
           <p className="min-w-0 flex-1">
             <span className="font-semibold">{t('carryOver.title')}</span>{' '}
-            <span className="text-muted-foreground">{t('carryOver.kept', { n: kept })}</span>
+            <span className="text-muted-foreground">
+              {t('carryOver.kept', { n: kept })} {t('carryOver.where')}
+            </span>
           </p>
           <Link href="/signup?from=guest" className="font-semibold text-primary hover:underline">
             {t('carryOver.cta')}
@@ -651,6 +653,21 @@ export function GuestInvoiceForm() {
             <div role="status" className="w-full rounded-xl border border-primary/30 bg-accent/50 p-4 text-sm">
               <p className="font-semibold">{t('doneTitle')}</p>
               <p className="mt-1 text-muted-foreground">{t('carryOver.title')}</p>
+              {kept > 0 && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t('carryOver.where')}{' '}
+                  <button
+                    type="button"
+                    className="underline hover:text-foreground"
+                    onClick={() => {
+                      forgetGuestInvoices();
+                      setKept(0);
+                    }}
+                  >
+                    {t('carryOver.forget')}
+                  </button>
+                </p>
+              )}
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link href="/signup?from=guest" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
                   {t('carryOver.cta')}

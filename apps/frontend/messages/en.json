@@ -5177,7 +5177,10 @@
       "hint": "We save them as issued documents and the customers as contacts, and numbering continues after the last one. Empty company details are filled from the supplier.",
       "toggle": "Bring them into the account",
       "done": "Brought over {invoices, plural, one {# invoice} other {# invoices}} and {contacts, plural, one {# new contact} other {# new contacts}}.",
-      "failed": "The invoices made without an account couldn't be brought over just now"
+      "failed": "The invoices made without an account couldn't be brought over just now",
+      "claim": "Bring into the account",
+      "dismiss": "Forget them",
+      "bannerHint": "You made them in this browser without an account. We save them as issued documents and the customers as contacts."
     }
   },
   "registry": {
@@ -6325,7 +6328,7 @@
         },
         {
           "q": "Do you store the invoice details?",
-          "a": "No. We generate the PDF and nothing from it stays on the server. If you will need the invoice again, keep the PDF or create an account."
+          "a": "No. We generate the PDF and nothing from it stays on the server. Only your browser keeps the invoices you downloaded, so you can bring them into an account – delete them with Forget them, otherwise they go after 90 days. If you will need the invoice again, keep the PDF or create an account."
         },
         {
           "q": "Will the invoice have a QR payment code?",
@@ -6359,7 +6362,8 @@
       "kept": "{n, plural, one {# invoice is} other {# invoices are}} kept in this browser.",
       "cta": "Save to a free account",
       "forget": "Forget them",
-      "signupNote": "After you sign up, we bring over the invoices you made in this browser without an account: the numbering continues and the customers are saved as contacts."
+      "signupNote": "After you sign up, we bring over the invoices you made in this browser without an account: the numbering continues and the customers are saved as contacts.",
+      "where": "Only this browser keeps them, and it deletes them after 90 days – on a shared computer, use Forget them."
     }
   },
   "publicProfile": {

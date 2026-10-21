@@ -5177,7 +5177,10 @@
       "hint": "Uložíme ich ako vystavené doklady, odberateľov ako kontakty a číslovanie bude pokračovať za poslednou z nich. Prázdne údaje o firme doplníme z dodávateľa.",
       "toggle": "Prevziať do účtu",
       "done": "Prevzaté: {invoices, plural, one {# faktúra} few {# faktúry} other {# faktúr}}, {contacts, plural, one {# nový kontakt} few {# nové kontakty} other {# nových kontaktov}}.",
-      "failed": "Faktúry bez účtu sa teraz nepodarilo prevziať"
+      "failed": "Faktúry bez účtu sa teraz nepodarilo prevziať",
+      "claim": "Prevziať do účtu",
+      "dismiss": "Zabudnúť",
+      "bannerHint": "Vystavili ste ich v tomto prehliadači bez účtu. Uložíme ich ako vystavené doklady a odberateľov ako kontakty."
     }
   },
   "registry": {
@@ -6325,7 +6328,7 @@
         },
         {
           "q": "Ukladáte údaje z faktúry?",
-          "a": "Nie. PDF vygenerujeme a nič z neho na serveri nezostáva. Ak budete faktúru potrebovať znova, uložte si PDF, alebo si založte účet."
+          "a": "Nie. PDF vygenerujeme a nič z neho na serveri nezostáva. Stiahnuté faktúry si pamätá len váš prehliadač, aby ste ich mohli prevziať do účtu – zmažete ich tlačidlom Zabudnúť, inak zmiznú po 90 dňoch. Ak budete faktúru potrebovať znova, uložte si PDF, alebo si založte účet."
         },
         {
           "q": "Bude na faktúre QR kód na platbu?",
@@ -6359,7 +6362,8 @@
       "kept": "V tomto prehliadači {n, plural, one {je uložená # faktúra} few {sú uložené # faktúry} other {je uložených # faktúr}}.",
       "cta": "Uložiť do účtu zadarmo",
       "forget": "Zabudnúť",
-      "signupNote": "Po registrácii prevezmeme faktúry, ktoré ste v tomto prehliadači vystavili bez účtu: číslovanie bude pokračovať a odberatelia sa uložia ako kontakty."
+      "signupNote": "Po registrácii prevezmeme faktúry, ktoré ste v tomto prehliadači vystavili bez účtu: číslovanie bude pokračovať a odberatelia sa uložia ako kontakty.",
+      "where": "Pamätá si ich len tento prehliadač a po 90 dňoch ich sám zmaže – na zdieľanom počítači ich zmažte tlačidlom Zabudnúť."
     }
   },
   "publicProfile": {
