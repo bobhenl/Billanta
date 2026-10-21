@@ -60,7 +60,7 @@ export class GoogleDriveOAuthService {
   buildAuthorizeUrl(state: string): string {
     const clientId = this.config.get<string>("GOOGLE_CLIENT_ID");
     if (!clientId) {
-      throw new Error("GOOGLE_CLIENT_ID is not set — see .env.example");
+      throw new Error("GOOGLE_CLIENT_ID is not set – see .env.example");
     }
 
     const params = new URLSearchParams({
@@ -103,7 +103,7 @@ export class GoogleDriveOAuthService {
     const clientId = this.config.get<string>("GOOGLE_CLIENT_ID");
     const clientSecret = this.config.get<string>("GOOGLE_CLIENT_SECRET");
     if (!clientId || !clientSecret) {
-      throw new Error("GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set — see .env.example");
+      throw new Error("GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set – see .env.example");
     }
 
     const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -120,13 +120,13 @@ export class GoogleDriveOAuthService {
 
     if (!response.ok) {
       const body = await response.text();
-      throw new Error(`Google authorization-code exchange failed: HTTP ${response.status} — ${body}`);
+      throw new Error(`Google authorization-code exchange failed: HTTP ${response.status} – ${body}`);
     }
 
     const data = (await response.json()) as { refresh_token?: string };
     if (!data.refresh_token) {
       throw new Error(
-        "Google did not return a refresh_token for this authorization — see this method's " +
+        "Google did not return a refresh_token for this authorization – see this method's " +
           "doc comment for the likely cause (a stale prior consent) and how to recover.",
       );
     }

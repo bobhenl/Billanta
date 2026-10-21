@@ -426,7 +426,7 @@ export class ExportsController {
   }
 
   @Get("dphshv.xml")
-  @ApiOperation({ summary: "EC sales list (souhrnné hlášení, EPO DPHSHV) — 404 when nothing to report" })
+  @ApiOperation({ summary: "EC sales list (souhrnné hlášení, EPO DPHSHV) – 404 when nothing to report" })
   shv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     // Monthly for goods, quarterly allowed for services only; both accepted.
     return this.vat(req, res, "shv", parseVatPeriod(query));
@@ -439,13 +439,13 @@ export class ExportsController {
   }
 
   @Get("sk/kvdph.xml")
-  @ApiOperation({ summary: "Slovak VAT control statement (kontrolný výkaz, KVDPHv25) — due even when empty" })
+  @ApiOperation({ summary: "Slovak VAT control statement (kontrolný výkaz, KVDPHv25) – due even when empty" })
   skKv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     return this.vatSk(req, res, "kv", parseVatPeriod(query));
   }
 
   @Get("sk/svdph.xml")
-  @ApiOperation({ summary: "Slovak EC sales list (súhrnný výkaz, SVDPHv20) — 404 when nothing to report" })
+  @ApiOperation({ summary: "Slovak EC sales list (súhrnný výkaz, SVDPHv20) – 404 when nothing to report" })
   skSv(@Req() req: TenantScopedRequest, @Query() query: Record<string, string>, @Res() res: Response) {
     return this.vatSk(req, res, "sv", parseVatPeriod(query));
   }
@@ -480,7 +480,7 @@ export class ExportsController {
     period: ExportPeriod & { vat: VatPeriod; label: string },
   ) {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
-    if (!tenant?.dic) throw new BadRequestException("Company has no DIČ — VAT filings need it");
+    if (!tenant?.dic) throw new BadRequestException("Company has no DIČ – VAT filings need it");
     let body: string | null;
     let warnings: VatExportWarning[];
     try {

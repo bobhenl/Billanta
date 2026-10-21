@@ -184,7 +184,7 @@ export class DashboardService {
         if (invoice.contactId) {
           const c = customers.get(invoice.contactId) ?? {
             contactId: invoice.contactId,
-            name: contactName ?? "—",
+            name: contactName ?? "–",
             total: 0,
             count: 0,
           };

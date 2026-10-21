@@ -38,7 +38,7 @@ export class SubscriptionActiveGuard implements CanActivate {
     if (!req.tenantDb) {
       throw new ForbiddenException(
         "SubscriptionActiveGuard requires TenantContextMiddleware to run first (no req.tenantDb) " +
-          "— check the route is listed in AppModule's TenantContextMiddleware.forRoutes(...)",
+          "– check the route is listed in AppModule's TenantContextMiddleware.forRoutes(...)",
       );
     }
 

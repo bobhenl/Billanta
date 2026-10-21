@@ -92,7 +92,7 @@ export function buildIsdocInvoiceInput(
 ): IsdocInvoiceInput {
   if (!invoice.invoiceNumber || !invoice.issueDate || !invoice.dueDate) {
     throw new Error(
-      "buildIsdocInvoiceInput: invoice is missing invoiceNumber/issueDate/dueDate — has it been issued?",
+      "buildIsdocInvoiceInput: invoice is missing invoiceNumber/issueDate/dueDate – has it been issued?",
     );
   }
 

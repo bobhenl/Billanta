@@ -63,7 +63,7 @@ export interface MeResponse {
  * NextAuth session — callers should catch this and redirect to `/login`. */
 export class NotSignedInError extends Error {
   constructor() {
-    super("No active session — sign in required before calling the backend API");
+    super("No active session – sign in required before calling the backend API");
     this.name = "NotSignedInError";
   }
 }

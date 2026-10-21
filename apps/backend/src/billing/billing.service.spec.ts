@@ -58,7 +58,7 @@ describe("BillingService", () => {
     );
   });
 
-  describe("Stripe — signature verification", () => {
+  describe("Stripe – signature verification", () => {
     it("rejects an invalid signature with 400 and never touches the DB", async () => {
       stripe.webhooks.constructEvent.mockImplementation(() => {
         throw new Error("No signatures found matching the expected signature for payload");
@@ -106,7 +106,7 @@ describe("BillingService", () => {
     });
   });
 
-  describe("Stripe — idempotency", () => {
+  describe("Stripe – idempotency", () => {
     it("skips processing entirely on a replayed event id", async () => {
       const event = {
         id: "evt_dup",
@@ -149,7 +149,7 @@ describe("BillingService", () => {
     });
   });
 
-  describe("Stripe — event handling", () => {
+  describe("Stripe – event handling", () => {
     it("checkout.session.completed activates the tenant from metadata and stores the customer id", async () => {
       const event = {
         id: "evt_checkout",
@@ -331,7 +331,7 @@ describe("BillingService", () => {
       expect(gopayClient.getPaymentStatus).not.toHaveBeenCalled();
     });
 
-    it("never trusts the notification directly — always calls back GopayClient for status", async () => {
+    it("never trusts the notification directly – always calls back GopayClient for status", async () => {
       gopayClient.getPaymentStatus.mockResolvedValue({
         id: "pay-1",
         state: "PAID",

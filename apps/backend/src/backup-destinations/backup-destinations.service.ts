@@ -94,7 +94,7 @@ export class BackupDestinationsService {
     if (dto.type === "google_drive") {
       throw new BadRequestException(
         "Google Drive destinations are connected via GET /api/v1/backup-destinations/" +
-          "google-drive/authorize, not this endpoint — there is no OAuth refresh token to " +
+          "google-drive/authorize, not this endpoint – there is no OAuth refresh token to " +
           "accept in a plain JSON body here.",
       );
     }
@@ -177,7 +177,7 @@ export class BackupDestinationsService {
 
       if (existing?.type === "local") {
         throw new BadRequestException(
-          "type 'local' destinations can only use schedule 'manual' — there is no way to push " +
+          "type 'local' destinations can only use schedule 'manual' – there is no way to push " +
             "a file to a browser download on a timer, someone must be present to click download",
         );
       }

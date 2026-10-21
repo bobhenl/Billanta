@@ -14,7 +14,7 @@ describe("hashApiKey", () => {
     expect(hash).not.toContain(raw);
   });
 
-  it("is deterministic — the same key always hashes to the same digest", () => {
+  it("is deterministic – the same key always hashes to the same digest", () => {
     const raw = `${API_KEY_PREFIX}deterministicExample0001`;
     expect(hashApiKey(raw)).toBe(hashApiKey(raw));
   });

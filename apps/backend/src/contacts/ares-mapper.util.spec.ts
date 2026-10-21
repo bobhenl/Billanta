@@ -104,7 +104,7 @@ describe("mapAresSubjectToContactPrefill", () => {
     expect([result.addressStreet, result.addressCity, result.addressPostalCode]).toEqual(["Lhota 12", "Kostelec", "25001"]);
   });
 
-  it("never fabricates isVatPayer=false from dic presence alone — stays null (unknown) unless ARES explicitly says so", () => {
+  it("never fabricates isVatPayer=false from dic presence alone – stays null (unknown) unless ARES explicitly says so", () => {
     const result = mapAresSubjectToContactPrefill(makeSubject({ dic: "CZ27604977", platceDph: undefined }));
     expect(result.isVatPayer).toBeNull();
   });

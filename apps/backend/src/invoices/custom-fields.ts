@@ -202,7 +202,7 @@ export function displayCustomField(
   const kind = field.kind ?? "text";
   if (kind === "text") return fill(field.value);
   const n = numericValue(field, vars);
-  if (n === null) return kind === "formula" ? "—" : fill(field.value);
+  if (n === null) return kind === "formula" ? "–" : fill(field.value);
   if (kind === "percent") return `${field.value.trim()} % (${format(n)})`;
   return format(n);
 }

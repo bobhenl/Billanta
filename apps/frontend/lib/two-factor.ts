@@ -28,7 +28,7 @@ const RECOVERY_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
  */
 function encryptionKey(): Buffer {
   const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error("NEXTAUTH_SECRET is not set — see .env.example");
+  if (!secret) throw new Error("NEXTAUTH_SECRET is not set – see .env.example");
   return Buffer.from(hkdfSync("sha256", secret, "billanta-2fa", "totp-secret v1", 32));
 }
 

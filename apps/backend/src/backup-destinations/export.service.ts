@@ -184,7 +184,7 @@ export class ExportService {
       } else if (destination.type === "google_drive") {
         if (!secret) {
           throw new Error(
-            "Google Drive destination has no refresh token on file — reconnect via " +
+            "Google Drive destination has no refresh token on file – reconnect via " +
               "GET /api/v1/backup-destinations/google-drive/authorize",
           );
         }
@@ -236,7 +236,7 @@ export class ExportService {
         // against a future call site accidentally routing a `local`
         // destination here instead.
         throw new Error(
-          `runDestinationExport does not handle type '${destination.type}' destinations — ` +
+          `runDestinationExport does not handle type '${destination.type}' destinations – ` +
             "use runLocalDestinationExport instead",
         );
       }

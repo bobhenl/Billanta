@@ -27,7 +27,7 @@ export class ApiKeysController {
   @ApiOperation({
     summary: "Generate a new public-API key",
     description:
-      "Returns the full plaintext key in THIS response only — only its SHA-256 hash and a " +
+      "Returns the full plaintext key in THIS response only – only its SHA-256 hash and a " +
       "12-char prefix are ever persisted (see ApiKeysService.create / hashApiKey). There is " +
       "no way to retrieve the full key again after this call; losing it means revoking it " +
       "and generating a new one.",
@@ -39,7 +39,7 @@ export class ApiKeysController {
   @Get()
   @ApiOperation({
     summary: "List API keys for the current tenant",
-    description: "Never returns the full key or its hash — prefix, name, and usage metadata only.",
+    description: "Never returns the full key or its hash – prefix, name, and usage metadata only.",
   })
   list(@Req() req: TenantScopedRequest) {
     return this.apiKeysService.list(req.tenantDb!);

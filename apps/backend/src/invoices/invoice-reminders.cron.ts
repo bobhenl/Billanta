@@ -40,7 +40,7 @@ export class InvoiceRemindersCron {
         if (!contactEmail) {
           this.logger.warn(
             `invoice ${invoice.id} (tenant ${tenantId}) is overdue but its contact has no ` +
-              "email on file — skipping reminder",
+              "email on file – skipping reminder",
           );
           continue;
         }

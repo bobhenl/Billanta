@@ -606,7 +606,7 @@ export class InvoicesService {
         .orderBy(asc(schema.invoiceLineItems.sortOrder));
       const newItems = lineItemValues(tenantId, id, dto.line_items);
       const describe = (rows: { description: string; quantity: string | number; unit?: string | null; unitPrice: string | number }[]) =>
-        rows.map((r) => `${r.description} — ${Number(r.quantity)}${r.unit ? ` ${r.unit}` : ""} × ${Number(r.unitPrice)}`);
+        rows.map((r) => `${r.description} – ${Number(r.quantity)}${r.unit ? ` ${r.unit}` : ""} × ${Number(r.unitPrice)}`);
       const fromItems = describe(oldItems);
       const toItems = describe(newItems);
       if (JSON.stringify(fromItems) !== JSON.stringify(toItems)) changes.push({ field: "lineItems", from: fromItems, to: toItems });
@@ -675,7 +675,7 @@ export class InvoicesService {
   async remove(db: TenantDb, id: string) {
     const invoice = await this.requireInvoice(db, id);
     if (!ISSUABLE_STATUSES.includes(invoice.status) || invoice.invoiceNumber) {
-      throw new BadRequestException("Only an unissued draft can be deleted — cancel an issued document instead");
+      throw new BadRequestException("Only an unissued draft can be deleted – cancel an issued document instead");
     }
     const [child] = await db
       .select({ id: schema.invoices.id })
@@ -1480,7 +1480,7 @@ export class InvoicesService {
 
     if (!ISSUABLE_STATUSES.includes(invoice.status)) {
       throw new BadRequestException(
-        `Invoice ${invoiceId} cannot be issued from status "${invoice.status}" — only ` +
+        `Invoice ${invoiceId} cannot be issued from status "${invoice.status}" – only ` +
           `${ISSUABLE_STATUSES.join("/")} invoices can be issued`,
       );
     }
@@ -1489,7 +1489,7 @@ export class InvoicesService {
     if (noCustomer) throw new BadRequestException(noCustomer);
 
     if (!invoice.dueDate && invoice.documentType !== "quote") {
-      throw new BadRequestException("Invoice has no due date — set one before issuing");
+      throw new BadRequestException("Invoice has no due date – set one before issuing");
     }
     const related = await this.checkRelated(db, invoice.documentType, invoice.relatedInvoiceId);
 
@@ -1498,7 +1498,7 @@ export class InvoicesService {
       .from(schema.invoiceLineItems)
       .where(eq(schema.invoiceLineItems.invoiceId, invoiceId));
     if (lineItems.length === 0) {
-      throw new BadRequestException("Invoice has no line items — add at least one before issuing");
+      throw new BadRequestException("Invoice has no line items – add at least one before issuing");
     }
 
     const now = new Date();
@@ -1659,7 +1659,7 @@ export class InvoicesService {
     }
 
     if (!invoice.invoiceNumber) {
-      throw new BadRequestException("Invoice has not been issued yet — no document to generate");
+      throw new BadRequestException("Invoice has not been issued yet – no document to generate");
     }
 
     if (!invoice.contactId) {

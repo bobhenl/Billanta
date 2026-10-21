@@ -72,7 +72,7 @@ export class BankReconciliationController {
   })
   async importStatement(@Req() req: TenantScopedRequest, @UploadedFile() file?: UploadedCsvFile) {
     if (!file) {
-      throw new BadRequestException('No file uploaded — expected a multipart form field named "file"');
+      throw new BadRequestException('No file uploaded – expected a multipart form field named "file"');
     }
     if (!hasStatementExtension(file.originalname)) {
       throw new BadRequestException("bank_statement_unknown_format");

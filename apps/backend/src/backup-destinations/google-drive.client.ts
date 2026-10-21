@@ -48,7 +48,7 @@ export class GoogleDriveClient {
     const clientId = this.config.get<string>("GOOGLE_CLIENT_ID");
     const clientSecret = this.config.get<string>("GOOGLE_CLIENT_SECRET");
     if (!clientId || !clientSecret) {
-      throw new Error("GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set — see .env.example");
+      throw new Error("GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set – see .env.example");
     }
 
     const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -64,7 +64,7 @@ export class GoogleDriveClient {
 
     if (!response.ok) {
       const body = await response.text();
-      throw new Error(`Google access-token refresh failed: HTTP ${response.status} — ${body}`);
+      throw new Error(`Google access-token refresh failed: HTTP ${response.status} – ${body}`);
     }
 
     const data = (await response.json()) as { access_token?: string };
@@ -132,7 +132,7 @@ export class GoogleDriveClient {
 
     if (!response.ok) {
       const responseBody = await response.text();
-      throw new Error(`Google Drive upload failed: HTTP ${response.status} — ${responseBody}`);
+      throw new Error(`Google Drive upload failed: HTTP ${response.status} – ${responseBody}`);
     }
   }
 }

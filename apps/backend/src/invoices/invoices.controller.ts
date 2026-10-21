@@ -516,7 +516,7 @@ export class InvoicesController {
       "sets issued_by_user_id/issued_at (and ai_draft_reviewed_at for AI-sourced drafts), " +
       "and flips status -> issued. Rejects (400) an invoice that's already " +
       "issued/paid/cancelled, or that has no contact/due date/line items yet. Does NOT " +
-      "persist a PDF/ISDOC copy — see GET .../pdf and .../isdoc, which render both " +
+      "persist a PDF/ISDOC copy – see GET .../pdf and .../isdoc, which render both " +
       "on demand from the now-issued invoice's data.",
   })
   issue(@Req() req: TenantScopedRequest, @Param("id") id: string) {
