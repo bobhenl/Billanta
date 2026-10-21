@@ -1,0 +1,912 @@
+{
+  "app": {
+    "name": "Billanta",
+    "tagline": "Fakturowanie i księgowość online dla firm i przedsiębiorców",
+    "readOnlyRole": "Masz rolę Tylko do odczytu – możesz przeglądać dokumenty, ale nie możesz ich zmieniać.",
+    "readOnly": {
+      "title": "Masz dostęp tylko do podglądu",
+      "body": "Twoje uprawnienia w tej firmie nie pozwalają tworzyć ani zmieniać dokumentów. W razie potrzeby poproś właściciela lub administratora.",
+      "back": "Wstecz"
+    }
+  },
+  "nav": {
+    "dashboard": "Pulpit",
+    "invoices": "Faktury",
+    "expenses": "Wydatki",
+    "bank": "Bank",
+    "contacts": "Kontakty",
+    "settings": "Ustawienia",
+    "billing": "Płatności",
+    "primaryNavigation": "Główna nawigacja",
+    "time": "Czas pracy",
+    "reports": "Raporty",
+    "activity": "Historia zmian"
+  },
+  "theme": {
+    "toggle": "Przełącz motyw",
+    "light": "Tryb jasny",
+    "dark": "Tryb ciemny",
+    "short": {
+      "system": "Systemowy",
+      "light": "Jasny",
+      "dark": "Ciemny"
+    }
+  },
+  "language": {
+    "label": "Język",
+    "cs": "Čeština",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "dashboard": {
+    "title": "Pulpit",
+    "welcome": "Witaj ponownie. Oto krótki przegląd Twoich faktur i płatności.",
+    "noTenant": "Najpierw dokończ konfigurację firmy, a tutaj pojawi się przegląd.",
+    "loadError": "Nie udało się wczytać przeglądu. Spróbuj odświeżyć stronę.",
+    "greeting": "Dzień dobry, {name}",
+    "newInvoice": "Nowa faktura",
+    "customize": "Dostosuj",
+    "showAll": "Pokaż wszystko",
+    "recent": "Ostatnie dokumenty",
+    "overdueTitle": "Po terminie ({count})",
+    "dueOn": "termin {date}",
+    "topCustomers": "Najwięksi klienci",
+    "topCustomersHint": "Według zafakturowanej kwoty z ostatnich 12 miesięcy",
+    "foreignNote": "{count, plural, one {# dokument w obcej walucie nie jest wliczony} few {# dokumenty w obcych walutach nie są wliczone} many {# dokumentów w obcych walutach nie jest wliczonych} other {# dokumentu w obcych walutach nie jest wliczone}} do sum.",
+    "emptyTitle": "Na razie pusto",
+    "emptyHint": "Wystaw pierwszą fakturę, a przegląd wypełni się przychodami, wykresem i klientami.",
+    "chart": {
+      "title": "Przychody i wydatki",
+      "hint": "Ostatnie 12 miesięcy, bez VAT",
+      "revenue": "Przychody",
+      "expenses": "Wydatki"
+    },
+    "cards": {
+      "revenue_month": {
+        "label": "Przychody w tym miesiącu",
+        "sub": "Wystawione faktury bez VAT"
+      },
+      "unpaid": {
+        "label": "Nieopłacone",
+        "sub": "{count, plural, one {# faktura czeka} few {# faktury czekają} many {# faktur czeka} other {# faktury czeka}} na zapłatę"
+      },
+      "overdue": {
+        "label": "Po terminie",
+        "sub": "{count, plural, =0 {Wszystko w porządku} one {# faktura} few {# faktury} many {# faktur} other {# faktury}}"
+      },
+      "expenses_month": {
+        "label": "Wydatki w tym miesiącu",
+        "sub": "Dokumenty otrzymane"
+      },
+      "revenue_year": {
+        "label": "Przychody w tym roku",
+        "sub": "Od początku roku"
+      },
+      "drafts": {
+        "label": "Szkice",
+        "sub": "Czekają na wystawienie"
+      },
+      "profit_month": {
+        "label": "Zysk w tym miesiącu",
+        "sub": "Przychody minus wydatki"
+      },
+      "vat_month": {
+        "label": "VAT w tym miesiącu",
+        "sub": "VAT należny – szczegóły w eksportach"
+      },
+      "due_soon": {
+        "label": "Termin w ciągu 7 dni",
+        "sub": "{count, plural, =0 {Nic pilnego} one {# faktura} few {# faktury} many {# faktur} other {# faktury}}"
+      },
+      "unviewed": {
+        "label": "Nieotwarte faktury",
+        "sub": "Wysłane, klient jeszcze ich nie otworzył"
+      },
+      "missing_receipts": {
+        "label": "Wydatki bez dokumentu",
+        "sub": "Nie przesłano dokumentu"
+      }
+    },
+    "tiles": {
+      "new_invoice": "Nowa faktura",
+      "new_proforma": "Proforma",
+      "new_quote": "Oferta",
+      "new_expense": "Nowy wydatek",
+      "templates": "Szablony",
+      "bulk": "Fakturowanie zbiorcze",
+      "new_contact": "Kontakty",
+      "bank": "Bank",
+      "exports": "Eksporty dla księgowej",
+      "scan_invoice": "Zeskanuj fakturę (QR)",
+      "dictate_invoice": "Podyktuj fakturę",
+      "calendar_feed": "Terminy w kalendarzu",
+      "public_profile": "Publiczny profil firmy",
+      "migration": "Przejdź z innego systemu",
+      "bank_sync": "Płatności z banku i PayPal"
+    },
+    "sections": {
+      "showChart": "Wykres przychodów i wydatków",
+      "showTopCustomers": "Najwięksi klienci",
+      "showRecent": "Ostatnie dokumenty",
+      "showDueSoon": "Faktury z bliskim terminem",
+      "showTaxDeadlines": "Terminy podatkowe",
+      "showFxRates": "Kursy walut ČNB"
+    },
+    "customizeCards": "Karty z liczbami",
+    "customizeTiles": "Szybkie akcje",
+    "customizeSections": "Sekcje",
+    "customizeReset": "Przywróć zalecane",
+    "customizeSaved": "Przegląd zapisany",
+    "customizeFailed": "Zapis nie powiódł się: {reason}",
+    "moveUp": "Przesuń w górę",
+    "moveDown": "Przesuń w dół",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "dueSoonTitle": "Termin w ciągu 7 dni ({count})",
+    "taxDeadlines": {
+      "title": "Najbliższe terminy podatkowe",
+      "hint": "Terminy podatkowe pochodzą z oficjalnego kalendarza czeskiej administracji skarbowej (odświeżane codziennie, już przesunięte na dni robocze). Nie ma w nim zaliczek na ubezpieczenia ani rocznych rozliczeń, więc te obliczamy sami. Pokazujemy najbliższe 45 dni; to tylko kalendarz, Billanta nie śledzi, co już złożono.",
+      "daysLeft": "{count, plural, =0 {dzisiaj} one {jutro} few {za # dni} many {za # dni} other {za # dnia}}",
+      "customizeTitle": "Obserwowane terminy",
+      "customizeHint": "Pokazujemy tylko terminy, które dotyczą Twojego statusu VAT i formy prawnej (Ustawienia → Firma). Kwartalni podatnicy VAT zaznaczają opcję kwartalną zamiast miesięcznej.",
+      "kinds": {
+        "vat_monthly": "Deklaracja VAT i informacja kontrolna (miesięcznie)",
+        "vat_quarterly": "Deklaracja VAT i informacja kontrolna (kwartalnie)",
+        "control_statement": "Informacja kontrolna (miesięcznie)",
+        "vat_identified": "Deklaracja VAT (osoba zidentyfikowana)",
+        "ec_sales_list": "Informacja podsumowująca",
+        "health": "Zaliczka na ubezpieczenie zdrowotne przedsiębiorcy",
+        "social": "Zaliczka na ubezpieczenie społeczne przedsiębiorcy",
+        "income_tax": "Zeznanie w podatku dochodowym",
+        "overviews": "Roczne rozliczenia ubezpieczenia społecznego i zdrowotnego",
+        "road_tax": "Podatek drogowy",
+        "property_tax": "Podatek od nieruchomości",
+        "vat_other": "VAT: OSS, CESOP i inne zgłoszenia",
+        "flat_tax": "Zaliczka na podatek ryczałtowy",
+        "payroll": "Zaliczki na podatek pracowników"
+      },
+      "sourceOfficial": "Terminy podatkowe: oficjalny kalendarz",
+      "sourceLocal": "Nie udało się teraz wczytać kalendarza administracji skarbowej; terminy są obliczone na podstawie przepisów.",
+      "prepareXml": "Przygotuj XML",
+      "amountsTitle": "Przewidywane kwoty",
+      "amountsHint": "Kwota, którą co miesiąc płacisz jako pracodawca. Wyświetla się przy terminie, żeby było wiadomo, ile odłożyć. Zostaw puste, jeśli nie dotyczy.",
+      "bookExpense": "Zaksięguj jako wydatek",
+      "fillAmount": "Dodaj kwotę",
+      "onlyIfForeignPurchase": "Tylko jeśli w tym miesiącu kupiłeś usługi z zagranicy (np. reklamy).",
+      "onlyIfEuSales": "Tylko jeśli w tym miesiącu zafakturowałeś usługę firmie z innego kraju UE.",
+      "advancesInSettings": "Zaliczki na ubezpieczenia i podatek ryczałtowy ustawiasz według okresów w Danych firmy.",
+      "editAdvances": "Edytuj zaliczki",
+      "manualKindsHint": "Billanta nie wie, czy masz pracowników, pojazd objęty podatkiem drogowym lub nieruchomość, więc te pozycje zaznacz sam.",
+      "regimeUnknown": "Nie wiemy, czy rozliczasz się ryczałtem, więc obserwujemy zwykłe zaliczki na ubezpieczenia.",
+      "regimeAnswer": "Odpowiedz w ustawieniach"
+    },
+    "fxRates": {
+      "title": "Kursy walut ČNB",
+      "hint": "Kurs Czeskiego Banku Narodowego z wybranego dnia, używany do przeliczania faktur w obcej walucie na CZK. Procent to zmiana w tygodniu poprzedzającym ten dzień.",
+      "customizeTitle": "Waluty w kursach ČNB",
+      "customizeHint": "Wybierz, które waluty pokazuje pulpit. Możesz wybrać dowolną walutę publikowaną przez ČNB.",
+      "source": "Źródło:",
+      "weekChange": "Zmiana w ciągu 7 dni",
+      "weekShort": "/ tydzień",
+      "date": "Dzień",
+      "publishedOn": "Kurs z {date}",
+      "fallbackNote": "ČNB nie opublikował kursu na wybrany dzień (weekend, święto lub przed 14:30), więc pokazujemy ostatni opublikowany.",
+      "unavailable": "Nie udało się wczytać kursów na ten dzień.",
+      "converter": "Przelicz na CZK",
+      "amount": "Kwota",
+      "currency": "Waluta",
+      "add": "Dodaj walutę",
+      "remove": "Usuń {code}",
+      "limit": "Maksymalnie {max} walut."
+    },
+    "usage": {
+      "title": "Zalecane na podstawie tego, z czego korzystasz",
+      "hint": "To, czego nie zmienisz, nadal się dopasowuje. Twój wybór zawsze ma pierwszeństwo.",
+      "newAccount": "Na razie nic tu nie ma, więc widzisz układ podstawowy.",
+      "currencies": "Fakturujesz w {list}",
+      "onlyHome": "Fakturujesz tylko w {currency}",
+      "expenses": "zapisujesz wydatki",
+      "noExpenses": "nie zapisano jeszcze wydatków",
+      "paypal": "PayPal podłączony",
+      "bank": "bank podłączony",
+      "proformas": "wystawiasz proformy",
+      "quotes": "wysyłasz oferty"
+    },
+    "customizeOrderHint": "Przeciągnij za uchwyt lub użyj strzałek, aby zmienić kolejność.",
+    "dragToReorder": "Przeciągnij, aby zmienić kolejność",
+    "exportsCta": "Eksporty dla księgowej",
+    "emptyHintReadOnly": "Nie ma jeszcze dokumentów. Gdy firma wystawi pierwszą fakturę, zobaczysz tu przychody, wykres i klientów."
+  },
+  "invoices": {
+    "hover": {
+      "fx": "≈ {amount} (kurs {source} {rate} {pair} z {date})",
+      "fxNoDate": "≈ {amount} (kurs {source} {rate} {pair})",
+      "fxAnnual": "≈ {amount} (stały kurs {rate} {pair} na {year})",
+      "fxManual": "≈ {amount} (kurs {rate} {pair})",
+      "breakdown": "Netto {base} + VAT {vat}",
+      "loading": "Wczytywanie…",
+      "error": "Nie udało się wczytać podsumowania.",
+      "ico": "Numer firmy",
+      "count": "{count, plural, one {# faktura} few {# faktury} many {# faktur} other {# faktury}}",
+      "none": "Brak wystawionych faktur.",
+      "invoiced": "Zafakturowano",
+      "unpaid": "Nieopłacone",
+      "overdue": "Po terminie",
+      "last": "Ostatnia faktura",
+      "open": "Otwórz kontakt"
+    },
+    "title": "Faktury",
+    "description": "Wszystkie wystawione i przygotowywane faktury.",
+    "newInvoice": "Nowa faktura",
+    "empty": "Nie ma jeszcze żadnych faktur.",
+    "columns": {
+      "number": "Numer",
+      "contact": "Kontrahent",
+      "amount": "Kwota",
+      "currency": "Waluta",
+      "status": "Status",
+      "dueDate": "Termin płatności",
+      "actions": "Akcje"
+    },
+    "status": {
+      "draft": "Szkic",
+      "pending_review": "Do sprawdzenia",
+      "issued": "Wystawiona",
+      "paid": "Opłacona",
+      "cancelled": "Anulowana"
+    },
+    "aiDisclaimer": "Utworzono z wiadomości głosowej – przed wystawieniem sprawdź wszystkie dane.",
+    "unnumbered": "Numer zostanie nadany przy wystawieniu",
+    "noDueDate": "Brak terminu płatności",
+    "noTenant": "Twoje konto nie jest jeszcze powiązane z firmą. Skontaktuj się z pomocą techniczną.",
+    "loadError": "Nie udało się teraz wczytać faktur. Spróbuj ponownie za chwilę.",
+    "duplicate": "Duplikuj",
+    "view": {
+      "saveView": "Zapisz widok",
+      "saveHint": "Zapisuje bieżące filtry, kolumny i sortowanie pod wybraną nazwą.",
+      "viewName": "Nazwa widoku",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "saved": "Widok „{name}” zapisany",
+      "applyView": "Zastosuj widok",
+      "deleteView": "Usuń widok {name}",
+      "customize": "Dostosuj",
+      "customizeTitle": "Szybkie filtry",
+      "customizeHint": "Wybierz, które etykiety pokazują się nad listą. Ukryta etykieta jest widoczna, dopóki jest aktywna. Dotyczy tej przeglądarki.",
+      "presetChips": "Szybki wybór",
+      "typeChips": "Rodzaje dokumentów",
+      "statusChips": "Statusy",
+      "presets": {
+        "thisMonth": "Ten miesiąc",
+        "lastMonth": "Poprzedni miesiąc",
+        "thisQuarter": "Ten kwartał",
+        "thisYear": "Ten rok",
+        "lastYear": "Poprzedni rok",
+        "eur": "W euro",
+        "unsent": "Wystawione, niewysłane",
+        "today": "Dzisiaj",
+        "yesterday": "Wczoraj",
+        "thisWeek": "Ten tydzień",
+        "lastWeek": "Poprzedni tydzień",
+        "last7": "Ostatnie 7 dni",
+        "last30": "Ostatnie 30 dni",
+        "last90": "Ostatnie 90 dni",
+        "lastQuarter": "Poprzedni kwartał",
+        "last12Months": "Ostatnie 12 miesięcy",
+        "overdue30": "Ponad 30 dni po terminie",
+        "partial": "Częściowo opłacone"
+      },
+      "inlineActions": "Akcje w wierszu",
+      "inlineActionsHint": "Pokazuje ikony najczęstszych akcji obok ⋯.",
+      "sortBy": "Sortuj (kliknij ponownie, aby odwrócić, po raz trzeci, aby wyczyścić)",
+      "resetSort": "Wyczyść sortowanie",
+      "sortLabel": "Sortowanie",
+      "sort": {
+        "default": "Ostatnio utworzone",
+        "issueDate_desc": "Najnowsze wystawione",
+        "issueDate_asc": "Najstarsze wystawione",
+        "createdAt_asc": "Najwcześniej utworzone",
+        "dueDate_asc": "Najbliższy termin",
+        "dueDate_desc": "Najdalszy termin",
+        "overdue_desc": "Najdłużej po terminie",
+        "total_desc": "Najwyższa kwota",
+        "total_asc": "Najniższa kwota",
+        "amountDue_desc": "Najwięcej do zapłaty",
+        "totalWithoutVat_desc": "Najwyższa kwota netto",
+        "customer_asc": "Klient A–Z",
+        "customer_desc": "Klient Z–A",
+        "number_desc": "Numer malejąco",
+        "number_asc": "Numer rosnąco",
+        "paidAt_desc": "Ostatnio opłacone",
+        "sentAt_desc": "Ostatnio wysłane",
+        "taxableDate_desc": "Najnowsza data sprzedaży",
+        "variableSymbol_asc": "Symbol zmienny",
+        "status_asc": "Według statusu",
+        "type_asc": "Według rodzaju dokumentu"
+      }
+    },
+    "sendBlocked": {
+      "EMAIL_DAILY_LIMIT": "Osiągnięto dzisiejszy limit e-maili. Nowe konta mają w pierwszym tygodniu niższy limit; możesz wysyłać znowu jutro albo udostępnić link lub PDF.",
+      "EMAIL_PAUSED": "Wysyłka e-maili jest wstrzymana, bo kilku odbiorców zgłosiło Twoje dokumenty jako niechciane. Skontaktuj się z pomocą techniczną, a sprawdzimy to.",
+      "ACCOUNT_SUSPENDED": "Konto jest zawieszone z powodu podejrzenia nadużycia. Skontaktuj się z pomocą techniczną."
+    },
+    "buyerDetails": {
+      "badge": {
+        "waiting": "Czeka na dane klienta",
+        "submitted": "Klient uzupełnił dane"
+      },
+      "button": "Poproś klienta o uzupełnienie danych",
+      "dialogTitle": "Niech klient uzupełni swoje dane",
+      "dialogHint": "Klient dostaje link, pod którym widzi pozycje i kwotę oraz wpisuje nazwę, adres i numer firmy lub NIP UE. Dane trafiają do Twoich kontaktów, a nic, co zapisałeś, nie zostanie nadpisane.",
+      "emailLabel": "E-mail klienta",
+      "emailPlaceholder": "imie@firma.pl",
+      "emailHint": "Zostaw puste, jeśli chcesz tylko skopiować link i wysłać go samodzielnie.",
+      "autoIssue": "Po uzupełnieniu automatycznie wystaw i wyślij fakturę",
+      "autoIssueHint": "Tylko gdy dane nie są sprzeczne z zapisanym kontaktem. W przeciwnym razie szkic czeka na Ciebie.",
+      "replaceNote": "Nowy link zastępuje stary, który przestaje działać.",
+      "sendEmail": "Wyślij e-mail",
+      "createLink": "Utwórz link",
+      "close": "Zamknij",
+      "copied": "Link skopiowany.",
+      "copyPrompt": "Skopiuj link:",
+      "emailed": "Wysłaliśmy link na adres {email}.",
+      "cancelled": "Link został zamknięty.",
+      "failed": "Niepowodzenie",
+      "waitingTitle": "Czeka na dane klienta",
+      "waitingEmail": "Link został wysłany na adres {email}.",
+      "waitingLink": "Link jest gotowy do udostępnienia.",
+      "waitingAuto": "Po uzupełnieniu faktura zostanie automatycznie wystawiona i wysłana.",
+      "waitingManual": "Po uzupełnieniu damy Ci znać, a fakturę wystawisz samodzielnie.",
+      "copyLink": "Kopiuj link",
+      "resend": "Wyślij ponownie",
+      "cancel": "Zamknij link",
+      "submittedTitle": "Klient uzupełnił dane {date}",
+      "mode": {
+        "created": "Utworzyliśmy nowy kontakt i dodaliśmy go do szkicu.",
+        "existing": "Znaleźliśmy zapisany kontakt po numerze firmy lub NIP i dodaliśmy go do szkicu.",
+        "filled": "Dane należą do kontaktu, który już był na szkicu."
+      },
+      "filled": "Uzupełniono: {fields}.",
+      "conflicts": "Różni się od zapisanego kontaktu, nic nie zostało nadpisane:",
+      "empty": "puste",
+      "auto": {
+        "sent": "Faktura została automatycznie wystawiona i wysłana.",
+        "issued": "Faktura została wystawiona, ale nie udało się wysłać e-maila.",
+        "failed": "Automatyczne wystawienie nie powiodło się. Sprawdź szkic.",
+        "skipped": "Automatyczne wystawienie czeka na Ciebie, dane wymagają sprawdzenia."
+      },
+      "askAgain": "Wyślij nowy link",
+      "field": {
+        "legalName": "nazwa",
+        "email": "e-mail",
+        "ico": "numer firmy",
+        "dic": "NIP",
+        "address": "adres",
+        "isPerson": "osoba prywatna",
+        "contactId": "kontakt",
+        "phone": "telefon"
+      },
+      "copyManual": "Kopiowanie nie jest tu dostępne. Zaznacz link i skopiuj go samodzielnie.",
+      "copyManualLabel": "Link dla klienta",
+      "requiredLabel": "Wymagane dane",
+      "requiredHint": "Co klient musi uzupełnić. Nazwa i adres są zawsze wymagane, numer firmy i NIP tylko w przypadku firm.",
+      "requiredSaveDefault": "Używaj jako domyślne dla nowych linków",
+      "requiredSummary": "Wymagane: {fields}",
+      "pickCustomer": "Wybierz klienta"
+    },
+    "profileOrder": {
+      "badge": "Zamówienie z profilu",
+      "banner": "Klient utworzył ten szkic, składając zamówienie przez Twój publiczny profil. Sprawdź pozycje i ceny, a potem go wystaw. Klientowi nic nie zostało wysłane."
+    }
+  },
+  "contacts": {
+    "title": "Kontakty",
+    "hint": "Klienci zapisują się tu automatycznie, gdy wybierzesz ich na fakturze (z kontaktów lub z rejestru ARES). Oznacz gwiazdką tych, którym fakturujesz najczęściej, a na nowej fakturze wybierzesz ich jednym stuknięciem.",
+    "filter": "Szukaj po nazwie, numerze firmy lub e-mailu",
+    "empty": "Nie ma jeszcze klientów. Dodadzą się z pierwszą fakturą.",
+    "emptyCta": "Wystaw fakturę",
+    "noMatch": "Nic nie pasuje do wyszukiwania.",
+    "star": "Oznacz gwiazdką",
+    "unstar": "Usuń gwiazdkę",
+    "starred": "{name} oznaczono gwiazdką",
+    "unstarred": "Usunięto gwiazdkę: {name}",
+    "starFailed": "Nie udało się zapisać gwiazdki",
+    "invoice": "Faktura",
+    "aresVerified": "Zweryfikowano w ARES",
+    "loadError": "Nie udało się wczytać kontaktów.",
+    "newContact": "Nowy kontakt",
+    "editor": {
+      "newTitle": "Nowy kontakt",
+      "editTitle": "Edytuj kontakt",
+      "legalName": "Nazwa",
+      "street": "Ulica i numer",
+      "city": "Miejscowość",
+      "postalCode": "Kod pocztowy",
+      "country": "Kraj",
+      "vatPayer": "Podatnik VAT",
+      "vatUnknown": "Nie wiadomo",
+      "vatYes": "Tak",
+      "vatNo": "Nie",
+      "fromAres": "Wczytaj z ARES",
+      "icoInvalid": "Numer firmy (IČO) musi mieć 8 cyfr.",
+      "aresNotFound": "W ARES nie ma firmy o tym numerze.",
+      "aresFailed": "Wyszukiwanie w ARES nie powiodło się",
+      "aresLoaded": "Wczytano z ARES.",
+      "icoTaken": "Kontakt z tym numerem firmy już istnieje.",
+      "saveFailed": "Zapis nie powiódł się",
+      "saved": "Kontakt zapisany.",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "kind": "Rodzaj klienta",
+      "kindCompany": "Firma",
+      "kindPerson": "Osoba prywatna",
+      "kindHint": "Osoba prywatna nie ma numeru firmy ani NIP – ukrywamy te pola i nie pojawią się na fakturze. Nigdy nie jest podatnikiem VAT.",
+      "personName": "Imię i nazwisko",
+      "color": "Kolorowa etykieta",
+      "colorNone": "Brak",
+      "registrySearch": "Znajdź firmę w rejestrze",
+      "registryHint": "Szukaj po nazwie, numerze firmy lub NIP UE, a dane uzupełnią się same. Kraj wybierz po prawej. Czechy i Słowację przeszukujesz po nazwie lub IČO; Francję, Norwegię, Finlandię, Danię i Szwajcarię po nazwie lub numerze rejestrowym; Polskę po NIP. Każdą firmę z UE znajdziesz po numerze VAT UE z prefiksem kraju (np. IT00488410010). Opcje „LEI” przeszukują światowy rejestr GLEIF, w którym są głównie większe firmy.",
+      "registryResults": "Z rejestru",
+      "registryEmpty": "Nic nie znaleziono w rejestrze",
+      "registryPlaceholder": {
+        "auto": "Nazwa, numer firmy lub NIP UE (np. IT00488410010)",
+        "CZ": "Nazwa czeskiej firmy lub IČO",
+        "SK": "Nazwa słowackiej firmy lub IČO",
+        "FR": "Nazwa lub SIREN",
+        "NO": "Nazwa lub numer org.",
+        "PL": "NIP (10 cyfr)",
+        "EU": "NIP UE z prefiksem kraju, np. DE123456789",
+        "DE": "Nazwa firmy lub NIP UE (DE…)",
+        "AT": "Nazwa firmy lub NIP UE (ATU…)",
+        "IT": "Nazwa firmy lub NIP UE (IT…)",
+        "GB": "Nazwa firmy lub numer rejestrowy",
+        "US": "Nazwa firmy (np. Apple Inc)",
+        "WORLD": "Nazwa firmy z dowolnego kraju",
+        "FI": "Nazwa lub Business ID (1234567-8)",
+        "DK": "Nazwa lub CVR (8 cyfr)",
+        "CH": "Nazwa lub UID (CHE-123.456.789)"
+      },
+      "internalNote": "Notatka wewnętrzna",
+      "internalNoteHint": "Tylko dla Ciebie: nigdy nie jest drukowana na dokumentach ani wysyłana klientowi. Wyświetla się na stronie kontaktu i przy fakturowaniu tego klienta, jest też w eksporcie CSV.",
+      "internalNotePlaceholder": "Np. zawsze płaci z opóźnieniem, faktury adresować do pani Nowak, rabat 5%…",
+      "fromRegistry": "Wczytaj z rejestru",
+      "phone": "Telefon",
+      "vatSuggestYes": "Rejestr podaje, że jest podatnikiem VAT. Ustawić na „Tak”?",
+      "vatSuggestNo": "Rejestr nie podaje, że jest podatnikiem VAT. Ustawić na „Nie”?",
+      "contactPerson": "Osoba kontaktowa"
+    },
+    "detail": {
+      "title": "Szczegóły kontaktu",
+      "loadError": "Nie udało się wczytać kontaktu.",
+      "backToList": "Wróć do kontaktów",
+      "aresVerified": "Zweryfikowano w ARES",
+      "noIco": "Brak numeru firmy",
+      "stats": {
+        "invoiced": "Zafakturowano ({currency})",
+        "open": "Nieopłacone ({currency})",
+        "overdue": "Po terminie",
+        "avgDelay": "Średnie opóźnienie płatności",
+        "onTime": "Płaci w terminie",
+        "days": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}"
+      },
+      "invoices": "Dokumenty",
+      "expenses": "Wydatki od tego dostawcy",
+      "noExpenses": "Brak wydatków od tego kontaktu.",
+      "info": "Dane",
+      "vatPayer": "Podatnik VAT",
+      "yes": "Tak",
+      "no": "Nie",
+      "aresCheck": "Zweryfikowano w ARES",
+      "lastInvoice": "Ostatni dokument",
+      "documentCount": "Dokumenty",
+      "openAres": "Otwórz w ARES ↗",
+      "newInvoice": "Nowa faktura",
+      "star": "Oznacz gwiazdką",
+      "unstar": "Usuń gwiazdkę",
+      "refreshAres": "Odśwież z ARES",
+      "aresUpdated": "Zaktualizowano z ARES.",
+      "aresNotFound": "Nie znaleziono w ARES.",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "cancel": "Anuluj",
+      "deleteTitle": "Usunąć kontakt?",
+      "deleteBody": "Kontakt „{name}” zostanie trwale usunięty.",
+      "inUse": "Kontakt ma dokumenty i nie można go usunąć.",
+      "deleted": "Kontakt usunięty.",
+      "actionFailed": "Akcja nie powiodła się",
+      "invoicesFilter": "Otwórz w fakturach z filtrami",
+      "internalNote": "Notatka wewnętrzna",
+      "portal": {
+        "title": "Portal klienta",
+        "hint": "Jeden stały link, pod którym klient widzi wszystkie wystawione mu dokumenty, kwotę pozostałą do zapłaty i kod QR do płatności każdej faktury. Szkice nigdy nie są widoczne. Nowy link unieważnia stary.",
+        "off": "Wyślij klientowi jeden link do wszystkich jego faktur i ofert.",
+        "enable": "Włącz portal",
+        "enabled": "Portal jest włączony",
+        "copy": "Kopiuj",
+        "copied": "Link skopiowany",
+        "open": "Otwórz",
+        "renew": "Nowy link",
+        "renewConfirm": "Utworzyć nowy link? Obecny przestanie działać.",
+        "renewed": "Utworzono nowy link",
+        "disable": "Wyłącz",
+        "disabled": "Portal jest wyłączony",
+        "failed": "Coś poszło nie tak"
+      },
+      "contactPerson": "Osoba kontaktowa"
+    },
+    "csv": {
+      "import": "Importuj CSV",
+      "importHint": "Prześlij plik CSV z Excela, Fakturoid, iDoklad lub faktorio. Kontakty dopasowujemy po numerze firmy, a w razie jego braku po nazwie.",
+      "export": "Eksportuj CSV",
+      "done": "Gotowe: nowe kontakty {created}, zaktualizowane {updated}.",
+      "skippedTitle": "Pominięte wiersze: {count}",
+      "skippedRow": "Wiersz {line} ({name})",
+      "skippedMore": "…i {count} więcej.",
+      "reasons": {
+        "missing_name": "brak nazwy",
+        "invalid_ico": "nieprawidłowy numer firmy",
+        "invalid_email": "nieprawidłowy e-mail",
+        "invalid_country": "nieznany kraj"
+      },
+      "errors": {
+        "unknown_columns": "W pliku nie znaleziono kolumny z nazwą firmy (Name / Název).",
+        "too_many_rows": "Plik jest za duży (maks. 5000 wierszy).",
+        "no_file": "Wybierz plik CSV.",
+        "failed": "Import nie powiódł się, spróbuj ponownie."
+      }
+    },
+    "filters": {
+      "kind": "Rodzaj",
+      "activity": "Fakturowanie",
+      "activityHint": "Liczą się wystawione faktury (bez szkiców i anulowanych).",
+      "activityValue": {
+        "unpaid": "Z nieopłaconymi fakturami",
+        "active": "Fakturowani",
+        "none": "Jeszcze bez faktury"
+      },
+      "starred": "Z gwiazdką",
+      "vatPayer": "Podatnik VAT",
+      "ares": "Zweryfikowano w ARES",
+      "email": "Ma e-mail",
+      "country": "Kraj"
+    },
+    "sort": {
+      "label": "Sortowanie",
+      "name": "Według nazwy",
+      "newest": "Najnowsze",
+      "revenue": "Największy obrót",
+      "lastInvoice": "Ostatnia faktura",
+      "unpaid": "Najwięcej nieopłaconych",
+      "city": "Według miejscowości"
+    },
+    "stats": {
+      "invoices": "{count, plural, one {# faktura} few {# faktury} many {# faktur} other {# faktury}}",
+      "unpaid": "nieopłacone: {count}",
+      "unpaidTitle": "Nieopłacone wystawione faktury"
+    },
+    "colorFilter": "Kolor",
+    "colors": {
+      "red": "Czerwony",
+      "orange": "Pomarańczowy",
+      "amber": "Żółty",
+      "green": "Zielony",
+      "teal": "Morski",
+      "sky": "Niebieski",
+      "indigo": "Indygo",
+      "violet": "Fioletowy",
+      "pink": "Różowy",
+      "slate": "Szary"
+    }
+  },
+  "auth": {
+    "signup": {
+      "title": "Załóż konto",
+      "subtitle": "Załóż konto i wystaw pierwszą fakturę w kilka minut.",
+      "companyNameLabel": "Imię i nazwisko lub nazwa firmy",
+      "companyNamePlaceholder": "Jan Kowalski lub Firma Sp. z o.o.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "ty@email.com",
+      "passwordLabel": "Hasło",
+      "passwordPlaceholder": "Wybierz silne hasło",
+      "tosLabel": "Mam ukończone 18 lat, działam jako przedsiębiorca i akceptuję <tos>Regulamin</tos>, w tym ograniczenie odpowiedzialności, oraz <dpa>Umowę powierzenia przetwarzania danych</dpa>.",
+      "submit": "Załóż konto",
+      "emailTakenError": "Konto z tym adresem e-mail już istnieje.",
+      "genericError": "Coś poszło nie tak. Spróbuj ponownie.",
+      "rateLimitedError": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
+      "hasAccount": "Masz już konto?",
+      "loginLink": "Zaloguj się",
+      "companyNameHint": "Prowadzisz jednoosobową działalność? Wystarczy Twoje imię i nazwisko. Numer identyfikacyjny firmy i dane do faktur dodasz w następnym kroku.",
+      "aboutYouLegend": "O Tobie (opcjonalnie)",
+      "managesClientsLabel": "Prowadzę księgowość dla klientów",
+      "isTeacherLabel": "Jestem nauczycielem",
+      "trialNote": "{days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} planu {plan} za darmo, bez karty. Okres próbny zaczyna się po wpisaniu numeru identyfikacyjnego firmy w ustawieniach, raz na firmę. Potem korzystasz dalej z planu Free; nic nie jest pobierane automatycznie."
+    },
+    "login": {
+      "title": "Zaloguj się",
+      "subtitle": "Witaj ponownie – zaloguj się na swoje konto.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "ty@email.com",
+      "passwordLabel": "Hasło",
+      "passwordPlaceholder": "Twoje hasło",
+      "submit": "Zaloguj się",
+      "orContinueWith": "lub kontynuuj przez",
+      "error": "Nieprawidłowy e-mail lub hasło.",
+      "noAccount": "Nie masz konta?",
+      "signupLink": "Zarejestruj się",
+      "forgotPasswordLink": "Nie pamiętasz hasła?",
+      "continueWith": "Kontynuuj przez {provider}"
+    },
+    "forgotPassword": {
+      "title": "Nie pamiętasz hasła?",
+      "subtitle": "Podaj swój e-mail, a wyślemy Ci link do zresetowania hasła.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "ty@email.com",
+      "submit": "Wyślij link",
+      "successMessage": "Jeśli istnieje konto z tym adresem, wysłaliśmy link do zresetowania hasła. Sprawdź skrzynkę (także folder spam).",
+      "backToLogin": "Wróć do logowania"
+    },
+    "resetPassword": {
+      "title": "Zresetuj hasło",
+      "subtitle": "Wybierz nowe hasło do swojego konta.",
+      "passwordLabel": "Nowe hasło",
+      "passwordPlaceholder": "Wybierz silne hasło",
+      "confirmPasswordLabel": "Potwierdź nowe hasło",
+      "confirmPasswordPlaceholder": "Wpisz je ponownie",
+      "submit": "Zresetuj hasło",
+      "mismatchError": "Hasła nie są takie same.",
+      "invalidInputError": "Hasło musi mieć co najmniej 8 znaków.",
+      "invalidTokenError": "Ten link jest nieprawidłowy lub wygasł.",
+      "genericError": "Coś poszło nie tak. Spróbuj ponownie.",
+      "successMessage": "Hasło zostało zresetowane. Możesz się teraz zalogować nowym hasłem.",
+      "goToLogin": "Przejdź do logowania",
+      "requestNewLink": "Poproś o nowy link",
+      "rateLimitedError": "Zbyt wiele prób. Spróbuj ponownie za chwilę."
+    },
+    "twoFactor": {
+      "title": "Uwierzytelnianie dwuskładnikowe",
+      "subtitle": "Logujesz się jako {email}. Wpisz sześciocyfrowy kod z aplikacji uwierzytelniającej.",
+      "codeLabel": "Kod weryfikacyjny",
+      "recoveryHint": "Nie masz telefonu pod ręką? Wpisz jeden z kodów odzyskiwania.",
+      "submit": "Zweryfikuj",
+      "cancel": "Anuluj i wyloguj",
+      "errors": {
+        "invalid_code": "Kod się nie zgadza. Sprawdź zegar w telefonie i spróbuj ponownie.",
+        "rate_limited": "Zbyt wiele prób. Spróbuj ponownie za kilka minut.",
+        "not_signed_in": "Sesja logowania wygasła. Zaloguj się ponownie."
+      }
+    }
+  },
+  "common": {
+    "comingSoonBody": "Ta sekcja jest w przygotowaniu.",
+    "logOut": "Wyloguj się",
+    "accountMenu": "Menu konta",
+    "moreInfo": "Więcej informacji",
+    "userMenu": {
+      "profile": "Mój profil",
+      "company": "Dane firmy",
+      "team": "Zespół",
+      "exports": "Eksporty dla księgowej",
+      "billing": "Subskrypcja",
+      "settings": "Ustawienia",
+      "companies": "Firmy",
+      "addCompany": "Dodaj firmę",
+      "manageCompanies": "Zarządzaj firmami",
+      "activity": "Historia zmian",
+      "referrals": "Zaproś i zdobywaj kredyty",
+      "website": "Strona Billanta",
+      "classroom": "Klasa"
+    },
+    "installApp": {
+      "label": "Zainstaluj aplikację",
+      "iosTitle": "Dodaj do ekranu początkowego (iPhone/iPad)",
+      "iosBody": "W Safari stuknij ikonę Udostępnij (kwadrat ze strzałką) i wybierz „Do ekranu początkowego”. Aplikacja będzie się wtedy otwierać na pełnym ekranie jak każda inna.",
+      "manualTitle": "Zainstaluj aplikację",
+      "manualBody": "Otwórz menu przeglądarki (⋮ lub ⋯) i wybierz „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”. W Chrome i Edge na komputerze znajdziesz też ikonę instalacji po prawej stronie paska adresu.",
+      "ok": "Rozumiem"
+    }
+  },
+  "mobile": {
+    "more": "Więcej",
+    "explore": "Odkrywaj",
+    "language": "Język",
+    "appearance": "Wygląd",
+    "create": "Utwórz"
+  },
+  "pricing": {
+    "title": "Cennik",
+    "lead": "Zacznij za darmo, bez karty. Przejdź na wyższy plan, gdy będzie potrzebny.",
+    "seoTitle": "Cennik programu do faktur – zacznij za darmo",
+    "metaDescription": "Cennik Billanta: Free z 10 dokumentami miesięcznie i płatnością za każdy kolejny, Start od 4,99 €, Plus z AI od 9,99 € i Business dla zespołów. Bez karty, ceny netto (bez VAT).",
+    "yearly": "Rocznie",
+    "monthly": "Miesięcznie",
+    "yearlySave": "2 miesiące gratis",
+    "currency": "Waluta",
+    "period": "Rozliczenie",
+    "perMonth": "/ miesiąc",
+    "billedYearly": "płatne rocznie, {total}",
+    "billedMonthly": "płatne miesięcznie",
+    "forever": "na zawsze",
+    "popular": "Najpopularniejszy",
+    "vatNote": "Ceny nie zawierają VAT. Plan możesz zmienić lub anulować w dowolnym momencie.",
+    "aiKeyNote": "Masz własny klucz AI? Podłącz go w ustawieniach i płać za funkcje AI bezpośrednio swojemu dostawcy, bez limitów planu.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Na próbę i do okazjonalnych faktur",
+        "cta": "Zacznij za darmo",
+        "features": [
+          "10 dokumentów miesięcznie w cenie",
+          "Kolejne dokumenty po {payg} za sztukę",
+          "ISDOC, płatność QR, wyszukiwanie w rejestrze i VIES",
+          "5 kredytów AI miesięcznie",
+          "Śledzenie limitu VAT i kalendarz podatkowy",
+          "Ewidencja czasu pracy i kopie zapasowe danych"
+        ]
+      },
+      "start": {
+        "name": "Start",
+        "tagline": "Dla freelancerów, którzy fakturują regularnie",
+        "cta": "Wybierz Start",
+        "features": [
+          "Nielimitowane dokumenty",
+          "Parowanie płatności z banku i PayPal",
+          "Automatyczne przypomnienia",
+          "Faktury cykliczne i portal klienta",
+          "Dane do podatku dochodowego",
+          "Eksport do Pohoda i Money S3",
+          "30 kredytów AI miesięcznie",
+          "Bezpłatny dostęp dla księgowej"
+        ]
+      },
+      "plus": {
+        "name": "Plus",
+        "tagline": "Większość pracy wykona AI",
+        "cta": "Wybierz Plus",
+        "features": [
+          "Wszystko z planu Start",
+          "150 kredytów AI miesięcznie",
+          "Deklaracja VAT, informacja kontrolna i podsumowująca",
+          "Płatności kartą na fakturach",
+          "3 użytkowników + księgowa",
+          "API i webhooki (10 000 zapytań)",
+          "Wsparcie priorytetowe"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Dla zespołów i kilku firm",
+        "cta": "Wybierz Business",
+        "features": [
+          "Wszystko z planu Plus",
+          "Do 10 firm na jednym koncie",
+          "10 użytkowników z rolami",
+          "500 kredytów AI miesięcznie",
+          "API i webhooki (50 000 zapytań)",
+          "Wsparcie priorytetowe"
+        ]
+      }
+    },
+    "paygNote": "W planie Free płacisz tylko za dokumenty powyżej 10 miesięcznie, po {payg} za sztukę. Od około 34 dokumentów miesięcznie taniej wychodzi plan Start.",
+    "aiCreditNote": "Jeden kredyt AI = jedna faktura z wiadomości głosowej lub tekstowej albo jeden paragon odczytany ze zdjęcia.",
+    "compare": {
+      "title": "Porównaj plany",
+      "feature": "Funkcja",
+      "yes": "Tak",
+      "no": "Nie",
+      "groups": {
+        "invoicing": "Fakturowanie",
+        "payments": "Płatności i bank",
+        "ai": "AI",
+        "tax": "Podatki i księgowa",
+        "team": "Zespół i dane"
+      },
+      "rows": {
+        "docs": "Dokumenty miesięcznie",
+        "types": "Faktury, proformy, korekty i oferty",
+        "isdoc": "ISDOC, płatność QR, wyszukiwanie w rejestrze i VIES",
+        "currencies": "Obce waluty po kursach banku centralnego",
+        "languages": "Dokumenty po czesku, słowacku i angielsku",
+        "recurring": "Faktury cykliczne",
+        "reminders": "Przypomnienia o zaległościach",
+        "bank": "Parowanie płatności z banku",
+        "paypal": "Synchronizacja z PayPal",
+        "portal": "Portal klienta",
+        "cards": "Płatności kartą na fakturach",
+        "aiCredits": "Kredyty AI miesięcznie",
+        "voice": "Faktury z wiadomości głosowych i tekstowych",
+        "receipts": "Paragony ze zdjęcia",
+        "ownKey": "Własny klucz AI, bez limitu",
+        "vatLimit": "Śledzenie limitu VAT i kalendarz podatkowy",
+        "annual": "Dane do podatku dochodowego",
+        "vatFilings": "Deklaracja VAT, informacja kontrolna i podsumowująca",
+        "accountantExport": "Eksport dla księgowej",
+        "users": "Użytkownicy",
+        "companies": "Firmy na jednym koncie",
+        "api": "API i webhooki (zapytania miesięcznie)",
+        "time": "Ewidencja czasu pracy",
+        "backups": "Kopie zapasowe danych (Google Drive, pobieranie)",
+        "support": "Wsparcie"
+      },
+      "cell": {
+        "docsFree": "10 w cenie, potem po {payg}",
+        "unlimited": "Bez limitu",
+        "twoTemplates": "2 szablony",
+        "manual": "Ręcznie",
+        "automatic": "Automatycznie",
+        "csv": "CSV",
+        "csvPlus": "CSV, Pohoda, Money S3",
+        "oneUser": "1",
+        "userAccountant": "1 + księgowa",
+        "threeAccountant": "3 + księgowa",
+        "tenUsers": "10 z rolami",
+        "upTo10": "Do 10",
+        "email": "E-mail",
+        "priority": "Priorytetowe"
+      }
+    },
+    "compareCompetitors": "Jak Billanta wypada na tle Fakturoid, iDoklad i innych",
+    "trialNote": "{days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} planu {plan} za darmo, bez karty, raz na numer firmy. Okres próbny zaczyna się, gdy firma uzupełni swój numer identyfikacyjny, a potem sam przechodzi na Free. Dane zostają.",
+    "trialCard": "{days, plural, one {Pierwszy # dzień} few {Pierwsze # dni} many {Pierwsze # dni} other {Pierwsze # dnia}} za darmo, bez karty",
+    "methods": {
+      "title": "Jak zapłacić",
+      "card": {
+        "title": "Subskrypcja kartą – odnawia się automatycznie, taniej",
+        "body": "Powyższe ceny dotyczą subskrypcji kartą, Apple Pay lub Google Pay. Odnawia się sama, możesz ją anulować w każdej chwili, a plan działa do końca opłaconego okresu."
+      },
+      "transfer": {
+        "title": "Przelew bankowy – bez automatycznego odnawiania",
+        "body": "Na miesiąc lub rok z góry na podstawie faktury proforma z kodem QR, o {percent} % drożej, bo każdą płatność parujemy ręcznie. Nic nie jest pobierane automatycznie, a przed końcem okresu wysyłamy przypomnienie z kolejną proformą."
+      }
+    },
+    "transferPrice": "przelewem {price} / miesiąc",
+    "transferCzkOnly": "Przelew bankowy jest możliwy tylko w koronach czeskich.",
+    "faq": {
+      "title": "Pytania o ceny",
+      "items": [
+        {
+          "q": "Czy Billanta jest darmowa?",
+          "a": "Tak. Plan Free nie ma limitu czasu i nie wymaga karty. Obejmuje 10 dokumentów miesięcznie; każdy kolejny kosztuje {payg}. ISDOC, płatności QR i wyszukiwanie firm w rejestrze ARES są w każdym planie."
+        },
+        {
+          "q": "Czy ceny zawierają VAT?",
+          "a": "Nie, wszystkie ceny podajemy bez VAT."
+        },
+        {
+          "q": "Czy mogę w każdej chwili zmienić lub anulować plan?",
+          "a": "Tak. Subskrypcję kartą można anulować w każdej chwili, a plan działa do końca opłaconego okresu. Kopię zapasową danych pobierzesz w każdym planie."
+        },
+        {
+          "q": "Czy mogę zapłacić przelewem?",
+          "a": "Tak, na miesiąc lub rok z góry na podstawie faktury proforma, o {percent} % drożej niż kartą, bo takie płatności parujemy ręcznie. Przelew bankowy jest możliwy tylko w koronach czeskich."
+        },
+        {
+          "q": "Czym jest kredyt AI?",
+          "a": "To jedna faktura przygotowana z wiadomości głosowej lub tekstowej albo jeden odczytany paragon. Z własnym kluczem AI płacisz bezpośrednio dostawcy AI, bez limitów planu."
+        },
+        {
+          "q": "Czy moja księgowa potrzebuje własnego planu?",
+          "a": "Nie. Od planu Start jedna księgowa otrzymuje dostęp do Twojej firmy za darmo, w ramach Twojego planu."
+        },
+        {
+          "q": "Dlaczego na fakturach jest napis „Stworzono w Billanta”?",
+          "a": "W darmowym planie każdy dokument ma w stopce PDF, e-maila i faktury online mały link do Billanta. Dzięki temu plan Free się utrzymuje. W płatnym planie i w okresie próbnym możesz to wyłączyć w Ustawieniach w sekcji faktur."
+        }
+      ]
+    }
+  },
+  "toasts": {
+    "invoiceCreated": "Szkic faktury zapisany",
+    "saved": "Zapisano",
+    "emailChanged": "Twój e-mail został zmieniony. Następnym razem zaloguj się nowym adresem.",
+    "emailChangeTaken": "Ten adres został w międzyczasie zajęty przez inne konto.",
+    "emailChangeInvalid": "Link jest nieprawidłowy lub wygasł. Poproś o zmianę ponownie."
+  },
+  "notifications": {
+    "bell": "Powiadomienia",
+    "bellUnread": "Powiadomienia – nieprzeczytane: {count}",
+    "title": "Powiadomienia",
+    "readAll": "Oznacz wszystkie jako przeczytane",
+    "settings": "Ustawienia powiadomień",
+    "empty": "Na razie nic nowego. Damy znać, gdy coś się wydarzy."
+  }
+}
