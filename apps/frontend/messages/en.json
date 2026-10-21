@@ -404,6 +404,7 @@
       "kinds": {
         "vat_monthly": "VAT return & control statement (monthly)",
         "vat_quarterly": "VAT return & control statement (quarterly)",
+        "control_statement": "Control statement (monthly)",
         "vat_identified": "VAT return (identified person)",
         "ec_sales_list": "EC sales list",
         "health": "Self-employed health insurance advance",
@@ -7949,6 +7950,7 @@
             "CZ": {
               "vat_monthly": "VAT return and control statement",
               "vat_quarterly": "VAT return and control statement (quarterly)",
+              "control_statement": "Control statement (monthly)",
               "vat_other": "VAT: OSS, CESOP and other filings",
               "vat_identified": "VAT return (identified person)",
               "ec_sales_list": "EC sales list",
@@ -7964,6 +7966,7 @@
             "SK": {
               "vat_monthly": "VAT return and control statement",
               "vat_quarterly": "VAT return and control statement (quarterly)",
+              "control_statement": "Control statement (monthly)",
               "vat_other": "VAT: OSS and other filings",
               "vat_identified": "VAT return (registered person)",
               "ec_sales_list": "EC sales list",
@@ -7981,6 +7984,7 @@
             "CZ": {
               "vat_monthly": "A monthly VAT payer files the VAT return and the control statement (kontrolní hlášení) by the 25th day after the month ends and pays the tax by the same day (§ 101 and § 101e of the Czech VAT Act).",
               "vat_quarterly": "A payer with last year's turnover up to CZK 10 million that is not an unreliable payer can file quarterly (§ 99a of the VAT Act). Return and payment by the 25th day after the quarter ends. Only individuals file the control statement quarterly; companies file it every month.",
+              "control_statement": "A company on quarterly VAT also files the control statement for the months inside the quarter, by the 25th of the next month (§ 101e of the VAT Act).",
               "vat_other": "Filings under special schemes (OSS, CESOP) follow the official calendar of the Czech Financial Administration.",
               "vat_identified": "An identified person files a return only for a month in which they had to self-assess VAT, typically after buying a service from abroad (ads, software), within 25 days after it ends (§ 101 of the VAT Act).",
               "ec_sales_list": "The EC sales list is filed by anyone who supplied goods or services to a business in another EU country that month, within 25 days after the month ends (§ 102 of the VAT Act).",
@@ -7996,6 +8000,7 @@
             "SK": {
               "vat_monthly": "A monthly VAT payer files the VAT return and the control statement (kontrolný výkaz) within 25 days after the month ends and pays the tax by the same day (§ 78 and § 78a of Act No. 222/2004 Coll.).",
               "vat_quarterly": "A payer with lower turnover can have a quarterly tax period (§ 77 of the VAT Act). Return and control statement within 25 days after the quarter ends.",
+              "control_statement": "A Slovak payer files the control statement for its own tax period, so there are no extra monthly rows (§ 78a of the VAT Act).",
               "vat_other": "Filings under special schemes (OSS) follow the calendar of the Slovak Financial Administration.",
               "vat_identified": "A person registered under § 7 or § 7a files a return only for a month in which they owed VAT, for example after buying a service from abroad, within 25 days after it ends.",
               "ec_sales_list": "The EC sales list (súhrnný výkaz) is filed by anyone who supplied goods or services to a business in another EU country that month, within 25 days after the month ends (§ 80 of the VAT Act).",

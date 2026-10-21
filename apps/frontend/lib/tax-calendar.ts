@@ -1,4 +1,4 @@
-import { taxCalendarYear, type TaxCalendarEntry, type TaxDeadlineKind } from '@faktur/cz-compliance';
+import { taxCalendarYear, withImpliedTaxDeadlineKinds, type TaxCalendarEntry, type TaxDeadlineKind } from '@faktur/cz-compliance';
 
 /**
  * The public tax calendar (/calculators/tax-calendar and its .ics feed):
@@ -52,7 +52,7 @@ export function kindsFor(profile: CalendarProfile): TaxDeadlineKind[] {
   if (p.entity === 'osvc') kinds.push('health', 'social', 'income_tax', ...(p.country === 'CZ' ? (['overviews'] as const) : []));
   if (p.entity === 'company') kinds.push('income_tax');
   kinds.push(...p.extras);
-  return kinds;
+  return withImpliedTaxDeadlineKinds(kinds, { country: p.country, legalEntity: p.entity === 'company' });
 }
 
 /** Due only if something happened that month (a service to an EU business, a service bought from abroad). */
