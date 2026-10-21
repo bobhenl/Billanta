@@ -7980,7 +7980,7 @@
           "kindHints": {
             "CZ": {
               "vat_monthly": "Měsíční plátce podává přiznání k DPH a kontrolní hlášení do 25. dne po skončení měsíce a ve stejné lhůtě daň platí (§ 101 a § 101e zákona o DPH).",
-              "vat_quarterly": "Čtvrtletně může přiznávat plátce s obratem za minulý rok do 10 milionů Kč, který není nespolehlivým plátcem (§ 99a zákona o DPH). Přiznání i daň do 25. dne po skončení čtvrtletí. Kontrolní hlášení podává čtvrtletně jen fyzická osoba, firma ho podává každý měsíc.",
+              "vat_quarterly": "Čtvrtletně může přiznávat plátce s obratem za minulý rok do 15 milionů Kč, který není nespolehlivým plátcem (§ 99a zákona o DPH). Přiznání i daň do 25. dne po skončení čtvrtletí. Kontrolní hlášení podává čtvrtletně jen fyzická osoba, firma ho podává každý měsíc.",
               "vat_other": "Podání ve zvláštních režimech (OSS, CESOP) podle oficiálního kalendáře Finanční správy.",
               "vat_identified": "Identifikovaná osoba podává přiznání jen za měsíc, ve kterém jí vznikla povinnost přiznat daň, typicky po nákupu služby ze zahraničí (reklamy, software), do 25 dnů po jeho skončení (§ 101 zákona o DPH).",
               "ec_sales_list": "Souhrnné hlášení podává ten, kdo v měsíci dodal zboží nebo službu podnikateli v jiném státě EU, do 25 dnů po skončení měsíce (§ 102 zákona o DPH).",
@@ -8231,7 +8231,7 @@
           "sections": [
             {
               "title": "Přiznání k DPH (DPHDP3)",
-              "body": "Podává každý plátce DPH za každé zdaňovací období, i když nic nefakturoval. Zdaňovací období je měsíc, nebo čtvrtletí, pokud obrat za předchozí rok nepřesáhl 10 milionů Kč, nejste nespolehlivý plátce ani člen skupiny a čtvrtletí si zvolíte. Přiznání se podává a daň se platí do 25. dne po skončení období."
+              "body": "Podává každý plátce DPH za každé zdaňovací období, i když nic nefakturoval. Zdaňovací období je měsíc, nebo čtvrtletí, pokud obrat za předchozí rok nepřesáhl 15 milionů Kč, nejste nespolehlivý plátce ani člen skupiny a čtvrtletí si zvolíte. Přiznání se podává a daň se platí do 25. dne po skončení období."
             },
             {
               "title": "Kontrolní hlášení (DPHKH1)",
