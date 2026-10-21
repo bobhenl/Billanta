@@ -76,7 +76,8 @@
         "ares": "Overenie v ARES",
         "qr": "QR platba"
       },
-      "guestCta": "Faktúra bez registrácie"
+      "guestCta": "Faktúra bez registrácie",
+      "dictateCta": "Alebo ju nadiktujte – bez registrácie"
     },
     "invoiceMockup": {
       "status": "Zaplatená",
@@ -6446,7 +6447,9 @@
         "ai_global_limit": "AI zdarma je na dnes vyčerpaná pre všetkých. Skúste to zajtra alebo si založte účet.",
         "ai_unavailable": "AI teraz nie je k dispozícii.",
         "failed": "Text sa nepodarilo spracovať. Skúste ho napísať inak."
-      }
+      },
+      "tapToSpeak": "Stlačte a hovorte",
+      "noSpeech": "Váš prehliadač diktovanie nepodporuje (napríklad Firefox). Napíšte to do poľa a kliknite na Vyplniť."
     },
     "showcase": {
       "title": "S účtom zdarma toho viete viac",
@@ -6528,6 +6531,13 @@
       "hintReverseCharge": "Faktúra bude bez DPH s údajom „prenesenie daňovej povinnosti“ (§ 69 ods. 12 zákona o DPH). Len medzi platiteľmi DPH.",
       "hintCreditNote": "Pri znížení ceny zadajte zápornú cenu za jednotku, napr. -100.",
       "identifiedNote": "Prenesenie daňovej povinnosti."
+    },
+    "dictatePage": {
+      "seoTitle": "Nadiktujte faktúru – hotová je za pár sekúnd",
+      "seoDescription": "Povedzte, komu a za čo fakturujete. AI vyplní odberateľa podľa IČO, položky, ceny aj splatnosť a vy si stiahnete PDF s QR platbou. Zadarmo a bez registrácie.",
+      "heading": "Nadiktujte faktúru",
+      "lead": "Stlačte mikrofón a povedzte, komu a za čo fakturujete. Formulár sa vyplní sám, vy ho len skontrolujete a stiahnete PDF.",
+      "example": "Skúste napríklad: „Faktúra pre IČO 27604977, návrh loga za 600 eur, splatnosť 14 dní.“"
     }
   },
   "publicProfile": {

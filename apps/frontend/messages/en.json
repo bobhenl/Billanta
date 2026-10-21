@@ -76,7 +76,8 @@
         "ares": "ARES lookup",
         "qr": "QR payments"
       },
-      "guestCta": "Invoice without sign-up"
+      "guestCta": "Invoice without sign-up",
+      "dictateCta": "Or dictate it – no sign-up"
     },
     "invoiceMockup": {
       "status": "Paid",
@@ -6446,7 +6447,9 @@
         "ai_global_limit": "Today's free AI is used up for everyone. Try tomorrow or create an account.",
         "ai_unavailable": "AI isn't available right now.",
         "failed": "We couldn't process that text. Try phrasing it differently."
-      }
+      },
+      "tapToSpeak": "Tap and talk",
+      "noSpeech": "Your browser can't take dictation (Firefox, for one). Type it into the box and click Fill in."
     },
     "showcase": {
       "title": "A free account does much more",
@@ -6528,6 +6531,13 @@
       "hintReverseCharge": "The invoice shows no VAT and states that the customer accounts for it (Section 92a of the Czech VAT Act). Only between VAT payers.",
       "hintCreditNote": "For a price reduction enter a negative unit price, e.g. -2000.",
       "identifiedNote": "Reverse charge – the customer accounts for the VAT."
+    },
+    "dictatePage": {
+      "seoTitle": "Dictate an invoice – ready in seconds",
+      "seoDescription": "Say who you are invoicing and for what. AI fills in the customer from the company register, the items, prices and due date, and you download a PDF with a QR payment code. Free, no sign-up.",
+      "heading": "Dictate an invoice",
+      "lead": "Tap the microphone and say who you are invoicing and for what. The form fills itself in; you check it and download the PDF.",
+      "example": "Try: “Invoice for company ID 27604977, logo design for €600, due in 14 days.”"
     }
   },
   "publicProfile": {

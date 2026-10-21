@@ -101,7 +101,8 @@ function writeStorage(key: string, value: unknown) {
   }
 }
 
-export function GuestInvoiceForm() {
+/** `dictate`: the /dictate-invoice share page, where the voice fill is the whole point. */
+export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
   const t = useTranslations('guestInvoice');
   const tDemo = useTranslations('demo');
   const locale = useLocale();
@@ -142,6 +143,8 @@ export function GuestInvoiceForm() {
     const template = new URLSearchParams(window.location.search).get('template');
     if (template && template in TEMPLATE_PROFILE) applyTemplate(template as TemplateSlug);
     else if (savedProfile?.useCase && savedProfile.billing) applyProfile(savedProfile, false);
+    // The "what is it for" step would stand between the visitor and the microphone.
+    else if (dictate) applyProfile({ useCase: 'freelancer', billing: 'project' }, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -386,7 +389,7 @@ export function GuestInvoiceForm() {
         </label>
       </div>
 
-      <AiFill vatPayer={vatPayer} billing={profile.billing} onResult={applySuggestion} />
+      <AiFill vatPayer={vatPayer} billing={profile.billing} onResult={applySuggestion} prominent={dictate} />
 
       <form onSubmit={submit} className="mt-6 space-y-6">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -742,7 +745,18 @@ type SpeechRecognitionLike = {
 };
 
 /** Free text / dictation -> invoice fields, a few tries per visitor (backend-enforced). */
-function AiFill({ vatPayer, billing, onResult }: { vatPayer: boolean; billing: Billing; onResult: (r: AiResult) => void }) {
+/** `prominent`: one big microphone, and the fill runs as soon as the visitor stops talking. */
+function AiFill({
+  vatPayer,
+  billing,
+  onResult,
+  prominent = false
+}: {
+  vatPayer: boolean;
+  billing: Billing;
+  onResult: (r: AiResult) => void;
+  prominent?: boolean;
+}) {
   const t = useTranslations('guestInvoice.ai');
   const locale = useLocale();
   const [quota, setQuota] = useState<AiQuota | null>(null);
@@ -773,13 +787,19 @@ function AiFill({ vatPayer, billing, onResult }: { vatPayer: boolean; billing: B
     const rec = new Ctor();
     rec.lang = locale === 'en' ? 'en-US' : locale === 'sk' ? 'sk-SK' : 'cs-CZ';
     rec.interimResults = false;
+    const before = text;
+    let combined = before;
     rec.onresult = (e) => {
       const said = Array.from(e.results)
         .map((r) => r[0]?.transcript ?? '')
         .join(' ');
-      setText((prev) => `${prev ? `${prev} ` : ''}${said}`.slice(0, 1500));
+      combined = `${before ? `${before} ` : ''}${said}`.slice(0, 1500);
+      setText(combined);
     };
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      if (prominent && combined !== before && combined.trim().length >= 3) void run(combined);
+    };
     recognition.current = rec;
     setListening(true);
     try {
@@ -789,14 +809,14 @@ function AiFill({ vatPayer, billing, onResult }: { vatPayer: boolean; billing: B
     }
   }
 
-  async function run() {
+  async function run(input = text) {
     setBusy(true);
     setMessage(null);
     try {
       const res = await fetch('/api/public/guest-invoice/ai', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ text, vatPayer })
+        body: JSON.stringify({ text: input, vatPayer })
       });
       const body = (await res.json().catch(() => ({}))) as Partial<AiResult> & { error?: string };
       if (!res.ok) {
@@ -831,6 +851,24 @@ function AiFill({ vatPayer, billing, onResult }: { vatPayer: boolean; billing: B
         )}
       </div>
       <p className="mt-1 text-sm text-muted-foreground">{t('lead')}</p>
+      {prominent &&
+        (speechSupported ? (
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleDictation}
+              disabled={exhausted || busy}
+              aria-pressed={listening}
+              aria-label={listening ? t('stop') : t('tapToSpeak')}
+              className={`flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:opacity-50 ${listening ? 'animate-pulse ring-8 ring-primary/25' : ''}`}
+            >
+              {busy ? <Loader2 className="h-8 w-8 animate-spin" /> : listening ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
+            </button>
+            <span className="text-sm font-semibold">{listening ? t('stop') : t('tapToSpeak')}</span>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm">{t('noSpeech')}</p>
+        ))}
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <textarea
           rows={2}
@@ -842,7 +880,7 @@ function AiFill({ vatPayer, billing, onResult }: { vatPayer: boolean; billing: B
           onChange={(e) => setText(e.target.value)}
         />
         <div className="flex gap-2 sm:flex-col">
-          {speechSupported && (
+          {speechSupported && !prominent && (
             <button
               type="button"
               onClick={toggleDictation}

@@ -67,6 +67,7 @@ const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/invoicing', changeFrequency: 'weekly', priority: 0.8, locales: ['cs', 'sk'] },
   { path: '/features', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/create-invoice', changeFrequency: 'monthly', priority: 0.9 },
+  { path: '/dictate-invoice', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/demo', changeFrequency: 'monthly', priority: 0.9 },
   { path: '/your-first-invoice', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/invoicing-for-beginners', changeFrequency: 'monthly', priority: 0.7 },

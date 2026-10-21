@@ -102,6 +102,7 @@ const MAIN_PAGES: [path: string, label: string][] = [
   ['/', 'Home: what the product does, how it works, FAQ'],
   ['/pricing', 'Pricing: plans, plan comparison table, pricing FAQ'],
   ['/create-invoice', 'Invoice without sign-up: free one-off PDF invoice with QR payment code, nothing stored'],
+  ['/dictate-invoice', 'Dictate an invoice: say who and what you are invoicing, the guest form fills itself in, no sign-up'],
   ['/demo', 'Demo: try the app with sample data, no account'],
   ['/features', 'Features: one page per feature'],
   ['/for-accountants', 'For accountants: free access to clients’ companies, exports for accounting software'],

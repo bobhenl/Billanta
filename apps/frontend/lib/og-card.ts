@@ -52,6 +52,8 @@ export function resolveOgCard(locale: string, path: string[]): OgCard | null {
         return { title: t('featurePages.indexTitle'), subtitle: t('featurePages.indexDescription'), section: s.features };
       case 'create-invoice':
         return { title: t('guestInvoice.seoTitle'), subtitle: t('guestInvoice.seoDescription'), section: s.tool };
+      case 'dictate-invoice':
+        return { title: t('guestInvoice.dictatePage.seoTitle'), subtitle: t('guestInvoice.dictatePage.seoDescription'), section: s.tool };
       case 'invoicing':
         return { title: t('municipalityPages.indexTitle'), subtitle: t('municipalityPages.indexLead'), section: s.places };
       case 'calculators':

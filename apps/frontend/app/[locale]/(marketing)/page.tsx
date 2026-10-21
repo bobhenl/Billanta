@@ -230,6 +230,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
+            <Link
+              href="/dictate-invoice"
+              className="-mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            >
+              <Mic className="h-4 w-4" aria-hidden="true" />
+              {t('hero.dictateCta')}
+            </Link>
           </div>
 
           <div className="mx-auto w-full max-w-md lg:mx-0">
