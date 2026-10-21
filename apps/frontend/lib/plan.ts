@@ -21,7 +21,9 @@ export interface PlanSummary {
  * is defined; plans.spec.ts there fails if these drift.
  */
 export const TRIAL_PLAN: PaidPlanKey = 'plus';
-export const DEFAULT_TRIAL_DAYS = 14;
+export const DEFAULT_TRIAL_DAYS = 7;
+/** Total trial length with a saved card (CARD_TRIAL_DAYS in the backend). */
+export const CARD_TRIAL_DAYS = 30;
 
 /** TRIAL_DAYS (server env, shared with the backend); 0 turns the trial off. Same clamp as the SQL bootstrap. */
 export function trialDays(raw: string | undefined = process.env.TRIAL_DAYS): number {

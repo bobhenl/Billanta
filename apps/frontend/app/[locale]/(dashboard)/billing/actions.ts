@@ -25,6 +25,12 @@ export async function startCheckout(plan: PaidPlanKey, interval: 'month' | 'year
   return post<{ url: string }>('/api/v1/billing/subscription/checkout', { plan, interval, currency, locale });
 }
 
+/** Stripe Checkout in setup mode: saves a card for the longer trial, charges nothing. */
+export async function startTrialCard() {
+  const locale = await getLocale();
+  return post<{ url: string }>('/api/v1/billing/subscription/trial-card', { locale });
+}
+
 export async function openPortal() {
   const locale = await getLocale();
   return post<{ url: string }>('/api/v1/billing/subscription/portal', { locale });

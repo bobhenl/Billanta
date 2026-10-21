@@ -14,8 +14,10 @@ import { TenantBillingRepository } from "./tenant-billing.repository";
 import { PrepaidRemindersCron } from "./prepaid-reminders.cron";
 import { ReferralRewardsCron } from "./referral-rewards.cron";
 import { TrialRemindersCron } from "./trial-reminders.cron";
+import { WelcomeTrialModule } from "./welcome-trial.module";
 
 @Module({
+  imports: [WelcomeTrialModule],
   controllers: [BillingController, SubscriptionController, AdminBillingController],
   providers: [
     BillingService,

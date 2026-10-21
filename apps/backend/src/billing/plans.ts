@@ -23,7 +23,20 @@ export type BillingInterval = "month" | "year";
  * switch it off per deployment.
  */
 export const TRIAL_PLAN: PaidPlan = "plus";
-export const DEFAULT_TRIAL_DAYS = 14;
+export const DEFAULT_TRIAL_DAYS = 7;
+
+/**
+ * Total trial length once the owner saves a card (setup only, nothing
+ * charged), counted from the trial's start. Needs TRIAL_CARD_EXTENSION=1 and
+ * Stripe; see WelcomeTrialService.extendWithCard. The frontend copy is
+ * checked by plans.spec.ts too.
+ */
+export const CARD_TRIAL_DAYS = 30;
+
+/** The card extension is offered only when switched on and Stripe is set up. */
+export function cardTrialEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.TRIAL_CARD_EXTENSION === "1" && Boolean(env.STRIPE_SECRET_KEY);
+}
 
 /** TRIAL_DAYS from env (0 turns the trial off), clamped like grant_welcome_trial does. */
 export function trialDays(raw: string | undefined = process.env.TRIAL_DAYS): number {

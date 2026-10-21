@@ -56,7 +56,18 @@ function toValues(t: TenantSettings): Values {
   return v;
 }
 
-export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSettings; accounts: BankAccount[]; readOnly: boolean }) {
+export function CompanyForm({
+  tenant,
+  accounts,
+  readOnly,
+  trialHintDays = null
+}: {
+  tenant: TenantSettings;
+  accounts: BankAccount[];
+  readOnly: boolean;
+  /** Set while filling in the IČO would start the welcome trial. */
+  trialHintDays?: number | null;
+}) {
   const t = useTranslations('settings.company');
   const router = useRouter();
   const initial = useMemo(() => toValues(tenant), [tenant]);
@@ -223,6 +234,9 @@ export function CompanyForm({ tenant, accounts, readOnly }: { tenant: TenantSett
                 </button>
               )}
             </div>
+            {trialHintDays != null && !readOnly && (
+              <span className="mt-1 block text-xs text-muted-foreground">{t('icoTrialHint', { days: trialHintDays })}</span>
+            )}
           </label>
           <label className="block text-sm">
             <span className="mb-1 flex flex-wrap items-center gap-2">

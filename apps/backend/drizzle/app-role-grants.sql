@@ -37,6 +37,8 @@ REVOKE ALL ON email_suppressions FROM faktur_app;
 -- (migration 0051); the app may request (insert) a pending one for its tenant.
 REVOKE ALL ON trial_claims FROM faktur_app;
 REVOKE ALL ON trial_icos FROM faktur_app;
+REVOKE ALL ON trial_signals FROM faktur_app;
+REVOKE ALL ON trial_cards FROM faktur_app;
 REVOKE UPDATE, DELETE ON platform_proformas FROM faktur_app;
 -- Demo bookkeeping (per-IP hashes, AI counts) only through the demo
 -- functions of migration 0068.

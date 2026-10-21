@@ -265,12 +265,17 @@ export const tenants = pgTable("tenants", {
   prepaidPlan: varchar("prepaid_plan", { length: 16 }),
   prepaidUntil: date("prepaid_until"),
   // Free trial of the top plan (0051, `billing/plan-access.ts`): granted once by
-  // bootstrap_tenant_for_user and never cleared, so it can't be started twice.
+  // grant_welcome_trial (0082) and never cleared, so it can't be started twice.
   trialPlan: varchar("trial_plan", { length: 16 }),
   trialStartedAt: timestamp("trial_started_at", { withTimezone: true }),
   trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
   // Smallest "days left" the ending reminder already went out for (3, 1, 0 = ended).
   trialRemindedDays: integer("trial_reminded_days"),
+  // How the trial started (0084): 'welcome' (the IČO), 'card' (extended with a
+  // card); null for promo codes and older trials. trial_withheld_at: an abuse
+  // signal or a used IČO kept the no-card trial back, a card clears it.
+  trialSource: varchar("trial_source", { length: 8 }).$type<"welcome" | "card">(),
+  trialWithheldAt: timestamp("trial_withheld_at", { withTimezone: true }),
   // Plan limits apply (features above the plan turn read-only). False for
   // companies created before 0051, which keep everything as before.
   planEnforced: boolean("plan_enforced").notNull().default(false),
@@ -1532,9 +1537,10 @@ export const creditLedger = pgTable("credit_ledger", {
 // for a plan paid by bank transfer (`billing/bank-transfer.service.ts`). The
 // app only inserts pending rows; a platform admin marks one paid through
 // mark_platform_proforma_paid (0051), which also extends tenants.prepaid_*.
-// trial_claims (one trial per user and e-mail) and trial_icos (one per IČO,
-// 0082) have no Drizzle model on purpose: only grant_welcome_trial reads or
-// writes them.
+// trial_claims (one trial per user and e-mail), trial_icos (one per IČO,
+// 0082), trial_signals and trial_cards (0084) have no Drizzle model on
+// purpose: only the welcome-trial functions in rls-policies.sql read or
+// write them.
 // ---------------------------------------------------------------------------
 export const platformProformas = pgTable("platform_proformas", {
   id: uuid("id").primaryKey().defaultRandom(),

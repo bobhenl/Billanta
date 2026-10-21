@@ -428,8 +428,10 @@ export class InvoiceImportService {
         .update(schema.tenants)
         .set({ ...fill, updatedAt: new Date() })
         .where(eq(schema.tenants.id, tenantId));
-      if (fill.ico) await this.welcomeTrial?.grantIfEligible(db, tenantId);
     }
+    // The first IČO starts the welcome trial; imported supplier accounts are
+    // checked against other trial companies (billing/welcome-trial.ts).
+    await this.welcomeTrial?.onCompanyChanged(db, tenantId, Boolean(fill.ico));
 
     // Archive copy of what the customer received. Not e-mailed again and not
     // shown in the portal; the invoice data itself stays as imported.

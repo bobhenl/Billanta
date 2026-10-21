@@ -1872,7 +1872,8 @@
       "loadRegistry": "Load from register",
       "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents.",
       "dataBoxId": "Data box ID",
-      "dataBoxIdHint": "Seven characters, e.g. ab12cd3. Not a secret. Prefilled into the yearly overview for ČSSZ."
+      "dataBoxIdHint": "Seven characters, e.g. ab12cd3. Not a secret. Prefilled into the yearly overview for ČSSZ.",
+      "icoTrialHint": "Filling in the IČO starts your free {days}-day Plus trial – no card needed, once per IČO."
     },
     "team": {
       "title": "Team",
@@ -3491,7 +3492,10 @@
       "no_subscription": "The company doesn't have a running card subscription.",
       "same_interval": "You already pay that way.",
       "subscription_past_due": "The last payment didn't go through. Change the card in the subscription portal first.",
-      "subscription_not_changeable": "This subscription can't be changed here. Write to us and we'll sort it out."
+      "subscription_not_changeable": "This subscription can't be changed here. Write to us and we'll sort it out.",
+      "trial_card_disabled": "Extending the trial with a card is not switched on right now.",
+      "trial_card_not_available": "This company cannot extend its trial with a card.",
+      "no_ico": "Fill in the company IČO in the company settings first."
     },
     "portalHint": "In the Stripe portal you can change your card or billing details and download invoices.",
     "sub": {
@@ -3509,6 +3513,28 @@
       "switchToMonth": "Switch to monthly billing ({price} / month)",
       "switchNote": "The new period starts right away. We take the unused part of the current one off the first payment.",
       "switched": "Done, you now pay {interval, select, year {yearly} other {monthly}}."
+    },
+    "trialCard": {
+      "title": "Try Billanta for {days} days",
+      "body": "Add a card and your trial grows to {days} days in total. Nothing is charged, and before it ends we ask whether you want to continue.",
+      "bodyWithheld": "We could not give this company the no-card trial. With a card you get {days} days. Nothing is charged, and before it ends we ask whether you want to continue.",
+      "button": "Add a card",
+      "hint": "Stripe checks the card. Each card extends a trial only once.",
+      "extended": "Done – your trial now runs for {days} days. The card is saved and nothing was charged.",
+      "errors": {
+        "generic": "We could not extend the trial. Please try again.",
+        "trial_card_card_used": "This card has already extended a trial.",
+        "trial_card_user_had_trial": "Your account already had a trial with another company.",
+        "trial_card_trial_over": "The trial has already ended and can no longer be extended.",
+        "trial_card_no_ico": "Fill in the company IČO in the company settings first.",
+        "trial_card_invalid_ico": "The company IČO is not valid. Fix it in the company settings.",
+        "trial_card_not_in_registry": "We could not find the company IČO in the business register. Fix it in the company settings.",
+        "trial_card_registry_down": "The business register is not responding. Please try again in a moment.",
+        "trial_card_not_available": "This company cannot extend its trial with a card.",
+        "trial_card_invalid_session": "This saved card does not belong to this company.",
+        "trial_card_incomplete": "Saving the card did not finish. Please try again.",
+        "trial_card_disabled": "Extending the trial with a card is not switched on right now."
+      }
     }
   },
   "auth": {
