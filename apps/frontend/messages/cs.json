@@ -10128,7 +10128,16 @@
       "showCode": "Zobrazit osobní kód",
       "leave": "Odhlásit se",
       "leaveConfirm": "Odhlásit se? Zpátky se dostanete s osobním kódem.",
-      "backToClass": "Zpět do třídy"
+      "backToClass": "Zpět do třídy",
+      "team": "Tým {team} · třída {className}",
+      "teacherTeam": "Firma týmu {team} · třída {className}",
+      "teamName": "tým {team}",
+      "accountant": "Vedete účetnictví: {who} · třída {className}",
+      "modes": {
+        "review": "Jen kontrolujete: vše vidíte, nic neměníte.",
+        "bookkeeper": "Zapisujete náklady a platby a připravujete přehledy. Faktury vystavuje majitel firmy.",
+        "full": "Vedete firmě celou agendu včetně faktur."
+      }
     },
     "errors": {
       "generic": "Něco se nepovedlo. Zkuste to prosím znovu.",
@@ -10145,7 +10154,82 @@
       "classroom_not_found": "Třída nebo žák už neexistuje.",
       "classroom_ended": "Třída už skončila, lze ji jen prohlížet.",
       "not_found": "Nenalezeno.",
-      "forbidden": "K tomu nemáte oprávnění."
+      "forbidden": "K tomu nemáte oprávnění.",
+      "classroom_closed": "Třída už skončila nebo je pozastavená, nic nového v ní nejde založit.",
+      "classroom_invalid_kind": "Tento typ firmy třída nepoužívá.",
+      "classroom_unavailable": "Firmu se teď nepodařilo naplnit. Zkuste to prosím znovu.",
+      "classroom_team_limit": "Třída už má nejvíc týmů, kolik může mít.",
+      "classroom_team_name_taken": "Tým s tímto názvem už ve třídě je.",
+      "classroom_team_taken": "Žák už je v jiném týmu.",
+      "classroom_team_full": "Tým je plný.",
+      "classroom_team_empty": "Tým zatím nemá žádné členy. Nejdřív do něj někoho přidejte.",
+      "classroom_company_limit": "Další firmu už založit nejde. Pro jednoho žáka nebo tým jsou nejvýše tři.",
+      "classroom_company_owner": "Vyberte žáka nebo tým.",
+      "classroom_partner_same": "Vyberte dvě různé firmy.",
+      "classroom_accountant_member": "Žák už ve firmě je jako majitel nebo člen týmu.",
+      "classroom_accountant_limit": "Žák už vede účetnictví nejvíc firmám, kolik může.",
+      "classroom_invalid_mode": "Tento režim třída nepovoluje."
+    },
+    "groups": {
+      "teamOwner": "Tým {name}",
+      "teams": {
+        "title": "Týmy",
+        "body": "Členové týmu pracují v jedné společné firmě. Každý žák může být nejvýše v jednom týmu.",
+        "empty": "Zatím žádné týmy.",
+        "name": "Název týmu",
+        "create": "Založit tým",
+        "addMember": "Přidat žáka",
+        "removeMember": "Odebrat žáka {name} z týmu",
+        "delete": "Smazat tým",
+        "deleteConfirm": "Smazat tým {name} i s jeho firmami? Žáci si nechají své vlastní firmy."
+      },
+      "companies": {
+        "title": "Další firmy",
+        "body": "Žák nebo tým může mít další firmu, třeba odběratele k dodavateli. Firma se naplní stejně jako firmy žáků a smaže se spolu s třídou.",
+        "empty": "Zatím žádné další firmy.",
+        "owner": "Pro koho",
+        "kind": "Typ firmy",
+        "label": "Název firmy (nepovinné)",
+        "create": "Založit firmu",
+        "created": "Firma je založená.",
+        "open": "Otevřít firmu",
+        "delete": "Smazat firmu",
+        "deleteConfirm": "Smazat firmu {name}? Nejde to vrátit.",
+        "progress": "splněno {n} z {max}"
+      },
+      "partners": {
+        "title": "Obchodní partneři",
+        "body": "Dvě firmy třídy si navzájem přidají kontakt, aby si mohly vystavovat faktury. Fakturu od partnera pak druhá firma zapíše jako náklad.",
+        "a": "První firma",
+        "b": "Druhá firma",
+        "submit": "Propojit",
+        "done": "{n, plural, =0 {Firmy už se znají.} one {Přidán # kontakt.} few {Přidány # kontakty.} other {Přidáno # kontaktů.}}"
+      },
+      "accountants": {
+        "title": "Žáci jako účetní",
+        "body": "Žák se stane účetním jiné firmy třídy a přepíná se do ní jako do své. Co tam smí, určuje režim.",
+        "empty": "Zatím nikdo nevede účetnictví jiné firmě.",
+        "student": "Žák",
+        "company": "Firma",
+        "mode": "Režim",
+        "assign": "Přiřadit",
+        "remove": "Odebrat",
+        "row": "{student} vede účetnictví: {company}",
+        "modes": {
+          "review": {
+            "title": "Kontrola",
+            "hint": "Účetní vše vidí, ale nic nezmění. Hodí se ke kontrole dokladů po spolužákovi."
+          },
+          "bookkeeper": {
+            "title": "Účetní",
+            "hint": "Účetní zapisuje náklady, banku a přehledy, faktury jen čte. Vystavuje je majitel firmy."
+          },
+          "full": {
+            "title": "Plný přístup",
+            "hint": "Účetní smí ve firmě vše jako její majitel, včetně vystavování a storna faktur."
+          }
+        }
+      }
     }
   },
   "classroomJoin": {

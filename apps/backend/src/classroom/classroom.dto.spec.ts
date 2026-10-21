@@ -1,6 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { applySchema, normalizeNickname } from "./classroom.dto";
+import { accountantSchema, applySchema, createCompanySchema, normalizeNickname, partnersSchema, teamSchema } from "./classroom.dto";
 import { SCHOOL_LEVELS } from "./tracks";
+
+const id = (n: number) => `00000000-0000-4000-8000-00000000000${n}`;
+
+describe("phase 2 dtos", () => {
+  it("wants a company for exactly one student or team", () => {
+    expect(createCompanySchema.safeParse({ studentId: id(1), kind: "cz_vat_sro" }).success).toBe(true);
+    expect(createCompanySchema.safeParse({ teamId: id(1), kind: "cz_vat_sro", label: " Dodavatel " }).data?.label).toBe("Dodavatel");
+    expect(createCompanySchema.safeParse({ kind: "cz_vat_sro" }).success).toBe(false);
+    expect(createCompanySchema.safeParse({ studentId: id(1), teamId: id(2), kind: "cz_vat_sro" }).success).toBe(false);
+    expect(createCompanySchema.safeParse({ studentId: id(1), kind: "evil" }).success).toBe(false);
+  });
+
+  it("pairs two different companies", () => {
+    expect(partnersSchema.safeParse({ tenantA: id(1), tenantB: id(2) }).success).toBe(true);
+    expect(partnersSchema.safeParse({ tenantA: id(1), tenantB: id(1) }).success).toBe(false);
+  });
+
+  it("makes a bookkeeper unless told otherwise", () => {
+    expect(accountantSchema.parse({ tenantId: id(1), studentId: id(2) }).mode).toBe("bookkeeper");
+    expect(accountantSchema.safeParse({ tenantId: id(1), studentId: id(2), mode: "owner" }).success).toBe(false);
+  });
+
+  it("names teams briefly", () => {
+    expect(teamSchema.safeParse({ name: "  " }).success).toBe(false);
+    expect(teamSchema.safeParse({ name: "x".repeat(41) }).success).toBe(false);
+  });
+});
 
 describe("normalizeNickname", () => {
   it("accepts first names with an initial and diacritics", () => {

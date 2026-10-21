@@ -20,6 +20,7 @@ import {
   rotateJoinCode,
   updateClass
 } from '../actions';
+import { ClassGroups } from './class-groups';
 
 /** Which progress columns a track shows; the backend counts all of them. */
 const TRACK_COLUMNS: Record<ClassroomTrack, string[]> = {
@@ -250,6 +251,8 @@ export function ClassView({ detail, colleagues }: { detail: ClassDetail; colleag
           {t('students.kinds', { kinds: detail.kinds.map(kindTitle).join(', ') })}
         </p>
       </section>
+
+      <ClassGroups detail={detail} pending={pending} run={run} openCompany={openCompany} kindTitle={kindTitle} columns={columns} />
 
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="font-bold">{t('teachers.title')}</h2>

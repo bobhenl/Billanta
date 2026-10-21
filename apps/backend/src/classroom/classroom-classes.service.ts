@@ -266,7 +266,7 @@ export class ClassroomClassesService {
    * nothing. The caller is an approved teacher (`approved()`); in a
    * suspended school only taking things away is left (`suspended: true`).
    */
-  private async access(teacher: Teacher, school: School, classId: string, opts: { suspended?: boolean } = {}): Promise<ClassRow> {
+  async access(teacher: Teacher, school: School, classId: string, opts: { suspended?: boolean } = {}): Promise<ClassRow> {
     if (school.suspendedAt && !opts.suspended) throw new ForbiddenException("classroom_school_suspended");
     const [cls] = await this.dbService.db
       .select()
@@ -301,19 +301,22 @@ export class ClassroomClassesService {
 
   private async progress(userId: string, students: (typeof schema.classroomStudents.$inferSelect)[]) {
     const out = new Map<string, MilestoneCounts>();
-    for (const s of students) {
-      const [row] = await this.dbService.sql.begin(async (tx) => {
-        await tx`SELECT set_config('app.current_tenant_id', ${s.tenantId}, true)`;
-        await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
-        return tx.unsafe(MILESTONE_SQL, [(s.seededAt ?? s.createdAt).toISOString()]);
-      });
-      out.set(s.id, toMilestoneCounts(row as Record<string, unknown> | undefined));
-    }
+    for (const s of students) out.set(s.id, await this.companyProgress(userId, s.tenantId, s.seededAt ?? s.createdAt));
     return out;
   }
 
+  /** One company's milestones since `since`, read as the teacher who is a viewer there. */
+  async companyProgress(userId: string, tenantId: string, since: Date): Promise<MilestoneCounts> {
+    const [row] = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`;
+      await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
+      return tx.unsafe(MILESTONE_SQL, [since.toISOString()]);
+    });
+    return toMilestoneCounts(row as Record<string, unknown> | undefined);
+  }
+
   /** classroom_students is under RLS: the teacher sees the rows of the classes they teach. */
-  private asTeacher<T>(userId: string, read: (db: ReturnType<typeof drizzleTx<typeof schema>>) => Promise<T>): Promise<T> {
+  asTeacher<T>(userId: string, read: (db: ReturnType<typeof drizzleTx<typeof schema>>) => Promise<T>): Promise<T> {
     return this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_user_id', ${userId}, true)`;
       return read(drizzleTx(tx, schema));

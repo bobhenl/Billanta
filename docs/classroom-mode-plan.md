@@ -642,7 +642,8 @@ Decided in round three:
 
 1. The DPA: feedback from the friendly school's DPO, then publish the
    school terms (the application form links the general DPA until then).
-2. Teams, second companies and the accountant exercise: phase 2.
+2. Teams, second companies and the accountant exercise: designed in §8,
+   built on the `classroom-phase-2` branch.
 3. The EU backup destination for the sub-processor list.
 
 ### 7.2 Deviations of the MVP from this plan
@@ -668,3 +669,132 @@ Decided in round three:
   whole class joins from one school IP.
 - Demo and student sessions are not slid forward by Auth.js; they end
   when they were opened to end.
+
+## 8. Phase 2: teams, second companies, the accountant
+
+Phase 1 stays as it is: every pupil joins with one **home company**
+(`classroom_students.tenant_id`). Phase 2 adds companies *next to* it and
+memberships *into* other companies; nothing in the join flow changes.
+
+### 8.1 Data model (migration `0083_classroom_phase2.sql`)
+
+| Table | Columns | Notes |
+|---|---|---|
+| `classroom_teams` | id, class_id, name, created_at | unique `(class_id, lower(name))`; a class has at most 20 |
+| `classroom_team_members` | team_id, student_id (pk), class_id | a pupil is in one team per class |
+| `classroom_companies` | id, class_id, tenant_id (unique), kind, label, student_id *or* team_id, seeded_at, created_at | every company beyond the home one; exactly one owner side (`num_nonnulls = 1`) |
+| `classroom_accountants` | id, class_id, tenant_id, student_id, mode, created_at | unique `(tenant_id, student_id)`; mode `review` / `bookkeeper` / `full` |
+
+Everything references `classroom_classes ON DELETE CASCADE`, students and
+tenants cascade too, so no row outlives the class. Every new company is a
+demo tenant with `classroom_class_id` and `demo_expires_at = ends_at + 30
+days`, created exactly like a home company: `classroom_extend` (which
+updates tenants by `classroom_class_id`) and the read-only month after the
+end cover it without a change.
+
+Limits (only against abuse): 3 extra companies per pupil or team, a team
+of 2–6 pupils, 3 accountants per company, and `2 × max_students` extra
+companies per class.
+
+### 8.2 Memberships and RLS
+
+No new bypass: all data stays behind tenant RLS, a pupil reaches another
+company only through an ordinary `tenant_memberships` row.
+
+- **Team company**: every member is `owner` (the classroom lock already
+  stops anyone removing an owner through the app), teachers are `viewer`.
+- **Second company**: the pupil is `owner`, teachers are `viewer`.
+- **Accountant**: the pupil gets role `accountant` with per-area
+  `permissions` (`src/tenancy/permissions.ts`), set from the mode:
+  - `review` – everything read-only;
+  - `bookkeeper` (default) – invoices and contacts read-only, expenses,
+    bank and reports writable;
+  - `full` – the accountant role's defaults, everything writable.
+
+**Why a read-only variant.** The accountant role writes everywhere, which
+is right for a real accounting firm but wrong as the only option in a
+class: a pupil could cancel or edit invoices in a classmate's company that
+is being graded, by mistake or on purpose, and nobody could tell whose
+work it is. The common exercises – "check your client's documents and find
+the mistakes", "run the reports" – need no writes at all. So `review` is
+there for those, `bookkeeper` matches what an outside accountant really
+does (books costs and payments, does not issue the client's invoices) and
+is the default, and `full` stays for a teacher who wants it. It costs
+nothing new: the per-membership override already exists.
+
+The app role reads the four tables (the class page and the banner) and
+may insert and rename teams; every change that touches a membership or a
+tenant goes through a function, because `classroom_memberships_lock`
+refuses the app role in practice companies.
+
+### 8.3 SECURITY DEFINER functions and triggers
+
+All with `SET search_path = public`, revoked from PUBLIC and granted to
+`faktur_app`. The service checks the teacher may manage the class
+(`access`), the functions check every id belongs to that class.
+
+- `classroom_create_company(class, student|team, kind, label, tenant,
+  bank, modules)` – the second company or the team's company, with owner
+  and teacher memberships; returns the tenant and a user to seed it as.
+- `classroom_delete_company(company)` – `delete_demo_tenant` and the row.
+- `classroom_team_member(team, student, add)` – adds or removes the pupil
+  and their owner membership in the team's companies.
+- `classroom_delete_team(team)` – the team's companies, then the team.
+- `classroom_assign_accountant(class, tenant, student, mode, permissions)`
+  and `classroom_unassign_accountant(link)`; a pupil who already belongs to
+  the company cannot become its accountant.
+- `classroom_company_context(tenant, user)` – what the banner shows:
+  class, whose company it is and what the user is there (home, team,
+  second, accountant + mode, teacher).
+
+Triggers instead of redefining the phase 1 functions:
+
+- `BEFORE DELETE ON classroom_students` – deletes the pupil's second
+  companies, their memberships in team and client companies, and the
+  pupil user once nothing is left (`delete_demo_tenant` keeps a user who
+  still has memberships). So `classroom_remove_student` and
+  `classroom_delete_class` clean up phase 2 without a change;
+  `classroom_delete_class` already deletes every tenant of the class.
+- `AFTER INSERT OR DELETE ON classroom_class_teachers` – gives a
+  co-teacher a `viewer` membership in the extra companies too (and takes
+  it away), as `classroom_add_teacher` does for the home companies.
+
+### 8.4 Teacher UI (class page)
+
+- **Teams**: create a team from selected pupils, add or remove members,
+  delete the team.
+- **Companies**: "Add a company" for a pupil or a team (kind from the
+  class's kinds, a short label such as "Supplier"), each listed with its
+  progress columns and "Open company" (read-only, as for home companies).
+- **Trading partners**: pick two companies of the class and each gets the
+  other as a contact, so the pupils invoice each other (supplier and
+  customer). The documents are not delivered between companies; an
+  in-app inbox is still a separate design.
+- **Accountants**: pick a company, a pupil and the mode.
+
+### 8.5 Pupil UI
+
+- The company switcher lists all of a pupil's companies (home, team,
+  second, client). It still hides practice companies from a teacher.
+- The classroom banner says where the pupil is: "Your company", "Team
+  company of *Team A*", "Your second company *Supplier*", "You are the
+  accountant of *nickname*'s company (review only / bookkeeping / full)".
+- Joining is unchanged; the teacher forms teams after the pupils join.
+  Picking a team at the join screen can come later.
+
+### 8.6 Lesson tracks
+
+- Teams and second companies work in every track.
+- The accountant exercise needs expenses and bank (standard track and up);
+  in a basic class only `review` is offered, since there is nothing else to
+  book. Reports appear with the advanced track's modules.
+- The new companies get the class's modules, so a track's limits hold.
+
+### 8.7 GDPR and the school contract
+
+No new personal data: still nicknames only, team names are chosen by the
+teacher, and every new row is deleted with the class. What changes is
+**who sees a nickname**: team mates see each other's nicknames, and a
+pupil accountant sees the nickname of the company they look after. The
+DPA should say that pupils of one class may see each other's nicknames
+and practice companies when the teacher pairs them. No new sub-processor.

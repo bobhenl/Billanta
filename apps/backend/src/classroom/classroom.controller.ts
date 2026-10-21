@@ -5,8 +5,21 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { ClassroomClassesService } from "./classroom-classes.service";
 import { classroomConfig } from "./classroom-config";
+import { ClassroomGroupsService } from "./classroom-groups.service";
 import { ClassroomTeachersService } from "./classroom-teachers.service";
-import { ApplyDto, CoTeacherDto, CreateClassDto, ExtendClassDto, InviteDto, UpdateClassDto } from "./classroom.dto";
+import {
+  AccountantDto,
+  ApplyDto,
+  CoTeacherDto,
+  CreateClassDto,
+  CreateCompanyDto,
+  ExtendClassDto,
+  InviteDto,
+  PartnersDto,
+  TeamDto,
+  TeamMemberDto,
+  UpdateClassDto,
+} from "./classroom.dto";
 
 /**
  * The teacher's side (docs/classroom-mode-plan.md). JWT only, no tenant
@@ -21,6 +34,7 @@ export class ClassroomController {
   constructor(
     private readonly teachers: ClassroomTeachersService,
     private readonly classes: ClassroomClassesService,
+    private readonly groups: ClassroomGroupsService,
   ) {}
 
   @Get("me")
@@ -62,9 +76,10 @@ export class ClassroomController {
   }
 
   @Get("classes/:id")
-  get(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+  async get(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     enabled();
-    return this.classes.get(req.user!.id, id);
+    const cls = await this.classes.get(req.user!.id, id);
+    return { ...cls, ...(await this.groups.overview(req.user!.id, id)) };
   }
 
   @Get("classes/:id/progress.csv")
@@ -122,6 +137,78 @@ export class ClassroomController {
   removeStudent(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Param("studentId", ParseUUIDPipe) studentId: string) {
     enabled();
     return this.classes.removeStudent(req.user!.id, id, studentId);
+  }
+
+  // Phase 2 (docs/classroom-mode-plan.md §8): teams, extra companies, partners, accountants.
+
+  @Post("classes/:id/teams")
+  @HttpCode(200)
+  createTeam(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: TeamDto) {
+    enabled();
+    return this.groups.createTeam(req.user!.id, id, dto.name);
+  }
+
+  @Patch("classes/:id/teams/:teamId")
+  renameTeam(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Param("teamId", ParseUUIDPipe) teamId: string, @Body() dto: TeamDto) {
+    enabled();
+    return this.groups.renameTeam(req.user!.id, id, teamId, dto.name);
+  }
+
+  @Delete("classes/:id/teams/:teamId")
+  deleteTeam(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Param("teamId", ParseUUIDPipe) teamId: string) {
+    enabled();
+    return this.groups.deleteTeam(req.user!.id, id, teamId);
+  }
+
+  @Post("classes/:id/teams/:teamId/members")
+  @HttpCode(200)
+  addMember(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Param("teamId", ParseUUIDPipe) teamId: string, @Body() dto: TeamMemberDto) {
+    enabled();
+    return this.groups.setTeamMember(req.user!.id, id, teamId, dto.studentId, true);
+  }
+
+  @Delete("classes/:id/teams/:teamId/members/:studentId")
+  removeMember(
+    @Req() req: TenantScopedRequest,
+    @Param("id", ParseUUIDPipe) id: string,
+    @Param("teamId", ParseUUIDPipe) teamId: string,
+    @Param("studentId", ParseUUIDPipe) studentId: string,
+  ) {
+    enabled();
+    return this.groups.setTeamMember(req.user!.id, id, teamId, studentId, false);
+  }
+
+  @Post("classes/:id/companies")
+  @HttpCode(200)
+  createCompany(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: CreateCompanyDto) {
+    enabled();
+    return this.groups.createCompany(req.user!.id, id, dto);
+  }
+
+  @Delete("classes/:id/companies/:companyId")
+  deleteCompany(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Param("companyId", ParseUUIDPipe) companyId: string) {
+    enabled();
+    return this.groups.deleteCompany(req.user!.id, id, companyId);
+  }
+
+  @Post("classes/:id/partners")
+  @HttpCode(200)
+  pair(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: PartnersDto) {
+    enabled();
+    return this.groups.pairPartners(req.user!.id, id, dto);
+  }
+
+  @Post("classes/:id/accountants")
+  @HttpCode(200)
+  assignAccountant(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: AccountantDto) {
+    enabled();
+    return this.groups.assignAccountant(req.user!.id, id, dto);
+  }
+
+  @Delete("classes/:id/accountants/:linkId")
+  unassignAccountant(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Param("linkId", ParseUUIDPipe) linkId: string) {
+    enabled();
+    return this.groups.unassignAccountant(req.user!.id, id, linkId);
   }
 
   @Delete("classes/:id")

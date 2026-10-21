@@ -575,6 +575,13 @@
       "when": 1793075460000,
       "tag": "0081_classroom_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "7",
+      "when": 1793161860000,
+      "tag": "0083_classroom_phase2",
+      "breakpoints": true
     }
   ]
 }

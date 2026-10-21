@@ -2,6 +2,7 @@ import { createZodDto } from "nestjs-zod";
 import { z } from "zod";
 import { DEMO_KINDS } from "../demo/dataset";
 import { enabledModulesSchema } from "../tenants/modules";
+import { ACCOUNTANT_MODES } from "./accountants";
 import { CLASSROOM_TRACKS, SCHOOL_LEVELS } from "./tracks";
 
 const text = (max: number) => z.string().trim().min(1).max(max);
@@ -64,6 +65,37 @@ export class ExtendClassDto extends createZodDto(extendClassSchema) {}
 
 export const coTeacherSchema = z.object({ teacherId: z.string().uuid() });
 export class CoTeacherDto extends createZodDto(coTeacherSchema) {}
+
+// Phase 2 (docs/classroom-mode-plan.md §8).
+export const teamSchema = z.object({ name: text(40) });
+export class TeamDto extends createZodDto(teamSchema) {}
+
+export const teamMemberSchema = z.object({ studentId: z.string().uuid() });
+export class TeamMemberDto extends createZodDto(teamMemberSchema) {}
+
+export const createCompanySchema = z
+  .object({
+    studentId: z.string().uuid().optional(),
+    teamId: z.string().uuid().optional(),
+    kind: z.enum(DEMO_KINDS),
+    // Shown instead of the dataset's company name, so a student's two
+    // companies (or a pair of the same type) can be told apart.
+    label: z.string().trim().max(60).optional(),
+  })
+  .refine((v) => (v.studentId ? 1 : 0) + (v.teamId ? 1 : 0) === 1, { message: "classroom_company_owner" });
+export class CreateCompanyDto extends createZodDto(createCompanySchema) {}
+
+export const partnersSchema = z
+  .object({ tenantA: z.string().uuid(), tenantB: z.string().uuid() })
+  .refine((v) => v.tenantA !== v.tenantB, { message: "classroom_partner_same" });
+export class PartnersDto extends createZodDto(partnersSchema) {}
+
+export const accountantSchema = z.object({
+  tenantId: z.string().uuid(),
+  studentId: z.string().uuid(),
+  mode: z.enum(ACCOUNTANT_MODES).default("bookkeeper"),
+});
+export class AccountantDto extends createZodDto(accountantSchema) {}
 
 export const decisionSchema = z.object({
   decision: z.enum(["approve", "reject"]),

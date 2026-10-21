@@ -46,6 +46,13 @@ REVOKE INSERT, UPDATE, DELETE ON classroom_class_teachers FROM faktur_app;
 REVOKE INSERT, DELETE ON classroom_students FROM faktur_app;
 -- Wrong re-entry codes per network (0081) only through classroom_reenter.
 REVOKE ALL ON classroom_reentry_misses FROM faktur_app;
+-- Phase 2 (0083): team members, extra companies and accountants change only
+-- through their classroom_* functions; the app names teams and may set a
+-- company's label and seeding time.
+REVOKE DELETE ON classroom_teams FROM faktur_app;
+REVOKE INSERT, UPDATE, DELETE ON classroom_team_members, classroom_accountants FROM faktur_app;
+REVOKE INSERT, UPDATE, DELETE ON classroom_companies FROM faktur_app;
+GRANT UPDATE (label, seeded_at) ON classroom_companies TO faktur_app;
 
 -- A company's promo redemption is its attribution record (migration 0071):
 -- inserted once, never edited. Codes are switched off, not deleted.
