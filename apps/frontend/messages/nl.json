@@ -38,6 +38,259 @@
     "sk": "Slovenčina",
     "en": "English"
   },
+  "marketing": {
+    "nav": {
+      "features": "Functies",
+      "pricing": "Prijzen",
+      "login": "Inloggen",
+      "signup": "Registreren",
+      "label": "Hoofdnavigatie",
+      "home": "Home",
+      "start": "Start",
+      "cities": "Steden",
+      "about": "Over ons",
+      "faq": "Veelgestelde vragen",
+      "guestInvoice": "Factuur zonder registratie",
+      "createInvoice": "Factuur maken",
+      "createInvoiceShort": "Factuur",
+      "search": "Zoeken",
+      "app": "App",
+      "account": "Account",
+      "accountants": "Voor boekhouders",
+      "partners": "Partners",
+      "schools": "Voor scholen",
+      "creators": "Voor creators",
+      "events": "Voor evenementen en community's",
+      "forPartners": "Voor partners",
+      "firstInvoice": "Eerste factuur",
+      "teamRoles": "Teamrollen"
+    },
+    "hero": {
+      "title": "Facturatie voor Tsjechische en Slowaakse bedrijven, zonder papierwerk",
+      "subtitle": "Maak facturen met je stem via Telegram of WhatsApp, exporteer ze naar ISDOC en wees er zeker van dat alles klopt met ARES en de geldende regels.",
+      "cta": "Maak een gratis account",
+      "secondaryCta": "Bekijk hoe het werkt",
+      "eyebrow": "Facturatie voor CZ en SK",
+      "points": {
+        "isdoc": "ISDOC-export",
+        "ares": "Opzoeken in ARES",
+        "qr": "QR-betalingen"
+      },
+      "guestCta": "Factuur zonder registratie",
+      "dictateCta": "Of dicteer hem – zonder registratie"
+    },
+    "invoiceMockup": {
+      "status": "Betaald",
+      "issuedTo": "Factuur aan",
+      "dueDate": "Vervaldatum",
+      "subtotal": "Subtotaal",
+      "vat": "Btw 21%",
+      "total": "Te betalen",
+      "isdocTag": "ISDOC-export",
+      "aresTag": "Gecontroleerd via ARES",
+      "credit": "Gemaakt met Billanta"
+    },
+    "features": {
+      "title": "Alles wat je nodig hebt om te factureren, op één plek",
+      "isdoc": {
+        "title": "ISDOC-export",
+        "description": "Facturen in ISDOC-formaat, klaar voor je boekhouder en de belastingdienst – zonder iets over te typen."
+      },
+      "aiVoice": {
+        "title": "Factuur uit een spraakbericht",
+        "description": "Dicteer een factuur via Telegram of WhatsApp en laat AI een concept klaarzetten dat je snel nakijkt."
+      },
+      "compliance": {
+        "title": "Controle van verplichte gegevens",
+        "description": "Voordat je een factuur uitreikt, controleren we of alles erop staat wat de Tsjechische of Slowaakse btw- en handelswetgeving eist – bedrijfsnummer, btw-nummer, adressen, regels. Klantgegevens komen uit ARES."
+      },
+      "multilang": {
+        "title": "Tsjechisch, Slowaaks en Engels",
+        "description": "De hele app en je facturen werken vanaf dag één in drie talen."
+      },
+      "qr": {
+        "title": "Een QR-betaalcode op elke factuur",
+        "description": "Elke factuur krijgt een QR-code volgens de standaard van de Tsjechische Bankvereniging. Vul je rekeningnummer of IBAN in en je klant scant en betaalt."
+      },
+      "bankSync": {
+        "title": "Betalingen via bank en PayPal koppelen zichzelf",
+        "description": "Koppel Fio, een andere bank via PSD2 of PayPal, en Billanta haalt binnenkomende betalingen op en zet facturen op betaald, inclusief de PayPal-kosten."
+      },
+      "reminders": {
+        "title": "Betalingsherinneringen",
+        "description": "Billanta houdt onbetaalde facturen in de gaten en stuurt de klant een herinnering met de link naar de factuur en een QR-betaling."
+      },
+      "vat": {
+        "title": "Btw-aangifte voor EPO",
+        "description": "Uit facturen en uitgaven maken we de btw-aangifte en controleaangifte in XML voor het Tsjechische belastingportaal."
+      },
+      "expenses": {
+        "title": "Bonnetjes van een foto",
+        "description": "Maak een foto van een bonnetje of upload een pdf en AI vult leverancier, bedrag, btw en vervaldatum in."
+      },
+      "recurring": {
+        "title": "Terugkerende en bulkfacturen",
+        "description": "Vaste maandbedragen en huur worden volgens schema gefactureerd. Vanuit een sjabloon factureer je veel klanten tegelijk."
+      },
+      "templates": {
+        "title": "Sjablonen en eigen variabelen",
+        "description": "Sla een document op als sjabloon, pas e-mailteksten aan en voeg variabelen in zoals '{number}' of '{due_date}'."
+      },
+      "time": {
+        "title": "Urenregistratie",
+        "description": "Een timer en handmatige registraties per project. Zet niet-gefactureerd werk met één klik om in een factuur tegen het tarief van het project."
+      },
+      "taxEstimate": {
+        "title": "Wat je overhoudt",
+        "description": "Bij elke factuur zie je een ruwe schatting van wat er overblijft na inkomstenbelasting en premies volgens de Tsjechische regels voor zelfstandigen. Voor het hele jaar berekenen we de belasting, premies en volgende voorschotten."
+      },
+      "currencies": {
+        "title": "Facturen in vreemde valuta",
+        "description": "EUR, USD en meer. De koers van de ČNB voor de leverdatum wordt automatisch ingevuld en omgerekend naar CZK voor de btw."
+      },
+      "clientPortal": {
+        "title": "Klantenportaal",
+        "description": "Eén vaste link per klant: al hun facturen en offertes, wat er nog openstaat en wat over tijd is."
+      },
+      "migration": {
+        "title": "Overstappen vanuit een andere app",
+        "description": "Vanuit BitFaktura en Fakturoid rechtstreeks via de API met de originele pdf's, vanuit iDoklad of Excel via CSV. Je ziet een voorbeeld voordat je opslaat."
+      },
+      "api": {
+        "title": "API en webhooks",
+        "description": "Een REST-API met eigen sleutels, webhooks voor Slack, Discord of je eigen systeem, en een kalender met vervaldatums."
+      },
+      "team": {
+        "title": "Team, boekhouder, meerdere bedrijven",
+        "description": "Nodig collega's en je boekhouder uit, elk met een eigen rol. Beheer een eenmanszaak en een vennootschap vanuit één account."
+      },
+      "auditLog": {
+        "title": "Wijzigingsgeschiedenis",
+        "description": "Wie wat wanneer heeft gewijzigd, ook wijzigingen door AI en via de API. Een uitgereikt document kan alleen met een opgegeven reden worden gecorrigeerd."
+      },
+      "reports": {
+        "title": "Rapporten per periode",
+        "description": "Omzet, uitgaven en topklanten per maand, kwartaal of jaar, vergeleken met de vorige periode."
+      },
+      "backups": {
+        "title": "Back-ups naar je eigen opslag",
+        "description": "Bedrijfsgegevens worden regelmatig opgeslagen in Google Drive, op je eigen server via SFTP of via een webhook. Download alles met één klik."
+      }
+    },
+    "howItWorks": {
+      "title": "Zo werkt het",
+      "steps": {
+        "capture": {
+          "title": "Dicteer of typ het",
+          "description": "Een spraakbericht via Telegram of WhatsApp, een foto van een bonnetje of één zin. AI vult de klant uit ARES en de regels in.",
+          "highlight": "AI ook in het gratis abonnement"
+        },
+        "draft": {
+          "title": "Controleer het concept",
+          "description": "Billanta controleert de verplichte gegevens, de btw en de nummering. Er wordt niets uitgereikt tot jij het bevestigt.",
+          "highlight": "Controle van verplichte gegevens"
+        },
+        "issue": {
+          "title": "Uitreiken en versturen",
+          "description": "Een pdf met QR-betaalcode, ISDOC en UBL voor Slowakije. Je klant krijgt een e-mail met een link naar de factuur.",
+          "highlight": "10 documenten per maand gratis"
+        },
+        "getPaid": {
+          "title": "Betalingen koppelen zichzelf",
+          "description": "Vanuit Fio, een andere bank via PSD2 of PayPal. Bij elke factuur zie je wat je overhoudt na inkomstenbelasting en premies.",
+          "highlight": "Je houdt over: het nettobedrag"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Klaar om je facturatie eenvoudiger te maken?",
+      "subtitle": "Gratis beginnen, geen creditcard nodig.",
+      "cta": "Maak je account aan"
+    },
+    "footer": {
+      "tagline": "Moderne facturatie voor Tsjechische en Slowaakse bedrijven.",
+      "product": {
+        "title": "Product",
+        "features": "Functies",
+        "pricing": "Prijzen",
+        "faq": "Veelgestelde vragen",
+        "guestInvoice": "Factuur zonder registratie",
+        "compare": "Vergelijken met andere",
+        "firstInvoice": "Je eerste factuur",
+        "beginners": "Voor beginners",
+        "advanced": "Voor gevorderden",
+        "teamRoles": "Teamrollen"
+      },
+      "company": {
+        "title": "Bedrijf",
+        "about": "Over ons",
+        "accountants": "Voor boekhouders",
+        "partners": "Partners",
+        "blog": "Blog",
+        "schools": "Voor scholen",
+        "creators": "Voor creators",
+        "events": "Voor evenementen en community's",
+        "forPartners": "Voor partners"
+      },
+      "legal": {
+        "title": "Juridisch",
+        "terms": "Gebruiksvoorwaarden",
+        "privacy": "Privacybeleid",
+        "cookies": "Cookiebeleid",
+        "cookieSettings": "Cookie-instellingen",
+        "dpa": "Verwerkersovereenkomst",
+        "contact": "Contact"
+      },
+      "account": {
+        "title": "Account",
+        "login": "Inloggen",
+        "signup": "Registreren",
+        "openApp": "Naar de app"
+      },
+      "partners": {
+        "title": "Partners",
+        "all": "Alle partners"
+      }
+    },
+    "seo": {
+      "title": "Billanta – online facturatie voor Tsjechische en Slowaakse bedrijven",
+      "description": "Maak facturen met ISDOC-export, klantgegevens uit ARES en een QR-betaalcode. Dicteer een concept als spraakbericht via Telegram of WhatsApp. Gratis beginnen."
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "items": {
+        "free": {
+          "q": "Wat kost Billanta?",
+          "a": "Je kunt gratis beginnen, zonder creditcard, met 10 documenten per maand. Betaalde abonnementen beginnen bij {price} per maand excl. btw bij jaarlijkse betaling; meer details vind je op de prijspagina."
+        },
+        "slovakia": {
+          "q": "Werkt Billanta ook voor Slowakije?",
+          "a": "Ja. De app is beschikbaar in het Slowaaks, zoekt klanten op in het Slowaakse RPO-register, zet een PAY by square QR-code op facturen en de abonnementen zijn in euro geprijsd. Met het Plus-abonnement maakt de app de Slowaakse btw-aangifte, controleaangifte en intracommunautaire opgave voor eDane. Er worden al UBL-e-facturen gemaakt (Peppol BIS 3.0); verzenden via het Peppol-netwerk voor de e-factuurplicht vanaf 2027 is in ontwikkeling."
+        },
+        "isdoc": {
+          "q": "Wat is ISDOC en waarom heb ik het nodig?",
+          "a": "ISDOC is de Tsjechische standaard voor elektronische facturen. Boekhoudsoftware kan het automatisch inlezen, zodat je boekhouder nooit iets hoeft over te typen."
+        },
+        "ares": {
+          "q": "Hoe werkt het opzoeken in ARES?",
+          "a": "Vul een bedrijfsnummer (IČO) in en Billanta haalt naam, adres en btw-nummer van de klant rechtstreeks uit het openbare ARES-register, zodat je niets overtypt en er geen tikfouten insluipen."
+        },
+        "voice": {
+          "q": "Kan ik een factuur dicteren?",
+          "a": "Ja. Stuur een spraakbericht via Telegram of WhatsApp en AI maakt er een conceptfactuur van. Die wordt pas definitief als je hem zelf hebt nagekeken en bevestigd."
+        },
+        "data": {
+          "q": "Wat gebeurt er met mijn gegevens?",
+          "a": "De gegevens van elk bedrijf zijn in de database afgeschermd van alle andere bedrijven. Je kunt altijd een back-up downloaden of die in de instellingen automatisch laten opslaan in je eigen opslag."
+        }
+      }
+    },
+    "compare": {
+      "title": "Vergeleken met de alternatieven",
+      "lead": "Meer gratis, een lagere prijs en AI in elk abonnement. Naast Fakturoid, iDoklad, SuperFaktura, Vyfakturuj en BitFaktura.",
+      "more": "Volledige vergelijking met Fakturoid, iDoklad en andere"
+    }
+  },
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welkom terug. Hier zie je in één oogopslag je facturen en betalingen.",
@@ -1437,6 +1690,17 @@
       }
     }
   },
+  "about": {
+    "title": "Over Billanta",
+    "lead": "Billanta is een facturatietool die is gebouwd op de open standaarden waarop Tsjechische en Slowaakse facturatie al draait – niet eromheen.",
+    "whatTitle": "Wat Billanta doet",
+    "whatBody": "Billanta maakt facturen in ISDOC-formaat, haalt gegevens van de wederpartij rechtstreeks uit het ARES-handelsregister en houdt je nummering en btw-tarieven consistent, zodat je niet vastzit aan het spreadsheetsjabloon van vorige maand. Je kunt ook een spraakbericht sturen via Telegram of WhatsApp en Billanta maakt er een conceptfactuur van die je snel controleert – pas als jij bevestigt, is hij definitief.",
+    "whoTitle": "Voor wie het is",
+    "whoBody": "We bouwen dit voor freelancers en kleine bedrijven in Tsjechië en Slowakije – mensen die tussen klantafspraken door zelf factureren, geen financiële afdeling met eigen IT-mensen.",
+    "whyTitle": "Waarom we dit hebben gebouwd",
+    "whyBody": "Factureren kostte ons altijd meer tijd dan nodig – een bedrijfsnummer opzoeken in ARES, het volgende factuurnummer met de hand bijhouden, een laptop openklappen om op de terugweg van een klant één regel te factureren. We wilden iets dat dat deel overneemt en ons alleen laat beslissen over wat er echt toe doet: of de factuur klopt voordat hij de deur uitgaat.",
+    "seoTitle": "Over Billanta – facturatie op basis van ISDOC, ARES en QR"
+  },
   "common": {
     "comingSoonBody": "Aan dit onderdeel wordt nog gewerkt.",
     "logOut": "Uitloggen",
@@ -1472,6 +1736,463 @@
     "language": "Taal",
     "appearance": "Weergave",
     "create": "Maken"
+  },
+  "pricing": {
+    "title": "Prijzen",
+    "lead": "Begin gratis, zonder creditcard. Stap over naar een hoger abonnement wanneer je dat nodig hebt.",
+    "seoTitle": "Prijzen voor facturatie – begin gratis",
+    "metaDescription": "Prijzen van Billanta: Free met 10 documenten per maand en daarboven betalen per document, Start vanaf €4,99, Plus met AI vanaf €9,99 en Business voor teams. Geen creditcard nodig, prijzen excl. btw.",
+    "yearly": "Jaarlijks",
+    "monthly": "Maandelijks",
+    "yearlySave": "2 maanden gratis",
+    "currency": "Valuta",
+    "period": "Facturering",
+    "perMonth": "/ maand",
+    "billedYearly": "jaarlijks gefactureerd, {total}",
+    "billedMonthly": "maandelijks gefactureerd",
+    "forever": "voor altijd",
+    "popular": "Meest gekozen",
+    "vatNote": "Prijzen zijn exclusief btw. Je kunt je abonnement altijd wijzigen of opzeggen.",
+    "aiKeyNote": "Heb je een eigen AI-sleutel? Koppel die in de instellingen en betaal AI-functies rechtstreeks aan je provider, zonder limieten van je abonnement.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Om uit te proberen en voor een factuur af en toe",
+        "cta": "Begin gratis",
+        "features": [
+          "10 documenten per maand inbegrepen",
+          "Extra documenten voor {payg} per stuk",
+          "ISDOC, QR-betaling, opzoeken in het handelsregister en VIES",
+          "5 AI-credits per maand",
+          "Bewaking van de btw-drempel en belastingkalender",
+          "Urenregistratie en back-ups van je gegevens"
+        ]
+      },
+      "start": {
+        "name": "Start",
+        "tagline": "Voor freelancers die regelmatig factureren",
+        "cta": "Kies Start",
+        "features": [
+          "Onbeperkt documenten",
+          "Betalingen via bank en PayPal automatisch gekoppeld",
+          "Automatische herinneringen",
+          "Terugkerende facturen en klantenportaal",
+          "Cijfers voor de inkomstenbelasting",
+          "Export naar Pohoda en Money S3",
+          "30 AI-credits per maand",
+          "Gratis toegang voor je boekhouder"
+        ]
+      },
+      "plus": {
+        "name": "Plus",
+        "tagline": "AI doet het meeste werk",
+        "cta": "Kies Plus",
+        "features": [
+          "Alles uit Start",
+          "150 AI-credits per maand",
+          "Btw-aangifte, controleaangifte en intracommunautaire opgave",
+          "Kaartbetalingen op facturen",
+          "3 gebruikers + boekhouder",
+          "API en webhooks (10.000 verzoeken)",
+          "Voorrang bij support"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Voor teams en meerdere bedrijven",
+        "cta": "Kies Business",
+        "features": [
+          "Alles uit Plus",
+          "Tot 10 bedrijven onder één account",
+          "10 gebruikers met rollen",
+          "500 AI-credits per maand",
+          "API en webhooks (50.000 verzoeken)",
+          "Voorrang bij support"
+        ]
+      }
+    },
+    "paygNote": "Op Free betaal je alleen voor documenten boven de 10 per maand, {payg} per stuk. Vanaf ongeveer 34 documenten per maand is Start voordeliger.",
+    "aiCreditNote": "Eén AI-credit = één factuur uit een spraak- of tekstbericht, of één bonnetje uitgelezen van een foto.",
+    "compare": {
+      "title": "Abonnementen vergelijken",
+      "feature": "Functie",
+      "yes": "Ja",
+      "no": "Nee",
+      "groups": {
+        "invoicing": "Facturatie",
+        "payments": "Betalingen en bank",
+        "ai": "AI",
+        "tax": "Belastingen en boekhouder",
+        "team": "Team en gegevens"
+      },
+      "rows": {
+        "docs": "Documenten per maand",
+        "types": "Facturen, proformafacturen, creditnota's en offertes",
+        "isdoc": "ISDOC, QR-betaling, opzoeken in het handelsregister en VIES",
+        "currencies": "Vreemde valuta met koersen van de centrale bank",
+        "languages": "Documenten in het Tsjechisch, Slowaaks en Engels",
+        "recurring": "Terugkerende facturen",
+        "reminders": "Herinneringen bij achterstallige betaling",
+        "bank": "Bankbetalingen automatisch koppelen",
+        "paypal": "PayPal-synchronisatie",
+        "portal": "Klantenportaal",
+        "cards": "Kaartbetalingen op facturen",
+        "aiCredits": "AI-credits per maand",
+        "voice": "Facturen uit spraak- en tekstberichten",
+        "receipts": "Bonnetjes van een foto",
+        "ownKey": "Eigen AI-sleutel, zonder limiet",
+        "vatLimit": "Bewaking van de btw-drempel en belastingkalender",
+        "annual": "Cijfers voor de inkomstenbelasting",
+        "vatFilings": "Btw-aangifte, controleaangifte en intracommunautaire opgave",
+        "accountantExport": "Export voor je boekhouder",
+        "users": "Gebruikers",
+        "companies": "Bedrijven onder één account",
+        "api": "API en webhooks (verzoeken per maand)",
+        "time": "Urenregistratie",
+        "backups": "Back-ups van gegevens (Google Drive, downloaden)",
+        "support": "Support"
+      },
+      "cell": {
+        "docsFree": "10 inbegrepen, daarna {payg} per stuk",
+        "unlimited": "Onbeperkt",
+        "twoTemplates": "2 sjablonen",
+        "manual": "Handmatig",
+        "automatic": "Automatisch",
+        "csv": "CSV",
+        "csvPlus": "CSV, Pohoda, Money S3",
+        "oneUser": "1",
+        "userAccountant": "1 + boekhouder",
+        "threeAccountant": "3 + boekhouder",
+        "tenUsers": "10 met rollen",
+        "upTo10": "Tot 10",
+        "email": "E-mail",
+        "priority": "Voorrang"
+      }
+    },
+    "compareCompetitors": "Hoe Billanta zich verhoudt tot Fakturoid, iDoklad en andere",
+    "trialNote": "{days, plural, one {# dag} other {# dagen}} {plan} gratis, zonder creditcard, één keer per bedrijfsnummer (IČO). De proefperiode begint zodra het bedrijf zijn IČO invult en gaat daarna vanzelf over naar Free. Je gegevens blijven bewaard.",
+    "trialCard": "Eerste {days, plural, one {# dag} other {# dagen}} gratis, zonder creditcard",
+    "methods": {
+      "title": "Hoe je betaalt",
+      "card": {
+        "title": "Abonnement per kaart – verlengt automatisch, voordeliger",
+        "body": "De prijzen hierboven gelden voor een abonnement met kaart, Apple Pay of Google Pay. Het verlengt vanzelf, je kunt altijd opzeggen en het abonnement loopt door tot het einde van de betaalde periode."
+      },
+      "transfer": {
+        "title": "Bankoverschrijving – geen automatische verlenging",
+        "body": "Een maand of een jaar vooruit op basis van een proformafactuur met QR-code, {percent} % duurder, omdat we elke betaling handmatig koppelen. Er wordt niets automatisch afgeschreven en voor het einde van de periode sturen we een herinnering met de volgende proformafactuur."
+      }
+    },
+    "transferPrice": "per overschrijving {price} / maand",
+    "transferCzkOnly": "Bankoverschrijving kan alleen in Tsjechische kronen.",
+    "faq": {
+      "title": "Vragen over prijzen",
+      "items": [
+        {
+          "q": "Is Billanta gratis?",
+          "a": "Ja. Het Free-abonnement heeft geen tijdslimiet en vraagt geen creditcard. Je krijgt 10 documenten per maand; elk extra document kost {payg}. ISDOC, QR-betalingen en bedrijven opzoeken in het ARES-register zitten in elk abonnement."
+        },
+        {
+          "q": "Zijn de prijzen inclusief btw?",
+          "a": "Nee, alle prijzen worden exclusief btw getoond."
+        },
+        {
+          "q": "Kan ik mijn abonnement altijd wijzigen of opzeggen?",
+          "a": "Ja. Een abonnement per kaart kun je altijd opzeggen en het loopt door tot het einde van de betaalde periode. In elk abonnement kun je een back-up van je gegevens downloaden."
+        },
+        {
+          "q": "Kan ik per bankoverschrijving betalen?",
+          "a": "Ja, een maand of een jaar vooruit op basis van een proformafactuur, {percent} % duurder dan per kaart, omdat we die betalingen handmatig koppelen. Bankoverschrijving kan alleen in Tsjechische kronen."
+        },
+        {
+          "q": "Wat is een AI-credit?",
+          "a": "Eén factuurconcept uit een spraak- of tekstbericht, of één uitgelezen bonnetje. Met je eigen AI-sleutel betaal je je AI-provider rechtstreeks, zonder de limieten van je abonnement."
+        },
+        {
+          "q": "Heeft mijn boekhouder een eigen abonnement nodig?",
+          "a": "Nee. Vanaf het Start-abonnement krijgt één boekhouder gratis toegang tot je bedrijf, als onderdeel van jouw abonnement."
+        },
+        {
+          "q": "Waarom staat er ‘Gemaakt met Billanta’ op facturen?",
+          "a": "In het gratis abonnement staat op elk document een kleine link naar Billanta in de voettekst van de pdf, de e-mail en de online factuur. Zo betaalt het Free-abonnement zichzelf terug. Met een betaald abonnement en tijdens een proefperiode kun je dit uitzetten in Instellingen onder facturen."
+        }
+      ]
+    }
+  },
+  "invoiceForm": {
+    "title": "Nieuwe factuur",
+    "lead": "Typ zelf, kies uit de suggesties of beschrijf de factuur in één zin en laat de velden vooraf invullen.",
+    "ai": {
+      "title": "Vooraf invullen met AI",
+      "hint": "Typ of dicteer de factuur in je eigen woorden, bijv. „factuur voor 27604977, 3 uur advies à 1500, betaaltermijn 14 dagen”. AI vult de klant in (gecontroleerd in ARES), de regels en de vervaldatum. Er wordt niets opgeslagen tot je het formulier hebt nagekeken en opgeslagen.",
+      "placeholder": "bijv. factuur Dvořák & Partners, 2× training à 4.500 CZK, betaaltermijn 30 dagen",
+      "run": "Invullen",
+      "working": "Bezig…",
+      "applied": "Klaar – controleer de ingevulde velden.",
+      "usingOwn": "Met je eigen API-sleutel",
+      "usingPlatform": "Met Billanta AI",
+      "unavailable": "Vooraf invullen met AI staat niet aan.",
+      "setup": "AI instellen"
+    },
+    "customer": {
+      "draftWithout": "Je kunt de klant later toevoegen. Een concept kan zonder klant worden opgeslagen, en je kunt de klant een link sturen om zelf de gegevens in te vullen.",
+      "title": "Klant",
+      "hint": "Zoek op naam of ondernemingsnummer (IČO). De suggesties tonen je contacten en bedrijven uit het ARES-register; een bedrijf uit ARES wordt bij het opslaan met adres aan je contacten toegevoegd.",
+      "placeholder": "Bedrijfsnaam of IČO",
+      "empty": "Niets gevonden. Typ een heel woord af, probeer het IČO of een ander register aan de rechterkant.",
+      "yourContacts": "Je contacten",
+      "fromAres": "Bedrijfsregisters (ARES, RPO, VIES…)",
+      "change": "Andere klant kiezen",
+      "aresBadge": "Uit register",
+      "aresWillSave": "Wordt bij het opslaan aan je contacten toegevoegd.",
+      "starred": "Klanten met ster",
+      "searchingRegisters": "Bedrijfsregisters doorzoeken…",
+      "internalNote": "Interne notitie bij dit contact",
+      "contactPerson": "Contactpersoon"
+    },
+    "dates": {
+      "issue": "Factuurdatum",
+      "due": "Vervaldatum",
+      "currency": "Valuta",
+      "days": "{days} dagen",
+      "title": "Datums",
+      "taxableSupply": "Datum belastbaar feit",
+      "taxableSupplyHint": "Datum van de belastbare levering. Leeg = factuurdatum.",
+      "validUntil": "Geldig tot",
+      "dueOnWeekend": "De vervaldatum valt in het weekend.",
+      "dueOnHoliday": "De vervaldatum valt op een feestdag ({name}).",
+      "shiftToWorkday": "Verplaatsen naar volgende werkdag"
+    },
+    "items": {
+      "title": "Regels",
+      "hint": "Terwijl je een omschrijving typt, worden regels uit je eerdere facturen voorgesteld met hun laatste prijs en btw-tarief.",
+      "description": "Omschrijving",
+      "quantity": "Aantal",
+      "unitPrice": "Prijs per eenheid",
+      "vat": "Btw",
+      "remove": "Regel verwijderen",
+      "add": "Regel toevoegen",
+      "unit": "Eenheid",
+      "unitPlaceholder": "st.",
+      "discount": "Korting",
+      "lineTotal": "Totaal excl. btw",
+      "duplicate": "Regel dupliceren",
+      "grossPrices": "Ik voer prijzen incl. btw in",
+      "unitPriceGross": "Prijs per eenheid incl. btw",
+      "lineTotalGross": "Totaal incl. btw"
+    },
+    "totals": {
+      "base": "Subtotaal",
+      "vat": "Btw",
+      "total": "Totaal",
+      "alreadyPaid": "Al betaald",
+      "alreadyPaidHint": "Een voorschot of vooruitbetaling – als bedrag of als percentage van het totaal. Is alles betaald, dan wordt de factuur na uitgifte als betaald gemarkeerd.",
+      "remaining": "Nog te betalen"
+    },
+    "cancel": "Annuleren",
+    "save": "Concept opslaan",
+    "saveNote": "Het concept krijgt een nummer zodra het wordt uitgegeven.",
+    "errors": {
+      "customer_required": "Zonder klant kun je alleen een concept opslaan. Kies een klant voordat je uitgeeft.",
+      "items_required": "Voeg minstens één regel toe.",
+      "save_failed": "De factuur kon niet worden opgeslagen. Probeer het opnieuw.",
+      "not_allowed": "Je hebt hier geen rechten voor, of het abonnement is niet actief.",
+      "ai_disabled": "AI staat uit in Instellingen → AI.",
+      "ai_key_missing": "Sla eerst je API-sleutel op in Instellingen → AI.",
+      "ai_key_invalid": "De opgeslagen API-sleutel werkt niet. Controleer hem in Instellingen → AI.",
+      "ai_platform_unavailable": "Billanta AI is nu niet beschikbaar. Gebruik je eigen sleutel in Instellingen → AI.",
+      "ai_daily_limit": "De daglimiet van Billanta AI is bereikt. Probeer het morgen opnieuw of gebruik je eigen sleutel.",
+      "ai_rate_limited": "AI is druk bezig, probeer het zo opnieuw.",
+      "ai_refused": "AI heeft geweigerd deze tekst te verwerken.",
+      "ai_unparseable": "AI gaf geen bruikbaar resultaat. Probeer het specifieker te omschrijven.",
+      "ai_bad_request": "De tekst kon niet worden verwerkt. Probeer hem korter te maken.",
+      "ai_provider_unavailable": "AI reageert niet. Probeer het zo opnieuw.",
+      "empty_input": "Beschrijf wat je wilt factureren.",
+      "symbol_invalid": "Symbolen mogen alleen cijfers bevatten (VS en SS max. 10, KS max. 4).",
+      "reason_required": "Vul een reden voor de wijziging in."
+    },
+    "copy": {
+      "title": "Invullen vanuit een andere factuur",
+      "hint": "Kopieert klant, regels, valuta, betaling, rekening, taal, notities en eigen velden. Nummer, datums en betalingen worden niet gekopieerd, en de vervaldatum volgt je standaardtermijn.",
+      "latest": "Vanuit de laatste factuur",
+      "other": "Vanuit een andere factuur…",
+      "searchLabel": "Facturen zoeken",
+      "searchPlaceholder": "Factuurnummer of klant",
+      "searchEmpty": "Geen factuur gevonden.",
+      "draft": "Concept",
+      "fromNumber": "Ingevuld vanuit factuur {number}: klant, regels en betaling zijn gekopieerd, de datums zijn van vandaag en de vervaldatum volgt je standaardtermijn.",
+      "fromDraft": "Ingevuld vanuit een concept: klant, regels en betaling zijn gekopieerd, de datums zijn van vandaag en de vervaldatum volgt je standaardtermijn.",
+      "noneYet": "Je hebt nog geen factuur om vanuit te starten. Vul de eerste met de hand in."
+    },
+    "duplicate": {
+      "fromNumber": "Kopie van factuur {number}: klant, valuta, betaaltermijn en regels zijn ingevuld; de datums zijn van vandaag.",
+      "fromDraft": "Kopie van een concept: klant, valuta, betaaltermijn en regels zijn ingevuld; de datums zijn van vandaag."
+    },
+    "titles": {
+      "invoice": "Nieuwe factuur",
+      "proforma": "Nieuwe proformafactuur",
+      "quote": "Nieuwe offerte",
+      "credit_note": "Nieuwe creditnota"
+    },
+    "editTitle": "Concept bewerken",
+    "editLead": "Je kunt een concept vrij aanpassen tot je het uitgeeft.",
+    "fromTemplate": "Vanuit sjabloon „{name}”: klant, regels en notities zijn vooraf ingevuld, de datums zijn van vandaag.",
+    "type": {
+      "label": "Documenttype",
+      "hint": {
+        "invoice": "Een fiscaal document voor geleverde goederen of diensten.",
+        "proforma": "Een verzoek om een voorschot – geen fiscaal document. Maak de factuur zodra er betaald is.",
+        "quote": "Een vrijblijvend aanbod voor de klant. Zet het na akkoord met één klik om in een factuur.",
+        "credit_note": "Een corrigerend fiscaal document bij een uitgegeven factuur."
+      }
+    },
+    "payment": {
+      "title": "Betaling",
+      "vsAuto": "Automatisch uit het documentnummer",
+      "ks": "Constant symbool",
+      "ss": "Specifiek symbool",
+      "more": "Constant / specifiek symbool, bestelnummer",
+      "exchangeRate": "Koers {pair}",
+      "exchangeRateAuto": "Koers {source} bij uitgifte",
+      "exchangeRateLoad": "Ophalen bij {source}",
+      "exchangeRateFailed": "De koers van {source} kon niet worden opgehaald.",
+      "inCzk": "≈ {amount} totaal",
+      "bankAccount": "Betalen op rekening",
+      "bankAccountAuto": "Automatisch ({account})",
+      "bankAccountPrimary": "hoofdrekening",
+      "customGroup": "Eigen",
+      "instructions": "Betaalinstructies",
+      "instructionsPlaceholder": "Wordt onder de regels op het document afgedrukt.",
+      "bankAccountManage": "Rekeningen beheren",
+      "bankAccountMissing": "Er is nog geen bankrekening ingesteld, dus het document heeft geen rekeningnummer of betaal-QR.",
+      "bankAccountAdd": "Rekening toevoegen"
+    },
+    "settings": {
+      "title": "Documentinstellingen",
+      "language": "Taal van het document",
+      "languages": {
+        "cs": "Čeština",
+        "sk": "Slovenčina",
+        "en": "English"
+      },
+      "reverseCharge": "Btw verlegd",
+      "reverseChargeHint": "De klant draagt de btw af; het document toont geen btw maar een vermelding.",
+      "reverseChargeCode": "Code van de levering (kód předmětu plnění)",
+      "reverseChargeCodeNone": "Kies een code…",
+      "reverseChargeCodeHint": "De Tsjechische controleopgave vereist deze code voor elk document in sectie A.1.",
+      "reverseChargeCodes": {
+        "1": "Goud",
+        "3": "Levering van onroerend goed waarop btw van toepassing is",
+        "4": "Bouw- en installatiewerkzaamheden",
+        "5": "Goederen uit bijlage 5 (afval, schroot)",
+        "6": "Levering van goederen die oorspronkelijk als zekerheid zijn gegeven",
+        "7": "Levering van goederen na overdracht van eigendomsvoorbehoud",
+        "11": "Emissierechten voor broeikasgassen",
+        "12": "Granen en technische gewassen",
+        "13": "Metalen",
+        "14": "Mobiele telefoons",
+        "15": "Geïntegreerde schakelingen",
+        "16": "Draagbare apparaten voor gegevensverwerking",
+        "17": "Spelcomputers",
+        "18": "Elektriciteitscertificaten",
+        "19": "Elektriciteit via netwerken geleverd aan een handelaar",
+        "20": "Gas via netwerken geleverd aan een handelaar",
+        "21": "Bepaalde elektronische communicatiediensten",
+        "1a": "Bemiddeling bij de levering van beleggingsgoud",
+        "3a": "Levering van onroerend goed bij een gedwongen verkoop",
+        "4a": "Bouw- en installatiewerkzaamheden – terbeschikkingstelling van personeel"
+      }
+    },
+    "notes": {
+      "title": "Notities",
+      "below": "Tekst onder de regels",
+      "belowPlaceholder": "bijv. Bedankt voor je opdracht.",
+      "above": "Tekst boven de regels",
+      "abovePlaceholder": "bijv. Hierbij factureren wij je voor…",
+      "internal": "Interne notitie",
+      "internalPlaceholder": "Alleen jij ziet dit; het wordt niet afgedrukt.",
+      "more": "Tekst boven de regels, interne notitie",
+      "vars": "Variabelen",
+      "varsHint": "De teksten boven en onder de regels kunnen variabelen bevatten zoals '{number}', '{due_date}', '{vs}', '{customer}' of je eigen variabelen. Op het document worden ze vervangen door de echte waarden. Zie Instellingen → Variabelen.",
+      "preview": "Voorbeeld",
+      "previewLater": "Wordt ingevuld bij het uitgeven van het document"
+    },
+    "saveIssue": "Opslaan en uitgeven",
+    "saveIssueQuote": "Opslaan en offerte uitgeven",
+    "saveChanges": "Wijzigingen opslaan",
+    "savedDraft": "Concept opgeslagen.",
+    "savedIssued": "Document uitgegeven.",
+    "savedChanges": "Wijzigingen opgeslagen.",
+    "issueFailed": "Opgeslagen als concept, maar uitgeven is mislukt: {reason}",
+    "customize": "Formulier aanpassen",
+    "details": {
+      "title": "Documentgegevens",
+      "hint": "Extra regels in de kop van het document: bestelnummer, plaats van uitgifte, wie het heeft opgesteld en eigen velden (bijv. contractnummer)."
+    },
+    "fields": {
+      "itemCode": "Artikelcode",
+      "itemCodePlaceholder": "Code / EAN",
+      "unit": "Eenheid",
+      "discount": "Korting per regel",
+      "taxableSupplyDate": "Datum belastbaar feit",
+      "symbols": "Constant en specifiek symbool",
+      "orderNumber": "Bestelnummer",
+      "issuePlace": "Plaats van uitgifte",
+      "issuePlacePlaceholder": "Praag",
+      "issuedBy": "Opgesteld door",
+      "issuedByPlaceholder": "Volledige naam",
+      "noteAbove": "Tekst boven de regels",
+      "internalNote": "Interne notitie",
+      "customFields": "Eigen velden",
+      "customLabel": "Veldnaam",
+      "customValue": "Waarde",
+      "customAdd": "Veld toevoegen",
+      "language": "Taal van het document",
+      "customFieldsHint": "Je eigen regels in de kop van het document. Tekst kan variabelen bevatten zoals '{net}' (geschat netto na belasting en premies), '{base}', '{vat}', '{paid}' of '{remaining}'. Bedragen worden opgemaakt in de valuta van het document; % wordt berekend over de grondslag. Met het slotje wordt een veld intern: alleen voor het team, nooit afgedrukt of zichtbaar voor de klant, maar wel opgenomen in exports.",
+      "customKind": "Veldtype",
+      "kindText": "Tekst",
+      "customInternal": "Intern veld (alleen team)",
+      "customInternalOn": "Intern – alleen je team ziet dit",
+      "customInternalOff": "Openbaar – wordt op het document afgedrukt",
+      "customHelp": "Tip: tekst kan variabelen gebruiken, bijv. Netto '{net}'. Vergrendel een veld om het voor de klant te verbergen.",
+      "kindFormula": "Formule",
+      "formulaError": "De formule kan niet worden berekend – controleer de variabelen en haakjes.",
+      "formulaVars": "In formules:",
+      "formulaHint": "Formules gebruiken + − * /, haakjes en percentages, bijv. '{base} - {costs}' of '{amount} * 3.4 % + 10'. Je kunt verwijzen naar andere velden (op naam zonder accenten, bijv. '{costs}') en naar je eigen getalvariabelen uit Instellingen → Variabelen. Belasting en premies zijn schattingen (forfait van 60 %).",
+      "presets": {
+        "title": "Kant-en-klare velden…",
+        "groups": {
+          "profit": "Winst & belastingen",
+          "fees": "Kosten betaalproviders",
+          "customer": "Voor de klant"
+        },
+        "net": "Jij houdt over",
+        "afterTax": "Na inkomstenbelasting",
+        "afterTaxSocial": "Na belasting en sociale premies",
+        "reserve": "Opzij zetten voor belasting & premies",
+        "margin": "Marge",
+        "costsLabel": "Kosten",
+        "paypal": "PayPal-kosten",
+        "stripe": "Stripe-kosten",
+        "wise": "Wise-kosten",
+        "gopay": "GoPay-kosten",
+        "deposit": "Voorschot"
+      }
+    },
+    "find": {
+      "placeholder": "Veld zoeken… (bijv. belastbaar feit, korting, bestelling)",
+      "empty": "Geen veld gevonden",
+      "required": "{done} van {total} verplichte velden ingevuld",
+      "allDone": "Alle verplichte velden zijn ingevuld",
+      "missing": "Naar het eerste ontbrekende verplichte veld"
+    },
+    "editIssuedTitle": "{number} bewerken",
+    "editIssuedLead": "Dit document is al uitgegeven. Het nummer blijft gelijk; elke wijziging komt samen met de reden in de geschiedenis.",
+    "editReason": {
+      "label": "Reden van de wijziging",
+      "placeholder": "Bijv. een typfout in het adres van de klant",
+      "hint": "Iedereen in het bedrijf ziet dit in de geschiedenis van het document."
+    }
   },
   "toasts": {
     "invoiceCreated": "Conceptfactuur opgeslagen",
@@ -2189,6 +2910,74 @@
       "bannerHint": "Je hebt ze in deze browser zonder account gemaakt. We slaan ze op als uitgegeven documenten en de klanten als contacten."
     }
   },
+  "buyerDetails": {
+    "title": "Vul je factuurgegevens in",
+    "intro": "{supplier} maakt {document} voor je klaar. Laat weten op wiens naam die moet staan.",
+    "documentType": {
+      "invoice": "een factuur",
+      "proforma": "een proformafactuur",
+      "quote": "een offerte"
+    },
+    "supplier": "Leverancier",
+    "amount": "Bedrag",
+    "withoutVat": "{amount} excl. btw",
+    "dueDate": "Vervalt op {date}",
+    "item": "Omschrijving",
+    "quantity": "Aantal",
+    "total": "Totaal",
+    "ico": "Ondernemingsnummer",
+    "dic": "Btw-nummer",
+    "doneTitle": "Bedankt, we hebben je gegevens",
+    "doneText": "{supplier} maakt de factuur nu af. Je kunt deze pagina sluiten.",
+    "privacy": "Alleen {supplier} krijgt deze gegevens, om je document op te maken.",
+    "form": {
+      "title": "Factuurgegevens",
+      "hint": "{supplier} maakt het document op naam van deze gegevens.",
+      "kind": "De klant is",
+      "company": "Bedrijf of zelfstandige",
+      "person": "Particulier",
+      "country": "Land",
+      "ico": "Ondernemingsnummer (IČO)",
+      "dic": "Btw-nummer (DIČ)",
+      "vatId": "Btw-nummer",
+      "lookup": "Ophalen uit register",
+      "lookupNeedsIco": "Vul eerst het ondernemingsnummer in.",
+      "lookupNeedsVat": "Vul eerst het btw-nummer in.",
+      "lookupNotFound": "Niets gevonden in het register, vul de gegevens zelf in.",
+      "lookupDone": "Gegevens opgehaald, controleer ze even.",
+      "companyName": "Bedrijfsnaam",
+      "personName": "Volledige naam",
+      "street": "Straat en huisnummer",
+      "city": "Plaats",
+      "postalCode": "Postcode",
+      "email": "E-mailadres voor de factuur",
+      "submit": "Gegevens versturen",
+      "errors": {
+        "invalid": "Controleer de gemarkeerde velden.",
+        "closed": "Deze link werkt niet meer. Vraag de leverancier om een nieuwe.",
+        "submitted": "De gegevens zijn al verstuurd.",
+        "limit": "Te veel pogingen, probeer het zo opnieuw.",
+        "failed": "Er ging iets mis, probeer het opnieuw.",
+        "field": "Controleer dit veld.",
+        "ico_required": "Een Tsjechisch of Slowaaks bedrijf heeft een ondernemingsnummer nodig.",
+        "ico_format": "Een ondernemingsnummer heeft 8 cijfers.",
+        "ico_foreign": "Een ondernemingsnummer (IČO) geldt alleen voor Tsjechische en Slowaakse bedrijven.",
+        "dic_format": "Het btw-nummer lijkt niet te kloppen.",
+        "email_required": "Vul je e-mailadres in zodat de leverancier contact met je kan opnemen.",
+        "required": "Dit veld is verplicht.",
+        "phone_format": "Dit telefoonnummer lijkt niet te kloppen."
+      },
+      "optional": "optioneel",
+      "phone": "Telefoon",
+      "companySearch": "Zoek je bedrijf in het register",
+      "companySearchHint": "Begin met het typen van een naam, ondernemingsnummer of plaats en kies je bedrijf. Wij vullen de rest in."
+    },
+    "trust": {
+      "verifiedAres": "We hebben {supplier} gecontroleerd in het Tsjechische handelsregister (ARES).",
+      "verifiedRpo": "We hebben {supplier} gecontroleerd in het Slowaakse register van rechtspersonen (RPO).",
+      "private": "Deze link is privé. Alleen deze leverancier ziet je gegevens."
+    }
+  },
   "twoFactor": {
     "notice": {
       "title": "Tweestapsverificatie vereist",
@@ -2270,5 +3059,36 @@
     "text": "Zet contacten, uitgegeven facturen en je nummerreeks over vanuit een export van Fakturoid, iDoklad, SuperFaktura of een andere app.",
     "cta": "Gegevens importeren",
     "dismiss": "Verbergen"
+  },
+  "contact": {
+    "title": "Contact",
+    "lead": "Hoe je ons bereikt, wie Billanta beheert en waar je snel antwoorden vindt.",
+    "emailTitle": "Schrijf ons",
+    "emailBody": "Stuur vragen over facturatie, je account of samenwerking per e-mail.",
+    "noEmailTitle": "Waar je hulp vindt",
+    "noEmailBody": "We hebben nog geen openbaar e-mailadres. De veelgestelde vragen beantwoorden de meest voorkomende vragen en in de demo kun je de app zonder account uitproberen.",
+    "helpTitle": "Snelle antwoorden",
+    "links": {
+      "faq": {
+        "title": "Veelgestelde vragen",
+        "body": "Prijzen, btw, exports voor boekhouders en andere veelgestelde vragen."
+      },
+      "demo": {
+        "title": "Probeer de demo",
+        "body": "De app met voorbeeldgegevens, zonder registratie."
+      },
+      "accountants": {
+        "title": "Vind een boekhouder",
+        "body": "Boekhouders en kantoren die met Billanta werken."
+      },
+      "partners": {
+        "title": "Voor partners",
+        "body": "Cursussen, coworkings, community's en anderen die Billanta willen aanbevelen."
+      }
+    },
+    "operatorTitle": "Beheerder",
+    "privacyTitle": "Persoonsgegevens",
+    "privacyBody": "De hierboven genoemde beheerder is de verwerkingsverantwoordelijke voor je persoonsgegevens. In het privacybeleid lees je wat we verwerken en hoe je je rechten uitoefent (inzage, correctie, verwijdering en meer).",
+    "legalTitle": "Juridische documenten"
   }
 }
