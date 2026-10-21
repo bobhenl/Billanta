@@ -1,0 +1,1597 @@
+{
+  "app": {
+    "name": "Billanta",
+    "tagline": "Rechnungs- und Buchhaltungssoftware für Unternehmen in Tschechien und der Slowakei",
+    "readOnlyRole": "Ihre Rolle ist „Nur lesen“ – Sie können Belege ansehen, aber nicht ändern.",
+    "readOnly": {
+      "title": "Sie haben nur Leserechte",
+      "body": "Mit Ihrem Zugang in diesem Unternehmen können Sie keine Belege erstellen oder ändern. Wenden Sie sich bei Bedarf an den Inhaber oder einen Administrator.",
+      "back": "Zurück"
+    }
+  },
+  "nav": {
+    "dashboard": "Übersicht",
+    "invoices": "Rechnungen",
+    "expenses": "Ausgaben",
+    "bank": "Bank",
+    "contacts": "Kontakte",
+    "settings": "Einstellungen",
+    "billing": "Abrechnung",
+    "primaryNavigation": "Hauptnavigation",
+    "time": "Zeiterfassung",
+    "reports": "Berichte",
+    "activity": "Änderungsverlauf"
+  },
+  "theme": {
+    "toggle": "Design wechseln",
+    "light": "Heller Modus",
+    "dark": "Dunkler Modus",
+    "short": {
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    }
+  },
+  "language": {
+    "label": "Sprache",
+    "cs": "Čeština",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "marketing": {
+    "nav": {
+      "features": "Funktionen",
+      "pricing": "Preise",
+      "login": "Anmelden",
+      "signup": "Registrieren",
+      "label": "Hauptnavigation",
+      "home": "Startseite",
+      "start": "Erste Schritte",
+      "cities": "Städte",
+      "about": "Über uns",
+      "faq": "FAQ",
+      "guestInvoice": "Rechnung ohne Registrierung",
+      "createInvoice": "Rechnung erstellen",
+      "createInvoiceShort": "Rechnung",
+      "search": "Suche",
+      "app": "App",
+      "account": "Konto",
+      "accountants": "Für Buchhaltungen",
+      "partners": "Partner",
+      "schools": "Für Schulen",
+      "creators": "Für Creator",
+      "events": "Für Events und Communities",
+      "forPartners": "Für Partner",
+      "firstInvoice": "Erste Rechnung",
+      "teamRoles": "Teamrollen"
+    },
+    "hero": {
+      "title": "Rechnungen für Unternehmen in Tschechien und der Slowakei, ohne Papierkram",
+      "subtitle": "Stellen Sie Rechnungen per Sprachnachricht über Telegram oder WhatsApp aus, exportieren Sie sie nach ISDOC und verlassen Sie sich darauf, dass alles mit ARES und den geltenden Vorschriften übereinstimmt.",
+      "cta": "Kostenloses Konto erstellen",
+      "secondaryCta": "So funktioniert es",
+      "eyebrow": "Rechnungen für CZ und SK",
+      "points": {
+        "isdoc": "ISDOC-Export",
+        "ares": "ARES-Abfrage",
+        "qr": "QR-Zahlungen"
+      },
+      "guestCta": "Rechnung ohne Registrierung",
+      "dictateCta": "Oder diktieren – ohne Registrierung"
+    },
+    "invoiceMockup": {
+      "status": "Bezahlt",
+      "issuedTo": "Rechnungsempfänger",
+      "dueDate": "Fälligkeit",
+      "subtotal": "Zwischensumme",
+      "vat": "USt. 21 %",
+      "total": "Zu zahlen",
+      "isdocTag": "ISDOC-Export",
+      "aresTag": "Über ARES verifiziert",
+      "credit": "Erstellt mit Billanta"
+    },
+    "features": {
+      "title": "Alles für Ihre Rechnungen an einem Ort",
+      "isdoc": {
+        "title": "ISDOC-Export",
+        "description": "Rechnungen im ISDOC-Format, bereit für Ihre Buchhaltung und das Finanzamt – ohne manuelles Abtippen."
+      },
+      "aiVoice": {
+        "title": "Rechnung per Sprachnachricht",
+        "description": "Diktieren Sie eine Rechnung über Telegram oder WhatsApp, und die KI erstellt einen Entwurf zur schnellen Prüfung."
+      },
+      "compliance": {
+        "title": "Prüfung der Pflichtangaben",
+        "description": "Bevor Sie eine Rechnung ausstellen, prüfen wir, ob sie alles enthält, was das tschechische oder slowakische Umsatzsteuer- und Handelsrecht verlangt – Firmennummer, USt-IdNr., Adressen, Positionen. Die Kundendaten kommen aus ARES."
+      },
+      "multilang": {
+        "title": "Tschechisch, Slowakisch und Englisch",
+        "description": "Die gesamte App und Ihre Rechnungen funktionieren vom ersten Tag an in drei Sprachen."
+      },
+      "qr": {
+        "title": "Ein QR-Zahlungscode auf jeder Rechnung",
+        "description": "Jede Rechnung trägt einen QR-Code nach dem Standard der Tschechischen Bankenvereinigung. Hinterlegen Sie Kontonummer oder IBAN, und Ihr Kunde scannt einfach und zahlt."
+      },
+      "bankSync": {
+        "title": "Bank- und PayPal-Zahlungen werden automatisch zugeordnet",
+        "description": "Verbinden Sie Fio, eine andere Bank über PSD2 oder PayPal, und Billanta lädt eingehende Zahlungen herunter und markiert Rechnungen als bezahlt, inklusive PayPal-Gebühr."
+      },
+      "reminders": {
+        "title": "Zahlungserinnerungen",
+        "description": "Billanta behält offene Rechnungen im Blick und sendet dem Kunden eine Erinnerung mit Rechnungslink und QR-Zahlung."
+      },
+      "vat": {
+        "title": "USt.-Erklärung für EPO",
+        "description": "Aus Rechnungen und Ausgaben erstellen wir die USt.-Erklärung und die Kontrollmeldung als XML für das tschechische Steuerportal."
+      },
+      "expenses": {
+        "title": "Belege aus einem Foto",
+        "description": "Fotografieren Sie einen Beleg oder laden Sie ein PDF hoch, und die KI ergänzt Lieferant, Betrag, USt. und Fälligkeit."
+      },
+      "recurring": {
+        "title": "Wiederkehrende und Sammelrechnungen",
+        "description": "Pauschalen und Mieten werden planmäßig ausgestellt. Aus einer Vorlage fakturieren Sie viele Kunden auf einmal."
+      },
+      "templates": {
+        "title": "Vorlagen und eigene Variablen",
+        "description": "Speichern Sie einen Beleg als Vorlage, bearbeiten Sie E-Mail-Texte und fügen Sie Variablen wie '{number}' oder '{due_date}' ein."
+      },
+      "time": {
+        "title": "Zeiterfassung",
+        "description": "Timer und manuelle Einträge pro Projekt. Machen Sie aus nicht abgerechneter Arbeit mit einem Klick eine Rechnung zum Projektsatz."
+      },
+      "taxEstimate": {
+        "title": "Was Ihnen bleibt",
+        "description": "Jede Rechnung zeigt einen ungefähren Betrag nach Einkommensteuer und Versicherungen gemäß den tschechischen Regeln für Einzelunternehmer. Für das ganze Jahr berechnen wir Steuer, Versicherungen und die nächsten Vorauszahlungen."
+      },
+      "currencies": {
+        "title": "Rechnungen in Fremdwährung",
+        "description": "EUR, USD und mehr. Der ČNB-Kurs zum Leistungsdatum wird automatisch eingesetzt und für die USt. in CZK umgerechnet."
+      },
+      "clientPortal": {
+        "title": "Kundenportal",
+        "description": "Ein dauerhafter Link pro Kunde: alle Rechnungen und Angebote, der offene und der überfällige Betrag."
+      },
+      "migration": {
+        "title": "Von einer anderen App wechseln",
+        "description": "Aus BitFaktura und Fakturoid direkt über die API mit den Original-PDFs, aus iDoklad oder Excel per CSV. Vor dem Speichern sehen Sie eine Vorschau."
+      },
+      "api": {
+        "title": "API und Webhooks",
+        "description": "Eine REST-API mit eigenen Schlüsseln, Webhooks für Slack, Discord oder Ihr eigenes System und ein Fälligkeitskalender."
+      },
+      "team": {
+        "title": "Team, Buchhaltung, mehrere Unternehmen",
+        "description": "Laden Sie Kolleginnen und Kollegen sowie Ihre Buchhaltung mit eigener Rolle ein. Führen Sie ein Einzelunternehmen und eine Gesellschaft über ein Konto."
+      },
+      "auditLog": {
+        "title": "Änderungsverlauf",
+        "description": "Wer hat was wann geändert, einschließlich Änderungen durch KI und über die API. Ein ausgestellter Beleg lässt sich nur mit Angabe eines Grundes korrigieren."
+      },
+      "reports": {
+        "title": "Berichte nach Zeitraum",
+        "description": "Umsatz, Ausgaben und Top-Kunden für Monat, Quartal oder Jahr, im Vergleich zum Vorzeitraum."
+      },
+      "backups": {
+        "title": "Sicherungen in Ihren eigenen Speicher",
+        "description": "Die Unternehmensdaten werden regelmäßig in Google Drive, auf Ihrem Server per SFTP oder über einen Webhook gesichert. Laden Sie alles mit einem Klick herunter."
+      }
+    },
+    "howItWorks": {
+      "title": "So funktioniert es",
+      "steps": {
+        "capture": {
+          "title": "Diktieren oder eintippen",
+          "description": "Eine Sprachnachricht über Telegram oder WhatsApp, ein Foto eines Belegs oder ein einziger Satz. Die KI ergänzt den Kunden aus ARES und die Positionen.",
+          "highlight": "KI auch im kostenlosen Tarif"
+        },
+        "draft": {
+          "title": "Entwurf prüfen",
+          "description": "Billanta prüft Pflichtangaben, USt. und Nummerierung. Nichts wird ausgestellt, bevor Sie es bestätigen.",
+          "highlight": "Prüfung der Pflichtangaben"
+        },
+        "issue": {
+          "title": "Ausstellen und versenden",
+          "description": "Ein PDF mit QR-Zahlungscode, ISDOC und UBL für die Slowakei. Ihr Kunde erhält eine E-Mail mit einem Link zur Rechnung.",
+          "highlight": "10 Belege pro Monat kostenlos"
+        },
+        "getPaid": {
+          "title": "Zahlungen werden automatisch zugeordnet",
+          "description": "Von Fio, einer anderen Bank über PSD2 oder PayPal. Jede Rechnung zeigt, was Ihnen nach Einkommensteuer und Abgaben bleibt.",
+          "highlight": "Ihnen bleibt: der Nettobetrag"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Bereit, Ihre Rechnungsstellung zu vereinfachen?",
+      "subtitle": "Kostenlos starten, keine Kreditkarte erforderlich.",
+      "cta": "Konto erstellen"
+    },
+    "footer": {
+      "tagline": "Moderne Rechnungsstellung für Unternehmen in Tschechien und der Slowakei.",
+      "product": {
+        "title": "Produkt",
+        "features": "Funktionen",
+        "pricing": "Preise",
+        "faq": "FAQ",
+        "guestInvoice": "Rechnung ohne Registrierung",
+        "compare": "Vergleich mit anderen",
+        "firstInvoice": "Ihre erste Rechnung",
+        "beginners": "Für Einsteiger",
+        "advanced": "Für Fortgeschrittene",
+        "teamRoles": "Teamrollen"
+      },
+      "company": {
+        "title": "Unternehmen",
+        "about": "Über uns",
+        "accountants": "Für Buchhaltungen",
+        "partners": "Partner",
+        "blog": "Blog",
+        "schools": "Für Schulen",
+        "creators": "Für Creator",
+        "events": "Für Events und Communities",
+        "forPartners": "Für Partner"
+      },
+      "legal": {
+        "title": "Rechtliches",
+        "terms": "Nutzungsbedingungen",
+        "privacy": "Datenschutzerklärung",
+        "cookies": "Cookie-Richtlinie",
+        "cookieSettings": "Cookie-Einstellungen",
+        "dpa": "Auftragsverarbeitungsvertrag",
+        "contact": "Kontakt"
+      },
+      "account": {
+        "title": "Konto",
+        "login": "Anmelden",
+        "signup": "Registrieren",
+        "openApp": "Zur App"
+      },
+      "partners": {
+        "title": "Partner",
+        "all": "Alle Partner"
+      }
+    },
+    "seo": {
+      "title": "Billanta – Online-Rechnungen für Unternehmen in Tschechien und der Slowakei",
+      "description": "Stellen Sie Rechnungen mit ISDOC-Export, ARES-Kundensuche und QR-Zahlungscode aus. Diktieren Sie einen Entwurf als Sprachnachricht über Telegram oder WhatsApp. Kostenlos starten."
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "items": {
+        "free": {
+          "q": "Was kostet Billanta?",
+          "a": "Sie starten kostenlos, ohne Karte, mit 10 Belegen pro Monat. Kostenpflichtige Tarife beginnen bei {price} pro Monat zzgl. USt. bei jährlicher Abrechnung; Details finden Sie auf der Preisseite."
+        },
+        "slovakia": {
+          "q": "Funktioniert Billanta für die Slowakei?",
+          "a": "Ja. Die App ist auf Slowakisch verfügbar, sucht Kunden im slowakischen RPO-Register, druckt einen PAY-by-square-QR-Code auf Rechnungen, und die Tarife sind in Euro bepreist. Im Plus-Tarif erstellt sie die slowakische USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung für eDane. UBL-E-Rechnungsdateien (Peppol BIS 3.0) erzeugt sie bereits; der Versand über das Peppol-Netz für die E-Rechnungspflicht ab 2027 ist in Arbeit."
+        },
+        "isdoc": {
+          "q": "Was ist ISDOC und wozu brauche ich es?",
+          "a": "ISDOC ist der tschechische Standard für elektronische Rechnungen. Buchhaltungssoftware kann ihn automatisch importieren, sodass Ihre Buchhaltung nichts abtippen muss."
+        },
+        "ares": {
+          "q": "Wie funktioniert die ARES-Abfrage?",
+          "a": "Geben Sie eine Firmennummer (IČO) ein, und Billanta holt Name, Adresse und USt-IdNr. des Kunden direkt aus dem öffentlichen ARES-Register – nichts wird abgetippt, keine Tippfehler schleichen sich ein."
+        },
+        "voice": {
+          "q": "Kann ich eine Rechnung diktieren?",
+          "a": "Ja. Senden Sie eine Sprachnachricht über Telegram oder WhatsApp, und die KI erstellt daraus einen Rechnungsentwurf. Endgültig wird er erst, wenn Sie ihn selbst geprüft und bestätigt haben."
+        },
+        "data": {
+          "q": "Was passiert mit meinen Daten?",
+          "a": "Die Daten jedes Unternehmens sind in der Datenbank von allen anderen Unternehmen getrennt. Sie können jederzeit eine Sicherung herunterladen oder sie in den Einstellungen automatisch in Ihrem eigenen Speicher ablegen lassen."
+        }
+      }
+    },
+    "compare": {
+      "title": "Im Vergleich mit Alternativen",
+      "lead": "Mehr gratis, ein niedrigerer Preis und KI in jedem Tarif. Neben Fakturoid, iDoklad, SuperFaktura, Vyfakturuj und BitFaktura.",
+      "more": "Vollständiger Vergleich mit Fakturoid, iDoklad und anderen"
+    }
+  },
+  "dashboard": {
+    "title": "Übersicht",
+    "welcome": "Willkommen zurück. Hier sehen Sie Ihre Rechnungen und Zahlungen auf einen Blick.",
+    "noTenant": "Schließen Sie zuerst die Einrichtung Ihres Unternehmens ab, dann erscheint hier Ihre Übersicht.",
+    "loadError": "Die Übersicht konnte nicht geladen werden. Laden Sie die Seite neu.",
+    "greeting": "Hallo, {name}",
+    "newInvoice": "Neue Rechnung",
+    "customize": "Anpassen",
+    "showAll": "Alle anzeigen",
+    "recent": "Letzte Belege",
+    "overdueTitle": "Überfällig ({count})",
+    "dueOn": "fällig am {date}",
+    "topCustomers": "Top-Kunden",
+    "topCustomersHint": "Nach Rechnungsbetrag der letzten 12 Monate",
+    "foreignNote": "{count, plural, one {# Beleg in Fremdwährung ist} other {# Belege in Fremdwährungen sind}} nicht in den Summen enthalten.",
+    "emptyTitle": "Noch nichts vorhanden",
+    "emptyHint": "Stellen Sie Ihre erste Rechnung aus, und die Übersicht füllt sich mit Umsatz, Diagramm und Kunden.",
+    "chart": {
+      "title": "Umsatz und Ausgaben",
+      "hint": "Letzte 12 Monate, netto",
+      "revenue": "Umsatz",
+      "expenses": "Ausgaben"
+    },
+    "cards": {
+      "revenue_month": {
+        "label": "Umsatz diesen Monat",
+        "sub": "Ausgestellte Rechnungen, netto"
+      },
+      "unpaid": {
+        "label": "Offen",
+        "sub": "{count, plural, one {# Rechnung wartet} other {# Rechnungen warten}} auf Zahlung"
+      },
+      "overdue": {
+        "label": "Überfällig",
+        "sub": "{count, plural, =0 {Alles in Ordnung} one {# Rechnung} other {# Rechnungen}}"
+      },
+      "expenses_month": {
+        "label": "Ausgaben diesen Monat",
+        "sub": "Eingangsbelege"
+      },
+      "revenue_year": {
+        "label": "Umsatz dieses Jahr",
+        "sub": "Seit Jahresbeginn"
+      },
+      "drafts": {
+        "label": "Entwürfe",
+        "sub": "Warten auf Ausstellung"
+      },
+      "profit_month": {
+        "label": "Gewinn diesen Monat",
+        "sub": "Umsatz abzüglich Ausgaben"
+      },
+      "vat_month": {
+        "label": "USt. diesen Monat",
+        "sub": "Umsatzsteuer – siehe Exporte"
+      },
+      "due_soon": {
+        "label": "Fällig in 7 Tagen",
+        "sub": "{count, plural, =0 {Nichts Dringendes} one {# Rechnung} other {# Rechnungen}}"
+      },
+      "unviewed": {
+        "label": "Ungeöffnete Rechnungen",
+        "sub": "Versendet, vom Kunden noch nicht geöffnet"
+      },
+      "missing_receipts": {
+        "label": "Ausgaben ohne Beleg",
+        "sub": "Kein Beleg hochgeladen"
+      }
+    },
+    "tiles": {
+      "new_invoice": "Neue Rechnung",
+      "new_proforma": "Proformarechnung",
+      "new_quote": "Angebot",
+      "new_expense": "Neue Ausgabe",
+      "templates": "Vorlagen",
+      "bulk": "Sammelfakturierung",
+      "new_contact": "Kontakte",
+      "bank": "Bank",
+      "exports": "Exporte für die Buchhaltung",
+      "scan_invoice": "Rechnung scannen (QR)",
+      "dictate_invoice": "Rechnung diktieren",
+      "calendar_feed": "Fristen in Ihrem Kalender",
+      "public_profile": "Öffentliches Firmenprofil",
+      "migration": "Von einem anderen System wechseln",
+      "bank_sync": "Bank- und PayPal-Zahlungen"
+    },
+    "sections": {
+      "showChart": "Diagramm Umsatz und Ausgaben",
+      "showTopCustomers": "Top-Kunden",
+      "showRecent": "Letzte Belege",
+      "showDueSoon": "Bald fällige Rechnungen",
+      "showTaxDeadlines": "Steuerfristen",
+      "showFxRates": "ČNB-Wechselkurse"
+    },
+    "customizeCards": "Kennzahlen",
+    "customizeTiles": "Schnellaktionen",
+    "customizeSections": "Bereiche",
+    "customizeReset": "Empfehlung wiederherstellen",
+    "customizeSaved": "Übersicht gespeichert",
+    "customizeFailed": "Speichern fehlgeschlagen: {reason}",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "dueSoonTitle": "Fällig in 7 Tagen ({count})",
+    "taxDeadlines": {
+      "title": "Anstehende Steuerfristen",
+      "hint": "Die Steuerfristen stammen aus dem offiziellen Steuerkalender der tschechischen Finanzverwaltung (täglich aktualisiert, bereits auf Werktage verschoben). Sozial- und Krankenversicherungsvorauszahlungen sowie die Jahresübersichten sind dort nicht enthalten und werden daher berechnet. Angezeigt werden die nächsten 45 Tage; es ist nur ein Kalender, Billanta verfolgt nicht, was Sie bereits eingereicht haben.",
+      "daysLeft": "{count, plural, =0 {heute} one {morgen} other {in # Tagen}}",
+      "customizeTitle": "Zu beobachtende Fristen",
+      "customizeHint": "Es werden nur Fristen angezeigt, die zu Ihrem USt.-Status und Ihrer Rechtsform passen (Einstellungen → Unternehmen). Vierteljährliche Umsatzsteuerzahler wählen die vierteljährliche statt der monatlichen Option.",
+      "kinds": {
+        "vat_monthly": "USt.-Erklärung & Kontrollmeldung (monatlich)",
+        "vat_quarterly": "USt.-Erklärung & Kontrollmeldung (vierteljährlich)",
+        "control_statement": "Kontrollmeldung (monatlich)",
+        "vat_identified": "USt.-Erklärung (identifizierte Person)",
+        "ec_sales_list": "Zusammenfassende Meldung",
+        "health": "Krankenversicherungsvorauszahlung für Selbstständige",
+        "social": "Sozialversicherungsvorauszahlung für Selbstständige",
+        "income_tax": "Einkommensteuererklärung",
+        "overviews": "Jahresübersichten für Sozial- und Krankenversicherung",
+        "road_tax": "Kfz-Steuer",
+        "property_tax": "Grundsteuer",
+        "vat_other": "USt.: OSS, CESOP und weitere Meldungen",
+        "flat_tax": "Vorauszahlung Pauschalsteuer",
+        "payroll": "Lohnsteuer der Mitarbeitenden"
+      },
+      "sourceOfficial": "Steuerfristen: offizieller Kalender",
+      "sourceLocal": "Der Kalender der Finanzverwaltung konnte gerade nicht geladen werden; die Fristen werden aus dem Gesetz berechnet.",
+      "prepareXml": "XML vorbereiten",
+      "amountsTitle": "Erwartete Beträge",
+      "amountsHint": "Der Betrag, den Sie als Arbeitgeber monatlich zahlen. Er wird neben der Frist angezeigt, damit Sie wissen, wie viel Sie zurücklegen sollten. Leer lassen, wenn keiner anfällt.",
+      "bookExpense": "Als Ausgabe buchen",
+      "fillAmount": "Betrag ergänzen",
+      "onlyIfForeignPurchase": "Nur wenn Sie in diesem Monat Leistungen aus dem Ausland bezogen haben (z. B. Werbung).",
+      "onlyIfEuSales": "Nur wenn Sie in diesem Monat einem Unternehmen in einem anderen EU-Land eine Leistung in Rechnung gestellt haben.",
+      "advancesInSettings": "Sozial-, Kranken- und Pauschalsteuervorauszahlungen legen Sie je Zeitraum in den Unternehmensdaten fest.",
+      "editAdvances": "Vorauszahlungen bearbeiten",
+      "manualKindsHint": "Billanta kann nicht erkennen, ob Sie Mitarbeitende, ein kfz-steuerpflichtiges Fahrzeug oder grundsteuerpflichtigen Besitz haben – markieren Sie diese daher selbst.",
+      "regimeUnknown": "Wir wissen nicht, ob Sie die Pauschalbesteuerung nutzen, daher beobachten wir die regulären Versicherungsvorauszahlungen.",
+      "regimeAnswer": "In den Einstellungen angeben"
+    },
+    "fxRates": {
+      "title": "ČNB-Wechselkurse",
+      "hint": "Der Kurs der Tschechischen Nationalbank für den gewählten Tag, mit dem Rechnungen in Fremdwährung in CZK umgerechnet werden. Der Prozentwert ist die Veränderung gegenüber der Vorwoche.",
+      "customizeTitle": "Währungen bei den ČNB-Kursen",
+      "customizeHint": "Wählen Sie, welche Währungen die Übersicht anzeigt. Sie können jede von der ČNB veröffentlichte Währung wählen.",
+      "source": "Quelle:",
+      "weekChange": "Veränderung in 7 Tagen",
+      "weekShort": "/ Woche",
+      "date": "Tag",
+      "publishedOn": "Kurs vom {date}",
+      "fallbackNote": "Die ČNB hat für den gewählten Tag keinen Kurs veröffentlicht (Wochenende, Feiertag oder vor 14:30 Uhr), daher wird der zuletzt veröffentlichte angezeigt.",
+      "unavailable": "Die Kurse für diesen Tag konnten nicht geladen werden.",
+      "converter": "In CZK umrechnen",
+      "amount": "Betrag",
+      "currency": "Währung",
+      "add": "Währung hinzufügen",
+      "remove": "{code} entfernen",
+      "limit": "Bis zu {max} Währungen."
+    },
+    "usage": {
+      "title": "Empfohlen nach Ihrer Nutzung",
+      "hint": "Was Sie unverändert lassen, passt sich weiter an. Ihre eigene Auswahl hat immer Vorrang.",
+      "newAccount": "Noch keine Daten, daher sehen Sie die Grundansicht.",
+      "currencies": "Sie fakturieren in {list}",
+      "onlyHome": "Sie fakturieren nur in {currency}",
+      "expenses": "Sie erfassen Ausgaben",
+      "noExpenses": "noch keine Ausgaben erfasst",
+      "paypal": "PayPal verbunden",
+      "bank": "Bank verbunden",
+      "proformas": "Sie stellen Proformarechnungen aus",
+      "quotes": "Sie versenden Angebote"
+    },
+    "customizeOrderHint": "Ziehen Sie am Griff oder nutzen Sie die Pfeile, um die Reihenfolge zu ändern.",
+    "dragToReorder": "Zum Umsortieren ziehen",
+    "exportsCta": "Exporte für die Buchhaltung",
+    "emptyHintReadOnly": "Es gibt noch keine Belege. Sobald das Unternehmen seine erste Rechnung ausstellt, sehen Sie hier Umsatz, Diagramm und Kunden."
+  },
+  "invoices": {
+    "hover": {
+      "fx": "≈ {amount} ({source}-Kurs {rate} {pair} vom {date})",
+      "fxNoDate": "≈ {amount} ({source}-Kurs {rate} {pair})",
+      "fxAnnual": "≈ {amount} (fester Kurs {rate} {pair} für {year})",
+      "fxManual": "≈ {amount} (Kurs {rate} {pair})",
+      "breakdown": "Netto {base} + USt. {vat}",
+      "loading": "Wird geladen…",
+      "error": "Die Zusammenfassung konnte nicht geladen werden.",
+      "ico": "Firmennummer",
+      "count": "{count, plural, one {# Rechnung} other {# Rechnungen}}",
+      "none": "Noch keine ausgestellten Rechnungen.",
+      "invoiced": "Fakturiert",
+      "unpaid": "Offen",
+      "overdue": "Überfällig",
+      "last": "Letzte Rechnung",
+      "open": "Kontakt öffnen"
+    },
+    "title": "Rechnungen",
+    "description": "Alle ausgestellten und in Bearbeitung befindlichen Rechnungen.",
+    "newInvoice": "Neue Rechnung",
+    "empty": "Es gibt noch keine Rechnungen.",
+    "columns": {
+      "number": "Nummer",
+      "contact": "Kontakt",
+      "amount": "Betrag",
+      "currency": "Währung",
+      "status": "Status",
+      "dueDate": "Fälligkeit",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "draft": "Entwurf",
+      "pending_review": "Zur Prüfung",
+      "issued": "Ausgestellt",
+      "paid": "Bezahlt",
+      "cancelled": "Storniert"
+    },
+    "aiDisclaimer": "Aus einer Sprachnachricht erstellt – bitte prüfen Sie vor dem Ausstellen alle Angaben.",
+    "unnumbered": "Die Nummer wird beim Ausstellen vergeben",
+    "noDueDate": "Noch kein Fälligkeitsdatum",
+    "noTenant": "Ihr Konto ist noch keinem Arbeitsbereich zugeordnet. Bitte wenden Sie sich an den Support.",
+    "loadError": "Die Rechnungen konnten gerade nicht geladen werden. Bitte versuchen Sie es gleich erneut.",
+    "duplicate": "Duplizieren",
+    "view": {
+      "saveView": "Ansicht speichern",
+      "saveHint": "Speichert die aktuellen Filter, Spalten und die Sortierung unter einem Namen Ihrer Wahl.",
+      "viewName": "Name der Ansicht",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "saved": "Ansicht „{name}“ gespeichert",
+      "applyView": "Ansicht anwenden",
+      "deleteView": "Ansicht {name} löschen",
+      "customize": "Anpassen",
+      "customizeTitle": "Schnellfilter",
+      "customizeHint": "Wählen Sie, welche Filter über der Liste erscheinen. Ein ausgeblendeter Filter bleibt sichtbar, solange er aktiv ist. Gilt für diesen Browser.",
+      "presetChips": "Schnellauswahl",
+      "typeChips": "Belegarten",
+      "statusChips": "Status",
+      "presets": {
+        "thisMonth": "Dieser Monat",
+        "lastMonth": "Letzter Monat",
+        "thisQuarter": "Dieses Quartal",
+        "thisYear": "Dieses Jahr",
+        "lastYear": "Letztes Jahr",
+        "eur": "In Euro",
+        "unsent": "Ausgestellt, nicht versendet",
+        "today": "Heute",
+        "yesterday": "Gestern",
+        "thisWeek": "Diese Woche",
+        "lastWeek": "Letzte Woche",
+        "last7": "Letzte 7 Tage",
+        "last30": "Letzte 30 Tage",
+        "last90": "Letzte 90 Tage",
+        "lastQuarter": "Letztes Quartal",
+        "last12Months": "Letzte 12 Monate",
+        "overdue30": "Über 30 Tage überfällig",
+        "partial": "Teilweise bezahlt"
+      },
+      "inlineActions": "Aktionen in der Zeile",
+      "inlineActionsHint": "Zeigt neben ⋯ Symbole für die häufigsten Aktionen.",
+      "sortBy": "Sortieren (erneut klicken zum Umkehren, ein drittes Mal zum Aufheben)",
+      "resetSort": "Sortierung aufheben",
+      "sortLabel": "Sortierung",
+      "sort": {
+        "default": "Zuletzt erstellt",
+        "issueDate_desc": "Neueste zuerst",
+        "issueDate_asc": "Älteste zuerst",
+        "createdAt_asc": "Zuerst erstellt",
+        "dueDate_asc": "Bald fällig",
+        "dueDate_desc": "Spät fällig",
+        "overdue_desc": "Am längsten überfällig",
+        "total_desc": "Höchster Betrag",
+        "total_asc": "Niedrigster Betrag",
+        "amountDue_desc": "Höchster offener Betrag",
+        "totalWithoutVat_desc": "Höchster Nettobetrag",
+        "customer_asc": "Kunde A–Z",
+        "customer_desc": "Kunde Z–A",
+        "number_desc": "Nummer absteigend",
+        "number_asc": "Nummer aufsteigend",
+        "paidAt_desc": "Zuletzt bezahlt",
+        "sentAt_desc": "Zuletzt versendet",
+        "taxableDate_desc": "Neuestes Leistungsdatum",
+        "variableSymbol_asc": "Variables Symbol",
+        "status_asc": "Nach Status",
+        "type_asc": "Nach Belegart"
+      }
+    },
+    "sendBlocked": {
+      "EMAIL_DAILY_LIMIT": "Sie haben das heutige E-Mail-Limit erreicht. Neue Konten haben in der ersten Woche ein niedrigeres Limit; Sie können morgen wieder senden oder stattdessen den Link oder das PDF teilen.",
+      "EMAIL_PAUSED": "Der E-Mail-Versand ist pausiert, weil mehrere Empfänger Ihre Belege als unerwünscht gemeldet haben. Bitte wenden Sie sich an den Support, wir prüfen den Fall.",
+      "ACCOUNT_SUSPENDED": "Das Konto ist wegen Verdachts auf Missbrauch gesperrt. Bitte wenden Sie sich an den Support."
+    },
+    "buyerDetails": {
+      "badge": {
+        "waiting": "Warten auf Kundendaten",
+        "submitted": "Kunde hat Daten ausgefüllt"
+      },
+      "button": "Kunden bitten, seine Daten auszufüllen",
+      "dialogTitle": "Kunden die Daten selbst ausfüllen lassen",
+      "dialogHint": "Der Kunde erhält einen Link, unter dem er Positionen und Betrag sieht und Name, Adresse sowie Firmennummer oder USt-IdNr. ausfüllt. Die Daten landen in Ihren Kontakten; nichts bereits Gespeichertes wird überschrieben.",
+      "emailLabel": "E-Mail des Kunden",
+      "emailPlaceholder": "name@firma.de",
+      "emailHint": "Leer lassen, wenn Sie den Link nur kopieren und selbst versenden möchten.",
+      "autoIssue": "Rechnung nach dem Ausfüllen automatisch ausstellen und versenden",
+      "autoIssueHint": "Nur wenn die Angaben nicht vom gespeicherten Kontakt abweichen. Andernfalls wartet der Entwurf auf Sie.",
+      "replaceNote": "Ein neuer Link ersetzt den alten, der dann nicht mehr funktioniert.",
+      "sendEmail": "E-Mail senden",
+      "createLink": "Link erstellen",
+      "close": "Schließen",
+      "copied": "Link kopiert.",
+      "copyPrompt": "Link kopieren:",
+      "emailed": "Wir haben den Link an {email} gesendet.",
+      "cancelled": "Der Link wurde deaktiviert.",
+      "failed": "Fehlgeschlagen",
+      "waitingTitle": "Warten auf Kundendaten",
+      "waitingEmail": "Der Link wurde an {email} gesendet.",
+      "waitingLink": "Der Link ist bereit zum Teilen.",
+      "waitingAuto": "Nach dem Ausfüllen wird die Rechnung automatisch ausgestellt und versendet.",
+      "waitingManual": "Nach dem Ausfüllen benachrichtigen wir Sie, und Sie stellen die Rechnung selbst aus.",
+      "copyLink": "Link kopieren",
+      "resend": "Erneut senden",
+      "cancel": "Link deaktivieren",
+      "submittedTitle": "Der Kunde hat seine Daten am {date} ausgefüllt",
+      "mode": {
+        "created": "Wir haben einen neuen Kontakt angelegt und in den Entwurf übernommen.",
+        "existing": "Wir haben anhand der Firmennummer oder USt-IdNr. einen gespeicherten Kontakt gefunden und in den Entwurf übernommen.",
+        "filled": "Die Angaben gehören zum Kontakt, der bereits im Entwurf stand."
+      },
+      "filled": "Ausgefüllt: {fields}.",
+      "conflicts": "Abweichend vom gespeicherten Kontakt, nichts wurde überschrieben:",
+      "empty": "leer",
+      "auto": {
+        "sent": "Die Rechnung wurde automatisch ausgestellt und versendet.",
+        "issued": "Die Rechnung wurde ausgestellt, die E-Mail konnte jedoch nicht gesendet werden.",
+        "failed": "Das automatische Ausstellen ist fehlgeschlagen. Bitte prüfen Sie den Entwurf.",
+        "skipped": "Das automatische Ausstellen wartet auf Sie, die Angaben müssen geprüft werden."
+      },
+      "askAgain": "Neuen Link senden",
+      "field": {
+        "legalName": "Name",
+        "email": "E-Mail",
+        "ico": "Firmennummer",
+        "dic": "USt-IdNr.",
+        "address": "Adresse",
+        "isPerson": "Privatperson",
+        "contactId": "Kontakt",
+        "phone": "Telefon"
+      },
+      "copyManual": "Kopieren ist hier nicht möglich. Markieren Sie den Link und kopieren Sie ihn selbst.",
+      "copyManualLabel": "Link für den Kunden",
+      "requiredLabel": "Pflichtangaben",
+      "requiredHint": "Was der Kunde ausfüllen muss. Name und Adresse sind immer Pflicht, Firmennummer und USt-IdNr. nur bei Unternehmen.",
+      "requiredSaveDefault": "Als Standard für neue Links verwenden",
+      "requiredSummary": "Pflicht: {fields}",
+      "pickCustomer": "Kunden auswählen"
+    },
+    "profileOrder": {
+      "badge": "Profilbestellung",
+      "banner": "Ein Kunde hat diesen Entwurf durch eine Bestellung über Ihr öffentliches Profil erstellt. Prüfen Sie Positionen und Preise und stellen Sie die Rechnung dann aus. An den Kunden wurde nichts gesendet."
+    }
+  },
+  "expenses": {
+    "title": "Ausgaben",
+    "description": "Überblick über Eingangsrechnungen und sonstige Kosten.",
+    "newExpense": "Neue Ausgabe",
+    "empty": "Es gibt noch keine Ausgaben.",
+    "columns": {
+      "date": "Datum",
+      "supplier": "Lieferant",
+      "description": "Beschreibung",
+      "amount": "Betrag brutto",
+      "vatRate": "USt.-Satz",
+      "category": "Kategorie",
+      "dueDate": "Fällig",
+      "state": "Status"
+    },
+    "uncategorized": "Ohne Kategorie",
+    "form": {
+      "title": "Neue Ausgabe",
+      "description": "Eine erhaltene Rechnung, ein Kassenbon oder sonstige Kosten. Am schnellsten geht es mit einem Foto.",
+      "supplierNameLabel": "Lieferant",
+      "supplierNamePlaceholder": "Name des Lieferanten",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "z. B. Einkauf Büromaterial",
+      "amountLabel": "Betrag brutto",
+      "vatRateLabel": "USt.-Satz (%)",
+      "currencyLabel": "Währung",
+      "expenseDateLabel": "Belegdatum / Leistungsdatum",
+      "categoryLabel": "Kategorie",
+      "categoryPlaceholder": "z. B. Büromaterial",
+      "receiptFileUrlLabel": "Link zum Beleg (optional)",
+      "receiptFileUrlPlaceholder": "https://…",
+      "receiptFileUrlHint": "Link zum Dokument in der Cloud (Google Drive, Dropbox…).",
+      "cancel": "Abbrechen",
+      "submit": "Ausgabe speichern",
+      "editTitle": "Ausgabe bearbeiten",
+      "aiTitle": "Aus Foto oder PDF auslesen",
+      "aiHint": "Fotografieren Sie einen Beleg oder ziehen Sie ein PDF hierher – die KI ergänzt Lieferant, Betrag, USt. und Fälligkeit.",
+      "aiReading": "Beleg wird ausgelesen…",
+      "aiCheck": "Diese Felder hat die KI ausgefüllt – bitte prüfen Sie sie vor dem Speichern.",
+      "aiFailed": "Der Beleg konnte nicht ausgelesen werden",
+      "aiErrors": {
+        "ai_disabled": "KI ist in den Einstellungen deaktiviert",
+        "ai_key_missing": "Ihr eigener KI-API-Schlüssel fehlt",
+        "unsupported_file_type": "Nicht unterstützter Dateityp (JPEG, PNG, WebP, GIF, PDF)",
+        "ai_refused": "Die KI hat die Verarbeitung des Belegs abgelehnt",
+        "ai_unparseable": "Aus dem Beleg konnte nichts ausgelesen werden"
+      },
+      "supplierSection": "Lieferant & Beleg",
+      "supplierLinked": "Mit einem Kontakt verknüpft",
+      "documentNumberLabel": "Belegnummer",
+      "variableSymbolLabel": "Variables Symbol",
+      "noCategory": "Keine Kategorie",
+      "amountSection": "Betrag",
+      "vatBreakdown": "Netto {base} + USt. {vat}",
+      "reverseChargeLabel": "Reverse-Charge (§ 92a)",
+      "reverseChargeHint": "Der Lieferant hat ohne USt. fakturiert, und Sie führen die Steuer selbst ab. Geben Sie den Nettobetrag ein; die USt. wird in der Erklärung zugleich geschuldet und als Vorsteuer abgezogen (Zeilen 10/11 und 43/44), und der Beleg erscheint in Abschnitt B.1 der Kontrollmeldung.",
+      "amountLabelReverseCharge": "Betrag netto",
+      "vatBreakdownReverseCharge": "Netto {base}, selbst abzuführende USt. {vat}",
+      "reverseChargeRequiredHint": "Abschnitt B.1 erfordert die USt-IdNr. des Lieferanten und die Belegnummer.",
+      "datesSection": "Daten & Zahlung",
+      "dueDateLabel": "Fälligkeitsdatum",
+      "paidLabel": "Bereits bezahlt",
+      "otherSection": "Sonstiges",
+      "noteLabel": "Interne Notiz (optional)",
+      "saveChanges": "Änderungen speichern",
+      "saved": "Ausgabe gespeichert",
+      "saveFailed": "Die Ausgabe konnte nicht gespeichert werden",
+      "supplierDicHint": "Für die USt.-Kontrollmeldung (Abschnitt B.2)",
+      "qrCamera": "QR-Code mit der Kamera scannen",
+      "qrHint": "QR-Rechnungen (QR Faktura) und QR-Zahlungscodes werden direkt aus Foto oder PDF gelesen, ohne KI.",
+      "qrFound": "Angaben aus dem QR-Code geladen",
+      "qrCheck": "Aus der QR-Rechnung übernommen – Lieferant, Betrag, USt. und Daten entsprechen exakt dem Beleg. Ergänzen Sie Beschreibung und Kategorie.",
+      "qrCheckPayment": "Der QR-Zahlungscode lieferte Betrag, variables Symbol und Fälligkeit. Ergänzen Sie den Rest oder laden Sie den ganzen Beleg hoch.",
+      "qrDescription": "Rechnung {number}"
+    },
+    "noTenant": "Richten Sie zuerst Ihr Unternehmen ein.",
+    "loadError": "Die Ausgaben konnten nicht geladen werden",
+    "fromPhoto": "Beleg scannen",
+    "emptyFiltered": "Keine Ausgabe entspricht dem Filter.",
+    "searchPlaceholder": "Lieferant, Beschreibung, Nummer suchen…",
+    "allStates": "Alle",
+    "allCategories": "Alle Kategorien",
+    "selected": "Ausgewählt: {count}",
+    "selectAll": "Alle auswählen",
+    "clearSelection": "Auswahl aufheben",
+    "bulkDone": "{ok} von {total} erledigt",
+    "bulkDeleteConfirm": "{count} Ausgaben wirklich löschen?",
+    "sumLabel": "Summe ({count})",
+    "vatIncluded": "inkl. USt. {vat}",
+    "kpi": {
+      "month": "Dieser Monat",
+      "unpaid": "Zu zahlen",
+      "overdue": "Überfällig",
+      "count": "{count, plural, one {# Beleg} other {# Belege}}"
+    },
+    "state": {
+      "paid": "Bezahlt",
+      "unpaid": "Zu zahlen",
+      "overdue": "Überfällig"
+    },
+    "category": {
+      "material": "Material",
+      "services": "Dienstleistungen",
+      "software": "Software",
+      "travel": "Reisen",
+      "fuel": "Kraftstoff",
+      "office": "Büro",
+      "telecom": "Telefon & Internet",
+      "rent": "Miete",
+      "marketing": "Marketing",
+      "other": "Sonstiges"
+    },
+    "detail": {
+      "title": "Ausgabendetails",
+      "loadError": "Die Ausgabe konnte nicht geladen werden",
+      "backToList": "Zurück zu den Ausgaben",
+      "badge": "Eingangsbeleg",
+      "unknownSupplier": "Unbekannter Lieferant",
+      "total": "Gesamt brutto",
+      "base": "Netto",
+      "vat": "USt. {rate} %",
+      "amounts": "Beträge",
+      "supplier": "Lieferant",
+      "details": "Angaben",
+      "paidAt": "Bezahlt am",
+      "createdAt": "Erfasst",
+      "openReceipt": "Beleg öffnen",
+      "overdueBanner": "Diese Ausgabe ist überfällig (fällig am {date}).",
+      "markPaid": "Als bezahlt markieren",
+      "markUnpaid": "Als unbezahlt markieren",
+      "edit": "Bearbeiten",
+      "duplicate": "Duplizieren",
+      "delete": "Löschen",
+      "deleteTitle": "Ausgabe löschen?",
+      "deleteBody": "Die Ausgabe wird endgültig entfernt.",
+      "actionFailed": "Aktion fehlgeschlagen",
+      "done": {
+        "paid": "Als bezahlt markiert",
+        "unpaid": "Als unbezahlt markiert",
+        "deleted": "Ausgabe gelöscht"
+      }
+    },
+    "filters": {
+      "receipt": "Beleg",
+      "receiptYes": "Hochgeladen",
+      "receiptNo": "Fehlt",
+      "dateHint": "Wählen Sie, nach welchem Datum gefiltert wird – Belegdatum, Fälligkeit oder Zahlungsdatum.",
+      "dateField": {
+        "expense": "Belegdatum",
+        "due": "Fälligkeit",
+        "paid": "Bezahlt"
+      }
+    }
+  },
+  "contacts": {
+    "title": "Kontakte",
+    "hint": "Kunden werden hier automatisch gespeichert, wenn Sie sie auf einer Rechnung auswählen (aus Ihren Kontakten oder dem ARES-Register). Markieren Sie häufige Kunden mit einem Stern, um sie bei einer neuen Rechnung mit einem Tipp auszuwählen.",
+    "filter": "Name, Firmennummer oder E-Mail suchen",
+    "empty": "Noch keine Kunden. Sie werden mit Ihrer ersten Rechnung hinzugefügt.",
+    "emptyCta": "Rechnung erstellen",
+    "noMatch": "Keine Treffer für Ihre Suche.",
+    "star": "Markieren",
+    "unstar": "Markierung entfernen",
+    "starred": "{name} markiert",
+    "unstarred": "Markierung von {name} entfernt",
+    "starFailed": "Die Markierung konnte nicht gespeichert werden",
+    "invoice": "Rechnung",
+    "aresVerified": "In ARES verifiziert",
+    "loadError": "Die Kontakte konnten nicht geladen werden.",
+    "newContact": "Neuer Kontakt",
+    "editor": {
+      "newTitle": "Neuer Kontakt",
+      "editTitle": "Kontakt bearbeiten",
+      "legalName": "Name",
+      "street": "Straße und Hausnummer",
+      "city": "Ort",
+      "postalCode": "PLZ",
+      "country": "Land",
+      "vatPayer": "Umsatzsteuerpflichtig",
+      "vatUnknown": "Unbekannt",
+      "vatYes": "Ja",
+      "vatNo": "Nein",
+      "fromAres": "Aus ARES laden",
+      "icoInvalid": "Die Firmennummer (IČO) muss 8 Ziffern haben.",
+      "aresNotFound": "Kein Unternehmen mit dieser Nummer in ARES.",
+      "aresFailed": "ARES-Abfrage fehlgeschlagen",
+      "aresLoaded": "Aus ARES geladen.",
+      "icoTaken": "Ein Kontakt mit dieser Firmennummer existiert bereits.",
+      "saveFailed": "Speichern fehlgeschlagen",
+      "saved": "Kontakt gespeichert.",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "kind": "Kundentyp",
+      "kindCompany": "Unternehmen",
+      "kindPerson": "Privatperson",
+      "kindHint": "Eine Privatperson hat keine Firmennummer und keine USt-IdNr. – wir blenden diese Felder aus, und sie erscheinen nicht auf der Rechnung. Nie umsatzsteuerpflichtig.",
+      "personName": "Vollständiger Name",
+      "color": "Farbmarkierung",
+      "colorNone": "Keine",
+      "registrySearch": "Unternehmen im Register suchen",
+      "registryHint": "Suchen Sie nach Name, Firmennummer oder USt-IdNr., und die Daten werden ausgefüllt. Wählen Sie rechts das Land. Tschechien und die Slowakei werden nach Name oder IČO durchsucht; Frankreich, Norwegen, Finnland, Dänemark und die Schweiz nach Name oder Registernummer; Polen nach NIP. Jedes EU-Unternehmen finden Sie über die USt-IdNr. mit Länderpräfix (z. B. IT00488410010). Die „LEI“-Optionen durchsuchen das weltweite GLEIF-Register, das vor allem größere Unternehmen enthält.",
+      "registryResults": "Aus dem Register",
+      "registryEmpty": "Im Register nichts gefunden",
+      "registryPlaceholder": {
+        "auto": "Name, Firmennummer oder USt-IdNr. (z. B. IT00488410010)",
+        "CZ": "Name des tschechischen Unternehmens oder IČO",
+        "SK": "Name des slowakischen Unternehmens oder IČO",
+        "FR": "Name oder SIREN",
+        "NO": "Name oder Org.-Nummer",
+        "PL": "NIP (10 Ziffern)",
+        "EU": "USt-IdNr. mit Länderpräfix, z. B. DE123456789",
+        "DE": "Firmenname oder USt-IdNr. (DE…)",
+        "AT": "Firmenname oder UID (ATU…)",
+        "IT": "Firmenname oder USt-IdNr. (IT…)",
+        "GB": "Firmenname oder Company Number",
+        "US": "Firmenname (z. B. Apple Inc)",
+        "WORLD": "Firmenname weltweit",
+        "FI": "Name oder Business ID (1234567-8)",
+        "DK": "Name oder CVR (8 Ziffern)",
+        "CH": "Name oder UID (CHE-123.456.789)"
+      },
+      "internalNote": "Interne Notiz",
+      "internalNoteHint": "Nur für Sie: wird nie auf Belege gedruckt oder an den Kunden gesendet. Erscheint auf der Kontaktseite und beim Fakturieren dieses Kunden sowie im CSV-Export.",
+      "internalNotePlaceholder": "Z. B. zahlt immer spät, Rechnungen an Frau Neumann adressieren, 5 % Rabatt…",
+      "fromRegistry": "Aus dem Register laden",
+      "phone": "Telefon",
+      "vatSuggestYes": "Laut Register ist der Kontakt umsatzsteuerpflichtig. Auf „Ja“ setzen?",
+      "vatSuggestNo": "Laut Register ist der Kontakt nicht umsatzsteuerpflichtig. Auf „Nein“ setzen?",
+      "contactPerson": "Ansprechpartner"
+    },
+    "detail": {
+      "title": "Kontaktdetails",
+      "loadError": "Der Kontakt konnte nicht geladen werden.",
+      "backToList": "Zurück zu den Kontakten",
+      "aresVerified": "In ARES verifiziert",
+      "noIco": "Keine Firmennummer",
+      "stats": {
+        "invoiced": "Fakturiert ({currency})",
+        "open": "Offen ({currency})",
+        "overdue": "Überfällig",
+        "avgDelay": "Durchschnittlicher Zahlungsverzug",
+        "onTime": "Zahlt pünktlich",
+        "days": "{count, plural, one {# Tag} other {# Tage}}"
+      },
+      "invoices": "Belege",
+      "expenses": "Ausgaben bei diesem Lieferanten",
+      "noExpenses": "Keine Ausgaben bei diesem Kontakt.",
+      "info": "Angaben",
+      "vatPayer": "Umsatzsteuerpflichtig",
+      "yes": "Ja",
+      "no": "Nein",
+      "aresCheck": "In ARES verifiziert",
+      "lastInvoice": "Letzter Beleg",
+      "documentCount": "Belege",
+      "openAres": "In ARES öffnen ↗",
+      "newInvoice": "Neue Rechnung",
+      "star": "Markieren",
+      "unstar": "Markierung entfernen",
+      "refreshAres": "Aus ARES aktualisieren",
+      "aresUpdated": "Aus ARES aktualisiert.",
+      "aresNotFound": "In ARES nicht gefunden.",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "deleteTitle": "Kontakt löschen?",
+      "deleteBody": "Der Kontakt „{name}“ wird endgültig entfernt.",
+      "inUse": "Zu diesem Kontakt gibt es Belege, daher kann er nicht gelöscht werden.",
+      "deleted": "Kontakt gelöscht.",
+      "actionFailed": "Aktion fehlgeschlagen",
+      "invoicesFilter": "In Rechnungen mit Filtern öffnen",
+      "internalNote": "Interne Notiz",
+      "portal": {
+        "title": "Kundenportal",
+        "hint": "Ein dauerhafter Link, unter dem der Kunde alle für ihn ausgestellten Belege, den offenen Betrag und einen Zahlungs-QR-Code für jede Rechnung sieht. Entwürfe werden nie angezeigt. Ein neuer Link macht den alten ungültig.",
+        "off": "Senden Sie dem Kunden einen Link zu all seinen Rechnungen und Angeboten.",
+        "enable": "Portal aktivieren",
+        "enabled": "Portal ist aktiv",
+        "copy": "Kopieren",
+        "copied": "Link kopiert",
+        "open": "Öffnen",
+        "renew": "Neuer Link",
+        "renewConfirm": "Neuen Link erstellen? Der aktuelle funktioniert dann nicht mehr.",
+        "renewed": "Neuer Link erstellt",
+        "disable": "Deaktivieren",
+        "disabled": "Portal ist deaktiviert",
+        "failed": "Etwas ist schiefgelaufen"
+      },
+      "contactPerson": "Ansprechpartner"
+    },
+    "csv": {
+      "import": "CSV importieren",
+      "importHint": "Laden Sie eine CSV-Datei aus Excel, Fakturoid, iDoklad oder faktorio hoch. Kontakte werden über die Firmennummer zugeordnet, sonst über den Namen.",
+      "export": "CSV exportieren",
+      "done": "Fertig: {created} neue, {updated} aktualisierte Kontakte.",
+      "skippedTitle": "Übersprungene Zeilen: {count}",
+      "skippedRow": "Zeile {line} ({name})",
+      "skippedMore": "…und {count} weitere.",
+      "reasons": {
+        "missing_name": "Name fehlt",
+        "invalid_ico": "ungültige Firmennummer",
+        "invalid_email": "ungültige E-Mail",
+        "invalid_country": "unbekanntes Land"
+      },
+      "errors": {
+        "unknown_columns": "In der Datei wurde keine Spalte mit dem Firmennamen (Name / Název) gefunden.",
+        "too_many_rows": "Die Datei ist zu groß (max. 5.000 Zeilen).",
+        "no_file": "Wählen Sie eine CSV-Datei.",
+        "failed": "Import fehlgeschlagen, bitte versuchen Sie es erneut."
+      }
+    },
+    "filters": {
+      "kind": "Typ",
+      "activity": "Fakturierung",
+      "activityHint": "Zählt ausgestellte Rechnungen (keine Entwürfe oder stornierten).",
+      "activityValue": {
+        "unpaid": "Mit offenen Rechnungen",
+        "active": "Fakturiert",
+        "none": "Noch keine Rechnung"
+      },
+      "starred": "Markiert",
+      "vatPayer": "Umsatzsteuerpflichtig",
+      "ares": "In ARES verifiziert",
+      "email": "Mit E-Mail",
+      "country": "Land"
+    },
+    "sort": {
+      "label": "Sortierung",
+      "name": "Nach Name",
+      "newest": "Neueste",
+      "revenue": "Höchster Umsatz",
+      "lastInvoice": "Letzte Rechnung",
+      "unpaid": "Höchster offener Betrag",
+      "city": "Nach Ort"
+    },
+    "stats": {
+      "invoices": "{count, plural, one {# Rechnung} other {# Rechnungen}}",
+      "unpaid": "{count} offen",
+      "unpaidTitle": "Offene ausgestellte Rechnungen"
+    },
+    "colorFilter": "Farbe",
+    "colors": {
+      "red": "Rot",
+      "orange": "Orange",
+      "amber": "Gelb",
+      "green": "Grün",
+      "teal": "Türkis",
+      "sky": "Blau",
+      "indigo": "Indigo",
+      "violet": "Violett",
+      "pink": "Rosa",
+      "slate": "Grau"
+    }
+  },
+  "billing": {
+    "title": "Tarif und Abrechnung",
+    "description": "Welchen Tarif das Unternehmen nutzt, wie lange die Testphase noch läuft und wie Sie bezahlen.",
+    "loadError": "Ihr Tarif konnte nicht geladen werden. Laden Sie die Seite neu.",
+    "checkoutSuccess": "Danke, die Zahlung war erfolgreich. Ihr Tarif wird in wenigen Sekunden aktiviert.",
+    "checkoutCanceled": "Sie haben die Zahlung nicht abgeschlossen. Es wurde nichts berechnet.",
+    "planNames": {
+      "free": "Free",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "trialBanner": {
+      "active": "Sie testen den Tarif {plan} kostenlos, noch {days, plural, one {# Tag} other {# Tage}}.",
+      "ended": "Ihre Testphase für {plan} ist beendet. Ihre Daten sind vollständig vorhanden; kostenpflichtige Funktionen sind schreibgeschützt.",
+      "choose": "Tarif wählen",
+      "upgrade": "Upgraden"
+    },
+    "current": {
+      "label": "Aktueller Tarif",
+      "trial": "Kostenlose Testphase, noch {days, plural, one {# Tag} other {# Tage}} (bis {date}). Keine Karte, es wird nichts automatisch berechnet.",
+      "trialEnded": "Ihre Testphase für {plan} ist beendet. Das Unternehmen nutzt jetzt den Free-Tarif. Nichts wurde gelöscht; Funktionen darüber hinaus sind schreibgeschützt.",
+      "prepaid": "Bezahlt bis {date}.",
+      "subscriptionMonth": "Abo, monatliche Abrechnung.",
+      "subscriptionYear": "Abo, jährliche Abrechnung.",
+      "free": "Free-Tarif. Wechseln Sie, sobald Sie mehr brauchen.",
+      "pastDue": "Die letzte Zahlung ist fehlgeschlagen. Stripe versucht es erneut; in der Zwischenzeit können Sie die Zahlungsmethode im Portal ändern."
+    },
+    "portal": "Abo verwalten",
+    "choose": {
+      "title": "Tarif wählen",
+      "yearly": "Jährlich",
+      "monthly": "Monatlich",
+      "perMonth": "/ Monat",
+      "billedYearly": "{total} pro Jahr",
+      "billedMonthly": "monatliche Abrechnung",
+      "payCard": "Mit Karte zahlen",
+      "renewCard": "Mit Karte verlängern",
+      "cardUnavailable": "Kartenzahlungen sind noch nicht aktiviert.",
+      "cardTitle": "Kartenabo – verlängert sich automatisch, günstiger",
+      "cardBody": "Karte, Apple Pay oder Google Pay. Verlängert sich automatisch, und Sie können hier mit einem Klick kündigen.",
+      "transferTitle": "Überweisung – keine automatische Verlängerung",
+      "transferBody": "Eine Proformarechnung mit QR-Code für einen Monat oder ein Jahr im Voraus, {percent} % teurer. Vor Ablauf des Zeitraums senden wir eine Erinnerung.",
+      "transferPrice": "Per Überweisung {price} / Monat ({total})"
+    },
+    "terms": {
+      "renewYearly": "Das Abo verlängert sich jährlich automatisch zum gleichen Preis, bis Sie es kündigen.",
+      "renewMonthly": "Das Abo verlängert sich monatlich automatisch zum gleichen Preis, bis Sie es kündigen.",
+      "cancel": "Sie können jederzeit mit einem Schritt direkt auf dieser Seite kündigen. Der Tarif läuft dann bis zum Ende des bezahlten Zeitraums.",
+      "methods": "Zahlen Sie per Karte, Apple Pay, Google Pay oder mit einer anderen im Checkout angebotenen Methode.",
+      "transfer": "Per Überweisung zahlen Sie ein Jahr im Voraus, {percent} % mehr als per Karte. Nichts verlängert sich automatisch: 14 und 3 Tage vor Ablauf senden wir Ihnen per E-Mail eine neue Proformarechnung mit QR-Code. Der Tarif startet, sobald die Zahlung auf unserem Konto eingeht.",
+      "transferMonthly": "Per Überweisung zahlen Sie einen Monat im Voraus, {percent} % mehr als per Karte. Nichts verlängert sich automatisch: 14 und 3 Tage vor Ablauf senden wir Ihnen per E-Mail eine neue Proformarechnung mit QR-Code.",
+      "transferCzkOnly": "Überweisungen sind nur in CZK möglich.",
+      "vat": "Preise zzgl. USt."
+    },
+    "transfer": {
+      "title": "Zahlungen per Überweisung",
+      "button": "Per Überweisung zahlen",
+      "created": "Ihre Proformarechnung ist bereit. Die Zahlungsdaten finden Sie unten.",
+      "months": "{n, plural, one {# Monat} other {# Monate}}",
+      "status": {
+        "pending": "Zahlung ausstehend",
+        "paid": "Bezahlt",
+        "canceled": "Storniert"
+      },
+      "qrAlt": "QR-Code für die Zahlung",
+      "amount": "Betrag",
+      "vat": "inkl. USt. {rate} %",
+      "vs": "Variables Symbol",
+      "account": "Kontonummer",
+      "due": "Fällig",
+      "payee": "Empfänger",
+      "ico": "Firmennummer",
+      "dic": "USt-IdNr.",
+      "note": "Scannen Sie den QR-Code in Ihrer Banking-App oder geben Sie Konto und variables Symbol manuell ein. Wir aktivieren den Tarif, sobald wir die Zahlung zugeordnet haben, in der Regel innerhalb eines Werktags.",
+      "paidOn": "Zahlung eingegangen am {date}."
+    },
+    "errors": {
+      "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+      "billing_not_configured": "Kartenzahlungen sind noch nicht aktiviert.",
+      "already_subscribed": "Das Unternehmen hat bereits ein Abo. Sie verwalten es oben auf dieser Seite.",
+      "no_stripe_customer": "Das Unternehmen hat noch kein Stripe-Abo.",
+      "bank_transfer_not_configured": "Überweisungen sind noch nicht aktiviert.",
+      "too_many_pending_proformas": "Sie haben bereits drei unbezahlte Proformarechnungen. Bezahlen Sie eine davon oder warten Sie, bis wir sie zugeordnet haben.",
+      "forbidden": "Nur der Inhaber oder ein Administrator des Unternehmens kann bezahlen.",
+      "no_subscription": "Das Unternehmen hat kein laufendes Kartenabo.",
+      "same_interval": "Sie zahlen bereits auf diese Weise.",
+      "subscription_past_due": "Die letzte Zahlung ist nicht durchgegangen. Ändern Sie zuerst die Karte im Abo-Portal.",
+      "subscription_not_changeable": "Dieses Abo kann hier nicht geändert werden. Schreiben Sie uns, wir kümmern uns darum.",
+      "trial_card_disabled": "Die Verlängerung der Testphase per Karte ist derzeit nicht aktiviert.",
+      "trial_card_not_available": "Dieses Unternehmen kann die Testphase nicht per Karte verlängern.",
+      "no_ico": "Tragen Sie zuerst die IČO des Unternehmens in den Unternehmenseinstellungen ein."
+    },
+    "portalHint": "Im Stripe-Portal können Sie Karte oder Rechnungsdaten ändern und Rechnungen herunterladen.",
+    "sub": {
+      "renewsOn": "Nächste Zahlung und Verlängerung am {date}.",
+      "endsOn": "Das Abo ist gekündigt und endet am {date}. Bis dahin läuft der Tarif weiter.",
+      "cancel": "Abo kündigen",
+      "cancelConfirm": "Das Abo wird nicht verlängert. Der Tarif läuft bis {date}, danach wechselt das Unternehmen in den Free-Tarif. Ihre Daten bleiben erhalten.",
+      "cancelConfirmNoDate": "Das Abo wird nicht verlängert. Der Tarif läuft bis zum Ende des bezahlten Zeitraums, danach wechselt das Unternehmen in den Free-Tarif. Ihre Daten bleiben erhalten.",
+      "cancelYes": "Ja, kündigen",
+      "keep": "Abo behalten",
+      "canceled": "Das Abo wird nicht verlängert. Der Tarif läuft bis zum Ende des bezahlten Zeitraums.",
+      "resume": "Mein Abo behalten",
+      "resumed": "Das Abo wird wieder verlängert.",
+      "switchToYear": "Zu jährlicher Abrechnung wechseln ({price} / Monat)",
+      "switchToMonth": "Zu monatlicher Abrechnung wechseln ({price} / Monat)",
+      "switchNote": "Der neue Zeitraum beginnt sofort. Den ungenutzten Teil des aktuellen Zeitraums ziehen wir von der ersten Zahlung ab.",
+      "switched": "Erledigt, Sie zahlen jetzt {interval, select, year {jährlich} other {monatlich}}."
+    },
+    "trialCard": {
+      "title": "Billanta {days} Tage testen",
+      "body": "Hinterlegen Sie eine Karte, und Ihre Testphase verlängert sich auf insgesamt {days} Tage. Es wird nichts berechnet, und vor dem Ende fragen wir, ob Sie weitermachen möchten.",
+      "bodyWithheld": "Wir konnten diesem Unternehmen die Testphase ohne Karte nicht gewähren. Mit Karte erhalten Sie {days} Tage. Es wird nichts berechnet, und vor dem Ende fragen wir, ob Sie weitermachen möchten.",
+      "button": "Karte hinzufügen",
+      "hint": "Stripe prüft die Karte. Jede Karte verlängert eine Testphase nur einmal.",
+      "extended": "Erledigt – Ihre Testphase läuft jetzt {days} Tage. Die Karte ist gespeichert, und es wurde nichts berechnet.",
+      "errors": {
+        "generic": "Die Testphase konnte nicht verlängert werden. Bitte versuchen Sie es erneut.",
+        "trial_card_card_used": "Mit dieser Karte wurde bereits eine Testphase verlängert.",
+        "trial_card_user_had_trial": "Ihr Konto hatte bereits eine Testphase mit einem anderen Unternehmen.",
+        "trial_card_trial_over": "Die Testphase ist bereits beendet und kann nicht mehr verlängert werden.",
+        "trial_card_no_ico": "Tragen Sie zuerst die IČO des Unternehmens in den Unternehmenseinstellungen ein.",
+        "trial_card_invalid_ico": "Die IČO des Unternehmens ist ungültig. Korrigieren Sie sie in den Unternehmenseinstellungen.",
+        "trial_card_not_in_registry": "Wir konnten die IČO des Unternehmens im Handelsregister nicht finden. Korrigieren Sie sie in den Unternehmenseinstellungen.",
+        "trial_card_registry_down": "Das Handelsregister antwortet nicht. Bitte versuchen Sie es gleich noch einmal.",
+        "trial_card_not_available": "Dieses Unternehmen kann die Testphase nicht per Karte verlängern.",
+        "trial_card_invalid_session": "Diese gespeicherte Karte gehört nicht zu diesem Unternehmen.",
+        "trial_card_incomplete": "Das Speichern der Karte wurde nicht abgeschlossen. Bitte versuchen Sie es erneut.",
+        "trial_card_disabled": "Die Verlängerung der Testphase per Karte ist derzeit nicht aktiviert."
+      }
+    }
+  },
+  "auth": {
+    "signup": {
+      "title": "Konto erstellen",
+      "subtitle": "Erstellen Sie Ihr Konto und schreiben Sie in wenigen Minuten Ihre erste Rechnung.",
+      "companyNameLabel": "Ihr Name oder Firmenname",
+      "companyNamePlaceholder": "Max Mustermann oder Muster GmbH",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "sie@beispiel.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Wählen Sie ein sicheres Passwort",
+      "tosLabel": "Ich bin mindestens 18 Jahre alt, handle als Unternehmer und stimme den <tos>Nutzungsbedingungen</tos> einschließlich der Haftungsbeschränkung sowie dem <dpa>Auftragsverarbeitungsvertrag</dpa> zu.",
+      "submit": "Konto erstellen",
+      "emailTakenError": "Für diese E-Mail-Adresse existiert bereits ein Konto.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+      "rateLimitedError": "Zu viele Versuche. Bitte versuchen Sie es gleich noch einmal.",
+      "hasAccount": "Sie haben bereits ein Konto?",
+      "loginLink": "Anmelden",
+      "companyNameHint": "Selbstständig? Ihr eigener Name genügt. Firmennummer (IČO) und Rechnungsdaten ergänzen Sie im nächsten Schritt.",
+      "aboutYouLegend": "Über Sie (optional)",
+      "managesClientsLabel": "Ich führe die Bücher für Mandanten",
+      "isTeacherLabel": "Ich bin Lehrkraft",
+      "trialNote": "{days, plural, one {# Tag} other {# Tage}} {plan} kostenlos, ohne Karte. Die Testphase beginnt, sobald Sie in den Einstellungen Ihre Firmennummer (IČO) eingeben, einmal pro IČO. Danach nutzen Sie den Free-Tarif weiter; es wird nichts automatisch berechnet."
+    },
+    "login": {
+      "title": "Anmelden",
+      "subtitle": "Willkommen zurück – melden Sie sich bei Ihrem Konto an.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "sie@beispiel.de",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Ihr Passwort",
+      "submit": "Anmelden",
+      "orContinueWith": "oder weiter mit",
+      "error": "E-Mail-Adresse oder Passwort ist falsch.",
+      "noAccount": "Noch kein Konto?",
+      "signupLink": "Registrieren",
+      "forgotPasswordLink": "Passwort vergessen?",
+      "continueWith": "Weiter mit {provider}"
+    },
+    "forgotPassword": {
+      "title": "Passwort vergessen?",
+      "subtitle": "Geben Sie Ihre E-Mail-Adresse ein, und wir senden Ihnen einen Link zum Zurücksetzen Ihres Passworts.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "sie@beispiel.de",
+      "submit": "Link zum Zurücksetzen senden",
+      "successMessage": "Falls für diese E-Mail-Adresse ein Konto existiert, haben wir Ihnen einen Link zum Zurücksetzen gesendet. Prüfen Sie Ihr Postfach (und den Spam-Ordner).",
+      "backToLogin": "Zurück zur Anmeldung"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "subtitle": "Wählen Sie ein neues Passwort für Ihr Konto.",
+      "passwordLabel": "Neues Passwort",
+      "passwordPlaceholder": "Wählen Sie ein sicheres Passwort",
+      "confirmPasswordLabel": "Neues Passwort bestätigen",
+      "confirmPasswordPlaceholder": "Noch einmal eingeben",
+      "submit": "Passwort zurücksetzen",
+      "mismatchError": "Die Passwörter stimmen nicht überein.",
+      "invalidInputError": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+      "invalidTokenError": "Dieser Link ist ungültig oder abgelaufen.",
+      "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+      "successMessage": "Ihr Passwort wurde zurückgesetzt. Sie können sich jetzt mit dem neuen Passwort anmelden.",
+      "goToLogin": "Zur Anmeldung",
+      "requestNewLink": "Neuen Link anfordern",
+      "rateLimitedError": "Zu viele Versuche. Bitte versuchen Sie es gleich noch einmal."
+    },
+    "twoFactor": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "subtitle": "Anmeldung als {email}. Geben Sie den sechsstelligen Code aus Ihrer Authenticator-App ein.",
+      "codeLabel": "Bestätigungscode",
+      "recoveryHint": "Kein Telefon zur Hand? Geben Sie einen Ihrer Wiederherstellungscodes ein.",
+      "submit": "Bestätigen",
+      "cancel": "Abbrechen und abmelden",
+      "errors": {
+        "invalid_code": "Der Code stimmt nicht. Prüfen Sie die Uhrzeit auf Ihrem Telefon und versuchen Sie es erneut.",
+        "rate_limited": "Zu viele Versuche. Versuchen Sie es in einigen Minuten erneut.",
+        "not_signed_in": "Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an."
+      }
+    }
+  },
+  "common": {
+    "comingSoonBody": "Dieser Bereich befindet sich noch im Aufbau.",
+    "logOut": "Abmelden",
+    "accountMenu": "Kontomenü",
+    "moreInfo": "Mehr erfahren",
+    "userMenu": {
+      "profile": "Mein Profil",
+      "company": "Unternehmensdaten",
+      "team": "Team",
+      "exports": "Exporte für die Buchhaltung",
+      "billing": "Abonnement",
+      "settings": "Einstellungen",
+      "companies": "Unternehmen",
+      "addCompany": "Unternehmen hinzufügen",
+      "manageCompanies": "Unternehmen verwalten",
+      "activity": "Änderungsverlauf",
+      "referrals": "Einladen und Guthaben erhalten",
+      "website": "Billanta-Website",
+      "classroom": "Klassenzimmer"
+    },
+    "installApp": {
+      "label": "App installieren",
+      "iosTitle": "Zum Home-Bildschirm hinzufügen (iPhone/iPad)",
+      "iosBody": "Tippen Sie in Safari auf das Teilen-Symbol (das Quadrat mit dem Pfeil) und wählen Sie „Zum Home-Bildschirm“. Die App öffnet sich dann im Vollbild wie jede andere App.",
+      "manualTitle": "App installieren",
+      "manualBody": "Öffnen Sie das Browsermenü (⋮ oder ⋯) und wählen Sie „App installieren“ oder „Zum Startbildschirm hinzufügen“. In Chrome und Edge am Desktop gibt es zudem rechts in der Adressleiste ein Installationssymbol.",
+      "ok": "Verstanden"
+    }
+  },
+  "pricing": {
+    "title": "Preise",
+    "lead": "Starten Sie kostenlos, ohne Karte. Wechseln Sie in einen höheren Tarif, wenn Sie ihn brauchen.",
+    "seoTitle": "Preise für Rechnungssoftware – kostenlos starten",
+    "metaDescription": "Billanta-Preise: Free mit 10 Belegen pro Monat und Abrechnung nach Verbrauch darüber hinaus, Start ab 4,99 €, Plus mit KI ab 9,99 € und Business für Teams. Keine Karte nötig, Preise zzgl. USt.",
+    "yearly": "Jährlich",
+    "monthly": "Monatlich",
+    "yearlySave": "2 Monate gratis",
+    "currency": "Währung",
+    "period": "Abrechnung",
+    "perMonth": "/ Monat",
+    "billedYearly": "jährliche Abrechnung, {total}",
+    "billedMonthly": "monatliche Abrechnung",
+    "forever": "dauerhaft",
+    "popular": "Am beliebtesten",
+    "vatNote": "Alle Preise zzgl. USt. Sie können Ihren Tarif jederzeit wechseln oder kündigen.",
+    "aiKeyNote": "Sie haben einen eigenen KI-Schlüssel? Verbinden Sie ihn in den Einstellungen und zahlen Sie KI-Funktionen direkt bei Ihrem Anbieter, ohne Tariflimits.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Zum Ausprobieren und für gelegentliche Rechnungen",
+        "cta": "Kostenlos starten",
+        "features": [
+          "10 Belege pro Monat inklusive",
+          "Weitere Belege für je {payg}",
+          "ISDOC, QR-Zahlung, Registerabfrage und VIES",
+          "5 KI-Credits pro Monat",
+          "Überwachung der USt.-Schwelle und Steuerkalender",
+          "Zeiterfassung und Datensicherung"
+        ]
+      },
+      "start": {
+        "name": "Start",
+        "tagline": "Für Freiberufler, die regelmäßig fakturieren",
+        "cta": "Start wählen",
+        "features": [
+          "Unbegrenzte Belege",
+          "Abgleich von Bank- und PayPal-Zahlungen",
+          "Automatische Zahlungserinnerungen",
+          "Wiederkehrende Rechnungen und Kundenportal",
+          "Kennzahlen für die Einkommensteuer",
+          "Export für Pohoda und Money S3",
+          "30 KI-Credits pro Monat",
+          "Kostenloser Zugang für die Buchhaltung"
+        ]
+      },
+      "plus": {
+        "name": "Plus",
+        "tagline": "Die KI erledigt den Großteil der Arbeit",
+        "cta": "Plus wählen",
+        "features": [
+          "Alles aus Start",
+          "150 KI-Credits pro Monat",
+          "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung",
+          "Kartenzahlung auf Rechnungen",
+          "3 Benutzer + Buchhaltung",
+          "API und Webhooks (10.000 Anfragen)",
+          "Bevorzugter Support"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Für Teams und mehrere Unternehmen",
+        "cta": "Business wählen",
+        "features": [
+          "Alles aus Plus",
+          "Bis zu 10 Unternehmen in einem Konto",
+          "10 Benutzer mit Rollen",
+          "500 KI-Credits pro Monat",
+          "API und Webhooks (50.000 Anfragen)",
+          "Bevorzugter Support"
+        ]
+      }
+    },
+    "paygNote": "Im Free-Tarif zahlen Sie nur für Belege über 10 pro Monat, je {payg}. Ab etwa 34 Belegen im Monat ist Start günstiger.",
+    "aiCreditNote": "Ein KI-Credit = eine Rechnung aus einer Sprach- oder Textnachricht oder ein aus einem Foto ausgelesener Beleg.",
+    "compare": {
+      "title": "Tarife vergleichen",
+      "feature": "Funktion",
+      "yes": "Ja",
+      "no": "Nein",
+      "groups": {
+        "invoicing": "Fakturierung",
+        "payments": "Zahlungen und Bank",
+        "ai": "KI",
+        "tax": "Steuern und Buchhaltung",
+        "team": "Team und Daten"
+      },
+      "rows": {
+        "docs": "Belege pro Monat",
+        "types": "Rechnungen, Proformarechnungen, Gutschriften und Angebote",
+        "isdoc": "ISDOC, QR-Zahlung, Registerabfrage und VIES",
+        "currencies": "Fremdwährungen mit Zentralbankkursen",
+        "languages": "Belege auf Tschechisch, Slowakisch und Englisch",
+        "recurring": "Wiederkehrende Rechnungen",
+        "reminders": "Zahlungserinnerungen bei Verzug",
+        "bank": "Abgleich von Bankzahlungen",
+        "paypal": "PayPal-Synchronisierung",
+        "portal": "Kundenportal",
+        "cards": "Kartenzahlung auf Rechnungen",
+        "aiCredits": "KI-Credits pro Monat",
+        "voice": "Rechnungen aus Sprach- und Textnachrichten",
+        "receipts": "Belege aus einem Foto",
+        "ownKey": "Eigener KI-Schlüssel, ohne Limit",
+        "vatLimit": "Überwachung der USt.-Schwelle und Steuerkalender",
+        "annual": "Kennzahlen für die Einkommensteuer",
+        "vatFilings": "USt.-Erklärung, Kontrollmeldung und Zusammenfassende Meldung",
+        "accountantExport": "Export für die Buchhaltung",
+        "users": "Benutzer",
+        "companies": "Unternehmen in einem Konto",
+        "api": "API und Webhooks (Anfragen pro Monat)",
+        "time": "Zeiterfassung",
+        "backups": "Datensicherung (Google Drive, Download)",
+        "support": "Support"
+      },
+      "cell": {
+        "docsFree": "10 inklusive, danach je {payg}",
+        "unlimited": "Unbegrenzt",
+        "twoTemplates": "2 Vorlagen",
+        "manual": "Manuell",
+        "automatic": "Automatisch",
+        "csv": "CSV",
+        "csvPlus": "CSV, Pohoda, Money S3",
+        "oneUser": "1",
+        "userAccountant": "1 + Buchhaltung",
+        "threeAccountant": "3 + Buchhaltung",
+        "tenUsers": "10 mit Rollen",
+        "upTo10": "Bis zu 10",
+        "email": "E-Mail",
+        "priority": "Bevorzugt"
+      }
+    },
+    "compareCompetitors": "Wie Billanta im Vergleich zu Fakturoid, iDoklad und anderen abschneidet",
+    "trialNote": "{days, plural, one {# Tag} other {# Tage}} {plan} kostenlos, ohne Karte, einmal pro Firmennummer (IČO). Die Testphase beginnt, sobald das Unternehmen seine IČO einträgt, und wechselt danach automatisch zu Free. Die Daten bleiben erhalten.",
+    "trialCard": "Die ersten {days, plural, one {# Tag} other {# Tage}} kostenlos, ohne Karte",
+    "methods": {
+      "title": "Zahlungsarten",
+      "card": {
+        "title": "Kartenabo – verlängert sich automatisch, günstiger",
+        "body": "Die obigen Preise gelten für ein Abo per Karte, Apple Pay oder Google Pay. Es verlängert sich automatisch, ist jederzeit kündbar, und der Tarif läuft bis zum Ende des bezahlten Zeitraums."
+      },
+      "transfer": {
+        "title": "Überweisung – keine automatische Verlängerung",
+        "body": "Einen Monat oder ein Jahr im Voraus gegen Proformarechnung mit QR-Code, {percent} % teurer, weil wir jede Zahlung manuell zuordnen. Es wird nichts automatisch abgebucht; vor Ablauf des Zeitraums senden wir Ihnen eine Erinnerung mit der nächsten Proformarechnung."
+      }
+    },
+    "transferPrice": "per Überweisung {price} / Monat",
+    "transferCzkOnly": "Überweisungen sind nur in Tschechischen Kronen möglich.",
+    "faq": {
+      "title": "Fragen zu den Preisen",
+      "items": [
+        {
+          "q": "Ist Billanta kostenlos?",
+          "a": "Ja. Der Free-Tarif ist zeitlich unbegrenzt und benötigt keine Karte. Er umfasst 10 Belege pro Monat; jeder weitere kostet {payg}. ISDOC, QR-Zahlungen und die Firmensuche im ARES-Register sind in jedem Tarif enthalten."
+        },
+        {
+          "q": "Sind die Preise inklusive USt.?",
+          "a": "Nein, alle Preise verstehen sich zzgl. USt."
+        },
+        {
+          "q": "Kann ich meinen Tarif jederzeit wechseln oder kündigen?",
+          "a": "Ja. Ein Kartenabo ist jederzeit kündbar, und der Tarif läuft bis zum Ende des bezahlten Zeitraums. In jedem Tarif können Sie eine Sicherung Ihrer Daten herunterladen."
+        },
+        {
+          "q": "Kann ich per Überweisung zahlen?",
+          "a": "Ja, einen Monat oder ein Jahr im Voraus gegen Proformarechnung, {percent} % teurer als per Karte, weil wir diese Zahlungen manuell zuordnen. Überweisungen sind nur in Tschechischen Kronen möglich."
+        },
+        {
+          "q": "Was ist ein KI-Credit?",
+          "a": "Eine aus einer Sprach- oder Textnachricht entworfene Rechnung oder ein ausgelesener Beleg. Mit einem eigenen KI-Schlüssel zahlen Sie direkt bei Ihrem KI-Anbieter, ohne Tariflimits."
+        },
+        {
+          "q": "Braucht meine Buchhaltung einen eigenen Tarif?",
+          "a": "Nein. Ab dem Start-Tarif erhält eine Buchhalterin oder ein Buchhalter kostenlos Zugang zu Ihrem Unternehmen, als Teil Ihres Tarifs."
+        },
+        {
+          "q": "Warum steht auf Rechnungen „Erstellt mit Billanta“?",
+          "a": "Im kostenlosen Tarif trägt jeder Beleg einen kleinen Link zu Billanta in der Fußzeile des PDFs, der E-Mail und der Online-Rechnung. So finanziert sich der Free-Tarif. In einem kostenpflichtigen Tarif und während der Testphase können Sie ihn in den Einstellungen unter Rechnungen ausschalten."
+        }
+      ]
+    }
+  },
+  "invoiceForm": {
+    "title": "Neue Rechnung",
+    "lead": "Tippen Sie, wählen Sie aus Vorschlägen, oder beschreiben Sie die Rechnung in einem Satz und lassen Sie sie vorausfüllen.",
+    "ai": {
+      "title": "Mit KI vorausfüllen",
+      "hint": "Schreiben oder diktieren Sie die Rechnung in eigenen Worten, z. B. „Rechnung für 27604977, 3 Stunden Beratung zu 1500, fällig in 14 Tagen“. Die KI ergänzt den Kunden (in ARES geprüft), die Positionen und die Fälligkeit. Gespeichert wird erst, wenn Sie das Formular prüfen und speichern.",
+      "placeholder": "z. B. Rechnung an Dvořák & Partner, 2× Schulung zu 4.500 CZK, fällig in 30 Tagen",
+      "run": "Vorausfüllen",
+      "working": "Wird verarbeitet…",
+      "applied": "Fertig – bitte prüfen Sie die ausgefüllten Felder.",
+      "usingOwn": "Mit Ihrem API-Schlüssel",
+      "usingPlatform": "Mit Billanta-KI",
+      "unavailable": "Das Vorausfüllen per KI ist nicht aktiviert.",
+      "setup": "KI einrichten"
+    },
+    "customer": {
+      "draftWithout": "Den Kunden können Sie später ergänzen. Ein Entwurf lässt sich auch ohne ihn speichern, und Sie können ihm einen Link senden, um seine Daten selbst einzutragen.",
+      "title": "Kunde",
+      "hint": "Suchen Sie nach Name oder IČO (Firmennummer). Vorgeschlagen werden Ihre Kontakte und Unternehmen aus dem ARES-Register; ein Unternehmen aus ARES wird beim Speichern samt Adresse zu Ihren Kontakten hinzugefügt.",
+      "placeholder": "Firmenname oder IČO",
+      "empty": "Nichts gefunden. Schreiben Sie ein ganzes Wort aus, versuchen Sie die IČO oder ein anderes Register rechts.",
+      "yourContacts": "Ihre Kontakte",
+      "fromAres": "Firmenregister (ARES, RPO, VIES…)",
+      "change": "Kunden ändern",
+      "aresBadge": "Aus dem Register",
+      "aresWillSave": "Wird beim Speichern zu Ihren Kontakten hinzugefügt.",
+      "starred": "Markierte Kunden",
+      "searchingRegisters": "Firmenregister werden durchsucht…",
+      "internalNote": "Interne Notiz zu diesem Kontakt",
+      "contactPerson": "Ansprechpartner"
+    },
+    "dates": {
+      "issue": "Ausgestellt",
+      "due": "Fällig",
+      "currency": "Währung",
+      "days": "{days} Tage",
+      "title": "Daten",
+      "taxableSupply": "Leistungsdatum",
+      "taxableSupplyHint": "Datum der steuerpflichtigen Leistung. Leer = Ausstellungsdatum.",
+      "validUntil": "Gültig bis",
+      "dueOnWeekend": "Die Fälligkeit fällt auf ein Wochenende.",
+      "dueOnHoliday": "Die Fälligkeit fällt auf einen Feiertag ({name}).",
+      "shiftToWorkday": "Auf den nächsten Werktag verschieben"
+    },
+    "items": {
+      "title": "Positionen",
+      "hint": "Während Sie eine Beschreibung tippen, werden Positionen aus früheren Rechnungen mit dem letzten Preis und USt.-Satz vorgeschlagen.",
+      "description": "Beschreibung der Position",
+      "quantity": "Menge",
+      "unitPrice": "Einzelpreis",
+      "vat": "USt.",
+      "remove": "Position entfernen",
+      "add": "Position hinzufügen",
+      "unit": "Einheit",
+      "unitPlaceholder": "Stk.",
+      "discount": "Rabatt",
+      "lineTotal": "Summe netto",
+      "duplicate": "Position duplizieren",
+      "grossPrices": "Ich gebe Bruttopreise ein",
+      "unitPriceGross": "Einzelpreis brutto",
+      "lineTotalGross": "Summe brutto"
+    },
+    "totals": {
+      "base": "Zwischensumme",
+      "vat": "USt.",
+      "total": "Gesamt",
+      "alreadyPaid": "Bereits bezahlt",
+      "alreadyPaidHint": "Eine Anzahlung oder vorab erhaltene Zahlung – als Betrag oder als Prozentsatz der Gesamtsumme. Ist der Betrag voll bezahlt, wird die Rechnung nach dem Ausstellen als bezahlt markiert.",
+      "remaining": "Noch zu zahlen"
+    },
+    "cancel": "Abbrechen",
+    "save": "Entwurf speichern",
+    "saveNote": "Die Nummer erhält der Entwurf beim Ausstellen.",
+    "errors": {
+      "customer_required": "Ohne Kunden können Sie nur einen Entwurf speichern. Wählen Sie vor dem Ausstellen einen aus.",
+      "items_required": "Fügen Sie mindestens eine Position hinzu.",
+      "save_failed": "Die Rechnung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "not_allowed": "Dazu fehlt Ihnen die Berechtigung, oder das Abo ist nicht aktiv.",
+      "ai_disabled": "Die KI ist unter Einstellungen → KI deaktiviert.",
+      "ai_key_missing": "Speichern Sie zuerst Ihren API-Schlüssel unter Einstellungen → KI.",
+      "ai_key_invalid": "Der gespeicherte API-Schlüssel funktioniert nicht. Prüfen Sie ihn unter Einstellungen → KI.",
+      "ai_platform_unavailable": "Die Billanta-KI ist gerade nicht verfügbar. Verwenden Sie Ihren eigenen Schlüssel unter Einstellungen → KI.",
+      "ai_daily_limit": "Das heutige Limit der Billanta-KI ist aufgebraucht. Versuchen Sie es morgen oder verwenden Sie Ihren eigenen Schlüssel.",
+      "ai_rate_limited": "Die KI ist ausgelastet, versuchen Sie es gleich noch einmal.",
+      "ai_refused": "Die KI hat die Verarbeitung dieses Textes abgelehnt.",
+      "ai_unparseable": "Die KI hat nichts Verwertbares geliefert. Formulieren Sie genauer.",
+      "ai_bad_request": "Der Text konnte nicht verarbeitet werden. Versuchen Sie, ihn zu kürzen.",
+      "ai_provider_unavailable": "Die KI antwortet nicht. Versuchen Sie es gleich noch einmal.",
+      "empty_input": "Beschreiben Sie, was Sie in Rechnung stellen möchten.",
+      "symbol_invalid": "Symbole dürfen nur Ziffern enthalten (VS und SS bis 10, KS bis 4).",
+      "reason_required": "Geben Sie einen Grund für die Änderung an."
+    },
+    "copy": {
+      "title": "Aus einer anderen Rechnung vorausfüllen",
+      "hint": "Übernimmt Kunde, Positionen, Währung, Zahlung, Konto, Sprache, Notizen und eigene Felder. Nummer, Daten und Zahlungen werden nicht kopiert, und die Fälligkeit richtet sich nach Ihrer Standardfrist.",
+      "latest": "Aus der letzten Rechnung",
+      "other": "Aus einer anderen Rechnung…",
+      "searchLabel": "Rechnungen durchsuchen",
+      "searchPlaceholder": "Rechnungsnummer oder Kunde",
+      "searchEmpty": "Keine passende Rechnung.",
+      "draft": "Entwurf",
+      "fromNumber": "Vorausgefüllt aus Rechnung {number}: Kunde, Positionen und Zahlung sind übernommen, die Daten sind von heute und die Fälligkeit folgt Ihrer Standardfrist.",
+      "fromDraft": "Vorausgefüllt aus einem Entwurf: Kunde, Positionen und Zahlung sind übernommen, die Daten sind von heute und die Fälligkeit folgt Ihrer Standardfrist.",
+      "noneYet": "Sie haben noch keine Rechnung als Vorlage. Füllen Sie die erste von Hand aus."
+    },
+    "duplicate": {
+      "fromNumber": "Kopie der Rechnung {number}: Kunde, Währung, Zahlungsfrist und Positionen sind ausgefüllt; die Daten sind von heute.",
+      "fromDraft": "Kopie eines Entwurfs: Kunde, Währung, Zahlungsfrist und Positionen sind ausgefüllt; die Daten sind von heute."
+    },
+    "titles": {
+      "invoice": "Neue Rechnung",
+      "proforma": "Neue Proformarechnung",
+      "quote": "Neues Angebot",
+      "credit_note": "Neue Gutschrift"
+    },
+    "editTitle": "Entwurf bearbeiten",
+    "editLead": "Einen Entwurf können Sie frei ändern, bis Sie ihn ausstellen.",
+    "fromTemplate": "Aus der Vorlage „{name}“: Kunde, Positionen und Notizen sind vorausgefüllt, die Daten sind von heute.",
+    "type": {
+      "label": "Belegart",
+      "hint": {
+        "invoice": "Ein Steuerbeleg für gelieferte Waren oder Leistungen.",
+        "proforma": "Eine Anforderung einer Vorauszahlung – kein Steuerbeleg. Stellen Sie die Rechnung aus, sobald bezahlt wurde.",
+        "quote": "Ein unverbindliches Angebot für den Kunden. Nach der Zusage wandeln Sie es mit einem Klick in eine Rechnung um.",
+        "credit_note": "Ein korrigierender Steuerbeleg zu einer ausgestellten Rechnung."
+      }
+    },
+    "payment": {
+      "title": "Zahlung",
+      "vsAuto": "Automatisch aus der Belegnummer",
+      "ks": "Konstantes Symbol",
+      "ss": "Spezifisches Symbol",
+      "more": "Konstantes / spezifisches Symbol, Bestellnummer",
+      "exchangeRate": "Kurs {pair}",
+      "exchangeRateAuto": "{source}-Kurs zum Ausstellungsdatum",
+      "exchangeRateLoad": "Von {source} laden",
+      "exchangeRateFailed": "Der {source}-Kurs konnte nicht geladen werden.",
+      "inCzk": "≈ {amount} gesamt",
+      "bankAccount": "Zahlung auf Konto",
+      "bankAccountAuto": "Automatisch ({account})",
+      "bankAccountPrimary": "Hauptkonto",
+      "customGroup": "Eigene",
+      "instructions": "Zahlungshinweise",
+      "instructionsPlaceholder": "Wird auf dem Beleg unter den Positionen gedruckt.",
+      "bankAccountManage": "Konten verwalten",
+      "bankAccountMissing": "Es ist noch kein Bankkonto eingerichtet, daher enthält der Beleg weder Kontonummer noch QR-Zahlungscode.",
+      "bankAccountAdd": "Konto hinzufügen"
+    },
+    "settings": {
+      "title": "Belegeinstellungen",
+      "language": "Belegsprache",
+      "languages": {
+        "cs": "Čeština",
+        "sk": "Slovenčina",
+        "en": "English"
+      },
+      "reverseCharge": "Reverse Charge",
+      "reverseChargeHint": "Der Kunde führt die USt. ab; der Beleg weist keine USt. aus und enthält einen Hinweis."
+    }
+  },
+  "toasts": {
+    "invoiceCreated": "Rechnungsentwurf gespeichert",
+    "saved": "Gespeichert",
+    "emailChanged": "Ihre E-Mail-Adresse wurde geändert. Melden Sie sich künftig mit der neuen Adresse an.",
+    "emailChangeTaken": "Diese Adresse wird inzwischen von einem anderen Konto verwendet.",
+    "emailChangeInvalid": "Der Link ist ungültig oder abgelaufen. Fordern Sie die Änderung erneut an."
+  }
+}
