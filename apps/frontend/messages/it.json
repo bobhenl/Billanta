@@ -1,0 +1,2147 @@
+{
+  "app": {
+    "name": "Billanta",
+    "tagline": "SaaS di fatturazione e contabilità per le imprese ceche e slovacche",
+    "readOnlyRole": "Il Suo ruolo è Sola lettura – può visualizzare i documenti ma non modificarli.",
+    "readOnly": {
+      "title": "Può solo visualizzare",
+      "body": "Il Suo accesso a questa azienda non consente di creare o modificare documenti. Se necessario, si rivolga al titolare o a un amministratore.",
+      "back": "Indietro"
+    }
+  },
+  "nav": {
+    "dashboard": "Pannello",
+    "invoices": "Fatture",
+    "expenses": "Spese",
+    "bank": "Banca",
+    "contacts": "Contatti",
+    "settings": "Impostazioni",
+    "billing": "Abbonamento",
+    "primaryNavigation": "Navigazione principale",
+    "time": "Tempo",
+    "reports": "Report",
+    "activity": "Cronologia modifiche"
+  },
+  "theme": {
+    "toggle": "Cambia tema",
+    "light": "Modalità chiara",
+    "dark": "Modalità scura",
+    "short": {
+      "system": "Sistema",
+      "light": "Chiaro",
+      "dark": "Scuro"
+    }
+  },
+  "language": {
+    "label": "Lingua",
+    "cs": "Čeština",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "common": {
+    "comingSoonBody": "Questa sezione è in costruzione.",
+    "logOut": "Esci",
+    "accountMenu": "Menu account",
+    "moreInfo": "Maggiori informazioni",
+    "userMenu": {
+      "profile": "Il mio profilo",
+      "company": "Dati aziendali",
+      "team": "Team",
+      "exports": "Esportazioni per il commercialista",
+      "billing": "Abbonamento",
+      "settings": "Impostazioni",
+      "companies": "Aziende",
+      "addCompany": "Aggiungi un'azienda",
+      "manageCompanies": "Gestisci aziende",
+      "activity": "Cronologia modifiche",
+      "referrals": "Invita e guadagna crediti",
+      "website": "Sito web di Billanta",
+      "classroom": "Classroom"
+    },
+    "installApp": {
+      "label": "Installa l'app",
+      "iosTitle": "Aggiungi alla schermata Home (iPhone/iPad)",
+      "iosBody": "In Safari tocchi l'icona Condividi (il quadrato con la freccia) e scelga “Aggiungi alla schermata Home”. L'app si aprirà poi a schermo intero come qualsiasi altra app.",
+      "manualTitle": "Installa l'app",
+      "manualBody": "Apra il menu del browser (⋮ o ⋯) e scelga “Installa app” o “Aggiungi alla schermata Home”. In Chrome ed Edge su desktop è presente anche un'icona di installazione a destra della barra degli indirizzi.",
+      "ok": "Ho capito"
+    }
+  },
+  "toasts": {
+    "invoiceCreated": "Bozza della fattura salvata",
+    "saved": "Salvato",
+    "emailChanged": "La Sua email è stata modificata. La prossima volta acceda con il nuovo indirizzo.",
+    "emailChangeTaken": "Nel frattempo questo indirizzo è stato utilizzato da un altro account.",
+    "emailChangeInvalid": "Il link non è valido o è scaduto. Richieda di nuovo la modifica."
+  },
+  "mobile": {
+    "more": "Altro",
+    "explore": "Esplora",
+    "language": "Lingua",
+    "appearance": "Aspetto",
+    "create": "Crea"
+  },
+  "notifications": {
+    "bell": "Notifiche",
+    "bellUnread": "Notifiche – {count} non lette",
+    "title": "Notifiche",
+    "readAll": "Segna tutte come lette",
+    "settings": "Impostazioni notifiche",
+    "empty": "Ancora nessuna novità. La avviseremo quando succederà qualcosa."
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Autenticazione a due fattori obbligatoria",
+      "body": "Poiché consente l'accesso a denaro e dati, i nuovi collegamenti possono essere aggiunti solo con l'autenticazione a due fattori. I collegamenti esistenti continuano a funzionare.",
+      "cta": "Attiva la 2FA"
+    }
+  },
+  "auth": {
+    "signup": {
+      "title": "Crea un account",
+      "subtitle": "Crei il Suo account e inizi a fatturare in pochi minuti.",
+      "companyNameLabel": "Il Suo nome o la ragione sociale",
+      "companyNamePlaceholder": "Mario Rossi o Acme s.r.l.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "nome@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Scelga una password sicura",
+      "tosLabel": "Dichiaro di avere almeno 18 anni, di agire in qualità di impresa o professionista e di accettare i <tos>Termini di servizio</tos>, inclusa la limitazione di responsabilità, e l'<dpa>Accordo sul trattamento dei dati</dpa>.",
+      "submit": "Crea account",
+      "emailTakenError": "Esiste già un account con questa email.",
+      "genericError": "Si è verificato un errore. Riprovi.",
+      "rateLimitedError": "Troppi tentativi. Riprovi tra qualche istante.",
+      "hasAccount": "Ha già un account?",
+      "loginLink": "Accedi",
+      "companyNameHint": "Lavoratore autonomo? Basta il Suo nome. L'IČO e i dati di fatturazione si aggiungono nel passaggio successivo.",
+      "aboutYouLegend": "Su di Lei (facoltativo)",
+      "managesClientsLabel": "Tengo la contabilità per dei clienti",
+      "isTeacherLabel": "Sono un insegnante",
+      "trialNote": "{days, plural, one {# giorno} many {# giorni} other {# giorni}} di {plan} gratis, senza carta. La prova inizia quando inserisce il numero di identificazione dell'azienda (IČO) nelle impostazioni, una volta per IČO. Poi prosegue con il piano Free; non viene addebitato nulla automaticamente."
+    },
+    "login": {
+      "title": "Accedi",
+      "subtitle": "Bentornato – acceda al Suo account.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "nome@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "La Sua password",
+      "submit": "Accedi",
+      "orContinueWith": "oppure continui con",
+      "error": "Email o password non corretti.",
+      "noAccount": "Non ha un account?",
+      "signupLink": "Registrati",
+      "forgotPasswordLink": "Password dimenticata?",
+      "continueWith": "Continua con {provider}"
+    },
+    "forgotPassword": {
+      "title": "Password dimenticata?",
+      "subtitle": "Inserisca la Sua email e Le invieremo un link per reimpostare la password.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "nome@email.com",
+      "submit": "Invia link di reimpostazione",
+      "successMessage": "Se esiste un account con questa email, abbiamo inviato un link per reimpostare la password. Controlli la posta in arrivo (e la cartella spam).",
+      "backToLogin": "Torna all'accesso"
+    },
+    "resetPassword": {
+      "title": "Reimposta la password",
+      "subtitle": "Scelga una nuova password per il Suo account.",
+      "passwordLabel": "Nuova password",
+      "passwordPlaceholder": "Scelga una password sicura",
+      "confirmPasswordLabel": "Conferma la nuova password",
+      "confirmPasswordPlaceholder": "La digiti di nuovo",
+      "submit": "Reimposta password",
+      "mismatchError": "Le password non coincidono.",
+      "invalidInputError": "La password deve contenere almeno 8 caratteri.",
+      "invalidTokenError": "Questo link di reimpostazione non è valido o è scaduto.",
+      "genericError": "Si è verificato un errore. Riprovi.",
+      "successMessage": "La password è stata reimpostata. Ora può accedere con la nuova password.",
+      "goToLogin": "Vai all'accesso",
+      "requestNewLink": "Richiedi un nuovo link",
+      "rateLimitedError": "Troppi tentativi. Riprovi tra qualche istante."
+    },
+    "twoFactor": {
+      "title": "Autenticazione a due fattori",
+      "subtitle": "Accesso come {email}. Inserisca il codice a sei cifre dell'app di autenticazione.",
+      "codeLabel": "Codice di verifica",
+      "recoveryHint": "Non ha il telefono a portata di mano? Inserisca uno dei Suoi codici di recupero.",
+      "submit": "Verifica",
+      "cancel": "Annulla ed esci",
+      "errors": {
+        "invalid_code": "Il codice non corrisponde. Controlli l'ora del telefono e riprovi.",
+        "rate_limited": "Troppi tentativi. Riprovi tra qualche minuto.",
+        "not_signed_in": "L'accesso è scaduto. Acceda di nuovo."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Pannello",
+    "welcome": "Bentornato. Ecco una rapida panoramica di fatture e pagamenti.",
+    "noTenant": "Completi prima la configurazione dell'azienda, poi qui comparirà la panoramica.",
+    "loadError": "Impossibile caricare la panoramica. Provi ad aggiornare la pagina.",
+    "greeting": "Buongiorno, {name}",
+    "newInvoice": "Nuova fattura",
+    "customize": "Personalizza",
+    "showAll": "Mostra tutto",
+    "recent": "Documenti recenti",
+    "overdueTitle": "Scadute ({count})",
+    "dueOn": "scadenza {date}",
+    "topCustomers": "Clienti principali",
+    "topCustomersHint": "Per importo fatturato negli ultimi 12 mesi",
+    "foreignNote": "{count, plural, one {# documento in valuta estera non è incluso} many {# documenti in valute estere non sono inclusi} other {# documenti in valute estere non sono inclusi}} nei totali.",
+    "emptyTitle": "Ancora niente qui",
+    "emptyHint": "Emetta la prima fattura e la panoramica si riempirà di ricavi, un grafico e clienti.",
+    "chart": {
+      "title": "Ricavi e spese",
+      "hint": "Ultimi 12 mesi, IVA esclusa",
+      "revenue": "Ricavi",
+      "expenses": "Spese"
+    },
+    "cards": {
+      "revenue_month": {
+        "label": "Ricavi del mese",
+        "sub": "Fatture emesse, IVA esclusa"
+      },
+      "unpaid": {
+        "label": "Da incassare",
+        "sub": "{count, plural, one {# fattura} many {# fatture} other {# fatture}} in attesa di pagamento"
+      },
+      "overdue": {
+        "label": "Scadute",
+        "sub": "{count, plural, =0 {Tutto in ordine} one {# fattura} many {# fatture} other {# fatture}}"
+      },
+      "expenses_month": {
+        "label": "Spese del mese",
+        "sub": "Documenti ricevuti"
+      },
+      "revenue_year": {
+        "label": "Ricavi dell'anno",
+        "sub": "Da inizio anno"
+      },
+      "drafts": {
+        "label": "Bozze",
+        "sub": "In attesa di emissione"
+      },
+      "profit_month": {
+        "label": "Utile del mese",
+        "sub": "Ricavi meno spese"
+      },
+      "vat_month": {
+        "label": "IVA del mese",
+        "sub": "IVA a debito – vedere le esportazioni"
+      },
+      "due_soon": {
+        "label": "In scadenza entro 7 giorni",
+        "sub": "{count, plural, =0 {Nulla di urgente} one {# fattura} many {# fatture} other {# fatture}}"
+      },
+      "unviewed": {
+        "label": "Fatture non aperte",
+        "sub": "Inviate, non ancora aperte dal cliente"
+      },
+      "missing_receipts": {
+        "label": "Spese senza giustificativo",
+        "sub": "Nessun documento caricato"
+      }
+    },
+    "tiles": {
+      "new_invoice": "Nuova fattura",
+      "new_proforma": "Proforma",
+      "new_quote": "Preventivo",
+      "new_expense": "Nuova spesa",
+      "templates": "Modelli",
+      "bulk": "Fatturazione massiva",
+      "new_contact": "Contatti",
+      "bank": "Banca",
+      "exports": "Esportazioni per il commercialista",
+      "scan_invoice": "Scansiona una fattura (QR)",
+      "dictate_invoice": "Detta una fattura",
+      "calendar_feed": "Scadenze nel Suo calendario",
+      "public_profile": "Profilo pubblico dell'azienda",
+      "migration": "Passa da un altro sistema",
+      "bank_sync": "Pagamenti bancari e PayPal"
+    },
+    "sections": {
+      "showChart": "Grafico ricavi e spese",
+      "showTopCustomers": "Clienti principali",
+      "showRecent": "Documenti recenti",
+      "showDueSoon": "Fatture in scadenza",
+      "showTaxDeadlines": "Scadenze fiscali",
+      "showFxRates": "Tassi di cambio ČNB"
+    },
+    "customizeCards": "Schede numeriche",
+    "customizeTiles": "Azioni rapide",
+    "customizeSections": "Sezioni",
+    "customizeReset": "Ripristina consigliati",
+    "customizeSaved": "Panoramica salvata",
+    "customizeFailed": "Salvataggio non riuscito: {reason}",
+    "moveUp": "Sposta su",
+    "moveDown": "Sposta giù",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "dueSoonTitle": "In scadenza entro 7 giorni ({count})",
+    "taxDeadlines": {
+      "title": "Prossime scadenze fiscali",
+      "hint": "Le scadenze fiscali provengono dal calendario fiscale ufficiale dell'Amministrazione finanziaria ceca (aggiornato ogni giorno, già spostato ai giorni lavorativi). Gli anticipi previdenziali e i riepiloghi annuali non vi sono inclusi, quindi vengono calcolati. Mostra i prossimi 45 giorni; è solo un calendario, Billanta non tiene traccia di ciò che ha presentato.",
+      "daysLeft": "{count, plural, =0 {oggi} one {domani} many {tra # giorni} other {tra # giorni}}",
+      "customizeTitle": "Scadenze da monitorare",
+      "customizeHint": "Vengono mostrate solo le scadenze pertinenti al Suo regime IVA e alla Sua forma giuridica (Impostazioni → Azienda). I soggetti IVA trimestrali selezionano l'opzione trimestrale invece di quella mensile.",
+      "kinds": {
+        "vat_monthly": "Dichiarazione IVA e comunicazione di controllo (mensile)",
+        "vat_quarterly": "Dichiarazione IVA e comunicazione di controllo (trimestrale)",
+        "control_statement": "Comunicazione di controllo (mensile)",
+        "vat_identified": "Dichiarazione IVA (soggetto identificato)",
+        "ec_sales_list": "Elenco riepilogativo (Intrastat)",
+        "health": "Anticipo dell'assicurazione sanitaria per autonomi",
+        "social": "Anticipo della previdenza sociale per autonomi",
+        "income_tax": "Dichiarazione dei redditi",
+        "overviews": "Riepiloghi annuali per previdenza e assicurazione sanitaria",
+        "road_tax": "Tassa stradale",
+        "property_tax": "Imposta sugli immobili",
+        "vat_other": "IVA: OSS, CESOP e altre comunicazioni",
+        "flat_tax": "Anticipo dell'imposta forfettaria",
+        "payroll": "Ritenute fiscali sui dipendenti"
+      },
+      "sourceOfficial": "Scadenze fiscali: calendario ufficiale",
+      "sourceLocal": "Al momento non è stato possibile caricare il calendario dell'Amministrazione finanziaria; le scadenze sono calcolate in base alla legge.",
+      "prepareXml": "Prepara XML",
+      "amountsTitle": "Importi previsti",
+      "amountsHint": "L'importo che paga ogni mese come datore di lavoro. Compare accanto alla scadenza, così sa quanto accantonare. Lasci vuoto se non c'è.",
+      "bookExpense": "Registra come spesa",
+      "fillAmount": "Aggiungi importo",
+      "onlyIfForeignPurchase": "Solo se in quel mese ha acquistato servizi dall'estero (ad es. pubblicità).",
+      "onlyIfEuSales": "Solo se in quel mese ha fatturato un servizio a un'impresa di un altro Paese UE.",
+      "advancesInSettings": "Gli anticipi previdenziali, sanitari e dell'imposta forfettaria si impostano per periodo in Dati aziendali.",
+      "editAdvances": "Modifica anticipi",
+      "manualKindsHint": "Billanta non può sapere se ha dipendenti, un veicolo soggetto a tassa stradale o immobili soggetti a imposta, quindi li selezioni Lei.",
+      "regimeUnknown": "Non sappiamo se applica il regime forfettario, quindi monitoriamo gli anticipi previdenziali ordinari.",
+      "regimeAnswer": "Rispondi nelle impostazioni"
+    },
+    "fxRates": {
+      "title": "Tassi di cambio ČNB",
+      "hint": "Il tasso della Banca nazionale ceca per il giorno scelto, usato per convertire in CZK le fatture in valuta estera. La percentuale indica la variazione nella settimana precedente.",
+      "customizeTitle": "Valute nei tassi ČNB",
+      "customizeHint": "Scelga quali valute mostrare nel pannello. Può scegliere qualsiasi valuta pubblicata dalla ČNB.",
+      "source": "Fonte:",
+      "weekChange": "Variazione in 7 giorni",
+      "weekShort": "/ settimana",
+      "date": "Giorno",
+      "publishedOn": "Tasso del {date}",
+      "fallbackNote": "La ČNB non ha pubblicato alcun tasso per il giorno scelto (fine settimana, festivo o prima delle 14:30), quindi viene mostrato l'ultimo pubblicato.",
+      "unavailable": "Impossibile caricare i tassi per questo giorno.",
+      "converter": "Converti in CZK",
+      "amount": "Importo",
+      "currency": "Valuta",
+      "add": "Aggiungi valuta",
+      "remove": "Rimuovi {code}",
+      "limit": "Fino a {max} valute."
+    },
+    "usage": {
+      "title": "Consigliato in base all'utilizzo",
+      "hint": "Ciò che lascia invariato continua ad adattarsi. La Sua scelta ha sempre la precedenza.",
+      "newAccount": "Non c'è ancora nulla, quindi vede il layout di base.",
+      "currencies": "Fattura in {list}",
+      "onlyHome": "Fattura solo in {currency}",
+      "expenses": "registra le spese",
+      "noExpenses": "nessuna spesa registrata",
+      "paypal": "PayPal collegato",
+      "bank": "banca collegata",
+      "proformas": "emette fatture proforma",
+      "quotes": "invia preventivi"
+    },
+    "customizeOrderHint": "Trascini dalla maniglia o usi le frecce per cambiare l'ordine.",
+    "dragToReorder": "Trascina per riordinare",
+    "exportsCta": "Esportazioni per il commercialista",
+    "emptyHintReadOnly": "Non ci sono ancora documenti. Quando l'azienda emetterà la prima fattura, qui vedrà ricavi, un grafico e clienti."
+  },
+  "settings": {
+    "modules": {
+      "title": "Moduli e tipo di attività",
+      "description": "Indichi come lavora e Billanta nasconderà le parti che non Le servono.",
+      "loadError": "Impossibile caricare le impostazioni dei moduli.",
+      "readOnly": "Solo il titolare o un amministratore può modificare i moduli.",
+      "presetsTitle": "Tipo di attività",
+      "presetsHint": "Un profilo predefinito imposta i moduli sottostanti. Poi è possibile regolarli uno per uno.",
+      "customMix": "Combinazione personalizzata di moduli",
+      "presets": {
+        "invoicingOnly": {
+          "title": "Solo fatturazione",
+          "description": "Fatture e contatti, nient'altro."
+        },
+        "flatTax": {
+          "title": "Libero professionista in regime forfettario",
+          "description": "Senza registrazione delle spese, con abbinamento dei pagamenti bancari e preventivi."
+        },
+        "tradesman": {
+          "title": "Ditta individuale con spese",
+          "description": "Fatture, spese e ricevute, banca e preventivi."
+        },
+        "withAccountant": {
+          "title": "Società con commercialista",
+          "description": "Tutto, incluse le esportazioni per il commercialista (Pohoda, Money S3, CSV)."
+        },
+        "eshop": {
+          "title": "E-commerce",
+          "description": "Fatture, spese, banca ed esportazioni – senza preventivi."
+        }
+      },
+      "modulesTitle": "Moduli",
+      "items": {
+        "expenses": {
+          "title": "Spese",
+          "description": "Fatture ricevute, ricevute e relativa estrazione dei dati."
+        },
+        "bank": {
+          "title": "Banca",
+          "description": "Abbina i pagamenti degli estratti conto alle fatture."
+        },
+        "quotes": {
+          "title": "Preventivi",
+          "description": "Preventivi da trasformare in fattura con un clic."
+        },
+        "reports": {
+          "title": "Esportazioni per il commercialista",
+          "description": "CSV, XML per Pohoda e Money S3 per mese, trimestre o anno."
+        },
+        "ai": {
+          "title": "Assistente IA",
+          "description": "Fatturazione vocale e lettura delle ricevute."
+        },
+        "time": {
+          "title": "Registrazione del tempo",
+          "description": "Timer, progetti con tariffa oraria e fatturazione delle ore lavorate."
+        }
+      },
+      "dataKept": "Disattivare un modulo non elimina nulla – scompare solo dal menu. Riattivandolo, i dati sono ancora lì.",
+      "save": "Salva",
+      "reset": "Ripristina",
+      "saved": "Moduli salvati.",
+      "failed": "Salvataggio non riuscito"
+    },
+    "notifications": {
+      "title": "Notifiche",
+      "description": "Scelga di cosa essere informato e come. Queste impostazioni valgono solo per Lei, non per tutto il team.",
+      "loadError": "Impossibile caricare le impostazioni delle notifiche.",
+      "saved": "Salvato",
+      "saveFailed": "Salvataggio non riuscito",
+      "eventsTitle": "Eventi",
+      "eventsHint": "Campanella = notifica nella barra superiore dell'app (e un popup del browser, se lo consente qui sotto). L'email arriva all'indirizzo del Suo account.",
+      "channels": {
+        "app": "Campanella",
+        "email": "Email"
+      },
+      "allOn": "attiva tutto",
+      "noneOn": "disattiva tutto",
+      "events": {
+        "invoice_paid": {
+          "label": "Fattura pagata",
+          "hint": "Quando segna una fattura come pagata o la abbiniamo da un estratto conto."
+        },
+        "invoice_viewed": {
+          "label": "Il cliente ha aperto la fattura",
+          "hint": "La prima volta che la fattura viene visualizzata nel portale clienti."
+        },
+        "invoice_overdue": {
+          "label": "Fattura scaduta",
+          "hint": "Una volta, quando la fattura scade e parte il primo sollecito automatico."
+        },
+        "reminder_sent": {
+          "label": "Sollecito inviato",
+          "hint": "Solleciti manuali e automatici al cliente."
+        },
+        "invoice_sent": {
+          "label": "Fattura inviata",
+          "hint": "Quando invia una fattura via email dall'app."
+        },
+        "draft_ready": {
+          "label": "Nuova bozza da verificare",
+          "hint": "L'IA ha preparato una fattura da un messaggio vocale o di testo ed è in attesa di approvazione."
+        },
+        "bank_import": {
+          "label": "Importazione estratto conto",
+          "hint": "Quante transazioni sono arrivate e quante ne abbiamo abbinate automaticamente."
+        },
+        "member_joined": {
+          "label": "Nuovo membro del team",
+          "hint": "Qualcuno ha accettato un invito nella Sua azienda."
+        },
+        "quote_response": {
+          "label": "Risposta a un preventivo",
+          "hint": "Un cliente ha accettato o rifiutato un preventivo nel portale."
+        },
+        "buyer_details": {
+          "label": "Il cliente ha compilato i suoi dati",
+          "hint": "Il cliente ha compilato i dati di fatturazione tramite il link che ha inviato."
+        },
+        "profile_message": {
+          "label": "Messaggio dal profilo",
+          "hint": "Un visitatore Le ha scritto tramite il modulo di contatto del Suo profilo pubblico."
+        }
+      },
+      "browserTitle": "Notifiche del browser",
+      "browserHint": "Un popup di sistema anche quando l'app è in background. Funziona finché è aperta in una scheda.",
+      "browserToggle": "Mostra popup",
+      "testTitle": "Billanta – notifiche attive",
+      "testBody": "Così La informeremo di fatture pagate e altri eventi.",
+      "permission": {
+        "granted": "Consentito nel browser",
+        "denied": "Il browser blocca le notifiche – le consenta nelle impostazioni del sito.",
+        "unsupported": "Questo browser non supporta le notifiche.",
+        "ask": "Consenti nel browser"
+      }
+    },
+    "emails": {
+      "title": "Email ai clienti",
+      "description": "L'aspetto delle email con fatture e solleciti e il loro mittente.",
+      "loadError": "Impossibile caricare le impostazioni email.",
+      "readOnly": "Solo il titolare o un amministratore può modificare queste impostazioni.",
+      "senderTitle": "Mittente",
+      "senderHint": "Le email partono da un indirizzo Billanta, ma il cliente vede il Suo nome e le risposte arrivano a Lei.",
+      "fromName": "Nome del mittente",
+      "replyTo": "Indirizzo di risposta",
+      "replyToHint": "Dove arrivano le risposte dei clienti. Vuoto = email dell'azienda.",
+      "replyToInvalid": "Inserisca un indirizzo email valido.",
+      "bcc": "Inviami una copia nascosta",
+      "bccHint": "Una copia di ogni email inviata arriva a {email}.",
+      "textsTitle": "Oggetto e testo",
+      "textsHint": "Campo vuoto = testo predefinito (mostrato in grigio). Le variabili tra parentesi graffe vengono sostituite con i dati reali all'invio.",
+      "kinds": {
+        "invoice": "Fattura",
+        "reminder": "Sollecito"
+      },
+      "subject": "Oggetto",
+      "message": "Testo introduttivo",
+      "signature": "Firma",
+      "signatureHint": "Aggiunta in fondo a ogni email – fatture e solleciti.",
+      "signaturePlaceholder": "Cordiali saluti\n{company}",
+      "placeholders": "Variabili",
+      "placeholdersHint": "Clicchi per inserire la variabile nella posizione del cursore, nel campo modificato per ultimo.",
+      "ph": {
+        "number": "numero",
+        "amount": "importo",
+        "due_date": "scadenza",
+        "company": "la Sua azienda",
+        "customer": "cliente",
+        "link": "link",
+        "reminder_no": "n. sollecito",
+        "vs": "simbolo var."
+      },
+      "attachTitle": "Allegati e aspetto",
+      "attachPdf": "Allega il PDF della fattura",
+      "attachPdfHint": "Senza allegato, il cliente apre la fattura tramite il link nell'email.",
+      "attachIsdoc": "Allega ISDOC",
+      "attachIsdocHint": "Fattura in formato elettronico (ceco) che i software di contabilità importano direttamente.",
+      "accent": "Colore dei pulsanti e dell'intestazione",
+      "accentCustom": "Colore personalizzato",
+      "save": "Salva",
+      "saved": "Impostazioni email salvate",
+      "saveFailed": "Salvataggio non riuscito",
+      "preview": "Anteprima",
+      "previewFromAddress": "fakturace@billanta.cz",
+      "previewReplyTo": "Rispondi a",
+      "previewNote": "Dati di esempio. L'email reale può apparire leggermente diversa nel client di posta.",
+      "moreVars": "Altre variabili →"
+    },
+    "variables": {
+      "title": "Variabili",
+      "description": "Scriva un testo una volta sola e lo inserisca come '{variable}' nelle email e nelle note dei documenti.",
+      "loadError": "Impossibile caricare le variabili.",
+      "readOnly": "Solo il titolare o un amministratore può modificare le variabili.",
+      "ownTitle": "Le Sue variabili",
+      "ownHint": "Ad es. '{terms}' con un link. Modificando il testo qui, cambia ovunque.",
+      "empty": "Ancora nessuna variabile personalizzata. Ne aggiunga una o ne scelga una già pronta qui sotto.",
+      "label": "Nome",
+      "labelPlaceholder": "Nome (ad es. Condizioni)",
+      "key": "Chiave della variabile",
+      "value": "Valore",
+      "valuePlaceholder": "Testo da inserire…",
+      "copy": "Copia '{variable}'",
+      "remove": "Rimuovi",
+      "add": "Aggiungi variabile",
+      "save": "Salva",
+      "saved": "Variabili salvate",
+      "saveFailed": "Salvataggio non riuscito",
+      "errors": {
+        "format": "Solo lettere minuscole, cifre e _ (iniziando con una lettera).",
+        "builtin": "Questo nome è già usato da una variabile predefinita.",
+        "duplicate": "Esiste già una variabile con questo nome."
+      },
+      "presets": "Variabili già pronte",
+      "presetsHint": "Clicchi per aggiungerla con un testo di esempio – poi la modifichi e salvi.",
+      "builtinTitle": "Variabili predefinite",
+      "builtinHint": "Compilate dai dati della Sua azienda, del documento e del cliente. Clicchi per copiare.",
+      "groups": {
+        "document": "Documento",
+        "customer": "Cliente",
+        "company": "La Sua azienda",
+        "other": "Altro"
+      },
+      "builtin": {
+        "number": "numero del documento",
+        "amount": "importo da pagare",
+        "due_date": "data di scadenza",
+        "issue_date": "data di emissione",
+        "vs": "simbolo variabile",
+        "link": "link alla fattura online",
+        "reminder_no": "numero del sollecito (solo solleciti)",
+        "customer": "nome del cliente",
+        "customer_ico": "numero di identificazione del cliente (IČO)",
+        "company": "il Suo nome o la ragione sociale",
+        "ico": "numero di identificazione (IČO)",
+        "dic": "partita IVA (DIČ)",
+        "company_email": "email dell'azienda",
+        "phone": "telefono",
+        "web": "sito web",
+        "address": "sede legale",
+        "bank_account": "conto bancario",
+        "iban": "IBAN",
+        "today": "data odierna",
+        "year": "anno corrente",
+        "base": "imponibile senza IVA",
+        "vat": "IVA totale",
+        "paid": "già pagato",
+        "remaining": "ancora da pagare",
+        "net": "netto stimato dopo imposte e contributi (forfait 60 %)",
+        "tax": "Imposta sul reddito per questa fattura (stima, forfait 60 %)",
+        "social": "Contributi previdenziali per questa fattura (stima)",
+        "health": "Contributi sanitari per questa fattura (stima)",
+        "insurance": "Previdenziali + sanitari (stima)",
+        "portal_link": "link al portale clienti (se attivo)"
+      },
+      "whereUsed": "Funziona negli oggetti, nei testi e nelle firme delle email e nelle note sopra/sotto le voci del documento. Una variabile sconosciuta resta come è scritta.",
+      "numberHint": "Una variabile che contiene un numero (ad es. 3.4) può essere usata anche nelle formule dei campi personalizzati della fattura."
+    },
+    "integrations": {
+      "title": "Integrazioni",
+      "description": "Colleghi Billanta al Suo calendario, alla chat o al Suo sistema.",
+      "loadError": "Impossibile caricare le impostazioni delle integrazioni.",
+      "copied": "Copiato negli appunti",
+      "copy": "Copia",
+      "saved": "Salvato",
+      "saveFailed": "Salvataggio non riuscito",
+      "errors": {
+        "https_only": "L'URL del webhook deve iniziare con https://.",
+        "private_host": "L'URL del webhook deve puntare a un server pubblico, non a una rete interna.",
+        "invalid_url": "L'URL del webhook non è valido.",
+        "too_many": "È possibile avere al massimo 10 webhook.",
+        "two_factor_required": "Attivi prima l'autenticazione a due fattori in Impostazioni → Sicurezza."
+      },
+      "feed": {
+        "title": "Calendario e RSS",
+        "hint": "Un indirizzo segreto da aggiungere a Google Calendar, Outlook o Calendario di Apple (Aggiungi calendario → Da URL). Si aggiorna da solo e contiene le scadenze fiscali e contributive attivate nella bacheca, le scadenze delle fatture non pagate e i pagamenti da effettuare.",
+        "off": "Calendario e RSS sono disattivati. Attivandoli otterrà un indirizzo privato, noto solo a chi lo condivide.",
+        "enable": "Crea indirizzo",
+        "calendar": "Calendario (iCal)",
+        "calendarHint": "Scadenze fiscali, scadenze delle fatture emesse e dei pagamenti da effettuare, con un anno di anticipo. Le app di calendario lo aggiornano circa ogni 6 ore.",
+        "rss": "RSS delle fatture",
+        "rssHint": "Gli ultimi 50 documenti emessi e il loro stato. Utile per un lettore RSS o per automazioni come Zapier o Make.",
+        "openCalendar": "Apri nell'app calendario",
+        "google": "Aggiungi a Google Calendar",
+        "secretNote": "Chiunque abbia questi indirizzi può vedere le Sue scadenze e l'elenco delle fatture (senza accesso). Non li condivida pubblicamente. Se uno trapela, ne generi uno nuovo – il vecchio indirizzo smette subito di funzionare.",
+        "rotate": "Genera un nuovo indirizzo",
+        "disable": "Disattiva",
+        "created": "Il nuovo indirizzo è pronto",
+        "disabled": "Calendario e RSS sono disattivati"
+      },
+      "webhooks": {
+        "title": "Webhook",
+        "hint": "Billanta invia un messaggio all'URL quando si verifica l'evento scelto (pagamento, fattura visualizzata, scadenza superata…). Discord: Impostazioni canale → Integrazioni → Webhook → Copia URL. Slack: l'app Incoming Webhooks. Qualsiasi altro URL riceve un JSON firmato.",
+        "adminOnly": "Solo il titolare o un amministratore può configurare i webhook dell'azienda.",
+        "empty": "Ancora nessun webhook. Aggiunga, per esempio, un canale Discord che riceve le fatture pagate.",
+        "name": "Nome",
+        "namePlaceholder": "Ad es. #fatture su Discord",
+        "events": "Eventi",
+        "enabled": "Attivo",
+        "secret": "Segreto di firma",
+        "secretHint": "Ogni richiesta contiene X-Billanta-Signature: sha256=(HMAC-SHA256 del corpo con questo segreto) e X-Billanta-Event con il nome dell'evento.",
+        "test": "Invia un messaggio di prova",
+        "testOk": "Messaggio di prova inviato",
+        "testFailed": "Impossibile recapitare il messaggio di prova ({status})",
+        "saveFirst": "Salvi prima le modifiche",
+        "remove": "Rimuovi",
+        "add": "Aggiungi webhook",
+        "save": "Salva webhook",
+        "kinds": {
+          "discord": "Discord",
+          "slack": "Slack",
+          "json": "JSON"
+        }
+      },
+      "api": {
+        "title": "REST API",
+        "hint": "L'API crea e legge fatture, contatti e altro dal Suo e-commerce o dal Suo sistema.",
+        "description": "Crei una chiave API per collegare un e-commerce, un CRM o i Suoi script. La documentazione elenca tutti gli endpoint.",
+        "keys": "Gestisci le chiavi API",
+        "docs": "Documentazione API"
+      }
+    },
+    "paymentMethods": {
+      "title": "Metodi di pagamento",
+      "description": "Oltre a bonifico, contanti, carta e contrassegno, aggiunga i Suoi metodi di pagamento – con le istruzioni su come pagare.",
+      "loadError": "Impossibile caricare i metodi di pagamento.",
+      "readOnly": "Solo il titolare o un amministratore può modificare i metodi di pagamento.",
+      "ownTitle": "Metodi di pagamento personalizzati",
+      "ownHint": "Compaiono nel modulo della fattura sotto quelli predefiniti. Il nome e le istruzioni vengono stampati sul documento.",
+      "builtinNote": "Bonifico, contanti, carta, contrassegno e “altro” sono sempre disponibili.",
+      "empty": "Ancora nessun metodo di pagamento personalizzato. Ne aggiunga uno o ne scelga uno già pronto qui sotto.",
+      "label": "Nome",
+      "labelPlaceholder": "Nome (ad es. PayPal)",
+      "base": "Si comporta come",
+      "baseHint": "Usato per i report, le esportazioni contabili e il pagamento tramite QR. “Bonifico” mantiene sul documento il numero di conto e il codice QR.",
+      "instructions": "Istruzioni di pagamento",
+      "instructionsHint": "Stampate sul documento sotto le voci. Si possono usare variabili come '{amount}' o '{number}'. Restano modificabili sulla fattura.",
+      "instructionsPlaceholder": "Ad es. Pagare su paypal.me/azienda indicando il numero della fattura nella causale.",
+      "add": "Aggiungi metodo",
+      "save": "Salva",
+      "saved": "Metodi di pagamento salvati",
+      "saveFailed": "Salvataggio non riuscito",
+      "up": "Sposta su",
+      "down": "Sposta giù",
+      "remove": "Rimuovi",
+      "presetsTitle": "Già pronti",
+      "presetsHint": "Clicchi per aggiungerlo con istruzioni precompilate, che potrà poi modificare.",
+      "presets": {
+        "paypal": {
+          "label": "PayPal",
+          "instructions": "Si prega di pagare tramite PayPal a …, indicando '{number}' nella causale."
+        },
+        "offset": {
+          "label": "Compensazione",
+          "instructions": "Saldato tramite compensazione reciproca dei crediti."
+        },
+        "paymentLink": {
+          "label": "Link di pagamento",
+          "instructions": "Paghi con carta tramite il link nell'email o su '{link}'."
+        },
+        "crypto": {
+          "label": "Criptovaluta",
+          "instructions": "Invii '{amount}' al wallet …"
+        },
+        "foreignTransfer": {
+          "label": "Bonifico in EUR (SEPA)",
+          "instructions": "Pagamento in EUR tramite bonifico SEPA, commissioni a carico del pagatore."
+        },
+        "advance": {
+          "label": "Pagato con acconto",
+          "instructions": "Pagato tramite la fattura di acconto – non pagare."
+        }
+      },
+      "howTitle": "Come funziona",
+      "how": {
+        "form": "Nel modulo della fattura li trova nel menu Metodo di pagamento, sotto quelli predefiniti.",
+        "pdf": "Il PDF riporta il Suo nome al posto di quello predefinito, più le istruzioni di pagamento sotto le voci.",
+        "qr": "Il pagamento QR e il numero di conto vengono stampati solo per i metodi che si comportano come bonifico.",
+        "snapshot": "La fattura conserva una copia del nome e delle istruzioni. Modificarli qui in seguito non cambia i documenti già emessi."
+      },
+      "card": {
+        "title": "Pagamenti con carta dal link della fattura",
+        "description": "I clienti pagano con carta, Apple Pay o Google Pay direttamente dal link della fattura. Il denaro arriva direttamente sul Suo account Stripe.",
+        "hint": "In Stripe, crei una chiave con restrizioni (Developers → API keys → Create restricted key) con accesso in scrittura a Checkout Sessions e in lettura a Payment Intents, Charges e Balance. Billanta la conserva cifrata e non la mostra mai più. Dopo il pagamento, la fattura viene segnata come pagata e la commissione di Stripe viene registrata con il pagamento.",
+        "keyLabel": "Chiave segreta o con restrizioni di Stripe",
+        "keyHelp": "Inizia con rk_live_ o sk_live_. Usi una chiave rk_test_ / sk_test_ per provare con le carte di test.",
+        "connect": "Collega Stripe",
+        "connected": "Stripe è collegato.",
+        "disconnected": "Stripe è scollegato e la chiave è stata eliminata.",
+        "disconnect": "Scollega",
+        "stripeAccount": "Account Stripe",
+        "mode": {
+          "live": "Modalità live",
+          "test": "Modalità di test"
+        },
+        "reconnect": "Impossibile leggere la chiave, colleghi di nuovo Stripe.",
+        "enabled": "Mostra il pulsante \"Paga con carta\" sulle fatture",
+        "enabledOn": "I pagamenti con carta sono attivi.",
+        "enabledOff": "I pagamenti con carta sono disattivati.",
+        "notConnected": "I pagamenti con carta non sono configurati.",
+        "errors": {
+          "invalid_key_format": "Non sembra una chiave segreta di Stripe (sk_… o rk_…). Una chiave pubblicabile pk_… non basta.",
+          "invalid_key": "Stripe ha rifiutato la chiave. Verifichi che sia valida e abbia i permessi necessari.",
+          "not_connected": "Colleghi prima Stripe.",
+          "generic": "Impossibile salvare. Riprovi.",
+          "plan_required": "Questa funzione fa parte di un piano superiore. Ne scelga uno in Piano e fatturazione."
+        }
+      }
+    },
+    "publicProfile": {
+      "title": "Profilo pubblico",
+      "description": "Una semplice pagina pubblica per la Sua azienda: cosa fa, a quale prezzo e come contattarLa. Inserisca il link nella firma email, sulle fatture o sui social.",
+      "loadError": "Impossibile caricare il profilo pubblico.",
+      "readOnly": "Solo il titolare o un amministratore può modificare il profilo pubblico.",
+      "enabled": "Pubblica il profilo",
+      "enabledHint": "Un profilo non pubblicato è invisibile e il suo indirizzo restituisce “pagina non trovata”. Le impostazioni vengono conservate.",
+      "copy": "Copia link",
+      "open": "Apri profilo",
+      "addressTitle": "Indirizzo del profilo",
+      "slug": {
+        "label": "Indirizzo",
+        "hint": "Lettere minuscole, cifre e trattini, 3–40 caratteri. Modificandolo, il vecchio indirizzo smette di funzionare.",
+        "hintDomain": "Il profilo funziona su un proprio sottodominio il-suo-indirizzo.{domain}. Lettere minuscole, cifre e trattini, 3–40 caratteri.",
+        "checking": "Verifica in corso…",
+        "available": "L'indirizzo è libero",
+        "invalid": "Solo lettere minuscole, cifre e trattini (3–40 caratteri, non all'inizio o alla fine).",
+        "reserved": "Questo indirizzo non può essere usato.",
+        "taken": "Questo indirizzo è già usato da un'altra azienda."
+      },
+      "contentTitle": "Contenuto",
+      "tagline": "Slogan",
+      "taglineHint": "Una frase sotto il nome dell'azienda. Compare anche nei risultati di ricerca e nelle anteprime dei link.",
+      "taglinePlaceholder": "Ad es. Siti web e negozi online per piccole imprese",
+      "about": "Chi siamo",
+      "aboutHint": "Un testo più lungo sull'azienda. Gli a capo vengono mantenuti.",
+      "aboutPlaceholder": "Cosa fa, per chi lavora, in cosa è bravo…",
+      "services": "Servizi e prezzi",
+      "servicesHint": "Fino a 12 voci. Il prezzo è un testo libero, quindi va bene anche “da 50 €” o “su richiesta”.",
+      "servicesEmpty": "Ancora nessun servizio.",
+      "serviceTitle": "Nome del servizio",
+      "serviceDescription": "Descrizione (facoltativa)",
+      "servicePrice": "Prezzo (ad es. da 49 €)",
+      "addService": "Aggiungi servizio",
+      "up": "Sposta su",
+      "down": "Sposta giù",
+      "remove": "Rimuovi",
+      "showTitle": "Quali dati aziendali mostrare",
+      "showHint": "I dati provengono da Impostazioni → Azienda, così li gestisce in un unico posto.",
+      "show": {
+        "email": "Email",
+        "phone": "Telefono",
+        "website": "Sito web",
+        "address": "Sede legale",
+        "ico": "Numero di identificazione (IČO), partita IVA e iscrizione al registro",
+        "logo": "Logo"
+      },
+      "cta": "Pulsante “Invia richiesta”",
+      "ctaHint": "Apre per il visitatore un'email con l'oggetto precompilato. Non viene salvato nulla, non serve alcun modulo.",
+      "missing": "Mancano nei dati aziendali: {fields}.",
+      "missingLink": "Compila",
+      "neverShown": "Coordinate bancarie, dati dell'abbonamento e documenti non vengono mai mostrati sul profilo.",
+      "save": "Salva",
+      "publish": "Salva e pubblica",
+      "saved": "Profilo salvato",
+      "savedLive": "Il profilo è online",
+      "saveFailed": "Salvataggio non riuscito",
+      "serviceUnitPrice": "Prezzo unitario",
+      "serviceUnitPriceHint": "Un numero senza IVA che finisce nell'ordine. Senza di esso, il prezzo lo aggiunge Lei.",
+      "serviceUnit": "Unità (pz, ore)",
+      "copyOrderLink": "Copia link per l'ordine",
+      "copyOrderLinkSaveFirst": "Il link è disponibile dopo aver salvato e pubblicato il profilo.",
+      "orders": {
+        "title": "Ordini e messaggi",
+        "enabled": "Ricevi ordini dal profilo",
+        "enabledHint": "Ogni servizio riceve un pulsante Ordina. Gli ordini vengono salvati come bozze di fattura da verificare; nulla viene emesso o inviato automaticamente.",
+        "customItems": "Consenti voci personalizzate",
+        "customItemsHint": "I clienti possono aggiungere cos'altro desiderano. Queste voci arrivano senza prezzo e lo aggiunge Lei.",
+        "prepay": "Pagamento anticipato",
+        "prepayHint": "Dopo l'ordine, il cliente vede il numero di conto, l'importo, il simbolo variabile e un codice QR. Solo per i servizi con prezzo unitario. La fattura la emette comunque Lei manualmente.",
+        "prepayNoAccount": "Aggiunga il conto bancario dell'azienda per richiedere il pagamento anticipato.",
+        "contactForm": "Modulo di contatto",
+        "contactFormHint": "I visitatori possono scriverLe direttamente dal profilo. I messaggi arrivano nelle notifiche dell'app; al visitatore non inviamo nulla.",
+        "linksHint": "Copi il link per ordinare un servizio specifico con l'icona a catena accanto. Utile per email o social."
+      },
+      "directory": {
+        "enabled": "Mostra nell'elenco delle attività",
+        "enabledHint": "Il Suo profilo compare nell'elenco delle attività per settore e città, e nella pagina della Sua città.",
+        "noTown": "Per comparire nell'elenco serve la città dall'indirizzo dell'azienda. Aggiunga l'indirizzo nei dati aziendali.",
+        "trade": "Settore",
+        "pickTrade": "Scelga un settore",
+        "town": "Città",
+        "pickTown": "Scelga una città",
+        "townWithDistrict": "{name} (distretto di {district})",
+        "needsProfile": "L'elenco mostra solo profili pubblicati. Attivi anche la pubblicazione del profilo qui sopra.",
+        "consentTitle": "Cosa viene pubblicato attivando questa opzione",
+        "consentShown": "L'elenco mostra il nome dell'azienda, lo slogan, il logo, il settore e la città, con un link a questo profilo.",
+        "consentShownNoCity": "L'elenco mostra il nome dell'azienda, lo slogan, il logo, il settore e la città, con un link a questo profilo (anche se nasconde l'indirizzo sul profilo).",
+        "consentNever": "Il numero di identificazione (IČO), l'email e il telefono non vengono mai mostrati nell'elenco.",
+        "consentSearch": "Le pagine dell'elenco possono essere indicizzate dai motori di ricerca (Google e altri).",
+        "consentWithdraw": "Può disattivare la presenza nell'elenco in qualsiasi momento. Scompare dall'elenco entro pochi minuti e dalle pagine delle città entro un'ora; i motori di ricerca possono impiegare più tempo.",
+        "consentBasis": "La presenza nell'elenco è volontaria e si basa sul Suo consenso (art. 6, par. 1, lett. a) GDPR), che fornisce attivando questa opzione e revoca disattivandola.",
+        "trades": {
+          "tradesman": "Artigiani",
+          "construction": "Edilizia",
+          "it": "IT e software",
+          "design": "Design e grafica",
+          "marketing": "Marketing e pubblicità",
+          "photo": "Foto e video",
+          "consulting": "Consulenza",
+          "education": "Formazione e corsi",
+          "beauty": "Estetica e parrucchieri",
+          "health": "Salute e terapie",
+          "transport": "Trasporti e traslochi",
+          "gastro": "Ristorazione e catering",
+          "eshop": "E-commerce e commercio al dettaglio",
+          "cleaning": "Pulizie e manutenzione",
+          "other": "Altri servizi"
+        }
+      }
+    }
+  },
+  "pricing": {
+    "title": "Prezzi",
+    "lead": "Inizi gratis, senza carta. Passi a un piano superiore quando ne ha bisogno.",
+    "seoTitle": "Prezzi del software di fatturazione – inizia gratis",
+    "metaDescription": "Prezzi di Billanta: Free con 10 documenti al mese e pagamento a consumo oltre questa soglia, Start da 4,99 €, Plus con AI da 9,99 € e Business per i team. Nessuna carta richiesta, prezzi IVA esclusa.",
+    "yearly": "Annuale",
+    "monthly": "Mensile",
+    "yearlySave": "2 mesi gratis",
+    "currency": "Valuta",
+    "period": "Fatturazione",
+    "perMonth": "/ mese",
+    "billedYearly": "fatturato annualmente, {total}",
+    "billedMonthly": "fatturato mensilmente",
+    "forever": "per sempre",
+    "popular": "Il più scelto",
+    "vatNote": "Prezzi IVA esclusa. Può cambiare o disdire il piano in qualsiasi momento.",
+    "aiKeyNote": "Ha una Sua chiave AI? La colleghi nelle impostazioni e paghi le funzioni AI direttamente al Suo fornitore, senza limiti del piano.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Per provare e per qualche fattura occasionale",
+        "cta": "Inizia gratis",
+        "features": [
+          "10 documenti al mese inclusi",
+          "Documenti aggiuntivi a {payg} l'uno",
+          "ISDOC, pagamento con QR, ricerca nei registri e VIES",
+          "5 crediti AI al mese",
+          "Monitoraggio della soglia IVA e scadenzario fiscale",
+          "Registrazione dei tempi e backup dei dati"
+        ]
+      },
+      "start": {
+        "name": "Start",
+        "tagline": "Per i freelance che fatturano con regolarità",
+        "cta": "Scegli Start",
+        "features": [
+          "Documenti illimitati",
+          "Abbinamento dei pagamenti da banca e PayPal",
+          "Solleciti automatici",
+          "Fatture ricorrenti e portale clienti",
+          "Dati per l'imposta sul reddito",
+          "Esportazione per Pohoda e Money S3",
+          "30 crediti AI al mese",
+          "Accesso gratuito per il commercialista"
+        ]
+      },
+      "plus": {
+        "name": "Plus",
+        "tagline": "L'AI fa gran parte del lavoro",
+        "cta": "Scegli Plus",
+        "features": [
+          "Tutto ciò che include Start",
+          "150 crediti AI al mese",
+          "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi",
+          "Pagamenti con carta sulle fatture",
+          "3 utenti + commercialista",
+          "API e webhook (10.000 richieste)",
+          "Assistenza prioritaria"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Per team e più aziende",
+        "cta": "Scegli Business",
+        "features": [
+          "Tutto ciò che include Plus",
+          "Fino a 10 aziende in un unico account",
+          "10 utenti con ruoli",
+          "500 crediti AI al mese",
+          "API e webhook (50.000 richieste)",
+          "Assistenza prioritaria"
+        ]
+      }
+    },
+    "paygNote": "Con Free paga solo i documenti oltre i 10 al mese, {payg} l'uno. Da circa 34 documenti al mese conviene Start.",
+    "aiCreditNote": "Un credito AI = una fattura da un messaggio vocale o di testo, oppure uno scontrino letto da una foto.",
+    "compare": {
+      "title": "Confronta i piani",
+      "feature": "Funzione",
+      "yes": "Sì",
+      "no": "No",
+      "groups": {
+        "invoicing": "Fatturazione",
+        "payments": "Pagamenti e banca",
+        "ai": "AI",
+        "tax": "Fisco e commercialista",
+        "team": "Team e dati"
+      },
+      "rows": {
+        "docs": "Documenti al mese",
+        "types": "Fatture, proforma, note di credito e preventivi",
+        "isdoc": "ISDOC, pagamento con QR, ricerca nei registri e VIES",
+        "currencies": "Valute estere con i cambi della banca centrale",
+        "languages": "Documenti in ceco, slovacco e inglese",
+        "recurring": "Fatture ricorrenti",
+        "reminders": "Solleciti per i pagamenti scaduti",
+        "bank": "Abbinamento dei pagamenti bancari",
+        "paypal": "Sincronizzazione con PayPal",
+        "portal": "Portale clienti",
+        "cards": "Pagamenti con carta sulle fatture",
+        "aiCredits": "Crediti AI al mese",
+        "voice": "Fatture da messaggi vocali e di testo",
+        "receipts": "Scontrini da una foto",
+        "ownKey": "La Sua chiave AI, senza limiti",
+        "vatLimit": "Monitoraggio della soglia IVA e scadenzario fiscale",
+        "annual": "Dati per l'imposta sul reddito",
+        "vatFilings": "Dichiarazione IVA, comunicazione di controllo ed elenchi riepilogativi",
+        "accountantExport": "Esportazione per il commercialista",
+        "users": "Utenti",
+        "companies": "Aziende in un unico account",
+        "api": "API e webhook (richieste al mese)",
+        "time": "Registrazione dei tempi",
+        "backups": "Backup dei dati (Google Drive, download)",
+        "support": "Assistenza"
+      },
+      "cell": {
+        "docsFree": "10 inclusi, poi {payg} l'uno",
+        "unlimited": "Illimitati",
+        "twoTemplates": "2 modelli",
+        "manual": "Manuale",
+        "automatic": "Automatico",
+        "csv": "CSV",
+        "csvPlus": "CSV, Pohoda, Money S3",
+        "oneUser": "1",
+        "userAccountant": "1 + commercialista",
+        "threeAccountant": "3 + commercialista",
+        "tenUsers": "10 con ruoli",
+        "upTo10": "Fino a 10",
+        "email": "E-mail",
+        "priority": "Prioritaria"
+      }
+    },
+    "compareCompetitors": "Billanta a confronto con Fakturoid, iDoklad e altri",
+    "trialNote": "{days, plural, one {# giorno} many {# giorni} other {# giorni}} di {plan} gratis, senza carta, una volta per numero di identificazione (IČO). La prova inizia quando l'azienda inserisce il proprio IČO e al termine passa automaticamente al piano Free. I dati restano.",
+    "trialCard": "{days, plural, one {# giorno} many {# giorni} other {# giorni}} gratis per iniziare, senza carta",
+    "methods": {
+      "title": "Come pagare",
+      "card": {
+        "title": "Abbonamento con carta – rinnovo automatico, più conveniente",
+        "body": "I prezzi indicati sopra valgono per l'abbonamento con carta, Apple Pay o Google Pay. Si rinnova da solo, può disdirlo in qualsiasi momento e il piano resta attivo fino alla fine del periodo pagato."
+      },
+      "transfer": {
+        "title": "Bonifico bancario – senza rinnovo automatico",
+        "body": "Un mese o un anno in anticipo a fronte di una fattura proforma con codice QR, con un sovrapprezzo del {percent} %, perché abbiniamo ogni pagamento a mano. Non viene addebitato nulla in automatico e prima della fine del periodo Le inviamo un promemoria con la proforma successiva."
+      }
+    },
+    "transferPrice": "con bonifico {price} / mese",
+    "transferCzkOnly": "Il bonifico bancario è possibile solo in corone ceche.",
+    "faq": {
+      "title": "Domande sui prezzi",
+      "items": [
+        {
+          "q": "Billanta è gratuito?",
+          "a": "Sì. Il piano Free non ha limiti di tempo e non richiede una carta. Include 10 documenti al mese; ogni documento in più costa {payg}. ISDOC, pagamenti con QR e ricerca delle aziende nel registro ARES sono inclusi in tutti i piani."
+        },
+        {
+          "q": "I prezzi includono l'IVA?",
+          "a": "No, tutti i prezzi sono indicati IVA esclusa."
+        },
+        {
+          "q": "Posso cambiare o disdire il piano in qualsiasi momento?",
+          "a": "Sì. L'abbonamento con carta si può disdire in qualsiasi momento e il piano resta attivo fino alla fine del periodo pagato. Con ogni piano può scaricare un backup dei Suoi dati."
+        },
+        {
+          "q": "Posso pagare con bonifico bancario?",
+          "a": "Sì, un mese o un anno in anticipo a fronte di una fattura proforma, con un sovrapprezzo del {percent} % rispetto alla carta, perché questi pagamenti li abbiniamo a mano. Il bonifico è possibile solo in corone ceche."
+        },
+        {
+          "q": "Che cos'è un credito AI?",
+          "a": "Una bozza di fattura creata da un messaggio vocale o di testo, oppure uno scontrino letto. Con una Sua chiave AI paga direttamente il fornitore AI, senza i limiti del piano."
+        },
+        {
+          "q": "Il mio commercialista ha bisogno di un piano proprio?",
+          "a": "No. Dal piano Start un commercialista ottiene gratuitamente l'accesso alla Sua azienda, nell'ambito del Suo piano."
+        },
+        {
+          "q": "Perché sulle fatture compare “Creato con Billanta”?",
+          "a": "Con il piano gratuito ogni documento riporta un piccolo link a Billanta nel piè di pagina del PDF, dell'e-mail e della fattura online. È così che il piano Free si ripaga. Con un piano a pagamento e durante la prova può disattivarlo in Impostazioni, nella sezione fatture."
+        }
+      ]
+    }
+  },
+  "billing": {
+    "title": "Piano e fatturazione",
+    "description": "Su quale piano si trova l'azienda, quanto resta della prova e come paga.",
+    "loadError": "Impossibile caricare il piano. Provi a ricaricare la pagina.",
+    "checkoutSuccess": "Grazie, il pagamento è andato a buon fine. Il piano si attiverà tra pochi secondi.",
+    "checkoutCanceled": "Il pagamento non è stato completato. Non è stato addebitato nulla.",
+    "planNames": {
+      "free": "Free",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "trialBanner": {
+      "active": "Sta provando gratuitamente il piano {plan}, {days, plural, one {resta # giorno} many {restano # giorni} other {restano # giorni}}.",
+      "ended": "La prova del piano {plan} è terminata. I Suoi dati ci sono tutti; le funzioni a pagamento sono in sola lettura.",
+      "choose": "Scegli un piano",
+      "upgrade": "Passa a un piano superiore"
+    },
+    "current": {
+      "label": "Piano attuale",
+      "trial": "Prova gratuita, {days, plural, one {resta # giorno} many {restano # giorni} other {restano # giorni}} (fino al {date}). Nessuna carta, nessun addebito automatico.",
+      "trialEnded": "La prova del piano {plan} è terminata. Ora l'azienda è sul piano Free. Non è stato eliminato nulla; le funzioni dei piani superiori sono in sola lettura.",
+      "prepaid": "Pagato fino al {date}.",
+      "subscriptionMonth": "Abbonamento con fatturazione mensile.",
+      "subscriptionYear": "Abbonamento con fatturazione annuale.",
+      "free": "Piano Free. Passi a un piano superiore quando Le serve di più.",
+      "pastDue": "L'ultimo pagamento non è andato a buon fine. Stripe riproverà; nel frattempo può cambiare il metodo di pagamento nel portale."
+    },
+    "portal": "Gestisci abbonamento",
+    "choose": {
+      "title": "Scegli un piano",
+      "yearly": "Annuale",
+      "monthly": "Mensile",
+      "perMonth": "/ mese",
+      "billedYearly": "{total} all'anno",
+      "billedMonthly": "fatturato ogni mese",
+      "payCard": "Paga con carta",
+      "renewCard": "Rinnova con carta",
+      "cardUnavailable": "I pagamenti con carta non sono ancora attivi.",
+      "cardTitle": "Abbonamento con carta – rinnovo automatico, più conveniente",
+      "cardBody": "Carta, Apple Pay o Google Pay. Si rinnova da solo e può disdirlo qui con un clic.",
+      "transferTitle": "Bonifico bancario – senza rinnovo automatico",
+      "transferBody": "Una fattura proforma con codice QR per un mese o un anno in anticipo, con un sovrapprezzo del {percent} %. Prima della fine del periodo Le inviamo un promemoria.",
+      "transferPrice": "Con bonifico {price} / mese ({total})"
+    },
+    "terms": {
+      "renewYearly": "L'abbonamento si rinnova automaticamente ogni anno allo stesso prezzo finché non lo disdice.",
+      "renewMonthly": "L'abbonamento si rinnova automaticamente ogni mese allo stesso prezzo finché non lo disdice.",
+      "cancel": "Può disdire in qualsiasi momento con un solo passaggio direttamente in questa pagina. Il piano resta poi attivo fino alla fine del periodo pagato.",
+      "methods": "Paghi con carta, Apple Pay, Google Pay o con qualsiasi altro metodo offerto al checkout.",
+      "transfer": "Con il bonifico bancario paga un anno in anticipo, con un sovrapprezzo del {percent} % rispetto alla carta. Nulla si rinnova da solo: 14 e 3 giorni prima della scadenza Le inviamo via e-mail una nuova proforma con codice QR. Il piano si attiva non appena il pagamento arriva sul nostro conto.",
+      "transferMonthly": "Con il bonifico bancario paga un mese in anticipo, con un sovrapprezzo del {percent} % rispetto alla carta. Nulla si rinnova da solo: 14 e 3 giorni prima della scadenza Le inviamo via e-mail una nuova proforma con codice QR.",
+      "transferCzkOnly": "Il bonifico bancario è disponibile solo in CZK.",
+      "vat": "Prezzi IVA esclusa."
+    },
+    "transfer": {
+      "title": "Pagamenti con bonifico bancario",
+      "button": "Paga con bonifico",
+      "created": "La fattura proforma è pronta. I dati per il pagamento sono riportati qui sotto.",
+      "months": "{n, plural, one {# mese} many {# mesi} other {# mesi}}",
+      "status": {
+        "pending": "In attesa di pagamento",
+        "paid": "Pagata",
+        "canceled": "Annullata"
+      },
+      "qrAlt": "Codice QR per il pagamento",
+      "amount": "Importo",
+      "vat": "IVA {rate} % inclusa",
+      "vs": "Simbolo variabile",
+      "account": "Numero di conto",
+      "due": "Scadenza",
+      "payee": "Beneficiario",
+      "ico": "Numero di identificazione (IČO)",
+      "dic": "Partita IVA",
+      "note": "Scansioni il codice QR con l'app della Sua banca oppure inserisca a mano il conto e il simbolo variabile. Attiviamo il piano non appena abbiniamo il pagamento, di solito entro un giorno lavorativo.",
+      "paidOn": "Pagamento ricevuto il {date}."
+    },
+    "errors": {
+      "generic": "Qualcosa è andato storto. Riprovi.",
+      "billing_not_configured": "I pagamenti con carta non sono ancora attivi.",
+      "already_subscribed": "L'azienda ha già un abbonamento. Lo gestisce in alto in questa pagina.",
+      "no_stripe_customer": "L'azienda non ha ancora un abbonamento Stripe.",
+      "bank_transfer_not_configured": "Il bonifico bancario non è ancora attivo.",
+      "too_many_pending_proformas": "Ha già tre fatture proforma non pagate. Ne paghi una oppure attenda che la abbiniamo.",
+      "forbidden": "Solo il titolare o un amministratore dell'azienda può effettuare pagamenti.",
+      "no_subscription": "L'azienda non ha un abbonamento con carta attivo.",
+      "same_interval": "Paga già in questo modo.",
+      "subscription_past_due": "L'ultimo pagamento non è andato a buon fine. Prima cambi la carta nel portale dell'abbonamento.",
+      "subscription_not_changeable": "Questo abbonamento non si può modificare qui. Ci scriva e risolveremo noi.",
+      "trial_card_disabled": "Al momento non è possibile estendere la prova con una carta.",
+      "trial_card_not_available": "Questa azienda non può estendere la prova con una carta.",
+      "no_ico": "Prima inserisca l'IČO dell'azienda nelle impostazioni aziendali."
+    },
+    "portalHint": "Nel portale Stripe può cambiare la carta o i dati di fatturazione e scaricare le fatture.",
+    "sub": {
+      "renewsOn": "Prossimo pagamento e rinnovo il {date}.",
+      "endsOn": "L'abbonamento è disdetto e termina il {date}. Fino ad allora il piano resta attivo.",
+      "cancel": "Disdici abbonamento",
+      "cancelConfirm": "L'abbonamento non verrà rinnovato. Il piano resta attivo fino al {date}, poi l'azienda passa al piano Free. I Suoi dati restano.",
+      "cancelConfirmNoDate": "L'abbonamento non verrà rinnovato. Il piano resta attivo fino alla fine del periodo pagato, poi l'azienda passa al piano Free. I Suoi dati restano.",
+      "cancelYes": "Sì, disdici",
+      "keep": "Mantieni abbonamento",
+      "canceled": "L'abbonamento non verrà rinnovato. Il piano resta attivo fino alla fine del periodo pagato.",
+      "resume": "Mantieni il mio abbonamento",
+      "resumed": "L'abbonamento verrà di nuovo rinnovato.",
+      "switchToYear": "Passa alla fatturazione annuale ({price} / mese)",
+      "switchToMonth": "Passa alla fatturazione mensile ({price} / mese)",
+      "switchNote": "Il nuovo periodo inizia subito. La parte non utilizzata di quello attuale viene scalata dal primo pagamento.",
+      "switched": "Fatto, ora paga {interval, select, year {annualmente} other {mensilmente}}."
+    },
+    "trialCard": {
+      "title": "Provi Billanta per {days} giorni",
+      "body": "Aggiunga una carta e la Sua prova si estende a {days} giorni in totale. Non viene addebitato nulla e prima della scadenza Le chiediamo se desidera continuare.",
+      "bodyWithheld": "Non abbiamo potuto concedere a questa azienda la prova senza carta. Con una carta ottiene {days} giorni. Non viene addebitato nulla e prima della scadenza Le chiediamo se desidera continuare.",
+      "button": "Aggiungi una carta",
+      "hint": "Stripe verifica la carta. Ogni carta può estendere una prova una sola volta.",
+      "extended": "Fatto – ora la Sua prova dura {days} giorni. La carta è salvata e non è stato addebitato nulla.",
+      "errors": {
+        "generic": "Non è stato possibile estendere la prova. Riprovi.",
+        "trial_card_card_used": "Questa carta ha già esteso una prova.",
+        "trial_card_user_had_trial": "Il Suo account ha già usufruito di una prova con un'altra azienda.",
+        "trial_card_trial_over": "La prova è già terminata e non può più essere estesa.",
+        "trial_card_no_ico": "Prima inserisca l'IČO dell'azienda nelle impostazioni aziendali.",
+        "trial_card_invalid_ico": "L'IČO dell'azienda non è valido. Lo corregga nelle impostazioni aziendali.",
+        "trial_card_not_in_registry": "Non abbiamo trovato l'IČO dell'azienda nel registro delle imprese. Lo corregga nelle impostazioni aziendali.",
+        "trial_card_registry_down": "Il registro delle imprese non risponde. Riprovi tra un momento.",
+        "trial_card_not_available": "Questa azienda non può estendere la prova con una carta.",
+        "trial_card_invalid_session": "Questa carta salvata non appartiene a questa azienda.",
+        "trial_card_incomplete": "Il salvataggio della carta non è stato completato. Riprovi.",
+        "trial_card_disabled": "Al momento non è possibile estendere la prova con una carta."
+      }
+    }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Funzionalità",
+      "pricing": "Prezzi",
+      "login": "Accedi",
+      "signup": "Registrati",
+      "label": "Navigazione principale",
+      "home": "Home",
+      "start": "Inizia",
+      "cities": "Città",
+      "about": "Chi siamo",
+      "faq": "Domande frequenti",
+      "guestInvoice": "Fattura senza registrazione",
+      "createInvoice": "Crea fattura",
+      "createInvoiceShort": "Fattura",
+      "search": "Cerca",
+      "app": "App",
+      "account": "Account",
+      "accountants": "Per commercialisti",
+      "partners": "Partner",
+      "schools": "Per le scuole",
+      "creators": "Per i creator",
+      "events": "Per eventi e community",
+      "forPartners": "Per i partner",
+      "firstInvoice": "Prima fattura",
+      "teamRoles": "Ruoli nel team"
+    },
+    "hero": {
+      "title": "Fatturazione per le imprese ceche e slovacche, senza scartoffie",
+      "subtitle": "Emetta fatture a voce tramite Telegram o WhatsApp, le esporti in ISDOC e abbia la certezza che tutto corrisponda al registro ARES e alle norme vigenti.",
+      "cta": "Crea un account gratuito",
+      "secondaryCta": "Scopri come funziona",
+      "eyebrow": "Fatturazione per CZ e SK",
+      "points": {
+        "isdoc": "Esportazione ISDOC",
+        "ares": "Ricerca in ARES",
+        "qr": "Pagamenti con QR"
+      },
+      "guestCta": "Fattura senza registrazione",
+      "dictateCta": "Oppure dettala – senza registrazione"
+    },
+    "invoiceMockup": {
+      "status": "Pagata",
+      "issuedTo": "Intestata a",
+      "dueDate": "Scadenza",
+      "subtotal": "Imponibile",
+      "vat": "IVA 21%",
+      "total": "Totale da pagare",
+      "isdocTag": "Esportazione ISDOC",
+      "aresTag": "Verificato tramite ARES",
+      "credit": "Creato con Billanta"
+    },
+    "features": {
+      "title": "Tutto ciò che serve per fatturare, in un unico posto",
+      "isdoc": {
+        "title": "Esportazione ISDOC",
+        "description": "Fatture in formato ISDOC, pronte per il commercialista e per l'amministrazione finanziaria – senza doverle ricopiare a mano."
+      },
+      "aiVoice": {
+        "title": "Fattura da un messaggio vocale",
+        "description": "Detti una fattura su Telegram o WhatsApp e l'AI prepara una bozza da controllare in un attimo."
+      },
+      "compliance": {
+        "title": "Controllo dei dati obbligatori",
+        "description": "Prima dell'emissione verifichiamo che la fattura contenga tutto ciò che richiedono le norme ceche o slovacche su IVA e diritto commerciale – numero di identificazione, partita IVA, indirizzi, righe. I dati del cliente arrivano da ARES."
+      },
+      "multilang": {
+        "title": "Ceco, slovacco e inglese",
+        "description": "L'intera app e le Sue fatture funzionano in tre lingue fin dal primo giorno."
+      },
+      "qr": {
+        "title": "Un codice QR di pagamento su ogni fattura",
+        "description": "Ogni fattura riporta un codice QR secondo lo standard dell'Associazione bancaria ceca. Aggiunga il numero di conto o l'IBAN e il cliente non deve far altro che inquadrarlo e pagare."
+      },
+      "bankSync": {
+        "title": "I pagamenti da banca e PayPal si abbinano da soli",
+        "description": "Colleghi Fio, un'altra banca tramite PSD2 o PayPal: Billanta scarica gli incassi e segna le fatture come pagate, commissione PayPal compresa."
+      },
+      "reminders": {
+        "title": "Solleciti per i pagamenti scaduti",
+        "description": "Billanta tiene d'occhio le fatture non pagate e invia al cliente un sollecito con il link alla fattura e il pagamento con QR."
+      },
+      "vat": {
+        "title": "Dichiarazione IVA per EPO",
+        "description": "Da fatture e spese prepariamo in XML la dichiarazione IVA e la comunicazione di controllo per il portale fiscale ceco (EPO)."
+      },
+      "expenses": {
+        "title": "Scontrini da una foto",
+        "description": "Fotografi uno scontrino o carichi un PDF: l'AI compila fornitore, importo, IVA e scadenza."
+      },
+      "recurring": {
+        "title": "Fatture ricorrenti e massive",
+        "description": "Canoni e affitti vengono emessi secondo calendario. Da un modello può fatturare a molti clienti in una volta."
+      },
+      "templates": {
+        "title": "Modelli e variabili personalizzate",
+        "description": "Salvi un documento come modello, modifichi i testi delle e-mail e inserisca variabili come '{number}' o '{due_date}'."
+      },
+      "time": {
+        "title": "Registrazione dei tempi",
+        "description": "Un timer e registrazioni manuali per progetto. Trasformi il lavoro non ancora fatturato in una fattura alla tariffa del progetto con un clic."
+      },
+      "taxEstimate": {
+        "title": "Quanto Le resta",
+        "description": "Ogni fattura mostra un importo indicativo al netto di imposta sul reddito e contributi secondo le regole ceche per le ditte individuali. Per l'intero anno calcoliamo imposta, contributi e prossimi acconti."
+      },
+      "currencies": {
+        "title": "Fatture in valuta estera",
+        "description": "EUR, USD e altre. Il cambio della ČNB (banca nazionale ceca) alla data dell'operazione si compila da solo e viene convertito in CZK ai fini IVA."
+      },
+      "clientPortal": {
+        "title": "Portale clienti",
+        "description": "Un link permanente per ogni cliente: tutte le sue fatture e i preventivi, quanto resta da pagare e cosa è scaduto."
+      },
+      "migration": {
+        "title": "Passi da un'altra app",
+        "description": "Da BitFaktura e Fakturoid direttamente tramite API con i PDF originali, da iDoklad o Excel tramite CSV. Prima di salvare vede un'anteprima."
+      },
+      "api": {
+        "title": "API e webhook",
+        "description": "Una REST API con chiavi proprie, webhook per Slack, Discord o il Suo sistema e un calendario delle scadenze."
+      },
+      "team": {
+        "title": "Team, commercialista, più aziende",
+        "description": "Inviti colleghi e commercialista, ciascuno con il proprio ruolo. Gestisca una ditta individuale e una società da un unico account."
+      },
+      "auditLog": {
+        "title": "Cronologia delle modifiche",
+        "description": "Chi ha modificato cosa e quando, comprese le modifiche dell'AI e tramite API. Un documento emesso si può correggere solo indicando un motivo."
+      },
+      "reports": {
+        "title": "Report per periodo",
+        "description": "Ricavi, spese e clienti principali per mese, trimestre o anno, a confronto con il periodo precedente."
+      },
+      "backups": {
+        "title": "Backup sul Suo spazio di archiviazione",
+        "description": "I dati dell'azienda vengono salvati regolarmente su Google Drive, sul Suo server tramite SFTP o tramite webhook. Scarichi tutto con un clic."
+      }
+    },
+    "howItWorks": {
+      "title": "Come funziona",
+      "steps": {
+        "capture": {
+          "title": "La detti o la scriva",
+          "description": "Un vocale su Telegram o WhatsApp, la foto di uno scontrino o una sola frase. L'AI compila il cliente da ARES e le righe.",
+          "highlight": "AI anche nel piano gratuito"
+        },
+        "draft": {
+          "title": "Controlli la bozza",
+          "description": "Billanta verifica i dati obbligatori, l'IVA e la numerazione. Nulla viene emesso finché non conferma Lei.",
+          "highlight": "Controllo dei dati obbligatori"
+        },
+        "issue": {
+          "title": "Emetta e invii",
+          "description": "Un PDF con codice QR di pagamento, ISDOC e UBL per la Slovacchia. Il cliente riceve un'e-mail con il link alla fattura.",
+          "highlight": "10 documenti al mese gratis"
+        },
+        "getPaid": {
+          "title": "I pagamenti si abbinano da soli",
+          "description": "Da Fio, da un'altra banca tramite PSD2 o da PayPal. Ogni fattura mostra quanto Le resta al netto di imposta sul reddito e contributi.",
+          "highlight": "Le resta: l'importo netto"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Pronto a semplificare la Sua fatturazione?",
+      "subtitle": "Si inizia gratis, senza carta di credito.",
+      "cta": "Crea il Suo account"
+    },
+    "footer": {
+      "tagline": "Fatturazione moderna per le imprese ceche e slovacche.",
+      "product": {
+        "title": "Prodotto",
+        "features": "Funzionalità",
+        "pricing": "Prezzi",
+        "faq": "Domande frequenti",
+        "guestInvoice": "Fattura senza registrazione",
+        "compare": "Confronto con altri",
+        "firstInvoice": "La Sua prima fattura",
+        "beginners": "Per chi inizia",
+        "advanced": "Per utenti esperti",
+        "teamRoles": "Ruoli nel team"
+      },
+      "company": {
+        "title": "Azienda",
+        "about": "Chi siamo",
+        "accountants": "Per commercialisti",
+        "partners": "Partner",
+        "blog": "Blog",
+        "schools": "Per le scuole",
+        "creators": "Per i creator",
+        "events": "Per eventi e community",
+        "forPartners": "Per i partner"
+      },
+      "legal": {
+        "title": "Note legali",
+        "terms": "Termini di servizio",
+        "privacy": "Informativa sulla privacy",
+        "cookies": "Cookie policy",
+        "cookieSettings": "Impostazioni cookie",
+        "dpa": "Accordo sul trattamento dei dati",
+        "contact": "Contatti"
+      },
+      "account": {
+        "title": "Account",
+        "login": "Accedi",
+        "signup": "Registrati",
+        "openApp": "Vai all'app"
+      },
+      "partners": {
+        "title": "Partner",
+        "all": "Tutti i partner"
+      }
+    },
+    "seo": {
+      "title": "Billanta – fatturazione online per le imprese ceche e slovacche",
+      "description": "Emetta fatture con esportazione ISDOC, ricerca dei clienti in ARES e codice QR di pagamento. Detti una bozza con un messaggio vocale su Telegram o WhatsApp. Si inizia gratis."
+    },
+    "faq": {
+      "title": "Domande frequenti",
+      "items": {
+        "free": {
+          "q": "Quanto costa Billanta?",
+          "a": "Può iniziare gratis, senza carta, con 10 documenti al mese. I piani a pagamento partono da {price} al mese IVA esclusa con fatturazione annuale; i dettagli sono nella pagina dei prezzi."
+        },
+        "slovakia": {
+          "q": "Billanta funziona anche per la Slovacchia?",
+          "a": "Sì. L'app è disponibile in slovacco, cerca i clienti nel registro slovacco RPO, inserisce nelle fatture il codice QR PAY by square e i piani hanno prezzi in euro. Con il piano Plus prepara la dichiarazione IVA slovacca, la comunicazione di controllo e l'elenco riepilogativo per eDane. Crea già file di fattura elettronica UBL (Peppol BIS 3.0); l'invio tramite la rete Peppol per l'obbligo di fatturazione elettronica dal 2027 è in fase di sviluppo."
+        },
+        "isdoc": {
+          "q": "Che cos'è ISDOC e perché mi serve?",
+          "a": "ISDOC è lo standard ceco per la fattura elettronica. I software di contabilità lo importano automaticamente, così il commercialista non deve mai ricopiare nulla."
+        },
+        "ares": {
+          "q": "Come funziona la ricerca in ARES?",
+          "a": "Inserisca il numero di identificazione (IČO) e Billanta recupera nome, indirizzo e partita IVA del cliente direttamente dal registro pubblico ARES: niente da ricopiare e nessun errore di battitura."
+        },
+        "voice": {
+          "q": "Posso dettare una fattura?",
+          "a": "Sì. Invii un messaggio vocale su Telegram o WhatsApp e l'AI ne ricava una bozza di fattura. Diventa definitiva solo dopo che Lei l'ha controllata e confermata."
+        },
+        "data": {
+          "q": "Che fine fanno i miei dati?",
+          "a": "I dati di ogni impresa sono isolati nel database da quelli di tutte le altre. Può scaricare un backup in qualsiasi momento oppure, nelle impostazioni, farlo salvare automaticamente sul Suo spazio di archiviazione."
+        }
+      }
+    },
+    "compare": {
+      "title": "A confronto con le alternative",
+      "lead": "Più funzioni gratis, un prezzo più basso e l'AI in ogni piano. Accanto a Fakturoid, iDoklad, SuperFaktura, Vyfakturuj e BitFaktura.",
+      "more": "Confronto completo con Fakturoid, iDoklad e altri"
+    }
+  },
+  "about": {
+    "title": "Chi è Billanta",
+    "lead": "Billanta è uno strumento di fatturazione costruito sugli standard aperti che già regolano la fatturazione in Repubblica Ceca e Slovacchia – non in modo da aggirarli.",
+    "whatTitle": "Che cosa fa Billanta",
+    "whatBody": "Billanta emette fatture in formato ISDOC, recupera i dati della controparte direttamente dal registro delle imprese ARES e mantiene coerenti la numerazione e le aliquote IVA, così non deve più copiare il foglio di calcolo del mese scorso. Può anche inviare un messaggio vocale su Telegram o WhatsApp: Billanta lo trasforma in una bozza di fattura pronta per un rapido controllo – diventa definitiva solo quando la conferma Lei.",
+    "whoTitle": "Per chi è",
+    "whoBody": "Lo stiamo costruendo per freelance e piccole imprese in Repubblica Ceca e Slovacchia – persone che si fanno le fatture da sole tra un appuntamento e l'altro, non un ufficio amministrativo con il proprio reparto IT.",
+    "whyTitle": "Perché l'abbiamo creato",
+    "whyBody": "Fatturare ci ha sempre portato via più tempo del dovuto – cercare un numero di identificazione in ARES, tenere a mano il conto del prossimo numero di fattura, aprire il portatile solo per fatturare una riga tornando da un cliente. Volevamo qualcosa che si occupasse di questa parte e ci lasciasse decidere solo ciò che conta davvero: se la fattura è corretta prima di inviarla.",
+    "seoTitle": "Chi è Billanta – fatturazione con ISDOC, ARES e QR"
+  },
+  "contact": {
+    "title": "Contatti",
+    "lead": "Come raggiungerci, chi gestisce Billanta e dove trovare risposte rapide.",
+    "emailTitle": "Ci scriva",
+    "emailBody": "Ci invii via e-mail domande sulla fatturazione, sul Suo account o su una collaborazione.",
+    "noEmailTitle": "Dove trovare aiuto",
+    "noEmailBody": "Non abbiamo ancora un indirizzo e-mail pubblico. Le domande frequenti rispondono ai dubbi più comuni e nella demo può provare l'app senza account.",
+    "helpTitle": "Risposte rapide",
+    "links": {
+      "faq": {
+        "title": "Domande frequenti",
+        "body": "Prezzi, IVA, esportazioni per i commercialisti e altre domande comuni."
+      },
+      "demo": {
+        "title": "Provi la demo",
+        "body": "L'app con dati di esempio, senza registrazione."
+      },
+      "accountants": {
+        "title": "Trova un commercialista",
+        "body": "Commercialisti e studi che lavorano con Billanta."
+      },
+      "partners": {
+        "title": "Per i partner",
+        "body": "Corsi, coworking, community e chiunque voglia consigliare Billanta."
+      }
+    },
+    "operatorTitle": "Gestore",
+    "privacyTitle": "Dati personali",
+    "privacyBody": "Il gestore indicato sopra è il titolare del trattamento dei Suoi dati personali. L'informativa sulla privacy spiega quali dati trattiamo e come esercitare i Suoi diritti (accesso, rettifica, cancellazione e altri).",
+    "legalTitle": "Documenti legali"
+  },
+  "join": {
+    "metaTitle": "Partecipa con un codice",
+    "from": "Invito da {owner}",
+    "fromBillanta": "Invito a Billanta",
+    "title": "Fatturi con Billanta",
+    "benefit": "Con questo codice ottiene {benefit}.",
+    "preset": "Configureremo l'app per il Suo tipo di attività: {preset}.",
+    "email": "Continua con l'e-mail",
+    "or": "oppure",
+    "try": "Prova subito",
+    "trying": "Preparazione della demo…",
+    "tryHint": "Un'azienda di esempio, senza registrazione. Il codice resta memorizzato per quando creerà un account.",
+    "remembered": "Ricorderemo il codice {code} per 30 giorni.",
+    "haveAccount": "Ha già un account? Acceda.",
+    "signedIn": "Ha già effettuato l'accesso. Il codice vale per l'azienda aperta, se può gestirne l'abbonamento.",
+    "toDashboard": "Continua all'app",
+    "invalid": "Questo codice non è valido o è scaduto. Verifichi di averlo digitato correttamente.",
+    "form": {
+      "title": "Inserisca il codice",
+      "hint": "Il codice o la parola d'ordine del poster, della slide o dell'invito. Maiuscole e minuscole non contano.",
+      "label": "Codice",
+      "placeholder": "es. KAVARNA-BRNO",
+      "submit": "Continua"
+    }
+  },
+  "promo": {
+    "signupNote": "Il codice promozionale {code} verrà applicato non appena avrà configurato la Sua azienda.",
+    "appliedToast": "Codice promozionale {code} applicato: {benefit}.",
+    "notAppliedToast": "Non è stato possibile applicare il codice promozionale. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# giorno} many {# giorni} other {# giorni}} di prova del piano {plan}",
+      "free_months": "{count, plural, one {# mese} many {# mesi} other {# mesi}} del piano {plan} gratis"
+    },
+    "card": {
+      "title": "Ho un codice promozionale",
+      "hint": "Un codice da un evento, da un creator o da una scuola. Ogni azienda può riscattarne uno.",
+      "label": "Codice promozionale",
+      "placeholder": "es. STARTUP-WEEK",
+      "submit": "Applica",
+      "applied": "Codice {code} applicato ({date})"
+    },
+    "errors": {
+      "generic": "Qualcosa è andato storto. Riprovi.",
+      "promo_invalid": "Questo codice non è valido. Verifichi di averlo digitato correttamente.",
+      "promo_expired": "Questo codice è scaduto.",
+      "promo_used_up": "Questo codice ha raggiunto il limite di utilizzi.",
+      "promo_already_applied": "La Sua azienda ha già riscattato un codice promozionale. I codici non sono cumulabili.",
+      "promo_subscription_active": "L'azienda paga con un abbonamento con carta, quindi non è possibile aggiungere mesi gratuiti. Ci scriva e risolveremo noi.",
+      "promo_plan_conflict": "L'azienda ha già pagato un altro piano. Il codice potrà essere riscattato al termine di quel periodo.",
+      "promo_rate_limited": "Troppi tentativi. Riprovi tra un'ora.",
+      "forbidden": "Solo il titolare o un amministratore dell'azienda può riscattare un codice promozionale."
+    }
+  },
+  "switchBanner": {
+    "title": "Arriva da un'altra app? Importi i Suoi dati in pochi minuti",
+    "text": "Porti con sé contatti, fatture emesse e la numerazione da un export di Fakturoid, iDoklad, SuperFaktura o di altre app.",
+    "cta": "Importa dati",
+    "dismiss": "Nascondi"
+  },
+  "og": {
+    "sections": {
+      "compare": "Confronto",
+      "forAccountants": "Per commercialisti",
+      "partners": "Partner",
+      "directory": "Elenco dei commercialisti",
+      "profile": "Profilo aziendale"
+    },
+    "services": "{n, plural, one {# servizio} many {# servizi} other {# servizi}}",
+    "privateTitle": "Documento condiviso",
+    "privateSubtitle": "Apra il link per vedere il documento.",
+    "privateSection": "Link privato"
+  },
+  "linkName": {
+    "title": "Link per il cliente",
+    "label": "Nome personalizzato del link",
+    "placeholder": "es. redesign-sito",
+    "hint": "Serve solo alla leggibilità. È la chiave alla fine ad aprire il link, quindi i link già inviati continuano a funzionare. Lasci vuoto per la forma predefinita.",
+    "save": "Salva",
+    "saved": "Nome del link salvato",
+    "cleared": "Il link è tornato alla forma predefinita",
+    "invalid": "Usi lettere, cifre o trattini.",
+    "failed": "Impossibile salvare",
+    "copy": "Copia",
+    "copied": "Link copiato"
+  },
+  "shareQr": {
+    "button": "Condividi / codice QR",
+    "title": "Condividi questa pagina",
+    "lead": "Scansioni il codice QR con un telefono oppure lo scarichi per un poster o una slide.",
+    "alt": "Codice QR che rimanda a {url}",
+    "promoLabel": "Codice promozionale (facoltativo)",
+    "promoPlaceholder": "es. MEETUP26",
+    "promoHint": "Con un codice, il QR porta alla pagina per entrare in un gruppo, ad esempio un evento o un coworking. I codici li emettiamo noi, quindi uno inventato non funzionerà.",
+    "copy": "Copia link",
+    "copied": "Link copiato.",
+    "failed": "Non ha funzionato, riprovi.",
+    "share": "Condividi dal telefono"
+  },
+  "qrScan": {
+    "title": "Scansiona il codice QR della fattura",
+    "hint": "Inquadri con la fotocamera il codice QR di pagamento o il QR fattura sul documento. L'immagine viene elaborata solo sul Suo dispositivo.",
+    "denied": "Nessun accesso alla fotocamera. Lo consenta nel browser oppure carichi una foto del documento.",
+    "unsupported": "Questo browser non supporta la fotocamera. Carichi invece una foto o un PDF.",
+    "close": "Chiudi"
+  },
+  "clientPortal": {
+    "title": "Documenti per {name}",
+    "lead": "Fatture e preventivi di {company} in un unico posto – apra un documento per il QR di pagamento e il PDF",
+    "outstanding": "Da pagare",
+    "overdueOf": "di cui {amount} scaduti",
+    "allPaid": "È tutto pagato, grazie.",
+    "filterLabel": "Filtra documenti",
+    "filters": {
+      "all": "Tutti",
+      "unpaid": "Da pagare",
+      "paid": "Pagati",
+      "quotes": "Preventivi"
+    },
+    "empty": "Nessun documento.",
+    "unnumbered": "Senza numero",
+    "due": "scadenza {date}",
+    "validUntil": "valido fino al {date}",
+    "types": {
+      "invoice": "Fattura",
+      "proforma": "Fattura proforma",
+      "credit_note": "Nota di credito",
+      "quote": "Preventivo"
+    },
+    "state": {
+      "overdue": "Scaduta",
+      "unpaid": "Da pagare",
+      "paid": "Pagata",
+      "accepted": "Accettato",
+      "rejected": "Rifiutato",
+      "quote": "Preventivo",
+      "issued": "Emessa",
+      "cancelled": "Annullata"
+    },
+    "footer": "{company} Le ha inviato questo link – La preghiamo di non condividerlo",
+    "notFoundTitle": "Portale non trovato",
+    "notFoundBody": "Il link non è valido o è stato revocato. Ne chieda uno nuovo al fornitore."
+  },
+  "unsubscribe": {
+    "title": "Annulla iscrizione",
+    "intro": "Non riceverà più {what} per {company}. Le altre e-mail continueranno ad arrivare.",
+    "introNoCompany": "Non riceverà più {what}. Le altre e-mail continueranno ad arrivare.",
+    "confirm": "Annulla iscrizione",
+    "done": "Fatto, l'iscrizione è stata annullata. Non Le invieremo più queste e-mail.",
+    "already": "Ha già annullato l'iscrizione a queste e-mail.",
+    "manage": "Acceda e vada in <link>Impostazioni → Notifiche e-mail</link> per modificare le altre e-mail.",
+    "types": {
+      "invoice_paid": "le e-mail sulle fatture pagate",
+      "invoice_viewed": "le e-mail sulle fatture aperte",
+      "invoice_overdue": "le e-mail sulle fatture scadute",
+      "reminder_sent": "le e-mail sui solleciti inviati",
+      "invoice_sent": "le e-mail sulle fatture inviate",
+      "draft_ready": "le e-mail sulle nuove bozze da controllare",
+      "bank_import": "le e-mail sulle importazioni degli estratti conto",
+      "member_joined": "le e-mail sui nuovi membri del team",
+      "quote_response": "le e-mail sulle risposte ai preventivi",
+      "buyer_details": "le e-mail sui dati compilati dai clienti",
+      "weekly_digest": "il riepilogo settimanale",
+      "all": "tutte le notifiche e-mail facoltative",
+      "newsletter": "gli aggiornamenti di Billanta sulle novità fiscali e di fatturazione"
+    },
+    "errors": {
+      "invalid": "Questo link non è valido o è incompleto. Provi a copiare l'intero link dall'e-mail.",
+      "unavailable": "Al momento non è possibile annullare l'iscrizione. Riprovi tra un momento."
+    }
+  },
+  "guestInvoice": {
+    "seoTitle": "Fattura online gratuita, senza registrazione – PDF con QR",
+    "seoDescription": "Crei una fattura online gratis, senza account. Inserisca fornitore, cliente e voci e scarichi un PDF con codice QR per il pagamento. Non conserviamo nulla.",
+    "heading": "Fattura online senza registrazione",
+    "lead": "Compili i dati e scarichi la fattura PDF pronta. Nessun account, nessuna email e la fattura non viene conservata.",
+    "points": [
+      "PDF con pagamento tramite QR",
+      "Dati aziendali da ARES",
+      "Compilazione con l’AI",
+      "Con o senza partita IVA",
+      "Ceco, slovacco, inglese"
+    ],
+    "sections": {
+      "document": "Documento",
+      "supplier": "Fornitore (Lei)",
+      "customer": "Cliente",
+      "items": "Voci"
+    },
+    "fields": {
+      "number": "Numero fattura",
+      "issueDate": "Data di emissione",
+      "dueDate": "Scadenza",
+      "currency": "Valuta",
+      "paymentMethod": "Metodo di pagamento",
+      "language": "Lingua della fattura",
+      "vatPayer": "Sono soggetto IVA",
+      "name": "Nome o ragione sociale",
+      "street": "Via e numero civico",
+      "city": "Città",
+      "postalCode": "CAP",
+      "ico": "Numero di identificazione (IČO)",
+      "dic": "Partita IVA",
+      "email": "Email",
+      "phone": "Telefono",
+      "account": "Numero di conto",
+      "bankCode": "Codice banca",
+      "iban": "IBAN",
+      "description": "Descrizione",
+      "quantity": "Quantità",
+      "unit": "Unità",
+      "unitPlaceholder": "pz",
+      "unitPrice": "Prezzo unitario",
+      "vatRate": "IVA",
+      "note": "Nota in fattura",
+      "taxableSupplyDate": "Data di effettuazione dell’operazione"
+    },
+    "hints": {
+      "vatPayer": "Selezioni solo se è registrato ai fini IVA. La fattura mostrerà allora l’IVA, la data di effettuazione dell’operazione e il riepilogo per aliquota.",
+      "iban": "Facoltativo; per un conto ceco lo ricaviamo dal numero di conto. Utile per i pagamenti dall’estero.",
+      "remembered": "I dati del fornitore vengono ricordati solo da questo browser, così la prossima volta non dovrà riscriverli.",
+      "number": "Con un account, i numeri delle fatture seguono automaticamente la Sua serie di numerazione.",
+      "duzp": "La data in cui è effettuata l’operazione imponibile. Di solito coincide con la data di emissione.",
+      "qr": "Trasformiamo il numero di conto in un pagamento QR; al cliente basta scansionarlo nell’app della banca.",
+      "foreign": "Suggerimento: per un cliente UE aggiunga la sua partita IVA. Con un account la verifichiamo in VIES e troviamo l’azienda nei registri esteri."
+    },
+    "methods": {
+      "bank_transfer": "Bonifico bancario",
+      "cash": "Contanti",
+      "card": "Carta",
+      "cash_on_delivery": "Contrassegno",
+      "other": "Altro"
+    },
+    "addItem": "Aggiungi voce",
+    "removeItem": "Rimuovi voce",
+    "total": "Totale da pagare",
+    "download": "Scarica fattura PDF",
+    "privacy": "Generiamo la fattura e la dimentichiamo subito; sul server non resta nulla.",
+    "doneTitle": "La fattura è stata scaricata.",
+    "signup": "Crea un account gratuito",
+    "errors": {
+      "invalid": "Alcuni dati non sono validi. Controlli i campi obbligatori, le date e i numeri.",
+      "rateLimited": "Troppe fatture in poco tempo. Riprovi tra qualche minuto.",
+      "failed": "Non è stato possibile creare la fattura. Riprovi.",
+      "busy": "Il servizio è al momento sovraccarico. Riprovi tra poco oppure crei un account gratuito."
+    },
+    "setup": {
+      "title": "Due domande veloci",
+      "lead": "Mostreremo solo i campi che Le servono davvero. Può cambiarlo in qualsiasi momento.",
+      "q1": "In quale veste emette la fattura?",
+      "q2": "Che cosa fattura?",
+      "useCases": {
+        "freelancer": {
+          "title": "Libero professionista senza partita IVA",
+          "text": "La fattura più semplice, senza IVA"
+        },
+        "vat": {
+          "title": "Attività soggetta a IVA",
+          "text": "IVA per aliquota, data dell’operazione e partita IVA"
+        },
+        "foreign": {
+          "title": "Cliente estero",
+          "text": "In inglese, in euro, con IBAN"
+        },
+        "oneoff": {
+          "title": "Occasionale / privato",
+          "text": "Solo l’essenziale, senza IČO del cliente"
+        }
+      },
+      "billing": {
+        "hours": "Ore di lavoro",
+        "goods": "Merce a pezzo",
+        "project": "Un incarico o progetto"
+      },
+      "skip": "Salta e mostra tutti i campi",
+      "current": "Impostazione:",
+      "change": "Modifica",
+      "showAll": "Tutti i campi"
+    },
+    "placeholders": {
+      "hours": "Es. Sviluppo sito web – settembre",
+      "goods": "Es. Tazza in ceramica 0,3 l",
+      "project": "Es. Progettazione logo e identità visiva"
+    },
+    "dueIn": "{days} giorni",
+    "ares": {
+      "found": "Caricato da ARES",
+      "notFound": "Nessuna azienda trovata con questo numero",
+      "unavailable": "Il registro non è raggiungibile in questo momento, compili i dati a mano."
+    },
+    "ai": {
+      "title": "Compila con l’AI",
+      "lead": "Scriva o detti con parole Sue che cosa fattura. L’AI compila voci, prezzi, scadenza e, a partire dall’IČO, il cliente. Lei controlla tutto.",
+      "placeholder": {
+        "hours": "Es. “fattura per IČO 27604977, 12 ore di consulenza a 50 €, scadenza 14 giorni”",
+        "goods": "Es. “30 tazze a 10 € e 2× spedizione a 6 € per Caffè dei Tigli, scadenza 7 giorni”",
+        "project": "Es. “progettazione logo per 600 € per IČO 27604977, scadenza 30 giorni”"
+      },
+      "dictate": "Detta",
+      "stop": "Stop",
+      "run": "Compila",
+      "remaining": "{remaining} di {limit} tentativi gratuiti rimasti",
+      "applied": "Fatto, l’AI ha compilato il modulo. Controlli i dati.",
+      "exhausted": "Ha esaurito i tentativi AI gratuiti di oggi. Con un account l’AI (anche da un messaggio vocale su Telegram) è disponibile ogni giorno.",
+      "signupCta": "Crea un account gratuito",
+      "errors": {
+        "ai_guest_limit": "Ha esaurito i tentativi AI di oggi.",
+        "ai_global_limit": "L’AI gratuita di oggi è esaurita per tutti. Riprovi domani o crei un account.",
+        "ai_unavailable": "L’AI non è disponibile al momento.",
+        "failed": "Non siamo riusciti a elaborare il testo. Provi a formularlo in modo diverso."
+      },
+      "tapToSpeak": "Tocchi e parli",
+      "noSpeech": "Il Suo browser non supporta la dettatura (ad esempio Firefox). Scriva il testo nel campo e clicchi su Compila."
+    },
+    "showcase": {
+      "title": "Un account gratuito fa molto di più",
+      "lead": "Questa pagina è solo un assaggio. Nell’app trova anche:",
+      "all": "Tutte le funzioni",
+      "items": {
+        "recurring": {
+          "title": "Fatture ricorrenti",
+          "text": "Canoni e abbonamenti vengono emessi e inviati da soli ogni mese."
+        },
+        "reminders": {
+          "title": "Solleciti",
+          "text": "Teniamo d’occhio le fatture non pagate e ricordiamo gentilmente il pagamento al cliente."
+        },
+        "bank": {
+          "title": "Abbinamento dei pagamenti",
+          "text": "Gli estratti conto vengono abbinati alle fatture tramite il simbolo variabile."
+        },
+        "ai": {
+          "title": "AI e messaggi vocali",
+          "text": "Una fattura da una frase o da un vocale su Telegram, le spese dalla foto di uno scontrino."
+        },
+        "exports": {
+          "title": "Esportazioni per il commercialista",
+          "text": "ISDOC, XML per Pohoda e Money S3, CSV e dichiarazioni IVA ceche per il portale EPO."
+        },
+        "registry": {
+          "title": "Registri delle imprese",
+          "text": "ARES, RPO slovacco, VIES e registri esteri dalla Francia alla Svizzera."
+        },
+        "payments": {
+          "title": "Pagamenti con carta e acconti",
+          "text": "Pagamento online dal link della fattura e monitoraggio dei pagamenti parziali."
+        }
+      }
+    },
+    "account": {
+      "title": "Vuole conservare le fatture e inviarle via email?",
+      "body": "Un account gratuito Le offre una panoramica delle fatture, i contatti dal registro delle imprese, i solleciti e i pagamenti QR. Questa fattura può comunque crearla anche senza.",
+      "signup": "Crea un account gratuito",
+      "login": "Accedi",
+      "signedIn": "Ha già effettuato l’accesso. Può salvare la fattura direttamente nell’app.",
+      "openApp": "Nuova fattura nell’app"
+    },
+    "faq": {
+      "title": "Domande",
+      "items": [
+        {
+          "q": "Creare la fattura è davvero gratuito?",
+          "a": "Sì. Compila la fattura e la scarica in PDF senza registrazione, senza email e senza costi."
+        },
+        {
+          "q": "Conservate i dati della fattura?",
+          "a": "No. Generiamo il PDF e sul server non resta nulla. Solo il Suo browser conserva le fatture scaricate, così può trasferirle in un account – le elimini con Dimenticale, altrimenti spariscono dopo 90 giorni. Se avrà di nuovo bisogno della fattura, conservi il PDF o crei un account."
+        },
+        {
+          "q": "La fattura avrà un codice QR per il pagamento?",
+          "a": "Sì, se inserisce un conto bancario. Un conto ceco riceve un codice QR Platba, un IBAN slovacco riceve PAY by square, letto dalle banche slovacche."
+        },
+        {
+          "q": "Funziona per i soggetti IVA e per la Slovacchia?",
+          "a": "Sì. Gestisce fatture di soggetti con e senza partita IVA, in ceco, slovacco o inglese. Un’azienda ceca viene caricata da ARES tramite l’IČO; un cliente slovacco si compila a mano."
+        },
+        {
+          "q": "Quando conviene un account?",
+          "a": "Quando fattura regolarmente. Un account mantiene la serie di numerazione, registra i pagamenti, aiuta con i solleciti ed esporta le fatture in ISDOC per il commercialista. Il piano Free include 10 documenti al mese."
+        }
+      ]
+    },
+    "template": {
+      "documentType": "Tipo di documento",
+      "documentTypes": {
+        "invoice": "Fattura",
+        "proforma": "Fattura proforma",
+        "credit_note": "Nota di credito"
+      },
+      "reverseCharge": "Inversione contabile (l’IVA è a carico del cliente)",
+      "relatedInvoiceNumber": "Numero della fattura rettificata",
+      "hintReverseCharge": "La fattura non riporta l’IVA e indica che l’imposta è assolta dal cliente (art. 92a della legge ceca sull’IVA). Solo tra soggetti IVA.",
+      "hintCreditNote": "Per una riduzione di prezzo inserisca un prezzo unitario negativo, ad es. -2000.",
+      "identifiedNote": "Inversione contabile – l’IVA è assolta dal cliente."
+    },
+    "dictatePage": {
+      "seoTitle": "Detti una fattura – pronta in pochi secondi",
+      "seoDescription": "Dica a chi fattura e per che cosa. L’AI compila il cliente dal registro delle imprese, le voci, i prezzi e la scadenza, e Lei scarica un PDF con codice QR per il pagamento. Gratis, senza registrazione.",
+      "heading": "Detti una fattura",
+      "lead": "Tocchi il microfono e dica a chi fattura e per che cosa. Il modulo si compila da solo; Lei controlla e scarica il PDF.",
+      "example": "Provi: “Fattura per IČO 27604977, progettazione logo per 600 €, scadenza 14 giorni.”"
+    },
+    "carryOver": {
+      "title": "Salvi le fatture in un account – trasferiamo numerazione e clienti.",
+      "kept": "{n, plural, one {# fattura è conservata} many {# fatture sono conservate} other {# fatture sono conservate}} in questo browser.",
+      "cta": "Salva in un account gratuito",
+      "forget": "Dimenticale",
+      "signupNote": "Dopo la registrazione trasferiamo le fatture create in questo browser senza account: la numerazione prosegue e i clienti vengono salvati come contatti.",
+      "where": "Le conserva solo questo browser, che le elimina dopo 90 giorni – su un computer condiviso usi Dimenticale."
+    }
+  },
+  "featurePages": {
+    "indexTitle": "Funzionalità di fatturazione",
+    "indexHeading": "Tutto ciò che serve per fatturare, per freelance e piccole imprese",
+    "indexLead": "Ogni funzionalità ha una pagina dedicata con descrizione, funzionamento e risposte alle domande più comuni. Tutto in un’unica app – senza componenti aggiuntivi né moduli extra.",
+    "indexDescription": "Funzionalità di fatturazione: pagamenti QR, ISDOC, ricerca in ARES, solleciti, abbinamento dei pagamenti bancari, fatture ricorrenti, dichiarazioni IVA ceche, export per Pohoda e Money S3.",
+    "breadcrumb": "Funzionalità",
+    "allFeatures": "Tutte le funzionalità",
+    "pointsTitle": "Cosa fa",
+    "stepsTitle": "Come funziona",
+    "faqTitle": "Domande frequenti",
+    "relatedTitle": "Altre funzionalità",
+    "cta": "Crea un account gratuito",
+    "ctaNote": "Nessuna carta di credito. Tutte le funzionalità sono disponibili subito dopo la registrazione.",
+    "more": "Scopri di più",
+    "items": {
+      "qr": {
+        "name": "Pagamento QR sulle fatture",
+        "title": "Codici QR di pagamento sulle fatture (SPAYD)",
+        "description": "Ogni fattura riceve un codice QR di pagamento secondo lo standard ceco SPAYD. Il cliente lo inquadra con l’app della propria banca e paga.",
+        "lead": "Il cliente non deve ridigitare numero di conto, importo o simbolo variabile. Inquadra il codice QR nell’app della banca e il pagamento è pronto.",
+        "points": [
+          "Codice QR nello standard SPAYD, supportato da tutte le banche ceche",
+          "Conto, importo, valuta, simbolo variabile e scadenza vengono presi direttamente dalla fattura",
+          "Il codice compare nel PDF e nel link alla fattura online che invia",
+          "Per una fattura pagata in parte, il codice richiede solo l’importo residuo"
+        ],
+        "steps": [
+          "Aggiunga il conto bancario (numero di conto o IBAN) nelle impostazioni.",
+          "Emetta una fattura – il codice QR viene generato automaticamente.",
+          "Il cliente inquadra e paga, e Lei abbina il pagamento alla fattura."
+        ],
+        "faq": [
+          {
+            "q": "Il pagamento QR funziona con tutte le banche?",
+            "a": "Lo standard SPAYD (QR Platba) è supportato dalle app mobili di tutte le principali banche ceche e dalla maggior parte di quelle slovacche."
+          },
+          {
+            "q": "Devo attivarlo?",
+            "a": "No. Una volta inserito il conto bancario, le fatture mostrano il codice automaticamente."
+          }
+        ]
+      },
+      "isdoc": {
+        "name": "Export ISDOC",
+        "title": "Fatture nel formato ISDOC",
+        "description": "Esporti le fatture in ISDOC, lo standard ceco di fatturazione elettronica che la maggior parte dei software contabili sa importare.",
+        "lead": "ISDOC è il formato ceco della fattura elettronica. Il commercialista lo importa senza ridigitare nulla.",
+        "points": [
+          "Export ISDOC di qualsiasi fattura con un clic",
+          "Include fornitore, cliente, righe, aliquote IVA e dati di pagamento",
+          "Utile per commercialisti, grandi clienti ed enti pubblici",
+          "Sono disponibili anche i download in PDF e CSV",
+          "File di fattura elettronica UBL 2.1 (Peppol BIS 3.0) per i clienti slovacchi; l’invio tramite Peppol per l’obbligo slovacco del 2027 è in preparazione"
+        ],
+        "steps": [
+          "Emetta la fattura come al solito.",
+          "Nel dettaglio della fattura scelga l’export ISDOC.",
+          "Invii il file al commercialista o al cliente per l’importazione."
+        ],
+        "faq": [
+          {
+            "q": "Chi ha bisogno di ISDOC?",
+            "a": "Soprattutto commercialisti e aziende che importano le fatture in automatico. Alcuni enti pubblici e grandi imprese richiedono fatture elettroniche."
+          },
+          {
+            "q": "ISDOC sostituisce il PDF?",
+            "a": "No, lo integra. Il cliente riceve comunque un PDF leggibile; ISDOC è pensato per le macchine."
+          }
+        ]
+      },
+      "registry": {
+        "name": "Ricerca aziende in ARES e nei registri",
+        "title": "Dati del cliente da ARES tramite IČO o ragione sociale",
+        "description": "Digiti l’IČO o il nome dell’azienda e i dati del cliente arrivano da ARES. Cerchiamo anche nel registro slovacco RPO, in VIES dell’UE e in registri esteri.",
+        "lead": "Digiti poche lettere del nome o l’IČO. Indirizzo, partita IVA e ragione sociale arrivano dal registro ufficiale, quindi niente refusi in fattura.",
+        "points": [
+          "Aziende ceche da ARES per IČO o nome",
+          "Aziende slovacche da RPO, qualsiasi azienda UE tramite partita IVA via VIES",
+          "Registri esteri: Francia, Norvegia, Finlandia, Danimarca, Svizzera, Polonia, Regno Unito e l’indice mondiale LEI",
+          "I clienti salvati compaiono subito, i risultati dei registri arrivano man mano"
+        ],
+        "steps": [
+          "Digiti l’IČO o il nome dell’azienda nel campo cliente.",
+          "Scelga l’azienda – i dati si compilano da soli.",
+          "Il cliente viene salvato in rubrica per la prossima volta."
+        ],
+        "faq": [
+          {
+            "q": "La ricerca è gratuita?",
+            "a": "Sì. I registri sono pubblici e la ricerca è inclusa nell’app."
+          },
+          {
+            "q": "Posso trovare una ditta individuale per nome?",
+            "a": "Sì. Digiti nome e cognome – ARES confronta parole intere, quindi completi almeno una parola."
+          }
+        ]
+      },
+      "reminders": {
+        "name": "Solleciti automatici",
+        "title": "Solleciti di pagamento automatici per le fatture scadute",
+        "description": "Dopo la scadenza inviamo al cliente un cortese sollecito via email. Lei sceglie l’intervallo e il numero massimo di solleciti.",
+        "lead": "Basta tenere traccia di chi non ha pagato. I solleciti partono da soli non appena una fattura è scaduta.",
+        "points": [
+          "I solleciti per le fatture scadute vengono inviati via email automaticamente",
+          "Intervallo tra i solleciti e numero massimo configurabili",
+          "Ogni sollecito rimanda alla fattura con il suo pagamento QR",
+          "I solleciti si fermano appena la fattura viene pagata"
+        ],
+        "steps": [
+          "Attivi i solleciti nelle impostazioni delle fatture e scelga un intervallo.",
+          "Una fattura oltre la scadenza viene segnata come scaduta.",
+          "Il cliente riceve solleciti finché non paga o non si raggiunge il limite."
+        ],
+        "faq": [
+          {
+            "q": "Con quale frequenza vengono inviati i solleciti?",
+            "a": "L’intervallo predefinito è di 7 giorni; può modificarlo, insieme al numero massimo, nelle impostazioni."
+          },
+          {
+            "q": "Posso inviare un sollecito manualmente?",
+            "a": "Sì, può inviare un sollecito per una fattura scaduta in qualsiasi momento."
+          }
+        ]
+      },
+      "bankMatching": {
+        "name": "Abbinamento dei pagamenti bancari",
+        "title": "Abbinamento automatico dei pagamenti alle fatture",
+        "description": "I pagamenti in entrata vengono abbinati alle fatture in base a simbolo variabile e importo. Fio, altre banche tramite PSD2 e PayPal si sincronizzano da sole; per qualsiasi altra banca basta caricare un estratto conto in CSV.",
+        "lead": "Invece di spuntare a mano le fatture pagate, l’app assegna i pagamenti da sola e segna la fattura come pagata.",
+        "points": [
+          "Fio banka: pagamenti in entrata scaricati ogni ora tramite l’API ufficiale",
+          "Altre banche: importazione dell’estratto conto in un semplice formato CSV",
+          "Abbinamento per simbolo variabile, importo e valuta",
+          "I pagamenti parziali vengono registrati sulla fattura come acconti",
+          "I pagamenti non abbinati restano da assegnare manualmente"
+        ],
+        "steps": [
+          "In Banca colleghi un conto (Fio con un token di sola lettura, altre banche tramite PSD2 o PayPal), oppure carichi un estratto conto CSV della Sua banca.",
+          "L’app scarica i pagamenti e li abbina alle fatture.",
+          "Controlli i pagamenti rimasti non abbinati e li assegni a mano."
+        ],
+        "faq": [
+          {
+            "q": "Quali banche sono supportate?",
+            "a": "Fio direttamente tramite la sua API gratuita, altre banche ceche, slovacche e del SEE (Revolut e Wise comprese) tramite PSD2 (fornitore autorizzato Enable Banking). Qualsiasi banca anche tramite estratto conto CSV: riconosciamo i consueti export delle banche ceche e slovacche, e bastano data, importo e valuta."
+          },
+          {
+            "q": "Billanta può effettuare pagamenti dal mio conto?",
+            "a": "No. Il token Fio viene creato con il permesso “solo visualizzazione del conto”, che non consente di inviare nulla. Lo conserviamo cifrato."
+          },
+          {
+            "q": "E se il cliente dimentica il simbolo variabile?",
+            "a": "Il pagamento resta non abbinato e Lei lo assegna alla fattura manualmente."
+          }
+        ]
+      },
+      "recurring": {
+        "name": "Fatture ricorrenti",
+        "title": "Fatture ricorrenti",
+        "description": "Imposti una fattura ricorrente per i servizi periodici. Viene emessa automaticamente ogni settimana, mese, trimestre o anno.",
+        "lead": "Affitti, canoni, manutenzione di siti web – le fatture che emette ogni mese allo stesso modo possono emettersi da sole.",
+        "points": [
+          "Cadenza settimanale, mensile, trimestrale o annuale",
+          "Un modello con cliente, righe e condizioni di pagamento",
+          "Ogni nuova fattura riceve il numero successivo della serie",
+          "Sospenda o termini la ricorrenza in qualsiasi momento"
+        ],
+        "steps": [
+          "Crei un modello di fattura e scelga la frequenza.",
+          "Nel giorno previsto l’app emette una nuova fattura.",
+          "La controlli o la invii direttamente al cliente."
+        ],
+        "faq": [
+          {
+            "q": "Posso cambiare l’importo di una fattura ricorrente?",
+            "a": "Sì, modifichi il modello in qualsiasi momento; la modifica vale per le fatture future."
+          },
+          {
+            "q": "Ogni fattura riceve un nuovo numero?",
+            "a": "Sì, ogni fattura emessa prende il numero successivo della serie."
+          }
+        ]
+      },
+      "voice": {
+        "name": "Fattura a voce",
+        "title": "Crei fatture a voce tramite Telegram",
+        "description": "Detti una fattura al telefono. L’IA trasforma il messaggio vocale in una bozza di fattura che Lei deve solo controllare.",
+        "lead": "È in giro e deve fatturare a qualcuno? Invii un messaggio vocale e la bozza La aspetterà nell’app.",
+        "points": [
+          "Messaggi vocali tramite un account Telegram collegato",
+          "L’IA riconosce cliente, voci, quantità e prezzi",
+          "Crea una bozza – nulla viene inviato senza la Sua revisione",
+          "Funziona in ceco e in slovacco"
+        ],
+        "steps": [
+          "Colleghi Telegram nelle impostazioni.",
+          "Dica a chi sta fatturando e per cosa.",
+          "Controlli la bozza nell’app e la emetta."
+        ],
+        "faq": [
+          {
+            "q": "Una fattura può partire senza la mia revisione?",
+            "a": "No. Un messaggio vocale crea sempre e solo una bozza che Lei conferma."
+          },
+          {
+            "q": "Devo parlare in modo formale?",
+            "a": "No, va benissimo il linguaggio di tutti i giorni."
+          }
+        ]
+      },
+      "expenses": {
+        "name": "Gestione delle spese",
+        "title": "Registrazione di spese e costi",
+        "description": "Registri fatture ricevute e spese in un unico posto e veda entrate, costi e utile netto stimato.",
+        "lead": "Le spese stanno accanto alle fatture. Le gestisca nella stessa app e veda il risultato reale della Sua attività.",
+        "points": [
+          "Fatture ricevute e spese con IVA",
+          "Categorie e ricerca",
+          "Export CSV per il commercialista",
+          "Entrate e spese a confronto nella bacheca"
+        ],
+        "steps": [
+          "Aggiunga una spesa con fornitore, importo e data.",
+          "Rientra nei riepiloghi e nella stima delle imposte.",
+          "A fine periodo esporti tutto per il commercialista."
+        ],
+        "faq": [
+          {
+            "q": "Le spese entrano nella dichiarazione IVA?",
+            "a": "Sì, le spese con IVA confluiscono negli export della dichiarazione IVA ceca e della comunicazione di controllo (kontrolní hlášení)."
+          },
+          {
+            "q": "Posso esportare le spese?",
+            "a": "Sì, in CSV."
+          }
+        ]
+      }
+    },
+    "indexSeoTitle": "Funzionalità di fatturazione per freelance e PMI",
+    "demo": {
+      "text": "Vuole provarla prima? Apra la demo dal vivo con un’azienda di esempio, senza registrazione.",
+      "link": "Prova la demo"
+    },
+    "audiences": {
+      "title": "Anche per",
+      "accountants": "Commercialisti",
+      "partners": "Partner",
+      "coworkings": "Spazi di coworking",
+      "schools": "Scuole e insegnanti"
+    }
+  }
+}
