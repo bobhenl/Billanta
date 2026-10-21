@@ -7,6 +7,7 @@ import {
   relevantTaxDeadlineKinds,
   taxCalendarYear,
   taxDeadlinesFor,
+  withImpliedTaxDeadlineKinds,
   type TaxProfile
 } from '../tax-deadlines.js';
 
@@ -113,6 +114,56 @@ describe('taxDeadlinesFor', () => {
   it('leaves other kinds alone', () => {
     const d = { kind: 'social' as const, date: new Date(2026, 9, 20), daysLeft: 19 };
     expect(applyTaxActivity([d], profile({ activity: { euSalesMonths: [], foreignPurchaseMonths: [] } }))).toEqual([d]);
+  });
+});
+
+describe('taxDeadlinesFor in Slovakia', () => {
+  const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const sk = profile({ country: 'SK' });
+
+  it('uses Slovak due days: sociálne poistenie by the 8th, daňové priznanie by 31 March', () => {
+    expect(taxDeadlinesFor(['social'], sk, null, new Date(2026, 9, 1), 30).map((d) => ymd(d.date))).toEqual(['2026-10-08']);
+    expect(taxDeadlinesFor(['social'], profile(), null, new Date(2026, 9, 1), 30).map((d) => ymd(d.date))).toEqual(['2026-10-20']);
+    expect(taxDeadlinesFor(['income_tax'], sk, null, new Date(2026, 2, 1), 45).map((d) => ymd(d.date))).toEqual(['2026-03-31']);
+  });
+
+  it('ignores the Czech official calendar and its wording', () => {
+    const official = [{ date: '2026-10-26', tax: 'Daň z přidané hodnoty', description: 'Přiznání a splatnost daně za září', kind: 'vat' as const, quarterly: false }];
+    const [vat] = taxDeadlinesFor(['vat_monthly'], sk, official, new Date(2026, 9, 1), 30);
+    expect(ymd(vat!.date)).toBe('2026-10-26');
+    expect(vat!.details).toBeUndefined();
+  });
+});
+
+describe('monthly kontrolní hlášení of a quarterly company', () => {
+  const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const company = profile({ legalEntity: true });
+
+  it('is implied by vat_quarterly for a Czech legal entity only', () => {
+    expect(withImpliedTaxDeadlineKinds(['vat_quarterly'], company)).toEqual(['vat_quarterly', 'control_statement']);
+    expect(withImpliedTaxDeadlineKinds(['vat_quarterly'], profile())).toEqual(['vat_quarterly']);
+    expect(withImpliedTaxDeadlineKinds(['vat_quarterly'], profile({ legalEntity: true, country: 'SK' }))).toEqual(['vat_quarterly']);
+    expect(withImpliedTaxDeadlineKinds(['vat_monthly'], company)).toEqual(['vat_monthly']);
+  });
+
+  it('cannot be picked by hand', () => {
+    expect(relevantTaxDeadlineKinds(['control_statement'], company)).toEqual([]);
+  });
+
+  it('falls in the months inside a quarter; the quarterly row covers the rest', () => {
+    // 25 Nov 2026 is a Wednesday, 25 Oct a Sunday.
+    const rows = taxDeadlinesFor(['vat_quarterly'], company, null, new Date(2026, 9, 1), 60).map((d) => [d.kind, ymd(d.date)]);
+    expect(rows).toEqual([
+      ['vat_quarterly', '2026-10-26'],
+      ['control_statement', '2026-11-25']
+    ]);
+    const year = taxCalendarYear(['control_statement'], 2026, 'CZ').map((r) => r.statutory.getMonth());
+    expect(year).toEqual([1, 2, 4, 5, 7, 8, 10, 11]);
+    expect(taxCalendarYear(['control_statement'], 2026, 'SK')).toEqual([]);
+  });
+
+  it('a self-employed quarterly payer files kontrolní hlášení with the quarterly return only', () => {
+    expect(taxDeadlinesFor(['vat_quarterly'], profile(), null, new Date(2026, 9, 1), 60).map((d) => d.kind)).toEqual(['vat_quarterly']);
   });
 });
 

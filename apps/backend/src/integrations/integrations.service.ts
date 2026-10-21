@@ -46,6 +46,7 @@ export const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
   cs: {
     vat_monthly: "DPH a kontrolní hlášení",
     vat_quarterly: "DPH a kontrolní hlášení (čtvrtletí)",
+    control_statement: "Kontrolní hlášení (měsíční)",
     vat_other: "DPH: OSS, CESOP a další hlášení",
     vat_identified: "Přiznání k DPH (identifikovaná osoba)",
     ec_sales_list: "Souhrnné hlášení",
@@ -61,6 +62,7 @@ export const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
   sk: {
     vat_monthly: "DPH a kontrolný výkaz",
     vat_quarterly: "DPH a kontrolný výkaz (štvrťrok)",
+    control_statement: "Kontrolné hlásenie (mesačné)",
     vat_other: "DPH: OSS, CESOP a ďalšie hlásenia",
     vat_identified: "Daňové priznanie k DPH (registrovaný podľa §7a)",
     ec_sales_list: "Súhrnný výkaz",
@@ -76,6 +78,7 @@ export const TAX_LABELS: Record<Lang, Record<TaxDeadlineKind, string>> = {
   en: {
     vat_monthly: "VAT return & control statement",
     vat_quarterly: "VAT return & control statement (quarter)",
+    control_statement: "Control statement (monthly)",
     vat_other: "VAT: OSS, CESOP and other reports",
     vat_identified: "VAT return (identified person)",
     ec_sales_list: "EC sales list",

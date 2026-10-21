@@ -12,7 +12,7 @@ export const revalidate = 86400;
 
 /** Kinds explained under the calendar, in the order a visitor meets them. */
 const EXPLAINED: Record<'CZ' | 'SK', TaxDeadlineKind[]> = {
-  CZ: ['vat_monthly', 'vat_quarterly', 'vat_identified', 'ec_sales_list', 'health', 'social', 'flat_tax', 'income_tax', 'overviews', 'payroll', 'road_tax', 'property_tax'],
+  CZ: ['vat_monthly', 'vat_quarterly', 'control_statement', 'vat_identified', 'ec_sales_list', 'health', 'social', 'flat_tax', 'income_tax', 'overviews', 'payroll', 'road_tax', 'property_tax'],
   SK: ['vat_monthly', 'vat_quarterly', 'vat_identified', 'ec_sales_list', 'health', 'social', 'income_tax', 'road_tax']
 };
 

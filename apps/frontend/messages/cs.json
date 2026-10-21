@@ -405,6 +405,7 @@
       "kinds": {
         "vat_monthly": "DPH a kontrolní hlášení (měsíčně)",
         "vat_quarterly": "DPH a kontrolní hlášení (čtvrtletně)",
+        "control_statement": "Kontrolní hlášení (měsíčně)",
         "vat_identified": "Přiznání k DPH (identifikovaná osoba)",
         "ec_sales_list": "Souhrnné hlášení",
         "health": "Záloha na zdravotní pojištění OSVČ",
@@ -8253,6 +8254,7 @@
             "CZ": {
               "vat_monthly": "DPH a kontrolní hlášení",
               "vat_quarterly": "DPH a kontrolní hlášení (čtvrtletní)",
+              "control_statement": "Kontrolní hlášení (měsíční)",
               "vat_other": "DPH: OSS, CESOP a další hlášení",
               "vat_identified": "Přiznání k DPH (identifikovaná osoba)",
               "ec_sales_list": "Souhrnné hlášení",
@@ -8268,6 +8270,7 @@
             "SK": {
               "vat_monthly": "DPH a kontrolní výkaz",
               "vat_quarterly": "DPH a kontrolní výkaz (čtvrtletní)",
+              "control_statement": "Kontrolní hlášení (měsíční)",
               "vat_other": "DPH: OSS a další hlášení",
               "vat_identified": "Přiznání k DPH (registrovaná osoba)",
               "ec_sales_list": "Souhrnný výkaz",
@@ -8285,6 +8288,7 @@
             "CZ": {
               "vat_monthly": "Měsíční plátce podává přiznání k DPH a kontrolní hlášení do 25. dne po skončení měsíce a ve stejné lhůtě daň platí (§ 101 a § 101e zákona o DPH).",
               "vat_quarterly": "Čtvrtletně může přiznávat plátce s obratem za minulý rok do 15 milionů Kč, který není nespolehlivým plátcem (§ 99a zákona o DPH). Přiznání i daň do 25. dne po skončení čtvrtletí. Kontrolní hlášení podává čtvrtletně jen fyzická osoba, firma ho podává každý měsíc.",
+              "control_statement": "Firma se čtvrtletním DPH podává kontrolní hlášení i za měsíce uvnitř čtvrtletí, vždy do 25. dne následujícího měsíce (§ 101e zákona o DPH).",
               "vat_other": "Podání ve zvláštních režimech (OSS, CESOP) podle oficiálního kalendáře Finanční správy.",
               "vat_identified": "Identifikovaná osoba podává přiznání jen za měsíc, ve kterém jí vznikla povinnost přiznat daň, typicky po nákupu služby ze zahraničí (reklamy, software), do 25 dnů po jeho skončení (§ 101 zákona o DPH).",
               "ec_sales_list": "Souhrnné hlášení podává ten, kdo v měsíci dodal zboží nebo službu podnikateli v jiném státě EU, do 25 dnů po skončení měsíce (§ 102 zákona o DPH).",
@@ -8300,6 +8304,7 @@
             "SK": {
               "vat_monthly": "Měsíční plátce podává přiznání k DPH a kontrolní výkaz do 25 dnů po skončení měsíce a ve stejné lhůtě daň platí (§ 78 a § 78a zákona č. 222/2004 Z. z.).",
               "vat_quarterly": "Čtvrtletní zdaňovací období může mít plátce s nižším obratem (§ 77 zákona o DPH). Přiznání i kontrolní výkaz do 25 dnů po skončení čtvrtletí.",
+              "control_statement": "Slovenský plátce podává kontrolní výkaz za své zdaňovací období, měsíční řádky navíc tedy nemá (§ 78a zákona o DPH).",
               "vat_other": "Podání ve zvláštních režimech (OSS) podle kalendáře slovenské Finanční správy.",
               "vat_identified": "Osoba registrovaná podle § 7 nebo § 7a podává přiznání jen za měsíc, ve kterém jí vznikla daňová povinnost, například po nákupu služby ze zahraničí, do 25 dnů po jeho skončení.",
               "ec_sales_list": "Souhrnný výkaz podává ten, kdo v měsíci dodal zboží nebo službu podnikateli v jiném státě EU, do 25 dnů po skončení měsíce (§ 80 zákona o DPH).",

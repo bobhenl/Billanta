@@ -1,6 +1,5 @@
 import { isVatStatus, type VatStatus } from './vat-status.js';
 import { nextWorkingDay } from './public-holidays.js';
-import { nextCzechWorkingDay } from './working-days.js';
 
 /**
  * Czech tax & insurance deadlines for the dashboard reminder (a calendar only,
@@ -14,6 +13,7 @@ import { nextCzechWorkingDay } from './working-days.js';
 export const TAX_DEADLINE_KINDS = [
   'vat_monthly',
   'vat_quarterly',
+  'control_statement',
   'vat_other',
   'vat_identified',
   'ec_sales_list',
@@ -101,10 +101,14 @@ const OSVC_ONLY: readonly TaxDeadlineKind[] = ['health', 'social', 'flat_tax', '
 /** Czech-only: paušální daň and the ČSSZ / health-insurer overviews. */
 const CZ_ONLY: readonly TaxDeadlineKind[] = ['flat_tax', 'overviews'];
 
-/** Drops the kinds that can't apply to this account (a chosen kind that doesn't fit is hidden, not deleted). */
+/**
+ * Drops the kinds that can't apply to this account (a chosen kind that doesn't fit is hidden, not deleted).
+ * `control_statement` is never picked by hand, it follows from `vat_quarterly` (see `withImpliedTaxDeadlineKinds`).
+ */
 export function relevantTaxDeadlineKinds(kinds: readonly TaxDeadlineKind[], profile: TaxProfile): TaxDeadlineKind[] {
   const sk = profile.country.toUpperCase() === 'SK';
   return kinds.filter((k) => {
+    if (k === 'control_statement') return false;
     if (profile.legalEntity && OSVC_ONLY.includes(k)) return false;
     if (sk && CZ_ONLY.includes(k)) return false;
     if (profile.vatStatus === 'non_payer' && VAT_KINDS.includes(k)) return false;
@@ -112,6 +116,17 @@ export function relevantTaxDeadlineKinds(kinds: readonly TaxDeadlineKind[], prof
     if (profile.vatStatus === 'payer' && k === 'vat_identified') return false;
     return true;
   });
+}
+
+/**
+ * A Czech legal entity files kontrolní hlášení for every month even when its
+ * VAT period is a quarter (§ 101e odst. 1 ZDPH), so a quarterly company also
+ * gets the monthly rows. A Slovak payer files kontrolný výkaz for its own tax
+ * period (§ 78a ods. 3 ZoDPH), so nothing changes there.
+ */
+export function withImpliedTaxDeadlineKinds(kinds: readonly TaxDeadlineKind[], profile: Pick<TaxProfile, 'country' | 'legalEntity'>): TaxDeadlineKind[] {
+  const cz = profile.country.toUpperCase() !== 'SK';
+  return cz && profile.legalEntity && kinds.includes('vat_quarterly') && !kinds.includes('control_statement') ? [...kinds, 'control_statement'] : [...kinds];
 }
 
 const monthKeyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -148,7 +163,8 @@ export function taxDeadlinesFor(
   today = new Date(),
   horizonDays = 45
 ): TaxDeadline[] {
-  return applyTaxActivity(mergeTaxDeadlines(relevantTaxDeadlineKinds(kinds, profile), official, today, horizonDays), profile);
+  const chosen = withImpliedTaxDeadlineKinds(relevantTaxDeadlineKinds(kinds, profile), profile);
+  return applyTaxActivity(mergeTaxDeadlines(chosen, official, today, horizonDays, profile.country), profile);
 }
 
 /** s.r.o., spol. s r.o., a.s., v.o.s., k.s., z.s., z.ú., o.p.s., družstvo, SE at the end of the registered name. */
@@ -181,6 +197,7 @@ function rawDatesSk(kind: TaxDeadlineKind, year: number): Date[] | null {
     case 'property_tax':
     case 'flat_tax':
     case 'overviews':
+    case 'control_statement':
       return [];
     default:
       return null;
@@ -201,6 +218,10 @@ function rawDates(kind: TaxDeadlineKind, year: number, country = 'CZ'): Date[] {
     // Čtvrtletní plátce: 25. den po skončení čtvrtletí.
     case 'vat_quarterly':
       return [0, 3, 6, 9].map((m) => day(year, m, 25));
+    // Právnická osoba se čtvrtletním obdobím: kontrolní hlášení i za měsíce uvnitř čtvrtletí (§ 101e odst. 1 ZDPH);
+    // v lednu, dubnu, červenci a říjnu ho pokrývá řádek čtvrtletního přiznání.
+    case 'control_statement':
+      return [1, 2, 4, 5, 7, 8, 10, 11].map((m) => day(year, m, 25));
     // OSS/CESOP/SME podání: only from the official calendar.
     case 'vat_other':
       return [];
@@ -252,14 +273,17 @@ function officialKind(e: OfficialTaxEvent, kinds: readonly TaxDeadlineKind[]): T
 /**
  * Upcoming deadlines: official rows for the tax kinds (grouped per kind and
  * day) plus locally computed insurance ones. `official` = null → all local.
+ * The official calendar is the Czech Finanční správa one, so a Slovak
+ * account never uses it and gets everything computed by Slovak law.
  */
 export function mergeTaxDeadlines(
   kinds: readonly TaxDeadlineKind[],
   official: OfficialTaxEvent[] | null,
   today = new Date(),
-  horizonDays = 45
+  horizonDays = 45,
+  country = 'CZ'
 ): TaxDeadline[] {
-  if (!official) return upcomingTaxDeadlines(kinds, today, horizonDays);
+  if (!official || country.toUpperCase() === 'SK') return upcomingTaxDeadlines(kinds, today, horizonDays, country);
   const start = day(today.getFullYear(), today.getMonth(), today.getDate());
   const groups = new Map<string, TaxDeadline>();
   for (const e of official) {
@@ -281,14 +305,14 @@ export function mergeTaxDeadlines(
   return [...groups.values(), ...local].sort((a, b) => a.daysLeft - b.daysLeft || TAX_DEADLINE_KINDS.indexOf(a.kind) - TAX_DEADLINE_KINDS.indexOf(b.kind));
 }
 
-/** Upcoming deadlines of the chosen kinds within `horizonDays`, soonest first (computed locally). */
-export function upcomingTaxDeadlines(kinds: readonly TaxDeadlineKind[], today = new Date(), horizonDays = 45): TaxDeadline[] {
+/** Upcoming deadlines of the chosen kinds within `horizonDays`, soonest first (computed locally by `country` law and holidays). */
+export function upcomingTaxDeadlines(kinds: readonly TaxDeadlineKind[], today = new Date(), horizonDays = 45, country = 'CZ'): TaxDeadline[] {
   const start = day(today.getFullYear(), today.getMonth(), today.getDate());
   const out: TaxDeadline[] = [];
   for (const kind of kinds) {
     for (const year of [start.getFullYear(), start.getFullYear() + 1]) {
-      for (const raw of rawDates(kind, year)) {
-        const date = nextCzechWorkingDay(raw);
+      for (const raw of rawDates(kind, year, country)) {
+        const date = nextWorkingDay(raw, country);
         const daysLeft = Math.round((date.getTime() - start.getTime()) / 86_400_000);
         if (daysLeft >= 0 && daysLeft <= horizonDays) out.push({ kind, date, daysLeft });
       }
