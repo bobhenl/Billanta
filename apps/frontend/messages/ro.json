@@ -1,0 +1,1531 @@
+{
+  "app": {
+    "name": "Billanta",
+    "tagline": "Software de facturare și contabilitate pentru firme din Cehia și Slovacia",
+    "readOnlyRole": "Rolul dumneavoastră este Doar citire – puteți vizualiza documentele, dar nu le puteți modifica.",
+    "readOnly": {
+      "title": "Puteți doar vizualiza",
+      "body": "Accesul dumneavoastră în această firmă nu permite crearea sau modificarea documentelor. Dacă aveți nevoie, adresați-vă proprietarului sau unui administrator.",
+      "back": "Înapoi"
+    }
+  },
+  "nav": {
+    "dashboard": "Panou de control",
+    "invoices": "Facturi",
+    "expenses": "Cheltuieli",
+    "bank": "Bancă",
+    "contacts": "Contacte",
+    "settings": "Setări",
+    "billing": "Abonament",
+    "primaryNavigation": "Navigare principală",
+    "time": "Timp",
+    "reports": "Rapoarte",
+    "activity": "Istoric modificări"
+  },
+  "theme": {
+    "toggle": "Schimbați tema",
+    "light": "Mod luminos",
+    "dark": "Mod întunecat",
+    "short": {
+      "system": "Sistem",
+      "light": "Luminos",
+      "dark": "Întunecat"
+    }
+  },
+  "language": {
+    "label": "Limbă",
+    "cs": "Čeština",
+    "sk": "Slovenčina",
+    "en": "English"
+  },
+  "common": {
+    "comingSoonBody": "Această secțiune este în lucru.",
+    "logOut": "Deconectare",
+    "accountMenu": "Meniul contului",
+    "moreInfo": "Mai multe informații",
+    "userMenu": {
+      "profile": "Profilul meu",
+      "company": "Datele firmei",
+      "team": "Echipă",
+      "exports": "Exporturi pentru contabil",
+      "billing": "Abonament",
+      "settings": "Setări",
+      "companies": "Firme",
+      "addCompany": "Adăugați o firmă",
+      "manageCompanies": "Gestionați firmele",
+      "activity": "Istoric modificări",
+      "referrals": "Invitați și câștigați credite",
+      "website": "Site-ul Billanta",
+      "classroom": "Clasă"
+    },
+    "installApp": {
+      "label": "Instalați aplicația",
+      "iosTitle": "Adăugați pe ecranul principal (iPhone/iPad)",
+      "iosBody": "În Safari, atingeți pictograma Partajare (pătratul cu săgeată) și alegeți „Adaugă pe ecranul principal”. Aplicația se va deschide apoi pe tot ecranul, ca orice altă aplicație.",
+      "manualTitle": "Instalați aplicația",
+      "manualBody": "Deschideți meniul browserului (⋮ sau ⋯) și alegeți „Instalează aplicația” sau „Adaugă pe ecranul principal”. În Chrome și Edge pe desktop există și o pictogramă de instalare în dreapta barei de adrese.",
+      "ok": "Am înțeles"
+    }
+  },
+  "mobile": {
+    "more": "Mai mult",
+    "explore": "Explorați",
+    "language": "Limbă",
+    "appearance": "Aspect",
+    "create": "Creați"
+  },
+  "toasts": {
+    "invoiceCreated": "Ciorna facturii a fost salvată",
+    "saved": "Salvat",
+    "emailChanged": "Adresa de e-mail a fost schimbată. Data viitoare conectați-vă cu noua adresă.",
+    "emailChangeTaken": "Între timp, această adresă a fost preluată de alt cont.",
+    "emailChangeInvalid": "Linkul este invalid sau a expirat. Solicitați din nou schimbarea."
+  },
+  "notifications": {
+    "bell": "Notificări",
+    "bellUnread": "Notificări – {count} necitite",
+    "title": "Notificări",
+    "readAll": "Marcați toate ca citite",
+    "settings": "Setări notificări",
+    "empty": "Nimic nou deocamdată. Vă anunțăm când se întâmplă ceva."
+  },
+  "twoFactor": {
+    "notice": {
+      "title": "Este necesară autentificarea în doi pași",
+      "body": "Deoarece oferă acces la bani și date, conexiunile noi pot fi adăugate doar cu autentificarea în doi pași activă. Conexiunile existente funcționează în continuare.",
+      "cta": "Activați 2FA"
+    }
+  },
+  "auth": {
+    "signup": {
+      "title": "Creați un cont",
+      "subtitle": "Creați-vă contul și începeți să facturați în câteva minute.",
+      "companyNameLabel": "Numele dumneavoastră sau denumirea firmei",
+      "companyNamePlaceholder": "Ion Popescu sau Acme s.r.o.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "nume@email.ro",
+      "passwordLabel": "Parolă",
+      "passwordPlaceholder": "Alegeți o parolă puternică",
+      "tosLabel": "Am cel puțin 18 ani, acționez în calitate de profesionist și sunt de acord cu <tos>Termenii și condițiile</tos>, inclusiv limitarea răspunderii, și cu <dpa>Acordul de prelucrare a datelor</dpa>.",
+      "submit": "Creați contul",
+      "emailTakenError": "Există deja un cont cu această adresă de e-mail.",
+      "genericError": "A apărut o eroare. Vă rugăm să încercați din nou.",
+      "rateLimitedError": "Prea multe încercări. Vă rugăm să încercați din nou peste câteva momente.",
+      "hasAccount": "Aveți deja un cont?",
+      "loginLink": "Conectați-vă",
+      "companyNameHint": "Sunteți PFA? Este suficient numele dumneavoastră. Codul de identificare (IČO) și datele de facturare le adăugați în pasul următor.",
+      "aboutYouLegend": "Despre dumneavoastră (opțional)",
+      "managesClientsLabel": "Țin contabilitatea pentru clienți",
+      "isTeacherLabel": "Sunt profesor",
+      "trialNote": "{days, plural, one {# zi} few {# zile} other {# de zile}} de {plan} gratuit, fără card. Perioada de probă începe după ce introduceți codul de identificare al firmei (IČO) în setări, o singură dată per IČO. După aceea continuați cu planul Free; nu se percepe nimic automat."
+    },
+    "login": {
+      "title": "Conectare",
+      "subtitle": "Bine ați revenit – conectați-vă la cont.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "nume@email.ro",
+      "passwordLabel": "Parolă",
+      "passwordPlaceholder": "Parola dumneavoastră",
+      "submit": "Conectare",
+      "orContinueWith": "sau continuați cu",
+      "error": "E-mail sau parolă incorectă.",
+      "noAccount": "Nu aveți cont?",
+      "signupLink": "Înregistrați-vă",
+      "forgotPasswordLink": "Ați uitat parola?",
+      "continueWith": "Continuați cu {provider}"
+    },
+    "forgotPassword": {
+      "title": "Ați uitat parola?",
+      "subtitle": "Introduceți adresa de e-mail și vă trimitem un link pentru resetarea parolei.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "nume@email.ro",
+      "submit": "Trimiteți linkul de resetare",
+      "successMessage": "Dacă există un cont pentru această adresă, v-am trimis un link pentru resetarea parolei. Verificați căsuța de e-mail (și dosarul spam).",
+      "backToLogin": "Înapoi la conectare"
+    },
+    "resetPassword": {
+      "title": "Resetați parola",
+      "subtitle": "Alegeți o parolă nouă pentru contul dumneavoastră.",
+      "passwordLabel": "Parolă nouă",
+      "passwordPlaceholder": "Alegeți o parolă puternică",
+      "confirmPasswordLabel": "Confirmați parola nouă",
+      "confirmPasswordPlaceholder": "Introduceți-o din nou",
+      "submit": "Resetați parola",
+      "mismatchError": "Parolele nu coincid.",
+      "invalidInputError": "Parola trebuie să aibă cel puțin 8 caractere.",
+      "invalidTokenError": "Acest link de resetare este invalid sau a expirat.",
+      "genericError": "A apărut o eroare. Vă rugăm să încercați din nou.",
+      "successMessage": "Parola a fost resetată. Acum vă puteți conecta cu noua parolă.",
+      "goToLogin": "Mergeți la conectare",
+      "requestNewLink": "Solicitați un nou link de resetare",
+      "rateLimitedError": "Prea multe încercări. Vă rugăm să încercați din nou peste câteva momente."
+    },
+    "twoFactor": {
+      "title": "Autentificare în doi pași",
+      "subtitle": "Vă conectați ca {email}. Introduceți codul din șase cifre din aplicația de autentificare.",
+      "codeLabel": "Cod de verificare",
+      "recoveryHint": "Nu aveți telefonul la îndemână? Introduceți unul dintre codurile de recuperare.",
+      "submit": "Verificați",
+      "cancel": "Anulați și deconectați-vă",
+      "errors": {
+        "invalid_code": "Codul nu se potrivește. Verificați ora de pe telefon și încercați din nou.",
+        "rate_limited": "Prea multe încercări. Încercați din nou peste câteva minute.",
+        "not_signed_in": "Sesiunea a expirat. Vă rugăm să vă conectați din nou."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Panou de control",
+    "welcome": "Bine ați revenit. Iată o privire de ansamblu asupra facturilor și plăților.",
+    "noTenant": "Finalizați mai întâi configurarea firmei, apoi aici va apărea prezentarea generală.",
+    "loadError": "Prezentarea generală nu a putut fi încărcată. Încercați să reîmprospătați pagina.",
+    "greeting": "Bună ziua, {name}",
+    "newInvoice": "Factură nouă",
+    "customize": "Personalizați",
+    "showAll": "Afișați tot",
+    "recent": "Documente recente",
+    "overdueTitle": "Restante ({count})",
+    "dueOn": "scadentă la {date}",
+    "topCustomers": "Clienți principali",
+    "topCustomersHint": "După suma facturată în ultimele 12 luni",
+    "foreignNote": "{count, plural, one {# document în valută nu este inclus} few {# documente în valută nu sunt incluse} other {# de documente în valută nu sunt incluse}} în totaluri.",
+    "emptyTitle": "Nimic aici deocamdată",
+    "emptyHint": "Emiteți prima factură, iar prezentarea generală se va umple cu venituri, un grafic și clienți.",
+    "chart": {
+      "title": "Venituri și cheltuieli",
+      "hint": "Ultimele 12 luni, fără TVA",
+      "revenue": "Venituri",
+      "expenses": "Cheltuieli"
+    },
+    "cards": {
+      "revenue_month": {
+        "label": "Venituri luna aceasta",
+        "sub": "Facturi emise fără TVA"
+      },
+      "unpaid": {
+        "label": "Neîncasate",
+        "sub": "{count, plural, one {# factură așteaptă} few {# facturi așteaptă} other {# de facturi așteaptă}} plata"
+      },
+      "overdue": {
+        "label": "Restante",
+        "sub": "{count, plural, =0 {Totul este în regulă} one {# factură} few {# facturi} other {# de facturi}}"
+      },
+      "expenses_month": {
+        "label": "Cheltuieli luna aceasta",
+        "sub": "Documente primite"
+      },
+      "revenue_year": {
+        "label": "Venituri anul acesta",
+        "sub": "De la începutul anului"
+      },
+      "drafts": {
+        "label": "Ciorne",
+        "sub": "Așteaptă să fie emise"
+      },
+      "profit_month": {
+        "label": "Profit luna aceasta",
+        "sub": "Venituri minus cheltuieli"
+      },
+      "vat_month": {
+        "label": "TVA luna aceasta",
+        "sub": "TVA colectată – vedeți exporturile"
+      },
+      "due_soon": {
+        "label": "Scadente în 7 zile",
+        "sub": "{count, plural, =0 {Nimic urgent} one {# factură} few {# facturi} other {# de facturi}}"
+      },
+      "unviewed": {
+        "label": "Facturi nedeschise",
+        "sub": "Trimise, dar încă nedeschise de client"
+      },
+      "missing_receipts": {
+        "label": "Cheltuieli fără document",
+        "sub": "Niciun document încărcat"
+      }
+    },
+    "tiles": {
+      "new_invoice": "Factură nouă",
+      "new_proforma": "Proformă",
+      "new_quote": "Ofertă",
+      "new_expense": "Cheltuială nouă",
+      "templates": "Șabloane",
+      "bulk": "Facturare în masă",
+      "new_contact": "Contacte",
+      "bank": "Bancă",
+      "exports": "Exporturi pentru contabil",
+      "scan_invoice": "Scanați o factură (QR)",
+      "dictate_invoice": "Dictați o factură",
+      "calendar_feed": "Termene în calendarul dumneavoastră",
+      "public_profile": "Profil public al firmei",
+      "migration": "Treceți de la alt sistem",
+      "bank_sync": "Plăți prin bancă și PayPal"
+    },
+    "sections": {
+      "showChart": "Grafic venituri și cheltuieli",
+      "showTopCustomers": "Clienți principali",
+      "showRecent": "Documente recente",
+      "showDueSoon": "Facturi cu scadență apropiată",
+      "showTaxDeadlines": "Termene fiscale",
+      "showFxRates": "Cursuri de schimb ČNB"
+    },
+    "customizeCards": "Carduri cu cifre",
+    "customizeTiles": "Acțiuni rapide",
+    "customizeSections": "Secțiuni",
+    "customizeReset": "Restabiliți varianta recomandată",
+    "customizeSaved": "Prezentarea generală a fost salvată",
+    "customizeFailed": "Salvarea a eșuat: {reason}",
+    "moveUp": "Mutați în sus",
+    "moveDown": "Mutați în jos",
+    "cancel": "Anulați",
+    "save": "Salvați",
+    "dueSoonTitle": "Scadente în 7 zile ({count})",
+    "taxDeadlines": {
+      "title": "Termene fiscale apropiate",
+      "hint": "Termenele fiscale provin din calendarul fiscal oficial al Administrației Financiare din Cehia (actualizat zilnic, deja mutat pe zile lucrătoare). Avansurile pentru asigurări și declarațiile anuale nu sunt incluse, de aceea sunt calculate. Sunt afișate următoarele 45 de zile; este doar un calendar, Billanta nu urmărește ce ați depus.",
+      "daysLeft": "{count, plural, =0 {astăzi} one {mâine} few {peste # zile} other {peste # de zile}}",
+      "customizeTitle": "Termene urmărite",
+      "customizeHint": "Sunt afișate doar termenele care se aplică statutului de plătitor de TVA și formei juridice (Setări → Firmă). Plătitorii trimestriali de TVA bifează opțiunea trimestrială în locul celei lunare.",
+      "kinds": {
+        "vat_monthly": "Decont TVA și declarație de control (lunar)",
+        "vat_quarterly": "Decont TVA și declarație de control (trimestrial)",
+        "control_statement": "Declarație de control (lunar)",
+        "vat_identified": "Decont TVA (persoană identificată)",
+        "ec_sales_list": "Declarație recapitulativă",
+        "health": "Avans asigurare de sănătate (independent)",
+        "social": "Avans asigurări sociale (independent)",
+        "income_tax": "Declarația de impozit pe venit",
+        "overviews": "Declarații anuale pentru asigurările sociale și de sănătate",
+        "road_tax": "Taxa rutieră",
+        "property_tax": "Impozit pe proprietate",
+        "vat_other": "TVA: OSS, CESOP și alte raportări",
+        "flat_tax": "Avans impozit forfetar",
+        "payroll": "Impozit reținut angajaților"
+      },
+      "sourceOfficial": "Termene fiscale: calendar oficial",
+      "sourceLocal": "Calendarul Administrației Financiare nu a putut fi încărcat acum; termenele sunt calculate conform legii.",
+      "prepareXml": "Pregătiți XML",
+      "amountsTitle": "Sume estimate",
+      "amountsHint": "Suma pe care o plătiți lunar ca angajator. Apare lângă termen, ca să știți cât să puneți deoparte. Lăsați gol dacă nu este cazul.",
+      "bookExpense": "Înregistrați ca cheltuială",
+      "fillAmount": "Adăugați suma",
+      "onlyIfForeignPurchase": "Doar dacă ați cumpărat servicii din străinătate în acea lună (de ex. reclame).",
+      "onlyIfEuSales": "Doar dacă ați facturat un serviciu unei firme din alt stat UE în acea lună.",
+      "advancesInSettings": "Avansurile pentru asigurările sociale, de sănătate și impozitul forfetar se setează pe perioade în Datele firmei.",
+      "editAdvances": "Editați avansurile",
+      "manualKindsHint": "Billanta nu poate ști dacă aveți angajați, un vehicul pentru taxa rutieră sau o proprietate pentru impozitul pe proprietate, așa că bifați-le dumneavoastră.",
+      "regimeUnknown": "Nu știm dacă sunteți în regimul impozitului forfetar, de aceea urmărim avansurile obișnuite pentru asigurări.",
+      "regimeAnswer": "Răspundeți în setări"
+    },
+    "fxRates": {
+      "title": "Cursuri de schimb ČNB",
+      "hint": "Cursul Băncii Naționale Cehe pentru ziua aleasă, folosit la conversia facturilor în valută în CZK. Procentul reprezintă variația față de săptămâna anterioară acelei zile.",
+      "customizeTitle": "Valute în cursurile ČNB",
+      "customizeHint": "Alegeți ce valute afișează panoul. Puteți alege orice valută publicată de ČNB.",
+      "source": "Sursa:",
+      "weekChange": "Variație în 7 zile",
+      "weekShort": "/ săptămână",
+      "date": "Ziua",
+      "publishedOn": "Curs din {date}",
+      "fallbackNote": "ČNB nu a publicat un curs pentru ziua aleasă (weekend, sărbătoare sau înainte de ora 14:30), așa că este afișat ultimul curs publicat.",
+      "unavailable": "Cursurile pentru această zi nu au putut fi încărcate.",
+      "converter": "Conversie în CZK",
+      "amount": "Sumă",
+      "currency": "Valută",
+      "add": "Adăugați o valută",
+      "remove": "Eliminați {code}",
+      "limit": "Maximum {max} valute."
+    },
+    "usage": {
+      "title": "Recomandat pe baza utilizării",
+      "hint": "Tot ce lăsați neschimbat se adaptează în continuare. Alegerea dumneavoastră are întotdeauna prioritate.",
+      "newAccount": "Încă nu există date, așa că vedeți aspectul de bază.",
+      "currencies": "Facturați în {list}",
+      "onlyHome": "Facturați doar în {currency}",
+      "expenses": "înregistrați cheltuieli",
+      "noExpenses": "nicio cheltuială înregistrată încă",
+      "paypal": "PayPal conectat",
+      "bank": "bancă conectată",
+      "proformas": "emiteți proforme",
+      "quotes": "trimiteți oferte"
+    },
+    "customizeOrderHint": "Trageți de mâner sau folosiți săgețile pentru a schimba ordinea.",
+    "dragToReorder": "Trageți pentru a reordona",
+    "exportsCta": "Exporturi pentru contabil",
+    "emptyHintReadOnly": "Nu există încă documente. După ce firma emite prima factură, aici veți vedea venituri, un grafic și clienți."
+  },
+  "invoices": {
+    "hover": {
+      "fx": "≈ {amount} (curs {source} {rate} {pair} din {date})",
+      "fxNoDate": "≈ {amount} (curs {source} {rate} {pair})",
+      "fxAnnual": "≈ {amount} (curs fix {rate} {pair} pentru {year})",
+      "fxManual": "≈ {amount} (curs {rate} {pair})",
+      "breakdown": "Fără TVA {base} + TVA {vat}",
+      "loading": "Se încarcă…",
+      "error": "Rezumatul nu a putut fi încărcat.",
+      "ico": "Cod de identificare",
+      "count": "{count, plural, one {# factură} few {# facturi} other {# de facturi}}",
+      "none": "Nicio factură emisă încă.",
+      "invoiced": "Facturat",
+      "unpaid": "Neîncasat",
+      "overdue": "Restant",
+      "last": "Ultima factură",
+      "open": "Deschideți contactul"
+    },
+    "title": "Facturi",
+    "description": "Toate facturile emise și cele în lucru.",
+    "newInvoice": "Factură nouă",
+    "empty": "Nu există încă facturi.",
+    "columns": {
+      "number": "Număr",
+      "contact": "Contact",
+      "amount": "Sumă",
+      "currency": "Valută",
+      "status": "Stare",
+      "dueDate": "Scadență",
+      "actions": "Acțiuni"
+    },
+    "status": {
+      "draft": "Ciornă",
+      "pending_review": "În așteptarea verificării",
+      "issued": "Emisă",
+      "paid": "Plătită",
+      "cancelled": "Anulată"
+    },
+    "aiDisclaimer": "Creată dintr-un mesaj vocal – vă rugăm să verificați toate detaliile înainte de emitere.",
+    "unnumbered": "Numărul va fi atribuit la emitere",
+    "noDueDate": "Fără scadență deocamdată",
+    "noTenant": "Contul dumneavoastră nu este încă asociat unui spațiu de lucru. Vă rugăm să contactați asistența.",
+    "loadError": "Facturile nu au putut fi încărcate acum. Vă rugăm să încercați din nou în curând.",
+    "duplicate": "Duplicați",
+    "view": {
+      "saveView": "Salvați vizualizarea",
+      "saveHint": "Salvează filtrele, coloanele și sortarea curente sub un nume ales de dumneavoastră.",
+      "viewName": "Numele vizualizării",
+      "save": "Salvați",
+      "cancel": "Anulați",
+      "saved": "Vizualizarea „{name}” a fost salvată",
+      "applyView": "Aplicați vizualizarea",
+      "deleteView": "Ștergeți vizualizarea {name}",
+      "customize": "Personalizați",
+      "customizeTitle": "Filtre rapide",
+      "customizeHint": "Alegeți ce etichete apar deasupra listei. O etichetă ascunsă apare totuși cât timp este activă. Se aplică acestui browser.",
+      "presetChips": "Selecții rapide",
+      "typeChips": "Tipuri de documente",
+      "statusChips": "Stări",
+      "presets": {
+        "thisMonth": "Luna aceasta",
+        "lastMonth": "Luna trecută",
+        "thisQuarter": "Trimestrul acesta",
+        "thisYear": "Anul acesta",
+        "lastYear": "Anul trecut",
+        "eur": "În euro",
+        "unsent": "Emise, netrimise",
+        "today": "Astăzi",
+        "yesterday": "Ieri",
+        "thisWeek": "Săptămâna aceasta",
+        "lastWeek": "Săptămâna trecută",
+        "last7": "Ultimele 7 zile",
+        "last30": "Ultimele 30 de zile",
+        "last90": "Ultimele 90 de zile",
+        "lastQuarter": "Trimestrul trecut",
+        "last12Months": "Ultimele 12 luni",
+        "overdue30": "Restante peste 30 de zile",
+        "partial": "Plătite parțial"
+      },
+      "inlineActions": "Acțiuni pe rând",
+      "inlineActionsHint": "Afișează pictograme pentru cele mai frecvente acțiuni lângă ⋯.",
+      "sortBy": "Sortare (clic din nou pentru inversare, a treia oară pentru anulare)",
+      "resetSort": "Anulați sortarea",
+      "sortLabel": "Sortare",
+      "sort": {
+        "default": "Create recent",
+        "issueDate_desc": "Emise cel mai recent",
+        "issueDate_asc": "Emise cel mai demult",
+        "createdAt_asc": "Create primele",
+        "dueDate_asc": "Scadență cea mai apropiată",
+        "dueDate_desc": "Scadență cea mai îndepărtată",
+        "overdue_desc": "Cele mai restante",
+        "total_desc": "Suma cea mai mare",
+        "total_asc": "Suma cea mai mică",
+        "amountDue_desc": "Cel mai mult de plătit",
+        "totalWithoutVat_desc": "Suma fără TVA cea mai mare",
+        "customer_asc": "Client A–Z",
+        "customer_desc": "Client Z–A",
+        "number_desc": "Număr descrescător",
+        "number_asc": "Număr crescător",
+        "paidAt_desc": "Plătite recent",
+        "sentAt_desc": "Trimise recent",
+        "taxableDate_desc": "Cea mai recentă dată a faptului generator",
+        "variableSymbol_asc": "Simbol variabil",
+        "status_asc": "După stare",
+        "type_asc": "După tipul documentului"
+      }
+    },
+    "sendBlocked": {
+      "EMAIL_DAILY_LIMIT": "Ați atins limita zilnică de e-mailuri. Conturile noi au o limită mai mică în prima săptămână; puteți trimite din nou mâine sau puteți partaja linkul ori PDF-ul.",
+      "EMAIL_PAUSED": "Trimiterea e-mailurilor este suspendată, deoarece mai mulți destinatari au raportat documentele ca nesolicitate. Vă rugăm să contactați asistența și vom analiza situația.",
+      "ACCOUNT_SUSPENDED": "Contul este suspendat din cauza unei suspiciuni de abuz. Vă rugăm să contactați asistența."
+    },
+    "buyerDetails": {
+      "badge": {
+        "waiting": "Se așteaptă datele clientului",
+        "submitted": "Clientul a completat datele"
+      },
+      "button": "Rugați clientul să își completeze datele",
+      "dialogTitle": "Lăsați clientul să își completeze datele",
+      "dialogHint": "Clientul primește un link unde vede articolele și suma și completează numele, adresa și codul de identificare sau codul de TVA. Datele ajung în contactele dumneavoastră și nimic din ce ați salvat nu este suprascris.",
+      "emailLabel": "E-mailul clientului",
+      "emailPlaceholder": "nume@firma.ro",
+      "emailHint": "Lăsați gol dacă doriți doar să copiați linkul și să îl trimiteți dumneavoastră.",
+      "autoIssue": "Emiteți și trimiteți factura automat după completare",
+      "autoIssueHint": "Doar dacă datele nu sunt în conflict cu contactul salvat. Altfel, ciorna vă așteaptă.",
+      "replaceNote": "Un link nou îl înlocuiește pe cel vechi, care nu mai funcționează.",
+      "sendEmail": "Trimiteți e-mail",
+      "createLink": "Creați linkul",
+      "close": "Închideți",
+      "copied": "Linkul a fost copiat.",
+      "copyPrompt": "Copiați linkul:",
+      "emailed": "Am trimis linkul la {email}.",
+      "cancelled": "Linkul a fost închis.",
+      "failed": "Eșuat",
+      "waitingTitle": "Se așteaptă datele clientului",
+      "waitingEmail": "Linkul a fost trimis la {email}.",
+      "waitingLink": "Linkul este gata de partajat.",
+      "waitingAuto": "După completare, factura este emisă și trimisă automat.",
+      "waitingManual": "După completare vă anunțăm, iar factura o emiteți dumneavoastră.",
+      "copyLink": "Copiați linkul",
+      "resend": "Trimiteți din nou",
+      "cancel": "Închideți linkul",
+      "submittedTitle": "Clientul și-a completat datele {date}",
+      "mode": {
+        "created": "Am creat un contact nou și l-am adăugat pe ciornă.",
+        "existing": "Am găsit un contact salvat după codul de identificare sau codul de TVA și l-am adăugat pe ciornă.",
+        "filled": "Datele aparțin contactului care era deja pe ciornă."
+      },
+      "filled": "Completat: {fields}.",
+      "conflicts": "Diferit de contactul salvat, nimic nu a fost suprascris:",
+      "empty": "gol",
+      "auto": {
+        "sent": "Factura a fost emisă și trimisă automat.",
+        "issued": "Factura a fost emisă, dar e-mailul nu a putut fi trimis.",
+        "failed": "Emiterea automată a eșuat. Vă rugăm să verificați ciorna.",
+        "skipped": "Emiterea automată vă așteaptă, datele trebuie verificate."
+      },
+      "askAgain": "Trimiteți un link nou",
+      "field": {
+        "legalName": "nume",
+        "email": "e-mail",
+        "ico": "cod de identificare",
+        "dic": "cod de TVA",
+        "address": "adresă",
+        "isPerson": "persoană fizică",
+        "contactId": "contact",
+        "phone": "telefon"
+      },
+      "copyManual": "Copierea nu este disponibilă aici. Selectați linkul și copiați-l manual.",
+      "copyManualLabel": "Link pentru client",
+      "requiredLabel": "Date obligatorii",
+      "requiredHint": "Ce trebuie să completeze clientul. Numele și adresa sunt întotdeauna obligatorii, codul de identificare și codul de TVA doar pentru firme.",
+      "requiredSaveDefault": "Folosiți ca implicit pentru linkurile noi",
+      "requiredSummary": "Obligatoriu: {fields}",
+      "pickCustomer": "Alegeți un client"
+    },
+    "profileOrder": {
+      "badge": "Comandă din profil",
+      "banner": "Un client a creat această ciornă comandând din profilul dumneavoastră public. Verificați articolele și prețurile, apoi emiteți-o. Clientului nu i s-a trimis nimic."
+    }
+  },
+  "contacts": {
+    "title": "Contacte",
+    "hint": "Clienții sunt salvați aici automat când îi alegeți pe o factură (din contacte sau din registrul ARES). Marcați cu stea pe cei pe care îi facturați cel mai des, ca să îi alegeți dintr-o atingere pe o factură nouă.",
+    "filter": "Căutați după nume, cod de identificare sau e-mail",
+    "empty": "Nu aveți încă clienți. Se adaugă odată cu prima factură.",
+    "emptyCta": "Creați o factură",
+    "noMatch": "Niciun rezultat pentru căutarea dumneavoastră.",
+    "star": "Marcați cu stea",
+    "unstar": "Eliminați steaua",
+    "starred": "{name} marcat cu stea",
+    "unstarred": "Steaua a fost eliminată pentru {name}",
+    "starFailed": "Steaua nu a putut fi salvată",
+    "invoice": "Factură",
+    "aresVerified": "Verificat în ARES",
+    "loadError": "Contactele nu au putut fi încărcate.",
+    "newContact": "Contact nou",
+    "editor": {
+      "newTitle": "Contact nou",
+      "editTitle": "Editați contactul",
+      "legalName": "Nume",
+      "street": "Stradă și număr",
+      "city": "Oraș",
+      "postalCode": "Cod poștal",
+      "country": "Țară",
+      "vatPayer": "Plătitor de TVA",
+      "vatUnknown": "Necunoscut",
+      "vatYes": "Da",
+      "vatNo": "Nu",
+      "fromAres": "Încărcați din ARES",
+      "icoInvalid": "Codul de identificare trebuie să aibă 8 cifre.",
+      "aresNotFound": "Nicio firmă cu acest cod în ARES.",
+      "aresFailed": "Căutarea în ARES a eșuat",
+      "aresLoaded": "Încărcat din ARES.",
+      "icoTaken": "Există deja un contact cu acest cod de identificare.",
+      "saveFailed": "Salvarea a eșuat",
+      "saved": "Contactul a fost salvat.",
+      "cancel": "Anulați",
+      "save": "Salvați",
+      "kind": "Tipul clientului",
+      "kindCompany": "Firmă",
+      "kindPerson": "Persoană fizică",
+      "kindHint": "O persoană fizică nu are cod de identificare sau cod de TVA – ascundem aceste câmpuri și nu vor apărea pe factură. Nu este niciodată plătitor de TVA.",
+      "personName": "Nume complet",
+      "color": "Etichetă de culoare",
+      "colorNone": "Fără",
+      "registrySearch": "Căutați firma într-un registru",
+      "registryHint": "Căutați după nume, cod de identificare sau cod de TVA, iar datele se completează singure. Alegeți țara din dreapta. Cehia și Slovacia se caută după nume sau IČO; Franța, Norvegia, Finlanda, Danemarca și Elveția după nume sau număr de înregistrare; Polonia după NIP. Orice firmă din UE poate fi găsită după codul de TVA cu prefixul țării (de ex. IT00488410010). Opțiunile „LEI” caută în registrul mondial GLEIF, care cuprinde mai ales firme mari.",
+      "registryResults": "Din registru",
+      "registryEmpty": "Nu s-a găsit nimic în registru",
+      "registryPlaceholder": {
+        "auto": "Nume, cod de identificare sau cod de TVA (de ex. IT00488410010)",
+        "CZ": "Denumirea firmei cehe sau IČO",
+        "SK": "Denumirea firmei slovace sau IČO",
+        "FR": "Nume sau SIREN",
+        "NO": "Nume sau număr de organizație",
+        "PL": "NIP (10 cifre)",
+        "EU": "Cod de TVA cu prefixul țării, de ex. DE123456789",
+        "DE": "Denumirea firmei sau codul de TVA (DE…)",
+        "AT": "Denumirea firmei sau codul de TVA (ATU…)",
+        "IT": "Denumirea firmei sau codul de TVA (IT…)",
+        "GB": "Denumirea firmei sau numărul de înregistrare",
+        "US": "Denumirea firmei (de ex. Apple Inc)",
+        "WORLD": "Denumirea firmei, oriunde în lume",
+        "FI": "Nume sau Business ID (1234567-8)",
+        "DK": "Nume sau CVR (8 cifre)",
+        "CH": "Nume sau UID (CHE-123.456.789)"
+      },
+      "internalNote": "Notă internă",
+      "internalNoteHint": "Doar pentru dumneavoastră: nu se tipărește niciodată pe documente și nu se trimite clientului. Apare pe pagina contactului și când facturați acest client și este inclusă în exportul CSV.",
+      "internalNotePlaceholder": "De ex. plătește mereu cu întârziere, facturile în atenția doamnei Popescu, reducere 5%…",
+      "fromRegistry": "Încărcați din registru",
+      "phone": "Telefon",
+      "vatSuggestYes": "Registrul îl indică drept plătitor de TVA. Setați „Da”?",
+      "vatSuggestNo": "Registrul nu îl indică drept plătitor de TVA. Setați „Nu”?",
+      "contactPerson": "Persoană de contact"
+    },
+    "detail": {
+      "title": "Detalii contact",
+      "loadError": "Contactul nu a putut fi încărcat.",
+      "backToList": "Înapoi la contacte",
+      "aresVerified": "Verificat în ARES",
+      "noIco": "Fără cod de identificare",
+      "stats": {
+        "invoiced": "Facturat ({currency})",
+        "open": "Neîncasat ({currency})",
+        "overdue": "Restant",
+        "avgDelay": "Întârziere medie la plată",
+        "onTime": "Plătește la timp",
+        "days": "{count, plural, one {# zi} few {# zile} other {# de zile}}"
+      },
+      "invoices": "Documente",
+      "expenses": "Cheltuieli de la acest furnizor",
+      "noExpenses": "Nicio cheltuială de la acest contact.",
+      "info": "Detalii",
+      "vatPayer": "Plătitor de TVA",
+      "yes": "Da",
+      "no": "Nu",
+      "aresCheck": "Verificat în ARES",
+      "lastInvoice": "Ultimul document",
+      "documentCount": "Documente",
+      "openAres": "Deschideți în ARES ↗",
+      "newInvoice": "Factură nouă",
+      "star": "Marcați cu stea",
+      "unstar": "Eliminați steaua",
+      "refreshAres": "Actualizați din ARES",
+      "aresUpdated": "Actualizat din ARES.",
+      "aresNotFound": "Nu a fost găsit în ARES.",
+      "edit": "Editați",
+      "delete": "Ștergeți",
+      "cancel": "Anulați",
+      "deleteTitle": "Ștergeți contactul?",
+      "deleteBody": "Contactul „{name}” va fi eliminat definitiv.",
+      "inUse": "Contactul are documente și nu poate fi șters.",
+      "deleted": "Contactul a fost șters.",
+      "actionFailed": "Acțiunea a eșuat",
+      "invoicesFilter": "Deschideți în facturi cu filtre",
+      "internalNote": "Notă internă",
+      "portal": {
+        "title": "Portal pentru client",
+        "hint": "Un link permanent unde clientul vede toate documentele emise pentru el, cât mai are de plătit și un cod QR de plată pentru fiecare factură. Ciornele nu sunt afișate niciodată. Un link nou îl anulează pe cel vechi.",
+        "off": "Trimiteți clientului un singur link către toate facturile și ofertele sale.",
+        "enable": "Activați portalul",
+        "enabled": "Portalul este activ",
+        "copy": "Copiați",
+        "copied": "Linkul a fost copiat",
+        "open": "Deschideți",
+        "renew": "Link nou",
+        "renewConfirm": "Creați un link nou? Cel actual nu va mai funcționa.",
+        "renewed": "Linkul nou a fost creat",
+        "disable": "Dezactivați",
+        "disabled": "Portalul este dezactivat",
+        "failed": "A apărut o eroare"
+      },
+      "contactPerson": "Persoană de contact"
+    },
+    "csv": {
+      "import": "Importați CSV",
+      "importHint": "Încărcați un fișier CSV din Excel, Fakturoid, iDoklad sau faktorio. Contactele sunt potrivite după codul de identificare, altfel după nume.",
+      "export": "Exportați CSV",
+      "done": "Gata: {created} contacte noi, {updated} actualizate.",
+      "skippedTitle": "Rânduri omise: {count}",
+      "skippedRow": "Rândul {line} ({name})",
+      "skippedMore": "…și încă {count}.",
+      "reasons": {
+        "missing_name": "lipsește numele",
+        "invalid_ico": "cod de identificare invalid",
+        "invalid_email": "e-mail invalid",
+        "invalid_country": "țară necunoscută"
+      },
+      "errors": {
+        "unknown_columns": "Fișierul nu conține o coloană cu denumirea firmei (Name / Název).",
+        "too_many_rows": "Fișierul este prea mare (maximum 5.000 de rânduri).",
+        "no_file": "Alegeți un fișier CSV.",
+        "failed": "Importul a eșuat, vă rugăm să încercați din nou."
+      }
+    },
+    "filters": {
+      "kind": "Tip",
+      "activity": "Facturare",
+      "activityHint": "Numără facturile emise (fără ciorne sau facturi anulate).",
+      "activityValue": {
+        "unpaid": "Cu facturi neîncasate",
+        "active": "Facturați",
+        "none": "Nicio factură încă"
+      },
+      "starred": "Marcați cu stea",
+      "vatPayer": "Plătitor de TVA",
+      "ares": "Verificat în ARES",
+      "email": "Are e-mail",
+      "country": "Țară"
+    },
+    "sort": {
+      "label": "Sortare",
+      "name": "După nume",
+      "newest": "Cele mai noi",
+      "revenue": "Venituri cele mai mari",
+      "lastInvoice": "Ultima factură",
+      "unpaid": "Cele mai multe neîncasate",
+      "city": "După oraș"
+    },
+    "stats": {
+      "invoices": "{count, plural, one {# factură} few {# facturi} other {# de facturi}}",
+      "unpaid": "{count} neîncasate",
+      "unpaidTitle": "Facturi emise neîncasate"
+    },
+    "colorFilter": "Culoare",
+    "colors": {
+      "red": "Roșu",
+      "orange": "Portocaliu",
+      "amber": "Galben",
+      "green": "Verde",
+      "teal": "Turcoaz",
+      "sky": "Albastru",
+      "indigo": "Indigo",
+      "violet": "Violet",
+      "pink": "Roz",
+      "slate": "Gri"
+    }
+  },
+  "expenses": {
+    "title": "Cheltuieli",
+    "description": "O privire de ansamblu asupra facturilor primite și a altor costuri.",
+    "newExpense": "Cheltuială nouă",
+    "empty": "Nu există încă cheltuieli.",
+    "columns": {
+      "date": "Data",
+      "supplier": "Furnizor",
+      "description": "Descriere",
+      "amount": "Sumă cu TVA",
+      "vatRate": "Cotă TVA",
+      "category": "Categorie",
+      "dueDate": "Scadență",
+      "state": "Stare"
+    },
+    "uncategorized": "Fără categorie",
+    "form": {
+      "title": "Cheltuială nouă",
+      "description": "O factură primită, un bon sau alt cost. Scanarea unei fotografii este calea cea mai rapidă.",
+      "supplierNameLabel": "Furnizor",
+      "supplierNamePlaceholder": "Numele furnizorului",
+      "descriptionLabel": "Descriere",
+      "descriptionPlaceholder": "de ex. achiziție de rechizite de birou",
+      "amountLabel": "Sumă cu TVA",
+      "vatRateLabel": "Cotă TVA (%)",
+      "currencyLabel": "Valută",
+      "expenseDateLabel": "Data emiterii / data faptului generator",
+      "categoryLabel": "Categorie",
+      "categoryPlaceholder": "de ex. Rechizite de birou",
+      "receiptFileUrlLabel": "Link către document (opțional)",
+      "receiptFileUrlPlaceholder": "https://…",
+      "receiptFileUrlHint": "Link către documentul din cloud (Google Drive, Dropbox…).",
+      "cancel": "Anulați",
+      "submit": "Salvați cheltuiala",
+      "editTitle": "Editați cheltuiala",
+      "aiTitle": "Citiți dintr-o fotografie sau un PDF",
+      "aiHint": "Fotografiați bonul sau trageți aici un PDF – AI completează furnizorul, suma, TVA-ul și scadența.",
+      "aiReading": "Se citește documentul…",
+      "aiCheck": "Aceste câmpuri au fost completate de AI – vă rugăm să le verificați înainte de salvare.",
+      "aiFailed": "Documentul nu a putut fi citit",
+      "aiErrors": {
+        "ai_disabled": "AI este dezactivat în setări",
+        "ai_key_missing": "Lipsește cheia API proprie pentru AI",
+        "unsupported_file_type": "Tip de fișier neacceptat (JPEG, PNG, WebP, GIF, PDF)",
+        "ai_refused": "AI a refuzat să proceseze documentul",
+        "ai_unparseable": "Nu s-a putut citi nimic din document"
+      },
+      "supplierSection": "Furnizor și document",
+      "supplierLinked": "Asociat unui contact",
+      "documentNumberLabel": "Numărul documentului",
+      "variableSymbolLabel": "Simbol variabil",
+      "noCategory": "Fără categorie",
+      "amountSection": "Sumă",
+      "vatBreakdown": "Bază {base} + TVA {vat}",
+      "reverseChargeLabel": "Taxare inversă (§ 92a)",
+      "reverseChargeHint": "Furnizorul a facturat fără TVA, iar TVA-ul îl calculați dumneavoastră. Introduceți suma fără TVA; TVA-ul este atât datorat, cât și dedus în decont (rândurile 10/11 și 43/44), iar documentul intră în secțiunea B.1 a declarației de control.",
+      "amountLabelReverseCharge": "Sumă fără TVA",
+      "vatBreakdownReverseCharge": "Bază {base}, TVA de autolichidat {vat}",
+      "reverseChargeRequiredHint": "Secțiunea B.1 necesită codul de TVA al furnizorului și numărul documentului.",
+      "datesSection": "Date și plată",
+      "dueDateLabel": "Scadență",
+      "paidLabel": "Deja plătită",
+      "otherSection": "Altele",
+      "noteLabel": "Notă internă (opțional)",
+      "saveChanges": "Salvați modificările",
+      "saved": "Cheltuiala a fost salvată",
+      "saveFailed": "Cheltuiala nu a putut fi salvată",
+      "supplierDicHint": "Pentru declarația de control TVA (secțiunea B.2)",
+      "qrCamera": "Scanați QR cu camera",
+      "qrHint": "Codurile QR Faktura și codurile QR de plată sunt citite direct din fotografie sau PDF, fără AI.",
+      "qrFound": "Datele au fost încărcate din codul QR",
+      "qrCheck": "Completat din factura QR – furnizorul, suma, TVA-ul și datele corespund exact documentului. Adăugați o descriere și o categorie.",
+      "qrCheckPayment": "Codul QR de plată a furnizat suma, simbolul variabil și scadența. Completați restul sau încărcați întregul document.",
+      "qrDescription": "Factura {number}"
+    },
+    "noTenant": "Configurați mai întâi firma.",
+    "loadError": "Cheltuielile nu au putut fi încărcate",
+    "fromPhoto": "Scanați un bon",
+    "emptyFiltered": "Nicio cheltuială nu corespunde filtrului.",
+    "searchPlaceholder": "Căutați furnizor, descriere, număr…",
+    "allStates": "Toate",
+    "allCategories": "Toate categoriile",
+    "selected": "Selectate: {count}",
+    "selectAll": "Selectați tot",
+    "clearSelection": "Anulați selecția",
+    "bulkDone": "Gata {ok} din {total}",
+    "bulkDeleteConfirm": "Sigur ștergeți {count} cheltuieli?",
+    "sumLabel": "Total ({count})",
+    "vatIncluded": "inclusiv TVA {vat}",
+    "kpi": {
+      "month": "Luna aceasta",
+      "unpaid": "De plătit",
+      "overdue": "Restante",
+      "count": "{count, plural, one {# document} few {# documente} other {# de documente}}"
+    },
+    "state": {
+      "paid": "Plătită",
+      "unpaid": "De plătit",
+      "overdue": "Restantă"
+    },
+    "category": {
+      "material": "Materiale",
+      "services": "Servicii",
+      "software": "Software",
+      "travel": "Deplasări",
+      "fuel": "Combustibil",
+      "office": "Birou",
+      "telecom": "Telefon și internet",
+      "rent": "Chirie",
+      "marketing": "Marketing",
+      "other": "Altele"
+    },
+    "detail": {
+      "title": "Detalii cheltuială",
+      "loadError": "Cheltuiala nu a putut fi încărcată",
+      "backToList": "Înapoi la cheltuieli",
+      "badge": "Document primit",
+      "unknownSupplier": "Furnizor necunoscut",
+      "total": "Total cu TVA",
+      "base": "Bază",
+      "vat": "TVA {rate} %",
+      "amounts": "Sume",
+      "supplier": "Furnizor",
+      "details": "Detalii",
+      "paidAt": "Plătită la",
+      "createdAt": "Înregistrată",
+      "openReceipt": "Deschideți documentul",
+      "overdueBanner": "Această cheltuială este restantă (scadentă la {date}).",
+      "markPaid": "Marcați ca plătită",
+      "markUnpaid": "Marcați ca neplătită",
+      "edit": "Editați",
+      "duplicate": "Duplicați",
+      "delete": "Ștergeți",
+      "deleteTitle": "Ștergeți cheltuiala?",
+      "deleteBody": "Cheltuiala va fi eliminată definitiv.",
+      "actionFailed": "Acțiunea a eșuat",
+      "done": {
+        "paid": "Marcată ca plătită",
+        "unpaid": "Marcată ca neplătită",
+        "deleted": "Cheltuiala a fost ștearsă"
+      }
+    },
+    "filters": {
+      "receipt": "Document",
+      "receiptYes": "Încărcat",
+      "receiptNo": "Lipsă",
+      "dateHint": "Alegeți după ce dată filtrați – data cheltuielii, scadența sau data plății.",
+      "dateField": {
+        "expense": "Data cheltuielii",
+        "due": "Scadență",
+        "paid": "Plătită"
+      }
+    }
+  },
+  "pricing": {
+    "title": "Prețuri",
+    "lead": "Începeți gratuit, fără card. Treceți la un plan superior când aveți nevoie.",
+    "seoTitle": "Prețuri pentru facturare – începeți gratuit",
+    "metaDescription": "Prețuri Billanta: Free cu 10 documente pe lună și plată per document peste această limită, Start de la 4,99 €, Plus cu AI de la 9,99 € și Business pentru echipe. Fără card, prețuri fără TVA.",
+    "yearly": "Anual",
+    "monthly": "Lunar",
+    "yearlySave": "2 luni gratuite",
+    "currency": "Valută",
+    "period": "Facturare",
+    "perMonth": "/ lună",
+    "billedYearly": "facturat anual, {total}",
+    "billedMonthly": "facturat lunar",
+    "forever": "pentru totdeauna",
+    "popular": "Cel mai ales",
+    "vatNote": "Prețurile nu includ TVA. Puteți schimba sau anula planul oricând.",
+    "aiKeyNote": "Aveți propria cheie AI? Conectați-o în setări și plătiți direct furnizorului pentru funcțiile AI, fără limitele planului.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Pentru a încerca și pentru facturi ocazionale",
+        "cta": "Începeți gratuit",
+        "features": [
+          "10 documente pe lună incluse",
+          "Documente suplimentare la {payg} fiecare",
+          "ISDOC, plată QR, căutare în registru și VIES",
+          "5 credite AI pe lună",
+          "Urmărirea pragului de TVA și calendar fiscal",
+          "Pontaj și copii de siguranță ale datelor"
+        ]
+      },
+      "start": {
+        "name": "Start",
+        "tagline": "Pentru liber-profesioniștii care facturează regulat",
+        "cta": "Alegeți Start",
+        "features": [
+          "Documente nelimitate",
+          "Asocierea plăților din bancă și PayPal",
+          "Remindere automate",
+          "Facturi recurente și portal pentru clienți",
+          "Cifre pentru impozitul pe venit",
+          "Export pentru Pohoda și Money S3",
+          "30 de credite AI pe lună",
+          "Acces gratuit pentru contabil"
+        ]
+      },
+      "plus": {
+        "name": "Plus",
+        "tagline": "AI face cea mai mare parte a muncii",
+        "cta": "Alegeți Plus",
+        "features": [
+          "Tot ce include Start",
+          "150 de credite AI pe lună",
+          "Decont TVA, declarație de control și declarație recapitulativă",
+          "Plăți cu cardul pe facturi",
+          "3 utilizatori + contabil",
+          "API și webhookuri (10.000 de cereri)",
+          "Asistență prioritară"
+        ]
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Pentru echipe și mai multe firme",
+        "cta": "Alegeți Business",
+        "features": [
+          "Tot ce include Plus",
+          "Până la 10 firme într-un singur cont",
+          "10 utilizatori cu roluri",
+          "500 de credite AI pe lună",
+          "API și webhookuri (50.000 de cereri)",
+          "Asistență prioritară"
+        ]
+      }
+    },
+    "paygNote": "Pe planul Free plătiți doar documentele de peste 10 pe lună, {payg} fiecare. De la aproximativ 34 de documente pe lună, Start iese mai ieftin.",
+    "aiCreditNote": "Un credit AI = o factură dintr-un mesaj vocal sau text ori un bon citit dintr-o fotografie.",
+    "compare": {
+      "title": "Comparați planurile",
+      "feature": "Funcție",
+      "yes": "Da",
+      "no": "Nu",
+      "groups": {
+        "invoicing": "Facturare",
+        "payments": "Plăți și bancă",
+        "ai": "AI",
+        "tax": "Taxe și contabil",
+        "team": "Echipă și date"
+      },
+      "rows": {
+        "docs": "Documente pe lună",
+        "types": "Facturi, proforme, facturi de stornare și oferte",
+        "isdoc": "ISDOC, plată QR, căutare în registru și VIES",
+        "currencies": "Valute străine la cursul băncii centrale",
+        "languages": "Documente în cehă, slovacă și engleză",
+        "recurring": "Facturi recurente",
+        "reminders": "Remindere pentru restanțe",
+        "bank": "Asocierea plăților din bancă",
+        "paypal": "Sincronizare PayPal",
+        "portal": "Portal pentru clienți",
+        "cards": "Plăți cu cardul pe facturi",
+        "aiCredits": "Credite AI pe lună",
+        "voice": "Facturi din mesaje vocale și text",
+        "receipts": "Bonuri dintr-o fotografie",
+        "ownKey": "Cheie AI proprie, fără limită",
+        "vatLimit": "Urmărirea pragului de TVA și calendar fiscal",
+        "annual": "Cifre pentru impozitul pe venit",
+        "vatFilings": "Decont TVA, declarație de control și declarație recapitulativă",
+        "accountantExport": "Export pentru contabil",
+        "users": "Utilizatori",
+        "companies": "Firme într-un singur cont",
+        "api": "API și webhookuri (cereri pe lună)",
+        "time": "Pontaj",
+        "backups": "Copii de siguranță (Google Drive, descărcare)",
+        "support": "Asistență"
+      },
+      "cell": {
+        "docsFree": "10 incluse, apoi {payg} fiecare",
+        "unlimited": "Nelimitat",
+        "twoTemplates": "2 șabloane",
+        "manual": "Manual",
+        "automatic": "Automat",
+        "csv": "CSV",
+        "csvPlus": "CSV, Pohoda, Money S3",
+        "oneUser": "1",
+        "userAccountant": "1 + contabil",
+        "threeAccountant": "3 + contabil",
+        "tenUsers": "10 cu roluri",
+        "upTo10": "Până la 10",
+        "email": "E-mail",
+        "priority": "Prioritară"
+      }
+    },
+    "compareCompetitors": "Cum se compară Billanta cu Fakturoid, iDoklad și alții",
+    "trialNote": "{days, plural, one {# zi} few {# zile} other {# de zile}} de {plan} gratuit, fără card, o singură dată per cod de identificare (IČO). Perioada de probă începe când firma își completează IČO, iar apoi trece singură la Free. Datele rămân.",
+    "trialCard": "{days, plural, one {Prima zi gratuită} few {Primele # zile gratuite} other {Primele # de zile gratuite}}, fără card",
+    "methods": {
+      "title": "Cum plătiți",
+      "card": {
+        "title": "Abonament cu cardul – se reînnoiește automat, mai ieftin",
+        "body": "Prețurile de mai sus sunt pentru un abonament cu cardul, Apple Pay sau Google Pay. Se reînnoiește singur, îl puteți anula oricând, iar planul rămâne activ până la sfârșitul perioadei plătite."
+      },
+      "transfer": {
+        "title": "Transfer bancar – fără reînnoire automată",
+        "body": "Pentru o lună sau un an în avans, pe baza unei proforme cu cod QR, cu {percent} % mai scump, deoarece asociem manual fiecare plată. Nu se percepe nimic automat, iar înainte de sfârșitul perioadei vă trimitem un reminder cu următoarea proformă."
+      }
+    },
+    "transferPrice": "prin transfer {price} / lună",
+    "transferCzkOnly": "Transferul bancar este posibil doar în coroane cehe.",
+    "faq": {
+      "title": "Întrebări despre prețuri",
+      "items": [
+        {
+          "q": "Billanta este gratuită?",
+          "a": "Da. Planul Free nu are limită de timp și nu necesită card. Include 10 documente pe lună; fiecare document suplimentar costă {payg}. ISDOC, plățile QR și căutarea firmelor în registrul ARES sunt incluse în toate planurile."
+        },
+        {
+          "q": "Prețurile includ TVA?",
+          "a": "Nu, toate prețurile sunt afișate fără TVA."
+        },
+        {
+          "q": "Pot schimba sau anula planul oricând?",
+          "a": "Da. Un abonament cu cardul poate fi anulat oricând, iar planul rămâne activ până la sfârșitul perioadei plătite. Pe orice plan puteți descărca o copie de siguranță a datelor."
+        },
+        {
+          "q": "Pot plăti prin transfer bancar?",
+          "a": "Da, pentru o lună sau un an în avans, pe baza unei facturi proforme, cu {percent} % mai mult decât cu cardul, deoarece asociem manual aceste plăți. Transferul bancar este posibil doar în coroane cehe."
+        },
+        {
+          "q": "Ce este un credit AI?",
+          "a": "O factură întocmită dintr-un mesaj vocal sau text ori un bon citit. Cu propria cheie AI plătiți direct furnizorului de AI, fără limitele planului."
+        },
+        {
+          "q": "Contabilul meu are nevoie de un plan propriu?",
+          "a": "Nu. Începând cu planul Start, un contabil primește gratuit acces la firma dumneavoastră, ca parte a planului."
+        },
+        {
+          "q": "De ce apare pe facturi „Realizat cu Billanta”?",
+          "a": "Pe planul gratuit, fiecare document conține un mic link către Billanta în subsolul PDF-ului, al e-mailului și al facturii online. Astfel se autofinanțează planul Free. Pe un plan plătit și în perioada de probă îl puteți dezactiva în Setări, la secțiunea facturi."
+        }
+      ]
+    }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Funcții",
+      "pricing": "Prețuri",
+      "login": "Conectare",
+      "signup": "Înregistrare",
+      "label": "Navigare principală",
+      "home": "Acasă",
+      "start": "Start",
+      "cities": "Orașe",
+      "about": "Despre noi",
+      "faq": "Întrebări frecvente",
+      "guestInvoice": "Factură fără înregistrare",
+      "createInvoice": "Creați o factură",
+      "createInvoiceShort": "Factură",
+      "search": "Căutare",
+      "app": "Aplicație",
+      "account": "Cont",
+      "accountants": "Pentru contabili",
+      "partners": "Parteneri",
+      "schools": "Pentru școli",
+      "creators": "Pentru creatori",
+      "events": "Pentru evenimente și comunități",
+      "forPartners": "Pentru parteneri",
+      "firstInvoice": "Prima factură",
+      "teamRoles": "Roluri în echipă"
+    },
+    "hero": {
+      "title": "Facturare pentru firmele din Cehia și Slovacia, fără hârțogăraie",
+      "subtitle": "Emiteți facturi prin mesaj vocal pe Telegram sau WhatsApp, exportați-le în ISDOC și fiți siguri că totul corespunde registrului ARES și reglementărilor în vigoare.",
+      "cta": "Creați un cont gratuit",
+      "secondaryCta": "Vedeți cum funcționează",
+      "eyebrow": "Facturare pentru CZ și SK",
+      "points": {
+        "isdoc": "Export ISDOC",
+        "ares": "Căutare în ARES",
+        "qr": "Plăți QR"
+      },
+      "guestCta": "Factură fără înregistrare",
+      "dictateCta": "Sau dictați-o – fără înregistrare"
+    },
+    "invoiceMockup": {
+      "status": "Plătită",
+      "issuedTo": "Facturat către",
+      "dueDate": "Scadență",
+      "subtotal": "Subtotal",
+      "vat": "TVA 21%",
+      "total": "Total de plată",
+      "isdocTag": "Export ISDOC",
+      "aresTag": "Verificat în ARES",
+      "credit": "Realizat cu Billanta"
+    },
+    "features": {
+      "title": "Tot ce aveți nevoie pentru facturare, într-un singur loc",
+      "isdoc": {
+        "title": "Export ISDOC",
+        "description": "Facturi în format ISDOC, gata pentru contabil și pentru autoritățile fiscale – fără reintroducere manuală."
+      },
+      "aiVoice": {
+        "title": "Factură dintr-un mesaj vocal",
+        "description": "Dictați o factură pe Telegram sau WhatsApp, iar AI pregătește o ciornă pentru o verificare rapidă."
+      },
+      "compliance": {
+        "title": "Verificarea elementelor obligatorii",
+        "description": "Înainte de emitere verificăm că factura are tot ce cer legislația cehă sau slovacă privind TVA și dreptul comercial – cod de identificare, cod de TVA, adrese, articole. Datele clientului vin din ARES."
+      },
+      "multilang": {
+        "title": "Cehă, slovacă și engleză",
+        "description": "Întreaga aplicație și facturile funcționează în trei limbi din prima zi."
+      },
+      "qr": {
+        "title": "Cod QR de plată pe fiecare factură",
+        "description": "Fiecare factură are un cod QR conform standardului Asociației Băncilor din Cehia. Adăugați numărul de cont sau IBAN-ul, iar clientul doar scanează și plătește."
+      },
+      "bankSync": {
+        "title": "Plățile din bancă și PayPal se asociază singure",
+        "description": "Conectați Fio, altă bancă prin PSD2 sau PayPal, iar Billanta descarcă plățile primite și marchează facturile ca plătite, inclusiv cu comisionul PayPal."
+      },
+      "reminders": {
+        "title": "Remindere pentru restanțe",
+        "description": "Billanta urmărește facturile neîncasate și trimite clientului un reminder cu linkul facturii și plata QR."
+      },
+      "vat": {
+        "title": "Decont TVA pentru EPO",
+        "description": "Din facturi și cheltuieli pregătim în XML decontul de TVA și declarația de control pentru portalul fiscal ceh."
+      },
+      "expenses": {
+        "title": "Bonuri dintr-o fotografie",
+        "description": "Fotografiați un bon sau încărcați un PDF, iar AI completează furnizorul, suma, TVA-ul și scadența."
+      },
+      "recurring": {
+        "title": "Facturi recurente și în masă",
+        "description": "Abonamentele și chiriile se emit conform programului. Dintr-un șablon puteți factura mai mulți clienți deodată."
+      },
+      "templates": {
+        "title": "Șabloane și variabile proprii",
+        "description": "Salvați un document ca șablon, editați textele e-mailurilor și inserați variabile precum '{number}' sau '{due_date}'."
+      },
+      "time": {
+        "title": "Pontaj",
+        "description": "Cronometru și înregistrări manuale pe proiect. Transformați munca nefacturată într-o factură la tariful proiectului, dintr-un clic."
+      },
+      "taxEstimate": {
+        "title": "Cât vă rămâne",
+        "description": "Fiecare factură arată o sumă aproximativă după impozitul pe venit și asigurări, conform regulilor cehe pentru independenți. Pentru întregul an calculăm impozitul, asigurările și următoarele avansuri."
+      },
+      "currencies": {
+        "title": "Facturi în valută",
+        "description": "EUR, USD și altele. Cursul ČNB pentru data livrării se completează singur și este convertit în CZK pentru TVA."
+      },
+      "clientPortal": {
+        "title": "Portal pentru clienți",
+        "description": "Un link permanent pentru fiecare client: toate facturile și ofertele, cât mai are de plătit și ce este restant."
+      },
+      "migration": {
+        "title": "Treceți de la altă aplicație",
+        "description": "Din BitFaktura și Fakturoid direct prin API, cu PDF-urile originale, din iDoklad sau Excel prin CSV. Vedeți o previzualizare înainte de salvare."
+      },
+      "api": {
+        "title": "API și webhookuri",
+        "description": "Un API REST cu chei proprii, webhookuri pentru Slack, Discord sau propriul sistem și un calendar al scadențelor."
+      },
+      "team": {
+        "title": "Echipă, contabil, mai multe firme",
+        "description": "Invitați colegii și contabilul, fiecare cu rolul său. Gestionați o activitate de independent și o firmă dintr-un singur cont."
+      },
+      "auditLog": {
+        "title": "Istoric modificări",
+        "description": "Cine a modificat ce și când, inclusiv modificările făcute de AI și prin API. Un document emis poate fi corectat doar cu un motiv declarat."
+      },
+      "reports": {
+        "title": "Rapoarte pe perioade",
+        "description": "Venituri, cheltuieli și clienți principali pe lună, trimestru sau an, comparate cu perioada anterioară."
+      },
+      "backups": {
+        "title": "Copii de siguranță în propriul spațiu de stocare",
+        "description": "Datele firmei sunt salvate regulat în Google Drive, pe serverul dumneavoastră prin SFTP sau printr-un webhook. Descărcați totul dintr-un clic."
+      }
+    },
+    "howItWorks": {
+      "title": "Cum funcționează",
+      "steps": {
+        "capture": {
+          "title": "Dictați sau scrieți",
+          "description": "Un mesaj vocal pe Telegram sau WhatsApp, fotografia unui bon sau o singură propoziție. AI completează clientul din ARES și articolele.",
+          "highlight": "AI și pe planul gratuit"
+        },
+        "draft": {
+          "title": "Verificați ciorna",
+          "description": "Billanta verifică elementele obligatorii, TVA-ul și numerotarea. Nimic nu este emis până nu confirmați.",
+          "highlight": "Verificarea elementelor obligatorii"
+        },
+        "issue": {
+          "title": "Emiteți și trimiteți",
+          "description": "Un PDF cu cod QR de plată, ISDOC și UBL pentru Slovacia. Clientul primește un e-mail cu linkul către factură.",
+          "highlight": "10 documente pe lună gratuit"
+        },
+        "getPaid": {
+          "title": "Plățile se asociază singure",
+          "description": "Din Fio, altă bancă prin PSD2 sau PayPal. Fiecare factură arată cât vă rămâne după impozitul pe venit și contribuții.",
+          "highlight": "Vă rămâne: suma netă"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Gata să vă simplificați facturarea?",
+      "subtitle": "Începeți gratuit, fără card de credit.",
+      "cta": "Creați-vă contul"
+    },
+    "footer": {
+      "tagline": "Facturare modernă pentru firmele din Cehia și Slovacia.",
+      "product": {
+        "title": "Produs",
+        "features": "Funcții",
+        "pricing": "Prețuri",
+        "faq": "Întrebări frecvente",
+        "guestInvoice": "Factură fără înregistrare",
+        "compare": "Comparație cu alții",
+        "firstInvoice": "Prima dumneavoastră factură",
+        "beginners": "Pentru începători",
+        "advanced": "Pentru utilizatori avansați",
+        "teamRoles": "Roluri în echipă"
+      },
+      "company": {
+        "title": "Companie",
+        "about": "Despre noi",
+        "accountants": "Pentru contabili",
+        "partners": "Parteneri",
+        "blog": "Blog",
+        "schools": "Pentru școli",
+        "creators": "Pentru creatori",
+        "events": "Pentru evenimente și comunități",
+        "forPartners": "Pentru parteneri"
+      },
+      "legal": {
+        "title": "Informații legale",
+        "terms": "Termeni și condiții",
+        "privacy": "Politica de confidențialitate",
+        "cookies": "Politica privind cookie-urile",
+        "cookieSettings": "Setări cookie-uri",
+        "dpa": "Acord de prelucrare a datelor",
+        "contact": "Contact"
+      },
+      "account": {
+        "title": "Cont",
+        "login": "Conectare",
+        "signup": "Înregistrare",
+        "openApp": "Mergeți la aplicație"
+      },
+      "partners": {
+        "title": "Parteneri",
+        "all": "Toți partenerii"
+      }
+    },
+    "seo": {
+      "title": "Billanta – facturare online pentru firmele din Cehia și Slovacia",
+      "description": "Emiteți facturi cu export ISDOC, căutarea clienților în ARES și cod QR de plată. Dictați o ciornă ca mesaj vocal pe Telegram sau WhatsApp. Începeți gratuit."
+    },
+    "faq": {
+      "title": "Întrebări frecvente",
+      "items": {
+        "free": {
+          "q": "Cât costă Billanta?",
+          "a": "Puteți începe gratuit, fără card, cu 10 documente pe lună. Planurile plătite încep de la {price} pe lună fără TVA, la plata anuală; detaliile sunt pe pagina de prețuri."
+        },
+        "slovakia": {
+          "q": "Billanta funcționează pentru Slovacia?",
+          "a": "Da. Aplicația este disponibilă în slovacă, caută clienții în registrul slovac RPO, pune pe facturi un cod QR PAY by square, iar planurile au prețuri în euro. Pe planul Plus pregătește decontul de TVA slovac, declarația de control și declarația recapitulativă pentru eDane. Generează deja fișiere de factură electronică UBL (Peppol BIS 3.0); trimiterea prin rețeaua Peppol pentru obligația de facturare electronică din 2027 este în lucru."
+        },
+        "isdoc": {
+          "q": "Ce este ISDOC și de ce am nevoie de el?",
+          "a": "ISDOC este standardul ceh pentru facturi electronice. Programele de contabilitate îl pot importa automat, așa că contabilul nu trebuie să reintroducă nimic."
+        },
+        "ares": {
+          "q": "Cum funcționează căutarea în ARES?",
+          "a": "Introduceți codul de identificare al firmei (IČO), iar Billanta preia numele, adresa și codul de TVA al clientului direct din registrul public ARES, fără reintroducere și fără greșeli de tastare."
+        },
+        "voice": {
+          "q": "Pot dicta o factură?",
+          "a": "Da. Trimiteți un mesaj vocal pe Telegram sau WhatsApp, iar AI pregătește din el o ciornă de factură. Devine definitivă doar după ce ați verificat-o și confirmat-o dumneavoastră."
+        },
+        "data": {
+          "q": "Ce se întâmplă cu datele mele?",
+          "a": "Datele fiecărei firme sunt izolate în baza de date de cele ale oricărei alte firme. Puteți descărca oricând o copie de siguranță sau o puteți salva automat în propriul spațiu de stocare, din setări."
+        }
+      }
+    },
+    "compare": {
+      "title": "Comparație cu alternativele",
+      "lead": "Mai mult gratuit, un preț mai mic și AI pe fiecare plan. Alături de Fakturoid, iDoklad, SuperFaktura, Vyfakturuj și BitFaktura.",
+      "more": "Comparație completă cu Fakturoid, iDoklad și alții"
+    }
+  },
+  "billing": {
+    "title": "Plan și facturare",
+    "description": "Pe ce plan este firma, cât a mai rămas din perioada de probă și cum plătiți.",
+    "loadError": "Planul nu a putut fi încărcat. Încercați să reîncărcați pagina.",
+    "checkoutSuccess": "Vă mulțumim, plata a fost efectuată. Planul se activează în câteva secunde.",
+    "checkoutCanceled": "Nu ați finalizat plata. Nu s-a perceput nimic.",
+    "planNames": {
+      "free": "Free",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "trialBanner": {
+      "active": "Încercați gratuit planul {plan}, {days, plural, one {a mai rămas # zi} few {au mai rămas # zile} other {au mai rămas # de zile}}.",
+      "ended": "Perioada de probă {plan} s-a încheiat. Toate datele sunt la locul lor; funcțiile plătite sunt doar pentru citire.",
+      "choose": "Alegeți un plan",
+      "upgrade": "Treceți la un plan superior"
+    },
+    "current": {
+      "label": "Planul actual",
+      "trial": "Perioadă de probă gratuită, {days, plural, one {a mai rămas # zi} few {au mai rămas # zile} other {au mai rămas # de zile}} (până la {date}). Fără card, nu se percepe nimic automat.",
+      "trialEnded": "Perioada de probă {plan} s-a încheiat. Firma este acum pe planul Free. Nu s-a șters nimic; funcțiile superioare sunt doar pentru citire.",
+      "prepaid": "Plătit până la {date}.",
+      "subscriptionMonth": "Abonament, facturat lunar.",
+      "subscriptionYear": "Abonament, facturat anual.",
+      "free": "Plan gratuit. Treceți la un plan superior oricând aveți nevoie de mai mult.",
+      "pastDue": "Ultima plată a eșuat. Stripe va încerca din nou; între timp puteți schimba metoda de plată în portal."
+    },
+    "portal": "Gestionați abonamentul",
+    "choose": {
+      "title": "Alegeți un plan",
+      "yearly": "Anual",
+      "monthly": "Lunar",
+      "perMonth": "/ lună",
+      "billedYearly": "{total} pe an",
+      "billedMonthly": "facturat în fiecare lună",
+      "payCard": "Plătiți cu cardul",
+      "renewCard": "Reînnoiți cu cardul",
+      "cardUnavailable": "Plățile cu cardul nu sunt încă activate.",
+      "cardTitle": "Abonament cu cardul – se reînnoiește automat, mai ieftin",
+      "cardBody": "Card, Apple Pay sau Google Pay. Se reînnoiește singur și îl puteți anula aici dintr-un clic.",
+      "transferTitle": "Transfer bancar – fără reînnoire automată",
+      "transferBody": "O proformă cu cod QR pentru o lună sau un an în avans, cu {percent} % mai scump. Vă trimitem un reminder înainte de sfârșitul perioadei.",
+      "transferPrice": "Prin transfer {price} / lună ({total})"
+    },
+    "terms": {
+      "renewYearly": "Abonamentul se reînnoiește automat în fiecare an la același preț, până când îl anulați.",
+      "renewMonthly": "Abonamentul se reînnoiește automat în fiecare lună la același preț, până când îl anulați.",
+      "cancel": "Îl puteți anula oricând, dintr-un singur pas, chiar pe această pagină. Planul rămâne activ până la sfârșitul perioadei plătite.",
+      "methods": "Plătiți cu cardul, Apple Pay, Google Pay sau orice altă metodă oferită la finalizarea plății.",
+      "transfer": "Prin transfer bancar plătiți un an în avans, cu {percent} % mai mult decât cu cardul. Nimic nu se reînnoiește singur: cu 14 și 3 zile înainte de final vă trimitem prin e-mail o nouă proformă cu cod QR. Planul pornește imediat ce plata ajunge în contul nostru.",
+      "transferMonthly": "Prin transfer bancar plătiți o lună în avans, cu {percent} % mai mult decât cu cardul. Nimic nu se reînnoiește singur: cu 14 și 3 zile înainte de final vă trimitem prin e-mail o nouă proformă cu cod QR.",
+      "transferCzkOnly": "Transferul bancar este disponibil doar în CZK.",
+      "vat": "Prețurile nu includ TVA."
+    },
+    "transfer": {
+      "title": "Plăți prin transfer bancar",
+      "button": "Plătiți prin transfer bancar",
+      "created": "Factura proformă este gata. Detaliile de plată sunt mai jos.",
+      "months": "{n, plural, one {# lună} few {# luni} other {# de luni}}",
+      "status": {
+        "pending": "În așteptarea plății",
+        "paid": "Plătită",
+        "canceled": "Anulată"
+      },
+      "qrAlt": "Cod QR pentru plată",
+      "amount": "Sumă",
+      "vat": "inclusiv TVA {rate} %",
+      "vs": "Simbol variabil",
+      "account": "Număr de cont",
+      "due": "Scadență",
+      "payee": "Beneficiar",
+      "ico": "Cod de identificare",
+      "dic": "Cod de TVA",
+      "note": "Scanați codul QR în aplicația bancară sau introduceți manual contul și simbolul variabil. Activăm planul după ce asociem plata, de obicei în cel mult o zi lucrătoare.",
+      "paidOn": "Plata a fost primită la {date}."
+    },
+    "errors": {
+      "generic": "A apărut o eroare. Vă rugăm să încercați din nou.",
+      "billing_not_configured": "Plățile cu cardul nu sunt încă activate.",
+      "already_subscribed": "Firma are deja un abonament. Îl gestionați în partea de sus a acestei pagini.",
+      "no_stripe_customer": "Firma nu are încă un abonament Stripe.",
+      "bank_transfer_not_configured": "Transferul bancar nu este încă activat.",
+      "too_many_pending_proformas": "Aveți deja trei proforme neplătite. Plătiți una dintre ele sau așteptați până o asociem.",
+      "forbidden": "Doar proprietarul firmei sau un administrator poate efectua plata.",
+      "no_subscription": "Firma nu are un abonament activ cu cardul.",
+      "same_interval": "Deja plătiți în acest mod.",
+      "subscription_past_due": "Ultima plată nu a reușit. Schimbați mai întâi cardul în portalul abonamentului.",
+      "subscription_not_changeable": "Acest abonament nu poate fi modificat aici. Scrieți-ne și rezolvăm.",
+      "trial_card_disabled": "Prelungirea perioadei de probă cu cardul nu este activă momentan.",
+      "trial_card_not_available": "Această firmă nu își poate prelungi perioada de probă cu cardul.",
+      "no_ico": "Completați mai întâi IČO al firmei în setările firmei."
+    },
+    "portalHint": "În portalul Stripe puteți schimba cardul sau datele de facturare și puteți descărca facturile.",
+    "sub": {
+      "renewsOn": "Următoarea plată și reînnoire la {date}.",
+      "endsOn": "Abonamentul este anulat și se încheie la {date}. Până atunci planul rămâne activ.",
+      "cancel": "Anulați abonamentul",
+      "cancelConfirm": "Abonamentul nu se va reînnoi. Planul rămâne activ până la {date}, apoi firma trece pe planul Free. Datele rămân.",
+      "cancelConfirmNoDate": "Abonamentul nu se va reînnoi. Planul rămâne activ până la sfârșitul perioadei plătite, apoi firma trece pe planul Free. Datele rămân.",
+      "cancelYes": "Da, anulați",
+      "keep": "Păstrați abonamentul",
+      "canceled": "Abonamentul nu se va reînnoi. Planul rămâne activ până la sfârșitul perioadei plătite.",
+      "resume": "Păstrați abonamentul",
+      "resumed": "Abonamentul se va reînnoi din nou.",
+      "switchToYear": "Treceți la facturare anuală ({price} / lună)",
+      "switchToMonth": "Treceți la facturare lunară ({price} / lună)",
+      "switchNote": "Noua perioadă începe imediat. Partea neutilizată din perioada curentă o scădem din prima plată.",
+      "switched": "Gata, acum plătiți {interval, select, year {anual} other {lunar}}."
+    },
+    "trialCard": {
+      "title": "Încercați Billanta timp de {days} de zile",
+      "body": "Adăugați un card, iar perioada de probă crește la {days} de zile în total. Nu se percepe nimic, iar înainte de final vă întrebăm dacă doriți să continuați.",
+      "bodyWithheld": "Nu am putut oferi acestei firme perioada de probă fără card. Cu un card primiți {days} de zile. Nu se percepe nimic, iar înainte de final vă întrebăm dacă doriți să continuați.",
+      "button": "Adăugați un card",
+      "hint": "Stripe verifică cardul. Fiecare card poate prelungi o perioadă de probă o singură dată.",
+      "extended": "Gata – perioada de probă durează acum {days} de zile. Cardul este salvat și nu s-a perceput nimic.",
+      "errors": {
+        "generic": "Nu am putut prelungi perioada de probă. Vă rugăm să încercați din nou.",
+        "trial_card_card_used": "Acest card a prelungit deja o perioadă de probă.",
+        "trial_card_user_had_trial": "Contul dumneavoastră a avut deja o perioadă de probă cu altă firmă.",
+        "trial_card_trial_over": "Perioada de probă s-a încheiat deja și nu mai poate fi prelungită.",
+        "trial_card_no_ico": "Completați mai întâi IČO al firmei în setările firmei.",
+        "trial_card_invalid_ico": "IČO al firmei nu este valid. Corectați-l în setările firmei.",
+        "trial_card_not_in_registry": "Nu am găsit IČO al firmei în registrul comerțului. Corectați-l în setările firmei.",
+        "trial_card_registry_down": "Registrul comerțului nu răspunde. Vă rugăm să încercați din nou peste câteva momente.",
+        "trial_card_not_available": "Această firmă nu își poate prelungi perioada de probă cu cardul.",
+        "trial_card_invalid_session": "Acest card salvat nu aparține acestei firme.",
+        "trial_card_incomplete": "Salvarea cardului nu s-a finalizat. Vă rugăm să încercați din nou.",
+        "trial_card_disabled": "Prelungirea perioadei de probă cu cardul nu este activă momentan."
+      }
+    }
+  },
+  "offline": {
+    "offline": "Offline",
+    "offlineHint": "Fără conexiune. Ciornele rămân pe acest dispozitiv și se trimit când reveniți online.",
+    "waiting": "{count, plural, one {# în așteptare} few {# în așteptare} other {# în așteptare}}",
+    "title": "În așteptarea sincronizării",
+    "onlineNote": "Trimise automat. Ciornele nu se trimit clienților și nu primesc număr.",
+    "offlineNote": "Se trimit când acest dispozitiv revine online.",
+    "kindContact": "Contact",
+    "kindInvoice": "Ciornă",
+    "statusPending": "În așteptarea sincronizării",
+    "statusFailed": "Nu a putut fi salvat ({code})",
+    "statusConflict": "Există deja un contact cu acest cod de identificare: {name}",
+    "useExisting": "Folosiți contactul existent",
+    "retry": "Încercați din nou",
+    "discard": "Renunțați",
+    "discardConfirm": "Renunțați la acest element? Va fi șters de pe acest dispozitiv și nu va fi trimis niciodată.",
+    "leaveConfirm": "{count, plural, one {# ciornă nu a fost încă sincronizată} few {# ciorne nu au fost încă sincronizate} other {# de ciorne nu au fost încă sincronizate}}. Dacă continuați, tot ce așteaptă sincronizarea va fi șters de pe acest dispozitiv. Continuați?",
+    "contactQueued": "Contactul este salvat pe acest dispozitiv și va fi trimis când sunteți online.",
+    "invoiceQueued": "Ciorna facturii este salvată pe acest dispozitiv și va fi trimisă imediat ce sunteți online.",
+    "noCustomer": "Fără client",
+    "queuedContact": "Contact în așteptarea sincronizării",
+    "issueNeedsConnection": "Emiterea unei facturi necesită conexiune. Salvați-o ca ciornă și emiteți-o când sunteți online.",
+    "issueNeedsSyncedCustomer": "Clientul nu a ajuns încă pe server. Salvați factura ca ciornă și emiteți-o după ce clientul s-a sincronizat.",
+    "editNeedsConnection": "Editarea unui document salvat necesită conexiune.",
+    "searchNeedsConnection": "Căutarea clienților și în registre necesită conexiune. Offline puteți alege un contact marcat cu stea sau unul creat offline.",
+    "formNote": "Sunteți offline: ciorna rămâne pe acest dispozitiv și se trimite când sunteți online. Primește numărul la emitere.",
+    "aiNeedsConnection": "AI și introducerea vocală necesită conexiune. Textul rămâne aici – rulați-l când reveniți online.",
+    "copyNeedsConnection": "Copierea dintr-o altă factură necesită conexiune.",
+    "kindVoice": "Notă vocală",
+    "voiceRecord": "Înregistrați o notă vocală",
+    "voiceStop": "Opriți înregistrarea {time} / {max}",
+    "voiceLabel": "Notă vocală ({duration})",
+    "voiceQueued": "Nota vocală este salvată pe acest dispozitiv. Când sunteți online, devine o ciornă de factură pe care o verificați.",
+    "voiceHint": "Sunteți offline. Dictați factura ca notă vocală – când sunteți online o transcriem și pregătim o ciornă pentru verificare. Factura o emiteți dumneavoastră.",
+    "voiceUnsupported": "Acest browser nu poate înregistra audio.",
+    "voiceMicDenied": "Billanta are nevoie de acces la microfon. Permiteți-l în setările browserului.",
+    "voiceTooShort": "Înregistrarea este prea scurtă.",
+    "voiceTooLong": "Înregistrarea este prea mare, vă rugăm să o faceți mai scurtă.",
+    "voiceNotSaved": "Nota vocală nu a putut fi salvată pe acest dispozitiv.",
+    "voiceErrors": {
+      "voice_unavailable": "Notele vocale nu sunt disponibile momentan. Încercați mai târziu sau renunțați la notă.",
+      "voice_empty": "În înregistrare nu s-a auzit nicio vorbire.",
+      "voice_too_large": "Înregistrarea este prea mare pentru a fi procesată.",
+      "ai_disabled": "AI este dezactivat pentru această firmă. Activați-l în Setări → AI sau renunțați la notă.",
+      "ai_key_missing": "Lipsește cheia AI proprie. Adăugați-o în Setări → AI."
+    }
+  },
+  "about": {
+    "title": "Despre Billanta",
+    "lead": "Billanta este un instrument de facturare construit pe standardele deschise care stau deja la baza facturării în Cehia și Slovacia – nu pe lângă ele.",
+    "whatTitle": "Ce face Billanta",
+    "whatBody": "Billanta emite facturi în format ISDOC, preia datele partenerilor direct din registrul comerțului ARES și păstrează consecvente numerotarea și cotele de TVA, ca să nu mai copiați șablonul din foaia de calcul de luna trecută. Puteți trimite și o notă vocală pe Telegram sau WhatsApp, iar Billanta o transformă într-o ciornă de factură gata pentru o verificare rapidă – devine definitivă doar după ce o confirmați dumneavoastră.",
+    "whoTitle": "Pentru cine este",
+    "whoBody": "Construim Billanta pentru liber-profesioniști și firme mici din Cehia și Slovacia – oameni care își fac singuri facturile între întâlnirile cu clienții, nu un departament financiar cu propriul IT.",
+    "whyTitle": "De ce am construit-o",
+    "whyBody": "Facturarea ne-a luat mereu mai mult timp decât ar fi trebuit – căutarea codului de identificare în ARES, urmărirea manuală a următorului număr de factură, deschiderea laptopului doar pentru a factura un singur articol în drum spre casă de la un client. Ne-am dorit ceva care să se ocupe de partea asta și să ne lase să decidem doar ce contează cu adevărat: dacă factura este corectă înainte să plece.",
+    "seoTitle": "Despre Billanta – facturare pe ISDOC, ARES și QR"
+  },
+  "invite": {
+    "title": "Invitație în echipă",
+    "heading": "Invitație la {company}",
+    "asRole": "Vă veți alătura ca {role}.",
+    "accept": "Acceptați invitația",
+    "accepted": "Acum sunteți membru al echipei.",
+    "failed": "Acceptarea a eșuat",
+    "alreadyAccepted": "Această invitație a fost deja acceptată.",
+    "expired": "Această invitație a expirat. Solicitați una nouă.",
+    "emailMismatch": "Această invitație este pentru {email}. Conectați-vă cu această adresă.",
+    "notFound": "Invitația nu a fost găsită",
+    "notFoundHint": "Linkul este invalid sau invitația a fost revocată.",
+    "toDashboard": "Mergeți la panoul de control"
+  }
+}
