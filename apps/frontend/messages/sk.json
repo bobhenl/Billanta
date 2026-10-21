@@ -3790,7 +3790,7 @@
         {
           "title": "Sprostredkovatelia a príjemcovia",
           "body": [
-            "Hosting a databáza: [poskytovateľ hostingu], dátové centrum v EÚ.",
+            "Hosting a databáza: OVHcloud (OVH Hosting Inc.), virtuálny server v dátovom centre v Kanade. Pre Kanadu platí rozhodnutie Európskej komisie o primeranej ochrane, pozri článok 5.",
             "Resend: odosielanie e-mailov (faktúry, upomienky, overenie účtu).",
             "Stripe a GoPay: platby predplatného. Údaje o platobných kartách spracúvajú len tieto brány, Billanta ich nevidí.",
             "Anthropic: AI návrhy faktúr z textu a obrázkov. OpenAI: prepis hlasových správ na text. Oboje len vtedy, keď používateľ AI funkciu použije.",
@@ -3804,6 +3804,7 @@
         {
           "title": "Prenos mimo EÚ",
           "body": [
+            "Server s aplikáciou a databázou je v Kanade. Prenos sa opiera o rozhodnutie Európskej komisie o primeranej ochrane osobných údajov v Kanade (2002/2/ES, čl. 45 GDPR).",
             "Niektorí sprostredkovatelia (Anthropic, OpenAI, Stripe, Microsoft, Google, Resend) môžu údaje spracúvať v USA. Prenos sa opiera o rámec EU–US Data Privacy Framework, ak je príjemca certifikovaný, inak o štandardné zmluvné doložky Európskej komisie (čl. 46 GDPR)."
           ]
         },
@@ -10681,7 +10682,7 @@
         },
         "security": {
           "title": "Ochrana údajov od základov",
-          "body": "Údaje každej firmy sú oddelené priamo v databáze, hostované v EÚ, so zálohami a auditným záznamom."
+          "body": "Údaje každej firmy sú oddelené priamo v databáze, so zálohami a auditným záznamom."
         }
       },
       "models": {

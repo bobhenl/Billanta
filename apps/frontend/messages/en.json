@@ -3790,7 +3790,7 @@
         {
           "title": "Processors and recipients",
           "body": [
-            "Hosting and database: [hosting provider], data centre in the EU.",
+            "Hosting and database: OVHcloud (OVH Hosting Inc.), a virtual server in a data centre in Canada. Canada is covered by a European Commission adequacy decision, see section 5.",
             "Resend: sending email (invoices, reminders, account verification).",
             "Stripe and GoPay: subscription payments. Card details are processed only by these gateways; Billanta never sees them.",
             "Anthropic: AI invoice drafts from text and images. OpenAI: transcribing voice messages to text. Both only when the user uses an AI feature.",
@@ -3804,6 +3804,7 @@
         {
           "title": "Transfers outside the EU",
           "body": [
+            "The server running the app and the database is in Canada. That transfer relies on the European Commission's adequacy decision for Canada (2002/2/EC, Art. 45 GDPR).",
             "Some processors (Anthropic, OpenAI, Stripe, Microsoft, Google, Resend) may process data in the USA. Transfers rely on the EU–US Data Privacy Framework where the recipient is certified, and otherwise on the European Commission's standard contractual clauses (Art. 46 GDPR)."
           ]
         },
@@ -10775,7 +10776,7 @@
         },
         "security": {
           "title": "Data protection by design",
-          "body": "Each company's data is isolated at the database level, hosted in the EU, with backups and an audit log."
+          "body": "Each company's data is isolated at the database level, with backups and an audit log."
         }
       },
       "models": {

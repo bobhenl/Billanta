@@ -340,7 +340,7 @@ musí platit dřív, než se služba nabídne školám.
 
 | Zpracovatel | Účel | Umístění dat | Týká se Žáků? | Právní nástroj předání |
 |---|---|---|---|---|
-| [smluvní subjekt OVH, ověřit] | virtuální server: aplikace, databáze, místní zálohy | [lokalita datacentra; podle IP rozsahu Kanada, OVH Hosting, Inc. Plánován přesun do EU.] | ano | Kanada: rozhodnutí Komise o odpovídající ochraně 2002/2/ES; v EU nepotřeba |
+| [smluvní subjekt OVH, ověřit] | virtuální server: aplikace, databáze, místní zálohy | Kanada (OVH Hosting, Inc.) | ano | Kanada: rozhodnutí Komise o odpovídající ochraně 2002/2/ES |
 | Google (Google Workspace, [ověřit edici a region]) | uložení zašifrovaných záloh databáze | [EU, pokud je nastaven datový region; jinak celosvětově včetně USA] | ano, jen zašifrovaně bez klíče | Cloud Data Processing Addendum; EU–US Data Privacy Framework, náhradně standardní smluvní doložky |
 | Resend | e-maily učitelům (schválení školy, upozornění na konec třídy) | [region odesílání, ověřit] | ne, Žáci nemají e-mail | DPA Resend; EU–US Data Privacy Framework nebo SCC [ověřit] |
 | Google (přihlášení Google) | přihlášení učitele, pokud ho zvolí | celosvětově | ne | jako výše |
@@ -402,8 +402,9 @@ chatovací aplikace ani analytika.
 2. **Právní základ.** Čl. 6 odst. 1 písm. e) a školský zákon bez souhlasu
    rodičů; čl. 8 GDPR se neuplatní, protože nejde o souhlas ani o službu
    nabízenou přímo dítěti.
-3. **Hosting mimo EU.** Server je podle IP adresy v Kanadě (rozhodnutí
-   o odpovídající ochraně). Doporučení: přesun do EU regionu OVH.
+3. **Hosting mimo EU.** Server je v Kanadě a zůstane tam (rozhodnutí
+   o odpovídající ochraně, čl. 45 GDPR). Stačí to, nebo školy budou
+   chtít EU?
 4. **Zálohy na Google.** Jen Google Workspace se smlouvou o zpracování,
    ideálně s datovým regionem EU, nebo úložiště v EU. Zálohy jsou
    šifrované klíčem, který Google nemá. Soukromý Google účet nepřichází

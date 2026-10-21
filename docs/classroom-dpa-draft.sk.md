@@ -16,7 +16,7 @@ Hranaté zátvorky `[...]` zostali len tam, kde údaj nepoznáme:
 | obchodné meno / meno, IČO, sídlo a zápis v registri prevádzkovateľa služby | čl. 1 | prevádzkovateľ služby |
 | kontaktný e-mail a e-mail pre bezpečnostné incidenty | čl. 1, čl. 7 | prevádzkovateľ služby |
 | adresa verejného zoznamu ďalších sprostredkovateľov | čl. 6.1 | prevádzkovateľ služby |
-| zmluvný subjekt a lokalita hostingu (IP adresa servera patrí OVH Hosting, Inc., Kanada; plánuje sa presun do EÚ) | čl. 6.4, príloha 2 | prevádzkovateľ služby |
+| zmluvný subjekt a lokalita hostingu (OVH Hosting, Inc., Kanada) | čl. 6.4, príloha 2 | prevádzkovateľ služby |
 | typ účtu Google pre zálohy (Workspace s Cloud DPA alebo iné úložisko) a región | príloha 2 | prevádzkovateľ služby |
 | región odosielania pri službe Resend | príloha 2 | prevádzkovateľ služby |
 | či je v produkcii zapnuté šifrovanie záloh | príloha 1 | prevádzkovateľ služby |
@@ -357,7 +357,7 @@ musia platiť skôr, než sa služba ponúkne školám.
 
 | Sprostredkovateľ | Účel | Umiestnenie údajov | Týka sa Žiakov? | Právny nástroj prenosu |
 |---|---|---|---|---|
-| [zmluvný subjekt OVH, overiť] | virtuálny server: aplikácia, databáza, miestne zálohy | [lokalita dátového centra; podľa rozsahu IP adries Kanada, OVH Hosting, Inc. Plánuje sa presun do EÚ.] | áno | Kanada: rozhodnutie Komisie o primeranosti 2002/2/ES; v EÚ netreba |
+| [zmluvný subjekt OVH, overiť] | virtuálny server: aplikácia, databáza, miestne zálohy | Kanada (OVH Hosting, Inc.) | áno | Kanada: rozhodnutie Komisie o primeranosti 2002/2/ES |
 | Google (Google Workspace, [overiť edíciu a región]) | uchovávanie šifrovaných záloh databázy | [EÚ, ak je nastavený dátový región; inak celosvetovo vrátane USA] | áno, iba zašifrované bez kľúča | Cloud Data Processing Addendum; rámec ochrany údajov medzi EÚ a USA, náhradne štandardné zmluvné doložky |
 | Resend | e-maily učiteľom (schválenie školy, upozornenie na koniec triedy) | [región odosielania, overiť] | nie, Žiaci nemajú e-mail | DPA Resend; rámec ochrany údajov medzi EÚ a USA alebo štandardné zmluvné doložky [overiť] |
 | Google (prihlásenie cez Google) | prihlásenie učiteľa, ak ho zvolí | celosvetovo | nie | ako vyššie |
@@ -420,8 +420,8 @@ webe).
    súhlasu zákonných zástupcov; čl. 8 GDPR (a vek 16 rokov podľa § 15
    zákona č. 18/2018 Z. z.) sa neuplatní, lebo nejde o súhlas ani o službu
    ponúkanú priamo dieťaťu.
-3. **Hosting mimo EÚ.** Server je podľa IP adresy v Kanade (rozhodnutie
-   o primeranosti). Odporúčanie: presun do regiónu OVH v EÚ.
+3. **Hosting mimo EÚ.** Server je v Kanade a zostane tam (rozhodnutie
+   o primeranosti, čl. 45 GDPR). Stačí to, alebo budú školy chcieť EÚ?
 4. **Zálohy v službe Google.** Iba Google Workspace so zmluvou
    o spracúvaní, ideálne s dátovým regiónom EÚ, alebo úložisko v EÚ.
    Súkromný účet Google neprichádza do úvahy.
