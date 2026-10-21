@@ -8172,7 +8172,7 @@
           "kindHints": {
             "CZ": {
               "vat_monthly": "A monthly VAT payer files the VAT return and the control statement (kontrolní hlášení) by the 25th day after the month ends and pays the tax by the same day (§ 101 and § 101e of the Czech VAT Act).",
-              "vat_quarterly": "A payer with last year's turnover up to CZK 10 million that is not an unreliable payer can file quarterly (§ 99a of the VAT Act). Return and payment by the 25th day after the quarter ends. Only individuals file the control statement quarterly; companies file it every month.",
+              "vat_quarterly": "A payer with last year's turnover up to CZK 15 million that is not an unreliable payer can file quarterly (§ 99a of the VAT Act). Return and payment by the 25th day after the quarter ends. Only individuals file the control statement quarterly; companies file it every month.",
               "vat_other": "Filings under special schemes (OSS, CESOP) follow the official calendar of the Czech Financial Administration.",
               "vat_identified": "An identified person files a return only for a month in which they had to self-assess VAT, typically after buying a service from abroad (ads, software), within 25 days after it ends (§ 101 of the VAT Act).",
               "ec_sales_list": "The EC sales list is filed by anyone who supplied goods or services to a business in another EU country that month, within 25 days after the month ends (§ 102 of the VAT Act).",
@@ -8423,7 +8423,7 @@
           "sections": [
             {
               "title": "VAT return (DPHDP3)",
-              "body": "Every VAT payer files it for every tax period, even with no invoices. The tax period is a month, or a quarter if your turnover in the previous year did not exceed CZK 10 million, you are not an unreliable payer or part of a VAT group, and you choose quarterly filing. The return is filed and the tax paid by the 25th day after the period ends."
+              "body": "Every VAT payer files it for every tax period, even with no invoices. The tax period is a month, or a quarter if your turnover in the previous year did not exceed CZK 15 million, you are not an unreliable payer or part of a VAT group, and you choose quarterly filing. The return is filed and the tax paid by the 25th day after the period ends."
             },
             {
               "title": "Control statement (DPHKH1)",
