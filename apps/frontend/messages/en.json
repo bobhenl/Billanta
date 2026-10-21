@@ -7204,7 +7204,7 @@
       },
       "import": {
         "label": "Import from another app",
-        "billanta": "Fakturoid, iDoklad, BitFaktura (with PDFs), CSV",
+        "billanta": "Recognises exports from Fakturoid, iDoklad, SuperFaktura, Vyfakturuj, KROS, Billdu and BitFaktura (CSV, Excel); Fakturoid and BitFaktura over the API too",
         "fakturoid": "–",
         "idoklad": "–",
         "superfaktura": "–",
@@ -7391,22 +7391,38 @@
         "price": "Fakturoid’s free plan limits the number of customers; Billanta’s limits documents per month. If you bill a few regular clients, both free plans will do. If you have many small jobs for different people, Billanta costs less, because documents over the limit are paid one by one.",
         "switchTitle": "How to switch from Fakturoid",
         "switchSteps": [
-          "In Fakturoid, export contacts and invoices to CSV. The whole history is fine.",
-          "In Billanta, open Settings → Import from another system and pick Fakturoid.",
-          "Upload contacts first, then invoices. You’ll see a preview before anything is saved."
+          "In Fakturoid, copy the API v3 Client ID and Client secret from your user account settings. Without the API, an export of invoices and contacts to CSV will do.",
+          "In Billanta, go to Settings → Import from another system, pick Fakturoid and paste them, or upload the export. The import maps the export’s columns itself.",
+          "Over the API, invoices, proformas, credit notes, payments, original PDFs and the address book all come over. You’ll see a preview before anything is saved."
         ],
         "faq": [
           {
-            "q": "Can I bring my older invoices over from Fakturoid?",
-            "a": "Yes. Upload the Fakturoid CSV export in Billanta and the invoices are saved as history, customers included. Contacts are matched by company ID (IČO), otherwise by name."
-          },
-          {
             "q": "Is Billanta cheaper than Fakturoid?",
-            "a": "Billanta’s cheapest paid plan costs less, and its free plan has no customer limit. Both price lists are shown above, with the date we checked them."
+            "a": "Billanta’s cheapest paid plan, Start, is CZK 119 a month billed yearly (CZK 149 monthly); Fakturoid’s cheapest is CZK 151. Fakturoid’s free plan is capped at five customers, Billanta’s at ten documents a month with no customer limit. Both price lists are above, with the date we checked them."
           },
           {
-            "q": "Can I use both apps for a while?",
-            "a": "Yes. Try Billanta for free on a few invoices and move your history when you’ve decided. Just make sure your invoice numbering continues and no number repeats."
+            "q": "What do I get in Billanta for free?",
+            "a": "Ten documents a month with no customer limit, then CZK 5 each, so an occasional busy month doesn’t force a plan change. Two recurring invoices, QR payments, ISDOC, AI receipt reading and invoicing by voice (with a monthly limit) and the history import are free too. Bank payment matching and automatic reminders come with the paid plans."
+          },
+          {
+            "q": "How do I move my data from Fakturoid?",
+            "a": "Two ways. Directly over the API: copy the Client ID and Client secret from your Fakturoid user account settings, paste them into Billanta, and invoices, proformas, credit notes, payments, original PDFs and the whole address book come over. Or upload an export of invoices and contacts to CSV or Excel, which the import recognises by its columns. Map any column it doesn’t know by hand in the preview."
+          },
+          {
+            "q": "What comes over from Fakturoid?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
+          },
+          {
+            "q": "Does anything change in my Fakturoid account?",
+            "a": "No. The import only reads your data; nothing in Fakturoid is changed or deleted. Over the API, Billanta only sends read requests and never stores your credentials. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
+          },
+          {
+            "q": "Does Billanta do ISDOC and UBL e-invoices?",
+            "a": "Yes, on every plan including the free one. For each invoice you can download an ISDOC file for Czech accounting software and a UBL e-invoice in the Peppol BIS 3.0 format, which Slovak and other foreign customers ask for. Fakturoid’s price list includes ISDOC."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet; Fakturoid does. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           }
         ]
       },
@@ -7428,22 +7444,38 @@
         "price": "Both free plans are usable, but they limit different things: iDoklad the number of customers, Billanta documents per month. On paid plans the difference is mostly what the cheapest one includes. Billanta’s has payment matching and reminders; iDoklad needs a higher plan for those.",
         "switchTitle": "How to switch from iDoklad",
         "switchSteps": [
-          "In iDoklad, select your issued invoices and export them to Excel or CSV.",
-          "Save an Excel file as CSV (UTF-8). Export contacts from the address book the same way.",
-          "In Billanta, go to Settings → Import from another system, pick iDoklad and upload contacts first, then invoices."
+          "In iDoklad, select your issued invoices and export them to Excel or CSV. Export contacts from the address book the same way.",
+          "In Billanta, go to Settings → Import from another system and pick iDoklad. The import recognises the export by its columns and maps them itself; upload an .xlsx file as it is.",
+          "Upload contacts first, then invoices. The preview shows the columns, customers and numbering, and nothing is saved until you confirm."
         ],
         "faq": [
           {
-            "q": "Can I move my data from iDoklad?",
-            "a": "Yes, through a CSV export. Billanta reads customers and invoices and shows a preview before saving, so you see exactly what comes over."
+            "q": "Is Billanta cheaper than iDoklad?",
+            "a": "Billanta’s cheapest paid plan, Start, is CZK 119 a month billed yearly; iDoklad’s cheapest is CZK 187. Start also includes bank payment matching and automatic reminders, which iDoklad keeps for higher plans."
           },
           {
-            "q": "Does Billanta work for Slovak companies?",
-            "a": "Yes. One account can hold a Czech and a Slovak company, documents in crowns and euros, and a contributions estimate for Slovakia too."
+            "q": "Why does iDoklad’s free plan count customers and Billanta’s documents?",
+            "a": "Each price list measures its free plan differently. iDoklad limits how many customers you invoice (five); Billanta how many documents you issue a month (ten, then CZK 5 each). With many different clients and fewer invoices, Billanta works out better. Billanta’s free plan also has two recurring invoices, AI receipt reading and the history import."
           },
           {
-            "q": "Why does iDoklad count customers and Billanta documents?",
-            "a": "Each price list measures its free plan differently. iDoklad limits how many customers you invoice; Billanta limits how many documents you issue a month. With many different clients and fewer invoices, Billanta works out better."
+            "q": "How do I move my data from iDoklad?",
+            "a": "Export your issued invoices and contacts from iDoklad to Excel or CSV and upload them in Billanta under Settings → Import from another system. There’s no need to convert an .xlsx file. The import recognises an iDoklad export by its column names, maps them itself and works out the VAT rate from the amounts. Map any column it doesn’t know by hand in the preview."
+          },
+          {
+            "q": "What comes over from iDoklad?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
+          },
+          {
+            "q": "Does anything change in my iDoklad account?",
+            "a": "No. The import only reads your data; nothing in iDoklad is changed or deleted. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
+          },
+          {
+            "q": "Does Billanta do ISDOC and UBL e-invoices?",
+            "a": "Yes, on every plan including the free one. For each invoice you can download an ISDOC file for Czech accounting software and a UBL e-invoice in the Peppol BIS 3.0 format, which Slovak and other foreign customers ask for. iDoklad’s price list includes ISDOC."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet; iDoklad does. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           }
         ]
       },
@@ -7465,22 +7497,38 @@
         "price": "The cheapest paid plans are close in price. The difference is what they include: SuperFaktura has recurring invoices and the API only on higher plans, Billanta on its cheapest paid one. Billanta also includes two recurring invoices for free.",
         "switchTitle": "How to switch from SuperFaktura",
         "switchSteps": [
-          "In SuperFaktura, export invoices and contacts to a spreadsheet (CSV or Excel).",
-          "In Billanta, go to Settings → Import from another system, pick Excel / other system and check the columns against the template.",
-          "Upload contacts first, then invoices, and review the preview before saving."
+          "In SuperFaktura, set the period in the invoice overview and download the list as Excel or CSV. Export the client address book the same way.",
+          "In Billanta, go to Settings → Import from another system and pick SuperFaktura. The import recognises the export by its columns and maps them itself; upload an .xlsx file as it is.",
+          "Upload contacts first, then invoices. The preview shows the columns, customers and numbering, and nothing is saved until you confirm."
         ],
         "faq": [
           {
-            "q": "Can I move my data from SuperFaktura?",
-            "a": "Yes, through a spreadsheet. Upload invoices and contacts exported to CSV using Billanta’s Excel import. One row is one invoice; rows with the same number are merged into one invoice with several items."
+            "q": "Is Billanta cheaper than SuperFaktura?",
+            "a": "The cheapest paid plans are close: Billanta Start is CZK 119 a month billed yearly, SuperFaktura CZK 129. SuperFaktura keeps recurring invoices and the API for higher plans. On the free plans, SuperFaktura caps customers at five, Billanta documents at ten a month, then CZK 5 each."
           },
           {
-            "q": "Is Billanta a good fit for a Slovak sole trader?",
-            "a": "Yes. Billanta has a Slovak interface and documents, looks companies up in the Slovak register, invoices in euros and estimates Slovak contributions."
+            "q": "How do I move my data from SuperFaktura?",
+            "a": "Download the invoice overview and the client address book from SuperFaktura as Excel or CSV and upload them in Billanta under Settings → Import from another system. The import recognises both Czech and Slovak SuperFaktura exports by their column names, invoices in euros included, and keeps a Slovak VAT ID (IČ DPH) separate from the tax ID. Map any column it doesn’t know by hand in the preview."
+          },
+          {
+            "q": "What comes over from SuperFaktura?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
+          },
+          {
+            "q": "Does anything change in my SuperFaktura account?",
+            "a": "No. The import only reads your data; nothing in SuperFaktura is changed or deleted. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
+          },
+          {
+            "q": "Does Billanta do ISDOC and UBL e-invoices?",
+            "a": "Yes, on every plan including the free one. For each invoice you can download an ISDOC file for Czech accounting software and a UBL e-invoice in the Peppol BIS 3.0 format, which Slovak and other foreign customers ask for. SuperFaktura’s price list includes ISDOC."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet; SuperFaktura does. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           },
           {
             "q": "Does Billanta send reminders?",
-            "a": "Yes, by email and automatically on paid plans. Billanta doesn’t send SMS reminders yet; SuperFaktura does."
+            "a": "Yes, by email: automatically on paid plans, by hand on the free one. Billanta doesn’t send SMS reminders yet; SuperFaktura does."
           }
         ]
       },
@@ -7502,22 +7550,38 @@
         "price": "Vyfakturuj’s cheapest paid plan costs more and offers recurring invoices only on a higher plan. Billanta includes two recurring invoices for free, and its free plan has no customer limit.",
         "switchTitle": "How to switch from Vyfakturuj",
         "switchSteps": [
-          "In Vyfakturuj, export invoices and contacts to a spreadsheet (CSV or Excel).",
-          "In Billanta, go to Settings → Import from another system, pick Excel / other system and download the column template.",
-          "Upload contacts first, then invoices. You’ll see a preview before anything is saved."
+          "In Vyfakturuj, filter the issued invoices for the period you want to move and download them to CSV or Excel, ideally with line items. Export contacts separately.",
+          "In Billanta, go to Settings → Import from another system and pick Vyfakturuj. The import recognises the export by its columns and maps them itself; upload an .xlsx file as it is.",
+          "Upload contacts first, then invoices. The preview shows the columns, customers and numbering, and nothing is saved until you confirm."
         ],
         "faq": [
           {
+            "q": "Is Billanta cheaper than Vyfakturuj?",
+            "a": "Yes. Billanta Start is CZK 119 a month billed yearly; Vyfakturuj’s cheapest plan is CZK 175. Vyfakturuj offers recurring invoices only on a higher plan, Billanta includes two for free. Vyfakturuj’s free plan is capped at five customers, Billanta’s at ten documents a month with no customer limit."
+          },
+          {
             "q": "How do I move invoices from Vyfakturuj?",
-            "a": "Export them to CSV or Excel and upload them with Billanta’s Excel import. Check the columns against the template you can download there; you’ll see a preview before saving."
+            "a": "Export the document list to CSV or Excel, ideally with line items, and upload it in Billanta under Settings → Import from another system. The import recognises a Vyfakturuj export by its columns and brings the items over line by line, with quantity, price and VAT rate. Map any column it doesn’t know by hand in the preview."
+          },
+          {
+            "q": "What comes over from Vyfakturuj?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
+          },
+          {
+            "q": "Does anything change in my Vyfakturuj account?",
+            "a": "No. The import only reads your data; nothing in Vyfakturuj is changed or deleted. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
+          },
+          {
+            "q": "Does Billanta do ISDOC and UBL e-invoices?",
+            "a": "Yes, on every plan including the free one. For each invoice you can download an ISDOC file for Czech accounting software and a UBL e-invoice in the Peppol BIS 3.0 format, which Slovak and other foreign customers ask for. Vyfakturuj’s price list includes ISDOC."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet; Vyfakturuj does. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           },
           {
             "q": "Can Billanta invoice in a foreign currency?",
-            "a": "Yes. For an invoice in euros or another currency, Billanta fills in the Czech National Bank rate itself."
-          },
-          {
-            "q": "Is Billanta on mobile?",
-            "a": "Yes, as a web app you install on your phone’s home screen. It works on iOS and Android without an app store download."
+            "a": "Yes, on every plan. For an invoice in euros or another currency, Billanta fills in the Czech National Bank rate itself. The import keeps the currency and rate too."
           }
         ]
       },
@@ -7539,22 +7603,38 @@
         "price": "BitFaktura’s free plan covers about one invoice a month; Billanta’s covers ten documents, and each one beyond is paid separately. The cheapest paid plans are close in price, but Billanta’s already includes bank payment matching.",
         "switchTitle": "How to switch from BitFaktura",
         "switchSteps": [
-          "In BitFaktura, open Settings → Account settings → Integrations and copy the API authorisation code.",
-          "In Billanta, go to Settings → Import from another system, pick BitFaktura and enter the account name and the code.",
-          "Billanta loads your invoices with their original PDFs and the whole contact list. You’ll see a preview before saving."
+          "In BitFaktura, open Settings → Account settings → Integrations and copy the API authorisation code. Without it, an invoice export to CSV will do.",
+          "In Billanta, go to Settings → Import from another system, pick BitFaktura and enter the account name and the code, or upload the export.",
+          "Billanta loads your invoices with their original PDFs and the whole contact list. A series like 1/09/2025 carries on, and you’ll see a preview before saving."
         ],
         "faq": [
           {
+            "q": "How many invoices can I issue for free in Billanta compared with BitFaktura?",
+            "a": "BitFaktura’s free plan covers about one invoice a month; Billanta’s covers ten documents, however many customers you have, then CZK 5 each. The cheapest paid plans are close (Billanta Start CZK 119 a month billed yearly, BitFaktura CZK 129), but Billanta’s already includes bank payment matching."
+          },
+          {
+            "q": "How do I move my data from BitFaktura?",
+            "a": "The API is the easiest: copy the authorisation code from Settings → Account settings → Integrations in BitFaktura and enter it in Billanta with your account name. Without the code, export your invoices to CSV or Excel; the import recognises a BitFaktura export by its columns. Map any column it doesn’t know by hand in the preview."
+          },
+          {
             "q": "Do the invoice PDFs come over from BitFaktura?",
-            "a": "Yes. With the direct API connection Billanta downloads invoices with their original PDFs, the contact list, exchange rates and payment methods."
+            "a": "Yes, over the API. Billanta downloads invoices with their original PDFs, the whole address book including contacts you haven’t invoiced yet, exchange rates and payment methods. A CSV export doesn’t carry the PDFs."
           },
           {
-            "q": "Can I do it without the API code?",
-            "a": "Yes. Export invoices from BitFaktura to CSV and upload them in Billanta. The original PDFs won’t come over that way, though."
+            "q": "What comes over from BitFaktura?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
           },
           {
-            "q": "How many invoices can I issue in Billanta for free?",
-            "a": "Ten documents a month, however many customers you have. Each one beyond is paid separately, so an occasional busy month doesn’t force a plan change."
+            "q": "Does anything change in my BitFaktura account?",
+            "a": "No. The import only reads your data; nothing in BitFaktura is changed or deleted. Over the API, Billanta only sends read requests and never stores your credentials. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
+          },
+          {
+            "q": "Does Billanta do ISDOC and UBL e-invoices?",
+            "a": "Yes, on every plan including the free one. For each invoice you can download an ISDOC file for Czech accounting software and a UBL e-invoice in the Peppol BIS 3.0 format, which Slovak and other foreign customers ask for. BitFaktura’s price list has ISDOC on paid plans only."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           }
         ]
       },
@@ -7577,18 +7657,34 @@
         "price": "The cheapest paid KROS plan is €5.90 a month billed yearly, Billanta Start €4.99. Recurring invoices (€1.90) and the API (€4.90) are extra add-ons on the lower KROS plans; Billanta includes them in every paid plan, and two recurring invoices are free.",
         "switchTitle": "How to switch from KROS Fakturácia",
         "switchSteps": [
-          "In KROS, export your invoices and contacts to Excel (XLSX) and save them as CSV in Excel.",
-          "In Billanta, go to Settings → Switch from another system, choose Excel / other and check the columns against the template.",
-          "Upload contacts first, then invoices, and review the preview before saving."
+          "In KROS Fakturácia, select your issued invoices and export them to Excel or CSV. Export your partners the same way.",
+          "In Billanta, go to Settings → Import from another system and pick KROS. The import recognises the export by its columns and maps them itself; upload an .xlsx file as it is.",
+          "Upload contacts first, then invoices. The preview shows the columns, customers and numbering, and nothing is saved until you confirm."
         ],
         "faq": [
           {
-            "q": "Can I bring my data over from KROS Fakturácia?",
-            "a": "Yes, as a spreadsheet. Save the invoices and contacts you exported to Excel as CSV and upload them through the import in Billanta. Several rows with the same invoice number become one invoice with several lines."
+            "q": "Is Billanta cheaper than KROS Fakturácia?",
+            "a": "The cheapest paid KROS plan is €5.90 a month billed yearly, Billanta Start €4.99. Recurring invoices and the API are extra add-ons on the lower KROS plans; Billanta includes them. KROS offers a free plan only to non-VAT payers with five customers; Billanta’s free plan is for everyone, with ten documents a month."
+          },
+          {
+            "q": "How do I move my data from KROS Fakturácia?",
+            "a": "Export your issued invoices and partners to Excel or CSV and upload them in Billanta under Settings → Import from another system; an .xlsx file needs no conversion. The import recognises the Slovak KROS column names, invoices in euros and VAT IDs, and works out the VAT rate from the amounts. Map any column it doesn’t know by hand in the preview."
+          },
+          {
+            "q": "What comes over from KROS Fakturácia?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
+          },
+          {
+            "q": "Does anything change in my KROS Fakturácia account?",
+            "a": "No. The import only reads your data; nothing in KROS Fakturácia is changed or deleted. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
           },
           {
             "q": "Will Billanta handle the mandatory Slovak eFaktúra from 2027?",
             "a": "Billanta already creates a UBL e-invoice file in the Peppol BIS 3.0 format. Sending over the Peppol network, which the mandate requires from 1 January 2027, is in the works. KROS announced it for autumn 2026."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           },
           {
             "q": "Does Billanta prepare the Slovak VAT filings?",
@@ -7615,22 +7711,38 @@
         "price": "The cheapest Billdu plan, Lite, is €4.99 a month billed yearly, the same as Billanta Start, but it is capped at ten customers. Paid monthly, Billdu Lite is €7.99 and Billanta Start €5.99. Billdu keeps recurring invoices and the API for its top plan.",
         "switchTitle": "How to switch from Billdu",
         "switchSteps": [
-          "In Billdu, export your invoices and contacts to a spreadsheet (CSV or Excel) if your plan allows it. Save Excel files as CSV.",
-          "In Billanta, go to Settings → Switch from another system, choose Excel / other and check the columns against the template.",
-          "Upload contacts first, then invoices, and review the preview before saving."
+          "In the Billdu web app, open the invoice list and download the document export as CSV or Excel, if your plan allows it. Export clients separately.",
+          "In Billanta, go to Settings → Import from another system and pick Billdu. The import recognises the export by its columns and maps them itself; upload an .xlsx file as it is.",
+          "Upload contacts first, then invoices. The preview shows the columns, customers and numbering, and nothing is saved until you confirm."
         ],
         "faq": [
           {
-            "q": "Can I bring my data over from Billdu?",
-            "a": "Yes, as a spreadsheet. Upload invoices and contacts saved as CSV through the import in Billanta. Several rows with the same invoice number become one invoice with several lines."
+            "q": "Is Billanta cheaper than Billdu?",
+            "a": "Billed yearly, Billdu Lite and Billanta Start both cost €4.99 a month, but Billdu Lite is capped at ten customers. Paid monthly, Billdu Lite is €7.99 and Billanta Start €5.99. Billdu keeps recurring invoices and the API for its top plan."
           },
           {
-            "q": "Does Billanta work on a phone?",
-            "a": "Yes. Billanta is a web app you install on your home screen, where it works like an app. It has no native app in the App Store or Google Play yet; Billdu does."
+            "q": "Does Billanta have a free plan? Billdu doesn’t.",
+            "a": "Yes, for good, not just a trial. Ten documents a month with no customer limit, then €0.20 each, two recurring invoices, AI receipt reading and invoicing by voice. Bank payment matching and automatic reminders come with the paid plans."
+          },
+          {
+            "q": "How do I move my data from Billdu?",
+            "a": "In the Billdu web app, download the document and client exports as CSV or Excel and upload them in Billanta under Settings → Import from another system. The import understands Billdu’s English column names, converts the payment status and dates, and reads “Client ID” as the company ID. Map any column it doesn’t know by hand in the preview."
+          },
+          {
+            "q": "What comes over from Billdu?",
+            "a": "Customers with their company ID, VAT ID and address, issued invoices with dates, amounts, currency and payment status, and line items when the export has them. Without items, one line covers the whole amount. Customers you already have in Billanta are matched by company ID, otherwise by name, so nothing is duplicated. Your next invoice continues after the highest imported number, and if the old series used a different number format, the preview offers to keep it."
+          },
+          {
+            "q": "Does anything change in my Billdu account?",
+            "a": "No. The import only reads your data; nothing in Billdu is changed or deleted. Imported invoices are not sent again and get no reminders. You can run both apps side by side for a while; just make sure invoice numbers don’t repeat. Invoices whose numbers already exist in Billanta are skipped."
           },
           {
             "q": "Will Billanta handle the mandatory Slovak eFaktúra from 2027?",
             "a": "Billanta already creates a UBL e-invoice file in the Peppol BIS 3.0 format. Sending over the Peppol network, which the mandate requires from 1 January 2027, is in the works. Billdu has also announced it before the start of 2027."
+          },
+          {
+            "q": "Can I invoice from my phone with Billanta, even by voice?",
+            "a": "Yes. Billanta is a web app you install on the home screen of an iPhone or Android phone. It has no native app in the stores yet; Billdu does. You can dictate an invoice or send it as a Telegram or WhatsApp message on every plan, the free one included. AI prepares a draft and you issue it yourself."
           }
         ]
       }

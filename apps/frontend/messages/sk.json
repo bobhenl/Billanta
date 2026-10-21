@@ -7204,7 +7204,7 @@
       },
       "import": {
         "label": "Import z inej aplikácie",
-        "billanta": "CSV (aj zo SuperFaktúry a iDokladu), Fakturoid cez API",
+        "billanta": "Rozpozná exporty zo SuperFaktúry, KROS, iDokladu, Billdu, Fakturoidu, Vyfakturuj aj BitFaktury (CSV, Excel); Fakturoid a BitFaktura aj cez API",
         "fakturoid": "–",
         "idoklad": "–",
         "superfaktura": "Import agendy, bez bližších údajov",
@@ -7392,18 +7392,34 @@
         "price": "Fakturoid má cenník len v korunách, najlacnejší platený tarif stojí 151 Kč mesačne. Billanta Start stojí 4,99 € mesačne pri ročnej platbe, so slovenskými výkazmi DPH od tarifu Plus.",
         "switchTitle": "Ako prejsť z Fakturoidu",
         "switchSteps": [
-          "Vo Fakturoide otvorte nastavenia svojho používateľského účtu a v časti API v3 skopírujte Client ID a Client Secret.",
-          "V Billante v Nastaveniach → Prechod z iného systému zvoľte Fakturoid a oba údaje vložte.",
-          "Billanta prenesie kontakty aj faktúry s pôvodnými PDF. Pred uložením si prejdite náhľad."
+          "Vo Fakturoide otvorte nastavenia svojho používateľského účtu a v časti API v3 skopírujte Client ID a Client Secret. Bez API stačí export faktúr a kontaktov do CSV.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte Fakturoid a oba údaje vložte, alebo nahrajte export. Stĺpce exportu import priradí sám.",
+          "Cez API sa načítajú faktúry, zálohové faktúry, opravné doklady, platby, pôvodné PDF aj adresár. Pred uložením si prejdite náhľad."
         ],
         "faq": [
           {
-            "q": "Prenesiem si dáta z Fakturoidu?",
-            "a": "Áno, priamo cez API Fakturoidu. Kontakty aj faktúry sa prenesú aj s pôvodnými PDF, nič nemusíte exportovať ručne."
+            "q": "Je Billanta lacnejšia ako Fakturoid?",
+            "a": "Fakturoid má cenník len v korunách, jeho najlacnejší platený tarif stojí 151 Kč mesačne. Billanta Start stojí 4,99 € mesačne pri ročnej platbe. Bezplatný tarif Fakturoidu obmedzuje počet odberateľov na päť, Billanta počet dokladov na desať mesačne a každý ďalší stojí 0,20 €."
+          },
+          {
+            "q": "Ako prenesiem dáta z Fakturoidu?",
+            "a": "Dvoma cestami. Priamo cez API: v nastaveniach používateľského účtu vo Fakturoide skopírujete Client ID a Client Secret, vložíte ich v Billante a načítajú sa faktúry, zálohové faktúry, opravné doklady, platby, pôvodné PDF aj celý adresár. Alebo nahráte export faktúr a kontaktov do CSV či Excelu, ktorý import rozpozná podľa stĺpcov. Neznámy stĺpec priradíte v náhľade ručne."
+          },
+          {
+            "q": "Čo všetko sa z Fakturoidu prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
+          },
+          {
+            "q": "Zmení sa niečo v mojom účte vo Fakturoide?",
+            "a": "Nie. Import dáta len číta, vo Fakturoide sa nič nezmení ani nevymaže. Pri prepojení cez API posiela Billanta len požiadavky na čítanie a prístupové údaje neukladá. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
           },
           {
             "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
-            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. Fakturoid ho ohlásil bez termínu."
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. Fakturoid ho ohlásil bez termínu."
+          },
+          {
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá, to Fakturoid má. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           },
           {
             "q": "Môžem mať v jednom účte slovenskú aj českú firmu?",
@@ -7430,22 +7446,38 @@
         "price": "Najlacnejší platený tarif iDokladu stojí 5,00 € mesačne pri ročnej platbe, Billanta Start 4,99 €. Párovanie z banky, upomienky a opakované faktúry má iDoklad až od druhého plateného tarifu (8,30 €), Billanta už v Starte. API má iDoklad len v najvyššom.",
         "switchTitle": "Ako prejsť z iDokladu",
         "switchSteps": [
-          "V iDoklade vyexportujte vydané faktúry a kontakty do CSV.",
-          "V Billante v Nastaveniach → Prechod z iného systému zvoľte iDoklad. Stĺpce Billanta rozpozná sama.",
-          "Nahrajte najprv kontakty, potom faktúry, a pred uložením si prejdite náhľad."
+          "V iDoklade vyberte vydané faktúry a vyexportujte ich do Excelu alebo CSV. Rovnako vyexportujte kontakty z adresára.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte iDoklad. Import export rozpozná podľa stĺpcov a priradí ich sám, súbor .xlsx nahráte bez prevodu.",
+          "Nahrajte najprv kontakty, potom faktúry. V náhľade skontrolujete stĺpce, odberateľov aj číslovanie a uloží sa až po potvrdení."
         ],
         "faq": [
           {
-            "q": "Prenesiem si dáta z iDokladu?",
-            "a": "Áno. Vydané faktúry a kontakty vyexportované z iDokladu do CSV nahráte v Billante cez import. Viac riadkov s rovnakým číslom sa spojí do faktúry s viacerými položkami."
+            "q": "Je Billanta lacnejšia ako iDoklad?",
+            "a": "Najlacnejší platený tarif iDokladu stojí 5,00 € mesačne pri ročnej platbe, Billanta Start 4,99 €. Párovanie z banky, upomienky a opakované faktúry má iDoklad až od druhého plateného tarifu, Billanta už v Starte. API má iDoklad len v najvyššom."
+          },
+          {
+            "q": "Prečo iDoklad zadarmo počíta odberateľov a Billanta doklady?",
+            "a": "Každý cenník meria bezplatný tarif inak. iDoklad obmedzuje, koľkým odberateľom fakturujete (piatim), Billanta koľko dokladov mesačne vystavíte (desať, každý ďalší za 0,20 €). Kto má veľa rôznych klientov a menej faktúr, vyjde v Billante lepšie. Zadarmo má Billanta aj dve opakované faktúry, AI čítanie bločkov a import histórie."
+          },
+          {
+            "q": "Ako prenesiem dáta z iDokladu?",
+            "a": "Vyexportujte vydané faktúry a kontakty z iDokladu do Excelu alebo CSV a nahrajte ich v Billante v Nastaveniach → Import z iného systému. Súbor .xlsx netreba prevádzať. Import rozpozná export z iDokladu podľa názvov stĺpcov a priradí ich sám, sadzbu DPH dopočíta zo súm. Stĺpec, ktorý nerozpozná, priradíte v náhľade ručne."
+          },
+          {
+            "q": "Čo všetko sa z iDokladu prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
+          },
+          {
+            "q": "Zmení sa niečo v mojom účte v iDoklade?",
+            "a": "Nie. Import dáta len číta, v iDoklade sa nič nezmení ani nevymaže. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
           },
           {
             "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
-            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. iDoklad ho ohlásil na jeseň 2026."
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. iDoklad ho ohlásil na jeseň 2026."
           },
           {
-            "q": "Hodí sa Billanta pre slovenského živnostníka?",
-            "a": "Áno. Billanta má slovenské rozhranie aj doklady, dohľadá firmu v slovenskom registri, fakturuje v eurách s PAY by square a odhadne slovenské odvody."
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá, to iDoklad má. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           }
         ]
       },
@@ -7469,22 +7501,38 @@
         "price": "Najlacnejšie platené tarify stoja rovnako: 4,99 € mesačne pri ročnej platbe, 5,99 € pri mesačnej. Rozdiel je v tom, čo obsahujú: opakované faktúry a API má SuperFaktúra až vo vyšších tarifoch, Billanta v najlacnejšom platenom. Billanta má navyše tarif zadarmo s desiatimi dokladmi mesačne.",
         "switchTitle": "Ako prejsť zo SuperFaktúry",
         "switchSteps": [
-          "V SuperFaktúre vyexportujte faktúry a kontakty do tabuľky (CSV alebo Excel). Excel uložte ako CSV.",
-          "V Billante v Nastaveniach → Prechod z iného systému zvoľte Excel / iný systém. Stĺpce zo SuperFaktúry Billanta rozpozná sama, skontrolujte ich v náhľade.",
-          "Nahrajte najprv kontakty, potom faktúry, a pred uložením si prejdite náhľad."
+          "V SuperFaktúre si v prehľade faktúr nastavte obdobie a stiahnite zoznam ako Excel alebo CSV. Rovnako vyexportujte adresár klientov.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte SuperFaktúru. Import export rozpozná podľa stĺpcov a priradí ich sám, súbor .xlsx nahráte bez prevodu.",
+          "Nahrajte najprv kontakty, potom faktúry. V náhľade skontrolujete stĺpce, odberateľov aj číslovanie a uloží sa až po potvrdení."
         ],
         "faq": [
           {
-            "q": "Prenesiem si dáta zo SuperFaktúry?",
-            "a": "Áno, cez tabuľku. Faktúry a kontakty vyexportované do CSV nahráte v Billante cez import. Jeden riadok je jedna faktúra, viac riadkov s rovnakým číslom sa spojí do faktúry s viacerými položkami."
+            "q": "Je Billanta lacnejšia ako SuperFaktúra?",
+            "a": "Najlacnejšie platené tarify stoja rovnako: 4,99 € mesačne pri ročnej platbe, 5,99 € pri mesačnej. Opakované faktúry a API má SuperFaktúra až vo vyšších tarifoch, Billanta v najlacnejšom platenom. SuperFaktúra má len 30-dňovú skúšobnú verziu, Billanta bezplatný tarif natrvalo s desiatimi dokladmi mesačne."
+          },
+          {
+            "q": "Ako prenesiem dáta zo SuperFaktúry?",
+            "a": "Stiahnite zo SuperFaktúry prehľad faktúr a adresár klientov ako Excel alebo CSV a nahrajte ich v Billante v Nastaveniach → Import z iného systému. Import rozpozná slovenské aj české exporty SuperFaktúry podľa názvov stĺpcov, faktúry v eurách aj IČ DPH, ktoré ponechá u odberateľa zvlášť od DIČ. Neznámy stĺpec priradíte v náhľade ručne."
+          },
+          {
+            "q": "Čo všetko sa zo SuperFaktúry prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
+          },
+          {
+            "q": "Zmení sa niečo v mojom účte v SuperFaktúre?",
+            "a": "Nie. Import dáta len číta, v SuperFaktúre sa nič nezmení ani nevymaže. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
           },
           {
             "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
-            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. SuperFaktúra ho už ponúka."
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. SuperFaktúra ho už ponúka."
+          },
+          {
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá, to SuperFaktúra má. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           },
           {
             "q": "Posiela Billanta upomienky?",
-            "a": "Áno, e-mailom a automaticky v platených tarifoch. SMS upomienky Billanta zatiaľ neposiela, to SuperFaktúra vie."
+            "a": "Áno, e-mailom. V platených tarifoch automaticky, v bezplatnom ručne. SMS upomienky Billanta zatiaľ neposiela, to SuperFaktúra vie."
           }
         ]
       },
@@ -7506,22 +7554,38 @@
         "price": "Najlacnejší platený tarif Vyfakturuj je drahší a opakované faktúry ponúka až vo vyššom tarife. V Billante sú dve opakované faktúry aj zadarmo a bezplatný tarif neobmedzuje počet odberateľov.",
         "switchTitle": "Ako prejsť z Vyfakturuj",
         "switchSteps": [
-          "Vo Vyfakturuj vyexportujte faktúry a kontakty do tabuľky (CSV alebo Excel).",
-          "V Billante v Nastaveniach → Import z iného systému zvoľte Excel / iný systém a stiahnite si šablónu stĺpcov.",
-          "Nahrajte najprv kontakty, potom faktúry. Pred uložením uvidíte náhľad."
+          "Vo Vyfakturuj vyfiltrujte vydané faktúry za obdobie, ktoré chcete preniesť, a stiahnite ich do CSV alebo Excelu, ideálne s položkami. Kontakty vyexportujte zvlášť.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte Vyfakturuj. Import export rozpozná podľa stĺpcov a priradí ich sám, súbor .xlsx nahráte bez prevodu.",
+          "Nahrajte najprv kontakty, potom faktúry. V náhľade skontrolujete stĺpce, odberateľov aj číslovanie a uloží sa až po potvrdení."
         ],
         "faq": [
           {
-            "q": "Ako previesť faktúry z Vyfakturuj?",
-            "a": "Vyexportujte ich do CSV alebo Excelu a nahrajte v Billante cez import z Excelu. Stĺpce skontrolujete podľa šablóny, ktorú si tam stiahnete, a pred uložením uvidíte náhľad."
+            "q": "Je Billanta lacnejšia ako Vyfakturuj?",
+            "a": "Áno. Billanta Start stojí 4,99 € mesačne pri ročnej platbe, najlacnejší tarif Vyfakturuj 175 Kč. Opakované faktúry má Vyfakturuj až vo vyššom tarife, Billanta dve aj zadarmo. Bezplatný tarif Vyfakturuj obmedzuje na päť odberateľov, Billanta na desať dokladov mesačne bez limitu odberateľov."
+          },
+          {
+            "q": "Ako prenesiem faktúry z Vyfakturuj?",
+            "a": "Vyexportujte zoznam dokladov do CSV alebo Excelu, najlepšie aj s položkami, a nahrajte ho v Billante v Nastaveniach → Import z iného systému. Import rozpozná export z Vyfakturuj podľa stĺpcov a položky prenesie riadok po riadku aj s množstvom, cenou a sadzbou DPH. Stĺpec, ktorý nerozpozná, priradíte v náhľade ručne."
+          },
+          {
+            "q": "Čo všetko sa z Vyfakturuj prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
+          },
+          {
+            "q": "Zmení sa niečo v mojom účte vo Vyfakturuj?",
+            "a": "Nie. Import dáta len číta, vo Vyfakturuj sa nič nezmení ani nevymaže. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
+          },
+          {
+            "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme."
+          },
+          {
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá, to Vyfakturuj má. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           },
           {
             "q": "Vie Billanta faktúry v cudzej mene?",
-            "a": "Áno. Pri faktúre v cudzej mene Billanta sama doplní kurz."
-          },
-          {
-            "q": "Je Billanta aj v mobile?",
-            "a": "Áno, ako webová aplikácia, ktorú si nainštalujete na plochu telefónu. Funguje na iOS aj Androide bez sťahovania z obchodu."
+            "a": "Áno, v každom tarife. Pri faktúre v cudzej mene Billanta sama doplní kurz. Menu a kurz prevezme aj import."
           }
         ]
       },
@@ -7543,22 +7607,38 @@
         "price": "Bezplatný tarif v BitFakture stačí zhruba na jednu faktúru mesačne, v Billante na desať dokladov a každý ďalší sa platí po kusoch. Najlacnejšie platené tarify sú cenou blízko, v Billante v ňom však už funguje párovanie platieb z banky.",
         "switchTitle": "Ako prejsť z BitFaktury",
         "switchSteps": [
-          "V BitFakture otvorte Nastavenia → Nastavenia účtu → Integrácie a skopírujte autorizačný kód API.",
-          "V Billante v Nastaveniach → Import z iného systému zvoľte BitFakturu a vyplňte názov účtu a kód.",
-          "Billanta načíta faktúry aj s pôvodnými PDF a celý adresár kontaktov. Pred uložením uvidíte náhľad."
+          "V BitFakture otvorte Nastavenia → Nastavenia účtu → Integrácie a skopírujte autorizačný kód API. Bez kódu stačí export faktúr do CSV.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte BitFakturu a vyplňte názov účtu a kód, alebo nahrajte export.",
+          "Billanta načíta faktúry aj s pôvodnými PDF a celý adresár kontaktov. Číselný rad typu 1/09/2025 nadviaže a pred uložením uvidíte náhľad."
         ],
         "faq": [
           {
+            "q": "Koľko faktúr vystavím v Billante zadarmo oproti BitFakture?",
+            "a": "Bezplatný tarif v BitFakture stačí zhruba na jednu faktúru mesačne, v Billante na desať dokladov bez ohľadu na počet odberateľov a každý ďalší stojí 0,20 €. Najlacnejšie platené tarify sú cenou blízko, v Billante v ňom však už funguje párovanie platieb z banky."
+          },
+          {
+            "q": "Ako prenesiem dáta z BitFaktury?",
+            "a": "Najľahšie cez API: v BitFakture skopírujete autorizačný kód z Nastavenia → Nastavenia účtu → Integrácie a v Billante ho zadáte spolu s názvom účtu. Bez kódu vyexportujte faktúry do CSV alebo Excelu, import export BitFaktury rozpozná podľa stĺpcov. Neznámy stĺpec priradíte v náhľade ručne."
+          },
+          {
             "q": "Prenesú sa z BitFaktury aj PDF faktúr?",
-            "a": "Áno. Pri priamom prepojení cez API Billanta stiahne faktúry aj s pôvodnými PDF, adresár kontaktov, kurzy a spôsob úhrady."
+            "a": "Áno, pri prepojení cez API. Billanta stiahne faktúry aj s pôvodnými PDF, celý adresár vrátane kontaktov, ktorým ste zatiaľ nefakturovali, kurzy a spôsob úhrady. Z exportu do CSV sa PDF neprenesú."
           },
           {
-            "q": "Dá sa to aj bez kódu API?",
-            "a": "Dá. Faktúry vyexportujte z BitFaktury do CSV a nahrajte ich v Billante. Pôvodné PDF sa tak však neprenesú."
+            "q": "Čo všetko sa z BitFaktury prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
           },
           {
-            "q": "Koľko faktúr vystavím v Billante zadarmo?",
-            "a": "Desať dokladov mesačne bez ohľadu na počet odberateľov. Každý ďalší sa platí zvlášť, takže pri občasnom prekročení nemusíte hneď meniť tarif."
+            "q": "Zmení sa niečo v mojom účte v BitFakture?",
+            "a": "Nie. Import dáta len číta, v BitFakture sa nič nezmení ani nevymaže. Pri prepojení cez API posiela Billanta len požiadavky na čítanie a prístupové údaje neukladá. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
+          },
+          {
+            "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme."
+          },
+          {
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           }
         ]
       },
@@ -7581,18 +7661,34 @@
         "price": "Najlacnejší platený tarif KROS stojí 5,90 € mesačne pri ročnej platbe, Billanta Start 4,99 €. Opakované faktúry (1,90 €) a API (4,90 €) sú v nižších tarifoch KROS doplnky navyše, v Billante sú v cene každého plateného tarifu a dve opakované faktúry sú aj zadarmo.",
         "switchTitle": "Ako prejsť z KROS Fakturácie",
         "switchSteps": [
-          "V KROS vyexportujte faktúry a kontakty do Excelu (XLSX) a v Exceli ich uložte ako CSV.",
-          "V Billante v Nastaveniach → Prechod z iného systému zvoľte Excel / iný systém a podľa šablóny skontrolujte stĺpce.",
-          "Nahrajte najprv kontakty, potom faktúry, a pred uložením si prejdite náhľad."
+          "V KROS Fakturácii označte vydané faktúry a vyexportujte ich do Excelu alebo CSV. Rovnako vyexportujte partnerov.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte KROS. Import export rozpozná podľa stĺpcov a priradí ich sám, súbor .xlsx nahráte bez prevodu.",
+          "Nahrajte najprv kontakty, potom faktúry. V náhľade skontrolujete stĺpce, odberateľov aj číslovanie a uloží sa až po potvrdení."
         ],
         "faq": [
           {
-            "q": "Prenesiem si dáta z KROS Fakturácie?",
-            "a": "Áno, cez tabuľku. Faktúry a kontakty vyexportované do Excelu uložte ako CSV a nahrajte v Billante cez import. Viac riadkov s rovnakým číslom faktúry sa spojí do jednej faktúry s viacerými položkami."
+            "q": "Je Billanta lacnejšia ako KROS Fakturácia?",
+            "a": "Najlacnejší platený tarif KROS stojí 5,90 € mesačne pri ročnej platbe, Billanta Start 4,99 €. Opakované faktúry (1,90 €) a API (4,90 €) sú v nižších tarifoch KROS doplnky navyše, v Billante sú v cene. Bezplatný tarif má KROS len pre neplatiteľov DPH s piatimi odberateľmi, Billanta pre každého s desiatimi dokladmi mesačne."
+          },
+          {
+            "q": "Ako prenesiem dáta z KROS Fakturácie?",
+            "a": "Vyexportujte vydané faktúry a partnerov do Excelu alebo CSV a nahrajte ich v Billante v Nastaveniach → Import z iného systému, súbor .xlsx bez prevodu. Import rozpozná slovenské názvy stĺpcov z KROS, faktúry v eurách aj IČ DPH a sadzbu DPH dopočíta zo súm. Neznámy stĺpec priradíte v náhľade ručne."
+          },
+          {
+            "q": "Čo všetko sa z KROS Fakturácie prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
+          },
+          {
+            "q": "Zmení sa niečo v mojom účte v KROS Fakturácii?",
+            "a": "Nie. Import dáta len číta, v KROS Fakturácii sa nič nezmení ani nevymaže. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
           },
           {
             "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
-            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. KROS ho ohlásil na jeseň 2026."
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. KROS ho ohlásil na jeseň 2026."
+          },
+          {
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           },
           {
             "q": "Pripraví Billanta výkazy DPH?",
@@ -7619,22 +7715,38 @@
         "price": "Najlacnejší tarif Billdu Lite stojí 4,99 € mesačne pri ročnej platbe, rovnako ako Billanta Start, no je obmedzený na desať odberateľov. Pri mesačnej platbe stojí Billdu Lite 7,99 €, Billanta Start 5,99 €. Opakované faktúry a API má Billdu až v najvyššom tarife.",
         "switchTitle": "Ako prejsť z Billdu",
         "switchSteps": [
-          "V Billdu vyexportujte faktúry a kontakty do tabuľky (CSV alebo Excel), ak to váš tarif umožňuje. Excel uložte ako CSV.",
-          "V Billante v Nastaveniach → Prechod z iného systému zvoľte Excel / iný systém a podľa šablóny skontrolujte stĺpce.",
-          "Nahrajte najprv kontakty, potom faktúry, a pred uložením si prejdite náhľad."
+          "Vo webovej verzii Billdu otvorte zoznam faktúr a stiahnite export dokumentov ako CSV alebo Excel, ak to váš tarif umožňuje. Klientov vyexportujte zvlášť.",
+          "V Billante v Nastaveniach → Import z iného systému zvoľte Billdu. Import export rozpozná podľa stĺpcov a priradí ich sám, súbor .xlsx nahráte bez prevodu.",
+          "Nahrajte najprv kontakty, potom faktúry. V náhľade skontrolujete stĺpce, odberateľov aj číslovanie a uloží sa až po potvrdení."
         ],
         "faq": [
           {
-            "q": "Prenesiem si dáta z Billdu?",
-            "a": "Áno, cez tabuľku. Faktúry a kontakty uložené ako CSV nahráte v Billante cez import. Viac riadkov s rovnakým číslom faktúry sa spojí do jednej faktúry s viacerými položkami."
+            "q": "Je Billanta lacnejšia ako Billdu?",
+            "a": "Pri ročnej platbe stojí Billdu Lite aj Billanta Start 4,99 € mesačne, Billdu Lite je však obmedzený na desať odberateľov. Pri mesačnej platbe stojí Billdu Lite 7,99 €, Billanta Start 5,99 €. Opakované faktúry a API má Billdu až v najvyššom tarife."
           },
           {
-            "q": "Funguje Billanta na mobile?",
-            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu a funguje ako aplikácia. Natívnu aplikáciu v App Store alebo Google Play zatiaľ nemá, to Billdu má."
+            "q": "Má Billanta bezplatný tarif? Billdu ho nemá.",
+            "a": "Áno, natrvalo, nie len na skúšku. Desať dokladov mesačne bez limitu odberateľov, každý ďalší za 0,20 €, dve opakované faktúry, PAY by square, AI čítanie bločkov a faktúra hlasom. Párovanie platieb z banky a automatické upomienky sú až v platených tarifoch."
+          },
+          {
+            "q": "Ako prenesiem dáta z Billdu?",
+            "a": "Vo webovej verzii Billdu stiahnite export dokumentov a klientov ako CSV alebo Excel a nahrajte ho v Billante v Nastaveniach → Import z iného systému. Import rozpozná anglické názvy stĺpcov Billdu, prevedie stav úhrady aj dátumy a „Client ID“ číta ako IČO. Neznámy stĺpec priradíte v náhľade ručne."
+          },
+          {
+            "q": "Čo všetko sa z Billdu prenesie?",
+            "a": "Odberatelia s IČO, DIČ, IČ DPH a adresou, vydané faktúry s dátumami, sumami, menou a stavom úhrady a položky, ak ich export obsahuje. Bez položiek vznikne jedna položka na celú sumu. Odberateľov, ktorých už v Billante máte, import spáruje podľa IČO, inak podľa názvu, takže sa nezdvoja. Ďalšia faktúra nadviaže na najvyššie importované číslo, a keď mal starý rad iný tvar čísla, náhľad ponúkne jeho prevzatie."
+          },
+          {
+            "q": "Zmení sa niečo v mojom účte v Billdu?",
+            "a": "Nie. Import dáta len číta, v Billdu sa nič nezmení ani nevymaže. Importované faktúry sa znova neodošlú a nepôjdu k nim upomienky. Obe aplikácie môžete chvíľu používať súbežne, len dajte pozor, aby sa čísla faktúr neopakovali. Faktúry s číslami, ktoré už v Billante máte, import preskočí."
           },
           {
             "q": "Zvládne Billanta povinnú eFaktúru od roku 2027?",
-            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. Billdu ho tiež ohlásilo pred začiatkom roka 2027."
+            "a": "Billanta už teraz vytvorí súbor e-faktúry UBL vo formáte Peppol BIS 3.0, a to v každom tarife. Odosielanie cez sieť Peppol, ktoré povinnosť od 1. 1. 2027 vyžaduje, pripravujeme. Billdu ho tiež ohlásilo pred začiatkom roka 2027."
+          },
+          {
+            "q": "Dá sa v Billante fakturovať z mobilu, aj hlasom?",
+            "a": "Áno. Billanta je webová aplikácia, ktorú si nainštalujete na plochu telefónu s iOS aj Androidom. Natívnu aplikáciu v obchode zatiaľ nemá, to Billdu má. Faktúru môžete nadiktovať alebo poslať správou cez Telegram či WhatsApp, v každom tarife vrátane bezplatného. AI z nej pripraví koncept a vystavíte ho až vy."
           }
         ]
       }
