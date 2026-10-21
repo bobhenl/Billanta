@@ -1,8 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { createTranslator } from 'next-intl';
-import cs from '@/messages/cs.json';
-import en from '@/messages/en.json';
-import sk from '@/messages/sk.json';
+import { routing, type AppLocale } from '@/i18n/routing';
+import { loadMessages } from '@/i18n/messages';
 import { resolveOgCard, type OgCard } from '@/lib/og-card';
 import { getPublicProfile } from '@/lib/public-profiles';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
@@ -26,7 +25,6 @@ export const runtime = 'edge';
 
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;
-const MESSAGES = { cs, sk, en } as const;
 
 // Literal URLs, so the bundler can see and include the files.
 const fontFile = (url: URL) => fetch(url).then((r) => r.arrayBuffer());
@@ -90,10 +88,10 @@ interface Card extends OgCard {
 
 async function resolveProfileCard(locale: string, rawSlug: string): Promise<Card | null> {
   const slug = rawSlug.toLowerCase();
-  if (!(locale in MESSAGES) || !SLUG.test(slug)) return null;
+  if (!(routing.locales as readonly string[]).includes(locale) || !SLUG.test(slug)) return null;
   const profile = await getPublicProfile(slug).catch(() => null);
   if (!profile) return null;
-  const t = createTranslator({ locale: locale as keyof typeof MESSAGES, messages: MESSAGES[locale as keyof typeof MESSAGES], namespace: 'og' });
+  const t = createTranslator({ locale: locale as AppLocale, messages: await loadMessages(locale as AppLocale), namespace: 'og' }) as unknown as (key: string, values?: Record<string, number>) => string;
   const logo = profile.hasLogo ? await profileLogo(slug) : undefined;
   return {
     title: profile.companyName,
@@ -111,7 +109,7 @@ export async function GET(
   const params = await props.params;
   const path = params.path ?? [];
   const card: Card | null =
-    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(params.locale, path[1]!) : resolveOgCard(params.locale, path);
+    path[0] === 'p' && path.length === 2 ? await resolveProfileCard(params.locale, path[1]!) : await resolveOgCard(params.locale, path);
   if (!card) return new Response('Not found', { status: 404 });
   const [regular, bold] = await loadFonts();
   const title = clip(card.title, 90);

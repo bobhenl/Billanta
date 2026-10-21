@@ -1,3 +1,4 @@
+import { INDEXED_LOCALES } from '@/i18n/locales';
 import { routing } from '@/i18n/routing';
 import { brandsFor, comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
@@ -181,7 +182,7 @@ export function buildLlmsTxt(): string {
     '',
     '## Languages',
     '',
-    ...routing.locales.map((loc) => `- ${LANGUAGE_NAMES[loc] ?? loc}: ${url(loc, '/')}`),
+    ...INDEXED_LOCALES.map((loc) => `- ${LANGUAGE_NAMES[loc] ?? loc}: ${url(loc, '/')}`),
     '',
     `## Optional`,
     '',
@@ -249,7 +250,7 @@ export function buildLlmsFullTxt(): string {
     '',
     ...featureLines('en', true),
     '',
-    ...routing.locales.flatMap((loc) => [`## FAQ in ${LANGUAGE_NAMES[loc] ?? loc}`, ...faqs(loc)]),
+    ...INDEXED_LOCALES.flatMap((loc) => [`## FAQ in ${LANGUAGE_NAMES[loc] ?? loc}`, ...faqs(loc)]),
     ''
   ].join('\n');
 }

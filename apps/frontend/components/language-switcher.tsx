@@ -25,7 +25,7 @@ export function LanguageSwitcher({
 }: {
   className?: string;
   align?: 'left' | 'right';
-  /** `inline`: a flat CS / SK / EN row, for places a popover would be clipped (the phone "More" panel). */
+  /** `inline`: a flat, wrapping row of codes (CS SK EN …), for places a popover would be clipped (the phone "More" panel). */
   variant?: 'dropdown' | 'inline';
 }) {
   const t = useTranslations('language');
@@ -55,7 +55,7 @@ export function LanguageSwitcher({
 
   if (variant === 'inline') {
     return (
-      <nav aria-label={t('label')} className={cn('inline-flex rounded-full border border-border bg-secondary p-0.5', className)}>
+      <nav aria-label={t('label')} className={cn('inline-flex flex-wrap gap-0.5 rounded-2xl border border-border bg-secondary p-0.5', className)}>
         {routing.locales.map((loc) => (
           <Link
             key={loc}
@@ -90,7 +90,7 @@ export function LanguageSwitcher({
       </summary>
       <ul
         className={cn(
-          'absolute top-full z-50 mt-1.5 min-w-[10rem] rounded-lg border border-border bg-card p-1 shadow-lg',
+          'absolute top-full z-50 mt-1.5 max-h-[70vh] min-w-[10rem] overflow-y-auto rounded-lg border border-border bg-card p-1 shadow-lg',
           align === 'right' ? 'right-0' : 'left-0'
         )}
       >

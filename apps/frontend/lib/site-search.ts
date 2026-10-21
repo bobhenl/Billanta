@@ -1,6 +1,6 @@
-import cs from '@/messages/cs.json';
-import en from '@/messages/en.json';
-import sk from '@/messages/sk.json';
+import type cs from '@/messages/cs.json';
+import type { AppLocale } from '@/i18n/locales';
+import { loadMessages } from '@/i18n/messages';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
 import { glossaryTermsFor } from '@/lib/glossary';
 import { glossaryText } from '@/lib/glossary-content';
@@ -8,7 +8,6 @@ import { CALCULATORS, GUIDES, GUIDES_HUB_LOCALES, isPublishedIn, REMINDERS, TEMP
 import { getAllMunicipalities, isDistrictSeat, municipalityLocale, type Municipality } from '@/lib/municipalities';
 
 type Messages = typeof cs;
-const MESSAGES: Record<string, Messages> = { cs, sk: sk as Messages, en: en as Messages };
 
 export type SearchKind = 'page' | 'feature' | 'calculator' | 'guide' | 'faq' | 'city' | 'glossary';
 
@@ -41,13 +40,21 @@ type FeatureText = { name: string; title: string; description: string; lead: str
 type FaqText = { q: string; a: string };
 type ToolText = { name: string; description: string; lead?: string; keywords?: string };
 
-const INDEX = new Map<string, Entry[]>();
+const INDEX = new Map<string, Promise<Entry[]>>();
 
 /** Every public page with real copy, built once per locale from the message catalogs. */
-function indexFor(locale: string): Entry[] {
-  const cached = INDEX.get(locale);
-  if (cached) return cached;
-  const m = MESSAGES[locale] ?? MESSAGES.cs!;
+function indexFor(locale: string): Promise<Entry[]> {
+  let index = INDEX.get(locale);
+  if (!index) {
+    index = buildIndex(locale);
+    INDEX.set(locale, index);
+  }
+  return index;
+}
+
+async function buildIndex(locale: string): Promise<Entry[]> {
+  // A partly translated locale searches its catalog merged over English, the text its pages show.
+  const m = (await loadMessages(locale as AppLocale)) as unknown as Messages;
   const features = m.featurePages.items as unknown as Record<string, FeatureText>;
   const homeFaq = m.marketing.faq.items as unknown as Record<string, FaqText>;
   const entries: Entry[] = [
@@ -109,7 +116,6 @@ function indexFor(locale: string): Entry[] {
     if (!text || !isPublishedIn(x, locale)) continue;
     entries.push(entry('guide', `/payment-reminder-templates/${x.slug}`, text.title, text.description, `${text.name} ${text.lead ?? ''}`));
   }
-  INDEX.set(locale, entries);
   return entries;
 }
 
@@ -118,13 +124,14 @@ function indexFor(locale: string): Entry[] {
  * has to appear (as a prefix of a word) in the title or the text; title
  * hits rank first. Plain in-memory scan: a few hundred entries.
  */
-export function searchSite(locale: string, query: string, limit = 30): SearchHit[] {
-  const words = normalise(query).split(/[^a-z0-9]+/).filter((w) => w.length > 1);
+export async function searchSite(locale: string, query: string, limit = 30): Promise<SearchHit[]> {
+  // Any script's letters, not just a-z: a Ukrainian query is Cyrillic.
+  const words = normalise(query).split(/[^\p{L}\p{N}]+/u).filter((w) => w.length > 1);
   if (words.length === 0) return [];
-  const has = (text: string, word: string) => new RegExp(`(^|[^a-z0-9])${word}`).test(text);
+  const has = (text: string, word: string) => new RegExp(`(^|[^\\p{L}\\p{N}])${word}`, 'u').test(text);
 
   const scored: { hit: SearchHit; score: number }[] = [];
-  for (const e of indexFor(locale)) {
+  for (const e of await indexFor(locale)) {
     let score = 0;
     let all = true;
     for (const w of words) {

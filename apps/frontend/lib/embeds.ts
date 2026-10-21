@@ -1,3 +1,4 @@
+import { LOCALE_PATTERN } from '@/i18n/locales';
 import { REFERRAL_CODE } from '@/lib/referral';
 import { SITE_URL } from '@/lib/site';
 
@@ -185,7 +186,7 @@ export function publicInvoiceUrl(pasted: string, lang: EmbedLang): string | null
   } catch {
     return null;
   }
-  const m = url.pathname.match(/^\/(?:(cs|sk|en)\/)?i\/([A-Za-z0-9_-]{6,160})\/?$/);
+  const m = url.pathname.match(new RegExp(`^/(?:(${LOCALE_PATTERN})/)?i/([A-Za-z0-9_-]{6,160})/?$`));
   return m ? `${SITE_URL}/${m[1] ?? lang}/i/${m[2]}` : null;
 }
 
