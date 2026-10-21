@@ -68,6 +68,30 @@ describe("promoPatch: trial_days", () => {
   });
 });
 
+// Every new company starts with the 14-day Plus welcome trial
+// (billing/plans.ts TRIAL_PLAN), so a code redeemed at sign-up meets it.
+describe("promoPatch on top of the welcome trial", () => {
+  const welcome = { ...fresh, trialPlan: "plus", trialStartedAt: now, trialEndsAt: new Date(now.getTime() + 14 * DAY) };
+
+  it("adds trial days after the welcome trial", () => {
+    const r = promoPatch(welcome, { benefit: "trial_days", plan: "start", value: 30 }, now);
+    expect(r).toEqual({ ok: true, patch: { trialPlan: "plus", trialStartedAt: now, trialEndsAt: new Date(now.getTime() + 44 * DAY), trialRemindedDays: null } });
+  });
+
+  it("lets a Business trial code replace the plan for the whole trial", () => {
+    const r = promoPatch(welcome, { benefit: "trial_days", plan: "business", value: 30 }, now);
+    expect(r.ok && r.patch).toMatchObject({ trialPlan: "business", trialEndsAt: new Date(now.getTime() + 44 * DAY) });
+  });
+
+  it("starts free Plus months when the welcome trial ends", () => {
+    expect(promoPatch(welcome, { benefit: "free_months", plan: "plus", value: 3 }, now)).toEqual({ ok: true, patch: { prepaidPlan: "plus", prepaidUntil: "2027-02-02" } });
+  });
+
+  it("starts free Business months right away", () => {
+    expect(promoPatch(welcome, { benefit: "free_months", plan: "business", value: 1 }, now)).toEqual({ ok: true, patch: { prepaidPlan: "business", prepaidUntil: "2026-11-19" } });
+  });
+});
+
 describe("promoPatch: free_months", () => {
   it("prepays from today", () => {
     expect(promoPatch(fresh, { benefit: "free_months", plan: "plus", value: 3 }, now)).toEqual({ ok: true, patch: { prepaidPlan: "plus", prepaidUntil: "2027-01-19" } });

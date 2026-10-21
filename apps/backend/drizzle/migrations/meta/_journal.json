@@ -582,6 +582,27 @@
       "when": 1793161860000,
       "tag": "0083_classroom_phase2",
       "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1793248320000,
+      "tag": "0084_trial_plus",
+      "breakpoints": true
+    },
+    {
+      "idx": 85,
+      "version": "7",
+      "when": 1793248380000,
+      "tag": "0085_trial_per_ico",
+      "breakpoints": true
+    },
+    {
+      "idx": 86,
+      "version": "7",
+      "when": 1793248440000,
+      "tag": "0086_trial_signals",
+      "breakpoints": true
     }
   ]
 }

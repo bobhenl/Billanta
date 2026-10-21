@@ -4,6 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { AuditService } from "../audit/audit.service";
+import { WelcomeTrialService } from "../billing/welcome-trial.service";
 import { demoConfig } from "../demo/demo-config";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { DashboardRole } from "../tenancy/tenant-context.middleware";
@@ -66,6 +67,7 @@ export class TenantsService {
   constructor(
     @Optional() private readonly notifications?: NotificationsService,
     @Optional() private readonly audit?: AuditService,
+    @Optional() private readonly welcomeTrial?: WelcomeTrialService,
   ) {}
 
   /**
@@ -161,6 +163,9 @@ export class TenantsService {
       if (changes.length > 0) {
         await this.audit?.record(db, id, { entityType: "tenant", entityId: id, entityLabel: row.companyName, action: "updated", changes });
       }
+      // The welcome trial starts with the first real IČO; later bank and contact
+      // changes are checked against other trial companies (billing/welcome-trial.ts).
+      await this.welcomeTrial?.onCompanyChanged(db, id, Boolean(values.ico));
     }
     const [tenant] = await this.findById(db, id);
     return tenant;
@@ -271,6 +276,7 @@ export class TenantsService {
       action: "created",
       changes: [{ field: "account", from: null, to: formatAccount(row) }],
     });
+    await this.welcomeTrial?.refreshSignals(db, tenantId);
     return row;
   }
 
@@ -290,6 +296,7 @@ export class TenantsService {
     if (changes.length > 0) {
       await this.audit?.record(db, tenantId, { entityType: "bank_account", entityId: id, entityLabel: row.label, action: "updated", changes });
     }
+    await this.welcomeTrial?.refreshSignals(db, tenantId);
     return row;
   }
 

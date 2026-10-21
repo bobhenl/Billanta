@@ -1874,7 +1874,8 @@
       "loadRegistry": "Načítať z registra",
       "dicKeepHint": "DIČ nechajte vyplnené, aj keď nie ste platiteľ alebo ste identifikovaná osoba. Uvádza sa potom na dokladoch.",
       "dataBoxId": "ID dátovej schránky",
-      "dataBoxIdHint": "Sedem znakov, napr. ab12cd3. Nie je tajné. Predvyplní sa do ročného prehľadu pre ČSSZ."
+      "dataBoxIdHint": "Sedem znakov, napr. ab12cd3. Nie je tajné. Predvyplní sa do ročného prehľadu pre ČSSZ.",
+      "icoTrialHint": "Vyplnením IČO spustíte skúšobnú verziu tarifu Plus na {days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty. Raz pre každé IČO."
     },
     "team": {
       "title": "Tím",
@@ -3493,7 +3494,10 @@
       "no_subscription": "Firma teraz nemá aktívne predplatné kartou.",
       "same_interval": "Predplatné už takto platíte.",
       "subscription_past_due": "Posledná platba neprešla. Najskôr v portáli predplatného zmeňte kartu.",
-      "subscription_not_changeable": "Toto predplatné sa tu zmeniť nedá. Napíšte nám a vyriešime to."
+      "subscription_not_changeable": "Toto predplatné sa tu zmeniť nedá. Napíšte nám a vyriešime to.",
+      "trial_card_disabled": "Predĺženie skúšobnej doby kartou teraz nie je zapnuté.",
+      "trial_card_not_available": "Táto firma nemôže využiť predĺženie skúšobnej doby kartou.",
+      "no_ico": "Najprv v nastaveniach firmy vyplňte IČO."
     },
     "portalHint": "V portáli Stripe zmeníte kartu alebo fakturačné údaje a stiahnete faktúry.",
     "sub": {
@@ -3511,6 +3515,28 @@
       "switchToMonth": "Prejsť na mesačnú platbu ({price} / mesiac)",
       "switchNote": "Nové obdobie sa začne hneď. Nevyčerpanú časť súčasného vám odpočítame z prvej platby.",
       "switched": "Hotovo, predplatné teraz platíte {interval, select, year {ročne} other {mesačne}}."
+    },
+    "trialCard": {
+      "title": "Vyskúšajte Billantu {days} dní",
+      "body": "Pridajte kartu a skúšobná doba sa predĺži na {days} dní celkovo. Nič sa nestrhne a pred koncom sa vás opýtame, či chcete pokračovať.",
+      "bodyWithheld": "Skúšobnú verziu bez karty sme tejto firme nemohli poskytnúť. S kartou ju dostanete na {days} dní. Nič sa nestrhne a pred koncom sa vás opýtame, či chcete pokračovať.",
+      "button": "Pridať kartu",
+      "hint": "Kartu overí Stripe. Každá karta predĺži skúšobnú dobu iba raz.",
+      "extended": "Hotovo, skúšobná doba teraz trvá {days} dní. Karta je uložená a nič sa nestrhlo.",
+      "errors": {
+        "generic": "Skúšobnú dobu sa nepodarilo predĺžiť. Skúste to, prosím, znova.",
+        "trial_card_card_used": "Táto karta už jednu skúšobnú dobu predĺžila.",
+        "trial_card_user_had_trial": "Váš účet už mal skúšobnú verziu pri inej firme.",
+        "trial_card_trial_over": "Skúšobná doba už uplynula, predĺžiť ju nemožno.",
+        "trial_card_no_ico": "Najprv v nastaveniach firmy vyplňte IČO.",
+        "trial_card_invalid_ico": "IČO firmy nie je platné. Opravte ho v nastaveniach firmy.",
+        "trial_card_not_in_registry": "IČO firmy sme v registri nenašli. Opravte ho v nastaveniach firmy.",
+        "trial_card_registry_down": "Register firiem teraz neodpovedá. Skúste to, prosím, o chvíľu.",
+        "trial_card_not_available": "Táto firma nemôže využiť predĺženie skúšobnej doby kartou.",
+        "trial_card_invalid_session": "Toto uloženie karty nepatrí k tejto firme.",
+        "trial_card_incomplete": "Uloženie karty sa nedokončilo. Skúste to, prosím, znova.",
+        "trial_card_disabled": "Predĺženie skúšobnej doby kartou teraz nie je zapnuté."
+      }
     }
   },
   "auth": {
@@ -3533,7 +3559,8 @@
       "companyNameHint": "Ako živnostníkovi stačí vaše meno a priezvisko. IČO a fakturačné údaje doplníte v ďalšom kroku.",
       "aboutYouLegend": "O vás (nepovinné)",
       "managesClientsLabel": "Vediem účtovníctvo pre klientov",
-      "isTeacherLabel": "Som učiteľ/ka"
+      "isTeacherLabel": "Som učiteľ/ka",
+      "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} {plan} zadarmo, bez karty. Skúšobná doba začne, keď v nastaveniach vyplníte IČO firmy (raz pre každé IČO). Potom pokračujete na tarife Zadarmo, nič sa samo nestiahne."
     },
     "login": {
       "title": "Prihlásiť sa",
@@ -4222,7 +4249,8 @@
       }
     },
     "compareCompetitors": "Ako si Billanta stojí oproti SuperFaktúre, Fakturoidu a ďalším",
-    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty: vyskúšajte celý tarif Firma.",
+    "trialNote": "{days, plural, one {# deň} few {# dni} other {# dní}} tarifu {plan} zadarmo, bez karty, raz pre každé IČO. Skúšobná doba začne, keď firma vyplní IČO, a potom sama prejde na Zadarmo. Dáta zostanú.",
+    "trialCard": "Prvých {days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty",
     "methods": {
       "title": "Ako platiť",
       "card": {

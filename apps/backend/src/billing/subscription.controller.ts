@@ -19,6 +19,7 @@ export class CheckoutDto extends createZodDto(
 ) {}
 export class IntervalDto extends createZodDto(z.object({ interval: z.enum(["month", "year"]) })) {}
 export class PortalDto extends createZodDto(z.object({ locale })) {}
+export class TrialCardConfirmDto extends createZodDto(z.object({ sessionId: z.string().regex(/^cs_[A-Za-z0-9_]+$/).max(255) })) {}
 // Without `months` it is a year, as before monthly transfers existed.
 export class BankTransferDto extends createZodDto(z.object({ plan, months: z.union([z.literal(1), z.literal(12)]).default(12) })) {}
 
@@ -45,6 +46,18 @@ export class SubscriptionController {
   @ApiOperation({ summary: "Stripe Checkout URL for a monthly or yearly subscription" })
   checkout(@Req() req: TenantScopedRequest, @Body() dto: CheckoutDto) {
     return this.subscriptions.checkout(req.tenantDb!, req.user!.tenantId, req.user!.email, dto);
+  }
+
+  @Post("trial-card")
+  @ApiOperation({ summary: "Stripe Checkout (setup mode) to save a card for the longer trial; nothing is charged" })
+  trialCard(@Req() req: TenantScopedRequest, @Body() dto: PortalDto) {
+    return this.subscriptions.trialCard(req.tenantDb!, req.user!.tenantId, req.user!.email, dto.locale);
+  }
+
+  @Post("trial-card/confirm")
+  @ApiOperation({ summary: "Extend the trial with the card saved in the setup Checkout" })
+  confirmTrialCard(@Req() req: TenantScopedRequest, @Body() dto: TrialCardConfirmDto) {
+    return this.subscriptions.confirmTrialCard(req.tenantDb!, req.user!.tenantId, dto.sessionId);
   }
 
   @Post("portal")

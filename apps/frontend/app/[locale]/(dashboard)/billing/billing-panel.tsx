@@ -7,7 +7,7 @@ import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import type { PaidPlanKey, PlanSummary } from '@/lib/plan';
 import { cn } from '@/lib/utils';
-import { cancelSubscription, openPortal, requestBankTransfer, resumeSubscription, startCheckout, switchInterval, type SubscriptionInfo } from './actions';
+import { cancelSubscription, openPortal, requestBankTransfer, resumeSubscription, startCheckout, startTrialCard, switchInterval, type SubscriptionInfo } from './actions';
 
 type Currency = 'CZK' | 'EUR';
 type Interval = 'month' | 'year';
@@ -47,6 +47,12 @@ export interface BillingStatus {
   transferPrices: Record<PaidPlanKey, Record<Currency, { monthly: number; yearly: number }>>;
   transferSurchargePercent: number;
   card: { enabled: boolean };
+  /**
+   * A card saved through Stripe (nothing charged) makes the trial `totalDays`
+   * long. `withheld`: the no-card trial was refused or ended; never says why.
+   * Missing from an older backend.
+   */
+  trialOffer?: { available: boolean; withheld: boolean; totalDays: number };
   bankTransfer:
     | {
         enabled: true;
@@ -213,6 +219,25 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
           </div>
         )}
       </section>
+
+      {status.trialOffer?.available && (
+        <section className="rounded-xl border border-primary/40 bg-card p-4">
+          <h2 className="font-bold">{t('trialCard.title', { days: status.trialOffer.totalDays })}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {status.trialOffer.withheld ? t('trialCard.bodyWithheld', { days: status.trialOffer.totalDays }) : t('trialCard.body', { days: status.trialOffer.totalDays })}
+          </p>
+          <button
+            type="button"
+            disabled={readOnly || pending}
+            onClick={() => act('trial-card', startTrialCard)}
+            className={cn(buttonClass.primary, 'mt-3')}
+          >
+            {busy === 'trial-card' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <CreditCard className="h-4 w-4" aria-hidden="true" />}
+            {t('trialCard.button')}
+          </button>
+          <p className="mt-2 text-xs text-muted-foreground">{t('trialCard.hint')}</p>
+        </section>
+      )}
 
       {!subscribed && (
         <section className="rounded-xl border border-border bg-card p-4">

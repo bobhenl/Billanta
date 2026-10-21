@@ -179,6 +179,9 @@ export class BillingService {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        // A card saved for the longer trial (SubscriptionService.trialCard)
+        // pays for nothing; the confirm call extends the trial instead.
+        if (session.mode === "setup") return;
         const customerId =
           typeof session.customer === "string" ? session.customer : session.customer?.id;
         // Our own Checkout (SubscriptionService) puts the plan in metadata.

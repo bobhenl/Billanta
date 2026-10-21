@@ -1,7 +1,18 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { BANK_TRANSFER_SURCHARGE_PERCENT, PLAN_PRICES_MINOR, periodPriceMinor, transferPriceMinor, transferPricesMinor } from "./plans";
+import {
+  BANK_TRANSFER_SURCHARGE_PERCENT,
+  CARD_TRIAL_DAYS,
+  DEFAULT_TRIAL_DAYS,
+  cardTrialEnabled,
+  PLAN_PRICES_MINOR,
+  TRIAL_PLAN,
+  periodPriceMinor,
+  transferPriceMinor,
+  transferPricesMinor,
+  trialDays,
+} from "./plans";
 
 describe("transferPriceMinor", () => {
   it("adds the surcharge and rounds up to a whole koruna", () => {
@@ -48,5 +59,45 @@ describe("frontend price list", () => {
     const src = readFileSync(join(__dirname, "../../../frontend/lib/plans.ts"), "utf8");
     const m = /BANK_TRANSFER_SURCHARGE_PERCENT\s*=\s*(\d+)/.exec(src);
     expect(Number(m?.[1])).toBe(BANK_TRANSFER_SURCHARGE_PERCENT);
+  });
+});
+
+describe("welcome trial", () => {
+  it("is 7 days of Plus, 30 with a card", () => {
+    expect(TRIAL_PLAN).toBe("plus");
+    expect(DEFAULT_TRIAL_DAYS).toBe(7);
+    expect(CARD_TRIAL_DAYS).toBe(30);
+  });
+
+  it("offers the card extension only behind its flag and with Stripe", () => {
+    expect(cardTrialEnabled({ TRIAL_CARD_EXTENSION: "1", STRIPE_SECRET_KEY: "sk" })).toBe(true);
+    expect(cardTrialEnabled({ STRIPE_SECRET_KEY: "sk" })).toBe(false);
+    expect(cardTrialEnabled({ TRIAL_CARD_EXTENSION: "1" })).toBe(false);
+  });
+
+  it("takes TRIAL_DAYS from the env, 0 switches it off, clamped to 90", () => {
+    expect(trialDays(undefined)).toBe(DEFAULT_TRIAL_DAYS);
+    expect(trialDays(" ")).toBe(DEFAULT_TRIAL_DAYS);
+    expect(trialDays("7")).toBe(7);
+    expect(trialDays("0")).toBe(0);
+    expect(trialDays("-3")).toBe(0);
+    expect(trialDays("365")).toBe(90);
+    expect(trialDays("abc")).toBe(DEFAULT_TRIAL_DAYS);
+  });
+
+  // grant_welcome_trial (SQL) starts the trial and the frontend advertises it (the
+  // pricing and signup pages read no backend), so each carries a copy.
+  it("is granted as TRIAL_PLAN by grant_welcome_trial", () => {
+    const src = readFileSync(join(__dirname, "../../drizzle/rls-policies.sql"), "utf8");
+    const fn = src.slice(src.indexOf("CREATE OR REPLACE FUNCTION grant_welcome_trial("));
+    const m = /SET trial_plan = '(\w+)'/.exec(fn);
+    expect(m?.[1]).toBe(TRIAL_PLAN);
+  });
+
+  it("is advertised with the same plan and length by the frontend", () => {
+    const src = readFileSync(join(__dirname, "../../../frontend/lib/plan.ts"), "utf8");
+    expect(/export const TRIAL_PLAN[^=]*=\s*'(\w+)'/.exec(src)?.[1]).toBe(TRIAL_PLAN);
+    expect(Number(/DEFAULT_TRIAL_DAYS\s*=\s*(\d+)/.exec(src)?.[1])).toBe(DEFAULT_TRIAL_DAYS);
+    expect(Number(/CARD_TRIAL_DAYS\s*=\s*(\d+)/.exec(src)?.[1])).toBe(CARD_TRIAL_DAYS);
   });
 });

@@ -182,10 +182,42 @@ migration `0051_trial_billing.sql`.
   a live Stripe subscription (`active`/`past_due`), a prepaid period
   (`prepaid_plan`/`prepaid_until`, from credits or a paid proforma) and a
   running trial, else free. Nothing flips when a trial ends.
-- **Trial**: `bootstrap_tenant_for_user(..., p_trial_days)` gives a new
-  company `TRIAL_DAYS` (default 14, 0 = off, max 90) of Business, no card.
-  One trial per user account and per normalised e-mail (`trial_claims`,
-  lowercased, `+tag` and Gmail dots removed, stored as a SHA-256 hash).
+- **Trial**: a company gets `TRIAL_DAYS` (default 7, 0 = off, max 90) of
+  Plus, no card (`TRIAL_PLAN` / `DEFAULT_TRIAL_DAYS` in
+  `src/billing/plans.ts`; the SQL and `apps/frontend/lib/plan.ts` copies are
+  checked by `plans.spec.ts`). It is not started at sign-up but when the
+  company first saves an IČO (Settings → Company, or an import that fills it
+  in), counted from then. The rules are in `src/billing/welcome-trial.ts`:
+  the IČO passes the checksum and exists in ARES / RPO; one trial per IČO
+  ever (`trial_icos`); one per user account and per normalised e-mail of
+  every owner (`trial_claims`, lowercased, `+tag` and Gmail dots removed,
+  SHA-256); never for demo or classroom companies. `grant_welcome_trial`
+  (SECURITY DEFINER, the only writer of both tables) enforces them
+  atomically. So a re-signup with a new e-mail, a second company of the
+  same person (`POST /me/tenants`) or a company with an IČO that already had
+  a trial starts on Free: otherwise a new account every two weeks would be
+  Plus for free forever.
+  **Abuse signals** (0086): the company's supplier bank accounts (settings,
+  extra accounts, and the seller on imported invoices), its e-mail and
+  phone, owners' e-mails and the sign-up IP are hashed (`trialSignals()`)
+  and kept in `trial_signals` (no app-role access). A bank account, e-mail
+  or phone shared with an earlier trial company withholds the no-card trial
+  (`trial_withheld_at`), and ends a running one (`refresh_trial_signals`,
+  after bank or contact edits); the same IP needs two other trial companies
+  within 30 days and only withholds, never ends. Customers are never
+  compared. A hit never blocks the account, it only moves the company to
+  the card route.
+  **Card extension** (only with `TRIAL_CARD_EXTENSION=1` and
+  `STRIPE_SECRET_KEY`): `POST /v1/billing/subscription/trial-card` opens
+  Stripe Checkout in setup mode (nothing charged), and the return calls
+  `trial-card/confirm`, which reads the card fingerprint and makes the trial
+  `CARD_TRIAL_DAYS` (30) in total, once per card (`trial_cards`, hashed). It
+  also clears a signal hit or an IČO that already had a trial, but not an
+  owner who had a trial at another company. The webhook ignores setup-mode
+  sessions. When it ends the company is on Free: data stays,
+  features above Free are read-only. A promo code still works on top
+  (`promo-logic.ts`): trial days extend it, a better plan's code upgrades
+  it, free months of Plus or lower start after it.
   `TrialRemindersCron` (08:00 Prague) sends the 3-day, 1-day and "ended"
   notices to owners and admins in the bell, and by e-mail only when Resend
   is configured.

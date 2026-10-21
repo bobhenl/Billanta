@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Minus } from 'lucide-react';
+import { Check, Gift, Minus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { PAYG_PRICE, transferPrice, type Plan, type PlanCurrency } from '@/lib/plans';
@@ -48,7 +48,8 @@ export function PricingPlans({
   labels,
   locale,
   initialCurrency,
-  comparison
+  comparison,
+  trial
 }: {
   plans: Plan[];
   copy: Record<string, PlanCopy>;
@@ -56,6 +57,8 @@ export function PricingPlans({
   locale: string;
   initialCurrency: PlanCurrency;
   comparison: CompareCopy;
+  /** The plan every new company tries for free, with its card line; null when the trial is off. */
+  trial: { plan: string; label: string } | null;
 }) {
   const [yearly, setYearly] = useState(true);
   const [currency, setCurrency] = useState<PlanCurrency>(initialCurrency);
@@ -143,6 +146,12 @@ export function PricingPlans({
               >
                 {text.cta}
               </Link>
+              {trial?.plan === plan.key && (
+                <p className="mt-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary">
+                  <Gift className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  {trial.label}
+                </p>
+              )}
             </article>
           );
         })}

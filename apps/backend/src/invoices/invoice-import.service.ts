@@ -27,6 +27,7 @@ import { getHomeRateDay } from "../exports/home-rates";
 import type { HomeCurrency } from "@faktur/cz-compliance";
 import { tenantHomeCurrency } from "../tenants/home-currency";
 import { AuditService } from "../audit/audit.service";
+import { WelcomeTrialService } from "../billing/welcome-trial.service";
 import { buyerSnapshotFromImport } from "./party-snapshot";
 import { guestBusinessFill, mapGuestInvoices, newestSupplier, type GuestBusinessFill } from "./guest-import";
 import type { GuestInvoiceInput } from "../guest-invoices/guest-invoices.service";
@@ -244,7 +245,10 @@ export async function importedRate(
 
 @Injectable()
 export class InvoiceImportService {
-  constructor(@Optional() private readonly audit?: AuditService) {}
+  constructor(
+    @Optional() private readonly audit?: AuditService,
+    @Optional() private readonly welcomeTrial?: WelcomeTrialService,
+  ) {}
 
   /**
    * A CSV or .xlsx export of another tool. The preview says which tool it
@@ -464,6 +468,9 @@ export class InvoiceImportService {
         .set({ ...fill, updatedAt: new Date() })
         .where(eq(schema.tenants.id, tenantId));
     }
+    // The first IČO starts the welcome trial; imported supplier accounts are
+    // checked against other trial companies (billing/welcome-trial.ts).
+    await this.welcomeTrial?.onCompanyChanged(db, tenantId, Boolean(fill.ico));
 
     // Archive copy of what the customer received. Not e-mailed again and not
     // shown in the portal; the invoice data itself stays as imported.

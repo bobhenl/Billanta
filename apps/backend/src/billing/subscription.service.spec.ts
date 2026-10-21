@@ -37,7 +37,7 @@ describe("SubscriptionService bank transfer", () => {
     vi.restoreAllMocks();
   });
 
-  const service = () => new SubscriptionService({ get: () => undefined } as never, {} as never);
+  const service = () => new SubscriptionService({ get: () => undefined } as never, {} as never, {} as never);
 
   it("issues a month at the monthly transfer price (card price plus the surcharge)", async () => {
     const { db, inserted } = fakeDb([{ pending: 0, seq: "42" }]);
@@ -95,7 +95,7 @@ describe("SubscriptionService card subscription", () => {
         update: vi.fn().mockImplementation(async (_id: string, params: Record<string, unknown>) => ({ ...sub, ...params })),
       },
     };
-    const service = new SubscriptionService({ get: () => "sk_test" } as never, stripe as never);
+    const service = new SubscriptionService({ get: () => "sk_test" } as never, stripe as never, {} as never);
     return { service, stripe, db: fakeDb([]).db };
   }
 

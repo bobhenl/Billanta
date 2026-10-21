@@ -3,7 +3,9 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { backendMessage } from '@/lib/action-error';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
+import { CARD_TRIAL_DAYS } from '@/lib/plan';
 import { canManage, fetchMyRole } from '@/lib/tenant';
 import { BillingPanel, type BillingStatus } from './billing-panel';
 import { PromoCodeCard, type PromoRedemption } from './promo-code-card';
@@ -20,19 +22,40 @@ export async function generateMetadata(): Promise<Metadata> {
  * renewal and how to cancel sit next to the buttons (EU/CZ pre-contract
  * information, California ARL), and cancelling is one step in the portal.
  */
-export default async function BillingPage({ searchParams }: { searchParams: Promise<{ checkout?: string }> }) {
+/**
+ * Back from the setup Checkout: the backend reads the saved card and extends
+ * the trial. Safe to repeat on a reload (it answers ok once extended).
+ */
+async function confirmTrialCard(sessionId: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    await apiFetch('/api/v1/billing/subscription/trial-card/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId })
+    });
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof NotSignedInError) throw error;
+    return { ok: false, error: backendMessage(error) };
+  }
+}
+
+export default async function BillingPage({ searchParams }: { searchParams: Promise<{ checkout?: string; trial_card?: string }> }) {
   const gate = await settingsGate('billing');
   if (gate) return gate;
   const locale = await getLocale();
   const t = await getTranslations('billing');
-  const { checkout } = await searchParams;
+  const { checkout, trial_card: trialCardSession } = await searchParams;
 
   let status: BillingStatus;
   let role: string | null;
   let promo: { redemption: PromoRedemption | null } | null;
   // A demo company can't redeem a code, so it doesn't get the card at all.
   const isDemo = Boolean((await auth().catch(() => null))?.isDemo);
+  let trialCard: Awaited<ReturnType<typeof confirmTrialCard>> | null = null;
   try {
+    // Before the status, so the page already shows the longer trial.
+    if (trialCardSession) trialCard = await confirmTrialCard(trialCardSession);
     [status, role, promo] = await Promise.all([
       apiFetch<BillingStatus>('/api/v1/billing/subscription'),
       fetchMyRole(),
@@ -50,6 +73,10 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
       <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
       {checkout === 'success' && <Banner tone="ok" title={t('checkoutSuccess')} className="mt-4" />}
       {checkout === 'canceled' && <Banner tone="info" title={t('checkoutCanceled')} className="mt-4" />}
+      {trialCard?.ok && <Banner tone="ok" title={t('trialCard.extended', { days: CARD_TRIAL_DAYS })} className="mt-4" />}
+      {trialCard && !trialCard.ok && (
+        <Banner tone="err" title={t.has(`trialCard.errors.${trialCard.error}`) ? t(`trialCard.errors.${trialCard.error}`) : t('trialCard.errors.generic')} className="mt-4" />
+      )}
       <BillingPanel status={status} locale={locale} readOnly={!canManage(role)} />
       {promo && <PromoCodeCard redemption={promo.redemption} readOnly={!canManage(role)} />}
     </div>

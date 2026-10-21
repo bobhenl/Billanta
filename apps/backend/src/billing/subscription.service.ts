@@ -16,7 +16,9 @@ import { platformBillingEntity, proformaAmounts, proformaIdentifiers, proformaSp
 import { planSummary } from "./plan-access";
 import {
   BANK_TRANSFER_SURCHARGE_PERCENT,
+  CARD_TRIAL_DAYS,
   PLAN_PRICES_MINOR,
+  cardTrialEnabled,
   isPaidPlan,
   periodPriceMinor,
   transferPricesMinor,
@@ -26,6 +28,8 @@ import {
 } from "./plans";
 import { STRIPE_CLIENT } from "./stripe-client.provider";
 import { stripeSubscriptionDetails, subscriptionItem } from "./stripe-subscription";
+import { WelcomeTrialService } from "./welcome-trial.service";
+import type { CardTrialOutcome } from "./welcome-trial";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 
@@ -42,6 +46,22 @@ function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+/** Stable error codes for the frontend; anything unexpected is one generic code. */
+function trialCardError(outcome: CardTrialOutcome): string {
+  switch (outcome) {
+    case "card_used":
+    case "user_had_trial":
+    case "trial_over":
+    case "no_ico":
+    case "invalid_ico":
+    case "not_in_registry":
+    case "registry_down":
+      return `trial_card_${outcome}`;
+    default:
+      return "trial_card_not_available";
+  }
+}
+
 /**
  * The company's own side of billing: what plan it is on, Stripe Checkout and
  * the Customer Portal, and proformas for a month or a year paid by bank transfer. Every
@@ -54,6 +74,7 @@ export class SubscriptionService {
   constructor(
     private readonly config: ConfigService,
     @Inject(STRIPE_CLIENT) private readonly stripe: Stripe,
+    private readonly welcomeTrial: WelcomeTrialService,
   ) {}
 
   private get stripeConfigured(): boolean {
@@ -89,6 +110,7 @@ export class SubscriptionService {
       transferPrices: transferPricesMinor(),
       transferSurchargePercent: BANK_TRANSFER_SURCHARGE_PERCENT,
       card: { enabled: this.stripeConfigured },
+      trialOffer: this.trialOffer(t, plan.source),
       bankTransfer: payee
         ? {
             enabled: true,
@@ -162,6 +184,80 @@ export class SubscriptionService {
     });
     if (!session.url) throw new ServiceUnavailableException("billing_not_configured");
     return { url: session.url };
+  }
+
+  /**
+   * Whether to offer the longer trial for a saved card. `withheld` means the
+   * no-card trial was refused or ended (the IČO had one, or the company looks
+   * like an earlier one); which signal it was is never shown.
+   */
+  private trialOffer(t: typeof schema.tenants.$inferSelect, source: string) {
+    const available =
+      cardTrialEnabled() &&
+      source !== "subscription" &&
+      t.trialSource !== "card" &&
+      !t.isDemo &&
+      !t.classroomClassId &&
+      Boolean(t.ico);
+    return { available, withheld: Boolean(t.trialWithheldAt), totalDays: CARD_TRIAL_DAYS };
+  }
+
+  /**
+   * Stripe Checkout in setup mode: the card is saved, nothing is charged. The
+   * card's fingerprint then makes the trial CARD_TRIAL_DAYS long, once per
+   * card (WelcomeTrialService.extendWithCard). Behind TRIAL_CARD_EXTENSION.
+   */
+  async trialCard(db: TenantDb, tenantId: string, email: string | undefined, locale?: string): Promise<{ url: string }> {
+    if (!cardTrialEnabled()) throw new ServiceUnavailableException("trial_card_disabled");
+    const t = await this.tenant(db, tenantId);
+    const offer = this.trialOffer(t, planSummary(t, new Date()).source);
+    if (!offer.available) throw new ConflictException(t.ico ? "trial_card_not_available" : "no_ico");
+
+    let customer = t.stripeCustomerId;
+    if (!customer) {
+      const created = await this.stripe.customers.create({
+        ...(email ? { email } : {}),
+        name: t.legalName || t.companyName,
+        metadata: { tenantId },
+      });
+      customer = created.id;
+      await db.update(schema.tenants).set({ stripeCustomerId: customer, updatedAt: new Date() }).where(eq(schema.tenants.id, tenantId));
+    }
+    const lang = locale === "cs" || locale === "sk" || locale === "en" ? locale : "cs";
+    const session = await this.stripe.checkout.sessions.create({
+      mode: "setup",
+      currency: "czk",
+      payment_method_types: ["card"],
+      customer,
+      client_reference_id: tenantId,
+      metadata: { tenantId, purpose: "trial_card" },
+      locale: lang,
+      success_url: `${siteUrl()}/${lang}/billing?trial_card={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl()}/${lang}/billing`,
+    });
+    if (!session.url) throw new ServiceUnavailableException("billing_not_configured");
+    return { url: session.url };
+  }
+
+  /** After the setup Checkout returns: read the saved card and extend the trial. */
+  async confirmTrialCard(db: TenantDb, tenantId: string, sessionId: string): Promise<{ ok: true; trialEndsAt: string | null }> {
+    if (!cardTrialEnabled()) throw new ServiceUnavailableException("trial_card_disabled");
+    const session = await this.stripe.checkout.sessions
+      .retrieve(sessionId, { expand: ["setup_intent.payment_method"] })
+      .catch(() => null);
+    if (!session || session.mode !== "setup" || session.metadata?.tenantId !== tenantId || session.metadata?.purpose !== "trial_card") {
+      throw new BadRequestException("trial_card_invalid_session");
+    }
+    const intent = session.setup_intent;
+    const pm = intent && typeof intent !== "string" ? intent.payment_method : null;
+    const fingerprint = pm && typeof pm !== "string" ? pm.card?.fingerprint : null;
+    if (session.status !== "complete" || !intent || typeof intent === "string" || intent.status !== "succeeded" || !fingerprint) {
+      throw new BadRequestException("trial_card_incomplete");
+    }
+    const outcome = await this.welcomeTrial.extendWithCard(db, tenantId, fingerprint);
+    if (outcome !== "extended" && outcome !== "already_extended") throw new ConflictException(trialCardError(outcome));
+    const t = await this.tenant(db, tenantId);
+    return { ok: true, trialEndsAt: t.trialEndsAt?.toISOString() ?? null };
   }
 
   /** Stripe Customer Portal: change card, download invoices, cancel in one step. */

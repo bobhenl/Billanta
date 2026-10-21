@@ -4,7 +4,8 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { NotSignedInError } from '@/lib/api-client';
-import { type BankAccount, canManage, fetchBankAccounts, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { trialDays } from '@/lib/plan';
+import { type BankAccount, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
 import { CompanyForm } from './company-form';
 import { settingsGate } from '@/components/settings-gate';
 
@@ -29,6 +30,10 @@ export default async function CompanyPage() {
     return <Banner tone="err" title={t('loadError')} className="mt-6" />;
   }
   if (!tenant) return <Banner tone="err" title={t('loadError')} className="mt-6" />;
+  // The welcome trial starts with the first IČO, so say so until there is one.
+  const plan = (await fetchMyAccess().catch(() => null))?.plan;
+  const days = trialDays();
+  const trialHintDays = days > 0 && !tenant.ico && !tenant.isDemo && plan && !plan.trial && plan.source === 'free' ? days : null;
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -38,7 +43,7 @@ export default async function CompanyPage() {
           {t('readOnly')}
         </Banner>
       )}
-      <CompanyForm tenant={tenant} accounts={accounts} readOnly={!canManage(role)} />
+      <CompanyForm tenant={tenant} accounts={accounts} readOnly={!canManage(role)} trialHintDays={trialHintDays} />
     </div>
   );
 }

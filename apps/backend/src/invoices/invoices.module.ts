@@ -4,6 +4,7 @@ import { ApiKeysModule } from "../api-keys/api-keys.module";
 import { AuthModule } from "../auth/auth.module";
 import { CombinedAuthGuard } from "../auth/combined-auth.guard";
 import { SubscriptionActiveGuard } from "../billing/require-active-subscription.guard";
+import { WelcomeTrialModule } from "../billing/welcome-trial.module";
 import { EmailModule } from "../email/email.module";
 import { InvoiceAttachmentsService } from "./invoice-attachments.service";
 import { InvoiceImportService } from "./invoice-import.service";
@@ -24,7 +25,8 @@ import { BuyerDetailsService } from "./buyer-details.service";
   // injector, the same reason SubscriptionActiveGuard is re-provided below
   // rather than assumed available globally.
   // AiModule: voice notes from the dashboard become drafts through AiService.suggestInvoice.
-  imports: [EmailModule, AuthModule, ApiKeysModule, AiModule],
+  // WelcomeTrialModule: an import that fills in the company's IČO can start the trial.
+  imports: [EmailModule, AuthModule, ApiKeysModule, AiModule, WelcomeTrialModule],
   controllers: [InvoicesController],
   // SubscriptionActiveGuard (blueprint §5 plan gating) is re-provided
   // directly here — rather than importing the whole BillingModule — since
