@@ -5,7 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { GuideSection } from '@/components/public-tools/guide-page';
 import { InvoiceTemplateSample, LawLink, TemplateTabs, templateMetadata } from '@/components/public-tools/invoice-template';
-import { RelatedTools, SignupCta, ToolHeader } from '@/components/public-tools/parts';
+import { RelatedTools, ToolHeader } from '@/components/public-tools/parts';
 import { RemindersLink } from '@/components/public-tools/payment-reminder';
 import { getTemplate, isPublishedIn, TEMPLATES } from '@/lib/public-tools';
 import { breadcrumbLd, jsonLd, webPageLd } from '@/lib/seo';
@@ -47,7 +47,7 @@ export default async function InvoiceTemplatePage({ params }: { params: Promise<
   const fields = t.raw(`${k}.fields`) as Field[];
   const pitfalls = t.raw(`${k}.pitfalls`) as string[];
   const others = TEMPLATES.filter((x) => x.slug !== slug && isPublishedIn(x, locale));
-  const pill = 'inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary';
+  const pill = 'text-sm hover:text-primary hover:underline';
 
   return (
     <article className="container py-12 sm:py-16">
@@ -112,7 +112,7 @@ export default async function InvoiceTemplatePage({ params }: { params: Promise<
 
       <nav aria-label={t('common.otherTitle')} className="mt-12 border-t border-border pt-8">
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('common.otherTitle')}</h2>
-        <ul className="mt-4 flex flex-wrap gap-2">
+        <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
           {others.map((x) => (
             <li key={x.slug}>
               <Link href={`/invoice-templates/${x.slug}`} className={pill}>
@@ -121,7 +121,7 @@ export default async function InvoiceTemplatePage({ params }: { params: Promise<
             </li>
           ))}
           <li>
-            <Link href="/invoice-templates" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
+            <Link href="/invoice-templates" className="text-sm font-semibold text-primary hover:underline">
               {t('common.allTemplates')} →
             </Link>
           </li>
@@ -129,9 +129,6 @@ export default async function InvoiceTemplatePage({ params }: { params: Promise<
       </nav>
       <div className="mt-12">
         <RemindersLink />
-      </div>
-      <div className="mt-12">
-        <SignupCta />
       </div>
       <div className="mt-12">
         <RelatedTools current={slug} />

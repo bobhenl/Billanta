@@ -22,7 +22,7 @@ import { SCHOOL_LESSONS } from '@/lib/school-lessons';
  * only and for now only the larger towns (isIndexedMunicipality), plus
  * a handful of static marketing routes × 3 locales. That's well
  * under the sitemap protocol's hard cap of 50,000 URLs (and 50MB) per file,
- * so a single `sitemap.xml` would be spec-legal — but sharding keeps
+ * so a single `sitemap.xml` would be spec-legal – but sharding keeps
  * headroom (the CZ dataset is
  * already known to be short ~107 municipalities that could be added later,
  * see the data README, and adding a 4th locale or any other section of the
@@ -44,10 +44,10 @@ interface UrlEntry {
 }
 
 // Static, public, crawlable marketing routes. Only pages that are themselves
-// indexable belong here — the auth forms carry `noindex` (see
+// indexable belong here – the auth forms carry `noindex` (see
 // (auth)/layout.tsx), and a sitemap URL that says noindex is a contradiction
 // Search Console reports. Deliberately excludes anything
-// under (dashboard)/(auth's post-login areas)/settings/billing — those are
+// under (dashboard)/(auth's post-login areas)/settings/billing – those are
 // gated by `app/robots.ts` and have no SEO value anyway.
 const STATIC_ENTRIES: UrlEntry[] = [
   { path: '/', changeFrequency: 'monthly', priority: 1 },

@@ -1,8 +1,10 @@
+import type { Metadata } from 'next';
 import { Search } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { FilterField, filterFieldClass as field, FilterPanel } from '@/components/filter-panel';
+import { InfoHint } from '@/components/info-hint';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney } from '@/lib/invoice-ui';
 import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
@@ -12,6 +14,11 @@ import type { Contact } from '../invoices/new/types';
 import { EntriesTable } from './entries-table';
 import { ProjectsManager } from './projects-manager';
 import { TimerBar } from './timer-bar';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('time');
+  return { title: t('title') };
+}
 
 const PERIODS = ['week', 'month', 'lastMonth', 'all'] as const;
 const STATES = ['unbilled', 'billed', 'nonbillable'] as const;
@@ -101,6 +108,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
     );
   }
 
+  const home = await fetchHomeCurrency();
   const q = filters.q?.toLowerCase();
   const rows = q ? entries.filter((e) => [e.description, e.projectName, e.contactName].some((v) => v?.toLowerCase().includes(q))) : entries;
   const panelActive = PANEL_KEYS.filter((k) => filters[k]).length;
@@ -111,7 +119,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
     {
       key: 'unbilled',
       label: t('kpi.unbilled'),
-      value: summary.unbilled.length ? summary.unbilled.map((u) => formatMoney(u.amount, u.currency, locale)).join(' · ') : formatMoney(0, await fetchHomeCurrency(), locale),
+      value: summary.unbilled.length ? summary.unbilled.map((u) => formatMoney(u.amount, u.currency, locale)).join(' · ') : formatMoney(0, home, locale),
       sub: t('kpi.unbilledHours', { hours: formatMinutes(summary.unbilledMinutes) }),
       href: hrefWith({}, { period: 'all', state: 'unbilled' }),
       tone: 'text-warning'
@@ -120,7 +128,6 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
       key: 'projects',
       label: t('kpi.projects'),
       value: String(projects.filter((p) => !p.archived).length),
-      sub: t('kpi.projectsSub'),
       href: '#projects',
       tone: 'text-foreground'
     }
@@ -128,7 +135,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
 
   const chip = (active: boolean) =>
     cn(
-      'rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
+      'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3 text-sm font-semibold transition-colors',
       active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary'
     );
 
@@ -136,24 +143,27 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
   const canEdit = await fetchCanWrite('invoices');
 
   return (
-    <div>
-      <div>
+    <div className="mx-auto max-w-6xl">
+      <InfoHint hint={t('description')}>
         <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-        <p className="mt-1 text-muted-foreground">{t('description')}</p>
-      </div>
+      </InfoHint>
 
       {canEdit && <TimerBar running={summary.running} projects={projects.filter((p) => !p.archived)} />}
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      {/* Phones: the two short figures share a row and the money one spans it (dense fills the gap). */}
+      <div className="mt-4 grid grid-flow-row-dense grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((card) => (
           <Link
             key={card.key}
             href={card.href}
-            className="rounded-xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
+            className={cn(
+              'min-w-0 rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/50 sm:p-4',
+              card.key === 'unbilled' && 'col-span-2 sm:col-span-1'
+            )}
           >
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{card.label}</div>
-            <div className={cn('mt-1 text-2xl font-extrabold tabular-nums', card.tone)}>{card.value}</div>
-            {card.sub && <div className="mt-0.5 text-xs text-muted-foreground">{card.sub}</div>}
+            <div className="truncate text-xs font-semibold text-muted-foreground">{card.label}</div>
+            <div title={String(card.value)} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', card.tone)}>{card.value}</div>
+            {card.sub && <div className="mt-0.5 truncate text-xs text-muted-foreground">{card.sub}</div>}
           </Link>
         ))}
       </div>
@@ -161,16 +171,18 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <form action="" className="relative w-full max-w-xs">
           {Object.entries(filters).map(([key, value]) => (key !== 'q' && value ? <input key={key} type="hidden" name={key} value={value} /> : null))}
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
             name="q"
             data-page-search
             defaultValue={filters.q}
             placeholder={t('searchPlaceholder')}
-            className="w-full rounded-full border border-input bg-background py-2 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            aria-label={t('searchPlaceholder')}
+            className="h-9 w-full rounded-full border border-input bg-background pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </form>
-        <div className="flex flex-wrap gap-1.5">
+        {/* One swipeable row per chip group on a phone instead of a lone chip wrapping. */}
+        <div className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
           {PERIODS.map((p) => (
             <Link key={p} href={hrefWith(filters, { period: p, from: undefined, to: undefined })} className={chip(period === p)}>
               {t(`period.${p}`)}
@@ -178,7 +190,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
           ))}
         </div>
       </div>
-      <div className="mt-2 flex flex-wrap gap-1.5">
+      <div className="-mx-4 mt-2 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
         <Link href={hrefWith(filters, { state: undefined })} className={chip(!filters.state)}>
           {t('allStates')}
         </Link>
@@ -226,7 +238,7 @@ export default async function TimePage(props: { searchParams: Promise<Filters> }
 
       <EntriesTable rows={rows} projects={projects} contacts={contactOptions} filtered={rows.length !== entries.length || !!filters.state || panelActive > 0} />
 
-      <ProjectsManager projects={projects} contacts={contactOptions} home={await fetchHomeCurrency()} />
+      <ProjectsManager projects={projects} contacts={contactOptions} home={home} />
     </div>
   );
 }

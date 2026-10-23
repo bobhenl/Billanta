@@ -5,6 +5,7 @@ import { Copy, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { confirmTwoFactorSetup, disableTwoFactor, regenerateRecoveryCodes, startTwoFactorSetup } from './actions';
@@ -95,18 +96,21 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
   );
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card p-5">
+    <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start gap-3">
         <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${enabled ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
           {enabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldOff className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-bold">{t('twoFactorTitle')}</h2>
+          <InfoHint hint={t('why')}>
+            <h2 className="font-bold">{t('twoFactorTitle')}</h2>
+          </InfoHint>
           <p className="mt-0.5 text-sm text-muted-foreground">{enabled ? t('statusOn', { n: recoveryCodesLeft }) : t('statusOff')}</p>
         </div>
       </div>
 
-      <p className="mt-4 text-sm text-muted-foreground">{t('why')}</p>
+      {/* The reason stays visible while 2FA is off: it is what talks people into turning it on. */}
+      {!enabled && <p className="mt-4 text-sm text-muted-foreground">{t('why')}</p>}
 
       {error && (
         <Banner tone="err" className="mt-4">

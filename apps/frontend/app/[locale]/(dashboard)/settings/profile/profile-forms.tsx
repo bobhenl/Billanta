@@ -4,11 +4,14 @@ import { useState, useTransition } from 'react';
 import { AlertTriangle, KeyRound, Loader2, Mail, Save, ShieldCheck, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { Modal, buttonClass, inputClass } from '@/components/modal';
+import { Modal } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ThemeSegment } from '@/components/theme-toggle';
 import { changePassword, deleteAccount, requestEmailChange, updateProfileName } from './actions';
+import { PasswordInput } from '@/components/password-input';
 
 const PROVIDER_LABELS: Record<string, string> = { google: 'Google', seznam: 'Seznam', discord: 'Discord' };
 
@@ -95,23 +98,27 @@ export function ProfileForms({
 
   return (
     <div className="mt-6 space-y-5">
-      <section className="flex items-center gap-4 rounded-xl border border-border bg-card p-5">
+      <section className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 sm:p-5">
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-extrabold text-primary-foreground">
           {initial}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-lg font-bold">{name || email}</p>
+          <p className="truncate text-lg font-bold" title={name || email}>
+            {name || email}
+          </p>
           {name && (
-            <p className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
-              <Mail className="h-3.5 w-3.5" />
-              {email}
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Mail className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate" title={email}>
+                {email}
+              </span>
             </p>
           )}
           <p className="mt-0.5 text-xs text-muted-foreground">{t('memberSince', { date: memberSince })}</p>
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="font-bold">{t('personal')}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block text-sm">
@@ -119,14 +126,15 @@ export function ProfileForms({
             <input className={inputClass} value={name} maxLength={120} onChange={(e) => setName(e.target.value)} placeholder={t('namePlaceholder')} />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block font-medium">{t('email')}</span>
+            <InfoHint hint={t('emailChange.hint')} className="mb-1 font-medium">
+              <span>{t('email')}</span>
+            </InfoHint>
             <div className="flex gap-2">
-              <input className={`${inputClass} cursor-not-allowed opacity-70`} value={email} readOnly />
-              <button type="button" className={buttonClass.secondary} onClick={() => setEmailForm({ email: '', password: '' })}>
+              <input className={`${inputClass} min-w-0 flex-1 cursor-not-allowed opacity-70`} value={email} readOnly title={email} />
+              <button type="button" className={`${buttonClass.secondary} shrink-0`} onClick={() => setEmailForm({ email: '', password: '' })}>
                 {t('emailChange.button')}
               </button>
             </div>
-            <span className="mt-1 block text-xs text-muted-foreground">{t('emailChange.hint')}</span>
           </label>
         </div>
         <div className="mt-4 flex justify-end">
@@ -137,7 +145,7 @@ export function ProfileForms({
         </div>
       </section>
 
-      <section id="password" className="scroll-mt-20 rounded-xl border border-border bg-card p-5">
+      <section id="password" className="scroll-mt-20 rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="flex items-center gap-2 font-bold">
           <KeyRound className="h-4 w-4 text-primary" />
           {hasPassword ? t('changePassword') : t('setPassword')}
@@ -153,18 +161,18 @@ export function ProfileForms({
           {hasPassword && (
             <label className="block text-sm">
               <span className="mb-1 block font-medium">{t('currentPassword')}</span>
-              <input type="password" autoComplete="current-password" className={inputClass} value={current} onChange={(e) => setCurrent(e.target.value)} required />
+              <PasswordInput autoComplete="current-password" className={inputClass} value={current} onChange={(e) => setCurrent(e.target.value)} required />
             </label>
           )}
           <label className="block text-sm">
             <span className="mb-1 block font-medium">{t('newPassword')}</span>
-            <input type="password" autoComplete="new-password" minLength={8} className={inputClass} value={next} onChange={(e) => setNext(e.target.value)} required />
+            <PasswordInput autoComplete="new-password" minLength={8} className={inputClass} value={next} onChange={(e) => setNext(e.target.value)} required />
           </label>
           <label className="block text-sm">
             <span className="mb-1 block font-medium">{t('confirmPassword')}</span>
-            <input type="password" autoComplete="new-password" minLength={8} className={inputClass} value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+            <PasswordInput autoComplete="new-password" minLength={8} className={inputClass} value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
           </label>
-          <div className="flex items-center justify-between gap-3 sm:col-span-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-3">
             <span className="text-xs text-muted-foreground">{t('passwordRules')}</span>
             <button type="submit" className={buttonClass.primary} disabled={savingPassword || !next}>
               {savingPassword && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -174,7 +182,7 @@ export function ProfileForms({
         </form>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="flex items-center gap-2 font-bold">
           <ShieldCheck className="h-4 w-4 text-primary" />
           {t('signInMethods')}
@@ -193,7 +201,7 @@ export function ProfileForms({
         </ul>
       </section>
 
-      <section id="preferences" className="scroll-mt-20 rounded-xl border border-border bg-card p-5">
+      <section id="preferences" className="scroll-mt-20 rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="font-bold">{t('preferences')}</h2>
         <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
           <div>
@@ -207,7 +215,7 @@ export function ProfileForms({
         </div>
       </section>
 
-      <section className="rounded-xl border border-destructive/40 bg-card p-5">
+      <section className="rounded-xl border border-destructive/40 bg-card p-4 sm:p-5">
         <h2 className="flex items-center gap-2 font-bold text-destructive">
           <AlertTriangle className="h-4 w-4" />
           {t('danger.title')}
@@ -258,8 +266,7 @@ export function ProfileForms({
           {hasPassword && (
             <label className="block text-sm">
               <span className="mb-1 block font-medium">{t('currentPassword')}</span>
-              <input
-                type="password"
+              <PasswordInput
                 autoComplete="current-password"
                 className={inputClass}
                 value={emailForm?.password ?? ''}
@@ -310,8 +317,7 @@ export function ProfileForms({
           {hasPassword && (
             <label className="block">
               <span className="mb-1 block font-medium">{t('currentPassword')}</span>
-              <input
-                type="password"
+              <PasswordInput
                 autoComplete="current-password"
                 className={inputClass}
                 value={deleteForm?.password ?? ''}

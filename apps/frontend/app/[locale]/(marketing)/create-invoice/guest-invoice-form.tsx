@@ -2,22 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Banknote,
-  BellRing,
-  Building2,
   Download,
-  FileCode2,
   Globe2,
-  Landmark,
   Loader2,
   Mic,
   MicOff,
+  Minus,
   Plus,
   Receipt,
-  RefreshCw,
   Save,
-  Search,
-  Settings2,
   Sparkles,
   Trash2,
   User,
@@ -26,10 +19,12 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
+import { CompanyLookup, fetchPublicCompanyHits } from '@/components/company-lookup';
+import type { CompanyHit } from '@/lib/company-lookup';
 import { forgetGuestInvoices, nextGuestNumber, readGuestInvoices, rememberGuestInvoice, type GuestInvoiceBody } from '@/lib/guest-invoices';
 
 /**
- * "Make an invoice without an account" — everything stays in the browser
+ * "Make an invoice without an account" – everything stays in the browser
  * until the visitor clicks download; the backend renders the PDF and keeps
  * nothing. A short "what is it for" step tailors which fields show and
  * their defaults; the visitor can always switch to all fields. The supplier
@@ -37,11 +32,12 @@ import { forgetGuestInvoices, nextGuestNumber, readGuestInvoices, rememberGuestI
  * each downloaded invoice (`lib/guest-invoices.ts`), so an account opened
  * later takes over the numbering and the customers.
  *
- * Showcase extras: ARES lookup by IČO and an AI fill from free text or
- * voice, capped per visitor (and globally) by the backend.
+ * Showcase extras: a company search by name or IČO over the public
+ * registers (ARES, RPO, VIES) and an AI fill from free text or voice,
+ * capped per visitor (and globally) by the backend.
  */
 type Party = { name: string; street: string; city: string; postalCode: string; ico: string; dic: string };
-type Supplier = Party & { email: string; phone: string; bankAccountNumber: string; bankCode: string; iban: string };
+type Supplier = Party & { email: string; phone: string; bankAccountNumber: string; bankCode: string; iban: string; swift: string };
 type Item = { description: string; quantity: string; unit: string; unitPrice: string; vatRate: string };
 type UseCase = 'freelancer' | 'vat' | 'foreign' | 'oneoff';
 type Billing = 'hours' | 'goods' | 'project';
@@ -55,7 +51,22 @@ type AresPrefill = { ico: string; dic: string | null; legalName: string; address
 const STORAGE_KEY = 'billanta.guestInvoice.supplier';
 const PROFILE_KEY = 'billanta.guestInvoice.profile';
 const emptyParty: Party = { name: '', street: '', city: '', postalCode: '', ico: '', dic: '' };
-const emptySupplier: Supplier = { ...emptyParty, email: '', phone: '', bankAccountNumber: '', bankCode: '', iban: '' };
+const emptySupplier: Supplier = { ...emptyParty, email: '', phone: '', bankAccountNumber: '', bankCode: '', iban: '', swift: '' };
+const CURRENCIES = ['CZK', 'EUR', 'USD', 'GBP', 'PLN', 'HUF', 'CHF', 'SEK', 'NOK', 'DKK', 'RON', 'BGN', 'UAH', 'CAD', 'AUD', 'JPY', 'CNY'];
+/**
+ * The backend knows five methods. PayPal, Revolut and a set-off go out as
+ * "other" with their own name printed on the PDF, like a tenant's custom
+ * method; the name follows the invoice's language, not the page's.
+ */
+const PAYMENT_METHODS = ['bank_transfer', 'cash', 'card', 'paypal', 'revolut', 'offset', 'cash_on_delivery', 'other'] as const;
+const BASE_METHODS: readonly string[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
+const METHOD_LABELS: Record<string, Record<string, string>> = {
+  paypal: { cs: 'PayPal', sk: 'PayPal', en: 'PayPal' },
+  revolut: { cs: 'Revolut', sk: 'Revolut', en: 'Revolut' },
+  offset: { cs: 'Zápočtem', sk: 'Zápočtom', en: 'Set-off' }
+};
+/** Methods where the customer needs to be told where to send the money. */
+const METHODS_WITH_INSTRUCTIONS: readonly string[] = ['paypal', 'revolut', 'other'];
 const UNIT_BY_BILLING: Record<Billing, string> = { hours: 'hod', goods: 'ks', project: '' };
 const USE_CASES: { id: UseCase; icon: typeof User }[] = [
   { id: 'freelancer', icon: User },
@@ -74,19 +85,39 @@ const TEMPLATE_PROFILE: Record<TemplateSlug, Profile> = {
   'reverse-charge': { useCase: 'vat', billing: 'project' },
   'identified-person': { useCase: 'freelancer', billing: 'project' }
 };
-const FEATURES = [
-  { key: 'recurring', icon: RefreshCw },
-  { key: 'reminders', icon: BellRing },
-  { key: 'bank', icon: Landmark },
-  { key: 'ai', icon: Wand2 },
-  { key: 'exports', icon: FileCode2 },
-  { key: 'registry', icon: Building2 },
-  { key: 'payments', icon: Banknote }
-] as const;
+/** The four that change how people work; the rest live on the features page. */
+const SHOWCASE = ['recurring', 'reminders', 'bank', 'ai'] as const;
 
-const inputClass = 'w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2';
+const inputClass = 'w-full min-h-10 rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2';
 const isoDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const num = (v: string) => Number(v.replace(',', '.').replace(/\s/g, ''));
+
+/**
+ * BIC of the main Czech and Slovak banks by their domestic bank code, so the
+ * SWIFT field fills itself once the account is in. The two countries' codes
+ * do not overlap for these banks.
+ */
+const BIC_BY_BANK_CODE: Record<string, string> = {
+  '0100': 'KOMBCZPP',
+  '0300': 'CEKOCZPP',
+  '0600': 'AGBACZPP',
+  '0800': 'GIBACZPX',
+  '2010': 'FIOBCZPP',
+  '2700': 'BACXCZPP',
+  '3030': 'AIRACZPP',
+  '3500': 'INGBCZPP',
+  '5500': 'RZBCCZPP',
+  '5800': 'JTBPCZPP',
+  '6210': 'BREXCZPP',
+  '0200': 'SUBASKBX',
+  '0900': 'GIBASKBX',
+  '1100': 'TATRSKBX',
+  '1111': 'UNCRSKBX',
+  '5600': 'KOMASK2X',
+  '6500': 'POBNSKBA',
+  '7500': 'CEKOSKBX',
+  '8330': 'FIOZSKBA'
+};
 const addDays = (iso: string, days: number) => isoDate(new Date(new Date(`${iso}T12:00:00`).getTime() + days * 86_400_000));
 
 function readStorage<T>(key: string): T | null {
@@ -121,6 +152,14 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
   const [dueDate, setDueDate] = useState('');
   const [currency, setCurrency] = useState(locale === 'sk' ? 'EUR' : 'CZK');
   const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
+  const [paymentLabel, setPaymentLabel] = useState('');
+  const [paymentInstructions, setPaymentInstructions] = useState('');
+  const bankCodeRef = useRef<HTMLInputElement>(null);
+  /** IBAN and SWIFT opened by hand where the profile hides them. */
+  const [showIntl, setShowIntl] = useState(false);
+  /** Document type, payment method and language, folded away until the visitor needs them. */
+  const [moreDoc, setMoreDoc] = useState(false);
+  const [moreNote, setMoreNote] = useState(false);
   const [vatPayer, setVatPayer] = useState(false);
   const [documentType, setDocumentType] = useState<DocumentType>('invoice');
   const [reverseCharge, setReverseCharge] = useState(false);
@@ -249,12 +288,19 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
         taxableSupplyDate: vatPayer && taxableSupplyDate ? taxableSupplyDate : undefined,
         dueDate: dueDate || undefined,
         currency,
-        paymentMethod,
+        paymentMethod: BASE_METHODS.includes(paymentMethod) ? paymentMethod : 'other',
+        paymentMethodLabel: paymentMethod === 'other' ? paymentLabel.trim() || undefined : (METHOD_LABELS[paymentMethod]?.[language] ?? METHOD_LABELS[paymentMethod]?.cs),
+        paymentInstructions: METHODS_WITH_INSTRUCTIONS.includes(paymentMethod) ? paymentInstructions.trim() || undefined : undefined,
         vatPayer,
         documentType,
         reverseCharge: vatPayer && reverseCharge,
         relatedInvoiceNumber: documentType === 'credit_note' ? relatedInvoiceNumber.trim() : undefined,
-        supplier: { ...supplier, iban: supplier.iban.replace(/\s/g, '') },
+        supplier: {
+          ...supplier,
+          iban: supplier.iban.replace(/\s/g, ''),
+          // Printed only where the visitor sees the field, filled from the bank code if left empty.
+          swift: paymentMethod === 'bank_transfer' && (visible.iban || showIntl) ? supplier.swift.trim() || BIC_BY_BANK_CODE[supplier.bankCode] || '' : ''
+        },
         customer,
         note,
         items: items
@@ -350,28 +396,42 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
     );
   }
 
-  const partyFields = <P extends Party>(value: P, onChange: (v: P) => void, prefix: string, ids: boolean) => (
+  // What the law asks for on this document: name, seat and IČO of the supplier on any business
+  // document; a full tax document (VAT payer, not a proforma) also needs DUZP, the supplier's DIČ
+  // and the customer's address. Marked with an asterisk and enforced by the browser.
+  const taxDocument = vatPayer && documentType !== 'proforma';
+  const docOpen = moreDoc || showAll || visible.language || documentType !== 'invoice' || paymentMethod !== 'bank_transfer';
+  const partyFields = <P extends Party>(value: P, onChange: (v: P) => void, prefix: string, ids: boolean, req: { address: boolean; ico: boolean; dic: boolean }) => (
     <div className="grid gap-3 sm:grid-cols-2">
-      {ids && (
-        <Field label={t('fields.ico')} className="sm:col-span-2">
-          <AresInput value={value.ico} onChange={(ico) => onChange({ ...value, ico })} onFound={(p) => onChange({ ...value, ...fromAres(p) })} />
-        </Field>
-      )}
-      <Field label={t('fields.name')} className="sm:col-span-2">
-        <input required className={inputClass} value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} autoComplete={`section-${prefix} organization`} />
+      <Field label={t('fields.name')} hint={t('hints.lookup')} required className="sm:col-span-2">
+        <CompanyLookup
+          value={value.name}
+          onChange={(name) => onChange({ ...value, name })}
+          onPick={(hit) => onChange({ ...value, ...fromHit(hit) })}
+          fetchHits={(q, part) => fetchPublicCompanyHits(q, null, part)}
+          placeholder={t('lookup.placeholder')}
+          ariaLabel={t('fields.name')}
+          inputClassName={inputClass}
+          required
+        />
       </Field>
-      <Field label={t('fields.street')} className="sm:col-span-2">
-        <input className={inputClass} value={value.street} onChange={(e) => onChange({ ...value, street: e.target.value })} autoComplete={`section-${prefix} street-address`} />
+      <Field label={t('fields.street')} required={req.address} className="sm:col-span-2">
+        <input required={req.address} className={inputClass} value={value.street} onChange={(e) => onChange({ ...value, street: e.target.value })} autoComplete={`section-${prefix} street-address`} />
       </Field>
-      <Field label={t('fields.city')}>
-        <input className={inputClass} value={value.city} onChange={(e) => onChange({ ...value, city: e.target.value })} autoComplete={`section-${prefix} address-level2`} />
+      <Field label={t('fields.city')} required={req.address}>
+        <input required={req.address} className={inputClass} value={value.city} onChange={(e) => onChange({ ...value, city: e.target.value })} autoComplete={`section-${prefix} address-level2`} />
       </Field>
       <Field label={t('fields.postalCode')}>
         <input className={inputClass} value={value.postalCode} onChange={(e) => onChange({ ...value, postalCode: e.target.value })} autoComplete={`section-${prefix} postal-code`} />
       </Field>
+      {ids && (
+        <Field label={t('fields.ico')} required={req.ico}>
+          <IcoInput value={value.ico} required={req.ico} onChange={(ico) => onChange({ ...value, ico })} onFound={(hit) => onChange({ ...value, ...fromHit(hit) })} />
+        </Field>
+      )}
       {ids && visible.dic && (
-        <Field label={t('fields.dic')}>
-          <input className={inputClass} value={value.dic} onChange={(e) => onChange({ ...value, dic: e.target.value })} />
+        <Field label={t('fields.dic')} required={req.dic}>
+          <input required={req.dic} className={inputClass} value={value.dic} onChange={(e) => onChange({ ...value, dic: e.target.value })} />
         </Field>
       )}
     </div>
@@ -420,9 +480,9 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
         </button>
         <label className="ml-auto flex items-center gap-2">
           <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
-          <Settings2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           {t('setup.showAll')}
         </label>
+        <span className="w-full text-xs text-muted-foreground">{t('requiredLegend')}</span>
       </div>
 
       <AiFill vatPayer={vatPayer} billing={profile.billing} onResult={applySuggestion} prominent={dictate} />
@@ -430,11 +490,11 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
       <form onSubmit={submit} className="mt-6 space-y-6">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="text-base font-bold">{t('sections.document')}</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <Field label={t('fields.number')} hint={t('hints.number')}>
+          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <Field label={t('fields.number')} hint={t('hints.number')} required>
               <input required maxLength={40} className={inputClass} value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)} />
             </Field>
-            <Field label={t('fields.issueDate')}>
+            <Field label={t('fields.issueDate')} required>
               <input
                 required
                 type="date"
@@ -447,43 +507,34 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
               />
             </Field>
             {visible.duzp && (
-              <Field label={t('fields.taxableSupplyDate')} hint={t('hints.duzp')}>
-                <input type="date" className={inputClass} value={taxableSupplyDate} onChange={(e) => setTaxableSupplyDate(e.target.value)} />
+              <Field label={t('fields.taxableSupplyDate')} hint={t('hints.duzp')} required={taxDocument}>
+                <input type="date" required={taxDocument} className={inputClass} value={taxableSupplyDate} onChange={(e) => setTaxableSupplyDate(e.target.value)} />
               </Field>
             )}
-            <Field label={t('fields.dueDate')}>
+            <Field
+              label={t('fields.dueDate')}
+              aside={
+                <span className="flex gap-2">
+                  {[7, 14, 30].map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      disabled={!issueDate}
+                      onClick={() => setDueDate(addDays(issueDate, d))}
+                      className="text-xs text-primary hover:underline disabled:opacity-50"
+                    >
+                      {t('dueIn', { days: d })}
+                    </button>
+                  ))}
+                </span>
+              }
+            >
               <input type="date" className={inputClass} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-              <span className="flex gap-1">
-                {[7, 14, 30].map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    disabled={!issueDate}
-                    onClick={() => setDueDate(addDays(issueDate, d))}
-                    className="rounded border border-border px-1.5 py-0.5 text-[11px] text-muted-foreground hover:bg-secondary"
-                  >
-                    {t('dueIn', { days: d })}
-                  </button>
-                ))}
-              </span>
             </Field>
-            <Field label={t('fields.currency')}>
-              <select className={inputClass} value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                {['CZK', 'EUR', 'USD', 'GBP', 'PLN'].map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-            </Field>
-            <Field label={t('fields.paymentMethod')}>
-              <select className={inputClass} value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-                {(['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'] as const).map((m) => (
-                  <option key={m} value={m}>
-                    {t(`methods.${m}`)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            {(showAll || documentType !== 'invoice') && (
+          </div>
+          {docOpen ? (
+            <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {/* A deposit invoice or credit note is an everyday need, so it stays one click away. */}
               <Field label={t('template.documentType')}>
                 <select className={inputClass} value={documentType} onChange={(e) => setDocumentType(e.target.value as DocumentType)}>
                   {DOCUMENT_TYPES.map((d) => (
@@ -493,22 +544,52 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
                   ))}
                 </select>
               </Field>
-            )}
-            {documentType === 'credit_note' && (
-              <Field label={t('template.relatedInvoiceNumber')}>
-                <input maxLength={40} className={inputClass} value={relatedInvoiceNumber} onChange={(e) => setRelatedInvoiceNumber(e.target.value)} />
-              </Field>
-            )}
-            {visible.language && (
-              <Field label={t('fields.language')}>
-                <select className={inputClass} value={language} onChange={(e) => setLanguage(e.target.value)}>
-                  <option value="cs">Čeština</option>
-                  <option value="sk">Slovenčina</option>
-                  <option value="en">English</option>
+              <Field label={t('fields.paymentMethod')}>
+                <select className={inputClass} value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+                  {PAYMENT_METHODS.map((m) => (
+                    <option key={m} value={m}>
+                      {t(`methods.${m}`)}
+                    </option>
+                  ))}
                 </select>
               </Field>
-            )}
-          </div>
+              {visible.language && (
+                <Field label={t('fields.language')}>
+                  <select className={inputClass} value={language} onChange={(e) => setLanguage(e.target.value)}>
+                    <option value="cs">Čeština</option>
+                    <option value="sk">Slovenčina</option>
+                    <option value="en">English</option>
+                  </select>
+                </Field>
+              )}
+              {documentType === 'credit_note' && (
+                <Field label={t('template.relatedInvoiceNumber')} required>
+                  <input required maxLength={40} className={inputClass} value={relatedInvoiceNumber} onChange={(e) => setRelatedInvoiceNumber(e.target.value)} />
+                </Field>
+              )}
+              {paymentMethod === 'other' && (
+                <Field label={t('fields.paymentLabel')}>
+                  <input maxLength={60} className={inputClass} placeholder={t('placeholders.paymentLabel')} value={paymentLabel} onChange={(e) => setPaymentLabel(e.target.value)} />
+                </Field>
+              )}
+              {METHODS_WITH_INSTRUCTIONS.includes(paymentMethod) && (
+                <Field label={t('fields.paymentInstructions')} hint={t('hints.paymentInstructions')} className="col-span-2">
+                  <input
+                    maxLength={300}
+                    className={inputClass}
+                    placeholder={t(`placeholders.instructions.${paymentMethod as 'paypal' | 'revolut' | 'other'}`)}
+                    value={paymentInstructions}
+                    onChange={(e) => setPaymentInstructions(e.target.value)}
+                  />
+                </Field>
+              )}
+            </div>
+          ) : (
+            <button type="button" onClick={() => setMoreDoc(true)} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              <Plus className="h-4 w-4" />
+              {t('moreDoc')}
+            </button>
+          )}
           {visible.vatToggle && (
             <label className="mt-4 flex items-center gap-2 text-sm">
               <input type="checkbox" checked={vatPayer} onChange={(e) => setVatPayer(e.target.checked)} />
@@ -532,7 +613,7 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
           <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
             <h2 className="text-base font-bold">{t('sections.supplier')}</h2>
             <div className="mt-4 space-y-3">
-              {partyFields(supplier, setSupplier, 'supplier', true)}
+              {partyFields(supplier, setSupplier, 'supplier', true, { address: true, ico: profile.useCase !== 'oneoff', dic: taxDocument })}
               <div className="grid gap-3 sm:grid-cols-2">
                 {visible.contact && (
                   <>
@@ -546,16 +627,69 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
                 )}
                 {paymentMethod === 'bank_transfer' && (
                   <>
-                    <Field label={t('fields.account')} hint={t('hints.qr')}>
-                      <input className={inputClass} placeholder="123456789" value={supplier.bankAccountNumber} onChange={(e) => setSupplier({ ...supplier, bankAccountNumber: e.target.value })} />
+                    <Field label={t('fields.accountWithCode')} hint={t('hints.account')} className="sm:col-span-2">
+                      <span className="flex items-center gap-2">
+                        <input
+                          className={inputClass}
+                          placeholder="19-123456789"
+                          aria-label={t('fields.account')}
+                          value={supplier.bankAccountNumber}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            const split = splitAccount(raw);
+                            if (split) {
+                              setSupplier({ ...supplier, bankAccountNumber: split.number, bankCode: split.code, iban: split.iban ?? supplier.iban });
+                            } else if (/^[\d-]+\/$/.test(raw.trim()) && !supplier.bankCode) {
+                              // A typed slash means "the bank code comes next": jump there.
+                              setSupplier({ ...supplier, bankAccountNumber: raw.trim().slice(0, -1) });
+                              bankCodeRef.current?.focus();
+                            } else {
+                              setSupplier({ ...supplier, bankAccountNumber: raw });
+                            }
+                          }}
+                        />
+                        <span className="text-lg text-muted-foreground" aria-hidden="true">
+                          /
+                        </span>
+                        <span className="w-24 shrink-0">
+                          <input
+                            ref={bankCodeRef}
+                            className={inputClass}
+                            placeholder="0100"
+                            inputMode="numeric"
+                            maxLength={4}
+                            aria-label={t('fields.bankCode')}
+                            value={supplier.bankCode}
+                            onChange={(e) => setSupplier({ ...supplier, bankCode: e.target.value.replace(/\D/g, '') })}
+                          />
+                        </span>
+                      </span>
                     </Field>
-                    <Field label={t('fields.bankCode')}>
-                      <input className={inputClass} placeholder="0100" inputMode="numeric" value={supplier.bankCode} onChange={(e) => setSupplier({ ...supplier, bankCode: e.target.value })} />
-                    </Field>
-                    {visible.iban && (
-                      <Field label={t('fields.iban')} hint={t('hints.iban')} className="sm:col-span-2">
-                        <input className={inputClass} value={supplier.iban} onChange={(e) => setSupplier({ ...supplier, iban: e.target.value })} />
-                      </Field>
+                    {visible.iban || showIntl ? (
+                      <>
+                        <Field label={t('fields.iban')} hint={t('hints.iban')}>
+                          <input
+                            className={inputClass}
+                            placeholder={t('placeholders.iban')}
+                            value={supplier.iban}
+                            onChange={(e) => setSupplier({ ...supplier, iban: e.target.value })}
+                          />
+                        </Field>
+                        <Field label={t('fields.swift')} hint={t('hints.swift')}>
+                          <input
+                            className={`${inputClass} uppercase`}
+                            maxLength={14}
+                            placeholder={BIC_BY_BANK_CODE[supplier.bankCode] ?? 'KOMBCZPP'}
+                            value={supplier.swift}
+                            onChange={(e) => setSupplier({ ...supplier, swift: e.target.value })}
+                          />
+                        </Field>
+                      </>
+                    ) : (
+                      <button type="button" onClick={() => setShowIntl(true)} className="inline-flex items-center gap-1 justify-self-start text-sm font-medium text-primary hover:underline sm:col-span-2">
+                        <Plus className="h-4 w-4" />
+                        {t('addIbanSwift')}
+                      </button>
                     )}
                   </>
                 )}
@@ -566,17 +700,27 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
 
           <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
             <h2 className="text-base font-bold">{t('sections.customer')}</h2>
-            <div className="mt-4">{partyFields(customer, setCustomer, 'customer', visible.customerIds)}</div>
+            <div className="mt-4">{partyFields(customer, setCustomer, 'customer', visible.customerIds, { address: taxDocument, ico: false, dic: false })}</div>
             {profile.useCase === 'foreign' && <p className="mt-3 text-xs text-muted-foreground">{t('hints.foreign')}</p>}
           </section>
         </div>
 
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="text-base font-bold">{t('sections.items')}</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-base font-bold">{t('sections.items')}</h2>
+            <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              {t('fields.currency')}
+              <select className={`${inputClass} w-auto py-1.5`} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+                {CURRENCIES.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+          </div>
           <ul className="mt-4 space-y-3">
             {items.map((item, index) => (
               <li key={index} className="grid grid-cols-6 gap-2 border-b border-border pb-3 last:border-0 sm:grid-cols-12">
-                <Field label={t('fields.description')} className={`col-span-6 ${visible.unit ? 'sm:col-span-5' : 'sm:col-span-6'}`}>
+                <Field label={t('fields.description')} className={`col-span-6 ${DESCRIPTION_SPAN[`${visible.unit}-${vatPayer}`]}`}>
                   <input
                     required={index === 0}
                     maxLength={500}
@@ -586,19 +730,27 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
                     onChange={(e) => setItem(index, { description: e.target.value })}
                   />
                 </Field>
-                <Field label={t('fields.quantity')} className="col-span-2 sm:col-span-1">
-                  <input required inputMode="decimal" className={inputClass} value={item.quantity} onChange={(e) => setItem(index, { quantity: e.target.value })} />
+                <Field label={t('fields.quantity')} className="col-span-3 sm:col-span-2">
+                  <Stepper
+                    value={item.quantity}
+                    onChange={(quantity) => setItem(index, { quantity })}
+                    decreaseLabel={t('quantityLess')}
+                    increaseLabel={t('quantityMore')}
+                  />
                 </Field>
                 {visible.unit && (
-                  <Field label={t('fields.unit')} className="col-span-2 sm:col-span-1">
+                  <Field label={t('fields.unit')} className="col-span-3 sm:col-span-1">
                     <input maxLength={20} className={inputClass} placeholder={t('fields.unitPlaceholder')} value={item.unit} onChange={(e) => setItem(index, { unit: e.target.value })} />
                   </Field>
                 )}
-                <Field label={t('fields.unitPrice')} className="col-span-2 sm:col-span-2">
-                  <input required inputMode="decimal" className={inputClass} value={item.unitPrice} onChange={(e) => setItem(index, { unitPrice: e.target.value })} />
+                <Field label={t('fields.unitPrice')} className="col-span-3 sm:col-span-2">
+                  <span className="relative block">
+                    <input required inputMode="decimal" className={`${inputClass} pr-12`} value={item.unitPrice} onChange={(e) => setItem(index, { unitPrice: e.target.value })} />
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">{currency}</span>
+                  </span>
                 </Field>
                 {vatPayer && (
-                  <Field label={t('fields.vatRate')} className="col-span-3 sm:col-span-2">
+                  <Field label={t('fields.vatRate')} className="col-span-2 sm:col-span-2">
                     <select className={inputClass} value={item.vatRate} onChange={(e) => setItem(index, { vatRate: e.target.value })}>
                       {['21', '12', '0', '23', '19', '5'].map((r) => (
                         <option key={r} value={r}>
@@ -608,7 +760,7 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
                     </select>
                   </Field>
                 )}
-                <div className={`flex items-end ${vatPayer ? 'col-span-3 sm:col-span-1' : 'col-span-6 sm:col-span-3'} justify-end`}>
+                <div className={`flex items-end justify-end ${vatPayer ? 'col-span-1' : 'col-span-3 sm:col-span-1'}`}>
                   {items.length > 1 && (
                     <button
                       type="button"
@@ -623,15 +775,26 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
               </li>
             ))}
           </ul>
-          {items.length < 50 && (
-            <button type="button" onClick={() => setItems((list) => [...list, newItem()])} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              <Plus className="h-4 w-4" />
-              {t('addItem')}
-            </button>
+          {/* Both links sit on one row; without the gap they ran into each other. */}
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+            {items.length < 50 && (
+              <button type="button" onClick={() => setItems((list) => [...list, newItem()])} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                <Plus className="h-4 w-4" />
+                {t('addItem')}
+              </button>
+            )}
+            {!(moreNote || note) && (
+              <button type="button" onClick={() => setMoreNote(true)} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                <Plus className="h-4 w-4" />
+                {t('addNote')}
+              </button>
+            )}
+          </div>
+          {(moreNote || note) && (
+            <Field label={t('fields.note')} className="mt-4">
+              <textarea rows={2} maxLength={2000} className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />
+            </Field>
           )}
-          <Field label={t('fields.note')} className="mt-4">
-            <textarea rows={2} maxLength={2000} className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />
-          </Field>
           <p className="mt-4 text-right text-lg font-bold">
             {t('total')}: {new Intl.NumberFormat(locale, { style: 'currency', currency }).format(total)}
           </p>
@@ -675,9 +838,6 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
                 <Link href="/signup?from=guest" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
                   {t('carryOver.cta')}
                 </Link>
-                <Link href="/demo" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
-                  {tDemo('cta')}
-                </Link>
               </div>
             </div>
           )}
@@ -688,24 +848,22 @@ export function GuestInvoiceForm({ dictate = false }: { dictate?: boolean }) {
         <h2 id="guest-features" className="text-xl font-semibold tracking-tight">
           {t('showcase.title')}
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('showcase.lead')}</p>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ key, icon: Icon }) => (
-            <li key={key} className="rounded-xl border border-border bg-card p-4">
-              <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
-              <p className="mt-2 text-sm font-semibold">{t(`showcase.items.${key}.title`)}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{t(`showcase.items.${key}.text`)}</p>
-            </li>
+        <dl className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          {SHOWCASE.map((key) => (
+            <div key={key}>
+              <dt className="text-sm font-semibold">{t(`showcase.items.${key}.title`)}</dt>
+              <dd className="mt-0.5 text-sm text-muted-foreground">{t(`showcase.items.${key}.text`)}</dd>
+            </div>
           ))}
-        </ul>
-        <div className="mt-4 flex flex-wrap gap-3">
+        </dl>
+        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
           <Link href="/signup" className="inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground hover:opacity-90">
             {t('signup')}
           </Link>
-          <Link href="/demo" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
+          <Link href="/demo" className="text-sm font-medium text-primary hover:underline">
             {tDemo('cta')}
           </Link>
-          <Link href="/features" className="inline-flex rounded-full border border-border px-5 py-2 text-sm font-medium hover:bg-secondary">
+          <Link href="/features" className="text-sm font-medium text-primary hover:underline">
             {t('showcase.all')}
           </Link>
         </div>
@@ -718,36 +876,49 @@ function fromAres(p: AresPrefill): Party {
   return { name: p.legalName, ico: p.ico, dic: p.dic ?? '', street: p.addressStreet ?? '', city: p.addressCity ?? '', postalCode: p.addressPostalCode ?? '' };
 }
 
-/** IČO input with a "load from ARES" button (auto-runs once 8 digits are typed). */
-function AresInput({ value, onChange, onFound }: { value: string; onChange: (v: string) => void; onFound: (p: AresPrefill) => void }) {
+function fromHit(hit: CompanyHit): Party {
+  return { name: hit.name, ico: hit.ico ?? '', dic: hit.dic ?? '', street: hit.street ?? '', city: hit.city ?? '', postalCode: hit.postalCode ?? '' };
+}
+
+/**
+ * "19-123456789/0100" (prefix optional, spaces around the slash fine) or a
+ * Czech / Slovak IBAN, which carries the same three parts, split into the
+ * account number and the bank code. Null for anything else, which is kept
+ * as typed.
+ */
+function splitAccount(raw: string): { number: string; code: string; iban?: string } | null {
+  const value = raw.trim();
+  const [, typed, typedCode] = /^((?:\d{1,6}\s*-\s*)?\d{2,10})\s*\/\s*(\d{4})$/.exec(value) ?? [];
+  if (typed && typedCode) return { number: typed.replace(/\s/g, ''), code: typedCode };
+  const iban = value.replace(/\s/g, '').toUpperCase();
+  if (!/^(CZ|SK)\d{22}$/.test(iban)) return null;
+  const prefix = iban.slice(8, 14).replace(/^0+/, '');
+  const number = iban.slice(14).replace(/^0+/, '');
+  return { number: prefix ? `${prefix}-${number}` : number, code: iban.slice(4, 8), iban };
+}
+
+/** IČO input that fills the rest from the registers once 8 digits are typed (Czech and Slovak IČO alike). */
+function IcoInput({ value, required, onChange, onFound }: { value: string; required?: boolean; onChange: (v: string) => void; onFound: (hit: CompanyHit) => void }) {
   const t = useTranslations('guestInvoice');
-  const [state, setState] = useState<'idle' | 'loading' | 'notFound' | 'unavailable' | 'found'>('idle');
+  const [state, setState] = useState<'idle' | 'loading' | 'notFound' | 'found'>('idle');
   const lastLooked = useRef('');
 
   async function lookup(ico: string) {
-    const clean = ico.replace(/\s/g, '');
-    if (!/^\d{8}$/.test(clean)) return;
-    lastLooked.current = clean;
+    lastLooked.current = ico;
     setState('loading');
-    try {
-      const res = await fetch(`/api/public/guest-invoice/lookup?ico=${clean}`);
-      if (!res.ok) {
-        setState(res.status === 404 || res.status === 400 ? 'notFound' : 'unavailable');
-        return;
-      }
-      onFound((await res.json()) as AresPrefill);
-      setState('found');
-    } catch {
-      setState('notFound');
-    }
+    const hit = (await fetchPublicCompanyHits(ico, null, 'fast')).find((h) => h.ico === ico);
+    if (lastLooked.current !== ico) return;
+    if (hit) onFound(hit);
+    setState(hit ? 'found' : 'notFound');
   }
 
   return (
     <span className="flex flex-col gap-1">
-      <span className="flex gap-2">
+      <span className="relative">
         <input
           className={inputClass}
           inputMode="numeric"
+          required={required}
           value={value}
           placeholder="12345678"
           onChange={(e) => {
@@ -757,19 +928,10 @@ function AresInput({ value, onChange, onFound }: { value: string; onChange: (v: 
             if (/^\d{8}$/.test(clean) && clean !== lastLooked.current) void lookup(clean);
           }}
         />
-        <button
-          type="button"
-          onClick={() => void lookup(value)}
-          disabled={!/^\d{8}$/.test(value.replace(/\s/g, '')) || state === 'loading'}
-          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border px-3 text-xs font-medium hover:bg-secondary disabled:opacity-50"
-        >
-          {state === 'loading' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}
-          ARES
-        </button>
+        {state === 'loading' && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
       </span>
       {state === 'found' && <span className="text-[11px] text-primary">{t('ares.found')}</span>}
-      {state === 'notFound' && <span className="text-[11px] text-destructive">{t('ares.notFound')}</span>}
-      {state === 'unavailable' && <span className="text-[11px] text-destructive">{t('ares.unavailable')}</span>}
+      {state === 'notFound' && <span className="text-[11px] text-muted-foreground">{t('ares.notFound')}</span>}
     </span>
   );
 }
@@ -971,15 +1133,62 @@ function AiFill({
   );
 }
 
-function Field({ label, hint, className, children }: { label: string; hint?: string; className?: string; children: React.ReactNode }) {
+/** Items row widths on the 12-column grid: the description takes what the other columns leave. */
+const DESCRIPTION_SPAN: Record<string, string> = {
+  'true-true': 'sm:col-span-4',
+  'true-false': 'sm:col-span-6',
+  'false-true': 'sm:col-span-5',
+  'false-false': 'sm:col-span-7'
+};
+
+/** A number field with − and + on its sides; typing a decimal still works, the buttons step by one. */
+function Stepper({ value, onChange, decreaseLabel, increaseLabel }: { value: string; onChange: (value: string) => void; decreaseLabel: string; increaseLabel: string }) {
+  const step = (delta: number) => {
+    const current = num(value) || 0;
+    const next = Math.max(0, Math.round((current + delta) * 1000) / 1000);
+    onChange(value.includes(',') ? String(next).replace('.', ',') : String(next));
+  };
+  const button = 'flex w-8 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-40';
+  return (
+    <span className="flex overflow-hidden rounded-lg border border-input bg-background transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+      <button type="button" className={`${button} border-r border-input`} onClick={() => step(-1)} disabled={(num(value) || 0) <= 0} aria-label={decreaseLabel}>
+        <Minus className="h-3.5 w-3.5" />
+      </button>
+      <input required inputMode="decimal" className="w-full min-w-0 bg-transparent px-1 py-2 text-center text-sm outline-none" value={value} onChange={(e) => onChange(e.target.value)} />
+      <button type="button" className={`${button} border-l border-input`} onClick={() => step(1)} aria-label={increaseLabel}>
+        <Plus className="h-3.5 w-3.5" />
+      </button>
+    </span>
+  );
+}
+
+function Field({ label, hint, required, className, aside, children }: { label: string; hint?: string; required?: boolean; className?: string; aside?: React.ReactNode; children: React.ReactNode }) {
+  const text = (
+    <span className="text-xs font-medium text-muted-foreground">
+      {label}
+      {required && (
+        <span className="text-destructive" aria-hidden="true">
+          {' *'}
+        </span>
+      )}
+    </span>
+  );
+  const head = hint ? (
+    <InfoHint label={label} hint={hint}>
+      {text}
+    </InfoHint>
+  ) : (
+    text
+  );
   return (
     <label className={`flex min-w-0 flex-col gap-1 ${className ?? ''}`}>
-      {hint ? (
-        <InfoHint label={label} hint={hint}>
-          <span className="text-xs font-medium text-muted-foreground">{label}</span>
-        </InfoHint>
+      {aside ? (
+        <span className="flex items-baseline justify-between gap-2">
+          {head}
+          {aside}
+        </span>
       ) : (
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+        head
       )}
       {children}
     </label>

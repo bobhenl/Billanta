@@ -102,7 +102,7 @@ export default async function MinimumsPage({ params }: { params: Promise<Params>
           const current = known.find((y) => y <= thisYear) ?? known[0];
           const older = known.filter((y) => y !== current);
           return (
-            <section key={country} className="overflow-x-auto rounded-xl border border-border bg-card p-5">
+            <section key={country} className="min-w-0 overflow-x-auto rounded-xl border border-border bg-card p-4 sm:p-5">
               <h2 className="font-semibold">{t(country === 'CZ' ? 'cz' : 'sk')}</h2>
               {current != null && table(country, current)}
               {older.length > 0 && (

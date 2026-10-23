@@ -45,7 +45,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(navigate(event, url));
     return;
   }
-  if (url.pathname.startsWith('/_next/static/') || url.pathname === '/icon.svg') {
+  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/brand/')) {
     event.respondWith(staticFile(request));
   }
 });

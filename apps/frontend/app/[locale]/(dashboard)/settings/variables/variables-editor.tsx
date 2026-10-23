@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Braces, Check, Copy, Loader2, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
+import { Braces, Check, ChevronDown, Copy, Loader2, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { useRouter } from '@/i18n/navigation';
 import { BUILTIN_GROUPS, BUILTIN_VARS, MAX_TEMPLATE_VARS, PRESET_VARS, sampleValues, VAR_KEY_RE, type TemplateVar } from '@/lib/template-vars';
@@ -56,7 +56,7 @@ export function VariablesEditor({
       setCopied(key);
       setTimeout(() => setCopied((c) => (c === key ? null : c)), 1200);
     } catch {
-      // clipboard blocked — nothing to do
+      // clipboard blocked – nothing to do
     }
   };
 
@@ -68,7 +68,7 @@ export function VariablesEditor({
     });
 
   const samples = sampleValues(company, vars);
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
   const chip = 'inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 font-mono text-xs transition-colors hover:border-primary hover:text-primary';
 
   return (
@@ -183,10 +183,13 @@ export function VariablesEditor({
         )}
       </section>
 
-      <section className={card}>
-        <InfoHint hint={t('builtinHint')}>
+      {/* A reference list: most people only need it once, so it starts folded. */}
+      <details className={cn(card, 'group')}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
           <h2 className="font-bold">{t('builtinTitle')}</h2>
-        </InfoHint>
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        <p className="mt-2 text-sm text-muted-foreground">{t('builtinHint')}</p>
         <div className="mt-4 grid gap-5 sm:grid-cols-2">
           {(Object.keys(BUILTIN_GROUPS) as (keyof typeof BUILTIN_GROUPS)[]).map((group) => (
             <div key={group}>
@@ -199,9 +202,11 @@ export function VariablesEditor({
                       {`{${key}}`}
                     </button>
                     <span className="min-w-0 flex-1 truncate text-muted-foreground">{t(`builtin.${key}`)}</span>
-                    <span className="hidden max-w-[40%] truncate text-xs text-muted-foreground/70 md:inline" title={samples[key]}>
-                      {samples[key] || '–'}
-                    </span>
+                    {samples[key] && (
+                      <span className="hidden max-w-[40%] truncate text-xs text-muted-foreground/70 md:inline" title={samples[key]}>
+                        {samples[key]}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -209,7 +214,7 @@ export function VariablesEditor({
           ))}
         </div>
         <p className="mt-4 text-xs text-muted-foreground">{t('whereUsed')}</p>
-      </section>
+      </details>
     </>
   );
 }

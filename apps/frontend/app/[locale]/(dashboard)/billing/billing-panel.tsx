@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Building2, CreditCard, ExternalLink, Loader2, Repeat, RotateCcw } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
+import { InfoHint } from '@/components/info-hint';
 import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import type { PaidPlanKey, PlanSummary } from '@/lib/plan';
@@ -119,7 +120,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
 
   return (
     <div className="mt-6 flex flex-col gap-6">
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('current.label')}</p>
         <p className="mt-1 text-xl font-bold">{planName(plan.plan)}</p>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -142,7 +143,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
         {sub && !readOnly && (
           <div className="mt-3 flex flex-col gap-3">
             {otherInterval && plan.subscriptionStatus !== 'past_due' && !sub.cancelAt && (
-              <div>
+              <InfoHint hint={t('sub.switchNote')}>
                 <button
                   type="button"
                   disabled={pending}
@@ -156,8 +157,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                   {busy === 'interval' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Repeat className="h-4 w-4" aria-hidden="true" />}
                   {t(otherInterval === 'year' ? 'sub.switchToYear' : 'sub.switchToMonth', { price: switchPrice })}
                 </button>
-                <p className="mt-1 text-xs text-muted-foreground">{t('sub.switchNote')}</p>
-              </div>
+              </InfoHint>
             )}
             {sub.cancelAt ? (
               <div>
@@ -172,7 +172,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                 </button>
               </div>
             ) : confirmCancel ? (
-              <div className="rounded-lg border border-border p-3 text-sm">
+              <div className="anim-fade rounded-lg border border-border p-3 text-sm">
                 <p>{sub.periodEnd ? t('sub.cancelConfirm', { date: day(sub.periodEnd) }) : t('sub.cancelConfirmNoDate')}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
@@ -205,7 +205,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
         )}
 
         {status.hasStripeCustomer && (
-          <div className="mt-3">
+          <InfoHint hint={t('portalHint')} className="mt-3">
             <button
               type="button"
               disabled={readOnly || pending}
@@ -215,8 +215,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
               {busy === 'portal' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ExternalLink className="h-4 w-4" aria-hidden="true" />}
               {t('portal')}
             </button>
-            <p className="mt-1 text-xs text-muted-foreground">{t('portalHint')}</p>
-          </div>
+          </InfoHint>
         )}
       </section>
 
@@ -226,21 +225,22 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
           <p className="mt-1 text-sm text-muted-foreground">
             {status.trialOffer.withheld ? t('trialCard.bodyWithheld', { days: status.trialOffer.totalDays }) : t('trialCard.body', { days: status.trialOffer.totalDays })}
           </p>
-          <button
-            type="button"
-            disabled={readOnly || pending}
-            onClick={() => act('trial-card', startTrialCard)}
-            className={cn(buttonClass.primary, 'mt-3')}
-          >
-            {busy === 'trial-card' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <CreditCard className="h-4 w-4" aria-hidden="true" />}
-            {t('trialCard.button')}
-          </button>
-          <p className="mt-2 text-xs text-muted-foreground">{t('trialCard.hint')}</p>
+          <InfoHint hint={t('trialCard.hint')} className="mt-3">
+            <button
+              type="button"
+              disabled={readOnly || pending}
+              onClick={() => act('trial-card', startTrialCard)}
+              className={buttonClass.primary}
+            >
+              {busy === 'trial-card' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <CreditCard className="h-4 w-4" aria-hidden="true" />}
+              {t('trialCard.button')}
+            </button>
+          </InfoHint>
         </section>
       )}
 
       {!subscribed && (
-        <section className="rounded-xl border border-border bg-card p-4">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-bold">{t('choose.title')}</h2>
             <div className="flex flex-wrap gap-2 text-sm">
@@ -263,22 +263,21 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
             </div>
           </div>
 
+          {/* The titles carry the difference; the details repeat the terms below, so they sit behind (i). */}
           <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-            <p className="flex items-start gap-2 rounded-lg bg-primary/[0.06] p-2.5">
+            <div className="flex items-start gap-2 rounded-lg bg-primary/[0.06] p-2.5">
               <CreditCard className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-              <span>
-                <span className="block font-semibold">{t('choose.cardTitle')}</span>
-                <span className="text-xs text-muted-foreground">{t('choose.cardBody')}</span>
-              </span>
-            </p>
+              <InfoHint hint={t('choose.cardBody')} className="min-w-0 flex-1" rowClassName="items-start">
+                <span className="font-semibold">{t('choose.cardTitle')}</span>
+              </InfoHint>
+            </div>
             {status.bankTransfer.enabled && (
-              <p className="flex items-start gap-2 rounded-lg border border-border p-2.5">
+              <div className="flex items-start gap-2 rounded-lg border border-border p-2.5">
                 <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                <span>
-                  <span className="block font-semibold">{t('choose.transferTitle')}</span>
-                  <span className="text-xs text-muted-foreground">{t('choose.transferBody', { percent: status.transferSurchargePercent })}</span>
-                </span>
-              </p>
+                <InfoHint hint={t('choose.transferBody', { percent: status.transferSurchargePercent })} className="min-w-0 flex-1" rowClassName="items-start">
+                  <span className="font-semibold">{t('choose.transferTitle')}</span>
+                </InfoHint>
+              </div>
             )}
           </div>
 
@@ -348,9 +347,9 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
       )}
 
       {status.proformas.length > 0 && (
-        <section className="rounded-xl border border-border bg-card p-4">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <h2 className="font-bold">{t('transfer.title')}</h2>
-          <ul className="mt-3 flex flex-col gap-4">
+          <ul className="mt-3 flex flex-col gap-3">
             {status.proformas.map((p) => (
               <li key={p.id} className="rounded-lg border border-border p-3 text-sm">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -361,7 +360,8 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                     {t(`transfer.status.${p.status}`)}
                   </span>
                 </div>
-                {p.payment && (
+                {/* Paid or cancelled proformas keep one line: a QR code there only invites paying twice. */}
+                {p.payment && p.status === 'pending' && (
                   <div className="mt-3 flex flex-col gap-4 sm:flex-row">
                     {/* eslint-disable-next-line @next/next/no-img-element -- data URL from the backend */}
                     <img src={p.payment.qrDataUrl} alt={t('transfer.qrAlt')} width={160} height={160} className="h-40 w-40 shrink-0 rounded bg-white p-1" />
@@ -395,7 +395,7 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                     </dl>
                   </div>
                 )}
-                {p.payment && <p className="mt-3 text-xs text-muted-foreground">{t('transfer.note')}</p>}
+                {p.payment && p.status === 'pending' && <p className="mt-3 text-xs text-muted-foreground">{t('transfer.note')}</p>}
                 {p.status === 'paid' && p.paidAt && <p className="mt-1 text-xs text-muted-foreground">{t('transfer.paidOn', { date: day(p.paidAt) })}</p>}
               </li>
             ))}

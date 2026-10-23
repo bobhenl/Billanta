@@ -40,7 +40,7 @@ export function Modal({
         if (e.target === ref.current) onClose();
       }}
       className={cn(
-        'w-[min(32rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-0 text-foreground shadow-xl backdrop:bg-black/40',
+        'anim-dialog w-[min(32rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-0 text-foreground shadow-xl backdrop:bg-black/40',
         className
       )}
     >
@@ -51,7 +51,7 @@ export function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+              className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               aria-label="Zavřít"
             >
               <X className="h-4 w-4" />

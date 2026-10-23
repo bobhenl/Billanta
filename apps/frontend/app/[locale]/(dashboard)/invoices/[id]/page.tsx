@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { AlertTriangle, ArrowLeft, Lock, Building2, CheckCircle2, ChevronDown, Eye, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Lock, Building2, CheckCircle2, ChevronDown, FileText, History, Link2, Wallet, XCircle } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { AuditLogList } from '@/components/audit-log-list';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { fetchAuditLog, type AuditPage } from '@/lib/audit';
 import { NetEstimate } from '@/components/net-estimate';
 import { displayCustomField, documentVars } from '@/lib/custom-fields';
@@ -18,7 +19,6 @@ import {
   formatMoney,
   rateQuote,
   STATUS_BADGE_CLASSES,
-  TYPE_BADGE_CLASSES,
   type InvoiceDetail
 } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
@@ -114,6 +114,10 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   // The customer has an older copy: edited in place after the last send.
   const editedAt = lastEdit?.items[0]?.createdAt;
   const editedAfterSend = Boolean(invoice.sentAt && editedAt && invoice.status !== 'cancelled' && Date.parse(editedAt) > Date.parse(invoice.sentAt));
+  // The buyer-details box below already says "waiting"/"submitted", so the status line skips it then.
+  const buyerState = buyerDetailsState(invoice);
+  const buyerBoxShown =
+    canEdit && invoice.documentType !== 'credit_note' && Boolean(invoice.buyerDetailsToken || (invoice.buyerDetailsSubmittedAt && invoice.buyerDetailsOutcome));
   const status = displayStatus(invoice);
   const statusLabel = status === 'overdue' ? t('overdue') : tStatus(status);
   const title = invoice.invoiceNumber
@@ -153,6 +157,16 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
     [t('fields.paidAt'), formatDate(invoice.paidAt, locale)],
     [t('fields.sentAt'), formatDate(invoice.sentAt, locale)]
   ];
+  // How many times the customer opened the shared link: one row instead of a card of its own.
+  if (invoice.status !== 'draft' && invoice.status !== 'pending_review') {
+    const last = invoice.publicLastViewedAt ?? invoice.publicFirstViewedAt;
+    facts.push([
+      t('views.opened'),
+      invoice.publicViewCount > 0
+        ? [t('views.times', { count: invoice.publicViewCount }), last && new Date(last).toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' })].filter(Boolean).join(' · ')
+        : t('views.notYet')
+    ]);
+  }
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -162,23 +176,40 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       </Link>
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span title={tGloss(`type.${invoice.documentType}`)} className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', TYPE_BADGE_CLASSES[invoice.documentType])}>
-              {t(`type.${invoice.documentType}`)}
-            </span>
+        <div className="min-w-0">
+          {/* One status line: state first, then type, the date that matters and where it came from. */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
             <span title={tGloss(`status.${status}`)} className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_BADGE_CLASSES[status])}>{statusLabel}</span>
-            {invoice.source === 'profile_order' && (
-              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{tProfileOrder('badge')}</span>
+            <span title={tGloss(`type.${invoice.documentType}`)}>{t(`type.${invoice.documentType}`)}</span>
+            {(invoice.status === 'paid' ? invoice.paidAt : invoice.dueDate) && (
+              <>
+                <span aria-hidden>·</span>
+                <span className={cn(invoice.isOverdue && invoice.status !== 'paid' && 'font-medium text-destructive')}>
+                  {invoice.status === 'paid' ? t('fields.paidAt') : t('fields.dueDate')} {formatDate(invoice.status === 'paid' ? invoice.paidAt : invoice.dueDate, locale)}
+                </span>
+              </>
             )}
-            {buyerDetailsState(invoice) && (
-              <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', buyerDetailsState(invoice) === 'waiting' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success')}>
-                {tBuyer(`badge.${buyerDetailsState(invoice)}`)}
-              </span>
+            {invoice.isOverdue && invoice.reminderCount > 0 && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{t('remindersSent', { count: invoice.reminderCount, date: formatDate(invoice.lastReminderSentAt, locale) ?? '' })}</span>
+              </>
+            )}
+            {invoice.source === 'profile_order' && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{tProfileOrder('badge')}</span>
+              </>
+            )}
+            {buyerState && !buyerBoxShown && (
+              <>
+                <span aria-hidden>·</span>
+                <span className={buyerState === 'waiting' ? 'text-warning' : 'text-success'}>{tBuyer(`badge.${buyerState}`)}</span>
+              </>
             )}
           </div>
-          <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{title}</h1>
-          {contact && <p className="mt-1 text-muted-foreground">{contact.legalName}</p>}
+          <h1 className="mt-2 break-words text-2xl font-extrabold tracking-tight">{title}</h1>
+          {contact && <p className="mt-1 break-words text-muted-foreground">{contact.legalName}</p>}
         </div>
         <div className="sm:text-right">
           <div className="text-xs uppercase tracking-wide text-muted-foreground">{t('totalDue')}</div>
@@ -277,25 +308,18 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
         </Banner>
       )}
       {peppolIssues.length > 0 && (
-        <Banner tone={peppolIssues.some((i) => i.severity === 'error') ? 'warn' : 'info'} title={t('peppol.title')} className="mt-4">
-          <p>{t('peppol.intro')}</p>
-          <ul className="mt-1 list-disc space-y-0.5 pl-5">
+        <Banner tone={peppolIssues.some((i) => i.severity === 'error') ? 'warn' : 'info'} className="mt-4">
+          {/* Not the `title` prop: Banner wraps that in a <p>, which can't hold the hint's block markup. */}
+          <InfoHint hint={t('peppol.intro')}>
+            <span className="font-semibold">{t('peppol.title')}</span>
+          </InfoHint>
+          <ul className="mt-1 list-disc text-muted-foreground space-y-0.5 pl-5">
             {peppolIssues.map((i) => (
               <li key={`${i.rule}-${i.field}-${i.code}`}>
                 {t(`peppol.field.${i.field}`)}: {t(`peppol.code.${i.code}`)} <span className="font-mono text-xs opacity-70">{i.rule}</span>
               </li>
             ))}
           </ul>
-        </Banner>
-      )}
-      {invoice.isOverdue && (
-        <Banner tone="err" className="mt-4">
-          {t('overdueBanner', { date: formatDate(invoice.dueDate, locale) ?? '' })}
-          {invoice.reminderCount > 0 && (
-            <span className="block text-xs opacity-80">
-              {t('remindersSent', { count: invoice.reminderCount, date: formatDate(invoice.lastReminderSentAt, locale) ?? '' })}
-            </span>
-          )}
         </Banner>
       )}
 
@@ -334,17 +358,17 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 {items.map((item) => (
                   <tr key={item.id} className="border-b border-border/60 last:border-b-0">
                     <td className="py-2.5 pr-2">{item.description}</td>
-                    <td className="px-2 py-2.5 text-right tabular-nums">
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">
                       {Number(item.quantity).toLocaleString(locale)} {item.unit ?? ''}
                     </td>
-                    <td className="px-2 py-2.5 text-right tabular-nums">{money(Number(item.unitPrice))}</td>
-                    <td className="px-2 py-2.5 text-right tabular-nums text-muted-foreground">
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums">{money(Number(item.unitPrice))}</td>
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-muted-foreground">
                       {Number(item.discountPercent) ? `${Number(item.discountPercent)} %` : '–'}
                     </td>
-                    <td className="px-2 py-2.5 text-right tabular-nums text-muted-foreground">
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-muted-foreground">
                       {item.vatRate === null ? '–' : `${Number(item.vatRate)} %`}
                     </td>
-                    <td className="py-2.5 pl-2 text-right font-semibold tabular-nums">{money(item.lineTotalWithoutVat)}</td>
+                    <td className="whitespace-nowrap py-2.5 pl-2 text-right font-semibold tabular-nums">{money(item.lineTotalWithoutVat)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -434,12 +458,14 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
           </section>
 
           {showNet && (
-            <section className="rounded-xl border border-border bg-card p-4">
-              <h2 className="flex items-center gap-2 text-sm font-bold">
+            <details className="group rounded-xl border border-border bg-card p-4">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold [&::-webkit-details-marker]:hidden">
                 <Wallet className="h-4 w-4 text-primary" />
-                {t('net.title')}
-              </h2>
-              <dl className="mt-2 space-y-1.5 text-sm">
+                <span className="flex-1">{t('net.title')}</span>
+                <span className="font-extrabold tabular-nums">{czk(netCzk)}</span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+              </summary>
+              <dl className="mt-3 space-y-1.5 text-sm">
                 <div className="flex justify-between gap-3">
                   <dt className="text-muted-foreground">{t('net.gross')}</dt>
                   <dd className="tabular-nums">{czk(grossCzk)}</dd>
@@ -475,7 +501,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                 </div>
               </dl>
               {receivedCzk == null && invoice.currency !== home && <p className="mt-2 text-xs text-muted-foreground">{t('net.noReceived', { home })}</p>}
-            </section>
+            </details>
           )}
 
           <section className="rounded-xl border border-border bg-card p-4">
@@ -547,37 +573,9 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
                   )}
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-muted-foreground">{t('quoteResponse.waiting')}</p>
-              )}
-            </section>
-          )}
-
-          {invoice.status !== 'draft' && invoice.status !== 'pending_review' && (
-            <section className="rounded-xl border border-border bg-card p-4">
-              <h2 className="flex items-center gap-2 text-sm font-bold">
-                <Eye className="h-4 w-4 text-primary" />
-                {t('views.title')}
-              </h2>
-              {invoice.publicViewCount > 0 ? (
-                <dl className="mt-2 space-y-1.5 text-sm">
-                  <div className="flex justify-between gap-3">
-                    <dt className="text-muted-foreground">{t('views.count')}</dt>
-                    <dd className="font-medium tabular-nums">{t('views.times', { count: invoice.publicViewCount })}</dd>
-                  </div>
-                  {[
-                    [t('views.first'), invoice.publicFirstViewedAt],
-                    [t('views.last'), invoice.publicLastViewedAt]
-                  ].map(([label, at]) => (
-                    <div key={label} className="flex justify-between gap-3">
-                      <dt className="text-muted-foreground">{label}</dt>
-                      <dd className="text-right font-medium tabular-nums">
-                        {at ? new Date(at).toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '–'}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">{t('views.none')}</p>
+                <InfoHint hint={t('quoteResponse.waiting')} className="mt-2" rowClassName="text-sm text-muted-foreground">
+                  <span>{t('quoteResponse.waitingShort')}</span>
+                </InfoHint>
               )}
             </section>
           )}

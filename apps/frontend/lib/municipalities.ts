@@ -3,12 +3,12 @@ import municipalitiesData from '@/data/municipalities.json';
 /**
  * Backs the `/invoicing/[slug]` local-SEO landing pages (one per Czech and
  * Slovak municipality). See `apps/frontend/data/README.md` for exactly where
- * this data comes from, its real coverage, and its known gaps — every
+ * this data comes from, its real coverage, and its known gaps – every
  * municipality here is a real, sourced place; none were invented to pad out
  * the count.
  */
 export interface Municipality {
-  /** Unique across the whole dataset (both countries) — used as the route param. */
+  /** Unique across the whole dataset (both countries) – used as the route param. */
   slug: string;
   /** Official name, with diacritics. */
   name: string;
@@ -61,7 +61,7 @@ export function regionAnchorId(country: Municipality['country'], region: string)
 
 /**
  * Groups every municipality by (country, region) for the `/invoicing`
- * directory/browse page — real internal linking down to every municipality
+ * directory/browse page – real internal linking down to every municipality
  * page, not just a sitemap entry, per the project's doorway-page mitigation
  * plan (crawlable hierarchy: country -> region -> municipality).
  */
@@ -93,7 +93,7 @@ export function getRegionGroups(): RegionGroup[] {
  * `app/[locale]/invoicing/[slug]/page.tsx` for why: build-time generation
  * of all ~9,100 municipalities × 3 locales is not reasonable). These are the
  * municipalities that are themselves the seat of their own district (i.e.
- * their name matches their `district` field) — the largest, most-searched
+ * their name matches their `district` field) – the largest, most-searched
  * towns in the dataset, including both national capitals. Every other
  * municipality is rendered on first request and cached via ISR.
  */
@@ -139,7 +139,7 @@ const INDEX_MIN_POPULATION = (() => {
  * doorway pages. Smaller places and the other locales stay reachable and
  * `follow`, but `noindex`. Each indexed page carries data no other page has
  * (nearest places with distances, position against the district and region
- * seat, the competent tax office) — see the [slug] page.
+ * seat, the competent tax office) – see the [slug] page.
  */
 export function isIndexedMunicipality(m: Municipality, locale: string): boolean {
   return locale === municipalityLocale(m) && (INDEX_MIN_POPULATION === 0 || (m.population ?? 0) >= INDEX_MIN_POPULATION);

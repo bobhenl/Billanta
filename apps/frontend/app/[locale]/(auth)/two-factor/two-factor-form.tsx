@@ -5,7 +5,8 @@ import { ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 import { cancelTwoFactor, submitTwoFactorCode } from './actions';
 
 /** One field for both kinds of code: six digits are TOTP, anything else is tried as a recovery code. */
@@ -57,7 +58,7 @@ export function TwoFactorForm({ email }: { email: string }) {
         </Banner>
       )}
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+      <form method="post" className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="code" className="text-sm font-medium">
             {t('codeLabel')}
@@ -73,12 +74,12 @@ export function TwoFactorForm({ email }: { email: string }) {
             placeholder="123 456"
             value={code}
             onChange={(event) => setCode(event.target.value)}
-            className={`${inputClass} text-center font-mono text-lg tracking-[0.3em]`}
+            className={`min-h-10 ${inputClass} text-center font-mono text-lg tracking-[0.3em]`}
           />
           <p className="text-xs text-muted-foreground">{t('recoveryHint')}</p>
         </div>
 
-        <button type="submit" disabled={pending || code.trim().length < 6} className={buttonClass.primary}>
+        <button type="submit" disabled={pending || code.trim().length < 6} className={cn(buttonClass.primary, 'mt-2 py-2.5')}>
           {t('submit')}
         </button>
       </form>

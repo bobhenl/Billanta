@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { CalendarPlus, Download } from 'lucide-react';
-import { Segmented } from '@/components/public-tools/fields';
+import { Segmented, toolCard } from '@/components/public-tools/fields';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import {
   CAL_COUNTRIES,
@@ -56,7 +57,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
 
   return (
     <div className="space-y-6">
-      <form className="grid gap-4 rounded-xl border border-border bg-card p-5 sm:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'grid gap-4 sm:grid-cols-2')} onSubmit={(e) => e.preventDefault()}>
         <Segmented
           label={t('fields.country')}
           value={profile.country}
@@ -77,14 +78,15 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
         {profile.country === 'CZ' && profile.entity === 'company' && profile.vat === 'quarterly' && (
           <p className="text-xs text-muted-foreground sm:col-span-2">{t('khMonthly')}</p>
         )}
-        <fieldset className="sm:col-span-2">
+        <fieldset className="min-w-0 sm:col-span-2">
           <legend className="text-sm font-medium">{t('fields.extras')}</legend>
-          <div className="mt-1.5 flex flex-wrap gap-2">
+          {/* One swipe line on a phone instead of a ragged block of pills. */}
+          <div className="-mx-4 mt-1.5 flex gap-2 overflow-x-auto overscroll-x-contain px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0">
             {extrasFor(profile.country).map((e) => (
               <label
                 key={e}
                 className={cn(
-                  'inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm',
+                  'inline-flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm transition-colors',
                   profile.extras.includes(e) ? 'border-primary/50 bg-primary/10 text-foreground' : 'border-border text-muted-foreground hover:text-foreground'
                 )}
               >
@@ -129,7 +131,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
                             {periodText((k, v) => t(`period.${k}`, v), locale, e.kind, e.statutory)}
                             {moved && ` · ${t('movedShort', { date: format.dateTime(e.statutory, { day: 'numeric', month: 'numeric' }) })}`}
                           </span>
-                          {isConditional(e.kind) && <span className="mt-0.5 block text-xs text-amber-700 dark:text-amber-400">{t(`onlyIf.${e.kind}`)}</span>}
+                          {isConditional(e.kind) && <span className="mt-0.5 block text-xs text-warning">{t(`onlyIf.${e.kind}`)}</span>}
                           {isNext && <span className="mt-0.5 block text-xs font-semibold text-primary">{t('nextBadge')}</span>}
                         </span>
                       </li>
@@ -142,7 +144,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-5">
+      <section className={toolCard}>
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           <CalendarPlus className="h-5 w-5 text-primary" aria-hidden="true" />
           {t('subscribe.title')}
@@ -151,7 +153,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
         <div className="mt-4 flex flex-wrap gap-2">
           <a
             href={webcal || feedPath}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
+            className={buttonClass.primary}
           >
             <CalendarPlus className="h-4 w-4" aria-hidden="true" />
             {t('subscribe.webcal')}
@@ -161,7 +163,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
               href={google}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-semibold hover:border-primary/40 hover:text-primary"
+              className={buttonClass.secondary}
             >
               {t('subscribe.google')}
             </a>
@@ -169,7 +171,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
           <a
             href={feedPath}
             download="tax-calendar.ics"
-            className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-sm font-semibold hover:border-primary/40 hover:text-primary"
+            className={buttonClass.secondary}
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             {t('subscribe.download')}
@@ -182,7 +184,7 @@ export function TaxCalendar({ years, defaultCountry }: { years: number[]; defaul
               readOnly
               value={`${origin}${feedPath}`}
               onFocus={(e) => e.currentTarget.select()}
-              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-xs text-foreground"
+              className={cn(inputClass, 'mt-1 h-10 font-mono text-xs')}
             />
           </label>
         )}

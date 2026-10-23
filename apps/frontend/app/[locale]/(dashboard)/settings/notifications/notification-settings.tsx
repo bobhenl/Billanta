@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from 'react';
 import { Bell, BellRing, Loader2, Mail, MonitorSmartphone } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass } from '@/components/modal';
+import { buttonClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { saveNotificationPrefs } from '@/lib/notification-actions';
 import { NOTIFICATION_EVENTS, type NotificationEvent, type NotificationPrefs } from '@/lib/notifications';
@@ -62,12 +62,12 @@ export function NotificationSettings({ prefs: initial }: { prefs: NotificationPr
     const result = await Notification.requestPermission();
     setPermission(result);
     if (result === 'granted') {
-      new Notification(t('testTitle'), { body: t('testBody'), icon: '/icon.svg' });
+      new Notification(t('testTitle'), { body: t('testBody'), icon: '/brand/mark.png' });
       if (!prefs.browserPopups) patch({ browser_popups: true }, { ...prefs, browserPopups: true });
     }
   };
 
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
   const channels: { key: Channel; icon: typeof Bell }[] = [
     { key: 'app', icon: Bell },
     { key: 'email', icon: Mail }
@@ -145,7 +145,7 @@ export function NotificationSettings({ prefs: initial }: { prefs: NotificationPr
             {t('browserToggle')}
           </label>
           {permission === 'granted' ? (
-            <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">{t('permission.granted')}</span>
+            <span className="text-xs font-medium text-success">{t('permission.granted')}</span>
           ) : permission === 'denied' ? (
             <span className="text-xs text-muted-foreground">{t('permission.denied')}</span>
           ) : permission === 'unsupported' ? (

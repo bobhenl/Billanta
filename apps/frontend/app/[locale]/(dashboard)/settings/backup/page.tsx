@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Link, redirect } from '@/i18n/navigation';
+import { redirect } from '@/i18n/navigation';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { Banner } from '@/components/banner';
 import { TwoFactorNotice } from '@/components/two-factor-notice';
+import { SettingsHeader } from '@/components/settings-header';
 import { settingsGate } from '@/components/settings-gate';
 import {
   BackupDestinationsManager,
@@ -38,19 +39,14 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
   }
 
   return (
-    <div>
-      <Link href="/settings" className="text-sm text-muted-foreground hover:text-foreground">
-        ← {t('back')}
-      </Link>
-
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight">{t('title')}</h1>
-      <p className="mt-1 text-muted-foreground">{t('description')}</p>
+    <div className="mx-auto max-w-3xl">
+      <SettingsHeader title={t('title')} description={t('description')} />
 
       {/*
         These two banners reflect REAL query params: the backend's Google
         Drive OAuth callback (GoogleDriveCallbackController) redirects here
         with `?connected=google_drive` on success or `?error=...` if the
-        tenant declined consent / Google reported an error — see that
+        tenant declined consent / Google reported an error – see that
         controller's `frontendSettingsUrl` helper. Rendering them is real,
         working logic.
       */}
@@ -77,8 +73,6 @@ export default async function BackupSettingsPage({ searchParams }: BackupSetting
 
       {state === 'ok' && <TwoFactorNotice className="mt-4" />}
       {state === 'ok' && <BackupDestinationsManager initialDestinations={destinations} />}
-
-      <p className="mt-4 text-xs text-muted-foreground">{t('docsHint')}</p>
     </div>
   );
 }

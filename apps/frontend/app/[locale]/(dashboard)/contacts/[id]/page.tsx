@@ -76,16 +76,21 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
       { label: t('stats.invoiced', { currency }), value: formatMoney(s.total, currency, locale), tone: 'text-primary' },
       { label: t('stats.open', { currency }), value: formatMoney(s.open, currency, locale), tone: s.open > 0 ? 'text-warning' : '' }
     ]),
-    { label: t('stats.overdue'), value: String(overdue), tone: overdue > 0 ? 'text-destructive' : '' },
-    {
-      label: t('stats.avgDelay'),
-      value: avgDelay === null ? '–' : avgDelay <= 0 ? t('stats.onTime') : t('stats.days', { count: avgDelay }),
-      tone: avgDelay !== null && avgDelay > 0 ? 'text-warning' : ''
-    }
+    // A customer with nothing invoiced yet gets no row of zeros and dashes.
+    ...(billable.length ? [{ label: t('stats.overdue'), value: String(overdue), tone: overdue > 0 ? 'text-destructive' : '' }] : []),
+    ...(avgDelay === null
+      ? []
+      : [
+          {
+            label: t('stats.avgDelay'),
+            value: avgDelay <= 0 ? t('stats.onTime') : t('stats.days', { count: avgDelay }),
+            tone: avgDelay > 0 ? 'text-warning' : ''
+          }
+        ])
   ];
 
   return (
-    <div>
+    <div className="mx-auto max-w-5xl">
       <Link href="/contacts" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
         <ArrowLeft className="h-4 w-4" />
         {t('backToList')}
@@ -107,14 +112,16 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
         <ContactActions contact={contact} />
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-4">
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{s.label}</div>
-            <div className={cn('mt-1 text-xl font-extrabold tabular-nums', s.tone)}>{s.value}</div>
-          </div>
-        ))}
-      </div>
+      {stats.length > 0 && (
+        <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.label} className="min-w-0 rounded-xl border border-border bg-card p-3 sm:p-4">
+              <div title={s.label} className="truncate text-xs text-muted-foreground">{s.label}</div>
+              <div title={s.value} className={cn('mt-1 truncate text-lg font-extrabold tabular-nums sm:text-2xl', s.tone)}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_300px]">
         <div className="min-w-0">
@@ -126,27 +133,31 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
               </Link>
             )}
           </div>
-          <InvoicesTable rows={invoices} filtered={false} />
+          <InvoicesTable rows={invoices} filtered={false} omit={['customer']} />
 
-          <h2 className="mt-8 text-lg font-bold">{t('expenses')}</h2>
-          {expenses.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">{t('noExpenses')}</p>
-          ) : (
+          {/* Most contacts are only customers; an empty expenses block would just be noise. */}
+          {expenses.length > 0 && (
+            <>
+            <h2 className="mt-8 text-lg font-bold">{t('expenses')}</h2>
             <ul className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
               {expenses.map((e) => {
                 const state = expenseState(e);
                 return (
                   <li key={e.id}>
                     <Link href={`/expenses/${e.id}`} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-accent/60">
-                      <span className="w-24 shrink-0 tabular-nums text-muted-foreground">{formatDate(e.expenseDate, locale)}</span>
-                      <span className="min-w-0 flex-1 truncate">{e.description}</span>
-                      <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{tExp(state)}</span>
-                      <span className="w-28 shrink-0 text-right font-semibold tabular-nums">{formatMoney(Number(e.amount), e.currency, locale)}</span>
+                      <span className="hidden w-24 shrink-0 tabular-nums text-muted-foreground sm:block">{formatDate(e.expenseDate, locale)}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{e.description}</span>
+                        <span className="block text-xs tabular-nums text-muted-foreground sm:hidden">{formatDate(e.expenseDate, locale)}</span>
+                      </span>
+                      <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{tExp(state)}</span>
+                      <span className="shrink-0 text-right font-semibold tabular-nums sm:w-28">{formatMoney(Number(e.amount), e.currency, locale)}</span>
                     </Link>
                   </li>
                 );
               })}
             </ul>
+            </>
           )}
         </div>
 
@@ -200,22 +211,23 @@ export default async function ContactDetailPage(props: { params: Promise<{ id: s
                 <dt className="text-muted-foreground">{t('vatPayer')}</dt>
                 <dd className="font-semibold">{contact.isVatPayer === null ? '–' : contact.isVatPayer ? t('yes') : t('no')}</dd>
               </div>
-              <div className="flex justify-between gap-2">
-                <dt className="text-muted-foreground">{t('aresCheck')}</dt>
-                <dd className="font-semibold">{formatDate(contact.aresVerifiedAt, locale) ?? '–'}</dd>
-              </div>
-              <div className="flex justify-between gap-2">
-                <dt className="text-muted-foreground">{t('lastInvoice')}</dt>
-                <dd className="font-semibold">{formatDate(lastInvoice, locale) ?? '–'}</dd>
-              </div>
-              <div className="flex justify-between gap-2">
-                <dt className="text-muted-foreground">{t('documentCount')}</dt>
-                <dd className="font-semibold">{invoices.length}</dd>
-              </div>
+              {contact.aresVerifiedAt && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-muted-foreground">{t('aresCheck')}</dt>
+                  <dd className="font-semibold">{formatDate(contact.aresVerifiedAt, locale)}</dd>
+                </div>
+              )}
+              {lastInvoice && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-muted-foreground">{t('lastInvoice')}</dt>
+                  <dd className="font-semibold">{formatDate(lastInvoice, locale)}</dd>
+                </div>
+              )}
             </dl>
           </section>
           <ClientPortalCard contactId={contact.id} link={contact.portalLink ?? null} defaultLink={contact.portalLinkDefault ?? null} slug={contact.portalSlug ?? null} />
-          {contact.ico && (
+          {/* ARES only knows Czech companies. */}
+          {contact.ico && (contact.addressCountry || 'CZ') === 'CZ' && (
             <a
               href={`https://ares.gov.cz/ekonomicke-subjekty?ico=${contact.ico}`}
               target="_blank"

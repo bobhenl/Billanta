@@ -39,7 +39,7 @@ export default async function AdvancedPage({ params }: { params: Promise<{ local
   const faq = t.raw('faq') as { q: string; a: string }[];
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -68,10 +68,10 @@ export default async function AdvancedPage({ params }: { params: Promise<{ local
         <h2 className="text-xl font-bold tracking-tight">{t('switch.title')}</h2>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('switch.body')}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Link href="/features/switch-from-another-app" className={buttonClass.primary}>
+          <Link href="/features/switch-from-another-app" className={buttonClass.secondary}>
             {t('switch.cta')}
           </Link>
-          <Link href="/compare" className={buttonClass.secondary}>
+          <Link href="/compare" className={buttonClass.ghost}>
             {t('switch.compare')}
           </Link>
         </div>

@@ -188,12 +188,12 @@ export function MarketingSearch() {
         typeof document !== 'undefined' &&
         createPortal(
           <div
-            className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-3 pt-3 backdrop-blur-sm sm:px-4 sm:pt-[12vh]"
+            className="anim-fade fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-3 pt-3 backdrop-blur-sm sm:px-4 sm:pt-[12vh]"
             onMouseDown={(event) => {
               if (event.target === event.currentTarget) setOpen(false);
             }}
           >
-            <div role="dialog" aria-modal="true" aria-label={t('title')} className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
+            <div role="dialog" aria-modal="true" aria-label={t('title')} className="anim-dialog-flat w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
               <form
                 role="search"
                 action={`/${locale}/search`}

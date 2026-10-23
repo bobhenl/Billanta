@@ -38,7 +38,7 @@ export default async function ApiKeysSettingsPage() {
   ).replace(/\/$/, '');
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-3xl">
       <SettingsHeader title={t('title')} description={t('description')} />
       <TwoFactorNotice className="mt-4" />
       {!canManage(role) && (

@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { VAT_FORM_VERSIONS, VAT_INFO_CHECKED, VAT_OFFICIAL_URL } from '@faktur/cz-compliance';
 import { Link } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
-import { inputClass } from '@/components/modal';
+import { inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 
@@ -98,7 +98,7 @@ export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { cou
   }
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start gap-3">
         <Landmark className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
         <div>

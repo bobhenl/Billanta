@@ -114,11 +114,12 @@ export default async function EditInvoicePage(props: {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <h1 className="text-2xl font-extrabold tracking-tight">
+      <h1 className="break-words text-2xl font-extrabold tracking-tight">
         {issuedEdit ? t('editIssuedTitle', { number: invoice.invoiceNumber ?? '' }) : t('editTitle')}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">{issuedEdit ? t('editIssuedLead') : t('editLead')}</p>
-      <div className="mt-6">
+      {/* A draft can change freely, which goes without saying; an issued one keeps its number and logs the reason. */}
+      {issuedEdit && <p className="mt-1 text-sm text-muted-foreground">{t('editIssuedLead')}</p>}
+      <div className="mt-4">
         <InvoiceForm
           mode={{ kind: 'edit', id: invoice.id, issued: issuedEdit, reason: issuedEdit ? searchParams.reason?.slice(0, 1000) : undefined }}
           defaults={defaults} ai={ai} starred={starred} template={template} />

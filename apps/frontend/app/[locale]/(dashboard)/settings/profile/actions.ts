@@ -87,7 +87,7 @@ async function verifyPassword(userId: string, password: string): Promise<{ email
  * one-hour confirmation link to the NEW address; nothing changes until it is
  * opened (`app/api/auth/confirm-email`). The pending change lives in
  * `verification_tokens` as `email-change:<userId>:<newEmail>` + SHA-256 of
- * the token — the same storage the password-reset flow uses.
+ * the token – the same storage the password-reset flow uses.
  */
 export async function requestEmailChange(password: string, newEmailRaw: string, locale: string): Promise<ProfileResult> {
   const refused = await refuseDemo();

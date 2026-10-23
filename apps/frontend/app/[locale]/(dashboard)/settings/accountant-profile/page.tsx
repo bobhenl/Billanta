@@ -38,9 +38,9 @@ export default async function AccountantProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <SettingsHeader title={t('title')} description={t('description')} />
+      <SettingsHeader title={t('title')} />
       <ListingForm own={own} readOnly={readOnly} />
-      <section className="mt-6 rounded-xl border border-border bg-card p-4">
+      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="font-bold">{t('partnerTitle')}</h2>
         <PartnerRequest status={own.partnerStatus} note={own.partnerNote} hasListing={hasListing} readOnly={readOnly} className="mt-3" />
       </section>

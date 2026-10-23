@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from 'react';
 import { ArrowDown, ArrowUp, Check, Copy, ExternalLink, Eye, Globe, Link2, Loader2, MapPin, Plus, Save, ShoppingCart, Trash2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
 import { PROFILE_DOMAIN, profileOrderUrl, profileUrl } from '@/lib/site';
@@ -148,11 +148,11 @@ export function PublicProfileEditor({
       setCopied(key);
       setTimeout(() => setCopied(null), 1500);
     } catch {
-      // clipboard blocked — the link is visible anyway
+      // clipboard blocked – the link is visible anyway
     }
   };
 
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
   const iconBtn = 'rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-primary disabled:opacity-30';
 
   return (
@@ -484,7 +484,7 @@ export function PublicProfileEditor({
       </section>
 
       {!readOnly && (
-        <div className="sticky bottom-4 mt-6 flex justify-end">
+        <div className="sticky bottom-20 z-10 mt-6 flex justify-end md:bottom-4">
           <button type="button" onClick={save} disabled={saving || invalid || !dirty} className={cn(buttonClass.primary, 'shadow-lg')}>
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {p.enabled && !saved.enabled ? t('publish') : t('save')}

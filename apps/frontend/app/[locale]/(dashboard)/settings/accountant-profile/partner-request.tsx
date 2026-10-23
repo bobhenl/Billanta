@@ -4,7 +4,7 @@ import { useTransition } from 'react';
 import { BadgeCheck, Clock, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { buttonClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { requestPartnerProgram } from './actions';

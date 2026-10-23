@@ -4,11 +4,13 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { BlogMarkdown } from '@/components/blog-markdown';
+import { BlogMarkdown, blogHeadings, normalizeDashes } from '@/components/blog-markdown';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { fetchBlogPost, formatBlogDate, isAiWritten, type BlogPost } from '@/lib/blog';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 type Params = { locale: string; slug: string };
 
@@ -42,9 +44,12 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
   const t = await getTranslations('blog');
   const path = `/blog/${post.slug}`;
   const ai = isAiWritten(post.kind);
+  const title = normalizeDashes(post.title);
+  const description = normalizeDashes(post.description);
+  const headings = blogHeadings(post.body);
 
   return (
-    <article className="container max-w-3xl py-10 sm:py-14">
+    <article className="container max-w-2xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -73,7 +78,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
           {t('title')}
         </Link>
       </nav>
-      <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{post.title}</h1>
+      <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">
         <time dateTime={post.publishedAt}>{formatBlogDate(locale, post.publishedAt)}</time>
         {post.updatedAt.slice(0, 10) > post.publishedAt.slice(0, 10) && (
@@ -95,7 +100,22 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
           </span>
         </p>
       )}
-      <p className="mt-6 text-lg text-muted-foreground">{post.description}</p>
+      <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{description}</p>
+
+      {headings.length >= 4 && (
+        <nav aria-label={t('toc')} className="mt-8 border-l-2 border-border pl-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('toc')}</p>
+          <ol className="mt-2 space-y-1.5 text-sm">
+            {headings.map((h) => (
+              <li key={h.id}>
+                <a href={`#${h.id}`} className="text-foreground/80 hover:text-primary hover:underline">
+                  {h.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
 
       <div className="mt-8">
         <BlogMarkdown body={post.body} />
@@ -120,7 +140,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       <div className="mt-10 rounded-2xl border border-primary/20 bg-primary/5 p-6">
         <h2 className="text-lg font-bold">{t('ctaTitle')}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t('ctaBody')}</p>
-        <Link href="/signup" className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+        <Link href="/signup" className={cn(buttonClass.primary, 'mt-4 w-full sm:w-auto')}>
           {t('ctaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>

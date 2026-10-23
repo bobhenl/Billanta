@@ -114,8 +114,8 @@ export default async function NewInvoicePage(
 
   return (
     <div className="mx-auto max-w-6xl">
+      {/* No lead line: the AI and copy pre-fill options sit right under the title and speak for themselves. */}
       <h1 className="text-2xl font-extrabold tracking-tight">{t(`titles.${template?.documentType ?? 'invoice'}`)}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t('lead')}</p>
       {searchParams.from === 'latest' && !loaded && (
         <Banner tone="info" className="mt-4">
           {t('copy.noneYet')}
@@ -138,7 +138,7 @@ export default async function NewInvoicePage(
           </Banner>
         )
       )}
-      <div className="mt-6">
+      <div className="mt-4">
         {/* Keyed by the starting point, so "Podle faktury" on this page starts over with the copy. */}
         <InvoiceForm
           key={[searchParams.from, searchParams.template, searchParams.preset, searchParams.contact, searchParams.type].join('|')}

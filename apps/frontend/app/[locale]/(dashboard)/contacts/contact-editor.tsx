@@ -4,7 +4,7 @@ import { AddressInput } from '@/components/address-input';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { Typeahead, type TypeaheadGroup } from '@/components/typeahead';
 import { type FormEvent, useState, useTransition } from 'react';
-import { BadgeCheck, Building2, Loader2, RefreshCw, User } from 'lucide-react';
+import { BadgeCheck, Building2, ChevronDown, Loader2, RefreshCw, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { VatStatusBadge } from '@/components/vat-status-badge';
@@ -126,7 +126,7 @@ export function ContactEditor({
     const person = form.isPerson === true;
     const input: ContactInput = {
       legalName: (form.legalName ?? '').trim(),
-      // A private person has no IČO/DIČ — drop whatever was typed before switching.
+      // A private person has no IČO/DIČ – drop whatever was typed before switching.
       ico: person ? null : clean(form.ico),
       dic: person ? null : clean(form.dic),
       email: clean(form.email),
@@ -142,7 +142,7 @@ export function ContactEditor({
       internalNote: clean(form.internalNote),
       ...(aresVerified !== undefined && { aresVerified })
     };
-    // POST's schema has no nullable ico/dic/email — omit empty ones there.
+    // POST's schema has no nullable ico/dic/email – omit empty ones there.
     const created = Object.fromEntries(Object.entries(input).filter(([, v]) => v !== null)) as ContactInput;
     // Without a connection a new contact waits in the offline queue; edits stay online only.
     const queue = async () => {
@@ -175,8 +175,12 @@ export function ContactEditor({
     });
   }
 
-  const label = 'mb-1 block text-xs font-semibold text-muted-foreground';
+  // Every label one line high, so inputs side by side line up even next to the DIČ badge.
+  const label = 'mb-1 flex min-h-5 items-center gap-2 text-xs font-semibold text-muted-foreground';
+  const field = cn(inputClass, 'h-10');
   const person = form.isPerson === true;
+  // Rarely filled in, so folded away unless the contact already uses one of them.
+  const hasExtra = Boolean(contact?.phone || contact?.contactPerson || contact?.color || contact?.internalNote);
   const kinds = [
     { value: false, icon: Building2, text: t('kindCompany') },
     { value: true, icon: User, text: t('kindPerson') }
@@ -262,35 +266,42 @@ export function ContactEditor({
           <span className={label}>IČO</span>
           <div className="flex gap-2">
             <input
-              className={inputClass}
+              className={cn(field, 'min-w-0 flex-1')}
               inputMode="numeric"
               maxLength={8}
               value={form.ico ?? ''}
               onChange={(e) => setForm((f) => ({ ...f, ico: e.target.value.replace(/\D/g, '') }))}
             />
-            <button type="button" className={buttonClass.secondary} onClick={fromAres} disabled={loadingAres} title={t('fromAres')}>
+            {/* Icon only: in a half-width column the label left the IČO field three digits wide. */}
+            <button
+              type="button"
+              className={cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0')}
+              onClick={fromAres}
+              disabled={loadingAres}
+              title={t('fromAres')}
+              aria-label={t('fromRegistry')}
+            >
               {loadingAres ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              {t('fromRegistry')}
             </button>
           </div>
         </label>
         <label className="block">
-          <span className="mb-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+          <span className={label}>
             DIČ
-            <VatStatusBadge dic={form.dic ?? ''} onResult={setVatCheck} />
+            <VatStatusBadge dic={form.dic ?? ''} onResult={setVatCheck} className="py-0" />
           </span>
-          <input className={inputClass} value={form.dic ?? ''} onChange={set('dic')} />
+          <input className={field} value={form.dic ?? ''} onChange={set('dic')} />
         </label>
         </>
         )}
         <label className="block sm:col-span-2">
           <span className={label}>{person ? t('personName') : t('legalName')}</span>
-          <input required className={inputClass} value={form.legalName ?? ''} onChange={set('legalName')} />
+          <input required className={field} value={form.legalName ?? ''} onChange={set('legalName')} />
         </label>
         <label className="block sm:col-span-2">
           <span className={label}>{t('street')}</span>
           <AddressInput
-            className={inputClass}
+            className={field}
             value={form.addressStreet ?? ''}
             country={form.addressCountry}
             onChange={(street) => setForm((f) => ({ ...f, addressStreet: street }))}
@@ -299,35 +310,27 @@ export function ContactEditor({
         </label>
         <label className="block">
           <span className={label}>{t('city')}</span>
-          <input className={inputClass} value={form.addressCity ?? ''} onChange={set('addressCity')} />
+          <input className={field} value={form.addressCity ?? ''} onChange={set('addressCity')} />
         </label>
         <div className="grid grid-cols-2 gap-2">
           <label className="block">
             <span className={label}>{t('postalCode')}</span>
-            <input className={inputClass} maxLength={10} value={form.addressPostalCode ?? ''} onChange={set('addressPostalCode')} />
+            <input className={field} maxLength={10} value={form.addressPostalCode ?? ''} onChange={set('addressPostalCode')} />
           </label>
           <label className="block">
             <span className={label}>{t('country')}</span>
-            <input className={inputClass} maxLength={2} value={form.addressCountry ?? ''} onChange={set('addressCountry')} />
+            <input className={cn(field, 'uppercase')} maxLength={2} value={form.addressCountry ?? ''} onChange={set('addressCountry')} />
           </label>
         </div>
-        <label className="block">
+        <label className={cn('block', person && 'sm:col-span-2')}>
           <span className={label}>E-mail</span>
-          <input type="email" className={inputClass} value={form.email ?? ''} onChange={set('email')} />
-        </label>
-        <label className="block">
-          <span className={label}>{t('phone')}</span>
-          <input type="tel" className={inputClass} maxLength={40} value={form.phone ?? ''} onChange={set('phone')} />
-        </label>
-        <label className="block">
-          <span className={label}>{t('contactPerson')}</span>
-          <input className={inputClass} maxLength={255} value={form.contactPerson ?? ''} onChange={set('contactPerson')} />
+          <input type="email" className={field} value={form.email ?? ''} onChange={set('email')} />
         </label>
         {!person && (
         <label className="block">
           <span className={label}>{t('vatPayer')}</span>
           <select
-            className={inputClass}
+            className={field}
             value={form.isVatPayer === null || form.isVatPayer === undefined ? '' : String(form.isVatPayer)}
             onChange={(e) => setForm((f) => ({ ...f, isVatPayer: e.target.value === '' ? null : e.target.value === 'true' }))}
           >
@@ -346,53 +349,69 @@ export function ContactEditor({
           )}
         </label>
         )}
-        <div className="sm:col-span-2">
-          <span className={label}>{t('color')}</span>
-          <div role="radiogroup" aria-label={t('color')} className="flex flex-wrap items-center gap-1.5">
-            <button
-              type="button"
-              role="radio"
-              aria-checked={!form.color}
-              onClick={() => setForm((f) => ({ ...f, color: null }))}
-              className={cn(
-                'inline-flex h-7 items-center rounded-full border px-2.5 text-xs font-semibold',
-                !form.color ? 'border-primary text-primary' : 'border-border text-muted-foreground hover:bg-secondary'
-              )}
-            >
-              {t('colorNone')}
-            </button>
-            {CONTACT_COLORS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                role="radio"
-                aria-checked={form.color === c}
-                aria-label={tColors(c)}
-                title={tColors(c)}
-                onClick={() => setForm((f) => ({ ...f, color: c }))}
-                className={cn(
-                  'inline-flex h-7 w-7 items-center justify-center rounded-full ring-offset-2 ring-offset-card',
-                  form.color === c && 'ring-2 ring-primary'
-                )}
-              >
-                <span className={cn('h-5 w-5 rounded-full', CONTACT_COLOR_DOT[c])} />
-              </button>
-            ))}
+        <details open={hasExtra} className="group sm:col-span-2">
+          <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden">
+            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+            {t('moreDetails')}
+          </summary>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className={label}>{t('phone')}</span>
+              <input type="tel" className={field} maxLength={40} value={form.phone ?? ''} onChange={set('phone')} />
+            </label>
+            <label className="block">
+              <span className={label}>{t('contactPerson')}</span>
+              <input className={field} maxLength={255} value={form.contactPerson ?? ''} onChange={set('contactPerson')} />
+            </label>
+            <div className="sm:col-span-2">
+              <span className={label}>{t('color')}</span>
+              <div role="radiogroup" aria-label={t('color')} className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!form.color}
+                  onClick={() => setForm((f) => ({ ...f, color: null }))}
+                  className={cn(
+                    'inline-flex h-7 items-center rounded-full border px-2.5 text-xs font-semibold',
+                    !form.color ? 'border-primary text-primary' : 'border-border text-muted-foreground hover:bg-secondary'
+                  )}
+                >
+                  {t('colorNone')}
+                </button>
+                {CONTACT_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    role="radio"
+                    aria-checked={form.color === c}
+                    aria-label={tColors(c)}
+                    title={tColors(c)}
+                    onClick={() => setForm((f) => ({ ...f, color: c }))}
+                    className={cn(
+                      'inline-flex h-7 w-7 items-center justify-center rounded-full ring-offset-2 ring-offset-card',
+                      form.color === c && 'ring-2 ring-primary'
+                    )}
+                  >
+                    <span className={cn('h-5 w-5 rounded-full', CONTACT_COLOR_DOT[c])} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label className="block sm:col-span-2">
+              <InfoHint hint={t('internalNoteHint')}>
+                <span className={label}>{t('internalNote')}</span>
+              </InfoHint>
+              <textarea
+                rows={3}
+                maxLength={4000}
+                className={cn(inputClass, 'h-auto py-2')}
+                value={form.internalNote ?? ''}
+                onChange={set('internalNote')}
+                placeholder={t('internalNotePlaceholder')}
+              />
+            </label>
           </div>
-        </div>
-        <label className="block sm:col-span-2">
-          <InfoHint hint={t('internalNoteHint')}>
-            <span className={label}>{t('internalNote')}</span>
-          </InfoHint>
-          <textarea
-            rows={3}
-            maxLength={4000}
-            className={cn(inputClass, 'h-auto py-2')}
-            value={form.internalNote ?? ''}
-            onChange={set('internalNote')}
-            placeholder={t('internalNotePlaceholder')}
-          />
-        </label>
+        </details>
       </form>
     </Modal>
   );

@@ -19,7 +19,7 @@ export function useCompanyRegistry(): [CompanyRegistry, (r: CompanyRegistry) => 
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved && (COMPANY_REGISTRIES as readonly string[]).includes(saved)) setRegistry(saved as CompanyRegistry);
     } catch {
-      // storage blocked — keep "auto"
+      // storage blocked – keep "auto"
     }
   }, []);
   const pick = (r: CompanyRegistry) => {
@@ -51,7 +51,8 @@ export function RegistryPicker({
         aria-label={t('label')}
         value={value}
         onChange={(e) => onChange(e.target.value as CompanyRegistry)}
-        className="h-10 rounded-lg border border-border bg-card pl-8 pr-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+        // Only the globe on a phone, so the search beside it keeps its width; the list still names every option.
+        className="h-10 w-10 appearance-none rounded-lg border border-border bg-card pl-8 pr-0 text-sm font-medium text-transparent focus:outline-none focus:ring-2 focus:ring-primary sm:w-auto sm:appearance-auto sm:pr-2 sm:text-foreground [&>option]:text-foreground"
       >
         {COMPANY_REGISTRIES.map((r) => (
           <option key={r} value={r}>

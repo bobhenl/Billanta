@@ -8,6 +8,8 @@ import { jsonLd, ogImage } from '@/lib/seo';
 import { isDirectoryTrade } from '@/lib/business-presets';
 import { getMunicipalityBySlug } from '@/lib/municipalities';
 import { profileUrl, SITE_NAME, SITE_URL } from '@/lib/site';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 import { ProfileMessageForm } from './profile-message-form';
 import { ProfileOrderForm } from './profile-order-form';
 
@@ -71,7 +73,7 @@ function organizationLd(p: PublicProfile, url: string) {
 }
 
 /**
- * Public company profile — a business-card page at `/<locale>/p/<slug>`,
+ * Public company profile – a business-card page at `/<locale>/p/<slug>`,
  * or `<slug>.<NEXT_PUBLIC_PROFILE_DOMAIN>` via middleware. Shows only what
  * the company published in Settings → Veřejný profil; 404 otherwise.
  */
@@ -97,14 +99,15 @@ export default async function PublicProfilePage({ params }: Props) {
   const orderable = profile.orders?.enabled ? profile.services.flatMap((s) => (s.id ? [{ id: s.id, title: s.title, unitPrice: s.unitPrice, unit: s.unit }] : [])) : [];
   const askable = profile.contactForm ? profile.services.flatMap((s) => (s.id ? [{ id: s.id, title: s.title }] : [])) : [];
   const row = 'flex items-start gap-3 text-sm';
-  const pill = 'inline-flex items-center gap-1.5 rounded-lg border border-input px-3 py-1.5 text-xs font-semibold hover:bg-muted';
+  const pill = 'inline-flex h-8 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-semibold transition-colors hover:bg-accent hover:text-primary';
+  const headerCta = cn(buttonClass.primary, 'h-10 w-full shrink-0 gap-2 px-5 sm:w-auto');
   const icon = 'mt-0.5 h-4 w-4 shrink-0 text-primary';
 
   return (
-    <main className="min-h-screen bg-muted/30 px-4 py-10 sm:py-16">
+    <main className="min-h-screen bg-muted/30 px-4 py-6 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(organizationLd(profile, profileUrl(profile.slug, locale)))} />
       <div className="mx-auto max-w-3xl">
-        <header className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <header className="rounded-2xl border border-border bg-card p-5 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             {profile.hasLogo ? (
               // eslint-disable-next-line @next/next/no-img-element -- served by our own proxy route, any size
@@ -115,22 +118,22 @@ export default async function PublicProfilePage({ params }: Props) {
               </span>
             )}
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{profile.companyName}</h1>
+              <h1 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">{profile.companyName}</h1>
               {profile.tagline && <p className="mt-1 text-muted-foreground">{profile.tagline}</p>}
             </div>
             {profile.contactForm ? (
-              <a href="#contact" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+              <a href="#contact" className={headerCta}>
                 <MessageSquare className="h-4 w-4" />
                 {t('message.button')}
               </a>
             ) : profile.contactCta && mailto && (
-              <a href={mailto} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+              <a href={mailto} className={headerCta}>
                 <Send className="h-4 w-4" />
                 {t('cta.button')}
               </a>
             )}
           </div>
-          {profile.about && <p className="mt-6 whitespace-pre-line leading-relaxed">{profile.about}</p>}
+          {profile.about && <p className="mt-6 whitespace-pre-line break-words leading-relaxed">{profile.about}</p>}
         </header>
 
         {profile.services.length > 0 && (
@@ -140,14 +143,14 @@ export default async function PublicProfilePage({ params }: Props) {
               {profile.services.map((s, i) => (
                 <li key={i} className="rounded-xl border border-border bg-card p-4">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold">{s.title}</h3>
+                    <h3 className="min-w-0 break-words font-semibold">{s.title}</h3>
                     {s.price && <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{s.price}</span>}
                   </div>
                   {s.description && <p className="mt-1.5 text-sm text-muted-foreground">{s.description}</p>}
                   {s.id && (orderable.length > 0 || askable.length > 0) && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {orderable.length > 0 && (
-                        <a href={`?service=${s.id}#order`} className={`${pill} border-primary bg-primary text-primary-foreground hover:bg-primary/90`}>
+                        <a href={`?service=${s.id}#order`} className={cn(buttonClass.primary, 'h-8 px-3 py-0 text-xs')}>
                           <ShoppingCart className="h-3.5 w-3.5" />
                           {t('order.button')}
                         </a>
@@ -184,7 +187,7 @@ export default async function PublicProfilePage({ params }: Props) {
           </section>
         )}
 
-        <section className="mt-6 rounded-2xl border border-border bg-card p-6">
+        <section className="mt-6 rounded-2xl border border-border bg-card p-5 sm:p-6">
           <h2 className="text-lg font-bold">{t('contact')}</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="space-y-3">
@@ -199,7 +202,7 @@ export default async function PublicProfilePage({ params }: Props) {
               {profile.phone && (
                 <p className={row}>
                   <Phone className={icon} />
-                  <a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="hover:text-primary hover:underline">
+                  <a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="break-words hover:text-primary hover:underline">
                     {profile.phone}
                   </a>
                 </p>
@@ -215,15 +218,15 @@ export default async function PublicProfilePage({ params }: Props) {
               {address && (
                 <p className={row}>
                   <MapPin className={icon} />
-                  <span>{address}</span>
+                  <span className="break-words">{address}</span>
                 </p>
               )}
             </div>
             {(profile.ico || profile.dic || profile.registryNote) && (
               <div className={row}>
                 <Building2 className={icon} />
-                <dl className="space-y-1">
-                  <dt className="font-semibold">{profile.legalName}</dt>
+                <dl className="min-w-0 space-y-1">
+                  <dt className="break-words font-semibold">{profile.legalName}</dt>
                   {profile.ico && (
                     <dd>
                       {t('ico')}: <span className="tabular-nums">{profile.ico}</span>
@@ -245,7 +248,7 @@ export default async function PublicProfilePage({ params }: Props) {
           // Absolute links: on a profile subdomain (PROFILE_DOMAIN) the directory lives on the main site.
           <nav aria-label={tDir('title')} className="mt-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span>{tDir('profileListed')}</span>
-            <a href={`${SITE_URL}/${locale}/directory/${directoryTrade}`} className="rounded-full border border-border bg-card px-3 py-1 hover:border-primary hover:text-primary">
+            <a href={`${SITE_URL}/${locale}/directory/${directoryTrade}`} className="rounded-full border border-border bg-card px-3 py-1 transition-colors hover:border-primary hover:text-primary">
               {tDir(`trades.${directoryTrade}`)}
             </a>
             <a href={`${SITE_URL}/${locale}/directory/town/${directoryTown.slug}`} className="rounded-full border border-border bg-card px-3 py-1 hover:border-primary hover:text-primary">

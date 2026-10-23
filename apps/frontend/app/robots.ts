@@ -6,7 +6,7 @@ import { sitemapShardUrls } from './sitemap';
  * each private section is disallowed under any locale prefix.
  *
  * Private: the signed-in app (route groups add no path segment, so these
- * are real top-level paths) and `/i/<token>` / `/c/<token>` — a client's private invoice or portal
+ * are real top-level paths) and `/i/<token>` / `/c/<token>` – a client's private invoice or portal
  * link, which also carries `noindex`. The auth forms are deliberately NOT
  * disallowed: they are `noindex`, and a crawler has to be allowed to fetch
  * a page to see that.

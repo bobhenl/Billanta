@@ -4,7 +4,8 @@ import { useMemo, useState, useTransition } from 'react';
 import { ExternalLink, Loader2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
-import { buttonClass, inputClass } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { LISTING_LANGUAGES, LISTING_REGIONS, LISTING_SERVICES } from '@/lib/accountant-directory';
 import { cn } from '@/lib/utils';
@@ -101,12 +102,13 @@ export function ListingForm({ own, readOnly }: { own: OwnListing; readOnly: bool
   const disabled = readOnly || pending || !own.eligible;
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card p-4">
+    <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <h2 className="font-bold">{t('settings.title')}</h2>
+        <InfoHint hint={t('settings.intro')}>
+          <h2 className="font-bold">{t('settings.title')}</h2>
+        </InfoHint>
         {l && <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', STATUS_TONE[l.status])}>{t(`settings.status.${l.status}`)}</span>}
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{t('settings.intro')}</p>
       {!own.eligible && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{t('settings.needIco')}</p>}
       {l?.reviewNote && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{t('settings.reviewNote', { note: l.reviewNote })}</p>}
 
@@ -190,7 +192,7 @@ export function ListingForm({ own, readOnly }: { own: OwnListing; readOnly: bool
               {t('settings.withdraw')}
             </button>
           )}
-          <Link href="/accountants" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+          <Link href="/accountants" className="ml-auto inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
             {t('settings.viewPage')}
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </Link>

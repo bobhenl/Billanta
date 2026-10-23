@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { ResetPasswordForm } from './reset-password-form';
 
 /**
- * Standalone "reset password" page — mirrors the other `(auth)` pages'
+ * Standalone "reset password" page – mirrors the other `(auth)` pages'
  * structure (route group, centered-card layout). Stays a plain server
  * component; all interactivity (including reading the `?token=` search
  * param) lives in `reset-password-form.tsx`.

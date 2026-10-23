@@ -94,7 +94,7 @@ export function SiteSearchBox({ defaultValue }: { defaultValue: string }) {
         />
       </label>
       {showList && (
-        <div className="absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+        <div className="anim-pop absolute inset-x-0 top-full z-30 mt-1 overflow-hidden rounded-xl border border-border bg-card shadow-lg">
           <ul id={listId} role="listbox" aria-label={t('label')} className="max-h-[60vh] overflow-y-auto py-1">
             {groups.map((g) => {
               const Icon = KIND_ICON[g.kind];

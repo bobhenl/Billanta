@@ -2,10 +2,10 @@
  * Canonical public origin for this app, used for absolute URLs in
  * `<link rel="canonical">`, hreflang alternates, `app/sitemap.ts`, and
  * `app/robots.ts`. No production domain has been decided/purchased yet
- * (nothing else in this scaffold sets one either — see the `/login`,
+ * (nothing else in this scaffold sets one either – see the `/login`,
  * `/pricing` TODO placeholders in `components/marketing-navbar.tsx`), so
  * this falls back to a clearly-placeholder domain. Set `NEXT_PUBLIC_SITE_URL`
- * per environment — see `.env.example`.
+ * per environment – see `.env.example`.
  */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://billanta.com').replace(/\/$/, '');
 
@@ -21,7 +21,7 @@ export const SITE_NAME = 'Billanta';
 /**
  * Optional wildcard domain for public company profiles: with
  * `NEXT_PUBLIC_PROFILE_DOMAIN=billanta.com` (and a `*.billanta.com` DNS
- * record + certificate), `novak.billanta.com` serves `/p/novak` — see
+ * record + certificate), `novak.billanta.com` serves `/p/novak` – see
  * `middleware.ts`. Unset, profiles live only at `/<locale>/p/<slug>`.
  */
 export const PROFILE_DOMAIN = (process.env.NEXT_PUBLIC_PROFILE_DOMAIN ?? '').trim().toLowerCase().replace(/^\.+|\/+$/g, '');

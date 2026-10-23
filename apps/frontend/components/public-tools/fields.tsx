@@ -1,8 +1,26 @@
 'use client';
 
-import { useId } from 'react';
-import { inputClass } from '@/components/modal';
+import { useId, type ReactNode } from 'react';
+import { InfoHint } from '@/components/info-hint';
+import { inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
+
+/** The card every calculator puts its form and its result in, so the pages read as one family. */
+export const toolCard = 'min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5';
+
+/**
+ * Field label, with the secondary explanation behind an (i) when there is
+ * one. Every field gets the same label row height, so inputs side by side
+ * line up whether or not they have a note.
+ */
+function FieldLabel({ htmlFor, label, info }: { htmlFor: string; label: string; info?: ReactNode }) {
+  const text = (
+    <label htmlFor={htmlFor} className="text-sm font-medium">
+      {label}
+    </label>
+  );
+  return info ? <InfoHint hint={info}>{text}</InfoHint> : <div className="flex items-center">{text}</div>;
+}
 
 /** "1 200 000", "1200000,50" or "1.200.000" → number; empty or junk → 0. */
 export function parseAmount(value: string): number {
@@ -15,21 +33,41 @@ export function money(locale: string, amount: number, currency = 'CZK', digits =
   return new Intl.NumberFormat(locale, { style: 'currency', currency, minimumFractionDigits: digits, maximumFractionDigits: digits }).format(amount);
 }
 
-export function AmountField({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint?: string }) {
+/** `unit` (CZK, EUR, %) sits inside the input on the right; `info` goes behind the (i), `hint` stays visible below. */
+export function AmountField({
+  label,
+  value,
+  onChange,
+  hint,
+  info,
+  unit
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+  info?: ReactNode;
+  unit?: string;
+}) {
   const id = useId();
   return (
-    <div>
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      <input
-        id={id}
-        inputMode="decimal"
-        autoComplete="off"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={cn(inputClass, 'mt-1.5 tabular-nums')}
-      />
+    <div className="min-w-0">
+      <FieldLabel htmlFor={id} label={label} info={info} />
+      <div className="relative mt-1.5">
+        <input
+          id={id}
+          inputMode="decimal"
+          autoComplete="off"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={cn(inputClass, 'h-10 tabular-nums', unit && 'pr-14')}
+        />
+        {unit && (
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground" aria-hidden="true">
+            {unit}
+          </span>
+        )}
+      </div>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
@@ -40,6 +78,7 @@ export function TextField({
   value,
   onChange,
   hint,
+  info,
   placeholder,
   inputMode,
   type = 'text',
@@ -49,6 +88,7 @@ export function TextField({
   value: string;
   onChange: (v: string) => void;
   hint?: string;
+  info?: ReactNode;
   placeholder?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
   type?: 'text' | 'date';
@@ -56,10 +96,8 @@ export function TextField({
 }) {
   const id = useId();
   return (
-    <div>
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
+    <div className="min-w-0">
+      <FieldLabel htmlFor={id} label={label} info={info} />
       <input
         id={id}
         type={type}
@@ -70,7 +108,7 @@ export function TextField({
         maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={cn(inputClass, 'mt-1.5')}
+        className={cn(inputClass, 'mt-1.5 h-10')}
       />
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
@@ -81,20 +119,20 @@ export function SelectField<T extends string>({
   label,
   value,
   onChange,
-  options
+  options,
+  info
 }: {
   label: string;
   value: T;
   onChange: (v: T) => void;
   options: { value: T; label: string }[];
+  info?: ReactNode;
 }) {
   const id = useId();
   return (
-    <div>
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value as T)} className={cn(inputClass, 'mt-1.5')}>
+    <div className="min-w-0">
+      <FieldLabel htmlFor={id} label={label} info={info} />
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value as T)} className={cn(inputClass, 'mt-1.5 h-10')}>
         {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
@@ -118,9 +156,15 @@ export function Segmented<T extends string>({
   options: { value: T; label: string }[];
 }) {
   return (
-    <fieldset>
-      <legend className="text-sm font-medium">{label}</legend>
-      <div className="mt-1.5 inline-flex flex-wrap rounded-lg border border-border bg-secondary p-0.5">
+    <fieldset className="min-w-0">
+      <legend className="flex items-center text-sm font-medium">{label}</legend>
+      {/* Three or more options stack on phones: wrapped rows of uneven pills read worse than a list. */}
+      <div
+        className={cn(
+          'mt-1.5 rounded-lg border border-border bg-secondary p-0.5',
+          options.length > 2 ? 'grid grid-cols-1 sm:flex sm:flex-wrap' : 'flex flex-wrap'
+        )}
+      >
         {options.map((o) => (
           <button
             key={o.value}
@@ -128,7 +172,7 @@ export function Segmented<T extends string>({
             aria-pressed={o.value === value}
             onClick={() => onChange(o.value)}
             className={cn(
-              'rounded-md px-3 py-1.5 text-sm font-semibold transition-colors',
+              'min-h-[2.125rem] flex-auto rounded-md px-3 py-1.5 text-sm font-semibold transition-colors',
               o.value === value ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
             )}
           >

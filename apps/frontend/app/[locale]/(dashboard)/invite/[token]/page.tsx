@@ -40,7 +40,7 @@ export default async function InvitePage(props: { params: Promise<{ token: strin
 
   return (
     <div className="mx-auto max-w-md py-8">
-      <div className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-6 text-center">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
           <Users className="h-6 w-6" />
         </span>

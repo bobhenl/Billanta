@@ -53,7 +53,7 @@ export function NewsletterSettings({ initial }: { initial: MyNewsletter }) {
   };
 
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card p-5">
+    <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <InfoHint hint={t('hint')}>
           <h2 className="flex items-center gap-2 font-bold">

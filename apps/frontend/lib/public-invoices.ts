@@ -1,5 +1,5 @@
 /**
- * Client-portal data access — talks to the backend's PUBLIC, unauthenticated
+ * Client-portal data access – talks to the backend's PUBLIC, unauthenticated
  * `GET /api/v1/public/invoices/:token` endpoint (`apps/backend/src/public-
  * invoices`). No session/JWT is ever attached here on purpose: a client
  * opening an emailed invoice link has neither, and the endpoint doesn't
@@ -8,7 +8,7 @@
  *
  * `BACKEND_URL` is a plain server-side env var (NOT `NEXT_PUBLIC_*`) because
  * this fetch only ever runs in the Server Component that renders
- * `app/[locale]/i/[token]/page.tsx` — it never needs to reach the browser
+ * `app/[locale]/i/[token]/page.tsx` – it never needs to reach the browser
  * bundle. Defaults to the backend's own default port (see
  * `apps/backend/src/main.ts`) for local dev.
  */
@@ -89,7 +89,7 @@ export async function confirmCardPayment(token: string, sessionId: string): Prom
 
 /**
  * Fetches the client-portal view of an invoice by its `public_token`.
- * Returns `null` for a 404 (unmatched or malformed token — the backend
+ * Returns `null` for a 404 (unmatched or malformed token – the backend
  * deliberately returns the same shape for both, see
  * `PublicInvoicesService.findByPublicToken`), so the page can render a
  * proper `notFound()` instead of an error boundary. Any other non-2xx
@@ -97,7 +97,7 @@ export async function confirmCardPayment(token: string, sessionId: string): Prom
  */
 export async function getPublicInvoice(token: string): Promise<PublicInvoice | null> {
   const res = await fetch(`${BACKEND_URL}/api/v1/public/invoices/${encodeURIComponent(token)}`, {
-    // Always fetch fresh — this is per-invoice, per-request data (status,
+    // Always fetch fresh – this is per-invoice, per-request data (status,
     // amounts) that must never be served stale from a cache, and there is
     // no tenant-aware cache key to scope it by anyway.
     cache: "no-store",
@@ -123,6 +123,6 @@ export async function recordPublicInvoiceView(token: string): Promise<void> {
       signal: AbortSignal.timeout(3000)
     });
   } catch {
-    // Analytics only — never break the invoice page over it.
+    // Analytics only – never break the invoice page over it.
   }
 }

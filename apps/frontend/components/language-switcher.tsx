@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 /**
  * Compact language dropdown: a globe + current code ("CS ▾") that opens a
  * small menu with each language's own name. Built on `<details>` so the
- * options are real `<a hreflang>` links that stay in the DOM while closed —
- * crawlable, and reinforcing the hreflang tags in the head — and it works
+ * options are real `<a hreflang>` links that stay in the DOM while closed –
+ * crawlable, and reinforcing the hreflang tags in the head – and it works
  * without JavaScript. Script only adds close-on-outside-click / Escape /
  * navigation.
  *
@@ -78,7 +78,7 @@ export function LanguageSwitcher({
   }
 
   return (
-    <details ref={ref} className={cn('group relative shrink-0', className)}>
+    <details ref={ref} data-menu className={cn('group relative shrink-0', className)}>
       <summary
         aria-label={t('label')}
         title={t('label')}

@@ -4,8 +4,10 @@ import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, RotateCcw } from 'lucide-react';
 import { invoiceChecklist, type ChecklistCountry, type ChecklistItemId, type ChecklistScenario } from '@faktur/cz-compliance';
+import { toolCard } from '@/components/public-tools/fields';
 import { ChecklistGroups, ChecklistNotices, ScenarioPicker } from '@/components/public-tools/invoice-checklist-view';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * "What must my invoice contain?" The visitor says who they are and what
@@ -39,14 +41,14 @@ export function InvoiceRequirementsChecker({ defaultCountry }: { defaultCountry:
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-      <form className="h-fit space-y-4 rounded-xl border border-border bg-card p-5 lg:sticky lg:top-24" onSubmit={(e) => e.preventDefault()}>
+      <form className={cn(toolCard, 'h-fit space-y-4 lg:sticky lg:top-24')} onSubmit={(e) => e.preventDefault()}>
         <h2 className="text-base font-semibold">{t('scenarioTitle')}</h2>
         {/* The normalised scenario, so impossible choices (a non-payer's simplified document) snap back. */}
         <ScenarioPicker value={{ ...scenario, ...checklist.scenario }} onChange={setScenario} />
       </form>
 
       <div className="min-w-0 space-y-6">
-        <section aria-live="polite" className="rounded-xl border border-border bg-card p-5">
+        <section aria-live="polite" className={toolCard}>
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-base font-semibold">{t('progressTitle')}</h2>
             <span className="text-sm tabular-nums text-muted-foreground">{t('progress', { done, total: required.length })}</span>

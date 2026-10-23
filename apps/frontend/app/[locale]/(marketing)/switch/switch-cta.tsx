@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import type { SwitchBrand } from '@/lib/switch';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 /** Sign up and land in the import (`?from=` is remembered for the welcome screen, see middleware). */
@@ -14,14 +15,14 @@ export async function SwitchCta({ brand, className }: { brand?: SwitchBrand; cla
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <Link
           href={brand ? `/signup?from=${brand}` : '/signup'}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          className={buttonClass.primary}
         >
           {t('ctaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
         <Link
           href={brand ? `/settings/import?source=${brand}` : '/settings/import'}
-          className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
+          className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
         >
           {t('haveAccount')}
         </Link>

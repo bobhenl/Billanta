@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { getClientPortal, type ClientPortalDocument } from '@/lib/client-portal';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { privateLinkMetadata } from '@/lib/seo';
+import { SITE_NAME } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 // A customer's private portal link: never indexed, never followed.
@@ -65,18 +66,17 @@ export default async function ClientPortalPage({
   const { filter: rawFilter } = await searchParams;
   const filter: Filter = (FILTERS as readonly string[]).includes(rawFilter ?? '') ? (rawFilter as Filter) : 'all';
   const t = await getTranslations('clientPortal');
-  const tApp = await getTranslations('app');
+  const tInvoice = await getTranslations('publicInvoice');
   const locale = await getLocale();
   const docs = portal.documents.filter((d) => matches(d, filter));
   const counts = Object.fromEntries(FILTERS.map((f) => [f, portal.documents.filter((d) => matches(d, f)).length])) as Record<Filter, number>;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:py-14">
-      <p className="text-center text-sm font-medium text-muted-foreground">{tApp('name')}</p>
-
-      <header className="mt-6">
-        <p className="text-sm font-semibold text-primary">{portal.companyName}</p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight">{t('title', { name: portal.customerName })}</h1>
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:py-14">
+      {/* The supplier leads; the app name only signs off in the footer. */}
+      <header>
+        <p className="break-words text-sm font-semibold text-primary">{portal.companyName}</p>
+        <h1 className="mt-1 break-words text-2xl font-extrabold tracking-tight">{t('title', { name: portal.customerName })}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t('lead', { company: portal.companyName })}</p>
       </header>
 
@@ -105,11 +105,11 @@ export default async function ClientPortalPage({
             key={f}
             href={f === 'all' ? `/c/${token}` : `/c/${token}?filter=${f}`}
             className={cn(
-              'shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold transition-colors',
+              'inline-flex h-9 shrink-0 items-center gap-1 rounded-full border px-3 text-sm font-semibold transition-colors',
               f === filter ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:bg-accent hover:text-primary'
             )}
           >
-            {t(`filters.${f}`)} <span className="opacity-70">{counts[f]}</span>
+            {t(`filters.${f}`)} <span className="tabular-nums opacity-70">{counts[f]}</span>
           </Link>
         ))}
       </nav>
@@ -122,19 +122,24 @@ export default async function ClientPortalPage({
             const state = docState(d);
             const dueText =
               d.dueDate && d.documentType !== 'credit_note'
-                ? ` · ${t(d.documentType === 'quote' ? 'validUntil' : 'due', { date: formatDate(d.dueDate, locale) ?? '' })}`
-                : '';
+                ? t(d.documentType === 'quote' ? 'validUntil' : 'due', { date: formatDate(d.dueDate, locale) ?? '' })
+                : null;
             return (
               <li key={d.token}>
                 <Link href={`/i/${d.token}`} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/50">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-baseline gap-x-2">
-                      <span className="font-semibold">{d.number ?? t('unnumbered')}</span>
+                      <span className="min-w-0 break-all font-semibold">{d.number ?? t('unnumbered')}</span>
                       <span className="text-xs text-muted-foreground">{t(`types.${d.documentType}`)}</span>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {formatDate(d.issueDate, locale)}
-                      {dueText}
+                      {dueText && (
+                        <>
+                          {' · '}
+                          <span className={cn(state === 'overdue' && 'font-semibold text-destructive')}>{dueText}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
@@ -149,7 +154,10 @@ export default async function ClientPortalPage({
         </ul>
       )}
 
-      <p className="mt-8 text-center text-xs text-muted-foreground">{t('footer', { company: portal.companyName })}</p>
+      <footer className="mt-8 space-y-1 text-center text-xs text-muted-foreground">
+        <p>{t('footer', { company: portal.companyName })}</p>
+        <p className="opacity-80">{tInvoice('madeWith', { name: SITE_NAME })}</p>
+      </footer>
     </div>
   );
 }

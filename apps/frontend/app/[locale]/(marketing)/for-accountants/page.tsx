@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import { Building2, Calculator, Check, FileDown, Gift, Link2, MapPin, MessageSquare, Sparkles, UserPlus, Users } from 'lucide-react';
+import { ArrowRight, BadgeCheck, Building2, FileDown, Gift, MapPin, Users } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { DemoCta } from '@/components/demo/demo-cta';
-import { NextPages } from '@/components/learn-page';
-
+import { AudienceHero, ClosingCta, SectionTitle } from '@/components/audience-page';
 import { EmbedSection } from '@/components/embed-section';
+import { CheckList, NextPages, NumberedSteps } from '@/components/learn-page';
+import { FaqList, IconCards, faqLd } from '@/components/segment-page';
 import { Link } from '@/i18n/navigation';
-import { buttonClass } from '@/lib/ui-classes';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { CONTACT_EMAIL, SITE_NAME } from '@/lib/site';
 import { REFERRAL_REWARDS } from '@/lib/referral';
@@ -24,6 +23,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  * that starts paying (Settings → Invite for credits), and an invitation to
  * tell us what to build next. The FAQ is mirrored 1:1 in FAQPage data.
  */
+const BENEFITS = [
+  { icon: Users, key: 'access' },
+  { icon: Building2, key: 'clients' },
+  { icon: FileDown, key: 'exports' },
+  { icon: BadgeCheck, key: 'included' },
+  { icon: Gift, key: 'credits' },
+  { icon: MapPin, key: 'directory' }
+] as const;
+const STEPS = ['signup', 'program', 'share'] as const;
+
 export default async function AccountantsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -35,20 +44,7 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
     a: a.replace('{welcome}', String(credits.welcome)).replace('{reward}', String(credits.reward))
   }));
   const mailto = CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(t('shapeCta.mailSubject'))}` : null;
-
-  const benefits = [
-    { icon: Users, key: 'access' },
-    { icon: Building2, key: 'clients' },
-    { icon: FileDown, key: 'exports' },
-    { icon: MapPin, key: 'directory' },
-    { icon: Gift, key: 'credits' },
-    { icon: Sparkles, key: 'shape' }
-  ] as const;
-  const steps = [
-    { icon: UserPlus, key: 'signup' },
-    { icon: Calculator, key: 'program' },
-    { icon: Link2, key: 'share' }
-  ] as const;
+  const signup = { href: '/signup?for=accountant', label: t('cta') };
 
   return (
     <section className="container max-w-5xl py-10 sm:py-14">
@@ -59,100 +55,37 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
             [SITE_NAME, '/'],
             [t('title'), '/for-accountants']
           ]),
-          {
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: faq.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } }))
-          }
+          faqLd(faq)
         ])}
       />
-      <p className="text-sm font-bold uppercase tracking-wider text-primary">{t('eyebrow')}</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/signup?for=accountant" className={buttonClass.primary}>
-          {t('cta')}
+      <AudienceHero
+        title={t('title')}
+        lead={t('lead')}
+        primary={signup}
+        secondary={{ href: { pathname: '/demo', query: { view: 'accountant' } }, label: tLearn('demo') }}
+      />
+
+      <IconCards
+        items={BENEFITS.map(({ icon, key }) => ({
+          icon,
+          title: t(`benefits.${key}.title`),
+          body: t(`benefits.${key}.body`, { welcome: credits.welcome, reward: credits.reward })
+        }))}
+      />
+
+      <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-primary">
+        <Link href="/invoicing" className="inline-flex items-center gap-1.5 hover:underline">
+          {t('directoryCta.example')}
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
-        <Link href="/partners" className={buttonClass.secondary}>
+        <Link href="/partners" className="inline-flex items-center gap-1.5 hover:underline">
           {t('partnersLink')}
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </div>
-      <DemoCta view="accountant" className="mt-6 max-w-3xl" />
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {benefits.map(({ icon: Icon, key }) => (
-          <div key={key} className="rounded-xl border border-border bg-card p-5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Icon className="h-5 w-5" />
-            </span>
-            <h2 className="mt-3 font-bold">{t(`benefits.${key}.title`)}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t(`benefits.${key}.body`, { welcome: credits.welcome, reward: credits.reward })}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-12 grid gap-6 lg:grid-cols-2">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight">{t('clients.title')}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{t('clients.lead')}</p>
-          <ul className="mt-4 space-y-2 text-sm">
-            {(t.raw('clients.points') as string[]).map((p) => (
-              <li key={p} className="flex gap-2">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                {p}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <MapPin className="h-5 w-5" />
-          </span>
-          <h2 className="mt-3 text-xl font-bold tracking-tight">{t('directoryCta.title')}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{t('directoryCta.body')}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/invoicing" className={buttonClass.secondary}>
-              {t('directoryCta.example')}
-            </Link>
-            <Link href="/settings/accountant-profile" className={buttonClass.ghost}>
-              {t('directoryCta.settings')}
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('stepsTitle')}</h2>
-      <ol className="mt-4 grid gap-4 sm:grid-cols-3">
-        {steps.map(({ icon: Icon, key }, i) => (
-          <li key={key} className="rounded-xl border border-border bg-card p-5">
-            <span className="flex items-center gap-2 text-sm font-bold text-primary">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground">{i + 1}</span>
-              <Icon className="h-4 w-4" />
-            </span>
-            <h3 className="mt-3 font-bold">{t(`steps.${key}.title`)}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{t(`steps.${key}.body`)}</p>
-          </li>
-        ))}
-      </ol>
-
-      <div className="mt-12 rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <MessageSquare className="h-5 w-5" />
-        </span>
-        <h2 className="mt-3 text-xl font-bold tracking-tight">{t('shapeCta.title')}</h2>
-        <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('shapeCta.body')}</p>
-        <div className="mt-4">
-          {mailto ? (
-            <a href={mailto} className={buttonClass.primary}>
-              {t('shapeCta.mail')}
-            </a>
-          ) : (
-            <Link href="/signup?for=accountant" className={buttonClass.primary}>
-              {t('shapeCta.signup')}
-            </Link>
-          )}
-        </div>
-      </div>
+      <SectionTitle title={t('stepsTitle')} />
+      <NumberedSteps steps={STEPS.map((key) => ({ title: t(`steps.${key}.title`), body: t(`steps.${key}.body`) }))} />
 
       <NextPages
         title={tLearn('nextTitle')}
@@ -163,29 +96,22 @@ export default async function AccountantsPage({ params }: { params: Promise<{ lo
         }))}
       />
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('faqTitle')}</h2>
-      <div className="mt-4 divide-y divide-border rounded-xl border border-border bg-card">
-        {faq.map(({ q, a }) => (
-          <details key={q} className="group p-4">
-            <summary className="cursor-pointer list-none font-semibold marker:hidden">{q}</summary>
-            <p className="mt-2 text-sm text-muted-foreground">{a}</p>
-          </details>
-        ))}
-      </div>
+      <FaqList title={t('faqTitle')} faq={faq} />
+
+      {/* The credit rules matter to few readers, so they stay folded. */}
+      <details className="mt-4 rounded-xl border border-border bg-card p-4">
+        <summary className="cursor-pointer list-none font-semibold marker:hidden">{t('fine.title')}</summary>
+        <CheckList items={t.raw('fine.points') as string[]} className="mt-3" />
+      </details>
 
       <EmbedSection section="accountants" tabs={['badge']} badgeKinds={['partner']} className="mt-12" />
 
-      <div className="mt-12 rounded-xl border border-border p-6">
-        <h2 className="text-lg font-bold tracking-tight">{t('fine.title')}</h2>
-        <ul className="mt-3 space-y-1.5 text-sm">
-          {(t.raw('fine.points') as string[]).map((p) => (
-            <li key={p} className="flex gap-2">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-              {p}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ClosingCta
+        title={t('shapeCta.title')}
+        body={t('shapeCta.body')}
+        primary={signup}
+        secondary={mailto ? { href: mailto, label: t('shapeCta.mail') } : null}
+      />
     </section>
   );
 }

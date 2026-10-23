@@ -39,6 +39,8 @@
 
     --radius: 0.625rem;
     --tabbar-h: 64px;
+    /* Decelerating curve for everything that enters (see "Motion" below). */
+    --ease-out: cubic-bezier(0.2, 0, 0, 1);
     color-scheme: light;
   }
 
@@ -111,33 +113,149 @@
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
+
+  /* The chevron of a folded section turns instead of flipping. Base layer,
+     so a call site's own transition utility still wins. */
+  summary svg {
+    transition: transform 200ms var(--ease-out);
+  }
 }
 
 @layer components {
   /*
-   * (i) hint, after VoxelRank's hint() partial: a quiet round button next
-   * to a label, and a note that opens beneath it. The note's text is always
-   * in the DOM (hidden / hidden="until-found"), so crawlers and Ctrl+F still
-   * see it — see components/info-hint.tsx.
+   * (i) hint, after VoxelRank's hint() partial: a quiet info icon next to a
+   * label. A mouse gets a tooltip (.hint-tip), touch gets the text sliding
+   * open under the label (.hint-reveal). The text is always in the DOM
+   * (hidden / hidden="until-found"), so crawlers and Ctrl+F still see it –
+   * see components/info-hint.tsx.
    */
+  /* -my-1 keeps the 24px tap target from making a hinted label row taller
+     than a plain one, so inputs under both line up. No hover fill or
+     pressed state: it should read as part of the label, not as a button. */
   .hint-btn {
-    @apply inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors;
+    @apply -my-1 inline-flex h-6 w-6 shrink-0 cursor-help items-center justify-center rounded-full text-muted-foreground/70 transition-colors;
+    -webkit-tap-highlight-color: transparent;
   }
   .hint-btn:hover,
   .hint-btn[aria-expanded='true'] {
-    @apply bg-accent text-primary;
+    @apply text-primary;
   }
-  .hint-body {
-    @apply mt-1.5 block rounded-r-md border-l-[3px] border-primary/60 bg-accent/60 px-3 py-2 text-sm leading-relaxed text-muted-foreground;
+  /* Keyboard focus stays visible, but hugs the icon instead of the global offset ring. */
+  .hint-btn:focus-visible {
+    @apply text-primary ring-2 ring-ring ring-offset-0;
   }
-  .hint-body[hidden] {
-    @apply m-0 border-0 p-0;
+  .hint-tip {
+    @apply fixed left-0 top-0 z-[200] block max-h-[calc(100vh-1rem)] w-max max-w-[min(20rem,calc(100vw-1rem))] overflow-auto whitespace-normal rounded-lg border border-border bg-card px-3 py-2 text-left text-sm font-normal normal-case leading-relaxed tracking-normal text-muted-foreground shadow-lg;
+    visibility: hidden;
+    animation: hint-fade-in 120ms ease-out;
   }
-  /* Plain `hidden` (server render, browsers without until-found) must win
-     over `display: block` above; `until-found` hides via content-visibility
-     and needs the box kept so find-in-page can still reach the text. */
-  .hint-body[hidden]:not([hidden='until-found']) {
-    display: none;
+  .hint-inline {
+    @apply block whitespace-normal pt-1.5 text-left text-sm font-normal normal-case leading-relaxed tracking-normal text-muted-foreground;
+  }
+  /* Slide open by growing a grid row from 0fr to its content height;
+     closing is a little quicker (REVEAL_MS in info-hint.tsx covers both). */
+  .hint-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 150ms ease-in,
+      opacity 150ms ease-in;
+  }
+  .hint-reveal[data-open] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition-duration: 200ms;
+    transition-timing-function: var(--ease-out);
+  }
+  .hint-reveal > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+  /* components/hint-card.tsx: with a mouse the explanation is just shown,
+     already before hydration, so the cards do not jump once JS runs. */
+  @media (hover: hover) and (pointer: fine) {
+    .hint-card .hint-reveal {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+    .hint-card .hint-card-body[hidden] {
+      display: block;
+      content-visibility: visible;
+    }
+    .hint-card-chevron {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hint-tip {
+      animation: none;
+    }
+    .hint-reveal {
+      transition: none;
+    }
+  }
+
+  /*
+   * Motion: only where it shows where something came from. Entries are
+   * 150-200ms and decelerate; exits are instant (the element unmounts or
+   * the <dialog> closes), except the toast, which fades. Every class here is
+   * switched off for reduced motion further down. CSS animations, not
+   * transitions, because these elements mount (or leave display: none)
+   * already in their final state. The keyframes use the standalone
+   * translate / scale properties, so they add to a panel's own Tailwind
+   * transform (e.g. -translate-x-1/2) instead of replacing it.
+   */
+  /* Dropdowns, menus, suggestion lists: drop 4px from their trigger. */
+  .anim-pop {
+    animation: ui-pop 150ms var(--ease-out);
+  }
+  /* Panels above the phone tab bar ("More", "+"): rise from the bar. */
+  .anim-rise {
+    animation: ui-rise 180ms var(--ease-out);
+  }
+  /* Dialog surfaces: fade with a hint of scale; their backdrop just fades. */
+  .anim-dialog,
+  .anim-dialog-flat {
+    animation: ui-dialog 180ms var(--ease-out);
+  }
+  .anim-dialog::backdrop,
+  .anim-fade {
+    animation: ui-fade 180ms var(--ease-out);
+  }
+  /* A sheet slides up from the bottom edge on phones, and is a dialog from sm up. */
+  .anim-sheet {
+    animation: ui-sheet 200ms var(--ease-out);
+  }
+  @media (min-width: 640px) {
+    .anim-sheet {
+      animation: ui-dialog 180ms var(--ease-out);
+    }
+  }
+  /* A <details> used as a menu or popover (data-menu: language switcher,
+     nav menus, components/dismissable-details.tsx): its panel pops. The
+     backdrop of a details modal (data-dismiss) only fades, since moving a
+     full-screen layer would uncover a strip of the page. */
+  details[data-menu][open] > :not(summary, [data-dismiss]) {
+    animation: ui-pop 150ms var(--ease-out);
+  }
+  details[data-menu][open] > [data-dismiss] {
+    animation: ui-fade 180ms var(--ease-out);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .anim-pop,
+    .anim-rise,
+    .anim-dialog,
+    .anim-dialog::backdrop,
+    .anim-dialog-flat,
+    .anim-fade,
+    .anim-sheet,
+    details[data-menu][open] > * {
+      animation: none !important;
+    }
+    summary svg {
+      transition: none !important;
+    }
   }
 
   /* Space reserved under page content for the fixed mobile tab bar. */
@@ -172,6 +290,81 @@
   animation-duration: 150ms;
 }
 
+/*
+ * Folded sections (<details>, not the data-menu ones) open by growing to
+ * their height instead of jumping. Needs ::details-content and
+ * interpolate-size (Chromium for now); elsewhere they open instantly as
+ * before. A transition, not an animation, so sections rendered open do not
+ * animate on page load. Closing is quicker than opening.
+ *
+ * The clip keeps the growing text from spilling over what is below, but it
+ * would also cut off a suggestion list or menu inside the section, so it is
+ * lifted while something inside (other than a summary) has focus, which is
+ * when those are open. The clip margin spares focus rings and shadows.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(::details-content) and (interpolate-size: allow-keywords) {
+    details:not([data-menu]) {
+      interpolate-size: allow-keywords;
+    }
+    details:not([data-menu])::details-content {
+      block-size: 0;
+      opacity: 0;
+      overflow-y: clip;
+      overflow-clip-margin: 6px;
+      transition:
+        block-size 140ms ease-in,
+        opacity 140ms ease-in,
+        content-visibility 140ms ease-in allow-discrete;
+    }
+    details:not([data-menu])[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+      transition-duration: 200ms;
+      transition-timing-function: var(--ease-out);
+    }
+    details:not([data-menu])[open]:has(:focus:not(summary))::details-content {
+      overflow-y: visible;
+    }
+  }
+}
+
+@keyframes ui-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ui-pop {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+@keyframes ui-rise {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+@keyframes ui-dialog {
+  from {
+    opacity: 0;
+    scale: 0.98;
+  }
+}
+@keyframes ui-sheet {
+  from {
+    translate: 0 100%;
+  }
+}
+
+/* components/info-hint.tsx: the tooltip fades in. */
+@keyframes hint-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* components/nav-progress.tsx: the bar sweeps left to right while a page loads. */
 @keyframes nav-progress {
   from {
@@ -179,6 +372,71 @@
   }
   to {
     transform: translateX(300%);
+  }
+}
+
+/*
+ * components/marketing-hero-slides.tsx: three slides take turns over a 12s
+ * loop with a plain cross-fade: the slides tell the dictate → send → paid
+ * story, and a blur or slide-in would only add show. Every slide gets the
+ * same animation with a 4s delay step; the backwards fill keeps the later
+ * ones hidden until their turn.
+ */
+@keyframes hero-slide {
+  0% {
+    opacity: 0;
+  }
+  4%,
+  31% {
+    opacity: 1;
+  }
+  35%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes hero-dot {
+  0% {
+    transform: scaleX(0);
+  }
+  33.3% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  36%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+@keyframes hero-wave {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.hero-slide {
+  animation: hero-slide 12s ease-in-out infinite both;
+}
+.hero-dot {
+  transform-origin: left;
+  animation: hero-dot 12s linear infinite both;
+}
+.hero-wave {
+  animation: hero-wave 0.9s ease-in-out infinite;
+}
+/* No motion: the middle slide (the invoice) stands still on its own. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-dot,
+  .hero-wave {
+    animation: none;
+  }
+  .hero-slide:not([data-still]) {
+    visibility: hidden;
   }
 }
 

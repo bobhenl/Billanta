@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Check, Loader2, Plus, Save, Trash2 } from 'lucide-react';
+import { Check, ChevronDown, Loader2, Plus, Save, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
@@ -162,7 +162,7 @@ export function InvoiceFormSettings({
       if (result.ok) router.refresh();
     });
 
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
   return (
     <form
       onSubmit={(e) => {
@@ -170,6 +170,84 @@ export function InvoiceFormSettings({
         save();
       }}
     >
+      {/* Defaults first: they are what most companies come here to change. */}
+      <section id="defaults" className={cn(card, 'scroll-mt-20')}>
+        <InfoHint hint={t('defaultsHint')}>
+          <h2 className="font-bold">{t('defaultsTitle')}</h2>
+        </InfoHint>
+        <InvoiceDefaultsFields value={blank} onChange={setBlank} bankAccounts={bankAccounts} vatPayer={vatPayer} home={home} readOnly={readOnly} />
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <label className="block text-sm">
+            <span className="font-medium">{tf('issuePlace')}</span>
+            <input
+              className={cn(inputClass, 'mt-1')}
+              maxLength={100}
+              value={place}
+              disabled={readOnly}
+              onChange={(e) => setPlace(e.target.value)}
+              placeholder={tf('issuePlacePlaceholder')}
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium">{tf('issuedBy')}</span>
+            <input
+              className={cn(inputClass, 'mt-1')}
+              maxLength={100}
+              value={issuedBy}
+              disabled={readOnly}
+              onChange={(e) => setIssuedBy(e.target.value)}
+              placeholder={tf('issuedByPlaceholder')}
+            />
+          </label>
+        </div>
+
+        {/* Only useful with the custom fields switched on below; labels already saved stay visible either way. */}
+        {(show.customFields || labels.length > 0) && (
+          <div className="mt-6">
+            <InfoHint hint={t('customLabelsHint')}>
+              <h3 className="text-sm font-semibold">{t('customLabelsTitle')}</h3>
+            </InfoHint>
+            <div className="mt-3 space-y-2">
+              {labels.map((label, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    className={cn(inputClass, 'min-w-0 flex-1')}
+                    maxLength={40}
+                    value={label}
+                    disabled={readOnly}
+                    aria-label={tf('customLabel')}
+                    placeholder={t('customLabelPlaceholder')}
+                    onChange={(e) => setLabels((cur) => cur.map((x, j) => (j === i ? e.target.value : x)))}
+                  />
+                  <button
+                    type="button"
+                    disabled={readOnly}
+                    title={t('remove')}
+                    aria-label={t('remove')}
+                    onClick={() => setLabels((cur) => cur.filter((_, j) => j !== i))}
+                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {labels.length < 4 && !readOnly && (
+                <button type="button" onClick={() => setLabels((cur) => [...cur, ''])} className={buttonClass.secondary}>
+                  <Plus className="h-4 w-4" />
+                  {t('addLabel')}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        <p className="mt-6 text-sm text-muted-foreground">
+          {t('registryNoteElsewhere')}{' '}
+          <Link href="/settings/company" className="font-semibold text-foreground underline underline-offset-2">
+            {t('registryNoteLink')}
+          </Link>
+        </p>
+      </section>
+
       <section id="fields" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('fieldsHint')}>
           <h2 className="font-bold">{t('fieldsTitle')}</h2>
@@ -288,7 +366,7 @@ export function InvoiceFormSettings({
             {!canHideCredit && (
               <p className="mt-1 text-xs text-muted-foreground">
                 {t('brandCreditFree')}{' '}
-                <Link href="/settings/billing" className="font-medium text-primary hover:underline">
+                <Link href="/billing" className="font-medium text-primary hover:underline">
                   {t('brandCreditUpgrade')}
                 </Link>
               </p>
@@ -296,20 +374,6 @@ export function InvoiceFormSettings({
           </div>
         </div>
       </section>
-
-      <ExchangeRateSettings
-        className={card}
-        mode={rateMode}
-        onModeChange={setRateMode}
-        reportMode={reportRateMode}
-        onReportModeChange={setReportRateMode}
-        uniform={uniformRates}
-        rates={annualRates}
-        onRatesChange={setAnnualRates}
-        vatStatus={vatStatus}
-        home={home}
-        readOnly={readOnly}
-      />
 
       <section id="reminders" className={cn(card, 'scroll-mt-20')}>
         <InfoHint hint={t('remindersHint')}>
@@ -359,100 +423,54 @@ export function InvoiceFormSettings({
         </div>
       </section>
 
-      <section id="links" className={cn(card, 'scroll-mt-20')}>
-        <InfoHint hint={t('links.hint')}>
-          <h2 className="font-bold">{t('links.title')}</h2>
-        </InfoHint>
-        <div role="radiogroup" aria-label={t('links.title')} className="mt-3 space-y-2">
-          {PUBLIC_LINK_PREFIXES.map((mode) => (
-            <label key={mode} className={cn('flex items-start gap-2.5 text-sm', readOnly && 'opacity-70')}>
-              <input
-                type="radio"
-                name="public-link-prefix"
-                checked={linkPrefix === mode}
-                disabled={readOnly}
-                onChange={() => setLinkPrefix(mode)}
-                className="mt-0.5 h-4 w-4 accent-primary"
-              />
-              <span className="min-w-0">
-                <span className="font-medium">{t(`links.options.${mode}`)}</span>
-                <span className="block break-all font-mono text-xs text-muted-foreground">{exampleLink(mode, linkCompany)}</span>
-              </span>
-            </label>
-          ))}
-        </div>
-      </section>
+      {/* Set once, if ever: folded so the everyday options above stay one short scroll. */}
+      <details className="group mt-6">
+        <summary className="flex cursor-pointer list-none items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 sm:px-5 [&::-webkit-details-marker]:hidden">
+          <span className="min-w-0 flex-1">
+            <span className="block font-bold">{t('advancedTitle')}</span>
+            <span className="block text-xs text-muted-foreground">{t('advancedSummary')}</span>
+          </span>
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+        </summary>
+        <ExchangeRateSettings
+          className={card}
+          mode={rateMode}
+          onModeChange={setRateMode}
+          reportMode={reportRateMode}
+          onReportModeChange={setReportRateMode}
+          uniform={uniformRates}
+          rates={annualRates}
+          onRatesChange={setAnnualRates}
+          vatStatus={vatStatus}
+          home={home}
+          readOnly={readOnly}
+        />
 
-      <section id="defaults" className={cn(card, 'scroll-mt-20')}>
-        <InfoHint hint={t('defaultsHint')}>
-          <h2 className="font-bold">{t('defaultsTitle')}</h2>
-        </InfoHint>
-        <InvoiceDefaultsFields value={blank} onChange={setBlank} bankAccounts={bankAccounts} vatPayer={vatPayer} home={home} readOnly={readOnly} />
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="block text-sm">
-            <span className="font-medium">{tf('issuePlace')}</span>
-            <input
-              className={cn(inputClass, 'mt-1')}
-              maxLength={100}
-              value={place}
-              disabled={readOnly}
-              onChange={(e) => setPlace(e.target.value)}
-              placeholder={tf('issuePlacePlaceholder')}
-            />
-          </label>
-          <label className="block text-sm">
-            <span className="font-medium">{tf('issuedBy')}</span>
-            <input
-              className={cn(inputClass, 'mt-1')}
-              maxLength={100}
-              value={issuedBy}
-              disabled={readOnly}
-              onChange={(e) => setIssuedBy(e.target.value)}
-              placeholder={tf('issuedByPlaceholder')}
-            />
-          </label>
-        </div>
+        <section id="links" className={cn(card, 'scroll-mt-20')}>
+          <InfoHint hint={t('links.hint')}>
+            <h2 className="font-bold">{t('links.title')}</h2>
+          </InfoHint>
+          <div role="radiogroup" aria-label={t('links.title')} className="mt-3 space-y-2">
+            {PUBLIC_LINK_PREFIXES.map((mode) => (
+              <label key={mode} className={cn('flex items-start gap-2.5 text-sm', readOnly && 'opacity-70')}>
+                <input
+                  type="radio"
+                  name="public-link-prefix"
+                  checked={linkPrefix === mode}
+                  disabled={readOnly}
+                  onChange={() => setLinkPrefix(mode)}
+                  className="mt-0.5 h-4 w-4 accent-primary"
+                />
+                <span className="min-w-0">
+                  <span className="font-medium">{t(`links.options.${mode}`)}</span>
+                  <span className="block break-all font-mono text-xs text-muted-foreground">{exampleLink(mode, linkCompany)}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </section>
 
-        <InfoHint hint={t('customLabelsHint')} className="mt-6">
-          <h3 className="text-sm font-semibold">{t('customLabelsTitle')}</h3>
-        </InfoHint>
-        <div className="mt-3 space-y-2">
-          {labels.map((label, i) => (
-            <div key={i} className="flex gap-2">
-              <input
-                className={inputClass}
-                maxLength={40}
-                value={label}
-                disabled={readOnly}
-                aria-label={tf('customLabel')}
-                placeholder={t('customLabelPlaceholder')}
-                onChange={(e) => setLabels((cur) => cur.map((x, j) => (j === i ? e.target.value : x)))}
-              />
-              <button
-                type="button"
-                disabled={readOnly}
-                aria-label={t('remove')}
-                onClick={() => setLabels((cur) => cur.filter((_, j) => j !== i))}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
-          {labels.length < 4 && !readOnly && (
-            <button type="button" onClick={() => setLabels((cur) => [...cur, ''])} className={buttonClass.secondary}>
-              <Plus className="h-4 w-4" />
-              {t('addLabel')}
-            </button>
-          )}
-        </div>
-        <p className="mt-6 text-sm text-muted-foreground">
-          {t('registryNoteElsewhere')}{' '}
-          <Link href="/settings/company" className="font-semibold text-foreground underline underline-offset-2">
-            {t('registryNoteLink')}
-          </Link>
-        </p>
-      </section>
+      </details>
 
       {!readOnly && (
         <div className="sticky bottom-20 z-10 mt-6 flex justify-end rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">

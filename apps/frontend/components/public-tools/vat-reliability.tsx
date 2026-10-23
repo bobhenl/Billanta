@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { AlertTriangle, CheckCircle2, CircleHelp, ShieldAlert } from 'lucide-react';
 import { buttonClass } from '@/lib/ui-classes';
-import { ResultRow, TextField } from '@/components/public-tools/fields';
+import { ResultRow, TextField, toolCard } from '@/components/public-tools/fields';
 import { cn } from '@/lib/utils';
 
 /** `GET /api/public/company-lookup/vat-check?dic&account` (backend `PublicVatCheck`). */
@@ -62,13 +62,13 @@ export function VatReliability() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={check} noValidate>
-        <TextField label={t('fields.id')} value={id} onChange={setId} hint={t('fields.idHint')} placeholder="CZ12345678" maxLength={20} />
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={check} noValidate>
+        <TextField label={t('fields.id')} value={id} onChange={setId} info={t('fields.idHint')} placeholder="CZ12345678" maxLength={20} />
         <TextField
           label={t('fields.account')}
           value={account}
           onChange={setAccount}
-          hint={t('fields.accountHint')}
+          info={t('fields.accountHint')}
           placeholder="123456789/0800"
           maxLength={60}
         />
@@ -76,12 +76,12 @@ export function VatReliability() {
           {state.kind === 'loading' ? t('fields.checking') : t('fields.check')}
         </button>
       </form>
-      <section aria-live="polite" className="rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         {state.kind === 'idle' && <p className="text-sm text-muted-foreground">{t('result.empty')}</p>}
         {state.kind === 'loading' && <p className="text-sm text-muted-foreground">{t('fields.checking')}</p>}
         {state.kind === 'error' && (
-          <div className="flex gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+          <div className="flex gap-3 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
             <p>{t(`errors.${state.code}`)}</p>
           </div>
         )}

@@ -36,7 +36,7 @@ import type { DemoViewRole } from './demo';
 /**
  * Public feature landing pages (`/features/<slug>`). Each describes a feature
  * the app really has; the copy lives in `featurePages.items.<key>` and must
- * stay true to the product — no invented numbers or promises. Slugs are
+ * stay true to the product – no invented numbers or promises. Slugs are
  * Czech in every locale (same as `/invoicing`), so hreflang alternates
  * share one path.
  */

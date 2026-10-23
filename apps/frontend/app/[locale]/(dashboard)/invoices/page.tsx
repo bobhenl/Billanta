@@ -1,5 +1,7 @@
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { CalendarRange, ChevronDown, LayoutTemplate, Plus, Search, Users, X } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { CalendarRange, Check, ChevronDown, LayoutTemplate, Plus, Search, Users, X } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import type { HomeCurrency } from '@faktur/cz-compliance';
@@ -17,6 +19,11 @@ import { DATE_PRESETS, isDatePreset, parseQuickPrefs, presetFilters, QUICK_COOKI
 import { bankAccountLine, type BankAccount } from '@/lib/bank-account';
 import { InvoiceViewBar } from './invoice-view-bar';
 import { InvoicesTable } from './invoices-table';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('invoices');
+  return { title: t('title') };
+}
 
 const STATUS_FILTERS = ['draft', 'issued', 'overdue', 'paid', 'cancelled'] as const;
 const PAYMENT_METHODS = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'] as const;
@@ -73,7 +80,7 @@ interface Filters {
 }
 
 const DATE_KEYS = ['date_field', 'from', 'to'] as const;
-/** The "Filtry" dialog's fields — counted for the badge and kept as hidden inputs by the search box. */
+/** The "Filtry" dialog's fields – counted for the badge and kept as hidden inputs by the search box. */
 const MODAL_KEYS = [
   'contact_id',
   'contact_color',
@@ -170,9 +177,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   };
   const quick = parseQuickPrefs((await cookies()).get(QUICK_COOKIE)?.value);
   // A hidden chip stays visible while it is the active filter, so it can be switched off.
-  const typeChips = DOCUMENT_TYPES.filter((type) => !quick.hiddenTypes.includes(type) || filters.type === type);
   const statusChips = STATUS_FILTERS.filter((status) => !quick.hiddenStatuses.includes(status) || filters.status === status);
-  // A date column without a range filters nothing — don't count it as active.
+  // A date column without a range filters nothing – don't count it as active.
   if (!filters.from && !filters.to) filters.date_field = undefined;
   const dateField = filters.date_field ?? 'issue';
   const now = new Date();
@@ -185,16 +191,19 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
   const presets = quick.presets.map(presetLink);
   const datePresets = DATE_PRESETS.map(presetLink);
   const dateActive = Boolean(filters.from || filters.to);
-  // A range that no visible chip describes gets its own removable chip.
-  const customRange = dateActive && !presets.some((p) => p.active && isDatePreset(p.preset));
   const noDates = Object.fromEntries(DATE_KEYS.map((k) => [k, undefined])) as Filters;
   const fmtDay = (iso?: string) => (iso ? new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric', year: 'numeric' }).format(new Date(`${iso}T00:00:00`)) : '…');
-  const rangeLabel = `${tDoc(`filters.dateField.${dateField}`)}: ${filters.from === filters.to ? fmtDay(filters.from) : `${fmtDay(filters.from)} – ${fmtDay(filters.to)}`}`;
+  // The period menu names the active range: a preset by its name, anything else by its dates.
+  const activePreset = datePresets.find((p) => p.active)?.preset;
+  const periodLabel = activePreset
+    ? `${dateField !== 'issue' ? `${tDoc(`filters.dateField.${dateField}`)}: ` : ''}${t(`view.presets.${activePreset}`)}`
+    : `${tDoc(`filters.dateField.${dateField}`)}: ${filters.from === filters.to ? fmtDay(filters.from) : `${fmtDay(filters.from)} – ${fmtDay(filters.to)}`}`;
 
   const panelActive =
     MODAL_KEYS.filter((k) => filters[k] && k !== 'amount_max' && k !== 'net_max').length +
     (filters.amount_max && !filters.amount_min ? 1 : 0) +
     (filters.net_max && !filters.net_min ? 1 : 0);
+  const activeCount = (filters.type ? 1 : 0) + (filters.status ? 1 : 0) + (dateActive ? 1 : 0) + panelActive;
   const query = new URLSearchParams(Object.entries(filters).filter(([, v]) => v) as [string, string][]).toString();
 
   let invoices: InvoiceRow[];
@@ -294,31 +303,63 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
       'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors',
       active ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:bg-accent hover:text-primary'
     );
+  /** A pill that opens a menu; while it filters, it shows the value and an × that drops it. */
+  const menu = ({ label, icon, active, clearHref, panelClass, children }: { label: string; icon?: ReactNode; active: boolean; clearHref: string; panelClass: string; children: ReactNode }) => (
+    <div
+      className={cn(
+        'relative inline-flex min-w-0 max-w-full items-center rounded-full border text-sm font-semibold',
+        active ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+      )}
+    >
+      <DismissableDetails className="min-w-0">
+        <summary
+          className={cn(
+            'flex min-w-0 cursor-pointer list-none items-center gap-1.5 rounded-full py-1.5 pl-3 transition-colors [&::-webkit-details-marker]:hidden',
+            active ? 'pr-1' : 'pr-3 hover:bg-accent hover:text-primary'
+          )}
+        >
+          {icon}
+          <span className="truncate">{label}</span>
+          <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        </summary>
+        <div className={cn('z-40 rounded-xl border border-border bg-card font-normal text-foreground shadow-lg', panelClass)}>{children}</div>
+      </DismissableDetails>
+      {active && (
+        <Link href={clearHref} aria-label={tDoc('filters.remove')} title={tDoc('filters.remove')} className="mr-1 shrink-0 rounded-full p-1 hover:bg-primary/20">
+          <X className="h-3.5 w-3.5" aria-hidden />
+        </Link>
+      )}
+    </div>
+  );
 
   return (
-    <div>
+    <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-muted-foreground">{t('description')}</p>
           <StatusLegend className="mt-2" />
         </div>
         {/* Templates, bulk and new all create documents: nothing here for a read-only member. */}
         {canEdit && (
         <div className="flex flex-wrap gap-2">
+          {/* Icons only on a phone, so the three buttons share one row. */}
           <Link
             href="/invoices/templates"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
+            title={tDoc('templatesLink')}
+            aria-label={tDoc('templatesLink')}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary sm:px-4"
           >
             <LayoutTemplate className="h-4 w-4" />
-            {tDoc('templatesLink')}
+            <span className="hidden sm:inline">{tDoc('templatesLink')}</span>
           </Link>
           <Link
             href="/invoices/bulk"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
+            title={tDoc('bulkLink')}
+            aria-label={tDoc('bulkLink')}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary sm:px-4"
           >
             <Users className="h-4 w-4" />
-            {tDoc('bulkLink')}
+            <span className="hidden sm:inline">{tDoc('bulkLink')}</span>
           </Link>
           <Link
             href="/invoices/new"
@@ -331,22 +372,8 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
         )}
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
-        <nav className="flex flex-wrap gap-2" aria-label={tDoc('filterType')}>
-          <Link href={hrefWith(filters, { type: undefined })} className={chip(!filters.type)}>
-            {tDoc('allTypes')}
-          </Link>
-          {typeChips.map((type) => (
-            <Link key={type} href={hrefWith(filters, { type })} className={chip(filters.type === type)}>
-              {tDoc(`typePlural.${type}`)}
-            </Link>
-          ))}
-        </nav>
-        <InvoiceViewBar query={query} quick={quick} />
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <form action="" className="relative w-full max-w-xs">
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        <form action="" className="relative w-full sm:max-w-xs">
           {filters.type && <input type="hidden" name="type" value={filters.type} />}
           {filters.status && <input type="hidden" name="status" value={filters.status} />}
           {PANEL_KEYS.map((k) => filters[k] && <input key={k} type="hidden" name={k} value={filters[k]} />)}
@@ -359,87 +386,126 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
             className="w-full rounded-full border border-input bg-background py-2 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </form>
-        <div className="flex flex-wrap gap-1.5">
-          <Link href={hrefWith(filters, { status: undefined })} className={chip(!filters.status)}>
+        {/* One swipeable row on a phone instead of three wrapped ones. */}
+        <nav
+          aria-label={tDoc('filters.statusLabel')}
+          className="flex min-w-0 max-w-full gap-1.5 overflow-x-auto [scrollbar-width:none] sm:flex-wrap sm:overflow-visible [&::-webkit-scrollbar]:hidden"
+        >
+          <Link href={hrefWith(filters, { status: undefined })} className={cn(chip(!filters.status), 'shrink-0 whitespace-nowrap')}>
             {tDoc('allStatuses')}
           </Link>
           {statusChips.map((status) => (
-            <Link key={status} href={hrefWith(filters, { status })} className={chip(filters.status === status)}>
+            <Link key={status} href={hrefWith(filters, { status })} className={cn(chip(filters.status === status), 'shrink-0 whitespace-nowrap')}>
               {status === 'overdue' ? tDoc('overdue') : t(`status.${status}`)}
             </Link>
           ))}
-        </div>
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        <CalendarRange className="h-4 w-4 text-muted-foreground" aria-hidden />
-        {presets.map(({ preset, active, href }) => (
-          <Link key={preset} href={href} className={dateChip(active)}>
-            {active && isDatePreset(preset) && dateField !== 'issue' && `${tDoc(`filters.dateField.${dateField}`)}: `}
-            {t(`view.presets.${preset}`)}
-          </Link>
-        ))}
-        {customRange && (
-          <Link href={hrefWith(filters, noDates)} title={tDoc('filters.remove')} className={dateChip(true)}>
-            {rangeLabel}
-            <X className="h-3 w-3" aria-hidden />
-          </Link>
-        )}
-        <DismissableDetails className="relative">
-          <summary className={cn(dateChip(false), 'cursor-pointer list-none [&::-webkit-details-marker]:hidden')}>
-            {tDoc('filters.period')}
-            <ChevronDown className="h-3 w-3" aria-hidden />
-          </summary>
-          <div className="fixed inset-x-4 top-28 z-40 rounded-xl border border-border bg-card p-3 shadow-lg sm:absolute sm:inset-x-auto sm:left-0 sm:top-auto sm:mt-1 sm:w-[30rem]">
-            <form action="">
-              {Object.entries(filters).map(([k, v]) => (v && !(DATE_KEYS as readonly string[]).includes(k) ? <input key={k} type="hidden" name={k} value={v} /> : null))}
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{tDoc('filters.customRange')}</p>
-              <div className="mt-2 flex flex-wrap items-end gap-2">
-                <FilterField label={tDoc('filters.dateBy')}>
-                  <select name="date_field" defaultValue={dateField} className={field}>
-                    {DATE_FIELDS.map((d) => (
-                      <option key={d} value={d}>
-                        {tDoc(`filters.dateField.${d}`)}
-                      </option>
-                    ))}
-                  </select>
-                </FilterField>
-                <FilterField label={tDoc('filters.from')}>
-                  <input type="date" name="from" defaultValue={filters.from} className={field} />
-                </FilterField>
-                <FilterField label={tDoc('filters.to')}>
-                  <input type="date" name="to" defaultValue={filters.to} className={field} />
-                </FilterField>
-                <button type="submit" className="h-9 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90">
-                  {tDoc('filters.apply')}
-                </button>
-              </div>
-            </form>
-            <p className="mt-3 border-t border-border pt-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              {tDoc('filters.quickRanges', { field: tDoc(`filters.dateField.${dateField}`) })}
-            </p>
-            <div className="mt-2 grid grid-cols-2 gap-1 sm:grid-cols-3">
-              {datePresets.map(({ preset, active, href }) => (
-                <Link key={preset} href={href} className={cn(dateChip(active), 'justify-center')}>
-                  {t(`view.presets.${preset}`)}
-                </Link>
-              ))}
-            </div>
-            {dateActive && (
-              <Link href={hrefWith(filters, noDates)} className="mt-3 inline-block text-xs font-semibold text-muted-foreground hover:text-primary">
-                {tDoc('filters.anyDate')}
-              </Link>
-            )}
-          </div>
-        </DismissableDetails>
+        </nav>
       </div>
 
       <FilterPanel
         modal
         active={panelActive}
         pills={pills}
+        pillsClear={false}
         keep={{ type: filters.type, status: filters.status, q: filters.q, date_field: filters.date_field, from: filters.from, to: filters.to }}
         clearHref={hrefWith(filters, Object.fromEntries(MODAL_KEYS.map((k) => [k, undefined])))}
+        leading={
+          <>
+            {menu({
+              label: filters.type ? tDoc(`typePlural.${filters.type}`) : tDoc('filters.anyType'),
+              active: Boolean(filters.type),
+              clearHref: hrefWith(filters, { type: undefined }),
+              panelClass: 'absolute left-0 top-full mt-1 w-56 p-1',
+              children: (
+                <nav aria-label={tDoc('filterType')}>
+                  {[undefined, ...DOCUMENT_TYPES].map((type) => (
+                    <Link
+                      key={type ?? 'all'}
+                      href={hrefWith(filters, { type })}
+                      data-dismiss="button"
+                      aria-current={filters.type === type ? 'true' : undefined}
+                      className={cn(
+                        'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm hover:bg-accent',
+                        filters.type === type && 'font-semibold text-primary'
+                      )}
+                    >
+                      {type ? tDoc(`typePlural.${type}`) : tDoc('filters.anyType')}
+                      {filters.type === type && <Check className="h-4 w-4 shrink-0" aria-hidden />}
+                    </Link>
+                  ))}
+                </nav>
+              )
+            })}
+            {menu({
+              label: dateActive ? periodLabel : tDoc('filters.period'),
+              icon: <CalendarRange className="h-4 w-4 shrink-0" aria-hidden />,
+              active: dateActive,
+              clearHref: hrefWith(filters, noDates),
+              // A phone has no room beside the pill, so the panel spans the screen there.
+              panelClass: 'fixed inset-x-4 top-28 p-3 sm:absolute sm:inset-x-auto sm:left-0 sm:top-full sm:mt-1 sm:w-[30rem]',
+              children: (
+                <>
+                  {/* Quick picks first: they are what people tap; the custom range is the rare case. */}
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {tDoc('filters.quickRanges', { field: tDoc(`filters.dateField.${dateField}`) })}
+                  </p>
+                  <div className="mt-2 grid grid-cols-2 gap-1 sm:grid-cols-3">
+                    {datePresets.map(({ preset, active, href }) => (
+                      <Link key={preset} href={href} data-dismiss="button" className={cn(dateChip(active), 'justify-center')}>
+                        {t(`view.presets.${preset}`)}
+                      </Link>
+                    ))}
+                  </div>
+                  <form action="" className="mt-3 border-t border-border pt-3">
+                    {Object.entries(filters).map(([k, v]) => (v && !(DATE_KEYS as readonly string[]).includes(k) ? <input key={k} type="hidden" name={k} value={v} /> : null))}
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{tDoc('filters.customRange')}</p>
+                    <div className="mt-2 grid grid-cols-2 items-end gap-2 sm:grid-cols-[1fr_1fr_1fr_auto] [&_input]:w-full [&_select]:w-full">
+                      <div className="col-span-2 sm:col-span-1">
+                        <FilterField label={tDoc('filters.dateBy')}>
+                          <select name="date_field" defaultValue={dateField} className={field}>
+                            {DATE_FIELDS.map((d) => (
+                              <option key={d} value={d}>
+                                {tDoc(`filters.dateField.${d}`)}
+                              </option>
+                            ))}
+                          </select>
+                        </FilterField>
+                      </div>
+                      <FilterField label={tDoc('filters.from')}>
+                        <input type="date" name="from" defaultValue={filters.from} className={field} />
+                      </FilterField>
+                      <FilterField label={tDoc('filters.to')}>
+                        <input type="date" name="to" defaultValue={filters.to} className={field} />
+                      </FilterField>
+                      <button type="submit" className="col-span-2 h-9 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90 sm:col-span-1">
+                        {tDoc('filters.apply')}
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )
+            })}
+            {/* Only the quick picks the user switched on in "Přizpůsobit"; none by default. */}
+            {presets.map(({ preset, active, href }) => (
+              <Link key={preset} href={href} className={dateChip(active)}>
+                {active && isDatePreset(preset) && dateField !== 'issue' && `${tDoc(`filters.dateField.${dateField}`)}: `}
+                {t(`view.presets.${preset}`)}
+              </Link>
+            ))}
+          </>
+        }
+        trailing={
+          <>
+            {activeCount > 1 && (
+              <Link href={hrefWith({}, { q: filters.q })} className="px-1.5 text-xs font-semibold text-muted-foreground hover:text-primary">
+                {tDoc('filters.clear')}
+              </Link>
+            )}
+            <div className="ml-auto">
+              <InvoiceViewBar query={query} quick={quick} />
+            </div>
+          </>
+        }
       >
         <FilterGroup title={tDoc('filters.groups.customer')}>
           <FilterField label={tDoc('filters.customer')}>

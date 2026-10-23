@@ -164,14 +164,15 @@ export function AuditLogList({
     <div>
       {showFilters && (
         <div className="space-y-3">
-          <div className="flex flex-wrap gap-2" role="group" aria-label={t('filterLabel')}>
+          {/* One swipeable line on a phone: seven chips would otherwise take three rows. */}
+          <div className="-mx-4 flex gap-2 overflow-x-auto overscroll-x-contain px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0" role="group" aria-label={t('filterLabel')}>
             {FILTERS.map((f) => (
               <button
                 key={f}
                 type="button"
                 aria-pressed={filters.entity === f}
                 onClick={() => apply({ entity: f, action: '' })}
-                className={`rounded-full border px-3 py-1 text-sm font-semibold transition-colors ${
+                className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-sm font-semibold transition-colors ${
                   filters.entity === f ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card hover:border-primary hover:text-primary'
                 }`}
               >

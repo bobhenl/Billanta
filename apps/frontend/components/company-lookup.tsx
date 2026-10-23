@@ -27,7 +27,8 @@ export function CompanyLookup({
   ariaLabel,
   inputClassName,
   className,
-  emptyHint
+  emptyHint,
+  required
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -42,6 +43,7 @@ export function CompanyLookup({
   inputClassName?: string;
   className?: string;
   emptyHint?: ReactNode;
+  required?: boolean;
 }) {
   const t = useTranslations('companyLookup');
   const group = async (q: string, part: RegistryPart) => {
@@ -64,6 +66,7 @@ export function CompanyLookup({
       inputClassName={inputClassName}
       className={className}
       emptyHint={emptyHint ?? t('empty')}
+      required={required}
     />
   );
 }

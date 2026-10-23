@@ -12,29 +12,22 @@ import {
   ArrowRight,
   ArrowUp,
   Banknote,
-  Calculator,
-  CalendarRange,
   ChevronRight,
   Clock,
   CalendarClock,
   Download,
-  EyeOff,
-  FilePen,
   FilePlus2,
   FileText,
   Landmark,
   LayoutTemplate,
-  Paperclip,
   Plus,
   Mic,
   QrCode,
   Receipt,
   RefreshCw,
   Settings2,
-  TrendingUp,
   UserPlus,
   Users,
-  Wallet,
   Timer,
   X,
   type LucideIcon
@@ -102,18 +95,18 @@ const DEFAULT_FX = ['EUR', 'USD', 'GBP'];
 const FX_MAX = 12;
 
 /** Where each KPI card leads, its icon and tone. */
-const CARD_META: Record<KpiCard, { href: string; icon: LucideIcon; tone: string }> = {
-  revenue_month: { href: '/invoices?type=invoice', icon: TrendingUp, tone: 'bg-primary/10 text-primary' },
-  unpaid: { href: '/invoices?status=issued', icon: Clock, tone: 'bg-warning/15 text-warning' },
-  overdue: { href: '/invoices?status=overdue', icon: AlertTriangle, tone: 'bg-destructive/10 text-destructive' },
-  expenses_month: { href: '/expenses', icon: Receipt, tone: 'bg-secondary text-foreground' },
-  revenue_year: { href: '/invoices?type=invoice', icon: CalendarRange, tone: 'bg-primary/10 text-primary' },
-  drafts: { href: '/invoices?status=draft', icon: FilePen, tone: 'bg-secondary text-foreground' },
-  profit_month: { href: '/expenses', icon: Wallet, tone: 'bg-success/15 text-success' },
-  vat_month: { href: '/settings/exports', icon: Calculator, tone: 'bg-accent text-accent-foreground' },
-  due_soon: { href: '', icon: CalendarClock, tone: 'bg-warning/15 text-warning' },
-  unviewed: { href: '/invoices?status=issued&sent=yes&viewed=no', icon: EyeOff, tone: 'bg-secondary text-foreground' },
-  missing_receipts: { href: '/expenses?receipt=no', icon: Paperclip, tone: 'bg-secondary text-foreground' }
+const CARD_META: Record<KpiCard, { href: string }> = {
+  revenue_month: { href: '/invoices?type=invoice' },
+  unpaid: { href: '/invoices?status=issued' },
+  overdue: { href: '/invoices?status=overdue' },
+  expenses_month: { href: '/expenses' },
+  revenue_year: { href: '/invoices?type=invoice' },
+  drafts: { href: '/invoices?status=draft' },
+  profit_month: { href: '/expenses' },
+  vat_month: { href: '/settings/exports' },
+  due_soon: { href: '' },
+  unviewed: { href: '/invoices?status=issued&sent=yes&viewed=no' },
+  missing_receipts: { href: '/expenses?receipt=no' }
 };
 
 const isoDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -239,8 +232,15 @@ export function DashboardView({
   const cards = config.cards.filter((card) => cardAllowed(card, abilities));
   const [customizing, setCustomizing] = useState(false);
   const money = (n: number) => formatMoney(n, summary.currency, locale);
+  // Cards show whole units: on a phone two decimals cut the amount off. The exact one is in the title.
+  const amount = (n: number) => {
+    try {
+      return { value: new Intl.NumberFormat(locale, { style: 'currency', currency: summary.currency, maximumFractionDigits: 0 }).format(n), exact: money(n) };
+    } catch {
+      return { value: money(n), exact: money(n) };
+    }
+  };
   const { kpi } = summary;
-  const tiles = (config.tiles ?? DEFAULT_TILES).filter((id): id is QuickTile => (QUICK_TILES as readonly string[]).includes(id) && tileAllowed(id as QuickTile, abilities));
   // The accountant's main job here is the exports; others issue invoices.
   const primary =
     abilities.role === 'accountant' && abilities.exports
@@ -248,17 +248,22 @@ export function DashboardView({
       : abilities.createInvoices
         ? { href: '/invoices/new', icon: Plus, label: t('newInvoice') }
         : null;
+  // A "new invoice" tile next to the "new invoice" button says the same thing twice.
+  const tiles = (config.tiles ?? DEFAULT_TILES).filter(
+    (id): id is QuickTile =>
+      (QUICK_TILES as readonly string[]).includes(id) && tileAllowed(id as QuickTile, abilities) && !(id === 'new_invoice' && primary?.href === '/invoices/new')
+  );
 
-  const cardValue: Record<KpiCard, { value: string; sub: string }> = {
-    revenue_month: { value: money(kpi.revenueMonth), sub: t('cards.revenue_month.sub') },
-    unpaid: { value: money(kpi.unpaidTotal), sub: t('cards.unpaid.sub', { count: kpi.unpaidCount }) },
-    overdue: { value: money(kpi.overdueTotal), sub: t('cards.overdue.sub', { count: kpi.overdueCount }) },
-    expenses_month: { value: money(kpi.expensesMonth), sub: t('cards.expenses_month.sub') },
-    revenue_year: { value: money(kpi.revenueYear), sub: t('cards.revenue_year.sub') },
+  const cardValue: Record<KpiCard, { value: string; exact?: string; sub: string }> = {
+    revenue_month: { ...amount(kpi.revenueMonth), sub: t('cards.revenue_month.sub') },
+    unpaid: { ...amount(kpi.unpaidTotal), sub: t('cards.unpaid.sub', { count: kpi.unpaidCount }) },
+    overdue: { ...amount(kpi.overdueTotal), sub: t('cards.overdue.sub', { count: kpi.overdueCount }) },
+    expenses_month: { ...amount(kpi.expensesMonth), sub: t('cards.expenses_month.sub') },
+    revenue_year: { ...amount(kpi.revenueYear), sub: t('cards.revenue_year.sub') },
     drafts: { value: String(kpi.draftCount), sub: t('cards.drafts.sub') },
-    profit_month: { value: money(kpi.profitMonth), sub: t('cards.profit_month.sub') },
-    vat_month: { value: money(kpi.vatMonth), sub: t('cards.vat_month.sub') },
-    due_soon: { value: money(kpi.dueSoonTotal ?? 0), sub: t('cards.due_soon.sub', { count: kpi.dueSoonCount ?? 0 }) },
+    profit_month: { ...amount(kpi.profitMonth), sub: t('cards.profit_month.sub') },
+    vat_month: { ...amount(kpi.vatMonth), sub: t('cards.vat_month.sub') },
+    due_soon: { ...amount(kpi.dueSoonTotal ?? 0), sub: t('cards.due_soon.sub', { count: kpi.dueSoonCount ?? 0 }) },
     unviewed: { value: String(kpi.unviewedCount ?? 0), sub: t('cards.unviewed.sub') },
     missing_receipts: { value: String(kpi.missingReceiptsCount ?? 0), sub: t('cards.missing_receipts.sub') }
   };
@@ -268,14 +273,11 @@ export function DashboardView({
   return (
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{firstName ? t('greeting', { name: firstName }) : t('title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('welcome')}</p>
-        </div>
+        <h1 className="text-2xl font-extrabold tracking-tight">{firstName ? t('greeting', { name: firstName }) : t('title')}</h1>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => setCustomizing(true)} className={buttonClass.secondary}>
+          <button type="button" onClick={() => setCustomizing(true)} className={buttonClass.secondary} title={t('customize')} aria-label={t('customize')}>
             <Settings2 className="h-4 w-4" />
-            {t('customize')}
+            <span className="hidden sm:inline">{t('customize')}</span>
           </button>
           {primary && (
             <Link href={primary.href} className={buttonClass.primary}>
@@ -287,28 +289,24 @@ export function DashboardView({
       </div>
 
       {cards.length > 0 && (
-        <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-4">
           {cards.map((card) => {
             const meta = CARD_META[card];
-            const Icon = meta.icon;
             const alert = card === 'overdue' && kpi.overdueCount > 0;
             return (
               <Link
                 key={card}
                 href={card === 'due_soon' ? dueSoonHref() : card === 'vat_month' && !abilities.exports ? '/invoices?type=invoice' : meta.href}
                 className={cn(
-                  'group rounded-xl border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md',
+                  'group min-w-0 rounded-xl border bg-card p-2.5 transition-colors hover:border-primary sm:p-4',
                   alert ? 'border-destructive/40' : 'border-border'
                 )}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t(`cards.${card}.label`)}</span>
-                  <span className={cn('flex h-8 w-8 items-center justify-center rounded-lg', meta.tone)}>
-                    <Icon className="h-4 w-4" />
-                  </span>
-                </div>
-                <p className={cn('mt-2 truncate text-xl font-extrabold tabular-nums sm:text-2xl', alert && 'text-destructive')}>{cardValue[card].value}</p>
-                <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                <span className="block truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{t(`cards.${card}.label`)}</span>
+                <p title={cardValue[card].exact} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', alert && 'text-destructive')}>
+                  {cardValue[card].value}
+                </p>
+                <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground sm:text-xs">
                   <span className="truncate">{cardValue[card].sub}</span>
                   <ChevronRight className="ml-auto h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
                 </p>
@@ -320,14 +318,15 @@ export function DashboardView({
       {summary.foreignCurrencyCount > 0 && <p className="mt-2 text-xs text-muted-foreground">{t('foreignNote', { count: summary.foreignCurrencyCount })}</p>}
 
       {tiles.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        // One swipeable row on a phone: wrapped, the shortcuts took up a whole screen.
+        <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           {tiles.map((tile) => {
             const { href, icon: Icon } = TILE_META[tile];
             return (
               <Link
                 key={tile}
                 href={href}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
               >
                 <Icon className="h-4 w-4" />
                 {t(`tiles.${tile}`)}
@@ -389,8 +388,9 @@ export function DashboardView({
         {config.showChart && hasData && (stats ? <PeriodReport initial={stats} compact usage={usage} home={homeCurrencyOf(country)} /> : <RevenueChart chart={summary.chart} money={money} />)}
         {config.showTopCustomers && summary.topCustomers.length > 0 && (
           <section className="rounded-xl border border-border bg-card p-4">
-            <h2 className="font-bold">{t('topCustomers')}</h2>
-            <p className="text-xs text-muted-foreground">{t('topCustomersHint')}</p>
+            <h2 className="font-bold">
+              {t('topCustomers')} <span className="text-xs font-normal text-muted-foreground">{t('topCustomersHint')}</span>
+            </h2>
             <ol className="mt-3 space-y-1">
               {summary.topCustomers.map((c, i) => {
                 const top = summary.topCustomers[0]?.total ?? 0;
@@ -677,7 +677,6 @@ function CustomizeModal({
     >
       {usage && <UsageNote usage={usage} />}
       <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('customizeCards')}</h3>
-      {cards.length > 1 && <p className="mt-1 text-xs text-muted-foreground">{t('customizeOrderHint')}</p>}
       <ul className="mt-2 space-y-1">
         {ordered.map((card) => {
           const on = cards.includes(card);
@@ -771,12 +770,10 @@ function CustomizeModal({
 
       {sections.showFxRates && country !== 'SK' && (
         <>
-          <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            <InfoHint hint={t('fxRates.customizeHint')}>{t('fxRates.customizeTitle')}</InfoHint>
-          </h3>
+          <h3 className="mt-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('fxRates.customizeTitle')}</h3>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
             {fx.map((code) => (
-              <span key={code} className="flex items-center gap-1 rounded-lg border border-border px-2 py-1" title={fxNames[code]}>
+              <span key={code} className="flex h-9 items-center gap-1 rounded-lg border border-border px-2" title={fxNames[code]}>
                 {code}
                 <button
                   type="button"
@@ -794,7 +791,7 @@ function CustomizeModal({
             {fx.length < FX_MAX ? (
               <select
                 aria-label={t('fxRates.add')}
-                className="rounded-lg border border-border bg-background px-2 py-1 text-sm"
+                className="h-9 rounded-lg border border-border bg-background px-2 text-sm"
                 value=""
                 onChange={(e) => {
                   const code = e.target.value;
@@ -876,7 +873,7 @@ function CustomizeModal({
                       inputMode="decimal"
                       min={0}
                       step="1"
-                      className="h-9 rounded-lg border border-border bg-background px-3 text-sm"
+                      className="h-10 rounded-lg border border-border bg-background px-3 text-sm"
                       value={taxAmounts[kind] ?? ''}
                       onChange={(e) => setTaxAmounts((prev) => ({ ...prev, [kind]: e.target.value }))}
                     />
@@ -903,11 +900,9 @@ function UsageNote({ usage }: { usage: Usage }) {
   if (usage.has.proformas) facts.push(t('proformas'));
   if (usage.has.quotes) facts.push(t('quotes'));
   return (
-    <div className="mb-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs">
-      <p className="font-semibold">{t('title')}</p>
-      <p className="mt-0.5 text-muted-foreground">{usage.has.invoices ? facts.join(' · ') : t('newAccount')}</p>
-      <p className="mt-0.5 text-muted-foreground">{t('hint')}</p>
-    </div>
+    <p className="mb-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs text-muted-foreground">
+      <span className="font-semibold text-foreground">{t('title')}:</span> {usage.has.invoices ? facts.join(' · ') : t('newAccount')}
+    </p>
   );
 }
 
@@ -1052,8 +1047,8 @@ function TaxDeadlines({
             )}
             <span
               className={cn(
-                'shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold',
-                item.daysLeft <= 3 ? 'bg-destructive/10 text-destructive' : item.daysLeft <= 7 ? 'bg-warning/15 text-warning' : 'bg-secondary text-muted-foreground'
+                'shrink-0 whitespace-nowrap text-right text-xs font-semibold',
+                item.daysLeft <= 3 ? 'text-destructive' : item.daysLeft <= 7 ? 'text-warning' : 'text-muted-foreground'
               )}
             >
               {t('daysLeft', { count: item.daysLeft })}
@@ -1123,7 +1118,7 @@ function TimeCard({ time }: { time: TimeSummary }) {
         {running && (
           <Link href="/time" className="col-span-2 rounded-lg bg-primary/10 px-3 py-2 hover:bg-primary/15 sm:col-span-1">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-destructive" />
+              <span className="h-2 w-2 rounded-full bg-destructive motion-safe:animate-pulse" />
               {t('running')}
             </div>
             <div className="flex items-baseline justify-between gap-2">
@@ -1180,7 +1175,7 @@ function FxRates({ currencies }: { currencies: string[] }) {
   const fromRow = rows.find((r) => r.code === from) ?? rows[0];
   const parsedAmount = Number(amount.replace(/\s/g, '').replace(',', '.'));
   const converted = fromRow?.rate != null && amount.trim() !== '' && Number.isFinite(parsedAmount) ? parsedAmount * fromRow.rate : null;
-  const control = 'rounded-lg border border-border bg-background px-2 py-1 text-sm';
+  const control = 'h-9 rounded-lg border border-border bg-background px-2 text-sm';
   return (
     <section className="mt-6 rounded-xl border border-border bg-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1206,12 +1201,6 @@ function FxRates({ currencies }: { currencies: string[] }) {
         <p className="mt-3 text-sm text-muted-foreground">{t('unavailable')}</p>
       ) : (
         <>
-          {published && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              {t('publishedOn', { date: formatDate(published, locale) ?? published })}
-              {requested && published !== requested && <> – {t('fallbackNote')}</>}
-            </p>
-          )}
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {(data ? rows : currencies.map((code) => ({ code, rate: null, weekAgo: null }))).map((row) => {
               const change = row.rate != null && row.weekAgo ? row.rate / row.weekAgo - 1 : null;
@@ -1252,8 +1241,15 @@ function FxRates({ currencies }: { currencies: string[] }) {
           )}
         </>
       )}
-      <p className="mt-2 text-xs text-muted-foreground">
-        {t('source')}{' '}
+      {/* The publish date sits with the source: it matters only when it differs from the day picked. */}
+      <p className="mt-3 text-xs text-muted-foreground">
+        {published && (
+          <>
+            {t('publishedOn', { date: formatDate(published, locale) ?? published })}
+            {requested && published !== requested && <> ({t('fallbackNote')})</>}
+            {' · '}
+          </>
+        )}
         <a href="https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/" target="_blank" rel="noreferrer" className="font-semibold text-primary hover:underline">
           cnb.cz
         </a>

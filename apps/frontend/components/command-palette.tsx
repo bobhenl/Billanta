@@ -408,12 +408,12 @@ export function CommandPalette({ hidden = [] }: { hidden?: string[] }) {
 
       {open && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-[12vh] backdrop-blur-sm"
+          className="anim-fade fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-[12vh] backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setOpen(false);
           }}
         >
-          <div role="dialog" aria-modal="true" aria-label={t('palette.open')} className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
+          <div role="dialog" aria-modal="true" aria-label={t('palette.open')} className="anim-dialog-flat w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
             <div className="flex items-center gap-2 border-b border-border px-4">
               {aiMode ? <Sparkles className="h-4 w-4 shrink-0 text-primary" /> : <Search className="h-4 w-4 shrink-0 text-muted-foreground" />}
               <input

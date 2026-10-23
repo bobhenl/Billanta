@@ -34,7 +34,9 @@ const nextConfig = {
   // Standalone output traces the minimal server + node_modules needed to run
   // `node server.js` — lets apps/frontend/Dockerfile copy just that into a
   // slim runtime stage instead of the whole node_modules tree.
-  output: 'standalone',
+  // NEXT_STANDALONE=0 skips it for a local `next start`: the standalone copy
+  // needs symlinks, which Windows refuses without Developer Mode.
+  output: process.env.NEXT_STANDALONE === '0' ? undefined : 'standalone',
   // The Docker build on the small VPS skips the type check and lint that
   // `next build` would repeat: they run locally before every deploy.
   typescript: { ignoreBuildErrors: process.env.SKIP_BUILD_CHECKS === '1' },

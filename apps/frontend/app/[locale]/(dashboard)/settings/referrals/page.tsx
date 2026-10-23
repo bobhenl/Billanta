@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
-import { Calculator } from 'lucide-react';
+import { Calculator, ChevronDown } from 'lucide-react';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { EmbedSection } from '@/components/embed-section';
@@ -38,29 +38,9 @@ export default async function ReferralsPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <SettingsHeader title={t('title')} description={t('description')} />
+      <SettingsHeader title={t('title')} />
       <ReferralsPanel overview={overview} link={link} readOnly={!canManage(role)} />
-      <section className="mt-6 rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('qr.title')}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t('qr.hint')}</p>
-        <QrLinkPanel url={link} fileSlug={`ref-${overview.code.toLowerCase()}`} className="mx-auto max-w-sm" />
-      </section>
-      <EmbedSection
-        section="settings"
-        tabs={['badge', 'qr', 'pay', 'vat']}
-        badgeKinds={overview.program === 'accountant' || overview.canBeAccountant ? ['customer', 'partner'] : ['customer']}
-        refCode={overview.code}
-        className="mt-6 sm:p-4"
-      />
-      <p className="mt-6 rounded-xl border border-border bg-card p-4 text-sm">
-        <Calculator className="mr-1.5 inline h-4 w-4 align-[-2px] text-primary" aria-hidden="true" />
-        {t('profileLink.body')}{' '}
-        <Link href="/settings/accountant-profile" className="font-semibold text-primary hover:underline">
-          {t('profileLink.cta')}
-        </Link>
-      </p>
-
-      <section className="mt-6 rounded-xl border border-border bg-card p-4">
+      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="font-bold">{t('invited.title')}</h2>
         {overview.invited.length === 0 ? (
           <p className="mt-1 text-sm text-muted-foreground">{t('invited.empty')}</p>
@@ -92,7 +72,7 @@ export default async function ReferralsPage() {
         )}
       </section>
 
-      <section className="mt-6 rounded-xl border border-border bg-card p-4">
+      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="font-bold">{t('ledger.title')}</h2>
         {overview.ledger.length === 0 ? (
           <p className="mt-1 text-sm text-muted-foreground">{t('ledger.empty')}</p>
@@ -113,6 +93,34 @@ export default async function ReferralsPage() {
           </ul>
         )}
       </section>
+      {/* QR and embed codes are set up once, so they stay folded below the day-to-day lists. */}
+      <details className="group mt-6">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 font-bold sm:px-5 [&::-webkit-details-marker]:hidden">
+          {t('shareMore')}
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        <div className="mt-3 space-y-6">
+          <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+            <h2 className="font-bold">{t('qr.title')}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t('qr.hint')}</p>
+            <QrLinkPanel url={link} fileSlug={`ref-${overview.code.toLowerCase()}`} className="mx-auto max-w-sm" />
+          </section>
+          <EmbedSection
+            section="settings"
+            tabs={['badge', 'qr', 'pay', 'vat']}
+            badgeKinds={overview.program === 'accountant' || overview.canBeAccountant ? ['customer', 'partner'] : ['customer']}
+            refCode={overview.code}
+            className="sm:p-4"
+          />
+        </div>
+      </details>
+      <p className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5 text-sm">
+        <Calculator className="mr-1.5 inline h-4 w-4 align-[-2px] text-primary" aria-hidden="true" />
+        {t('profileLink.body')}{' '}
+        <Link href="/settings/accountant-profile" className="font-semibold text-primary hover:underline">
+          {t('profileLink.cta')}
+        </Link>
+      </p>
     </div>
   );
 }

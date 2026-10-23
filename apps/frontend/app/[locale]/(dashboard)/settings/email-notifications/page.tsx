@@ -18,7 +18,7 @@ export default async function EmailNotificationsPage() {
   const [prefs, newsletter] = await Promise.all([fetchEmailPrefs(), fetchMyNewsletter()]);
   return (
     <div className="mx-auto max-w-3xl">
-      <SettingsHeader title={t('title')} description={t('description')} />
+      <SettingsHeader title={t('title')} />
       {prefs ? <EmailNotificationSettings prefs={prefs} /> : <Banner tone="err" title={t('loadError')} className="mt-6" />}
       {newsletter && <NewsletterSettings initial={newsletter} />}
     </div>

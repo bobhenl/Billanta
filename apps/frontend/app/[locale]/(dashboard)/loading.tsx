@@ -5,7 +5,7 @@
  */
 export default function DashboardLoading() {
   return (
-    <div role="status" aria-busy="true" className="animate-pulse">
+    <div role="status" aria-busy="true" className="mx-auto max-w-6xl motion-safe:animate-pulse">
       <span className="sr-only">…</span>
       <div className="h-7 w-48 rounded-md bg-secondary" />
       <div className="mt-2 h-4 w-72 max-w-full rounded-md bg-secondary" />

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { Gift, PackageOpen, Save, Ticket } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
@@ -6,13 +7,18 @@ import { TRIAL_PLAN, trialDays } from '@/lib/plan';
 import { PROMO_CODE, PROMO_COOKIE } from '@/lib/promo';
 import { SignupForm } from './signup-form';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.signup');
+  return { title: t('title') };
+}
+
 /**
- * Standalone signup page — picks up the "no standalone signup page built"
+ * Standalone signup page – picks up the "no standalone signup page built"
  * TODO from apps/frontend/README.md. Lives in an (auth) route group (no URL
  * segment added, same trick `(dashboard)` uses) so it renders without the
  * authenticated dashboard sidebar/shell from `(dashboard)/layout.tsx`.
  *
- * This page itself stays a plain server component with no interactivity —
+ * This page itself stays a plain server component with no interactivity –
  * all form state and the ToS acceptance logic live in the client component
  * below (`signup-form.tsx`), per blueprint §9's signup-gate requirement.
  */
@@ -34,32 +40,26 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
   const tSignup = await getTranslations('auth.signup');
   const tPricing = await getTranslations('pricing');
   const trial = trialDays();
+  const notes = [
+    trial > 0 && { Icon: Gift, text: tSignup('trialNote', { days: trial, plan: tPricing(`plans.${TRIAL_PLAN}.name`) }) },
+    fromDemo && { Icon: PackageOpen, text: t('signupNote') },
+    fromGuest && !fromDemo && { Icon: Save, text: tGuest('signupNote') },
+    promo && { Icon: Ticket, text: tPromo('signupNote', { code: promo }) }
+  ].filter((note): note is { Icon: typeof Gift; text: string } => !!note);
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-12">
       <div className="w-full max-w-md">
-        {trial > 0 && (
-          <p className="mb-4 flex gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm font-medium">
-            <Gift className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-            {tSignup('trialNote', { days: trial, plan: tPricing(`plans.${TRIAL_PLAN}.name`) })}
-          </p>
-        )}
-        {fromDemo && (
-          <p className="mb-4 flex gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm">
-            <PackageOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-            {t('signupNote')}
-          </p>
-        )}
-        {fromGuest && !fromDemo && (
-          <p className="mb-4 flex gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm">
-            <Save className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-            {tGuest('signupNote')}
-          </p>
-        )}
-        {promo && (
-          <p className="mb-4 flex gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm">
-            <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-            {tPromo('signupNote', { code: promo })}
-          </p>
+        {/* One box for every reason this signup is special, so they read as
+            notes on the form rather than a stack of separate alerts. */}
+        {notes.length > 0 && (
+          <ul className="mb-4 divide-y divide-primary/15 rounded-lg border border-primary/30 bg-primary/5 text-sm">
+            {notes.map(({ Icon, text }) => (
+              <li key={text} className="flex gap-2 px-3 py-2.5">
+                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                {text}
+              </li>
+            ))}
+          </ul>
         )}
         <SignupForm audience={audience} />
       </div>

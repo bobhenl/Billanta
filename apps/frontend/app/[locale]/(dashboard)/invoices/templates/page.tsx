@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowLeft, Users } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { Link } from '@/i18n/navigation';
 import { apiFetch } from '@/lib/api-client';
 import { TEMPLATE_PRESETS } from './presets';
@@ -36,17 +37,18 @@ export default async function TemplatesPage() {
         <ArrowLeft className="h-4 w-4" />
         {tInv('title')}
       </Link>
-      <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-        <div>
+      <div className="mt-3 flex items-start justify-between gap-3">
+        <InfoHint hint={t('lead')} className="min-w-0">
           <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('lead')}</p>
-        </div>
+        </InfoHint>
         <Link
           href="/invoices/bulk"
-          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
+          title={t('bulkCta')}
+          aria-label={t('bulkCta')}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary sm:px-4"
         >
           <Users className="h-4 w-4" />
-          {t('bulkCta')}
+          <span className="hidden sm:inline">{t('bulkCta')}</span>
         </Link>
       </div>
       {loadError && (

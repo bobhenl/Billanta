@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Download, FileText } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Download, FileText } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import {
   OSVC_FLAT_EXPENSE_CAPS,
@@ -11,6 +11,7 @@ import {
   type TaxReturnDeadlineKind
 } from '@faktur/cz-compliance';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { settingsGate } from '@/components/settings-gate';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
@@ -92,41 +93,31 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/reports" className="text-sm font-semibold text-primary hover:underline">
-        ← {t('back')}
+      <Link href="/reports" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        {t('back')}
       </Link>
       <h1 className="mt-2 flex items-start gap-2 text-2xl font-extrabold tracking-tight">
         <FileText className="mt-1 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
         <span>{t(sk ? 'titleSk' : 'title', { year })}</span>
       </h1>
-      <p className="mt-1 text-muted-foreground">{t('lead')}</p>
-      <Banner tone="info" className="mt-4">
-        {t('notAdvice')}
-      </Banner>
+      <p className="mt-1 text-sm text-muted-foreground">{t('notAdvice')}</p>
 
-      {/* Year, then the downloads. Links, not a form: the page is a server component. */}
-      <nav aria-label={t('yearLabel')} className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="text-sm font-semibold text-muted-foreground">{t('yearLabel')}</span>
-        {years.map((y) => (
-          <Link
-            key={y}
-            href={href({ year: y })}
-            aria-current={y === year ? 'page' : undefined}
-            className={cn('rounded-full border px-3 py-1 text-sm font-semibold tabular-nums', y === year ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card hover:bg-accent')}
-          >
-            {y}
-          </Link>
-        ))}
-      </nav>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <a href={`/api/files/exports/tax-return-basis.pdf?${query}`} className={buttonClass.primary}>
-          <Download className="h-4 w-4" aria-hidden="true" />
-          {t('downloadPdf')}
-        </a>
-        <a href={`/api/files/exports/tax-return-basis.csv?${query}`} className={buttonClass.secondary}>
-          <Download className="h-4 w-4" aria-hidden="true" />
-          {t('downloadCsv')}
-        </a>
+      {/* Year and the downloads on one bar. Links, not a form: the page is a server component. */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <SegmentLinks label={t('yearLabel')} items={years.map((y) => ({ key: String(y), label: String(y), href: href({ year: y }), current: y === year }))} />
+        <div className="flex flex-wrap gap-2">
+          <a href={`/api/files/exports/tax-return-basis.pdf?${query}`} className={cn(buttonClass.primary, 'h-10')}>
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {t('downloadPdf')}
+          </a>
+          {/* The CSV is the secondary download; on a phone just its format name, so both fit beside the years. */}
+          <a href={`/api/files/exports/tax-return-basis.csv?${query}`} aria-label={t('downloadCsv')} className={cn(buttonClass.secondary, 'h-10')}>
+            <Download className="h-4 w-4" aria-hidden="true" />
+            <span className="sm:hidden">CSV</span>
+            <span className="hidden sm:inline">{t('downloadCsv')}</span>
+          </a>
+        </div>
       </div>
       {running && (
         <Banner tone="warn" className="mt-4">
@@ -172,21 +163,25 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
       ) : (
         <>
           <Section title={t(sk ? 'flatTitleSk' : 'flatTitle')} lead={t(sk ? 'flatLeadSk' : 'flatLead')}>
+            {/* All four rate rules behind one (i): choosing a rate needs them side by side. */}
             {!sk && (
-              <nav aria-label={t('rateLabel')} className="mb-3 flex flex-wrap gap-2">
-                {RATES.map((x) => (
-                  <Link
-                    key={x}
-                    href={href({ rate: x })}
-                    aria-current={x === rate ? 'page' : undefined}
-                    className={cn('rounded-full border px-3 py-1 text-sm font-semibold', x === rate ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card hover:bg-accent')}
-                  >
-                    {x} %
-                  </Link>
-                ))}
-              </nav>
+              <div className="mb-3 space-y-1.5">
+                {/* Label above the control, so on touch the opened list gets the full width. */}
+                <InfoHint
+                  label={t('rateLabel')}
+                  hint={
+                    <ul className="space-y-1">
+                      {RATES.map((x) => (
+                        <li key={x}>{t(`rates.${x}`)}</li>
+                      ))}
+                    </ul>
+                  }
+                >
+                  <span className="text-sm font-semibold text-muted-foreground">{t('rateLabel')}</span>
+                </InfoHint>
+                <SegmentLinks label={t('rateLabel')} items={RATES.map((x) => ({ key: x, label: `${x} %`, href: href({ rate: x }), current: x === rate }))} />
+              </div>
             )}
-            {!sk && <p className="mb-3 text-xs text-muted-foreground">{t(`rates.${rate}`)}</p>}
             <dl className="divide-y divide-border text-sm">
               {r.flatExpenses.map((f) => (
                 <Row
@@ -203,16 +198,19 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
 
           {r.params && r.options ? (
             <Section title={t('estimateTitle')} lead={t(sk ? 'estimateLeadSk' : 'estimateLead')}>
-              <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 gap-y-2 text-sm">
-                <span />
-                {r.options.map((o) => (
-                  <span key={o.kind} className="text-right text-xs font-bold text-muted-foreground">
-                    {t(`option.${o.kind}`)}
-                  </span>
-                ))}
-                {(['expenses', 'profit', 'tax', 'social', 'health', 'total'] as const).map((k) => (
-                  <EstimateRow key={k} label={t(sk && (k === 'social' || k === 'health') ? `${k}Sk` : k)} values={r.options!.map((o) => money(o[k]))} strong={k === 'total'} />
-                ))}
+              {/* Two money columns beside wrapped labels; on a very narrow phone the table scrolls in its own box. */}
+              <div className="overflow-x-auto">
+                <div className="grid min-w-[18rem] grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 gap-y-2 text-sm">
+                  <span />
+                  {r.options.map((o) => (
+                    <span key={o.kind} className="text-right text-xs font-bold text-muted-foreground">
+                      {t(`option.${o.kind}`)}
+                    </span>
+                  ))}
+                  {(['expenses', 'profit', 'tax', 'social', 'health', 'total'] as const).map((k) => (
+                    <EstimateRow key={k} label={t(sk && (k === 'social' || k === 'health') ? `${k}Sk` : k)} values={r.options!.map((o) => money(o[k]))} strong={k === 'total'} />
+                  ))}
+                </div>
               </div>
               {sk && <p className="mt-3 text-xs text-muted-foreground">{t('skInsuranceNote')}</p>}
             </Section>
@@ -250,8 +248,8 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
         </dl>
       </Section>
 
-      {/* The two systems side by side: the user often knows one and works in the other. */}
-      <Section title={t('diffTitle')}>
+      {/* The two systems side by side: the user often knows one and works in the other. Reference, so folded. */}
+      <Section title={t('diffTitle')} folded>
         <div className="grid gap-x-3 gap-y-2 text-sm sm:grid-cols-[minmax(0,10rem)_minmax(0,1fr)_minmax(0,1fr)]">
           <span className="hidden sm:block" />
           <span className="hidden font-bold sm:block">{t('diff.cz')}</span>
@@ -287,19 +285,56 @@ export default async function TaxReturnPage({ searchParams }: { searchParams: Pr
           {!r.legalEntity && r.params && <li>{t(sk ? 'noteEstimateSk' : 'noteEstimate')}</li>}
           <li>{t('noteData')}</li>
         </ul>
-        <p className="mt-4 text-xs text-muted-foreground">{t('disclaimer')}</p>
       </Section>
     </div>
   );
 }
 
-function Section({ title, lead, children }: { title: string; lead?: string; children: React.ReactNode }) {
+function Section({ title, lead, folded, children }: { title: string; lead?: string; folded?: boolean; children: React.ReactNode }) {
+  if (folded)
+    return (
+      <details className="group mt-6 rounded-xl border border-border bg-card p-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold [&::-webkit-details-marker]:hidden">
+          {title}
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
+        {lead && <p className="mt-1 text-sm text-muted-foreground">{lead}</p>}
+        <div className="mt-3">{children}</div>
+      </details>
+    );
   return (
     <section className="mt-6 rounded-xl border border-border bg-card p-4">
-      <h2 className="font-bold">{title}</h2>
-      {lead && <p className="mt-1 text-sm text-muted-foreground">{lead}</p>}
+      {/* The legal background of a section sits behind an (i); the figures are what the page is for. */}
+      {lead ? (
+        <InfoHint hint={lead}>
+          <h2 className="font-bold">{title}</h2>
+        </InfoHint>
+      ) : (
+        <h2 className="font-bold">{title}</h2>
+      )}
       <div className="mt-3">{children}</div>
     </section>
+  );
+}
+
+/** A segmented control for a server page: each option is a link that changes the query. */
+function SegmentLinks({ label, items }: { label: string; items: { key: string; label: string; href: string; current: boolean }[] }) {
+  return (
+    <nav aria-label={label} className="flex w-fit max-w-full rounded-lg border border-border bg-secondary p-0.5">
+      {items.map((i) => (
+        <Link
+          key={i.key}
+          href={i.href}
+          aria-current={i.current ? 'page' : undefined}
+          className={cn(
+            'flex min-h-9 items-center rounded-md px-3 text-sm font-semibold tabular-nums transition-colors',
+            i.current ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {i.label}
+        </Link>
+      ))}
+    </nav>
   );
 }
 

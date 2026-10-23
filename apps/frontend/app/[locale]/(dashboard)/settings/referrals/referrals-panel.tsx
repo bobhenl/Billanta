@@ -4,7 +4,8 @@ import { useState, useTransition } from 'react';
 import { Calculator, Check, Copy, Gift, Loader2, Users } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { buttonClass, inputClass } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { redeemCredits, setReferralProgram } from './actions';
@@ -97,7 +98,7 @@ export function ReferralsPanel({ overview, link, readOnly }: { overview: Referra
           {t('link.body', { welcome: rewards.welcome, reward: rewards.reward })}
         </p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-          <input readOnly value={link} onFocus={(e) => e.currentTarget.select()} className={cn(inputClass, 'font-mono text-xs')} aria-label={t('link.title')} />
+          <input readOnly value={link} onFocus={(e) => e.currentTarget.select()} className={cn(inputClass, 'min-w-0 flex-1 font-mono text-xs')} aria-label={t('link.title')} />
           <button type="button" onClick={copy} className={cn(buttonClass.primary, 'shrink-0')}>
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? t('link.copied') : t('link.copy')}
@@ -112,16 +113,17 @@ export function ReferralsPanel({ overview, link, readOnly }: { overview: Referra
           { label: t('stats.invited'), value: String(overview.stats.invited) },
           { label: t('stats.paying'), value: String(overview.stats.paying) }
         ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-4">
+          <div key={s.label} className="rounded-xl border border-border bg-card p-4 sm:p-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{s.label}</p>
             <p className="mt-1 text-2xl font-extrabold tracking-tight">{s.value}</p>
           </div>
         ))}
       </div>
 
-      <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('program.title')}</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{t('program.hint')}</p>
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <InfoHint hint={t('program.hint')}>
+          <h2 className="font-bold">{t('program.title')}</h2>
+        </InfoHint>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {(['friend', 'accountant'] as const).map((p) => {
             const Icon = p === 'friend' ? Users : Calculator;
@@ -165,9 +167,10 @@ export function ReferralsPanel({ overview, link, readOnly }: { overview: Referra
         )}
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('redeem.title')}</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{t('redeem.hint')}</p>
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <InfoHint hint={t('redeem.hint')}>
+          <h2 className="font-bold">{t('redeem.title')}</h2>
+        </InfoHint>
         {overview.prepaid && (
           <p className="mt-3 rounded-lg bg-secondary/60 px-3 py-2 text-sm">
             {t('redeem.running', {

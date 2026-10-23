@@ -18,7 +18,7 @@ export function ogImage(locale: string, path: string, alt: string) {
 
 /**
  * Canonical + hreflang for one locale-less path (e.g. "/" or "/pricing").
- * Every public page should emit both in its <head> — the sitemap carries
+ * Every public page should emit both in its <head> – the sitemap carries
  * the same alternates, but Google recommends the in-page tags as well.
  *
  * `locales` narrows the alternates for a page published in some languages

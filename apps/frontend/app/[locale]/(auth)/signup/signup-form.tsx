@@ -4,7 +4,10 @@ import { type FormEvent, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 import { TOS_VERSION } from '@/lib/tos';
+import { PasswordInput } from '@/components/password-input';
 
 // Signup gates on this exact ToS version (see lib/tos.ts).
 
@@ -22,7 +25,7 @@ import { TOS_VERSION } from '@/lib/tos';
  * GAP (see `app/api/auth/register/route.ts`'s doc comment for the full
  * explanation): `companyName` and the `tosVersionAccepted`/`acceptedAt`
  * pair are still collected and sent, but the backend cannot yet log a
- * `tos_acceptances` row or create a tenant from them — tenant bootstrap
+ * `tos_acceptances` row or create a tenant from them – tenant bootstrap
  * (`TenantsService.signup()`) is a separate, not-yet-implemented task. This
  * form's own ToS-acceptance gating logic (the required, non-preselected
  * checkbox) is unchanged and still enforced client-side regardless.
@@ -53,7 +56,7 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
       companyName,
       email,
       password,
-      // blueprint §9 `tos_acceptances` audit fields — currently unused by
+      // blueprint §9 `tos_acceptances` audit fields – currently unused by
       // the backend, see this file's doc comment.
       tosVersionAccepted: TOS_VERSION,
       // The same checkbox confirms the age (18+, see tosLabel); the route
@@ -79,7 +82,7 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
       }
 
       // Auto sign-in right after registration, then a few setup questions
-      // (/welcome) — avoids making them re-enter credentials they just typed.
+      // (/welcome) – avoids making them re-enter credentials they just typed.
       const result = await signIn('credentials', { email, password, redirect: false });
       if (result?.error) {
         setError(t('genericError'));
@@ -99,7 +102,8 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
       <h1 className="text-2xl font-semibold tracking-tight text-card-foreground">{t('title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+      {/* POST so a submit before hydration never puts the fields in the URL. */}
+      <form method="post" className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="companyName" className="text-sm font-medium">
             {t('companyNameLabel')}
@@ -114,7 +118,7 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
             placeholder={t('companyNamePlaceholder')}
             value={companyName}
             onChange={(event) => setCompanyName(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
           <p id="companyNameHint" className="text-xs text-muted-foreground">{t('companyNameHint')}</p>
         </div>
@@ -132,7 +136,7 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
             placeholder={t('emailPlaceholder')}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
         </div>
 
@@ -140,21 +144,20 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
           <label htmlFor="password" className="text-sm font-medium">
             {t('passwordLabel')}
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             required
             minLength={8}
             autoComplete="new-password"
             placeholder={t('passwordPlaceholder')}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
         </div>
 
-        {/* Required, non-preselected ToS acceptance checkbox — blueprint §9
+        {/* Required, non-preselected ToS acceptance checkbox – blueprint §9
             "signup gate". The submit button stays disabled until this is
             checked; `t.rich` renders the `<tos>` and `<dpa>` tags from the
             message catalog as links to /legal/terms and /legal/dpa. The
@@ -196,8 +199,9 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
         {/* Optional, so both start unticked unless the visitor came from the
             accountants or schools page (`?for=`). They only tailor what the
             app shows; nothing is unlocked by them. */}
-        <fieldset className="flex flex-col gap-2 border-t border-border pt-4">
-          <legend className="sr-only">{t('aboutYouLegend')}</legend>
+        <details className="border-t border-border pt-3" open={managesClients || isTeacher}>
+          <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">{t('aboutYouLegend')}</summary>
+          <div className="mt-3 flex flex-col gap-2">
           <label htmlFor="managesClients" className="flex items-start gap-2 text-sm text-muted-foreground">
             <input
               id="managesClients"
@@ -220,14 +224,19 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
             />
             <span>{t('isTeacherLabel')}</span>
           </label>
-        </fieldset>
+          </div>
+        </details>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p role="alert" className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
           disabled={!canSubmit}
-          className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(buttonClass.primary, 'mt-2 py-2.5')}
         >
           {t('submit')}
         </button>

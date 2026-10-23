@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { ChipRow, chipClass } from '@/components/chip-row';
 import { DirectoryJoin } from '@/components/directory-join';
 import { DirectoryListings, directoryItemListLd } from '@/components/directory-listings';
 import { fetchDirectory, isThin, townsOf } from '@/lib/business-directory';
@@ -40,39 +41,39 @@ export default async function DirectoryHubPage({ params }: Props) {
   for (const l of listings) tradeCounts.set(l.trade, (tradeCounts.get(l.trade) ?? 0) + 1);
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(breadcrumbLd(locale, [[SITE_NAME, '/'], [t('title'), '/directory']]))} />
       {!isThin(listings) && (
         <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(directoryItemListLd(t('title'), '/directory', locale, listings.slice(0, HUB_LISTINGS), tradeLabel))} />
       )}
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead', { site: SITE_NAME })}</p>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead', { site: SITE_NAME })}</p>
 
       <h2 className="mt-10 text-lg font-bold tracking-tight">{t('byTrade')}</h2>
-      <ul className="mt-3 flex flex-wrap gap-2">
+      <ChipRow label={t('byTrade')} className="mt-3">
         {DIRECTORY_TRADES.map((key) => (
           <li key={key}>
-            <Link href={`/directory/${key}`} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+            <Link href={`/directory/${key}`} className={chipClass}>
               {tradeLabel(key)}
               {tradeCounts.get(key) ? <span className="text-xs text-muted-foreground">{tradeCounts.get(key)}</span> : null}
             </Link>
           </li>
         ))}
-      </ul>
+      </ChipRow>
 
       {towns.length > 0 && (
         <>
           <h2 className="mt-10 text-lg font-bold tracking-tight">{t('byTown')}</h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ChipRow label={t('byTown')} className="mt-3">
             {towns.map(({ municipality: m, count }) => (
               <li key={m.slug}>
-                <Link href={`/directory/town/${m.slug}`} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+                <Link href={`/directory/town/${m.slug}`} className={chipClass}>
                   {m.name}
                   <span className="text-xs text-muted-foreground">{count}</span>
                 </Link>
               </li>
             ))}
-          </ul>
+          </ChipRow>
         </>
       )}
 

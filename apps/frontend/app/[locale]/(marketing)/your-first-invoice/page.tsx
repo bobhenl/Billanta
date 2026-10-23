@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const PATH = '/your-first-invoice';
 
@@ -41,7 +42,7 @@ export default async function FirstInvoicePage({ params }: { params: Promise<{ l
   const countries = locale === 'sk' ? (['sk', 'cz'] as const) : (['cz', 'sk'] as const);
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -87,14 +88,10 @@ export default async function FirstInvoicePage({ params }: { params: Promise<{ l
       <div className="mt-12 rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8">
         <h2 className="text-xl font-bold tracking-tight">{t('ctaBox.title')}</h2>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('ctaBox.body')}</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Link href="/signup" className={buttonClass.primary}>
-            {tc('signup')}
-          </Link>
-          <Link href="/create-invoice" className={buttonClass.secondary}>
-            {t('guestCta')}
-          </Link>
-        </div>
+        {/* The hero already offers the guest editor; this box is the one signup ask. */}
+        <Link href="/signup" className={cn(buttonClass.primary, 'mt-4')}>
+          {tc('signup')}
+        </Link>
       </div>
 
       <ToolLinks

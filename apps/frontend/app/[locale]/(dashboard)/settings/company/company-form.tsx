@@ -13,6 +13,7 @@ import { hitFromPrefill, registryForCountry, suggestedVatStatus, type CompanyHit
 import { lookupCompanyById } from '@/lib/company-lookup-actions';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { cn } from '@/lib/utils';
 import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
 import type { BankAccount, TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
@@ -226,11 +227,18 @@ export function CompanyForm({
           <label className="block text-sm">
             <span className="mb-1 block font-medium">{t('ico')}</span>
             <div className="flex gap-2">
-              {input('ico', { inputMode: 'numeric', pattern: '\\d{8}', maxLength: 8, placeholder: '12345678' })}
+              {input('ico', { inputMode: 'numeric', pattern: '\\d{8}', maxLength: 8, placeholder: '12345678', className: cn(inputClass, 'min-w-0 flex-1') })}
+              {/* Icon only: with its label the button wrapped under the field on a phone. */}
               {!readOnly && (
-                <button type="button" className={buttonClass.secondary} disabled={!/^\d{8}$/.test(values.ico) || loadingAres} onClick={loadAres}>
+                <button
+                  type="button"
+                  className={cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0')}
+                  disabled={!/^\d{8}$/.test(values.ico) || loadingAres}
+                  onClick={loadAres}
+                  title={t('loadRegistry')}
+                  aria-label={t('loadRegistry')}
+                >
                   {loadingAres ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                  {t('loadRegistry')}
                 </button>
               )}
             </div>
@@ -238,14 +246,13 @@ export function CompanyForm({
               <span className="mt-1 block text-xs text-muted-foreground">{t('icoTrialHint', { days: trialHintDays })}</span>
             )}
           </label>
-          <label className="block text-sm">
-            <span className="mb-1 flex flex-wrap items-center gap-2">
+          <div className="block text-sm">
+            <InfoHint hint={t('dicKeepHint')} className="mb-1" rowClassName="flex-wrap gap-x-2">
               <span className="font-medium">{t('dic')}</span>
               <VatStatusBadge dic={values.dic} onResult={setVatCheck} />
-            </span>
-            {input('dic', { placeholder: 'CZ12345678', maxLength: 12 })}
-            <span className="mt-1 block text-xs text-muted-foreground">{t('dicKeepHint')}</span>
-          </label>
+            </InfoHint>
+            {input('dic', { placeholder: 'CZ12345678', maxLength: 12, 'aria-label': t('dic') })}
+          </div>
           {field('companyName', t('companyName'), { required: true, maxLength: 200 }, '', t('companyNameHint'))}
           {field('legalName', t('legalName'), { required: true, maxLength: 200 }, '', t('legalNameHint'))}
         </div>
@@ -348,14 +355,14 @@ export function CompanyForm({
       </Section>
 
       {/* Invoice defaults (language, due days, payment, notes, customer, items…) live together in Settings → Faktury. */}
-      <Section icon={FileText} title={t('sections.defaults')}>
-        <p className="text-sm text-muted-foreground">
-          {t('defaultsMoved')}{' '}
-          <Link href="/settings/invoices#defaults" className="font-semibold text-foreground underline underline-offset-2">
-            {t('defaultsLink')}
-          </Link>
-        </p>
-      </Section>
+      {/* A pointer, not a section: a whole card for one link made the form look longer than it is. */}
+      <p className="flex flex-wrap items-center gap-x-1 px-1 text-sm text-muted-foreground">
+        <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
+        {t('defaultsMoved')}
+        <Link href="/settings/invoices#defaults" className="font-semibold text-foreground underline underline-offset-2">
+          {t('defaultsLink')}
+        </Link>
+      </p>
 
       {!readOnly && (
         <div className="sticky bottom-20 z-10 flex items-center justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">

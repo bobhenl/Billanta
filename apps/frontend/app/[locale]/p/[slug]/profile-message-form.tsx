@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { CheckCircle2, Loader2, MessageSquare } from 'lucide-react';
 import { buyerInputClass } from '@/components/buyer-fields';
 import { sendProfileMessage } from '@/lib/public-profile-actions';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /** "Kontaktovat": a short message that reaches the company in its app notifications. */
 export function ProfileMessageForm({
@@ -49,7 +51,7 @@ export function ProfileMessageForm({
 
   if (sent) {
     return (
-      <div className="rounded-2xl border border-success/40 bg-card p-6" role="status">
+      <div className="rounded-2xl border border-success/40 bg-card p-5 sm:p-6" role="status">
         <h2 className="flex items-center gap-2 text-lg font-bold">
           <CheckCircle2 className="h-5 w-5 text-success" />
           {t('doneTitle')}
@@ -60,7 +62,7 @@ export function ProfileMessageForm({
   }
 
   const field = (key: string, label: string, node: React.ReactNode, wide = false) => (
-    <label className={`text-sm ${wide ? 'sm:col-span-2' : ''}`}>
+    <label className={cn('min-w-0 text-sm', wide && 'sm:col-span-2')}>
       <span className="mb-1 block font-medium">{label}</span>
       {node}
       {fields[key] && <span className="mt-1 block text-xs text-destructive">{t(`errors.${key}`)}</span>}
@@ -68,7 +70,7 @@ export function ProfileMessageForm({
   );
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-6">
+    <form onSubmit={submit} className="rounded-2xl border border-border bg-card p-5 sm:p-6">
       <h2 className="flex items-center gap-2 text-lg font-bold">
         <MessageSquare className="h-5 w-5 text-primary" />
         {t('title')}
@@ -121,7 +123,7 @@ export function ProfileMessageForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-4 inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className={cn(buttonClass.primary, 'mt-5 h-10 w-full gap-2 px-5 sm:w-auto')}
       >
         {pending && <Loader2 className="h-4 w-4 animate-spin" />}
         {t('submit')}

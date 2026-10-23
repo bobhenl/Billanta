@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Copy, Loader2, Mail, SlidersHorizontal, Trash2, UserPlus, X } from 'lucide-react';
+import { ChevronDown, Copy, Loader2, Mail, SlidersHorizontal, Trash2, UserPlus, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass, Modal } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { formatDate } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
@@ -179,10 +180,9 @@ export function TeamManager({
     <div className="mt-6 space-y-5">
       <section className="rounded-xl border border-border bg-card">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
-          <div>
+          <InfoHint hint={t('membersHint')} className="min-w-0">
             <h2 className="font-bold">{t('members', { count: team.members.length })}</h2>
-            <p className="text-xs text-muted-foreground">{t('membersHint')}</p>
-          </div>
+          </InfoHint>
           {canManage && (
             <button
               type="button"
@@ -211,7 +211,7 @@ export function TeamManager({
                     {m.name || m.email}
                     {isMe && <span className="ml-1.5 text-xs font-normal text-muted-foreground">({t('you')})</span>}
                   </p>
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="break-all text-xs text-muted-foreground">
                     {m.email} · {t('since', { date: formatDate(m.createdAt, locale) ?? '' })}
                   </p>
                   <AccessSummary role={m.role} permissions={m.permissions} />
@@ -259,7 +259,7 @@ export function TeamManager({
                   </span>
                 )}
                 {editable && (
-                  <button type="button" className={buttonClass.ghost} aria-label={t('remove')} onClick={() => setRemoving(m)}>
+                  <button type="button" className={buttonClass.ghost} title={t('remove')} aria-label={t('remove')} onClick={() => setRemoving(m)}>
                     <Trash2 className="h-4 w-4" />
                   </button>
                 )}
@@ -279,7 +279,7 @@ export function TeamManager({
                   <Mail className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{inv.email}</p>
+                  <p className="break-all font-semibold">{inv.email}</p>
                   <p className={cn('text-xs', inv.expired ? 'text-destructive' : 'text-muted-foreground')}>
                     {inv.expired ? t('expired') : t('expires', { date: formatDate(inv.expiresAt, locale) ?? '' })}
                   </p>
@@ -293,10 +293,12 @@ export function TeamManager({
                     type="button"
                     className={buttonClass.ghost}
                     disabled={pending}
+                    title={t('revoke')}
+                    aria-label={t('revoke')}
                     onClick={() => run(() => revokeInvitation(inv.id), t('revoked'))}
                   >
                     <X className="h-4 w-4" />
-                    {t('revoke')}
+                    <span className="hidden sm:inline">{t('revoke')}</span>
                   </button>
                 )}
               </li>
@@ -305,9 +307,13 @@ export function TeamManager({
         </section>
       )}
 
-      <section className="rounded-xl border border-border bg-card p-4">
-        <h2 className="font-bold">{t('rolesTitle')}</h2>
-        <p className="mt-1 text-xs text-muted-foreground">{t('presetsHint')}</p>
+      {/* Reference, not a task: the invite dialog already explains each profile. */}
+      <details className="group rounded-xl border border-border bg-card p-4 sm:p-5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold [&::-webkit-details-marker]:hidden">
+          {t('rolesTitle')}
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+        </summary>
+        <p className="mt-2 text-xs text-muted-foreground">{t('presetsHint')}</p>
         <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
           <div className="rounded-lg bg-muted/40 p-3">
             <dt>
@@ -325,7 +331,7 @@ export function TeamManager({
             </div>
           ))}
         </dl>
-      </section>
+      </details>
 
       <Modal
         open={inviteOpen}
@@ -357,8 +363,8 @@ export function TeamManager({
               <p role="alert" className="font-medium text-warning">{t('inviteNotSent')}</p>
             )}
             <div className="flex gap-2">
-              <input className={cn(inputClass, 'font-mono text-xs')} readOnly value={createdLink.url} onFocus={(e) => e.target.select()} />
-              <button type="button" className={buttonClass.secondary} onClick={() => copy(createdLink.url)}>
+              <input className={cn(inputClass, 'min-w-0 flex-1 font-mono text-xs')} readOnly aria-label={t('copyLink')} value={createdLink.url} onFocus={(e) => e.target.select()} />
+              <button type="button" className={cn(buttonClass.secondary, 'shrink-0')} title={t('copyLink')} aria-label={t('copyLink')} onClick={() => copy(createdLink.url)}>
                 <Copy className="h-4 w-4" />
               </button>
             </div>

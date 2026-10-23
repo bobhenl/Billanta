@@ -48,27 +48,28 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
     );
   }
 
+  const link =
+    'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full border border-border bg-card px-3 text-sm font-semibold text-primary transition-colors hover:bg-accent';
+
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{t('pageTitle')}</h1>
-          <p className="mt-1 text-muted-foreground">{t('pageLead')}</p>
-        </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
+    <div className="mx-auto max-w-6xl">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('pageTitle')}</h1>
+        {/* Related pages as one swipeable row on a phone, so they never wrap under each other. */}
+        <nav className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
           {/* The paušální režim is for Czech sole traders only. */}
           {tenant && tenant.addressCountry.toUpperCase() !== 'SK' && !isLegalEntityName(tenant.legalName) && (
-            <Link href={inAppCalculatorPath('flat-tax')!} className="text-sm font-semibold text-primary hover:underline">
+            <Link href={inAppCalculatorPath('flat-tax')!} className={link}>
               {t('flatTaxLink')}
             </Link>
           )}
-          <Link href="/reports/tax-return" className="text-sm font-semibold text-primary hover:underline">
+          <Link href="/reports/tax-return" className={link}>
             {t('taxReturnLink')}
           </Link>
-          <Link href="/settings/exports" className="text-sm font-semibold text-primary hover:underline">
+          <Link href="/settings/exports" className={link}>
             {t('exportsLink')}
           </Link>
-        </div>
+        </nav>
       </div>
       <PeriodReport key={preset} initial={stats} initialPreset={preset} usage={usage} savedKpis={config?.reportKpis ?? null} home={await fetchHomeCurrency()} />
     </div>

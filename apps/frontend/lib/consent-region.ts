@@ -19,7 +19,7 @@
  * The country comes from the CDN in front of the site: Cloudflare's
  * `cf-ipcountry` / `cf-region-code` (the "Add visitor location headers"
  * managed transform), or Vercel's `x-vercel-ip-country(-region)`. With no
- * header at all — local development, Caddy without Cloudflare — every
+ * header at all – local development, Caddy without Cloudflare – every
  * visitor gets the banner, the safe side.
  */
 
@@ -44,8 +44,8 @@ export const OPT_IN_COUNTRIES = Object.freeze([
 
 /**
  * US states (ISO 3166-2 subdivision, as `cf-region-code` sends it) where
- * session replay waits for a yes: the all-party-consent wiretap states —
- * CA (CIPA), PA, FL, MA, WA, MD, IL, MT, NH — plus CT, MI, NV, OR, DE on
+ * session replay waits for a yes: the all-party-consent wiretap states –
+ * CA (CIPA), PA, FL, MA, WA, MD, IL, MT, NH – plus CT, MI, NV, OR, DE on
  * the safe side. A US visitor with no usable state waits too.
  */
 export const REPLAY_ASK_STATES = Object.freeze([
@@ -60,8 +60,8 @@ const clean = (value: string | null | undefined) => String(value ?? '').trim().t
 
 /**
  * Whether optional cookies wait for a yes in `country`. Anything that is not
- * a clean two-letter code — no header, Cloudflare's `XX` (unknown) or `T1`
- * (Tor) — counts as yes, the safe side.
+ * a clean two-letter code – no header, Cloudflare's `XX` (unknown) or `T1`
+ * (Tor) – counts as yes, the safe side.
  */
 export function optInFor(country: string | null | undefined): boolean {
   const code = clean(country);

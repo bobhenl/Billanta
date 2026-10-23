@@ -4,11 +4,14 @@ import { type FormEvent, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { signIn } from 'next-auth/react';
 import { Link, useRouter } from '@/i18n/navigation';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 import { OAuthButton } from '@/components/oauth-button';
 import { PROVIDER_NAMES, type OAuthProviderId } from '@/lib/oauth-providers';
+import { PasswordInput } from '@/components/password-input';
 
 /**
- * Login form — email/password via NextAuth's Credentials provider, plus a
+ * Login form – email/password via NextAuth's Credentials provider, plus a
  * "Continue with …" button for every configured OAuth provider. Mirrors
  * `(auth)/signup/signup-form.tsx`'s visual conventions (same card, input,
  * and button classes) so the two auth pages read as one consistent flow.
@@ -16,7 +19,7 @@ import { PROVIDER_NAMES, type OAuthProviderId } from '@/lib/oauth-providers';
  * Client component: form state (email/password/error/submitting) and the
  * `signIn(...)` calls both require it. `signIn` here comes from
  * `next-auth/react` (the client-side API, backed by the `SessionProvider`
- * wrapper in `components/session-provider.tsx`) — NOT the `signIn` exported
+ * wrapper in `components/session-provider.tsx`) – NOT the `signIn` exported
  * from the root `auth.ts`, which is meant for server actions/route handlers.
  */
 export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
@@ -49,7 +52,8 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
       <h1 className="text-2xl font-semibold tracking-tight text-card-foreground">{t('title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+      {/* POST so a submit before hydration never puts the fields in the URL. */}
+      <form method="post" className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium">
             {t('emailLabel')}
@@ -63,7 +67,7 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
             placeholder={t('emailPlaceholder')}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
         </div>
 
@@ -71,16 +75,15 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
           <label htmlFor="password" className="text-sm font-medium">
             {t('passwordLabel')}
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             required
             autoComplete="current-password"
             placeholder={t('passwordPlaceholder')}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
           {/* After the field, so Tab goes from the e-mail straight to the password. */}
           <Link
@@ -91,12 +94,16 @@ export function LoginForm({ providers }: { providers: OAuthProviderId[] }) {
           </Link>
         </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p role="alert" className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(buttonClass.primary, 'mt-2 py-2.5')}
         >
           {t('submit')}
         </button>

@@ -151,14 +151,26 @@ function sortValue(row: InvoiceRow, key: SortKey): string | number | null {
  * the state-dependent actions, checkboxes enable bulk actions, and the
  * visible columns are the viewer's choice (remembered in this browser).
  */
-export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceRow[]; filtered: boolean; home?: HomeCurrency }) {
+export function InvoicesTable({
+  rows,
+  filtered,
+  home = 'CZK',
+  omit
+}: {
+  rows: InvoiceRow[];
+  filtered: boolean;
+  home?: HomeCurrency;
+  /** Columns that say the same thing on every row here (the customer on a contact's page). */
+  omit?: Column[];
+}) {
   const t = useTranslations('doc');
   const tList = useTranslations('invoices');
   const tStatus = useTranslations('invoices.status');
   const tGloss = useTranslations('glossary');
   const locale = useLocale();
   const router = useRouter();
-  const [columns, setColumns] = useState<Column[]>(DEFAULT_COLUMNS);
+  const [chosen, setColumns] = useState<Column[]>(DEFAULT_COLUMNS);
+  const columns = omit ? chosen.filter((c) => !omit.includes(c)) : chosen;
   const [chooserOpen, setChooserOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<Sort>(null);
@@ -379,9 +391,9 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
             <>
               <div className="fixed inset-0 z-30" onClick={() => setChooserOpen(false)} />
               <div className="absolute right-0 z-40 mt-1 w-56 rounded-xl border border-border bg-card p-2 shadow-lg">
-                {COLUMNS.map((column) => (
+                {COLUMNS.filter((c) => !omit?.includes(c)).map((column) => (
                   <label key={column} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-accent">
-                    <input type="checkbox" checked={columns.includes(column)} onChange={() => toggleColumn(column)} className="accent-[hsl(var(--primary))]" />
+                    <input type="checkbox" checked={chosen.includes(column)} onChange={() => toggleColumn(column)} className="accent-[hsl(var(--primary))]" />
                     {t(`columns.${column}`)}
                   </label>
                 ))}
@@ -410,7 +422,52 @@ export function InvoicesTable({ rows, filtered, home = 'CZK' }: { rows: InvoiceR
         </div>
       </div>
 
-      <div className="relative overflow-x-auto rounded-xl border border-border bg-card">
+      {/* Below md the column table cannot fit: number and customer on the left, amount and status on the right. */}
+      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:hidden">
+        {rows.length === 0 && <li className="px-4 py-10 text-center text-sm text-muted-foreground">{filtered ? t('emptyFiltered') : tList('empty')}</li>}
+        {sortedRows.map((row) => (
+          <li key={row.id} className={cn('flex items-center gap-2 px-3 py-3', selected.has(row.id) && 'bg-accent/40', row.status === 'cancelled' && 'opacity-60')}>
+            {canEdit && (
+              <input
+                type="checkbox"
+                aria-label={row.invoiceNumber ?? t('unnumbered')}
+                checked={selected.has(row.id)}
+                onChange={(e) =>
+                  setSelected((s) => {
+                    const next = new Set(s);
+                    if (e.target.checked) next.add(row.id);
+                    else next.delete(row.id);
+                    return next;
+                  })
+                }
+                className="h-5 w-5 shrink-0 accent-[hsl(var(--primary))]"
+              />
+            )}
+            <div
+              className="flex min-w-0 flex-1 cursor-pointer items-start justify-between gap-3"
+              onClick={() => {
+                startNavProgress();
+                router.push(`/invoices/${row.id}`);
+              }}
+            >
+              <div className="min-w-0 space-y-0.5 text-sm">
+                <div className="truncate">{cell(row, 'customer')}</div>
+                <div className="flex items-center gap-2 text-xs">
+                  {cell(row, 'number')}
+                  {cell(row, 'dueDate')}
+                </div>
+              </div>
+              <div className="shrink-0 space-y-1 text-right text-sm">
+                <div>{cell(row, 'total')}</div>
+                <div>{cell(row, 'status')}</div>
+              </div>
+            </div>
+            <RowMenu row={row} inline={false} />
+          </li>
+        ))}
+      </ul>
+
+      <div className="relative hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full min-w-[720px] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">

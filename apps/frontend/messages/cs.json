@@ -66,39 +66,35 @@
       "teamRoles": "Role v týmu"
     },
     "hero": {
-      "title": "Fakturace pro české a slovenské podnikatele, bez papírování",
-      "subtitle": "Vystavujte faktury hlasem přes Telegram nebo WhatsApp, exportujte je do ISDOC a mějte jistotu, že vše odpovídá pravidlům ARES i platné legislativě.",
-      "cta": "Založit účet zdarma",
-      "secondaryCta": "Zjistit více",
-      "eyebrow": "Fakturace pro CZ a SK",
-      "points": {
-        "isdoc": "Export ISDOC",
-        "ares": "Ověření v ARES",
-        "qr": "QR platba"
-      },
-      "guestCta": "Faktura bez registrace",
-      "dictateCta": "Nebo ji nadiktujte – bez registrace"
+      "title": "Online fakturace, která pohlídá i platby",
+      "subtitle": "Fakturu vystavíte za minutu, klidně hlasem. Platby z banky se k ní spárují samy.",
+      "cta": "Začít zdarma",
+      "note": "Bez platební karty. Nebo bez registrace: <write>vyplnit fakturu</write> · <voice>nadiktovat ji</voice>"
     },
-    "invoiceMockup": {
-      "status": "Zaplaceno",
-      "issuedTo": "Odběratel",
-      "dueDate": "Splatnost",
-      "subtotal": "Mezisoučet",
-      "vat": "DPH 21 %",
-      "total": "Celkem k úhradě",
-      "isdocTag": "Export ISDOC",
-      "aresTag": "Ověřeno v ARES",
-      "credit": "Vystaveno v aplikaci Billanta"
+    "heroSlides": {
+      "voice": {
+        "step": "Nadiktujte",
+        "reply": "Návrh faktury je připravený ke kontrole"
+      },
+      "send": {
+        "step": "Odešlete",
+        "sent": "Odesláno s QR platbou"
+      },
+      "paid": {
+        "step": "Máte zaplaceno",
+        "title": "Příchozí platba",
+        "matched": "Spárováno s fakturou 2026-0004"
+      }
     },
     "features": {
-      "title": "Vše, co potřebujete k fakturaci, na jednom místě",
+      "title": "Vše k fakturaci",
       "isdoc": {
         "title": "Export do ISDOC",
         "description": "Faktury ve formátu ISDOC připravené pro účetní i státní správu, bez ručního přepisování."
       },
       "aiVoice": {
         "title": "Faktura z hlasové zprávy",
-        "description": "Nadiktujte fakturu do Telegramu nebo WhatsAppu a nechte AI připravit koncept k rychlé kontrole."
+        "description": "Pošlete hlasovku do Telegramu nebo WhatsAppu, AI připraví koncept ke kontrole."
       },
       "compliance": {
         "title": "Kontrola povinných údajů",
@@ -110,19 +106,19 @@
       },
       "qr": {
         "title": "QR platba na každé faktuře",
-        "description": "Každá faktura nese QR kód podle standardu České bankovní asociace. Stačí doplnit číslo účtu nebo IBAN – odběratel jen naskenuje a zaplatí."
+        "description": "QR kód podle standardu České bankovní asociace, odběratel jen naskenuje a zaplatí."
       },
       "bankSync": {
         "title": "Platby z banky a PayPalu se spárují samy",
-        "description": "Připojte Fio, jinou banku přes PSD2 nebo PayPal a Billanta sama stáhne příchozí platby a označí zaplacené faktury, u PayPalu i s poplatkem."
+        "description": "Fio, jiná banka přes PSD2 nebo PayPal – zaplacené faktury se označí samy."
       },
       "reminders": {
         "title": "Upomínky po splatnosti",
-        "description": "Neuhrazené faktury Billanta pohlídá a odběrateli pošle upomínku s odkazem na fakturu a QR platbou."
+        "description": "Po splatnosti odejde odběrateli upomínka s odkazem na fakturu a QR platbou."
       },
       "vat": {
         "title": "Přiznání k DPH pro EPO",
-        "description": "Z faktur a výdajů připravíme XML přiznání k DPH a kontrolní hlášení pro portál Finanční správy."
+        "description": "XML přiznání k DPH a kontrolní hlášení z vašich faktur a výdajů."
       },
       "expenses": {
         "title": "Účtenky z fotky",
@@ -142,7 +138,7 @@
       },
       "taxEstimate": {
         "title": "Kolik vám zůstane",
-        "description": "U každé faktury vidíte orientační částku po dani z příjmů a sociálním i zdravotním pojištění. Za celý rok spočítáme daň, pojistné i nové zálohy."
+        "description": "U každé faktury orientační částka po dani a pojištění, za celý rok i nové zálohy."
       },
       "currencies": {
         "title": "Faktury v cizí měně",
@@ -203,8 +199,8 @@
       }
     },
     "finalCta": {
-      "title": "Připraveni zjednodušit fakturaci?",
-      "subtitle": "Začněte zdarma, bez nutnosti platební karty.",
+      "title": "Začněte s první fakturou",
+      "subtitle": "Zdarma a bez platební karty.",
       "cta": "Vytvořit účet"
     },
     "footer": {
@@ -253,8 +249,8 @@
       }
     },
     "seo": {
-      "title": "Billanta – online fakturace pro OSVČ a firmy v ČR a SR",
-      "description": "Faktury s exportem do ISDOC, ověřením odběratele v ARES a QR platbou. Fakturu nadiktujete i hlasovou zprávou přes Telegram nebo WhatsApp. Zdarma."
+      "title": "Billanta – online fakturace zdarma pro OSVČ a firmy",
+      "description": "Online fakturace pro OSVČ a firmy v Česku i na Slovensku. Faktura za minutu, i hlasem. Platby z banky se spárují samy a upomínky odejdou automaticky. Začněte zdarma."
     },
     "faq": {
       "title": "Časté dotazy",
@@ -287,13 +283,12 @@
     },
     "compare": {
       "title": "Srovnání s konkurencí",
-      "lead": "Víc zdarma, nižší cena a AI v každém tarifu. Vedle Fakturoidu, iDokladu, SuperFaktury, Vyfakturuj a BitFaktury.",
+      "lead": "Víc zdarma, nižší cena a AI v každém tarifu.",
       "more": "Celé srovnání s Fakturoidem, iDokladem a dalšími"
     }
   },
   "dashboard": {
     "title": "Přehled",
-    "welcome": "Vítejte zpět. Zde najdete rychlý přehled vašich faktur a plateb.",
     "noTenant": "Nejdřív dokončete nastavení firmy, pak se tu objeví přehled.",
     "loadError": "Přehled se nepodařilo načíst. Zkuste stránku obnovit.",
     "greeting": "Dobrý den, {name}",
@@ -304,7 +299,7 @@
     "overdueTitle": "Po splatnosti ({count})",
     "dueOn": "splatnost {date}",
     "topCustomers": "Největší odběratelé",
-    "topCustomersHint": "Podle fakturace za posledních 12 měsíců",
+    "topCustomersHint": "za 12 měsíců",
     "foreignNote": "{count, plural, one {# doklad v cizí měně není} few {# doklady v cizí měně nejsou} other {# dokladů v cizí měně není}} započten v součtech.",
     "emptyTitle": "Zatím tu nic není",
     "emptyHint": "Vystavte první fakturu a přehled se začne plnit tržbami, grafem i odběrateli.",
@@ -398,10 +393,10 @@
     "dueSoonTitle": "Splatné do 7 dní ({count})",
     "taxDeadlines": {
       "title": "Blížící se daňové termíny",
-      "hint": "Daňové lhůty bere Billanta z oficiálního daňového kalendáře Finanční správy (obnovuje se denně, termíny jsou už posunuté na pracovní dny). Zálohy na pojištění a přehledy OSVČ v něm nejsou, ty se dopočítávají. Ukazuje nejbližších 45 dní; je to kalendář, Billanta nesleduje, co už máte podáno.",
+      "hint": "Nejbližších 45 dní podle kalendáře Finanční správy, zálohy na pojištění jsou dopočítané. Co už máte podané, Billanta nesleduje.",
       "daysLeft": "{count, plural, =0 {dnes} one {zítra} few {za # dny} other {za # dní}}",
       "customizeTitle": "Které termíny hlídat",
-      "customizeHint": "Ukazujeme jen termíny, které se vás týkají podle vztahu k DPH a právní formy (Nastavení → Firma). Čtvrtletní plátce DPH si místo měsíčního zaškrtne čtvrtletní.",
+      "customizeHint": "Nabízíme jen termíny podle vztahu k DPH a právní formy. Čtvrtletní plátce DPH zaškrtne čtvrtletní.",
       "kinds": {
         "vat_monthly": "DPH a kontrolní hlášení (měsíčně)",
         "vat_quarterly": "DPH a kontrolní hlášení (čtvrtletně)",
@@ -422,28 +417,26 @@
       "sourceLocal": "Kalendář Finanční správy se teď nepodařilo načíst, termíny jsou dopočítané podle zákona.",
       "prepareXml": "Připravit XML",
       "amountsTitle": "Očekávané částky",
-      "amountsHint": "Částka, kterou každý měsíc odvádíte jako zaměstnavatel. Ukáže se u termínu, ať víte, kolik si nachystat. Prázdné pole = bez částky.",
+      "amountsHint": "Měsíční odvod za zaměstnance. Ukáže se u termínu.",
       "bookExpense": "Zapsat jako výdaj",
       "fillAmount": "Doplnit výši",
       "onlyIfForeignPurchase": "Jen pokud jste v měsíci nakoupili služby ze zahraničí (např. reklamy).",
       "onlyIfEuSales": "Jen pokud jste v měsíci fakturovali službu firmě v jiném státě EU.",
       "advancesInSettings": "Výši záloh na pojištění a paušální daň nastavíte podle období ve Fakturačních údajích.",
       "editAdvances": "Upravit zálohy",
-      "manualKindsHint": "Zaměstnance, silniční daň a daň z nemovitých věcí Billanta nepozná, ty si zaškrtněte sami.",
+      "manualKindsHint": "Zaměstnance, silniční daň a daň z nemovitých věcí si zaškrtněte sami.",
       "regimeUnknown": "Nevíme, jestli jste v paušálním režimu, proto hlídáme běžné zálohy na pojištění.",
       "regimeAnswer": "Doplnit v nastavení"
     },
     "fxRates": {
       "title": "Kurzy ČNB",
-      "hint": "Kurz devizového trhu ČNB pro zvolený den – ten se používá pro přepočet faktur v cizí měně (§ 38 ZDPH). Procenta ukazují změnu za týden před tímto dnem.",
+      "hint": "Kurz ČNB pro zvolený den, podle kterého se přepočítávají faktury v cizí měně (§ 38 ZDPH). Procenta jsou změna za týden.",
       "customizeTitle": "Měny v kurzech ČNB",
-      "customizeHint": "Vyberte, které měny se mají na přehledu ukazovat. Na výběr jsou všechny měny, které ČNB vyhlašuje.",
-      "source": "Zdroj:",
       "weekChange": "Změna za 7 dní",
       "weekShort": "/ týden",
       "date": "Den",
       "publishedOn": "Kurz ze dne {date}",
-      "fallbackNote": "ČNB pro zvolený den kurz nevyhlásila (víkend, svátek nebo ještě před 14:30), proto ukazujeme poslední vyhlášený.",
+      "fallbackNote": "pro zvolený den ČNB kurz nevyhlásila",
       "unavailable": "Kurzy pro tento den se nepodařilo načíst.",
       "converter": "Převod na Kč",
       "amount": "Částka",
@@ -454,7 +447,6 @@
     },
     "usage": {
       "title": "Doporučeno podle toho, co používáte",
-      "hint": "Co nezměníte, se bude dál přizpůsobovat. Vaše volba má vždy přednost.",
       "newAccount": "Zatím tu nic nemáte, proto ukazujeme základní rozvržení.",
       "currencies": "Fakturujete v {list}",
       "onlyHome": "Fakturujete jen v {currency}",
@@ -465,7 +457,6 @@
       "proformas": "vystavujete zálohovky",
       "quotes": "posíláte nabídky"
     },
-    "customizeOrderHint": "Pořadí změníte přetažením za úchyt nebo šipkami.",
     "dragToReorder": "Přetáhněte pro změnu pořadí",
     "exportsCta": "Exporty pro účetní",
     "emptyHintReadOnly": "Zatím tu nejsou žádné doklady. Jakmile firma vystaví první fakturu, uvidíte tu tržby, graf i odběratele."
@@ -527,7 +518,6 @@
       "customizeTitle": "Rychlé filtry",
       "customizeHint": "Vyberte, které štítky nad seznamem chcete vidět. Skrytý štítek se dál ukáže, dokud je zrovna aktivní. Platí pro tento prohlížeč.",
       "presetChips": "Rychlé volby",
-      "typeChips": "Typy dokladů",
       "statusChips": "Stavy",
       "presets": {
         "thisMonth": "Tento měsíc",
@@ -670,9 +660,9 @@
     "vatTotalLabel": "DPH celkem",
     "totalLabel": "Celkem k úhradě",
     "paymentTitle": "Uhradit fakturu",
-    "paymentInstructions": "Naskenujte QR kód v bankovní aplikaci a předvyplňte si okamžitý bankovní převod.",
+    "paymentInstructions": "Naskenujte QR kód v aplikaci banky.",
     "paymentDisclaimer": "Jde o standardní český/slovenský QR kód pro bankovní převod (SPAYD / „QR Platba“), nikoli o platbu kartou.",
-    "noBankAccount": "Vystavovatel zatím nemá nastavený bankovní účet pro online platbu. Ohledně úhrady ho prosím kontaktujte přímo.",
+    "noBankAccount": "Dodavatel neuvedl bankovní účet. Pro platbu ho kontaktujte přímo.",
     "notFoundTitle": "Faktura nenalezena",
     "notFoundBody": "Tento odkaz je neplatný nebo již vypršel. Pro nový odkaz kontaktujte odesílatele.",
     "attachmentsTitle": "Přílohy",
@@ -703,13 +693,14 @@
       "title": "Moje poznámka",
       "hint": "Vidíte ji jen vy – ukládá se pouze v tomto prohlížeči, dodavatel ji nevidí.",
       "placeholder": "Např. schváleno, zaplatit do pátku",
-      "saved": "Uloženo v tomto prohlížeči."
+      "saved": "Uloženo v tomto prohlížeči.",
+      "add": "Přidat si poznámku"
     },
     "paymentMethod": "Způsob úhrady",
     "report": {
       "link": "Nečekali jste tento doklad? Nahlaste ho",
       "title": "Nahlásit podezřelý doklad",
-      "hint": "Hlášení dostane provozovatel služby Billanta, ne vystavovatel dokladu. Pokud doklad nahlásí více příjemců, odesílání e-mailů vystavovatele pozastavíme a prověříme ho.",
+      "hint": "Hlášení dostane provozovatel služby {name}, ne vystavovatel dokladu. Pokud doklad nahlásí více příjemců, odesílání e-mailů vystavovatele pozastavíme a prověříme ho.",
       "reason": "Důvod",
       "reasons": {
         "fraud": "Podvod nebo falešná faktura",
@@ -734,7 +725,7 @@
     },
     "card": {
       "pay": "Zaplatit kartou {amount}",
-      "note": "Platba proběhne přes zabezpečenou bránu Stripe. Údaje o kartě dodavatel ani Billanta nevidí.",
+      "note": "Platba proběhne přes zabezpečenou bránu Stripe. Údaje o kartě dodavatel ani {name} nevidí.",
       "success": "Děkujeme, platba kartou byla přijata. Faktura je označená jako uhrazená.",
       "processing": "Platbu ověřujeme. Jakmile ji Stripe potvrdí, faktura se označí jako uhrazená. Obvykle to trvá pár minut.",
       "cancelled": "Platba kartou byla zrušena. Můžete to zkusit znovu nebo zaplatit převodem.",
@@ -748,7 +739,25 @@
     "cta": {
       "question": "Taky fakturujete?",
       "action": "Vyzkoušejte aplikaci {name} zdarma"
-    }
+    },
+    "amountDueLabel": "K úhradě",
+    "dueOn": "Splatnost {date}",
+    "validUntilOn": "Platnost do {date}",
+    "overdue": "Po splatnosti",
+    "quoteTotalLabel": "Celková cena",
+    "totalShortLabel": "Celkem",
+    "issuedOn": "Vystaveno {date}",
+    "pay": {
+      "account": "Číslo účtu",
+      "iban": "IBAN",
+      "amount": "Částka",
+      "copy": "Kopírovat",
+      "copied": "Zkopírováno",
+      "copyLabel": "Kopírovat {label}"
+    },
+    "print": "Tisk / PDF",
+    "downloadPdf": "Stáhnout PDF",
+    "downloadPdfShort": "PDF"
   },
   "expenses": {
     "title": "Výdaje",
@@ -768,25 +777,22 @@
     "uncategorized": "Nezařazeno",
     "form": {
       "title": "Nový výdaj",
-      "description": "Přijatá faktura, účtenka nebo jiný náklad. Nejrychleji ji načtete z fotky.",
-      "supplierNameLabel": "Dodavatel",
+      "supplierNameLabel": "Název",
       "supplierNamePlaceholder": "Název dodavatele",
       "descriptionLabel": "Popis",
       "descriptionPlaceholder": "Např. nákup kancelářských potřeb",
       "amountLabel": "Částka s DPH",
-      "vatRateLabel": "Sazba DPH (%)",
+      "vatRateLabel": "Sazba DPH",
       "currencyLabel": "Měna",
       "expenseDateLabel": "Datum vystavení / DUZP",
       "categoryLabel": "Kategorie",
-      "categoryPlaceholder": "Např. Kancelářské potřeby",
-      "receiptFileUrlLabel": "Odkaz na doklad (nepovinné)",
+      "receiptFileUrlLabel": "Odkaz na doklad",
       "receiptFileUrlPlaceholder": "https://…",
-      "receiptFileUrlHint": "Odkaz na doklad v cloudu (Google Drive, Dropbox…).",
       "cancel": "Zrušit",
       "submit": "Uložit výdaj",
       "editTitle": "Upravit výdaj",
       "aiTitle": "Načíst doklad z fotky nebo PDF",
-      "aiHint": "Vyfoťte účtenku nebo přetáhněte PDF – AI vyplní dodavatele, částku, DPH i splatnost.",
+      "aiHint": "Vyfoťte účtenku nebo přetáhněte PDF a pole se vyplní samy.",
       "aiReading": "Čtu doklad…",
       "aiCheck": "Pole vyplnila AI – před uložením je prosím zkontrolujte.",
       "aiFailed": "Doklad se nepodařilo přečíst",
@@ -797,7 +803,7 @@
         "ai_refused": "AI doklad odmítla zpracovat",
         "ai_unparseable": "Z dokladu se nepodařilo nic vyčíst"
       },
-      "supplierSection": "Dodavatel a doklad",
+      "supplierSection": "Dodavatel",
       "supplierLinked": "Propojeno s kontaktem",
       "documentNumberLabel": "Číslo dokladu",
       "variableSymbolLabel": "Variabilní symbol",
@@ -805,33 +811,30 @@
       "amountSection": "Částka",
       "vatBreakdown": "Základ {base} + DPH {vat}",
       "reverseChargeLabel": "Přenesená daňová povinnost (§ 92a)",
-      "reverseChargeHint": "Dodavatel fakturoval bez DPH a daň přiznáváte vy. Zadejte částku bez DPH; DPH se odvede i odečte v přiznání (ř. 10/11 a 43/44) a doklad půjde do oddílu B.1 kontrolního hlášení.",
+      "reverseChargeHint": "Zadejte částku bez DPH. Daň přiznáte i odečtete vy a doklad půjde do oddílu B.1 kontrolního hlášení.",
       "amountLabelReverseCharge": "Částka bez DPH",
       "vatBreakdownReverseCharge": "Základ {base}, DPH k přiznání {vat}",
       "reverseChargeRequiredHint": "Oddíl B.1 potřebuje DIČ dodavatele a číslo dokladu.",
       "datesSection": "Data a úhrada",
+      "moreDetails": "Další údaje",
       "dueDateLabel": "Splatnost",
       "paidLabel": "Už uhrazeno",
-      "otherSection": "Další",
-      "noteLabel": "Interní poznámka (nepovinné)",
+      "noteLabel": "Interní poznámka",
       "saveChanges": "Uložit změny",
       "saved": "Výdaj uložen",
       "saveFailed": "Výdaj se nepodařilo uložit",
-      "supplierDicHint": "Pro kontrolní hlášení (oddíl B.2)",
       "qrCamera": "Naskenovat QR kamerou",
-      "qrHint": "QR Faktura i QR Platba se přečtou rovnou z fotky nebo PDF, bez AI.",
+      "qrHint": "QR Fakturu i QR Platbu přečte přímo prohlížeč, bez AI.",
       "qrFound": "Údaje načteny z QR kódu",
-      "qrCheck": "Pole vyplnila QR Faktura – dodavatel, částka, DPH i data jsou přesně podle dokladu. Doplňte popis a kategorii.",
+      "qrCheck": "Vyplněno z QR Faktury přesně podle dokladu. Doplňte popis a kategorii.",
       "qrCheckPayment": "Z QR Platby je načtená částka, VS a splatnost. Zbytek doplňte ručně nebo nahrajte celý doklad.",
       "qrDescription": "Faktura {number}"
     },
     "noTenant": "Nejdřív je potřeba založit firmu.",
     "loadError": "Výdaje se nepodařilo načíst",
-    "fromPhoto": "Načíst z fotky",
     "emptyFiltered": "Filtru neodpovídá žádný výdaj.",
     "searchPlaceholder": "Hledat dodavatele, popis, číslo…",
     "allStates": "Vše",
-    "allCategories": "Všechny kategorie",
     "selected": "Vybráno: {count}",
     "selectAll": "Vybrat vše",
     "clearSelection": "Zrušit výběr",
@@ -866,7 +869,6 @@
       "title": "Detail výdaje",
       "loadError": "Výdaj se nepodařilo načíst",
       "backToList": "Zpět na výdaje",
-      "badge": "Přijatý doklad",
       "unknownSupplier": "Neznámý dodavatel",
       "total": "Celkem s DPH",
       "base": "Základ",
@@ -906,7 +908,6 @@
   },
   "bank": {
     "title": "Banka",
-    "description": "Nahrajte bankovní výpis (camt.053, GPC nebo CSV) a spárujte příchozí platby s vystavenými fakturami.",
     "import": {
       "label": "Import výpisu",
       "selectFile": "Vybrat soubor s výpisem",
@@ -918,7 +919,7 @@
       "invalidFile": "Vyberte prosím výpis ve formátu .xml (camt.053), .gpc, .abo nebo .csv.",
       "parseError": "Soubor se nepodařilo zpracovat: {message}",
       "formatHelpLabel": "Jaký soubor nahrát?",
-      "formatHelp": "Nejlépe funguje výpis ve formátu camt.053 (XML) nebo GPC/ABO (.gpc), které nabízí většina českých a slovenských bank. Stáhnete ho v internetovém bankovnictví u výpisů nebo exportu pohybů. Poradíme si i s CSV: poznáme běžné exporty (Fio, ČSOB, KB, Raiffeisen, Tatra banka a další), oddělení středníkem i čárkou, datum 31.12.2026 i 2026-12-31 a částky s desetinnou čárkou. Platby, které už v Billantě jsou (z jiného výpisu nebo z Fio API), poznáme a podruhé je nenahrajeme.",
+      "formatHelp": "Nejlépe funguje camt.053 (XML) nebo GPC/ABO, které najdete v internetovém bankovnictví u výpisů. Zvládneme i CSV export z běžných bank. Platby, které už v Billantě jsou, podruhé nenahrajeme.",
       "sample": "Stáhnout vzorový CSV",
       "successWithDuplicates": "Naimportováno {total} transakcí, {matched} spárováno automaticky. {duplicates, plural, one {# platbu už Billanta měla} few {# platby už Billanta měla} other {# plateb už Billanta měla}}, ty jsme přeskočili.",
       "errors": {
@@ -977,7 +978,7 @@
       "draft": "Koncept",
       "invoiceGone": "Spárovaná faktura už neexistuje.",
       "suggestions": "Návrhy ke spárování",
-      "suggestionsHint": "Vystavené neuhrazené faktury ve stejné měně, seřazené podle shody. Spárováním se faktura označí jako uhrazená.",
+      "suggestionsHint": "Neuhrazené faktury ve stejné měně, nejlepší shoda nahoře. Spárováním se faktura označí jako uhrazená.",
       "noCandidates": "Žádná vystavená neuhrazená faktura v této měně.",
       "due": "splatnost",
       "reason": {
@@ -998,10 +999,10 @@
     },
     "connections": {
       "title": "Napojení na banku",
-      "hint": "Billanta každou hodinu stáhne nové příchozí platby přímo z banky nebo z PayPalu a sama je spáruje s fakturami podle variabilního symbolu a částky. Spárované faktury se označí jako zaplacené, u PayPalu i se strženým poplatkem. Odchozí platby se nestahují.",
-      "empty": "Zatím žádný účet. Připojte Fio nebo PayPal a platby se budou párovat samy. Z ostatních bank nahrajte výpis (camt.053, GPC nebo CSV).",
+      "hint": "Billanta každou hodinu stáhne příchozí platby z banky nebo PayPalu a spáruje je s fakturami podle VS a částky. Odchozí platby se nestahují.",
+      "empty": "Zatím žádný účet. Připojte Fio nebo PayPal, nebo nahrajte výpis z jiné banky.",
       "token": "API token z Fio",
-      "tokenHint": "V internetovém bankovnictví Fio otevřete Nastavení → API, přidejte token s oprávněním „Pouze sledovat účet“ a zkopírujte ho sem (64 znaků). S takovým tokenem nejde nic zaplatit. Token ukládáme šifrovaně a už ho nikdy nezobrazíme.",
+      "tokenHint": "Fio bankovnictví → Nastavení → API: přidejte token s oprávněním „Pouze sledovat účet“. Takovým tokenem nejde nic zaplatit. Ukládáme ho šifrovaně.",
       "tokenPlaceholder": "64 znaků",
       "label": "Název (nepovinný)",
       "labelPlaceholder": "Fio – běžný účet",
@@ -1018,7 +1019,7 @@
       "resume": "Obnovit",
       "disconnect": "Odpojit účet",
       "disconnectConfirm": "Odpojit účet a smazat uložený token? Už stažené platby zůstanou.",
-      "otherBanks": "Další banky (ČSOB, KB, Česká spořitelna, Raiffeisen…) zatím přes nahrání výpisu (camt.053, GPC nebo CSV), dokud na serveru není zapnuté napojení přes PSD2.",
+      "otherBanks": "Ostatní banky zatím přes nahrání výpisu.",
       "errors": {
         "fio_token_format": "Token musí mít přesně 64 písmen a číslic.",
         "fio_token_invalid": "Fio token odmítlo. Zkontrolujte, že je platný a není zrušený.",
@@ -1046,20 +1047,19 @@
         "history_locked": "Fio vydá pohyby starší než 90 dní jen po silném ověření v internetovém bankovnictví. Příště začneme stahovat od posledních 89 dní."
       },
       "psd2": {
-        "hint": "Billanta stahuje nové příchozí platby přímo z banky nebo z PayPalu a sama je páruje s fakturami podle variabilního symbolu a částky. Fio připojíte API tokenem, PayPal údaji své REST aplikace, ostatní banky přes PSD2: přihlásíte se u své banky a udělíte souhlas jen ke čtení účtu (nejvýše na 180 dní, u mnoha bank 90). Banky dovolují jen pár automatických čtení denně, proto se PSD2 účty stahují zhruba každých 6 hodin. Odchozí platby se nestahují a zaplatit přes napojení nejde nic.",
-        "empty": "Zatím žádný účet. Připojte svou banku nebo PayPal a platby se budou párovat samy, bez nahrávání výpisů.",
+        "hint": "Billanta stahuje příchozí platby z banky nebo PayPalu a páruje je s fakturami podle VS a částky. U PSD2 udělíte bance souhlas jen ke čtení (90–180 dní) a účty se stahují zhruba každých 6 hodin. Zaplatit přes napojení nejde nic.",
+        "empty": "Zatím žádný účet. Připojte banku nebo PayPal a platby se budou párovat samy.",
         "country": "Země",
         "bank": "Banka",
-        "bankHint": "Seznam bank, které podporuje náš licencovaný PSD2 poskytovatel Enable Banking, v celém EHP. Revolut najdete pod Litvou, Wise pod Belgií. Po kliknutí na Pokračovat vás přesměrujeme do internetového bankovnictví, kde se přihlásíte a vyberete účty.",
+        "bankHint": "Banky z celého EHP přes poskytovatele Enable Banking. Revolut je pod Litvou, Wise pod Belgií.",
         "pickBank": "Vyberte banku",
         "loadingBanks": "Načítám banky…",
         "labelPlaceholder": "Běžný účet",
-        "accountType": "Typ účtu:",
+        "accountType": "Typ účtu",
         "business": "Firemní",
         "personal": "Osobní (OSVČ)",
         "continue": "Pokračovat do banky",
-        "note": "Přihlašujete se přímo u své banky, Billanta vaše přihlašovací údaje nikdy nevidí. Souhlas můžete kdykoli zrušit odpojením účtu nebo v bankovnictví.",
-        "otherBanksAvailable": "Jinou banku připojíte přes Připojit banku → Banka přes PSD2.",
+        "note": "Přihlašujete se přímo u své banky, vaše údaje nevidíme. Souhlas zrušíte odpojením účtu.",
         "expired": "Souhlas vypršel",
         "consentUntil": "souhlas do {date}",
         "renew": "Obnovit souhlas",
@@ -1075,26 +1075,27 @@
         "connect": "Připojit PayPal",
         "clientId": "Client ID",
         "secret": "Secret",
-        "credentialsHint": "V PayPal Developer Dashboardu (developer.paypal.com → Apps & Credentials) vytvořte REST aplikaci, v jejích funkcích zapněte Transaction search a zkopírujte Client ID a Secret. Billanta s nimi jen čte přijaté platby, nic neodesílá. Údaje ukládáme šifrovaně a už je nikdy nezobrazíme.",
+        "credentialsHint": "developer.paypal.com → Apps & Credentials: vytvořte REST aplikaci, zapněte Transaction search a zkopírujte Client ID a Secret. Jen čteme přijaté platby a údaje ukládáme šifrovaně.",
         "sandbox": "Testovací účet (sandbox)",
         "sandboxHint": "Zaškrtněte jen pro klíče ze sandboxu PayPalu. Platby z něj nejsou skutečné.",
-        "note": "Přijaté platby se párují s fakturami podle čísla faktury nebo VS v poznámce a částky. Poplatek, který si PayPal strhl, se zapíše k faktuře, takže v přehledu vidíte i čistý příjem. PayPal zveřejňuje transakce se zpožděním až 3 hodiny.",
-        "connected": "PayPal připojen. Platby za posledních 30 dní stáhneme při nejbližší synchronizaci."
+        "note": "Platby se párují podle čísla faktury nebo VS v poznámce a částky. Poplatek PayPalu se zapíše k faktuře. PayPal ukazuje platby se zpožděním až 3 hodiny.",
+        "connected": "PayPal připojen. Platby za posledních 30 dní stáhneme při nejbližší synchronizaci.",
+        "moreOptions": "Další možnosti"
       },
       "connectBank": "Připojit banku",
       "chooseProvider": "Co chcete připojit?",
       "providers": {
         "psd2": {
           "title": "Banka přes PSD2",
-          "text": "ČSOB, KB, Česká spořitelna, Raiffeisen, Tatra banka, Revolut, Wise a další banky v EHP. Přihlásíte se přímo u své banky."
+          "text": "ČSOB, KB, Česká spořitelna, Revolut a další banky v EHP."
         },
         "fio": {
           "title": "Fio banka",
-          "text": "Přes API token jen pro čtení. Platby se stahují každou hodinu."
+          "text": "API token jen pro čtení, stahuje se každou hodinu."
         },
         "paypal": {
           "title": "PayPal",
-          "text": "Přes Client ID a Secret vaší REST aplikace. K faktuře se zapíše i poplatek."
+          "text": "Client ID a Secret, poplatek se zapíše k faktuře."
         }
       },
       "syncPending": "Fio jsme připravili. Platby stáhneme při další synchronizaci, zkuste to za 30 sekund."
@@ -1103,7 +1104,7 @@
   },
   "contacts": {
     "title": "Kontakty",
-    "hint": "Zákazníci se sem ukládají sami, když je vyberete na faktuře (z vašich kontaktů nebo z ARES). Hvězdičkou označte ty, kterým fakturujete nejčastěji – na nové faktuře je pak vyberete jedním klepnutím.",
+    "hint": "Zákazníci se sem uloží sami, když je vyberete na faktuře. Hvězdičkou označte ty nejčastější – na nové faktuře je pak vyberete jedním klepnutím.",
     "filter": "Hledat jméno, IČO nebo e-mail",
     "empty": "Zatím žádní zákazníci. Přidají se sami s první fakturou.",
     "emptyCta": "Vystavit fakturu",
@@ -1114,7 +1115,6 @@
     "unstarred": "{name} – odebráno z oblíbených",
     "starFailed": "Hvězdičku se nepodařilo uložit",
     "invoice": "Fakturovat",
-    "aresVerified": "Ověřeno v ARES",
     "loadError": "Kontakty se nepodařilo načíst.",
     "newContact": "Nový kontakt",
     "editor": {
@@ -1142,12 +1142,12 @@
       "kind": "Typ zákazníka",
       "kindCompany": "Firma",
       "kindPerson": "Soukromá osoba",
-      "kindHint": "Soukromá osoba nemá IČO ani DIČ – pole pro firmu skryjeme a na faktuře se nezobrazí. Neplátcem DPH je vždy.",
+      "kindHint": "Soukromá osoba nemá IČO ani DIČ a není plátcem DPH.",
       "personName": "Jméno a příjmení",
       "color": "Barevný štítek",
       "colorNone": "Bez barvy",
       "registrySearch": "Najít firmu v registru",
-      "registryHint": "Hledejte podle názvu, IČO nebo DIČ a údaje se vyplní samy. Vpravo zvolte zemi. Česko a Slovensko hledají podle názvu i IČO, Francie, Norsko, Finsko, Dánsko a Švýcarsko podle názvu i čísla firmy, Polsko podle NIP. Kterákoli firma z EU se najde podle DIČ s předponou státu (např. IT00488410010). Volby „LEI“ prohledávají celosvětový registr GLEIF – obsahuje hlavně větší firmy.",
+      "registryHint": "Hledejte podle názvu, IČO nebo DIČ a údaje se vyplní samy. Vpravo zvolte zemi registru. Firmu z EU najdete podle DIČ s předponou státu (např. IT00488410010), velké firmy z celého světa přes „LEI“.",
       "registryResults": "Z registru",
       "registryEmpty": "V registru nic nenalezeno",
       "registryPlaceholder": {
@@ -1169,13 +1169,14 @@
         "CH": "Název nebo UID (CHE-123.456.789)"
       },
       "internalNote": "Interní poznámka",
-      "internalNoteHint": "Jen pro vás: nikdy se netiskne na doklady ani neposílá odběrateli. Ukáže se v detailu kontaktu a při vystavování faktury tomuto odběrateli a je i v CSV exportu.",
+      "internalNoteHint": "Jen pro vás – na doklady se netiskne a zákazník ji neuvidí.",
       "internalNotePlaceholder": "Např. platí vždy pozdě, fakturovat na paní Novou, sleva 5 %…",
       "fromRegistry": "Načíst z registru",
       "phone": "Telefon",
       "vatSuggestYes": "Registr ho vede jako plátce DPH. Nastavit „Ano“?",
       "vatSuggestNo": "Registr ho jako plátce DPH nevede. Nastavit „Ne“?",
-      "contactPerson": "Kontaktní osoba"
+      "contactPerson": "Kontaktní osoba",
+      "moreDetails": "Další údaje"
     },
     "detail": {
       "title": "Detail kontaktu",
@@ -1187,7 +1188,7 @@
         "invoiced": "Vyfakturováno ({currency})",
         "open": "Neuhrazeno ({currency})",
         "overdue": "Po splatnosti",
-        "avgDelay": "Průměrné zpoždění platby",
+        "avgDelay": "Zpoždění platby",
         "onTime": "Platí včas",
         "days": "{count, plural, one {# den} few {# dny} other {# dní}}"
       },
@@ -1200,7 +1201,6 @@
       "no": "Ne",
       "aresCheck": "Ověřeno v ARES",
       "lastInvoice": "Poslední doklad",
-      "documentCount": "Počet dokladů",
       "openAres": "Otevřít v ARES ↗",
       "newInvoice": "Vystavit fakturu",
       "star": "Oblíbit",
@@ -1220,7 +1220,7 @@
       "internalNote": "Interní poznámka",
       "portal": {
         "title": "Klientský portál",
-        "hint": "Jeden trvalý odkaz, na kterém zákazník uvidí všechny své vystavené doklady, co zbývá zaplatit, a u každé faktury QR platbu. Koncepty se nezobrazují. Nový odkaz zneplatní ten starý.",
+        "hint": "Trvalý odkaz, kde zákazník vidí své doklady, co zbývá zaplatit a QR platbu. Nový odkaz zneplatní ten starý.",
         "off": "Pošlete zákazníkovi jeden odkaz na všechny jeho faktury a nabídky.",
         "enable": "Zapnout portál",
         "enabled": "Portál je zapnutý",
@@ -1232,7 +1232,8 @@
         "renewed": "Vytvořen nový odkaz",
         "disable": "Vypnout",
         "disabled": "Portál je vypnutý",
-        "failed": "Akce se nezdařila"
+        "failed": "Akce se nezdařila",
+        "manage": "Upravit odkaz"
       },
       "contactPerson": "Kontaktní osoba"
     },
@@ -1287,6 +1288,7 @@
       "unpaidTitle": "Neuhrazené vystavené faktury"
     },
     "colorFilter": "Barva",
+    "colorAll": "Všechny barvy",
     "colors": {
       "red": "Červená",
       "orange": "Oranžová",
@@ -1305,14 +1307,13 @@
     "comingSoon": "Nastavení účtu bude brzy k dispozici.",
     "channels": {
       "title": "Propojené kanály",
-      "description": "Propojte Telegram nebo WhatsApp a vytvářejte faktury přímo z hlasové zprávy.",
-      "back": "Zpět na nastavení",
+      "description": "Vytvářejte faktury hlasovou zprávou z Telegramu.",
       "telegram": "Telegram",
       "whatsapp": "WhatsApp",
       "statusLinked": "Propojeno",
       "statusNotLinked": "Nepropojeno",
       "linkedAs": "Propojeno jako {handle}",
-      "whatsappComingSoon": "WhatsApp bude podporován v pozdější fázi (nejprve Telegram).",
+      "whatsappComingSoon": "Připravujeme",
       "linkAnother": "Propojit další účet Telegramu s touto firmou.",
       "linkTelegram": "Propojit Telegram",
       "generating": "Generuji kód…",
@@ -1320,7 +1321,6 @@
       "openInTelegram": "Otevřít v Telegramu",
       "copy": "Kopírovat",
       "copied": "Zkopírováno",
-      "expiresNote": "Kód vyprší za 10 minut.",
       "expiresAt": "Kód platí do {time}. Po propojení klikněte na Hotovo.",
       "newCode": "Vygenerovat nový kód",
       "done": "Hotovo",
@@ -1334,7 +1334,7 @@
     },
     "apiKeys": {
       "title": "API klíče",
-      "description": "Vygenerujte klíče pro volání API Billanty z vlastních systémů – např. pro programové vytváření nebo výpis faktur.",
+      "description": "Klíče pro napojení vlastních systémů na API Billanty.",
       "back": "Zpět na nastavení",
       "empty": "Zatím žádné API klíče.",
       "columns": {
@@ -1390,14 +1390,12 @@
     },
     "backup": {
       "title": "Zálohování dat",
-      "description": "Nastavte, kam se mají pravidelně exportovat data vaší firmy – na vlastní server přes SFTP, do Google Disku, na webhook, který spravujete, nebo jako místní stažení.",
-      "back": "Zpět na nastavení",
+      "description": "Kam se mají automaticky ukládat zálohy dat firmy.",
       "empty": "Zatím není nastaven žádný cíl zálohování.",
+      "addTitle": "Přidat cíl zálohy",
       "columns": {
-        "type": "Typ",
         "schedule": "Plán",
-        "lastRun": "Poslední běh",
-        "status": "Stav"
+        "lastRun": "Poslední běh"
       },
       "typeGoogleDrive": "Google Disk",
       "typeWebhook": "Webhook",
@@ -1420,17 +1418,18 @@
         "connecting": "Přesměrovávám na Google…",
         "connectedBanner": "Google Disk byl úspěšně připojen.",
         "errorBanner": "Připojení Google Disku se nezdařilo: {error}",
-        "description": "Zálohy se ukládají do složky ve vašem Google Disku. Aplikace vidí jen soubory, které sama vytvoří.",
+        "description": "Do složky na vašem Google Disku. Billanta vidí jen soubory, které sama vytvoří.",
         "unavailable": "Připojení Google Disku na tomto serveru není nastavené."
       },
       "addLocal": {
         "button": "Přidat místní stažení",
-        "description": "Stažitelný soubor databáze SQLite s vašimi daty – není třeba nic nastavovat a lze jej spustit jen ručně (plán je vždy „Ručně“).",
+        "description": "Soubor ke stažení, spouštíte ručně.",
         "adding": "Přidávám…"
       },
       "addWebhook": {
         "button": "Přidat webhook",
         "title": "Přidat cíl webhooku",
+        "description": "Pošle data jako podepsaný JSON na vaši adresu.",
         "urlLabel": "URL webhooku",
         "urlPlaceholder": "https://example.com/faktur-webhook",
         "urlHint": "Data se na tuto adresu odešlou jako podepsaný JSON (hlavička X-Faktur-Signature).",
@@ -1446,7 +1445,6 @@
         "copied": "Zkopírováno",
         "done": "Hotovo"
       },
-      "docsHint": "Podrobnosti o formátu exportu a ověření podpisu najdete v apps/backend/README.md.",
       "runDone": "Záloha proběhla.",
       "runFailed": "Zálohu se nepodařilo dokončit.",
       "pause": "Pozastavit",
@@ -1458,7 +1456,7 @@
       "sftpFingerprintPending": "Klíč serveru se ověří při první záloze",
       "addSftp": {
         "button": "Přidat SFTP server",
-        "description": "Záloha (soubor SQLite) se nahraje na váš vlastní server, NAS nebo hosting přes SFTP. Data tak máte u sebe, volitelně zašifrovaná vaším klíčem.",
+        "description": "Na vlastní server, NAS nebo hosting. Volitelně šifrovaně.",
         "title": "Nový SFTP server",
         "hint": "Billanta se připojí jen při záloze, nahraje soubor billanta-zaloha-…db a odpojí se. Bez hesla vygenerujeme vlastní SSH klíč, který na serveru povolíte. Klíč serveru si zapamatujeme při prvním připojení a při jeho změně zálohu odmítneme.",
         "host": "Server",
@@ -1539,113 +1537,115 @@
     "backToSettings": "Zpět na nastavení",
     "hub": {
       "title": "Nastavení",
-      "description": "Vše o vašem účtu, firmě, datech a propojeních na jednom místě.",
+      "description": "Účet, firma, data a propojení.",
       "groups": {
         "account": "Účet a firma",
         "data": "Data",
         "integrations": "Propojení",
-        "personal": "Můj účet"
+        "personal": "Můj účet",
+        "company": "Firma",
+        "invoicing": "Fakturace"
       },
       "items": {
         "profile": {
           "title": "Můj profil",
-          "description": "Jméno, heslo, způsoby přihlášení, jazyk a vzhled."
+          "description": "Jméno, přihlášení, jazyk a vzhled"
         },
         "company": {
           "title": "Fakturační údaje",
-          "description": "Fakturační údaje, adresa, bankovní účet a výchozí hodnoty faktur."
+          "description": "Adresa, IČO, bankovní účet"
         },
         "team": {
           "title": "Tým",
-          "description": "Pozvěte účetní nebo kolegy a nastavte jim oprávnění."
+          "description": "Kolegové, účetní a jejich oprávnění"
         },
         "billing": {
           "title": "Předplatné",
-          "description": "Tarif, platby a faktury za službu."
+          "description": "Tarif a platby za službu"
         },
         "exports": {
           "title": "Exporty pro účetní",
-          "description": "Faktury a náklady do CSV a XML pro Pohodu a Money S3 za měsíc, kvartál či rok."
+          "description": "Podklady pro účetní a přiznání"
         },
         "backup": {
           "title": "Zálohy",
-          "description": "Automatické zálohy na Google Drive, webhook nebo stažení."
+          "description": "Automatické zálohy dat"
         },
         "channels": {
           "title": "Telegram a WhatsApp",
-          "description": "Vystavujte faktury hlasovou zprávou z telefonu."
+          "description": "Faktury hlasovou zprávou"
         },
         "ai": {
           "title": "AI asistent",
-          "description": "Čtení účtenek a hlasové fakturace, vlastní API klíč."
+          "description": "Zdroj AI a vlastní API klíč"
         },
         "apiKeys": {
           "title": "API klíče",
-          "description": "Napojte e-shop nebo vlastní systém přes REST API."
+          "description": "Napojení e-shopu nebo vlastního systému"
         },
         "invoices": {
           "title": "Faktury",
-          "description": "Která pole formuláře faktury chcete vidět, vlastní pole a výchozí hodnoty."
+          "description": "Pole formuláře a výchozí hodnoty"
         },
         "modules": {
           "title": "Moduly a typ podnikání",
-          "description": "Zapněte jen to, co používáte – např. bez výdajů pro paušalisty."
+          "description": "Zapněte jen to, co používáte"
         },
         "notifications": {
           "title": "Notifikace",
-          "description": "Co vám dáme vědět – ve zvonečku, e-mailem i v prohlížeči."
+          "description": "Zvoneček a upozornění v prohlížeči"
         },
         "emails": {
           "title": "E-maily",
-          "description": "Odesílatel, předmět a text e-mailů s fakturou a upomínkou, přílohy, barva tlačítka."
+          "description": "Texty e-mailů s fakturou a upomínkou"
         },
         "variables": {
           "title": "Proměnné",
-          "description": "Vlastní '{zástupné}' texty do e-mailů a poznámek na fakturách – a přehled vestavěných."
+          "description": "Zástupné texty do e-mailů a poznámek"
         },
         "integrations": {
           "title": "Integrace",
-          "description": "Kalendář s termíny, RSS, Discord/Slack webhooky."
+          "description": "Kalendář, RSS a webhooky"
         },
         "paymentMethods": {
           "title": "Způsoby úhrady",
-          "description": "Vlastní způsoby platby (PayPal, zápočet, platební odkaz…) s pokyny tištěnými na doklad."
+          "description": "PayPal, zápočet, platební odkaz…"
         },
         "publicProfile": {
           "title": "Veřejný profil",
-          "description": "Vizitka firmy na vlastní adrese – služby, kontakty a tlačítko pro poptávku."
+          "description": "Vizitka firmy na vlastní adrese"
         },
         "import": {
           "title": "Import z jiného systému",
-          "description": "Kontakty a historie faktur z BitFaktury, Fakturoidu, iDokladu, Excelu a dalších."
+          "description": "Z Fakturoidu, iDokladu, Excelu…"
         },
         "companies": {
           "title": "Moje firmy a živnosti",
-          "description": "Víc firem pod jedním přihlášením a rychlé přepínání mezi nimi."
+          "description": "Přepínání mezi firmami"
         },
         "activity": {
           "title": "Historie změn",
-          "description": "Kdo co kdy změnil: doklady, kontakty, firma, tým a klíče."
+          "description": "Kdo co kdy změnil"
         },
         "numbering": {
           "title": "Číslování dokladů",
-          "description": "Vlastní formát čísel faktur, záloh, dobropisů a nabídek a číslo, kterým řada pokračuje."
+          "description": "Formát čísel dokladů"
         },
         "referrals": {
           "title": "Pozvat a získat kredity",
-          "description": "Odkaz pro známé a klienty, kredity a platba tarifu kredity."
+          "description": "Doporučte nás a získejte kredity"
         },
         "security": {
           "title": "Zabezpečení",
-          "description": "Dvoufázové ověření a záložní kódy"
+          "description": "Dvoufázové ověření"
         },
         "emailNotifications": {
           "title": "E-mailová upozornění",
-          "description": "Které e-maily vám chodí, týdenní přehled a tichý režim přes noc."
+          "description": "Které e-maily vám chodí"
         },
         "accountantProfile": {
           "title": "Profil účetního",
-          "description": "Zápis do adresáře účetních a partnerský program pro účetní."
+          "description": "Adresář a partnerský program"
         }
       },
       "managedByAdmins": "Údaje firmy, tým, předplatné a další nastavení firmy spravuje vlastník nebo administrátor."
@@ -1965,11 +1965,12 @@
         "empty": "V tomto kraji zatím nikoho nemáme.",
         "all": "Celý adresář účetních",
         "picked": "E-mail {email} je vyplněný. Zkontrolujte roli a pošlete pozvánku."
-      }
+      },
+      "copyLink": "Kopírovat odkaz"
     },
     "exports": {
       "title": "Exporty pro účetní",
-      "description": "Stáhněte doklady za období a pošlete je účetní, nebo ji rovnou pozvěte do týmu.",
+      "description": "Doklady za období ke stažení pro účetní.",
       "period": "Období",
       "modes": {
         "month": "Měsíc",
@@ -2260,7 +2261,7 @@
     },
     "invoices": {
       "title": "Formulář faktury",
-      "description": "Vyberte, co se má ve formuláři zobrazovat rovnou. Ostatní pole najdete pod tlačítkem „+“ u každé sekce.",
+      "description": "Výchozí hodnoty, pole ve formuláři, vzhled PDF a upomínky.",
       "loadError": "Nastavení se nepodařilo načíst.",
       "readOnly": "Nastavení může měnit jen vlastník nebo administrátor.",
       "fieldsTitle": "Zobrazená pole",
@@ -2395,7 +2396,9 @@
       "brandCredit": "Zobrazovat pod fakturami řádek „Vystaveno v aplikaci {name}“",
       "brandCreditHint": "Malý odkaz v patičce PDF, e-mailu a online faktury, kde je i pozvánka pro odběratele. Na placeném tarifu ho můžete vypnout.",
       "brandCreditFree": "Na bezplatném tarifu se řádek zobrazuje vždy.",
-      "brandCreditUpgrade": "Přejít na placený tarif"
+      "brandCreditUpgrade": "Přejít na placený tarif",
+      "advancedTitle": "Pokročilé",
+      "advancedSummary": "Kurzy měn a tvar odkazu na fakturu"
     },
     "modules": {
       "title": "Moduly a typ podnikání",
@@ -2462,7 +2465,7 @@
     },
     "notifications": {
       "title": "Notifikace",
-      "description": "Vyberte si, o čem chcete vědět a kudy. Nastavení platí jen pro vás, ne pro celý tým.",
+      "description": "O čem a kudy vám dáme vědět. Platí jen pro vás.",
       "loadError": "Nastavení notifikací se nepodařilo načíst.",
       "saved": "Uloženo",
       "saveFailed": "Uložení selhalo",
@@ -2582,11 +2585,12 @@
       "previewFromAddress": "fakturace@billanta.cz",
       "previewReplyTo": "Odpovědět",
       "previewNote": "Ukázková data. Skutečný e-mail se může v poštovním programu mírně lišit.",
-      "moreVars": "Další proměnné →"
+      "moreVars": "Další proměnné →",
+      "bccHintNoEmail": "Kopie přijde na e-mail firmy – zatím ho nemáte vyplněný ve Fakturačních údajích."
     },
     "variables": {
       "title": "Proměnné",
-      "description": "Text napíšete jednou a pak ho vkládáte jako '{proměnnou}' do e-mailů i poznámek na dokladech.",
+      "description": "Text napíšete jednou a vkládáte ho do e-mailů a poznámek.",
       "loadError": "Proměnné se nepodařilo načíst.",
       "readOnly": "Proměnné může měnit jen vlastník nebo správce.",
       "ownTitle": "Vaše proměnné",
@@ -2719,7 +2723,7 @@
     },
     "paymentMethods": {
       "title": "Způsoby úhrady",
-      "description": "Kromě převodu, hotovosti, karty a dobírky si přidejte vlastní způsoby platby – i s pokyny, jak zaplatit.",
+      "description": "Vlastní způsoby platby s pokyny, jak zaplatit.",
       "loadError": "Způsoby úhrady se nepodařilo načíst.",
       "readOnly": "Způsoby úhrady může měnit jen vlastník nebo správce.",
       "ownTitle": "Vlastní způsoby úhrady",
@@ -2806,7 +2810,7 @@
     },
     "publicProfile": {
       "title": "Veřejný profil",
-      "description": "Jednoduchá veřejná stránka vaší firmy: co děláte, za kolik a jak vás kontaktovat. Odkaz můžete dát do podpisu e-mailu, na faktury nebo sociální sítě.",
+      "description": "Veřejná stránka firmy: co děláte, za kolik a jak vás kontaktovat.",
       "loadError": "Veřejný profil se nepodařilo načíst.",
       "readOnly": "Veřejný profil může měnit jen vlastník nebo správce.",
       "enabled": "Zveřejnit profil",
@@ -2917,7 +2921,7 @@
     },
     "import": {
       "title": "Přechod z jiného systému",
-      "description": "Přeneste si kontakty a vystavené faktury ze starého systému. Nejdřív uvidíte náhled, nic se neuloží bez potvrzení.",
+      "description": "Kontakty a faktury ze starého systému. Před uložením uvidíte náhled.",
       "readOnly": "Import může spustit jen vlastník nebo správce firmy.",
       "template": "Stáhnout šablonu CSV",
       "step1": {
@@ -3208,7 +3212,7 @@
     },
     "companies": {
       "title": "Moje firmy a živnosti",
-      "description": "Všechny firmy, ke kterým máte přístup. Faktury, kontakty, nastavení i předplatné má každá firma vlastní.",
+      "description": "Firmy, ke kterým máte přístup. Každá má vlastní data i předplatné.",
       "loadError": "Seznam firem se nepodařilo načíst.",
       "active": "Aktivní",
       "switch": "Přepnout",
@@ -3220,7 +3224,7 @@
       },
       "add": {
         "title": "Přidat další firmu nebo živnost",
-        "description": "Založte další firmu nebo živnost. Stanete se jejím vlastníkem a hned se do ní přepnete.",
+        "description": "Stanete se jejím vlastníkem a hned se do ní přepnete.",
         "hint": "Každá firma má oddělená data, číselné řady, tým i tarif. Mezi firmami přepínáte v menu pod svým avatarem. Jako vlastník můžete mít nejvýš {max} firem; do dalších vás mohou pozvat jiní.",
         "nameLabel": "Jméno nebo název firmy",
         "namePlaceholder": "Jan Novák nebo Novák s.r.o.",
@@ -3240,7 +3244,7 @@
     },
     "numbering": {
       "title": "Číslování dokladů",
-      "description": "Nastavte, jak vypadají čísla dokladů – třeba stejně jako v nástroji, ze kterého přecházíte.",
+      "description": "Formát čísel faktur a dalších dokladů.",
       "loadError": "Nastavení číslování se nepodařilo načíst.",
       "readOnly": "Číslování dokladů může měnit jen vlastník nebo správce.",
       "pattern": "Formát čísla",
@@ -3256,7 +3260,7 @@
       "save": "Uložit",
       "saved": "Číslování uloženo",
       "saveFailed": "Uložení se nepodařilo",
-      "tokensTitle": "Značky",
+      "tokensTitle": "Značky a pravidla",
       "tokens": {
         "YYYY": "rok, např. 2026",
         "YY": "rok dvěma číslicemi, např. 26",
@@ -3542,7 +3546,7 @@
   "auth": {
     "signup": {
       "title": "Vytvořit účet",
-      "subtitle": "Založte si účet a začněte fakturovat během pár minut.",
+      "subtitle": "První fakturu vystavíte za pár minut.",
       "companyNameLabel": "Jméno nebo název firmy",
       "companyNamePlaceholder": "Jan Novák nebo Novák s.r.o.",
       "emailLabel": "E-mail",
@@ -3560,11 +3564,11 @@
       "aboutYouLegend": "O vás (nepovinné)",
       "managesClientsLabel": "Spravuji účetnictví pro klienty",
       "isTeacherLabel": "Jsem učitel/ka",
-      "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} {plan} zdarma, bez karty. Zkušební doba začne, jakmile v nastavení vyplníte IČO firmy (jednou pro každé IČO). Pak pokračujete na tarifu Zdarma, nic se samo nestrhne."
+      "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} {plan} zdarma, bez karty. Začne, až vyplníte IČO, a pak pokračujete na tarifu Zdarma."
     },
     "login": {
       "title": "Přihlásit se",
-      "subtitle": "Vítejte zpět – přihlaste se ke svému účtu.",
+      "subtitle": "Vítejte zpět.",
       "emailLabel": "E-mail",
       "emailPlaceholder": "vas@email.cz",
       "passwordLabel": "Heslo",
@@ -4024,11 +4028,11 @@
     "title": "O Billantě",
     "lead": "Billanta je fakturační nástroj postavený nad otevřenými standardy, které v Česku a na Slovensku už fungují – ne vedle nich.",
     "whatTitle": "Co Billanta dělá",
-    "whatBody": "Billanta vystavuje faktury ve formátu ISDOC, dotahuje údaje o odběratelích přímo z ARES a hlídá návaznost číselných řad i sazby DPH, takže se nemusíte spoléhat na kopírování starých šablon v Excelu. Přes Telegram nebo WhatsApp navíc stačí nadiktovat hlasovku a Billanta z ní připraví návrh faktury k rychlé kontrole – hotovo je ale až ve chvíli, kdy ji sami potvrdíte.",
+    "whatBody": "Billanta vystavuje faktury ve formátu ISDOC, načte údaje o odběrateli z ARES a hlídá číselné řady i sazby DPH. Fakturu můžete i nadiktovat přes Telegram nebo WhatsApp: z hlasovky vznikne návrh a vystavená je až ve chvíli, kdy ji potvrdíte.",
     "whoTitle": "Pro koho je Billanta",
-    "whoBody": "Stavíme ho pro OSVČ a malé firmy v Česku a na Slovensku – pro lidi, kteří fakturují sami sobě mezi schůzkami, ne pro účetní oddělení s vlastním IT.",
+    "whoBody": "Stavíme ji pro OSVČ a malé firmy v Česku a na Slovensku, které si fakturují samy mezi schůzkami, ne pro účetní oddělení s vlastním IT.",
     "whyTitle": "Proč jsme to postavili",
-    "whyBody": "Fakturace nám samotným vždycky zabírala víc času, než jsme čekali – hledání IČO v ARES, ruční hlídání číselné řady, otevírání notebooku jen kvůli jedné položce po cestě od klienta. Chtěli jsme nástroj, který tohle vezme na sebe a nechá nám prostor rozhodovat se jen o tom, co je opravdu na nás: jestli je faktura v pořádku, než ji pošleme.",
+    "whyBody": "Fakturace nám vždycky zabrala víc času, než by měla: hledání IČO v ARES, ruční hlídání číselné řady, notebook kvůli jedné položce. Chtěli jsme nástroj, který to udělá za nás a nám nechá jen kontrolu, jestli je faktura v pořádku.",
     "seoTitle": "O Billantě – fakturace nad ISDOC, ARES a QR"
   },
   "common": {
@@ -4058,7 +4062,10 @@
       "manualTitle": "Nainstalovat aplikaci",
       "manualBody": "Otevřete menu prohlížeče (⋮ nebo ⋯) a zvolte „Nainstalovat aplikaci“ nebo „Přidat na plochu“. V Chrome a Edge najdete na počítači také ikonu instalace vpravo v adresním řádku.",
       "ok": "Rozumím"
-    }
+    },
+    "close": "Zavřít",
+    "showPassword": "Zobrazit heslo",
+    "hidePassword": "Skrýt heslo"
   },
   "municipalityPages": {
     "regionLabel": "Kraj",
@@ -4068,12 +4075,12 @@
     "breadcrumbBrowse": "Města a obce",
     "heading": "{name}: fakturace pro živnostníky a firmy",
     "lead": "{name} i kdekoli jinde v Česku a na Slovensku: vystavujte faktury, hlídejte DPH a exportujte do ISDOC.",
-    "body": "Billanta vystavuje faktury ve formátu ISDOC, dotahuje údaje o odběratelích přímo z registru ARES a hlídá návaznost číselných řad i sazby DPH. Přes Telegram nebo WhatsApp stačí nadiktovat hlasovku a Billanta z ní připraví návrh faktury k rychlé kontrole – hotovo je až ve chvíli, kdy ji sami potvrdíte.",
+    "body": "Billanta vystavuje faktury v ISDOC, načte údaje o odběrateli z ARES a hlídá číselné řady i sazby DPH. Fakturu můžete i nadiktovat přes Telegram nebo WhatsApp: vznikne návrh a vystavená je až po vašem potvrzení.",
     "localNote": "ISDOC, ARES i sazby DPH platí stejně po celém Česku a na Slovensku – {district} nevyjímaje. Billanta nevyžaduje žádné místní nastavení ani nový účet navíc.",
     "cta": "Založit účet zdarma",
     "browseCta": "Všechna města a obce – {region} →",
     "indexTitle": "Fakturační software podle měst a obcí",
-    "indexLead": "Billanta funguje stejně spolehlivě pro podnikatele kdekoli v Česku a na Slovensku. Vyberte kraj a najděte stránku pro své město nebo obec.",
+    "indexLead": "Vyberte kraj a najděte stránku pro své město nebo obec. Billanta funguje stejně kdekoli v Česku a na Slovensku.",
     "indexCoverageNote": "Aktuálně {count, plural, one {# obec} few {# obce} other {# obcí}}.",
     "regionMunicipalityCount": "{count, plural, one {# město nebo obec} few {# města a obce} other {# měst a obcí}}",
     "expandListLabel": "Zobrazit seznam",
@@ -4114,7 +4121,13 @@
     "explore": "Prozkoumat",
     "language": "Jazyk",
     "appearance": "Vzhled",
-    "create": "Vytvořit"
+    "create": "Vytvořit",
+    "groupWork": "Agenda",
+    "groupAccount": "Účet",
+    "groupProduct": "Produkt",
+    "groupResources": "Zdroje",
+    "groupPartners": "Účetní a partneři",
+    "groupHelp": "Pomoc"
   },
   "pricing": {
     "title": "Ceník",
@@ -4249,17 +4262,17 @@
       }
     },
     "compareCompetitors": "Jak si Billanta stojí proti Fakturoidu, iDokladu a dalším",
-    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} zdarma, bez karty, jednou pro každé IČO. Zkušební doba začne, jakmile firma vyplní IČO, a pak sama přejde na Zdarma. Data zůstanou.",
+    "trialNote": "{days, plural, one {# den} few {# dny} other {# dní}} tarifu {plan} zdarma, jednou pro každé IČO. Pak firma sama přejde na Zdarma a data zůstanou.",
     "trialCard": "Prvních {days, plural, one {# den} few {# dny} other {# dní}} zdarma, bez karty",
     "methods": {
       "title": "Jak platit",
       "card": {
-        "title": "Předplatné kartou – automatické obnovení, levnější",
-        "body": "Ceny výše platí pro předplatné kartou, Apple Pay nebo Google Pay. Obnovuje se samo, zrušit ho můžete kdykoli a tarif poběží do konce zaplaceného období."
+        "title": "Kartou",
+        "body": "Ceny výše platí pro předplatné kartou, Apple Pay nebo Google Pay. Obnovuje se samo, zrušit ho můžete kdykoli."
       },
       "transfer": {
-        "title": "Převodem – bez automatického obnovení",
-        "body": "Měsíc nebo rok dopředu podle zálohové faktury s QR kódem, o {percent} % dráž, protože každou platbu párujeme ručně. Nic se samo nestrhne a před koncem období vám pošleme připomínku s další zálohovkou."
+        "title": "Převodem",
+        "body": "Na měsíc nebo rok podle zálohové faktury s QR kódem, o {percent} % dráž, protože platby párujeme ručně. Nic se samo neobnoví."
       }
     },
     "transferPrice": "převodem {price} / měsíc",
@@ -4408,6 +4421,7 @@
     "lead": "Vyplňte ručně, vyberte z našeptávače, nebo fakturu popište jednou větou a nechte ji předvyplnit.",
     "ai": {
       "title": "Předvyplnit pomocí AI",
+      "short": "Pomocí AI",
       "hint": "Napište nebo nadiktujte fakturu vlastními slovy, např. „faktura pro 27604977, 3 hodiny konzultace po 1500, splatnost 14 dní“. AI doplní odběratele (ověří v ARES), položky a splatnost. Nic se neuloží, dokud formulář nezkontrolujete a neuložíte.",
       "placeholder": "např. faktura pro Dvořák & Partners, 2× školení po 4 500 Kč, splatnost 30 dní",
       "run": "Předvyplnit",
@@ -4465,13 +4479,21 @@
       "unitPriceGross": "Cena/j. s DPH",
       "lineTotalGross": "Celkem s DPH"
     },
+    "preview": {
+      "title": "Náhled",
+      "empty": "Zatím žádné položky",
+      "noCustomer": "Vyberte odběratele"
+    },
     "totals": {
       "base": "Základ",
       "vat": "DPH",
       "total": "Celkem",
       "alreadyPaid": "Již uhrazeno",
       "alreadyPaidHint": "Záloha nebo platba přijatá předem – jako částka nebo procento z celku. Uhrazená celá částka označí fakturu po vystavení rovnou jako zaplacenou.",
-      "remaining": "Zbývá uhradit"
+      "remaining": "Zbývá uhradit",
+      "alreadyPaidAdd": "Zákazník už zaplatil (celé nebo část)",
+      "paidInFull": "Celá částka",
+      "paidFullNote": "Po vystavení bude faktura rovnou uhrazená."
     },
     "cancel": "Zrušit",
     "save": "Uložit koncept",
@@ -4497,6 +4519,7 @@
     },
     "copy": {
       "title": "Předvyplnit podle jiné faktury",
+      "short": "Z jiné faktury",
       "hint": "Zkopíruje odběratele, položky, měnu, platbu, účet, jazyk, poznámky a vlastní pole. Číslo, data a platby se nekopírují, splatnost se spočítá podle výchozího nastavení.",
       "latest": "Podle poslední faktury",
       "other": "Podle jiné faktury…",
@@ -4777,6 +4800,7 @@
       "total": "Bez DPH"
     },
     "actions": {
+      "more": "Další",
       "open": "Otevřít",
       "edit": "Upravit",
       "issue": "Vystavit",
@@ -4801,7 +4825,8 @@
       "ublHint": "Také jako soubor e-faktury UBL (Peppol BIS 3.0) pro slovenské odběratele. Odesílání přes síť Peppol, které na Slovensku od 1. 1. 2027 vyžaduje povinná e-fakturace, připravujeme.",
       "duplicateToFix": "Nová faktura s opravou",
       "rotateLink": "Nový odkaz pro klienta",
-      "editAnyway": "Přesto upravit"
+      "editAnyway": "Přesto upravit",
+      "markPaidShort": "Uhrazeno"
     },
     "confirm": {
       "back": "Zpět",
@@ -4821,12 +4846,12 @@
       "remindTitle": "Poslat upomínku?",
       "remindBody": "Odběratel dostane e-mail s odkazem na fakturu a QR platbou. Bude to upomínka č. {count}.",
       "editIssuedTitle": "Vystavený doklad nejde přepsat",
-      "editIssuedBody": "Doklad už má číslo a mohl odejít odběrateli nebo do přiznání, proto ho zákon nedovoluje měnit. Opravu udělejte novým dokladem: zkopírujeme sem všechny údaje a vy upravíte jen to, co je špatně.",
-      "editIssuedCredit": "Pokud se mění částka nebo DPH, vystavte k původní faktuře dobropis (opravný daňový doklad) a pak novou fakturu se správnými údaji.",
+      "editIssuedBody": "Doklad už má číslo, takže ho zákon nedovoluje měnit. Opravte ho novým dokladem – zkopírujeme do něj všechny údaje.",
+      "editIssuedCredit": "Mění se částka nebo DPH? Vystavte k původní faktuře dobropis.",
       "rotateTitle": "Vydat nový odkaz pro klienta?",
       "rotateBody": "Současný odkaz na tento doklad okamžitě přestane fungovat, i v už odeslaných e-mailech. Hodí se, když odkaz dostal někdo nepovolaný. Klientovi pak doklad pošlete znovu.",
       "editAnywayTitle": "Jen drobná oprava?",
-      "editAnywayBody": "Překlep nebo chybějící údaj můžete opravit přímo. Číslo dokladu zůstane a změna se zapíše do historie i s důvodem. Pokud už má doklad odběratel, pošlete mu ho znovu.",
+      "editAnywayBody": "Překlep nebo chybějící údaj opravíte přímo. Číslo zůstane, změna i důvod se zapíšou do historie.",
       "editAnywayPlaceholder": "Důvod úpravy, např. překlep v adrese",
       "editAnywayNeedsReason": "Nejdřív napište důvod úpravy"
     },
@@ -4850,12 +4875,9 @@
     "fxLabelManual": "Kurz",
     "fxHidden": "Přepočet na {home} se na dokladu netiskne (kurz {rate} {pair} jen pro přehledy).",
     "views": {
-      "title": "Sdílený odkaz",
-      "count": "Zobrazeno",
       "times": "{count}×",
-      "first": "Poprvé",
-      "last": "Naposledy",
-      "none": "Klient zatím odkaz na fakturu neotevřel."
+      "opened": "Klient otevřel",
+      "notYet": "zatím ne"
     },
     "filters": {
       "title": "Filtry",
@@ -4889,11 +4911,10 @@
       "customerColor": "Barva zákazníka",
       "close": "Zavřít",
       "remove": "Odebrat filtr",
-      "period": "Období…",
+      "period": "Období",
       "customRange": "Vlastní rozsah",
       "dateBy": "Podle data",
       "quickRanges": "Rychlé volby ({field})",
-      "anyDate": "Bez omezení data",
       "item": "Položka",
       "itemPlaceholder": "Text nebo kód položky",
       "paidState": "Úhrada",
@@ -4966,7 +4987,9 @@
         "communication": "Odeslání a reakce zákazníka",
         "content": "Obsah dokladu",
         "origin": "Původ a vazby"
-      }
+      },
+      "anyType": "Všechny doklady",
+      "statusLabel": "Stav"
     },
     "remindersSent": "{count, plural, one {Odeslána # upomínka} few {Odeslány # upomínky} other {Odesláno # upomínek}}, naposledy {date}.",
     "attachments": {
@@ -4993,7 +5016,8 @@
       "title": "Odpověď klienta",
       "accepted": "Nabídku přijal",
       "rejected": "Nabídku odmítl",
-      "waiting": "Klient zatím neodpověděl. V portálu (odkaz pro klienta) může nabídku přijmout nebo odmítnout."
+      "waiting": "Klient zatím neodpověděl. V portálu (odkaz pro klienta) může nabídku přijmout nebo odmítnout.",
+      "waitingShort": "Klient zatím neodpověděl."
     },
     "partial": {
       "paid": "Uhrazeno {amount}",
@@ -5179,7 +5203,6 @@
     "noEmail": "bez e-mailu",
     "issueDate": "Datum vystavení",
     "issueNow": "Rovnou vystavit (přidělit čísla)",
-    "issueNowHint": "Jinak vzniknou koncepty, které můžete před vystavením zkontrolovat.",
     "summary": "Vznikne <b>{count, plural, one {# doklad} few {# doklady} other {# dokladů}}</b> v celkové hodnotě <b>{total}</b> bez DPH.",
     "submitDrafts": "Vytvořit {count, plural, one {# koncept} few {# koncepty} other {# konceptů}}",
     "submitIssue": "Vystavit {count, plural, one {# doklad} few {# doklady} other {# dokladů}}",
@@ -5360,17 +5383,16 @@
   },
   "welcome": {
     "title": "Vítejte v Billantě",
-    "subtitle": "Tři rychlé otázky a aplikace ukáže jen to, co opravdu použijete. Vše jde později změnit v Nastavení.",
+    "subtitle": "Tři rychlé otázky. Všechno jde později změnit v Nastavení.",
     "companyTitle": "Vaše podnikání",
-    "companyHint": "Zadejte název firmy, své jméno (OSVČ) nebo IČO a údaje na fakturu načteme z ARES, slovenského RPO nebo zahraničních registrů. Můžete i přeskočit.",
+    "companyHint": "Údaje na fakturu načteme z registru. Můžete i přeskočit.",
     "vatQuestion": "Jste plátce DPH?",
     "yes": "Ano",
     "no": "Ne",
     "businessTitle": "Jak podnikáte?",
     "businessHint": "Podle toho zapneme vhodné moduly.",
-    "modulesTitle": "Co chcete používat?",
+    "modulesTitle": "Moduly",
     "modulesHint": "Fakturace je vždy zapnutá. Ostatní si zapněte nebo vypněte.",
-    "later": "Kdykoli upravíte v Nastavení → Moduly.",
     "skip": "Přeskočit",
     "finish": "Hotovo, jdeme fakturovat",
     "saved": "Nastaveno",
@@ -5379,13 +5401,13 @@
     "searchPlaceholder": "Název firmy, vaše jméno nebo IČO",
     "searchEmpty": "Nic jsme nenašli. Zkuste jiný název nebo IČO, nebo jiný registr.",
     "importTitle": "Přecházíte z jiné aplikace?",
-    "importHint": "Vyberte ji a po uložení vás provedeme importem kontaktů, faktur i číselné řady.",
+    "importHint": "Po uložení vás provedeme importem kontaktů, faktur i číselné řady.",
     "importNone": "Začínám od nuly",
     "importOther": "Jiná aplikace / Excel",
     "finishImport": "Hotovo, jdeme importovat",
     "guest": {
       "title": "{n, plural, one {# faktura vystavená bez účtu} few {# faktury vystavené bez účtu} other {# faktur vystavených bez účtu}}",
-      "hint": "Uložíme je jako vystavené doklady, odběratele jako kontakty a číslování bude pokračovat za poslední z nich. Prázdné údaje o firmě doplníme z dodavatele.",
+      "hint": "Uložíme je jako vystavené doklady a odběratele jako kontakty. Číslování naváže na poslední z nich.",
       "toggle": "Převzít do účtu",
       "done": "Převzato: {invoices, plural, one {# faktura} few {# faktury} other {# faktur}}, {contacts, plural, one {# nový kontakt} few {# nové kontakty} other {# nových kontaktů}}.",
       "failed": "Faktury bez účtu se teď převzít nepodařilo",
@@ -5418,7 +5440,7 @@
   "featurePages": {
     "indexTitle": "Funkce fakturace",
     "indexHeading": "Všechno, co fakturace pro OSVČ a malé firmy potřebuje",
-    "indexLead": "Každá funkce má vlastní stránku s popisem, postupem a odpověďmi na časté otázky. Vše je součástí jedné aplikace – bez doplňků a modulů navíc.",
+    "indexLead": "Každá funkce má vlastní stránku s postupem a odpověďmi na časté otázky.",
     "indexDescription": "Funkce fakturační aplikace: QR platby, ISDOC, ARES, upomínky, párování plateb, opakované faktury, DPH pro EPO, export do Pohody a Money S3 a API.",
     "breadcrumb": "Funkce",
     "allFeatures": "Všechny funkce",
@@ -5427,7 +5449,7 @@
     "faqTitle": "Časté otázky",
     "relatedTitle": "Další funkce",
     "cta": "Založit účet zdarma",
-    "ctaNote": "Bez platební karty. Funkce jsou dostupné hned po registraci.",
+    "ctaNote": "Bez platební karty.",
     "more": "Více o funkci",
     "items": {
       "qr": {
@@ -5545,21 +5567,21 @@
         "description": "Příchozí platby se spárují s fakturami podle variabilního symbolu a částky. Z Fio banky, dalších bank přes PSD2 a z PayPalu se stahují samy, z ostatních bank nahrajete výpis v CSV.",
         "lead": "Místo ručního odškrtávání zaplacených faktur aplikace platby přiřadí sama a fakturu označí jako zaplacenou.",
         "points": [
-          "Fio banka: automatické stažení příchozích plateb každou hodinu přes oficiální API",
-          "Ostatní banky: import výpisu v jednoduchém CSV formátu",
+          "Fio, další banky přes PSD2 a PayPal: platby se stahují samy",
+          "Kterákoli jiná banka: nahrání výpisu v CSV",
           "Párování podle variabilního symbolu, částky a měny",
           "Částečné platby se připíšou k faktuře jako dílčí úhrada",
           "Nespárované platby zůstanou k ručnímu přiřazení"
         ],
         "steps": [
-          "V sekci Banka připojíte účet (Fio tokenem jen pro čtení, ostatní banky přes PSD2, nebo PayPal), případně nahrajete CSV výpis ze své banky.",
+          "V sekci Banka připojíte účet (Fio, banku přes PSD2 nebo PayPal), případně nahrajete výpis v CSV.",
           "Aplikace platby stáhne a spáruje s fakturami.",
           "Zkontrolujete zbylé nespárované platby a přiřadíte je ručně."
         ],
         "faq": [
           {
             "q": "Které banky jsou podporované?",
-            "a": "Fio banka napřímo přes své bezplatné API, ostatní české, slovenské i zahraniční banky v EHP (včetně Revolutu a Wise) přes PSD2 (licencovaný poskytovatel Enable Banking). Kterákoli banka také přes CSV výpis. Poznáme běžné exporty českých a slovenských bank, stačí datum, částka a měna."
+            "a": "Fio napřímo přes své bezplatné API, další české, slovenské i zahraniční banky v EHP (včetně Revolutu a Wise) přes PSD2. Kterákoli banka také přes výpis v CSV: poznáme běžné exporty českých a slovenských bank, stačí datum, částka a měna."
           },
           {
             "q": "Může Billanta z mého účtu platit?",
@@ -5909,7 +5931,7 @@
           },
           {
             "q": "A jiné banky?",
-            "a": "Přes PSD2: v sekci Banka kliknete na Připojit banku, zvolíte Banka přes PSD2, vyberete svou banku a v jejím bankovnictví udělíte souhlas jen ke čtení účtu. Napojení zprostředkuje licencovaný poskytovatel Enable Banking, souhlas platí 90 až 180 dní podle banky a před vypršením vám připomeneme obnovení. Kvůli limitům PSD2 se tyto účty stahují zhruba každých 6 hodin."
+            "a": "Přes PSD2. V sekci Banka zvolíte Připojit banku → Banka přes PSD2, vyberete banku a v jejím bankovnictví udělíte souhlas jen ke čtení. Napojení zajišťuje licencovaný poskytovatel Enable Banking. Souhlas platí 90 až 180 dní podle banky a před vypršením vám připomeneme obnovení. Kvůli limitům PSD2 se tyto účty stahují zhruba každých 6 hodin."
           },
           {
             "q": "A platby přes PayPal?",
@@ -6335,7 +6357,7 @@
     },
     "indexSeoTitle": "Funkce fakturace pro OSVČ a firmy",
     "demo": {
-      "text": "Chcete si to nejdřív vyzkoušet? Otevřete živé demo s ukázkovou firmou, bez registrace.",
+      "text": "Chcete si to nejdřív vyzkoušet bez registrace?",
       "link": "Vyzkoušet demo"
     },
     "audiences": {
@@ -6350,14 +6372,7 @@
     "seoTitle": "Faktura online zdarma bez registrace, PDF s QR",
     "seoDescription": "Vystavte fakturu online zdarma a bez registrace. Vyplníte dodavatele, odběratele a položky a stáhnete PDF s QR platbou. Nic neukládáme.",
     "heading": "Faktura online bez registrace",
-    "lead": "Vyplňte údaje a stáhněte hotovou fakturu v PDF. Bez účtu a bez e-mailu, fakturu u nás neukládáme.",
-    "points": [
-      "PDF s QR platbou",
-      "Načtení firmy z ARES",
-      "Vyplnění pomocí AI",
-      "Plátce i neplátce DPH",
-      "Čeština, slovenština, angličtina"
-    ],
+    "lead": "Vyplňte údaje a stáhněte hotovou fakturu v PDF. Bez účtu a bez e-mailu.",
     "sections": {
       "document": "Doklad",
       "supplier": "Dodavatel (vy)",
@@ -6390,7 +6405,11 @@
       "unitPrice": "Cena za jednotku",
       "vatRate": "DPH",
       "note": "Poznámka na faktuře",
-      "taxableSupplyDate": "DUZP"
+      "taxableSupplyDate": "DUZP",
+      "accountWithCode": "Číslo účtu / kód banky",
+      "paymentLabel": "Název způsobu úhrady",
+      "paymentInstructions": "Kam zaplatit",
+      "swift": "SWIFT (BIC)"
     },
     "hints": {
       "vatPayer": "Zaškrtněte, jen pokud jste registrovaní k DPH. Faktura pak obsahuje DPH, DUZP a rekapitulaci podle sazeb.",
@@ -6399,14 +6418,21 @@
       "number": "S účtem se čísla faktur řadí sama podle vaší číselné řady.",
       "duzp": "Datum uskutečnění zdanitelného plnění. Většinou je stejné jako datum vystavení.",
       "qr": "Z čísla účtu vytvoříme QR platbu, odběratel jen naskenuje kód v bankovní aplikaci.",
-      "foreign": "Tip: u odběratele z EU uveďte jeho DIČ (VAT ID). S účtem ho ověříme ve VIES a firmu dohledáme v zahraničních registrech."
+      "foreign": "Tip: u odběratele z EU uveďte jeho DIČ (VAT ID). S účtem ho ověříme ve VIES a firmu dohledáme v zahraničních registrech.",
+      "account": "Celé číslo účtu můžete vložit najednou, třeba 19-123456789/0100 nebo IBAN – na číslo a kód banky ho rozdělíme sami. Z účtu vytvoříme QR platbu, odběratel jen naskenuje kód v bankovní aplikaci.",
+      "lookup": "Začněte psát název firmy, IČO nebo DIČ. Hledáme v českém ARES, slovenském registru právnických osob (RPO) i v evropském VIES. Po výběru se adresa, IČO a DIČ doplní samy.",
+      "paymentInstructions": "Vytiskne se na fakturu u způsobu úhrady, aby odběratel věděl, kam poslat peníze.",
+      "swift": "Kód banky pro platby ze zahraničí. U větších českých a slovenských bank ho doplníme podle kódu banky, stačí nechat prázdné."
     },
     "methods": {
       "bank_transfer": "Převodem",
       "cash": "Hotově",
       "card": "Kartou",
       "cash_on_delivery": "Dobírkou",
-      "other": "Jinak"
+      "other": "Jinak",
+      "paypal": "PayPal",
+      "revolut": "Revolut",
+      "offset": "Zápočtem"
     },
     "addItem": "Přidat položku",
     "removeItem": "Odebrat položku",
@@ -6423,13 +6449,13 @@
     },
     "setup": {
       "title": "Dvě rychlé otázky",
-      "lead": "Podle odpovědí ukážeme jen pole, která opravdu potřebujete. Později to jde kdykoli změnit.",
-      "q1": "Pro koho fakturujete?",
+      "lead": "Ukážeme jen pole, která opravdu potřebujete.",
+      "q1": "Jakou fakturu potřebujete?",
       "q2": "Co fakturujete?",
       "useCases": {
         "freelancer": {
-          "title": "Živnostník, neplátce DPH",
-          "text": "Nejjednodušší faktura bez DPH"
+          "title": "Neplátce DPH",
+          "text": "Faktura bez DPH – pro OSVČ i firmy"
         },
         "vat": {
           "title": "Plátce DPH",
@@ -6457,17 +6483,23 @@
     "placeholders": {
       "hours": "Např. Programování webu – září",
       "goods": "Např. Keramický hrnek 0,3 l",
-      "project": "Např. Návrh loga a vizuální identity"
+      "project": "Např. Návrh loga a vizuální identity",
+      "paymentLabel": "např. Stripe, kupón, barter",
+      "instructions": {
+        "paypal": "jan@example.cz nebo paypal.me/jan",
+        "revolut": "@jan nebo revolut.me/jan",
+        "other": "Kde a jak zaplatit"
+      },
+      "iban": "CZ65 0800 0000 1920 0014 5399"
     },
     "dueIn": "{days} dní",
     "ares": {
-      "found": "Načteno z ARES",
-      "notFound": "Firmu s tímto IČO jsme nenašli",
-      "unavailable": "ARES teď nejde načíst, vyplňte údaje ručně."
+      "found": "Doplněno z obchodního registru",
+      "notFound": "V registrech jsme toto IČO nenašli, doplňte údaje ručně."
     },
     "ai": {
       "title": "Vyplnit pomocí AI",
-      "lead": "Napište nebo nadiktujte vlastními slovy, co fakturujete. AI vyplní položky, ceny, splatnost a podle IČO i odběratele. Vše pak zkontrolujete.",
+      "lead": "Napište nebo nadiktujte, co fakturujete. AI vyplní položky, ceny, splatnost a podle IČO i odběratele.",
       "placeholder": {
         "hours": "Např. „faktura pro IČO 27604977, 12 hodin konzultací po 1 200 Kč, splatnost 14 dní“",
         "goods": "Např. „30 hrnků po 250 Kč a 2× doprava po 150 Kč pro Kavárnu Lípa, splatnost 7 dní“",
@@ -6526,7 +6558,6 @@
     },
     "account": {
       "title": "Chcete faktury ukládat a posílat e-mailem?",
-      "body": "S účtem zdarma máte přehled faktur, kontakty z ARES, upomínky a QR platby. Fakturu vytvoříte i bez něj.",
       "signup": "Založit účet zdarma",
       "login": "Přihlásit se",
       "signedIn": "Jste přihlášeni. Fakturu si můžete uložit rovnou v aplikaci.",
@@ -6584,7 +6615,16 @@
       "forget": "Zapomenout",
       "signupNote": "Po registraci převezmeme faktury, které jste v tomto prohlížeči vystavili bez účtu: číslování bude pokračovat a odběratelé se uloží jako kontakty.",
       "where": "Pamatuje si je jen tento prohlížeč a po 90 dnech je sám smaže – na sdíleném počítači je smažte tlačítkem Zapomenout."
-    }
+    },
+    "lookup": {
+      "placeholder": "Název firmy nebo IČO – doplníme z registru"
+    },
+    "requiredLegend": "Hvězdička * označuje údaje, které tento doklad musí obsahovat.",
+    "addIbanSwift": "Přidat IBAN a SWIFT",
+    "moreDoc": "Typ dokladu a způsob úhrady",
+    "addNote": "Přidat poznámku na faktuře",
+    "quantityLess": "Ubrat kus",
+    "quantityMore": "Přidat kus"
   },
   "publicProfile": {
     "services": "Služby",
@@ -6665,7 +6705,7 @@
   },
   "time": {
     "title": "Evidence času",
-    "description": "Stopujte práci na projektech a neodfakturované hodiny převeďte jedním klikem na fakturu.",
+    "description": "Stopujte práci a neodfakturované hodiny převeďte na koncept faktury.",
     "noTenant": "Nejdřív dokončete nastavení firmy.",
     "loadError": "Evidenci času se nepodařilo načíst.",
     "error": "Něco se nepovedlo.",
@@ -6673,8 +6713,7 @@
       "week": "Tento týden",
       "unbilled": "Neodfakturováno",
       "unbilledHours": "{hours} h k vyfakturování",
-      "projects": "Aktivní projekty",
-      "projectsSub": "Sazby a zákazníci"
+      "projects": "Aktivní projekty"
     },
     "period": {
       "week": "Tento týden",
@@ -6759,7 +6798,7 @@
       "hideArchived": "Skrýt archivované",
       "deleteConfirm": "Smazat projekt? Záznamy zůstanou, jen bez projektu.",
       "deleted": "Projekt smazán",
-      "empty": "Založte projekt se sazbou a zákazníkem – fakturace pak proběhne sama."
+      "empty": "Projekt drží sazbu a zákazníka, takže hodiny vyfakturujete rychle."
     },
     "dashboard": {
       "title": "Evidence času",
@@ -6771,7 +6810,7 @@
   },
   "clientPortal": {
     "title": "Doklady pro {name}",
-    "lead": "Faktury a nabídky od {company} na jednom místě – kliknutím otevřete doklad s QR platbou a PDF",
+    "lead": "Klepnutím otevřete doklad s platebními údaji.",
     "outstanding": "Zbývá uhradit",
     "overdueOf": "z toho po splatnosti {amount}",
     "allPaid": "Vše je zaplaceno, děkujeme.",
@@ -6808,7 +6847,6 @@
   },
   "reports": {
     "pageTitle": "Reporty",
-    "pageLead": "Tržby, náklady a zisk za libovolné období, porovnané s obdobím před ním.",
     "exportsLink": "Exporty pro účetní a úřady →",
     "noTenant": "Nejdřív si založte firmu nebo podnikání.",
     "loadError": "Report se nepodařilo načíst.",
@@ -6917,13 +6955,12 @@
       "failed": "Nepodařilo se uložit: {reason}",
       "notUsed": "zatím nevyužíváte",
       "notVatPayer": "nejste plátce DPH",
-      "orderHint": "Pořadí tady určuje pořadí karet v přehledu. Změníte ho přetažením za úchyt nebo šipkami.",
       "moveUp": "Posunout dopředu",
       "moveDown": "Posunout dozadu",
       "dragToReorder": "Přetáhněte pro změnu pořadí"
     },
     "flatTaxLink": "Vyplatí se paušální daň? →",
-    "taxReturnLink": "Podklady pro daňové přiznání"
+    "taxReturnLink": "Podklady pro daňové přiznání →"
   },
   "siteSearch": {
     "title": "Hledat na webu",
@@ -6975,9 +7012,9 @@
   },
   "audit": {
     "title": "Historie změn",
-    "description": "Všechny důležité akce ve firmě: kdo co kdy vytvořil, upravil, odeslal nebo smazal, u změn i původní a nová hodnota.",
+    "description": "Kdo co kdy ve firmě vytvořil, upravil, odeslal nebo smazal.",
     "filterLabel": "Filtrovat podle typu",
-    "empty": "Zatím tu nic není. Jakmile vy nebo kolegové něco změníte, objeví se to tady.",
+    "empty": "Zatím žádné změny.",
     "loadError": "Historii se nepodařilo načíst.",
     "loadMore": "Načíst starší",
     "loading": "Načítám…",
@@ -7405,13 +7442,11 @@
     "signupCta": "Začít zdarma",
     "notStated": "– = v ceníku neuvádí (nemusí znamenat, že funkce chybí)",
     "verified": "Ověřeno v ceníku {date}",
-    "sourcesTitle": "Zdroje",
     "brand": {
       "suitsUsTitle": "Kdy se vyplatí Billanta",
       "suitsThemTitle": "Kdy dává větší smysl {brand}",
       "priceTitle": "Cena",
       "tableTitle": "Billanta a {brand} bod po bodu",
-      "source": "Zdroj: {brand}, ceník",
       "versus": "Billanta vs. {brand}",
       "importCta": "Jak funguje import",
       "faqTitle": "Časté otázky",
@@ -7859,7 +7894,8 @@
       "czOnlyTextAlt": "„{name}“ se týká českých předpisů. Pro slovenské živnostníky máme samostatnou kalkulačku podle slovenských pravidel.",
       "noLiability": "Výsledek je bez záruky. Za rozhodnutí učiněná podle něj neodpovídáme.",
       "noWarranty": "Výsledek má jen informativní charakter a je bez záruky. Před použitím si údaje ověřte.",
-      "invoiceCtaTemplates": "Vzory faktur s vyplněním online"
+      "invoiceCtaTemplates": "Vzory faktur s vyplněním online",
+      "toc": "Obsah"
     },
     "calculators": {
       "indexTitle": "Kalkulačky a nástroje pro podnikatele",
@@ -7896,17 +7932,19 @@
           "name": "Vyplatí se paušální daň?",
           "title": "Vyplatí se paušální daň? Srovnání s výdajovým paušálem a skutečnými výdaji",
           "description": "Porovnejte paušální daň s výdajovým paušálem a skutečnými výdaji. Daň a pojištění pro každou variantu, slevy na děti a jasné doporučení.",
-          "lead": "Zadejte roční příjmy, případně skutečné výdaje. Kalkulačka spočítá daň, sociální a zdravotní pojištění v paušálním režimu, s výdajovým paušálem i se skutečnými výdaji a řekne, co vychází nejlépe.",
+          "lead": "Zadejte roční příjmy a případně skutečné výdaje. Porovnáme paušální daň s výdajovým paušálem i se skutečnými výdaji a ukážeme, co vyjde nejlevněji.",
           "keywords": "vyplatí se paušální daň paušální režim pásmo osvč výdajový paušál skutečné výdaje srovnání",
           "fields": {
             "year": "Rok",
-            "income": "Příjmy za rok (Kč)",
-            "actualExpenses": "Skutečné výdaje za rok (Kč)",
+            "income": "Příjmy za rok",
+            "actualExpenses": "Skutečné výdaje za rok",
             "actualHint": "Nepovinné. Bez nich porovnáme jen paušální daň a výdajový paušál.",
             "flatRate": "Převažující činnost",
-            "children": "Počet dětí (daňové zvýhodnění)",
-            "spouse": "Sleva na manželku/manžela (příjmy partnera do 68 000 Kč, dítě do 3 let)",
-            "vatPayer": "Jsem plátce DPH"
+            "children": "Počet dětí",
+            "spouse": "Sleva na manželku/manžela",
+            "vatPayer": "Jsem plátce DPH",
+            "spouseInfo": "Jen když má partner příjmy do 68 000 Kč za rok a ve společné domácnosti je dítě do 3 let.",
+            "childrenInfo": "Daňové zvýhodnění na vyživované děti ve společné domácnosti."
           },
           "rates": {
             "30": "Pronájem obchodního majetku (30 %, nejvýš {cap} Kč)",
@@ -8107,7 +8145,7 @@
           "name": "Vyhledání firmy podle IČO, DIČ nebo názvu",
           "title": "Vyhledání firmy podle IČO, DIČ nebo názvu (ARES, RPO, VIES)",
           "description": "Najděte firmu podle IČO, DIČ nebo názvu v ARES, slovenském RPO nebo evropském VIES. Ukážeme sídlo, DIČ a jestli je plátce DPH, případně nespolehlivý plátce.",
-          "lead": "Zadejte IČO, DIČ nebo část názvu. Hledáme v českém ARES, ve slovenském registru právnických osob (RPO), v evropském VIES a v dalších registrech, které si vyberete.",
+          "lead": "Zadejte IČO, DIČ nebo část názvu. Hledáme v ARES, slovenském RPO, evropském VIES a dalších registrech, které vyberete.",
           "keywords": "ares ičo dič vyhledat firmu podle ičo podle názvu plátce dph nespolehlivý plátce vies rpo sídlo firmy odběratel",
           "fields": {
             "query": "IČO, DIČ nebo název",
@@ -9182,12 +9220,13 @@
     "profileLink": {
       "body": "Jste účetní? Zápis do adresáře účetních a žádost o partnerský program najdete v Profilu účetního.",
       "cta": "Otevřít Profil účetního"
-    }
+    },
+    "shareMore": "QR kód a odznaky na web"
   },
   "partners": {
     "title": "Partneři",
     "seoTitle": "Partneři Billanty – účetní, banky a nástroje",
-    "lead": "Účetní, banky a nástroje, které s Billantou dobře fungují. Vyberte si, s kým vám fakturace a účetnictví půjdou snadno.",
+    "lead": "Účetní, banky a nástroje, které s Billantou dobře fungují.",
     "filterLabel": "Kategorie partnerů",
     "categories": {
       "all": "Vše",
@@ -9225,6 +9264,10 @@
         "title": "Exporty pro účetnictví",
         "body": "Kontrolní hlášení, přiznání k DPH, ISDOC a CSV stáhnete bez přepisování."
       },
+      "included": {
+        "title": "V ceně klientova tarifu",
+        "body": "Od tarifu Start je přístup pro účetní v ceně klienta. Vy za něj neplatíte nic."
+      },
       "credits": {
         "title": "Kredity za klienty",
         "body": "Klient dostane {welcome} kreditů, vy až {reward} za každého, kdo začne platit. Stejně jako u běžného doporučení."
@@ -9250,7 +9293,7 @@
       },
       "program": {
         "title": "Požádejte o partnerský program",
-        "body": "V Nastavení → Profil účetního vyplňte zápis do adresáře a požádejte o partnerský program. Každý zápis ručně schvalujeme. Po schválení vás firmy najdou v adresáři účetních a na stránkách svého města."
+        "body": "V Nastavení → Profil účetního vyplňte zápis do adresáře. Každý ručně schvalujeme, pak vás firmy najdou v adresáři účetních a na stránkách svého města."
       },
       "share": {
         "title": "Pošlete odkaz klientům",
@@ -9287,7 +9330,7 @@
     },
     "shapeCta": {
       "title": "Billantu ladíme spolu s účetními",
-      "body": "Jsme malý tým a nové funkce stavíme podle toho, co účetní při práci s klienty opravdu potřebují. Napište nám, jak pracujete, co vás zdržuje a jaký export by vám ušetřil čas. Návrhy od účetních bereme přednostně.",
+      "body": "Jsme malý tým a funkce stavíme podle toho, co účetní při práci s klienty potřebují. Napište nám, jaký export nebo přehled by vám ušetřil čas.",
       "mail": "Napsat nám",
       "mailSubject": "Billanta pro účetní – návrh",
       "signup": "Zaregistrovat kancelář a napsat nám"
@@ -9340,7 +9383,8 @@
     "ctaBody": "Billanta hlídá splatnosti, QR platby a exporty pro účetní. Začněte zdarma.",
     "ctaButton": "Založit účet zdarma",
     "aiAuto": "Článek napsala umělá inteligence z našich podkladů a před zveřejněním prošel jen automatickou kontrolou. Pokud najdete chybu, <contact>napište nám</contact>.",
-    "aiReviewed": "Článek jsme připravili s pomocí umělé inteligence, před zveřejněním ho zkontroloval člověk. Pokud najdete chybu, <contact>napište nám</contact>."
+    "aiReviewed": "Článek jsme připravili s pomocí umělé inteligence, před zveřejněním ho zkontroloval člověk. Pokud najdete chybu, <contact>napište nám</contact>.",
+    "toc": "Obsah"
   },
   "adminBlog": {
     "title": "Blog",
@@ -9763,7 +9807,8 @@
     "invalid": "Použijte písmena, číslice nebo pomlčky.",
     "failed": "Uložení se nezdařilo",
     "copy": "Kopírovat",
-    "copied": "Odkaz zkopírován"
+    "copied": "Odkaz zkopírován",
+    "rename": "Upravit název odkazu"
   },
   "demo": {
     "cta": "Vyzkoušet demo",
@@ -9783,43 +9828,6 @@
         "empty": "Chcete začít od nuly? Zvolte prázdnou firmu a svou práci si po registraci převeďte do vlastního účtu."
       },
       "pick": "Vyberte typ firmy",
-      "rolesTitle": "Podívejte se na aplikaci očima celého týmu",
-      "rolesLead": "V demu přepnete pohled jedním výběrem v horní liště. Každá role vidí přesně to, co by viděla ve skutečné firmě.",
-      "tryTitle": "Co si v demu vyzkoušet",
-      "try": {
-        "invoices": {
-          "title": "Faktura s QR platbou",
-          "text": "Vystavte fakturu, stáhněte PDF a pošlete odkaz s QR kódem."
-        },
-        "payments": {
-          "title": "Úhrady a částečné platby",
-          "text": "Označte fakturu jako zaplacenou nebo zapište zálohu."
-        },
-        "reminders": {
-          "title": "Faktury po splatnosti",
-          "text": "Podívejte se, co je po splatnosti a jak vypadá upomínka."
-        },
-        "expenses": {
-          "title": "Náklady",
-          "text": "Zapište přijatý doklad a sledujte výdaje po kategoriích."
-        },
-        "vat": {
-          "title": "DPH a přehledy",
-          "text": "Přiznání k DPH a kontrolní hlášení ze stejných dat."
-        },
-        "accountant": {
-          "title": "Pohled účetní",
-          "text": "Exporty pro účetní a co účetní ve firmě smí."
-        },
-        "team": {
-          "title": "Tým a role",
-          "text": "Přepněte se na kolegu jen pro čtení a zkuste něco změnit."
-        },
-        "quotes": {
-          "title": "Nabídky a zálohové faktury",
-          "text": "Z nabídky udělejte zálohovou a pak ostrou fakturu."
-        }
-      },
       "allFeatures": "Všechny funkce",
       "faqTitle": "Časté otázky k demu",
       "faq": [
@@ -10034,7 +10042,7 @@
     },
     "apply": {
       "title": "Přihlášení učitele",
-      "intro": "Výuka je pro učitele zdarma. Ověříme, že škola existuje a že na ní učíte, a pak můžete zakládat třídy.",
+      "intro": "Výuka je pro učitele zdarma. Po ověření školy můžete zakládat třídy.",
       "country": "Země",
       "countryCZ": "Česko",
       "countrySK": "Slovensko",
@@ -10070,7 +10078,7 @@
       "endsAt": "Konec výuky",
       "endsAtHint": "Potom je třída 30 dní jen ke čtení a pak se smaže. Prázdné pole znamená konec školního roku.",
       "seeded": "Začít s ukázkovými daty",
-      "seededHint": "Firma dostane pár odběratelů a faktur, aby měli žáci s čím pracovat. Bez toho začnou s prázdnou firmou.",
+      "seededHint": "Firma dostane pár odběratelů a faktur na procvičení. Jinak začne prázdná.",
       "submit": "Založit třídu"
     },
     "invite": {
@@ -10354,7 +10362,8 @@
     "suspendedDone": "Škola pozastavena.",
     "unsuspended": "Škola obnovena.",
     "failed": "Nepovedlo se",
-    "rejectConfirm": "Zamítnout učitele {name}? Jeho třídy skončí a zůstanou 30 dní jen ke čtení, z ostatních tříd bude odebrán."
+    "rejectConfirm": "Zamítnout učitele {name}? Jeho třídy skončí a zůstanou 30 dní jen ke čtení, z ostatních tříd bude odebrán.",
+    "manage": "Spravovat"
   },
   "offline": {
     "offline": "Offline",
@@ -10610,7 +10619,7 @@
     "seoTitle": "Billanta pro meetupy, coworkingy a komunity",
     "eyebrow": "Pro organizátory akcí",
     "title": "Dejte svým účastníkům fakturaci na zkoušku",
-    "lead": "Pořádáte meetup, kurz pro začínající podnikatele nebo vedete coworking? Pro účastníky vám připravíme vlastní kód a QR kód. Billantu si vyzkouší za 30 sekund, bez registrace.",
+    "lead": "Pro meetup, kurz nebo coworking vám připravíme vlastní kód a QR kód. Účastníci si Billantu vyzkouší za 30 sekund, bez registrace.",
     "demoCta": "Vyzkoušet demo",
     "offerTitle": "Co od nás dostanete",
     "offer": {
@@ -11373,7 +11382,8 @@
       "businessPreset": "Typ podnikání",
       "presetNone": "nechat vybrat",
       "defaultLocale": "Jazyk stránky",
-      "localeVisitor": "podle návštěvníka"
+      "localeVisitor": "podle návštěvníka",
+      "moreDetails": "Další nastavení"
     },
     "errors": {
       "code_taken": "Takový kód už existuje.",
@@ -12030,9 +12040,8 @@
     "metaTitle": "Podklady pro daňové přiznání",
     "title": "Podklady pro daňové přiznání {year}",
     "titleSk": "Podklady pro daňové přiznání {year} (Slovensko)",
-    "back": "Přehledy",
-    "lead": "Příjmy, výdaje a výdajové paušály za zdaňovací období z vašich dokladů, termíny podání a orientační odhad daně. Zdarma ve všech tarifech.",
-    "notAdvice": "Jde o podklad pro daňové přiznání sestavený z vašich dokladů, nikoli o daňové poradenství. Před podáním údaje ověřte, případně s účetní nebo daňovým poradcem.",
+    "back": "Reporty",
+    "notAdvice": "Podklad z vašich dokladů, ne daňové poradenství. Před podáním čísla ověřte, případně s účetní. Za obsah přiznání odpovídáte vy.",
     "noTenant": "Nejdřív vyplňte fakturační údaje firmy.",
     "loadError": "Podklady se nepodařilo načíst. Zkuste to prosím za chvíli.",
     "ratesUnavailable": "U některých dokladů v cizí měně chybí kurz a nepodařilo se ho dohledat. Zkuste to prosím za chvíli.",
@@ -12143,7 +12152,6 @@
     "noteEstimate": "Odhad počítá jen se slevou na poplatníka, bez dalších slev, odpočtů a příjmů z jiných zdrojů (zaměstnání, nájem).",
     "noteEstimateSk": "Odhad počítá jen s nezdanitelnou částí na daňovníka, bez dalších odpočtů, daňového bonusu a příjmů z jiných zdrojů.",
     "noteData": "Čísla jsou jen z dokladů v aplikaci. Příjmy a výdaje, které tu nemáte (hotovost bez dokladu, jiné činnosti), přidejte sami.",
-    "disclaimer": "Podklady mají jen informativní charakter, jsou bez záruky a nenahrazují daňového poradce ani účetní. Za obsah podání odpovídáte vy.",
     "nudge": {
       "title": "Daňové přiznání za rok {year}",
       "body": "Příjmy, výdaje podle kategorií, paušály a termíny za rok {year} máme připravené z vašich dokladů. PDF i CSV pro účetní zdarma.",
@@ -12208,8 +12216,6 @@
       },
       "calculatorsTitle": "Daňové kalkulačky",
       "calculatorsLead": "Bez registrace: daň a pojistné OSVČ a SZČO, srovnání s paušální daní a minimální zálohy.",
-      "ctaTitle": "Podklady z vašich vlastních faktur",
-      "ctaBody": "Když fakturujete v Billantě, podklady pro přiznání máte hotové bez přepisování. Stačí doplnit, co v aplikaci nemáte.",
       "faqTitle": "Časté otázky",
       "faq": [
         {
@@ -12454,7 +12460,7 @@
     "seoTitle": "Přechod na Billantu z jiné fakturační aplikace",
     "navTitle": "Přechod na Billantu",
     "title": "Přejděte na Billantu, data si vezměte s sebou",
-    "lead": "Kontakty, vydané faktury i číselnou řadu přenesete z exportu, který vám dá vaše dosavadní aplikace. Import pozná, odkud soubor je, a než se cokoli uloží, ukáže náhled.",
+    "lead": "Kontakty, vydané faktury i číselnou řadu přenesete z exportu vaší dosavadní aplikace. Před uložením uvidíte náhled.",
     "pickTitle": "Odkud přecházíte?",
     "cardCta": "Návod k přechodu",
     "otherTitle": "Jiná aplikace nebo Excel",

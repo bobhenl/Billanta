@@ -25,7 +25,7 @@ export function DirectoryListings({
         const town = getMunicipalityBySlug(l.town);
         return (
           <li key={l.slug}>
-            <a href={profileUrl(l.slug, locale)} className="flex h-full min-w-0 items-start gap-3 rounded-xl border border-border bg-card p-4 hover:border-primary">
+            <a href={profileUrl(l.slug, locale)} className="flex h-full min-w-0 items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40">
               {l.hasLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl(l)} alt="" loading="lazy" className="h-12 w-12 shrink-0 rounded-lg border border-border bg-white object-contain p-1" />
@@ -38,7 +38,7 @@ export function DirectoryListings({
                 <span className="block break-words font-semibold text-foreground">{l.name}</span>
                 {l.tagline && <span className="mt-0.5 line-clamp-2 block break-words text-sm text-muted-foreground">{l.tagline}</span>}
                 <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                  <span className="rounded-full bg-muted px-2 py-0.5">{tradeLabel(l.trade)}</span>
+                  <span>{tradeLabel(l.trade)}</span>
                   {showTown && town && (
                     <span className="inline-flex items-center gap-1">
                       <MapPin className="h-3 w-3" />

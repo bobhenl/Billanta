@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 
 /**
  * Scoped `not-found` boundary for the client-portal route
- * (`app/[locale]/i/[token]/page.tsx`) — reached via `notFound()` when
+ * (`app/[locale]/i/[token]/page.tsx`) – reached via `notFound()` when
  * `getPublicInvoice` returns `null` (unmatched or malformed `public_token`;
  * see `apps/backend/src/public-invoices/public-invoices.service.ts`, which
  * deliberately returns the same 404 for both cases). Kept minimal and on

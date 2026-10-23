@@ -29,7 +29,10 @@ export default async function OsvcCalculatorPage({ params }: { params: Promise<P
   const validity = t('tools.common.validFor', { year: first === latest ? String(first) : `${first}–${latest}` });
   return (
     <CalculatorPage slug={SLUG} locale={locale} validity={validity} disclaimer={t('annualEstimate.disclaimer')} skAlternative="slovak-self-employed-tax">
-      <AnnualEstimate country="CZ" years={OSVC_PARAM_YEARS} defaultYear={year} defaults={EXAMPLE} />
+      {/* The same card as the other calculators; the dashboard puts the component in its own card. */}
+      <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5">
+        <AnnualEstimate country="CZ" years={OSVC_PARAM_YEARS} defaultYear={year} defaults={EXAMPLE} />
+      </div>
     </CalculatorPage>
   );
 }

@@ -10,7 +10,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
 
 /**
- * Header for the public site. Separate from the dashboard shell — the two
+ * Header for the public site. Separate from the dashboard shell – the two
  * audiences need different links. Only the pages a visitor is here for sit
  * in the header; the secondary ones (calculators, guides, FAQ, comparison)
  * share one "Resources" dropdown in the third slot, so the row stays at three
@@ -37,14 +37,12 @@ export async function MarketingNavbar() {
   ];
   const resources = [
     { href: '/invoice-templates', label: tTemplates('menu'), hint: tMenu('templatesHint') },
-    { href: '/payment-reminder-templates', label: tMenu('reminders'), hint: tMenu('remindersHint') },
     { href: '/calculators', label: tMenu('calculators'), hint: tMenu('calculatorsHint') },
     ...(GUIDES_HUB_LOCALES.includes(locale) ? [{ href: '/guides', label: tMenu('guides'), hint: tMenu('guidesHint') }] : []),
     { href: '/glossary', label: tMenu('glossary'), hint: tMenu('glossaryHint') },
     { href: '/accountants', label: tMenu('findAccountant'), hint: tMenu('findAccountantHint') },
     { href: '/directory', label: tMenu('businessDirectory'), hint: tMenu('businessDirectoryHint') },
     { href: '/blog', label: tMenu('blog'), hint: tMenu('blogHint') },
-    { href: '/#faq', label: t('faq') },
     { href: '/compare', label: tMenu('compare') }
   ];
 

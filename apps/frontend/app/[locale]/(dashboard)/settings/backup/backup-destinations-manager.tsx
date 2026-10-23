@@ -1,11 +1,13 @@
 'use client';
 
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, type ReactNode, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 import { toast } from '@/components/toaster';
 import { useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { InfoHint } from '@/components/info-hint';
 import { copyText } from '@/lib/clipboard';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import {
   createBackupDestination,
   deleteBackupDestination,
@@ -56,12 +58,6 @@ export type BackupEncryptionInput =
 
 type EncryptionMode = BackupEncryptionInput['mode'];
 
-const inputClass = 'rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2';
-const primaryButton =
-  'inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50';
-const secondaryButton =
-  'inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent';
-
 const encryptionModeOf = (d: BackupDestinationListItem): EncryptionMode =>
   d.encryptionRecipient ? 'key' : d.encryptionPassphrase ? 'passphrase' : 'none';
 
@@ -83,7 +79,7 @@ function saveBlob(blob: Blob, filename: string): void {
 }
 
 /**
- * "Backup destinations" settings page — list + connect Google Drive + add
+ * "Backup destinations" settings page – list + connect Google Drive + add
  * webhook + add local download + run now + delete, all against
  * `/api/v1/backup-destinations` (owner only, `OwnerOnlyGuard`). Mutations go
  * through `./actions.ts`; "run now" goes through the
@@ -300,485 +296,420 @@ export function BackupDestinationsManager({
     return t('scheduleManual');
   }
 
-  return (
-    <div>
-      {revealedSecret && (
-        <div className="mt-6 rounded-lg border border-warning/40 bg-warning/10 p-4">
-          <p className="text-sm font-medium">{t('reveal.title')}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{t('reveal.warning')}</p>
+  const scheduleOptions = (
+    <>
+      <option value="daily">{t('scheduleDaily')}</option>
+      <option value="weekly">{t('scheduleWeekly')}</option>
+      <option value="manual">{t('scheduleManual')}</option>
+    </>
+  );
+  const linkButton = 'text-xs font-semibold text-muted-foreground hover:text-primary disabled:cursor-not-allowed disabled:opacity-60';
 
+  return (
+    <div className="mt-6 space-y-6">
+      {revealedSecret && (
+        <div className="rounded-xl border border-warning/40 bg-warning/10 p-4">
+          <p className="text-sm font-bold">{t('reveal.title')}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t('reveal.warning')}</p>
           <div className="mt-3 flex items-center gap-2">
-            <code className="flex-1 overflow-x-auto rounded-md border border-border bg-background px-3 py-2 font-mono text-sm">
+            <code className="min-w-0 flex-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 font-mono text-sm">
               {revealedSecret}
             </code>
-            <button
-              type="button"
-              onClick={() => handleCopy()}
-              className="shrink-0 rounded-md border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
-            >
-              {copied ? t('reveal.copied') : t('reveal.copy')}
+            <button type="button" onClick={() => handleCopy()} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.copy')} aria-label={t('reveal.copy')}>
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              <span className="hidden sm:inline">{copied ? t('reveal.copied') : t('reveal.copy')}</span>
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setRevealedSecret(null)}
-            className="mt-3 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
-          >
+          <button type="button" onClick={() => setRevealedSecret(null)} className={cn(buttonClass.primary, 'mt-3')}>
             {t('reveal.done')}
           </button>
         </div>
       )}
 
       {revealedPublicKey && (
-        <div className="mt-6 rounded-lg border border-warning/40 bg-warning/10 p-4">
-          <p className="text-sm font-medium">{t('sftpKey.title')}</p>
+        <div className="rounded-xl border border-warning/40 bg-warning/10 p-4">
+          <p className="text-sm font-bold">{t('sftpKey.title')}</p>
           <p className="mt-1 text-sm text-muted-foreground">{t('sftpKey.instructions')}</p>
           <div className="mt-3 flex items-center gap-2">
-            <code className="flex-1 overflow-x-auto whitespace-nowrap rounded-md border border-border bg-background px-3 py-2 font-mono text-xs">
+            <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs">
               {revealedPublicKey}
             </code>
-            <button
-              type="button"
-              onClick={() => handleCopy(revealedPublicKey)}
-              className="shrink-0 rounded-md border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
-            >
-              {copied ? t('reveal.copied') : t('reveal.copy')}
+            <button type="button" onClick={() => handleCopy(revealedPublicKey)} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.copy')} aria-label={t('reveal.copy')}>
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              <span className="hidden sm:inline">{copied ? t('reveal.copied') : t('reveal.copy')}</span>
             </button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{t('sftpKey.later')}</p>
-          <button type="button" onClick={() => setRevealedPublicKey(null)} className={cn(primaryButton, 'mt-3')}>
+          <button type="button" onClick={() => setRevealedPublicKey(null)} className={cn(buttonClass.primary, 'mt-3')}>
             {t('reveal.done')}
           </button>
         </div>
       )}
 
-      <div className="mt-6 overflow-hidden rounded-lg border border-border">
-        <div className="overflow-x-auto"><table className="w-full min-w-[720px] border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-border bg-muted/50 text-left text-muted-foreground">
-              <th className="px-4 py-3 font-medium">{t('columns.type')}</th>
-              <th className="px-4 py-3 font-medium">{t('columns.schedule')}</th>
-              <th className="px-4 py-3 font-medium">{t('columns.lastRun')}</th>
-              <th className="px-4 py-3 font-medium">{t('columns.status')}</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody>
-            {destinations.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                  {t('empty')}
-                </td>
-              </tr>
-            )}
-
+      {/* A card list rather than a table: four columns plus five actions never fit a phone. */}
+      <section className="rounded-xl border border-border bg-card">
+        {destinations.length === 0 ? (
+          <p className="p-4 text-sm text-muted-foreground sm:p-5">{t('empty')}</p>
+        ) : (
+          <ul className="divide-y divide-border">
             {destinations.map((destination) => {
-              const lastRunFailed =
-                destination.lastRunStatus !== null && destination.lastRunStatus !== 'success';
+              const lastRunFailed = destination.lastRunStatus !== null && destination.lastRunStatus !== 'success';
+              const encryption = encryptionModeOf(destination);
+              const where =
+                destination.type === 'webhook'
+                  ? destination.webhookUrl
+                  : destination.type === 'sftp' && destination.sftpHost
+                    ? `${destination.sftpUsername}@${destination.sftpHost}${destination.sftpPort && destination.sftpPort !== 22 ? `:${destination.sftpPort}` : ''}:${destination.sftpPath || '~'}`
+                    : null;
               return (
-                <tr key={destination.id} className="border-b border-border last:border-b-0">
-                  <td className="px-4 py-3 font-medium">
-                    {typeLabel(destination.type)}
-                    {destination.type === 'webhook' && destination.webhookUrl && (
-                      <div className="mt-0.5 truncate text-xs font-normal text-muted-foreground">
-                        {destination.webhookUrl}
-                      </div>
-                    )}
-                    {destination.type === 'sftp' && destination.sftpHost && (
-                      <div className="mt-0.5 max-w-[260px] truncate font-mono text-xs font-normal text-muted-foreground">
-                        {destination.sftpUsername}@{destination.sftpHost}
-                        {destination.sftpPort && destination.sftpPort !== 22 ? `:${destination.sftpPort}` : ''}:{destination.sftpPath || '~'}
-                      </div>
-                    )}
-                    {destination.type === 'sftp' && (
-                      <div
-                        className="mt-0.5 max-w-[260px] truncate text-xs font-normal text-muted-foreground"
-                        title={destination.sftpHostFingerprint ?? undefined}
-                      >
-                        {destination.sftpHostFingerprint
-                          ? t('sftpFingerprint', { fingerprint: destination.sftpHostFingerprint })
-                          : t('sftpFingerprintPending')}
-                      </div>
-                    )}
-                    {(destination.type === 'sftp' || destination.type === 'google_drive') &&
-                      encryptionModeOf(destination) !== 'none' && (
-                        <span className="mt-1 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
-                          {encryptionModeOf(destination) === 'key' ? t('encryption.badgeKey') : t('encryption.badgePassphrase')}
-                        </span>
+                <li key={destination.id} className="p-4 sm:p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-bold">{typeLabel(destination.type)}</p>
+                      {where && (
+                        <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground" title={where}>
+                          {where}
+                        </p>
                       )}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
+                    </div>
+                    <span
+                      className={cn(
+                        'flex shrink-0 items-center gap-1.5 text-xs font-semibold',
+                        !destination.lastRunAt ? 'text-muted-foreground' : lastRunFailed ? 'text-destructive' : 'text-success'
+                      )}
+                      title={lastRunFailed ? (destination.lastRunStatus ?? undefined) : undefined}
+                    >
+                      <span className="h-2 w-2 rounded-full bg-current" aria-hidden="true" />
+                      {destination.lastRunAt
+                        ? lastRunFailed
+                          ? t('lastRunFailed')
+                          : t('lastRunSuccess')
+                        : destination.isActive
+                          ? t('statusActive')
+                          : t('statusInactive')}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('columns.lastRun')}: {destination.lastRunAt ? dateFormatter.format(new Date(destination.lastRunAt)) : t('neverRun')}
+                    {encryption !== 'none' && ` · ${encryption === 'key' ? t('encryption.badgeKey') : t('encryption.badgePassphrase')}`}
+                  </p>
+                  {destination.type === 'sftp' && (
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground" title={destination.sftpHostFingerprint ?? undefined}>
+                      {destination.sftpHostFingerprint
+                        ? t('sftpFingerprint', { fingerprint: destination.sftpHostFingerprint })
+                        : t('sftpFingerprintPending')}
+                    </p>
+                  )}
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
                     {readOnly || destination.type === 'local' ? (
-                      scheduleLabel(destination.schedule)
+                      <span className="text-sm text-muted-foreground">{scheduleLabel(destination.schedule)}</span>
                     ) : (
                       <select
                         aria-label={t('columns.schedule')}
                         value={destination.schedule}
                         onChange={(event) => handleSchedule(destination, event.target.value as BackupSchedule)}
-                        className="rounded-md border border-input bg-background px-2 py-1 text-sm outline-none ring-ring focus:ring-2"
+                        className={cn(inputClass, 'h-9 w-auto py-1')}
                       >
-                        <option value="daily">{t('scheduleDaily')}</option>
-                        <option value="weekly">{t('scheduleWeekly')}</option>
-                        <option value="manual">{t('scheduleManual')}</option>
+                        {scheduleOptions}
                       </select>
                     )}
-                  </td>
-                  <td className="px-4 py-3 tabular-nums text-muted-foreground">
-                    {destination.lastRunAt ? dateFormatter.format(new Date(destination.lastRunAt)) : t('neverRun')}
-                  </td>
-                  <td className="px-4 py-3">
-                    {destination.lastRunAt ? (
-                      <span
-                        className={cn(
-                          'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                          lastRunFailed
-                            ? 'bg-destructive/15 text-destructive'
-                            : 'bg-success/15 text-success'
-                        )}
-                        title={lastRunFailed ? (destination.lastRunStatus ?? undefined) : undefined}
-                      >
-                        {lastRunFailed ? t('lastRunFailed') : t('lastRunSuccess')}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                        {destination.isActive ? t('statusActive') : t('statusInactive')}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right">
                     {!readOnly && (
-                    <div className="flex items-center justify-end gap-3">
-                      {(destination.type === 'sftp' || destination.type === 'google_drive') && (
+                      <>
                         <button
                           type="button"
-                          onClick={() => openEncryption(destination)}
-                          className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:no-underline"
+                          onClick={() => handleRunNow(destination)}
+                          disabled={runningId === destination.id}
+                          className={cn(linkButton, 'text-primary')}
                         >
-                          {t('encryption.button')}
+                          {runningId === destination.id ? t('runningNow') : t('runNow')}
                         </button>
-                      )}
-                      {destination.sftpPublicKey && (
+                        {(destination.type === 'sftp' || destination.type === 'google_drive') && (
+                          <button type="button" onClick={() => openEncryption(destination)} className={linkButton}>
+                            {t('encryption.button')}
+                          </button>
+                        )}
+                        {destination.sftpPublicKey && (
+                          <button type="button" onClick={() => setRevealedPublicKey(destination.sftpPublicKey ?? null)} className={linkButton}>
+                            {t('sftpKey.show')}
+                          </button>
+                        )}
+                        {destination.type !== 'local' && (
+                          <button type="button" onClick={() => handleToggleActive(destination)} className={linkButton}>
+                            {destination.isActive ? t('pause') : t('resume')}
+                          </button>
+                        )}
                         <button
                           type="button"
-                          onClick={() => setRevealedPublicKey(destination.sftpPublicKey ?? null)}
-                          className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:no-underline"
+                          onClick={() => handleDelete(destination.id)}
+                          disabled={deletingId === destination.id}
+                          className={cn(linkButton, 'hover:text-destructive')}
                         >
-                          {t('sftpKey.show')}
+                          {deletingId === destination.id ? t('deleting') : t('delete')}
                         </button>
-                      )}
-                      {destination.type !== 'local' && (
-                        <button
-                          type="button"
-                          onClick={() => handleToggleActive(destination)}
-                          className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:no-underline"
-                        >
-                          {destination.isActive ? t('pause') : t('resume')}
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleRunNow(destination)}
-                        disabled={runningId === destination.id}
-                        className="text-xs font-medium text-primary underline underline-offset-2 hover:no-underline disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {runningId === destination.id ? t('runningNow') : t('runNow')}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(destination.id)}
-                        disabled={deletingId === destination.id}
-                        className="text-xs font-medium text-destructive underline underline-offset-2 hover:no-underline disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {deletingId === destination.id ? t('deleting') : t('delete')}
-                      </button>
-                    </div>
+                      </>
                     )}
-                  </td>
-                </tr>
+                  </div>
+                  {encryptingId === destination.id && !readOnly && (
+                    <form onSubmit={handleSaveEncryption} className="mt-4 space-y-3 border-t border-border pt-4">
+                      <InfoHint hint={t('encryption.hint')} rowClassName="text-sm font-bold">
+                        {t('encryption.title')}
+                      </InfoHint>
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                        {(['none', 'key', 'passphrase'] as const).map((mode) => (
+                          <label key={mode} className="inline-flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="encryptionMode"
+                              value={mode}
+                              checked={encryptionMode === mode}
+                              onChange={() => {
+                                setEncryptionMode(mode);
+                                setEncryptionValue('');
+                              }}
+                            />
+                            {t(`encryption.mode.${mode}`)}
+                          </label>
+                        ))}
+                      </div>
+                      {encryptionMode === 'key' && (
+                        <Field id="encryptionRecipient" label={t('encryption.keyLabel')} hint={t('encryption.keyHint')}>
+                          <input
+                            id="encryptionRecipient"
+                            required
+                            spellCheck={false}
+                            autoComplete="off"
+                            placeholder="age1…"
+                            value={encryptionValue}
+                            onChange={(event) => setEncryptionValue(event.target.value)}
+                            className={cn(inputClass, 'font-mono')}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {t('encryption.decryptKey')} <code className="break-all font-mono">age -d -i klic.txt zaloha.db.age &gt; zaloha.db</code>
+                          </p>
+                        </Field>
+                      )}
+                      {encryptionMode === 'passphrase' && (
+                        <Field id="encryptionPassphrase" label={t('encryption.passphraseLabel')} hint={t('encryption.passphraseHint')}>
+                          <input
+                            id="encryptionPassphrase"
+                            type="password"
+                            required
+                            minLength={12}
+                            autoComplete="new-password"
+                            value={encryptionValue}
+                            onChange={(event) => setEncryptionValue(event.target.value)}
+                            className={inputClass}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {t('encryption.decryptPassphrase')} <code className="break-all font-mono">age -d zaloha.db.age &gt; zaloha.db</code>
+                          </p>
+                        </Field>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <button type="submit" disabled={savingEncryption} className={buttonClass.primary}>
+                          {savingEncryption ? t('encryption.saving') : t('encryption.save')}
+                        </button>
+                        <button type="button" onClick={() => setEncryptingId(null)} className={buttonClass.secondary}>
+                          {t('addWebhook.cancel')}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </li>
               );
             })}
-          </tbody>
-        </table></div>
-      </div>
-
-      {encryptingId && !readOnly && (
-        <form onSubmit={handleSaveEncryption} className="mt-6 flex flex-col gap-3 rounded-lg border border-border p-4">
-          <InfoHint hint={t('encryption.hint')} rowClassName="text-sm font-medium">
-            {t('encryption.title')}
-          </InfoHint>
-          <div className="flex flex-wrap gap-4 text-sm">
-            {(['none', 'key', 'passphrase'] as const).map((mode) => (
-              <label key={mode} className="inline-flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="encryptionMode"
-                  value={mode}
-                  checked={encryptionMode === mode}
-                  onChange={() => {
-                    setEncryptionMode(mode);
-                    setEncryptionValue('');
-                  }}
-                />
-                {t(`encryption.mode.${mode}`)}
-              </label>
-            ))}
-          </div>
-          {encryptionMode === 'key' && (
-            <div className="flex flex-col gap-1.5">
-              <InfoHint hint={t('encryption.keyHint')} rowClassName="text-sm font-medium">
-                <label htmlFor="encryptionRecipient">{t('encryption.keyLabel')}</label>
-              </InfoHint>
-              <input
-                id="encryptionRecipient"
-                required
-                spellCheck={false}
-                autoComplete="off"
-                placeholder="age1…"
-                value={encryptionValue}
-                onChange={(event) => setEncryptionValue(event.target.value)}
-                className={cn(inputClass, 'font-mono')}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('encryption.decryptKey')}{' '}
-                <code className="break-all font-mono">age -d -i klic.txt zaloha.db.age &gt; zaloha.db</code>
-              </p>
-            </div>
-          )}
-          {encryptionMode === 'passphrase' && (
-            <div className="flex flex-col gap-1.5">
-              <InfoHint hint={t('encryption.passphraseHint')} rowClassName="text-sm font-medium">
-                <label htmlFor="encryptionPassphrase">{t('encryption.passphraseLabel')}</label>
-              </InfoHint>
-              <input
-                id="encryptionPassphrase"
-                type="password"
-                required
-                minLength={12}
-                autoComplete="new-password"
-                value={encryptionValue}
-                onChange={(event) => setEncryptionValue(event.target.value)}
-                className={inputClass}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('encryption.decryptPassphrase')}{' '}
-                <code className="break-all font-mono">age -d zaloha.db.age &gt; zaloha.db</code>
-              </p>
-            </div>
-          )}
-          <div className="flex items-center gap-3">
-            <button type="submit" disabled={savingEncryption} className={primaryButton}>
-              {savingEncryption ? t('encryption.saving') : t('encryption.save')}
-            </button>
-            <button type="button" onClick={() => setEncryptingId(null)} className={secondaryButton}>
-              {t('addWebhook.cancel')}
-            </button>
-          </div>
-        </form>
-      )}
+          </ul>
+        )}
+      </section>
 
       {!readOnly && (
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-border p-4 sm:col-span-3">
-          {sftpOpen ? (
-            <form onSubmit={handleAddSftp} className="flex flex-col gap-3">
-              <InfoHint hint={t('addSftp.hint')} rowClassName="text-sm font-medium">
-                {t('addSftp.title')}
-              </InfoHint>
-              <div className="grid gap-3 sm:grid-cols-[1fr_6rem]">
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="sftpHost" className="text-sm font-medium">{t('addSftp.host')}</label>
-                  <input
-                    id="sftpHost"
-                    required
-                    spellCheck={false}
-                    placeholder="nas.example.cz"
-                    value={sftp.host}
-                    onChange={(event) => setSftp({ ...sftp, host: event.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="sftpPort" className="text-sm font-medium">{t('addSftp.port')}</label>
-                  <input
-                    id="sftpPort"
-                    type="number"
-                    min={1}
-                    max={65535}
-                    value={sftp.port}
-                    onChange={(event) => setSftp({ ...sftp, port: event.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="sftpUsername" className="text-sm font-medium">{t('addSftp.username')}</label>
-                  <input
-                    id="sftpUsername"
-                    required
-                    spellCheck={false}
-                    autoComplete="off"
-                    value={sftp.username}
-                    onChange={(event) => setSftp({ ...sftp, username: event.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <InfoHint hint={t('addSftp.pathHint')} rowClassName="text-sm font-medium">
-                    <label htmlFor="sftpPath">{t('addSftp.path')}</label>
+        <section className="rounded-xl border border-border bg-card">
+          <h2 className="border-b border-border px-4 py-3 font-bold sm:px-5">{t('addTitle')}</h2>
+          <ul className="divide-y divide-border">
+            {/* Google Drive and the local download need no setup, so they lead. */}
+            <li className="p-4 sm:p-5">
+              <AddRow title={t('typeGoogleDrive')} description={t('connectGoogleDrive.description')}>
+                <button type="button" onClick={handleConnectGoogleDrive} disabled={connecting} className={buttonClass.secondary}>
+                  {connecting ? t('connectGoogleDrive.connecting') : t('connectGoogleDrive.button')}
+                </button>
+              </AddRow>
+            </li>
+            <li className="p-4 sm:p-5">
+              <AddRow title={t('typeLocal')} description={t('addLocal.description')}>
+                <button type="button" onClick={handleAddLocal} disabled={addingLocal} className={buttonClass.secondary}>
+                  {addingLocal ? t('addLocal.adding') : t('addLocal.button')}
+                </button>
+              </AddRow>
+            </li>
+            <li className="p-4 sm:p-5">
+              {sftpOpen ? (
+                <form onSubmit={handleAddSftp} className="space-y-3">
+                  <InfoHint hint={t('addSftp.hint')} rowClassName="font-bold">
+                    {t('addSftp.title')}
                   </InfoHint>
-                  <input
-                    id="sftpPath"
-                    spellCheck={false}
-                    value={sftp.path}
-                    onChange={(event) => setSftp({ ...sftp, path: event.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <InfoHint hint={t('addSftp.passwordHint')} rowClassName="text-sm font-medium">
-                    <label htmlFor="sftpPassword">{t('addSftp.password')}</label>
-                  </InfoHint>
-                  <input
-                    id="sftpPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    value={sftp.password}
-                    onChange={(event) => setSftp({ ...sftp, password: event.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="sftpSchedule" className="text-sm font-medium">{t('addWebhook.scheduleLabel')}</label>
-                  <select
-                    id="sftpSchedule"
-                    value={sftpSchedule}
-                    onChange={(event) => setSftpSchedule(event.target.value as BackupSchedule)}
-                    className={inputClass}
-                  >
-                    <option value="daily">{t('scheduleDaily')}</option>
-                    <option value="weekly">{t('scheduleWeekly')}</option>
-                    <option value="manual">{t('scheduleManual')}</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="submit"
-                  disabled={addingSftp || !sftp.host.trim() || !sftp.username.trim()}
-                  className={primaryButton}
-                >
-                  {addingSftp ? t('addWebhook.submitting') : t('addWebhook.submit')}
-                </button>
-                <button type="button" onClick={() => setSftpOpen(false)} disabled={addingSftp} className={secondaryButton}>
-                  {t('addWebhook.cancel')}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <>
-              <p className="mb-3 text-sm text-muted-foreground">{t('addSftp.description')}</p>
-              <button type="button" onClick={() => setSftpOpen(true)} className={primaryButton}>
-                {t('addSftp.button')}
-              </button>
-            </>
-          )}
-        </div>
-
-        <div className="rounded-lg border border-border p-4">
-          <p className="mb-3 text-sm text-muted-foreground">{t('connectGoogleDrive.description')}</p>
-          <button
-            type="button"
-            onClick={handleConnectGoogleDrive}
-            disabled={connecting}
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {connecting ? t('connectGoogleDrive.connecting') : t('connectGoogleDrive.button')}
-          </button>
-        </div>
-
-        <div className="rounded-lg border border-border p-4">
-          <p className="mb-3 text-sm text-muted-foreground">{t('addLocal.description')}</p>
-          <button
-            type="button"
-            onClick={handleAddLocal}
-            disabled={addingLocal}
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {addingLocal ? t('addLocal.adding') : t('addLocal.button')}
-          </button>
-        </div>
-
-        <div className="rounded-lg border border-border p-4">
-          {formOpen ? (
-            <form onSubmit={handleAddWebhook} className="flex flex-col gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="webhookUrl" className="text-sm font-medium">
-                  {t('addWebhook.urlLabel')}
-                </label>
-                <input
-                  id="webhookUrl"
-                  name="webhookUrl"
-                  type="url"
-                  required
-                  placeholder={t('addWebhook.urlPlaceholder')}
-                  value={webhookUrl}
-                  onChange={(event) => setWebhookUrl(event.target.value)}
-                  className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-                />
-                <p className="text-xs text-muted-foreground">{t('addWebhook.urlHint')}</p>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="webhookSchedule" className="text-sm font-medium">
-                  {t('addWebhook.scheduleLabel')}
-                </label>
-                <select
-                  id="webhookSchedule"
-                  name="webhookSchedule"
-                  value={webhookSchedule}
-                  onChange={(event) => setWebhookSchedule(event.target.value as BackupSchedule)}
-                  className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
-                >
-                  <option value="daily">{t('scheduleDaily')}</option>
-                  <option value="weekly">{t('scheduleWeekly')}</option>
-                  <option value="manual">{t('scheduleManual')}</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  type="submit"
-                  disabled={submitting || webhookUrl.trim().length === 0}
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {submitting ? t('addWebhook.submitting') : t('addWebhook.submit')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormOpen(false)}
-                  disabled={submitting}
-                  className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-                >
-                  {t('addWebhook.cancel')}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setFormOpen(true)}
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
-            >
-              {t('addWebhook.button')}
-            </button>
-          )}
-        </div>
-      </div>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_6rem]">
+                    <Field id="sftpHost" label={t('addSftp.host')}>
+                      <input
+                        id="sftpHost"
+                        required
+                        spellCheck={false}
+                        placeholder="nas.example.cz"
+                        value={sftp.host}
+                        onChange={(event) => setSftp({ ...sftp, host: event.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field id="sftpPort" label={t('addSftp.port')}>
+                      <input
+                        id="sftpPort"
+                        type="number"
+                        min={1}
+                        max={65535}
+                        value={sftp.port}
+                        onChange={(event) => setSftp({ ...sftp, port: event.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field id="sftpUsername" label={t('addSftp.username')}>
+                      <input
+                        id="sftpUsername"
+                        required
+                        spellCheck={false}
+                        autoComplete="off"
+                        value={sftp.username}
+                        onChange={(event) => setSftp({ ...sftp, username: event.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field id="sftpPath" label={t('addSftp.path')} hint={t('addSftp.pathHint')}>
+                      <input
+                        id="sftpPath"
+                        spellCheck={false}
+                        value={sftp.path}
+                        onChange={(event) => setSftp({ ...sftp, path: event.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field id="sftpPassword" label={t('addSftp.password')} hint={t('addSftp.passwordHint')}>
+                      <input
+                        id="sftpPassword"
+                        type="password"
+                        autoComplete="new-password"
+                        value={sftp.password}
+                        onChange={(event) => setSftp({ ...sftp, password: event.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field id="sftpSchedule" label={t('addWebhook.scheduleLabel')}>
+                      <select
+                        id="sftpSchedule"
+                        value={sftpSchedule}
+                        onChange={(event) => setSftpSchedule(event.target.value as BackupSchedule)}
+                        className={inputClass}
+                      >
+                        {scheduleOptions}
+                      </select>
+                    </Field>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="submit" disabled={addingSftp || !sftp.host.trim() || !sftp.username.trim()} className={buttonClass.primary}>
+                      {addingSftp ? t('addWebhook.submitting') : t('addWebhook.submit')}
+                    </button>
+                    <button type="button" onClick={() => setSftpOpen(false)} disabled={addingSftp} className={buttonClass.secondary}>
+                      {t('addWebhook.cancel')}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <AddRow title={t('typeSftp')} description={t('addSftp.description')}>
+                  <button type="button" onClick={() => setSftpOpen(true)} className={buttonClass.secondary}>
+                    {t('addSftp.button')}
+                  </button>
+                </AddRow>
+              )}
+            </li>
+            <li className="p-4 sm:p-5">
+              {formOpen ? (
+                <form onSubmit={handleAddWebhook} className="space-y-3">
+                  <p className="font-bold">{t('addWebhook.title')}</p>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_10rem]">
+                    <Field id="webhookUrl" label={t('addWebhook.urlLabel')} hint={t('addWebhook.urlHint')}>
+                      <input
+                        id="webhookUrl"
+                        name="webhookUrl"
+                        type="url"
+                        required
+                        placeholder={t('addWebhook.urlPlaceholder')}
+                        value={webhookUrl}
+                        onChange={(event) => setWebhookUrl(event.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field id="webhookSchedule" label={t('addWebhook.scheduleLabel')}>
+                      <select
+                        id="webhookSchedule"
+                        name="webhookSchedule"
+                        value={webhookSchedule}
+                        onChange={(event) => setWebhookSchedule(event.target.value as BackupSchedule)}
+                        className={inputClass}
+                      >
+                        {scheduleOptions}
+                      </select>
+                    </Field>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="submit" disabled={submitting || webhookUrl.trim().length === 0} className={buttonClass.primary}>
+                      {submitting ? t('addWebhook.submitting') : t('addWebhook.submit')}
+                    </button>
+                    <button type="button" onClick={() => setFormOpen(false)} disabled={submitting} className={buttonClass.secondary}>
+                      {t('addWebhook.cancel')}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <AddRow title={t('typeWebhook')} description={t('addWebhook.description')}>
+                  <button type="button" onClick={() => setFormOpen(true)} className={buttonClass.secondary}>
+                    {t('addWebhook.button')}
+                  </button>
+                </AddRow>
+              )}
+            </li>
+          </ul>
+        </section>
       )}
+    </div>
+  );
+}
+
+/** One way to add a destination: name and one line on the left, its button on the right (stacked on phones). */
+function AddRow({ title, description, children }: { title: string; description: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <p className="font-bold">{title}</p>
+        <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+      </div>
+      <div className="shrink-0">{children}</div>
+    </div>
+  );
+}
+
+/** Label above the control and the optional (i) beside the label, so fields side by side line up. */
+function Field({ id, label, hint, children }: { id: string; label: string; hint?: string; children: ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      {hint ? (
+        <InfoHint hint={hint} rowClassName="text-sm font-medium">
+          <label htmlFor={id}>{label}</label>
+        </InfoHint>
+      ) : (
+        <label htmlFor={id} className="block text-sm font-medium">
+          {label}
+        </label>
+      )}
+      {children}
     </div>
   );
 }

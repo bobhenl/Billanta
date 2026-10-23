@@ -41,7 +41,7 @@ export const metadata: Metadata = { robots: NOINDEX };
 /**
  * Shell for the signed-in dashboard (a route group, so no URL segment).
  *
- * Desktop: one compact 56px bar — brand, section links, language, theme,
+ * Desktop: one compact 56px bar: brand, section links, language, theme,
  * account. Phones: the bar keeps only brand + account (Spotify-style), and
  * the sections move to the fixed tab bar at the bottom (`MobileBottomNav`),
  * whose "More" sheet also carries language and theme. `.pb-tabbar` keeps

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
 import { toast } from '@/components/toaster';
 import { Link, useRouter } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
 import { completePsd2Connection } from '../actions';
 
 const KNOWN = ['psd2_state_invalid', 'psd2_auth_failed', 'psd2_no_accounts', 'psd2_not_configured', 'psd2_rejected', 'bank_unavailable', 'forbidden'];
@@ -31,11 +32,11 @@ export function Psd2Callback({ code, state, error }: { code: string | null; stat
 
   if (failure) {
     return (
-      <div className="mx-auto mt-10 max-w-lg">
+      <div className="anim-fade mx-auto mt-10 max-w-lg">
         <Banner tone="err" title={t('psd2.failedTitle')}>
           {failure}
         </Banner>
-        <Link href="/bank" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">
+        <Link href="/bank" className={`${buttonClass.secondary} mt-4`}>
           {t('psd2.back')}
         </Link>
       </div>

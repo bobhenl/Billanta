@@ -4,22 +4,25 @@ import { type FormEvent, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/navigation';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
+import { PasswordInput } from '@/components/password-input';
 
 /**
- * "Reset password" form — mirrors `(auth)/login/login-form.tsx`'s visual
+ * "Reset password" form – mirrors `(auth)/login/login-form.tsx`'s visual
  * conventions. Reads the raw reset token from the `?token=` URL search
- * param (the link from the email — see `lib/email.ts` /
+ * param (the link from the email – see `lib/email.ts` /
  * `app/api/auth/forgot-password/route.ts`) and posts `{ token, password }`
  * to `POST /api/auth/reset-password`.
  *
  * Three explicit UI states, matching this feature's brief:
- * - missing token (malformed/bookmarked link with no `?token=` at all) —
+ * - missing token (malformed/bookmarked link with no `?token=` at all) –
  *   treated the same as an invalid token, with a link back to
  *   `/forgot-password`.
- * - success — confirmation + link to `/login`.
- * - error (invalid/expired token, or any other failure) — message + link
+ * - success – confirmation + link to `/login`.
+ * - error (invalid/expired token, or any other failure) – message + link
  *   back to `/forgot-password` to request a new link. Deliberately does not
- *   distinguish "expired" from "invalid" (the API itself doesn't either —
+ *   distinguish "expired" from "invalid" (the API itself doesn't either –
  *   see that route's doc comment).
  */
 export function ResetPasswordForm() {
@@ -73,7 +76,7 @@ export function ResetPasswordForm() {
     return (
       <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
         <h1 className="text-2xl font-semibold tracking-tight text-card-foreground">{t('title')}</h1>
-        <p className="mt-4 text-sm text-destructive">{t('invalidTokenError')}</p>
+        <p role="alert" className="mt-4 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">{t('invalidTokenError')}</p>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           <Link
             href="/forgot-password"
@@ -94,7 +97,7 @@ export function ResetPasswordForm() {
         <button
           type="button"
           onClick={() => router.push('/login')}
-          className="mt-6 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+          className={cn(buttonClass.primary, 'mt-6 w-full py-2.5')}
         >
           {t('goToLogin')}
         </button>
@@ -107,22 +110,22 @@ export function ResetPasswordForm() {
       <h1 className="text-2xl font-semibold tracking-tight text-card-foreground">{t('title')}</h1>
       <p className="mt-1 text-sm text-muted-foreground">{t('subtitle')}</p>
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+      {/* POST so a submit before hydration never puts the fields in the URL. */}
+      <form method="post" className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="password" className="text-sm font-medium">
             {t('passwordLabel')}
           </label>
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             required
             minLength={8}
             autoComplete="new-password"
             placeholder={t('passwordPlaceholder')}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
         </div>
 
@@ -130,27 +133,30 @@ export function ResetPasswordForm() {
           <label htmlFor="confirmPassword" className="text-sm font-medium">
             {t('confirmPasswordLabel')}
           </label>
-          <input
+          <PasswordInput
             id="confirmPassword"
             name="confirmPassword"
-            type="password"
             required
             minLength={8}
             autoComplete="new-password"
             placeholder={t('confirmPasswordPlaceholder')}
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2"
+            className={`min-h-10 ${inputClass}`}
           />
-          {mismatch && <p className="text-sm text-destructive">{t('mismatchError')}</p>}
+          {mismatch && <p role="alert" className="text-sm text-destructive">{t('mismatchError')}</p>}
         </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p role="alert" className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
           disabled={submitting || mismatch}
-          className="mt-2 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(buttonClass.primary, 'mt-2 py-2.5')}
         >
           {t('submit')}
         </button>

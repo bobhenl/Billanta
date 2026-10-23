@@ -70,7 +70,7 @@ export default async function TeamRolesPage({ params }: { params: Promise<{ loca
   const faq = t.raw('faq') as { q: string; a: string }[];
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -88,18 +88,17 @@ export default async function TeamRolesPage({ params }: { params: Promise<{ loca
         <Link href="/features/team-and-roles" className={buttonClass.secondary}>
           {t('featureLink')}
         </Link>
-        <ShareQr />
       </PageIntro>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {ROLES.map(({ key, icon: Icon, href }) => (
           <div key={key} id={key} className="flex scroll-mt-24 flex-col rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Icon className="h-5 w-5" />
-              </span>
               <div>
-                <h2 className="font-bold">{tRoles(key)}</h2>
+                <h2 className="flex items-center gap-2 font-bold">
+                  <Icon className="h-4 w-4 shrink-0 text-primary" />
+                  {tRoles(key)}
+                </h2>
                 <p className="text-sm text-muted-foreground">{t(`cards.${key}.who`)}</p>
               </div>
             </div>
@@ -169,7 +168,7 @@ export default async function TeamRolesPage({ params }: { params: Promise<{ loca
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('demoLead')}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {DEMO_VIEW_ROLES.map((view) => (
-            <Link key={view} href={view === 'owner' ? '/demo' : { pathname: '/demo', query: { view } }} className={view === 'owner' ? buttonClass.primary : buttonClass.secondary}>
+            <Link key={view} href={view === 'owner' ? '/demo' : { pathname: '/demo', query: { view } }} className={buttonClass.secondary}>
               {tDemoRoles(`${view}.label`)}
             </Link>
           ))}
@@ -177,6 +176,8 @@ export default async function TeamRolesPage({ params }: { params: Promise<{ loca
       </div>
 
       <FaqList title={tc('faqTitle')} faq={faq} />
+
+      <ShareQr className="mt-10" />
     </section>
   );
 }

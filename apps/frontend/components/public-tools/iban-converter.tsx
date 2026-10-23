@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { czechAccountToIban, ibanToCzechAccount, isValidCzechBankAccount, isValidIban, normalizeIban } from '@faktur/cz-compliance';
-import { ResultRow, TextField } from '@/components/public-tools/fields';
+import { ResultRow, TextField, toolCard } from '@/components/public-tools/fields';
+import { cn } from '@/lib/utils';
 
 /** "CZ6508000000192000145399" → "CZ65 0800 0000 1920 0014 5399". */
 const groupIban = (iban: string) => iban.replace(/(.{4})/g, '$1 ').trim();
@@ -37,13 +38,13 @@ export function IbanConverter() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <form className="space-y-4 rounded-xl border border-border bg-card p-5" onSubmit={(e) => e.preventDefault()}>
-        <TextField label={t('fields.input')} value={input} onChange={setInput} hint={t('fields.inputHint')} />
+      <form className={cn(toolCard, 'space-y-4')} onSubmit={(e) => e.preventDefault()}>
+        <TextField label={t('fields.input')} value={input} onChange={setInput} info={t('fields.inputHint')} placeholder="19-2000145399/0800" />
       </form>
-      <section aria-live="polite" className="rounded-xl border border-border bg-card p-5">
+      <section aria-live="polite" className={toolCard}>
         {value ? (
           <>
-            <p className={`flex items-center gap-2 font-semibold ${valid ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+            <p className={cn('flex items-center gap-2 font-semibold', valid ? 'text-success' : 'text-destructive')}>
               {valid ? <CheckCircle2 className="h-5 w-5" aria-hidden="true" /> : <XCircle className="h-5 w-5" aria-hidden="true" />}
               {valid ? t('result.valid') : isIban ? t('result.invalidIban') : t('result.invalidAccount')}
             </p>

@@ -1,4 +1,5 @@
-import { Plus, ScanLine, Search } from 'lucide-react';
+import type { Metadata } from 'next';
+import { Plus, Search } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -10,6 +11,11 @@ import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
 import { EXPENSE_CATEGORIES, expenseState, type Expense, type ExpensePage } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { ExpensesTable } from './expenses-table';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('expenses');
+  return { title: t('title') };
+}
 
 const STATE_FILTERS = ['unpaid', 'overdue', 'paid'] as const;
 const DATE_FIELDS = ['expense', 'due', 'paid'] as const;
@@ -33,7 +39,7 @@ interface Filters {
 }
 
 /** The "Filtry" panel's fields. */
-const PANEL_KEYS = ['supplier', 'currency', 'vat', 'receipt', 'amount_min', 'amount_max', 'date_field', 'from', 'to'] as const;
+const PANEL_KEYS = ['category', 'supplier', 'currency', 'vat', 'receipt', 'amount_min', 'amount_max', 'date_field', 'from', 'to'] as const;
 
 function hrefWith(current: Filters, change: Filters): string {
   const params = new URLSearchParams();
@@ -159,47 +165,41 @@ export default async function ExpensesPage(props: { searchParams: Promise<Filter
 
   const chip = (active: boolean) =>
     cn(
-      'rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
+      'shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
       active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary'
     );
 
   return (
-    <div>
+    <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-muted-foreground">{t('description')}</p>
-        </div>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
         {canEdit && (
-        <div className="flex flex-wrap gap-2">
+          // The new-expense form opens with the photo/PDF reader, so one button covers both.
           <Link
             href="/expenses/new"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
-          >
-            <ScanLine className="h-4 w-4" />
-            {t('fromPhoto')}
-          </Link>
-          <Link
-            href="/expenses/new"
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
+            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
           >
             <Plus className="h-4 w-4" />
             {t('newExpense')}
           </Link>
-        </div>
         )}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      {/* Three narrow columns on a phone too: stacked, the cards filled the whole first screen. */}
+      <div className="mt-5 grid grid-cols-3 gap-2 sm:mt-6 sm:gap-3">
         {cards.map((card) => (
           <Link
             key={card.key}
             href={card.href}
-            className="rounded-xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
+            className="min-w-0 rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-primary/50 sm:p-4"
           >
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{card.label}</div>
-            <div className={cn('mt-1 text-2xl font-extrabold tabular-nums', card.tone)}>{formatMoney(card.value, home, locale)}</div>
-            <div className="mt-0.5 text-xs text-muted-foreground">{card.sub}</div>
+            <div className="truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{card.label}</div>
+            <div title={formatMoney(card.value, home, locale)} className={cn('mt-1 truncate text-sm font-extrabold tabular-nums sm:text-2xl', card.tone)}>
+              {/* Whole units on a phone: with haléře the sum no longer fits a third of the width. */}
+              <span className="sm:hidden">{new Intl.NumberFormat(locale, { style: 'currency', currency: home, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(card.value)}</span>
+              <span className="hidden sm:inline">{formatMoney(card.value, home, locale)}</span>
+            </div>
+            <div className="mt-0.5 truncate text-[11px] text-muted-foreground sm:text-xs">{card.sub}</div>
           </Link>
         ))}
       </div>
@@ -213,10 +213,11 @@ export default async function ExpensesPage(props: { searchParams: Promise<Filter
             data-page-search
             defaultValue={filters.q}
             placeholder={t('searchPlaceholder')}
-            className="w-full rounded-full border border-input bg-background py-2 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="h-10 w-full rounded-full border border-input bg-background pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </form>
-        <div className="flex flex-wrap gap-1.5">
+        {/* One swipeable row on phones instead of chips stacking into several lines. */}
+        <div className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
           <Link href={hrefWith(filters, { state: undefined })} className={chip(!filters.state)}>
             {t('allStates')}
           </Link>
@@ -225,34 +226,33 @@ export default async function ExpensesPage(props: { searchParams: Promise<Filter
               {t(`state.${state}`)}
             </Link>
           ))}
+          {filters.month && (
+            <Link href={hrefWith(filters, { month: undefined })} className={chip(true)}>
+              {filters.month} ✕
+            </Link>
+          )}
         </div>
-      </div>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        <Link href={hrefWith(filters, { category: undefined })} className={chip(!filters.category)}>
-          {t('allCategories')}
-        </Link>
-        {EXPENSE_CATEGORIES.map((c) => (
-          <Link key={c} href={hrefWith(filters, { category: c })} className={chip(filters.category === c)}>
-            {t(`category.${c}`)}
-          </Link>
-        ))}
-        {filters.month && (
-          <Link href={hrefWith(filters, { month: undefined })} className={chip(true)}>
-            {filters.month} ✕
-          </Link>
-        )}
       </div>
 
       <FilterPanel
         active={panelActive}
         keep={{
           state: filters.state,
-          category: filters.category,
           month: filters.month,
           q: filters.q
         }}
         clearHref={hrefWith(filters, Object.fromEntries(PANEL_KEYS.map((k) => [k, undefined])))}
       >
+        <FilterField label={t('columns.category')}>
+          <select name="category" defaultValue={filters.category ?? ''} className={field}>
+            <option value="">{tDoc('filters.any')}</option>
+            {EXPENSE_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {t(`category.${c}`)}
+              </option>
+            ))}
+          </select>
+        </FilterField>
         <FilterField label={t('columns.supplier')}>
           <select name="supplier" defaultValue={filters.supplier ?? ''} className={cn(field, 'max-w-[14rem]')}>
             <option value="">{tDoc('filters.any')}</option>

@@ -7,7 +7,7 @@ import type { ApiKeyListItem } from './api-keys-manager';
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: string };
 
-/** `POST /api/v1/api-keys` — the only response that ever carries the full key. */
+/** `POST /api/v1/api-keys` – the only response that ever carries the full key. */
 export async function createApiKey(name: string, readOnlyKey = false): Promise<Result<ApiKeyListItem & { key: string }>> {
   try {
     const data = await apiFetch<ApiKeyListItem & { key: string }>('/api/v1/api-keys', {
@@ -22,7 +22,7 @@ export async function createApiKey(name: string, readOnlyKey = false): Promise<R
   }
 }
 
-/** `DELETE /api/v1/api-keys/:id` — soft revoke, the row stays for the audit trail. */
+/** `DELETE /api/v1/api-keys/:id` – soft revoke, the row stays for the audit trail. */
 export async function revokeApiKey(id: string): Promise<Result<{ id: string; revokedAt: string }>> {
   try {
     const data = await apiFetch<{ id: string; revokedAt: string }>(`/api/v1/api-keys/${encodeURIComponent(id)}`, { method: 'DELETE' });

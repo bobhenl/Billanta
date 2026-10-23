@@ -4,9 +4,10 @@ import { useState, useTransition } from 'react';
 import { FilePlus2, Loader2, Pencil, RefreshCw, Star, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
-import { buttonClass, Modal } from '@/components/modal';
+import { Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import type { Contact } from '../../invoices/new/types';
 import { deleteContact, lookupAres, setContactStarred, updateContact } from '../actions';
@@ -22,7 +23,10 @@ export function ContactActions({ contact }: { contact: Contact }) {
   const canEdit = useCanWrite('contacts');
   const canInvoice = useCanWrite('invoices');
 
-  const pill = 'inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary disabled:opacity-50';
+  // Edit is icon-only on phones too, so all actions fit one row at 375px.
+  const pill = cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0 sm:w-auto sm:px-3.5');
+  // The less frequent actions are icons only, so the header stays one row on a phone.
+  const icon = cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0');
 
   const star = () =>
     startTransition(async () => {
@@ -60,11 +64,12 @@ export function ContactActions({ contact }: { contact: Contact }) {
   if (!canEdit && !canInvoice) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    // Tighter on a phone so the invoice button and the four icons share one row.
+    <div className="flex flex-wrap gap-1.5 sm:gap-2">
       {canInvoice && (
       <Link
         href={`/invoices/new?contact=${contact.id}`}
-        className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90"
+        className={cn(buttonClass.primary, 'h-10 px-3 sm:px-4')}
       >
         <FilePlus2 className="h-4 w-4" />
         {t('newInvoice')}
@@ -72,23 +77,35 @@ export function ContactActions({ contact }: { contact: Contact }) {
       )}
       {canEdit && (
       <>
-      <button type="button" className={pill} onClick={star} disabled={pending}>
-        <Star className={cn('h-4 w-4', contact.isStarred && 'fill-warning text-warning')} />
-        {contact.isStarred ? t('unstar') : t('star')}
+      <button type="button" className={pill} onClick={() => setEditing(true)} aria-label={t('edit')} title={t('edit')}>
+        <Pencil className="h-4 w-4" />
+        <span className="hidden sm:inline">{t('edit')}</span>
       </button>
-      {contact.ico && (
-        <button type="button" className={pill} onClick={refreshAres} disabled={pending}>
+      <button
+        type="button"
+        className={icon}
+        onClick={star}
+        disabled={pending}
+        aria-pressed={contact.isStarred}
+        aria-label={contact.isStarred ? t('unstar') : t('star')}
+        title={contact.isStarred ? t('unstar') : t('star')}
+      >
+        <Star className={cn('h-4 w-4', contact.isStarred && 'fill-warning text-warning')} />
+      </button>
+      {/* ARES is the Czech register; other contacts have nothing to refresh from there. */}
+      {contact.ico && (contact.addressCountry || 'CZ') === 'CZ' && (
+        <button type="button" className={icon} onClick={refreshAres} disabled={pending} aria-label={t('refreshAres')} title={t('refreshAres')}>
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          {t('refreshAres')}
         </button>
       )}
-      <button type="button" className={pill} onClick={() => setEditing(true)}>
-        <Pencil className="h-4 w-4" />
-        {t('edit')}
-      </button>
-      <button type="button" className={cn(pill, 'text-destructive hover:text-destructive')} onClick={() => setConfirmDelete(true)}>
+      <button
+        type="button"
+        className={cn(icon, 'text-destructive hover:text-destructive')}
+        onClick={() => setConfirmDelete(true)}
+        aria-label={t('delete')}
+        title={t('delete')}
+      >
         <Trash2 className="h-4 w-4" />
-        {t('delete')}
       </button>
       </>
       )}
@@ -111,10 +128,10 @@ export function ContactActions({ contact }: { contact: Contact }) {
         title={t('deleteTitle')}
         footer={
           <>
-            <button type="button" className={buttonClass.secondary} onClick={() => setConfirmDelete(false)}>
+            <button type="button" className={cn(buttonClass.secondary, 'h-10')} onClick={() => setConfirmDelete(false)}>
               {t('cancel')}
             </button>
-            <button type="button" className={buttonClass.danger} onClick={remove} disabled={pending}>
+            <button type="button" className={cn(buttonClass.danger, 'h-10')} onClick={remove} disabled={pending}>
               {pending && <Loader2 className="h-4 w-4 animate-spin" />}
               {t('delete')}
             </button>

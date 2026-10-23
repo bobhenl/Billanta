@@ -10,13 +10,14 @@ import { Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { formatMoney } from '@/lib/invoice-ui';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { formatMinutes, type Project } from '@/lib/time-ui';
 import { cn } from '@/lib/utils';
 import { createProject, deleteProject, updateProject, type ProjectInput } from './actions';
 
 const COLORS = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6', '#64748b'];
 const CURRENCIES = ['CZK', 'EUR', 'USD', 'GBP', 'PLN'];
-const field = 'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
+const field = `${inputClass} h-10`;
 const label = 'mb-1 block text-xs font-semibold text-muted-foreground';
 
 /** Projects: customer, hourly rate, colour; archive or delete. */
@@ -68,19 +69,21 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
         </h2>
         <div className="flex items-center gap-2">
           {archivedCount > 0 && (
-            <button type="button" onClick={() => setShowArchived((v) => !v)} className="text-xs font-semibold text-muted-foreground hover:text-primary">
+            <button type="button" onClick={() => setShowArchived((v) => !v)} className={cn(buttonClass.ghost, 'h-10 text-xs')}>
               {showArchived ? t('projects.hideArchived') : t('projects.showArchived', { count: archivedCount })}
             </button>
           )}
           {canEdit && (
-          <button
-            type="button"
-            onClick={() => setEditing('new')}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
-          >
-            <Plus className="h-4 w-4" />
-            {t('projects.new')}
-          </button>
+            <button
+              type="button"
+              onClick={() => setEditing('new')}
+              aria-label={t('projects.new')}
+              title={t('projects.new')}
+              className={cn(buttonClass.secondary, 'h-10 w-10 shrink-0 px-0 sm:w-auto sm:px-4')}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('projects.new')}</span>
+            </button>
           )}
         </div>
       </div>
@@ -101,14 +104,14 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
                 </div>
                 {canEdit && (
                 <div className="flex shrink-0">
-                  <button type="button" onClick={() => setEditing(p)} className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary" aria-label={t('projects.edit')}>
+                  <button type="button" onClick={() => setEditing(p)} className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-primary" aria-label={t('projects.edit')}>
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button
                     type="button"
                     disabled={pending}
                     onClick={() => act(() => updateProject(p.id, { archived: !p.archived }), p.archived ? t('projects.restored') : t('projects.archived'))}
-                    className="rounded-full p-1.5 text-muted-foreground hover:bg-accent hover:text-primary"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-primary"
                     aria-label={p.archived ? t('projects.restore') : t('projects.archive')}
                     title={p.archived ? t('projects.restore') : t('projects.archive')}
                   >
@@ -118,7 +121,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
                     type="button"
                     disabled={pending}
                     onClick={() => window.confirm(t('projects.deleteConfirm')) && act(() => deleteProject(p.id), t('projects.deleted'))}
-                    className="rounded-full p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                     aria-label={t('delete')}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -151,7 +154,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
         title={editing === 'new' ? t('projects.new') : t('projects.edit')}
         footer={
           <>
-            <button type="button" onClick={() => setEditing(null)} className="rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground hover:bg-accent">
+            <button type="button" onClick={() => setEditing(null)} className={cn(buttonClass.ghost, 'h-10')}>
               {t('cancel')}
             </button>
             <button
@@ -164,7 +167,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
                   () => setEditing(null)
                 )
               }
-              className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50"
+              className={cn(buttonClass.primary, 'h-10')}
             >
               {t('save')}
             </button>
@@ -191,7 +194,7 @@ export function ProjectsManager({ projects, contacts, home = 'CZK' }: { projects
           </label>
           <div className="grid grid-cols-3 gap-2">
             <label className="col-span-2 block">
-              <span className={label}>{t('columns.rate')} (/h)</span>
+              <span className={label}>{t('columns.rate')} ({form.currency}/h)</span>
               <input
                 className={field}
                 inputMode="decimal"

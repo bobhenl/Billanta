@@ -105,7 +105,7 @@ export function UserMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-border bg-card p-1.5 text-card-foreground shadow-lg"
+          className="anim-pop absolute right-0 z-50 mt-2 w-64 rounded-xl border border-border bg-card p-1.5 text-card-foreground shadow-lg"
         >
           <div className="flex items-center gap-2.5 border-b border-border px-2 pb-2.5 pt-1.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">

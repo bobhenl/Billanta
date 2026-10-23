@@ -53,7 +53,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
   return (
     <div className="mt-5">
       {canEdit && selected.size > 0 && (
-        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+        <div className="anim-fade mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
           <span className="font-semibold">{t('selected', { count: selected.size })}</span>
           <button
             type="button"
@@ -69,7 +69,44 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
           </button>
         </div>
       )}
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+      {/* Narrow screens get one two-line row per transaction instead of a sideways-scrolling table. */}
+      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:hidden">
+        {rows.map((tx) => {
+          const amount = Number(tx.amount);
+          return (
+            <li key={tx.id} className={cn('flex items-center gap-3 px-3 py-3', selected.has(tx.id) && 'bg-primary/5')}>
+              {canEdit && tx.status === 'unmatched' && (
+                <input
+                  type="checkbox"
+                  aria-label={tx.counterpartyName ?? t('unknownCounterparty')}
+                  className="h-5 w-5 shrink-0 accent-primary"
+                  checked={selected.has(tx.id)}
+                  onChange={() => toggle(tx.id)}
+                />
+              )}
+              <Link href={`/bank/${tx.id}`} className="flex min-w-0 flex-1 items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{tx.counterpartyName ?? t('unknownCounterparty')}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {formatDate(tx.transactionDate, locale)}
+                    {tx.variableSymbol && ` · VS ${tx.variableSymbol}`}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className={cn('text-sm font-semibold tabular-nums', amount < 0 ? 'text-destructive' : 'text-success')}>
+                    {amount > 0 && '+'}
+                    {formatMoney(amount, tx.currency, locale)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {tx.status === 'matched' && tx.invoiceNumber ? t('matchedWithInvoice', { invoiceId: tx.invoiceNumber }) : t(`status.${tx.status}`)}
+                  </p>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="hidden overflow-x-auto rounded-xl border border-border bg-card md:block">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">

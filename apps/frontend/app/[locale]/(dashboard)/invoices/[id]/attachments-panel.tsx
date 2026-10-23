@@ -166,6 +166,7 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
                 disabled={!canEdit}
                 className={toggleClass(row.sendWithEmail)}
                 title={row.sendWithEmail ? t('emailOn') : t('emailOff')}
+                aria-label={row.sendWithEmail ? t('emailOn') : t('emailOff')}
                 aria-pressed={row.sendWithEmail}
               >
                 <Mail className="h-3.5 w-3.5" />
@@ -176,19 +177,21 @@ export function AttachmentsPanel({ invoiceId, initial, portal }: { invoiceId: st
                 disabled={!canEdit}
                 className={toggleClass(row.showInPortal)}
                 title={row.showInPortal ? t('portalOn') : t('portalOff')}
+                aria-label={row.showInPortal ? t('portalOn') : t('portalOff')}
                 aria-pressed={row.showInPortal}
               >
                 <Users className="h-3.5 w-3.5" />
               </button>
               {canEdit && (
-              <button
-                type="button"
-                onClick={() => remove(row)}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground opacity-60 hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
-                title={t('delete')}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => remove(row)}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground opacity-60 hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+                  title={t('delete')}
+                  aria-label={`${t('delete')}: ${row.filename}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
               )}
             </li>
           ))}

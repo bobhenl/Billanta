@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Clock, Download, Info, Paperclip } from "lucide-react";
+import { CheckCircle2, Clock, Download, Info, Paperclip } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
@@ -24,6 +24,11 @@ import { QuoteResponse } from "./quote-response";
 import { ReportAbuse } from "./report-abuse";
 import { PayerNote } from "./payer-note";
 import { CardPayButton } from "./card-pay-button";
+import { PaymentDetails, type PaymentDetailRow } from "./payment-details";
+import { PrintButton } from "./print-button";
+import { InfoHint } from "@/components/info-hint";
+import { buttonClass } from "@/lib/ui-classes";
+import { cn } from "@/lib/utils";
 
 /**
  * Links from the bottom of the page to our own site, tagged like
@@ -44,21 +49,21 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 /**
- * Client-portal invoice view — the page a client lands on after clicking an
+ * Client-portal invoice view – the page a client lands on after clicking an
  * emailed invoice link. No auth, no dashboard chrome.
  *
  * ============================================================================
  * ROUTE PLACEMENT: `app/[locale]/i/[token]/page.tsx`, INSIDE the `[locale]`
- * segment (not a locale-independent `app/i/[token]/page.tsx`) — reasoning:
+ * segment (not a locale-independent `app/i/[token]/page.tsx`) – reasoning:
  * ============================================================================
  *   1. `middleware.ts`'s matcher (`/((?!api|trpc|_next|_vercel|.*\\..*).*)`)
  *      applies next-intl's locale-prefix redirect to essentially every path
  *      in the app. A route living outside `[locale]` would still get
  *      intercepted and redirected to `/cs/i/:token` before ever reaching a
- *      locale-less page — carving out an exception would mean editing the
+ *      locale-less page – carving out an exception would mean editing the
  *      shared middleware matcher, which every other route in the app
  *      currently relies on behaving uniformly.
- *   2. There is no root `app/layout.tsx` in this project — `<html>`/`<body>`,
+ *   2. There is no root `app/layout.tsx` in this project – `<html>`/`<body>`,
  *      the theme provider, and the `NextIntlClientProvider` are all set up
  *      once in `app/[locale]/layout.tsx`. A locale-independent route would
  *      need its own parallel root layout, duplicating that setup.
@@ -70,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
  *      is locale-agnostic (dates/amounts use `Intl` formatting against the
  *      resolved locale below); only the surrounding UI copy is translated.
  *   4. This mirrors how `app/[locale]/legal/terms` and `app/[locale]/about`
- *      are already structured: locale-prefixed, but with no dashboard nav —
+ *      are already structured: locale-prefixed, but with no dashboard nav –
  *      "public, chrome-free" and "locale-prefixed" aren't in tension
  *      anywhere else in this codebase.
  */
@@ -107,7 +112,6 @@ export default async function PublicInvoicePage({
 
   const t = await getTranslations("publicInvoice");
   const tStatus = await getTranslations("invoices.status");
-  const tApp = await getTranslations("app");
   const locale = await getLocale();
 
   const currencyFormatter = new Intl.NumberFormat(locale, {
@@ -121,17 +125,17 @@ export default async function PublicInvoicePage({
 
   // --- Payment section: SPAYD ("QR Platba") QR code -----------------------
   // Only the tenant's IBAN (from `get_public_invoice_supplier_info`, joined
-  // server-side via the invoice's public_token — see
+  // server-side via the invoice's public_token – see
   // `apps/backend/drizzle/rls-policies.sql`) is needed to build the SPAYD
   // string; `generateSpaydString` (packages/cz-compliance/src/spayd.ts)
   // encodes IBAN + amount + currency + variable symbol into the standard
   // Czech Banking Association short payment descriptor, which `qrcode`
-  // then renders as an actual scannable SVG image below — never just shown
+  // then renders as an actual scannable SVG image below – never just shown
   // as raw text, which would defeat the entire "scan to pay" point.
   //
   // Card payments go through the supplier's OWN Stripe account (Settings →
   // Způsoby úhrady → Platba kartou); `invoice.cardPayment` says whether to
-  // offer the button — see apps/backend/src/card-payments.
+  // offer the button – see apps/backend/src/card-payments.
   const remainingToPay = Math.max(0, Math.round((invoice.total - (invoice.amountPaid ?? 0)) * 100) / 100);
   let qrCodeSvg: string | null = null;
   let qrBySquare = false;
@@ -205,102 +209,223 @@ export default async function PublicInvoicePage({
     qrCodeSvg = await QRCode.toString(spayd, { type: "svg", margin: 1 });
   }
 
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-      <div className="mb-8 text-center">
-        <p className="text-sm font-medium text-muted-foreground">
-          {tApp("name")}
-        </p>
-      </div>
 
+  const paid = invoice.status === "paid";
+  const overdue =
+    invoice.status === "issued" && !invoice.quote && Boolean(invoice.dueDate) && (invoice.dueDate ?? "") < new Date().toISOString().slice(0, 10);
+  // Nothing to pay on a paid or cancelled document: no QR that would pay it twice.
+  const showPayment = !invoice.quote && !paid && invoice.status !== "cancelled";
+  const partlyPaid = invoice.status === "issued" && (invoice.amountPaid ?? 0) > 0;
+  const showVat = invoice.vatTotal > 0 || invoice.lineItems.some((i) => (i.vatRate ?? 0) > 0);
+  // "Issued" says nothing to a payer: the amount block already reads "Amount due".
+  const badge: { label: string; className: string } | null = overdue
+    ? { label: t("overdue"), className: "bg-destructive/10 text-destructive" }
+    : invoice.status === "issued" || (invoice.quote && invoice.status !== "cancelled")
+      ? null
+      : { label: tStatus(invoice.status), className: STATUS_BADGE_CLASSES[invoice.status] };
+
+  const accountNumber = supplier?.bankAccountNumber
+    ? supplier.bankAccountBankCode
+      ? `${supplier.bankAccountNumber}/${supplier.bankAccountBankCode}`
+      : supplier.bankAccountNumber
+    : null;
+  // Bank apps want a bare number in the amount field, without grouping or currency.
+  const plainAmount = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false }).format(amountToPay);
+  const paymentRows: PaymentDetailRow[] =
+    isTransfer && (iban || accountNumber)
+      ? [
+          ...(accountNumber ? [{ label: t("pay.account"), value: accountNumber, strong: true }] : []),
+          ...(iban ? [{ label: t("pay.iban"), value: iban.replace(/(.{4})(?=.)/g, "$1 "), copy: iban }] : []),
+          ...(invoice.variableSymbol ? [{ label: t("variableSymbolLabel"), value: invoice.variableSymbol, strong: true }] : []),
+          { label: t("pay.amount"), value: currencyFormatter.format(amountToPay), copy: plainAmount, strong: true },
+        ]
+      : [];
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:py-14 print:py-0" data-print-sheet>
       {invoice.demo && <PublicDemoNotice />}
 
-      <div className="relative overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-8">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-8">
         {invoice.demo && <PublicDemoNotice watermark />}
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-              {invoice.invoiceNumber
-                ? t(invoice.quote ? "quoteTitle" : "title", {
-                    number: invoice.invoiceNumber,
-                  })
-                : t("unnumbered")}
-            </h1>
-            <dl className="mt-2 grid grid-cols-[auto_auto] gap-x-3 gap-y-1 text-sm text-muted-foreground">
-              {invoice.issueDate && (
-                <>
-                  <dt>{t("issueDateLabel")}:</dt>
-                  <dd>{dateFormatter.format(new Date(invoice.issueDate))}</dd>
-                </>
-              )}
-              {invoice.dueDate && (
-                <>
-                  <dt>
-                    {t(invoice.quote ? "validUntilLabel" : "dueDateLabel")}:
-                  </dt>
-                  <dd>{dateFormatter.format(new Date(invoice.dueDate))}</dd>
-                </>
-              )}
-              {invoice.variableSymbol && (
-                <>
-                  <dt>{t("variableSymbolLabel")}:</dt>
-                  <dd className="font-mono">{invoice.variableSymbol}</dd>
-                </>
-              )}
-            </dl>
-          </div>
 
-          <span
-            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[invoice.status]}`}
-          >
-            {tStatus(invoice.status)}
-          </span>
+        {/* Who is billing comes first: the reader may never have heard of the app the link is on. */}
+        <header className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            {supplier?.companyName && <p className="break-words text-sm font-semibold text-primary">{supplier.companyName}</p>}
+            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+                {invoice.invoiceNumber
+                  ? t(invoice.quote ? "quoteTitle" : "title", { number: invoice.invoiceNumber })
+                  : t("unnumbered")}
+              </h1>
+              {badge && (
+                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}>
+                  {badge.label}
+                </span>
+              )}
+            </div>
+            {invoice.issueDate && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t("issuedOn", { date: dateFormatter.format(new Date(invoice.issueDate)) })}
+                {invoice.variableSymbol && paymentRows.length === 0 && (
+                  <>
+                    {" · "}
+                    {t("variableSymbolLabel")} <span className="font-mono">{invoice.variableSymbol}</span>
+                  </>
+                )}
+              </p>
+            )}
+          </div>
+          {/* The real document once it has a number; an unnumbered one can only be printed from the page. */}
+          {invoice.invoiceNumber ? (
+            <a
+              href={`/api/public/invoices/${token}/pdf`}
+              download
+              className={cn(buttonClass.primary, "h-10 shrink-0 px-3 sm:px-4 print:hidden")}
+              aria-label={t("downloadPdf")}
+            >
+              <Download className="h-4 w-4" />
+              <span className="sm:hidden">{t("downloadPdfShort")}</span>
+              <span className="hidden sm:inline">{t("downloadPdf")}</span>
+            </a>
+          ) : (
+            <PrintButton />
+          )}
+        </header>
+
+        <div className="mt-5 rounded-xl bg-muted/50 p-4">
+          <p className="text-sm text-muted-foreground">
+            {invoice.quote
+              ? t("quoteTotalLabel")
+              : showPayment
+                ? t(partlyPaid ? "remainingLabel" : "amountDueLabel")
+                : t("totalShortLabel")}
+          </p>
+          <p className="mt-0.5 text-3xl font-extrabold tracking-tight tabular-nums">
+            {currencyFormatter.format(showPayment ? amountToPay : invoice.total)}
+          </p>
+          {invoice.dueDate && (invoice.quote || showPayment) && (
+            <p className={`mt-1 text-sm font-semibold ${overdue ? "text-destructive" : "text-foreground"}`}>
+              {t(invoice.quote ? "validUntilOn" : "dueOn", { date: dateFormatter.format(new Date(invoice.dueDate)) })}
+            </p>
+          )}
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-sm font-semibold text-muted-foreground">
-            {t("lineItemsTitle")}
-          </h2>
-          <div className="mt-3 overflow-x-auto rounded-lg border border-border">
-            <table className="w-full min-w-[480px] border-collapse text-sm">
+        {card === "success" && (
+          <div
+            className={`mt-4 flex items-start gap-3 rounded-lg border p-4 text-sm ${cardResult === "paid" || paid ? "border-success/40 bg-success/5" : "border-border bg-muted/40"}`}
+          >
+            {cardResult === "paid" || paid ? (
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+            ) : (
+              <Clock className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+            )}
+            <p>{t(cardResult === "paid" || paid ? "card.success" : "card.processing")}</p>
+          </div>
+        )}
+        {card === "cancelled" && (
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4 text-sm">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+            <p>{t("card.cancelled")}</p>
+          </div>
+        )}
+
+        {invoice.quote && (
+          <QuoteResponse
+            token={token}
+            preview={Boolean(preview)}
+            state={invoice.quote}
+            respondedAtLabel={invoice.quote.respondedAt ? dateFormatter.format(new Date(invoice.quote.respondedAt)) : null}
+          />
+        )}
+
+        {showPayment && (
+          <section className="mt-6">
+            <h2 className="text-base font-bold">{t("paymentTitle")}</h2>
+            {invoice.cardPayment && !invoice.demo && (
+              <CardPayButton token={token} disabled={Boolean(preview)} amountLabel={currencyFormatter.format(amountToPay)} />
+            )}
+            {invoice.paymentMethodLabel && !isTransfer && (
+              <p className="mt-2 text-sm">
+                <span className="text-muted-foreground">{t("paymentMethod")}: </span>
+                <span className="font-medium">{invoice.paymentMethodLabel}</span>
+              </p>
+            )}
+            {invoice.paymentInstructions && (
+              <p className="mt-2 whitespace-pre-line break-words rounded-md bg-muted/50 px-3 py-2 text-sm">
+                {invoice.paymentInstructions
+                  .replaceAll("{number}", invoice.invoiceNumber ?? "")
+                  .replaceAll("{vs}", invoice.variableSymbol ?? "")
+                  .replaceAll("{amount}", currencyFormatter.format(invoice.total))
+                  .replaceAll("{remaining}", currencyFormatter.format(remainingToPay))}
+              </p>
+            )}
+
+            {paymentRows.length > 0 ? (
+              <div className="mt-4 grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start">
+                {/* On a phone the QR is on the screen it would be scanned with, so the copyable details come first there. */}
+                {qrCodeSvg && (
+                  <div className="order-last flex flex-col items-center gap-2 sm:order-none">
+                    <div
+                      className="h-44 w-44 shrink-0 rounded-lg bg-white p-1 [&_svg]:h-full [&_svg]:w-full"
+                      // `qrCodeSvg` is generated server-side by the trusted `qrcode`
+                      // library from a SPAYD or PAY by square string we just built above – not
+                      // user-supplied HTML – so injecting it directly is safe and
+                      // is the only way to render actual SVG markup as an image
+                      // rather than escaped text.
+                      dangerouslySetInnerHTML={{ __html: qrCodeSvg }}
+                    />
+                    <InfoHint
+                      hint={t(qrBySquare ? "paymentDisclaimerBySquare" : "paymentDisclaimer")}
+                      className="max-w-[16rem]"
+                      rowClassName="justify-center text-center text-xs text-muted-foreground"
+                    >
+                      <span>{t("paymentInstructions")}</span>
+                    </InfoHint>
+                  </div>
+                )}
+                <PaymentDetails rows={paymentRows} />
+              </div>
+            ) : isTransfer ? (
+              <p className="mt-3 text-sm text-muted-foreground">{t("noBankAccount")}</p>
+            ) : null}
+          </section>
+        )}
+
+        <section className="mt-8">
+          <h2 className="text-sm font-semibold text-muted-foreground">{t("lineItemsTitle")}</h2>
+          <div className="mt-2 overflow-x-auto rounded-lg border border-border">
+            <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/50 text-left text-muted-foreground">
-                  <th className="px-4 py-2.5 font-medium">
-                    {t("columns.description")}
-                  </th>
-                  <th className="px-4 py-2.5 text-right font-medium">
-                    {t("columns.quantity")}
-                  </th>
-                  <th className="px-4 py-2.5 text-right font-medium">
-                    {t("columns.unitPrice")}
-                  </th>
-                  <th className="px-4 py-2.5 text-right font-medium">
-                    {t("columns.vatRate")}
-                  </th>
-                  <th className="px-4 py-2.5 text-right font-medium">
-                    {t("columns.lineTotal")}
-                  </th>
+                  <th className="px-3 py-2 font-medium sm:px-4">{t("columns.description")}</th>
+                  <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">{t("columns.quantity")}</th>
+                  <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">{t("columns.unitPrice")}</th>
+                  {showVat && <th className="hidden px-4 py-2 text-right font-medium sm:table-cell">{t("columns.vatRate")}</th>}
+                  <th className="px-3 py-2 text-right font-medium sm:px-4">{t("columns.lineTotal")}</th>
                 </tr>
               </thead>
               <tbody>
                 {invoice.lineItems.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="border-b border-border last:border-b-0"
-                  >
-                    <td className="px-4 py-2.5">{item.description}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">
-                      {item.quantity}
+                  <tr key={index} className="border-b border-border align-top last:border-b-0">
+                    <td className="px-3 py-2.5 sm:px-4">
+                      <span className="break-words">{item.description}</span>
+                      {/* On a phone the quantity, unit price and VAT columns fold into one line under the name. */}
+                      <span className="mt-0.5 block text-xs text-muted-foreground tabular-nums sm:hidden">
+                        {item.quantity} × {currencyFormatter.format(item.unitPrice)}
+                        {showVat && item.vatRate != null ? ` · ${t("columns.vatRate")} ${percentFormatter.format(item.vatRate)} %` : ""}
+                      </span>
                     </td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">
+                    <td className="hidden px-4 py-2.5 text-right tabular-nums sm:table-cell">{item.quantity}</td>
+                    <td className="hidden whitespace-nowrap px-4 py-2.5 text-right tabular-nums sm:table-cell">
                       {currencyFormatter.format(item.unitPrice)}
                     </td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">
-                      {item.vatRate != null
-                        ? `${percentFormatter.format(item.vatRate)} %`
-                        : "–"}
-                    </td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">
+                    {showVat && (
+                      <td className="hidden whitespace-nowrap px-4 py-2.5 text-right tabular-nums sm:table-cell">
+                        {item.vatRate != null ? `${percentFormatter.format(item.vatRate)} %` : ""}
+                      </td>
+                    )}
+                    <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums sm:px-4">
                       {currencyFormatter.format(item.quantity * item.unitPrice)}
                     </td>
                   </tr>
@@ -309,47 +434,45 @@ export default async function PublicInvoicePage({
             </table>
           </div>
 
-          <div className="ml-auto mt-4 max-w-[280px] space-y-1.5 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>{t("subtotalLabel")}</span>
-              <span className="tabular-nums">
-                {currencyFormatter.format(invoice.subtotal)}
-              </span>
-            </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span>{t("vatTotalLabel")}</span>
-              <span className="tabular-nums">
-                {currencyFormatter.format(invoice.vatTotal)}
-              </span>
-            </div>
-            <div className="flex justify-between border-t border-border pt-1.5 text-base font-semibold">
-              <span>{t("totalLabel")}</span>
-              <span className="tabular-nums">
-                {currencyFormatter.format(invoice.total)}
-              </span>
-            </div>
-            {invoice.status === "issued" && (invoice.amountPaid ?? 0) > 0 && (
+          <div className="ml-auto mt-3 max-w-[280px] space-y-1.5 text-sm">
+            {invoice.vatTotal > 0 && (
               <>
-                <div className="flex justify-between text-success">
+                <div className="flex justify-between gap-4 text-muted-foreground">
+                  <span>{t("subtotalLabel")}</span>
+                  <span className="tabular-nums">{currencyFormatter.format(invoice.subtotal)}</span>
+                </div>
+                <div className="flex justify-between gap-4 text-muted-foreground">
+                  <span>{t("vatTotalLabel")}</span>
+                  <span className="tabular-nums">{currencyFormatter.format(invoice.vatTotal)}</span>
+                </div>
+              </>
+            )}
+            <div className={`flex justify-between gap-4 font-semibold ${invoice.vatTotal > 0 ? "border-t border-border pt-1.5" : ""}`}>
+              <span>{t(invoice.quote ? "quoteTotalLabel" : "totalShortLabel")}</span>
+              <span className="tabular-nums">{currencyFormatter.format(invoice.total)}</span>
+            </div>
+            {partlyPaid && (
+              <>
+                <div className="flex justify-between gap-4 text-success">
                   <span>{t("paidSoFarLabel")}</span>
                   <span className="tabular-nums">{currencyFormatter.format(invoice.amountPaid ?? 0)}</span>
                 </div>
-                <div className="flex justify-between font-semibold">
+                <div className="flex justify-between gap-4 font-semibold">
                   <span>{t("remainingLabel")}</span>
                   <span className="tabular-nums">{currencyFormatter.format(remainingToPay)}</span>
                 </div>
               </>
             )}
           </div>
-        </div>
+        </section>
 
         {invoice.attachments && invoice.attachments.length > 0 && (
-          <div className="mt-8">
+          <section className="mt-8">
             <h2 className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
               <Paperclip className="h-4 w-4" />
               {t("attachmentsTitle")}
             </h2>
-            <ul className="mt-3 divide-y divide-border rounded-lg border border-border">
+            <ul className="mt-2 divide-y divide-border rounded-lg border border-border">
               {invoice.attachments.map((file) => (
                 <li key={file.id}>
                   <a
@@ -357,9 +480,7 @@ export default async function PublicInvoicePage({
                     className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted/50 hover:text-primary"
                   >
                     <Download className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    <span className="min-w-0 flex-1 truncate">
-                      {file.filename}
-                    </span>
+                    <span className="min-w-0 flex-1 truncate">{file.filename}</span>
                     <span className="shrink-0 text-xs text-muted-foreground">
                       {file.sizeBytes < 1024
                         ? `${file.sizeBytes} B`
@@ -369,119 +490,31 @@ export default async function PublicInvoicePage({
                 </li>
               ))}
             </ul>
-          </div>
-        )}
-
-        {card === "success" && (
-          <div
-            className={`mt-8 flex items-start gap-3 rounded-lg border p-4 text-sm ${cardResult === "paid" || invoice.status === "paid" ? "border-success/40 bg-success/5" : "border-border bg-muted/40"}`}
-          >
-            {cardResult === "paid" || invoice.status === "paid" ? (
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
-            ) : (
-              <Clock className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-            )}
-            <p>{t(cardResult === "paid" || invoice.status === "paid" ? "card.success" : "card.processing")}</p>
-          </div>
-        )}
-        {card === "cancelled" && (
-          <div className="mt-8 flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4 text-sm">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-            <p>{t("card.cancelled")}</p>
-          </div>
+          </section>
         )}
 
         {!preview && <PayerNote token={token} />}
 
-        {invoice.quote && (
-          <QuoteResponse
-            token={token}
-            preview={Boolean(preview)}
-            state={invoice.quote}
-            respondedAtLabel={
-              invoice.quote.respondedAt
-                ? dateFormatter.format(new Date(invoice.quote.respondedAt))
-                : null
-            }
-          />
-        )}
+        {!preview && <ReportAbuse token={token} initiallyOpen={report === "1"} />}
 
-        {!invoice.quote && (
-          <div className="mt-8 rounded-lg border border-dashed border-border p-5">
-            <h2 className="text-sm font-semibold">{t("paymentTitle")}</h2>
-            {invoice.cardPayment && !invoice.demo && (
-              <CardPayButton
-                token={token}
-                disabled={Boolean(preview)}
-                amountLabel={currencyFormatter.format(remainingToPay > 0 ? remainingToPay : invoice.total)}
-              />
-            )}
-            {invoice.paymentMethodLabel && (
-              <p className="mt-2 text-sm">
-                <span className="text-muted-foreground">{t("paymentMethod")}: </span>
-                <span className="font-medium">{invoice.paymentMethodLabel}</span>
-              </p>
-            )}
-            {invoice.paymentInstructions && (
-              <p className="mt-2 whitespace-pre-line rounded-md bg-muted/50 px-3 py-2 text-sm">
-                {invoice.paymentInstructions
-                  .replaceAll("{number}", invoice.invoiceNumber ?? "")
-                  .replaceAll("{vs}", invoice.variableSymbol ?? "")
-                  .replaceAll("{amount}", currencyFormatter.format(invoice.total))
-                  .replaceAll("{remaining}", currencyFormatter.format(remainingToPay))}
-              </p>
-            )}
-
-            {qrCodeSvg ? (
-              <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-                <div
-                  className="h-48 w-48 shrink-0 [&_svg]:h-full [&_svg]:w-full"
-                  // `qrCodeSvg` is generated server-side by the trusted `qrcode`
-                  // library from a SPAYD or PAY by square string we just built above — not
-                  // user-supplied HTML — so injecting it directly is safe and
-                  // is the only way to render actual SVG markup as an image
-                  // rather than escaped text.
-                  dangerouslySetInnerHTML={{ __html: qrCodeSvg }}
-                />
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>{t("paymentInstructions")}</p>
-                  <p className="flex items-start gap-1.5">
-                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span>{t(qrBySquare ? "paymentDisclaimerBySquare" : "paymentDisclaimer")}</span>
-                  </p>
-                </div>
-              </div>
-            ) : isTransfer ? (
-              <p className="mt-3 text-sm text-muted-foreground">
-                {t("noBankAccount")}
-              </p>
-            ) : null}
-          </div>
-        )}
-
-        {!preview && <ReportAbuse token={token} initiallyOpen={report === '1'} />}
-
-        {/* Last on the page, below payment: the customer who opened the link may invoice too. */}
+        {/* Last on the page and small: the supplier's identity leads, the customer may invoice too. */}
         {invoice.brandCredit && (
-          <div className="mt-8 border-t border-border pt-5 text-center">
-            <p className="text-sm text-muted-foreground">
-              {t("cta.question")}{" "}
-              <a
-                href={siteHref(`/${locale}/signup`, invoice.brandCredit.ref, { utm_medium: "public_page" })}
-                className="font-medium text-primary hover:underline"
-              >
-                {t("cta.action", { name: SITE_NAME })}
-              </a>
-            </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              <a
-                href={siteHref(`/${locale}`, invoice.brandCredit.ref, { utm_medium: "footer", utm_content: "page" })}
-                className="hover:text-foreground hover:underline"
-              >
-                {t("madeWith", { name: SITE_NAME })}
-              </a>
-            </p>
-          </div>
+          <p className="mt-6 border-t border-border pt-4 text-center text-xs text-muted-foreground">
+            <a
+              href={siteHref(`/${locale}`, invoice.brandCredit.ref, { utm_medium: "footer", utm_content: "page" })}
+              className="hover:text-foreground hover:underline"
+            >
+              {t("madeWith", { name: SITE_NAME })}
+            </a>
+            {" · "}
+            {t("cta.question")}{" "}
+            <a
+              href={siteHref(`/${locale}/signup`, invoice.brandCredit.ref, { utm_medium: "public_page" })}
+              className="font-medium text-primary hover:underline"
+            >
+              {t("cta.action", { name: SITE_NAME })}
+            </a>
+          </p>
         )}
       </div>
     </div>

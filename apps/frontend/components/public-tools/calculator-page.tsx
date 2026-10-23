@@ -80,11 +80,11 @@ export async function CalculatorPage({
   const ctaBox =
     cta === 'invoice' ? <InvoiceCta title={ctaTitle} text={ctaText} templates={ctaTemplates} /> : <SignupCta title={ctaTitle} text={ctaText} />;
   return (
-    <section className="container py-12 sm:py-16">
+    <section className="container py-6 sm:py-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(webPageLd(locale, path, 'WebPage', t(`${k}.title`), t(`${k}.description`)))} />
       <ToolTabs kind="calculators" current={slug} />
       <ToolHeader hubHref="/calculators" hubLabel={t('menu.calculators')} name={t(`${k}.name`)} title={t(`${k}.title`)} lead={link(t(`${k}.lead`))} icon={c.icon} />
-      <div className="mt-10">{children}</div>
+      <div className="mt-6 sm:mt-8">{children}</div>
       {ctaFirst && <div className="mt-8">{ctaBox}</div>}
       <div className="mt-6">
         {disclaimer ? <ToolDisclaimer validity={validity} text={typeof disclaimer === 'string' ? disclaimer : undefined} /> : <ToolNote />}

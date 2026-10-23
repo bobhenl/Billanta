@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { AlertTriangle, CheckCircle2, FileUp, HelpCircle, RotateCcw, Sparkles, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FileText, FileUp, HelpCircle, RotateCcw, XCircle } from 'lucide-react';
 import {
   checkIsdoc,
   generateIsdocXml,
@@ -136,15 +136,15 @@ export function IsdocViewer() {
       </label>
 
       {error && (
-        <p role="alert" className="flex gap-2 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
-          <XCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <p role="alert" className="flex gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+          <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" aria-hidden="true" />
           {t(`errors.${error}`)}
         </p>
       )}
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <button type="button" className={buttonClass.secondary} disabled={busy} onClick={() => void load(new TextEncoder().encode(sampleXml()), t('sampleName'))}>
-          <Sparkles className="h-4 w-4" aria-hidden="true" />
+          <FileText className="h-4 w-4" aria-hidden="true" />
           {t('sample')}
         </button>
         <span className="text-muted-foreground">{t('privacy')}</span>
@@ -155,8 +155,8 @@ export function IsdocViewer() {
 
 const STATUS_ICON: Record<IsdocItemStatus, { icon: typeof CheckCircle2; className: string }> = {
   ok: { icon: CheckCircle2, className: 'text-primary' },
-  missing: { icon: XCircle, className: 'text-red-600 dark:text-red-400' },
-  invalid: { icon: AlertTriangle, className: 'text-amber-600 dark:text-amber-400' },
+  missing: { icon: XCircle, className: 'text-destructive' },
+  invalid: { icon: AlertTriangle, className: 'text-warning' },
   unknown: { icon: HelpCircle, className: 'text-muted-foreground' }
 };
 
@@ -201,9 +201,9 @@ function IsdocReport({
       </div>
 
       {/* Verdict first: that's what the visitor came for. */}
-      <section aria-live="polite" className={cn('rounded-xl border p-5', clean ? 'border-primary/40 bg-primary/5' : 'border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30')}>
+      <section aria-live="polite" className={cn('rounded-xl border p-5', clean ? 'border-primary/40 bg-primary/5' : 'border-warning/40 bg-warning/10')}>
         <h2 className="flex items-center gap-2 text-base font-semibold">
-          {clean ? <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" /> : <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" aria-hidden="true" />}
+          {clean ? <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" /> : <AlertTriangle className="h-5 w-5 text-warning" aria-hidden="true" />}
           {clean ? t('verdictOk') : t('verdictIssues', { missing: counts.missing, problems: check.findings.length })}
         </h2>
         {check.findings.length > 0 && (
@@ -211,9 +211,9 @@ function IsdocReport({
             {check.findings.map((f, i) => (
               <li key={`${f.code}-${i}`} className="flex gap-2">
                 {f.severity === 'error' ? (
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
+                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" aria-hidden="true" />
                 ) : (
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
                 )}
                 <span>
                   {t(`findings.${f.code}`, {
@@ -232,7 +232,7 @@ function IsdocReport({
       <InvoiceView doc={doc} amount={amount} date={date} />
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-        <div className="h-fit space-y-4 rounded-xl border border-border bg-card p-5 lg:sticky lg:top-24">
+        <div className="h-fit space-y-4 rounded-xl border border-border bg-card p-4 sm:p-5 lg:sticky lg:top-24">
           <h2 className="text-base font-semibold">{t('scenarioTitle')}</h2>
           <p className="text-xs text-muted-foreground">{t('scenarioHint')}</p>
           <ScenarioPicker value={{ ...scenario, ...check.checklist.scenario }} onChange={onScenario} />
@@ -248,7 +248,7 @@ function IsdocReport({
             }}
             rowClass={(item) => {
               const status = statusOf.get(item.id);
-              return status === 'missing' ? 'bg-red-50/60 dark:bg-red-950/20' : status === 'invalid' ? 'bg-amber-50/60 dark:bg-amber-950/20' : undefined;
+              return status === 'missing' ? 'bg-destructive/5' : status === 'invalid' ? 'bg-warning/5' : undefined;
             }}
           />
         </div>

@@ -14,6 +14,7 @@ export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; l
   const t = useTranslations('linkName');
   // Copying the link is for everyone; renaming it changes the document.
   const canEdit = useCanWrite('invoices');
+  const [renaming, setRenaming] = useState(slug !== null);
   // Same form as the {link} in e-mails (no locale: the page picks it up).
   const [base, setBase] = useState('/i/');
   useEffect(() => setBase(`${window.location.origin}/i/`), []);
@@ -40,18 +41,26 @@ export function PublicLinkPanel({ id, link, defaultLink, slug }: { id: string; l
           value={url}
           onFocus={(e) => e.currentTarget.select()}
           aria-label={t('title')}
-          className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-background px-2.5 font-mono text-xs"
+          className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 font-mono text-xs"
         />
         <button
           type="button"
           onClick={copy}
-          className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs font-semibold transition-colors hover:bg-accent hover:text-primary"
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold transition-colors hover:bg-accent hover:text-primary"
         >
-          <Copy className="h-3.5 w-3.5" />
+          <Copy className="h-4 w-4" />
           {t('copy')}
         </button>
       </div>
-      {canEdit && <LinkNameField className="mt-3" base={base} link={link} defaultLink={defaultLink} slug={slug} onSave={(s) => setInvoiceLinkName(id, s)} />}
+      {/* Renaming is rare, so it waits behind a link unless a name is already set. */}
+      {canEdit &&
+        (renaming ? (
+          <LinkNameField className="mt-3" base={base} link={link} defaultLink={defaultLink} slug={slug} onSave={(s) => setInvoiceLinkName(id, s)} />
+        ) : (
+          <button type="button" onClick={() => setRenaming(true)} className="mt-2 text-xs font-semibold text-primary hover:underline">
+            {t('rename')}
+          </button>
+        ))}
     </section>
   );
 }

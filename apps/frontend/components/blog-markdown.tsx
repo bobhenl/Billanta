@@ -41,10 +41,30 @@ function inline(text: string): ReactNode[] {
   return out;
 }
 
+/** House style is the spaced en dash; older posts were drafted with the em dash. */
+export function normalizeDashes(text: string): string {
+  return text.replace(/\s*\u2014\s*/g, ' \u2013 ');
+}
+
+function blocksOf(body: string): string[] {
+  return normalizeDashes(body.replace(/\r\n/g, '\n'))
+    .split(/\n\s*\n/)
+    .map((b) => b.trim())
+    .filter(Boolean);
+}
+
+/** The `## ` headings with the ids BlogMarkdown gives them, for a table of contents. */
+export function blogHeadings(body: string): { id: string; title: string }[] {
+  return blocksOf(body)
+    .filter((b) => b.startsWith('## '))
+    .map((b, i) => ({ id: `h${i + 1}`, title: b.slice(3).replace(/\*\*([^*]+)\*\*|\[([^\]]+)\]\([^)]*\)/g, '$1$2') }));
+}
+
 export function BlogMarkdown({ body }: { body: string }) {
-  const blocks = body.replace(/\r\n/g, '\n').split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+  const blocks = blocksOf(body);
+  let h2 = 0;
   return (
-    <div className="space-y-4 leading-relaxed">
+    <div className="space-y-4 text-base leading-7">
       {blocks.map((block, i) => {
         if (block.startsWith('### ')) {
           return (
@@ -55,7 +75,7 @@ export function BlogMarkdown({ body }: { body: string }) {
         }
         if (block.startsWith('## ')) {
           return (
-            <h2 key={i} className="pt-4 text-xl font-extrabold tracking-tight">
+            <h2 key={i} id={`h${++h2}`} className="scroll-mt-24 pt-4 text-xl font-extrabold tracking-tight">
               {inline(block.slice(3))}
             </h2>
           );

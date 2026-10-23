@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { ArrowDown, ArrowUp, Download, Loader2, Settings2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Download, Loader2, Settings2, SlidersHorizontal, X } from 'lucide-react';
 import { DragHandle, moveBy, useDragSort } from '@/components/drag-sort';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -62,6 +62,7 @@ export function PeriodReport({
   const [loading, start] = useTransition();
   const [kpiChoice, setKpiChoice] = useState<string[] | null>(savedKpis);
   const [customizing, setCustomizing] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const noExpenses = !!usage && !usage.has.expenses;
   const money = (n: number) => formatMoney(n, stats.currency, locale);
 
@@ -150,7 +151,8 @@ export function PeriodReport({
   const showTypeFilter = !usage || usage.has.proformas || usage.has.creditNotes || !!filters.documentType;
 
   const typeLabel = (type: string) => t(`docTypes.${type as (typeof REPORT_DOC_TYPES)[number]}`);
-  const select = 'rounded-md border border-border bg-background px-2 py-1 text-xs';
+  // One height for the chips, the dates and the filters, so the toolbar rows line up.
+  const select = 'h-7 rounded-md border border-border bg-background px-2 text-xs';
   const exportHref = `/api/files/exports/invoices.csv?${reportQuery(range.from, range.to, filters, { dateBy: 'supply' })}`;
 
   return (
@@ -172,7 +174,7 @@ export function PeriodReport({
             <button
               type="button"
               onClick={() => setCustomizing(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground hover:border-primary hover:text-foreground"
+              className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-semibold text-muted-foreground hover:border-primary hover:text-foreground"
             >
               <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
               {t('customize.button')}
@@ -180,7 +182,7 @@ export function PeriodReport({
             <a
               href={range.from && range.to && range.from <= range.to ? exportHref : undefined}
               download
-              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-primary hover:border-primary"
+              className="inline-flex h-7 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-semibold text-primary hover:border-primary"
               title={t('exportHint')}
             >
               <Download className="h-3.5 w-3.5" aria-hidden="true" />
@@ -190,7 +192,9 @@ export function PeriodReport({
         )}
       </div>
 
+      {/* Phones: the chips are one swipeable row, the dates go under it. */}
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <div className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:contents">
         {PERIOD_PRESETS.map((p) => (
           <button
             key={p}
@@ -201,13 +205,14 @@ export function PeriodReport({
               load(presetRange(p, new Date(), stats.earliest), filters, p === 'all');
             }}
             className={cn(
-              'rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors',
+              'h-7 shrink-0 whitespace-nowrap rounded-full border px-2.5 text-xs font-semibold transition-colors',
               preset === p ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:text-foreground'
             )}
           >
             {t(`presets.${p}`)}
           </button>
         ))}
+        </div>
         <span className="flex items-center gap-1 text-xs">
           <input
             type="date"
@@ -217,7 +222,7 @@ export function PeriodReport({
               setPreset('custom');
               load({ ...range, from: e.target.value }, filters, false);
             }}
-            className="rounded-md border border-border bg-background px-1.5 py-0.5"
+            className={select}
           />
           –
           <input
@@ -228,13 +233,29 @@ export function PeriodReport({
               setPreset('custom');
               load({ ...range, to: e.target.value }, filters, false);
             }}
-            className="rounded-md border border-border bg-background px-1.5 py-0.5"
+            className={select}
           />
         </span>
+        {!compact && (
+          // Five dropdowns would push the numbers off a phone screen; they stay open from `sm` up.
+          <button
+            type="button"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen((o) => !o)}
+            className={cn(
+              'inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-xs font-semibold sm:hidden',
+              filtersOpen || anyFilter ? 'border-primary text-primary' : 'border-border text-muted-foreground'
+            )}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+            {t('filters.label')}
+            {anyFilter && <span className="tabular-nums">({Object.values(filters).filter(Boolean).length})</span>}
+          </button>
+        )}
       </div>
 
       {!compact && (
-        <div className="mt-2 flex flex-wrap items-center gap-1.5" role="group" aria-label={t('filters.label')}>
+        <div className={cn('mt-2 flex-wrap items-center gap-1.5 sm:flex', filtersOpen ? 'flex' : 'hidden')} role="group" aria-label={t('filters.label')}>
           {showCurrencyFilter && (
             <select aria-label={t('filters.currency')} className={select} value={filters.currency ?? ''} onChange={(e) => setFilter('currency', e.target.value)}>
               <option value="">{t('filters.allCurrencies', { home })}</option>
@@ -515,7 +536,6 @@ function KpiCustomizer({
           </p>
         </div>
       )}
-      {chosen.length > 1 && <p className="mb-2 text-xs text-muted-foreground">{t('customize.orderHint')}</p>}
       <ul className="grid gap-2 text-sm sm:grid-cols-2">
         {[...chosen, ...rest].map((key) => {
           const on = chosen.includes(key);
@@ -570,7 +590,8 @@ function KpiCustomizer({
 }
 
 function Change({ now, before, invert, label }: { now: number; before: number; invert?: boolean; label: string }) {
-  if (before === 0) return <p className="text-[11px] text-muted-foreground">–</p>;
+  // Nothing to compare with: a bare dash on every card was just noise.
+  if (before === 0) return null;
   const pct = Math.round(((now - before) / Math.abs(before)) * 100);
   const good = invert ? pct <= 0 : pct >= 0;
   const Icon = pct >= 0 ? ArrowUp : ArrowDown;

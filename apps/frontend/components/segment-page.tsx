@@ -13,11 +13,11 @@ export function IconCards({ items }: { items: { icon: Icon; title: string; body:
     <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {items.map(({ icon: Icon, title, body }) => (
         <div key={title} className="rounded-xl border border-border bg-card p-5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Icon className="h-5 w-5" />
-          </span>
-          <h3 className="mt-3 font-bold">{title}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+          <h3 className="flex items-center gap-2 font-bold">
+            <Icon className="h-4 w-4 shrink-0 text-primary" />
+            {title}
+          </h3>
+          <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
         </div>
       ))}
     </div>

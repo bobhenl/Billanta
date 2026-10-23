@@ -3,6 +3,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { CookieSettingsButton } from '@/components/cookie-settings-button';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -42,6 +44,19 @@ const ROWS = [
   { name: '_clck, _clsk, CLID, ANONCHK, MR, MUID, SM', category: 'analytics', key: 'clarity' }
 ] as const;
 
+function CategoryBadge({ category, label }: { category: (typeof ROWS)[number]['category']; label: string }) {
+  return (
+    <span
+      className={cn(
+        'shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold',
+        category === 'analytics' ? 'bg-accent text-accent-foreground' : 'bg-secondary'
+      )}
+    >
+      {label}
+    </span>
+  );
+}
+
 export default async function CookiesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -59,10 +74,26 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
           ])
         ])}
       />
-      <h1 className="text-3xl font-extrabold tracking-tight">{t('title')}</h1>
-      <p className="mt-3 text-muted-foreground">{t('intro')}</p>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('intro')}</p>
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-border bg-card">
+      {/* Four columns don't fit a phone, so there each cookie is its own card. */}
+      <ul className="mt-8 space-y-3 sm:hidden">
+        {ROWS.map((row) => (
+          <li key={row.key} className="rounded-xl border border-border bg-card p-4 text-sm">
+            <div className="flex items-start justify-between gap-3">
+              <span className="min-w-0 [overflow-wrap:anywhere] font-mono text-xs">{row.name}</span>
+              <CategoryBadge category={row.category} label={t(`categories.${row.category}`)} />
+            </div>
+            <p className="mt-2 text-muted-foreground">{t(`rows.${row.key}.purpose`)}</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground">{t('columns.duration')}:</span> {t(`rows.${row.key}.duration`)}
+            </p>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-8 hidden overflow-x-auto rounded-xl border border-border bg-card sm:block">
         <table className="w-full min-w-[34rem] text-left text-sm">
           <thead className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
@@ -78,15 +109,7 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
                 <td className="px-4 py-3 font-mono text-xs">{row.name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{t(`rows.${row.key}.purpose`)}</td>
                 <td className="px-4 py-3">
-                  <span
-                    className={
-                      row.category === 'analytics'
-                        ? 'rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground'
-                        : 'rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold'
-                    }
-                  >
-                    {t(`categories.${row.category}`)}
-                  </span>
+                  <CategoryBadge category={row.category} label={t(`categories.${row.category}`)} />
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{t(`rows.${row.key}.duration`)}</td>
               </tr>
@@ -95,7 +118,7 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
         </table>
       </div>
 
-      <div className="mt-8 space-y-3 text-sm leading-relaxed text-muted-foreground">
+      <div className="mt-8 max-w-2xl space-y-3 text-[15px] leading-7 text-foreground/90">
         <p>{t('functionalNote')}</p>
         <p>{t('analyticsNote')}</p>
         <p>{t('attributionNote')}</p>
@@ -105,7 +128,7 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
 
       <CookieSettingsButton
         label={t('change')}
-        className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
+        className={cn(buttonClass.primary, 'mt-6')}
       />
     </section>
   );

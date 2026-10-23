@@ -5,6 +5,7 @@ import { Copy, Download, ExternalLink, KeyRound, RefreshCw, Trash2, UserMinus } 
 import { useFormatter, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { copyText } from '@/lib/clipboard';
@@ -112,8 +113,9 @@ export function ClassView({ detail, colleagues }: { detail: ClassDetail; colleag
 
       <section className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4">
-          <h2 className="font-bold">{t('join.title')}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t('join.body')}</p>
+          <InfoHint hint={t('join.body')}>
+            <h2 className="font-bold">{t('join.title')}</h2>
+          </InfoHint>
           <p className="mt-3 select-all font-mono text-2xl font-extrabold tracking-widest">{detail.joinCode}</p>
           <p className="mt-1 break-all text-xs text-muted-foreground">{detail.joinUrl}</p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -143,14 +145,15 @@ export function ClassView({ detail, colleagues }: { detail: ClassDetail; colleag
         </div>
 
         <div className="rounded-xl border border-border bg-card p-4">
-          <h2 className="font-bold">{t('retention.title')}</h2>
+          <InfoHint hint={t('retention.body')}>
+            <h2 className="font-bold">{t('retention.title')}</h2>
+          </InfoHint>
           <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
             <dt className="text-muted-foreground">{t('retention.endsAt')}</dt>
             <dd className="font-semibold">{date(detail.endsAt)}</dd>
             <dt className="text-muted-foreground">{t('retention.deletesAt')}</dt>
             <dd className="font-semibold">{date(detail.deletesAt)}</dd>
           </dl>
-          <p className="mt-2 text-xs text-muted-foreground">{t('retention.body')}</p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
             <input type="date" value={extendTo} onChange={(e) => setExtendTo(e.target.value)} className={`${inputClass} sm:w-44`} aria-label={t('retention.pickDate')} />
             <button

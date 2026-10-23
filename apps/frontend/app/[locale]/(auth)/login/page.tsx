@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { auth } from '@/auth';
 import { Link, redirect } from '@/i18n/navigation';
@@ -6,8 +7,13 @@ import { enabledOAuthProviders } from '@/lib/oauth-providers';
 import { ClearCachedPages } from '@/components/offline-sync';
 import { LoginForm } from './login-form';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.login');
+  return { title: t('title') };
+}
+
 /**
- * Standalone login page — mirrors `(auth)/signup/page.tsx`'s structure
+ * Standalone login page – mirrors `(auth)/signup/page.tsx`'s structure
  * exactly (same route-group trick to skip the dashboard shell, same
  * centered-card layout). Stays a plain server component; all interactivity
  * lives in `login-form.tsx`.

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { ChipRow, chipClass } from '@/components/chip-row';
 import { DirectoryJoin } from '@/components/directory-join';
 import { DirectoryListings, directoryItemListLd } from '@/components/directory-listings';
 import { fetchDirectory, isThin, townsOf } from '@/lib/business-directory';
@@ -43,7 +44,7 @@ export default async function DirectoryTradePage({ params }: Props) {
   const path = `/directory/${trade}`;
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(breadcrumbLd(locale, [[SITE_NAME, '/'], [t('title'), '/directory'], [label, path]]))} />
       {!isThin(listings) && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(directoryItemListLd(label, path, locale, listings, tradeLabel))} />}
       <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
@@ -53,8 +54,8 @@ export default async function DirectoryTradePage({ params }: Props) {
         <span className="mx-2">/</span>
         <span className="text-foreground">{label}</span>
       </nav>
-      <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{label}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t(`tradeIntro.${trade}`)}</p>
+      <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{label}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t(`tradeIntro.${trade}`)}</p>
       {listings.length > 0 && <p className="mt-6 text-sm text-muted-foreground">{t('count', { n: listings.length })}</p>}
 
       <div className="mt-3">
@@ -68,28 +69,28 @@ export default async function DirectoryTradePage({ params }: Props) {
       {towns.length > 0 && (
         <>
           <h2 className="mt-10 text-lg font-bold tracking-tight">{t('tradeTowns', { trade: label })}</h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ChipRow label={t('tradeTowns', { trade: label })} className="mt-3">
             {towns.map(({ municipality: m }) => (
               <li key={m.slug}>
-                <Link href={`/directory/town/${m.slug}`} className="inline-flex rounded-full border border-border bg-card px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+                <Link href={`/directory/town/${m.slug}`} className={chipClass}>
                   {m.name}
                 </Link>
               </li>
             ))}
-          </ul>
+          </ChipRow>
         </>
       )}
 
       <h2 className="mt-10 text-lg font-bold tracking-tight">{t('otherTrades')}</h2>
-      <ul className="mt-3 flex flex-wrap gap-2">
+      <ChipRow label={t('otherTrades')} className="mt-3">
         {DIRECTORY_TRADES.filter((k) => k !== trade).map((k) => (
           <li key={k}>
-            <Link href={`/directory/${k}`} className="inline-flex rounded-full border border-border bg-card px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+            <Link href={`/directory/${k}`} className={chipClass}>
               {tradeLabel(k)}
             </Link>
           </li>
         ))}
-      </ul>
+      </ChipRow>
 
       <DirectoryJoin />
     </section>

@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { homeCurrencyOf, lookupCzOffices, type CzOfficeTable } from '@faktur/cz-compliance';
 import czOffices from '@/data/cz-offices.json';
 import { Link } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { buttonClass } from '@/lib/ui-classes';
 import { checkedDate } from '@/lib/legislation-checked';
 import { fetchTenant } from '@/lib/tenant';
 import { SettingsHeader } from '@/components/settings-header';

@@ -44,6 +44,10 @@ export const guestInvoiceSchema = z.object({
   dueDate: date.optional(),
   currency: z.string().regex(/^[A-Z]{3}$/).default("CZK"),
   paymentMethod: z.enum(["bank_transfer", "cash", "card", "cash_on_delivery", "other"]).default("bank_transfer"),
+  /** Printed instead of the method's own name, e.g. "PayPal" on top of "other" (same as a tenant's custom method). */
+  paymentMethodLabel: optionalText(60),
+  /** Where to pay for a method without a bank account, e.g. a PayPal address or link. */
+  paymentInstructions: optionalText(300),
   variableSymbol: z
     .string()
     .regex(/^\d{0,10}$/)
@@ -62,6 +66,8 @@ export const guestInvoiceSchema = z.object({
     bankAccountNumber: optionalText(40),
     bankCode: optionalText(10),
     iban: optionalText(40),
+    /** BIC of the bank, printed next to the IBAN for payments from abroad. */
+    swift: optionalText(14),
   }),
   customer: partySchema,
   note: optionalText(2000),
@@ -113,7 +119,7 @@ export class GuestInvoicesService {
       bankAccountNumber: s.bankAccountNumber,
       bankAccountBankCode: s.bankCode,
       bankAccountIban: s.iban,
-      bankAccountSwift: null,
+      bankAccountSwift: s.swift?.toUpperCase().replace(/\s/g, "") || null,
       logoData: null,
       invoiceFormPrefs: {},
       templateVars: [],
@@ -139,6 +145,8 @@ export class GuestInvoicesService {
       dueDate: input.dueDate ?? null,
       currency: input.currency,
       paymentMethod: input.paymentMethod,
+      paymentMethodLabel: input.paymentMethodLabel,
+      paymentInstructions: input.paymentInstructions,
       variableSymbol: input.variableSymbol ?? (input.invoiceNumber.replace(/\D/g, "").slice(-10) || null),
       constantSymbol: null,
       specificSymbol: null,

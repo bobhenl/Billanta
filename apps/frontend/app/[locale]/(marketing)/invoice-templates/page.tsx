@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { ArrowRight, ListChecks } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { SignupCta } from '@/components/public-tools/parts';
 import { RemindersLink } from '@/components/public-tools/payment-reminder';
 import { TemplateTabs } from '@/components/public-tools/invoice-template';
 import { isPublishedIn, TEMPLATES } from '@/lib/public-tools';
@@ -55,9 +54,9 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(itemList)} />
       <TemplateTabs />
-      <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
-      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
-      <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('indexLead')}</p>
+      <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {templates.map((x) => {
           const Icon = x.icon;
           return (
@@ -70,8 +69,8 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-semibold group-hover:text-primary">{t(`items.${x.key}.name`)}</span>
-                  <span className="mt-1 block text-sm text-muted-foreground">{t(`items.${x.key}.lead`)}</span>
+                  <span className="block font-bold group-hover:text-primary">{t(`items.${x.key}.name`)}</span>
+                  <span className="mt-1.5 block text-sm leading-relaxed text-muted-foreground">{t(`items.${x.key}.lead`)}</span>
                 </span>
               </Link>
             </li>
@@ -80,7 +79,7 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
       </ul>
 
       <div className="mt-12 max-w-3xl">
-        <h2 className="text-xl font-semibold">{t('howTitle')}</h2>
+        <h2 className="text-xl font-bold tracking-tight">{t('howTitle')}</h2>
         <ol className="mt-4 space-y-3">
           {how.map((step, i) => (
             <li key={step} className="flex gap-3 text-sm leading-relaxed">
@@ -111,9 +110,6 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
           <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
         </Link>
         <RemindersLink />
-      </div>
-      <div className="mt-12">
-        <SignupCta />
       </div>
     </section>
   );

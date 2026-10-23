@@ -36,7 +36,7 @@ export default async function BeginnersPage({ params }: { params: Promise<{ loca
   const countries = locale === 'sk' ? (['sk', 'cz'] as const) : (['cz', 'sk'] as const);
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([

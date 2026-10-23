@@ -6,6 +6,7 @@ import sk from '@/messages/sk.json';
 import { resolveOgCard, type OgCard } from '@/lib/og-card';
 import { getPublicProfile } from '@/lib/public-profiles';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { BRAND_MARK_PNG } from '@/lib/brand-mark-data';
 
 /**
  * The Open Graph card of a public page, 1200x630, one per page and locale:
@@ -39,12 +40,6 @@ function loadFonts() {
   return fonts;
 }
 
-// The app icon (app/icon.svg), white-on-gradient so it reads on the card.
-const LOGO =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity="0.16"/><path d="M10.5 7.5h6.3a4.25 4.25 0 0 1 0 8.5H10.5zM10.5 16h7.4a4.5 4.5 0 0 1 0 9h-7.4z" fill="none" stroke="#fff" stroke-width="2.8" stroke-linejoin="round"/><circle cx="24.6" cy="8.4" r="2.6" fill="#4ade80"/></svg>'
-  );
 
 /** Cuts at a word boundary and adds an ellipsis; satori has no line clamp. */
 function clip(text: string, max: number): string {
@@ -134,8 +129,11 @@ export async function GET(
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={LOGO} width={64} height={64} alt="" />
+          {/* The coloured mark on a white tile, so it reads on the gradient. */}
+          <div style={{ display: 'flex', padding: 6, borderRadius: 16, backgroundColor: '#fff' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={BRAND_MARK_PNG} width={56} height={56} alt="" />
+          </div>
           <div style={{ fontSize: 36, fontWeight: 700 }}>{SITE_NAME}</div>
           {card.section ? (
             <div

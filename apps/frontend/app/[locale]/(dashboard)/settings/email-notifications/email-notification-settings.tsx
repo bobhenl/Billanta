@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { Loader2, Lock, MoonStar } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { Link } from '@/i18n/navigation';
 import { saveEmailPrefs } from '@/lib/email-prefs-actions';
@@ -61,7 +61,7 @@ export function EmailNotificationSettings({ prefs: initial }: { prefs: EmailPref
     quiet.end !== prefs.quietHours.end ||
     quiet.timeZone !== prefs.quietHours.timeZone;
   const zones = TIME_ZONES.includes(quiet.timeZone) ? TIME_ZONES : [quiet.timeZone, ...TIME_ZONES];
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
 
   return (
     <>
@@ -112,38 +112,45 @@ export function EmailNotificationSettings({ prefs: initial }: { prefs: EmailPref
           <Toggle on={quiet.enabled} onChange={() => setQuiet({ ...quiet, enabled: !quiet.enabled })} label={t('quiet.toggle')} />
           {t('quiet.toggle')}
         </label>
-        <div className={cn('mt-3 grid gap-3 sm:grid-cols-3', !quiet.enabled && 'opacity-60')}>
-          <label className="text-sm">
-            <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('quiet.from')}</span>
-            <input type="time" className={inputClass} value={quiet.start} disabled={!quiet.enabled} onChange={(e) => setQuiet({ ...quiet, start: e.target.value })} />
-          </label>
-          <label className="text-sm">
-            <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('quiet.to')}</span>
-            <input type="time" className={inputClass} value={quiet.end} disabled={!quiet.enabled} onChange={(e) => setQuiet({ ...quiet, end: e.target.value })} />
-          </label>
-          <label className="text-sm">
-            <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('quiet.timeZone')}</span>
-            <select className={inputClass} value={quiet.timeZone} disabled={!quiet.enabled} onChange={(e) => setQuiet({ ...quiet, timeZone: e.target.value })}>
-              {zones.map((z) => (
-                <option key={z} value={z}>
-                  {z}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <p className="mt-2 text-xs text-muted-foreground">{t('quiet.note')}</p>
-        <div className="mt-4 flex justify-end">
-          <button
-            type="button"
-            className={buttonClass.primary}
-            disabled={pending || !quietChanged || !/^\d\d:\d\d$/.test(quiet.start) || !/^\d\d:\d\d$/.test(quiet.end)}
-            onClick={() => save({ quiet_hours: { enabled: quiet.enabled, start: quiet.start, end: quiet.end, time_zone: quiet.timeZone } })}
-          >
-            {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-            {t('quiet.save')}
-          </button>
-        </div>
+        {quiet.enabled && (
+          <>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <label className="text-sm">
+                <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('quiet.from')}</span>
+                <input type="time" className={inputClass} value={quiet.start} onChange={(e) => setQuiet({ ...quiet, start: e.target.value })} />
+              </label>
+              <label className="text-sm">
+                <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('quiet.to')}</span>
+                <input type="time" className={inputClass} value={quiet.end} onChange={(e) => setQuiet({ ...quiet, end: e.target.value })} />
+              </label>
+              <label className="text-sm">
+                <span className="mb-1 block text-xs font-semibold text-muted-foreground">{t('quiet.timeZone')}</span>
+                <select className={inputClass} value={quiet.timeZone} onChange={(e) => setQuiet({ ...quiet, timeZone: e.target.value })}>
+                  {zones.map((z) => (
+                    <option key={z} value={z}>
+                      {z}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">{t('quiet.note')}</p>
+          </>
+        )}
+        {/* Switching quiet hours off still has to be saved, so the button follows the change, not the toggle. */}
+        {quietChanged && (
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              className={buttonClass.primary}
+              disabled={pending || !quietChanged || !/^\d\d:\d\d$/.test(quiet.start) || !/^\d\d:\d\d$/.test(quiet.end)}
+              onClick={() => save({ quiet_hours: { enabled: quiet.enabled, start: quiet.start, end: quiet.end, time_zone: quiet.timeZone } })}
+            >
+              {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {t('quiet.save')}
+            </button>
+          </div>
+        )}
       </section>
     </>
   );

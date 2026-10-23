@@ -77,6 +77,20 @@ function ListingCard({ listing: l }: { listing: ReviewListing }) {
   const label = (key: string, value: string) => (td.has(key) ? td(key) : value);
   const places = [...(l.regions ?? []).map((r) => label(`regions.${r}`, r)), ...(l.remote ? [td('remote')] : [])];
   const row = 'grid gap-0.5 sm:grid-cols-[9rem_1fr] sm:gap-3';
+  const services = (l.services ?? []).map((s) => label(`services.${s}`, s)).join(', ');
+  // Plain text, not links: the address is unreviewed until the admin approves it.
+  const contact = [l.contact_email, l.website].filter(Boolean).join(' · ');
+  // Empty fields are left out rather than shown as a bare dash.
+  const fields = (
+    [
+      [t('fields.places'), places.join(', ')],
+      [t('fields.services'), services],
+      [t('fields.languages'), (l.languages ?? []).join(', ')],
+      [t('fields.price'), l.price_hint ?? ''],
+      [t('fields.contact'), contact],
+      [t('partner.label'), t(`partner.status.${l.partner_status ?? 'none'}`)]
+    ] as const
+  ).filter(([, value]) => value);
 
   return (
     <li className="rounded-xl border border-border bg-card p-4">
@@ -90,33 +104,12 @@ function ListingCard({ listing: l }: { listing: ReviewListing }) {
       </p>
       {l.bio && <p className="mt-2 whitespace-pre-line text-sm">{l.bio}</p>}
       <dl className="mt-3 space-y-1.5 text-sm">
-        <div className={row}>
-          <dt className="text-muted-foreground">{t('fields.places')}</dt>
-          <dd>{places.join(', ') || '–'}</dd>
-        </div>
-        <div className={row}>
-          <dt className="text-muted-foreground">{t('fields.services')}</dt>
-          <dd>{(l.services ?? []).map((s) => label(`services.${s}`, s)).join(', ') || '–'}</dd>
-        </div>
-        <div className={row}>
-          <dt className="text-muted-foreground">{t('fields.languages')}</dt>
-          <dd>{(l.languages ?? []).join(', ') || '–'}</dd>
-        </div>
-        {l.price_hint && (
-          <div className={row}>
-            <dt className="text-muted-foreground">{t('fields.price')}</dt>
-            <dd>{l.price_hint}</dd>
+        {fields.map(([term, value]) => (
+          <div key={term} className={row}>
+            <dt className="text-muted-foreground">{term}</dt>
+            <dd className="min-w-0 [overflow-wrap:anywhere]">{value}</dd>
           </div>
-        )}
-        <div className={row}>
-          <dt className="text-muted-foreground">{t('fields.contact')}</dt>
-          {/* Plain text, not links: the address is unreviewed until the admin approves it. */}
-          <dd className="break-all">{[l.contact_email, l.website].filter(Boolean).join(' · ')}</dd>
-        </div>
-        <div className={row}>
-          <dt className="text-muted-foreground">{t('partner.label')}</dt>
-          <dd>{t(`partner.status.${l.partner_status ?? 'none'}`)}</dd>
-        </div>
+        ))}
       </dl>
       {l.status === 'withdrawn' ? (
         <p className="mt-4 text-xs text-muted-foreground">{t('withdrawnHint')}</p>

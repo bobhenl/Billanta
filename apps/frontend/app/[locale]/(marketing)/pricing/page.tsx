@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { ArrowRight, CreditCard, Gift, Landmark, Sparkles } from 'lucide-react';
+import { ArrowRight, CreditCard, Landmark } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { FaqList, faqLd } from '@/components/segment-page';
 import { ShareQr } from '@/components/share-qr';
@@ -91,23 +91,12 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
   return (
     <section className="container py-12 sm:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(structuredData)} />
+      {/* Title and one line, then straight to the cards: the trial terms,
+          VAT and the small print sit under the cards, where the prices they
+          qualify are. */}
       <div className="max-w-2xl">
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
         <p className="mt-3 text-muted-foreground">{t('lead')}</p>
-        {trial > 0 && (
-          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/[0.06] px-3 py-1 text-sm font-semibold text-primary">
-            <Gift className="h-4 w-4 shrink-0" aria-hidden="true" />
-            {t('trialNote', { days: trial, plan: t(`plans.${TRIAL_PLAN}.name`) })}
-          </p>
-        )}
-        <p className="mt-4 text-sm">
-          <Link href="/demo" className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline">
-            {tDemo('cta')}
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-          <span className="ml-2 text-muted-foreground">{tDemo('ctaHint')}</span>
-        </p>
-        <ShareQr className="mt-4" />
       </div>
 
       <PricingPlans
@@ -128,13 +117,14 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
           popular: t('popular'),
           paygNote: t.raw('paygNote') as string,
           aiCreditNote: t('aiCreditNote'),
+          notes: [...(trial > 0 ? [t('trialNote', { days: trial, plan: t(`plans.${TRIAL_PLAN}.name`) })] : []), t('vatNote')],
           transferPrice: t.raw('transferPrice') as string
         }}
         comparison={comparison}
         trial={trial > 0 ? { plan: TRIAL_PLAN, label: t('trialCard', { days: trial }) } : null}
       />
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('methods.title')}</h2>
+      <h2 className="mt-10 text-xl font-bold tracking-tight">{t('methods.title')}</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-primary/40 bg-card p-5">
           <h3 className="flex items-center gap-2 font-bold">
@@ -153,20 +143,21 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col gap-2 text-sm text-muted-foreground">
-        <p className="flex items-start gap-2">
-          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-          {t('aiKeyNote')}
-        </p>
-        <p className="text-xs">{t('vatNote')}</p>
-      </div>
-
       <FaqList title={t('faq.title')} faq={faq} />
 
-      <Link href="/compare" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-        {t('compareCompetitors')}
-        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-      </Link>
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-col gap-2 text-sm">
+          <Link href="/compare" className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline">
+            {t('compareCompetitors')}
+            <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+          </Link>
+          <Link href="/demo" className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline">
+            {tDemo('cta')}
+            <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+          </Link>
+        </div>
+        <ShareQr />
+      </div>
     </section>
   );
 }

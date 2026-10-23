@@ -1,5 +1,5 @@
 /**
- * Public company profile (`app/[locale]/p/[slug]`) — reads the backend's
+ * Public company profile (`app/[locale]/p/[slug]`) – reads the backend's
  * unauthenticated `GET /api/v1/public/profiles/:slug`. Server-side only.
  */
 const BACKEND_URL = (process.env.BACKEND_URL ?? 'http://localhost:3000').replace(/\/$/, '');
@@ -28,7 +28,7 @@ export interface PublicProfile {
   directory?: { trade: string; town: string } | null;
 }
 
-/** `null` for an unknown or unpublished slug. Cached briefly — the owner sees changes within a minute. */
+/** `null` for an unknown or unpublished slug. Cached briefly – the owner sees changes within a minute. */
 export async function getPublicProfile(slug: string): Promise<PublicProfile | null> {
   const res = await fetch(`${BACKEND_URL}/api/v1/public/profiles/${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
   if (res.status === 404) return null;

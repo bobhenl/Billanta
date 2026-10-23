@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CalendarClock, ChevronDown, ExternalLink, Inbox, Send } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { nextVatDeadlines } from '@faktur/cz-compliance';
@@ -19,14 +19,24 @@ type Channel = 'ds' | 'epo' | 'mojeDane';
  * channels Finanční správa accepts electronically (datová schránka with the
  * XML attached, EPO web form + DS login or a certificate, the MOJE daně
  * portal with bank/eObčanka identity), step by step, plus the next deadlines
- * (25th of the following month, moved to the next working day — § 33 DŘ).
+ * (25th of the following month, moved to the next working day – § 33 DŘ).
  * Informational only: nothing is sent from here.
  */
 export function EpoGuide() {
   const t = useTranslations('settings.exports.epo');
   const locale = useLocale();
   const [channel, setChannel] = useState<Channel>('ds');
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  // Reference material, folded by default; links to /settings/exports#epo (dashboard, command palette) open it.
+  useEffect(() => {
+    const sync = () => {
+      if (window.location.hash === '#epo') setOpen(true);
+    };
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
 
   // Shared with the public VAT guide (@faktur/cz-compliance nextVatDeadlines).
   const deadlines = useMemo(() => nextVatDeadlines(), []);
@@ -37,7 +47,7 @@ export function EpoGuide() {
   const link = 'inline-flex items-center gap-1 font-semibold text-primary hover:underline';
 
   return (
-    <section id="epo" className="scroll-mt-20 rounded-xl border border-border bg-card p-5">
+    <section id="epo" className="scroll-mt-20 rounded-xl border border-border bg-card p-4 sm:p-5">
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-start gap-3 text-left">
         <Send className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
         <span className="flex-1">

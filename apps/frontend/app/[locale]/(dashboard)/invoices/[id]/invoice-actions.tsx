@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition, type ReactNode } from 'react';
 import {
   Ban,
   BellRing,
   BookmarkPlus,
   CheckCircle2,
+  ChevronDown,
   Copy,
   Download,
   ExternalLink,
@@ -42,7 +43,7 @@ import {
 type Dialog = null | 'issue' | 'paid' | 'cancel' | 'delete' | 'template' | 'send' | 'remind' | 'edit' | 'rotate';
 
 /**
- * Everything one can do with a document, shown according to its state —
+ * Everything one can do with a document, shown according to its state –
  * the toolbar of the invoice detail (after Fakturoid's/iDoklad's detail).
  * A read-only member keeps only what doesn't change the document: the files
  * and the customer's view.
@@ -105,6 +106,7 @@ export function InvoiceActions({
   const num = (v: string) => Number(v.replace(/\s/g, '').replace(',', '.')) || undefined;
   const net = { fee: num(feeValue), receivedCzk: currency === home ? undefined : num(receivedValue) };
 
+  const menuItem = 'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold hover:bg-secondary disabled:opacity-60';
   const canEdit = useCanWrite('invoices');
   const isDraft = canEdit && (status === 'draft' || status === 'pending_review');
   const canPay = canEdit && status === 'issued' && documentType !== 'quote';
@@ -132,126 +134,147 @@ export function InvoiceActions({
               <Stamp className="h-4 w-4" />
               {documentType === 'quote' ? t('actions.issueQuote') : t('actions.issue')}
             </button>
-            <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary}>
+            <Link href={`/invoices/${id}/edit`} className={buttonClass.secondary} title={t('actions.edit')} aria-label={t('actions.edit')}>
               <Pencil className="h-4 w-4" />
-              {t('actions.edit')}
+              <span className="hidden sm:inline">{t('actions.edit')}</span>
             </Link>
           </>
         )}
         {/* An issued document is final by law, but people still look for
             "edit" on it: the button explains that and offers the right fix. */}
         {canEdit && !isDraft && numbered && status !== 'cancelled' && (
-          <button type="button" className={buttonClass.secondary} onClick={() => setDialog('edit')}>
+          <button type="button" className={buttonClass.secondary} title={t('actions.edit')} aria-label={t('actions.edit')} onClick={() => setDialog('edit')}>
             <Pencil className="h-4 w-4" />
-            {t('actions.edit')}
+            <span className="hidden sm:inline">{t('actions.edit')}</span>
           </button>
         )}
         {canPay && (
-          <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('paid')}>
+          <button type="button" className={buttonClass.primary} disabled={pending} title={t('actions.markPaid')} onClick={() => setDialog('paid')}>
             <CheckCircle2 className="h-4 w-4" />
-            {t('actions.markPaid')}
-          </button>
-        )}
-        {canEdit && status === 'paid' && (
-          <button
-            type="button"
-            className={buttonClass.secondary}
-            disabled={pending}
-            onClick={() => act(() => markInvoiceUnpaid(id), t('done.unpaid'))}
-          >
-            <Undo2 className="h-4 w-4" />
-            {t('actions.markUnpaid')}
+            <span className="sm:hidden">{t('actions.markPaidShort')}</span>
+            <span className="hidden sm:inline">{t('actions.markPaid')}</span>
           </button>
         )}
         {numbered && (
-          <>
-            <a href={`/api/files/invoices/${id}/pdf`} target="_blank" rel="noreferrer" className={buttonClass.secondary}>
-              <Download className="h-4 w-4" />
-              PDF
-            </a>
-            <a href={`/api/files/invoices/${id}/isdoc`} className={buttonClass.secondary}>
-              <FileCode2 className="h-4 w-4" />
-              ISDOC
-            </a>
-            {(documentType === 'invoice' || documentType === 'credit_note') && (
-              <a href={`/api/files/invoices/${id}/ubl`} title={t('actions.ublHint')} className={buttonClass.secondary}>
-                <FileCode2 className="h-4 w-4" />
-                UBL
-              </a>
-            )}
-          </>
+          <a href={`/api/files/invoices/${id}/pdf`} target="_blank" rel="noreferrer" className={buttonClass.secondary}>
+            <Download className="h-4 w-4" />
+            PDF
+          </a>
         )}
         {canEdit && numbered && status !== 'cancelled' && (
-          <button type="button" className={buttonClass.secondary} disabled={pending || !hasEmail} title={hasEmail ? undefined : t('noEmail')} onClick={() => setDialog('send')}>
+          <button
+            type="button"
+            className={buttonClass.secondary}
+            disabled={pending || !hasEmail}
+            title={hasEmail ? t('actions.send') : t('noEmail')}
+            aria-label={t('actions.send')}
+            onClick={() => setDialog('send')}
+          >
             <Send className="h-4 w-4" />
-            {t('actions.send')}
+            <span className="hidden sm:inline">{t('actions.send')}</span>
           </button>
         )}
         {canPay && overdue && (
-          <button type="button" className={buttonClass.secondary} disabled={pending || !hasEmail} title={hasEmail ? undefined : t('noEmail')} onClick={() => setDialog('remind')}>
-            <BellRing className="h-4 w-4" />
-            {t('actions.remind')}
-          </button>
-        )}
-        {conversions.map((to) => (
           <button
-            key={to}
             type="button"
             className={buttonClass.secondary}
-            disabled={pending}
-            onClick={() => act(() => convertInvoice(id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
+            disabled={pending || !hasEmail}
+            title={hasEmail ? t('actions.remind') : t('noEmail')}
+            aria-label={t('actions.remind')}
+            onClick={() => setDialog('remind')}
           >
-            <Repeat2 className="h-4 w-4" />
-            {t(`actions.convertTo.${to}`)}
-          </button>
-        ))}
-        {canEdit && (
-          <Link href={`/invoices/new?from=${id}`} className={buttonClass.ghost}>
-            <Copy className="h-4 w-4" />
-            {t('actions.duplicate')}
-          </Link>
-        )}
-        {/* Same copy, but the due date follows the default term ("Podle faktury" in the new-invoice form). */}
-        {canEdit && documentType !== 'credit_note' && (
-          <Link href={`/invoices/new?from=${id}&similar=1`} className={buttonClass.ghost}>
-            <FilePlus2 className="h-4 w-4" />
-            {t('actions.issueSimilar')}
-          </Link>
-        )}
-        {canEdit && (
-          <button type="button" className={buttonClass.ghost} onClick={() => setDialog('template')}>
-            <BookmarkPlus className="h-4 w-4" />
-            {t('actions.saveTemplate')}
+            <BellRing className="h-4 w-4" />
+            <span className="hidden sm:inline">{t('actions.remind')}</span>
           </button>
         )}
-        {numbered && (
-          <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={buttonClass.ghost}>
-            <ExternalLink className="h-4 w-4" />
-            {t('actions.publicLink')}
-          </a>
-        )}
-        {canEdit && numbered && (
-          <button type="button" className={buttonClass.ghost} onClick={() => setDialog('rotate')}>
-            <RotateCcw className="h-4 w-4" />
-            {t('actions.rotateLink')}
-          </button>
-        )}
-        {canEdit && status === 'issued' && (
-          <button type="button" className={buttonClass.ghost} onClick={() => setDialog('cancel')}>
-            <Ban className="h-4 w-4" />
-            {t('actions.cancel')}
-          </button>
-        )}
-        {isDraft && (
-          <button type="button" className={`${buttonClass.ghost} hover:text-destructive`} onClick={() => setDialog('delete')}>
-            <Trash2 className="h-4 w-4" />
-            {t('actions.delete')}
-          </button>
+        {(canEdit || numbered) && (
+          <MoreMenu label={t('actions.more')}>
+            {canEdit && status === 'paid' && (
+              <button
+                type="button"
+                className={menuItem}
+                disabled={pending}
+                onClick={() => act(() => markInvoiceUnpaid(id), t('done.unpaid'))}
+              >
+                <Undo2 className="h-4 w-4" />
+                {t('actions.markUnpaid')}
+              </button>
+            )}
+            {numbered && (
+              <>
+                <a href={`/api/files/invoices/${id}/isdoc`} className={menuItem}>
+                  <FileCode2 className="h-4 w-4" />
+                  ISDOC
+                </a>
+                {(documentType === 'invoice' || documentType === 'credit_note') && (
+                  <a href={`/api/files/invoices/${id}/ubl`} title={t('actions.ublHint')} className={menuItem}>
+                    <FileCode2 className="h-4 w-4" />
+                    UBL
+                  </a>
+                )}
+              </>
+            )}
+            {conversions.map((to) => (
+              <button
+                key={to}
+                type="button"
+                className={menuItem}
+                disabled={pending}
+                onClick={() => act(() => convertInvoice(id, to), t('done.converted'), (doc) => router.push(`/invoices/${doc.id}`))}
+              >
+                <Repeat2 className="h-4 w-4" />
+                {t(`actions.convertTo.${to}`)}
+              </button>
+            ))}
+            {canEdit && (
+              <Link href={`/invoices/new?from=${id}`} className={menuItem}>
+                <Copy className="h-4 w-4" />
+                {t('actions.duplicate')}
+              </Link>
+            )}
+            {/* Same copy, but the due date follows the default term ("Podle faktury" in the new-invoice form). */}
+            {canEdit && documentType !== 'credit_note' && (
+              <Link href={`/invoices/new?from=${id}&similar=1`} className={menuItem}>
+                <FilePlus2 className="h-4 w-4" />
+                {t('actions.issueSimilar')}
+              </Link>
+            )}
+            {canEdit && (
+              <button type="button" className={menuItem} onClick={() => setDialog('template')}>
+                <BookmarkPlus className="h-4 w-4" />
+                {t('actions.saveTemplate')}
+              </button>
+            )}
+            {numbered && (
+              <a href={`/i/${publicLink}?preview=1`} target="_blank" rel="noreferrer" className={menuItem}>
+                <ExternalLink className="h-4 w-4" />
+                {t('actions.publicLink')}
+              </a>
+            )}
+            {canEdit && numbered && (
+              <button type="button" className={menuItem} onClick={() => setDialog('rotate')}>
+                <RotateCcw className="h-4 w-4" />
+                {t('actions.rotateLink')}
+              </button>
+            )}
+            {canEdit && status === 'issued' && (
+              <button type="button" className={menuItem} onClick={() => setDialog('cancel')}>
+                <Ban className="h-4 w-4" />
+                {t('actions.cancel')}
+              </button>
+            )}
+            {isDraft && (
+              <button type="button" className={`${menuItem} hover:text-destructive`} onClick={() => setDialog('delete')}>
+                <Trash2 className="h-4 w-4" />
+                {t('actions.delete')}
+              </button>
+            )}
+          </MoreMenu>
         )}
       </div>
 
       {canEdit && editedAfterSend && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-3 text-sm dark:border-amber-500/30 dark:bg-amber-500/10">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm">
           <div className="min-w-0">
             <p className="font-semibold">{t('correction.title')}</p>
             <p className="text-muted-foreground">{t('correction.body', { date: sentAt ? new Date(sentAt).toLocaleDateString(locale) : '' })}</p>
@@ -406,9 +429,11 @@ export function InvoiceActions({
           </>
         }
       >
-        <p className="text-muted-foreground">{t('confirm.editIssuedBody')}</p>
-        {sentAt && <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">{t('correction.editNote', { date: new Date(sentAt).toLocaleDateString(locale) })}</p>}
-        {documentType === 'invoice' && <p className="mt-2 text-muted-foreground">{t('confirm.editIssuedCredit')}</p>}
+        <p className="text-muted-foreground">
+          {t('confirm.editIssuedBody')}
+          {documentType === 'invoice' && ` ${t('confirm.editIssuedCredit')}`}
+        </p>
+        {sentAt && <p className="mt-2 rounded-lg bg-warning/10 px-3 py-2 text-sm">{t('correction.editNote', { date: new Date(sentAt).toLocaleDateString(locale) })}</p>}
         {/* Typos and similar: edit in place, but the reason and every change go to the history. */}
         <div className="mt-4 rounded-xl border border-border bg-muted/40 p-3">
           <p className="text-sm font-semibold">{t('confirm.editAnywayTitle')}</p>
@@ -503,5 +528,53 @@ export function InvoiceActions({
         </label>
       </Modal>
     </>
+  );
+}
+
+/**
+ * Secondary actions behind one button, so the toolbar keeps a single primary
+ * action. A click on any entry closes it, as does a click elsewhere or Escape.
+ */
+function MoreMenu({ label, children }: { label: string; children: ReactNode }) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  // Opens to the right of the button unless that would run off a phone screen.
+  const [alignRight, setAlignRight] = useState(false);
+  useEffect(() => {
+    const close = (event: Event) => {
+      const el = ref.current;
+      if (el?.open && !(event.target instanceof Node && el.contains(event.target))) el.open = false;
+    };
+    const esc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && ref.current?.open) ref.current.open = false;
+    };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', esc);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', esc);
+    };
+  }, []);
+  return (
+    <details
+      ref={ref}
+      className="group relative"
+      onToggle={(event) => {
+        const box = event.currentTarget.getBoundingClientRect();
+        if (event.currentTarget.open) setAlignRight(box.left + 240 > document.documentElement.clientWidth - 8);
+      }}
+    >
+      <summary className={`${buttonClass.secondary} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>
+        {label}
+        <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+      </summary>
+      <div
+        onClick={(event) => {
+          if (event.target instanceof Element && event.target.closest('a,button') && ref.current) ref.current.open = false;
+        }}
+        className={`absolute ${alignRight ? 'right-0' : 'left-0'} z-20 mt-1 w-60 max-w-[calc(100vw-2rem)] space-y-0.5 rounded-xl border border-border bg-card p-1.5 shadow-lg anim-pop`}
+      >
+        {children}
+      </div>
+    </details>
   );
 }

@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowDownLeft, ArrowUpRight, FileText } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { rankCandidates, TX_STATUS_CLASSES, type BankTransactionDetail } from '@/lib/bank-ui';
@@ -45,7 +46,8 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
     [t('columns.date'), formatDate(tx.transactionDate, locale)],
     [t('columns.variableSymbol'), tx.variableSymbol],
     [t('detail.account'), tx.counterpartyAccount],
-    [t('detail.message'), tx.message ?? null],
+    // Most lines carry no message; a "–" row for it is just noise.
+    ...(tx.message ? ([[t('detail.message'), tx.message]] as [string, string][]) : []),
     [t('detail.importFile'), tx.import.filename],
     [t('detail.importedAt'), formatDate(tx.import.importedAt, locale)]
   ];
@@ -58,26 +60,26 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
       </Link>
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <span
             className={cn(
-              'inline-flex h-11 w-11 items-center justify-center rounded-full',
+              'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
               amount < 0 ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success'
             )}
           >
             {amount < 0 ? <ArrowUpRight className="h-5 w-5" /> : <ArrowDownLeft className="h-5 w-5" />}
           </span>
-          <div>
+          <div className="min-w-0">
             <h1 className="text-2xl font-extrabold tracking-tight tabular-nums">
               {amount > 0 && '+'}
               {formatMoney(amount, tx.currency, locale)}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="break-words text-sm text-muted-foreground">
               {tx.counterpartyName ?? t('unknownCounterparty')}
               {tx.fee && Number(tx.fee) > 0 && <span className="ml-2">· {t('fee', { amount: formatMoney(Number(tx.fee), tx.currency, locale) })}</span>}
             </p>
           </div>
-          <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', TX_STATUS_CLASSES[tx.status])}>{t(`status.${tx.status}`)}</span>
+          <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold', TX_STATUS_CLASSES[tx.status])}>{t(`status.${tx.status}`)}</span>
         </div>
         <TransactionActions id={tx.id} status={tx.status} />
       </div>
@@ -104,8 +106,9 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
 
           {tx.status === 'unmatched' && amount > 0 && (
             <section className="rounded-xl border border-border bg-card p-4">
-              <h2 className="font-bold">{t('detail.suggestions')}</h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">{t('detail.suggestionsHint')}</p>
+              <InfoHint hint={t('detail.suggestionsHint')} label={t('detail.suggestions')}>
+                <h2 className="font-bold">{t('detail.suggestions')}</h2>
+              </InfoHint>
               {candidates.length === 0 ? (
                 <p className="mt-4 text-sm text-muted-foreground">{t('detail.noCandidates')}</p>
               ) : (
@@ -119,13 +122,9 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                         <div className="truncate text-xs text-muted-foreground">
                           {invoice.contactName} · {t('detail.due')} {formatDate(invoice.dueDate, locale) ?? '–'}
                         </div>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {reasons.map((r) => (
-                            <span key={r} className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                              {t(`detail.reason.${r}`)}
-                            </span>
-                          ))}
-                        </div>
+                        {reasons.length > 0 && (
+                          <div className="mt-0.5 text-xs font-semibold text-primary">{reasons.map((r) => t(`detail.reason.${r}`)).join(' · ')}</div>
+                        )}
                       </div>
                       <span className="font-semibold tabular-nums">{formatMoney(invoice.total, invoice.currency, locale)}</span>
                       <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} />
@@ -146,7 +145,7 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
             {facts.map(([label, value]) => (
               <div key={label}>
                 <dt className="text-xs text-muted-foreground">{label}</dt>
-                <dd className="break-all font-semibold">{value ?? '–'}</dd>
+                <dd className="font-semibold [overflow-wrap:anywhere]">{value ?? '–'}</dd>
               </div>
             ))}
           </dl>

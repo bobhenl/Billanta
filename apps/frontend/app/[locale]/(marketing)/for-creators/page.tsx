@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { ArrowRight, Briefcase, Check, Euro, FileSignature, Globe2, Repeat, Scale, Ticket } from 'lucide-react';
+import { ArrowRight, Briefcase, Euro, FileSignature, Globe2, Repeat, Scale } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { DemoCta } from '@/components/demo/demo-cta';
+import { AudienceHero, SectionTitle } from '@/components/audience-page';
+import { CheckList } from '@/components/learn-page';
 import { contactMailto, faqLd, FaqList, IconCards } from '@/components/segment-page';
 import { ShareQr } from '@/components/share-qr';
 import { Link } from '@/i18n/navigation';
@@ -70,34 +71,16 @@ export default async function CreatorsPage({ params }: { params: Promise<{ local
           faqLd(faq)
         ])}
       />
-      <p className="text-sm font-bold uppercase tracking-wider text-primary">{t('eyebrow')}</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title')}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/signup" className={buttonClass.primary}>
-          {t('cta')}
-        </Link>
-        <Link href="/demo" className={buttonClass.secondary}>
-          {t('demo')}
-        </Link>
-        <ShareQr />
-      </div>
+      <AudienceHero title={t('title')} lead={t('lead')} primary={{ href: '/signup', label: t('cta') }} secondary={{ href: '/demo', label: t('demo') }} />
 
-      <h2 className="mt-12 text-xl font-bold tracking-tight">{t('topicsTitle')}</h2>
+      <SectionTitle title={t('topicsTitle')} />
       <IconCards items={TOPICS.map(({ icon, key }) => ({ icon, title: t(`topics.${key}.title`), body: t(`topics.${key}.body`) }))} />
 
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         <div>
           <h2 className="text-xl font-bold tracking-tight">{t('flatTax.title')}</h2>
           <p className="mt-2 text-sm text-muted-foreground">{t('flatTax.body')}</p>
-          <ul className="mt-4 space-y-2 text-sm">
-            {(t.raw('flatTax.points') as string[]).map((p) => (
-              <li key={p} className="flex gap-2">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                {p}
-              </li>
-            ))}
-          </ul>
+          <CheckList items={t.raw('flatTax.points') as string[]} className="mt-4" />
         </div>
         <div className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-lg font-bold tracking-tight">{t('linksTitle')}</h2>
@@ -114,36 +97,21 @@ export default async function CreatorsPage({ params }: { params: Promise<{ local
         </div>
       </div>
 
-      <DemoCta className="mt-12" />
-
-      <div className="mt-12 rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Ticket className="h-5 w-5" />
-        </span>
-        <h2 className="mt-3 text-xl font-bold tracking-tight">{t('partner.title')}</h2>
-        <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('partner.body')}</p>
-        <ul className="mt-4 space-y-1.5 text-sm">
-          {(t.raw('partner.points') as string[]).map((p) => (
-            <li key={p} className="flex gap-2">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-              {p}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {mailto ? (
-            <a href={mailto} className={buttonClass.primary}>
-              {t('partner.cta')}
-            </a>
-          ) : (
-            <Link href="/signup" className={buttonClass.primary}>
-              {t('cta')}
-            </Link>
-          )}
-        </div>
+      {/* A side offer for creators with an audience, so a secondary button: the page's primary action stays sign-up. */}
+      <div className="mt-12 rounded-2xl border border-border bg-card p-6">
+        <h2 className="text-xl font-bold tracking-tight">{t('partner.title')}</h2>
+        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{t('partner.body')}</p>
+        <CheckList items={t.raw('partner.points') as string[]} className="mt-4" />
+        {mailto && (
+          <a href={mailto} className={`${buttonClass.secondary} mt-5`}>
+            {t('partner.cta')}
+          </a>
+        )}
       </div>
 
       <FaqList title={t('faqTitle')} faq={faq} />
+
+      <ShareQr className="mt-10" />
     </section>
   );
 }

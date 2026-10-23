@@ -3,7 +3,7 @@
 import { useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
-import { buttonClass, inputClass } from '@/components/modal';
+import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 /**
@@ -42,7 +42,7 @@ export function FxDatePicker({ value, max, min }: { value: string | null; max: s
           min={min}
           max={max}
           required
-          className={cn(inputClass, 'mt-1.5 block w-44 tabular-nums')}
+          className={cn(inputClass, 'mt-1.5 block h-10 w-44 tabular-nums')}
         />
       </label>
       <button type="submit" disabled={pending} className={cn(buttonClass.secondary, 'h-10')}>

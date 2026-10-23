@@ -8,6 +8,7 @@ import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
+import { isReverseChargeCode } from '@faktur/cz-compliance';
 import { ExpenseActions } from './expense-actions';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -36,6 +37,8 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
   const tForm = await getTranslations('expenses.form');
   const tCat = await getTranslations('expenses.category');
   const tState = await getTranslations('expenses.state');
+  // Code names are shared with the invoice form.
+  const tRc = await getTranslations('invoiceForm.settings');
 
   let expense: Expense;
   try {
@@ -56,7 +59,10 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
 
   const amount = Number(expense.amount);
   const rate = Number(expense.vatRate);
-  const vat = vatOfGross(amount, rate);
+  // Reverse charge: the amount is the net and the self-assessed VAT comes on top (as in the form).
+  const reverseCharge = expense.reverseCharge && rate > 0;
+  const vat = reverseCharge ? Math.round(amount * rate) / 100 : vatOfGross(amount, rate);
+  const base = reverseCharge ? amount : amount - vat;
   const money = (n: number) => formatMoney(n, expense.currency, locale);
   const state = expenseState(expense);
   const supplierName = contact?.legalName ?? expense.supplierNameRaw ?? t('unknownSupplier');
@@ -68,6 +74,12 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
     [tForm('documentNumberLabel'), expense.documentNumber],
     [tForm('variableSymbolLabel'), expense.variableSymbol],
     [tForm('categoryLabel'), expense.category ? (isKnownCategory(expense.category) ? tCat(expense.category) : expense.category) : null],
+    [
+      tRc('reverseChargeCode'),
+      reverseCharge && isReverseChargeCode(expense.reverseChargeCode)
+        ? `${expense.reverseChargeCode} – ${tRc(`reverseChargeCodes.${expense.reverseChargeCode}`)}`
+        : null
+    ],
     [t('createdAt'), formatDate(expense.createdAt, locale)]
   ];
 
@@ -79,19 +91,25 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
       </Link>
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
+          {/* The badge plus the red due date is the single overdue signal;
+              a banner repeated it, and "mark paid" sits right below anyway. */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">{t('badge')}</span>
             <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{tState(state)}</span>
+            {state === 'overdue' && expense.dueDate && (
+              <span className="text-xs font-semibold text-destructive">
+                {tForm('dueDateLabel')} {formatDate(expense.dueDate, locale)}
+              </span>
+            )}
           </div>
-          <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{expense.description}</h1>
+          <h1 className="mt-2 break-words text-2xl font-extrabold tracking-tight">{expense.description}</h1>
           <p className="mt-1 text-muted-foreground">
             {supplierName}
             {expense.documentNumber && <> · {expense.documentNumber}</>}
           </p>
         </div>
-        <div className="text-right">
-          <div className="text-xs uppercase tracking-wide text-muted-foreground">{t('total')}</div>
+        <div className="sm:text-right">
+          <div className="text-xs text-muted-foreground">{reverseCharge ? tForm('amountLabelReverseCharge') : t('total')}</div>
           <div className="text-3xl font-extrabold tabular-nums">{money(amount)}</div>
         </div>
       </div>
@@ -100,34 +118,28 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
         <ExpenseActions id={expense.id} paid={Boolean(expense.paidAt)} />
       </div>
 
-      {state === 'overdue' && (
-        <Banner tone="err" className="mt-4">
-          {t('overdueBanner', { date: formatDate(expense.dueDate, locale) ?? '' })}
-        </Banner>
-      )}
-
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="space-y-4 lg:col-span-2">
-          <div className="rounded-xl border border-border bg-card p-4">
-            <h2 className="flex items-center gap-2 text-sm font-bold">
-              <Receipt className="h-4 w-4 text-primary" />
-              {t('amounts')}
-            </h2>
-            <dl className="mt-3 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg bg-muted/60 p-3">
-                <dt className="text-xs text-muted-foreground">{t('base')}</dt>
-                <dd className="mt-1 text-lg font-bold tabular-nums">{money(amount - vat)}</dd>
-              </div>
-              <div className="rounded-lg bg-muted/60 p-3">
-                <dt className="text-xs text-muted-foreground">{t('vat', { rate })}</dt>
-                <dd className="mt-1 text-lg font-bold tabular-nums">{money(vat)}</dd>
-              </div>
-              <div className="rounded-lg bg-primary/10 p-3">
-                <dt className="text-xs text-muted-foreground">{t('total')}</dt>
-                <dd className="mt-1 text-lg font-extrabold tabular-nums text-primary">{money(amount)}</dd>
-              </div>
-            </dl>
-          </div>
+          {/* Without VAT the header total says it all. */}
+          {rate > 0 && (
+            <div className="rounded-xl border border-border bg-card p-4">
+              <h2 className="flex items-center gap-2 text-sm font-bold">
+                <Receipt className="h-4 w-4 text-primary" />
+                {t('amounts')}
+              </h2>
+              <dl className="mt-3 grid grid-cols-2 gap-3">
+                <div className="min-w-0 rounded-lg bg-muted/60 p-3">
+                  <dt className="text-xs text-muted-foreground">{t('base')}</dt>
+                  <dd className="mt-1 truncate text-lg font-bold tabular-nums">{money(base)}</dd>
+                </div>
+                <div className="min-w-0 rounded-lg bg-muted/60 p-3">
+                  <dt className="text-xs text-muted-foreground">{t('vat', { rate })}</dt>
+                  <dd className="mt-1 truncate text-lg font-bold tabular-nums">{money(vat)}</dd>
+                </div>
+              </dl>
+              {reverseCharge && <p className="mt-2 text-xs text-muted-foreground">{tForm('reverseChargeLabel')}</p>}
+            </div>
+          )}
 
           {expense.note && (
             <div className="rounded-xl border border-border bg-card p-4">
@@ -171,10 +183,14 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
                     .join(', ')}
                 </div>
               )}
-              {(expense.supplierIco ?? contact?.ico) && (
+              {(expense.supplierIco ?? contact?.ico ?? expense.supplierDic ?? contact?.dic) && (
                 <div className="mt-1 text-xs text-muted-foreground">
-                  IČO {expense.supplierIco ?? contact?.ico}
-                  {(expense.supplierDic ?? contact?.dic) && <> · DIČ {expense.supplierDic ?? contact?.dic}</>}
+                  {[
+                    (expense.supplierIco ?? contact?.ico) && `IČO ${expense.supplierIco ?? contact?.ico}`,
+                    (expense.supplierDic ?? contact?.dic) && `DIČ ${expense.supplierDic ?? contact?.dic}`
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
                 </div>
               )}
             </div>
@@ -187,8 +203,8 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
                 .filter(([, value]) => value)
                 .map(([label, value]) => (
                   <div key={label} className="flex justify-between gap-3">
-                    <dt className="text-muted-foreground">{label}</dt>
-                    <dd className="text-right font-medium">{value}</dd>
+                    <dt className="shrink-0 text-muted-foreground">{label}</dt>
+                    <dd className="min-w-0 break-words text-right font-medium">{value}</dd>
                   </div>
                 ))}
             </dl>

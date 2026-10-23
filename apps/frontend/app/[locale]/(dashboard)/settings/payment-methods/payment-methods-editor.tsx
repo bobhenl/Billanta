@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { ArrowDown, ArrowUp, Loader2, Plus, Save, Sparkles, Trash2, Wallet } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, Loader2, Plus, Save, Sparkles, Trash2, Wallet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
@@ -67,7 +67,7 @@ export function PaymentMethodsEditor({ initial, readOnly }: { initial: PaymentMe
       if (result.ok) router.refresh();
     });
 
-  const card = 'mt-6 rounded-xl border border-border bg-card p-5';
+  const card = 'mt-6 rounded-xl border border-border bg-card p-4 sm:p-5';
   const chip = 'inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-xs transition-colors hover:border-primary hover:text-primary';
   const iconBtn = 'rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-primary disabled:opacity-30';
 
@@ -75,7 +75,7 @@ export function PaymentMethodsEditor({ initial, readOnly }: { initial: PaymentMe
     <>
       <section className={card}>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <InfoHint hint={t('ownHint')}>
+          <InfoHint hint={`${t('ownHint')} ${t('builtinNote')}`}>
             <h2 className="flex items-center gap-2 font-bold">
               <Wallet className="h-4 w-4 text-primary" />
               {t('ownTitle')}
@@ -85,7 +85,6 @@ export function PaymentMethodsEditor({ initial, readOnly }: { initial: PaymentMe
             {methods.length} / {MAX}
           </span>
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{t('builtinNote')}</p>
 
         <fieldset disabled={readOnly} className="mt-4 space-y-3">
           {methods.length === 0 && <p className="rounded-lg bg-muted/50 px-4 py-6 text-center text-sm text-muted-foreground">{t('empty')}</p>}
@@ -182,15 +181,19 @@ export function PaymentMethodsEditor({ initial, readOnly }: { initial: PaymentMe
         )}
       </section>
 
-      <section className={card}>
-        <h2 className="font-bold">{t('howTitle')}</h2>
+      {/* Background, not a setting: folded so the editor above is the page. */}
+      <details className={cn(card, 'group')}>
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold [&::-webkit-details-marker]:hidden">
+          {t('howTitle')}
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+        </summary>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
           <li>{t('how.form')}</li>
           <li>{t('how.pdf')}</li>
           <li>{t('how.qr')}</li>
           <li>{t('how.snapshot')}</li>
         </ul>
-      </section>
+      </details>
     </>
   );
 }

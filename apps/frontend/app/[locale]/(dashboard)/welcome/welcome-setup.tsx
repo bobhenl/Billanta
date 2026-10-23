@@ -4,13 +4,14 @@ import { useEffect, useState, useTransition } from 'react';
 import { BadgeCheck, Bot, Check, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Save, Timer, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
+import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { BUSINESS_PRESETS, presetForModules, TOGGLEABLE_MODULES, type ModuleSet, type ToggleableModule } from '@/lib/business-presets';
 import { RegistryPicker, useCompanyRegistry } from '@/components/registry-picker';
 import { Typeahead } from '@/components/typeahead';
 import { fetchContactSearch } from '@/components/company-lookup';
 import { hasSlowRegistryPart, registryForCountry, type RegistryPart } from '@/lib/company-lookup';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import { forgetGuestInvoices, readGuestInvoices, type GuestInvoiceBody } from '@/lib/guest-invoices';
 import type { AresPrefill } from '../invoices/new/types';
@@ -138,17 +139,22 @@ export function WelcomeSetup({
       router.refresh();
     });
 
-  const step = (n: number, title: string, hint?: string) => (
+  // The why of each question sits behind an (i), so the screen reads as three short questions.
+  const step = (n: number, title: string, hint: string) => (
     <div className="flex items-start gap-3">
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
         {n}
       </span>
-      <div>
+      <InfoHint hint={hint} className="min-w-0 flex-1 pt-0.5" bodyClassName="text-xs">
         <h2 className="font-bold">{title}</h2>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
-      </div>
+      </InfoHint>
     </div>
   );
+  const choice = (on: boolean) =>
+    cn(
+      'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+      on ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
+    );
 
   return (
     <div className="mx-auto max-w-2xl space-y-5 pb-10">
@@ -208,9 +214,9 @@ export function WelcomeSetup({
             {[picked.legalName, [picked.addressStreet, picked.addressCity].filter(Boolean).join(', ')].filter(Boolean).join(' · ')}
           </p>
         )}
-        <div>
-          <p className="mb-1.5 text-sm font-medium">{t('vatQuestion')}</p>
-          <div className="inline-flex rounded-lg border border-border p-0.5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-medium">{t('vatQuestion')}</p>
+          <div className="inline-flex rounded-lg border border-border p-0.5" role="group" aria-label={t('vatQuestion')}>
             {[true, false].map((v) => (
               <button
                 key={String(v)}
@@ -248,37 +254,35 @@ export function WelcomeSetup({
             </button>
           ))}
         </div>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-border bg-card p-4">
-        {step(3, t('modulesTitle'), t('modulesHint'))}
-        <div className="flex flex-wrap gap-2">
-          {TOGGLEABLE_MODULES.map((m) => {
-            const Icon = ICONS[m];
-            const on = modules[m];
-            return (
-              <button
-                key={m}
-                type="button"
-                aria-pressed={on}
-                title={tm(`items.${m}.description`)}
-                onClick={() => setModules({ ...modules, [m]: !on })}
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-                  on ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {on ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-                {tm(`items.${m}.title`)}
-              </button>
-            );
-          })}
+        {/* The modules follow the preset; this row is only for fine-tuning it, so it shares the step. */}
+        <div className="border-t border-border pt-3">
+          <InfoHint hint={t('modulesHint')} className="mb-2" bodyClassName="text-xs">
+            <p className="text-sm font-medium">{t('modulesTitle')}</p>
+          </InfoHint>
+          <div className="flex flex-wrap gap-2">
+            {TOGGLEABLE_MODULES.map((m) => {
+              const Icon = ICONS[m];
+              const on = modules[m];
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={on}
+                  title={tm(`items.${m}.description`)}
+                  onClick={() => setModules({ ...modules, [m]: !on })}
+                  className={choice(on)}
+                >
+                  {on ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                  {tm(`items.${m}.title`)}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">{t('later')}</p>
       </section>
 
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
-        {step(4, t('importTitle'), t('importHint'))}
+        {step(3, t('importTitle'), t('importHint'))}
         <div className="flex flex-wrap gap-2">
           {[{ key: null, name: t('importNone') }, ...importApps, { key: 'excel', name: t('importOther') }].map((app) => (
             <button
@@ -286,10 +290,7 @@ export function WelcomeSetup({
               type="button"
               aria-pressed={importFrom === app.key}
               onClick={() => setImportFrom(app.key)}
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-                importFrom === app.key ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
-              )}
+              className={choice(importFrom === app.key)}
             >
               {importFrom === app.key ? <Check className="h-4 w-4" /> : app.key === 'excel' && <FileSpreadsheet className="h-4 w-4" />}
               {app.name}
@@ -298,11 +299,11 @@ export function WelcomeSetup({
         </div>
       </section>
 
-      <div className="flex flex-wrap justify-end gap-2">
-        <button type="button" className={buttonClass.secondary} disabled={saving} onClick={skip}>
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <button type="button" className={cn(buttonClass.secondary, 'h-10')} disabled={saving} onClick={skip}>
           {t('skip')}
         </button>
-        <button type="button" className={buttonClass.primary} disabled={saving} onClick={finish}>
+        <button type="button" className={cn(buttonClass.primary, 'h-10')} disabled={saving} onClick={finish}>
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
           {importFrom ? t('finishImport') : t('finish')}
         </button>

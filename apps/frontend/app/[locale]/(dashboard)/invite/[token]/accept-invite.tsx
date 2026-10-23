@@ -4,8 +4,8 @@ import { useTransition } from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { buttonClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
+import { buttonClass } from '@/lib/ui-classes';
 import { acceptInvitation } from './actions';
 
 export function AcceptInvite({ token }: { token: string }) {
@@ -15,7 +15,7 @@ export function AcceptInvite({ token }: { token: string }) {
   return (
     <button
       type="button"
-      className={`${buttonClass.primary} w-full`}
+      className={`${buttonClass.primary} h-10 w-full`}
       disabled={pending}
       onClick={() =>
         startTransition(async () => {

@@ -51,13 +51,20 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
           <Pencil className="h-4 w-4" />
           {t('edit')}
         </Link>
-        <Link href={`/expenses/new?from=${id}`} className={buttonClass.ghost}>
-          <Copy className="h-4 w-4" />
-          {t('duplicate')}
+        {/* Icon-only on phones, so the toolbar stays on one row at 375px. */}
+        <Link href={`/expenses/new?from=${id}`} className={buttonClass.ghost} title={t('duplicate')} aria-label={t('duplicate')}>
+          <Copy className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline">{t('duplicate')}</span>
         </Link>
-        <button type="button" className={`${buttonClass.ghost} hover:text-destructive`} onClick={() => setDialog('delete')}>
-          <Trash2 className="h-4 w-4" />
-          {t('delete')}
+        <button
+          type="button"
+          className={`${buttonClass.ghost} hover:text-destructive`}
+          title={t('delete')}
+          aria-label={t('delete')}
+          onClick={() => setDialog('delete')}
+        >
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline">{t('delete')}</span>
         </button>
       </div>
 

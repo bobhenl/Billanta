@@ -20,6 +20,7 @@ import { REVERSE_CHARGE_CODE_VALUES, homeCurrencyOf, isReverseChargeCode, isWork
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { fieldKey, formattedVars, resolveVars } from '@/lib/custom-fields';
+import { InvoicePreview } from './invoice-preview';
 import { CopyFromInvoicePanel } from './copy-from-invoice';
 import { fetchExchangeRate, saveInvoice, suggestInvoice, suggestItems } from './actions';
 import type {
@@ -161,17 +162,17 @@ const grossOf = (net: string, rate: number) => {
 };
 const lineBase = (row: Row) => num(row.quantity) * num(row.unitPrice) * (1 - Math.min(100, Math.max(0, num(row.discount))) / 100);
 
-/** `issued`: "Přesto upravit" on an issued or paid document — needs a reason, never re-issues. */
+/** `issued`: "Přesto upravit" on an issued or paid document – needs a reason, never re-issues. */
 export type InvoiceFormMode =
   | { kind: 'create'; templateId?: string | null }
   | { kind: 'edit'; id: string; issued?: boolean; reason?: string };
 
 /**
- * The invoice form — new drafts and editing an existing one. Three ways in,
+ * The invoice form – new drafts and editing an existing one. Three ways in,
  * all ending in the same reviewed form: type it, pick from suggestions
  * (customers from your contacts + ARES, items from your past invoices), or
  * describe the invoice in a sentence and let AI pre-fill it. A draft gets its
- * number only when it is issued — either here ("Uložit a vystavit") or later
+ * number only when it is issued – either here ("Uložit a vystavit") or later
  * from its detail.
  */
 /** Ready-made custom fields; the fees are typical list prices to adjust. */
@@ -387,6 +388,26 @@ export function InvoiceForm({
   });
   const reveal = (f: OptionalField) => setShown((current) => ({ ...current, [f]: true }));
   const [collapsed, setCollapsed] = useCollapsedSections();
+  // The side preview: open by default on wide screens, closed on phones; the choice is remembered.
+  const [previewOpen, setPreviewOpen] = useState(false);
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem('invoiceForm.preview');
+      setPreviewOpen(stored ? stored === '1' : window.matchMedia('(min-width: 1280px)').matches);
+    } catch {
+      setPreviewOpen(window.matchMedia('(min-width: 1280px)').matches);
+    }
+  }, []);
+  const togglePreview = () =>
+    setPreviewOpen((open) => {
+      try {
+        window.localStorage.setItem('invoiceForm.preview', open ? '0' : '1');
+      } catch {
+        // not persisted; fine
+      }
+      return !open;
+    });
+  const [paidOpen, setPaidOpen] = useState(false);
 
   const [prefilledByAi, setPrefilledByAi] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -432,6 +453,8 @@ export function InvoiceForm({
   const paidNumber = Number(paidValue.replace(',', '.')) || 0;
   // Partial payment received up front (bitfaktura-style), as an amount or % of the total.
   const paidAmount = paidNumber > 0 ? Math.min(totals.total, Math.round((paidUnit === 'percent' ? (totals.total * paidNumber) / 100 : paidNumber) * 100) / 100) : undefined;
+  // Mirrors the backend's prepaidInFull: issuing such a document marks it paid.
+  const paidInFull = Boolean(paidAmount && totals.total > 0 && paidAmount >= totals.total - 0.005);
 
   const fieldMoney = new Intl.NumberFormat(locale, { style: 'currency', currency });
   // Numbers behind amount / % / formula custom fields, for the live preview.
@@ -851,6 +874,7 @@ export function InvoiceForm({
               role="radio"
               aria-checked={documentType === type}
               onClick={() => setDocumentType(type)}
+              title={t(`type.hint.${type}`)}
               className={cn(
                 'flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors',
                 documentType === type ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -860,7 +884,8 @@ export function InvoiceForm({
             </button>
           ))}
         </div>
-        <p className="-mt-2 px-1 text-xs text-muted-foreground">{t(`type.hint.${documentType}`)}</p>
+        {/* "Invoice" needs no explanation; the others differ from it in ways that matter. */}
+        {documentType !== 'invoice' && <p className="-mt-2 px-1 text-xs text-muted-foreground">{t(`type.hint.${documentType}`)}</p>}
 
         {/* AI pre-fill */}
         {!editing && (
@@ -877,7 +902,10 @@ export function InvoiceForm({
                 )}
               >
                 <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">{t('ai.title')}</h2>
+                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">
+                  <span className="sm:hidden">{t('ai.short')}</span>
+                  <span className="hidden sm:inline">{t('ai.title')}</span>
+                </h2>
                 <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', aiOpen && 'rotate-180')} />
               </button>
               <button
@@ -890,7 +918,10 @@ export function InvoiceForm({
                 )}
               >
                 <Copy className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">{t('copy.title')}</h2>
+                <h2 className="min-w-0 flex-1 truncate text-sm font-bold">
+                  <span className="sm:hidden">{t('copy.short')}</span>
+                  <span className="hidden sm:inline">{t('copy.title')}</span>
+                </h2>
                 <ChevronDown className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', copyOpen && 'rotate-180')} />
               </button>
             </div>
@@ -904,7 +935,6 @@ export function InvoiceForm({
                 {
               (aiUsable ? (
                 <>
-                  <p className="mt-1 text-xs text-muted-foreground">{t('ai.hint')}</p>
                   <textarea
                     value={aiText}
                     onChange={(event) => setAiText(event.target.value)}
@@ -913,7 +943,7 @@ export function InvoiceForm({
                     }}
                     rows={2}
                     placeholder={t('ai.placeholder')}
-                    className={cn(area, 'mt-3')}
+                    className={area}
                   />
                   <div className="mt-2 flex flex-wrap items-center gap-3">
                     <button
@@ -939,7 +969,9 @@ export function InvoiceForm({
                         }}
                       />
                     )}
-                    <span className="text-xs text-muted-foreground">{ai?.mode === 'own' ? t('ai.usingOwn') : t('ai.usingPlatform')}</span>
+                    <InfoHint hint={t('ai.hint')} rowClassName="text-xs text-muted-foreground">
+                      <span>{ai?.mode === 'own' ? t('ai.usingOwn') : t('ai.usingPlatform')}</span>
+                    </InfoHint>
                   </div>
                   {!offline.online && !aiError && (
                     <p className="mt-2 text-xs text-muted-foreground">{tOffline(voiceOffline ? 'voiceHint' : 'aiNeedsConnection')}</p>
@@ -966,7 +998,14 @@ export function InvoiceForm({
 
         {/* Customer */}
         <section data-field="customer" className={card}>
-          <InfoHint hint={t('customer.hint')}>
+          <InfoHint
+            hint={
+              <>
+                <p>{t('customer.hint')}</p>
+                {!issuedEdit && <p className="mt-1">{t('customer.draftWithout')}</p>}
+              </>
+            }
+          >
             <h2 className={label}>{t('customer.title')}</h2>
           </InfoHint>
           {customer ? (
@@ -1028,7 +1067,7 @@ export function InvoiceForm({
                 renderItem={(o) => {
                   const name = o.kind === 'contact' ? o.contact.legalName : o.ares.legalName;
                   const ico = o.kind === 'contact' ? o.contact.ico : o.ares.ico;
-                  // Foreign register hits have no IČO — show their VAT / registration number instead.
+                  // Foreign register hits have no IČO – show their VAT / registration number instead.
                   const foreignId = o.kind === 'ares' && !o.ares.ico ? (o.ares.dic ?? o.ares.regNumber) : null;
                   const country = o.kind === 'contact' ? o.contact.addressCountry : o.ares.addressCountry;
                   const city = [o.kind === 'contact' ? o.contact.addressCity : o.ares.addressCity, country && country !== 'CZ' ? country : null]
@@ -1049,7 +1088,6 @@ export function InvoiceForm({
               />
               <RegistryPicker value={registry} onChange={setRegistry} />
               </div>
-              {!issuedEdit && <p className="mt-2 text-xs text-muted-foreground">{t('customer.draftWithout')}</p>}
             </>
           )}
         </section>
@@ -1187,7 +1225,7 @@ export function InvoiceForm({
                     onClick={() => duplicateRow(row.key)}
                     aria-label={t('items.duplicate')}
                     title={t('items.duplicate')}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    className="inline-flex h-10 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground"
                   >
                     <Copy className="h-4 w-4" />
                   </button>
@@ -1196,7 +1234,7 @@ export function InvoiceForm({
                     onClick={() => setRows((current) => (current.length > 1 ? current.filter((r) => r.key !== row.key) : current))}
                     aria-label={t('items.remove')}
                     title={t('items.remove')}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-destructive"
+                    className="inline-flex h-10 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -1255,14 +1293,15 @@ export function InvoiceForm({
                     const value = numeric && key ? fieldVars[key] : undefined;
                     return (
                     <div key={i} className="space-y-1">
-                    <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)_5.5rem_2.25rem_2.25rem] gap-2">
+                    {/* Phones: the name gets its own line, value, type and the two icons share the next. */}
+                    <div className="grid grid-cols-[minmax(0,1fr)_5.5rem_2.25rem_2.25rem] gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_5.5rem_2.25rem_2.25rem]">
                       <input
                         aria-label={t('fields.customLabel')}
                         placeholder={t('fields.customLabel')}
                         maxLength={40}
                         value={f.label}
                         onChange={(e) => setCustomFields((cur) => cur.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
-                        className={field}
+                        className={cn(field, 'col-span-4 sm:col-span-1')}
                       />
                       <input
                         aria-label={t('fields.customValue')}
@@ -1301,6 +1340,7 @@ export function InvoiceForm({
                         type="button"
                         onClick={() => setCustomFields((cur) => cur.filter((_, j) => j !== i))}
                         aria-label={t('items.remove')}
+                        title={t('items.remove')}
                         className="inline-flex h-10 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1326,7 +1366,6 @@ export function InvoiceForm({
                     </div>
                     );
                   })}
-                  <p className="text-xs text-muted-foreground">{t('fields.customHelp')}</p>
                   <p className="text-xs leading-6 text-muted-foreground">
                     <InfoHint hint={t('fields.formulaHint')}>{t('fields.formulaVars')}</InfoHint>{' '}
                     {['base', 'vat', 'amount', 'paid', 'remaining', 'net', 'tax', 'social', 'health', 'insurance', ...companyNumberVars.map((v) => v.key)].map((k) => (
@@ -1428,6 +1467,44 @@ export function InvoiceForm({
 
       {/* Sidebar: dates, payment, settings, totals, save */}
       <aside className="grid gap-4 sm:grid-cols-2 xl:block xl:space-y-4 xl:sticky xl:top-20">
+        <section className={cn(card, 'sm:col-span-2 xl:col-span-1')}>
+          <button type="button" onClick={togglePreview} aria-expanded={previewOpen} className="flex w-full items-center gap-1.5 text-left">
+            <h2 className={cn(label, 'flex-1')}>{t('preview.title')}</h2>
+            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', previewOpen && 'rotate-180')} />
+          </button>
+          {previewOpen && (
+            <div className="mt-3">
+              <InvoicePreview
+                title={tDoc(`type.${documentType}`)}
+                customerLines={(() => {
+                  const c = customer ? (customer.kind === 'contact' ? customer.contact : customer.ares) : null;
+                  return c
+                    ? [c.legalName, [c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`].filter(Boolean).join(' · '), [c.addressStreet, [c.addressPostalCode, c.addressCity].filter(Boolean).join(' ')].filter(Boolean).join(', ')].filter(Boolean)
+                    : [];
+                })()}
+                dates={[
+                  ...(issueDate ? ([[t('dates.issue'), new Intl.DateTimeFormat(locale).format(new Date(`${issueDate}T12:00:00`))]] as [string, string][]) : []),
+                  ...(dueDate ? ([[t(isQuote ? 'dates.validUntil' : 'dates.due'), new Intl.DateTimeFormat(locale).format(new Date(`${dueDate}T12:00:00`))]] as [string, string][]) : [])
+                ]}
+                lines={rows
+                  .filter((r) => r.description.trim() || r.unitPrice)
+                  .map((r) => ({ key: r.key, description: r.description.trim() || '–', quantity: r.quantity, unit: r.unit, total: money.format(lineBase(r)) }))}
+                totals={[
+                  ...(vatPayer && !reverseCharge && totals.vat ? [{ label: t('totals.base'), value: money.format(totals.base) }, { label: t('totals.vat'), value: money.format(totals.vat) }] : []),
+                  { label: t('totals.total'), value: money.format(totals.total), strong: true }
+                ]}
+                payment={[
+                  paymentMethod === 'bank_transfer' && defaults.bankAccounts.find((a) => a.id === bankAccountId)?.line,
+                  variableSymbol && `${tDoc('fields.variableSymbol')} ${variableSymbol}`
+                ].filter((x): x is string => Boolean(x))}
+                noteAbove={noteAbove.trim()}
+                noteBelow={noteBelow.trim()}
+                labels={{ customer: t('customer.title'), empty: t('preview.empty'), noCustomer: t('preview.noCustomer') }}
+              />
+            </div>
+          )}
+        </section>
+
         <Collapsible id="dates" title={t('dates.title')} collapsed={collapsed} onToggle={setCollapsed} className={card} labelClass={label}>
           <label data-field="issueDate" className="block space-y-1.5">
             <span className="text-sm font-medium">{t('dates.issue')}</span>
@@ -1435,9 +1512,10 @@ export function InvoiceForm({
           </label>
           {vatPayer && !isQuote && shown.taxableSupplyDate && (
             <label data-field="taxableSupplyDate" className="block space-y-1.5">
-              <span className="text-sm font-medium">{t('dates.taxableSupply')}</span>
+              <InfoHint hint={t('dates.taxableSupplyHint')}>
+                <span className="text-sm font-medium">{t('dates.taxableSupply')}</span>
+              </InfoHint>
               <input type="date" value={taxableSupplyDate} onChange={(event) => setTaxableSupplyDate(event.target.value)} className={field} />
-              <span className="block text-xs text-muted-foreground">{t('dates.taxableSupplyHint')}</span>
             </label>
           )}
           <div data-field="dueDate" className="space-y-1.5">
@@ -1655,15 +1733,16 @@ export function InvoiceForm({
           {vatPayer && (
             <label data-field="reverseCharge" className="flex items-start gap-2.5 text-sm">
               <input type="checkbox" checked={reverseCharge} onChange={(e) => setReverseCharge(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primary" />
-              <span>
+              <InfoHint hint={t('settings.reverseChargeHint')}>
                 <span className="font-medium">{t('settings.reverseCharge')}</span>
-                <span className="block text-xs text-muted-foreground">{t('settings.reverseChargeHint')}</span>
-              </span>
+              </InfoHint>
             </label>
           )}
           {domesticReverseCharge && (
             <label data-field="reverseChargeCode" className="block space-y-1.5">
-              <span className="text-sm font-medium">{t('settings.reverseChargeCode')}</span>
+              <InfoHint hint={t('settings.reverseChargeCodeHint')}>
+                <span className="text-sm font-medium">{t('settings.reverseChargeCode')}</span>
+              </InfoHint>
               <select value={reverseChargeCode} onChange={(e) => setReverseChargeCode(e.target.value)} className={field}>
                 <option value="">{t('settings.reverseChargeCodeNone')}</option>
                 {REVERSE_CHARGE_CODE_VALUES.map((code) => (
@@ -1672,7 +1751,6 @@ export function InvoiceForm({
                   </option>
                 ))}
               </select>
-              <span className="block text-xs text-muted-foreground">{t('settings.reverseChargeCodeHint')}</span>
             </label>
           )}
         </Collapsible>
@@ -1696,27 +1774,46 @@ export function InvoiceForm({
               <dt>{t('totals.total')}</dt>
               <dd className="tabular-nums">{money.format(totals.total)}</dd>
             </div>
-            {!isQuote && (
+            {!isQuote && !paidOpen && !paidValue && (
+              <button type="button" onClick={() => setPaidOpen(true)} className="pt-1 text-xs font-semibold text-primary hover:underline">
+                + {t('totals.alreadyPaidAdd')}
+              </button>
+            )}
+            {!isQuote && (paidOpen || paidValue) && (
               <div className="flex items-center justify-between gap-2 pt-1 text-sm">
                 <dt className="text-muted-foreground">
                   <InfoHint hint={t('totals.alreadyPaidHint')}>{t('totals.alreadyPaid')}</InfoHint>
                 </dt>
                 <dd className="flex items-center gap-1">
                   <input
-                    className="w-24 rounded-md border border-border bg-background px-2 py-1 text-right tabular-nums"
+                    className="h-8 w-24 rounded-md border border-border bg-background px-2 text-right tabular-nums"
                     inputMode="decimal"
                     placeholder="0"
                     value={paidValue}
                     onChange={(e) => setPaidValue(e.target.value.replace(/[^\d.,]/g, ''))}
                   />
-                  <select className="rounded-md border border-border bg-background px-1 py-1" value={paidUnit} onChange={(e) => setPaidUnit(e.target.value as 'amount' | 'percent')}>
+                  <select className="h-8 rounded-md border border-border bg-background px-1" value={paidUnit} onChange={(e) => setPaidUnit(e.target.value as 'amount' | 'percent')}>
                     <option value="amount">{currency}</option>
                     <option value="percent">%</option>
                   </select>
                 </dd>
               </div>
             )}
-            {paidAmount ? (
+            {!isQuote && (paidOpen || paidValue) && !paidInFull && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPaidUnit('percent');
+                  setPaidValue('100');
+                }}
+                className="ml-auto block text-xs font-semibold text-primary hover:underline"
+              >
+                {t('totals.paidInFull')}
+              </button>
+            )}
+            {paidInFull ? (
+              <p className="text-xs font-semibold text-success">{t('totals.paidFullNote')}</p>
+            ) : paidAmount ? (
               <div className="flex justify-between text-sm">
                 <dt className="text-muted-foreground">{t('totals.remaining')}</dt>
                 <dd className="font-semibold tabular-nums">{money.format(Math.max(0, totals.total - paidAmount))}</dd>
@@ -1732,7 +1829,9 @@ export function InvoiceForm({
 
           {issuedEdit && (
             <label className="mt-4 block space-y-1.5">
-              <span className={label}>{t('editReason.label')}</span>
+              <InfoHint hint={t('editReason.hint')}>
+                <span className={label}>{t('editReason.label')}</span>
+              </InfoHint>
               <textarea
                 value={editReason}
                 onChange={(e) => setEditReason(e.target.value)}
@@ -1742,7 +1841,6 @@ export function InvoiceForm({
                 placeholder={t('editReason.placeholder')}
                 className={area}
               />
-              <span className="block text-xs text-muted-foreground">{t('editReason.hint')}</span>
             </label>
           )}
 
@@ -1774,7 +1872,9 @@ export function InvoiceForm({
               {t('cancel')}
             </Link>
           </div>
-          <p className="mt-1 text-center text-xs text-muted-foreground">{offline.online ? t('saveNote') : tOffline('formNote')}</p>
+          {!(issuedEdit && offline.online) && (
+            <p className="mt-1 text-center text-xs text-muted-foreground">{offline.online ? t('saveNote') : tOffline('formNote')}</p>
+          )}
         </section>
       </aside>
     </div>
@@ -1791,7 +1891,7 @@ function useCollapsedSections(): [Set<string>, (id: string) => void] {
       const stored = JSON.parse(window.localStorage.getItem(COLLAPSED_KEY) ?? '[]');
       if (Array.isArray(stored)) setCollapsed(new Set(stored.filter((x) => typeof x === 'string')));
     } catch {
-      // storage unavailable — start expanded
+      // storage unavailable – start expanded
     }
   }, []);
   const toggle = (id: string) =>
@@ -1844,24 +1944,24 @@ function CustomerSummary({ customer }: { customer: SelectedCustomer }) {
   const address = [c.addressStreet, [c.addressPostalCode, c.addressCity].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   return (
     <div className="min-w-0 text-sm">
-      <p className="flex items-center gap-1.5 font-bold">
-        {c.legalName}
+      <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 break-words font-bold">
+        <span className="min-w-0 break-words">{c.legalName}</span>
+        {/* The card's (i) already says register hits get saved to contacts; the badge keeps it as a tooltip. */}
         {customer.kind === 'ares' && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
+          <span title={t('aresWillSave')} className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-accent-foreground">
             <BadgeCheck className="h-3 w-3" /> {t('aresBadge')}
           </span>
         )}
       </p>
       <p className="text-muted-foreground">{[c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`].filter(Boolean).join(' · ')}</p>
       {address && <p className="text-muted-foreground">{address}</p>}
-      {customer.kind === 'contact' && customer.contact.email && <p className="text-muted-foreground">{customer.contact.email}</p>}
+      {customer.kind === 'contact' && customer.contact.email && <p className="truncate text-muted-foreground" title={customer.contact.email}>{customer.contact.email}</p>}
       {customer.kind === 'contact' && customer.contact.internalNote && (
         <p className="mt-1.5 flex gap-1.5 rounded-lg bg-warning/10 px-2 py-1.5 text-xs" title={t('internalNote')}>
           <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" aria-label={t('internalNote')} />
           <span className="whitespace-pre-line">{customer.contact.internalNote}</span>
         </p>
       )}
-      {customer.kind === 'ares' && <p className="mt-1 text-xs text-muted-foreground">{t('aresWillSave')}</p>}
     </div>
   );
 }

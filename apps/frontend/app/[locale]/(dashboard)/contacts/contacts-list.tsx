@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ArrowUpDown, BadgeCheck, ChevronRight, FilePlus2, Plus, Search, Star, User } from 'lucide-react';
+import { ArrowUpDown, ChevronRight, FilePlus2, Plus, Search, Star, User } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
@@ -11,7 +11,7 @@ import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { readJson, writeJson } from '@/lib/invoice-list-prefs';
 import { cn } from '@/lib/utils';
 import { ColorDot } from '@/components/color-dot';
-import { CONTACT_COLORS, CONTACT_COLOR_DOT } from '@/lib/contact-colors';
+import { CONTACT_COLORS } from '@/lib/contact-colors';
 import type { Contact } from '../invoices/new/types';
 import { setContactStarred } from './actions';
 import { ContactEditor } from './contact-editor';
@@ -116,14 +116,17 @@ export function ContactsList({
   };
 
   const editor = canEdit && creating && <ContactEditor open onClose={() => setCreating(false)} onSaved={(c) => router.push(`/contacts/${c.id}`)} />;
-  const newButton = canEdit && (
+  // `compact`: icon only on a phone, where it sits beside the search.
+  const newButton = (compact: boolean) => canEdit && (
     <button
       type="button"
       onClick={() => setCreating(true)}
-      className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground hover:opacity-90"
+      aria-label={t('newContact')}
+      title={t('newContact')}
+      className={cn('inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-primary text-sm font-bold text-primary-foreground hover:opacity-90', compact ? 'px-3 sm:px-4' : 'px-4')}
     >
       <Plus className="h-4 w-4" />
-      {t('newContact')}
+      <span className={compact ? 'hidden sm:inline' : undefined}>{t('newContact')}</span>
     </button>
   );
 
@@ -137,8 +140,8 @@ export function ContactsList({
           </Link>
         )}
         <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {newButton}
-          <ContactsCsvButtons showExport={false} onSkipped={setSkipped} />
+          {newButton(false)}
+          <ContactsCsvButtons showExport={false} onSkipped={setSkipped} compact={false} />
         </div>
         <SkippedRows rows={skipped} />
         {editor}
@@ -148,8 +151,11 @@ export function ContactsList({
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="relative block w-full max-w-sm">
+      {/* Search and "new" share the first row; sort, colour and CSV the second.
+          Stacked one per row, the controls pushed the list below the fold on a phone. */}
+      <div className="flex flex-wrap items-center gap-2 sm:justify-between sm:gap-3">
+        <div className="flex w-full items-center gap-2 sm:contents">
+        <label className="relative block min-w-0 flex-1 sm:w-full sm:max-w-sm sm:flex-none">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
             type="search"
@@ -161,6 +167,8 @@ export function ContactsList({
             className="h-10 w-full rounded-full border border-input bg-card pl-9 pr-4 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-ring/30"
           />
         </label>
+        <span className="sm:hidden">{newButton(true)}</span>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="relative inline-flex items-center">
             <ArrowUpDown className="pointer-events-none absolute left-3 h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
@@ -172,7 +180,9 @@ export function ContactsList({
                 writeJson(SORT_KEY, next);
               }}
               aria-label={t('sort.label')}
-              className="h-10 rounded-full border border-input bg-card pl-8 pr-3 text-sm font-semibold outline-none focus:border-primary"
+              title={t('sort.label')}
+              // Only the arrows on a phone: the select is as wide as its longest option and pushed colour and CSV onto a third row.
+              className="h-10 w-10 appearance-none rounded-full border border-input bg-card pl-8 pr-0 text-sm font-semibold text-transparent outline-none focus:border-primary sm:w-auto sm:appearance-auto sm:pr-3 sm:text-foreground [&>option]:text-foreground"
             >
               {SORTS.map((key) => (
                 <option key={key} value={key}>
@@ -181,31 +191,28 @@ export function ContactsList({
               ))}
             </select>
           </label>
-          <ContactsCsvButtons showExport onSkipped={setSkipped} />
-          {newButton}
-        </div>
-      </div>
-      {usedColors.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label={t('colorFilter')}>
-          <span className="mr-1 text-xs font-semibold text-muted-foreground">{t('colorFilter')}</span>
-          {usedColors.map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-pressed={colorFilter === c}
-              onClick={() => setColorFilter((cur) => (cur === c ? null : c))}
+          {usedColors.length > 0 && (
+            <select
+              value={colorFilter ?? ''}
+              onChange={(e) => setColorFilter(e.target.value || null)}
+              aria-label={t('colorFilter')}
               className={cn(
-                'inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-xs font-semibold transition-colors',
-                colorFilter === c ? 'border-primary bg-accent text-primary' : 'border-border hover:bg-secondary'
+                'h-10 rounded-full border bg-card px-3 text-sm font-semibold outline-none focus:border-primary',
+                colorFilter ? 'border-primary text-primary' : 'border-input'
               )}
             >
-              <span className={cn('h-2.5 w-2.5 rounded-full', CONTACT_COLOR_DOT[c])} />
-              {tColors(c)}
-              <span className="text-muted-foreground">{rows.filter((r) => r.color === c).length}</span>
-            </button>
-          ))}
+              <option value="">{t('colorAll')}</option>
+              {usedColors.map((c) => (
+                <option key={c} value={c}>
+                  {tColors(c)} ({rows.filter((r) => r.color === c).length})
+                </option>
+              ))}
+            </select>
+          )}
+          <ContactsCsvButtons showExport onSkipped={setSkipped} />
+          <span className="hidden sm:contents">{newButton(true)}</span>
         </div>
-      )}
+      </div>
       {filters}
       <SkippedRows rows={skipped} />
       {editor}
@@ -236,7 +243,6 @@ export function ContactsList({
                   <ColorDot color={row.color} label={row.color ? tColors(row.color) : undefined} />
                   {row.isPerson && <User className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-label={t('editor.kindPerson')} />}
                   <span className="truncate group-hover:text-primary">{row.legalName}</span>
-                  {row.aresVerifiedAt && <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-label={t('aresVerified')} />}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
                   {[row.ico && `IČO ${row.ico}`, row.addressCity, row.email].filter(Boolean).join(' · ')}
@@ -252,7 +258,7 @@ export function ContactsList({
                 </div>
               )}
               {row.stats && row.stats.unpaid > 0 && (
-                <span className="shrink-0 rounded-full bg-warning/15 px-2 py-0.5 text-xs font-semibold text-warning" title={t('stats.unpaidTitle')}>
+                <span className="shrink-0 text-xs font-semibold text-warning" title={t('stats.unpaidTitle')}>
                   {t('stats.unpaid', { count: row.stats.unpaid })}
                 </span>
               )}

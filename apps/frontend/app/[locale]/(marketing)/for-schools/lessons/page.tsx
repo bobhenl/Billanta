@@ -45,7 +45,7 @@ export default async function SchoolLessonsIndex({ params }: { params: Promise<P
         <span className="mx-2">/</span>
         <span className="text-foreground">{t('indexName')}</span>
       </nav>
-      <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
+      <h1 className="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{t('indexTitle')}</h1>
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{t('indexLead')}</p>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{t('lawBasis')}</p>
 

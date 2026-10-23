@@ -50,7 +50,7 @@ export function AnnualSummary({ country }: { country: EstimateCountry }) {
   const sk = country === 'SK';
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="mb-4 flex items-start gap-3">
         <Calculator className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
         <div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getFormatter, getLocale, getTranslations } from 'next-intl/server';
 import { CZ_TAX_YEAR_LIST, OSVC_PARAM_YEARS } from '@faktur/cz-compliance';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { FlatTaxCalculator, type FlatTaxPrefill } from '@/components/public-tools/flat-tax-calculator';
 import { ToolDisclaimer } from '@/components/public-tools/parts';
 import { Link, redirect } from '@/i18n/navigation';
@@ -64,12 +65,11 @@ export default async function InAppFlatTaxPage() {
   const notOsvc = tenant != null && (tenant.addressCountry.toUpperCase() === 'SK' || isLegalEntityName(tenant.legalName));
 
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
-        <div>
+    <div className="mx-auto max-w-6xl">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <InfoHint hint={t('lead')} className="min-w-0">
           <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-muted-foreground">{t('lead')}</p>
-        </div>
+        </InfoHint>
         <Link href="/calculators/flat-tax" className="text-sm font-semibold text-primary hover:underline">
           {t('publicLink')}
         </Link>

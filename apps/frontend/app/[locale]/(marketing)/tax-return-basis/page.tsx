@@ -66,7 +66,7 @@ export default async function TaxReturnBasisLanding({ params }: { params: Promis
   const countries = locale === 'sk' ? (['SK', 'CZ'] as const) : (['CZ', 'SK'] as const);
 
   return (
-    <section className="container max-w-5xl py-10 sm:py-14">
+    <section className="container max-w-5xl py-12 sm:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd([
@@ -79,8 +79,8 @@ export default async function TaxReturnBasisLanding({ params }: { params: Promis
         ])}
       />
       <p className="text-sm font-bold uppercase tracking-wider text-primary">{t('eyebrow')}</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{t('title', { year })}</h1>
-      <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">{t('lead')}</p>
+      <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title', { year })}</h1>
+      <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
       <div className="mt-6 flex flex-wrap gap-2">
         <Link href="/signup" className={buttonClass.primary}>
           {t('cta')}
@@ -96,7 +96,7 @@ export default async function TaxReturnBasisLanding({ params }: { params: Promis
 
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {countries.map((country) => (
-          <div key={country} className="rounded-2xl border border-border bg-card p-6">
+          <div key={country} className="rounded-2xl border border-border bg-card p-5 sm:p-6">
             <h2 className="text-lg font-bold tracking-tight">{t(`country.${country}.title`, { year })}</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {(country === 'CZ' ? cz : sk).map((d) => (
@@ -129,7 +129,7 @@ export default async function TaxReturnBasisLanding({ params }: { params: Promis
         ))}
       </div>
 
-      <div className="mt-12 rounded-2xl border border-border bg-card p-6">
+      <div className="mt-12 rounded-2xl border border-border bg-card p-5 sm:p-6">
         <h2 className="text-lg font-bold tracking-tight">{t('calculatorsTitle')}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t('calculatorsLead')}</p>
         <ul className="mt-3 space-y-2 text-sm">
@@ -146,16 +146,6 @@ export default async function TaxReturnBasisLanding({ params }: { params: Promis
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="mt-12 rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8">
-        <h2 className="text-xl font-bold tracking-tight">{t('ctaTitle')}</h2>
-        <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('ctaBody')}</p>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <Link href="/signup" className={buttonClass.primary}>
-            {t('cta')}
-          </Link>
-        </div>
       </div>
 
       <FaqList title={t('faqTitle')} faq={faq} />

@@ -1,20 +1,22 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import { Info } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { useReveal } from '@/components/info-hint';
 import { cn } from '@/lib/utils';
 
+const FINE_POINTER = '(hover: hover) and (pointer: fine)';
+
 /**
- * A card whose whole surface is the (i) toggle: the title row stays one
- * line, and a click anywhere on the card opens its explanation underneath
- * as plain body text (no hint-note box, the card already is the box).
- * Built as the accordion pattern, an <h3> wrapping the button, so the
- * page's heading outline stays intact.
+ * A card with a one-line title and a short explanation. With a mouse there
+ * is room and no reason to hide a sentence, so the text is simply shown and
+ * the title is a plain heading. On touch the card starts collapsed and the
+ * title row is an accordion button (an <h3> wrapping it, so the page's
+ * heading outline stays intact) that slides the text open.
  *
- * Same hidden-text rules as InfoHint: the explanation is server-rendered,
- * only hidden, so it is indexed and reachable by screen readers, and on
- * browsers that support `hidden="until-found"` Ctrl+F finds it and opens
- * the card by itself.
+ * globals.css shows the text on fine pointers before hydration too, so the
+ * desktop layout does not jump when the effect below switches modes.
+ * Same hidden-text rules as InfoHint: see `useReveal`.
  */
 export function HintCard({
   leading,
@@ -29,56 +31,62 @@ export function HintCard({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [plain, setPlain] = useState(false);
+  const revealRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLParagraphElement>(null);
   const id = useId();
 
+  useReveal(open, setOpen, revealRef, bodyRef);
+
   useEffect(() => {
-    const el = bodyRef.current;
-    if (!el) return;
-    if (open) {
-      el.removeAttribute('hidden');
-    } else if ('onbeforematch' in document.body) {
-      el.setAttribute('hidden', 'until-found');
-    } else {
-      el.setAttribute('hidden', '');
-    }
-    const onMatch = () => setOpen(true);
-    el.addEventListener('beforematch', onMatch);
-    return () => el.removeEventListener('beforematch', onMatch);
-  }, [open]);
+    const mq = window.matchMedia(FINE_POINTER);
+    const sync = () => {
+      setPlain(mq.matches);
+      if (mq.matches) setOpen(true);
+    };
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  const row = (
+    <>
+      {leading}
+      <span className="min-w-0 flex-1">{title}</span>
+    </>
+  );
 
   return (
-    <li
-      className={cn(
-        'rounded-xl border transition-colors',
-        open ? 'border-primary/30 bg-accent/50' : 'border-border bg-card hover:border-primary/30',
-        className
-      )}
-    >
+    <li className={cn('hint-card rounded-xl border border-border bg-card', className)}>
       <h3 className="text-sm font-bold leading-snug">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={id}
-          onClick={() => setOpen((value) => !value)}
-          className="flex w-full items-center gap-3 rounded-xl p-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
-        >
-          {leading}
-          <span className="min-w-0 flex-1">{title}</span>
-          <Info
-            className={cn('h-4 w-4 shrink-0 transition-colors', open ? 'text-primary' : 'text-muted-foreground')}
-            aria-hidden="true"
-          />
-        </button>
+        {plain ? (
+          <span className="flex items-center gap-3 p-3">{row}</span>
+        ) : (
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={id}
+            onClick={() => setOpen(!open)}
+            className="flex w-full items-center gap-3 rounded-xl p-3 text-left"
+          >
+            {row}
+            <ChevronDown
+              className={cn(
+                'hint-card-chevron h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none',
+                open && 'rotate-180'
+              )}
+              aria-hidden="true"
+            />
+          </button>
+        )}
       </h3>
-      <p
-        id={id}
-        ref={bodyRef}
-        className="-mt-1 px-3 pb-3 text-sm leading-relaxed text-muted-foreground [&[hidden]:not([hidden='until-found'])]:hidden [&[hidden]]:p-0"
-        hidden
-      >
-        {hint}
-      </p>
+      <div ref={revealRef} className="hint-reveal">
+        <div>
+          <p id={id} ref={bodyRef} className="hint-card-body -mt-1 px-3 pb-3 text-sm leading-relaxed text-muted-foreground" hidden>
+            {hint}
+          </p>
+        </div>
+      </div>
     </li>
   );
 }

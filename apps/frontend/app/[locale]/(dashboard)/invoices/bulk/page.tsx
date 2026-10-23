@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { ArrowLeft } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { InfoHint } from '@/components/info-hint';
 import { Link } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
 import { apiFetch } from '@/lib/api-client';
 import type { Contact } from '../new/types';
 import type { SavedTemplateRow } from '../templates/template-gallery';
@@ -32,13 +34,14 @@ export default async function BulkInvoicePage(props: { searchParams: Promise<{ t
         <ArrowLeft className="h-4 w-4" />
         {tTpl('title')}
       </Link>
-      <h1 className="mt-3 text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('lead')}</p>
+      <InfoHint hint={t('lead')} className="mt-3">
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
+      </InfoHint>
       {templates.length === 0 ? (
         <div className="mt-6 rounded-xl border border-dashed border-border p-8 text-center">
           <p className="font-semibold">{t('noTemplates')}</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{t('noTemplatesHint')}</p>
-          <Link href="/invoices/templates" className="mt-4 inline-flex rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">
+          <Link href="/invoices/templates" className={`${buttonClass.primary} mt-4`}>
             {tTpl('title')}
           </Link>
         </div>

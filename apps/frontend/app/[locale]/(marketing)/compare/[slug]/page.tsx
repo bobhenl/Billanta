@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { DemoCta } from '@/components/demo/demo-cta';
+import { AudienceActions } from '@/components/audience-page';
 import { Link } from '@/i18n/navigation';
 import { SkEinvoicingCallout } from '@/components/public-tools/sk-einvoicing-callout';
+import { FaqList } from '@/components/segment-page';
 import { routing } from '@/i18n/routing';
 import { brandsFor, comparedAtLabel, comparedBrandsFor, comparedPages, getComparedBrand, rowsFor } from '@/lib/competitors';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
@@ -20,6 +21,9 @@ import { isSwitchBrand } from '@/lib/switch';
  */
 type Params = { locale: string; slug: string };
 type Faq = { q: string; a: string };
+
+/** Shown as the price cards, so the comparison table leaves them out. */
+const PRICE_ROWS: string[] = ['free', 'entry'];
 
 // A brand only has pages in the locales of its market (KROS and Billdu: Slovak only).
 export function generateStaticParams({ params }: { params: { locale: string } }) {
@@ -88,7 +92,7 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
 
       <div className="mt-4 max-w-2xl">
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h1>
-        <p className="mt-3 text-muted-foreground">{t(`${k}.lead`)}</p>
+        <p className="mt-3 text-muted-foreground sm:text-lg">{t(`${k}.lead`)}</p>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -118,7 +122,7 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
 
       <h2 className="mt-12 text-2xl font-extrabold tracking-tight">{t('brand.priceTitle')}</h2>
       <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-        {(['free', 'entry'] as const).map((row) => (
+        {PRICE_ROWS.map((row) => (
           <div key={row} className="rounded-xl border border-border bg-card p-4">
             <dt className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t(`rows.${row}.label`)}</dt>
             <dd className="mt-2 grid grid-cols-2 gap-3 text-sm">
@@ -154,7 +158,8 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
             </tr>
           </thead>
           <tbody>
-            {rowsFor(locale).map((row) => (
+            {/* Free plan and entry price already have their own cards above. */}
+            {rowsFor(locale).filter((row) => !PRICE_ROWS.includes(row.key)).map((row) => (
               <tr key={row.key} className="border-b border-border align-top last:border-0">
                 <th scope="row" className="px-3 py-2.5 text-left font-semibold">
                   {t(`rows.${row.key}.label`)}
@@ -164,7 +169,7 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
                   return (
                     <td key={b.key} className={`px-3 py-2.5 ${b.key === 'billanta' ? 'bg-primary/5' : ''} ${good ? '' : 'text-muted-foreground'}`}>
                       <span className="flex gap-1.5">
-                        {good && <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />}
+                        {good && <Check className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden="true" />}
                         <span className={good ? 'font-medium text-foreground' : ''}>{cell(row.key, b.key)}</span>
                       </span>
                     </td>
@@ -177,14 +182,11 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
       </div>
       <p className="mt-3 text-xs font-semibold text-foreground">{t('verified', { date: comparedAt })}</p>
       <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
-        {t('notStated')}. {t('disclaimer', { date: comparedAt })}{' '}
-        <a href={brand.pricingUrl ?? undefined} target="_blank" rel="noopener noreferrer nofollow" className="underline hover:text-foreground">
-          {t('brand.source', { brand: brand.name })}
-        </a>
+        {t('notStated')}. {t('disclaimer', { date: comparedAt })}
       </p>
 
-      <div className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6">
-        <h2 className="text-lg font-bold">{t(`${k}.switchTitle`)}</h2>
+      <div className="mt-12 rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-8">
+        <h2 className="text-xl font-bold tracking-tight">{t(`${k}.switchTitle`)}</h2>
         <ol className="mt-4 space-y-3">
           {steps.map((s, i) => (
             <li key={s} className="flex gap-3 text-sm leading-relaxed">
@@ -195,58 +197,40 @@ export default async function CompareBrandPage({ params }: { params: Promise<Par
             </li>
           ))}
         </ol>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link href={isSwitchBrand(brand.key) ? `/signup?from=${brand.key}` : '/signup'} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-            {t('signupCta')}
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-          {isSwitchBrand(brand.key) && (
-            <Link
-              href={`/switch/${brand.key}`}
-              className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
-            >
-              {t('brand.switchGuide')}
-            </Link>
-          )}
-          <Link
-            href="/features/switch-from-another-app"
-            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary"
-          >
-            {t('brand.importCta')}
-          </Link>
-        </div>
+        {/* Brands with a switch guide link to it; for the rest the import feature page explains the move. */}
+        <AudienceActions
+          className="mt-5"
+          primary={{ href: isSwitchBrand(brand.key) ? `/signup?from=${brand.key}` : '/signup', label: t('signupCta') }}
+          secondary={
+            isSwitchBrand(brand.key)
+              ? { href: `/switch/${brand.key}`, label: t('brand.switchGuide') }
+              : { href: '/features/switch-from-another-app', label: t('brand.importCta') }
+          }
+        />
       </div>
-      <DemoCta className="mt-6" />
       {/* Slovak visitors comparing apps are choosing one for the 2027 mandate. */}
       {locale === 'sk' && <SkEinvoicingCallout className="mt-6" />}
 
-      <div className="mt-14 max-w-3xl border-t border-border pt-8">
-        <h2 className="text-xl font-semibold">{t('brand.faqTitle')}</h2>
-        <dl className="mt-4 divide-y divide-border">
-          {faq.map(({ q, a }) => (
-            <div key={q} className="py-4">
-              <dt className="font-medium">{q}</dt>
-              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{a}</dd>
-            </div>
-          ))}
-        </dl>
+      {/* Folded: the answers stay in the page (and in the FAQ JSON-LD), but the page ends sooner after the switch steps. */}
+      <div className="max-w-3xl">
+        <FaqList title={t('brand.faqTitle')} faq={faq} />
       </div>
 
       <nav aria-label={t('brand.othersTitle')} className="mt-12 border-t border-border pt-8">
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('brand.othersTitle')}</h2>
-        <ul className="mt-4 flex flex-wrap gap-2">
+        <ul className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
           {comparedBrandsFor(locale).filter((b) => b.key !== brand.key).map((b) => (
             <li key={b.key}>
               <Link
                 href={`/compare/${b.key}`}
-                className="inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary/40 hover:text-primary"
+                className="text-sm font-medium hover:text-primary hover:underline"
               >
                 {t('brand.versus', { brand: b.name })}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/compare" className="inline-flex px-4 py-2 text-sm font-medium text-primary hover:underline">
+            <Link href="/compare" className="text-sm font-semibold text-primary hover:underline">
               {t('brand.all')} →
             </Link>
           </li>

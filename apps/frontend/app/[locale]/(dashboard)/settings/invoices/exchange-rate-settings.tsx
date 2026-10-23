@@ -179,18 +179,19 @@ export function ExchangeRateSettings({
             {rates.map((r, i) => {
               const auto = computed(r.year, r.currency);
               return (
+                // Widths sized so year, currency and rate stay on one line on a 375px phone.
                 <div key={i} className="flex flex-wrap items-center gap-2">
                   <input
                     inputMode="numeric"
                     aria-label={t('year')}
-                    className={cn(inputClass, 'h-9 w-24')}
+                    className={cn(inputClass, 'h-9 w-20')}
                     value={r.year}
                     disabled={readOnly}
                     onChange={(e) => retarget(i, { year: e.target.value.replace(/\D/g, '').slice(0, 4) })}
                   />
                   <select
                     aria-label={t('currency')}
-                    className={cn(inputClass, 'h-9 w-24')}
+                    className={cn(inputClass, 'h-9 w-20')}
                     value={r.currency}
                     disabled={readOnly}
                     onChange={(e) => retarget(i, { currency: e.target.value })}
@@ -205,7 +206,7 @@ export function ExchangeRateSettings({
                     inputMode="decimal"
                     aria-label={t('rate')}
                     placeholder={auto ? fmt(auto.rate!) : t('rate')}
-                    className={cn(inputClass, 'h-9 w-36')}
+                    className={cn(inputClass, 'h-9 w-28')}
                     value={r.rate}
                     disabled={readOnly}
                     onChange={(e) => setRow(i, { rate: e.target.value.replace(/[^\d.,]/g, '') })}
@@ -214,6 +215,7 @@ export function ExchangeRateSettings({
                   <button
                     type="button"
                     disabled={readOnly}
+                    title={t('remove')}
                     aria-label={t('remove')}
                     onClick={() => onRatesChange(rates.filter((_, j) => j !== i))}
                     className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary disabled:opacity-50"

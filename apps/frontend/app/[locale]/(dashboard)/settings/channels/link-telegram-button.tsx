@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from '@/components/toaster';
 import { createLinkingCode, unlinkChannel } from './actions';
 import { copyText } from '@/lib/clipboard';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * "Link Telegram": asks the backend for a single-use code (30 min) and shows
@@ -48,23 +50,23 @@ export function LinkTelegramButton({ botUsername }: { botUsername: string }) {
         type="button"
         onClick={handleGenerateCode}
         disabled={status === 'generating'}
-        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        className={buttonClass.primary}
       >
         {status === 'generating' ? t('generating') : status === 'generated' ? t('newCode') : t('linkTelegram')}
       </button>
 
       {status === 'generated' && code && deepLink && (
-        <div className="mt-4 rounded-lg border border-border bg-muted/30 p-4">
+        <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4">
           <p className="text-sm text-muted-foreground">{t('codeInstructions')}</p>
 
           <div className="mt-3 flex items-center gap-2">
-            <code className="min-w-0 flex-1 truncate rounded-md border border-border bg-background px-3 py-2 font-mono text-sm">
+            <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-background px-3 py-2 font-mono text-sm">
               /start {code.token}
             </code>
             <button
               type="button"
               onClick={handleCopy}
-              className="shrink-0 rounded-md border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+              className={cn(buttonClass.secondary, 'shrink-0')}
             >
               {copied ? t('copied') : t('copy')}
             </button>
@@ -76,14 +78,14 @@ export function LinkTelegramButton({ botUsername }: { botUsername: string }) {
               href={deepLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+              className={buttonClass.primary}
             >
               {t('openInTelegram')}
             </a>
             <button
               type="button"
               onClick={() => router.refresh()}
-              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+              className={buttonClass.secondary}
             >
               {t('done')}
             </button>
@@ -113,7 +115,7 @@ export function UnlinkButton({ id }: { id: string }) {
       type="button"
       onClick={handleUnlink}
       disabled={busy}
-      className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-60"
+      className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-destructive disabled:opacity-60"
     >
       {t('unlink')}
     </button>

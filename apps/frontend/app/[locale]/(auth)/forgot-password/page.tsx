@@ -1,7 +1,14 @@
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { ForgotPasswordForm } from './forgot-password-form';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.forgotPassword');
+  return { title: t('title') };
+}
+
 /**
- * Standalone "forgot password" page — mirrors `(auth)/login/page.tsx` and
+ * Standalone "forgot password" page – mirrors `(auth)/login/page.tsx` and
  * `(auth)/signup/page.tsx`'s structure exactly (same `(auth)` route group
  * trick to skip the dashboard shell, same centered-card layout). Stays a
  * plain server component; all interactivity lives in

@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Building2, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
+import { Building2, ChevronDown, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { useRouter } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import {
   connectFio,
@@ -50,7 +51,7 @@ const KNOWN_ERRORS = [
 const EXPIRY_WARNING_MS = 14 * 24 * 60 * 60 * 1000;
 
 /**
- * "Napojení na banku" — automatic download of incoming payments: Fio over
+ * "Napojení na banku" – automatic download of incoming payments: Fio over
  * its own API token, other banks over PSD2 (Enable Banking) with a consent
  * given at the bank. The backend syncs on its own; the button syncs now.
  */
@@ -183,7 +184,7 @@ export function BankConnections({
   };
 
   const inputClass =
-    'w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
+    'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
   const softButton = 'rounded-full bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-accent hover:text-primary disabled:opacity-60';
   const primaryButton =
     'inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60';
@@ -210,7 +211,7 @@ export function BankConnections({
       )}
 
       {mode === 'choose' && (
-        <div className="mt-3">
+        <div className="anim-fade mt-3">
           <p className="text-xs font-semibold">{t('chooseProvider')}</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             {(
@@ -254,12 +255,8 @@ export function BankConnections({
                     {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : 'Fio banka')}
                     {c.label && c.bankName && <span className="ml-2 text-xs font-normal text-muted-foreground">{c.bankName}</span>}
                     {c.accountNumber && <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">{c.accountNumber}</span>}
-                    {!c.enabled && (
-                      <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">{t('paused')}</span>
-                    )}
-                    {expired && (
-                      <span className="ml-2 rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">{t('psd2.expired')}</span>
-                    )}
+                    {!c.enabled && <span className="ml-2 text-xs font-medium text-muted-foreground">· {t('paused')}</span>}
+                    {expired && <span className="ml-2 text-xs font-semibold text-destructive">· {t('psd2.expired')}</span>}
                   </div>
                   <div className={cn('text-xs', c.lastError ? 'text-destructive' : 'text-muted-foreground')}>
                     {c.lastError
@@ -268,14 +265,14 @@ export function BankConnections({
                         ? t('lastSynced', { when: format.relativeTime(new Date(c.lastSyncedAt)) })
                         : t('neverSynced')}
                     {expiresAt && !expired && (
-                      <span className={cn('ml-1', expiringSoon ? 'font-semibold text-amber-600 dark:text-amber-400' : 'text-muted-foreground')}>
+                      <span className={cn('ml-1', expiringSoon ? 'font-semibold text-warning' : 'text-muted-foreground')}>
                         · {t('psd2.consentUntil', { date: format.dateTime(expiresAt, { dateStyle: 'medium' }) })}
                       </span>
                     )}
                   </div>
                 </div>
                 {canEdit && (
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {(expired || expiringSoon) && (
                     <button type="button" disabled={pending || !c.bankName} onClick={() => renew(c)} className={primaryButton}>
                       {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
@@ -318,7 +315,7 @@ export function BankConnections({
 
       {mode === 'psd2' && (
         <form
-          className="mt-3 grid gap-3 sm:grid-cols-[7rem_1fr_12rem] sm:items-end"
+          className="anim-fade mt-3 grid gap-3 sm:grid-cols-[10rem_1fr_12rem] sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             goToBank('new', { bankName, country, psuType, label });
@@ -366,7 +363,7 @@ export function BankConnections({
           </label>
           <fieldset className="flex flex-wrap items-center gap-3 text-xs sm:col-span-3">
             <legend className="sr-only">{t('psd2.accountType')}</legend>
-            <span className="font-semibold">{t('psd2.accountType')}</span>
+            <span aria-hidden="true" className="font-semibold">{t('psd2.accountType')}</span>
             {(['business', 'personal'] as const).map((type) => (
               <label key={type} className="inline-flex items-center gap-1.5">
                 <input type="radio" name="psuType" checked={psuType === type} onChange={() => setPsuType(type)} className="accent-primary" />
@@ -378,12 +375,12 @@ export function BankConnections({
             <button
               type="submit"
               disabled={pending || !bankName}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+              className={buttonClass.primary}
             >
               {busyId === 'new' ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
               {t('psd2.continue')}
             </button>
-            <button type="button" onClick={() => setMode(null)} className="rounded-full bg-muted px-4 py-2 text-sm font-semibold hover:bg-accent">
+            <button type="button" onClick={() => setMode(null)} className={buttonClass.secondary}>
               {t('cancel')}
             </button>
           </div>
@@ -393,7 +390,7 @@ export function BankConnections({
 
       {mode === 'paypal' && (
         <form
-          className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_12rem] sm:items-end"
+          className="anim-fade mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_12rem] sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             connectPaypalAccount();
@@ -431,22 +428,29 @@ export function BankConnections({
             {t('label')}
             <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder="PayPal" className={cn(inputClass, 'mt-1.5')} />
           </label>
-          <label className="inline-flex items-center gap-1.5 text-xs sm:col-span-3">
-            <input type="checkbox" checked={sandbox} onChange={(e) => setSandbox(e.target.checked)} className="accent-primary" />
-            <InfoHint hint={t('paypal.sandboxHint')} label={t('paypal.sandbox')}>
-              <span>{t('paypal.sandbox')}</span>
-            </InfoHint>
-          </label>
+          {/* Sandbox keys are a developer's test setup; a real account never needs this. */}
+          <details open={sandbox} className="group text-xs sm:col-span-3">
+            <summary className="inline-flex cursor-pointer list-none items-center gap-1 font-semibold text-muted-foreground hover:text-primary [&::-webkit-details-marker]:hidden">
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+              {t('paypal.moreOptions')}
+            </summary>
+            <label className="mt-2 inline-flex items-center gap-1.5">
+              <input type="checkbox" checked={sandbox} onChange={(e) => setSandbox(e.target.checked)} className="accent-primary" />
+              <InfoHint hint={t('paypal.sandboxHint')} label={t('paypal.sandbox')}>
+                <span>{t('paypal.sandbox')}</span>
+              </InfoHint>
+            </label>
+          </details>
           <div className="flex flex-wrap gap-2 sm:col-span-3">
             <button
               type="submit"
               disabled={pending || paypalId.trim().length < 10 || paypalSecret.trim().length < 10}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+              className={buttonClass.primary}
             >
               {busyId === 'new' && <Loader2 className="h-4 w-4 animate-spin" />}
               {t('connect')}
             </button>
-            <button type="button" onClick={() => setMode(null)} className="rounded-full bg-muted px-4 py-2 text-sm font-semibold hover:bg-accent">
+            <button type="button" onClick={() => setMode(null)} className={buttonClass.secondary}>
               {t('cancel')}
             </button>
           </div>
@@ -456,7 +460,7 @@ export function BankConnections({
 
       {mode === 'fio' && (
         <form
-          className="mt-3 grid gap-3 sm:grid-cols-[1fr_12rem_auto] sm:items-end"
+          className="anim-fade mt-3 grid gap-3 sm:grid-cols-2 sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             connect();
@@ -483,20 +487,19 @@ export function BankConnections({
             {t('label')}
             <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder={t('labelPlaceholder')} className={cn(inputClass, 'mt-1.5')} />
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 sm:col-span-2">
             <button
               type="submit"
               disabled={pending || token.trim().length !== 64}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+              className={buttonClass.primary}
             >
               {busyId === 'new' && <Loader2 className="h-4 w-4 animate-spin" />}
               {t('connect')}
             </button>
-            <button type="button" onClick={() => setMode(null)} className="rounded-full bg-muted px-4 py-2 text-sm font-semibold hover:bg-accent">
+            <button type="button" onClick={() => setMode(null)} className={buttonClass.secondary}>
               {t('cancel')}
             </button>
           </div>
-          <p className="text-[11px] text-muted-foreground sm:col-span-3">{psd2.available ? t('psd2.otherBanksAvailable') : t('otherBanks')}</p>
         </form>
       )}
     </section>

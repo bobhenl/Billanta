@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+import { Search } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -12,8 +14,13 @@ import { BankConnections } from './bank-connections';
 import { BankImport } from './bank-import';
 import { BankTable, type BankRow } from './bank-reconciliation-panel';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('bank');
+  return { title: t('title') };
+}
+
 /**
- * `GET /bank` — imported statement lines, auto-matched against issued
+ * `GET /bank` – imported statement lines, auto-matched against issued
  * invoices by the backend (`apps/backend/src/bank-reconciliation/`). Rows
  * open `/bank/{id}`, where the leftovers get matched by hand.
  */
@@ -68,13 +75,13 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
   const cards = [
     { key: 'unmatched', label: t('kpi.toReview'), value: String(unmatched.length), href: '/bank?status=unmatched', tone: unmatched.length ? 'text-warning' : '' },
     { key: 'matched', label: t('kpi.matched'), value: String(matchedCount), href: '/bank?status=matched', tone: 'text-success' },
-    { key: 'in', label: t('kpi.incoming', { currency: home }), value: formatMoney(incoming, home, locale), href: '/bank', tone: 'text-primary' },
-    { key: 'out', label: t('kpi.outgoing', { currency: home }), value: formatMoney(outgoing, home, locale), href: '/bank', tone: '' }
+    { key: 'in', label: t('kpi.incoming', { currency: home }), value: formatMoney(incoming, home, locale), href: null, tone: 'text-primary' },
+    { key: 'out', label: t('kpi.outgoing', { currency: home }), value: formatMoney(outgoing, home, locale), href: null, tone: '' }
   ];
 
   const chip = (active: boolean) =>
     cn(
-      'rounded-full px-3 py-1.5 text-sm font-semibold transition-colors',
+      'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3 text-sm font-semibold transition-colors',
       active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary'
     );
   const href = (s?: string) => {
@@ -86,50 +93,62 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
   };
 
   return (
-    <div>
+    <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-muted-foreground">{t('description')}</p>
-        </div>
+        <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
         {canEdit && <BankImport />}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((card) => (
-          <Link
-            key={card.key}
-            href={card.href}
-            className="rounded-xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
-          >
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{card.label}</div>
-            <div className={cn('mt-1 text-2xl font-extrabold tabular-nums', card.tone)}>{card.value}</div>
-          </Link>
-        ))}
+      {/* Two compact rows on a phone; full-size cards filled the first screen. */}
+      <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-4 sm:gap-3">
+        {cards.map((card) => {
+          const body = (
+            <>
+              <div className="truncate text-[11px] font-semibold text-muted-foreground sm:text-xs">{card.label}</div>
+              <div title={String(card.value)} className={cn('mt-1 truncate text-base font-extrabold tabular-nums sm:text-2xl', card.tone)}>{card.value}</div>
+            </>
+          );
+          const box = 'min-w-0 rounded-xl border border-border bg-card p-2.5 sm:p-4';
+          // Only the counts filter the list; the sums are plain figures.
+          return card.href ? (
+            <Link key={card.key} href={card.href} className={cn(box, 'transition-colors hover:border-primary/50')}>
+              {body}
+            </Link>
+          ) : (
+            <div key={card.key} className={box}>
+              {body}
+            </div>
+          );
+        })}
       </div>
 
       <TwoFactorNotice className="mt-6" />
       <BankConnections connections={connections} psd2={psd2} />
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <form action="" className="w-full max-w-xs">
+        <form action="" className="relative w-full sm:max-w-xs">
           {status && <input type="hidden" name="status" value={status} />}
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
             name="q"
             data-page-search
             defaultValue={q}
             placeholder={t('searchPlaceholder')}
-            className="w-full rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            aria-label={t('searchPlaceholder')}
+            className="h-10 w-full rounded-full border border-input bg-background pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </form>
-        <Link href={href()} className={chip(!status)}>
-          {t('filterAll')}
-        </Link>
-        {TRANSACTION_STATUSES.map((s) => (
-          <Link key={s} href={href(s)} className={chip(status === s)}>
-            {t(`status.${s}`)}
+        {/* One swipeable row on phones instead of chips stacking into several lines. */}
+        <div className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
+          <Link href={href()} className={chip(!status)}>
+            {t('filterAll')}
           </Link>
-        ))}
+          {TRANSACTION_STATUSES.map((s) => (
+            <Link key={s} href={href(s)} className={chip(status === s)}>
+              {t(`status.${s}`)}
+            </Link>
+          ))}
+        </div>
       </div>
 
       <BankTable rows={visible} empty={transactions.length === 0} />

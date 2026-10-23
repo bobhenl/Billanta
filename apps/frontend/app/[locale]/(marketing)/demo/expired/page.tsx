@@ -17,8 +17,8 @@ export default async function DemoExpiredPage({ params }: { params: Promise<{ lo
   const t = await getTranslations('demo');
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-16 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">{t('expired.title')}</h1>
+    <div className="container max-w-xl py-12 text-center sm:py-16">
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('expired.title')}</h1>
       <p className="mt-3 text-muted-foreground">{t('expired.lead')}</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link href="/demo" className={buttonClass.primary}>

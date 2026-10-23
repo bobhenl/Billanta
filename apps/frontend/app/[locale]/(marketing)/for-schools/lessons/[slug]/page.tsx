@@ -156,7 +156,7 @@ export default async function SchoolLessonPage({ params }: { params: Promise<Par
             <span className="mx-2">·</span>
             <Clock className="-mt-0.5 inline h-3.5 w-3.5" aria-hidden="true" /> {t('minutes', { n: LESSON_MINUTES })}
           </p>
-          <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">{c.title}</h1>
+          <h1 className="mt-2 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl">{c.title}</h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">{c.lead}</p>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{t('lawBasis')}</p>
         </div>

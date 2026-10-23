@@ -43,7 +43,7 @@ export function CardPaymentsCard({ initial, readOnly }: { initial: CardPaymentSe
   if (!settings) return null;
 
   return (
-    <section className="mt-6 rounded-2xl border border-border bg-card p-4 sm:p-5">
+    <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start gap-3">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
           <CreditCard className="h-4 w-4" />
@@ -62,11 +62,7 @@ export function CardPaymentsCard({ initial, readOnly }: { initial: CardPaymentSe
             <span className="font-semibold">{settings.accountName ?? t('stripeAccount')}</span>
             {settings.mode && (
               <span
-                className={
-                  settings.mode === 'live'
-                    ? 'rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400'
-                    : 'rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400'
-                }
+                className={settings.mode === 'live' ? 'text-xs font-semibold text-success' : 'text-xs font-semibold text-warning'}
               >
                 {t(`mode.${settings.mode}`)}
               </span>
@@ -80,7 +76,7 @@ export function CardPaymentsCard({ initial, readOnly }: { initial: CardPaymentSe
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-input"
+              className="h-4 w-4 accent-primary"
               checked={settings.enabled}
               disabled={readOnly || pending}
               onChange={(event) => {

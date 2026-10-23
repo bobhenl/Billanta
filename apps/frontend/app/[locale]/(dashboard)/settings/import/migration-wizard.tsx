@@ -59,12 +59,12 @@ type SellerUpdate = {
 };
 type ContactSkip = { line: number; reason: string; name: string };
 
-/** A header our mapper reads — handed out as a template for hand-made files. */
+/** A header our mapper reads – handed out as a template for hand-made files. */
 const TEMPLATE =
   'Číslo faktury;Odběratel;IČO;DIČ;E-mail;Datum vystavení;Datum splatnosti;DUZP;Celkem bez DPH;Celkem s DPH;Měna;Stav;Datum úhrady\n' +
   '2025-0001;Příklad s.r.o.;12345678;CZ12345678;fakturace@priklad.cz;2.1.2025;16.1.2025;2.1.2025;1000,00;1210,00;CZK;Zaplaceno;10.1.2025\n';
 
-const card = 'rounded-xl border border-border bg-card p-5';
+const card = 'rounded-xl border border-border bg-card p-4 sm:p-5';
 const button =
   'inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-card px-4 text-sm font-semibold hover:bg-secondary disabled:opacity-60';
 const primary =
@@ -192,7 +192,7 @@ function ContactsStep({ readOnly }: { readOnly: boolean }) {
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <FilePicker disabled={readOnly} busy={busy} label={t('step2.upload')} onFile={upload} accept={FILE_ACCEPT} />
         {done && (
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-success">
             <Users className="h-4 w-4" />
             {t('step2.done', { created: done.created, updated: done.updated })}
           </span>
@@ -438,9 +438,9 @@ function InvoicesStep({ readOnly, source }: { readOnly: boolean; source: Source 
           {preview.source && (
             <p className="flex items-start gap-1.5 text-sm">
               {preview.skipped.length === 0 ? (
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
               ) : (
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
               )}
               <span>
                 {t(source === 'fakturoid' ? 'step3.fakturoid.source' : 'step3.source', preview.source)}{' '}
@@ -630,7 +630,7 @@ function SellerUpdateOffer({ update, date }: { update: SellerUpdate; date: (iso:
         ))}
       </dl>
       {state === 'done' ? (
-        <p className="mt-3 inline-flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
+        <p className="mt-3 inline-flex items-center gap-1.5 font-semibold text-success">
           <CheckCircle2 className="h-4 w-4" />
           {t('applied')}
         </p>
@@ -665,7 +665,7 @@ function ColumnMapping({
   const changed = fields.some((f, i) => f !== columns[i]?.field);
   const required = missing.length > 0;
   return (
-    <details open={required} className={cn('rounded-lg border p-3 text-sm', required ? 'border-amber-500/60' : 'border-border')}>
+    <details open={required} className={cn('rounded-lg border p-3 text-sm', required ? 'border-warning/60' : 'border-border')}>
       <summary className="cursor-pointer font-semibold">{required ? t('requiredTitle') : t('title')}</summary>
       {required && <p className="mt-2 text-muted-foreground">{t('requiredLead', { fields: missing.map((m) => t(`required.${m}`)).join(', ') })}</p>}
       <div className="mt-3 max-h-[28rem] space-y-2 overflow-y-auto">

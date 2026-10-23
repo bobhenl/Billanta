@@ -3,6 +3,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { SiteSearchBox } from '@/components/site-search-box';
 import { searchSite, type SearchKind } from '@/lib/site-search';
+import { ChipRow, chipClass } from '@/components/chip-row';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -32,10 +35,10 @@ export default async function SiteSearchPage({
 
   return (
     <div className="container max-w-3xl py-12 sm:py-16">
-      <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
       <form action="" method="get" role="search" className="mt-5 flex gap-2">
         <SiteSearchBox key={query} defaultValue={query} />
-        <button type="submit" className="rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground hover:opacity-90">
+        <button type="submit" className={cn(buttonClass.primary, 'shrink-0')}>
           {t('submit')}
         </button>
       </form>
@@ -61,15 +64,15 @@ export default async function SiteSearchPage({
       ) : (
         <div className="mt-6 text-sm text-muted-foreground">
           <p>{query ? t('empty') : t('suggestTitle')}</p>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ChipRow label={t('suggestTitle')} className="mt-3">
             {(['isdoc', 'qr', 'dph', 'ares', 'banka', 'dobropis'] as const).map((s) => (
               <li key={s}>
-                <Link href={{ pathname: '/search', query: { q: t(`suggest.${s}`) } }} className="inline-block rounded-full border border-border px-3 py-1 text-foreground hover:border-primary hover:text-primary">
+                <Link href={{ pathname: '/search', query: { q: t(`suggest.${s}`) } }} className={cn(chipClass, 'text-foreground')}>
                   {t(`suggest.${s}`)}
                 </Link>
               </li>
             ))}
-          </ul>
+          </ChipRow>
         </div>
       )}
     </div>

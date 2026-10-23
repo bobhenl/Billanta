@@ -1,14 +1,16 @@
 'use client';
 
 import { type FormEvent, useRef, useState, useTransition } from 'react';
-import { Loader2, QrCode, ScanLine, Upload } from 'lucide-react';
+import { ChevronDown, Link2, Loader2, QrCode, ScanLine, Upload } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { REVERSE_CHARGE_CODE_VALUES, isReverseChargeCode } from '@faktur/cz-compliance';
 import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Banner } from '@/components/banner';
+import { InfoHint } from '@/components/info-hint';
 import { formatMoney } from '@/lib/invoice-ui';
+import { cn } from '@/lib/utils';
 import { EXPENSE_CATEGORIES, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { QrCameraScanner } from '@/components/qr-camera-scanner';
 import { scanInvoiceFile, type ScannedInvoice } from '@/lib/qr-scan';
@@ -48,7 +50,7 @@ const day = (value: string | null | undefined) => (value ? value.slice(0, 10) : 
  * Create/edit form for an expense (received invoice, receipt). The top
  * drop zone first looks for a QR Faktura / QR Platba on the photo or PDF
  * (in the browser, no AI); only when the code doesn't carry the whole invoice
- * is the file sent to the AI reader. Either way it only pre-fills the fields —
+ * is the file sent to the AI reader. Either way it only pre-fills the fields –
  * nothing is saved until the user submits.
  */
 export function ExpenseForm({
@@ -62,7 +64,7 @@ export function ExpenseForm({
   autoScan?: boolean;
   /** Edit mode: the saved expense. */
   expense?: Expense;
-  /** Create mode prefill (duplicate) — copied, never updated. */
+  /** Create mode prefill (duplicate) – copied, never updated. */
   initial?: Expense;
   suppliers: SupplierOption[];
   /** The company's own currency, the default for a new expense. */
@@ -106,6 +108,9 @@ export function ExpenseForm({
   const [reverseChargeCode, setReverseChargeCode] = useState(src?.reverseChargeCode ?? '');
   // Reverse charge needs a rate to self-assess; at 0 % there is nothing to report.
   const isReverseCharge = reverseCharge && Number(vatRate) > 0;
+  const [moreOpen, setMoreOpen] = useState(
+    Boolean(src?.supplierDic || src?.documentNumber || src?.variableSymbol || src?.note || src?.receiptFileUrl)
+  );
 
   // Reverse charge: the amount is the net and the VAT comes on top (§ 92a ZDPH).
   const vatPart = isReverseCharge
@@ -140,6 +145,8 @@ export function ExpenseForm({
     if (scan.dueDate) setDueDate(scan.dueDate);
     setDescription((d) => d || (scan.invoiceNumber ? t('qrDescription', { number: scan.invoiceNumber }) : scan.message ?? ''));
     setQrFilled(scan.format);
+    // Show what the code filled in under "More details" so it gets checked.
+    if (scan.supplierDic || scan.invoiceNumber || scan.variableSymbol) setMoreOpen(true);
   }
 
   async function readReceipt(file: File) {
@@ -185,6 +192,7 @@ export function ExpenseForm({
         setPaidAt(s.issue_date ?? today());
       }
       setAiFilled(true);
+      if (s.document_number || s.variable_symbol) setMoreOpen(true);
       if (scan) applyScan(scan);
     } catch (error) {
       if (scan) applyScan(scan);
@@ -229,12 +237,12 @@ export function ExpenseForm({
     });
   }
 
-  const label = 'mb-1 block text-xs font-semibold text-muted-foreground';
+  const label = 'mb-1 flex min-h-5 items-center gap-2 text-xs font-semibold text-muted-foreground';
+  const field = cn(inputClass, 'h-10');
 
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-extrabold tracking-tight">{expense ? t('editTitle') : t('title')}</h1>
-      <p className="mt-1 text-muted-foreground">{t('description')}</p>
 
       <button
         type="button"
@@ -251,19 +259,18 @@ export function ExpenseForm({
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
           {reading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ScanLine className="h-5 w-5" />}
         </span>
-        <span>
+        <span className="min-w-0">
           <span className="block font-bold">{reading ? t('aiReading') : t('aiTitle')}</span>
           <span className="block text-sm text-muted-foreground">{t('aiHint')}</span>
         </span>
-        <Upload className="ml-auto h-5 w-5 text-primary" />
+        <Upload className="ml-auto hidden h-5 w-5 shrink-0 text-primary sm:block" />
       </button>
-      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <InfoHint hint={t('qrHint')} label={t('qrCamera')} className="mt-2" rowClassName="gap-2">
         <button type="button" className={buttonClass.secondary} onClick={() => setCameraOpen(true)} disabled={reading}>
           <QrCode className="h-4 w-4" />
           {t('qrCamera')}
         </button>
-        <span>{t('qrHint')}</span>
-      </div>
+      </InfoHint>
       <QrCameraScanner
         open={cameraOpen}
         onClose={() => setCameraOpen(false)}
@@ -295,16 +302,30 @@ export function ExpenseForm({
         </Banner>
       )}
 
-      <form className="mt-5 space-y-5" onSubmit={handleSubmit}>
+      <form
+        className="mt-5 space-y-5"
+        onSubmit={handleSubmit}
+        // A required field inside the closed "More details" can't take focus; open it first.
+        onInvalidCapture={(e) => (e.target as HTMLElement).closest('details')?.setAttribute('open', '')}
+      >
         <section className="rounded-xl border border-border bg-card p-4">
           <h2 className="mb-3 text-sm font-bold">{t('supplierSection')}</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="block sm:col-span-2">
-              <span className={label}>{t('supplierNameLabel')}</span>
+              <span className={label}>
+                {t('supplierNameLabel')}
+                {/* In the label row rather than under the input, so the row keeps the IČO field's height. */}
+                {supplierContactId && (
+                  <span className="ml-auto inline-flex min-w-0 items-center gap-1 font-normal text-success">
+                    <Link2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span className="truncate">{t('supplierLinked')}</span>
+                  </span>
+                )}
+              </span>
               <input
                 list="expense-suppliers"
                 required
-                className={inputClass}
+                className={field}
                 placeholder={t('supplierNamePlaceholder')}
                 value={supplierName}
                 onChange={(e) => pickSupplier(e.target.value)}
@@ -316,12 +337,11 @@ export function ExpenseForm({
                   </option>
                 ))}
               </datalist>
-              {supplierContactId && <span className="mt-1 block text-xs text-success">{t('supplierLinked')}</span>}
             </label>
             <label className="block">
               <span className={label}>IČO</span>
               <input
-                className={inputClass}
+                className={field}
                 inputMode="numeric"
                 pattern="\d{8}"
                 maxLength={8}
@@ -329,36 +349,26 @@ export function ExpenseForm({
                 onChange={(e) => setSupplierIco(e.target.value.replace(/\D/g, ''))}
               />
             </label>
-            <label className="block">
-              <span className={label}>DIČ</span>
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-border bg-card p-4">
+          <h2 className="mb-3 text-sm font-bold">{t('amountSection')}</h2>
+          {/* On phones the amount, rate and currency share one row: they belong together and are short. */}
+          <div className="grid grid-cols-4 gap-3 sm:grid-cols-3">
+            <label className="col-span-4 block sm:col-span-2">
+              <span className={label}>{t('descriptionLabel')}</span>
               <input
-                className={inputClass}
-                placeholder="CZ12345678"
-                required={isReverseCharge}
-                pattern="[A-Za-z]{2}[0-9A-Za-z]{2,12}"
-                maxLength={14}
-                value={supplierDic}
-                onChange={(e) => setSupplierDic(e.target.value.replace(/\s/g, '').toUpperCase())}
-              />
-              <span className="mt-1 block text-xs text-muted-foreground">{t('supplierDicHint')}</span>
-            </label>
-            <label className="block">
-              <span className={label}>{t('documentNumberLabel')}</span>
-              <input className={inputClass} maxLength={64} required={isReverseCharge} value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value)} />
-            </label>
-            <label className="block">
-              <span className={label}>{t('variableSymbolLabel')}</span>
-              <input
-                className={inputClass}
-                inputMode="numeric"
-                maxLength={10}
-                value={variableSymbol}
-                onChange={(e) => setVariableSymbol(e.target.value.replace(/\D/g, ''))}
+                required
+                className={field}
+                placeholder={t('descriptionPlaceholder')}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </label>
-            <label className="block">
+            <label className="col-span-4 block sm:col-span-1">
               <span className={label}>{t('categoryLabel')}</span>
-              <select className={inputClass} value={category} onChange={(e) => setCategory(e.target.value)}>
+              <select className={field} value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="">{t('noCategory')}</option>
                 {EXPENSE_CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -368,37 +378,21 @@ export function ExpenseForm({
                 {category && !isKnownCategory(category) && <option value={category}>{category}</option>}
               </select>
             </label>
-          </div>
-        </section>
-
-        <section className="rounded-xl border border-border bg-card p-4">
-          <h2 className="mb-3 text-sm font-bold">{t('amountSection')}</h2>
-          <label className="block">
-            <span className={label}>{t('descriptionLabel')}</span>
-            <input
-              required
-              className={inputClass}
-              placeholder={t('descriptionPlaceholder')}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </label>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            <label className="block">
+            <label className="col-span-2 block sm:col-span-1">
               <span className={label}>{isReverseCharge ? t('amountLabelReverseCharge') : t('amountLabel')}</span>
               <input
                 type="number"
                 min="0"
                 step="0.01"
                 required
-                className={inputClass}
+                className={field}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
             </label>
             <label className="block">
               <span className={label}>{t('vatRateLabel')}</span>
-              <select className={inputClass} value={vatRate} onChange={(e) => setVatRate(e.target.value)}>
+              <select className={field} value={vatRate} onChange={(e) => setVatRate(e.target.value)}>
                 {[...new Set([...VAT_RATE_OPTIONS, vatRate])].map((option) => (
                   <option key={option} value={option}>
                     {option} %
@@ -408,7 +402,7 @@ export function ExpenseForm({
             </label>
             <label className="block">
               <span className={label}>{t('currencyLabel')}</span>
-              <select className={inputClass} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+              <select className={field} value={currency} onChange={(e) => setCurrency(e.target.value)}>
                 {[...new Set([...CURRENCY_OPTIONS, currency])].map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -417,7 +411,7 @@ export function ExpenseForm({
               </select>
             </label>
           </div>
-          {Number(amount) > 0 && (
+          {Number(amount) > 0 && Number(vatRate) > 0 && (
             <p className="mt-2 text-sm text-muted-foreground">
               {t(isReverseCharge ? 'vatBreakdownReverseCharge' : 'vatBreakdown', {
                 base: formatMoney(basePart, currency, locale),
@@ -431,18 +425,17 @@ export function ExpenseForm({
                 type="checkbox"
                 checked={reverseCharge}
                 onChange={(e) => setReverseCharge(e.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-primary"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
               />
-              <span>
+              <InfoHint hint={t('reverseChargeHint')} label={t('reverseChargeLabel')} className="min-w-0">
                 <span className="font-medium">{t('reverseChargeLabel')}</span>
-                <span className="block text-xs text-muted-foreground">{t('reverseChargeHint')}</span>
-              </span>
+              </InfoHint>
             </label>
           )}
           {isReverseCharge && (
             <label className="mt-3 block">
               <span className={label}>{tRc('reverseChargeCode')}</span>
-              <select className={inputClass} value={reverseChargeCode} onChange={(e) => setReverseChargeCode(e.target.value)}>
+              <select className={field} value={reverseChargeCode} onChange={(e) => setReverseChargeCode(e.target.value)}>
                 <option value="">{tRc('reverseChargeCodeNone')}</option>
                 {REVERSE_CHARGE_CODE_VALUES.map((code) => (
                   <option key={code} value={code}>
@@ -450,51 +443,85 @@ export function ExpenseForm({
                   </option>
                 ))}
               </select>
-              <span className="mt-1 block text-xs text-muted-foreground">{t('reverseChargeRequiredHint')}</span>
             </label>
           )}
         </section>
 
         <section className="rounded-xl border border-border bg-card p-4">
           <h2 className="mb-3 text-sm font-bold">{t('datesSection')}</h2>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <label className="block">
               <span className={label}>{t('expenseDateLabel')}</span>
-              <input type="date" required className={inputClass} value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
+              <input type="date" required className={field} value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
             </label>
             <label className="block">
               <span className={label}>{t('dueDateLabel')}</span>
-              <input type="date" className={inputClass} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              <input type="date" className={field} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
             </label>
-            <div>
-              <label className="flex items-center gap-2 pt-5 text-sm font-semibold">
+            <div className="col-span-2 sm:col-span-1">
+              <label className={cn(label, 'cursor-pointer text-foreground')}>
                 <input type="checkbox" checked={paid} onChange={(e) => setPaid(e.target.checked)} className="h-4 w-4 accent-primary" />
                 {t('paidLabel')}
               </label>
               {paid && (
-                <input type="date" className={`${inputClass} mt-2`} value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
+                <input type="date" aria-label={t('paidLabel')} className={field} value={paidAt} onChange={(e) => setPaidAt(e.target.value)} />
               )}
             </div>
           </div>
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-4">
-          <h2 className="mb-3 text-sm font-bold">{t('otherSection')}</h2>
-          <label className="block">
-            <span className={label}>{t('noteLabel')}</span>
-            <textarea rows={3} maxLength={2000} className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />
-          </label>
-          <label className="mt-3 block">
-            <span className={label}>{t('receiptFileUrlLabel')}</span>
-            <input
-              className={inputClass}
-              placeholder={t('receiptFileUrlPlaceholder')}
-              value={receiptFileUrl}
-              onChange={(e) => setReceiptFileUrl(e.target.value)}
-            />
-            <span className="mt-1 block text-xs text-muted-foreground">{t('receiptFileUrlHint')}</span>
-          </label>
-        </section>
+        <details
+          open={moreOpen || isReverseCharge}
+          onToggle={(e) => setMoreOpen(e.currentTarget.open)}
+          className="group rounded-xl border border-border bg-card p-4"
+        >
+          <summary className="flex cursor-pointer list-none items-center gap-1 text-sm font-bold [&::-webkit-details-marker]:hidden">
+            {t('moreDetails')}
+            <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
+          </summary>
+          {isReverseCharge && <p className="mt-2 text-xs text-muted-foreground">{t('reverseChargeRequiredHint')}</p>}
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <label className="block">
+              <span className={label}>DIČ</span>
+              <input
+                className={field}
+                placeholder="CZ12345678"
+                required={isReverseCharge}
+                pattern="[A-Za-z]{2}[0-9A-Za-z]{2,12}"
+                maxLength={14}
+                value={supplierDic}
+                onChange={(e) => setSupplierDic(e.target.value.replace(/\s/g, '').toUpperCase())}
+              />
+            </label>
+            <label className="block">
+              <span className={label}>{t('documentNumberLabel')}</span>
+              <input className={field} maxLength={64} required={isReverseCharge} value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value)} />
+            </label>
+            <label className="block">
+              <span className={label}>{t('variableSymbolLabel')}</span>
+              <input
+                className={field}
+                inputMode="numeric"
+                maxLength={10}
+                value={variableSymbol}
+                onChange={(e) => setVariableSymbol(e.target.value.replace(/\D/g, ''))}
+              />
+            </label>
+            <label className="block sm:col-span-3">
+              <span className={label}>{t('noteLabel')}</span>
+              <textarea rows={3} maxLength={2000} className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />
+            </label>
+            <label className="block sm:col-span-3">
+              <span className={label}>{t('receiptFileUrlLabel')}</span>
+              <input
+                className={field}
+                placeholder={t('receiptFileUrlPlaceholder')}
+                value={receiptFileUrl}
+                onChange={(e) => setReceiptFileUrl(e.target.value)}
+              />
+            </label>
+          </div>
+        </details>
 
         <div className="flex items-center gap-3">
           <button type="submit" disabled={pending || reading} className={buttonClass.primary}>
