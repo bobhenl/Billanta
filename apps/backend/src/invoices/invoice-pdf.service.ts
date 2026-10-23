@@ -16,6 +16,7 @@ import {
 } from "@faktur/cz-compliance";
 import { generatePayBySquareString } from "@faktur/cz-compliance/pay-by-square";
 import PDFDocument from "pdfkit";
+import { BRAND_MARK_PNG } from "./brand-mark";
 import { drawDemoWatermark } from "./invoice-pdf-demo";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
@@ -344,7 +345,8 @@ export class InvoicePdfService {
     this.renderLineItemsTable(doc, t, lineItems, invoice);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), homeCurrencyOf(tenant.addressCountry));
     // The brand name is written exactly so ("PAY by square"), never uppercased.
-    if (qr) this.renderPaymentQr(doc, qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
+    const qrLabel = qr ? (qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase()) : "";
+    this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant), qr ? { label: qrLabel, png: qr.png } : null, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     const credit = brandCreditFor(tenant, lang, "pdf");
     if (credit) this.renderCredit(doc, credit);
@@ -554,7 +556,10 @@ export class InvoicePdfService {
     doc.moveTo(50, y - 8).lineTo(545, y - 8).strokeColor("#e5e7eb").stroke();
     const fmt = (d: Date | null) => (d ? new Date(d).toLocaleDateString("cs-CZ") : "–");
     const left: Array<[string, string]> = [[t.issueDate, fmt(invoice.issueDate)]];
-    if (invoice.documentType === "invoice" || invoice.documentType === "credit_note") {
+    // DUZP belongs on tax documents only (§29 ZDPH); a non-payer's invoice is
+    // not one, and printing the date there only raises questions.
+    const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
+    if (taxDocument && (tenant.dicVatPayer || tenant.vatStatus === "identified")) {
       left.push([t.taxableSupplyDate, fmt(invoice.taxableSupplyDate ?? invoice.issueDate)]);
     }
     if (invoice.dueDate) left.push([invoice.documentType === "quote" ? t.validUntil : t.dueDate, fmt(invoice.dueDate)]);
@@ -569,14 +574,6 @@ export class InvoicePdfService {
     const rightRows: Array<[string, string]> = [];
     if (invoice.documentType !== "quote") {
       rightRows.push([t.paymentMethod, invoice.paymentMethodLabel || t.methods[invoice.paymentMethod]]);
-      if (invoice.paymentMethod === "bank_transfer") {
-        if (tenant.bankAccountNumber) {
-          rightRows.push([t.account, `${tenant.bankAccountNumber}/${tenant.bankAccountBankCode ?? ""}`]);
-        }
-        const iban = this.iban(tenant);
-        if (iban) rightRows.push(["IBAN", iban]);
-        if (tenant.bankAccountSwift) rightRows.push(["SWIFT", tenant.bankAccountSwift]);
-      }
       if (invoice.variableSymbol) rightRows.push([t.vs, invoice.variableSymbol]);
       if (invoice.constantSymbol) rightRows.push([t.ks, invoice.constantSymbol]);
       if (invoice.specificSymbol) rightRows.push([t.ss, invoice.specificSymbol]);
@@ -770,12 +767,45 @@ export class InvoicePdfService {
     return top;
   }
 
-  /** Sits to the left of the totals block, level with its top (`top`). */
-  private renderPaymentQr(doc: PDFKit.PDFDocument, label: string, qrPngBuffer: Buffer, top: number): void {
-    doc.font(BOLD).fontSize(8).fillColor(MUTED).text(label, 50, top);
-    doc.image(qrPngBuffer, 50, top + 12, { width: 100, height: 100 });
+  /** Account, IBAN and SWIFT of a bank transfer: they go next to the QR code that pays into them. */
+  private bankRows(t: (typeof L)[Lang], invoice: InvoiceRow, tenant: TenantRow): Array<[string, string]> {
+    if (invoice.documentType === "quote" || invoice.paymentMethod !== "bank_transfer") return [];
+    const rows: Array<[string, string]> = [];
+    if (tenant.bankAccountNumber) rows.push([t.account, `${tenant.bankAccountNumber}/${tenant.bankAccountBankCode ?? ""}`]);
+    const iban = this.iban(tenant);
+    if (iban) rows.push(["IBAN", iban]);
+    if (tenant.bankAccountSwift) rows.push(["SWIFT", tenant.bankAccountSwift]);
+    return rows;
+  }
+
+  /**
+   * The bank details and the QR code side by side, to the left of the totals
+   * block and level with its top (`top`). The rows stack label over value so
+   * they fit beside the code without making the block taller than the code.
+   */
+  private renderPaymentBlock(
+    doc: PDFKit.PDFDocument,
+    rows: Array<[string, string]>,
+    qr: { label: string; png: Buffer } | null,
+    top: number,
+  ): void {
+    if (!rows.length && !qr) return;
+    const size = 90;
+    if (qr) {
+      doc.font(BOLD).fontSize(8).fillColor(MUTED).text(qr.label, 50, top, { width: 240 });
+      doc.image(qr.png, 50, top + 12, { width: size, height: size });
+    }
+    const x = qr ? 50 + size + 10 : 50;
+    const width = 290 - x;
+    let y = qr ? top + 14 : top;
+    for (const [label, value] of rows) {
+      doc.font(REGULAR).fontSize(7.5).fillColor(MUTED).text(label, x, y, { width });
+      y += doc.heightOfString(label, { width }) + 1;
+      doc.font(BOLD).fontSize(9).fillColor("black").text(value, x, y, { width });
+      y += doc.heightOfString(value, { width }) + 5;
+    }
     doc.fillColor("black");
-    doc.y = Math.max(doc.y, top + 120);
+    doc.y = Math.max(doc.y, y, qr ? top + 12 + size + 8 : top);
   }
 
   /**
@@ -842,19 +872,9 @@ export class InvoicePdfService {
     doc.fillColor("black");
   }
 
-  /** The Billanta "B" tile from components/brand-mark.tsx, `size` points square. */
+  /** The Billanta logo mark (public/brand/mark.png), `size` points square. */
   private renderBrandMark(doc: PDFKit.PDFDocument, x: number, y: number, size: number): void {
-    const gradient = doc.linearGradient(x, y, x + size, y + size).stop(0, "#6366f1").stop(1, "#7c3aed");
-    doc.save();
-    doc.roundedRect(x, y, size, size, size / 4).fill(gradient);
-    doc.translate(x, y).scale(size / 32);
-    doc
-      .path("M10.5 7.5h6.3a4.25 4.25 0 0 1 0 8.5H10.5zM10.5 16h7.4a4.5 4.5 0 0 1 0 9h-7.4z")
-      .lineWidth(2.8)
-      .lineJoin("round")
-      .stroke("#ffffff");
-    doc.circle(24.6, 8.4, 2.6).fill("#4ade80");
-    doc.restore();
+    doc.image(BRAND_MARK_PNG, x, y, { width: size, height: size });
   }
 
   private formatNumber(n: number): string {

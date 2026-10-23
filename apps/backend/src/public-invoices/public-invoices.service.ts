@@ -1,7 +1,11 @@
 import { ConflictException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { sql } from "drizzle-orm";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import * as schema from "../../drizzle/schema";
 import { czechAccountToIban, generateQrInvoiceString } from "@faktur/cz-compliance";
 import { DbService } from "../db/db.service";
+import { drizzleTx } from "../db/drizzle-tx";
+import { InvoicesService } from "../invoices/invoices.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { EmailService } from "../email/email.service";
 import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
@@ -168,6 +172,7 @@ export class PublicInvoicesService {
     private readonly dbService: DbService,
     @Optional() private readonly notifications?: NotificationsService,
     @Optional() private readonly email?: EmailService,
+    @Optional() private readonly invoices?: InvoicesService,
   ) {}
 
   /**
@@ -383,6 +388,29 @@ export class PublicInvoicesService {
     };
   }
 
+  /**
+   * The invoice PDF for the /i/ page, the same document the dashboard renders.
+   * The token passes exactly the view's checks (link resolution, suspended
+   * company, `get_public_invoice_view`); drafts have no number and are 404 too.
+   * The tenant id comes from that SECURITY DEFINER row, and the render then
+   * runs in an ordinary RLS-scoped transaction for that tenant only.
+   */
+  async generatePdf(link: string): Promise<{ filename: string; content: Buffer }> {
+    const token = await resolveInvoiceToken(this.dbService.db, link);
+    if (!token || !this.invoices || (await this.isBlocked(token))) throw new NotFoundException("Invoice not found");
+    const rows = await this.dbService.db.execute<{ id: string; tenant_id: string; invoice_number: string | null; status: string }>(
+      sql`SELECT id, tenant_id, invoice_number, status FROM get_public_invoice_view(${token})`,
+    );
+    const hit = rows[0];
+    if (!hit || !hit.invoice_number || ["draft", "pending_review"].includes(hit.status)) throw new NotFoundException("Invoice not found");
+    const invoices = this.invoices;
+    const content = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${hit.tenant_id}, true)`;
+      return invoices.generateInvoicePdf(drizzleTx(tx, schema) as PostgresJsDatabase<typeof schema>, hit.tenant_id, hit.id);
+    });
+    return { filename: pdfFilename(hit.invoice_number), content: content as Buffer };
+  }
+
   /** One portal attachment by token + id (`get_public_invoice_attachment`); 404 for anything else. */
   async downloadAttachment(link: string, attachmentId: string) {
     const token = UUID_PATTERN.test(attachmentId) ? await resolveInvoiceToken(this.dbService.db, link) : null;
@@ -394,6 +422,17 @@ export class PublicInvoicesService {
     if (!row) throw new NotFoundException("Attachment not found");
     return { filename: row.filename, mime: row.mime, content: Buffer.from(row.data, "base64") };
   }
+}
+
+/** `<invoice number>.pdf`, safe inside a quoted Content-Disposition filename (ASCII only, no quotes or path parts). */
+export function pdfFilename(invoiceNumber: string): string {
+  const base = invoiceNumber
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[^A-Za-z0-9._-]+/g, "-")
+    .replace(/^[.-]+|[.-]+$/g, "")
+    .slice(0, 64);
+  return `${base || "invoice"}.pdf`;
 }
 
 function roundMinor(amount: number): number {
