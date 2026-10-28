@@ -142,7 +142,7 @@ export class WelcomeTrialService {
   private async signals(db: TenantDb, tenantId: string): Promise<TrialSignal[]> {
     const [t] = await db
       .select({
-        country: schema.tenants.addressCountry,
+        country: schema.tenants.country,
         account: schema.tenants.bankAccountNumber,
         bankCode: schema.tenants.bankAccountBankCode,
         iban: schema.tenants.bankAccountIban,

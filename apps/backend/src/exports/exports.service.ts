@@ -301,7 +301,7 @@ export class ExportsService {
   async invoicesCsv(db: Db, period: ExportPeriod, filters: ReportFilters = {}, dateBy: ExportDateBy = "issue"): Promise<string> {
     const rows = await this.loadInvoices(db, period, filters, dateBy);
     // RLS scopes this to the caller's own company — its number variables feed the formulas.
-    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.addressCountry }).from(schema.tenants).limit(1);
+    const [tenant] = await db.select({ templateVars: schema.tenants.templateVars, country: schema.tenants.country }).from(schema.tenants).limit(1);
     return invoicesCsvBody(rows, templateVarsOf(tenant?.templateVars), homeCurrencyOf(tenant?.country));
   }
 

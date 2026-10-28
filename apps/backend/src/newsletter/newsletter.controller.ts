@@ -62,7 +62,7 @@ export class MeNewsletterController {
   /** The company's country is only the default for a new subscription. */
   private async country(req: TenantScopedRequest): Promise<"CZ" | "SK"> {
     const [t] = await req
-      .tenantDb!.select({ country: schema.tenants.addressCountry })
+      .tenantDb!.select({ country: schema.tenants.country })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, req.user!.tenantId));
     return t?.country === "SK" ? "SK" : "CZ";

@@ -332,7 +332,7 @@ export class DashboardService {
     // A year back: whether the account buys abroad at all decides if an
     // identified person's return shows in a month without such an expense.
     const since = new Date(now.getFullYear(), now.getMonth() - 12, 1);
-    const [tenant] = await db.select({ country: schema.tenants.addressCountry }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
+    const [tenant] = await db.select({ country: schema.tenants.country }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
     const invoices = await db
       .select({
         documentType: schema.invoices.documentType,
@@ -416,7 +416,7 @@ export class DashboardService {
       db.select({ n: count() }).from(schema.invoiceTemplates),
       db.select({ n: count() }).from(schema.contacts),
       db
-        .select({ vatStatus: schema.tenants.vatStatus, dicVatPayer: schema.tenants.dicVatPayer, legalName: schema.tenants.legalName, country: schema.tenants.addressCountry })
+        .select({ vatStatus: schema.tenants.vatStatus, dicVatPayer: schema.tenants.dicVatPayer, legalName: schema.tenants.legalName, country: schema.tenants.country })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, tenantId)),
     ]);
