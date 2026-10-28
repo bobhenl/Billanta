@@ -33,7 +33,7 @@ describe('Partita IVA', () => {
     expect(isValidItPartitaIva('00905811007')).toBe(false);
     expect(isValidItPartitaIva('0090581100')).toBe(false);
     // Office code 101 is not assigned (valid Luhn otherwise).
-    expect(isValidItPartitaIva('12345671017')).toBe(false);
+    expect(isValidItPartitaIva('12345671015')).toBe(false);
     expect(isValidItPartitaIva('')).toBe(false);
   });
 });
