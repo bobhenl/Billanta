@@ -10671,7 +10671,242 @@
           "Sur une facture en EUR, indiquez aussi la TVA en CZK avec le taux de change utilisé.",
           "La date d’échéance n’est pas une mention obligatoire d’un document fiscal, mais sans elle une créance est difficile à recouvrer."
         ]
+      },
+      "proforma": {
+        "name": "Facture proforma",
+        "title": "Modèle de facture proforma (zálohová faktura tchèque)",
+        "description": "Modèle de facture proforma tchèque : ce qu’elle doit contenir, pourquoi ce n’est pas un document fiscal et quel document émettre après le paiement. Éditeur en ligne et PDF gratuits.",
+        "lead": "Une facture proforma demande un paiement à l’avance. Ce n’est pas un document fiscal : le client ne peut donc pas en déduire la TVA. Une fois le paiement reçu, l’assujetti à la TVA émet un document fiscal.",
+        "docTitle": "Facture proforma",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "Cette facture proforma n’est pas un document fiscal.",
+          "Nous vous enverrons un document fiscal pour le paiement dès sa réception sur notre compte."
+        ],
+        "lines": [
+          {
+            "d": "Acompte de 50 % pour la création d’un site web",
+            "q": 1,
+            "u": "pce",
+            "p": 20000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Vous souhaitez être payé d’avance avant de commencer le travail ou d’expédier la marchandise.",
+          "Après le paiement, l’assujetti à la TVA émet généralement un document fiscal pour le paiement reçu et déduit l’acompte sur la facture finale. Un non-assujetti déduit simplement l’acompte sur la facture finale."
+        ],
+        "fields": [
+          {
+            "name": "Fournisseur et client",
+            "text": "Nom, adresse du siège et numéro d’entreprise (IČO) ; c’est un document commercial.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Numéro de la proforma",
+            "text": "Utilisez une série distincte pour ne pas la confondre avec les documents fiscaux."
+          },
+          {
+            "name": "Montant de l’acompte et date d’échéance",
+            "text": "Combien, avant quelle date et sur quel compte bancaire."
+          },
+          {
+            "name": "Mention indiquant que ce n’est pas un document fiscal",
+            "text": "Recommandée : elle signale au client qu’il ne peut pas en déduire la TVA."
+          },
+          {
+            "name": "Document fiscal après le paiement",
+            "text": "La réception d’un acompte rend en général la TVA exigible ; l’assujetti émet un document fiscal pour ce paiement.",
+            "rule": "§28/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "N’indiquez pas de date du fait générateur sur une proforma – elle ne naît qu’à la réception du paiement.",
+          "N’oubliez pas de déduire l’acompte sur la facture finale, sinon le client paiera deux fois."
+        ]
+      },
+      "creditNote": {
+        "name": "Avoir",
+        "title": "Modèle d’avoir (document fiscal rectificatif tchèque)",
+        "description": "Modèle d’avoir tchèque : référence à la facture d’origine, motif de la rectification et différence de base imposable et de TVA. Mentions obligatoires selon l’article 46 de la loi sur la TVA.",
+        "lead": "Lorsque vous baissez le prix après la facturation (remise, réclamation, marchandise retournée) ou que vous l’augmentez, vous émettez un document fiscal rectificatif. Il corrige la facture d’origine, il ne la remplace pas.",
+        "docTitle": "Avoir",
+        "number": "OD-2026-0003",
+        "related": "2026-0042",
+        "reason": "Remise de prix suite à une réclamation sur la création du logo",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Remise – création du logo",
+            "q": 1,
+            "u": "pce",
+            "p": -2000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Une remise accordée après la facturation, une réclamation acceptée, une marchandise retournée ou une partie de la prestation annulée.",
+          "La facture d’origine reste valable ; l’avoir ne porte que sur la différence."
+        ],
+        "fields": [
+          {
+            "name": "Les deux parties et leurs numéros de TVA",
+            "text": "Comme sur un document fiscal ordinaire.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Numéro de l’avoir",
+            "text": "Un numéro propre, tiré de votre série.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Numéro du document d’origine",
+            "text": "La facture que vous rectifiez.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Motif de la rectification",
+            "text": "Bref et précis, par exemple une remise suite à une réclamation.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Différence de base imposable et de TVA",
+            "text": "L’écart entre la base et la TVA rectifiées et celles d’origine, négatif en cas de réduction.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Rectification de la base imposable",
+            "text": "Quand et à quelles conditions la rectification a lieu.",
+            "rule": "§42/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Un non-assujetti à la TVA n’émet pas de document fiscal rectificatif – un simple avoir en tant que pièce comptable, faisant référence à la facture d’origine, suffit.",
+          "N’annulez pas et n’écrasez pas la facture d’origine ; elle reste dans vos registres."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Autoliquidation",
+        "title": "Modèle de facture en autoliquidation nationale (République tchèque)",
+        "description": "Modèle de facture tchèque en autoliquidation nationale (article 92a de la loi sur la TVA), par exemple pour des travaux de construction : la mention « daň odvede zákazník », le numéro de TVA du client et le montant hors TVA.",
+        "lead": "Pour les travaux de construction et de montage, les déchets, les métaux et les autres prestations relevant de l’article 92a de la loi tchèque sur la TVA, c’est le client qui acquitte la TVA. Le fournisseur facture hors TVA et ajoute la mention « daň odvede zákazník » (la taxe sera acquittée par le client).",
+        "docTitle": "Facture (document fiscal)",
+        "number": "2026-0115",
+        "notes": [
+          "Daň odvede zákazník (autoliquidation).",
+          "Autoliquidation selon l’article 92e de la loi sur la TVA (travaux de construction et de montage)."
+        ],
+        "lines": [
+          {
+            "d": "Maçonnerie – rénovation de la salle de bains, appartement 2.04",
+            "q": 1,
+            "u": "pce",
+            "p": 84000,
+            "r": 21
+          },
+          {
+            "d": "Carrelage mural et au sol, matériaux compris",
+            "q": 26,
+            "u": "m²",
+            "p": 1250,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Vous êtes tous deux assujettis à la TVA en République tchèque et la prestation relève du régime (articles 92b à 92e et règlement gouvernemental).",
+          "Le plus souvent des travaux de construction et de montage (CZ-CPA 41 à 43), des livraisons de déchets et de ferraille ou des quotas d’émission."
+        ],
+        "fields": [
+          {
+            "name": "La mention « daň odvede zákazník »",
+            "text": "Mention obligatoire sur le document fiscal lorsque c’est le client qui acquitte la TVA.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Numéros de TVA du fournisseur et du client",
+            "text": "Le régime ne s’applique qu’entre assujettis à la TVA ; le numéro de TVA du client est donc indispensable.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Base imposable hors TVA",
+            "text": "Vous n’indiquez pas le montant de la TVA ; le client le calcule et le déclare. Indiquer le taux lui facilite la tâche.",
+            "rule": "§92a/1 ZDPH"
+          },
+          {
+            "name": "Autres mentions du document fiscal",
+            "text": "Numéro, dates, objet et étendue de la prestation, prix unitaire.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Déclaration de contrôle",
+            "text": "Le fournisseur déclare la prestation dans la section A.1 de la déclaration de contrôle (kontrolní hlášení), le client dans la section B.1."
+          }
+        ],
+        "pitfalls": [
+          "Si le client n’est pas assujetti à la TVA (par exemple un particulier), le régime ne s’applique pas et vous facturez la TVA.",
+          "Avant l’envoi, vérifiez dans le registre des assujettis à la TVA que le client est bien assujetti."
+        ]
+      },
+      "identified": {
+        "name": "Personne identifiée",
+        "title": "Modèle de facture pour une personne identifiée (services vers l’UE)",
+        "description": "Modèle de facture tchèque pour une personne identifiée qui facture une entreprise d’un autre pays de l’UE : les deux numéros de TVA, sans TVA, avec la mention « daň odvede zákazník ». Mentions obligatoires et éditeur en ligne gratuit.",
+        "lead": "Un non-assujetti tchèque qui fournit un service à une entreprise d’un autre pays de l’UE devient une personne identifiée. Il facture sans TVA tchèque, indique son numéro de TVA et celui du client, et précise que la taxe est acquittée par le client.",
+        "docTitle": "Facture (document fiscal)",
+        "number": "2026-0021",
+        "notes": [
+          "Daň odvede zákazník (autoliquidation).",
+          "Autoliquidation – article 196 de la directive 2006/112/CE du Conseil."
+        ],
+        "lines": [
+          {
+            "d": "Webdesign – mise à jour du thème de la boutique en ligne, octobre 2026",
+            "q": 1,
+            "u": "pce",
+            "p": 18000,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Vous n’êtes pas assujetti à la TVA et fournissez un service (programmation, design, marketing) à une entreprise immatriculée à la TVA dans un autre pays de l’UE.",
+          "Inscrivez-vous comme personne identifiée dans les 15 jours suivant la prestation ; vous ne devenez pas assujetti à la TVA pour autant."
+        ],
+        "fields": [
+          {
+            "name": "Numéro de TVA du fournisseur",
+            "text": "La personne identifiée obtient un numéro de TVA CZ… et l’indique sur la facture.",
+            "rule": "§6i/1 ZDPH"
+          },
+          {
+            "name": "Numéro de TVA du client d’un autre pays",
+            "text": "Vérifiez-le dans VIES ; sans numéro de TVA valide, pas d’autoliquidation.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "La mention « daň odvede zákazník »",
+            "text": "Le client déclare la TVA dans son pays ; la facture indique le montant hors TVA.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Date de la prestation",
+            "text": "Le jour où le service a été fourni ; elle détermine la période de déclaration.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "État récapitulatif",
+            "text": "Déposez l’état récapitulatif (souhrnné hlášení) pour le mois au cours duquel vous avez fourni le service.",
+            "rule": "§102/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Si vous facturez un particulier dans l’UE, vous ne devenez pas personne identifiée ; il s’agit d’une facture ordinaire de non-assujetti.",
+          "Pour les services que vous achetez à des sociétés étrangères (publicités Facebook ou Google), vous acquittez vous-même la TVA tchèque – c’est l’autre face de la même obligation."
+        ]
       }
+    },
+    "requirementsLink": {
+      "title": "Que doit contenir une facture ?",
+      "text": "Indiquez qui vous êtes et ce que vous émettez, et nous vous listons les mentions obligatoires pour votre cas précis."
     }
   },
   "demo": {
@@ -12754,5 +12989,204 @@
       "cleaning": "Entreprises de nettoyage, entretien de la maison et du jardin, lavage de vitres et autres services à domicile.",
       "other": "Autres entrepreneurs individuels et sociétés qui n’entrent dans aucun des autres métiers."
     }
+  },
+  "accountantDirectory": {
+    "seoTitle": "Vous cherchez un comptable ? Comptables recommandés par région",
+    "title": "Vous cherchez un comptable ?",
+    "lead": "Des comptables et cabinets comptables qui travaillent avec Billanta. Choisissez une région et un service, puis contactez-les directement.",
+    "filters": {
+      "label": "Filtrer les comptables",
+      "region": "Région",
+      "anyRegion": "Tchéquie et Slovaquie",
+      "service": "Service",
+      "anyService": "Tous les services",
+      "apply": "Filtrer",
+      "reset": "Effacer les filtres"
+    },
+    "count": "{n, plural, one {# comptable} other {# comptables}}",
+    "empty": "Personne ne correspond pour l’instant. Essayez une autre région ou un autre service.",
+    "emptyAll": "La liste ne fait que commencer. Nous ajoutons les comptables un par un, chacun après vérification.",
+    "remote": "Aussi à distance",
+    "languages": "Langues",
+    "price": "Tarif",
+    "contact": "Contact",
+    "website": "Site web",
+    "profile": {
+      "title": "Profil de comptable",
+      "description": "Votre fiche dans l’annuaire public des comptables et le programme partenaire comptable. Nous validons les deux manuellement.",
+      "loadError": "Impossible de charger le profil de comptable.",
+      "partnerTitle": "Programme partenaire comptable"
+    },
+    "emailSubject": "Demande de services comptables ({site})",
+    "howTitle": "Comment les comptables sont référencés",
+    "howBody": "Les comptables s’inscrivent eux-mêmes dans Paramètres → Profil de comptable, et nous validons chaque fiche manuellement avant sa publication. Personne ne paie pour être référencé. Vous convenez du tarif et des conditions directement avec le comptable ; Billanta n’intervient pas.",
+    "joinTitle": "Vous êtes comptable ?",
+    "joinBody": "Remplissez un profil de comptable et proposez vos services aux entreprises qui facturent avec Billanta.",
+    "joinCta": "Programme comptables",
+    "regions": {
+      "CZ-10": "Prague",
+      "CZ-20": "Région de Bohême-Centrale",
+      "CZ-31": "Région de Bohême-du-Sud",
+      "CZ-32": "Région de Plzeň",
+      "CZ-41": "Région de Karlovy Vary",
+      "CZ-42": "Région d’Ústí nad Labem",
+      "CZ-51": "Région de Liberec",
+      "CZ-52": "Région de Hradec Králové",
+      "CZ-53": "Région de Pardubice",
+      "CZ-63": "Région de Vysočina",
+      "CZ-64": "Région de Moravie-du-Sud",
+      "CZ-71": "Région d’Olomouc",
+      "CZ-72": "Région de Zlín",
+      "CZ-80": "Région de Moravie-Silésie",
+      "SK-BL": "Région de Bratislava",
+      "SK-TA": "Région de Trnava",
+      "SK-TC": "Région de Trenčín",
+      "SK-NI": "Région de Nitra",
+      "SK-ZI": "Région de Žilina",
+      "SK-BC": "Région de Banská Bystrica",
+      "SK-PV": "Région de Prešov",
+      "SK-KI": "Région de Košice"
+    },
+    "services": {
+      "bookkeeping": "Tenue de comptabilité",
+      "tax_records": "Registres fiscaux (entrepreneurs individuels)",
+      "tax_return": "Déclaration d’impôt sur le revenu",
+      "vat": "Déclarations et relevés de TVA",
+      "payroll": "Paie et RH",
+      "annual_accounts": "Comptes annuels",
+      "advisory": "Conseil fiscal",
+      "startup": "Création de société et d’activité"
+    },
+    "promo": {
+      "title": "Vous cherchez un comptable ?",
+      "body": "Personne à qui envoyer vos exports ? Notre liste recense des comptables par région et par service.",
+      "cta": "Trouver un comptable"
+    },
+    "settings": {
+      "title": "Fiche dans l’annuaire des comptables",
+      "intro": "Les entreprises qui cherchent un comptable vous trouveront sur la page « Vous cherchez un comptable ? ». Nous publions votre fiche après vérification.",
+      "displayName": "Votre nom ou celui de votre cabinet",
+      "bio": "Quelques mots sur vous",
+      "regions": "Régions couvertes",
+      "remote": "Je travaille aussi à distance",
+      "services": "Services",
+      "languages": "Langues",
+      "priceHint": "Tarif indicatif",
+      "priceHintPlaceholder": "p. ex. à partir de 1 500 CZK par mois",
+      "contactEmail": "E-mail pour les demandes",
+      "website": "Site web",
+      "contactNote": "Indiquez un e-mail, un site web ou les deux. Ils sont affichés publiquement.",
+      "save": "Envoyer pour validation",
+      "withdraw": "Retirer de la liste",
+      "saved": "Envoyé pour validation",
+      "withdrawn": "Fiche retirée",
+      "editNote": "Chaque modification repasse en validation.",
+      "viewPage": "Voir la page",
+      "reviewNote": "Notre remarque : {note}",
+      "status": {
+        "pending": "En attente de validation",
+        "approved": "Publiée",
+        "rejected": "Non approuvée",
+        "withdrawn": "Retirée"
+      },
+      "errors": {
+        "services_required": "Choisissez au moins un service.",
+        "languages_required": "Choisissez au moins une langue.",
+        "region_required": "Choisissez une région ou cochez le travail à distance.",
+        "contact_required": "Indiquez un e-mail ou un site web.",
+        "invalid_website": "Le site web ne semble pas être une adresse valide.",
+        "generic": "L’enregistrement a échoué. Veuillez réessayer.",
+        "ico_required": "Ajoutez d’abord votre numéro d’entreprise dans Paramètres → Entreprise."
+      },
+      "needIco": "Une fiche dans l’annuaire nécessite votre numéro d’entreprise (IČO). Ajoutez-le dans Paramètres → Entreprise."
+    },
+    "partner": {
+      "approved": "Votre adhésion au programme partenaire comptable est approuvée. Les crédits pour vos clients sont les mêmes que pour un parrainage classique.",
+      "pending": "Votre demande d’adhésion au programme partenaire est en attente de validation. Nous l’examinons en même temps que votre fiche dans l’annuaire.",
+      "intro": "Le programme partenaire signale les comptables que nous avons vérifiés. Les crédits pour vos clients sont les mêmes que pour un parrainage classique. Les entreprises vous trouvent dans l’annuaire des comptables, et vous travaillez avec vos clients grâce au rôle de comptable et aux exports. Nous l’activons manuellement une fois votre fiche dans l’annuaire approuvée.",
+      "rejected": "Nous n’avons pas approuvé la demande cette fois-ci. Vous pouvez la renvoyer.",
+      "rejectedNote": "Nous n’avons pas approuvé la demande : {note}. Vous pouvez la renvoyer.",
+      "needListing": "Envoyez d’abord votre fiche pour l’annuaire des comptables.",
+      "ask": "Demander à rejoindre le programme partenaire comptable",
+      "profileLink": "Profil de comptable",
+      "sent": "Demande envoyée. Nous reviendrons vers vous après vérification.",
+      "errors": {
+        "listing_required": "Envoyez d’abord votre fiche pour l’annuaire dans Profil de comptable.",
+        "ico_required": "Ajoutez d’abord votre numéro d’entreprise dans Paramètres → Entreprise.",
+        "generic": "Impossible d’envoyer la demande. Veuillez réessayer."
+      }
+    }
+  },
+  "annualEstimate": {
+    "year": "Année",
+    "incomeCzk": "Revenus de l’année (CZK)",
+    "incomeEur": "Revenus de l’année (EUR)",
+    "income": "Revenus",
+    "expenses": "Dépenses",
+    "actualMode": "Dépenses réelles",
+    "actualExpenses": "Dépenses réelles",
+    "start": "Activité en cours d’année",
+    "startFull": "Toute l’année",
+    "startFrom": "À partir du {date} ({months, plural, one {# mois} other {# mois}})",
+    "paidSocial": "Cotisations sociales versées (facultatif)",
+    "paidHealth": "Cotisations d’assurance maladie versées (facultatif)",
+    "paidHint": "Acomptes versés pour cette année. Renseignez-les pour voir le reste à payer ou le trop-perçu.",
+    "balance": "À payer (+) / trop-perçu (−)",
+    "nextAdvance": "Nouvel acompte mensuel",
+    "total": "Impôt + cotisations au total",
+    "paramsFallback": "Pas encore de paramètres pour cette année ; nous utilisons ceux de {year}.",
+    "downloadCsv": "Télécharger le CSV",
+    "csvName": "estimation-impot-et-cotisations",
+    "resultTitle": "Estimation",
+    "perMonth": "par mois",
+    "disclaimer": "Le résultat n’est qu’une estimation approximative et ne remplace pas un expert-comptable ni un conseiller fiscal. Il ne prend en compte que les revenus d’activité, avec la réduction ou l’abattement de base du contribuable, sans tenir compte des enfants, des déductions ni des autres revenus. Avant de déclarer ou de payer quoi que ce soit sur cette base, vérifiez auprès de votre comptable ou sur les sites des administrations.",
+    "cz": {
+      "modes": {
+        "30": "Forfait 30 % – location de biens professionnels (max. {cap} CZK)",
+        "40": "Forfait 40 % – professions libérales, droits d’auteur (max. {cap} CZK)",
+        "60": "Forfait 60 % – autres activités commerciales (max. {cap} CZK)",
+        "80": "Forfait 80 % – artisanat, agriculture (max. {cap} CZK)"
+      },
+      "flatExpenses": "Dépenses forfaitaires {rate} %",
+      "profit": "Bénéfice",
+      "taxBase": "Base imposable (arrondie à la centaine inférieure)",
+      "taxCredit": "Réduction d’impôt du contribuable",
+      "incomeTax": "Impôt sur le revenu",
+      "incomeTaxHint": "15 %, 23 % au-delà de 36 salaires moyens. Seule la réduction de base du contribuable est appliquée, sans enfants, conjoint ni déductions.",
+      "social": "Cotisations sociales",
+      "socialHint": "29,2 % de 55 % du bénéfice, au minimum la base minimale pour activité principale pour chaque mois d’activité.",
+      "health": "Assurance maladie",
+      "healthHint": "13,5 % de 50 % du bénéfice, au minimum la moitié du salaire moyen pour chaque mois d’activité.",
+      "params": "Pour {year}, nous utilisons un salaire moyen de {wage} CZK, une réduction d’impôt du contribuable de {credit} CZK et une base minimale de cotisations sociales de {share} % du salaire moyen (activité principale).",
+      "paramsShareChange": "À partir de {month}/{year}, le minimum passe à {share} % (acompte social d’au moins {advance} CZK).",
+      "startHint": "Les bases minimales de cotisations ne comptent que les mois d’activité. La réduction d’impôt du contribuable et le plafond forfaitaire restent entiers."
+    },
+    "sk": {
+      "flatMode": "Dépenses forfaitaires 60 % (max. {cap})",
+      "actualHint": "Sans les cotisations sociales et d’assurance maladie versées, déduites séparément.",
+      "flatExpenses": "Dépenses forfaitaires 60 %",
+      "paidInsurance": "Cotisations versées",
+      "taxBase": "Base imposable",
+      "allowance": "Abattement du contribuable (nezdaniteľná časť)",
+      "taxable": "Montant imposable",
+      "incomeTax": "Impôt sur le revenu",
+      "incomeTaxReduced": "Impôt sur le revenu (15 %)",
+      "incomeTaxHint": "15 % pour des revenus jusqu’à 100 000 EUR (60 000 EUR pour 2024), sinon 19 % et 25 % sur la base imposable dépassant 176,8 fois le minimum vital. À partir de 2026, les tranches sont 19 % jusqu’à 43 983 EUR, 25 % jusqu’à 60 349 EUR, 30 % jusqu’à 75 010 EUR et 35 % au-delà. Sans bonus pour enfant ni autres déductions.",
+      "health": "Assurance maladie pour l’année",
+      "healthHint": "{rate} % de la base de calcul (bénéfice divisé par 1,486), au minimum la base minimale pour chaque mois d’activité.",
+      "social": "Cotisations sociales à partir de juillet {year}",
+      "socialNone": "aucune",
+      "socialHint": "La caisse slovaque d’assurance sociale (Sociálna poisťovňa) les fixe d’après votre déclaration d’impôt : la base est le bénéfice divisé par 1,486 puis par le nombre de mois, entre la base minimale et la base maximale. En dessous du seuil de revenus, il n’y a pas d’obligation.",
+      "socialMicroHint": "Les revenus dépassent à peine le seuil, donc une micro-cotisation réduite (mikroodvod) s’applique à partir de juillet 2026.",
+      "total": "Impôt + cotisations pour l’année",
+      "totalHint": "Impôt sur le revenu, assurance maladie pour l’année et cotisations sociales versées en cours d’année.",
+      "params": "Pour {year}, nous utilisons un minimum vital de {zm} et un plafond de dépenses forfaitaires de {cap}.",
+      "socialFallback": "Les paramètres des cotisations sociales pour l’année prochaine ne sont pas encore publiés ; nous utilisons ceux de juillet {year}.",
+      "startHint": "La base minimale d’assurance maladie ne compte que les mois d’activité. Le plafond forfaitaire et l’abattement restent entiers.",
+      "paidSocialHint": "Cotisations sociales versées en cours d’année. Elles réduisent la base imposable.",
+      "paidHealthHint": "Acomptes d’assurance maladie versés en cours d’année. Ils réduisent la base imposable et sont régularisés lors du décompte annuel."
+    },
+    "csvNote": "Remarque",
+    "csvDisclaimer": "Estimation approximative sans garantie. Elle ne remplace ni une déclaration d’impôt ni un conseiller fiscal. Vérifiez les chiffres avant de les utiliser."
   }
 }
