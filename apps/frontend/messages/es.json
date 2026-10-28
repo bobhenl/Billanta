@@ -7774,6 +7774,344 @@
             "El seguro sanitario es el 15 % (16 % desde 2026) del beneficio dividido entre 1,486, como mínimo sobre la base mínima por cada mes. La diferencia con los anticipos pagados se liquida en la regularización anual.",
             "La cotización social empieza solo en julio del año siguiente, y solo si los ingresos superan el umbral legal. La base es el beneficio dividido entre 1,486 y entre los meses, entre la base mínima y la máxima."
           ]
+        },
+        "taxCalendar": {
+          "name": "Calendario fiscal",
+          "title": "Calendario fiscal para autónomos y sociedades: plazos de IVA, seguros sociales y declaración de la renta",
+          "description": "Un año de plazos fiscales mes a mes: IVA, declaraciones de control, anticipos de seguros sociales y declaración de la renta. Para Chequia y Eslovaquia, trasladados a días hábiles y con suscripción para el calendario de su teléfono.",
+          "lead": "Elija el país, la forma en que ejerce su actividad y su situación respecto al IVA. Verá todos los plazos del año mes a mes y podrá añadirlos a su propio calendario.",
+          "keywords": "calendario fiscal checo 2026 2027 plazos fiscales eslovaquia plazo declaración iva declaración de control seguridad social seguro médico autónomos plazo declaración renta ics",
+          "how": [
+            "Los plazos siguen la legislación de Chequia o Eslovaquia. Cuando uno cae en fin de semana o festivo, lo trasladamos al siguiente día hábil (§ 33 del Código Tributario checo, § 27 de la Ley de Procedimiento Tributario eslovaca).",
+            "Cada plazo indica a qué periodo corresponde la declaración o el pago.",
+            "La declaración recapitulativa y la declaración de la persona identificada solo se presentan en los meses en que hubo operaciones, por eso se marcan como \"solo si\".",
+            "La suscripción al calendario no requiere registro. La dirección solo contiene sus opciones, no guardamos nada sobre usted y pasa al año nuevo automáticamente."
+          ],
+          "howTitle": "Cómo funciona",
+          "ctaTitle": "Deje que Billanta controle sus plazos",
+          "ctaText": "Billanta muestra sus próximos plazos en el panel, adaptados a su situación de IVA y forma jurídica, y los sincroniza con el calendario de su teléfono. A partir de sus facturas y gastos prepara el XML de la declaración de IVA checa y de la declaración de control.",
+          "disclaimer": "Los plazos se calculan a partir de la ley y, si caen en fin de semana o festivo, se trasladan al siguiente día hábil. El calendario oficial de la Administración Tributaria incluye también otras declaraciones (OSS, CESOP, impuestos especiales). Esto es un calendario; no controlamos lo que ya ha presentado.",
+          "explainedTitle": "Qué significa cada plazo ({country})",
+          "fields": {
+            "country": "País",
+            "year": "Año",
+            "entity": "Ejerzo mi actividad como",
+            "vat": "IVA",
+            "extras": "Otros plazos"
+          },
+          "countries": {
+            "CZ": "Chequia",
+            "SK": "Eslovaquia"
+          },
+          "entities": {
+            "CZ": {
+              "osvc": "Autónomo",
+              "flat": "Autónomo en régimen de cuota fija",
+              "company": "Sociedad (s.r.o., a.s.)"
+            },
+            "SK": {
+              "osvc": "Autónomo (SZČO)",
+              "flat": "Régimen de cuota fija",
+              "company": "Sociedad (s.r.o., a.s.)"
+            }
+          },
+          "vat": {
+            "none": "No sujeto pasivo de IVA",
+            "monthly": "Declarante mensual",
+            "quarterly": "Declarante trimestral",
+            "identified": "Persona identificada"
+          },
+          "extras": {
+            "payroll": "Tengo empleados",
+            "road_tax": "Impuesto de circulación",
+            "property_tax": "Impuesto sobre bienes inmuebles"
+          },
+          "flatNotPossible": "El régimen de cuota fija no se puede combinar con el alta en el IVA, así que se muestran los plazos de un autónomo normal.",
+          "khMonthly": "Una sociedad presenta la declaración de control cada mes antes del día 25, aunque declare el IVA trimestralmente (§ 101e de la Ley del IVA).",
+          "heading": "Calendario fiscal {year} – {country}",
+          "count": "{n, plural, =0 {No hay plazos para esta selección.} one {# plazo} other {# plazos}}",
+          "noDeadlines": "Ningún plazo",
+          "nextBadge": "Próximo plazo",
+          "movedShort": "trasladado desde el {date}",
+          "moved": "El plazo legal es el {date}, que cae en fin de semana o festivo, por lo que se traslada al siguiente día hábil.",
+          "onlyIf": {
+            "ec_sales_list": "Solo si el mes anterior facturó bienes o servicios a una empresa de otro país de la UE.",
+            "vat_identified": "Solo si el mes anterior compró un servicio en el extranjero (p. ej., publicidad)."
+          },
+          "period": {
+            "month": "de {month}",
+            "quarter": "del T{quarter} de {year}",
+            "year": "de {year}",
+            "yearAhead": "para {year}"
+          },
+          "kinds": {
+            "CZ": {
+              "vat_monthly": "Declaración de IVA y declaración de control",
+              "vat_quarterly": "Declaración de IVA y declaración de control (trimestral)",
+              "control_statement": "Declaración de control (mensual)",
+              "vat_other": "IVA: OSS, CESOP y otras declaraciones",
+              "vat_identified": "Declaración de IVA (persona identificada)",
+              "ec_sales_list": "Declaración recapitulativa",
+              "health": "Anticipo del seguro médico",
+              "social": "Anticipo de la seguridad social",
+              "income_tax": "Declaración y pago del impuesto sobre la renta",
+              "flat_tax": "Impuesto de cuota fija",
+              "overviews": "Resúmenes anuales para la seguridad social y el seguro médico",
+              "payroll": "Retenciones de los empleados",
+              "road_tax": "Impuesto de circulación",
+              "property_tax": "Impuesto sobre bienes inmuebles"
+            },
+            "SK": {
+              "vat_monthly": "Declaración de IVA y declaración de control",
+              "vat_quarterly": "Declaración de IVA y declaración de control (trimestral)",
+              "control_statement": "Declaración de control (mensual)",
+              "vat_other": "IVA: OSS y otras declaraciones",
+              "vat_identified": "Declaración de IVA (persona registrada)",
+              "ec_sales_list": "Declaración recapitulativa",
+              "health": "Anticipo del seguro médico",
+              "social": "Seguro social de los autónomos",
+              "income_tax": "Declaración y pago del impuesto sobre la renta",
+              "flat_tax": "Impuesto de cuota fija (solo Chequia)",
+              "overviews": "Resúmenes anuales (solo Chequia)",
+              "payroll": "Retenciones de los empleados",
+              "road_tax": "Impuesto sobre vehículos de motor",
+              "property_tax": "Impuesto sobre bienes inmuebles"
+            }
+          },
+          "kindHints": {
+            "CZ": {
+              "vat_monthly": "Un sujeto pasivo de IVA mensual presenta la declaración de IVA y la declaración de control (kontrolní hlášení) antes del día 25 siguiente al final del mes y paga el impuesto ese mismo día (§ 101 y § 101e de la Ley checa del IVA).",
+              "vat_quarterly": "Un sujeto pasivo cuya facturación del año anterior no supere 15 millones de CZK y que no sea un sujeto pasivo no fiable puede declarar trimestralmente (§ 99a de la Ley del IVA). Declaración y pago antes del día 25 siguiente al final del trimestre. Solo las personas físicas presentan la declaración de control trimestralmente; las sociedades la presentan cada mes.",
+              "control_statement": "Una sociedad con IVA trimestral presenta además la declaración de control de cada mes del trimestre, antes del día 25 del mes siguiente (§ 101e de la Ley del IVA).",
+              "vat_other": "Las declaraciones de los regímenes especiales (OSS, CESOP) siguen el calendario oficial de la Administración Tributaria checa.",
+              "vat_identified": "Una persona identificada solo presenta declaración en los meses en que tuvo que autoliquidar el IVA, normalmente tras comprar un servicio en el extranjero (publicidad, software), dentro de los 25 días siguientes al final del mes (§ 101 de la Ley del IVA).",
+              "ec_sales_list": "La declaración recapitulativa la presenta quien ese mes haya suministrado bienes o servicios a una empresa de otro país de la UE, dentro de los 25 días siguientes al final del mes (§ 102 de la Ley del IVA).",
+              "health": "El anticipo mensual del seguro médico de un autónomo vence el día 8 del mes siguiente (§ 7 de la Ley n.º 592/1992 Coll.).",
+              "social": "El anticipo mensual de la seguridad social de un autónomo vence el día 20 del mes siguiente (§ 14a de la Ley n.º 589/1992 Coll.).",
+              "income_tax": "La declaración electrónica del impuesto sobre la renta se presenta y el impuesto se paga antes del 1 de mayo; como es festivo, en la práctica el siguiente día hábil. En papel antes del 1 de abril, y con asesor fiscal antes del 1 de julio (§ 136 del Código Tributario). Se aplica a autónomos y sociedades.",
+              "flat_tax": "En el régimen de cuota fija (paušální režim), un único pago mensual sustituye a los anticipos de seguros sociales y a la declaración de la renta, y vence el día 20 del mes al que corresponde (§ 2a y § 38lc de la Ley del Impuesto sobre la Renta).",
+              "overviews": "Los autónomos presentan resúmenes anuales (přehledy) a la Administración de la Seguridad Social checa y a su aseguradora médica en el mes siguiente al plazo de la declaración de la renta, es decir, a principios de junio si la declaración es electrónica.",
+              "payroll": "El empleador ingresa las retenciones del impuesto sobre la renta del mes anterior antes del día 20 (§ 38h de la Ley del Impuesto sobre la Renta). Las cotizaciones sociales de los empleados vencen el mismo día.",
+              "road_tax": "El impuesto de circulación del año anterior se declara y se paga antes del 31 de enero (Ley n.º 16/1993 Coll.).",
+              "property_tax": "El impuesto sobre bienes inmuebles vence el 31 de mayo; si supera 5.000 CZK puede pagarse en dos plazos (antes del 31 de mayo y del 30 de noviembre). Solo se presenta declaración antes del 31 de enero si algo ha cambiado (Ley n.º 338/1992 Coll.)."
+            },
+            "SK": {
+              "vat_monthly": "Un sujeto pasivo de IVA mensual presenta la declaración de IVA y la declaración de control (kontrolný výkaz) dentro de los 25 días siguientes al final del mes y paga el impuesto ese mismo día (§ 78 y § 78a de la Ley n.º 222/2004 Coll.).",
+              "vat_quarterly": "Un sujeto pasivo con menor facturación puede tener un periodo impositivo trimestral (§ 77 de la Ley del IVA). Declaración y declaración de control dentro de los 25 días siguientes al final del trimestre.",
+              "control_statement": "Un sujeto pasivo eslovaco presenta la declaración de control según su propio periodo impositivo, así que no hay filas mensuales adicionales (§ 78a de la Ley del IVA).",
+              "vat_other": "Las declaraciones de los regímenes especiales (OSS) siguen el calendario de la Administración Tributaria eslovaca.",
+              "vat_identified": "Una persona registrada según el § 7 o el § 7a solo presenta declaración en los meses en que debía IVA, por ejemplo tras comprar un servicio en el extranjero, dentro de los 25 días siguientes al final del mes.",
+              "ec_sales_list": "La declaración recapitulativa (súhrnný výkaz) la presenta quien ese mes haya suministrado bienes o servicios a una empresa de otro país de la UE, dentro de los 25 días siguientes al final del mes (§ 80 de la Ley del IVA).",
+              "health": "El anticipo del seguro médico de un autónomo vence el día 8 del mes siguiente (§ 24 de la Ley n.º 580/2004 Coll.).",
+              "social": "Un autónomo con seguro obligatorio paga el seguro social antes del día 8 del mes siguiente al mes al que corresponde (§ 139 de la Ley n.º 461/2003 Coll.).",
+              "income_tax": "La declaración del impuesto sobre la renta de personas físicas y sociedades se presenta y el impuesto se paga antes del 31 de marzo. Mediante una comunicación el plazo se amplía 3 meses, o 6 meses si hay ingresos del extranjero (§ 49 de la Ley n.º 595/2003 Coll.).",
+              "flat_tax": "El régimen de cuota fija es checo; en Eslovaquia no existe nada parecido.",
+              "overviews": "Los resúmenes anuales son checos; en Eslovaquia la Agencia de Seguridad Social y las aseguradoras médicas trabajan con la declaración de la renta.",
+              "payroll": "El empleador ingresa las retenciones en los 5 días siguientes al pago de los salarios, así que no hay un día fijo en el mes.",
+              "road_tax": "La declaración del impuesto sobre vehículos de motor del año anterior se presenta y el impuesto se paga antes del 31 de enero (Ley n.º 361/2014 Coll.).",
+              "property_tax": "En Eslovaquia el impuesto sobre bienes inmuebles se paga según la resolución del municipio, así que no hay una fecha fija única."
+            }
+          },
+          "subscribe": {
+            "title": "Añadir al calendario",
+            "text": "Suscríbase a los plazos en su calendario (iPhone, Android, Outlook, Google). Sin registro y con sus opciones; pasa al año nuevo automáticamente.",
+            "webcal": "Suscribirse en el calendario",
+            "google": "Google Calendar",
+            "download": "Descargar .ics",
+            "urlLabel": "Dirección del calendario para añadirla manualmente"
+          },
+          "ics": {
+            "name": "Calendario fiscal – {country}",
+            "footer": "Plazos orientativos según la ley, trasladados a días hábiles. No controlamos lo que ya ha presentado.",
+            "category": "Impuestos"
+          }
+        },
+        "vatReliability": {
+          "name": "Comprobación de sujeto pasivo de IVA no fiable",
+          "title": "Comprobación de sujeto pasivo de IVA no fiable: NIF-IVA checo y cuenta bancaria publicada",
+          "description": "Compruebe gratis si un proveedor checo es un sujeto pasivo de IVA no fiable y si su cuenta bancaria está publicada en el registro de sujetos pasivos de IVA. Por NIF-IVA o número de empresa, directamente del registro de la Administración Tributaria checa.",
+          "lead": "Introduzca el NIF-IVA checo (DIČ) o el número de empresa (IČO) del proveedor y, opcionalmente, la cuenta a la que se le pide pagar. Lo comprobamos en el registro checo de sujetos pasivos de IVA.",
+          "keywords": "sujeto pasivo iva no fiable chequia comprobar dic registro sujetos pasivos iva checo cuenta bancaria publicada responsabilidad iva comprobación proveedor",
+          "how": [
+            "Consultamos directamente el registro de sujetos pasivos de IVA de la Administración Tributaria checa. El resultado es válido en el momento de la consulta.",
+            "Si usted es sujeto pasivo de IVA en Chequia y el proveedor figura como no fiable en la fecha de devengo o el día en que paga, usted responde del IVA que él no ingrese (§ 109 de la Ley checa del IVA). Lo evita pagando el IVA directamente a su oficina tributaria (§ 109a de la Ley del IVA).",
+            "También responde cuando paga una operación a una cuenta que el sujeto pasivo no ha publicado, sea cual sea el importe (§ 109(2)(c) de la Ley del IVA).",
+            "Comparamos la cuenta que introduce con las publicadas, tanto si la escribe como número con código de banco como si la escribe como IBAN. No mostramos la lista de cuentas publicadas, solo cuántas hay."
+          ],
+          "howTitle": "Cómo funciona",
+          "ctaTitle": "Billanta comprueba los sujetos pasivos de IVA por usted",
+          "ctaText": "Cuando carga un cliente o proveedor en Billanta por su número de empresa o NIF-IVA, comprueba su situación en el registro de sujetos pasivos de IVA y le avisa si es un sujeto pasivo no fiable. Sin comprobaciones manuales.",
+          "fields": {
+            "id": "NIF-IVA o número de empresa",
+            "idHint": "NIF-IVA checo (CZ12345678) o número de empresa (IČO).",
+            "account": "Cuenta bancaria (opcional)",
+            "accountHint": "La cuenta a la que se le pide pagar, como 123456789/0800 o un IBAN.",
+            "check": "Comprobar",
+            "checking": "Consultando el registro…"
+          },
+          "result": {
+            "state": {
+              "payer": "Sujeto pasivo de IVA fiable",
+              "unreliable": "Sujeto pasivo de IVA no fiable",
+              "not_registered": "No es sujeto pasivo de IVA",
+              "valid": "NIF-IVA válido",
+              "invalid": "NIF-IVA no válido",
+              "unknown": "No se pudo comprobar"
+            },
+            "stateNote": {
+              "payer": "La Administración Tributaria no incluye a esta empresa entre los sujetos pasivos no fiables.",
+              "unreliable": "Si usted es sujeto pasivo de IVA en Chequia, responde del IVA de sus operaciones con usted que no ingrese (§ 109 de la Ley del IVA). Basta con que figure en la lista en la fecha de devengo o el día en que paga. En su lugar, puede pagar el IVA directamente a su oficina tributaria (§ 109a de la Ley del IVA).",
+              "not_registered": "Este NIF-IVA no está en el registro de sujetos pasivos de IVA. La empresa no debería cobrarle IVA.",
+              "valid": "El NIF-IVA es válido.",
+              "invalid": "El NIF-IVA no está en el registro o ya no está activo.",
+              "unknown": "El registro no ha respondido en este momento."
+            },
+            "name": "Nombre",
+            "vatId": "NIF-IVA",
+            "published": "Cuentas publicadas",
+            "publishedCount": "{n, plural, =0 {ninguna} one {# cuenta} other {# cuentas}}",
+            "accountYes": "La cuenta {account} figura entre las cuentas publicadas.",
+            "accountNo": "La cuenta {account} no figura entre las cuentas publicadas.",
+            "accountNoNote": "Si paga una operación a una cuenta que el sujeto pasivo no ha publicado, responde del IVA de ese pago, sea cual sea el importe (§ 109(2)(c) de la Ley del IVA).",
+            "accountInvalid": "\"{account}\" no parece un número de cuenta ni un IBAN.",
+            "source": "Fuente: Registro de sujetos pasivos de IVA, Administración Tributaria checa. El resultado es válido en el momento de la consulta.",
+            "empty": "Introduzca un NIF-IVA o número de empresa y el resultado aparecerá aquí."
+          },
+          "errors": {
+            "invalid": "Introduzca un NIF-IVA checo (CZ y de 8 a 10 dígitos) o un número de empresa.",
+            "busy": "Demasiadas consultas en poco tiempo. Inténtelo de nuevo en un momento.",
+            "unavailable": "El registro de sujetos pasivos de IVA no responde en este momento. Inténtelo de nuevo en un momento o compruebe la empresa en el sitio web de la Administración Tributaria."
+          }
+        },
+        "invoiceRequirements": {
+          "name": "Requisitos de la factura",
+          "title": "Requisitos de la factura en Chequia y Eslovaquia 2026",
+          "description": "Descubra qué debe contener su factura: sujeto pasivo de IVA o no, factura rectificativa, factura proforma, inversión del sujeto pasivo, cliente de la UE. Para Chequia y Eslovaquia, con enlaces a la ley.",
+          "lead": "Indíquenos quién es y qué emite. Enumeramos los datos obligatorios exactamente para su caso, y puede marcar los que su factura ya incluye.",
+          "keywords": "requisitos factura factura checa datos obligatorios factura eslovaca sujeto pasivo iva documento fiscal factura rectificativa proforma inversión del sujeto pasivo",
+          "scenarioTitle": "Quién es usted y qué emite",
+          "progressTitle": "Su factura",
+          "progress": "{done} de {total} obligatorios",
+          "allDone": "Tiene todos los datos obligatorios.",
+          "missingTitle": "{n, plural, one {Falta # dato obligatorio:} other {Faltan # datos obligatorios:}}",
+          "tickHint": "Marque lo que incluye su factura. Las marcas se mantienen al cambiar la situación.",
+          "reset": "Borrar marcas",
+          "howTitle": "Cómo funciona",
+          "how": [
+            "Un sujeto pasivo de IVA emite un documento fiscal con los datos del § 29 de la Ley checa del IVA (§ 74 en Eslovaquia). Un no sujeto pasivo y una factura proforma solo se rigen por el derecho mercantil (§ 435 del Código Civil, § 3a del Código de Comercio eslovaco) y las buenas prácticas.",
+            "Los datos condicionales solo son obligatorios en el caso indicado; los recomendados no los exige la ley, pero las facturas sin ellos se cobran más tarde.",
+            "Cada dato enlaza con el artículo de la ley del que procede. Puede comprobar una factura ISDOC terminada en nuestro visor de ISDOC."
+          ],
+          "ctaTitle": "Emita una factura sin que falte nada",
+          "ctaText": "El formulario de factura de Billanta ya incluye los campos obligatorios, así que no se olvida nada. Descargue el PDF gratis, sin necesidad de cuenta."
+        },
+        "isdocViewer": {
+          "name": "Visor de ISDOC",
+          "title": "Visor y validador de facturas ISDOC en línea",
+          "description": "Abra una factura ISDOC o ISDOCX y compruébela: número de empresa, NIF-IVA, cuenta bancaria, totales de IVA y datos obligatorios. El archivo nunca sale de su navegador.",
+          "lead": "Suba un archivo .isdoc o .isdocx. Lo mostramos como una factura legible y comprobamos al instante que no falte nada y que las cifras cuadren.",
+          "keywords": "visor ISDOC abrir archivo ISDOC isdocx ver factura comprobar factura factura electrónica checa NIF-IVA",
+          "dropTitle": "Suelte aquí una factura ISDOC",
+          "dropHint": "Un archivo .isdoc, .isdocx o .xml. Lo leemos solo en su navegador y no lo enviamos a ningún sitio.",
+          "choose": "Elegir un archivo",
+          "reading": "Leyendo…",
+          "sample": "Probar una factura de ejemplo",
+          "sampleName": "sample.isdoc",
+          "privacy": "El archivo no se sube a ningún sitio.",
+          "errors": {
+            "not_xml": "El archivo no se puede leer como XML. ¿Seguro que es ISDOC?",
+            "not_isdoc": "El archivo es XML, pero no es una factura ISDOC.",
+            "too_big": "El archivo supera los 25 MB, algo que una factura nunca ocupa.",
+            "read": "No se pudo leer el archivo. Pruebe a descargarlo de nuevo."
+          },
+          "another": "Abrir otro archivo",
+          "verdictOk": "La factura parece correcta.",
+          "verdictIssues": "{missing, plural, =0 {No falta ningún dato obligatorio} one {Falta # dato obligatorio} other {Faltan # datos obligatorios}}{problems, plural, =0 {.} one {, y hemos encontrado # problema.} other {, y hemos encontrado # problemas.}}",
+          "verdictHint": "Vea abajo qué falta exactamente. Algunos datos (la inscripción registral, la referencia a la exención) pueden estar en una nota que no sabemos reconocer.",
+          "findings": {
+            "supplierIcoInvalid": "El número de empresa del proveedor {value} tiene un dígito de control no válido.",
+            "customerIcoInvalid": "El número de empresa del cliente {value} tiene un dígito de control no válido.",
+            "supplierDicInvalid": "El NIF-IVA del proveedor {value} tiene un formato o dígito de control no válido.",
+            "customerDicInvalid": "El NIF-IVA del cliente {value} tiene un formato o dígito de control no válido.",
+            "bankAccountInvalid": "El número de cuenta {value} no supera la validación del Banco Nacional Checo.",
+            "ibanInvalid": "El IBAN {value} tiene un dígito de control no válido.",
+            "noLines": "La factura no tiene conceptos.",
+            "lineAmountMismatch": "Concepto {value}: cantidad × precio da {expected}, la factura indica {actual}.",
+            "linesTotalMismatch": "Los conceptos suman {expected}, pero el total sin IVA es {actual}.",
+            "subtotalVatMismatch": "El IVA al {value} % debería ser {expected}, la factura indica {actual}.",
+            "vatTotalMismatch": "El IVA por tipo suma {expected}, pero el total de IVA es {actual}.",
+            "inclusiveMismatch": "La base más el IVA da {expected}, pero el total con IVA es {actual}.",
+            "payableMismatch": "El importe a pagar debería ser {expected}, la factura indica {actual}.",
+            "invalidDate": "La fecha “{value}” no es válida.",
+            "dueBeforeIssue": "La fecha de vencimiento {value} es anterior a la fecha de emisión.",
+            "vatOnNonPayer": "Un no sujeto pasivo no puede cobrar IVA, pero la factura incluye IVA.",
+            "simplifiedOverLimit": "Un documento simplificado solo se permite hasta {expected}; este es de {actual}."
+          },
+          "scenarioTitle": "La situación del proveedor",
+          "scenarioHint": "La hemos deducido del archivo. Si no es correcta, cámbiela y la comprobación se actualizará.",
+          "status": {
+            "ok": "OK",
+            "missing": "Falta",
+            "invalid": "Valor no válido",
+            "unknown": "No se puede verificar"
+          },
+          "kinds": {
+            "invoice": "Factura",
+            "credit_note": "Factura rectificativa",
+            "debit_note": "Nota de cargo",
+            "proforma": "Factura proforma",
+            "advance_tax": "Documento fiscal de un pago recibido",
+            "advance_credit": "Corrección de un pago recibido",
+            "simplified": "Documento fiscal simplificado",
+            "unknown": "Documento"
+          },
+          "supplier": "Proveedor",
+          "customer": "Cliente",
+          "noCustomer": "No se indica cliente.",
+          "ico": "N.º de empresa",
+          "dic": "NIF-IVA",
+          "issueDate": "Emitida",
+          "taxPointDate": "Fecha de devengo",
+          "dueDate": "Vence",
+          "currency": "Moneda",
+          "corrects": "Rectifica",
+          "order": "Pedido",
+          "lines": "Conceptos",
+          "noLines": "Sin conceptos.",
+          "lineNoText": "Concepto sin descripción",
+          "vatRate": "IVA {rate} %",
+          "reverseCharge": "inversión del sujeto pasivo",
+          "vatRecap": "Resumen de IVA",
+          "recapRow": "base {base}, IVA {vat}",
+          "taxExclusive": "Total sin IVA",
+          "vatTotal": "Total de IVA",
+          "rounding": "Redondeo",
+          "alreadyClaimed": "Anticipos deducidos",
+          "paidDeposits": "Pagado por anticipado",
+          "payable": "A pagar",
+          "payment": "Pago",
+          "noPayment": "El archivo no incluye datos de pago.",
+          "account": "Número de cuenta",
+          "variableSymbol": "Símbolo variable",
+          "constantSymbol": "Símbolo constante",
+          "specificSymbol": "Símbolo específico",
+          "method": "Forma de pago",
+          "methods": {
+            "10": "Efectivo",
+            "20": "Cheque",
+            "31": "Transferencia",
+            "42": "Transferencia bancaria",
+            "48": "Tarjeta",
+            "49": "Domiciliación bancaria",
+            "50": "Contra reembolso",
+            "97": "Compensación"
+          },
+          "howTitle": "Cómo funciona",
+          "how": [
+            "ISDOC es el formato checo de factura electrónica. Un archivo .isdocx es un zip que contiene la factura más un PDF y anexos – lo descomprimimos por usted.",
+            "Leemos el archivo solo en su navegador. No se sube nada a ningún servidor y no queda nada al cerrar la página.",
+            "Comprobamos los dígitos de control del número de empresa, el NIF-IVA, la cuenta bancaria y el IBAN, los totales de los conceptos y del IVA, y los datos obligatorios según quién haya emitido la factura. No consultamos el alta en el IVA ni la empresa en registros públicos."
+          ]
         }
       }
     },
@@ -8025,6 +8363,282 @@
           }
         }
       }
+    },
+    "invoiceChecklist": {
+      "scenario": {
+        "country": "Según la legislación de",
+        "vatStatus": "Usted es",
+        "document": "Documento",
+        "customer": "Cliente",
+        "reverseCharge": "Inversión del sujeto pasivo nacional",
+        "reverseYes": "Sí",
+        "reverseNo": "No",
+        "euSupply": "Qué suministra a la UE",
+        "euService": "Un servicio",
+        "euGoods": "Bienes",
+        "countries": {
+          "CZ": "Chequia",
+          "SK": "Eslovaquia"
+        },
+        "vatStatuses": {
+          "payer": "Sujeto pasivo de IVA",
+          "identified": "Persona identificada",
+          "non_payer": "No sujeto pasivo de IVA"
+        },
+        "documents": {
+          "invoice": "Factura",
+          "proforma": "Factura proforma",
+          "credit_note": "Factura rectificativa",
+          "simplified": "Factura simplificada"
+        },
+        "customers": {
+          "business": "Empresa nacional",
+          "consumer": "Consumidor",
+          "eu_business": "Empresa de la UE",
+          "non_eu": "Fuera de la UE"
+        }
+      },
+      "taxDocument": "Es un documento fiscal según la ley del IVA.",
+      "notTaxDocument": "No es un documento fiscal – basta con los datos mercantiles y las buenas prácticas.",
+      "notices": {
+        "simplifiedNotForNonPayer": "Solo un sujeto pasivo de IVA emite un documento fiscal simplificado. Se muestra una factura ordinaria en su lugar.",
+        "simplifiedLimitCz": "Un documento fiscal simplificado solo se permite hasta 10 000 CZK con IVA incluido (§ 30 de la ley checa del IVA).",
+        "simplifiedLimitSk": "En Eslovaquia, la factura simplificada solo se permite hasta 100 € con IVA incluido (§ 74(3)(a) de la ley eslovaca del IVA).",
+        "simplifiedNotCrossBorder": "Las entregas a otro Estado de la UE y las exportaciones no pueden usar un documento simplificado. Se muestra una factura ordinaria en su lugar.",
+        "proformaTaxDocument": "Una factura proforma no es un documento fiscal. Cuando llegue el pago, emita un documento fiscal por él en un plazo de 15 días.",
+        "identifiedNoTaxDocument": "Una persona identificada no repercute IVA nacional y factura como quien no es sujeto pasivo.",
+        "identifiedEuService": "Por un servicio a una empresa de otro Estado de la UE, la persona identificada también emite un documento fiscal – sin IVA y con la mención de inversión del sujeto pasivo.",
+        "reverseChargeDomesticOnly": "La inversión del sujeto pasivo nacional solo se aplica a las operaciones enumeradas (obras de construcción, chatarra, oro, teléfonos móviles por encima de un umbral …).",
+        "consumerNoTaxDocumentDuty": "No está obligado a emitir un documento fiscal a un consumidor salvo que lo solicite. Si lo emite, debe contener todo lo que figura a continuación.",
+        "nonPayerNoVat": "Quien no es sujeto pasivo no indica IVA en la factura y no puede repercutirlo."
+      },
+      "groups": {
+        "supplier": "Proveedor",
+        "customer": "Cliente",
+        "document": "Documento",
+        "amounts": "Importes e IVA",
+        "payment": "Pago"
+      },
+      "items": {
+        "supplierName": {
+          "label": "Nombre o razón social del proveedor",
+          "hint": "Exactamente como figura en el registro mercantil o de actividades."
+        },
+        "supplierAddress": {
+          "label": "Domicilio social del proveedor",
+          "hint": "El domicilio registrado, no solo una dirección postal."
+        },
+        "supplierIco": {
+          "label": "Número de identificación del proveedor (IČO)",
+          "hint": "Ocho dígitos; verificamos el dígito de control."
+        },
+        "supplierRegistry": {
+          "label": "Inscripción registral",
+          "hint": "P. ej. “Inscrita en el Registro Mercantil del Tribunal Municipal de Praga, sección C, hoja 123”. En Chequia, un autónomo inscrito solo en el registro de actividades puede omitirla."
+        },
+        "supplierDic": {
+          "label": "NIF-IVA del proveedor",
+          "hint": "Con el prefijo del país, p. ej. CZ o SK."
+        },
+        "customerName": {
+          "label": "Nombre o razón social del cliente",
+          "hint": "Para un consumidor basta con el nombre."
+        },
+        "customerAddress": {
+          "label": "Dirección del cliente",
+          "hint": "Domicilio social o domicilio particular."
+        },
+        "customerIco": {
+          "label": "Número de identificación del cliente",
+          "hint": "La ley no lo exige, pero las empresas lo quieren para su contabilidad."
+        },
+        "customerDic": {
+          "label": "NIF-IVA del cliente",
+          "hint": "Con el prefijo del país, p. ej. CZ12345678 o DE123456789."
+        },
+        "documentLabel": {
+          "label": "Título del documento",
+          "hint": "Para que quede claro de qué tipo de documento se trata."
+        },
+        "number": {
+          "label": "Número del documento",
+          "hint": "Único dentro de su serie de numeración; nunca debe repetirse."
+        },
+        "originalNumber": {
+          "label": "Número de la factura corregida",
+          "hint": "El número de la factura original que corrige la factura rectificativa."
+        },
+        "issueDate": {
+          "label": "Fecha de emisión",
+          "hint": "El día en que emitió el documento."
+        },
+        "taxPointDate": {
+          "label": "Fecha de devengo",
+          "hint": "Cuándo entregó los bienes o prestó el servicio."
+        },
+        "subject": {
+          "label": "Qué se suministró y en qué cantidad",
+          "hint": "De forma concreta – no solo “servicios”."
+        },
+        "unitPrice": {
+          "label": "Precio unitario sin IVA",
+          "hint": "Precio por pieza, hora u otra unidad, más cualquier descuento no incluido ya en el precio."
+        },
+        "taxBase": {
+          "label": "Base imponible",
+          "hint": "El total sin IVA."
+        },
+        "vatRate": {
+          "label": "Tipo de IVA",
+          "hint": "El tipo aplicable, o 0 % para una operación exenta."
+        },
+        "vatAmount": {
+          "label": "Cuota de IVA",
+          "hint": "El IVA repercutido, redondeado."
+        },
+        "total": {
+          "label": "Total a pagar",
+          "hint": "Cuánto debe pagar el cliente."
+        },
+        "correctionReason": {
+          "label": "Motivo de la rectificación",
+          "hint": "P. ej. devolución de mercancía, un descuento, un precio erróneo."
+        },
+        "correctionDifference": {
+          "label": "Variación de la base imponible y del IVA",
+          "hint": "En cuánto cambian la base y el IVA respecto a la factura original (con signo menos)."
+        },
+        "reverseChargeNote": {
+          "label": "Mención de inversión del sujeto pasivo",
+          "hint": "“Daň odvede zákazník” (CZ) o “prenesenie daňovej povinnosti” (SK), o “Reverse charge” para un cliente de la UE. El cliente liquida el IVA."
+        },
+        "exemptionNote": {
+          "label": "Referencia a la exención de IVA",
+          "hint": "P. ej. “Exenta según el § 64 de la ley del IVA”, o una referencia a la directiva del IVA."
+        },
+        "nonPayerNote": {
+          "label": "Mención “No sujeto pasivo de IVA”",
+          "hint": "No lo exige la ley, pero el cliente sabe de inmediato por qué no hay IVA."
+        },
+        "dueDate": {
+          "label": "Fecha de vencimiento",
+          "hint": "Sin ella se aplica el plazo legal y es más difícil justificar un recordatorio."
+        },
+        "paymentDetails": {
+          "label": "Cuenta bancaria y referencia de pago",
+          "hint": "Idealmente con un código QR de pago para que el cliente pague sin teclear nada."
+        }
+      },
+      "notes": {
+        "ifAssigned": "Si se le ha asignado uno.",
+        "ifRegistered": "Solo si está inscrito en el registro mercantil u otro registro público.",
+        "ifBuyerHasDic": "Si el cliente lo tiene.",
+        "ifDifferent": "Solo si difiere de la fecha de emisión.",
+        "buyerVatId": "El NIF-IVA de otro Estado de la UE (compruébelo en VIES).",
+        "perRate": "Por separado para cada tipo de IVA.",
+        "inHomeCurrency": "En la moneda nacional (CZK o EUR) aunque facture en otra moneda.",
+        "noVatAmountReverse": "Solo a título informativo – usted no calcula el IVA, lo hace el cliente.",
+        "totalOrBase": "El total con IVA, o la base y el IVA por separado.",
+        "proformaLabel": "P. ej. “Factura proforma – no es un documento fiscal”.",
+        "creditLabel": "P. ej. “Factura rectificativa” o “Documento fiscal correctivo”.",
+        "simplifiedLabel": "P. ej. “Documento fiscal simplificado”.",
+        "exemptEuGoods": "La entrega de bienes a la UE está exenta de IVA.",
+        "exportOrAbroad": "Para bienes exportados o un servicio prestado fuera de la UE."
+      },
+      "levels": {
+        "required": "Obligatorio",
+        "conditional": "Condicional",
+        "recommended": "Recomendado"
+      }
+    }
+  },
+  "holidays": {
+    "newYear": "Año Nuevo",
+    "slovakRepublic": "Día de la Fundación de la República Eslovaca",
+    "epiphany": "Epifanía",
+    "goodFriday": "Viernes Santo",
+    "easterMonday": "Lunes de Pascua",
+    "labourDay": "Día del Trabajo",
+    "victoryDay": "Día de la Victoria en Europa",
+    "cyrilMethodius": "Día de los Santos Cirilo y Metodio",
+    "janHus": "Día de Jan Hus",
+    "snp": "Aniversario del Levantamiento Nacional Eslovaco",
+    "constitution": "Día de la Constitución",
+    "ourLadyOfSorrows": "Virgen de los Dolores",
+    "statehood": "Día del Estado Checo",
+    "independence": "Día de la Independencia",
+    "allSaints": "Día de Todos los Santos",
+    "freedomDemocracy": "Día de la Lucha por la Libertad y la Democracia",
+    "christmasEve": "Nochebuena",
+    "christmasDay": "Navidad",
+    "stStephen": "San Esteban"
+  },
+  "buyerDetails": {
+    "title": "Complete sus datos de facturación",
+    "intro": "{supplier} está preparando {document} para usted. Indíquele a nombre de quién debe emitirse.",
+    "documentType": {
+      "invoice": "una factura",
+      "proforma": "una factura proforma",
+      "quote": "un presupuesto"
+    },
+    "supplier": "Proveedor",
+    "amount": "Importe",
+    "withoutVat": "{amount} sin IVA",
+    "dueDate": "Vence el {date}",
+    "item": "Concepto",
+    "quantity": "Cantidad",
+    "total": "Total",
+    "ico": "Número de identificación",
+    "dic": "NIF-IVA",
+    "doneTitle": "Gracias, ya tenemos sus datos",
+    "doneText": "{supplier} terminará ahora la factura. Puede cerrar esta página.",
+    "privacy": "Solo {supplier} recibe estos datos, para emitir su documento.",
+    "form": {
+      "title": "Datos de facturación",
+      "hint": "{supplier} emitirá el documento con estos datos.",
+      "kind": "El cliente es",
+      "company": "Empresa o autónomo",
+      "person": "Particular",
+      "country": "País",
+      "ico": "Número de identificación (IČO)",
+      "dic": "NIF-IVA (DIČ)",
+      "vatId": "NIF-IVA",
+      "lookup": "Cargar del registro",
+      "lookupNeedsIco": "Introduzca primero el número de identificación.",
+      "lookupNeedsVat": "Introduzca primero el NIF-IVA.",
+      "lookupNotFound": "No se encontró nada en el registro; complete los datos usted mismo.",
+      "lookupDone": "Datos cargados; revíselos.",
+      "companyName": "Razón social",
+      "personName": "Nombre completo",
+      "street": "Calle y número",
+      "city": "Ciudad",
+      "postalCode": "Código postal",
+      "email": "Correo electrónico para la factura",
+      "submit": "Enviar datos",
+      "errors": {
+        "invalid": "Revise los campos resaltados.",
+        "closed": "Este enlace ya no funciona. Pida uno nuevo al proveedor.",
+        "submitted": "Los datos ya se enviaron.",
+        "limit": "Demasiados intentos; inténtelo de nuevo en un momento.",
+        "failed": "Algo ha fallado; inténtelo de nuevo.",
+        "field": "Revise este campo.",
+        "ico_required": "Una empresa checa o eslovaca necesita un número de identificación.",
+        "ico_format": "El número de identificación tiene 8 dígitos.",
+        "ico_foreign": "El número de identificación (IČO) es solo para empresas checas y eslovacas.",
+        "dic_format": "El NIF-IVA no parece correcto.",
+        "email_required": "Introduzca su correo electrónico para que el proveedor pueda responderle.",
+        "required": "Este campo es obligatorio.",
+        "phone_format": "Este número de teléfono no parece correcto."
+      },
+      "optional": "opcional",
+      "phone": "Teléfono",
+      "companySearch": "Busque su empresa en el registro",
+      "companySearchHint": "Empiece a escribir un nombre, número de identificación o ciudad y elija su empresa. Nosotros completamos el resto."
+    },
+    "trust": {
+      "verifiedAres": "Hemos verificado a {supplier} en el registro mercantil checo (ARES).",
+      "verifiedRpo": "Hemos verificado a {supplier} en el registro eslovaco de personas jurídicas (RPO).",
+      "private": "Este enlace es privado. Solo este proveedor ve sus datos."
     }
   },
   "referrals": {
@@ -8143,11 +8757,238 @@
     },
     "disclosure": "Los enlaces a socios son enlaces de afiliado. Es posible que recibamos una compensación por un clic o un registro; esto no cambia su precio."
   },
+  "accountants": {
+    "eyebrow": "Programa de socios",
+    "title": "Billanta para contables, asesorías y asesores fiscales",
+    "seoTitle": "Billanta para contables y asesores fiscales – todos los clientes en un solo lugar, créditos",
+    "lead": "Invite a sus clientes a Billanta, tenga sus documentos en un solo lugar y gane créditos para su propio plan por cada cliente que empiece a pagar. Tanto para asesorías contables como para asesores fiscales.",
+    "cta": "Registre su asesoría",
+    "partnersLink": "Nuestros socios",
+    "benefits": {
+      "access": {
+        "title": "Rol de contable con sus clientes",
+        "body": "Su cliente le invita a su equipo. Usted ve las facturas, los gastos y el banco, no la administración de la empresa."
+      },
+      "exports": {
+        "title": "Exportaciones para la contabilidad",
+        "body": "Declaraciones de IVA y declaraciones de control, ISDOC y CSV, sin volver a teclear nada."
+      },
+      "credits": {
+        "title": "Créditos por clientes",
+        "body": "Su cliente recibe {welcome} créditos y usted hasta {reward} por cada uno que empiece a pagar. Igual que una recomendación normal."
+      },
+      "clients": {
+        "title": "Todos los clientes con un solo inicio de sesión",
+        "body": "Cambie entre las empresas que le han invitado desde el menú de la cuenta. Sin contraseñas compartidas."
+      },
+      "directory": {
+        "title": "Las empresas locales le encuentran",
+        "body": "Cuando aprobemos su ficha en Perfil de contable, su asesoría aparecerá en el directorio de contables y en las páginas de facturación de su región."
+      },
+      "shape": {
+        "title": "Funciones pensadas para su práctica",
+        "body": "¿Le falta una exportación o un informe que usa a diario? Cuéntenoslo."
+      }
+    },
+    "stepsTitle": "Cómo funciona",
+    "steps": {
+      "signup": {
+        "title": "Cree la cuenta de su asesoría",
+        "body": "El registro es gratuito. Introduzca el número de identificación de su asesoría en los ajustes de la empresa."
+      },
+      "program": {
+        "title": "Solicite el programa de socios",
+        "body": "En Ajustes → Perfil de contable, complete su ficha del directorio y solicite el programa de socios. Revisamos cada ficha a mano. Una vez aprobada, las empresas le encontrarán en el directorio de contables y en las páginas de su localidad."
+      },
+      "share": {
+        "title": "Envíe el enlace a sus clientes",
+        "body": "Quien se registre con su enlace y empiece a pagar le hará ganar créditos."
+      }
+    },
+    "fine": {
+      "title": "Condiciones",
+      "points": [
+        "1 crédito = 1 CZK. Los créditos pagan el plan Start, Plus o Business por un mes o un año.",
+        "La recompensa es única: tantos créditos como CZK pague la empresa invitada en el primer pago de su plan, hasta el límite del programa.",
+        "Añadimos los créditos tras el segundo pago de un plan mensual, o 30 días después de un pago anual. Si la empresa obtiene un reembolso o cancela antes, no hay recompensa.",
+        "Una invitación cuenta para las empresas creadas con su enlace en los últimos 30 días.",
+        "No puede invitar a su propia empresa ni a una de la que ya sea miembro.",
+        "Activamos el programa de socios para contables cuando aprobamos su ficha en el directorio de contables."
+      ]
+    },
+    "clients": {
+      "title": "Cómo trabaja con sus clientes",
+      "lead": "Los clientes facturan ellos mismos en Billanta, y usted tiene sus documentos a mano sin correos ni hojas de cálculo.",
+      "points": [
+        "El cliente le invita por correo electrónico con el rol de contable y puede ajustar los permisos.",
+        "Usted ve las facturas emitidas, los gastos, los movimientos bancarios y los informes fiscales.",
+        "Los ajustes de la empresa, el plan y el equipo siguen en manos del cliente.",
+        "A partir del plan Start, el acceso del contable está incluido en el plan del cliente.",
+        "Puede traer usted mismo un cliente nuevo: envíele su enlace y recibirá créditos de bienvenida."
+      ]
+    },
+    "directoryCta": {
+      "title": "Aparezca en la página de su localidad",
+      "body": "Billanta tiene una página de facturación para cada ciudad y municipio de Chequia y Eslovaquia. Los contables con una ficha aprobada en el directorio se muestran allí a las empresas de la misma región. La ficha es opcional y puede retirarla con un clic.",
+      "example": "Ver las páginas de localidades",
+      "settings": "Complete su perfil de contable"
+    },
+    "shapeCta": {
+      "title": "Construimos Billanta junto con los contables",
+      "body": "Somos un equipo pequeño y creamos nuevas funciones según lo que los contables realmente necesitan al trabajar con sus clientes. Cuéntenos cómo trabaja, qué le frena y qué exportación le ahorraría tiempo. Las ideas de los contables pasan al principio de la cola.",
+      "mail": "Escríbanos",
+      "mailSubject": "Billanta para contables – una idea",
+      "signup": "Registre su asesoría y cuéntenoslo"
+    },
+    "faqTitle": "Preguntas frecuentes",
+    "faq": [
+      {
+        "q": "¿Cuánto cuesta Billanta para una asesoría contable?",
+        "a": "El registro y la adhesión al programa son gratuitos. A partir del plan Start, el acceso a la empresa de un cliente está incluido en el plan del cliente. Los créditos por clientes que pagan pueden cubrir el plan de su propia asesoría."
+      },
+      {
+        "q": "¿Billanta también es para asesores fiscales?",
+        "a": "Sí. Un asesor fiscal se une a la empresa de un cliente igual que un contable, con el rol de contable, y obtiene las mismas exportaciones e informes, incluido el resumen para el impuesto sobre la renta. El programa de socios y la ficha en las páginas de localidades funcionan igual."
+      },
+      {
+        "q": "¿Cómo obtengo acceso a los documentos de un cliente?",
+        "a": "El cliente invita a su correo electrónico con el rol de contable en Ajustes → Equipo. Cuando usted acepta, su empresa aparece en el selector de empresas de su cuenta."
+      },
+      {
+        "q": "¿Qué exportaciones admite Billanta?",
+        "a": "Declaración de IVA checa, declaración de control y declaración recapitulativa para el portal EPO; declaración de IVA eslovaca, declaración de control y declaración recapitulativa para eDane; facturas ISDOC, exportaciones para Pohoda y Money S3, y CSV."
+      },
+      {
+        "q": "¿Cómo aparezco en las páginas de localidades?",
+        "a": "En Ajustes → Perfil de contable, complete su ficha del directorio con la región en la que trabaja y envíela. Revisamos cada ficha a mano. Una vez aprobada, su asesoría aparece en el directorio de contables y en las páginas de las localidades de su región, normalmente en menos de una hora."
+      },
+      {
+        "q": "¿Cuántos créditos recibo?",
+        "a": "Los mismos que con una recomendación normal, esté o no en el programa de socios: el cliente recibe {welcome} créditos al registrarse con su enlace. Usted recibe tantos créditos como CZK pague el cliente en el primer pago del plan, hasta {reward}. En un plan mensual los añadimos tras el segundo pago; en uno anual, 30 días después del pago. Si el cliente obtiene un reembolso o cancela antes, no hay recompensa. 1 crédito = 1 CZK."
+      }
+    ]
+  },
   "twoFactor": {
     "notice": {
       "title": "Se requiere la autenticación en dos pasos",
       "body": "Como esto da acceso a dinero y datos, solo se pueden añadir nuevas conexiones con la autenticación en dos pasos activada. Las conexiones existentes siguen funcionando.",
       "cta": "Activar 2FA"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "seoTitle": "Blog sobre facturación, impuestos y facturación electrónica",
+    "lead": "Plazos fiscales, cambios legislativos y guías prácticas para autónomos y pequeñas empresas en Chequia y Eslovaquia.",
+    "empty": "Aún no hay nada. Estamos escribiendo los primeros artículos.",
+    "read": "Leer artículo",
+    "updated": "actualizado el {date}",
+    "sources": "Fuentes",
+    "disclaimer": "Este artículo es un resumen, no asesoramiento fiscal ni jurídico. Consulte las fuentes o pregunte a un asesor fiscal antes de actuar.",
+    "ctaTitle": "Facturar sin complicaciones",
+    "ctaBody": "Billanta controla los vencimientos, los pagos con QR y las exportaciones para su contable. Empiece gratis.",
+    "ctaButton": "Crear una cuenta gratuita",
+    "aiAuto": "Este artículo lo ha escrito una IA a partir de nuestros propios datos y solo se comprobó automáticamente antes de publicarse. Si detecta un error, <contact>avísenos</contact>.",
+    "aiReviewed": "Este artículo se redactó con ayuda de IA y una persona lo revisó antes de publicarse. Si detecta un error, <contact>avísenos</contact>."
+  },
+  "adminBlog": {
+    "title": "Blog",
+    "description": "La cola de borradores de IA y todas las entradas. Nada se publica sin un clic.",
+    "empty": "Aún no hay entradas.",
+    "editTitle": "Editar entrada",
+    "warningCount": "{n, plural, one {# advertencia} other {# advertencias}}",
+    "status": {
+      "draft": "Borrador",
+      "pending_review": "Por revisar",
+      "published": "Publicada",
+      "rejected": "Rechazada"
+    },
+    "kind": {
+      "manual": "Manual",
+      "tax_deadlines": "Plazos fiscales",
+      "brief": "IA a partir de un briefing",
+      "tool_howto": "Guía de herramienta",
+      "trade_invoicing": "Facturación por oficio"
+    },
+    "drafts": {
+      "taxTitle": "Plazos fiscales de un mes",
+      "taxHint": "La IA escribe la introducción y los consejos; la lista de plazos la genera el código a partir del calendario fiscal.",
+      "year": "Año",
+      "month": "Mes",
+      "generate": "Crear borrador",
+      "briefTitle": "Entrada a partir de un briefing",
+      "briefHint": "Indique un tema, datos verificados y fuentes. La IA redacta un borrador con ellos (como máximo 3 por semana).",
+      "topic": "Tema",
+      "nothingNew": "Ese mes ya tiene una entrada o no tiene plazos.",
+      "created": "Borrador creado."
+    },
+    "fields": {
+      "locale": "Idioma",
+      "slug": "Slug",
+      "translationKey": "Clave de traducción",
+      "title": "Título",
+      "description": "Resumen",
+      "body": "Cuerpo",
+      "bodyHint": "Separe los párrafos con una línea en blanco. Se permite: ## título, ### subtítulo, - viñetas, **negrita**, [enlace](https://…).",
+      "sources": "Fuentes",
+      "sourcesPlaceholder": "Título | https://…  (una por línea)",
+      "facts": "Datos",
+      "factsHint": "Material para las comprobaciones: cada número del texto debe figurar aquí o en el título de una fuente. Vacío = los números no se comprueban."
+    },
+    "warningsTitle": "Las comprobaciones encontraron problemas",
+    "warningsAfterSave": "Las advertencias se recalculan al guardar.",
+    "edit": "Editar",
+    "preview": "Vista previa",
+    "save": "Guardar",
+    "saved": "Guardado.",
+    "publishAnyway": "He leído las advertencias, publicar de todos modos",
+    "publish": "Publicar",
+    "published": "La entrada está publicada.",
+    "reject": "Rechazar",
+    "rejected": "La entrada ha sido rechazada.",
+    "unpublish": "Despublicar",
+    "unpublished": "La entrada ha vuelto a borradores.",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar esta entrada? No se puede deshacer.",
+    "deleted": "Eliminada.",
+    "saveBeforePublish": "Se publica la versión guardada. Guarde primero sus cambios.",
+    "errors": {
+      "post_has_warnings": "La entrada tiene advertencias. Marque la casilla para confirmar que las ha leído.",
+      "slug_taken": "Ese slug ya existe en este idioma.",
+      "weekly_draft_limit": "Esta semana ya se crearon tres borradores a partir de un briefing. Inténtelo de nuevo la próxima semana.",
+      "ai_platform_unavailable": "La IA no está configurada (falta la clave de API).",
+      "ai_refused": "La IA se negó a escribir esta entrada. Modifique el briefing.",
+      "ai_unparseable": "No se pudo procesar la respuesta de la IA. Inténtelo de nuevo.",
+      "generic": "La acción ha fallado ({code})."
+    },
+    "warnings": {
+      "title_length": "El título debe tener entre 10 y 140 caracteres.",
+      "description_length": "El resumen debe tener entre 50 y 320 caracteres.",
+      "body_too_short": "El cuerpo es demasiado corto.",
+      "body_truncated": "El cuerpo no termina con una frase completa; puede estar cortado.",
+      "no_sources": "No hay fuentes.",
+      "banned_phrase": "El texto contiene una promesa o expresión prohibida (p. ej. \"garantizado\").",
+      "raw_html": "El texto contiene HTML.",
+      "bad_link": "Los enlaces solo pueden apuntar a https:// o a una página de este sitio (/…).",
+      "unknown_number": "El texto contiene un número que no figura en los datos ni en las fuentes.",
+      "absolute_claim": "El texto dice \"siempre\" o \"nunca\" donde los datos no lo dicen.",
+      "em_dash": "El texto contiene una raya larga. Use el guion medio \"–\".",
+      "law_reference": "El texto cita un artículo que no figura en los datos, o una ley sin enlace conocido."
+    },
+    "autopublish": {
+      "title": "Entradas automáticas",
+      "hint": "Borradores a partir de nuestros propios datos (herramientas, tipos de negocio). Un tipo activado se publica por sí solo únicamente si supera todas las comprobaciones, no trata de un cambio legislativo y no se han publicado más de {n} entradas automáticas en ese idioma en los últimos 7 días. Todo lo demás espera aprobación; las entradas de plazos fiscales, siempre.",
+      "kinds": {
+        "tool_howto": "Una nueva guía cada martes, en checo y eslovaco.",
+        "trade_invoicing": "Un nuevo oficio cada martes, en checo y eslovaco."
+      },
+      "thisWeek": "Publicadas automáticamente en los últimos 7 días: cs {cs}/{n}, sk {sk}/{n}.",
+      "on": "La publicación automática está activada.",
+      "off": "La publicación automática está desactivada.",
+      "topic": "Tipo de entrada",
+      "draftNext": "Escribir el siguiente tema",
+      "allWritten": "Todos los temas de este tipo ya tienen una entrada en ese idioma.",
+      "published": "La entrada superó todas las comprobaciones y está publicada.",
+      "badge": "auto"
     }
   },
   "unsubscribe": {
@@ -8471,6 +9312,501 @@
     "failed": "No se ha podido guardar",
     "copy": "Copiar",
     "copied": "Enlace copiado"
+  },
+  "demo": {
+    "cta": "Probar la demo",
+    "ctaHint": "Sin registro, una empresa de ejemplo durante 24 horas",
+    "meta": {
+      "title": "Demo gratuita de facturación – pruebe la aplicación en vivo, sin registro",
+      "description": "Abra una empresa de ejemplo y pruebe la facturación en vivo: facturas con pago por QR, IVA, recordatorios, gastos y la vista del contable. Sin e-mail ni contraseña, y más adelante puede llevarse su trabajo a su propia cuenta."
+    },
+    "page": {
+      "eyebrow": "Demo sin registro",
+      "title": "Pruebe {site} con una empresa de ejemplo",
+      "lead": "Elija un tipo de empresa y estará en la aplicación en segundos. Las facturas, los contactos y los informes ya están rellenados, y puede editar, emitir o eliminar lo que quiera.",
+      "points": {
+        "time": "La empresa dura 24 horas y después se elimina por completo.",
+        "safe": "Todos los datos son ficticios. No se envía ningún e-mail ni se cobra nada.",
+        "keep": "¿Le gusta? Cree una cuenta y empiece con su propia empresa.",
+        "empty": "¿Prefiere empezar de cero? Elija una empresa vacía y traslade su trabajo a su propia cuenta después de registrarse."
+      },
+      "pick": "Elija un tipo de empresa",
+      "rolesTitle": "Vea la aplicación con los ojos de todo el equipo",
+      "rolesLead": "En la demo cambia la vista con una sola opción en la barra superior. Cada rol ve exactamente lo que vería en una empresa real.",
+      "tryTitle": "Qué probar en la demo",
+      "try": {
+        "invoices": {
+          "title": "Factura con pago por QR",
+          "text": "Emita una factura, descargue el PDF y comparta un enlace con código QR."
+        },
+        "payments": {
+          "title": "Pagos y pagos parciales",
+          "text": "Marque una factura como pagada o registre un pago parcial."
+        },
+        "reminders": {
+          "title": "Facturas vencidas",
+          "text": "Vea qué está vencido y cómo es un recordatorio."
+        },
+        "expenses": {
+          "title": "Gastos",
+          "text": "Registre una factura recibida y siga el gasto por categorías."
+        },
+        "vat": {
+          "title": "IVA e informes",
+          "text": "La declaración de IVA y la declaración de control a partir de los mismos datos."
+        },
+        "accountant": {
+          "title": "La vista del contable",
+          "text": "Exportaciones para el contable y lo que un contable puede hacer en la empresa."
+        },
+        "team": {
+          "title": "Equipo y roles",
+          "text": "Cambie a un compañero de solo lectura e intente modificar algo."
+        },
+        "quotes": {
+          "title": "Presupuestos y facturas proforma",
+          "text": "Convierta un presupuesto en una factura proforma y luego en una factura definitiva."
+        }
+      },
+      "allFeatures": "Todas las funciones",
+      "faqTitle": "Preguntas frecuentes sobre la demo",
+      "faq": [
+        {
+          "q": "¿Tengo que registrarme o dar un e-mail para la demo?",
+          "a": "No. Elija un tipo de empresa y estará en la aplicación en unos segundos. Sin e-mail, contraseña ni tarjeta."
+        },
+        {
+          "q": "¿Cuánto dura la demo?",
+          "a": "La empresa de ejemplo dura 24 horas. Después se elimina junto con todo lo que haya creado en ella."
+        },
+        {
+          "q": "¿Puedo probar la vista del contable o de un compañero?",
+          "a": "Sí. En la barra superior de la demo puede cambiar entre el propietario, el contable y un compañero de solo lectura. Cada rol tiene los mismos permisos que en una empresa real."
+        },
+        {
+          "q": "¿Puedo empezar con una empresa vacía?",
+          "a": "Sí. Elija una empresa vacía al empezar o use \"empezar con una empresa vacía\" en la barra de la demo. Obtendrá una empresa sin documentos y lo creará todo usted mismo."
+        },
+        {
+          "q": "¿Las facturas de la demo pasarán a mi cuenta?",
+          "a": "Sí, si crea la cuenta directamente desde la demo. Después de registrarse le ofreceremos trasladar las facturas, los contactos y los gastos que haya creado. Las facturas llegan como borradores, para que las emita con sus propios datos y su propia numeración."
+        },
+        {
+          "q": "¿Llega algo de la demo a personas reales?",
+          "a": "No. La demo no envía e-mails, no conecta ningún banco y no cobra nada. Todas las empresas y personas que aparecen son ficticias."
+        }
+      ]
+    },
+    "kinds": {
+      "cz_vat_sro": {
+        "title": "s.r.o. checa, sujeto pasivo de IVA",
+        "description": "Una sociedad limitada checa con IVA, facturas en CZK y EUR, clientes extranjeros."
+      },
+      "cz_freelancer": {
+        "title": "Autónomo checo, sin IVA",
+        "description": "Un autónomo sin IVA, facturas sencillas y un resumen de ingresos."
+      },
+      "cz_pausal": {
+        "title": "Autónomo checo, impuesto a tanto alzado",
+        "description": "El régimen de impuesto a tanto alzado, el seguimiento del límite de ingresos y los anticipos mensuales."
+      },
+      "sk_vat_sro": {
+        "title": "s.r.o. eslovaca, sujeto pasivo de IVA",
+        "description": "Una empresa eslovaca en euros, con tipos de IVA eslovacos y clientes eslovacos."
+      },
+      "sk_freelancer": {
+        "title": "Autónomo eslovaco, sin IVA",
+        "description": "Un traductor sin IVA, facturas en euros y clientes también en el Reino Unido y en EE. UU."
+      },
+      "sk_vat_freelancer": {
+        "title": "Autónomo eslovaco, sujeto pasivo de IVA",
+        "description": "Un electricista con IVA e inversión del sujeto pasivo en obras de construcción para empresas."
+      }
+    },
+    "country": {
+      "CZ": "Chequia",
+      "SK": "Eslovaquia"
+    },
+    "start": "Abrir la demo",
+    "starting": "Preparando la empresa…",
+    "banner": {
+      "label": "Demo",
+      "left": "Empresa de ejemplo, se elimina en {time}.",
+      "ai": "{n, plural, =0 {No quedan solicitudes de IA} one {Queda # solicitud de IA} other {Quedan # solicitudes de IA}}",
+      "register": "Crear una cuenta y conservar mi trabajo",
+      "restart": "Empezar de nuevo",
+      "hours": "{h} h {m} min",
+      "minutes": "{m} min",
+      "viewAs": "Ver como:",
+      "empty": "Empezar con una empresa vacía",
+      "emptyConfirm": "Se abrirá una nueva empresa de ejemplo vacía, sin documentos. La demo actual solo se conserva hasta que caduque. ¿Continuar?"
+    },
+    "expired": {
+      "metaTitle": "La demo ha terminado",
+      "title": "La empresa de ejemplo ya no existe",
+      "lead": "Una demo dura 24 horas y después se elimina con todos sus datos. Puede abrir una nueva o crear su propia cuenta.",
+      "again": "Abrir una nueva demo",
+      "register": "Crear una cuenta"
+    },
+    "publicNotice": "Una factura de ejemplo de la demo de {site}. La empresa y todos los datos son ficticios – no pague nada.",
+    "watermark": "DEMO",
+    "errors": {
+      "demo_locked": "La identidad de la empresa (nombre, IČO, número de IVA, dirección) no se puede cambiar en la demo. En su propia cuenta, sí.",
+      "demo_limit": "La empresa de la demo tiene un número limitado de registros. Cree su propia cuenta para tener más.",
+      "demo_disabled": "Esto no se puede probar en la demo. Funciona en su propia cuenta.",
+      "demo_no_email": "La demo no envía e-mails. Puede descargar la factura en PDF o abrir su enlace.",
+      "demo_ai_quota": "Esta demo ha agotado sus solicitudes de IA.",
+      "demo_expired": "La demo ha terminado y la empresa se ha eliminado.",
+      "demo_signed_in": "Ha iniciado sesión en su propia cuenta. Cierre la sesión primero para abrir la demo.",
+      "demo_ip_limit": "Hoy ya se han abierto muchas demos desde su red. Inténtelo mañana o cree una cuenta.",
+      "demo_capacity": "Ahora mismo hay demasiadas demos en marcha. Inténtelo de nuevo en un momento.",
+      "demo_unavailable": "No se ha podido preparar la demo en este momento. Inténtelo de nuevo.",
+      "rate_limited": "Demasiados intentos. Inténtelo de nuevo dentro de unos minutos.",
+      "invalid_role": "Este rol no se puede probar en la demo."
+    },
+    "roles": {
+      "owner": {
+        "label": "Propietario",
+        "hint": "Lo ve y lo hace todo: facturas, gastos, banco, informes y ajustes de la empresa."
+      },
+      "accountant": {
+        "label": "Contable",
+        "hint": "Trabaja con documentos, IVA, exportaciones e informes, pero no puede tocar los ajustes de la empresa, el equipo ni la suscripción."
+      },
+      "viewer": {
+        "label": "Compañero de solo lectura",
+        "hint": "Puede consultar facturas e informes, pero no puede emitir ni eliminar nada."
+      }
+    },
+    "picker": {
+      "dataTitle": "Datos",
+      "filled": "Con documentos de ejemplo",
+      "empty": "Empresa vacía",
+      "filledHint": "Las facturas, los contactos, los gastos y los informes ya están rellenados.",
+      "emptyHint": "Solo la empresa y sus ajustes. Lo crea todo usted mismo, por ejemplo para trasladarlo después a su propia cuenta.",
+      "viewTitle": "Verla como",
+      "businessTitle": "Tipo de actividad",
+      "businessAuto": "Según la empresa",
+      "businessAutoHint": "Cada empresa de ejemplo tiene activado lo que suele usar su tipo de actividad. En la demo también puede cambiar cualquier cosa en Ajustes → Módulos.",
+      "countryTitle": "País",
+      "countryHint": "El país determina la moneda, los tipos de IVA, los registros y el aspecto de los documentos.",
+      "quickStart": "Iniciar la demo para la clase",
+      "customize": "Cambiar los ajustes de la demo"
+    },
+    "transfer": {
+      "title": "¿Traer su trabajo de la demo?",
+      "lead": "Las facturas, los contactos y los gastos que creó en la demo pasan a esta empresa como borradores. Los datos de ejemplo se quedan en la demo.",
+      "claim": "Traerlo",
+      "dismiss": "No, gracias",
+      "done": "Se han trasladado {invoices, plural, one {# factura} other {# facturas}}, {contacts, plural, one {# contacto} other {# contactos}} y {expenses, plural, one {# gasto} other {# gastos}}. Las facturas están entre sus borradores.",
+      "signupNote": "Después de registrarse, le ofreceremos trasladar las facturas, los contactos y los gastos que creó en la demo.",
+      "errors": {
+        "demo_transfer_invalid": "El traslado ya no está disponible: la demo ha caducado o ya se utilizó.",
+        "forbidden": "Solo el propietario o un administrador de la empresa puede traer datos de la demo.",
+        "generic": "El traslado no ha funcionado en este momento. Inténtelo de nuevo."
+      }
+    },
+    "ctaCard": {
+      "title": "Pruébelo en vivo en la demo",
+      "titleFeature": "Pruebe {feature} en vivo en la demo",
+      "lead": "Una empresa de ejemplo con datos rellenados, en unos segundos. Sin registro.",
+      "leadView": "La demo se abre directamente en la vista de {role}, sin registro.",
+      "button": "Abrir la demo",
+      "buttonView": "Demo como {role}"
+    },
+    "signOutAndStart": "Cerrar sesión y abrir la demo",
+    "audiences": {
+      "courses": "Preparada para un curso: un negocio nuevo y vacío, listo para la primera factura.",
+      "coworkings": "Preparada para miembros de coworkings: un autónomo con documentos de ejemplo.",
+      "communities": "Preparada para miembros de la comunidad: un autónomo en el régimen de tanto alzado.",
+      "expats": "Preparada para un autónomo que trabaja en inglés, con documentos de ejemplo.",
+      "banks": "Preparada para una empresa con contable y sincronización bancaria.",
+      "schools": "Preparada para una clase: un negocio vacío solo con facturación.",
+      "creators": "Preparada para creadores: un autónomo en el régimen de tanto alzado.",
+      "events": "Preparada para asistentes: un autónomo solo con facturación.",
+      "firstInvoice": "Preparada para una primera factura: un negocio vacío sin IVA, solo con facturación.",
+      "beginners": "Preparada para principiantes: un autónomo con documentos de ejemplo.",
+      "advanced": "Preparada para usuarios avanzados: un sujeto pasivo de IVA con contable y sincronización bancaria."
+    },
+    "scenarios": {
+      "firstInvoice": "Preparada para la clase: una empresa vacía sin documentos. Empieza en Contactos.",
+      "invoices": "Preparada para la clase: una empresa con facturas de ejemplo. Empieza en la lista de facturas.",
+      "overdue": "Preparada para la clase: una empresa con facturas de ejemplo. Empieza en las facturas vencidas.",
+      "registries": "Preparada para la clase: una empresa con documentos y contactos de ejemplo. Empieza en la lista de facturas.",
+      "vatInvoices": "Preparada para la clase: un sujeto pasivo de IVA con documentos de ejemplo. Empieza en la lista de facturas.",
+      "vatOverdue": "Preparada para la clase: un sujeto pasivo de IVA con documentos de ejemplo. Empieza en las facturas vencidas.",
+      "bank": "Preparada para la clase: un sujeto pasivo de IVA con movimientos bancarios por conciliar. Empieza en Banco.",
+      "accountant": "Preparada para la clase: una empresa registrada a efectos de IVA vista con los ojos del contable. Empieza en Banco.",
+      "flatTax": "Preparada para la clase: un autónomo en el régimen de impuesto a tanto alzado con documentos de ejemplo. Empieza en la lista de facturas."
+    }
+  },
+  "classroom": {
+    "title": "Aula",
+    "description": "Clases en las que los alumnos practican la facturación con una empresa propia.",
+    "loadError": "No se ha podido cargar el aula. Pruebe a recargar la página.",
+    "backToClasses": "Volver a las clases",
+    "rejected": {
+      "title": "Su solicitud no ha sido aprobada",
+      "body": "Si se trata de un error, envíe una nueva solicitud con un enlace al sitio web del centro o escríbanos."
+    },
+    "pending": {
+      "title": "Su solicitud está pendiente de aprobación",
+      "body": "Estamos verificando {school}. Suele tardar hasta un día laborable; recibirá el resultado por e-mail."
+    },
+    "suspended": {
+      "title": "La cuenta del centro está suspendida",
+      "body": "Ahora mismo los alumnos no pueden unirse a las clases. Si no sabe por qué, póngase en contacto con nosotros."
+    },
+    "signedInAs": "{name} · {school}",
+    "classes": {
+      "title": "Sus clases",
+      "empty": "Todavía no hay clases. Cree la primera a continuación.",
+      "students": "{n, plural, one {# alumno} other {# alumnos}}",
+      "coTeaching": "coprofesor",
+      "ended": "terminada, se elimina el {date}",
+      "until": "hasta el {date}"
+    },
+    "tracks": {
+      "basic": {
+        "title": "Básico",
+        "body": "La primera factura, los contactos y un autónomo sin IVA. Para educación primaria."
+      },
+      "standard": {
+        "title": "Estándar",
+        "body": "IVA, facturas proforma, facturas rectificativas, banco, gastos y presupuestos. Para secundaria y escuelas de negocios."
+      },
+      "advanced": {
+        "title": "Avanzado",
+        "body": "Añade la inversión del sujeto pasivo, monedas extranjeras e informes de IVA. Para formación profesional superior, universidades y cursos."
+      }
+    },
+    "apply": {
+      "title": "Registro de profesores",
+      "intro": "El aula es gratuita para los profesores. Comprobamos que el centro existe y que usted da clase en él; después podrá crear clases.",
+      "country": "País",
+      "countryCZ": "Chequia",
+      "countrySK": "Eslovaquia",
+      "ico": "Identificador del centro (IČO)",
+      "lookup": "Buscar",
+      "schoolName": "Nombre del centro",
+      "address": "Dirección",
+      "level": "Tipo de centro",
+      "levels": {
+        "zs": "Escuela primaria",
+        "ss": "Escuela secundaria",
+        "vos": "Escuela superior de formación profesional",
+        "vs": "Universidad",
+        "course": "Curso u otra formación"
+      },
+      "webUrl": "Sitio web del centro",
+      "name": "Su nombre",
+      "subject": "Asignatura",
+      "expectedStudents": "Número aproximado de alumnos",
+      "terms": "Al enviar la solicitud acepta las <link>condiciones para centros educativos</link>, incluido el acuerdo de tratamiento de datos. No hay nada que firmar.",
+      "emailHint": "Un e-mail del centro agiliza la aprobación. Así, los compañeros con el mismo dominio entran sin esperar.",
+      "submit": "Enviar solicitud"
+    },
+    "create": {
+      "title": "Nueva clase",
+      "name": "Nombre de la clase",
+      "namePlaceholder": "p. ej., 3.º A – economía",
+      "track": "Nivel",
+      "suggested": "recomendado",
+      "kinds": "Tipos de empresa para los alumnos",
+      "kindsHint": "Cada alumno elige uno al unirse. Si solo hay uno, no hay nada que elegir.",
+      "language": "Idioma",
+      "endsAt": "Fin de las clases",
+      "endsAtHint": "Después, la clase queda en solo lectura durante 30 días y luego se elimina. Déjelo vacío para el final del curso escolar.",
+      "seeded": "Empezar con datos de ejemplo",
+      "seededHint": "La empresa recibe algunos clientes y facturas para que los alumnos tengan con qué trabajar. Si no, empiezan vacíos.",
+      "submit": "Crear clase"
+    },
+    "invite": {
+      "title": "Invitar a un compañero",
+      "body": "Un compañero de {school} se convierte en profesor aprobado en cuanto se registra.",
+      "placeholder": "colleague@school.cz",
+      "submit": "Enviar invitación",
+      "sent": "Invitación enviada."
+    },
+    "detail": {
+      "copied": "Copiado.",
+      "owner": "Creada por {name}",
+      "endedTitle": "Las clases han terminado",
+      "endedBody": "La clase está ahora en solo lectura. Se eliminará el {date} a menos que la prorrogue.",
+      "join": {
+        "title": "Código de acceso",
+        "body": "Los alumnos abren el enlace o introducen el código en /join. No necesitan e-mail ni contraseña.",
+        "copy": "Copiar enlace",
+        "rotate": "Nuevo código",
+        "rotateConfirm": "El código anterior dejará de funcionar. Los alumnos que ya están en la clase no se ven afectados. ¿Continuar?",
+        "open": "Inscripción abierta ({n} de {max})"
+      },
+      "retention": {
+        "title": "Duración de la clase",
+        "endsAt": "Fin de las clases",
+        "deletesAt": "Se elimina el",
+        "body": "Tras el final, las empresas de los alumnos se pueden consultar durante 30 días y después se eliminan. Le enviaremos un e-mail un mes y una semana antes del fin de las clases.",
+        "pickDate": "Nueva fecha de fin (opcional)",
+        "extend": "Prorrogar un curso escolar",
+        "extendTo": "Prorrogar hasta la fecha elegida",
+        "extended": "La clase se ha prorrogado.",
+        "download": "Descargar el progreso (CSV)"
+      },
+      "students": {
+        "title": "{n, plural, one {Alumnos (#)} other {Alumnos (#)}}",
+        "empty": "Todavía no se ha unido nadie. Envíe a sus alumnos el enlace o el código.",
+        "nickname": "Apodo",
+        "code": "Código personal",
+        "open": "Abrir empresa",
+        "newCode": "Nuevo código",
+        "newCodeConfirm": "¿Crear un nuevo código personal para {name}? El anterior dejará de funcionar y se cerrará la sesión del alumno.",
+        "newCodeTitle": "Nuevo código personal",
+        "newCodeBody": "Entrégueselo al alumno. Lo introduce en /join, en «Tengo un código personal».",
+        "remove": "Quitar",
+        "removeConfirm": "¿Quitar a {name} junto con su empresa? Esta acción no se puede deshacer.",
+        "kinds": "Tipos de empresa: {kinds}"
+      },
+      "teachers": {
+        "title": "Profesores",
+        "ownerLabel": "propietario",
+        "remove": "Quitar",
+        "pick": "Elija un compañero",
+        "add": "Añadir coprofesor",
+        "none": "Todavía no hay nadie más de su centro. Puede invitar a un compañero desde el resumen de clases."
+      },
+      "delete": {
+        "title": "Eliminar clase",
+        "body": "Elimina la clase y la empresa de cada alumno. Esta acción no se puede deshacer.",
+        "confirm": "¿Seguro que desea eliminar {name} y todas las empresas de sus alumnos?",
+        "submit": "Eliminar clase"
+      }
+    },
+    "milestones": {
+      "contact_created": "Contacto",
+      "invoice_issued": "Factura",
+      "invoice_vat": "Factura con IVA",
+      "invoice_foreign_currency": "Moneda extranjera",
+      "invoice_reverse_charge": "Inversión del sujeto pasivo",
+      "proforma_converted": "Proforma → factura",
+      "quote_created": "Presupuesto",
+      "credit_note_issued": "Factura rectificativa",
+      "invoice_paid": "Pago",
+      "bank_matched": "Pago conciliado",
+      "expense_recorded": "Gasto",
+      "recurring_created": "Factura recurrente",
+      "time_logged": "Registro de horas"
+    },
+    "banner": {
+      "student": "{nickname} · clase {className}",
+      "teacher": "Empresa de {nickname} · clase {className}",
+      "practice": "Una empresa de prácticas; en realidad no se envía nada. Se elimina el {date}.",
+      "ended": "La clase ha terminado. Todavía puede consultarla y descargar los PDF, pero no se puede cambiar nada. Se elimina el {date}.",
+      "showCode": "Mostrar código personal",
+      "leave": "Cerrar sesión",
+      "leaveConfirm": "¿Cerrar sesión? Puede volver con su código personal.",
+      "backToClass": "Volver a la clase",
+      "team": "Equipo {team} · clase {className}",
+      "teacherTeam": "Empresa del equipo {team} · clase {className}",
+      "teamName": "equipo {team}",
+      "accountant": "Lleva la contabilidad de {who} · clase {className}",
+      "modes": {
+        "review": "Solo revisa: lo ve todo y no cambia nada.",
+        "bookkeeper": "Registra gastos y pagos y prepara informes. El propietario emite las facturas.",
+        "full": "Lleva toda la documentación de la empresa, facturas incluidas."
+      }
+    },
+    "errors": {
+      "generic": "Algo ha salido mal. Inténtelo de nuevo.",
+      "classroom_already_teacher": "Esta cuenta ya está registrada como profesor.",
+      "classroom_application_pending": "Su solicitud ya está pendiente de aprobación.",
+      "classroom_too_many_applications": "Demasiadas solicitudes desde esta cuenta. Inténtelo de nuevo más tarde.",
+      "classroom_too_many_invites": "Hoy ha invitado a demasiados compañeros. Inténtelo de nuevo mañana.",
+      "classroom_not_teacher": "Solo un profesor aprobado puede hacer esto.",
+      "classroom_class_limit": "Ha alcanzado el límite de clases activas. Elimine una más antigua o deje que termine.",
+      "classroom_invalid_end": "La fecha de fin debe ser futura y estar como máximo a 13 meses vista.",
+      "classroom_owner_only": "Solo el profesor que creó la clase puede hacer esto.",
+      "classroom_invalid_teacher": "No se puede añadir a este compañero. Debe ser un profesor aprobado del mismo centro.",
+      "classroom_school_suspended": "La cuenta del centro está suspendida. Póngase en contacto con nosotros.",
+      "classroom_not_found": "La clase o el alumno ya no existe.",
+      "classroom_ended": "La clase ha terminado y ahora está en solo lectura.",
+      "not_found": "No encontrado.",
+      "forbidden": "No tiene permiso para hacer esto.",
+      "classroom_closed": "La clase ha terminado o está suspendida; no se puede crear nada nuevo en ella.",
+      "classroom_invalid_kind": "La clase no utiliza este tipo de empresa.",
+      "classroom_unavailable": "No se ha podido rellenar la empresa en este momento. Inténtelo de nuevo.",
+      "classroom_team_limit": "La clase ya tiene el número máximo de equipos.",
+      "classroom_team_name_taken": "La clase ya tiene un equipo con este nombre.",
+      "classroom_team_taken": "El alumno ya está en otro equipo.",
+      "classroom_team_full": "El equipo está completo.",
+      "classroom_team_empty": "El equipo todavía no tiene miembros. Añada a alguien primero.",
+      "classroom_company_limit": "No se pueden crear más empresas. Un alumno o un equipo puede tener tres como máximo.",
+      "classroom_company_owner": "Elija un alumno o un equipo.",
+      "classroom_partner_same": "Elija dos empresas distintas.",
+      "classroom_accountant_member": "El alumno ya está en esta empresa como propietario o miembro del equipo.",
+      "classroom_accountant_limit": "El alumno ya lleva la contabilidad del número máximo de empresas permitido.",
+      "classroom_invalid_mode": "La clase no permite este modo."
+    },
+    "groups": {
+      "teamOwner": "Equipo {name}",
+      "teams": {
+        "title": "Equipos",
+        "body": "Los miembros de un equipo trabajan en una empresa compartida. Cada alumno puede estar como máximo en un equipo.",
+        "empty": "Todavía no hay equipos.",
+        "name": "Nombre del equipo",
+        "create": "Crear equipo",
+        "addMember": "Añadir alumno",
+        "removeMember": "Quitar a {name} del equipo",
+        "delete": "Eliminar equipo",
+        "deleteConfirm": "¿Eliminar el equipo {name} y sus empresas? Los alumnos conservan sus propias empresas."
+      },
+      "companies": {
+        "title": "Más empresas",
+        "body": "Un alumno o un equipo puede tener otra empresa, por ejemplo un cliente para un proveedor. Se rellena igual que las empresas de los alumnos y se elimina con la clase.",
+        "empty": "Todavía no hay otras empresas.",
+        "owner": "Para quién",
+        "kind": "Tipo de empresa",
+        "label": "Nombre de la empresa (opcional)",
+        "create": "Crear empresa",
+        "created": "La empresa se ha creado.",
+        "open": "Abrir empresa",
+        "delete": "Eliminar empresa",
+        "deleteConfirm": "¿Eliminar la empresa {name}? Esta acción no se puede deshacer.",
+        "progress": "{n} de {max} completados"
+      },
+      "partners": {
+        "title": "Socios comerciales",
+        "body": "Dos empresas de la clase se añaden mutuamente como contactos para poder facturarse entre sí. La otra empresa registra después la factura del socio como gasto.",
+        "a": "Primera empresa",
+        "b": "Segunda empresa",
+        "submit": "Conectar",
+        "done": "{n, plural, =0 {Las empresas ya se conocen.} one {Se ha añadido # contacto.} other {Se han añadido # contactos.}}"
+      },
+      "accountants": {
+        "title": "Alumnos como contables",
+        "body": "Un alumno se convierte en contable de otra empresa de la clase y cambia a ella como a la suya propia. El modo determina lo que puede hacer allí.",
+        "empty": "Todavía nadie lleva la contabilidad de otra empresa.",
+        "student": "Alumno",
+        "company": "Empresa",
+        "mode": "Modo",
+        "assign": "Asignar",
+        "remove": "Quitar",
+        "row": "{student} lleva la contabilidad: {company}",
+        "modes": {
+          "review": {
+            "title": "Revisión",
+            "hint": "El contable lo ve todo pero no cambia nada. Útil para revisar los documentos de un compañero."
+          },
+          "bookkeeper": {
+            "title": "Auxiliar contable",
+            "hint": "El contable registra gastos, banco e informes y solo consulta las facturas. El propietario las emite."
+          },
+          "full": {
+            "title": "Acceso completo",
+            "hint": "El contable puede hacer todo lo que puede el propietario, incluso emitir y anular facturas."
+          }
+        }
+      }
+    }
   },
   "classroomJoin": {
     "title": "Unirse a una clase",
@@ -8885,5 +10221,613 @@
         "Por los miembros que se queden con Billanta, el coworking puede obtener créditos por recomendación."
       ]
     }
+  },
+  "switchPage": {
+    "seoTitle": "Cámbiese a Billanta desde otro programa de facturación",
+    "navTitle": "Cambiar a Billanta",
+    "title": "Cámbiese a Billanta y llévese sus datos",
+    "lead": "Traiga sus contactos, facturas emitidas y su serie de numeración desde la exportación que le ofrece su programa actual. La importación reconoce de dónde procede el archivo y muestra una vista previa antes de guardar nada.",
+    "pickTitle": "¿Desde qué programa viene?",
+    "cardCta": "Guía para el cambio",
+    "otherTitle": "Otro programa o Excel",
+    "otherText": "La importación también lee su propia hoja de cálculo. Las columnas que no reconozca las asigna usted en la vista previa.",
+    "howTitle": "Cómo funciona el cambio",
+    "how": [
+      "Descargue de su programa anterior una exportación de facturas y contactos en CSV o Excel.",
+      "Suba el archivo a Billanta. Reconocemos de qué programa procede y asignamos las columnas.",
+      "Revise facturas, clientes y numeración en la vista previa. No se guarda nada hasta que lo confirme."
+    ],
+    "exportTitle": "Cómo sacar sus datos",
+    "transfersTitle": "Qué se traslada",
+    "transfers": [
+      "Clientes con número de identificación, NIF y dirección. Los que ya tiene en Billanta se emparejan, no se duplican.",
+      "Facturas emitidas con fechas, importes, moneda y estado de pago. No se vuelve a enviar nada ni salen recordatorios.",
+      "Su serie de numeración: la siguiente factura continúa tras la última importada y, si lo desea, adoptamos también el formato del número.",
+      "Los conceptos de la factura cuando la exportación los incluye; si no, una sola línea por el importe total."
+    ],
+    "note": "Describimos los pasos de forma general; los nombres de los botones pueden variar según la versión del programa.",
+    "ctaTitle": "Cree una cuenta gratuita y suba su exportación",
+    "ctaLead": "Tras registrarse le llevamos directamente a la importación. En su programa anterior no cambia nada.",
+    "ctaButton": "Crear cuenta e importar",
+    "haveAccount": "¿Ya tiene cuenta? Abrir la importación",
+    "compareLink": "Billanta frente a {brand}",
+    "othersTitle": "Cambiar desde otros programas",
+    "faqTitle": "Preguntas frecuentes",
+    "faq": [
+      {
+        "q": "¿Perderé algo en mi programa anterior?",
+        "a": "No. La importación solo lee el archivo que usted descarga. En el programa anterior no cambia nada y puede seguir usándolo hasta que esté seguro."
+      },
+      {
+        "q": "¿Qué pasa si la importación no reconoce algunas columnas?",
+        "a": "En la vista previa elige qué contiene cada columna y vuelve a comprobar el archivo. No se guarda nada sin su confirmación."
+      },
+      {
+        "q": "¿Continuará la numeración de las facturas?",
+        "a": "Sí. La siguiente factura recibe el número posterior al más alto importado. Si su programa anterior usaba otro formato de numeración, la vista previa le ofrece adoptarlo."
+      },
+      {
+        "q": "¿Tengo que convertir un archivo de Excel a CSV?",
+        "a": "No, suba directamente el archivo .xlsx. Solo el antiguo formato .xls debe volver a guardarse como .xlsx en Excel."
+      }
+    ],
+    "brands": {
+      "fakturoid": {
+        "title": "Cambiar de Fakturoid a Billanta",
+        "lead": "Hay dos formas de dejar Fakturoid: una conexión directa por API o una exportación a CSV. Ambas terminan en una vista previa donde lo revisa todo.",
+        "steps": [
+          "En los ajustes de su cuenta de usuario de Fakturoid obtiene el acceso a la API v3 (Client ID y Client secret).",
+          "Introdúzcalos en la importación de Billanta y cargamos de una vez facturas, facturas proforma, facturas rectificativas y la libreta de direcciones.",
+          "Sin la API, exporte las listas de facturas y contactos a CSV; suba primero los contactos."
+        ],
+        "extra": "Con la conexión por API también traemos las facturas proforma, las facturas rectificativas, los pagos y los PDF originales.",
+        "seoTitle": "Cambiar de Fakturoid a Billanta – guía de exportación e importación"
+      },
+      "idoklad": {
+        "title": "Cambiar de iDoklad a Billanta",
+        "lead": "Desde iDoklad, exporte la lista de facturas emitidas y sus contactos. El archivo de Excel se sube directamente, sin conversión.",
+        "steps": [
+          "En la lista de facturas emitidas, seleccione los documentos que quiere trasladar.",
+          "Use la exportación a Excel o CSV.",
+          "Exporte los contactos de la misma manera y súbalos primero a Billanta."
+        ],
+        "extra": "Deducimos el tipo de IVA a partir de los importes aunque la exportación no tenga una columna propia para él.",
+        "seoTitle": "Cambiar de iDoklad a Billanta – guía de exportación e importación"
+      },
+      "superfaktura": {
+        "title": "Cambiar de SuperFaktura a Billanta",
+        "lead": "Desde SuperFaktura, descargue el listado de facturas y el directorio de clientes. La importación lee exportaciones checas y eslovacas, incluidas las facturas en euros.",
+        "steps": [
+          "En el listado de facturas, filtre el periodo que quiere trasladar.",
+          "Descargue la lista en Excel o CSV.",
+          "Exporte los clientes de la misma manera y súbalos primero a Billanta."
+        ],
+        "extra": "El número de IVA eslovaco (IČ DPH) se mantiene en el cliente, separado del número fiscal (DIČ).",
+        "seoTitle": "Cambiar de SuperFaktura a Billanta – guía de exportación e importación"
+      },
+      "vyfakturuj": {
+        "title": "Cambiar de Vyfakturuj a Billanta",
+        "lead": "Desde Vyfakturuj trae las facturas emitidas con sus conceptos. Basta con exportar los documentos y los contactos.",
+        "steps": [
+          "En la lista de documentos, filtre las facturas emitidas del periodo que quiere trasladar.",
+          "Descárguelas en CSV o Excel, a ser posible con los conceptos.",
+          "Exporte los contactos por separado y súbalos primero a Billanta."
+        ],
+        "extra": "Una exportación con conceptos se traslada línea por línea, con cantidad, precio y tipo de IVA.",
+        "seoTitle": "Cambiar de Vyfakturuj a Billanta – guía de exportación e importación"
+      },
+      "kros": {
+        "title": "Cambiar de KROS Fakturácia a Billanta",
+        "lead": "Desde KROS Fakturácia, exporte a Excel las facturas emitidas y los socios comerciales. La importación lee los nombres de columna en eslovaco y las facturas en euros.",
+        "steps": [
+          "En la lista de facturas emitidas, seleccione los documentos que quiere trasladar.",
+          "Exporte la lista a Excel o CSV.",
+          "Exporte los socios comerciales de la misma manera y súbalos primero a Billanta."
+        ],
+        "extra": "El número de IVA eslovaco (IČ DPH) se mantiene separado del número fiscal (DIČ) y deducimos el tipo de IVA a partir de los importes.",
+        "seoTitle": "Cambiar de KROS Fakturácia a Billanta – guía de exportación e importación"
+      },
+      "billdu": {
+        "title": "Cambiar de Billdu a Billanta",
+        "lead": "Desde Billdu, descargue la exportación de documentos en la aplicación web. La importación también entiende los nombres de columna en inglés.",
+        "steps": [
+          "En la aplicación web de Billdu, abra la lista de facturas y busque la exportación de documentos.",
+          "Elija CSV o Excel y el periodo que quiere trasladar.",
+          "Exporte los clientes por separado y súbalos primero a Billanta."
+        ],
+        "extra": "El estado de pago y las fechas en formato YYYY-MM-DD se convierten automáticamente.",
+        "seoTitle": "Cambiar de Billdu a Billanta – guía de exportación e importación"
+      },
+      "bitfaktura": {
+        "title": "Cambiar de BitFaktura a Billanta",
+        "lead": "Puede dejar BitFaktura con un código de API o con una exportación de facturas a CSV. Una serie como 1/09/2025 continúa sin interrupción.",
+        "steps": [
+          "En las integraciones de los ajustes de su cuenta de BitFaktura encontrará un código de autorización de API.",
+          "Introdúzcalo en la importación de Billanta junto con el nombre de su cuenta y cargamos las facturas y toda la libreta de direcciones.",
+          "Sin el código, exporte las facturas a CSV y suba el archivo en la importación."
+        ],
+        "extra": "Con el código de API también cargamos los contactos a los que aún no ha facturado, los tipos de cambio y las formas de pago.",
+        "seoTitle": "Cambiar de BitFaktura a Billanta – guía de exportación e importación"
+      }
+    }
+  },
+  "glossaryPages": {
+    "breadcrumb": "Glosario",
+    "indexTitle": "Glosario: facturación e IVA en Chequia y Eslovaquia",
+    "indexLead": "Explicaciones breves de los términos que aparecen al facturar y gestionar el IVA en Chequia y Eslovaquia. Cada término incluye una definición, un ejemplo y un enlace a la ley.",
+    "indexDescription": "Qué significan en Chequia y Eslovaquia la DUZP, la inversión del sujeto pasivo, la declaración de control o la factura proforma. Breve, con un ejemplo y un enlace a la ley.",
+    "groupBoth": "Ambos países",
+    "groupCz": "Términos checos",
+    "groupSk": "Términos eslovacos",
+    "metaTitle": "{term} – significado",
+    "definition": "Definición",
+    "explanation": "Explicación",
+    "example": "Ejemplo",
+    "law": "Ley",
+    "related": "Términos relacionados",
+    "allTerms": "Todos los términos",
+    "disclaimer": "Una explicación breve, no asesoramiento fiscal. Lo que cuenta es el texto de la ley enlazada.",
+    "lawRef": "§ {p}",
+    "lawRefOdst": "§ {p}, apartado {o}",
+    "laws": {
+      "ZDPH": "Ley checa del IVA (Ley n.º 235/2004 Sb.)",
+      "OZ": "Código Civil checo (Ley n.º 89/2012 Sb.)",
+      "ZDP": "Ley checa del impuesto sobre la renta (Ley n.º 586/1992 Sb.)",
+      "DR": "Código Tributario checo (Ley n.º 280/2009 Sb.)",
+      "ZoDPH": "Ley eslovaca del IVA (Ley n.º 222/2004 Z. z.)",
+      "ZoDP": "Ley eslovaca del impuesto sobre la renta (Ley n.º 595/2003 Z. z.)",
+      "ObZ": "Código de Comercio eslovaco (Ley n.º 513/1991 Zb.)"
+    },
+    "otherTitle": "Este término pertenece al otro país",
+    "otherText": "La página «{term}» explica las normas de un solo país.",
+    "otherOriginal": "Leer el original",
+    "otherEnglish": "Leer en inglés",
+    "otherCounterpart": "El término equivalente es {term}",
+    "marketCz": "Chequia",
+    "marketSk": "Eslovaquia",
+    "onlyCz": "Un término del derecho checo. La versión principal de esta página está en checo.",
+    "onlySk": "Un término del derecho eslovaco. La versión principal de esta página está en eslovaco.",
+    "readOriginal": "Leer el original",
+    "tools": {
+      "heading": "Herramientas y guías",
+      "createInvoice": "Crear una factura sin registrarse"
+    }
+  },
+  "businessDirectory": {
+    "title": "Directorio de empresas",
+    "seoTitle": "Directorio de autónomos y empresas por sector y localidad",
+    "metaDescription": "Autónomos y empresas que facturan con {site}. Explore por sector y localidad y contacte con ellos directamente desde su perfil público.",
+    "lead": "Autónomos y empresas que facturan con {site} y han decidido aparecer en el directorio. Explore por sector o localidad.",
+    "byTrade": "Por sector",
+    "byTown": "Por localidad",
+    "latest": "En el directorio",
+    "emptyAll": "El directorio acaba de empezar. Sea de los primeros en aparecer.",
+    "emptyTrade": "Todavía no hay nadie en este sector. ¿Factura con Billanta? Active su presencia en el directorio.",
+    "emptyTown": "Todavía no hay nadie de {name} en el directorio.",
+    "count": "{n, plural, one {# empresa} other {# empresas}}",
+    "tradeSeoTitle": "{trade} – directorio de empresas",
+    "tradeTowns": "{trade} por localidad",
+    "otherTrades": "Otros sectores",
+    "townSeoTitle": "{name}: autónomos y empresas",
+    "townMetaDescription": "Autónomos y empresas de {name} que facturan con {site}. Sus servicios y datos de contacto en un solo lugar.",
+    "townTitle": "{name}: autónomos y empresas que facturan con Billanta",
+    "townIntro": "Empresas y autónomos de {name} (distrito de {district}, {region}) que facturan con {site} y aparecen en el directorio. Cada perfil lo ha publicado la propia empresa.",
+    "townTrades": "Sectores en esta localidad",
+    "townInvoicing": "Facturar en {name}: información local",
+    "townSection": "Autónomos y empresas de {name} que facturan con {site}",
+    "townSectionAll": "{n, plural, one {Ver # empresa en el directorio} other {Ver las # empresas del directorio}}",
+    "howTitle": "Cómo aparecer en el directorio",
+    "howBody": "El directorio solo muestra empresas que han publicado un perfil en Billanta y han activado ellas mismas su presencia en el directorio. No se añade a nadie sin su consentimiento y la presencia puede desactivarse en cualquier momento.",
+    "joinTitle": "¿Quiere aparecer aquí también?",
+    "joinBody": "Regístrese gratis en Billanta, publique el perfil de su empresa y active la presencia en el directorio en Ajustes → Perfil público.",
+    "joinCta": "Empezar gratis",
+    "profileListed": "En el directorio de empresas:",
+    "trades": {
+      "tradesman": "Oficios",
+      "construction": "Construcción",
+      "it": "Informática y software",
+      "design": "Diseño y grafismo",
+      "marketing": "Marketing y publicidad",
+      "photo": "Foto y vídeo",
+      "consulting": "Consultoría",
+      "education": "Formación y cursos",
+      "beauty": "Estética y peluquería",
+      "health": "Salud y terapia",
+      "transport": "Transporte y mudanzas",
+      "gastro": "Hostelería y catering",
+      "eshop": "Tiendas online y comercio",
+      "cleaning": "Limpieza y mantenimiento",
+      "other": "Otros servicios"
+    },
+    "tradeIntro": {
+      "tradesman": "Electricistas, fontaneros, carpinteros y otros profesionales de oficios que facturan con Billanta. Consulte su perfil público y contacte con ellos directamente.",
+      "construction": "Empresas constructoras y contratistas – desde albañilería hasta reformas llave en mano. Cada perfil muestra los servicios y el contacto que la empresa ha decidido publicar.",
+      "it": "Desarrolladores freelance, administradores de redes y consultores informáticos, además de pequeñas empresas de TI. Encuentre un proveedor cerca o en cualquier parte del país.",
+      "design": "Diseñadores gráficos, diseñadores web e ilustradores que facturan con Billanta. Su perfil enumera los servicios e incluye un enlace a su portafolio.",
+      "marketing": "Especialistas en marketing, redactores y agencias para pequeñas y grandes empresas. Campañas, redes sociales, textos y PPC.",
+      "photo": "Fotógrafos y videógrafos para bodas, empresas, productos y eventos. Escríbales directamente desde su perfil.",
+      "consulting": "Asesores de empresa, finanzas, derecho y recursos humanos. Pequeñas consultoras y consultores independientes.",
+      "education": "Tutores, cursos y profesores particulares – idiomas, clases de refuerzo, deporte y formación para empresas.",
+      "beauty": "Esteticistas, peluqueros, manicuristas y otros servicios de belleza cerca de usted.",
+      "health": "Fisioterapeutas, masajistas, terapeutas y otros profesionales de la salud y el bienestar.",
+      "transport": "Transportistas, mensajeros y empresas de mudanzas. Desde pequeños encargos hasta transporte regular.",
+      "gastro": "Restaurantes, cafeterías, empresas de catering y pastelerías que facturan con Billanta.",
+      "eshop": "Pequeñas tiendas online y comercios – desde productos artesanales hasta artículos especializados.",
+      "cleaning": "Empresas de limpieza, mantenimiento de casas y jardines, limpieza de cristales y otros servicios para el hogar.",
+      "other": "Otros autónomos y empresas que no encajan en los demás sectores."
+    }
+  },
+  "paymentReminders": {
+    "indexTitle": "Plantillas gratuitas de recordatorio de pago y requerimiento de pago",
+    "indexName": "Plantillas de recordatorio de pago",
+    "indexDescription": "Plantillas de recordatorio de pago, requerimiento de pago y aviso previo a la demanda según la legislación checa. Indique el deudor y el importe, elija el tono y copie el texto o descargue un PDF.",
+    "indexLead": "Tres cartas para una factura vencida, desde un recordatorio amable hasta un aviso antes de acudir a los tribunales. El generador de abajo las rellena por usted – copie el texto en un correo electrónico o descargue un PDF. Sin registro.",
+    "step": "Paso {n}",
+    "howTitle": "Qué hacer con una factura impagada",
+    "how": [
+      "Unos días después de la fecha de vencimiento, envíe un recordatorio cortés. A menudo se trata de un simple descuido.",
+      "Si el pago sigue sin llegar, envíe un requerimiento de pago con un nuevo plazo y una mención a los intereses de demora.",
+      "Antes de demandar, envíe un aviso previo a la demanda con al menos 7 días de antelación. Sin él, el tribunal puede no concederle las costas del proceso.",
+      "Guarde cada carta junto con el justificante de envío."
+    ],
+    "common": {
+      "whenTitle": "Cuándo enviarla",
+      "fieldsTitle": "Qué debe contener la carta",
+      "fieldsLead": "Cuando la ley establece un requisito, el punto enlaza con la disposición correspondiente.",
+      "pitfallsTitle": "Tenga en cuenta",
+      "otherTitle": "Otras plantillas",
+      "allTemplates": "Todas las plantillas de recordatorio",
+      "invoiceTemplates": "Plantillas de factura",
+      "rulesNote": "Estas plantillas siguen la legislación checa y no constituyen asesoramiento jurídico. Para reclamaciones elevadas o en disputa, consulte con un abogado."
+    },
+    "auto": {
+      "title": "Deje que Billanta envíe los recordatorios por usted",
+      "text": "Cuando una factura emitida en Billanta vence sin pagarse, su cliente recibe automáticamente un recordatorio cortés por correo electrónico con un enlace a la factura y su pago por QR. Usted define el intervalo y el número máximo de recordatorios, que se detienen en cuanto se paga la factura.",
+      "cta": "Pruébelo gratis",
+      "more": "Cómo funcionan los recordatorios automáticos"
+    },
+    "fromInvoices": {
+      "title": "¿Factura vencida? Plantillas de recordatorio de pago",
+      "text": "Un recordatorio, un requerimiento de pago y un aviso previo a la demanda. Rellénelos en línea y luego cópielos o descargue un PDF."
+    },
+    "items": {
+      "reminder": {
+        "name": "Recordatorio de pago",
+        "title": "Plantilla de recordatorio de pago para una factura impagada",
+        "description": "Un recordatorio cortés o firme para una factura vencida. Rellene los datos y copie el texto en un correo electrónico o descargue un PDF gratuito.",
+        "lead": "La primera carta tras la fecha de vencimiento: hace referencia a la factura y fija un nuevo plazo.",
+        "when": [
+          "Envíe un recordatorio unos días después de la fecha de vencimiento, normalmente entre 3 y 7 días. El cliente incurre en mora desde el día siguiente al vencimiento, pero la primera carta sirve sobre todo para recordarle que la factura existe.",
+          "La ley no exige ninguna forma concreta para el recordatorio. Basta con un correo electrónico, salvo que su contrato diga otra cosa."
+        ],
+        "fields": [
+          {
+            "name": "Número de factura, importe y fecha de vencimiento",
+            "text": "Para que el cliente pueda localizar e identificar el pago fácilmente."
+          },
+          {
+            "name": "Una mención de que el deudor está en mora",
+            "text": "Quien no paga a tiempo incurre en mora. En el primer recordatorio basta con una mención objetiva.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Nuevo plazo y datos de pago",
+            "text": "Una fecha concreta y el número de cuenta, idealmente con el número de factura como referencia del pago."
+          },
+          {
+            "name": "Una petición de aviso si ya se ha pagado",
+            "text": "Los pagos y los recordatorios a veces se cruzan. Una frase cortés evita discusiones innecesarias."
+          }
+        ],
+        "pitfalls": [
+          "Revise su extracto bancario antes de enviarlo. Un recordatorio por una factura ya pagada perjudica la relación.",
+          "Sea objetivo y evite las amenazas. El tono más firme corresponde al requerimiento de pago.",
+          "Un recordatorio no prorroga nada: los intereses de demora corren desde el día siguiente al vencimiento, sea cual sea el nuevo plazo."
+        ]
+      },
+      "demand": {
+        "name": "Requerimiento de pago",
+        "title": "Plantilla de requerimiento de pago con intereses de demora",
+        "description": "Un requerimiento de pago que menciona los intereses de demora legales y los 1.200 CZK de costes de cobro. Rellénelo en línea y luego cópielo o descargue un PDF.",
+        "lead": "La segunda carta: más firme, con intereses de demora y los costes de cobro de la deuda.",
+        "when": [
+          "Envíe un requerimiento de pago cuando el recordatorio no haya surtido efecto, normalmente entre 2 y 4 semanas después de la fecha de vencimiento.",
+          "Indica al deudor que, además del importe adeudado, puede deber intereses de demora y, entre empresas, los costes de cobro de la deuda."
+        ],
+        "fields": [
+          {
+            "name": "Importe adeudado y factura",
+            "text": "Número de factura, importe y fecha de vencimiento a partir de la cual el deudor está en mora.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Intereses de demora",
+            "text": "El acreedor puede reclamar los intereses de demora legales. El tipo anual es el tipo repo del Banco Nacional Checo vigente el primer día del semestre natural en que comenzó la mora, más 8 puntos porcentuales.",
+            "rule": "§1970 OZ, §2 NVU"
+          },
+          {
+            "name": "Costes de cobro de la deuda",
+            "text": "Al menos 1.200 CZK por reclamación. Reclámelos solo a empresas.",
+            "rule": "§3 NVU"
+          },
+          {
+            "name": "Nuevo plazo y datos de pago",
+            "text": "Una fecha concreta antes de la cual debe llegar el pago, y adónde enviarlo."
+          }
+        ],
+        "pitfalls": [
+          "Calcule los intereses desde el día siguiente al vencimiento, no desde la fecha del recordatorio.",
+          "Si su contrato fija su propio tipo de interés o una penalización contractual, remítase al contrato en lugar del tipo legal.",
+          "No reclame los 1.200 CZK a consumidores."
+        ]
+      },
+      "preAction": {
+        "name": "Aviso previo a la demanda",
+        "title": "Plantilla de aviso previo a la demanda para una factura impagada",
+        "description": "Un aviso previo a la demanda (requerimiento de cumplimiento según el § 142a del Código Procesal Civil checo). Envíelo al menos 7 días antes de demandar o es posible que no recupere las costas del proceso.",
+        "lead": "La última carta antes de acudir a los tribunales: sin ella puede no recuperar las costas del proceso.",
+        "when": [
+          "Envíe un aviso previo a la demanda una vez que haya decidido llevar la deuda a los tribunales.",
+          "El demandante que gana solo tiene derecho a las costas del proceso si envió al demandado un requerimiento de cumplimiento al menos 7 días antes de presentar la demanda, a su dirección de notificaciones, domicilio o sede social."
+        ],
+        "fields": [
+          {
+            "name": "Un requerimiento de cumplimiento explícito",
+            "text": "La carta debe dejar claro qué debe pagar exactamente el deudor y en qué plazo.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Dirección del deudor",
+            "text": "La dirección de notificaciones, el domicilio o la sede social. Compruébela en el registro mercantil o en ARES.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Aviso de acciones legales",
+            "text": "Que, si el plazo vence sin pago, presentará una demanda y reclamará las costas del proceso."
+          },
+          {
+            "name": "Intereses de demora y costes",
+            "text": "Añada al importe adeudado los intereses de demora legales y, entre empresas, los costes de cobro de la deuda.",
+            "rule": "§1970 OZ, §3 NVU"
+          }
+        ],
+        "pitfalls": [
+          "Entre el envío del aviso y la presentación de la demanda deben transcurrir al menos 7 días.",
+          "Envíelo por correo certificado o al buzón de datos del deudor y guarde el justificante de envío. Lo necesitará ante el tribunal.",
+          "Un aviso enviado solo por correo electrónico es más difícil de probar."
+        ]
+      }
+    }
+  },
+  "reminderGenerator": {
+    "title": "Rellene la carta",
+    "preview": "Vista previa",
+    "copy": "Copiar texto",
+    "copied": "Copiado",
+    "pdf": "Descargar PDF",
+    "note": "No guardamos nada. El PDF se genera solo para usted y se elimina de inmediato.",
+    "preActionHint": "Envíe el aviso por correo certificado o al buzón de datos del deudor y guarde el justificante de envío.",
+    "fields": {
+      "kind": "Carta",
+      "tone": "Tono",
+      "polite": "Cortés",
+      "firm": "Firme",
+      "creditor": "Acreedor (usted)",
+      "creditorPh": "Jan Novák, ID de empresa 12345678",
+      "debtor": "Deudor",
+      "debtorPh": "Firma s.r.o., ID de empresa 87654321",
+      "invoice": "Número de factura",
+      "due": "Fecha de vencimiento",
+      "amount": "Importe adeudado",
+      "currency": "Moneda",
+      "account": "Número de cuenta",
+      "accountPh": "123456789/0100",
+      "accountHint": "Opcional. Si no lo indica, nos remitiremos a la cuenta que figura en la factura.",
+      "deadline": "Nuevo plazo de pago",
+      "days": "{n, plural, one {# día} other {# días}}"
+    },
+    "blank": {
+      "invoice": "[número de factura]",
+      "amount": "[importe]",
+      "due": "[fecha de vencimiento]",
+      "dayAfter": "[día siguiente al vencimiento]",
+      "deadline": "[nuevo plazo]",
+      "creditor": "[su nombre]",
+      "debtor": "[deudor]",
+      "date": "[fecha]"
+    },
+    "file": {
+      "reminder": "recordatorio-de-pago",
+      "demand": "requerimiento-de-pago",
+      "preAction": "aviso-previo-a-la-demanda"
+    },
+    "errors": {
+      "copy": "No se ha podido copiar el texto. Selecciónelo en la vista previa.",
+      "rateLimited": "Demasiados PDF en poco tiempo. Vuelva a intentarlo en un momento.",
+      "busy": "El servidor está ocupado en este momento. Vuelva a intentarlo en un momento.",
+      "failed": "No se ha podido crear el PDF. Inténtelo de nuevo."
+    },
+    "letter": {
+      "from": "De: {creditor}",
+      "to": "Para: {debtor}",
+      "date": "Fecha: {date}",
+      "subject": "Asunto: {title} – factura n.º {invoice}",
+      "payAccount": "en la cuenta {account}",
+      "payInvoice": "en la cuenta indicada en la factura",
+      "closing": "Atentamente",
+      "reminder": {
+        "title": "Recordatorio de pago",
+        "polite": {
+          "greeting": "Buenos días:",
+          "body": [
+            "Le recordamos amablemente que la factura n.º {invoice} por importe de {amount} vencía el {due} y todavía no hemos recibido el pago.",
+            "Le rogamos que la abone {pay} a más tardar el {deadline}, indicando el número de factura como referencia del pago.",
+            "Si ya ha realizado el pago, le rogamos que ignore este recordatorio. Muchas gracias."
+          ]
+        },
+        "firm": {
+          "greeting": "Buenos días:",
+          "body": [
+            "La factura n.º {invoice} por importe de {amount} vencía el {due} y sigue pendiente de pago. Se encuentra usted en mora desde el {dayAfter}.",
+            "Le solicitamos que la abone {pay} a más tardar el {deadline}.",
+            "Si el pago no se recibe en ese plazo, reclamaremos además los intereses de demora legales."
+          ]
+        }
+      },
+      "demand": {
+        "title": "Requerimiento de pago",
+        "polite": {
+          "greeting": "Buenos días:",
+          "body": [
+            "A pesar de nuestro recordatorio, todavía no hemos recibido el pago de la factura n.º {invoice} por importe de {amount}, con vencimiento el {due}.",
+            "Por ello, le solicitamos que la abone {pay} a más tardar el {deadline}.",
+            "Le recordamos que se encuentra en mora desde el {dayAfter} y que, además del importe adeudado, podemos reclamar los intereses de demora legales.",
+            "Si tiene dificultades para pagar, póngase en contacto con nosotros. Estaremos encantados de acordar una solución."
+          ]
+        },
+        "firm": {
+          "greeting": "Buenos días:",
+          "body": [
+            "Le requerimos el pago de la factura n.º {invoice} por importe de {amount}, que vencía el {due}. Se encuentra usted en mora desde el {dayAfter}.",
+            "Abone el importe adeudado {pay} a más tardar el {deadline}.",
+            "Además del importe adeudado, reclamamos los intereses de demora legales al tipo repo del Banco Nacional Checo más 8 puntos porcentuales y 1.200 CZK en concepto de costes de cobro de la deuda.",
+            "Si el pago no se recibe en ese plazo, cederemos la deuda para su cobro."
+          ]
+        }
+      },
+      "preAction": {
+        "title": "Aviso previo a la demanda",
+        "polite": {
+          "greeting": "Buenos días:",
+          "body": [
+            "Por la presente le requerimos el cumplimiento conforme al § 142a del Código Procesal Civil checo.",
+            "Todavía no ha pagado la factura n.º {invoice} por importe de {amount}, con vencimiento el {due}. Se encuentra usted en mora desde el {dayAfter}.",
+            "Abone el importe adeudado {pay} a más tardar el {deadline}, junto con los intereses de demora legales.",
+            "Si el pago no se recibe en ese plazo, presentaremos una demanda y reclamaremos también las costas del proceso. Preferiríamos evitarlo, así que póngase en contacto con nosotros si tiene dificultades para pagar."
+          ]
+        },
+        "firm": {
+          "greeting": "Buenos días:",
+          "body": [
+            "Por la presente le requerimos el cumplimiento conforme al § 142a del Código Procesal Civil checo.",
+            "No ha pagado la factura n.º {invoice} por importe de {amount}, con vencimiento el {due}, a pesar de nuestros recordatorios anteriores. Se encuentra usted en mora desde el {dayAfter}.",
+            "Abone el importe adeudado {pay} a más tardar el {deadline}, junto con los intereses de demora legales y 1.200 CZK en concepto de costes de cobro de la deuda.",
+            "Si el pago no se recibe en ese plazo, presentaremos una demanda sin más aviso y reclamaremos también las costas del proceso."
+          ]
+        }
+      }
+    }
+  },
+  "schoolLessons": {
+    "hubName": "Para centros educativos",
+    "indexName": "Lecciones",
+    "indexTitle": "Lecciones de facturación listas para impartir en centros educativos",
+    "indexMetaTitle": "Lecciones de facturación para institutos y escuelas superiores – lecciones listas con fichas de trabajo",
+    "indexLead": "Lecciones de 45 minutos sobre facturación e IVA checos en tres niveles: desde la educación financiera en secundaria hasta las declaraciones de IVA y el trabajo con un asesor en la escuela superior. Objetivos, notas para el docente, una tarea en la demo sin registro y una ficha de trabajo con soluciones. Gratis, para imprimir o proyectar.",
+    "indexMeta": "Lecciones de 45 minutos listas para impartir sobre facturación e IVA checos para secundaria, bachillerato, escuelas superiores y cursos: qué es una factura, datos de la factura, fecha de devengo, tipos de IVA, facturas rectificativas, anticipos, recordatorios, declaraciones de IVA, la declaración de control y la conciliación bancaria. Fichas de trabajo con soluciones.",
+    "howTitle": "Cómo funcionan las lecciones",
+    "how": [
+      "Cada lección incluye objetivos, un plan de clase, una explicación de los conceptos clave con enlaces a las disposiciones exactas y notas para el docente.",
+      "Los alumnos realizan una tarea paso a paso en la demo de Billanta. La demo no requiere registro ni correo electrónico, y cada alumno obtiene su propia empresa con datos de ejemplo.",
+      "Imprima la ficha de trabajo en la versión para alumnos (sin soluciones). Las soluciones y la impresión con soluciones aparecen al iniciar sesión con una cuenta de docente."
+    ],
+    "rvpNote": "Las lecciones de secundaria encajan en la educación financiera, y las de bachillerato en los contenidos de economía y contabilidad de los planes marco checos (RVP) para academias de comercio. Cómo se distribuyen por cursos y asignaturas lo decide cada centro.",
+    "lawBasis": "Las lecciones siguen la legislación checa. Los enlaces a la normativa llevan a los textos en checo.",
+    "minutes": "{n} min",
+    "lessonNumber": "Lección {n}",
+    "openLesson": "Abrir lección",
+    "allLessons": "Todas las lecciones",
+    "goals": "Objetivos de la lección",
+    "timeline": "Plan de clase",
+    "teacherNotes": "Notas para el docente",
+    "concepts": "Conceptos clave",
+    "task": "Tarea en la demo",
+    "check": "Completada cuando",
+    "worksheet": "Ficha de trabajo",
+    "worksheetName": "Nombre y clase:",
+    "answer": "Solución para el docente",
+    "law": "Normativa",
+    "lawNote": "Los enlaces llevan a los textos consolidados vigentes en checo en zakonyprolidi.cz.",
+    "tools": "Guías y calculadoras relacionadas",
+    "demoCta": "Abrir la demo",
+    "demoPick": "En la demo, elija la empresa \"{kind}\". No se necesita registro.",
+    "teacherOnly": "Solo para el docente – oculto en la impresión para alumnos.",
+    "printStudent": "Imprimir para alumnos",
+    "printTeacher": "Imprimir con soluciones",
+    "checked": "Revisamos las referencias legales por última vez el {date}. Las leyes cambian, así que compruebe la redacción vigente antes de la clase. Las lecciones tienen fines didácticos y no constituyen asesoramiento fiscal.",
+    "skAlternative": "Calculadora de impuestos para autónomos eslovacos",
+    "levelNav": "Nivel",
+    "tracks": {
+      "basic": {
+        "name": "Educación secundaria",
+        "audience": "Educación financiera, de 13 a 15 años",
+        "lead": "Qué es una factura, cómo emitirla, cuándo se paga y cómo enviar un recordatorio cortés. Sin derecho tributario para los alumnos.",
+        "short": "Secundaria"
+      },
+      "standard": {
+        "name": "Bachillerato y FP",
+        "audience": "Academias de comercio y estudios de economía",
+        "lead": "Datos de la factura, IVA, anticipos, facturas rectificativas y recordatorios según la ley.",
+        "short": "Bachillerato"
+      },
+      "advanced": {
+        "name": "Escuela superior, universidad y cursos",
+        "audience": "Escuelas superiores, universidades y cursos de reciclaje profesional",
+        "lead": "Declaración de IVA y declaración de control, clientes extranjeros, conciliación bancaria y trabajo con un asesor.",
+        "short": "Universidad"
+      }
+    },
+    "answersLocked": "Los docentes ven las soluciones al iniciar sesión.",
+    "answersLogin": "Iniciar sesión",
+    "answersSignup": "Crear una cuenta de docente"
+  },
+  "coworkingPoster": {
+    "title": "Póster para coworking",
+    "lead": "Un póster con código QR para la cocina, la recepción o la sala de reuniones. Imprímalo directamente desde el navegador o guárdelo como PDF.",
+    "back": "Volver a la página de coworking",
+    "sizeLabel": "Tamaño",
+    "download": "Descargar póster",
+    "printHint": "Se abrirá el cuadro de diálogo de impresión: elija una impresora o Guardar como PDF. Mantenga la escala al 100 %.",
+    "withInvite": "El código QR del póster incluye el código de invitación de su empresa ({code}). Obtiene crédito por cada empresa que se registre con él y empiece a pagar.",
+    "generic": "Ahora mismo el código QR lleva a nuestro sitio web. Inicie sesión y incluirá el código de invitación de su empresa, de modo que las nuevas empresas le generen crédito.",
+    "login": "Iniciar sesión",
+    "groupCode": "¿Quiere un código permanente para todos los miembros, con una ventaja para ellos? Lo configuramos nosotros y lo ponemos en el póster.",
+    "contact": "Escríbanos",
+    "mailSubject": "Un código y un póster para nuestro espacio de coworking",
+    "qrTarget": "El QR lleva a:",
+    "ctaTitle": "Un póster para su pared",
+    "ctaBody": "A4 o A3, listo para imprimir. Si ha iniciado sesión, su código QR incluye el código de invitación de su empresa.",
+    "ctaButton": "Descargar póster"
+  },
+  "contact": {
+    "title": "Contacto",
+    "lead": "Cómo ponerse en contacto con nosotros, quién gestiona Billanta y dónde encontrar respuestas rápidas.",
+    "emailTitle": "Escríbanos",
+    "emailBody": "Envíenos por correo electrónico sus preguntas sobre facturación, su cuenta o la colaboración con nosotros.",
+    "noEmailTitle": "Dónde encontrar ayuda",
+    "noEmailBody": "Todavía no tenemos una dirección de correo electrónico pública. Las preguntas frecuentes responden a las dudas más habituales, y puede probar la aplicación sin cuenta en la demo.",
+    "helpTitle": "Respuestas rápidas",
+    "links": {
+      "faq": {
+        "title": "Preguntas frecuentes",
+        "body": "Precios, IVA, exportaciones para contables y otras preguntas habituales."
+      },
+      "demo": {
+        "title": "Pruebe la demo",
+        "body": "La aplicación con datos de ejemplo, sin registro."
+      },
+      "accountants": {
+        "title": "Encuentre un contable",
+        "body": "Contables y asesorías que trabajan con Billanta."
+      },
+      "partners": {
+        "title": "Para socios",
+        "body": "Cursos, espacios de coworking, comunidades y otros que quieran recomendar Billanta."
+      }
+    },
+    "operatorTitle": "Operador",
+    "privacyTitle": "Datos personales",
+    "privacyBody": "El operador indicado arriba es el responsable del tratamiento de sus datos personales. La política de privacidad explica qué datos tratamos y cómo ejercer sus derechos (acceso, rectificación, supresión y otros).",
+    "legalTitle": "Documentos legales"
   }
 }
