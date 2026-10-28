@@ -3784,7 +3784,252 @@
           ]
         }
       ]
+    },
+    "privacy": {
+      "title": "Polityka prywatności",
+      "intro": "Jak Billanta przetwarza dane osobowe użytkowników kont, odwiedzających stronę internetową i klientów wymienionych na fakturach (RODO).",
+      "sections": [
+        {
+          "title": "Administrator i podmiot przetwarzający",
+          "body": [
+            "Administratorem danych osobowych użytkowników kont i odwiedzających stronę internetową jest {operator}.",
+            "W przypadku danych klientów, które użytkownicy wprowadzają do usługi (kontakty, faktury), administratorem jest użytkownik, a Billanta jest jedynie podmiotem przetwarzającym na podstawie umowy powierzenia przetwarzania danych (DPA).",
+            "W przypadku uczniów w trybie klasy administratorem jest szkoła, zob. punkt 15."
+          ]
+        },
+        {
+          "title": "Co przetwarzamy",
+          "body": [
+            "Dane konta: imię i nazwisko, e-mail, skrót (hash) hasła lub tożsamość logowania Google, rola w zespole, ustawienia.",
+            "Dane firmy i rozliczeniowe: nazwa firmy, numer firmy, NIP, adres, rachunek bankowy, logo, wystawione dokumenty, płatności, wydatki.",
+            "Dane klientów w dokumentach: nazwy, numery firm, NIP-y, adresy, e-maile i numery telefonów osób kontaktowych.",
+            "Dane techniczne: adres IP, typ przeglądarki, zapisy logowań i dzienniki bezpieczeństwa. Analityka tylko za zgodą; zob. punkt 7.",
+            "Przy korzystaniu z funkcji AI: wiadomości głosowe, teksty i zdjęcia dokumentów, które użytkownik przesyła do przetworzenia."
+          ]
+        },
+        {
+          "title": "Cele i podstawy prawne",
+          "body": [
+            "Świadczenie usługi na podstawie umowy (art. 6 ust. 1 lit. b RODO).",
+            "Obowiązki prawne, zwłaszcza księgowe i podatkowe. Zapisy płatności za subskrypcję są przechowywane przez 10 lat (art. 6 ust. 1 lit. c).",
+            "Prawnie uzasadniony interes: bezpieczeństwo usługi, zapobieganie nadużyciom i dochodzenie roszczeń (art. 6 ust. 1 lit. f).",
+            "Zgoda: analityczne pliki cookie w regionach, w których jest wymagana (art. 6 ust. 1 lit. a); zgodę można w każdej chwili wycofać. Gdzie indziej nasz prawnie uzasadniony interes w ulepszaniu strony (art. 6 ust. 1 lit. f), wobec którego możesz w każdej chwili wnieść sprzeciw, wyłączając analitykę w ustawieniach plików cookie."
+          ]
+        },
+        {
+          "title": "Podmioty przetwarzające i odbiorcy",
+          "body": [
+            "Hosting i baza danych: OVHcloud (OVH Hosting Inc.), serwer wirtualny w centrum danych w Kanadzie. Kanada jest objęta decyzją Komisji Europejskiej stwierdzającą odpowiedni stopień ochrony, zob. punkt 5.",
+            "Resend: wysyłanie e-maili (faktury, przypomnienia, weryfikacja konta).",
+            "Stripe i GoPay: płatności za subskrypcję. Dane kart przetwarzają wyłącznie te bramki; Billanta nigdy ich nie widzi.",
+            "Anthropic: szkice faktur tworzone przez AI z tekstu i obrazów. OpenAI: transkrypcja wiadomości głosowych na tekst. Oba tylko wtedy, gdy użytkownik korzysta z funkcji AI.",
+            "Google: logowanie przez Google i kopie zapasowe na własnym Dysku Google użytkownika, tylko jeśli je włączy. Przechowujemy też szyfrowane nocne kopie zapasowe całej bazy danych na Dysku Google operatora, zob. punkt 10.",
+            "Telegram i Meta (WhatsApp): tylko jeśli użytkownik połączy swoje konto z komunikatorem.",
+            "Microsoft (Clarity): analityka na stronach publicznych (tylko za zgodą tam, gdzie jest wymagana).",
+            "Poza tym dane trafiają tylko tam, dokąd wyśle je użytkownik: do jego banku lub PayPala przez połączenie, które włączył (Fio, PSD2 przez Enable Banking, PayPal), do jego własnych webhooków i magazynów kopii zapasowych oraz w e-mailach do jego klientów. Zapytania do publicznych rejestrów (ARES, RPO, VIES) zawierają tylko numer firmy lub NIP.",
+            "Aktualna lista podmiotów przetwarzających wraz z datą ostatniej zmiany jest zawsze prowadzona w tym punkcie."
+          ]
+        },
+        {
+          "title": "Przekazywanie danych poza UE",
+          "body": [
+            "Serwer, na którym działa aplikacja i baza danych, znajduje się w Kanadzie. Przekazywanie opiera się na decyzji Komisji Europejskiej stwierdzającej odpowiedni stopień ochrony w Kanadzie (2002/2/WE, art. 45 RODO).",
+            "Niektóre podmioty przetwarzające (Anthropic, OpenAI, Stripe, Microsoft, Google, Resend) mogą przetwarzać dane w USA. Przekazywanie opiera się na ramach ochrony danych UE–USA (Data Privacy Framework), jeśli odbiorca ma certyfikat, a w przeciwnym razie na standardowych klauzulach umownych Komisji Europejskiej (art. 46 RODO)."
+          ]
+        },
+        {
+          "title": "Okres przechowywania",
+          "body": [
+            "Dane konta są przechowywane, dopóki konto istnieje, i przez 30 dni po jego zamknięciu. Następnie są usuwane, z wyjątkiem danych, które musimy przechowywać na mocy prawa (np. zapisy płatności za subskrypcję przez 10 lat). Z kopii zapasowych są usuwane najpóźniej w ciągu 90 dni. Bezpłatne konto, do którego nikt się nie zalogował przez ponad 12 miesięcy, może zostać zamknięte po wcześniejszym powiadomieniu.",
+            "Dokumenty użytkownika pozostają na koncie, dopóki użytkownik ich nie usunie lub nie zamknie konta. Użytkownik odpowiada za ich archiwizację przez okres wymagany prawem.",
+            "Operator nie archiwizuje wiadomości głosowych i obrazów przesłanych do usługi AI po ich przetworzeniu; zapisywany jest tylko powstały szkic faktury. Dostawcy AI mogą je krótko przechowywać na podstawie własnych warunków (np. w celu monitorowania nadużyć) i nie wykorzystują ich do trenowania modeli.",
+            "Dzienniki bezpieczeństwa są przechowywane najwyżej przez 12 miesięcy."
+          ]
+        },
+        {
+          "title": "Pliki cookie i analityka",
+          "body": [
+            "Niezbędne pliki cookie (logowanie, język, wybór dotyczący cookie) są używane zawsze. Analityczne pliki cookie (Microsoft Clarity) są używane tylko na stronach publicznych, nigdy w aplikacji do fakturowania, i tylko za zgodą w UE/EOG oraz innych regionach, w których wymaga tego prawo. Jeśli przeglądarka wysyła sygnał Global Privacy Control, traktujemy go jako odmowę analityki. Szczegóły znajdziesz w Polityce plików cookie."
+          ]
+        },
+        {
+          "title": "Twoje prawa",
+          "body": [
+            "Masz prawo dostępu, sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia danych oraz prawo sprzeciwu wobec przetwarzania opartego na prawnie uzasadnionym interesie. Zgodę możesz w każdej chwili wycofać.",
+            "Wnioski wysyłaj na adres [contact@billanta.cz]. Odpowiemy w ciągu jednego miesiąca. Możesz złożyć skargę do czeskiego Urzędu Ochrony Danych Osobowych (www.uoou.cz) lub do organu nadzorczego w swoim kraju."
+          ]
+        },
+        {
+          "title": "Bezpieczeństwo",
+          "body": [
+            "Dane są szyfrowane podczas przesyłania (TLS). Dane każdej firmy są w bazie danych odizolowane (zabezpieczenia na poziomie wierszy). Wrażliwe klucze (tokeny bankowe, klucze AI, konfiguracje kopii zapasowych) są przechowywane w postaci zaszyfrowanej. Dostęp do danych produkcyjnych mają tylko osoby, które go potrzebują."
+          ]
+        },
+        {
+          "title": "Kopie zapasowe",
+          "body": [
+            "Każdej nocy wykonujemy kopię zapasową całej bazy danych usługi. Kopia jest szyfrowana na serwerze narzędziem age przy użyciu klucza publicznego. Klucz prywatny, który otwiera kopię, nie znajduje się na serwerze; operator przechowuje go offline. Zaszyfrowane kopie są przechowywane na serwerze, a ich kopia na Dysku Google operatora. Bez klucza prywatnego nikt nie może ich odczytać, nawet osoba z dostępem do serwera lub konta Google. Kopie zapasowe są usuwane najpóźniej po 90 dniach (punkt 6).",
+            "Niezależnie od tego firma może włączyć kopie zapasowe własnych danych: na własny Dysk Google, na własny serwer SFTP, przez webhook lub do pobrania. Te kopie trafiają tylko tam, gdzie ustawi użytkownik, a użytkownik może je zaszyfrować własnym kluczem age lub hasłem. Na Dysku Google Billanta ma dostęp tylko do plików, które sama utworzyła. Za wybrany magazyn odpowiada użytkownik."
+          ]
+        },
+        {
+          "title": "Newsletter",
+          "body": [
+            "Newsletter wysyłamy tylko osobom, które się zapiszą i potwierdzą zapis linkiem w e-mailu (double opt-in). Niepotwierdzone zapisy usuwamy w ciągu 30 dni.",
+            "Przechowujemy adres e-mail, język, kraj, wybrane tematy, miejsce zapisu, treść zgody oraz czas zapisu i potwierdzenia. Podstawą prawną jest zgoda (art. 6 ust. 1 lit. a RODO).",
+            "Możesz się w każdej chwili wypisać jednym kliknięciem w stopce każdego wydania. Potem nie wysyłamy już nic i przechowujemy tylko zapis zgody i wypisania, abyśmy mogli wykazać, że pisaliśmy do Ciebie zgodnie z prawem."
+          ]
+        },
+        {
+          "title": "Skąd przychodzą nowi użytkownicy",
+          "body": [
+            "Gdy trafisz na stronę z linku z parametrami kampanii (utm) lub z innej strony internetowej, zapamiętujemy źródło wizyty w pliku cookie billanta_src na 90 dni: parametry utm, tylko domenę strony odsyłającej (bez ścieżki i zapytania), pierwszą odwiedzoną stronę i czas. Jeśli potem założysz konto, zapisujemy te dane razem z nim, abyśmy wiedzieli, które kanały przyprowadzają nam użytkowników.",
+            "Ten plik cookie ustawiamy tylko wtedy, gdy zezwolisz na analityczne pliki cookie. Podstawą prawną jest zgoda (art. 6 ust. 1 lit. a RODO)."
+          ]
+        },
+        {
+          "title": "Program poleceń",
+          "body": [
+            "Gdy przychodzisz przez link z zaproszeniem, przechowujemy kod zapraszającego w pliku cookie billanta_ref przez 30 dni, aby zaproszenie zostało zaliczone przy rejestracji.",
+            "W przypadku firmy zapisujemy następnie, kto ją zaprosił, kiedy się zarejestrowała, kiedy i ile zapłaciła za plan, stan nagrody i ruchy kredytów. Celem jest przyznawanie nagród i zapobieganie nadużyciom programu (umowa i prawnie uzasadniony interes, art. 6 ust. 1 lit. b i f RODO).",
+            "Zapraszający nie widzi nazwy ani danych zaproszonej firmy, tylko numer porządkowy, informację, czy płaci, i ile kredytów za nią otrzymał."
+          ]
+        },
+        {
+          "title": "Katalogi publiczne",
+          "body": [
+            "Katalog firm: firma pojawia się w nim tylko wtedy, gdy włączy swój publiczny profil, a w nim wpis do katalogu (domyślnie wyłączony). Wpis pokazuje nazwę firmy, krótki opis, branżę, miejscowość, kraj, logo, a miasto tylko wtedy, gdy firma pokazuje adres w profilu. Katalog nigdy nie pokazuje numeru firmy, e-maila ani telefonu.",
+            "Katalog księgowych: księgowa lub biuro rachunkowe samodzielnie zgłasza wpis, który zostaje opublikowany dopiero po zatwierdzeniu przez operatora. Pokazuje nazwę, opis, regiony, informację o pracy zdalnej, usługi, języki, orientacyjną cenę, e-mail kontaktowy lub stronę internetową oraz link do publicznego profilu, jeśli jest włączony.",
+            "Oba wpisy publikujemy na wniosek firmy, a firma może je w każdej chwili edytować, wyłączyć lub wycofać."
+          ]
+        },
+        {
+          "title": "Tryb klasy",
+          "body": [
+            "W trybie klasy administratorem danych osobowych uczniów jest szkoła działająca przez nauczyciela, który zakłada klasę. Operator jest jedynie podmiotem przetwarzającym na podstawie umowy powierzenia przetwarzania danych ze szkołą, którą opublikujemy na stronie Umowa ze szkołą.",
+            "Uczniowie dołączają do klasy tylko za pomocą kodu klasy i pseudonimu, bez e-maila i hasła. Przechowujemy pseudonim, zawartość firmy ćwiczeniowej ze zmyślonymi danymi, osobisty kod do powrotu (zaszyfrowany i jako hash) oraz dane techniczne potrzebne do działania usługi i zapobiegania nadużyciom. Funkcje AI są wyłączone, a strony uczniów nie mają analityki.",
+            "Firmy ćwiczeniowe klasy są usuwane 30 dni po zakończeniu klasy, a uczeń usunięty przez nauczyciela – natychmiast. Uproszczona informacja o prywatności w klasie jest przeznaczona dla uczniów i rodziców. Wnioski dotyczące danych uczniów rozpatruje szkoła.",
+            "Dane nauczycieli (imię i nazwisko, e-mail, szkoła, przedmiot) operator przetwarza jako administrator na podstawie niniejszej polityki w celu weryfikacji nauczycieli i prowadzenia ich kont."
+          ]
+        }
+      ]
+    },
+    "dpa": {
+      "title": "Umowa powierzenia przetwarzania danych (DPA)",
+      "intro": "Umowa o przetwarzaniu danych osobowych zgodnie z art. 28 RODO między użytkownikiem (administratorem) a operatorem (podmiotem przetwarzającym), stanowiąca część Regulaminu usługi.",
+      "sections": [
+        {
+          "title": "Strony i przedmiot",
+          "body": [
+            "Administratorem jest użytkownik Billanty. Podmiotem przetwarzającym jest {operator}.",
+            "Podmiot przetwarzający przetwarza dane osobowe, które administrator wprowadza do usługi, tylko w zakresie niezbędnym do świadczenia usługi zgodnie z Regulaminem usługi i przez czas jego obowiązywania."
+          ]
+        },
+        {
+          "title": "Charakter, cel i zakres",
+          "body": [
+            "Cel: wystawianie i wysyłanie dokumentów, prowadzenie ewidencji kontaktów, płatności i wydatków, eksport i kopie zapasowe danych oraz szkice dokumentów tworzone przez AI, jeśli administrator z nich korzysta.",
+            "Osoby, których dane dotyczą: klienci i dostawcy administratora oraz ich osoby kontaktowe, a także członkowie zespołu administratora.",
+            "Kategorie danych: dane identyfikacyjne i kontaktowe (imię i nazwisko, firma, numer firmy, NIP UE, adres, e-mail, telefon), dane płatnicze i fakturowe, w tym numery rachunków bankowych i transakcje na rachunku, a jeśli administrator korzysta z funkcji AI, także wiadomości głosowe, teksty i zdjęcia dokumentów. Szczególne kategorie danych (art. 9 RODO) nie są przetwarzane i administrator nie powinien ich wgrywać."
+          ]
+        },
+        {
+          "title": "Obowiązki podmiotu przetwarzającego",
+          "body": [
+            "Przetwarzać dane wyłącznie na udokumentowane polecenie administratora. Za polecenia uważa się konfigurację usługi przez administratora i sposób, w jaki z niej korzysta.",
+            "Niezwłocznie poinformować administratora, jeśli jego zdaniem polecenie narusza RODO lub inne przepisy o ochronie danych.",
+            "Przekazywać dane do państw trzecich wyłącznie zgodnie z poleceniami administratora i rozdziałem V RODO, jak opisano w Polityce prywatności (punkt 5).",
+            "Zapewnić, aby wszystkie osoby z dostępem do danych były zobowiązane do zachowania poufności.",
+            "Stosować odpowiednie środki techniczne i organizacyjne zgodnie z art. 32 RODO: szyfrowanie podczas przesyłania, izolację danych każdego administratora, szyfrowane przechowywanie kluczy, kontrolę dostępu i kopie zapasowe.",
+            "Pomagać administratorowi w obsłudze wniosków osób, których dane dotyczą, i w wypełnianiu jego obowiązków wynikających z art. 32–36 RODO.",
+            "Zgłosić administratorowi naruszenie ochrony danych osobowych bez zbędnej zwłoki, najpóźniej w ciągu 48 godzin od jego stwierdzenia."
+          ]
+        },
+        {
+          "title": "Dalsze podmioty przetwarzające",
+          "body": [
+            "Administrator udziela ogólnej zgody na korzystanie z dalszych podmiotów przetwarzających wymienionych w Polityce prywatności (punkt 4).",
+            "Podmiot przetwarzający poinformuje administratora o każdej zamierzonej zmianie e-mailem z co najmniej 14-dniowym wyprzedzeniem. Administrator może z uzasadnionych powodów wnieść sprzeciw lub wypowiedzieć umowę. Podmiot przetwarzający nałoży na dalsze podmioty przetwarzające te same obowiązki w zakresie ochrony danych.",
+            "W przypadku pilnej zmiany ze względów bezpieczeństwa lub operacyjnych podmiot przetwarzający może natychmiast skorzystać z nowego dalszego podmiotu przetwarzającego i bez zbędnej zwłoki poinformować o tym administratora. Podmiot przetwarzający ponosi wobec administratora pełną odpowiedzialność za wykonywanie obowiązków przez dalsze podmioty przetwarzające (art. 28 ust. 4 RODO)."
+          ]
+        },
+        {
+          "title": "Zakończenie, usunięcie i audyt",
+          "body": [
+            "Po zakończeniu umowy podmiot przetwarzający umożliwia administratorowi eksport danych przez 30 dni. Następnie, według wyboru administratora, usuwa je lub zwraca w postaci eksportu, chyba że prawo wymaga ich przechowywania. Z kopii zapasowych dane są usuwane najpóźniej w ciągu 90 dni.",
+            "Podmiot przetwarzający udostępni administratorowi informacje potrzebne do wykazania zgodności z niniejszą umową. Audyt na miejscu jest możliwy po wcześniejszym uzgodnieniu, na koszt administratora i najwyżej raz w roku.",
+            "Do odpowiedzialności stron na podstawie niniejszej umowy stosuje się ograniczenie odpowiedzialności z Regulaminu (punkt 10). Nie dotyczy ono roszczeń osób, których dane dotyczą, na podstawie art. 82 RODO w zakresie, w jakim nie można ich ograniczyć umownie."
+          ]
+        }
+      ]
+    },
+    "classroomPrivacy": {
+      "title": "Prywatność w klasie",
+      "intro": "Krótkie wyjaśnienie dla uczniów, studentów i ich rodziców: co Billanta przechowuje, gdy dołączysz do klasy, i kto to widzi.",
+      "sections": [
+        {
+          "title": "Co przechowujemy",
+          "body": [
+            "Pseudonim, który wybierzesz. Nie używaj pełnego imienia i nazwiska; wystarczy pseudonim, który rozpozna Twój nauczyciel.",
+            "Twoją firmę ćwiczeniową i wszystko, co w niej utworzysz: faktury, klientów, wydatki i inne zapisy. Dane są zmyślone, więc nie wpisuj prawdziwych informacji o sobie ani o nikim innym.",
+            "Twój osobisty kod do powrotu do firmy. Przechowujemy go w postaci zaszyfrowanej.",
+            "Kilka danych technicznych potrzebnych do działania usługi i zapobiegania nadużyciom, na przykład ile prób wejścia się nie powiodło."
+          ]
+        },
+        {
+          "title": "Czego nie przechowujemy ani nie używamy",
+          "body": [
+            "Nie prosimy o Twój e-mail, numer telefonu ani hasło.",
+            "W klasie nie ma sztucznej inteligencji (AI), analityki ani reklam. Nic Ci nie wysyłamy i nie wykorzystujemy Twoich danych do marketingu."
+          ]
+        },
+        {
+          "title": "Kto widzi Twoje dane",
+          "body": [
+            "Twoją firmę widzi Twój nauczyciel i ewentualnie inni nauczyciele tej samej klasy. Mogą ją tylko oglądać; niczego w niej nie zmieniają. Twoi koledzy i koleżanki z klasy nie widzą Twojej firmy.",
+            "Pracownicy Billanty mają dostęp do danych tylko wtedy, gdy jest to konieczne ze względu na wsparcie lub bezpieczeństwo."
+          ]
+        },
+        {
+          "title": "Kiedy Twoje dane są usuwane",
+          "body": [
+            "Po zakończeniu klasy możesz jeszcze przez 30 dni oglądać swoją firmę. Następnie zostaje usunięta razem z Twoim pseudonimem i osobistym kodem. Z zaszyfrowanych kopii zapasowych znika najpóźniej w ciągu 90 dni.",
+            "Jeśli nauczyciel usunie Cię z klasy, Twoja firma zostaje usunięta od razu."
+          ]
+        },
+        {
+          "title": "Z kim się kontaktować",
+          "body": [
+            "O Twoich danych w klasie decyduje Twoja szkoła. Billanta przetwarza je tylko dla szkoły na podstawie umowy ze szkołą. Z pytaniem lub prośbą o usunięcie danych zwróć się do nauczyciela lub szkoły.",
+            "Rodzice mogą poprosić szkołę o szczegóły lub napisać do operatora Billanty: {operator}."
+          ]
+        }
+      ]
+    },
+    "schoolContract": {
+      "title": "Umowa powierzenia przetwarzania danych ze szkołą",
+      "intro": "Warunki dla szkół i umowa o przetwarzaniu danych osobowych uczniów w trybie klasy.",
+      "sections": [
+        {
+          "title": "Wkrótce",
+          "body": [
+            "Umowa powierzenia przetwarzania danych ze szkołą zostanie opublikowana na tej stronie przed uruchomieniem trybu klasy.",
+            "Do tego czasu sposób, w jaki postępujemy z danymi uczniów, podsumowują informacja o prywatności w klasie i punkt 17 regulaminu. W razie pytań skontaktuj się z {operator}."
+          ]
+        }
+      ]
     }
+  },
+  "about": {
+    "title": "O Billancie",
+    "lead": "Billanta to narzędzie do fakturowania zbudowane na otwartych standardach, na których już działa czeskie i słowackie fakturowanie – a nie obok nich.",
+    "whatTitle": "Co robi Billanta",
+    "whatBody": "Billanta wystawia faktury w formacie ISDOC, pobiera dane kontrahentów bezpośrednio z rejestru przedsiębiorców ARES i pilnuje spójności numeracji oraz stawek VAT, więc nie musisz kopiować szablonu z arkusza z zeszłego miesiąca. Możesz też wysłać notatkę głosową przez Telegram lub WhatsApp, a Billanta zamieni ją w szkic faktury gotowy do szybkiego sprawdzenia – ostateczny staje się dopiero wtedy, gdy sam go zatwierdzisz.",
+    "whoTitle": "Dla kogo jest",
+    "whoBody": "Tworzymy ją dla freelancerów i małych firm w Czechach i na Słowacji – ludzi, którzy wystawiają faktury sami między spotkaniami z klientami, a nie dla działu finansowego z własnym zespołem IT.",
+    "whyTitle": "Dlaczego ją stworzyliśmy",
+    "whyBody": "Fakturowanie zawsze zajmowało nam więcej czasu, niż powinno – wyszukiwanie numeru firmy w ARES, ręczne pilnowanie kolejnego numeru faktury, otwieranie laptopa tylko po to, żeby w drodze od klienta zafakturować jedną pozycję. Chcieliśmy czegoś, co zajmie się tą częścią, a nam zostawi decyzję tylko w tym, co naprawdę ważne: czy faktura jest poprawna, zanim wyjdzie.",
+    "seoTitle": "O Billancie – fakturowanie z ISDOC, ARES i QR"
   },
   "common": {
     "comingSoonBody": "Ta sekcja jest w przygotowaniu.",
@@ -3814,6 +4059,55 @@
       "manualBody": "Otwórz menu przeglądarki (⋮ lub ⋯) i wybierz „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”. W Chrome i Edge na komputerze znajdziesz też ikonę instalacji po prawej stronie paska adresu.",
       "ok": "Rozumiem"
     }
+  },
+  "municipalityPages": {
+    "regionLabel": "Region",
+    "districtLabel": "Powiat",
+    "countryCz": "Czechy",
+    "countrySk": "Słowacja",
+    "breadcrumbBrowse": "Miasta i gminy",
+    "heading": "Program do fakturowania dla miejscowości {name}",
+    "lead": "Wystawiaj faktury, pilnuj VAT i eksportuj do ISDOC – niezależnie od tego, czy prowadzisz działalność w miejscowości {name}, czy gdziekolwiek indziej w Czechach i na Słowacji.",
+    "body": "Billanta wystawia faktury w formacie ISDOC, pobiera dane kontrahentów bezpośrednio z rejestru przedsiębiorców ARES i pilnuje spójności numeracji oraz stawek VAT. Przez Telegram lub WhatsApp wystarczy wysłać notatkę głosową, a Billanta zamieni ją w szkic faktury gotowy do szybkiego sprawdzenia – ostateczny staje się dopiero wtedy, gdy sam go zatwierdzisz.",
+    "localNote": "ISDOC, ARES i stawki VAT działają tak samo w całych Czechach i na Słowacji – również w powiecie {district}. Billanta nie wymaga żadnych lokalnych ustawień ani osobnego konta.",
+    "cta": "Załóż bezpłatne konto",
+    "browseCta": "Zobacz wszystkie miasta i gminy w regionie {region}",
+    "indexTitle": "Program do fakturowania według miast i gmin",
+    "indexLead": "Billanta działa równie niezawodnie dla firm w dowolnym miejscu w Czechach i na Słowacji. Wybierz region, aby znaleźć stronę swojego miasta lub gminy.",
+    "indexCoverageNote": "Obecnie {count, plural, one {# gmina} few {# gminy} many {# gmin} other {# gminy}}.",
+    "otherCountry": "Słowackie gminy znajdziesz w wersji słowackiej →",
+    "regionMunicipalityCount": "{count, plural, one {# miasto lub gmina} few {# miasta i gminy} many {# miast i gmin} other {# miasta i gminy}}",
+    "expandListLabel": "Pokaż listę",
+    "backToIndex": "Wróć do katalogu miast i gmin",
+    "districtTitle": "Więcej gmin w powiecie {district}",
+    "districtCount": "Powiat {district} ma w naszym katalogu {count, plural, one {# gminę} few {# gminy} many {# gmin} other {# gminy}}.",
+    "metaDescription": "{name}, powiat {district}: faktury z płatnością QR, ISDOC, kontrola VAT i wyszukiwanie w rejestrach. Dla jednoosobowych działalności i spółek, bezpłatnie na start.",
+    "whereTitle": "Gdzie leży {name}",
+    "seatPosition": "{km, number} km na {dir, select, n {północ} ne {północny wschód} e {wschód} se {południowy wschód} s {południe} sw {południowy zachód} w {zachód} other {północny zachód}} od miasta powiatowego",
+    "regionPosition": "{km, number} km na {dir, select, n {północ} ne {północny wschód} e {wschód} se {południowy wschód} s {południe} sw {południowy zachód} w {zachód} other {północny zachód}} od siedziby regionu",
+    "isDistrictSeat": "Miasto powiatowe powiatu {district}.",
+    "isRegionSeat": "Siedziba regionu ({region}).",
+    "mapLink": "Pokaż na mapie (OpenStreetMap) ↗",
+    "taxTitle": "Urzędy dla samozatrudnionych",
+    "taxNoteCz": "Dla jednoosobowych działalności według miejsca stałego pobytu, dla spółek według siedziby. Zeznania i VAT składa się online przez portal MOJE daně – Billanta przygotuje dane.",
+    "taxNoteSk": "Dla jednoosobowych działalności według miejsca stałego pobytu, dla spółek według siedziby. Zeznania i VAT składa się online przez portal Administracji Finansowej – Billanta przygotuje dane.",
+    "nearbyTitle": "Najbliższe gminy",
+    "km": "{km, number} km",
+    "countryLabel": "Kraj",
+    "socialNote": "Osoby prowadzące jednoosobową działalność wysyłają tu zaliczki na ubezpieczenie społeczne i roczne zestawienie przychodów i wydatków, według miejsca stałego pobytu.",
+    "healthNoteCz": "Ubezpieczenie zdrowotne opłaca się w kasie chorych, którą wybierasz sam. Miejsce zamieszkania nie ma znaczenia.",
+    "healthNoteSk": "Ubezpieczenie zdrowotne opłaca się w kasie chorych, którą wybierasz sam. Miejsce zamieszkania nie ma znaczenia.",
+    "tradeNoteCz": "Działalność gospodarczą możesz zarejestrować w dowolnym urzędzie ds. działalności gospodarczej lub online. Ten sam formularz zgłasza Cię też do urzędu skarbowego, ubezpieczenia społecznego i zdrowotnego.",
+    "tradeNoteSk": "Działalność gospodarczą możesz zarejestrować w dowolnym urzędzie okręgowym (wydział ds. działalności gospodarczej) lub online przez slovensko.sk.",
+    "nearbyMajorTitle": "Większe miasta w pobliżu",
+    "majorTowns": "Większe miasta",
+    "nearbyMajorItem": "{km, number} km na {dir, select, n {północ} ne {północny wschód} e {wschód} se {południowy wschód} s {południe} sw {południowy zachód} w {zachód} other {północny zachód}}",
+    "accountantsTitle": "Księgowe – {region}",
+    "accountantsNote": "Księgowe z katalogu Billanta, które deklarują, że pracują dla klientów z tego regionu. Każdy wpis zatwierdzamy ręcznie; wybór należy do Ciebie.",
+    "accountantsEmpty": "Nie zgłosiła się tu jeszcze żadna księgowa. Jeśli jej szukasz, Billanta da jej dostęp do Twoich dokumentów bez przesyłania plików e-mailem.",
+    "accountantsJoin": "Jesteś księgową w miejscowości {name} lub w pobliżu? Dodaj się bezpłatnie →",
+    "populationCz": "{count, plural, one {# mieszkaniec} few {# mieszkańców} many {# mieszkańców} other {# mieszkańca}} (Czeski Urząd Statystyczny, 1.01.2025).",
+    "populationSk": "{count, plural, one {# mieszkaniec} few {# mieszkańców} many {# mieszkańców} other {# mieszkańca}} (Urząd Statystyczny RS, 30.06.2025)."
   },
   "mobile": {
     "more": "Więcej",
@@ -4002,6 +4296,386 @@
           "a": "W darmowym planie każdy dokument ma w stopce PDF, e-maila i faktury online mały link do Billanta. Dzięki temu plan Free się utrzymuje. W płatnym planie i w okresie próbnym możesz to wyłączyć w Ustawieniach w sekcji faktur."
         }
       ]
+    }
+  },
+  "cookies": {
+    "banner": {
+      "title": "Pliki cookie",
+      "body": "Niezbędne pliki cookie są potrzebne do działania strony. Analityka (Microsoft Clarity i zapis, skąd przyszedłeś) pomaga nam ją ulepszać – włączamy ją tylko za Twoją zgodą.",
+      "more": "Dowiedz się więcej",
+      "accept": "Akceptuj wszystkie",
+      "reject": "Tylko niezbędne",
+      "settings": "Ustawienia",
+      "save": "Zapisz wybór",
+      "necessary": "Niezbędne",
+      "necessaryHint": "Logowanie, język, Twój wybór dotyczący cookie, kod z linku, z którego przyszedłeś. Zawsze włączone.",
+      "analytics": "Analityczne",
+      "analyticsHint": "Microsoft Clarity: anonimowe mapy cieplne i nagrania sesji na stronach publicznych. Do tego, skąd przyszedłeś po raz pierwszy (źródło kampanii lub strona odsyłająca), zapisywane z Twoim kontem, jeśli się zarejestrujesz.",
+      "saved": "Ustawienia cookie zapisane",
+      "bodyDefault": "Niezbędne pliki cookie są potrzebne do działania strony. Analityka (Microsoft Clarity i zapis, skąd przyszedłeś) pomaga nam ją ulepszać i w Twoim regionie jest domyślnie włączona – tutaj możesz ją wyłączyć."
+    },
+    "page": {
+      "title": "Polityka plików cookie",
+      "intro": "Pliki cookie i podobne magazyny danych, których używa Billanta, do czego służy każdy z nich i jak długo jest przechowywany.",
+      "columns": {
+        "name": "Nazwa",
+        "purpose": "Cel",
+        "category": "Kategoria",
+        "duration": "Okres"
+      },
+      "categories": {
+        "necessary": "Niezbędne",
+        "functional": "Funkcjonalne",
+        "analytics": "Analityczne"
+      },
+      "rows": {
+        "session": {
+          "purpose": "Utrzymuje Cię zalogowanym. Z tego samego pliku cookie korzystają wersja demo i uczniowie dołączający do klasy.",
+          "duration": "30 dni; w przypadku demo lub klasy do ich zakończenia"
+        },
+        "csrf": {
+          "purpose": "Chroni formularz logowania przed fałszerstwem i przenosi Cię z powrotem na stronę, z której przyszedłeś.",
+          "duration": "Do zamknięcia przeglądarki"
+        },
+        "oauth": {
+          "purpose": "Zabezpiecza logowanie przez Google lub innego dostawcę. Tylko w trakcie logowania.",
+          "duration": "15 minut"
+        },
+        "tenant": {
+          "purpose": "Zapamiętuje, w której firmie pracujesz w aplikacji.",
+          "duration": "1 rok; w przypadku demo lub klasy do ich zakończenia"
+        },
+        "demoTransfer": {
+          "purpose": "Pozwala przenieść dane z wersji demo do nowo założonego konta.",
+          "duration": "Do zakończenia demo"
+        },
+        "locale": {
+          "purpose": "Zapamiętuje Twój język.",
+          "duration": "Do zamknięcia przeglądarki"
+        },
+        "consent": {
+          "purpose": "Przechowuje Twój wybór w tym oknie dotyczącym cookie.",
+          "duration": "6 miesięcy"
+        },
+        "region": {
+          "purpose": "Zapamiętuje, czy w Twoim regionie analityka wymaga zgody, aby nie sprawdzać tego przy każdej wizycie (w przeglądarce, nigdy nie jest wysyłany na serwer).",
+          "duration": "7 dni"
+        },
+        "theme": {
+          "purpose": "Zapamiętuje jasny lub ciemny motyw (w przeglądarce, nigdy nie jest wysyłany na serwer).",
+          "duration": "Do usunięcia"
+        },
+        "referral": {
+          "purpose": "Kod polecający z linku, którym zaprosił Cię inny użytkownik, aby po Twojej rejestracji otrzymał nagrodę. Tylko gdy przychodzisz przez taki link.",
+          "duration": "30 dni lub do wykorzystania"
+        },
+        "promo": {
+          "purpose": "Kod promocyjny lub kod wydarzenia z linku (?promo= lub /join/CODE), aby został zastosowany do Twojej nowej firmy. Tylko gdy przychodzisz przez taki link.",
+          "duration": "30 dni lub do wykorzystania"
+        },
+        "switch": {
+          "purpose": "Aplikacja, z której się przenosisz (link „Przejdź z…” do rejestracji), aby ekran powitalny zaproponował import z niej. Tylko gdy rejestrujesz się przez taki link.",
+          "duration": "30 dni"
+        },
+        "invoiceFilters": {
+          "purpose": "Szybkie filtry listy faktur w aplikacji.",
+          "duration": "1 rok"
+        },
+        "preferences": {
+          "purpose": "Drobne wybory i niedokończone wpisy w aplikacji i narzędziach: zwinięte sekcje, typ wykresu, ukryte wskazówki, dane dostawcy w formularzu faktury bez rejestracji. Pozostają w przeglądarce i nigdy nie są wysyłane na serwer.",
+          "duration": "Do usunięcia lub zamknięcia karty"
+        },
+        "attribution": {
+          "purpose": "Skąd przyszedłeś po raz pierwszy: tagi kampanii (utm_*), strona, która tu odsyłała (tylko domena), i pierwsza strona. Zapisywane z Twoim kontem przy rejestracji, abyśmy wiedzieli, które kanały działają. Tylko za zgodą na analitykę.",
+          "duration": "90 dni"
+        },
+        "clarity": {
+          "purpose": "Microsoft Clarity: pomiar ruchu, mapy cieplne i nagrania sesji. Tylko za zgodą.",
+          "duration": "Od 1 dnia do 1 roku"
+        }
+      },
+      "functionalNote": "Funkcjonalne pliki cookie powstają tylko wtedy, gdy użyjesz linku, który ich wymaga (zaproszenie, kod promocyjny, przeniesienie z innej aplikacji), lub dokonasz wyboru w aplikacji, i służą tylko temu, o co Ci chodziło przy tym linku lub wyborze. Dlatego nie prosimy o zgodę na nie. Nie udostępniamy ich nikomu.",
+      "analyticsNote": "Analityczne pliki cookie są używane tylko na stronach publicznych (strona główna, cennik, strony informacyjne). W aplikacji, w której pracujesz z fakturami i danymi klientów, nigdy nie działa żadna analityka. W UE/EOG, Wielkiej Brytanii, Szwajcarii, Brazylii, Kanadzie i w tych stanach USA, w których nagrywanie wizyty wymaga zgody wszystkich stron (np. Kalifornia, Pensylwania, Floryda, Waszyngton), włączamy je tylko za Twoją zgodą; jeśli nie możemy ustalić, gdzie jesteś, również pytamy. Gdzie indziej działają domyślnie i możesz je w każdej chwili wyłączyć. Twoja lokalizacja jest szacowana tylko na podstawie kraju i stanu zgłaszanych przez sieć dostarczającą stronę i nie jest przechowywana. Clarity jest obsługiwane przez Microsoft; dane mogą być przetwarzane poza UE na podstawie ram ochrony danych UE-USA (Data Privacy Framework). Jeśli Twoja przeglądarka wysyła sygnał Global Privacy Control (GPC), wszędzie traktujemy go jako „Tylko niezbędne” i w ogóle nie wyświetlamy banera cookie.",
+      "attributionNote": "Informacja, skąd przyszedłeś (billanta_src), nie jest nigdzie zapisywana przed wyrażeniem zgody: jest przechowywana tylko w pamięci otwartej strony, a plik cookie zostaje zapisany dopiero, gdy zezwolisz na analitykę. Jeśli odmówisz lub wycofasz zgodę, usuwamy go.",
+      "schoolsNote": "Na stronach dla szkół (/for-schools), do dołączania do klasy (/join) i w dostępie ucznia do klasy nie uruchamiamy żadnej analityki, nawet za zgodą: korzystają z nich dzieci, które nie mogą same udzielić ważnej zgody. Baner cookie nie otwiera się tam sam.",
+      "withdraw": "Zgodę możesz w każdej chwili zmienić lub wycofać przyciskiem poniżej lub linkiem „Ustawienia cookie” w stopce strony.",
+      "change": "Zmień ustawienia cookie",
+      "seoTitle": "Polityka plików cookie i przechowywania danych"
+    }
+  },
+  "invoiceForm": {
+    "title": "Nowa faktura",
+    "lead": "Wpisz ją, wybierz z podpowiedzi albo opisz fakturę jednym zdaniem i pozwól ją wstępnie wypełnić.",
+    "ai": {
+      "title": "Wypełnij za pomocą AI",
+      "hint": "Wpisz lub podyktuj fakturę własnymi słowami, np. „faktura dla 27604977, 3 godziny konsultacji po 1500, płatne w 14 dni”. AI uzupełni klienta (sprawdzonego w ARES), pozycje i termin płatności. Nic nie zostanie zapisane, dopóki nie sprawdzisz i nie zapiszesz formularza.",
+      "placeholder": "np. faktura Dvořák & Partners, 2× szkolenie po 4 500 CZK, płatne w 30 dni",
+      "run": "Wypełnij",
+      "working": "Pracuję…",
+      "applied": "Gotowe – sprawdź wypełnione pola.",
+      "usingOwn": "Używany jest Twój klucz API",
+      "usingPlatform": "Używane jest Billanta AI",
+      "unavailable": "Wypełnianie za pomocą AI nie jest włączone.",
+      "setup": "Skonfiguruj AI"
+    },
+    "customer": {
+      "draftWithout": "Klienta możesz dodać później. Szkic można zapisać bez niego, a klientowi możesz wysłać link, aby sam uzupełnił swoje dane.",
+      "title": "Klient",
+      "hint": "Szukaj po nazwie lub numerze firmy (IČO). Podpowiedzi pokazują Twoje kontakty i firmy z rejestru ARES; firma z ARES zostanie przy zapisie dodana do Twoich kontaktów razem z adresem.",
+      "placeholder": "Nazwa firmy lub IČO",
+      "empty": "Nic nie znaleziono. Dokończ całe słowo, spróbuj IČO lub innego rejestru po prawej.",
+      "yourContacts": "Twoje kontakty",
+      "fromAres": "Rejestry firm (ARES, RPO, VIES…)",
+      "change": "Zmień klienta",
+      "aresBadge": "Z rejestru",
+      "aresWillSave": "Zostanie dodany do Twoich kontaktów przy zapisie.",
+      "starred": "Wyróżnieni klienci",
+      "searchingRegisters": "Przeszukuję rejestry firm…",
+      "internalNote": "Wewnętrzna notatka do tego kontaktu",
+      "contactPerson": "Osoba kontaktowa"
+    },
+    "dates": {
+      "issue": "Wystawiono",
+      "due": "Termin płatności",
+      "currency": "Waluta",
+      "days": "{days} dni",
+      "title": "Daty",
+      "taxableSupply": "Data dostawy",
+      "taxableSupplyHint": "Data dokonania dostawy. Puste = data wystawienia.",
+      "validUntil": "Ważna do",
+      "dueOnWeekend": "Termin płatności wypada w weekend.",
+      "dueOnHoliday": "Termin płatności wypada w dzień ustawowo wolny od pracy ({name}).",
+      "shiftToWorkday": "Przesuń na następny dzień roboczy"
+    },
+    "items": {
+      "title": "Pozycje",
+      "hint": "Podczas wpisywania opisu podpowiadane są pozycje z Twoich wcześniejszych faktur wraz z ostatnią ceną i stawką VAT.",
+      "description": "Opis pozycji",
+      "quantity": "Ilość",
+      "unitPrice": "Cena jedn.",
+      "vat": "VAT",
+      "remove": "Usuń pozycję",
+      "add": "Dodaj pozycję",
+      "unit": "Jednostka",
+      "unitPlaceholder": "szt.",
+      "discount": "Rabat",
+      "lineTotal": "Razem netto",
+      "duplicate": "Duplikuj pozycję",
+      "grossPrices": "Wpisuję ceny brutto",
+      "unitPriceGross": "Cena jedn. brutto",
+      "lineTotalGross": "Razem brutto"
+    },
+    "totals": {
+      "base": "Netto",
+      "vat": "VAT",
+      "total": "Razem",
+      "alreadyPaid": "Już zapłacono",
+      "alreadyPaidHint": "Zaliczka lub płatność otrzymana z góry – jako kwota lub procent sumy. W pełni zapłacona kwota oznaczy fakturę po wystawieniu jako zapłaconą.",
+      "remaining": "Pozostało do zapłaty"
+    },
+    "cancel": "Anuluj",
+    "save": "Zapisz szkic",
+    "saveNote": "Szkic otrzyma numer przy wystawieniu.",
+    "errors": {
+      "customer_required": "Bez klienta możesz zapisać tylko szkic. Przed wystawieniem wybierz klienta.",
+      "items_required": "Dodaj co najmniej jedną pozycję.",
+      "save_failed": "Nie udało się zapisać faktury. Spróbuj ponownie.",
+      "not_allowed": "Nie masz uprawnień do tej czynności lub subskrypcja jest nieaktywna.",
+      "ai_disabled": "AI jest wyłączone w Ustawienia → AI.",
+      "ai_key_missing": "Najpierw zapisz swój klucz API w Ustawienia → AI.",
+      "ai_key_invalid": "Zapisany klucz API nie działa. Sprawdź go w Ustawienia → AI.",
+      "ai_platform_unavailable": "Billanta AI jest w tej chwili niedostępne. Użyj własnego klucza w Ustawienia → AI.",
+      "ai_daily_limit": "Dzisiejszy limit Billanta AI został wykorzystany. Spróbuj jutro lub użyj własnego klucza.",
+      "ai_rate_limited": "AI jest zajęte, spróbuj ponownie za chwilę.",
+      "ai_refused": "AI odmówiło przetworzenia tego tekstu.",
+      "ai_unparseable": "AI nie zwróciło nic użytecznego. Spróbuj napisać konkretniej.",
+      "ai_bad_request": "Nie udało się przetworzyć tekstu. Spróbuj go skrócić.",
+      "ai_provider_unavailable": "AI nie odpowiada. Spróbuj ponownie za chwilę.",
+      "empty_input": "Opisz, co chcesz zafakturować.",
+      "symbol_invalid": "Symbole mogą zawierać tylko cyfry (VS i SS do 10, KS do 4).",
+      "reason_required": "Podaj powód zmiany."
+    },
+    "copy": {
+      "title": "Wypełnij na podstawie innej faktury",
+      "hint": "Kopiuje klienta, pozycje, walutę, płatność, rachunek, język, notatki i pola własne. Numer, daty i płatności nie są kopiowane, a termin płatności jest zgodny z Twoim domyślnym terminem.",
+      "latest": "Z ostatniej faktury",
+      "other": "Z innej faktury…",
+      "searchLabel": "Szukaj faktur",
+      "searchPlaceholder": "Numer faktury lub klient",
+      "searchEmpty": "Żadna faktura nie pasuje.",
+      "draft": "Szkic",
+      "fromNumber": "Wypełniono na podstawie faktury {number}: skopiowano klienta, pozycje i płatność, daty są dzisiejsze, a termin płatności jest zgodny z Twoim domyślnym terminem.",
+      "fromDraft": "Wypełniono na podstawie szkicu: skopiowano klienta, pozycje i płatność, daty są dzisiejsze, a termin płatności jest zgodny z Twoim domyślnym terminem.",
+      "noneYet": "Nie masz jeszcze faktury, od której można zacząć. Pierwszą wypełnij ręcznie."
+    },
+    "duplicate": {
+      "fromNumber": "Kopia faktury {number}: uzupełniono klienta, walutę, termin płatności i pozycje; daty są dzisiejsze.",
+      "fromDraft": "Kopia szkicu: uzupełniono klienta, walutę, termin płatności i pozycje; daty są dzisiejsze."
+    },
+    "titles": {
+      "invoice": "Nowa faktura",
+      "proforma": "Nowa faktura proforma",
+      "quote": "Nowa oferta",
+      "credit_note": "Nowa faktura korygująca"
+    },
+    "editTitle": "Edycja szkicu",
+    "editLead": "Szkic możesz dowolnie zmieniać, dopóki go nie wystawisz.",
+    "fromTemplate": "Z szablonu „{name}”: klient, pozycje i notatki są wstępnie wypełnione, daty są dzisiejsze.",
+    "type": {
+      "label": "Typ dokumentu",
+      "hint": {
+        "invoice": "Dokument podatkowy za dostarczone towary lub usługi.",
+        "proforma": "Wezwanie do zapłaty zaliczki – nie jest dokumentem podatkowym. Po zapłacie wystaw fakturę.",
+        "quote": "Niewiążąca propozycja dla klienta. Po akceptacji zamienisz ją w fakturę jednym kliknięciem.",
+        "credit_note": "Korygujący dokument podatkowy do wystawionej faktury."
+      }
+    },
+    "payment": {
+      "title": "Płatność",
+      "vsAuto": "Automatycznie z numeru dokumentu",
+      "ks": "Symbol stały",
+      "ss": "Symbol specyficzny",
+      "more": "Symbol stały / specyficzny, numer zamówienia",
+      "exchangeRate": "Kurs {pair}",
+      "exchangeRateAuto": "Kurs {source} w dniu wystawienia",
+      "exchangeRateLoad": "Pobierz z {source}",
+      "exchangeRateFailed": "Nie udało się pobrać kursu {source}.",
+      "inCzk": "≈ {amount} razem",
+      "bankAccount": "Płatność na rachunek",
+      "bankAccountAuto": "Automatycznie ({account})",
+      "bankAccountPrimary": "rachunek główny",
+      "customGroup": "Własne",
+      "instructions": "Instrukcje płatności",
+      "instructionsPlaceholder": "Drukowane na dokumencie pod pozycjami.",
+      "bankAccountManage": "Zarządzaj rachunkami",
+      "bankAccountMissing": "Nie skonfigurowano jeszcze rachunku bankowego, więc dokument nie ma numeru rachunku ani kodu QR do płatności.",
+      "bankAccountAdd": "Dodaj rachunek"
+    },
+    "settings": {
+      "title": "Ustawienia dokumentu",
+      "language": "Język dokumentu",
+      "languages": {
+        "cs": "Čeština",
+        "sk": "Slovenčina",
+        "en": "English"
+      },
+      "reverseCharge": "Odwrotne obciążenie",
+      "reverseChargeHint": "VAT rozlicza klient; dokument nie zawiera VAT, tylko adnotację.",
+      "reverseChargeCode": "Kod przedmiotu świadczenia (kód předmětu plnění)",
+      "reverseChargeCodeNone": "Wybierz kod…",
+      "reverseChargeCodeHint": "Czeski raport kontrolny VAT wymaga go dla każdego dokumentu w sekcji A.1.",
+      "reverseChargeCodes": {
+        "1": "Złoto",
+        "3": "Dostawa nieruchomości opodatkowana VAT",
+        "4": "Roboty budowlane i montażowe",
+        "5": "Towary wymienione w załączniku 5 (odpady, złom)",
+        "6": "Dostawa towarów pierwotnie przekazanych jako zabezpieczenie",
+        "7": "Dostawa towarów po przeniesieniu zastrzeżenia prawa własności",
+        "11": "Uprawnienia do emisji gazów cieplarnianych",
+        "12": "Zboża i rośliny przemysłowe",
+        "13": "Metale",
+        "14": "Telefony komórkowe",
+        "15": "Układy scalone",
+        "16": "Przenośne urządzenia do przetwarzania danych",
+        "17": "Konsole do gier wideo",
+        "18": "Certyfikaty energii elektrycznej",
+        "19": "Energia elektryczna dostarczana przez sieci handlowcowi",
+        "20": "Gaz dostarczany przez sieci handlowcowi",
+        "21": "Określone usługi łączności elektronicznej",
+        "1a": "Pośrednictwo w dostawie złota inwestycyjnego",
+        "3a": "Dostawa nieruchomości w ramach sprzedaży egzekucyjnej",
+        "4a": "Roboty budowlane i montażowe – udostępnienie pracowników"
+      }
+    },
+    "notes": {
+      "title": "Notatki",
+      "below": "Tekst pod pozycjami",
+      "belowPlaceholder": "np. Dziękujemy za współpracę.",
+      "above": "Tekst nad pozycjami",
+      "abovePlaceholder": "np. Fakturujemy Państwu…",
+      "internal": "Notatka wewnętrzna",
+      "internalPlaceholder": "Widzisz ją tylko Ty; nie jest drukowana.",
+      "more": "Tekst nad pozycjami, notatka wewnętrzna",
+      "vars": "Zmienne",
+      "varsHint": "Teksty nad i pod pozycjami mogą zawierać zmienne, takie jak '{number}', '{due_date}', '{vs}', '{customer}' lub własne. Na dokumencie są zastępowane rzeczywistymi wartościami. Zobacz Ustawienia → Zmienne.",
+      "preview": "Podgląd",
+      "previewLater": "Uzupełniane przy wystawieniu dokumentu"
+    },
+    "saveIssue": "Zapisz i wystaw",
+    "saveIssueQuote": "Zapisz i wystaw ofertę",
+    "saveChanges": "Zapisz zmiany",
+    "savedDraft": "Szkic zapisany.",
+    "savedIssued": "Dokument wystawiony.",
+    "savedChanges": "Zmiany zapisane.",
+    "issueFailed": "Zapisano jako szkic, ale wystawienie się nie powiodło: {reason}",
+    "customize": "Dostosuj formularz",
+    "details": {
+      "title": "Szczegóły dokumentu",
+      "hint": "Dodatkowe wiersze w nagłówku dokumentu: numer zamówienia, miejsce wystawienia, kto wystawił i pola własne (np. numer umowy)."
+    },
+    "fields": {
+      "itemCode": "Kod pozycji",
+      "itemCodePlaceholder": "Kod / EAN",
+      "unit": "Jednostka",
+      "discount": "Rabat na pozycji",
+      "taxableSupplyDate": "Data dokonania dostawy",
+      "symbols": "Symbol stały i specyficzny",
+      "orderNumber": "Numer zamówienia",
+      "issuePlace": "Miejsce wystawienia",
+      "issuePlacePlaceholder": "Praga",
+      "issuedBy": "Wystawił(a)",
+      "issuedByPlaceholder": "Imię i nazwisko",
+      "noteAbove": "Tekst nad pozycjami",
+      "internalNote": "Notatka wewnętrzna",
+      "customFields": "Pola własne",
+      "customLabel": "Nazwa pola",
+      "customValue": "Wartość",
+      "customAdd": "Dodaj pole",
+      "language": "Język dokumentu",
+      "customFieldsHint": "Twoje własne wiersze w nagłówku dokumentu. Tekst może zawierać zmienne, takie jak '{net}' (szacowany dochód na rękę po podatku i ubezpieczeniach), '{base}', '{vat}', '{paid}' lub '{remaining}'. Kwoty są formatowane w walucie dokumentu; % jest liczony od kwoty netto. Kłódka czyni pole wewnętrznym: tylko dla zespołu, nigdy nie jest drukowane ani pokazywane klientowi, ale trafia do eksportów.",
+      "customKind": "Typ pola",
+      "kindText": "Tekst",
+      "customInternal": "Pole wewnętrzne (tylko zespół)",
+      "customInternalOn": "Wewnętrzne – widzi je tylko Twój zespół",
+      "customInternalOff": "Publiczne – drukowane na dokumencie",
+      "customHelp": "Wskazówka: tekst może zawierać zmienne, np. Na rękę '{net}'. Zablokuj pole, aby ukryć je przed klientem.",
+      "kindFormula": "Formuła",
+      "formulaError": "Nie można obliczyć formuły – sprawdź zmienne i nawiasy.",
+      "formulaVars": "W formułach:",
+      "formulaHint": "Formuły obsługują + − * /, nawiasy i procenty, np. '{base} - {costs}' lub '{amount} * 3.4 % + 10'. Możesz odwoływać się do innych pól (po nazwie bez znaków diakrytycznych, np. '{costs}') i do własnych zmiennych liczbowych z Ustawienia → Zmienne. Podatek i ubezpieczenia są szacunkowe (ryczałt kosztów 60 %).",
+      "presets": {
+        "title": "Gotowe pola…",
+        "groups": {
+          "profit": "Zysk i podatki",
+          "fees": "Opłaty bramek płatniczych",
+          "customer": "Dla klienta"
+        },
+        "net": "Zostaje Ci",
+        "afterTax": "Po podatku dochodowym",
+        "afterTaxSocial": "Po podatku i ubezpieczeniu społecznym",
+        "reserve": "Odłóż na podatek i ubezpieczenia",
+        "margin": "Marża",
+        "costsLabel": "Koszty",
+        "paypal": "Opłata PayPal",
+        "stripe": "Opłata Stripe",
+        "wise": "Opłata Wise",
+        "gopay": "Opłata GoPay",
+        "deposit": "Zaliczka"
+      }
+    },
+    "find": {
+      "placeholder": "Znajdź pole… (np. data dostawy, rabat, zamówienie)",
+      "empty": "Żadne pole nie pasuje",
+      "required": "Wypełniono {done} z {total} wymaganych",
+      "allDone": "Wszystkie wymagane pola są wypełnione",
+      "missing": "Przejdź do pierwszego brakującego wymaganego pola"
+    },
+    "editIssuedTitle": "Edycja {number}",
+    "editIssuedLead": "Ten dokument został już wystawiony. Numer pozostaje bez zmian; każda zmiana trafia do historii razem z powodem.",
+    "editReason": {
+      "label": "Powód zmiany",
+      "placeholder": "Np. literówka w adresie klienta",
+      "hint": "Widzi go każdy w firmie w historii dokumentu."
     }
   },
   "toasts": {
