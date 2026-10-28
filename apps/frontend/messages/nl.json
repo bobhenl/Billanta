@@ -904,6 +904,203 @@
       }
     }
   },
+  "bank": {
+    "title": "Bank",
+    "description": "Upload een bankafschrift (camt.053, GPC of CSV) en koppel binnenkomende betalingen aan uitgegeven facturen.",
+    "import": {
+      "label": "Afschrift importeren",
+      "selectFile": "Kies een afschriftbestand",
+      "noFileSelected": "Geen bestand gekozen",
+      "submit": "Uploaden en koppelen",
+      "importing": "Uploaden en koppelen…",
+      "formatHint": "Een afschrift uit je internetbankieren als camt.053 (XML), GPC/ABO of CSV.",
+      "success": "{total} transactie(s) geïmporteerd, {matched} automatisch gekoppeld.",
+      "invalidFile": "Kies een afschrift in het formaat .xml (camt.053), .gpc, .abo of .csv.",
+      "parseError": "Het bestand kon niet worden verwerkt: {message}",
+      "formatHelpLabel": "Welk bestand upload je?",
+      "formatHelp": "Een afschrift in camt.053 (XML) of GPC/ABO (.gpc) werkt het best; de meeste Tsjechische en Slowaakse banken bieden dat aan onder afschriften of transactie-export in internetbankieren. CSV werkt ook: we herkennen de gangbare exports (Fio, ČSOB, KB, Raiffeisen, Tatra banka en andere), gescheiden door puntkomma of komma, datums zoals 31.12.2026 of 2026-12-31 en bedragen met een decimale komma. Betalingen die al in Billanta staan (uit een ander afschrift of de Fio-API) worden herkend en niet dubbel toegevoegd.",
+      "sample": "Voorbeeld-CSV downloaden",
+      "successWithDuplicates": "{total} transactie(s) geïmporteerd, {matched} automatisch gekoppeld. {duplicates, plural, one {# betaling stond al in Billanta en is overgeslagen} other {# betalingen stonden al in Billanta en zijn overgeslagen}}.",
+      "errors": {
+        "bank_statement_unknown_format": "Dit formaat kennen we niet. Upload het afschrift als camt.053 (XML), GPC/ABO of CSV.",
+        "bank_statement_invalid": "Het afschrift is beschadigd of onvolledig."
+      }
+    },
+    "empty": "Nog geen banktransacties. Upload een afschrift met de knop rechtsboven.",
+    "filterLabel": "Toon",
+    "filterAll": "Alle",
+    "columns": {
+      "date": "Datum",
+      "amount": "Bedrag",
+      "variableSymbol": "Betalingskenmerk (VS)",
+      "counterparty": "Tegenpartij",
+      "status": "Status",
+      "actions": "Acties"
+    },
+    "status": {
+      "unmatched": "Niet gekoppeld",
+      "matched": "Gekoppeld",
+      "ignored": "Genegeerd"
+    },
+    "matchedWithInvoice": "Factuur {invoiceId}",
+    "matchAction": "Koppelen",
+    "ignoreAction": "Negeren",
+    "matchForm": {
+      "invoiceIdPlaceholder": "Factuur-ID",
+      "confirm": "Bevestigen",
+      "cancel": "Annuleren",
+      "required": "Vul een factuur-ID in."
+    },
+    "noTenant": "Rond eerst de bedrijfsinstellingen af.",
+    "loadError": "Banktransacties konden niet worden geladen.",
+    "emptyFiltered": "Geen transactie voldoet aan het filter.",
+    "searchPlaceholder": "Zoek op tegenpartij, VS, rekening…",
+    "unknownCounterparty": "Onbekende tegenpartij",
+    "selected": "{count, plural, one {# transactie geselecteerd} other {# transacties geselecteerd}}",
+    "selectAll": "Alles selecteren",
+    "clearSelection": "Selectie wissen",
+    "bulkDone": "Klaar: {ok} van {total}.",
+    "kpi": {
+      "toReview": "Te koppelen",
+      "matched": "Gekoppeld",
+      "incoming": "Inkomend ({currency})",
+      "outgoing": "Uitgaand ({currency})"
+    },
+    "detail": {
+      "title": "Banktransactie",
+      "backToList": "Terug naar bank",
+      "account": "Rekening tegenpartij",
+      "importFile": "Afschriftbestand",
+      "importedAt": "Geïmporteerd",
+      "facts": "Gegevens",
+      "matchedTo": "Gekoppeld aan document",
+      "draft": "Concept",
+      "invoiceGone": "De gekoppelde factuur bestaat niet meer.",
+      "suggestions": "Koppelvoorstellen",
+      "suggestionsHint": "Uitgegeven, onbetaalde facturen in dezelfde valuta, beste match eerst. Koppelen markeert de factuur als betaald.",
+      "noCandidates": "Geen uitgegeven, onbetaalde factuur in deze valuta.",
+      "due": "vervalt",
+      "reason": {
+        "vs": "VS komt overeen",
+        "amount": "Bedrag komt overeen",
+        "name": "Naam komt overeen"
+      },
+      "outgoingHint": "Uitgaande betaling – als het een uitgave is, registreer die dan onder Uitgaven en negeer daarna deze transactie.",
+      "ignoredHint": "Deze transactie wordt genegeerd en niet meegenomen bij het koppelen.",
+      "match": "Koppelen",
+      "ignore": "Negeren",
+      "restore": "Terug naar koppelen",
+      "matchedDone": "Gekoppeld; de factuur is betaald.",
+      "ignoredDone": "Transactie genegeerd.",
+      "restoredDone": "Transactie teruggezet naar koppelen.",
+      "actionFailed": "Actie mislukt",
+      "message": "Bericht voor de ontvanger"
+    },
+    "connections": {
+      "title": "Bankkoppeling",
+      "hint": "Elk uur haalt Billanta nieuwe binnenkomende betalingen rechtstreeks op bij je bank of PayPal en koppelt ze aan facturen op basis van betalingskenmerk en bedrag. Gekoppelde facturen worden als betaald gemarkeerd, inclusief de PayPal-kosten. Uitgaande betalingen worden niet opgehaald.",
+      "empty": "Nog geen rekening. Koppel Fio of PayPal en betalingen worden vanzelf gekoppeld. Voor andere banken upload je een afschrift (camt.053, GPC of CSV).",
+      "token": "Fio-API-token",
+      "tokenHint": "Open in Fio-internetbankieren Instellingen → API, voeg een token toe met de rechten “alleen rekening bekijken” en plak het hier (64 tekens). Met zo'n token kan niets worden betaald. We bewaren het versleuteld en tonen het nooit meer.",
+      "tokenPlaceholder": "64 tekens",
+      "label": "Naam (optioneel)",
+      "labelPlaceholder": "Fio – betaalrekening",
+      "connect": "Koppelen",
+      "cancel": "Annuleren",
+      "connected": "Rekening gekoppeld. Klik op Nu synchroniseren of wacht op de download van elk uur.",
+      "sync": "Nu synchroniseren",
+      "synced": "{total} betalingen opgehaald, {matched} automatisch gekoppeld.",
+      "syncedNothing": "Geen nieuwe betalingen.",
+      "lastSynced": "Laatst opgehaald {when}",
+      "neverSynced": "Nog niet opgehaald",
+      "paused": "Gepauzeerd",
+      "pause": "Pauzeren",
+      "resume": "Hervatten",
+      "disconnect": "Rekening ontkoppelen",
+      "disconnectConfirm": "Rekening ontkoppelen en het opgeslagen token verwijderen? Al opgehaalde betalingen blijven staan.",
+      "otherBanks": "Voor andere banken upload je een afschrift (camt.053, GPC of CSV) tot PSD2-koppelingen op deze server zijn ingeschakeld.",
+      "errors": {
+        "fio_token_format": "Het token moet precies 64 letters en cijfers bevatten.",
+        "fio_token_invalid": "Fio heeft het token geweigerd. Controleer of het geldig is en niet is ingetrokken.",
+        "invalid_token": "Fio heeft het token geweigerd. Controleer of het geldig is en niet is ingetrokken.",
+        "bank_sync_too_soon": "Deze rekening is net gesynchroniseerd. Fio staat één download per 30 s toe, PayPal één per minuut en PSD2-banken één per 15 minuten.",
+        "rate_limited": "Fio staat één download per 30 seconden toe. Probeer het zo opnieuw.",
+        "bank_unavailable": "De bank reageert niet. We proberen het bij de volgende download opnieuw.",
+        "unavailable": "De bank reageerde niet bij de laatste download.",
+        "forbidden": "Met jouw rol kun je geen bankkoppelingen beheren.",
+        "encryption_not_configured": "De server heeft geen versleutelingssleutel, dus het token kan niet veilig worden opgeslagen.",
+        "generic": "Er ging iets mis ({code}).",
+        "consent_expired": "De toestemming voor toegang tot de rekening is verlopen of ingetrokken. Vernieuw ze.",
+        "psd2_not_configured": "PSD2-bankkoppelingen zijn op deze server niet ingesteld.",
+        "psd2_rejected": "De bank of provider heeft het verzoek geweigerd.",
+        "psd2_bank_unknown": "De provider kent deze bank niet. Kies er een uit de lijst.",
+        "psd2_country": "Dit land wordt nog niet ondersteund.",
+        "psd2_pending": "De koppeling is nog niet afgerond.",
+        "psd2_auth_failed": "De bank heeft de aanmelding niet bevestigd. Probeer opnieuw te koppelen.",
+        "psd2_no_accounts": "Er is in de toestemming geen rekening gekozen.",
+        "psd2_state_invalid": "De link van de bank is ongeldig of al gebruikt. Start de koppeling opnieuw.",
+        "paypal_credentials_invalid": "PayPal heeft de Client ID of het Secret geweigerd. Controleer ze, en of ze bij de sandbox horen.",
+        "paypal_reporting_disabled": "In de PayPal-app is Transaction search niet ingeschakeld. Zet het aan in de app-instellingen (het kan een paar uur duren voor het werkt).",
+        "two_factor_required": "Schakel eerst tweestapsverificatie in onder Instellingen → Beveiliging.",
+        "plan_required": "Deze functie hoort bij een betaald abonnement. Kies er een onder Abonnement en facturatie.",
+        "history_locked": "Fio geeft bewegingen ouder dan 90 dagen pas vrij na een sterke autorisatie in internetbankieren. De volgende keer beginnen we bij de laatste 89 dagen."
+      },
+      "psd2": {
+        "hint": "Billanta haalt nieuwe binnenkomende betalingen rechtstreeks op bij je bank of PayPal en koppelt ze aan facturen op basis van betalingskenmerk en bedrag. Fio koppel je met een API-token, PayPal met de gegevens van je REST-app, andere banken via PSD2: je meldt je aan bij je bank en geeft alleen-lezentoegang tot de rekening (tot 180 dagen, bij veel banken 90). Banken staan maar een paar automatische opvragingen per dag toe, dus PSD2-rekeningen worden ongeveer elke 6 uur gesynchroniseerd. Uitgaande betalingen worden niet opgehaald en via de koppeling kan niets worden betaald.",
+        "empty": "Nog geen rekening. Koppel je bank of PayPal en betalingen worden vanzelf gekoppeld, zonder afschriften te uploaden.",
+        "country": "Land",
+        "bank": "Bank",
+        "bankHint": "Banken in de hele EER die onze vergunde PSD2-provider Enable Banking ondersteunt. Revolut staat onder Litouwen, Wise onder België. Na Doorgaan word je naar je internetbankieren gestuurd om je aan te melden en de rekeningen te kiezen.",
+        "pickBank": "Kies een bank",
+        "loadingBanks": "Banken laden…",
+        "labelPlaceholder": "Betaalrekening",
+        "accountType": "Soort rekening:",
+        "business": "Zakelijk",
+        "personal": "Privé (eenmanszaak)",
+        "continue": "Door naar de bank",
+        "note": "Je meldt je rechtstreeks aan bij je bank; Billanta ziet je bankgegevens nooit. Trek je toestemming op elk moment in door de rekening te ontkoppelen of in je internetbankieren.",
+        "otherBanksAvailable": "Koppel een andere bank via Bank koppelen → Bank via PSD2.",
+        "expired": "Toestemming verlopen",
+        "consentUntil": "toestemming tot {date}",
+        "renew": "Toestemming vernieuwen",
+        "disconnectConfirm": "Rekening ontkoppelen en de toestemming bij de bank intrekken? Al opgehaalde betalingen blijven staan.",
+        "callbackTitle": "Bankkoppeling",
+        "finishing": "Bankkoppeling afronden…",
+        "connected": "Bank gekoppeld. De betalingen van de laatste 30 dagen komen binnen bij de volgende synchronisatie.",
+        "cancelled": "De koppeling is bij de bank geannuleerd of geweigerd. Je kunt het opnieuw proberen.",
+        "failedTitle": "De bank kon niet worden gekoppeld",
+        "back": "Terug naar bank"
+      },
+      "paypal": {
+        "connect": "PayPal koppelen",
+        "clientId": "Client ID",
+        "secret": "Secret",
+        "credentialsHint": "Maak in het PayPal Developer Dashboard (developer.paypal.com → Apps & Credentials) een REST-app aan, schakel Transaction search in bij de functies en kopieer de Client ID en het Secret. Billanta leest daarmee alleen ontvangen betalingen en verstuurt niets. Ze worden versleuteld opgeslagen en nooit meer getoond.",
+        "sandbox": "Testaccount (sandbox)",
+        "sandboxHint": "Vink alleen aan voor PayPal-sandboxsleutels. Die betalingen zijn niet echt.",
+        "note": "Ontvangen betalingen worden aan facturen gekoppeld op basis van het factuurnummer of betalingskenmerk in de omschrijving, en op bedrag. De kosten die PayPal inhoudt worden op de factuur geboekt, zodat rapporten ook de netto-inkomsten tonen. PayPal publiceert transacties met een vertraging tot 3 uur.",
+        "connected": "PayPal gekoppeld. De betalingen van de laatste 30 dagen komen binnen bij de volgende synchronisatie."
+      },
+      "connectBank": "Bank koppelen",
+      "chooseProvider": "Wat wil je koppelen?",
+      "providers": {
+        "psd2": {
+          "title": "Bank via PSD2",
+          "text": "ČSOB, KB, Česká spořitelna, Tatra banka, Revolut, Wise en andere banken in de EER. Je meldt je aan bij je eigen bank."
+        },
+        "fio": {
+          "title": "Fio banka",
+          "text": "Met een API-token met alleen leesrechten. Betalingen worden elk uur gesynchroniseerd."
+        },
+        "paypal": {
+          "title": "PayPal",
+          "text": "Met de Client ID en het Secret van je REST-app. Ook de kosten worden op de factuur geboekt."
+        }
+      },
+      "syncPending": "Fio is klaar. Betalingen komen bij de volgende synchronisatie, probeer het over 30 seconden opnieuw."
+    },
+    "fee": "kosten {amount}"
+  },
   "contacts": {
     "title": "Contacten",
     "hint": "Klanten worden hier automatisch opgeslagen zodra je ze op een factuur kiest (uit je contacten of uit het ARES-register). Geef je vaste klanten een ster, dan kies je ze op een nieuwe factuur met één tik.",
@@ -1104,6 +1301,582 @@
     }
   },
   "settings": {
+    "title": "Instellingen",
+    "comingSoon": "Accountinstellingen komen binnenkort.",
+    "channels": {
+      "title": "Gekoppelde kanalen",
+      "description": "Koppel Telegram of WhatsApp om facturen rechtstreeks vanuit een spraakbericht te maken.",
+      "back": "Terug naar instellingen",
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp",
+      "statusLinked": "Gekoppeld",
+      "statusNotLinked": "Niet gekoppeld",
+      "linkedAs": "Gekoppeld als {handle}",
+      "whatsappComingSoon": "WhatsApp-ondersteuning volgt in een latere fase (Telegram komt eerst).",
+      "linkAnother": "Koppel nog een Telegram-account aan dit bedrijf.",
+      "linkTelegram": "Telegram koppelen",
+      "generating": "Code aanmaken…",
+      "codeInstructions": "Klik op “Openen in Telegram” en druk op Start in de chat met de bot, of stuur het gekopieerde commando naar de bot. De code werkt één keer.",
+      "openInTelegram": "Openen in Telegram",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd",
+      "expiresNote": "De code verloopt over 10 minuten.",
+      "expiresAt": "De code is geldig tot {time}. Klik op Klaar zodra de koppeling gelukt is.",
+      "newCode": "Nieuwe code aanmaken",
+      "done": "Klaar",
+      "unlink": "Ontkoppelen",
+      "unlinkConfirm": "Deze chat ontkoppelen? Spraakberichten uit deze chat maken dan geen facturen meer.",
+      "unlinked": "Chat ontkoppeld",
+      "loadError": "Gekoppelde kanalen konden niet worden geladen.",
+      "readOnly": "Alleen de eigenaar of een beheerder kan kanalen koppelen en ontkoppelen.",
+      "linkFirst": "Koppel je Telegram en stuur spraakberichten die conceptfacturen worden.",
+      "securityNote": "Alleen privéchats kunnen worden gekoppeld. De code verloopt na 30 minuten en elke chat kan maar bij één bedrijf horen."
+    },
+    "apiKeys": {
+      "title": "API-sleutels",
+      "description": "Maak sleutels aan om de Billanta-API vanuit je eigen systemen aan te roepen – bijvoorbeeld om facturen automatisch aan te maken of op te vragen.",
+      "back": "Terug naar instellingen",
+      "empty": "Nog geen API-sleutels.",
+      "columns": {
+        "name": "Naam",
+        "prefix": "Sleutel",
+        "lastUsed": "Laatst gebruikt",
+        "created": "Aangemaakt",
+        "status": "Status"
+      },
+      "neverUsed": "Nooit gebruikt",
+      "statusActive": "Actief",
+      "statusRevoked": "Ingetrokken",
+      "revoke": "Intrekken",
+      "revoking": "Intrekken…",
+      "confirmRevoke": "Deze sleutel intrekken? Alles wat hem gebruikt, werkt meteen niet meer.",
+      "generate": {
+        "button": "Nieuwe sleutel aanmaken",
+        "title": "Nieuwe API-sleutel aanmaken",
+        "nameLabel": "Naam",
+        "namePlaceholder": "bijv. Koppeling met boekhoudsysteem",
+        "nameHint": "Een label waaraan je deze sleutel later herkent – niemand anders ziet het.",
+        "cancel": "Annuleren",
+        "submit": "Sleutel aanmaken",
+        "generating": "Aanmaken…",
+        "readOnly": "Alleen lezen",
+        "readOnlyHint": "De sleutel kan alleen gegevens lezen (GET). Aanmaken, wijzigen of verwijderen geeft 403. Handig voor rapporten en koppelingen die niets veranderen."
+      },
+      "reveal": {
+        "title": "Je nieuwe API-sleutel",
+        "warning": "Kopieer deze sleutel nu – je krijgt hem niet meer te zien. Alleen een kort voorvoegsel wordt bewaard om hem te herkennen.",
+        "copy": "Kopiëren",
+        "copied": "Gekopieerd",
+        "done": "Klaar"
+      },
+      "docsHint": "Gebruik hem als bearer-token: Authorization: Bearer <key>. Zie apps/backend/README.md voor de volledige API-referentie.",
+      "loadError": "API-sleutels konden niet worden geladen.",
+      "readOnly": "Alleen de eigenaar of een beheerder kan sleutels aanmaken en intrekken.",
+      "listTitle": "Je sleutels",
+      "listHint": "Elke sleutel heeft volledige toegang tot de API van je bedrijf. Maak één sleutel per gekoppeld systeem, zodat je ze afzonderlijk kunt intrekken.",
+      "showRevoked": "Ingetrokken tonen ({count})",
+      "generateFailed": "De sleutel kon niet worden aangemaakt",
+      "revokeFailed": "De sleutel kon niet worden ingetrokken",
+      "revoked": "Sleutel ingetrokken",
+      "usage": {
+        "title": "Zo gebruik je een sleutel",
+        "hint": "Verstuur de sleutel alleen vanaf een server, nooit vanuit een browser of mobiele app waar iedereen hem kan lezen.",
+        "description": "Stuur de sleutel mee in de Authorization-header als bearer-token. Voorbeeld voor het opvragen van facturen:",
+        "docs": "API-documentatie (Swagger)"
+      },
+      "readOnlyBadge": "Alleen lezen",
+      "twoFactorRequired": "API-sleutels kunnen alleen worden aangemaakt met tweestapsverificatie.",
+      "planRequired": "Deze functie hoort bij een hoger abonnement. Kies er een onder Abonnement en facturatie."
+    },
+    "backup": {
+      "title": "Back-upbestemmingen",
+      "description": "Kies waar de gegevens van je bedrijf volgens schema naartoe worden geëxporteerd – je eigen server via SFTP, Google Drive, een eigen webhook of een lokale download.",
+      "back": "Terug naar instellingen",
+      "empty": "Nog geen back-upbestemmingen ingesteld.",
+      "columns": {
+        "type": "Type",
+        "schedule": "Schema",
+        "lastRun": "Laatste uitvoering",
+        "status": "Status"
+      },
+      "typeGoogleDrive": "Google Drive",
+      "typeWebhook": "Webhook",
+      "typeLocal": "Lokale download",
+      "scheduleDaily": "Dagelijks",
+      "scheduleWeekly": "Wekelijks",
+      "scheduleManual": "Handmatig",
+      "neverRun": "Nog nooit uitgevoerd",
+      "statusActive": "Actief",
+      "statusInactive": "Inactief",
+      "lastRunSuccess": "Gelukt",
+      "lastRunFailed": "Mislukt",
+      "runNow": "Nu uitvoeren",
+      "runningNow": "Bezig…",
+      "delete": "Verwijderen",
+      "deleting": "Verwijderen…",
+      "confirmDelete": "Deze back-upbestemming verwijderen? De geschiedenis van uitvoeringen wordt ook verwijderd.",
+      "connectGoogleDrive": {
+        "button": "Google Drive koppelen",
+        "connecting": "Doorsturen naar Google…",
+        "connectedBanner": "Google Drive is gekoppeld.",
+        "errorBanner": "Koppelen met Google Drive mislukt: {error}",
+        "description": "Back-ups worden opgeslagen in een map in je Google Drive. De app ziet alleen bestanden die hij zelf aanmaakt.",
+        "unavailable": "Google Drive is op deze server niet ingesteld."
+      },
+      "addLocal": {
+        "button": "Lokale download toevoegen",
+        "description": "Een downloadbaar SQLite-databasebestand met je gegevens – niets in te stellen, en alleen op aanvraag uit te voeren (het schema is altijd \"Handmatig\").",
+        "adding": "Toevoegen…"
+      },
+      "addWebhook": {
+        "button": "Webhook toevoegen",
+        "title": "Webhookbestemming toevoegen",
+        "urlLabel": "Webhook-URL",
+        "urlPlaceholder": "https://example.com/faktur-webhook",
+        "urlHint": "De gegevens worden als ondertekende JSON naar dit adres gePOST (header X-Faktur-Signature).",
+        "scheduleLabel": "Schema",
+        "cancel": "Annuleren",
+        "submit": "Toevoegen",
+        "submitting": "Toevoegen…"
+      },
+      "reveal": {
+        "title": "Ondertekeningsgeheim van de webhook",
+        "warning": "Kopieer dit geheim nu – je krijgt het niet meer te zien. Gebruik het om de header X-Faktur-Signature te controleren.",
+        "copy": "Kopiëren",
+        "copied": "Gekopieerd",
+        "done": "Klaar"
+      },
+      "docsHint": "Zie apps/backend/README.md voor het exportformaat en het controleren van de handtekening.",
+      "runDone": "Back-up voltooid.",
+      "runFailed": "De back-up kon niet worden voltooid.",
+      "pause": "Pauzeren",
+      "resume": "Hervatten",
+      "ownerOnly": "Alleen de eigenaar van het bedrijf kan back-ups instellen.",
+      "loadError": "Back-upbestemmingen konden niet worden geladen.",
+      "typeSftp": "SFTP-server",
+      "sftpFingerprint": "Serversleutel: {fingerprint}",
+      "sftpFingerprintPending": "De serversleutel wordt bij de eerste back-up gecontroleerd",
+      "addSftp": {
+        "button": "SFTP-server toevoegen",
+        "description": "De back-up (een SQLite-bestand) wordt via SFTP geüpload naar je eigen server, NAS of hosting – je gegevens blijven bij jou, eventueel versleuteld met je sleutel.",
+        "title": "Nieuwe SFTP-server",
+        "hint": "Billanta maakt alleen verbinding om een back-up te maken: het uploadt billanta-zaloha-…db en verbreekt de verbinding. Zonder wachtwoord maken we een eigen SSH-sleutel voor je aan, die je op de server autoriseert. De hostsleutel van de server wordt bij de eerste verbinding onthouden, en een gewijzigde sleutel stopt de back-up.",
+        "host": "Server",
+        "port": "Poort",
+        "username": "Gebruiker",
+        "path": "Map",
+        "pathHint": "Een relatief pad is relatief ten opzichte van de thuismap van de gebruiker. Een ontbrekende map wordt aangemaakt.",
+        "password": "Wachtwoord (optioneel)",
+        "passwordHint": "We raden aan het leeg te laten en de sleutel te gebruiken die na het opslaan wordt getoond. Wachtwoorden worden versleuteld opgeslagen."
+      },
+      "sftpKey": {
+        "title": "Autoriseer deze sleutel op de server",
+        "instructions": "Voeg de regel toe aan ~/.ssh/authorized_keys van de gebruiker op de server. Het is alleen de publieke helft; de privésleutel blijft versleuteld bij ons.",
+        "later": "Je kunt de sleutel altijd opnieuw tonen vanuit de tabel (SSH-sleutel).",
+        "show": "SSH-sleutel"
+      },
+      "encryption": {
+        "button": "Versleuteling",
+        "title": "Versleuteling van back-upbestanden",
+        "hint": "Bestanden worden met age (age-encryption.org) versleuteld voordat ze Billanta verlaten, zodat noch de serverbeheerder noch Google ze kan lezen zonder je sleutel of wachtzin. Raak ze niet kwijt – zonder kan een back-up niet worden hersteld.",
+        "mode": {
+          "none": "Geen versleuteling",
+          "key": "Publieke age-sleutel",
+          "passphrase": "Wachtzin"
+        },
+        "keyLabel": "Publieke sleutel (age1…)",
+        "keyHint": "Maak een sleutel aan met age-keygen -o klic.txt. Plak hier alleen de regel \"public key: age1…\" en bewaar klic.txt zelf.",
+        "passphraseLabel": "Wachtzin voor back-ups",
+        "passphraseHint": "Minstens 12 tekens. Ze wordt versleuteld opgeslagen zodat back-ups automatisch kunnen worden versleuteld, en wordt nooit meer getoond.",
+        "decryptKey": "Ontsleutelen:",
+        "decryptPassphrase": "Ontsleutelen:",
+        "save": "Opslaan",
+        "saving": "Opslaan…",
+        "saved": "Versleuteling opgeslagen.",
+        "badgeKey": "Versleuteld met sleutel",
+        "badgePassphrase": "Versleuteld met wachtzin"
+      },
+      "twoFactorRequired": "Back-upbestemmingen kunnen alleen worden gekoppeld met tweestapsverificatie."
+    },
+    "ai": {
+      "title": "AI",
+      "lead": "Wat het vooraf invullen van facturen en andere AI-functies aandrijft.",
+      "loadError": "De AI-instellingen konden niet worden geladen.",
+      "keyTitle": "Je eigen Anthropic API-sleutel",
+      "keyHint": "Maak een sleutel aan op console.anthropic.com → API Keys. Je betaalt Anthropic dan rechtstreeks per gebruik, zonder daglimiet. We controleren de sleutel voordat we hem opslaan.",
+      "keySave": "Opslaan en gebruiken",
+      "keyRemove": "Sleutel verwijderen",
+      "keyStorage": "De sleutel wordt versleuteld opgeslagen (AES-256) en nooit volledig getoond. Model: {model}.",
+      "modeTitle": "AI-bron",
+      "modeHint": "Eigen sleutel = gefactureerd aan je Anthropic-account, zonder limiet. Billanta AI = onze sleutel met een daglimiet. Uit = er worden geen gegevens naar AI gestuurd.",
+      "own": {
+        "title": "Eigen sleutel",
+        "saved": "Opgeslagen sleutel …{last4}",
+        "needsKey": "Sla eerst hierboven een sleutel op."
+      },
+      "platform": {
+        "title": "Billanta AI",
+        "limit": "Tot {limit} keer vooraf invullen per dag",
+        "unavailable": "Niet geconfigureerd op deze server."
+      },
+      "off": {
+        "title": "Uit",
+        "note": "AI-functies zijn verborgen."
+      },
+      "apiTitle": "Via de API",
+      "apiHint": "Hetzelfde vooraf invullen zit ook in de publieke API: roep het aan met een sleutel uit Instellingen → API-sleutels. Het gebruikt de AI-bron die je hierboven kiest; er wordt niets opgeslagen.",
+      "apiExample": "factuur 27604977, 3 uur advies tegen 1500",
+      "saved": "Opgeslagen.",
+      "errors": {
+        "ai_key_invalid": "De sleutel werkt niet – controleer of hij volledig is en begint met sk-ant-.",
+        "ai_key_no_model_access": "De sleutel werkt, maar heeft geen toegang tot het vereiste model.",
+        "ai_key_missing": "Sla eerst een sleutel op.",
+        "ai_provider_unavailable": "De sleutel kon nu niet worden gecontroleerd, probeer het zo opnieuw.",
+        "not_allowed": "Alleen de eigenaar of een beheerder van het bedrijf kan de AI-instellingen wijzigen.",
+        "save_failed": "Opslaan mislukt."
+      }
+    },
+    "backToSettings": "Terug naar instellingen",
+    "hub": {
+      "title": "Instellingen",
+      "description": "Alles over je account, bedrijf, gegevens en integraties op één plek.",
+      "groups": {
+        "account": "Account & bedrijf",
+        "data": "Gegevens",
+        "integrations": "Integraties",
+        "personal": "Mijn account"
+      },
+      "items": {
+        "profile": {
+          "title": "Mijn profiel",
+          "description": "Naam, wachtwoord, inlogmethoden, taal en weergave."
+        },
+        "company": {
+          "title": "Bedrijfsgegevens",
+          "description": "Factuurgegevens, adres, bankrekening en standaardinstellingen voor facturen."
+        },
+        "team": {
+          "title": "Team",
+          "description": "Nodig je boekhouder of collega's uit en stel hun rechten in."
+        },
+        "billing": {
+          "title": "Abonnement",
+          "description": "Pakket, betalingen en facturen voor de dienst."
+        },
+        "exports": {
+          "title": "Exports voor de boekhouder",
+          "description": "Facturen en kosten als CSV, Pohoda- en Money S3-XML, per maand, kwartaal of jaar."
+        },
+        "backup": {
+          "title": "Back-ups",
+          "description": "Automatische back-ups naar Google Drive, een webhook of als download."
+        },
+        "channels": {
+          "title": "Telegram & WhatsApp",
+          "description": "Facturen uitgeven met een spraakbericht vanaf je telefoon."
+        },
+        "ai": {
+          "title": "AI-assistent",
+          "description": "Bonnetjes uitlezen en factureren met je stem, je eigen API-sleutel."
+        },
+        "apiKeys": {
+          "title": "API-sleutels",
+          "description": "Koppel een webshop of je eigen systeem via de REST API."
+        },
+        "invoices": {
+          "title": "Facturen",
+          "description": "Welke velden je in het factuurformulier wilt zien, eigen velden en standaardwaarden."
+        },
+        "modules": {
+          "title": "Modules & type onderneming",
+          "description": "Zet alleen aan wat je gebruikt – bijv. geen kosten voor freelancers met een forfaitaire belasting."
+        },
+        "notifications": {
+          "title": "Meldingen",
+          "description": "Waarover we je informeren – in de bel, per e-mail en in de browser."
+        },
+        "emails": {
+          "title": "E-mails",
+          "description": "Afzender, onderwerp en tekst van factuur- en herinneringsmails, bijlagen, kleur van de knop."
+        },
+        "variables": {
+          "title": "Variabelen",
+          "description": "Je eigen '{placeholder}'-teksten voor e-mails en factuurnotities – plus de ingebouwde."
+        },
+        "integrations": {
+          "title": "Integraties",
+          "description": "Deadlinekalender, RSS, Discord/Slack-webhooks."
+        },
+        "paymentMethods": {
+          "title": "Betaalmethoden",
+          "description": "Je eigen betaalmethoden (PayPal, verrekening, betaallink…) met instructies op het document."
+        },
+        "publicProfile": {
+          "title": "Openbaar profiel",
+          "description": "Een visitekaartjespagina op je eigen adres – diensten, contactgegevens en een knop voor aanvragen."
+        },
+        "import": {
+          "title": "Importeren uit een ander systeem",
+          "description": "Contacten en factuurgeschiedenis uit BitFaktura, Fakturoid, iDoklad, Excel en meer."
+        },
+        "companies": {
+          "title": "Mijn bedrijven",
+          "description": "Meerdere bedrijven onder één login, met snel wisselen."
+        },
+        "activity": {
+          "title": "Wijzigingsgeschiedenis",
+          "description": "Wie wat wanneer heeft gewijzigd: documenten, contacten, bedrijf, team en sleutels."
+        },
+        "numbering": {
+          "title": "Documentnummering",
+          "description": "Je eigen nummerformaat voor facturen, proformafacturen, creditnota's en offertes, en het nummer waarmee de reeks verdergaat."
+        },
+        "referrals": {
+          "title": "Uitnodigen en tegoed verdienen",
+          "description": "Een link voor vrienden en klanten, tegoed en je abonnement daarmee betalen."
+        },
+        "security": {
+          "title": "Beveiliging",
+          "description": "Tweestapsverificatie en herstelcodes"
+        },
+        "emailNotifications": {
+          "title": "E-mailmeldingen",
+          "description": "Welke e-mails je krijgt, het wekelijkse overzicht en stille uren 's nachts."
+        },
+        "accountantProfile": {
+          "title": "Boekhoudersprofiel",
+          "description": "Vermelding in de boekhoudersgids en het partnerprogramma voor boekhouders."
+        }
+      },
+      "managedByAdmins": "Bedrijfsgegevens, het team, het abonnement en andere bedrijfsinstellingen worden beheerd door de eigenaar of een beheerder."
+    },
+    "profile": {
+      "title": "Mijn profiel",
+      "description": "Je persoonlijke gegevens en login. Bedrijfsgegevens vind je onder Bedrijf.",
+      "memberSince": "Lid sinds {date}",
+      "personal": "Persoonlijke gegevens",
+      "name": "Volledige naam",
+      "namePlaceholder": "Sanne de Vries",
+      "email": "E-mail",
+      "save": "Opslaan",
+      "nameSaved": "Naam opgeslagen.",
+      "changePassword": "Wachtwoord wijzigen",
+      "setPassword": "Wachtwoord instellen",
+      "setPasswordHint": "Je logt in met Google of Seznam. Met een wachtwoord kun je ook met je e-mailadres inloggen.",
+      "currentPassword": "Huidig wachtwoord",
+      "newPassword": "Nieuw wachtwoord",
+      "confirmPassword": "Nieuw wachtwoord herhalen",
+      "passwordRules": "Minimaal 8 tekens.",
+      "passwordSaved": "Wachtwoord gewijzigd.",
+      "signInMethods": "Inlogmethoden",
+      "methodPassword": "E-mail en wachtwoord",
+      "active": "Actief",
+      "notSet": "Niet ingesteld",
+      "linked": "Gekoppeld",
+      "preferences": "Taal & weergave",
+      "language": "Taal van de app",
+      "theme": "Thema",
+      "errors": {
+        "not_signed_in": "Je bent niet ingelogd.",
+        "name_too_long": "De naam is te lang.",
+        "too_short": "Het wachtwoord moet minimaal 8 tekens hebben.",
+        "wrong_current": "Het huidige wachtwoord is onjuist.",
+        "mismatch": "De nieuwe wachtwoorden komen niet overeen.",
+        "invalid_email": "Vul een geldig e-mailadres in.",
+        "same_email": "Dat is je huidige e-mailadres.",
+        "email_taken": "Dit e-mailadres wordt al door een ander account gebruikt.",
+        "send_failed": "De e-mail kon niet worden verstuurd, probeer het later opnieuw.",
+        "confirm_mismatch": "Het bevestigingsadres komt niet overeen.",
+        "last_admin": "Je bent de laatste beheerder van {company}. Geef de beheerdersrol eerst aan een ander lid.",
+        "issued_in_shared": "Je hebt documenten uitgegeven in het gedeelde bedrijf {company}, dus je kunt niet worden verwijderd. Neem contact op met de andere leden.",
+        "delete_failed": "Verwijderen mislukt, probeer het opnieuw."
+      },
+      "cancel": "Annuleren",
+      "emailChange": {
+        "button": "Wijzigen",
+        "hint": "Met je e-mailadres log je in. Bevestig een wijziging via de link die naar het nieuwe adres wordt gestuurd.",
+        "title": "Inlog-e-mailadres wijzigen",
+        "body": "We sturen een bevestigingslink naar het nieuwe adres (1 uur geldig). Tot je die opent, log je verder in met je huidige e-mailadres.",
+        "newEmail": "Nieuw e-mailadres",
+        "submit": "Bevestiging versturen",
+        "sent": "We hebben een bevestigingslink gestuurd naar {email}."
+      },
+      "danger": {
+        "title": "Account verwijderen",
+        "body": "Verwijdert je account definitief. Bedrijven waarvan je het enige lid bent, worden verwijderd met al hun documenten.",
+        "button": "Account verwijderen",
+        "modalTitle": "Je account echt verwijderen?",
+        "modalBody": "Dit kan niet ongedaan worden gemaakt.",
+        "pointSolo": "Bedrijven waarvan je het enige lid bent, worden verwijderd met hun facturen, contacten en kosten.",
+        "pointShared": "Uit gedeelde bedrijven word je alleen verwijderd; andere leden verliezen niets.",
+        "pointBackup": "Download eerst een back-up van je gegevens (Instellingen → Back-ups). Fiscale documenten moeten 10 jaar worden bewaard.",
+        "typeEmail": "Typ je e-mailadres ter bevestiging ({email})",
+        "confirm": "Definitief verwijderen"
+      }
+    },
+    "company": {
+      "title": "Bedrijfsgegevens",
+      "description": "Deze gegevens staan op elke factuur als leverancier.",
+      "loadError": "Je bedrijfsgegevens konden niet worden geladen.",
+      "readOnly": "Alleen een eigenaar of beheerder kan de bedrijfsgegevens wijzigen.",
+      "sections": {
+        "identity": "Identificatie",
+        "identityHint": "Vul het ondernemingsnummer (IČO) in en laad de rest uit ARES.",
+        "address": "Statutair adres",
+        "contact": "Contact",
+        "contactHint": "Getoond in de kop van de factuur.",
+        "bank": "Bankrekening",
+        "bankHint": "Gebruikt voor de QR-betaalcode op facturen.",
+        "defaults": "Standaardinstellingen voor facturen",
+        "defaultsHint": "Vooraf ingevuld op elke nieuwe factuur; per factuur aan te passen."
+      },
+      "ico": "Ondernemingsnummer (IČO)",
+      "dic": "Btw-nummer (DIČ)",
+      "companyName": "Naam (kort)",
+      "legalName": "Officiële naam",
+      "vatPayer": "Btw-plichtig",
+      "vatPayerHint": "Facturen worden uitgegeven met btw en een btw-overzicht. Niet-btw-plichtigen krijgen de vermelding “Niet btw-plichtig” op de factuur.",
+      "vatStatus": {
+        "title": "Btw-status",
+        "payer": "Btw-plichtig",
+        "payerHint": "Je factureert met btw en dient btw-aangiften en controleoverzichten in.",
+        "identified": "Geïdentificeerde persoon",
+        "identifiedHint": "Niet btw-plichtig, maar je betaalt btw over advertenties en diensten die je in het buitenland koopt.",
+        "non_payer": "Niet btw-plichtig",
+        "non_payerHint": "Je factureert zonder btw en dient geen btw-aangiften in.",
+        "dicHint": "Heb je een btw-nummer maar ben je niet btw-plichtig? Als je advertenties of diensten in het buitenland koopt (Google, Meta), ben je waarschijnlijk een geïdentificeerde persoon. ARES toont dit niet, dus controleer het bij je belastingkantoor.",
+        "suggest": {
+          "payer": "{source} vermeldt je als btw-plichtige.",
+          "non_payer": "{source} vermeldt je niet als btw-plichtige.",
+          "registry": "Het register van btw-plichtigen",
+          "apply": "Instellen op: {status}"
+        }
+      },
+      "advances": {
+        "title": "Maandelijkse voorschotten",
+        "hint": "Elk bedrag geldt vanaf de gekozen maand tot een nieuwere rij het vervangt. Bewaar de oudere rijen: het dashboard, de kalender en de jaarraming gebruiken ze voor afgelopen maanden. Een leeg veld neemt het bedrag van de vorige rij over, 0 betekent niets te betalen.",
+        "social": "Sociale verzekering",
+        "health": "Zorgverzekering",
+        "flat_tax": "Forfaitaire belasting of voorschot inkomstenbelasting",
+        "short": {
+          "social": "sociaal",
+          "health": "zorg",
+          "flat_tax": "forfaitair"
+        },
+        "from": "Geldt vanaf",
+        "current": "Huidig",
+        "inherit": "ongewijzigd",
+        "add": "Nieuw bedrag vanaf…",
+        "remove": "De rij vanaf {month} verwijderen",
+        "empty": "Nog geen voorschotten. Voeg een bedrag toe en de maand vanaf wanneer het geldt.",
+        "duplicate": "Een andere rij gebruikt deze maand al.",
+        "minimum": "Wettelijk minimum vanaf {from}: {amounts}.",
+        "useMinimum": "Gebruiken",
+        "errors": {
+          "month": "Vul bij elke rij de maand in vanaf wanneer die geldt.",
+          "duplicate": "Twee rijen hebben dezelfde maand. Voeg ze samen tot één.",
+          "amount": "Voorschotten moeten getallen zijn van 0 tot 10.000.000."
+        },
+        "flatTaxLabel": {
+          "flat": "Forfaitaire belasting",
+          "advance": "Voorschot inkomstenbelasting",
+          "unknown": "Forfaitaire belasting / belastingvoorschot"
+        },
+        "regime": {
+          "flatTax": "Val je onder de forfaitaire regeling?",
+          "flatTaxHint": "In de forfaitaire regeling (paušální daň) betaal je één maandbedrag voor inkomstenbelasting, sociale verzekering en zorgverzekering. Je betaalt dan geen aparte verzekeringsvoorschotten.",
+          "activity": "Hoofd- of nevenactiviteit?",
+          "activityHint": "Zelfstandig werk is een nevenactiviteit als je daarnaast in loondienst bent, studeert, of een pensioen of ouderschapsuitkering ontvangt. Het minimale voorschot voor de sociale verzekering is dan lager en er is geen minimumvoorschot voor de zorgverzekering.",
+          "yes": "Ja",
+          "no": "Nee",
+          "main": "Hoofdactiviteit",
+          "secondary": "Nevenactiviteit"
+        },
+        "minimumAsk": {
+          "flatTax": "Om het wettelijke minimum te tonen, vertel ons of je onder de forfaitaire regeling valt:",
+          "activity": "Om het wettelijke minimum te tonen, vertel ons of zelfstandig werk je hoofd- of nevenactiviteit is:"
+        },
+        "useMinimumHint": "Vult het wettelijke minimum in de rij in. Andere lege velden worden op 0 gezet."
+      },
+      "street": "Straat en huisnummer",
+      "city": "Plaats",
+      "postalCode": "Postcode",
+      "country": "Land",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "website": "Website",
+      "registryNote": "Inschrijving in het register",
+      "registryNotePlaceholder": "Ingeschreven in het handelsregister, Praag, afdeling C, dossier …",
+      "accountNumber": "Rekeningnummer",
+      "bankCode": "Bankcode",
+      "defaultLocale": "Taal van de factuur",
+      "defaultDueDays": "Betaaltermijn (dagen)",
+      "defaultPaymentMethod": "Betaalmethode",
+      "defaultNoteBelow": "Tekst onder de regels",
+      "defaultNotePlaceholder": "Bedankt voor de samenwerking.",
+      "aresLoaded": "Geladen uit ARES – controleer en sla op.",
+      "aresNotFound": "Geen bedrijf met dit nummer in ARES.",
+      "aresFailed": "Opzoeken in ARES mislukt",
+      "unsaved": "{count, plural, one {# niet-opgeslagen wijziging} other {# niet-opgeslagen wijzigingen}}",
+      "noChanges": "Alles opgeslagen",
+      "discard": "Verwerpen",
+      "save": "Wijzigingen opslaan",
+      "saved": "Bedrijfsgegevens opgeslagen.",
+      "saveFailed": "Opslaan mislukt",
+      "accounts": {
+        "title": "Andere bankrekeningen",
+        "hint": "Bijv. een EUR-rekening – automatisch gebruikt op facturen in die valuta.",
+        "add": "Rekening toevoegen",
+        "addTitle": "Nieuwe bankrekening",
+        "editTitle": "Rekening bewerken",
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "label": "Naam",
+        "labelPlaceholder": "Bijv. Wise EUR",
+        "accountNumber": "Rekeningnummer",
+        "bankCode": "Bankcode",
+        "currency": "Automatisch voor valuta",
+        "currencyNone": "Alleen als je hem handmatig kiest",
+        "currencyHint": "Facturen in deze valuta krijgen deze rekening, tenzij je op de factuur een andere kiest.",
+        "autoFor": "auto {currency}",
+        "needAccount": "Vul een IBAN in, of een rekeningnummer met bankcode.",
+        "saved": "Rekening opgeslagen",
+        "deleted": "Rekening verwijderd",
+        "saveFailed": "Opslaan mislukt",
+        "deleteTitle": "Bankrekening verwijderen?",
+        "deleteBody": "“{label}” wordt verwijderd. Facturen die deze rekening gebruikten, schakelen over naar de automatische keuze.",
+        "cancel": "Annuleren",
+        "save": "Opslaan"
+      },
+      "logo": {
+        "title": "Logo",
+        "hint": "Rechtsboven op facturen. PNG of JPG tot 512 kB, liggend formaat werkt het best.",
+        "upload": "Logo uploaden",
+        "replace": "Vervangen",
+        "remove": "Verwijderen",
+        "alt": "Bedrijfslogo",
+        "saved": "Logo opgeslagen",
+        "removed": "Logo verwijderd",
+        "badType": "Het logo moet een PNG of JPG zijn.",
+        "tooBig": "Het logo is groter dan 512 kB.",
+        "failed": "Uploaden mislukt (HTTP {status})"
+      },
+      "companyNameHint": "Een korte naam voor de app en e-mails (bijv. “Novák Design”). Op facturen staat de officiële naam.",
+      "legalNameHint": "Precies zoals in het handelsregister – op facturen vermeld als leverancier. Voor een eenmanszaak is dit je volledige naam (met eventuele handelsnaam).",
+      "countryHint": "Landcode van twee letters: CZ, SK, DE…",
+      "registryNoteHint": "Bedrijven in het handelsregister moeten dit op facturen vermelden. Eenmanszaken kunnen het leeg laten.",
+      "ibanHint": "Rekeningnummer en bankcode zijn voldoende – IBAN is vooral nodig voor betalingen uit het buitenland.",
+      "defaultDueDaysHint": "Hoeveel dagen na uitgifte een nieuwe factuur vervalt. Meestal 14.",
+      "defaultsMoved": "Standaardinstellingen voor facturen vind je onder",
+      "defaultsLink": "Instellingen › Facturen",
+      "registrySearch": "Zoeken in het register",
+      "registrySearchPlaceholder": "Bedrijfsnaam, eenmanszaak, ondernemingsnummer of plaats",
+      "loadRegistry": "Laden uit register",
+      "dicKeepHint": "Laat het btw-nummer ingevuld, ook als niet-btw-plichtige of geïdentificeerde persoon. Het staat op je documenten.",
+      "dataBoxId": "ID van de datová schránka",
+      "dataBoxIdHint": "Zeven tekens, bijv. ab12cd3. Niet geheim. Vooraf ingevuld in het jaaroverzicht voor de ČSSZ.",
+      "icoTrialHint": "Door het IČO in te vullen start je gratis proefperiode van {days} dagen Plus – geen kaart nodig, één keer per IČO."
+    },
     "team": {
       "title": "Team",
       "description": "Wie toegang heeft tot de facturatie van je bedrijf.",
@@ -1192,6 +1965,297 @@
         "empty": "Nog niemand in deze regio.",
         "all": "Volledige boekhoudersgids",
         "picked": "{email} is ingevuld. Controleer de rol en verstuur de uitnodiging."
+      }
+    },
+    "exports": {
+      "title": "Exports voor je boekhouder",
+      "description": "Download de documenten voor een periode en stuur ze naar je boekhouder, of nodig die uit in je team.",
+      "period": "Periode",
+      "modes": {
+        "month": "Maand",
+        "quarter": "Kwartaal",
+        "year": "Jaar",
+        "range": "Aangepast"
+      },
+      "quarter": "K{q}",
+      "download": "Downloaden",
+      "files": {
+        "invoices": {
+          "title": "Uitgegeven facturen (CSV)",
+          "hint": "Alle uitgegeven documenten met grondslag en btw per tarief, de {source}-koers en het bedrag in {home}. Voor Excel en boekhoudsoftware."
+        },
+        "expenses": {
+          "title": "Uitgaven (CSV)",
+          "hint": "Ontvangen facturen en bonnetjes met leverancier en btw."
+        },
+        "pohoda": {
+          "title": "Pohoda (XML)",
+          "hint": "Uitgegeven en ontvangen facturen om in Pohoda te importeren (dataPack)."
+        },
+        "moneyS3": {
+          "title": "Money S3 (XML)",
+          "hint": "Uitgegeven en ontvangen facturen voor Money S3 (Bestand → Importeren → XML)."
+        }
+      },
+      "accountantHint": "Een boekhouder met de rol Boekhouder kan de exports downloaden wanneer dat nodig is.",
+      "inviteAccountant": "Boekhouder uitnodigen",
+      "vat": {
+        "title": "Tsjechische btw-aangiften",
+        "hint": "XML-bestanden om te importeren in EPO op het Tsjechische belastingportaal. Documenten worden toegewezen op de datum van de belastbare levering; vreemde valuta gebruiken de ČNB-koers.",
+        "monthly": "Maandelijks",
+        "quarterly": "Per kwartaal",
+        "quarter": "K{q}",
+        "download": "XML downloaden",
+        "files": {
+          "dp3": {
+            "title": "Btw-aangifte",
+            "hint": "DPHDP3 – verschuldigde btw, aftrek, te betalen belasting."
+          },
+          "kh1": {
+            "title": "Controleoverzicht",
+            "hint": "DPHKH1 – documenten boven CZK 10.000 per stuk vermeld (A.4, B.2), de rest samengevoegd."
+          },
+          "shv": {
+            "title": "Opgaaf ICP",
+            "hint": "DPHSHV – diensten aan btw-plichtige afnemers in andere EU-landen."
+          }
+        },
+        "nothingToReport": "Geen EU-leveringen in deze periode – er is geen opgaaf ICP nodig.",
+        "missingDic": "Vul het btw-nummer van je bedrijf in bij Instellingen – de aangiften hebben het nodig.",
+        "rateUnavailable": "De ČNB-wisselkoers kon niet worden geladen. Probeer het zo opnieuw.",
+        "failed": "Het bestand kon niet worden aangemaakt.",
+        "disclaimer": "Controleer het bestand in EPO voordat je het indient en kies daar het belastingkantoor. EU-leveringen worden gemeld als diensten (code 3); documenten zonder btw-nummer van de leverancier komen in B.3.",
+        "formVersions": "De export maakt XML in de versies DPHDP3 {dp3}, DPHKH1 {kh1} en DPHSHV {shv}. We hebben de regels en formulierversies voor het laatst gecontroleerd op {date}.",
+        "officialLink": "Actuele informatie van de Tsjechische belastingdienst",
+        "guideLink": "Handleiding voor de aangifte",
+        "sk": {
+          "title": "Slowaakse btw-aangiften",
+          "hint": "XML-bestanden voor de e-aangiftedienst eDane van de Slowaakse belastingdienst. Documenten worden toegewezen op het belastbare feit; vreemde valuta gebruiken de ECB-koers van de vorige dag (§ 26 van wet nr. 222/2004 Z.z.).",
+          "files": {
+            "dph": {
+              "title": "Btw-aangifte",
+              "hint": "DPHv25 – verschuldigde btw per tarief, aftrek van voorbelasting, te betalen belasting (§ 78)."
+            },
+            "kv": {
+              "title": "Controleoverzicht",
+              "hint": "KVDPHv25 – facturen per afnemer en leverancier (A.1, A.2, B.2), vereenvoudigde facturen samengevoegd, correcties in C.1 (§ 78a)."
+            },
+            "sv": {
+              "title": "Opgaaf ICP",
+              "hint": "SVDPHv20 – diensten aan btw-plichtige afnemers in andere EU-landen (§ 80)."
+            }
+          },
+          "nothingToReport": "Geen EU-leveringen in deze periode – er is geen opgaaf ICP nodig.",
+          "missingDic": "Vul het Slowaakse btw-nummer van je bedrijf (SK gevolgd door 10 cijfers) in bij Instellingen – de aangiften hebben het nodig.",
+          "rateUnavailable": "De ECB-wisselkoers kon niet worden geladen. Probeer het zo opnieuw.",
+          "disclaimer": "Controleer het bestand in eDane voordat je het indient en vul het belastingkantoor in. EU-leveringen worden gemeld als diensten (code 2); verplaats EU-leveringen van goederen (regel 14) en uitvoer (regel 15) met de hand. Ontvangen documenten zonder btw-nummer van de leverancier komen in B.3.1.",
+          "formVersions": "De export maakt XML in de versies DPHv25, KVDPHv25 en SVDPHv20.",
+          "officialLink": "Actuele informatie van de Slowaakse belastingdienst"
+        },
+        "warnings": {
+          "reverse_charge_code_missing": "Documenten zonder leveringscode: {documents}. Vul de code in op het document en download het bestand opnieuw, anders weigert EPO het.",
+          "reverse_charge_dic_missing": "Documenten met verlegde btw zonder btw-nummer van de afnemer, weggelaten uit sectie A.1: {documents}.",
+          "received_reverse_charge_code_missing": "Ontvangen documenten met verlegde btw zonder leveringscode: {documents}. Vul de code in bij de uitgave en download het bestand opnieuw, anders weigert EPO het.",
+          "received_reverse_charge_dic_missing": "Ontvangen documenten met verlegde btw zonder btw-nummer van de leverancier, weggelaten uit sectie B.1: {documents}.",
+          "received_reverse_charge_number_missing": "Ontvangen documenten met verlegde btw zonder documentnummer (getoond op datum), weggelaten uit sectie B.1: {documents}."
+        }
+      },
+      "annual": {
+        "title": "Jaarlijkse schatting van belasting en premies (Tsjechische zzp’er)",
+        "hint": "Schat de inkomstenbelasting, sociale en zorgpremies en de voorschotten voor volgend jaar op basis van de in het jaar betaalde facturen en uitgaven.",
+        "incomeHint": "Facturen betaald in het jaar ({invoices}), creditnota’s afgetrokken.",
+        "incomeHintVat": "Facturen betaald in het jaar zonder btw ({invoices}), creditnota’s afgetrokken.",
+        "actualExpenses": "Werkelijke kosten",
+        "flatExpenses": "Forfaitaire kosten {rate} %",
+        "profit": "Winst",
+        "taxBase": "Belastinggrondslag",
+        "taxCredit": "Heffingskorting belastingplichtige",
+        "incomeTax": "Inkomstenbelasting",
+        "incomeTaxHint": "15 %, 23 % boven 36 gemiddelde lonen. Alleen de basisheffingskorting wordt toegepast.",
+        "social": "Sociale premie",
+        "socialHint": "29,2 % van 55 % van de winst, minstens de minimale grondslag voor hoofdactiviteit.",
+        "health": "Zorgpremie",
+        "healthHint": "13,5 % van 50 % van de winst, minstens de helft van het gemiddelde loon.",
+        "balance": "Te betalen (+) / te veel betaald (−)",
+        "nextAdvance": "Nieuw maandelijks voorschot",
+        "total": "Belasting + premies in totaal",
+        "missingRates": "{count, plural, one {# document in vreemde valuta} other {# documenten in vreemde valuta}} zonder {source}-koers – weggelaten.",
+        "paramsFallback": "Nog geen parameters voor dit jaar; we gebruiken {year}.",
+        "downloadCsv": "CSV downloaden",
+        "epoLink": "EPO-formulieren (belastingdienst)",
+        "failed": "De schatting kon niet worden berekend.",
+        "disclaimer": "Een ruwe schatting voor hoofdactiviteit. Vervangt niet de belastingaangifte of de premieoverzichten.",
+        "paidFromSettings": "Ingevuld op basis van de maandelijkse voorschotten in Bedrijfsgegevens. Je kunt het aanpassen.",
+        "uniformRate": "Vreemde valuta worden omgerekend tegen de uniforme koers voor {year} (het gemiddelde van de ČNB-koersen aan het einde van de maand). Je kunt dit wijzigen in Instellingen → Factuurformulier.",
+        "titleSk": "Jaarlijkse schatting van belasting en premies (Slowaakse zzp’er)",
+        "hintSk": "Schat de Slowaakse inkomstenbelasting, zorg- en sociale premies op basis van de in het jaar betaalde facturen en uitgaven, in euro.",
+        "modes": {}
+      },
+      "epo": {
+        "title": "Zo dien je de btw-aangifte, het controleoverzicht en de opgaaf ICP in",
+        "lead": "Upload de XML-bestanden hierboven in EPO of stuur ze via je databox. We leiden je stap voor stap door de gekozen route. Vanuit hier wordt niets verstuurd.",
+        "deadlines": {
+          "monthly": "Maandaangever – voor {period}",
+          "monthlyHint": "De btw-aangifte, het controleoverzicht en de opgaaf ICP moeten uiterlijk de 25e van de volgende maand binnen zijn; valt dat in een weekend of op een feestdag, dan schuift het naar de volgende werkdag.",
+          "quarterly": "Kwartaalaangever – K{q} {year}",
+          "quarterlyHint": "Aangifte uiterlijk de 25e na het einde van het kwartaal. Particulieren dienen het controleoverzicht per kwartaal in, bedrijven altijd maandelijks.",
+          "in": "{count, plural, =0 {vandaag} one {over # dag} other {over # dagen}}"
+        },
+        "channelTitle": "Hoe wil je indienen?",
+        "channelHint": "Iedereen met een databox (elk bedrijf, zzp’ers sinds 2023) moet elektronisch indienen. Controleoverzichten en opgaven ICP zijn altijd elektronisch.",
+        "channels": {
+          "ds": {
+            "name": "Via databox",
+            "when": "Het eenvoudigst als je een databox hebt: voeg de XML gewoon toe aan een bericht, een handtekening is niet nodig.",
+            "steps": [
+              "Download de XML hierboven – elke aangifte is een apart bestand.",
+              "We raden aan het eerst in EPO te laden (Načtení souboru → Kontrola), het belastingkantoor in te vullen en waarschuwingen op te lossen, en het dan weer als XML op te slaan.",
+              "Log in op je databox en schrijf een nieuw bericht aan je belastingkantoor (de box-ID staat in de lijst met kantoren).",
+              "Voeg één XML-bestand per bericht toe.",
+              "Verstuur het en bewaar het ontvangstbewijs."
+            ]
+          },
+          "epo": {
+            "name": "Via EPO",
+            "when": "Het webformulier van de belastingdienst. Dien in via je databox (inloggen vanuit EPO) of met een gekwalificeerde elektronische handtekening.",
+            "steps": [
+              "Download de XML hierboven.",
+              "Open EPO → Elektronická podání → Načtení souboru en kies de XML.",
+              "Controleer de secties D en P: belastingkantoor, regionaal kantoor en contactgegevens.",
+              "Klik op Kontrola en los fouten op; waarschuwingen zijn ter informatie.",
+              "Kies Pokračovat v podání → Odeslat přes datovou schránku, of verstuur met een elektronische handtekening.",
+              "Bewaar de indieningsbevestiging (PDF) en de verstuurde XML."
+            ]
+          },
+          "mojeDane": {
+            "name": "Portaal MOJE daně",
+            "when": "Voor particulieren met een bankidentiteit of eID-kaart; de aangifte gaat rechtstreeks vanuit het portaal.",
+            "steps": [
+              "Download de XML hierboven.",
+              "Log in op het portaal MOJE daně met je bankidentiteit of eID.",
+              "Kies in EPO Načtení souboru en upload de XML.",
+              "Controleer het, vul het belastingkantoor in en voer Kontrola uit.",
+              "Dien in met Podat; de bevestiging staat in je documentenoverzicht."
+            ]
+          }
+        },
+        "links": {
+          "epo": "EPO openen",
+          "mojeDane": "Portaal MOJE daně",
+          "fuList": "Databox-ID’s van belastingkantoren"
+        },
+        "tips": {
+          "title": "Voordat je indient",
+          "items": [
+            "De gegevens komen uit de facturen en uitgaven in Billanta – zorg dat alle documenten voor de periode zijn ingevoerd.",
+            "Een te laat controleoverzicht betekent een boete van CZK 1.000; op een verzoek van het kantoor moet je binnen 5 werkdagen reageren.",
+            "Dien correcties in als aanvullende aangifte of vervolgcontroleoverzicht door in EPO het type aangifte te wijzigen.",
+            "Twijfel je? Nodig je boekhouder uit in het team (Instellingen → Team) – die ziet de exports en kan voor je indienen."
+          ]
+        }
+      },
+      "filings": {
+        "title": "Jaaraangiften voor {year}",
+        "hint": "Aangifte inkomstenbelasting, het ČSSZ-overzicht en de waarden voor je zorgverzekeraar, vooraf ingevuld op basis van de facturen en uitgaven van het jaar. Je downloadt, controleert en dient ze zelf in.",
+        "year": "Jaar",
+        "expenses": "Kosten",
+        "basis": "Administratie",
+        "basisHint": "Belastingadministratie (daňová evidence) telt inkomsten wanneer facturen betaald zijn. Volledige boekhouding telt ze op de leveringsdatum (DUZP).",
+        "basisCash": "Belastingadministratie (op betaling)",
+        "basisAccrual": "Boekhouding (op leveringsdatum)",
+        "activity": "Activiteit",
+        "activityHint": "Een nevenactiviteit is bijvoorbeeld een onderneming naast een baan of ouderschapsverlof. De verzekering begint pas boven het drempelbedrag.",
+        "activityMain": "Hoofdactiviteit",
+        "activitySecondary": "Nevenactiviteit",
+        "fromMonth": "Ondernemer sinds",
+        "taxAdvances": "Betaalde voorschotten inkomstenbelasting (CZK)",
+        "taxAdvancesHint": "Voor dit jaar betaalde voorschotten inkomstenbelasting. De meeste zzp’ers betalen er in de eerste jaren geen.",
+        "spouse": "Heffingskorting voor partner aanvragen",
+        "spouseHint": "Alleen als je echtgenoot of echtgenote een eigen inkomen had van maximaal CZK 68.000 in het jaar en jullie één huishouden vormen.",
+        "failed": "De gegevens voor de jaaraangifte konden niet worden geladen.",
+        "rowNo": "regel {n}",
+        "dpfoTitle": "Aangifte inkomstenbelasting (DPFO)",
+        "dpfo": {
+          "r101": "Inkomsten uit onderneming (§ 7)",
+          "r102": "Kosten ({rate} % forfaitair of werkelijk)",
+          "r113": "Deelgrondslag uit onderneming",
+          "r61": "Fiscaal verlies",
+          "r56": "Belastinggrondslag, afgerond",
+          "r57": "Belasting 15 % / 23 %",
+          "r64": "Heffingskorting belastingplichtige",
+          "r65a": "Heffingskorting partner",
+          "r71": "Belasting na kortingen",
+          "r84": "Betaalde voorschotten",
+          "r91": "Nog te betalen (min is te veel betaald)"
+        },
+        "csszTitle": "Overzicht voor ČSSZ (sociale verzekering)",
+        "cssz": {
+          "r24": "Winst (inkomsten min kosten)",
+          "r25": "Premiegrondslag uit winst",
+          "r27": "Minimale premiegrondslag",
+          "r28": "Premiegrondslag",
+          "r32": "Verschuldigde premie",
+          "r33": "Betaalde voorschotten",
+          "r34": "Nog te betalen (min is te veel betaald)",
+          "r35": "Nieuwe maandelijkse premiegrondslag",
+          "r36": "Nieuw maandelijks voorschot"
+        },
+        "csszNotInsured": "De winst uit de nevenactiviteit bleef onder de drempel, dus er is geen pensioenverzekering ontstaan. Je dient het ČSSZ-overzicht toch in, met nul premie.",
+        "nextUnknown": "Het minimale voorschot voor volgend jaar is nog niet bekend. Controleer het nieuwe voorschot in het ČSSZ ePortal.",
+        "healthTitle": "Overzicht voor de zorgverzekeraar",
+        "health": {
+          "profit": "Winst",
+          "baseFromProfit": "De helft van de winst",
+          "minBase": "Minimale premiegrondslag",
+          "base": "Premiegrondslag",
+          "premium": "Premie 13,5 %",
+          "paid": "Betaalde voorschotten",
+          "balance": "Nog te betalen (min is te veel betaald)",
+          "nextAdvance": "Nieuw maandelijks voorschot"
+        },
+        "insurer": "Je verzekeraar",
+        "healthHowTo": "Sinds 2026 kan het overzicht voor de zorgverzekering alleen elektronisch worden ingediend: op het portaal van de verzekeraar (bijvoorbeeld Moje VZP) of via een databox. Verzekeraars hebben geen gemeenschappelijk XML-formaat en VZP neemt een pdf aan via de databox, dus we maken geen bestand aan. Neem de waarden links over in het formulier van je verzekeraar.",
+        "missingRates": "{count, plural, one {# document in vreemde valuta heeft} other {# documenten in vreemde valuta hebben}} geen ČNB-koers en ontbreekt in de totalen.",
+        "personTitle": "Persoonlijke gegevens voor de bestanden",
+        "personHint": "Worden alleen in de gedownloade XML gezet. We slaan ze niet op en ze verschijnen nooit in het paginaadres.",
+        "person": {
+          "birthNumber": "Tsjechisch persoonsnummer (rodné číslo)",
+          "birthNumberHint": "Komt zowel in de belastingaangifte als in het ČSSZ-overzicht.",
+          "taxOffice": "Code belastingkantoor",
+          "taxOfficeHint": "De driecijferige code uit EPO, bijvoorbeeld 451 voor de stad Praag.",
+          "taxWorkplace": "Code lokaal kantoor",
+          "ossz": "OSSZ-code",
+          "osszHint": "De driecijferige code van je districtskantoor voor sociale zekerheid.",
+          "variableSymbol": "Betalingskenmerk ČSSZ (variabel symbool)",
+          "variableSymbolHint": "Te zien in het ČSSZ ePortal of op je eerdere voorschotbetalingen.",
+          "dataBox": "Databox-ID",
+          "prefilled": "De kantoorcodes en de databox zijn vooraf ingevuld op basis van het adres en de gegevens in Factuurgegevens. Controleer ze; je kunt ze aanpassen.",
+          "remember": "Onthouden in deze browser",
+          "rememberHint": "Je persoonsnummer en betalingskenmerk worden alleen in deze browser opgeslagen en nooit naar onze server gestuurd. Vink uit om ze te verwijderen."
+        },
+        "downloadDpfdp": "Belastingaangifte downloaden ({form}, XML)",
+        "dpfdpMissing": "De belastingdienst publiceert het aangifteformulier voor {year} meestal in januari {next}.",
+        "downloadCssz": "ČSSZ-overzicht downloaden (XML)",
+        "csszMissing": "ČSSZ publiceert het overzichtsformulier voor {year} meestal begin {next}.",
+        "print": "Samenvatting afdrukken",
+        "epoLink": "EPO van de belastingdienst",
+        "epoHow": "laad het bestand met “Načíst soubor”, controleer het en verstuur het.",
+        "csszLink": "ČSSZ ePortal",
+        "csszHow": "upload het overzicht als XML of stuur het via je databox.",
+        "errors": {
+          "form_not_published": "De instantie heeft het formulier voor dit jaar nog niet gepubliceerd.",
+          "year_not_supported": "We hebben de parameters voor dit jaar nog niet.",
+          "invalid_filings_query": "Controleer de ingevulde gegevens; iets heeft een verkeerd formaat.",
+          "generic": "Het bestand kon niet worden aangemaakt."
+        },
+        "disclaimer": "Vooraf ingevuld op basis van de documenten in de app voor de gangbare situatie van een zzp’er (alleen inkomsten uit onderneming, basiskortingen). Dit is geen belastingadvies. Controleer alles voordat je indient; je dient zelf in via EPO, het ČSSZ ePortal, het portaal van je verzekeraar of je databox.",
+        "modes": {
+          "30": "Forfaitair 30 % (verhuur)",
+          "40": "Forfaitair 40 % (vrije beroepen)",
+          "60": "Forfaitair 60 % (handel en bedrijf)",
+          "80": "Forfaitair 80 % (ambachten)",
+          "actual": "Werkelijke kosten"
+        }
       }
     },
     "invoices": {
@@ -1396,6 +2460,784 @@
       "saved": "Modules opgeslagen.",
       "failed": "Opslaan mislukt"
     },
+    "notifications": {
+      "title": "Meldingen",
+      "description": "Kies waarover je iets wilt horen en hoe. Deze instellingen gelden alleen voor jou, niet voor het hele team.",
+      "loadError": "Meldingsinstellingen konden niet worden geladen.",
+      "saved": "Opgeslagen",
+      "saveFailed": "Opslaan mislukt",
+      "eventsTitle": "Gebeurtenissen",
+      "eventsHint": "Bel = melding in de bovenbalk van de app (en een pop-up in de browser als je die hieronder toestaat). E-mail gaat naar het adres van je account.",
+      "channels": {
+        "app": "Bel",
+        "email": "E-mail"
+      },
+      "allOn": "alles aan",
+      "noneOn": "alles uit",
+      "events": {
+        "invoice_paid": {
+          "label": "Factuur betaald",
+          "hint": "Als je een factuur als betaald markeert, of wij die koppelen vanuit een bankafschrift."
+        },
+        "invoice_viewed": {
+          "label": "Klant heeft factuur geopend",
+          "hint": "De eerste keer dat de factuur in het klantenportaal wordt bekeken."
+        },
+        "invoice_overdue": {
+          "label": "Factuur te laat",
+          "hint": "Eén keer, wanneer een factuur over de vervaldatum gaat en de eerste automatische herinnering wordt verstuurd."
+        },
+        "reminder_sent": {
+          "label": "Herinnering verstuurd",
+          "hint": "Handmatige en automatische herinneringen aan de klant."
+        },
+        "invoice_sent": {
+          "label": "Factuur verstuurd",
+          "hint": "Wanneer je een factuur vanuit de app mailt."
+        },
+        "draft_ready": {
+          "label": "Nieuw concept om te controleren",
+          "hint": "AI heeft een factuur opgesteld op basis van een spraakbericht of bericht en die wacht op goedkeuring."
+        },
+        "bank_import": {
+          "label": "Import bankafschrift",
+          "hint": "Hoeveel transacties er binnenkwamen en hoeveel we automatisch hebben gekoppeld."
+        },
+        "member_joined": {
+          "label": "Nieuw teamlid",
+          "hint": "Iemand heeft een uitnodiging voor je bedrijf geaccepteerd."
+        },
+        "quote_response": {
+          "label": "Reactie op offerte",
+          "hint": "Een klant heeft een offerte in het portaal geaccepteerd of afgewezen."
+        },
+        "buyer_details": {
+          "label": "Klant heeft gegevens ingevuld",
+          "hint": "De klant heeft de factuurgegevens ingevuld via de link die je stuurde."
+        },
+        "profile_message": {
+          "label": "Bericht via profiel",
+          "hint": "Een bezoeker heeft je geschreven via het contactformulier op je openbare profiel."
+        }
+      },
+      "browserTitle": "Browsermeldingen",
+      "browserHint": "Een systeempop-up, ook als de app op de achtergrond draait. Werkt zolang de app in een tabblad open is.",
+      "browserToggle": "Pop-ups tonen",
+      "testTitle": "Billanta – meldingen staan aan",
+      "testBody": "Zo laten we je weten wanneer facturen betaald zijn en andere dingen gebeuren.",
+      "permission": {
+        "granted": "Toegestaan in browser",
+        "denied": "De browser blokkeert meldingen – sta ze toe in de site-instellingen.",
+        "unsupported": "Deze browser ondersteunt geen meldingen.",
+        "ask": "Toestaan in browser"
+      }
+    },
+    "emails": {
+      "title": "E-mails aan klanten",
+      "description": "Hoe e-mails met facturen en herinneringen eruitzien en van wie ze komen.",
+      "loadError": "E-mailinstellingen konden niet worden geladen.",
+      "readOnly": "Alleen de eigenaar of een beheerder kan deze instellingen wijzigen.",
+      "senderTitle": "Afzender",
+      "senderHint": "E-mails gaan uit vanaf een Billanta-adres, maar de klant ziet jouw naam en antwoorden komen bij jou terecht.",
+      "fromName": "Naam afzender",
+      "replyTo": "Antwoordadres",
+      "replyToHint": "Waar antwoorden van klanten naartoe gaan. Leeg = het e-mailadres van het bedrijf.",
+      "replyToInvalid": "Vul een geldig e-mailadres in.",
+      "bcc": "Stuur mij een blinde kopie",
+      "bccHint": "Een kopie van elke verstuurde e-mail gaat naar {email}.",
+      "textsTitle": "Onderwerp en tekst",
+      "textsHint": "Leeg veld = de standaardtekst (in grijs). Variabelen tussen accolades worden bij het versturen vervangen door echte gegevens.",
+      "kinds": {
+        "invoice": "Factuur",
+        "reminder": "Herinnering"
+      },
+      "subject": "Onderwerp",
+      "message": "Inleidende tekst",
+      "signature": "Handtekening",
+      "signatureHint": "Wordt onder elke e-mail gezet – facturen en herinneringen.",
+      "signaturePlaceholder": "Met vriendelijke groet\n{company}",
+      "placeholders": "Variabelen",
+      "placeholdersHint": "Klik om de variabele bij de cursor in te voegen in het veld dat je als laatste bewerkte.",
+      "ph": {
+        "number": "nummer",
+        "amount": "bedrag",
+        "due_date": "vervaldatum",
+        "company": "je bedrijf",
+        "customer": "klant",
+        "link": "link",
+        "reminder_no": "herinnering nr.",
+        "vs": "betalingskenmerk"
+      },
+      "attachTitle": "Bijlagen en uiterlijk",
+      "attachPdf": "Factuur-pdf bijvoegen",
+      "attachPdfHint": "Zonder pdf opent de klant de factuur via de link in de e-mail.",
+      "attachIsdoc": "ISDOC bijvoegen",
+      "attachIsdocHint": "Machineleesbare factuur die boekhoudsoftware direct importeert.",
+      "accent": "Kleur van knop en kop",
+      "accentCustom": "Eigen kleur",
+      "save": "Opslaan",
+      "saved": "E-mailinstellingen opgeslagen",
+      "saveFailed": "Opslaan mislukt",
+      "preview": "Voorbeeld",
+      "previewFromAddress": "fakturace@billanta.cz",
+      "previewReplyTo": "Antwoorden aan",
+      "previewNote": "Voorbeeldgegevens. De echte e-mail kan er in een mailprogramma iets anders uitzien.",
+      "moreVars": "Meer variabelen →"
+    },
+    "variables": {
+      "title": "Variabelen",
+      "description": "Schrijf een tekst één keer en voeg hem in als '{variable}' in e-mails en notities op documenten.",
+      "loadError": "Variabelen konden niet worden geladen.",
+      "readOnly": "Alleen de eigenaar of een beheerder kan variabelen wijzigen.",
+      "ownTitle": "Je variabelen",
+      "ownHint": "Bijv. '{terms}' met een link. Wijzig de tekst hier en hij verandert overal.",
+      "empty": "Nog geen eigen variabelen. Voeg er een toe of kies hieronder een kant-en-klare.",
+      "label": "Naam",
+      "labelPlaceholder": "Naam (bijv. Voorwaarden)",
+      "key": "Sleutel van de variabele",
+      "value": "Waarde",
+      "valuePlaceholder": "Tekst om in te voegen…",
+      "copy": "'{variable}' kopiëren",
+      "remove": "Verwijderen",
+      "add": "Variabele toevoegen",
+      "save": "Opslaan",
+      "saved": "Variabelen opgeslagen",
+      "saveFailed": "Opslaan mislukt",
+      "errors": {
+        "format": "Alleen kleine letters, cijfers en _ (beginnend met een letter).",
+        "builtin": "Een ingebouwde variabele gebruikt deze naam al.",
+        "duplicate": "Er bestaat al een variabele met deze naam."
+      },
+      "presets": "Kant-en-klare variabelen",
+      "presetsHint": "Klik om toe te voegen met een voorbeeldtekst – pas hem daarna aan en sla op.",
+      "builtinTitle": "Ingebouwde variabelen",
+      "builtinHint": "Ingevuld vanuit je bedrijf, het document en de klant. Klik om te kopiëren.",
+      "groups": {
+        "document": "Document",
+        "customer": "Klant",
+        "company": "Je bedrijf",
+        "other": "Overig"
+      },
+      "builtin": {
+        "number": "documentnummer",
+        "amount": "te betalen bedrag",
+        "due_date": "vervaldatum",
+        "issue_date": "factuurdatum",
+        "vs": "variabel symbool (betalingskenmerk)",
+        "link": "link naar de online factuur",
+        "reminder_no": "nummer van de herinnering (alleen bij herinneringen)",
+        "customer": "naam van de klant",
+        "customer_ico": "ondernemingsnummer van de klant (IČO)",
+        "company": "je naam of bedrijfsnaam",
+        "ico": "ondernemingsnummer (IČO)",
+        "dic": "btw-nummer (DIČ)",
+        "company_email": "e-mailadres van het bedrijf",
+        "phone": "telefoon",
+        "web": "website",
+        "address": "vestigingsadres",
+        "bank_account": "bankrekening",
+        "iban": "IBAN",
+        "today": "datum van vandaag",
+        "year": "huidig jaar",
+        "base": "bedrag zonder btw",
+        "vat": "totaal btw",
+        "paid": "tot nu toe betaald",
+        "remaining": "nog te betalen",
+        "net": "geschat netto na belasting en premies (forfait 60 %)",
+        "tax": "Inkomstenbelasting op deze factuur (schatting, forfait 60 %)",
+        "social": "Sociale premies op deze factuur (schatting)",
+        "health": "Zorgpremie op deze factuur (schatting)",
+        "insurance": "Sociale premies + zorgpremie (schatting)",
+        "portal_link": "link naar het klantenportaal (als dat aanstaat)"
+      },
+      "whereUsed": "Werkt in onderwerpen, teksten en handtekeningen van e-mails en in de notities boven/onder de documentregels. Een onbekende variabele blijft staan zoals je hem typte.",
+      "numberHint": "Een variabele met een getal (bijv. 3,4) kun je ook gebruiken in formules van eigen factuurvelden."
+    },
+    "integrations": {
+      "title": "Integraties",
+      "description": "Koppel Billanta aan je agenda, chat of je eigen systeem.",
+      "loadError": "De integratie-instellingen konden niet worden geladen.",
+      "copied": "Gekopieerd naar het klembord",
+      "copy": "Kopiëren",
+      "saved": "Opgeslagen",
+      "saveFailed": "Opslaan mislukt",
+      "errors": {
+        "https_only": "De webhook-URL moet beginnen met https://.",
+        "private_host": "De webhook-URL moet naar een openbare server wijzen, niet naar een intern netwerk.",
+        "invalid_url": "De webhook-URL is niet geldig.",
+        "too_many": "Je kunt maximaal 10 webhooks hebben.",
+        "two_factor_required": "Zet eerst tweestapsverificatie aan via Instellingen → Beveiliging."
+      },
+      "feed": {
+        "title": "Agenda & RSS",
+        "hint": "Een geheim adres dat je toevoegt aan Google Agenda, Outlook of Apple Agenda (Agenda toevoegen → Via URL). Het ververst vanzelf en bevat de belasting- en premiedeadlines die je op je dashboard hebt aangezet, de vervaldata van je onbetaalde facturen en de rekeningen die je nog moet betalen.",
+        "off": "Agenda en RSS staan uit. Zet je ze aan, dan krijg je een privéadres dat alleen bekend is bij wie je het geeft.",
+        "enable": "Adres aanmaken",
+        "calendar": "Agenda (iCal)",
+        "calendarHint": "Belastingdeadlines, vervaldata van uitgegeven facturen en te betalen rekeningen, een jaar vooruit. Agenda-apps halen het ongeveer elke 6 uur op.",
+        "rss": "RSS van facturen",
+        "rssHint": "De laatste 50 uitgegeven documenten en hun status. Handig voor een RSS-lezer of automatiseringen zoals Zapier of Make.",
+        "openCalendar": "Openen in agenda-app",
+        "google": "Toevoegen aan Google Agenda",
+        "secretNote": "Iedereen met deze adressen ziet je deadlines en factuurlijst (zonder in te loggen). Deel ze niet openbaar. Is er een uitgelekt, maak dan een nieuw adres aan – het oude werkt meteen niet meer.",
+        "rotate": "Nieuw adres aanmaken",
+        "disable": "Uitzetten",
+        "created": "Het nieuwe adres staat klaar",
+        "disabled": "Agenda en RSS staan uit"
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "hint": "Billanta stuurt een bericht naar de URL als een gekozen gebeurtenis plaatsvindt (betaling, factuur bekeken, achterstallig…). Discord: Kanaalinstellingen → Integraties → Webhooks → URL kopiëren. Slack: de app Incoming Webhooks. Elke andere URL krijgt ondertekende JSON.",
+        "adminOnly": "Alleen een eigenaar of beheerder kan de webhooks van het bedrijf instellen.",
+        "empty": "Nog geen webhooks. Voeg bijvoorbeeld een Discord-kanaal toe dat betaalde facturen ontvangt.",
+        "name": "Naam",
+        "namePlaceholder": "Bijv. #facturen op Discord",
+        "events": "Gebeurtenissen",
+        "enabled": "Actief",
+        "secret": "Ondertekeningsgeheim",
+        "secretHint": "Elk verzoek bevat X-Billanta-Signature: sha256=(HMAC-SHA256 van de body met dit geheim) en X-Billanta-Event met de naam van de gebeurtenis.",
+        "test": "Testbericht versturen",
+        "testOk": "Testbericht verstuurd",
+        "testFailed": "Het testbericht kon niet worden afgeleverd ({status})",
+        "saveFirst": "Sla eerst je wijzigingen op",
+        "remove": "Verwijderen",
+        "add": "Webhook toevoegen",
+        "save": "Webhooks opslaan",
+        "kinds": {
+          "discord": "Discord",
+          "slack": "Slack",
+          "json": "JSON"
+        }
+      },
+      "api": {
+        "title": "REST API",
+        "hint": "Met de API maak en lees je facturen, contacten en meer vanuit je webshop of eigen systeem.",
+        "description": "Maak een API-sleutel aan om een webshop, CRM of je eigen scripts te koppelen. De documentatie beschrijft elk endpoint.",
+        "keys": "API-sleutels beheren",
+        "docs": "API-documentatie"
+      }
+    },
+    "paymentMethods": {
+      "title": "Betaalmethoden",
+      "description": "Naast overschrijving, contant, kaart en rembours kun je eigen betaalmethoden toevoegen – met instructies over hoe er betaald wordt.",
+      "loadError": "Betaalmethoden konden niet worden geladen.",
+      "readOnly": "Alleen de eigenaar of een beheerder kan betaalmethoden wijzigen.",
+      "ownTitle": "Eigen betaalmethoden",
+      "ownHint": "Ze verschijnen in het factuurformulier onder de ingebouwde methoden. Hun naam en instructies worden op het document afgedrukt.",
+      "builtinNote": "Overschrijving, contant, kaart, rembours en “overig” zijn altijd beschikbaar.",
+      "empty": "Nog geen eigen betaalmethoden. Voeg er een toe of kies hieronder een kant-en-klare.",
+      "label": "Naam",
+      "labelPlaceholder": "Naam (bijv. PayPal)",
+      "base": "Gedraagt zich als",
+      "baseHint": "Gebruikt voor rapporten, boekhoudexports en de QR-betaling. Bij “Overschrijving” blijven het rekeningnummer en de QR-code op het document staan.",
+      "instructions": "Betaalinstructies",
+      "instructionsHint": "Afgedrukt op het document onder de regels. Je kunt variabelen gebruiken zoals '{amount}' of '{number}'. Op de factuur kun je ze nog aanpassen.",
+      "instructionsPlaceholder": "Bijv. Betaal via paypal.me/bedrijf en vermeld het factuurnummer in de omschrijving.",
+      "add": "Methode toevoegen",
+      "save": "Opslaan",
+      "saved": "Betaalmethoden opgeslagen",
+      "saveFailed": "Opslaan mislukt",
+      "up": "Omhoog",
+      "down": "Omlaag",
+      "remove": "Verwijderen",
+      "presetsTitle": "Kant-en-klaar",
+      "presetsHint": "Klik om toe te voegen met vooraf ingevulde instructies die je daarna kunt aanpassen.",
+      "presets": {
+        "paypal": {
+          "label": "PayPal",
+          "instructions": "Betaal via PayPal aan …, met '{number}' in de omschrijving."
+        },
+        "offset": {
+          "label": "Verrekening",
+          "instructions": "Voldaan door onderlinge verrekening van vorderingen."
+        },
+        "paymentLink": {
+          "label": "Betaallink",
+          "instructions": "Betaal met je kaart via de link in de e-mail of op '{link}'."
+        },
+        "crypto": {
+          "label": "Cryptovaluta",
+          "instructions": "Stuur '{amount}' naar de wallet …"
+        },
+        "foreignTransfer": {
+          "label": "Overschrijving in EUR (SEPA)",
+          "instructions": "Betaling in EUR via SEPA-overschrijving, kosten voor de betaler."
+        },
+        "advance": {
+          "label": "Betaald via voorschot",
+          "instructions": "Betaald via de voorschotfactuur – niet betalen."
+        }
+      },
+      "howTitle": "Zo werkt het",
+      "how": {
+        "form": "In het factuurformulier vind je ze in het menu Betaalmethode, onder de ingebouwde methoden.",
+        "pdf": "De pdf toont jouw naam in plaats van de ingebouwde, plus de betaalinstructies onder de regels.",
+        "qr": "De QR-betaling en het rekeningnummer worden alleen afgedrukt bij methoden die zich gedragen als overschrijving.",
+        "snapshot": "De factuur bewaart een kopie van de naam en instructies. Als je ze hier later wijzigt, veranderen uitgegeven documenten niet."
+      },
+      "card": {
+        "title": "Kaartbetalingen via de factuurlink",
+        "description": "Klanten betalen met kaart, Apple Pay of Google Pay direct via de factuurlink. Het geld gaat rechtstreeks naar je Stripe-account.",
+        "hint": "Maak in Stripe een beperkte sleutel aan (Developers → API keys → Create restricted key) met schrijfrechten op Checkout Sessions en leesrechten op Payment Intents, Charges en Balance. Billanta bewaart hem versleuteld en toont hem nooit meer. Na betaling wordt de factuur als betaald gemarkeerd en worden de Stripe-kosten bij de betaling geboekt.",
+        "keyLabel": "Geheime of beperkte Stripe-sleutel",
+        "keyHelp": "Begint met rk_live_ of sk_live_. Gebruik een rk_test_- of sk_test_-sleutel om het te proberen met testkaarten.",
+        "connect": "Stripe koppelen",
+        "connected": "Stripe is gekoppeld.",
+        "disconnected": "Stripe is ontkoppeld en de sleutel verwijderd.",
+        "disconnect": "Ontkoppelen",
+        "stripeAccount": "Stripe-account",
+        "mode": {
+          "live": "Live-modus",
+          "test": "Testmodus"
+        },
+        "reconnect": "De sleutel kan niet worden gelezen, koppel Stripe opnieuw.",
+        "enabled": "Knop \"Betalen met kaart\" tonen op facturen",
+        "enabledOn": "Kaartbetalingen staan aan.",
+        "enabledOff": "Kaartbetalingen staan uit.",
+        "notConnected": "Kaartbetalingen zijn niet ingesteld.",
+        "errors": {
+          "invalid_key_format": "Dat lijkt geen geheime Stripe-sleutel (sk_… of rk_…). Een publieke pk_…-sleutel is niet genoeg.",
+          "invalid_key": "Stripe heeft de sleutel geweigerd. Controleer of hij geldig is en de nodige rechten heeft.",
+          "not_connected": "Koppel eerst Stripe.",
+          "generic": "Opslaan lukte niet. Probeer het opnieuw.",
+          "plan_required": "Deze functie hoort bij een hoger abonnement. Kies er een onder Abonnement en facturatie."
+        }
+      }
+    },
+    "publicProfile": {
+      "title": "Openbaar profiel",
+      "description": "Een eenvoudige openbare pagina voor je bedrijf: wat je doet, voor hoeveel en hoe ze je bereiken. Zet de link in je e-mailhandtekening, op facturen of op sociale media.",
+      "loadError": "Het openbare profiel kon niet worden geladen.",
+      "readOnly": "Alleen de eigenaar of een beheerder kan het openbare profiel wijzigen.",
+      "enabled": "Profiel publiceren",
+      "enabledHint": "Een niet-gepubliceerd profiel is onzichtbaar en het adres geeft “pagina niet gevonden”. Je instellingen blijven bewaard.",
+      "copy": "Link kopiëren",
+      "open": "Profiel openen",
+      "addressTitle": "Profieladres",
+      "slug": {
+        "label": "Adres",
+        "hint": "Kleine letters, cijfers en koppeltekens, 3–40 tekens. Als je het wijzigt, werkt het oude adres niet meer.",
+        "hintDomain": "Het profiel draait op een eigen subdomein jouw-adres.{domain}. Kleine letters, cijfers en koppeltekens, 3–40 tekens.",
+        "checking": "Controleren…",
+        "available": "Het adres is vrij",
+        "invalid": "Alleen kleine letters, cijfers en koppeltekens (3–40 tekens, niet aan het begin of einde).",
+        "reserved": "Dit adres kan niet worden gebruikt.",
+        "taken": "Een ander bedrijf gebruikt dit adres al."
+      },
+      "contentTitle": "Inhoud",
+      "tagline": "Slogan",
+      "taglineHint": "Eén zin onder de bedrijfsnaam. Wordt ook getoond in zoekresultaten en linkvoorbeelden.",
+      "taglinePlaceholder": "Bijv. Websites en webshops voor kleine bedrijven",
+      "about": "Over ons",
+      "aboutHint": "Een langere tekst over het bedrijf. Regeleinden blijven behouden.",
+      "aboutPlaceholder": "Wat je doet, voor wie je werkt, waar je goed in bent…",
+      "services": "Diensten en prijzen",
+      "servicesHint": "Maximaal 12 items. De prijs is vrije tekst, dus “vanaf € 50” of “op aanvraag” kan ook.",
+      "servicesEmpty": "Nog geen diensten.",
+      "serviceTitle": "Naam van de dienst",
+      "serviceDescription": "Omschrijving (optioneel)",
+      "servicePrice": "Prijs (bijv. vanaf € 49)",
+      "addService": "Dienst toevoegen",
+      "up": "Omhoog",
+      "down": "Omlaag",
+      "remove": "Verwijderen",
+      "showTitle": "Welke bedrijfsgegevens tonen",
+      "showHint": "De gegevens komen uit Instellingen → Bedrijf, zodat je ze op één plek bijhoudt.",
+      "show": {
+        "email": "E-mail",
+        "phone": "Telefoon",
+        "website": "Website",
+        "address": "Vestigingsadres",
+        "ico": "Ondernemingsnummer, btw-nummer en registerinschrijving",
+        "logo": "Logo"
+      },
+      "cta": "Knop “Aanvraag sturen”",
+      "ctaHint": "Opent voor de bezoeker een e-mail met een vooraf ingevuld onderwerp. Er wordt niets opgeslagen, geen formulier nodig.",
+      "missing": "Ontbreekt in de bedrijfsgegevens: {fields}.",
+      "missingLink": "Invullen",
+      "neverShown": "Bankgegevens, abonnementsgegevens en documenten worden nooit op het profiel getoond.",
+      "save": "Opslaan",
+      "publish": "Opslaan en publiceren",
+      "saved": "Profiel opgeslagen",
+      "savedLive": "Profiel staat online",
+      "saveFailed": "Opslaan mislukt",
+      "serviceUnitPrice": "Eenheidsprijs",
+      "serviceUnitPriceHint": "Een bedrag zonder btw dat op de bestelling komt. Zonder prijs vul je die zelf in.",
+      "serviceUnit": "Eenheid (st., uur)",
+      "copyOrderLink": "Bestellink kopiëren",
+      "copyOrderLinkSaveFirst": "De link is beschikbaar zodra het profiel is opgeslagen en gepubliceerd.",
+      "orders": {
+        "title": "Bestellingen en berichten",
+        "enabled": "Bestellingen via het profiel ontvangen",
+        "enabledHint": "Elke dienst krijgt een knop Bestellen. Bestellingen worden opgeslagen als conceptfacturen die je zelf nakijkt; er wordt niets automatisch uitgegeven of verstuurd.",
+        "customItems": "Eigen items toestaan",
+        "customItemsHint": "Klanten kunnen toevoegen wat ze nog meer willen. Deze items hebben geen prijs, die vul je zelf in.",
+        "prepay": "Vooruitbetaling",
+        "prepayHint": "Na het bestellen ziet de klant het rekeningnummer, het bedrag, het variabel symbool en een QR-code. Alleen voor diensten met een eenheidsprijs. De factuur geef je nog steeds zelf uit.",
+        "prepayNoAccount": "Voeg de bankrekening van het bedrijf toe om om vooruitbetaling te vragen.",
+        "contactForm": "Contactformulier",
+        "contactFormHint": "Bezoekers kunnen je direct vanaf het profiel een bericht sturen. Berichten komen binnen bij je meldingen in de app; we sturen niets naar de bezoeker.",
+        "linksHint": "Kopieer met het kettingpictogram ernaast een link om een specifieke dienst te bestellen. Handig voor e-mails of sociale media."
+      },
+      "directory": {
+        "enabled": "Tonen in de bedrijvengids",
+        "enabledHint": "Je profiel verschijnt in de bedrijvengids per vakgebied en plaats, en op de pagina van je plaats.",
+        "noTown": "Voor een vermelding in de gids is de plaats uit je bedrijfsadres nodig. Vul het adres in bij je bedrijfsgegevens.",
+        "trade": "Vakgebied",
+        "pickTrade": "Kies een vakgebied",
+        "town": "Plaats",
+        "pickTown": "Kies een plaats",
+        "townWithDistrict": "{name} (district {district})",
+        "needsProfile": "De gids toont alleen gepubliceerde profielen. Zet hierboven ook het publiceren van het profiel aan.",
+        "consentTitle": "Wat je publiceert als je dit aanzet",
+        "consentShown": "De gids toont je bedrijfsnaam, slogan, logo, vakgebied en plaats, met een link naar dit profiel.",
+        "consentShownNoCity": "De gids toont je bedrijfsnaam, slogan, logo, vakgebied en plaats, met een link naar dit profiel (ook als je het adres op het profiel verbergt).",
+        "consentNever": "Je ondernemingsnummer, e-mailadres en telefoonnummer worden nooit in de gids getoond.",
+        "consentSearch": "Pagina’s van de gids kunnen worden geïndexeerd door zoekmachines (Google en andere).",
+        "consentWithdraw": "Je kunt de vermelding op elk moment uitzetten. Ze verdwijnt binnen enkele minuten uit de gids en binnen een uur van de plaatspagina’s; zoekmachines kunnen er langer over doen.",
+        "consentBasis": "De vermelding is vrijwillig en gebaseerd op je toestemming (art. 6, lid 1, onder a AVG/GDPR), die je geeft door dit aan te zetten en intrekt door het uit te zetten.",
+        "trades": {
+          "tradesman": "Vaklui",
+          "construction": "Bouw",
+          "it": "IT en software",
+          "design": "Design en grafisch werk",
+          "marketing": "Marketing en reclame",
+          "photo": "Foto en video",
+          "consulting": "Advies",
+          "education": "Onderwijs en cursussen",
+          "beauty": "Schoonheid en kapsalon",
+          "health": "Gezondheid en therapie",
+          "transport": "Transport en verhuizingen",
+          "gastro": "Horeca en catering",
+          "eshop": "Webshops en detailhandel",
+          "cleaning": "Schoonmaak en onderhoud",
+          "other": "Overige diensten"
+        }
+      }
+    },
+    "import": {
+      "title": "Overstappen vanuit een ander systeem",
+      "description": "Neem contacten en uitgegeven facturen mee uit je oude systeem. Je ziet eerst een voorbeeld; er wordt niets opgeslagen tot je bevestigt.",
+      "readOnly": "Alleen de eigenaar of een beheerder van het bedrijf kan een import uitvoeren.",
+      "template": "CSV-sjabloon downloaden",
+      "step1": {
+        "title": "Exporteren uit het oude systeem",
+        "hint": "Een gewoon CSV-bestand volstaat (gescheiden door puntkomma, komma of tab, UTF-8 of Windows-1250). Kolomnamen worden automatisch herkend: Tsjechisch, Slowaaks en Engels."
+      },
+      "sources": {
+        "fakturoid": {
+          "name": "Fakturoid",
+          "steps": [
+            "De snelste weg is een directe koppeling: open in Fakturoid de instellingen van je gebruikersaccount en kopieer de Client ID en het Client secret uit het onderdeel API v3.",
+            "Vul ze hieronder in bij stap 3. We laden facturen, proformafacturen, correcties, je hele adresboek, wisselkoersen, betalingen en de originele pdf's. De stap met contacten kun je dan overslaan.",
+            "Zonder koppeling exporteer je zowel de factuurlijst als de contacten naar CSV en upload je ze hieronder, eerst de contacten."
+          ]
+        },
+        "idoklad": {
+          "name": "iDoklad",
+          "steps": [
+            "Selecteer in de lijst met uitgegeven facturen de facturen en exporteer ze naar Excel of CSV.",
+            "Heb je een Excel-bestand gekregen, sla het dan op als CSV (UTF-8).",
+            "Exporteer de contacten uit het adresboek op dezelfde manier."
+          ]
+        },
+        "bitfaktura": {
+          "name": "bitfaktura",
+          "steps": [
+            "De snelste weg is een directe koppeling: open in BitFaktura Instellingen → Accountinstellingen → Integratie en kopieer de API-autorisatiecode.",
+            "Vul hieronder in stap 3 de accountnaam in (bijv. company uit company.bitfaktura.cz) en de code. We laden de facturen en je hele contactenlijst (ook contacten die je nog niet hebt gefactureerd), wisselkoersen en betaalmethoden. De contacten-CSV in stap 2 kun je dan overslaan.",
+            "Zonder code kun je de facturen naar CSV exporteren en het bestand hieronder uploaden."
+          ]
+        },
+        "faktorio": {
+          "name": "faktorio",
+          "steps": [
+            "Exporteer je uitgegeven facturen en contacten naar CSV.",
+            "Upload eerst de contacten, daarna de facturen."
+          ]
+        },
+        "invoiceNinja": {
+          "name": "Invoice Ninja",
+          "steps": [
+            "Open in Settings het onderdeel Import | Export en exporteer Invoices en Clients naar CSV.",
+            "Upload eerst de klanten als contacten, daarna de facturen."
+          ]
+        },
+        "excel": {
+          "name": "Excel / overig",
+          "steps": [
+            "Download hieronder het sjabloon, of gebruik je eigen sheet met factuurnummer, klant, factuurdatum en bedrag.",
+            "Eén rij = één factuur. Meerdere rijen met hetzelfde nummer worden één factuur met meerdere regels (kolommen Item, Quantity, Unit price).",
+            "Sla de sheet op als CSV en upload hem hieronder."
+          ]
+        },
+        "superfaktura": {
+          "name": "SuperFaktura",
+          "steps": [
+            "Filter in het factuuroverzicht de periode die je wilt overzetten.",
+            "Download de lijst als Excel (.xlsx) of CSV.",
+            "Exporteer de klantenlijst op dezelfde manier en upload die eerst."
+          ]
+        },
+        "vyfakturuj": {
+          "name": "Vyfakturuj",
+          "steps": [
+            "Filter in de documentenlijst de uitgegeven facturen voor de periode die je wilt overzetten.",
+            "Download ze als CSV of Excel. Biedt de export factuurregels aan, neem ze dan mee; dan zetten we elke factuurregel over.",
+            "Exporteer de contacten apart en upload ze eerst."
+          ]
+        },
+        "kros": {
+          "name": "KROS Fakturácia",
+          "steps": [
+            "Selecteer in de lijst met uitgegeven facturen de documenten die je wilt overzetten.",
+            "Exporteer de lijst naar Excel (.xlsx) of CSV.",
+            "Exporteer je klanten uit de partnerlijst en upload ze eerst."
+          ]
+        },
+        "billdu": {
+          "name": "Billdu",
+          "steps": [
+            "Open in de webapp van Billdu de factuurlijst en zoek de export van documenten.",
+            "Kies CSV of Excel en de periode die je wilt overzetten.",
+            "Exporteer de klanten apart en upload ze eerst."
+          ]
+        }
+      },
+      "step2": {
+        "title": "Contacten",
+        "hint": "Contacten worden gekoppeld op ondernemingsnummer (IČO), anders op naam. Bestaande contacten worden aangevuld, er wordt niets verwijderd. Je kunt deze stap overslaan: de factuurimport maakt ontbrekende klanten zelf aan.",
+        "lead": "Optioneel maar aanbevolen: zo neem je ook contacten mee die je nog niet hebt gefactureerd.",
+        "upload": "Contacten uploaden (CSV)",
+        "done": "Klaar: {created} nieuw, {updated} bijgewerkt",
+        "skipped": "{count, plural, one {# rij kon niet worden gebruikt} other {# rijen konden niet worden gebruikt}}."
+      },
+      "step3": {
+        "title": "Facturen",
+        "hint": "Facturen worden opgeslagen zoals ze zijn: origineel nummer, datums en betaalstatus. Er wordt niets naar iemand verstuurd en geïmporteerde facturen krijgen geen herinneringen. Nummers die je hier al hebt, worden overgeslagen, dus je kunt de import gerust herhalen. Volgen de nummers ons formaat (bijv. 2025-0042), dan gaat de nummering verder na het hoogste nummer.",
+        "lead": "Je ziet eerst een voorbeeld. Er wordt niets opgeslagen tot je bevestigt.",
+        "upload": "Factuurbestand kiezen",
+        "nothing": "Dit bestand bevat niets nieuws om te importeren.",
+        "extraOnly": "Geen nieuwe documenten. We voegen alleen dit toe:",
+        "summary": "{count, plural, one {# factuur klaar} other {# facturen klaar}}",
+        "range": "Periode: {from} – {to}",
+        "statuses": "Betaald: {paid} · onbetaald: {issued} · geannuleerd: {cancelled}",
+        "totals": "Totaal: {totals}",
+        "contacts": "Contacten – nieuw: {created}, bestaand: {matched}",
+        "source": "We hebben {invoices, plural, one {# document} other {# documenten}} en {contacts, plural, one {# contact} other {# contacten}} uit BitFaktura geladen.",
+        "sourceAll": "Alles komt mee, er is niets overgeslagen.",
+        "sourceSkipped": "{count, plural, one {# document wordt overgeslagen} other {# documenten worden overgeslagen}}, de reden staat telkens hieronder.",
+        "business": "We vullen de lege bedrijfsgegevens in: {fields}",
+        "businessDone": "We hebben je bedrijfsgegevens ingevuld: {fields}.",
+        "businessCheck": "Controleer ze",
+        "businessFields": {
+          "ico": "ondernemingsnummer (IČO)",
+          "dic": "btw-nummer (DIČ)",
+          "registryNote": "registervermelding",
+          "address": "vestigingsadres"
+        },
+        "more": "…en nog {count}.",
+        "confirm": "{count, plural, one {# factuur importeren} other {# facturen importeren}}",
+        "confirmExtra": "Toevoegen",
+        "done": "{count, plural, one {# factuur geïmporteerd} other {# facturen geïmporteerd}}, nieuwe contacten: {contacts}.",
+        "open": "Facturen tonen",
+        "openContacts": "Contacten tonen",
+        "columns": {
+          "number": "Nummer",
+          "customer": "Klant",
+          "date": "Uitgegeven",
+          "total": "Totaal",
+          "status": "Status"
+        },
+        "api": {
+          "lead": "Laad rechtstreeks uit BitFaktura via de API: facturen, contacten en de originele pdf's. De code wordt alleen voor deze import gebruikt en we bewaren hem niet. Maak daarna gerust een nieuwe aan in BitFaktura.",
+          "account": "BitFaktura-account",
+          "accountPlaceholder": "company.bitfaktura.cz",
+          "token": "API-autorisatiecode",
+          "load": "Voorbeeld laden",
+          "privacy": "We lezen alleen uit BitFaktura en wijzigen daar niets."
+        },
+        "pdfs": "Originele pdf's uit BitFaktura: {archived} opgeslagen als archiefbijlagen (niet verstuurd naar klanten).",
+        "pdfsMissing": "{missing} konden niet worden gedownload.",
+        "sellers": {
+          "title": "De facturen komen van {count, plural, one {# leverancier} other {# verschillende leveranciers}}",
+          "lead": "Meer dan één bedrijf gebruikt dit BitFaktura-account. Kies wiens facturen hier horen. We maken hiervan geen nieuw bedrijf aan.",
+          "choose": "Facturen importeren van",
+          "all": "Alle leveranciers",
+          "row": "{name} (ondernemingsnummer {ico}): {count, plural, one {# factuur} other {# facturen}}"
+        },
+        "sellerUpdate": {
+          "title": "De nieuwste factuur ({number}, {date}) toont andere leveranciersgegevens dan je bedrijfsgegevens.",
+          "fields": {
+            "name": "Naam",
+            "dic": "Btw-nummer (DIČ)",
+            "address": "Vestigingsadres"
+          },
+          "empty": "leeg",
+          "apply": "Gegevens van de nieuwste factuur gebruiken",
+          "applied": "Je bedrijfsgegevens zijn bijgewerkt.",
+          "failed": "De gegevens konden niet worden opgeslagen."
+        },
+        "fakturoid": {
+          "lead": "Laad rechtstreeks uit Fakturoid via de API: facturen, contacten en de originele pdf's. De inloggegevens worden alleen voor deze import gebruikt en we bewaren ze niet. Maak daarna gerust een nieuw Client secret aan in Fakturoid.",
+          "clientId": "Client ID",
+          "clientSecret": "Client secret",
+          "account": "Account (optioneel)",
+          "accountPlaceholder": "mijnbedrijf",
+          "accountHint": "Alleen nodig als je meer dan één Fakturoid-account hebt. Het adres uit je browser plakken werkt ook.",
+          "privacy": "We lezen alleen uit Fakturoid en wijzigen daar niets.",
+          "source": "We hebben {invoices, plural, one {# document} other {# documenten}} en {contacts, plural, one {# contact} other {# contacten}} uit Fakturoid geladen.",
+          "pdfs": "Originele pdf's uit Fakturoid: {archived} opgeslagen als archiefbijlagen (niet verstuurd naar klanten).",
+          "sellersLead": "De facturen in Fakturoid vermelden meer dan één leverancier. Kies wiens facturen hier horen. We maken hiervan geen nieuw bedrijf aan."
+        }
+      },
+      "status": {
+        "issued": "Onbetaald",
+        "paid": "Betaald",
+        "cancelled": "Geannuleerd"
+      },
+      "skipped": {
+        "title": "{count, plural, one {# rij overgeslagen} other {# rijen overgeslagen}}",
+        "row": "Rij {line} ({number}):",
+        "reasons": {
+          "missing_number": "factuurnummer ontbreekt.",
+          "missing_customer": "klant ontbreekt.",
+          "invalid_date": "factuurdatum ontbreekt of is onleesbaar.",
+          "invalid_amount": "bedrag is onleesbaar.",
+          "duplicate_in_file": "het nummer staat al eerder in het bestand.",
+          "already_exists": "je hebt al een factuur met dit nummer.",
+          "unsupported_kind": "dit documenttype kunnen we niet importeren.",
+          "unsupported_discount": "de factuur heeft een regelkorting, die we nog niet importeren.",
+          "other_seller": "uitgegeven door een andere leverancier (ondernemingsnummer) dan degene die je koos."
+        }
+      },
+      "errors": {
+        "unknown_columns": "Dit lijkt geen factuurlijst: er is geen kolom met factuurnummer, klant of bedrag.",
+        "too_many_rows": "Het bestand is te groot; splits het in kleinere delen (max. 5.000 facturen).",
+        "no_file": "Kies een CSV-bestand.",
+        "forbidden": "Alleen de eigenaar of een beheerder kan een import uitvoeren.",
+        "failed": "De import is mislukt, probeer het opnieuw.",
+        "bitfaktura_account": "We konden dat BitFaktura-account niet vinden. Vul het in als company.bitfaktura.cz.",
+        "bitfaktura_unauthorized": "BitFaktura accepteerde de code niet. Controleer de API-autorisatiecode onder Instellingen → Integratie.",
+        "bitfaktura_unreachable": "BitFaktura reageert nu niet, probeer het zo opnieuw.",
+        "fakturoid_unauthorized": "Fakturoid accepteerde de inloggegevens niet. Controleer de Client ID en het Client secret in de instellingen van je gebruikersaccount.",
+        "fakturoid_account": "We zien dat Fakturoid-account niet. Vul het in zoals het in app.fakturoid.cz/mijnbedrijf staat, of laat het veld leeg.",
+        "fakturoid_blocked": "Het Fakturoid-account is geblokkeerd of het abonnement is niet betaald, dus het geeft geen gegevens vrij via de API.",
+        "fakturoid_unreachable": "Fakturoid reageert nu niet, probeer het zo opnieuw.",
+        "xls_unsupported": "Het oude .xls-formaat kunnen we niet lezen. Open het bestand in Excel en sla het op als .xlsx of CSV.",
+        "xlsx_unreadable": "We konden dit .xlsx-bestand niet lezen. Sla het opnieuw op, of als CSV.",
+        "invalid_mapping": "De kolomtoewijzing is ongeldig. Upload het bestand opnieuw.",
+        "pattern_clash": "De geïmporteerde reeks kan niet worden overgenomen omdat die overlapt met een andere. Pas hem aan in Instellingen → Nummering."
+      },
+      "mapping": {
+        "detected": "Dit bestand lijkt een export uit {source}; we hebben de kolommen zelf gekoppeld.",
+        "notDetected": "We konden niet bepalen waar het bestand vandaan komt, dus we hebben de kolommen op naam gekoppeld.",
+        "title": "Hoe we de kolommen lezen",
+        "requiredTitle": "Kolommen koppelen",
+        "requiredLead": "We konden niet vinden in welke kolom de {fields} staat. Kies hem hieronder en controleer het bestand opnieuw.",
+        "required": {
+          "number": "factuurnummer",
+          "customer": "klant",
+          "amount": "bedrag (totaal, netto of eenheidsprijs)"
+        },
+        "noHeader": "Kolom {n}",
+        "empty": "(leeg)",
+        "selectLabel": "Gegevens in kolom {column}",
+        "ignore": "Niet importeren",
+        "apply": "Opnieuw controleren",
+        "fields": {
+          "number": "Factuurnummer",
+          "customer": "Klant",
+          "issueDate": "Factuurdatum",
+          "dueDate": "Vervaldatum",
+          "taxableSupplyDate": "Datum belastbaar feit",
+          "totalNet": "Totaal excl. btw",
+          "totalVat": "Totaal btw",
+          "totalGross": "Totaal incl. btw",
+          "vatRate": "Btw-tarief",
+          "currency": "Valuta",
+          "status": "Status",
+          "paidDate": "Betaald op",
+          "paidAmount": "Betaald bedrag",
+          "variableSymbol": "Variabel symbool",
+          "documentType": "Documenttype",
+          "ico": "Ondernemingsnummer (IČO)",
+          "dic": "Fiscaal nummer (DIČ)",
+          "vatId": "Btw-nummer (IČ DPH)",
+          "email": "E-mail",
+          "phone": "Telefoon",
+          "street": "Straat",
+          "city": "Plaats",
+          "postalCode": "Postcode",
+          "country": "Land",
+          "contactPerson": "Contactpersoon",
+          "description": "Omschrijving",
+          "quantity": "Aantal",
+          "unit": "Eenheid",
+          "unitPrice": "Eenheidsprijs",
+          "lineVatRate": "Btw-tarief regel",
+          "note": "Opmerking",
+          "internalNote": "Interne notitie",
+          "orderNumber": "Bestelnummer",
+          "constantSymbol": "Constant symbool",
+          "paymentMethod": "Betaalmethode",
+          "issuePlace": "Plaats van uitgifte",
+          "issuedBy": "Uitgegeven door",
+          "reverseCharge": "Btw verlegd",
+          "reverseChargeCode": "Code btw verlegd",
+          "exchangeRate": "Wisselkoers",
+          "exchangeRateCnb": "ČNB-koers",
+          "exchangeRateKind": "Soort koers",
+          "exchangeRateDate": "Koersdatum"
+        }
+      },
+      "numbering": {
+        "title": "Nummerreeks",
+        "row": "{type}: nummers zoals {pattern}, laatste {current}, volgende wordt {next}.",
+        "types": {
+          "invoice": "Facturen",
+          "proforma": "Proformafacturen",
+          "credit_note": "Creditnota's",
+          "quote": "Offertes"
+        },
+        "existing": "{count, plural, one {Je hebt al # eigen document in een andere reeks.} other {Je hebt al # eigen documenten in een andere reeks.}}",
+        "adopt": "Verdergaan met de geïmporteerde nummerreeks (wijzigt je nummeringsinstellingen)",
+        "adopted": "De nummering gaat nu verder met de geïmporteerde reeks.",
+        "check": "Nummering controleren"
+      }
+    },
+    "companies": {
+      "title": "Mijn bedrijven",
+      "description": "Elk bedrijf waartoe je toegang hebt. Elk heeft zijn eigen facturen, contacten, instellingen en abonnement.",
+      "loadError": "Je bedrijven konden niet worden geladen.",
+      "active": "Actief",
+      "switch": "Wisselen",
+      "roles": {
+        "owner": "Eigenaar",
+        "admin": "Beheerder",
+        "accountant": "Boekhouder",
+        "viewer": "Alleen lezen"
+      },
+      "add": {
+        "title": "Nog een bedrijf toevoegen",
+        "description": "Richt een ander bedrijf of eenmanszaak in. Je wordt de eigenaar en schakelt er meteen naar over.",
+        "hint": "Elk bedrijf heeft zijn eigen gegevens, nummerreeksen, team en abonnement. Wissel ertussen in het menu onder je avatar. Als eigenaar kun je tot {max} bedrijven hebben; anderen kunnen je voor meer uitnodigen.",
+        "nameLabel": "Je naam of bedrijfsnaam",
+        "namePlaceholder": "Jan Jansen of Acme bv",
+        "tos": "Ik ben minstens 18 jaar en ga voor dit bedrijf akkoord met de <tos>gebruiksvoorwaarden</tos> en de <dpa>verwerkersovereenkomst</dpa>.",
+        "submit": "Bedrijf aanmaken",
+        "creating": "Bezig met aanmaken…",
+        "nameHint": "Voor een eenmanszaak volstaat je eigen naam."
+      },
+      "errors": {
+        "generic": "Er ging iets mis. Probeer het opnieuw.",
+        "not_member": "Je hebt geen toegang meer tot dit bedrijf.",
+        "name_required": "Vul je naam of bedrijfsnaam in.",
+        "name_too_long": "De naam is te lang.",
+        "tos_required": "Ga akkoord met de voorwaarden.",
+        "tenant_limit": "Je hebt de limiet van {max} eigen bedrijven bereikt."
+      }
+    },
     "numbering": {
       "title": "Documentnummering",
       "description": "Kies hoe je documentnummers eruitzien – bijvoorbeeld net als in de tool waar je vandaan komt.",
@@ -1477,6 +3319,91 @@
         "not_enabled": "Tweestapsverificatie is niet ingeschakeld.",
         "not_signed_in": "Je sessie is verlopen. Log opnieuw in."
       }
+    },
+    "emailNotifications": {
+      "title": "E-mailmeldingen",
+      "description": "Welke e-mails je krijgt, het wekelijkse overzicht en stille uren 's nachts.",
+      "loadError": "Je e-mailinstellingen konden niet worden geladen.",
+      "saved": "Opgeslagen",
+      "saveFailed": "Opslaan mislukt",
+      "otherChannels": "Meldingen via de bel en de browser vind je onder <link>Meldingen</link>.",
+      "locked": "Altijd",
+      "lockedHint": "Deze e-mail kun je niet uitzetten – je account of je klanten hebben hem nodig.",
+      "groups": {
+        "activity": {
+          "title": "Bedrijfsactiviteit",
+          "hint": "Betalingen, geopende facturen, concepten om na te kijken en meer. Komen er meerdere tegelijk binnen, dan sturen we ze in één e-mail."
+        },
+        "digest": {
+          "title": "Wekelijks overzicht",
+          "hint": "Maandag om 8:00: onbetaalde facturen, betalingen van vorige week en komende belastingdeadlines. Standaard uit."
+        },
+        "account": {
+          "title": "Account en beveiliging",
+          "hint": "Beveiligingsmeldingen, teamuitnodigingen, wachtwoordherstel en e-mailwijzigingen. Altijd verstuurd."
+        },
+        "customers": {
+          "title": "E-mails aan je klanten",
+          "hint": "Facturen, herinneringen en verzoeken om gegevens die je naar klanten stuurt. Pas de tekst aan in Instellingen → E-mails."
+        }
+      },
+      "types": {
+        "weekly_digest": {
+          "label": "Wekelijks overzicht per e-mail",
+          "hint": "Elke maandagochtend een samenvatting. Wordt overgeslagen als er niets te melden is."
+        },
+        "security_alert": {
+          "label": "Beveiligingsmeldingen",
+          "hint": "Een wijziging van de bankrekening van het bedrijf. Elk lid krijgt hem, zodat niemand ongemerkt een ander rekeningnummer kan invullen."
+        },
+        "billing_notice": {
+          "label": "Abonnement en proefperiode",
+          "hint": "Proefperiode loopt af, abonnement betaald. Verstuurd naar de eigenaren en beheerders van het bedrijf."
+        },
+        "team_invitation": {
+          "label": "Teamuitnodigingen",
+          "hint": "Wanneer iemand je uitnodigt voor zijn bedrijf."
+        },
+        "password_reset": {
+          "label": "Wachtwoordherstel",
+          "hint": "Een link om een nieuw wachtwoord in te stellen, wanneer je erom vraagt."
+        },
+        "email_change": {
+          "label": "E-mailwijziging",
+          "hint": "Bevestigt een nieuw e-mailadres."
+        },
+        "invoice": {
+          "label": "Factuur aan een klant",
+          "hint": "Een factuur met pdf die je naar een klant stuurt."
+        },
+        "reminder": {
+          "label": "Herinnering aan een klant",
+          "hint": "Handmatige en automatische herinneringen voor onbetaalde facturen."
+        },
+        "buyer_details_request": {
+          "label": "Verzoek om gegevens",
+          "hint": "Een link waar de klant zelf zijn factuurgegevens invult."
+        }
+      },
+      "quiet": {
+        "title": "Stille uren",
+        "hint": "Meldingen die 's nachts binnenkomen, wachten tot de ochtend en komen in één e-mail. Beveiligingsmails en e-mails aan klanten gaan meteen weg.",
+        "toggle": "'s Nachts niets versturen",
+        "from": "Van",
+        "to": "Tot",
+        "timeZone": "Tijdzone",
+        "note": "Standaard is het 21:00–7:00 Praagse tijd.",
+        "save": "Stille uren opslaan"
+      },
+      "errors": {
+        "invalid_time_zone": "Onbekende tijdzone."
+      }
+    },
+    "noAccess": {
+      "title": "Dit beheert de eigenaar of een beheerder",
+      "body": "Met de rol “{role}” kun je deze bedrijfsinstellingen niet wijzigen. Moeten ze worden aangepast, vraag het dan aan de eigenaar of een beheerder van het bedrijf.",
+      "bodyGeneric": "Je rol in dit bedrijf heeft geen toegang tot deze instelling. Vraag het aan de eigenaar of een beheerder van het bedrijf.",
+      "back": "Terug naar instellingen"
     }
   },
   "billing": {
@@ -2910,6 +4837,1070 @@
       "bannerHint": "Je hebt ze in deze browser zonder account gemaakt. We slaan ze op als uitgegeven documenten en de klanten als contacten."
     }
   },
+  "featurePages": {
+    "items": {
+      "qr": {
+        "name": "QR-betaling op facturen",
+        "title": "QR-betaalcodes op facturen (SPAYD)",
+        "description": "Elke factuur krijgt een QR-betaalcode volgens de Tsjechische SPAYD-standaard. Je klant scant hem in de bankapp en betaalt.",
+        "lead": "Je klant hoeft rekeningnummer, bedrag en variabel symbool niet over te typen. Hij scant de QR-code in de app van zijn bank en de betaling staat klaar.",
+        "points": [
+          "QR-code in de SPAYD-standaard die elke Tsjechische bank ondersteunt",
+          "Rekening, bedrag, valuta, variabel symbool en vervaldatum komen rechtstreeks uit de factuur",
+          "De code staat op de pdf en op de online factuurlink die je verstuurt",
+          "Bij een deels betaalde factuur vraagt de code alleen nog het resterende bedrag"
+        ],
+        "steps": [
+          "Voeg je bankrekening (rekeningnummer of IBAN) toe in de instellingen.",
+          "Geef een factuur uit – de QR-code wordt automatisch aangemaakt.",
+          "Je klant scant en betaalt, en jij koppelt de betaling aan de factuur."
+        ],
+        "faq": [
+          {
+            "q": "Werkt de QR-betaling bij elke bank?",
+            "a": "De SPAYD-standaard (QR Platba) wordt ondersteund door de mobiele apps van alle grote Tsjechische banken en de meeste Slowaakse."
+          },
+          {
+            "q": "Moet ik het aanzetten?",
+            "a": "Nee. Zodra je bankrekening is ingevuld, tonen facturen de code automatisch."
+          }
+        ]
+      },
+      "isdoc": {
+        "name": "ISDOC-export",
+        "title": "Facturen in het ISDOC-formaat",
+        "description": "Exporteer facturen als ISDOC, de Tsjechische standaard voor e-facturen die de meeste boekhoudsoftware kan inlezen.",
+        "lead": "ISDOC is het Tsjechische formaat voor elektronische facturen. Je boekhouder leest het in zonder iets over te typen.",
+        "points": [
+          "ISDOC-export van elke factuur met één klik",
+          "Met leverancier, klant, regels, btw-tarieven en betaalgegevens",
+          "Handig voor boekhouders, grote klanten en overheden",
+          "Ook als pdf en csv te downloaden",
+          "UBL 2.1-e-factuur (Peppol BIS 3.0) voor Slowaakse klanten; verzending via Peppol voor de Slowaakse verplichting van 2027 is in ontwikkeling"
+        ],
+        "steps": [
+          "Geef zoals gewoonlijk een factuur uit.",
+          "Kies ISDOC-export in het factuurdetail.",
+          "Stuur het bestand naar je boekhouder of klant om in te lezen."
+        ],
+        "faq": [
+          {
+            "q": "Wie heeft ISDOC nodig?",
+            "a": "Vooral boekhouders en bedrijven die facturen automatisch inlezen. Sommige overheden en grote bedrijven eisen e-facturen."
+          },
+          {
+            "q": "Vervangt ISDOC de pdf?",
+            "a": "Nee, het vult hem aan. Je klant krijgt nog steeds een leesbare pdf; ISDOC is voor machines."
+          }
+        ]
+      },
+      "registry": {
+        "name": "Bedrijven opzoeken in ARES en registers",
+        "title": "Klantgegevens uit ARES op ondernemingsnummer of naam",
+        "description": "Typ een ondernemingsnummer of naam en de gegevens van de klant komen uit ARES. We zoeken ook in het Slowaakse RPO, EU-VIES en buitenlandse registers.",
+        "lead": "Typ een paar letters van de naam of het ondernemingsnummer. Adres, btw-nummer en officiële naam komen uit het register, dus geen typfouten op de factuur.",
+        "points": [
+          "Tsjechische bedrijven uit ARES op nummer of naam",
+          "Slowaakse bedrijven uit RPO, elk EU-bedrijf op btw-nummer via VIES",
+          "Buitenlandse registers: Frankrijk, Noorwegen, Finland, Denemarken, Zwitserland, Polen, het VK en de wereldwijde LEI-index",
+          "Je opgeslagen contacten verschijnen meteen, resultaten uit registers volgen vanzelf"
+        ],
+        "steps": [
+          "Typ het ondernemingsnummer of de naam in het klantveld.",
+          "Kies het bedrijf – de gegevens worden ingevuld.",
+          "De klant wordt bewaard in je contacten voor de volgende keer."
+        ],
+        "faq": [
+          {
+            "q": "Is het opzoeken gratis?",
+            "a": "Ja. De registers zijn openbaar en het opzoeken hoort bij de app."
+          },
+          {
+            "q": "Kan ik een eenmanszaak op naam vinden?",
+            "a": "Ja. Typ voor- en achternaam – ARES zoekt op hele woorden, dus maak minstens één woord af."
+          }
+        ]
+      },
+      "reminders": {
+        "name": "Automatische herinneringen",
+        "title": "Automatische betalingsherinneringen voor achterstallige facturen",
+        "description": "Na de vervaldatum mailen we je klant een vriendelijke herinnering. Jij kiest het interval en het maximale aantal herinneringen.",
+        "lead": "Hou niet langer bij wie nog niet heeft betaald. Herinneringen gaan automatisch de deur uit zodra een factuur te laat is.",
+        "points": [
+          "Herinneringen voor achterstallige facturen worden automatisch gemaild",
+          "Instelbare tijd tussen herinneringen en een maximumaantal",
+          "Elke herinnering linkt naar de factuur met de QR-betaling",
+          "Herinneringen stoppen zodra de factuur betaald is"
+        ],
+        "steps": [
+          "Zet herinneringen aan in de factuurinstellingen en kies een interval.",
+          "Een factuur voorbij de vervaldatum wordt als achterstallig gemarkeerd.",
+          "Je klant krijgt herinneringen tot hij betaalt of de limiet bereikt is."
+        ],
+        "faq": [
+          {
+            "q": "Hoe vaak worden herinneringen verstuurd?",
+            "a": "Standaard om de 7 dagen; je kunt dat en het maximumaantal aanpassen in de instellingen."
+          },
+          {
+            "q": "Kan ik zelf een herinnering sturen?",
+            "a": "Ja, je kunt op elk moment een herinnering sturen voor een achterstallige factuur."
+          }
+        ]
+      },
+      "bankMatching": {
+        "name": "Betalingen koppelen via de bank",
+        "title": "Betalingen automatisch aan facturen koppelen",
+        "description": "Inkomende betalingen worden gekoppeld aan facturen op variabel symbool en bedrag. Fio, andere banken via PSD2 en PayPal synchroniseren vanzelf; voor elke andere bank upload je een csv-afschrift.",
+        "lead": "In plaats van betaalde facturen met de hand af te vinken, wijst de app betalingen zelf toe en markeert de factuur als betaald.",
+        "points": [
+          "Fio banka: inkomende betalingen elk uur opgehaald via de officiële API",
+          "Andere banken: afschrift importeren in een eenvoudig csv-formaat",
+          "Koppelen op variabel symbool, bedrag en valuta",
+          "Deelbetalingen worden op de factuur geboekt als gedeeltelijke betalingen",
+          "Niet-gekoppelde betalingen blijven staan om met de hand toe te wijzen"
+        ],
+        "steps": [
+          "Koppel onder Bank een rekening (Fio met een alleen-lezen-token, andere banken via PSD2 of PayPal), of upload een csv-afschrift van je bank.",
+          "De app haalt de betalingen op en koppelt ze aan facturen.",
+          "Bekijk de overgebleven betalingen en wijs ze met de hand toe."
+        ],
+        "faq": [
+          {
+            "q": "Welke banken worden ondersteund?",
+            "a": "Fio rechtstreeks via de gratis API, andere Tsjechische, Slowaakse en EER-banken (ook Revolut en Wise) via PSD2 (vergunde aanbieder Enable Banking). Elke bank ook via een csv-afschrift: we herkennen de gangbare Tsjechische en Slowaakse bankexports, en datum, bedrag en valuta volstaan."
+          },
+          {
+            "q": "Kan Billanta betalingen doen vanaf mijn rekening?",
+            "a": "Nee. Het Fio-token wordt aangemaakt met de rechten “alleen rekening bekijken”, waarmee niets verstuurd kan worden. We bewaren het versleuteld."
+          },
+          {
+            "q": "Wat als de klant het variabel symbool vergeet?",
+            "a": "Dan blijft de betaling ongekoppeld en wijs je hem met de hand toe aan de factuur."
+          }
+        ]
+      },
+      "recurring": {
+        "name": "Terugkerende facturen",
+        "title": "Terugkerende facturen",
+        "description": "Stel een terugkerende factuur in voor vaste diensten. Hij wordt automatisch elke week, maand, elk kwartaal of jaar uitgegeven.",
+        "lead": "Huur, vaste opdrachten, websiteonderhoud – facturen die je elke maand hetzelfde uitgeeft, kunnen zichzelf uitgeven.",
+        "points": [
+          "Wekelijks, maandelijks, per kwartaal of jaarlijks",
+          "Een sjabloon met klant, regels en betalingsvoorwaarden",
+          "Elke nieuwe factuur krijgt het volgende nummer in je reeks",
+          "Pauzeer of beëindig de planning wanneer je wilt"
+        ],
+        "steps": [
+          "Maak een factuursjabloon en kies een frequentie.",
+          "Op de geplande dag geeft de app een nieuwe factuur uit.",
+          "Controleer hem of stuur hem meteen naar je klant."
+        ],
+        "faq": [
+          {
+            "q": "Kan ik het bedrag van een terugkerende factuur wijzigen?",
+            "a": "Ja, pas het sjabloon op elk moment aan; de wijziging geldt voor toekomstige facturen."
+          },
+          {
+            "q": "Krijgt elke factuur een nieuw nummer?",
+            "a": "Ja, elke uitgegeven factuur krijgt het volgende nummer in je reeks."
+          }
+        ]
+      },
+      "voice": {
+        "name": "Factuur met je stem",
+        "title": "Facturen maken met je stem via Telegram",
+        "description": "Spreek een factuur in op je telefoon. AI maakt van het spraakbericht een conceptfactuur die je alleen nog controleert.",
+        "lead": "Onderweg en moet je iemand factureren? Stuur een spraakbericht en het concept staat klaar in de app.",
+        "points": [
+          "Spraakberichten via een gekoppeld Telegram-account",
+          "AI haalt klant, regels, aantallen en prijzen eruit",
+          "Er wordt een concept gemaakt – niets gaat weg zonder jouw controle",
+          "Werkt in het Tsjechisch en Slowaaks"
+        ],
+        "steps": [
+          "Koppel je Telegram in de instellingen.",
+          "Zeg wie je factureert en waarvoor.",
+          "Controleer het concept in de app en geef het uit."
+        ],
+        "faq": [
+          {
+            "q": "Gaat er een factuur weg zonder dat ik hem controleer?",
+            "a": "Nee. Een spraakbericht maakt altijd alleen een concept dat jij bevestigt."
+          },
+          {
+            "q": "Moet ik formeel spreken?",
+            "a": "Nee, gewone spreektaal is prima."
+          }
+        ]
+      },
+      "expenses": {
+        "name": "Uitgaven bijhouden",
+        "title": "Uitgaven en kosten bijhouden",
+        "description": "Registreer ontvangen facturen en uitgaven op één plek en zie je inkomsten, kosten en geschatte nettowinst.",
+        "lead": "Uitgaven horen naast je facturen. Hou ze bij in dezelfde app en zie het echte resultaat van je zaak.",
+        "points": [
+          "Ontvangen facturen en uitgaven inclusief btw",
+          "Categorieën en zoeken",
+          "Csv-export voor je boekhouder",
+          "Inkomsten tegenover uitgaven op het dashboard"
+        ],
+        "steps": [
+          "Voeg een uitgave toe met leverancier, bedrag en datum.",
+          "Ze telt mee in je overzichten en belastingschatting.",
+          "Exporteer alles voor je boekhouder aan het eind van de periode."
+        ],
+        "faq": [
+          {
+            "q": "Komen uitgaven in de btw-aangifte?",
+            "a": "Ja, uitgaven met btw gaan mee in de exports voor de Tsjechische btw-aangifte en het controleoverzicht."
+          },
+          {
+            "q": "Kan ik uitgaven exporteren?",
+            "a": "Ja, als csv."
+          }
+        ]
+      },
+      "vat": {
+        "name": "Tsjechische btw-aangiften voor EPO",
+        "title": "Tsjechische btw-aangifte, controleoverzicht en ICP-opgave als XML voor EPO",
+        "description": "Uit je facturen en uitgaven maken we de XML-bestanden van de Tsjechische btw-aangifte, het controleoverzicht en de ICP-opgave, klaar om te uploaden naar het belastingportaal EPO.",
+        "lead": "Tsjechische btw-plichtigen typen geen cijfers meer over in formulieren. Download de XML en upload hem naar het belastingportaal.",
+        "points": [
+          "Btw-aangifte (DPHDP3) als XML",
+          "Controleoverzicht (DPHKH1) met elk document",
+          "ICP-opgave (DPHSHV) voor leveringen binnen de EU",
+          "De bestanden worden aanvaard door het EPO-portaal en de datová schránka"
+        ],
+        "steps": [
+          "Geef tijdens de periode facturen uit en registreer uitgaven.",
+          "Kies de periode onder Exports en download de XML.",
+          "Upload hem naar EPO, controleer en dien in."
+        ],
+        "faq": [
+          {
+            "q": "Dient de app de aangifte voor mij in?",
+            "a": "Nee. Wij maken het bestand klaar; je uploadt en dient het zelf in en blijft verantwoordelijk voor de aangifte."
+          },
+          {
+            "q": "Is dit ook voor wie niet btw-plichtig is?",
+            "a": "Wie niet btw-plichtig is, heeft deze bestanden niet nodig; die kan het jaaroverzicht van inkomsten en uitgaven gebruiken."
+          }
+        ]
+      },
+      "accounting": {
+        "name": "Exports voor je boekhouder",
+        "title": "Facturen exporteren naar Pohoda, Money S3 en csv voor je boekhouder",
+        "description": "Exporteer facturen als Pohoda- of Money S3-XML, csv voor Excel en een jaaroverzicht van inkomsten en uitgaven.",
+        "lead": "Je boekhouder hoeft niets over te typen. Stuur een bestand dat zijn software kan inlezen.",
+        "points": [
+          "XML-export van facturen voor Pohoda en Money S3",
+          "Csv van facturen en uitgaven voor Excel of andere tools",
+          "Jaaroverzicht met vreemde valuta omgerekend tegen ČNB-koersen",
+          "Back-ups van je gegevens en al je documenten in één download"
+        ],
+        "steps": [
+          "Open Exports en kies een periode.",
+          "Kies een formaat – Pohoda-XML, Money S3-XML, csv of jaaroverzicht.",
+          "Stuur het bestand naar je boekhouder."
+        ],
+        "faq": [
+          {
+            "q": "Ondersteunen jullie ook andere boekhoudsoftware dan Pohoda?",
+            "a": "De meeste programma's lezen csv of ISDOC in. Voor Pohoda en Money S3 exporteren we hun eigen XML-formaten."
+          },
+          {
+            "q": "Hoe worden vreemde valuta omgerekend?",
+            "a": "Het jaaroverzicht rekent facturen in vreemde valuta om tegen de koers van de Tsjechische Nationale Bank."
+          }
+        ]
+      },
+      "partialPayments": {
+        "name": "Deelbetalingen",
+        "title": "Deelbetalingen en termijnen",
+        "description": "Boek deelbetalingen op een factuur en zie altijd hoeveel er betaald is en hoeveel er nog openstaat.",
+        "lead": "Niet elke factuur wordt in één keer betaald. Volg termijnen en hou het openstaande saldo in het oog.",
+        "points": [
+          "Meerdere betalingen per factuur met datum en bedrag",
+          "Openstaand saldo op de factuur, in lijsten en op de online link",
+          "De QR-betaling vraagt alleen het saldo",
+          "De factuur wordt als betaald gemarkeerd zodra het volledige bedrag binnen is"
+        ],
+        "steps": [
+          "Voeg een ontvangen betaling toe aan de factuur.",
+          "De app berekent het saldo opnieuw.",
+          "Is alles betaald, dan wordt de factuur als betaald gemarkeerd."
+        ],
+        "faq": [
+          {
+            "q": "Worden deelbetalingen ook uit afschriften gekoppeld?",
+            "a": "Ja, een betaling op het afschrift die lager is dan het factuurtotaal wordt als deelbetaling geboekt."
+          },
+          {
+            "q": "Lopen herinneringen door na een deelbetaling?",
+            "a": "Ja, de factuur blijft onbetaald tot het volledige bedrag binnen is."
+          }
+        ]
+      },
+      "integrations": {
+        "name": "API, webhooks en agenda",
+        "title": "API, Discord- en Slack-webhooks, RSS en iCal",
+        "description": "Koppel je facturatie aan je andere tools: een REST-API met sleutels, webhooks voor Discord, Slack en je eigen systemen, een RSS-feed van facturen en vervaldatums in je agenda.",
+        "lead": "Stuur meldingen naar de chat van je team en vervaldatums naar je agenda.",
+        "points": [
+          "REST-API met je eigen API-sleutels en documentatie",
+          "Webhooks wanneer een factuur betaald, bekeken of achterstallig is – Discord, Slack of ondertekende JSON",
+          "iCal-agenda met vervaldatums voor Google, Apple en Outlook",
+          "RSS-feed van uitgegeven facturen"
+        ],
+        "steps": [
+          "Webhooks, RSS en de agenda vind je onder Instellingen → Integraties.",
+          "Maak een API-sleutel aan onder Instellingen → API-sleutels.",
+          "Kies bij een webhook de gebeurtenissen waarover je bericht wilt krijgen."
+        ],
+        "faq": [
+          {
+            "q": "Hoe controleer ik dat een webhook van jullie komt?",
+            "a": "JSON-webhooks hebben een HMAC-header X-Billanta-Signature, ondertekend met het geheim dat in de instellingen staat."
+          },
+          {
+            "q": "Is de agenda openbaar?",
+            "a": "De link bevat een geheim token dat alleen bekend is bij wie je hem geeft, en je kunt het op elk moment vernieuwen."
+          }
+        ]
+      },
+      "migration": {
+        "name": "Overstappen van een ander systeem",
+        "title": "Overstappen van BitFaktura, Fakturoid, iDoklad of Excel",
+        "description": "Neem contacten en je hele factuurhistoriek mee uit een ander facturatiesysteem of uit Excel. Voorbeeld vóór het opslaan, er worden geen e-mails verstuurd en de nummering loopt door.",
+        "lead": "Opnieuw beginnen betekent niet dat je je historiek kwijt bent. Een csv-export uit het oude systeem is alles wat je nodig hebt.",
+        "points": [
+          "Contacten en uitgegeven facturen importeren uit csv",
+          "Uit BitFaktura en Fakturoid rechtstreeks via de API: facturen, adresboek en originele pdf's",
+          "Kolommen uit Fakturoid, iDoklad, faktorio, Invoice Ninja of je eigen spreadsheet worden automatisch herkend",
+          "Voorbeeld met aantal facturen, periode en totalen vóór het opslaan",
+          "Facturen met meerdere regels, proformafacturen en creditnota's",
+          "Er wordt niets verstuurd en geïmporteerde facturen krijgen geen herinneringen",
+          "De nummering loopt door na het laatste geïmporteerde nummer"
+        ],
+        "steps": [
+          "Exporteer contacten en facturen uit het oude systeem naar csv.",
+          "Upload de bestanden onder Instellingen → Overstappen van een ander systeem.",
+          "Controleer het voorbeeld en bevestig de import."
+        ],
+        "faq": [
+          {
+            "q": "Wat als ik de import twee keer uitvoer?",
+            "a": "Facturen met een nummer dat je al hebt, worden overgeslagen. Je kunt de import dus gerust herhalen, bijvoorbeeld met een bijgewerkt bestand."
+          },
+          {
+            "q": "Merken mijn klanten iets van de import?",
+            "a": "Nee. Geïmporteerde facturen worden bewaard als al uitgegeven; er gaan geen e-mails of herinneringen weg."
+          },
+          {
+            "q": "Moet ik eerst contacten uploaden?",
+            "a": "Nee. De factuurimport maakt klanten aan die je nog niet hebt. Een aparte contactimport is handig voor klanten die je nog niet hebt gefactureerd."
+          }
+        ]
+      },
+      "quotes": {
+        "name": "Offertes en proformafacturen",
+        "title": "Offertes en proformafacturen",
+        "description": "Stuur een offerte, laat de klant hem online aanvaarden en maak er met één klik een proforma of definitieve factuur van. Aparte nummerreeksen per documenttype.",
+        "lead": "Van offerte via voorschot tot definitieve factuur, zonder iets over te typen.",
+        "points": [
+          "Offertes, proformafacturen, facturen en creditnota's",
+          "De klant aanvaardt of weigert een offerte online, met een opmerking",
+          "Maak met één klik een proforma of factuur van een offerte",
+          "De factuur na een betaalde proforma wordt uitgegeven als vereffend met het voorschot",
+          "Aparte nummerreeksen: ZF voor proforma's, OD voor creditnota's, NA voor offertes"
+        ],
+        "steps": [
+          "Maak een offerte en stuur de klant een link.",
+          "De klant aanvaardt hem en jij krijgt een melding.",
+          "Geef met één klik een proforma of factuur uit vanuit de offerte."
+        ],
+        "faq": [
+          {
+            "q": "Is een proformafactuur een fiscaal document?",
+            "a": "Nee. Het fiscale document is de factuur die wordt uitgegeven nadat het voorschot betaald is; de app maakt die klaar uit de betaalde proforma."
+          },
+          {
+            "q": "Heeft de klant een account nodig om een offerte te aanvaarden?",
+            "a": "Nee. De link die je hem mailt, volstaat."
+          }
+        ]
+      },
+      "currencies": {
+        "name": "Facturen in vreemde valuta",
+        "title": "Facturen in euro en andere valuta met ČNB-koersen",
+        "description": "Factureer in EUR, USD en andere valuta. De koers van de Tsjechische Nationale Bank op de belastbare leveringsdatum wordt automatisch ingevuld en voor de btw omgerekend naar CZK.",
+        "lead": "Buitenlandse klanten betalen in hun valuta, je btw klopt gewoon in kronen.",
+        "points": [
+          "Facturen in euro, dollar en andere valuta",
+          "ČNB-koers op de belastbare leveringsdatum ingevuld bij het uitgeven",
+          "De koers kun je met de hand aanpassen",
+          "Omrekening naar CZK voor btw-aangiften en controleoverzichten",
+          "De factuur toont de bankrekening in de valuta van de factuur",
+          "Btw verlegd voor buitenlandse btw-plichtigen"
+        ],
+        "steps": [
+          "Kies de valuta op de factuur.",
+          "De ČNB-koers wordt ingevuld wanneer je hem uitgeeft.",
+          "Btw-exports rekenen de bedragen om naar CZK."
+        ],
+        "faq": [
+          {
+            "q": "Welke koers wordt gebruikt?",
+            "a": "De ČNB-koers op de belastbare leveringsdatum. Kan die op dat moment niet worden opgehaald, dan wordt hij ingevuld bij de btw-export."
+          },
+          {
+            "q": "Kan ik een eurorekening hebben?",
+            "a": "Ja. Voeg meerdere bankrekeningen toe in de bedrijfsinstellingen; de rekening in de valuta van de factuur wordt automatisch gekozen."
+          }
+        ]
+      }
+    },
+    "indexSeoTitle": "Factuurfuncties voor freelancers en kmo's",
+    "demo": {
+      "text": "Eerst uitproberen? Open de live demo met een voorbeeldbedrijf, zonder registratie.",
+      "link": "Probeer de demo"
+    },
+    "audiences": {
+      "title": "Ook voor",
+      "accountants": "Boekhouders",
+      "partners": "Partners",
+      "coworkings": "Coworkingruimtes",
+      "schools": "Scholen en leraren"
+    }
+  },
+  "guestInvoice": {
+    "seoTitle": "Gratis online factuur zonder registratie – pdf met QR",
+    "seoDescription": "Maak gratis een factuur online, zonder account. Vul leverancier, klant en regels in en download een pdf met een QR-betaalcode. We bewaren niets.",
+    "heading": "Online factuur zonder registratie",
+    "lead": "Vul de gegevens in en download een kant-en-klare pdf-factuur. Geen account, geen e-mail, en we bewaren de factuur niet.",
+    "points": [
+      "Pdf met QR-betaling",
+      "Bedrijfsgegevens uit ARES",
+      "Invullen met AI",
+      "Btw-plichtig en niet btw-plichtig",
+      "Tsjechisch, Slowaaks, Engels"
+    ],
+    "sections": {
+      "document": "Document",
+      "supplier": "Leverancier (jij)",
+      "customer": "Klant",
+      "items": "Regels"
+    },
+    "fields": {
+      "number": "Factuurnummer",
+      "issueDate": "Factuurdatum",
+      "dueDate": "Vervaldatum",
+      "currency": "Valuta",
+      "paymentMethod": "Betaalmethode",
+      "language": "Taal van de factuur",
+      "vatPayer": "Ik ben btw-plichtig",
+      "name": "Naam of bedrijfsnaam",
+      "street": "Straat en huisnummer",
+      "city": "Plaats",
+      "postalCode": "Postcode",
+      "ico": "Ondernemingsnummer (IČO)",
+      "dic": "Btw-nummer",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "account": "Rekeningnummer",
+      "bankCode": "Bankcode",
+      "iban": "IBAN",
+      "description": "Omschrijving",
+      "quantity": "Aantal",
+      "unit": "Eenheid",
+      "unitPlaceholder": "st.",
+      "unitPrice": "Prijs per eenheid",
+      "vatRate": "Btw",
+      "note": "Opmerking op de factuur",
+      "taxableSupplyDate": "Datum belastbaar feit"
+    },
+    "hints": {
+      "vatPayer": "Vink dit alleen aan als je btw-plichtig bent. De factuur toont dan btw, de datum van het belastbaar feit en een uitsplitsing per tarief.",
+      "iban": "Optioneel; voor een Tsjechische rekening leiden we hem af uit het rekeningnummer. Handig voor betalingen uit het buitenland.",
+      "remembered": "Alleen deze browser onthoudt je leveranciersgegevens, zodat je ze de volgende keer niet opnieuw hoeft in te typen.",
+      "number": "Met een account volgen factuurnummers automatisch je nummerreeks.",
+      "duzp": "De datum van de belastbare levering. Meestal dezelfde als de factuurdatum.",
+      "qr": "We maken van het rekeningnummer een QR-betaling; je klant scant die gewoon in de bank-app.",
+      "foreign": "Tip: vul bij een klant in de EU het btw-nummer in. Met een account controleren we het in VIES en zoeken we het bedrijf op in buitenlandse registers."
+    },
+    "methods": {
+      "bank_transfer": "Overschrijving",
+      "cash": "Contant",
+      "card": "Kaart",
+      "cash_on_delivery": "Onder rembours",
+      "other": "Anders"
+    },
+    "addItem": "Regel toevoegen",
+    "removeItem": "Regel verwijderen",
+    "total": "Te betalen",
+    "download": "Pdf-factuur downloaden",
+    "privacy": "We maken de factuur aan en vergeten hem meteen; er blijft niets op de server staan.",
+    "doneTitle": "Je factuur is gedownload.",
+    "signup": "Maak een gratis account",
+    "errors": {
+      "invalid": "Sommige gegevens zijn niet geldig. Controleer de verplichte velden, data en bedragen.",
+      "rateLimited": "Te veel facturen in korte tijd. Probeer het over een paar minuten opnieuw.",
+      "failed": "De factuur kon niet worden aangemaakt. Probeer het opnieuw.",
+      "busy": "De dienst is nu druk bezet. Probeer het zo meteen opnieuw, of maak een gratis account."
+    },
+    "setup": {
+      "title": "Twee korte vragen",
+      "lead": "We tonen alleen de velden die je echt nodig hebt. Je kunt dit altijd aanpassen.",
+      "q1": "Als wie factureer je?",
+      "q2": "Wat factureer je?",
+      "useCases": {
+        "freelancer": {
+          "title": "Freelancer, niet btw-plichtig",
+          "text": "De eenvoudigste factuur, zonder btw"
+        },
+        "vat": {
+          "title": "Btw-plichtig bedrijf",
+          "text": "Btw per tarief, datum belastbaar feit en btw-nummer"
+        },
+        "foreign": {
+          "title": "Klant in het buitenland",
+          "text": "In het Engels, in euro, met een IBAN"
+        },
+        "oneoff": {
+          "title": "Eenmalig / particulier",
+          "text": "Alleen het nodige, zonder ondernemingsnummer van de klant"
+        }
+      },
+      "billing": {
+        "hours": "Gewerkte uren",
+        "goods": "Goederen per stuk",
+        "project": "Een opdracht of project"
+      },
+      "skip": "Overslaan en alle velden tonen",
+      "current": "Instelling:",
+      "change": "Wijzigen",
+      "showAll": "Alle velden"
+    },
+    "placeholders": {
+      "hours": "Bijv. Webontwikkeling – september",
+      "goods": "Bijv. Keramische mok 0,3 l",
+      "project": "Bijv. Ontwerp logo en huisstijl"
+    },
+    "dueIn": "{days} dagen",
+    "ares": {
+      "found": "Opgehaald uit ARES",
+      "notFound": "Geen bedrijf gevonden met dit nummer",
+      "unavailable": "Het register is nu niet bereikbaar, vul de gegevens handmatig in."
+    },
+    "ai": {
+      "title": "Invullen met AI",
+      "lead": "Typ of dicteer in je eigen woorden wat je factureert. AI vult de regels, prijzen, vervaldatum en, op basis van een ondernemingsnummer, de klant in. Jij controleert alles.",
+      "placeholder": {
+        "hours": "Bijv. “factuur voor ondernemingsnummer 27604977, 12 uur advies à €50, betaaltermijn 14 dagen”",
+        "goods": "Bijv. “30 mokken à €10 en 2× verzending à €6 voor Café De Linde, betaaltermijn 7 dagen”",
+        "project": "Bijv. “logo-ontwerp voor €600 voor ondernemingsnummer 27604977, betaaltermijn 30 dagen”"
+      },
+      "dictate": "Dicteren",
+      "stop": "Stop",
+      "run": "Invullen",
+      "remaining": "Nog {remaining} van {limit} gratis pogingen",
+      "applied": "Klaar, AI heeft het formulier ingevuld. Controleer de gegevens.",
+      "exhausted": "Je hebt de gratis AI-pogingen van vandaag gebruikt. Met een account kun je AI (ook via een Telegram-spraakbericht) elke dag gebruiken.",
+      "signupCta": "Maak een gratis account",
+      "errors": {
+        "ai_guest_limit": "Je hebt je AI-pogingen voor vandaag gebruikt.",
+        "ai_global_limit": "De gratis AI van vandaag is voor iedereen op. Probeer het morgen of maak een account.",
+        "ai_unavailable": "AI is nu niet beschikbaar.",
+        "failed": "We konden die tekst niet verwerken. Probeer het anders te formuleren."
+      },
+      "tapToSpeak": "Tik en spreek",
+      "noSpeech": "Je browser kan niet dicteren (Firefox bijvoorbeeld). Typ het in het vak en klik op Invullen."
+    },
+    "showcase": {
+      "title": "Een gratis account kan veel meer",
+      "lead": "Deze pagina is maar een voorproefje. In de app krijg je ook:",
+      "all": "Alle functies",
+      "items": {
+        "recurring": {
+          "title": "Terugkerende facturen",
+          "text": "Vaste opdrachten en abonnementen worden elke maand vanzelf uitgegeven en verstuurd."
+        },
+        "reminders": {
+          "title": "Herinneringen",
+          "text": "We houden onbetaalde facturen in de gaten en herinneren je klant er beleefd aan."
+        },
+        "bank": {
+          "title": "Betalingen koppelen",
+          "text": "Bankafschriften worden via het variabel symbool aan facturen gekoppeld."
+        },
+        "ai": {
+          "title": "AI en spraakberichten",
+          "text": "Een factuur uit één zin of een Telegram-spraakbericht, uitgaven uit een foto van het bonnetje."
+        },
+        "exports": {
+          "title": "Exports voor je boekhouder",
+          "text": "ISDOC, XML voor Pohoda en Money S3, CSV en Tsjechische btw-aangiftes voor het EPO-portaal."
+        },
+        "registry": {
+          "title": "Bedrijfsregisters",
+          "text": "ARES, het Slowaakse RPO, VIES en buitenlandse registers van Frankrijk tot Zwitserland."
+        },
+        "payments": {
+          "title": "Kaartbetalingen en deelbetalingen",
+          "text": "Online betalen via de factuurlink en opvolging van deelbetalingen."
+        }
+      }
+    },
+    "account": {
+      "title": "Wil je je facturen bewaren en mailen?",
+      "body": "Een gratis account geeft je een factuuroverzicht, contacten uit het handelsregister, herinneringen en QR-betalingen. Deze factuur kun je ook zonder account maken.",
+      "signup": "Maak een gratis account",
+      "login": "Inloggen",
+      "signedIn": "Je bent ingelogd. Je kunt de factuur meteen in de app opslaan.",
+      "openApp": "Nieuwe factuur in de app"
+    },
+    "faq": {
+      "title": "Vragen",
+      "items": [
+        {
+          "q": "Is een factuur maken echt gratis?",
+          "a": "Ja. Je vult de factuur in en downloadt hem als pdf, zonder registratie, zonder e-mail en zonder kosten."
+        },
+        {
+          "q": "Bewaren jullie de factuurgegevens?",
+          "a": "Nee. We maken de pdf aan en er blijft niets van op de server staan. Alleen je browser bewaart de facturen die je hebt gedownload, zodat je ze in een account kunt overnemen – wis ze met Vergeten, anders verdwijnen ze na 90 dagen. Heb je de factuur later nog nodig, bewaar dan de pdf of maak een account."
+        },
+        {
+          "q": "Krijgt de factuur een QR-betaalcode?",
+          "a": "Ja, als je een bankrekening invult. Een Tsjechische rekening krijgt een QR Platba-code, een Slowaakse IBAN krijgt PAY by square, dat Slowaakse banken kunnen lezen."
+        },
+        {
+          "q": "Werkt het voor btw-plichtigen en voor Slowakije?",
+          "a": "Ja. Het werkt voor facturen van btw-plichtigen en niet-btw-plichtigen, in het Tsjechisch, Slowaaks of Engels. Een Tsjechisch bedrijf wordt via het ondernemingsnummer uit ARES opgehaald; een Slowaakse klant vul je handmatig in."
+        },
+        {
+          "q": "Wanneer loont een account?",
+          "a": "Als je regelmatig factureert. Een account houdt de nummerreeks bij, registreert betalingen, helpt met herinneringen en exporteert facturen naar ISDOC voor je boekhouder. Het Free-abonnement bevat 10 documenten per maand."
+        }
+      ]
+    },
+    "template": {
+      "documentType": "Documenttype",
+      "documentTypes": {
+        "invoice": "Factuur",
+        "proforma": "Proformafactuur",
+        "credit_note": "Creditnota"
+      },
+      "reverseCharge": "Btw verlegd (de klant draagt de btw af)",
+      "relatedInvoiceNumber": "Nummer van de gecorrigeerde factuur",
+      "hintReverseCharge": "De factuur toont geen btw en vermeldt dat de klant die afdraagt (§ 92a van de Tsjechische btw-wet). Alleen tussen btw-plichtigen.",
+      "hintCreditNote": "Vul voor een prijsverlaging een negatieve prijs per eenheid in, bijv. -2000.",
+      "identifiedNote": "Btw verlegd – de klant draagt de btw af."
+    },
+    "dictatePage": {
+      "seoTitle": "Dicteer een factuur – klaar in een paar seconden",
+      "seoDescription": "Zeg wie je factureert en waarvoor. AI vult de klant uit het bedrijfsregister, de regels, prijzen en vervaldatum in, en jij downloadt een pdf met een QR-betaalcode. Gratis, zonder registratie.",
+      "heading": "Dicteer een factuur",
+      "lead": "Tik op de microfoon en zeg wie je factureert en waarvoor. Het formulier vult zichzelf in; jij controleert het en downloadt de pdf.",
+      "example": "Probeer: “Factuur voor ondernemingsnummer 27604977, logo-ontwerp voor €600, betaaltermijn 14 dagen.”"
+    },
+    "carryOver": {
+      "title": "Bewaar je facturen in een account – we nemen de nummering en de klanten over.",
+      "kept": "{n, plural, one {# factuur wordt} other {# facturen worden}} in deze browser bewaard.",
+      "cta": "Opslaan in een gratis account",
+      "forget": "Vergeten",
+      "signupNote": "Na je registratie nemen we de facturen over die je zonder account in deze browser hebt gemaakt: de nummering loopt door en de klanten worden als contacten opgeslagen.",
+      "where": "Alleen deze browser bewaart ze, en wist ze na 90 dagen – gebruik op een gedeelde computer Vergeten."
+    }
+  },
+  "publicProfile": {
+    "services": "Diensten",
+    "contact": "Contact",
+    "ico": "Ondernemingsnummer",
+    "dic": "Btw-nummer",
+    "cta": {
+      "button": "Aanvraag sturen",
+      "subject": "Aanvraag – {company}",
+      "body": "Hallo,\n\nIk heb interesse in:\n\n"
+    },
+    "poweredBy": "Profiel gemaakt met <brand>Billanta</brand> – facturatie voor freelancers en bedrijven",
+    "order": {
+      "button": "Bestellen",
+      "title": "Bestelling",
+      "hint": "Kies een dienst en vul je factuurgegevens in. {company} bekijkt de bestelling en neemt contact met je op.",
+      "service": "Dienst",
+      "noService": "Alleen mijn eigen regels",
+      "quantity": "Aantal",
+      "estimate": "Ongeveer {amount}. De leverancier bevestigt de definitieve prijs.",
+      "priceLater": "De leverancier vult de prijs in.",
+      "customItems": "Andere regels",
+      "customItemsHint": "Vertel wat je nog meer nodig hebt. De leverancier vult de prijs in.",
+      "itemDescription": "Wat je nodig hebt",
+      "addItem": "Regel toevoegen",
+      "removeItem": "Regel verwijderen",
+      "buyerTitle": "Factuurgegevens",
+      "note": "Opmerking",
+      "notePlaceholder": "Deadline, details, iets anders",
+      "submit": "Bestelling versturen",
+      "legal": "Door te versturen deel je je gegevens met de leverancier, zodat die de bestelling kan afhandelen en een factuur kan uitgeven.",
+      "doneTitle": "Bestelling verstuurd",
+      "doneText": "{company} bekijkt hem nu en geeft zelf de factuur uit. Je hoeft verder niets te doen.",
+      "payTitle": "Vooruitbetaling",
+      "payHint": "{company} vraagt om vooruitbetaling. Betaal met deze gegevens of scan de QR-code in je bank-app.",
+      "payAmount": "Bedrag",
+      "payAccount": "Rekeningnummer",
+      "payVs": "Variabel symbool",
+      "payRecipient": "Begunstigde",
+      "payNote": "Gebruik precies dit variabel symbool, zodat de leverancier je betaling kan koppelen. De factuur komt van de leverancier.",
+      "errors": {
+        "invalid": "Controleer de gemarkeerde velden.",
+        "closed": "Dit bedrijf neemt momenteel geen bestellingen aan.",
+        "limit": "Te veel pogingen, probeer het zo meteen opnieuw.",
+        "daily_cap": "Dit bedrijf heeft vandaag al veel bestellingen gekregen. Probeer het morgen opnieuw.",
+        "unknown_service": "Deze dienst wordt niet meer aangeboden. Laad de pagina opnieuw.",
+        "custom_items_disabled": "Dit bedrijf neemt geen eigen regels aan. Laad de pagina opnieuw.",
+        "empty_order": "Kies een dienst of voeg een regel toe.",
+        "items": "Controleer de regels (omschrijving van minstens 2 tekens).",
+        "failed": "Er ging iets mis, probeer het opnieuw."
+      }
+    },
+    "message": {
+      "button": "Contact",
+      "title": "Stuur ons een bericht",
+      "hint": "Je bericht gaat rechtstreeks naar {company}. Zij antwoorden op je e-mailadres.",
+      "name": "Naam",
+      "email": "E-mail",
+      "about": "Onderwerp",
+      "aboutGeneral": "Algemene vraag",
+      "message": "Bericht",
+      "submit": "Bericht versturen",
+      "legal": "Door te versturen deel je je naam, e-mailadres en bericht met het bedrijf, zodat het kan antwoorden.",
+      "doneTitle": "Bericht verstuurd",
+      "doneText": "{company} heeft het ontvangen en antwoordt op je e-mailadres.",
+      "errors": {
+        "invalid": "Controleer de gemarkeerde velden.",
+        "closed": "Dit bedrijf neemt momenteel geen berichten aan via zijn profiel.",
+        "limit": "Te veel berichten, probeer het zo meteen opnieuw.",
+        "daily_cap": "Dit bedrijf heeft vandaag al veel berichten gekregen. Probeer het morgen opnieuw.",
+        "failed": "Er ging iets mis, probeer het opnieuw.",
+        "name": "Vul je naam in (minstens 2 tekens).",
+        "email": "Vul een geldig e-mailadres in.",
+        "message": "Het bericht moet 5 tot 2000 tekens lang zijn.",
+        "serviceId": "Kies het onderwerp opnieuw."
+      }
+    }
+  },
+  "time": {
+    "title": "Tijdregistratie",
+    "description": "Registreer werk aan projecten en zet niet-gefactureerde uren met één klik om in een factuur.",
+    "noTenant": "Rond eerst de instelling van je bedrijf af.",
+    "loadError": "De tijdregistratie kon niet worden geladen.",
+    "error": "Er ging iets mis.",
+    "kpi": {
+      "week": "Deze week",
+      "unbilled": "Niet gefactureerd",
+      "unbilledHours": "{hours} u te factureren",
+      "projects": "Actieve projecten",
+      "projectsSub": "Tarieven en klanten"
+    },
+    "period": {
+      "week": "Deze week",
+      "month": "Deze maand",
+      "lastMonth": "Vorige maand",
+      "all": "Alles"
+    },
+    "allStates": "Alle",
+    "state": {
+      "unbilled": "Te factureren",
+      "billed": "Gefactureerd",
+      "nonbillable": "Niet factureerbaar"
+    },
+    "searchPlaceholder": "Zoek in omschrijving, project, klant…",
+    "columns": {
+      "date": "Datum",
+      "description": "Omschrijving",
+      "project": "Project",
+      "contact": "Klant",
+      "duration": "Tijd",
+      "amount": "Bedrag",
+      "state": "Status",
+      "rate": "Tarief"
+    },
+    "whatAreYouWorkingOn": "Waar werk je aan?",
+    "noProject": "Geen project",
+    "noDescription": "(geen omschrijving)",
+    "start": "Start",
+    "stop": "Stop",
+    "stopped": "{time} u geregistreerd",
+    "addManual": "Handmatig toevoegen",
+    "editEntry": "Registratie bewerken",
+    "from": "Van",
+    "durationHint": "Bijv. 1:30, 1,5 of 90m.",
+    "durationRead": "Registreert {time} u.",
+    "rateHint": "Leeg = het tarief van het project.",
+    "billable": "Factureerbaar",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "saved": "Opgeslagen",
+    "added": "Registratie toegevoegd",
+    "delete": "Verwijderen",
+    "deleted": "Verwijderd",
+    "deleteConfirm": "Deze registratie verwijderen?",
+    "draft": "concept",
+    "select": "Selecteren",
+    "selectAll": "Alles selecteren om te factureren",
+    "selected": "{count} geselecteerd",
+    "clearSelection": "Selectie wissen",
+    "sumLabel": "Totaal van {count, plural, one {# registratie} other {# registraties}}",
+    "empty": "Nog niets. Start de timer of voeg werk handmatig toe.",
+    "emptyFiltered": "Geen registraties die aan de filters voldoen.",
+    "invoice": {
+      "action": "Factureren",
+      "groupBy": "Factuurregels",
+      "groupHint": "Hoe registraties worden samengevoegd tot factuurregels. Je krijgt een concept om te controleren voordat je het uitgeeft.",
+      "group": {
+        "project": "Eén regel per project",
+        "day": "Eén regel per dag",
+        "entry": "Eén regel per registratie"
+      },
+      "pickContact": "Kies een klant…",
+      "manyContacts": "Kies registraties van één klant.",
+      "manyCurrencies": "Kies registraties in één valuta.",
+      "done": "Conceptfactuur aangemaakt"
+    },
+    "projects": {
+      "title": "Projecten",
+      "new": "Nieuw project",
+      "edit": "Project bewerken",
+      "name": "Naam",
+      "noContact": "Geen klant",
+      "contactHint": "De registraties van het project worden aan deze klant gefactureerd.",
+      "currency": "Valuta",
+      "color": "Kleur",
+      "total": "Totaal",
+      "archive": "Archiveren",
+      "restore": "Herstellen",
+      "archived": "Project gearchiveerd",
+      "restored": "Project hersteld",
+      "showArchived": "Gearchiveerd ({count})",
+      "hideArchived": "Gearchiveerde verbergen",
+      "deleteConfirm": "Project verwijderen? De registraties blijven, alleen zonder project.",
+      "deleted": "Project verwijderd",
+      "empty": "Maak een project met een tarief en een klant, en het factureren regelt zichzelf."
+    },
+    "dashboard": {
+      "title": "Tijdregistratie",
+      "week": "Deze week",
+      "unbilled": "Te factureren",
+      "running": "Loopt",
+      "open": "Openen"
+    }
+  },
+  "audit": {
+    "title": "Wijzigingsgeschiedenis",
+    "description": "Elke belangrijke actie in het bedrijf: wie wat wanneer heeft aangemaakt, bewerkt, verstuurd of verwijderd, met de oude en nieuwe waarde van elke wijziging.",
+    "filterLabel": "Filteren op type",
+    "empty": "Hier staat nog niets. Zodra jij of je collega's iets wijzigen, verschijnt het hier.",
+    "loadError": "De geschiedenis kon niet worden geladen.",
+    "loadMore": "Oudere laden",
+    "loading": "Laden…",
+    "reason": "Reden",
+    "changed": "gewijzigd",
+    "reordered": "anders gesorteerd",
+    "yes": "Ja",
+    "no": "Nee",
+    "actor": {
+      "user": "Gebruiker",
+      "ai": "AI-assistent",
+      "api_key": "API-sleutel",
+      "system": "Systeem",
+      "customer": "Klant"
+    },
+    "entities": {
+      "all": "Alles",
+      "invoice": "Documenten",
+      "contact": "Contacten",
+      "tenant": "Bedrijfsgegevens",
+      "bank_account": "Bankrekeningen",
+      "member": "Team",
+      "api_key": "API-sleutels",
+      "import": "Imports"
+    },
+    "docTypes": {
+      "invoice": "een factuur",
+      "proforma": "een proformafactuur",
+      "credit_note": "een creditnota",
+      "quote": "een offerte"
+    },
+    "actions": {
+      "converted": "maakte {to} aan van",
+      "any": {
+        "created": "maakte aan",
+        "updated": "bewerkte",
+        "deleted": "verwijderde"
+      },
+      "invoice": {
+        "created": "maakte het concept aan",
+        "updated": "bewerkte het concept",
+        "edited_issued": "bewerkte het uitgegeven document",
+        "deleted": "verwijderde het concept",
+        "issued": "gaf uit",
+        "sent": "mailde",
+        "reminder_sent": "stuurde een herinnering voor",
+        "marked_paid": "markeerde als betaald",
+        "partial_payment": "registreerde een deelbetaling voor",
+        "marked_unpaid": "markeerde als onbetaald",
+        "paid_from_bank": "koppelde een bankbetaling aan",
+        "link_rotated": "verving de openbare link van",
+        "cancelled": "annuleerde",
+        "sent_corrected": "stuurde de gecorrigeerde versie van",
+        "buyer_details_requested": "stuurde naar de klant om de gegevens in te vullen:",
+        "buyer_details_submitted": "vulde de factuurgegevens in voor",
+        "buyer_details_cancelled": "sloot het verzoek om klantgegevens voor",
+        "profile_order": "aangemaakt via een bestelling op het openbare profiel:",
+        "link_renamed": "hernoemde de openbare link"
+      },
+      "tenant": {
+        "updated": "bewerkte de bedrijfsgegevens",
+        "logo_uploaded": "uploadde het logo",
+        "logo_removed": "verwijderde het logo",
+        "number_formats_updated": "wijzigde de documentnummering"
+      },
+      "bank_account": {
+        "created": "voegde de bankrekening toe",
+        "updated": "bewerkte de bankrekening",
+        "deleted": "verwijderde de bankrekening"
+      },
+      "contact": {
+        "created": "voegde het contact toe",
+        "updated": "bewerkte het contact",
+        "deleted": "verwijderde het contact"
+      },
+      "member": {
+        "invited": "nodigde uit",
+        "invitation_revoked": "trok de uitnodiging in voor",
+        "updated": "wijzigde de rechten van",
+        "removed": "verwijderde uit het team",
+        "left": "verliet het bedrijf"
+      },
+      "api_key": {
+        "created": "maakte de API-sleutel aan",
+        "revoked": "trok de API-sleutel in"
+      },
+      "import": {
+        "bitfaktura": "importeerde gegevens uit BitFaktura",
+        "csv": "importeerde documenten uit CSV",
+        "contacts_csv": "importeerde contacten uit CSV",
+        "fakturoid": "importeerde gegevens uit Fakturoid",
+        "guest": "nam facturen over die zonder account waren gemaakt"
+      }
+    },
+    "fields": {
+      "documentType": "Documenttype",
+      "contactId": "Klant",
+      "issueDate": "Factuurdatum",
+      "dueDate": "Vervaldatum",
+      "taxableSupplyDate": "Leveringsdatum",
+      "currency": "Valuta",
+      "bankAccountId": "Bankrekening",
+      "exchangeRate": "Wisselkoers",
+      "paymentMethod": "Betaalmethode",
+      "paymentMethodLabel": "Naam betaalmethode",
+      "paymentInstructions": "Betaalinstructies",
+      "variableSymbol": "Variabel symbool",
+      "constantSymbol": "Constant symbool",
+      "specificSymbol": "Specifiek symbool",
+      "orderNumber": "Bestelnummer",
+      "noteAbove": "Tekst boven de regels",
+      "noteBelow": "Tekst onder de regels",
+      "internalNote": "Interne notitie",
+      "issuePlace": "Plaats van uitgifte",
+      "issuedByName": "Uitgegeven door",
+      "customFields": "Eigen velden",
+      "amountPaid": "Betaald",
+      "language": "Documenttaal",
+      "reverseCharge": "Btw verlegd",
+      "lineItems": "Regels",
+      "total": "Totaal",
+      "email": "E-mail",
+      "invoiceNumber": "Documentnummer",
+      "role": "Rol",
+      "permissions": "Rechten",
+      "account": "Rekening",
+      "label": "Naam",
+      "accountNumber": "Rekeningnummer",
+      "bankCode": "Bankcode",
+      "iban": "IBAN",
+      "swift": "SWIFT",
+      "sortOrder": "Volgorde",
+      "companyName": "Bedrijfsnaam",
+      "legalName": "Naam",
+      "ico": "Ondernemingsnummer (IČO)",
+      "dic": "Btw-nummer",
+      "dicVatPayer": "Btw-plichtig",
+      "isVatPayer": "Btw-plichtig",
+      "addressStreet": "Straat",
+      "addressCity": "Plaats",
+      "addressPostalCode": "Postcode",
+      "addressCountry": "Land",
+      "bankAccountNumber": "Rekeningnummer op facturen",
+      "bankAccountBankCode": "Bankcode op facturen",
+      "bankAccountIban": "IBAN op facturen",
+      "bankAccountSwift": "SWIFT op facturen",
+      "defaultLocale": "Standaardtaal",
+      "defaultDueDays": "Standaard betaaltermijn",
+      "defaultPaymentMethod": "Standaard betaalmethode",
+      "defaultNoteBelow": "Standaardtekst onder de regels",
+      "phone": "Telefoon",
+      "website": "Website",
+      "registryNote": "Registerinschrijving",
+      "emailPrefs": "E-mailinstellingen",
+      "templateVars": "Variabelen",
+      "paymentMethods": "Betaalmethoden",
+      "publicProfile": "Openbaar profiel",
+      "enabledModules": "Modules",
+      "webhooks": "Webhooks",
+      "aiMode": "AI-modus",
+      "cardPaymentsEnabled": "Kaartbetalingen",
+      "isPerson": "Particulier",
+      "isStarred": "Met ster",
+      "color": "Kleur",
+      "importedInvoices": "Nieuwe documenten",
+      "importedContacts": "Nieuwe contacten",
+      "updatedContacts": "Bijgewerkte contacten",
+      "archivedPdfs": "Opgeslagen originele pdf's",
+      "skippedRows": "Overgeslagen rijen",
+      "numberFormat": "Nummerformaat",
+      "nextNumber": "Volgend nummer",
+      "publicSlug": "Linknaam"
+    },
+    "values": {
+      "invoice": "Factuur",
+      "proforma": "Proformafactuur",
+      "credit_note": "Creditnota",
+      "quote": "Offerte",
+      "bank_transfer": "Overschrijving",
+      "cash": "Contant",
+      "card": "Kaart",
+      "cash_on_delivery": "Rembours",
+      "other": "Overig",
+      "owner": "Eigenaar",
+      "admin": "Beheerder",
+      "accountant": "Boekhouder",
+      "viewer": "Alleen lezen"
+    },
+    "cleared": "gewist",
+    "filters": {
+      "action": "Actie",
+      "anyAction": "Alle acties",
+      "member": "Wie",
+      "anyMember": "Iedereen",
+      "from": "Van",
+      "to": "Tot",
+      "reset": "Filters wissen"
+    }
+  },
   "buyerDetails": {
     "title": "Vul je factuurgegevens in",
     "intro": "{supplier} maakt {document} voor je klaar. Laat weten op wiens naam die moet staan.",
@@ -2978,12 +5969,254 @@
       "private": "Deze link is privé. Alleen deze leverancier ziet je gegevens."
     }
   },
+  "referrals": {
+    "title": "Nodig uit en verdien credits",
+    "description": "Nodig bedrijven uit die je kent of je klanten. Voor elk bedrijf dat een betaald abonnement neemt en blijft, krijg je credits voor je eigen abonnement.",
+    "loadError": "Het verwijsprogramma kon niet worden geladen.",
+    "failed": "Mislukt",
+    "readOnly": "Alleen de eigenaar of een beheerder van het bedrijf kan credits besteden of het programma wijzigen.",
+    "credits": "{credits, plural, one {# credit} other {# credits}}",
+    "welcomeToast": "Welkom! Je uitnodiging heeft je {credits} credits opgeleverd.",
+    "copyFailed": "De link kon niet worden gekopieerd. Selecteer hem en kopieer hem handmatig.",
+    "link": {
+      "title": "Je uitnodigingslink",
+      "body": "Een nieuw bedrijf krijgt {welcome} credits direct na het aanmelden. Jij krijgt evenveel credits als het bedrijf in CZK betaalt voor de eerste abonnementsbetaling, tot maximaal {reward}. We schrijven ze bij na de tweede maandbetaling, of 30 dagen na een jaarbetaling. 1 credit = 1 CZK.",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd",
+      "code": "Code: {code}"
+    },
+    "stats": {
+      "balance": "Saldo",
+      "invited": "Uitgenodigde bedrijven",
+      "paying": "Betalend"
+    },
+    "program": {
+      "title": "Programma",
+      "hint": "Het partnerprogramma is voor boekhouders en administratiekantoren van wie we de vermelding in de gids hebben goedgekeurd. De credits zijn dezelfde als bij het doorverwijzen van vrienden.",
+      "saved": "Programma gewijzigd.",
+      "friend": {
+        "title": "Verwijs een vriend door",
+        "body": "Het uitgenodigde bedrijf krijgt {welcome} credits, jij krijgt tot {reward} voor elk betalend bedrijf."
+      },
+      "accountant": {
+        "title": "Partnerprogramma voor boekhouders",
+        "body": "Je klant krijgt {welcome} credits, jij krijgt tot {reward} voor elke betalende klant, net als bij het doorverwijzen van vrienden.",
+        "needsApproval": "Zodra we je vermelding in Boekhoudersprofiel hebben goedgekeurd."
+      }
+    },
+    "redeem": {
+      "title": "Betaal een abonnement met credits",
+      "hint": "Een jaar kost de prijs van het jaarabonnement. Een lopend abonnement wordt verlengd.",
+      "button": "{months, plural, one {1 maand} other {# maanden}} · {credits} cr.",
+      "done": "Het abonnement {plan} is betaald tot {until}.",
+      "running": "Je abonnement {plan} is met credits betaald tot {until}."
+    },
+    "plans": {
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "invited": {
+      "title": "Uitgenodigde bedrijven",
+      "empty": "Nog niemand heeft zich via je link aangemeld.",
+      "company": "Bedrijf #{n}",
+      "paying": "Betalend · +{credits} cr.",
+      "waiting": "Betaalt nog niet",
+      "heldUntil": "Betaald · +{credits} cr. op {date}",
+      "heldMonthly": "Betaald · +{credits} cr. na de tweede betaling",
+      "voided": "Betaling terugbetaald of geannuleerd · geen beloning"
+    },
+    "ledger": {
+      "title": "Creditgeschiedenis",
+      "empty": "Nog geen mutaties.",
+      "reason": {
+        "referral_welcome": "Welkomstbonus voor een uitnodiging",
+        "referral_reward": "Beloning voor een betalend bedrijf",
+        "plan_purchase": "Abonnement {plan} voor {months, plural, one {1 maand} other {# maanden}}",
+        "adjustment": "Correctie"
+      }
+    },
+    "errors": {
+      "insufficient_credits": "Je hebt niet genoeg credits voor dit abonnement.",
+      "other_plan_running": "Er wordt al een ander abonnement met credits betaald. Alleen het lopende abonnement kan worden verlengd.",
+      "ico_required": "Voor het partnerprogramma is het ondernemingsnummer (IČO) nodig (Instellingen → Bedrijf).",
+      "partner_not_approved": "Het partnerprogramma voor boekhouders gaat aan zodra we je vermelding in Boekhoudersprofiel hebben goedgekeurd.",
+      "listing_required": "Vul eerst je vermelding in Boekhoudersprofiel in en verstuur hem."
+    },
+    "nudge": {
+      "title": "Je eerste factuur is betaald. Geef Billanta door",
+      "body": "Stuur de link naar iemand met een eigen bedrijf. Die krijgt {welcome, plural, one {# credit} other {# credits}} bij het aanmelden, en jij krijgt tot {reward, plural, one {# credit} other {# credits}} zodra die voor een abonnement gaat betalen. Eén credit is 1 CZK korting op een abonnement.",
+      "copy": "Link kopiëren",
+      "copied": "Gekopieerd",
+      "more": "Zo werkt doorverwijzen",
+      "dismiss": "Verbergen"
+    },
+    "qr": {
+      "title": "Een QR-code met je link",
+      "hint": "Print hem of laat hem zien op je telefoon. Wie hem scant, meldt zich aan via jouw link."
+    },
+    "profileLink": {
+      "body": "Ben je boekhouder? Je vermelding in de gids en de aanvraag voor het partnerprogramma vind je in Boekhoudersprofiel.",
+      "cta": "Boekhoudersprofiel openen"
+    }
+  },
+  "partners": {
+    "title": "Partners",
+    "seoTitle": "Billanta-partners – boekhouders, banken en tools",
+    "lead": "Boekhouders, banken en tools die goed samenwerken met Billanta. Kies wie je facturatie en boekhouding makkelijk maakt.",
+    "filterLabel": "Partnercategorieën",
+    "categories": {
+      "all": "Alle",
+      "accounting": "Boekhouders",
+      "banking": "Banken",
+      "software": "Software",
+      "service": "Diensten",
+      "other": "Overig"
+    },
+    "empty": "We voegen op dit moment partners toe. Kijk intussen eens naar het programma voor boekhouders.",
+    "featured": "Aanbevolen",
+    "visit": "Bezoeken",
+    "become": {
+      "title": "Wil je partner worden?",
+      "body": "Boekhouders en administratiekantoren kunnen zich aanmelden voor de boekhoudersgids, waar ondernemers ze vinden. De credits voor betalende klanten zijn voor iedereen gelijk, en elk bedrijf kan mensen die het kent uitnodigen met de link in Instellingen.",
+      "accountants": "Programma voor boekhouders",
+      "signup": "Account aanmaken",
+      "programmes": "Partnerprogramma's"
+    },
+    "disclosure": "Links naar partners zijn affiliatelinks. We kunnen een vergoeding krijgen voor een klik of aanmelding; dat verandert niets aan jouw prijs."
+  },
+  "accountants": {
+    "eyebrow": "Partnerprogramma",
+    "title": "Billanta voor boekhouders, administratiekantoren en belastingadviseurs",
+    "seoTitle": "Billanta voor boekhouders en belastingadviseurs – alle klanten op één plek, credits",
+    "lead": "Nodig klanten uit voor Billanta, houd hun documenten op één plek en verdien credits voor je eigen abonnement voor elke klant die gaat betalen. Voor administratiekantoren en belastingadviseurs.",
+    "cta": "Registreer je kantoor",
+    "partnersLink": "Onze partners",
+    "benefits": {
+      "access": {
+        "title": "Boekhoudersrol bij klanten",
+        "body": "Je klant nodigt je uit voor zijn team. Jij ziet facturen, uitgaven en de bank, niet het beheer van het bedrijf."
+      },
+      "exports": {
+        "title": "Exports voor de boekhouding",
+        "body": "Btw-aangiften en controleoverzichten, ISDOC en CSV, zonder iets over te typen."
+      },
+      "credits": {
+        "title": "Credits voor klanten",
+        "body": "Je klant krijgt {welcome} credits, jij krijgt tot {reward} voor elke klant die gaat betalen. Net als bij een gewone doorverwijzing."
+      },
+      "clients": {
+        "title": "Alle klanten achter één login",
+        "body": "Wissel via het accountmenu tussen de bedrijven die je hebben uitgenodigd. Geen gedeelde wachtwoorden."
+      },
+      "directory": {
+        "title": "Lokale ondernemers vinden je",
+        "body": "Zodra we je vermelding in Boekhoudersprofiel hebben goedgekeurd, verschijnt je kantoor in de boekhoudersgids en op de factuurpagina's voor je regio."
+      },
+      "shape": {
+        "title": "Functies gevormd door jouw praktijk",
+        "body": "Mis je een export of rapport dat je elke dag gebruikt? Laat het ons weten."
+      }
+    },
+    "stepsTitle": "Zo werkt het",
+    "steps": {
+      "signup": {
+        "title": "Maak een account voor je kantoor",
+        "body": "Aanmelden is gratis. Vul het ondernemingsnummer (IČO) van je kantoor in bij de bedrijfsinstellingen."
+      },
+      "program": {
+        "title": "Vraag het partnerprogramma aan",
+        "body": "Vul in Instellingen → Boekhoudersprofiel je vermelding voor de gids in en vraag het partnerprogramma aan. We beoordelen elke vermelding met de hand. Na goedkeuring vinden ondernemers je in de boekhoudersgids en op de pagina's van hun gemeente."
+      },
+      "share": {
+        "title": "Stuur de link naar klanten",
+        "body": "Wie zich via jouw link aanmeldt en gaat betalen, levert jou credits op."
+      }
+    },
+    "fine": {
+      "title": "Voorwaarden",
+      "points": [
+        "1 credit = 1 CZK. Met credits betaal je het abonnement Start, Plus of Business voor een maand of een jaar.",
+        "De beloning is eenmalig: evenveel credits als het uitgenodigde bedrijf in CZK betaalt voor de eerste abonnementsbetaling, tot de limiet van het programma.",
+        "We schrijven de credits bij na de tweede betaling bij een maandabonnement, of 30 dagen na een jaarbetaling. Als het bedrijf daarvoor geld terugkrijgt of opzegt, is er geen beloning.",
+        "Een uitnodiging telt voor bedrijven die in de afgelopen 30 dagen via jouw link zijn aangemaakt.",
+        "Je kunt je eigen bedrijf niet uitnodigen, en ook geen bedrijf waarvan je al lid bent.",
+        "We zetten het partnerprogramma voor boekhouders aan zodra we je vermelding in de boekhoudersgids hebben goedgekeurd."
+      ]
+    },
+    "clients": {
+      "title": "Zo werk je met klanten",
+      "lead": "Klanten factureren zelf in Billanta, en hun documenten liggen voor je klaar zonder e-mails en spreadsheets.",
+      "points": [
+        "De klant nodigt je per e-mail uit met de boekhoudersrol en kan de rechten aanpassen.",
+        "Je ziet uitgegeven facturen, uitgaven, banktransacties en belastingrapporten.",
+        "Bedrijfsinstellingen, het abonnement en het team blijven in handen van de klant.",
+        "Vanaf het abonnement Start zit toegang voor de boekhouder in het abonnement van de klant.",
+        "Je kunt zelf een nieuwe klant aanbrengen: stuur je link en de klant krijgt welkomstcredits."
+      ]
+    },
+    "directoryCta": {
+      "title": "Kom op de pagina van je gemeente",
+      "body": "Billanta heeft een factuurpagina voor elke stad en gemeente in Tsjechië en Slowakije. Boekhouders met een goedgekeurde vermelding in de gids worden daar getoond aan ondernemers in dezelfde regio. Vermelding is optioneel en je trekt hem met één klik weer in.",
+      "example": "Bekijk de gemeentepagina's",
+      "settings": "Vul je boekhoudersprofiel in"
+    },
+    "shapeCta": {
+      "title": "We bouwen Billanta samen met boekhouders",
+      "body": "We zijn een klein team en bouwen nieuwe functies rond wat boekhouders echt nodig hebben in het werk met klanten. Vertel ons hoe je werkt, wat je ophoudt en welke export je tijd zou besparen. Ideeën van boekhouders gaan voor in de rij.",
+      "mail": "Schrijf ons",
+      "mailSubject": "Billanta voor boekhouders – een idee",
+      "signup": "Meld je kantoor aan en vertel het ons"
+    },
+    "faqTitle": "Veelgestelde vragen",
+    "faq": [
+      {
+        "q": "Wat kost Billanta voor een administratiekantoor?",
+        "a": "Aanmelden en deelnemen aan het programma zijn gratis. Vanaf het abonnement Start zit toegang tot het bedrijf van een klant in het abonnement van de klant. Met credits voor betalende klanten kun je het abonnement van je eigen kantoor betalen."
+      },
+      {
+        "q": "Is Billanta ook voor belastingadviseurs?",
+        "a": "Ja. Een belastingadviseur komt op dezelfde manier bij het bedrijf van een klant als een boekhouder, met de boekhoudersrol, en krijgt dezelfde exports en rapporten, inclusief het overzicht voor de inkomstenbelasting. Het partnerprogramma en de vermelding op gemeentepagina's werken hetzelfde."
+      },
+      {
+        "q": "Hoe krijg ik toegang tot de documenten van een klant?",
+        "a": "De klant nodigt je e-mailadres uit met de boekhoudersrol via Instellingen → Team. Zodra je accepteert, verschijnt het bedrijf in de bedrijvenwisselaar in je account."
+      },
+      {
+        "q": "Welke exports ondersteunt Billanta?",
+        "a": "De Tsjechische btw-aangifte, het controleoverzicht en de ICP-opgave voor het EPO-portaal, de Slowaakse btw-aangifte, het controleoverzicht en de ICP-opgave voor eDane, ISDOC-facturen, exports voor Pohoda en Money S3, en CSV."
+      },
+      {
+        "q": "Hoe kom ik op de gemeentepagina's?",
+        "a": "Vul in Instellingen → Boekhoudersprofiel je vermelding in met de regio waarin je werkt en verstuur hem. We beoordelen elke vermelding met de hand. Na goedkeuring verschijnt je kantoor in de boekhoudersgids en op de gemeentepagina's in je regio, meestal binnen een uur."
+      },
+      {
+        "q": "Hoeveel credits krijg ik?",
+        "a": "Hetzelfde als bij een gewone doorverwijzing, met of zonder partnerprogramma: de klant krijgt {welcome} credits bij aanmelding via jouw link. Jij krijgt evenveel credits als de klant in CZK betaalt voor de eerste abonnementsbetaling, tot maximaal {reward}. Bij een maandabonnement schrijven we ze bij na de tweede betaling, bij een jaarabonnement 30 dagen na de betaling. Als de klant daarvoor geld terugkrijgt of opzegt, is er geen beloning. 1 credit = 1 CZK."
+      }
+    ]
+  },
   "twoFactor": {
     "notice": {
       "title": "Tweestapsverificatie vereist",
       "body": "Omdat dit toegang geeft tot geld en gegevens, kun je nieuwe koppelingen alleen toevoegen met tweestapsverificatie. Bestaande koppelingen blijven werken.",
       "cta": "2FA inschakelen"
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "seoTitle": "Blog over facturatie, belastingen en e-facturatie",
+    "lead": "Belastingdeadlines, wetswijzigingen en praktische handleidingen voor zzp'ers en kleine bedrijven in Tsjechië en Slowakije.",
+    "empty": "Hier staat nog niets. De eerste artikelen worden geschreven.",
+    "read": "Artikel lezen",
+    "updated": "bijgewerkt {date}",
+    "sources": "Bronnen",
+    "disclaimer": "Dit artikel is een samenvatting, geen belasting- of juridisch advies. Controleer de bronnen of vraag een belastingadviseur voordat je ernaar handelt.",
+    "ctaTitle": "Factureren zonder gedoe",
+    "ctaBody": "Billanta houdt vervaldatums, QR-betalingen en exports voor je boekhouder bij. Begin gratis.",
+    "ctaButton": "Gratis account aanmaken",
+    "aiAuto": "Dit artikel is door AI geschreven op basis van onze eigen gegevens en voor publicatie alleen automatisch gecontroleerd. Zie je een fout, <contact>laat het ons weten</contact>.",
+    "aiReviewed": "Dit artikel is met hulp van AI opgesteld en voor publicatie door een mens nagekeken. Zie je een fout, <contact>laat het ons weten</contact>."
   },
   "companyLookup": {
     "group": "Uit het register",
