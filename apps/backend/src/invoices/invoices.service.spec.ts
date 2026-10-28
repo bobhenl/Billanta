@@ -436,7 +436,7 @@ describe("InvoicesService.issue – exchange rate mode", () => {
   });
 
   /** Issues a EUR draft (DUZP Saturday 14 March 2026) for a company with these prefs and VAT status; returns what was written. */
-  async function issueEur(prefs: Record<string, unknown>, vatStatus: string, over: Record<string, unknown> = {}, items: unknown[] = lineItems, addressCountry = "CZ") {
+  async function issueEur(prefs: Record<string, unknown>, vatStatus: string, over: Record<string, unknown> = {}, items: unknown[] = lineItems, country = "CZ") {
     const invoice = makeInvoice({
       status: "draft",
       invoiceNumber: null,
@@ -454,7 +454,7 @@ describe("InvoicesService.issue – exchange rate mode", () => {
       .mockReturnValueOnce(makeSelectChain([])) // number free
       .mockReturnValueOnce(makeSelectChain([])) // snapshot: tenant
       .mockReturnValueOnce(makeSelectChain([])) // snapshot: contact
-      .mockReturnValueOnce(makeSelectChain([{ invoiceFormPrefs: prefs, vatStatus, addressCountry }])); // rate settings
+      .mockReturnValueOnce(makeSelectChain([{ invoiceFormPrefs: prefs, vatStatus, country }])); // rate settings
     const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = { select, insert: vi.fn().mockReturnValue(makeSequenceInsertChain(1)), update } as any;

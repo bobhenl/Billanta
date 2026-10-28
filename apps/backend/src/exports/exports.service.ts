@@ -25,6 +25,7 @@ import {
   type VatReceivedDoc,
 } from "./vat-returns";
 import { generateSkDphV25, generateSkKvDphV25, generateSkSvDphV20, skSubmitterFromTenant } from "./vat-returns-sk";
+import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 type Db = PostgresJsDatabase<typeof schema>;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
@@ -331,7 +332,7 @@ export class ExportsService {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
     const packId = `billanta-${isoDate(period.from)}`;
-    const home = homeCurrencyOf(tenant.addressCountry);
+    const home = tenantHomeCurrencyOf(tenant);
 
     const partner = (c: ContactRow | null) =>
       c
@@ -460,7 +461,7 @@ export class ExportsService {
   async moneyS3Xml(db: Db, period: ExportPeriod, tenant: typeof schema.tenants.$inferSelect): Promise<string> {
     const invoices = await this.loadInvoices(db, period);
     const expenses = await this.loadExpenses(db, period);
-    const home = homeCurrencyOf(tenant.addressCountry);
+    const home = tenantHomeCurrencyOf(tenant);
 
     const issued = invoices.map(({ invoice, contact, lineItems, totals }) => {
       const foreign = invoice.currency !== home;

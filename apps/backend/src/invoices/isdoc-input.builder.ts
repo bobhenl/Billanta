@@ -6,6 +6,7 @@ import type {
 } from "@faktur/cz-compliance";
 import * as schema from "../../drizzle/schema";
 import type { InvoiceVatBreakdown } from "./invoice-total.util";
+import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -108,7 +109,7 @@ export function buildIsdocInvoiceInput(
     taxableSupplyDate: (invoice.taxableSupplyDate ?? invoice.issueDate).toISOString().slice(0, 10),
     currency: invoice.currency,
     // Same home-currency rule as the Pohoda export; SK suppliers keep EUR as local.
-    localCurrency: tenant.addressCountry === "SK" ? "EUR" : "CZK",
+    localCurrency: tenantHomeCurrencyOf(tenant),
     exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
     supplier: tenantToIsdocParty(tenant),
     // The contact person belongs to the document, not to the contact row.

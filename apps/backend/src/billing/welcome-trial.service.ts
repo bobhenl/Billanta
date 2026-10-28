@@ -53,7 +53,7 @@ export class WelcomeTrialService {
       if (!t) return "not_eligible";
       const skip = welcomeTrialSkip(t, days);
       if (skip) return skip;
-      const known = await this.inRegistry(t.ico!, t.addressCountry);
+      const known = await this.inRegistry(t.ico!, t.country);
       if (known !== "ok") return known;
 
       const signals = await this.signals(db, tenantId);
@@ -95,7 +95,7 @@ export class WelcomeTrialService {
       const skip = welcomeTrialSkip({ ...t, trialStartedAt: null }, CARD_TRIAL_DAYS);
       if (skip === "tenant_had_trial") return "not_eligible";
       if (skip) return skip;
-      const known = await this.inRegistry(t.ico!, t.addressCountry);
+      const known = await this.inRegistry(t.ico!, t.country);
       if (known !== "ok") return known;
 
       const signals = await this.signals(db, tenantId);
@@ -118,7 +118,7 @@ export class WelcomeTrialService {
         isDemo: schema.tenants.isDemo,
         classroomClassId: schema.tenants.classroomClassId,
         trialStartedAt: schema.tenants.trialStartedAt,
-        addressCountry: schema.tenants.addressCountry,
+        country: schema.tenants.country,
       })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId));

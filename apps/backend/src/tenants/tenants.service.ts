@@ -9,6 +9,7 @@ import { demoConfig } from "../demo/demo-config";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { DashboardRole } from "../tenancy/tenant-context.middleware";
 import { findBankAccount, listBankAccounts } from "./bank-accounts";
+import { countryChange, isCountryLocked } from "./country-change";
 import type { BankAccountDto } from "./dto/bank-account.dto";
 import type { UpdateTenantDto } from "./dto/update-tenant.dto";
 import { getNumberFormats, saveNumberFormats, type NumberFormatsInput } from "./number-formats";
@@ -83,12 +84,14 @@ export class TenantsService {
     const demoAiCallsLeft = rows[0]?.isDemo
       ? ((await db.execute<{ left: number }>(sql`SELECT demo_ai_calls_left(${id}, ${demoConfig().aiPerSession}) AS left`))[0]?.left ?? 0)
       : null;
+    const countryLocked = rows[0] ? await isCountryLocked(db) : false;
     return rows.map(({ aiApiKeyEncrypted: _aiKey, stripeSecretKeyEncrypted, logoData, ...tenant }) => ({
       ...tenant,
       hasStripeKey: Boolean(stripeSecretKeyEncrypted),
       taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
       hasLogo: Boolean(logoData),
       demoAiCallsLeft,
+      countryLocked,
     }));
   }
 
@@ -139,6 +142,10 @@ export class TenantsService {
     if (slug && (await this.profileSlugTaken(db, id, slug))) throw new ConflictException({ error: "slug_taken" });
     const [row] = await db.select().from(schema.tenants).where(eq(schema.tenants.id, id)).limit(1);
     Object.assign(values, vatFields(dto, row?.vatStatus));
+    if (dto.country !== undefined) {
+      const change = countryChange(row?.country, dto.country, await isCountryLocked(db));
+      if (change) Object.assign(values, change);
+    }
     if (dto.tax_advances) values.taxAdvances = cleanAdvances(dto.tax_advances);
     await db
       .update(schema.tenants)

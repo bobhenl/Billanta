@@ -65,7 +65,7 @@ describe("taxAdvancesSchema", () => {
 describe("reverseChargeNoteKind", () => {
   const eu = { ico: null, dic: "DE123456789", isPerson: false, addressCountry: "DE" };
   const invoice = { documentType: "invoice" as const, reverseCharge: false };
-  const tenant = (vatStatus: "payer" | "identified" | "non_payer") => ({ vatStatus, addressCountry: "CZ" });
+  const tenant = (vatStatus: "payer" | "identified" | "non_payer") => ({ vatStatus, country: "CZ" });
 
   it("prints 'daň odvede zákazník' for an identified person's service to an EU business", () => {
     expect(reverseChargeNoteKind(invoice, tenant("identified"), eu)).toBe("eu");

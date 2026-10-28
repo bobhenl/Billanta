@@ -6,7 +6,6 @@ import { dirname, join } from "node:path";
 import { Injectable, Logger } from "@nestjs/common";
 import {
   czechAccountToIban,
-  homeCurrencyOf,
   generateQrInvoiceString,
   generateSpaydString,
   isEuReverseChargeService,
@@ -23,6 +22,7 @@ import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
 import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
 import { rateLineLabel } from "./exchange-rate-mode";
 import { brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
+import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
 type ContactRow = typeof schema.contacts.$inferSelect;
@@ -36,14 +36,14 @@ type TenantRow = typeof schema.tenants.$inferSelect;
  */
 export function reverseChargeNoteKind(
   invoice: Pick<InvoiceRow, "documentType" | "reverseCharge">,
-  tenant: Pick<TenantRow, "vatStatus" | "addressCountry">,
+  tenant: Pick<TenantRow, "vatStatus" | "country">,
   contact?: Pick<ContactRow, "ico" | "dic" | "isPerson" | "addressCountry">,
 ): "eu" | "domestic" | null {
   const taxDocument = invoice.documentType === "invoice" || invoice.documentType === "credit_note";
   const customer = contact
     ? { ico: contact.ico ?? undefined, dic: contact.dic ?? undefined, isPerson: contact.isPerson, address: { countryCode: contact.addressCountry } }
     : undefined;
-  const euService = taxDocument && isEuReverseChargeService(tenant.vatStatus, tenant.addressCountry, customer);
+  const euService = taxDocument && isEuReverseChargeService(tenant.vatStatus, tenantCountry(tenant), customer);
   if (euService && (invoice.reverseCharge || tenant.vatStatus === "identified")) return "eu";
   return invoice.reverseCharge ? "domestic" : null;
 }
@@ -342,7 +342,7 @@ export class InvoicePdfService {
       doc.moveDown(0.8);
     }
     this.renderLineItemsTable(doc, t, lineItems, invoice);
-    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), homeCurrencyOf(tenant.addressCountry));
+    const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), tenantHomeCurrencyOf(tenant));
     // The brand name is written exactly so ("PAY by square"), never uppercased.
     if (qr) this.renderPaymentQr(doc, qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase(), qr.png, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);

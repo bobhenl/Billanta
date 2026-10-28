@@ -65,6 +65,8 @@ export const updateTenantSchema = z
     address_city: text(100),
     address_postal_code: text(10),
     address_country: z.string().length(2),
+    /** The tax country (ISO code). Only an active one, and only until the first issued invoice (country-change.ts). */
+    country: z.string().regex(/^[A-Za-z]{2}$/),
     email: z.string().trim().email().max(320).nullish().or(z.literal("")),
     phone: text(32),
     website: text(200),
