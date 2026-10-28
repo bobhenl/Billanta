@@ -598,6 +598,1011 @@
       "slate": "Szary"
     }
   },
+  "settings": {
+    "profile": {
+      "title": "Mój profil",
+      "description": "Twoje dane osobowe i logowanie. Dane firmy znajdziesz w sekcji Firma.",
+      "memberSince": "Członek od {date}",
+      "personal": "Dane osobowe",
+      "name": "Imię i nazwisko",
+      "namePlaceholder": "Jan Kowalski",
+      "email": "E-mail",
+      "save": "Zapisz",
+      "nameSaved": "Imię i nazwisko zapisane.",
+      "changePassword": "Zmień hasło",
+      "setPassword": "Ustaw hasło",
+      "setPasswordHint": "Logujesz się przez Google lub Seznam. Hasło pozwoli Ci logować się także e-mailem.",
+      "currentPassword": "Obecne hasło",
+      "newPassword": "Nowe hasło",
+      "confirmPassword": "Powtórz nowe hasło",
+      "passwordRules": "Co najmniej 8 znaków.",
+      "passwordSaved": "Hasło zmienione.",
+      "signInMethods": "Metody logowania",
+      "methodPassword": "E-mail i hasło",
+      "active": "Aktywna",
+      "notSet": "Nieustawiona",
+      "linked": "Połączona",
+      "preferences": "Język i wygląd",
+      "language": "Język aplikacji",
+      "theme": "Motyw",
+      "errors": {
+        "not_signed_in": "Nie jesteś zalogowany.",
+        "name_too_long": "Imię i nazwisko jest za długie.",
+        "too_short": "Hasło musi mieć co najmniej 8 znaków.",
+        "wrong_current": "Obecne hasło jest nieprawidłowe.",
+        "mismatch": "Nowe hasła nie są zgodne.",
+        "invalid_email": "Wpisz prawidłowy adres e-mail.",
+        "same_email": "To jest Twój obecny e-mail.",
+        "email_taken": "Ten e-mail jest już używany przez inne konto.",
+        "send_failed": "Nie udało się wysłać e-maila, spróbuj później.",
+        "confirm_mismatch": "E-mail potwierdzający się nie zgadza.",
+        "last_admin": "Jesteś ostatnim administratorem firmy {company}. Najpierw przekaż rolę administratora innemu członkowi.",
+        "issued_in_shared": "Wystawiałeś dokumenty we wspólnej firmie {company}, więc nie można Cię usunąć. Skontaktuj się z pozostałymi członkami.",
+        "delete_failed": "Usuwanie nie powiodło się, spróbuj ponownie."
+      },
+      "cancel": "Anuluj",
+      "emailChange": {
+        "button": "Zmień",
+        "hint": "E-mail służy do logowania. Zmianę potwierdzasz linkiem wysłanym na nowy adres.",
+        "title": "Zmiana e-maila do logowania",
+        "body": "Wyślemy link potwierdzający na nowy adres (ważny 1 godzinę). Dopóki go nie otworzysz, logujesz się obecnym e-mailem.",
+        "newEmail": "Nowy e-mail",
+        "submit": "Wyślij potwierdzenie",
+        "sent": "Wysłaliśmy link potwierdzający na {email}."
+      },
+      "danger": {
+        "title": "Usuń konto",
+        "body": "Trwale usuwa Twoje konto. Firmy, w których jesteś jedynym członkiem, zostaną usunięte razem ze wszystkimi dokumentami.",
+        "button": "Usuń konto",
+        "modalTitle": "Na pewno usunąć konto?",
+        "modalBody": "Tej operacji nie można cofnąć.",
+        "pointSolo": "Firmy, w których jesteś jedynym członkiem, zostaną usunięte razem z fakturami, kontaktami i wydatkami.",
+        "pointShared": "Ze wspólnych firm zostaniesz tylko usunięty; pozostali członkowie nic nie tracą.",
+        "pointBackup": "Najpierw pobierz kopię zapasową danych (Ustawienia → Kopie zapasowe). Dokumenty podatkowe trzeba archiwizować przez 10 lat.",
+        "typeEmail": "Wpisz swój e-mail, aby potwierdzić ({email})",
+        "confirm": "Usuń trwale"
+      }
+    },
+    "company": {
+      "title": "Dane firmy",
+      "description": "Te dane drukujemy na każdej fakturze jako dane sprzedawcy.",
+      "loadError": "Nie udało się wczytać danych firmy.",
+      "readOnly": "Dane firmy może zmienić tylko właściciel lub administrator.",
+      "sections": {
+        "identity": "Identyfikacja",
+        "identityHint": "Wpisz numer firmy (IČO), a resztę wczytamy z ARES.",
+        "address": "Adres siedziby",
+        "contact": "Kontakt",
+        "contactHint": "Wyświetlany w nagłówku faktury.",
+        "bank": "Konto bankowe",
+        "bankHint": "Używane do kodu QR płatności na fakturach.",
+        "defaults": "Domyślne ustawienia faktur",
+        "defaultsHint": "Wypełniane na każdej nowej fakturze; można je zmienić na konkretnej fakturze."
+      },
+      "ico": "Numer firmy (IČO)",
+      "dic": "NIP (DIČ)",
+      "companyName": "Nazwa (skrócona)",
+      "legalName": "Pełna nazwa prawna",
+      "vatPayer": "Podatnik VAT",
+      "vatPayerHint": "Faktury są wystawiane z VAT i podsumowaniem podatku. Niepodatnicy mają na fakturze adnotację „Nie jest podatnikiem VAT”.",
+      "vatStatus": {
+        "title": "Status VAT",
+        "payer": "Podatnik VAT",
+        "payerHint": "Wystawiasz faktury z VAT i składasz deklaracje VAT oraz informacje kontrolne.",
+        "identified": "Osoba zidentyfikowana",
+        "identifiedHint": "Nie jesteś podatnikiem VAT, ale płacisz VAT od reklam i usług kupionych za granicą.",
+        "non_payer": "Nie jest podatnikiem VAT",
+        "non_payerHint": "Wystawiasz faktury bez VAT i nie składasz deklaracji VAT.",
+        "dicHint": "Masz NIP, ale nie jesteś podatnikiem VAT? Jeśli kupujesz reklamy lub usługi z zagranicy (Google, Meta), prawdopodobnie jesteś osobą zidentyfikowaną. ARES tego nie pokazuje, więc sprawdź to w swoim urzędzie skarbowym.",
+        "suggest": {
+          "payer": "{source} podaje Cię jako podatnika VAT.",
+          "non_payer": "{source} nie podaje Cię jako podatnika VAT.",
+          "registry": "Rejestr podatników VAT",
+          "apply": "Ustaw na: {status}"
+        }
+      },
+      "advances": {
+        "title": "Miesięczne zaliczki",
+        "hint": "Każda kwota obowiązuje od wybranego miesiąca, dopóki nie zastąpi jej nowszy wiersz. Zachowaj starsze wiersze: pulpit, kalendarz i szacunek roczny korzystają z nich dla minionych miesięcy. Puste pole zachowuje kwotę z poprzedniego wiersza, 0 oznacza brak płatności.",
+        "social": "Ubezpieczenie społeczne",
+        "health": "Ubezpieczenie zdrowotne",
+        "flat_tax": "Podatek ryczałtowy lub zaliczka na podatek dochodowy",
+        "short": {
+          "social": "społeczne",
+          "health": "zdrowotne",
+          "flat_tax": "ryczałt"
+        },
+        "from": "Obowiązuje od",
+        "current": "Aktualnie",
+        "inherit": "bez zmian",
+        "add": "Nowa kwota od…",
+        "remove": "Usuń wiersz od {month}",
+        "empty": "Brak zaliczek. Dodaj kwotę i miesiąc, od którego obowiązuje.",
+        "duplicate": "Ten miesiąc jest już używany w innym wierszu.",
+        "minimum": "Ustawowe minimum od {from}: {amounts}.",
+        "useMinimum": "Użyj",
+        "errors": {
+          "month": "Uzupełnij miesiąc, od którego obowiązuje każdy wiersz.",
+          "duplicate": "Dwa wiersze mają ten sam miesiąc. Połącz je w jeden.",
+          "amount": "Zaliczki muszą być liczbami od 0 do 10 000 000."
+        },
+        "flatTaxLabel": {
+          "flat": "Podatek ryczałtowy",
+          "advance": "Zaliczka na podatek dochodowy",
+          "unknown": "Podatek ryczałtowy / zaliczka na podatek"
+        },
+        "regime": {
+          "flatTax": "Czy rozliczasz się w reżimie ryczałtowym?",
+          "flatTaxHint": "W reżimie ryczałtowym (paušální daň) płacisz jedną miesięczną kwotę, która obejmuje podatek dochodowy oraz ubezpieczenie społeczne i zdrowotne. Nie płacisz osobnych zaliczek na ubezpieczenia.",
+          "activity": "Działalność główna czy dodatkowa?",
+          "activityHint": "Działalność gospodarcza jest dodatkowa, jeśli jednocześnie pracujesz na etacie, studiujesz albo pobierasz emeryturę lub zasiłek rodzicielski. Minimalna zaliczka na ubezpieczenie społeczne jest wtedy niższa, a minimalnej zaliczki na ubezpieczenie zdrowotne nie ma.",
+          "yes": "Tak",
+          "no": "Nie",
+          "main": "Główna",
+          "secondary": "Dodatkowa"
+        },
+        "minimumAsk": {
+          "flatTax": "Aby pokazać ustawowe minimum, powiedz nam, czy rozliczasz się w reżimie ryczałtowym:",
+          "activity": "Aby pokazać ustawowe minimum, powiedz nam, czy działalność gospodarcza jest Twoją działalnością główną, czy dodatkową:"
+        },
+        "useMinimumHint": "Wpisuje ustawowe minimum do wiersza. Pozostałe puste pola zostaną ustawione na 0."
+      },
+      "street": "Ulica i numer",
+      "city": "Miasto",
+      "postalCode": "Kod pocztowy",
+      "country": "Kraj",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "website": "Strona internetowa",
+      "registryNote": "Wpis do rejestru",
+      "registryNotePlaceholder": "Wpisana do rejestru handlowego prowadzonego przez Sąd Miejski w Pradze, sekcja C, wpis …",
+      "accountNumber": "Numer konta",
+      "bankCode": "Kod banku",
+      "defaultLocale": "Język faktury",
+      "defaultDueDays": "Termin płatności (dni)",
+      "defaultPaymentMethod": "Forma płatności",
+      "defaultNoteBelow": "Tekst pod pozycjami",
+      "defaultNotePlaceholder": "Dziękujemy za współpracę.",
+      "aresLoaded": "Wczytano z ARES – sprawdź i zapisz.",
+      "aresNotFound": "W ARES nie ma firmy o tym numerze.",
+      "aresFailed": "Wyszukiwanie w ARES nie powiodło się",
+      "unsaved": "{count, plural, one {# niezapisana zmiana} few {# niezapisane zmiany} many {# niezapisanych zmian} other {# niezapisanej zmiany}}",
+      "noChanges": "Wszystko zapisane",
+      "discard": "Odrzuć",
+      "save": "Zapisz zmiany",
+      "saved": "Dane firmy zapisane.",
+      "saveFailed": "Zapisywanie nie powiodło się",
+      "accounts": {
+        "title": "Inne konta bankowe",
+        "hint": "Np. konto w EUR – używane automatycznie na fakturach w tej walucie.",
+        "add": "Dodaj konto",
+        "addTitle": "Nowe konto bankowe",
+        "editTitle": "Edytuj konto",
+        "edit": "Edytuj",
+        "delete": "Usuń",
+        "label": "Nazwa",
+        "labelPlaceholder": "Np. Wise EUR",
+        "accountNumber": "Numer konta",
+        "bankCode": "Kod banku",
+        "currency": "Automatycznie dla waluty",
+        "currencyNone": "Tylko przy ręcznym wyborze",
+        "currencyHint": "Faktury w tej walucie dostaną to konto, chyba że na fakturze wybierzesz inne.",
+        "autoFor": "auto {currency}",
+        "needAccount": "Wpisz IBAN albo numer konta z kodem banku.",
+        "saved": "Konto zapisane",
+        "deleted": "Konto usunięte",
+        "saveFailed": "Zapisywanie nie powiodło się",
+        "deleteTitle": "Usunąć konto bankowe?",
+        "deleteBody": "„{label}” zostanie usunięte. Faktury, które z niego korzystały, przejdą na wybór automatyczny.",
+        "cancel": "Anuluj",
+        "save": "Zapisz"
+      },
+      "logo": {
+        "title": "Logo",
+        "hint": "Drukowane w prawym górnym rogu faktur. PNG lub JPG do 512 kB, najlepiej w poziomie.",
+        "upload": "Prześlij logo",
+        "replace": "Zastąp",
+        "remove": "Usuń",
+        "alt": "Logo firmy",
+        "saved": "Logo zapisane",
+        "removed": "Logo usunięte",
+        "badType": "Logo musi być w formacie PNG lub JPG.",
+        "tooBig": "Logo jest większe niż 512 kB.",
+        "failed": "Przesyłanie nie powiodło się (HTTP {status})"
+      },
+      "companyNameHint": "Krótka nazwa do aplikacji i e-maili (np. „Novák Design”). Na fakturach drukujemy pełną nazwę prawną.",
+      "legalNameHint": "Dokładnie tak jak w rejestrze – drukowana na fakturach jako dane sprzedawcy. W przypadku przedsiębiorcy jednoosobowego to Twoje imię i nazwisko (ewentualnie z dopiskiem firmy).",
+      "countryHint": "Dwuliterowy kod kraju: CZ, SK, DE…",
+      "registryNoteHint": "Spółki wpisane do rejestru handlowego muszą to podawać na fakturach. Przedsiębiorcy jednoosobowi mogą zostawić puste pole.",
+      "ibanHint": "Wystarczy numer konta i kod banku – IBAN jest potrzebny głównie do płatności z zagranicy.",
+      "defaultDueDaysHint": "Ile dni po wystawieniu przypada termin płatności nowej faktury. Zwykle 14.",
+      "defaultsMoved": "Domyślne ustawienia faktur znajdziesz w",
+      "defaultsLink": "Ustawienia › Faktury",
+      "registrySearch": "Znajdź w rejestrze",
+      "registrySearchPlaceholder": "Nazwa firmy, przedsiębiorca, numer firmy lub miasto",
+      "loadRegistry": "Wczytaj z rejestru",
+      "dicKeepHint": "Zachowaj wpisany NIP, nawet jeśli nie jesteś podatnikiem VAT lub jesteś osobą zidentyfikowaną. Drukujemy go na Twoich dokumentach.",
+      "dataBoxId": "ID skrzynki danych",
+      "dataBoxIdHint": "Siedem znaków, np. ab12cd3. Nie jest tajne. Wypełniamy je w rocznym przeglądzie dla ČSSZ.",
+      "icoTrialHint": "Wpisanie IČO uruchamia bezpłatny {days}-dniowy okres próbny Plus – bez karty, raz na IČO."
+    },
+    "team": {
+      "title": "Zespół",
+      "description": "Kto ma dostęp do fakturowania Twojej firmy.",
+      "loadError": "Nie udało się wczytać zespołu.",
+      "members": "Członkowie ({count})",
+      "membersHint": "Każdy członek loguje się na własne konto.",
+      "invite": "Zaproś członka",
+      "you": "Ty",
+      "since": "od {date}",
+      "role": "Rola",
+      "roles": {
+        "owner": "Właściciel",
+        "admin": "Administrator",
+        "accountant": "Księgowa",
+        "viewer": "Tylko odczyt"
+      },
+      "roleHints": {
+        "owner": "Założył firmę, pełny dostęp. Nie można go usunąć.",
+        "admin": "Pełny dostęp, a do tego zarządza zespołem i danymi firmy.",
+        "accountant": "Dla Twojej księgowej: dokumenty, bank i eksporty. Nie może zmieniać zespołu ani firmy.",
+        "viewer": "Do przeglądania dokumentów i raportów. Nie może zmieniać zespołu ani firmy."
+      },
+      "rolesTitle": "Co może każda rola",
+      "roleChanged": "Rola zmieniona.",
+      "remove": "Usuń",
+      "removeTitle": "Usunąć członka?",
+      "removeBody": "{name} straci dostęp do tej firmy. Konto pozostanie.",
+      "removed": "Członek usunięty.",
+      "invitations": "Oczekujące zaproszenia ({count})",
+      "expires": "ważne do {date}",
+      "expired": "Zaproszenie wygasło",
+      "revoke": "Cofnij",
+      "revoked": "Zaproszenie cofnięte.",
+      "inviteTitle": "Zaproś do zespołu",
+      "email": "E-mail",
+      "sendInvite": "Wyślij zaproszenie",
+      "inviteSent": "Zaproszenie wysłane e-mailem. Link możesz też udostępnić samodzielnie:",
+      "inviteNotSent": "Nie udało się wysłać zaproszenia e-mailem. Skopiuj link i wyślij go sam:",
+      "copied": "Link skopiowany.",
+      "done": "Gotowe",
+      "cancel": "Anuluj",
+      "failed": "Akcja nie powiodła się",
+      "presets": {
+        "admin": "Administrator",
+        "accountant": "Księgowa",
+        "invoicer": "Fakturzysta",
+        "expenses": "Asystent ds. wydatków",
+        "auditor": "Doradca podatkowy / audytor",
+        "viewer": "Tylko odczyt",
+        "custom": "Własne uprawnienia"
+      },
+      "presetHints": {
+        "admin": "Pełny dostęp, łącznie z zespołem, danymi firmy i płatnościami za Billantę.",
+        "accountant": "Dokumenty, kontakty, wydatki, bank i eksporty. Nie może zmieniać zespołu ani danych firmy.",
+        "invoicer": "Wystawia faktury i zarządza kontaktami, bank widzi tylko do odczytu. Bez wydatków i eksportów.",
+        "expenses": "Wprowadza wydatki i paragony, przegląda faktury i kontakty.",
+        "auditor": "Widzi wszystko, łącznie z bankiem i eksportami, niczego nie zmienia.",
+        "viewer": "Przegląda faktury, kontakty i wydatki. Bez banku i eksportów.",
+        "custom": "Ustaw dostęp dla każdego obszaru osobno."
+      },
+      "presetsHint": "Wybierz gotowy profil albo dostosuj dostęp członka do poszczególnych obszarów (ikona suwaków).",
+      "areas": {
+        "title": "Obszar",
+        "invoices": "Faktury",
+        "contacts": "Kontakty",
+        "expenses": "Wydatki",
+        "bank": "Bank",
+        "reports": "Eksporty"
+      },
+      "levels": {
+        "none": "Brak dostępu",
+        "read": "Odczyt",
+        "write": "Edycja"
+      },
+      "editPermissions": "Edytuj uprawnienia",
+      "editPermissionsFor": "Uprawnienia – {name}",
+      "permissionsHint": "Edycja obejmuje odczyt. Zespołem, danymi firmy i płatnościami za Billantę zarządzają tylko administratorzy.",
+      "save": "Zapisz",
+      "directory": {
+        "toggle": "Nie masz księgowej? Wybierz sprawdzoną",
+        "hint": "Księgowe z naszego katalogu, które sprawdziliśmy i zatwierdziliśmy. Przycisk Zaproś tylko wpisuje e-mail; zaproszenie nadal wysyłasz sam.",
+        "region": "Region",
+        "anyRegion": "Wszystkie regiony",
+        "invite": "Zaproś",
+        "contact": "Kontakt",
+        "empty": "W tym regionie nikogo jeszcze nie ma.",
+        "all": "Pełny katalog księgowych",
+        "picked": "Wpisano {email}. Sprawdź rolę i wyślij zaproszenie."
+      }
+    },
+    "exports": {
+      "title": "Eksporty dla księgowej",
+      "description": "Pobierz dokumenty za dany okres i wyślij je księgowej albo zaproś ją do zespołu.",
+      "period": "Okres",
+      "modes": {
+        "month": "Miesiąc",
+        "quarter": "Kwartał",
+        "year": "Rok",
+        "range": "Własny"
+      },
+      "quarter": "Q{q}",
+      "download": "Pobierz",
+      "files": {
+        "invoices": {
+          "title": "Wystawione faktury (CSV)",
+          "hint": "Wszystkie wystawione dokumenty z podstawą i VAT według stawek, kursem {source} i kwotą w {home}. Do Excela i programów księgowych."
+        },
+        "expenses": {
+          "title": "Wydatki (CSV)",
+          "hint": "Otrzymane faktury i paragony z dostawcą i VAT."
+        },
+        "pohoda": {
+          "title": "Pohoda (XML)",
+          "hint": "Wystawione i otrzymane faktury do importu do Pohody (dataPack)."
+        },
+        "moneyS3": {
+          "title": "Money S3 (XML)",
+          "hint": "Wystawione i otrzymane faktury dla Money S3 (Plik → Import → XML)."
+        }
+      },
+      "accountantHint": "Księgowa z rolą Księgowa może pobierać eksporty, kiedy tylko potrzebuje.",
+      "inviteAccountant": "Zaproś księgową",
+      "vat": {
+        "title": "Czeskie zgłoszenia VAT",
+        "hint": "Pliki XML do importu do EPO na czeskim portalu podatkowym. Dokumenty są przypisywane według daty dokonania dostawy; waluty obce przeliczamy po kursie ČNB.",
+        "monthly": "Miesięcznie",
+        "quarterly": "Kwartalnie",
+        "quarter": "Q{q}",
+        "download": "Pobierz XML",
+        "files": {
+          "dp3": {
+            "title": "Deklaracja VAT",
+            "hint": "DPHDP3 – VAT należny, odliczenia, podatek do zapłaty."
+          },
+          "kh1": {
+            "title": "Informacja kontrolna",
+            "hint": "DPHKH1 – dokumenty powyżej 10 000 CZK wykazane pojedynczo (A.4, B.2), pozostałe zbiorczo."
+          },
+          "shv": {
+            "title": "Informacja podsumowująca",
+            "hint": "DPHSHV – usługi dla klientów zarejestrowanych do VAT w innych państwach UE."
+          }
+        },
+        "nothingToReport": "W tym okresie nie ma dostaw do UE – informacji podsumowującej nie trzeba składać.",
+        "missingDic": "Uzupełnij NIP swojej firmy w Ustawieniach – zgłoszenia go wymagają.",
+        "rateUnavailable": "Nie udało się wczytać kursu ČNB. Spróbuj ponownie za chwilę.",
+        "failed": "Nie udało się wygenerować pliku.",
+        "disclaimer": "Przed złożeniem sprawdź plik w EPO i wybierz tam urząd skarbowy. Dostawy do UE wykazujemy jako usługi (kod 3); dokumenty bez NIP dostawcy trafiają do B.3.",
+        "formVersions": "Eksport tworzy XML w wersjach DPHDP3 {dp3}, DPHKH1 {kh1} i DPHSHV {shv}. Zasady i wersje formularzy ostatnio sprawdziliśmy {date}.",
+        "officialLink": "Aktualne informacje czeskiej administracji skarbowej",
+        "guideLink": "Instrukcja składania",
+        "sk": {
+          "title": "Słowackie zgłoszenia VAT",
+          "hint": "Pliki XML dla usługi elektronicznego składania eDane słowackiej administracji skarbowej. Dokumenty są przypisywane według momentu powstania obowiązku podatkowego; waluty obce przeliczamy po kursie EBC z dnia poprzedniego (§ 26 ustawy nr 222/2004 Dz.U.).",
+          "files": {
+            "dph": {
+              "title": "Deklaracja VAT",
+              "hint": "DPHv25 – VAT należny według stawek, odliczenie VAT naliczonego, podatek do zapłaty (§ 78)."
+            },
+            "kv": {
+              "title": "Informacja kontrolna",
+              "hint": "KVDPHv25 – faktury według klienta i dostawcy (A.1, A.2, B.2), faktury uproszczone zbiorczo, korekty w C.1 (§ 78a)."
+            },
+            "sv": {
+              "title": "Informacja podsumowująca",
+              "hint": "SVDPHv20 – usługi dla klientów zarejestrowanych do VAT w innych państwach UE (§ 80)."
+            }
+          },
+          "nothingToReport": "W tym okresie nie ma dostaw do UE – informacji podsumowującej nie trzeba składać.",
+          "missingDic": "Uzupełnij słowacki NIP swojej firmy (SK i 10 cyfr) w Ustawieniach – zgłoszenia go wymagają.",
+          "rateUnavailable": "Nie udało się wczytać kursu EBC. Spróbuj ponownie za chwilę.",
+          "disclaimer": "Przed złożeniem sprawdź plik w eDane i uzupełnij urząd skarbowy. Dostawy do UE wykazujemy jako usługi (kod 2); dostawy towarów do UE (wiersz 14) i eksport (wiersz 15) przenieś ręcznie. Otrzymane dokumenty bez NIP dostawcy trafiają do B.3.1.",
+          "formVersions": "Eksport tworzy XML w wersjach DPHv25, KVDPHv25 i SVDPHv20.",
+          "officialLink": "Aktualne informacje słowackiej administracji skarbowej"
+        },
+        "warnings": {
+          "reverse_charge_code_missing": "Dokumenty bez kodu dostawy: {documents}. Uzupełnij kod na dokumencie i pobierz plik ponownie, inaczej EPO go odrzuci.",
+          "reverse_charge_dic_missing": "Dokumenty z odwrotnym obciążeniem bez NIP klienta, pominięte w sekcji A.1: {documents}.",
+          "received_reverse_charge_code_missing": "Otrzymane dokumenty z odwrotnym obciążeniem bez kodu dostawy: {documents}. Uzupełnij kod przy wydatku i pobierz plik ponownie, inaczej EPO go odrzuci.",
+          "received_reverse_charge_dic_missing": "Otrzymane dokumenty z odwrotnym obciążeniem bez NIP dostawcy, pominięte w sekcji B.1: {documents}.",
+          "received_reverse_charge_number_missing": "Otrzymane dokumenty z odwrotnym obciążeniem bez numeru dokumentu (pokazane według daty), pominięte w sekcji B.1: {documents}."
+        }
+      },
+      "annual": {
+        "title": "Roczny szacunek podatku i ubezpieczeń (czeski przedsiębiorca jednoosobowy)",
+        "hint": "Szacuje podatek dochodowy, ubezpieczenie społeczne i zdrowotne oraz zaliczki na kolejny rok na podstawie faktur i wydatków opłaconych w danym roku.",
+        "incomeHint": "Faktury opłacone w danym roku ({invoices}), po odjęciu faktur korygujących.",
+        "incomeHintVat": "Faktury opłacone w danym roku bez VAT ({invoices}), po odjęciu faktur korygujących.",
+        "actualExpenses": "Rzeczywiste wydatki",
+        "flatExpenses": "Wydatki ryczałtowe {rate} %",
+        "profit": "Zysk",
+        "taxBase": "Podstawa opodatkowania",
+        "taxCredit": "Ulga na podatnika",
+        "incomeTax": "Podatek dochodowy",
+        "incomeTaxHint": "15 %, 23 % powyżej 36-krotności przeciętnego wynagrodzenia. Uwzględniamy tylko podstawową ulgę na podatnika.",
+        "social": "Ubezpieczenie społeczne",
+        "socialHint": "29,2 % z 55 % zysku, co najmniej minimalna podstawa dla działalności głównej.",
+        "health": "Ubezpieczenie zdrowotne",
+        "healthHint": "13,5 % z 50 % zysku, co najmniej połowa przeciętnego wynagrodzenia.",
+        "balance": "Do zapłaty (+) / nadpłata (−)",
+        "nextAdvance": "Nowa miesięczna zaliczka",
+        "total": "Podatek i ubezpieczenia łącznie",
+        "missingRates": "{count, plural, one {# dokument w walucie obcej} few {# dokumenty w walucie obcej} many {# dokumentów w walucie obcej} other {# dokumentu w walucie obcej}} bez kursu {source} – pominięte.",
+        "paramsFallback": "Brak jeszcze parametrów na ten rok; używamy roku {year}.",
+        "downloadCsv": "Pobierz CSV",
+        "epoLink": "Formularze EPO (administracja skarbowa)",
+        "failed": "Nie udało się obliczyć szacunku.",
+        "disclaimer": "Orientacyjny szacunek dla działalności głównej. Nie zastępuje zeznania podatkowego ani rozliczeń ubezpieczeń.",
+        "paidFromSettings": "Wypełnione na podstawie miesięcznych zaliczek w Danych firmy. Możesz to zmienić.",
+        "uniformRate": "Waluty obce przeliczamy po jednolitym kursie za rok {year} (średnia kursów ČNB z ostatnich dni miesięcy). Możesz to zmienić w Ustawienia → Formularz faktury.",
+        "titleSk": "Roczny szacunek podatku i ubezpieczeń (słowacki przedsiębiorca jednoosobowy)",
+        "hintSk": "Szacuje słowacki podatek dochodowy, ubezpieczenie zdrowotne i społeczne na podstawie faktur i wydatków opłaconych w danym roku, w euro.",
+        "modes": {}
+      },
+      "epo": {
+        "title": "Jak złożyć deklarację VAT, informację kontrolną i informację podsumowującą",
+        "lead": "Prześlij powyższe pliki XML do EPO albo wyślij je przez skrzynkę danych. Krok po kroku przeprowadzimy Cię wybraną drogą. Stąd nic nie jest wysyłane.",
+        "deadlines": {
+          "monthly": "Rozliczenie miesięczne – za {period}",
+          "monthlyHint": "Deklarację VAT, informację kontrolną i informację podsumowującą składa się do 25. dnia następnego miesiąca; weekend lub święto przesuwa termin na następny dzień roboczy.",
+          "quarterly": "Rozliczenie kwartalne – Q{q} {year}",
+          "quarterlyHint": "Deklarację składa się do 25. dnia po zakończeniu kwartału. Osoby fizyczne składają informację kontrolną kwartalnie, spółki zawsze miesięcznie.",
+          "in": "{count, plural, =0 {dziś} one {za # dzień} few {za # dni} many {za # dni} other {za # dnia}}"
+        },
+        "channelTitle": "Jak chcesz złożyć?",
+        "channelHint": "Każdy, kto ma skrzynkę danych (każda spółka, przedsiębiorcy jednoosobowi od 2023 r.), musi składać elektronicznie. Informacje kontrolne i podsumowujące są zawsze elektroniczne.",
+        "channels": {
+          "ds": {
+            "name": "Przez skrzynkę danych",
+            "when": "Najprościej, jeśli masz skrzynkę danych: wystarczy dołączyć XML do wiadomości, bez podpisu.",
+            "steps": [
+              "Pobierz powyższy XML – każde zgłoszenie to osobny plik.",
+              "Zalecamy najpierw wczytać go do EPO (Načtení souboru → Kontrola), uzupełnić urząd skarbowy i poprawić ostrzeżenia, a potem zapisać z powrotem jako XML.",
+              "Zaloguj się do skrzynki danych i napisz nową wiadomość do swojego urzędu skarbowego (ID jego skrzynki znajdziesz na liście urzędów).",
+              "Do jednej wiadomości dołącz jeden plik XML.",
+              "Wyślij ją i zachowaj potwierdzenie doręczenia."
+            ]
+          },
+          "epo": {
+            "name": "Przez EPO",
+            "when": "Formularz internetowy administracji skarbowej. Złożenie przez skrzynkę danych (logując się z EPO) albo z kwalifikowanym podpisem elektronicznym.",
+            "steps": [
+              "Pobierz powyższy XML.",
+              "Otwórz EPO → Elektronická podání → Načtení souboru i wybierz XML.",
+              "Sprawdź sekcje D i P: urząd skarbowy, oddział terenowy i dane kontaktowe.",
+              "Kliknij Kontrola i popraw błędy; ostrzeżenia mają charakter informacyjny.",
+              "Wybierz Pokračovat v podání → Odeslat přes datovou schránku albo wyślij z podpisem elektronicznym.",
+              "Zachowaj potwierdzenie złożenia (PDF) i wysłany XML."
+            ]
+          },
+          "mojeDane": {
+            "name": "Portal MOJE daně",
+            "when": "Dla osób fizycznych z identyfikacją bankową lub e-dowodem; zgłoszenie wysyłane jest bezpośrednio z portalu.",
+            "steps": [
+              "Pobierz powyższy XML.",
+              "Zaloguj się do portalu MOJE daně przez identyfikację bankową lub eID.",
+              "W EPO wybierz Načtení souboru i prześlij XML.",
+              "Sprawdź go, uzupełnij urząd skarbowy i uruchom Kontrola.",
+              "Złóż przyciskiem Podat; potwierdzenie znajdziesz w przeglądzie dokumentów."
+            ]
+          }
+        },
+        "links": {
+          "epo": "Otwórz EPO",
+          "mojeDane": "Portal MOJE daně",
+          "fuList": "ID skrzynek danych urzędów skarbowych"
+        },
+        "tips": {
+          "title": "Zanim złożysz",
+          "items": [
+            "Dane pochodzą z faktur i wydatków wystawionych w Billancie – upewnij się, że wprowadzono wszystkie dokumenty za dany okres.",
+            "Spóźniona informacja kontrolna oznacza karę 1000 CZK; na wezwanie urzędu trzeba odpowiedzieć w ciągu 5 dni roboczych.",
+            "Korekty składaj jako deklarację uzupełniającą lub następczą informację kontrolną, zmieniając rodzaj zgłoszenia w EPO.",
+            "Nie masz pewności? Zaproś księgową do zespołu (Ustawienia → Zespół) – zobaczy eksporty i może złożyć za Ciebie."
+          ]
+        }
+      },
+      "filings": {
+        "title": "Roczne zgłoszenia za {year}",
+        "hint": "Zeznanie podatkowe, rozliczenie dla ČSSZ i wartości dla Twojej kasy ubezpieczenia zdrowotnego, wstępnie wypełnione na podstawie faktur i wydatków z danego roku. Pobierasz, sprawdzasz i składasz je sam.",
+        "year": "Rok",
+        "expenses": "Wydatki",
+        "basis": "Ewidencja",
+        "basisHint": "Ewidencja podatkowa (daňová evidence) liczy przychód w momencie zapłaty faktury. Pełna księgowość liczy go według daty dokonania dostawy (DUZP).",
+        "basisCash": "Ewidencja podatkowa (według zapłaty)",
+        "basisAccrual": "Księgowość (według daty dostawy)",
+        "activity": "Działalność",
+        "activityHint": "Działalność dodatkowa to na przykład firma prowadzona obok etatu lub urlopu rodzicielskiego. Ubezpieczenie powstaje dopiero powyżej kwoty progowej.",
+        "activityMain": "Główna",
+        "activitySecondary": "Dodatkowa",
+        "fromMonth": "Działalność od",
+        "taxAdvances": "Zapłacone zaliczki na podatek dochodowy (CZK)",
+        "taxAdvancesHint": "Zaliczki na podatek dochodowy zapłacone za ten rok. Większość przedsiębiorców jednoosobowych w pierwszych latach ich nie płaci.",
+        "spouse": "Skorzystaj z ulgi na małżonka",
+        "spouseHint": "Tylko jeśli Twój małżonek miał w danym roku własne dochody do 68 000 CZK i prowadzicie wspólne gospodarstwo domowe.",
+        "failed": "Nie udało się wczytać danych do rocznych zgłoszeń.",
+        "rowNo": "wiersz {n}",
+        "dpfoTitle": "Zeznanie podatkowe (DPFO)",
+        "dpfo": {
+          "r101": "Przychody z działalności (§ 7)",
+          "r102": "Wydatki (ryczałt {rate} % lub rzeczywiste)",
+          "r113": "Częściowa podstawa opodatkowania z działalności",
+          "r61": "Strata podatkowa",
+          "r56": "Podstawa opodatkowania po zaokrągleniu",
+          "r57": "Podatek 15 % / 23 %",
+          "r64": "Ulga na podatnika",
+          "r65a": "Ulga na małżonka",
+          "r71": "Podatek po ulgach",
+          "r84": "Zapłacone zaliczki",
+          "r91": "Pozostaje do zapłaty (minus oznacza nadpłatę)"
+        },
+        "csszTitle": "Rozliczenie dla ČSSZ (ubezpieczenie społeczne)",
+        "cssz": {
+          "r24": "Zysk (przychody minus wydatki)",
+          "r25": "Podstawa wymiaru z zysku",
+          "r27": "Minimalna podstawa wymiaru",
+          "r28": "Podstawa wymiaru",
+          "r32": "Należne ubezpieczenie",
+          "r33": "Zapłacone zaliczki",
+          "r34": "Pozostaje do zapłaty (minus oznacza nadpłatę)",
+          "r35": "Nowa miesięczna podstawa wymiaru",
+          "r36": "Nowa miesięczna zaliczka"
+        },
+        "csszNotInsured": "Zysk z działalności dodatkowej nie przekroczył progu, więc ubezpieczenie emerytalne nie powstało. Rozliczenie dla ČSSZ i tak składasz, z zerowym ubezpieczeniem.",
+        "nextUnknown": "Minimalna zaliczka na przyszły rok nie jest jeszcze znana. Nową zaliczkę sprawdź w ePortalu ČSSZ.",
+        "healthTitle": "Rozliczenie dla kasy ubezpieczenia zdrowotnego",
+        "health": {
+          "profit": "Zysk",
+          "baseFromProfit": "Połowa zysku",
+          "minBase": "Minimalna podstawa wymiaru",
+          "base": "Podstawa wymiaru",
+          "premium": "Ubezpieczenie 13,5 %",
+          "paid": "Zapłacone zaliczki",
+          "balance": "Pozostaje do zapłaty (minus oznacza nadpłatę)",
+          "nextAdvance": "Nowa miesięczna zaliczka"
+        },
+        "insurer": "Twoja kasa",
+        "healthHowTo": "Od 2026 r. rozliczenie ubezpieczenia zdrowotnego można złożyć tylko elektronicznie: na portalu kasy (na przykład Moje VZP) albo przez skrzynkę danych. Kasy nie mają wspólnego formatu XML, a VZP przyjmuje przez skrzynkę danych plik PDF, dlatego nie generujemy pliku. Przepisz wartości z lewej strony do formularza swojej kasy.",
+        "missingRates": "{count, plural, one {# dokument w walucie obcej nie ma} few {# dokumenty w walucie obcej nie mają} many {# dokumentów w walucie obcej nie ma} other {# dokumentu w walucie obcej nie ma}} kursu ČNB i brakuje go w sumach.",
+        "personTitle": "Dane osobowe do plików",
+        "personHint": "Wpisujemy je tylko do pobranego XML. Nie przechowujemy ich i nigdy nie pojawiają się w adresie strony.",
+        "person": {
+          "birthNumber": "Numer urodzenia (rodné číslo)",
+          "birthNumberHint": "Trafia zarówno do zeznania podatkowego, jak i do rozliczenia dla ČSSZ.",
+          "taxOffice": "Kod urzędu skarbowego",
+          "taxOfficeHint": "Trzycyfrowy kod z EPO, np. 451 dla miasta Pragi.",
+          "taxWorkplace": "Kod oddziału terenowego",
+          "ossz": "Kod OSSZ",
+          "osszHint": "Trzycyfrowy kod Twojego okręgowego zakładu ubezpieczeń społecznych.",
+          "variableSymbol": "Symbol zmienny ČSSZ",
+          "variableSymbolHint": "Widoczny w ePortalu ČSSZ lub na Twoich wcześniejszych wpłatach zaliczek.",
+          "dataBox": "ID skrzynki danych",
+          "prefilled": "Kody urzędów i skrzynkę danych wypełniamy na podstawie adresu i danych w Danych do faktur. Sprawdź je; możesz je zmienić.",
+          "remember": "Zapamiętaj w tej przeglądarce",
+          "rememberHint": "Numer urodzenia i symbol zmienny zapisujemy tylko w tej przeglądarce i nigdy nie wysyłamy na nasz serwer. Odznacz, aby je usunąć."
+        },
+        "downloadDpfdp": "Pobierz zeznanie podatkowe ({form}, XML)",
+        "dpfdpMissing": "Administracja skarbowa zwykle publikuje formularz zeznania za {year} w styczniu {next}.",
+        "downloadCssz": "Pobierz rozliczenie dla ČSSZ (XML)",
+        "csszMissing": "ČSSZ zwykle publikuje formularz rozliczenia za {year} na początku {next}.",
+        "print": "Drukuj podsumowanie",
+        "epoLink": "EPO administracji skarbowej",
+        "epoHow": "wczytaj plik przyciskiem „Načíst soubor”, sprawdź go i wyślij.",
+        "csszLink": "ePortal ČSSZ",
+        "csszHow": "prześlij rozliczenie jako XML albo wyślij je przez skrzynkę danych.",
+        "errors": {
+          "form_not_published": "Urząd nie opublikował jeszcze formularza na ten rok.",
+          "year_not_supported": "Nie mamy jeszcze parametrów na ten rok.",
+          "invalid_filings_query": "Sprawdź wpisane dane; coś ma nieprawidłowy format.",
+          "generic": "Nie udało się utworzyć pliku."
+        },
+        "disclaimer": "Wstępnie wypełnione na podstawie dokumentów w aplikacji dla typowego przypadku przedsiębiorcy jednoosobowego (tylko przychody z działalności, podstawowe ulgi). To nie jest doradztwo podatkowe. Przed złożeniem wszystko sprawdź; składasz sam przez EPO, ePortal ČSSZ, portal swojej kasy lub skrzynkę danych.",
+        "modes": {
+          "30": "Ryczałt 30 % (najem)",
+          "40": "Ryczałt 40 % (wolne zawody)",
+          "60": "Ryczałt 60 % (pozostałe działalności)",
+          "80": "Ryczałt 80 % (rzemiosło)",
+          "actual": "Rzeczywiste wydatki"
+        }
+      }
+    },
+    "invoices": {
+      "title": "Formularz faktury",
+      "description": "Wybierz, co formularz pokazuje od razu. Pozostałe pola są w każdej sekcji o jedno kliknięcie „+” dalej.",
+      "loadError": "Nie udało się wczytać ustawień.",
+      "readOnly": "Te ustawienia może zmienić tylko właściciel lub administrator.",
+      "fieldsTitle": "Widoczne pola",
+      "fieldsHint": "Zaznaczone pola są w formularzu zawsze widoczne. Pole, które ma już wartość na dokumencie, jest zawsze pokazywane.",
+      "rate": {
+        "title": "Kurs wymiany na fakturach w walucie obcej",
+        "hint": "Jak przeliczamy kwoty w walucie obcej na CZK, osobno na fakturze i w Twoich raportach. Kurs zapisujemy z dokumentem w chwili wystawienia i później się nie zmienia.",
+        "invoiceTitle": "Na fakturze",
+        "modes": {
+          "cnb_daily": "Dzienny kurs ČNB",
+          "none": "Nie drukuj przeliczenia na {home}",
+          "ecb_daily": "Dzienny kurs EBC"
+        },
+        "cnbDailyHint": "Kurs ČNB obowiązujący w dniu dokonania dostawy, jak wymaga § 38 czeskiej ustawy o VAT. Jeśli ČNB tego dnia nie opublikował kursu, używamy ostatniego wcześniejszego. Dokument z VAT zawsze używa tego kursu.",
+        "noneHint": "Dokument nie pokaże przeliczenia na CZK. Kurs ČNB i tak zapisujemy do Twoich raportów.",
+        "noneIdentified": "Dotyczy tylko dokumentów bez VAT. Jeśli dokument zawiera VAT, przeliczenie zostanie wydrukowane.",
+        "nonePayer": "Podatnik VAT musi podać na dokumencie przeliczenie na CZK, dlatego ta opcja nie jest dostępna. Faktury są wystawiane z kursem ČNB.",
+        "reportTitle": "W raportach i szacunku podatku dochodowego",
+        "reportModes": {
+          "daily": "Kurs dzienny z dokumentu",
+          "annual": "Jednolity kurs roczny"
+        },
+        "reportDailyHint": "Każdy dokument przeliczamy po kursie na nim zapisanym.",
+        "annualHint": "Jednolity kurs (jednotný kurz) zgodnie z § 38 ust. 1 czeskiej ustawy o podatku dochodowym. Obliczamy go sami jako średnią kursów ČNB z ostatniego dnia każdego miesiąca, tak samo jak publikuje go organ podatkowy (GFŘ) po zakończeniu roku.",
+        "invoiceStaysDaily": "Faktury nadal pokazują dzienny kurs ČNB, bo wymaga tego prawo o VAT, a jednolity kurs jest używany tylko w Twoich raportach.",
+        "computedTitle": "Obliczone kursy jednolite",
+        "computedError": "Nie udało się teraz wczytać kursów ČNB. Raporty użyją Twojego własnego kursu, a w razie jego braku kursu z dokumentu.",
+        "computedEmpty": "Nie zakończył się jeszcze żaden miesiąc, z którego można obliczyć kurs.",
+        "final": "ostateczny",
+        "running": "tymczasowy, na razie {n, plural, one {# miesiąc} few {# miesiące} many {# miesięcy} other {# miesiąca}}",
+        "computedValue": "Obliczony kurs: {rate} ({status})",
+        "annualTitle": "Własny kurs na dany rok",
+        "annualEmpty": "Nie musisz niczego wpisywać. Dodaj własny kurs tylko wtedy, gdy chcesz innego niż obliczony, na przykład dokładnego z komunikatu GFŘ.",
+        "annualOverrideHint": "Twój kurs ma pierwszeństwo przed obliczonym dla danego roku i waluty.",
+        "year": "Rok",
+        "currency": "Waluta",
+        "rate": "Kurs",
+        "perUnit": "CZK za 1 {currency}",
+        "remove": "Usuń kurs",
+        "duplicate": "Każdy rok i waluta mogą wystąpić tylko raz.",
+        "add": "Dodaj własny kurs",
+        "hintEur": "Jak przeliczamy kwotę w walucie obcej na EUR. Kurs zapisujemy z dokumentem w chwili wystawienia i później się nie zmienia.",
+        "ecbDailyHint": "Kurs referencyjny EBC z dnia poprzedzającego powstanie obowiązku podatkowego (§ 26 ust. 1 słowackiej ustawy o VAT). Prawo słowackie nie przewiduje stałego kursu rocznego.",
+        "noneHintEcb": "Dokument nie pokaże przeliczenia na EUR. Kurs EBC i tak zapisujemy do Twoich raportów.",
+        "nonePayerEcb": "Podatnik VAT musi podać na fakturze VAT w euro (§ 74 ust. 1 lit. i słowackiej ustawy o VAT), dlatego ta opcja nie jest dostępna. Faktury są wystawiane z kursem EBC."
+      },
+      "groups": {
+        "items": "Pozycje",
+        "dates": "Daty i płatność",
+        "details": "Szczegóły dokumentu",
+        "notes": "Uwagi"
+      },
+      "hints": {
+        "itemCode": "Osobna kolumna na kod produktu, EAN lub numer katalogowy.",
+        "unit": "szt., godz., m² … drukowane za ilością.",
+        "discount": "Rabat procentowy na każdej pozycji.",
+        "taxableSupplyDate": "W przeciwnym razie używamy daty wystawienia.",
+        "symbols": "Symbol stały i specyficzny dla płatności (VS jest zawsze pokazywany).",
+        "orderNumber": "Numer zamówienia klienta.",
+        "issuePlace": "Drukowane w nagłówku dokumentu.",
+        "issuedBy": "Imię i nazwisko osoby, która wystawiła dokument, w stopce.",
+        "noteAbove": "Tekst wprowadzający nad tabelą pozycji.",
+        "internalNote": "Tylko dla Ciebie, nigdy nie jest drukowana.",
+        "customFields": "Dowolne dodatkowe wiersze w nagłówku, np. numer umowy lub projektu.",
+        "language": "Język, w którym dokument jest drukowany."
+      },
+      "resetDefaults": "Przywróć domyślny wybór",
+      "defaultsTitle": "Ustawienia domyślne",
+      "defaultsHint": "Każda nowa pusta faktura zaczyna się w ten sposób. Kopie i szablony zachowują własne wartości. Na fakturze możesz zmienić wszystko.",
+      "registryNoteElsewhere": "Wpis do rejestru drukujemy na każdej fakturze. Możesz go zmienić w",
+      "registryNoteLink": "Danych do faktur",
+      "blank": {
+        "currency": "Waluta",
+        "bankAccount": "Konto bankowe",
+        "bankAccountPrimary": "Konto główne z danych do faktur",
+        "customer": "Klient",
+        "customerHint": "Przydatne, gdy fakturujesz głównie jednego klienta. Na fakturze zmienisz go jednym kliknięciem.",
+        "customerSearch": "Szukaj w kontaktach",
+        "customerEmpty": "Żaden kontakt nie pasuje.",
+        "customerNone": "Bez domyślnego klienta",
+        "customerRemove": "Usuń klienta",
+        "items": "Pozycje",
+        "itemsHint": "Pozycje, które pojawią się na każdej nowej fakturze, np. opłata miesięczna. Maksymalnie 10.",
+        "itemDescription": "Opis",
+        "itemQuantity": "Ilość",
+        "itemUnit": "Jedn.",
+        "itemPrice": "Cena jedn.",
+        "itemVat": "VAT",
+        "noVat": "Bez VAT",
+        "itemRemove": "Usuń pozycję",
+        "addItem": "Dodaj pozycję",
+        "noteAbove": "Tekst nad pozycjami",
+        "noteAbovePlaceholder": "np. Usługi za miesiąc…"
+      },
+      "customLabelsTitle": "Predefiniowane pola własne",
+      "customLabelsHint": "Te nazwy proponujemy na każdej nowej fakturze; wystarczy wpisać wartość (maks. 4).",
+      "customLabelPlaceholder": "np. Numer umowy",
+      "addLabel": "Dodaj nazwę pola",
+      "remove": "Usuń",
+      "save": "Zapisz",
+      "saved": "Ustawienia formularza zapisane.",
+      "saveFailed": "Zapisywanie nie powiodło się",
+      "lookTitle": "Ceny i wygląd PDF",
+      "grossPrices": "Wpisuję ceny z VAT",
+      "grossPricesHint": "Nowe faktury zaczynają w trybie „ceny z VAT”: wpisujesz cenę końcową, a my obliczamy cenę netto. Tryb możesz przełączyć na każdej fakturze w formularzu.",
+      "accent": "Kolor dokumentu",
+      "accentHint": "Kolor tytułu i ramki z kwotą do zapłaty w PDF. Dotyczy nowo pobranych plików PDF.",
+      "accentSample": "Faktura",
+      "secondLanguage": "Dwujęzyczny PDF",
+      "secondLanguageHint": "Etykiety w PDF pojawią się także w drugim języku, np. „Datum vystavení / Data wystawienia”. Przydatne dla klientów zagranicznych. Faktura już wystawiona w tym języku pozostanie jednojęzyczna.",
+      "secondLanguageNone": "Nie, tylko jeden język",
+      "secondLanguages": {
+        "en": "+ angielski",
+        "cs": "+ czeski",
+        "sk": "+ słowacki"
+      },
+      "remindersTitle": "Przypomnienia",
+      "remindersHint": "Codziennie o 9:00 wysyłamy klientowi e-mail w sprawie wystawionych faktur po terminie płatności. Przypomnienie możesz też wysłać ręcznie ze szczegółów faktury.",
+      "remindersEnabled": "Wysyłaj przypomnienia automatycznie",
+      "remindersRule": "Powtarzaj co <interval></interval> dni, maksymalnie <max></max>×.",
+      "reminderInterval": "Dni między przypomnieniami",
+      "reminderMax": "Maksymalna liczba przypomnień",
+      "links": {
+        "title": "Linki dla klientów",
+        "hint": "Jak wygląda link do dokumentu, który klient dostaje e-mailem. Tajny jest tylko kod na końcu; tekst przed nim służy czytelności. Link do portalu klienta zaczyna się od nazwy klienta, chyba że wybierzesz sam kod. Wysłane już linki nadal działają.",
+        "options": {
+          "number": "Numer dokumentu",
+          "company_number": "Firma i numer dokumentu",
+          "none": "Tylko losowy kod"
+        }
+      },
+      "brandCredit": "Pokazuj „Stworzone w {name}” pod fakturami",
+      "brandCreditHint": "Mały link w stopce PDF, e-maila i faktury online, który zaprasza też Twojego klienta do wypróbowania. W płatnych planach można go wyłączyć.",
+      "brandCreditFree": "W planie bezpłatnym ten wiersz jest zawsze widoczny.",
+      "brandCreditUpgrade": "Przejdź na płatny plan"
+    },
+    "modules": {
+      "title": "Moduły i rodzaj działalności",
+      "description": "Powiedz nam, jak prowadzisz działalność, a Billanta ukryje części, których nie potrzebujesz.",
+      "loadError": "Nie udało się wczytać ustawień modułów.",
+      "readOnly": "Moduły może zmienić tylko właściciel lub administrator.",
+      "presetsTitle": "Rodzaj działalności",
+      "presetsHint": "Gotowy profil ustawia poniższe moduły. Potem możesz je dostosować pojedynczo.",
+      "customMix": "Własny zestaw modułów",
+      "presets": {
+        "invoicingOnly": {
+          "title": "Tylko fakturowanie",
+          "description": "Faktury i kontakty, nic więcej."
+        },
+        "flatTax": {
+          "title": "Freelancer na ryczałcie",
+          "description": "Bez ewidencji wydatków, z dopasowywaniem płatności bankowych i ofertami."
+        },
+        "tradesman": {
+          "title": "Przedsiębiorca z wydatkami",
+          "description": "Faktury, wydatki i paragony, bank i oferty."
+        },
+        "withAccountant": {
+          "title": "Firma z księgową",
+          "description": "Wszystko, łącznie z eksportami dla księgowej (Pohoda, Money S3, CSV)."
+        },
+        "eshop": {
+          "title": "Sklep internetowy",
+          "description": "Faktury, wydatki, bank i eksporty – bez ofert."
+        }
+      },
+      "modulesTitle": "Moduły",
+      "items": {
+        "expenses": {
+          "title": "Wydatki",
+          "description": "Otrzymane faktury, paragony i ich odczytywanie."
+        },
+        "bank": {
+          "title": "Bank",
+          "description": "Dopasowywanie płatności z wyciągów bankowych do faktur."
+        },
+        "quotes": {
+          "title": "Oferty",
+          "description": "Oferty, które jednym kliknięciem zamienisz w fakturę."
+        },
+        "reports": {
+          "title": "Eksporty dla księgowej",
+          "description": "CSV, Pohoda i Money S3 XML za miesiąc, kwartał lub rok."
+        },
+        "ai": {
+          "title": "Asystent AI",
+          "description": "Fakturowanie głosem i odczytywanie paragonów."
+        },
+        "time": {
+          "title": "Ewidencja czasu",
+          "description": "Stoper, projekty ze stawką godzinową i fakturowanie przepracowanych godzin."
+        }
+      },
+      "dataKept": "Wyłączenie modułu niczego nie usuwa – znika on tylko z menu. Włącz go ponownie, a dane będą na miejscu.",
+      "save": "Zapisz",
+      "reset": "Cofnij zmiany",
+      "saved": "Moduły zapisane.",
+      "failed": "Zapisywanie nie powiodło się"
+    },
+    "notifications": {
+      "title": "Powiadomienia",
+      "description": "Wybierz, o czym i jak chcesz być informowany. Te ustawienia dotyczą tylko Ciebie, nie całego zespołu.",
+      "loadError": "Nie udało się wczytać ustawień powiadomień.",
+      "saved": "Zapisano",
+      "saveFailed": "Zapisywanie nie powiodło się",
+      "eventsTitle": "Zdarzenia",
+      "eventsHint": "Dzwonek = powiadomienie w górnym pasku aplikacji (i wyskakujące okienko przeglądarki, jeśli zezwolisz na nie poniżej). E-mail trafia na adres Twojego konta.",
+      "channels": {
+        "app": "Dzwonek",
+        "email": "E-mail"
+      },
+      "allOn": "włącz wszystko",
+      "noneOn": "wyłącz wszystko",
+      "events": {
+        "invoice_paid": {
+          "label": "Faktura opłacona",
+          "hint": "Gdy oznaczysz fakturę jako opłaconą albo dopasujemy ją z wyciągu bankowego."
+        },
+        "invoice_viewed": {
+          "label": "Klient otworzył fakturę",
+          "hint": "Przy pierwszym wyświetleniu faktury w portalu klienta."
+        },
+        "invoice_overdue": {
+          "label": "Faktura po terminie",
+          "hint": "Jednorazowo, gdy faktura stanie się przeterminowana i zostanie wysłane pierwsze automatyczne przypomnienie."
+        },
+        "reminder_sent": {
+          "label": "Przypomnienie wysłane",
+          "hint": "Ręczne i automatyczne przypomnienia dla klienta."
+        },
+        "invoice_sent": {
+          "label": "Faktura wysłana",
+          "hint": "Gdy wyślesz fakturę e-mailem z aplikacji."
+        },
+        "draft_ready": {
+          "label": "Nowy szkic do sprawdzenia",
+          "hint": "AI przygotowało szkic faktury z notatki głosowej lub wiadomości i czeka on na zatwierdzenie."
+        },
+        "bank_import": {
+          "label": "Import wyciągu bankowego",
+          "hint": "Ile transakcji przyszło i ile dopasowaliśmy automatycznie."
+        },
+        "member_joined": {
+          "label": "Nowy członek zespołu",
+          "hint": "Ktoś przyjął zaproszenie do Twojej firmy."
+        },
+        "quote_response": {
+          "label": "Odpowiedź na ofertę",
+          "hint": "Klient zaakceptował lub odrzucił ofertę w portalu."
+        },
+        "buyer_details": {
+          "label": "Klient uzupełnił swoje dane",
+          "hint": "Klient uzupełnił swoje dane do faktury przez wysłany przez Ciebie link."
+        },
+        "profile_message": {
+          "label": "Wiadomość z profilu",
+          "hint": "Odwiedzający napisał do Ciebie przez formularz kontaktowy na Twoim profilu publicznym."
+        }
+      },
+      "browserTitle": "Powiadomienia w przeglądarce",
+      "browserHint": "Systemowe okienko, nawet gdy aplikacja działa w tle. Działa, dopóki jest otwarta w którejś karcie.",
+      "browserToggle": "Pokazuj okienka",
+      "testTitle": "Billanta – powiadomienia włączone",
+      "testBody": "Tak będziemy Cię informować o opłaconych fakturach i innych zdarzeniach.",
+      "permission": {
+        "granted": "Przeglądarka zezwoliła",
+        "denied": "Przeglądarka blokuje powiadomienia – zezwól na nie w ustawieniach witryny.",
+        "unsupported": "Ta przeglądarka nie obsługuje powiadomień.",
+        "ask": "Zezwól w przeglądarce"
+      }
+    },
+    "emails": {
+      "title": "E-maile do klientów",
+      "description": "Jak wyglądają e-maile z fakturami i przypomnieniami i od kogo przychodzą.",
+      "loadError": "Nie udało się wczytać ustawień e-maili.",
+      "readOnly": "Te ustawienia może zmienić tylko właściciel lub administrator.",
+      "senderTitle": "Nadawca",
+      "senderHint": "E-maile wychodzą z adresu Billanty, ale klient widzi Twoją nazwę, a odpowiedzi trafiają do Ciebie.",
+      "fromName": "Nazwa nadawcy",
+      "replyTo": "Adres do odpowiedzi",
+      "replyToHint": "Gdzie trafiają odpowiedzi klientów. Puste = e-mail firmy.",
+      "replyToInvalid": "Wpisz prawidłowy adres e-mail.",
+      "bcc": "Wysyłaj mi ukrytą kopię",
+      "bccHint": "Kopia każdego wysłanego e-maila trafia na {email}.",
+      "textsTitle": "Temat i treść",
+      "textsHint": "Puste pole = tekst domyślny (pokazany na szaro). Zmienne w nawiasach klamrowych są przy wysyłce zastępowane prawdziwymi danymi.",
+      "kinds": {
+        "invoice": "Faktura",
+        "reminder": "Przypomnienie"
+      },
+      "subject": "Temat",
+      "message": "Tekst wprowadzający",
+      "signature": "Podpis",
+      "signatureHint": "Dodawany pod każdym e-mailem – z fakturami i przypomnieniami.",
+      "signaturePlaceholder": "Z pozdrowieniami\n{company}",
+      "placeholders": "Zmienne",
+      "placeholdersHint": "Kliknij, aby wstawić zmienną w miejscu kursora w ostatnio edytowanym polu.",
+      "ph": {
+        "number": "numer",
+        "amount": "kwota",
+        "due_date": "termin płatności",
+        "company": "Twoja firma",
+        "customer": "klient",
+        "link": "link",
+        "reminder_no": "nr przypomnienia",
+        "vs": "symbol zm."
+      },
+      "attachTitle": "Załączniki i wygląd",
+      "attachPdf": "Dołącz PDF faktury",
+      "attachPdfHint": "Bez niego klient otworzy fakturę przez link w e-mailu.",
+      "attachIsdoc": "Dołącz ISDOC",
+      "attachIsdocHint": "Faktura w formacie do odczytu maszynowego, którą programy księgowe importują bezpośrednio.",
+      "accent": "Kolor przycisku i nagłówka",
+      "accentCustom": "Własny kolor",
+      "save": "Zapisz",
+      "saved": "Ustawienia e-maili zapisane",
+      "saveFailed": "Zapisywanie nie powiodło się",
+      "preview": "Podgląd",
+      "previewFromAddress": "fakturace@billanta.cz",
+      "previewReplyTo": "Odpowiedz do",
+      "previewNote": "Przykładowe dane. Prawdziwy e-mail może w programie pocztowym wyglądać nieco inaczej.",
+      "moreVars": "Więcej zmiennych →"
+    },
+    "variables": {
+      "title": "Zmienne",
+      "description": "Napisz tekst raz, a potem wstawiaj go jako '{variable}' w e-mailach i uwagach dokumentów.",
+      "loadError": "Nie udało się wczytać zmiennych.",
+      "readOnly": "Zmienne może zmienić tylko właściciel lub administrator.",
+      "ownTitle": "Twoje zmienne",
+      "ownHint": "Np. '{terms}' z linkiem. Zmień tekst tutaj, a zmieni się wszędzie.",
+      "empty": "Brak jeszcze własnych zmiennych. Dodaj jedną albo wybierz gotową poniżej.",
+      "label": "Nazwa",
+      "labelPlaceholder": "Nazwa (np. Warunki)",
+      "key": "Klucz zmiennej",
+      "value": "Wartość",
+      "valuePlaceholder": "Tekst do wstawienia…",
+      "copy": "Kopiuj '{variable}'",
+      "remove": "Usuń",
+      "add": "Dodaj zmienną",
+      "save": "Zapisz",
+      "saved": "Zmienne zapisane",
+      "saveFailed": "Zapisywanie nie powiodło się",
+      "errors": {
+        "format": "Tylko małe litery, cyfry i _ (na początku litera).",
+        "builtin": "Tej nazwy używa już wbudowana zmienna.",
+        "duplicate": "Zmienna o tej nazwie już istnieje."
+      },
+      "presets": "Gotowe zmienne",
+      "presetsHint": "Kliknij, aby dodać z przykładowym tekstem – potem edytuj i zapisz.",
+      "builtinTitle": "Wbudowane zmienne",
+      "builtinHint": "Wypełniane z danych Twojej firmy, dokumentu i klienta. Kliknij, aby skopiować.",
+      "groups": {
+        "document": "Dokument",
+        "customer": "Klient",
+        "company": "Twoja firma",
+        "other": "Inne"
+      },
+      "builtin": {
+        "number": "numer dokumentu",
+        "amount": "kwota do zapłaty",
+        "due_date": "termin płatności",
+        "issue_date": "data wystawienia",
+        "vs": "symbol zmienny",
+        "link": "link do faktury online",
+        "reminder_no": "numer przypomnienia (tylko w przypomnieniach)",
+        "customer": "nazwa klienta",
+        "customer_ico": "numer firmy klienta (IČO)",
+        "company": "Twoje imię i nazwisko lub nazwa firmy",
+        "ico": "numer firmy (IČO)",
+        "dic": "NIP (DIČ)",
+        "company_email": "e-mail firmy",
+        "phone": "telefon",
+        "web": "strona internetowa",
+        "address": "adres siedziby",
+        "bank_account": "konto bankowe",
+        "iban": "IBAN",
+        "today": "dzisiejsza data",
+        "year": "bieżący rok",
+        "base": "podstawa bez VAT",
+        "vat": "VAT łącznie",
+        "paid": "dotychczas zapłacono",
+        "remaining": "pozostaje do zapłaty",
+        "net": "szacowana kwota na rękę po podatku i ubezpieczeniach (ryczałt 60 %)",
+        "tax": "Podatek dochodowy od tej faktury (szacunek, ryczałt 60 %)",
+        "social": "Ubezpieczenie społeczne od tej faktury (szacunek)",
+        "health": "Ubezpieczenie zdrowotne od tej faktury (szacunek)",
+        "insurance": "Społeczne + zdrowotne (szacunek)",
+        "portal_link": "link do portalu klienta (gdy jest włączony)"
+      },
+      "whereUsed": "Działa w tematach, treści i podpisach e-maili oraz w uwagach nad i pod pozycjami dokumentu. Nieznana zmienna pozostaje w postaci, w jakiej ją wpisano.",
+      "numberHint": "Zmienną zawierającą liczbę (np. 3.4) można też użyć we wzorach pól własnych faktury."
+    }
+  },
   "auth": {
     "signup": {
       "title": "Załóż konto",
@@ -908,5 +1913,2486 @@
     "readAll": "Oznacz wszystkie jako przeczytane",
     "settings": "Ustawienia powiadomień",
     "empty": "Na razie nic nowego. Damy znać, gdy coś się wydarzy."
+  },
+  "time": {
+    "title": "Ewidencja czasu",
+    "description": "Rejestruj pracę nad projektami i zamieniaj niezafakturowane godziny w fakturę jednym kliknięciem.",
+    "noTenant": "Najpierw dokończ konfigurację firmy.",
+    "loadError": "Nie udało się wczytać ewidencji czasu.",
+    "error": "Coś poszło nie tak.",
+    "kpi": {
+      "week": "Ten tydzień",
+      "unbilled": "Niezafakturowane",
+      "unbilledHours": "{hours} h do zafakturowania",
+      "projects": "Aktywne projekty",
+      "projectsSub": "Stawki i klienci"
+    },
+    "period": {
+      "week": "Ten tydzień",
+      "month": "Ten miesiąc",
+      "lastMonth": "Poprzedni miesiąc",
+      "all": "Wszystko"
+    },
+    "allStates": "Wszystkie",
+    "state": {
+      "unbilled": "Do zafakturowania",
+      "billed": "Zafakturowane",
+      "nonbillable": "Niefakturowane"
+    },
+    "searchPlaceholder": "Szukaj w opisie, projekcie, kliencie…",
+    "columns": {
+      "date": "Data",
+      "description": "Opis",
+      "project": "Projekt",
+      "contact": "Klient",
+      "duration": "Czas",
+      "amount": "Kwota",
+      "state": "Status",
+      "rate": "Stawka"
+    },
+    "whatAreYouWorkingOn": "Nad czym pracujesz?",
+    "noProject": "Bez projektu",
+    "noDescription": "(bez opisu)",
+    "start": "Start",
+    "stop": "Stop",
+    "stopped": "Zapisano {time} h",
+    "addManual": "Dodaj ręcznie",
+    "editEntry": "Edytuj wpis",
+    "from": "Od",
+    "durationHint": "Np. 1:30, 1,5 lub 90m.",
+    "durationRead": "Zostanie zapisane {time} h.",
+    "rateHint": "Puste = stawka projektu.",
+    "billable": "Do fakturowania",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "saved": "Zapisano",
+    "added": "Wpis dodany",
+    "delete": "Usuń",
+    "deleted": "Usunięto",
+    "deleteConfirm": "Usunąć ten wpis?",
+    "draft": "szkic",
+    "select": "Zaznacz",
+    "selectAll": "Zaznacz wszystko do zafakturowania",
+    "selected": "Zaznaczono: {count}",
+    "clearSelection": "Wyczyść zaznaczenie",
+    "sumLabel": "Łącznie {count, plural, one {# wpis} few {# wpisy} many {# wpisów} other {# wpisu}}",
+    "empty": "Na razie nic tu nie ma. Uruchom stoper lub dodaj pracę ręcznie.",
+    "emptyFiltered": "Żaden wpis nie pasuje do filtrów.",
+    "invoice": {
+      "action": "Zafakturuj",
+      "groupBy": "Pozycje faktury",
+      "groupHint": "Jak połączyć wpisy w pozycje faktury. Otrzymasz szkic do sprawdzenia przed wystawieniem.",
+      "group": {
+        "project": "Jedna pozycja na projekt",
+        "day": "Jedna pozycja na dzień",
+        "entry": "Jedna pozycja na wpis"
+      },
+      "pickContact": "Wybierz klienta…",
+      "manyContacts": "Wybierz wpisy jednego klienta.",
+      "manyCurrencies": "Wybierz wpisy w jednej walucie.",
+      "done": "Utworzono szkic faktury"
+    },
+    "projects": {
+      "title": "Projekty",
+      "new": "Nowy projekt",
+      "edit": "Edytuj projekt",
+      "name": "Nazwa",
+      "noContact": "Bez klienta",
+      "contactHint": "Wpisy projektu są fakturowane temu klientowi.",
+      "currency": "Waluta",
+      "color": "Kolor",
+      "total": "Łącznie",
+      "archive": "Archiwizuj",
+      "restore": "Przywróć",
+      "archived": "Projekt zarchiwizowany",
+      "restored": "Projekt przywrócony",
+      "showArchived": "Zarchiwizowane ({count})",
+      "hideArchived": "Ukryj zarchiwizowane",
+      "deleteConfirm": "Usunąć projekt? Jego wpisy zostaną, tylko bez projektu.",
+      "deleted": "Projekt usunięty",
+      "empty": "Utwórz projekt ze stawką i klientem, a fakturowanie zrobi się samo."
+    },
+    "dashboard": {
+      "title": "Ewidencja czasu",
+      "week": "Ten tydzień",
+      "unbilled": "Do zafakturowania",
+      "running": "Trwa",
+      "open": "Otwórz"
+    }
+  },
+  "clientPortal": {
+    "title": "Dokumenty dla {name}",
+    "lead": "Faktury i oferty od {company} w jednym miejscu – otwórz dokument, aby zobaczyć kod QR do płatności i PDF",
+    "outstanding": "Pozostało do zapłaty",
+    "overdueOf": "z tego {amount} po terminie",
+    "allPaid": "Wszystko jest opłacone, dziękujemy.",
+    "filterLabel": "Filtruj dokumenty",
+    "filters": {
+      "all": "Wszystkie",
+      "unpaid": "Do zapłaty",
+      "paid": "Opłacone",
+      "quotes": "Oferty"
+    },
+    "empty": "Brak dokumentów.",
+    "unnumbered": "Bez numeru",
+    "due": "termin {date}",
+    "validUntil": "ważna do {date}",
+    "types": {
+      "invoice": "Faktura",
+      "proforma": "Faktura proforma",
+      "credit_note": "Faktura korygująca",
+      "quote": "Oferta"
+    },
+    "state": {
+      "overdue": "Po terminie",
+      "unpaid": "Do zapłaty",
+      "paid": "Opłacona",
+      "accepted": "Zaakceptowana",
+      "rejected": "Odrzucona",
+      "quote": "Oferta",
+      "issued": "Wystawiona",
+      "cancelled": "Anulowana"
+    },
+    "footer": "{company} wysłał(a) Ci ten link – prosimy, nie udostępniaj go dalej",
+    "notFoundTitle": "Nie znaleziono portalu",
+    "notFoundBody": "Link jest nieprawidłowy lub został unieważniony. Poproś dostawcę o nowy."
+  },
+  "reports": {
+    "pageTitle": "Raporty",
+    "pageLead": "Przychody, koszty i zysk za dowolny okres w porównaniu z okresem poprzednim.",
+    "exportsLink": "Eksporty dla księgowej i urzędów →",
+    "noTenant": "Najpierw skonfiguruj firmę lub działalność.",
+    "loadError": "Nie udało się wczytać raportu.",
+    "title": "Przegląd okresu",
+    "hint": "Bez VAT, w porównaniu z poprzednim okresem tej samej długości",
+    "openReports": "Szczegółowe raporty →",
+    "from": "Od",
+    "to": "Do",
+    "vsPrevious": "vs. poprzedni",
+    "paidCount": "{count, plural, one {# opłacona faktura} few {# opłacone faktury} many {# opłaconych faktur} other {# opłaconej faktury}}",
+    "days": "{count, number} dni",
+    "exportCsv": "Eksport dla księgowej (CSV)",
+    "exportHint": "Dokumenty za wybrany okres i filtry, gotowe do Excela. Okres liczony jest według daty obowiązku podatkowego.",
+    "docCount": "{count, plural, one {# dokument} few {# dokumenty} many {# dokumentów} other {# dokumentu}}",
+    "inCurrency": "Kwoty są w {currency}, bez przeliczania.",
+    "converted": "{count, plural, one {# dokument w innej walucie został przeliczony} few {# dokumenty w innych walutach zostały przeliczone} many {# dokumentów w innych walutach zostało przeliczonych} other {# dokumentu w innych walutach zostało przeliczone}} na {home} po kursie zapisanym w dokumencie.",
+    "missingRate": "{count, plural, one {# dokument w innej walucie nie ma zapisanego kursu, więc nie jest uwzględniony.} few {# dokumenty w innych walutach nie mają zapisanego kursu, więc nie są uwzględnione.} many {# dokumentów w innych walutach nie ma zapisanego kursu, więc nie są uwzględnione.} other {# dokumentu w innych walutach nie ma zapisanego kursu, więc nie są uwzględnione.}}",
+    "expensesUnfiltered": "Wydatki są filtrowane tylko według waluty, pozostałe filtry ich nie dotyczą.",
+    "outstandingHint": "Nieopłacone i po terminie: z VAT, z dokumentów w okresie, pomniejszone o płatności częściowe.",
+    "byCurrency": "Przychody według walut",
+    "noRate": "brak kursu",
+    "chartKind": {
+      "label": "Typ wykresu",
+      "bars": "Słupki",
+      "line": "Linia",
+      "area": "Obszar"
+    },
+    "filters": {
+      "label": "Filtry",
+      "currency": "Waluta",
+      "allCurrencies": "Wszystkie waluty (w {home})",
+      "language": "Język dokumentu",
+      "allLanguages": "Wszystkie języki",
+      "customer": "Klient",
+      "allCustomers": "Wszyscy klienci",
+      "type": "Typ dokumentu",
+      "allTypes": "Wszystkie typy",
+      "status": "Status",
+      "allStatuses": "Wszystkie statusy",
+      "clear": "Wyczyść filtry"
+    },
+    "docTypes": {
+      "invoice": "Faktury",
+      "proforma": "Faktury proforma",
+      "credit_note": "Faktury korygujące"
+    },
+    "statuses": {
+      "paid": "Opłacone",
+      "unpaid": "Nieopłacone",
+      "overdue": "Po terminie",
+      "cancelled": "Anulowane"
+    },
+    "pies": {
+      "customers": "Przychody według klientów",
+      "currencies": "Przychody według walut",
+      "types": "Dokumenty według typu (z VAT)",
+      "payment": "Opłacone i nieopłacone (z VAT)",
+      "empty": "Brak danych w tym okresie.",
+      "others": "Pozostałe",
+      "unpaidNotDue": "Nieopłacone, jeszcze przed terminem"
+    },
+    "topCustomers": "Najwięksi klienci w okresie",
+    "customerMeta": "{count, plural, one {# faktura} few {# faktury} many {# faktur} other {# faktury}} · {share} %",
+    "presets": {
+      "thisMonth": "Ten miesiąc",
+      "lastMonth": "Poprzedni miesiąc",
+      "thisQuarter": "Ten kwartał",
+      "lastQuarter": "Poprzedni kwartał",
+      "thisYear": "Ten rok",
+      "lastYear": "Poprzedni rok",
+      "last12": "12 miesięcy",
+      "all": "Cały okres"
+    },
+    "grain": {
+      "day": "według dni",
+      "week": "według tygodni",
+      "month": "według miesięcy"
+    },
+    "kpi": {
+      "revenue": "Przychody",
+      "expenses": "Koszty",
+      "profit": "Zysk",
+      "collected": "Otrzymane płatności",
+      "invoiceCount": "Wystawione faktury",
+      "averageInvoice": "Średnia faktura",
+      "vat": "VAT należny",
+      "daysToPay": "Średni czas zapłaty",
+      "outstanding": "Nieopłacone",
+      "overdue": "Po terminie",
+      "customers": "Klienci",
+      "newCustomers": "Nowi klienci"
+    },
+    "customize": {
+      "button": "Dostosuj",
+      "title": "Wskaźniki raportu",
+      "recommendedTitle": "Polecane na podstawie tego, z czego korzystasz",
+      "noVat": "Nie jesteś podatnikiem VAT, więc VAT jest ukryty.",
+      "noVatIdentified": "Jesteś osobą zidentyfikowaną bez faktur z odwrotnym obciążeniem, więc VAT jest ukryty.",
+      "noExpenses": "Nie masz jeszcze zapisanych wydatków, więc wydatki i zysk są ukryte.",
+      "allRelevant": "Pokazujemy wszystko, co Cię dotyczy.",
+      "noExpensesHint": "Brak zapisanych wydatków",
+      "reset": "Przywróć polecane",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saved": "Zapisano",
+      "failed": "Nie udało się zapisać: {reason}",
+      "notUsed": "jeszcze nieużywane",
+      "notVatPayer": "nie jesteś podatnikiem VAT",
+      "orderHint": "Kolejność tutaj to kolejność kart w raporcie. Zmienisz ją, przeciągając za uchwyt lub strzałkami.",
+      "moveUp": "Przesuń wcześniej",
+      "moveDown": "Przesuń później",
+      "dragToReorder": "Przeciągnij, aby zmienić kolejność"
+    },
+    "flatTaxLink": "Czy podatek ryczałtowy się opłaca? →",
+    "taxReturnLink": "Podsumowanie do zeznania podatkowego"
+  },
+  "siteSearch": {
+    "title": "Szukaj w witrynie",
+    "label": "Czego szukasz",
+    "placeholder": "Np. faktura korygująca, płatność QR, Brno…",
+    "submit": "Szukaj",
+    "count": "{count, plural, =0 {Nic nie znaleziono dla „{query}”.} one {# wynik dla „{query}”} few {# wyniki dla „{query}”} many {# wyników dla „{query}”} other {# wyniku dla „{query}”}}",
+    "empty": "Spróbuj innego słowa lub jednego z tych:",
+    "suggestTitle": "Popularne wyszukiwania:",
+    "kind": {
+      "page": "Strona",
+      "feature": "Funkcja",
+      "faq": "FAQ",
+      "city": "Gmina",
+      "calculator": "Kalkulatory",
+      "guide": "Poradniki",
+      "glossary": "Słowniczek"
+    },
+    "suggest": {
+      "isdoc": "ISDOC",
+      "qr": "płatność QR",
+      "dph": "VAT",
+      "ares": "ARES",
+      "banka": "bank",
+      "dobropis": "faktura korygująca"
+    },
+    "keyboardHint": "↑ ↓ wybór · Enter otwórz · Esc zamknij"
+  },
+  "glossary": {
+    "legendLabel": "Co oznaczają etykiety i kolory",
+    "statusTitle": "Status dokumentu",
+    "typeTitle": "Typ dokumentu",
+    "status": {
+      "draft": "Roboczy dokument bez numeru. Możesz go dowolnie edytować lub usunąć; Twój klient go jeszcze nie widzi.",
+      "pending_review": "Szkic, który AI przygotowała z wiadomości głosowej lub tekstowej. Przed wystawieniem sprawdź dane.",
+      "issued": "Wystawiony, ponumerowany dokument, który nie jest jeszcze opłacony. Koryguje się go fakturą korygującą; drobną poprawkę, np. literówkę, można wprowadzić bezpośrednio z podaniem powodu, który trafi do historii.",
+      "paid": "Opłacony w całości – oznaczony ręcznie, sparowany z bankiem lub opłacony kartą.",
+      "cancelled": "Anulowany. Numer pozostaje wykorzystany; dokument nie jest uwzględniany w raportach ani w VAT.",
+      "overdue": "Wystawiony, nieopłacony i po terminie płatności. Możesz wysłać przypomnienie."
+    },
+    "type": {
+      "invoice": "Dokument podatkowy za dostarczone towary lub usługi.",
+      "proforma": "Wezwanie do zapłaty z góry. Nie jest dokumentem podatkowym; po opłaceniu wystawiasz na jego podstawie fakturę.",
+      "credit_note": "Korygujący dokument podatkowy, który obniża lub anuluje kwotę pierwotnej faktury.",
+      "quote": "Oferta dla Twojego klienta. Po uzgodnieniu zamień ją na fakturę lub proformę."
+    },
+    "contactColor": "Kolorowa etykieta kontaktu ({color}). O tym, co oznacza, decydujesz w szczegółach kontaktu – np. VIP albo spóźniony płatnik.",
+    "contactColorPlain": "Kolorowa etykieta kontaktu. O tym, co oznacza, decydujesz w szczegółach kontaktu."
+  },
+  "audit": {
+    "title": "Historia zmian",
+    "description": "Każda ważna czynność w firmie: kto i kiedy co utworzył, edytował, wysłał lub usunął, ze starą i nową wartością każdej zmiany.",
+    "filterLabel": "Filtruj według typu",
+    "empty": "Na razie nic tu nie ma. Gdy tylko Ty lub Twoi współpracownicy coś zmienicie, pojawi się to tutaj.",
+    "loadError": "Nie udało się wczytać historii.",
+    "loadMore": "Wczytaj starsze",
+    "loading": "Wczytywanie…",
+    "reason": "Powód",
+    "changed": "zmieniono",
+    "reordered": "zmieniono kolejność",
+    "yes": "Tak",
+    "no": "Nie",
+    "actor": {
+      "user": "Użytkownik",
+      "ai": "Asystent AI",
+      "api_key": "Klucz API",
+      "system": "System",
+      "customer": "Klient"
+    },
+    "entities": {
+      "all": "Wszystko",
+      "invoice": "Dokumenty",
+      "contact": "Kontakty",
+      "tenant": "Dane firmy",
+      "bank_account": "Konta bankowe",
+      "member": "Zespół",
+      "api_key": "Klucze API",
+      "import": "Importy"
+    },
+    "docTypes": {
+      "invoice": "fakturę",
+      "proforma": "fakturę proforma",
+      "credit_note": "fakturę korygującą",
+      "quote": "ofertę"
+    },
+    "actions": {
+      "converted": "utworzył(a) {to} z dokumentu",
+      "any": {
+        "created": "utworzył(a)",
+        "updated": "edytował(a)",
+        "deleted": "usunął/usunęła"
+      },
+      "invoice": {
+        "created": "utworzył(a) szkic",
+        "updated": "edytował(a) szkic",
+        "edited_issued": "edytował(a) wystawiony dokument",
+        "deleted": "usunął/usunęła szkic",
+        "issued": "wystawił(a)",
+        "sent": "wysłał(a) e-mailem",
+        "reminder_sent": "wysłał(a) przypomnienie do",
+        "marked_paid": "oznaczył(a) jako opłacony",
+        "partial_payment": "zapisał(a) płatność częściową do",
+        "marked_unpaid": "oznaczył(a) jako nieopłacony",
+        "paid_from_bank": "sparował(a) płatność bankową z",
+        "link_rotated": "zastąpił(a) publiczny link do",
+        "cancelled": "anulował(a)",
+        "sent_corrected": "wysłał(a) poprawioną wersję",
+        "buyer_details_requested": "wysłał(a) klientowi do uzupełnienia danych:",
+        "buyer_details_submitted": "uzupełnił(a) swoje dane rozliczeniowe do",
+        "buyer_details_cancelled": "zamknął/zamknęła prośbę o dane klienta do",
+        "profile_order": "utworzono przez zamówienie z profilu publicznego:",
+        "link_renamed": "zmienił(a) nazwę publicznego linku"
+      },
+      "tenant": {
+        "updated": "edytował(a) dane firmy",
+        "logo_uploaded": "wgrał(a) logo",
+        "logo_removed": "usunął/usunęła logo",
+        "number_formats_updated": "zmienił(a) numerację dokumentów"
+      },
+      "bank_account": {
+        "created": "dodał(a) konto bankowe",
+        "updated": "edytował(a) konto bankowe",
+        "deleted": "usunął/usunęła konto bankowe"
+      },
+      "contact": {
+        "created": "dodał(a) kontakt",
+        "updated": "edytował(a) kontakt",
+        "deleted": "usunął/usunęła kontakt"
+      },
+      "member": {
+        "invited": "zaprosił(a)",
+        "invitation_revoked": "cofnął/cofnęła zaproszenie dla",
+        "updated": "zmienił(a) uprawnienia użytkownika",
+        "removed": "usunął/usunęła z zespołu",
+        "left": "opuścił(a) firmę"
+      },
+      "api_key": {
+        "created": "utworzył(a) klucz API",
+        "revoked": "unieważnił(a) klucz API"
+      },
+      "import": {
+        "bitfaktura": "zaimportował(a) dane z BitFaktura",
+        "csv": "zaimportował(a) dokumenty z CSV",
+        "contacts_csv": "zaimportował(a) kontakty z CSV",
+        "fakturoid": "zaimportował(a) dane z Fakturoid",
+        "guest": "przeniósł/przeniosła faktury utworzone bez konta"
+      }
+    },
+    "fields": {
+      "documentType": "Typ dokumentu",
+      "contactId": "Klient",
+      "issueDate": "Data wystawienia",
+      "dueDate": "Termin płatności",
+      "taxableSupplyDate": "Data dostawy",
+      "currency": "Waluta",
+      "bankAccountId": "Konto bankowe",
+      "exchangeRate": "Kurs walutowy",
+      "paymentMethod": "Forma płatności",
+      "paymentMethodLabel": "Nazwa płatności",
+      "paymentInstructions": "Instrukcje płatności",
+      "variableSymbol": "Symbol zmienny",
+      "constantSymbol": "Symbol stały",
+      "specificSymbol": "Symbol specyficzny",
+      "orderNumber": "Numer zamówienia",
+      "noteAbove": "Tekst nad pozycjami",
+      "noteBelow": "Tekst pod pozycjami",
+      "internalNote": "Notatka wewnętrzna",
+      "issuePlace": "Miejsce wystawienia",
+      "issuedByName": "Wystawił(a)",
+      "customFields": "Pola własne",
+      "amountPaid": "Zapłacono",
+      "language": "Język dokumentu",
+      "reverseCharge": "Odwrotne obciążenie",
+      "lineItems": "Pozycje",
+      "total": "Razem",
+      "email": "E-mail",
+      "invoiceNumber": "Numer dokumentu",
+      "role": "Rola",
+      "permissions": "Uprawnienia",
+      "account": "Konto",
+      "label": "Nazwa",
+      "accountNumber": "Numer konta",
+      "bankCode": "Kod banku",
+      "iban": "IBAN",
+      "swift": "SWIFT",
+      "sortOrder": "Kolejność",
+      "companyName": "Nazwa firmy",
+      "legalName": "Nazwa",
+      "ico": "Numer firmy",
+      "dic": "NIP",
+      "dicVatPayer": "Podatnik VAT",
+      "isVatPayer": "Podatnik VAT",
+      "addressStreet": "Ulica",
+      "addressCity": "Miasto",
+      "addressPostalCode": "Kod pocztowy",
+      "addressCountry": "Kraj",
+      "bankAccountNumber": "Numer konta na fakturach",
+      "bankAccountBankCode": "Kod banku na fakturach",
+      "bankAccountIban": "IBAN na fakturach",
+      "bankAccountSwift": "SWIFT na fakturach",
+      "defaultLocale": "Domyślny język",
+      "defaultDueDays": "Domyślny termin płatności (dni)",
+      "defaultPaymentMethod": "Domyślna forma płatności",
+      "defaultNoteBelow": "Domyślny tekst pod pozycjami",
+      "phone": "Telefon",
+      "website": "Strona internetowa",
+      "registryNote": "Wpis do rejestru",
+      "emailPrefs": "Ustawienia e-maili",
+      "templateVars": "Zmienne",
+      "paymentMethods": "Formy płatności",
+      "publicProfile": "Profil publiczny",
+      "enabledModules": "Moduły",
+      "webhooks": "Webhooki",
+      "aiMode": "Tryb AI",
+      "cardPaymentsEnabled": "Płatności kartą",
+      "isPerson": "Osoba fizyczna",
+      "isStarred": "Oznaczony gwiazdką",
+      "color": "Kolor",
+      "importedInvoices": "Nowe dokumenty",
+      "importedContacts": "Nowe kontakty",
+      "updatedContacts": "Zaktualizowane kontakty",
+      "archivedPdfs": "Zapisane oryginalne pliki PDF",
+      "skippedRows": "Pominięte wiersze",
+      "numberFormat": "Format numeru",
+      "nextNumber": "Następny numer",
+      "publicSlug": "Nazwa linku"
+    },
+    "values": {
+      "invoice": "Faktura",
+      "proforma": "Faktura proforma",
+      "credit_note": "Faktura korygująca",
+      "quote": "Oferta",
+      "bank_transfer": "Przelew bankowy",
+      "cash": "Gotówka",
+      "card": "Karta",
+      "cash_on_delivery": "Za pobraniem",
+      "other": "Inna",
+      "owner": "Właściciel",
+      "admin": "Administrator",
+      "accountant": "Księgowa",
+      "viewer": "Tylko do odczytu"
+    },
+    "cleared": "wyczyszczono",
+    "filters": {
+      "action": "Czynność",
+      "anyAction": "Wszystkie czynności",
+      "member": "Kto",
+      "anyMember": "Ktokolwiek",
+      "from": "Od",
+      "to": "Do",
+      "reset": "Wyczyść filtry"
+    }
+  },
+  "comparePage": {
+    "title": "Billanta a alternatywy",
+    "seoTitle": "Porównanie czeskich i słowackich aplikacji do fakturowania: Billanta, Fakturoid, iDoklad i inne",
+    "lead": "Co dostajesz za darmo, ile kosztuje najtańszy płatny plan i gdzie pojawia się AI, parowanie płatności z bankiem oraz API. Wszystko obok siebie na jednej stronie.",
+    "feature": "Porównujemy",
+    "rows": {
+      "free": {
+        "label": "Plan darmowy",
+        "billanta": "10 dokumentów/mies., potem 5 CZK za każdy",
+        "fakturoid": "5 klientów",
+        "idoklad": "5 klientów",
+        "superfaktura": "5 klientów",
+        "vyfakturuj": "5 klientów",
+        "bitfaktura": "1 faktura/mies.",
+        "kros": "5 klientów, tylko dla niebędących podatnikami VAT",
+        "billdu": "Nie, tylko okres próbny"
+      },
+      "entry": {
+        "label": "Najtańszy plan",
+        "billanta": "119 CZK/mies.",
+        "fakturoid": "151 CZK/mies.",
+        "idoklad": "187 CZK/mies.",
+        "superfaktura": "129 CZK/mies.",
+        "vyfakturuj": "175 CZK/mies.",
+        "bitfaktura": "129 CZK/mies.",
+        "kros": "5,90 €/mies.",
+        "billdu": "4,99 €/mies., 10 klientów"
+      },
+      "bank": {
+        "label": "Parowanie płatności z bankiem",
+        "billanta": "Plany płatne",
+        "fakturoid": "Od 2. płatnego planu",
+        "idoklad": "Od 2. płatnego planu",
+        "superfaktura": "Plany płatne",
+        "vyfakturuj": "Plany płatne",
+        "bitfaktura": "Import od 1., parowanie od 2. płatnego planu",
+        "kros": "Plany płatne",
+        "billdu": "–"
+      },
+      "ai": {
+        "label": "Odczyt dokumentów przez AI",
+        "billanta": "Tak, nawet za darmo",
+        "fakturoid": "Dodatek",
+        "idoklad": "3 za darmo, potem płatnie",
+        "superfaktura": "20 za darmo, potem płatnie",
+        "vyfakturuj": "–",
+        "bitfaktura": "Ograniczony",
+        "kros": "Przechwytywanie danych tylko w najwyższym planie",
+        "billdu": "–"
+      },
+      "voice": {
+        "label": "Faktura głosem / wiadomością",
+        "billanta": "Tak, Telegram i WhatsApp",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "taxEstimate": {
+        "label": "Szacunek podatku i składek",
+        "billanta": "Na każdej fakturze, roczny od planu Start",
+        "fakturoid": "Plany płatne",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "Zeznanie podatkowe (typ A i B)",
+        "billdu": "–"
+      },
+      "import": {
+        "label": "Import z innej aplikacji",
+        "billanta": "Rozpoznaje eksporty z Fakturoid, iDoklad, SuperFaktura, Vyfakturuj, KROS, Billdu i BitFaktura (CSV, Excel); z Fakturoid i BitFaktura także przez API",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Z Fakturoid i iDoklad",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "api": {
+        "label": "API",
+        "billanta": "Plany płatne",
+        "fakturoid": "Nawet za darmo",
+        "idoklad": "Od 2. płatnego planu",
+        "superfaktura": "Tylko najwyższy plan",
+        "vyfakturuj": "Od 2. płatnego planu",
+        "bitfaktura": "Nawet za darmo",
+        "kros": "Dodatek za 4,90 €, w cenie KROS Firma",
+        "billdu": "Tylko najwyższy plan"
+      },
+      "recurring": {
+        "label": "Faktury cykliczne",
+        "billanta": "Tak, 2 nawet za darmo",
+        "fakturoid": "Tylko najwyższy plan",
+        "idoklad": "Tak",
+        "superfaktura": "Od 2. płatnego planu",
+        "vyfakturuj": "Od 2. płatnego planu",
+        "bitfaktura": "Plany płatne",
+        "kros": "Dodatek za 1,90 €, w cenie KROS Firma",
+        "billdu": "Tylko najwyższy plan"
+      },
+      "reminders": {
+        "label": "Automatyczne przypomnienia",
+        "billanta": "Plany płatne",
+        "fakturoid": "Od 2. płatnego planu",
+        "idoklad": "Od 2. płatnego planu",
+        "superfaktura": "Od 2. płatnego planu, także SMS",
+        "vyfakturuj": "Plany płatne",
+        "bitfaktura": "Tak, nawet za darmo",
+        "kros": "Plany płatne",
+        "billdu": "Od 2. płatnego planu"
+      },
+      "einvoice": {
+        "label": "ISDOC / e-faktura",
+        "billanta": "Pliki ISDOC i UBL",
+        "fakturoid": "ISDOC",
+        "idoklad": "ISDOC",
+        "superfaktura": "ISDOC",
+        "vyfakturuj": "ISDOC",
+        "bitfaktura": "ISDOC, plany płatne",
+        "kros": "Zapowiedziane, 50 wysłanych/mies. od planu Základ",
+        "billdu": "Zapowiedziane przed 1 stycznia 2027"
+      },
+      "vatReports": {
+        "label": "Słowackie rozliczenia VAT (deklaracja, kontrolne zestawienie i informacja podsumowująca)",
+        "billanta": "XML do złożenia, od planu Plus",
+        "superfaktura": "–",
+        "kros": "–",
+        "idoklad": "–",
+        "billdu": "–",
+        "fakturoid": "Nie dla Słowacji",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "qr": {
+        "label": "Płatność QR",
+        "billanta": "Tak, nawet za darmo",
+        "fakturoid": "Tak, nawet za darmo",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Tak",
+        "bitfaktura": "–",
+        "kros": "Tak, również w planie darmowym",
+        "billdu": "–"
+      },
+      "currencies": {
+        "label": "Waluty obce",
+        "billanta": "Tak, kurs ČNB uzupełniany automatycznie",
+        "fakturoid": "–",
+        "idoklad": "Tak, z kursem",
+        "superfaktura": "–",
+        "vyfakturuj": "Tak, nawet za darmo",
+        "bitfaktura": "Tak, kurs ČNB lub EBC",
+        "kros": "Plany płatne, aktualne kursy walut",
+        "billdu": "–"
+      },
+      "czsk": {
+        "label": "Czechy i Słowacja",
+        "billanta": "Jedno konto, także słowackie składki",
+        "fakturoid": "Brak funkcji podatkowych dla SK",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "mobile": {
+        "label": "Mobile",
+        "billanta": "Instalowalna aplikacja webowa",
+        "fakturoid": "iOS, Android",
+        "idoklad": "iOS, Android",
+        "superfaktura": "iOS, Android",
+        "vyfakturuj": "iOS, Android",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "iOS, Android"
+      },
+      "history": {
+        "label": "Historia zmian",
+        "billanta": "Tak",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "Tak",
+        "kros": "–",
+        "billdu": "–"
+      }
+    },
+    "disclaimer": "Na podstawie publicznych czeskich cenników według stanu na {date}. Ceny miesięczne przy rozliczeniu rocznym, bez VAT, o ile nie zaznaczono inaczej. „2. płatny plan” = drugi najtańszy płatny plan. Limity planów darmowych podajemy jako klientów, nawet jeśli cennik nazywa ich kontaktami. Dane orientacyjne, sprawdź je u dostawcy. Nazwy są znakami towarowymi ich właścicieli.",
+    "reasonsTitle": "Czym wyróżnia się Billanta",
+    "reasons": [
+      {
+        "title": "Za darmo bez limitu klientów",
+        "body": "Wystawiaj faktury komukolwiek. Płacisz tylko za dokumenty powyżej 10 miesięcznie, za każdy osobno, a nie za cały plan."
+      },
+      {
+        "title": "AI w cenie",
+        "body": "Paragon ze zdjęcia albo faktura podyktowana do telefonu. Każdy plan ma kredyty AI, a z własnym kluczem bez limitu."
+      },
+      {
+        "title": "Czechy i Słowacja",
+        "body": "ARES i słowacki rejestr, korony i euro, dokumenty po czesku, słowacku i angielsku na jednym koncie."
+      },
+      {
+        "title": "Historia zmian",
+        "body": "Kto co zmienił i dlaczego. Wystawiony dokument można edytować tylko z podaniem powodu, który widzi cały zespół."
+      },
+      {
+        "title": "Twoje dane zostają Twoje",
+        "body": "Automatyczne kopie zapasowe na Google Drive i pobranie wszystkiego jednym kliknięciem."
+      },
+      {
+        "title": "Łatwa przesiadka",
+        "body": "Z iDoklad lub Excela przez CSV, z BitFaktura i Fakturoid bezpośrednio przez API, łącznie z oryginalnymi PDF-ami."
+      }
+    ],
+    "switchTitle": "Przechodzisz z innej aplikacji?",
+    "switchBody": "Zacznij za darmo i przenieś swoje kontakty oraz dokumenty za pomocą importu.",
+    "pricingCta": "Cennik",
+    "signupCta": "Zacznij za darmo",
+    "notStated": "– = nie podano w cenniku (nie oznacza, że tego brakuje)",
+    "verified": "Sprawdzone z cennikami w {date}",
+    "sourcesTitle": "Źródła",
+    "brand": {
+      "suitsUsTitle": "Kiedy lepszym wyborem jest Billanta",
+      "suitsThemTitle": "Kiedy bardziej opłaca się {brand}",
+      "priceTitle": "Cena",
+      "tableTitle": "Billanta i {brand} punkt po punkcie",
+      "source": "Źródło: cennik {brand}",
+      "versus": "Billanta a {brand}",
+      "importCta": "Jak działa import",
+      "faqTitle": "Najczęściej zadawane pytania",
+      "othersTitle": "Więcej porównań",
+      "all": "Pełne porównanie",
+      "switchGuide": "Przewodnik przesiadki krok po kroku"
+    },
+    "brands": {
+      "fakturoid": {
+        "seoTitle": "Alternatywa dla Fakturoid: jak wypada Billanta",
+        "title": "Billanta czy Fakturoid?",
+        "lead": "Fakturoid to od lat działająca czeska aplikacja do fakturowania, którą zna wielu freelancerów i księgowych. Billanta działa w innym modelu: za darmo bez limitu klientów i z AI w cenie. Oto, co to dla Ciebie oznacza.",
+        "suitsUs": [
+          "Wystawiasz faktury więcej niż pięciu klientom i nie chcesz płacić za plan tylko z tego powodu.",
+          "Chcesz fotografować paragony albo dyktować fakturę do telefonu bez płatnego dodatku.",
+          "Potrzebujesz faktur cyklicznych, ale nie najwyższego planu.",
+          "Prowadzisz działalność zarówno w Czechach, jak i na Słowacji albo wysyłasz e-faktury UBL (Peppol)."
+        ],
+        "suitsThem": [
+          "Chcesz natywną aplikację z App Store lub Google Play, a nie aplikację webową na ekranie głównym.",
+          "Podłączasz własny system i potrzebujesz API w planie darmowym.",
+          "Twoja księgowa od lat pracuje z Fakturoid, a przesiadka niczego by Ci nie zaoszczędziła."
+        ],
+        "price": "Darmowy plan Fakturoid ogranicza liczbę klientów, a darmowy plan Billanty liczbę dokumentów miesięcznie. Jeśli fakturujesz kilku stałych klientów, wystarczy każdy z nich. Jeśli masz dużo drobnych zleceń dla różnych osób, Billanta kosztuje mniej, bo dokumenty ponad limit opłacasz pojedynczo.",
+        "switchTitle": "Jak przejść z Fakturoid",
+        "switchSteps": [
+          "W Fakturoid skopiuj Client ID i Client secret API v3 z ustawień swojego konta użytkownika. Bez API wystarczy eksport faktur i kontaktów do CSV.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu, wybierz Fakturoid i wklej dane albo wgraj eksport. Import sam przypisze kolumny eksportu.",
+          "Przez API przenoszą się faktury, proformy, faktury korygujące, płatności, oryginalne PDF-y i książka adresowa. Zanim cokolwiek zostanie zapisane, zobaczysz podgląd."
+        ],
+        "faq": [
+          {
+            "q": "Czy Billanta jest tańsza niż Fakturoid?",
+            "a": "Najtańszy płatny plan Billanty, Start, kosztuje 119 CZK miesięcznie przy rozliczeniu rocznym (149 CZK przy miesięcznym); najtańszy plan Fakturoid kosztuje 151 CZK. Darmowy plan Fakturoid jest ograniczony do pięciu klientów, a Billanty do dziesięciu dokumentów miesięcznie bez limitu klientów. Oba cenniki znajdziesz powyżej, z datą, kiedy je sprawdziliśmy."
+          },
+          {
+            "q": "Co dostaję w Billancie za darmo?",
+            "a": "Dziesięć dokumentów miesięcznie bez limitu klientów, potem 5 CZK za każdy, więc jeden pracowitszy miesiąc nie zmusza Cię do zmiany planu. Za darmo są też dwie faktury cykliczne, płatności QR, ISDOC, odczyt paragonów przez AI i fakturowanie głosem (z miesięcznym limitem) oraz import historii. Parowanie płatności z bankiem i automatyczne przypomnienia są w planach płatnych."
+          },
+          {
+            "q": "Jak przenieść dane z Fakturoid?",
+            "a": "Na dwa sposoby. Bezpośrednio przez API: skopiuj Client ID i Client secret z ustawień konta użytkownika w Fakturoid, wklej je w Billancie, a przeniosą się faktury, proformy, faktury korygujące, płatności, oryginalne PDF-y i cała książka adresowa. Albo wgraj eksport faktur i kontaktów do CSV lub Excela, który import rozpozna po kolumnach. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Co przenosi się z Fakturoid?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w Fakturoid coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w Fakturoid nic nie jest zmieniane ani usuwane. Przez API Billanta wysyła wyłącznie zapytania odczytu i nigdy nie przechowuje Twoich danych dostępowych. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta obsługuje e-faktury ISDOC i UBL?",
+            "a": "Tak, w każdym planie, łącznie z darmowym. Do każdej faktury możesz pobrać plik ISDOC dla czeskich programów księgowych oraz e-fakturę UBL w formacie Peppol BIS 3.0, o którą proszą klienci ze Słowacji i z innych krajów. Cennik Fakturoid obejmuje ISDOC."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach; Fakturoid ją ma. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          }
+        ]
+      },
+      "idoklad": {
+        "seoTitle": "Alternatywa dla iDoklad: jak wypada Billanta",
+        "title": "Billanta czy iDoklad?",
+        "lead": "iDoklad to popularna aplikacja do fakturowania online od producenta programu księgowego Money. Porównaliśmy, czym różni się od Billanty i komu pasuje każda z nich.",
+        "suitsUs": [
+          "Masz więcej niż pięciu klientów i chcesz zostać przy darmowym planie.",
+          "Chcesz parowania płatności z bankiem i przypomnień w najtańszym płatnym planie.",
+          "Chcesz regularnie korzystać z odczytu dokumentów przez AI, a nie tylko z kilku próbnych dokumentów.",
+          "Chcesz szacunku podatku i składek na każdej fakturze."
+        ],
+        "suitsThem": [
+          "Prowadzisz księgowość w Money i chcesz fakturowania od tego samego dostawcy.",
+          "Chcesz natywnej aplikacji mobilnej na iOS lub Androida.",
+          "Masz już skonfigurowany iDoklad, a jego limity Ci nie przeszkadzają."
+        ],
+        "price": "Oba darmowe plany nadają się do użytku, ale ograniczają co innego: iDoklad liczbę klientów, Billanta liczbę dokumentów miesięcznie. W planach płatnych różnica dotyczy głównie tego, co zawiera najtańszy z nich. Plan Billanty ma parowanie płatności i przypomnienia; w iDoklad potrzebujesz do tego wyższego planu.",
+        "switchTitle": "Jak przejść z iDoklad",
+        "switchSteps": [
+          "W iDoklad zaznacz wystawione faktury i wyeksportuj je do Excela lub CSV. W ten sam sposób wyeksportuj kontakty z książki adresowej.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu i wybierz iDoklad. Import rozpozna eksport po kolumnach i sam je przypisze; plik .xlsx wgraj bez zmian.",
+          "Najpierw wgraj kontakty, potem faktury. Podgląd pokaże kolumny, klientów i numerację, a nic nie zostanie zapisane, dopóki tego nie potwierdzisz."
+        ],
+        "faq": [
+          {
+            "q": "Czy Billanta jest tańsza niż iDoklad?",
+            "a": "Najtańszy płatny plan Billanty, Start, kosztuje 119 CZK miesięcznie przy rozliczeniu rocznym; najtańszy plan iDoklad kosztuje 187 CZK. Start obejmuje też parowanie płatności z bankiem i automatyczne przypomnienia, które iDoklad zostawia dla wyższych planów."
+          },
+          {
+            "q": "Dlaczego darmowy plan iDoklad liczy klientów, a Billanty dokumenty?",
+            "a": "Każdy cennik mierzy swój darmowy plan inaczej. iDoklad ogranicza, ilu klientom wystawiasz faktury (pięciu); Billanta, ile dokumentów wystawiasz miesięcznie (dziesięć, potem 5 CZK za każdy). Przy wielu różnych klientach i mniejszej liczbie faktur lepiej wypada Billanta. Darmowy plan Billanty ma też dwie faktury cykliczne, odczyt paragonów przez AI i import historii."
+          },
+          {
+            "q": "Jak przenieść dane z iDoklad?",
+            "a": "Wyeksportuj wystawione faktury i kontakty z iDoklad do Excela lub CSV i wgraj je w Billancie w Ustawienia → Import z innego systemu. Pliku .xlsx nie trzeba konwertować. Import rozpozna eksport z iDoklad po nazwach kolumn, sam je przypisze i wyliczy stawkę VAT z kwot. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Co przenosi się z iDoklad?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w iDoklad coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w iDoklad nic nie jest zmieniane ani usuwane. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta obsługuje e-faktury ISDOC i UBL?",
+            "a": "Tak, w każdym planie, łącznie z darmowym. Do każdej faktury możesz pobrać plik ISDOC dla czeskich programów księgowych oraz e-fakturę UBL w formacie Peppol BIS 3.0, o którą proszą klienci ze Słowacji i z innych krajów. Cennik iDoklad obejmuje ISDOC."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach; iDoklad ją ma. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          }
+        ]
+      },
+      "superfaktura": {
+        "seoTitle": "Alternatywa dla SuperFaktura: jak wypada Billanta",
+        "title": "Billanta czy SuperFaktura?",
+        "lead": "SuperFaktura pochodzi ze Słowacji i ma też wersję czeską. Billanta to nowsza aplikacja do fakturowania dla obu krajów z AI w cenie. Czym się różnią i kiedy opłaca się każda z nich?",
+        "suitsUs": [
+          "Wystawiasz faktury więcej niż pięciu klientom i nie chcesz od razu płacić.",
+          "Chcesz faktur cyklicznych bez wyższego planu.",
+          "Potrzebujesz API w zwykłym płatnym planie, a nie tylko w najwyższym.",
+          "Chcesz podyktować fakturę do telefonu albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie."
+        ],
+        "suitsThem": [
+          "Chcesz wysyłać przypomnienia także SMS-em.",
+          "Chcesz natywnej aplikacji na iOS lub Androida.",
+          "Masz SuperFakturę połączoną z innymi usługami i nie chcesz łączyć ich od nowa."
+        ],
+        "price": "Najtańsze płatne plany mają zbliżoną cenę. Różnica tkwi w tym, co zawierają: SuperFaktura ma faktury cykliczne i API dopiero w wyższych planach, Billanta już w najtańszym płatnym. Billanta daje też dwie faktury cykliczne za darmo.",
+        "switchTitle": "Jak przejść z SuperFaktura",
+        "switchSteps": [
+          "W SuperFakturze ustaw okres w przeglądzie faktur i pobierz listę jako Excel lub CSV. W ten sam sposób wyeksportuj książkę adresową klientów.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu i wybierz SuperFaktura. Import rozpozna eksport po kolumnach i sam je przypisze; plik .xlsx wgraj bez zmian.",
+          "Najpierw wgraj kontakty, potem faktury. Podgląd pokaże kolumny, klientów i numerację, a nic nie zostanie zapisane, dopóki tego nie potwierdzisz."
+        ],
+        "faq": [
+          {
+            "q": "Czy Billanta jest tańsza niż SuperFaktura?",
+            "a": "Najtańsze płatne plany są zbliżone: Billanta Start kosztuje 119 CZK miesięcznie przy rozliczeniu rocznym, SuperFaktura 129 CZK. SuperFaktura zostawia faktury cykliczne i API dla wyższych planów. W planach darmowych SuperFaktura ogranicza liczbę klientów do pięciu, Billanta liczbę dokumentów do dziesięciu miesięcznie, potem 5 CZK za każdy."
+          },
+          {
+            "q": "Jak przenieść dane z SuperFaktura?",
+            "a": "Pobierz z SuperFaktury przegląd faktur i książkę adresową klientów jako Excel lub CSV i wgraj je w Billancie w Ustawienia → Import z innego systemu. Import rozpoznaje po nazwach kolumn zarówno czeskie, jak i słowackie eksporty z SuperFaktury, łącznie z fakturami w euro, i trzyma słowacki numer VAT (IČ DPH) osobno od numeru podatkowego. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Co przenosi się z SuperFaktura?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w SuperFaktura coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w SuperFakturze nic nie jest zmieniane ani usuwane. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta obsługuje e-faktury ISDOC i UBL?",
+            "a": "Tak, w każdym planie, łącznie z darmowym. Do każdej faktury możesz pobrać plik ISDOC dla czeskich programów księgowych oraz e-fakturę UBL w formacie Peppol BIS 3.0, o którą proszą klienci ze Słowacji i z innych krajów. Cennik SuperFaktury obejmuje ISDOC."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach; SuperFaktura ją ma. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          },
+          {
+            "q": "Czy Billanta wysyła przypomnienia?",
+            "a": "Tak, e-mailem: w planach płatnych automatycznie, w darmowym ręcznie. Przypomnień SMS Billanta jeszcze nie wysyła; SuperFaktura tak."
+          }
+        ]
+      },
+      "vyfakturuj": {
+        "seoTitle": "Alternatywa dla Vyfakturuj: jak wypada Billanta",
+        "title": "Billanta czy Vyfakturuj?",
+        "lead": "Vyfakturuj to czeska aplikacja do fakturowania online z aplikacjami mobilnymi i walutami obcymi nawet w planie darmowym. Porównaliśmy ją z Billantą punkt po punkcie.",
+        "suitsUs": [
+          "Chcesz darmowego planu bez limitu klientów.",
+          "Szukasz tańszego planu startowego z parowaniem płatności z bankiem.",
+          "Chcesz faktur cyklicznych także w planie darmowym.",
+          "Odczytujesz paragony ze zdjęć albo dyktujesz faktury do telefonu."
+        ],
+        "suitsThem": [
+          "Wystawiasz faktury w walutach obcych i chcesz tego w planie darmowym.",
+          "Chcesz natywnej aplikacji na iOS lub Androida.",
+          "Vyfakturuj Ci odpowiada, a nie masz więcej klientów, niż pozwala jego darmowy plan."
+        ],
+        "price": "Najtańszy płatny plan Vyfakturuj kosztuje więcej, a faktury cykliczne oferuje dopiero w wyższym planie. Billanta daje dwie faktury cykliczne za darmo, a jej darmowy plan nie ma limitu klientów.",
+        "switchTitle": "Jak przejść z Vyfakturuj",
+        "switchSteps": [
+          "W Vyfakturuj przefiltruj wystawione faktury za okres, który chcesz przenieść, i pobierz je do CSV lub Excela, najlepiej z pozycjami. Kontakty wyeksportuj osobno.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu i wybierz Vyfakturuj. Import rozpozna eksport po kolumnach i sam je przypisze; plik .xlsx wgraj bez zmian.",
+          "Najpierw wgraj kontakty, potem faktury. Podgląd pokaże kolumny, klientów i numerację, a nic nie zostanie zapisane, dopóki tego nie potwierdzisz."
+        ],
+        "faq": [
+          {
+            "q": "Czy Billanta jest tańsza niż Vyfakturuj?",
+            "a": "Tak. Billanta Start kosztuje 119 CZK miesięcznie przy rozliczeniu rocznym; najtańszy plan Vyfakturuj 175 CZK. Vyfakturuj oferuje faktury cykliczne dopiero w wyższym planie, Billanta daje dwie za darmo. Darmowy plan Vyfakturuj jest ograniczony do pięciu klientów, a Billanty do dziesięciu dokumentów miesięcznie bez limitu klientów."
+          },
+          {
+            "q": "Jak przenieść faktury z Vyfakturuj?",
+            "a": "Wyeksportuj listę dokumentów do CSV lub Excela, najlepiej z pozycjami, i wgraj ją w Billancie w Ustawienia → Import z innego systemu. Import rozpozna eksport z Vyfakturuj po kolumnach i przeniesie pozycje linia po linii, z ilością, ceną i stawką VAT. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Co przenosi się z Vyfakturuj?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w Vyfakturuj coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w Vyfakturuj nic nie jest zmieniane ani usuwane. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta obsługuje e-faktury ISDOC i UBL?",
+            "a": "Tak, w każdym planie, łącznie z darmowym. Do każdej faktury możesz pobrać plik ISDOC dla czeskich programów księgowych oraz e-fakturę UBL w formacie Peppol BIS 3.0, o którą proszą klienci ze Słowacji i z innych krajów. Cennik Vyfakturuj obejmuje ISDOC."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach; Vyfakturuj ją ma. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          },
+          {
+            "q": "Czy Billanta umie fakturować w walucie obcej?",
+            "a": "Tak, w każdym planie. Przy fakturze w euro lub innej walucie Billanta sama uzupełni kurs Czeskiego Banku Narodowego. Import również zachowuje walutę i kurs."
+          }
+        ]
+      },
+      "bitfaktura": {
+        "seoTitle": "Alternatywa dla BitFaktura: jak wypada Billanta",
+        "title": "Billanta czy BitFaktura?",
+        "lead": "BitFaktura mieści sporo w podstawowych planach, ale jej darmowy plan jest bardzo wąski. A z BitFaktury najłatwiej przenieść się do Billanty, łącznie z oryginalnymi PDF-ami.",
+        "suitsUs": [
+          "Wystawiasz więcej niż jedną fakturę miesięcznie i nie chcesz za to płacić.",
+          "Chcesz parowania płatności z bankiem w najtańszym płatnym planie.",
+          "Potrzebujesz faktur cyklicznych także w planie darmowym.",
+          "Chcesz podyktować fakturę do telefonu albo sfotografować paragon."
+        ],
+        "suitsThem": [
+          "Chcesz automatycznych przypomnień w planie darmowym.",
+          "Potrzebujesz API w planie darmowym.",
+          "Wystawiasz faktury w walucie obcej i chcesz wybierać między kursem ČNB a EBC."
+        ],
+        "price": "Darmowy plan BitFaktury obejmuje około jednej faktury miesięcznie; Billanty dziesięć dokumentów, a każdy kolejny opłacasz osobno. Najtańsze płatne plany mają zbliżoną cenę, ale plan Billanty zawiera już parowanie płatności z bankiem.",
+        "switchTitle": "Jak przejść z BitFaktura",
+        "switchSteps": [
+          "W BitFakturze otwórz Ustawienia → Ustawienia konta → Integracje i skopiuj kod autoryzacyjny API. Bez niego wystarczy eksport faktur do CSV.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu, wybierz BitFaktura i wpisz nazwę konta oraz kod albo wgraj eksport.",
+          "Billanta wczyta Twoje faktury z oryginalnymi PDF-ami i całą listę kontaktów. Seria w rodzaju 1/09/2025 będzie kontynuowana, a przed zapisaniem zobaczysz podgląd."
+        ],
+        "faq": [
+          {
+            "q": "Ile faktur mogę wystawić za darmo w Billancie w porównaniu z BitFakturą?",
+            "a": "Darmowy plan BitFaktury obejmuje około jednej faktury miesięcznie; Billanty dziesięć dokumentów, niezależnie od liczby klientów, potem 5 CZK za każdy. Najtańsze płatne plany są zbliżone (Billanta Start 119 CZK miesięcznie przy rozliczeniu rocznym, BitFaktura 129 CZK), ale plan Billanty zawiera już parowanie płatności z bankiem."
+          },
+          {
+            "q": "Jak przenieść dane z BitFaktura?",
+            "a": "Najprościej przez API: skopiuj kod autoryzacyjny z Ustawienia → Ustawienia konta → Integracje w BitFakturze i wpisz go w Billancie razem z nazwą konta. Bez kodu wyeksportuj faktury do CSV lub Excela; import rozpozna eksport z BitFaktury po kolumnach. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Czy PDF-y faktur przeniosą się z BitFaktury?",
+            "a": "Tak, przez API. Billanta pobiera faktury z oryginalnymi PDF-ami, całą książkę adresową, łącznie z kontaktami, którym jeszcze nie wystawiłeś faktury, a także kursy walut i metody płatności. Eksport CSV nie zawiera PDF-ów."
+          },
+          {
+            "q": "Co przenosi się z BitFaktura?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w BitFaktura coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w BitFakturze nic nie jest zmieniane ani usuwane. Przez API Billanta wysyła wyłącznie zapytania odczytu i nigdy nie przechowuje Twoich danych dostępowych. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta obsługuje e-faktury ISDOC i UBL?",
+            "a": "Tak, w każdym planie, łącznie z darmowym. Do każdej faktury możesz pobrać plik ISDOC dla czeskich programów księgowych oraz e-fakturę UBL w formacie Peppol BIS 3.0, o którą proszą klienci ze Słowacji i z innych krajów. Cennik BitFaktury ma ISDOC tylko w planach płatnych."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          }
+        ]
+      },
+      "kros": {
+        "seoTitle": "Alternatywa dla KROS Fakturácia: porównanie z Billantą",
+        "title": "Billanta czy KROS Fakturácia?",
+        "lead": "KROS Fakturácia to program do fakturowania firmy KROS, słowackiego producenta, który tworzy też oprogramowanie księgowe. Billanta to nowsza aplikacja do fakturowania dla Słowacji i Czech z AI w cenie. Czym się różnią i kiedy która ma sens?",
+        "suitsUs": [
+          "Jesteś podatnikiem VAT i chcesz zacząć za darmo. Darmowy plan KROS jest tylko dla niebędących podatnikami VAT.",
+          "Wystawiasz faktury więcej niż pięciu klientom i nie chcesz od razu płacić.",
+          "Chcesz faktur cyklicznych i API w cenie planu, a nie jako dodatków.",
+          "Chcesz słowackiej deklaracji VAT, kontrolnego zestawienia i informacji podsumowującej przygotowanych bezpośrednio z Twoich faktur.",
+          "Chcesz podyktować fakturę do telefonu albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie."
+        ],
+        "suitsThem": [
+          "Twoja księgowa korzysta z programów księgowych KROS (Alfa plus, Omega) i chcesz bezpośredniego połączenia.",
+          "Chcesz składać zeznanie podatkowe z tego samego programu.",
+          "Fakturujesz rzadko, nie jesteś podatnikiem VAT i wystarczy Ci pięciu klientów."
+        ],
+        "price": "Najtańszy płatny plan KROS kosztuje 5,90 € miesięcznie przy rozliczeniu rocznym, Billanta Start 4,99 €. Faktury cykliczne (1,90 €) i API (4,90 €) to w niższych planach KROS dodatkowo płatne dodatki; Billanta ma je w każdym płatnym planie, a dwie faktury cykliczne są za darmo.",
+        "switchTitle": "Jak przejść z KROS Fakturácia",
+        "switchSteps": [
+          "W KROS Fakturácia zaznacz wystawione faktury i wyeksportuj je do Excela lub CSV. W ten sam sposób wyeksportuj partnerów.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu i wybierz KROS. Import rozpozna eksport po kolumnach i sam je przypisze; plik .xlsx wgraj bez zmian.",
+          "Najpierw wgraj kontakty, potem faktury. Podgląd pokaże kolumny, klientów i numerację, a nic nie zostanie zapisane, dopóki tego nie potwierdzisz."
+        ],
+        "faq": [
+          {
+            "q": "Czy Billanta jest tańsza niż KROS Fakturácia?",
+            "a": "Najtańszy płatny plan KROS kosztuje 5,90 € miesięcznie przy rozliczeniu rocznym, Billanta Start 4,99 €. Faktury cykliczne i API to w niższych planach KROS dodatkowo płatne dodatki; Billanta ma je w cenie. KROS oferuje darmowy plan tylko niebędącym podatnikami VAT z pięcioma klientami; darmowy plan Billanty jest dla wszystkich, z dziesięcioma dokumentami miesięcznie."
+          },
+          {
+            "q": "Jak przenieść dane z KROS Fakturácia?",
+            "a": "Wyeksportuj wystawione faktury i partnerów do Excela lub CSV i wgraj je w Billancie w Ustawienia → Import z innego systemu; pliku .xlsx nie trzeba konwertować. Import rozpoznaje słowackie nazwy kolumn KROS, faktury w euro i numery VAT oraz wylicza stawkę VAT z kwot. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Co przenosi się z KROS Fakturácia?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w KROS Fakturácia coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w KROS Fakturácia nic nie jest zmieniane ani usuwane. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta poradzi sobie z obowiązkową słowacką eFaktúrą od 2027 roku?",
+            "a": "Billanta już teraz tworzy plik e-faktury UBL w formacie Peppol BIS 3.0. Wysyłka przez sieć Peppol, której obowiązek wymaga od 1 stycznia 2027, jest w przygotowaniu. KROS zapowiedział ją na jesień 2026."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          },
+          {
+            "q": "Czy Billanta przygotowuje słowackie rozliczenia VAT?",
+            "a": "Tak. Od planu Plus tworzy z Twoich faktur i wydatków plik XML deklaracji VAT, kontrolnego zestawienia i informacji podsumowującej, gotowy do złożenia na portalu słowackiej administracji skarbowej."
+          }
+        ]
+      },
+      "billdu": {
+        "seoTitle": "Alternatywa dla Billdu: porównanie z Billantą",
+        "title": "Billanta czy Billdu?",
+        "lead": "Billdu to słowacka aplikacja do fakturowania stawiająca na urządzenia mobilne, używana także za granicą. Billanta to nowsza aplikacja do fakturowania dla Słowacji i Czech z AI w cenie. Czym się różnią i kiedy która ma sens?",
+        "suitsUs": [
+          "Chcesz fakturować za darmo na stałe, a nie tylko w okresie próbnym.",
+          "Masz więcej niż dziesięciu klientów i nie chcesz wyższego planu tylko z tego powodu.",
+          "Chcesz faktur cyklicznych i API bez najwyższego planu.",
+          "Chcesz parowania płatności z bankiem, PAY by square oraz słowackiej deklaracji VAT z kontrolnym zestawieniem.",
+          "Chcesz podyktować fakturę do telefonu albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie."
+        ],
+        "suitsThem": [
+          "Chcesz natywnej aplikacji na iOS lub Androida i fakturujesz głównie z telefonu.",
+          "Potrzebujesz skanera kodów kreskowych albo paragonów kasowych dla sklepu.",
+          "Wystawiasz faktury także klientom spoza Słowacji i Czech i chcesz aplikacji znanej za granicą."
+        ],
+        "price": "Najtańszy plan Billdu, Lite, kosztuje 4,99 € miesięcznie przy rozliczeniu rocznym, tyle samo co Billanta Start, ale jest ograniczony do dziesięciu klientów. Przy płatności miesięcznej Billdu Lite kosztuje 7,99 €, a Billanta Start 5,99 €. Billdu zostawia faktury cykliczne i API dla swojego najwyższego planu.",
+        "switchTitle": "Jak przejść z Billdu",
+        "switchSteps": [
+          "W aplikacji webowej Billdu otwórz listę faktur i pobierz eksport dokumentów jako CSV lub Excel, jeśli Twój plan na to pozwala. Klientów wyeksportuj osobno.",
+          "W Billancie przejdź do Ustawienia → Import z innego systemu i wybierz Billdu. Import rozpozna eksport po kolumnach i sam je przypisze; plik .xlsx wgraj bez zmian.",
+          "Najpierw wgraj kontakty, potem faktury. Podgląd pokaże kolumny, klientów i numerację, a nic nie zostanie zapisane, dopóki tego nie potwierdzisz."
+        ],
+        "faq": [
+          {
+            "q": "Czy Billanta jest tańsza niż Billdu?",
+            "a": "Przy rozliczeniu rocznym Billdu Lite i Billanta Start kosztują po 4,99 € miesięcznie, ale Billdu Lite jest ograniczony do dziesięciu klientów. Przy płatności miesięcznej Billdu Lite kosztuje 7,99 €, a Billanta Start 5,99 €. Billdu zostawia faktury cykliczne i API dla swojego najwyższego planu."
+          },
+          {
+            "q": "Czy Billanta ma darmowy plan? Billdu go nie ma.",
+            "a": "Tak, na stałe, a nie tylko na okres próbny. Dziesięć dokumentów miesięcznie bez limitu klientów, potem 0,20 € za każdy, dwie faktury cykliczne, odczyt paragonów przez AI i fakturowanie głosem. Parowanie płatności z bankiem i automatyczne przypomnienia są w planach płatnych."
+          },
+          {
+            "q": "Jak przenieść dane z Billdu?",
+            "a": "W aplikacji webowej Billdu pobierz eksport dokumentów i klientów jako CSV lub Excel i wgraj je w Billancie w Ustawienia → Import z innego systemu. Import rozumie angielskie nazwy kolumn Billdu, przelicza status płatności i daty, a „Client ID” odczytuje jako numer firmy. Kolumny, których nie zna, przypiszesz ręcznie w podglądzie."
+          },
+          {
+            "q": "Co przenosi się z Billdu?",
+            "a": "Klienci z numerem firmy, NIP-em i adresem, wystawione faktury z datami, kwotami, walutą i statusem płatności, a także pozycje, jeśli eksport je zawiera. Bez pozycji całą kwotę obejmuje jedna linia. Klientów, których już masz w Billancie, dopasowujemy po numerze firmy, a w przeciwnym razie po nazwie, więc nic się nie dubluje. Kolejna faktura kontynuuje po najwyższym zaimportowanym numerze, a jeśli stara seria miała inny format numeru, podgląd zaproponuje jego zachowanie."
+          },
+          {
+            "q": "Czy na moim koncie w Billdu coś się zmieni?",
+            "a": "Nie. Import tylko odczytuje Twoje dane; w Billdu nic nie jest zmieniane ani usuwane. Zaimportowane faktury nie są ponownie wysyłane i nie dostają przypomnień. Przez jakiś czas możesz korzystać z obu aplikacji równolegle; pilnuj tylko, żeby numery faktur się nie powtarzały. Faktury, których numery już istnieją w Billancie, są pomijane."
+          },
+          {
+            "q": "Czy Billanta poradzi sobie z obowiązkową słowacką eFaktúrą od 2027 roku?",
+            "a": "Billanta już teraz tworzy plik e-faktury UBL w formacie Peppol BIS 3.0. Wysyłka przez sieć Peppol, której obowiązek wymaga od 1 stycznia 2027, jest w przygotowaniu. Billdu również zapowiedziało ją przed początkiem 2027 roku."
+          },
+          {
+            "q": "Czy w Billancie mogę fakturować z telefonu, nawet głosem?",
+            "a": "Tak. Billanta to aplikacja webowa, którą instalujesz na ekranie głównym iPhone’a lub telefonu z Androidem. Nie ma jeszcze natywnej aplikacji w sklepach; Billdu ją ma. W każdym planie, także darmowym, możesz podyktować fakturę albo wysłać ją jako wiadomość na Telegramie lub WhatsAppie. AI przygotuje szkic, a wystawiasz go sam."
+          }
+        ]
+      }
+    }
+  },
+  "tools": {
+    "menu": {
+      "resources": "Materiały",
+      "calculators": "Kalkulatory",
+      "calculatorsHint": "Podatek, VAT, płatność QR, wyszukiwanie firm, terminy płatności",
+      "guides": "Poradniki",
+      "guidesHint": "Czeski VAT i słowackie e-fakturowanie",
+      "compare": "Porównanie z konkurencją",
+      "blog": "Blog",
+      "blogHint": "Terminy, przepisy i instrukcje",
+      "findAccountant": "Szukasz księgowej?",
+      "findAccountantHint": "Polecane księgowe według regionu",
+      "glossary": "Słowniczek",
+      "glossaryHint": "Pojęcia z fakturowania i VAT w prostych słowach",
+      "businessDirectory": "Katalog firm",
+      "businessDirectoryHint": "Przedsiębiorcy i spółki według branży i miejscowości",
+      "templatesHint": "Wzory dla każdego rodzaju faktury",
+      "reminders": "Wzory wezwań do zapłaty",
+      "remindersHint": "Przypomnienie, wezwanie do zapłaty, przedsądowe wezwanie"
+    },
+    "search": {
+      "showAll": "Pokaż wszystkie wyniki dla „{query}”",
+      "pages": "Strony",
+      "close": "Zamknij wyszukiwanie",
+      "noResults": "Brak szybkich dopasowań. Spróbuj innego słowa albo otwórz pełne wyniki.",
+      "slashHint": "otwiera wyszukiwanie"
+    },
+    "common": {
+      "disclaimerTitle": "Orientacyjny szacunek",
+      "disclaimer": "Wynik to tylko orientacyjny szacunek i nie zastępuje księgowej ani doradcy podatkowego. Nie uwzględnia innych dochodów, odliczeń, ulg na dzieci ani rozpoczęcia lub zakończenia działalności w trakcie roku. Zanim cokolwiek na jego podstawie złożysz lub zapłacisz, sprawdź to ze swoją księgową albo na stronach czeskiej administracji skarbowej (Finanční správa) i zakładu ubezpieczeń społecznych (ČSSZ).",
+      "validFor": "Kwoty obowiązują dla roku {year}.",
+      "ratesSince": "Stawki obowiązują od {date}.",
+      "ctaTitle": "Już fakturujesz? Billanta wyliczy to z Twoich dokumentów",
+      "ctaText": "Aplikacja pokazuje szacunek podatku i ubezpieczenia, minimalne zaliczki oraz rozliczenia VAT bezpośrednio z zapisanych faktur i wydatków.",
+      "ctaButton": "Załóż darmowe konto",
+      "ctaNote": "Bez karty. Plan podstawowy jest darmowy.",
+      "related": "Więcej kalkulatorów",
+      "allCalculators": "Wszystkie kalkulatory",
+      "relatedGuides": "Poradniki",
+      "allGuides": "Wszystkie poradniki",
+      "howTitle": "Jak to liczymy",
+      "resultTitle": "Wynik",
+      "perYear": "rocznie",
+      "perMonth": "miesięcznie",
+      "czOnlyTitle": "Ta strona dotyczy czeskich przepisów",
+      "czOnlyText": "„{name}” opisuje czeskie prawo. Na Słowacji obowiązują inne stawki, terminy i formularze, dlatego nie ma wersji słowackiej.",
+      "czOnlyCs": "Otwórz wersję czeską",
+      "czOnlySk": "Słowackie przepisy: Finančná správa SR",
+      "czTag": "Czeskie przepisy",
+      "lastChecked": "Ostatnio sprawdziliśmy te informacje {date}.",
+      "officialSource": "Wiążące informacje i formularze znajdziesz na stronie czeskiej administracji skarbowej",
+      "guideDisclaimer": "Ten poradnik podsumowuje podstawowe zasady i nie zastępuje księgowej ani doradcy podatkowego. Przepisy i formularze się zmieniają, dlatego szczegóły sprawdź na stronie administracji skarbowej.",
+      "updated": "Zaktualizowano",
+      "invoiceCtaTitle": "Potrzebujesz z tego faktury?",
+      "invoiceCtaText": "Wystaw fakturę z kodem QR do płatności, danymi firmy z ARES i prawidłowym terminem płatności, bez zakładania konta. Z kontem Billanta Twoje faktury są zapisywane, płatności śledzone, a księgowa dostaje dokumenty.",
+      "invoiceCtaButton": "Wystaw darmową fakturę",
+      "overview": "Przegląd",
+      "myNumbers": {
+        "hint": "Jesteś zalogowany. Otwórz kalkulator w aplikacji z przychodami i wydatkami z Twoich dokumentów.",
+        "cta": "Otwórz z moimi liczbami"
+      },
+      "czOnlyTextAlt": "„{name}” dotyczy czeskich przepisów. Dla słowackich przedsiębiorców jest osobny kalkulator w sekcji słowackich przepisów.",
+      "noLiability": "Wynik nie jest objęty żadną gwarancją i nie odpowiadamy za decyzje podjęte na jego podstawie.",
+      "noWarranty": "Wynik ma charakter wyłącznie informacyjny i nie jest objęty gwarancją. Zanim go użyjesz, sprawdź szczegóły.",
+      "invoiceCtaTemplates": "Wzory faktur do wypełnienia online"
+    }
+  },
+  "demo": {
+    "cta": "Wypróbuj demo",
+    "ctaHint": "Bez rejestracji, przykładowa firma na 24 godziny",
+    "meta": {
+      "title": "Darmowe demo fakturowania – wypróbuj aplikację na żywo, bez rejestracji",
+      "description": "Otwórz przykładową firmę i wypróbuj fakturowanie na żywo: faktury z płatnością QR, VAT, przypomnienia, wydatki i widok księgowej. Bez e-maila, bez hasła, a swoją pracę możesz później przenieść na własne konto."
+    },
+    "page": {
+      "eyebrow": "Demo bez rejestracji",
+      "title": "Wypróbuj {site} na przykładowej firmie",
+      "lead": "Wybierz rodzaj firmy, a w kilka sekund jesteś w aplikacji. Faktury, kontakty i raporty są już uzupełnione, a wszystko możesz edytować, wystawiać lub usuwać.",
+      "points": {
+        "time": "Firma istnieje 24 godziny, potem zostaje całkowicie usunięta.",
+        "safe": "Wszystkie dane są zmyślone. Nic nie jest wysyłane e-mailem i za nic nie płacisz.",
+        "keep": "Podoba Ci się? Załóż konto i zacznij z własną firmą.",
+        "empty": "Chcesz zacząć od zera? Wybierz pustą firmę, a po rejestracji przenieś swoją pracę na własne konto."
+      },
+      "pick": "Wybierz rodzaj firmy",
+      "rolesTitle": "Zobacz aplikację oczami całego zespołu",
+      "rolesLead": "W demo przełączasz widok jednym wyborem na górnym pasku. Każda rola widzi dokładnie to, co widziałaby w prawdziwej firmie.",
+      "tryTitle": "Co wypróbować w demo",
+      "try": {
+        "invoices": {
+          "title": "Faktura z płatnością QR",
+          "text": "Wystaw fakturę, pobierz PDF i udostępnij link z kodem QR."
+        },
+        "payments": {
+          "title": "Płatności i płatności częściowe",
+          "text": "Oznacz fakturę jako opłaconą lub zapisz płatność częściową."
+        },
+        "reminders": {
+          "title": "Przeterminowane faktury",
+          "text": "Zobacz, co jest po terminie i jak wygląda przypomnienie."
+        },
+        "expenses": {
+          "title": "Wydatki",
+          "text": "Zapisz otrzymany rachunek i śledź wydatki według kategorii."
+        },
+        "vat": {
+          "title": "VAT i raporty",
+          "text": "Deklaracja VAT i raport kontrolny z tych samych danych."
+        },
+        "accountant": {
+          "title": "Widok księgowej",
+          "text": "Eksporty dla księgowej i to, co księgowa może robić w firmie."
+        },
+        "team": {
+          "title": "Zespół i role",
+          "text": "Przełącz się na współpracownika z dostępem tylko do odczytu i spróbuj coś zmienić."
+        },
+        "quotes": {
+          "title": "Oferty i faktury proforma",
+          "text": "Zamień ofertę w proformę, a potem w fakturę końcową."
+        }
+      },
+      "allFeatures": "Wszystkie funkcje",
+      "faqTitle": "Najczęstsze pytania o demo",
+      "faq": [
+        {
+          "q": "Czy do demo muszę się rejestrować lub podawać e-mail?",
+          "a": "Nie. Wybierz rodzaj firmy, a w kilka sekund jesteś w aplikacji. Bez e-maila, hasła i karty."
+        },
+        {
+          "q": "Jak długo trwa demo?",
+          "a": "Przykładowa firma istnieje 24 godziny. Potem zostaje usunięta razem ze wszystkim, co w niej utworzysz."
+        },
+        {
+          "q": "Czy mogę wypróbować widok księgowej lub współpracownika?",
+          "a": "Tak. Na górnym pasku demo przełączasz się między właścicielem, księgową i współpracownikiem z dostępem tylko do odczytu. Każda rola ma takie same uprawnienia jak w prawdziwej firmie."
+        },
+        {
+          "q": "Czy mogę zacząć z pustą firmą?",
+          "a": "Tak. Wybierz pustą firmę na starcie albo użyj opcji „zacznij z pustą firmą” na pasku demo. Dostajesz firmę bez dokumentów i wszystko tworzysz sam."
+        },
+        {
+          "q": "Czy faktury z demo przejdą na moje konto?",
+          "a": "Tak, jeśli założysz konto bezpośrednio z demo. Po rejestracji zaproponujemy przeniesienie utworzonych faktur, kontaktów i wydatków. Faktury trafią jako szkice, więc wystawisz je już pod własnymi danymi i numeracją."
+        },
+        {
+          "q": "Czy coś z demo trafia do prawdziwych ludzi?",
+          "a": "Nie. Demo nie wysyła e-maili, nie łączy się z bankiem i niczego nie pobiera. Wszystkie firmy i osoby w nim są zmyślone."
+        }
+      ]
+    },
+    "kinds": {
+      "cz_vat_sro": {
+        "title": "Czeska s.r.o., podatnik VAT",
+        "description": "Czeska spółka z o.o. z VAT, faktury w CZK i EUR, klienci zagraniczni."
+      },
+      "cz_freelancer": {
+        "title": "Czeski freelancer bez VAT",
+        "description": "Jednoosobowa działalność bez VAT, proste faktury i przegląd przychodów."
+      },
+      "cz_pausal": {
+        "title": "Czeski freelancer, podatek ryczałtowy",
+        "description": "Ryczałtowy system podatkowy, śledzenie limitu przychodów i miesięczne zaliczki."
+      },
+      "sk_vat_sro": {
+        "title": "Słowacka s.r.o., podatnik VAT",
+        "description": "Słowacka spółka rozliczająca się w euro, ze słowackimi stawkami VAT i słowackimi klientami."
+      },
+      "sk_freelancer": {
+        "title": "Słowacki freelancer bez VAT",
+        "description": "Tłumacz bez VAT, faktury w euro, klienci także w Wielkiej Brytanii i USA."
+      },
+      "sk_vat_freelancer": {
+        "title": "Słowacki freelancer, podatnik VAT",
+        "description": "Elektryk z VAT, odwrotne obciążenie przy robotach budowlanych dla firm."
+      }
+    },
+    "country": {
+      "CZ": "Czechy",
+      "SK": "Słowacja"
+    },
+    "start": "Otwórz demo",
+    "starting": "Przygotowujemy firmę…",
+    "banner": {
+      "label": "Demo",
+      "left": "Przykładowa firma, zostanie usunięta za {time}.",
+      "ai": "{n, plural, =0 {Brak pozostałych zapytań AI} one {Pozostało # zapytanie AI} few {Pozostały # zapytania AI} many {Pozostało # zapytań AI} other {Pozostało # zapytania AI}}",
+      "register": "Załóż konto i zachowaj moją pracę",
+      "restart": "Zacznij od nowa",
+      "hours": "{h} godz. {m} min",
+      "minutes": "{m} min",
+      "viewAs": "Widok jako:",
+      "empty": "Zacznij z pustą firmą",
+      "emptyConfirm": "Otworzy się nowa, pusta przykładowa firma bez dokumentów. Obecne demo pozostanie tylko do wygaśnięcia. Kontynuować?"
+    },
+    "expired": {
+      "metaTitle": "Demo dobiegło końca",
+      "title": "Przykładowa firma już nie istnieje",
+      "lead": "Demo trwa 24 godziny, a potem zostaje usunięte ze wszystkimi danymi. Możesz otworzyć nowe albo założyć własne konto.",
+      "again": "Otwórz nowe demo",
+      "register": "Załóż konto"
+    },
+    "publicNotice": "Przykładowa faktura z demo {site}. Firma i wszystkie dane są zmyślone – niczego nie płać.",
+    "watermark": "DEMO",
+    "errors": {
+      "demo_locked": "Tożsamości firmy (nazwy, IČO, NIP, adresu) nie można zmienić w demo. Na własnym koncie można.",
+      "demo_limit": "Firma demo ma ograniczoną liczbę rekordów. Załóż własne konto, aby mieć więcej.",
+      "demo_disabled": "Tego nie można wypróbować w demo. Działa na własnym koncie.",
+      "demo_no_email": "Demo nie wysyła e-maili. Fakturę możesz pobrać jako PDF lub otworzyć jej link.",
+      "demo_ai_quota": "To demo wykorzystało już swoje zapytania AI.",
+      "demo_expired": "Demo dobiegło końca, a firma została usunięta.",
+      "demo_signed_in": "Jesteś zalogowany na własne konto. Aby otworzyć demo, najpierw się wyloguj.",
+      "demo_ip_limit": "Z Twojej sieci otwarto dziś już wiele wersji demo. Spróbuj jutro lub załóż konto.",
+      "demo_capacity": "W tej chwili działa zbyt wiele wersji demo. Spróbuj ponownie za chwilę.",
+      "demo_unavailable": "Nie udało się teraz przygotować demo. Spróbuj ponownie.",
+      "rate_limited": "Zbyt wiele prób. Spróbuj ponownie za kilka minut.",
+      "invalid_role": "Tej roli nie można wypróbować w demo."
+    },
+    "roles": {
+      "owner": {
+        "label": "Właściciel",
+        "hint": "Widzi i robi wszystko: faktury, wydatki, bank, raporty i ustawienia firmy."
+      },
+      "accountant": {
+        "label": "Księgowa",
+        "hint": "Pracuje z dokumentami, VAT, eksportami i raportami, ale nie może zmieniać ustawień firmy, zespołu ani subskrypcji."
+      },
+      "viewer": {
+        "label": "Współpracownik (tylko odczyt)",
+        "hint": "Może przeglądać faktury i raporty, ale niczego nie wystawi ani nie usunie."
+      }
+    },
+    "picker": {
+      "dataTitle": "Dane",
+      "filled": "Z przykładowymi dokumentami",
+      "empty": "Pusta firma",
+      "filledHint": "Faktury, kontakty, wydatki i raporty są już uzupełnione.",
+      "emptyHint": "Tylko firma i jej ustawienia. Wszystko tworzysz sam, np. żeby później przenieść to na własne konto.",
+      "viewTitle": "Zobacz jako",
+      "businessTitle": "Rodzaj działalności",
+      "businessAuto": "Dopasuj do firmy",
+      "businessAutoHint": "Każda przykładowa firma ma włączone to, czego zwykle używa jej rodzaj działalności. W demo możesz też wszystko przełączyć w Ustawienia → Moduły.",
+      "countryTitle": "Kraj",
+      "countryHint": "Kraj określa walutę, stawki VAT, rejestry i wygląd dokumentów.",
+      "quickStart": "Uruchom demo do lekcji",
+      "customize": "Zmień ustawienia demo"
+    },
+    "transfer": {
+      "title": "Przenieść Twoją pracę z demo?",
+      "lead": "Faktury, kontakty i wydatki utworzone w demo przejdą do tej firmy jako szkice. Przykładowe dane zostaną w demo.",
+      "claim": "Przenieś",
+      "dismiss": "Nie, dziękuję",
+      "done": "Przeniesiono {invoices, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}, {contacts, plural, one {# kontakt} few {# kontakty} many {# kontaktów} other {# kontaktu}} i {expenses, plural, one {# wydatek} few {# wydatki} many {# wydatków} other {# wydatku}}. Faktury znajdziesz wśród swoich szkiców.",
+      "signupNote": "Po rejestracji zaproponujemy przeniesienie faktur, kontaktów i wydatków utworzonych w demo.",
+      "errors": {
+        "demo_transfer_invalid": "Przeniesienie nie jest już dostępne: demo wygasło albo zostało już wykorzystane.",
+        "forbidden": "Dane z demo może przenieść tylko właściciel lub administrator firmy.",
+        "generic": "Przeniesienie teraz się nie udało. Spróbuj ponownie."
+      }
+    },
+    "ctaCard": {
+      "title": "Wypróbuj na żywo w demo",
+      "titleFeature": "Wypróbuj {feature} na żywo w demo",
+      "lead": "Przykładowa firma z uzupełnionymi danymi w kilka sekund. Bez rejestracji.",
+      "leadView": "Demo otworzy się od razu w widoku {role}, bez rejestracji.",
+      "button": "Otwórz demo",
+      "buttonView": "Demo jako {role}"
+    },
+    "signOutAndStart": "Wyloguj się i otwórz demo",
+    "audiences": {
+      "courses": "Przygotowane na kurs: pusta, nowa działalność gotowa na pierwszą fakturę.",
+      "coworkings": "Przygotowane dla członków coworkingu: freelancer z przykładowymi dokumentami.",
+      "communities": "Przygotowane dla członków społeczności: freelancer na podatku ryczałtowym.",
+      "expats": "Przygotowane dla freelancera pracującego po angielsku, z przykładowymi dokumentami.",
+      "banks": "Przygotowane dla firmy z księgową i synchronizacją z bankiem.",
+      "schools": "Przygotowane na lekcję: pusta działalność tylko z fakturowaniem.",
+      "creators": "Przygotowane dla twórców: freelancer na podatku ryczałtowym.",
+      "events": "Przygotowane dla uczestników: freelancer tylko z fakturowaniem.",
+      "firstInvoice": "Przygotowane na pierwszą fakturę: pusta działalność bez VAT, tylko fakturowanie.",
+      "beginners": "Przygotowane dla początkujących: jednoosobowa działalność z przykładowymi dokumentami.",
+      "advanced": "Przygotowane dla zaawansowanych: podatnik VAT z księgową i synchronizacją z bankiem."
+    },
+    "scenarios": {
+      "firstInvoice": "Przygotowane na lekcję: pusta firma bez dokumentów. Zaczynasz w Kontaktach.",
+      "invoices": "Przygotowane na lekcję: firma z przykładowymi fakturami. Zaczynasz na liście faktur.",
+      "overdue": "Przygotowane na lekcję: firma z przykładowymi fakturami. Zaczynasz na przeterminowanych fakturach.",
+      "registries": "Przygotowane na lekcję: firma z przykładowymi dokumentami i kontaktami. Zaczynasz na liście faktur.",
+      "vatInvoices": "Przygotowane na lekcję: podatnik VAT z przykładowymi dokumentami. Zaczynasz na liście faktur.",
+      "vatOverdue": "Przygotowane na lekcję: podatnik VAT z przykładowymi dokumentami. Zaczynasz na przeterminowanych fakturach.",
+      "bank": "Przygotowane na lekcję: podatnik VAT z transakcjami bankowymi do dopasowania. Zaczynasz w Banku.",
+      "accountant": "Przygotowane na lekcję: firma zarejestrowana jako podatnik VAT oczami księgowej. Zaczynasz w Banku.",
+      "flatTax": "Przygotowane na lekcję: jednoosobowa działalność na podatku ryczałtowym z przykładowymi dokumentami. Zaczynasz na liście faktur."
+    }
+  },
+  "classroom": {
+    "title": "Klasa",
+    "description": "Klasy, w których uczniowie ćwiczą fakturowanie na własnej firmie.",
+    "loadError": "Nie udało się wczytać klasy. Spróbuj odświeżyć stronę.",
+    "backToClasses": "Wróć do klas",
+    "rejected": {
+      "title": "Twój wniosek nie został zatwierdzony",
+      "body": "Jeśli to pomyłka, wyślij nowy wniosek z linkiem do strony szkoły albo napisz do nas."
+    },
+    "pending": {
+      "title": "Twój wniosek czeka na zatwierdzenie",
+      "body": "Sprawdzamy {school}. Zwykle trwa to do jednego dnia roboczego; wynik dostaniesz e-mailem."
+    },
+    "suspended": {
+      "title": "Konto szkoły jest zawieszone",
+      "body": "Uczniowie nie mogą teraz dołączać do klas. Jeśli nie wiesz dlaczego, skontaktuj się z nami."
+    },
+    "signedInAs": "{name} · {school}",
+    "classes": {
+      "title": "Twoje klasy",
+      "empty": "Nie masz jeszcze żadnych klas. Utwórz pierwszą poniżej.",
+      "students": "{n, plural, one {# uczeń} few {# uczniowie} many {# uczniów} other {# ucznia}}",
+      "coTeaching": "współprowadzący",
+      "ended": "zakończona, usunięta {date}",
+      "until": "do {date}"
+    },
+    "tracks": {
+      "basic": {
+        "title": "Podstawy",
+        "body": "Pierwsza faktura, kontakty i jednoosobowa działalność bez VAT. Dla szkół podstawowych."
+      },
+      "standard": {
+        "title": "Standard",
+        "body": "VAT, proformy, faktury korygujące, bank, wydatki i oferty. Dla szkół średnich i handlowych."
+      },
+      "advanced": {
+        "title": "Zaawansowany",
+        "body": "Dodatkowo odwrotne obciążenie, waluty obce i raporty VAT. Dla szkół policealnych, uczelni i kursów."
+      }
+    },
+    "apply": {
+      "title": "Rejestracja nauczyciela",
+      "intro": "Klasa jest dla nauczycieli bezpłatna. Sprawdzamy, czy szkoła istnieje i czy w niej uczysz, a potem możesz tworzyć klasy.",
+      "country": "Kraj",
+      "countryCZ": "Czechy",
+      "countrySK": "Słowacja",
+      "ico": "Numer szkoły (IČO)",
+      "lookup": "Wyszukaj",
+      "schoolName": "Nazwa szkoły",
+      "address": "Adres",
+      "level": "Typ szkoły",
+      "levels": {
+        "zs": "Szkoła podstawowa",
+        "ss": "Szkoła średnia",
+        "vos": "Wyższa szkoła zawodowa (policealna)",
+        "vs": "Uczelnia wyższa",
+        "course": "Kurs lub inna forma edukacji"
+      },
+      "webUrl": "Strona szkoły",
+      "name": "Twoje imię i nazwisko",
+      "subject": "Przedmiot",
+      "expectedStudents": "Mniej więcej ilu uczniów",
+      "terms": "Wysyłając wniosek, akceptujesz <link>warunki dla szkół</link>, w tym umowę powierzenia przetwarzania danych. Nic nie trzeba podpisywać.",
+      "emailHint": "Szkolny e-mail przyspiesza zatwierdzenie. Koledzy z tej samej domeny dostaną się wtedy bez czekania.",
+      "submit": "Wyślij wniosek"
+    },
+    "create": {
+      "title": "Nowa klasa",
+      "name": "Nazwa klasy",
+      "namePlaceholder": "np. 3A – ekonomia",
+      "track": "Poziom",
+      "suggested": "sugerowany",
+      "kinds": "Rodzaje firm dla uczniów",
+      "kindsHint": "Każdy uczeń wybiera jeden przy dołączaniu. Jeśli jest tylko jeden, nie ma czego wybierać.",
+      "language": "Język",
+      "endsAt": "Koniec nauczania",
+      "endsAtHint": "Potem klasa jest przez 30 dni tylko do odczytu, a następnie zostaje usunięta. Zostaw puste, aby był to koniec roku szkolnego.",
+      "seeded": "Zacznij z przykładowymi danymi",
+      "seededHint": "Firma dostanie kilku klientów i faktur, żeby uczniowie mieli na czym pracować. W przeciwnym razie zaczynają od pustej.",
+      "submit": "Utwórz klasę"
+    },
+    "invite": {
+      "title": "Zaproś kolegę lub koleżankę",
+      "body": "Osoba z {school} zostanie zatwierdzonym nauczycielem od razu po rejestracji.",
+      "placeholder": "kolega@szkola.cz",
+      "submit": "Wyślij zaproszenie",
+      "sent": "Zaproszenie wysłane."
+    },
+    "detail": {
+      "copied": "Skopiowano.",
+      "owner": "Utworzył(a) {name}",
+      "endedTitle": "Nauczanie dobiegło końca",
+      "endedBody": "Klasa jest teraz tylko do odczytu. Zostanie usunięta {date}, chyba że ją przedłużysz.",
+      "join": {
+        "title": "Kod dołączenia",
+        "body": "Uczniowie otwierają link lub wpisują kod na /join. Nie potrzebują e-maila ani hasła.",
+        "copy": "Kopiuj link",
+        "rotate": "Nowy kod",
+        "rotateConfirm": "Stary kod przestanie działać. Nie dotyczy to uczniów, którzy już są w klasie. Kontynuować?",
+        "open": "Dołączanie jest otwarte ({n} z {max})"
+      },
+      "retention": {
+        "title": "Czas istnienia klasy",
+        "endsAt": "Koniec nauczania",
+        "deletesAt": "Usunięcie",
+        "body": "Po zakończeniu firmy uczniów można przeglądać jeszcze przez 30 dni, a potem zostają usunięte. Wyślemy Ci e-mail miesiąc i tydzień przed końcem nauczania.",
+        "pickDate": "Nowa data zakończenia (opcjonalnie)",
+        "extend": "Przedłuż o rok szkolny",
+        "extendTo": "Przedłuż do wybranej daty",
+        "extended": "Klasa została przedłużona.",
+        "download": "Pobierz postępy (CSV)"
+      },
+      "students": {
+        "title": "{n, plural, one {Uczniowie (#)} few {Uczniowie (#)} many {Uczniowie (#)} other {Uczniowie (#)}}",
+        "empty": "Nikt jeszcze nie dołączył. Wyślij uczniom link lub kod.",
+        "nickname": "Pseudonim",
+        "code": "Kod osobisty",
+        "open": "Otwórz firmę",
+        "newCode": "Nowy kod",
+        "newCodeConfirm": "Utworzyć nowy kod osobisty dla {name}? Stary przestanie działać, a uczeń zostanie wylogowany.",
+        "newCodeTitle": "Nowy kod osobisty",
+        "newCodeBody": "Przekaż go uczniowi. Wpisuje go na /join w opcji „Mam kod osobisty”.",
+        "remove": "Usuń",
+        "removeConfirm": "Usunąć {name} razem z jego firmą? Tego nie można cofnąć.",
+        "kinds": "Rodzaje firm: {kinds}"
+      },
+      "teachers": {
+        "title": "Nauczyciele",
+        "ownerLabel": "właściciel",
+        "remove": "Usuń",
+        "pick": "Wybierz kolegę lub koleżankę",
+        "add": "Dodaj współprowadzącego",
+        "none": "Nikogo innego z Twojej szkoły jeszcze tu nie ma. Kolegę lub koleżankę możesz zaprosić w przeglądzie klas."
+      },
+      "delete": {
+        "title": "Usuń klasę",
+        "body": "Usuwa klasę i firmy wszystkich uczniów. Tego nie można cofnąć.",
+        "confirm": "Na pewno usunąć {name} i firmy wszystkich jej uczniów?",
+        "submit": "Usuń klasę"
+      }
+    },
+    "milestones": {
+      "contact_created": "Kontakt",
+      "invoice_issued": "Faktura",
+      "invoice_vat": "Faktura VAT",
+      "invoice_foreign_currency": "Waluta obca",
+      "invoice_reverse_charge": "Odwrotne obciążenie",
+      "proforma_converted": "Proforma → faktura",
+      "quote_created": "Oferta",
+      "credit_note_issued": "Faktura korygująca",
+      "invoice_paid": "Płatność",
+      "bank_matched": "Dopasowana płatność",
+      "expense_recorded": "Wydatek",
+      "recurring_created": "Faktura cykliczna",
+      "time_logged": "Ewidencja czasu"
+    },
+    "banner": {
+      "student": "{nickname} · klasa {className}",
+      "teacher": "Firma ucznia {nickname} · klasa {className}",
+      "practice": "Firma ćwiczeniowa; nic nie jest naprawdę wysyłane. Zostanie usunięta {date}.",
+      "ended": "Klasa się zakończyła. Nadal możesz się rozglądać i pobierać PDF-y, ale niczego nie można zmienić. Zostanie usunięta {date}.",
+      "showCode": "Pokaż kod osobisty",
+      "leave": "Wyloguj się",
+      "leaveConfirm": "Wylogować się? Możesz wrócić za pomocą kodu osobistego.",
+      "backToClass": "Wróć do klasy",
+      "team": "Zespół {team} · klasa {className}",
+      "teacherTeam": "Firma zespołu {team} · klasa {className}",
+      "teamName": "zespół {team}",
+      "accountant": "Prowadzisz księgowość dla {who} · klasa {className}",
+      "modes": {
+        "review": "Tylko sprawdzasz: widzisz wszystko i niczego nie zmieniasz.",
+        "bookkeeper": "Zapisujesz koszty i płatności oraz przygotowujesz raporty. Faktury wystawia właściciel.",
+        "full": "Prowadzisz całą dokumentację firmy, łącznie z fakturami."
+      }
+    },
+    "errors": {
+      "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+      "classroom_already_teacher": "To konto jest już zarejestrowane jako nauczyciel.",
+      "classroom_application_pending": "Twój wniosek już czeka na zatwierdzenie.",
+      "classroom_too_many_applications": "Zbyt wiele wniosków z tego konta. Spróbuj ponownie później.",
+      "classroom_too_many_invites": "Zaprosiłeś dziś zbyt wiele osób. Spróbuj jutro.",
+      "classroom_not_teacher": "Może to zrobić tylko zatwierdzony nauczyciel.",
+      "classroom_class_limit": "Osiągnięto limit aktywnych klas. Usuń starszą albo poczekaj, aż wygaśnie.",
+      "classroom_invalid_end": "Data zakończenia musi być w przyszłości i najwyżej 13 miesięcy naprzód.",
+      "classroom_owner_only": "Może to zrobić tylko nauczyciel, który utworzył klasę.",
+      "classroom_invalid_teacher": "Tej osoby nie można dodać. Musi być zatwierdzonym nauczycielem w tej samej szkole.",
+      "classroom_school_suspended": "Konto szkoły jest zawieszone. Skontaktuj się z nami.",
+      "classroom_not_found": "Klasa lub uczeń już nie istnieje.",
+      "classroom_ended": "Klasa się zakończyła i jest teraz tylko do odczytu.",
+      "not_found": "Nie znaleziono.",
+      "forbidden": "Nie masz uprawnień, aby to zrobić.",
+      "classroom_closed": "Klasa się zakończyła lub jest zawieszona; nie można w niej tworzyć niczego nowego.",
+      "classroom_invalid_kind": "Klasa nie korzysta z tego rodzaju firmy.",
+      "classroom_unavailable": "Nie udało się teraz wypełnić firmy danymi. Spróbuj ponownie.",
+      "classroom_team_limit": "Klasa ma już maksymalną liczbę zespołów.",
+      "classroom_team_name_taken": "Klasa ma już zespół o tej nazwie.",
+      "classroom_team_taken": "Uczeń jest już w innym zespole.",
+      "classroom_team_full": "Zespół jest pełny.",
+      "classroom_team_empty": "Zespół nie ma jeszcze członków. Najpierw kogoś dodaj.",
+      "classroom_company_limit": "Nie można utworzyć więcej firm. Uczeń lub zespół może mieć najwyżej trzy.",
+      "classroom_company_owner": "Wybierz ucznia lub zespół.",
+      "classroom_partner_same": "Wybierz dwie różne firmy.",
+      "classroom_accountant_member": "Uczeń jest już w tej firmie jako właściciel lub członek zespołu.",
+      "classroom_accountant_limit": "Uczeń prowadzi już księgowość dla maksymalnej dozwolonej liczby firm.",
+      "classroom_invalid_mode": "Klasa nie pozwala na ten tryb."
+    },
+    "groups": {
+      "teamOwner": "Zespół {name}",
+      "teams": {
+        "title": "Zespoły",
+        "body": "Członkowie zespołu pracują w jednej wspólnej firmie. Każdy uczeń może być najwyżej w jednym zespole.",
+        "empty": "Nie ma jeszcze zespołów.",
+        "name": "Nazwa zespołu",
+        "create": "Utwórz zespół",
+        "addMember": "Dodaj ucznia",
+        "removeMember": "Usuń {name} z zespołu",
+        "delete": "Usuń zespół",
+        "deleteConfirm": "Usunąć zespół {name} i jego firmy? Uczniowie zachowają własne firmy."
+      },
+      "companies": {
+        "title": "Więcej firm",
+        "body": "Uczeń lub zespół może mieć kolejną firmę, np. klienta dla dostawcy. Jest wypełniana tak jak firmy uczniów i usuwana razem z klasą.",
+        "empty": "Nie ma jeszcze innych firm.",
+        "owner": "Dla kogo",
+        "kind": "Rodzaj firmy",
+        "label": "Nazwa firmy (opcjonalnie)",
+        "create": "Utwórz firmę",
+        "created": "Firma została utworzona.",
+        "open": "Otwórz firmę",
+        "delete": "Usuń firmę",
+        "deleteConfirm": "Usunąć firmę {name}? Tego nie można cofnąć.",
+        "progress": "Ukończono {n} z {max}"
+      },
+      "partners": {
+        "title": "Partnerzy handlowi",
+        "body": "Dwie firmy z klasy dodają się nawzajem jako kontakty, żeby mogły sobie wystawiać faktury. Druga firma zapisuje wtedy fakturę partnera jako koszt.",
+        "a": "Pierwsza firma",
+        "b": "Druga firma",
+        "submit": "Połącz",
+        "done": "{n, plural, =0 {Firmy już się znają.} one {Dodano # kontakt.} few {Dodano # kontakty.} many {Dodano # kontaktów.} other {Dodano # kontaktu.}}"
+      },
+      "accountants": {
+        "title": "Uczniowie jako księgowi",
+        "body": "Uczeń zostaje księgowym innej firmy z klasy i przełącza się do niej jak do własnej. Tryb określa, co może w niej robić.",
+        "empty": "Nikt jeszcze nie prowadzi księgowości innej firmy.",
+        "student": "Uczeń",
+        "company": "Firma",
+        "mode": "Tryb",
+        "assign": "Przypisz",
+        "remove": "Usuń",
+        "row": "{student} prowadzi księgowość: {company}",
+        "modes": {
+          "review": {
+            "title": "Kontrola",
+            "hint": "Księgowy widzi wszystko, ale niczego nie zmienia. Dobre do sprawdzania dokumentów kolegi z klasy."
+          },
+          "bookkeeper": {
+            "title": "Księgowanie",
+            "hint": "Księgowy zapisuje koszty, bank i raporty, a faktury tylko przegląda. Wystawia je właściciel."
+          },
+          "full": {
+            "title": "Pełny dostęp",
+            "hint": "Księgowy może wszystko to, co właściciel, łącznie z wystawianiem i anulowaniem faktur."
+          }
+        }
+      }
+    }
+  },
+  "classroomJoin": {
+    "title": "Dołącz do klasy",
+    "notFound": {
+      "title": "Nie znaleźliśmy tej klasy",
+      "body": "Sprawdź kod albo poproś nauczyciela o nowy link.",
+      "retry": "Wpisz kod ponownie"
+    },
+    "signedIn": {
+      "title": "Jesteś zalogowany na swoje konto",
+      "body": "Do klas dołącza się bez konta. Wyloguj się albo otwórz link w oknie prywatnym."
+    },
+    "heading": "Klasa {className}",
+    "ended": "Nauczanie w tej klasie dobiegło końca. Możesz już tylko przeglądać swoją firmę.",
+    "closed": "Nauczyciel zamknął dołączanie. Jeśli już jesteś w klasie, użyj swojego kodu osobistego.",
+    "nickname": "Pseudonim",
+    "nicknameHint": "Nie podawaj pełnego imienia i nazwiska. Wystarczy pseudonim, który rozpozna Twój nauczyciel.",
+    "kind": "Jaką firmę chcesz prowadzić?",
+    "join": "Dołącz do klasy",
+    "joining": "Przygotowujemy Twoją firmę…",
+    "privacy": "Nie potrzebujesz e-maila ani hasła. Firma służy do ćwiczeń i zostanie usunięta 30 dni po zakończeniu klasy.",
+    "privacyLink": "<link>Co przechowujemy i kto to widzi</link>",
+    "haveCode": "Jestem już w klasie i mam kod osobisty",
+    "personalCode": "Kod osobisty",
+    "personalCodeHint": "Kod dostałeś przy pierwszym dołączeniu. Jeśli go nie masz, poproś nauczyciela o nowy.",
+    "reenter": "Kontynuuj z moją firmą",
+    "newHere": "Jestem tu nowy",
+    "done": {
+      "title": "Witaj, {nickname}!",
+      "body": "To Twój kod osobisty. Zapisz go: dzięki niemu wrócisz do swojej firmy na innym urządzeniu lub po wylogowaniu.",
+      "copy": "Kopiuj kod",
+      "copied": "Kod skopiowany.",
+      "continue": "Zapisałem, kontynuuj"
+    },
+    "errors": {
+      "classroom_not_found": "Nie znaleźliśmy klasy z tym kodem.",
+      "classroom_closed": "Dołączanie do tej klasy jest zamknięte.",
+      "classroom_class_full": "Klasa jest pełna. Powiedz o tym nauczycielowi.",
+      "classroom_school_full": "Szkoła osiągnęła limit uczniów. Powiedz o tym nauczycielowi.",
+      "classroom_nickname_taken": "Ktoś w klasie ma już ten pseudonim. Wybierz inny.",
+      "classroom_invalid_nickname": "Pseudonim musi mieć od 2 do 30 znaków: litery, cyfry, spacje lub kropkę.",
+      "classroom_invalid_kind": "Wybierz jeden z oferowanych rodzajów firm.",
+      "classroom_reenter_invalid": "Nie znamy tego kodu osobistego. Sprawdź go albo poproś nauczyciela o nowy.",
+      "classroom_locked_out": "Zbyt wiele prób. Spróbuj ponownie za chwilę.",
+      "classroom_signed_in": "Jesteś zalogowany na swoje konto. Wyloguj się albo użyj okna prywatnego.",
+      "classroom_unavailable": "Dołączanie teraz nie działa. Spróbuj ponownie za chwilę.",
+      "rate_limited": "Zbyt wiele prób z tej sieci. Spróbuj ponownie za kilka minut.",
+      "not_found": "Klasy nie są włączone.",
+      "forbidden": "Żądanie zostało odrzucone. Odśwież stronę i spróbuj ponownie."
+    }
+  },
+  "adminClassroom": {
+    "title": "Klasa – wnioski nauczycieli",
+    "description": "Sprawdź szkołę i nauczyciela. Zatwierdzenie weryfikuje też szkołę i jej domenę e-mail.",
+    "loadError": "Nie udało się wczytać wniosków.",
+    "empty": "Brak wniosków.",
+    "status": {
+      "pending": "Oczekuje",
+      "approved": "Zatwierdzony",
+      "rejected": "Odrzucony"
+    },
+    "emailVerified": "e-mail zweryfikowany",
+    "emailUnverified": "e-mail niezweryfikowany",
+    "ico": "Numer",
+    "fields": {
+      "school": "Szkoła",
+      "address": "Adres",
+      "web": "Strona",
+      "schoolState": "Status szkoły",
+      "subject": "Przedmiot",
+      "expectedStudents": "Uczniowie",
+      "invited": "Zaproszenie",
+      "note": "Notatka"
+    },
+    "verification": {
+      "pending": "niezweryfikowana",
+      "verified": "zweryfikowana",
+      "rejected": "odrzucona"
+    },
+    "suspended": "zawieszona",
+    "invitedYes": "zaproszony przez kogoś ze szkoły",
+    "domain": "Domena e-mail szkoły",
+    "domainHint": "Osoby z tej domeny są zatwierdzane automatycznie. Uzupełnij ją dopiero po sprawdzeniu, że należy do szkoły (nie gmail i podobne).",
+    "note": "Notatka",
+    "noteHint": "Przy odrzuceniu zostanie wysłana nauczycielowi e-mailem.",
+    "approve": "Zatwierdź",
+    "reject": "Odrzuć",
+    "approved": "Nauczyciel zatwierdzony.",
+    "rejected": "Wniosek odrzucony.",
+    "suspend": "Zawieś szkołę",
+    "unsuspend": "Przywróć szkołę",
+    "suspendConfirm": "Zawiesić {school}? Wszystkie jej klasy zostaną zamknięte dla nowych uczniów, a nauczyciele stracą dostęp do firm uczniów.",
+    "suspendedDone": "Szkoła zawieszona.",
+    "unsuspended": "Szkoła przywrócona.",
+    "failed": "Niepowodzenie",
+    "rejectConfirm": "Odrzucić {name}? Jego klasy zakończą się i przez 30 dni pozostaną tylko do odczytu, a on sam zostanie usunięty z innych klas."
+  },
+  "offline": {
+    "offline": "Offline",
+    "offlineHint": "Brak połączenia. Szkice są przechowywane na tym urządzeniu i zostaną wysłane, gdy wrócisz online.",
+    "waiting": "{count, plural, one {# czeka} few {# czekają} many {# czeka} other {# czeka}}",
+    "title": "Czeka na synchronizację",
+    "onlineNote": "Wysyłane automatycznie. Szkice nie trafiają do klientów i nie dostają numeru.",
+    "offlineNote": "Zostanie wysłane, gdy to urządzenie wróci online.",
+    "kindContact": "Kontakt",
+    "kindInvoice": "Szkic",
+    "statusPending": "Czeka na synchronizację",
+    "statusFailed": "Nie udało się zapisać ({code})",
+    "statusConflict": "Kontakt z tym numerem firmy już istnieje: {name}",
+    "useExisting": "Użyj istniejącego kontaktu",
+    "retry": "Spróbuj ponownie",
+    "discard": "Odrzuć",
+    "discardConfirm": "Odrzucić ten element? Zostanie usunięty z tego urządzenia i nigdy nie zostanie wysłany.",
+    "leaveConfirm": "{count, plural, one {# szkic nie został jeszcze zsynchronizowany} few {# szkice nie zostały jeszcze zsynchronizowane} many {# szkiców nie zostało jeszcze zsynchronizowanych} other {# szkicu nie zostało jeszcze zsynchronizowane}}. Jeśli będziesz kontynuować, wszystko, co czeka na synchronizację, zostanie usunięte z tego urządzenia. Kontynuować?",
+    "contactQueued": "Kontakt jest zapisany na tym urządzeniu i zostanie wysłany, gdy będziesz online.",
+    "invoiceQueued": "Szkic faktury jest zapisany na tym urządzeniu i zostanie wysłany, gdy tylko będziesz online.",
+    "noCustomer": "Bez klienta",
+    "queuedContact": "Kontakt czeka na synchronizację",
+    "issueNeedsConnection": "Wystawienie faktury wymaga połączenia. Zapisz ją jako szkic i wystaw, gdy będziesz online.",
+    "issueNeedsSyncedCustomer": "Klient nie dotarł jeszcze na serwer. Zapisz fakturę jako szkic i wystaw ją, gdy klient się zsynchronizuje.",
+    "editNeedsConnection": "Edycja zapisanego dokumentu wymaga połączenia.",
+    "searchNeedsConnection": "Wyszukiwanie klientów i w rejestrach wymaga połączenia. Offline możesz wybrać kontakt oznaczony gwiazdką lub utworzony offline.",
+    "formNote": "Jesteś offline: szkic jest przechowywany na tym urządzeniu i zostanie wysłany, gdy będziesz online. Numer dostanie przy wystawieniu.",
+    "aiNeedsConnection": "AI i wprowadzanie głosowe wymagają połączenia. Tekst zostaje tutaj – uruchom go, gdy wrócisz online.",
+    "copyNeedsConnection": "Kopiowanie z innej faktury wymaga połączenia.",
+    "kindVoice": "Notatka głosowa",
+    "voiceRecord": "Nagraj notatkę głosową",
+    "voiceStop": "Zatrzymaj nagrywanie {time} / {max}",
+    "voiceLabel": "Notatka głosowa ({duration})",
+    "voiceQueued": "Notatka głosowa jest zapisana na tym urządzeniu. Gdy będziesz online, stanie się szkicem faktury do sprawdzenia.",
+    "voiceHint": "Jesteś offline. Podyktuj fakturę jako notatkę głosową – gdy będziesz online, przepiszemy ją i przygotujemy szkic do sprawdzenia. Wystawiasz go sam.",
+    "voiceUnsupported": "Ta przeglądarka nie potrafi nagrywać dźwięku.",
+    "voiceMicDenied": "Billanta potrzebuje dostępu do mikrofonu. Zezwól na niego w ustawieniach przeglądarki.",
+    "voiceTooShort": "Nagranie jest za krótkie.",
+    "voiceTooLong": "Nagranie jest za duże, nagraj krótsze.",
+    "voiceNotSaved": "Nie udało się zapisać notatki głosowej na tym urządzeniu.",
+    "voiceErrors": {
+      "voice_unavailable": "Notatki głosowe są teraz niedostępne. Spróbuj później lub odrzuć notatkę.",
+      "voice_empty": "W nagraniu nie słychać mowy.",
+      "voice_too_large": "Nagranie jest za duże do przetworzenia.",
+      "ai_disabled": "AI jest wyłączone dla tej firmy. Włącz je w Ustawienia → AI lub odrzuć notatkę.",
+      "ai_key_missing": "Brakuje Twojego własnego klucza AI. Dodaj go w Ustawienia → AI."
+    }
+  },
+  "shareQr": {
+    "button": "Udostępnij / kod QR",
+    "title": "Udostępnij tę stronę",
+    "lead": "Zeskanuj kod QR telefonem albo pobierz go na plakat lub slajd.",
+    "alt": "Kod QR prowadzący do {url}",
+    "promoLabel": "Kod promocyjny (opcjonalnie)",
+    "promoPlaceholder": "np. MEETUP26",
+    "promoHint": "Z kodem QR prowadzi na stronę dołączenia do grupy, np. wydarzenia lub coworkingu. Kody wydajemy my, więc wymyślony nie zadziała.",
+    "copy": "Kopiuj link",
+    "copied": "Link skopiowany.",
+    "failed": "Nie udało się, spróbuj ponownie.",
+    "share": "Udostępnij z telefonu"
+  },
+  "schools": {
+    "seoTitle": "Billanta dla szkół – bezpłatne fakturowanie do nauki",
+    "eyebrow": "Dla szkół i nauczycieli",
+    "title": "Fakturowanie, które uczniowie naprawdę mogą wypróbować",
+    "lead": "Billanta jest bezpłatna do nauki. Na firmach ćwiczeniowych uczniowie przechodzą cały cykl życia faktury: wystawienie, korektę, windykację i fakturowanie klienta zagranicznego, według przepisów czeskich i słowackich.",
+    "freeBadge": "Bezpłatnie do nauki",
+    "lessonsLink": "Lekcje i karty pracy",
+    "practiceTitle": "Co ćwiczą uczniowie",
+    "practiceLead": "Te same kroki, które wykonuje każdy freelancer i każda księgowa, bez ryzyka zepsucia czegoś prawdziwego.",
+    "practice": {
+      "vatInvoice": {
+        "title": "Faktura VAT",
+        "body": "Elementy obowiązkowe, stawki VAT, data dokonania dostawy i dlaczego mają znaczenie. Kontrola elementów obowiązkowych od razu pokazuje, czego brakuje."
+      },
+      "creditNote": {
+        "title": "Faktura korygująca",
+        "body": "Rabat po wystawieniu, zwrot towaru lub błędna cena. Uczniowie widzą, jak koryguje się pierwotną fakturę i co to zmienia w VAT."
+      },
+      "reminder": {
+        "title": "Przypomnienie i płatność",
+        "body": "Przeterminowana faktura, przypomnienie, płatność częściowa i jej dopasowanie. Praktyka, do której szkoła rzadko dociera."
+      },
+      "foreign": {
+        "title": "Klient zagraniczny",
+        "body": "Faktura w euro, kurs banku centralnego, odwrotne obciążenie i dwujęzyczny dokument dla klienta z innego kraju UE."
+      },
+      "czsk": {
+        "title": "Przepisy czeskie a słowackie",
+        "body": "Ta sama faktura według przepisów czeskich i słowackich: inne stawki VAT i inne numery podatkowe."
+      },
+      "roles": {
+        "title": "Właściciel i nauczyciel",
+        "body": "Kto może co widzieć i zmieniać. Każdy uczeń prowadzi swoją firmę jako właściciel, a nauczyciel może do niej zajrzeć w trybie tylko do odczytu. Ćwiczenie z dostępem księgowej jest w przygotowaniu."
+      }
+    },
+    "access": {
+      "title": "Jak zdobyć Billantę dla swojej klasy",
+      "lead": "Kończymy tryb klasy. Nauczyciele, którzy odezwą się teraz, dostaną go wśród pierwszych.",
+      "steps": {
+        "request": {
+          "title": "Napisz do nas",
+          "body": "Szkoła, przedmiot, rocznik i mniej więcej liczba uczniów. Ze szkolnego e-maila zweryfikujemy Cię szybciej."
+        },
+        "setup": {
+          "title": "Zakładamy klasę",
+          "body": "Dostajesz dostęp nauczyciela i firmy ćwiczeniowe, na których pracują uczniowie. Wkrótce będziesz je tworzyć sam."
+        },
+        "teach": {
+          "title": "Uczysz",
+          "body": "Uczniowie wystawiają dokumenty na swoich firmach ćwiczeniowych, a Ty widzisz ich pracę i możesz ją z nimi omówić."
+        }
+      },
+      "soon": "Do tego czasu możesz pokazać uczniom na projektorze demo bez rejestracji.",
+      "cta": "Poproś o dostęp dla swojej szkoły",
+      "signup": "Załóż konto nauczyciela",
+      "mailSubject": "Billanta dla szkół – prośba o dostęp"
+    },
+    "safeguardsTitle": "Środowisko do ćwiczeń, nie prawdziwy biznes",
+    "safeguards": {
+      "practice": {
+        "title": "Firmy ćwiczeniowe",
+        "body": "Uczniowie pracują na zmyślonych firmach i klientach. Nie muszą podawać żadnych prawdziwych danych osobowych."
+      },
+      "watermark": {
+        "title": "Dokumenty ze znakiem wodnym",
+        "body": "Dokumenty z trybu klasy będą miały widoczne oznaczenie ćwiczeniowe, żeby nikt nie wziął ich za prawdziwą fakturę."
+      },
+      "notReal": {
+        "title": "Tylko do nauki",
+        "body": "Dostęp do nauki nie jest przeznaczony do prawdziwej działalności. Kto zaczyna fakturować naprawdę, zakłada zwykłe konto."
+      }
+    },
+    "privacyLink": "Krótka <link>informacja o prywatności dla uczniów i rodziców</link> wyjaśnia, co przechowujemy o uczniach i kto to widzi.",
+    "resourcesTitle": "Materiały dydaktyczne",
+    "resourcesLead": "Lekcje i karty pracy, przewodniki po przepisach i strony, które szczegółowo wyjaśniają każdy temat.",
+    "resources": {
+      "firstInvoice": "Twoja pierwsza faktura: co musi zawierać",
+      "beginners": "Fakturowanie dla początkujących",
+      "requiredFields": "Elementy obowiązkowe faktury",
+      "currencies": "Faktury w walutach obcych",
+      "reminders": "Przypomnienia i zaległe płatności",
+      "vatCalculator": "Kalkulator VAT"
+    },
+    "faqTitle": "Pytania nauczycieli",
+    "faq": [
+      {
+        "q": "Czy Billanta dla szkół jest naprawdę bezpłatna?",
+        "a": "Tak. Szkoła, nauczyciel ani uczniowie nie płacą nic za naukę. Płatne jest tylko zwykłe konto do prawdziwej działalności."
+      },
+      {
+        "q": "Dla jakich szkół jest dostęp do nauki?",
+        "a": "Szkoły podstawowe i średnie, zwłaszcza akademie handlowe i szkoły z przedmiotami ekonomicznymi, szkoły policealne i uczelnie, a także kursy przekwalifikowujące. Jeśli uczysz fakturowania gdzie indziej, też do nas napisz."
+      },
+      {
+        "q": "Kiedy tryb klasy będzie gotowy?",
+        "a": "Wkrótce. Nauczyciele, którzy poproszą o dostęp teraz, dostaną go wśród pierwszych i mogą nam powiedzieć, czego potrzebują na lekcjach."
+      },
+      {
+        "q": "Czy uczniowie mogą używać Billanty do własnej działalności?",
+        "a": "Nie z dostępem do nauki, który służy tylko do ćwiczeń. Do prawdziwego fakturowania uczeń zakłada zwykłe konto, które działa niezależnie od szkoły."
+      },
+      {
+        "q": "A co z danymi osobowymi uczniów?",
+        "a": "Do ćwiczeń nie są potrzebne. Uczniowie dołączają do klasy tylko z kodem klasy i pseudonimem, bez e-maila i hasła. Firmy i klienci są zmyśleni, a firmy ćwiczeniowe zostają usunięte 30 dni po zakończeniu klasy."
+      }
+    ]
+  },
+  "creators": {
+    "seoTitle": "Fakturowanie dla twórców i influencerów – marki, agencje, euro",
+    "eyebrow": "Dla twórców treści",
+    "title": "Fakturuj współprace z markami bez bólu głowy",
+    "lead": "Kampania dla marki, honorarium od agencji, wypłata z platformy z zagranicy. Billanta wystawi fakturę w koronach lub euro, obsłuży odwrotne obciążenie i przypomni klientom, którzy nie zapłacili.",
+    "cta": "Zacznij fakturować za darmo",
+    "demo": "Wypróbuj bez rejestracji",
+    "topicsTitle": "Z czym twórcy mierzą się najczęściej",
+    "topics": {
+      "brands": {
+        "title": "Marki i agencje",
+        "body": "Jedna faktura na kampanię lub na każdy element. Pozycje dokładnie mówią, co dostarczasz: liczbę postów lub filmów, licencję na wykorzystanie treści."
+      },
+      "eur": {
+        "title": "Faktury w euro",
+        "body": "Fakturuj w EUR i innych walutach. Kurs banku centralnego uzupełnia się sam, a faktura pokazuje też przeliczoną kwotę."
+      },
+      "reverseCharge": {
+        "title": "Odwrotne obciążenie",
+        "body": "Firma z innego kraju UE zwykle sama rozlicza VAT. Faktura zawiera wtedy NIP UE klienta i adnotację o odwrotnym obciążeniu. Osoba niebędąca podatnikiem VAT często musi się z tego powodu zarejestrować do celów VAT."
+      },
+      "abroad": {
+        "title": "Klienci spoza UE",
+        "body": "Współpraca z amerykańską marką lub platformą: faktura po angielsku, w dolarach lub euro, z właściwym sformułowaniem o miejscu świadczenia."
+      },
+      "advance": {
+        "title": "Zaliczki i oferty",
+        "body": "Wyślij ofertę, odbierz zaliczkę i po kampanii wystaw fakturę końcową. Wszystko w jednym miejscu i powiązane ze sobą."
+      },
+      "recurring": {
+        "title": "Stałe współprace",
+        "body": "Umowa ambasadorska z miesięcznym honorarium? Faktura cykliczna wystawi się i wyśle sama."
+      }
+    },
+    "flatTax": {
+      "title": "Podatek ryczałtowy i koszty ryczałtowe",
+      "body": "Większość twórców prowadzi działalność na własny rachunek i korzysta z rozliczenia ryczałtowego. Billanta pokazuje, ile w tym roku zafakturowałeś, więc wiesz, gdzie jesteś względem limitów.",
+      "points": [
+        "W Czechach podatek ryczałtowy (paušální daň): jedna miesięczna płatność za podatek dochodowy i ubezpieczenia, jeśli nie jesteś podatnikiem VAT i nie przekraczasz limitu przychodów.",
+        "Albo koszty ryczałtowe jako procent przychodów, z szacunkiem podatku i ubezpieczeń w aplikacji.",
+        "Na Słowacji koszty ryczałtowe i szacunek podatku oraz składek dla samozatrudnionych.",
+        "Swoją sytuację zawsze sprawdź z księgową, która widzi Twoje dane z fakturowania prosto z Billanty."
+      ]
+    },
+    "linksTitle": "Czytaj dalej",
+    "links": {
+      "currencies": "Faktury w walutach obcych",
+      "bilingual": "Faktury dwujęzyczne",
+      "quotes": "Oferty i faktury proforma",
+      "taxEstimate": "Szacunek podatku i ubezpieczeń"
+    },
+    "partner": {
+      "title": "Chcesz własny kod dla swoich odbiorców?",
+      "body": "Współpracujemy z twórcami, którzy rozmawiają ze swoimi obserwującymi o biznesie i pieniądzach. Twoi odbiorcy dostają bonus przy rejestracji, a Ty widzisz, ile osób użyło Twojego kodu.",
+      "points": [
+        "Kod wydajemy po krótkiej rozmowie.",
+        "Bonus dla Twoich obserwujących i warunki ustalamy wspólnie.",
+        "I tak, za współpracę możesz nam wystawić fakturę z Billanty.",
+        "Płatne i partnerskie posty musisz wyraźnie oznaczyć jako reklamę lub współpracę."
+      ],
+      "cta": "Poproś o kod",
+      "mailSubject": "Billanta – kod promocyjny dla twórców"
+    },
+    "faqTitle": "Pytania twórców",
+    "faq": [
+      {
+        "q": "Czy muszę być podatnikiem VAT, żeby fakturować zagraniczne firmy?",
+        "a": "Niekoniecznie. Osoba niebędąca podatnikiem VAT, która świadczy usługi firmie z innego kraju UE, zwykle musi jednak zarejestrować się do celów VAT i składać informacje podsumowujące. Billanta umieści na fakturze właściwą adnotację, ale rejestracja i zgłoszenia to sprawa Twoja i Twojej księgowej lub urzędu skarbowego."
+      },
+      {
+        "q": "Czy mogę wystawić czeskiej agencji fakturę w euro?",
+        "a": "Tak, jeśli się na to umówicie. Billanta uzupełni kurs banku centralnego i kwotę w koronach potrzebną do celów podatkowych."
+      },
+      {
+        "q": "Co jeśli marka zapłaci mi produktami zamiast pieniędzy?",
+        "a": "Barter to zwykle również przychód podlegający opodatkowaniu. Sposób rozliczenia zależy od umowy, więc zapytaj księgową. Dokument wystawisz potem w Billancie jak każdą inną fakturę."
+      },
+      {
+        "q": "Jak zdobyć kod promocyjny dla moich obserwujących?",
+        "a": "Napisz do nas. Kody wydajemy sami po uzgodnieniu warunków, a potem już tylko je udostępniasz, np. jako kod QR z tej strony."
+      }
+    ]
+  },
+  "events": {
+    "seoTitle": "Billanta dla meetupów, coworkingów i społeczności",
+    "eyebrow": "Dla organizatorów wydarzeń",
+    "title": "Daj uczestnikom wypróbować fakturowanie na miejscu",
+    "lead": "Organizujesz meetup, kurs dla początkujących przedsiębiorców albo prowadzisz coworking? Przygotujemy kod i kod QR dla Twoich uczestników. Wypróbują Billantę w 30 sekund, bez rejestracji.",
+    "demoCta": "Wypróbuj demo",
+    "offerTitle": "Co od nas dostajesz",
+    "offer": {
+      "code": {
+        "title": "Kod dla uczestników",
+        "body": "Bonus przy rejestracji, np. kilka miesięcy za darmo. Warunki ustalamy dla każdego wydarzenia."
+      },
+      "qr": {
+        "title": "Kod QR na plakaty i slajdy",
+        "body": "Pobierz go jako PNG lub SVG i wydrukuj w dowolnym rozmiarze. Kod jest już zawarty w linku."
+      },
+      "demo": {
+        "title": "Demo w 30 sekund",
+        "body": "Uczestnicy skanują kod QR i lądują w przykładowej firmie z fakturami, płatnościami i VAT. Bez e-maila, bez hasła."
+      }
+    },
+    "stepsTitle": "Jak to działa",
+    "steps": {
+      "write": {
+        "title": "Napisz do nas",
+        "body": "Kiedy i gdzie odbywa się wydarzenie, ilu osób się spodziewasz i kim one są."
+      },
+      "print": {
+        "title": "Wysyłamy kod",
+        "body": "Dostajesz kod i kod QR. Ten sam kod QR możesz też wygenerować tutaj przyciskiem Udostępnij."
+      },
+      "scan": {
+        "title": "Uczestnicy skanują",
+        "body": "Każdy może od razu wypróbować demo. Kto chce zostać, rejestruje się z Twoim kodem."
+      }
+    },
+    "contact": {
+      "title": "Porozmawiajmy",
+      "body": "Dla organizatorów jest to bezpłatne. Wystarczy kilka zdań o Twoim wydarzeniu, a odezwiemy się z propozycją.",
+      "cta": "Opowiedz nam o swoim wydarzeniu",
+      "mailSubject": "Billanta – kod na wydarzenie",
+      "schools": "Uczysz? Billanta dla szkół"
+    },
+    "faqTitle": "Pytania organizatorów",
+    "faq": [
+      {
+        "q": "Ile to kosztuje?",
+        "a": "Dla organizatorów nic. Kod dla uczestników i kod QR przygotujemy bezpłatnie."
+      },
+      {
+        "q": "Czy uczestnicy muszą coś instalować?",
+        "a": "Nie. Demo działa w przeglądarce na telefonie lub komputerze i nie wymaga rejestracji."
+      },
+      {
+        "q": "Co dokładnie uczestnicy dostają z kodem?",
+        "a": "Uzgodniony bonus przy rejestracji, np. kilka miesięcy za darmo. Kod wpisują przy rejestracji albo jest już w linku z kodu QR."
+      }
+    ],
+    "coworking": {
+      "title": "Dla coworkingów: jeden kod QR dla wszystkich członków",
+      "body": "Coworking nie potrzebuje wydarzenia, wystarczy stały kod. Powieś kod QR w recepcji lub w kuchni albo podaj członkom hasło.",
+      "points": [
+        "Jeden stały kod QR lub hasło dla wszystkich członków.",
+        "Skanują go i już są w środku. Nigdy nie zakładasz kont pojedynczo.",
+        "Za członków, którzy zostaną z Billantą, coworking może zdobywać kredyty za polecenia."
+      ]
+    }
+  },
+  "paymentReminders": {
+    "indexTitle": "Darmowe wzory przypomnień o płatności i wezwań do zapłaty",
+    "indexName": "Wzory przypomnień o płatności",
+    "indexDescription": "Wzory przypomnienia o płatności, wezwania do zapłaty i przedsądowego wezwania do zapłaty zgodne z prawem czeskim. Uzupełnij dłużnika i kwotę, wybierz ton, a potem skopiuj tekst albo pobierz PDF.",
+    "indexLead": "Trzy pisma w sprawie przeterminowanej faktury – od uprzejmego przypomnienia po wezwanie przed skierowaniem sprawy do sądu. Generator poniżej uzupełni je za Ciebie – skopiuj tekst do e-maila albo pobierz PDF. Bez rejestracji.",
+    "step": "Krok {n}",
+    "howTitle": "Co zrobić z niezapłaconą fakturą",
+    "how": [
+      "Kilka dni po terminie płatności wyślij uprzejme przypomnienie. Często ktoś po prostu o niej zapomniał.",
+      "Jeśli płatność nadal nie wpływa, wyślij wezwanie do zapłaty z nowym terminem i wzmianką o odsetkach za opóźnienie.",
+      "Zanim złożysz pozew, wyślij przedsądowe wezwanie co najmniej 7 dni wcześniej. Bez niego sąd może nie przyznać Ci zwrotu kosztów postępowania.",
+      "Przechowuj każde pismo razem z dowodem jego wysłania."
+    ],
+    "common": {
+      "whenTitle": "Kiedy je wysłać",
+      "fieldsTitle": "Co powinno zawierać pismo",
+      "fieldsLead": "Tam, gdzie wymóg wynika z prawa, punkt zawiera link do przepisu.",
+      "pitfallsTitle": "Na co uważać",
+      "otherTitle": "Inne wzory",
+      "allTemplates": "Wszystkie wzory przypomnień",
+      "invoiceTemplates": "Wzory faktur",
+      "rulesNote": "Wzory są zgodne z prawem czeskim i nie stanowią porady prawnej. Przy dużych lub spornych należnościach skonsultuj się z prawnikiem."
+    },
+    "auto": {
+      "title": "Niech Billanta wysyła przypomnienia za Ciebie",
+      "text": "Gdy faktura wystawiona w Billancie stanie się przeterminowana, Twój klient automatycznie dostanie uprzejme przypomnienie e-mailem z linkiem do faktury i płatnością kodem QR. Ty ustawiasz odstęp i maksymalną liczbę przypomnień, a wysyłka kończy się, gdy tylko faktura zostanie opłacona.",
+      "cta": "Wypróbuj za darmo",
+      "more": "Jak działają automatyczne przypomnienia"
+    },
+    "fromInvoices": {
+      "title": "Faktura po terminie? Wzory przypomnień o płatności",
+      "text": "Przypomnienie, wezwanie do zapłaty i przedsądowe wezwanie do zapłaty. Uzupełnij je online, a potem skopiuj albo pobierz PDF."
+    },
+    "items": {
+      "reminder": {
+        "name": "Przypomnienie o płatności",
+        "title": "Wzór przypomnienia o płatności niezapłaconej faktury",
+        "description": "Uprzejme albo stanowcze przypomnienie o przeterminowanej fakturze. Uzupełnij dane, a potem skopiuj tekst do e-maila albo pobierz darmowy PDF.",
+        "lead": "Pierwsze pismo po terminie płatności: wskazuje fakturę i wyznacza nowy termin.",
+        "when": [
+          "Wyślij przypomnienie kilka dni po terminie płatności, zwykle po 3 do 7 dniach. Klient pozostaje w zwłoce od dnia następującego po terminie płatności, ale pierwsze pismo jest przede wszystkim sygnałem, że faktura istnieje.",
+          "Prawo nie określa formy przypomnienia. Wystarczy e-mail, chyba że umowa stanowi inaczej."
+        ],
+        "fields": [
+          {
+            "name": "Numer faktury, kwota i termin płatności",
+            "text": "Żeby klient mógł łatwo odnaleźć fakturę i dopasować płatność."
+          },
+          {
+            "name": "Wzmianka, że dłużnik jest w zwłoce",
+            "text": "Kto nie płaci w terminie, pozostaje w zwłoce. W pierwszym przypomnieniu wystarczy rzeczowa wzmianka.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Nowy termin i dane do płatności",
+            "text": "Konkretna data i numer konta, najlepiej z numerem faktury jako tytułem płatności."
+          },
+          {
+            "name": "Prośba o kontakt, jeśli już zapłacono",
+            "text": "Płatności i przypomnienia często się mijają. Uprzejme zdanie pozwala uniknąć niepotrzebnego sporu."
+          }
+        ],
+        "pitfalls": [
+          "Przed wysłaniem sprawdź wyciąg bankowy. Przypomnienie o opłaconej fakturze psuje relację.",
+          "Pisz rzeczowo i bez gróźb. Stanowczy ton zostaw na wezwanie do zapłaty.",
+          "Przypomnienie niczego nie przedłuża: odsetki za opóźnienie biegną od dnia następującego po terminie płatności, niezależnie od nowego terminu."
+        ]
+      },
+      "demand": {
+        "name": "Wezwanie do zapłaty",
+        "title": "Wzór wezwania do zapłaty z odsetkami za opóźnienie",
+        "description": "Wezwanie do zapłaty powołujące się na ustawowe odsetki za opóźnienie i koszty dochodzenia należności w wysokości 1200 CZK. Uzupełnij je online, a potem skopiuj albo pobierz PDF.",
+        "lead": "Drugie pismo: bardziej stanowcze, z odsetkami za opóźnienie i kosztami dochodzenia należności.",
+        "when": [
+          "Wyślij wezwanie do zapłaty, gdy przypomnienie nie pomogło, zwykle 2 do 4 tygodni po terminie płatności.",
+          "Informuje dłużnika, że oprócz należnej kwoty może być winien odsetki za opóźnienie, a między przedsiębiorcami także koszty dochodzenia należności."
+        ],
+        "fields": [
+          {
+            "name": "Należna kwota i faktura",
+            "text": "Numer faktury, kwota i termin płatności, po którym dłużnik pozostaje w zwłoce.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Odsetki za opóźnienie",
+            "text": "Wierzyciel może żądać ustawowych odsetek za opóźnienie. Stopa roczna to stopa repo Czeskiego Banku Narodowego obowiązująca pierwszego dnia półrocza kalendarzowego, w którym powstała zwłoka, powiększona o 8 punktów procentowych.",
+            "rule": "§1970 OZ, §2 NVU"
+          },
+          {
+            "name": "Koszty dochodzenia należności",
+            "text": "Co najmniej 1200 CZK za każdą należność. Żądaj ich tylko od przedsiębiorców.",
+            "rule": "§3 NVU"
+          },
+          {
+            "name": "Nowy termin i dane do płatności",
+            "text": "Konkretna data, do której płatność musi wpłynąć, oraz dokąd ją wysłać."
+          }
+        ],
+        "pitfalls": [
+          "Licz odsetki od dnia następującego po terminie płatności, a nie od daty przypomnienia.",
+          "Jeśli umowa określa własną stopę odsetek albo karę umowną, powołaj się na umowę zamiast na stopę ustawową.",
+          "Nie żądaj 1200 CZK od konsumentów."
+        ]
+      },
+      "preAction": {
+        "name": "Przedsądowe wezwanie do zapłaty",
+        "title": "Wzór przedsądowego wezwania do zapłaty niezapłaconej faktury",
+        "description": "Przedsądowe wezwanie do zapłaty (wezwanie do spełnienia świadczenia według § 142a czeskiego kodeksu postępowania cywilnego). Wyślij je co najmniej 7 dni przed złożeniem pozwu, inaczej możesz nie odzyskać kosztów postępowania.",
+        "lead": "Ostatnie pismo przed pójściem do sądu: bez niego możesz nie odzyskać kosztów postępowania.",
+        "when": [
+          "Wyślij przedsądowe wezwanie, gdy zdecydujesz się dochodzić należności w sądzie.",
+          "Powód, który wygra, ma prawo do zwrotu kosztów postępowania tylko wtedy, gdy co najmniej 7 dni przed złożeniem pozwu wysłał pozwanemu wezwanie do spełnienia świadczenia na adres do doręczeń, adres zamieszkania lub siedziby."
+        ],
+        "fields": [
+          {
+            "name": "Wyraźne wezwanie do spełnienia świadczenia",
+            "text": "Z pisma musi jasno wynikać, co dokładnie dłużnik ma zapłacić i do kiedy.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Adres dłużnika",
+            "text": "Adres do doręczeń, adres zamieszkania lub siedziby. Sprawdź go w rejestrze handlowym albo w ARES.",
+            "rule": "§142a/1 OSR"
+          },
+          {
+            "name": "Zapowiedź skierowania sprawy do sądu",
+            "text": "Że jeśli termin minie bez zapłaty, złożysz pozew i będziesz żądać zwrotu kosztów postępowania."
+          },
+          {
+            "name": "Odsetki za opóźnienie i koszty",
+            "text": "Do należnej kwoty dolicz ustawowe odsetki za opóźnienie, a między przedsiębiorcami także koszty dochodzenia należności.",
+            "rule": "§1970 OZ, §3 NVU"
+          }
+        ],
+        "pitfalls": [
+          "Między wysłaniem wezwania a złożeniem pozwu musi upłynąć co najmniej 7 dni.",
+          "Wyślij je listem poleconym albo do skrzynki danych (datová schránka) dłużnika i zachowaj dowód wysłania. Będzie Ci potrzebny w sądzie.",
+          "Wezwanie wysłane tylko e-mailem trudniej udowodnić."
+        ]
+      }
+    }
+  },
+  "reminderGenerator": {
+    "title": "Uzupełnij pismo",
+    "preview": "Podgląd",
+    "copy": "Kopiuj tekst",
+    "copied": "Skopiowano",
+    "pdf": "Pobierz PDF",
+    "note": "Niczego nie przechowujemy. PDF powstaje tylko dla Ciebie i od razu jest usuwany.",
+    "preActionHint": "Wyślij wezwanie listem poleconym albo do skrzynki danych dłużnika i zachowaj dowód wysłania.",
+    "fields": {
+      "kind": "Pismo",
+      "tone": "Ton",
+      "polite": "Uprzejmy",
+      "firm": "Stanowczy",
+      "creditor": "Wierzyciel (Ty)",
+      "creditorPh": "Jan Novák, IČO 12345678",
+      "debtor": "Dłużnik",
+      "debtorPh": "Firma s.r.o., IČO 87654321",
+      "invoice": "Numer faktury",
+      "due": "Termin płatności",
+      "amount": "Należna kwota",
+      "currency": "Waluta",
+      "account": "Numer konta",
+      "accountPh": "123456789/0100",
+      "accountHint": "Opcjonalnie. W przeciwnym razie odwołamy się do konta podanego na fakturze.",
+      "deadline": "Nowy termin płatności",
+      "days": "{n, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}"
+    },
+    "blank": {
+      "invoice": "[numer faktury]",
+      "amount": "[kwota]",
+      "due": "[termin płatności]",
+      "dayAfter": "[dzień po terminie płatności]",
+      "deadline": "[nowy termin]",
+      "creditor": "[Twoje imię i nazwisko]",
+      "debtor": "[dłużnik]",
+      "date": "[data]"
+    },
+    "file": {
+      "reminder": "przypomnienie-o-platnosci",
+      "demand": "wezwanie-do-zaplaty",
+      "preAction": "przedsadowe-wezwanie-do-zaplaty"
+    },
+    "errors": {
+      "copy": "Nie udało się skopiować tekstu. Zaznacz go w podglądzie.",
+      "rateLimited": "Za dużo plików PDF w krótkim czasie. Spróbuj ponownie za chwilę.",
+      "busy": "Serwer jest teraz zajęty. Spróbuj ponownie za chwilę.",
+      "failed": "Nie udało się utworzyć pliku PDF. Spróbuj ponownie."
+    },
+    "letter": {
+      "from": "Od: {creditor}",
+      "to": "Do: {debtor}",
+      "date": "Data: {date}",
+      "subject": "Dotyczy: {title} – faktura nr {invoice}",
+      "payAccount": "na konto {account}",
+      "payInvoice": "na konto podane na fakturze",
+      "closing": "Z poważaniem",
+      "reminder": {
+        "title": "Przypomnienie o płatności",
+        "polite": {
+          "greeting": "Dzień dobry,",
+          "body": [
+            "uprzejmie przypominamy, że termin płatności faktury nr {invoice} na kwotę {amount} upłynął {due}, a płatność jeszcze do nas nie wpłynęła.",
+            "Prosimy o zapłatę {pay} najpóźniej do {deadline}, z numerem faktury jako tytułem płatności.",
+            "Jeśli płatność została już zrealizowana, prosimy zignorować to przypomnienie. Dziękujemy."
+          ]
+        },
+        "firm": {
+          "greeting": "Dzień dobry,",
+          "body": [
+            "termin płatności faktury nr {invoice} na kwotę {amount} upłynął {due}, a faktura pozostaje nieopłacona. Od {dayAfter} pozostają Państwo w zwłoce.",
+            "Prosimy o zapłatę {pay} najpóźniej do {deadline}.",
+            "Jeśli płatność do tego czasu nie wpłynie, będziemy dochodzić także ustawowych odsetek za opóźnienie."
+          ]
+        }
+      },
+      "demand": {
+        "title": "Wezwanie do zapłaty",
+        "polite": {
+          "greeting": "Dzień dobry,",
+          "body": [
+            "mimo naszego przypomnienia nadal nie otrzymaliśmy zapłaty faktury nr {invoice} na kwotę {amount} z terminem płatności {due}.",
+            "Prosimy zatem o zapłatę {pay} najpóźniej do {deadline}.",
+            "Zwracamy uwagę, że od {dayAfter} pozostają Państwo w zwłoce i że oprócz należnej kwoty możemy żądać ustawowych odsetek za opóźnienie.",
+            "Jeśli mają Państwo trudności z zapłatą, prosimy o kontakt. Chętnie uzgodnimy rozwiązanie."
+          ]
+        },
+        "firm": {
+          "greeting": "Dzień dobry,",
+          "body": [
+            "wzywamy do zapłaty faktury nr {invoice} na kwotę {amount}, której termin płatności upłynął {due}. Od {dayAfter} pozostają Państwo w zwłoce.",
+            "Należną kwotę prosimy zapłacić {pay} najpóźniej do {deadline}.",
+            "Oprócz należnej kwoty żądamy ustawowych odsetek za opóźnienie w wysokości stopy repo Czeskiego Banku Narodowego powiększonej o 8 punktów procentowych oraz 1200 CZK tytułem kosztów dochodzenia należności.",
+            "Jeśli płatność do tego czasu nie wpłynie, przekażemy należność do windykacji."
+          ]
+        }
+      },
+      "preAction": {
+        "title": "Przedsądowe wezwanie do zapłaty",
+        "polite": {
+          "greeting": "Dzień dobry,",
+          "body": [
+            "niniejszym wzywamy do spełnienia świadczenia zgodnie z § 142a czeskiego kodeksu postępowania cywilnego.",
+            "Dotychczas nie zapłacili Państwo faktury nr {invoice} na kwotę {amount} z terminem płatności {due}. Od {dayAfter} pozostają Państwo w zwłoce.",
+            "Należną kwotę wraz z ustawowymi odsetkami za opóźnienie prosimy zapłacić {pay} najpóźniej do {deadline}.",
+            "Jeśli płatność do tego czasu nie wpłynie, złożymy pozew i będziemy żądać także zwrotu kosztów postępowania. Wolelibyśmy tego uniknąć, dlatego jeśli mają Państwo trudności z zapłatą, prosimy o kontakt."
+          ]
+        },
+        "firm": {
+          "greeting": "Dzień dobry,",
+          "body": [
+            "niniejszym wzywamy do spełnienia świadczenia zgodnie z § 142a czeskiego kodeksu postępowania cywilnego.",
+            "Mimo naszych wcześniejszych przypomnień nie zapłacili Państwo faktury nr {invoice} na kwotę {amount} z terminem płatności {due}. Od {dayAfter} pozostają Państwo w zwłoce.",
+            "Należną kwotę wraz z ustawowymi odsetkami za opóźnienie oraz 1200 CZK tytułem kosztów dochodzenia należności prosimy zapłacić {pay} najpóźniej do {deadline}.",
+            "Jeśli płatność do tego czasu nie wpłynie, bez dalszego wezwania złożymy pozew i będziemy żądać także zwrotu kosztów postępowania."
+          ]
+        }
+      }
+    }
+  },
+  "schoolLessons": {
+    "hubName": "Dla szkół",
+    "indexName": "Lekcje",
+    "indexTitle": "Gotowe lekcje o fakturowaniu dla szkół",
+    "indexMetaTitle": "Lekcje o fakturowaniu dla szkół i uczelni – gotowe lekcje z kartami pracy",
+    "indexLead": "45-minutowe lekcje o czeskim fakturowaniu i VAT na trzech poziomach: od edukacji finansowej w szkole podstawowej po deklaracje VAT i współpracę z księgową na uczelni. Cele, notatki dla nauczyciela, zadanie w demo bez rejestracji i karta pracy z odpowiedziami. Za darmo, do druku lub na rzutnik.",
+    "indexMeta": "Gotowe 45-minutowe lekcje o czeskim fakturowaniu i VAT dla szkół podstawowych, średnich, uczelni i kursów: czym jest faktura, elementy faktury, moment powstania obowiązku podatkowego, stawki VAT, faktury korygujące, zaliczki, przypomnienia, deklaracje VAT, informacja podsumowująca (kontrolní hlášení) i dopasowanie płatności z banku. Karty pracy z odpowiedziami.",
+    "howTitle": "Jak działają lekcje",
+    "how": [
+      "Każda lekcja ma cele, plan lekcji, wyjaśnienie kluczowych pojęć z linkami do konkretnych przepisów oraz notatki dla nauczyciela.",
+      "Uczniowie wykonują krok po kroku zadanie w demo Billanty. Demo nie wymaga rejestracji ani e-maila, a każdy uczeń dostaje własną firmę z przykładowymi danymi.",
+      "Wydrukuj kartę pracy w wersji dla ucznia (bez odpowiedzi). Odpowiedzi i wydruk z odpowiedziami pojawią się po zalogowaniu na konto nauczyciela."
+    ],
+    "rvpNote": "Lekcje dla szkoły podstawowej pasują do edukacji finansowej, a lekcje dla szkoły średniej do treści z ekonomii i rachunkowości w czeskich ramowych programach nauczania (RVP) dla akademii handlowych. Przypisanie do klas i przedmiotów zależy od szkoły.",
+    "lawBasis": "Lekcje są zgodne z prawem czeskim. Linki do przepisów prowadzą do czeskich tekstów.",
+    "minutes": "{n} min",
+    "lessonNumber": "Lekcja {n}",
+    "openLesson": "Otwórz lekcję",
+    "allLessons": "Wszystkie lekcje",
+    "goals": "Cele lekcji",
+    "timeline": "Plan lekcji",
+    "teacherNotes": "Notatki dla nauczyciela",
+    "concepts": "Kluczowe pojęcia",
+    "task": "Zadanie w demo",
+    "check": "Gotowe, gdy",
+    "worksheet": "Karta pracy",
+    "worksheetName": "Imię, nazwisko i klasa:",
+    "answer": "Odpowiedź dla nauczyciela",
+    "law": "Przepisy",
+    "lawNote": "Linki prowadzą do aktualnych tekstów jednolitych czeskich przepisów na zakonyprolidi.cz.",
+    "tools": "Powiązane poradniki i kalkulatory",
+    "demoCta": "Otwórz demo",
+    "demoPick": "W demo wybierz firmę „{kind}”. Bez rejestracji.",
+    "teacherOnly": "Tylko dla nauczyciela – ukryte w wydruku dla uczniów.",
+    "printStudent": "Drukuj dla uczniów",
+    "printTeacher": "Drukuj z odpowiedziami",
+    "checked": "Odwołania do przepisów sprawdziliśmy ostatnio {date}. Prawo się zmienia, więc przed lekcją sprawdź aktualne brzmienie. Lekcje służą do nauki i nie stanowią doradztwa podatkowego.",
+    "skAlternative": "Słowacki kalkulator podatku dla samozatrudnionych",
+    "levelNav": "Poziom",
+    "tracks": {
+      "basic": {
+        "name": "Szkoła podstawowa",
+        "audience": "Edukacja finansowa, wiek 13–15 lat",
+        "lead": "Czym jest faktura, jak ją wystawić, kiedy zostaje opłacona i jak wysłać uprzejme przypomnienie. Bez prawa podatkowego dla uczniów.",
+        "short": "Podstawowa"
+      },
+      "standard": {
+        "name": "Szkoła średnia",
+        "audience": "Akademie handlowe i kierunki ekonomiczne",
+        "lead": "Elementy faktury, VAT, zaliczki, faktury korygujące i przypomnienia zgodnie z prawem.",
+        "short": "Średnia"
+      },
+      "advanced": {
+        "name": "Szkoła pomaturalna, uczelnia i kursy",
+        "audience": "Szkoły pomaturalne, uczelnie i kursy przekwalifikowujące",
+        "lead": "Deklaracja VAT i informacja podsumowująca (kontrolní hlášení), klienci zagraniczni, dopasowanie płatności z banku i współpraca z księgową.",
+        "short": "Uczelnia"
+      }
+    },
+    "answersLocked": "Nauczyciele zobaczą odpowiedzi po zalogowaniu.",
+    "answersLogin": "Zaloguj się",
+    "answersSignup": "Załóż konto nauczyciela"
+  },
+  "coworkingPoster": {
+    "title": "Plakat do coworkingu",
+    "lead": "Plakat z kodem QR do kuchni, recepcji albo sali spotkań. Wydrukuj go prosto z przeglądarki albo zapisz jako PDF.",
+    "back": "Wróć do strony o coworkingach",
+    "sizeLabel": "Rozmiar",
+    "download": "Pobierz plakat",
+    "printHint": "Otworzy się okno drukowania: wybierz drukarkę albo Zapisz jako PDF. Zostaw skalę 100%.",
+    "withInvite": "Kod QR na plakacie zawiera kod zaproszenia Twojej firmy ({code}). Otrzymujesz środki za każdą firmę, która zarejestruje się przez niego i zacznie płacić.",
+    "generic": "Teraz kod QR prowadzi na naszą stronę. Zaloguj się, a będzie zawierał kod zaproszenia Twojej firmy, dzięki czemu nowe firmy przyniosą Ci środki.",
+    "login": "Zaloguj się",
+    "groupCode": "Chcesz jeden stały kod dla wszystkich członków, z korzyścią dla członków? Ustawimy go i umieścimy na plakacie.",
+    "contact": "Napisz do nas",
+    "mailSubject": "Kod i plakat dla naszego coworkingu",
+    "qrTarget": "Kod QR prowadzi do:",
+    "ctaTitle": "Plakat na Twoją ścianę",
+    "ctaBody": "A4 lub A3, gotowy do druku. Gdy jesteś zalogowany, jego kod QR zawiera kod zaproszenia Twojej firmy.",
+    "ctaButton": "Pobierz plakat"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "lead": "Jak się z nami skontaktować, kto prowadzi Billantę i gdzie znaleźć szybkie odpowiedzi.",
+    "emailTitle": "Napisz do nas",
+    "emailBody": "Pytania o fakturowanie, Twoje konto lub współpracę wyślij e-mailem.",
+    "noEmailTitle": "Gdzie znaleźć pomoc",
+    "noEmailBody": "Nie mamy jeszcze publicznego adresu e-mail. FAQ odpowiada na najczęstsze pytania, a aplikację możesz wypróbować bez konta w demo.",
+    "helpTitle": "Szybkie odpowiedzi",
+    "links": {
+      "faq": {
+        "title": "FAQ",
+        "body": "Ceny, VAT, eksporty dla księgowych i inne częste pytania."
+      },
+      "demo": {
+        "title": "Wypróbuj demo",
+        "body": "Aplikacja z przykładowymi danymi, bez rejestracji."
+      },
+      "accountants": {
+        "title": "Znajdź księgową",
+        "body": "Księgowe i biura rachunkowe, które pracują z Billantą."
+      },
+      "partners": {
+        "title": "Dla partnerów",
+        "body": "Kursy, coworkingi, społeczności i inni, którzy chcą polecać Billantę."
+      }
+    },
+    "operatorTitle": "Operator",
+    "privacyTitle": "Dane osobowe",
+    "privacyBody": "Wskazany powyżej operator jest administratorem Twoich danych osobowych. Polityka prywatności wyjaśnia, co przetwarzamy i jak korzystać ze swoich praw (dostęp, sprostowanie, usunięcie i inne).",
+    "legalTitle": "Dokumenty prawne"
   }
 }
