@@ -11574,6 +11574,430 @@
       ]
     }
   },
+  "taxReturn": {
+    "metaTitle": "Resumen para la declaración de la renta",
+    "title": "Resumen para la declaración de la renta {year}",
+    "titleSk": "Resumen para la declaración de la renta {year} (Eslovaquia)",
+    "back": "Informes",
+    "lead": "Ingresos, gastos y gastos a tanto alzado del ejercicio fiscal a partir de sus propios documentos, los plazos de presentación y una estimación aproximada del impuesto. Gratis en todos los planes.",
+    "notAdvice": "Esto es un resumen de sus propios documentos para preparar la declaración del impuesto sobre la renta, no asesoramiento fiscal. Revise las cifras antes de presentarla, con un contable o asesor fiscal si es necesario.",
+    "noTenant": "Primero complete los datos de facturación de su empresa.",
+    "loadError": "No se ha podido cargar el resumen. Inténtelo de nuevo en un momento.",
+    "ratesUnavailable": "Algunos documentos en moneda extranjera no tienen tipo de cambio y no se ha podido obtener. Inténtelo de nuevo en un momento.",
+    "yearLabel": "Año",
+    "downloadPdf": "Descargar PDF",
+    "downloadCsv": "Descargar CSV",
+    "runningYear": "El año {year} aún está en curso: las cifras cambiarán hasta que termine y su declaración se presenta el año siguiente.",
+    "income": "Ingresos de facturas cobradas",
+    "incomeAccrual": "Ingresos de facturas emitidas",
+    "invoiceCount": "{count, plural, one {# documento} other {# documentos}}, facturas rectificativas descontadas",
+    "actualExpenses": "Gastos reales en total",
+    "expenseCount": "{count, plural, one {# gasto} other {# gastos}}",
+    "basisCash": "Registro por criterio de caja: ingresos según el día de cobro, gastos según el día de pago.",
+    "basisAccrual": "Contabilidad: ingresos según la fecha de devengo.",
+    "vatPayerYes": "Está registrado a efectos del IVA, los importes son sin IVA.",
+    "vatPayerNo": "No está registrado a efectos del IVA, los importes son brutos.",
+    "missingRates": "{count, plural, one {Se excluye # documento en moneda extranjera sin tipo de cambio.} other {Se excluyen # documentos en moneda extranjera sin tipo de cambio.}}",
+    "categoriesTitle": "Gastos por categoría",
+    "uncategorised": "Sin categoría",
+    "noExpenses": "No hay gastos en este año.",
+    "legalEntity": "Una sociedad presenta la declaración del impuesto sobre sociedades (DPPO). Los gastos a tanto alzado y la paušální daň no se aplican, y el beneficio lo determina la contabilidad – utilice estas sumas como comprobación.",
+    "legalEntitySk": "Una sociedad presenta la declaración del impuesto sobre sociedades (DPPO). Los gastos a tanto alzado no se aplican y el beneficio lo determina la contabilidad – utilice estas sumas como comprobación.",
+    "flatTitle": "Gastos a tanto alzado frente a gastos reales",
+    "flatTitleSk": "Gastos a tanto alzado frente a gastos reales",
+    "flatLead": "Según el § 7 (7) de la ley checa del impuesto sobre la renta, puede aplicar un porcentaje de los ingresos en lugar de los gastos reales. El porcentaje depende de la actividad, cada uno con un límite anual.",
+    "flatLeadSk": "En Eslovaquia hay un único porcentaje a tanto alzado (§ 6 (10) ZDP) con un límite anual; las cotizaciones pagadas se deducen además.",
+    "rateLabel": "Su actividad",
+    "rates": {
+      "30": "30 % – alquiler de bienes afectos a la actividad.",
+      "40": "40 % – profesiones liberales y otras actividades reguladas por leyes especiales, ingresos por derechos de autor.",
+      "60": "60 % – otras actividades comerciales (la mayoría de las no cualificadas, cualificadas y con licencia).",
+      "80": "80 % – oficios artesanales, agricultura, silvicultura y gestión del agua."
+    },
+    "flatRow": "Tanto alzado del {rate} % (máx. {cap})",
+    "capped": "límite",
+    "better": {
+      "flat": "El tanto alzado del {rate} % le da más gastos que sus gastos reales.",
+      "actual": "Sus gastos reales son mayores que el tanto alzado del {rate} %.",
+      "equal": "El tanto alzado del {rate} % y los gastos reales dan el mismo resultado."
+    },
+    "estimateTitle": "Estimación aproximada de impuestos y cotizaciones",
+    "estimateLead": "Impuesto sobre la renta tras la deducción básica del contribuyente, y cotizaciones sociales y sanitarias del año con los tipos y mínimos de este año.",
+    "estimateLeadSk": "Impuesto sobre la renta tras el mínimo personal básico, y cotizaciones del año con los tipos de este año.",
+    "option": {
+      "flat_expenses": "Tanto alzado",
+      "actual_expenses": "Gastos reales"
+    },
+    "expenses": "Gastos",
+    "profit": "Beneficio",
+    "tax": "Impuesto sobre la renta",
+    "social": "Seguridad social",
+    "health": "Seguro de salud",
+    "socialSk": "Seguridad social pagada",
+    "healthSk": "Seguro de salud del año",
+    "total": "Total del año",
+    "skInsuranceNote": "Las cotizaciones pagadas se toman de los anticipos en Ajustes → Datos de facturación y reducen la base imponible en ambas opciones.",
+    "noParams": "Los tipos y límites de {year} aún no se han publicado, por lo que no hay estimación del impuesto. Las sumas y los plazos sí son válidos.",
+    "flatTaxTitle": "Impuesto a tanto alzado (paušální daň)",
+    "flatTaxLead": "Un único pago mensual que cubre el impuesto sobre la renta y las cotizaciones sociales y sanitarias (§ 2a ZDP). Para quienes no son sujetos pasivos de IVA con ingresos de hasta 2 millones de CZK; se accede notificándolo antes del 10 de enero.",
+    "flatTaxBand": "Con estos ingresos estaría en la banda {band}: {total} al año.",
+    "flatTaxNo": {
+      "vat_payer": "Un sujeto pasivo de IVA no puede acogerse a la paušální daň.",
+      "over_limit": "La paušální daň no está disponible con estos ingresos (límite de 2 millones de CZK, menos en las bandas inferiores).",
+      "no_data": "Faltan los importes de la paušální daň para este año."
+    },
+    "best": {
+      "flat_tax": "Según esta estimación, la paušální daň es la opción más barata.",
+      "flat_expenses": "Según esta estimación, el régimen general con gastos a tanto alzado es la opción más barata.",
+      "actual_expenses": "Según esta estimación, el régimen general con gastos reales es la opción más barata."
+    },
+    "inFlatTaxRegime": "Según sus ajustes, está en el régimen de paušální daň. Si no lo abandonó durante el año ni superó el límite, normalmente no presenta ni la declaración ni los resúmenes de cotizaciones.",
+    "flatTaxCalculator": "Comparación completa en la calculadora de la paušální daň",
+    "deadlinesTitle": "Plazos de presentación",
+    "deadline": {
+      "CZ": {
+        "paper": "En papel",
+        "electronic": "Por vía electrónica (buzón de datos, Moje daně)",
+        "advisor": "A través de un asesor fiscal (poder presentado antes del primer plazo)"
+      },
+      "SK": {
+        "paper": "Plazo ordinario",
+        "extended": "Tras notificar una prórroga"
+      }
+    },
+    "diffTitle": "Chequia frente a Eslovaquia – las diferencias",
+    "diff": {
+      "cz": "Chequia",
+      "sk": "Eslovaquia",
+      "flatLabel": "Gastos a tanto alzado",
+      "flatCz": "Según la actividad: {caps}.",
+      "flatSk": "Un único tanto alzado del {rate} %, como máximo {cap} al año.",
+      "deadlineLabel": "Plazo de la declaración",
+      "deadlineCz": "{paper} en papel, {electronic} por vía electrónica, {advisor} a través de un asesor fiscal.",
+      "deadlineSk": "{paper}; tras notificarlo a la administración tributaria, {extended} (hasta 6 meses con ingresos del extranjero).",
+      "insuranceLabel": "Cotizaciones",
+      "insuranceCz": "Las cotizaciones propias del autónomo no son gasto deducible (§ 25 ZDP).",
+      "insuranceSk": "Las cotizaciones pagadas se deducen de la base imponible, también además del tanto alzado.",
+      "flatTaxLabel": "Impuesto a tanto alzado",
+      "flatTaxCz": "Sí, para quienes no son sujetos pasivos de IVA con ingresos de hasta 2 millones de CZK.",
+      "flatTaxSk": "No. Con ingresos más bajos se aplica un tipo reducido del 15 % en el impuesto sobre la renta.",
+      "formLabel": "Qué se presenta",
+      "formCz": "La declaración del impuesto sobre la renta de las personas físicas y, en el plazo de un mes, los resúmenes para la ČSSZ y la aseguradora de salud.",
+      "formSk": "Declaración tipo B; la Agencia de la Seguridad Social obtiene los ingresos de la administración tributaria."
+    },
+    "notesTitle": "Notas",
+    "noteInsurance": "Los anticipos de cotizaciones sociales y sanitarias del autónomo no son gasto deducible (§ 25 (1) h) ZDP), por lo que no figuran entre los gastos.",
+    "noteInsuranceSk": "Las cotizaciones sociales y sanitarias pagadas se deducen de la base imponible junto con el tanto alzado o los gastos reales (§ 6 (10) y (11) ZDP).",
+    "noteEstimate": "La estimación solo tiene en cuenta la deducción básica del contribuyente, sin otras deducciones, reducciones ni otros ingresos (trabajo por cuenta ajena, alquileres).",
+    "noteEstimateSk": "La estimación solo tiene en cuenta el mínimo personal básico, sin otras deducciones, la bonificación por hijos ni otros ingresos.",
+    "noteData": "Las cifras proceden únicamente de los documentos de la aplicación. Añada usted mismo los ingresos y gastos que no figuren aquí (efectivo sin documento, otras actividades).",
+    "disclaimer": "Este resumen es meramente informativo, se ofrece sin garantía y no sustituye a un asesor fiscal ni a un contable. Usted es responsable de lo que presenta.",
+    "nudge": {
+      "title": "Declaración de la renta {year}",
+      "body": "Sus ingresos de {year}, los gastos por categoría, los tantos alzados y los plazos ya están listos a partir de sus documentos. PDF y CSV para su contable, gratis.",
+      "cta": "Abrir el resumen",
+      "dismiss": "Ocultar"
+    },
+    "landing": {
+      "seoTitle": "Resumen gratuito para la declaración de la renta {year} para autónomos en Chequia y Eslovaquia",
+      "eyebrow": "Declaración del impuesto sobre la renta",
+      "title": "Resumen para la declaración de la renta {year}",
+      "lead": "Billanta suma los ingresos de las facturas cobradas y los gastos por categoría, los compara con los gastos a tanto alzado y muestra los plazos de presentación. Para Chequia y Eslovaquia, en PDF y CSV.",
+      "cta": "Empezar gratis",
+      "demo": "Probar la demo",
+      "free": "El resumen está incluido en todos los planes, también en el gratuito.",
+      "featuresTitle": "Qué incluye el resumen",
+      "features": {
+        "income": {
+          "title": "Ingresos de facturas cobradas",
+          "body": "De todo el año según el día de cobro, con las facturas rectificativas descontadas y las monedas extranjeras convertidas al tipo de cambio del documento."
+        },
+        "categories": {
+          "title": "Gastos por categoría",
+          "body": "Material, servicios, software, viajes y más – incluidos los gastos sin categoría."
+        },
+        "flat": {
+          "title": "Tanto alzado o gastos reales",
+          "body": "Todos los porcentajes de gastos a tanto alzado con su límite anual, junto a sus gastos reales."
+        },
+        "flatTax": {
+          "title": "Impuesto a tanto alzado",
+          "body": "Para autónomos checos, una comparación con la paušální daň y una estimación aproximada de impuestos y cotizaciones."
+        },
+        "deadlines": {
+          "title": "Plazos de presentación",
+          "body": "En papel, por vía electrónica y a través de un asesor, ajustados si caen en fin de semana o festivo."
+        },
+        "export": {
+          "title": "PDF y CSV para su contable",
+          "body": "Con un clic, claramente marcado como base para la declaración, no como asesoramiento fiscal."
+        }
+      },
+      "country": {
+        "CZ": {
+          "title": "Chequia – declaración de {year}",
+          "deadline": {
+            "paper": "En papel",
+            "electronic": "Por vía electrónica",
+            "advisor": "A través de un asesor fiscal"
+          },
+          "flat": "Gastos a tanto alzado: {caps}.",
+          "extra": "Paušální daň para quienes no son sujetos pasivos de IVA con ingresos de hasta 2 millones de CZK; resúmenes de cotizaciones para la ČSSZ y la aseguradora de salud en el plazo de un mes tras la declaración."
+        },
+        "SK": {
+          "title": "Eslovaquia – declaración de {year}",
+          "deadline": {
+            "paper": "Plazo ordinario",
+            "extended": "Tras notificar una prórroga"
+          },
+          "flat": "Gastos a tanto alzado del {rate} % de los ingresos, como máximo {cap} al año.",
+          "extra": "Las cotizaciones pagadas se deducen además del tanto alzado; Eslovaquia no tiene impuesto a tanto alzado."
+        }
+      },
+      "calculatorsTitle": "Calculadoras fiscales",
+      "calculatorsLead": "Sin registro: impuestos y cotizaciones para autónomos checos y eslovacos, la comparación con la paušální daň y los anticipos mínimos.",
+      "ctaTitle": "Un resumen a partir de sus propias facturas",
+      "ctaBody": "Si factura con Billanta, la base de su declaración está lista sin volver a teclear nada. Solo tiene que añadir lo que no está en la aplicación.",
+      "faqTitle": "Preguntas frecuentes",
+      "faq": [
+        {
+          "q": "¿Es esto asesoramiento fiscal?",
+          "a": "No. Suma sus propios documentos con un cálculo aproximado según los tipos legales. Revise las cifras antes de presentar la declaración, con un contable o asesor fiscal si es necesario."
+        },
+        {
+          "q": "¿Cuándo convienen más los gastos a tanto alzado que los gastos reales?",
+          "a": "Cuando sus gastos reales son inferiores al porcentaje de ingresos que permite su actividad. El resumen muestra ambas cifras una al lado de la otra, con el límite anual."
+        },
+        {
+          "q": "¿Es gratis?",
+          "a": "Sí, en todos los planes, incluido el gratuito, tanto para autónomos checos como eslovacos."
+        },
+        {
+          "q": "¿Y si facturo en otra moneda?",
+          "a": "Las facturas en moneda extranjera se convierten al tipo de cambio guardado con el documento. Los documentos sin tipo de cambio se muestran aparte para que no se pierda nada."
+        }
+      ],
+      "disclaimer": "Los tipos, límites y plazos se basan en las leyes checa y eslovaca del impuesto sobre la renta y en los códigos de procedimiento tributario del año correspondiente. La información es orientativa y no sustituye a un asesor fiscal."
+    }
+  },
+  "newsletter": {
+    "signup": {
+      "title": "Novedades sobre cambios fiscales y de facturación",
+      "body": "Un breve e-mail de vez en cuando, cuando cambian los tipos, los límites, los plazos o la facturación electrónica eslovaca. Sin spam.",
+      "email": "E-mail",
+      "emailPlaceholder": "usted@ejemplo.com",
+      "country": "País",
+      "countries": {
+        "CZ": "Chequia",
+        "SK": "Eslovaquia"
+      },
+      "topicsLabel": "Qué le interesa",
+      "topics": {
+        "tax_rates": "Tipos impositivos y de IVA",
+        "limits": "Límites (IVA, paušální daň, efectivo)",
+        "deadlines": "Plazos fiscales",
+        "sk_einvoicing": "Facturación electrónica eslovaca 2027"
+      },
+      "consent": "Acepto recibir en esta dirección e-mails de Billanta con novedades sobre cambios en impuestos, límites, plazos y facturación electrónica. Puedo retirar este consentimiento en cualquier momento con el enlace incluido en cada e-mail.",
+      "privacy": "El tratamiento se describe en la <link>Política de privacidad</link>. La suscripción solo se activa después de que la confirme desde el e-mail.",
+      "submit": "Suscribirse",
+      "sentTitle": "Revise su e-mail",
+      "sentBody": "Le hemos enviado un enlace para confirmar la suscripción. No se envía nada hasta que la confirme.",
+      "errors": {
+        "invalid_email": "Introduzca un e-mail válido.",
+        "no_topics": "Elija al menos un tema.",
+        "consent_required": "Se necesita su consentimiento para suscribirse.",
+        "rate_limited": "Demasiados intentos. Inténtelo de nuevo más tarde.",
+        "failed": "No se ha podido completar la suscripción. Inténtelo de nuevo."
+      }
+    },
+    "confirm": {
+      "metaTitle": "Confirme su suscripción",
+      "title": "Confirme su suscripción",
+      "intro": "Confirme que {email} debe recibir novedades de Billanta sobre:",
+      "button": "Confirmar suscripción",
+      "doneTitle": "Suscripción confirmada",
+      "doneBody": "¡Gracias! Le escribiremos cuando algo cambie. Puede darse de baja con un clic desde cualquier e-mail.",
+      "backHome": "Volver a Billanta",
+      "errors": {
+        "invalid_confirm_link": "El enlace no es válido o ya se utilizó para darse de baja. Suscríbase de nuevo.",
+        "confirm_link_expired": "El enlace ha caducado. Suscríbase de nuevo y le enviaremos uno nuevo.",
+        "rate_limited": "Demasiados intentos. Inténtelo de nuevo más tarde.",
+        "unavailable": "No se ha podido confirmar. Inténtelo de nuevo en un momento."
+      }
+    },
+    "settings": {
+      "title": "Novedades de Billanta",
+      "hint": "Un breve e-mail cuando cambian los tipos, los límites, los plazos fiscales o la facturación electrónica eslovaca. Es una comunicación comercial, por lo que solo se envía con su consentimiento.",
+      "toggle": "Enviarme novedades sobre cambios",
+      "consent": "Acepto recibir e-mails de Billanta con novedades sobre cambios en impuestos, límites, plazos y facturación electrónica en el e-mail de mi cuenta (activado en Ajustes). Puedo retirar este consentimiento en cualquier momento.",
+      "pending": "Le hemos enviado un e-mail de confirmación. La suscripción se activa cuando haga clic en el enlace que contiene.",
+      "country": "País",
+      "topics": "Temas",
+      "saved": "Guardado",
+      "errors": {
+        "consent_required": "Se necesita su consentimiento para suscribirse.",
+        "user_not_found": "No se ha encontrado la cuenta.",
+        "failed": "No se ha podido guardar."
+      }
+    }
+  },
+  "adminNewsletter": {
+    "title": "Newsletter",
+    "description": "Novedades para suscriptores con consentimiento confirmado. Cada número se envía por lotes a través de la cola de e-mails, siempre con un enlace para darse de baja.",
+    "loadError": "No se ha podido cargar la newsletter.",
+    "stats": "Suscriptores",
+    "statuses": {
+      "pending": "Pendiente de confirmación",
+      "confirmed": "Confirmado",
+      "unsubscribed": "Dado de baja"
+    },
+    "topicCounts": "Por tema (confirmados)",
+    "newIssue": "Nuevo número",
+    "draftFromBlog": "Borrador a partir del blog y los plazos",
+    "locale": "Idioma",
+    "country": "País",
+    "allCountries": "Chequia y Eslovaquia",
+    "topics": "Temas (quién lo recibe)",
+    "subject": "Asunto",
+    "body": "Cuerpo (markdown: ## título, - viñetas, **negrita**, [enlace](https://…))",
+    "save": "Guardar borrador",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar este borrador?",
+    "preview": "Vista previa",
+    "send": "Enviar",
+    "sendConfirm": "¿Enviar este número a {count} suscriptores? No se puede deshacer.",
+    "audience": "Destinatarios: {count}",
+    "queued": "En cola: {count}",
+    "issues": "Números",
+    "noIssues": "Aún no hay números.",
+    "issueStatuses": {
+      "draft": "Borrador",
+      "sending": "Enviando",
+      "sent": "Enviado"
+    },
+    "edit": "Editar",
+    "close": "Cerrar",
+    "saved": "Guardado",
+    "sendStarted": "Envío iniciado",
+    "errors": {
+      "issue_not_editable": "Un número ya enviado no se puede editar.",
+      "issue_already_sent": "El número ya se ha enviado.",
+      "issue_not_found": "No se ha encontrado el número.",
+      "unsubscribe_unavailable": "Falta la clave de firma para los enlaces de baja.",
+      "failed": "La acción ha fallado."
+    }
+  },
+  "embeds": {
+    "qr": {
+      "title": "Pago con QR",
+      "alt": "Código QR de pago",
+      "scan": "Escanéelo en la aplicación de su banco.",
+      "account": "Cuenta",
+      "vs": "Símbolo variable",
+      "message": "Mensaje",
+      "invalid": "El número de cuenta de este enlace no es válido."
+    },
+    "vat": {
+      "frameTitle": "Calculadora de IVA"
+    },
+    "builder": {
+      "tabs": {
+        "badge": "Distintivo",
+        "qr": "Pago con QR",
+        "pay": "Botón de pago",
+        "vat": "Calculadora de IVA"
+      },
+      "lang": "Idioma",
+      "langs": {
+        "cs": "Checo",
+        "sk": "Eslovaco",
+        "en": "Inglés"
+      },
+      "theme": "Estilo",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "kind": "Distintivo",
+      "format": "Formato",
+      "image": "Imagen",
+      "html": "HTML simple",
+      "account": "Número de cuenta o IBAN",
+      "name": "Beneficiario",
+      "nameHint": "Los bancos eslovacos (PAY by square) lo exigen.",
+      "amount": "Importe (opcional)",
+      "currency": "Moneda",
+      "vs": "Símbolo variable",
+      "message": "Mensaje para el beneficiario",
+      "invoice": "Enlace público de la factura",
+      "invoiceHint": "Cópielo desde el detalle de la factura (Compartir enlace).",
+      "invalidAccount": "El número de cuenta o IBAN no es válido.",
+      "needAccount": "Introduzca un número de cuenta para ver la vista previa y el código.",
+      "invalidInvoice": "Este no es un enlace público de factura.",
+      "needInvoice": "Pegue un enlace público de factura para ver el botón y el código.",
+      "preview": "Vista previa",
+      "code": "Código para su sitio web",
+      "copy": "Copiar código",
+      "copied": "Copiado",
+      "copyFailed": "No se ha podido copiar el código.",
+      "keepLink": "Mantenga el enlace bajo el widget – es lo que permite que el widget sea gratuito."
+    },
+    "sections": {
+      "settings": {
+        "title": "Distintivos y widgets para su sitio web",
+        "description": "Añada a su sitio un distintivo, un pago con QR o una calculadora. Los enlaces llevan su código, así que los registros que lleguen a través de ellos cuentan para usted."
+      },
+      "partners": {
+        "title": "Un distintivo para su sitio web",
+        "description": "Muestre a sus visitantes que trabaja con nosotros. Solo tiene que copiar el código en su sitio."
+      },
+      "accountants": {
+        "title": "Distintivo Billanta Partner",
+        "description": "Demuestre a sus clientes que conoce la aplicación. Coloque el código en el pie de página de su sitio web o en la página de sus servicios."
+      },
+      "calculator": {
+        "title": "Añada la calculadora a su sitio web",
+        "description": "¿Escribe sobre impuestos o tiene un negocio? Inserte la calculadora de IVA en un artículo con un solo fragmento de código, gratis, sin anuncios ni seguimiento."
+      }
+    },
+    "snippet": {
+      "cs": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR plateb – {name}",
+        "payButton": "Zaplatit fakturu",
+        "payLink": "Online platby faktur – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "sk": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR platieb – {name}",
+        "payButton": "Zaplatiť faktúru",
+        "payLink": "Online platby faktúr – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "en": {
+        "customer": "We invoice with Billanta",
+        "partner": "Billanta Partner",
+        "qrTitle": "QR payment",
+        "qrLink": "QR payment generator – {name}",
+        "payButton": "Pay invoice",
+        "payLink": "Online invoice payments – {name}",
+        "vatTitle": "VAT calculator",
+        "vatLink": "VAT calculator – {name}"
+      }
+    }
+  },
+  "switchBanner": {
+    "title": "¿Viene de otra aplicación? Importe sus datos en minutos",
+    "text": "Traiga sus contactos, facturas emitidas y su serie de numeración desde una exportación de Fakturoid, iDoklad, SuperFaktura u otra aplicación.",
+    "cta": "Importar datos",
+    "dismiss": "Ocultar"
+  },
   "switchPage": {
     "seoTitle": "Cámbiese a Billanta desde otro programa de facturación",
     "navTitle": "Cambiar a Billanta",
@@ -11953,6 +12377,388 @@
         ],
         "ids": [
           "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "items": {
+      "nonPayer": {
+        "name": "No sujeto pasivo de IVA",
+        "title": "Plantilla de factura para no sujetos pasivos de IVA (República Checa)",
+        "description": "Plantilla de factura checa para no sujetos pasivos de IVA: un ejemplo rellenado, los datos que exigen el Código Civil y la Ley de Contabilidad y un editor online gratuito con PDF.",
+        "lead": "La factura más habitual de un autónomo checo. Quien no es sujeto pasivo no indica IVA ni fecha de devengo, pero debe dejar claro quién emite la factura, a quién y por qué concepto.",
+        "docTitle": "Factura",
+        "number": "2026-0018",
+        "notes": [
+          "No es sujeto pasivo de IVA.",
+          "Autónomo inscrito en el Registro de Actividades Comerciales."
+        ],
+        "lines": [
+          {
+            "d": "Fotografía de producto para una tienda online (40 fotos)",
+            "q": 1,
+            "u": "ud.",
+            "p": 8500,
+            "r": 0
+          },
+          {
+            "d": "Retoque fotográfico",
+            "q": 4,
+            "u": "h",
+            "p": 600,
+            "r": 0
+          }
+        ],
+        "when": [
+          "No está dado de alta en el IVA (volumen de negocio de hasta 2 000 000 CZK en un año natural) y factura a un cliente en la República Checa.",
+          "Se aplica a autónomos y sociedades que no son sujetos pasivos de IVA. Si presta servicios a empresas de otro país de la UE, normalmente pasa a ser persona identificada – consulte la plantilla específica."
+        ],
+        "fields": [
+          {
+            "name": "Nombre, domicilio social y número de identificación (IČO) del proveedor",
+            "text": "Un empresario los indica en todos sus documentos comerciales, incluidas las facturas.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Inscripción en un registro público",
+            "text": "Solo si está inscrito en uno: una sociedad indica el tribunal y el número de hoja registral. Un autónomo inscrito únicamente en el Registro de Actividades Comerciales no está obligado.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Cliente",
+            "text": "Nombre y dirección y, si es una empresa, su número de identificación, para que quede claro quiénes son las partes.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Número de documento",
+            "text": "Un número único para la factura, idealmente de una serie correlativa.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Qué se ha suministrado y el importe",
+            "text": "Qué ha entregado, en qué cantidad y a qué precio. El importe total a pagar.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Fecha de emisión",
+            "text": "Cuándo se elaboró el documento.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Indicación de que no es sujeto pasivo de IVA",
+            "text": "No es estrictamente obligatoria, pero evita preguntas sobre por qué no hay IVA."
+          }
+        ],
+        "pitfalls": [
+          "No indique un NIF-IVA \"CZ…\" si no es sujeto pasivo ni persona identificada – el cliente podría esperar un documento fiscal.",
+          "La fecha de vencimiento y la cuenta bancaria no son obligatorias por ley, pero sin ellas cobrará más tarde."
+        ]
+      },
+      "vatPayer": {
+        "name": "Sujeto pasivo de IVA",
+        "title": "Plantilla de factura para sujetos pasivos de IVA (documento fiscal checo)",
+        "description": "Plantilla de factura checa con IVA: un documento fiscal con los NIF-IVA, la fecha de devengo y el resumen del IVA. Datos obligatorios según el artículo 29 de la Ley del IVA y un editor online gratuito.",
+        "lead": "La factura de un sujeto pasivo de IVA es un documento fiscal. Además de los datos habituales, debe incluir los NIF-IVA de ambas partes, la fecha de devengo, la base imponible, el tipo y la cuota de IVA.",
+        "docTitle": "Factura fiscal",
+        "number": "2026-0042",
+        "notes": [
+          "Autónomo inscrito en el Registro de Actividades Comerciales."
+        ],
+        "lines": [
+          {
+            "d": "Diseño de logotipo e identidad visual",
+            "q": 1,
+            "u": "ud.",
+            "p": 12000,
+            "r": 21
+          },
+          {
+            "d": "Asesoramiento sobre la impresión de envases",
+            "q": 3,
+            "u": "h",
+            "p": 900,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Es sujeto pasivo de IVA en la República Checa y suministra bienes o servicios en el país, donde usted declara el IVA.",
+          "Emita el documento fiscal en un plazo de 15 días desde la operación imponible o desde la recepción del pago."
+        ],
+        "fields": [
+          {
+            "name": "Proveedor y su NIF-IVA",
+            "text": "Nombre, domicilio social y número de identificación fiscal (DIČ).",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Cliente y su NIF-IVA",
+            "text": "Si el cliente es sujeto pasivo de IVA, también se indica su NIF-IVA.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Número de documento",
+            "text": "Único dentro de una o varias series.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Alcance y objeto de la operación",
+            "text": "Qué ha suministrado y en qué cantidad.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Fecha de emisión y fecha de devengo",
+            "text": "La fecha de devengo es obligatoria cuando difiere de la fecha de emisión – en la práctica, indíquela siempre.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Precio unitario sin IVA y descuento",
+            "text": "Precio unitario sin IVA y cualquier descuento que no esté ya incluido en él.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Base imponible, tipo y cuota de IVA",
+            "text": "Por cada tipo; la cuota de IVA en CZK incluso en una factura en moneda extranjera.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Datos exigidos por el Código Civil",
+            "text": "Domicilio social, número de identificación y, en su caso, inscripción en un registro público.",
+            "rule": "§435/1 OZ"
+          }
+        ],
+        "pitfalls": [
+          "En una factura en EUR, indique también el IVA en CZK junto con el tipo de cambio aplicado.",
+          "La fecha de vencimiento no es un dato obligatorio del documento fiscal, pero sin ella es difícil reclamar la deuda."
+        ]
+      },
+      "proforma": {
+        "name": "Factura proforma",
+        "title": "Plantilla de factura proforma (zálohová faktura checa)",
+        "description": "Plantilla de factura proforma checa: qué debe incluir, por qué no es un documento fiscal y qué documento emitir una vez pagada. Editor online gratuito y PDF.",
+        "lead": "Una factura proforma solicita un pago por adelantado. No es un documento fiscal, por lo que el cliente no puede deducirse el IVA con ella. Una vez pagada, el sujeto pasivo de IVA emite un documento fiscal.",
+        "docTitle": "Factura proforma",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "Esta factura proforma no es un documento fiscal.",
+          "Le enviaremos un documento fiscal por el pago en cuanto se reciba en nuestra cuenta."
+        ],
+        "lines": [
+          {
+            "d": "Anticipo del 50 % por la creación de un sitio web",
+            "q": 1,
+            "u": "ud.",
+            "p": 20000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Quiere cobrar por adelantado antes de empezar el trabajo o enviar la mercancía.",
+          "Una vez pagada, el sujeto pasivo de IVA suele emitir un documento fiscal por el pago y descuenta el anticipo en la factura final. Quien no es sujeto pasivo simplemente lo descuenta en la factura final."
+        ],
+        "fields": [
+          {
+            "name": "Proveedor y cliente",
+            "text": "Nombre, domicilio social y número de identificación; es un documento comercial.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Número de la proforma",
+            "text": "Utilice una serie aparte para no confundirla con los documentos fiscales."
+          },
+          {
+            "name": "Importe del anticipo y fecha de vencimiento",
+            "text": "Cuánto y hasta cuándo, además de la cuenta bancaria."
+          },
+          {
+            "name": "Indicación de que no es un documento fiscal",
+            "text": "Recomendable: informa al cliente de que no puede deducirse el IVA con ella."
+          },
+          {
+            "name": "Documento fiscal tras el pago",
+            "text": "La recepción de un anticipo suele hacer que se devengue el IVA; el sujeto pasivo emite un documento fiscal por él.",
+            "rule": "§28/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "No indique una fecha de devengo en una proforma – solo surge cuando se recibe el pago.",
+          "No olvide descontar el anticipo en la factura final o el cliente pagará dos veces."
+        ]
+      },
+      "creditNote": {
+        "name": "Factura rectificativa",
+        "title": "Plantilla de factura rectificativa (documento fiscal correctivo checo)",
+        "description": "Plantilla de factura rectificativa checa: referencia a la factura original, motivo de la rectificación y diferencia de base y de IVA. Datos obligatorios según el artículo 46 de la Ley del IVA.",
+        "lead": "Cuando reduce el precio después de facturar (descuento, reclamación, devolución de mercancía) o lo aumenta, emite un documento fiscal rectificativo. Corrige la factura original, no la sustituye.",
+        "docTitle": "Factura rectificativa",
+        "number": "OD-2026-0003",
+        "related": "2026-0042",
+        "reason": "Descuento en el precio tras una reclamación sobre el diseño del logotipo",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Descuento – diseño del logotipo",
+            "q": 1,
+            "u": "ud.",
+            "p": -2000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Un descuento concedido después de facturar, una reclamación aceptada, una devolución de mercancía o la anulación de parte de la operación.",
+          "La factura original sigue siendo válida; la factura rectificativa solo recoge la diferencia."
+        ],
+        "fields": [
+          {
+            "name": "Ambas partes y sus NIF-IVA",
+            "text": "Igual que en un documento fiscal ordinario.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Número de la factura rectificativa",
+            "text": "Su propio número dentro de su serie.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Número del documento original",
+            "text": "La factura que está rectificando.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Motivo de la rectificación",
+            "text": "Breve y concreto, p. ej., un descuento tras una reclamación.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Diferencia de base y de IVA",
+            "text": "La diferencia entre la base y el IVA rectificados y los originales, negativa en caso de reducción.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Rectificación de la base imponible",
+            "text": "Cuándo y en qué condiciones se realiza la rectificación.",
+            "rule": "§42/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Quien no es sujeto pasivo de IVA no emite un documento fiscal rectificativo – basta con una nota de abono como documento contable que haga referencia a la factura original.",
+          "No anule ni sobrescriba la factura original; debe permanecer en sus registros."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Inversión del sujeto pasivo",
+        "title": "Plantilla de factura con inversión del sujeto pasivo nacional (República Checa)",
+        "description": "Plantilla de factura checa con inversión del sujeto pasivo nacional (artículo 92a de la Ley del IVA), p. ej., para obras de construcción: la mención \"daň odvede zákazník\", el NIF-IVA del cliente y el importe sin IVA.",
+        "lead": "En las obras de construcción y montaje, los residuos, los metales y otras operaciones del artículo 92a de la Ley checa del IVA, es el cliente quien declara el IVA. El proveedor factura sin IVA y añade \"daň odvede zákazník\" (el impuesto lo liquida el cliente).",
+        "docTitle": "Factura fiscal",
+        "number": "2026-0115",
+        "notes": [
+          "Daň odvede zákazník (inversión del sujeto pasivo).",
+          "Inversión del sujeto pasivo según el artículo 92e de la Ley del IVA (obras de construcción y montaje)."
+        ],
+        "lines": [
+          {
+            "d": "Albañilería – reforma del baño, vivienda 2.04",
+            "q": 1,
+            "u": "ud.",
+            "p": 84000,
+            "r": 21
+          },
+          {
+            "d": "Alicatado de paredes y solado, materiales incluidos",
+            "q": 26,
+            "u": "m²",
+            "p": 1250,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Ambos son sujetos pasivos de IVA en la República Checa y la operación está incluida en el régimen (artículos 92b a 92e y el reglamento del Gobierno).",
+          "Lo más habitual son obras de construcción y montaje (CZ-CPA 41 a 43), entregas de residuos y chatarra o derechos de emisión."
+        ],
+        "fields": [
+          {
+            "name": "La mención \"daň odvede zákazník\"",
+            "text": "Una indicación obligatoria en el documento fiscal cuando el cliente declara el IVA.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "NIF-IVA del proveedor y del cliente",
+            "text": "El régimen solo se aplica entre sujetos pasivos de IVA, por lo que el NIF-IVA del cliente es imprescindible.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Base imponible sin IVA",
+            "text": "No indica la cuota de IVA; el cliente la calcula y la declara. Indicar el tipo le facilita el trabajo.",
+            "rule": "§92a/1 ZDPH"
+          },
+          {
+            "name": "Otros datos del documento fiscal",
+            "text": "Número, fechas, objeto y alcance de la operación, precio unitario.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Declaración de control",
+            "text": "El proveedor declara la operación en la sección A.1 de la declaración de control y el cliente en la sección B.1."
+          }
+        ],
+        "pitfalls": [
+          "Si el cliente no es sujeto pasivo de IVA (p. ej., un particular), el régimen no se aplica y usted repercute el IVA.",
+          "Antes de enviarla, compruebe en el registro de sujetos pasivos de IVA que el cliente realmente lo es."
+        ]
+      },
+      "identified": {
+        "name": "Persona identificada",
+        "title": "Plantilla de factura para persona identificada (servicios a la UE)",
+        "description": "Plantilla de factura checa para una persona identificada que factura a una empresa de otro país de la UE: los NIF-IVA de ambas partes, sin IVA y con la mención \"daň odvede zákazník\". Datos obligatorios y editor online gratuito.",
+        "lead": "Quien no es sujeto pasivo de IVA en la República Checa y presta un servicio a una empresa de otro país de la UE pasa a ser persona identificada. Factura sin IVA checo, indica su NIF-IVA y el del cliente y hace constar que el impuesto lo declara el cliente.",
+        "docTitle": "Factura fiscal",
+        "number": "2026-0021",
+        "notes": [
+          "Daň odvede zákazník (inversión del sujeto pasivo).",
+          "Inversión del sujeto pasivo – artículo 196 de la Directiva 2006/112/CE del Consejo."
+        ],
+        "lines": [
+          {
+            "d": "Diseño web – actualización de la plantilla de la tienda online, octubre de 2026",
+            "q": 1,
+            "u": "ud.",
+            "p": 18000,
+            "r": 0
+          }
+        ],
+        "when": [
+          "No es sujeto pasivo de IVA y presta un servicio (programación, diseño, marketing) a una empresa registrada a efectos del IVA en otro país de la UE.",
+          "Regístrese como persona identificada en un plazo de 15 días desde la prestación; no pasa a ser sujeto pasivo de IVA."
+        ],
+        "fields": [
+          {
+            "name": "NIF-IVA del proveedor",
+            "text": "La persona identificada obtiene un NIF-IVA CZ… y lo indica en la factura.",
+            "rule": "§6i/1 ZDPH"
+          },
+          {
+            "name": "NIF-IVA del cliente de otro país",
+            "text": "Compruébelo en VIES; sin un NIF-IVA válido no hay inversión del sujeto pasivo.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "La mención \"daň odvede zákazník\"",
+            "text": "El cliente declara el IVA en su país; la factura muestra el importe sin IVA.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Fecha de la prestación",
+            "text": "El día en que se prestó el servicio; determina cuándo debe declararlo.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Declaración recapitulativa",
+            "text": "Presente la declaración recapitulativa (souhrnné hlášení) del mes en que prestó el servicio.",
+            "rule": "§102/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Si factura a un particular de la UE, no pasa a ser persona identificada; se trata de una factura ordinaria de no sujeto pasivo.",
+          "Por los servicios que compra a empresas extranjeras (anuncios de Facebook o Google), usted mismo declara el IVA checo – es la otra cara de la misma obligación."
         ]
       }
     },
