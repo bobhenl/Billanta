@@ -5,7 +5,7 @@ import { redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
 import { SettingsHeader } from '@/components/settings-header';
 import { apiFetch, NotSignedInError } from '@/lib/api-client';
-import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { type BankAccount, bankAccountLine, canManage, fetchBankAccounts, fetchMyAccess, fetchMyRole, fetchTenant, taxCountryOf, type TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
 import { formPrefs, loadContact } from '../../invoices/new/load';
 import { RATE_CURRENCIES } from '../../invoices/new/types';
@@ -73,7 +73,7 @@ export default async function InvoiceSettingsPage() {
         bankAccounts={accounts.map((a) => ({ id: a.id, label: a.label, line: bankAccountLine(a) }))}
         vatPayer={tenant.dicVatPayer}
         vatStatus={vatStatusOf(tenant)}
-        home={homeCurrencyOf(tenant.addressCountry)}
+        home={homeCurrencyOf(taxCountryOf(tenant))}
         uniformRates={uniformRates}
         linkCompany={tenant.publicProfile?.slug || tenant.companyName}
         canHideCredit={canHideCredit}

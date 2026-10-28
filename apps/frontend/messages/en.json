@@ -1875,7 +1875,12 @@
       "dicKeepHint": "Keep the tax ID filled in even as a non-payer or identified person. It is printed on your documents.",
       "dataBoxId": "Data box ID",
       "dataBoxIdHint": "Seven characters, e.g. ab12cd3. Not a secret. Prefilled into the yearly overview for ČSSZ.",
-      "icoTrialHint": "Filling in the IČO starts your free {days}-day Plus trial – no card needed, once per IČO."
+      "icoTrialHint": "Filling in the IČO starts your free {days}-day Plus trial – no card needed, once per IČO.",
+      "taxCountry": "Tax country",
+      "taxCountryValue": "{country} · books kept in {currency}",
+      "taxCountryHint": "Sets VAT rates, the currency of your books and exports. The registered address doesn't change it. You can change it in the welcome setup until you issue your first invoice.",
+      "taxCountryLocked": "The tax country can't change after the first issued invoice.",
+      "taxCountryChange": "Change"
     },
     "team": {
       "title": "Team",
@@ -5392,7 +5397,12 @@
       "claim": "Bring into the account",
       "dismiss": "Forget them",
       "bannerHint": "You made them in this browser without an account. We save them as issued documents and the customers as contacts."
-    }
+    },
+    "countryQuestion": "Where is your business registered?",
+    "countryHint": "The country sets VAT rates, the currency of your books and the registers we search. It can't change after your first issued invoice.",
+    "countrySoon": "Coming soon",
+    "countryLocked": "The country is fixed because you have already issued an invoice.",
+    "countryNotSupported": "We don't support this country yet."
   },
   "registry": {
     "label": "Company register",

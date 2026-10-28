@@ -8,7 +8,7 @@ import { Banner } from '@/components/banner';
 import { fetchAuditLog, type AuditPage } from '@/lib/audit';
 import { NetEstimate } from '@/components/net-estimate';
 import { displayCustomField, documentVars } from '@/lib/custom-fields';
-import { fetchCanWrite, fetchTenant, type BuyerDetailsField } from '@/lib/tenant';
+import { fetchCanWrite, fetchTenant, taxCountryOf, type BuyerDetailsField } from '@/lib/tenant';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import {
   buyerDetailsState,
@@ -78,7 +78,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
       fetchAuditLog({ entityType: 'invoice', entityId: params.id, action: 'edited_issued', limit: 1 })
     ]);
     companyVars = (tenant?.templateVars ?? []).map((v) => ({ key: v.key, value: v.value }));
-    homeCountry = tenant?.addressCountry;
+    homeCountry = taxCountryOf(tenant);
     if (tenant?.buyerDetailsRequired) defaultRequired = tenant.buyerDetailsRequired;
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });

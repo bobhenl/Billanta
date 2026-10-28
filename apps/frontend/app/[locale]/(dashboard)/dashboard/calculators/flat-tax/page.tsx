@@ -7,7 +7,7 @@ import { ToolDisclaimer } from '@/components/public-tools/parts';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { isLegalEntityName } from '@/lib/tax-deadlines';
-import { fetchTenant, vatStatusOf, type TenantSettings } from '@/lib/tenant';
+import { fetchTenant, taxCountryOf, vatStatusOf, type TenantSettings } from '@/lib/tenant';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('tools.calculators.items.flatTax.app');
@@ -61,7 +61,7 @@ export default async function InAppFlatTaxPage() {
     : undefined;
   const czk = (n: number) => format.number(Math.round(n), { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 });
   // The paušální režim exists only for Czech sole traders.
-  const notOsvc = tenant != null && (tenant.addressCountry.toUpperCase() === 'SK' || isLegalEntityName(tenant.legalName));
+  const notOsvc = tenant != null && (taxCountryOf(tenant) === 'SK' || isLegalEntityName(tenant.legalName));
 
   return (
     <div>
