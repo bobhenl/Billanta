@@ -34,8 +34,10 @@ export function validateSiret(value: string): boolean {
   const v = normalizeFrDigits(value);
   if (!/^\d{14}$/.test(v)) return false;
   if (v.startsWith(LA_POSTE_SIREN)) {
+    // The head office (35600000000048) passes Luhn; other La Poste
+    // establishments only satisfy the digit-sum-mod-5 rule.
     const sum = [...v].reduce((s, d) => s + Number(d), 0);
-    return sum % 5 === 0;
+    return sum % 5 === 0 || luhnValid(v);
   }
   return validateSiren(v.slice(0, 9)) && luhnValid(v);
 }
