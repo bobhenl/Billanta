@@ -12097,12 +12097,1239 @@
       "no_data": "Die Beträge der Pauschalsteuer für dieses Jahr fehlen."
     },
     "best": {
-      "flat_tax": "Nach dieser Schätzung ist die Pauschalsteuer am günstigsten."
+      "flat_tax": "Nach dieser Schätzung ist die Pauschalsteuer am günstigsten.",
+      "flat_expenses": "Nach dieser Schätzung ist das reguläre Verfahren mit Ausgabenpauschale am günstigsten.",
+      "actual_expenses": "Nach dieser Schätzung ist das reguläre Verfahren mit tatsächlichen Ausgaben am günstigsten."
+    },
+    "inFlatTaxRegime": "Laut Ihren Einstellungen nutzen Sie die Pauschalsteuer. Wenn Sie sie im Laufe des Jahres nicht verlassen und das Limit nicht überschritten haben, reichen Sie in der Regel weder die Steuererklärung noch die Versicherungsübersichten ein.",
+    "flatTaxCalculator": "Vollständiger Vergleich im Pauschalsteuer-Rechner",
+    "deadlinesTitle": "Abgabefristen",
+    "deadline": {
+      "CZ": {
+        "paper": "In Papierform",
+        "electronic": "Elektronisch (Datenbox, Moje daně)",
+        "advisor": "Über einen Steuerberater (Vollmacht bis zur ersten Frist eingereicht)"
+      },
+      "SK": {
+        "paper": "Reguläre Frist",
+        "extended": "Nach Anzeige einer Fristverlängerung"
+      }
+    },
+    "diffTitle": "Tschechien vs. Slowakei – die Unterschiede",
+    "diff": {
+      "cz": "Tschechien",
+      "sk": "Slowakei",
+      "flatLabel": "Ausgabenpauschale",
+      "flatCz": "Je nach Tätigkeit: {caps}.",
+      "flatSk": "Eine einheitliche Pauschale von {rate} %, höchstens {cap} pro Jahr.",
+      "deadlineLabel": "Abgabe der Erklärung",
+      "deadlineCz": "{paper} in Papierform, {electronic} elektronisch, {advisor} über einen Steuerberater.",
+      "deadlineSk": "{paper}; nach Anzeige beim Finanzamt {extended} (bei Auslandseinkünften bis zu 6 Monate).",
+      "insuranceLabel": "Versicherung",
+      "insuranceCz": "Die eigene Versicherung eines Einzelunternehmers ist keine steuerliche Ausgabe (§ 25 ZDP).",
+      "insuranceSk": "Die gezahlte Versicherung wird von der Steuerbemessungsgrundlage abgezogen, auch zusätzlich zur Pauschale.",
+      "flatTaxLabel": "Pauschalsteuer",
+      "flatTaxCz": "Ja, für Nicht-USt.-Zahler mit Einkünften bis 2 Mio. CZK.",
+      "flatTaxSk": "Nein. Bei niedrigeren Einkünften gilt ein ermäßigter Einkommensteuersatz von 15 %.",
+      "formLabel": "Was Sie einreichen",
+      "formCz": "Die Einkommensteuererklärung für natürliche Personen, danach innerhalb eines Monats die Übersichten für die Sozialversicherung ČSSZ und die Krankenversicherung.",
+      "formSk": "Steuererklärung Typ B; die Sozialversicherungsanstalt übernimmt die Einkünfte vom Finanzamt."
+    },
+    "notesTitle": "Hinweise",
+    "noteInsurance": "Die Vorauszahlungen eines Einzelunternehmers zur Sozial- und Krankenversicherung sind keine steuerliche Ausgabe (§ 25 Abs. 1 Buchst. h ZDP) und daher nicht in den Ausgaben enthalten.",
+    "noteInsuranceSk": "Die gezahlte Sozial- und Krankenversicherung wird sowohl neben der Pauschale als auch neben tatsächlichen Ausgaben von der Steuerbemessungsgrundlage abgezogen (§ 6 Abs. 10 und 11 ZDP).",
+    "noteEstimate": "Die Schätzung berücksichtigt nur den Grundfreibetrag des Steuerpflichtigen, ohne weitere Ermäßigungen, Abzüge oder sonstige Einkünfte (Arbeitsverhältnis, Vermietung).",
+    "noteEstimateSk": "Die Schätzung berücksichtigt nur den persönlichen Grundfreibetrag, ohne weitere Abzüge, den Kinderbonus oder sonstige Einkünfte.",
+    "noteData": "Die Zahlen stammen ausschließlich aus den Belegen in der App. Einnahmen und Ausgaben, die hier fehlen (Bargeld ohne Beleg, andere Tätigkeiten), ergänzen Sie bitte selbst.",
+    "disclaimer": "Diese Übersicht dient nur der Information, erfolgt ohne Gewähr und ersetzt keinen Steuerberater oder Buchhalter. Für die Angaben in Ihrer Erklärung sind Sie selbst verantwortlich.",
+    "nudge": {
+      "title": "Steuererklärung für {year}",
+      "body": "Ihre Einnahmen {year}, Ausgaben nach Kategorien, Pauschalen und Fristen stehen aus Ihren Belegen bereit. PDF und CSV für Ihre Buchhaltung, kostenlos.",
+      "cta": "Übersicht öffnen",
+      "dismiss": "Ausblenden"
+    },
+    "landing": {
+      "seoTitle": "Kostenlose Übersicht zur Steuererklärung {year} für Selbstständige in Tschechien und der Slowakei",
+      "eyebrow": "Einkommensteuererklärung",
+      "title": "Übersicht zur Steuererklärung {year}",
+      "lead": "Billanta summiert die Einnahmen aus bezahlten Rechnungen und die Ausgaben nach Kategorien, vergleicht sie mit der Ausgabenpauschale und zeigt die Abgabefristen. Für Tschechien und die Slowakei, als PDF und CSV.",
+      "cta": "Kostenlos starten",
+      "demo": "Demo ausprobieren",
+      "free": "Die Übersicht ist in jedem Tarif enthalten, auch im kostenlosen.",
+      "featuresTitle": "Was die Übersicht enthält",
+      "features": {
+        "income": {
+          "title": "Einnahmen aus bezahlten Rechnungen",
+          "body": "Für das ganze Jahr nach Zahlungsdatum, Gutschriften abgezogen, Fremdwährungen zum Kurs des Belegs umgerechnet."
+        },
+        "categories": {
+          "title": "Ausgaben nach Kategorien",
+          "body": "Material, Dienstleistungen, Software, Reisen und mehr – inklusive nicht kategorisierter Ausgaben."
+        },
+        "flat": {
+          "title": "Pauschale oder tatsächliche Ausgaben",
+          "body": "Jeder Pauschalsatz mit seiner jährlichen Obergrenze, neben Ihren tatsächlichen Ausgaben."
+        },
+        "flatTax": {
+          "title": "Pauschalsteuer",
+          "body": "Für tschechische Einzelunternehmer ein Vergleich mit der Pauschalsteuer und eine grobe Schätzung von Steuer und Versicherung."
+        },
+        "deadlines": {
+          "title": "Abgabefristen",
+          "body": "In Papierform, elektronisch und über einen Berater, bei Wochenenden und Feiertagen entsprechend verschoben."
+        },
+        "export": {
+          "title": "PDF und CSV für Ihre Buchhaltung",
+          "body": "Mit einem Klick, klar gekennzeichnet als Grundlage für die Erklärung, nicht als Steuerberatung."
+        }
+      },
+      "country": {
+        "CZ": {
+          "title": "Tschechien – Erklärung für {year}",
+          "deadline": {
+            "paper": "In Papierform",
+            "electronic": "Elektronisch",
+            "advisor": "Über einen Steuerberater"
+          },
+          "flat": "Ausgabenpauschale: {caps}.",
+          "extra": "Pauschalsteuer für Nicht-USt.-Zahler mit Einkünften bis 2 Mio. CZK; Versicherungsübersichten für die Sozialversicherung ČSSZ und die Krankenversicherung innerhalb eines Monats nach der Erklärung."
+        },
+        "SK": {
+          "title": "Slowakei – Erklärung für {year}",
+          "deadline": {
+            "paper": "Reguläre Frist",
+            "extended": "Nach Anzeige einer Fristverlängerung"
+          },
+          "flat": "Ausgabenpauschale von {rate} % der Einnahmen, höchstens {cap} pro Jahr.",
+          "extra": "Die gezahlte Versicherung wird zusätzlich zur Pauschale abgezogen; eine Pauschalsteuer gibt es in der Slowakei nicht."
+        }
+      },
+      "calculatorsTitle": "Steuerrechner",
+      "calculatorsLead": "Ohne Registrierung: Steuer und Versicherung für tschechische und slowakische Einzelunternehmer, Vergleich mit der Pauschalsteuer und Mindestvorauszahlungen.",
+      "ctaTitle": "Eine Übersicht aus Ihren eigenen Rechnungen",
+      "ctaBody": "Wenn Sie mit Billanta fakturieren, liegt die Grundlage für Ihre Erklärung bereit, ohne etwas abzutippen. Ergänzen Sie nur, was nicht in der App ist.",
+      "faqTitle": "Häufige Fragen",
+      "faq": [
+        {
+          "q": "Ist das eine Steuerberatung?",
+          "a": "Nein. Es summiert Ihre eigenen Belege mit einer groben Berechnung zu den gesetzlichen Sätzen. Prüfen Sie die Zahlen vor der Abgabe, bei Bedarf mit einer Buchhaltung oder einem Steuerberater."
+        },
+        {
+          "q": "Wann ist die Ausgabenpauschale besser als tatsächliche Ausgaben?",
+          "a": "Wenn Ihre tatsächlichen Ausgaben niedriger sind als der Anteil der Einnahmen, den Ihre Tätigkeit erlaubt. Die Übersicht zeigt beide Zahlen nebeneinander, mit der jährlichen Obergrenze."
+        },
+        {
+          "q": "Ist das kostenlos?",
+          "a": "Ja, in jedem Tarif einschließlich des kostenlosen, für tschechische wie slowakische Einzelunternehmer."
+        },
+        {
+          "q": "Was, wenn ich in einer anderen Währung fakturiere?",
+          "a": "Rechnungen in Fremdwährung werden zum beim Beleg gespeicherten Kurs umgerechnet. Belege ohne Kurs werden separat aufgeführt, damit nichts verloren geht."
+        }
+      ],
+      "disclaimer": "Sätze, Obergrenzen und Fristen richten sich nach den tschechischen und slowakischen Einkommensteuergesetzen und Abgabenordnungen für das jeweilige Jahr. Die Angaben sind unverbindlich und ersetzen keinen Steuerberater."
+    }
+  },
+  "newsletter": {
+    "signup": {
+      "title": "Neuigkeiten zu Steuer- und Rechnungsänderungen",
+      "body": "Ab und zu eine kurze E-Mail, wenn sich Sätze, Limits, Fristen oder die slowakische E-Rechnung ändern. Kein Spam.",
+      "email": "E-Mail",
+      "emailPlaceholder": "sie@beispiel.de",
+      "country": "Land",
+      "countries": {
+        "CZ": "Tschechien",
+        "SK": "Slowakei"
+      },
+      "topicsLabel": "Was Sie interessiert",
+      "topics": {
+        "tax_rates": "Steuer- und USt.-Sätze",
+        "limits": "Limits (USt., Pauschalsteuer, Bargeld)",
+        "deadlines": "Steuerfristen",
+        "sk_einvoicing": "Slowakische E-Rechnung 2027"
+      },
+      "consent": "Ich bin damit einverstanden, an diese Adresse E-Mail-Neuigkeiten von Billanta über Änderungen bei Steuern, Limits, Fristen und E-Rechnungen zu erhalten. Ich kann diese Einwilligung jederzeit über den Link in jeder E-Mail widerrufen.",
+      "privacy": "Die Verarbeitung ist in der <link>Datenschutzerklärung</link> beschrieben. Das Abonnement beginnt erst, wenn Sie es per E-Mail bestätigen.",
+      "submit": "Abonnieren",
+      "sentTitle": "Prüfen Sie Ihr Postfach",
+      "sentBody": "Wir haben Ihnen einen Link zur Bestätigung des Abonnements geschickt. Bis zur Bestätigung senden wir nichts.",
+      "errors": {
+        "invalid_email": "Geben Sie eine gültige E-Mail-Adresse ein.",
+        "no_topics": "Wählen Sie mindestens ein Thema.",
+        "consent_required": "Für das Abonnement ist Ihre Einwilligung nötig.",
+        "rate_limited": "Zu viele Versuche. Bitte versuchen Sie es später erneut.",
+        "failed": "Das Abonnieren ist fehlgeschlagen. Bitte versuchen Sie es erneut."
+      }
+    },
+    "confirm": {
+      "metaTitle": "Abonnement bestätigen",
+      "title": "Abonnement bestätigen",
+      "intro": "Bestätigen Sie, dass {email} Neuigkeiten von Billanta erhalten soll zu:",
+      "button": "Abonnement bestätigen",
+      "doneTitle": "Abonnement bestätigt",
+      "doneBody": "Danke! Wir melden uns, wenn sich etwas ändert. Abmelden können Sie sich mit einem Klick in jeder E-Mail.",
+      "backHome": "Zurück zu Billanta",
+      "errors": {
+        "invalid_confirm_link": "Der Link ist ungültig oder wurde bereits zum Abmelden verwendet. Bitte abonnieren Sie erneut.",
+        "confirm_link_expired": "Der Link ist abgelaufen. Abonnieren Sie erneut, dann senden wir Ihnen einen neuen.",
+        "rate_limited": "Zu viele Versuche. Bitte versuchen Sie es später erneut.",
+        "unavailable": "Die Bestätigung ist fehlgeschlagen. Bitte versuchen Sie es gleich noch einmal."
+      }
+    },
+    "settings": {
+      "title": "Neuigkeiten von Billanta",
+      "hint": "Eine kurze E-Mail, wenn sich Sätze, Limits, Steuerfristen oder die slowakische E-Rechnung ändern. Es handelt sich um eine kommerzielle Kommunikation, daher senden wir sie nur mit Ihrer Einwilligung.",
+      "toggle": "Neuigkeiten zu Änderungen senden",
+      "consent": "Ich bin damit einverstanden, an die E-Mail-Adresse meines Kontos E-Mail-Neuigkeiten von Billanta über Änderungen bei Steuern, Limits, Fristen und E-Rechnungen zu erhalten (aktiviert in den Einstellungen). Ich kann diese Einwilligung jederzeit widerrufen.",
+      "pending": "Wir haben Ihnen eine Bestätigungs-E-Mail geschickt. Das Abonnement beginnt, sobald Sie auf den Link darin klicken.",
+      "country": "Land",
+      "topics": "Themen",
+      "saved": "Gespeichert",
+      "errors": {
+        "consent_required": "Für das Abonnement ist Ihre Einwilligung nötig.",
+        "user_not_found": "Konto nicht gefunden.",
+        "failed": "Speichern fehlgeschlagen."
+      }
+    }
+  },
+  "adminNewsletter": {
+    "title": "Newsletter",
+    "description": "Neuigkeiten für Abonnenten mit bestätigter Einwilligung. Eine Ausgabe wird in Stapeln über die E-Mail-Warteschlange versendet, immer mit Abmeldelink.",
+    "loadError": "Der Newsletter konnte nicht geladen werden.",
+    "stats": "Abonnenten",
+    "statuses": {
+      "pending": "Wartet auf Bestätigung",
+      "confirmed": "Bestätigt",
+      "unsubscribed": "Abgemeldet"
+    },
+    "topicCounts": "Nach Thema (bestätigt)",
+    "newIssue": "Neue Ausgabe",
+    "draftFromBlog": "Entwurf aus Blog und Fristen",
+    "locale": "Sprache",
+    "country": "Land",
+    "allCountries": "Tschechien und Slowakei",
+    "topics": "Themen (wer sie erhält)",
+    "subject": "Betreff",
+    "body": "Text (Markdown: ## Überschrift, - Aufzählung, **fett**, [Link](https://…))",
+    "save": "Entwurf speichern",
+    "delete": "Löschen",
+    "deleteConfirm": "Diesen Entwurf löschen?",
+    "preview": "Vorschau",
+    "send": "Senden",
+    "sendConfirm": "Diese Ausgabe an {count} Abonnenten senden? Das kann nicht rückgängig gemacht werden.",
+    "audience": "Empfänger: {count}",
+    "queued": "In der Warteschlange: {count}",
+    "issues": "Ausgaben",
+    "noIssues": "Noch keine Ausgaben.",
+    "issueStatuses": {
+      "draft": "Entwurf",
+      "sending": "Wird gesendet",
+      "sent": "Gesendet"
+    },
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "saved": "Gespeichert",
+    "sendStarted": "Versand gestartet",
+    "errors": {
+      "issue_not_editable": "Eine gesendete Ausgabe kann nicht bearbeitet werden.",
+      "issue_already_sent": "Die Ausgabe wurde bereits gesendet.",
+      "issue_not_found": "Ausgabe nicht gefunden.",
+      "unsubscribe_unavailable": "Der Signaturschlüssel für Abmeldelinks fehlt.",
+      "failed": "Die Aktion ist fehlgeschlagen."
+    }
+  },
+  "embeds": {
+    "qr": {
+      "title": "QR-Zahlung",
+      "alt": "QR-Code für die Zahlung",
+      "scan": "Scannen Sie ihn in Ihrer Banking-App.",
+      "account": "Konto",
+      "vs": "Variables Symbol",
+      "message": "Nachricht",
+      "invalid": "Die Kontonummer in diesem Link ist ungültig."
+    },
+    "vat": {
+      "frameTitle": "USt.-Rechner"
+    },
+    "builder": {
+      "tabs": {
+        "badge": "Badge",
+        "qr": "QR-Zahlung",
+        "pay": "Bezahl-Button",
+        "vat": "USt.-Rechner"
+      },
+      "lang": "Sprache",
+      "langs": {
+        "cs": "Tschechisch",
+        "sk": "Slowakisch",
+        "en": "Englisch"
+      },
+      "theme": "Stil",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "kind": "Badge",
+      "format": "Format",
+      "image": "Bild",
+      "html": "Reines HTML",
+      "account": "Kontonummer oder IBAN",
+      "name": "Zahlungsempfänger",
+      "nameHint": "Slowakische Banken (PAY by square) verlangen ihn.",
+      "amount": "Betrag (optional)",
+      "currency": "Währung",
+      "vs": "Variables Symbol",
+      "message": "Nachricht an den Empfänger",
+      "invoice": "Öffentlicher Rechnungslink",
+      "invoiceHint": "Kopieren Sie ihn aus dem Rechnungsdetail (Link teilen).",
+      "invalidAccount": "Die Kontonummer oder IBAN ist ungültig.",
+      "needAccount": "Geben Sie eine Kontonummer ein, um Vorschau und Code zu sehen.",
+      "invalidInvoice": "Das ist kein öffentlicher Rechnungslink.",
+      "needInvoice": "Fügen Sie einen öffentlichen Rechnungslink ein, um Button und Code zu sehen.",
+      "preview": "Vorschau",
+      "code": "Code für Ihre Website",
+      "copy": "Code kopieren",
+      "copied": "Kopiert",
+      "copyFailed": "Der Code konnte nicht kopiert werden.",
+      "keepLink": "Bitte lassen Sie den Link unter dem Widget stehen – nur so bleibt das Widget kostenlos."
+    },
+    "sections": {
+      "settings": {
+        "title": "Badges und Widgets für Ihre Website",
+        "description": "Binden Sie ein Badge, eine QR-Zahlung oder einen Rechner auf Ihrer Website ein. Die Links enthalten Ihren Code, Registrierungen darüber werden Ihnen angerechnet."
+      },
+      "partners": {
+        "title": "Ein Badge für Ihre Website",
+        "description": "Zeigen Sie Besuchern, dass Sie mit uns zusammenarbeiten. Kopieren Sie einfach den Code in Ihre Website."
+      },
+      "accountants": {
+        "title": "Badge „Billanta Partner“",
+        "description": "Zeigen Sie Ihren Mandanten, dass Sie die App kennen. Platzieren Sie den Code im Footer Ihrer Website oder auf der Seite mit Ihren Leistungen."
+      },
+      "calculator": {
+        "title": "Den Rechner auf Ihrer Website einbinden",
+        "description": "Sie schreiben über Steuern oder Unternehmertum? Binden Sie den USt.-Rechner mit einem Snippet in einen Artikel ein – kostenlos, ohne Werbung und ohne Tracking."
+      }
+    },
+    "snippet": {
+      "cs": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR plateb – {name}",
+        "payButton": "Zaplatit fakturu",
+        "payLink": "Online platby faktur – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "sk": {
+        "customer": "Fakturujeme s Billantou",
+        "partner": "Partner Billanty",
+        "qrTitle": "QR platba",
+        "qrLink": "Generátor QR platieb – {name}",
+        "payButton": "Zaplatiť faktúru",
+        "payLink": "Online platby faktúr – {name}",
+        "vatTitle": "Kalkulačka DPH",
+        "vatLink": "Kalkulačka DPH – {name}"
+      },
+      "en": {
+        "customer": "We invoice with Billanta",
+        "partner": "Billanta Partner",
+        "qrTitle": "QR payment",
+        "qrLink": "QR payment generator – {name}",
+        "payButton": "Pay invoice",
+        "payLink": "Online invoice payments – {name}",
+        "vatTitle": "VAT calculator",
+        "vatLink": "VAT calculator – {name}"
+      }
+    }
+  },
+  "switchBanner": {
+    "title": "Sie wechseln von einer anderen App? Importieren Sie Ihre Daten in wenigen Minuten",
+    "text": "Übernehmen Sie Kontakte, ausgestellte Rechnungen und Ihren Nummernkreis aus einem Export von Fakturoid, iDoklad, SuperFaktura oder einer anderen App.",
+    "cta": "Daten importieren",
+    "dismiss": "Ausblenden"
+  },
+  "switchPage": {
+    "seoTitle": "Von einer anderen Rechnungs-App zu Billanta wechseln",
+    "navTitle": "Zu Billanta wechseln",
+    "title": "Wechseln Sie zu Billanta und nehmen Sie Ihre Daten mit",
+    "lead": "Übernehmen Sie Kontakte, ausgestellte Rechnungen und Ihren Nummernkreis aus dem Export Ihrer bisherigen App. Der Import erkennt, woher die Datei stammt, und zeigt eine Vorschau, bevor etwas gespeichert wird.",
+    "pickTitle": "Woher kommen Sie?",
+    "cardCta": "Anleitung zum Wechsel",
+    "otherTitle": "Andere App oder Excel",
+    "otherText": "Der Import liest auch Ihre eigene Tabelle. Spalten, die er nicht erkennt, ordnen Sie in der Vorschau zu.",
+    "howTitle": "So funktioniert der Wechsel",
+    "how": [
+      "Laden Sie aus Ihrer alten App einen Export der Rechnungen und Kontakte als CSV oder Excel herunter.",
+      "Laden Sie die Datei in Billanta hoch. Wir erkennen, aus welcher App sie stammt, und ordnen die Spalten zu.",
+      "Prüfen Sie Rechnungen, Kunden und Nummerierung in der Vorschau. Gespeichert wird erst nach Ihrer Bestätigung."
+    ],
+    "exportTitle": "So bekommen Sie Ihre Daten heraus",
+    "transfersTitle": "Was übernommen wird",
+    "transfers": [
+      "Kunden mit IČO (Firmennummer), DIČ (Steuernummer) und Adresse. Kunden, die Sie bereits in Billanta haben, werden zugeordnet, nicht doppelt angelegt.",
+      "Ausgestellte Rechnungen mit Datum, Beträgen, Währung und Zahlungsstatus. Nichts wird erneut versendet und keine Mahnungen gehen raus.",
+      "Ihr Nummernkreis: Die nächste Rechnung folgt auf die zuletzt importierte, und auf Wunsch übernehmen wir auch das Nummernformat.",
+      "Rechnungspositionen, wenn der Export sie enthält; sonst eine Position über den Gesamtbetrag."
+    ],
+    "note": "Wir beschreiben die Schritte allgemein; die Namen der Schaltflächen können je nach Version der App abweichen.",
+    "ctaTitle": "Erstellen Sie ein kostenloses Konto und laden Sie Ihren Export hoch",
+    "ctaLead": "Nach der Registrierung führen wir Sie direkt zum Import. In Ihrer alten App ändert sich nichts.",
+    "ctaButton": "Konto erstellen und importieren",
+    "haveAccount": "Sie haben bereits ein Konto? Import öffnen",
+    "compareLink": "Billanta im Vergleich mit {brand}",
+    "othersTitle": "Wechsel von anderen Apps",
+    "faqTitle": "Häufige Fragen",
+    "faq": [
+      {
+        "q": "Verliere ich etwas in meiner alten App?",
+        "a": "Nein. Der Import liest nur die Datei, die Sie herunterladen. In der alten App ändert sich nichts, und Sie können sie weiter nutzen, bis Sie sicher sind."
+      },
+      {
+        "q": "Was, wenn der Import einige Spalten nicht erkennt?",
+        "a": "In der Vorschau wählen Sie, was jede Spalte enthält, und prüfen die Datei erneut. Ohne Ihre Bestätigung wird nichts gespeichert."
+      },
+      {
+        "q": "Wird die Rechnungsnummerierung fortgesetzt?",
+        "a": "Ja. Die nächste Rechnung erhält die Nummer nach der höchsten importierten. Hat Ihre alte App ein anderes Nummernformat verwendet, bietet die Vorschau an, es zu übernehmen."
+      },
+      {
+        "q": "Muss ich eine Excel-Datei in CSV umwandeln?",
+        "a": "Nein, laden Sie die .xlsx-Datei direkt hoch. Nur das alte .xls-Format muss in Excel erneut als .xlsx gespeichert werden."
+      }
+    ],
+    "brands": {
+      "fakturoid": {
+        "title": "Wechsel von Fakturoid zu Billanta",
+        "lead": "Es gibt zwei Wege weg von Fakturoid: eine direkte API-Verbindung oder einen CSV-Export. Beide enden in einer Vorschau, in der Sie alles prüfen.",
+        "steps": [
+          "In den Einstellungen Ihres Fakturoid-Benutzerkontos erhalten Sie den API-v3-Zugang (Client ID und Client secret).",
+          "Geben Sie ihn im Billanta-Import ein, und wir laden Rechnungen, Proformarechnungen, Gutschriften und das Adressbuch auf einmal.",
+          "Ohne API exportieren Sie die Rechnungs- und Kontaktlisten als CSV; laden Sie zuerst die Kontakte hoch."
+        ],
+        "extra": "Mit der API-Verbindung übernehmen wir auch Proformarechnungen, Gutschriften, Zahlungen und die Original-PDFs.",
+        "seoTitle": "Wechsel von Fakturoid zu Billanta – Anleitung für Export und Import"
+      },
+      "idoklad": {
+        "title": "Wechsel von iDoklad zu Billanta",
+        "lead": "Exportieren Sie aus iDoklad die Liste der ausgestellten Rechnungen und Ihre Kontakte. Die Excel-Datei laden Sie direkt hoch, ohne Umwandlung.",
+        "steps": [
+          "Markieren Sie in der Liste der ausgestellten Rechnungen die Belege, die Sie übernehmen möchten.",
+          "Nutzen Sie den Export nach Excel oder CSV.",
+          "Exportieren Sie die Kontakte auf dieselbe Weise und laden Sie sie zuerst in Billanta hoch."
+        ],
+        "extra": "Den USt.-Satz ermitteln wir aus den Beträgen, auch wenn der Export keine eigene Spalte dafür hat.",
+        "seoTitle": "Wechsel von iDoklad zu Billanta – Anleitung für Export und Import"
+      },
+      "superfaktura": {
+        "title": "Wechsel von SuperFaktura zu Billanta",
+        "lead": "Laden Sie aus SuperFaktura die Rechnungsübersicht und das Kundenverzeichnis herunter. Der Import liest tschechische wie slowakische Exporte, auch Rechnungen in Euro.",
+        "steps": [
+          "Filtern Sie in der Rechnungsübersicht den Zeitraum, den Sie übernehmen möchten.",
+          "Laden Sie die Liste als Excel oder CSV herunter.",
+          "Exportieren Sie die Kunden auf dieselbe Weise und laden Sie sie zuerst in Billanta hoch."
+        ],
+        "extra": "Eine slowakische USt-IdNr. (IČ DPH) bleibt beim Kunden erhalten, getrennt von der Steuernummer (DIČ).",
+        "seoTitle": "Wechsel von SuperFaktura zu Billanta – Anleitung für Export und Import"
+      },
+      "vyfakturuj": {
+        "title": "Wechsel von Vyfakturuj zu Billanta",
+        "lead": "Aus Vyfakturuj übernehmen Sie ausgestellte Rechnungen einschließlich ihrer Positionen. Ein Export der Belege und Kontakte genügt.",
+        "steps": [
+          "Filtern Sie in der Belegliste die ausgestellten Rechnungen für den gewünschten Zeitraum.",
+          "Laden Sie sie als CSV oder Excel herunter, idealerweise mit Positionen.",
+          "Exportieren Sie die Kontakte separat und laden Sie sie zuerst in Billanta hoch."
+        ],
+        "extra": "Ein Export mit Positionen wird Position für Position übernommen, mit Menge, Preis und USt.-Satz.",
+        "seoTitle": "Wechsel von Vyfakturuj zu Billanta – Anleitung für Export und Import"
+      },
+      "kros": {
+        "title": "Wechsel von KROS Fakturácia zu Billanta",
+        "lead": "Exportieren Sie aus KROS Fakturácia ausgestellte Rechnungen und Partner nach Excel. Der Import liest slowakische Spaltennamen und Rechnungen in Euro.",
+        "steps": [
+          "Markieren Sie in der Liste der ausgestellten Rechnungen die Belege, die Sie übernehmen möchten.",
+          "Exportieren Sie die Liste nach Excel oder CSV.",
+          "Exportieren Sie die Partner auf dieselbe Weise und laden Sie sie zuerst in Billanta hoch."
+        ],
+        "extra": "Die slowakische USt-IdNr. (IČ DPH) bleibt getrennt von der Steuernummer (DIČ), und den USt.-Satz ermitteln wir aus den Beträgen.",
+        "seoTitle": "Wechsel von KROS Fakturácia zu Billanta – Anleitung für Export und Import"
+      },
+      "billdu": {
+        "title": "Wechsel von Billdu zu Billanta",
+        "lead": "Laden Sie aus Billdu den Belegexport in der Web-App herunter. Der Import versteht auch englische Spaltennamen.",
+        "steps": [
+          "Öffnen Sie in der Billdu-Web-App die Rechnungsliste und suchen Sie den Belegexport.",
+          "Wählen Sie CSV oder Excel und den Zeitraum, den Sie übernehmen möchten.",
+          "Exportieren Sie die Kunden separat und laden Sie sie zuerst in Billanta hoch."
+        ],
+        "extra": "Zahlungsstatus und Datumsangaben im Format YYYY-MM-DD werden automatisch umgewandelt.",
+        "seoTitle": "Wechsel von Billdu zu Billanta – Anleitung für Export und Import"
+      },
+      "bitfaktura": {
+        "title": "Wechsel von BitFaktura zu Billanta",
+        "lead": "BitFaktura können Sie mit einem API-Code oder mit einem CSV-Export der Rechnungen verlassen. Ein Nummernkreis wie 1/09/2025 wird fortgesetzt.",
+        "steps": [
+          "Unter den Integrationen in den Einstellungen Ihres BitFaktura-Kontos finden Sie einen API-Autorisierungscode.",
+          "Geben Sie ihn zusammen mit Ihrem Kontonamen im Billanta-Import ein, und wir laden Rechnungen und das gesamte Adressbuch.",
+          "Ohne Code exportieren Sie die Rechnungen als CSV und laden die Datei im Import hoch."
+        ],
+        "extra": "Mit dem API-Code laden wir auch Kontakte, denen Sie noch keine Rechnung gestellt haben, Wechselkurse und Zahlungsarten.",
+        "seoTitle": "Wechsel von BitFaktura zu Billanta – Anleitung für Export und Import"
+      }
+    }
+  },
+  "glossaryPages": {
+    "breadcrumb": "Glossar",
+    "indexTitle": "Glossar: Rechnungsstellung und USt. in Tschechien und der Slowakei",
+    "indexLead": "Kurze Erklärungen der Begriffe, denen Sie bei Rechnungsstellung und USt. in Tschechien und der Slowakei begegnen. Jeder Begriff mit Definition, Beispiel und Link zum Gesetz.",
+    "indexDescription": "Was DUZP, Reverse Charge, die Kontrollmeldung oder eine Proformarechnung in Tschechien und der Slowakei bedeuten. Kurz, mit Beispiel und Link zum Gesetz.",
+    "groupBoth": "Beide Länder",
+    "groupCz": "Tschechische Begriffe",
+    "groupSk": "Slowakische Begriffe",
+    "metaTitle": "{term} – Bedeutung",
+    "definition": "Definition",
+    "explanation": "Erklärung",
+    "example": "Beispiel",
+    "law": "Gesetz",
+    "related": "Verwandte Begriffe",
+    "allTerms": "Alle Begriffe",
+    "disclaimer": "Eine kurze Erklärung, keine Steuerberatung. Maßgeblich ist der Wortlaut des verlinkten Gesetzes.",
+    "lawRef": "§ {p}",
+    "lawRefOdst": "§ {p} Abs. {o}",
+    "laws": {
+      "ZDPH": "Tschechisches Umsatzsteuergesetz (Gesetz Nr. 235/2004 Slg.)",
+      "OZ": "Tschechisches Bürgerliches Gesetzbuch (Gesetz Nr. 89/2012 Slg.)",
+      "ZDP": "Tschechisches Einkommensteuergesetz (Gesetz Nr. 586/1992 Slg.)",
+      "DR": "Tschechische Abgabenordnung (Gesetz Nr. 280/2009 Slg.)",
+      "ZoDPH": "Slowakisches Umsatzsteuergesetz (Gesetz Nr. 222/2004 Slg.)",
+      "ZoDP": "Slowakisches Einkommensteuergesetz (Gesetz Nr. 595/2003 Slg.)",
+      "ObZ": "Slowakisches Handelsgesetzbuch (Gesetz Nr. 513/1991 Slg.)"
+    },
+    "otherTitle": "Dieser Begriff gehört zum anderen Land",
+    "otherText": "Die Seite „{term}“ erklärt die Regeln eines Landes.",
+    "otherOriginal": "Original lesen",
+    "otherEnglish": "Auf Englisch lesen",
+    "otherCounterpart": "Der entsprechende Begriff ist {term}",
+    "marketCz": "Tschechien",
+    "marketSk": "Slowakei",
+    "onlyCz": "Ein Begriff des tschechischen Rechts. Die Hauptversion dieser Seite ist auf Tschechisch.",
+    "onlySk": "Ein Begriff des slowakischen Rechts. Die Hauptversion dieser Seite ist auf Slowakisch.",
+    "readOriginal": "Original lesen",
+    "tools": {
+      "heading": "Tools und Ratgeber",
+      "createInvoice": "Rechnung ohne Registrierung erstellen"
+    }
+  },
+  "businessDirectory": {
+    "title": "Firmenverzeichnis",
+    "seoTitle": "Verzeichnis von Einzelunternehmern und Firmen nach Branche und Ort",
+    "metaDescription": "Einzelunternehmer und Firmen, die mit {site} fakturieren. Stöbern Sie nach Branche und Ort und kontaktieren Sie sie direkt über ihr öffentliches Profil.",
+    "lead": "Einzelunternehmer und Firmen, die mit {site} fakturieren und sich für einen Eintrag entschieden haben. Stöbern Sie nach Branche oder Ort.",
+    "byTrade": "Nach Branche",
+    "byTown": "Nach Ort",
+    "latest": "Eingetragen",
+    "emptyAll": "Das Verzeichnis steht noch am Anfang. Seien Sie unter den Ersten, die eingetragen sind.",
+    "emptyTrade": "In dieser Branche ist noch niemand eingetragen. Sie fakturieren mit Billanta? Aktivieren Sie Ihren Verzeichniseintrag.",
+    "emptyTown": "Aus {name} ist noch niemand eingetragen.",
+    "count": "{n, plural, one {# Firma} other {# Firmen}}",
+    "tradeSeoTitle": "{trade} – Firmenverzeichnis",
+    "tradeTowns": "{trade} nach Ort",
+    "otherTrades": "Weitere Branchen",
+    "townSeoTitle": "{name}: Einzelunternehmer und Firmen",
+    "townMetaDescription": "Einzelunternehmer und Firmen aus {name}, die mit {site} fakturieren. Ihre Leistungen und Kontakte an einem Ort.",
+    "townTitle": "{name}: Einzelunternehmer und Firmen, die mit Billanta fakturieren",
+    "townIntro": "Firmen und Einzelunternehmer aus {name} (Bezirk {district}, {region}), die mit {site} fakturieren und im Verzeichnis eingetragen sind. Jedes Profil wurde von der Firma selbst veröffentlicht.",
+    "townTrades": "Branchen in diesem Ort",
+    "townInvoicing": "Rechnungsstellung in {name}: lokale Informationen",
+    "townSection": "Einzelunternehmer und Firmen aus {name}, die mit {site} fakturieren",
+    "townSectionAll": "{n, plural, one {# Firma im Verzeichnis ansehen} other {Alle # Firmen im Verzeichnis ansehen}}",
+    "howTitle": "So kommen Sie ins Verzeichnis",
+    "howBody": "Das Verzeichnis zeigt nur Firmen, die in Billanta ein Profil veröffentlicht und den Verzeichniseintrag selbst aktiviert haben. Niemand wird ohne Einwilligung aufgenommen, und der Eintrag lässt sich jederzeit deaktivieren.",
+    "joinTitle": "Möchten Sie auch hier stehen?",
+    "joinBody": "Registrieren Sie sich kostenlos bei Billanta, veröffentlichen Sie Ihr Firmenprofil und aktivieren Sie den Verzeichniseintrag unter Einstellungen → Öffentliches Profil.",
+    "joinCta": "Kostenlos starten",
+    "profileListed": "Im Firmenverzeichnis:",
+    "trades": {
+      "tradesman": "Handwerker",
+      "construction": "Bau",
+      "it": "IT und Software",
+      "design": "Design und Grafik",
+      "marketing": "Marketing und Werbung",
+      "photo": "Foto und Video",
+      "consulting": "Beratung",
+      "education": "Bildung und Kurse",
+      "beauty": "Kosmetik und Friseur",
+      "health": "Gesundheit und Therapie",
+      "transport": "Transport und Umzüge",
+      "gastro": "Gastronomie und Catering",
+      "eshop": "Onlineshops und Handel",
+      "cleaning": "Reinigung und Instandhaltung",
+      "other": "Sonstige Dienstleistungen"
+    },
+    "tradeIntro": {
+      "tradesman": "Elektriker, Installateure, Tischler und andere Handwerker, die mit Billanta fakturieren. Sehen Sie sich ihr öffentliches Profil an und kontaktieren Sie sie direkt.",
+      "construction": "Baufirmen und Bauunternehmer – vom Mauerwerk bis zur schlüsselfertigen Sanierung. Jedes Profil zeigt die Leistungen und Kontaktdaten, die die Firma veröffentlichen wollte.",
+      "it": "Freiberufliche Entwickler, Netzwerkadministratoren und IT-Berater sowie kleinere IT-Firmen. Finden Sie einen Anbieter in der Nähe oder im ganzen Land.",
+      "design": "Grafikdesigner, Webdesigner und Illustratoren, die mit Billanta fakturieren. Ihr Profil nennt Leistungen und einen Link zum Portfolio.",
+      "marketing": "Marketer, Texter und Agenturen für kleine und größere Unternehmen. Kampagnen, Social Media, Texte und PPC.",
+      "photo": "Fotografen und Videografen für Hochzeiten, Firmen, Produkte und Events. Schreiben Sie ihnen direkt über ihr Profil.",
+      "consulting": "Berater für Unternehmen, Finanzen, Recht und Personal. Kleine Firmen und unabhängige Berater.",
+      "education": "Nachhilfe, Kurse und Privatlehrer – Sprachen, Nachhilfe, Sport und Firmenschulungen.",
+      "beauty": "Kosmetikerinnen, Friseure, Nageldesignerinnen und weitere Beauty-Angebote in Ihrer Nähe.",
+      "health": "Physiotherapeuten, Masseure, Therapeuten und andere Anbieter für Gesundheit und Wohlbefinden.",
+      "transport": "Transportunternehmen, Kuriere und Umzugsdienste. Von kleinen Aufträgen bis zu regelmäßigen Transporten.",
+      "gastro": "Restaurants, Cafés, Caterer und Konditoreien, die mit Billanta fakturieren.",
+      "eshop": "Kleine Onlineshops und Geschäfte – von Handgemachtem bis zu Fachprodukten.",
+      "cleaning": "Reinigungsfirmen, Haus- und Gartenpflege, Fensterreinigung und weitere Dienste rund ums Haus.",
+      "other": "Weitere Einzelunternehmer und Firmen, die in keine der anderen Branchen passen."
+    }
+  },
+  "invoiceTemplates": {
+    "menu": "Rechnungsvorlagen",
+    "indexTitle": "Tschechische Rechnungsvorlagen – für USt.-Zahler und Nicht-Zahler",
+    "indexName": "Rechnungsvorlagen",
+    "indexDescription": "Rechnungsvorlagen nach tschechischem Recht: Rechnungen für Nicht-USt.-Zahler und USt.-Zahler, Proformarechnung, Gutschrift, inländisches Reverse Charge und identifizierte Person. Jeweils mit Pflichtangaben und kostenlosem Online-Editor.",
+    "indexLead": "Wählen Sie Ihre Situation und sehen Sie ein ausgefülltes Muster, die Pflichtangaben mit Links zum Gesetz und eine Schaltfläche, die den Editor mit diesem Belegtyp öffnet. Das PDF ist kostenlos, ohne Registrierung.",
+    "howTitle": "So verwenden Sie eine Vorlage",
+    "how": [
+      "Sehen Sie sich das Muster an, um zu wissen, was auf die Rechnung gehört und wohin.",
+      "Öffnen Sie den Editor mit dem bereits gewählten Belegtyp und ergänzen Sie Ihre Daten.",
+      "Laden Sie das fertige PDF mit QR-Zahlungscode herunter. Nichts wird gespeichert, kein Konto nötig."
+    ],
+    "common": {
+      "sample": "Muster",
+      "fictional": "Erfundene Angaben, nur zur Veranschaulichung.",
+      "whenTitle": "Wann Sie diesen Beleg verwenden",
+      "fieldsTitle": "Pflichtangaben",
+      "fieldsLead": "Jeder Punkt verlinkt auf die Vorschrift des tschechischen Rechts, die ihn verlangt (auf Tschechisch).",
+      "pitfallsTitle": "Worauf Sie achten sollten",
+      "useButton": "Diese Vorlage online ausfüllen",
+      "useNote": "Der Editor öffnet sich mit dem gewählten Belegtyp. Das PDF ist kostenlos, ohne Registrierung.",
+      "otherTitle": "Weitere Vorlagen",
+      "allTemplates": "Alle Rechnungsvorlagen",
+      "lawRef": "§ {p} Abs. {o} {law}",
+      "lawRefShort": "§ {p} {law}",
+      "rulesNote": "Diese Vorlagen folgen dem tschechischen Recht. Bei Sonderfällen (ausländische Kunden, steuerbefreite Leistungen) prüfen Sie die Details im Gesetz oder mit einem Steuerberater."
+    },
+    "laws": {
+      "ZDPH": "des Umsatzsteuergesetzes",
+      "OZ": "des Bürgerlichen Gesetzbuchs",
+      "ZU": "des Rechnungslegungsgesetzes",
+      "ZoDPH": "des slowakischen Umsatzsteuergesetzes",
+      "ObZ": "des slowakischen Handelsgesetzbuchs",
+      "ZoU": "des slowakischen Rechnungslegungsgesetzes",
+      "OSR": "der Zivilprozessordnung",
+      "NVU": "der Regierungsverordnung Nr. 351/2013 Slg.",
+      "NVUO": "der slowakischen Regierungsverordnung Nr. 21/2013 Slg."
+    },
+    "doc": {
+      "supplier": "Lieferant",
+      "customer": "Kunde",
+      "number": "Beleg-Nr.",
+      "issueDate": "Ausstellungsdatum",
+      "duzp": "Leistungsdatum",
+      "dueDate": "Fälligkeit",
+      "payment": "Zahlung",
+      "bankTransfer": "Banküberweisung",
+      "vs": "Variables Symbol",
+      "description": "Beschreibung",
+      "quantity": "Menge",
+      "unitPrice": "Einzelpreis",
+      "rate": "USt.",
+      "amount": "Betrag",
+      "base": "Netto",
+      "vat": "USt.",
+      "recap": "USt.-Übersicht",
+      "totalDue": "Zu zahlen",
+      "related": "Korrigiert Rechnung",
+      "reason": "Grund der Korrektur",
+      "reverseBase": "Bemessungsgrundlage (Reverse Charge)"
+    },
+    "currency": "CZK",
+    "bank": {
+      "account": "1920014539/0800",
+      "iban": "CZ65 0800 0000 0019 2001 4539"
+    },
+    "parties": {
+      "nonPayer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "IČO (Firmennummer): 12345678",
+          "Kein USt.-Zahler."
+        ]
+      },
+      "payer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "IČO (Firmennummer): 12345678",
+          "DIČ (USt-IdNr.): CZ7356120123"
+        ]
+      },
+      "identified": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "IČO (Firmennummer): 12345678",
+          "DIČ (USt-IdNr.): CZ7356120123",
+          "Identifizierte Person für die USt."
+        ]
+      },
+      "contractor": {
+        "name": "Stavby Kučera s.r.o.",
+        "lines": [
+          "Lidická 45",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "IČO (Firmennummer): 24681357",
+          "DIČ (USt-IdNr.): CZ24681357",
+          "Aktenzeichen C 98765, Kreisgericht Brno"
+        ]
+      },
+      "domestic": {
+        "name": "Pekárna U Mlýna s.r.o.",
+        "lines": [
+          "Mlýnská 8",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "IČO (Firmennummer): 87654321",
+          "DIČ (USt-IdNr.): CZ87654321"
+        ]
+      },
+      "developer": {
+        "name": "Rezidence Hájek s.r.o.",
+        "lines": [
+          "Na Pankráci 30",
+          "140 00 Praha 4"
+        ],
+        "ids": [
+          "IČO (Firmennummer): 13579246",
+          "DIČ (USt-IdNr.): CZ13579246"
+        ]
+      },
+      "eu": {
+        "name": "Hafenstadt Media GmbH",
+        "lines": [
+          "Speicherstraße 4",
+          "20457 Hamburg",
+          "Deutschland"
+        ],
+        "ids": [
+          "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "items": {
+      "nonPayer": {
+        "name": "Nicht-USt.-Zahler",
+        "title": "Rechnungsvorlage für Nicht-USt.-Zahler (Tschechien)",
+        "description": "Tschechische Rechnungsvorlage für Nicht-USt.-Zahler: ein ausgefülltes Muster, die nach Bürgerlichem Gesetzbuch und Rechnungslegungsgesetz erforderlichen Angaben und ein kostenloser Online-Editor mit PDF.",
+        "lead": "Die häufigste Rechnung tschechischer Freiberufler. Ein Nicht-Zahler weist weder USt. noch Leistungsdatum aus, muss aber angeben, wer die Rechnung ausstellt, an wen und wofür.",
+        "docTitle": "Rechnung",
+        "number": "2026-0018",
+        "notes": [
+          "Kein USt.-Zahler.",
+          "Einzelunternehmer, eingetragen im Gewerberegister."
+        ],
+        "lines": [
+          {
+            "d": "Produktfotografie für einen Onlineshop (40 Aufnahmen)",
+            "q": 1,
+            "u": "Stk.",
+            "p": 8500,
+            "r": 0
+          },
+          {
+            "d": "Bildretusche",
+            "q": 4,
+            "u": "Std.",
+            "p": 600,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Sie sind nicht für die USt. registriert (Umsatz bis 2.000.000 CZK im Kalenderjahr) und stellen einem Kunden in Tschechien eine Rechnung.",
+          "Das gilt für Einzelunternehmer und Firmen, die keine USt.-Zahler sind. Für Dienstleistungen an Unternehmen in einem anderen EU-Land werden Sie in der Regel zur identifizierten Person – siehe die separate Vorlage."
+        ],
+        "fields": [
+          {
+            "name": "Name, Sitz und IČO (Firmennummer) des Lieferanten",
+            "text": "Ein Unternehmer gibt sie auf jedem Geschäftsdokument an, auch auf Rechnungen.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Eintrag in einem öffentlichen Register",
+            "text": "Nur wenn Sie in einem eingetragen sind: Eine Firma gibt Gericht und Aktenzeichen an. Ein Einzelunternehmer, der nur im Gewerberegister steht, muss das nicht.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Kunde",
+            "text": "Name und Adresse, bei Unternehmen auch die IČO, damit klar ist, wer die Vertragsparteien sind.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Belegnummer",
+            "text": "Eine eindeutige Nummer der Rechnung, idealerweise aus einem fortlaufenden Nummernkreis.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Gegenstand der Leistung und Betrag",
+            "text": "Was Sie geliefert haben, wie viel und zu welchem Preis. Der zu zahlende Gesamtbetrag.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Ausstellungsdatum",
+            "text": "Wann der Beleg erstellt wurde.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Hinweis, dass Sie kein USt.-Zahler sind",
+            "text": "Nicht zwingend, erspart aber Rückfragen, warum keine USt. ausgewiesen ist."
+          }
+        ],
+        "pitfalls": [
+          "Geben Sie keine DIČ „CZ…“ an, wenn Sie weder USt.-Zahler noch identifizierte Person sind – der Kunde könnte einen Steuerbeleg erwarten.",
+          "Fälligkeit und Bankkonto sind gesetzlich nicht vorgeschrieben, ohne sie werden Sie aber später bezahlt."
+        ]
+      },
+      "vatPayer": {
+        "name": "USt.-Zahler",
+        "title": "Rechnungsvorlage für USt.-Zahler (tschechischer Steuerbeleg)",
+        "description": "Tschechische Rechnungsvorlage mit USt.: ein Steuerbeleg mit DIČ, Leistungsdatum und USt.-Übersicht. Pflichtangaben nach § 29 des Umsatzsteuergesetzes und ein kostenloser Online-Editor.",
+        "lead": "Die Rechnung eines USt.-Zahlers ist ein Steuerbeleg. Zusätzlich zu den üblichen Angaben muss sie beide DIČ, das Leistungsdatum, die Bemessungsgrundlage, den Steuersatz und den USt.-Betrag enthalten.",
+        "docTitle": "Rechnung – Steuerbeleg",
+        "number": "2026-0042",
+        "notes": [
+          "Einzelunternehmer, eingetragen im Gewerberegister."
+        ],
+        "lines": [
+          {
+            "d": "Entwurf von Logo und visueller Identität",
+            "q": 1,
+            "u": "Stk.",
+            "p": 12000,
+            "r": 21
+          },
+          {
+            "d": "Beratung zum Verpackungsdruck",
+            "q": 3,
+            "u": "Std.",
+            "p": 900,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Sie sind tschechischer USt.-Zahler und liefern Waren oder Dienstleistungen in Tschechien, für die Sie die USt. abführen.",
+          "Stellen Sie den Steuerbeleg innerhalb von 15 Tagen nach der steuerbaren Leistung oder nach Erhalt der Zahlung aus."
+        ],
+        "fields": [
+          {
+            "name": "Lieferant und seine DIČ",
+            "text": "Name, Sitz und Steueridentifikationsnummer (DIČ).",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Kunde und seine DIČ",
+            "text": "Ist der Kunde USt.-Zahler, wird auch seine DIČ angegeben.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Belegnummer",
+            "text": "Eindeutig innerhalb eines oder mehrerer Nummernkreise.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Umfang und Gegenstand der Leistung",
+            "text": "Was und wie viel Sie geliefert haben.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Ausstellungsdatum und Leistungsdatum",
+            "text": "Das Leistungsdatum ist Pflicht, wenn es vom Ausstellungsdatum abweicht – in der Praxis geben Sie es immer an.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Einzelpreis ohne USt. und Rabatt",
+            "text": "Einzelpreis ohne USt. und ein etwaiger Rabatt, der nicht bereits darin enthalten ist.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Bemessungsgrundlage, Steuersatz und USt.-Betrag",
+            "text": "Je Steuersatz; den USt.-Betrag in CZK, auch bei einer Rechnung in Fremdwährung.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Angaben nach Bürgerlichem Gesetzbuch",
+            "text": "Sitz, IČO und ein etwaiger Eintrag in einem öffentlichen Register.",
+            "rule": "§435/1 OZ"
+          }
+        ],
+        "pitfalls": [
+          "Geben Sie auf einer EUR-Rechnung die USt. auch in CZK an, mit dem verwendeten Wechselkurs.",
+          "Die Fälligkeit ist keine Pflichtangabe eines Steuerbelegs, ohne sie lässt sich eine Forderung aber schwer eintreiben."
+        ]
+      },
+      "proforma": {
+        "name": "Proformarechnung",
+        "title": "Vorlage für eine Proformarechnung (tschechische zálohová faktura)",
+        "description": "Tschechische Vorlage für eine Proformarechnung: was darauf gehört, warum sie kein Steuerbeleg ist und welchen Beleg Sie nach der Zahlung ausstellen. Kostenloser Online-Editor und PDF.",
+        "lead": "Eine Proformarechnung fordert eine Vorauszahlung an. Sie ist kein Steuerbeleg, der Kunde kann daraus also keine Vorsteuer abziehen. Nach der Zahlung stellt ein USt.-Zahler einen Steuerbeleg aus.",
+        "docTitle": "Proformarechnung",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "Diese Proformarechnung ist kein Steuerbeleg.",
+          "Den Steuerbeleg über die Zahlung senden wir Ihnen, sobald sie auf unserem Konto eingegangen ist."
+        ],
+        "lines": [
+          {
+            "d": "Anzahlung 50 % für die Erstellung einer Website",
+            "q": 1,
+            "u": "Stk.",
+            "p": 20000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Sie möchten eine Vorauszahlung, bevor Sie mit der Arbeit beginnen oder Waren versenden.",
+          "Nach der Zahlung stellt ein USt.-Zahler in der Regel einen Steuerbeleg über die Zahlung aus und zieht die Anzahlung in der Schlussrechnung ab. Ein Nicht-Zahler zieht sie nur in der Schlussrechnung ab."
+        ],
+        "fields": [
+          {
+            "name": "Lieferant und Kunde",
+            "text": "Name, Sitz und IČO; es ist ein Geschäftsdokument.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Nummer der Proformarechnung",
+            "text": "Verwenden Sie einen eigenen Nummernkreis, damit sie nicht mit Steuerbelegen verwechselt wird."
+          },
+          {
+            "name": "Höhe der Anzahlung und Fälligkeit",
+            "text": "Wie viel und bis wann, dazu das Bankkonto."
+          },
+          {
+            "name": "Hinweis, dass es kein Steuerbeleg ist",
+            "text": "Empfohlen: So weiß der Kunde, dass er daraus keine Vorsteuer geltend machen kann."
+          },
+          {
+            "name": "Steuerbeleg nach der Zahlung",
+            "text": "Mit Erhalt einer Anzahlung entsteht in der Regel die USt.-Pflicht; der Zahler stellt dafür einen Steuerbeleg aus.",
+            "rule": "§28/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Geben Sie auf einer Proformarechnung kein Leistungsdatum an – es entsteht erst mit Erhalt der Zahlung.",
+          "Vergessen Sie nicht, die Anzahlung in der Schlussrechnung abzuziehen, sonst zahlt der Kunde doppelt."
+        ]
+      },
+      "creditNote": {
+        "name": "Gutschrift",
+        "title": "Vorlage für eine Gutschrift (tschechischer Korrekturbeleg)",
+        "description": "Tschechische Vorlage für eine Gutschrift: Verweis auf die ursprüngliche Rechnung, Grund der Korrektur und Differenz bei Bemessungsgrundlage und USt. Pflichtangaben nach § 46 des Umsatzsteuergesetzes.",
+        "lead": "Wenn Sie den Preis nach der Rechnungsstellung senken (Rabatt, Reklamation, zurückgegebene Ware) oder erhöhen, stellen Sie einen Korrekturbeleg aus. Er korrigiert die ursprüngliche Rechnung, ersetzt sie aber nicht.",
+        "docTitle": "Gutschrift",
+        "number": "OD-2026-0003",
+        "related": "2026-0042",
+        "reason": "Preisnachlass nach einer Reklamation des Logoentwurfs",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Rabatt – Logoentwurf",
+            "q": 1,
+            "u": "Stk.",
+            "p": -2000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Ein nach der Rechnungsstellung gewährter Rabatt, eine anerkannte Reklamation, zurückgegebene Ware oder ein stornierter Teil der Leistung.",
+          "Die ursprüngliche Rechnung bleibt gültig; die Gutschrift erfasst nur die Differenz."
+        ],
+        "fields": [
+          {
+            "name": "Beide Parteien und ihre DIČ",
+            "text": "Wie auf einem gewöhnlichen Steuerbeleg.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Nummer der Gutschrift",
+            "text": "Eine eigene Nummer aus Ihrem Nummernkreis.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Nummer des ursprünglichen Belegs",
+            "text": "Die Rechnung, die Sie korrigieren.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Grund der Korrektur",
+            "text": "Kurz und konkret, z. B. ein Rabatt nach einer Reklamation.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Differenz bei Bemessungsgrundlage und USt.",
+            "text": "Die Differenz zwischen korrigierter und ursprünglicher Bemessungsgrundlage und USt., bei einer Minderung negativ.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Korrektur der Bemessungsgrundlage",
+            "text": "Wann und unter welchen Bedingungen die Korrektur erfolgt.",
+            "rule": "§42/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Ein Nicht-USt.-Zahler stellt keinen Korrekturbeleg aus – eine einfache Gutschrift als Buchungsbeleg mit Verweis auf die ursprüngliche Rechnung genügt.",
+          "Stornieren oder überschreiben Sie die ursprüngliche Rechnung nicht; sie bleibt in Ihren Unterlagen."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Reverse Charge",
+        "title": "Rechnungsvorlage für inländisches Reverse Charge (Tschechien)",
+        "description": "Tschechische Rechnungsvorlage für inländisches Reverse Charge (§ 92a des Umsatzsteuergesetzes), z. B. für Bauleistungen: der Vermerk „daň odvede zákazník“, die DIČ des Kunden und der Betrag ohne USt.",
+        "lead": "Bei Bau- und Montageleistungen, Abfällen, Metallen und weiteren Leistungen nach § 92a des tschechischen Umsatzsteuergesetzes führt der Kunde die USt. ab. Der Lieferant stellt die Rechnung ohne USt. aus und vermerkt „daň odvede zákazník“ (Steuerschuldnerschaft des Leistungsempfängers).",
+        "docTitle": "Rechnung – Steuerbeleg",
+        "number": "2026-0115",
+        "notes": [
+          "Daň odvede zákazník (Steuerschuldnerschaft des Leistungsempfängers).",
+          "Reverse Charge nach § 92e des Umsatzsteuergesetzes (Bau- und Montageleistungen)."
+        ],
+        "lines": [
+          {
+            "d": "Maurerarbeiten – Badsanierung, Wohnung 2.04",
+            "q": 1,
+            "u": "Stk.",
+            "p": 84000,
+            "r": 21
+          },
+          {
+            "d": "Wand- und Bodenfliesen, inklusive Material",
+            "q": 26,
+            "u": "m²",
+            "p": 1250,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Sie sind beide tschechische USt.-Zahler, und die Leistung fällt unter die Regelung (§§ 92b bis 92e und die Regierungsverordnung).",
+          "Am häufigsten Bau- und Montageleistungen (CZ-CPA 41 bis 43), Lieferungen von Abfall und Schrott oder Emissionszertifikate."
+        ],
+        "fields": [
+          {
+            "name": "Der Vermerk „daň odvede zákazník“",
+            "text": "Eine Pflichtangabe auf dem Steuerbeleg, wenn der Kunde die USt. abführt.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "DIČ von Lieferant und Kunde",
+            "text": "Die Regelung gilt nur zwischen USt.-Zahlern, daher ist die DIČ des Kunden unerlässlich.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Bemessungsgrundlage ohne USt.",
+            "text": "Den USt.-Betrag weisen Sie nicht aus; der Kunde berechnet und erklärt ihn. Die Angabe des Steuersatzes hilft ihm.",
+            "rule": "§92a/1 ZDPH"
+          },
+          {
+            "name": "Weitere Angaben des Steuerbelegs",
+            "text": "Nummer, Daten, Gegenstand und Umfang der Leistung, Einzelpreis.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Kontrollmeldung",
+            "text": "Der Lieferant meldet die Leistung in Abschnitt A.1 der Kontrollmeldung, der Kunde in Abschnitt B.1."
+          }
+        ],
+        "pitfalls": [
+          "Ist der Kunde kein USt.-Zahler (z. B. eine Privatperson), gilt die Regelung nicht, und Sie berechnen USt.",
+          "Prüfen Sie vor dem Versand im Register der USt.-Zahler, ob der Kunde tatsächlich Zahler ist."
+        ]
+      },
+      "identified": {
+        "name": "Identifizierte Person",
+        "title": "Rechnungsvorlage für eine identifizierte Person (Leistungen in die EU)",
+        "description": "Tschechische Rechnungsvorlage für eine identifizierte Person, die einem Unternehmen in einem anderen EU-Land eine Rechnung stellt: beide USt-IdNr., keine USt., der Vermerk „daň odvede zákazník“. Pflichtangaben und kostenloser Online-Editor.",
+        "lead": "Ein tschechischer Nicht-USt.-Zahler, der eine Dienstleistung an ein Unternehmen in einem anderen EU-Land erbringt, wird zur identifizierten Person. Er stellt die Rechnung ohne tschechische USt. aus, gibt seine eigene und die USt-IdNr. des Kunden an und vermerkt, dass der Kunde die Steuer abführt.",
+        "docTitle": "Rechnung – Steuerbeleg",
+        "number": "2026-0021",
+        "notes": [
+          "Daň odvede zákazník (Steuerschuldnerschaft des Leistungsempfängers).",
+          "Reverse Charge – Artikel 196, Richtlinie 2006/112/EG des Rates."
+        ],
+        "lines": [
+          {
+            "d": "Webdesign – Aktualisierung des Onlineshop-Themes, Oktober 2026",
+            "q": 1,
+            "u": "Stk.",
+            "p": 18000,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Sie sind kein USt.-Zahler und erbringen eine Dienstleistung (Programmierung, Design, Marketing) an ein Unternehmen, das in einem anderen EU-Land für die USt. registriert ist.",
+          "Registrieren Sie sich innerhalb von 15 Tagen nach der Leistung als identifizierte Person; USt.-Zahler werden Sie dadurch nicht."
+        ],
+        "fields": [
+          {
+            "name": "USt-IdNr. des Lieferanten",
+            "text": "Eine identifizierte Person erhält eine DIČ CZ… und gibt sie auf der Rechnung an.",
+            "rule": "§6i/1 ZDPH"
+          },
+          {
+            "name": "USt-IdNr. des Kunden aus einem anderen Land",
+            "text": "Prüfen Sie sie in VIES; ohne gültige USt-IdNr. gibt es kein Reverse Charge.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Der Vermerk „daň odvede zákazník“",
+            "text": "Der Kunde erklärt die USt. in seinem Land; die Rechnung zeigt den Betrag ohne USt.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Datum der Leistung",
+            "text": "Der Tag, an dem die Dienstleistung erbracht wurde; er bestimmt, wann Sie sie melden.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Zusammenfassende Meldung",
+            "text": "Reichen Sie die Zusammenfassende Meldung (souhrnné hlášení) für den Monat ein, in dem Sie die Leistung erbracht haben.",
+            "rule": "§102/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Stellen Sie einer Privatperson in der EU eine Rechnung, werden Sie nicht zur identifizierten Person; es ist eine gewöhnliche Rechnung eines Nicht-Zahlers.",
+          "Für Dienstleistungen, die Sie von ausländischen Firmen beziehen (Facebook- oder Google-Werbung), führen Sie die tschechische USt. selbst ab – die andere Seite derselben Pflicht."
+        ]
+      }
+    },
+    "requirementsLink": {
+      "title": "Was muss eine Rechnung enthalten?",
+      "text": "Sagen Sie uns, wer Sie sind und was Sie ausstellen, und wir listen die Pflichtangaben genau für Ihren Fall auf."
     }
   },
   "paymentReminders": {
+    "indexTitle": "Kostenlose Vorlagen für Zahlungserinnerung und Mahnung",
+    "indexName": "Vorlagen für Zahlungserinnerungen",
+    "indexDescription": "Vorlagen für Zahlungserinnerung, Mahnung und Aufforderung vor Klageerhebung nach tschechischem Recht. Schuldner und Betrag eintragen, Tonfall wählen, dann Text kopieren oder PDF herunterladen.",
+    "indexLead": "Drei Schreiben für eine überfällige Rechnung, von der freundlichen Erinnerung bis zur Aufforderung vor Klageerhebung. Der Generator unten füllt sie für Sie aus – kopieren Sie den Text in eine E-Mail oder laden Sie ein PDF herunter. Ohne Registrierung.",
+    "step": "Schritt {n}",
+    "howTitle": "Was tun bei einer unbezahlten Rechnung",
+    "how": [
+      "Senden Sie einige Tage nach der Fälligkeit eine höfliche Erinnerung. Oft wurde die Rechnung einfach übersehen.",
+      "Kommt die Zahlung weiterhin nicht, senden Sie eine Mahnung mit neuer Frist und einem Hinweis auf Verzugszinsen.",
+      "Bevor Sie klagen, senden Sie mindestens 7 Tage vorher eine Aufforderung vor Klageerhebung. Ohne sie spricht Ihnen das Gericht die Prozesskosten möglicherweise nicht zu.",
+      "Bewahren Sie jedes Schreiben zusammen mit dem Nachweis des Versands auf."
+    ],
+    "common": {
+      "whenTitle": "Wann Sie es senden",
+      "fieldsTitle": "Was das Schreiben enthalten sollte",
+      "fieldsLead": "Wo das Gesetz eine Anforderung stellt, verlinkt der Punkt auf die Vorschrift.",
+      "pitfallsTitle": "Worauf Sie achten sollten",
+      "otherTitle": "Weitere Vorlagen",
+      "allTemplates": "Alle Mahnungsvorlagen",
+      "invoiceTemplates": "Rechnungsvorlagen",
+      "rulesNote": "Diese Vorlagen folgen dem tschechischen Recht und sind keine Rechtsberatung. Bei hohen oder strittigen Forderungen wenden Sie sich an einen Anwalt."
+    },
+    "auto": {
+      "title": "Lassen Sie Billanta die Erinnerungen für Sie senden",
+      "text": "Wird eine in Billanta ausgestellte Rechnung überfällig, erhält Ihr Kunde automatisch eine höfliche E-Mail-Erinnerung mit Link zur Rechnung und deren QR-Zahlung. Sie legen das Intervall und die maximale Anzahl der Erinnerungen fest, und sie enden, sobald die Rechnung bezahlt ist.",
+      "cta": "Kostenlos testen",
+      "more": "So funktionieren automatische Erinnerungen"
+    },
+    "fromInvoices": {
+      "title": "Rechnung überfällig? Vorlagen für Zahlungserinnerungen",
+      "text": "Eine Erinnerung, eine Mahnung und eine Aufforderung vor Klageerhebung. Online ausfüllen, dann kopieren oder als PDF herunterladen."
+    },
     "items": {
+      "reminder": {
+        "name": "Zahlungserinnerung",
+        "title": "Vorlage für eine Zahlungserinnerung zu einer unbezahlten Rechnung",
+        "description": "Eine höfliche oder bestimmte Erinnerung an eine überfällige Rechnung. Angaben eintragen, dann den Text in eine E-Mail kopieren oder kostenlos als PDF herunterladen.",
+        "lead": "Das erste Schreiben nach der Fälligkeit: Es verweist auf die Rechnung und setzt eine neue Frist.",
+        "when": [
+          "Senden Sie eine Erinnerung einige Tage nach der Fälligkeit, typischerweise nach 3 bis 7 Tagen. Der Kunde ist ab dem Tag nach der Fälligkeit im Verzug, das erste Schreiben ist aber vor allem ein Hinweis, dass die Rechnung existiert.",
+          "Das Gesetz schreibt für eine Erinnerung keine Form vor. Eine E-Mail genügt, sofern Ihr Vertrag nichts anderes bestimmt."
+        ],
+        "fields": [
+          {
+            "name": "Rechnungsnummer, Betrag und Fälligkeit",
+            "text": "Damit der Kunde die Zahlung leicht finden und zuordnen kann."
+          },
+          {
+            "name": "Hinweis, dass der Schuldner im Verzug ist",
+            "text": "Wer nicht rechtzeitig zahlt, ist im Verzug. In der ersten Erinnerung genügt ein sachlicher Hinweis.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Neue Frist und Zahlungsangaben",
+            "text": "Ein konkretes Datum und die Kontonummer, idealerweise mit der Rechnungsnummer als Verwendungszweck."
+          },
+          {
+            "name": "Bitte um Rückmeldung, falls bereits bezahlt",
+            "text": "Zahlungen und Erinnerungen überschneiden sich. Ein höflicher Satz vermeidet unnötigen Streit."
+          }
+        ],
+        "pitfalls": [
+          "Prüfen Sie vor dem Versand Ihren Kontoauszug. Eine Erinnerung zu einer bezahlten Rechnung schadet der Geschäftsbeziehung.",
+          "Bleiben Sie sachlich und ohne Drohungen. Der strengere Ton gehört in die Mahnung.",
+          "Eine Erinnerung verlängert nichts: Verzugszinsen laufen ab dem Tag nach der Fälligkeit, unabhängig von der neuen Frist."
+        ]
+      },
+      "demand": {
+        "name": "Mahnung",
+        "title": "Vorlage für eine Mahnung mit Verzugszinsen",
+        "description": "Eine Mahnung mit Hinweis auf die gesetzlichen Verzugszinsen und die Beitreibungskosten von 1.200 CZK. Online ausfüllen, dann kopieren oder als PDF herunterladen.",
+        "lead": "Das zweite Schreiben: bestimmter, mit Verzugszinsen und den Kosten der Beitreibung.",
+        "when": [
+          "Senden Sie eine Mahnung, wenn die Erinnerung nichts bewirkt hat, meist 2 bis 4 Wochen nach der Fälligkeit.",
+          "Sie teilt dem Schuldner mit, dass er zusätzlich zum geschuldeten Betrag Verzugszinsen und, zwischen Unternehmern, die Kosten der Beitreibung schulden kann."
+        ],
+        "fields": [
+          {
+            "name": "Geschuldeter Betrag und Rechnung",
+            "text": "Rechnungsnummer, Betrag und Fälligkeit, nach der der Schuldner im Verzug ist.",
+            "rule": "§1968 OZ"
+          },
+          {
+            "name": "Verzugszinsen",
+            "text": "Der Gläubiger kann gesetzliche Verzugszinsen verlangen. Der Jahressatz entspricht dem Reposatz der Tschechischen Nationalbank, der am ersten Tag des Kalenderhalbjahrs gilt, in dem der Verzug begann, zuzüglich 8 Prozentpunkten.",
+            "rule": "§1970 OZ, §2 NVU"
+          },
+          {
+            "name": "Kosten der Beitreibung",
+            "text": "Mindestens 1.200 CZK je Forderung. Verlangen Sie sie nur von Unternehmern.",
+            "rule": "§3 NVU"
+          },
+          {
+            "name": "Neue Frist und Zahlungsangaben",
+            "text": "Ein konkretes Datum, bis zu dem die Zahlung eingehen muss, und wohin sie zu senden ist."
+          }
+        ],
+        "pitfalls": [
+          "Berechnen Sie die Zinsen ab dem Tag nach der Fälligkeit, nicht ab dem Datum der Erinnerung.",
+          "Legt Ihr Vertrag einen eigenen Zinssatz oder eine Vertragsstrafe fest, verweisen Sie auf den Vertrag statt auf den gesetzlichen Satz.",
+          "Verlangen Sie die 1.200 CZK nicht von Verbrauchern."
+        ]
+      },
       "preAction": {
+        "name": "Aufforderung vor Klageerhebung",
+        "title": "Vorlage für eine Aufforderung vor Klageerhebung zu einer unbezahlten Rechnung",
+        "description": "Eine Aufforderung vor Klageerhebung (Leistungsaufforderung nach § 142a der tschechischen Zivilprozessordnung). Senden Sie sie mindestens 7 Tage vor der Klage, sonst erhalten Sie die Prozesskosten möglicherweise nicht erstattet.",
+        "lead": "Das letzte Schreiben vor dem Gang zum Gericht: Ohne es bekommen Sie Ihre Prozesskosten möglicherweise nicht zurück.",
+        "when": [
+          "Senden Sie eine Aufforderung vor Klageerhebung, sobald Sie entschieden haben, die Forderung vor Gericht zu bringen.",
+          "Ein obsiegender Kläger hat nur dann Anspruch auf Erstattung der Prozesskosten, wenn er dem Beklagten mindestens 7 Tage vor Klageerhebung eine Leistungsaufforderung an dessen Zustelladresse, Wohnsitz oder Sitz gesendet hat."
+        ],
         "fields": [
           {
             "name": "Eine ausdrückliche Leistungsaufforderung",
