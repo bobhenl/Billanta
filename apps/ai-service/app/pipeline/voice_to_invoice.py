@@ -60,6 +60,7 @@ from app.pipeline.schemas import (
     Channel,
     DraftInvoicePayload,
     ExtractedInvoiceDraft,
+    TenantContext,
 )
 
 logger = logging.getLogger(__name__)
@@ -138,7 +139,38 @@ EXTRACTION_JSON_SCHEMA: dict = {
     "additionalProperties": False,
 }
 
-EXTRACTION_SYSTEM_PROMPT = (
+# Spelled out in the prompt for non-CZ tenants; an unknown code is passed through.
+COUNTRY_NAMES = {"CZ": "the Czech Republic", "SK": "Slovakia"}
+# The "other" currency named in the default-currency hint, so the model still
+# recognises a cross-border invoice spoken in the neighbour's currency.
+CURRENCY_EXAMPLES = {"CZK": "EUR for Slovak speakers", "EUR": "CZK for Czech speakers"}
+
+
+def build_extraction_system_prompt(country: str = "CZ", home_currency: str = "CZK") -> str:
+    """The extraction prompt with the tenant's defaults filled in.
+
+    A CZ/CZK tenant gets exactly the prompt this service always used, so
+    existing Czech drafts don't shift; other tenants get their home currency
+    as the default and one line naming the issuer's tax country.
+    """
+    example = CURRENCY_EXAMPLES.get(home_currency, "EUR for Slovak speakers")
+    country_rule = ""
+    if country != "CZ":
+        country_rule = (
+            f"- The invoicing business is registered for tax in "
+            f"{COUNTRY_NAMES.get(country, country)}; read any spoken VAT "
+            "rate under that country's rules.\n"
+        )
+    return (
+        _EXTRACTION_PROMPT_HEAD
+        + country_rule
+        + f"- Default currency to {home_currency} unless another currency is "
+        f"clearly stated (e.g. {example}).\n"
+        "- Respond ONLY with JSON matching the provided schema."
+    )
+
+
+_EXTRACTION_PROMPT_HEAD = (
     "You are an assistant that extracts structured invoice data from a "
     "transcribed voice message. The speaker is a Czech or Slovak freelancer "
     "or small-business owner (occasionally speaking English) describing work "
@@ -157,10 +189,9 @@ EXTRACTION_SYSTEM_PROMPT = (
     "and unit_price=that sum.\n"
     "- vat_rate is a percentage number (e.g. 21) if mentioned, otherwise "
     "null - never assume a default VAT rate.\n"
-    "- Default currency to CZK unless another currency is clearly stated "
-    "(e.g. EUR for Slovak speakers).\n"
-    "- Respond ONLY with JSON matching the provided schema."
 )
+
+EXTRACTION_SYSTEM_PROMPT = build_extraction_system_prompt()
 
 
 # ---------------------------------------------------------------------------
@@ -171,8 +202,8 @@ async def resolve_tenant(
     external_user_id: str,
     *,
     settings: Settings | None = None,
-) -> str | None:
-    """Resolve an inbound channel sender to a tenant_id.
+) -> TenantContext | None:
+    """Resolve an inbound channel sender to its tenant.
 
     Blueprint §6 step 2: an unrecognized sender must be rejected (never
     processed) and pointed at onboarding instructions instead. This calls the
@@ -181,8 +212,8 @@ async def resolve_tenant(
     lives in the backend/DB, not here).
 
     Returns:
-        The tenant_id (as a string UUID) if the sender is linked and active,
-        otherwise None.
+        The tenant (id as a string UUID, plus its tax country and home
+        currency) if the sender is linked and active, otherwise None.
     """
     settings = settings or get_settings()
     async with httpx.AsyncClient(base_url=settings.backend_api_url, timeout=10.0) as client:
@@ -202,7 +233,20 @@ async def resolve_tenant(
     response.raise_for_status()
     body = response.json()
     # The backend answers in camelCase (`tenantId`); accept both spellings.
-    return body.get("tenantId") or body.get("tenant_id")
+    tenant_id = body.get("tenantId") or body.get("tenant_id")
+    if not tenant_id:
+        return None
+    # Backends older than the country rollout send only the id; the
+    # TenantContext defaults (CZ/CZK) then stand in for the missing fields.
+    extra = {
+        key: value
+        for key, value in (
+            ("country", body.get("country")),
+            ("home_currency", body.get("homeCurrency") or body.get("home_currency")),
+        )
+        if value
+    }
+    return TenantContext(tenant_id=tenant_id, **extra)
 
 
 async def activate_channel_link(
@@ -482,6 +526,7 @@ async def transcribe_audio(
 async def extract_invoice_data(
     transcript: str,
     *,
+    tenant: TenantContext | None = None,
     settings: Settings | None = None,
 ) -> ExtractedInvoiceDraft:
     """Extract structured invoice data from a transcript via GPT-4o.
@@ -494,15 +539,19 @@ async def extract_invoice_data(
     with Pydantic, retry once on schema-validation failure.
 
     The `ExtractedInvoiceDraft` model itself (app/pipeline/schemas.py) is the
-    real, validated contract for this step.
+    real, validated contract for this step. `tenant` only sets the defaults
+    (home currency, tax country); without it the CZ/CZK defaults apply.
     """
     settings = settings or get_settings()
     if not settings.openai_api_key:
         raise ExtractionError("OPENAI_API_KEY is not configured")
 
+    country = tenant.country if tenant else "CZ"
+    home_currency = tenant.home_currency if tenant else "CZK"
+
     client = AsyncOpenAI(api_key=settings.openai_api_key)
     messages: list[dict] = [
-        {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
+        {"role": "system", "content": build_extraction_system_prompt(country, home_currency)},
         {"role": "user", "content": transcript},
     ]
 
@@ -527,6 +576,10 @@ async def extract_invoice_data(
         raw_content = response.choices[0].message.content or ""
         try:
             data = json.loads(raw_content)
+            # A blank currency would otherwise fall through to the model's
+            # CZK default, which is wrong for a Slovak tenant.
+            if isinstance(data, dict) and not data.get("currency"):
+                data["currency"] = home_currency
             return ExtractedInvoiceDraft.model_validate(data)
         except (json.JSONDecodeError, ValidationError) as exc:
             last_error = exc
@@ -716,8 +769,8 @@ async def orchestrate(
 
     # Step 2: tenant resolution / account linking. Unlinked senders are
     # always rejected, never processed.
-    tenant_id = await resolve_tenant(channel, external_user_id, settings=settings)
-    if tenant_id is None:
+    tenant = await resolve_tenant(channel, external_user_id, settings=settings)
+    if tenant is None:
         logger.info(
             "orchestrate: no tenant linked for channel=%s external_user_id=%s "
             "- rejecting message, caller should send onboarding instructions",
@@ -733,7 +786,7 @@ async def orchestrate(
     transcript = await transcribe_audio(audio_bytes, mime_type=mime_type, settings=settings)
 
     # Step 6: structured extraction (GPT-4o), Pydantic-validated.
-    extracted = await extract_invoice_data(transcript, settings=settings)
+    extracted = await extract_invoice_data(transcript, tenant=tenant, settings=settings)
 
     # Step 7: ARES enrichment - never asserts VAT-payer status outright.
     # enrich_with_ares() itself already swallows httpx/network/backend-error
@@ -760,7 +813,7 @@ async def orchestrate(
 
     # Step 8: draft creation only, status=pending_review, never auto-finalize.
     response = await create_draft_invoice(
-        tenant_id,
+        tenant.tenant_id,
         extracted,
         channel,
         transcript,

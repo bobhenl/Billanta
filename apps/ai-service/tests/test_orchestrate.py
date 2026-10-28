@@ -21,6 +21,7 @@ from app.pipeline.schemas import (
     AresMatchStatus,
     Channel,
     ExtractedInvoiceDraft,
+    TenantContext,
 )
 
 
@@ -53,7 +54,7 @@ async def test_orchestrate_flags_needs_attention_when_ares_raises_unexpectedly(m
     draft = ExtractedInvoiceDraft(counterparty_name_raw="Jan Novák", counterparty_ico="12345678")
 
     async def fake_resolve_tenant(*args, **kwargs):
-        return "tenant-1"
+        return TenantContext(tenant_id="tenant-1")
 
     async def fake_download_media(*args, **kwargs):
         return b"audio-bytes"
@@ -97,7 +98,7 @@ async def test_orchestrate_flags_needs_attention_on_ares_lookup_failed_status(mo
     draft = ExtractedInvoiceDraft(counterparty_name_raw="Jan Novák", counterparty_ico="12345678")
 
     async def fake_resolve_tenant(*args, **kwargs):
-        return "tenant-1"
+        return TenantContext(tenant_id="tenant-1")
 
     async def fake_download_media(*args, **kwargs):
         return b"audio-bytes"
@@ -139,7 +140,7 @@ async def test_orchestrate_no_needs_attention_on_clean_match(monkeypatch, settin
     draft = ExtractedInvoiceDraft(counterparty_name_raw="Jan Novák", counterparty_ico="12345678")
 
     async def fake_resolve_tenant(*args, **kwargs):
-        return "tenant-1"
+        return TenantContext(tenant_id="tenant-1")
 
     async def fake_download_media(*args, **kwargs):
         return b"audio-bytes"
@@ -175,3 +176,47 @@ async def test_orchestrate_no_needs_attention_on_clean_match(monkeypatch, settin
     )
 
     assert captured_kwargs["needs_attention"] is False
+
+
+async def test_orchestrate_passes_tenant_country_to_extraction(monkeypatch, settings):
+    tenant = TenantContext(tenant_id="tenant-sk", country="SK", home_currency="EUR")
+    draft = ExtractedInvoiceDraft(counterparty_name_raw="Ján Novák", currency="EUR")
+    seen = {}
+
+    async def fake_resolve_tenant(*args, **kwargs):
+        return tenant
+
+    async def fake_download_media(*args, **kwargs):
+        return b"audio-bytes"
+
+    async def fake_transcribe_audio(*args, **kwargs):
+        return "transcript text"
+
+    async def fake_extract_invoice_data(*args, **kwargs):
+        seen["tenant"] = kwargs.get("tenant")
+        return draft
+
+    async def fake_enrich_with_ares(*args, **kwargs):
+        return AresEnrichment(status=AresMatchStatus.SKIPPED_NO_ICO)
+
+    async def fake_create_draft_invoice(*args, **kwargs):
+        seen["tenant_id"] = args[0]
+        return httpx.Response(201, request=httpx.Request("POST", "https://example.test"))
+
+    monkeypatch.setattr(v2i, "resolve_tenant", fake_resolve_tenant)
+    monkeypatch.setattr(v2i, "download_media", fake_download_media)
+    monkeypatch.setattr(v2i, "transcribe_audio", fake_transcribe_audio)
+    monkeypatch.setattr(v2i, "extract_invoice_data", fake_extract_invoice_data)
+    monkeypatch.setattr(v2i, "enrich_with_ares", fake_enrich_with_ares)
+    monkeypatch.setattr(v2i, "create_draft_invoice", fake_create_draft_invoice)
+
+    await v2i.orchestrate(
+        channel=Channel.TELEGRAM,
+        external_user_id="123",
+        file_id="file-1",
+        mime_type="audio/ogg",
+        settings=settings,
+    )
+
+    assert seen["tenant"] is tenant
+    assert seen["tenant_id"] == "tenant-sk"

@@ -2,7 +2,9 @@ import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundExcep
 import { and, count, desc, eq, isNull, lt } from "drizzle-orm";
 import { randomBytes } from "node:crypto";
 import { channelLinks } from "../../drizzle/schema";
+import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
+import { drizzleTx } from "../db/drizzle-tx";
 import type { ActivateChannelLinkDto } from "./dto/activate-channel-link.dto";
 import type { CreateLinkingTokenDto } from "./dto/create-linking-token.dto";
 import type { VerifyChannelLinkDto } from "./dto/verify-channel-link.dto";
@@ -17,7 +19,8 @@ export class ChannelLinksService {
 
   /**
    * Resolves `(channel, external_user_id)` -> `tenant_id` for the AI
-   * microservice's per-message tenant lookup (blueprint §6 step 2).
+   * microservice's per-message tenant lookup (blueprint §6 step 2), plus the
+   * tenant's tax country and home currency for its prompt defaults.
    *
    * ============================================================================
    * WHY THIS GOES THROUGH THE SHARED POOL (`DbService.db`), NOT `req.tenantDb`
@@ -51,7 +54,7 @@ export class ChannelLinksService {
    * `TenantContextMiddleware` in `AppModule.configure` for exactly this
    * reason, so `req.tenantDb` would never even be populated here.
    */
-  async verify(dto: VerifyChannelLinkDto): Promise<{ tenantId: string }> {
+  async verify(dto: VerifyChannelLinkDto): Promise<{ tenantId: string; country: string; homeCurrency: string }> {
     const [link] = await this.dbService.db
       .select({ tenantId: channelLinks.tenantId, isActive: channelLinks.isActive })
       .from(channelLinks)
@@ -70,7 +73,20 @@ export class ChannelLinksService {
       throw new NotFoundException("No active channel link for this sender");
     }
 
-    return { tenantId: link.tenantId };
+    // `tenants` keeps FORCE RLS, so its row is read inside a transaction
+    // scoped to the tenant the link just resolved to. The AI service only
+    // uses these as prompt defaults (draft currency, which VAT conventions).
+    const tenant = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${link.tenantId}, true)`;
+      const [row] = await drizzleTx(tx, schema)
+        .select({ country: schema.tenants.country, homeCurrency: schema.tenants.homeCurrency })
+        .from(schema.tenants)
+        .where(eq(schema.tenants.id, link.tenantId))
+        .limit(1);
+      return row;
+    });
+
+    return { tenantId: link.tenantId, country: tenant?.country ?? "CZ", homeCurrency: tenant?.homeCurrency ?? "CZK" };
   }
 
   /** Active links shown in Settings → Kanály. Never returns tokens. */
