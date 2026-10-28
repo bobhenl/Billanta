@@ -22,7 +22,7 @@ app/[locale]/{c,d,i,p}/     public token/slug pages (client portal, documents, i
 app/api/                    route handlers (auth, proxies)
 components/                 shared components (flat; no shadcn vendoring)
 lib/                        helpers: api-client, seo, site, tenant, access, …
-messages/{cs,sk,en}.json    translations
+messages/<locale>.json      translations (cs/sk/en complete, the rest partial)
 middleware.ts               locale routing, profile subdomain rewrite, referral cookie
 ```
 
@@ -33,10 +33,21 @@ adding it there.
 
 ## i18n
 
-- Locales `cs` (default), `sk`, `en`, always prefixed (`/cs/...`).
+- Locales `cs` (default), `sk`, `en`, plus `de`, `pl`, `uk`, `hu`, `ro`,
+  `fr`, `es`, `it`, `nl`, `pt`, always prefixed (`/cs/...`). The list, native
+  names, Intl tags and the `indexed` flag live in `i18n/locales.ts`;
+  `next.config.mjs` and `public/sw.js` keep their own copy of the codes.
+- cs, sk and en are complete. The other locales load through
+  `loadMessages` (`i18n/messages.ts`): their file is merged over `en.json`,
+  so a missing key or a missing file shows English. Hand-written content
+  that exists in cs/sk/en only goes through `contentLocale(locale)`.
+- A locale with `indexed: false` is served but noindex (X-Robots-Tag from
+  middleware and the page metadata) and left out of hreflang, the sitemap
+  and llms.txt. Flip it once its translation is complete and reviewed.
 - Import `Link`, `redirect`, `useRouter` and `usePathname` from
   `@/i18n/navigation`, never from `next/link` or `next/navigation`.
-- **Every key must exist in all three message files with the same shape.**
+- **Every key must exist in cs, sk and en with the same shape.** The
+  other locales may lag behind; they fall back to English.
   Use ICU params and plurals (`{n, plural, one {…} few {…} other {…}}`;
   Czech and Slovak need `few`).
 - Edit the JSON files with a script that parses and re-serialises them
