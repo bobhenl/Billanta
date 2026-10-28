@@ -1824,7 +1824,502 @@
       }
     }
   },
+  "contacts": {
+    "title": "Contactos",
+    "hint": "Os clientes ficam guardados aqui automaticamente quando os escolhe numa fatura (dos seus contactos ou do registo ARES). Marque com estrela os que fatura com mais frequência para os escolher com um toque numa nova fatura.",
+    "filter": "Pesquisar por nome, número de empresa ou e-mail",
+    "empty": "Ainda não há clientes. São adicionados com a sua primeira fatura.",
+    "emptyCta": "Criar fatura",
+    "noMatch": "Nada corresponde à sua pesquisa.",
+    "star": "Marcar com estrela",
+    "unstar": "Remover estrela",
+    "starred": "{name} marcado com estrela",
+    "unstarred": "Estrela removida de {name}",
+    "starFailed": "Não foi possível guardar a estrela",
+    "invoice": "Faturar",
+    "aresVerified": "Verificado no ARES",
+    "loadError": "Não foi possível carregar os contactos.",
+    "newContact": "Novo contacto",
+    "editor": {
+      "newTitle": "Novo contacto",
+      "editTitle": "Editar contacto",
+      "legalName": "Nome",
+      "street": "Rua e número",
+      "city": "Localidade",
+      "postalCode": "Código postal",
+      "country": "País",
+      "vatPayer": "Sujeito passivo de IVA",
+      "vatUnknown": "Desconhecido",
+      "vatYes": "Sim",
+      "vatNo": "Não",
+      "fromAres": "Carregar do ARES",
+      "icoInvalid": "O número de empresa deve ter 8 dígitos.",
+      "aresNotFound": "Não existe nenhuma empresa com este número no ARES.",
+      "aresFailed": "A consulta ao ARES falhou",
+      "aresLoaded": "Carregado do ARES.",
+      "icoTaken": "Já existe um contacto com este número de empresa.",
+      "saveFailed": "Não foi possível guardar",
+      "saved": "Contacto guardado.",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "kind": "Tipo de cliente",
+      "kindCompany": "Empresa",
+      "kindPerson": "Particular",
+      "kindHint": "Um particular não tem número de empresa nem NIF de IVA – ocultamos esses campos e não aparecerão na fatura. Nunca é sujeito passivo de IVA.",
+      "personName": "Nome completo",
+      "color": "Etiqueta de cor",
+      "colorNone": "Nenhuma",
+      "registrySearch": "Procurar a empresa num registo",
+      "registryHint": "Pesquise por nome, número de empresa ou NIF de IVA e os dados são preenchidos. Escolha o país à direita. Na Chéquia e na Eslováquia pesquisa-se por nome ou IČO; em França, na Noruega, na Finlândia, na Dinamarca e na Suíça por nome ou número de registo; na Polónia pelo NIP. Qualquer empresa da UE pode ser encontrada pelo NIF de IVA com o prefixo do país (p. ex. IT00488410010). As opções “LEI” pesquisam o registo mundial GLEIF, que inclui sobretudo empresas de maior dimensão.",
+      "registryResults": "Do registo",
+      "registryEmpty": "Nada encontrado no registo",
+      "registryPlaceholder": {
+        "auto": "Nome, número de empresa ou NIF de IVA (p. ex. IT00488410010)",
+        "CZ": "Nome de empresa checa ou IČO",
+        "SK": "Nome de empresa eslovaca ou IČO",
+        "FR": "Nome ou SIREN",
+        "NO": "Nome ou n.º de organização",
+        "PL": "NIP (10 dígitos)",
+        "EU": "NIF de IVA com prefixo do país, p. ex. DE123456789",
+        "DE": "Nome da empresa ou NIF de IVA (DE…)",
+        "AT": "Nome da empresa ou NIF de IVA (ATU…)",
+        "IT": "Nome da empresa ou NIF de IVA (IT…)",
+        "GB": "Nome da empresa ou company number",
+        "US": "Nome da empresa (p. ex. Apple Inc)",
+        "WORLD": "Nome de empresa em qualquer parte do mundo",
+        "FI": "Nome ou Business ID (1234567-8)",
+        "DK": "Nome ou CVR (8 dígitos)",
+        "CH": "Nome ou UID (CHE-123.456.789)"
+      },
+      "internalNote": "Nota interna",
+      "internalNoteHint": "Só para si: nunca é impressa nos documentos nem enviada ao cliente. Aparece na página do contacto e quando fatura este cliente, e está incluída na exportação CSV.",
+      "internalNotePlaceholder": "P. ex. paga sempre tarde, faturas ao cuidado da Sra. Nová, 5% de desconto…",
+      "fromRegistry": "Carregar do registo",
+      "phone": "Telefone",
+      "vatSuggestYes": "O registo indica-o como sujeito passivo de IVA. Definir como \"Sim\"?",
+      "vatSuggestNo": "O registo não o indica como sujeito passivo de IVA. Definir como \"Não\"?",
+      "contactPerson": "Pessoa de contacto"
+    },
+    "detail": {
+      "title": "Detalhe do contacto",
+      "loadError": "Não foi possível carregar o contacto.",
+      "backToList": "Voltar aos contactos",
+      "aresVerified": "Verificado no ARES",
+      "noIco": "Sem número de empresa",
+      "stats": {
+        "invoiced": "Faturado ({currency})",
+        "open": "Por pagar ({currency})",
+        "overdue": "Em atraso",
+        "avgDelay": "Atraso médio de pagamento",
+        "onTime": "Paga a tempo",
+        "days": "{count, plural, one {# dia} other {# dias}}"
+      },
+      "invoices": "Documentos",
+      "expenses": "Despesas deste fornecedor",
+      "noExpenses": "Sem despesas deste contacto.",
+      "info": "Dados",
+      "vatPayer": "Sujeito passivo de IVA",
+      "yes": "Sim",
+      "no": "Não",
+      "aresCheck": "Verificado no ARES",
+      "lastInvoice": "Último documento",
+      "documentCount": "Documentos",
+      "openAres": "Abrir no ARES ↗",
+      "newInvoice": "Nova fatura",
+      "star": "Marcar com estrela",
+      "unstar": "Remover estrela",
+      "refreshAres": "Atualizar a partir do ARES",
+      "aresUpdated": "Atualizado a partir do ARES.",
+      "aresNotFound": "Não encontrado no ARES.",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "deleteTitle": "Eliminar contacto?",
+      "deleteBody": "O contacto “{name}” será removido permanentemente.",
+      "inUse": "O contacto tem documentos e não pode ser eliminado.",
+      "deleted": "Contacto eliminado.",
+      "actionFailed": "A ação falhou",
+      "invoicesFilter": "Abrir nas faturas com filtros",
+      "internalNote": "Nota interna",
+      "portal": {
+        "title": "Portal do cliente",
+        "hint": "Uma ligação permanente onde o cliente vê todos os documentos emitidos, o que falta pagar e um QR de pagamento para cada fatura. Os rascunhos nunca são mostrados. Uma nova ligação revoga a anterior.",
+        "off": "Envie ao cliente uma única ligação para todas as faturas e orçamentos.",
+        "enable": "Ativar portal",
+        "enabled": "O portal está ativo",
+        "copy": "Copiar",
+        "copied": "Ligação copiada",
+        "open": "Abrir",
+        "renew": "Nova ligação",
+        "renewConfirm": "Criar uma nova ligação? A atual deixará de funcionar.",
+        "renewed": "Nova ligação criada",
+        "disable": "Desativar",
+        "disabled": "O portal está desativado",
+        "failed": "Algo correu mal"
+      },
+      "contactPerson": "Pessoa de contacto"
+    },
+    "csv": {
+      "import": "Importar CSV",
+      "importHint": "Carregue um CSV do Excel, Fakturoid, iDoklad ou faktorio. Os contactos são associados pelo número de empresa ou, na falta dele, pelo nome.",
+      "export": "Exportar CSV",
+      "done": "Concluído: {created} contactos novos, {updated} atualizados.",
+      "skippedTitle": "Linhas ignoradas: {count}",
+      "skippedRow": "Linha {line} ({name})",
+      "skippedMore": "…e mais {count}.",
+      "reasons": {
+        "missing_name": "nome em falta",
+        "invalid_ico": "número de empresa inválido",
+        "invalid_email": "e-mail inválido",
+        "invalid_country": "país desconhecido"
+      },
+      "errors": {
+        "unknown_columns": "Não foi encontrada no ficheiro nenhuma coluna com o nome da empresa (Name / Název).",
+        "too_many_rows": "O ficheiro é demasiado grande (máx. 5000 linhas).",
+        "no_file": "Escolha um ficheiro CSV.",
+        "failed": "A importação falhou, tente novamente."
+      }
+    },
+    "filters": {
+      "kind": "Tipo",
+      "activity": "Faturação",
+      "activityHint": "Conta as faturas emitidas (não os rascunhos nem as anuladas).",
+      "activityValue": {
+        "unpaid": "Com faturas por pagar",
+        "active": "Faturados",
+        "none": "Ainda sem fatura"
+      },
+      "starred": "Com estrela",
+      "vatPayer": "Sujeito passivo de IVA",
+      "ares": "Verificado no ARES",
+      "email": "Com e-mail",
+      "country": "País"
+    },
+    "sort": {
+      "label": "Ordenar",
+      "name": "Por nome",
+      "newest": "Mais recentes",
+      "revenue": "Maior faturação",
+      "lastInvoice": "Última fatura",
+      "unpaid": "Mais por pagar",
+      "city": "Por localidade"
+    },
+    "stats": {
+      "invoices": "{count, plural, one {# fatura} other {# faturas}}",
+      "unpaid": "{count} por pagar",
+      "unpaidTitle": "Faturas emitidas por pagar"
+    },
+    "colorFilter": "Cor",
+    "colors": {
+      "red": "Vermelho",
+      "orange": "Laranja",
+      "amber": "Amarelo",
+      "green": "Verde",
+      "teal": "Verde-azulado",
+      "sky": "Azul",
+      "indigo": "Índigo",
+      "violet": "Violeta",
+      "pink": "Rosa",
+      "slate": "Cinzento"
+    }
+  },
   "settings": {
+    "title": "Definições",
+    "comingSoon": "As definições da conta estão para breve.",
+    "backToSettings": "Voltar às definições",
+    "noAccess": {
+      "title": "Isto é gerido pelo proprietário ou por um administrador",
+      "body": "Com a função “{role}” não pode alterar estas definições da empresa. Se for necessário alterá-las, peça ao proprietário da empresa ou a um administrador.",
+      "bodyGeneric": "A sua função nesta empresa não tem acesso a esta definição. Peça ao proprietário da empresa ou a um administrador.",
+      "back": "Voltar às definições"
+    },
+    "hub": {
+      "title": "Definições",
+      "description": "Tudo sobre a sua conta, empresa, dados e integrações num só lugar.",
+      "groups": {
+        "account": "Conta e empresa",
+        "data": "Dados",
+        "integrations": "Integrações",
+        "personal": "A minha conta"
+      },
+      "items": {
+        "profile": {
+          "title": "O meu perfil",
+          "description": "Nome, palavra-passe, métodos de início de sessão, idioma e aspeto."
+        },
+        "company": {
+          "title": "Dados da empresa",
+          "description": "Dados de faturação, morada, conta bancária e predefinições das faturas."
+        },
+        "team": {
+          "title": "Equipa",
+          "description": "Convide o seu contabilista ou colegas e defina as respetivas permissões."
+        },
+        "billing": {
+          "title": "Subscrição",
+          "description": "Plano, pagamentos e faturas do serviço."
+        },
+        "exports": {
+          "title": "Exportações para o contabilista",
+          "description": "Faturas e despesas em CSV e XML para Pohoda e Money S3, por mês, trimestre ou ano."
+        },
+        "backup": {
+          "title": "Cópias de segurança",
+          "description": "Cópias de segurança automáticas para o Google Drive, um webhook ou transferência."
+        },
+        "channels": {
+          "title": "Telegram e WhatsApp",
+          "description": "Emita faturas com uma mensagem de voz a partir do telemóvel."
+        },
+        "ai": {
+          "title": "Assistente de IA",
+          "description": "Leitura de recibos e faturação por voz, com a sua própria chave de API."
+        },
+        "apiKeys": {
+          "title": "Chaves de API",
+          "description": "Ligue uma loja ou o seu próprio sistema através da API REST."
+        },
+        "invoices": {
+          "title": "Faturas",
+          "description": "Que campos do formulário de fatura quer ver, campos personalizados e predefinições."
+        },
+        "modules": {
+          "title": "Módulos e tipo de atividade",
+          "description": "Ative apenas o que utiliza – por exemplo, sem despesas para trabalhadores independentes com imposto fixo."
+        },
+        "notifications": {
+          "title": "Notificações",
+          "description": "Sobre o que o informamos – no sino, por email e no navegador."
+        },
+        "emails": {
+          "title": "Emails",
+          "description": "Remetente, assunto e texto dos emails de faturas e lembretes, anexos, cor do botão."
+        },
+        "variables": {
+          "title": "Variáveis",
+          "description": "Os seus próprios textos '{placeholder}' para emails e notas de faturas – além dos predefinidos."
+        },
+        "integrations": {
+          "title": "Integrações",
+          "description": "Calendário de prazos, RSS, webhooks do Discord/Slack."
+        },
+        "paymentMethods": {
+          "title": "Métodos de pagamento",
+          "description": "Os seus próprios métodos de pagamento (PayPal, compensação, link de pagamento…) com instruções impressas no documento."
+        },
+        "publicProfile": {
+          "title": "Perfil público",
+          "description": "Uma página de cartão de visita no seu próprio endereço – serviços, contactos e um botão de pedido de informações."
+        },
+        "import": {
+          "title": "Importar de outro sistema",
+          "description": "Contactos e histórico de faturas do BitFaktura, Fakturoid, iDoklad, Excel e outros."
+        },
+        "companies": {
+          "title": "As minhas empresas",
+          "description": "Várias empresas com um único início de sessão e troca rápida entre elas."
+        },
+        "activity": {
+          "title": "Histórico de alterações",
+          "description": "Quem alterou o quê e quando: documentos, contactos, empresa, equipa e chaves."
+        },
+        "numbering": {
+          "title": "Numeração de documentos",
+          "description": "O seu próprio formato de número para faturas, faturas pró-forma, notas de crédito e orçamentos, e o número a partir do qual a série continua."
+        },
+        "referrals": {
+          "title": "Convide e ganhe créditos",
+          "description": "Um link para amigos e clientes, créditos e o pagamento do seu plano com eles."
+        },
+        "security": {
+          "title": "Segurança",
+          "description": "Autenticação de dois fatores e códigos de recuperação"
+        },
+        "emailNotifications": {
+          "title": "Notificações por email",
+          "description": "Que emails recebe, o resumo semanal e as horas de silêncio à noite."
+        },
+        "accountantProfile": {
+          "title": "Perfil de contabilista",
+          "description": "Presença no diretório de contabilistas e o programa de parceiros para contabilistas."
+        }
+      },
+      "managedByAdmins": "Os dados da empresa, a equipa, a subscrição e outras definições da empresa são geridos pelo proprietário ou por um administrador."
+    },
+    "profile": {
+      "title": "O meu perfil",
+      "description": "Os seus dados pessoais e de início de sessão. Os dados da empresa estão em Empresa.",
+      "memberSince": "Membro desde {date}",
+      "personal": "Dados pessoais",
+      "name": "Nome completo",
+      "namePlaceholder": "Maria Silva",
+      "email": "Email",
+      "save": "Guardar",
+      "nameSaved": "Nome guardado.",
+      "changePassword": "Alterar palavra-passe",
+      "setPassword": "Definir uma palavra-passe",
+      "setPasswordHint": "Inicia sessão com Google ou Seznam. Uma palavra-passe permite-lhe iniciar sessão também com email.",
+      "currentPassword": "Palavra-passe atual",
+      "newPassword": "Nova palavra-passe",
+      "confirmPassword": "Repetir a nova palavra-passe",
+      "passwordRules": "Pelo menos 8 caracteres.",
+      "passwordSaved": "Palavra-passe alterada.",
+      "signInMethods": "Métodos de início de sessão",
+      "methodPassword": "Email e palavra-passe",
+      "active": "Ativo",
+      "notSet": "Não definido",
+      "linked": "Associado",
+      "preferences": "Idioma e aspeto",
+      "language": "Idioma da aplicação",
+      "theme": "Tema",
+      "errors": {
+        "not_signed_in": "Não tem sessão iniciada.",
+        "name_too_long": "O nome é demasiado longo.",
+        "too_short": "A palavra-passe tem de ter pelo menos 8 caracteres.",
+        "wrong_current": "A palavra-passe atual está incorreta.",
+        "mismatch": "As novas palavras-passe não coincidem.",
+        "invalid_email": "Introduza um email válido.",
+        "same_email": "Esse é o seu email atual.",
+        "email_taken": "Este email já é utilizado por outra conta.",
+        "send_failed": "Não foi possível enviar o email. Tente novamente mais tarde.",
+        "confirm_mismatch": "O email de confirmação não coincide.",
+        "last_admin": "É o último administrador de {company}. Passe primeiro a função de administrador a outro membro.",
+        "issued_in_shared": "Emitiu documentos na empresa partilhada {company}, por isso não pode ser removido. Contacte os outros membros.",
+        "delete_failed": "A eliminação falhou. Tente novamente."
+      },
+      "cancel": "Cancelar",
+      "emailChange": {
+        "button": "Alterar",
+        "hint": "O seu email é utilizado para iniciar sessão. Confirme a alteração através do link enviado para o novo endereço.",
+        "title": "Alterar o email de início de sessão",
+        "body": "Enviaremos um link de confirmação para o novo endereço (válido durante 1 hora). Até o abrir, continua a iniciar sessão com o email atual.",
+        "newEmail": "Novo email",
+        "submit": "Enviar confirmação",
+        "sent": "Enviámos um link de confirmação para {email}."
+      },
+      "danger": {
+        "title": "Eliminar conta",
+        "body": "Elimina definitivamente a sua conta. As empresas em que é o único membro são eliminadas juntamente com todos os seus documentos.",
+        "button": "Eliminar conta",
+        "modalTitle": "Eliminar mesmo a sua conta?",
+        "modalBody": "Esta ação não pode ser anulada.",
+        "pointSolo": "As empresas em que é o único membro são eliminadas com as respetivas faturas, contactos e despesas.",
+        "pointShared": "Das empresas partilhadas é apenas removido; os outros membros não perdem nada.",
+        "pointBackup": "Transfira primeiro uma cópia de segurança dos dados (Definições → Cópias de segurança). Os documentos fiscais têm de ser arquivados durante 10 anos.",
+        "typeEmail": "Escreva o seu email para confirmar ({email})",
+        "confirm": "Eliminar definitivamente"
+      }
+    },
+    "company": {
+      "title": "Dados da empresa",
+      "description": "Estes dados são impressos em todas as faturas como fornecedor.",
+      "loadError": "Não foi possível carregar os dados da sua empresa.",
+      "readOnly": "Só um proprietário ou administrador pode alterar os dados da empresa.",
+      "sections": {
+        "identity": "Identificação",
+        "identityHint": "Introduza o número de identificação da empresa (IČO) e carregue o resto a partir do ARES (registo checo de empresas).",
+        "address": "Sede",
+        "contact": "Contacto",
+        "contactHint": "Apresentado no cabeçalho da fatura.",
+        "bank": "Conta bancária",
+        "bankHint": "Utilizada para o código QR de pagamento nas faturas.",
+        "defaults": "Predefinições das faturas",
+        "defaultsHint": "Preenchidas em cada nova fatura; podem ser alteradas fatura a fatura."
+      },
+      "ico": "N.º de identificação da empresa (IČO)",
+      "dic": "N.º de IVA (DIČ)",
+      "companyName": "Nome (abreviado)",
+      "legalName": "Denominação legal",
+      "vatPayer": "Sujeito passivo de IVA",
+      "vatPayerHint": "As faturas são emitidas com IVA e um resumo do imposto. Quem não é sujeito passivo recebe a nota “Não sujeito passivo de IVA” na fatura.",
+      "vatStatus": {
+        "title": "Situação de IVA",
+        "payer": "Sujeito passivo de IVA",
+        "payerHint": "Fatura com IVA e entrega declarações de IVA e declarações de controlo.",
+        "identified": "Pessoa identificada",
+        "identifiedHint": "Não é sujeito passivo de IVA, mas paga IVA sobre publicidade e serviços adquiridos no estrangeiro.",
+        "non_payer": "Não sujeito passivo de IVA",
+        "non_payerHint": "Fatura sem IVA e não entrega declarações de IVA.",
+        "dicHint": "Tem número de IVA mas não é sujeito passivo? Se compra publicidade ou serviços no estrangeiro (Google, Meta), é provavelmente uma pessoa identificada. O ARES não mostra esta informação, por isso confirme-a junto da sua repartição de finanças.",
+        "suggest": {
+          "payer": "{source} indica-o como sujeito passivo de IVA.",
+          "non_payer": "{source} não o indica como sujeito passivo de IVA.",
+          "registry": "O registo de sujeitos passivos de IVA",
+          "apply": "Definir como: {status}"
+        }
+      },
+      "advances": {
+        "title": "Adiantamentos mensais",
+        "hint": "Cada montante aplica-se a partir do mês escolhido até ser substituído por uma linha mais recente. Mantenha as linhas antigas: o painel, o calendário e a estimativa anual utilizam-nas para os meses passados. Um campo vazio mantém o montante da linha anterior; 0 significa que não há nada a pagar.",
+        "social": "Segurança social",
+        "health": "Seguro de saúde",
+        "flat_tax": "Imposto fixo ou adiantamento do imposto sobre o rendimento",
+        "short": {
+          "social": "segurança social",
+          "health": "seguro de saúde",
+          "flat_tax": "imposto fixo"
+        },
+        "from": "Aplica-se a partir de",
+        "current": "Atual",
+        "inherit": "sem alteração",
+        "add": "Novo montante a partir de…",
+        "remove": "Eliminar a linha de {month}",
+        "empty": "Ainda não há adiantamentos. Adicione um montante e o mês a partir do qual se aplica.",
+        "duplicate": "Outra linha já utiliza este mês.",
+        "minimum": "Mínimo legal a partir de {from}: {amounts}.",
+        "useMinimum": "Utilizar",
+        "errors": {
+          "month": "Preencha o mês a partir do qual cada linha se aplica.",
+          "duplicate": "Duas linhas têm o mesmo mês. Junte-as numa só.",
+          "amount": "Os adiantamentos têm de ser números entre 0 e 10 000 000."
+        },
+        "flatTaxLabel": {
+          "flat": "Imposto fixo",
+          "advance": "Adiantamento do imposto sobre o rendimento",
+          "unknown": "Imposto fixo / adiantamento do imposto"
+        },
+        "regime": {
+          "flatTax": "Está no regime de imposto fixo?",
+          "flatTaxHint": "No regime de imposto fixo (paušální daň) paga um único montante mensal que cobre o imposto sobre o rendimento, a segurança social e o seguro de saúde. Não paga adiantamentos separados de contribuições.",
+          "activity": "Atividade principal ou secundária?",
+          "activityHint": "O trabalho por conta própria é uma atividade secundária quando também tem um emprego, estuda ou recebe pensão ou subsídio parental. O adiantamento mínimo da segurança social é então mais baixo e não há adiantamento mínimo do seguro de saúde.",
+          "yes": "Sim",
+          "no": "Não",
+          "main": "Principal",
+          "secondary": "Secundária"
+        },
+        "minimumAsk": {
+          "flatTax": "Para mostrar o mínimo legal, indique se está no regime de imposto fixo:",
+          "activity": "Para mostrar o mínimo legal, indique se o trabalho por conta própria é a sua atividade principal ou secundária:"
+        },
+        "useMinimumHint": "Preenche o mínimo legal na linha. Os outros campos vazios ficam a 0."
+      },
+      "street": "Rua e número",
+      "city": "Localidade",
+      "postalCode": "Código postal",
+      "country": "País",
+      "email": "Email",
+      "phone": "Telefone",
+      "website": "Website",
+      "registryNote": "Inscrição no registo",
+      "registryNotePlaceholder": "Inscrita no Registo Comercial de Praga, secção C, processo …",
+      "accountNumber": "Número de conta",
+      "bankCode": "Código do banco",
+      "defaultLocale": "Idioma da fatura",
+      "defaultDueDays": "Vencimento (dias)",
+      "defaultPaymentMethod": "Método de pagamento",
+      "defaultNoteBelow": "Texto abaixo dos itens",
+      "defaultNotePlaceholder": "Obrigado pela preferência.",
+      "aresLoaded": "Carregado do ARES – verifique e guarde.",
+      "aresNotFound": "Não existe nenhuma empresa com este número no ARES.",
+      "aresFailed": "A consulta ao ARES falhou",
+      "unsaved": "{count, plural, one {# alteração não guardada} other {# alterações não guardadas}}",
+      "noChanges": "Tudo guardado",
+      "discard": "Descartar",
+      "save": "Guardar alterações",
+      "saved": "Dados da empresa guardados.",
+      "saveFailed": "Falha ao guardar"
+    },
     "import": {
       "title": "Mudar de outro sistema",
       "description": "Traga os contactos e as faturas emitidas do seu sistema antigo. Primeiro vê uma pré-visualização; nada é guardado até confirmar.",
@@ -2116,5 +2611,2095 @@
         "check": "Verificar numeração"
       }
     }
+  },
+  "billing": {
+    "title": "Plano e faturação",
+    "description": "Em que plano está a empresa, quanto falta do período experimental e como paga.",
+    "loadError": "Não foi possível carregar o seu plano. Tente recarregar a página.",
+    "checkoutSuccess": "Obrigado, o pagamento foi concluído. O plano fica ativo dentro de alguns segundos.",
+    "checkoutCanceled": "O pagamento não foi concluído. Não foi cobrado nada.",
+    "planNames": {
+      "free": "Grátis",
+      "start": "Start",
+      "plus": "Plus",
+      "business": "Business"
+    },
+    "trialBanner": {
+      "active": "Está a experimentar o plano {plan} gratuitamente, {days, plural, one {falta # dia} other {faltam # dias}}.",
+      "ended": "O período experimental do plano {plan} terminou. Os seus dados continuam todos lá; as funcionalidades pagas ficam só de leitura.",
+      "choose": "Escolher plano",
+      "upgrade": "Fazer upgrade"
+    },
+    "current": {
+      "label": "Plano atual",
+      "trial": "Período experimental gratuito, {days, plural, one {falta # dia} other {faltam # dias}} (até {date}). Sem cartão, nada é cobrado automaticamente.",
+      "trialEnded": "O período experimental do plano {plan} terminou. A empresa está agora no plano Grátis. Nada foi apagado; as funcionalidades acima deste plano ficam só de leitura.",
+      "prepaid": "Pago até {date}.",
+      "subscriptionMonth": "Subscrição com faturação mensal.",
+      "subscriptionYear": "Subscrição com faturação anual.",
+      "free": "Plano Grátis. Faça upgrade sempre que precisar de mais.",
+      "pastDue": "O último pagamento falhou. A Stripe vai tentar de novo; entretanto, pode alterar o método de pagamento no portal."
+    },
+    "portal": "Gerir subscrição",
+    "choose": {
+      "title": "Escolher plano",
+      "yearly": "Anual",
+      "monthly": "Mensal",
+      "perMonth": "/ mês",
+      "billedYearly": "{total} por ano",
+      "billedMonthly": "faturado todos os meses",
+      "payCard": "Pagar com cartão",
+      "renewCard": "Renovar com cartão",
+      "cardUnavailable": "Os pagamentos com cartão ainda não estão ativos.",
+      "cardTitle": "Subscrição com cartão – renova automaticamente, mais barata",
+      "cardBody": "Cartão, Apple Pay ou Google Pay. Renova-se sozinha e pode cancelá-la aqui com um clique.",
+      "transferTitle": "Transferência bancária – sem renovação automática",
+      "transferBody": "Uma fatura proforma com código QR para um mês ou um ano de antecedência, mais {percent} %. Enviamos um lembrete antes de o período terminar.",
+      "transferPrice": "Por transferência {price} / mês ({total})"
+    },
+    "terms": {
+      "renewYearly": "A subscrição renova-se automaticamente todos os anos ao mesmo preço até a cancelar.",
+      "renewMonthly": "A subscrição renova-se automaticamente todos os meses ao mesmo preço até a cancelar.",
+      "cancel": "Pode cancelar a qualquer momento, num só passo, diretamente nesta página. O plano mantém-se até ao fim do período pago.",
+      "methods": "Pague com cartão, Apple Pay, Google Pay ou qualquer outro método que o checkout lhe ofereça.",
+      "transfer": "Por transferência bancária paga um ano adiantado, mais {percent} % do que com cartão. Nada se renova sozinho: 14 e 3 dias antes do fim enviamos-lhe por e-mail uma nova proforma com código QR. O plano é ativado assim que o pagamento chega à nossa conta.",
+      "transferMonthly": "Por transferência bancária paga um mês adiantado, mais {percent} % do que com cartão. Nada se renova sozinho: 14 e 3 dias antes do fim enviamos-lhe por e-mail uma nova proforma com código QR.",
+      "transferCzkOnly": "A transferência bancária só está disponível em CZK.",
+      "vat": "Preços sem IVA."
+    },
+    "transfer": {
+      "title": "Pagamentos por transferência bancária",
+      "button": "Pagar por transferência bancária",
+      "created": "A sua fatura proforma está pronta. Os dados de pagamento estão abaixo.",
+      "months": "{n, plural, one {# mês} other {# meses}}",
+      "status": {
+        "pending": "A aguardar pagamento",
+        "paid": "Paga",
+        "canceled": "Cancelada"
+      },
+      "qrAlt": "Código QR para o pagamento",
+      "amount": "Montante",
+      "vat": "IVA incluído {rate} %",
+      "vs": "Símbolo variável",
+      "account": "Número de conta",
+      "due": "Vencimento",
+      "payee": "Beneficiário",
+      "ico": "N.º de identificação da empresa (IČO)",
+      "dic": "N.º de IVA (DIČ)",
+      "note": "Leia o código QR na app do seu banco ou introduza manualmente a conta e o símbolo variável. Ativamos o plano assim que identificarmos o pagamento, normalmente no prazo de um dia útil.",
+      "paidOn": "Pagamento recebido a {date}."
+    },
+    "errors": {
+      "generic": "Ocorreu um erro. Tente novamente.",
+      "billing_not_configured": "Os pagamentos com cartão ainda não estão ativos.",
+      "already_subscribed": "A empresa já tem uma subscrição. Pode geri-la no topo desta página.",
+      "no_stripe_customer": "A empresa ainda não tem subscrição na Stripe.",
+      "bank_transfer_not_configured": "A transferência bancária ainda não está ativa.",
+      "too_many_pending_proformas": "Já tem três proformas por pagar. Pague uma delas ou aguarde até a identificarmos.",
+      "forbidden": "Só o proprietário da empresa ou um administrador pode efetuar pagamentos.",
+      "no_subscription": "A empresa não tem nenhuma subscrição com cartão ativa.",
+      "same_interval": "Já paga dessa forma.",
+      "subscription_past_due": "O último pagamento não foi concluído. Altere primeiro o cartão no portal da subscrição.",
+      "subscription_not_changeable": "Esta subscrição não pode ser alterada aqui. Escreva-nos e resolvemos a situação.",
+      "trial_card_disabled": "De momento não é possível prolongar o período experimental com cartão.",
+      "trial_card_not_available": "Esta empresa não pode prolongar o período experimental com cartão.",
+      "no_ico": "Preencha primeiro o IČO da empresa nas definições da empresa."
+    },
+    "portalHint": "No portal da Stripe pode alterar o cartão ou os dados de faturação e descarregar faturas.",
+    "sub": {
+      "renewsOn": "Próximo pagamento e renovação a {date}.",
+      "endsOn": "A subscrição foi cancelada e termina a {date}. O plano mantém-se ativo até lá.",
+      "cancel": "Cancelar subscrição",
+      "cancelConfirm": "A subscrição não será renovada. O plano mantém-se até {date} e depois a empresa passa para o plano Grátis. Os seus dados ficam guardados.",
+      "cancelConfirmNoDate": "A subscrição não será renovada. O plano mantém-se até ao fim do período pago e depois a empresa passa para o plano Grátis. Os seus dados ficam guardados.",
+      "cancelYes": "Sim, cancelar",
+      "keep": "Manter subscrição",
+      "canceled": "A subscrição não será renovada. O plano mantém-se até ao fim do período pago.",
+      "resume": "Manter a minha subscrição",
+      "resumed": "A subscrição voltará a ser renovada.",
+      "switchToYear": "Mudar para faturação anual ({price} / mês)",
+      "switchToMonth": "Mudar para faturação mensal ({price} / mês)",
+      "switchNote": "O novo período começa de imediato. A parte não utilizada do período atual é descontada no primeiro pagamento.",
+      "switched": "Feito, agora paga {interval, select, year {anualmente} other {mensalmente}}."
+    },
+    "trialCard": {
+      "title": "Experimente a Billanta durante {days} dias",
+      "body": "Adicione um cartão e o seu período experimental passa a ter {days} dias no total. Nada é cobrado e, antes de terminar, perguntamos se quer continuar.",
+      "bodyWithheld": "Não foi possível atribuir a esta empresa o período experimental sem cartão. Com um cartão tem {days} dias. Nada é cobrado e, antes de terminar, perguntamos se quer continuar.",
+      "button": "Adicionar cartão",
+      "hint": "A Stripe verifica o cartão. Cada cartão só prolonga um período experimental uma vez.",
+      "extended": "Feito – o seu período experimental tem agora {days} dias. O cartão ficou guardado e nada foi cobrado.",
+      "errors": {
+        "generic": "Não foi possível prolongar o período experimental. Tente novamente.",
+        "trial_card_card_used": "Este cartão já prolongou um período experimental.",
+        "trial_card_user_had_trial": "A sua conta já teve um período experimental com outra empresa.",
+        "trial_card_trial_over": "O período experimental já terminou e não pode ser prolongado.",
+        "trial_card_no_ico": "Preencha primeiro o IČO da empresa nas definições da empresa.",
+        "trial_card_invalid_ico": "O IČO da empresa não é válido. Corrija-o nas definições da empresa.",
+        "trial_card_not_in_registry": "Não encontrámos o IČO da empresa no registo comercial. Corrija-o nas definições da empresa.",
+        "trial_card_registry_down": "O registo comercial não está a responder. Tente novamente dentro de momentos.",
+        "trial_card_not_available": "Esta empresa não pode prolongar o período experimental com cartão.",
+        "trial_card_invalid_session": "Este cartão guardado não pertence a esta empresa.",
+        "trial_card_incomplete": "O cartão não chegou a ser guardado. Tente novamente.",
+        "trial_card_disabled": "De momento não é possível prolongar o período experimental com cartão."
+      }
+    }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Funcionalidades",
+      "pricing": "Preços",
+      "login": "Iniciar sessão",
+      "signup": "Registar-se",
+      "label": "Navegação principal",
+      "home": "Início",
+      "start": "Começar",
+      "cities": "Cidades",
+      "about": "Sobre nós",
+      "faq": "Perguntas frequentes",
+      "guestInvoice": "Faturar sem registo",
+      "createInvoice": "Criar fatura",
+      "createInvoiceShort": "Fatura",
+      "search": "Pesquisar",
+      "app": "Aplicação",
+      "account": "Conta",
+      "accountants": "Para contabilistas",
+      "partners": "Parceiros",
+      "schools": "Para escolas",
+      "creators": "Para criadores",
+      "events": "Para eventos e comunidades",
+      "forPartners": "Para parceiros",
+      "firstInvoice": "Primeira fatura",
+      "teamRoles": "Funções da equipa"
+    },
+    "hero": {
+      "title": "Faturação para empresas checas e eslovacas, sem papelada",
+      "subtitle": "Emita faturas por voz no Telegram ou no WhatsApp, exporte-as para ISDOC e tenha a certeza de que tudo bate certo com o registo ARES e a legislação em vigor.",
+      "cta": "Criar conta gratuita",
+      "secondaryCta": "Ver como funciona",
+      "eyebrow": "Faturação para CZ e SK",
+      "points": {
+        "isdoc": "Exportação ISDOC",
+        "ares": "Pesquisa no ARES",
+        "qr": "Pagamentos por QR"
+      },
+      "guestCta": "Faturar sem registo",
+      "dictateCta": "Ou dite-a – sem registo"
+    },
+    "invoiceMockup": {
+      "status": "Paga",
+      "issuedTo": "Faturar a",
+      "dueDate": "Data de vencimento",
+      "subtotal": "Subtotal",
+      "vat": "IVA 21%",
+      "total": "Total a pagar",
+      "isdocTag": "Exportação ISDOC",
+      "aresTag": "Verificado no ARES",
+      "credit": "Feito com Billanta"
+    },
+    "features": {
+      "title": "Tudo o que precisa para faturar, num só lugar",
+      "isdoc": {
+        "title": "Exportação ISDOC",
+        "description": "Faturas em formato ISDOC, prontas para o contabilista e para as finanças – sem voltar a introduzir nada à mão."
+      },
+      "aiVoice": {
+        "title": "Fatura a partir de uma mensagem de voz",
+        "description": "Dite uma fatura no Telegram ou no WhatsApp e a IA prepara um rascunho para uma revisão rápida."
+      },
+      "compliance": {
+        "title": "Verificação dos elementos obrigatórios",
+        "description": "Antes de emitir uma fatura, verificamos se tem tudo o que a lei checa ou eslovaca do IVA e o direito comercial exigem – número de empresa (IČO), número de IVA, moradas, linhas da fatura. Os dados do cliente vêm do ARES."
+      },
+      "multilang": {
+        "title": "Checo, eslovaco e inglês",
+        "description": "Toda a aplicação e as suas faturas funcionam em três línguas desde o primeiro dia."
+      },
+      "qr": {
+        "title": "Um código QR de pagamento em cada fatura",
+        "description": "Cada fatura inclui um código QR segundo a norma da Associação Bancária Checa. Indique o número de conta ou o IBAN e o cliente só tem de ler o código e pagar."
+      },
+      "bankSync": {
+        "title": "Pagamentos bancários e PayPal conciliados automaticamente",
+        "description": "Ligue o Fio, outro banco via PSD2 ou o PayPal, e o Billanta descarrega os pagamentos recebidos e marca as faturas como pagas, já com a comissão do PayPal incluída."
+      },
+      "reminders": {
+        "title": "Lembretes de faturas vencidas",
+        "description": "O Billanta acompanha as faturas por pagar e envia ao cliente um lembrete com a ligação para a fatura e o pagamento por QR."
+      },
+      "vat": {
+        "title": "Declaração de IVA para o EPO",
+        "description": "A partir das faturas e despesas, preparamos em XML a declaração de IVA e a declaração de controlo para o portal fiscal checo."
+      },
+      "expenses": {
+        "title": "Recibos a partir de uma fotografia",
+        "description": "Fotografe um recibo ou carregue um PDF e a IA preenche o fornecedor, o valor, o IVA e a data de vencimento."
+      },
+      "recurring": {
+        "title": "Faturas recorrentes e em lote",
+        "description": "Avenças e rendas são emitidas conforme o calendário. A partir de um modelo, pode faturar vários clientes de uma só vez."
+      },
+      "templates": {
+        "title": "Modelos e variáveis personalizadas",
+        "description": "Guarde um documento como modelo, edite os textos dos e-mails e insira variáveis como '{number}' ou '{due_date}'."
+      },
+      "time": {
+        "title": "Registo de horas",
+        "description": "Cronómetro e registos manuais por projeto. Transforme o trabalho por faturar numa fatura, à tarifa do projeto, com um clique."
+      },
+      "taxEstimate": {
+        "title": "Quanto fica para si",
+        "description": "Cada fatura mostra um valor aproximado depois do imposto sobre o rendimento e das contribuições, segundo as regras checas para trabalhadores independentes. Para o ano inteiro calculamos o imposto, as contribuições e os próximos adiantamentos."
+      },
+      "currencies": {
+        "title": "Faturas em moeda estrangeira",
+        "description": "EUR, USD e outras. A taxa de câmbio do ČNB (banco central checo) para a data da prestação é preenchida automaticamente e convertida em CZK para efeitos de IVA."
+      },
+      "clientPortal": {
+        "title": "Portal do cliente",
+        "description": "Uma ligação permanente por cliente: todas as faturas e orçamentos, o que falta pagar e o que está vencido."
+      },
+      "migration": {
+        "title": "Mudar de outra aplicação",
+        "description": "Do BitFaktura e do Fakturoid diretamente pela API, com os PDF originais; do iDoklad ou do Excel via CSV. Vê uma pré-visualização antes de guardar."
+      },
+      "api": {
+        "title": "API e webhooks",
+        "description": "Uma API REST com chaves próprias, webhooks para Slack, Discord ou o seu próprio sistema, e um calendário de vencimentos."
+      },
+      "team": {
+        "title": "Equipa, contabilista, várias empresas",
+        "description": "Convide colegas e o seu contabilista, cada um com a sua função. Gira uma atividade em nome individual e uma sociedade a partir da mesma conta."
+      },
+      "auditLog": {
+        "title": "Histórico de alterações",
+        "description": "Quem alterou o quê e quando, incluindo alterações feitas pela IA e pela API. Um documento emitido só pode ser corrigido indicando o motivo."
+      },
+      "reports": {
+        "title": "Relatórios por período",
+        "description": "Receitas, despesas e principais clientes de um mês, trimestre ou ano, comparados com o período anterior."
+      },
+      "backups": {
+        "title": "Cópias de segurança no seu próprio armazenamento",
+        "description": "Os dados da empresa são guardados regularmente no Google Drive, no seu servidor via SFTP ou num webhook. Descarregue tudo com um clique."
+      }
+    },
+    "howItWorks": {
+      "title": "Como funciona",
+      "steps": {
+        "capture": {
+          "title": "Dite ou escreva",
+          "description": "Uma nota de voz no Telegram ou no WhatsApp, uma fotografia de um recibo ou uma frase. A IA preenche o cliente a partir do ARES e as linhas da fatura.",
+          "highlight": "IA também no plano gratuito"
+        },
+        "draft": {
+          "title": "Reveja o rascunho",
+          "description": "O Billanta verifica os elementos obrigatórios, o IVA e a numeração. Nada é emitido sem a sua confirmação.",
+          "highlight": "Verificação dos elementos obrigatórios"
+        },
+        "issue": {
+          "title": "Emita e envie",
+          "description": "Um PDF com código QR de pagamento, ISDOC e UBL para a Eslováquia. O cliente recebe um e-mail com a ligação para a fatura.",
+          "highlight": "10 documentos por mês grátis"
+        },
+        "getPaid": {
+          "title": "Pagamentos conciliados automaticamente",
+          "description": "Do Fio, de outro banco via PSD2 ou do PayPal. Cada fatura mostra quanto fica para si depois do imposto sobre o rendimento e das contribuições.",
+          "highlight": "Fica para si: o valor líquido"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Pronto para simplificar a sua faturação?",
+      "subtitle": "Comece grátis, sem cartão de crédito.",
+      "cta": "Criar conta"
+    },
+    "footer": {
+      "tagline": "Faturação moderna para empresas checas e eslovacas.",
+      "product": {
+        "title": "Produto",
+        "features": "Funcionalidades",
+        "pricing": "Preços",
+        "faq": "Perguntas frequentes",
+        "guestInvoice": "Faturar sem registo",
+        "compare": "Comparar com outros",
+        "firstInvoice": "A sua primeira fatura",
+        "beginners": "Para principiantes",
+        "advanced": "Para utilizadores avançados",
+        "teamRoles": "Funções da equipa"
+      },
+      "company": {
+        "title": "Empresa",
+        "about": "Sobre nós",
+        "accountants": "Para contabilistas",
+        "partners": "Parceiros",
+        "blog": "Blogue",
+        "schools": "Para escolas",
+        "creators": "Para criadores",
+        "events": "Para eventos e comunidades",
+        "forPartners": "Para parceiros"
+      },
+      "legal": {
+        "title": "Informação legal",
+        "terms": "Termos de Serviço",
+        "privacy": "Política de Privacidade",
+        "cookies": "Política de Cookies",
+        "cookieSettings": "Definições de cookies",
+        "dpa": "Acordo de Tratamento de Dados",
+        "contact": "Contacto"
+      },
+      "account": {
+        "title": "Conta",
+        "login": "Iniciar sessão",
+        "signup": "Registar-se",
+        "openApp": "Ir para a aplicação"
+      },
+      "partners": {
+        "title": "Parceiros",
+        "all": "Todos os parceiros"
+      }
+    },
+    "seo": {
+      "title": "Billanta – faturação online para empresas checas e eslovacas",
+      "description": "Emita faturas com exportação ISDOC, pesquisa de clientes no ARES e código QR de pagamento. Dite um rascunho por mensagem de voz no Telegram ou no WhatsApp. Comece grátis."
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "items": {
+        "free": {
+          "q": "Quanto custa o Billanta?",
+          "a": "Pode começar grátis, sem cartão, com 10 documentos por mês. Os planos pagos começam em {price} por mês sem IVA, com faturação anual; consulte a página de preços para mais detalhes."
+        },
+        "slovakia": {
+          "q": "O Billanta funciona para a Eslováquia?",
+          "a": "Sim. A aplicação está disponível em eslovaco, pesquisa clientes no registo eslovaco RPO, coloca nas faturas um código QR PAY by square e os planos têm preços em euros. No plano Plus prepara a declaração de IVA eslovaca, a declaração de controlo e a declaração recapitulativa para o eDane. Já cria ficheiros de fatura eletrónica UBL (Peppol BIS 3.0); o envio pela rede Peppol, para a obrigação de faturação eletrónica a partir de 2027, está em desenvolvimento."
+        },
+        "isdoc": {
+          "q": "O que é o ISDOC e porque preciso dele?",
+          "a": "O ISDOC é a norma checa de fatura eletrónica. Os programas de contabilidade importam-no automaticamente, por isso o seu contabilista nunca tem de voltar a escrever nada."
+        },
+        "ares": {
+          "q": "Como funciona a pesquisa no ARES?",
+          "a": "Introduza o número de identificação da empresa (IČO) e o Billanta obtém o nome, a morada e o número de IVA do cliente diretamente do registo público ARES, sem nada para reescrever nem gralhas."
+        },
+        "voice": {
+          "q": "Posso ditar uma fatura?",
+          "a": "Sim. Envie uma mensagem de voz no Telegram ou no WhatsApp e a IA prepara a partir dela um rascunho de fatura. Só se torna definitiva depois de a rever e confirmar."
+        },
+        "data": {
+          "q": "O que acontece aos meus dados?",
+          "a": "Os dados de cada empresa estão isolados dos de todas as outras na base de dados. Pode descarregar uma cópia de segurança a qualquer momento ou, nas definições, guardá-la automaticamente no seu próprio armazenamento."
+        }
+      }
+    },
+    "compare": {
+      "title": "Em comparação com as alternativas",
+      "lead": "Mais funcionalidades grátis, um preço mais baixo e IA em todos os planos. Face ao Fakturoid, iDoklad, SuperFaktura, Vyfakturuj e BitFaktura.",
+      "more": "Comparação completa com o Fakturoid, o iDoklad e outros"
+    }
+  },
+  "buyerDetails": {
+    "title": "Preencha os seus dados de faturação",
+    "intro": "{supplier} está a preparar {document} para si. Indique em nome de quem deve ser emitido.",
+    "documentType": {
+      "invoice": "uma fatura",
+      "proforma": "uma fatura pró-forma",
+      "quote": "um orçamento"
+    },
+    "supplier": "Fornecedor",
+    "amount": "Valor",
+    "withoutVat": "{amount} sem IVA",
+    "dueDate": "Vence a {date}",
+    "item": "Artigo",
+    "quantity": "Quantidade",
+    "total": "Total",
+    "ico": "N.º de empresa",
+    "dic": "N.º de IVA",
+    "doneTitle": "Obrigado, já temos os seus dados",
+    "doneText": "{supplier} vai agora concluir a fatura. Pode fechar esta página.",
+    "privacy": "Só {supplier} recebe estes dados, para emitir o seu documento.",
+    "form": {
+      "title": "Dados de faturação",
+      "hint": "{supplier} vai emitir o documento com estes dados.",
+      "kind": "O cliente é",
+      "company": "Empresa ou trabalhador independente",
+      "person": "Particular",
+      "country": "País",
+      "ico": "N.º de empresa (IČO)",
+      "dic": "N.º de IVA (DIČ)",
+      "vatId": "N.º de IVA",
+      "lookup": "Obter do registo",
+      "lookupNeedsIco": "Preencha primeiro o número de empresa.",
+      "lookupNeedsVat": "Preencha primeiro o número de IVA.",
+      "lookupNotFound": "Nada encontrado no registo; preencha os dados manualmente.",
+      "lookupDone": "Dados carregados; verifique-os.",
+      "companyName": "Denominação social",
+      "personName": "Nome completo",
+      "street": "Rua e número",
+      "city": "Localidade",
+      "postalCode": "Código postal",
+      "email": "E-mail para a fatura",
+      "submit": "Enviar dados",
+      "errors": {
+        "invalid": "Verifique os campos assinalados.",
+        "closed": "Esta ligação já não funciona. Peça uma nova ao fornecedor.",
+        "submitted": "Os dados já foram enviados.",
+        "limit": "Demasiadas tentativas; tente novamente dentro de momentos.",
+        "failed": "Algo correu mal; tente novamente.",
+        "field": "Verifique este campo.",
+        "ico_required": "Uma empresa checa ou eslovaca precisa de um número de empresa (IČO).",
+        "ico_format": "O número de empresa tem 8 dígitos.",
+        "ico_foreign": "O número de empresa (IČO) aplica-se apenas a empresas checas e eslovacas.",
+        "dic_format": "O número de IVA não parece correto.",
+        "email_required": "Indique o seu e-mail para que o fornecedor possa responder-lhe.",
+        "required": "Este campo é obrigatório.",
+        "phone_format": "Este número de telefone não parece correto."
+      },
+      "optional": "opcional",
+      "phone": "Telefone",
+      "companySearch": "Encontre a sua empresa no registo",
+      "companySearchHint": "Comece a escrever um nome, o número de empresa ou a localidade e escolha a sua empresa. Nós preenchemos o resto."
+    },
+    "trust": {
+      "verifiedAres": "Verificámos {supplier} no registo comercial checo (ARES).",
+      "verifiedRpo": "Verificámos {supplier} no registo eslovaco de pessoas coletivas (RPO).",
+      "private": "Esta ligação é privada. Só este fornecedor vê os seus dados."
+    }
+  },
+  "templates": {
+    "title": "Modelos de fatura",
+    "lead": "Guarde faturas recorrentes como modelo e emita-as com um clique – uma de cada vez ou em lote para vários clientes. Crie um modelo a partir de qualquer documento com “Guardar como modelo” ou comece com um modelo inicial pronto a usar.",
+    "bulkCta": "Faturação em lote",
+    "loadError": "Não foi possível carregar os modelos.",
+    "saved": "Os seus modelos ({count})",
+    "emptyTitle": "Ainda não há modelos guardados",
+    "emptyHint": "Abra uma fatura e escolha “Guardar como modelo” no respetivo menu. Ou comece com um dos modelos iniciais abaixo.",
+    "anyCustomer": "Sem cliente fixo",
+    "menu": "Ações do modelo",
+    "use": "Criar documento",
+    "useNamed": "Criar um documento a partir do modelo {name}",
+    "bulk": "Faturar em lote",
+    "rename": "Editar nome e descrição",
+    "delete": "Eliminar",
+    "deleteTitle": "Eliminar modelo?",
+    "deleteBody": "O modelo “{name}” será eliminado. Os documentos criados a partir dele mantêm-se inalterados.",
+    "moreItems": "+ mais {count}",
+    "usage": "Usado {count}× · {when}",
+    "neverUsed": "Ainda não usado",
+    "starters": "Modelos iniciais",
+    "startersHint": "Um formulário pré-preenchido com linhas típicas – basta acrescentar o cliente e os preços.",
+    "name": "Nome",
+    "description": "Descrição",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "renamed": "Modelo atualizado.",
+    "deleted": "Modelo eliminado.",
+    "failed": "A ação falhou: {reason}",
+    "presets": {
+      "hourly": {
+        "name": "Trabalho à hora",
+        "description": "Consultoria, desenvolvimento ou serviços faturados à hora.",
+        "items": {
+          "0": "Consultoria"
+        }
+      },
+      "retainer": {
+        "name": "Avença mensal",
+        "description": "Um serviço mensal regular – gestão, suporte, manutenção.",
+        "items": {
+          "0": "Avença mensal de serviços"
+        }
+      },
+      "goods": {
+        "name": "Venda de mercadorias",
+        "description": "Mercadorias à unidade, incluindo portes.",
+        "items": {
+          "0": "Mercadorias",
+          "1": "Portes de envio"
+        }
+      },
+      "advance": {
+        "name": "Adiantamento de projeto",
+        "description": "Uma fatura pró-forma antes do início dos trabalhos.",
+        "items": {
+          "0": "Adiantamento de projeto"
+        }
+      },
+      "quote": {
+        "name": "Orçamento de projeto",
+        "description": "Um orçamento dividido pelas fases do projeto.",
+        "items": {
+          "0": "Análise e planeamento",
+          "1": "Design visual",
+          "2": "Implementação"
+        }
+      },
+      "rent": {
+        "name": "Renda",
+        "description": "Renda mensal e adiantamentos de despesas de condomínio.",
+        "items": {
+          "0": "Renda",
+          "1": "Adiantamentos de despesas"
+        }
+      }
+    }
+  },
+  "comparePage": {
+    "title": "Billanta vs. as alternativas",
+    "seoTitle": "Comparação de aplicações de faturação checas e eslovacas: Billanta, Fakturoid, iDoklad e outras",
+    "lead": "O que tem de graça, quanto custa o plano pago mais barato e onde entram a IA, a conciliação bancária e a API. Lado a lado, numa só página.",
+    "feature": "Comparado",
+    "rows": {
+      "free": {
+        "label": "Plano gratuito",
+        "billanta": "10 docs/mês, depois 5 CZK cada",
+        "fakturoid": "5 clientes",
+        "idoklad": "5 clientes",
+        "superfaktura": "5 clientes",
+        "vyfakturuj": "5 clientes",
+        "bitfaktura": "1 fatura/mês",
+        "kros": "5 clientes, só não sujeitos a IVA",
+        "billdu": "Não, só período experimental"
+      },
+      "entry": {
+        "label": "Plano mais barato",
+        "billanta": "119 CZK/mês",
+        "fakturoid": "151 CZK/mês",
+        "idoklad": "187 CZK/mês",
+        "superfaktura": "129 CZK/mês",
+        "vyfakturuj": "175 CZK/mês",
+        "bitfaktura": "129 CZK/mês",
+        "kros": "5,90 €/mês",
+        "billdu": "4,99 €/mês, 10 clientes"
+      },
+      "bank": {
+        "label": "Conciliação bancária",
+        "billanta": "Planos pagos",
+        "fakturoid": "A partir do 2.º plano pago",
+        "idoklad": "A partir do 2.º plano pago",
+        "superfaktura": "Planos pagos",
+        "vyfakturuj": "Planos pagos",
+        "bitfaktura": "Importação desde o 1.º, conciliação desde o 2.º plano pago",
+        "kros": "Planos pagos",
+        "billdu": "–"
+      },
+      "ai": {
+        "label": "Leitura de documentos com IA",
+        "billanta": "Sim, até no gratuito",
+        "fakturoid": "Extra pago",
+        "idoklad": "3 grátis, depois pago",
+        "superfaktura": "20 grátis, depois pago",
+        "vyfakturuj": "–",
+        "bitfaktura": "Limitada",
+        "kros": "Recolha de dados só no plano mais alto",
+        "billdu": "–"
+      },
+      "voice": {
+        "label": "Fatura por voz / mensagem",
+        "billanta": "Sim, Telegram e WhatsApp",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "taxEstimate": {
+        "label": "Estimativa de impostos e contribuições",
+        "billanta": "Em cada fatura, anual a partir do Start",
+        "fakturoid": "Planos pagos",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "Declaração de imposto sobre o rendimento (tipo A e B)",
+        "billdu": "–"
+      },
+      "import": {
+        "label": "Importação de outra aplicação",
+        "billanta": "Reconhece exportações do Fakturoid, iDoklad, SuperFaktura, Vyfakturuj, KROS, Billdu e BitFaktura (CSV, Excel); Fakturoid e BitFaktura também via API",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Do Fakturoid e do iDoklad",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "api": {
+        "label": "API",
+        "billanta": "Planos pagos",
+        "fakturoid": "Até no gratuito",
+        "idoklad": "A partir do 2.º plano pago",
+        "superfaktura": "Só no plano mais alto",
+        "vyfakturuj": "A partir do 2.º plano pago",
+        "bitfaktura": "Até no gratuito",
+        "kros": "Extra de 4,90 €, incluído no KROS Firma",
+        "billdu": "Só no plano mais alto"
+      },
+      "recurring": {
+        "label": "Faturas recorrentes",
+        "billanta": "Sim, 2 até no gratuito",
+        "fakturoid": "Só no plano mais alto",
+        "idoklad": "Sim",
+        "superfaktura": "A partir do 2.º plano pago",
+        "vyfakturuj": "A partir do 2.º plano pago",
+        "bitfaktura": "Planos pagos",
+        "kros": "Extra de 1,90 €, incluído no KROS Firma",
+        "billdu": "Só no plano mais alto"
+      },
+      "reminders": {
+        "label": "Lembretes automáticos",
+        "billanta": "Planos pagos",
+        "fakturoid": "A partir do 2.º plano pago",
+        "idoklad": "A partir do 2.º plano pago",
+        "superfaktura": "A partir do 2.º plano pago, também por SMS",
+        "vyfakturuj": "Planos pagos",
+        "bitfaktura": "Sim, até no gratuito",
+        "kros": "Planos pagos",
+        "billdu": "A partir do 2.º plano pago"
+      },
+      "einvoice": {
+        "label": "ISDOC / fatura eletrónica",
+        "billanta": "Ficheiros ISDOC e UBL",
+        "fakturoid": "ISDOC",
+        "idoklad": "ISDOC",
+        "superfaktura": "ISDOC",
+        "vyfakturuj": "ISDOC",
+        "bitfaktura": "ISDOC, planos pagos",
+        "kros": "Anunciada, 50 envios/mês a partir do Základ",
+        "billdu": "Anunciada antes de 1 jan. 2027"
+      },
+      "vatReports": {
+        "label": "Declarações de IVA eslovacas (declaração periódica, declaração de controlo e declaração recapitulativa)",
+        "billanta": "XML para submeter, a partir do Plus",
+        "superfaktura": "–",
+        "kros": "–",
+        "idoklad": "–",
+        "billdu": "–",
+        "fakturoid": "Não para a Eslováquia",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "qr": {
+        "label": "Pagamento por QR",
+        "billanta": "Sim, até no gratuito",
+        "fakturoid": "Sim, até no gratuito",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Sim",
+        "bitfaktura": "–",
+        "kros": "Sim, também no plano gratuito",
+        "billdu": "–"
+      },
+      "currencies": {
+        "label": "Moedas estrangeiras",
+        "billanta": "Sim, câmbio do ČNB preenchido",
+        "fakturoid": "–",
+        "idoklad": "Sim, com câmbio",
+        "superfaktura": "–",
+        "vyfakturuj": "Sim, até no gratuito",
+        "bitfaktura": "Sim, câmbio do ČNB ou do BCE",
+        "kros": "Planos pagos, câmbios atuais",
+        "billdu": "–"
+      },
+      "czsk": {
+        "label": "Chéquia e Eslováquia",
+        "billanta": "Uma só conta, também contribuições SK",
+        "fakturoid": "Sem funções fiscais SK",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "mobile": {
+        "label": "Telemóvel",
+        "billanta": "Aplicação web instalável",
+        "fakturoid": "iOS, Android",
+        "idoklad": "iOS, Android",
+        "superfaktura": "iOS, Android",
+        "vyfakturuj": "iOS, Android",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "iOS, Android"
+      },
+      "history": {
+        "label": "Histórico de alterações",
+        "billanta": "Sim",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "Sim",
+        "kros": "–",
+        "billdu": "–"
+      }
+    },
+    "disclaimer": "Com base nas tabelas de preços públicas checas em {date}. Preços mensais com faturação anual, sem IVA salvo indicação em contrário. \"2.º plano pago\" = o segundo plano pago mais barato. Os limites dos planos gratuitos são indicados em clientes, mesmo quando a tabela de preços fala em contactos. Valores aproximados – confirme junto do fornecedor. Os nomes são marcas dos respetivos titulares.",
+    "reasonsTitle": "O que torna a Billanta diferente",
+    "reasons": [
+      {
+        "title": "Grátis e sem limite de clientes",
+        "body": "Fature a quem quiser. Só paga os documentos acima de 10 por mês, um a um, e não um plano inteiro."
+      },
+      {
+        "title": "IA incluída",
+        "body": "Um recibo a partir de uma fotografia ou uma fatura ditada ao telemóvel. Todos os planos têm créditos de IA, ilimitados com a sua própria chave."
+      },
+      {
+        "title": "Chéquia e Eslováquia",
+        "body": "ARES e o registo eslovaco, coroa e euro, documentos em checo, eslovaco e inglês numa só conta."
+      },
+      {
+        "title": "Histórico de alterações",
+        "body": "Quem alterou o quê, e porquê. Um documento emitido só pode ser editado com um motivo visível para toda a equipa."
+      },
+      {
+        "title": "Os seus dados continuam seus",
+        "body": "Cópias de segurança automáticas para o Google Drive e transferência de tudo com um clique."
+      },
+      {
+        "title": "Mudar é fácil",
+        "body": "Do iDoklad ou do Excel por CSV, do BitFaktura e do Fakturoid diretamente via API, com os PDF originais incluídos."
+      }
+    ],
+    "switchTitle": "Vem de outra aplicação?",
+    "switchBody": "Comece grátis e traga os seus contactos e documentos com uma importação.",
+    "pricingCta": "Preços",
+    "signupCta": "Começar grátis",
+    "notStated": "– = não indicado na tabela de preços (não significa que não exista)",
+    "verified": "Verificado nas tabelas de preços em {date}",
+    "sourcesTitle": "Fontes",
+    "brand": {
+      "suitsUsTitle": "Quando a Billanta é a melhor escolha",
+      "suitsThemTitle": "Quando {brand} faz mais sentido",
+      "priceTitle": "Preço",
+      "tableTitle": "Billanta e {brand}, ponto por ponto",
+      "source": "Fonte: tabela de preços de {brand}",
+      "versus": "Billanta vs. {brand}",
+      "importCta": "Como funciona a importação",
+      "faqTitle": "Perguntas frequentes",
+      "othersTitle": "Mais comparações",
+      "all": "Comparação completa",
+      "switchGuide": "Guia de mudança passo a passo"
+    }
+  },
+  "tools": {
+    "menu": {
+      "resources": "Recursos",
+      "calculators": "Calculadoras",
+      "calculatorsHint": "Impostos, IVA, pagamento por QR, pesquisa de empresas, datas de vencimento",
+      "guides": "Guias",
+      "guidesHint": "IVA checo e faturação eletrónica eslovaca",
+      "compare": "Comparar com a concorrência",
+      "blog": "Blogue",
+      "blogHint": "Prazos, legislação e guias práticos",
+      "findAccountant": "Procura um contabilista?",
+      "findAccountantHint": "Contabilistas recomendados por região",
+      "glossary": "Glossário",
+      "glossaryHint": "Termos de faturação e IVA explicados",
+      "businessDirectory": "Diretório de empresas",
+      "businessDirectoryHint": "Empresários em nome individual e empresas por atividade e localidade",
+      "templatesHint": "Modelos para todos os tipos de fatura",
+      "reminders": "Modelos de lembretes de pagamento",
+      "remindersHint": "Lembrete, interpelação para pagamento, notificação pré-contenciosa"
+    },
+    "search": {
+      "showAll": "Mostrar todos os resultados para «{query}»",
+      "pages": "Páginas",
+      "close": "Fechar pesquisa",
+      "noResults": "Sem correspondências rápidas. Experimente outra palavra ou abra os resultados completos.",
+      "slashHint": "abre a pesquisa"
+    },
+    "common": {
+      "disclaimerTitle": "Estimativa aproximada",
+      "disclaimer": "O resultado é apenas uma estimativa aproximada e não substitui um contabilista ou consultor fiscal. Não tem em conta outros rendimentos, deduções, créditos por filhos nem o início ou a cessação da atividade durante o ano. Antes de entregar uma declaração ou pagar algo com base nele, confirme com o seu contabilista ou nos sites da Administração Financeira checa (Finanční správa) e da segurança social checa (ČSSZ).",
+      "validFor": "Os montantes aplicam-se a {year}.",
+      "ratesSince": "As taxas aplicam-se a partir de {date}.",
+      "ctaTitle": "Já fatura? A Billanta calcula isto a partir dos seus documentos",
+      "ctaText": "A aplicação mostra a estimativa de impostos e contribuições, os adiantamentos mínimos e as declarações de IVA diretamente a partir das faturas e despesas que regista.",
+      "ctaButton": "Criar conta gratuita",
+      "ctaNote": "Sem cartão. O plano básico é gratuito.",
+      "related": "Mais calculadoras",
+      "allCalculators": "Todas as calculadoras",
+      "relatedGuides": "Guias",
+      "allGuides": "Todos os guias",
+      "howTitle": "Como é calculado",
+      "resultTitle": "Resultado",
+      "perYear": "por ano",
+      "perMonth": "por mês",
+      "czOnlyTitle": "Esta página trata das regras checas",
+      "czOnlyText": "«{name}» aborda a legislação checa. A Eslováquia tem taxas, prazos e formulários diferentes, por isso não existe versão eslovaca.",
+      "czOnlyCs": "Abrir a versão checa",
+      "czOnlySk": "Regras eslovacas: Finančná správa SR",
+      "czTag": "Regras checas",
+      "lastChecked": "Verificámos esta informação pela última vez em {date}.",
+      "officialSource": "A informação vinculativa e os formulários estão no site da Administração Financeira checa",
+      "guideDisclaimer": "Este guia resume as regras básicas e não substitui um contabilista ou consultor fiscal. A lei e os formulários mudam, por isso confirme os pormenores no site da Administração Financeira.",
+      "updated": "Atualizado",
+      "invoiceCtaTitle": "Precisa de uma fatura a partir daqui?",
+      "invoiceCtaText": "Emita uma fatura com código QR de pagamento, dados da empresa obtidos do ARES e a data de vencimento correta, sem precisar de conta. Com uma conta Billanta, as faturas ficam guardadas, os pagamentos são acompanhados e o seu contabilista recebe os registos.",
+      "invoiceCtaButton": "Criar fatura gratuita",
+      "overview": "Visão geral",
+      "myNumbers": {
+        "hint": "Tem sessão iniciada. Abra a calculadora na aplicação com os rendimentos e as despesas dos seus documentos.",
+        "cta": "Abrir com os meus números"
+      },
+      "czOnlyTextAlt": "«{name}» trata das regras checas. Para os empresários em nome individual eslovacos existe uma calculadora própria segundo as regras eslovacas.",
+      "noLiability": "O resultado não tem qualquer garantia e não nos responsabilizamos por decisões tomadas com base nele.",
+      "noWarranty": "O resultado é meramente informativo e não tem qualquer garantia. Confirme os pormenores antes de os utilizar.",
+      "invoiceCtaTemplates": "Modelos de fatura para preencher online"
+    },
+    "invoiceChecklist": {
+      "scenario": {
+        "country": "Segundo a lei de",
+        "vatStatus": "Você é",
+        "document": "Documento",
+        "customer": "Cliente",
+        "reverseCharge": "Autoliquidação nacional",
+        "reverseYes": "Sim",
+        "reverseNo": "Não",
+        "euSupply": "O que fornece para a UE",
+        "euService": "Um serviço",
+        "euGoods": "Bens",
+        "countries": {
+          "CZ": "Chéquia",
+          "SK": "Eslováquia"
+        },
+        "vatStatuses": {
+          "payer": "Sujeito passivo de IVA",
+          "identified": "Pessoa identificada",
+          "non_payer": "Não sujeito a IVA"
+        },
+        "documents": {
+          "invoice": "Fatura",
+          "proforma": "Fatura pró-forma",
+          "credit_note": "Nota de crédito",
+          "simplified": "Fatura simplificada"
+        },
+        "customers": {
+          "business": "Empresa nacional",
+          "consumer": "Consumidor",
+          "eu_business": "Empresa da UE",
+          "non_eu": "Fora da UE"
+        }
+      },
+      "taxDocument": "Este é um documento fiscal nos termos da lei do IVA.",
+      "notTaxDocument": "Este não é um documento fiscal – bastam os elementos exigidos pelo direito comercial e as boas práticas.",
+      "notices": {
+        "simplifiedNotForNonPayer": "Só um sujeito passivo de IVA emite um documento fiscal simplificado. Em vez disso, é apresentada uma fatura normal.",
+        "simplifiedLimitCz": "Um documento fiscal simplificado só é permitido até 10 000 CZK com IVA incluído (§ 30 da lei checa do IVA).",
+        "simplifiedLimitSk": "Na Eslováquia, uma fatura simplificada só é permitida até 100 € com IVA incluído (§ 74(3)(a) da lei eslovaca do IVA).",
+        "simplifiedNotCrossBorder": "Os fornecimentos para outro Estado da UE e as exportações não podem usar um documento simplificado. Em vez disso, é apresentada uma fatura normal.",
+        "proformaTaxDocument": "Uma fatura pró-forma não é um documento fiscal. Quando o pagamento chegar, emita um documento fiscal no prazo de 15 dias.",
+        "identifiedNoTaxDocument": "Uma pessoa identificada não liquida IVA nacional e fatura como um não sujeito.",
+        "identifiedEuService": "Por um serviço prestado a uma empresa de outro Estado da UE, uma pessoa identificada também emite um documento fiscal – sem IVA e com a menção de autoliquidação.",
+        "reverseChargeDomesticOnly": "A autoliquidação nacional aplica-se apenas aos fornecimentos enumerados na lei (obras de construção, sucata, ouro, telemóveis acima de um limiar …).",
+        "consumerNoTaxDocumentDuty": "Não é obrigado a emitir um documento fiscal a um consumidor, a menos que este o peça. Se o emitir, tem de conter tudo o que consta abaixo.",
+        "nonPayerNoVat": "Um não sujeito não indica IVA na fatura e não o pode liquidar."
+      },
+      "groups": {
+        "supplier": "Fornecedor",
+        "customer": "Cliente",
+        "document": "Documento",
+        "amounts": "Montantes e IVA",
+        "payment": "Pagamento"
+      },
+      "items": {
+        "supplierName": {
+          "label": "Nome ou firma do fornecedor",
+          "hint": "Exatamente como consta do registo comercial ou do registo de atividades."
+        },
+        "supplierAddress": {
+          "label": "Sede do fornecedor",
+          "hint": "A sede registada, não apenas um endereço postal."
+        },
+        "supplierIco": {
+          "label": "Número de identificação da empresa do fornecedor (IČO)",
+          "hint": "Oito dígitos; verificamos o dígito de controlo."
+        },
+        "supplierRegistry": {
+          "label": "Inscrição no registo",
+          "hint": "Por exemplo, «Inscrita no Registo Comercial do Tribunal Municipal de Praga, secção C, processo 123». Na Chéquia, um empresário em nome individual inscrito apenas no registo de atividades pode omiti-la."
+        },
+        "supplierDic": {
+          "label": "Número de IVA do fornecedor",
+          "hint": "Com o prefixo do país, por exemplo CZ ou SK."
+        },
+        "customerName": {
+          "label": "Nome ou firma do cliente",
+          "hint": "Para um consumidor basta o nome."
+        },
+        "customerAddress": {
+          "label": "Morada do cliente",
+          "hint": "Sede registada ou morada de residência."
+        },
+        "customerIco": {
+          "label": "Número de identificação da empresa do cliente",
+          "hint": "A lei não o exige, mas as empresas precisam dele para a contabilidade."
+        },
+        "customerDic": {
+          "label": "Número de IVA do cliente",
+          "hint": "Com o prefixo do país, por exemplo CZ12345678 ou DE123456789."
+        },
+        "documentLabel": {
+          "label": "Título do documento",
+          "hint": "Para ficar claro de que tipo de documento se trata."
+        },
+        "number": {
+          "label": "Número do documento",
+          "hint": "Único dentro da sua série de numeração; nunca se pode repetir."
+        },
+        "originalNumber": {
+          "label": "Número da fatura corrigida",
+          "hint": "O número da fatura original que a nota de crédito corrige."
+        },
+        "issueDate": {
+          "label": "Data de emissão",
+          "hint": "O dia em que emitiu o documento."
+        },
+        "taxPointDate": {
+          "label": "Data do fornecimento (facto gerador)",
+          "hint": "Quando entregou os bens ou prestou o serviço."
+        },
+        "subject": {
+          "label": "O que foi fornecido e em que quantidade",
+          "hint": "Concreto – não apenas «serviços»."
+        },
+        "unitPrice": {
+          "label": "Preço unitário sem IVA",
+          "hint": "Preço por peça, hora ou outra unidade, mais qualquer desconto que ainda não esteja incluído no preço."
+        },
+        "taxBase": {
+          "label": "Valor tributável",
+          "hint": "O total sem IVA."
+        },
+        "vatRate": {
+          "label": "Taxa de IVA",
+          "hint": "A taxa aplicável, ou 0 % para um fornecimento isento."
+        },
+        "vatAmount": {
+          "label": "Montante do IVA",
+          "hint": "O IVA liquidado, arredondado."
+        },
+        "total": {
+          "label": "Total a pagar",
+          "hint": "Quanto o cliente deve pagar."
+        },
+        "correctionReason": {
+          "label": "Motivo da correção",
+          "hint": "Por exemplo, devolução de bens, um desconto, um preço errado."
+        },
+        "correctionDifference": {
+          "label": "Alteração do valor tributável e do IVA",
+          "hint": "Em quanto o valor tributável e o IVA mudam face à fatura original (com sinal de menos)."
+        },
+        "reverseChargeNote": {
+          "label": "Menção de autoliquidação",
+          "hint": "«Daň odvede zákazník» (CZ) ou «prenesenie daňovej povinnosti» (SK), ou «Reverse charge» para um cliente da UE. É o cliente que liquida o IVA."
+        },
+        "exemptionNote": {
+          "label": "Referência à isenção de IVA",
+          "hint": "Por exemplo, «Isento nos termos do § 64 da lei do IVA», ou uma referência à diretiva do IVA."
+        },
+        "nonPayerNote": {
+          "label": "Menção «Não sujeito a IVA»",
+          "hint": "Não é exigida por lei, mas o cliente percebe logo porque não há IVA."
+        },
+        "dueDate": {
+          "label": "Data de vencimento",
+          "hint": "Sem ela aplica-se o prazo legal e é mais difícil fundamentar um lembrete."
+        },
+        "paymentDetails": {
+          "label": "Conta bancária e referência de pagamento",
+          "hint": "De preferência com um código QR de pagamento, para que o cliente pague sem ter de copiar os dados."
+        }
+      },
+      "notes": {
+        "ifAssigned": "Se tiver sido atribuído.",
+        "ifRegistered": "Apenas se estiver inscrito no registo comercial ou noutro registo público.",
+        "ifBuyerHasDic": "Se o cliente o tiver.",
+        "ifDifferent": "Apenas se for diferente da data de emissão.",
+        "buyerVatId": "O número de IVA de outro Estado da UE (verifique-o no VIES).",
+        "perRate": "Separadamente para cada taxa de IVA.",
+        "inHomeCurrency": "Na moeda nacional (CZK ou EUR), mesmo que fature noutra moeda.",
+        "noVatAmountReverse": "Apenas a título informativo – não é o fornecedor que calcula o IVA, é o cliente.",
+        "totalOrBase": "O total com IVA, ou o valor tributável e o IVA em separado.",
+        "proformaLabel": "Por exemplo, «Fatura pró-forma – não é documento fiscal».",
+        "creditLabel": "Por exemplo, «Nota de crédito» ou «Documento fiscal de correção».",
+        "simplifiedLabel": "Por exemplo, «Documento fiscal simplificado».",
+        "exemptEuGoods": "O fornecimento de bens para a UE está isento de IVA.",
+        "exportOrAbroad": "Para bens exportados ou um serviço prestado fora da UE."
+      },
+      "levels": {
+        "required": "Obrigatório",
+        "conditional": "Condicional",
+        "recommended": "Recomendado"
+      }
+    }
+  },
+  "cookies": {
+    "banner": {
+      "title": "Cookies",
+      "body": "Precisamos de cookies essenciais para o site funcionar. Os de análise (Microsoft Clarity e um registo de onde veio) ajudam-nos a melhorá-lo – só os ativamos com o seu consentimento.",
+      "more": "Saber mais",
+      "accept": "Aceitar todos",
+      "reject": "Apenas essenciais",
+      "settings": "Definições",
+      "save": "Guardar escolha",
+      "necessary": "Essenciais",
+      "necessaryHint": "Início de sessão, idioma, a sua escolha de cookies, o código de uma ligação que seguiu. Sempre ativos.",
+      "analytics": "Análise",
+      "analyticsHint": "Microsoft Clarity: mapas de calor anónimos e gravações de sessões nas páginas públicas. E ainda de onde veio pela primeira vez (origem da campanha ou site que o encaminhou), guardado com a sua conta se se registar.",
+      "saved": "Preferências de cookies guardadas",
+      "bodyDefault": "Precisamos de cookies essenciais para o site funcionar. Os de análise (Microsoft Clarity e um registo de onde veio) ajudam-nos a melhorá-lo e, na sua região, estão ativos por predefinição – pode desativá-los aqui."
+    },
+    "page": {
+      "title": "Política de cookies",
+      "intro": "Os cookies e o armazenamento semelhante que a Billanta utiliza, para que serve cada um e quanto tempo dura.",
+      "columns": {
+        "name": "Nome",
+        "purpose": "Finalidade",
+        "category": "Categoria",
+        "duration": "Duração"
+      },
+      "categories": {
+        "necessary": "Essenciais",
+        "functional": "Funcionais",
+        "analytics": "Análise"
+      },
+      "rows": {
+        "session": {
+          "purpose": "Mantém a sua sessão iniciada. A demonstração e os alunos que entram numa turma usam o mesmo cookie.",
+          "duration": "30 dias; numa demonstração ou turma, até terminar"
+        },
+        "csrf": {
+          "purpose": "Protege o formulário de início de sessão contra falsificação e devolve-o à página de onde veio.",
+          "duration": "Até fechar o browser"
+        },
+        "oauth": {
+          "purpose": "Protege o início de sessão com a Google ou outro fornecedor. Apenas durante o início de sessão.",
+          "duration": "15 minutos"
+        },
+        "tenant": {
+          "purpose": "Lembra-se da empresa com que está a trabalhar dentro da app.",
+          "duration": "1 ano; numa demonstração ou turma, até terminar"
+        },
+        "demoTransfer": {
+          "purpose": "Permite transferir os dados da demonstração para uma conta recém-criada.",
+          "duration": "Até a demonstração terminar"
+        },
+        "locale": {
+          "purpose": "Lembra-se do seu idioma.",
+          "duration": "Até fechar o browser"
+        },
+        "consent": {
+          "purpose": "Guarda a sua escolha nesta janela de cookies.",
+          "duration": "6 meses"
+        },
+        "region": {
+          "purpose": "Lembra-se se a análise exige consentimento na sua região, para não ser verificado em cada visita (no browser, nunca enviado para o servidor).",
+          "duration": "7 dias"
+        },
+        "theme": {
+          "purpose": "Lembra-se do tema claro ou escuro (no browser, nunca enviado para o servidor).",
+          "duration": "Até ser eliminado"
+        },
+        "referral": {
+          "purpose": "O código de recomendação da ligação com que outro utilizador o convidou, para que a recompensa dele seja creditada quando se registar. Apenas quando chega através dessa ligação.",
+          "duration": "30 dias ou até ser utilizado"
+        },
+        "promo": {
+          "purpose": "Um código promocional ou de evento de uma ligação (?promo= ou /join/CODE), para que seja aplicado à sua nova empresa. Apenas quando chega através dessa ligação.",
+          "duration": "30 dias ou até ser utilizado"
+        },
+        "switch": {
+          "purpose": "A app de onde está a mudar (uma ligação \"Mudar de…\" para o registo), para que o ecrã de boas-vindas ofereça a respetiva importação. Apenas quando se regista através dessa ligação.",
+          "duration": "30 dias"
+        },
+        "invoiceFilters": {
+          "purpose": "Filtros rápidos da lista de faturas na app.",
+          "duration": "1 ano"
+        },
+        "preferences": {
+          "purpose": "Pequenas escolhas e dados ainda por concluir na app e nas ferramentas: secções recolhidas, tipo de gráfico, dicas dispensadas, dados do fornecedor no formulário de fatura sem registo. Ficam no browser e nunca são enviados para o servidor.",
+          "duration": "Até serem eliminados ou fechar o separador"
+        },
+        "attribution": {
+          "purpose": "De onde veio pela primeira vez: etiquetas de campanha (utm_*), o site que o encaminhou (apenas o domínio) e a primeira página. Guardado com a sua conta quando se regista, para sabermos que canais funcionam. Apenas com consentimento de análise.",
+          "duration": "90 dias"
+        },
+        "clarity": {
+          "purpose": "Microsoft Clarity: medição de tráfego, mapas de calor e gravações de sessões. Apenas com consentimento.",
+          "duration": "1 dia a 1 ano"
+        }
+      },
+      "functionalNote": "Os cookies funcionais só são criados quando usa uma ligação que precisa deles (um convite, um código promocional, a mudança a partir de outra app) ou uma escolha na app, e servem apenas o que pretendeu com essa ligação ou escolha. Por isso não pedimos consentimento para eles. Não os partilhamos com ninguém.",
+      "analyticsNote": "Os cookies de análise são usados apenas nas páginas públicas (início, preços, páginas informativas). Nunca corre qualquer análise dentro da app, onde trabalha com faturas e dados de clientes. Na UE/EEE, no Reino Unido, na Suíça, no Brasil, no Canadá e nos estados dos EUA onde gravar uma visita exige o consentimento de todas as partes (p. ex. Califórnia, Pensilvânia, Florida, Washington), só os ativamos com o seu consentimento; se não conseguirmos saber onde está, também perguntamos. Nos restantes casos estão ativos por predefinição e pode desativá-los a qualquer momento. A sua localização é estimada apenas a partir do país e do estado indicados pela rede que entrega o site, e não é guardada. O Clarity é operado pela Microsoft; os dados podem ser tratados fora da UE ao abrigo do Quadro de Privacidade de Dados UE-EUA. Se o seu browser enviar um sinal Global Privacy Control (GPC), tratamo-lo em todo o lado como \"Apenas essenciais\" e nem mostramos o aviso de cookies.",
+      "attributionNote": "A informação de onde veio (billanta_src) não é guardada em lado nenhum antes do seu consentimento: fica apenas na memória da página aberta, e o cookie só é escrito quando autoriza a análise. Se recusar ou retirar o consentimento, eliminamo-lo.",
+      "schoolsNote": "Nas páginas para escolas (/for-schools), para entrar numa turma (/join) e no acesso de um aluno à turma não corremos qualquer análise, mesmo com consentimento: são usadas por crianças, que não podem dar um consentimento válido por si próprias. O aviso de cookies não abre aí automaticamente.",
+      "withdraw": "Pode alterar ou retirar o consentimento a qualquer momento com o botão abaixo ou com a ligação “Definições de cookies” no rodapé do site.",
+      "change": "Alterar definições de cookies",
+      "seoTitle": "Política de cookies e armazenamento"
+    }
+  },
+  "newsletter": {
+    "signup": {
+      "title": "Novidades sobre alterações fiscais e de faturação",
+      "body": "Um e-mail curto de vez em quando, quando mudam taxas, limites, prazos ou a faturação eletrónica eslovaca. Sem spam.",
+      "email": "E-mail",
+      "emailPlaceholder": "you@example.com",
+      "country": "País",
+      "countries": {
+        "CZ": "Chéquia",
+        "SK": "Eslováquia"
+      },
+      "topicsLabel": "O que lhe interessa",
+      "topics": {
+        "tax_rates": "Taxas de imposto e de IVA",
+        "limits": "Limites (IVA, imposto fixo, numerário)",
+        "deadlines": "Prazos fiscais",
+        "sk_einvoicing": "Faturação eletrónica eslovaca 2027"
+      },
+      "consent": "Aceito receber neste endereço e-mails da Billanta com novidades sobre alterações a impostos, limites, prazos e faturação eletrónica. Posso retirar este consentimento a qualquer momento através da ligação incluída em cada e-mail.",
+      "privacy": "O tratamento dos dados está descrito na <link>Política de privacidade</link>. A subscrição só começa depois de a confirmar a partir do e-mail.",
+      "submit": "Subscrever",
+      "sentTitle": "Verifique o seu e-mail",
+      "sentBody": "Enviámos-lhe uma ligação para confirmar a subscrição. Nada é enviado até confirmar.",
+      "errors": {
+        "invalid_email": "Introduza um e-mail válido.",
+        "no_topics": "Escolha pelo menos um tema.",
+        "consent_required": "É necessário o consentimento para subscrever.",
+        "rate_limited": "Demasiadas tentativas. Tente novamente mais tarde.",
+        "failed": "Não foi possível subscrever. Tente novamente."
+      }
+    },
+    "confirm": {
+      "metaTitle": "Confirme a sua subscrição",
+      "title": "Confirme a sua subscrição",
+      "intro": "Confirme que {email} deve receber novidades da Billanta sobre:",
+      "button": "Confirmar subscrição",
+      "doneTitle": "Subscrição confirmada",
+      "doneBody": "Obrigado! Escreveremos quando alguma coisa mudar. Pode cancelar a subscrição com um clique em qualquer e-mail.",
+      "backHome": "Voltar à Billanta",
+      "errors": {
+        "invalid_confirm_link": "A ligação é inválida ou já foi usada para cancelar a subscrição. Subscreva novamente.",
+        "confirm_link_expired": "A ligação expirou. Subscreva novamente e enviaremos uma nova.",
+        "rate_limited": "Demasiadas tentativas. Tente novamente mais tarde.",
+        "unavailable": "A confirmação falhou. Tente novamente daqui a pouco."
+      }
+    },
+    "settings": {
+      "title": "Novidades da Billanta",
+      "hint": "Um e-mail curto quando mudam taxas, limites, prazos fiscais ou a faturação eletrónica eslovaca. Trata-se de uma comunicação comercial, por isso só é enviada com o seu consentimento.",
+      "toggle": "Enviar-me novidades sobre alterações",
+      "consent": "Aceito receber no e-mail da minha conta (ativado nas Definições) e-mails da Billanta com novidades sobre alterações a impostos, limites, prazos e faturação eletrónica. Posso retirar este consentimento a qualquer momento.",
+      "pending": "Enviámos-lhe um e-mail de confirmação. A subscrição começa quando clicar na ligação que contém.",
+      "country": "País",
+      "topics": "Temas",
+      "saved": "Guardado",
+      "errors": {
+        "consent_required": "É necessário o consentimento para subscrever.",
+        "user_not_found": "Conta não encontrada.",
+        "failed": "Não foi possível guardar."
+      }
+    }
+  },
+  "blog": {
+    "title": "Blogue",
+    "seoTitle": "Blogue sobre faturação, impostos e faturação eletrónica",
+    "lead": "Prazos fiscais, alterações legislativas e guias práticos para trabalhadores independentes e pequenas empresas na Chéquia e na Eslováquia.",
+    "empty": "Ainda não há nada aqui. Os primeiros artigos estão a ser escritos.",
+    "read": "Ler artigo",
+    "updated": "atualizado a {date}",
+    "sources": "Fontes",
+    "disclaimer": "Este artigo é um resumo, não aconselhamento fiscal ou jurídico. Consulte as fontes ou pergunte a um consultor fiscal antes de agir com base nele.",
+    "ctaTitle": "Faturação sem complicações",
+    "ctaBody": "A Billanta acompanha as datas de vencimento, os pagamentos por QR e as exportações para o seu contabilista. Comece gratuitamente.",
+    "ctaButton": "Criar conta gratuita",
+    "aiAuto": "Este artigo foi escrito por IA a partir dos nossos próprios dados e apenas verificado automaticamente antes da publicação. Se encontrar um erro, <contact>avise-nos</contact>.",
+    "aiReviewed": "Este artigo foi redigido com a ajuda de IA e revisto por uma pessoa antes da publicação. Se encontrar um erro, <contact>avise-nos</contact>."
+  },
+  "glossary": {
+    "legendLabel": "O que significam as etiquetas e as cores",
+    "statusTitle": "Estado do documento",
+    "typeTitle": "Tipo de documento",
+    "status": {
+      "draft": "Um documento em preparação, ainda sem número. Pode editá-lo ou eliminá-lo à vontade; o seu cliente ainda não o vê.",
+      "pending_review": "Um rascunho que a IA preparou a partir de uma mensagem de voz ou de texto. Verifique os dados antes de emitir.",
+      "issued": "Um documento emitido e numerado que ainda não foi pago. Corrige-se com uma nota de crédito; uma pequena correção, como uma gralha, pode ser feita diretamente, com um motivo que fica registado no histórico.",
+      "paid": "Pago na totalidade – marcado manualmente, conciliado com o banco ou pago com cartão.",
+      "cancelled": "Anulado. O número continua utilizado; fica excluído dos relatórios e do IVA.",
+      "overdue": "Emitido, por pagar e com a data de vencimento ultrapassada. Pode enviar um lembrete."
+    },
+    "type": {
+      "invoice": "Um documento fiscal por bens entregues ou serviços prestados.",
+      "proforma": "Um pedido de pagamento antecipado. Não é um documento fiscal; depois de pago, emite a fatura a partir dele.",
+      "credit_note": "Um documento fiscal corretivo que reduz ou anula o valor da fatura original.",
+      "quote": "Uma proposta para o seu cliente. Depois de aceite, converta-a numa fatura ou numa fatura pró-forma."
+    },
+    "contactColor": "A etiqueta de cor do contacto ({color}). É você que decide o que significa no detalhe do contacto – por exemplo, cliente VIP ou mau pagador.",
+    "contactColorPlain": "A etiqueta de cor do contacto. É você que decide o que significa no detalhe do contacto."
+  },
+  "glossaryPages": {
+    "breadcrumb": "Glossário",
+    "indexTitle": "Glossário: faturação e IVA na Chéquia e na Eslováquia",
+    "indexLead": "Explicações curtas dos termos que encontra ao faturar e ao lidar com o IVA na Chéquia e na Eslováquia. Cada termo tem uma definição, um exemplo e uma ligação para a lei.",
+    "indexDescription": "O que significam DUZP, autoliquidação, a declaração de controlo ou a fatura pró-forma na Chéquia e na Eslováquia. De forma breve, com um exemplo e uma ligação para a lei.",
+    "groupBoth": "Ambos os países",
+    "groupCz": "Termos checos",
+    "groupSk": "Termos eslovacos",
+    "metaTitle": "{term} – significado",
+    "definition": "Definição",
+    "explanation": "Explicação",
+    "example": "Exemplo",
+    "law": "Lei",
+    "related": "Termos relacionados",
+    "allTerms": "Todos os termos",
+    "disclaimer": "Uma explicação breve, não aconselhamento fiscal. Prevalece o texto da lei indicada.",
+    "lawRef": "Artigo {p}",
+    "lawRefOdst": "Artigo {p}, n.º {o}",
+    "laws": {
+      "ZDPH": "Lei checa do IVA (Lei n.º 235/2004 Coll.)",
+      "OZ": "Código Civil checo (Lei n.º 89/2012 Coll.)",
+      "ZDP": "Lei checa do imposto sobre o rendimento (Lei n.º 586/1992 Coll.)",
+      "DR": "Código de Procedimento Tributário checo (Lei n.º 280/2009 Coll.)",
+      "ZoDPH": "Lei eslovaca do IVA (Lei n.º 222/2004 Coll.)",
+      "ZoDP": "Lei eslovaca do imposto sobre o rendimento (Lei n.º 595/2003 Coll.)",
+      "ObZ": "Código Comercial eslovaco (Lei n.º 513/1991 Coll.)"
+    },
+    "otherTitle": "Este termo pertence ao outro país",
+    "otherText": "A página “{term}” explica as regras de um só país.",
+    "otherOriginal": "Ler o original",
+    "otherEnglish": "Ler em inglês",
+    "otherCounterpart": "O termo correspondente é {term}",
+    "marketCz": "Chéquia",
+    "marketSk": "Eslováquia",
+    "onlyCz": "Um termo do direito checo. A versão principal desta página está em checo.",
+    "onlySk": "Um termo do direito eslovaco. A versão principal desta página está em eslovaco.",
+    "readOriginal": "Ler o original",
+    "tools": {
+      "heading": "Ferramentas e guias",
+      "createInvoice": "Criar uma fatura sem registo"
+    }
+  },
+  "holidays": {
+    "newYear": "Dia de Ano Novo",
+    "slovakRepublic": "Dia da Fundação da República Eslovaca",
+    "epiphany": "Epifania",
+    "goodFriday": "Sexta-feira Santa",
+    "easterMonday": "Segunda-feira de Páscoa",
+    "labourDay": "Dia do Trabalhador",
+    "victoryDay": "Dia da Vitória na Europa",
+    "cyrilMethodius": "Dia de São Cirilo e São Metódio",
+    "janHus": "Dia de Jan Hus",
+    "snp": "Aniversário da Revolta Nacional Eslovaca",
+    "constitution": "Dia da Constituição",
+    "ourLadyOfSorrows": "Nossa Senhora das Dores",
+    "statehood": "Dia do Estado Checo",
+    "independence": "Dia da Independência",
+    "allSaints": "Dia de Todos os Santos",
+    "freedomDemocracy": "Dia da Luta pela Liberdade e Democracia",
+    "christmasEve": "Véspera de Natal",
+    "christmasDay": "Dia de Natal",
+    "stStephen": "Dia de Santo Estêvão"
+  },
+  "netEstimate": {
+    "label": "Fica com",
+    "flatRate": "Despesas forfetárias",
+    "rate": "forfetário {rate} %",
+    "noFlat": "sem regime forfetário",
+    "hint": "Estimativa aproximada para um empresário em nome individual checo: o valor sem IVA menos o imposto sobre o rendimento (15 %) e as contribuições para a segurança social e o seguro de saúde sobre esta fatura – cerca de {burden}. Usa a taxa forfetária escolhida e ignora os adiantamentos mínimos e as deduções fiscais. Consulte Exportações para o ano completo."
+  },
+  "adminClassroom": {
+    "title": "Sala de aula – candidaturas de professores",
+    "description": "Verifique a escola e o professor. A aprovação verifica também a escola e o respetivo domínio de e-mail.",
+    "loadError": "Não foi possível carregar as candidaturas.",
+    "empty": "Sem candidaturas.",
+    "status": {
+      "pending": "Pendente",
+      "approved": "Aprovada",
+      "rejected": "Recusada"
+    },
+    "emailVerified": "e-mail verificado",
+    "emailUnverified": "e-mail não verificado",
+    "ico": "IČO",
+    "fields": {
+      "school": "Escola",
+      "address": "Morada",
+      "web": "Site",
+      "schoolState": "Estado da escola",
+      "subject": "Disciplina",
+      "expectedStudents": "Alunos",
+      "invited": "Convite",
+      "note": "Nota"
+    },
+    "verification": {
+      "pending": "não verificada",
+      "verified": "verificada",
+      "rejected": "recusada"
+    },
+    "suspended": "suspensa",
+    "invitedYes": "convidado por um colega da escola",
+    "domain": "Domínio de e-mail da escola",
+    "domainHint": "Os colegas com este domínio são aprovados automaticamente. Preencha-o só depois de confirmar que pertence à escola (não gmail e semelhantes).",
+    "note": "Nota",
+    "noteHint": "Em caso de recusa, é enviada por e-mail ao professor.",
+    "approve": "Aprovar",
+    "reject": "Recusar",
+    "approved": "Professor aprovado.",
+    "rejected": "Candidatura recusada.",
+    "suspend": "Suspender escola",
+    "unsuspend": "Reativar escola",
+    "suspendConfirm": "Suspender {school}? Todas as turmas deixam de aceitar novos alunos e os professores perdem o acesso às empresas dos alunos.",
+    "suspendedDone": "Escola suspensa.",
+    "unsuspended": "Escola reativada.",
+    "failed": "Falhou",
+    "rejectConfirm": "Recusar {name}? As suas turmas terminam e ficam só de leitura durante 30 dias, e é removido de outras turmas."
+  },
+  "adminPosters": {
+    "title": "Cartazes e folhetos",
+    "description": "Cartazes A4 e A5 e folhetos A6 com código QR para escolas, criadores, eventos e quadros de avisos municipais. Prontos a imprimir, também a preto e branco.",
+    "fields": {
+      "template": "Público",
+      "lang": "Idioma do cartaz",
+      "target": "Para onde leva o código QR",
+      "size": "Formato",
+      "promo": "Código promocional (opcional)",
+      "event": "Nome do evento (opcional)",
+      "tabs": "Tiras destacáveis"
+    },
+    "templates": {
+      "school": "Escolas",
+      "courses": "Cursos de requalificação e de criação de empresas",
+      "creators": "Criadores e trabalhadores independentes",
+      "communities": "Comunidades de pequenas empresas",
+      "event": "Eventos (workshop, encontro)",
+      "coworking": "Coworking (para membros)",
+      "local": "Profissionais locais (quadro de avisos)",
+      "expats": "Expatriados (inglês)",
+      "generic": "Geral"
+    },
+    "langs": {
+      "cs": "Checo",
+      "sk": "Eslovaco",
+      "en": "Inglês"
+    },
+    "targets": {
+      "demo": "Demonstração",
+      "pricing": "Preços",
+      "signup": "Registo",
+      "home": "Página inicial",
+      "forSchools": "Página para escolas",
+      "forCreators": "Página para criadores",
+      "events": "Página de eventos",
+      "forCourses": "Para cursos (/for-courses)",
+      "forCommunities": "Para comunidades (/for-communities)",
+      "forExpats": "Para expatriados (/for-expats)"
+    },
+    "sizes": {
+      "a4": "Cartaz A4",
+      "a3": "Cartaz A3",
+      "a5": "Cartaz A5",
+      "a6": "Folheto A6",
+      "a6x4": "Folheto A6, 4 numa folha A4"
+    },
+    "eventPlaceholder": "p. ex. Startup Weekend Brno",
+    "tabsHint": "Tiras destacáveis com o código QR e o endereço, para quadros de avisos.",
+    "apply": "Atualizar pré-visualização",
+    "print": "Imprimir",
+    "printHint": "Na janela de impressão, defina a escala para 100 % e desative os cabeçalhos e rodapés. Para obter um PDF, escolha Guardar como PDF.",
+    "qrTarget": "O código QR leva a:",
+    "promoHint": "Com um código, o QR leva a /join/CÓDIGO e o código é impresso em grande para que as pessoas o possam escrever."
+  },
+  "classroom": {
+    "title": "Sala de aula",
+    "description": "Turmas em que os alunos praticam a faturação numa empresa própria.",
+    "loadError": "Não foi possível carregar a sala de aula. Tente recarregar a página.",
+    "backToClasses": "Voltar às turmas",
+    "rejected": {
+      "title": "A sua candidatura não foi aprovada",
+      "body": "Se se tratar de um engano, envie uma nova candidatura com uma ligação para o site da escola ou escreva-nos."
+    },
+    "pending": {
+      "title": "A sua candidatura aguarda aprovação",
+      "body": "Estamos a verificar {school}. Normalmente demora até um dia útil; receberá o resultado por e-mail."
+    },
+    "suspended": {
+      "title": "A conta da escola está suspensa",
+      "body": "De momento, os alunos não podem entrar nas turmas. Se não souber porquê, contacte-nos."
+    },
+    "signedInAs": "{name} · {school}",
+    "classes": {
+      "title": "As suas turmas",
+      "empty": "Ainda não há turmas. Crie a primeira abaixo.",
+      "students": "{n, plural, one {# aluno} many {# alunos} other {# alunos}}",
+      "coTeaching": "coprofessor",
+      "ended": "terminada, eliminada a {date}",
+      "until": "até {date}"
+    },
+    "tracks": {
+      "basic": {
+        "title": "Básico",
+        "body": "A primeira fatura, os contactos e um empresário em nome individual sem IVA. Para o ensino básico."
+      },
+      "standard": {
+        "title": "Padrão",
+        "body": "IVA, faturas pró-forma, notas de crédito, banco, despesas e orçamentos. Para o ensino secundário e escolas de comércio."
+      },
+      "advanced": {
+        "title": "Avançado",
+        "body": "Acrescenta autoliquidação, moedas estrangeiras e declarações de IVA. Para o ensino superior e cursos."
+      }
+    },
+    "apply": {
+      "title": "Registo de professor",
+      "intro": "A sala de aula é gratuita para professores. Verificamos que a escola existe e que leciona lá; depois, pode criar turmas.",
+      "country": "País",
+      "countryCZ": "Chéquia",
+      "countrySK": "Eslováquia",
+      "ico": "Número de identificação da escola (IČO)",
+      "lookup": "Pesquisar",
+      "schoolName": "Nome da escola",
+      "address": "Morada",
+      "level": "Tipo de escola",
+      "levels": {
+        "zs": "Ensino básico",
+        "ss": "Ensino secundário",
+        "vos": "Escola profissional superior",
+        "vs": "Universidade",
+        "course": "Curso ou outra formação"
+      },
+      "webUrl": "Site da escola",
+      "name": "O seu nome",
+      "subject": "Disciplina",
+      "expectedStudents": "Número aproximado de alunos",
+      "terms": "Ao enviar, aceita os <link>termos para escolas</link>, incluindo o acordo de tratamento de dados. Não é preciso assinar nada.",
+      "emailHint": "Um e-mail da escola acelera a aprovação. Os colegas com o mesmo domínio entram depois sem esperar.",
+      "submit": "Enviar candidatura"
+    },
+    "create": {
+      "title": "Nova turma",
+      "name": "Nome da turma",
+      "namePlaceholder": "p. ex. 3A – economia",
+      "track": "Nível",
+      "suggested": "sugerido",
+      "kinds": "Tipos de empresa para os alunos",
+      "kindsHint": "Cada aluno escolhe um ao entrar. Se houver só um, não há nada a escolher.",
+      "language": "Idioma",
+      "endsAt": "Fim das aulas",
+      "endsAtHint": "Depois disso, a turma fica só de leitura durante 30 dias e é eliminada. Deixe em branco para o fim do ano letivo.",
+      "seeded": "Começar com dados de exemplo",
+      "seededHint": "A empresa recebe alguns clientes e faturas para que os alunos tenham com que trabalhar. Caso contrário, começam do zero.",
+      "submit": "Criar turma"
+    },
+    "invite": {
+      "title": "Convidar um colega",
+      "body": "Um colega de {school} torna-se professor aprovado assim que se registar.",
+      "placeholder": "colega@escola.cz",
+      "submit": "Enviar convite",
+      "sent": "Convite enviado."
+    },
+    "detail": {
+      "copied": "Copiado.",
+      "owner": "Criada por {name}",
+      "endedTitle": "As aulas terminaram",
+      "endedBody": "A turma está agora só de leitura. Será eliminada a {date}, a menos que a prolongue.",
+      "join": {
+        "title": "Código de acesso",
+        "body": "Os alunos abrem a ligação ou introduzem o código em /join. Não precisam de e-mail nem de palavra-passe.",
+        "copy": "Copiar ligação",
+        "rotate": "Novo código",
+        "rotateConfirm": "O código antigo deixará de funcionar. Os alunos que já estão na turma não são afetados. Continuar?",
+        "open": "A entrada está aberta ({n} de {max})"
+      },
+      "retention": {
+        "title": "Duração da turma",
+        "endsAt": "Fim das aulas",
+        "deletesAt": "Eliminada a",
+        "body": "Após o fim, as empresas dos alunos ficam visíveis durante 30 dias e depois são eliminadas. Enviamos-lhe um e-mail um mês e uma semana antes do fim das aulas.",
+        "pickDate": "Nova data de fim (opcional)",
+        "extend": "Prolongar por um ano letivo",
+        "extendTo": "Prolongar até à data escolhida",
+        "extended": "A turma foi prolongada.",
+        "download": "Descarregar progresso (CSV)"
+      },
+      "students": {
+        "title": "{n, plural, one {Alunos (#)} many {Alunos (#)} other {Alunos (#)}}",
+        "empty": "Ainda ninguém entrou. Envie aos alunos a ligação ou o código.",
+        "nickname": "Alcunha",
+        "code": "Código pessoal",
+        "open": "Abrir empresa",
+        "newCode": "Novo código",
+        "newCodeConfirm": "Criar um novo código pessoal para {name}? O antigo deixa de funcionar e a sessão do aluno é terminada.",
+        "newCodeTitle": "Novo código pessoal",
+        "newCodeBody": "Entregue-o ao aluno. Este introdu-lo em /join, em “Tenho um código pessoal”.",
+        "remove": "Remover",
+        "removeConfirm": "Remover {name} juntamente com a respetiva empresa? Esta ação não pode ser anulada.",
+        "kinds": "Tipos de empresa: {kinds}"
+      },
+      "teachers": {
+        "title": "Professores",
+        "ownerLabel": "proprietário",
+        "remove": "Remover",
+        "pick": "Escolher um colega",
+        "add": "Adicionar coprofessor",
+        "none": "Ainda não há mais ninguém da sua escola. Pode convidar um colega na vista geral das turmas."
+      },
+      "delete": {
+        "title": "Eliminar turma",
+        "body": "Elimina a turma e a empresa de cada aluno. Esta ação não pode ser anulada.",
+        "confirm": "Eliminar mesmo {name} e todas as empresas dos seus alunos?",
+        "submit": "Eliminar turma"
+      }
+    },
+    "milestones": {
+      "contact_created": "Contacto",
+      "invoice_issued": "Fatura",
+      "invoice_vat": "Fatura com IVA",
+      "invoice_foreign_currency": "Moeda estrangeira",
+      "invoice_reverse_charge": "Autoliquidação",
+      "proforma_converted": "Pró-forma → fatura",
+      "quote_created": "Orçamento",
+      "credit_note_issued": "Nota de crédito",
+      "invoice_paid": "Pagamento",
+      "bank_matched": "Pagamento conciliado",
+      "expense_recorded": "Despesa",
+      "recurring_created": "Fatura recorrente",
+      "time_logged": "Registo de horas"
+    },
+    "banner": {
+      "student": "{nickname} · turma {className}",
+      "teacher": "Empresa de {nickname} · turma {className}",
+      "practice": "Uma empresa de prática; nada é realmente enviado. Eliminada a {date}.",
+      "ended": "A turma terminou. Ainda pode consultar tudo e descarregar PDF, mas nada pode ser alterado. Eliminada a {date}.",
+      "showCode": "Mostrar código pessoal",
+      "leave": "Terminar sessão",
+      "leaveConfirm": "Terminar sessão? Pode voltar com o seu código pessoal.",
+      "backToClass": "Voltar à turma",
+      "team": "Equipa {team} · turma {className}",
+      "teacherTeam": "Empresa da equipa {team} · turma {className}",
+      "teamName": "equipa {team}",
+      "accountant": "Faz a contabilidade de {who} · turma {className}",
+      "modes": {
+        "review": "Só verifica: vê tudo e não altera nada.",
+        "bookkeeper": "Regista custos e pagamentos e prepara relatórios. O proprietário emite as faturas.",
+        "full": "Trata de toda a documentação da empresa, incluindo as faturas."
+      }
+    },
+    "errors": {
+      "generic": "Algo correu mal. Tente novamente.",
+      "classroom_already_teacher": "Esta conta já está registada como professor.",
+      "classroom_application_pending": "A sua candidatura já aguarda aprovação.",
+      "classroom_too_many_applications": "Demasiadas candidaturas a partir desta conta. Tente novamente mais tarde.",
+      "classroom_too_many_invites": "Convidou demasiados colegas hoje. Tente novamente amanhã.",
+      "classroom_not_teacher": "Só um professor aprovado pode fazer isto.",
+      "classroom_class_limit": "Atingiu o limite de turmas ativas. Elimine uma mais antiga ou deixe-a terminar.",
+      "classroom_invalid_end": "A data de fim tem de ser futura e no máximo daqui a 13 meses.",
+      "classroom_owner_only": "Só o professor que criou a turma pode fazer isto.",
+      "classroom_invalid_teacher": "Não é possível adicionar este colega. Tem de ser um professor aprovado da mesma escola.",
+      "classroom_school_suspended": "A conta da escola está suspensa. Contacte-nos.",
+      "classroom_not_found": "A turma ou o aluno já não existe.",
+      "classroom_ended": "A turma terminou e está agora só de leitura.",
+      "not_found": "Não encontrado.",
+      "forbidden": "Não tem permissão para fazer isso.",
+      "classroom_closed": "A turma terminou ou está suspensa; não é possível criar nada de novo nela.",
+      "classroom_invalid_kind": "A turma não utiliza este tipo de empresa.",
+      "classroom_unavailable": "Não foi possível preencher a empresa neste momento. Tente novamente.",
+      "classroom_team_limit": "A turma já tem o número máximo de equipas.",
+      "classroom_team_name_taken": "A turma já tem uma equipa com este nome.",
+      "classroom_team_taken": "O aluno já pertence a outra equipa.",
+      "classroom_team_full": "A equipa está completa.",
+      "classroom_team_empty": "A equipa ainda não tem membros. Adicione alguém primeiro.",
+      "classroom_company_limit": "Não é possível criar mais empresas. Um aluno ou uma equipa pode ter no máximo três.",
+      "classroom_company_owner": "Escolha um aluno ou uma equipa.",
+      "classroom_partner_same": "Escolha duas empresas diferentes.",
+      "classroom_accountant_member": "O aluno já pertence a esta empresa como proprietário ou membro da equipa.",
+      "classroom_accountant_limit": "O aluno já faz a contabilidade do número máximo de empresas permitido.",
+      "classroom_invalid_mode": "A turma não permite este modo."
+    },
+    "groups": {
+      "teamOwner": "Equipa {name}",
+      "teams": {
+        "title": "Equipas",
+        "body": "Os membros de uma equipa trabalham numa empresa partilhada. Cada aluno pode pertencer, no máximo, a uma equipa.",
+        "empty": "Ainda não há equipas.",
+        "name": "Nome da equipa",
+        "create": "Criar equipa",
+        "addMember": "Adicionar aluno",
+        "removeMember": "Remover {name} da equipa",
+        "delete": "Eliminar equipa",
+        "deleteConfirm": "Eliminar a equipa {name} e as respetivas empresas? Os alunos mantêm as suas próprias empresas."
+      },
+      "companies": {
+        "title": "Mais empresas",
+        "body": "Um aluno ou uma equipa pode ter outra empresa, por exemplo um cliente para um fornecedor. É preenchida como as empresas dos alunos e eliminada com a turma.",
+        "empty": "Ainda não há outras empresas.",
+        "owner": "Para quem",
+        "kind": "Tipo de empresa",
+        "label": "Nome da empresa (opcional)",
+        "create": "Criar empresa",
+        "created": "A empresa foi criada.",
+        "open": "Abrir empresa",
+        "delete": "Eliminar empresa",
+        "deleteConfirm": "Eliminar a empresa {name}? Esta ação não pode ser anulada.",
+        "progress": "{n} de {max} concluídos"
+      },
+      "partners": {
+        "title": "Parceiros comerciais",
+        "body": "Duas empresas da turma adicionam-se mutuamente como contactos para poderem faturar uma à outra. A outra empresa regista depois a fatura do parceiro como custo.",
+        "a": "Primeira empresa",
+        "b": "Segunda empresa",
+        "submit": "Ligar",
+        "done": "{n, plural, =0 {As empresas já se conhecem.} one {Foi adicionado # contacto.} many {Foram adicionados # contactos.} other {Foram adicionados # contactos.}}"
+      },
+      "accountants": {
+        "title": "Alunos como contabilistas",
+        "body": "Um aluno torna-se contabilista de outra empresa da turma e alterna para ela como para a sua. O modo define o que pode fazer lá.",
+        "empty": "Ainda ninguém faz a contabilidade de outra empresa.",
+        "student": "Aluno",
+        "company": "Empresa",
+        "mode": "Modo",
+        "assign": "Atribuir",
+        "remove": "Remover",
+        "row": "{student} faz a contabilidade de: {company}",
+        "modes": {
+          "review": {
+            "title": "Revisão",
+            "hint": "O contabilista vê tudo, mas não altera nada. Ideal para verificar os documentos de um colega."
+          },
+          "bookkeeper": {
+            "title": "Contabilidade",
+            "hint": "O contabilista regista custos, banco e relatórios e apenas consulta as faturas. É o proprietário que as emite."
+          },
+          "full": {
+            "title": "Acesso total",
+            "hint": "O contabilista pode fazer tudo o que o proprietário faz, incluindo emitir e anular faturas."
+          }
+        }
+      }
+    }
+  },
+  "classroomJoin": {
+    "title": "Entrar numa turma",
+    "notFound": {
+      "title": "Não encontrámos essa turma",
+      "body": "Verifique o código ou peça ao professor uma nova ligação.",
+      "retry": "Introduzir o código novamente"
+    },
+    "signedIn": {
+      "title": "Tem sessão iniciada na sua conta",
+      "body": "Entra-se nas turmas sem conta. Termine a sessão ou abra a ligação numa janela privada."
+    },
+    "heading": "Turma {className}",
+    "ended": "As aulas desta turma terminaram. Só pode consultar a sua empresa.",
+    "closed": "O professor fechou as entradas. Se já está na turma, use o seu código pessoal.",
+    "nickname": "Alcunha",
+    "nicknameHint": "Não use o seu nome completo. Basta uma alcunha que o professor reconheça.",
+    "kind": "Que empresa quer gerir?",
+    "join": "Entrar na turma",
+    "joining": "A preparar a sua empresa…",
+    "privacy": "Não é preciso e-mail nem palavra-passe. A empresa serve para praticar e é eliminada 30 dias após o fim da turma.",
+    "privacyLink": "<link>O que guardamos e quem o vê</link>",
+    "haveCode": "Já estou na turma e tenho um código pessoal",
+    "personalCode": "Código pessoal",
+    "personalCodeHint": "Recebeu o código quando entrou pela primeira vez. Se não o tiver, peça um novo ao professor.",
+    "reenter": "Continuar com a minha empresa",
+    "newHere": "Sou novo aqui",
+    "done": {
+      "title": "Bem-vindo, {nickname}!",
+      "body": "Este é o seu código pessoal. Aponte-o: permite-lhe voltar à sua empresa noutro dispositivo ou depois de terminar a sessão.",
+      "copy": "Copiar código",
+      "copied": "Código copiado.",
+      "continue": "Já o apontei, continuar"
+    },
+    "errors": {
+      "classroom_not_found": "Não encontrámos nenhuma turma com este código.",
+      "classroom_closed": "As entradas nesta turma estão fechadas.",
+      "classroom_class_full": "A turma está completa. Avise o professor.",
+      "classroom_school_full": "A escola atingiu o limite de alunos. Avise o professor.",
+      "classroom_nickname_taken": "Alguém na turma já tem esta alcunha. Escolha outra.",
+      "classroom_invalid_nickname": "A alcunha deve ter entre 2 e 30 caracteres: letras, algarismos, espaços ou um ponto.",
+      "classroom_invalid_kind": "Escolha um dos tipos de empresa disponíveis.",
+      "classroom_reenter_invalid": "Não reconhecemos este código pessoal. Verifique-o ou peça um novo ao professor.",
+      "classroom_locked_out": "Demasiadas tentativas. Tente novamente daqui a pouco.",
+      "classroom_signed_in": "Tem sessão iniciada na sua conta. Termine a sessão ou use uma janela privada.",
+      "classroom_unavailable": "De momento não é possível entrar. Tente novamente daqui a pouco.",
+      "rate_limited": "Demasiadas tentativas a partir desta rede. Tente novamente dentro de alguns minutos.",
+      "not_found": "As turmas não estão ativadas.",
+      "forbidden": "O pedido foi recusado. Recarregue a página e tente novamente."
+    }
+  },
+  "coworkingPoster": {
+    "title": "Cartaz para coworking",
+    "lead": "Um cartaz com código QR para a cozinha, a receção ou a sala de reuniões. Imprima-o diretamente do browser ou guarde-o em PDF.",
+    "back": "Voltar à página de coworking",
+    "sizeLabel": "Tamanho",
+    "download": "Descarregar cartaz",
+    "printHint": "Abre a janela de impressão: escolha uma impressora ou Guardar como PDF. Mantenha a escala em 100%.",
+    "withInvite": "O código QR do cartaz leva o código de convite da sua empresa ({code}). Recebe crédito por cada empresa que se registe através dele e comece a pagar.",
+    "generic": "Neste momento, o código QR leva ao nosso site. Inicie sessão e passará a levar o código de convite da sua empresa, para que as novas empresas lhe deem crédito.",
+    "login": "Iniciar sessão",
+    "groupCode": "Quer um código permanente para todos os membros, com uma vantagem para membros? Nós configuramo-lo e colocamo-lo no cartaz.",
+    "contact": "Escreva-nos",
+    "mailSubject": "Um código e um cartaz para o nosso espaço de coworking",
+    "qrTarget": "O QR leva a:",
+    "ctaTitle": "Um cartaz para a sua parede",
+    "ctaBody": "A4 ou A3, pronto a imprimir. Com sessão iniciada, o código QR leva o código de convite da sua empresa.",
+    "ctaButton": "Descarregar cartaz"
+  },
+  "posters": {
+    "scan": "Digitalize ou visite",
+    "codeLabel": "O seu código",
+    "eventLine": "Para os participantes de {event}",
+    "foot": "Grátis até 10 documentos por mês. Sem cartão.",
+    "tabTitle": "Faturação online",
+    "templates": {
+      "school": {
+        "eyebrow": "Para alunos e professores",
+        "headline": "Emita a sua primeira fatura antes de tocar o sino.",
+        "lead": "Uma empresa de demonstração sem e-mail nem palavra-passe. Experimente IVA, pagamentos por QR e lembretes com dados fictícios.",
+        "benefits": [
+          {
+            "title": "Demonstração sem registo",
+            "text": "Uma empresa de exemplo durante 24 horas. Nada é enviado por e-mail e nada é cobrado."
+          },
+          {
+            "title": "Como a sério",
+            "text": "Elementos obrigatórios da fatura, IVA, ISDOC e a vista do contabilista a partir dos mesmos dados."
+          },
+          {
+            "title": "Quando abrir o seu negócio",
+            "text": "Largue o exemplo e continue na sua própria conta com o número de identificação da sua empresa."
+          }
+        ]
+      },
+      "creators": {
+        "eyebrow": "Para criadores e trabalhadores independentes",
+        "headline": "Negócio fechado. Fatura enviada em 30 segundos.",
+        "lead": "Fature a marcas e agências em coroas ou euros, com pagamento por QR e verificação do número de IVA da UE.",
+        "benefits": [
+          {
+            "title": "Pagamento por QR na fatura",
+            "text": "Os clientes pagam na app do banco sem voltar a escrever o seu número de conta."
+          },
+          {
+            "title": "Clientes na UE",
+            "text": "Verificação do número de IVA no VIES e autoliquidação na fatura."
+          },
+          {
+            "title": "Fatura a partir de uma mensagem de voz",
+            "text": "Dite-a no Telegram ou no WhatsApp. A Billanta prepara o rascunho e você verifica-o."
+          }
+        ]
+      },
+      "event": {
+        "eyebrow": "Para workshops e encontros",
+        "headline": "Fature daqui mesmo. No portátil ou no telemóvel.",
+        "lead": "Faturação checa e eslovaca para trabalhadores independentes e pequenas empresas. ISDOC, IVA, registos comerciais e VIES em todos os planos.",
+        "benefits": [
+          {
+            "title": "Escreva o IČO e o resto preenche-se sozinho",
+            "text": "Dados do cliente a partir dos registos comerciais checos e eslovacos."
+          },
+          {
+            "title": "O contabilista recebe o que precisa",
+            "text": "ISDOC e exportações para Pohoda e Money S3."
+          },
+          {
+            "title": "Vigia os limites",
+            "text": "Volume de negócios face ao limiar de registo para IVA e um calendário fiscal com prazos."
+          }
+        ]
+      },
+      "local": {
+        "eyebrow": "Para profissionais e empresários em nome individual",
+        "headline": "Fature a partir do telemóvel, mesmo no local do trabalho.",
+        "lead": "Introduza o IČO do cliente, os artigos e o preço. A Billanta calcula o IVA, acrescenta um pagamento por QR e envia a fatura por e-mail.",
+        "benefits": [
+          {
+            "title": "Grátis para faturas ocasionais",
+            "text": "10 documentos por mês incluídos, sem cartão."
+          },
+          {
+            "title": "Um código QR para o seu cliente",
+            "text": "Paga logo ali a partir do telemóvel, sem escrever números de conta."
+          },
+          {
+            "title": "Nada para instalar",
+            "text": "Funciona no telemóvel e no computador, com os seus dados em cópia de segurança."
+          }
+        ]
+      },
+      "generic": {
+        "eyebrow": "Faturação para CZ e SK",
+        "headline": "Uma fatura com pagamento por QR em 30 segundos.",
+        "lead": "Para trabalhadores independentes e pequenas empresas na Chéquia e na Eslováquia. Sem papelada, nada para instalar.",
+        "benefits": [
+          {
+            "title": "ISDOC, IVA, CZ e SK",
+            "text": "Faturas em coroas ou euros, segundo as regras checas e eslovacas."
+          },
+          {
+            "title": "Dados do ARES",
+            "text": "Escreva o IČO e os dados do cliente preenchem-se sozinhos."
+          },
+          {
+            "title": "Os lembretes seguem sozinhos",
+            "text": "Quando uma fatura vence, lembramos o cliente por e-mail."
+          }
+        ]
+      },
+      "courses": {
+        "eyebrow": "Para cursos de criação de empresas",
+        "headline": "Um negócio começa com a primeira fatura. Envie a sua hoje.",
+        "lead": "Pratique numa empresa de exemplo e continue a sério assim que tiver o número de identificação da sua empresa.",
+        "benefits": [
+          {
+            "title": "Demonstração sem registo",
+            "text": "Uma empresa de exemplo durante 24 horas, sem e-mail nem palavra-passe."
+          },
+          {
+            "title": "Cliente a partir do IČO",
+            "text": "Escreva o número e os dados preenchem-se a partir do registo comercial."
+          },
+          {
+            "title": "Limites e prazos",
+            "text": "Volume de negócios face ao limiar de registo para IVA e um calendário fiscal com prazos."
+          }
+        ]
+      },
+      "communities": {
+        "eyebrow": "Para comunidades de pequenas empresas",
+        "headline": "Menos papelada, mais tempo para o trabalho.",
+        "lead": "Faturação para empresários em nome individual e pequenas empresas na Chéquia e na Eslováquia. No telemóvel ou no computador.",
+        "benefits": [
+          {
+            "title": "Fatura com pagamento por QR",
+            "text": "Os clientes pagam na app do banco sem voltar a escrever o número de conta."
+          },
+          {
+            "title": "O contabilista recebe o que precisa",
+            "text": "ISDOC e exportações para Pohoda e Money S3."
+          },
+          {
+            "title": "Os lembretes seguem sozinhos",
+            "text": "Quando uma fatura vence, lembramos o cliente por e-mail."
+          }
+        ]
+      },
+      "coworking": {
+        "eyebrow": "Para membros de coworking",
+        "headline": "A fatura fica pronta antes de o café arrefecer.",
+        "lead": "Faturação checa e eslovaca para trabalhadores independentes e pequenas empresas. No portátil ou no telemóvel.",
+        "benefits": [
+          {
+            "title": "Escreva o IČO e o resto preenche-se sozinho",
+            "text": "Dados do cliente a partir dos registos comerciais checos e eslovacos."
+          },
+          {
+            "title": "Fatura com pagamento por QR",
+            "text": "Os clientes pagam na app do banco sem voltar a escrever o número de conta."
+          },
+          {
+            "title": "O contabilista recebe o que precisa",
+            "text": "ISDOC e exportações para Pohoda e Money S3."
+          }
+        ]
+      },
+      "expats": {
+        "eyebrow": "Para expatriados na Chéquia e na Eslováquia",
+        "headline": "Faturas checas, em inglês.",
+        "lead": "Toda a aplicação funciona em inglês. As faturas seguem as regras checas e eslovacas.",
+        "benefits": [
+          {
+            "title": "Faturas bilingues",
+            "text": "Rótulos em checo e inglês, p. ex. Datum vystavení / Issue date."
+          },
+          {
+            "title": "Euros, dólares e mais",
+            "text": "A taxa do ČNB (banco central checo) para a data da operação preenche-se sozinha e o IVA é convertido para CZK."
+          },
+          {
+            "title": "Cliente a partir do IČO",
+            "text": "Escreva o IČO e os dados preenchem-se a partir do registo."
+          }
+        ]
+      }
+    },
+    "scanOrType": "Digitalize ou introduza o código em"
+  },
+  "schoolLessons": {
+    "hubName": "Para escolas",
+    "indexName": "Aulas",
+    "indexTitle": "Aulas de faturação prontas a usar para escolas",
+    "indexMetaTitle": "Aulas de faturação para escolas e ensino superior – aulas prontas com fichas de trabalho",
+    "indexLead": "Aulas de 45 minutos sobre faturação e IVA checos em três níveis: da literacia financeira no 3.º ciclo às declarações de IVA e ao trabalho com um contabilista no ensino superior. Objetivos, notas para o professor, uma tarefa na demonstração sem registo e uma ficha de trabalho com soluções. Gratuitas, para imprimir ou projetar.",
+    "indexMeta": "Aulas de 45 minutos prontas a usar sobre faturação e IVA checos para o 3.º ciclo, o secundário, o ensino superior e cursos: o que é uma fatura, elementos da fatura, data da operação tributável, taxas de IVA, notas de crédito, adiantamentos, lembretes, declarações de IVA, a declaração de controlo e a conciliação bancária. Fichas de trabalho com soluções.",
+    "howTitle": "Como funcionam as aulas",
+    "how": [
+      "Cada aula tem objetivos, um plano de aula, uma explicação dos conceitos-chave com ligações para as disposições legais exatas e notas para o professor.",
+      "Os alunos resolvem uma tarefa passo a passo na demonstração da Billanta. A demonstração não exige registo nem e-mail e cada aluno recebe a sua própria empresa com dados de exemplo.",
+      "Imprima a ficha de trabalho na versão do aluno (sem soluções). As soluções e a impressão com soluções aparecem quando iniciar sessão com uma conta de professor."
+    ],
+    "rvpNote": "As aulas do 3.º ciclo enquadram-se na literacia financeira e as do secundário nos conteúdos de economia e contabilidade dos programas curriculares checos (RVP) para escolas de comércio. A correspondência com anos e disciplinas fica ao critério da escola.",
+    "lawBasis": "As aulas seguem a legislação checa. As ligações para a legislação levam aos textos checos.",
+    "minutes": "{n} min",
+    "lessonNumber": "Aula {n}",
+    "openLesson": "Abrir aula",
+    "allLessons": "Todas as aulas",
+    "goals": "Objetivos da aula",
+    "timeline": "Plano de aula",
+    "teacherNotes": "Notas para o professor",
+    "concepts": "Conceitos-chave",
+    "task": "Tarefa na demonstração",
+    "check": "Concluída quando",
+    "worksheet": "Ficha de trabalho",
+    "worksheetName": "Nome e turma:",
+    "answer": "Solução para o professor",
+    "law": "Legislação",
+    "lawNote": "As ligações levam aos textos checos consolidados e atualizados em zakonyprolidi.cz.",
+    "tools": "Guias e calculadoras relacionados",
+    "demoCta": "Abrir a demonstração",
+    "demoPick": "Na demonstração, escolha a empresa \"{kind}\". Não é preciso registo.",
+    "teacherOnly": "Só para o professor – oculto na impressão para alunos.",
+    "printStudent": "Imprimir para alunos",
+    "printTeacher": "Imprimir com soluções",
+    "checked": "Verificámos as referências legais pela última vez a {date}. As leis mudam, por isso confirme a redação em vigor antes da aula. As aulas destinam-se ao ensino e não constituem aconselhamento fiscal.",
+    "skAlternative": "Calculadora de impostos para trabalhadores independentes eslovacos",
+    "levelNav": "Nível",
+    "tracks": {
+      "basic": {
+        "name": "3.º ciclo do ensino básico",
+        "audience": "Literacia financeira, dos 13 aos 15 anos",
+        "lead": "O que é uma fatura, como emiti-la, quando é paga e como enviar um lembrete educado. Sem legislação fiscal para os alunos.",
+        "short": "3.º ciclo"
+      },
+      "standard": {
+        "name": "Ensino secundário",
+        "audience": "Escolas de comércio e cursos de economia",
+        "lead": "Elementos da fatura, IVA, adiantamentos, notas de crédito e lembretes segundo a lei.",
+        "short": "Secundário"
+      },
+      "advanced": {
+        "name": "Ensino superior e cursos",
+        "audience": "Escolas profissionais superiores, universidades e cursos de requalificação",
+        "lead": "Declaração de IVA e declaração de controlo, clientes estrangeiros, conciliação bancária e trabalho com um contabilista.",
+        "short": "Superior"
+      }
+    },
+    "answersLocked": "Os professores veem as soluções depois de iniciar sessão.",
+    "answersLogin": "Iniciar sessão",
+    "answersSignup": "Criar uma conta de professor"
+  },
+  "schools": {
+    "seoTitle": "Billanta para escolas – faturação gratuita para o ensino",
+    "eyebrow": "Para escolas e professores",
+    "title": "Faturação que os seus alunos experimentam na prática",
+    "lead": "A Billanta é gratuita para o ensino. Em empresas de prática, os alunos percorrem todo o ciclo de vida de uma fatura: emiti-la, corrigi-la, cobrá-la e faturar a um cliente estrangeiro, segundo as regras checas e eslovacas.",
+    "freeBadge": "Gratuito para o ensino",
+    "lessonsLink": "Aulas e fichas de trabalho",
+    "practiceTitle": "O que os alunos praticam",
+    "practiceLead": "Os mesmos passos que qualquer trabalhador independente ou contabilista dá, sem o risco de estragar nada real.",
+    "practice": {
+      "vatInvoice": {
+        "title": "Fatura com IVA",
+        "body": "Elementos obrigatórios, taxas de IVA, a data da operação tributável e porque são importantes. A verificação dos elementos obrigatórios mostra de imediato o que falta."
+      },
+      "creditNote": {
+        "title": "Nota de crédito",
+        "body": "Um desconto após a emissão, mercadoria devolvida ou um preço errado. Os alunos veem como a fatura original é corrigida e o que isso muda no IVA."
+      },
+      "reminder": {
+        "title": "Lembrete e pagamento",
+        "body": "Uma fatura vencida, um lembrete, um pagamento parcial e a sua conciliação. Uma prática a que a escola raramente chega."
+      },
+      "foreign": {
+        "title": "Cliente estrangeiro",
+        "body": "Uma fatura em euros, a taxa de câmbio do banco central, autoliquidação e um documento bilingue para um cliente de outro país da UE."
+      },
+      "czsk": {
+        "title": "Regras checas vs. eslovacas",
+        "body": "A mesma fatura segundo as regras checas e eslovacas: taxas de IVA diferentes e números fiscais diferentes."
+      },
+      "roles": {
+        "title": "Proprietário e professor",
+        "body": "Quem pode ver e alterar o quê. Cada aluno gere a sua empresa como proprietário e o professor pode consultá-la só em modo de leitura. Está em preparação um exercício com acesso de contabilista."
+      }
+    },
+    "access": {
+      "title": "Como obter a Billanta para a sua turma",
+      "lead": "Estamos a concluir um modo de sala de aula. Os professores que nos contactarem agora estarão entre os primeiros a tê-lo.",
+      "steps": {
+        "request": {
+          "title": "Escreva-nos",
+          "body": "A escola, a disciplina, o ano e o número aproximado de alunos. Conseguimos verificá-lo mais depressa a partir de um e-mail da escola."
+        },
+        "setup": {
+          "title": "Preparamos a turma",
+          "body": "Recebe acesso de professor e empresas de prática para os alunos trabalharem. Em breve poderá criá-las sozinho."
+        },
+        "teach": {
+          "title": "Dá as suas aulas",
+          "body": "Os alunos emitem documentos nas suas empresas de prática e o professor vê o trabalho deles e pode analisá-lo em conjunto."
+        }
+      },
+      "soon": "Até lá, pode mostrar aos alunos a demonstração sem registo no projetor.",
+      "cta": "Pedir acesso para a sua escola",
+      "signup": "Criar uma conta de professor",
+      "mailSubject": "Billanta para escolas – pedido de acesso"
+    },
+    "safeguardsTitle": "Um ambiente de prática, não um negócio real",
+    "safeguards": {
+      "practice": {
+        "title": "Empresas de prática",
+        "body": "Os alunos trabalham com empresas e clientes fictícios. Não precisam de introduzir quaisquer dados pessoais reais."
+      },
+      "watermark": {
+        "title": "Documentos com marca de água",
+        "body": "Os documentos do modo de sala de aula terão uma marca de prática visível, para que ninguém os confunda com uma fatura real."
+      },
+      "notReal": {
+        "title": "Só para o ensino",
+        "body": "O acesso para o ensino não se destina a um negócio real. Quem começar a faturar a sério abre uma conta normal."
+      }
+    },
+    "privacyLink": "Um breve <link>aviso de privacidade para alunos e encarregados de educação</link> explica o que é guardado sobre os alunos e quem o pode ver.",
+    "resourcesTitle": "Materiais didáticos",
+    "resourcesLead": "Aulas e fichas de trabalho, guias da legislação e páginas que explicam cada tema em pormenor.",
+    "resources": {
+      "firstInvoice": "A sua primeira fatura: o que tem de conter",
+      "beginners": "Faturação para principiantes",
+      "requiredFields": "Elementos obrigatórios de uma fatura",
+      "currencies": "Faturas em moeda estrangeira",
+      "reminders": "Lembretes e pagamentos em atraso",
+      "vatCalculator": "Calculadora de IVA"
+    },
+    "faqTitle": "Perguntas dos professores",
+    "faq": [
+      {
+        "q": "A Billanta para escolas é mesmo gratuita?",
+        "a": "Sim. A escola, o professor e os alunos não pagam nada pelo ensino. Só é paga uma conta normal para um negócio real."
+      },
+      {
+        "q": "A que escolas se destina o acesso para o ensino?",
+        "a": "Ao ensino básico e secundário, sobretudo escolas de comércio e escolas com disciplinas de economia, ao ensino superior e a cursos de requalificação. Se ensina faturação noutro contexto, escreva-nos também."
+      },
+      {
+        "q": "Quando estará pronto o modo de sala de aula?",
+        "a": "Em breve. Os professores que pedirem acesso agora recebem-no entre os primeiros e podem dizer-nos do que precisam nas aulas."
+      },
+      {
+        "q": "Os alunos podem usar a Billanta para o seu próprio negócio?",
+        "a": "Não com o acesso para o ensino, que serve apenas para praticar. Para faturar a sério, o aluno abre uma conta normal, independente da escola."
+      },
+      {
+        "q": "E os dados pessoais dos alunos?",
+        "a": "A prática não precisa de nenhuns. Os alunos entram numa turma apenas com o código da turma e uma alcunha, sem e-mail nem palavra-passe. As empresas e os clientes são fictícios e as empresas de prática são eliminadas 30 dias após o fim da turma."
+      }
+    ]
   }
 }
