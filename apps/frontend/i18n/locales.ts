@@ -30,14 +30,28 @@ export const LOCALE_INFO = {
 
 export type AppLocale = keyof typeof LOCALE_INFO;
 
-export const LOCALES = Object.keys(LOCALE_INFO) as AppLocale[];
-
-/** `cs|sk|en|…` for path regexes. next.config.mjs and public/sw.js keep their own copy. */
-export const LOCALE_PATTERN = LOCALES.join('|');
-
 /** Locales with a complete catalog of their own; the rest fall back to English key by key. */
 export const FULL_LOCALES = ['cs', 'sk', 'en'] as const satisfies readonly AppLocale[];
 export type FullLocale = (typeof FULL_LOCALES)[number];
+
+/**
+ * The switch for the newer locales: off unless `NEXT_PUBLIC_EXTRA_LOCALES`
+ * names them (`de,pl`) or says `all`. A switched-off locale is not routed
+ * (its URLs 404), not in the language switcher and not in the sitemap.
+ * NEXT_PUBLIC_ because middleware needs it too: it is read at build time,
+ * so changing it means a rebuild.
+ */
+function enabledLocales(): AppLocale[] {
+  const raw = (process.env.NEXT_PUBLIC_EXTRA_LOCALES ?? '').toLowerCase();
+  const extra = raw.trim() === 'all' ? null : new Set(raw.split(',').map((l) => l.trim()));
+  const all = Object.keys(LOCALE_INFO) as AppLocale[];
+  return all.filter((l) => (FULL_LOCALES as readonly string[]).includes(l) || !extra || extra.has(l));
+}
+
+export const LOCALES = enabledLocales();
+
+/** `cs|sk|en|…` for path regexes. next.config.mjs and public/sw.js keep their own copy of every code. */
+export const LOCALE_PATTERN = LOCALES.join('|');
 
 export const INDEXED_LOCALES: readonly AppLocale[] = LOCALES.filter((l) => LOCALE_INFO[l].indexed);
 
@@ -62,5 +76,5 @@ export function intlLocale(locale: string): string {
 /** `/de/...` → 'de' when that is a locale that must not be indexed. */
 export function unindexedLocaleOfPath(pathname: string): AppLocale | null {
   const first = pathname.split('/')[1] ?? '';
-  return first in LOCALE_INFO && !isIndexedLocale(first) ? (first as AppLocale) : null;
+  return (LOCALES as readonly string[]).includes(first) && !isIndexedLocale(first) ? (first as AppLocale) : null;
 }

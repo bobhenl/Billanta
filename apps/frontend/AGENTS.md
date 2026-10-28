@@ -37,6 +37,12 @@ adding it there.
   `fr`, `es`, `it`, `nl`, `pt`, always prefixed (`/cs/...`). The list, native
   names, Intl tags and the `indexed` flag live in `i18n/locales.ts`;
   `next.config.mjs` and `public/sw.js` keep their own copy of the codes.
+- The newer locales are **off by default**. `NEXT_PUBLIC_EXTRA_LOCALES`
+  (`de,pl` or `all`, read at build time) turns them on; a switched-off
+  locale is not routed and not in the switcher. Use `routing.locales` /
+  `LOCALES`, never `Object.keys(LOCALE_INFO)`, for anything a visitor sees.
+- Likewise `EXTRA_COUNTRIES` (`PL,DE` or `all`, runtime) decides which
+  country packs the welcome screen lists as "coming soon". Default: none.
 - cs, sk and en are complete. The other locales load through
   `loadMessages` (`i18n/messages.ts`): their file is merged over `en.json`,
   so a missing key or a missing file shows English. Hand-written content

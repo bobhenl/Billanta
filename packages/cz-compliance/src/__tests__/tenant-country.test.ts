@@ -21,12 +21,23 @@ describe('tenant country', () => {
     expect(isActiveCountry(null)).toBe(false);
   });
 
-  it('lists CZ and SK first and selectable, other packs as coming soon', () => {
-    const list = onboardingCountries();
-    expect(list.slice(0, 2)).toEqual([
+  it('lists only CZ and SK unless the deployment names more', () => {
+    expect(onboardingCountries()).toEqual([
       { code: 'CZ', active: true },
       { code: 'SK', active: true },
     ]);
+  });
+
+  it('adds the named packs as coming soon, unknown codes ignored', () => {
+    expect(onboardingCountries(['pl', 'de', 'XX']).slice(2)).toEqual([
+      { code: 'DE', active: false },
+      { code: 'PL', active: false },
+    ]);
+  });
+
+  it('lists every registered pack with all', () => {
+    const list = onboardingCountries('all');
+    expect(list.length).toBeGreaterThan(40);
     expect(list.slice(2).every((c) => !c.active && /^[A-Z]{2}$/.test(c.code))).toBe(true);
   });
 });

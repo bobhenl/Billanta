@@ -31,6 +31,12 @@ async function promoPreset(): Promise<string | null> {
   return r && Date.now() - new Date(r.createdAt).getTime() < 24 * 60 * 60 * 1000 ? r.businessPreset : null;
 }
 
+/** The country switch: packs listed as "coming soon" only when EXTRA_COUNTRIES names them (or says `all`). */
+function previewCountries(): string[] | 'all' {
+  const raw = (process.env.EXTRA_COUNTRIES ?? '').trim();
+  return raw.toLowerCase() === 'all' ? 'all' : raw.split(',').map((c) => c.trim()).filter(Boolean);
+}
+
 /** First screen after signup: a few questions that decide which parts of the app show up. */
 export default async function WelcomePage() {
   const locale = await getLocale();
@@ -47,7 +53,7 @@ export default async function WelcomePage() {
       <WelcomeSetup
         initialModules={modules}
         company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: taxCountryOf(tenant), countryLocked: tenant?.countryLocked ?? false }}
-        countries={onboardingCountries()}
+        countries={onboardingCountries(previewCountries())}
         importApps={switchBrandsFor(locale)}
         initialImportFrom={isSwitchBrand(from) ? from : null}
         managesClients={session?.managesClients ?? false}

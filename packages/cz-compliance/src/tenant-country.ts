@@ -40,11 +40,17 @@ export interface OnboardingCountry {
   active: boolean;
 }
 
-/** "Where is your business registered?": CZ and SK first, then every registered country pack as coming soon. */
-export function onboardingCountries(): OnboardingCountry[] {
+/**
+ * "Where is your business registered?": CZ and SK, then the registered
+ * country packs named in `preview` as "coming soon". Off by default: a
+ * pack shows up only when the deployment lists it (EXTRA_COUNTRIES in the
+ * frontend), or every pack with `'all'`.
+ */
+export function onboardingCountries(preview: readonly string[] | 'all' = []): OnboardingCountry[] {
+  const wanted = preview === 'all' ? null : new Set(preview.map((c) => c.toUpperCase()));
   const soon = Object.keys(COUNTRY_PACKS)
     .map((c) => c.toUpperCase())
-    .filter((c) => COUNTRY_CODE_PATTERN.test(c) && !isActiveCountry(c))
+    .filter((c) => COUNTRY_CODE_PATTERN.test(c) && !isActiveCountry(c) && (!wanted || wanted.has(c)))
     .sort();
   return [...ACTIVE_COUNTRIES.map((code) => ({ code, active: true })), ...[...new Set(soon)].map((code) => ({ code, active: false }))];
 }

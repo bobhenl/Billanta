@@ -105,7 +105,7 @@ describe('2026 public holidays', () => {
 });
 
 describe('2026 VAT deadlines', () => {
-  const dates = (pack: typeof SI) => pack.deadlines(2026).map((d) => d.date);
+  const dates = (pack: typeof SI) => pack.deadlines!(2026).map((d) => d.date);
 
   it('SI: last working day of the month', () => {
     // 2026-01-31 is a Saturday.
