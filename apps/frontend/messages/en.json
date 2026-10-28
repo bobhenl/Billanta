@@ -36,7 +36,17 @@
     "label": "Language",
     "cs": "Čeština",
     "sk": "Slovenčina",
-    "en": "English"
+    "en": "English",
+    "de": "Deutsch",
+    "pl": "Polski",
+    "uk": "Українська",
+    "hu": "Magyar",
+    "ro": "Română",
+    "fr": "Français",
+    "es": "Español",
+    "it": "Italiano",
+    "nl": "Nederlands",
+    "pt": "Português"
   },
   "marketing": {
     "nav": {

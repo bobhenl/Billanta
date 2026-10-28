@@ -11,7 +11,7 @@ import { searchSite } from '@/lib/site-search';
  * so the locale comes as a query parameter. One request per keystroke
  * (debounced in the client) is cheap, but it is still rate limited per IP.
  */
-export function GET(request: Request): NextResponse {
+export async function GET(request: Request): Promise<NextResponse> {
   const ip = clientIp(request);
   if (ip && !takeToken(`site-search:${ip}`, 120, 60_000)) {
     return NextResponse.json({ hits: [] }, { status: 429, headers: { 'Retry-After': '60' } });
@@ -20,6 +20,6 @@ export function GET(request: Request): NextResponse {
   const q = (url.searchParams.get('q') ?? '').trim().slice(0, 100);
   const requested = url.searchParams.get('locale') ?? '';
   const locale = (routing.locales as readonly string[]).includes(requested) ? requested : routing.defaultLocale;
-  const hits = q ? searchSite(locale, q, 8) : [];
+  const hits = q ? await searchSite(locale, q, 8) : [];
   return NextResponse.json({ hits }, { headers: { 'Cache-Control': 'public, max-age=300' } });
 }

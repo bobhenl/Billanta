@@ -7,7 +7,8 @@ const legacy = JSON.parse(readFileSync(new URL('./lib/legacy-slugs.json', import
 
 function legacyRedirects() {
   const out = [];
-  for (const prefix of ['/:locale(cs|sk|en)', '']) {
+  // Same list as i18n/locales.ts (this file can't import TypeScript).
+  for (const prefix of ['/:locale(cs|sk|en|de|pl|uk|hu|ro|fr|es|it|nl|pt)', '']) {
     const to = prefix ? '/:locale' : '';
     for (const [from, slug] of Object.entries(legacy.features)) {
       out.push({ source: `${prefix}/funkce/${from}`, destination: `${to}/features/${slug}`, permanent: true });

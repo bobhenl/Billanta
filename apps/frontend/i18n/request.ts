@@ -1,5 +1,6 @@
 import { getRequestConfig } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
+import { loadMessages } from './messages';
 import { routing } from './routing';
 
 /**
@@ -22,6 +23,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     // container), and the client inherits that: a local-midnight date then
     // prints as the day before. Prague and Bratislava share the zone.
     timeZone: 'Europe/Prague',
-    messages: (await import(`../messages/${locale}.json`)).default
+    messages: await loadMessages(locale)
   };
 });

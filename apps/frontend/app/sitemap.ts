@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { INDEXED_LOCALES, isIndexedLocale } from '@/i18n/locales';
 import { routing } from '@/i18n/routing';
 import { comparedPages } from '@/lib/competitors';
 import { FEATURE_PAGES } from '@/lib/feature-pages';
@@ -20,7 +21,7 @@ import { SCHOOL_LESSONS } from '@/lib/school-lessons';
  * Why sharded: `getAllMunicipalities()` has ~9,000 real, sourced entries
  * (see `apps/frontend/data/README.md`), each listed in its own language
  * only and for now only the larger towns (isIndexedMunicipality), plus
- * a handful of static marketing routes × 3 locales. That's well
+ * a handful of static marketing routes × the indexed locales. That's well
  * under the sitemap protocol's hard cap of 50,000 URLs (and 50MB) per file,
  * so a single `sitemap.xml` would be spec-legal – but sharding keeps
  * headroom (the CZ dataset is
@@ -42,6 +43,9 @@ interface UrlEntry {
   /** Only these locales (default: all). A municipality page is indexed in its own language only. */
   locales?: readonly string[];
 }
+
+/** The entry's locales that may be indexed: a locale still being translated never is (i18n/locales.ts). */
+const indexedLocales = (entry: Pick<UrlEntry, 'locales'>) => (entry.locales ?? INDEXED_LOCALES).filter(isIndexedLocale);
 
 // Static, public, crawlable marketing routes. Only pages that are themselves
 // indexable belong here – the auth forms carry `noindex` (see
@@ -110,7 +114,7 @@ const STATIC_ENTRIES: UrlEntry[] = [
 
 /** The static public pages with their locales, for llms.txt to list whatever it doesn't describe itself. */
 export function staticSitemapPages(): { path: string; locales: readonly string[] }[] {
-  return STATIC_ENTRIES.map((e) => ({ path: e.path, locales: e.locales ?? routing.locales }));
+  return STATIC_ENTRIES.map((e) => ({ path: e.path, locales: indexedLocales(e) }));
 }
 
 function buildAllEntries(): UrlEntry[] {
@@ -128,7 +132,7 @@ function buildAllEntries(): UrlEntry[] {
 }
 
 function totalUrlCount(): number {
-  return buildAllEntries().reduce((sum, e) => sum + (e.locales ?? routing.locales).length, 0);
+  return buildAllEntries().reduce((sum, e) => sum + indexedLocales(e).length, 0);
 }
 
 export function sitemapShardCount(): number {
@@ -153,7 +157,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
   // id always maps to the same slice across builds.
   const flat: { path: string; locale: string; locales: readonly string[]; changeFrequency: UrlEntry['changeFrequency']; priority: number }[] = [];
   for (const entry of buildAllEntries()) {
-    const locales = entry.locales ?? routing.locales;
+    const locales = indexedLocales(entry);
     for (const locale of locales) {
       flat.push({ path: entry.path, locale, locales, changeFrequency: entry.changeFrequency, priority: entry.priority });
     }
@@ -190,7 +194,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
  * have different slugs; they are grouped by translation key for hreflang.
  */
 async function blogEntries(): Promise<MetadataRoute.Sitemap> {
-  const posts = await fetchBlogSitemap();
+  const posts = (await fetchBlogSitemap()).filter((p) => isIndexedLocale(p.locale));
   if (!posts.length) return [];
   const groups = new Map<string, Record<string, string>>();
   for (const p of posts) {
@@ -199,7 +203,7 @@ async function blogEntries(): Promise<MetadataRoute.Sitemap> {
     groups.set(p.translationKey, languages);
   }
   // The index is only indexable in a language that has a post (see blog/page.tsx).
-  const indexLocales = routing.locales.filter((l) => posts.some((p) => p.locale === l));
+  const indexLocales = INDEXED_LOCALES.filter((l) => posts.some((p) => p.locale === l));
   const index = Object.fromEntries(indexLocales.map((l) => [l, `${SITE_URL}/${l}/blog`]));
   return [
     ...indexLocales.map((l) => ({ url: index[l]!, changeFrequency: 'weekly' as const, priority: 0.6, alternates: { languages: index } })),
@@ -222,9 +226,9 @@ async function directoryEntries(): Promise<MetadataRoute.Sitemap> {
   const listings = await fetchDirectory();
   if (isThin(listings)) return [];
   const everywhere = (path: string, priority: number) => {
-    const languages: Record<string, string> = Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}${path}`]));
+    const languages: Record<string, string> = Object.fromEntries(INDEXED_LOCALES.map((l) => [l, `${SITE_URL}/${l}${path}`]));
     languages['x-default'] = languages[routing.defaultLocale]!;
-    return routing.locales.map((l) => ({ url: `${SITE_URL}/${l}${path}`, changeFrequency: 'weekly' as const, priority, alternates: { languages } }));
+    return INDEXED_LOCALES.map((l) => ({ url: `${SITE_URL}/${l}${path}`, changeFrequency: 'weekly' as const, priority, alternates: { languages } }));
   };
   const trades = DIRECTORY_TRADES.filter((k) => !isThin(listings.filter((l) => l.trade === k)));
   const towns = townsOf(listings).filter((t) => t.count >= MIN_INDEXED_LISTINGS);

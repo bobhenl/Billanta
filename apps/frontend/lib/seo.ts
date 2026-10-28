@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { INDEXED_LOCALES, isIndexedLocale } from '@/i18n/locales';
 import { routing } from '@/i18n/routing';
 import { getTranslations } from 'next-intl/server';
 import { PRIVATE_CARD, SITE_NAME, SITE_URL } from '@/lib/site';
@@ -23,19 +24,22 @@ export function ogImage(locale: string, path: string, alt: string) {
  *
  * `locales` narrows the alternates for a page published in some languages
  * only (see lib/public-tools.ts): hreflang must never point at a copy that
- * is noindex. x-default stays the default locale when it is among them.
+ * is noindex. For the same reason a locale that is not indexed yet
+ * (i18n/locales.ts) is never an alternate. x-default stays the default
+ * locale when it is among them.
  */
 export function localeAlternates(
   locale: string,
   path: string,
-  locales: readonly string[] = routing.locales
+  locales: readonly string[] = INDEXED_LOCALES
 ): NonNullable<Metadata['alternates']> {
   const suffix = path === '/' ? '' : path;
+  const indexed = locales.filter(isIndexedLocale);
   const languages: Record<string, string> = {};
-  for (const l of locales) {
+  for (const l of indexed) {
     languages[l] = `${SITE_URL}/${l}${suffix}`;
   }
-  const fallback = locales.includes(routing.defaultLocale) ? routing.defaultLocale : locales[0];
+  const fallback = indexed.includes(routing.defaultLocale) ? routing.defaultLocale : (indexed[0] ?? locale);
   languages['x-default'] = `${SITE_URL}/${fallback}${suffix}`;
   return { canonical: `${SITE_URL}/${locale}${suffix}`, languages };
 }
@@ -67,6 +71,7 @@ export function publicPageMetadata({
     ...(title ? { title } : {}),
     description,
     alternates,
+    ...(isIndexedLocale(locale) ? {} : { robots: UNINDEXED_LOCALE }),
     openGraph: {
       ...(social ? { title: social } : {}),
       description,
@@ -79,6 +84,9 @@ export function publicPageMetadata({
     twitter: { card: 'summary_large_image', ...(social ? { title: social } : {}), description, images: [image.url] }
   };
 }
+
+/** A page in a locale that is not indexed yet: its links still count. */
+export const UNINDEXED_LOCALE: Metadata['robots'] = { index: false, follow: true };
 
 /** For pages that must never be indexed (auth forms, dashboard, private invoice links). */
 export const NOINDEX: Metadata['robots'] = { index: false, follow: false };

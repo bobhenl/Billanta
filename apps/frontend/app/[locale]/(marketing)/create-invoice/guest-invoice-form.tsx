@@ -22,6 +22,7 @@ import { InfoHint } from '@/components/info-hint';
 import { CompanyLookup, fetchPublicCompanyHits } from '@/components/company-lookup';
 import type { CompanyHit } from '@/lib/company-lookup';
 import { forgetGuestInvoices, nextGuestNumber, readGuestInvoices, rememberGuestInvoice, type GuestInvoiceBody } from '@/lib/guest-invoices';
+import { intlLocale } from '@/i18n/locales';
 
 /**
  * "Make an invoice without an account" – everything stays in the browser
@@ -998,7 +999,7 @@ function AiFill({
     const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
     if (!Ctor) return;
     const rec = new Ctor();
-    rec.lang = locale === 'en' ? 'en-US' : locale === 'sk' ? 'sk-SK' : 'cs-CZ';
+    rec.lang = intlLocale(locale);
     rec.interimResults = false;
     const before = text;
     let combined = before;

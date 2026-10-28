@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { intlLocale } from '@/i18n/locales';
 
 /* Minimal typing of the Web Speech API (not in lib.dom for every TS version). */
 interface SpeechResult {
@@ -26,8 +27,6 @@ interface Recognition {
   abort(): void;
 }
 type RecognitionCtor = new () => Recognition;
-
-const LANGS: Record<string, string> = { cs: 'cs-CZ', sk: 'sk-SK', en: 'en-US' };
 
 function recognitionCtor(): RecognitionCtor | null {
   if (typeof window === 'undefined') return null;
@@ -71,7 +70,7 @@ export function DictationButton({
     const Ctor = recognitionCtor();
     if (!Ctor || rec.current) return;
     const r = new Ctor();
-    r.lang = LANGS[locale] ?? 'cs-CZ';
+    r.lang = intlLocale(locale);
     r.continuous = false;
     r.interimResults = true;
     const prefix = base.trim() ? `${base.trim()} ` : '';

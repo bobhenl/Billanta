@@ -31,7 +31,7 @@ export default async function SiteSearchPage({
   const { q = '' } = await searchParams;
   const query = q.trim().slice(0, 100);
   const t = await getTranslations('siteSearch');
-  const hits = query ? searchSite(locale, query) : [];
+  const hits = query ? await searchSite(locale, query) : [];
 
   return (
     <div className="container max-w-3xl py-12 sm:py-16">

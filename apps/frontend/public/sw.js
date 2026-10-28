@@ -16,7 +16,8 @@
 const STATIC_CACHE = 'billanta-static-v1';
 const PAGES_CACHE = 'billanta-pages-v1';
 const STATIC_LIMIT = 400;
-const OFFLINE_PAGES = /^\/(cs|sk|en)\/(dashboard|invoices\/new|contacts)\/?$/;
+// Locales as in i18n/locales.ts.
+const OFFLINE_PAGES = /^\/(cs|sk|en|de|pl|uk|hu|ro|fr|es|it|nl|pt)\/(dashboard|invoices\/new|contacts)\/?$/;
 
 const OFFLINE_HTML = `<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title>
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:#0b0c14;color:#e7e8f0;text-align:center;padding:16px}a,button{display:inline-block;margin:16px 4px 0;border:0;border-radius:999px;padding:10px 18px;font:inherit;font-weight:700;background:#6366f1;color:#fff;text-decoration:none}a{background:#272a3d}</style></head>
