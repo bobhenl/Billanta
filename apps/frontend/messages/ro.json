@@ -888,6 +888,3273 @@
       }
     }
   },
+  "tools": {
+    "menu": {
+      "resources": "Resurse",
+      "calculators": "Calculatoare",
+      "calculatorsHint": "Impozit, TVA, plată prin QR, căutare firme, scadențe",
+      "guides": "Ghiduri",
+      "guidesHint": "TVA în Cehia și facturare electronică în Slovacia",
+      "compare": "Comparație cu concurența",
+      "blog": "Blog",
+      "blogHint": "Termene, legislație și instrucțiuni",
+      "findAccountant": "Căutați un contabil?",
+      "findAccountantHint": "Contabili recomandați pe regiuni",
+      "glossary": "Glosar",
+      "glossaryHint": "Termeni de facturare și TVA explicați",
+      "businessDirectory": "Catalog de firme",
+      "businessDirectoryHint": "Liber-profesioniști și firme după domeniu și localitate",
+      "templatesHint": "Modele pentru orice tip de factură",
+      "reminders": "Modele de remindere de plată",
+      "remindersHint": "Reminder, somație de plată, notificare înainte de acțiune în instanță"
+    },
+    "search": {
+      "showAll": "Afișați toate rezultatele pentru „{query}”",
+      "pages": "Pagini",
+      "close": "Închideți căutarea",
+      "noResults": "Nicio potrivire rapidă. Încercați alt cuvânt sau deschideți toate rezultatele.",
+      "slashHint": "deschide căutarea"
+    },
+    "common": {
+      "disclaimerTitle": "Estimare orientativă",
+      "disclaimer": "Rezultatul este doar o estimare orientativă și nu înlocuiește un contabil sau un consultant fiscal. Nu ține cont de alte venituri, deduceri, bonificații pentru copii și nici de începerea sau încetarea activității în cursul anului. Înainte de a depune sau de a plăti ceva pe baza lui, verificați cu contabilul dumneavoastră sau pe site-urile Administrației Financiare cehe (Finanční správa) și ale casei de asigurări sociale (ČSSZ).",
+      "validFor": "Sumele sunt valabile pentru anul {year}.",
+      "ratesSince": "Cotele se aplică de la {date}.",
+      "ctaTitle": "Facturați deja? Billanta calculează asta din documentele dumneavoastră",
+      "ctaText": "Aplicația vă arată estimarea impozitului și a asigurărilor, avansurile minime și declarațiile de TVA direct din facturile și cheltuielile pe care le înregistrați.",
+      "ctaButton": "Creați un cont gratuit",
+      "ctaNote": "Fără card. Planul de bază este gratuit.",
+      "related": "Alte calculatoare",
+      "allCalculators": "Toate calculatoarele",
+      "relatedGuides": "Ghiduri",
+      "allGuides": "Toate ghidurile",
+      "howTitle": "Cum se calculează",
+      "resultTitle": "Rezultat",
+      "perYear": "pe an",
+      "perMonth": "pe lună",
+      "czOnlyTitle": "Această pagină se referă la regulile din Cehia",
+      "czOnlyText": "„{name}” se referă la legislația cehă. Slovacia are alte cote, termene și formulare, așa că nu există o versiune slovacă.",
+      "czOnlyCs": "Deschideți versiunea cehă",
+      "czOnlySk": "Reguli slovace: Finančná správa SR",
+      "czTag": "Reguli cehe",
+      "lastChecked": "Am verificat ultima dată aceste informații pe {date}.",
+      "officialSource": "Informațiile obligatorii și formularele se găsesc pe site-ul Administrației Financiare cehe",
+      "guideDisclaimer": "Acest ghid rezumă regulile de bază și nu înlocuiește un contabil sau un consultant fiscal. Legislația și formularele se schimbă, așa că verificați detaliile pe site-ul Administrației Financiare.",
+      "updated": "Actualizat",
+      "invoiceCtaTitle": "Aveți nevoie de o factură din asta?",
+      "invoiceCtaText": "Emiteți o factură cu cod QR de plată, datele firmei din ARES și scadența corectă, fără cont. Cu un cont Billanta facturile se salvează, plățile sunt urmărite, iar contabilul primește documentele.",
+      "invoiceCtaButton": "Creați o factură gratuită",
+      "overview": "Prezentare generală",
+      "myNumbers": {
+        "hint": "Sunteți conectat. Deschideți calculatorul în aplicație cu veniturile și cheltuielile din documentele dumneavoastră.",
+        "cta": "Deschideți cu cifrele mele"
+      },
+      "czOnlyTextAlt": "„{name}” se referă la regulile din Cehia. Pentru liber-profesioniștii din Slovacia există un calculator separat, după regulile slovace.",
+      "noLiability": "Rezultatul nu este însoțit de nicio garanție și nu răspundem pentru deciziile luate pe baza lui.",
+      "noWarranty": "Rezultatul are caracter informativ și nu este însoțit de nicio garanție. Verificați detaliile înainte de a le folosi.",
+      "invoiceCtaTemplates": "Modele de facturi de completat online"
+    },
+    "invoiceChecklist": {
+      "scenario": {
+        "country": "Conform legislației din",
+        "vatStatus": "Sunteți",
+        "document": "Document",
+        "customer": "Client",
+        "reverseCharge": "Taxare inversă internă",
+        "reverseYes": "Da",
+        "reverseNo": "Nu",
+        "euSupply": "Ce livrați în UE",
+        "euService": "Un serviciu",
+        "euGoods": "Bunuri",
+        "countries": {
+          "CZ": "Cehia",
+          "SK": "Slovacia"
+        },
+        "vatStatuses": {
+          "payer": "Plătitor de TVA",
+          "identified": "Persoană identificată",
+          "non_payer": "Neplătitor de TVA"
+        },
+        "documents": {
+          "invoice": "Factură",
+          "proforma": "Proformă",
+          "credit_note": "Factură de stornare",
+          "simplified": "Factură simplificată"
+        },
+        "customers": {
+          "business": "Firmă din țară",
+          "consumer": "Consumator",
+          "eu_business": "Firmă din UE",
+          "non_eu": "Din afara UE"
+        }
+      },
+      "taxDocument": "Acesta este un document fiscal conform legii TVA.",
+      "notTaxDocument": "Acesta nu este un document fiscal – sunt suficiente elementele cerute de dreptul comercial și bunele practici.",
+      "notices": {
+        "simplifiedNotForNonPayer": "Doar un plătitor de TVA emite un document fiscal simplificat. Se afișează în schimb o factură obișnuită.",
+        "simplifiedLimitCz": "Un document fiscal simplificat este permis doar până la 10.000 CZK cu TVA inclus (§ 30 din legea cehă a TVA).",
+        "simplifiedLimitSk": "În Slovacia o factură simplificată este permisă doar până la 100 € cu TVA inclus (§ 74 alin. 3 lit. a din legea slovacă a TVA).",
+        "simplifiedNotCrossBorder": "Livrările în alt stat UE și exporturile nu pot folosi un document simplificat. Se afișează în schimb o factură obișnuită.",
+        "proformaTaxDocument": "Proforma nu este un document fiscal. După primirea plății, emiteți pentru aceasta un document fiscal în termen de 15 zile.",
+        "identifiedNoTaxDocument": "O persoană identificată nu percepe TVA intern și facturează ca un neplătitor.",
+        "identifiedEuService": "Pentru un serviciu prestat unei firme din alt stat UE, persoana identificată emite și ea un document fiscal – fără TVA și cu mențiunea privind taxarea inversă.",
+        "reverseChargeDomesticOnly": "Taxarea inversă internă se aplică doar livrărilor enumerate în lege (lucrări de construcții, deșeuri, aur, telefoane mobile peste un anumit prag …).",
+        "consumerNoTaxDocumentDuty": "Nu sunteți obligat să emiteți un document fiscal unui consumator, decât dacă îl solicită. Dacă îl emiteți, trebuie să conțină tot ce este mai jos.",
+        "nonPayerNoVat": "Un neplătitor nu afișează TVA pe factură și nu are voie să o perceapă."
+      },
+      "groups": {
+        "supplier": "Furnizor",
+        "customer": "Client",
+        "document": "Document",
+        "amounts": "Sume și TVA",
+        "payment": "Plată"
+      },
+      "items": {
+        "supplierName": {
+          "label": "Numele sau denumirea furnizorului",
+          "hint": "Exact ca în registrul comerțului sau în registrul meșteșugurilor."
+        },
+        "supplierAddress": {
+          "label": "Sediul furnizorului",
+          "hint": "Sediul social, nu doar o adresă de corespondență."
+        },
+        "supplierIco": {
+          "label": "Codul de identificare al furnizorului (IČO)",
+          "hint": "Opt cifre; verificăm cifra de control."
+        },
+        "supplierRegistry": {
+          "label": "Înscrierea în registru",
+          "hint": "De ex. „Înregistrată în Registrul Comerțului la Tribunalul Municipal din Praga, secțiunea C, dosarul 123”. Un liber-profesionist înscris doar în registrul meșteșugurilor o poate omite în Cehia."
+        },
+        "supplierDic": {
+          "label": "Codul de TVA al furnizorului",
+          "hint": "Cu prefixul țării, de ex. CZ sau SK."
+        },
+        "customerName": {
+          "label": "Numele sau denumirea clientului",
+          "hint": "Pentru un consumator este suficient numele."
+        },
+        "customerAddress": {
+          "label": "Adresa clientului",
+          "hint": "Sediul sau adresa de domiciliu."
+        },
+        "customerIco": {
+          "label": "Codul de identificare al clientului",
+          "hint": "Legea nu îl cere, dar firmele îl vor pentru contabilitate."
+        },
+        "customerDic": {
+          "label": "Codul de TVA al clientului",
+          "hint": "Cu prefixul țării, de ex. CZ12345678 sau DE123456789."
+        },
+        "documentLabel": {
+          "label": "Titlul documentului",
+          "hint": "Ca să fie clar despre ce tip de document este vorba."
+        },
+        "number": {
+          "label": "Numărul documentului",
+          "hint": "Unic în seria de numerotare; nu se poate repeta niciodată."
+        },
+        "originalNumber": {
+          "label": "Numărul facturii corectate",
+          "hint": "Numărul facturii originale pe care o corectează factura de stornare."
+        },
+        "issueDate": {
+          "label": "Data emiterii",
+          "hint": "Ziua în care ați emis documentul."
+        },
+        "taxPointDate": {
+          "label": "Data livrării (faptul generator)",
+          "hint": "Când ați livrat bunurile sau ați prestat serviciul."
+        },
+        "subject": {
+          "label": "Ce și cât s-a livrat",
+          "hint": "Concret – nu doar „servicii”."
+        },
+        "unitPrice": {
+          "label": "Preț unitar fără TVA",
+          "hint": "Prețul pe bucată, oră sau altă unitate, plus orice reducere care nu este deja inclusă în preț."
+        },
+        "taxBase": {
+          "label": "Baza de impozitare",
+          "hint": "Totalul fără TVA."
+        },
+        "vatRate": {
+          "label": "Cota de TVA",
+          "hint": "Cota aplicabilă sau 0 % pentru o livrare scutită."
+        },
+        "vatAmount": {
+          "label": "Valoarea TVA",
+          "hint": "TVA-ul perceput, rotunjit."
+        },
+        "total": {
+          "label": "Total de plată",
+          "hint": "Cât trebuie să plătească clientul."
+        },
+        "correctionReason": {
+          "label": "Motivul corecției",
+          "hint": "De ex. bunuri returnate, o reducere, un preț greșit."
+        },
+        "correctionDifference": {
+          "label": "Modificarea bazei de impozitare și a TVA",
+          "hint": "Cu cât se modifică baza și TVA-ul față de factura originală (cu semnul minus)."
+        },
+        "reverseChargeNote": {
+          "label": "Mențiunea privind taxarea inversă",
+          "hint": "„Daň odvede zákazník” (CZ) sau „prenesenie daňovej povinnosti” (SK), ori „Reverse charge” pentru un client din UE. TVA-ul îl declară clientul."
+        },
+        "exemptionNote": {
+          "label": "Trimitere la scutirea de TVA",
+          "hint": "De ex. „Scutit conform § 64 din legea TVA” sau o trimitere la directiva TVA."
+        },
+        "nonPayerNote": {
+          "label": "Mențiunea „Neplătitor de TVA”",
+          "hint": "Nu este cerută de lege, dar clientul înțelege imediat de ce nu există TVA."
+        },
+        "dueDate": {
+          "label": "Scadența",
+          "hint": "Fără ea se aplică termenul legal și un reminder se argumentează mai greu."
+        },
+        "paymentDetails": {
+          "label": "Cont bancar și referința plății",
+          "hint": "Ideal cu un cod QR de plată, ca clientul să plătească fără să rescrie datele."
+        }
+      },
+      "notes": {
+        "ifAssigned": "Dacă a fost atribuit.",
+        "ifRegistered": "Doar dacă sunteți înscris în registrul comerțului sau în alt registru public.",
+        "ifBuyerHasDic": "Dacă clientul are unul.",
+        "ifDifferent": "Doar dacă diferă de data emiterii.",
+        "buyerVatId": "Codul de TVA din alt stat UE (verificați-l în VIES).",
+        "perRate": "Separat pentru fiecare cotă de TVA.",
+        "inHomeCurrency": "În moneda națională (CZK sau EUR), chiar dacă facturați în altă monedă.",
+        "noVatAmountReverse": "Doar informativ – nu dumneavoastră calculați TVA-ul, ci clientul.",
+        "totalOrBase": "Totalul cu TVA inclus sau baza și TVA-ul separat.",
+        "proformaLabel": "De ex. „Factură proformă – nu este document fiscal”.",
+        "creditLabel": "De ex. „Factură de stornare” sau „Document fiscal de corecție”.",
+        "simplifiedLabel": "De ex. „Document fiscal simplificat”.",
+        "exemptEuGoods": "Livrarea de bunuri în UE este scutită de TVA.",
+        "exportOrAbroad": "Pentru bunuri exportate sau un serviciu prestat în afara UE."
+      },
+      "levels": {
+        "required": "Obligatoriu",
+        "conditional": "Condiționat",
+        "recommended": "Recomandat"
+      }
+    }
+  },
+  "featurePages": {
+    "indexTitle": "Funcții de facturare",
+    "indexHeading": "Tot ce are nevoie facturarea pentru independenți și firme mici",
+    "indexLead": "Fiecare funcție are propria pagină cu descriere, modul de funcționare și răspunsuri la întrebări frecvente. Totul vine într-o singură aplicație – fără suplimente sau module suplimentare.",
+    "indexDescription": "Funcții de facturare: plăți QR, ISDOC, căutare în ARES, remindere, potrivirea plăților bancare, facturi recurente, decontul de TVA ceh, export în Pohoda și Money S3.",
+    "breadcrumb": "Funcții",
+    "allFeatures": "Toate funcțiile",
+    "pointsTitle": "Ce face",
+    "stepsTitle": "Cum funcționează",
+    "faqTitle": "Întrebări frecvente",
+    "relatedTitle": "Alte funcții",
+    "cta": "Creați un cont gratuit",
+    "ctaNote": "Fără card de credit. Toate funcțiile sunt disponibile imediat după înregistrare.",
+    "more": "Aflați mai multe",
+    "indexSeoTitle": "Funcții de facturare pentru independenți și IMM-uri",
+    "demo": {
+      "text": "Doriți să încercați mai întâi? Deschideți demo-ul live cu o firmă de exemplu, fără înregistrare.",
+      "link": "Încercați demo-ul"
+    },
+    "items": {
+      "qr": {
+        "name": "Plată QR pe facturi",
+        "title": "Coduri QR de plată pe facturi (SPAYD)",
+        "description": "Fiecare factură primește un cod QR de plată conform standardului ceh SPAYD. Clientul îl scanează în aplicația băncii și plătește.",
+        "lead": "Clientul nu mai rescrie numărul de cont, suma sau simbolul variabil. Scanează codul QR în aplicația băncii, iar plata este pregătită.",
+        "points": [
+          "Cod QR în standardul SPAYD, acceptat de toate băncile din Cehia",
+          "Contul, suma, moneda, simbolul variabil și scadența se preiau direct din factură",
+          "Codul apare pe PDF și pe linkul online al facturii pe care îl trimiteți",
+          "La o factură plătită parțial, codul cere doar suma rămasă"
+        ],
+        "steps": [
+          "Adăugați contul bancar (număr de cont sau IBAN) în setări.",
+          "Emiteți o factură – codul QR se generează automat.",
+          "Clientul scanează și plătește, iar dumneavoastră potriviți plata cu factura."
+        ],
+        "faq": [
+          {
+            "q": "Funcționează plata QR cu orice bancă?",
+            "a": "Standardul SPAYD (QR Platba) este acceptat de aplicațiile mobile ale tuturor marilor bănci din Cehia și ale majorității celor din Slovacia."
+          },
+          {
+            "q": "Trebuie să o activez?",
+            "a": "Nu. Odată ce contul bancar este completat, facturile afișează codul automat."
+          }
+        ]
+      },
+      "isdoc": {
+        "name": "Export ISDOC",
+        "title": "Facturi în formatul ISDOC",
+        "description": "Exportați facturile în ISDOC, standardul ceh de facturare electronică pe care îl pot importa majoritatea programelor de contabilitate.",
+        "lead": "ISDOC este formatul ceh de factură electronică. Contabilul îl importă fără să rescrie nimic.",
+        "points": [
+          "Export ISDOC al oricărei facturi dintr-un singur clic",
+          "Include furnizorul, clientul, liniile facturii, cotele de TVA și detaliile de plată",
+          "Util pentru contabili, clienți mari și instituții publice",
+          "Sunt disponibile și descărcări PDF și CSV",
+          "Fișier de factură electronică UBL 2.1 (Peppol BIS 3.0) pentru clienții slovaci; trimiterea prin Peppol pentru obligația SK din 2027 este în lucru"
+        ],
+        "steps": [
+          "Emiteți o factură ca de obicei.",
+          "Alegeți exportul ISDOC în detaliul facturii.",
+          "Trimiteți fișierul contabilului sau clientului pentru import."
+        ],
+        "faq": [
+          {
+            "q": "Cine are nevoie de ISDOC?",
+            "a": "În principal contabilii și firmele care importă facturile automat. Unele instituții publice și firme mari cer facturi electronice."
+          },
+          {
+            "q": "ISDOC înlocuiește PDF-ul?",
+            "a": "Nu, îl completează. Clientul primește în continuare un PDF lizibil; ISDOC este pentru calculatoare."
+          }
+        ]
+      },
+      "registry": {
+        "name": "Căutarea firmelor în ARES și în registre",
+        "title": "Completați clienții din ARES după IČO sau nume",
+        "description": "Introduceți codul de identificare (IČO) sau numele firmei, iar datele clientului vin din ARES. Căutăm și în registrul slovac RPO, în VIES al UE și în registre străine.",
+        "lead": "Introduceți câteva litere din nume sau IČO. Adresa, codul de TVA și denumirea oficială vin din registrul oficial, deci fără greșeli pe factură.",
+        "points": [
+          "Firme cehe din ARES după IČO sau nume",
+          "Firme slovace din RPO, orice firmă din UE după codul de TVA prin VIES",
+          "Registre străine: Franța, Norvegia, Finlanda, Danemarca, Elveția, Polonia, Regatul Unit și indexul mondial LEI",
+          "Clienții salvați apar imediat, rezultatele din registre sosesc treptat"
+        ],
+        "steps": [
+          "Introduceți IČO sau numele firmei în câmpul pentru client.",
+          "Alegeți firma – datele se completează.",
+          "Clientul se salvează în contacte pentru data viitoare."
+        ],
+        "faq": [
+          {
+            "q": "Căutarea este gratuită?",
+            "a": "Da. Registrele sunt publice, iar căutarea face parte din aplicație."
+          },
+          {
+            "q": "Pot găsi un liber-profesionist după nume?",
+            "a": "Da. Introduceți prenumele și numele – ARES potrivește cuvinte întregi, deci terminați cel puțin un cuvânt."
+          }
+        ]
+      },
+      "reminders": {
+        "name": "Remindere automate",
+        "title": "Remindere automate de plată pentru facturile restante",
+        "description": "După scadență trimitem clientului un reminder politicos prin e-mail. Dumneavoastră alegeți intervalul și numărul maxim de remindere.",
+        "lead": "Nu mai urmăriți cine nu a plătit. Reminderele pleacă automat de îndată ce o factură este restantă.",
+        "points": [
+          "Reminderele pentru restanțe se trimit automat prin e-mail",
+          "Interval configurabil între remindere și un număr maxim",
+          "Fiecare reminder are link către factură cu plata QR",
+          "Reminderele se opresc imediat ce factura este plătită"
+        ],
+        "steps": [
+          "Activați reminderele în setările facturilor și alegeți un interval.",
+          "O factură trecută de scadență este marcată ca restantă.",
+          "Clientul primește remindere până plătește sau până se atinge limita."
+        ],
+        "faq": [
+          {
+            "q": "Cât de des se trimit reminderele?",
+            "a": "Intervalul implicit este de 7 zile; îl puteți schimba, la fel ca numărul maxim, în setări."
+          },
+          {
+            "q": "Pot trimite un reminder manual?",
+            "a": "Da, puteți trimite oricând un reminder pentru o factură restantă."
+          }
+        ]
+      },
+      "bankMatching": {
+        "name": "Potrivirea plăților bancare",
+        "title": "Potrivirea automată a plăților cu facturile",
+        "description": "Plățile primite sunt potrivite cu facturile după simbolul variabil și sumă. Fio, alte bănci prin PSD2 și PayPal se sincronizează singure; pentru orice altă bancă încărcați un extras CSV.",
+        "lead": "În loc să bifați manual facturile plătite, aplicația atribuie singură plățile și marchează factura ca plătită.",
+        "points": [
+          "Fio banka: plățile primite se descarcă în fiecare oră prin API-ul oficial",
+          "Alte bănci: importul extrasului într-un format CSV simplu",
+          "Potrivire după simbolul variabil, sumă și monedă",
+          "Plățile parțiale se înregistrează pe factură ca plăți parțiale",
+          "Plățile nepotrivite rămân pentru atribuire manuală"
+        ],
+        "steps": [
+          "În secțiunea Bancă, conectați un cont (Fio cu un token doar pentru citire, alte bănci prin PSD2 sau PayPal) ori încărcați un extras CSV de la bancă.",
+          "Aplicația descarcă plățile și le potrivește cu facturile.",
+          "Verificați plățile rămase nepotrivite și atribuiți-le manual."
+        ],
+        "faq": [
+          {
+            "q": "Ce bănci sunt acceptate?",
+            "a": "Fio direct prin API-ul său gratuit, alte bănci cehe, slovace și din SEE (inclusiv Revolut și Wise) prin PSD2 (furnizor licențiat Enable Banking). Orice bancă și printr-un extras CSV: recunoaștem exporturile obișnuite ale băncilor cehe și slovace, iar data, suma și moneda sunt suficiente."
+          },
+          {
+            "q": "Poate Billanta să facă plăți din contul meu?",
+            "a": "Nu. Tokenul Fio se creează cu permisiunea „doar vizualizare cont”, care nu poate trimite nimic. Îl stocăm criptat."
+          },
+          {
+            "q": "Ce se întâmplă dacă clientul uită simbolul variabil?",
+            "a": "Plata rămâne nepotrivită și o atribuiți manual facturii."
+          }
+        ]
+      },
+      "recurring": {
+        "name": "Facturi recurente",
+        "title": "Facturi recurente",
+        "description": "Configurați o factură recurentă pentru servicii regulate. Se emite automat în fiecare săptămână, lună, trimestru sau an.",
+        "lead": "Chirie, abonamente de servicii, întreținerea site-ului – facturile pe care le emiteți la fel în fiecare lună se pot emite singure.",
+        "points": [
+          "Programări săptămânale, lunare, trimestriale sau anuale",
+          "Un șablon cu clientul, liniile facturii și condițiile de plată",
+          "Fiecare factură nouă primește următorul număr din serie",
+          "Puteți întrerupe sau încheia programarea oricând"
+        ],
+        "steps": [
+          "Creați un șablon de factură și alegeți frecvența.",
+          "În ziua programată aplicația emite o factură nouă.",
+          "Verificați-o sau trimiteți-o direct clientului."
+        ],
+        "faq": [
+          {
+            "q": "Pot schimba suma unei facturi recurente?",
+            "a": "Da, puteți edita șablonul oricând; modificarea se aplică facturilor viitoare."
+          },
+          {
+            "q": "Fiecare factură primește un număr nou?",
+            "a": "Da, fiecare factură emisă primește următorul număr din serie."
+          }
+        ]
+      },
+      "voice": {
+        "name": "Factură prin voce",
+        "title": "Creați facturi prin voce în Telegram",
+        "description": "Dictați o factură în telefon. AI-ul transformă mesajul vocal într-o ciornă de factură pe care doar o verificați.",
+        "lead": "Sunteți pe drum și trebuie să facturați cuiva? Trimiteți un mesaj vocal, iar ciorna vă așteaptă în aplicație.",
+        "points": [
+          "Mesaje vocale printr-un cont Telegram conectat",
+          "AI-ul identifică clientul, articolele, cantitățile și prețurile",
+          "Creează o ciornă – nimic nu se trimite fără verificarea dumneavoastră",
+          "Funcționează în cehă și slovacă"
+        ],
+        "steps": [
+          "Conectați Telegram în setări.",
+          "Spuneți cui facturați și pentru ce.",
+          "Verificați ciorna în aplicație și emiteți-o."
+        ],
+        "faq": [
+          {
+            "q": "Poate pleca o factură fără verificarea mea?",
+            "a": "Nu. Un mesaj vocal creează întotdeauna doar o ciornă pe care o confirmați."
+          },
+          {
+            "q": "Trebuie să vorbesc formal?",
+            "a": "Nu, vorbirea obișnuită este în regulă."
+          }
+        ]
+      },
+      "expenses": {
+        "name": "Evidența cheltuielilor",
+        "title": "Evidența cheltuielilor și costurilor",
+        "description": "Înregistrați facturile primite și cheltuielile într-un singur loc și vedeți veniturile, costurile și profitul net estimat.",
+        "lead": "Cheltuielile își au locul lângă facturi. Urmăriți-le în aceeași aplicație și vedeți rezultatul real al afacerii.",
+        "points": [
+          "Facturi primite și cheltuieli, inclusiv TVA",
+          "Categorii și căutare",
+          "Export CSV pentru contabil",
+          "Venituri vs. cheltuieli în panoul de control"
+        ],
+        "steps": [
+          "Adăugați o cheltuială cu furnizorul, suma și data.",
+          "Aceasta intră în rapoarte și în estimarea impozitului.",
+          "La sfârșitul perioadei exportați totul pentru contabil."
+        ],
+        "faq": [
+          {
+            "q": "Cheltuielile intră în decontul de TVA?",
+            "a": "Da, cheltuielile cu TVA alimentează exporturile pentru decontul de TVA ceh și declarația de control."
+          },
+          {
+            "q": "Pot exporta cheltuielile?",
+            "a": "Da, în format CSV."
+          }
+        ]
+      },
+      "vat": {
+        "name": "Decont de TVA ceh pentru EPO",
+        "title": "Decont de TVA ceh, declarație de control și declarație recapitulativă în XML pentru EPO",
+        "description": "Din facturi și cheltuieli pregătim fișierele XML ale decontului de TVA ceh, ale declarației de control și ale declarației recapitulative, gata de încărcat pe portalul fiscal EPO.",
+        "lead": "Plătitorii de TVA din Cehia nu mai rescriu cifre în formulare. Descărcați XML-ul și încărcați-l pe portalul fiscal.",
+        "points": [
+          "Decont de TVA (DPHDP3) în XML",
+          "Declarație de control (DPHKH1) cu toate documentele",
+          "Declarație recapitulativă (DPHSHV) pentru livrările în UE",
+          "Fișierele sunt acceptate de portalul EPO și de cutia de date"
+        ],
+        "steps": [
+          "Emiteți facturi și înregistrați cheltuieli pe parcursul perioadei.",
+          "Alegeți perioada în Exporturi și descărcați XML-ul.",
+          "Încărcați-l în EPO, verificați-l și depuneți-l."
+        ],
+        "faq": [
+          {
+            "q": "Va depune aplicația declarația în locul meu?",
+            "a": "Nu. Noi pregătim fișierul; îl încărcați și îl depuneți dumneavoastră și rămâneți responsabil pentru depunere."
+          },
+          {
+            "q": "Este util și pentru neplătitorii de TVA?",
+            "a": "Neplătitorii nu au nevoie de aceste fișiere; pot folosi sinteza anuală a veniturilor și cheltuielilor."
+          }
+        ]
+      },
+      "accounting": {
+        "name": "Exporturi pentru contabil",
+        "title": "Export de facturi în Pohoda, Money S3 și CSV pentru contabil",
+        "description": "Exportați facturile ca XML pentru Pohoda sau Money S3, CSV pentru Excel și o sinteză anuală a veniturilor și cheltuielilor.",
+        "lead": "Contabilul nu rescrie nimic. Trimiteți-i un fișier pe care programul lui îl poate importa.",
+        "points": [
+          "Export XML al facturilor pentru Pohoda și Money S3",
+          "CSV cu facturi și cheltuieli pentru Excel sau alte instrumente",
+          "Sinteză anuală cu monedele străine convertite la cursul ČNB",
+          "Copii de siguranță ale datelor și descărcarea tuturor documentelor deodată"
+        ],
+        "steps": [
+          "Deschideți Exporturi și alegeți o perioadă.",
+          "Alegeți un format – Pohoda XML, Money S3 XML, CSV sau sinteza anuală.",
+          "Trimiteți fișierul contabilului."
+        ],
+        "faq": [
+          {
+            "q": "Acceptați și alte programe de contabilitate decât Pohoda?",
+            "a": "Majoritatea programelor importă CSV sau ISDOC. Pentru Pohoda și Money S3 exportăm formatele XML proprii ale acestora."
+          },
+          {
+            "q": "Cum se convertesc monedele străine?",
+            "a": "Sinteza anuală convertește facturile în monedă străină la cursul Băncii Naționale a Cehiei."
+          }
+        ]
+      },
+      "partialPayments": {
+        "name": "Plăți parțiale",
+        "title": "Plăți parțiale și în rate",
+        "description": "Înregistrați plățile parțiale pe o factură și vedeți mereu cât s-a plătit și cât a mai rămas.",
+        "lead": "Nu orice factură se plătește dintr-odată. Urmăriți ratele și țineți sub control soldul.",
+        "points": [
+          "Mai multe plăți pe factură, cu dată și sumă",
+          "Soldul rămas pe factură, în liste și pe linkul online",
+          "Plata QR cere doar soldul",
+          "Factura este marcată ca plătită odată ce a sosit întreaga sumă"
+        ],
+        "steps": [
+          "Adăugați o plată primită la factură.",
+          "Aplicația recalculează soldul.",
+          "După plata integrală, factura este marcată ca plătită."
+        ],
+        "faq": [
+          {
+            "q": "Plățile parțiale se potrivesc și din extrase?",
+            "a": "Da, o plată din extras mai mică decât totalul facturii se înregistrează ca plată parțială."
+          },
+          {
+            "q": "Reminderele continuă după o plată parțială?",
+            "a": "Da, factura rămâne neplătită până sosește întreaga sumă."
+          }
+        ]
+      },
+      "integrations": {
+        "name": "API, webhookuri și calendar",
+        "title": "API, webhookuri Discord și Slack, RSS și iCal",
+        "description": "Conectați facturarea la celelalte instrumente: un API REST cu chei, webhookuri pentru Discord, Slack și propriile sisteme, un flux RSS de facturi și scadențele în calendar.",
+        "lead": "Trimiteți alerte în chatul echipei și scadențele în calendar.",
+        "points": [
+          "API REST cu propriile chei API și documentație",
+          "Webhookuri când o factură este plătită, vizualizată sau restantă – Discord, Slack sau JSON semnat",
+          "Calendar iCal cu scadențe pentru Google, Apple și Outlook",
+          "Flux RSS cu facturile emise"
+        ],
+        "steps": [
+          "Webhookurile, RSS-ul și calendarul se găsesc în Setări → Integrări.",
+          "Creați o cheie API în Setări → Chei API.",
+          "Pentru un webhook, alegeți evenimentele despre care doriți să aflați."
+        ],
+        "faq": [
+          {
+            "q": "Cum verific că un webhook vine de la dumneavoastră?",
+            "a": "Webhookurile JSON au un antet HMAC X-Billanta-Signature semnat cu secretul afișat în setări."
+          },
+          {
+            "q": "Calendarul este public?",
+            "a": "Linkul conține un token secret cunoscut doar de cei cu care îl partajați și îl puteți regenera oricând."
+          }
+        ]
+      },
+      "migration": {
+        "name": "Trecerea de la alt sistem",
+        "title": "Treceți de la BitFaktura, Fakturoid, iDoklad sau Excel",
+        "description": "Aduceți clienții și întregul istoric de facturi din alt sistem de facturare sau din Excel. Previzualizare înainte de salvare, fără e-mailuri trimise, numerotarea continuă.",
+        "lead": "Un nou început nu înseamnă pierderea istoricului. Aveți nevoie doar de un export CSV din vechiul sistem.",
+        "points": [
+          "Import de clienți și facturi emise din CSV",
+          "Din BitFaktura și Fakturoid direct prin API: facturi, agendă și PDF-urile originale",
+          "Coloanele din Fakturoid, iDoklad, faktorio, Invoice Ninja sau din propriul tabel sunt recunoscute automat",
+          "Previzualizare cu numărul de facturi, perioada și totalurile înainte de salvare",
+          "Facturi cu mai multe articole, proforme și facturi de stornare",
+          "Nu se trimite nimic, iar facturile importate nu primesc remindere",
+          "Numerotarea continuă după ultimul număr importat"
+        ],
+        "steps": [
+          "Exportați clienții și facturile din vechiul sistem în CSV.",
+          "Încărcați fișierele în Setări → Trecerea de la alt sistem.",
+          "Verificați previzualizarea și confirmați importul."
+        ],
+        "faq": [
+          {
+            "q": "Ce se întâmplă dacă rulez importul de două ori?",
+            "a": "Facturile cu un număr pe care îl aveți deja sunt sărite, deci puteți repeta importul în siguranță, de exemplu cu un fișier actualizat."
+          },
+          {
+            "q": "Vor observa clienții mei importul?",
+            "a": "Nu. Facturile importate se salvează ca deja emise; nu se trimit e-mailuri sau remindere."
+          },
+          {
+            "q": "Trebuie să încarc mai întâi clienții?",
+            "a": "Nu. Importul de facturi creează clienții pe care nu îi aveți încă. Un import separat de clienți este util pentru cei pe care nu i-ați facturat încă."
+          }
+        ]
+      },
+      "quotes": {
+        "name": "Oferte și proforme",
+        "title": "Oferte și facturi proforme",
+        "description": "Trimiteți o ofertă, lăsați clientul să o accepte online și transformați-o într-o proformă sau într-o factură finală dintr-un clic. Serii de numerotare separate pentru fiecare tip de document.",
+        "lead": "De la ofertă la avans și la factura finală, fără să rescrieți nimic.",
+        "points": [
+          "Oferte, facturi proforme, facturi și facturi de stornare",
+          "Clientul acceptă sau respinge oferta online, cu o notă",
+          "Transformați o ofertă în proformă sau factură dintr-un clic",
+          "Factura emisă după o proformă plătită apare ca achitată prin avans",
+          "Serii de numerotare separate: ZF pentru proforme, OD pentru facturi de stornare, NA pentru oferte"
+        ],
+        "steps": [
+          "Creați o ofertă și trimiteți clientului un link.",
+          "Clientul o acceptă, iar dumneavoastră primiți o notificare.",
+          "Emiteți din ofertă o proformă sau o factură dintr-un clic."
+        ],
+        "faq": [
+          {
+            "q": "Este proforma un document fiscal?",
+            "a": "Nu. Documentul fiscal este factura emisă după plata avansului, pe care aplicația o pregătește din proforma plătită."
+          },
+          {
+            "q": "Are nevoie clientul de un cont pentru a accepta oferta?",
+            "a": "Nu. Linkul pe care i-l trimiteți prin e-mail este suficient."
+          }
+        ]
+      },
+      "currencies": {
+        "name": "Facturi în monedă străină",
+        "title": "Facturi în euro și alte monede, cu cursul ČNB",
+        "description": "Facturați în EUR, USD și alte monede. Cursul Băncii Naționale a Cehiei pentru data faptului generator (DUZP) se completează automat și se convertește în CZK pentru TVA.",
+        "lead": "Clienții străini plătesc în moneda lor, iar TVA-ul dumneavoastră rămâne corect în coroane.",
+        "points": [
+          "Facturi în euro, dolari și alte monede",
+          "Cursul ČNB pentru data faptului generator se completează la emitere",
+          "Cursul poate fi ajustat manual",
+          "Conversie în CZK pentru deconturile de TVA și declarațiile de control",
+          "Factura afișează contul bancar în moneda facturii",
+          "Taxare inversă pentru plătitorii de TVA străini"
+        ],
+        "steps": [
+          "Alegeți moneda pe factură.",
+          "Cursul ČNB se completează la emitere.",
+          "Exporturile de TVA convertesc sumele în CZK."
+        ],
+        "faq": [
+          {
+            "q": "Ce curs se folosește?",
+            "a": "Cursul ČNB pentru data faptului generator. Dacă nu poate fi încărcat în acel moment, se completează la exportul de TVA."
+          },
+          {
+            "q": "Pot avea un cont în euro?",
+            "a": "Da. Adăugați mai multe conturi bancare în setările firmei; contul în moneda facturii se alege automat."
+          }
+        ]
+      },
+      "team": {
+        "name": "Echipă și roluri",
+        "title": "Facturare pentru echipe și contabili",
+        "description": "Invitați colegii și contabilul. Roluri de proprietar, administrator, contabil și vizualizator, permisiuni pe domenii și mai multe firme sub un singur cont.",
+        "lead": "Fiecare vede și modifică doar ce trebuie.",
+        "points": [
+          "Invitații prin e-mail pentru colegi și contabili externi",
+          "Roluri de proprietar, administrator, contabil și vizualizator",
+          "Permisiuni separate pentru facturi, clienți, cheltuieli, bancă și rapoarte",
+          "Mai multe firme sub un singur cont",
+          "Setările firmei și cheile API doar pentru proprietari și administratori"
+        ],
+        "steps": [
+          "Trimiteți o invitație în Setări → Echipă.",
+          "Colegul o acceptă și se conectează.",
+          "Ajustați-i permisiunile dacă este nevoie."
+        ],
+        "faq": [
+          {
+            "q": "Poate contabilul doar să citească?",
+            "a": "Da. Dați-i rolul de vizualizator sau setați domeniile individuale doar pentru citire în cadrul rolului de contabil."
+          },
+          {
+            "q": "Plătesc pentru fiecare utilizator?",
+            "a": "Consultați pagina de prețuri. Invitarea colegilor face parte din aplicație."
+          }
+        ]
+      }
+    }
+  },
+  "learnPages": {
+    "common": {
+      "toolsTitle": "Instrumente și ghiduri",
+      "toolsLead": "Gratuit și fără înregistrare. Calculați, verificați și aflați mai multe.",
+      "nextTitle": "Unde mai departe",
+      "faqTitle": "Întrebări frecvente",
+      "signup": "Începeți gratuit",
+      "demo": "Încercați demo-ul",
+      "more": "Mai mult",
+      "allRoles": "Toate rolurile",
+      "pages": {
+        "first": {
+          "title": "Prima dumneavoastră factură",
+          "body": "Ce trebuie să conțină o factură în Cehia și Slovacia și cum o emiteți pas cu pas."
+        },
+        "beginners": {
+          "title": "Facturare pentru începători",
+          "body": "Neplătitor de TVA, primul client, numerotarea, plățile și reminderele."
+        },
+        "advanced": {
+          "title": "Facturare pentru utilizatori avansați",
+          "body": "Plătitori de TVA, taxare inversă, clienți străini, facturi recurente și API-ul."
+        },
+        "schools": {
+          "title": "Pentru școli",
+          "body": "Predați facturarea într-o aplicație reală, cu o firmă goală pentru fiecare elev."
+        },
+        "roles": {
+          "title": "Rolurile echipei",
+          "body": "Proprietar, administrator, contabil și doar citire: cine ce vede și cine ce poate modifica."
+        },
+        "accountants": {
+          "title": "Pentru contabili",
+          "body": "Acces la clienți, exporturi contabile și datele de TVA într-un singur loc."
+        },
+        "owners": {
+          "title": "Pentru proprietarii de afaceri",
+          "body": "Imaginea completă, echipa, abonamentul, backupul datelor și mai multe firme sub un singur cont."
+        },
+        "assistants": {
+          "title": "Pentru asistenți și office manageri",
+          "body": "Rolul de administrator sau un acces mai restrâns, doar la facturi sau doar la cheltuieli."
+        }
+      },
+      "basicsTitle": "Bazele facturării"
+    },
+    "firstInvoice": {
+      "seoTitle": "Prima dumneavoastră factură: ce trebuie să conțină și cum o emiteți",
+      "eyebrow": "Ghid pentru începători",
+      "title": "Prima dumneavoastră factură",
+      "lead": "Ce trebuie să conțină o factură în Cehia și Slovacia, cum o emiteți pas cu pas și ce greșeli să evitați. Fără jargon juridic.",
+      "guestCta": "Emiteți o factură fără înregistrare",
+      "demoCta": "Încercați pe o firmă goală",
+      "contentTitle": "Ce trebuie să apară pe factură",
+      "contentLead": "O afacere care nu este plătitoare de TVA are nevoie de mai puține date decât un plătitor. Billanta verifică după setările dumneavoastră că nu lipsește nimic.",
+      "alwaysLabel": "Întotdeauna",
+      "vatLabel": "În plus pentru plătitorii de TVA",
+      "countries": {
+        "cz": {
+          "title": "Cehia",
+          "always": [
+            "Numele sau denumirea firmei, sediul și codul de identificare (IČO)",
+            "Înscrierea în registru (un liber-profesionist poate menționa înscrierea în registrul comerțului)",
+            "Clientul: nume, adresă și, în cazul unei firme, IČO-ul acesteia",
+            "Un număr unic de factură din seria dumneavoastră de numerotare",
+            "Data emiterii și data scadenței",
+            "Ce facturați, cantitatea și prețul",
+            "Totalul și modul de plată; la transfer, numărul de cont și simbolul variabil"
+          ],
+          "vat": [
+            "Codul dumneavoastră de TVA (DIČ) și cel al clientului",
+            "Data faptului generator al taxei (DUZP)",
+            "Prețul unitar fără TVA și eventuala reducere",
+            "Baza de impozitare, cota (21 % sau 12 %) și valoarea TVA în CZK",
+            "La taxarea inversă, o mențiune că taxa o datorează clientul"
+          ],
+          "law": "Conform § 435 din Codul civil și § 29 din Legea privind TVA."
+        },
+        "sk": {
+          "title": "Slovacia",
+          "always": [
+            "Numele sau denumirea comercială, sediul și IČO",
+            "Înscrierea în registrul comerțului sau în registrul meseriilor, inclusiv numărul de înregistrare",
+            "Clientul: nume, adresă și, în cazul unei firme, IČO-ul acesteia",
+            "Un număr unic și secvențial de factură",
+            "Data emiterii și data scadenței",
+            "Ce facturați, cantitatea și prețul",
+            "Totalul și modul de plată; la transfer, IBAN-ul și simbolul variabil"
+          ],
+          "vat": [
+            "Codul dumneavoastră de TVA (IČ DPH) și cel al clientului",
+            "Data livrării bunurilor sau a prestării serviciului",
+            "Prețul unitar fără TVA și eventuala reducere",
+            "Baza de impozitare, cota (23 %, 19 % sau 5 %) și valoarea TVA în euro",
+            "La taxarea inversă, mențiunea „prenesenie daňovej povinnosti”"
+          ],
+          "law": "Conform § 3a din Codul comercial și § 74 din Legea privind TVA."
+        }
+      },
+      "stepsTitle": "Pas cu pas",
+      "steps": [
+        {
+          "title": "Completați datele dumneavoastră",
+          "body": "Introduceți IČO-ul și datele firmei se încarcă din registrul comerțului ceh sau slovac. Adăugați contul bancar."
+        },
+        {
+          "title": "Adăugați clientul",
+          "body": "Și pentru client ajunge IČO-ul. Pentru o persoană fizică, introduceți numele și adresa."
+        },
+        {
+          "title": "Descrieți ce facturați",
+          "body": "Lucrarea sau bunurile, cantitatea și prețul. Fiți concret: „Design logo, 3 variante” în loc de „servicii”."
+        },
+        {
+          "title": "Verificați datele",
+          "body": "Data emiterii este azi, scadența de obicei peste 14 zile. Un plătitor de TVA adaugă data livrării și emite factura în cel mult 15 zile de la aceasta."
+        },
+        {
+          "title": "Emiteți și trimiteți",
+          "body": "Factura primește următorul număr din serie și un cod QR pentru plată. Trimiteți-o pe e-mail sau descărcați PDF-ul."
+        },
+        {
+          "title": "Urmăriți plata",
+          "body": "Marcați-o ca plătită când sosesc banii sau lăsați plățile bancare să se asocieze singure. După scadență, trimiteți un reminder."
+        }
+      ],
+      "mistakesTitle": "Greșeli frecvente",
+      "mistakes": {
+        "vatShown": {
+          "title": "TVA pe factura unui neplătitor",
+          "body": "Dacă nu sunteți plătitor de TVA, nu treceți TVA. Dacă o scrieți pe factură, o datorați statului."
+        },
+        "numbering": {
+          "title": "Goluri și numere duplicate",
+          "body": "Numerele trebuie să se succeadă fără repetări. Billanta le atribuie singură la emitere."
+        },
+        "buyer": {
+          "title": "Date greșite ale clientului",
+          "body": "O greșeală de scriere în nume sau în IČO întârzie plata. Datele încărcate din registru sunt exacte."
+        },
+        "dates": {
+          "title": "Date întârziate sau greșite",
+          "body": "Un plătitor de TVA are nevoie de data corectă a livrării și trebuie să emită factura în cel mult 15 zile de la livrare."
+        },
+        "editing": {
+          "title": "Rescrierea unei facturi emise",
+          "body": "Nu modificați o factură emisă. Corectați greșeala cu o factură de stornare și o factură nouă."
+        },
+        "copies": {
+          "title": "Copii pierdute",
+          "body": "Facturile trebuie păstrate ani de zile. Ele rămân în aplicație și puteți configura backupuri."
+        }
+      },
+      "ctaBox": {
+        "title": "Încercați mai întâi",
+        "body": "Demo-ul vă oferă o firmă goală, iar prima factură vă ia câteva minute. Nu se trimite nimic nicăieri."
+      },
+      "faq": [
+        {
+          "q": "Am nevoie de un cont Billanta pentru prima factură?",
+          "a": "Nu. Puteți emite o factură ocazională fără înregistrare. Un cont vă ajută când doriți serii numerotate, urmărirea plăților și totul într-un singur loc."
+        },
+        {
+          "q": "Factura are nevoie de ștampilă sau semnătură?",
+          "a": "Nu, legea nu cere niciuna dintre ele. Contează datele obligatorii."
+        },
+        {
+          "q": "Pot factura fără IČO?",
+          "a": "Facturile le emit întreprinzătorii, așa că aveți nevoie de IČO. O persoană fizică fără autorizație tratează veniturile ocazionale altfel."
+        },
+        {
+          "q": "Ce scadență să stabilesc?",
+          "a": "14 zile este obișnuit. Între firme legea presupune o limită (30 de zile în Cehia, 60 în Slovacia), dacă nu conveniți explicit altfel."
+        },
+        {
+          "q": "Este suficient un PDF pe e-mail?",
+          "a": "Da. O factură electronică este la fel de valabilă ca una pe hârtie dacă clientul este de acord, ceea ce astăzi este obișnuit."
+        },
+        {
+          "q": "Ce fac dacă am greșit pe factură?",
+          "a": "Cât timp este ciornă, pur și simplu o modificați. O factură emisă se corectează cu o factură de stornare, urmată de o factură nouă."
+        }
+      ]
+    },
+    "beginners": {
+      "seoTitle": "Facturare pentru începători: neplătitor de TVA, primul client",
+      "eyebrow": "Facturare pentru începători",
+      "title": "Vă porniți afacerea? Facturați așa",
+      "lead": "Bazele pentru liber-profesioniștii care nu sunt plătitori de TVA: primul client, numerotarea, plățile, reminderele și momentul în care deveniți plătitor de TVA.",
+      "topicsTitle": "Ce trebuie să știți",
+      "topics": {
+        "nonVat": {
+          "title": "Neplătitor de TVA",
+          "body": "Facturați fără TVA și nu menționați deloc TVA pe factură. Adăugați doar un rând că nu sunteți plătitor."
+        },
+        "firstCustomer": {
+          "title": "Primul client",
+          "body": "Stabiliți dinainte prețul, volumul lucrării și scadența. Ajunge un e-mail din care înțelegerea este clară."
+        },
+        "numbering": {
+          "title": "Numerotarea",
+          "body": "Alegeți o serie, de exemplu anul și numărul de ordine (2026001). Billanta atribuie numerele singură și continuă și în anul nou."
+        },
+        "payment": {
+          "title": "Încasarea",
+          "body": "Indicați numărul de cont și simbolul variabil. Clientul scanează codul QR în aplicația bancară și nu tastează nimic."
+        },
+        "reminders": {
+          "title": "Remindere",
+          "body": "Când plata nu sosește, Billanta trimite clientului după scadență un reminder politicos. Dumneavoastră alegeți când."
+        },
+        "tax": {
+          "title": "Impozite și contribuții",
+          "body": "Facturile stau la baza declarației fiscale. Calculați cheltuielile forfetare sau impozitul forfetar cu calculatoarele de mai jos."
+        }
+      },
+      "vatTitle": "Când deveniți plătitor de TVA",
+      "vatLead": "Pragul se calculează din cifra de afaceri pe un an calendaristic. Billanta vă poate arăta cât de departe sunteți de el.",
+      "vat": {
+        "cz": {
+          "title": "Cehia",
+          "points": [
+            "Pragul este de 2 000 000 CZK cifră de afaceri într-un an calendaristic",
+            "Dacă îl depășiți, deveniți plătitor de la 1 ianuarie al anului următor",
+            "Dacă cifra de afaceri depășește 2 536 500 CZK, sunteți plătitor din ziua următoare",
+            "Vă puteți înregistra și voluntar, de exemplu dacă vindeți mai ales plătitorilor de TVA"
+          ]
+        },
+        "sk": {
+          "title": "Slovacia",
+          "points": [
+            "Pragul este de 50 000 EUR cifră de afaceri într-un an calendaristic",
+            "Dacă îl depășiți, trebuie să solicitați înregistrarea; sunteți plătitor din ziua de după aprobare",
+            "Dacă cifra de afaceri depășește 62 500 EUR, deveniți plătitor chiar cu livrarea care a depășit pragul",
+            "Vă puteți înregistra și voluntar"
+          ]
+        }
+      },
+      "monthTitle": "Prima lună de facturare",
+      "month": [
+        {
+          "title": "Configurați firma",
+          "body": "IČO, adresă, cont bancar și serie de numerotare. Cu registrul durează câteva minute."
+        },
+        {
+          "title": "Emiteți prima factură",
+          "body": "Ideal imediat după finalizarea lucrării, ca plata să nu întârzie."
+        },
+        {
+          "title": "Înregistrați cheltuielile",
+          "body": "Fotografiați sau încărcați bonurile. Ele alimentează situația dumneavoastră și declarația fiscală."
+        },
+        {
+          "title": "Verificați plățile",
+          "body": "Conectați banca sau marcați plățile manual. Situația arată cine vă datorează."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Trebuie să scriu că nu sunt plătitor de TVA?",
+          "a": "Legea nu o cere strict, dar este o bună practică și vă scutește de întrebări. Billanta o adaugă pentru dumneavoastră."
+        },
+        {
+          "q": "Pot face facturi în Excel sau Word?",
+          "a": "Puteți, dar trebuie să urmăriți singur numerotarea, datele și copiile. O aplicație face asta pentru dumneavoastră și nu uită nimic."
+        },
+        {
+          "q": "Ce este impozitul forfetar ceh?",
+          "a": "O plată lunară unică ce acoperă impozitul pe venit și asigurările sociale și de sănătate pentru liber-profesioniștii cehi sub un anumit venit. Nu se potrivește oricui, așa că faceți calculul."
+        },
+        {
+          "q": "Am nevoie de un contabil?",
+          "a": "La început adesea nu, mai ales cu cheltuieli forfetare. Când afacerea crește, invitați-vă contabilul în Billanta și acesta vede singur evidențele."
+        },
+        {
+          "q": "Cât costă Billanta?",
+          "a": "Facturarea de bază este gratuită. Planurile superioare adaugă de exemplu asocierea plăților bancare sau mai mulți utilizatori. Detalii găsiți la prețuri."
+        }
+      ]
+    },
+    "advanced": {
+      "seoTitle": "Facturare pentru utilizatori avansați: TVA, clienți străini, facturi recurente, API",
+      "eyebrow": "Facturare pentru utilizatori avansați",
+      "title": "Când facturarea face parte din rutina zilnică",
+      "lead": "Pentru plătitorii de TVA și firmele în creștere: taxare inversă, clienți străini, facturi recurente, asocierea plăților, API-ul, mai multe firme și rolurile echipei.",
+      "topicsTitle": "Subiecte pe care le veți întâlni mai devreme sau mai târziu",
+      "topics": {
+        "vat": {
+          "title": "Plătitori de TVA",
+          "body": "Cote, date de livrare și datele pentru decont. Decontul TVA ceh, declarația de control și declarația recapitulativă se descarcă în format XML pentru EPO."
+        },
+        "reverseCharge": {
+          "title": "Taxare inversă",
+          "body": "Pentru unele livrări și pentru plătitorii de TVA din UE, taxa o datorează clientul. Billanta cere codul lui de TVA și adaugă mențiunea obligatorie."
+        },
+        "foreign": {
+          "title": "Clienți străini",
+          "body": "Facturi în euro sau dolari, cursul de schimb pentru data livrării și conversia pentru TVA. Facturile pot fi și bilingve."
+        },
+        "recurring": {
+          "title": "Facturi recurente",
+          "body": "Facturați chiria sau un abonament lunar dintr-un singur șablon. În fiecare lună apare o factură cu următorul număr din serie."
+        },
+        "bank": {
+          "title": "Asocierea plăților",
+          "body": "Plățile bancare se asociază după simbolul variabil și sumă. Facturile plătite se marchează singure."
+        },
+        "api": {
+          "title": "API și webhookuri",
+          "body": "Conectați magazinul online sau propriul sistem. Webhookurile anunță când o factură este plătită, vizualizată sau scadentă."
+        },
+        "companies": {
+          "title": "Mai multe firme",
+          "body": "Un singur cont, evidențe separate. În fiecare firmă puteți avea alt rol. Depinde de plan."
+        },
+        "roles": {
+          "title": "Rolurile echipei",
+          "body": "Un contabil, un asistent sau un coleg cu acces doar la citire vede și modifică numai ce trebuie."
+        },
+        "isdoc": {
+          "title": "ISDOC și facturi electronice",
+          "body": "Programele de contabilitate ale clienților citesc singure facturile ISDOC, fără retastare."
+        }
+      },
+      "switch": {
+        "title": "Veniți de la altă aplicație?",
+        "body": "Aduceți clienții și facturile emise din CSV, Fakturoid sau BitFaktura. Numerotarea continuă de unde ați rămas.",
+        "cta": "Cum treceți",
+        "compare": "Comparați cu alții"
+      },
+      "faq": [
+        {
+          "q": "Știe Billanta când să folosească taxarea inversă?",
+          "a": "Pentru un client cu cod de TVA dintr-o altă țară UE, oferă taxarea inversă și verifică codul în VIES. Pentru cazurile interne, de exemplu lucrările de construcții, o activați pe factură."
+        },
+        {
+          "q": "Pot factura într-o monedă străină?",
+          "a": "Da. Pentru firmele cehe, cursul ČNB pentru data livrării se completează la emitere și poate fi ajustat manual. TVA se convertește în CZK."
+        },
+        {
+          "q": "Gestionează Billanta declarația de control cehă?",
+          "a": "Da. Pentru plătitorii de TVA cehi pregătește XML-ul declarației de control cu fiecare document, precum și decontul TVA și declarația recapitulativă."
+        },
+        {
+          "q": "API-ul este inclus în fiecare plan?",
+          "a": "API-ul și webhookurile sunt în planurile plătite. Detalii găsiți la prețuri."
+        },
+        {
+          "q": "Pot gestiona mai multe firme?",
+          "a": "Da, în planul cel mai mare. Fiecare firmă are propriile date, serii de numerotare, bancă și echipă."
+        }
+      ]
+    },
+    "roles": {
+      "seoTitle": "Rolurile echipei: proprietar, administrator, contabil și doar citire",
+      "eyebrow": "Echipă și roluri",
+      "title": "Rolurile echipei",
+      "lead": "Invitați-vă contabilul, un asistent sau un coleg. Fiecare vede doar ce are nevoie și modifică doar ce are voie. Iată exact ce.",
+      "featureLink": "Funcția Echipă și roluri",
+      "cards": {
+        "owner": {
+          "who": "Cel care a creat firma în Billanta",
+          "body": "Vede și face totul. Răspunde pentru firmă și este singurul care configurează backupul datelor.",
+          "points": [
+            "Toată facturarea, cheltuielile, banca și rapoartele",
+            "Echipa, abonamentul, setările firmei și cheile API",
+            "Backupul datelor, și nimeni altcineva",
+            "Rolul proprietarului nu poate fi schimbat, iar proprietarul nu poate fi eliminat"
+          ],
+          "link": "Mai mult pentru proprietari"
+        },
+        "admin": {
+          "who": "Office manager, asociat, mâna dreaptă",
+          "body": "Conduce firma în numele proprietarului. Poate face aproape totul, în afară de configurarea backupului datelor.",
+          "points": [
+            "Toată facturarea, cheltuielile, banca și rapoartele",
+            "Invită colegi și le setează accesul",
+            "Setările firmei, abonamentul, cheile API, importul istoricului",
+            "Conectează conturi bancare"
+          ],
+          "link": "Mai mult pentru asistenți"
+        },
+        "accountant": {
+          "who": "Contabil extern sau consultant fiscal",
+          "body": "Lucrează cu documente și exporturi și nu se implică în administrarea firmei.",
+          "points": [
+            "Facturi, clienți, cheltuieli și rapoarte",
+            "Sincronizează banca, dar nu conectează conturi noi",
+            "Exporturile contabile la îndemână",
+            "Nu vede echipa, abonamentul sau cheile API"
+          ],
+          "link": "Mai mult pentru contabili"
+        },
+        "viewer": {
+          "who": "Asociat, investitor, auditor",
+          "body": "Se uită, nu modifică nimic. Potrivit pentru oricine are nevoie de o imagine de ansamblu.",
+          "points": [
+            "Citește facturi, clienți, cheltuieli, banca și rapoarte",
+            "Nu poate emite, modifica sau șterge nimic",
+            "Nu vede setările firmei"
+          ]
+        }
+      },
+      "tableTitle": "Cine ce are voie",
+      "tableLead": "Accesul implicit al fiecărui rol. Pentru rolurile de contabil și doar citire, proprietarul sau un administrator poate ajusta accesul pe fiecare zonă.",
+      "table": {
+        "area": "Zonă",
+        "rows": {
+          "invoices": "Facturi",
+          "contacts": "Clienți",
+          "expenses": "Cheltuieli",
+          "bank": "Bancă și plăți",
+          "reports": "Rapoarte și exporturi",
+          "settings": "Setările firmei",
+          "team": "Echipă și abonament",
+          "import": "Importul istoricului",
+          "backups": "Backupul datelor"
+        },
+        "levels": {
+          "write": "Modifică",
+          "read": "Citește",
+          "none": "Nu"
+        }
+      },
+      "tableNote": "Contabilul sincronizează banca; conturile noi le conectează proprietarul sau un administrator. Contabilii pot activa singuri calendarul scadențelor în integrări. Oricine poate părăsi o firmă sau își poate crea propria firmă.",
+      "presetsTitle": "Profiluri predefinite",
+      "presetsLead": "Alegeți un profil când invitați pe cineva și accesul se setează automat. Îl puteți ajusta oricând.",
+      "presets": {
+        "invoicer": {
+          "title": "Facturist",
+          "body": "Emite facturi și gestionează clienții, citește banca. Fără acces la cheltuieli sau rapoarte."
+        },
+        "expenses": {
+          "title": "Asistent pentru cheltuieli",
+          "body": "Înregistrează cheltuieli și bonuri, citește facturile și clienții."
+        },
+        "auditor": {
+          "title": "Consultant fiscal / auditor",
+          "body": "Citește totul, nu modifică nimic. Ideal pentru un control sau pentru închiderea anului."
+        },
+        "viewer": {
+          "title": "Doar citire",
+          "body": "Vede facturile, clienții și cheltuielile. Nu și banca sau rapoartele."
+        }
+      },
+      "demoTitle": "Vedeți totul prin ochii fiecărui rol",
+      "demoLead": "Deschideți demo-ul ca proprietar, contabil sau coleg cu acces doar la citire. Situația, meniul și setările arată doar ce poate face rolul respectiv.",
+      "faq": [
+        {
+          "q": "Câte persoane pot invita?",
+          "a": "Depinde de plan, de la un singur utilizator până la o echipă întreagă. Detalii găsiți la prețuri."
+        },
+        {
+          "q": "Contabilul meu plătește pentru cont?",
+          "a": "Nu. Îl invitați pe e-mail și se conectează cu propriul cont, care poate servi mai mulți clienți."
+        },
+        {
+          "q": "Ce vede un membru pe o pagină pe care nu o poate folosi?",
+          "a": "Meniul și situația oferă doar ce poate face. Dacă deschide o pagină ascunsă dintr-un link, vede o notă că nu are acces la ea."
+        },
+        {
+          "q": "Pot afla cine ce a modificat?",
+          "a": "Da. Istoricul modificărilor arată autorul, ora și valoarea veche și cea nouă a fiecărei modificări."
+        },
+        {
+          "q": "Poate o persoană să aibă roluri diferite în firme diferite?",
+          "a": "Da. De exemplu, proprietar al propriei firme și contabil la firma unui client."
+        }
+      ]
+    },
+    "owners": {
+      "seoTitle": "Billanta pentru proprietarii de afaceri: imagine de ansamblu, echipă și control",
+      "eyebrow": "Pentru proprietari",
+      "title": "Pentru proprietarii de afaceri",
+      "lead": "Dumneavoastră creați firma în Billanta și aveți ultimul cuvânt. Vedeți totul, vă invitați echipa și decideți cine ce are voie.",
+      "cardsTitle": "Ce primiți ca proprietar",
+      "cards": {
+        "overview": {
+          "title": "Imaginea completă",
+          "body": "Cine vă datorează, ce e după scadență, cifra de afaceri și cheltuielile. Totul pe un singur ecran, și pe telefon."
+        },
+        "team": {
+          "title": "Echipa sub control",
+          "body": "În Setări → Echipă invitați-vă contabilul sau un asistent și ajustați-le accesul pe fiecare zonă."
+        },
+        "audit": {
+          "title": "Istoricul modificărilor",
+          "body": "Pentru fiecare factură vedeți cine a modificat-o, când și de ce. Chiar și când a fost AI-ul sau API-ul."
+        },
+        "billing": {
+          "title": "Abonament și setări",
+          "body": "Dumneavoastră sau un administrator gestionați planul, datele firmei, seriile de numerotare și cheile API."
+        },
+        "backups": {
+          "title": "Backupuri doar prin dumneavoastră",
+          "body": "Doar proprietarul stabilește unde și cât de des se face backupul datelor firmei. Nimeni altcineva nu îl poate redirecționa."
+        },
+        "companies": {
+          "title": "Mai multe firme",
+          "body": "Adăugați o altă firmă sub același cont. Datele și echipele rămân separate. Depinde de plan."
+        }
+      },
+      "stepsTitle": "Cum vă construiți echipa",
+      "steps": [
+        {
+          "title": "Invitați-vă contabilul",
+          "body": "Introduceți e-mailul lui și rolul Contabil. Își ia singur exporturile și evidențele, așa că nu trimiteți nimic."
+        },
+        {
+          "title": "Invitați un asistent",
+          "body": "Dați unui office manager rolul de Administrator. Cine doar facturează primește profilul Facturist."
+        },
+        {
+          "title": "Ajustați accesul",
+          "body": "Pentru rolurile de contabil și doar citire, activați sau dezactivați zone individuale, de exemplu banca sau rapoartele."
+        },
+        {
+          "title": "Verificați istoricul",
+          "body": "Activitatea arată cine ce a modificat. O factură emisă poate fi corectată doar cu un motiv declarat."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Mă poate elimina cineva din echipă?",
+          "a": "Nu. Proprietarul nu poate fi eliminat din firmă, iar rolul proprietarului nu poate fi schimbat."
+        },
+        {
+          "q": "De ce doar proprietarul configurează backupurile?",
+          "a": "Un backup conține toate datele firmei, așa că doar persoana care răspunde pentru firmă decide unde ajung."
+        },
+        {
+          "q": "Ce se întâmplă dacă pleacă contabilul?",
+          "a": "Eliminați-l în Setări → Echipă și accesul lui se încheie imediat. Datele rămân la firmă."
+        },
+        {
+          "q": "Pot vedea firma așa cum o vede contabilul meu?",
+          "a": "În demo, da: deschideți-l în vizualizarea de contabil sau doar citire."
+        }
+      ]
+    },
+    "assistants": {
+      "seoTitle": "Billanta pentru asistenți și office manageri",
+      "eyebrow": "Pentru asistenți",
+      "title": "Pentru asistenți și office manageri",
+      "lead": "Vă ocupați de facturi și acte pentru altcineva? Billanta vă oferă accesul potrivit: întreaga firmă sau doar facturile ori cheltuielile.",
+      "cardsTitle": "Accesul pe care îl puteți primi",
+      "cards": {
+        "admin": {
+          "title": "Administrator",
+          "body": "Conduceți firma pentru proprietar: facturi, cheltuieli, bancă, echipă și setări. Doar backupul datelor rămâne la proprietar."
+        },
+        "invoicer": {
+          "title": "Facturist",
+          "body": "Emiteți facturi și gestionați clienții. Vedeți plățile bancare, dar nu și cheltuielile sau rapoartele."
+        },
+        "expenses": {
+          "title": "Asistent pentru cheltuieli",
+          "body": "Înregistrați cheltuieli și bonuri. Vedeți facturile și clienții, dar nu le modificați."
+        },
+        "contacts": {
+          "title": "Clienți din registru",
+          "body": "Adăugați un client nou după IČO și datele se încarcă din registrul comerțului. Fără retastare."
+        },
+        "tailored": {
+          "title": "O aplicație potrivită rolului dumneavoastră",
+          "body": "Situația, meniul, căutarea și navigarea pe mobil arată doar acțiunile pe care le puteți face."
+        },
+        "limits": {
+          "title": "Limite clare",
+          "body": "Setările pe care nu le puteți folosi afișează o notă că le gestionează administratorii. Nu puteți strica nimic."
+        }
+      },
+      "stepsTitle": "Primii pași",
+      "steps": [
+        {
+          "title": "Acceptați invitația",
+          "body": "Proprietarul vă invită pe e-mail. Conectați-vă cu contul dumneavoastră sau creați unul pe loc."
+        },
+        {
+          "title": "Priviți situația",
+          "body": "Ecranul principal arată doar ce aveți acces să vedeți: ciorne, scadențe sau cheltuieli."
+        },
+        {
+          "title": "Emiteți sau înregistrați",
+          "body": "Un facturist emite o factură, un asistent pentru cheltuieli încarcă un bon. Totul intră în istoricul modificărilor."
+        },
+        {
+          "title": "Aveți nevoie de mai mult?",
+          "body": "Cereți proprietarului sau unui administrator să vă extindă accesul. Modificarea se aplică imediat."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Care este diferența dintre un administrator și proprietar?",
+          "a": "Un administrator poate face aproape tot ce poate proprietarul, dar nu configurează backupul datelor și nu poate elimina proprietarul sau schimba rolul acestuia."
+        },
+        {
+          "q": "Pot lucra pentru mai multe firme?",
+          "a": "Da. Un cont poate aparține mai multor firme, cu un rol diferit în fiecare."
+        },
+        {
+          "q": "Ca facturist, voi vedea cheltuielile sau profitul?",
+          "a": "Nu. Profilul Facturist nu are acces la cheltuieli sau rapoarte."
+        },
+        {
+          "q": "Ce se întâmplă dacă plec din firmă?",
+          "a": "Puteți părăsi singur o firmă oricând. Facturile emise de dumneavoastră rămân la firmă."
+        }
+      ]
+    }
+  },
+  "demo": {
+    "cta": "Încercați demo-ul",
+    "ctaHint": "Fără înregistrare, o firmă demonstrativă pentru 24 de ore",
+    "meta": {
+      "title": "Demo gratuit de facturare – încercați aplicația live, fără înregistrare",
+      "description": "Deschideți o firmă demonstrativă și încercați facturarea live: facturi cu plată prin QR, TVA, remindere, cheltuieli și vizualizarea contabilului. Fără e-mail, fără parolă, iar munca o puteți muta ulterior în propriul cont."
+    },
+    "page": {
+      "eyebrow": "Demo, fără înregistrare",
+      "title": "Încercați {site} cu o firmă demonstrativă",
+      "lead": "Alegeți un tip de firmă și în câteva secunde sunteți în aplicație. Facturile, clienții și rapoartele sunt deja completate și puteți modifica, emite sau șterge orice.",
+      "points": {
+        "time": "Firma durează 24 de ore, apoi este ștearsă complet.",
+        "safe": "Toate datele sunt fictive. Nu se trimite niciun e-mail și nu se taxează nimic.",
+        "keep": "Vă place? Creați un cont și începeți cu propria firmă.",
+        "empty": "Doriți să începeți de la zero? Alegeți o firmă goală și mutați-vă munca în propriul cont după înregistrare."
+      },
+      "pick": "Alegeți un tip de firmă",
+      "rolesTitle": "Vedeți aplicația prin ochii întregii echipe",
+      "rolesLead": "În demo schimbați vizualizarea cu o singură alegere în bara de sus. Fiecare rol vede exact ce ar vedea într-o firmă reală.",
+      "tryTitle": "Ce să încercați în demo",
+      "try": {
+        "invoices": {
+          "title": "Factură cu plată prin QR",
+          "text": "Emiteți o factură, descărcați PDF-ul și distribuiți un link cu cod QR."
+        },
+        "payments": {
+          "title": "Plăți și plăți parțiale",
+          "text": "Marcați o factură ca plătită sau înregistrați o plată parțială."
+        },
+        "reminders": {
+          "title": "Facturi scadente",
+          "text": "Vedeți ce este după scadență și cum arată un reminder."
+        },
+        "expenses": {
+          "title": "Cheltuieli",
+          "text": "Înregistrați o factură primită și urmăriți cheltuielile pe categorii."
+        },
+        "vat": {
+          "title": "TVA și rapoarte",
+          "text": "Decontul TVA și declarația de control din aceleași date."
+        },
+        "accountant": {
+          "title": "Vizualizarea contabilului",
+          "text": "Exporturi pentru contabil și ce poate face un contabil în firmă."
+        },
+        "team": {
+          "title": "Echipă și roluri",
+          "text": "Treceți la un coleg cu acces doar la citire și încercați să modificați ceva."
+        },
+        "quotes": {
+          "title": "Oferte și facturi proforme",
+          "text": "Transformați o ofertă în proformă și apoi în factură finală."
+        }
+      },
+      "allFeatures": "Toate funcțiile",
+      "faqTitle": "Întrebări despre demo",
+      "faq": [
+        {
+          "q": "Trebuie să mă înregistrez sau să dau un e-mail pentru demo?",
+          "a": "Nu. Alegeți un tip de firmă și în câteva secunde sunteți în aplicație. Fără e-mail, parolă sau card."
+        },
+        {
+          "q": "Cât durează demo-ul?",
+          "a": "Firma demonstrativă durează 24 de ore. Apoi este ștearsă împreună cu tot ce ați creat în ea."
+        },
+        {
+          "q": "Pot încerca vizualizarea contabilului sau a unui coleg?",
+          "a": "Da. În bara de sus a demo-ului comutați între proprietar, contabil și un coleg cu acces doar la citire. Fiecare rol are aceleași permisiuni ca într-o firmă reală."
+        },
+        {
+          "q": "Pot începe cu o firmă goală?",
+          "a": "Da. Alegeți o firmă goală la pornire sau folosiți „începeți cu o firmă goală” din bara demo-ului. Primiți o firmă fără documente și creați totul singur."
+        },
+        {
+          "q": "Facturile din demo se mută în contul meu?",
+          "a": "Da, dacă vă creați contul direct din demo. După înregistrare vă oferim mutarea facturilor, clienților și cheltuielilor create. Facturile sosesc ca ciorne, ca să le emiteți cu propriile date și propria numerotare."
+        },
+        {
+          "q": "Ajunge ceva din demo la oameni reali?",
+          "a": "Nu. Demo-ul nu trimite e-mailuri, nu conectează nicio bancă și nu taxează nimic. Toate firmele și persoanele din el sunt fictive."
+        }
+      ]
+    },
+    "kinds": {
+      "cz_vat_sro": {
+        "title": "S.r.o. cehă, plătitoare de TVA",
+        "description": "O societate cu răspundere limitată cehă cu TVA, facturi în CZK și EUR, clienți străini."
+      },
+      "cz_freelancer": {
+        "title": "Liber-profesionist ceh, fără TVA",
+        "description": "Un liber-profesionist fără TVA, facturi simple și o imagine a veniturilor."
+      },
+      "cz_pausal": {
+        "title": "Liber-profesionist ceh, impozit forfetar",
+        "description": "Regimul de impozit forfetar, urmărirea plafonului de venit și avansuri lunare."
+      },
+      "sk_vat_sro": {
+        "title": "S.r.o. slovacă, plătitoare de TVA",
+        "description": "O firmă slovacă în euro, cu cotele de TVA slovace și clienți slovaci."
+      },
+      "sk_freelancer": {
+        "title": "Liber-profesionist slovac, fără TVA",
+        "description": "Un traducător fără TVA, facturi în euro, clienți și în Regatul Unit și SUA."
+      },
+      "sk_vat_freelancer": {
+        "title": "Liber-profesionist slovac, plătitor de TVA",
+        "description": "Un electrician cu TVA, taxare inversă la lucrări de construcții pentru firme."
+      }
+    },
+    "country": {
+      "CZ": "Cehia",
+      "SK": "Slovacia"
+    },
+    "start": "Deschideți demo-ul",
+    "starting": "Se pregătește firma…",
+    "banner": {
+      "label": "Demo",
+      "left": "Firmă demonstrativă, ștearsă peste {time}.",
+      "ai": "{n, plural, =0 {Nu mai aveți cereri AI} one {A mai rămas # cerere AI} few {Au mai rămas # cereri AI} other {Au mai rămas # de cereri AI}}",
+      "register": "Creați un cont și păstrați-mi munca",
+      "restart": "Începeți din nou",
+      "hours": "{h} h {m} min",
+      "minutes": "{m} min",
+      "viewAs": "Vizualizare ca:",
+      "empty": "Începeți cu o firmă goală",
+      "emptyConfirm": "Se deschide o firmă demonstrativă nouă și goală, fără documente. Demo-ul actual rămâne doar până expiră. Continuați?"
+    },
+    "expired": {
+      "metaTitle": "Demo-ul s-a încheiat",
+      "title": "Firma demonstrativă nu mai există",
+      "lead": "Un demo durează 24 de ore și apoi este șters cu toate datele. Puteți deschide unul nou sau vă puteți crea propriul cont.",
+      "again": "Deschideți un demo nou",
+      "register": "Creați un cont"
+    },
+    "publicNotice": "O factură demonstrativă din demo-ul {site}. Firma și toate datele sunt fictive – nu plătiți nimic.",
+    "watermark": "DEMO",
+    "errors": {
+      "demo_locked": "Identitatea firmei (nume, IČO, cod de TVA, adresă) nu poate fi schimbată în demo. În propriul cont se poate.",
+      "demo_limit": "Firma demonstrativă are un număr limitat de înregistrări. Creați-vă propriul cont pentru mai multe.",
+      "demo_disabled": "Acest lucru nu poate fi încercat în demo. Funcționează în propriul cont.",
+      "demo_no_email": "Demo-ul nu trimite e-mailuri. Puteți descărca factura ca PDF sau îi puteți deschide linkul.",
+      "demo_ai_quota": "Acest demo și-a epuizat cererile AI.",
+      "demo_expired": "Demo-ul s-a încheiat, iar firma a fost ștearsă.",
+      "demo_signed_in": "Sunteți conectat la propriul cont. Deconectați-vă mai întâi pentru a deschide demo-ul.",
+      "demo_ip_limit": "Din rețeaua dumneavoastră s-au deschis deja multe demo-uri astăzi. Încercați mâine sau creați un cont.",
+      "demo_capacity": "Rulează prea multe demo-uri în acest moment. Încercați din nou peste puțin timp.",
+      "demo_unavailable": "Demo-ul nu a putut fi pregătit acum. Încercați din nou.",
+      "rate_limited": "Prea multe încercări. Încercați din nou peste câteva minute.",
+      "invalid_role": "Acest rol nu poate fi încercat în demo."
+    },
+    "roles": {
+      "owner": {
+        "label": "Proprietar",
+        "hint": "Vede și face totul: facturi, cheltuieli, bancă, rapoarte și setările firmei."
+      },
+      "accountant": {
+        "label": "Contabil",
+        "hint": "Lucrează cu documente, TVA, exporturi și rapoarte, dar nu poate atinge setările firmei, echipa sau abonamentul."
+      },
+      "viewer": {
+        "label": "Coleg cu acces doar la citire",
+        "hint": "Poate vedea facturile și rapoartele, dar nu poate emite sau șterge nimic."
+      }
+    },
+    "picker": {
+      "dataTitle": "Date",
+      "filled": "Cu documente demonstrative",
+      "empty": "Firmă goală",
+      "filledHint": "Facturile, clienții, cheltuielile și rapoartele sunt deja completate.",
+      "emptyHint": "Doar firma și setările ei. Creați totul singur, de exemplu ca să mutați ulterior în propriul cont.",
+      "viewTitle": "Priviți ca",
+      "businessTitle": "Tipul de activitate",
+      "businessAuto": "Potrivit firmei",
+      "businessAutoHint": "Fiecare firmă demonstrativă are activat ce folosește de obicei tipul ei de activitate. În demo puteți comuta orice și în Setări → Module.",
+      "countryTitle": "Țara",
+      "countryHint": "Țara stabilește moneda, cotele de TVA, registrele și aspectul documentelor.",
+      "quickStart": "Porniți demo-ul lecției",
+      "customize": "Modificați setările demo-ului"
+    },
+    "transfer": {
+      "title": "Aduceți munca din demo?",
+      "lead": "Facturile, clienții și cheltuielile create în demo se mută în această firmă ca ciorne. Datele demonstrative rămân în demo.",
+      "claim": "Aduceți-le",
+      "dismiss": "Nu, mulțumesc",
+      "done": "S-au mutat {invoices, plural, one {# factură} few {# facturi} other {# de facturi}}, {contacts, plural, one {# client} few {# clienți} other {# de clienți}} și {expenses, plural, one {# cheltuială} few {# cheltuieli} other {# de cheltuieli}}. Facturile sunt printre ciornele dumneavoastră.",
+      "signupNote": "După înregistrare vă vom oferi mutarea facturilor, clienților și cheltuielilor create în demo.",
+      "errors": {
+        "demo_transfer_invalid": "Transferul nu mai este disponibil: demo-ul a expirat sau a fost deja folosit.",
+        "forbidden": "Doar proprietarul sau un administrator al firmei poate aduce datele din demo.",
+        "generic": "Transferul nu a funcționat acum. Încercați din nou."
+      }
+    },
+    "ctaCard": {
+      "title": "Încercați live în demo",
+      "titleFeature": "Încercați {feature} live în demo",
+      "lead": "O firmă demonstrativă cu date completate, în câteva secunde. Fără înregistrare.",
+      "leadView": "Demo-ul se deschide direct în vizualizarea {role}, fără înregistrare.",
+      "button": "Deschideți demo-ul",
+      "buttonView": "Demo ca {role}"
+    },
+    "signOutAndStart": "Deconectați-vă și deschideți demo-ul",
+    "audiences": {
+      "courses": "Pregătit pentru un curs: o afacere nouă și goală, gata pentru prima factură.",
+      "coworkings": "Pregătit pentru membrii coworkingului: un liber-profesionist cu documente demonstrative.",
+      "communities": "Pregătit pentru membrii comunității: un liber-profesionist în regim forfetar.",
+      "expats": "Pregătit pentru un liber-profesionist care lucrează în engleză, cu documente demonstrative.",
+      "banks": "Pregătit pentru o firmă cu contabil și sincronizare bancară.",
+      "schools": "Pregătit pentru o lecție: o afacere goală, doar cu facturare.",
+      "creators": "Pregătit pentru creatori: un liber-profesionist în regim forfetar.",
+      "events": "Pregătit pentru participanți: un liber-profesionist doar cu facturare.",
+      "firstInvoice": "Pregătit pentru prima factură: o afacere goală, neplătitoare de TVA, doar cu facturare.",
+      "beginners": "Pregătit pentru începători: un liber-profesionist cu documente demonstrative.",
+      "advanced": "Pregătit pentru utilizatori avansați: un plătitor de TVA cu contabil și sincronizare bancară."
+    },
+    "scenarios": {
+      "firstInvoice": "Pregătit pentru lecție: o firmă goală, fără documente. Începeți în Clienți.",
+      "invoices": "Pregătit pentru lecție: o firmă cu facturi demonstrative. Începeți în lista de facturi.",
+      "overdue": "Pregătit pentru lecție: o firmă cu facturi demonstrative. Începeți la facturile scadente.",
+      "registries": "Pregătit pentru lecție: o firmă cu documente și clienți demonstrativi. Începeți în lista de facturi.",
+      "vatInvoices": "Pregătit pentru lecție: un plătitor de TVA cu documente demonstrative. Începeți în lista de facturi.",
+      "vatOverdue": "Pregătit pentru lecție: un plătitor de TVA cu documente demonstrative. Începeți la facturile scadente.",
+      "bank": "Pregătit pentru lecție: un plătitor de TVA cu tranzacții bancare de asociat. Începeți în Bancă.",
+      "accountant": "Pregătit pentru lecție: o firmă înregistrată în scopuri de TVA, văzută prin ochii contabilului. Începeți în Bancă.",
+      "flatTax": "Pregătit pentru lecție: un liber-profesionist în regimul impozitului forfetar, cu documente demonstrative. Începeți în lista de facturi."
+    }
+  },
+  "palette": {
+    "open": "Căutați în aplicație",
+    "trigger": "Căutare…",
+    "placeholder": "Căutați facturi, clienți, pagini – sau scrieți ce doriți să facturați…",
+    "empty": "Nu s-a găsit nimic.",
+    "navigate": "mutare",
+    "select": "deschidere",
+    "typoHint": "Greșelile de scriere nu contează",
+    "draft": "Ciornă",
+    "aiInvoice": "Creați o factură cu AI: „{q}”",
+    "aiHint": "AI completează clientul, articolele și scadența",
+    "groups": {
+      "ai": "AI",
+      "actions": "Acțiuni",
+      "invoices": "Facturi",
+      "contacts": "Clienți",
+      "pages": "Pagini"
+    },
+    "actions": {
+      "newInvoice": "Factură nouă",
+      "newProforma": "Factură proformă nouă",
+      "newQuote": "Ofertă nouă",
+      "newExpense": "Cheltuială nouă",
+      "newContact": "Client nou",
+      "bulk": "Facturare în masă",
+      "export": "Export pentru contabil",
+      "invite": "Invitați un membru al echipei",
+      "shortcuts": "Comenzi rapide de la tastatură"
+    },
+    "pages": {
+      "templates": "Șabloane de facturi"
+    },
+    "keywords": {
+      "newInvoice": "emitere creare adăugare document",
+      "newProforma": "avans acont proformă",
+      "newQuote": "estimare ofertă deviz",
+      "newExpense": "bon chitanță cost",
+      "newContact": "contact client firmă",
+      "bulk": "multe facturi lot",
+      "exportData": "pohoda csv xml contabil",
+      "invite": "contabil echipă acces",
+      "dashboard": "acasă situație panou",
+      "bank": "extras plăți asociere",
+      "profile": "parolă cont",
+      "company": "ico tva adresă logo",
+      "invoiceSettings": "numerotare scadență",
+      "modules": "tip de activitate",
+      "team": "contabil acces permisiuni",
+      "billing": "plan abonament plată",
+      "backup": "descărcare date",
+      "channels": "telegram whatsapp",
+      "apiKeys": "cheie api integrare",
+      "shortcuts": "tastatură scurtătură ctrl",
+      "notifications": "alerte clopoțel push e-mail notificare",
+      "numbering": "serie numerotare format prefix",
+      "emails": "șablon subiect expeditor e-mail text",
+      "variables": "variabilă substituent text",
+      "paymentMethods": "plată paypal compensare numerar",
+      "publicProfile": "carte de vizită site cerere",
+      "import": "bitfaktura fakturoid idoklad excel csv migrare mutare",
+      "integrations": "webhook discord slack calendar ics rss",
+      "bankAccounts": "iban număr de cont bancă qr",
+      "logo": "semnătură ștampilă imagine",
+      "invoiceFields": "formular câmpuri câmp personalizat",
+      "reminders": "reminder neplătit scadent somație",
+      "invoiceDefaults": "implicite scadență tva notă monedă limbă",
+      "password": "parolă schimbare conectare autentificare",
+      "preferences": "limbă temă mod întunecat aspect",
+      "cardPayments": "stripe card plată online",
+      "webhooks": "discord slack webhook",
+      "calendar": "ics google calendar scadențe",
+      "epo": "portal fiscal tva declarație de control xml",
+      "bankConnections": "fio psd2 paypal conectare sincronizare"
+    },
+    "aiSearch": "Căutare AI în facturi",
+    "aiOpen": "Întrebați AI / căutați în cuvinte simple",
+    "aiToggle": "Mod AI (Tab)",
+    "aiTab": "Mod AI",
+    "aiPlaceholder": "Încercați: facturi neplătite pentru Alza în septembrie…",
+    "aiIntro": "Descrieți ce căutați într-o propoziție obișnuită. Recunoaștem starea, perioada, moneda și clientul și deschidem lista filtrată. Sau descrieți o factură și AI o precompletează.",
+    "aiExamples": {
+      "ex1": "facturi neplătite luna aceasta",
+      "ex2": "scadente",
+      "ex3": "plătite luna trecută în EUR",
+      "ex4": "facturi proforme anul acesta"
+    },
+    "nlStatus": {
+      "draft": "Ciornă",
+      "issued": "Neplătită",
+      "overdue": "Scadentă",
+      "paid": "Plătită",
+      "cancelled": "Anulată"
+    },
+    "sections": {
+      "bankAccounts": "Conturi bancare",
+      "logo": "Logo și semnătură",
+      "invoiceFields": "Câmpurile facturii",
+      "reminders": "Remindere",
+      "invoiceDefaults": "Valori implicite ale facturii",
+      "password": "Parolă și conectare",
+      "preferences": "Limbă și aspect",
+      "cardPayments": "Plăți cu cardul (Stripe)",
+      "webhooks": "Webhookuri Discord și Slack",
+      "calendar": "Calendarul scadențelor",
+      "epo": "Depunere pe portalul fiscal (EPO)",
+      "bankConnections": "Conexiuni bancare"
+    }
+  },
+  "doc": {
+    "detailTitle": "Detaliile documentului",
+    "loadError": "Documentul nu a putut fi încărcat.",
+    "backToList": "Înapoi la documente",
+    "draftOf": "{type} – ciornă",
+    "overdue": "Restant",
+    "overdueBanner": "Acest document este restant (scadent la {date}). Trimiteți clientului un reminder sau marcați-l ca plătit.",
+    "aiDisclaimer": "Această ciornă a fost creată de AI dintr-un mesaj vocal – verificați fiecare detaliu înainte de emitere.",
+    "totalDue": "Total de plată",
+    "withoutVat": "Total fără TVA",
+    "vatTotal": "Total TVA",
+    "vatAt": "TVA {rate} %",
+    "reverseChargeNote": "TVA-ul se datorează de către client (taxare inversă).",
+    "customer": "Client",
+    "noCustomer": "Clientul nu a fost încă completat",
+    "sellerSnapshotNote": "Datele furnizorului la data emiterii",
+    "buyerSnapshotNote": "Datele clientului la data emiterii",
+    "details": "Detaliile documentului",
+    "related": "Documente asociate",
+    "unnumbered": "fără număr",
+    "noEmail": "Clientul nu are o adresă de e-mail înregistrată",
+    "actionFailed": "Acțiunea a eșuat",
+    "templatesLink": "Șabloane",
+    "bulkLink": "În masă",
+    "filterType": "Tipul documentului",
+    "allTypes": "Toate",
+    "allStatuses": "Toate stările",
+    "searchPlaceholder": "Număr, client, VS…",
+    "emptyFiltered": "Niciun document nu corespunde filtrului.",
+    "count": "{count, plural, one {# document} few {# documente} other {# de documente}}",
+    "selected": "Selectate: {count}",
+    "selectAll": "Selectați tot",
+    "clearSelection": "Anulați selecția",
+    "bulkDone": "{action}: finalizat ({count})",
+    "bulkPartial": "Reușite {ok}, eșuate {failed}",
+    "columnsButton": "Coloane",
+    "sumLabel": "Total (fără anulate și oferte)",
+    "rowActions": "Acțiuni pentru document",
+    "type": {
+      "invoice": "Factură",
+      "proforma": "Factură proformă",
+      "credit_note": "Factură de stornare",
+      "quote": "Ofertă"
+    },
+    "typePlural": {
+      "invoice": "Facturi",
+      "proforma": "Proforme",
+      "credit_note": "Facturi de stornare",
+      "quote": "Oferte"
+    },
+    "payment": {
+      "bank_transfer": "Transfer bancar",
+      "cash": "Numerar",
+      "card": "Card",
+      "cash_on_delivery": "Ramburs",
+      "other": "Altele"
+    },
+    "columns": {
+      "number": "Număr",
+      "type": "Tip",
+      "customer": "Client",
+      "issueDate": "Emisă",
+      "dueDate": "Scadență",
+      "variableSymbol": "VS",
+      "totalWithoutVat": "Fără TVA",
+      "total": "Total",
+      "status": "Stare",
+      "paidAt": "Plătită la",
+      "sentAt": "Trimisă"
+    },
+    "fields": {
+      "issueDate": "Data emiterii",
+      "taxableSupplyDate": "Data faptului generator",
+      "dueDate": "Data scadenței",
+      "paymentMethod": "Metoda de plată",
+      "variableSymbol": "Simbol variabil",
+      "constantSymbol": "Simbol constant",
+      "specificSymbol": "Simbol specific",
+      "orderNumber": "Număr comandă",
+      "paidAt": "Plătită la",
+      "sentAt": "Trimisă",
+      "internalNote": "Notă internă"
+    },
+    "items": {
+      "description": "Articol",
+      "quantity": "Cantitate",
+      "unitPrice": "Preț unitar",
+      "discount": "Reducere",
+      "vat": "TVA",
+      "total": "Fără TVA"
+    },
+    "actions": {
+      "open": "Deschideți",
+      "edit": "Editați",
+      "issue": "Emiteți",
+      "issueQuote": "Emiteți oferta",
+      "markPaid": "Marcați ca plătită",
+      "markPaidToday": "Plătită azi",
+      "markUnpaid": "Anulați plata",
+      "send": "Trimiteți prin e-mail",
+      "duplicate": "Duplicați",
+      "issueSimilar": "Emiteți una similară",
+      "saveTemplate": "Salvați ca șablon",
+      "publicLink": "Link public",
+      "cancel": "Anulați",
+      "delete": "Ștergeți",
+      "downloadPdf": "Descărcați PDF",
+      "convertTo": {
+        "invoice": "Creați factura",
+        "proforma": "Creați proforma",
+        "credit_note": "Emiteți factură de stornare"
+      },
+      "remind": "Trimiteți reminder",
+      "ublHint": "Și ca fișier de factură electronică UBL (Peppol BIS 3.0) pentru clienții din Slovacia. Trimiterea prin rețeaua Peppol, pe care legislația slovacă o impune de la 1 ianuarie 2027, este în pregătire.",
+      "duplicateToFix": "Factură nouă cu corectura",
+      "rotateLink": "Link nou pentru client",
+      "editAnyway": "Editați oricum"
+    },
+    "confirm": {
+      "back": "Înapoi",
+      "save": "Salvați",
+      "issueTitle": "Emiteți acest document?",
+      "issueBody": "Documentul primește următorul număr din serie și nu mai poate fi editat sau șters. Corecturile se fac apoi printr-o factură de stornare.",
+      "paidTitle": "Marcați ca plătită",
+      "sendTitle": "Trimiteți clientului",
+      "sendBody": "Clientul primește un e-mail cu un link către document, PDF-ul și plata prin cod QR.",
+      "cancelTitle": "Anulați acest document?",
+      "cancelBody": "Documentul este marcat ca anulat, iar numărul său rămâne folosit. Dacă a fost deja inclus într-un decont TVA, emiteți în schimb o factură de stornare.",
+      "deleteTitle": "Ștergeți această ciornă?",
+      "deleteBody": "Ciorna va fi ștearsă definitiv.",
+      "bulkDelete": "Ștergeți {count} ciorne? Acțiunea nu poate fi anulată.",
+      "templateBody": "Șablonul reține clientul, articolele, moneda, termenul de plată și notele. Îl veți găsi în galeria de șabloane.",
+      "templateName": "Numele șablonului",
+      "remindTitle": "Trimiteți un reminder?",
+      "remindBody": "Clientul primește un e-mail cu un link către factură și plata prin cod QR. Acesta va fi reminderul nr. {count}.",
+      "editIssuedTitle": "Un document emis nu poate fi rescris",
+      "editIssuedBody": "Are deja un număr și poate să fi ajuns la client sau într-o declarație fiscală, așa că legea nu permite modificarea lui. Corectați-l printr-un document nou: copiem toate datele, iar dumneavoastră schimbați doar ce este greșit.",
+      "editIssuedCredit": "Dacă se schimbă suma sau TVA-ul, emiteți mai întâi o factură de stornare pentru factura originală, apoi factura nouă cu datele corecte.",
+      "rotateTitle": "Emiteți un link nou pentru client?",
+      "rotateBody": "Linkul actual către acest document nu mai funcționează imediat, inclusiv în e-mailurile deja trimise. Folosiți această opțiune când linkul a ajuns la cineva care nu ar fi trebuit să-l primească, apoi trimiteți din nou documentul clientului.",
+      "editAnywayTitle": "Doar o mică corectură?",
+      "editAnywayBody": "O greșeală de tastare sau un detaliu lipsă se pot corecta direct. Numărul rămâne, iar modificarea intră în istoric împreună cu motivul dumneavoastră. Dacă clientul are deja documentul, trimiteți-l din nou.",
+      "editAnywayPlaceholder": "Motivul, de ex. o greșeală în adresă",
+      "editAnywayNeedsReason": "Introduceți mai întâi un motiv"
+    },
+    "done": {
+      "issued": "Document emis",
+      "paid": "Marcată ca plătită",
+      "unpaid": "Plata a fost anulată",
+      "sent": "Document trimis",
+      "converted": "Noul document este gata",
+      "cancelled": "Document anulat",
+      "deleted": "Ciornă ștearsă",
+      "templateSaved": "Șablon salvat",
+      "reminded": "Reminder trimis",
+      "partial": "Plata parțială a fost înregistrată.",
+      "rotated": "Link nou emis, cel vechi nu mai funcționează"
+    },
+    "fxLine": "{label} {rate} {pair} · TVA {vat} · total {total}",
+    "fxLabel": "Curs ČNB",
+    "fxLabelOn": "Curs ČNB la data de {date}",
+    "fxLabelAnnual": "Curs anual fix pentru {year}",
+    "fxLabelManual": "Curs de schimb",
+    "fxHidden": "Conversia în {home} nu este tipărită pe document (curs {rate} {pair} doar pentru rapoarte).",
+    "views": {
+      "title": "Link partajat",
+      "count": "Vizualizat",
+      "times": "{count, plural, one {o dată} few {de # ori} other {de # de ori}}",
+      "first": "Prima dată",
+      "last": "Ultima dată",
+      "none": "Clientul nu a deschis încă linkul facturii."
+    },
+    "filters": {
+      "title": "Filtre",
+      "any": "Oricare",
+      "currency": "Monedă",
+      "date": "Perioadă",
+      "dateHint": "Alegeți data după care filtrați – data emiterii, scadența sau data la care a fost plătită factura. Puteți completa doar „de la” sau doar „până la”.",
+      "dateField": {
+        "issue": "Emisă",
+        "due": "Scadență",
+        "paid": "Plătită",
+        "taxable": "Data faptului generator",
+        "sent": "Trimisă",
+        "created": "Creată"
+      },
+      "from": "De la",
+      "to": "Până la",
+      "apply": "Aplicați",
+      "clear": "Ștergeți filtrele",
+      "sent": "Trimisă prin e-mail",
+      "sentYes": "Da",
+      "sentNo": "Încă nu",
+      "customer": "Client",
+      "amount": "Sumă cu TVA",
+      "min": "min",
+      "max": "max",
+      "viewed": "Deschisă de client",
+      "viewedHint": "Dacă clientul a deschis factura prin linkul online.",
+      "yes": "Da",
+      "no": "Nu",
+      "customerColor": "Culoarea clientului",
+      "close": "Închideți",
+      "remove": "Eliminați filtrul",
+      "period": "Perioadă…",
+      "customRange": "Interval personalizat",
+      "dateBy": "După dată",
+      "quickRanges": "Intervale rapide ({field})",
+      "anyDate": "Orice dată",
+      "item": "Articol",
+      "itemPlaceholder": "Textul sau codul articolului",
+      "paidState": "Plată",
+      "paidStates": {
+        "unpaid": "Nimic plătit",
+        "partial": "Plătită parțial",
+        "full": "Plătită integral"
+      },
+      "overdueDays": "Restanță",
+      "overdueDaysHint": "Documente emise cu cel puțin atâtea zile după scadență.",
+      "overduePill": "Restanță ≥ # zile",
+      "reminded": "Reminder trimis",
+      "vatRate": "Cotă TVA",
+      "vatRateHint": "Documentul are cel puțin un articol cu această cotă.",
+      "reverseCharge": "Taxare inversă",
+      "language": "Limba documentului",
+      "languages": {
+        "cs": "Cehă",
+        "sk": "Slovacă",
+        "en": "Engleză"
+      },
+      "source": "Creat prin",
+      "sources": {
+        "manual": "Manual",
+        "ai": "AI (voce, Telegram/WhatsApp)",
+        "api": "API",
+        "recurring": "Factură recurentă",
+        "import": "Import",
+        "profile_order": "Comandă din profil"
+      },
+      "bankAccount": "Cont bancar",
+      "attachments": "Are atașamente",
+      "internalNote": "Are notă internă",
+      "clientResponse": "Răspunsul clientului",
+      "clientResponseHint": "Pentru oferte: dacă clientul a acceptat-o sau a respins-o prin linkul online.",
+      "clientResponses": {
+        "accepted": "Acceptată",
+        "rejected": "Respinsă",
+        "none": "Fără răspuns"
+      },
+      "note": "Text în note",
+      "notePlaceholder": "Notă internă, text deasupra/sub articole…",
+      "noteHint": "Caută în nota internă, în textul de deasupra și de sub articole și în răspunsul clientului la o ofertă.",
+      "symbol": "Simbol",
+      "symbolHint": "Simbol variabil, constant sau specific (potrivire parțială).",
+      "customField": "Câmp personalizat",
+      "customFieldPlaceholder": "Etichetă sau valoare",
+      "customFieldHint": "Caută în etichetele și valorile câmpurilor personalizate din antetul documentului.",
+      "hasCustomFields": "Are câmpuri personalizate",
+      "net": "Sumă fără TVA",
+      "netHint": "Suma articolelor fără TVA, în moneda documentului.",
+      "dueMin": "Rest de plată de cel puțin",
+      "dueMinHint": "Documente neplătite cu cel puțin această sumă încă de achitat.",
+      "country": "Țara clientului",
+      "countries": {
+        "CZ": "Cehia",
+        "SK": "Slovacia",
+        "foreign": "Străinătate (nu CZ/SK)"
+      },
+      "issuedBy": "Emis de",
+      "related": "Document asociat",
+      "relatedHint": "Asociat cu alt document: o factură de stornare la o factură, o factură dintr-o proformă sau dintr-o ofertă.",
+      "needsAttention": "Necesită verificare",
+      "needsAttentionHint": "Documente marcate pentru verificare, de obicei ciorne AI cu încredere mai scăzută.",
+      "find": "Căutați filtre…",
+      "findNone": "Niciun filtru nu corespunde.",
+      "groups": {
+        "customer": "Client",
+        "money": "Sume și plată",
+        "communication": "Trimitere și răspunsul clientului",
+        "content": "Conținutul documentului",
+        "origin": "Proveniență și legături"
+      }
+    },
+    "remindersSent": "{count, plural, one {# reminder trimis} few {# remindere trimise} other {# de remindere trimise}}, ultimul la {date}.",
+    "attachments": {
+      "title": "Atașamente",
+      "hint": "O fișă de pontaj, un contract sau un aviz de însoțire pentru factură. Pentru fiecare fișier alegeți dacă se trimite cu e-mailul facturii (plicul) și dacă clientul îl poate descărca din linkul partajat (persoanele). PDF, imagini, Office, CSV/XML/TXT, max. 5 MB, până la 10 fișiere.",
+      "add": "Adăugați",
+      "empty": "Trageți un fișier aici sau faceți clic",
+      "download": "Descărcați",
+      "delete": "Eliminați",
+      "confirmDelete": "Eliminați atașamentul „{name}”?",
+      "emailOn": "Se trimite cu e-mailul facturii (clic pentru a dezactiva)",
+      "emailOff": "Nu se trimite prin e-mail (clic pentru a activa)",
+      "portalOn": "Poate fi descărcat din linkul partajat (clic pentru a ascunde)",
+      "portalOff": "Ascuns în linkul partajat (clic pentru a afișa)",
+      "portalNotYet": "Atașamentele apar în linkul partajat după emiterea facturii.",
+      "errors": {
+        "bad_type": "Acest tip de fișier nu poate fi atașat.",
+        "too_big": "Fișierul depășește 5 MB.",
+        "too_many": "O factură poate avea cel mult 10 atașamente.",
+        "generic": "Atașamentul nu a putut fi salvat."
+      }
+    },
+    "quoteResponse": {
+      "title": "Răspunsul clientului",
+      "accepted": "A acceptat oferta",
+      "rejected": "A respins oferta",
+      "waiting": "Încă niciun răspuns. Clientul poate accepta sau respinge oferta în portal (linkul clientului)."
+    },
+    "partial": {
+      "paid": "Plătit {amount}",
+      "remaining": "Rămas {amount}",
+      "short": "{amount} plătit",
+      "record": "Înregistrați plata",
+      "full": "Suma integrală ({amount})",
+      "partial": "Plată parțială",
+      "amountLabel": "Suma primită",
+      "alreadyPaid": "Plătit până acum: {amount}."
+    },
+    "internalField": "Câmp intern – doar pentru echipă",
+    "peppol": {
+      "title": "Această factură electronică (Peppol) nu ar trece validarea",
+      "intro": "Este posibil să doriți să o trimiteți ca factură electronică UBL prin rețeaua Peppol (în Slovacia, plătitorii de TVA trebuie să le emită către firmele locale de la 1 ianuarie 2027). Un punct de acces ar respinge-o sau ar marca-o din cauza:",
+      "field": {
+        "supplier": "Furnizor",
+        "customer": "Client",
+        "lines": "Articole",
+        "payment": "Plată",
+        "currency": "Monedă",
+        "document": "Document"
+      },
+      "code": {
+        "nameMissing": "lipsește numele",
+        "countryMissing": "lipsește codul țării",
+        "addressIncomplete": "adresa este incompletă (strada sau localitatea)",
+        "vatInvalid": "codul de TVA are un format invalid",
+        "vatMissing": "lipsește codul de TVA, dar acest regim de TVA îl necesită",
+        "endpointMissing": "nicio adresă electronică Peppol (adăugați un cod de TVA cu prefixul unei țări UE)",
+        "noLines": "factura nu are articole",
+        "lineNameMissing": "un articol nu are descriere",
+        "currencyInvalid": "cod de monedă invalid",
+        "noAccount": "nu este indicat niciun cont bancar",
+        "noIban": "contul nu are IBAN",
+        "skDicMissing": "lipsește DIČ-ul slovac (10 cifre); din el se construiește adresa Peppol 0245",
+        "precedingMissing": "factura de stornare nu face referire la factura originală pe care o corectează"
+      }
+    },
+    "requirements": {
+      "title": "Completați datele obligatorii înainte de emitere",
+      "titleIssued": "Acestui document îi lipsesc date obligatorii",
+      "code": {
+        "nameMissing": "lipsește numele",
+        "addressIncomplete": "lipsește adresa sediului (strada sau localitatea)",
+        "icoMissing": "lipsește codul de identificare (IČO)",
+        "dicMissing": "lipsește codul de TVA",
+        "dicMissingReverse": "taxarea inversă necesită codul de TVA al clientului",
+        "registryMissing": "lipsește înscrierea în registrul public (de ex. registrul autorizațiilor comerciale), adăugați-o în Setări › Firmă",
+        "customerMissing": "niciun client selectat",
+        "noLines": "documentul nu are articole",
+        "lineNameMissing": "un articol nu are descriere",
+        "zeroQuantity": "un articol are cantitatea zero"
+      }
+    },
+    "net": {
+      "toggle": "Comisioane și curs de schimb (PayPal, Stripe, Wise…)",
+      "hint": "Opțional. Din comisioane și suma efectiv încasată calculăm venitul net și diferența de curs.",
+      "fee": "Comisionul furnizorului ({currency})",
+      "received": "Încasat în cont ({home})",
+      "title": "Venit net",
+      "gross": "Primit (la cursul facturii)",
+      "fees": "Comisioane",
+      "fx": "Diferență de curs",
+      "net": "Venit net",
+      "noReceived": "Introduceți suma încasată în {home} pentru a vedea și diferența de curs."
+    },
+    "history": "Istoricul modificărilor",
+    "correction": {
+      "title": "Editată după trimitere",
+      "body": "Ați trimis această factură clientului la {date}, iar de atunci s-a modificat. Clientul are versiunea veche – trimiteți-i versiunea corectată. Linkul public afișează deja versiunea nouă.",
+      "send": "Trimiteți versiunea corectată",
+      "sendBody": "Clientul primește un e-mail intitulat „Factură corectată”, care explică faptul că înlocuiește versiunea anterioară. Trimiterea este înregistrată în istoricul modificărilor.",
+      "editNote": "Ați trimis deja această factură clientului ({date}). După editare, pagina de detalii vă va oferi trimiterea versiunii corectate."
+    },
+    "fxLabelEcbOn": "Curs BCE la data de {date}"
+  },
+  "taxReturn": {
+    "metaTitle": "Rezumat pentru declarația de impozit",
+    "title": "Rezumat pentru declarația de impozit {year}",
+    "titleSk": "Rezumat pentru declarația de impozit {year} (Slovacia)",
+    "back": "Rapoarte",
+    "lead": "Veniturile, cheltuielile și cheltuielile forfetare pentru anul fiscal din propriile documente, termenele de depunere și o estimare orientativă a impozitului. Gratuit în orice plan.",
+    "notAdvice": "Acesta este un rezumat al propriilor documente pentru pregătirea declarației de impozit pe venit, nu consultanță fiscală. Verificați cifrele înainte de depunere, dacă este nevoie împreună cu un contabil sau un consultant fiscal.",
+    "noTenant": "Completați mai întâi datele de facturare ale firmei.",
+    "loadError": "Rezumatul nu a putut fi încărcat. Încercați din nou peste câteva momente.",
+    "ratesUnavailable": "Unele documente în monedă străină nu au curs de schimb, iar acesta nu a putut fi obținut. Încercați din nou peste câteva momente.",
+    "yearLabel": "An",
+    "downloadPdf": "Descărcați PDF",
+    "downloadCsv": "Descărcați CSV",
+    "runningYear": "Anul {year} este încă în curs: cifrele se vor schimba până la sfârșitul lui, iar declarația pentru el se depune anul viitor.",
+    "income": "Venituri din facturi plătite",
+    "incomeAccrual": "Venituri din facturi emise",
+    "invoiceCount": "{count, plural, one {# document} few {# documente} other {# de documente}}, facturile de stornare scăzute",
+    "actualExpenses": "Cheltuieli reale în total",
+    "expenseCount": "{count, plural, one {# cheltuială} few {# cheltuieli} other {# de cheltuieli}}",
+    "basisCash": "Evidență în partidă simplă: veniturile după ziua încasării, cheltuielile după ziua plății.",
+    "basisAccrual": "Contabilitate: veniturile după data livrării.",
+    "vatPayerYes": "Sunteți plătitor de TVA, sumele sunt fără TVA.",
+    "vatPayerNo": "Nu sunteți plătitor de TVA, sumele sunt brute.",
+    "missingRates": "{count, plural, one {# document în monedă străină fără curs a fost omis.} few {# documente în monedă străină fără curs au fost omise.} other {# de documente în monedă străină fără curs au fost omise.}}",
+    "categoriesTitle": "Cheltuieli pe categorii",
+    "uncategorised": "Necategorizate",
+    "noExpenses": "Nicio cheltuială în acest an.",
+    "legalEntity": "O societate depune declarația de impozit pe profit (DPPO). Cheltuielile forfetare și impozitul forfetar nu se aplică, iar profitul este stabilit de contabilitate – folosiți aceste sume ca verificare.",
+    "legalEntitySk": "O societate depune declarația de impozit pe profit (DPPO). Cheltuielile forfetare nu se aplică, iar profitul este stabilit de contabilitate – folosiți aceste sume ca verificare.",
+    "flatTitle": "Cheltuieli forfetare vs. cheltuieli reale",
+    "flatTitleSk": "Cheltuieli forfetare vs. cheltuieli reale",
+    "flatLead": "Conform § 7 alin. (7) din legea cehă a impozitului pe venit, puteți deduce un procent din venituri în locul cheltuielilor reale. Procentul depinde de activitate, fiecare cu un plafon anual.",
+    "flatLeadSk": "În Slovacia există un singur procent forfetar (§ 6 alin. (10) ZDP) cu plafon anual; contribuțiile de asigurări plătite se deduc în plus.",
+    "rateLabel": "Activitatea dumneavoastră",
+    "rates": {
+      "30": "30 % – închirierea bunurilor din patrimoniul afacerii.",
+      "40": "40 % – profesii liberale și alte activități reglementate prin legi speciale, venituri din drepturi de autor.",
+      "60": "60 % – alte activități autorizate (majoritatea activităților libere, calificate și concesionate).",
+      "80": "80 % – meșteșuguri, agricultură, silvicultură și gospodărirea apelor."
+    },
+    "flatRow": "Forfetar {rate} % (max. {cap})",
+    "capped": "plafon",
+    "better": {
+      "flat": "Forfetul de {rate} % vă oferă cheltuieli mai mari decât cheltuielile reale.",
+      "actual": "Cheltuielile reale sunt mai mari decât forfetul de {rate} %.",
+      "equal": "Forfetul de {rate} % și cheltuielile reale ies la fel."
+    },
+    "estimateTitle": "Estimare orientativă a impozitului și a contribuțiilor",
+    "estimateLead": "Impozitul pe venit după reducerea de bază pentru contribuabil și contribuțiile sociale și de sănătate pentru anul respectiv, la cotele și minimele din acest an.",
+    "estimateLeadSk": "Impozitul pe venit după deducerea personală de bază și contribuțiile pentru anul respectiv, la cotele din acest an.",
+    "option": {
+      "flat_expenses": "Forfetar",
+      "actual_expenses": "Cheltuieli reale"
+    },
+    "expenses": "Cheltuieli",
+    "profit": "Profit",
+    "tax": "Impozit pe venit",
+    "social": "Asigurări sociale",
+    "health": "Asigurări de sănătate",
+    "socialSk": "Asigurări sociale plătite",
+    "healthSk": "Asigurări de sănătate pentru an",
+    "total": "Total pentru an",
+    "skInsuranceNote": "Contribuțiile plătite sunt preluate din avansurile din Setări → Date de facturare și reduc baza de impozitare în ambele variante.",
+    "noParams": "Cotele și limitele pentru {year} nu sunt încă publicate, așa că nu există o estimare a impozitului. Sumele și termenele sunt valabile.",
+    "flatTaxTitle": "Impozit forfetar (paušální daň)",
+    "flatTaxLead": "O singură plată lunară care acoperă impozitul pe venit și contribuțiile sociale și de sănătate (§ 2a ZDP). Pentru neplătitorii de TVA cu venituri de până la 2 milioane CZK; intrarea în regim se face prin notificare până la 10 ianuarie.",
+    "flatTaxBand": "Cu aceste venituri ați fi în banda {band}: {total} pe an.",
+    "flatTaxNo": {
+      "vat_payer": "Un plătitor de TVA nu poate folosi impozitul forfetar.",
+      "over_limit": "Impozitul forfetar nu este disponibil cu aceste venituri (limita de 2 milioane CZK, mai mică la procentele forfetare mai mici).",
+      "no_data": "Lipsesc sumele impozitului forfetar pentru acest an."
+    },
+    "best": {
+      "flat_tax": "Conform acestei estimări, impozitul forfetar este cel mai avantajos.",
+      "flat_expenses": "Conform acestei estimări, regimul obișnuit cu cheltuieli forfetare este cel mai avantajos.",
+      "actual_expenses": "Conform acestei estimări, regimul obișnuit cu cheltuieli reale este cel mai avantajos."
+    },
+    "inFlatTaxRegime": "Conform setărilor, sunteți în regimul impozitului forfetar. Dacă nu ați ieșit din el în cursul anului și nu ați depășit limita, de obicei nu depuneți nici declarația, nici situațiile pentru asigurări.",
+    "flatTaxCalculator": "Comparația completă în calculatorul impozitului forfetar",
+    "deadlinesTitle": "Termene de depunere",
+    "deadline": {
+      "CZ": {
+        "paper": "Pe hârtie",
+        "electronic": "Electronic (cutia de date, Moje daně)",
+        "advisor": "Prin consultant fiscal (împuternicire depusă până la primul termen)"
+      },
+      "SK": {
+        "paper": "Termen obișnuit",
+        "extended": "După notificarea prelungirii"
+      }
+    },
+    "diffTitle": "Cehia vs. Slovacia – diferențele",
+    "diff": {
+      "cz": "Cehia",
+      "sk": "Slovacia",
+      "flatLabel": "Cheltuieli forfetare",
+      "flatCz": "În funcție de activitate: {caps}.",
+      "flatSk": "Un singur procent forfetar de {rate} %, cel mult {cap} pe an.",
+      "deadlineLabel": "Termenul declarației",
+      "deadlineCz": "{paper} pe hârtie, {electronic} electronic, {advisor} prin consultant fiscal.",
+      "deadlineSk": "{paper}; după notificarea administrației fiscale, {extended} (până la 6 luni cu venituri din străinătate).",
+      "insuranceLabel": "Asigurări",
+      "insuranceCz": "Contribuțiile proprii ale unui liber-profesionist nu sunt cheltuieli deductibile (§ 25 ZDP).",
+      "insuranceSk": "Contribuțiile plătite se deduc din baza de impozitare, inclusiv în plus față de forfet.",
+      "flatTaxLabel": "Impozit forfetar",
+      "flatTaxCz": "Da, pentru neplătitorii de TVA cu venituri de până la 2 milioane CZK.",
+      "flatTaxSk": "Nu. La venituri mai mici se aplică o cotă redusă a impozitului pe venit de 15 %.",
+      "formLabel": "Ce depuneți",
+      "formCz": "Declarația de impozit pe venitul persoanelor fizice, apoi în termen de o lună situațiile pentru ČSSZ și casa de asigurări de sănătate.",
+      "formSk": "Declarația de impozit tip B; Casa de Asigurări Sociale preia veniturile de la administrația fiscală."
+    },
+    "notesTitle": "Note",
+    "noteInsurance": "Avansurile pentru asigurările sociale și de sănătate ale unui liber-profesionist nu sunt cheltuieli deductibile (§ 25 alin. (1) lit. h) ZDP), așa că nu apar printre cheltuieli.",
+    "noteInsuranceSk": "Contribuțiile sociale și de sănătate plătite se deduc din baza de impozitare atât lângă forfet, cât și lângă cheltuielile reale (§ 6 alin. (10) și (11) ZDP).",
+    "noteEstimate": "Estimarea folosește doar reducerea de bază pentru contribuabil, fără alte reduceri, deduceri sau alte venituri (salariu, chirie).",
+    "noteEstimateSk": "Estimarea folosește doar deducerea personală de bază, fără alte deduceri, bonusul pentru copii sau alte venituri.",
+    "noteData": "Cifrele provin doar din documentele din aplicație. Adăugați singur veniturile și cheltuielile care nu sunt aici (numerar fără document, alte activități).",
+    "disclaimer": "Acest rezumat are doar caracter informativ, este oferit fără garanție și nu înlocuiește un consultant fiscal sau un contabil. Răspunderea pentru ceea ce depuneți vă aparține.",
+    "nudge": {
+      "title": "Declarația de impozit pentru {year}",
+      "body": "Veniturile din {year}, cheltuielile pe categorii, forfetele și termenele sunt pregătite din documentele dumneavoastră. PDF și CSV pentru contabil, gratuit.",
+      "cta": "Deschideți rezumatul",
+      "dismiss": "Ascundeți"
+    },
+    "landing": {
+      "seoTitle": "Rezumat gratuit pentru declarația de impozit {year} pentru independenții din Cehia și Slovacia",
+      "eyebrow": "Declarația de impozit pe venit",
+      "title": "Rezumat pentru declarația de impozit {year}",
+      "lead": "Billanta adună veniturile din facturile plătite și cheltuielile pe categorii, le compară cu cheltuielile forfetare și afișează termenele de depunere. Pentru Cehia și Slovacia, ca PDF și CSV.",
+      "cta": "Începeți gratuit",
+      "demo": "Încercați demo-ul",
+      "free": "Rezumatul este inclus în fiecare plan, inclusiv în cel gratuit.",
+      "featuresTitle": "Ce conține rezumatul",
+      "features": {
+        "income": {
+          "title": "Venituri din facturi plătite",
+          "body": "Pentru tot anul, după ziua încasării, cu facturile de stornare scăzute și monedele străine convertite la cursul documentului."
+        },
+        "categories": {
+          "title": "Cheltuieli pe categorii",
+          "body": "Materiale, servicii, software, deplasări și altele – inclusiv cheltuielile necategorizate."
+        },
+        "flat": {
+          "title": "Forfetar sau cheltuieli reale",
+          "body": "Fiecare procent de cheltuieli forfetare cu plafonul său anual, alături de cheltuielile dumneavoastră reale."
+        },
+        "flatTax": {
+          "title": "Impozit forfetar",
+          "body": "Pentru liber-profesioniștii din Cehia, o comparație cu impozitul forfetar și o estimare orientativă a impozitului și a contribuțiilor."
+        },
+        "deadlines": {
+          "title": "Termene de depunere",
+          "body": "Pe hârtie, electronic și prin consultant, mutate după weekenduri și sărbători legale."
+        },
+        "export": {
+          "title": "PDF și CSV pentru contabil",
+          "body": "Dintr-un singur clic, marcate clar ca bază pentru declarație, nu consultanță fiscală."
+        }
+      },
+      "country": {
+        "CZ": {
+          "title": "Cehia – declarația pentru {year}",
+          "deadline": {
+            "paper": "Pe hârtie",
+            "electronic": "Electronic",
+            "advisor": "Prin consultant fiscal"
+          },
+          "flat": "Cheltuieli forfetare: {caps}.",
+          "extra": "Impozit forfetar pentru neplătitorii de TVA cu venituri de până la 2 milioane CZK; situațiile pentru ČSSZ și casa de asigurări de sănătate în termen de o lună de la declarație."
+        },
+        "SK": {
+          "title": "Slovacia – declarația pentru {year}",
+          "deadline": {
+            "paper": "Termen obișnuit",
+            "extended": "După notificarea prelungirii"
+          },
+          "flat": "Cheltuieli forfetare de {rate} % din venituri, cel mult {cap} pe an.",
+          "extra": "Contribuțiile plătite se deduc în plus față de forfet; Slovacia nu are impozit forfetar."
+        }
+      },
+      "calculatorsTitle": "Calculatoare fiscale",
+      "calculatorsLead": "Fără înregistrare: impozitul și contribuțiile pentru liber-profesioniștii din Cehia și Slovacia, comparația cu impozitul forfetar și avansurile minime.",
+      "ctaTitle": "Un rezumat din propriile facturi",
+      "ctaBody": "Când facturați în Billanta, baza pentru declarație este gata fără să retastați nimic. Adăugați doar ce nu se află în aplicație.",
+      "faqTitle": "Întrebări frecvente",
+      "faq": [
+        {
+          "q": "Este aceasta consultanță fiscală?",
+          "a": "Nu. Însumează propriile documente cu un calcul orientativ la cotele legale. Verificați cifrele înainte de depunere, dacă este nevoie împreună cu un contabil sau un consultant fiscal."
+        },
+        {
+          "q": "Când sunt cheltuielile forfetare mai avantajoase decât cele reale?",
+          "a": "Când cheltuielile reale sunt mai mici decât procentul din venituri permis pentru activitatea dumneavoastră. Rezumatul afișează ambele cifre una lângă alta, cu plafonul anual."
+        },
+        {
+          "q": "Este gratuit?",
+          "a": "Da, în fiecare plan, inclusiv în cel gratuit, atât pentru liber-profesioniștii din Cehia, cât și din Slovacia."
+        },
+        {
+          "q": "Ce se întâmplă dacă facturez în altă monedă?",
+          "a": "Facturile în monedă străină sunt convertite la cursul salvat cu documentul. Documentele fără curs sunt listate separat, ca să nu se piardă nimic."
+        }
+      ],
+      "disclaimer": "Cotele, plafoanele și termenele urmează legile cehe și slovace privind impozitul pe venit și codurile de procedură fiscală pentru anul respectiv. Informațiile sunt orientative și nu înlocuiesc un consultant fiscal."
+    }
+  },
+  "settings": {
+    "backup": {
+      "title": "Destinații de backup",
+      "description": "Alegeți unde se exportă periodic datele firmei – pe propriul server prin SFTP, în Google Drive, printr-un webhook administrat de dumneavoastră sau ca descărcare locală.",
+      "back": "Înapoi la setări",
+      "empty": "Nicio destinație de backup configurată încă.",
+      "columns": {
+        "type": "Tip",
+        "schedule": "Programare",
+        "lastRun": "Ultima rulare",
+        "status": "Stare"
+      },
+      "typeGoogleDrive": "Google Drive",
+      "typeWebhook": "Webhook",
+      "typeLocal": "Descărcare locală",
+      "scheduleDaily": "Zilnic",
+      "scheduleWeekly": "Săptămânal",
+      "scheduleManual": "Manual",
+      "neverRun": "Nu a rulat încă",
+      "statusActive": "Activă",
+      "statusInactive": "Inactivă",
+      "lastRunSuccess": "Reușit",
+      "lastRunFailed": "Eșuat",
+      "runNow": "Rulați acum",
+      "runningNow": "Se rulează…",
+      "delete": "Ștergeți",
+      "deleting": "Se șterge…",
+      "confirmDelete": "Ștergeți această destinație de backup? Istoricul rulărilor se șterge odată cu ea.",
+      "connectGoogleDrive": {
+        "button": "Conectați Google Drive",
+        "connecting": "Redirecționare către Google…",
+        "connectedBanner": "Google Drive a fost conectat cu succes.",
+        "errorBanner": "Conectarea Google Drive a eșuat: {error}",
+        "description": "Backupurile se salvează într-un dosar din Google Drive. Aplicația vede doar fișierele pe care le creează ea însăși.",
+        "unavailable": "Google Drive nu este configurat pe acest server."
+      },
+      "addLocal": {
+        "button": "Adăugați descărcare locală",
+        "description": "Un fișier de bază de date SQLite cu datele dumneavoastră, gata de descărcat – nimic de configurat și poate fi rulat doar la cerere (programarea este întotdeauna „Manual”).",
+        "adding": "Se adaugă…"
+      },
+      "addWebhook": {
+        "button": "Adăugați webhook",
+        "title": "Adăugați o destinație webhook",
+        "urlLabel": "URL webhook",
+        "urlPlaceholder": "https://example.com/faktur-webhook",
+        "urlHint": "Datele sunt trimise prin POST la această adresă ca JSON semnat (antetul X-Faktur-Signature).",
+        "scheduleLabel": "Programare",
+        "cancel": "Anulați",
+        "submit": "Adăugați",
+        "submitting": "Se adaugă…"
+      },
+      "reveal": {
+        "title": "Secretul de semnare al webhookului",
+        "warning": "Copiați acest secret acum – nu îl veți mai putea vedea. Folosiți-l pentru a verifica antetul X-Faktur-Signature.",
+        "copy": "Copiați",
+        "copied": "Copiat",
+        "done": "Gata"
+      },
+      "docsHint": "Consultați apps/backend/README.md pentru formatul exportului și detaliile verificării semnăturii.",
+      "runDone": "Backupul s-a încheiat.",
+      "runFailed": "Backupul nu a putut fi finalizat.",
+      "pause": "Întrerupeți",
+      "resume": "Reluați",
+      "ownerOnly": "Doar proprietarul firmei poate configura backupurile.",
+      "loadError": "Destinațiile de backup nu au putut fi încărcate.",
+      "typeSftp": "Server SFTP",
+      "sftpFingerprint": "Cheia serverului: {fingerprint}",
+      "sftpFingerprintPending": "Cheia serverului se verifică la primul backup",
+      "addSftp": {
+        "button": "Adăugați server SFTP",
+        "description": "Backupul (un fișier SQLite) se încarcă prin SFTP pe propriul server, NAS sau hosting – datele rămân la dumneavoastră, opțional criptate cu cheia dumneavoastră.",
+        "title": "Server SFTP nou",
+        "hint": "Billanta se conectează doar pentru backup: încarcă billanta-zaloha-…db și se deconectează. Fără parolă, generăm o cheie SSH proprie pe care o autorizați pe server. Cheia de gazdă a serverului este reținută la prima conectare, iar o cheie modificată oprește backupul.",
+        "host": "Server",
+        "port": "Port",
+        "username": "Utilizator",
+        "path": "Dosar",
+        "pathHint": "O cale relativă pornește din dosarul personal al utilizatorului. Un dosar lipsă este creat.",
+        "password": "Parolă (opțional)",
+        "passwordHint": "Vă recomandăm să o lăsați goală și să folosiți cheia afișată după salvare. Parolele sunt stocate criptat."
+      },
+      "sftpKey": {
+        "title": "Autorizați această cheie pe server",
+        "instructions": "Adăugați linia în fișierul ~/.ssh/authorized_keys al utilizatorului de pe server. Este doar partea publică; cheia privată rămâne criptată la noi.",
+        "later": "Puteți afișa din nou cheia oricând din tabel (Cheie SSH).",
+        "show": "Cheie SSH"
+      },
+      "encryption": {
+        "button": "Criptare",
+        "title": "Criptarea fișierelor de backup",
+        "hint": "Fișierele sunt criptate cu age (age-encryption.org) înainte să părăsească Billanta, astfel încât nici administratorul serverului, nici Google nu le pot citi fără cheia sau fraza de acces. Nu le pierdeți – fără ele un backup nu poate fi restaurat.",
+        "mode": {
+          "none": "Fără criptare",
+          "key": "Cheie publică age",
+          "passphrase": "Frază de acces"
+        },
+        "keyLabel": "Cheie publică (age1…)",
+        "keyHint": "Creați o cheie cu age-keygen -o klic.txt. Lipiți aici doar linia „public key: age1…” și păstrați klic.txt la dumneavoastră.",
+        "passphraseLabel": "Fraza de acces pentru backup",
+        "passphraseHint": "Cel puțin 12 caractere. Este stocată criptat, pentru ca backupurile să poată fi criptate automat, și nu mai este afișată niciodată.",
+        "decryptKey": "Pentru decriptare:",
+        "decryptPassphrase": "Pentru decriptare:",
+        "save": "Salvați",
+        "saving": "Se salvează…",
+        "saved": "Criptarea a fost salvată.",
+        "badgeKey": "Criptat cu cheie",
+        "badgePassphrase": "Criptat cu frază de acces"
+      },
+      "twoFactorRequired": "Destinațiile de backup pot fi conectate doar cu autentificarea în doi pași."
+    },
+    "numbering": {
+      "title": "Numerotarea documentelor",
+      "description": "Alegeți cum arată numerele documentelor – de exemplu la fel ca în aplicația din care vă mutați.",
+      "loadError": "Setările de numerotare nu au putut fi încărcate.",
+      "readOnly": "Doar un proprietar sau un administrator poate modifica numerotarea documentelor.",
+      "pattern": "Formatul numărului",
+      "patternHint": "Textul din jurul elementelor este copiat ca atare. Permise: litere fără diacritice, cifre, spațiu și - / . _",
+      "nextNumber": "Următorul număr",
+      "nextNumberHint": "Numărul de ordine de la care continuă seria în această lună sau în acest an. Lăsați gol pentru a-l păstra neschimbat.",
+      "preview": "Următorul document primește",
+      "then": "(apoi {number})",
+      "resetMonthly": "Seria reîncepe în fiecare lună.",
+      "resetYearly": "Seria reîncepe în fiecare an.",
+      "lastUsed": "Ultimul număr de ordine folosit în această perioadă: {number}.",
+      "lowerWarning": "Este mai mic sau egal cu ultimul număr folosit. Îl puteți salva doar cât timp nu există încă niciun document de acest tip în această perioadă.",
+      "save": "Salvați",
+      "saved": "Numerotarea a fost salvată",
+      "saveFailed": "Salvarea a eșuat",
+      "tokensTitle": "Elemente",
+      "tokens": {
+        "YYYY": "anul, de ex. 2026",
+        "YY": "anul din două cifre, de ex. 26",
+        "MM": "luna, de ex. 03 – seria reîncepe apoi în fiecare lună",
+        "N": "număr de ordine fără zerouri, de ex. 7",
+        "NNNN": "număr de ordine completat cu zerouri ('{NN}' până la '{NNNNN}'), de ex. 0007"
+      },
+      "how": {
+        "rules": "Formatul trebuie să conțină exact un număr de ordine și un an. Un număr poate avea cel mult 32 de caractere.",
+        "reset": "Cu '{MM}' în format, numărătoarea începe de la 1 în fiecare lună, altfel în fiecare an.",
+        "issued": "Modificarea se aplică doar documentelor emise de acum înainte. Documentele deja emise își păstrează numerele.",
+        "separate": "Fiecare tip de document are propria serie neîntreruptă. Dacă un număr există deja (de exemplu dintr-un import), se folosește următorul liber."
+      },
+      "errors": {
+        "empty": "Introduceți un format.",
+        "invalid_character": "Formatul conține un caracter nepermis. Folosiți litere fără diacritice, cifre, spațiu sau - / . _",
+        "unknown_token": "Element necunoscut. Folosiți '{YYYY}', '{YY}', '{MM}', '{N}' până la '{NNNNN}'.",
+        "no_sequence": "Lipsește numărul de ordine, de ex. '{NNNN}'.",
+        "multiple_sequences": "Numărul de ordine poate apărea o singură dată.",
+        "no_year": "Lipsește anul – '{YYYY}' sau '{YY}'.",
+        "multiple_years": "Anul poate apărea o singură dată.",
+        "multiple_months": "Luna poate apărea o singură dată.",
+        "too_long": "Numărul ar avea mai mult de {max} caractere.",
+        "pattern_clash": "Un alt tip de document folosește deja acest format. Fiecare tip are nevoie de propriul format.",
+        "next_number_too_low": "Următorul număr este mai mic decât ultimul folosit, iar în această perioadă există deja documente."
+      }
+    },
+    "comingSoon": "Setările contului vor fi disponibile în curând."
+  },
+  "publicProfile": {
+    "services": "Servicii",
+    "contact": "Contact",
+    "ico": "Cod de identificare",
+    "dic": "Cod de TVA",
+    "cta": {
+      "button": "Trimiteți o solicitare",
+      "subject": "Solicitare – {company}",
+      "body": "Bună ziua,\n\naș fi interesat de:\n\n"
+    },
+    "poweredBy": "Profil realizat cu <brand>Billanta</brand> – facturare pentru independenți și firme",
+    "order": {
+      "button": "Comandați",
+      "title": "Comandă",
+      "hint": "Alegeți un serviciu și completați datele de facturare. {company} va verifica comanda și vă va răspunde.",
+      "service": "Serviciu",
+      "noService": "Doar propriile articole",
+      "quantity": "Cantitate",
+      "estimate": "Aproximativ {amount}. Furnizorul confirmă prețul final.",
+      "priceLater": "Furnizorul va adăuga prețul.",
+      "customItems": "Alte articole",
+      "customItemsHint": "Spuneți-ne de ce mai aveți nevoie. Furnizorul va adăuga prețul.",
+      "itemDescription": "De ce aveți nevoie",
+      "addItem": "Adăugați articol",
+      "removeItem": "Eliminați articolul",
+      "buyerTitle": "Date de facturare",
+      "note": "Notă",
+      "notePlaceholder": "Termen, detalii, orice altceva",
+      "submit": "Trimiteți comanda",
+      "legal": "Prin trimitere, vă comunicați datele furnizorului, pentru ca acesta să poată procesa comanda și emite factura.",
+      "doneTitle": "Comandă trimisă",
+      "doneText": "{company} o va verifica acum și va emite singur factura. Nu mai trebuie să faceți nimic.",
+      "payTitle": "Plată în avans",
+      "payHint": "{company} solicită plata în avans. Plătiți folosind aceste date sau scanați codul QR în aplicația bancară.",
+      "payAmount": "Sumă",
+      "payAccount": "Număr de cont",
+      "payVs": "Simbol variabil",
+      "payRecipient": "Beneficiar",
+      "payNote": "Folosiți exact acest simbol variabil, pentru ca furnizorul să poată asocia plata. Factura va veni de la furnizor.",
+      "errors": {
+        "invalid": "Verificați câmpurile evidențiate.",
+        "closed": "Această firmă nu primește comenzi în acest moment.",
+        "limit": "Prea multe încercări, încercați din nou peste câteva momente.",
+        "daily_cap": "Această firmă a primit multe comenzi astăzi. Încercați din nou mâine.",
+        "unknown_service": "Acest serviciu nu mai este oferit. Reîncărcați pagina.",
+        "custom_items_disabled": "Această firmă nu acceptă articole personalizate. Reîncărcați pagina.",
+        "empty_order": "Alegeți un serviciu sau adăugați un articol.",
+        "items": "Verificați articolele (descriere de cel puțin 2 caractere).",
+        "failed": "Ceva nu a funcționat, încercați din nou."
+      }
+    },
+    "message": {
+      "button": "Contact",
+      "title": "Scrieți-ne",
+      "hint": "Mesajul ajunge direct la {company}. Vă va răspunde pe e-mail.",
+      "name": "Nume",
+      "email": "E-mail",
+      "about": "Subiect",
+      "aboutGeneral": "Întrebare generală",
+      "message": "Mesaj",
+      "submit": "Trimiteți mesajul",
+      "legal": "Prin trimitere, comunicați firmei numele, e-mailul și mesajul, pentru ca aceasta să vă poată răspunde.",
+      "doneTitle": "Mesaj trimis",
+      "doneText": "{company} l-a primit și vă va răspunde pe e-mail.",
+      "errors": {
+        "invalid": "Verificați câmpurile evidențiate.",
+        "closed": "Această firmă nu primește mesaje prin profil în acest moment.",
+        "limit": "Prea multe mesaje, încercați din nou peste câteva momente.",
+        "daily_cap": "Această firmă a primit multe mesaje astăzi. Încercați din nou mâine.",
+        "failed": "Ceva nu a funcționat, încercați din nou.",
+        "name": "Introduceți numele (cel puțin 2 caractere).",
+        "email": "Introduceți un e-mail valid.",
+        "message": "Mesajul trebuie să aibă între 5 și 2000 de caractere.",
+        "serviceId": "Alegeți din nou subiectul."
+      }
+    }
+  },
+  "schools": {
+    "seoTitle": "Billanta pentru școli – facturare gratuită pentru predare",
+    "eyebrow": "Pentru școli și profesori",
+    "title": "Facturare pe care elevii chiar o pot încerca",
+    "lead": "Billanta este gratuită pentru predare. Pe firme de exercițiu, elevii parcurg întregul ciclu de viață al unei facturi: emiterea, corectarea, urmărirea plății și facturarea unui client străin, atât după regulile cehe, cât și după cele slovace.",
+    "freeBadge": "Gratuit pentru predare",
+    "lessonsLink": "Lecții și fișe de lucru",
+    "practiceTitle": "Ce exersează elevii",
+    "practiceLead": "Aceiași pași pe care îi face orice independent și orice contabil, fără riscul de a strica ceva real.",
+    "practice": {
+      "vatInvoice": {
+        "title": "Factură cu TVA",
+        "body": "Câmpurile obligatorii, cotele de TVA, data faptului generator și de ce contează. Verificarea câmpurilor obligatorii arată imediat ce lipsește."
+      },
+      "creditNote": {
+        "title": "Factură de stornare",
+        "body": "O reducere după emitere, mărfuri returnate sau un preț greșit. Elevii văd cum se corectează factura originală și ce schimbă asta la TVA."
+      },
+      "reminder": {
+        "title": "Reminder și plată",
+        "body": "O factură restantă, un reminder, o plată parțială și asocierea ei. Un exercițiu la care școala ajunge rareori."
+      },
+      "foreign": {
+        "title": "Client străin",
+        "body": "O factură în euro, cursul băncii centrale, taxarea inversă și un document bilingv pentru un client din altă țară UE."
+      },
+      "czsk": {
+        "title": "Reguli cehe vs. slovace",
+        "body": "Aceeași factură după regulile cehe și slovace: cote de TVA diferite și coduri fiscale diferite."
+      },
+      "roles": {
+        "title": "Proprietar și profesor",
+        "body": "Cine ce are voie să vadă și să modifice. Fiecare elev își conduce firma ca proprietar, iar profesorul se poate uita în modul doar citire. Un exercițiu cu acces de contabil este în pregătire."
+      }
+    },
+    "access": {
+      "title": "Cum obțineți Billanta pentru clasa dumneavoastră",
+      "lead": "Finalizăm un mod pentru clasă. Profesorii care ne contactează acum vor fi printre primii care îl primesc.",
+      "steps": {
+        "request": {
+          "title": "Scrieți-ne",
+          "body": "Școala, materia, anul de studiu și numărul aproximativ de elevi. Vă putem verifica mai repede de pe un e-mail al școlii."
+        },
+        "setup": {
+          "title": "Configurăm clasa",
+          "body": "Primiți acces de profesor și firme de exercițiu pe care să lucreze elevii. În curând le veți crea singur."
+        },
+        "teach": {
+          "title": "Predați",
+          "body": "Elevii emit documente pe firmele de exercițiu, iar dumneavoastră vedeți munca lor și o puteți parcurge împreună cu ei."
+        }
+      },
+      "soon": "Până atunci le puteți arăta elevilor demo-ul fără înregistrare pe proiector.",
+      "cta": "Solicitați acces pentru școala dumneavoastră",
+      "signup": "Creați un cont de profesor",
+      "mailSubject": "Billanta pentru școli – solicitare de acces"
+    },
+    "safeguardsTitle": "Un mediu de exercițiu, nu o afacere reală",
+    "safeguards": {
+      "practice": {
+        "title": "Firme de exercițiu",
+        "body": "Elevii lucrează pe firme și clienți inventați. Nu trebuie să introducă niciun fel de date personale reale."
+      },
+      "watermark": {
+        "title": "Documente cu filigran",
+        "body": "Documentele din modul pentru clasă vor avea un marcaj vizibil de exercițiu, astfel încât nimeni să nu le confunde cu o factură reală."
+      },
+      "notReal": {
+        "title": "Doar pentru predare",
+        "body": "Accesul pentru predare nu este destinat unei afaceri reale. Cine începe să factureze pe bune își deschide un cont obișnuit."
+      }
+    },
+    "privacyLink": "O scurtă <link>notă de confidențialitate pentru elevi și părinți</link> explică ce se stochează despre elevi și cine poate vedea aceste date.",
+    "resourcesTitle": "Materiale didactice",
+    "resourcesLead": "Lecții și fișe de lucru, ghiduri despre legislație și pagini care explică în detaliu fiecare temă.",
+    "resources": {
+      "firstInvoice": "Prima factură: ce trebuie să conțină",
+      "beginners": "Facturare pentru începători",
+      "requiredFields": "Câmpurile obligatorii ale unei facturi",
+      "currencies": "Facturi în monede străine",
+      "reminders": "Remindere și plăți restante",
+      "vatCalculator": "Calculator TVA"
+    },
+    "faqTitle": "Întrebări pe care le pun profesorii",
+    "faq": [
+      {
+        "q": "Este Billanta pentru școli chiar gratuită?",
+        "a": "Da. Școala, profesorul și elevii nu plătesc nimic pentru predare. Se plătește doar un cont obișnuit pentru o afacere reală."
+      },
+      {
+        "q": "Pentru ce școli este accesul pentru predare?",
+        "a": "Școli primare și gimnaziale, licee, în special colegii economice și școli cu materii economice, școli postliceale și universități, precum și cursuri de recalificare. Dacă predați facturarea în altă parte, scrieți-ne și dumneavoastră."
+      },
+      {
+        "q": "Când va fi gata modul pentru clasă?",
+        "a": "În curând. Profesorii care solicită acces acum îl primesc printre primii și ne pot spune de ce au nevoie la clasă."
+      },
+      {
+        "q": "Pot folosi elevii Billanta pentru propria afacere?",
+        "a": "Nu cu accesul pentru predare, care este doar pentru exercițiu. Pentru facturare reală, elevul își deschide un cont obișnuit, care funcționează independent de școală."
+      },
+      {
+        "q": "Ce se întâmplă cu datele personale ale elevilor?",
+        "a": "Exercițiul nu are nevoie de ele. Elevii intră într-o clasă doar cu codul clasei și un pseudonim, fără e-mail sau parolă. Firmele și clienții sunt inventați, iar firmele de exercițiu se șterg la 30 de zile după încheierea clasei."
+      }
+    ]
+  },
+  "municipalityPages": {
+    "regionLabel": "Regiune",
+    "districtLabel": "District",
+    "countryCz": "Cehia",
+    "countrySk": "Slovacia",
+    "breadcrumbBrowse": "Orașe și comune",
+    "heading": "Program de facturare pentru {name}",
+    "lead": "Emiteți facturi, urmăriți TVA-ul și exportați în ISDOC – fie că aveți afaceri în {name}, fie oriunde altundeva în Cehia și Slovacia.",
+    "body": "Billanta emite facturi în format ISDOC, preia datele partenerilor direct din registrul comercial ARES și păstrează consecvente seria de numerotare și cotele de TVA. Prin Telegram sau WhatsApp trimiteți doar un mesaj vocal, iar Billanta îl transformă într-o ciornă de factură pregătită pentru o verificare rapidă – devine definitivă doar după ce o confirmați dumneavoastră.",
+    "localNote": "ISDOC, ARES și cotele de TVA funcționează la fel în toată Cehia și Slovacia – inclusiv în districtul {district}. Billanta nu are nevoie de nicio configurare locală sau de un cont separat.",
+    "cta": "Creați un cont gratuit",
+    "browseCta": "Vedeți toate orașele și comunele din {region}",
+    "indexTitle": "Program de facturare după oraș și comună",
+    "indexLead": "Billanta funcționează la fel de fiabil pentru firmele de oriunde din Cehia și Slovacia. Alegeți o regiune pentru a găsi pagina orașului sau comunei dumneavoastră.",
+    "indexCoverageNote": "În prezent {count, plural, one {# comună} few {# comune} other {# de comune}}.",
+    "otherCountry": "Comunele slovace se află în versiunea slovacă →",
+    "regionMunicipalityCount": "{count, plural, one {# oraș sau comună} few {# orașe și comune} other {# de orașe și comune}}",
+    "expandListLabel": "Afișați lista",
+    "backToIndex": "Înapoi la lista orașelor și comunelor",
+    "districtTitle": "Alte comune din districtul {district}",
+    "districtCount": "Districtul {district} are {count, plural, one {# comună} few {# comune} other {# de comune}} în lista noastră.",
+    "metaDescription": "{name}, districtul {district}: facturi cu plată prin cod QR, ISDOC, verificări de TVA și căutare în registre. Pentru liber-profesioniști și firme, gratuit la început.",
+    "whereTitle": "Unde se află {name}",
+    "seatPosition": "La {km, number} km {dir, select, n {nord} ne {nord-est} e {est} se {sud-est} s {sud} sw {sud-vest} w {vest} other {nord-vest}} de orașul reședință de district",
+    "regionPosition": "La {km, number} km {dir, select, n {nord} ne {nord-est} e {est} se {sud-est} s {sud} sw {sud-vest} w {vest} other {nord-vest}} de reședința regiunii",
+    "isDistrictSeat": "Oraș reședință al districtului {district}.",
+    "isRegionSeat": "Reședința regiunii ({region}).",
+    "mapLink": "Afișați pe hartă (OpenStreetMap) ↗",
+    "taxTitle": "Instituții pentru independenți",
+    "taxNoteCz": "Pentru liber-profesioniști după domiciliul stabil, pentru firme după sediul social. Declarațiile și TVA-ul se depun online prin portalul MOJE daně – Billanta pregătește cifrele.",
+    "taxNoteSk": "Pentru liber-profesioniști după domiciliul stabil, pentru firme după sediul social. Declarațiile și TVA-ul se depun online prin portalul Administrației Financiare – Billanta pregătește cifrele.",
+    "nearbyTitle": "Cele mai apropiate comune",
+    "km": "{km, number} km",
+    "countryLabel": "Țară",
+    "socialNote": "Liber-profesioniștii trimit aici avansurile pentru asigurările sociale și o situație anuală a veniturilor și cheltuielilor, în funcție de domiciliul stabil.",
+    "healthNoteCz": "Asigurarea de sănătate se plătește la casa de asigurări pe care o alegeți singur. Locul în care locuiți nu contează.",
+    "healthNoteSk": "Asigurarea de sănătate se plătește la casa de asigurări pe care o alegeți singur. Locul în care locuiți nu contează.",
+    "tradeNoteCz": "Puteți înregistra o activitate autorizată la orice birou de autorizări comerciale sau online. Același formular vă înregistrează și la fisc, asigurările sociale și de sănătate.",
+    "tradeNoteSk": "Puteți înregistra o activitate autorizată la orice oficiu districtual (departamentul de autorizări comerciale) sau online prin slovensko.sk.",
+    "nearbyMajorTitle": "Orașe mai mari din apropiere",
+    "majorTowns": "Orașe mai mari",
+    "nearbyMajorItem": "{km, number} km {dir, select, n {nord} ne {nord-est} e {est} se {sud-est} s {sud} sw {sud-vest} w {vest} other {nord-vest}}",
+    "accountantsTitle": "Contabili – {region}",
+    "accountantsNote": "Contabili din directorul Billanta care declară că lucrează pentru clienți din această regiune. Aprobăm manual fiecare înscriere; alegerea vă aparține.",
+    "accountantsEmpty": "Niciun contabil nu s-a înscris aici încă. Dacă sunteți în căutarea unuia, Billanta îi oferă acces la documentele dumneavoastră fără să trimiteți fișiere prin e-mail.",
+    "accountantsJoin": "Sunteți contabil în {name} sau în apropiere? Înscrieți-vă gratuit →",
+    "populationCz": "{count, plural, one {# locuitor} few {# locuitori} other {# de locuitori}} (Oficiul Ceh de Statistică, 1 ian. 2025).",
+    "populationSk": "{count, plural, one {# locuitor} few {# locuitori} other {# de locuitori}} (Oficiul de Statistică al RS, 30 iun. 2025)."
+  },
+  "clientPortal": {
+    "title": "Documente pentru {name}",
+    "lead": "Facturi și oferte de la {company} într-un singur loc – deschideți un document pentru codul QR de plată și PDF",
+    "outstanding": "Rest de plată",
+    "overdueOf": "din care {amount} restant",
+    "allPaid": "Totul este plătit, vă mulțumim.",
+    "filterLabel": "Filtrați documentele",
+    "filters": {
+      "all": "Toate",
+      "unpaid": "De plată",
+      "paid": "Plătite",
+      "quotes": "Oferte"
+    },
+    "empty": "Niciun document.",
+    "unnumbered": "Fără număr",
+    "due": "scadent la {date}",
+    "validUntil": "valabilă până la {date}",
+    "types": {
+      "invoice": "Factură",
+      "proforma": "Factură proformă",
+      "credit_note": "Factură de stornare",
+      "quote": "Ofertă"
+    },
+    "state": {
+      "overdue": "Restantă",
+      "unpaid": "De plată",
+      "paid": "Plătită",
+      "accepted": "Acceptată",
+      "rejected": "Respinsă",
+      "quote": "Ofertă",
+      "issued": "Emisă",
+      "cancelled": "Anulată"
+    },
+    "footer": "{company} v-a trimis acest link – vă rugăm să nu îl distribuiți",
+    "notFoundTitle": "Portalul nu a fost găsit",
+    "notFoundBody": "Linkul este invalid sau a fost revocat. Cereți furnizorului unul nou."
+  },
+  "promo": {
+    "signupNote": "Codul promoțional {code} va fi aplicat imediat după ce configurați firma.",
+    "appliedToast": "Codul promoțional {code} a fost aplicat: {benefit}.",
+    "notAppliedToast": "Codul promoțional nu a putut fi aplicat. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# zi} few {# zile} other {# de zile}} de încercare a planului {plan}",
+      "free_months": "{count, plural, one {# lună} few {# luni} other {# de luni}} gratuite din planul {plan}"
+    },
+    "card": {
+      "title": "Am un cod promoțional",
+      "hint": "Un cod de la un eveniment, un creator sau o școală. Fiecare firmă poate folosi unul.",
+      "label": "Cod promoțional",
+      "placeholder": "de ex. STARTUP-WEEK",
+      "submit": "Aplicați",
+      "applied": "Codul {code} a fost aplicat ({date})"
+    },
+    "errors": {
+      "generic": "Ceva nu a funcționat. Încercați din nou.",
+      "promo_invalid": "Acest cod nu este valid. Verificați dacă l-ați scris corect.",
+      "promo_expired": "Acest cod a expirat.",
+      "promo_used_up": "Acest cod a atins limita de utilizări.",
+      "promo_already_applied": "Firma dumneavoastră a folosit deja un cod promoțional. Codurile nu se pot combina.",
+      "promo_subscription_active": "Firma plătește printr-un abonament cu cardul, așa că nu se pot adăuga luni gratuite. Scrieți-ne și rezolvăm.",
+      "promo_plan_conflict": "Firma are plătit un alt plan. Codul poate fi folosit după încheierea acelei perioade.",
+      "promo_rate_limited": "Prea multe încercări. Încercați din nou peste o oră.",
+      "forbidden": "Doar proprietarul firmei sau un administrator poate folosi un cod promoțional."
+    }
+  },
+  "shareQr": {
+    "button": "Distribuiți / cod QR",
+    "title": "Distribuiți această pagină",
+    "lead": "Scanați codul QR cu telefonul sau descărcați-l pentru un afiș sau un slide.",
+    "alt": "Cod QR cu link către {url}",
+    "promoLabel": "Cod promoțional (opțional)",
+    "promoPlaceholder": "de ex. MEETUP26",
+    "promoHint": "Cu un cod, codul QR duce la pagina de alăturare la un grup, de exemplu un eveniment sau un coworking. Codurile le emitem noi, așa că unul inventat nu va funcționa.",
+    "copy": "Copiați linkul",
+    "copied": "Linkul a fost copiat.",
+    "failed": "Nu a funcționat, încercați din nou.",
+    "share": "Distribuiți de pe telefon"
+  },
+  "invoiceTemplates": {
+    "menu": "Șabloane de facturi",
+    "indexTitle": "Șabloane de facturi cehești – pentru plătitori și neplătitori de TVA",
+    "indexName": "Șabloane de facturi",
+    "indexDescription": "Șabloane de facturi conform legislației cehe: factură de neplătitor și de plătitor de TVA, proformă, factură de stornare, taxare inversă internă și persoană identificată. Fiecare cu elementele obligatorii și un editor online gratuit.",
+    "indexLead": "Alegeți situația dumneavoastră pentru a vedea un exemplu completat, elementele obligatorii cu trimiteri la lege și un buton care deschide editorul pregătit pentru acel document. PDF-ul este gratuit, fără înregistrare.",
+    "howTitle": "Cum folosiți un șablon",
+    "how": [
+      "Consultați exemplul pentru a vedea ce trebuie să apară pe factură și unde.",
+      "Deschideți editorul cu tipul de document deja setat și completați datele dumneavoastră.",
+      "Descărcați PDF-ul final cu cod QR de plată. Nimic nu se salvează, nu aveți nevoie de cont."
+    ],
+    "common": {
+      "sample": "Exemplu",
+      "fictional": "Date inventate, doar cu titlu ilustrativ.",
+      "whenTitle": "Când se folosește acest document",
+      "fieldsTitle": "Elemente obligatorii",
+      "fieldsLead": "Fiecare element trimite la secțiunea din legislația cehă care îl impune (în limba cehă).",
+      "pitfallsTitle": "Atenție la",
+      "useButton": "Completați acest șablon online",
+      "useNote": "Editorul se deschide cu tipul de document setat. PDF-ul este gratuit, fără înregistrare.",
+      "otherTitle": "Alte șabloane",
+      "allTemplates": "Toate șabloanele de facturi",
+      "lawRef": "§ {p} alin. ({o}) {law}",
+      "lawRefShort": "§ {p} {law}",
+      "rulesNote": "Aceste șabloane respectă legislația cehă. Pentru cazuri speciale (clienți străini, livrări scutite) verificați detaliile în lege sau cu un consultant fiscal."
+    },
+    "laws": {
+      "ZDPH": "din Legea TVA",
+      "OZ": "din Codul civil",
+      "ZU": "din Legea contabilității",
+      "ZoDPH": "din Legea slovacă a TVA",
+      "ObZ": "din Codul comercial slovac",
+      "ZoU": "din Legea slovacă a contabilității",
+      "OSR": "din Codul de procedură civilă",
+      "NVU": "din Hotărârea Guvernului nr. 351/2013 Coll.",
+      "NVUO": "din Hotărârea Guvernului slovac nr. 21/2013 Coll."
+    },
+    "doc": {
+      "supplier": "Furnizor",
+      "customer": "Client",
+      "number": "Nr. document",
+      "issueDate": "Data emiterii",
+      "duzp": "Data livrării impozabile",
+      "dueDate": "Data scadenței",
+      "payment": "Plată",
+      "bankTransfer": "Transfer bancar",
+      "vs": "Simbol variabil",
+      "description": "Descriere",
+      "quantity": "Cant.",
+      "unitPrice": "Preț unitar",
+      "rate": "TVA",
+      "amount": "Valoare",
+      "base": "Bază",
+      "vat": "TVA",
+      "recap": "Recapitulare TVA",
+      "totalDue": "Total de plată",
+      "related": "Corectează factura",
+      "reason": "Motivul corecției",
+      "reverseBase": "Bază impozabilă (taxare inversă)"
+    },
+    "currency": "CZK",
+    "bank": {
+      "account": "1920014539/0800",
+      "iban": "CZ65 0800 0000 0019 2001 4539"
+    },
+    "parties": {
+      "nonPayer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "Cod de identificare (IČO): 12345678",
+          "Neplătitor de TVA."
+        ]
+      },
+      "payer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "Cod de identificare (IČO): 12345678",
+          "Cod de TVA (DIČ): CZ7356120123"
+        ]
+      },
+      "identified": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "Cod de identificare (IČO): 12345678",
+          "Cod de TVA (DIČ): CZ7356120123",
+          "Persoană identificată în scopuri de TVA"
+        ]
+      },
+      "contractor": {
+        "name": "Stavby Kučera s.r.o.",
+        "lines": [
+          "Lidická 45",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "Cod de identificare (IČO): 24681357",
+          "Cod de TVA (DIČ): CZ24681357",
+          "Dosar C 98765, Tribunalul Regional din Brno"
+        ]
+      },
+      "domestic": {
+        "name": "Pekárna U Mlýna s.r.o.",
+        "lines": [
+          "Mlýnská 8",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "Cod de identificare (IČO): 87654321",
+          "Cod de TVA (DIČ): CZ87654321"
+        ]
+      },
+      "developer": {
+        "name": "Rezidence Hájek s.r.o.",
+        "lines": [
+          "Na Pankráci 30",
+          "140 00 Praha 4"
+        ],
+        "ids": [
+          "Cod de identificare (IČO): 13579246",
+          "Cod de TVA (DIČ): CZ13579246"
+        ]
+      },
+      "eu": {
+        "name": "Hafenstadt Media GmbH",
+        "lines": [
+          "Speicherstraße 4",
+          "20457 Hamburg",
+          "Germania"
+        ],
+        "ids": [
+          "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "items": {
+      "nonPayer": {
+        "name": "Neplătitor de TVA",
+        "title": "Șablon de factură pentru neplătitori de TVA (Cehia)",
+        "description": "Șablon de factură cehească pentru neplătitori de TVA: un exemplu completat, elementele cerute de Codul civil și Legea contabilității și un editor online gratuit cu PDF.",
+        "lead": "Cea mai obișnuită factură a unui liber-profesionist ceh. Un neplătitor nu afișează TVA și nici data livrării impozabile, dar trebuie să precizeze cine a emis factura, cui și pentru ce.",
+        "docTitle": "Factură",
+        "number": "2026-0018",
+        "notes": [
+          "Neplătitor de TVA.",
+          "Liber-profesionist înregistrat în Registrul comerțului (živnostenský rejstřík)."
+        ],
+        "lines": [
+          {
+            "d": "Fotografii de produs pentru un magazin online (40 de cadre)",
+            "q": 1,
+            "u": "buc",
+            "p": 8500,
+            "r": 0
+          },
+          {
+            "d": "Retușare foto",
+            "q": 4,
+            "u": "h",
+            "p": 600,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Nu sunteți înregistrat în scopuri de TVA (cifră de afaceri de până la 2 000 000 CZK într-un an calendaristic) și facturați unui client din Cehia.",
+          "Se aplică liber-profesioniștilor și firmelor care nu sunt plătitoare de TVA. Pentru servicii prestate firmelor din alt stat UE deveniți de obicei persoană identificată – consultați șablonul separat."
+        ],
+        "fields": [
+          {
+            "name": "Denumirea, sediul și codul de identificare (IČO) al furnizorului",
+            "text": "O întreprindere le afișează pe fiecare document comercial, inclusiv pe facturi.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Înscrierea într-un registru public",
+            "text": "Doar dacă sunteți înscris într-unul: o firmă indică instanța și numărul dosarului. Un liber-profesionist înscris doar în Registrul comerțului nu este obligat.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Client",
+            "text": "Denumirea și adresa, plus codul de identificare în cazul unei firme, ca să fie clar cine sunt părțile.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Numărul documentului",
+            "text": "Un număr unic pentru factură, ideal dintr-o serie crescătoare.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Ce s-a livrat și valoarea",
+            "text": "Ce ați livrat, în ce cantitate și la ce preț. Suma totală de plată.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Data emiterii",
+            "text": "Când a fost întocmit documentul.",
+            "rule": "§11/1 ZU"
+          },
+          {
+            "name": "Mențiunea că nu sunteți plătitor de TVA",
+            "text": "Nu este strict obligatorie, dar evită întrebările despre lipsa TVA."
+          }
+        ],
+        "pitfalls": [
+          "Nu afișați un cod de TVA „CZ…” dacă nu sunteți nici plătitor, nici persoană identificată – clientul s-ar putea aștepta la un document fiscal.",
+          "Data scadenței și contul bancar nu sunt obligatorii prin lege, dar fără ele veți fi plătit mai târziu."
+        ]
+      },
+      "vatPayer": {
+        "name": "Plătitor de TVA",
+        "title": "Șablon de factură pentru plătitori de TVA (document fiscal ceh)",
+        "description": "Șablon de factură cehească cu TVA: document fiscal cu coduri de TVA, data livrării impozabile și recapitulare TVA. Elemente obligatorii conform § 29 din Legea TVA și editor online gratuit.",
+        "lead": "Factura unui plătitor de TVA este un document fiscal. Pe lângă elementele obișnuite, trebuie să conțină ambele coduri de TVA, data livrării impozabile, baza impozabilă, cota și valoarea TVA.",
+        "docTitle": "Factură fiscală",
+        "number": "2026-0042",
+        "notes": [
+          "Liber-profesionist înregistrat în Registrul comerțului (živnostenský rejstřík)."
+        ],
+        "lines": [
+          {
+            "d": "Design de logo și identitate vizuală",
+            "q": 1,
+            "u": "buc",
+            "p": 12000,
+            "r": 21
+          },
+          {
+            "d": "Consultanță pentru tipărirea ambalajelor",
+            "q": 3,
+            "u": "h",
+            "p": 900,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Sunteți plătitor de TVA în Cehia și livrați bunuri sau servicii în Cehia, unde dumneavoastră colectați TVA.",
+          "Emiteți documentul fiscal în cel mult 15 zile de la livrarea impozabilă sau de la încasarea plății."
+        ],
+        "fields": [
+          {
+            "name": "Furnizorul și codul său de TVA",
+            "text": "Denumirea, sediul și codul de identificare fiscală (DIČ).",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Clientul și codul său de TVA",
+            "text": "Dacă clientul este plătitor de TVA, se afișează și codul său de TVA.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Numărul documentului",
+            "text": "Unic în cadrul uneia sau mai multor serii.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Obiectul și volumul livrării",
+            "text": "Ce și cât ați livrat.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Data emiterii și data livrării impozabile",
+            "text": "Data livrării impozabile este obligatorie când diferă de data emiterii – în practică, afișați-o întotdeauna.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Prețul unitar fără TVA și reducerea",
+            "text": "Prețul unitar fără TVA și orice reducere care nu este deja inclusă în el.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Baza impozabilă, cota și valoarea TVA",
+            "text": "Pe fiecare cotă; valoarea TVA în CZK chiar și pe o factură în valută.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Elemente cerute de Codul civil",
+            "text": "Sediul, codul de identificare și eventuala înscriere într-un registru public.",
+            "rule": "§435/1 OZ"
+          }
+        ],
+        "pitfalls": [
+          "Pe o factură în EUR, afișați TVA și în CZK, împreună cu cursul de schimb folosit.",
+          "Data scadenței nu este un element obligatoriu al documentului fiscal, dar fără ea o datorie este greu de recuperat."
+        ]
+      },
+      "proforma": {
+        "name": "Factură proformă",
+        "title": "Șablon de factură proformă (zálohová faktura cehească)",
+        "description": "Șablon de factură proformă cehească: ce trebuie să conțină, de ce nu este document fiscal și ce document emiteți după plată. Editor online gratuit și PDF.",
+        "lead": "O factură proformă solicită plata în avans. Nu este document fiscal, deci clientul nu poate deduce TVA pe baza ei. După plată, plătitorul de TVA emite un document fiscal.",
+        "docTitle": "Factură proformă",
+        "number": "ZF-2026-0007",
+        "notes": [
+          "Această factură proformă nu este document fiscal.",
+          "Vă vom trimite un document fiscal pentru plată după ce aceasta ajunge în contul nostru."
+        ],
+        "lines": [
+          {
+            "d": "Avans de 50% pentru realizarea unui site web",
+            "q": 1,
+            "u": "buc",
+            "p": 20000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Doriți plata în avans înainte de a începe lucrul sau de a expedia marfa.",
+          "După plată, plătitorul de TVA emite de obicei un document fiscal pentru plata primită și deduce avansul pe factura finală. Un neplătitor doar deduce avansul pe factura finală."
+        ],
+        "fields": [
+          {
+            "name": "Furnizorul și clientul",
+            "text": "Denumirea, sediul și codul de identificare; este un document comercial.",
+            "rule": "§435/1 OZ"
+          },
+          {
+            "name": "Numărul proformei",
+            "text": "Folosiți o serie separată, ca să nu se confunde cu documentele fiscale."
+          },
+          {
+            "name": "Valoarea avansului și scadența",
+            "text": "Cât și până când, plus contul bancar."
+          },
+          {
+            "name": "Mențiunea că nu este document fiscal",
+            "text": "Recomandat: îi arată clientului că nu poate deduce TVA pe baza ei."
+          },
+          {
+            "name": "Document fiscal după plată",
+            "text": "Încasarea unui avans face de regulă TVA exigibilă; plătitorul emite pentru ea un document fiscal.",
+            "rule": "§28/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Nu afișați data livrării impozabile pe o proformă – aceasta apare abia la încasarea plății.",
+          "Nu uitați să deduceți avansul pe factura finală, altfel clientul plătește de două ori."
+        ]
+      },
+      "creditNote": {
+        "name": "Factură de stornare",
+        "title": "Șablon de factură de stornare (document fiscal corector ceh)",
+        "description": "Șablon de factură de stornare cehească: trimitere la factura inițială, motivul corecției și diferența de bază și TVA. Elemente obligatorii conform § 46 din Legea TVA.",
+        "lead": "Când reduceți prețul după facturare (reducere, reclamație, marfă returnată) sau îl majorați, emiteți un document fiscal corector. Acesta corectează factura inițială, nu o înlocuiește.",
+        "docTitle": "Factură de stornare",
+        "number": "OD-2026-0003",
+        "related": "2026-0042",
+        "reason": "Reducere de preț după o reclamație privind designul logoului",
+        "notes": [],
+        "lines": [
+          {
+            "d": "Reducere – design logo",
+            "q": 1,
+            "u": "buc",
+            "p": -2000,
+            "r": 21
+          }
+        ],
+        "when": [
+          "O reducere acordată după facturare, o reclamație acceptată, marfă returnată sau o parte anulată a livrării.",
+          "Factura inițială rămâne valabilă; factura de stornare consemnează doar diferența."
+        ],
+        "fields": [
+          {
+            "name": "Ambele părți și codurile lor de TVA",
+            "text": "La fel ca pe un document fiscal obișnuit.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Numărul facturii de stornare",
+            "text": "Un număr propriu din seria dumneavoastră.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Numărul documentului inițial",
+            "text": "Factura pe care o corectați.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Motivul corecției",
+            "text": "Scurt și concret, de ex. o reducere după o reclamație.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Diferența de bază și TVA",
+            "text": "Diferența dintre baza și TVA corectate și cele inițiale, negativă în cazul unei reduceri.",
+            "rule": "§46/1 ZDPH"
+          },
+          {
+            "name": "Corectarea bazei impozabile",
+            "text": "Când și în ce condiții se face corecția.",
+            "rule": "§42/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Un neplătitor de TVA nu emite document fiscal corector – ajunge o simplă notă de credit ca document contabil, cu trimitere la factura inițială.",
+          "Nu anulați și nu suprascrieți factura inițială; aceasta rămâne în evidența dumneavoastră."
+        ]
+      },
+      "reverseCharge": {
+        "name": "Taxare inversă",
+        "title": "Șablon de factură cu taxare inversă internă (Cehia)",
+        "description": "Șablon de factură cehească cu taxare inversă internă (§ 92a din Legea TVA), de ex. pentru lucrări de construcții: mențiunea „daň odvede zákazník”, codul de TVA al clientului și suma fără TVA.",
+        "lead": "Pentru lucrări de construcții și montaj, deșeuri, metale și alte livrări conform § 92a din Legea cehă a TVA, clientul colectează TVA. Furnizorul facturează fără TVA și adaugă „daň odvede zákazník” (taxa o plătește clientul).",
+        "docTitle": "Factură fiscală",
+        "number": "2026-0115",
+        "notes": [
+          "Daň odvede zákazník (taxare inversă).",
+          "Taxare inversă conform § 92e din Legea TVA (lucrări de construcții și montaj)."
+        ],
+        "lines": [
+          {
+            "d": "Lucrări de zidărie – renovare baie, apartamentul 2.04",
+            "q": 1,
+            "u": "buc",
+            "p": 84000,
+            "r": 21
+          },
+          {
+            "d": "Placare cu faianță și gresie, inclusiv materiale",
+            "q": 26,
+            "u": "m²",
+            "p": 1250,
+            "r": 21
+          }
+        ],
+        "when": [
+          "Sunteți amândoi plătitori de TVA în Cehia, iar livrarea intră sub incidența regimului (§ 92b – 92e și hotărârea guvernului).",
+          "Cel mai des lucrări de construcții și montaj (CZ-CPA 41 – 43), livrări de deșeuri și fier vechi sau certificate de emisii."
+        ],
+        "fields": [
+          {
+            "name": "Mențiunea „daň odvede zákazník”",
+            "text": "O mențiune obligatorie pe documentul fiscal când clientul colectează TVA.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Codurile de TVA ale furnizorului și clientului",
+            "text": "Regimul se aplică doar între plătitori de TVA, deci codul de TVA al clientului este esențial.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Baza impozabilă fără TVA",
+            "text": "Nu afișați valoarea TVA; clientul o calculează și o declară. Afișarea cotei îl ajută.",
+            "rule": "§92a/1 ZDPH"
+          },
+          {
+            "name": "Alte elemente ale documentului fiscal",
+            "text": "Număr, date, obiectul și volumul livrării, preț unitar.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Declarația de control",
+            "text": "Furnizorul raportează livrarea în secțiunea A.1 a declarației de control, clientul în secțiunea B.1."
+          }
+        ],
+        "pitfalls": [
+          "Dacă clientul nu este plătitor de TVA (de ex. o persoană fizică), regimul nu se aplică și facturați cu TVA.",
+          "Înainte de trimitere, verificați în registrul plătitorilor de TVA că clientul este într-adevăr plătitor."
+        ]
+      },
+      "identified": {
+        "name": "Persoană identificată",
+        "title": "Șablon de factură pentru persoană identificată (servicii în UE)",
+        "description": "Șablon de factură cehească pentru o persoană identificată care facturează unei firme din alt stat UE: ambele coduri de TVA, fără TVA, mențiunea „daň odvede zákazník”. Elemente obligatorii și editor online gratuit.",
+        "lead": "Un neplătitor de TVA ceh care prestează un serviciu unei firme din alt stat UE devine persoană identificată. Facturează fără TVA cehesc, afișează propriul cod de TVA și pe cel al clientului și menționează că taxa o colectează clientul.",
+        "docTitle": "Factură fiscală",
+        "number": "2026-0021",
+        "notes": [
+          "Daň odvede zákazník (taxare inversă).",
+          "Taxare inversă – articolul 196 din Directiva 2006/112/CE a Consiliului."
+        ],
+        "lines": [
+          {
+            "d": "Web design – actualizarea temei magazinului online, octombrie 2026",
+            "q": 1,
+            "u": "buc",
+            "p": 18000,
+            "r": 0
+          }
+        ],
+        "when": [
+          "Nu sunteți plătitor de TVA și prestați un serviciu (programare, design, marketing) unei firme înregistrate în scopuri de TVA în alt stat UE.",
+          "Înregistrați-vă ca persoană identificată în cel mult 15 zile de la prestare; nu deveniți plătitor de TVA."
+        ],
+        "fields": [
+          {
+            "name": "Codul de TVA al furnizorului",
+            "text": "O persoană identificată primește un cod de TVA CZ… și îl afișează pe factură.",
+            "rule": "§6i/1 ZDPH"
+          },
+          {
+            "name": "Codul de TVA al clientului din alt stat",
+            "text": "Verificați-l în VIES; fără un cod de TVA valid nu există taxare inversă.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Mențiunea „daň odvede zákazník”",
+            "text": "Clientul declară TVA în țara sa; factura afișează suma fără TVA.",
+            "rule": "§29/2 ZDPH"
+          },
+          {
+            "name": "Data prestării",
+            "text": "Ziua în care a fost prestat serviciul; stabilește când îl raportați.",
+            "rule": "§29/1 ZDPH"
+          },
+          {
+            "name": "Declarația recapitulativă",
+            "text": "Depuneți declarația recapitulativă (souhrnné hlášení) pentru luna în care ați prestat serviciul.",
+            "rule": "§102/1 ZDPH"
+          }
+        ],
+        "pitfalls": [
+          "Dacă facturați unei persoane fizice din UE, nu deveniți persoană identificată; este o factură obișnuită de neplătitor.",
+          "Pentru serviciile cumpărate de la firme străine (reclame pe Facebook sau Google) colectați singur TVA cehesc – cealaltă față a aceleiași obligații."
+        ]
+      }
+    },
+    "requirementsLink": {
+      "title": "Ce trebuie să conțină o factură?",
+      "text": "Spuneți-ne cine sunteți și ce emiteți, iar noi vă listăm elementele obligatorii exact pentru cazul dumneavoastră."
+    }
+  },
   "pricing": {
     "title": "Prețuri",
     "lead": "Începeți gratuit, fără card. Treceți la un plan superior când aveți nevoie.",
