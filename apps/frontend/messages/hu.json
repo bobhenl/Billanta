@@ -7177,6 +7177,624 @@
       "reset": "Szűrők törlése"
     }
   },
+  "comparePage": {
+    "title": "Billanta és az alternatívák",
+    "seoTitle": "Cseh és szlovák számlázóprogramok összehasonlítása: Billanta, Fakturoid, iDoklad és mások",
+    "lead": "Mit kap ingyen, mennyibe kerül a legolcsóbb fizetős csomag, és hol van AI, banki párosítás és API. Egymás mellett, egy oldalon.",
+    "feature": "Szempont",
+    "rows": {
+      "free": {
+        "label": "Ingyenes csomag",
+        "billanta": "10 bizonylat/hó, utána 5 CZK/db",
+        "fakturoid": "5 vevő",
+        "idoklad": "5 vevő",
+        "superfaktura": "5 vevő",
+        "vyfakturuj": "5 vevő",
+        "bitfaktura": "1 számla/hó",
+        "kros": "5 vevő, csak nem ÁFA-alanyoknak",
+        "billdu": "Nincs, csak próbaidőszak"
+      },
+      "entry": {
+        "label": "Legolcsóbb csomag",
+        "billanta": "119 CZK/hó",
+        "fakturoid": "151 CZK/hó",
+        "idoklad": "187 CZK/hó",
+        "superfaktura": "129 CZK/hó",
+        "vyfakturuj": "175 CZK/hó",
+        "bitfaktura": "129 CZK/hó",
+        "kros": "5,90 €/hó",
+        "billdu": "4,99 €/hó, 10 vevő"
+      },
+      "bank": {
+        "label": "Banki párosítás",
+        "billanta": "Fizetős csomagokban",
+        "fakturoid": "A 2. fizetős csomagtól",
+        "idoklad": "A 2. fizetős csomagtól",
+        "superfaktura": "Fizetős csomagokban",
+        "vyfakturuj": "Fizetős csomagokban",
+        "bitfaktura": "Importálás az 1., párosítás a 2. fizetős csomagtól",
+        "kros": "Fizetős csomagokban",
+        "billdu": "–"
+      },
+      "ai": {
+        "label": "Bizonylatok AI-alapú beolvasása",
+        "billanta": "Igen, ingyen is",
+        "fakturoid": "Kiegészítő",
+        "idoklad": "3 ingyen, utána fizetős",
+        "superfaktura": "20 ingyen, utána fizetős",
+        "vyfakturuj": "–",
+        "bitfaktura": "Korlátozottan",
+        "kros": "Adatkinyerés csak a legfelső csomagban",
+        "billdu": "–"
+      },
+      "voice": {
+        "label": "Számla hanggal / üzenettel",
+        "billanta": "Igen, Telegram és WhatsApp",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "taxEstimate": {
+        "label": "Adó- és járulékbecslés",
+        "billanta": "Minden számlánál, éves a Start csomagtól",
+        "fakturoid": "Fizetős csomagokban",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "Személyi jövedelemadó-bevallás (A és B típus)",
+        "billdu": "–"
+      },
+      "import": {
+        "label": "Importálás más alkalmazásból",
+        "billanta": "Felismeri a Fakturoid, az iDoklad, a SuperFaktura, a Vyfakturuj, a KROS, a Billdu és a BitFaktura exportjait (CSV, Excel); a Fakturoidból és a BitFakturából API-n keresztül is",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "A Fakturoidból és az iDokladból",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "api": {
+        "label": "API",
+        "billanta": "Fizetős csomagokban",
+        "fakturoid": "Ingyen is",
+        "idoklad": "A 2. fizetős csomagtól",
+        "superfaktura": "Csak a legfelső csomagban",
+        "vyfakturuj": "A 2. fizetős csomagtól",
+        "bitfaktura": "Ingyen is",
+        "kros": "4,90 € kiegészítő, a KROS Firma csomagban benne van",
+        "billdu": "Csak a legfelső csomagban"
+      },
+      "recurring": {
+        "label": "Ismétlődő számlák",
+        "billanta": "Igen, 2 ingyen is",
+        "fakturoid": "Csak a legfelső csomagban",
+        "idoklad": "Igen",
+        "superfaktura": "A 2. fizetős csomagtól",
+        "vyfakturuj": "A 2. fizetős csomagtól",
+        "bitfaktura": "Fizetős csomagokban",
+        "kros": "1,90 € kiegészítő, a KROS Firma csomagban benne van",
+        "billdu": "Csak a legfelső csomagban"
+      },
+      "reminders": {
+        "label": "Automatikus emlékeztetők",
+        "billanta": "Fizetős csomagokban",
+        "fakturoid": "A 2. fizetős csomagtól",
+        "idoklad": "A 2. fizetős csomagtól",
+        "superfaktura": "A 2. fizetős csomagtól, SMS-ben is",
+        "vyfakturuj": "Fizetős csomagokban",
+        "bitfaktura": "Igen, ingyen is",
+        "kros": "Fizetős csomagokban",
+        "billdu": "A 2. fizetős csomagtól"
+      },
+      "einvoice": {
+        "label": "ISDOC / e-számla",
+        "billanta": "ISDOC- és UBL-fájlok",
+        "fakturoid": "ISDOC",
+        "idoklad": "ISDOC",
+        "superfaktura": "ISDOC",
+        "vyfakturuj": "ISDOC",
+        "bitfaktura": "ISDOC, fizetős csomagokban",
+        "kros": "Bejelentve, a Základ csomagtól havi 50 küldés",
+        "billdu": "2027. január 1. előttre bejelentve"
+      },
+      "vatReports": {
+        "label": "Szlovák ÁFA-bejelentések (bevallás, összesítő jelentés és összesítő nyilatkozat)",
+        "billanta": "Benyújtható XML, a Plus csomagtól",
+        "superfaktura": "–",
+        "kros": "–",
+        "idoklad": "–",
+        "billdu": "–",
+        "fakturoid": "Szlovákiára nem",
+        "vyfakturuj": "–",
+        "bitfaktura": "–"
+      },
+      "qr": {
+        "label": "QR-fizetés",
+        "billanta": "Igen, ingyen is",
+        "fakturoid": "Igen, ingyen is",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "Igen",
+        "bitfaktura": "–",
+        "kros": "Igen, az ingyenes csomagban is",
+        "billdu": "–"
+      },
+      "currencies": {
+        "label": "Devizák",
+        "billanta": "Igen, ČNB-árfolyam automatikusan",
+        "fakturoid": "–",
+        "idoklad": "Igen, árfolyammal",
+        "superfaktura": "–",
+        "vyfakturuj": "Igen, ingyen is",
+        "bitfaktura": "Igen, ČNB- vagy EKB-árfolyam",
+        "kros": "Fizetős csomagokban, aktuális árfolyamok",
+        "billdu": "–"
+      },
+      "czsk": {
+        "label": "Csehország és Szlovákia",
+        "billanta": "Egy fiók, szlovák járulékok is",
+        "fakturoid": "Szlovák adófunkciók nélkül",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "–"
+      },
+      "mobile": {
+        "label": "Mobil",
+        "billanta": "Telepíthető webalkalmazás",
+        "fakturoid": "iOS, Android",
+        "idoklad": "iOS, Android",
+        "superfaktura": "iOS, Android",
+        "vyfakturuj": "iOS, Android",
+        "bitfaktura": "–",
+        "kros": "–",
+        "billdu": "iOS, Android"
+      },
+      "history": {
+        "label": "Változásnapló",
+        "billanta": "Igen",
+        "fakturoid": "–",
+        "idoklad": "–",
+        "superfaktura": "–",
+        "vyfakturuj": "–",
+        "bitfaktura": "Igen",
+        "kros": "–",
+        "billdu": "–"
+      }
+    },
+    "disclaimer": "A nyilvános cseh árlisták alapján, {date} állapot szerint. Havi árak éves számlázás mellett, ÁFA nélkül, ha nincs másként jelölve. „2. fizetős csomag” = a második legolcsóbb fizetős csomag. Az ingyenes csomagok korlátait vevőkben adjuk meg, akkor is, ha az árlista partnereknek nevezi őket. Tájékoztató adatok, ellenőrizze a szolgáltatónál. A nevek tulajdonosaik védjegyei.",
+    "reasonsTitle": "Miben más a Billanta",
+    "reasons": [
+      {
+        "title": "Ingyenes, vevőkorlát nélkül",
+        "body": "Bárkinek számlázhat. Csak a havi 10 feletti bizonylatokért fizet, darabonként, nem egy egész csomagért."
+      },
+      {
+        "title": "AI benne van",
+        "body": "Nyugta fotóról vagy a telefonba diktált számla. Minden csomagban vannak AI-kreditek, saját kulccsal korlátlanul."
+      },
+      {
+        "title": "Csehország és Szlovákia",
+        "body": "ARES és a szlovák nyilvántartás, korona és euró, cseh, szlovák és angol bizonylatok egyetlen fiókban."
+      },
+      {
+        "title": "Változásnapló",
+        "body": "Ki mit változtatott és miért. Kiállított bizonylat csak indoklással szerkeszthető, amelyet az egész csapat lát."
+      },
+      {
+        "title": "Az adatai az Önéi maradnak",
+        "body": "Automatikus mentés a Google Drive-ra, és minden adat letöltése egy kattintással."
+      },
+      {
+        "title": "Könnyű váltás",
+        "body": "Az iDokladból vagy Excelből CSV-n keresztül, a BitFakturából és a Fakturoidból közvetlenül API-n át, az eredeti PDF-ekkel együtt."
+      }
+    ],
+    "switchTitle": "Más alkalmazásból váltana?",
+    "switchBody": "Kezdje ingyen, és hozza át partnereit és bizonylatait importálással.",
+    "pricingCta": "Árak",
+    "signupCta": "Kezdje ingyen",
+    "notStated": "– = az árlista nem tünteti fel (nem jelenti azt, hogy hiányzik)",
+    "verified": "Az árlistákkal egyeztetve: {date}",
+    "sourcesTitle": "Források",
+    "brand": {
+      "suitsUsTitle": "Mikor jobb választás a Billanta",
+      "suitsThemTitle": "Mikor érdemesebb ez: {brand}",
+      "priceTitle": "Ár",
+      "tableTitle": "Billanta és {brand} pontról pontra",
+      "source": "Forrás: {brand} árlista",
+      "versus": "Billanta vs. {brand}",
+      "importCta": "Hogyan működik az importálás",
+      "faqTitle": "Gyakori kérdések",
+      "othersTitle": "További összehasonlítások",
+      "all": "Teljes összehasonlítás",
+      "switchGuide": "Lépésről lépésre: váltási útmutató"
+    },
+    "brands": {
+      "fakturoid": {
+        "seoTitle": "Fakturoid-alternatíva: így teljesít a Billanta",
+        "title": "Billanta vagy Fakturoid?",
+        "lead": "A Fakturoid régóta működő cseh számlázóprogram, amelyet sok szabadúszó és könyvelő ismer. A Billanta más modellre épül: ingyenes vevőkorlát nélkül, és az AI is benne van. Íme, mit jelent ez Önnek.",
+        "suitsUs": [
+          "Ötnél több vevőnek számláz, és emiatt nem akar csomagért fizetni.",
+          "Fizetős kiegészítő nélkül szeretne nyugtákat fotózni vagy számlát diktálni a telefonjába.",
+          "Ismétlődő számlákra van szüksége, de a legfelső csomagra nem.",
+          "Csehországban és Szlovákiában is vállalkozik, vagy UBL (Peppol) e-számlát küld."
+        ],
+        "suitsThem": [
+          "Az App Store-ból vagy a Google Playről letölthető natív alkalmazást szeretne a kezdőképernyőre tett webalkalmazás helyett.",
+          "Saját rendszert kapcsol be, és az ingyenes csomagban is API-ra van szüksége.",
+          "A könyvelője évek óta a Fakturoiddal dolgozik, és a váltással nem spórolna semmit."
+        ],
+        "price": "A Fakturoid ingyenes csomagja a vevők számát korlátozza, a Billantáé a havi bizonylatokét. Ha néhány állandó ügyfélnek számláz, mindkét ingyenes csomag elég. Ha sok kisebb megbízása van különböző embereknek, a Billanta olcsóbb, mert a korlát feletti bizonylatokat darabonként fizeti.",
+        "switchTitle": "Hogyan válthat a Fakturoidról",
+        "switchSteps": [
+          "A Fakturoidban másolja ki az API v3 Client ID-t és Client secretet a felhasználói fiók beállításaiból. API nélkül a számlák és partnerek CSV-exportja is megfelel.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, válassza a Fakturoidot, és illessze be őket, vagy töltse fel az exportot. Az importálás maga rendeli hozzá az export oszlopait.",
+          "API-n keresztül átkerülnek a számlák, a díjbekérők, a jóváíró számlák, a befizetések, az eredeti PDF-ek és a címjegyzék. Mentés előtt előnézetet lát."
+        ],
+        "faq": [
+          {
+            "q": "Olcsóbb a Billanta a Fakturoidnál?",
+            "a": "A Billanta legolcsóbb fizetős csomagja, a Start, éves számlázással havi 119 CZK (havi számlázással 149 CZK); a Fakturoid legolcsóbbja 151 CZK. A Fakturoid ingyenes csomagja öt vevőre korlátozott, a Billantáé havi tíz bizonylatra, vevőkorlát nélkül. Mindkét árlista fent található, az ellenőrzés dátumával."
+          },
+          {
+            "q": "Mit kapok a Billantában ingyen?",
+            "a": "Havi tíz bizonylatot vevőkorlát nélkül, utána 5 CZK darabonként, így egy-egy forgalmasabb hónap miatt nem kell csomagot váltania. Ingyenes a két ismétlődő számla, a QR-fizetés, az ISDOC, a nyugták AI-alapú beolvasása és a hangalapú számlázás (havi korláttal), valamint az előzmények importálása is. A banki befizetés-párosítás és az automatikus emlékeztetők a fizetős csomagokban érhetők el."
+          },
+          {
+            "q": "Hogyan vihetem át az adataimat a Fakturoidból?",
+            "a": "Kétféleképpen. Közvetlenül API-n keresztül: másolja ki a Client ID-t és a Client secretet a Fakturoid felhasználói fiókjának beállításaiból, illessze be őket a Billantába, és átkerülnek a számlák, díjbekérők, jóváíró számlák, befizetések, az eredeti PDF-ek és a teljes címjegyzék. Vagy töltse fel a számlák és partnerek CSV- vagy Excel-exportját, amelyet az importálás az oszlopai alapján felismer. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Mi kerül át a Fakturoidból?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi a Fakturoid-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; a Fakturoidban semmi nem változik és semmi nem törlődik. API-n keresztül a Billanta csak olvasási kéréseket küld, és soha nem tárolja a hozzáférési adatait. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Tud a Billanta ISDOC és UBL e-számlát?",
+            "a": "Igen, minden csomagban, az ingyenesben is. Minden számlához letölthet egy ISDOC-fájlt a cseh könyvelőprogramokhoz és egy UBL e-számlát Peppol BIS 3.0 formátumban, amelyet a szlovák és más külföldi vevők kérnek. A Fakturoid árlistája tartalmazza az ISDOC-ot."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása; a Fakturoidnak van. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          }
+        ]
+      },
+      "idoklad": {
+        "seoTitle": "iDoklad-alternatíva: így teljesít a Billanta",
+        "title": "Billanta vagy iDoklad?",
+        "lead": "Az iDoklad széles körben használt online számlázóprogram a Money könyvelőprogram fejlesztőjétől. Összevetettük, miben különbözik a Billantától, és kinek melyik való.",
+        "suitsUs": [
+          "Ötnél több vevője van, és ingyenes csomagon szeretne maradni.",
+          "A legolcsóbb fizetős csomagban is szeretne banki befizetés-párosítást és emlékeztetőket.",
+          "A bizonylatok AI-alapú beolvasását rendszeresen szeretné használni, nem csak néhány próbadokumentumra.",
+          "Minden számlánál szeretne adó- és járulékbecslést."
+        ],
+        "suitsThem": [
+          "A Moneyban könyvel, és ugyanattól a gyártótól szeretne számlázót.",
+          "Natív mobilalkalmazást szeretne iOS-re vagy Androidra.",
+          "Az iDoklad már be van állítva, és a korlátai nem zavarják."
+        ],
+        "price": "Mindkét ingyenes csomag használható, de mást korlátoznak: az iDoklad a vevők számát, a Billanta a havi bizonylatokat. A fizetős csomagoknál a különbség főleg abban van, mit tartalmaz a legolcsóbb. A Billantáéban van befizetés-párosítás és emlékeztető; az iDokladnál ehhez magasabb csomag kell.",
+        "switchTitle": "Hogyan válthat az iDokladról",
+        "switchSteps": [
+          "Az iDokladban jelölje ki a kiállított számlákat, és exportálja őket Excelbe vagy CSV-be. A partnereket a címjegyzékből ugyanígy exportálja.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, és válassza az iDokladot. Az importálás az oszlopai alapján felismeri az exportot, és maga rendeli hozzá őket; az .xlsx fájlt töltse fel úgy, ahogy van.",
+          "Először a partnereket töltse fel, utána a számlákat. Az előnézet megmutatja az oszlopokat, a vevőket és a számozást, és semmi nem mentődik, amíg jóvá nem hagyja."
+        ],
+        "faq": [
+          {
+            "q": "Olcsóbb a Billanta az iDokladnál?",
+            "a": "A Billanta legolcsóbb fizetős csomagja, a Start, éves számlázással havi 119 CZK; az iDoklad legolcsóbbja 187 CZK. A Start csomag a banki befizetés-párosítást és az automatikus emlékeztetőket is tartalmazza, amelyeket az iDoklad magasabb csomagokra tartogat."
+          },
+          {
+            "q": "Miért vevőket számol az iDoklad ingyenes csomagja, a Billantáé pedig bizonylatokat?",
+            "a": "Minden árlista másként méri az ingyenes csomagot. Az iDoklad azt korlátozza, hány vevőnek számláz (ötnek), a Billanta azt, hány bizonylatot állít ki havonta (tízet, utána 5 CZK darabonként). Sok különböző ügyfél és kevesebb számla esetén a Billanta jobban jön ki. A Billanta ingyenes csomagjában két ismétlődő számla, a nyugták AI-alapú beolvasása és az előzmények importálása is benne van."
+          },
+          {
+            "q": "Hogyan vihetem át az adataimat az iDokladból?",
+            "a": "Exportálja a kiállított számlákat és a partnereket az iDokladból Excelbe vagy CSV-be, és töltse fel őket a Billantában a Beállítások → Importálás más rendszerből menüpontban. Az .xlsx fájlt nem kell átalakítani. Az importálás az oszlopnevek alapján felismeri az iDoklad-exportot, maga rendeli hozzá az oszlopokat, és az összegekből kiszámítja az ÁFA-kulcsot. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Mi kerül át az iDokladból?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi az iDoklad-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; az iDokladban semmi nem változik és semmi nem törlődik. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Tud a Billanta ISDOC és UBL e-számlát?",
+            "a": "Igen, minden csomagban, az ingyenesben is. Minden számlához letölthet egy ISDOC-fájlt a cseh könyvelőprogramokhoz és egy UBL e-számlát Peppol BIS 3.0 formátumban, amelyet a szlovák és más külföldi vevők kérnek. Az iDoklad árlistája tartalmazza az ISDOC-ot."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása; az iDokladnak van. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          }
+        ]
+      },
+      "superfaktura": {
+        "seoTitle": "SuperFaktura-alternatíva: így teljesít a Billanta",
+        "title": "Billanta vagy SuperFaktura?",
+        "lead": "A SuperFaktura szlovákiai eredetű, és cseh változata is van. A Billanta újabb számlázóprogram mindkét országnak, beépített AI-jal. Miben különböznek, és mikor melyik éri meg?",
+        "suitsUs": [
+          "Ötnél több vevőnek számláz, és nem akar rögtön fizetni.",
+          "Ismétlődő számlákat szeretne magasabb csomag nélkül.",
+          "Az API-ra egy átlagos fizetős csomagban van szüksége, nem csak a legfelsőben.",
+          "Számlát szeretne diktálni a telefonjába, vagy Telegram- vagy WhatsApp-üzenetként elküldeni."
+        ],
+        "suitsThem": [
+          "Az emlékeztetőket SMS-ben is küldeni szeretné.",
+          "Natív alkalmazást szeretne iOS-re vagy Androidra.",
+          "A SuperFakturát más szolgáltatásokhoz kapcsolta, és nem akarja újra összekötni őket."
+        ],
+        "price": "A legolcsóbb fizetős csomagok ára közel van egymáshoz. A különbség abban van, mit tartalmaznak: a SuperFakturánál az ismétlődő számlák és az API csak magasabb csomagokban érhetők el, a Billantánál már a legolcsóbb fizetősben. A Billanta emellett két ismétlődő számlát ingyen is ad.",
+        "switchTitle": "Hogyan válthat a SuperFakturáról",
+        "switchSteps": [
+          "A SuperFakturában állítsa be az időszakot a számlák áttekintésében, és töltse le a listát Excelként vagy CSV-ként. Az ügyfelek címjegyzékét ugyanígy exportálja.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, és válassza a SuperFakturát. Az importálás az oszlopai alapján felismeri az exportot, és maga rendeli hozzá őket; az .xlsx fájlt töltse fel úgy, ahogy van.",
+          "Először a partnereket töltse fel, utána a számlákat. Az előnézet megmutatja az oszlopokat, a vevőket és a számozást, és semmi nem mentődik, amíg jóvá nem hagyja."
+        ],
+        "faq": [
+          {
+            "q": "Olcsóbb a Billanta a SuperFakturánál?",
+            "a": "A legolcsóbb fizetős csomagok közel vannak egymáshoz: a Billanta Start éves számlázással havi 119 CZK, a SuperFaktura 129 CZK. A SuperFaktura az ismétlődő számlákat és az API-t magasabb csomagokra tartogatja. Az ingyenes csomagoknál a SuperFaktura öt vevőre korlátoz, a Billanta havi tíz bizonylatra, utána 5 CZK darabonként."
+          },
+          {
+            "q": "Hogyan vihetem át az adataimat a SuperFakturából?",
+            "a": "Töltse le a számlák áttekintését és az ügyfelek címjegyzékét a SuperFakturából Excelként vagy CSV-ként, és töltse fel őket a Billantában a Beállítások → Importálás más rendszerből menüpontban. Az importálás az oszlopnevek alapján a cseh és a szlovák SuperFaktura-exportot is felismeri, az euróban kiállított számlákat is, és a szlovák közösségi adószámot (IČ DPH) az adószámtól külön kezeli. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Mi kerül át a SuperFakturából?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi a SuperFaktura-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; a SuperFakturában semmi nem változik és semmi nem törlődik. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Tud a Billanta ISDOC és UBL e-számlát?",
+            "a": "Igen, minden csomagban, az ingyenesben is. Minden számlához letölthet egy ISDOC-fájlt a cseh könyvelőprogramokhoz és egy UBL e-számlát Peppol BIS 3.0 formátumban, amelyet a szlovák és más külföldi vevők kérnek. A SuperFaktura árlistája tartalmazza az ISDOC-ot."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása; a SuperFakturának van. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          },
+          {
+            "q": "Küld a Billanta emlékeztetőket?",
+            "a": "Igen, e-mailben: a fizetős csomagokban automatikusan, az ingyenesben kézzel. SMS-emlékeztetőt a Billanta még nem küld; a SuperFaktura igen."
+          }
+        ]
+      },
+      "vyfakturuj": {
+        "seoTitle": "Vyfakturuj-alternatíva: így teljesít a Billanta",
+        "title": "Billanta vagy Vyfakturuj?",
+        "lead": "A Vyfakturuj cseh online számlázóprogram mobilalkalmazásokkal és devizás számlázással már az ingyenes csomagban is. Pontról pontra összevetettük a Billantával.",
+        "suitsUs": [
+          "Vevőkorlát nélküli ingyenes csomagot szeretne.",
+          "Olcsóbb belépő csomagot keres banki befizetés-párosítással.",
+          "Az ingyenes csomagban is szeretne ismétlődő számlákat.",
+          "Nyugtákat olvas be fotóról, vagy számlákat diktál a telefonjába."
+        ],
+        "suitsThem": [
+          "Devizában számláz, és ezt az ingyenes csomagban szeretné.",
+          "Natív alkalmazást szeretne iOS-re vagy Androidra.",
+          "A Vyfakturuj beválik Önnek, és nincs több vevője, mint amennyit az ingyenes csomagja enged."
+        ],
+        "price": "A Vyfakturuj legolcsóbb fizetős csomagja drágább, és ismétlődő számlákat csak magasabb csomagban kínál. A Billanta két ismétlődő számlát ingyen ad, és az ingyenes csomagjában nincs vevőkorlát.",
+        "switchTitle": "Hogyan válthat a Vyfakturujról",
+        "switchSteps": [
+          "A Vyfakturujban szűrje a kiállított számlákat az áthozandó időszakra, és töltse le őket CSV-be vagy Excelbe, lehetőleg tételekkel együtt. A partnereket külön exportálja.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, és válassza a Vyfakturujt. Az importálás az oszlopai alapján felismeri az exportot, és maga rendeli hozzá őket; az .xlsx fájlt töltse fel úgy, ahogy van.",
+          "Először a partnereket töltse fel, utána a számlákat. Az előnézet megmutatja az oszlopokat, a vevőket és a számozást, és semmi nem mentődik, amíg jóvá nem hagyja."
+        ],
+        "faq": [
+          {
+            "q": "Olcsóbb a Billanta a Vyfakturujnál?",
+            "a": "Igen. A Billanta Start éves számlázással havi 119 CZK; a Vyfakturuj legolcsóbb csomagja 175 CZK. A Vyfakturuj ismétlődő számlákat csak magasabb csomagban kínál, a Billanta kettőt ingyen ad. A Vyfakturuj ingyenes csomagja öt vevőre korlátozott, a Billantáé havi tíz bizonylatra, vevőkorlát nélkül."
+          },
+          {
+            "q": "Hogyan vihetem át a számlákat a Vyfakturujból?",
+            "a": "Exportálja a bizonylatlistát CSV-be vagy Excelbe, lehetőleg tételekkel együtt, és töltse fel a Billantában a Beállítások → Importálás más rendszerből menüpontban. Az importálás az oszlopai alapján felismeri a Vyfakturuj-exportot, és a tételeket soronként hozza át, mennyiséggel, árral és ÁFA-kulccsal. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Mi kerül át a Vyfakturujból?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi a Vyfakturuj-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; a Vyfakturujban semmi nem változik és semmi nem törlődik. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Tud a Billanta ISDOC és UBL e-számlát?",
+            "a": "Igen, minden csomagban, az ingyenesben is. Minden számlához letölthet egy ISDOC-fájlt a cseh könyvelőprogramokhoz és egy UBL e-számlát Peppol BIS 3.0 formátumban, amelyet a szlovák és más külföldi vevők kérnek. A Vyfakturuj árlistája tartalmazza az ISDOC-ot."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása; a Vyfakturujnak van. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          },
+          {
+            "q": "Tud a Billanta devizában számlázni?",
+            "a": "Igen, minden csomagban. Euróban vagy más pénznemben kiállított számlánál a Billanta maga tölti ki a Cseh Nemzeti Bank árfolyamát. Az importálás is megőrzi a pénznemet és az árfolyamot."
+          }
+        ]
+      },
+      "bitfaktura": {
+        "seoTitle": "BitFaktura-alternatíva: így teljesít a Billanta",
+        "title": "Billanta vagy BitFaktura?",
+        "lead": "A BitFaktura alapcsomagjai sok mindent tartalmaznak, az ingyenes csomagja viszont nagyon szűk. A BitFakturából a legkönnyebb átköltözni a Billantába, az eredeti PDF-ekkel együtt.",
+        "suitsUs": [
+          "Havonta egynél több számlát állít ki, és ezért nem akar fizetni.",
+          "A legolcsóbb fizetős csomagban is szeretne banki befizetés-párosítást.",
+          "Az ingyenes csomagban is szüksége van ismétlődő számlákra.",
+          "Számlát szeretne diktálni a telefonjába, vagy lefotózni egy nyugtát."
+        ],
+        "suitsThem": [
+          "Az ingyenes csomagban szeretne automatikus emlékeztetőket.",
+          "Az ingyenes csomagban is szüksége van API-ra.",
+          "Devizában számláz, és választani szeretne a ČNB- és az EKB-árfolyam között."
+        ],
+        "price": "A BitFaktura ingyenes csomagja nagyjából havi egy számlára elég; a Billantáé tíz bizonylatra, és minden további darabonként fizetendő. A legolcsóbb fizetős csomagok ára közel van egymáshoz, de a Billantáé már tartalmazza a banki befizetés-párosítást.",
+        "switchTitle": "Hogyan válthat a BitFakturáról",
+        "switchSteps": [
+          "A BitFakturában nyissa meg a Beállítások → Fiókbeállítások → Integrációk menüpontot, és másolja ki az API-engedélyezési kódot. Enélkül a számlák CSV-exportja is megfelel.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, válassza a BitFakturát, és adja meg a fiók nevét és a kódot, vagy töltse fel az exportot.",
+          "A Billanta betölti a számláit az eredeti PDF-ekkel és a teljes partnerlistát. Az olyan sorozat, mint az 1/09/2025, folytatódik, és mentés előtt előnézetet lát."
+        ],
+        "faq": [
+          {
+            "q": "Hány számlát állíthatok ki ingyen a Billantában a BitFakturához képest?",
+            "a": "A BitFaktura ingyenes csomagja nagyjából havi egy számlára elég; a Billantáé tíz bizonylatra, akárhány vevője van, utána 5 CZK darabonként. A legolcsóbb fizetős csomagok közel vannak egymáshoz (Billanta Start éves számlázással havi 119 CZK, BitFaktura 129 CZK), de a Billantáé már tartalmazza a banki befizetés-párosítást."
+          },
+          {
+            "q": "Hogyan vihetem át az adataimat a BitFakturából?",
+            "a": "A legegyszerűbb az API: másolja ki az engedélyezési kódot a BitFaktura Beállítások → Fiókbeállítások → Integrációk menüpontjából, és adja meg a Billantában a fiók nevével együtt. Kód nélkül exportálja a számláit CSV-be vagy Excelbe; az importálás az oszlopai alapján felismeri a BitFaktura-exportot. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Átkerülnek a számlák PDF-jei a BitFakturából?",
+            "a": "Igen, API-n keresztül. A Billanta letölti a számlákat az eredeti PDF-ekkel, a teljes címjegyzéket, a még nem számlázott partnereket is, valamint az árfolyamokat és a fizetési módokat. A CSV-export nem tartalmazza a PDF-eket."
+          },
+          {
+            "q": "Mi kerül át a BitFakturából?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi a BitFaktura-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; a BitFakturában semmi nem változik és semmi nem törlődik. API-n keresztül a Billanta csak olvasási kéréseket küld, és soha nem tárolja a hozzáférési adatait. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Tud a Billanta ISDOC és UBL e-számlát?",
+            "a": "Igen, minden csomagban, az ingyenesben is. Minden számlához letölthet egy ISDOC-fájlt a cseh könyvelőprogramokhoz és egy UBL e-számlát Peppol BIS 3.0 formátumban, amelyet a szlovák és más külföldi vevők kérnek. A BitFaktura árlistájában az ISDOC csak a fizetős csomagokban szerepel."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          }
+        ]
+      },
+      "kros": {
+        "seoTitle": "KROS Fakturácia-alternatíva: összevetés a Billantával",
+        "title": "Billanta vagy KROS Fakturácia?",
+        "lead": "A KROS Fakturácia a KROS számlázóprogramja; a szlovák cég könyvelőszoftvereket is fejleszt. A Billanta újabb számlázóprogram Szlovákiának és Csehországnak, beépített AI-jal. Miben különböznek, és mikor melyiknek van értelme?",
+        "suitsUs": [
+          "ÁFA-alany, és ingyen szeretne kezdeni. A KROS ingyenes csomagja csak nem ÁFA-alanyoknak szól.",
+          "Ötnél több vevőnek számláz, és nem akar rögtön fizetni.",
+          "Az ismétlődő számlákat és az API-t a csomag árában szeretné, nem kiegészítőként.",
+          "Szeretné, ha a szlovák ÁFA-bevallás, az összesítő jelentés és az összesítő nyilatkozat közvetlenül a számláiból készülne el.",
+          "Számlát szeretne diktálni a telefonjába, vagy Telegram- vagy WhatsApp-üzenetként elküldeni."
+        ],
+        "suitsThem": [
+          "A könyvelője KROS könyvelőszoftvert használ (Alfa plus, Omega), és közvetlen kapcsolatot szeretne.",
+          "A személyi jövedelemadó-bevallását ugyanabból a programból szeretné beadni.",
+          "Ritkán számláz, nem ÁFA-alany, és öt vevő elég Önnek."
+        ],
+        "price": "A legolcsóbb fizetős KROS-csomag éves számlázással havi 5,90 €, a Billanta Start 4,99 €. Az ismétlődő számlák (1,90 €) és az API (4,90 €) az alacsonyabb KROS-csomagokban külön kiegészítők; a Billanta minden fizetős csomagban tartalmazza őket, és két ismétlődő számla ingyenes.",
+        "switchTitle": "Hogyan válthat a KROS Fakturáciáról",
+        "switchSteps": [
+          "A KROS Fakturáciában jelölje ki a kiállított számlákat, és exportálja őket Excelbe vagy CSV-be. A partnereket ugyanígy exportálja.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, és válassza a KROS-t. Az importálás az oszlopai alapján felismeri az exportot, és maga rendeli hozzá őket; az .xlsx fájlt töltse fel úgy, ahogy van.",
+          "Először a partnereket töltse fel, utána a számlákat. Az előnézet megmutatja az oszlopokat, a vevőket és a számozást, és semmi nem mentődik, amíg jóvá nem hagyja."
+        ],
+        "faq": [
+          {
+            "q": "Olcsóbb a Billanta a KROS Fakturáciánál?",
+            "a": "A legolcsóbb fizetős KROS-csomag éves számlázással havi 5,90 €, a Billanta Start 4,99 €. Az ismétlődő számlák és az API az alacsonyabb KROS-csomagokban külön kiegészítők; a Billantában benne vannak. A KROS ingyenes csomagot csak öt vevővel rendelkező nem ÁFA-alanyoknak kínál; a Billanta ingyenes csomagja mindenkinek szól, havi tíz bizonylattal."
+          },
+          {
+            "q": "Hogyan vihetem át az adataimat a KROS Fakturáciából?",
+            "a": "Exportálja a kiállított számlákat és a partnereket Excelbe vagy CSV-be, és töltse fel őket a Billantában a Beállítások → Importálás más rendszerből menüpontban; az .xlsx fájlt nem kell átalakítani. Az importálás felismeri a KROS szlovák oszlopneveit, az euróban kiállított számlákat és a közösségi adószámokat, és az összegekből kiszámítja az ÁFA-kulcsot. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Mi kerül át a KROS Fakturáciából?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi a KROS Fakturácia-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; a KROS Fakturáciában semmi nem változik és semmi nem törlődik. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Kezeli majd a Billanta a 2027-től kötelező szlovák eFaktúrát?",
+            "a": "A Billanta már most is készít UBL e-számlafájlt Peppol BIS 3.0 formátumban. A Peppol-hálózaton történő küldés, amelyet az előírás 2027. január 1-jétől megkövetel, fejlesztés alatt áll. A KROS 2026 őszére jelentette be."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          },
+          {
+            "q": "Elkészíti a Billanta a szlovák ÁFA-bejelentéseket?",
+            "a": "Igen. A Plus csomagtól a számláiból és költségeiből összeállítja az ÁFA-bevallás, az összesítő jelentés és az összesítő nyilatkozat XML-fájlját, amely benyújtható a szlovák Pénzügyi Igazgatóság portálján."
+          }
+        ]
+      },
+      "billdu": {
+        "seoTitle": "Billdu-alternatíva: összevetés a Billantával",
+        "title": "Billanta vagy Billdu?",
+        "lead": "A Billdu elsősorban mobilra épülő szlovák számlázóprogram, amelyet külföldön is használnak. A Billanta újabb számlázóprogram Szlovákiának és Csehországnak, beépített AI-jal. Miben különböznek, és mikor melyiknek van értelme?",
+        "suitsUs": [
+          "Tartósan ingyen szeretne számlázni, nem csak a próbaidőszak alatt.",
+          "Tíznél több vevője van, és emiatt nem akar magasabb csomagot.",
+          "Ismétlődő számlákat és API-t szeretne a legfelső csomag nélkül.",
+          "Banki befizetés-párosítást, PAY by square-t és szlovák ÁFA-bevallást szeretne összesítő jelentéssel.",
+          "Számlát szeretne diktálni a telefonjába, vagy Telegram- vagy WhatsApp-üzenetként elküldeni."
+        ],
+        "suitsThem": [
+          "Natív iOS- vagy Android-alkalmazást szeretne, és főleg telefonról számláz.",
+          "Vonalkódolvasóra vagy pénztári nyugtákra van szüksége egy üzlethez.",
+          "Szlovákián és Csehországon kívüli vevőknek is számláz, és külföldön is ismert alkalmazást szeretne."
+        ],
+        "price": "A legolcsóbb Billdu-csomag, a Lite, éves számlázással havi 4,99 €, ugyanannyi, mint a Billanta Start, de tíz vevőre korlátozott. Havi fizetéssel a Billdu Lite 7,99 €, a Billanta Start 5,99 €. A Billdu az ismétlődő számlákat és az API-t a legfelső csomagjára tartogatja.",
+        "switchTitle": "Hogyan válthat a Billduról",
+        "switchSteps": [
+          "A Billdu webalkalmazásában nyissa meg a számlák listáját, és töltse le a bizonylatok exportját CSV-ként vagy Excelként, ha a csomagja ezt lehetővé teszi. Az ügyfeleket külön exportálja.",
+          "A Billantában lépjen a Beállítások → Importálás más rendszerből menüpontra, és válassza a Billdut. Az importálás az oszlopai alapján felismeri az exportot, és maga rendeli hozzá őket; az .xlsx fájlt töltse fel úgy, ahogy van.",
+          "Először a partnereket töltse fel, utána a számlákat. Az előnézet megmutatja az oszlopokat, a vevőket és a számozást, és semmi nem mentődik, amíg jóvá nem hagyja."
+        ],
+        "faq": [
+          {
+            "q": "Olcsóbb a Billanta a Billdunál?",
+            "a": "Éves számlázással a Billdu Lite és a Billanta Start is havi 4,99 €, de a Billdu Lite tíz vevőre korlátozott. Havi fizetéssel a Billdu Lite 7,99 €, a Billanta Start 5,99 €. A Billdu az ismétlődő számlákat és az API-t a legfelső csomagjára tartogatja."
+          },
+          {
+            "q": "Van a Billantának ingyenes csomagja? A Billdunak nincs.",
+            "a": "Igen, tartósan, nem csak próbaidőszakra. Havi tíz bizonylat vevőkorlát nélkül, utána 0,20 € darabonként, két ismétlődő számla, a nyugták AI-alapú beolvasása és a hangalapú számlázás. A banki befizetés-párosítás és az automatikus emlékeztetők a fizetős csomagokban érhetők el."
+          },
+          {
+            "q": "Hogyan vihetem át az adataimat a Billduból?",
+            "a": "A Billdu webalkalmazásában töltse le a bizonylatok és az ügyfelek exportját CSV-ként vagy Excelként, és töltse fel őket a Billantában a Beállítások → Importálás más rendszerből menüpontban. Az importálás érti a Billdu angol oszlopneveit, átalakítja a fizetési állapotot és a dátumokat, a „Client ID” mezőt pedig cégazonosítóként olvassa be. Az ismeretlen oszlopokat az előnézetben kézzel rendelheti hozzá."
+          },
+          {
+            "q": "Mi kerül át a Billduból?",
+            "a": "A vevők a cégazonosítójukkal, közösségi adószámukkal és címükkel, a kiállított számlák a dátumokkal, összegekkel, pénznemmel és fizetési állapottal, valamint a tételek, ha az export tartalmazza őket. Tételek nélkül egyetlen sor fedi a teljes összeget. A Billantában már meglévő vevőket a rendszer cégazonosító, ennek hiányában név alapján párosítja, így semmi nem duplikálódik. A következő számla a legmagasabb importált sorszám után folytatódik, és ha a régi sorozat más számformátumot használt, az előnézet felajánlja annak megtartását."
+          },
+          {
+            "q": "Változik bármi a Billdu-fiókomban?",
+            "a": "Nem. Az importálás csak olvassa az adatait; a Billduban semmi nem változik és semmi nem törlődik. Az importált számlákat a rendszer nem küldi el újra, és nem kapnak emlékeztetőt. Egy ideig a két alkalmazást párhuzamosan is használhatja; csak ügyeljen arra, hogy a számlaszámok ne ismétlődjenek. Azokat a számlákat, amelyek száma már létezik a Billantában, a rendszer kihagyja."
+          },
+          {
+            "q": "Kezeli majd a Billanta a 2027-től kötelező szlovák eFaktúrát?",
+            "a": "A Billanta már most is készít UBL e-számlafájlt Peppol BIS 3.0 formátumban. A Peppol-hálózaton történő küldés, amelyet az előírás 2027. január 1-jétől megkövetel, fejlesztés alatt áll. A Billdu is bejelentette 2027 elejére."
+          },
+          {
+            "q": "Számlázhatok a Billantával telefonról, akár hanggal is?",
+            "a": "Igen. A Billanta webalkalmazás, amelyet iPhone vagy Android telefon kezdőképernyőjére telepíthet. Az áruházakban még nincs natív alkalmazása; a Billdunak van. Minden csomagban, az ingyenesben is, diktálhat számlát, vagy elküldheti Telegram- vagy WhatsApp-üzenetként. Az AI piszkozatot készít, a kiállítás pedig az Ön dolga."
+          }
+        ]
+      }
+    }
+  },
   "tools": {
     "menu": {
       "resources": "Források",
@@ -11831,6 +12449,135 @@
     "text": "Hozza át a partnereket, a kiállított számlákat és a számsorát a Fakturoid, iDoklad, SuperFaktura vagy más alkalmazás exportjából.",
     "cta": "Adatok importálása",
     "dismiss": "Elrejtés"
+  },
+  "switchPage": {
+    "seoTitle": "Váltson Billantára egy másik számlázó alkalmazásból",
+    "navTitle": "Váltás Billantára",
+    "title": "Váltson Billantára, és vigye magával az adatait",
+    "lead": "Hozza át a partnereket, a kiállított számlákat és a számsorát a jelenlegi alkalmazása által adott exportból. Az importálás felismeri, honnan származik a fájl, és mentés előtt előnézetet mutat.",
+    "pickTitle": "Honnan érkezik?",
+    "cardCta": "Váltási útmutató",
+    "otherTitle": "Másik alkalmazás vagy Excel",
+    "otherText": "Az importálás a saját táblázatát is beolvassa. Azokat az oszlopokat, amelyeket nem ismer fel, az előnézetben párosíthatja.",
+    "howTitle": "Hogyan működik a váltás",
+    "how": [
+      "Töltse le a számlák és partnerek exportját a régi alkalmazásából CSV vagy Excel formátumban.",
+      "Töltse fel a fájlt a Billantába. Felismerjük, melyik alkalmazásból származik, és párosítjuk az oszlopokat.",
+      "Ellenőrizze az előnézetben a számlákat, a vevőket és a számozást. Amíg meg nem erősíti, semmi nem mentődik."
+    ],
+    "exportTitle": "Hogyan nyerje ki az adatait",
+    "transfersTitle": "Mi kerül át",
+    "transfers": [
+      "Vevők cégazonosítóval, adószámmal és címmel. Akik már szerepelnek a Billantában, azokat párosítjuk, nem duplikáljuk.",
+      "Kiállított számlák dátumokkal, összegekkel, pénznemmel és fizetési állapottal. Semmi nem megy ki újra, és nem küldünk emlékeztetőket.",
+      "A számsora: a következő számla az utolsó importáltat követi, és ha szeretné, a számformátumot is átvesszük.",
+      "A számlatételek, ha az export tartalmazza őket; egyébként egy tétel a teljes összegre."
+    ],
+    "note": "A lépéseket általánosan írjuk le; a gombok neve az alkalmazás verzióitól függően eltérhet.",
+    "ctaTitle": "Hozzon létre ingyenes fiókot, és töltse fel az exportot",
+    "ctaLead": "Regisztráció után egyenesen az importáláshoz visszük. A régi alkalmazásában semmi nem változik.",
+    "ctaButton": "Fiók létrehozása és importálás",
+    "haveAccount": "Már van fiókja? Nyissa meg az importálást",
+    "compareLink": "A Billanta és a(z) {brand} összehasonlítása",
+    "othersTitle": "Váltás más alkalmazásokból",
+    "faqTitle": "Gyakran ismételt kérdések",
+    "faq": [
+      {
+        "q": "Elveszítek valamit a régi alkalmazásomban?",
+        "a": "Nem. Az importálás csak a letöltött fájlt olvassa. A régi alkalmazásban semmi nem változik, és addig használhatja, amíg biztos nem lesz a dolgában."
+      },
+      {
+        "q": "Mi van, ha az importálás nem ismer fel néhány oszlopot?",
+        "a": "Az előnézetben kiválasztja, mit tartalmaz az egyes oszlop, és újra ellenőrzi a fájlt. Az Ön megerősítése nélkül semmi nem mentődik."
+      },
+      {
+        "q": "Folytatódik a számlák számozása?",
+        "a": "Igen. A következő számla a legmagasabb importált számot követő számot kapja. Ha a régi alkalmazása más számformátumot használt, az előnézet felajánlja annak átvételét."
+      },
+      {
+        "q": "Át kell alakítanom az Excel-fájlt CSV-re?",
+        "a": "Nem, töltse fel közvetlenül az .xlsx fájlt. Csak a régi .xls formátumot kell Excelben újra .xlsx-ként menteni."
+      }
+    ],
+    "brands": {
+      "fakturoid": {
+        "title": "Váltás a Fakturoidról a Billantára",
+        "lead": "A Fakturoidot kétféleképpen hagyhatja el: közvetlen API-kapcsolattal vagy CSV-exporttal. Mindkettő egy előnézettel végződik, ahol mindent ellenőrizhet.",
+        "steps": [
+          "A Fakturoid felhasználói fiókjának beállításaiban kap API v3 hozzáférést (Client ID és Client secret).",
+          "Adja meg ezeket a Billanta importálásában, és egyszerre betöltjük a számlákat, díjbekérőket, jóváíró számlákat és a címjegyzéket.",
+          "API nélkül exportálja a számlák és a partnerek listáját CSV-be; először a partnereket töltse fel."
+        ],
+        "extra": "API-kapcsolattal a díjbekérőket, a jóváíró számlákat, a befizetéseket és az eredeti PDF-eket is áthozzuk.",
+        "seoTitle": "Váltás a Fakturoidról a Billantára – export- és importálási útmutató"
+      },
+      "idoklad": {
+        "title": "Váltás az iDokladról a Billantára",
+        "lead": "Az iDokladból exportálja a kiállított számlák listáját és a partnereit. Az Excel-fájlt közvetlenül feltöltheti, átalakítás nélkül.",
+        "steps": [
+          "A kiállított számlák listájában jelölje ki az áthozandó bizonylatokat.",
+          "Használja az Excel- vagy CSV-exportot.",
+          "A partnereket ugyanígy exportálja, és először őket töltse fel a Billantába."
+        ],
+        "extra": "Az ÁFA-kulcsot az összegekből számítjuk ki akkor is, ha az exportban nincs rá külön oszlop.",
+        "seoTitle": "Váltás az iDokladról a Billantára – export- és importálási útmutató"
+      },
+      "superfaktura": {
+        "title": "Váltás a SuperFakturáról a Billantára",
+        "lead": "A SuperFakturából töltse le a számlák áttekintését és az ügyféljegyzéket. Az importálás a cseh és a szlovák exportot is beolvassa, az euróban kiállított számlákkal együtt.",
+        "steps": [
+          "A számlák áttekintésében szűrjön az áthozandó időszakra.",
+          "Töltse le a listát Excel vagy CSV formátumban.",
+          "Az ügyfeleket ugyanígy exportálja, és először őket töltse fel a Billantába."
+        ],
+        "extra": "A szlovák közösségi adószám (IČ DPH) a vevőnél marad, az adószámtól (DIČ) elkülönítve.",
+        "seoTitle": "Váltás a SuperFakturáról a Billantára – export- és importálási útmutató"
+      },
+      "vyfakturuj": {
+        "title": "Váltás a Vyfakturujról a Billantára",
+        "lead": "A Vyfakturujból a kiállított számlákat a tételeikkel együtt hozhatja át. Ehhez elég a bizonylatok és a partnerek exportja.",
+        "steps": [
+          "A bizonylatlistában szűrje a kiállított számlákat az áthozandó időszakra.",
+          "Töltse le őket CSV vagy Excel formátumban, lehetőleg tételekkel együtt.",
+          "A partnereket külön exportálja, és először őket töltse fel a Billantába."
+        ],
+        "extra": "A tételes export tételenként kerül át, mennyiséggel, árral és ÁFA-kulccsal.",
+        "seoTitle": "Váltás a Vyfakturujról a Billantára – export- és importálási útmutató"
+      },
+      "kros": {
+        "title": "Váltás a KROS Fakturáciáról a Billantára",
+        "lead": "A KROS Fakturáciából exportálja a kiállított számlákat és a partnereket Excelbe. Az importálás beolvassa a szlovák oszlopneveket és az euróban kiállított számlákat.",
+        "steps": [
+          "A kiállított számlák listájában jelölje ki az áthozandó bizonylatokat.",
+          "Exportálja a listát Excelbe vagy CSV-be.",
+          "A partnereket ugyanígy exportálja, és először őket töltse fel a Billantába."
+        ],
+        "extra": "A szlovák közösségi adószám (IČ DPH) elkülönül az adószámtól (DIČ), az ÁFA-kulcsot pedig az összegekből számítjuk ki.",
+        "seoTitle": "Váltás a KROS Fakturáciáról a Billantára – export- és importálási útmutató"
+      },
+      "billdu": {
+        "title": "Váltás a Billduról a Billantára",
+        "lead": "A Billduból a webes alkalmazásban töltse le a bizonylatok exportját. Az importálás az angol oszlopneveket is érti.",
+        "steps": [
+          "A Billdu webes alkalmazásában nyissa meg a számlák listáját, és keresse meg a bizonylatok exportját.",
+          "Válassza a CSV vagy Excel formátumot és az áthozandó időszakot.",
+          "Az ügyfeleket külön exportálja, és először őket töltse fel a Billantába."
+        ],
+        "extra": "A fizetési állapotot és az ÉÉÉÉ-HH-NN formátumú dátumokat automatikusan átalakítjuk.",
+        "seoTitle": "Váltás a Billduról a Billantára – export- és importálási útmutató"
+      },
+      "bitfaktura": {
+        "title": "Váltás a BitFakturáról a Billantára",
+        "lead": "A BitFakturát API-kóddal vagy a számlák CSV-exportjával hagyhatja el. Az olyan számsor, mint az 1/09/2025, folytatódik.",
+        "steps": [
+          "A BitFaktura-fiókja beállításaiban az integrációk között talál egy API-engedélyezési kódot.",
+          "Adja meg a Billanta importálásában a fióknevével együtt, és betöltjük a számlákat és a teljes címjegyzéket.",
+          "Kód nélkül exportálja a számlákat CSV-be, és töltse fel a fájlt az importálásban."
+        ],
+        "extra": "API-kóddal azokat a partnereket is betöltjük, akiknek még nem számlázott, valamint az árfolyamokat és a fizetési módokat.",
+        "seoTitle": "Váltás a BitFakturáról a Billantára – export- és importálási útmutató"
+      }
+    }
   },
   "glossaryPages": {
     "breadcrumb": "Fogalomtár",
