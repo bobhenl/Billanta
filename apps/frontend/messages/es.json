@@ -10222,6 +10222,1358 @@
       ]
     }
   },
+  "partnerSegments": {
+    "common": {
+      "contact": "Hable con nosotros",
+      "hubCrumb": "Para socios",
+      "faqTitle": "Preguntas de nuestros socios",
+      "allSegments": "Todos los programas para socios"
+    },
+    "how": {
+      "title": "Cómo funciona para los socios",
+      "lead": "Sin listas de nombres ni cuentas creadas una a una. Sus miembros se registran por su cuenta, con la ventaja ya aplicada.",
+      "steps": {
+        "code": {
+          "title": "Le asignamos un código",
+          "body": "Un código de grupo con la ventaja que acordemos: un periodo gratuito, un descuento o crédito adicional."
+        },
+        "share": {
+          "title": "Recibe un QR, un cartel y un enlace",
+          "body": "Imprima el cartel, ponga el QR en una diapositiva o pegue el enlace en su boletín o en el chat del grupo."
+        },
+        "scan": {
+          "title": "Los miembros escanean y ya están dentro",
+          "body": "Cada persona abre el enlace, configura su propia empresa y empieza a facturar. Antes puede probar la demo, sin registrarse."
+        },
+        "track": {
+          "title": "Ve los registros y obtiene crédito",
+          "body": "Ve cuántas personas se han unido con su código y recibe crédito por cada una que empiece a pagar (por defecto hasta {reward} créditos, según el primer pago; 1 crédito = 1 CZK)."
+        }
+      }
+    },
+    "contact": {
+      "title": "Pongámoslo en marcha",
+      "body": "Escríbanos unas líneas sobre su grupo y cuántas personas lo forman. Le respondemos en dos días hábiles con un código y una propuesta de ventaja.",
+      "mail": "Enviar un correo electrónico",
+      "about": "Datos de contacto"
+    },
+    "hub": {
+      "eyebrow": "Programas para socios",
+      "title": "Lleve Billanta a su gente",
+      "seoTitle": "Programas para socios – cursos, coworkings, comunidades, bancos",
+      "lead": "Cursos, coworkings, comunidades, escuelas, creadores, contables y bancos: cada uno recibe un código para todo su grupo, una ventaja para sus miembros y crédito por cada empresa que empiece a pagar.",
+      "more": "Ver la oferta",
+      "mailSubject": "Colaboración con Billanta",
+      "directory": "Directorio de socios",
+      "segments": {
+        "courses": {
+          "title": "Cursos de emprendimiento",
+          "body": "Cursos de reciclaje profesional y de creación de empresas, incubadoras. Los participantes facturan gratis mientras dura el curso."
+        },
+        "coworkings": {
+          "title": "Coworkings",
+          "body": "Un QR permanente para todos los miembros, un cartel para la pared y crédito para el espacio."
+        },
+        "communities": {
+          "title": "Comunidades y asociaciones",
+          "body": "Asociaciones de autónomos, sindicatos, grupos de Facebook y Discord. Un código para miembros y una charla opcional."
+        },
+        "expats": {
+          "title": "Expatriados y nómadas digitales",
+          "body": "Facturas en inglés, en EUR y CZK, con inversión del sujeto pasivo. Para agencias de reubicación y grupos de expatriados."
+        },
+        "schools": {
+          "title": "Escuelas",
+          "body": "Clases sobre facturación y gestión de un negocio, con una demo para el aula."
+        },
+        "creators": {
+          "title": "Creadores",
+          "body": "Su propio código para su audiencia y crédito por cada empresa que se quede."
+        },
+        "events": {
+          "title": "Eventos y ferias",
+          "body": "Un código para los asistentes a una conferencia, feria o meetup."
+        },
+        "accountants": {
+          "title": "Contables",
+          "body": "Una ficha en el directorio de contables, acceso a las empresas de sus clientes y exportaciones."
+        },
+        "banks": {
+          "title": "Bancos",
+          "body": "Una oferta para clientes con cuenta de empresa, sincronización bancaria y códigos con marca compartida."
+        }
+      }
+    },
+    "courses": {
+      "eyebrow": "Para cursos de emprendimiento y reciclaje profesional",
+      "title": "Sus participantes están empezando un negocio. Su facturación puede empezar en clase.",
+      "seoTitle": "Facturación para cursos de emprendimiento e incubadoras",
+      "lead": "Para cursos de reciclaje de la oficina de empleo, programas de emprendimiento como los de CzechInvest e incubadoras. Los participantes emiten su primera factura durante el curso, gratis, con un código que usted reparte en la primera sesión.",
+      "demoButton": "Abrir la demo vacía",
+      "offerTitle": "Qué ofrecemos a su curso",
+      "offers": {
+        "free": {
+          "title": "Gratis mientras dura el curso",
+          "body": "Los participantes usan el plan de pago gratis durante el curso y algo más, para que también las primeras facturas reales estén cubiertas."
+        },
+        "code": {
+          "title": "Un código para todo el grupo",
+          "body": "Un solo QR o contraseña para cada edición del curso. Nadie tiene que recopilar correos ni crear cuentas."
+        },
+        "lessons": {
+          "title": "Lecciones listas para usar",
+          "body": "Lecciones breves sobre facturación, IVA y cobros que los formadores pueden usar tal cual o aprovechar en parte."
+        },
+        "empty": {
+          "title": "Un inicio como \"empresa recién creada\"",
+          "body": "La demo se abre como un negocio nuevo y vacío: sin documentos de ejemplo, solo los ajustes que necesita alguien que empieza."
+        },
+        "noAccounts": {
+          "title": "Cada persona configura su propia empresa",
+          "body": "Los participantes introducen su propio número de identificación y su cuenta bancaria. Los datos son suyos, no del curso."
+        },
+        "lecturer": {
+          "title": "Ayuda para los formadores",
+          "body": "Con gusto enseñamos la aplicación a sus formadores antes de la primera edición, en línea y en una media hora."
+        }
+      },
+      "lesson": {
+        "title": "Una clase que termina con una factura real",
+        "lead": "Un esquema sencillo que cabe en una sesión:",
+        "points": [
+          "Qué debe contener una factura válida y por qué",
+          "Configurar el nuevo negocio: número de identificación, dirección, cuenta bancaria",
+          "Emitir una primera factura con código QR de pago",
+          "Registrar un cobro y enviar un recordatorio cortés",
+          "Qué pedirán el contable o Hacienda al final del año"
+        ],
+        "link": "Lecciones para escuelas y cursos"
+      },
+      "faq": [
+        {
+          "q": "¿Quién puede usar la oferta para cursos?",
+          "a": "Cualquier curso que ayude a la gente a crear un negocio: cursos de reciclaje profesional, programas de emprendimiento, incubadoras y aceleradoras. Escríbanos y preparamos un código para su próxima edición."
+        },
+        {
+          "q": "¿Qué ocurre cuando termina el periodo gratuito?",
+          "a": "Los participantes pueden quedarse en el plan gratuito o elegir uno de pago. No se cobra nada automáticamente y nadie pierde sus facturas."
+        },
+        {
+          "q": "¿Pueden practicar los participantes sin tener todavía un negocio real?",
+          "a": "Sí. La demo vacía funciona sin registrarse, y una empresa de demostración puede trasladarse más adelante a una cuenta real."
+        },
+        {
+          "q": "¿Ve el curso las facturas de los participantes?",
+          "a": "No. El curso solo ve cuántas personas se han unido con su código. Los datos de cada empresa son privados."
+        }
+      ],
+      "mailSubject": "Billanta para nuestro curso",
+      "contactTitle": "Consiga un código para su próximo curso",
+      "contactBody": "Díganos cuándo empieza el curso y cuántos participantes tiene. Le enviamos el código, un cartel y las lecciones antes de la primera sesión."
+    },
+    "coworkings": {
+      "eyebrow": "Para coworkings",
+      "title": "Un QR en la pared, una ventaja para cada miembro",
+      "seoTitle": "Ventaja de facturación para miembros de coworkings",
+      "lead": "La mayoría de los miembros de un coworking son freelancers que facturan cada mes. Ofrézcales un mejor comienzo en Billanta como parte de la membresía, con un código permanente que nunca hay que actualizar.",
+      "demoButton": "Probar la demo",
+      "offerTitle": "Qué ofrecemos a su coworking",
+      "offers": {
+        "permanent": {
+          "title": "Un código permanente",
+          "body": "Un QR y una contraseña para todos los miembros, ahora y en el futuro. Los nuevos miembros simplemente usan el mismo."
+        },
+        "benefit": {
+          "title": "Una ventaja para miembros",
+          "body": "Un periodo gratuito o un descuento en el plan de pago, que puede incluir entre las ventajas de la membresía."
+        },
+        "credit": {
+          "title": "Crédito para el coworking",
+          "body": "Por cada empresa de un miembro que empiece a pagar, el coworking recibe crédito (por defecto hasta {reward} créditos, según el primer pago). Los acuerdos más amplios los pactamos de forma individual."
+        },
+        "poster": {
+          "title": "Un cartel para la pared",
+          "body": "Un cartel imprimible en A4 o A3 con su código, para la cocina, la recepción o la sala de reuniones."
+        },
+        "qr": {
+          "title": "Un QR para pantallas y chats",
+          "body": "El mismo código funciona en una pantalla del vestíbulo, en su boletín o en el chat de grupo de los miembros."
+        },
+        "members": {
+          "title": "Sin trabajo administrativo para usted",
+          "body": "Los miembros se registran por su cuenta. Usted no gestiona cuentas, licencias ni bajas."
+        }
+      },
+      "faq": [
+        {
+          "q": "¿Caduca el código?",
+          "a": "No, el código de un coworking es permanente salvo que nos pida cambiarlo. Los carteles que imprima hoy seguirán funcionando."
+        },
+        {
+          "q": "¿Tenemos que usar Billanta nosotros?",
+          "a": "No. El crédito puede destinarse a su propia suscripción si la usan, y para comunidades más grandes acordamos otra recompensa."
+        },
+        {
+          "q": "¿Podemos ver quién se ha registrado?",
+          "a": "Ve el número de registros y de empresas que pagan, no sus nombres ni sus facturas."
+        }
+      ],
+      "mailSubject": "Billanta para nuestro coworking",
+      "contactTitle": "Consiga un código para su coworking",
+      "contactBody": "Díganos el nombre del espacio y cuántos miembros tiene aproximadamente. Le enviamos el código y un cartel para imprimir."
+    },
+    "communities": {
+      "eyebrow": "Para comunidades y asociaciones",
+      "title": "Una ventaja para miembros que su comunidad realmente usará",
+      "seoTitle": "Ventaja de facturación para asociaciones y comunidades de freelancers",
+      "lead": "Para asociaciones de autónomos, sindicatos y colectivos profesionales, y para comunidades de freelancers en Facebook o Discord. Un código para miembros, una charla opcional sobre facturación y crédito para la comunidad.",
+      "demoButton": "Probar la demo",
+      "offerTitle": "Qué ofrecemos a su comunidad",
+      "offers": {
+        "code": {
+          "title": "Un código para miembros",
+          "body": "Un código para todos los miembros, que puede compartir en su boletín, en el área de miembros o en una publicación fijada."
+        },
+        "benefit": {
+          "title": "Una ventaja para los miembros",
+          "body": "Un periodo gratuito o un descuento en el plan de pago: una ventaja concreta que puede mencionar en su oferta."
+        },
+        "talk": {
+          "title": "Una charla o webinar (opcional)",
+          "body": "Una sesión breve y práctica sobre facturación, plazos del IVA y cobrar a tiempo. Sin discurso comercial."
+        },
+        "credit": {
+          "title": "Crédito para la comunidad",
+          "body": "Por cada empresa de un miembro que empiece a pagar, la comunidad obtiene crédito (por defecto hasta {reward} créditos, según el primer pago)."
+        },
+        "online": {
+          "title": "Pensado para grupos en línea",
+          "body": "Un enlace y un QR que funcionan en una publicación, un chat o una retransmisión. Los miembros pueden probar antes la demo, sin registrarse."
+        },
+        "members": {
+          "title": "Los miembros siguen siendo independientes",
+          "body": "Cada miembro tiene su propia empresa y sus propios datos. La comunidad no gestiona la cuenta de nadie."
+        }
+      },
+      "faq": [
+        {
+          "q": "¿Hay un tamaño mínimo de grupo?",
+          "a": "No. Una asociación local de treinta miembros es tan bienvenida como un grupo de miles."
+        },
+        {
+          "q": "¿De qué trata la charla?",
+          "a": "De lo que necesiten sus miembros: la primera factura, los umbrales de alta en el IVA, los recordatorios, el trabajo con un contable. Unos 30 a 45 minutos, en línea o en persona."
+        },
+        {
+          "q": "¿Podemos ver qué facturan nuestros miembros?",
+          "a": "No. Solo ve cuántos miembros se han unido y cuántos pagan. Sus empresas son privadas."
+        }
+      ],
+      "mailSubject": "Billanta para nuestra comunidad",
+      "contactTitle": "Consiga un código para miembros",
+      "contactBody": "Háblenos de su comunidad y díganos si le interesa una charla. Le enviamos el código, un QR y un breve texto para sus miembros."
+    },
+    "expats": {
+      "eyebrow": "Para expatriados y nómadas digitales",
+      "title": "Facturar en Chequia y Eslovaquia, en inglés",
+      "seoTitle": "Facturación para expatriados y freelancers en Chequia y Eslovaquia",
+      "lead": "Para extranjeros con licencia comercial o empresa en Chequia o Eslovaquia, y para las agencias de reubicación, los grupos de expatriados y los coworkings que los ayudan. La aplicación y las facturas hablan inglés; las normas son las locales.",
+      "demoButton": "Abrir la demo en inglés",
+      "offerTitle": "Qué obtiene",
+      "offers": {
+        "english": {
+          "title": "La aplicación y las facturas en inglés",
+          "body": "Use toda la aplicación en inglés y emita facturas en inglés, o en dos idiomas uno junto al otro."
+        },
+        "currencies": {
+          "title": "EUR, CZK y otras divisas",
+          "body": "Facture en euros o en cualquier otra divisa. El IVA en coronas checas se añade según el tipo de cambio del Banco Nacional Checo."
+        },
+        "reverseCharge": {
+          "title": "Inversión del sujeto pasivo para clientes de la UE",
+          "body": "Las facturas a sujetos pasivos de IVA de otros países de la UE llevan la mención correcta y dejan el IVA a cargo del cliente."
+        },
+        "checks": {
+          "title": "Comprobaciones antes de enviar",
+          "body": "La aplicación le avisa cuando falta algo que exige la ley, para que un contable checo no le devuelva la factura."
+        },
+        "recurring": {
+          "title": "Facturas recurrentes",
+          "body": "Una iguala mensual para un cliente extranjero se envía sola, con código QR para los clientes locales."
+        },
+        "remote": {
+          "title": "Funciona desde cualquier lugar",
+          "body": "En el navegador y en el móvil, desde Praga, Bratislava o cualquier otro sitio."
+        }
+      },
+      "musts": {
+        "title": "Qué debe contener una factura checa o eslovaca",
+        "lead": "La versión breve, para un freelancer o una pequeña empresa:",
+        "points": [
+          "Su nombre o razón social, dirección y número de identificación de la empresa (IČO)",
+          "El nombre y la dirección del cliente, y su número de identificación y NIF-IVA si los tiene",
+          "Un número de factura único, la fecha de emisión y la fecha de vencimiento",
+          "Qué ha suministrado, la cantidad y el precio",
+          "Si es sujeto pasivo de IVA: su NIF-IVA, la fecha de devengo, el tipo y el importe del IVA, en CZK en Chequia y en EUR en Eslovaquia",
+          "Si no es sujeto pasivo de IVA, es recomendable indicarlo en la factura",
+          "Para un cliente de la UE registrado a efectos del IVA: ambos NIF-IVA y la mención de inversión del sujeto pasivo"
+        ],
+        "note": "Un resumen, no asesoramiento fiscal. Los detalles dependen de su situación; las guías de abajo profundizan más.",
+        "readMore": "Leer más",
+        "links": {
+          "requiredFields": "Comprobación de campos obligatorios",
+          "currencies": "Facturas en divisas extranjeras",
+          "bilingual": "Facturas bilingües",
+          "fx": "Tipos de cambio del Banco Nacional Checo",
+          "identified": "La persona identificada a efectos del IVA",
+          "vatFiling": "Declaración de IVA y declaración de control"
+        }
+      },
+      "faq": [
+        {
+          "q": "¿Necesito hablar checo o eslovaco para usarla?",
+          "a": "No. La aplicación, las facturas, los correos a los clientes y la ayuda están disponibles en inglés."
+        },
+        {
+          "q": "¿Puedo facturar en euros desde Chequia?",
+          "a": "Sí. Puede facturar en EUR o en otra divisa. Si es sujeto pasivo de IVA en Chequia, el importe del IVA se muestra también en CZK, que la aplicación completa según el tipo de cambio del Banco Nacional Checo."
+        },
+        {
+          "q": "Mi cliente es una empresa de Alemania. ¿Qué cambia?",
+          "a": "Si es sujeto pasivo de IVA, la factura suele emitirse sin IVA checo por inversión del sujeto pasivo, con ambos NIF-IVA. Es posible que también deba presentar una declaración recapitulativa."
+        },
+        {
+          "q": "Ayudamos a expatriados a instalarse. ¿Podemos ofrecer esto a nuestros clientes?",
+          "a": "Sí. Emitimos un código con una ventaja para sus clientes, y usted obtiene crédito por cada empresa que empiece a pagar."
+        }
+      ],
+      "mailSubject": "Billanta para expatriados",
+      "contactTitle": "¿Ayuda a expatriados a instalarse?",
+      "contactBody": "Las agencias de reubicación, las comunidades de expatriados y los coworkings reciben un código para sus clientes o miembros. Escríbanos en inglés, checo o eslovaco."
+    },
+    "banks": {
+      "eyebrow": "Para bancos",
+      "title": "Facturación para sus clientes con cuenta de empresa",
+      "seoTitle": "Colaboración con bancos – facturación para clientes empresariales",
+      "lead": "Las pequeñas empresas abren una cuenta con ustedes y luego buscan cómo facturar. Ofrézcales Billanta como parte de la cuenta: facturas con su número de cuenta y pago por QR, cobros conciliados automáticamente y un código con marca compartida.",
+      "demoButton": "Probar la demo",
+      "offerTitle": "Qué puede incluir una colaboración",
+      "offers": {
+        "clients": {
+          "title": "Una oferta para nuevas cuentas de empresa",
+          "body": "Un periodo gratuito o un descuento para los clientes que abran una cuenta de empresa, ofrecido en su app, en la sucursal o en el correo de bienvenida."
+        },
+        "sync": {
+          "title": "Sincronización bancaria y conciliación de cobros",
+          "body": "Los cobros recibidos se concilian con las facturas automáticamente, así sus clientes ven qué está pagado sin exportar extractos."
+        },
+        "cobranded": {
+          "title": "Códigos con marca compartida",
+          "body": "Un código y una página de destino con ambas marcas, con la ventaja que usted elija para sus clientes."
+        },
+        "onboarding": {
+          "title": "Un arranque rápido para nuevos negocios",
+          "body": "Muchos titulares de cuentas nuevas están creando un negocio. En minutos tienen lista una factura con su cuenta y código QR."
+        },
+        "api": {
+          "title": "Integración",
+          "body": "Una API y webhooks para facturas y cobros, y una conexión directa de extractos donde su banco la ofrezca."
+        },
+        "security": {
+          "title": "Protección de datos desde el diseño",
+          "body": "Los datos de cada empresa están aislados a nivel de base de datos, con copias de seguridad y registro de auditoría."
+        }
+      },
+      "models": {
+        "title": "Cómo podemos colaborar",
+        "lead": "Adaptamos el alcance al banco, desde un simple código hasta una integración más profunda:",
+        "points": [
+          "Un código con ventaja para clientes con cuenta de empresa, con informes de registros",
+          "Una página de destino con marca compartida y materiales para las sucursales",
+          "Una conexión de extractos para conciliar cobros automáticamente",
+          "Un piloto con un grupo limitado de clientes antes de un lanzamiento más amplio"
+        ]
+      },
+      "faq": [
+        {
+          "q": "¿Necesitan los clientes una cuenta en su banco para usar Billanta?",
+          "a": "No. Billanta funciona con cualquier banco. Una colaboración ofrece a sus clientes una ventaja y un comienzo más fluido con su cuenta."
+        },
+        {
+          "q": "¿Ve Billanta los datos bancarios de los clientes?",
+          "a": "Solo lo que el propio cliente conecta, y solo para conciliar cobros con facturas. Los datos de cada empresa son privados."
+        },
+        {
+          "q": "¿Cuánto dura un piloto?",
+          "a": "Un código con ventaja puede estar en marcha en días. Una integración de extractos depende de la interfaz del banco; acordamos el plan juntos."
+        }
+      ],
+      "mailSubject": "Billanta y nuestro banco",
+      "contactTitle": "Hablemos de una colaboración",
+      "contactBody": "Escríbanos con la persona de contacto y lo que tienen en mente. Preparamos una propuesta a la medida de su banco."
+    }
+  },
+  "adminPosters": {
+    "title": "Carteles y folletos",
+    "description": "Carteles A4 y A5 y folletos A6 con código QR para escuelas, creadores, eventos y tablones de anuncios municipales. Listos para imprimir, también en blanco y negro.",
+    "fields": {
+      "template": "Público",
+      "lang": "Idioma del cartel",
+      "target": "Adónde lleva el código QR",
+      "size": "Formato",
+      "promo": "Código promocional (opcional)",
+      "event": "Nombre del evento (opcional)",
+      "tabs": "Tiras recortables"
+    },
+    "templates": {
+      "school": "Escuelas",
+      "courses": "Cursos de reciclaje y de creación de empresas",
+      "creators": "Creadores y freelancers",
+      "communities": "Comunidades de pequeñas empresas",
+      "event": "Eventos (taller, meetup)",
+      "coworking": "Coworking (para miembros)",
+      "local": "Profesionales locales (tablón de anuncios)",
+      "expats": "Expatriados (inglés)",
+      "generic": "General"
+    },
+    "langs": {
+      "cs": "Checo",
+      "sk": "Eslovaco",
+      "en": "Inglés"
+    },
+    "targets": {
+      "demo": "Demo",
+      "pricing": "Precios",
+      "signup": "Registro",
+      "home": "Página de inicio",
+      "forSchools": "Página para escuelas",
+      "forCreators": "Página para creadores",
+      "events": "Página de eventos",
+      "forCourses": "Para cursos (/for-courses)",
+      "forCommunities": "Para comunidades (/for-communities)",
+      "forExpats": "Para expatriados (/for-expats)"
+    },
+    "sizes": {
+      "a4": "Cartel A4",
+      "a3": "Cartel A3",
+      "a5": "Cartel A5",
+      "a6": "Folleto A6",
+      "a6x4": "Folleto A6, 4 en una hoja A4"
+    },
+    "eventPlaceholder": "p. ej. Startup Weekend Brno",
+    "tabsHint": "Tiras con el código QR y la dirección para recortar, para tablones de anuncios.",
+    "apply": "Actualizar vista previa",
+    "print": "Imprimir",
+    "printHint": "En el cuadro de impresión, ajuste la escala al 100 % y desactive los encabezados y pies de página. Para obtener un PDF, elija Guardar como PDF.",
+    "qrTarget": "El código QR lleva a:",
+    "promoHint": "Con un código, el QR lleva a /join/CODE y el código se imprime en grande para que se pueda escribir."
+  },
+  "posters": {
+    "scan": "Escanee o visite",
+    "codeLabel": "Su código",
+    "eventLine": "Para los asistentes a {event}",
+    "foot": "Gratis hasta 10 documentos al mes. Sin tarjeta.",
+    "tabTitle": "Facturación online",
+    "templates": {
+      "school": {
+        "eyebrow": "Para estudiantes y profesores",
+        "headline": "Emita su primera factura antes de que suene el timbre.",
+        "lead": "Una empresa de prueba sin e-mail ni contraseña. Pruebe el IVA, los pagos QR y los recordatorios con datos inventados.",
+        "benefits": [
+          {
+            "title": "Demo sin registro",
+            "text": "Una empresa de ejemplo durante 24 horas. No se envía ningún e-mail ni se cobra nada."
+          },
+          {
+            "title": "Como la de verdad",
+            "text": "Requisitos de la factura, IVA, ISDOC y la vista del contable a partir de los mismos datos."
+          },
+          {
+            "title": "Cuando ponga en marcha su negocio",
+            "text": "Deje la empresa de ejemplo y continúe en su propia cuenta con su número de empresa."
+          }
+        ]
+      },
+      "creators": {
+        "eyebrow": "Para creadores y freelancers",
+        "headline": "Trato cerrado. Factura enviada en 30 segundos.",
+        "lead": "Facture a marcas y agencias en coronas o euros, con pago QR y verificación del NIF-IVA europeo.",
+        "benefits": [
+          {
+            "title": "Pago QR en la factura",
+            "text": "Sus clientes pagan desde la app del banco sin volver a teclear su número de cuenta."
+          },
+          {
+            "title": "Clientes en la UE",
+            "text": "Verificación del NIF-IVA en VIES e inversión del sujeto pasivo en la factura."
+          },
+          {
+            "title": "Factura a partir de un mensaje de voz",
+            "text": "Díctela por Telegram o WhatsApp. Billanta prepara el borrador y usted lo revisa."
+          }
+        ]
+      },
+      "event": {
+        "eyebrow": "Para talleres y meetups",
+        "headline": "Facture desde aquí mismo. En el portátil o en el móvil.",
+        "lead": "Facturación checa y eslovaca para freelancers y pequeñas empresas. ISDOC, IVA, registros mercantiles y VIES en todos los planes.",
+        "benefits": [
+          {
+            "title": "Escriba el número de empresa y el resto se rellena solo",
+            "text": "Datos del cliente desde los registros mercantiles checo y eslovaco."
+          },
+          {
+            "title": "Su contable recibe lo que necesita",
+            "text": "ISDOC y exportaciones para Pohoda y Money S3."
+          },
+          {
+            "title": "Vigila los límites",
+            "text": "La facturación respecto al umbral de alta en el IVA y un calendario fiscal con los plazos."
+          }
+        ]
+      },
+      "local": {
+        "eyebrow": "Para profesionales de oficios y autónomos",
+        "headline": "Facture desde el móvil, en el mismo lugar del trabajo.",
+        "lead": "Introduzca el número de empresa del cliente, los conceptos y el precio. Billanta calcula el IVA, añade un pago QR y envía la factura por e-mail.",
+        "benefits": [
+          {
+            "title": "Gratis para facturas ocasionales",
+            "text": "10 documentos al mes incluidos, sin tarjeta."
+          },
+          {
+            "title": "Un código QR para su cliente",
+            "text": "Paga en el acto desde el móvil, sin teclear números de cuenta."
+          },
+          {
+            "title": "Nada que instalar",
+            "text": "Funciona en el móvil y en el ordenador, con sus datos respaldados."
+          }
+        ]
+      },
+      "generic": {
+        "eyebrow": "Facturación para CZ y SK",
+        "headline": "Una factura con pago QR en 30 segundos.",
+        "lead": "Para freelancers y pequeñas empresas en Chequia y Eslovaquia. Sin papeleo y sin nada que instalar.",
+        "benefits": [
+          {
+            "title": "ISDOC, IVA, CZ y SK",
+            "text": "Facturas en coronas o euros, según las normas checas y eslovacas."
+          },
+          {
+            "title": "Datos desde ARES",
+            "text": "Escriba el número de empresa y los datos del cliente se rellenan solos."
+          },
+          {
+            "title": "Los recordatorios salen solos",
+            "text": "Cuando una factura vence, avisamos al cliente por e-mail."
+          }
+        ]
+      },
+      "courses": {
+        "eyebrow": "Para cursos de emprendimiento",
+        "headline": "Un negocio empieza con su primera factura. Envíe la suya hoy.",
+        "lead": "Practique con una empresa de ejemplo y continúe de verdad cuando tenga su número de empresa.",
+        "benefits": [
+          {
+            "title": "Demo sin registro",
+            "text": "Una empresa de ejemplo durante 24 horas, sin e-mail ni contraseña."
+          },
+          {
+            "title": "Cliente a partir del número de empresa",
+            "text": "Escriba el número y los datos se rellenan desde el registro mercantil."
+          },
+          {
+            "title": "Límites y plazos",
+            "text": "La facturación respecto al umbral de alta en el IVA y un calendario fiscal con los plazos."
+          }
+        ]
+      },
+      "communities": {
+        "eyebrow": "Para comunidades de pequeñas empresas",
+        "headline": "Menos papeleo, más tiempo para el trabajo.",
+        "lead": "Facturación para autónomos y pequeñas empresas en Chequia y Eslovaquia. En el móvil o en el ordenador.",
+        "benefits": [
+          {
+            "title": "Facturas con pago QR",
+            "text": "Sus clientes pagan desde la app del banco sin volver a teclear el número de cuenta."
+          },
+          {
+            "title": "Su contable recibe lo que necesita",
+            "text": "ISDOC y exportaciones para Pohoda y Money S3."
+          },
+          {
+            "title": "Los recordatorios salen solos",
+            "text": "Cuando una factura vence, avisamos al cliente por e-mail."
+          }
+        ]
+      },
+      "coworking": {
+        "eyebrow": "Para miembros de coworkings",
+        "headline": "Su factura está lista antes de que se enfríe el café.",
+        "lead": "Facturación checa y eslovaca para freelancers y pequeñas empresas. En el portátil o en el móvil.",
+        "benefits": [
+          {
+            "title": "Escriba el número de empresa y el resto se rellena solo",
+            "text": "Datos del cliente desde los registros mercantiles checo y eslovaco."
+          },
+          {
+            "title": "Facturas con pago QR",
+            "text": "Sus clientes pagan desde la app del banco sin volver a teclear el número de cuenta."
+          },
+          {
+            "title": "Su contable recibe lo que necesita",
+            "text": "ISDOC y exportaciones para Pohoda y Money S3."
+          }
+        ]
+      },
+      "expats": {
+        "eyebrow": "Para expatriados en Chequia y Eslovaquia",
+        "headline": "Facturas checas, en inglés.",
+        "lead": "Toda la aplicación funciona en inglés. Las facturas cumplen las normas checas y eslovacas.",
+        "benefits": [
+          {
+            "title": "Facturas bilingües",
+            "text": "Etiquetas en checo e inglés, p. ej. Datum vystavení / Issue date."
+          },
+          {
+            "title": "Euros, dólares y más",
+            "text": "El tipo de cambio del ČNB de la fecha de devengo se rellena solo y el IVA se convierte a CZK."
+          },
+          {
+            "title": "Cliente a partir del número de empresa",
+            "text": "Escriba el IČO y los datos se rellenan desde el registro."
+          }
+        ]
+      }
+    },
+    "scanOrType": "Escanee o introduzca el código en"
+  },
+  "promo": {
+    "signupNote": "El código promocional {code} se aplicará en cuanto configure su empresa.",
+    "appliedToast": "Código promocional {code} aplicado: {benefit}.",
+    "notAppliedToast": "No se ha podido aplicar el código promocional. {reason}",
+    "benefit": {
+      "trial_days": "{count, plural, one {# día} other {# días}} del plan {plan} para probar",
+      "free_months": "{count, plural, one {# mes} other {# meses}} del plan {plan} gratis"
+    },
+    "card": {
+      "title": "Tengo un código promocional",
+      "hint": "Un código de un evento, un creador o una escuela. Cada empresa puede canjear uno.",
+      "label": "Código promocional",
+      "placeholder": "p. ej. STARTUP-WEEK",
+      "submit": "Aplicar",
+      "applied": "Código {code} aplicado ({date})"
+    },
+    "errors": {
+      "generic": "Algo ha salido mal. Inténtelo de nuevo.",
+      "promo_invalid": "Este código no es válido. Compruebe que esté bien escrito.",
+      "promo_expired": "Este código ha caducado.",
+      "promo_used_up": "Este código ha alcanzado su límite de canjes.",
+      "promo_already_applied": "Su empresa ya ha canjeado un código promocional. Los códigos no se pueden combinar.",
+      "promo_subscription_active": "La empresa paga con una suscripción con tarjeta, así que no se pueden añadir meses gratis. Escríbanos y lo resolveremos.",
+      "promo_plan_conflict": "La empresa tiene otro plan pagado. El código se podrá canjear cuando termine ese periodo.",
+      "promo_rate_limited": "Demasiados intentos. Inténtelo de nuevo dentro de una hora.",
+      "forbidden": "Solo el propietario o un administrador de la empresa puede canjear un código promocional."
+    }
+  },
+  "adminPromoCodes": {
+    "title": "Códigos promocionales",
+    "description": "Códigos para eventos, creadores y escuelas. Un código se desactiva, nunca se elimina – las empresas que lo canjearon lo conservan.",
+    "loadError": "No se han podido cargar los códigos promocionales.",
+    "empty": "Todavía no hay códigos promocionales.",
+    "failed": "Error",
+    "created": "Código creado.",
+    "activated": "Código activado.",
+    "deactivated": "Código desactivado.",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "inactive": "desactivado",
+    "validity": "válido {from} – {until}",
+    "used": "{used} canjeados",
+    "usedOf": "{used} / {max} canjeados",
+    "paying": "{count, plural, one {# de pago} other {# de pago}}",
+    "kind": {
+      "event": "Evento",
+      "creator": "Creador",
+      "school": "Escuela",
+      "other": "Otro"
+    },
+    "form": {
+      "title": "Nuevo código",
+      "code": "Código",
+      "kind": "Tipo",
+      "benefitType": "Ventaja",
+      "trialDays": "Días de prueba",
+      "freeMonths": "Meses gratis",
+      "value": "Cantidad",
+      "plan": "Plan",
+      "maxRedemptions": "Máx. de canjes",
+      "unlimited": "ilimitado",
+      "ownerLabel": "Pertenece a",
+      "ownerPlaceholder": "p. ej. Startup Week Brno",
+      "validFrom": "Válido desde",
+      "validUntil": "Válido hasta",
+      "note": "Nota",
+      "submit": "Crear código",
+      "referralCode": "Código de referido del creador",
+      "referralPlaceholder": "opcional, obtiene la recompensa",
+      "businessPreset": "Tipo de negocio",
+      "presetNone": "que elija el usuario",
+      "defaultLocale": "Idioma de la página",
+      "localeVisitor": "el del visitante"
+    },
+    "errors": {
+      "code_taken": "Ese código ya existe.",
+      "invalid_dates": "La fecha de fin es anterior a la fecha de inicio.",
+      "referral_unknown": "No existe ese código de referido."
+    },
+    "referrer": "referido {code}",
+    "copyLink": "Copiar enlace",
+    "copied": "Enlace copiado.",
+    "downloadQr": "Descargar código QR",
+    "locale": {
+      "cs": "Checo",
+      "sk": "Eslovaco",
+      "en": "Inglés"
+    }
+  },
+  "join": {
+    "metaTitle": "Únase con un código",
+    "from": "Invitación de {owner}",
+    "fromBillanta": "Invitación a Billanta",
+    "title": "Facture con Billanta",
+    "benefit": "Con este código obtiene {benefit}.",
+    "preset": "Configuraremos la aplicación para su tipo de negocio: {preset}.",
+    "email": "Continuar con e-mail",
+    "or": "o",
+    "try": "Solo probarlo",
+    "trying": "Preparando la demo…",
+    "tryHint": "Una empresa de ejemplo, sin registro. El código se guarda para cuando cree una cuenta.",
+    "remembered": "Recordaremos el código {code} durante 30 días.",
+    "haveAccount": "¿Ya tiene una cuenta? Inicie sesión.",
+    "signedIn": "Ha iniciado sesión. El código se aplica a la empresa que tiene abierta, si puede gestionar su suscripción.",
+    "toDashboard": "Continuar a la aplicación",
+    "invalid": "Este código no es válido o ha caducado. Compruebe que esté bien escrito.",
+    "form": {
+      "title": "Introduzca su código",
+      "hint": "El código o la frase clave del póster, la diapositiva o la invitación. Da igual mayúsculas o minúsculas.",
+      "label": "Código",
+      "placeholder": "p. ej. KAVARNA-BRNO",
+      "submit": "Continuar"
+    }
+  },
+  "learnPages": {
+    "common": {
+      "toolsTitle": "Herramientas y guías",
+      "toolsLead": "Gratis y sin registro. Calcule, compruebe y lea más.",
+      "nextTitle": "¿Y ahora qué?",
+      "faqTitle": "Preguntas frecuentes",
+      "signup": "Empezar gratis",
+      "demo": "Probar la demo",
+      "more": "Más",
+      "allRoles": "Todos los roles",
+      "pages": {
+        "first": {
+          "title": "Su primera factura",
+          "body": "Qué debe contener una factura en Chequia y Eslovaquia y cómo emitirla paso a paso."
+        },
+        "beginners": {
+          "title": "Facturación para principiantes",
+          "body": "Sin ser sujeto pasivo de IVA: el primer cliente, la numeración, los cobros y los recordatorios."
+        },
+        "advanced": {
+          "title": "Facturación para usuarios avanzados",
+          "body": "Sujetos pasivos de IVA, inversión del sujeto pasivo, clientes extranjeros, facturas recurrentes y la API."
+        },
+        "schools": {
+          "title": "Para centros educativos",
+          "body": "Enseñe a facturar en una aplicación real, con una empresa vacía para cada alumno."
+        },
+        "roles": {
+          "title": "Roles del equipo",
+          "body": "Propietario, administrador, contable y solo lectura: quién ve qué y quién puede modificarlo."
+        },
+        "accountants": {
+          "title": "Para contables",
+          "body": "Acceso a clientes, exportaciones contables y datos de IVA en un solo lugar."
+        },
+        "owners": {
+          "title": "Para propietarios de empresas",
+          "body": "La visión completa, su equipo, la suscripción, las copias de seguridad y varias empresas con un solo inicio de sesión."
+        },
+        "assistants": {
+          "title": "Para asistentes y responsables de oficina",
+          "body": "El rol de administrador o un acceso más limitado, solo a facturas o solo a gastos."
+        }
+      },
+      "basicsTitle": "Lo básico de la facturación"
+    },
+    "firstInvoice": {
+      "seoTitle": "Su primera factura: qué debe contener y cómo emitirla",
+      "eyebrow": "Guía para quienes empiezan",
+      "title": "Su primera factura",
+      "lead": "Qué debe contener una factura en Chequia y Eslovaquia, cómo emitirla paso a paso y qué errores evitar. Sin jerga legal.",
+      "guestCta": "Emitir una factura sin registro",
+      "demoCta": "Probarlo en una empresa vacía",
+      "contentTitle": "Qué debe figurar en la factura",
+      "contentLead": "Una empresa que no es sujeto pasivo de IVA necesita menos datos que una que sí lo es. Billanta comprueba según sus ajustes que no falte nada.",
+      "alwaysLabel": "Siempre",
+      "vatLabel": "Además, para sujetos pasivos de IVA",
+      "countries": {
+        "cz": {
+          "title": "Chequia",
+          "always": [
+            "Su nombre o razón social, domicilio social y número de identificación (IČO)",
+            "Su inscripción en el registro (un autónomo puede indicar la inscripción en el registro de actividades)",
+            "El cliente: nombre, dirección y, si es una empresa, su IČO",
+            "Un número de factura único de su serie de numeración",
+            "La fecha de emisión y la fecha de vencimiento",
+            "Qué factura, la cantidad y el precio",
+            "El total y la forma de pago; para una transferencia, el número de cuenta y el símbolo variable"
+          ],
+          "vat": [
+            "Su número de IVA (DIČ) y el del cliente",
+            "La fecha de devengo (DUZP)",
+            "El precio unitario sin IVA y cualquier descuento",
+            "La base imponible, el tipo (21 % o 12 %) y la cuota de IVA en CZK",
+            "En caso de inversión del sujeto pasivo, una frase que indique que el cliente liquida el impuesto"
+          ],
+          "law": "Según el § 435 del Código Civil y el § 29 de la Ley del IVA."
+        },
+        "sk": {
+          "title": "Eslovaquia",
+          "always": [
+            "Su nombre o razón social, domicilio social e IČO",
+            "Su inscripción en el registro mercantil o de actividades, incluido el número de inscripción",
+            "El cliente: nombre, dirección y, si es una empresa, su IČO",
+            "Un número de factura único y correlativo",
+            "La fecha de emisión y la fecha de vencimiento",
+            "Qué factura, la cantidad y el precio",
+            "El total y la forma de pago; para una transferencia, el IBAN y el símbolo variable"
+          ],
+          "vat": [
+            "Su número de IVA (IČ DPH) y el del cliente",
+            "La fecha de entrega de los bienes o de prestación del servicio",
+            "El precio unitario sin IVA y cualquier descuento",
+            "La base imponible, el tipo (23 %, 19 % o 5 %) y la cuota de IVA en euros",
+            "En caso de inversión del sujeto pasivo, la mención \"prenesenie daňovej povinnosti\""
+          ],
+          "law": "Según el § 3a del Código Mercantil y el § 74 de la Ley del IVA."
+        }
+      },
+      "stepsTitle": "Paso a paso",
+      "steps": [
+        {
+          "title": "Complete sus datos",
+          "body": "Introduzca su IČO y los datos de su empresa se cargan del registro mercantil checo o eslovaco. Añada su cuenta bancaria."
+        },
+        {
+          "title": "Añada el cliente",
+          "body": "También basta con el IČO del cliente. Para un particular, introduzca nombre y dirección."
+        },
+        {
+          "title": "Describa lo que factura",
+          "body": "El trabajo o los bienes, la cantidad y el precio. Sea concreto: \"Diseño de logotipo, 3 variantes\" en lugar de \"servicios\"."
+        },
+        {
+          "title": "Revise las fechas",
+          "body": "La fecha de emisión es hoy y la de vencimiento, normalmente 14 días después. Un sujeto pasivo de IVA añade la fecha de devengo y emite la factura en un plazo de 15 días desde ella."
+        },
+        {
+          "title": "Emita y envíe",
+          "body": "La factura recibe el siguiente número de su serie y un código QR para el pago. Envíela por correo electrónico o descargue el PDF."
+        },
+        {
+          "title": "Esté atento al cobro",
+          "body": "Márquela como pagada cuando llegue el dinero o deje que los pagos bancarios se concilien solos. Tras la fecha de vencimiento, envíe un recordatorio."
+        }
+      ],
+      "mistakesTitle": "Errores frecuentes",
+      "mistakes": {
+        "vatShown": {
+          "title": "IVA en la factura de quien no es sujeto pasivo",
+          "body": "Si no es sujeto pasivo de IVA, no incluya el IVA. Si lo indica en la factura, tendrá que ingresarlo a Hacienda."
+        },
+        "numbering": {
+          "title": "Saltos y números duplicados",
+          "body": "Los números deben ser correlativos y sin repeticiones. Billanta los asigna automáticamente al emitir."
+        },
+        "buyer": {
+          "title": "Datos del cliente incorrectos",
+          "body": "Una errata en el nombre o en el IČO retrasa el cobro. Los datos cargados del registro son exactos."
+        },
+        "dates": {
+          "title": "Fechas tardías o incorrectas",
+          "body": "Un sujeto pasivo de IVA necesita la fecha de devengo correcta y debe emitir la factura en un plazo de 15 días desde la operación."
+        },
+        "editing": {
+          "title": "Reescribir una factura emitida",
+          "body": "No sobrescriba una factura emitida. Corrija el error con una factura rectificativa y una nueva factura."
+        },
+        "copies": {
+          "title": "Copias perdidas",
+          "body": "Las facturas deben conservarse durante años. Permanecen en la aplicación y puede configurar copias de seguridad."
+        }
+      },
+      "ctaBox": {
+        "title": "Pruébelo antes",
+        "body": "La demo le ofrece una empresa vacía y su primera factura le llevará unos minutos. No se envía nada a ningún sitio."
+      },
+      "faq": [
+        {
+          "q": "¿Necesito una cuenta de Billanta para mi primera factura?",
+          "a": "No. Puede emitir una factura puntual sin registrarse. Una cuenta le resultará útil cuando quiera series numeradas, seguimiento de cobros y todo en un solo lugar."
+        },
+        {
+          "q": "¿Una factura necesita sello o firma?",
+          "a": "No, la ley no exige ninguna de las dos cosas. Lo que cuenta son los datos obligatorios."
+        },
+        {
+          "q": "¿Puedo facturar sin IČO?",
+          "a": "Las facturas las emiten empresas y autónomos, así que necesita un IČO. Un particular sin licencia de actividad declara los ingresos ocasionales de otra manera."
+        },
+        {
+          "q": "¿Qué fecha de vencimiento debo fijar?",
+          "a": "Lo habitual son 14 días. Entre empresas, la ley presupone un límite (30 días en Chequia, 60 en Eslovaquia), salvo que acuerden expresamente otra cosa."
+        },
+        {
+          "q": "¿Basta con un PDF por correo electrónico?",
+          "a": "Sí. Una factura electrónica es tan válida como una en papel si el cliente la acepta, algo que hoy es lo normal."
+        },
+        {
+          "q": "¿Y si me he equivocado en la factura?",
+          "a": "Mientras sea un borrador, basta con editarla. Una factura emitida se corrige con una factura rectificativa, seguida de una nueva factura."
+        }
+      ]
+    },
+    "beginners": {
+      "seoTitle": "Facturación para principiantes: sin IVA, el primer cliente",
+      "eyebrow": "Facturación para principiantes",
+      "title": "¿Empieza su negocio? Facture así",
+      "lead": "Lo básico para autónomos que no son sujetos pasivos de IVA: el primer cliente, la numeración, los cobros, los recordatorios y cuándo pasa a ser sujeto pasivo de IVA.",
+      "topicsTitle": "Lo que debe saber",
+      "topics": {
+        "nonVat": {
+          "title": "Sin ser sujeto pasivo de IVA",
+          "body": "Factura sin IVA y no lo menciona en ninguna parte de la factura. Basta con añadir una línea que indique que no es sujeto pasivo."
+        },
+        "firstCustomer": {
+          "title": "El primer cliente",
+          "body": "Acuerde de antemano el precio, el alcance y la fecha de vencimiento. Basta con un correo electrónico que deje claro el acuerdo."
+        },
+        "numbering": {
+          "title": "Numeración",
+          "body": "Elija una serie, por ejemplo año y número correlativo (2026001). Billanta asigna los números automáticamente y continúa en el año nuevo."
+        },
+        "payment": {
+          "title": "Cobrar",
+          "body": "Indique su número de cuenta y el símbolo variable. El cliente escanea el código QR en la app de su banco y no tiene que escribir nada."
+        },
+        "reminders": {
+          "title": "Recordatorios",
+          "body": "Si un pago no llega, Billanta envía al cliente un recordatorio cortés tras la fecha de vencimiento. Usted decide cuándo."
+        },
+        "tax": {
+          "title": "Impuestos y cotizaciones",
+          "body": "Las facturas son la base de su declaración de la renta. Calcule los gastos a tanto alzado o la paušální daň con las calculadoras de abajo."
+        }
+      },
+      "vatTitle": "Cuándo pasa a ser sujeto pasivo de IVA",
+      "vatLead": "El umbral se calcula sobre su volumen de negocio en un año natural. Billanta puede mostrarle cuánto le falta para alcanzarlo.",
+      "vat": {
+        "cz": {
+          "title": "Chequia",
+          "points": [
+            "El umbral es de 2 000 000 CZK de volumen de negocio en un año natural",
+            "Si lo supera, pasa a ser sujeto pasivo a partir del 1 de enero del año siguiente",
+            "Si el volumen de negocio supera los 2 536 500 CZK, es sujeto pasivo desde el día siguiente",
+            "También puede registrarse voluntariamente, por ejemplo si vende sobre todo a sujetos pasivos de IVA"
+          ]
+        },
+        "sk": {
+          "title": "Eslovaquia",
+          "points": [
+            "El umbral es de 50 000 EUR de volumen de negocio en un año natural",
+            "Si lo supera, debe solicitar el registro; es sujeto pasivo desde el día siguiente a su concesión",
+            "Si el volumen de negocio supera los 62 500 EUR, pasa a ser sujeto pasivo con la misma operación que lo superó",
+            "También puede registrarse voluntariamente"
+          ]
+        }
+      },
+      "monthTitle": "Su primer mes de facturación",
+      "month": [
+        {
+          "title": "Configure su empresa",
+          "body": "IČO, dirección, cuenta bancaria y serie de numeración. Con el registro se hace en minutos."
+        },
+        {
+          "title": "Emita su primera factura",
+          "body": "Idealmente justo después de terminar el trabajo, para que el cobro no se retrase."
+        },
+        {
+          "title": "Registre los gastos",
+          "body": "Fotografíe o suba los tiques. Alimentan su resumen y su declaración de la renta."
+        },
+        {
+          "title": "Revise los cobros",
+          "body": "Conecte su banco o marque los pagos a mano. El resumen muestra quién le debe dinero."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Tengo que indicar que no soy sujeto pasivo de IVA?",
+          "a": "La ley no lo exige estrictamente, pero es una buena práctica y evita preguntas. Billanta lo añade por usted."
+        },
+        {
+          "q": "¿Puedo hacer facturas en Excel o Word?",
+          "a": "Puede, pero tendrá que vigilar usted mismo la numeración, las fechas y las copias. Una aplicación lo hace por usted y no se olvida de nada."
+        },
+        {
+          "q": "¿Qué es la paušální daň checa?",
+          "a": "Un único pago mensual que cubre el impuesto sobre la renta y las cotizaciones a la seguridad social y al seguro de salud para autónomos checos por debajo de cierto nivel de ingresos. No le conviene a todo el mundo, así que haga cuentas."
+        },
+        {
+          "q": "¿Necesito un contable?",
+          "a": "Al principio a menudo no, sobre todo con gastos a tanto alzado. Cuando el negocio crezca, invite a su contable a Billanta y verá los registros por sí mismo."
+        },
+        {
+          "q": "¿Cuánto cuesta Billanta?",
+          "a": "La facturación básica es gratuita. Los planes superiores añaden funciones como la conciliación bancaria o más usuarios. Consulte los precios para más detalles."
+        }
+      ]
+    },
+    "advanced": {
+      "seoTitle": "Facturación para usuarios avanzados: IVA, clientes extranjeros, facturas recurrentes, API",
+      "eyebrow": "Facturación para usuarios avanzados",
+      "title": "Cuando facturar forma parte del día a día",
+      "lead": "Para sujetos pasivos de IVA y empresas en crecimiento: inversión del sujeto pasivo, clientes extranjeros, facturas recurrentes, conciliación de pagos, la API, varias empresas y roles del equipo.",
+      "topicsTitle": "Temas con los que se encontrará tarde o temprano",
+      "topics": {
+        "vat": {
+          "title": "Sujetos pasivos de IVA",
+          "body": "Tipos, fechas de devengo y los datos para su declaración. Las declaraciones de IVA checas, los control statements y las declaraciones recapitulativas se descargan en XML para EPO."
+        },
+        "reverseCharge": {
+          "title": "Inversión del sujeto pasivo",
+          "body": "En algunas operaciones y con sujetos pasivos de IVA de la UE, el cliente liquida el impuesto. Billanta le pide su número de IVA y añade la mención obligatoria."
+        },
+        "foreign": {
+          "title": "Clientes extranjeros",
+          "body": "Facturas en euros o dólares, el tipo de cambio de la fecha de devengo y la conversión para el IVA. Las facturas también pueden ser bilingües."
+        },
+        "recurring": {
+          "title": "Facturas recurrentes",
+          "body": "Facture un alquiler o una iguala a partir de una sola plantilla. Cada mes llega una factura con el siguiente número de la serie."
+        },
+        "bank": {
+          "title": "Conciliación de pagos",
+          "body": "Los pagos bancarios se concilian por símbolo variable e importe. Las facturas pagadas se marcan solas."
+        },
+        "api": {
+          "title": "API y webhooks",
+          "body": "Conecte su tienda o su propio sistema. Los webhooks avisan cuando una factura se paga, se visualiza o vence."
+        },
+        "companies": {
+          "title": "Varias empresas",
+          "body": "Un inicio de sesión, contabilidades separadas. Puede tener un rol distinto en cada empresa. Depende de su plan."
+        },
+        "roles": {
+          "title": "Roles del equipo",
+          "body": "Un contable, un asistente o un compañero con acceso de solo lectura ve y modifica solo lo que le corresponde."
+        },
+        "isdoc": {
+          "title": "ISDOC y facturas electrónicas",
+          "body": "El software contable de sus clientes lee las facturas ISDOC automáticamente, sin tener que volver a teclearlas."
+        }
+      },
+      "switch": {
+        "title": "¿Viene de otra aplicación?",
+        "body": "Traiga contactos y facturas emitidas desde CSV, Fakturoid o BitFaktura. La numeración continúa donde la dejó.",
+        "cta": "Cómo cambiarse",
+        "compare": "Comparar con otros"
+      },
+      "faq": [
+        {
+          "q": "¿Sabe Billanta cuándo aplicar la inversión del sujeto pasivo?",
+          "a": "Para un cliente con número de IVA de otro país de la UE, ofrece la inversión del sujeto pasivo y comprueba el número en VIES. En casos nacionales, como las obras de construcción, usted la activa en la factura."
+        },
+        {
+          "q": "¿Puedo facturar en moneda extranjera?",
+          "a": "Sí. Para empresas checas, el tipo de cambio del ČNB de la fecha de devengo se rellena al emitir y puede ajustarse a mano. El IVA se convierte a CZK."
+        },
+        {
+          "q": "¿Gestiona Billanta el control statement checo?",
+          "a": "Sí. Para los sujetos pasivos de IVA checos prepara el XML del control statement con todos los documentos, además de la declaración de IVA y la declaración recapitulativa."
+        },
+        {
+          "q": "¿Está la API en todos los planes?",
+          "a": "La API y los webhooks están en los planes de pago. Consulte los precios para más detalles."
+        },
+        {
+          "q": "¿Puedo gestionar varias empresas?",
+          "a": "Sí, con el plan superior. Cada empresa tiene sus propios datos, series de numeración, banco y equipo."
+        }
+      ]
+    },
+    "roles": {
+      "seoTitle": "Roles del equipo: propietario, administrador, contable y solo lectura",
+      "eyebrow": "Equipo y roles",
+      "title": "Roles del equipo",
+      "lead": "Invite a su contable, a un asistente o a un compañero. Cada uno ve solo lo que necesita y modifica solo lo que puede. Aquí verá exactamente qué.",
+      "featureLink": "La función Equipo y roles",
+      "cards": {
+        "owner": {
+          "who": "Quien creó la empresa en Billanta",
+          "body": "Ve y hace todo. Responde por la empresa y es el único que configura las copias de seguridad.",
+          "points": [
+            "Toda la facturación, los gastos, el banco y los informes",
+            "El equipo, la suscripción, los ajustes de la empresa y las claves de API",
+            "Las copias de seguridad, y nadie más",
+            "El rol del propietario no se puede cambiar y el propietario no se puede eliminar"
+          ],
+          "link": "Más para propietarios"
+        },
+        "admin": {
+          "who": "Responsable de oficina, socio, mano derecha",
+          "body": "Gestiona la empresa en nombre del propietario. Puede hacer casi todo, salvo configurar las copias de seguridad.",
+          "points": [
+            "Toda la facturación, los gastos, el banco y los informes",
+            "Invita a compañeros y define su acceso",
+            "Ajustes de la empresa, suscripción, claves de API, importación del historial",
+            "Conecta cuentas bancarias"
+          ],
+          "link": "Más para asistentes"
+        },
+        "accountant": {
+          "who": "Contable o asesor fiscal externo",
+          "body": "Trabaja con documentos y exportaciones, y no interviene en la administración de la empresa.",
+          "points": [
+            "Facturas, contactos, gastos e informes",
+            "Sincroniza el banco, pero no conecta cuentas nuevas",
+            "Las exportaciones contables, en primer plano",
+            "No ve el equipo, la suscripción ni las claves de API"
+          ],
+          "link": "Más para contables"
+        },
+        "viewer": {
+          "who": "Socio, inversor, revisor",
+          "body": "Consulta, no modifica nada. Adecuado para quien necesita una visión general.",
+          "points": [
+            "Lee facturas, contactos, gastos, banco e informes",
+            "No puede emitir, editar ni eliminar nada",
+            "No ve los ajustes de la empresa"
+          ]
+        }
+      },
+      "tableTitle": "Quién puede hacer qué",
+      "tableLead": "El acceso predeterminado de cada rol. Para los roles de contable y de solo lectura, el propietario o un administrador pueden ajustar el acceso área por área.",
+      "table": {
+        "area": "Área",
+        "rows": {
+          "invoices": "Facturas",
+          "contacts": "Contactos",
+          "expenses": "Gastos",
+          "bank": "Banco y pagos",
+          "reports": "Informes y exportaciones",
+          "settings": "Ajustes de la empresa",
+          "team": "Equipo y suscripción",
+          "import": "Importación del historial",
+          "backups": "Copias de seguridad"
+        },
+        "levels": {
+          "write": "Edita",
+          "read": "Lee",
+          "none": "No"
+        }
+      },
+      "tableNote": "El contable sincroniza el banco; las cuentas nuevas las conecta el propietario o un administrador. Los contables pueden activar por sí mismos el calendario de vencimientos en las integraciones. Cualquiera puede salir de una empresa o crear la suya propia.",
+      "presetsTitle": "Perfiles predefinidos",
+      "presetsLead": "Elija un perfil al invitar a alguien y el acceso se configura automáticamente. Puede ajustarlo en cualquier momento.",
+      "presets": {
+        "invoicer": {
+          "title": "Facturador",
+          "body": "Emite facturas y gestiona contactos, consulta el banco. Sin acceso a gastos ni informes."
+        },
+        "expenses": {
+          "title": "Asistente de gastos",
+          "body": "Registra gastos y tiques, consulta facturas y contactos."
+        },
+        "auditor": {
+          "title": "Asesor fiscal / auditor",
+          "body": "Lo consulta todo, no modifica nada. Ideal para una revisión o el cierre del ejercicio."
+        },
+        "viewer": {
+          "title": "Solo lectura",
+          "body": "Ve facturas, contactos y gastos. No el banco ni los informes."
+        }
+      },
+      "demoTitle": "Véalo con los ojos de cada rol",
+      "demoLead": "Abra la demo como propietario, como contable o como compañero con acceso de solo lectura. El resumen, el menú y los ajustes muestran solo lo que ese rol puede hacer.",
+      "faq": [
+        {
+          "q": "¿A cuántas personas puedo invitar?",
+          "a": "Depende de su plan, desde un único usuario hasta todo un equipo. Consulte los precios para más detalles."
+        },
+        {
+          "q": "¿Mi contable paga por una cuenta?",
+          "a": "No. Lo invita por correo electrónico e inicia sesión con su propia cuenta, que puede servirle para varios clientes."
+        },
+        {
+          "q": "¿Qué ve un miembro en una página que no puede usar?",
+          "a": "El menú y el resumen solo ofrecen lo que puede hacer. Si abre una página oculta desde un enlace, verá un aviso de que no tiene acceso."
+        },
+        {
+          "q": "¿Puedo saber quién cambió qué?",
+          "a": "Sí. El historial de cambios muestra el autor, la hora y el valor anterior y nuevo de cada cambio."
+        },
+        {
+          "q": "¿Puede una persona tener roles distintos en empresas distintas?",
+          "a": "Sí. Por ejemplo, propietario de su propia empresa y contable en la de un cliente."
+        }
+      ]
+    },
+    "owners": {
+      "seoTitle": "Billanta para propietarios de empresas: visión general, equipo y control",
+      "eyebrow": "Para propietarios",
+      "title": "Para propietarios de empresas",
+      "lead": "Usted crea la empresa en Billanta y tiene la última palabra. Lo ve todo, invita a su equipo y decide quién puede hacer qué.",
+      "cardsTitle": "Lo que obtiene como propietario",
+      "cards": {
+        "overview": {
+          "title": "La visión completa",
+          "body": "Quién le debe dinero, qué está vencido, la facturación y los gastos. Todo en una sola pantalla, también en el móvil."
+        },
+        "team": {
+          "title": "Su equipo bajo control",
+          "body": "En Ajustes → Equipo, invite a su contable o a un asistente y ajuste su acceso área por área."
+        },
+        "audit": {
+          "title": "Historial de cambios",
+          "body": "En cada factura ve quién la cambió, cuándo y por qué. Incluso si fue la IA o la API."
+        },
+        "billing": {
+          "title": "Suscripción y ajustes",
+          "body": "Usted, o un administrador, gestiona el plan, los datos de la empresa, las series de numeración y las claves de API."
+        },
+        "backups": {
+          "title": "Copias de seguridad, solo a través de usted",
+          "body": "Solo el propietario decide dónde y con qué frecuencia se hace la copia de seguridad de los datos de la empresa. Nadie más puede redirigirla."
+        },
+        "companies": {
+          "title": "Varias empresas",
+          "body": "Añada otra empresa con el mismo inicio de sesión. Los datos y los equipos se mantienen separados. Depende de su plan."
+        }
+      },
+      "stepsTitle": "Cómo formar su equipo",
+      "steps": [
+        {
+          "title": "Invite a su contable",
+          "body": "Introduzca su correo electrónico y el rol Contable. Se encarga por sí mismo de las exportaciones y los registros, así que usted no tiene que enviar nada."
+        },
+        {
+          "title": "Invite a un asistente",
+          "body": "Asigne a un responsable de oficina el rol Administrador. Quien solo factura recibe el perfil Facturador."
+        },
+        {
+          "title": "Ajuste el acceso",
+          "body": "Para los roles de contable y de solo lectura, active o desactive áreas concretas, como el banco o los informes."
+        },
+        {
+          "title": "Revise el historial",
+          "body": "La actividad muestra quién cambió qué. Una factura emitida solo puede corregirse indicando un motivo."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Puede alguien del equipo eliminarme?",
+          "a": "No. El propietario no se puede eliminar de la empresa y su rol no se puede cambiar."
+        },
+        {
+          "q": "¿Por qué solo el propietario configura las copias de seguridad?",
+          "a": "Una copia de seguridad contiene todos los datos de la empresa, así que solo quien responde por la empresa decide adónde van."
+        },
+        {
+          "q": "¿Y si mi contable se va?",
+          "a": "Elimínelo en Ajustes → Equipo y su acceso termina al instante. Los datos se quedan en la empresa."
+        },
+        {
+          "q": "¿Puedo ver la empresa como la ve mi contable?",
+          "a": "En la demo, sí: ábrala en la vista de contable o de solo lectura."
+        }
+      ]
+    },
+    "assistants": {
+      "seoTitle": "Billanta para asistentes y responsables de oficina",
+      "eyebrow": "Para asistentes",
+      "title": "Para asistentes y responsables de oficina",
+      "lead": "¿Gestiona facturas y papeleo para otra persona? Billanta le da el acceso adecuado: toda la empresa o solo las facturas o los gastos.",
+      "cardsTitle": "El acceso que puede tener",
+      "cards": {
+        "admin": {
+          "title": "Administrador",
+          "body": "Gestiona la empresa en nombre del propietario: facturas, gastos, banco, equipo y ajustes. Solo las copias de seguridad quedan en manos del propietario."
+        },
+        "invoicer": {
+          "title": "Facturador",
+          "body": "Emite facturas y mantiene los contactos. Ve los pagos bancarios, pero no los gastos ni los informes."
+        },
+        "expenses": {
+          "title": "Asistente de gastos",
+          "body": "Registra gastos y tiques. Ve las facturas y los contactos, pero no los modifica."
+        },
+        "contacts": {
+          "title": "Contactos desde el registro",
+          "body": "Añada un cliente nuevo por su IČO y los datos se cargan del registro mercantil. Sin volver a teclear nada."
+        },
+        "tailored": {
+          "title": "Una aplicación adaptada a su rol",
+          "body": "El resumen, el menú, la búsqueda y la navegación móvil muestran solo las acciones que puede realizar."
+        },
+        "limits": {
+          "title": "Límites claros",
+          "body": "Los ajustes que no puede usar muestran un aviso de que los gestionan los administradores. No puede estropear nada."
+        }
+      },
+      "stepsTitle": "Primeros pasos",
+      "steps": [
+        {
+          "title": "Acepte la invitación",
+          "body": "El propietario le invita por correo electrónico. Inicie sesión con su cuenta o cree una en el momento."
+        },
+        {
+          "title": "Eche un vistazo al resumen",
+          "body": "La pantalla de inicio muestra solo aquello a lo que tiene acceso: borradores, vencimientos o gastos."
+        },
+        {
+          "title": "Emita o registre",
+          "body": "Un facturador emite una factura; un asistente de gastos sube un tique. Todo queda en el historial de cambios."
+        },
+        {
+          "title": "¿Necesita más?",
+          "body": "Pida al propietario o a un administrador que amplíe su acceso. El cambio se aplica al instante."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Qué diferencia hay entre un administrador y el propietario?",
+          "a": "Un administrador puede hacer casi todo lo que hace el propietario, pero no configura las copias de seguridad ni puede eliminar al propietario o cambiar su rol."
+        },
+        {
+          "q": "¿Puedo trabajar para varias empresas?",
+          "a": "Sí. Un mismo inicio de sesión puede pertenecer a varias empresas, con un rol distinto en cada una."
+        },
+        {
+          "q": "Como facturador, ¿veré los gastos o los beneficios?",
+          "a": "No. El perfil Facturador no tiene acceso a gastos ni a informes."
+        },
+        {
+          "q": "¿Y si dejo la empresa?",
+          "a": "Puede salir de una empresa usted mismo en cualquier momento. Las facturas que emitió se quedan en la empresa."
+        }
+      ]
+    }
+  },
   "switchPage": {
     "seoTitle": "Cámbiese a Billanta desde otro programa de facturación",
     "navTitle": "Cambiar a Billanta",
@@ -10455,6 +11807,158 @@
       "eshop": "Pequeñas tiendas online y comercios – desde productos artesanales hasta artículos especializados.",
       "cleaning": "Empresas de limpieza, mantenimiento de casas y jardines, limpieza de cristales y otros servicios para el hogar.",
       "other": "Otros autónomos y empresas que no encajan en los demás sectores."
+    }
+  },
+  "invoiceTemplates": {
+    "menu": "Plantillas de factura",
+    "indexTitle": "Plantillas de factura checas – para sujetos pasivos de IVA y no sujetos",
+    "indexName": "Plantillas de factura",
+    "indexDescription": "Plantillas de factura según la legislación checa: factura de no sujeto pasivo y de sujeto pasivo de IVA, factura proforma, factura rectificativa, inversión del sujeto pasivo nacional y persona identificada. Cada una con los datos obligatorios y un editor online gratuito.",
+    "indexLead": "Elija su situación para ver un ejemplo rellenado, los datos obligatorios con enlaces a la ley y un botón que abre el editor preparado para ese documento. El PDF es gratuito y no requiere registro.",
+    "howTitle": "Cómo usar una plantilla",
+    "how": [
+      "Consulte el ejemplo para ver qué debe figurar en la factura y dónde.",
+      "Abra el editor con el tipo de documento ya configurado y añada sus propios datos.",
+      "Descargue el PDF terminado con código QR de pago. No se guarda nada y no hace falta cuenta."
+    ],
+    "common": {
+      "sample": "Ejemplo",
+      "fictional": "Datos ficticios, solo a modo ilustrativo.",
+      "whenTitle": "Cuándo usar este documento",
+      "fieldsTitle": "Datos obligatorios",
+      "fieldsLead": "Cada punto enlaza al artículo de la ley checa que lo exige (en checo).",
+      "pitfallsTitle": "Tenga cuidado con",
+      "useButton": "Rellenar esta plantilla online",
+      "useNote": "El editor se abre con el tipo de documento configurado. El PDF es gratuito y no requiere registro.",
+      "otherTitle": "Otras plantillas",
+      "allTemplates": "Todas las plantillas de factura",
+      "lawRef": "Artículo {p}({o}) {law}",
+      "lawRefShort": "Artículo {p} {law}",
+      "rulesNote": "Estas plantillas siguen la legislación checa. Para casos especiales (clientes extranjeros, operaciones exentas), compruebe los detalles en la ley o consulte a un asesor fiscal."
+    },
+    "laws": {
+      "ZDPH": "de la Ley checa del IVA",
+      "OZ": "del Código Civil checo",
+      "ZU": "de la Ley checa de Contabilidad",
+      "ZoDPH": "de la Ley eslovaca del IVA",
+      "ObZ": "del Código de Comercio eslovaco",
+      "ZoU": "de la Ley eslovaca de Contabilidad",
+      "OSR": "del Código Procesal Civil",
+      "NVU": "del Reglamento del Gobierno n.º 351/2013 Recop.",
+      "NVUO": "del Reglamento del Gobierno eslovaco n.º 21/2013 Recop."
+    },
+    "doc": {
+      "supplier": "Proveedor",
+      "customer": "Cliente",
+      "number": "N.º de documento",
+      "issueDate": "Fecha de emisión",
+      "duzp": "Fecha de devengo",
+      "dueDate": "Fecha de vencimiento",
+      "payment": "Pago",
+      "bankTransfer": "Transferencia bancaria",
+      "vs": "Símbolo variable",
+      "description": "Descripción",
+      "quantity": "Cant.",
+      "unitPrice": "Precio unitario",
+      "rate": "IVA",
+      "amount": "Importe",
+      "base": "Base",
+      "vat": "IVA",
+      "recap": "Resumen del IVA",
+      "totalDue": "Total a pagar",
+      "related": "Rectifica la factura",
+      "reason": "Motivo de la rectificación",
+      "reverseBase": "Base imponible (inversión del sujeto pasivo)"
+    },
+    "currency": "CZK",
+    "bank": {
+      "account": "1920014539/0800",
+      "iban": "CZ65 0800 0000 0019 2001 4539"
+    },
+    "parties": {
+      "nonPayer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "N.º de identificación (IČO): 12345678",
+          "No es sujeto pasivo de IVA."
+        ]
+      },
+      "payer": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "N.º de identificación (IČO): 12345678",
+          "NIF-IVA (DIČ): CZ7356120123"
+        ]
+      },
+      "identified": {
+        "name": "Jana Nováková",
+        "lines": [
+          "Vinohradská 12",
+          "120 00 Praha 2"
+        ],
+        "ids": [
+          "N.º de identificación (IČO): 12345678",
+          "NIF-IVA (DIČ): CZ7356120123",
+          "Persona identificada a efectos del IVA"
+        ]
+      },
+      "contractor": {
+        "name": "Stavby Kučera s.r.o.",
+        "lines": [
+          "Lidická 45",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "N.º de identificación (IČO): 24681357",
+          "NIF-IVA (DIČ): CZ24681357",
+          "Inscrita en la sección C, hoja 98765, del Tribunal Regional de Brno"
+        ]
+      },
+      "domestic": {
+        "name": "Pekárna U Mlýna s.r.o.",
+        "lines": [
+          "Mlýnská 8",
+          "602 00 Brno"
+        ],
+        "ids": [
+          "N.º de identificación (IČO): 87654321",
+          "NIF-IVA (DIČ): CZ87654321"
+        ]
+      },
+      "developer": {
+        "name": "Rezidence Hájek s.r.o.",
+        "lines": [
+          "Na Pankráci 30",
+          "140 00 Praha 4"
+        ],
+        "ids": [
+          "N.º de identificación (IČO): 13579246",
+          "NIF-IVA (DIČ): CZ13579246"
+        ]
+      },
+      "eu": {
+        "name": "Hafenstadt Media GmbH",
+        "lines": [
+          "Speicherstraße 4",
+          "20457 Hamburg",
+          "Alemania"
+        ],
+        "ids": [
+          "USt-IdNr.: DE123456789"
+        ]
+      }
+    },
+    "requirementsLink": {
+      "title": "¿Qué debe contener una factura?",
+      "text": "Indíquenos quién es y qué emite, y le mostraremos los datos obligatorios exactamente para su caso."
     }
   },
   "paymentReminders": {
