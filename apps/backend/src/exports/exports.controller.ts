@@ -23,8 +23,9 @@ import {
   HEALTH_INSURERS,
 } from "./annual-filings";
 import { submitterFromTenant } from "./vat-returns";
-import { computeTaxReturnBasis, homeCurrencyOf, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
+import { computeTaxReturnBasis, isLegalEntityName, normalizeTaxAdvances } from "@faktur/cz-compliance";
 import { taxReturnCsv, taxReturnFileName, taxReturnPdf, type TaxReturnReport } from "./tax-return-basis";
+import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 const vatPeriodSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
@@ -240,7 +241,7 @@ export class ExportsController {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     // Without a typed amount, the paid advances come from Settings → Měsíční zálohy (per month, as they applied then).
     const paid = paidAdvances(normalizeTaxAdvances(tenant?.taxAdvances), year, { paidSocial, paidHealth });
-    const country = tenant?.addressCountry === "SK" ? ("SK" as const) : ("CZ" as const);
+    const country = tenantCountry(tenant);
     try {
       const summary = await this.exportsService.annualSummary(req.tenantDb!, year, {
         vatPayer: tenant?.dicVatPayer ?? false,
@@ -248,8 +249,8 @@ export class ExportsController {
         paidSocial: paid.paidSocial,
         paidHealth: paid.paidHealth,
         basis,
-        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), homeCurrencyOf(tenant?.addressCountry)),
-        homeCurrency: homeCurrencyOf(tenant?.addressCountry),
+        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
+        homeCurrency: tenantHomeCurrencyOf(tenant),
       });
       // The dashboard card recomputes the figures from income, expenses and
       // the paid advances with the same @faktur/cz-compliance functions, under
@@ -297,7 +298,7 @@ export class ExportsController {
     if (!parsed.success) throw new BadRequestException("invalid_tax_return_query");
     const { year, rate } = parsed.data;
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
-    const country = tenant?.addressCountry === "SK" ? ("SK" as const) : ("CZ" as const);
+    const country = tenantCountry(tenant);
     const legalEntity = isLegalEntityName(tenant?.legalName);
     const basis = legalEntity ? ("accrual" as const) : ("cash" as const);
     const vatPayer = tenant?.dicVatPayer ?? false;
@@ -307,8 +308,8 @@ export class ExportsController {
         vatPayer,
         flatRate: null,
         basis,
-        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), homeCurrencyOf(tenant?.addressCountry)),
-        homeCurrency: homeCurrencyOf(tenant?.addressCountry),
+        rates: ReportRates.fromPrefs(tenant?.invoiceFormPrefs, new Date(), tenantHomeCurrencyOf(tenant)),
+        homeCurrency: tenantHomeCurrencyOf(tenant),
       });
       const b = computeTaxReturnBasis({
         country,

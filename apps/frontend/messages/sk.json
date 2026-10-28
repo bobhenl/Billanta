@@ -1885,7 +1885,12 @@
       "dicKeepHint": "DIČ nechajte vyplnené, aj keď nie ste platiteľ alebo ste identifikovaná osoba. Uvádza sa potom na dokladoch.",
       "dataBoxId": "ID dátovej schránky",
       "dataBoxIdHint": "Sedem znakov, napr. ab12cd3. Nie je tajné. Predvyplní sa do ročného prehľadu pre ČSSZ.",
-      "icoTrialHint": "Vyplnením IČO spustíte skúšobnú verziu tarifu Plus na {days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty. Raz pre každé IČO."
+      "icoTrialHint": "Vyplnením IČO spustíte skúšobnú verziu tarifu Plus na {days, plural, one {# deň} few {# dni} other {# dní}} zadarmo, bez karty. Raz pre každé IČO.",
+      "taxCountry": "Krajina zdanenia",
+      "taxCountryValue": "{country} · účtovníctvo v {currency}",
+      "taxCountryHint": "Určuje sadzby DPH, menu účtovníctva a exporty. Adresa sídla ju nemení. Zmeniť ju môžete v úvodnom nastavení, kým nevystavíte prvú faktúru.",
+      "taxCountryLocked": "Po vystavení prvej faktúry už krajinu zdanenia zmeniť nemožno.",
+      "taxCountryChange": "Zmeniť"
     },
     "team": {
       "title": "Tím",
@@ -5424,7 +5429,12 @@
       "claim": "Prevziať do účtu",
       "dismiss": "Zabudnúť",
       "bannerHint": "Vystavili ste ich v tomto prehliadači bez účtu. Uložíme ich ako vystavené doklady a odberateľov ako kontakty."
-    }
+    },
+    "countryQuestion": "Kde je vaša firma registrovaná?",
+    "countryHint": "Podľa krajiny nastavíme sadzby DPH, menu účtovníctva a registre. Po vystavení prvej faktúry ju už nezmeníte.",
+    "countrySoon": "Pripravujeme",
+    "countryLocked": "Krajina je pevne daná, lebo už máte vystavenú faktúru.",
+    "countryNotSupported": "Túto krajinu zatiaľ nepodporujeme."
   },
   "registry": {
     "label": "Register firiem",

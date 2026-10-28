@@ -5,7 +5,7 @@ import { Banner } from '@/components/banner';
 import { redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { auth } from '@/auth';
-import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
+import { canManage, fetchMyAccess, fetchTenant, forbiddenSettings, hiddenSections, taxCountryOf, vatStatusOf, type MyAccess, type TaxAdvances } from '@/lib/tenant';
 import { isLegalEntityName, type TaxProfile } from '@/lib/tax-deadlines';
 import { normalizeTaxAdvances, taxReturnSeason } from '@faktur/cz-compliance';
 import type { TimeSummary } from '@/lib/time-ui';
@@ -69,7 +69,7 @@ export default async function DashboardHomePage() {
       access.then((a) => (hiddenSections(a).includes('time') ? null : apiFetch<TimeSummary>('/api/v1/time-entries/summary').catch(() => null)))
     ]);
     abilities = abilitiesOf(await access);
-    country = tenant?.addressCountry ?? 'CZ';
+    country = taxCountryOf(tenant);
     profile = { country, vatStatus: vatStatusOf(tenant), legalEntity: isLegalEntityName(tenant?.legalName), flatTax: tenant?.flatTaxRegime ?? null };
     advances = normalizeTaxAdvances(tenant?.taxAdvances);
     // Only after money has actually come in (last 12 months is close enough to "ever").

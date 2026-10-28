@@ -20,7 +20,7 @@ import pytest
 
 from app.pipeline import voice_to_invoice as v2i
 from app.pipeline.errors import ExtractionError
-from app.pipeline.schemas import ExtractedInvoiceDraft
+from app.pipeline.schemas import ExtractedInvoiceDraft, TenantContext
 
 VALID_PAYLOAD = {
     "counterparty_name_raw": "Jan Novák",
@@ -146,3 +146,46 @@ async def test_extract_invoice_data_missing_api_key_raises(settings):
     settings.openai_api_key = ""
     with pytest.raises(ExtractionError):
         await v2i.extract_invoice_data("some transcript", settings=settings)
+
+
+async def test_extract_invoice_data_cz_tenant_keeps_the_original_prompt(monkeypatch, settings):
+    completions = _patch_openai(monkeypatch, contents=[json.dumps(VALID_PAYLOAD)])
+
+    await v2i.extract_invoice_data(
+        "some transcript",
+        tenant=TenantContext(tenant_id="t-cz", country="CZ", home_currency="CZK"),
+        settings=settings,
+    )
+
+    system_prompt = completions.calls[0]["messages"][0]["content"]
+    assert system_prompt == v2i.EXTRACTION_SYSTEM_PROMPT
+    assert "Default currency to CZK unless" in system_prompt
+    assert "registered for tax in" not in system_prompt
+
+
+async def test_extract_invoice_data_sk_tenant_defaults_to_eur(monkeypatch, settings):
+    payload = dict(VALID_PAYLOAD, currency="")
+    completions = _patch_openai(monkeypatch, contents=[json.dumps(payload)])
+
+    result = await v2i.extract_invoice_data(
+        "some transcript",
+        tenant=TenantContext(tenant_id="t-sk", country="SK", home_currency="EUR"),
+        settings=settings,
+    )
+
+    system_prompt = completions.calls[0]["messages"][0]["content"]
+    assert "Default currency to EUR unless" in system_prompt
+    assert "e.g. CZK for Czech speakers" in system_prompt
+    assert "registered for tax in Slovakia" in system_prompt
+    assert "Default currency to CZK" not in system_prompt
+    assert result.currency == "EUR"
+
+
+async def test_extract_invoice_data_without_tenant_falls_back_to_czk(monkeypatch, settings):
+    payload = dict(VALID_PAYLOAD, currency="")
+    completions = _patch_openai(monkeypatch, contents=[json.dumps(payload)])
+
+    result = await v2i.extract_invoice_data("some transcript", settings=settings)
+
+    assert completions.calls[0]["messages"][0]["content"] == v2i.EXTRACTION_SYSTEM_PROMPT
+    assert result.currency == "CZK"

@@ -7,7 +7,7 @@ import { fetchHomeCurrency } from '@/lib/tenant';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { inAppCalculatorPath } from '@/lib/public-tools';
 import { isLegalEntityName } from '@/lib/tax-deadlines';
-import { fetchTenant, type TenantSettings } from '@/lib/tenant';
+import { fetchTenant, taxCountryOf, type TenantSettings } from '@/lib/tenant';
 import { PeriodReport } from '../dashboard/period-report';
 import type { Usage } from '@/lib/usage-defaults';
 import type { DashboardConfig, PeriodStats } from '../dashboard/types';
@@ -58,7 +58,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         {/* Related pages as one swipeable row on a phone, so they never wrap under each other. */}
         <nav className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
           {/* The paušální režim is for Czech sole traders only. */}
-          {tenant && tenant.addressCountry.toUpperCase() !== 'SK' && !isLegalEntityName(tenant.legalName) && (
+          {tenant && taxCountryOf(tenant) !== 'SK' && !isLegalEntityName(tenant.legalName) && (
             <Link href={inAppCalculatorPath('flat-tax')!} className={link}>
               {t('flatTaxLink')}
             </Link>

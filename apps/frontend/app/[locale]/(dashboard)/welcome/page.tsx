@@ -7,7 +7,8 @@ import { apiFetch, NotSignedInError } from '@/lib/api-client';
 import { clientIp } from '@/lib/client-ip';
 import { PROMO_CODE, PROMO_COOKIE } from '@/lib/promo';
 import { lookupJoinCode } from '@/lib/promo-join';
-import { canManage, fetchMyAccess, fetchTenant } from '@/lib/tenant';
+import { onboardingCountries } from '@faktur/cz-compliance';
+import { canManage, fetchMyAccess, fetchTenant, taxCountryOf } from '@/lib/tenant';
 import { BUSINESS_PRESETS, TOGGLEABLE_MODULES, type ModuleSet } from '@/lib/business-presets';
 import { isSwitchBrand, SWITCH_COOKIE, switchBrandsFor } from '@/lib/switch';
 import { WelcomeSetup } from './welcome-setup';
@@ -45,7 +46,8 @@ export default async function WelcomePage() {
     return (
       <WelcomeSetup
         initialModules={modules}
-        company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: tenant?.addressCountry ?? 'CZ' }}
+        company={{ ico: tenant?.ico ?? '', vatPayer: tenant?.dicVatPayer ?? false, country: taxCountryOf(tenant), countryLocked: tenant?.countryLocked ?? false }}
+        countries={onboardingCountries()}
         importApps={switchBrandsFor(locale)}
         initialImportFrom={isSwitchBrand(from) ? from : null}
         managesClients={session?.managesClients ?? false}

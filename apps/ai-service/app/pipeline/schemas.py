@@ -21,6 +21,19 @@ class Channel(str, Enum):
     WHATSAPP = "whatsapp"
 
 
+class TenantContext(BaseModel):
+    """The tenant a linked sender belongs to, as the backend reports it.
+
+    `country` and `home_currency` only steer prompt defaults (draft currency,
+    whose VAT conventions to assume); the human reviewer still decides. The
+    defaults keep older backends that only send `tenantId` on CZ behaviour.
+    """
+
+    tenant_id: str
+    country: str = "CZ"
+    home_currency: str = "CZK"
+
+
 class LineItem(BaseModel):
     """A single invoice line item as extracted from the transcript.
 

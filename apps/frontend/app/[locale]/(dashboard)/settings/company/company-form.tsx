@@ -2,8 +2,8 @@
 
 import { AddressInput } from '@/components/address-input';
 import { useMemo, useState, useTransition } from 'react';
-import { Building2, CreditCard, FileText, Landmark, Lightbulb, Loader2, MapPin, Percent, Phone, Save, Search } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { Building2, CreditCard, FileText, Globe2, Landmark, Lightbulb, Loader2, Lock, MapPin, Percent, Phone, Save, Search } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { CompanyLookup, fetchContactSearch } from '@/components/company-lookup';
 import { InfoHint } from '@/components/info-hint';
@@ -14,8 +14,8 @@ import { lookupCompanyById } from '@/lib/company-lookup-actions';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
-import { isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
-import type { BankAccount, TenantSettings } from '@/lib/tenant';
+import { homeCurrencyOf, isLegalEntityName, type VatStatus } from '@faktur/cz-compliance';
+import { taxCountryOf, type BankAccount, type TenantSettings } from '@/lib/tenant';
 import { vatStatusOf } from '@/lib/vat-status';
 const VAT_STATUS_OPTIONS: VatStatus[] = ['payer', 'identified', 'non_payer'];
 import { BankAccounts } from './bank-accounts';
@@ -256,6 +256,7 @@ export function CompanyForm({
           {field('companyName', t('companyName'), { required: true, maxLength: 200 }, '', t('companyNameHint'))}
           {field('legalName', t('legalName'), { required: true, maxLength: 200 }, '', t('legalNameHint'))}
         </div>
+        <TaxCountry tenant={tenant} readOnly={readOnly} />
       </Section>
 
       <Section icon={MapPin} title={t('sections.address')}>
@@ -398,5 +399,32 @@ function Section({ icon: Icon, title, hint, children }: { icon: typeof Building2
       {hint ? <InfoHint hint={hint}>{heading}</InfoHint> : heading}
       <div className="mt-3">{children}</div>
     </section>
+  );
+}
+
+/**
+ * The tax country, read-only here: it is picked in the welcome setup and
+ * fixed by the first issued invoice, while the address below stays free.
+ */
+function TaxCountry({ tenant, readOnly }: { tenant: TenantSettings; readOnly: boolean }) {
+  const t = useTranslations('settings.company');
+  const locale = useLocale();
+  const code = taxCountryOf(tenant);
+  const name = new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
+  const currency = tenant.homeCurrency ?? homeCurrencyOf(code);
+  return (
+    <div className="mt-3 rounded-lg border border-border p-3 text-sm">
+      <p className="flex flex-wrap items-center gap-2">
+        {tenant.countryLocked ? <Lock className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> : <Globe2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
+        <span className="font-medium">{t('taxCountry')}:</span>
+        <span>{t('taxCountryValue', { country: name, currency })}</span>
+        {!tenant.countryLocked && !readOnly && (
+          <Link href="/welcome" className="text-xs font-semibold text-primary hover:underline">
+            {t('taxCountryChange')}
+          </Link>
+        )}
+      </p>
+      <p className="mt-1 text-xs text-muted-foreground">{tenant.countryLocked ? t('taxCountryLocked') : t('taxCountryHint')}</p>
+    </div>
   );
 }

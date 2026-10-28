@@ -3,7 +3,6 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException, 
 import {
   checkInvoiceRequirements,
   generateIsdocXml,
-  homeCurrencyOf,
   generateUblInvoiceXml,
   validatePeppolInvoice,
   type PeppolIssue,
@@ -51,6 +50,7 @@ import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from 
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
+import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
 // counterparty_ico / counterparty_name_raw into a real `contacts` row here
@@ -1373,12 +1373,12 @@ export class InvoicesService {
         paymentFees: schema.invoices.paymentFees,
         amountPaid: schema.invoices.amountPaid,
         reverseCharge: schema.invoices.reverseCharge,
-        addressCountry: schema.tenants.addressCountry,
+        country: schema.tenants.country,
       })
       .from(schema.invoices)
       .innerJoin(schema.tenants, eq(schema.tenants.id, schema.invoices.tenantId))
       .where(eq(schema.invoices.id, invoiceId));
-    const home = homeCurrencyOf(current?.addressCountry);
+    const home = tenantHomeCurrencyOf(current);
     const receivedCzk =
       received && received.currency.toUpperCase() === home && current && current.currency !== home && received.amount > 0
         ? { receivedCzk: round2(received.amount).toFixed(2) }
@@ -1574,11 +1574,11 @@ export class InvoicesService {
     issueDate: Date,
   ): Promise<{ exchangeRate: string | null; exchangeRateMode: StoredRateMode | null; exchangeRateDate: string | null }> {
     const [tenant] = await db
-      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus, addressCountry: schema.tenants.addressCountry })
+      .select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, vatStatus: schema.tenants.vatStatus, country: schema.tenants.country })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, tenantId))
       .limit(1);
-    const home = homeCurrencyOf(tenant?.addressCountry);
+    const home = tenantHomeCurrencyOf(tenant);
     if (invoice.currency.toUpperCase() === home) return { exchangeRate: null, exchangeRateMode: null, exchangeRateDate: null };
     const settings = exchangeRateSettingsOf(tenant?.invoiceFormPrefs);
     const day = new Date(invoice.taxableSupplyDate ?? issueDate);

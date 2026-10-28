@@ -248,7 +248,7 @@ export class IntegrationsService {
         locale: schema.tenants.defaultLocale,
         vatPayer: schema.tenants.dicVatPayer,
         vatStatus: schema.tenants.vatStatus,
-        country: schema.tenants.addressCountry,
+        country: schema.tenants.country,
         taxAdvances: schema.tenants.taxAdvances,
         flatTaxRegime: schema.tenants.flatTaxRegime,
       })

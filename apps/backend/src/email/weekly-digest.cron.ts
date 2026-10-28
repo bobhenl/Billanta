@@ -87,7 +87,7 @@ export class WeeklyDigestCron {
           legalName: schema.tenants.legalName,
           locale: schema.tenants.defaultLocale,
           vatStatus: schema.tenants.vatStatus,
-          country: schema.tenants.addressCountry,
+          country: schema.tenants.country,
         })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, tenantId));

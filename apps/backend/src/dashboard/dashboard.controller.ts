@@ -84,7 +84,7 @@ export class DashboardController {
     const earliest = new Date(end.getFullYear() - 5, end.getMonth(), end.getDate());
     if (start < earliest && !allTime) start = earliest;
     const [tenant] = await req
-      .tenantDb!.select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, country: schema.tenants.addressCountry })
+      .tenantDb!.select({ invoiceFormPrefs: schema.tenants.invoiceFormPrefs, country: schema.tenants.country })
       .from(schema.tenants)
       .where(eq(schema.tenants.id, req.user!.tenantId));
     return this.dashboardService.stats(req.tenantDb!, start, end, filters, {

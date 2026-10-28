@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
-import { BadgeCheck, Bot, Check, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Save, Timer, type LucideIcon } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useMemo, useState, useTransition } from 'react';
+import { BadgeCheck, Bot, Check, Lock, Download, FileQuestion, FileSpreadsheet, Landmark, Loader2, Receipt, Save, Timer, type LucideIcon } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
@@ -42,10 +42,14 @@ export function WelcomeSetup({
   company,
   importApps,
   initialImportFrom,
-  managesClients = false
+  managesClients = false,
+  countries
 }: {
   initialModules: ModuleSet;
-  company: { ico: string; vatPayer: boolean; country: string };
+  /** `country` is the tax country; locked once an invoice was issued (the backend refuses a change then). */
+  company: { ico: string; vatPayer: boolean; country: string; countryLocked: boolean };
+  /** "Where is your business registered?": the active countries first, the rest shown as coming soon. */
+  countries: { code: string; active: boolean }[];
   importApps: { key: string; name: string }[];
   initialImportFrom: string | null;
   /** Ticked "Spravuji účetnictví pro klienty" at sign-up: land on the accountant profile, not the dashboard. */
@@ -55,7 +59,14 @@ export function WelcomeSetup({
   const t = useTranslations('welcome');
   const tm = useTranslations('settings.modules');
   const tLookup = useTranslations('companyLookup');
+  const locale = useLocale();
   const router = useRouter();
+  const [country, setCountry] = useState(company.country);
+  const regionName = useMemo(() => {
+    const names = new Intl.DisplayNames([locale], { type: 'region' });
+    return (code: string) => names.of(code) ?? code;
+  }, [locale]);
+  const canPick = (code: string) => !company.countryLocked && countries.some((c) => c.code === code && c.active);
   const [query, setQuery] = useState(company.ico);
   const [registry, setRegistry] = useCompanyRegistry();
   const [picked, setPicked] = useState<AresPrefill | null>(null);
@@ -101,7 +112,7 @@ export function WelcomeSetup({
 
   // Name, own name (OSVČ) or IČO, in ARES, RPO, VIES or a foreign register (same search as a new invoice's customer).
   // ARES hits at once, the slow Slovak name search appended when it answers.
-  const effectiveRegistry = registry === 'auto' ? registryForCountry(company.country) : registry;
+  const effectiveRegistry = registry === 'auto' ? registryForCountry(country) : registry;
   const fetchCompanies = (part: RegistryPart) => async (q: string) => {
     if (part === 'slow' && !hasSlowRegistryPart(q, effectiveRegistry)) return [];
     const { ares } = await fetchContactSearch(q, effectiveRegistry, part);
@@ -112,6 +123,9 @@ export function WelcomeSetup({
     setPicked(hit);
     setQuery(hit.legalName);
     if (hit.isVatPayer != null) setVatPayer(hit.isVatPayer);
+    // A company found in the Slovak register is almost surely registered there.
+    const found = hit.addressCountry?.toUpperCase();
+    if (found && canPick(found)) setCountry(found);
   };
 
   const companyPatch = (hit: AresPrefill): AresPatch => ({
@@ -129,9 +143,12 @@ export function WelcomeSetup({
       await carryOver();
       const patch: AresPatch = { dic_vat_payer: vatPayer, ...(picked ? companyPatch(picked) : {}) };
       if (!picked && /^\d{8}$/.test(query.trim())) patch.ico = query.trim();
+      if (country !== company.country) patch.country = country;
       const [c, m] = await Promise.all([updateCompany(patch), updateModules(modules)]);
       if (!c.ok || !m.ok) {
-        toast({ text: `${t('failed')}: ${(!c.ok ? c.error : !m.ok ? m.error : '') || ''}`, tone: 'err' });
+        const error = !c.ok ? c.error : !m.ok ? m.error : '';
+        const reason = error === 'country_locked' ? t('countryLocked') : error === 'country_not_supported' ? t('countryNotSupported') : error;
+        toast({ text: `${t('failed')}: ${reason || ''}`, tone: 'err' });
         return;
       }
       toast({ text: t('saved'), tone: 'ok' });
@@ -179,6 +196,48 @@ export function WelcomeSetup({
 
       <section className="space-y-3 rounded-xl border border-border bg-card p-4">
         {step(1, t('companyTitle'), t('companyHint'))}
+        <div>
+          <p className="mb-1.5 text-sm font-medium">{t('countryQuestion')}</p>
+          {company.countryLocked ? (
+            <p className="flex items-center gap-1.5 text-sm">
+              <Lock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+              <span className="font-semibold">{regionName(country)}</span>
+              <span className="text-xs text-muted-foreground">{t('countryLocked')}</span>
+            </p>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-2">
+                {countries.map((c) =>
+                  c.active ? (
+                    <button
+                      key={c.code}
+                      type="button"
+                      aria-pressed={country === c.code}
+                      onClick={() => setCountry(c.code)}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                        country === c.code ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {country === c.code && <Check className="h-4 w-4" />}
+                      {regionName(c.code)}
+                    </button>
+                  ) : (
+                    <span
+                      key={c.code}
+                      aria-disabled="true"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-muted-foreground"
+                    >
+                      {regionName(c.code)}
+                      <span className="text-[10px] font-semibold uppercase tracking-wide">{t('countrySoon')}</span>
+                    </span>
+                  )
+                )}
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">{t('countryHint')}</p>
+            </>
+          )}
+        </div>
         <div className="flex gap-2">
           <Typeahead<AresPrefill>
             className="min-w-0 flex-1"

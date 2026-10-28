@@ -4,7 +4,7 @@ import { TenantsService } from "./tenants.service";
 /** A select chain that resolves to the given rows, like drizzle's `select().from().where().limit()`. */
 function dbReturning(rows: Record<string, unknown>[]) {
   const chain = { from: () => chain, where: () => chain, limit: async () => rows };
-  return { select: () => chain } as never;
+  return { select: () => chain, execute: async () => [{ locked: false }] } as never;
 }
 
 describe("TenantsService.findById", () => {

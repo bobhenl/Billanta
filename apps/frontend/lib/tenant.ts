@@ -32,6 +32,12 @@ export interface TenantSettings {
   addressCity: string | null;
   addressPostalCode: string | null;
   addressCountry: string;
+  /** The tax country (0087): VAT rules, currency, exports. Missing on an older backend, then the address decides. */
+  country?: string;
+  /** The currency of the books, CZK / EUR; follows `country`. */
+  homeCurrency?: string;
+  /** True once an invoice was issued: the country can no longer change. */
+  countryLocked?: boolean;
   email: string | null;
   phone: string | null;
   website: string | null;
@@ -135,8 +141,16 @@ export async function fetchTenant(): Promise<TenantSettings | null> {
   return rows[0] ?? null;
 }
 
-/** The currency the company keeps its books in, from where it is registered (CZK when unknown). */
-export const fetchHomeCurrency = cache(async (): Promise<HomeCurrency> => homeCurrencyOf((await fetchTenant().catch(() => null))?.addressCountry));
+/**
+ * The tax country of the company: `tenants.country`, never the postal
+ * address, which may change freely. CZ when unknown, as before the column.
+ */
+export function taxCountryOf(tenant: Pick<TenantSettings, 'country' | 'addressCountry'> | null | undefined): string {
+  return (tenant?.country || tenant?.addressCountry || 'CZ').trim().toUpperCase();
+}
+
+/** The currency the company keeps its books in, from its tax country (CZK when unknown). */
+export const fetchHomeCurrency = cache(async (): Promise<HomeCurrency> => homeCurrencyOf(taxCountryOf(await fetchTenant().catch(() => null))));
 
 /** The signed-in user's role in the active company (same choice as `apiFetch`). */
 export async function fetchMyRole(): Promise<string | null> {

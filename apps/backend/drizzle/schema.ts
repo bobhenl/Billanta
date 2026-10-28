@@ -176,8 +176,17 @@ export const tenants = pgTable("tenants", {
   id: uuid("id").primaryKey().defaultRandom(),
   companyName: text("company_name").notNull(),
   legalName: text("legal_name").notNull(),
-  ico: varchar("ico", { length: 8 }),
-  dic: varchar("dic", { length: 14 }),
+  ico: varchar("ico", { length: 20 }),
+  dic: varchar("dic", { length: 20 }),
+  // Tax country (0087): VAT rules, deadlines and exports follow it, not addressCountry.
+  // Chosen at onboarding, locked after the first issued invoice (TenantsService).
+  // No DB default: the tenants_fill_country trigger derives it from addressCountry
+  // when an insert leaves it out, so the default here only makes it optional.
+  country: char("country", { length: 2 }).notNull().default(sql`NULL`),
+  // Currency of the books (0087), filled by the same trigger: CZK, EUR for SK.
+  homeCurrency: char("home_currency", { length: 3 }).notNull().default(sql`NULL`),
+  // Further company ids keyed by kind (SK IČ DPH, Steuernummer …), see 0087.
+  taxIds: jsonb("tax_ids").$type<Record<string, string>>().notNull().default({}),
   // Legacy flag, kept equal to vatStatus === "payer" (CHECK in 0041); new code reads vatStatus.
   dicVatPayer: boolean("dic_vat_payer").notNull().default(false),
   // Plátce / identifikovaná osoba (§6g–6l ZDPH, SK §7a) / neplátce, see VAT_STATUSES in @faktur/cz-compliance.
@@ -466,8 +475,9 @@ export const contacts = pgTable("contacts", {
   tenantId: uuid("tenant_id")
     .notNull()
     .references(() => tenants.id, { onDelete: "cascade" }),
-  ico: varchar("ico", { length: 8 }),
-  dic: varchar("dic", { length: 14 }),
+  ico: varchar("ico", { length: 20 }),
+  dic: varchar("dic", { length: 20 }),
+  taxIds: jsonb("tax_ids").$type<Record<string, string>>().notNull().default({}),
   legalName: text("legal_name").notNull(),
   // Added for the invoice-emailing / overdue-payment-reminder feature: both
   // `EmailService.sendInvoiceEmail`/`sendPaymentReminderEmail` need a real
@@ -900,7 +910,7 @@ export const channelLinks = pgTable(
 // rate limit (blueprint §1 known gap, §6 step 7).
 // ---------------------------------------------------------------------------
 export const aresCache = pgTable("ares_cache", {
-  ico: varchar("ico", { length: 8 }).primaryKey(),
+  ico: varchar("ico", { length: 20 }).primaryKey(),
   responsePayload: jsonb("response_payload").notNull(),
   fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1047,9 +1057,9 @@ export const expenses = pgTable("expenses", {
   // the received invoice (typed in, or read by AI from a photo/PDF).
   documentNumber: varchar("document_number", { length: 64 }),
   variableSymbol: varchar("variable_symbol", { length: 10 }),
-  supplierIco: varchar("supplier_ico", { length: 8 }),
+  supplierIco: varchar("supplier_ico", { length: 20 }),
   /** Supplier's DIČ — the VAT control statement (KH, B.2) lists received documents by it. */
-  supplierDic: varchar("supplier_dic", { length: 14 }),
+  supplierDic: varchar("supplier_dic", { length: 20 }),
   /** Home currency (CZK, EUR for SK companies) per 1 unit of `currency`; null for the home currency (looked up when missing). */
   exchangeRate: numeric("exchange_rate", { precision: 20, scale: 10 }),
   // Received in domestic reverse charge (§92a ZDPH): the supplier charged no
