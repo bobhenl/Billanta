@@ -3,8 +3,10 @@ import { homeCurrencyOf, type HomeCurrency, type VatStatus } from '@faktur/cz-co
 import type { TemplateVar } from './template-vars';
 import type { BankAccount } from './bank-account';
 import { apiFetch, fetchMyCompanies } from './api-client';
+import { taxCountryOf } from './tax-country';
 
 export { ADVANCE_KINDS, vatStatusOf, type TaxAdvances } from './vat-status';
+export { taxCountryOf } from './tax-country';
 import type { TaxAdvances } from './vat-status';
 
 /** `GET /api/v1/tenants/me` row (camelCase; the encrypted AI key is never returned). */
@@ -141,13 +143,6 @@ export async function fetchTenant(): Promise<TenantSettings | null> {
   return rows[0] ?? null;
 }
 
-/**
- * The tax country of the company: `tenants.country`, never the postal
- * address, which may change freely. CZ when unknown, as before the column.
- */
-export function taxCountryOf(tenant: Pick<TenantSettings, 'country' | 'addressCountry'> | null | undefined): string {
-  return (tenant?.country || tenant?.addressCountry || 'CZ').trim().toUpperCase();
-}
 
 /** The currency the company keeps its books in, from its tax country (CZK when unknown). */
 export const fetchHomeCurrency = cache(async (): Promise<HomeCurrency> => homeCurrencyOf(taxCountryOf(await fetchTenant().catch(() => null))));
