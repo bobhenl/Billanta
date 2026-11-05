@@ -26,6 +26,7 @@ import { ATTRIBUTION_COOKIE, signupAttributionColumns } from "@/lib/attribution"
 import { clientIp } from "@/lib/client-ip";
 import { db } from "@/lib/db";
 import { AUTH_LIMITS, allow } from "@/lib/rate-limit";
+import { TOS_VERSION } from "@/lib/tos";
 import { users } from "@/lib/auth-schema";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -55,7 +56,10 @@ export async function POST(request: Request): Promise<NextResponse> {
     !password ||
     password.length < MIN_PASSWORD_LENGTH ||
     !companyName ||
-    !tosVersionAccepted ||
+    // Only the current text: bootstrap_tenant_for_user creates the tos_versions
+    // row for an unknown version, so any other string would log acceptance of
+    // terms that were never published.
+    tosVersionAccepted !== TOS_VERSION ||
     !adultConfirmed
   ) {
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });

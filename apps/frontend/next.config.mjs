@@ -48,9 +48,12 @@ const nextConfig = {
   // Other sites may frame only the widgets under /embed (lib/embeds.ts).
   // Everything else, the app above all, stays same-origin; Caddy adds the
   // older X-Frame-Options on top, except for /embed.
+  // base-uri and object-src cost nothing here (no <base>, no plugins) and take
+  // away two script-injection tricks. A script-src would need per-request
+  // nonces, which would make every cached marketing page dynamic.
   async headers() {
     return [
-      { source: '/:path((?!embed/|badges/).*)', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self'" }] },
+      { source: '/:path((?!embed/|badges/).*)', headers: [{ key: 'Content-Security-Policy', value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'" }] },
       {
         source: '/embed/:path*',
         headers: [
