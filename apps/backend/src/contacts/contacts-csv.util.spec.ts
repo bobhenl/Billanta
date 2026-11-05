@@ -98,6 +98,17 @@ describe("contactsToCsv", () => {
   });
 });
 
+describe("contactsToCsv formula cells", () => {
+  it("defuses names that start like a formula", () => {
+    const csv = contactsToCsv([
+      { legalName: '=HYPERLINK("https://x/","A")', ico: null, dic: null, email: null, addressStreet: null, addressCity: null, addressPostalCode: null, addressCountry: "CZ", isVatPayer: null, internalNote: "@SUM(1)" },
+    ]);
+    const row = csv.split("\r\n")[1];
+    expect(row.startsWith(`"'=HYPERLINK(`)).toBe(true);
+    expect(row.endsWith(";'@SUM(1)")).toBe(true);
+  });
+});
+
 describe("decodeCsvBuffer", () => {
   it("reads UTF-8 and falls back to windows-1250", () => {
     expect(decodeCsvBuffer(Buffer.from("Název", "utf-8"))).toBe("Název");

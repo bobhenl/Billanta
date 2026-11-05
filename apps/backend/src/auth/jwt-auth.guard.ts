@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { AuthenticatedUser, TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { verifyBearerToken } from "./verify-bearer-token";
@@ -43,6 +43,10 @@ export class JwtAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<TenantScopedRequest>();
 
     if (req.user) {
+      // `ApiKeyOrJwtTenantContextMiddleware` also sets `req.user`, for an API
+      // key. Routes behind this guard (issue, send, PDF, attachments, …) are
+      // the dashboard's only; `CombinedAuthGuard` marks the ones keys may use.
+      if (req.user.apiKey) throw new ForbiddenException("api_key_not_allowed");
       // Already verified + tenant-scoped by TenantContextMiddleware.
       return true;
     }
