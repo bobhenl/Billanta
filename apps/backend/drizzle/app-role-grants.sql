@@ -78,3 +78,14 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO faktur_app;
 -- Pays a held-back referral reward without checks of its own: only
 -- record_referral_payment and release_due_referral_rewards (0079) call it.
 REVOKE EXECUTE ON FUNCTION release_referral_reward(uuid) FROM faktur_app;
+-- Not for the app to call directly. Trigger functions fire without EXECUTE
+-- being checked; the helpers are called only from SECURITY DEFINER
+-- functions, which run as the owner. Revoking them means a future injection
+-- or careless call can't open a class, resync it or read e-mail keys out of
+-- band. (tenant_is_demo / tenant_is_classroom stay: invoker triggers use them.)
+REVOKE EXECUTE ON FUNCTION
+  classroom_class_teachers_sync(), classroom_memberships_lock(), classroom_student_cleanup(),
+  classroom_tenants_lock(), demo_email_outbox_drop(), demo_row_cap(), demo_tenant_readonly(),
+  demo_tenants_lock(),
+  classroom_class_open(uuid), classroom_sync_class(uuid), trial_email_key(text)
+FROM faktur_app;

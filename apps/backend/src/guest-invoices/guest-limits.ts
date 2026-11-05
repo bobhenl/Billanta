@@ -28,9 +28,14 @@ export function visitorBucket(ip: string): string {
  * comes from loopback/private network (i.e. that proxy), never from outside.
  */
 export function visitorIp(ip: string, req: { headers: Record<string, string | string[] | undefined> }): string {
+  return visitorBucket(visitorAddress(ip, req));
+}
+
+/** The same address before bucketing, for columns that record the IP itself (tos_acceptances). */
+export function visitorAddress(ip: string, req: { headers: Record<string, string | string[] | undefined> }): string {
   const forwarded = req.headers["x-guest-ip"];
   const local = /^(::1|127\.|::ffff:127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::ffff:(10|192\.168|172)\.)/.test(ip);
-  return visitorBucket(local && typeof forwarded === "string" && forwarded ? forwarded.slice(0, 64) : ip);
+  return local && typeof forwarded === "string" && forwarded ? forwarded.slice(0, 45) : ip;
 }
 
 /**

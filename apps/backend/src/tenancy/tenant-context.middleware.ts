@@ -8,6 +8,19 @@ import { AI_SERVICE_SCOPE } from "../auth/service-token.guard";
 import { verifyBearerToken } from "../auth/verify-bearer-token";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
+import { guardPath } from "./role-access.guard";
+
+/**
+ * The only tenant routes the AI service calls (apps/ai-service/app/pipeline).
+ * Its token is one static secret living next to untrusted Telegram/WhatsApp
+ * input, and it names its tenant in the body, so a leaked token must not
+ * reach exports, contacts or issuing for an arbitrary tenant.
+ */
+const AI_SERVICE_ROUTES = new Set(["POST v1/invoices/drafts", "POST v1/contacts/ares-lookup"]);
+
+export function aiServiceMayCall(method: string, rawUrl: string): boolean {
+  return AI_SERVICE_ROUTES.has(`${method.toUpperCase()} ${guardPath(rawUrl)}`);
+}
 
 /** How long the companies of an ended class stay (read-only), as in migration 0074. */
 const CLASSROOM_GRACE_MS = 30 * 24 * 3600 * 1000;
@@ -50,6 +63,11 @@ export interface AuthenticatedUser {
    * likewise has no `tenant_memberships` row.
    */
   role: DashboardRole | "service";
+  /**
+   * Set for a public-API key. `JwtAuthGuard` refuses these, so the routes it
+   * guards stay dashboard-only even when the API-key middleware runs first.
+   */
+  apiKey?: boolean;
   /** Per-area overrides of the role's defaults (`tenant_memberships.permissions`), see permissions.ts. */
   permissions?: unknown;
   /** The dashboard session passed the two-factor check (JWT `mfa` claim). Unset for API keys and the AI service. */
@@ -187,6 +205,9 @@ export class TenantContextMiddleware implements NestMiddleware {
     serviceSubject: string,
     serviceEmail: string,
   ): Promise<void> {
+    if (!aiServiceMayCall(req.method, req.originalUrl)) {
+      throw new ForbiddenException("service_route_not_allowed");
+    }
     const body = req.body as { tenantId?: string; tenant_id?: string } | undefined;
     const tenantId = body?.tenantId ?? body?.tenant_id;
     if (!tenantId) {

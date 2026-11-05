@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import * as schema from "../../drizzle/schema";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { DbService } from "../db/db.service";
+import { visitorAddress } from "../guest-invoices/guest-limits";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { AccountDeletionService } from "./account-deletion.service";
 import { CreateTenantDto } from "./dto/create-tenant.dto";
@@ -76,7 +77,7 @@ export class MeController {
   @ApiOperation({ summary: "Create another company (tenant) owned by the current user" })
   async createTenant(@Req() req: TenantScopedRequest, @Body() dto: CreateTenantDto) {
     await this.refuseDemoUser(req.user!.id);
-    return this.meService.createTenant(req.user!.id, dto.companyName, dto.tosVersion, req.ip ?? null);
+    return this.meService.createTenant(req.user!.id, dto.companyName, dto.tosVersion, req.ip ? visitorAddress(req.ip, req) : null);
   }
 
   /**

@@ -10,6 +10,8 @@
  * tab) and a UTF-8 BOM are auto-detected.
  */
 
+import { csvText } from "../exports/csv-cell";
+
 export interface CsvContact {
   legalName: string;
   ico: string | null;
@@ -176,10 +178,9 @@ const EXPORT_HEADER = ["Název", "IČO", "DIČ", "E-mail", "Ulice", "Město", "P
 export function contactsToCsv(
   rows: { legalName: string; ico: string | null; dic: string | null; email: string | null; addressStreet: string | null; addressCity: string | null; addressPostalCode: string | null; addressCountry: string; isVatPayer: boolean | null; internalNote?: string | null }[],
 ): string {
-  const cell = (v: string | null | undefined) => {
-    const s = v ?? "";
-    return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
+  // Contacts can come from anonymous visitors (profile orders, buyer-details
+  // links), so the names and notes are defused like every other export.
+  const cell = (v: string | null | undefined) => (v ? csvText(v) : "");
   const lines = [
     EXPORT_HEADER,
     ...rows.map((r) => [

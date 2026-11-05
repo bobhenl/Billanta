@@ -137,6 +137,7 @@ export class ApiKeyOrJwtTenantContextMiddleware implements NestMiddleware {
         email: "",
         tenantId: result.tenantId,
         role: "service",
+        apiKey: true,
       };
       req.tenantDb = drizzleTx(tx, schema);
 

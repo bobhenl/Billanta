@@ -14,7 +14,7 @@
 #     (same in apps/backend, apps/frontend, packages/cz-compliance), so this
 #     workflow pins Node 20.x.
 #   - Package manager: root package.json declares "packageManager":
-#     "pnpm@9.0.0", so pnpm/action-setup is pinned to version 9.
+#     "pnpm@9.0.0", which pnpm/action-setup reads (no `version` input).
 #   - The cz-compliance package's actual npm name is "@faktur/cz-compliance"
 #     (per packages/cz-compliance/package.json), used for the
 #     `pnpm --filter` test step.
@@ -44,10 +44,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # The version comes from package.json's packageManager; setting it here
+      # as well makes pnpm/action-setup refuse to run.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -63,8 +63,14 @@ jobs:
       - name: Lint (backend, frontend, cz-compliance)
         run: pnpm turbo run lint
 
+      # As in apps/frontend/Dockerfile: lib/db.ts refuses to load without
+      # DATABASE_URL and `next build` imports every route. The pool is lazy,
+      # so the placeholder is never dialled. Loose env mode lets turbo pass it.
       - name: Build (backend, frontend, cz-compliance)
-        run: pnpm turbo run build
+        run: pnpm turbo run build --env-mode=loose
+        env:
+          DATABASE_URL: postgres://build:build@127.0.0.1:1/build
+          NEXT_TELEMETRY_DISABLED: '1'
 
       - name: Test cz-compliance (vitest)
         run: pnpm --filter @faktur/cz-compliance test
