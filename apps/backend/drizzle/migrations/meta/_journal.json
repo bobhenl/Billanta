@@ -603,6 +603,13 @@
       "when": 1793248440000,
       "tag": "0086_trial_signals",
       "breakpoints": true
+    },
+    {
+      "idx": 87,
+      "version": "7",
+      "when": 1793248500000,
+      "tag": "0087_session_created_at",
+      "breakpoints": true
     }
   ]
 }

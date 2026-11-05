@@ -2,11 +2,12 @@
 
 import { createHash, randomBytes } from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { and, eq, like, lt, ne } from 'drizzle-orm';
+import { and, eq, gt, like, lt, ne } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { auth, hashSessionToken, signOut } from '@/auth';
 import { mintBackendToken } from '@/lib/backend-token';
+import { passwordProblem } from '@/lib/password';
 import { db } from '@/lib/db';
 import { sessions, users, verificationTokens } from '@/lib/auth-schema';
 import { sendEmailChangeEmail } from '@/lib/email';
@@ -14,9 +15,27 @@ import { SITE_URL } from '@/lib/site';
 
 export type ProfileResult = { ok: true } | { ok: false; error: string; company?: string };
 
-// Same rules as `app/api/auth/register` and `reset-password`.
-const MIN_PASSWORD_LENGTH = 8;
 const BCRYPT_COST_FACTOR = 12;
+
+/**
+ * An account without a password has nothing to re-enter before a sensitive
+ * change, so it needs a sign-in from the last few minutes instead. Otherwise
+ * a stolen session cookie could set a password, move the email to the thief's
+ * inbox or delete the account.
+ */
+const REAUTH_WINDOW_MS = 10 * 60 * 1000;
+
+async function signedInRecently(userId: string): Promise<boolean> {
+  const jar = await cookies();
+  const raw = jar.get('__Secure-authjs.session-token')?.value ?? jar.get('authjs.session-token')?.value;
+  if (!raw) return false;
+  const [fresh] = await db
+    .select({ userId: sessions.userId })
+    .from(sessions)
+    .where(and(eq(sessions.sessionToken, hashSessionToken(raw)), eq(sessions.userId, userId), gt(sessions.createdAt, new Date(Date.now() - REAUTH_WINDOW_MS))))
+    .limit(1);
+  return Boolean(fresh);
+}
 
 async function currentUserId(): Promise<string | null> {
   const session = await auth();
@@ -49,13 +68,15 @@ export async function changePassword(current: string, next: string): Promise<Pro
   if (refused) return refused;
   const userId = await currentUserId();
   if (!userId) return { ok: false, error: 'not_signed_in' };
-  if (next.length < MIN_PASSWORD_LENGTH) return { ok: false, error: 'too_short' };
+  const problem = passwordProblem(next);
+  if (problem) return { ok: false, error: problem };
 
   const [user] = await db.select({ passwordHash: users.passwordHash }).from(users).where(eq(users.id, userId)).limit(1);
   if (!user) return { ok: false, error: 'not_signed_in' };
   if (user.passwordHash && !(await bcrypt.compare(current, user.passwordHash))) {
     return { ok: false, error: 'wrong_current' };
   }
+  if (!user.passwordHash && !(await signedInRecently(userId))) return { ok: false, error: 'reauth_required' };
 
   const passwordHash = await bcrypt.hash(next, BCRYPT_COST_FACTOR);
   await db.update(users).set({ passwordHash, updatedAt: new Date() }).where(eq(users.id, userId));
@@ -75,10 +96,11 @@ const EMAIL_CHANGE_TTL_MS = 60 * 60 * 1000; // 1 hour, same as password reset
 const EMAIL_CHANGE_PREFIX = 'email-change:';
 
 /** Re-checks the local password (if the account has one) before a sensitive change. */
-async function verifyPassword(userId: string, password: string): Promise<{ email: string } | 'wrong_current' | null> {
+async function verifyPassword(userId: string, password: string): Promise<{ email: string } | 'wrong_current' | 'reauth_required' | null> {
   const [user] = await db.select({ email: users.email, passwordHash: users.passwordHash }).from(users).where(eq(users.id, userId)).limit(1);
   if (!user) return null;
   if (user.passwordHash && !(await bcrypt.compare(password, user.passwordHash))) return 'wrong_current';
+  if (!user.passwordHash && !(await signedInRecently(userId))) return 'reauth_required';
   return { email: user.email };
 }
 
@@ -99,7 +121,7 @@ export async function requestEmailChange(password: string, newEmailRaw: string, 
 
   const me = await verifyPassword(userId, password);
   if (!me) return { ok: false, error: 'not_signed_in' };
-  if (me === 'wrong_current') return { ok: false, error: 'wrong_current' };
+  if (me === 'wrong_current' || me === 'reauth_required') return { ok: false, error: me };
   if (me.email === newEmail) return { ok: false, error: 'same_email' };
   const [taken] = await db.select({ id: users.id }).from(users).where(eq(users.email, newEmail)).limit(1);
   if (taken) return { ok: false, error: 'email_taken' };
@@ -147,7 +169,7 @@ export async function deleteAccount(password: string, confirmEmail: string): Pro
 
   const me = await verifyPassword(userId, password);
   if (!me) return { ok: false, error: 'not_signed_in' };
-  if (me === 'wrong_current') return { ok: false, error: 'wrong_current' };
+  if (me === 'wrong_current' || me === 'reauth_required') return { ok: false, error: me };
   if (confirmEmail.trim().toLowerCase() !== me.email.toLowerCase()) return { ok: false, error: 'confirm_mismatch' };
 
   const token = await mintBackendToken({ id: userId, email: me.email });

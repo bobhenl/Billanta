@@ -10,7 +10,7 @@
  *   webhooks and backup destinations.
  */
 import { createCipheriv, createDecipheriv, createHash, hkdfSync, randomBytes, randomInt } from "node:crypto";
-import { and, eq, isNull, lt, ne, or } from "drizzle-orm";
+import { and, eq, isNull, lt, ne, or, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { hashSessionToken } from "@/auth";
 import { sessions, users } from "./auth-schema";
@@ -119,12 +119,14 @@ export async function verifyTwoFactorCode(
 
   if (!allowRecovery || pendingSetup || !row.codes?.length) return null;
   const hash = hashRecoveryCode(code);
-  if (!row.codes.includes(hash)) return null;
-  await db
+  // One conditional statement, like the TOTP step above: two requests with
+  // the same code cannot both remove it.
+  const used = await db
     .update(users)
-    .set({ totpRecoveryCodes: row.codes.filter((h) => h !== hash) })
-    .where(eq(users.id, userId));
-  return "recovery";
+    .set({ totpRecoveryCodes: sql`array_remove(${users.totpRecoveryCodes}, ${hash})` })
+    .where(and(eq(users.id, userId), sql`${hash} = ANY(${users.totpRecoveryCodes})`))
+    .returning({ id: users.id });
+  return used.length > 0 ? "recovery" : null;
 }
 
 /** The current browser's session cookie (raw token), if any. */

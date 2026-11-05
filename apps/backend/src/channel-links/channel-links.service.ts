@@ -51,7 +51,7 @@ export class ChannelLinksService {
    * `TenantContextMiddleware` in `AppModule.configure` for exactly this
    * reason, so `req.tenantDb` would never even be populated here.
    */
-  async verify(dto: VerifyChannelLinkDto): Promise<{ tenantId: string }> {
+  async verify(dto: VerifyChannelLinkDto): Promise<{ tenantId: string; subscriptionActive: boolean }> {
     const [link] = await this.dbService.db
       .select({ tenantId: channelLinks.tenantId, isActive: channelLinks.isActive })
       .from(channelLinks)
@@ -70,7 +70,17 @@ export class ChannelLinksService {
       throw new NotFoundException("No active channel link for this sender");
     }
 
-    return { tenantId: link.tenantId };
+    // Told up front so the AI service stops before paying for Whisper and
+    // GPT; the drafts route checks the same rule again. `tenants` is under
+    // RLS, so the read runs with the linked tenant set, as the tenant
+    // middleware would.
+    const subscriptionActive = await this.dbService.sql.begin(async (tx) => {
+      await tx`SELECT set_config('app.current_tenant_id', ${link.tenantId}, true)`;
+      const [row] = await tx<{ status: string }[]>`SELECT subscription_status AS status FROM tenants WHERE id = ${link.tenantId}`;
+      return row?.status === "active" || row?.status === "trialing";
+    });
+
+    return { tenantId: link.tenantId, subscriptionActive };
   }
 
   /** Active links shown in Settings → Kanály. Never returns tokens. */

@@ -23,13 +23,10 @@ import { and, eq, gt } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { clientIp } from '@/lib/client-ip';
 import { db } from '@/lib/db';
+import { passwordProblem } from '@/lib/password';
 import { AUTH_LIMITS, allow } from '@/lib/rate-limit';
 import { sessions, users, verificationTokens } from '@/lib/auth-schema';
 
-// Same rule as `app/api/auth/register/route.ts`'s `MIN_PASSWORD_LENGTH` —
-// duplicated rather than imported since that route doesn't export it; keep
-// both in sync if the minimum ever changes.
-const MIN_PASSWORD_LENGTH = 8;
 const BCRYPT_COST_FACTOR = 12;
 
 const INVALID_TOKEN_RESPONSE = () =>
@@ -48,7 +45,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     return INVALID_TOKEN_RESPONSE();
   }
 
-  if (!password || password.length < MIN_PASSWORD_LENGTH) {
+  if (!password || passwordProblem(password)) {
     return NextResponse.json({ error: 'invalid_input' }, { status: 400 });
   }
 

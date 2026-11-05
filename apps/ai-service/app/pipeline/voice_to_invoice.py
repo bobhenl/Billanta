@@ -52,8 +52,11 @@ from app.pipeline.errors import (
     ExtractionError,
     MediaDownloadError,
     MediaTooLargeError,
+    SenderRateLimitedError,
+    SubscriptionInactiveError,
     TranscriptionError,
 )
+from app.pipeline.limits import SlidingWindowLimiter
 from app.pipeline.schemas import (
     AresEnrichment,
     AresMatchStatus,
@@ -81,6 +84,33 @@ WHISPER_MAX_BYTES = 25 * 1024 * 1024
 # /file/ endpoint (larger files are only reachable via a local Bot API
 # server, which this service does not run).
 TELEGRAM_MAX_BYTES = 50 * 1024 * 1024
+# Longest note we transcribe. A 25 MB Opus note can hold hours of audio, and
+# the remux writes 16 kHz mono PCM (~32 KB/s), so without a cap one note
+# could fill the shared VPS disk. 10 minutes is ~19 MB of WAV, under Whisper's
+# limit, and far longer than anyone dictates an invoice.
+MAX_AUDIO_SECONDS = 600
+FFMPEG_TIMEOUT_SECONDS = 120
+
+# Every voice note costs a Whisper and up to two GPT-4o calls. Nobody
+# dictates more than a handful of invoices an hour; a script looping notes
+# from one linked chat would otherwise bill the OpenAI key without limit.
+SENDER_LIMIT_PER_HOUR = 20
+SENDER_LIMITER = SlidingWindowLimiter(SENDER_LIMIT_PER_HOUR, 3600)
+
+
+def _validation_summary(exc: Exception | None) -> str:
+    """Where the model's output broke, for logs. Never the error text itself:
+    pydantic quotes the input, i.e. client names and amounts from the transcript."""
+    if isinstance(exc, ValidationError):
+        return "; ".join(f"{'.'.join(map(str, e['loc']))}: {e['type']}" for e in exc.errors(include_input=False))
+    return type(exc).__name__
+
+
+def _http_failure(exc: httpx.HTTPError) -> str:
+    """Describe a failed request without its URL: Telegram's carries the bot token."""
+    if isinstance(exc, httpx.HTTPStatusError):
+        return f"HTTP {exc.response.status_code}"
+    return type(exc).__name__
 
 # --- GPT-4o structured extraction (blueprint §6 step 6) ---
 EXTRACTION_MODEL = "gpt-4o"
@@ -201,6 +231,11 @@ async def resolve_tenant(
 
     response.raise_for_status()
     body = response.json()
+    # Checked here, before anything is downloaded or sent to OpenAI: the
+    # drafts route refuses the same companies, but only after the money is
+    # spent. A backend that predates the field omits it, which counts as active.
+    if body.get("subscriptionActive") is False:
+        raise SubscriptionInactiveError(f"tenant of {external_user_id} has no active subscription")
     # The backend answers in camelCase (`tenantId`); accept both spellings.
     return body.get("tenantId") or body.get("tenant_id")
 
@@ -331,7 +366,7 @@ async def _download_telegram_media(file_id: str, *, settings: Settings) -> bytes
             download_response.raise_for_status()
             content = download_response.content
     except httpx.HTTPError as exc:
-        raise MediaDownloadError(f"Telegram media download failed: {exc}") from exc
+        raise MediaDownloadError(f"Telegram media download failed: {_http_failure(exc)}") from exc
 
     _enforce_size_limits(len(content))
     return content
@@ -369,7 +404,7 @@ async def _download_whatsapp_media(media_id: str, *, settings: Settings) -> byte
             download_response.raise_for_status()
             content = download_response.content
     except httpx.HTTPError as exc:
-        raise MediaDownloadError(f"WhatsApp media download failed: {exc}") from exc
+        raise MediaDownloadError(f"WhatsApp media download failed: {_http_failure(exc)}") from exc
 
     _enforce_size_limits(len(content))
     return content
@@ -397,6 +432,8 @@ async def _remux_to_wav(audio_bytes: bytes, tmp_dir: Path) -> Path:
             "-y",  # overwrite output.wav if it somehow already exists
             "-i",
             str(input_path),
+            "-t",
+            str(MAX_AUDIO_SECONDS),
             "-ar",
             "16000",  # Whisper's native sample rate
             "-ac",
@@ -405,7 +442,15 @@ async def _remux_to_wav(audio_bytes: bytes, tmp_dir: Path) -> Path:
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )
-        _stdout, stderr = await process.communicate()
+        try:
+            _stdout, stderr = await asyncio.wait_for(
+                process.communicate(), timeout=FFMPEG_TIMEOUT_SECONDS
+            )
+        except asyncio.TimeoutError as exc:
+            process.kill()
+            raise TranscriptionError(
+                f"ffmpeg remux timed out after {FFMPEG_TIMEOUT_SECONDS}s"
+            ) from exc
     except FileNotFoundError as exc:
         raise TranscriptionError(
             "ffmpeg executable not found - it must be installed in the "
@@ -420,6 +465,7 @@ async def _remux_to_wav(audio_bytes: bytes, tmp_dir: Path) -> Path:
 
     if not output_path.exists() or output_path.stat().st_size == 0:
         raise TranscriptionError("ffmpeg produced an empty or missing output file")
+    _enforce_size_limits(output_path.stat().st_size)
 
     return output_path
 
@@ -534,7 +580,7 @@ async def extract_invoice_data(
                 "extract_invoice_data: attempt %d/%d failed schema validation: %s",
                 attempt,
                 EXTRACTION_MAX_ATTEMPTS,
-                exc,
+                _validation_summary(exc),
             )
             if attempt < EXTRACTION_MAX_ATTEMPTS:
                 # Retry once, feeding the model back its own broken output
@@ -553,7 +599,7 @@ async def extract_invoice_data(
 
     raise ExtractionError(
         f"GPT-4o structured extraction failed schema validation after "
-        f"{EXTRACTION_MAX_ATTEMPTS} attempts: {last_error}"
+        f"{EXTRACTION_MAX_ATTEMPTS} attempts: {_validation_summary(last_error)}"
     )
 
 
@@ -713,6 +759,9 @@ async def orchestrate(
     onboarding instructions back to the user).
     """
     settings = settings or get_settings()
+
+    if not SENDER_LIMITER.allow(f"{Channel(channel).value}:{external_user_id}"):
+        raise SenderRateLimitedError(f"{external_user_id} exceeded {SENDER_LIMIT_PER_HOUR} voice notes per hour")
 
     # Step 2: tenant resolution / account linking. Unlinked senders are
     # always rejected, never processed.

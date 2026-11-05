@@ -405,6 +405,8 @@ export const sessions = pgTable("sessions", {
   // it and stamps two_factor_at (migration 0045).
   twoFactorPending: boolean("two_factor_pending").notNull().default(false),
   twoFactorAt: timestamp("two_factor_at", { withTimezone: true }),
+  // When the sign-in happened (migration 0087); passwordless re-auth reads it.
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const verificationTokens = pgTable(

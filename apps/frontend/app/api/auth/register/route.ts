@@ -25,11 +25,11 @@ import { NextResponse } from "next/server";
 import { ATTRIBUTION_COOKIE, signupAttributionColumns } from "@/lib/attribution";
 import { clientIp } from "@/lib/client-ip";
 import { db } from "@/lib/db";
+import { passwordProblem } from "@/lib/password";
 import { AUTH_LIMITS, allow } from "@/lib/rate-limit";
 import { TOS_VERSION } from "@/lib/tos";
 import { users } from "@/lib/auth-schema";
 
-const MIN_PASSWORD_LENGTH = 8;
 const BCRYPT_COST_FACTOR = 12;
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -54,7 +54,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     !email ||
     !email.includes("@") ||
     !password ||
-    password.length < MIN_PASSWORD_LENGTH ||
+    passwordProblem(password) !== null ||
     !companyName ||
     // Only the current text: bootstrap_tenant_for_user creates the tos_versions
     // row for an unknown version, so any other string would log acceptance of
