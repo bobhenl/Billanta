@@ -1689,7 +1689,9 @@
         "confirm_mismatch": "The confirmation email doesn't match.",
         "last_admin": "You are the last admin of {company}. Hand the admin role to another member first.",
         "issued_in_shared": "You issued documents in the shared company {company}, so you can't be removed. Contact the other members.",
-        "delete_failed": "Deletion failed, please try again."
+        "delete_failed": "Deletion failed, please try again.",
+        "reauth_required": "For your security, sign in again before this change: sign out, sign back in and try again within 10 minutes.",
+        "too_long": "The password is too long. It can be at most 72 bytes (a little less with accented characters)."
       },
       "cancel": "Cancel",
       "emailChange": {

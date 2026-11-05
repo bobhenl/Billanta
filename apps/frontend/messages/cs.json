@@ -1689,7 +1689,9 @@
         "confirm_mismatch": "Potvrzovací e-mail nesouhlasí.",
         "last_admin": "Ve firmě {company} jste poslední správce. Nejdřív předejte roli správce jinému členovi.",
         "issued_in_shared": "Ve sdílené firmě {company} jste vystavili doklady, proto vás nelze odebrat. Kontaktujte ostatní členy.",
-        "delete_failed": "Smazání se nepodařilo, zkuste to znovu."
+        "delete_failed": "Smazání se nepodařilo, zkuste to znovu.",
+        "reauth_required": "Z bezpečnostních důvodů se pro tuto změnu znovu přihlaste: odhlaste se, přihlaste se a do 10 minut to zkuste znovu.",
+        "too_long": "Heslo je příliš dlouhé, může mít nejvýše 72 bajtů (u znaků s diakritikou o něco méně)."
       },
       "cancel": "Zrušit",
       "emailChange": {

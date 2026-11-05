@@ -22,6 +22,7 @@ from app.pipeline.voice_to_invoice import (
     MAX_AUDIO_SECONDS,
     orchestrate,  # noqa: F401  (patched via app.webhooks.telegram)
 )
+from app.pipeline.limits import SeenRecently
 from app.webhooks import telegram as telegram_webhook_module
 
 WEBHOOK_SECRET = "test-webhook-secret"
@@ -50,6 +51,12 @@ def _configured_webhook_secret(monkeypatch):
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()
+
+
+@pytest.fixture(autouse=True)
+def _fresh_update_ids(monkeypatch):
+    # Tests reuse update ids; each starts with an empty retry memory.
+    monkeypatch.setattr(telegram_webhook_module, "RECENT_UPDATES", SeenRecently(3600))
 
 
 @pytest.fixture
@@ -183,3 +190,16 @@ def test_webhook_skips_overlong_voice_note_before_downloading(monkeypatch, clien
 
     assert response.status_code == 200
     assert called["orchestrate"] is False
+
+
+def test_webhook_ignores_a_redelivered_update(monkeypatch, client):
+    calls = []
+
+    async def fake_orchestrate(**kwargs):
+        calls.append(kwargs)
+
+    monkeypatch.setattr(telegram_webhook_module, "orchestrate", fake_orchestrate)
+
+    assert _post_update(client).status_code == 200
+    assert _post_update(client).status_code == 200
+    assert len(calls) == 1

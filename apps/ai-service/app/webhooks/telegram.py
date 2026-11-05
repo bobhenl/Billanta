@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.pipeline.errors import PipelineError
+from app.pipeline.limits import SeenRecently
 from app.pipeline.schemas import Channel
 from app.pipeline.voice_to_invoice import MAX_AUDIO_SECONDS, activate_channel_link, orchestrate, send_telegram_message
 
@@ -40,6 +41,9 @@ class TelegramVoice(BaseModel):
     mime_type: str | None = None
     file_size: int | None = None
 
+
+# Telegram retries a delivery for a while; an hour is well past that.
+RECENT_UPDATES = SeenRecently(3600)
 
 class TelegramUser(BaseModel):
     id: int
@@ -151,6 +155,14 @@ async def telegram_webhook(
 
     body = await request.json()
     update = TelegramUpdate.model_validate(body)
+
+    # The pipeline runs inside this request and can outlast Telegram's
+    # timeout, after which Telegram delivers the same update again. Without
+    # this, each retry would pay for a second transcription and leave a
+    # duplicate draft.
+    if not RECENT_UPDATES.first_time(str(update.update_id)):
+        logger.info("telegram_webhook: update %s already handled, ignoring the retry", update.update_id)
+        return {"ok": True}
 
     if update.message is not None and update.message.text and update.message.voice is None:
         await _handle_text(update.message)

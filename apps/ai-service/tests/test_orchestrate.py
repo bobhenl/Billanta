@@ -175,3 +175,46 @@ async def test_orchestrate_no_needs_attention_on_clean_match(monkeypatch, settin
     )
 
     assert captured_kwargs["needs_attention"] is False
+
+
+async def test_orchestrate_refuses_a_sender_over_the_hourly_limit(monkeypatch, settings):
+    import pytest
+
+    from app.pipeline.errors import SenderRateLimitedError
+    from app.pipeline.limits import SlidingWindowLimiter
+
+    async def fail(*args, **kwargs):
+        raise AssertionError("nothing may run for a rate-limited sender")
+
+    monkeypatch.setattr(v2i, "SENDER_LIMITER", SlidingWindowLimiter(0, 3600))
+    monkeypatch.setattr(v2i, "resolve_tenant", fail)
+    monkeypatch.setattr(v2i, "download_media", fail)
+
+    with pytest.raises(SenderRateLimitedError):
+        await v2i.orchestrate(
+            channel=Channel.TELEGRAM, external_user_id="42", file_id="f", mime_type="audio/ogg", settings=settings
+        )
+
+
+async def test_resolve_tenant_stops_when_subscription_is_inactive(monkeypatch, settings):
+    import pytest
+
+    from app.pipeline.errors import SubscriptionInactiveError
+
+    class FakeClient:
+        def __init__(self, *a, **k) -> None: ...
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, *exc) -> bool:
+            return False
+        async def post(self, url, **kwargs):
+            return httpx.Response(
+                200,
+                request=httpx.Request("POST", "http://backend" + url),
+                json={"tenantId": "t-1", "subscriptionActive": False},
+            )
+
+    monkeypatch.setattr(v2i.httpx, "AsyncClient", FakeClient)
+
+    with pytest.raises(SubscriptionInactiveError):
+        await v2i.resolve_tenant(Channel.TELEGRAM, "42", settings=settings)

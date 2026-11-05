@@ -52,8 +52,11 @@ from app.pipeline.errors import (
     ExtractionError,
     MediaDownloadError,
     MediaTooLargeError,
+    SenderRateLimitedError,
+    SubscriptionInactiveError,
     TranscriptionError,
 )
+from app.pipeline.limits import SlidingWindowLimiter
 from app.pipeline.schemas import (
     AresEnrichment,
     AresMatchStatus,
@@ -87,6 +90,12 @@ TELEGRAM_MAX_BYTES = 50 * 1024 * 1024
 # limit, and far longer than anyone dictates an invoice.
 MAX_AUDIO_SECONDS = 600
 FFMPEG_TIMEOUT_SECONDS = 120
+
+# Every voice note costs a Whisper and up to two GPT-4o calls. Nobody
+# dictates more than a handful of invoices an hour; a script looping notes
+# from one linked chat would otherwise bill the OpenAI key without limit.
+SENDER_LIMIT_PER_HOUR = 20
+SENDER_LIMITER = SlidingWindowLimiter(SENDER_LIMIT_PER_HOUR, 3600)
 
 
 def _validation_summary(exc: Exception | None) -> str:
@@ -222,6 +231,11 @@ async def resolve_tenant(
 
     response.raise_for_status()
     body = response.json()
+    # Checked here, before anything is downloaded or sent to OpenAI: the
+    # drafts route refuses the same companies, but only after the money is
+    # spent. A backend that predates the field omits it, which counts as active.
+    if body.get("subscriptionActive") is False:
+        raise SubscriptionInactiveError(f"tenant of {external_user_id} has no active subscription")
     # The backend answers in camelCase (`tenantId`); accept both spellings.
     return body.get("tenantId") or body.get("tenant_id")
 
@@ -745,6 +759,9 @@ async def orchestrate(
     onboarding instructions back to the user).
     """
     settings = settings or get_settings()
+
+    if not SENDER_LIMITER.allow(f"{Channel(channel).value}:{external_user_id}"):
+        raise SenderRateLimitedError(f"{external_user_id} exceeded {SENDER_LIMIT_PER_HOUR} voice notes per hour")
 
     # Step 2: tenant resolution / account linking. Unlinked senders are
     # always rejected, never processed.
