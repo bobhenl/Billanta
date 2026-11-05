@@ -10,6 +10,8 @@ this change and is exercised here only incidentally.
 
 from __future__ import annotations
 
+import copy
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -17,6 +19,7 @@ from app import main
 from app.config import get_settings
 from app.pipeline.errors import MediaTooLargeError
 from app.pipeline.voice_to_invoice import (
+    MAX_AUDIO_SECONDS,
     orchestrate,  # noqa: F401  (patched via app.webhooks.telegram)
 )
 from app.webhooks import telegram as telegram_webhook_module
@@ -164,3 +167,19 @@ def test_start_in_group_is_refused(client, captured):
 def test_plain_text_is_ignored(client, captured):
     _post_update(client, _text_update("ahoj"))
     assert captured == {"activate": [], "send": []}
+
+
+def test_webhook_skips_overlong_voice_note_before_downloading(monkeypatch, client):
+    called = {"orchestrate": False}
+
+    async def fake_orchestrate(**kwargs):
+        called["orchestrate"] = True
+
+    monkeypatch.setattr(telegram_webhook_module, "orchestrate", fake_orchestrate)
+    update = copy.deepcopy(VOICE_UPDATE)
+    update["message"]["voice"]["duration"] = MAX_AUDIO_SECONDS + 1
+
+    response = _post_update(client, update)
+
+    assert response.status_code == 200
+    assert called["orchestrate"] is False

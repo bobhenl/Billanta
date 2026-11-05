@@ -37,7 +37,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import { encode as defaultEncode } from "next-auth/jwt";
 import { cookies } from "next/headers";
@@ -167,12 +167,12 @@ export async function deleteSessionByToken(sessionToken: string): Promise<void> 
 }
 
 /** Whether the browser's current session belongs to a demo user. */
-async function currentSessionIsDemo(): Promise<boolean> {
+async function currentSessionUser(): Promise<{ id: string; isDemo?: boolean } | null> {
   const jar = await cookies();
   const token = SESSION_COOKIES.map((name) => jar.get(name)?.value).find(Boolean);
-  if (!token) return false;
+  if (!token) return null;
   const found = await adapter.getSessionAndUser!(token);
-  return Boolean((found?.user as { isDemo?: boolean } | undefined)?.isDemo);
+  return (found?.user as { id: string; isDemo?: boolean } | undefined) ?? null;
 }
 
 /**
@@ -313,11 +313,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } as typeof session;
     },
     // With database sessions, an OAuth sign-in while signed in LINKS the
-    // provider to the current user. From a demo that would tie a real Google
-    // account to a user the cleanup is about to delete, so refuse it.
-    async signIn({ account }) {
-      if (account && account.provider !== "credentials" && (await currentSessionIsDemo())) return false;
-      return true;
+    // provider to the current user. Nothing in the app offers linking, so
+    // refuse it: someone holding a stolen password or a session still waiting
+    // for its 2FA code could otherwise link their own Google account and keep
+    // getting in after a password reset. (From a demo it would also tie a real
+    // account to a user the cleanup is about to delete.) Signing in again with
+    // a provider already linked to this user is fine.
+    async signIn({ account, profile }) {
+      if (!account || account.provider === "credentials") return true;
+      // Discord hands out the address before its owner confirms it; a user
+      // created from it would squat that email for the real owner.
+      if (account.provider === "discord" && (profile as { verified?: boolean } | undefined)?.verified !== true) return false;
+      const current = await currentSessionUser();
+      if (!current) return true;
+      if (current.isDemo) return false;
+      const [linked] = await db
+        .select({ userId: authSchema.accounts.userId })
+        .from(authSchema.accounts)
+        .where(and(eq(authSchema.accounts.provider, account.provider), eq(authSchema.accounts.providerAccountId, account.providerAccountId)))
+        .limit(1);
+      return linked?.userId === current.id;
     },
     // See this file's top-of-file doc comment. For a Credentials sign-in
     // Auth.js runs this callback and then writes `jwt.encode(token)` into

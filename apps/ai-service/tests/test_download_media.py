@@ -205,3 +205,16 @@ async def test_whatsapp_download_missing_access_token_raises(settings):
 async def test_download_media_unsupported_channel_raises(settings):
     with pytest.raises(ValueError):
         await v2i.download_media("carrier-pigeon", file_id="x", settings=settings)  # type: ignore[arg-type]
+
+
+async def test_telegram_download_error_never_contains_the_bot_token(monkeypatch, settings):
+    # httpx puts the full URL, /bot<TOKEN>/..., into its error text; it must not reach the logs.
+    url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/getFile"
+    failing = httpx.Response(400, request=httpx.Request("GET", url), json={"ok": False})
+    _patch_client(monkeypatch, [failing])
+
+    with pytest.raises(MediaDownloadError) as exc_info:
+        await v2i.download_media(v2i.Channel.TELEGRAM, file_id="abc123", settings=settings)
+
+    assert settings.telegram_bot_token not in str(exc_info.value)
+    assert "HTTP 400" in str(exc_info.value)
