@@ -65,7 +65,7 @@ describe("ApiKeyAuthGuard", () => {
     const result = await guard.canActivate(makeContext(req));
 
     expect(result).toBe(true);
-    expect(req.user).toEqual({ id: "key-1", email: "", tenantId: "tenant-1", role: "service" });
+    expect(req.user).toEqual({ id: "key-1", email: "", tenantId: "tenant-1", role: "service", apiKey: true });
     expect(apiKeysService.touchLastUsed).toHaveBeenCalledWith("tenant-1", "key-1");
   });
 

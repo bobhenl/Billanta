@@ -37,7 +37,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import { encode as defaultEncode } from "next-auth/jwt";
 import { cookies } from "next/headers";
@@ -167,12 +167,12 @@ export async function deleteSessionByToken(sessionToken: string): Promise<void> 
 }
 
 /** Whether the browser's current session belongs to a demo user. */
-async function currentSessionIsDemo(): Promise<boolean> {
+async function currentSessionUser(): Promise<{ id: string; isDemo?: boolean } | null> {
   const jar = await cookies();
   const token = SESSION_COOKIES.map((name) => jar.get(name)?.value).find(Boolean);
-  if (!token) return false;
+  if (!token) return null;
   const found = await adapter.getSessionAndUser!(token);
-  return Boolean((found?.user as { isDemo?: boolean } | undefined)?.isDemo);
+  return (found?.user as { id: string; isDemo?: boolean } | undefined) ?? null;
 }
 
 /**
@@ -205,6 +205,46 @@ function oauthProviders(): Provider[] {
     Discord({ clientId: env.DISCORD_CLIENT_ID, clientSecret: env.DISCORD_CLIENT_SECRET }),
     GitHub({ clientId: env.GITHUB_CLIENT_ID, clientSecret: env.GITHUB_CLIENT_SECRET }),
   ];
+}
+
+/**
+ * Whether the provider vouches for the email it sent. Google and Apple only
+ * hand out confirmed addresses; Seznam's identity scope documents no such
+ * flag, so it is trusted as before. Discord says so in `verified`.
+ * GitHub's provider takes the public or primary address without checking it,
+ * so the account's email list is asked. Microsoft marks a work-account
+ * address its tenant never verified with `xms_edov: false` once that
+ * optional claim is enabled on the app registration (Entra → Token
+ * configuration); without the claim there is nothing to check.
+ */
+async function providerEmailVerified(
+  account: { provider: string; access_token?: string },
+  profile: unknown,
+  email: string | null | undefined,
+): Promise<boolean> {
+  const claims = (profile ?? {}) as { verified?: boolean; xms_edov?: boolean | string };
+  switch (account.provider) {
+    case "discord":
+      return claims.verified === true;
+    case "microsoft-entra-id":
+      return claims.xms_edov !== false && claims.xms_edov !== "false";
+    case "github": {
+      if (!email || !account.access_token) return false;
+      try {
+        const res = await fetch("https://api.github.com/user/emails", {
+          headers: { Authorization: `Bearer ${account.access_token}`, "User-Agent": "billanta" },
+          signal: AbortSignal.timeout(5000),
+        });
+        if (!res.ok) return false;
+        const emails = (await res.json()) as { email: string; verified: boolean }[];
+        return emails.some((e) => e.verified && e.email.toLowerCase() === email.toLowerCase());
+      } catch {
+        return false;
+      }
+    }
+    default:
+      return true;
+  }
 }
 
 /**
@@ -313,11 +353,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       } as typeof session;
     },
     // With database sessions, an OAuth sign-in while signed in LINKS the
-    // provider to the current user. From a demo that would tie a real Google
-    // account to a user the cleanup is about to delete, so refuse it.
-    async signIn({ account }) {
-      if (account && account.provider !== "credentials" && (await currentSessionIsDemo())) return false;
-      return true;
+    // provider to the current user. Nothing in the app offers linking, so
+    // refuse it: someone holding a stolen password or a session still waiting
+    // for its 2FA code could otherwise link their own Google account and keep
+    // getting in after a password reset. (From a demo it would also tie a real
+    // account to a user the cleanup is about to delete.) Signing in again with
+    // a provider already linked to this user is fine.
+    async signIn({ account, profile, user }) {
+      if (!account || account.provider === "credentials") return true;
+      // A user created from an address its owner never confirmed would squat
+      // that email: the real owner could neither sign up nor reset a password.
+      if (!(await providerEmailVerified(account, profile, user.email))) return false;
+      const current = await currentSessionUser();
+      if (!current) return true;
+      if (current.isDemo) return false;
+      const [linked] = await db
+        .select({ userId: authSchema.accounts.userId })
+        .from(authSchema.accounts)
+        .where(and(eq(authSchema.accounts.provider, account.provider), eq(authSchema.accounts.providerAccountId, account.providerAccountId)))
+        .limit(1);
+      return linked?.userId === current.id;
     },
     // See this file's top-of-file doc comment. For a Credentials sign-in
     // Auth.js runs this callback and then writes `jwt.encode(token)` into

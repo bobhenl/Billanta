@@ -97,3 +97,18 @@ class AresLookupError(PipelineError):
         "We created your invoice draft, but couldn't verify the client's "
         "business registration automatically. Please double-check it in the dashboard."
     )
+
+
+class SubscriptionInactiveError(PipelineError):
+    """The linked company has no active subscription or trial; nothing is transcribed."""
+
+    user_message = (
+        "Your Billanta subscription is not active, so voice invoices are paused. "
+        "Renew it in the dashboard and send the message again."
+    )
+
+
+class SenderRateLimitedError(PipelineError):
+    """One sender sent more voice notes than the hourly limit allows."""
+
+    user_message = "You've sent a lot of voice messages in a short time. Please wait a while and try again."

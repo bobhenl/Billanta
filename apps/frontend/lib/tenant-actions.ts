@@ -1,8 +1,9 @@
 'use server';
 
-import { cookies, type UnsafeUnwrappedCookies } from 'next/headers';
+import { cookies, headers, type UnsafeUnwrappedCookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { ACTIVE_TENANT_COOKIE, ApiError, apiFetch, fetchMyCompanies, type CurrentTenant } from './api-client';
+import { clientIp } from './client-ip';
 import { TOS_VERSION } from './tos';
 
 export type TenantActionResult = { ok: true; id: string } | { ok: false; error: string };
@@ -36,9 +37,12 @@ export async function createTenant(companyName: string, tosAccepted: boolean): P
   if (!tosAccepted) return { ok: false, error: 'tos_required' };
   try {
     // JWT-only endpoint; the X-Tenant-Id apiFetch adds is ignored there.
+    // The visitor's IP goes along because the backend only sees this server's
+    // address, and the welcome trial counts IPs as an abuse signal.
+    const ip = clientIp({ headers: await headers() });
     const created = await apiFetch<CurrentTenant>('/api/v1/me/tenants', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...(ip ? { 'x-guest-ip': ip } : {}) },
       body: JSON.stringify({ companyName: name, tosVersion: TOS_VERSION })
     });
     rememberActive(created.id);

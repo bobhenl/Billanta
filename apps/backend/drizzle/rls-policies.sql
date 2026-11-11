@@ -1215,7 +1215,10 @@ BEGIN
 
   INSERT INTO tenant_memberships (tenant_id, user_id, role, permissions)
   VALUES (inv.tenant_id, p_user_id, inv.role, inv.permissions)
-  ON CONFLICT (tenant_id, user_id) DO UPDATE SET role = EXCLUDED.role, permissions = EXCLUDED.permissions;
+  -- The "already a member" check runs when the invitation is created, so the
+  -- invitee may have become owner since; an old invitation must not demote them.
+  ON CONFLICT (tenant_id, user_id) DO UPDATE SET role = EXCLUDED.role, permissions = EXCLUDED.permissions
+    WHERE tenant_memberships.role <> 'owner';
 
   UPDATE tenant_invitations SET accepted_at = now() WHERE id = inv.id;
   RETURN inv.tenant_id;

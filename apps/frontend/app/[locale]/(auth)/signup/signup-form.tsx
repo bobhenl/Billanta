@@ -149,6 +149,7 @@ export function SignupForm({ audience = null }: { audience?: 'accountant' | 'tea
             name="password"
             required
             minLength={8}
+            maxLength={72}
             autoComplete="new-password"
             placeholder={t('passwordPlaceholder')}
             value={password}

@@ -33,7 +33,7 @@ export function glossaryLinker(locale: string, current?: string): (text: string)
   const done = new Set<string>(current ? [current] : []);
   const patterns = patternsFor(locale);
 
-  return (text) => {
+  return function linkGlossaryTerms(text: string) {
     const parts: ReactNode[] = [];
     let rest = text;
     let key = 0;

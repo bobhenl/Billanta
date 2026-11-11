@@ -186,3 +186,33 @@ async def test_transcribe_audio_cleans_up_temp_files_on_failure(monkeypatch, set
 
     assert captured_dirs, "ffmpeg should have been invoked"
     assert not captured_dirs[0].exists(), "TemporaryDirectory must be cleaned up even after failure"
+
+
+async def test_transcribe_audio_caps_ffmpeg_duration(monkeypatch, settings):
+    seen: list[tuple] = []
+
+    async def fake_create_subprocess_exec(*args, **kwargs):
+        seen.append(args)
+        return FakeProcess(0, on_communicate=_write_output_side_effect(args))
+
+    monkeypatch.setattr(v2i.asyncio, "create_subprocess_exec", fake_create_subprocess_exec)
+    _patch_openai(monkeypatch, text="ok")
+
+    await v2i.transcribe_audio(b"fake-ogg-bytes", mime_type="audio/ogg", settings=settings)
+
+    args = seen[0]
+    assert args[args.index("-t") + 1] == str(v2i.MAX_AUDIO_SECONDS)
+
+
+async def test_transcribe_audio_rejects_oversized_remux_output(monkeypatch, settings):
+    async def fake_create_subprocess_exec(*args, **kwargs):
+        def _write() -> None:
+            Path(args[-1]).write_bytes(b"x" * (v2i.WHISPER_MAX_BYTES + 1))
+
+        return FakeProcess(0, on_communicate=_write)
+
+    monkeypatch.setattr(v2i.asyncio, "create_subprocess_exec", fake_create_subprocess_exec)
+    _patch_openai(monkeypatch, text="never reached")
+
+    with pytest.raises(MediaTooLargeError):
+        await v2i.transcribe_audio(b"fake-ogg-bytes", mime_type="audio/ogg", settings=settings)

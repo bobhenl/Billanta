@@ -54,7 +54,7 @@ export class ChannelLinksService {
    * `TenantContextMiddleware` in `AppModule.configure` for exactly this
    * reason, so `req.tenantDb` would never even be populated here.
    */
-  async verify(dto: VerifyChannelLinkDto): Promise<{ tenantId: string; country: string; homeCurrency: string }> {
+  async verify(dto: VerifyChannelLinkDto): Promise<{ tenantId: string; country: string; homeCurrency: string; subscriptionActive: boolean }> {
     const [link] = await this.dbService.db
       .select({ tenantId: channelLinks.tenantId, isActive: channelLinks.isActive })
       .from(channelLinks)
@@ -74,19 +74,26 @@ export class ChannelLinksService {
     }
 
     // `tenants` keeps FORCE RLS, so its row is read inside a transaction
-    // scoped to the tenant the link just resolved to. The AI service only
-    // uses these as prompt defaults (draft currency, which VAT conventions).
+    // scoped to the tenant the link just resolved to. The AI service uses
+    // country and currency as prompt defaults, and the subscription status
+    // to stop before paying for Whisper and GPT; the drafts route checks the
+    // same rule again.
     const tenant = await this.dbService.sql.begin(async (tx) => {
       await tx`SELECT set_config('app.current_tenant_id', ${link.tenantId}, true)`;
       const [row] = await drizzleTx(tx, schema)
-        .select({ country: schema.tenants.country, homeCurrency: schema.tenants.homeCurrency })
+        .select({ country: schema.tenants.country, homeCurrency: schema.tenants.homeCurrency, status: schema.tenants.subscriptionStatus })
         .from(schema.tenants)
         .where(eq(schema.tenants.id, link.tenantId))
         .limit(1);
       return row;
     });
 
-    return { tenantId: link.tenantId, country: tenant?.country ?? "CZ", homeCurrency: tenant?.homeCurrency ?? "CZK" };
+    return {
+      tenantId: link.tenantId,
+      country: tenant?.country ?? "CZ",
+      homeCurrency: tenant?.homeCurrency ?? "CZK",
+      subscriptionActive: tenant?.status === "active" || tenant?.status === "trialing"
+    };
   }
 
   /** Active links shown in Settings → Kanály. Never returns tokens. */

@@ -112,7 +112,7 @@ export class ApiKeyAuthGuard implements CanActivate {
       );
     }
 
-    req.user = { id: result.apiKeyId, email: "", tenantId: result.tenantId, role: "service" };
+    req.user = { id: result.apiKeyId, email: "", tenantId: result.tenantId, role: "service", apiKey: true };
     this.apiKeysService.touchLastUsed(result.tenantId, result.apiKeyId);
     return true;
   }

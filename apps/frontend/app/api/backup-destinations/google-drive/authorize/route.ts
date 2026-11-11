@@ -8,8 +8,10 @@ import { ApiError, apiRedirectLocation, NotSignedInError } from '@/lib/api-clien
  * `/settings/backup?connected=google_drive` (or `?error=…`).
  */
 export async function GET(request: NextRequest) {
-  const locale = request.nextUrl.searchParams.get('locale') ?? 'cs';
-  const back = new URL(`/${encodeURIComponent(locale)}/settings/backup`, request.nextUrl.origin);
+  // Allow-listed: `/${locale}` with locale=/evil.example would be a protocol-relative open redirect.
+  const requested = request.nextUrl.searchParams.get('locale') ?? 'cs';
+  const locale = ['cs', 'sk', 'en'].includes(requested) ? requested : 'cs';
+  const back = new URL(`/${locale}/settings/backup`, request.nextUrl.origin);
   try {
     return NextResponse.redirect(await apiRedirectLocation('/api/v1/backup-destinations/google-drive/authorize'));
   } catch (error) {
