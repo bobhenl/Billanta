@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { normalizeVariableSymbol } from "@faktur/cz-compliance";
-import { and, desc, eq, gte, inArray, isNull, lt, ne, or } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNull, lt, ne, or } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
+import { ExpensesService } from "../expenses/expenses.service";
 import { InvoicesService } from "../invoices/invoices.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { compileRule, decideAfterMatch, type CompiledRule, type PaymentForRules, type RuleAction, type RuleConditions } from "./bank-rules";
 import type { ParsedBankTransactionRow } from "./csv-parser";
 import { splitDuplicates } from "./dedupe";
 import {
@@ -38,6 +40,19 @@ interface MatchPools {
   issued: MatchCandidateInvoice[];
   paid: PaidLinkCandidate[];
 }
+export type StoredRule = Omit<typeof schema.bankRules.$inferSelect, "conditions" | "action"> & { conditions: RuleConditions; action: RuleAction };
+
+export function paymentForRules(tx: StoredRow): PaymentForRules {
+  return {
+    amount: Number(tx.amount),
+    currency: tx.currency,
+    counterpartyName: tx.counterpartyName,
+    counterpartyAccount: tx.counterpartyAccount,
+    message: tx.message,
+    variableSymbol: tx.variableSymbol,
+  };
+}
+
 type AppliedMatch =
   | { type: "matched" | "linked"; invoiceId: string; updated: StoredRow }
   | Extract<MatchOutcome, { type: "unmatched" }>;
@@ -66,6 +81,7 @@ export class BankReconciliationService {
 
   constructor(
     private readonly invoicesService: InvoicesService,
+    private readonly expensesService: ExpensesService,
     @Optional() private readonly notifications?: NotificationsService,
   ) {}
 
@@ -80,11 +96,13 @@ export class BankReconciliationService {
   async importStatement(db: TenantDb, tenantId: string, filename: string, file: Buffer) {
     const { source, rows } = parseUploadedStatement(filename, file);
     const result = await this.persistAndMatch(db, tenantId, filename, source, rows);
-    const { total, matched, unmatched, duplicates } = result.summary;
+    const { total, matched, unmatched, ruled, duplicates } = result.summary;
     this.notifications?.notify(tenantId, "bank_import", {
       title: `Výpis ${filename} naimportován`,
       body:
-        `${total} pohybů, ${matched} spárováno automaticky, ${unmatched} čeká na vás.` +
+        `${total} pohybů, ${matched} spárováno automaticky, ` +
+        (ruled > 0 ? `${ruled} vyřídila pravidla, ` : "") +
+        `${unmatched} čeká na vás.` +
         (duplicates > 0 ? ` ${duplicates} už v Billantě byly, ty jsme přeskočili.` : ""),
       link: "/bank",
     });
@@ -110,6 +128,8 @@ export class BankReconciliationService {
       skipEmpty?: boolean;
       /** PayPal: an unmatched payment from this moment on becomes an invoice draft. */
       autoDraftFrom?: Date | null;
+      /** false for a history backfill: bank rules may ignore payments but not draft from them. */
+      ruleDrafts?: boolean;
     } = {},
   ) {
     const { fresh: parsedRows, duplicates, claims } = splitDuplicates(incomingRows, await this.storedAround(db, incomingRows));
@@ -120,7 +140,7 @@ export class BankReconciliationService {
         .where(and(eq(schema.bankTransactions.id, claim.id), isNull(schema.bankTransactions.externalId)));
     }
     if (parsedRows.length === 0 && options.skipEmpty) {
-      return { import: null, transactions: [], summary: { total: 0, matched: 0, unmatched: 0, drafted: 0, duplicates } };
+      return { import: null, transactions: [], summary: { total: 0, matched: 0, unmatched: 0, drafted: 0, ruled: 0, duplicates } };
     }
 
     const [importRow] = await db
@@ -156,24 +176,36 @@ export class BankReconciliationService {
             .returning();
 
     const pools = await this.loadPools(db, insertedTransactions);
+    // Rules run on new payments only. Older unmatched ones (e.g. a payment a
+    // member restored from "ignored") are left alone, or every sync would
+    // ignore them again; "Použít na existující" applies a rule to those.
+    const rules = insertedTransactions.length > 0 ? await this.loadCompiledRules(db) : [];
 
     const finalTransactions: (typeof insertedTransactions)[number][] = [];
     let matchedCount = 0;
     let drafted = 0;
+    let ruled = 0;
     const payerCountries = new Map(parsedRows.map((r) => [r.externalId ?? "", r.payerCountry ?? null]));
 
     for (const tx of insertedTransactions) {
       const outcome = await this.applyMatch(db, tenantId, tx, pools);
+      const decision = decideAfterMatch(outcome.type !== "unmatched", paymentForRules(tx), rules, {
+        drafts: options.ruleDrafts !== false,
+        autoDraft:
+          outcome.type === "unmatched" &&
+          outcome.reason === "no_candidate" &&
+          Boolean(options.autoDraftFrom) &&
+          // Payment days are UTC midnights: a payment on the connection's first day counts.
+          tx.transactionDate.getTime() >= startOfUtcDay(options.autoDraftFrom!),
+      });
 
       if (outcome.type !== "unmatched") {
         finalTransactions.push(outcome.updated);
         matchedCount++;
-      } else if (
-        outcome.reason === "no_candidate" &&
-        options.autoDraftFrom &&
-        // Payment days are UTC midnights: a payment on the connection's first day counts.
-        tx.transactionDate.getTime() >= startOfUtcDay(options.autoDraftFrom)
-      ) {
+      } else if (decision.kind === "rule") {
+        finalTransactions.push(await this.applyRuleAction(db, tenantId, tx, decision.rule));
+        ruled++;
+      } else if (decision.kind === "auto_draft") {
         const { transaction: updated } = await this.draftAndLink(db, tenantId, tx, payerCountries.get(tx.externalId ?? "") ?? null);
         finalTransactions.push(updated);
         drafted++;
@@ -202,8 +234,9 @@ export class BankReconciliationService {
       summary: {
         total: finalTransactions.length,
         matched: matchedCount,
-        unmatched: finalTransactions.length - matchedCount - drafted,
+        unmatched: finalTransactions.length - matchedCount - drafted - ruled,
         drafted,
+        ruled,
         duplicates,
       },
     };
@@ -279,7 +312,7 @@ export class BankReconciliationService {
     }
     const [updated] = await db
       .update(schema.bankTransactions)
-      .set({ status: "unmatched" })
+      .set({ status: "unmatched", appliedRuleId: null })
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
     return updated;
@@ -319,7 +352,13 @@ export class BankReconciliationService {
     return { transaction, invoiceId: invoice.id };
   }
 
-  private async draftAndLink(db: TenantDb, tenantId: string, tx: StoredRow, payerCountry: string | null) {
+  private async draftAndLink(
+    db: TenantDb,
+    tenantId: string,
+    tx: StoredRow,
+    payerCountry: string | null,
+    rule: { id: string; contactId: string | null } | null = null,
+  ) {
     const received = receivedFrom(tx);
     const invoice = await this.invoicesService.createPaymentDraft(db, tenantId, {
       amount: received.amount,
@@ -333,13 +372,68 @@ export class BankReconciliationService {
       fee: received.fee ?? null,
       net: received.net,
       note: received.note ?? paypalPaymentNote(received),
+      contactId: rule?.contactId ?? null,
     });
     const [transaction] = await db
       .update(schema.bankTransactions)
-      .set({ matchedInvoiceId: invoice.id, status: "matched" })
+      .set({ matchedInvoiceId: invoice.id, status: "matched", ...(rule && { appliedRuleId: rule.id }) })
       .where(eq(schema.bankTransactions.id, tx.id))
       .returning();
     return { transaction: transaction!, invoice };
+  }
+
+  /** Enabled rules in the order they run (RLS keeps them to this tenant). */
+  async loadCompiledRules(db: TenantDb): Promise<CompiledRule<StoredRule>[]> {
+    const rows = await db
+      .select()
+      .from(schema.bankRules)
+      .where(eq(schema.bankRules.enabled, true))
+      .orderBy(asc(schema.bankRules.position), asc(schema.bankRules.createdAt));
+    return (rows as StoredRule[]).map((rule) => compileRule(rule));
+  }
+
+  /**
+   * Runs one rule's action on an unmatched payment and records the rule on
+   * it. Drafts only: an expense flagged needs_review, or a pending_review
+   * invoice that a member still issues by hand.
+   */
+  async applyRuleAction(db: TenantDb, tenantId: string, tx: StoredRow, rule: StoredRule): Promise<StoredRow> {
+    if (rule.action === "draft_invoice") {
+      return (await this.draftAndLink(db, tenantId, tx, null, { id: rule.id, contactId: rule.contactId })).transaction;
+    }
+    if (rule.action === "draft_expense") {
+      const vs = normalizeVariableSymbol(tx.variableSymbol);
+      const expense = await this.expensesService.create(
+        db,
+        tenantId,
+        {
+          supplierNameRaw: tx.counterpartyName?.slice(0, 200) || null,
+          description: (tx.message || tx.counterpartyName || rule.name).slice(0, 500),
+          // The payment is the gross amount; the VAT rate is unknown until a person checks the receipt.
+          amount: Math.abs(Number(tx.amount)),
+          vatRate: 0,
+          currency: tx.currency,
+          expenseDate: tx.transactionDate,
+          category: rule.expenseCategory ?? null,
+          variableSymbol: vs && /^\d{1,10}$/.test(vs) ? vs : null,
+          paidAt: tx.transactionDate,
+          note: `Z bankovní platby, pravidlo „${rule.name}“.`,
+        },
+        { needsReview: true },
+      );
+      const [updated] = await db
+        .update(schema.bankTransactions)
+        .set({ matchedExpenseId: expense!.id, status: "matched", appliedRuleId: rule.id })
+        .where(eq(schema.bankTransactions.id, tx.id))
+        .returning();
+      return updated!;
+    }
+    const [updated] = await db
+      .update(schema.bankTransactions)
+      .set({ status: "ignored", appliedRuleId: rule.id })
+      .where(eq(schema.bankTransactions.id, tx.id))
+      .returning();
+    return updated!;
   }
 
   /** Issued invoices to settle and paid ones to link, for a set of transactions. */
@@ -484,7 +578,7 @@ export class BankReconciliationService {
 
     const [updated] = await db
       .update(schema.bankTransactions)
-      .set({ matchedInvoiceId: invoiceId, status: "matched" })
+      .set({ matchedInvoiceId: invoiceId, status: "matched", appliedRuleId: null, matchedExpenseId: null })
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
 

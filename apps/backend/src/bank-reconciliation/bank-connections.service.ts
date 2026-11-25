@@ -100,6 +100,8 @@ export interface BankSyncSummary {
   unmatched: number;
   /** PayPal payments that became invoice drafts. */
   drafted?: number;
+  /** Payments a bank rule ignored or drafted from. */
+  ruled?: number;
   /** Already stored PayPal payments that got their converted amount now. */
   netUpdated?: number;
   /** Older unmatched payments that the re-run after the sync matched or linked. */
@@ -494,7 +496,7 @@ export class BankConnectionsService {
       throw this.paypalHttpError(err);
     }
     const period = `${range.from.toISOString().slice(0, 10)} – ${range.to.toISOString().slice(0, 10)}`;
-    const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom);
+    const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom, false);
     await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
     return { connectionId: row.id, ...summary, from: range.from };
   }
@@ -671,6 +673,8 @@ export class BankConnectionsService {
     source: "fio" | "psd2" | "paypal",
     rows: (FioSyncedRow | Psd2SyncedRow | PaypalSyncedRow)[],
     autoDraftFrom: Date | null = null,
+    /** A history backfill: rules may ignore old payments but never draft from them. */
+    ruleDrafts = true,
   ) {
     const ids = rows.map((r) => r.externalId);
     const known = ids.length
@@ -692,6 +696,7 @@ export class BankConnectionsService {
     const result = await this.reconciliation.persistAndMatch(db, tenantId, title.replace(/\s+/g, " ").trim(), source, fresh, {
       skipEmpty: true,
       autoDraftFrom,
+      ruleDrafts,
     });
     // Older unmatched payments get another chance against invoices issued or imported since.
     const rematch = await this.reconciliation.rematchUnmatched(db, tenantId);
@@ -702,6 +707,7 @@ export class BankConnectionsService {
         body:
           `${result.summary.total} příchozích plateb, ${result.summary.matched} spárováno automaticky` +
           (result.summary.drafted ? `, ${result.summary.drafted} nových návrhů faktur ke kontrole` : "") +
+          (result.summary.ruled ? `, ${result.summary.ruled} vyřídila pravidla` : "") +
           `, ${result.summary.unmatched} čeká na vás.`,
         link: "/bank",
       });

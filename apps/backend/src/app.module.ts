@@ -10,6 +10,7 @@ import { BackupDestinationsController } from "./backup-destinations/backup-desti
 import { BackupDestinationsModule } from "./backup-destinations/backup-destinations.module";
 import { BankReconciliationController } from "./bank-reconciliation/bank-reconciliation.controller";
 import { BankConnectionsController } from "./bank-reconciliation/bank-connections.controller";
+import { BankRulesController } from "./bank-reconciliation/bank-rules.controller";
 import { BankReconciliationModule } from "./bank-reconciliation/bank-reconciliation.module";
 import { BillingModule } from "./billing/billing.module";
 import { SubscriptionController } from "./billing/subscription.controller";
@@ -243,6 +244,7 @@ export class AppModule implements NestModule {
         RecurringInvoicesController,
         BankReconciliationController,
         BankConnectionsController,
+        BankRulesController,
         BackupDestinationsController,
         TeamController,
         DashboardController,

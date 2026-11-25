@@ -631,6 +631,13 @@
       "when": 1793248680000,
       "tag": "0090_net_income",
       "breakpoints": true
+    },
+    {
+      "idx": 91,
+      "version": "7",
+      "when": 1793248740000,
+      "tag": "0091_bank_rules",
+      "breakpoints": true
     }
   ]
 }

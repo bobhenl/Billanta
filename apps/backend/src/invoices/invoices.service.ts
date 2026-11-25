@@ -1145,11 +1145,13 @@ export class InvoicesService {
       fee: number | null;
       net: { amount: number; currency: string } | null;
       note: string;
+      /** A bank rule chose the customer: bill this contact, no payer lookup. */
+      contactId?: string | null;
     },
   ) {
     const email = payment.payerEmail?.trim().toLowerCase() || null;
-    let contactId: string | null = null;
-    if (email) {
+    let contactId: string | null = payment.contactId ?? null;
+    if (!contactId && email) {
       const [existing] = await db
         .select({ id: schema.contacts.id })
         .from(schema.contacts)

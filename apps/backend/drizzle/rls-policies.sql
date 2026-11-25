@@ -193,6 +193,15 @@ CREATE POLICY tenant_isolation ON bank_connections
   USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
   WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
 
+-- bank_rules – what to do with unmatched payments (migration 0091).
+ALTER TABLE bank_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bank_rules FORCE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS tenant_isolation ON bank_rules;
+CREATE POLICY tenant_isolation ON bank_rules
+  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
+  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+
 -- projects / time_entries — time tracking (migration 0029).
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects FORCE ROW LEVEL SECURITY;

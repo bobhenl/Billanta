@@ -51,7 +51,8 @@ export class ExpensesService {
     return expense;
   }
 
-  create(db: TenantDb, tenantId: string, dto: CreateExpenseDto) {
+  /** `needsReview`: made by a bank rule, waits for a person to check it in the form. */
+  create(db: TenantDb, tenantId: string, dto: CreateExpenseDto, options: { needsReview?: boolean } = {}) {
     // tenantId is taken from the verified request context (req.user.tenantId
     // via the controller), never from client-supplied input — the DTO
     // deliberately has no tenantId field (same pattern as
@@ -78,6 +79,7 @@ export class ExpensesService {
         dueDate: dto.dueDate ?? null,
         paidAt: dto.paidAt ?? null,
         note: dto.note ?? null,
+        needsReview: options.needsReview ?? false,
       })
       .returning()
       .then(([expense]) => expense);
@@ -112,6 +114,7 @@ export class ExpensesService {
         ...(dto.dueDate !== undefined && { dueDate: dto.dueDate }),
         ...(dto.paidAt !== undefined && { paidAt: dto.paidAt }),
         ...(dto.note !== undefined && { note: dto.note }),
+        ...(dto.needsReview !== undefined && { needsReview: dto.needsReview }),
       })
       .where(eq(schema.expenses.id, id))
       .returning();

@@ -1079,6 +1079,8 @@ export const expenses = pgTable("expenses", {
   dueDate: timestamp("due_date", { withTimezone: true, mode: "date" }),
   paidAt: timestamp("paid_at", { withTimezone: true }),
   note: text("note"),
+  /** Created by a bank rule from a payment and not checked by a person yet (migration 0091). */
+  needsReview: boolean("needs_review").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -1167,8 +1169,43 @@ export const bankTransactions = pgTable("bank_transactions", {
   netCurrency: varchar("net_currency", { length: 3 }),
   /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
   message: text("message"),
+  /** The bank rule that ignored this payment or drafted its expense/invoice (migration 0091). */
+  appliedRuleId: uuid("applied_rule_id").references((): AnyPgColumn => bankRules.id, { onDelete: "set null" }),
+  /** An outgoing payment a bank rule turned into an expense draft (migration 0091). */
+  matchedExpenseId: uuid("matched_expense_id").references(() => expenses.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ---------------------------------------------------------------------------
+// bank_rules – tenant-scoped. "Pravidla pro platby": what to do with a bank
+// payment no invoice matched (ignore it, or turn it into an expense or
+// invoice draft to review). Lower `position` runs first and the first rule
+// that fits wins. `conditions` has the shape `ruleConditionsSchema` in
+// src/bank-reconciliation/bank-rules.ts validates. Migration 0091.
+// ---------------------------------------------------------------------------
+export const bankRules = pgTable(
+  "bank_rules",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id")
+      .notNull()
+      .references(() => tenants.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    enabled: boolean("enabled").notNull().default(true),
+    position: integer("position").notNull().default(0),
+    conditions: jsonb("conditions").notNull(),
+    action: varchar("action", { length: 32 }).notNull(),
+    /** draft_expense: category of the new expense. */
+    expenseCategory: text("expense_category"),
+    /** draft_invoice: bill this contact instead of looking up the payer. */
+    contactId: uuid("contact_id").references(() => contacts.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantPositionIdx: index("bank_rules_tenant_position_idx").on(table.tenantId, table.position),
+  }),
+);
 
 // ---------------------------------------------------------------------------
 // bank_connections — tenant-scoped. Read-only bank API tokens (Fio for now)
