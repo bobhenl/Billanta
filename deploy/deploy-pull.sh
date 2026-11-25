@@ -28,6 +28,8 @@ C="docker compose -f deploy/docker-compose.prod.yml --env-file .env"
 echo "== migrate $(date +%T)"; $C up -d postgres redis; $C run --rm migrate
 echo "== restart $(date +%T)"; $C up -d --remove-orphans; $C ps --format "{{.Service}} {{.Status}}"
 
+# The migrate image (~1.8 GB) is only needed for the run above; the disk is small.
+docker rmi billanta-migrate:latest "$R/billanta-migrate:$SHA" >/dev/null 2>&1 || true
 # Only this commit's registry tags stay; the rest are dangling copies.
 docker images --format '{{.Repository}}:{{.Tag}}' | grep "^$R/" | grep -v ":$SHA\$" | xargs -r docker rmi >/dev/null 2>&1 || true
 docker image prune -f >/dev/null
