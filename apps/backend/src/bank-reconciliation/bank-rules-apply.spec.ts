@@ -203,7 +203,8 @@ describe("BankRulesService.apply", () => {
 });
 
 describe("BankReconciliationService late descriptions", () => {
-  it("fills the description of a payment it already has, so its draft can take the item names", async () => {
+  // The API sync skips empty runs: a sync where every payment is known must still fill.
+  it.each([{ skipEmpty: false }, { skipEmpty: true }])("fills the description of a payment it already has, so its draft can take the item names (%o)", async (options) => {
     const stored = tx({ id: "tx-1", externalId: "paypal:45E2", amount: "25.00", currency: "USD", message: null, transactionDate: new Date("2026-08-24") });
     const executed: string[] = [];
     const db = {
@@ -223,7 +224,7 @@ describe("BankReconciliationService late descriptions", () => {
         externalId: "paypal:45E2",
         message: "Tebex Webstore - Rank category overhaul",
       } as never,
-    ]);
+    ], options);
     expect(result.summary.duplicates).toBe(1);
     expect(executed.join(" ")).toContain("Tebex Webstore - Rank category overhaul");
   });

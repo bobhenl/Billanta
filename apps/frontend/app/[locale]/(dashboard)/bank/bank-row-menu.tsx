@@ -123,16 +123,16 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
       {pos && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setPos(null)} />
-          <div role="menu" style={pos} className="fixed z-50 overflow-y-auto w-60 rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
+          <div role="menu" style={pos} className="fixed z-50 overflow-y-auto w-max min-w-60 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
             {items.map(({ icon: Icon, label, onSelect }) => (
               <button
                 key={label}
                 role="menuitem"
                 type="button"
                 onClick={onSelect}
-                className={cn('flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm hover:bg-accent hover:text-primary')}
+                className={cn('flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm hover:bg-accent hover:text-primary')}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4 shrink-0" />
                 {label}
               </button>
             ))}

@@ -111,6 +111,32 @@ export class BankReconciliationService {
   }
 
   /**
+   * A row synced before its source sent a description (PayPal invoice items
+   * came later) gets it now. Only an empty message is filled, never replaced,
+   * and a draft made from it swaps its placeholder line for the real text
+   * while it still waits for review (an issued invoice is never touched).
+   * Reads every incoming row: a stored one was split off as a duplicate before.
+   */
+  private async fillLateDescriptions(db: TenantDb, incomingRows: IncomingRow[], inserted: { externalId: string | null }[]) {
+    const insertedIds = new Set(inserted.map((t) => t.externalId));
+    const late = incomingRows
+      .filter((r) => r.externalId && r.message && !insertedIds.has(r.externalId))
+      .map((r) => ({ id: r.externalId, message: r.message!.slice(0, 500) }));
+    if (late.length === 0) return;
+    await db.execute(sql`
+      WITH filled AS (
+        UPDATE bank_transactions t SET message = v.message
+        FROM jsonb_to_recordset(${JSON.stringify(late)}::jsonb) AS v(id text, message text)
+        WHERE t.external_id = v.id AND t.message IS NULL
+        RETURNING t.matched_invoice_id, t.message
+      )
+      UPDATE invoice_line_items li SET description = f.message
+      FROM filled f JOIN invoices i ON i.id = f.matched_invoice_id
+      WHERE li.invoice_id = i.id AND i.status = 'pending_review'
+        AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, (SELECT btrim(tn.invoice_form_prefs->>'paymentDraftDescription') FROM tenants tn WHERE tn.id = i.tenant_id))`);
+  }
+
+  /**
    * Shared by the statement upload and the bank API sync: drops movements
    * we already have (`dedupe.ts`: the same bank id, or the same payment
    * seen from another source), records one import, inserts the rest and
@@ -141,6 +167,8 @@ export class BankReconciliationService {
         .where(and(eq(schema.bankTransactions.id, claim.id), isNull(schema.bankTransactions.externalId)));
     }
     if (parsedRows.length === 0 && options.skipEmpty) {
+      // Nothing new, but a known row may now come with the description it lacked.
+      await this.fillLateDescriptions(db, incomingRows, []);
       return { import: null, transactions: [], summary: { total: 0, matched: 0, unmatched: 0, drafted: 0, ruled: 0, duplicates } };
     }
 
@@ -176,28 +204,7 @@ export class BankReconciliationService {
             .onConflictDoNothing()
             .returning();
 
-    // A row synced before its source sent a description (PayPal invoice items
-    // came later) gets it now. Only an empty message is filled, never replaced,
-    // and a draft made from it swaps its placeholder line for the real text
-    // while it still waits for review (an issued invoice is never touched).
-    // From every incoming row: a stored one was already split off as a duplicate above.
-    const inserted = new Set(insertedTransactions.map((t) => t.externalId));
-    const late = incomingRows
-      .filter((r) => r.externalId && r.message && !inserted.has(r.externalId))
-      .map((r) => ({ id: r.externalId, message: r.message!.slice(0, 500) }));
-    if (late.length > 0) {
-      await db.execute(sql`
-        WITH filled AS (
-          UPDATE bank_transactions t SET message = v.message
-          FROM jsonb_to_recordset(${JSON.stringify(late)}::jsonb) AS v(id text, message text)
-          WHERE t.external_id = v.id AND t.message IS NULL
-          RETURNING t.matched_invoice_id, t.message
-        )
-        UPDATE invoice_line_items li SET description = f.message
-        FROM filled f JOIN invoices i ON i.id = f.matched_invoice_id
-        WHERE li.invoice_id = i.id AND i.status = 'pending_review'
-          AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, (SELECT tn.invoice_form_prefs->>'paymentDraftDescription' FROM tenants tn WHERE tn.id = i.tenant_id))`);
-    }
+    await this.fillLateDescriptions(db, incomingRows, insertedTransactions);
 
     const pools = await this.loadPools(db, insertedTransactions);
     // Rules run on new payments only. Older unmatched ones (e.g. a payment a
