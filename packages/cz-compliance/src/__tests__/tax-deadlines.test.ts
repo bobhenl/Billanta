@@ -100,6 +100,13 @@ describe('taxDeadlinesFor', () => {
     ]);
   });
 
+  it('identified person: an EU service sale alone makes the return due (ř. 21), a sale in another month does not', () => {
+    const sold = profile({ vatStatus: 'identified', activity: { euSalesMonths: ['2026-09'], foreignPurchaseMonths: [] } });
+    expect(taxDeadlinesFor(['vat_identified'], sold, null, today, 30).map((d) => [d.kind, !!d.conditional])).toEqual([['vat_identified', false]]);
+    const soldEarlier = profile({ vatStatus: 'identified', activity: { euSalesMonths: ['2026-07'], foreignPurchaseMonths: [] } });
+    expect(taxDeadlinesFor(['vat_identified'], soldEarlier, null, today, 30)).toEqual([]);
+  });
+
   it('souhrnné hlášení: only for a month with an EU service, the month before the deadline', () => {
     const august = profile({ activity: { euSalesMonths: ['2026-08'], foreignPurchaseMonths: [] } });
     expect(taxDeadlinesFor(['ec_sales_list'], august, null, today, 30)).toEqual([]);

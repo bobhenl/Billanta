@@ -134,8 +134,8 @@ const monthKeyOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).p
 /**
  * Applies the account's activity to the conditional kinds; a deadline on the
  * 25th covers the month before it. Souhrnné hlášení without an EU service
- * that month is dropped. An identified person's return without a foreign
- * purchase that month stays, flagged "only if …", only when the account has
+ * that month is dropped. An identified person's return is due for a month
+ * with a foreign purchase or an EU service sale; without either it stays, flagged "only if …", only when the account has
  * bought abroad at all in the window `activity` covers (a year): a regular
  * ad buyer may simply not have booked this month's invoice yet, while
  * someone who never buys abroad would only be nagged by it.
@@ -148,9 +148,11 @@ export function applyTaxActivity(deadlines: TaxDeadline[], profile: TaxProfile):
       continue;
     }
     const period = monthKeyOf(new Date(d.date.getFullYear(), d.date.getMonth() - 1, 1));
-    const months = profile.activity ? (d.kind === 'ec_sales_list' ? profile.activity.euSalesMonths : profile.activity.foreignPurchaseMonths) : null;
-    if (months?.includes(period)) out.push(d);
-    else if (!months || (d.kind === 'vat_identified' && months.length > 0)) out.push({ ...d, conditional: true });
+    const a = profile.activity;
+    // The identified person's return also carries services sold to EU businesses (ř. 21).
+    const due = a ? (d.kind === 'ec_sales_list' ? a.euSalesMonths : [...a.foreignPurchaseMonths, ...a.euSalesMonths]) : null;
+    if (due?.includes(period)) out.push(d);
+    else if (!a || (d.kind === 'vat_identified' && a.foreignPurchaseMonths.length > 0)) out.push({ ...d, conditional: true });
   }
   return out;
 }
