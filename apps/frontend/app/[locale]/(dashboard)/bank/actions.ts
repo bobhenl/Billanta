@@ -63,8 +63,12 @@ export type SyncResult = { ok: true; total: number; matched: number; pending: bo
 function errorCode(error: unknown): string {
   if (error instanceof ApiError) {
     try {
-      const parsed = JSON.parse(error.body) as { error?: unknown };
-      if (typeof parsed.error === 'string') return parsed.error;
+      const parsed = JSON.parse(error.body) as { error?: unknown; message?: unknown };
+      // Nest puts the code in `error` ({ error: "fio_token_format" }) or, for a plain
+      // `new ForbiddenException("two_factor_required")`, in `message` next to error "Forbidden".
+      for (const value of [parsed.error, parsed.message]) {
+        if (typeof value === 'string' && /^[a-z_]+$/.test(value)) return value;
+      }
     } catch {
       // not JSON
     }
