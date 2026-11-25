@@ -29,6 +29,8 @@ export const textConditionSchema = z.object({
 
 export const ruleConditionsSchema = z.object({
   text: z.array(textConditionSchema).max(5).default([]),
+  /** "all": every text condition holds (AND); "any": at least one does (OR). Direction, currency and amount always have to hold. */
+  textMatch: z.enum(["all", "any"]).optional(),
   direction: z.enum(RULE_DIRECTIONS).default("any"),
   currency: z
     .string()
@@ -234,7 +236,7 @@ export interface CompiledRule<R extends RuleLike = RuleLike> {
   matches: Predicate;
 }
 
-/** Turns a rule into one predicate: every given condition has to hold. */
+/** Turns a rule into one predicate: every given condition has to hold, the text ones as a group (all or any). */
 export function compileRule<R extends RuleLike>(rule: R): CompiledRule<R> {
   const c = rule.conditions;
   const checks: Predicate[] = [];
@@ -245,7 +247,8 @@ export function compileRule<R extends RuleLike>(rule: R): CompiledRule<R> {
   if (c.currency) checks.push((p) => p.currency.toUpperCase() === c.currency);
   if (c.minAmount != null) checks.push((p) => Math.abs(p.amount) >= c.minAmount!);
   if (c.maxAmount != null) checks.push((p) => Math.abs(p.amount) <= c.maxAmount!);
-  for (const t of c.text) checks.push(compileText(t));
+  const texts = c.text.map(compileText);
+  if (texts.length) checks.push(c.textMatch === "any" ? (p) => texts.some((t) => t(p)) : (p) => texts.every((t) => t(p)));
   // A rule with nothing but a direction would hit every payment; validateRule refuses it, this keeps old rows safe.
   const empty = c.text.length === 0 && c.minAmount == null && c.maxAmount == null;
   return { rule, matches: (p) => !empty && checks.every((check) => check(p)) };

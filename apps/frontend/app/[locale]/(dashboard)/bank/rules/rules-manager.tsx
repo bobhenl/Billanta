@@ -43,6 +43,7 @@ interface Draft {
   name: string;
   enabled: boolean;
   text: RuleTextCondition[];
+  textMatch: 'all' | 'any';
   direction: RuleDirection;
   currency: string;
   minAmount: string;
@@ -56,6 +57,7 @@ const emptyDraft = (): Draft => ({
   name: '',
   enabled: true,
   text: [{ field: 'counterparty_name', operator: 'contains', value: '' }],
+  textMatch: 'all',
   direction: 'any',
   currency: '',
   minAmount: '',
@@ -70,6 +72,7 @@ function draftOf(rule: BankRule): Draft {
     name: rule.name,
     enabled: rule.enabled,
     text: rule.conditions.text.length ? rule.conditions.text : emptyDraft().text,
+    textMatch: rule.conditions.textMatch ?? 'all',
     direction: rule.conditions.direction,
     currency: rule.conditions.currency ?? '',
     minAmount: rule.conditions.minAmount != null ? String(rule.conditions.minAmount) : '',
@@ -104,6 +107,7 @@ function bodyOf(d: Draft): BankRuleBody {
     enabled: d.enabled,
     conditions: {
       text: d.text.filter((c) => c.value.trim()).map((c) => ({ ...c, value: c.value.trim() })),
+      textMatch: d.textMatch,
       direction: d.direction,
       // A half-typed currency would fail validation; it only counts once it has three letters.
       currency: d.currency.length === 3 ? d.currency : null,
@@ -357,7 +361,8 @@ function IconButton({ label, disabled, onClick, children }: { label: string; dis
 function RuleSummary({ rule }: { rule: Pick<BankRule, 'conditions'> }) {
   const t = useTranslations('bankRules');
   const c = rule.conditions;
-  const parts = c.text.map((cond) => `${t(`field.${cond.field}`)} ${t(`operator.${cond.operator}`)} „${cond.value}“`);
+  const texts = c.text.map((cond) => `${t(`field.${cond.field}`)} ${t(`operator.${cond.operator}`)} „${cond.value}“`);
+  const parts = texts.length ? [texts.join(c.textMatch === 'any' ? t('summary.or') : t('summary.and'))] : [];
   if (c.direction !== 'any') parts.push(t(`direction.${c.direction}`));
   if (c.currency) parts.push(c.currency);
   if (c.minAmount != null && c.maxAmount != null) parts.push(t('summary.between', { min: c.minAmount, max: c.maxAmount }));
@@ -483,6 +488,17 @@ function RuleForm({
         <fieldset>
           <legend className={label}>{t('form.conditions')}</legend>
           <p className="mb-2 text-xs text-muted-foreground">{t('form.conditionsHint')}</p>
+          {draft.text.length > 1 && (
+            <select
+              aria-label={t('form.textMatch')}
+              className={cn(inputClass, 'mb-2 w-auto')}
+              value={draft.textMatch}
+              onChange={(e) => setDraft((d) => ({ ...d, textMatch: e.target.value as Draft['textMatch'] }))}
+            >
+              <option value="all">{t('form.textMatchAll')}</option>
+              <option value="any">{t('form.textMatchAny')}</option>
+            </select>
+          )}
           <div className="space-y-2">
             {draft.text.map((cond, index) => (
               <div key={index} className="grid grid-cols-2 gap-2 sm:grid-cols-[10rem_9rem_1fr_auto]">

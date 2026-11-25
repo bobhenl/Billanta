@@ -13771,7 +13771,9 @@
     "summary": {
       "between": "suma {min}–{max}",
       "atLeast": "suma od {min}",
-      "atMost": "suma do {max}"
+      "atMost": "suma do {max}",
+      "and": " a zároveň ",
+      "or": " alebo "
     },
     "action": {
       "ignore": "Ignorovať",
@@ -13789,7 +13791,7 @@
       "name": "Názov",
       "namePlaceholder": "Napr. Orange – telefón",
       "conditions": "Podmienky",
-      "conditionsHint": "Platba musí splniť všetky podmienky. Pri „obsahuje“ a „je presne“ sa veľkosť písmen ani diakritika nerozlišujú.",
+      "conditionsHint": "Veľkosť písmen a diakritika sa pri „obsahuje“ a „je presne“ nerozlišujú. Smer, mena a suma musia sedieť vždy.",
       "field": "Pole",
       "operator": "Porovnanie",
       "value": "Hodnota",
@@ -13814,7 +13816,10 @@
       "save": "Uložiť",
       "saveAndApply": "Uložiť a použiť na existujúce",
       "saved": "Pravidlo uložené.",
-      "created": "Pravidlo vytvorené."
+      "created": "Pravidlo vytvorené.",
+      "textMatch": "Ako spojiť podmienky",
+      "textMatchAll": "Musia platiť všetky podmienky (A zároveň)",
+      "textMatchAny": "Stačí jedna z podmienok (ALEBO)"
     },
     "preview": {
       "title": "Náhľad",

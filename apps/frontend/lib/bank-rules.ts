@@ -21,6 +21,8 @@ export interface RuleTextCondition {
 
 export interface RuleConditions {
   text: RuleTextCondition[];
+  /** AND ('all', the default) or OR ('any') between the text conditions. */
+  textMatch?: 'all' | 'any';
   direction: RuleDirection;
   currency?: string | null;
   minAmount?: number | null;

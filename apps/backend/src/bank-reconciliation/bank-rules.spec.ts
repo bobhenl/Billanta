@@ -256,3 +256,25 @@ describe("foldText", () => {
     expect(foldText("  Žluťoučký   KŮŇ ")).toBe("zlutoucky kun");
   });
 });
+
+describe("text conditions joined with OR", () => {
+  const either = (textMatch: "all" | "any") =>
+    rule({
+      textMatch,
+      text: [
+        { field: "counterparty_name", operator: "contains", value: "vodafone" },
+        { field: "counterparty_name", operator: "contains", value: "t-mobile" },
+      ],
+    });
+
+  it("needs every text condition by default and just one with 'any'", () => {
+    expect(matches(either("all"), payment())).toBe(false);
+    expect(matches(either("any"), payment())).toBe(true);
+    expect(matches(either("any"), payment({ counterpartyName: "O2 Czech Republic" }))).toBe(false);
+  });
+
+  it("still requires direction and amount with 'any'", () => {
+    expect(matches({ ...either("any"), conditions: { ...either("any").conditions, direction: "in" } }, payment())).toBe(payment().amount > 0);
+    expect(matches({ ...either("any"), conditions: { ...either("any").conditions, maxAmount: 1 } }, payment())).toBe(false);
+  });
+});

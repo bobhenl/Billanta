@@ -13867,7 +13867,9 @@
     "summary": {
       "between": "amount {min}–{max}",
       "atLeast": "amount from {min}",
-      "atMost": "amount up to {max}"
+      "atMost": "amount up to {max}",
+      "and": " and ",
+      "or": " or "
     },
     "action": {
       "ignore": "Ignore",
@@ -13885,7 +13887,7 @@
       "name": "Name",
       "namePlaceholder": "E.g. Vodafone – phone",
       "conditions": "Conditions",
-      "conditionsHint": "A payment has to meet every condition. “Contains” and “is exactly” ignore letter case and accents.",
+      "conditionsHint": "Case and accents don't matter for “contains” and “equals”. Direction, currency and amount always have to match.",
       "field": "Field",
       "operator": "Comparison",
       "value": "Value",
@@ -13910,7 +13912,10 @@
       "save": "Save",
       "saveAndApply": "Save and apply to existing",
       "saved": "Rule saved.",
-      "created": "Rule created."
+      "created": "Rule created.",
+      "textMatch": "How to combine conditions",
+      "textMatchAll": "All conditions must hold (AND)",
+      "textMatchAny": "Any one condition is enough (OR)"
     },
     "preview": {
       "title": "Preview",

@@ -13867,7 +13867,9 @@
     "summary": {
       "between": "částka {min}–{max}",
       "atLeast": "částka od {min}",
-      "atMost": "částka do {max}"
+      "atMost": "částka do {max}",
+      "and": " a zároveň ",
+      "or": " nebo "
     },
     "action": {
       "ignore": "Ignorovat",
@@ -13885,7 +13887,7 @@
       "name": "Název",
       "namePlaceholder": "Např. Vodafone – telefon",
       "conditions": "Podmínky",
-      "conditionsHint": "Platba musí splnit všechny podmínky. Velikost písmen a diakritika se u „obsahuje“ a „je přesně“ nerozlišují.",
+      "conditionsHint": "Velikost písmen a diakritika se u „obsahuje“ a „je přesně“ nerozlišují. Směr, měna a částka musí sedět vždy.",
       "field": "Pole",
       "operator": "Porovnání",
       "value": "Hodnota",
@@ -13910,7 +13912,10 @@
       "save": "Uložit",
       "saveAndApply": "Uložit a použít na existující",
       "saved": "Pravidlo uloženo.",
-      "created": "Pravidlo vytvořeno."
+      "created": "Pravidlo vytvořeno.",
+      "textMatch": "Jak spojit podmínky",
+      "textMatchAll": "Musí platit všechny podmínky (A zároveň)",
+      "textMatchAny": "Stačí jedna z podmínek (NEBO)"
     },
     "preview": {
       "title": "Náhled",
