@@ -796,6 +796,8 @@ export class BankConnectionsService {
         .set({ netAmount: net.netAmount, netCurrency: net.netCurrency })
         .where(and(eq(schema.bankTransactions.id, net.id), isNull(schema.bankTransactions.netAmount)));
     }
+    // Known payments skip the import below, but may now carry the item names they lacked.
+    await this.reconciliation.fillLateDescriptions(db, rows.filter((r) => knownIds.has(r.externalId)), []);
 
     const result = await this.reconciliation.persistAndMatch(db, tenantId, title.replace(/\s+/g, " ").trim(), source, fresh, {
       skipEmpty: true,

@@ -117,7 +117,7 @@ export class BankReconciliationService {
    * while it still waits for review (an issued invoice is never touched).
    * Reads every incoming row: a stored one was split off as a duplicate before.
    */
-  private async fillLateDescriptions(db: TenantDb, incomingRows: IncomingRow[], inserted: { externalId: string | null }[]) {
+  async fillLateDescriptions(db: TenantDb, incomingRows: IncomingRow[], inserted: { externalId: string | null }[]) {
     const insertedIds = new Set(inserted.map((t) => t.externalId));
     const late = incomingRows
       .filter((r) => r.externalId && r.message && !insertedIds.has(r.externalId))
