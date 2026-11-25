@@ -1148,7 +1148,10 @@
       "allDirections": "Příchozí i odchozí",
       "incoming": "Příchozí",
       "outgoing": "Odchozí"
-    }
+    },
+    "bulkDraft": "{count, plural, one {Vytvořit koncept faktury} few {Vytvořit # koncepty faktur} other {Vytvořit # konceptů faktur}}",
+    "bulkDraftHint": "Ke každé vybrané příchozí platbě vytvoří koncept faktury ke kontrole. Nic se nevystaví.",
+    "bulkDraftDone": "Koncepty vytvořeny: {ok} z {total}. Najdeš je ve Fakturách ke kontrole."
   },
   "contacts": {
     "title": "Kontakty",

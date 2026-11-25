@@ -1,26 +1,26 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { EyeOff } from 'lucide-react';
+import { EyeOff, FilePlus2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { TX_STATUS_CLASSES, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
-import { ignoreTransaction } from './actions';
+import { draftInvoiceFromTransaction, ignoreTransaction } from './actions';
 import { useCanWrite } from '@/components/access-provider';
 
 export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null };
 
-/** Statement lines: rows open the detail; unmatched ones can be bulk-ignored. */
+/** Statement lines: rows open the detail; unmatched ones can be bulk-ignored or turned into draft invoices. */
 export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) {
   const t = useTranslations('bank');
   const locale = useLocale();
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, startTransition] = useTransition();
-  // Selection only feeds bulk ignore, so read-only gets the plain list.
+  // Selection only feeds the bulk actions, so read-only gets the plain list.
   const canEdit = useCanWrite('bank');
 
   if (rows.length === 0) {
@@ -50,6 +50,18 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
       router.refresh();
     });
 
+  // Only incoming payments can become an invoice; outgoing ones in the selection are skipped.
+  const draftable = rows.filter((r) => selected.has(r.id) && Number(r.amount) > 0).map((r) => r.id);
+  const bulkDraft = () =>
+    startTransition(async () => {
+      let ok = 0;
+      // One at a time: each draft is its own request and transaction, and the selection is short.
+      for (const id of draftable) if ((await draftInvoiceFromTransaction(id)).ok) ok++;
+      toast({ text: t('bulkDraftDone', { ok, total: draftable.length }), tone: ok === draftable.length ? 'ok' : 'err' });
+      setSelected(new Set());
+      router.refresh();
+    });
+
   return (
     <div className="mt-5">
       {canEdit && selected.size > 0 && (
@@ -64,6 +76,18 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
             <EyeOff className="h-3.5 w-3.5" />
             {t('ignoreAction')}
           </button>
+          {draftable.length > 0 && (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={bulkDraft}
+              title={t('bulkDraftHint')}
+              className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            >
+              <FilePlus2 className="h-3.5 w-3.5" />
+              {t('bulkDraft', { count: draftable.length })}
+            </button>
+          )}
           <button type="button" className="ml-auto text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>
