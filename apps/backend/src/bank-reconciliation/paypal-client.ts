@@ -32,6 +32,14 @@ export interface PaypalSyncedRow extends ParsedBankTransactionRow {
   externalId: string;
   /** Fee PayPal kept, positive decimal string in `currency`, or null. */
   fee: string | null;
+  /**
+   * What PayPal credited after converting the payment to another currency
+   * (fee and PayPal's rate applied), or null when it stayed in `currency`.
+   */
+  netAmount: string | null;
+  netCurrency: string | null;
+  /** Two-letter country of the payer's PayPal account, for a new contact. */
+  payerCountry: string | null;
 }
 
 const MAX_WINDOW_MS = 31 * 24 * 60 * 60 * 1000;
@@ -47,6 +55,7 @@ type Money = { currency_code?: string | null; value?: string | number | null } |
 type RawDetail = {
   transaction_info?: {
     transaction_id?: string | null;
+    paypal_reference_id?: string | null;
     transaction_event_code?: string | null;
     transaction_initiation_date?: string | null;
     transaction_amount?: Money;
@@ -59,6 +68,7 @@ type RawDetail = {
   } | null;
   payer_info?: {
     email_address?: string | null;
+    country_code?: string | null;
     payer_name?: { given_name?: string | null; surname?: string | null; alternate_full_name?: string | null } | null;
   } | null;
 };
@@ -82,6 +92,7 @@ function parseDay(raw: string | null | undefined): Date | null {
  */
 export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
   if (!Array.isArray(details)) return [];
+  const conversions = conversionCredits(details as RawDetail[]);
   const rows: PaypalSyncedRow[] = [];
   for (const detail of details as RawDetail[]) {
     const info = detail?.transaction_info;
@@ -93,6 +104,11 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
     if (amount === null || amount <= 0 || !transactionDate) continue;
 
     const fee = money(info.fee_amount);
+    const currency = (info.transaction_amount?.currency_code ?? "EUR").toUpperCase().slice(0, 3);
+    const converted =
+      conversions.byReference.get(info.transaction_id) ??
+      conversions.byTime.get(`${info.transaction_initiation_date}|${currency}`) ??
+      null;
     const payer = detail.payer_info;
     const name =
       payer?.payer_name?.alternate_full_name?.trim() ||
@@ -102,14 +118,48 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
       externalId: `paypal:${info.transaction_id}`,
       transactionDate,
       amount: amount.toFixed(2),
-      currency: (info.transaction_amount?.currency_code ?? "EUR").toUpperCase().slice(0, 3),
+      currency,
       variableSymbol: extractVariableSymbol([info.invoice_id, info.custom_field, info.transaction_subject, info.transaction_note]),
       counterpartyAccount: payer?.email_address?.trim() || null,
       counterpartyName: name,
       fee: fee !== null && fee !== 0 ? Math.abs(fee).toFixed(2) : null,
+      netAmount: converted && converted.currency !== currency ? converted.amount.toFixed(2) : null,
+      netCurrency: converted && converted.currency !== currency ? converted.currency : null,
+      message: [info.transaction_subject, info.transaction_note].map((t) => t?.trim()).filter(Boolean).join(" – ") || null,
+      payerCountry: payer?.country_code?.trim().toUpperCase().slice(0, 2) || null,
     });
   }
   return rows;
+}
+
+/**
+ * The credit legs of PayPal's currency conversions (event T0200): with
+ * auto-conversion on, a received USD payment is followed by a USD debit and
+ * a CZK credit. The credit usually points at the payment through
+ * `paypal_reference_id`; when it does not, it shares the payment's timestamp,
+ * keyed by the currency it was converted from (the debit leg's).
+ */
+function conversionCredits(details: RawDetail[]) {
+  const byReference = new Map<string, { amount: number; currency: string }>();
+  const byTime = new Map<string, { amount: number; currency: string }>();
+  const debits = new Map<string, string>();
+  const credits: { info: NonNullable<RawDetail["transaction_info"]>; amount: number }[] = [];
+  for (const detail of details) {
+    const info = detail?.transaction_info;
+    if (!info || info.transaction_event_code !== "T0200" || info.transaction_status !== "S") continue;
+    const amount = money(info.transaction_amount);
+    const currency = info.transaction_amount?.currency_code?.toUpperCase();
+    if (amount === null || !currency) continue;
+    if (amount < 0) debits.set(info.transaction_initiation_date ?? "", currency);
+    else if (amount > 0) credits.push({ info, amount });
+  }
+  for (const { info, amount } of credits) {
+    const value = { amount, currency: info.transaction_amount!.currency_code!.toUpperCase().slice(0, 3) };
+    if (info.paypal_reference_id) byReference.set(info.paypal_reference_id, value);
+    const from = debits.get(info.transaction_initiation_date ?? "");
+    if (from) byTime.set(`${info.transaction_initiation_date}|${from}`, value);
+  }
+  return { byReference, byTime };
 }
 
 /** PayPal wants RFC 3339 without fractions. */

@@ -35,8 +35,63 @@ describe("parsePaypalTransactions", () => {
         counterpartyAccount: "buyer@example.test",
         counterpartyName: "Jana Nováková",
         fee: "4.48",
+        netAmount: null,
+        netCurrency: null,
+        message: null,
+        payerCountry: null,
       },
     ]);
+  });
+
+  function conversion(amount: string, currency: string, overrides: Record<string, unknown> = {}) {
+    return {
+      transaction_info: {
+        transaction_id: `CONV${currency}${amount}`,
+        transaction_event_code: "T0200",
+        transaction_initiation_date: "2026-09-30T14:03:11+0000",
+        transaction_amount: { currency_code: currency, value: amount },
+        transaction_status: "S",
+        ...overrides,
+      },
+    };
+  }
+
+  it("takes the converted amount from the conversion that references the payment", () => {
+    const [row] = parsePaypalTransactions([
+      detail({ transaction_initiation_date: "2026-09-30T10:00:00+0000" }),
+      // An unrelated conversion at the payment's second must lose to the reference.
+      conversion("-10.00", "EUR", { transaction_initiation_date: "2026-09-30T10:00:00+0000" }),
+      conversion("240.00", "CZK", { transaction_initiation_date: "2026-09-30T10:00:00+0000" }),
+      conversion("-116.52", "EUR", { paypal_reference_id: "9AB12345CD678901E", transaction_initiation_date: "2026-09-30T10:00:05+0000" }),
+      conversion("2803.47", "CZK", { paypal_reference_id: "9AB12345CD678901E", transaction_initiation_date: "2026-09-30T10:00:05+0000" }),
+    ]);
+    expect(row).toMatchObject({ amount: "121.00", currency: "EUR", netAmount: "2803.47", netCurrency: "CZK" });
+  });
+
+  it("pairs a conversion without a reference by its timestamp and source currency", () => {
+    const [row] = parsePaypalTransactions([
+      detail(),
+      conversion("-116.52", "EUR"),
+      conversion("2803.47", "CZK"),
+    ]);
+    expect(row).toMatchObject({ netAmount: "2803.47", netCurrency: "CZK" });
+  });
+
+  it("leaves the net empty when nothing was converted or a conversion at that time came from another currency", () => {
+    expect(parsePaypalTransactions([detail()])[0]).toMatchObject({ netAmount: null, netCurrency: null });
+    expect(parsePaypalTransactions([detail(), conversion("-30.00", "USD"), conversion("690.00", "CZK")])[0]).toMatchObject({
+      netAmount: null,
+    });
+  });
+
+  it("keeps the subject as the message and the payer's country", () => {
+    const [row] = parsePaypalTransactions([
+      detail(
+        { transaction_subject: "VIP rank", transaction_note: "Díky" },
+        { email_address: "buyer@example.test", country_code: "sk", payer_name: { alternate_full_name: "Ján Kováč" } },
+      ),
+    ]);
+    expect(row).toMatchObject({ message: "VIP rank – Díky", payerCountry: "SK", counterpartyName: "Ján Kováč" });
   });
 
   it("reads the variable symbol from the note when there is no invoice id", () => {

@@ -9,7 +9,7 @@ import {
   ServiceUnavailableException,
 } from "@nestjs/common";
 import { randomBytes } from "node:crypto";
-import { and, asc, eq, inArray, lt } from "drizzle-orm";
+import { and, asc, eq, inArray, lt, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { decryptSecret, encryptSecret } from "../backup-destinations/encryption.util";
@@ -97,6 +97,8 @@ export interface BankSyncSummary {
   total: number;
   matched: number;
   unmatched: number;
+  /** PayPal payments that became invoice drafts. */
+  drafted?: number;
   /**
    * Fio only: this sync just positioned Fio's cursor (one request per 30 s),
    * the movements come with the next one.
@@ -390,12 +392,29 @@ export class BankConnectionsService {
       .values({
         tenantId,
         provider: "paypal",
+        autoDraftFrom: await this.firstUninvoicedDay(db),
         label: input.label,
         bankName: input.sandbox ? "PayPal (sandbox)" : "PayPal",
         tokenEncrypted: encryptSecret(JSON.stringify(credentials), key),
       })
       .returning();
     return toPublic(row!);
+  }
+
+  /**
+   * Where PayPal drafts start: the day after the newest invoice already in
+   * Billanta (imported history covers what came before), but never later
+   * than now, so today's payments still count.
+   */
+  private async firstUninvoicedDay(db: TenantDb): Promise<Date> {
+    const [newest] = await db
+      .select({ day: sql<Date | null>`max(${schema.invoices.issueDate})` })
+      .from(schema.invoices)
+      .where(inArray(schema.invoices.status, ["issued", "paid"]));
+    const now = new Date();
+    if (!newest?.day) return new Date(now.getTime() - FIRST_SYNC_DAYS * DAY_MS);
+    const after = new Date(new Date(newest.day).getTime() + DAY_MS);
+    return after < now ? after : now;
   }
 
   private paypalHttpError(err: unknown): Error {
@@ -521,7 +540,7 @@ export class BankConnectionsService {
         if (throwErrors) throw this.paypalHttpError(err);
         throw err;
       }
-      const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows);
+      const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom);
       await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
       return { connectionId: row.id, ...summary };
     }
@@ -614,6 +633,7 @@ export class BankConnectionsService {
     title: string,
     source: "fio" | "psd2" | "paypal",
     rows: (FioSyncedRow | Psd2SyncedRow | PaypalSyncedRow)[],
+    autoDraftFrom: Date | null = null,
   ) {
     const ids = rows.map((r) => r.externalId);
     const known = ids.length
@@ -627,12 +647,16 @@ export class BankConnectionsService {
 
     const result = await this.reconciliation.persistAndMatch(db, tenantId, title.replace(/\s+/g, " ").trim(), source, fresh, {
       skipEmpty: true,
+      autoDraftFrom,
     });
 
     if (result.summary.total > 0) {
       this.notifications?.notify(tenantId, "bank_import", {
         title: "Nové platby z banky",
-        body: `${result.summary.total} příchozích plateb, ${result.summary.matched} spárováno automaticky, ${result.summary.unmatched} čeká na vás.`,
+        body:
+          `${result.summary.total} příchozích plateb, ${result.summary.matched} spárováno automaticky` +
+          (result.summary.drafted ? `, ${result.summary.drafted} nových návrhů faktur ke kontrole` : "") +
+          `, ${result.summary.unmatched} čeká na vás.`,
         link: "/bank",
       });
     }

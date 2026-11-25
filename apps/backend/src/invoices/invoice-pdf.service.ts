@@ -22,7 +22,7 @@ import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
 import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
 import { rateLineLabel } from "./exchange-rate-mode";
-import { brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
+import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 type InvoiceRow = typeof schema.invoices.$inferSelect;
@@ -321,7 +321,14 @@ export class InvoicePdfService {
     // A demo's fictional bank account must not end up in anyone's banking app.
     const qr = invoice.documentType !== "quote" && !tenant.isDemo ? await this.buildQrCode(invoice, contact, tenant, totals, payable) : null;
 
-    const doc = new PDFDocument({ size: "A4", margin: 50, bufferPages: true, info: { Title: `${invoice.invoiceNumber}`, Creator: "Billanta" } });
+    // With the credit switched off the document carries no trace of Billanta, metadata included.
+    const credit = brandCreditFor(tenant, lang, "pdf");
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 50,
+      bufferPages: true,
+      info: { Title: `${invoice.invoiceNumber}`, ...(credit ? { Creator: BRAND_NAME } : {}) },
+    });
     if (FONTS) {
       doc.registerFont(REGULAR, FONTS.regular);
       doc.registerFont(BOLD, FONTS.bold);
@@ -348,7 +355,6 @@ export class InvoicePdfService {
     const qrLabel = qr ? (qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase()) : "";
     this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant), qr ? { label: qrLabel, png: qr.png } : null, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
-    const credit = brandCreditFor(tenant, lang, "pdf");
     if (credit) this.renderCredit(doc, credit);
     if (tenant.isDemo) drawDemoWatermark(doc, lang, REGULAR, tenant.classroomClassId ? "classroom" : "demo");
 
@@ -429,7 +435,7 @@ export class InvoicePdfService {
           reverseCharge: invoice.reverseCharge,
           iban: iban ?? undefined,
           exchangeRate: invoice.exchangeRate ? Number(invoice.exchangeRate) : undefined,
-          software: "Billanta",
+          software: brandCreditFor(tenant, "cs", "pdf") ? BRAND_NAME : undefined,
         })
       : null;
 

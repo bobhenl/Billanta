@@ -50,6 +50,7 @@ import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from 
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
+import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 
 // TODO: once packages/cz-compliance is ready, ARES-resolve
@@ -1124,6 +1125,89 @@ export class InvoicesService {
   }
 
   /**
+   * An incoming PayPal payment with no invoice to pay becomes a draft for
+   * review (bank-reconciliation.service.ts): the payer as the customer (an
+   * existing contact with the same e-mail, or a new one), one line for the
+   * amount, and the payment already recorded, so issuing it makes it paid
+   * at once. Never numbered or issued here: a member reviews and issues it.
+   */
+  async createPaymentDraft(
+    db: TenantDb,
+    tenantId: string,
+    payment: {
+      amount: number;
+      currency: string;
+      paidAt: Date;
+      payerName: string | null;
+      payerEmail: string | null;
+      payerCountry: string | null;
+      description: string | null;
+      fee: number | null;
+      net: { amount: number; currency: string } | null;
+      note: string;
+    },
+  ) {
+    const email = payment.payerEmail?.trim().toLowerCase() || null;
+    let contactId: string | null = null;
+    if (email) {
+      const [existing] = await db
+        .select({ id: schema.contacts.id })
+        .from(schema.contacts)
+        .where(sql`lower(${schema.contacts.email}) = ${email}`)
+        .limit(1);
+      contactId = existing?.id ?? null;
+    }
+    if (!contactId && (payment.payerName || email)) {
+      const [created] = await db
+        .insert(schema.contacts)
+        .values({
+          tenantId,
+          legalName: (payment.payerName || email)!.slice(0, 200),
+          email,
+          addressCountry: /^[A-Z]{2}$/.test(payment.payerCountry ?? "") ? payment.payerCountry! : "CZ",
+        })
+        .returning({ id: schema.contacts.id });
+      contactId = created?.id ?? null;
+    }
+
+    const [tenant] = await db.select({ country: schema.tenants.country }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
+    const home = tenantHomeCurrencyOf(tenant);
+    const currency = payment.currency.toUpperCase();
+    const [invoice] = await db
+      .insert(schema.invoices)
+      .values({
+        tenantId,
+        contactId,
+        currency,
+        status: "pending_review",
+        source: "manual",
+        issueDate: payment.paidAt,
+        taxableSupplyDate: payment.paidAt,
+        dueDate: payment.paidAt,
+        paymentMethod: "other",
+        paymentMethodLabel: "PayPal",
+        amountPaid: round2(payment.amount).toFixed(2),
+        paymentFees: payment.fee && payment.fee > 0 ? round2(payment.fee).toFixed(2) : "0",
+        receivedCzk:
+          payment.net && payment.net.currency.toUpperCase() === home && currency !== home ? round2(payment.net.amount).toFixed(2) : null,
+        internalNote: payment.note,
+        needsAttention: !contactId,
+      })
+      .returning();
+    await db.insert(schema.invoiceLineItems).values({
+      tenantId,
+      invoiceId: invoice.id,
+      description: (payment.description || "Platba PayPal").slice(0, 500),
+      quantity: "1",
+      unitPrice: round2(payment.amount).toFixed(2),
+      vatRate: null,
+      sortOrder: 0,
+    });
+    this.ping(invoice, "draft_ready", "Nový návrh faktury z platby PayPal", payment.payerName ? `Odběratel: ${payment.payerName}` : undefined);
+    return invoice;
+  }
+
+  /**
    * `POST /api/v1/invoices/voice-drafts`: a voice note recorded in the
    * dashboard (usually offline, sent once the connection is back) becomes a
    * `pending_review` draft, like a Telegram or WhatsApp voice note. The
@@ -1362,7 +1446,16 @@ export class InvoicesService {
     db: TenantDb,
     invoiceId: string,
     tenantId: string,
-    received?: { amount: number; currency: string; fee?: number; paidAt?: Date },
+    received?: {
+      amount: number;
+      currency: string;
+      fee?: number;
+      paidAt?: Date;
+      /** What PayPal credited after converting the payment, when it did. */
+      net?: { amount: number; currency: string } | null;
+      /** A line for the internal note (payment-note.ts). */
+      note?: string | null;
+    },
   ) {
     // A home-currency credit settling a foreign-currency invoice is the real
     // proceeds after the bank's conversion; keep it for the margin / exchange
@@ -1373,16 +1466,20 @@ export class InvoicesService {
         paymentFees: schema.invoices.paymentFees,
         amountPaid: schema.invoices.amountPaid,
         reverseCharge: schema.invoices.reverseCharge,
+        internalNote: schema.invoices.internalNote,
         country: schema.tenants.country,
       })
       .from(schema.invoices)
       .innerJoin(schema.tenants, eq(schema.tenants.id, schema.invoices.tenantId))
       .where(eq(schema.invoices.id, invoiceId));
     const home = tenantHomeCurrencyOf(current);
+    // PayPal's own conversion counts the same way as the bank's.
+    const net = received?.net && received.net.currency.toUpperCase() === home && received.net.amount > 0 ? received.net.amount : null;
     const receivedCzk =
-      received && received.currency.toUpperCase() === home && current && current.currency !== home && received.amount > 0
-        ? { receivedCzk: round2(received.amount).toFixed(2) }
+      received && current && current.currency !== home && (net !== null || (received.currency.toUpperCase() === home && received.amount > 0))
+        ? { receivedCzk: round2(net ?? received.amount).toFixed(2) }
         : {};
+    const note = received?.note ? { internalNote: appendNoteLine(current?.internalNote, received.note) } : {};
     // Fee the payment provider kept (PayPal), booked like a manual "net received" entry.
     const fee =
       received?.fee && received.fee > 0 && current && received.currency.toUpperCase() === current.currency
@@ -1396,7 +1493,7 @@ export class InvoicesService {
     if (sameCurrency && paidSoFar < total - 0.005) {
       const [partial] = await db
         .update(schema.invoices)
-        .set({ amountPaid: paidSoFar.toFixed(2), ...fee, updatedAt: new Date() })
+        .set({ amountPaid: paidSoFar.toFixed(2), ...fee, ...note, updatedAt: new Date() })
         .where(
           and(
             eq(schema.invoices.id, invoiceId),
@@ -1421,6 +1518,7 @@ export class InvoicesService {
         amountPaid: total.toFixed(2),
         ...receivedCzk,
         ...fee,
+        ...note,
         updatedAt: new Date(),
       })
       .where(

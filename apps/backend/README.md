@@ -694,6 +694,17 @@ encrypted as JSON in `token_encrypted`.
   matched (automatically or by hand) and the fee is in the invoice currency,
   it is added to `invoices.payment_fees`, the same column the manual "net
   received" entry and Stripe card payments use.
+- With auto-conversion on, PayPal books a currency conversion (`T0200`)
+  after the payment. Its credit leg, found by `paypal_reference_id` or by
+  the payment's timestamp, is stored as `net_amount`/`net_currency`: what
+  really arrived after the fee and PayPal's rate. In the home currency it
+  becomes the invoice's `received_czk`. Every matched PayPal payment adds a
+  line to the invoice's internal note (`payment-note.ts`).
+- An unmatched PayPal payment dated on or after the connection's
+  `auto_draft_from` (the day after the newest invoice when it was connected)
+  becomes a `pending_review` draft: the payer as the contact (found by
+  e-mail or created), one line for the amount, the payment already recorded.
+  Issuing it makes it paid at once. Older payments are taken as invoiced.
 - `PAYPAL_API_BASE_URL` overrides the endpoint (local mock). Otherwise the
   `sandbox` flag picks `api-m.sandbox.paypal.com` or `api-m.paypal.com`.
 

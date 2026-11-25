@@ -1156,6 +1156,9 @@ export const bankTransactions = pgTable("bank_transactions", {
   externalId: text("external_id"),
   /** Fee kept by the payment provider (PayPal), in `currency`. Null for bank rows. */
   fee: numeric("fee", { precision: 14, scale: 2 }),
+  /** What arrived after PayPal converted the payment (fee and rate applied), in `net_currency`. Migration 0089. */
+  netAmount: numeric("net_amount", { precision: 14, scale: 2 }),
+  netCurrency: varchar("net_currency", { length: 3 }),
   /** The payer's note ("zpráva pro příjemce"), shown for manual review. Migration 0063. */
   message: text("message"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -1194,6 +1197,11 @@ export const bankConnections = pgTable("bank_connections", {
   fioCursorReady: boolean("fio_cursor_ready").notNull().default(false),
   /** Last call to the provider with this token; Fio refuses a second one within 30 s. */
   lastRequestAt: timestamp("last_request_at", { withTimezone: true }),
+  /**
+   * PayPal only: unmatched payments from this moment on become invoice
+   * drafts; older ones are taken as invoiced already. Migration 0089.
+   */
+  autoDraftFrom: timestamp("auto_draft_from", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

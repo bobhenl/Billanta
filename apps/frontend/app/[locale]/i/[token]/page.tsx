@@ -201,7 +201,8 @@ export default async function PublicInvoicePage({
                 variableSymbol: invoice.variableSymbol ?? undefined,
                 documentType: invoice.vatTotal > 0 ? 9 : 0,
                 iban,
-                software: "Billanta",
+                // Left out with the credit switched off, like on the PDF.
+                software: invoice.brandCredit ? SITE_NAME : undefined,
               }),
             )
           : undefined,

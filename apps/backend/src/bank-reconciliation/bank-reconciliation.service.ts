@@ -9,6 +9,7 @@ import { NotificationsService } from "../notifications/notifications.service";
 import type { ParsedBankTransactionRow } from "./csv-parser";
 import { splitDuplicates } from "./dedupe";
 import { findInvoiceMatch, type MatchCandidateInvoice } from "./matching";
+import { paypalPaymentNote } from "./payment-note";
 import { parseUploadedStatement } from "./statement-upload";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
@@ -18,8 +19,32 @@ export type BankTransactionStatusFilter = "unmatched" | "matched" | "ignored";
 type InvoiceLineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 
 export type BankImportSource = "csv" | "camt053" | "gpc" | "fio" | "psd2" | "paypal";
-type IncomingRow = ParsedBankTransactionRow & { externalId?: string | null; fee?: string | null };
+type IncomingRow = ParsedBankTransactionRow & {
+  externalId?: string | null;
+  fee?: string | null;
+  netAmount?: string | null;
+  netCurrency?: string | null;
+  payerCountry?: string | null;
+};
+type StoredRow = typeof schema.bankTransactions.$inferSelect;
+
+/** What a stored payment tells the invoice it pays: amount, fee, PayPal's conversion and the note line. */
+function receivedFrom(tx: StoredRow) {
+  const fee = tx.fee ? Number(tx.fee) : undefined;
+  const net = tx.netAmount && tx.netCurrency ? { amount: Number(tx.netAmount), currency: tx.netCurrency } : null;
+  return {
+    amount: Number(tx.amount),
+    currency: tx.currency,
+    fee,
+    paidAt: tx.transactionDate,
+    net,
+    note: tx.externalId?.startsWith("paypal:")
+      ? paypalPaymentNote({ amount: Number(tx.amount), currency: tx.currency, fee, netAmount: net?.amount, netCurrency: net?.currency })
+      : null,
+  };
+}
 const DAY_MS = 24 * 60 * 60 * 1000;
+const startOfUtcDay = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 
 @Injectable()
 export class BankReconciliationService {
@@ -67,7 +92,11 @@ export class BankReconciliationService {
     filename: string,
     source: BankImportSource,
     incomingRows: IncomingRow[],
-    options: { skipEmpty?: boolean } = {},
+    options: {
+      skipEmpty?: boolean;
+      /** PayPal: an unmatched payment from this moment on becomes an invoice draft. */
+      autoDraftFrom?: Date | null;
+    } = {},
   ) {
     const { fresh: parsedRows, duplicates, claims } = splitDuplicates(incomingRows, await this.storedAround(db, incomingRows));
     for (const claim of claims) {
@@ -77,7 +106,7 @@ export class BankReconciliationService {
         .where(and(eq(schema.bankTransactions.id, claim.id), isNull(schema.bankTransactions.externalId)));
     }
     if (parsedRows.length === 0 && options.skipEmpty) {
-      return { import: null, transactions: [], summary: { total: 0, matched: 0, unmatched: 0, duplicates } };
+      return { import: null, transactions: [], summary: { total: 0, matched: 0, unmatched: 0, drafted: 0, duplicates } };
     }
 
     const [importRow] = await db
@@ -103,6 +132,8 @@ export class BankReconciliationService {
                 counterpartyName: row.counterpartyName,
                 externalId: row.externalId ?? null,
                 fee: row.fee ?? null,
+                netAmount: row.netAmount ?? null,
+                netCurrency: row.netCurrency ?? null,
                 message: row.message ? row.message.slice(0, 500) : null,
                 status: "unmatched" as const,
               })),
@@ -114,6 +145,8 @@ export class BankReconciliationService {
 
     const finalTransactions: (typeof insertedTransactions)[number][] = [];
     let matchedCount = 0;
+    let drafted = 0;
+    const payerCountries = new Map(parsedRows.map((r) => [r.externalId ?? "", r.payerCountry ?? null]));
 
     for (const tx of insertedTransactions) {
       const outcome = findInvoiceMatch(
@@ -132,16 +165,37 @@ export class BankReconciliationService {
           .set({ matchedInvoiceId: outcome.invoiceId, status: "matched" })
           .where(eq(schema.bankTransactions.id, tx.id))
           .returning();
-        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, {
-          amount: Number(tx.amount),
-          currency: tx.currency,
-          fee: tx.fee ? Number(tx.fee) : undefined,
-          paidAt: tx.transactionDate,
-        });
+        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, receivedFrom(tx));
         finalTransactions.push(updated);
         matchedCount++;
         // Settled now: a second payment in the same batch must not pay it again.
         matchCandidates = matchCandidates.filter((c) => c.id !== outcome.invoiceId);
+      } else if (
+        outcome.reason === "no_candidate" &&
+        options.autoDraftFrom &&
+        // Payment days are UTC midnights: a payment on the connection's first day counts.
+        tx.transactionDate.getTime() >= startOfUtcDay(options.autoDraftFrom)
+      ) {
+        const received = receivedFrom(tx);
+        const draft = await this.invoicesService.createPaymentDraft(db, tenantId, {
+          amount: received.amount,
+          currency: received.currency,
+          paidAt: received.paidAt,
+          payerName: tx.counterpartyName,
+          payerEmail: tx.counterpartyAccount,
+          payerCountry: payerCountries.get(tx.externalId ?? "") ?? null,
+          description: tx.message,
+          fee: received.fee ?? null,
+          net: received.net,
+          note: received.note ?? paypalPaymentNote(received),
+        });
+        const [updated] = await db
+          .update(schema.bankTransactions)
+          .set({ matchedInvoiceId: draft.id, status: "matched" })
+          .where(eq(schema.bankTransactions.id, tx.id))
+          .returning();
+        finalTransactions.push(updated);
+        drafted++;
       } else {
         if (outcome.reason === "ambiguous") {
           // Correctness over completeness (see matching.ts doc comment):
@@ -167,7 +221,8 @@ export class BankReconciliationService {
       summary: {
         total: finalTransactions.length,
         matched: matchedCount,
-        unmatched: finalTransactions.length - matchedCount,
+        unmatched: finalTransactions.length - matchedCount - drafted,
+        drafted,
         duplicates,
       },
     };
@@ -271,12 +326,7 @@ export class BankReconciliationService {
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
 
-    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, {
-      amount: Number(transaction.amount),
-      currency: transaction.currency,
-      fee: transaction.fee ? Number(transaction.fee) : undefined,
-      paidAt: transaction.transactionDate,
-    });
+    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, receivedFrom(transaction));
 
     return updated;
   }
