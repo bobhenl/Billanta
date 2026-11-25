@@ -6,6 +6,7 @@ import * as schema from "../../drizzle/schema";
 import { expenseVatParts } from "../expenses/expense-vat";
 import { ReportRates } from "../exports/uniform-rate";
 import { isOverdue } from "../invoices/invoices.service";
+import { amountLeftToPay } from "../invoices/invoice-reminders.util";
 import { computeVatBreakdown, round2 } from "../invoices/invoice-total.util";
 import { earliestDay, filterOptions, localDay, periodBreakdown, periodTotals, type StatsDoc, type StatsExpense } from "./period-stats";
 import { hasDocumentFilters, matchesFilters, type ReportFilters } from "./report-filters";
@@ -136,6 +137,8 @@ export class DashboardService {
     for (const { invoice, contactName, contactColor } of invoices) {
       const totals = computeVatBreakdown(byInvoice.get(invoice.id) ?? [], { reverseCharge: invoice.reverseCharge });
       const overdue = isOverdue(invoice);
+      // The unpaid tiles count what the customer still owes, as the reports do (period-stats `unpaidPart`).
+      const open = amountLeftToPay(totals.totalWithVat, invoice.amountPaid);
       const row = { ...invoice, contactName, contactColor, total: totals.totalWithVat, isOverdue: overdue };
       enriched.push(row);
 
@@ -146,7 +149,7 @@ export class DashboardService {
         if (!overdue && invoice.dueDate && invoice.dueDate >= today && invoice.dueDate < dueSoonLimit) {
           dueSoon.push(row);
           kpi.dueSoonCount++;
-          if (invoice.currency === home) kpi.dueSoonTotal += totals.totalWithVat;
+          if (invoice.currency === home) kpi.dueSoonTotal += open;
         }
       }
 
@@ -165,10 +168,10 @@ export class DashboardService {
       }
 
       if (invoice.status === "issued" && invoice.documentType !== "credit_note") {
-        kpi.unpaidTotal += totals.totalWithVat;
+        kpi.unpaidTotal += open;
         kpi.unpaidCount++;
         if (overdue) {
-          kpi.overdueTotal += totals.totalWithVat;
+          kpi.overdueTotal += open;
           kpi.overdueCount++;
         }
       }
@@ -382,7 +385,7 @@ export class DashboardService {
     const inv = schema.invoices;
     const invDate = sql`coalesce(${inv.taxableSupplyDate}, ${inv.issueDate}, ${inv.createdAt})`;
     const recentInv = sql<boolean>`(${invDate} >= ${ts(since)})`;
-    const overdue = sql<boolean>`(${inv.status} = 'issued' and ${inv.documentType} <> 'quote' and ${inv.dueDate} is not null and ${inv.dueDate} < ${ts(today)})`;
+    const overdue = sql<boolean>`(${inv.status} = 'issued' and ${inv.documentType} in ('invoice', 'proforma') and ${inv.dueDate} is not null and ${inv.dueDate} < ${ts(today)})`;
     const recentExp = sql<boolean>`(${schema.expenses.expenseDate} >= ${ts(since)})`;
     const tx = schema.bankTransactions;
 
