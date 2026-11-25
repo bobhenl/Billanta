@@ -544,6 +544,25 @@ without any editing:
   (`99,90 EUR`) are all accepted.
 - Windows-1250 files are decoded when the upload is not valid UTF-8.
 
+The CSV exports of Wise, Revolut and Stripe are recognised by their header
+row and read by their own rules (`src/bank-reconciliation/fintech-csv.ts`):
+Wise transaction history (Direction IN/OUT) and balance statement, Revolut
+Business, personal and the older "Paid Out (EUR) / Paid In (EUR)"
+statement, Stripe's itemised balance report, the Dashboard balance export
+and the Payments export. For these:
+
+- the amount is the gross and the provider's fee goes into `fee` (only when
+  it is in the row's currency);
+- timestamps in UTC become the calendar day in Europe/Prague;
+- cancelled, declined, reverted, failed and pending rows, fully refunded or
+  uncaptured Stripe payments and conversions between the user's own
+  balances (Wise NEUTRAL / CONVERSION, Revolut EXCHANGE) are skipped;
+  outgoing payments are kept, as for any CSV;
+- the export's transaction id becomes `external_id` (`wise:<id>:<currency>`,
+  `revolut:<id>:<currency>`, `stripe:<charge or balance transaction id>`),
+  so uploading the same movements again is recognised;
+- a variable symbol is taken from the reference (`VS 2026001` or digits only).
+
 A sample in the plain format is served at
 `/samples/bank-statement-sample.csv` (linked from the import screen).
 
