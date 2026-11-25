@@ -221,7 +221,7 @@ migration `0051_trial_billing.sql`.
   `TrialRemindersCron` (08:00 Prague) sends the 3-day, 1-day and "ended"
   notices to owners and admins in the bell, and by e-mail only when Resend
   is configured.
-- **Limits** (`@RequirePlan`, `FEATURE_MIN_PLAN`): bank and PayPal sync, new
+- **Limits** (`@RequirePlan`, `FEATURE_MIN_PLAN`): bank, PayPal and Stripe sync, new
   API keys need Start, card payments need Plus, and free keeps 2 active
   recurring templates. Only companies created after 0051 are limited
   (`plan_enforced`). Nothing is deleted when a plan lapses: existing data
@@ -726,6 +726,38 @@ encrypted as JSON in `token_encrypted`.
   Issuing it makes it paid at once. Older payments are taken as invoiced.
 - `PAYPAL_API_BASE_URL` overrides the endpoint (local mock). Otherwise the
   `sandbox` flag picks `api-m.sandbox.paypal.com` or `api-m.paypal.com`.
+
+## Stripe sync (balance transactions)
+
+`POST .../connections/stripe` with `{secretKey, label}` connects a Stripe
+account (`stripe-client.ts`, migration 0092). Only restricted keys
+(`rk_live_…` / `rk_test_…`, 400 `stripe_key_format` otherwise) with Read on
+Balance transactions, Charges and Customers. The key is checked with one
+call (400 `stripe_key_invalid` or `stripe_permissions_missing`), then stored
+encrypted in `token_encrypted`. Plan feature `stripe_sync` (Start).
+
+- Every sync reads `GET /v1/balance_transactions` once for `type=charge` and
+  once for `type=payment`, `created[gte]` = the usual window, 100 rows a
+  page with `starting_after`, expanded with `data.source` and
+  `data.source.customer`. Manual sync is limited to one a minute.
+- Kept: status `available` or `pending`, positive amount, a charge that is
+  paid and not fully refunded. Payouts, refunds, fees and adjustments are
+  skipped. So are charges with Billanta's own `metadata.invoice_id` (a UUID):
+  card payments from the invoice link already marked those invoices paid.
+- `external_id` is `stripe:<charge or payment id>` (the balance transaction
+  id when there is no source), the same key as the Stripe CSV import, so an
+  uploaded export and the sync never store one payment twice. The day is `created`
+  in Europe/Prague. Amount and currency are the charge's (minor units,
+  zero-decimal currencies as whole units); the fee is the balance
+  transaction's, divided by `exchange_rate` when Stripe settled into another
+  currency. When it did, `net_amount`/`net_currency` keep what was credited
+  (`net`, in the balance currency), as for PayPal. The variable symbol comes
+  from metadata (`variable_symbol`, `vs`, `invoice_number`, …) or the
+  description; the billing address country goes to a new contact.
+- As with PayPal, an unmatched payment from `auto_draft_from` on becomes a
+  `pending_review` draft, and `POST .../connections/:id/backfill` reads up
+  to three years of history (at most 100 pages per type, no drafts).
+- `STRIPE_API_BASE_URL` overrides the endpoint (local mock).
 
 ## Card payments from the invoice link (Stripe Checkout)
 

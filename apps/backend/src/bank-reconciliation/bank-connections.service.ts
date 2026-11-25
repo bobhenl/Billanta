@@ -36,6 +36,13 @@ import {
 } from "./fio-client";
 import { missingNets } from "./dedupe";
 import { PaypalApiError, PaypalClient, paypalBackfillRange, paypalSyncFrom, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
+import {
+  STRIPE_BACKFILL_MAX_PAGES,
+  STRIPE_RESTRICTED_KEY_PATTERN,
+  StripeApiError,
+  StripeClient,
+  type StripeSyncedRow,
+} from "./stripe-client";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type BankConnectionRow = typeof schema.bankConnections.$inferSelect;
@@ -49,6 +56,7 @@ const PSD2_BACKGROUND_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const PSD2_MANUAL_INTERVAL_MS = 15 * 60 * 1000;
 const PSD2_MAX_CONSENT_MS = 180 * DAY_MS;
 const PAYPAL_MANUAL_INTERVAL_MS = 60_000;
+const STRIPE_MANUAL_INTERVAL_MS = 60_000;
 /**
  * The EEA countries Enable Banking covers, home markets first. Neobanks are
  * listed under their licence country: Revolut under LT (and most others),
@@ -111,6 +119,12 @@ export interface BankSyncSummary {
    * the movements come with the next one.
    */
   pending?: boolean;
+}
+
+function manualInterval(provider: BankConnectionRow["provider"]): number {
+  if (provider === "paypal") return PAYPAL_MANUAL_INTERVAL_MS;
+  if (provider === "stripe") return STRIPE_MANUAL_INTERVAL_MS;
+  return PSD2_MANUAL_INTERVAL_MS;
 }
 
 /** Fio's per-token limit, counted from our last request of any kind. */
@@ -409,7 +423,7 @@ export class BankConnectionsService {
   }
 
   /**
-   * Where PayPal drafts start: the day after the newest invoice already in
+   * Where PayPal and Stripe drafts start: the day after the newest invoice already in
    * Billanta (imported history covers what came before), but never later
    * than now, so today's payments still count.
    */
@@ -438,6 +452,46 @@ export class BankConnectionsService {
         ),
       );
     return oldest?.day ? new Date(oldest.day) : null;
+  }
+
+  /** Overridable in tests. */
+  protected stripeClient(secretKey: string): StripeClient {
+    return new StripeClient(secretKey);
+  }
+
+  /** Checks the restricted key (one balance transactions call) before storing it encrypted. */
+  async createStripe(db: TenantDb, tenantId: string, input: { secretKey: string; label: string | null }) {
+    const secretKey = input.secretKey.trim();
+    if (!STRIPE_RESTRICTED_KEY_PATTERN.test(secretKey)) throw new BadRequestException({ error: "stripe_key_format" });
+    const key = encryptionKey();
+    if (!key) throw new ServiceUnavailableException({ error: "encryption_not_configured" });
+    try {
+      await this.stripeClient(secretKey).fetchIncoming(new Date(Date.now() - DAY_MS));
+    } catch (err) {
+      throw this.stripeHttpError(err);
+    }
+    const [row] = await db
+      .insert(schema.bankConnections)
+      .values({
+        tenantId,
+        provider: "stripe",
+        autoDraftFrom: await this.firstUninvoicedDay(db),
+        label: input.label,
+        bankName: secretKey.startsWith("rk_test_") ? "Stripe (test)" : "Stripe",
+        tokenEncrypted: encryptSecret(secretKey, key),
+      })
+      .returning();
+    return toPublic(row!);
+  }
+
+  private stripeHttpError(err: unknown): Error {
+    if (err instanceof HttpException) return err;
+    const code = err instanceof StripeApiError ? err.code : "unavailable";
+    if (code === "invalid_credentials") return new BadRequestException({ error: "stripe_key_invalid" });
+    if (code === "permissions_missing") return new BadRequestException({ error: "stripe_permissions_missing" });
+    if (code === "rate_limited") return new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
+    this.logger.warn(`Stripe call failed: ${(err as Error)?.message}`);
+    return new ServiceUnavailableException({ error: "bank_unavailable" });
   }
 
   private paypalHttpError(err: unknown): Error {
@@ -480,21 +534,21 @@ export class BankConnectionsService {
       row.provider === "fio"
         ? fioTooSoon(row, new Date())
         : row.lastSyncedAt !== null &&
-          Date.now() - row.lastSyncedAt.getTime() < (row.provider === "paypal" ? PAYPAL_MANUAL_INTERVAL_MS : PSD2_MANUAL_INTERVAL_MS);
+          Date.now() - row.lastSyncedAt.getTime() < manualInterval(row.provider);
     if (tooSoon) throw new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
     return this.sync(db, tenantId, row, true);
   }
 
   /**
-   * "Stáhnout starší platby": reads PayPal history from `from` (at most
-   * three years back) and stores and matches it like a sync. Payments before
-   * the connection's `autoDraftFrom` are only imported and matched, never
-   * drafted. Known payments are skipped, so running it twice is harmless.
+   * "Stáhnout starší platby": reads PayPal or Stripe history from `from` (at
+   * most three years back) and stores and matches it like a sync. Payments
+   * before the connection's `autoDraftFrom` are only imported and matched,
+   * never drafted. Known payments are skipped, so running it twice is harmless.
    */
-  async backfillPaypal(db: TenantDb, tenantId: string, id: string, requested: Date): Promise<BankSyncSummary & { from: Date }> {
+  async backfill(db: TenantDb, tenantId: string, id: string, requested: Date): Promise<BankSyncSummary & { from: Date }> {
     const [row] = await db.select().from(schema.bankConnections).where(eq(schema.bankConnections.id, id)).limit(1);
     if (!row) throw new NotFoundException("Bank connection not found");
-    if (row.provider !== "paypal") throw new BadRequestException({ error: "backfill_unsupported" });
+    if (row.provider !== "paypal" && row.provider !== "stripe") throw new BadRequestException({ error: "backfill_unsupported" });
     const now = new Date();
     const range = paypalBackfillRange(requested, now);
     if (!range) throw new BadRequestException({ error: "backfill_range" });
@@ -504,15 +558,27 @@ export class BankConnectionsService {
     }
     await db.update(schema.bankConnections).set({ lastRequestAt: now }).where(eq(schema.bankConnections.id, row.id));
 
-    let rows: PaypalSyncedRow[];
-    try {
-      const credentials = JSON.parse(decryptSecret(row.tokenEncrypted ?? "", encryptionKey())) as PaypalCredentials;
-      rows = await this.paypalClient(credentials).fetchIncoming(range.from, range.to);
-    } catch (err) {
-      throw this.paypalHttpError(err);
-    }
     const period = `${range.from.toISOString().slice(0, 10)} – ${range.to.toISOString().slice(0, 10)}`;
-    const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom, false);
+    let summary: Awaited<ReturnType<typeof this.storeFresh>>;
+    if (row.provider === "stripe") {
+      let rows: StripeSyncedRow[];
+      try {
+        const secretKey = decryptSecret(row.tokenEncrypted ?? "", encryptionKey());
+        rows = await this.stripeClient(secretKey).fetchIncoming(range.from, range.to, STRIPE_BACKFILL_MAX_PAGES);
+      } catch (err) {
+        throw this.stripeHttpError(err);
+      }
+      summary = await this.storeFresh(db, tenantId, `${row.label ?? "Stripe"} ${period}`, "stripe", rows, row.autoDraftFrom, false);
+    } else {
+      let rows: PaypalSyncedRow[];
+      try {
+        const credentials = JSON.parse(decryptSecret(row.tokenEncrypted ?? "", encryptionKey())) as PaypalCredentials;
+        rows = await this.paypalClient(credentials).fetchIncoming(range.from, range.to);
+      } catch (err) {
+        throw this.paypalHttpError(err);
+      }
+      summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom, false);
+    }
     await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
     return { connectionId: row.id, ...summary, from: range.from };
   }
@@ -598,6 +664,26 @@ export class BankConnectionsService {
         throw err;
       }
       const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom);
+      await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
+      return { connectionId: row.id, ...summary };
+    }
+
+    if (row.provider === "stripe") {
+      let rows: StripeSyncedRow[];
+      try {
+        rows = await this.stripeClient(decryptSecret(row.tokenEncrypted ?? "", encryptionKey())).fetchIncoming(from);
+      } catch (err) {
+        const code = err instanceof StripeApiError ? err.code : "unavailable";
+        const lastError =
+          code === "invalid_credentials" ? "stripe_key_invalid" : code === "permissions_missing" ? "stripe_permissions_missing" : code;
+        await db
+          .update(schema.bankConnections)
+          .set({ lastError, ...(code === "rate_limited" ? {} : { lastSyncedAt: now }) })
+          .where(eq(schema.bankConnections.id, row.id));
+        if (throwErrors) throw this.stripeHttpError(err);
+        throw err;
+      }
+      const summary = await this.storeFresh(db, tenantId, `${row.label ?? "Stripe"} ${period}`, "stripe", rows, row.autoDraftFrom);
       await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
       return { connectionId: row.id, ...summary };
     }
@@ -688,8 +774,8 @@ export class BankConnectionsService {
     db: TenantDb,
     tenantId: string,
     title: string,
-    source: "fio" | "psd2" | "paypal",
-    rows: (FioSyncedRow | Psd2SyncedRow | PaypalSyncedRow)[],
+    source: "fio" | "psd2" | "paypal" | "stripe",
+    rows: (FioSyncedRow | Psd2SyncedRow | PaypalSyncedRow | StripeSyncedRow)[],
     autoDraftFrom: Date | null = null,
     /** A history backfill: rules may ignore old payments but never draft from them. */
     ruleDrafts = true,

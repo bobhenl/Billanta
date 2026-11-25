@@ -24,6 +24,7 @@ import {
   CompletePsd2Dto,
   CreateBankConnectionDto,
   CreatePaypalDto,
+  CreateStripeDto,
   StartPsd2Dto,
   UpdateBankConnectionDto,
 } from "./dto/bank-connection.dto";
@@ -64,6 +65,15 @@ export class BankConnectionsController {
   createPaypal(@Req() req: TenantScopedRequest, @Body() dto: CreatePaypalDto) {
     requireRole(req, ["owner", "admin"]);
     return this.service.createPaypal(req.tenantDb!, req.user!.tenantId, dto);
+  }
+
+  @Post("stripe")
+  @UseGuards(TwoFactorGuard)
+  @RequirePlan("stripe_sync")
+  @ApiOperation({ summary: "Connect a Stripe account with a read-only restricted key (balance transactions)" })
+  createStripe(@Req() req: TenantScopedRequest, @Body() dto: CreateStripeDto) {
+    requireRole(req, ["owner", "admin"]);
+    return this.service.createStripe(req.tenantDb!, req.user!.tenantId, dto);
   }
 
   @Get("psd2")
@@ -121,9 +131,9 @@ export class BankConnectionsController {
 
   @Post(":id/backfill")
   @RequirePlan("paypal_sync")
-  @ApiOperation({ summary: "Download older PayPal payments (up to 3 years back) and match them; no drafts before autoDraftFrom" })
+  @ApiOperation({ summary: "Download older PayPal or Stripe payments (up to 3 years back) and match them; no drafts before autoDraftFrom" })
   backfill(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: BackfillBankConnectionDto) {
     requireRole(req, ["owner", "admin"]);
-    return this.service.backfillPaypal(req.tenantDb!, req.user!.tenantId, id, dto.from);
+    return this.service.backfill(req.tenantDb!, req.user!.tenantId, id, dto.from);
   }
 }

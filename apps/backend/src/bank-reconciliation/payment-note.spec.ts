@@ -17,6 +17,12 @@ describe("paypalPaymentNote", () => {
   it("says only the amount without a fee or conversion", () => {
     expect(paypalPaymentNote({ amount: 10, currency: "EUR", fee: null, netAmount: null })).toBe("PayPal: zaplaceno 10,00 EUR");
   });
+
+  it("names Stripe for a Stripe payment", () => {
+    expect(paypalPaymentNote({ amount: 100, currency: "EUR", fee: 3.5, netAmount: 2412.5, netCurrency: "CZK" }, "Stripe")).toBe(
+      "Stripe: zaplaceno 100,00 EUR, poplatek 3,50 EUR, připsáno 2 412,50 Kč (kurz 25 Kč/EUR)",
+    );
+  });
 });
 
 describe("appendNoteLine", () => {

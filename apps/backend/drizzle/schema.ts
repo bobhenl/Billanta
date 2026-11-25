@@ -131,6 +131,7 @@ export const bankStatementSourceEnum = pgEnum("bank_statement_source", [
   "paypal",
   "camt053",
   "gpc",
+  "stripe",
 ]);
 
 export const bankTransactionStatusEnum = pgEnum("bank_transaction_status", [
@@ -1217,9 +1218,9 @@ export const bankConnections = pgTable("bank_connections", {
   tenantId: uuid("tenant_id")
     .notNull()
     .references(() => tenants.id, { onDelete: "cascade" }),
-  provider: text("provider").$type<"fio" | "enable_banking" | "paypal">().notNull().default("fio"),
+  provider: text("provider").$type<"fio" | "enable_banking" | "paypal" | "stripe">().notNull().default("fio"),
   label: text("label"),
-  /** Fio API token, or PayPal `{clientId, secret, sandbox}` JSON (encrypted). Null for PSD2 connections. */
+  /** Fio API token, PayPal `{clientId, secret, sandbox}` JSON or a Stripe restricted key (encrypted). Null for PSD2 connections. */
   tokenEncrypted: text("token_encrypted"),
   /** PSD2: `pending` until the bank redirects back, `expired` once consent runs out. */
   status: text("status").$type<"pending" | "active" | "expired">().notNull().default("active"),

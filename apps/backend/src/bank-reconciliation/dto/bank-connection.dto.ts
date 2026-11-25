@@ -46,6 +46,14 @@ export const backfillBankConnectionSchema = z.object({
 
 export class BackfillBankConnectionDto extends createZodDto(backfillBankConnectionSchema) {}
 
+export const createStripeSchema = z.object({
+  // The service checks the format (restricted keys only) so the UI gets its own error code.
+  secretKey: z.string().trim().min(10).max(255),
+  label: z.string().trim().max(80).nullish().transform((v) => v || null),
+});
+
+export class CreateStripeDto extends createZodDto(createStripeSchema) {}
+
 export const completePsd2Schema = z.object({
   code: z.string().min(1).max(2000),
   state: z.string().regex(/^[a-f0-9]{48}$/),

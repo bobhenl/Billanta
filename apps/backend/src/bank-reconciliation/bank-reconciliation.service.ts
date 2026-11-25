@@ -27,7 +27,7 @@ export type BankTransactionStatusFilter = "unmatched" | "matched" | "ignored";
 
 type InvoiceLineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 
-export type BankImportSource = "csv" | "camt053" | "gpc" | "fio" | "psd2" | "paypal";
+export type BankImportSource = "csv" | "camt053" | "gpc" | "fio" | "psd2" | "paypal" | "stripe";
 type IncomingRow = ParsedBankTransactionRow & {
   externalId?: string | null;
   fee?: string | null;
@@ -57,18 +57,19 @@ type AppliedMatch =
   | { type: "matched" | "linked"; invoiceId: string; updated: StoredRow }
   | Extract<MatchOutcome, { type: "unmatched" }>;
 
-/** What a stored payment tells the invoice it pays: amount, fee, PayPal's conversion and the note line. */
+/** What a stored payment tells the invoice it pays: amount, fee, PayPal's or Stripe's conversion and the note line. */
 function receivedFrom(tx: StoredRow) {
   const fee = tx.fee ? Number(tx.fee) : undefined;
   const net = tx.netAmount && tx.netCurrency ? { amount: Number(tx.netAmount), currency: tx.netCurrency } : null;
+  const provider = tx.externalId?.startsWith("paypal:") ? "PayPal" : tx.externalId?.startsWith("stripe:") ? "Stripe" : null;
   return {
     amount: Number(tx.amount),
     currency: tx.currency,
     fee,
     paidAt: tx.transactionDate,
     net,
-    note: tx.externalId?.startsWith("paypal:")
-      ? paypalPaymentNote({ amount: Number(tx.amount), currency: tx.currency, fee, netAmount: net?.amount, netCurrency: net?.currency })
+    note: provider
+      ? paypalPaymentNote({ amount: Number(tx.amount), currency: tx.currency, fee, netAmount: net?.amount, netCurrency: net?.currency }, provider)
       : null,
   };
 }

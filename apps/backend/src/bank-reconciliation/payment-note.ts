@@ -17,8 +17,11 @@ const unit = (currency: string) => (currency === "CZK" ? "Kč" : currency);
 const fmt = (n: number, currency: string) =>
   `${new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n).replace(/\s/g, " ")} ${unit(currency)}`;
 
-/** "PayPal: zaplaceno 25,00 USD, poplatek 1,20 USD, připsáno 545,12 Kč (kurz 22,9042 Kč/USD)". */
-export function paypalPaymentNote(input: PaymentNoteInput): string {
+/**
+ * "PayPal: zaplaceno 25,00 USD, poplatek 1,20 USD, připsáno 545,12 Kč (kurz 22,9042 Kč/USD)".
+ * Stripe payments get the same line under their own name.
+ */
+export function paypalPaymentNote(input: PaymentNoteInput, provider: "PayPal" | "Stripe" = "PayPal"): string {
   const currency = input.currency.toUpperCase();
   const parts = [`zaplaceno ${fmt(input.amount, currency)}`];
   const fee = input.fee && input.fee > 0 ? input.fee : 0;
@@ -36,7 +39,7 @@ export function paypalPaymentNote(input: PaymentNoteInput): string {
   } else if (fee) {
     parts.push(`připsáno ${fmt(input.amount - fee, currency)}`);
   }
-  return `PayPal: ${parts.join(", ")}`;
+  return `${provider}: ${parts.join(", ")}`;
 }
 
 /** The note with the line added below what is already there, once. */

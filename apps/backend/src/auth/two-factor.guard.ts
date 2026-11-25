@@ -3,7 +3,7 @@ import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 
 /**
  * Actions that hand out access to money or data outside Billanta: bank and
- * PayPal connections, API keys, outgoing webhooks, backup destinations.
+ * PayPal or Stripe connections, API keys, outgoing webhooks, backup destinations.
  * They need a dashboard session that passed two-factor sign-in, so a stolen
  * password (or a hijacked session of a user without 2FA) cannot wire the
  * account to an attacker. Put it after `JwtAuthGuard` on the handler.

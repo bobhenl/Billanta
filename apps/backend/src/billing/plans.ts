@@ -109,6 +109,7 @@ export function planRank(plan: PlanKey): number {
 export const FEATURE_MIN_PLAN = {
   bank_sync: "start",
   paypal_sync: "start",
+  stripe_sync: "start",
   api_keys: "start",
   card_payments: "plus",
 } as const satisfies Record<string, PaidPlan>;
