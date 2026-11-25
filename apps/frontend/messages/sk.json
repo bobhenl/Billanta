@@ -1054,7 +1054,9 @@
         "paypal_reporting_disabled": "Aplikácia v PayPale nemá zapnutú funkciu Transaction search. Zapnite ju v nastaveniach aplikácie (zmena sa prejaví do niekoľkých hodín).",
         "two_factor_required": "Najprv si zapnite dvojfázové overenie v Nastavenia → Zabezpečenie.",
         "plan_required": "Táto funkcia patrí do plateného tarifu. Vyberte si ho v sekcii Tarif a platby.",
-        "history_locked": "Fio vydá pohyby staršie ako 90 dní len po silnom overení v internet bankingu. Nabudúce začneme sťahovať od posledných 89 dní."
+        "history_locked": "Fio vydá pohyby staršie ako 90 dní len po silnom overení v internet bankingu. Nabudúce začneme sťahovať od posledných 89 dní.",
+        "backfill_range": "Vyberte deň v minulosti.",
+        "backfill_unsupported": "Staršie platby sa zatiaľ dajú stiahnuť len z PayPalu."
       },
       "psd2": {
         "hint": "Billanta sťahuje prichádzajúce platby z banky alebo PayPalu a páruje ich s faktúrami podľa VS a sumy. Pri PSD2 udelíte banke súhlas len na čítanie (90–180 dní) a účty sa sťahujú zhruba každých 6 hodín. Zaplatiť cez napojenie nejde nič.",
@@ -1090,7 +1092,14 @@
         "sandboxHint": "Zaškrtnite len pre kľúče zo sandboxu PayPalu. Platby z neho nie sú skutočné.",
         "note": "Platby sa párujú podľa čísla faktúry alebo VS v poznámke a sumy. Poplatok PayPalu sa zapíše k faktúre. PayPal ukazuje platby s oneskorením až 3 hodiny.",
         "connected": "PayPal pripojený. Platby za posledných 30 dní stiahneme pri najbližšej synchronizácii.",
-        "moreOptions": "Ďalšie možnosti"
+        "moreOptions": "Ďalšie možnosti",
+        "backfill": "Stiahnuť staršie platby",
+        "backfillFrom": "Od dňa",
+        "backfillHint": "PayPal vydá platby až 3 roky dozadu. Staršie platby len spárujeme s faktúrami, návrhy faktúr z nich nevznikajú. Čo už v Billante je, sa znova nestiahne.",
+        "backfillRun": "Stiahnuť",
+        "backfillDone": "{total, plural, one {Stiahnutá # staršia platba} few {Stiahnuté # staršie platby} other {Stiahnutých # starších platieb}}, {matched} spárovaných.",
+        "backfillNothing": "Žiadne nové staršie platby. Čo PayPal za to obdobie vydal, už v Billante je.",
+        "backfillNets": "Pri {count, plural, one {# platbe} other {# platbách}} sme doplnili sumu po prevode meny."
       },
       "connectBank": "Pripojiť banku",
       "chooseProvider": "Čo chcete pripojiť?",
@@ -1110,7 +1119,8 @@
       },
       "syncPending": "Fio sme pripravili. Platby stiahneme pri ďalšej synchronizácii, skúste to o 30 sekúnd."
     },
-    "fee": "poplatok {amount}"
+    "fee": "poplatok {amount}",
+    "netReceived": "pripísané {amount}"
   },
   "contacts": {
     "title": "Kontakty",

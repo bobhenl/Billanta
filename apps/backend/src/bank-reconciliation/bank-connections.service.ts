@@ -9,7 +9,7 @@ import {
   ServiceUnavailableException,
 } from "@nestjs/common";
 import { randomBytes } from "node:crypto";
-import { and, asc, eq, inArray, lt, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { decryptSecret, encryptSecret } from "../backup-destinations/encryption.util";
@@ -34,7 +34,8 @@ import {
   type FioStatement,
   type FioSyncedRow,
 } from "./fio-client";
-import { PaypalApiError, PaypalClient, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
+import { missingNets } from "./dedupe";
+import { PaypalApiError, PaypalClient, paypalBackfillRange, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type BankConnectionRow = typeof schema.bankConnections.$inferSelect;
@@ -99,6 +100,8 @@ export interface BankSyncSummary {
   unmatched: number;
   /** PayPal payments that became invoice drafts. */
   drafted?: number;
+  /** Already stored PayPal payments that got their converted amount now. */
+  netUpdated?: number;
   /**
    * Fio only: this sync just positioned Fio's cursor (one request per 30 s),
    * the movements come with the next one.
@@ -462,6 +465,38 @@ export class BankConnectionsService {
     return this.sync(db, tenantId, row, true);
   }
 
+  /**
+   * "Stáhnout starší platby": reads PayPal history from `from` (at most
+   * three years back) and stores and matches it like a sync. Payments before
+   * the connection's `autoDraftFrom` are only imported and matched, never
+   * drafted. Known payments are skipped, so running it twice is harmless.
+   */
+  async backfillPaypal(db: TenantDb, tenantId: string, id: string, requested: Date): Promise<BankSyncSummary & { from: Date }> {
+    const [row] = await db.select().from(schema.bankConnections).where(eq(schema.bankConnections.id, id)).limit(1);
+    if (!row) throw new NotFoundException("Bank connection not found");
+    if (row.provider !== "paypal") throw new BadRequestException({ error: "backfill_unsupported" });
+    const now = new Date();
+    const range = paypalBackfillRange(requested, now);
+    if (!range) throw new BadRequestException({ error: "backfill_range" });
+    // Up to 37 windows per run; one run a minute keeps a double click from doubling the PayPal calls.
+    if (row.lastRequestAt && now.getTime() - row.lastRequestAt.getTime() < PAYPAL_MANUAL_INTERVAL_MS) {
+      throw new HttpException({ error: "bank_sync_too_soon" }, HttpStatus.TOO_MANY_REQUESTS);
+    }
+    await db.update(schema.bankConnections).set({ lastRequestAt: now }).where(eq(schema.bankConnections.id, row.id));
+
+    let rows: PaypalSyncedRow[];
+    try {
+      const credentials = JSON.parse(decryptSecret(row.tokenEncrypted ?? "", encryptionKey())) as PaypalCredentials;
+      rows = await this.paypalClient(credentials).fetchIncoming(range.from, range.to);
+    } catch (err) {
+      throw this.paypalHttpError(err);
+    }
+    const period = `${range.from.toISOString().slice(0, 10)} – ${range.to.toISOString().slice(0, 10)}`;
+    const summary = await this.storeFresh(db, tenantId, `${row.label ?? "PayPal"} ${period}`, "paypal", rows, row.autoDraftFrom);
+    await db.update(schema.bankConnections).set({ lastSyncedAt: now, lastError: null }).where(eq(schema.bankConnections.id, row.id));
+    return { connectionId: row.id, ...summary, from: range.from };
+  }
+
   /** Hourly sweep for one tenant: every enabled connection, failures recorded on the row. */
   async syncAllForTenant(db: TenantDb, tenantId: string): Promise<number> {
     // Bank redirects abandoned for a day.
@@ -638,12 +673,19 @@ export class BankConnectionsService {
     const ids = rows.map((r) => r.externalId);
     const known = ids.length
       ? await db
-          .select({ externalId: schema.bankTransactions.externalId })
+          .select({ id: schema.bankTransactions.id, externalId: schema.bankTransactions.externalId, netAmount: schema.bankTransactions.netAmount })
           .from(schema.bankTransactions)
           .where(and(eq(schema.bankTransactions.tenantId, tenantId), inArray(schema.bankTransactions.externalId, ids)))
       : [];
     const knownIds = new Set(known.map((k) => k.externalId));
     const fresh = rows.filter((r) => !knownIds.has(r.externalId));
+    const nets = missingNets(known, rows as { externalId: string; netAmount?: string | null; netCurrency?: string | null }[]);
+    for (const net of nets) {
+      await db
+        .update(schema.bankTransactions)
+        .set({ netAmount: net.netAmount, netCurrency: net.netCurrency })
+        .where(and(eq(schema.bankTransactions.id, net.id), isNull(schema.bankTransactions.netAmount)));
+    }
 
     const result = await this.reconciliation.persistAndMatch(db, tenantId, title.replace(/\s+/g, " ").trim(), source, fresh, {
       skipEmpty: true,
@@ -660,6 +702,6 @@ export class BankConnectionsService {
         link: "/bank",
       });
     }
-    return result.summary;
+    return { ...result.summary, netUpdated: nets.length };
   }
 }

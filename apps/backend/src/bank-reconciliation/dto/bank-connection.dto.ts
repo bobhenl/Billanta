@@ -35,6 +35,17 @@ export const createPaypalSchema = z.object({
 
 export class CreatePaypalDto extends createZodDto(createPaypalSchema) {}
 
+export const backfillBankConnectionSchema = z.object({
+  /** First day to read, "2026-01-01". */
+  from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .transform((v) => new Date(`${v}T00:00:00Z`))
+    .refine((d) => !Number.isNaN(d.getTime())),
+});
+
+export class BackfillBankConnectionDto extends createZodDto(backfillBankConnectionSchema) {}
+
 export const completePsd2Schema = z.object({
   code: z.string().min(1).max(2000),
   state: z.string().regex(/^[a-f0-9]{48}$/),

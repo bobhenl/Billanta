@@ -19,7 +19,14 @@ import { TwoFactorGuard } from "../auth/two-factor.guard";
 import { RequirePlan } from "../billing/plan.guard";
 import type { TenantScopedRequest } from "../tenancy/tenant-context.middleware";
 import { BankConnectionsService } from "./bank-connections.service";
-import { CompletePsd2Dto, CreateBankConnectionDto, CreatePaypalDto, StartPsd2Dto, UpdateBankConnectionDto } from "./dto/bank-connection.dto";
+import {
+  BackfillBankConnectionDto,
+  CompletePsd2Dto,
+  CreateBankConnectionDto,
+  CreatePaypalDto,
+  StartPsd2Dto,
+  UpdateBankConnectionDto,
+} from "./dto/bank-connection.dto";
 
 /** Connecting a bank account is an owner/admin action; any non-viewer may trigger a sync. */
 function requireRole(req: TenantScopedRequest, roles: string[]) {
@@ -110,5 +117,13 @@ export class BankConnectionsController {
   sync(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
     requireRole(req, ["owner", "admin", "accountant"]);
     return this.service.syncOne(req.tenantDb!, req.user!.tenantId, id);
+  }
+
+  @Post(":id/backfill")
+  @RequirePlan("paypal_sync")
+  @ApiOperation({ summary: "Download older PayPal payments (up to 3 years back) and match them; no drafts before autoDraftFrom" })
+  backfill(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string, @Body() dto: BackfillBankConnectionDto) {
+    requireRole(req, ["owner", "admin"]);
+    return this.service.backfillPaypal(req.tenantDb!, req.user!.tenantId, id, dto.from);
   }
 }

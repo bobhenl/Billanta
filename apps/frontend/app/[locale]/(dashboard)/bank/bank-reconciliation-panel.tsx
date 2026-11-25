@@ -97,6 +97,11 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                     {amount > 0 && '+'}
                     {formatMoney(amount, tx.currency, locale)}
                   </p>
+                  {tx.netAmount && tx.netCurrency && (
+                    <p className="text-[11px] text-muted-foreground">
+                      {t('netReceived', { amount: formatMoney(Number(tx.netAmount), tx.netCurrency, locale) })}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     {tx.status === 'matched' && tx.invoiceNumber ? t('matchedWithInvoice', { invoiceId: tx.invoiceNumber }) : t(`status.${tx.status}`)}
                   </p>
@@ -159,6 +164,11 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                     {tx.fee && Number(tx.fee) > 0 && (
                       <div className="text-[11px] font-normal text-muted-foreground">
                         {t('fee', { amount: formatMoney(Number(tx.fee), tx.currency, locale) })}
+                      </div>
+                    )}
+                    {tx.netAmount && tx.netCurrency && (
+                      <div className="text-[11px] font-normal text-muted-foreground">
+                        {t('netReceived', { amount: formatMoney(Number(tx.netAmount), tx.netCurrency, locale) })}
                       </div>
                     )}
                   </td>

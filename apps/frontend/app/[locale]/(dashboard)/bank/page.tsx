@@ -6,8 +6,8 @@ import { Banner } from '@/components/banner';
 import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
-import { TRANSACTION_STATUSES, type BankTransaction, type TransactionStatus } from '@/lib/bank-ui';
-import { fetchCanWrite, fetchHomeCurrency } from '@/lib/tenant';
+import { TRANSACTION_STATUSES, homeCurrencyTotals, type BankTransaction, type TransactionStatus } from '@/lib/bank-ui';
+import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import type { BankConnection } from './actions';
 import { BankConnections } from './bank-connections';
@@ -35,7 +35,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
   let invoices: InvoiceRow[];
   let connections: BankConnection[];
   let psd2: { available: boolean; countries: string[] };
-  const [home, canEdit] = await Promise.all([fetchHomeCurrency(), fetchCanWrite('bank')]);
+  const [home, canEdit, role] = await Promise.all([fetchHomeCurrency(), fetchCanWrite('bank'), fetchMyRole().catch(() => null)]);
   try {
     [transactions, invoices, connections, psd2] = await Promise.all([
       apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions'),
@@ -67,9 +67,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
       (!q || [r.counterpartyName, r.variableSymbol, r.counterpartyAccount, r.invoiceNumber].some((v) => v?.toLowerCase().includes(q)))
   );
 
-  const atHome = transactions.filter((tx) => tx.currency === home);
-  const incoming = atHome.filter((tx) => Number(tx.amount) > 0).reduce((s, tx) => s + Number(tx.amount), 0);
-  const outgoing = atHome.filter((tx) => Number(tx.amount) < 0).reduce((s, tx) => s + Number(tx.amount), 0);
+  const { incoming, outgoing } = homeCurrencyTotals(transactions, home);
   const unmatched = transactions.filter((tx) => tx.status === 'unmatched');
   const matchedCount = transactions.filter((tx) => tx.status === 'matched').length;
   const cards = [
@@ -123,7 +121,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
       </div>
 
       <TwoFactorNotice className="mt-6" />
-      <BankConnections connections={connections} psd2={psd2} />
+      <BankConnections connections={connections} psd2={psd2} canManage={canManage(role)} />
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <form action="" className="relative w-full sm:max-w-xs">

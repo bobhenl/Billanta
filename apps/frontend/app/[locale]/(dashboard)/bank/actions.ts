@@ -131,6 +131,24 @@ export async function syncBankConnection(id: string): Promise<SyncResult> {
   }
 }
 
+export type BackfillResult =
+  | { ok: true; total: number; matched: number; netUpdated: number }
+  | { ok: false; error: string };
+
+/** PayPal history from `from` ("2026-01-01"); the backend caps it at three years and never drafts invoices from it. */
+export async function backfillBankConnection(id: string, from: string): Promise<BackfillResult> {
+  try {
+    const result = await apiFetch<{ total: number; matched: number; netUpdated?: number }>(
+      `${connections}/${encodeURIComponent(id)}/backfill`,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ from }) }
+    );
+    revalidatePath('/[locale]/(dashboard)', 'layout');
+    return { ok: true, total: result.total, matched: result.matched, netUpdated: result.netUpdated ?? 0 };
+  } catch (error) {
+    return { ok: false, error: errorCode(error) };
+  }
+}
+
 export interface Psd2Bank {
   name: string;
   country: string;

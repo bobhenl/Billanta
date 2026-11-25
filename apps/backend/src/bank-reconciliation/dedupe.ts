@@ -103,3 +103,25 @@ export function splitDuplicates<T extends DedupeRow>(incoming: T[], stored: Stor
 
   return { fresh, duplicates, claims };
 }
+
+/**
+ * Rows a re-sync already has but stored without PayPal's conversion (the
+ * conversion was not paired then, or came after the payment): the net is
+ * filled in once and never overwritten, so a later read cannot change what
+ * an invoice was already marked paid with.
+ */
+export function missingNets(
+  stored: { id: string; externalId: string | null; netAmount: string | null }[],
+  incoming: { externalId?: string | null; netAmount?: string | null; netCurrency?: string | null }[],
+): { id: string; netAmount: string; netCurrency: string }[] {
+  const nets = new Map<string, { netAmount: string; netCurrency: string }>();
+  for (const row of incoming) {
+    if (row.externalId && row.netAmount && row.netCurrency) nets.set(row.externalId, { netAmount: row.netAmount, netCurrency: row.netCurrency });
+  }
+  const updates: { id: string; netAmount: string; netCurrency: string }[] = [];
+  for (const row of stored) {
+    const net = row.externalId && row.netAmount === null ? nets.get(row.externalId) : undefined;
+    if (net) updates.push({ id: row.id, ...net });
+  }
+  return updates;
+}

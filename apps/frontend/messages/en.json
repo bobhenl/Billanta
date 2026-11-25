@@ -1054,7 +1054,9 @@
         "paypal_reporting_disabled": "The PayPal app does not have Transaction search enabled. Turn it on in the app settings (it can take a few hours to apply).",
         "two_factor_required": "Turn on two-factor authentication in Settings → Security first.",
         "plan_required": "This feature is part of a paid plan. Pick one under Plan and billing.",
-        "history_locked": "Fio releases movements older than 90 days only after a strong authorisation in online banking. Next time we start from the last 89 days."
+        "history_locked": "Fio releases movements older than 90 days only after a strong authorisation in online banking. Next time we start from the last 89 days.",
+        "backfill_range": "Pick a day in the past.",
+        "backfill_unsupported": "Older payments can only be downloaded from PayPal for now."
       },
       "psd2": {
         "hint": "Billanta downloads incoming payments from your bank or PayPal and matches them to invoices by variable symbol and amount. With PSD2 you give the bank read-only consent (90–180 days) and accounts sync about every 6 hours. Nothing can be paid through the connection.",
@@ -1090,7 +1092,14 @@
         "sandboxHint": "Tick only for PayPal sandbox keys. Its payments are not real.",
         "note": "Payments match by the invoice number or variable symbol in the note, and by amount. The PayPal fee is booked on the invoice. PayPal shows payments with up to a 3-hour delay.",
         "connected": "PayPal connected. The last 30 days of payments arrive with the next sync.",
-        "moreOptions": "More options"
+        "moreOptions": "More options",
+        "backfill": "Download older payments",
+        "backfillFrom": "From",
+        "backfillHint": "PayPal serves payments up to 3 years back. Older payments are only matched to invoices; they never become invoice drafts. Anything already in Billanta is not downloaded again.",
+        "backfillRun": "Download",
+        "backfillDone": "Downloaded {total, plural, one {# older payment} other {# older payments}}, {matched} matched.",
+        "backfillNothing": "No new older payments. Everything PayPal has for that period is already in Billanta.",
+        "backfillNets": "Filled in the amount after currency conversion for {count, plural, one {# payment} other {# payments}}."
       },
       "connectBank": "Connect a bank",
       "chooseProvider": "What do you want to connect?",
@@ -1110,7 +1119,8 @@
       },
       "syncPending": "Fio is ready. Payments come with the next sync, try again in 30 seconds."
     },
-    "fee": "fee {amount}"
+    "fee": "fee {amount}",
+    "netReceived": "credited {amount}"
   },
   "contacts": {
     "title": "Contacts",

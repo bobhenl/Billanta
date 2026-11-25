@@ -19,6 +19,9 @@ export interface BankTransaction {
   message?: string | null;
   /** Fee the payment provider kept (PayPal), in `currency`; null for bank rows. */
   fee?: string | null;
+  /** What PayPal credited after converting the payment, in `netCurrency`; null when it stayed in `currency`. */
+  netAmount?: string | null;
+  netCurrency?: string | null;
   matchedInvoiceId: string | null;
   status: TransactionStatus;
   createdAt: string;
@@ -26,6 +29,23 @@ export interface BankTransaction {
 
 export interface BankTransactionDetail extends BankTransaction {
   import: { id: string; filename: string; source: string; importedAt: string };
+}
+
+/**
+ * The "Příchozí / Odchozí" sums in the home currency. A foreign payment that
+ * PayPal converted to the home currency counts with what was credited, so a
+ * USD sale shows up in the CZK total; other foreign rows stay out.
+ */
+export function homeCurrencyTotals(transactions: BankTransaction[], home: string): { incoming: number; outgoing: number } {
+  let incoming = 0;
+  let outgoing = 0;
+  for (const tx of transactions) {
+    const value =
+      tx.currency === home ? Number(tx.amount) : tx.netCurrency === home && tx.netAmount ? Math.sign(Number(tx.amount)) * Number(tx.netAmount) : 0;
+    if (value > 0) incoming += value;
+    else outgoing += value;
+  }
+  return { incoming, outgoing };
 }
 
 export const TX_STATUS_CLASSES: Record<TransactionStatus, string> = {

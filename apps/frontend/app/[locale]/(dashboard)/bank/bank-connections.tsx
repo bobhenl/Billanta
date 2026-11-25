@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Building2, ChevronDown, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
+import { Building2, ChevronDown, History, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
@@ -10,6 +10,7 @@ import { useRouter } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 import {
+  backfillBankConnection,
   connectFio,
   connectPaypal,
   disconnectBank,
@@ -44,7 +45,9 @@ const KNOWN_ERRORS = [
   'psd2_no_accounts',
   'psd2_state_invalid',
   'paypal_credentials_invalid',
-  'paypal_reporting_disabled'
+  'paypal_reporting_disabled',
+  'backfill_range',
+  'backfill_unsupported'
 ];
 
 /** Renewal is offered this long before the bank consent runs out. */
@@ -57,10 +60,13 @@ const EXPIRY_WARNING_MS = 14 * 24 * 60 * 60 * 1000;
  */
 export function BankConnections({
   connections,
-  psd2
+  psd2,
+  canManage = false
 }: {
   connections: BankConnection[];
   psd2: { available: boolean; countries: string[] };
+  /** Owner/admin: may download PayPal history (an accountant may only sync). */
+  canManage?: boolean;
 }) {
   const t = useTranslations('bank.connections');
   const format = useFormatter();
@@ -88,6 +94,16 @@ export function BankConnections({
   const [paypalId, setPaypalId] = useState('');
   const [paypalSecret, setPaypalSecret] = useState('');
   const [sandbox, setSandbox] = useState(false);
+  const [backfillId, setBackfillId] = useState<string | null>(null);
+  const [backfillFrom, setBackfillFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
+  const today = new Date().toISOString().slice(0, 10);
+  // Transaction Search serves three years back; the backend clamps it the same way.
+  const oldest = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 3);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  })();
 
   const errorText = (code: string) => (KNOWN_ERRORS.includes(code) ? t(`errors.${code}`) : t('errors.generic', { code }));
 
@@ -122,6 +138,18 @@ export function BankConnections({
       if (!result.ok) toast({ text: errorText(result.error), tone: 'err' });
       else if (result.pending) toast({ text: t('syncPending'), tone: 'ok' });
       else toast({ text: result.total ? t('synced', { total: result.total, matched: result.matched }) : t('syncedNothing'), tone: 'ok' });
+    });
+
+  const backfill = (id: string) =>
+    run(id, async () => {
+      const result = await backfillBankConnection(id, backfillFrom);
+      if (!result.ok) {
+        toast({ text: errorText(result.error), tone: 'err' });
+        return;
+      }
+      const text = result.total ? t('paypal.backfillDone', { total: result.total, matched: result.matched }) : t('paypal.backfillNothing');
+      toast({ text: result.netUpdated ? `${text} ${t('paypal.backfillNets', { count: result.netUpdated })}` : text, tone: 'ok' });
+      setBackfillId(null);
     });
 
   const connect = () =>
@@ -290,6 +318,17 @@ export function BankConnections({
                       {t('sync')}
                     </button>
                   )}
+                  {canManage && c.provider === 'paypal' && !expired && backfillId !== c.id && (
+                    <button
+                      type="button"
+                      disabled={pending}
+                      onClick={() => setBackfillId(c.id)}
+                      className={cn(softButton, 'inline-flex items-center gap-1.5')}
+                    >
+                      <History className="h-3.5 w-3.5" />
+                      {t('paypal.backfill')}
+                    </button>
+                  )}
                   {!expired && (
                     <button type="button" disabled={pending} onClick={() => toggle(c)} className={softButton}>
                       {c.enabled ? t('pause') : t('resume')}
@@ -306,6 +345,36 @@ export function BankConnections({
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
+                )}
+                {canManage && backfillId === c.id && (
+                  <form
+                    className="anim-fade flex w-full flex-wrap items-end gap-2 rounded-lg bg-muted/50 p-3"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      backfill(c.id);
+                    }}
+                  >
+                    <label className="text-xs font-semibold">
+                      {t('paypal.backfillFrom')}
+                      <input
+                        type="date"
+                        required
+                        min={oldest}
+                        max={today}
+                        value={backfillFrom}
+                        onChange={(e) => setBackfillFrom(e.target.value)}
+                        className={cn(inputClass, 'mt-1.5 w-44')}
+                      />
+                    </label>
+                    <button type="submit" disabled={pending || !backfillFrom} className={cn(primaryButton, 'h-10 px-4')}>
+                      {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <History className="h-3.5 w-3.5" />}
+                      {t('paypal.backfillRun')}
+                    </button>
+                    <button type="button" disabled={pending} onClick={() => setBackfillId(null)} className={cn(softButton, 'h-10 px-4')}>
+                      {t('cancel')}
+                    </button>
+                    <p className="w-full text-[11px] text-muted-foreground">{t('paypal.backfillHint')}</p>
+                  </form>
                 )}
               </li>
             );

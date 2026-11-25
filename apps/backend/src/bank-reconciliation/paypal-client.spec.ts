@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { PaypalApiError, PaypalClient, parsePaypalTransactions, paypalBaseUrl } from "./paypal-client";
+import {
+  PaypalApiError,
+  PaypalClient,
+  parsePaypalTransactions,
+  paypalBackfillRange,
+  paypalBaseUrl,
+  paypalWindows,
+} from "./paypal-client";
 
 const credentials = { clientId: "client-id-123", secret: "secret-value-123", sandbox: true };
 
@@ -77,6 +84,34 @@ describe("parsePaypalTransactions", () => {
     expect(row).toMatchObject({ netAmount: "2803.47", netCurrency: "CZK" });
   });
 
+  it("follows a credit that references the debit leg, which references the payment", () => {
+    const [row] = parsePaypalTransactions([
+      detail(),
+      // Not the payment minus its fee, so only the reference chain can pair it.
+      conversion("-116.00", "EUR", { transaction_id: "DEBIT1", paypal_reference_id: "9AB12345CD678901E", transaction_initiation_date: "2026-09-30T14:03:40+0000" }),
+      conversion("2803.47", "CZK", { paypal_reference_id: "DEBIT1", transaction_initiation_date: "2026-09-30T14:03:41+0000" }),
+    ]);
+    expect(row).toMatchObject({ netAmount: "2803.47", netCurrency: "CZK" });
+  });
+
+  it("falls back to a same-day conversion of exactly the payment minus its fee", () => {
+    const payment = detail({ transaction_amount: { currency_code: "USD", value: "45.00" }, fee_amount: { currency_code: "USD", value: "-2.41" } });
+    const later = { transaction_initiation_date: "2026-09-30T14:05:00+0000" };
+    const [row] = parsePaypalTransactions([
+      payment,
+      conversion("-10.00", "USD", { transaction_initiation_date: "2026-09-30T09:00:00+0000" }),
+      conversion("230.00", "CZK", { transaction_initiation_date: "2026-09-30T09:00:00+0000" }),
+      conversion("-42.59", "USD", later),
+      conversion("1017.23", "CZK", later),
+    ]);
+    expect(row).toMatchObject({ amount: "45.00", currency: "USD", netAmount: "1017.23", netCurrency: "CZK" });
+    // Another day, or another amount, is not this payment's conversion.
+    const nextDay = { transaction_initiation_date: "2026-10-01T14:05:00+0000" };
+    expect(
+      parsePaypalTransactions([payment, conversion("-42.59", "USD", nextDay), conversion("1017.23", "CZK", nextDay), conversion("-45.00", "USD", later), conversion("1074.80", "CZK", later)])[0],
+    ).toMatchObject({ netAmount: null });
+  });
+
   it("leaves the net empty when nothing was converted or a conversion at that time came from another currency", () => {
     expect(parsePaypalTransactions([detail()])[0]).toMatchObject({ netAmount: null, netCurrency: null });
     expect(parsePaypalTransactions([detail(), conversion("-30.00", "USD"), conversion("690.00", "CZK")])[0]).toMatchObject({
@@ -115,6 +150,37 @@ describe("parsePaypalTransactions", () => {
   it("leaves the fee empty when PayPal kept none", () => {
     const [row] = parsePaypalTransactions([detail({ fee_amount: undefined })]);
     expect(row!.fee).toBeNull();
+  });
+});
+
+describe("paypalWindows", () => {
+  it("covers the period in back-to-back windows of at most 31 days", () => {
+    const from = new Date("2026-01-01T00:00:00Z");
+    const to = new Date("2026-03-15T12:00:00Z");
+    const windows = paypalWindows(from, to);
+    expect(windows.map((w) => [w.from.toISOString(), w.to.toISOString()])).toEqual([
+      ["2026-01-01T00:00:00.000Z", "2026-01-31T23:59:59.000Z"],
+      ["2026-02-01T00:00:00.000Z", "2026-03-03T23:59:59.000Z"],
+      ["2026-03-04T00:00:00.000Z", "2026-03-15T12:00:00.000Z"],
+    ]);
+    expect(paypalWindows(to, to)).toEqual([]);
+  });
+});
+
+describe("paypalBackfillRange", () => {
+  const now = new Date("2026-11-25T10:00:00Z");
+
+  it("reads from the start of the requested day up to now", () => {
+    expect(paypalBackfillRange(new Date("2026-01-01T15:30:00Z"), now)).toEqual({ from: new Date("2026-01-01T00:00:00Z"), to: now });
+  });
+
+  it("stops three years back, with a day of margin", () => {
+    expect(paypalBackfillRange(new Date("2020-05-01T00:00:00Z"), now)!.from).toEqual(new Date("2023-11-26T00:00:00Z"));
+  });
+
+  it("refuses a day that is not in the past", () => {
+    expect(paypalBackfillRange(new Date("2026-12-01T00:00:00Z"), now)).toBeNull();
+    expect(paypalBackfillRange(new Date("2026-11-25T00:00:00Z"), now)).not.toBeNull();
   });
 });
 

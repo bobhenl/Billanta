@@ -42,8 +42,32 @@ export interface PaypalSyncedRow extends ParsedBankTransactionRow {
   payerCountry: string | null;
 }
 
-const MAX_WINDOW_MS = 31 * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const MAX_WINDOW_MS = 31 * DAY_MS;
 const MAX_PAGES = 20;
+
+/** The 31-day windows PayPal accepts, oldest first, each ending a second before the next starts. */
+export function paypalWindows(from: Date, to: Date): { from: Date; to: Date }[] {
+  const windows: { from: Date; to: Date }[] = [];
+  for (let start = from.getTime(); start < to.getTime(); start += MAX_WINDOW_MS) {
+    windows.push({ from: new Date(start), to: new Date(Math.min(start + MAX_WINDOW_MS - 1000, to.getTime())) });
+  }
+  return windows;
+}
+
+/**
+ * What a history download reads: from the start of the requested day up to
+ * now. Transaction Search serves three years back; a day of margin keeps the
+ * first window inside it. Up to now rather than to the first sync, so rows
+ * stored earlier get their conversion filled in too (see `missingNets`).
+ * Null when the requested day is not in the past.
+ */
+export function paypalBackfillRange(requested: Date, now: Date): { from: Date; to: Date } | null {
+  const earliest = Date.UTC(now.getUTCFullYear() - 3, now.getUTCMonth(), now.getUTCDate() + 1);
+  const day = Date.UTC(requested.getUTCFullYear(), requested.getUTCMonth(), requested.getUTCDate());
+  const from = Math.max(day, earliest);
+  return from < now.getTime() ? { from: new Date(from), to: now } : null;
+}
 
 export function paypalBaseUrl(sandbox: boolean, env: NodeJS.ProcessEnv = process.env): string {
   const override = env.PAYPAL_API_BASE_URL?.trim();
@@ -108,6 +132,7 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
     const converted =
       conversions.byReference.get(info.transaction_id) ??
       conversions.byTime.get(`${info.transaction_initiation_date}|${currency}`) ??
+      conversions.byNet.get(netKey(info.transaction_initiation_date, currency, amount - Math.abs(fee ?? 0))) ??
       null;
     const payer = detail.payer_info;
     const name =
@@ -132,34 +157,50 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
   return rows;
 }
 
+const netKey = (time: string | null | undefined, currency: string, amount: number) =>
+  `${time?.slice(0, 10)}|${currency}|${Math.abs(amount).toFixed(2)}`;
+
 /**
  * The credit legs of PayPal's currency conversions (event T0200): with
  * auto-conversion on, a received USD payment is followed by a USD debit and
  * a CZK credit. The credit usually points at the payment through
- * `paypal_reference_id`; when it does not, it shares the payment's timestamp,
- * keyed by the currency it was converted from (the debit leg's).
+ * `paypal_reference_id`, or at the debit leg that does. When neither does,
+ * it shares the payment's timestamp, keyed by the currency it was converted
+ * from (the debit leg's). Last resort: PayPal converts what is left after
+ * the fee, so a debit of exactly the payment's net on the same day is it.
  */
 function conversionCredits(details: RawDetail[]) {
   const byReference = new Map<string, { amount: number; currency: string }>();
   const byTime = new Map<string, { amount: number; currency: string }>();
-  const debits = new Map<string, string>();
-  const credits: { info: NonNullable<RawDetail["transaction_info"]>; amount: number }[] = [];
+  const byNet = new Map<string, { amount: number; currency: string }>();
+  type Leg = { info: NonNullable<RawDetail["transaction_info"]>; amount: number; currency: string };
+  const debits: Leg[] = [];
+  const credits: Leg[] = [];
   for (const detail of details) {
     const info = detail?.transaction_info;
     if (!info || info.transaction_event_code !== "T0200" || info.transaction_status !== "S") continue;
     const amount = money(info.transaction_amount);
-    const currency = info.transaction_amount?.currency_code?.toUpperCase();
+    const currency = info.transaction_amount?.currency_code?.toUpperCase().slice(0, 3);
     if (amount === null || !currency) continue;
-    if (amount < 0) debits.set(info.transaction_initiation_date ?? "", currency);
-    else if (amount > 0) credits.push({ info, amount });
+    if (amount < 0) debits.push({ info, amount, currency });
+    else if (amount > 0) credits.push({ info, amount, currency });
   }
-  for (const { info, amount } of credits) {
-    const value = { amount, currency: info.transaction_amount!.currency_code!.toUpperCase().slice(0, 3) };
+  for (const credit of credits) {
+    const { info } = credit;
+    const value = { amount: credit.amount, currency: credit.currency };
+    const sameTime = debits.find((d) => d.info.transaction_initiation_date === info.transaction_initiation_date);
+    const linked =
+      debits.find((d) => info.paypal_reference_id && d.info.transaction_id === info.paypal_reference_id) ??
+      debits.find((d) => d.info.paypal_reference_id && d.info.paypal_reference_id === info.transaction_id) ??
+      debits.find((d) => info.paypal_reference_id && d.info.paypal_reference_id === info.paypal_reference_id);
     if (info.paypal_reference_id) byReference.set(info.paypal_reference_id, value);
-    const from = debits.get(info.transaction_initiation_date ?? "");
-    if (from) byTime.set(`${info.transaction_initiation_date}|${from}`, value);
+    const payment = linked?.info.paypal_reference_id;
+    if (payment && !byReference.has(payment)) byReference.set(payment, value);
+    if (sameTime) byTime.set(`${info.transaction_initiation_date}|${sameTime.currency}`, value);
+    const debit = linked ?? sameTime;
+    if (debit) byNet.set(netKey(debit.info.transaction_initiation_date, debit.currency, debit.amount), value);
   }
-  return { byReference, byTime };
+  return { byReference, byTime, byNet };
 }
 
 /** PayPal wants RFC 3339 without fractions. */
@@ -206,10 +247,8 @@ export class PaypalClient {
   /** Incoming payments between `from` and `to`, read in 31-day windows. */
   async fetchIncoming(from: Date, to: Date = new Date()): Promise<PaypalSyncedRow[]> {
     const rows: PaypalSyncedRow[] = [];
-    for (let start = from.getTime(); start < to.getTime(); start += MAX_WINDOW_MS) {
-      const end = Math.min(start + MAX_WINDOW_MS - 1000, to.getTime());
-      rows.push(...(await this.fetchWindow(new Date(start), new Date(end))));
-    }
+    // One window after another: PayPal rate-limits parallel reporting calls.
+    for (const window of paypalWindows(from, to)) rows.push(...(await this.fetchWindow(window.from, window.to)));
     return rows;
   }
 
