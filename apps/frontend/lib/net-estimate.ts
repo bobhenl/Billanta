@@ -4,8 +4,11 @@
 // invoice costs you", not the whole year.
 const MARGINAL_ON_PROFIT = 0.15 + 0.55 * 0.292 + 0.5 * 0.135;
 
-export function netAfterTaxes(base: number, flatRate: number) {
-  const profit = Math.max(0, base) * (1 - flatRate / 100);
+// `costs` are what the payment lost on the way (provider fees, conversion). They
+// always leave your pocket, but lower the profit only without a flat rate:
+// paušální výdaje already stand in for every real expense.
+export function netAfterTaxes(base: number, flatRate: number, costs = 0) {
+  const profit = flatRate ? Math.max(0, base) * (1 - flatRate / 100) : Math.max(0, base - costs);
   const burden = Math.round(profit * MARGINAL_ON_PROFIT * 100) / 100;
-  return { net: Math.round((base - burden) * 100) / 100, burden };
+  return { net: Math.round((base - costs - burden) * 100) / 100, burden };
 }

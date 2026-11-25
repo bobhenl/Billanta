@@ -144,6 +144,8 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
   const expectedCzk = (received - fees) * rate;
   const netCzk = receivedCzk ?? expectedCzk;
   const fxDiff = receivedCzk == null ? null : receivedCzk - expectedCzk;
+  // What the payment lost to fees and conversion, back in the invoice currency for "Zůstane vám".
+  const paymentCosts = showNet && rate > 0 ? Math.max(0, (grossCzk - netCzk) / rate) : 0;
 
   const facts: [string, string | null][] = [
     [t('fields.issueDate'), formatDate(invoice.issueDate, locale)],
@@ -220,7 +222,7 @@ export default async function InvoiceDetailPage(props: { params: Promise<{ id: s
               <span className="text-muted-foreground"> · {t('partial.remaining', { amount: money(Math.max(0, totals.totalWithVat - Number(invoice.amountPaid))) })}</span>
             </div>
           )}
-          {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} />}
+          {home === 'CZK' && invoice.documentType !== 'credit_note' && totals.totalWithoutVat > 0 && <NetEstimate base={totals.totalWithoutVat} currency={invoice.currency} czkRate={rate} costs={paymentCosts} />}
         </div>
       </div>
 
