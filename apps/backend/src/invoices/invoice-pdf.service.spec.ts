@@ -347,7 +347,7 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect(link).toHaveLength(1);
     expect(link[0]).toMatch(/\/cs\/i\/.*22222222-2222-2222-2222-222222222222/);
     // No public token, no page to link to.
-    expect(await qrFor("link", makeInvoice({ publicToken: null }))).toEqual([]);
+    expect(await qrFor("link", makeInvoice({ publicToken: null } as unknown as Partial<InvoiceRow>))).toEqual([]);
     expect(await qrFor("off")).toEqual([]);
     // Nothing left to pay: "payment only" prints no QR Faktura instead.
     expect((await qrFor("payment_only"))[0]).toMatch(/^SPD\*/);
