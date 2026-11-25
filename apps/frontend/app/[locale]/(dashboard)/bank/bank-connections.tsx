@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { Building2, ChevronDown, History, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
+import { Building2, ChevronDown, CreditCard, History, Landmark, Loader2, Plus, RefreshCw, ShieldCheck, Trash2, Wallet } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { toast } from '@/components/toaster';
@@ -13,6 +13,7 @@ import {
   backfillBankConnection,
   connectFio,
   connectPaypal,
+  connectStripe,
   disconnectBank,
   listPsd2Banks,
   setBankConnectionEnabled,
@@ -47,8 +48,14 @@ const KNOWN_ERRORS = [
   'paypal_credentials_invalid',
   'paypal_reporting_disabled',
   'backfill_range',
-  'backfill_unsupported'
+  'backfill_unsupported',
+  'stripe_key_format',
+  'stripe_key_invalid',
+  'stripe_permissions_missing'
 ];
+
+/** Same check as the backend: restricted keys only, never a full secret key. */
+const STRIPE_KEY = /^rk_(live|test)_[A-Za-z0-9]{16,}$/;
 
 /** Renewal is offered this long before the bank consent runs out. */
 const EXPIRY_WARNING_MS = 14 * 24 * 60 * 60 * 1000;
@@ -65,7 +72,7 @@ export function BankConnections({
 }: {
   connections: BankConnection[];
   psd2: { available: boolean; countries: string[] };
-  /** Owner/admin: may download PayPal history (an accountant may only sync). */
+  /** Owner/admin: may download PayPal or Stripe history (an accountant may only sync). */
   canManage?: boolean;
 }) {
   const t = useTranslations('bank.connections');
@@ -75,7 +82,7 @@ export function BankConnections({
   const [busyId, setBusyId] = useState<string | null>(null);
   // Read-only still sees which accounts are connected and when they last synced.
   const canEdit = useCanWrite('bank');
-  const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal'>(null);
+  const [mode, setMode] = useState<null | 'choose' | 'fio' | 'psd2' | 'paypal' | 'stripe'>(null);
   const [token, setToken] = useState('');
   const [label, setLabel] = useState('');
   const [country, setCountry] = useState(psd2.countries[0] ?? 'CZ');
@@ -94,10 +101,11 @@ export function BankConnections({
   const [paypalId, setPaypalId] = useState('');
   const [paypalSecret, setPaypalSecret] = useState('');
   const [sandbox, setSandbox] = useState(false);
+  const [stripeKey, setStripeKey] = useState('');
   const [backfillId, setBackfillId] = useState<string | null>(null);
   const [backfillFrom, setBackfillFrom] = useState(() => `${new Date().getFullYear()}-01-01`);
   const today = new Date().toISOString().slice(0, 10);
-  // Transaction Search serves three years back; the backend clamps it the same way.
+  // History goes three years back (PayPal's Transaction Search limit); the backend clamps it the same way.
   const oldest = (() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() - 3);
@@ -140,14 +148,18 @@ export function BankConnections({
       else toast({ text: result.total ? t('synced', { total: result.total, matched: result.matched }) : t('syncedNothing'), tone: 'ok' });
     });
 
-  const backfill = (id: string) =>
-    run(id, async () => {
-      const result = await backfillBankConnection(id, backfillFrom);
+  const providerName = (c: BankConnection) => (c.provider === 'stripe' ? 'Stripe' : 'PayPal');
+
+  const backfill = (c: BankConnection) =>
+    run(c.id, async () => {
+      const result = await backfillBankConnection(c.id, backfillFrom);
       if (!result.ok) {
         toast({ text: errorText(result.error), tone: 'err' });
         return;
       }
-      const text = result.total ? t('paypal.backfillDone', { total: result.total, matched: result.matched }) : t('paypal.backfillNothing');
+      const text = result.total
+        ? t('paypal.backfillDone', { total: result.total, matched: result.matched })
+        : t('paypal.backfillNothing', { provider: providerName(c) });
       toast({ text: result.netUpdated ? `${text} ${t('paypal.backfillNets', { count: result.netUpdated })}` : text, tone: 'ok' });
       setBackfillId(null);
     });
@@ -176,6 +188,19 @@ export function BankConnections({
       setPaypalId('');
       setPaypalSecret('');
       setSandbox(false);
+      setLabel('');
+      setMode(null);
+    });
+
+  const connectStripeAccount = () =>
+    run('new', async () => {
+      const result = await connectStripe({ secretKey: stripeKey, label });
+      if (!result.ok) {
+        toast({ text: errorText(result.error), tone: 'err' });
+        return;
+      }
+      toast({ text: t('stripe.connected'), tone: 'ok' });
+      setStripeKey('');
       setLabel('');
       setMode(null);
     });
@@ -219,7 +244,7 @@ export function BankConnections({
   const syncPart = 'relative inline-flex items-center gap-1.5 py-1.5 text-xs font-bold focus-visible:z-10 disabled:opacity-60';
   const syncSolid = 'bg-primary text-primary-foreground hover:opacity-90';
   const syncSoft = 'bg-muted hover:bg-accent hover:text-primary';
-  const historyFor = (c: BankConnection) => canManage && c.provider === 'paypal';
+  const historyFor = (c: BankConnection) => canManage && (c.provider === 'paypal' || c.provider === 'stripe');
   const primaryButton =
     'inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60';
 
@@ -247,13 +272,14 @@ export function BankConnections({
       {mode === 'choose' && (
         <div className="anim-fade mt-3">
           <p className="text-xs font-semibold">{t('chooseProvider')}</p>
-          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+          <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {(
               [
                 psd2.available && { key: 'psd2', icon: Building2, title: t('providers.psd2.title'), text: t('providers.psd2.text') },
                 { key: 'fio', icon: Landmark, title: t('providers.fio.title'), text: t('providers.fio.text') },
-                { key: 'paypal', icon: Wallet, title: t('providers.paypal.title'), text: t('providers.paypal.text') }
-              ].filter(Boolean) as { key: 'psd2' | 'fio' | 'paypal'; icon: typeof Landmark; title: string; text: string }[]
+                { key: 'paypal', icon: Wallet, title: t('providers.paypal.title'), text: t('providers.paypal.text') },
+                { key: 'stripe', icon: CreditCard, title: t('providers.stripe.title'), text: t('providers.stripe.text') }
+              ].filter(Boolean) as { key: 'psd2' | 'fio' | 'paypal' | 'stripe'; icon: typeof Landmark; title: string; text: string }[]
             ).map(({ key, icon: Icon, title, text }) => (
               <button
                 key={key}
@@ -287,7 +313,7 @@ export function BankConnections({
                 <div className="min-w-0">
                   {/* Wraps instead of truncating, so "paused"/"expired" never get cut off on a phone. */}
                   <div className="break-words text-sm font-semibold">
-                    {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : 'Fio banka')}
+                    {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : c.provider === 'stripe' ? 'Stripe' : 'Fio banka')}
                     {c.label && c.bankName && <span className="ml-2 text-xs font-normal text-muted-foreground">{c.bankName}</span>}
                     {c.accountNumber && <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">{c.accountNumber}</span>}
                     {!c.enabled && <span className="ml-2 text-xs font-medium text-muted-foreground">· {t('paused')}</span>}
@@ -379,7 +405,7 @@ export function BankConnections({
                     }}
                     onSubmit={(e) => {
                       e.preventDefault();
-                      backfill(c.id);
+                      backfill(c);
                     }}
                   >
                     <div className="flex flex-wrap items-end gap-3">
@@ -407,7 +433,7 @@ export function BankConnections({
                         </button>
                       </div>
                     </div>
-                    <p className="mt-3 break-words text-xs leading-relaxed text-muted-foreground">{t('paypal.backfillHint')}</p>
+                    <p className="mt-3 break-words text-xs leading-relaxed text-muted-foreground">{t('paypal.backfillHint', { provider: providerName(c) })}</p>
                   </form>
                 )}
               </li>
@@ -558,6 +584,53 @@ export function BankConnections({
             </button>
           </div>
           <p className="text-[11px] text-muted-foreground sm:col-span-3">{t('paypal.note')}</p>
+        </form>
+      )}
+
+      {mode === 'stripe' && (
+        <form
+          className="mt-3 grid gap-3 sm:grid-cols-[1fr_12rem] sm:items-end"
+          onSubmit={(e) => {
+            e.preventDefault();
+            connectStripeAccount();
+          }}
+        >
+          <div className="text-xs font-semibold">
+            <InfoHint hint={t('stripe.keyHint')} label={t('stripe.key')}>
+              <label htmlFor="stripe-key">{t('stripe.key')}</label>
+            </InfoHint>
+            <input
+              id="stripe-key"
+              value={stripeKey}
+              onChange={(e) => setStripeKey(e.target.value)}
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={255}
+              required
+              placeholder="rk_live_…"
+              className={cn(inputClass, 'mt-1.5 font-mono')}
+            />
+          </div>
+          <label className="text-xs font-semibold">
+            {t('label')}
+            <input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} placeholder="Stripe" className={cn(inputClass, 'mt-1.5')} />
+          </label>
+          {stripeKey.trim().startsWith('sk_') && <p className="text-xs text-destructive sm:col-span-2">{t('errors.stripe_key_format')}</p>}
+          <div className="flex flex-wrap gap-2 sm:col-span-2">
+            <button
+              type="submit"
+              disabled={pending || !STRIPE_KEY.test(stripeKey.trim())}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60"
+            >
+              {busyId === 'new' && <Loader2 className="h-4 w-4 animate-spin" />}
+              {t('connect')}
+            </button>
+            <button type="button" onClick={() => setMode(null)} className="rounded-full bg-muted px-4 py-2 text-sm font-semibold hover:bg-accent">
+              {t('cancel')}
+            </button>
+          </div>
+          <p className="text-[11px] text-muted-foreground sm:col-span-2">{t('stripe.note')}</p>
         </form>
       )}
 

@@ -128,31 +128,32 @@ export function rankCandidates(
 /** The bits of a bank connection that tell which import it filled. */
 export interface SourceConnection {
   id: string;
-  provider: 'fio' | 'enable_banking' | 'paypal';
+  provider: 'fio' | 'enable_banking' | 'paypal' | 'stripe';
   label: string | null;
   accountNumber: string | null;
   bankName: string | null;
 }
 
 const UPLOAD_SOURCES = new Set(['csv', 'camt053', 'gpc', 'mt940']);
-const PROVIDER_OF: Record<string, SourceConnection['provider']> = { paypal: 'paypal', fio: 'fio', psd2: 'enable_banking' };
+const PROVIDER_OF: Record<string, SourceConnection['provider']> = { paypal: 'paypal', stripe: 'stripe', fio: 'fio', psd2: 'enable_banking' };
 const squash = (s: string) => s.replace(/\s+/g, ' ').trim();
 
 /**
  * The title the backend gives a synced import (bank-connections.service.ts:
- * "PayPal 2026-01-01 – …", "Fio 123/2010 2026-…", "<bank> <account> …").
+ * "PayPal 2026-01-01 – …", "Stripe …", "Fio 123/2010 2026-…", "<bank> <account> …").
  * An import has no connection id, so with two accounts of one provider this
  * prefix is what tells them apart.
  */
 function importPrefix(c: SourceConnection): string {
   if (c.provider === 'paypal') return squash(c.label ?? 'PayPal');
+  if (c.provider === 'stripe') return squash(c.label ?? 'Stripe');
   if (c.provider === 'fio') return squash(`Fio ${c.accountNumber ?? ''}`);
   return squash(`${c.bankName ?? 'Banka'} ${c.accountNumber ?? ''}`);
 }
 
 /**
  * Filter key of a transaction: `upload` for an uploaded statement,
- * `c:<connection id>` for a synced one, or the bare source (`paypal`, `fio`,
+ * `c:<connection id>` for a synced one, or the bare source (`paypal`, `stripe`, `fio`,
  * `psd2`) when its connection is gone or can't be told apart.
  */
 export function transactionSourceKey(tx: BankTransaction, connections: SourceConnection[]): string {
@@ -170,6 +171,7 @@ export function transactionSourceKey(tx: BankTransaction, connections: SourceCon
 export function connectionLabel(c: SourceConnection): string {
   if (c.label) return c.label;
   if (c.provider === 'paypal') return 'PayPal';
+  if (c.provider === 'stripe') return c.bankName ?? 'Stripe';
   if (c.provider === 'fio') return squash(`Fio ${c.accountNumber ?? ''}`);
   return squash(`${c.bankName ?? ''} ${c.accountNumber ?? ''}`) || 'PSD2';
 }

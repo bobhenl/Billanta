@@ -1074,7 +1074,10 @@
         "plan_required": "Diese Funktion ist Teil eines kostenpflichtigen Tarifs. Wählen Sie einen unter Tarif und Abrechnung.",
         "history_locked": "Fio gibt Umsätze, die älter als 90 Tage sind, nur nach einer starken Authentifizierung im Online-Banking frei. Beim nächsten Mal beginnen wir mit den letzten 89 Tagen.",
         "backfill_range": "Wählen Sie einen Tag in der Vergangenheit.",
-        "backfill_unsupported": "Ältere Zahlungen lassen sich vorerst nur von PayPal abrufen."
+        "backfill_unsupported": "Ältere Zahlungen lassen sich vorerst nur von PayPal und Stripe abrufen.",
+        "stripe_key_format": "Fügen Sie einen eingeschränkten Schlüssel ein, der mit rk_live_ oder rk_test_ beginnt. Ein vollständiger geheimer Schlüssel (sk_) wird nicht akzeptiert.",
+        "stripe_key_invalid": "Stripe hat den Schlüssel abgelehnt. Prüfen Sie, ob Sie ihn vollständig kopiert haben und ob er nicht gelöscht wurde.",
+        "stripe_permissions_missing": "Dem Schlüssel fehlen Berechtigungen. Geben Sie ihm in Stripe Lesezugriff auf Balance transactions, Charges und Customers."
       },
       "psd2": {
         "hint": "Billanta lädt neue Zahlungseingänge direkt von Ihrer Bank oder von PayPal herunter und ordnet sie anhand von variablem Symbol und Betrag den Rechnungen zu. Fio wird per API-Token verbunden, PayPal mit den Zugangsdaten Ihrer REST-App, andere Banken über PSD2: Sie melden sich bei Ihrer Bank an und gewähren reinen Lesezugriff auf das Konto (bis zu 180 Tage, bei vielen Banken 90). Banken erlauben nur wenige automatische Abrufe pro Tag, daher werden PSD2-Konten etwa alle 6 Stunden synchronisiert. Zahlungsausgänge werden nicht heruntergeladen, und über die Verbindung lässt sich nichts bezahlen.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Weitere Optionen",
         "backfill": "Ab einem Datum synchronisieren…",
         "backfillFrom": "Ab",
-        "backfillHint": "PayPal liefert Zahlungen bis zu 3 Jahre zurück. Ältere Zahlungen werden nur Rechnungen zugeordnet, aus ihnen entstehen nie Rechnungsentwürfe. Was bereits in Billanta ist, wird nicht erneut abgerufen.",
+        "backfillHint": "{provider} liefert Zahlungen bis zu 3 Jahre zurück. Ältere Zahlungen werden nur Rechnungen zugeordnet, aus ihnen entstehen nie Rechnungsentwürfe. Was bereits in Billanta ist, wird nicht erneut abgerufen.",
         "backfillRun": "Synchronisieren",
         "backfillDone": "{total, plural, one {# ältere Zahlung} other {# ältere Zahlungen}} abgerufen, {matched} zugeordnet.",
-        "backfillNothing": "Keine neuen älteren Zahlungen. Alles, was PayPal für diesen Zeitraum hat, ist bereits in Billanta.",
+        "backfillNothing": "Keine neuen älteren Zahlungen. Alles, was {provider} für diesen Zeitraum hat, ist bereits in Billanta.",
         "backfillNets": "Betrag nach Währungsumrechnung für {count, plural, one {# Zahlung} other {# Zahlungen}} ergänzt."
       },
       "connectBank": "Bank verbinden",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Mit Client-ID und Secret Ihrer REST-App. Auch die Gebühr wird auf der Rechnung verbucht."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Eingeschränkter Schlüssel nur zum Lesen. Die Gebühr wird auf der Rechnung verbucht."
         }
       },
-      "syncPending": "Fio ist bereit. Zahlungen kommen mit der nächsten Synchronisierung, versuchen Sie es in 30 Sekunden erneut."
+      "syncPending": "Fio ist bereit. Zahlungen kommen mit der nächsten Synchronisierung, versuchen Sie es in 30 Sekunden erneut.",
+      "stripe": {
+        "key": "Eingeschränkter Schlüssel (rk_…)",
+        "keyHint": "Erstellen Sie im Stripe Dashboard (Developers → API keys → Create restricted key) einen eingeschränkten Schlüssel nur mit Lesezugriff (Read) auf Balance transactions, Charges und Customers. Alles andere bleibt auf None. Billanta liest damit nur eingegangene Zahlungen und sendet oder erstattet nie etwas. Der Schlüssel wird verschlüsselt gespeichert und nie wieder angezeigt.",
+        "note": "Eingegangene Zahlungen werden Rechnungen anhand der Rechnungsnummer oder des Verwendungszwecks (VS) in der Beschreibung oder den Metadaten der Zahlung und anhand des Betrags zugeordnet. Die von Stripe einbehaltene Gebühr wird auf der Rechnung verbucht. Kartenzahlungen über einen Billanta-Rechnungslink sind bereits erfasst und erscheinen hier nicht noch einmal.",
+        "connected": "Stripe verbunden. Die Zahlungen der letzten 30 Tage kommen mit der nächsten Synchronisierung."
+      }
     },
     "fee": "Gebühr {amount}",
     "netReceived": "gutgeschrieben {amount}",

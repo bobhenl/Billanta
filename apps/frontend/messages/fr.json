@@ -1074,7 +1074,10 @@
         "plan_required": "Cette fonctionnalité fait partie d’une offre payante. Choisissez-en une dans Offre et facturation.",
         "history_locked": "Fio ne communique les mouvements de plus de 90 jours qu’après une authentification forte dans la banque en ligne. La prochaine fois, nous partirons des 89 derniers jours.",
         "backfill_range": "Choisissez un jour dans le passé.",
-        "backfill_unsupported": "Pour l’instant, seuls les anciens paiements PayPal peuvent être téléchargés."
+        "backfill_unsupported": "Pour l’instant, seuls les anciens paiements PayPal et Stripe peuvent être téléchargés.",
+        "stripe_key_format": "Collez une clé restreinte qui commence par rk_live_ ou rk_test_. Une clé secrète complète (sk_) n’est pas acceptée.",
+        "stripe_key_invalid": "Stripe a refusé la clé. Vérifiez que vous l’avez copiée en entier et qu’elle n’a pas été supprimée.",
+        "stripe_permissions_missing": "Il manque des autorisations à la clé. Dans Stripe, donnez-lui un accès en lecture à Balance transactions, Charges et Customers."
       },
       "psd2": {
         "hint": "Billanta récupère les nouveaux paiements reçus directement depuis votre banque ou PayPal et les rapproche des factures par symbole variable et montant. Fio se connecte avec un jeton API, PayPal avec les identifiants de votre application REST, les autres banques via PSD2 : vous vous connectez à votre banque et accordez un accès en lecture seule au compte (jusqu’à 180 jours, 90 dans de nombreuses banques). Les banques n’autorisent que quelques lectures automatiques par jour, les comptes PSD2 sont donc synchronisés environ toutes les 6 heures. Les paiements sortants ne sont pas récupérés et aucun paiement ne peut être effectué via la connexion.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Plus d’options",
         "backfill": "Synchroniser depuis une date…",
         "backfillFrom": "Depuis le",
-        "backfillHint": "PayPal fournit les paiements jusqu’à 3 ans en arrière. Les anciens paiements sont seulement rapprochés des factures ; ils ne deviennent jamais des brouillons de facture. Ce qui est déjà dans Billanta n’est pas téléchargé à nouveau.",
+        "backfillHint": "{provider} fournit les paiements jusqu’à 3 ans en arrière. Les anciens paiements sont seulement rapprochés des factures ; ils ne deviennent jamais des brouillons de facture. Ce qui est déjà dans Billanta n’est pas téléchargé à nouveau.",
         "backfillRun": "Synchroniser",
         "backfillDone": "{total, plural, one {# ancien paiement téléchargé} other {# anciens paiements téléchargés}}, {matched} rapprochés.",
-        "backfillNothing": "Aucun nouvel ancien paiement. Tout ce que PayPal a pour cette période est déjà dans Billanta.",
+        "backfillNothing": "Aucun nouvel ancien paiement. Tout ce que {provider} a pour cette période est déjà dans Billanta.",
         "backfillNets": "Montant après conversion de devise renseigné pour {count, plural, one {# paiement} other {# paiements}}."
       },
       "connectBank": "Connecter une banque",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Avec le Client ID et le Secret de votre application REST. Les frais sont aussi comptabilisés sur la facture."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Clé restreinte en lecture seule. Les frais sont comptabilisés sur la facture."
         }
       },
-      "syncPending": "Fio est prêt. Les paiements arriveront à la prochaine synchronisation, réessayez dans 30 secondes."
+      "syncPending": "Fio est prêt. Les paiements arriveront à la prochaine synchronisation, réessayez dans 30 secondes.",
+      "stripe": {
+        "key": "Clé restreinte (rk_…)",
+        "keyHint": "Dans le Stripe Dashboard (Developers → API keys → Create restricted key), créez une clé restreinte avec un accès en lecture seule (Read) à Balance transactions, Charges et Customers. Laissez tout le reste sur None. Billanta s’en sert uniquement pour lire les paiements reçus et n’envoie ni ne rembourse rien. La clé est stockée chiffrée et n’est plus jamais affichée.",
+        "note": "Les paiements reçus sont rapprochés des factures d’après le numéro de facture ou le symbole variable (VS) figurant dans la description ou les métadonnées du paiement, et d’après le montant. Les frais retenus par Stripe sont comptabilisés sur la facture. Les paiements par carte effectués depuis un lien de facture Billanta sont déjà enregistrés et n’apparaîtront pas ici une seconde fois.",
+        "connected": "Stripe connecté. Les paiements des 30 derniers jours arriveront lors de la prochaine synchronisation."
+      }
     },
     "fee": "frais {amount}",
     "netReceived": "crédité {amount}",

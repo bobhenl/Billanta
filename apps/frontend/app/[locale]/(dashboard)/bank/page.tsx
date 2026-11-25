@@ -113,6 +113,7 @@ export default async function BankReconciliationPage(props: {
   const fallbacks: [string, string][] = [
     ['upload', t('filters.upload')],
     ['paypal', 'PayPal'],
+    ['stripe', 'Stripe'],
     ['fio', 'Fio'],
     ['psd2', t('filters.psd2')]
   ];

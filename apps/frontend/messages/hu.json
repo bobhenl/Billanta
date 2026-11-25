@@ -1074,7 +1074,10 @@
         "plan_required": "Ez a funkció a fizetős csomag része. Válasszon egyet a Csomag és számlázás menüben.",
         "history_locked": "A Fio a 90 napnál régebbi tételeket csak az internetbankban végzett erős hitelesítés után adja ki. Legközelebb az utolsó 89 nappal kezdünk.",
         "backfill_range": "Válasszon egy múltbeli napot.",
-        "backfill_unsupported": "Régebbi fizetéseket egyelőre csak a PayPalból lehet letölteni."
+        "backfill_unsupported": "Régebbi fizetéseket egyelőre csak a PayPalból és a Stripe-ból lehet letölteni.",
+        "stripe_key_format": "Illesszen be egy rk_live_ vagy rk_test_ kezdetű korlátozott kulcsot. Teljes titkos kulcsot (sk_) nem fogadunk el.",
+        "stripe_key_invalid": "A Stripe elutasította a kulcsot. Ellenőrizze, hogy teljes egészében másolta-e ki, és hogy nem törölték-e.",
+        "stripe_permissions_missing": "A kulcsnak hiányoznak a jogosultságai. A Stripe-ban adjon neki olvasási jogot a Balance transactions, Charges és Customers elemekhez."
       },
       "psd2": {
         "hint": "A Billanta letölti az új beérkező befizetéseket közvetlenül a bankjából vagy a PayPalról, és változó szimbólum és összeg alapján párosítja őket a számlákkal. A Fio API-tokennel, a PayPal a REST-alkalmazása hitelesítő adataival, a többi bank PSD2-n keresztül csatlakozik: Ön bejelentkezik a bankjába, és csak olvasási hozzáférést ad a számlához (legfeljebb 180 napra, sok banknál 90-re). A bankok naponta csak néhány felügyelet nélküli lekérdezést engedélyeznek, ezért a PSD2-számlák kb. 6 óránként szinkronizálódnak. A kimenő fizetéseket nem töltjük le, és a kapcsolaton keresztül semmit sem lehet kifizetni.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "További lehetőségek",
         "backfill": "Szinkronizálás egy dátumtól…",
         "backfillFrom": "Ettől",
-        "backfillHint": "A PayPal legfeljebb 3 évre visszamenőleg adja ki a fizetéseket. A régebbi fizetéseket csak számlákkal párosítjuk, számlapiszkozat soha nem készül belőlük. Ami már szerepel a Billantában, azt nem töltjük le újra.",
+        "backfillHint": "A(z) {provider} legfeljebb 3 évre visszamenőleg adja ki a fizetéseket. A régebbi fizetéseket csak számlákkal párosítjuk, számlapiszkozat soha nem készül belőlük. Ami már szerepel a Billantában, azt nem töltjük le újra.",
         "backfillRun": "Szinkronizálás",
         "backfillDone": "{total, plural, one {# régebbi fizetés} other {# régebbi fizetés}} letöltve, ebből {matched} párosítva.",
-        "backfillNothing": "Nincs új régebbi fizetés. Minden, amit a PayPal erre az időszakra kínál, már a Billantában van.",
+        "backfillNothing": "Nincs új régebbi fizetés. Minden, amit a(z) {provider} erre az időszakra kínál, már a Billantában van.",
         "backfillNets": "{count, plural, one {# fizetésnél} other {# fizetésnél}} kitöltöttük a pénzváltás utáni összeget."
       },
       "connectBank": "Bank csatlakoztatása",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "A REST-alkalmazása Client ID-jával és Secretjével. A díjat is könyveljük a számlán."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Csak olvasási jogú korlátozott kulcs. A díjat a számlán könyveljük."
         }
       },
-      "syncPending": "A Fio készen áll. A befizetések a következő szinkronizáláskor érkeznek, próbálja újra 30 másodperc múlva."
+      "syncPending": "A Fio készen áll. A befizetések a következő szinkronizáláskor érkeznek, próbálja újra 30 másodperc múlva.",
+      "stripe": {
+        "key": "Korlátozott kulcs (rk_…)",
+        "keyHint": "A Stripe Dashboardon (Developers → API keys → Create restricted key) hozzon létre egy korlátozott kulcsot, amely csak olvasási (Read) jogot kap a Balance transactions, Charges és Customers elemekhez. Minden mást hagyjon None értéken. A Billanta ezzel csak a beérkezett fizetéseket olvassa, soha nem küld és nem térít vissza semmit. A kulcsot titkosítva tároljuk, és többé nem jelenítjük meg.",
+        "note": "A beérkezett fizetéseket a fizetés leírásában vagy metaadataiban szereplő számlaszám vagy változó szimbólum (VS), valamint az összeg alapján párosítjuk a számlákkal. A Stripe által levont díjat a számlán könyveljük. A Billanta számlalinkjéről indított kártyás fizetéseket már rögzítettük, ezek itt nem jelennek meg újra.",
+        "connected": "A Stripe csatlakoztatva. Az elmúlt 30 nap fizetései a következő szinkronizáláskor érkeznek."
+      }
     },
     "fee": "díj {amount}",
     "netReceived": "jóváírva: {amount}",

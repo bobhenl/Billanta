@@ -1074,7 +1074,10 @@
         "plan_required": "Táto funkcia patrí do plateného tarifu. Vyberte si ho v sekcii Tarif a platby.",
         "history_locked": "Fio vydá pohyby staršie ako 90 dní len po silnom overení v internet bankingu. Nabudúce začneme sťahovať od posledných 89 dní.",
         "backfill_range": "Vyberte deň v minulosti.",
-        "backfill_unsupported": "Staršie platby sa zatiaľ dajú stiahnuť len z PayPalu."
+        "backfill_unsupported": "Staršie platby sa zatiaľ dajú stiahnuť len z PayPalu a Stripe.",
+        "stripe_key_format": "Vložte obmedzený kľúč, ktorý začína rk_live_ alebo rk_test_. Plný tajný kľúč (sk_) neprijímame.",
+        "stripe_key_invalid": "Stripe kľúč odmietol. Skontrolujte, či ste ho skopírovali celý a či nebol zmazaný.",
+        "stripe_permissions_missing": "Kľúču chýbajú oprávnenia. V Stripe mu povoľte čítanie pre Balance transactions, Charges a Customers."
       },
       "psd2": {
         "hint": "Billanta sťahuje prichádzajúce platby z banky alebo PayPalu a páruje ich s faktúrami podľa VS a sumy. Pri PSD2 udelíte banke súhlas len na čítanie (90–180 dní) a účty sa sťahujú zhruba každých 6 hodín. Zaplatiť cez napojenie nejde nič.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Ďalšie možnosti",
         "backfill": "Synchronizovať od dátumu…",
         "backfillFrom": "Od dňa",
-        "backfillHint": "PayPal vydá platby až 3 roky dozadu. Staršie platby len spárujeme s faktúrami, návrhy faktúr z nich nevznikajú. Čo už v Billante je, sa znova nestiahne.",
+        "backfillHint": "{provider} vydá platby až 3 roky dozadu. Staršie platby len spárujeme s faktúrami, návrhy faktúr z nich nevznikajú. Čo už v Billante je, sa znova nestiahne.",
         "backfillRun": "Synchronizovať",
         "backfillDone": "{total, plural, one {Stiahnutá # staršia platba} few {Stiahnuté # staršie platby} other {Stiahnutých # starších platieb}}, {matched} spárovaných.",
-        "backfillNothing": "Žiadne nové staršie platby. Čo PayPal za to obdobie vydal, už v Billante je.",
+        "backfillNothing": "Žiadne nové staršie platby. Čo {provider} za to obdobie vydal, už v Billante je.",
         "backfillNets": "Pri {count, plural, one {# platbe} other {# platbách}} sme doplnili sumu po prevode meny."
       },
       "connectBank": "Pripojiť banku",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Client ID a Secret, poplatok sa zapíše k faktúre."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Obmedzený kľúč len na čítanie, poplatok sa zapíše k faktúre."
         }
       },
-      "syncPending": "Fio sme pripravili. Platby stiahneme pri ďalšej synchronizácii, skúste to o 30 sekúnd."
+      "syncPending": "Fio sme pripravili. Platby stiahneme pri ďalšej synchronizácii, skúste to o 30 sekúnd.",
+      "stripe": {
+        "key": "Obmedzený kľúč (rk_…)",
+        "keyHint": "V Stripe Dashboarde (Developers → API keys → Create restricted key) vytvorte obmedzený kľúč a dajte mu len čítanie (Read) pre Balance transactions, Charges a Customers. Ostatné oprávnenia nechajte na None. Billanta s ním len číta prijaté platby, nič neodosiela ani nevracia. Kľúč ukladáme šifrovane a už ho nikdy nezobrazíme.",
+        "note": "Prijaté platby sa párujú s faktúrami podľa čísla faktúry alebo VS v popise či metadátach platby a podľa sumy. Poplatok, ktorý si Stripe strhol, sa zapíše k faktúre. Platby kartou z odkazu na faktúru zapisuje Billanta sama, tu sa znova neobjavia.",
+        "connected": "Stripe pripojený. Platby za posledných 30 dní stiahneme pri najbližšej synchronizácii."
+      }
     },
     "fee": "poplatok {amount}",
     "netReceived": "pripísané {amount}",

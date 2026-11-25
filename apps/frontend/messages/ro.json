@@ -1074,7 +1074,10 @@
         "plan_required": "Această funcție face parte dintr-un plan plătit. Alegeți unul la Plan și facturare.",
         "history_locked": "Fio oferă mișcările mai vechi de 90 de zile doar după o autorizare puternică în internet banking. Data viitoare pornim de la ultimele 89 de zile.",
         "backfill_range": "Alegeți o zi din trecut.",
-        "backfill_unsupported": "Deocamdată, plățile mai vechi se pot descărca doar din PayPal."
+        "backfill_unsupported": "Deocamdată, plățile mai vechi se pot descărca doar din PayPal și Stripe.",
+        "stripe_key_format": "Lipiți o cheie restricționată care începe cu rk_live_ sau rk_test_. O cheie secretă completă (sk_) nu este acceptată.",
+        "stripe_key_invalid": "Stripe a respins cheia. Verificați dacă ați copiat-o integral și dacă nu a fost ștearsă.",
+        "stripe_permissions_missing": "Cheii îi lipsesc permisiuni. În Stripe, dați-i acces de citire la Balance transactions, Charges și Customers."
       },
       "psd2": {
         "hint": "Billanta descarcă plățile noi primite direct de la bancă sau din PayPal și le potrivește cu facturile după simbolul variabil și sumă. Fio se conectează cu un token API, PayPal cu datele de acces ale aplicației REST, iar celelalte bănci prin PSD2: vă autentificați la bancă și acordați acces doar pentru citire la cont (până la 180 de zile, la multe bănci 90). Băncile permit doar câteva citiri automate pe zi, de aceea conturile PSD2 se sincronizează aproximativ la fiecare 6 ore. Plățile ieșite nu se descarcă și prin conexiune nu se poate plăti nimic.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Mai multe opțiuni",
         "backfill": "Sincronizați de la o dată…",
         "backfillFrom": "De la",
-        "backfillHint": "PayPal oferă plățile din ultimii 3 ani. Plățile mai vechi sunt doar potrivite cu facturile; nu devin niciodată ciorne de facturi. Ce este deja în Billanta nu se descarcă din nou.",
+        "backfillHint": "{provider} oferă plățile din ultimii 3 ani. Plățile mai vechi sunt doar potrivite cu facturile; nu devin niciodată ciorne de facturi. Ce este deja în Billanta nu se descarcă din nou.",
         "backfillRun": "Sincronizați",
         "backfillDone": "{total, plural, one {S-a descărcat # plată mai veche} few {S-au descărcat # plăți mai vechi} other {S-au descărcat # de plăți mai vechi}}, {matched} potrivite.",
-        "backfillNothing": "Nicio plată mai veche nouă. Tot ce are PayPal pentru acea perioadă este deja în Billanta.",
+        "backfillNothing": "Nicio plată mai veche nouă. Tot ce are {provider} pentru acea perioadă este deja în Billanta.",
         "backfillNets": "Am completat suma după conversia valutară pentru {count, plural, one {# plată} few {# plăți} other {# de plăți}}."
       },
       "connectBank": "Conectați o bancă",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Cu Client ID-ul și Secretul aplicației dumneavoastră REST. Comisionul se înregistrează și el pe factură."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Cheie restricționată doar pentru citire. Comisionul se înregistrează pe factură."
         }
       },
-      "syncPending": "Fio este pregătit. Plățile sosesc la următoarea sincronizare, încercați din nou peste 30 de secunde."
+      "syncPending": "Fio este pregătit. Plățile sosesc la următoarea sincronizare, încercați din nou peste 30 de secunde.",
+      "stripe": {
+        "key": "Cheie restricționată (rk_…)",
+        "keyHint": "În Stripe Dashboard (Developers → API keys → Create restricted key) creați o cheie restricționată cu acces doar de citire (Read) la Balance transactions, Charges și Customers. Lăsați restul pe None. Billanta o folosește doar pentru a citi plățile primite și nu trimite și nu rambursează niciodată nimic. Cheia este stocată criptat și nu mai este afișată niciodată.",
+        "note": "Plățile primite sunt potrivite cu facturile după numărul facturii sau simbolul variabil (VS) din descrierea sau metadatele plății și după sumă. Comisionul reținut de Stripe se înregistrează pe factură. Plățile cu cardul făcute dintr-un link de factură Billanta sunt deja înregistrate și nu vor mai apărea aici.",
+        "connected": "Stripe conectat. Plățile din ultimele 30 de zile sosesc la următoarea sincronizare."
+      }
     },
     "fee": "comision {amount}",
     "netReceived": "creditat {amount}",

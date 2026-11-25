@@ -1074,7 +1074,10 @@
         "plan_required": "Ta funkcja jest częścią płatnego planu. Wybierz go w sekcji Plan i płatności.",
         "history_locked": "Fio udostępnia ruchy starsze niż 90 dni dopiero po silnej autoryzacji w bankowości internetowej. Następnym razem zaczniemy od ostatnich 89 dni.",
         "backfill_range": "Wybierz dzień z przeszłości.",
-        "backfill_unsupported": "Starsze płatności można na razie pobrać tylko z PayPala."
+        "backfill_unsupported": "Starsze płatności można na razie pobrać tylko z PayPala i Stripe.",
+        "stripe_key_format": "Wklej ograniczony klucz zaczynający się od rk_live_ lub rk_test_. Pełny klucz tajny (sk_) nie jest akceptowany.",
+        "stripe_key_invalid": "Stripe odrzucił klucz. Sprawdź, czy skopiowano go w całości i czy nie został usunięty.",
+        "stripe_permissions_missing": "Kluczowi brakuje uprawnień. W Stripe nadaj mu dostęp do odczytu do Balance transactions, Charges i Customers."
       },
       "psd2": {
         "hint": "Billanta pobiera nowe płatności przychodzące bezpośrednio z Twojego banku lub PayPala i paruje je z fakturami według symbolu zmiennego i kwoty. Fio łączy się tokenem API, PayPal danymi Twojej aplikacji REST, inne banki przez PSD2: logujesz się w swoim banku i udzielasz dostępu tylko do odczytu konta (do 180 dni, w wielu bankach 90). Banki pozwalają tylko na kilka automatycznych odczytów dziennie, dlatego konta PSD2 synchronizujemy mniej więcej co 6 godzin. Płatności wychodzące nie są pobierane i przez połączenie nie da się niczego zapłacić.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Więcej opcji",
         "backfill": "Synchronizuj od daty…",
         "backfillFrom": "Od",
-        "backfillHint": "PayPal udostępnia płatności do 3 lat wstecz. Starsze płatności są tylko parowane z fakturami, nigdy nie powstają z nich szkice faktur. Tego, co już jest w Billanta, nie pobieramy ponownie.",
+        "backfillHint": "{provider} udostępnia płatności do 3 lat wstecz. Starsze płatności są tylko parowane z fakturami, nigdy nie powstają z nich szkice faktur. Tego, co już jest w Billanta, nie pobieramy ponownie.",
         "backfillRun": "Synchronizuj",
         "backfillDone": "Pobrano {total, plural, one {# starszą płatność} few {# starsze płatności} many {# starszych płatności} other {# starszej płatności}}, sparowano: {matched}.",
-        "backfillNothing": "Brak nowych starszych płatności. Wszystko, co PayPal ma za ten okres, jest już w Billanta.",
+        "backfillNothing": "Brak nowych starszych płatności. Wszystko, co {provider} ma za ten okres, jest już w Billanta.",
         "backfillNets": "Uzupełniono kwotę po przewalutowaniu dla {count, plural, one {# płatności} few {# płatności} many {# płatności} other {# płatności}}."
       },
       "connectBank": "Połącz bank",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Za pomocą Client ID i Secret Twojej aplikacji REST. Prowizja też jest księgowana na fakturze."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Ograniczony klucz tylko do odczytu. Prowizja jest księgowana na fakturze."
         }
       },
-      "syncPending": "Fio jest gotowe. Płatności pojawią się przy następnej synchronizacji, spróbuj ponownie za 30 sekund."
+      "syncPending": "Fio jest gotowe. Płatności pojawią się przy następnej synchronizacji, spróbuj ponownie za 30 sekund.",
+      "stripe": {
+        "key": "Ograniczony klucz (rk_…)",
+        "keyHint": "W Stripe Dashboard (Developers → API keys → Create restricted key) utwórz ograniczony klucz z dostępem tylko do odczytu (Read) do Balance transactions, Charges i Customers. Wszystko inne zostaw na None. Billanta odczytuje nim tylko otrzymane płatności i nigdy niczego nie wysyła ani nie zwraca. Klucz jest przechowywany w postaci zaszyfrowanej i nigdy więcej nie zostanie pokazany.",
+        "note": "Otrzymane płatności są parowane z fakturami według numeru faktury lub symbolu zmiennego (VS) w opisie lub metadanych płatności oraz według kwoty. Prowizja pobrana przez Stripe jest księgowana na fakturze. Płatności kartą z linku do faktury Billanta są już zapisane i nie pojawią się tu ponownie.",
+        "connected": "Stripe połączony. Płatności z ostatnich 30 dni pojawią się przy najbliższej synchronizacji."
+      }
     },
     "fee": "prowizja {amount}",
     "netReceived": "zaksięgowano {amount}",

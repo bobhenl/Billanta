@@ -1074,7 +1074,10 @@
         "plan_required": "Questa funzione fa parte di un piano a pagamento. Ne scelga uno in Piano e fatturazione.",
         "history_locked": "Fio rilascia i movimenti più vecchi di 90 giorni solo dopo un'autorizzazione forte nell'home banking. La prossima volta partiremo dagli ultimi 89 giorni.",
         "backfill_range": "Scelga un giorno nel passato.",
-        "backfill_unsupported": "Per ora i pagamenti meno recenti si possono scaricare solo da PayPal."
+        "backfill_unsupported": "Per ora i pagamenti meno recenti si possono scaricare solo da PayPal e Stripe.",
+        "stripe_key_format": "Incolli una chiave limitata che inizia con rk_live_ o rk_test_. Una chiave segreta completa (sk_) non viene accettata.",
+        "stripe_key_invalid": "Stripe ha rifiutato la chiave. Verifichi di averla copiata per intero e che non sia stata eliminata.",
+        "stripe_permissions_missing": "Alla chiave mancano dei permessi. In Stripe le dia accesso in lettura a Balance transactions, Charges e Customers."
       },
       "psd2": {
         "hint": "Billanta scarica i nuovi pagamenti in entrata direttamente dalla Sua banca o da PayPal e li abbina alle fatture in base al simbolo variabile e all'importo. Fio si collega con un token API, PayPal con le credenziali della Sua app REST, le altre banche tramite PSD2: accede alla Sua banca e concede l'accesso in sola lettura al conto (fino a 180 giorni, 90 presso molte banche). Le banche consentono solo poche letture automatiche al giorno, quindi i conti PSD2 vengono sincronizzati circa ogni 6 ore. I pagamenti in uscita non vengono scaricati e tramite il collegamento non è possibile pagare nulla.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Altre opzioni",
         "backfill": "Sincronizza da una data…",
         "backfillFrom": "Dal",
-        "backfillHint": "PayPal fornisce i pagamenti fino a 3 anni indietro. I pagamenti meno recenti vengono solo abbinati alle fatture, non diventano mai bozze di fattura. Ciò che è già in Billanta non viene scaricato di nuovo.",
+        "backfillHint": "{provider} fornisce i pagamenti fino a 3 anni indietro. I pagamenti meno recenti vengono solo abbinati alle fatture, non diventano mai bozze di fattura. Ciò che è già in Billanta non viene scaricato di nuovo.",
         "backfillRun": "Sincronizza",
         "backfillDone": "{total, plural, one {Scaricato # pagamento meno recente} other {Scaricati # pagamenti meno recenti}}, {matched} abbinati.",
-        "backfillNothing": "Nessun nuovo pagamento meno recente. Tutto ciò che PayPal ha per quel periodo è già in Billanta.",
+        "backfillNothing": "Nessun nuovo pagamento meno recente. Tutto ciò che {provider} ha per quel periodo è già in Billanta.",
         "backfillNets": "Importo dopo la conversione valutaria completato per {count, plural, one {# pagamento} other {# pagamenti}}."
       },
       "connectBank": "Collega una banca",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Con il Client ID e il Secret della Sua app REST. Anche la commissione viene registrata sulla fattura."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Chiave limitata di sola lettura. La commissione viene registrata sulla fattura."
         }
       },
-      "syncPending": "Fio è pronto. I pagamenti arriveranno con la prossima sincronizzazione, riprovi tra 30 secondi."
+      "syncPending": "Fio è pronto. I pagamenti arriveranno con la prossima sincronizzazione, riprovi tra 30 secondi.",
+      "stripe": {
+        "key": "Chiave limitata (rk_…)",
+        "keyHint": "Nello Stripe Dashboard (Developers → API keys → Create restricted key) crei una chiave limitata con accesso in sola lettura (Read) a Balance transactions, Charges e Customers. Lasci tutto il resto su None. Billanta la usa solo per leggere i pagamenti ricevuti e non invia né rimborsa mai nulla. La chiave viene salvata cifrata e non viene più mostrata.",
+        "note": "I pagamenti ricevuti vengono abbinati alle fatture in base al numero di fattura o al simbolo variabile (VS) nella descrizione o nei metadati del pagamento e in base all’importo. La commissione trattenuta da Stripe viene registrata sulla fattura. I pagamenti con carta fatti da un link di fattura Billanta sono già registrati e qui non compariranno di nuovo.",
+        "connected": "Stripe collegato. I pagamenti degli ultimi 30 giorni arriveranno con la prossima sincronizzazione."
+      }
     },
     "fee": "commissione {amount}",
     "netReceived": "accreditati {amount}",

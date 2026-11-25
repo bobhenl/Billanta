@@ -70,7 +70,7 @@ export async function restoreTransaction(id: string) {
 
 export interface BankConnection {
   id: string;
-  provider: 'fio' | 'enable_banking' | 'paypal';
+  provider: 'fio' | 'enable_banking' | 'paypal' | 'stripe';
   status: 'pending' | 'active' | 'expired';
   label: string | null;
   accountNumber: string | null;
@@ -132,6 +132,15 @@ export async function connectPaypal(input: { clientId: string; secret: string; s
   });
 }
 
+/** Stripe restricted key (rk_…); the backend checks it with one balance transactions call. */
+export async function connectStripe(input: { secretKey: string; label: string }): Promise<ActionResult> {
+  return call(`${connections}/stripe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secretKey: input.secretKey.trim(), label: input.label.trim() || null })
+  });
+}
+
 export async function setBankConnectionEnabled(id: string, enabled: boolean): Promise<ActionResult> {
   return call(`${connections}/${encodeURIComponent(id)}`, {
     method: 'PATCH',
@@ -161,7 +170,7 @@ export type BackfillResult =
   | { ok: true; total: number; matched: number; netUpdated: number }
   | { ok: false; error: string };
 
-/** PayPal history from `from` ("2026-01-01"); the backend caps it at three years and never drafts invoices from it. */
+/** PayPal or Stripe history from `from` ("2026-01-01"); the backend caps it at three years and never drafts invoices from it. */
 export async function backfillBankConnection(id: string, from: string): Promise<BackfillResult> {
   try {
     const result = await apiFetch<{ total: number; matched: number; netUpdated?: number }>(

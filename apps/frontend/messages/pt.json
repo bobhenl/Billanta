@@ -1074,7 +1074,10 @@
         "plan_required": "Esta funcionalidade faz parte de um plano pago. Escolha um em Plano e faturação.",
         "history_locked": "A Fio só disponibiliza movimentos com mais de 90 dias após uma autorização forte no homebanking. Da próxima vez começamos pelos últimos 89 dias.",
         "backfill_range": "Escolha um dia no passado.",
-        "backfill_unsupported": "Por enquanto, só é possível descarregar pagamentos mais antigos do PayPal."
+        "backfill_unsupported": "Por enquanto, só é possível descarregar pagamentos mais antigos do PayPal e do Stripe.",
+        "stripe_key_format": "Cole uma chave restrita que comece por rk_live_ ou rk_test_. Uma chave secreta completa (sk_) não é aceite.",
+        "stripe_key_invalid": "O Stripe recusou a chave. Verifique se a copiou por inteiro e se não foi eliminada.",
+        "stripe_permissions_missing": "Faltam permissões à chave. No Stripe, dê-lhe acesso de leitura a Balance transactions, Charges e Customers."
       },
       "psd2": {
         "hint": "A Billanta descarrega os novos recebimentos diretamente do seu banco ou do PayPal e concilia-os com as faturas pelo símbolo variável e pelo valor. A Fio liga-se com um token de API, o PayPal com as credenciais da sua aplicação REST e os outros bancos por PSD2: inicia sessão no seu banco e concede acesso só de leitura à conta (até 180 dias, 90 em muitos bancos). Os bancos permitem apenas algumas leituras automáticas por dia, por isso as contas PSD2 são sincronizadas cerca de 6 em 6 horas. Os pagamentos efetuados não são descarregados e nada pode ser pago através da ligação.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Mais opções",
         "backfill": "Sincronizar a partir de uma data…",
         "backfillFrom": "Desde",
-        "backfillHint": "O PayPal disponibiliza pagamentos até 3 anos atrás. Os pagamentos mais antigos são apenas conciliados com faturas; nunca se tornam rascunhos de fatura. O que já está na Billanta não é descarregado de novo.",
+        "backfillHint": "Pagamentos de até 3 anos atrás estão disponíveis em {provider}. Os pagamentos mais antigos são apenas conciliados com faturas; nunca se tornam rascunhos de fatura. O que já está na Billanta não é descarregado de novo.",
         "backfillRun": "Sincronizar",
         "backfillDone": "{total, plural, one {Descarregado # pagamento mais antigo} other {Descarregados # pagamentos mais antigos}}, {matched} conciliados.",
-        "backfillNothing": "Não há pagamentos antigos novos. Tudo o que o PayPal tem para esse período já está na Billanta.",
+        "backfillNothing": "Não há pagamentos antigos novos. Tudo o que existe em {provider} para esse período já está na Billanta.",
         "backfillNets": "Montante após conversão cambial preenchido em {count, plural, one {# pagamento} other {# pagamentos}}."
       },
       "connectBank": "Ligar um banco",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Com o Client ID e o Secret da sua aplicação REST. A comissão também é registada na fatura."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Chave restrita só de leitura. A comissão é registada na fatura."
         }
       },
-      "syncPending": "A Fio está pronta. Os pagamentos chegam na próxima sincronização, tente novamente dentro de 30 segundos."
+      "syncPending": "A Fio está pronta. Os pagamentos chegam na próxima sincronização, tente novamente dentro de 30 segundos.",
+      "stripe": {
+        "key": "Chave restrita (rk_…)",
+        "keyHint": "No Stripe Dashboard (Developers → API keys → Create restricted key), crie uma chave restrita com acesso só de leitura (Read) a Balance transactions, Charges e Customers. Deixe tudo o resto em None. A Billanta usa-a apenas para ler os pagamentos recebidos e nunca envia nem reembolsa nada. A chave é guardada cifrada e nunca mais é mostrada.",
+        "note": "Os pagamentos recebidos são conciliados com as faturas pelo número da fatura ou pelo símbolo variável (VS) na descrição ou nos metadados do pagamento, e pelo valor. A comissão retida pelo Stripe é registada na fatura. Os pagamentos com cartão feitos a partir de um link de fatura da Billanta já estão registados e não voltam a aparecer aqui.",
+        "connected": "Stripe ligado. Os pagamentos dos últimos 30 dias chegam na próxima sincronização."
+      }
     },
     "fee": "comissão {amount}",
     "netReceived": "creditado {amount}",

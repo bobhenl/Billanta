@@ -1074,7 +1074,10 @@
         "plan_required": "Deze functie hoort bij een betaald abonnement. Kies er een onder Abonnement en facturatie.",
         "history_locked": "Fio geeft bewegingen ouder dan 90 dagen pas vrij na een sterke autorisatie in internetbankieren. De volgende keer beginnen we bij de laatste 89 dagen.",
         "backfill_range": "Kies een dag in het verleden.",
-        "backfill_unsupported": "Oudere betalingen kunnen voorlopig alleen uit PayPal worden gedownload."
+        "backfill_unsupported": "Oudere betalingen kunnen voorlopig alleen uit PayPal en Stripe worden gedownload.",
+        "stripe_key_format": "Plak een beperkte sleutel die begint met rk_live_ of rk_test_. Een volledige geheime sleutel (sk_) wordt niet geaccepteerd.",
+        "stripe_key_invalid": "Stripe heeft de sleutel geweigerd. Controleer of je hem volledig hebt gekopieerd en of hij niet is verwijderd.",
+        "stripe_permissions_missing": "De sleutel mist rechten. Geef hem in Stripe leesrechten voor Balance transactions, Charges en Customers."
       },
       "psd2": {
         "hint": "Billanta haalt nieuwe binnenkomende betalingen rechtstreeks op bij je bank of PayPal en koppelt ze aan facturen op basis van betalingskenmerk en bedrag. Fio koppel je met een API-token, PayPal met de gegevens van je REST-app, andere banken via PSD2: je meldt je aan bij je bank en geeft alleen-lezentoegang tot de rekening (tot 180 dagen, bij veel banken 90). Banken staan maar een paar automatische opvragingen per dag toe, dus PSD2-rekeningen worden ongeveer elke 6 uur gesynchroniseerd. Uitgaande betalingen worden niet opgehaald en via de koppeling kan niets worden betaald.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "Meer opties",
         "backfill": "Synchroniseren vanaf een datum…",
         "backfillFrom": "Vanaf",
-        "backfillHint": "PayPal levert betalingen tot 3 jaar terug. Oudere betalingen worden alleen aan facturen gekoppeld; er worden nooit conceptfacturen van gemaakt. Wat al in Billanta staat, wordt niet opnieuw gedownload.",
+        "backfillHint": "{provider} levert betalingen tot 3 jaar terug. Oudere betalingen worden alleen aan facturen gekoppeld; er worden nooit conceptfacturen van gemaakt. Wat al in Billanta staat, wordt niet opnieuw gedownload.",
         "backfillRun": "Synchroniseren",
         "backfillDone": "{total, plural, one {# oudere betaling} other {# oudere betalingen}} gedownload, {matched} gekoppeld.",
-        "backfillNothing": "Geen nieuwe oudere betalingen. Alles wat PayPal voor die periode heeft, staat al in Billanta.",
+        "backfillNothing": "Geen nieuwe oudere betalingen. Alles wat {provider} voor die periode heeft, staat al in Billanta.",
         "backfillNets": "Bedrag na valutaomrekening ingevuld voor {count, plural, one {# betaling} other {# betalingen}}."
       },
       "connectBank": "Bank koppelen",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Met de Client ID en het Secret van je REST-app. Ook de kosten worden op de factuur geboekt."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Beperkte sleutel met alleen leesrechten. De kosten worden op de factuur geboekt."
         }
       },
-      "syncPending": "Fio is klaar. Betalingen komen bij de volgende synchronisatie, probeer het over 30 seconden opnieuw."
+      "syncPending": "Fio is klaar. Betalingen komen bij de volgende synchronisatie, probeer het over 30 seconden opnieuw.",
+      "stripe": {
+        "key": "Beperkte sleutel (rk_…)",
+        "keyHint": "Maak in het Stripe Dashboard (Developers → API keys → Create restricted key) een beperkte sleutel met alleen leesrechten (Read) voor Balance transactions, Charges en Customers. Laat al het andere op None staan. Billanta leest er alleen ontvangen betalingen mee en verstuurt of terugbetaalt nooit iets. De sleutel wordt versleuteld opgeslagen en nooit meer getoond.",
+        "note": "Ontvangen betalingen worden aan facturen gekoppeld op basis van het factuurnummer of het variabel symbool (VS) in de omschrijving of metadata van de betaling, en op basis van het bedrag. De kosten die Stripe heeft ingehouden, worden op de factuur geboekt. Kaartbetalingen via een Billanta-factuurlink zijn al geregistreerd en verschijnen hier niet nog eens.",
+        "connected": "Stripe gekoppeld. De betalingen van de afgelopen 30 dagen komen binnen bij de volgende synchronisatie."
+      }
     },
     "fee": "kosten {amount}",
     "netReceived": "{amount} bijgeschreven",

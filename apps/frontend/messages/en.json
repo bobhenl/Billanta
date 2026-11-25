@@ -1074,7 +1074,10 @@
         "plan_required": "This feature is part of a paid plan. Pick one under Plan and billing.",
         "history_locked": "Fio releases movements older than 90 days only after a strong authorisation in online banking. Next time we start from the last 89 days.",
         "backfill_range": "Pick a day in the past.",
-        "backfill_unsupported": "Older payments can only be downloaded from PayPal for now."
+        "backfill_unsupported": "Older payments can only be downloaded from PayPal and Stripe for now.",
+        "stripe_key_format": "Paste a restricted key that starts with rk_live_ or rk_test_. A full secret key (sk_) is not accepted.",
+        "stripe_key_invalid": "Stripe rejected the key. Check that you copied all of it and that it has not been deleted.",
+        "stripe_permissions_missing": "The key is missing permissions. In Stripe, give it Read access to Balance transactions, Charges and Customers."
       },
       "psd2": {
         "hint": "Billanta downloads incoming payments from your bank or PayPal and matches them to invoices by variable symbol and amount. With PSD2 you give the bank read-only consent (90–180 days) and accounts sync about every 6 hours. Nothing can be paid through the connection.",
@@ -1113,10 +1116,10 @@
         "moreOptions": "More options",
         "backfill": "Sync from a date…",
         "backfillFrom": "From",
-        "backfillHint": "PayPal serves payments up to 3 years back. Older payments are only matched to invoices; they never become invoice drafts. Anything already in Billanta is not downloaded again.",
+        "backfillHint": "{provider} serves payments up to 3 years back. Older payments are only matched to invoices; they never become invoice drafts. Anything already in Billanta is not downloaded again.",
         "backfillRun": "Sync",
         "backfillDone": "Downloaded {total, plural, one {# older payment} other {# older payments}}, {matched} matched.",
-        "backfillNothing": "No new older payments. Everything PayPal has for that period is already in Billanta.",
+        "backfillNothing": "No new older payments. Everything {provider} has for that period is already in Billanta.",
         "backfillNets": "Filled in the amount after currency conversion for {count, plural, one {# payment} other {# payments}}."
       },
       "connectBank": "Connect a bank",
@@ -1133,9 +1136,19 @@
         "paypal": {
           "title": "PayPal",
           "text": "Client ID and Secret; the fee is booked on the invoice."
+        },
+        "stripe": {
+          "title": "Stripe",
+          "text": "Read-only restricted key; the fee is booked on the invoice."
         }
       },
-      "syncPending": "Fio is ready. Payments come with the next sync, try again in 30 seconds."
+      "syncPending": "Fio is ready. Payments come with the next sync, try again in 30 seconds.",
+      "stripe": {
+        "key": "Restricted key (rk_…)",
+        "keyHint": "In the Stripe Dashboard (Developers → API keys → Create restricted key) create a restricted key with Read access to Balance transactions, Charges and Customers only. Leave everything else at None. Billanta only reads received payments with it and never sends or refunds anything. The key is stored encrypted and never shown again.",
+        "note": "Received payments are matched to invoices by the invoice number or variable symbol in the payment's description or metadata, and by amount. The fee Stripe kept is booked on the invoice. Card payments made from a Billanta invoice link are already recorded and will not show up here again.",
+        "connected": "Stripe connected. The last 30 days of payments arrive with the next sync."
+      }
     },
     "fee": "fee {amount}",
     "netReceived": "credited {amount}",
