@@ -915,7 +915,9 @@
         "due": "Splatnost",
         "paid": "Zaplaceno"
       }
-    }
+    },
+    "bulkDeleteTitle": "Smazat {count, plural, one {# výdaj} few {# výdaje} other {# výdajů}}?",
+    "bulkDeleteBody": "Vybrané výdaje budou trvale odstraněny."
   },
   "bank": {
     "title": "Banka",
@@ -4133,7 +4135,8 @@
     },
     "close": "Zavřít",
     "showPassword": "Zobrazit heslo",
-    "hidePassword": "Skrýt heslo"
+    "hidePassword": "Skrýt heslo",
+    "moreActions": "Další akce"
   },
   "municipalityPages": {
     "regionLabel": "Kraj",
@@ -4921,7 +4924,9 @@
       "editAnywayTitle": "Jen drobná oprava?",
       "editAnywayBody": "Překlep nebo chybějící údaj opravíte přímo. Číslo zůstane, změna i důvod se zapíšou do historie.",
       "editAnywayPlaceholder": "Důvod úpravy, např. překlep v adrese",
-      "editAnywayNeedsReason": "Nejdřív napište důvod úpravy"
+      "editAnywayNeedsReason": "Nejdřív napište důvod úpravy",
+      "bulkDeleteTitle": "Smazat {count, plural, one {# koncept} few {# koncepty} other {# konceptů}}?",
+      "bulkDeleteBody": "Smazané koncepty už nepůjde obnovit."
     },
     "done": {
       "issued": "Doklad byl vystaven",

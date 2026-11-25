@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Clock, FileText, Home, LayoutTemplate, MoreHorizontal, Package, Pencil, Plus, Repeat, Trash2, Users, Wallet, type LucideIcon } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
 import { Modal, buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
@@ -99,11 +100,7 @@ export function TemplateGallery({ saved, presets }: { saved: SavedTemplateRow[];
       <section className="mt-8">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('saved', { count: saved.length })}</h2>
         {saved.length === 0 ? (
-          <div className="mt-3 rounded-xl border border-dashed border-border p-8 text-center">
-            <LayoutTemplate className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-2 font-semibold">{t('emptyTitle')}</p>
-            <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{t('emptyHint')}</p>
-          </div>
+          <EmptyState className="mt-3" icon={LayoutTemplate} title={t('emptyTitle')} hint={t('emptyHint')} />
         ) : (
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {saved.map((row) => {

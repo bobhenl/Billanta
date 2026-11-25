@@ -370,7 +370,7 @@ export function CompanyForm({
         <div className="sticky bottom-20 z-10 flex items-center justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">
           <span className="mr-auto text-sm text-muted-foreground">{dirtyCount > 0 ? t('unsaved', { count: dirtyCount }) : t('noChanges')}</span>
           {dirtyCount > 0 && (
-            <button type="button" className={buttonClass.ghost} onClick={() => {
+            <button type="button" className={buttonClass.secondary} onClick={() => {
               setValues(initial);
               setAdvanceRows(initialAdvances);
             }}>

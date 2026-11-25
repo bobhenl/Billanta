@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { buttonClass } from '@/lib/ui-classes';
 import { cn } from '@/lib/utils';
 
 /**
@@ -64,6 +65,56 @@ export function Modal({
         </div>
       )}
     </dialog>
+  );
+}
+
+/**
+ * "Are you sure?" in the app's own dialog instead of `window.confirm`:
+ * the way back first as a secondary button, then the confirm, red when
+ * `danger` (the same order as every other dialog).
+ */
+export function ConfirmModal({
+  open,
+  onClose,
+  onConfirm,
+  title,
+  body,
+  confirmLabel,
+  backLabel,
+  pending = false,
+  danger = false,
+  icon
+}: {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: React.ReactNode;
+  body?: React.ReactNode;
+  confirmLabel: React.ReactNode;
+  backLabel: React.ReactNode;
+  pending?: boolean;
+  danger?: boolean;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      footer={
+        <>
+          <button type="button" className={buttonClass.secondary} onClick={onClose}>
+            {backLabel}
+          </button>
+          <button type="button" className={danger ? buttonClass.danger : buttonClass.primary} disabled={pending} onClick={onConfirm}>
+            {icon}
+            {confirmLabel}
+          </button>
+        </>
+      }
+    >
+      {body && <p className="text-muted-foreground">{body}</p>}
+    </Modal>
   );
 }
 

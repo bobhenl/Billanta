@@ -85,11 +85,11 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
         className={`${inputClass} font-mono tracking-[0.2em]`}
       />
       <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={onCancel} disabled={pending} className={buttonClass.secondary}>
+          {t('cancel')}
+        </button>
         <button type="submit" disabled={pending || code.trim().length < 6} className={danger ? buttonClass.danger : buttonClass.primary}>
           {submitLabel}
-        </button>
-        <button type="button" onClick={onCancel} disabled={pending} className={buttonClass.ghost}>
-          {t('cancel')}
         </button>
       </div>
     </form>

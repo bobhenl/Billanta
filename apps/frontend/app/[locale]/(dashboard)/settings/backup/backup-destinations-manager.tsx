@@ -514,11 +514,11 @@ export function BackupDestinationsManager({
                         </Field>
                       )}
                       <div className="flex flex-wrap gap-2">
-                        <button type="submit" disabled={savingEncryption} className={buttonClass.primary}>
-                          {savingEncryption ? t('encryption.saving') : t('encryption.save')}
-                        </button>
                         <button type="button" onClick={() => setEncryptingId(null)} className={buttonClass.secondary}>
                           {t('addWebhook.cancel')}
+                        </button>
+                        <button type="submit" disabled={savingEncryption} className={buttonClass.primary}>
+                          {savingEncryption ? t('encryption.saving') : t('encryption.save')}
                         </button>
                       </div>
                     </form>
@@ -622,11 +622,11 @@ export function BackupDestinationsManager({
                     </Field>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button type="submit" disabled={addingSftp || !sftp.host.trim() || !sftp.username.trim()} className={buttonClass.primary}>
-                      {addingSftp ? t('addWebhook.submitting') : t('addWebhook.submit')}
-                    </button>
                     <button type="button" onClick={() => setSftpOpen(false)} disabled={addingSftp} className={buttonClass.secondary}>
                       {t('addWebhook.cancel')}
+                    </button>
+                    <button type="submit" disabled={addingSftp || !sftp.host.trim() || !sftp.username.trim()} className={buttonClass.primary}>
+                      {addingSftp ? t('addWebhook.submitting') : t('addWebhook.submit')}
                     </button>
                   </div>
                 </form>
@@ -668,11 +668,11 @@ export function BackupDestinationsManager({
                     </Field>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button type="submit" disabled={submitting || webhookUrl.trim().length === 0} className={buttonClass.primary}>
-                      {submitting ? t('addWebhook.submitting') : t('addWebhook.submit')}
-                    </button>
                     <button type="button" onClick={() => setFormOpen(false)} disabled={submitting} className={buttonClass.secondary}>
                       {t('addWebhook.cancel')}
+                    </button>
+                    <button type="submit" disabled={submitting || webhookUrl.trim().length === 0} className={buttonClass.primary}>
+                      {submitting ? t('addWebhook.submitting') : t('addWebhook.submit')}
                     </button>
                   </div>
                 </form>

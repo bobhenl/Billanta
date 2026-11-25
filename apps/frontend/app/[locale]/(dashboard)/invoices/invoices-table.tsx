@@ -14,6 +14,7 @@ import {
   Copy,
   Download,
   ExternalLink,
+  FileText,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -28,6 +29,8 @@ import { buttonClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { ColorDot } from '@/components/color-dot';
+import { EmptyState } from '@/components/empty-state';
+import { ConfirmModal } from '@/components/modal';
 import {
   buyerDetailsState,
   CONVERSIONS,
@@ -184,16 +187,23 @@ export function InvoicesTable({
   // Selecting only feeds the bulk mark-paid/delete bar, so a read-only member gets no checkboxes at all.
   const canEdit = useCanWrite('invoices');
   const span = columns.length + (canEdit ? 2 : 1);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const empty = (
-    <>
-      <p>{filtered ? t('emptyFiltered') : tList('empty')}</p>
-      {!filtered && canEdit && newHref && (
-        <Link href={newHref} className={cn(buttonClass.primary, 'mt-4')}>
-          <Plus className="h-4 w-4" aria-hidden />
-          {tList('newInvoice')}
-        </Link>
-      )}
-    </>
+    <EmptyState
+      framed={false}
+      icon={FileText}
+      title={filtered ? t('emptyFiltered') : tList('empty')}
+      action={
+        !filtered &&
+        canEdit &&
+        newHref && (
+          <Link href={newHref} className={buttonClass.primary}>
+            <Plus className="h-4 w-4" aria-hidden />
+            {tList('newInvoice')}
+          </Link>
+        )
+      }
+    />
   );
 
   useEffect(() => {
@@ -346,11 +356,7 @@ export function InvoicesTable({
                 <button
                   type="button"
                   disabled={pending}
-                  onClick={() => {
-                    if (window.confirm(t('confirm.bulkDelete', { count: deletable.length }))) {
-                      runBulk(t('actions.delete'), deletable.map((r) => r.id), deleteInvoice);
-                    }
-                  }}
+                  onClick={() => setConfirmDelete(true)}
                   className="ml-2 inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1.5 font-semibold text-destructive hover:bg-destructive/20"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -440,7 +446,7 @@ export function InvoicesTable({
 
       {/* Below md the column table cannot fit: number and customer on the left, amount and status on the right. */}
       <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:hidden">
-        {rows.length === 0 && <li className="px-4 py-10 text-center text-sm text-muted-foreground">{empty}</li>}
+        {rows.length === 0 && <li>{empty}</li>}
         {sortedRows.map((row) => (
           <li key={row.id} className={cn('flex items-center gap-2 px-3 py-3', selected.has(row.id) && 'bg-accent/40', row.status === 'cancelled' && 'opacity-60')}>
             {canEdit && (
@@ -528,7 +534,7 @@ export function InvoicesTable({
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={span} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={span} className="p-0">
                   {empty}
                 </td>
               </tr>
@@ -603,6 +609,22 @@ export function InvoicesTable({
           )}
         </table>
       </div>
+
+      <ConfirmModal
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        title={t('confirm.bulkDeleteTitle', { count: deletable.length })}
+        body={t('confirm.bulkDeleteBody')}
+        backLabel={t('confirm.back')}
+        confirmLabel={t('actions.delete')}
+        icon={<Trash2 className="h-4 w-4" />}
+        danger
+        pending={pending}
+        onConfirm={() => {
+          setConfirmDelete(false);
+          runBulk(t('actions.delete'), deletable.map((r) => r.id), deleteInvoice);
+        }}
+      />
     </div>
   );
 }

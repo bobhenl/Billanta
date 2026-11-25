@@ -26,6 +26,7 @@ import { buttonClass, inputClass, Modal } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { CONVERSIONS, type DocumentType, type InvoiceStatus } from '@/lib/invoice-ui';
+import { cn } from '@/lib/utils';
 import {
   cancelInvoice,
   convertInvoice,
@@ -173,12 +174,19 @@ export function InvoiceActions({
           </button>
         )}
         {numbered && (
-          <a href={`/api/files/invoices/${id}/pdf`} target="_blank" rel="noreferrer" className={buttonClass.secondary}>
+          <a
+            href={`/api/files/invoices/${id}/pdf`}
+            target="_blank"
+            rel="noreferrer"
+            className={cn(buttonClass.secondary, 'px-2.5')}
+            title={t('actions.downloadPdf')}
+            aria-label={t('actions.downloadPdf')}
+          >
             <Download className="h-4 w-4" />
-            PDF
           </a>
         )}
         {canEdit && numbered && status !== 'cancelled' && !sendFirst && sendButton}
+        {/* The reminder email speaks of an overdue invoice, so it is offered only once the invoice is overdue. */}
         {canPay && overdue && (
           <button
             type="button"

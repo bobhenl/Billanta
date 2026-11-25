@@ -1,10 +1,11 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { FileText, Pencil, Trash2 } from 'lucide-react';
+import { FileText, Pencil, Timer, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { ColorDot } from '@/components/color-dot';
+import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
@@ -74,9 +75,7 @@ export function EntriesTable({
 
   if (rows.length === 0) {
     return (
-      <div className="mt-6 rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-        {filtered ? t('emptyFiltered') : t('empty')}
-      </div>
+      <EmptyState className="mt-6" icon={Timer} title={filtered ? t('emptyFiltered') : t('empty')} />
     );
   }
 

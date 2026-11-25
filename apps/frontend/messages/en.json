@@ -915,7 +915,9 @@
         "due": "Due date",
         "paid": "Paid"
       }
-    }
+    },
+    "bulkDeleteTitle": "Delete {count, plural, one {# expense} other {# expenses}}?",
+    "bulkDeleteBody": "The selected expenses will be permanently removed."
   },
   "bank": {
     "title": "Bank",
@@ -4133,7 +4135,8 @@
     },
     "close": "Close",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "moreActions": "More actions"
   },
   "municipalityPages": {
     "regionLabel": "Region",
@@ -4921,7 +4924,9 @@
       "editAnywayTitle": "Just a small fix?",
       "editAnywayBody": "Fix a typo or a missing detail in place. The number stays; the change and your reason go to the history.",
       "editAnywayPlaceholder": "Reason, e.g. a typo in the address",
-      "editAnywayNeedsReason": "Enter a reason first"
+      "editAnywayNeedsReason": "Enter a reason first",
+      "bulkDeleteTitle": "Delete {count, plural, one {# draft} other {# drafts}}?",
+      "bulkDeleteBody": "Deleted drafts cannot be restored."
     },
     "done": {
       "issued": "Document issued",

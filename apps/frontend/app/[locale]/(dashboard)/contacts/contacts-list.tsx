@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ArrowUpDown, ChevronRight, FilePlus2, Plus, Search, Star, User } from 'lucide-react';
+import { ArrowUpDown, ChevronRight, FilePlus2, Plus, Search, Star, User, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
@@ -11,6 +11,7 @@ import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { readJson, writeJson } from '@/lib/invoice-list-prefs';
 import { cn } from '@/lib/utils';
 import { ColorDot } from '@/components/color-dot';
+import { EmptyState } from '@/components/empty-state';
 import { CONTACT_COLORS } from '@/lib/contact-colors';
 import type { Contact } from '../invoices/new/types';
 import { setContactStarred } from './actions';
@@ -132,17 +133,24 @@ export function ContactsList({
 
   if (rows.length === 0 && !filtered) {
     return (
-      <div className="mt-6 rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-        {t('empty')}{' '}
-        {canInvoice && (
-          <Link href="/invoices/new" className="font-semibold text-primary hover:underline">
-            {t('emptyCta')}
-          </Link>
-        )}
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {newButton(false)}
-          <ContactsCsvButtons showExport={false} onSkipped={setSkipped} compact={false} />
-        </div>
+      <div className="mt-6">
+        <EmptyState
+          icon={Users}
+          title={t('empty')}
+          hint={
+            canInvoice && (
+              <Link href="/invoices/new" className="font-semibold text-primary hover:underline">
+                {t('emptyCta')}
+              </Link>
+            )
+          }
+          action={
+            <>
+              {newButton(false)}
+              <ContactsCsvButtons showExport={false} onSkipped={setSkipped} compact={false} />
+            </>
+          }
+        />
         <SkippedRows rows={skipped} />
         {editor}
       </div>

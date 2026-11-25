@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from 'react';
 import { Check, Copy, Download, ExternalLink, KeyRound, Loader2, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { EmptyState } from '@/components/empty-state';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
@@ -147,8 +148,8 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
             <tbody>
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                    {t('empty')}
+                  <td colSpan={6} className="p-0">
+                    <EmptyState framed={false} icon={KeyRound} title={t('empty')} />
                   </td>
                 </tr>
               )}
@@ -216,12 +217,12 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
                   </InfoHint>
                 </div>
                 <div className="flex gap-2">
+                  <button type="button" onClick={() => setFormOpen(false)} disabled={generating} className={buttonClass.secondary}>
+                    {t('generate.cancel')}
+                  </button>
                   <button type="submit" disabled={generating || name.trim().length === 0} className={buttonClass.primary}>
                     {generating && <Loader2 className="h-4 w-4 animate-spin" />}
                     {generating ? t('generate.generating') : t('generate.submit')}
-                  </button>
-                  <button type="button" onClick={() => setFormOpen(false)} disabled={generating} className={buttonClass.ghost}>
-                    {t('generate.cancel')}
                   </button>
                 </div>
               </form>

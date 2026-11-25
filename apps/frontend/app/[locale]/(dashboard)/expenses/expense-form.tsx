@@ -8,6 +8,7 @@ import { useRouter } from '@/i18n/navigation';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { Banner } from '@/components/banner';
+import { MobileActionBar } from '@/components/mobile-action-bar';
 import { InfoHint } from '@/components/info-hint';
 import { formatMoney } from '@/lib/invoice-ui';
 import { cn } from '@/lib/utils';
@@ -239,6 +240,21 @@ export function ExpenseForm({
 
   const label = 'mb-1 flex min-h-5 items-center gap-2 text-xs font-semibold text-muted-foreground';
   const field = cn(inputClass, 'h-10');
+  const actions = (
+    <>
+      <button type="submit" disabled={pending || reading} className={cn(buttonClass.primary, 'h-10')}>
+        {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+        {expense ? t('saveChanges') : t('submit')}
+      </button>
+      <button
+        type="button"
+        onClick={() => router.push(expense ? `/expenses/${expense.id}` : '/expenses')}
+        className={cn(buttonClass.secondary, 'h-10')}
+      >
+        {t('cancel')}
+      </button>
+    </>
+  );
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -523,19 +539,9 @@ export function ExpenseForm({
           </div>
         </details>
 
-        <div className="flex items-center gap-3">
-          <button type="submit" disabled={pending || reading} className={buttonClass.primary}>
-            {pending && <Loader2 className="h-4 w-4 animate-spin" />}
-            {expense ? t('saveChanges') : t('submit')}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push(expense ? `/expenses/${expense.id}` : '/expenses')}
-            className={buttonClass.secondary}
-          >
-            {t('cancel')}
-          </button>
-        </div>
+        {/* On phones the same two buttons sit in the bar pinned above the tab bar. */}
+        <div className="hidden items-center gap-3 md:flex">{actions}</div>
+        <MobileActionBar>{actions}</MobileActionBar>
       </form>
     </div>
   );

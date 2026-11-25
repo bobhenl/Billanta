@@ -1,12 +1,14 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { CheckCircle2, Plus, Trash2 } from 'lucide-react';
+import { CheckCircle2, Plus, Receipt, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SortHeader, useListSort } from '@/components/sort-header';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
+import { EmptyState } from '@/components/empty-state';
+import { ConfirmModal } from '@/components/modal';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
@@ -43,6 +45,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
   const locale = useLocale();
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [pending, startTransition] = useTransition();
   // The checkboxes only feed bulk mark-paid/delete, so read-only gets a plain list.
   const canEdit = useCanWrite('expenses');
@@ -62,17 +65,20 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
 
   if (rows.length === 0) {
     return (
-      <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
-        {filtered ? t('emptyFiltered') : t('empty')}
-        {!filtered && canEdit && (
-          <div className="mt-4">
+      <EmptyState
+        className="mt-6"
+        icon={Receipt}
+        title={filtered ? t('emptyFiltered') : t('empty')}
+        action={
+          !filtered &&
+          canEdit && (
             <Link href="/expenses/new" className={buttonClass.primary}>
               <Plus className="h-4 w-4" aria-hidden />
               {t('newExpense')}
             </Link>
-          </div>
-        )}
-      </div>
+          )
+        }
+      />
     );
   }
 
@@ -122,9 +128,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
             type="button"
             disabled={pending}
             className="ml-2 inline-flex h-9 items-center gap-1 rounded-full border border-destructive/40 px-3 text-xs font-bold text-destructive disabled:opacity-50"
-            onClick={() => {
-              if (window.confirm(t('bulkDeleteConfirm', { count: selected.size }))) bulk(deleteExpense, [...selected]);
-            }}
+            onClick={() => setConfirmDelete(true)}
           >
             <Trash2 className="h-3.5 w-3.5" />
             {t('detail.delete')}
@@ -258,6 +262,22 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
           </tfoot>
         </table>
       </div>
+
+      <ConfirmModal
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        title={t('bulkDeleteTitle', { count: selected.size })}
+        body={t('bulkDeleteBody')}
+        backLabel={t('detail.back')}
+        confirmLabel={t('detail.delete')}
+        icon={<Trash2 className="h-4 w-4" />}
+        danger
+        pending={pending}
+        onConfirm={() => {
+          setConfirmDelete(false);
+          bulk(deleteExpense, [...selected]);
+        }}
+      />
     </div>
   );
 }

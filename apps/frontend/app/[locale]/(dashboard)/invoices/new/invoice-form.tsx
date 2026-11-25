@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState, useTransition, type ReactNode } from 'react';
 import { AI_PROMPT_KEY } from '@/components/command-palette';
-import { BadgeCheck, Building2, ChevronDown, CloudOff, Copy, FileCheck2, Loader2, Lock, LockOpen, Plus, SlidersHorizontal, Sparkles, Star, Trash2, Wand2, X } from 'lucide-react';
+import { BadgeCheck, Building2, ChevronDown, CloudOff, Copy, FileCheck2, Loader2, Lock, LockOpen, Plus, Save, SlidersHorizontal, Sparkles, Star, Trash2, Wand2, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Banner } from '@/components/banner';
+import { MobileActionBar, actionBarItem } from '@/components/mobile-action-bar';
+import { buttonClass } from '@/lib/ui-classes';
 import { DictationButton } from '@/components/dictation-button';
 import { FieldFinder, type FinderEntry } from '@/components/field-finder';
 import { InfoHint } from '@/components/info-hint';
@@ -848,6 +850,8 @@ export function InvoiceForm({
     const section = FIELD_SECTION[id];
     if (section && collapsed.has(section)) setCollapsed(section);
   };
+
+  const cancelHref = mode.kind === 'edit' ? `/invoices/${mode.id}` : '/invoices';
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start">
@@ -1845,7 +1849,8 @@ export function InvoiceForm({
             </label>
           )}
 
-          <div className="mt-4 space-y-2">
+          {/* On phones the same actions sit in the bar pinned above the tab bar. */}
+          <div className="mt-4 hidden space-y-2 md:block">
             {!issuedEdit && (
             <button
               type="button"
@@ -1867,7 +1872,7 @@ export function InvoiceForm({
               {editing ? t('saveChanges') : t('save')}
             </button>
             <Link
-              href={mode.kind === 'edit' ? `/invoices/${mode.id}` : '/invoices'}
+              href={cancelHref}
               className="block rounded-full px-4 py-2 text-center text-sm font-semibold text-muted-foreground hover:text-foreground"
             >
               {t('cancel')}
@@ -1878,6 +1883,35 @@ export function InvoiceForm({
           )}
         </section>
       </aside>
+
+      <MobileActionBar
+        more={
+          <>
+            {!issuedEdit && (
+              <button type="button" onClick={() => submit(false)} disabled={saving} className={actionBarItem}>
+                {savingIntent === 'draft' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {editing ? t('saveChanges') : t('save')}
+              </button>
+            )}
+            <Link href={cancelHref} className={actionBarItem}>
+              <X className="h-4 w-4" />
+              {t('cancel')}
+            </Link>
+          </>
+        }
+      >
+        {issuedEdit ? (
+          <button type="button" onClick={() => submit(false)} disabled={saving} className={cn(buttonClass.primary, 'h-10')}>
+            {savingIntent === 'draft' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {t('saveChanges')}
+          </button>
+        ) : (
+          <button type="button" onClick={() => submit(true)} disabled={saving || !offline.online} className={cn(buttonClass.primary, 'h-10')}>
+            {savingIntent === 'issue' ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCheck2 className="h-4 w-4" />}
+            {isQuote ? t('saveIssueQuote') : t('saveIssue')}
+          </button>
+        )}
+      </MobileActionBar>
     </div>
   );
 }
