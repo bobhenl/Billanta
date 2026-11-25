@@ -23,6 +23,10 @@ export interface BankTransaction {
   netAmount?: string | null;
   netCurrency?: string | null;
   matchedInvoiceId: string | null;
+  /** Expense a bank rule drafted from this outgoing payment. */
+  matchedExpenseId?: string | null;
+  /** Bank rule that ignored the payment or drafted its document; cleared by a manual match or restore. */
+  appliedRuleId?: string | null;
   status: TransactionStatus;
   createdAt: string;
   /** The list endpoint adds the statement import this row came from. */

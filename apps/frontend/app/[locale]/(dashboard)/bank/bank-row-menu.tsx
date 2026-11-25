@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useTransition } from 'react';
-import { ExternalLink, EyeOff, FilePlus2, FileText, Link2, MoreHorizontal, RotateCcw, SquareArrowOutUpRight } from 'lucide-react';
+import { ExternalLink, EyeOff, FilePlus2, FileText, Link2, ListFilter, MoreHorizontal, Receipt, RotateCcw, SquareArrowOutUpRight } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
@@ -14,6 +14,15 @@ import { draftInvoiceFromTransaction, ignoreTransaction, restoreTransaction } fr
 /** Opens a bank row in a new tab; also used for ctrl/middle-click on the row itself. */
 export function openInNewTab(locale: string, path: string) {
   window.open(`/${locale}${path}`, '_blank', 'noopener');
+}
+
+/** `/bank/rules` with a new rule prefilled from this payment: its payer and direction. */
+function ruleFromPayment(tx: BankTransaction): string {
+  const p = new URLSearchParams({ new: '1', dir: Number(tx.amount) < 0 ? 'out' : 'in' });
+  if (tx.counterpartyName) p.set('name', tx.counterpartyName);
+  // PayPal puts the payer's e-mail here; a bank account number is a weaker key, but better than nothing.
+  if (tx.counterpartyAccount) p.set('account', tx.counterpartyAccount);
+  return `/bank/rules?${p.toString()}`;
 }
 
 /** The "⋯" menu of one statement line, like the one on the invoice list. */
@@ -61,6 +70,9 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
     ...(tx.matchedInvoiceId
       ? [{ icon: FileText, label: t('rowMenu.openInvoice'), onSelect: () => router.push(`/invoices/${tx.matchedInvoiceId}`) }]
       : []),
+    ...(tx.matchedExpenseId
+      ? [{ icon: Receipt, label: t('rowMenu.openExpense'), onSelect: () => router.push(`/expenses/${tx.matchedExpenseId}`) }]
+      : []),
     ...(tx.status === 'unmatched' && incoming
       ? [
           { icon: Link2, label: t('rowMenu.findMatch'), write: true, onSelect: () => router.push(detail) },
@@ -89,7 +101,8 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
       : []),
     ...(tx.status === 'ignored'
       ? [{ icon: RotateCcw, label: t('detail.restore'), write: true, onSelect: () => run(() => restoreTransaction(tx.id), t('detail.restoredDone')) }]
-      : [])
+      : []),
+    { icon: ListFilter, label: t('rowMenu.createRule'), write: true, onSelect: () => (setPos(null), router.push(ruleFromPayment(tx))) }
   ];
   const items = canEdit ? all : all.filter((item) => !item.write);
 

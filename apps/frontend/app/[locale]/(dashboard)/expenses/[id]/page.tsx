@@ -96,6 +96,9 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
               a banner repeated it, and "mark paid" sits right below anyway. */}
           <div className="flex flex-wrap items-center gap-2">
             <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{tState(state)}</span>
+            {expense.needsReview && (
+              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{t('needsReview')}</span>
+            )}
             {state === 'overdue' && expense.dueDate && (
               <span className="text-xs font-semibold text-destructive">
                 {tForm('dueDateLabel')} {formatDate(expense.dueDate, locale)}
@@ -107,6 +110,7 @@ export default async function ExpenseDetailPage(props: { params: Promise<{ id: s
             {supplierName}
             {expense.documentNumber && <> · {expense.documentNumber}</>}
           </p>
+          {expense.needsReview && <p className="mt-2 max-w-xl text-sm text-muted-foreground">{t('needsReviewHint')}</p>}
         </div>
         <div className="sm:text-right">
           <div className="text-xs text-muted-foreground">{reverseCharge ? tForm('amountLabelReverseCharge') : t('total')}</div>

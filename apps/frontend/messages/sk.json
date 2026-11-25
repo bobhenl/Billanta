@@ -903,7 +903,9 @@
         "unpaid": "Vrátené na neuhradené",
         "deleted": "Výdavok zmazaný"
       },
-      "back": "Späť"
+      "back": "Späť",
+      "needsReview": "Na kontrolu",
+      "needsReviewHint": "Výdavok vytvorilo bankové pravidlo z odchádzajúcej platby. Skontrolujte dodávateľa, sadzbu DPH a kategóriu a uložte ho, štítok potom zmizne."
     },
     "filters": {
       "receipt": "Účtenka",
@@ -917,7 +919,8 @@
       }
     },
     "bulkDeleteTitle": "Zmazať {count, plural, one {# výdavok} few {# výdavky} other {# výdavkov}}?",
-    "bulkDeleteBody": "Vybrané výdavky budú natrvalo odstránené."
+    "bulkDeleteBody": "Vybrané výdavky budú natrvalo odstránené.",
+    "needsReview": "Na kontrolu"
   },
   "bank": {
     "title": "Banka",
@@ -1017,7 +1020,10 @@
       "alreadyLinked": "Túto faktúru už prepája iná platba.",
       "createDraft": "Vytvoriť faktúru z platby",
       "createDraftHint": "Platba nepatrí k žiadnej faktúre? Vytvoríme z nej návrh faktúry na kontrolu. Vystavíte ho sami.",
-      "draftDone": "Návrh faktúry je vytvorený a prepojený s platbou. Skontrolujte ho a vystavte."
+      "draftDone": "Návrh faktúry je vytvorený a prepojený s platbou. Skontrolujte ho a vystavte.",
+      "ruleApplied": "Platbu vybavilo pravidlo „{rule}“. Pravidlá upravíte v Banke › Pravidlá.",
+      "expenseGone": "Výdavok z tejto platby už neexistuje alebo ho nemôžete zobraziť.",
+      "expenseNeedsReview": "Výdavok čaká na kontrolu"
     },
     "connections": {
       "title": "Napojenie na banku",
@@ -1159,7 +1165,16 @@
       "open": "Otvoriť",
       "openNewTab": "Otvoriť v novom okne",
       "openInvoice": "Otvoriť faktúru",
-      "findMatch": "Spárovať s faktúrou…"
+      "findMatch": "Spárovať s faktúrou…",
+      "createRule": "Vytvoriť pravidlo z tejto platby",
+      "openExpense": "Otvoriť výdavok"
+    },
+    "rulesLink": "Pravidlá",
+    "rule": {
+      "ignoredBy": "Ignorované pravidlom {rule}",
+      "expenseBy": "Výdavok z pravidla {rule}",
+      "draftBy": "Návrh faktúry z pravidla {rule}",
+      "expense": "Spárované s výdavkom"
     }
   },
   "contacts": {
@@ -5453,7 +5468,8 @@
     "flatRate": "Paušálne výdavky",
     "rate": "paušál {rate} %",
     "noFlat": "bez paušálu",
-    "hint": "Orientačne podľa českých pravidiel: suma bez DPH po odpočítaní dane z príjmov (15 %), sociálneho a zdravotného poistenia OSVČ – zhruba {burden}. Nezohľadňuje minimálne preddavky ani zľavy na dani."
+    "hint": "Orientačne podľa českých pravidiel: suma bez DPH po odpočítaní dane z príjmov (15 %), sociálneho a zdravotného poistenia OSVČ – zhruba {burden}. Nezohľadňuje minimálne preddavky ani zľavy na dani.",
+    "hintCosts": "Odpočítané sú aj poplatky a kurzový rozdiel z platby ({costs}). Pri paušále daň neznižujú, ten už všetky výdavky zahŕňa."
   },
   "welcome": {
     "title": "Vitajte v Billante",
@@ -13713,6 +13729,131 @@
     "noAccess": {
       "title": "Len pre majiteľov a administrátorov",
       "body": "Prehľad Po zdanení ukazuje príjmy a dane jednotlivých spoločníkov, preto ho vidí len majiteľ a administrátori firmy."
+    }
+  },
+  "bankRules": {
+    "title": "Pravidlá pre platby",
+    "intro": "Čo urobiť s platbou, ktorú sa nepodarilo spárovať s faktúrou. Pravidlá bežia po každom importe a synchronizácii, len na nových nespárovaných platbách. Spárovanie s faktúrou má vždy prednosť.",
+    "backToBank": "Späť do banky",
+    "noTenant": "Najprv si vyberte alebo založte firmu.",
+    "loadError": "Pravidlá sa nepodarilo načítať.",
+    "newRule": "Nové pravidlo",
+    "empty": "Zatiaľ žiadne pravidlá",
+    "emptyHint": "Napríklad: platby od Orange zapísať ako výdavok, bankové poplatky ignorovať. Pravidlo môžete založiť aj z menu pri platbe.",
+    "list": {
+      "order": "Pravidlá sa skúšajú zhora nadol a použije sa prvé, ktoré platbe zodpovedá.",
+      "enabled": "Pravidlo zapnuté",
+      "off": "Vypnuté",
+      "moveUp": "Posunúť vyššie",
+      "moveDown": "Posunúť nižšie",
+      "edit": "Upraviť",
+      "delete": "Zmazať",
+      "enabledDone": "Pravidlo zapnuté.",
+      "disabledDone": "Pravidlo vypnuté."
+    },
+    "field": {
+      "counterparty_name": "Protistrana",
+      "counterparty_account": "Účet alebo e-mail platiteľa",
+      "message": "Správa pre prijímateľa",
+      "variable_symbol": "Variabilný symbol",
+      "any": "Ktorékoľvek pole"
+    },
+    "operator": {
+      "contains": "obsahuje",
+      "equals": "je presne",
+      "regex": "zodpovedá regulárnemu výrazu"
+    },
+    "direction": {
+      "any": "Prichádzajúce aj odchádzajúce",
+      "in": "Prichádzajúce",
+      "out": "Odchádzajúce"
+    },
+    "summary": {
+      "between": "suma {min}–{max}",
+      "atLeast": "suma od {min}",
+      "atMost": "suma do {max}"
+    },
+    "action": {
+      "ignore": "Ignorovať",
+      "draft_expense": "Vytvoriť výdavok na kontrolu",
+      "draft_invoice": "Vytvoriť návrh faktúry"
+    },
+    "actionHint": {
+      "ignore": "Platba sa označí ako ignorovaná. Kedykoľvek ju môžete vrátiť na spárovanie.",
+      "draft_expense": "Len pre odchádzajúce platby. Vznikne výdavok so štítkom Na kontrolu, prepojený s platbou.",
+      "draft_invoice": "Len pre prichádzajúce platby. Vznikne návrh faktúry na kontrolu. Vystavíte ho vždy sami."
+    },
+    "form": {
+      "titleNew": "Nové pravidlo",
+      "titleEdit": "Upraviť pravidlo",
+      "name": "Názov",
+      "namePlaceholder": "Napr. Orange – telefón",
+      "conditions": "Podmienky",
+      "conditionsHint": "Platba musí splniť všetky podmienky. Pri „obsahuje“ a „je presne“ sa veľkosť písmen ani diakritika nerozlišujú.",
+      "field": "Pole",
+      "operator": "Porovnanie",
+      "value": "Hodnota",
+      "valuePlaceholder": "Napr. Orange",
+      "addCondition": "Pridať podmienku",
+      "removeCondition": "Odobrať podmienku",
+      "advanced": "Pokročilé: regulárne výrazy",
+      "regexHint": "Regulárny výraz (JavaScript, bez rozlišovania veľkosti písmen), najviac 200 znakov. Napr. ^ORANGE alebo faktura \\d+/2026. Výrazy, ktoré by mohli bežať extrémne dlho (vnorené opakovania ako (a+)+, spätné odkazy, lookahead), sa uložiť nedajú.",
+      "direction": "Smer",
+      "currency": "Mena",
+      "currencyAny": "Akákoľvek",
+      "minAmount": "Suma od",
+      "maxAmount": "Suma do",
+      "amountHint": "Suma sa porovnáva bez znamienka, odchádzajúcich 500 € je teda 500.",
+      "action": "Čo urobiť",
+      "category": "Kategória výdavku",
+      "categoryNone": "Bez kategórie",
+      "contact": "Odberateľ",
+      "contactNone": "Podľa e-mailu platiteľa",
+      "enabled": "Pravidlo je zapnuté",
+      "cancel": "Zrušiť",
+      "save": "Uložiť",
+      "saveAndApply": "Uložiť a použiť na existujúce",
+      "saved": "Pravidlo uložené.",
+      "created": "Pravidlo vytvorené."
+    },
+    "preview": {
+      "title": "Náhľad",
+      "count": "Pravidlu zodpovedá {count, plural, one {# nespárovaná platba} few {# nespárované platby} other {# nespárovaných platieb}}.",
+      "loading": "Počítam…",
+      "incomplete": "Doplňte aspoň jednu podmienku a uvidíte, ktorých platieb sa pravidlo týka.",
+      "more": "a {count, plural, one {# ďalšia} few {# ďalšie} other {# ďalších}}",
+      "onlyUnmatched": "Náhľad ukazuje len platby, ktoré teraz nie sú spárované. Zatiaľ sa nič nemení."
+    },
+    "apply": {
+      "button": "Použiť na existujúce",
+      "confirmTitle": "Použiť pravidlo „{name}“ na existujúce platby?",
+      "what": {
+        "ignore": "Označia sa ako ignorované.",
+        "draft_expense": "Z každej vznikne výdavok na kontrolu.",
+        "draft_invoice": "Z každej vznikne návrh faktúry na kontrolu."
+      },
+      "rematchFirst": "Najprv ešte raz skúsime platby spárovať s faktúrami.",
+      "done": "Pravidlo použité na {applied, plural, one {# platbu} few {# platby} other {# platieb}}.",
+      "doneMore": "Pravidlo použité na {applied, plural, one {# platbu} few {# platby} other {# platieb}}. Zostáva {remaining}, spustite ho znova.",
+      "nothing": "Pravidlu teraz nezodpovedá žiadna nespárovaná platba."
+    },
+    "delete": {
+      "title": "Zmazať pravidlo?",
+      "body": "Pravidlo „{name}“ sa zmaže. Platby, ktoré už vybavilo, zostanú tak, ako sú.",
+      "confirm": "Zmazať",
+      "done": "Pravidlo zmazané."
+    },
+    "errors": {
+      "generic": "Nepodarilo sa to",
+      "rule_needs_condition": "Pridajte aspoň jednu podmienku na text alebo na sumu. Samotný smer by sa týkal všetkých platieb.",
+      "invalid_amount_range": "Suma od musí byť menšia alebo rovná sume do.",
+      "invalid_regex": "Regulárny výraz nie je platný alebo je dlhší ako 200 znakov.",
+      "unsafe_regex": "Tento regulárny výraz by mohol bežať príliš dlho. Zjednodušte ho (bez vnorených opakovaní, spätných odkazov a lookaheadu, najviac dve * alebo +).",
+      "action_needs_outgoing": "Výdavok sa dá vytvoriť len z odchádzajúcich platieb. Nastavte smer na Odchádzajúce.",
+      "action_needs_incoming": "Návrh faktúry sa dá vytvoriť len z prichádzajúcich platieb. Nastavte smer na Prichádzajúce.",
+      "contact_not_found": "Vybraný odberateľ už neexistuje.",
+      "bank_rule_not_found": "Pravidlo už neexistuje.",
+      "forbidden": "Na úpravu pravidiel nemáte oprávnenie."
     }
   }
 }

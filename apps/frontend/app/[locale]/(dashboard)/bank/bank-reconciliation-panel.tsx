@@ -12,7 +12,17 @@ import { draftInvoiceFromTransaction, ignoreTransaction } from './actions';
 import { useCanWrite } from '@/components/access-provider';
 import { BankRowMenu, openInNewTab } from './bank-row-menu';
 
-export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null };
+export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null; ruleName?: string | null };
+
+/** The status line of a row, naming the bank rule that acted on it. */
+function statusText(tx: BankRow, t: ReturnType<typeof useTranslations<'bank'>>): string {
+  const rule = tx.ruleName;
+  if (tx.status === 'ignored' && rule) return t('rule.ignoredBy', { rule });
+  if (tx.status === 'matched' && tx.matchedExpenseId) return rule ? t('rule.expenseBy', { rule }) : t('rule.expense');
+  if (tx.status === 'matched' && tx.invoiceNumber) return t('matchedWithInvoice', { invoiceId: tx.invoiceNumber });
+  if (tx.status === 'matched' && rule) return t('rule.draftBy', { rule });
+  return t(`status.${tx.status}`);
+}
 
 /** Statement lines: rows open the detail; unmatched ones can be bulk-ignored or turned into draft invoices. */
 export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) {
@@ -128,7 +138,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    {tx.status === 'matched' && tx.invoiceNumber ? t('matchedWithInvoice', { invoiceId: tx.invoiceNumber }) : t(`status.${tx.status}`)}
+                    {statusText(tx, t)}
                   </p>
                 </div>
               </Link>
@@ -203,7 +213,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                   </td>
                   <td className="px-3 py-2.5">
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', TX_STATUS_CLASSES[tx.status])}>
-                      {tx.status === 'matched' && tx.invoiceNumber ? t('matchedWithInvoice', { invoiceId: tx.invoiceNumber }) : t(`status.${tx.status}`)}
+                      {statusText(tx, t)}
                     </span>
                   </td>
                   <td className="px-2 py-2.5 text-right">

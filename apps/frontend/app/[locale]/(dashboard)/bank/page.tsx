@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Search } from 'lucide-react';
+import { ListFilter, Search } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -22,6 +22,7 @@ import {
 import { presetRange } from '@/lib/period-presets';
 import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
+import { buttonClass } from '@/lib/ui-classes';
 import type { BankConnection } from './actions';
 import { BankConnections } from './bank-connections';
 import { BankFilters } from './bank-filters';
@@ -67,16 +68,19 @@ export default async function BankReconciliationPage(props: {
   let invoices: InvoiceRow[];
   let connections: BankConnection[];
   let psd2: { available: boolean; countries: string[] };
+  let ruleNames: { id: string; name: string }[];
   const [home, canEdit, role] = await Promise.all([fetchHomeCurrency(), fetchCanWrite('bank'), fetchMyRole().catch(() => null)]);
   try {
-    [transactions, invoices, connections, psd2] = await Promise.all([
+    [transactions, invoices, connections, psd2, ruleNames] = await Promise.all([
       apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions'),
       apiFetch<InvoiceRow[]>('/api/v1/invoices').catch(() => [] as InvoiceRow[]),
       apiFetch<BankConnection[]>('/api/v1/bank-reconciliation/connections').catch(() => [] as BankConnection[]),
       apiFetch<{ available: boolean; countries: string[] }>('/api/v1/bank-reconciliation/connections/psd2').catch(() => ({
         available: false,
         countries: []
-      }))
+      })),
+      // Only for the "ignored by rule X" labels; the list works without it.
+      apiFetch<{ id: string; name: string }[]>('/api/v1/bank-reconciliation/rules').catch(() => [])
     ]);
   } catch (err) {
     if (err instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -89,9 +93,15 @@ export default async function BankReconciliationPage(props: {
   }
 
   const byId = new Map(invoices.map((i) => [i.id, i]));
+  const ruleName = new Map(ruleNames.map((r) => [r.id, r.name]));
   const rows: BankRow[] = transactions.map((tx) => {
     const inv = tx.matchedInvoiceId ? byId.get(tx.matchedInvoiceId) : undefined;
-    return { ...tx, invoiceNumber: inv?.invoiceNumber ?? null, invoiceContact: inv?.contactName ?? null };
+    return {
+      ...tx,
+      invoiceNumber: inv?.invoiceNumber ?? null,
+      invoiceContact: inv?.contactName ?? null,
+      ruleName: tx.appliedRuleId ? (ruleName.get(tx.appliedRuleId) ?? null) : null
+    };
   });
   const filters: BankListFilters = { status, q, source, from: range.from, to: range.to, direction };
   const visible = filterTransactions(rows, filters, connections);
@@ -132,12 +142,14 @@ export default async function BankReconciliationPage(props: {
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-        {canEdit && (
-          <div className="flex flex-wrap items-start gap-2">
-            {unmatchedTotal > 0 && <RematchButton />}
-            <BankImport />
-          </div>
-        )}
+        <div className="flex flex-wrap items-start gap-2">
+          <Link href="/bank/rules" className={buttonClass.secondary}>
+            <ListFilter className="h-4 w-4" />
+            {t('rulesLink')}
+          </Link>
+          {canEdit && unmatchedTotal > 0 && <RematchButton />}
+          {canEdit && <BankImport />}
+        </div>
       </div>
 
       {/* Two compact rows on a phone; full-size cards filled the first screen. */}

@@ -21,6 +21,8 @@ export interface Expense {
   dueDate: string | null;
   paidAt: string | null;
   note: string | null;
+  /** Drafted by a bank rule from an outgoing payment; cleared when someone saves the expense. */
+  needsReview?: boolean;
   createdAt: string;
 }
 

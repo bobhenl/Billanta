@@ -227,7 +227,8 @@ export function ExpenseForm({
       note: note.trim() || null
     };
     startTransition(async () => {
-      const result = expense ? await updateExpense(expense.id, input) : await createExpense(input);
+      // Saving the form is the review a bank-rule draft waits for.
+      const result = expense ? await updateExpense(expense.id, { ...input, needsReview: false }) : await createExpense(input);
       if (!result.ok) {
         toast({ text: `${t('saveFailed')}: ${result.error}`, tone: 'err' });
         return;

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowDownLeft, ArrowUpRight, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowDownLeft, ArrowUpRight, FileText, ListFilter, Receipt } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link, redirect } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -8,6 +8,7 @@ import { InfoHint } from '@/components/info-hint';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
 import { rankCandidates, TX_STATUS_CLASSES, type BankTransaction, type BankTransactionDetail } from '@/lib/bank-ui';
+import type { Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
 import { TransactionActions } from './transaction-actions';
 
@@ -40,11 +41,14 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
   const amount = Number(tx.amount);
   const suggest = tx.status === 'unmatched' && amount > 0;
   // Contacts (for the payer's e-mail) and matched rows (paid invoices already linked) only feed the suggestions.
-  const [invoices, contacts, matchedRows] = await Promise.all([
+  const [invoices, contacts, matchedRows, rules, expense] = await Promise.all([
     apiFetch<InvoiceRow[]>('/api/v1/invoices').catch(() => [] as InvoiceRow[]),
     suggest ? apiFetch<{ id: string; email: string | null }[]>('/api/v1/contacts').catch(() => []) : Promise.resolve([]),
-    suggest ? apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions?status=matched').catch(() => [] as BankTransaction[]) : Promise.resolve([])
+    suggest ? apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions?status=matched').catch(() => [] as BankTransaction[]) : Promise.resolve([]),
+    tx.appliedRuleId ? apiFetch<{ id: string; name: string }[]>('/api/v1/bank-reconciliation/rules').catch(() => []) : Promise.resolve([]),
+    tx.matchedExpenseId ? apiFetch<Expense>(`/api/v1/expenses/${tx.matchedExpenseId}`).catch(() => null) : Promise.resolve(null)
   ]);
+  const rule = tx.appliedRuleId ? rules.find((r) => r.id === tx.appliedRuleId) : undefined;
   const matched = tx.matchedInvoiceId ? invoices.find((i) => i.id === tx.matchedInvoiceId) : undefined;
   const candidates = suggest
     ? rankCandidates(tx, invoices, {
@@ -100,7 +104,20 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
           {tx.status === 'matched' && (
             <section className="rounded-xl border border-success/40 bg-success/5 p-4">
               <h2 className="text-xs font-semibold uppercase tracking-wide text-success">{t('detail.matchedTo')}</h2>
-              {matched ? (
+              {tx.matchedExpenseId ? (
+                expense ? (
+                  <Link href={`/expenses/${expense.id}`} className="mt-2 flex items-center gap-3 rounded-lg p-2 hover:bg-card">
+                    <Receipt className="h-5 w-5 text-primary" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold">{expense.supplierNameRaw ?? expense.description}</div>
+                      <div className="text-xs text-muted-foreground">{expense.needsReview ? t('detail.expenseNeedsReview') : expense.description}</div>
+                    </div>
+                    <span className="font-semibold tabular-nums">{formatMoney(Number(expense.amount), expense.currency, locale)}</span>
+                  </Link>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">{t('detail.expenseGone')}</p>
+                )
+              ) : matched ? (
                 <Link href={`/invoices/${matched.id}`} className="mt-2 flex items-center gap-3 rounded-lg p-2 hover:bg-card">
                   <FileText className="h-5 w-5 text-primary" />
                   <div className="min-w-0 flex-1">
@@ -157,6 +174,12 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
 
           {tx.status === 'unmatched' && amount < 0 && <Banner tone="info">{t('detail.outgoingHint')}</Banner>}
           {tx.status === 'ignored' && <Banner tone="info">{t('detail.ignoredHint')}</Banner>}
+          {rule && (
+            <Link href="/bank/rules" className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 text-sm hover:border-primary/50">
+              <ListFilter className="h-4 w-4 shrink-0 text-primary" />
+              <span className="min-w-0">{t('detail.ruleApplied', { rule: rule.name })}</span>
+            </Link>
+          )}
         </div>
 
         <aside className="rounded-xl border border-border bg-card p-4 text-sm">

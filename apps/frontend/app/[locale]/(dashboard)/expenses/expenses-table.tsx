@@ -167,6 +167,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                   <p className={cn('text-xs font-semibold', state === 'paid' ? 'text-muted-foreground' : state === 'overdue' ? 'text-destructive' : 'text-warning')}>
                     {t(`state.${state}`)}
                   </p>
+                  {e.needsReview && <p className="text-xs font-semibold text-primary">{t('needsReview')}</p>}
                 </div>
               </Link>
             </li>
@@ -238,6 +239,9 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
                   <td className="whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums">{formatMoney(Number(e.amount), e.currency, locale)}</td>
                   <td className="px-3 py-2.5">
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', EXPENSE_STATE_CLASSES[state])}>{t(`state.${state}`)}</span>
+                    {e.needsReview && (
+                      <span className="ml-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{t('needsReview')}</span>
+                    )}
                   </td>
                 </tr>
               );

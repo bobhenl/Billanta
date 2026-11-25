@@ -903,7 +903,9 @@
         "unpaid": "Marked as unpaid",
         "deleted": "Expense deleted"
       },
-      "back": "Back"
+      "back": "Back",
+      "needsReview": "To review",
+      "needsReviewHint": "A bank rule created this expense from an outgoing payment. Check the supplier, VAT rate and category, then save it and the label goes away."
     },
     "filters": {
       "receipt": "Receipt",
@@ -917,7 +919,8 @@
       }
     },
     "bulkDeleteTitle": "Delete {count, plural, one {# expense} other {# expenses}}?",
-    "bulkDeleteBody": "The selected expenses will be permanently removed."
+    "bulkDeleteBody": "The selected expenses will be permanently removed.",
+    "needsReview": "To review"
   },
   "bank": {
     "title": "Bank",
@@ -1017,7 +1020,10 @@
       "alreadyLinked": "Another payment is already linked to this invoice.",
       "createDraft": "Create invoice from payment",
       "createDraftHint": "No invoice for this payment? We turn it into an invoice draft for review. You issue it yourself.",
-      "draftDone": "Invoice draft created and linked to the payment. Review it and issue it."
+      "draftDone": "Invoice draft created and linked to the payment. Review it and issue it.",
+      "ruleApplied": "Rule “{rule}” handled this payment. You can change rules under Bank › Rules.",
+      "expenseGone": "The expense from this payment no longer exists, or you can't view it.",
+      "expenseNeedsReview": "Expense waiting for review"
     },
     "connections": {
       "title": "Bank connection",
@@ -1159,7 +1165,16 @@
       "open": "Open",
       "openNewTab": "Open in new window",
       "openInvoice": "Open invoice",
-      "findMatch": "Match to an invoice…"
+      "findMatch": "Match to an invoice…",
+      "createRule": "Create a rule from this payment",
+      "openExpense": "Open expense"
+    },
+    "rulesLink": "Rules",
+    "rule": {
+      "ignoredBy": "Ignored by rule {rule}",
+      "expenseBy": "Expense from rule {rule}",
+      "draftBy": "Draft invoice from rule {rule}",
+      "expense": "Matched to an expense"
     }
   },
   "contacts": {
@@ -5453,7 +5468,8 @@
     "flatRate": "Flat-rate expenses",
     "rate": "flat {rate} %",
     "noFlat": "no flat rate",
-    "hint": "Rough Czech sole-trader estimate: the amount without VAT minus income tax (15 %), social and health insurance on this invoice – about {burden}. Uses the chosen flat rate and ignores minimum advances and tax credits. See Exports for the full year."
+    "hint": "Rough Czech sole-trader estimate: the amount without VAT minus income tax (15 %), social and health insurance on this invoice – about {burden}. Uses the chosen flat rate and ignores minimum advances and tax credits. See Exports for the full year.",
+    "hintCosts": "Payment fees and the conversion loss ({costs}) are taken off too. With a flat rate they don't lower the tax, since the flat rate already covers all expenses."
   },
   "welcome": {
     "title": "Welcome to Billanta",
@@ -13809,6 +13825,131 @@
     "noAccess": {
       "title": "For owners and admins only",
       "body": "The after-tax report shows each partner’s income and taxes, so only the company’s owner and admins can see it."
+    }
+  },
+  "bankRules": {
+    "title": "Payment rules",
+    "intro": "What to do with a payment that didn't match an invoice. Rules run after every import and sync, on new unmatched payments only. Matching to an invoice always comes first.",
+    "backToBank": "Back to bank",
+    "noTenant": "Pick or create a company first.",
+    "loadError": "Couldn't load the rules.",
+    "newRule": "New rule",
+    "empty": "No rules yet",
+    "emptyHint": "For example: record payments to your phone provider as expenses, ignore bank fees. You can also start a rule from a payment's menu.",
+    "list": {
+      "order": "Rules are tried top to bottom, and the first one that fits a payment is used.",
+      "enabled": "Rule on",
+      "off": "Off",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "edit": "Edit",
+      "delete": "Delete",
+      "enabledDone": "Rule turned on.",
+      "disabledDone": "Rule turned off."
+    },
+    "field": {
+      "counterparty_name": "Counterparty",
+      "counterparty_account": "Payer account or e-mail",
+      "message": "Message for recipient",
+      "variable_symbol": "Variable symbol",
+      "any": "Any field"
+    },
+    "operator": {
+      "contains": "contains",
+      "equals": "is exactly",
+      "regex": "matches regex"
+    },
+    "direction": {
+      "any": "Incoming and outgoing",
+      "in": "Incoming",
+      "out": "Outgoing"
+    },
+    "summary": {
+      "between": "amount {min}–{max}",
+      "atLeast": "amount from {min}",
+      "atMost": "amount up to {max}"
+    },
+    "action": {
+      "ignore": "Ignore",
+      "draft_expense": "Create an expense to review",
+      "draft_invoice": "Create a draft invoice"
+    },
+    "actionHint": {
+      "ignore": "The payment is marked as ignored. You can put it back for matching at any time.",
+      "draft_expense": "Outgoing payments only. Creates an expense labelled To review, linked to the payment.",
+      "draft_invoice": "Incoming payments only. Creates a draft invoice to review. Issuing it is always up to you."
+    },
+    "form": {
+      "titleNew": "New rule",
+      "titleEdit": "Edit rule",
+      "name": "Name",
+      "namePlaceholder": "E.g. Vodafone – phone",
+      "conditions": "Conditions",
+      "conditionsHint": "A payment has to meet every condition. “Contains” and “is exactly” ignore letter case and accents.",
+      "field": "Field",
+      "operator": "Comparison",
+      "value": "Value",
+      "valuePlaceholder": "E.g. Vodafone",
+      "addCondition": "Add condition",
+      "removeCondition": "Remove condition",
+      "advanced": "Advanced: regular expressions",
+      "regexHint": "A regular expression (JavaScript, case-insensitive), at most 200 characters. E.g. ^VODAFONE or invoice \\d+/2026. Patterns that could run for an extremely long time (nested repeats like (a+)+, backreferences, lookaheads) can't be saved.",
+      "direction": "Direction",
+      "currency": "Currency",
+      "currencyAny": "Any",
+      "minAmount": "Amount from",
+      "maxAmount": "Amount up to",
+      "amountHint": "Amounts are compared without the sign, so an outgoing 500 counts as 500.",
+      "action": "What to do",
+      "category": "Expense category",
+      "categoryNone": "No category",
+      "contact": "Customer",
+      "contactNone": "By the payer's e-mail",
+      "enabled": "Rule is on",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saveAndApply": "Save and apply to existing",
+      "saved": "Rule saved.",
+      "created": "Rule created."
+    },
+    "preview": {
+      "title": "Preview",
+      "count": "{count, plural, one {# unmatched payment fits} other {# unmatched payments fit}} this rule.",
+      "loading": "Counting…",
+      "incomplete": "Add at least one condition to see which payments the rule would touch.",
+      "more": "and {count} more",
+      "onlyUnmatched": "The preview only shows payments that are unmatched right now. Nothing changes yet."
+    },
+    "apply": {
+      "button": "Apply to existing",
+      "confirmTitle": "Apply rule “{name}” to existing payments?",
+      "what": {
+        "ignore": "They will be marked as ignored.",
+        "draft_expense": "Each one becomes an expense to review.",
+        "draft_invoice": "Each one becomes a draft invoice to review."
+      },
+      "rematchFirst": "We'll try matching the payments to invoices once more first.",
+      "done": "Rule applied to {applied, plural, one {# payment} other {# payments}}.",
+      "doneMore": "Rule applied to {applied, plural, one {# payment} other {# payments}}. {remaining} left, run it again.",
+      "nothing": "No unmatched payment fits this rule right now."
+    },
+    "delete": {
+      "title": "Delete rule?",
+      "body": "Rule “{name}” will be deleted. Payments it already handled stay as they are.",
+      "confirm": "Delete",
+      "done": "Rule deleted."
+    },
+    "errors": {
+      "generic": "That didn't work",
+      "rule_needs_condition": "Add at least one text or amount condition. A direction alone would cover every payment.",
+      "invalid_amount_range": "Amount from has to be less than or equal to amount up to.",
+      "invalid_regex": "The regular expression isn't valid or is longer than 200 characters.",
+      "unsafe_regex": "This regular expression could run for too long. Simplify it (no nested repeats, backreferences or lookaheads, at most two * or +).",
+      "action_needs_outgoing": "Expenses can only come from outgoing payments. Set the direction to Outgoing.",
+      "action_needs_incoming": "Draft invoices can only come from incoming payments. Set the direction to Incoming.",
+      "contact_not_found": "The chosen customer no longer exists.",
+      "bank_rule_not_found": "The rule no longer exists.",
+      "forbidden": "You don't have permission to change rules."
     }
   }
 }
