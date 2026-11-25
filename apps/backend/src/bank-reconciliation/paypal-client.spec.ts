@@ -129,6 +129,31 @@ describe("parsePaypalTransactions", () => {
     expect(row).toMatchObject({ message: "VIP rank – Díky", payerCountry: "SK", counterpartyName: "Ján Kováč" });
   });
 
+  it("prefers the invoice's item names over the subject", () => {
+    const [row] = parsePaypalTransactions([
+      {
+        ...detail({ transaction_subject: "Invoice 0012" }),
+        cart_info: {
+          item_details: [
+            { item_name: "Tebex Webstore - Rank category overhaul", item_quantity: "1" },
+            { item_name: "Logo", item_quantity: "2" },
+            { item_name: "  " },
+          ],
+        },
+      },
+    ]);
+    expect(row!.message).toBe("Tebex Webstore - Rank category overhaul; 2× Logo");
+  });
+
+  it("dates a payment by the Prague calendar day, not the UTC one", () => {
+    const [late] = parsePaypalTransactions([detail({ transaction_initiation_date: "2026-08-21T22:30:00+0000" })]);
+    expect(late!.transactionDate.toISOString()).toBe("2026-08-22T00:00:00.000Z");
+    const [winter] = parsePaypalTransactions([detail({ transaction_initiation_date: "2026-01-15T23:10:00Z" })]);
+    expect(winter!.transactionDate.toISOString()).toBe("2026-01-16T00:00:00.000Z");
+    const [day] = parsePaypalTransactions([detail({ transaction_initiation_date: "2026-08-21T21:30:00+0000" })]);
+    expect(day!.transactionDate.toISOString()).toBe("2026-08-21T00:00:00.000Z");
+  });
+
   it("reads the variable symbol from the note when there is no invoice id", () => {
     const [row] = parsePaypalTransactions([detail({ invoice_id: null, transaction_note: "Faktura VS 2026015" })]);
     expect(row!.variableSymbol).toBe("2026015");

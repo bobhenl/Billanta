@@ -90,6 +90,9 @@ type RawDetail = {
     invoice_id?: string | null;
     custom_field?: string | null;
   } | null;
+  cart_info?: {
+    item_details?: { item_name?: string | null; item_quantity?: string | null }[] | null;
+  } | null;
   payer_info?: {
     email_address?: string | null;
     country_code?: string | null;
@@ -102,11 +105,36 @@ function money(value: Money): number | null {
   return value?.value === undefined || value?.value === null || !Number.isFinite(n) ? null : n;
 }
 
-/** "2026-09-30T14:03:11+0000" → that calendar day at UTC midnight (same as the other sources). */
-function parseDay(raw: string | null | undefined): Date | null {
-  const match = raw?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+const PRAGUE_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Prague", year: "numeric", month: "2-digit", day: "2-digit" });
+
+/**
+ * "2026-09-30T23:30:00+0000" → the calendar day in Prague (here Oct 1) at UTC
+ * midnight, like the other sources. PayPal's API answers in UTC; a payment
+ * late in the evening belongs to the next day on the invoice (DUZP) and in
+ * the books, which is also what PayPal's own site shows a CZ/SK account.
+ */
+export function parseDay(raw: string | null | undefined): Date | null {
+  const match = raw?.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?/);
   if (!match) return null;
-  return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  const [, y, m, d, hh, mm, ss, zone] = match;
+  if (hh === undefined) return new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+  const offset = !zone || zone === "Z" ? "Z" : zone.replace(/^([+-]\d{2}):?(\d{2})$/, "$1:$2");
+  const instant = new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}${offset}`);
+  if (Number.isNaN(instant.getTime())) return null;
+  const [py, pm, pd] = PRAGUE_DAY.format(instant).split("-").map(Number);
+  return new Date(Date.UTC(py, pm - 1, pd));
+}
+
+/** What was paid for: the item names of a PayPal invoice or cart ("2× Logo"), when PayPal sends them. */
+function itemsOf(detail: RawDetail): string | null {
+  const names = (detail.cart_info?.item_details ?? [])
+    .map((item) => {
+      const name = item?.item_name?.trim();
+      const qty = Number(item?.item_quantity);
+      return name ? (Number.isFinite(qty) && qty > 1 ? `${qty}× ${name}` : name) : null;
+    })
+    .filter(Boolean);
+  return names.length ? names.join("; ") : null;
 }
 
 /**
@@ -150,7 +178,8 @@ export function parsePaypalTransactions(details: unknown): PaypalSyncedRow[] {
       fee: fee !== null && fee !== 0 ? Math.abs(fee).toFixed(2) : null,
       netAmount: converted && converted.currency !== currency ? converted.amount.toFixed(2) : null,
       netCurrency: converted && converted.currency !== currency ? converted.currency : null,
-      message: [info.transaction_subject, info.transaction_note].map((t) => t?.trim()).filter(Boolean).join(" – ") || null,
+      // The items say what was paid for; a subject or note is the fallback (often just "Invoice 12").
+      message: itemsOf(detail) ?? ([info.transaction_subject, info.transaction_note].map((t) => t?.trim()).filter(Boolean).join(" – ") || null),
       payerCountry: payer?.country_code?.trim().toUpperCase().slice(0, 2) || null,
     });
   }
@@ -258,7 +287,7 @@ export class PaypalClient {
       const params = new URLSearchParams({
         start_date: paypalTime(from),
         end_date: paypalTime(to),
-        fields: "transaction_info,payer_info",
+        fields: "transaction_info,payer_info,cart_info",
         transaction_status: "S",
         page_size: "500",
         page: String(page),

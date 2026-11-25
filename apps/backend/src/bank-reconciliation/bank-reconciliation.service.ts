@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { normalizeVariableSymbol } from "@faktur/cz-compliance";
-import { and, asc, desc, eq, gte, inArray, isNull, lt, ne, or } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNull, lt, ne, or, sql } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
 import { ExpensesService } from "../expenses/expenses.service";
-import { InvoicesService } from "../invoices/invoices.service";
+import { InvoicesService, PAYMENT_DRAFT_PLACEHOLDER } from "../invoices/invoices.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { compileRule, decideAfterMatch, type CompiledRule, type PaymentForRules, type RuleAction, type RuleConditions } from "./bank-rules";
 import type { ParsedBankTransactionRow } from "./csv-parser";
@@ -174,6 +174,27 @@ export class BankReconciliationService {
             )
             .onConflictDoNothing()
             .returning();
+
+    // A row synced before its source sent a description (PayPal invoice items
+    // came later) gets it now. Only an empty message is filled, never replaced,
+    // and a draft made from it swaps its placeholder line for the real text
+    // while it still waits for review (an issued invoice is never touched).
+    const inserted = new Set(insertedTransactions.map((t) => t.externalId));
+    const late = parsedRows
+      .filter((r) => r.externalId && r.message && !inserted.has(r.externalId))
+      .map((r) => ({ id: r.externalId, message: r.message!.slice(0, 500) }));
+    if (late.length > 0) {
+      await db.execute(sql`
+        WITH filled AS (
+          UPDATE bank_transactions t SET message = v.message
+          FROM jsonb_to_recordset(${JSON.stringify(late)}::jsonb) AS v(id text, message text)
+          WHERE t.external_id = v.id AND t.message IS NULL
+          RETURNING t.matched_invoice_id, t.message
+        )
+        UPDATE invoice_line_items li SET description = f.message
+        FROM filled f JOIN invoices i ON i.id = f.matched_invoice_id
+        WHERE li.invoice_id = i.id AND i.status = 'pending_review' AND li.description = ${PAYMENT_DRAFT_PLACEHOLDER}`);
+    }
 
     const pools = await this.loadPools(db, insertedTransactions);
     // Rules run on new payments only. Older unmatched ones (e.g. a payment a

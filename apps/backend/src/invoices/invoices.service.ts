@@ -64,6 +64,9 @@ type InvoiceRow = typeof schema.invoices.$inferSelect;
 type LineItemRow = typeof schema.invoiceLineItems.$inferSelect;
 type LineItemInput = NonNullable<UpdateInvoiceDto["line_items"]>[number];
 
+/** The line a payment draft gets when the payment says nothing about what was paid for. */
+export const PAYMENT_DRAFT_PLACEHOLDER = "Platba PayPal";
+
 const ISSUABLE_STATUSES: ReadonlyArray<InvoiceRow["status"]> = ["draft", "pending_review"];
 
 /** Document number prefixes printed into the notes of a derived document. */
@@ -1199,7 +1202,7 @@ export class InvoicesService {
     await db.insert(schema.invoiceLineItems).values({
       tenantId,
       invoiceId: invoice.id,
-      description: (payment.description || "Platba PayPal").slice(0, 500),
+      description: (payment.description || PAYMENT_DRAFT_PLACEHOLDER).slice(0, 500),
       quantity: "1",
       unitPrice: round2(payment.amount).toFixed(2),
       vatRate: null,
