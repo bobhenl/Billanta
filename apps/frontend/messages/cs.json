@@ -5275,7 +5275,8 @@
       "shortcuts": "Klávesové zkratky"
     },
     "pages": {
-      "templates": "Šablony faktur"
+      "templates": "Šablony faktur",
+      "netIncome": "Po zdanění (čistý příjem)"
     },
     "keywords": {
       "newInvoice": "vystavit vytvořit přidat doklad",
@@ -6995,7 +6996,8 @@
       "dragToReorder": "Přetáhněte pro změnu pořadí"
     },
     "flatTaxLink": "Vyplatí se paušální daň? →",
-    "taxReturnLink": "Podklady pro daňové přiznání →"
+    "taxReturnLink": "Podklady pro daňové přiznání →",
+    "netIncomeLink": "Po zdanění"
   },
   "siteSearch": {
     "title": "Hledat na webu",
@@ -13632,5 +13634,138 @@
     "privacyTitle": "Osobní údaje",
     "privacyBody": "Správcem osobních údajů je provozovatel uvedený výše. Jaké údaje zpracováváme a jak uplatnit svá práva (přístup, oprava, výmaz a další), popisují Zásady ochrany osobních údajů.",
     "legalTitle": "Právní dokumenty"
+  },
+  "netIncome": {
+    "title": "Po zdanění",
+    "intro": "Kolik zůstane z uhrazených faktur po dani z příjmů, sociálním a zdravotním pojištění a společných výdajích. I pro víc společníků, kteří si příjem dělí.",
+    "back": "Přehledy",
+    "noTenant": "Nejdřív si vytvořte firmu.",
+    "loadError": "Výpočet se nepodařilo načíst. Zkuste to prosím znovu.",
+    "notSupported": "Výpočet po zdanění zatím počítá jen s českými pravidly (paušální výdaje, ČSSZ, zdravotní pojišťovna).",
+    "periodKindLabel": "Období",
+    "periodKind": {
+      "month": "Měsíc",
+      "quarter": "Čtvrtletí",
+      "year": "Rok"
+    },
+    "prev": "Předchozí období",
+    "next": "Další období",
+    "quarterLabel": "{q}. čtvrtletí {year}",
+    "missingRates": "{count, plural, one {U # faktury chybí kurz, ve výpočtu není.} few {U # faktur chybí kurz, ve výpočtu nejsou.} other {U # faktur chybí kurz, ve výpočtu nejsou.}}",
+    "cards": {
+      "income": "Příjmy celkem",
+      "taxes": "Daň a pojištění",
+      "afterTaxes": "Po zdanění",
+      "net": "Čistý příjem"
+    },
+    "creditsHint": {
+      "month": "Měsíc ukazuje 1/12 roční slevy na dani a 1/12 limitu paušálních výdajů. Skutečná daň se počítá za celý rok, takže součet měsíců se od roku může lišit.",
+      "quarter": "Čtvrtletí ukazuje 1/4 roční slevy na dani a 1/4 limitu paušálních výdajů. Skutečná daň se počítá za celý rok.",
+      "year": "Rok počítá s celou roční slevou na dani a celým limitem paušálních výdajů, stejně jako daňové přiznání."
+    },
+    "table": {
+      "title": "Výpočet",
+      "titlePartners": "Výpočet podle společníků",
+      "metric": "Položka",
+      "share": "podíl {percent} %",
+      "total": "Celkem",
+      "income": "Příjmy",
+      "flatExpenses": "Paušální výdaje",
+      "base": "Základ daně",
+      "taxBeforeCredits": "Daň před slevou",
+      "credits": "Slevy na dani",
+      "incomeTax": "Daň z příjmů",
+      "social": "Sociální pojištění",
+      "health": "Zdravotní pojištění",
+      "taxes": "Daň a pojištění celkem",
+      "sharedExpenses": "Společné výdaje",
+      "net": "Čistý příjem"
+    },
+    "formula": "Základ = příjmy − {flat} % paušál. Daň {tax} % ze základu, sociální {socialRate} % z {socialBase} % základu, zdravotní {healthRate} % z {healthBase} % základu.",
+    "estimateNote": "Orientační odhad: bez minimálních záloh, bez 23% sazby daně a bez zaokrouhlení základu. Nenahrazuje daňové přiznání ani přehledy.",
+    "partnerFallback": "Společník {n}",
+    "partnerMe": "Já",
+    "months": {
+      "title": "Po měsících",
+      "hint": "Každý měsíc spočítaný samostatně, s 1/12 slevy na dani. Hodí se na srovnání měsíců mezi sebou.",
+      "month": "Měsíc",
+      "income": "Příjmy",
+      "taxes": "Daň a pojištění",
+      "net": "Čistý příjem"
+    },
+    "list": {
+      "title": "Příjmy v období ({count})",
+      "hint": "Uhrazené faktury podle dne úhrady a ostatní příjmy z nastavení. U zahraniční faktury se bere částka, která skutečně přišla na účet (např. po převodu v PayPalu), jinak přepočet kurzem.",
+      "hintVat": "Uhrazené faktury podle dne úhrady, bez DPH, a ostatní příjmy z nastavení. U zahraniční faktury se bere částka, která skutečně přišla na účet, jinak přepočet kurzem.",
+      "empty": "V tomto období nejsou žádné uhrazené faktury.",
+      "show": "Zobrazit všechny příjmy ({count})",
+      "paidOn": "uhrazeno {date}",
+      "source": {
+        "czk": "v Kč",
+        "received": "skutečně přijato",
+        "converted": "přepočteno kurzem"
+      },
+      "extra": "ostatní příjem",
+      "splitLabel": "Komu patří faktura {number}",
+      "saved": "Rozdělení uloženo.",
+      "failed": "Rozdělení se nepodařilo uložit."
+    },
+    "shares": {
+      "default": "Výchozí podíly",
+      "alone": "Jen {name}",
+      "custom": "Vlastní poměr…",
+      "apply": "Použít poměr"
+    },
+    "config": {
+      "title": "Nastavení výpočtu",
+      "readOnly": "Nastavení může měnit jen vlastník nebo správce firmy.",
+      "rates": "Sazby",
+      "fields": {
+        "flat_expense_percent": "Paušální výdaje",
+        "flat_expense_cap": "Roční limit paušálu na osobu",
+        "income_tax_percent": "Daň z příjmů",
+        "social_rate_percent": "Sociální pojištění",
+        "social_base_percent": "Vyměřovací základ – sociální",
+        "health_rate_percent": "Zdravotní pojištění",
+        "health_base_percent": "Vyměřovací základ – zdravotní"
+      },
+      "ratesHintLabel": "Proč 55 % u sociálního?",
+      "ratesHint": "Od roku 2024 je vyměřovací základ pro sociální pojištění 55 % zisku (dříve 50 %), pro zdravotní zůstává 50 %. Limit paušálu při 60 % je 1 200 000 Kč ročně; prázdné pole znamená bez limitu.",
+      "partners": "Společníci",
+      "partnersHint": "Každý společník se daní zvlášť ze svého podílu. Podíl je poměr: 1, 1, 1 je třetina každému, 1 a 2 je třetina a dvě třetiny.",
+      "partnerName": "Jméno",
+      "partnerShare": "Podíl",
+      "partnerCredits": "Slevy na dani za rok",
+      "partnerFallback": "Společník {n}",
+      "addPartner": "Přidat společníka",
+      "remove": "Odebrat",
+      "creditsHintLabel": "Co patří do slev?",
+      "creditsHint": "Součet ročních slev na dani: na poplatníka 30 840 Kč, případně na manžela či manželku, na děti a další. Sleva sníží daň nejvýš na nulu.",
+      "sharedExpenses": "Společné výdaje",
+      "sharedExpensesHint": "Výdaje firmy (nájem, software…), které se odečtou od čistého příjmu podle poměru. Základ daně nemění, ten je daný paušálem.",
+      "label": "Popis",
+      "amount": "Částka",
+      "per": "Za",
+      "perMonth": "měsíc",
+      "perYear": "rok",
+      "splitOf": "Komu patří {label}",
+      "addExpense": "Přidat výdaj",
+      "extraIncome": "Ostatní příjmy",
+      "extraIncomeHint": "Příjmy, které nejsou fakturou, např. z poplatků a kurzových zisků. Daní se stejně jako faktury.",
+      "date": "Datum",
+      "addExtra": "Přidat příjem",
+      "save": "Uložit nastavení",
+      "saved": "Nastavení uloženo.",
+      "resetRates": "Výchozí sazby"
+    },
+    "errors": {
+      "duplicate_partner": "Dva společníci mají stejné označení. Odeberte jednoho a přidejte ho znovu.",
+      "shares_must_be_positive": "Aspoň jeden podíl musí být větší než nula.",
+      "generic": "Nastavení se nepodařilo uložit. Zkontrolujte čísla a zkuste to znovu."
+    },
+    "noAccess": {
+      "title": "Jen pro majitele a administrátory",
+      "body": "Report Po zdanění ukazuje příjmy a daně jednotlivých společníků, proto ho vidí jen majitel a administrátoři firmy."
+    }
   }
 }

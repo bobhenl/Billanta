@@ -624,6 +624,13 @@
       "when": 1793248620000,
       "tag": "0089_paypal_net_and_drafts",
       "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1793248680000,
+      "tag": "0090_net_income",
+      "breakpoints": true
     }
   ]
 }

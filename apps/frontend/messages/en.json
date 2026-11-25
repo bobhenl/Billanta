@@ -5275,7 +5275,8 @@
       "shortcuts": "Keyboard shortcuts"
     },
     "pages": {
-      "templates": "Invoice templates"
+      "templates": "Invoice templates",
+      "netIncome": "After taxes (net income)"
     },
     "keywords": {
       "newInvoice": "issue create add document",
@@ -6995,7 +6996,8 @@
       "dragToReorder": "Drag to reorder"
     },
     "flatTaxLink": "Does the flat-rate tax pay off? →",
-    "taxReturnLink": "Tax return summary →"
+    "taxReturnLink": "Tax return summary →",
+    "netIncomeLink": "After taxes"
   },
   "siteSearch": {
     "title": "Search the site",
@@ -13632,5 +13634,138 @@
     "privacyTitle": "Personal data",
     "privacyBody": "The operator named above is the controller of your personal data. The privacy policy explains what we process and how to use your rights (access, correction, erasure and more).",
     "legalTitle": "Legal documents"
+  },
+  "netIncome": {
+    "title": "After taxes",
+    "intro": "What is left of your paid invoices after income tax, social and health insurance and shared expenses. Also for several partners who split the income.",
+    "back": "Reports",
+    "noTenant": "Create a company first.",
+    "loadError": "Could not load the calculation. Please try again.",
+    "notSupported": "The after-tax calculation only follows Czech rules so far (flat-rate expenses, ČSSZ, health insurer).",
+    "periodKindLabel": "Period",
+    "periodKind": {
+      "month": "Month",
+      "quarter": "Quarter",
+      "year": "Year"
+    },
+    "prev": "Previous period",
+    "next": "Next period",
+    "quarterLabel": "Q{q} {year}",
+    "missingRates": "{count, plural, one {# invoice has no exchange rate and is left out.} other {# invoices have no exchange rate and are left out.}}",
+    "cards": {
+      "income": "Total income",
+      "taxes": "Tax and insurance",
+      "afterTaxes": "After taxes",
+      "net": "Net income"
+    },
+    "creditsHint": {
+      "month": "A month uses 1/12 of the yearly tax credits and 1/12 of the flat-rate expense cap. The real tax is assessed for the whole year, so the months may not add up to the year.",
+      "quarter": "A quarter uses 1/4 of the yearly tax credits and 1/4 of the flat-rate expense cap. The real tax is assessed for the whole year.",
+      "year": "A year uses the full yearly tax credits and the full flat-rate expense cap, like the tax return."
+    },
+    "table": {
+      "title": "Calculation",
+      "titlePartners": "Calculation by partner",
+      "metric": "Item",
+      "share": "share {percent} %",
+      "total": "Total",
+      "income": "Income",
+      "flatExpenses": "Flat-rate expenses",
+      "base": "Tax base",
+      "taxBeforeCredits": "Tax before credits",
+      "credits": "Tax credits",
+      "incomeTax": "Income tax",
+      "social": "Social insurance",
+      "health": "Health insurance",
+      "taxes": "Tax and insurance total",
+      "sharedExpenses": "Shared expenses",
+      "net": "Net income"
+    },
+    "formula": "Base = income − {flat} % flat-rate expenses. Tax {tax} % of the base, social {socialRate} % of {socialBase} % of the base, health {healthRate} % of {healthBase} % of the base.",
+    "estimateNote": "A rough estimate: no minimum advances, no 23 % tax band and no rounding of the base. It does not replace the tax return or the yearly statements.",
+    "partnerFallback": "Partner {n}",
+    "partnerMe": "Me",
+    "months": {
+      "title": "By month",
+      "hint": "Each month calculated on its own, with 1/12 of the tax credits. Useful for comparing months.",
+      "month": "Month",
+      "income": "Income",
+      "taxes": "Tax and insurance",
+      "net": "Net income"
+    },
+    "list": {
+      "title": "Income in the period ({count})",
+      "hint": "Paid invoices by the day paid, plus other income from the settings. For a foreign invoice it takes what actually reached the account (e.g. after conversion in PayPal), otherwise the exchange rate.",
+      "hintVat": "Paid invoices by the day paid, without VAT, plus other income from the settings. For a foreign invoice it takes what actually reached the account, otherwise the exchange rate.",
+      "empty": "No paid invoices in this period.",
+      "show": "Show all income ({count})",
+      "paidOn": "paid {date}",
+      "source": {
+        "czk": "in CZK",
+        "received": "actually received",
+        "converted": "converted at the rate"
+      },
+      "extra": "other income",
+      "splitLabel": "Who invoice {number} belongs to",
+      "saved": "Split saved.",
+      "failed": "Could not save the split."
+    },
+    "shares": {
+      "default": "Default shares",
+      "alone": "Only {name}",
+      "custom": "Own ratio…",
+      "apply": "Apply ratio"
+    },
+    "config": {
+      "title": "Calculation settings",
+      "readOnly": "Only the company owner or an admin can change the settings.",
+      "rates": "Rates",
+      "fields": {
+        "flat_expense_percent": "Flat-rate expenses",
+        "flat_expense_cap": "Yearly flat-rate cap per person",
+        "income_tax_percent": "Income tax",
+        "social_rate_percent": "Social insurance",
+        "social_base_percent": "Assessment base – social",
+        "health_rate_percent": "Health insurance",
+        "health_base_percent": "Assessment base – health"
+      },
+      "ratesHintLabel": "Why 55 % for social?",
+      "ratesHint": "Since 2024 the Czech social insurance base is 55 % of the profit (50 % before), the health insurance base stays at 50 %. The cap for 60 % flat-rate expenses is 1,200,000 CZK a year; leave it empty for no cap.",
+      "partners": "Partners",
+      "partnersHint": "Each partner is taxed separately on their share. A share is a ratio: 1, 1, 1 gives a third each, 1 and 2 gives one third and two thirds.",
+      "partnerName": "Name",
+      "partnerShare": "Share",
+      "partnerCredits": "Yearly tax credits",
+      "partnerFallback": "Partner {n}",
+      "addPartner": "Add partner",
+      "remove": "Remove",
+      "creditsHintLabel": "What counts as credits?",
+      "creditsHint": "The sum of yearly tax credits: 30,840 CZK per taxpayer, plus spouse, children and others where they apply. Credits reduce the tax to zero at most.",
+      "sharedExpenses": "Shared expenses",
+      "sharedExpensesHint": "Business costs (rent, software…) taken off the net income by ratio. They do not change the tax base, which comes from the flat-rate expenses.",
+      "label": "Description",
+      "amount": "Amount",
+      "per": "Per",
+      "perMonth": "month",
+      "perYear": "year",
+      "splitOf": "Who {label} belongs to",
+      "addExpense": "Add expense",
+      "extraIncome": "Other income",
+      "extraIncomeHint": "Income that is not an invoice, e.g. from fees and exchange gains. Taxed the same way as invoices.",
+      "date": "Date",
+      "addExtra": "Add income",
+      "save": "Save settings",
+      "saved": "Settings saved.",
+      "resetRates": "Default rates"
+    },
+    "errors": {
+      "duplicate_partner": "Two partners have the same id. Remove one and add it again.",
+      "shares_must_be_positive": "At least one share must be above zero.",
+      "generic": "Could not save the settings. Check the numbers and try again."
+    },
+    "noAccess": {
+      "title": "For owners and admins only",
+      "body": "The after-tax report shows each partner’s income and taxes, so only the company’s owner and admins can see it."
+    }
   }
 }

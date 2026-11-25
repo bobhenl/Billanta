@@ -29,6 +29,8 @@ import { EInvoicingSettingsController, IncomingEInvoicesController, InvoiceEInvo
 import { EInvoicingModule } from "./einvoicing/einvoicing.module";
 import { ExportsController } from "./exports/exports.controller";
 import { ExportsModule } from "./exports/exports.module";
+import { InvoicePartnerSharesController, NetIncomeController, TaxModelController } from "./net-income/net-income.controller";
+import { NetIncomeModule } from "./net-income/net-income.module";
 import { InvoiceTemplatesController } from "./invoice-templates/invoice-templates.controller";
 import { InvoiceTemplatesModule } from "./invoice-templates/invoice-templates.module";
 import { TimeTrackingController } from "./time-tracking/time-tracking.controller";
@@ -133,6 +135,8 @@ import { ReferralsModule } from "./referrals/referrals.module";
     CardPaymentsModule,
     DashboardModule,
     ExportsModule,
+    // Report "Po zdanění": the company's tax model and net income per partner.
+    NetIncomeModule,
     // Bell / browser / email notifications per member and event.
     NotificationsModule,
     AuditModule,
@@ -260,6 +264,10 @@ export class AppModule implements NestModule {
         InvoiceEInvoiceController,
         IncomingEInvoicesController,
         EInvoicingSettingsController,
+        NetIncomeController,
+        TaxModelController,
+        // JWT only: the split between partners is internal, not in the public API.
+        InvoicePartnerSharesController,
       );
 
     // InvoicesController: same tenant-context requirement as every

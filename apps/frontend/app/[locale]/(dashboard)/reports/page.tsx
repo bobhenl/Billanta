@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Banner } from '@/components/banner';
 import { Link, redirect } from '@/i18n/navigation';
 import { apiFetch, NoTenantError, NotSignedInError } from '@/lib/api-client';
-import { fetchHomeCurrency } from '@/lib/tenant';
+import { canManage, fetchHomeCurrency, fetchMyAccess } from '@/lib/tenant';
 import { PERIOD_PRESETS, presetRange, type PeriodPreset } from '@/lib/period-presets';
 import { inAppCalculatorPath } from '@/lib/public-tools';
 import { isLegalEntityName } from '@/lib/tax-deadlines';
@@ -31,13 +31,15 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   let usage: Usage | null;
   let config: DashboardConfig | null;
   let tenant: TenantSettings | null;
+  let access: Awaited<ReturnType<typeof fetchMyAccess>> | null;
   try {
-    [stats, usage, config, tenant] = await Promise.all([
+    [stats, usage, config, tenant, access] = await Promise.all([
       apiFetch<PeriodStats>(`/api/v1/dashboard/stats?from=${from}&to=${to}${preset === 'all' ? '&period=all' : ''}`),
       // Both optional: without them the report shows everything, as before.
       apiFetch<Usage>('/api/v1/dashboard/usage').catch(() => null),
       apiFetch<DashboardConfig>('/api/v1/dashboard/config').catch(() => null),
-      fetchTenant().catch(() => null)
+      fetchTenant().catch(() => null),
+      fetchMyAccess().catch(() => null)
     ]);
   } catch (error) {
     if (error instanceof NotSignedInError) redirect({ href: '/login', locale });
@@ -61,6 +63,12 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           {tenant && taxCountryOf(tenant) !== 'SK' && !isLegalEntityName(tenant.legalName) && (
             <Link href={inAppCalculatorPath('flat-tax')!} className={link}>
               {t('flatTaxLink')}
+            </Link>
+          )}
+          {/* Per-partner after-tax numbers are for owners and admins only. */}
+          {access && canManage(access.role) && (
+            <Link href="/reports/net-income" className={link}>
+              {t('netIncomeLink')}
             </Link>
           )}
           <Link href="/reports/tax-return" className={link}>

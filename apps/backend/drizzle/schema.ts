@@ -260,6 +260,9 @@ export const tenants = pgTable("tenants", {
   // Own number pattern per document type ({"invoice": "{N}/{MM}/{YYYY}"});
   // null or a missing type = built-in `{series}{YYYY}-{NNNN}` (`tenants/number-formats.ts`).
   numberFormats: jsonb("number_formats"),
+  // Report "Po zdanění": flat-rate expenses, tax and insurance rates, partners
+  // and their shares; null = single-OSVČ defaults (`net-income/tax-model.ts`).
+  taxModel: jsonb("tax_model"),
   // Abuse protection (`abuse/sending-guard.ts`): a suspended company can't send
   // and its share links show a notice; paused only blocks outgoing e-mail
   // (set automatically after repeated recipient reports, cleared by the operator).
@@ -693,6 +696,9 @@ export const invoices = pgTable(
     paymentFees: numeric("payment_fees", { precision: 14, scale: 2 }).notNull().default("0"),
     // What actually landed on the account, in CZK; null = not recorded.
     receivedCzk: numeric("received_czk", { precision: 14, scale: 2 }),
+    // Who this income belongs to in the "Po zdanění" report ({partnerId: weight});
+    // null = the tax model's default shares. Internal, never printed.
+    partnerShares: jsonb("partner_shares").$type<Record<string, number>>(),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     // Supplier / buyer as printed on the document on its issue date (§29, §34–35
     // ZDPH): captured when the document leaves the draft stage, or taken from

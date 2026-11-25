@@ -26,6 +26,7 @@ const DASHBOARD_ONLY = [
   'invoices',
   'expenses',
   'reports',
+  'netIncome',
   'palette',
   'time',
   'templates',

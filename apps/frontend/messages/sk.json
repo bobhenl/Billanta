@@ -5275,7 +5275,8 @@
       "shortcuts": "Klávesové skratky"
     },
     "pages": {
-      "templates": "Šablóny faktúr"
+      "templates": "Šablóny faktúr",
+      "netIncome": "Po zdanení (čistý príjem)"
     },
     "keywords": {
       "newInvoice": "vystaviť vytvoriť pridať doklad",
@@ -6995,7 +6996,8 @@
       "dragToReorder": "Potiahnite na zmenu poradia"
     },
     "flatTaxLink": "Oplatí sa paušálna daň? →",
-    "taxReturnLink": "Podklady k daňovému priznaniu →"
+    "taxReturnLink": "Podklady k daňovému priznaniu →",
+    "netIncomeLink": "Po zdanení"
   },
   "siteSearch": {
     "title": "Hľadať na webe",
@@ -13536,5 +13538,138 @@
     "privacyTitle": "Osobné údaje",
     "privacyBody": "Za spracúvanie osobných údajov zodpovedá prevádzkovateľ uvedený vyššie. Aké údaje spracúvame a ako uplatniť svoje práva (prístup, oprava, vymazanie a ďalšie), opisujú Zásady ochrany osobných údajov.",
     "legalTitle": "Právne dokumenty"
+  },
+  "netIncome": {
+    "title": "Po zdanení",
+    "intro": "Koľko zostane z uhradených faktúr po dani z príjmov, sociálnom a zdravotnom poistení a spoločných výdavkoch. Aj pre viacerých spoločníkov, ktorí si príjem delia.",
+    "back": "Prehľady",
+    "noTenant": "Najprv si vytvorte firmu.",
+    "loadError": "Výpočet sa nepodarilo načítať. Skúste to, prosím, znova.",
+    "notSupported": "Výpočet po zdanení zatiaľ počíta len s českými pravidlami (paušálne výdavky, ČSSZ, zdravotná poisťovňa).",
+    "periodKindLabel": "Obdobie",
+    "periodKind": {
+      "month": "Mesiac",
+      "quarter": "Štvrťrok",
+      "year": "Rok"
+    },
+    "prev": "Predchádzajúce obdobie",
+    "next": "Ďalšie obdobie",
+    "quarterLabel": "{q}. štvrťrok {year}",
+    "missingRates": "{count, plural, one {Pri # faktúre chýba kurz, vo výpočte nie je.} few {Pri # faktúrach chýba kurz, vo výpočte nie sú.} other {Pri # faktúrach chýba kurz, vo výpočte nie sú.}}",
+    "cards": {
+      "income": "Príjmy spolu",
+      "taxes": "Daň a poistenie",
+      "afterTaxes": "Po zdanení",
+      "net": "Čistý príjem"
+    },
+    "creditsHint": {
+      "month": "Mesiac ukazuje 1/12 ročnej zľavy na dani a 1/12 limitu paušálnych výdavkov. Skutočná daň sa počíta za celý rok, takže súčet mesiacov sa od roka môže líšiť.",
+      "quarter": "Štvrťrok ukazuje 1/4 ročnej zľavy na dani a 1/4 limitu paušálnych výdavkov. Skutočná daň sa počíta za celý rok.",
+      "year": "Rok počíta s celou ročnou zľavou na dani a celým limitom paušálnych výdavkov, rovnako ako daňové priznanie."
+    },
+    "table": {
+      "title": "Výpočet",
+      "titlePartners": "Výpočet podľa spoločníkov",
+      "metric": "Položka",
+      "share": "podiel {percent} %",
+      "total": "Spolu",
+      "income": "Príjmy",
+      "flatExpenses": "Paušálne výdavky",
+      "base": "Základ dane",
+      "taxBeforeCredits": "Daň pred zľavou",
+      "credits": "Zľavy na dani",
+      "incomeTax": "Daň z príjmov",
+      "social": "Sociálne poistenie",
+      "health": "Zdravotné poistenie",
+      "taxes": "Daň a poistenie spolu",
+      "sharedExpenses": "Spoločné výdavky",
+      "net": "Čistý príjem"
+    },
+    "formula": "Základ = príjmy − {flat} % paušál. Daň {tax} % zo základu, sociálne {socialRate} % z {socialBase} % základu, zdravotné {healthRate} % z {healthBase} % základu.",
+    "estimateNote": "Orientačný odhad: bez minimálnych záloh, bez 23 % sadzby dane a bez zaokrúhlenia základu. Nenahrádza daňové priznanie ani prehľady.",
+    "partnerFallback": "Spoločník {n}",
+    "partnerMe": "Ja",
+    "months": {
+      "title": "Po mesiacoch",
+      "hint": "Každý mesiac vypočítaný samostatne, s 1/12 zľavy na dani. Hodí sa na porovnanie mesiacov medzi sebou.",
+      "month": "Mesiac",
+      "income": "Príjmy",
+      "taxes": "Daň a poistenie",
+      "net": "Čistý príjem"
+    },
+    "list": {
+      "title": "Príjmy v období ({count})",
+      "hint": "Uhradené faktúry podľa dňa úhrady a ostatné príjmy z nastavenia. Pri zahraničnej faktúre sa berie suma, ktorá naozaj prišla na účet (napr. po prevode v PayPali), inak prepočet kurzom.",
+      "hintVat": "Uhradené faktúry podľa dňa úhrady, bez DPH, a ostatné príjmy z nastavenia. Pri zahraničnej faktúre sa berie suma, ktorá naozaj prišla na účet, inak prepočet kurzom.",
+      "empty": "V tomto období nie sú žiadne uhradené faktúry.",
+      "show": "Zobraziť všetky príjmy ({count})",
+      "paidOn": "uhradené {date}",
+      "source": {
+        "czk": "v Kč",
+        "received": "naozaj prijaté",
+        "converted": "prepočítané kurzom"
+      },
+      "extra": "ostatný príjem",
+      "splitLabel": "Komu patrí faktúra {number}",
+      "saved": "Rozdelenie uložené.",
+      "failed": "Rozdelenie sa nepodarilo uložiť."
+    },
+    "shares": {
+      "default": "Predvolené podiely",
+      "alone": "Len {name}",
+      "custom": "Vlastný pomer…",
+      "apply": "Použiť pomer"
+    },
+    "config": {
+      "title": "Nastavenie výpočtu",
+      "readOnly": "Nastavenie môže meniť len vlastník alebo správca firmy.",
+      "rates": "Sadzby",
+      "fields": {
+        "flat_expense_percent": "Paušálne výdavky",
+        "flat_expense_cap": "Ročný limit paušálu na osobu",
+        "income_tax_percent": "Daň z príjmov",
+        "social_rate_percent": "Sociálne poistenie",
+        "social_base_percent": "Vymeriavací základ – sociálne",
+        "health_rate_percent": "Zdravotné poistenie",
+        "health_base_percent": "Vymeriavací základ – zdravotné"
+      },
+      "ratesHintLabel": "Prečo 55 % pri sociálnom?",
+      "ratesHint": "Od roku 2024 je vymeriavací základ pre sociálne poistenie v Česku 55 % zisku (predtým 50 %), pre zdravotné zostáva 50 %. Limit paušálu pri 60 % je 1 200 000 Kč ročne; prázdne pole znamená bez limitu.",
+      "partners": "Spoločníci",
+      "partnersHint": "Každý spoločník sa zdaňuje zvlášť zo svojho podielu. Podiel je pomer: 1, 1, 1 je tretina každému, 1 a 2 je tretina a dve tretiny.",
+      "partnerName": "Meno",
+      "partnerShare": "Podiel",
+      "partnerCredits": "Zľavy na dani za rok",
+      "partnerFallback": "Spoločník {n}",
+      "addPartner": "Pridať spoločníka",
+      "remove": "Odobrať",
+      "creditsHintLabel": "Čo patrí do zliav?",
+      "creditsHint": "Súčet ročných zliav na dani: na poplatníka 30 840 Kč, prípadne na manžela či manželku, na deti a ďalšie. Zľava zníži daň najviac na nulu.",
+      "sharedExpenses": "Spoločné výdavky",
+      "sharedExpensesHint": "Výdavky firmy (nájom, softvér…), ktoré sa odpočítajú od čistého príjmu podľa pomeru. Základ dane nemenia, ten určuje paušál.",
+      "label": "Popis",
+      "amount": "Suma",
+      "per": "Za",
+      "perMonth": "mesiac",
+      "perYear": "rok",
+      "splitOf": "Komu patrí {label}",
+      "addExpense": "Pridať výdavok",
+      "extraIncome": "Ostatné príjmy",
+      "extraIncomeHint": "Príjmy, ktoré nie sú faktúrou, napr. z poplatkov a kurzových ziskov. Zdaňujú sa rovnako ako faktúry.",
+      "date": "Dátum",
+      "addExtra": "Pridať príjem",
+      "save": "Uložiť nastavenie",
+      "saved": "Nastavenie uložené.",
+      "resetRates": "Predvolené sadzby"
+    },
+    "errors": {
+      "duplicate_partner": "Dvaja spoločníci majú rovnaké označenie. Odoberte jedného a pridajte ho znova.",
+      "shares_must_be_positive": "Aspoň jeden podiel musí byť väčší ako nula.",
+      "generic": "Nastavenie sa nepodarilo uložiť. Skontrolujte čísla a skúste to znova."
+    },
+    "noAccess": {
+      "title": "Len pre majiteľov a administrátorov",
+      "body": "Prehľad Po zdanení ukazuje príjmy a dane jednotlivých spoločníkov, preto ho vidí len majiteľ a administrátori firmy."
+    }
   }
 }

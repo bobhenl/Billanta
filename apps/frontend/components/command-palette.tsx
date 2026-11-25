@@ -104,6 +104,7 @@ const PAGES: Entry[] = [
   { key: 'templates', href: '/invoices/templates', icon: LayoutTemplate, label: 'palette.pages.templates', section: 'invoices' },
   { key: 'expenses', href: '/expenses', icon: Receipt, label: 'nav.expenses', section: 'expenses', shortcut: 'G E' },
   { key: 'reports', href: '/reports', icon: BarChart3, label: 'nav.reports' },
+  { key: 'netIncome', href: '/reports/net-income', icon: Wallet, label: 'palette.pages.netIncome', section: 'manage' },
   { key: 'bank', href: '/bank', icon: Landmark, label: 'nav.bank', section: 'bank', shortcut: 'G B' },
   { key: 'time', href: '/time', icon: Timer, label: 'nav.time', section: 'time', shortcut: 'G T' },
   { key: 'contacts', href: '/contacts', icon: Users, label: 'nav.contacts', section: 'contacts', shortcut: 'G C' },
