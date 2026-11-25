@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/api-client';
 import { type BankAccount, bankAccountLine, fetchBankAccounts, fetchTenant, taxCountryOf } from '@/lib/tenant';
-import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, PUBLIC_LINK_PREFIXES, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
+import { DEFAULT_SHOWN, OPTIONAL_FIELDS, PDF_ACCENTS, PDF_QR_MODES, PUBLIC_LINK_PREFIXES, type AiSettings, type AnnualRate, type Contact, type DefaultItem, type DocLanguage, type FormDefaults, type InvoiceFormPrefs, type PaymentMethod } from './types';
 
 const PAYMENT_METHODS: PaymentMethod[] = ['bank_transfer', 'cash', 'card', 'cash_on_delivery', 'other'];
 const LANGUAGES: DocLanguage[] = ['cs', 'sk', 'en'];
@@ -80,7 +80,10 @@ export function formPrefs(raw: Partial<InvoiceFormPrefs> | null | undefined): In
           ? 'annual'
           : 'daily',
     annualRates: Array.isArray(raw?.annualRates) ? raw.annualRates.filter(isAnnualRate) : [],
-    publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number'
+    publicLinkPrefix: PUBLIC_LINK_PREFIXES.find((p) => p === raw?.publicLinkPrefix) ?? 'number',
+    pdfQr: PDF_QR_MODES.find((m) => m === raw?.pdfQr) ?? 'auto',
+    paymentDraftDescription:
+      typeof raw?.paymentDraftDescription === 'string' && raw.paymentDraftDescription.trim() ? raw.paymentDraftDescription : null
   };
 }
 

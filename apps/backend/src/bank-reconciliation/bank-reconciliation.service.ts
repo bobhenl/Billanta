@@ -193,7 +193,8 @@ export class BankReconciliationService {
         )
         UPDATE invoice_line_items li SET description = f.message
         FROM filled f JOIN invoices i ON i.id = f.matched_invoice_id
-        WHERE li.invoice_id = i.id AND i.status = 'pending_review' AND li.description = ${PAYMENT_DRAFT_PLACEHOLDER}`);
+        WHERE li.invoice_id = i.id AND i.status = 'pending_review'
+          AND li.description IN (${PAYMENT_DRAFT_PLACEHOLDER}, (SELECT tn.invoice_form_prefs->>'paymentDraftDescription' FROM tenants tn WHERE tn.id = i.tenant_id))`);
     }
 
     const pools = await this.loadPools(db, insertedTransactions);

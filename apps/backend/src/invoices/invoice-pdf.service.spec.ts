@@ -332,6 +332,29 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect(unpaid.lines).not.toContain("Zbývá uhradit");
   });
 
+  it("prints the QR code the company chose in Settings → Faktury", async () => {
+    async function qrFor(pdfQr: string, invoice: InvoiceRow = makeInvoice()) {
+      const qr = vi.spyOn(QRCode, "toBuffer");
+      const lineItems = makeLineItems();
+      const tenant = makeTenant({ bankAccountIban: "CZ6508000000192000145399", invoiceFormPrefs: { pdfQr } } as Partial<TenantRow>);
+      await new InvoicePdfService().generate(invoice, makeContact(), tenant, lineItems, computeVatBreakdown(lineItems));
+      const out = qr.mock.calls.map((c) => String(c[0]));
+      qr.mockRestore();
+      return out;
+    }
+    expect((await qrFor("auto"))[0]).toMatch(/^SPD\*/);
+    const link = await qrFor("link");
+    expect(link).toHaveLength(1);
+    expect(link[0]).toMatch(/\/cs\/i\/.*22222222-2222-2222-2222-222222222222/);
+    // No public token, no page to link to.
+    expect(await qrFor("link", makeInvoice({ publicToken: null }))).toEqual([]);
+    expect(await qrFor("off")).toEqual([]);
+    // Nothing left to pay: "payment only" prints no QR Faktura instead.
+    expect((await qrFor("payment_only"))[0]).toMatch(/^SPD\*/);
+    expect(await qrFor("payment_only", makeInvoice({ status: "paid" }))).toEqual([]);
+    expect((await qrFor("auto", makeInvoice({ status: "paid" })))[0]).toMatch(/^SID\*/);
+  });
+
   it("prints the country of a buyer abroad, not of a domestic one", async () => {
     expect((await render(makeInvoice(), makeContact({ addressCountry: "US" }))).lines).toContain("Spojené státy");
     expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "US" }))).lines).toContain("United States");

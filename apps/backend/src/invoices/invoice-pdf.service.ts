@@ -20,7 +20,8 @@ import { drawDemoWatermark } from "./invoice-pdf-demo";
 import QRCode from "qrcode";
 import * as schema from "../../drizzle/schema";
 import { lineBase, type InvoiceVatBreakdown } from "./invoice-total.util";
-import { pdfAccentOf, pdfSecondLanguageOf, tintOf } from "../tenants/invoice-form-prefs";
+import { pdfAccentOf, pdfQrModeOf, pdfSecondLanguageOf, tintOf, type PdfQrMode } from "../tenants/invoice-form-prefs";
+import { invoiceLinkOf } from "../public-links/public-link";
 import { rateLineLabel } from "./exchange-rate-mode";
 import { BRAND_NAME, brandCreditFor, brandCreditUrl, CREDIT_LABELS, siteUrl, type BrandCredit } from "./brand-credit";
 import { tenantCountry, tenantHomeCurrencyOf } from "../tenants/home-currency";
@@ -122,6 +123,7 @@ const L = {
     qr: "QR platba",
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR Faktura",
+    qrLink: "Faktura online",
     reverseCharge: "Daň odvede zákazník (přenesená daňová povinnost dle § 92a zákona o DPH).",
     // Service to a business in another EU state (§29/2c ZDPH, art. 196 of Directive 2006/112/EC).
     reverseChargeEu: "Daň odvede zákazník.",
@@ -184,6 +186,7 @@ const L = {
     qr: "QR platba",
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR faktúra",
+    qrLink: "Faktúra online",
     reverseCharge: "Prenesenie daňovej povinnosti.",
     reverseChargeEu: "Prenesenie daňovej povinnosti.",
     fxRate: "Kurz ČNB",
@@ -245,6 +248,7 @@ const L = {
     qr: "QR payment",
     qrPayBySquare: "PAY by square",
     qrInvoice: "QR invoice",
+    qrLink: "Invoice online",
     reverseCharge: "Reverse charge – VAT to be accounted for by the customer.",
     reverseChargeEu: "Reverse charge – VAT to be accounted for by the customer.",
     fxRate: "ČNB rate",
@@ -327,7 +331,11 @@ export class InvoicePdfService {
 
     const payable = invoice.documentType !== "quote" && totals.totalWithVat > 0;
     // A demo's fictional bank account must not end up in anyone's banking app.
-    const qr = invoice.documentType !== "quote" && !tenant.isDemo ? await this.buildQrCode(invoice, contact, tenant, totals, payable) : null;
+    const qrMode = pdfQrModeOf(tenant.invoiceFormPrefs);
+    const qr =
+      invoice.documentType !== "quote" && !tenant.isDemo && qrMode !== "off"
+        ? await this.buildQrCode(invoice, contact, tenant, totals, payable, qrMode, lang)
+        : null;
 
     // With the credit switched off the document carries no trace of Billanta, metadata included.
     const credit = brandCreditFor(tenant, lang, "pdf");
@@ -360,7 +368,11 @@ export class InvoicePdfService {
     this.renderLineItemsTable(doc, t, lineItems, invoice);
     const totalsTop = this.renderTotals(doc, t, totals, invoice, pdfAccentOf(tenant.invoiceFormPrefs), tenantHomeCurrencyOf(tenant));
     // The brand name is written exactly so ("PAY by square"), never uppercased.
-    const qrLabel = qr ? (qr.kind === "pay_by_square" ? t.qrPayBySquare : (qr.kind === "spayd" ? t.qr : t.qrInvoice).toUpperCase()) : "";
+    const qrLabel = qr
+      ? qr.kind === "pay_by_square"
+        ? t.qrPayBySquare
+        : (qr.kind === "spayd" ? t.qr : qr.kind === "link" ? t.qrLink : t.qrInvoice).toUpperCase()
+      : "";
     this.renderPaymentBlock(doc, this.bankRows(t, invoice, tenant), qr ? { label: qrLabel, png: qr.png } : null, totalsTop);
     this.renderFooterNotes(doc, t, invoice, tenant, fill, contact);
     if (credit) this.renderCredit(doc, credit);
@@ -409,6 +421,9 @@ export class InvoicePdfService {
    *
    * Slovak payers get PAY by square instead (rule in paymentQrScheme). It
    * has no slot for QR Faktura, so that code only pays.
+   *
+   * Settings → Faktury can swap this for a link to the invoice's web page
+   * (every way to pay is there) or keep only the payment code (PDF_QR_MODES).
    */
   private async buildQrCode(
     invoice: InvoiceRow,
@@ -416,7 +431,15 @@ export class InvoicePdfService {
     tenant: TenantRow,
     totals: InvoiceVatBreakdown,
     payable: boolean,
-  ): Promise<{ png: Buffer; kind: "spayd" | "pay_by_square" | "invoice" } | null> {
+    mode: PdfQrMode,
+    lang: Lang,
+  ): Promise<{ png: Buffer; kind: "spayd" | "pay_by_square" | "invoice" | "link" } | null> {
+    if (mode === "link") {
+      // A draft has no working public page yet.
+      if (!invoice.invoiceNumber || !invoice.publicToken) return null;
+      const url = `${siteUrl()}/${lang}/i/${invoiceLinkOf(tenant, invoice)}`;
+      return { png: await QRCode.toBuffer(url, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "link" };
+    }
     // Same gate as the client-portal page (apps/frontend/app/[locale]/i/[token]/page.tsx):
     // prefer the stored IBAN, otherwise derive it from the domestic
     // account number + bank code, and omit the payment part when neither is on file.
@@ -468,7 +491,7 @@ export class InvoicePdfService {
       });
       return { png: await QRCode.toBuffer(spayd, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "spayd" };
     }
-    if (!sid) return null;
+    if (!sid || mode === "payment_only") return null;
     return { png: await QRCode.toBuffer(sid, { type: "png", margin: 1, width: 280, errorCorrectionLevel: "M" }), kind: "invoice" };
   }
 

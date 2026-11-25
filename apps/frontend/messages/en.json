@@ -2482,7 +2482,18 @@
       "brandCreditFree": "On the free plan the line is always shown.",
       "brandCreditUpgrade": "Upgrade to a paid plan",
       "advancedTitle": "Advanced",
-      "advancedSummary": "Exchange rates and invoice link format"
+      "advancedSummary": "Exchange rates and invoice link format",
+      "pdfQr": "QR code on the PDF",
+      "pdfQrHint": "By default we print a payment QR code, or a QR invoice when there is no CZK/EUR account. The online invoice link opens a page where the customer can pay by bank, card or another way.",
+      "pdfQrModes": {
+        "auto": "Automatic (payment QR, otherwise QR invoice)",
+        "link": "Link to the invoice online (all payment options)",
+        "payment_only": "Payment QR only",
+        "off": "No QR code"
+      },
+      "paymentDraftLine": "Item description for drafts made from payments",
+      "paymentDraftLineHint": "Used when a payment (from PayPal, for example) names no items. For example \"Software services\" or \"Consulting\".",
+      "paymentDraftLinePlaceholder": "PayPal payment"
     },
     "modules": {
       "title": "Modules & business type",

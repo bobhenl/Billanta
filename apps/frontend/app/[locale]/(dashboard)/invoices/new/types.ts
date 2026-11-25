@@ -199,7 +199,14 @@ export interface InvoiceFormPrefs {
   annualRates: AnnualRate[];
   /** What customer links start with (backend public-links/public-link.ts). */
   publicLinkPrefix: PublicLinkPrefix;
+  /** Which QR code the PDF prints (backend PDF_QR_MODES). */
+  pdfQr: PdfQrMode;
+  /** The line of a draft made from a payment that names nothing ("Software services"). */
+  paymentDraftDescription: string | null;
 }
+
+export const PDF_QR_MODES = ['auto', 'link', 'payment_only', 'off'] as const;
+export type PdfQrMode = (typeof PDF_QR_MODES)[number];
 
 export const PUBLIC_LINK_PREFIXES = ['number', 'company_number', 'none'] as const;
 export type PublicLinkPrefix = (typeof PUBLIC_LINK_PREFIXES)[number];

@@ -2482,7 +2482,18 @@
       "brandCreditFree": "Na bezplatném tarifu se řádek zobrazuje vždy.",
       "brandCreditUpgrade": "Přejít na placený tarif",
       "advancedTitle": "Pokročilé",
-      "advancedSummary": "Kurzy měn a tvar odkazu na fakturu"
+      "advancedSummary": "Kurzy měn a tvar odkazu na fakturu",
+      "pdfQr": "QR kód na PDF",
+      "pdfQrHint": "Automaticky tiskneme QR platbu, a když chybí účet v CZK/EUR, QR Fakturu. Odkaz na fakturu online otevře stránku, kde zákazník zaplatí bankou, kartou nebo jinak.",
+      "pdfQrModes": {
+        "auto": "Automaticky (QR platba, jinak QR Faktura)",
+        "link": "Odkaz na fakturu online (všechny možnosti platby)",
+        "payment_only": "Jen QR platba",
+        "off": "Žádný QR kód"
+      },
+      "paymentDraftLine": "Popis položky u konceptů z plateb",
+      "paymentDraftLineHint": "Použije se, když platba (třeba z PayPalu) neobsahuje názvy položek. Např. „Software services“ nebo „Konzultace“.",
+      "paymentDraftLinePlaceholder": "Platba PayPal"
     },
     "modules": {
       "title": "Moduly a typ podnikání",

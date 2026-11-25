@@ -13,7 +13,9 @@ import { SITE_NAME, SITE_URL } from '@/lib/site';
 import {
   DEFAULT_SHOWN,
   PDF_ACCENTS,
+  PDF_QR_MODES,
   PUBLIC_LINK_PREFIXES,
+  type PdfQrMode,
   type Contact,
   type DocLanguage,
   type InvoiceFormPrefs,
@@ -84,6 +86,8 @@ export function InvoiceFormSettings({
   const [accent, setAccent] = useState(prefs.pdfAccent);
   const [secondLanguage, setSecondLanguage] = useState<'' | 'cs' | 'sk' | 'en'>(prefs.pdfSecondLanguage ?? '');
   const [brandCredit, setBrandCredit] = useState(prefs.brandCredit);
+  const [pdfQr, setPdfQr] = useState<PdfQrMode>(prefs.pdfQr);
+  const [paymentLine, setPaymentLine] = useState(prefs.paymentDraftDescription ?? '');
   const [reminders, setReminders] = useState(prefs.remindersEnabled);
   const [reminderInterval, setReminderInterval] = useState(prefs.reminderIntervalDays);
   const [reminderMax, setReminderMax] = useState(prefs.reminderMax);
@@ -132,6 +136,8 @@ export function InvoiceFormSettings({
         pdf_accent: accent,
         pdf_second_language: secondLanguage === '' ? null : secondLanguage,
         brand_credit: brandCredit,
+        pdf_qr: pdfQr,
+        payment_draft_description: paymentLine.trim() || null,
         reminders_enabled: reminders,
         reminder_interval_days: Math.min(60, Math.max(1, Math.round(reminderInterval) || 7)),
         reminder_max: Math.min(10, Math.max(1, Math.round(reminderMax) || 3)),
@@ -349,6 +355,36 @@ export function InvoiceFormSettings({
                 </option>
               ))}
             </select>
+          </label>
+          <label className="block max-w-md">
+            <InfoHint hint={t('pdfQrHint')}>
+              <span className="text-sm font-medium">{t('pdfQr')}</span>
+            </InfoHint>
+            <select
+              className={cn(inputClass, 'mt-1.5')}
+              value={pdfQr}
+              disabled={readOnly}
+              onChange={(e) => setPdfQr(e.target.value as PdfQrMode)}
+            >
+              {PDF_QR_MODES.map((m) => (
+                <option key={m} value={m}>
+                  {t(`pdfQrModes.${m}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block max-w-md">
+            <InfoHint hint={t('paymentDraftLineHint')}>
+              <span className="text-sm font-medium">{t('paymentDraftLine')}</span>
+            </InfoHint>
+            <input
+              className={cn(inputClass, 'mt-1.5')}
+              value={paymentLine}
+              maxLength={500}
+              disabled={readOnly}
+              placeholder={t('paymentDraftLinePlaceholder')}
+              onChange={(e) => setPaymentLine(e.target.value)}
+            />
           </label>
           <div>
             <InfoHint hint={t('brandCreditHint')} className={cn('text-sm', (readOnly || !canHideCredit) && 'opacity-70')}>

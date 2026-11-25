@@ -49,6 +49,7 @@ import {
 import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from "./isdoc-input.builder";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
+import { paymentDraftDescriptionOf } from "../tenants/invoice-form-prefs";
 import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
 import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
@@ -1175,7 +1176,10 @@ export class InvoicesService {
       contactId = created?.id ?? null;
     }
 
-    const [tenant] = await db.select({ country: schema.tenants.country }).from(schema.tenants).where(eq(schema.tenants.id, tenantId));
+    const [tenant] = await db
+      .select({ country: schema.tenants.country, invoiceFormPrefs: schema.tenants.invoiceFormPrefs })
+      .from(schema.tenants)
+      .where(eq(schema.tenants.id, tenantId));
     const home = tenantHomeCurrencyOf(tenant);
     const currency = payment.currency.toUpperCase();
     const [invoice] = await db
@@ -1202,7 +1206,7 @@ export class InvoicesService {
     await db.insert(schema.invoiceLineItems).values({
       tenantId,
       invoiceId: invoice.id,
-      description: (payment.description || PAYMENT_DRAFT_PLACEHOLDER).slice(0, 500),
+      description: (payment.description || paymentDraftDescriptionOf(tenant?.invoiceFormPrefs) || PAYMENT_DRAFT_PLACEHOLDER).slice(0, 500),
       quantity: "1",
       unitPrice: round2(payment.amount).toFixed(2),
       vatRate: null,
