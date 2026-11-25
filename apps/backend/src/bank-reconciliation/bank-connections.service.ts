@@ -35,7 +35,7 @@ import {
   type FioSyncedRow,
 } from "./fio-client";
 import { missingNets } from "./dedupe";
-import { PaypalApiError, PaypalClient, paypalBackfillRange, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
+import { PaypalApiError, PaypalClient, paypalBackfillRange, paypalSyncFrom, type PaypalCredentials, type PaypalSyncedRow } from "./paypal-client";
 
 type TenantDb = PostgresJsDatabase<typeof schema>;
 type BankConnectionRow = typeof schema.bankConnections.$inferSelect;
@@ -424,6 +424,22 @@ export class BankConnectionsService {
     return after < now ? after : now;
   }
 
+  /** Day of the oldest PayPal payment whose draft still waits for a description (stored before item names were read). */
+  private async oldestUnnamedPaypalDraft(db: TenantDb): Promise<Date | null> {
+    const [oldest] = await db
+      .select({ day: sql<string | null>`min(${schema.bankTransactions.transactionDate})` })
+      .from(schema.bankTransactions)
+      .innerJoin(schema.invoices, eq(schema.invoices.id, schema.bankTransactions.matchedInvoiceId))
+      .where(
+        and(
+          eq(schema.invoices.status, "pending_review"),
+          isNull(schema.bankTransactions.message),
+          sql`${schema.bankTransactions.externalId} LIKE 'paypal:%'`,
+        ),
+      );
+    return oldest?.day ? new Date(oldest.day) : null;
+  }
+
   private paypalHttpError(err: unknown): Error {
     if (err instanceof HttpException) return err;
     const code = err instanceof PaypalApiError ? err.code : "unavailable";
@@ -567,7 +583,9 @@ export class BankConnectionsService {
       let rows: PaypalSyncedRow[];
       try {
         const credentials = JSON.parse(decryptSecret(row.tokenEncrypted ?? "", encryptionKey())) as PaypalCredentials;
-        rows = await this.paypalClient(credentials).fetchIncoming(from, now);
+        // Only the button reaches back: a payment PayPal never names would make every hourly sweep re-read months.
+        const start = throwErrors ? paypalSyncFrom(from, await this.oldestUnnamedPaypalDraft(db), now) : from;
+        rows = await this.paypalClient(credentials).fetchIncoming(start, now);
       } catch (err) {
         const code = err instanceof PaypalApiError ? err.code : "unavailable";
         const lastError =

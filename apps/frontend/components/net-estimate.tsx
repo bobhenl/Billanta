@@ -35,7 +35,9 @@ export function NetEstimate({ base, currency, czkRate, costs = 0 }: { base: numb
       /* ignore */
     }
   };
-  const fmt = new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 });
+  // Whole crowns are precise enough; 21 US$ hides up to half a dollar, so foreign currencies keep the cents.
+  const digits = currency === 'CZK' ? 0 : 2;
+  const fmt = new Intl.NumberFormat(locale, { style: 'currency', currency, minimumFractionDigits: digits, maximumFractionDigits: digits });
   const { net, burden } = netAfterTaxes(base, rate, costs);
   const czk = currency !== 'CZK' && czkRate && czkRate > 0 ? new Intl.NumberFormat(locale, { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }) : null;
   const both = (amount: number) => (czk ? `${fmt.format(amount)} (≈ ${czk.format(amount * czkRate!)})` : fmt.format(amount));

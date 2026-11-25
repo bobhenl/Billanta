@@ -69,6 +69,18 @@ export function paypalBackfillRange(requested: Date, now: Date): { from: Date; t
   return from < now.getTime() ? { from: new Date(from), to: now } : null;
 }
 
+/**
+ * Where a manual sync starts reading. Normally `from` (a few days back), but
+ * a draft still waiting for PayPal's item names (`oldestUnnamed`, a stored
+ * Prague day) pulls it back so the re-read fills them in; one year at most.
+ */
+export function paypalSyncFrom(from: Date, oldestUnnamed: Date | null, now: Date): Date {
+  if (!oldestUnnamed) return from;
+  // The stored day is Prague's; the payment may sit on the UTC day before.
+  const start = Math.max(oldestUnnamed.getTime() - DAY_MS, now.getTime() - 366 * DAY_MS);
+  return start < from.getTime() ? new Date(start) : from;
+}
+
 export function paypalBaseUrl(sandbox: boolean, env: NodeJS.ProcessEnv = process.env): string {
   const override = env.PAYPAL_API_BASE_URL?.trim();
   if (override) return override.replace(/\/$/, "");

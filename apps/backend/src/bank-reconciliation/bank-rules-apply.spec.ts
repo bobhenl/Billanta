@@ -201,3 +201,30 @@ describe("BankRulesService.apply", () => {
     expect(result).toEqual({ applied: 1, remaining: 0, rematched: 0 });
   });
 });
+
+describe("BankReconciliationService late descriptions", () => {
+  it("fills the description of a payment it already has, so its draft can take the item names", async () => {
+    const stored = tx({ id: "tx-1", externalId: "paypal:45E2", amount: "25.00", currency: "USD", message: null, transactionDate: new Date("2026-08-24") });
+    const executed: string[] = [];
+    const db = {
+      select: () => ({ from: () => ({ where: async () => [stored] }) }),
+      insert: () => ({ values: () => ({ returning: async () => [{ id: "imp-2" }] }) }),
+      execute: vi.fn(async (query: { queryChunks?: unknown[] }) => {
+        executed.push(JSON.stringify(query.queryChunks ?? query));
+        return [];
+      }),
+    };
+    const { service } = services();
+    const result = await service.persistAndMatch(db as never, "t1", "PayPal", "paypal", [
+      {
+        transactionDate: new Date("2026-08-24"),
+        amount: "25.00",
+        currency: "USD",
+        externalId: "paypal:45E2",
+        message: "Tebex Webstore - Rank category overhaul",
+      } as never,
+    ]);
+    expect(result.summary.duplicates).toBe(1);
+    expect(executed.join(" ")).toContain("Tebex Webstore - Rank category overhaul");
+  });
+});

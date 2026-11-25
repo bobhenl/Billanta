@@ -5,6 +5,7 @@ import {
   parsePaypalTransactions,
   paypalBackfillRange,
   paypalBaseUrl,
+  paypalSyncFrom,
   paypalWindows,
 } from "./paypal-client";
 
@@ -262,5 +263,16 @@ describe("PaypalClient", () => {
 
     const offline = new PaypalClient(credentials, vi.fn().mockRejectedValue(new Error("ECONNREFUSED")) as never, "https://pp.test");
     await expect(offline.token()).rejects.toBeInstanceOf(PaypalApiError);
+  });
+});
+
+describe("paypalSyncFrom", () => {
+  const now = new Date("2026-11-25T20:00:00Z");
+  const from = new Date("2026-11-22T20:00:00Z");
+  it("reaches back to a draft still waiting for its item names, a year at most", () => {
+    expect(paypalSyncFrom(from, null, now)).toBe(from);
+    expect(paypalSyncFrom(from, new Date("2026-08-24"), now).toISOString()).toBe("2026-08-23T00:00:00.000Z");
+    expect(paypalSyncFrom(from, new Date("2024-01-01"), now).toISOString()).toBe("2025-11-24T20:00:00.000Z");
+    expect(paypalSyncFrom(from, new Date("2026-11-24"), now)).toBe(from);
   });
 });

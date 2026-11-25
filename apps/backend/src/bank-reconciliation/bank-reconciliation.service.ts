@@ -179,8 +179,9 @@ export class BankReconciliationService {
     // came later) gets it now. Only an empty message is filled, never replaced,
     // and a draft made from it swaps its placeholder line for the real text
     // while it still waits for review (an issued invoice is never touched).
+    // From every incoming row: a stored one was already split off as a duplicate above.
     const inserted = new Set(insertedTransactions.map((t) => t.externalId));
-    const late = parsedRows
+    const late = incomingRows
       .filter((r) => r.externalId && r.message && !inserted.has(r.externalId))
       .map((r) => ({ id: r.externalId, message: r.message!.slice(0, 500) }));
     if (late.length > 0) {
