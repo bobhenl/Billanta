@@ -36,7 +36,17 @@
     "label": "Sprache",
     "cs": "Čeština",
     "sk": "Slovenčina",
-    "en": "English"
+    "en": "English",
+    "de": "Deutsch",
+    "pl": "Polski",
+    "uk": "Українська",
+    "hu": "Magyar",
+    "ro": "Română",
+    "fr": "Français",
+    "es": "Español",
+    "it": "Italiano",
+    "nl": "Nederlands",
+    "pt": "Português"
   },
   "marketing": {
     "nav": {
@@ -69,26 +79,22 @@
       "title": "Rechnungen für Unternehmen in Tschechien und der Slowakei, ohne Papierkram",
       "subtitle": "Stellen Sie Rechnungen per Sprachnachricht über Telegram oder WhatsApp aus, exportieren Sie sie nach ISDOC und verlassen Sie sich darauf, dass alles mit ARES und den geltenden Vorschriften übereinstimmt.",
       "cta": "Kostenloses Konto erstellen",
-      "secondaryCta": "So funktioniert es",
-      "eyebrow": "Rechnungen für CZ und SK",
-      "points": {
-        "isdoc": "ISDOC-Export",
-        "ares": "ARES-Abfrage",
-        "qr": "QR-Zahlungen"
-      },
-      "guestCta": "Rechnung ohne Registrierung",
-      "dictateCta": "Oder diktieren – ohne Registrierung"
+      "note": "Keine Kreditkarte nötig. Oder ganz ohne Registrierung: <write>Rechnung ausfüllen</write> · <voice>Rechnung diktieren</voice>"
     },
-    "invoiceMockup": {
-      "status": "Bezahlt",
-      "issuedTo": "Rechnungsempfänger",
-      "dueDate": "Fälligkeit",
-      "subtotal": "Zwischensumme",
-      "vat": "USt. 21 %",
-      "total": "Zu zahlen",
-      "isdocTag": "ISDOC-Export",
-      "aresTag": "Über ARES verifiziert",
-      "credit": "Erstellt mit Billanta"
+    "heroSlides": {
+      "voice": {
+        "step": "Diktieren",
+        "reply": "Ihr Rechnungsentwurf ist bereit zur Prüfung"
+      },
+      "send": {
+        "step": "Senden",
+        "sent": "Mit QR-Zahlungscode gesendet"
+      },
+      "paid": {
+        "step": "Geld erhalten",
+        "title": "Zahlungseingang",
+        "matched": "Der Rechnung 2026-0004 zugeordnet"
+      }
     },
     "features": {
       "title": "Alles für Ihre Rechnungen an einem Ort",
@@ -293,7 +299,6 @@
   },
   "dashboard": {
     "title": "Übersicht",
-    "welcome": "Willkommen zurück. Hier sehen Sie Ihre Rechnungen und Zahlungen auf einen Blick.",
     "noTenant": "Schließen Sie zuerst die Einrichtung Ihres Unternehmens ab, dann erscheint hier Ihre Übersicht.",
     "loadError": "Die Übersicht konnte nicht geladen werden. Laden Sie die Seite neu.",
     "greeting": "Hallo, {name}",
@@ -437,8 +442,6 @@
       "title": "ČNB-Wechselkurse",
       "hint": "Der Kurs der Tschechischen Nationalbank für den gewählten Tag, mit dem Rechnungen in Fremdwährung in CZK umgerechnet werden. Der Prozentwert ist die Veränderung gegenüber der Vorwoche.",
       "customizeTitle": "Währungen bei den ČNB-Kursen",
-      "customizeHint": "Wählen Sie, welche Währungen die Übersicht anzeigt. Sie können jede von der ČNB veröffentlichte Währung wählen.",
-      "source": "Quelle:",
       "weekChange": "Veränderung in 7 Tagen",
       "weekShort": "/ Woche",
       "date": "Tag",
@@ -454,7 +457,6 @@
     },
     "usage": {
       "title": "Empfohlen nach Ihrer Nutzung",
-      "hint": "Was Sie unverändert lassen, passt sich weiter an. Ihre eigene Auswahl hat immer Vorrang.",
       "newAccount": "Noch keine Daten, daher sehen Sie die Grundansicht.",
       "currencies": "Sie fakturieren in {list}",
       "onlyHome": "Sie fakturieren nur in {currency}",
@@ -465,7 +467,6 @@
       "proformas": "Sie stellen Proformarechnungen aus",
       "quotes": "Sie versenden Angebote"
     },
-    "customizeOrderHint": "Ziehen Sie am Griff oder nutzen Sie die Pfeile, um die Reihenfolge zu ändern.",
     "dragToReorder": "Zum Umsortieren ziehen",
     "exportsCta": "Exporte für die Buchhaltung",
     "emptyHintReadOnly": "Es gibt noch keine Belege. Sobald das Unternehmen seine erste Rechnung ausstellt, sehen Sie hier Umsatz, Diagramm und Kunden."
@@ -527,7 +528,6 @@
       "customizeTitle": "Schnellfilter",
       "customizeHint": "Wählen Sie, welche Filter über der Liste erscheinen. Ein ausgeblendeter Filter bleibt sichtbar, solange er aktiv ist. Gilt für diesen Browser.",
       "presetChips": "Schnellauswahl",
-      "typeChips": "Belegarten",
       "statusChips": "Status",
       "presets": {
         "thisMonth": "Dieser Monat",
@@ -703,13 +703,14 @@
       "title": "Meine Notiz",
       "hint": "Nur Sie sehen sie – sie wird ausschließlich in diesem Browser gespeichert, der Lieferant sieht sie nie.",
       "placeholder": "z. B. freigegeben, bis Freitag bezahlen",
-      "saved": "In diesem Browser gespeichert."
+      "saved": "In diesem Browser gespeichert.",
+      "add": "Private Notiz hinzufügen"
     },
     "paymentMethod": "Zahlungsart",
     "report": {
       "link": "Haben Sie diesen Beleg nicht erwartet? Melden Sie ihn",
       "title": "Verdächtigen Beleg melden",
-      "hint": "Die Meldung geht an den Betreiber von Billanta, nicht an den Aussteller. Melden mehrere Empfänger einen Beleg, pausieren wir den E-Mail-Versand des Ausstellers und prüfen den Fall.",
+      "hint": "Die Meldung geht an den Betreiber von {name}, nicht an den Aussteller. Melden mehrere Empfänger einen Beleg, pausieren wir den E-Mail-Versand des Ausstellers und prüfen den Fall.",
       "reason": "Grund",
       "reasons": {
         "fraud": "Betrug oder gefälschte Rechnung",
@@ -734,7 +735,7 @@
     },
     "card": {
       "pay": "{amount} per Karte bezahlen",
-      "note": "Die Zahlung läuft über den sicheren Checkout von Stripe. Weder der Lieferant noch Billanta sehen Ihre Kartendaten.",
+      "note": "Die Zahlung läuft über den sicheren Checkout von Stripe. Weder der Lieferant noch {name} sehen Ihre Kartendaten.",
       "success": "Vielen Dank, Ihre Kartenzahlung ist eingegangen. Die Rechnung ist als bezahlt markiert.",
       "processing": "Wir prüfen die Zahlung. Die Rechnung wird als bezahlt markiert, sobald Stripe sie bestätigt – meist innerhalb weniger Minuten.",
       "cancelled": "Die Kartenzahlung wurde abgebrochen. Sie können es erneut versuchen oder per Überweisung bezahlen.",
@@ -748,7 +749,25 @@
     "cta": {
       "question": "Schreiben Sie auch Rechnungen?",
       "action": "{name} kostenlos testen"
-    }
+    },
+    "amountDueLabel": "Zu zahlender Betrag",
+    "dueOn": "Fällig am {date}",
+    "validUntilOn": "Gültig bis {date}",
+    "overdue": "Überfällig",
+    "quoteTotalLabel": "Gesamtpreis",
+    "totalShortLabel": "Gesamt",
+    "issuedOn": "Ausgestellt am {date}",
+    "pay": {
+      "account": "Kontonummer",
+      "iban": "IBAN",
+      "amount": "Betrag",
+      "copy": "Kopieren",
+      "copied": "Kopiert",
+      "copyLabel": "{label} kopieren"
+    },
+    "print": "Drucken / PDF",
+    "downloadPdf": "PDF herunterladen",
+    "downloadPdfShort": "PDF"
   },
   "expenses": {
     "title": "Ausgaben",
@@ -768,7 +787,6 @@
     "uncategorized": "Ohne Kategorie",
     "form": {
       "title": "Neue Ausgabe",
-      "description": "Eine erhaltene Rechnung, ein Kassenbon oder sonstige Kosten. Am schnellsten geht es mit einem Foto.",
       "supplierNameLabel": "Lieferant",
       "supplierNamePlaceholder": "Name des Lieferanten",
       "descriptionLabel": "Beschreibung",
@@ -778,10 +796,8 @@
       "currencyLabel": "Währung",
       "expenseDateLabel": "Belegdatum / Leistungsdatum",
       "categoryLabel": "Kategorie",
-      "categoryPlaceholder": "z. B. Büromaterial",
       "receiptFileUrlLabel": "Link zum Beleg (optional)",
       "receiptFileUrlPlaceholder": "https://…",
-      "receiptFileUrlHint": "Link zum Dokument in der Cloud (Google Drive, Dropbox…).",
       "cancel": "Abbrechen",
       "submit": "Ausgabe speichern",
       "editTitle": "Ausgabe bearbeiten",
@@ -810,14 +826,13 @@
       "vatBreakdownReverseCharge": "Netto {base}, selbst abzuführende USt. {vat}",
       "reverseChargeRequiredHint": "Abschnitt B.1 erfordert die USt-IdNr. des Lieferanten und die Belegnummer.",
       "datesSection": "Daten & Zahlung",
+      "moreDetails": "Weitere Angaben",
       "dueDateLabel": "Fälligkeitsdatum",
       "paidLabel": "Bereits bezahlt",
-      "otherSection": "Sonstiges",
       "noteLabel": "Interne Notiz (optional)",
       "saveChanges": "Änderungen speichern",
       "saved": "Ausgabe gespeichert",
       "saveFailed": "Die Ausgabe konnte nicht gespeichert werden",
-      "supplierDicHint": "Für die USt.-Kontrollmeldung (Abschnitt B.2)",
       "qrCamera": "QR-Code mit der Kamera scannen",
       "qrHint": "QR-Rechnungen (QR Faktura) und QR-Zahlungscodes werden direkt aus Foto oder PDF gelesen, ohne KI.",
       "qrFound": "Angaben aus dem QR-Code geladen",
@@ -827,11 +842,9 @@
     },
     "noTenant": "Richten Sie zuerst Ihr Unternehmen ein.",
     "loadError": "Die Ausgaben konnten nicht geladen werden",
-    "fromPhoto": "Beleg scannen",
     "emptyFiltered": "Keine Ausgabe entspricht dem Filter.",
     "searchPlaceholder": "Lieferant, Beschreibung, Nummer suchen…",
     "allStates": "Alle",
-    "allCategories": "Alle Kategorien",
     "selected": "Ausgewählt: {count}",
     "selectAll": "Alle auswählen",
     "clearSelection": "Auswahl aufheben",
@@ -866,7 +879,6 @@
       "title": "Ausgabendetails",
       "loadError": "Die Ausgabe konnte nicht geladen werden",
       "backToList": "Zurück zu den Ausgaben",
-      "badge": "Eingangsbeleg",
       "unknownSupplier": "Unbekannter Lieferant",
       "total": "Gesamt brutto",
       "base": "Netto",
@@ -890,7 +902,10 @@
         "paid": "Als bezahlt markiert",
         "unpaid": "Als unbezahlt markiert",
         "deleted": "Ausgabe gelöscht"
-      }
+      },
+      "back": "Zurück",
+      "needsReview": "Zu prüfen",
+      "needsReviewHint": "Eine Bankregel hat diese Ausgabe aus einem Zahlungsausgang erstellt. Prüfen Sie Lieferant, USt.-Satz und Kategorie und speichern Sie sie dann – die Markierung verschwindet."
     },
     "filters": {
       "receipt": "Beleg",
@@ -902,11 +917,13 @@
         "due": "Fälligkeit",
         "paid": "Bezahlt"
       }
-    }
+    },
+    "bulkDeleteTitle": "{count, plural, one {# Ausgabe} other {# Ausgaben}} löschen?",
+    "bulkDeleteBody": "Die ausgewählten Ausgaben werden endgültig entfernt.",
+    "needsReview": "Zu prüfen"
   },
   "bank": {
     "title": "Bank",
-    "description": "Laden Sie einen Kontoauszug hoch (camt.053, GPC oder CSV) und gleichen Sie Zahlungseingänge mit ausgestellten Rechnungen ab.",
     "import": {
       "label": "Kontoauszug importieren",
       "selectFile": "Kontoauszugsdatei wählen",
@@ -983,7 +1000,9 @@
       "reason": {
         "vs": "VS stimmt überein",
         "amount": "Betrag stimmt überein",
-        "name": "Name stimmt überein"
+        "name": "Name stimmt überein",
+        "email": "Gleiche E-Mail",
+        "date": "Ähnliches Datum"
       },
       "outgoingHint": "Zahlungsausgang – handelt es sich um eine Ausgabe, erfassen Sie sie unter Ausgaben und ignorieren Sie dann diesen Umsatz.",
       "ignoredHint": "Dieser Umsatz wird ignoriert und ist von der Zuordnung ausgenommen.",
@@ -994,7 +1013,17 @@
       "ignoredDone": "Umsatz ignoriert.",
       "restoredDone": "Umsatz wieder zur Zuordnung freigegeben.",
       "actionFailed": "Aktion fehlgeschlagen",
-      "message": "Verwendungszweck"
+      "message": "Verwendungszweck",
+      "paidOn": "bezahlt",
+      "paidHint": "Bereits bezahlt. Die Zahlung wird nur verknüpft, die Rechnung ändert sich nicht.",
+      "linkedDone": "Zahlung mit der Rechnung verknüpft. Die Rechnung wurde nicht geändert.",
+      "alreadyLinked": "Mit dieser Rechnung ist bereits eine andere Zahlung verknüpft.",
+      "createDraft": "Rechnung aus Zahlung erstellen",
+      "createDraftHint": "Keine Rechnung zu dieser Zahlung? Wir machen daraus einen Rechnungsentwurf zur Prüfung. Ausstellen müssen Sie ihn selbst.",
+      "draftDone": "Rechnungsentwurf erstellt und mit der Zahlung verknüpft. Prüfen Sie ihn und stellen Sie ihn aus.",
+      "ruleApplied": "Die Regel „{rule}“ hat diese Zahlung verarbeitet. Regeln ändern Sie unter Bank › Regeln.",
+      "expenseGone": "Die Ausgabe zu dieser Zahlung existiert nicht mehr oder Sie dürfen sie nicht sehen.",
+      "expenseNeedsReview": "Ausgabe wartet auf Prüfung"
     },
     "connections": {
       "title": "Bankverbindung",
@@ -1043,7 +1072,9 @@
         "paypal_reporting_disabled": "In der PayPal-App ist die Transaktionssuche (Transaction search) nicht aktiviert. Schalten Sie sie in den App-Einstellungen ein (die Aktivierung kann einige Stunden dauern).",
         "two_factor_required": "Aktivieren Sie zuerst die Zwei-Faktor-Authentifizierung unter Einstellungen → Sicherheit.",
         "plan_required": "Diese Funktion ist Teil eines kostenpflichtigen Tarifs. Wählen Sie einen unter Tarif und Abrechnung.",
-        "history_locked": "Fio gibt Umsätze, die älter als 90 Tage sind, nur nach einer starken Authentifizierung im Online-Banking frei. Beim nächsten Mal beginnen wir mit den letzten 89 Tagen."
+        "history_locked": "Fio gibt Umsätze, die älter als 90 Tage sind, nur nach einer starken Authentifizierung im Online-Banking frei. Beim nächsten Mal beginnen wir mit den letzten 89 Tagen.",
+        "backfill_range": "Wählen Sie einen Tag in der Vergangenheit.",
+        "backfill_unsupported": "Ältere Zahlungen lassen sich vorerst nur von PayPal abrufen."
       },
       "psd2": {
         "hint": "Billanta lädt neue Zahlungseingänge direkt von Ihrer Bank oder von PayPal herunter und ordnet sie anhand von variablem Symbol und Betrag den Rechnungen zu. Fio wird per API-Token verbunden, PayPal mit den Zugangsdaten Ihrer REST-App, andere Banken über PSD2: Sie melden sich bei Ihrer Bank an und gewähren reinen Lesezugriff auf das Konto (bis zu 180 Tage, bei vielen Banken 90). Banken erlauben nur wenige automatische Abrufe pro Tag, daher werden PSD2-Konten etwa alle 6 Stunden synchronisiert. Zahlungsausgänge werden nicht heruntergeladen, und über die Verbindung lässt sich nichts bezahlen.",
@@ -1059,7 +1090,6 @@
         "personal": "Privatkonto (Einzelunternehmer)",
         "continue": "Weiter zur Bank",
         "note": "Sie melden sich direkt bei Ihrer Bank an; Billanta sieht Ihre Bankzugangsdaten nie. Ihre Zustimmung können Sie jederzeit widerrufen, indem Sie das Konto trennen oder dies im Online-Banking tun.",
-        "otherBanksAvailable": "Eine weitere Bank verbinden Sie über „Bank verbinden“ → „Bank über PSD2“.",
         "expired": "Zustimmung abgelaufen",
         "consentUntil": "Zustimmung bis {date}",
         "renew": "Zustimmung erneuern",
@@ -1079,7 +1109,15 @@
         "sandbox": "Testkonto (Sandbox)",
         "sandboxHint": "Nur für PayPal-Sandbox-Schlüssel ankreuzen. Deren Zahlungen sind nicht echt.",
         "note": "Eingegangene Zahlungen werden anhand der Rechnungsnummer oder des variablen Symbols in der Mitteilung sowie anhand des Betrags den Rechnungen zugeordnet. Die von PayPal einbehaltene Gebühr wird auf der Rechnung verbucht, sodass Berichte auch den Nettoertrag zeigen. PayPal veröffentlicht Transaktionen mit einer Verzögerung von bis zu 3 Stunden.",
-        "connected": "PayPal verbunden. Die Zahlungen der letzten 30 Tage kommen mit der nächsten Synchronisierung."
+        "connected": "PayPal verbunden. Die Zahlungen der letzten 30 Tage kommen mit der nächsten Synchronisierung.",
+        "moreOptions": "Weitere Optionen",
+        "backfill": "Ab einem Datum synchronisieren…",
+        "backfillFrom": "Ab",
+        "backfillHint": "PayPal liefert Zahlungen bis zu 3 Jahre zurück. Ältere Zahlungen werden nur Rechnungen zugeordnet, aus ihnen entstehen nie Rechnungsentwürfe. Was bereits in Billanta ist, wird nicht erneut abgerufen.",
+        "backfillRun": "Synchronisieren",
+        "backfillDone": "{total, plural, one {# ältere Zahlung} other {# ältere Zahlungen}} abgerufen, {matched} zugeordnet.",
+        "backfillNothing": "Keine neuen älteren Zahlungen. Alles, was PayPal für diesen Zeitraum hat, ist bereits in Billanta.",
+        "backfillNets": "Betrag nach Währungsumrechnung für {count, plural, one {# Zahlung} other {# Zahlungen}} ergänzt."
       },
       "connectBank": "Bank verbinden",
       "chooseProvider": "Was möchten Sie verbinden?",
@@ -1099,7 +1137,45 @@
       },
       "syncPending": "Fio ist bereit. Zahlungen kommen mit der nächsten Synchronisierung, versuchen Sie es in 30 Sekunden erneut."
     },
-    "fee": "Gebühr {amount}"
+    "fee": "Gebühr {amount}",
+    "netReceived": "gutgeschrieben {amount}",
+    "rematch": {
+      "label": "Erneut zuordnen",
+      "done": "{matched, plural, one {# Zahlung} other {# Zahlungen}} ausgestellten Rechnungen zugeordnet, {linked, plural, one {# Zahlung} other {# Zahlungen}} mit bereits bezahlten Rechnungen verknüpft.",
+      "nothing": "{checked, plural, one {# nicht zugeordnete Zahlung} other {# nicht zugeordnete Zahlungen}} geprüft, keine neue Zuordnung.",
+      "failed": "Zuordnung fehlgeschlagen ({code})."
+    },
+    "filters": {
+      "source": "Konto",
+      "allSources": "Alle Konten",
+      "upload": "Hochgeladene Kontoauszüge",
+      "psd2": "Bank (PSD2)",
+      "period": "Zeitraum",
+      "custom": "Eigener Zeitraum",
+      "direction": "Richtung",
+      "allDirections": "Eingänge und Ausgänge",
+      "incoming": "Eingänge",
+      "outgoing": "Ausgänge"
+    },
+    "bulkDraft": "{count, plural, one {Rechnungsentwurf erstellen} other {# Rechnungsentwürfe erstellen}}",
+    "bulkDraftHint": "Erstellt aus jedem ausgewählten Zahlungseingang einen Rechnungsentwurf zur Prüfung. Nichts wird ausgestellt.",
+    "bulkDraftDone": "Entwürfe erstellt: {ok} von {total}. Sie finden sie unter Rechnungen, wo sie auf Ihre Prüfung warten.",
+    "rowMenu": {
+      "label": "Aktionen zur Zahlung",
+      "open": "Öffnen",
+      "openNewTab": "In neuem Fenster öffnen",
+      "openInvoice": "Rechnung öffnen",
+      "findMatch": "Einer Rechnung zuordnen…",
+      "createRule": "Regel aus dieser Zahlung erstellen",
+      "openExpense": "Ausgabe öffnen"
+    },
+    "rulesLink": "Regeln",
+    "rule": {
+      "ignoredBy": "Ignoriert durch Regel {rule}",
+      "expenseBy": "Ausgabe aus Regel {rule}",
+      "draftBy": "Rechnungsentwurf aus Regel {rule}",
+      "expense": "Einer Ausgabe zugeordnet"
+    }
   },
   "contacts": {
     "title": "Kontakte",
@@ -1114,7 +1190,6 @@
     "unstarred": "Markierung von {name} entfernt",
     "starFailed": "Die Markierung konnte nicht gespeichert werden",
     "invoice": "Rechnung",
-    "aresVerified": "In ARES verifiziert",
     "loadError": "Die Kontakte konnten nicht geladen werden.",
     "newContact": "Neuer Kontakt",
     "editor": {
@@ -1175,7 +1250,8 @@
       "phone": "Telefon",
       "vatSuggestYes": "Laut Register ist der Kontakt umsatzsteuerpflichtig. Auf „Ja“ setzen?",
       "vatSuggestNo": "Laut Register ist der Kontakt nicht umsatzsteuerpflichtig. Auf „Nein“ setzen?",
-      "contactPerson": "Ansprechpartner"
+      "contactPerson": "Ansprechpartner",
+      "moreDetails": "Weitere Angaben"
     },
     "detail": {
       "title": "Kontaktdetails",
@@ -1200,7 +1276,6 @@
       "no": "Nein",
       "aresCheck": "In ARES verifiziert",
       "lastInvoice": "Letzter Beleg",
-      "documentCount": "Belege",
       "openAres": "In ARES öffnen ↗",
       "newInvoice": "Neue Rechnung",
       "star": "Markieren",
@@ -1232,7 +1307,8 @@
         "renewed": "Neuer Link erstellt",
         "disable": "Deaktivieren",
         "disabled": "Portal ist deaktiviert",
-        "failed": "Etwas ist schiefgelaufen"
+        "failed": "Etwas ist schiefgelaufen",
+        "manage": "Link bearbeiten"
       },
       "contactPerson": "Ansprechpartner"
     },
@@ -1287,6 +1363,7 @@
       "unpaidTitle": "Offene ausgestellte Rechnungen"
     },
     "colorFilter": "Farbe",
+    "colorAll": "Alle Farben",
     "colors": {
       "red": "Rot",
       "orange": "Orange",
@@ -1306,7 +1383,6 @@
     "channels": {
       "title": "Verknüpfte Kanäle",
       "description": "Verknüpfen Sie Telegram oder WhatsApp, um Rechnungen direkt aus einer Sprachnachricht zu erstellen.",
-      "back": "Zurück zu den Einstellungen",
       "telegram": "Telegram",
       "whatsapp": "WhatsApp",
       "statusLinked": "Verknüpft",
@@ -1320,7 +1396,6 @@
       "openInTelegram": "In Telegram öffnen",
       "copy": "Kopieren",
       "copied": "Kopiert",
-      "expiresNote": "Der Code läuft in 10 Minuten ab.",
       "expiresAt": "Der Code ist bis {time} gültig. Klicken Sie nach dem Verknüpfen auf „Fertig“.",
       "newCode": "Neuen Code erstellen",
       "done": "Fertig",
@@ -1367,7 +1442,8 @@
         "warning": "Kopieren Sie diesen Schlüssel jetzt – Sie können ihn später nicht mehr einsehen. Zur Identifizierung wird nur ein kurzes Präfix gespeichert.",
         "copy": "Kopieren",
         "copied": "Kopiert",
-        "done": "Fertig"
+        "done": "Fertig",
+        "download": "Herunterladen"
       },
       "docsHint": "Verwenden Sie ihn als Bearer-Token: Authorization: Bearer <key>. Die vollständige API-Referenz finden Sie in apps/backend/README.md.",
       "loadError": "Die API-Schlüssel konnten nicht geladen werden.",
@@ -1391,13 +1467,11 @@
     "backup": {
       "title": "Sicherungsziele",
       "description": "Legen Sie fest, wohin die Daten Ihres Unternehmens planmäßig exportiert werden – auf Ihren eigenen Server per SFTP, in Google Drive, an einen eigenen Webhook oder als lokaler Download.",
-      "back": "Zurück zu den Einstellungen",
       "empty": "Noch keine Sicherungsziele eingerichtet.",
+      "addTitle": "Sicherungsziel hinzufügen",
       "columns": {
-        "type": "Typ",
         "schedule": "Zeitplan",
-        "lastRun": "Letzte Ausführung",
-        "status": "Status"
+        "lastRun": "Letzte Ausführung"
       },
       "typeGoogleDrive": "Google Drive",
       "typeWebhook": "Webhook",
@@ -1431,6 +1505,7 @@
       "addWebhook": {
         "button": "Webhook hinzufügen",
         "title": "Webhook-Ziel hinzufügen",
+        "description": "Sendet die Daten als signiertes JSON an Ihre URL.",
         "urlLabel": "Webhook-URL",
         "urlPlaceholder": "https://example.com/faktur-webhook",
         "urlHint": "Die Daten werden per POST als signiertes JSON an diese Adresse gesendet (Header X-Faktur-Signature).",
@@ -1444,9 +1519,9 @@
         "warning": "Kopieren Sie dieses Secret jetzt – Sie können es später nicht mehr einsehen. Damit prüfen Sie den Header X-Faktur-Signature.",
         "copy": "Kopieren",
         "copied": "Kopiert",
-        "done": "Fertig"
+        "done": "Fertig",
+        "download": "Herunterladen"
       },
-      "docsHint": "Details zum Exportformat und zur Signaturprüfung finden Sie in apps/backend/README.md.",
       "runDone": "Sicherung abgeschlossen.",
       "runFailed": "Die Sicherung konnte nicht abgeschlossen werden.",
       "pause": "Pausieren",
@@ -1544,7 +1619,9 @@
         "account": "Konto und Unternehmen",
         "data": "Daten",
         "integrations": "Integrationen",
-        "personal": "Mein Konto"
+        "personal": "Mein Konto",
+        "company": "Unternehmen",
+        "invoicing": "Rechnungsstellung"
       },
       "items": {
         "profile": {
@@ -1689,7 +1766,9 @@
         "confirm_mismatch": "Die Bestätigungs-E-Mail-Adresse stimmt nicht überein.",
         "last_admin": "Sie sind der letzte Administrator von {company}. Übertragen Sie die Administratorrolle zuerst an ein anderes Mitglied.",
         "issued_in_shared": "Sie haben im gemeinsamen Unternehmen {company} Belege ausgestellt und können daher nicht entfernt werden. Wenden Sie sich an die anderen Mitglieder.",
-        "delete_failed": "Löschen fehlgeschlagen, bitte versuchen Sie es erneut."
+        "delete_failed": "Löschen fehlgeschlagen, bitte versuchen Sie es erneut.",
+        "reauth_required": "Melden Sie sich zu Ihrer Sicherheit vor dieser Änderung erneut an: abmelden, wieder anmelden und es innerhalb von 10 Minuten noch einmal versuchen.",
+        "too_long": "Das Passwort ist zu lang. Es darf höchstens 72 Byte haben (mit Umlauten und Akzenten etwas weniger Zeichen)."
       },
       "cancel": "Abbrechen",
       "emailChange": {
@@ -1875,7 +1954,12 @@
       "dicKeepHint": "Lassen Sie die Steuernummer auch als nicht Umsatzsteuerpflichtiger oder identifizierte Person ausgefüllt. Sie wird auf Ihre Belege gedruckt.",
       "dataBoxId": "Datenbox-ID",
       "dataBoxIdHint": "Sieben Zeichen, z. B. ab12cd3. Nicht geheim. Wird in die Jahresübersicht für die ČSSZ (Sozialversicherung) übernommen.",
-      "icoTrialHint": "Mit der Eingabe der IČO startet Ihre kostenlose {days}-tägige Plus-Testphase – ohne Karte, einmal pro IČO."
+      "icoTrialHint": "Mit der Eingabe der IČO startet Ihre kostenlose {days}-tägige Plus-Testphase – ohne Karte, einmal pro IČO.",
+      "taxCountry": "Steuerland",
+      "taxCountryValue": "{country} · Buchführung in {currency}",
+      "taxCountryHint": "Bestimmt die USt.-Sätze, die Währung Ihrer Buchführung und die Exporte. Die Sitzadresse ändert daran nichts. Sie können es in der Ersteinrichtung ändern, bis Sie Ihre erste Rechnung ausstellen.",
+      "taxCountryLocked": "Nach der ersten ausgestellten Rechnung lässt sich das Steuerland nicht mehr ändern.",
+      "taxCountryChange": "Ändern"
     },
     "team": {
       "title": "Team",
@@ -1965,7 +2049,8 @@
         "empty": "In dieser Region gibt es noch niemanden.",
         "all": "Vollständiges Verzeichnis der Buchhaltungen",
         "picked": "{email} ist eingetragen. Prüfen Sie die Rolle und senden Sie die Einladung."
-      }
+      },
+      "copyLink": "Link kopieren"
     },
     "exports": {
       "title": "Exporte für die Buchhaltung",
@@ -2088,7 +2173,8 @@
         "paidFromSettings": "Übernommen aus den monatlichen Vorauszahlungen in den Unternehmensdaten. Sie können den Wert ändern.",
         "uniformRate": "Fremdwährungen werden zum einheitlichen Kurs für {year} umgerechnet (Durchschnitt der ČNB-Kurse zum Monatsende). Ändern können Sie das unter Einstellungen → Rechnungsformular.",
         "titleSk": "Jährliche Schätzung von Steuer und Versicherung (slowakische Einzelunternehmer)",
-        "hintSk": "Schätzt die slowakische Einkommensteuer sowie Kranken- und Sozialversicherung aus den im Jahr bezahlten Rechnungen und Ausgaben, in Euro."
+        "hintSk": "Schätzt die slowakische Einkommensteuer sowie Kranken- und Sozialversicherung aus den im Jahr bezahlten Rechnungen und Ausgaben, in Euro.",
+        "modes": {}
       },
       "epo": {
         "title": "So reichen Sie USt-Erklärung, Kontrollmeldung und Zusammenfassende Meldung ein",
@@ -2394,7 +2480,20 @@
       "brandCredit": "„Erstellt mit {name}“ unter Rechnungen anzeigen",
       "brandCreditHint": "Ein kleiner Link in der Fußzeile des PDFs, der E-Mail und der Online-Rechnung, der auch Ihren Kunden zum Ausprobieren einlädt. In kostenpflichtigen Tarifen lässt er sich ausschalten.",
       "brandCreditFree": "Im kostenlosen Tarif wird die Zeile immer angezeigt.",
-      "brandCreditUpgrade": "Auf einen kostenpflichtigen Tarif wechseln"
+      "brandCreditUpgrade": "Auf einen kostenpflichtigen Tarif wechseln",
+      "advancedTitle": "Erweitert",
+      "advancedSummary": "Wechselkurse und Format des Rechnungslinks",
+      "pdfQr": "QR-Code auf dem PDF",
+      "pdfQrHint": "Standardmäßig drucken wir einen QR-Code zur Zahlung, oder eine QR Faktura, wenn kein CZK/EUR-Konto hinterlegt ist. Der Link zur Online-Rechnung öffnet eine Seite, auf der der Kunde per Überweisung, Karte oder auf andere Weise zahlen kann.",
+      "pdfQrModes": {
+        "auto": "Automatisch (Zahlungs-QR, sonst QR Faktura)",
+        "link": "Link zur Online-Rechnung (alle Zahlungsarten)",
+        "payment_only": "Nur Zahlungs-QR",
+        "off": "Kein QR-Code"
+      },
+      "paymentDraftLine": "Positionsbeschreibung für Entwürfe aus Zahlungen",
+      "paymentDraftLineHint": "Wird verwendet, wenn eine Zahlung (z. B. von PayPal) keine Positionen nennt. Zum Beispiel „Softwareleistungen“ oder „Beratung“.",
+      "paymentDraftLinePlaceholder": "PayPal-Zahlung"
     },
     "modules": {
       "title": "Module und Geschäftsart",
@@ -2581,7 +2680,8 @@
       "previewFromAddress": "fakturace@billanta.cz",
       "previewReplyTo": "Antwort an",
       "previewNote": "Beispieldaten. Die echte E-Mail kann in einem E-Mail-Programm leicht anders aussehen.",
-      "moreVars": "Weitere Variablen →"
+      "moreVars": "Weitere Variablen →",
+      "bccHintNoEmail": "Die Kopie geht an die E-Mail-Adresse des Unternehmens – sie ist unter Unternehmensdaten noch nicht ausgefüllt."
     },
     "variables": {
       "title": "Variablen",
@@ -3317,7 +3417,8 @@
         "already_enabled": "Die Zwei-Faktor-Authentifizierung ist bereits aktiviert.",
         "not_enabled": "Die Zwei-Faktor-Authentifizierung ist nicht aktiviert.",
         "not_signed_in": "Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an."
-      }
+      },
+      "download": "Herunterladen"
     },
     "emailNotifications": {
       "title": "E-Mail-Benachrichtigungen",
@@ -4057,7 +4158,11 @@
       "manualTitle": "App installieren",
       "manualBody": "Öffnen Sie das Browsermenü (⋮ oder ⋯) und wählen Sie „App installieren“ oder „Zum Startbildschirm hinzufügen“. In Chrome und Edge am Desktop gibt es zudem rechts in der Adressleiste ein Installationssymbol.",
       "ok": "Verstanden"
-    }
+    },
+    "close": "Schließen",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen",
+    "moreActions": "Weitere Aktionen"
   },
   "municipalityPages": {
     "regionLabel": "Region",
@@ -4113,7 +4218,13 @@
     "explore": "Entdecken",
     "language": "Sprache",
     "appearance": "Darstellung",
-    "create": "Erstellen"
+    "create": "Erstellen",
+    "groupWork": "Arbeit",
+    "groupAccount": "Konto",
+    "groupProduct": "Produkt",
+    "groupResources": "Ressourcen",
+    "groupPartners": "Steuerberater & Partner",
+    "groupHelp": "Hilfe"
   },
   "pricing": {
     "title": "Preise",
@@ -4407,6 +4518,7 @@
     "lead": "Tippen Sie, wählen Sie aus Vorschlägen, oder beschreiben Sie die Rechnung in einem Satz und lassen Sie sie vorausfüllen.",
     "ai": {
       "title": "Mit KI vorausfüllen",
+      "short": "Mit KI",
       "hint": "Schreiben oder diktieren Sie die Rechnung in eigenen Worten, z. B. „Rechnung für 27604977, 3 Stunden Beratung zu 1500, fällig in 14 Tagen“. Die KI ergänzt den Kunden (in ARES geprüft), die Positionen und die Fälligkeit. Gespeichert wird erst, wenn Sie das Formular prüfen und speichern.",
       "placeholder": "z. B. Rechnung an Dvořák & Partner, 2× Schulung zu 4.500 CZK, fällig in 30 Tagen",
       "run": "Vorausfüllen",
@@ -4464,13 +4576,21 @@
       "unitPriceGross": "Einzelpreis brutto",
       "lineTotalGross": "Summe brutto"
     },
+    "preview": {
+      "title": "Vorschau",
+      "empty": "Noch keine Positionen",
+      "noCustomer": "Kunden wählen"
+    },
     "totals": {
       "base": "Zwischensumme",
       "vat": "USt.",
       "total": "Gesamt",
       "alreadyPaid": "Bereits bezahlt",
       "alreadyPaidHint": "Eine Anzahlung oder vorab erhaltene Zahlung – als Betrag oder als Prozentsatz der Gesamtsumme. Ist der Betrag voll bezahlt, wird die Rechnung nach dem Ausstellen als bezahlt markiert.",
-      "remaining": "Noch zu zahlen"
+      "remaining": "Noch zu zahlen",
+      "alreadyPaidAdd": "Kunde hat bereits (ganz oder teilweise) bezahlt",
+      "paidInFull": "Voller Betrag",
+      "paidFullNote": "Nach dem Ausstellen wird die Rechnung als bezahlt markiert."
     },
     "cancel": "Abbrechen",
     "save": "Entwurf speichern",
@@ -4496,6 +4616,7 @@
     },
     "copy": {
       "title": "Aus einer anderen Rechnung vorausfüllen",
+      "short": "Aus einer Rechnung",
       "hint": "Übernimmt Kunde, Positionen, Währung, Zahlung, Konto, Sprache, Notizen und eigene Felder. Nummer, Daten und Zahlungen werden nicht kopiert, und die Fälligkeit richtet sich nach Ihrer Standardfrist.",
       "latest": "Aus der letzten Rechnung",
       "other": "Aus einer anderen Rechnung…",
@@ -4776,6 +4897,7 @@
       "total": "Netto"
     },
     "actions": {
+      "more": "Mehr",
       "open": "Öffnen",
       "edit": "Bearbeiten",
       "issue": "Ausstellen",
@@ -4800,7 +4922,8 @@
       "ublHint": "Auch als E-Rechnungsdatei im UBL-Format (Peppol BIS 3.0) für slowakische Kunden. Der Versand über das Peppol-Netzwerk, den die Slowakei ab dem 1. Januar 2027 vorschreibt, ist in Vorbereitung.",
       "duplicateToFix": "Neue Rechnung mit Korrektur",
       "rotateLink": "Neuer Kundenlink",
-      "editAnyway": "Trotzdem bearbeiten"
+      "editAnyway": "Trotzdem bearbeiten",
+      "markPaidShort": "Bezahlt"
     },
     "confirm": {
       "back": "Zurück",
@@ -4827,7 +4950,9 @@
       "editAnywayTitle": "Nur eine kleine Korrektur?",
       "editAnywayBody": "Ein Tippfehler oder eine fehlende Angabe lässt sich direkt korrigieren. Die Nummer bleibt, und die Änderung wird mit Ihrer Begründung im Änderungsverlauf festgehalten. Hat der Kunde den Beleg bereits, senden Sie ihn erneut.",
       "editAnywayPlaceholder": "Grund, z. B. Tippfehler in der Adresse",
-      "editAnywayNeedsReason": "Geben Sie zuerst einen Grund an"
+      "editAnywayNeedsReason": "Geben Sie zuerst einen Grund an",
+      "bulkDeleteTitle": "{count, plural, one {# Entwurf} other {# Entwürfe}} löschen?",
+      "bulkDeleteBody": "Gelöschte Entwürfe lassen sich nicht wiederherstellen."
     },
     "done": {
       "issued": "Beleg ausgestellt",
@@ -4849,12 +4974,9 @@
     "fxLabelManual": "Wechselkurs",
     "fxHidden": "Die Umrechnung in {home} wird nicht auf den Beleg gedruckt (Kurs {rate} {pair} nur für Berichte).",
     "views": {
-      "title": "Geteilter Link",
-      "count": "Aufgerufen",
       "times": "{count, plural, one {einmal} other {#-mal}}",
-      "first": "Zuerst",
-      "last": "Zuletzt",
-      "none": "Der Kunde hat den Rechnungslink noch nicht geöffnet."
+      "opened": "Vom Kunden geöffnet",
+      "notYet": "noch nicht"
     },
     "filters": {
       "title": "Filter",
@@ -4892,7 +5014,6 @@
       "customRange": "Eigener Zeitraum",
       "dateBy": "Nach Datum",
       "quickRanges": "Schnellauswahl ({field})",
-      "anyDate": "Beliebiges Datum",
       "item": "Position",
       "itemPlaceholder": "Positionstext oder Code",
       "paidState": "Zahlung",
@@ -4965,7 +5086,9 @@
         "communication": "Versand und Antwort des Kunden",
         "content": "Inhalt des Belegs",
         "origin": "Herkunft und Verknüpfungen"
-      }
+      },
+      "anyType": "Alle Belege",
+      "statusLabel": "Status"
     },
     "remindersSent": "{count, plural, one {# Erinnerung gesendet} other {# Erinnerungen gesendet}}, zuletzt am {date}.",
     "attachments": {
@@ -4992,7 +5115,8 @@
       "title": "Antwort des Kunden",
       "accepted": "Hat das Angebot angenommen",
       "rejected": "Hat das Angebot abgelehnt",
-      "waiting": "Noch keine Antwort. Der Kunde kann das Angebot im Kundenportal (Kundenlink) annehmen oder ablehnen."
+      "waiting": "Noch keine Antwort. Der Kunde kann das Angebot im Kundenportal (Kundenlink) annehmen oder ablehnen.",
+      "waitingShort": "Noch keine Antwort."
     },
     "partial": {
       "paid": "Bezahlt {amount}",
@@ -5178,7 +5302,6 @@
     "noEmail": "keine E-Mail",
     "issueDate": "Ausstellungsdatum",
     "issueNow": "Sofort ausstellen (Nummern vergeben)",
-    "issueNowHint": "Andernfalls werden Entwürfe erstellt, die Sie vor dem Ausstellen prüfen.",
     "summary": "Dadurch entstehen <b>{count, plural, one {# Beleg} other {# Belege}}</b> im Gesamtwert von <b>{total}</b> ohne USt.",
     "submitDrafts": "{count, plural, one {# Entwurf} other {# Entwürfe}} erstellen",
     "submitIssue": "{count, plural, one {# Beleg} other {# Belege}} ausstellen",
@@ -5221,7 +5344,8 @@
       "shortcuts": "Tastenkürzel"
     },
     "pages": {
-      "templates": "Rechnungsvorlagen"
+      "templates": "Rechnungsvorlagen",
+      "netIncome": "Nach Steuern (Nettoeinkommen)"
     },
     "keywords": {
       "newInvoice": "ausstellen erstellen hinzufügen beleg",
@@ -5355,7 +5479,8 @@
     "flatRate": "Ausgabenpauschale",
     "rate": "Pauschale {rate} %",
     "noFlat": "ohne Pauschale",
-    "hint": "Grobe Schätzung für tschechische Einzelunternehmer (OSVČ): Betrag ohne USt. abzüglich Einkommensteuer (15 %), Sozial- und Krankenversicherung auf diese Rechnung – etwa {burden}. Verwendet die gewählte Pauschale und berücksichtigt keine Mindestvorauszahlungen und Steuerermäßigungen. Das ganze Jahr finden Sie unter Exporte."
+    "hint": "Grobe Schätzung für tschechische Einzelunternehmer (OSVČ): Betrag ohne USt. abzüglich Einkommensteuer (15 %), Sozial- und Krankenversicherung auf diese Rechnung – etwa {burden}. Verwendet die gewählte Pauschale und berücksichtigt keine Mindestvorauszahlungen und Steuerermäßigungen. Das ganze Jahr finden Sie unter Exporte.",
+    "hintCosts": "Auch Zahlungsgebühren und der Umrechnungsverlust ({costs}) werden abgezogen. Bei einer Ausgabenpauschale senken sie die Steuer nicht, da die Pauschale bereits alle Ausgaben abdeckt."
   },
   "welcome": {
     "title": "Willkommen bei Billanta",
@@ -5369,7 +5494,6 @@
     "businessHint": "Wir aktivieren die passenden Module.",
     "modulesTitle": "Was möchten Sie nutzen?",
     "modulesHint": "Rechnungen sind immer aktiv. Den Rest schalten Sie nach Bedarf ein.",
-    "later": "Jederzeit änderbar unter Einstellungen → Module.",
     "skip": "Überspringen",
     "finish": "Fertig, los geht's",
     "saved": "Alles bereit",
@@ -5391,7 +5515,12 @@
       "claim": "In das Konto übernehmen",
       "dismiss": "Verwerfen",
       "bannerHint": "Sie haben sie in diesem Browser ohne Konto erstellt. Wir speichern sie als ausgestellte Belege und die Kunden als Kontakte."
-    }
+    },
+    "countryQuestion": "Wo ist Ihr Unternehmen registriert?",
+    "countryHint": "Das Land bestimmt die USt.-Sätze, die Währung Ihrer Buchführung und die Register, in denen wir suchen. Nach Ihrer ersten ausgestellten Rechnung lässt es sich nicht mehr ändern.",
+    "countrySoon": "Demnächst",
+    "countryLocked": "Das Land ist festgelegt, weil Sie bereits eine Rechnung ausgestellt haben.",
+    "countryNotSupported": "Dieses Land unterstützen wir noch nicht."
   },
   "registry": {
     "label": "Firmenregister",
@@ -6350,13 +6479,6 @@
     "seoDescription": "Erstellen Sie kostenlos online eine Rechnung, ohne Konto. Lieferant, Kunde und Positionen ausfüllen und PDF mit QR-Zahlungscode herunterladen. Nichts wird gespeichert.",
     "heading": "Online-Rechnung ohne Registrierung",
     "lead": "Füllen Sie die Angaben aus und laden Sie eine fertige PDF-Rechnung herunter. Ohne Konto, ohne E-Mail, und wir speichern die Rechnung nicht.",
-    "points": [
-      "PDF mit QR-Zahlung",
-      "Firmendaten aus ARES",
-      "Ausfüllen mit KI",
-      "USt.-Zahler und Nicht-Zahler",
-      "Tschechisch, Slowakisch, Englisch"
-    ],
     "sections": {
       "document": "Beleg",
       "supplier": "Lieferant (Sie)",
@@ -6389,7 +6511,11 @@
       "unitPrice": "Einzelpreis",
       "vatRate": "USt.",
       "note": "Hinweis auf der Rechnung",
-      "taxableSupplyDate": "Leistungsdatum"
+      "taxableSupplyDate": "Leistungsdatum",
+      "accountWithCode": "Kontonummer / Bankleitzahl",
+      "paymentLabel": "Name der Zahlungsart",
+      "paymentInstructions": "Wohin zahlen",
+      "swift": "SWIFT (BIC)"
     },
     "hints": {
       "vatPayer": "Nur ankreuzen, wenn Sie umsatzsteuerlich registriert sind. Die Rechnung zeigt dann USt., Leistungsdatum und eine Aufschlüsselung nach Steuersätzen.",
@@ -6398,14 +6524,21 @@
       "number": "Mit einem Konto folgen die Rechnungsnummern automatisch Ihrem Nummernkreis.",
       "duzp": "Das Datum der steuerpflichtigen Leistung. Meist identisch mit dem Ausstellungsdatum.",
       "qr": "Aus der Kontonummer erstellen wir eine QR-Zahlung; Ihr Kunde scannt sie einfach in seiner Banking-App.",
-      "foreign": "Tipp: Geben Sie bei einem EU-Kunden seine USt-IdNr. an. Mit einem Konto prüfen wir sie in VIES und finden die Firma in ausländischen Registern."
+      "foreign": "Tipp: Geben Sie bei einem EU-Kunden seine USt-IdNr. an. Mit einem Konto prüfen wir sie in VIES und finden die Firma in ausländischen Registern.",
+      "account": "Fügen Sie das ganze Konto auf einmal ein, z. B. 19-123456789/0100 oder eine IBAN – wir trennen Nummer und Bankleitzahl. Aus dem Konto wird eine QR-Zahlung, die der Kunde einfach in seiner Banking-App scannt.",
+      "lookup": "Beginnen Sie mit Firmenname, IČO oder USt-IdNr. Wir suchen im tschechischen ARES, im slowakischen Register juristischer Personen (RPO) und im EU-System VIES. Wählen Sie einen Treffer, und Adresse, IČO und USt-IdNr. werden ausgefüllt.",
+      "paymentInstructions": "Wird auf der Rechnung neben der Zahlungsart gedruckt, damit der Kunde weiß, wohin er das Geld senden soll.",
+      "swift": "Die Bankkennung für Zahlungen aus dem Ausland. Bei den großen tschechischen und slowakischen Banken ergänzen wir sie aus der Bankleitzahl, Sie können das Feld also leer lassen."
     },
     "methods": {
       "bank_transfer": "Überweisung",
       "cash": "Bargeld",
       "card": "Karte",
       "cash_on_delivery": "Nachnahme",
-      "other": "Sonstige"
+      "other": "Sonstige",
+      "paypal": "PayPal",
+      "revolut": "Revolut",
+      "offset": "Verrechnung"
     },
     "addItem": "Position hinzufügen",
     "removeItem": "Position entfernen",
@@ -6456,13 +6589,19 @@
     "placeholders": {
       "hours": "Z. B. Webentwicklung – September",
       "goods": "Z. B. Keramikbecher 0,3 l",
-      "project": "Z. B. Entwurf von Logo und Corporate Design"
+      "project": "Z. B. Entwurf von Logo und Corporate Design",
+      "paymentLabel": "z. B. Stripe, Gutschein, Tausch",
+      "instructions": {
+        "paypal": "jan@example.com oder paypal.me/jan",
+        "revolut": "@jan oder revolut.me/jan",
+        "other": "Wohin und wie zahlen"
+      },
+      "iban": "CZ65 0800 0000 1920 0014 5399"
     },
     "dueIn": "{days} Tage",
     "ares": {
       "found": "Aus ARES geladen",
-      "notFound": "Zu dieser IČO wurde keine Firma gefunden",
-      "unavailable": "Das Register ist gerade nicht erreichbar, bitte füllen Sie die Angaben manuell aus."
+      "notFound": "Zu dieser IČO wurde keine Firma gefunden"
     },
     "ai": {
       "title": "Mit KI ausfüllen",
@@ -6525,7 +6664,6 @@
     },
     "account": {
       "title": "Möchten Sie Ihre Rechnungen behalten und per E-Mail versenden?",
-      "body": "Ein kostenloses Konto bietet Ihnen eine Rechnungsübersicht, Kontakte aus dem Handelsregister, Mahnungen und QR-Zahlungen. Diese Rechnung können Sie auch ohne Konto erstellen.",
       "signup": "Kostenloses Konto erstellen",
       "login": "Anmelden",
       "signedIn": "Sie sind angemeldet. Sie können die Rechnung direkt in der App speichern.",
@@ -6583,7 +6721,16 @@
       "forget": "Vergessen",
       "signupNote": "Nach der Registrierung übernehmen wir die Rechnungen, die Sie in diesem Browser ohne Konto erstellt haben: Die Nummerierung läuft weiter, und die Kunden werden als Kontakte gespeichert.",
       "where": "Nur dieser Browser bewahrt sie auf und löscht sie nach 90 Tagen – auf einem gemeinsam genutzten Computer verwenden Sie Vergessen."
-    }
+    },
+    "lookup": {
+      "placeholder": "Firmenname oder IČO – den Rest füllen wir aus"
+    },
+    "requiredLegend": "Ein Sternchen * kennzeichnet, was dieser Beleg enthalten muss.",
+    "addIbanSwift": "IBAN und SWIFT hinzufügen",
+    "moreDoc": "Belegart und Zahlungsart",
+    "addNote": "Hinweis zur Rechnung hinzufügen",
+    "quantityLess": "Eins weniger",
+    "quantityMore": "Eins mehr"
   },
   "publicProfile": {
     "services": "Leistungen",
@@ -6672,8 +6819,7 @@
       "week": "Diese Woche",
       "unbilled": "Nicht abgerechnet",
       "unbilledHours": "{hours} h abzurechnen",
-      "projects": "Aktive Projekte",
-      "projectsSub": "Sätze und Kunden"
+      "projects": "Aktive Projekte"
     },
     "period": {
       "week": "Diese Woche",
@@ -6770,7 +6916,7 @@
   },
   "clientPortal": {
     "title": "Belege für {name}",
-    "lead": "Rechnungen und Angebote von {company} an einem Ort – öffnen Sie einen Beleg für Zahlungs-QR und PDF",
+    "lead": "Tippen Sie auf einen Beleg, um die Zahlungsdetails zu sehen.",
     "outstanding": "Noch zu zahlen",
     "overdueOf": "davon {amount} überfällig",
     "allPaid": "Alles ist bezahlt, vielen Dank.",
@@ -6807,7 +6953,6 @@
   },
   "reports": {
     "pageTitle": "Berichte",
-    "pageLead": "Umsatz, Kosten und Gewinn für jeden Zeitraum, verglichen mit dem vorherigen Zeitraum.",
     "exportsLink": "Exporte für Buchhaltung und Behörden →",
     "noTenant": "Richten Sie zuerst eine Firma oder ein Unternehmen ein.",
     "loadError": "Der Bericht konnte nicht geladen werden.",
@@ -6916,13 +7061,13 @@
       "failed": "Speichern nicht möglich: {reason}",
       "notUsed": "noch nicht verwendet",
       "notVatPayer": "kein USt.-Zahler",
-      "orderHint": "Die Reihenfolge hier ist die Reihenfolge der Karten im Bericht. Ziehen Sie am Griff oder nutzen Sie die Pfeile, um sie zu ändern.",
       "moveUp": "Nach vorne",
       "moveDown": "Nach hinten",
       "dragToReorder": "Zum Umsortieren ziehen"
     },
     "flatTaxLink": "Lohnt sich die Pauschalsteuer? →",
-    "taxReturnLink": "Übersicht für die Steuererklärung"
+    "taxReturnLink": "Übersicht für die Steuererklärung",
+    "netIncomeLink": "Nach Steuern"
   },
   "siteSearch": {
     "title": "Website durchsuchen",
@@ -7404,13 +7549,11 @@
     "signupCta": "Kostenlos starten",
     "notStated": "– = in der Preisliste nicht angegeben (heißt nicht, dass es fehlt)",
     "verified": "Mit den Preislisten abgeglichen im {date}",
-    "sourcesTitle": "Quellen",
     "brand": {
       "suitsUsTitle": "Wann Billanta die bessere Wahl ist",
       "suitsThemTitle": "Wann {brand} sinnvoller ist",
       "priceTitle": "Preis",
       "tableTitle": "Billanta und {brand} Punkt für Punkt",
-      "source": "Quelle: Preisliste von {brand}",
       "versus": "Billanta vs. {brand}",
       "importCta": "So funktioniert der Import",
       "faqTitle": "Häufige Fragen",
@@ -7858,7 +8001,8 @@
       "czOnlyTextAlt": "„{name}“ behandelt tschechische Regeln. Für slowakische Einzelunternehmer gibt es einen eigenen Rechner unter den slowakischen Regeln.",
       "noLiability": "Das Ergebnis ist ohne Gewähr, und wir haften nicht für Entscheidungen, die darauf beruhen.",
       "noWarranty": "Das Ergebnis dient nur zur Information und ist ohne Gewähr. Prüfen Sie die Angaben, bevor Sie sie verwenden.",
-      "invoiceCtaTemplates": "Rechnungsvorlagen zum Online-Ausfüllen"
+      "invoiceCtaTemplates": "Rechnungsvorlagen zum Online-Ausfüllen",
+      "toc": "Inhalt"
     },
     "calculators": {
       "indexTitle": "Rechner und Tools für Unternehmen",
@@ -7888,7 +8032,8 @@
             "tax": "Einkommensteuer nach Freibetrag",
             "social": "Sozialversicherung",
             "health": "Krankenversicherung"
-          }
+          },
+          "fields": {}
         },
         "flatTax": {
           "name": "Lohnt sich die Pauschalsteuer?",
@@ -7904,7 +8049,9 @@
             "flatRate": "Haupttätigkeit",
             "children": "Anzahl der Kinder (Kinderfreibetrag)",
             "spouse": "Freibetrag für Ehepartner (Einkommen des Partners bis 68.000 CZK, Kind unter 3 Jahren)",
-            "vatPayer": "Ich bin USt.-pflichtig"
+            "vatPayer": "Ich bin USt.-pflichtig",
+            "spouseInfo": "Nur wenn Ihr Partner höchstens 68.000 CZK im Jahr verdient und ein Kind unter 3 Jahren in Ihrem Haushalt lebt.",
+            "childrenInfo": "Kinderfreibetrag für unterhaltsberechtigte Kinder, die in Ihrem Haushalt leben."
           },
           "rates": {
             "30": "Vermietung von Betriebsvermögen (30 %, bis {cap} CZK)",
@@ -7919,8 +8066,8 @@
           },
           "result": {
             "best": "Am günstigsten",
-            "band": "Band",
-            "bandValue": "Band {band}",
+            "band": "Stufe",
+            "bandValue": "Stufe {band}",
             "oneSum": "Eine Zahlung deckt Einkommensteuer, Sozial- und Krankenversicherung ab.",
             "expenses": "Ausgaben",
             "tax": "Einkommensteuer",
@@ -9180,7 +9327,8 @@
     "profileLink": {
       "body": "Sind Sie Buchhalter? Ihren Verzeichniseintrag und den Antrag auf das Partnerprogramm finden Sie im Buchhalterprofil.",
       "cta": "Buchhalterprofil öffnen"
-    }
+    },
+    "shareMore": "QR-Code und Website-Badges"
   },
   "partners": {
     "title": "Partner",
@@ -9222,6 +9370,10 @@
       "exports": {
         "title": "Exporte für die Buchhaltung",
         "body": "Umsatzsteuererklärungen und Kontrollmeldungen, ISDOC und CSV – ohne etwas abzutippen."
+      },
+      "included": {
+        "title": "Im Tarif des Mandanten enthalten",
+        "body": "Ab dem Tarif Start ist der Zugang für Steuerberater Teil des Tarifs des Mandanten. Sie zahlen dafür nichts."
       },
       "credits": {
         "title": "Credits für Mandanten",
@@ -9338,7 +9490,8 @@
     "ctaBody": "Billanta behält Fälligkeiten, QR-Zahlungen und Exporte für Ihre Buchhaltung im Blick. Starten Sie kostenlos.",
     "ctaButton": "Kostenloses Konto erstellen",
     "aiAuto": "Dieser Artikel wurde von KI aus unseren eigenen Daten geschrieben und vor der Veröffentlichung nur automatisch geprüft. Wenn Sie einen Fehler finden, <contact>sagen Sie uns Bescheid</contact>.",
-    "aiReviewed": "Dieser Artikel wurde mit Hilfe von KI entworfen und vor der Veröffentlichung von einem Menschen geprüft. Wenn Sie einen Fehler finden, <contact>sagen Sie uns Bescheid</contact>."
+    "aiReviewed": "Dieser Artikel wurde mit Hilfe von KI entworfen und vor der Veröffentlichung von einem Menschen geprüft. Wenn Sie einen Fehler finden, <contact>sagen Sie uns Bescheid</contact>.",
+    "toc": "Inhalt"
   },
   "adminBlog": {
     "title": "Blog",
@@ -9761,7 +9914,8 @@
     "invalid": "Verwenden Sie Buchstaben, Ziffern oder Bindestriche.",
     "failed": "Speichern fehlgeschlagen",
     "copy": "Kopieren",
-    "copied": "Link kopiert"
+    "copied": "Link kopiert",
+    "rename": "Link umbenennen"
   },
   "demo": {
     "cta": "Demo ausprobieren",
@@ -9781,43 +9935,6 @@
         "empty": "Lieber bei null anfangen? Wählen Sie eine leere Firma und übernehmen Sie Ihre Arbeit nach der Registrierung in Ihr eigenes Konto."
       },
       "pick": "Firmenart wählen",
-      "rolesTitle": "Sehen Sie die App mit den Augen des ganzen Teams",
-      "rolesLead": "In der Demo wechseln Sie die Ansicht mit einer Auswahl in der oberen Leiste. Jede Rolle sieht genau das, was sie auch in einer echten Firma sehen würde.",
-      "tryTitle": "Was Sie in der Demo ausprobieren können",
-      "try": {
-        "invoices": {
-          "title": "Rechnung mit QR-Zahlung",
-          "text": "Stellen Sie eine Rechnung aus, laden Sie das PDF herunter und teilen Sie einen Link mit QR-Code."
-        },
-        "payments": {
-          "title": "Zahlungen und Teilzahlungen",
-          "text": "Markieren Sie eine Rechnung als bezahlt oder erfassen Sie eine Teilzahlung."
-        },
-        "reminders": {
-          "title": "Überfällige Rechnungen",
-          "text": "Sehen Sie, was überfällig ist und wie eine Zahlungserinnerung aussieht."
-        },
-        "expenses": {
-          "title": "Ausgaben",
-          "text": "Erfassen Sie eine Eingangsrechnung und verfolgen Sie die Ausgaben nach Kategorien."
-        },
-        "vat": {
-          "title": "USt. und Berichte",
-          "text": "Umsatzsteuererklärung und Kontrollmeldung aus denselben Daten."
-        },
-        "accountant": {
-          "title": "Die Ansicht der Buchhaltung",
-          "text": "Exporte für die Buchhaltung und was Steuerberater in der Firma tun dürfen."
-        },
-        "team": {
-          "title": "Team und Rollen",
-          "text": "Wechseln Sie zu einem Kollegen mit Lesezugriff und versuchen Sie, etwas zu ändern."
-        },
-        "quotes": {
-          "title": "Angebote und Proformarechnungen",
-          "text": "Machen Sie aus einem Angebot eine Proformarechnung und daraus die endgültige Rechnung."
-        }
-      },
       "allFeatures": "Alle Funktionen",
       "faqTitle": "Häufige Fragen zur Demo",
       "faq": [
@@ -10352,7 +10469,8 @@
     "suspendedDone": "Schule gesperrt.",
     "unsuspended": "Schule wiederhergestellt.",
     "failed": "Fehlgeschlagen",
-    "rejectConfirm": "{name} ablehnen? Die Klassen dieser Lehrkraft enden und bleiben 30 Tage schreibgeschützt; außerdem wird sie aus anderen Klassen entfernt."
+    "rejectConfirm": "{name} ablehnen? Die Klassen dieser Lehrkraft enden und bleiben 30 Tage schreibgeschützt; außerdem wird sie aus anderen Klassen entfernt.",
+    "manage": "Verwalten"
   },
   "offline": {
     "offline": "Offline",
@@ -10721,7 +10839,7 @@
           "body": "Umschulungs- und Gründungskurse, Inkubatoren. Die Teilnehmenden stellen während des Kurses kostenlos Rechnungen."
         },
         "coworkings": {
-          "title": "Coworkings",
+          "title": "Coworking-Spaces",
           "body": "Ein dauerhafter QR-Code für alle Mitglieder, ein Plakat für die Wand und Guthaben für den Space."
         },
         "communities": {
@@ -11371,7 +11489,8 @@
       "businessPreset": "Art des Unternehmens",
       "presetNone": "selbst wählen lassen",
       "defaultLocale": "Sprache der Seite",
-      "localeVisitor": "die des Besuchers"
+      "localeVisitor": "die des Besuchers",
+      "moreDetails": "Weitere Einstellungen"
     },
     "errors": {
       "code_taken": "Dieser Code existiert bereits.",
@@ -12029,7 +12148,6 @@
     "title": "Übersicht für die Steuererklärung {year}",
     "titleSk": "Übersicht für die Steuererklärung {year} (Slowakei)",
     "back": "Berichte",
-    "lead": "Einnahmen, Ausgaben und Ausgabenpauschalen des Steuerjahres aus Ihren eigenen Belegen, die Abgabefristen und eine grobe Steuerschätzung. Kostenlos in jedem Tarif.",
     "notAdvice": "Dies ist eine Zusammenfassung Ihrer eigenen Belege zur Vorbereitung der Einkommensteuererklärung, keine Steuerberatung. Prüfen Sie die Zahlen vor der Abgabe, bei Bedarf mit Ihrer Buchhaltung oder Steuerberatung.",
     "noTenant": "Füllen Sie zuerst die Rechnungsdaten Ihrer Firma aus.",
     "loadError": "Die Übersicht konnte nicht geladen werden. Bitte versuchen Sie es gleich noch einmal.",
@@ -12141,7 +12259,6 @@
     "noteEstimate": "Die Schätzung berücksichtigt nur den Grundfreibetrag des Steuerpflichtigen, ohne weitere Ermäßigungen, Abzüge oder sonstige Einkünfte (Arbeitsverhältnis, Vermietung).",
     "noteEstimateSk": "Die Schätzung berücksichtigt nur den persönlichen Grundfreibetrag, ohne weitere Abzüge, den Kinderbonus oder sonstige Einkünfte.",
     "noteData": "Die Zahlen stammen ausschließlich aus den Belegen in der App. Einnahmen und Ausgaben, die hier fehlen (Bargeld ohne Beleg, andere Tätigkeiten), ergänzen Sie bitte selbst.",
-    "disclaimer": "Diese Übersicht dient nur der Information, erfolgt ohne Gewähr und ersetzt keinen Steuerberater oder Buchhalter. Für die Angaben in Ihrer Erklärung sind Sie selbst verantwortlich.",
     "nudge": {
       "title": "Steuererklärung für {year}",
       "body": "Ihre Einnahmen {year}, Ausgaben nach Kategorien, Pauschalen und Fristen stehen aus Ihren Belegen bereit. PDF und CSV für Ihre Buchhaltung, kostenlos.",
@@ -12206,8 +12323,6 @@
       },
       "calculatorsTitle": "Steuerrechner",
       "calculatorsLead": "Ohne Registrierung: Steuer und Versicherung für tschechische und slowakische Einzelunternehmer, Vergleich mit der Pauschalsteuer und Mindestvorauszahlungen.",
-      "ctaTitle": "Eine Übersicht aus Ihren eigenen Rechnungen",
-      "ctaBody": "Wenn Sie mit Billanta fakturieren, liegt die Grundlage für Ihre Erklärung bereit, ohne etwas abzutippen. Ergänzen Sie nur, was nicht in der App ist.",
       "faqTitle": "Häufige Fragen",
       "faq": [
         {
@@ -13589,5 +13704,268 @@
     "privacyTitle": "Personenbezogene Daten",
     "privacyBody": "Der oben genannte Betreiber ist Verantwortlicher für Ihre personenbezogenen Daten. Die Datenschutzerklärung erläutert, was wir verarbeiten und wie Sie Ihre Rechte ausüben (Auskunft, Berichtigung, Löschung und weitere).",
     "legalTitle": "Rechtliche Dokumente"
+  },
+  "netIncome": {
+    "title": "Nach Steuern",
+    "intro": "Was von Ihren bezahlten Rechnungen nach Einkommensteuer, Sozial- und Krankenversicherung und gemeinsamen Ausgaben übrig bleibt. Auch für mehrere Partner, die sich die Einnahmen teilen.",
+    "back": "Berichte",
+    "noTenant": "Legen Sie zuerst ein Unternehmen an.",
+    "loadError": "Die Berechnung konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "notSupported": "Die Berechnung nach Steuern folgt bisher nur tschechischen Regeln (Ausgabenpauschale, ČSSZ, Krankenkasse).",
+    "periodKindLabel": "Zeitraum",
+    "periodKind": {
+      "month": "Monat",
+      "quarter": "Quartal",
+      "year": "Jahr"
+    },
+    "prev": "Vorheriger Zeitraum",
+    "next": "Nächster Zeitraum",
+    "quarterLabel": "Q{q} {year}",
+    "missingRates": "{count, plural, one {# Rechnung hat keinen Wechselkurs und wird nicht berücksichtigt.} other {# Rechnungen haben keinen Wechselkurs und werden nicht berücksichtigt.}}",
+    "cards": {
+      "income": "Einnahmen gesamt",
+      "taxes": "Steuer und Versicherung",
+      "afterTaxes": "Nach Steuern",
+      "net": "Nettoeinkommen"
+    },
+    "creditsHint": {
+      "month": "Ein Monat rechnet mit 1/12 der jährlichen Steuerermäßigungen und 1/12 der Obergrenze der Ausgabenpauschale. Die tatsächliche Steuer wird für das ganze Jahr festgesetzt, daher ergeben die Monate zusammen nicht unbedingt das Jahr.",
+      "quarter": "Ein Quartal rechnet mit 1/4 der jährlichen Steuerermäßigungen und 1/4 der Obergrenze der Ausgabenpauschale. Die tatsächliche Steuer wird für das ganze Jahr festgesetzt.",
+      "year": "Ein Jahr rechnet mit den vollen jährlichen Steuerermäßigungen und der vollen Obergrenze der Ausgabenpauschale, wie die Steuererklärung."
+    },
+    "table": {
+      "title": "Berechnung",
+      "titlePartners": "Berechnung nach Partnern",
+      "metric": "Posten",
+      "share": "Anteil {percent} %",
+      "total": "Gesamt",
+      "income": "Einnahmen",
+      "flatExpenses": "Ausgabenpauschale",
+      "base": "Steuerbemessungsgrundlage",
+      "taxBeforeCredits": "Steuer vor Ermäßigungen",
+      "credits": "Steuerermäßigungen",
+      "incomeTax": "Einkommensteuer",
+      "social": "Sozialversicherung",
+      "health": "Krankenversicherung",
+      "taxes": "Steuer und Versicherung gesamt",
+      "sharedExpenses": "Gemeinsame Ausgaben",
+      "net": "Nettoeinkommen"
+    },
+    "formula": "Grundlage = Einnahmen − {flat} % Ausgabenpauschale. Steuer {tax} % der Grundlage, Sozialversicherung {socialRate} % aus {socialBase} % der Grundlage, Krankenversicherung {healthRate} % aus {healthBase} % der Grundlage.",
+    "estimateNote": "Eine grobe Schätzung: ohne Mindestvorauszahlungen, ohne den Steuersatz von 23 % und ohne Rundung der Grundlage. Sie ersetzt weder die Steuererklärung noch die Jahresübersichten.",
+    "partnerFallback": "Partner {n}",
+    "partnerMe": "Ich",
+    "months": {
+      "title": "Nach Monaten",
+      "hint": "Jeder Monat wird für sich berechnet, mit 1/12 der Steuerermäßigungen. Praktisch, um Monate zu vergleichen.",
+      "month": "Monat",
+      "income": "Einnahmen",
+      "taxes": "Steuer und Versicherung",
+      "net": "Nettoeinkommen"
+    },
+    "list": {
+      "title": "Einnahmen im Zeitraum ({count})",
+      "hint": "Bezahlte Rechnungen nach Zahlungsdatum, dazu sonstige Einnahmen aus den Einstellungen. Bei einer Fremdwährungsrechnung zählt, was tatsächlich auf dem Konto ankam (z. B. nach Umrechnung in PayPal), sonst der Wechselkurs.",
+      "hintVat": "Bezahlte Rechnungen nach Zahlungsdatum, ohne USt., dazu sonstige Einnahmen aus den Einstellungen. Bei einer Fremdwährungsrechnung zählt, was tatsächlich auf dem Konto ankam, sonst der Wechselkurs.",
+      "empty": "Keine bezahlten Rechnungen in diesem Zeitraum.",
+      "show": "Alle Einnahmen anzeigen ({count})",
+      "paidOn": "bezahlt am {date}",
+      "source": {
+        "czk": "in CZK",
+        "received": "tatsächlich erhalten",
+        "converted": "zum Kurs umgerechnet"
+      },
+      "extra": "sonstige Einnahme",
+      "splitLabel": "Wem die Rechnung {number} gehört",
+      "saved": "Aufteilung gespeichert.",
+      "failed": "Die Aufteilung konnte nicht gespeichert werden."
+    },
+    "shares": {
+      "default": "Standardanteile",
+      "alone": "Nur {name}",
+      "custom": "Eigenes Verhältnis…",
+      "apply": "Verhältnis anwenden"
+    },
+    "config": {
+      "title": "Einstellungen der Berechnung",
+      "readOnly": "Nur der Inhaber oder ein Administrator des Unternehmens kann die Einstellungen ändern.",
+      "rates": "Sätze",
+      "fields": {
+        "flat_expense_percent": "Ausgabenpauschale",
+        "flat_expense_cap": "Jährliche Obergrenze der Pauschale pro Person",
+        "income_tax_percent": "Einkommensteuer",
+        "social_rate_percent": "Sozialversicherung",
+        "social_base_percent": "Bemessungsgrundlage – Sozialversicherung",
+        "health_rate_percent": "Krankenversicherung",
+        "health_base_percent": "Bemessungsgrundlage – Krankenversicherung"
+      },
+      "ratesHintLabel": "Warum 55 % bei der Sozialversicherung?",
+      "ratesHint": "Seit 2024 beträgt die Bemessungsgrundlage der tschechischen Sozialversicherung 55 % des Gewinns (vorher 50 %), bei der Krankenversicherung bleibt sie bei 50 %. Die Obergrenze für die 60-%-Ausgabenpauschale liegt bei 1.200.000 CZK im Jahr; lassen Sie das Feld leer, wenn es keine Obergrenze geben soll.",
+      "partners": "Partner",
+      "partnersHint": "Jeder Partner wird auf seinen Anteil separat besteuert. Ein Anteil ist ein Verhältnis: 1, 1, 1 ergibt je ein Drittel, 1 und 2 ergibt ein Drittel und zwei Drittel.",
+      "partnerName": "Name",
+      "partnerShare": "Anteil",
+      "partnerCredits": "Jährliche Steuerermäßigungen",
+      "partnerFallback": "Partner {n}",
+      "addPartner": "Partner hinzufügen",
+      "remove": "Entfernen",
+      "creditsHintLabel": "Was zählt zu den Ermäßigungen?",
+      "creditsHint": "Die Summe der jährlichen Steuerermäßigungen: 30.840 CZK pro Steuerzahler, dazu Ehepartner, Kinder und weitere, sofern sie zutreffen. Ermäßigungen senken die Steuer höchstens auf null.",
+      "sharedExpenses": "Gemeinsame Ausgaben",
+      "sharedExpensesHint": "Betriebskosten (Miete, Software…), die anteilig vom Nettoeinkommen abgezogen werden. Die Steuerbemessungsgrundlage ändern sie nicht, sie ergibt sich aus der Ausgabenpauschale.",
+      "label": "Beschreibung",
+      "amount": "Betrag",
+      "per": "Pro",
+      "perMonth": "Monat",
+      "perYear": "Jahr",
+      "splitOf": "Wem {label} gehört",
+      "addExpense": "Ausgabe hinzufügen",
+      "extraIncome": "Sonstige Einnahmen",
+      "extraIncomeHint": "Einnahmen, die keine Rechnung sind, z. B. aus Gebühren und Kursgewinnen. Sie werden wie Rechnungen besteuert.",
+      "date": "Datum",
+      "addExtra": "Einnahme hinzufügen",
+      "save": "Einstellungen speichern",
+      "saved": "Einstellungen gespeichert.",
+      "resetRates": "Standardsätze"
+    },
+    "errors": {
+      "duplicate_partner": "Zwei Partner haben dieselbe ID. Entfernen Sie einen und fügen Sie ihn erneut hinzu.",
+      "shares_must_be_positive": "Mindestens ein Anteil muss größer als null sein.",
+      "generic": "Die Einstellungen konnten nicht gespeichert werden. Prüfen Sie die Zahlen und versuchen Sie es erneut."
+    },
+    "noAccess": {
+      "title": "Nur für Inhaber und Administratoren",
+      "body": "Der Bericht nach Steuern zeigt die Einnahmen und Steuern jedes Partners, daher sehen ihn nur der Inhaber und die Administratoren des Unternehmens."
+    }
+  },
+  "bankRules": {
+    "title": "Zahlungsregeln",
+    "intro": "Was mit einer Zahlung geschehen soll, die keiner Rechnung zugeordnet wurde. Regeln laufen nach jedem Import und jeder Synchronisierung, nur für neue, nicht zugeordnete Zahlungen. Die Zuordnung zu einer Rechnung hat immer Vorrang.",
+    "backToBank": "Zurück zur Bank",
+    "noTenant": "Wählen oder erstellen Sie zuerst ein Unternehmen.",
+    "loadError": "Die Regeln konnten nicht geladen werden.",
+    "newRule": "Neue Regel",
+    "empty": "Noch keine Regeln",
+    "emptyHint": "Zum Beispiel: Zahlungen an Ihren Mobilfunkanbieter als Ausgaben erfassen, Bankgebühren ignorieren. Eine Regel können Sie auch über das Menü einer Zahlung anlegen.",
+    "list": {
+      "order": "Regeln werden von oben nach unten geprüft, und die erste, die auf eine Zahlung passt, wird verwendet.",
+      "enabled": "Regel aktiv",
+      "off": "Aus",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "enabledDone": "Regel aktiviert.",
+      "disabledDone": "Regel deaktiviert."
+    },
+    "field": {
+      "counterparty_name": "Gegenpartei",
+      "counterparty_account": "Konto oder E-Mail des Zahlers",
+      "message": "Verwendungszweck",
+      "variable_symbol": "Variables Symbol",
+      "any": "Beliebiges Feld"
+    },
+    "operator": {
+      "contains": "enthält",
+      "equals": "ist genau",
+      "regex": "passt auf Regex"
+    },
+    "direction": {
+      "any": "Eingänge und Ausgänge",
+      "in": "Eingänge",
+      "out": "Ausgänge"
+    },
+    "summary": {
+      "between": "Betrag {min}–{max}",
+      "atLeast": "Betrag ab {min}",
+      "atMost": "Betrag bis {max}",
+      "and": " und ",
+      "or": " oder "
+    },
+    "action": {
+      "ignore": "Ignorieren",
+      "draft_expense": "Ausgabe zur Prüfung erstellen",
+      "draft_invoice": "Rechnungsentwurf erstellen"
+    },
+    "actionHint": {
+      "ignore": "Die Zahlung wird als ignoriert markiert. Sie können sie jederzeit wieder zur Zuordnung freigeben.",
+      "draft_expense": "Nur Zahlungsausgänge. Erstellt eine mit der Zahlung verknüpfte Ausgabe mit der Markierung „Zu prüfen“.",
+      "draft_invoice": "Nur Zahlungseingänge. Erstellt einen Rechnungsentwurf zur Prüfung. Ausstellen liegt immer bei Ihnen."
+    },
+    "form": {
+      "titleNew": "Neue Regel",
+      "titleEdit": "Regel bearbeiten",
+      "name": "Name",
+      "namePlaceholder": "Z. B. Vodafone – Telefon",
+      "conditions": "Bedingungen",
+      "conditionsHint": "Groß- und Kleinschreibung sowie Akzente spielen bei „enthält“ und „ist genau“ keine Rolle. Richtung, Währung und Betrag müssen immer übereinstimmen.",
+      "field": "Feld",
+      "operator": "Vergleich",
+      "value": "Wert",
+      "valuePlaceholder": "Z. B. Vodafone",
+      "addCondition": "Bedingung hinzufügen",
+      "removeCondition": "Bedingung entfernen",
+      "advanced": "Erweitert: reguläre Ausdrücke",
+      "regexHint": "Ein regulärer Ausdruck (JavaScript, ohne Unterscheidung von Groß- und Kleinschreibung), höchstens 200 Zeichen. Z. B. ^VODAFONE oder invoice \\d+/2026. Muster, die extrem lange laufen könnten (verschachtelte Wiederholungen wie (a+)+, Rückverweise, Lookaheads), lassen sich nicht speichern.",
+      "direction": "Richtung",
+      "currency": "Währung",
+      "currencyAny": "Beliebig",
+      "minAmount": "Betrag ab",
+      "maxAmount": "Betrag bis",
+      "amountHint": "Beträge werden ohne Vorzeichen verglichen, eine ausgehende 500 zählt also als 500.",
+      "action": "Was tun",
+      "category": "Ausgabenkategorie",
+      "categoryNone": "Keine Kategorie",
+      "contact": "Kunde",
+      "contactNone": "Nach der E-Mail des Zahlers",
+      "enabled": "Regel ist aktiv",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saveAndApply": "Speichern und auf vorhandene anwenden",
+      "saved": "Regel gespeichert.",
+      "created": "Regel erstellt.",
+      "textMatch": "Wie Bedingungen verknüpft werden",
+      "textMatchAll": "Alle Bedingungen müssen zutreffen (UND)",
+      "textMatchAny": "Eine Bedingung genügt (ODER)"
+    },
+    "preview": {
+      "title": "Vorschau",
+      "count": "{count, plural, one {# nicht zugeordnete Zahlung passt} other {# nicht zugeordnete Zahlungen passen}} auf diese Regel.",
+      "loading": "Wird gezählt…",
+      "incomplete": "Fügen Sie mindestens eine Bedingung hinzu, um zu sehen, welche Zahlungen die Regel betreffen würde.",
+      "more": "und {count} weitere",
+      "onlyUnmatched": "Die Vorschau zeigt nur Zahlungen, die gerade nicht zugeordnet sind. Noch ändert sich nichts."
+    },
+    "apply": {
+      "button": "Auf vorhandene anwenden",
+      "confirmTitle": "Regel „{name}“ auf vorhandene Zahlungen anwenden?",
+      "what": {
+        "ignore": "Sie werden als ignoriert markiert.",
+        "draft_expense": "Aus jeder wird eine Ausgabe zur Prüfung.",
+        "draft_invoice": "Aus jeder wird ein Rechnungsentwurf zur Prüfung."
+      },
+      "rematchFirst": "Zuerst versuchen wir noch einmal, die Zahlungen Rechnungen zuzuordnen.",
+      "done": "Regel auf {applied, plural, one {# Zahlung} other {# Zahlungen}} angewendet.",
+      "doneMore": "Regel auf {applied, plural, one {# Zahlung} other {# Zahlungen}} angewendet. {remaining} übrig, führen Sie sie erneut aus.",
+      "nothing": "Derzeit passt keine nicht zugeordnete Zahlung auf diese Regel."
+    },
+    "delete": {
+      "title": "Regel löschen?",
+      "body": "Die Regel „{name}“ wird gelöscht. Bereits verarbeitete Zahlungen bleiben, wie sie sind.",
+      "confirm": "Löschen",
+      "done": "Regel gelöscht."
+    },
+    "errors": {
+      "generic": "Das hat nicht geklappt",
+      "rule_needs_condition": "Fügen Sie mindestens eine Text- oder Betragsbedingung hinzu. Eine Richtung allein würde jede Zahlung erfassen.",
+      "invalid_amount_range": "„Betrag ab“ muss kleiner oder gleich „Betrag bis“ sein.",
+      "invalid_regex": "Der reguläre Ausdruck ist ungültig oder länger als 200 Zeichen.",
+      "unsafe_regex": "Dieser reguläre Ausdruck könnte zu lange laufen. Vereinfachen Sie ihn (keine verschachtelten Wiederholungen, Rückverweise oder Lookaheads, höchstens zwei * oder +).",
+      "action_needs_outgoing": "Ausgaben können nur aus Zahlungsausgängen entstehen. Stellen Sie die Richtung auf Ausgänge.",
+      "action_needs_incoming": "Rechnungsentwürfe können nur aus Zahlungseingängen entstehen. Stellen Sie die Richtung auf Eingänge.",
+      "contact_not_found": "Der gewählte Kunde existiert nicht mehr.",
+      "bank_rule_not_found": "Die Regel existiert nicht mehr.",
+      "forbidden": "Sie haben keine Berechtigung, Regeln zu ändern."
+    }
   }
 }

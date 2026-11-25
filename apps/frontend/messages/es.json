@@ -36,7 +36,17 @@
     "label": "Idioma",
     "cs": "Čeština",
     "sk": "Slovenčina",
-    "en": "English"
+    "en": "English",
+    "de": "Deutsch",
+    "pl": "Polski",
+    "uk": "Українська",
+    "hu": "Magyar",
+    "ro": "Română",
+    "fr": "Français",
+    "es": "Español",
+    "it": "Italiano",
+    "nl": "Nederlands",
+    "pt": "Português"
   },
   "marketing": {
     "nav": {
@@ -69,26 +79,22 @@
       "title": "Facturación para empresas checas y eslovacas, sin papeleo",
       "subtitle": "Emita facturas por voz a través de Telegram o WhatsApp, expórtelas a ISDOC y tenga la tranquilidad de que todo cuadra con ARES y la normativa vigente.",
       "cta": "Crear una cuenta gratuita",
-      "secondaryCta": "Ver cómo funciona",
-      "eyebrow": "Facturación para CZ y SK",
-      "points": {
-        "isdoc": "Exportación ISDOC",
-        "ares": "Consulta en ARES",
-        "qr": "Pagos con QR"
-      },
-      "guestCta": "Factura sin registro",
-      "dictateCta": "O díctela – sin registro"
+      "note": "Sin tarjeta de crédito. O sin registrarse: <write>rellene una factura</write> · <voice>díctela</voice>"
     },
-    "invoiceMockup": {
-      "status": "Pagada",
-      "issuedTo": "Facturar a",
-      "dueDate": "Fecha de vencimiento",
-      "subtotal": "Subtotal",
-      "vat": "IVA 21 %",
-      "total": "Total a pagar",
-      "isdocTag": "Exportación ISDOC",
-      "aresTag": "Verificado en ARES",
-      "credit": "Hecho con Billanta"
+    "heroSlides": {
+      "voice": {
+        "step": "Dicte",
+        "reply": "Su borrador de factura está listo para revisar"
+      },
+      "send": {
+        "step": "Envíe",
+        "sent": "Enviada con código QR de pago"
+      },
+      "paid": {
+        "step": "Cobre",
+        "title": "Cobro recibido",
+        "matched": "Conciliado con la factura 2026-0004"
+      }
     },
     "features": {
       "title": "Todo lo que necesita para facturar, en un solo lugar",
@@ -293,7 +299,6 @@
   },
   "dashboard": {
     "title": "Panel",
-    "welcome": "Bienvenido de nuevo. Aquí tiene un resumen rápido de sus facturas y pagos.",
     "noTenant": "Termine primero de configurar su empresa y aquí aparecerá su resumen.",
     "loadError": "No se ha podido cargar el resumen. Pruebe a recargar la página.",
     "greeting": "Hola, {name}",
@@ -437,8 +442,6 @@
       "title": "Tipos de cambio del ČNB",
       "hint": "El tipo del Banco Nacional Checo para el día elegido, que se usa para convertir a CZK las facturas en moneda extranjera. El porcentaje es la variación en la semana anterior a ese día.",
       "customizeTitle": "Monedas en los tipos del ČNB",
-      "customizeHint": "Elija qué monedas muestra el panel. Puede elegir cualquier moneda que publique el ČNB.",
-      "source": "Fuente:",
       "weekChange": "Variación en 7 días",
       "weekShort": "/ semana",
       "date": "Día",
@@ -454,7 +457,6 @@
     },
     "usage": {
       "title": "Recomendado según lo que usa",
-      "hint": "Lo que deje como está se sigue adaptando. Su propia elección siempre prevalece.",
       "newAccount": "Aún no hay nada, así que ve la disposición básica.",
       "currencies": "Factura en {list}",
       "onlyHome": "Factura solo en {currency}",
@@ -465,7 +467,6 @@
       "proformas": "emite facturas proforma",
       "quotes": "envía presupuestos"
     },
-    "customizeOrderHint": "Arrastre desde el asa o use las flechas para cambiar el orden.",
     "dragToReorder": "Arrastrar para reordenar",
     "exportsCta": "Exportaciones para el asesor",
     "emptyHintReadOnly": "Todavía no hay documentos. Cuando la empresa emita su primera factura, aquí verá los ingresos, un gráfico y los clientes."
@@ -527,7 +528,6 @@
       "customizeTitle": "Filtros rápidos",
       "customizeHint": "Elija qué etiquetas se muestran encima de la lista. Una etiqueta oculta se sigue mostrando mientras esté activa. Se aplica a este navegador.",
       "presetChips": "Selecciones rápidas",
-      "typeChips": "Tipos de documento",
       "statusChips": "Estados",
       "presets": {
         "thisMonth": "Este mes",
@@ -703,13 +703,14 @@
       "title": "Mi nota",
       "hint": "Solo usted puede verla – se guarda únicamente en este navegador y el proveedor nunca la ve.",
       "placeholder": "P. ej., aprobada, pagar antes del viernes",
-      "saved": "Guardada en este navegador."
+      "saved": "Guardada en este navegador.",
+      "add": "Añadir una nota privada"
     },
     "paymentMethod": "Forma de pago",
     "report": {
       "link": "¿No esperaba este documento? Denúncielo",
       "title": "Denunciar un documento sospechoso",
-      "hint": "La denuncia llega al operador de Billanta, no al emisor. Si varios destinatarios denuncian un documento, pausamos el envío de correos del emisor y lo revisamos.",
+      "hint": "La denuncia llega al operador de {name}, no al emisor. Si varios destinatarios denuncian un documento, pausamos el envío de correos del emisor y lo revisamos.",
       "reason": "Motivo",
       "reasons": {
         "fraud": "Fraude o factura falsa",
@@ -734,7 +735,7 @@
     },
     "card": {
       "pay": "Pagar {amount} con tarjeta",
-      "note": "El pago se realiza a través del pago seguro de Stripe. Ni el proveedor ni Billanta ven los datos de su tarjeta.",
+      "note": "El pago se realiza a través del pago seguro de Stripe. Ni el proveedor ni {name} ven los datos de su tarjeta.",
       "success": "Gracias, hemos recibido su pago con tarjeta. La factura figura como pagada.",
       "processing": "Estamos verificando el pago. La factura se marcará como pagada en cuanto Stripe lo confirme, normalmente en pocos minutos.",
       "cancelled": "El pago con tarjeta se ha cancelado. Puede volver a intentarlo o pagar por transferencia bancaria.",
@@ -748,7 +749,25 @@
     "cta": {
       "question": "¿Usted también envía facturas?",
       "action": "Pruebe {name} gratis"
-    }
+    },
+    "amountDueLabel": "Importe a pagar",
+    "dueOn": "Vence el {date}",
+    "validUntilOn": "Válido hasta el {date}",
+    "overdue": "Vencida",
+    "quoteTotalLabel": "Precio total",
+    "totalShortLabel": "Total",
+    "issuedOn": "Emitida el {date}",
+    "pay": {
+      "account": "Número de cuenta",
+      "iban": "IBAN",
+      "amount": "Importe",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "copyLabel": "Copiar {label}"
+    },
+    "print": "Imprimir / PDF",
+    "downloadPdf": "Descargar PDF",
+    "downloadPdfShort": "PDF"
   },
   "expenses": {
     "title": "Gastos",
@@ -768,7 +787,6 @@
     "uncategorized": "Sin categoría",
     "form": {
       "title": "Nuevo gasto",
-      "description": "Una factura recibida, un ticket u otro coste. Escanear una foto es la forma más rápida.",
       "supplierNameLabel": "Proveedor",
       "supplierNamePlaceholder": "Nombre del proveedor",
       "descriptionLabel": "Descripción",
@@ -778,10 +796,8 @@
       "currencyLabel": "Moneda",
       "expenseDateLabel": "Fecha de emisión / devengo",
       "categoryLabel": "Categoría",
-      "categoryPlaceholder": "p. ej., Material de oficina",
       "receiptFileUrlLabel": "Enlace al justificante (opcional)",
       "receiptFileUrlPlaceholder": "https://…",
-      "receiptFileUrlHint": "Enlace al documento en la nube (Google Drive, Dropbox…).",
       "cancel": "Cancelar",
       "submit": "Guardar gasto",
       "editTitle": "Editar gasto",
@@ -810,14 +826,13 @@
       "vatBreakdownReverseCharge": "Base {base}, IVA autoliquidado {vat}",
       "reverseChargeRequiredHint": "La sección B.1 requiere el NIF-IVA del proveedor y el número de documento.",
       "datesSection": "Fechas y pago",
+      "moreDetails": "Más datos",
       "dueDateLabel": "Fecha de vencimiento",
       "paidLabel": "Ya pagado",
-      "otherSection": "Otros",
       "noteLabel": "Nota interna (opcional)",
       "saveChanges": "Guardar cambios",
       "saved": "Gasto guardado",
       "saveFailed": "No se ha podido guardar el gasto",
-      "supplierDicHint": "Para el informe de control del IVA (sección B.2)",
       "qrCamera": "Escanear QR con la cámara",
       "qrHint": "Los códigos QR de factura (QR Faktura) y de pago se leen directamente de la foto o del PDF, sin IA.",
       "qrFound": "Datos cargados desde el código QR",
@@ -827,11 +842,9 @@
     },
     "noTenant": "Primero configure su empresa.",
     "loadError": "No se han podido cargar los gastos",
-    "fromPhoto": "Escanear un ticket",
     "emptyFiltered": "Ningún gasto coincide con el filtro.",
     "searchPlaceholder": "Buscar proveedor, descripción, número…",
     "allStates": "Todos",
-    "allCategories": "Todas las categorías",
     "selected": "Seleccionados: {count}",
     "selectAll": "Seleccionar todo",
     "clearSelection": "Anular selección",
@@ -866,7 +879,6 @@
       "title": "Detalle del gasto",
       "loadError": "No se ha podido cargar el gasto",
       "backToList": "Volver a gastos",
-      "badge": "Documento recibido",
       "unknownSupplier": "Proveedor desconocido",
       "total": "Total con IVA",
       "base": "Base",
@@ -890,7 +902,10 @@
         "paid": "Marcado como pagado",
         "unpaid": "Marcado como no pagado",
         "deleted": "Gasto eliminado"
-      }
+      },
+      "back": "Volver",
+      "needsReview": "Para revisar",
+      "needsReviewHint": "Una regla bancaria ha creado este gasto a partir de un pago saliente. Compruebe el proveedor, el tipo de IVA y la categoría y guárdelo; la etiqueta desaparecerá."
     },
     "filters": {
       "receipt": "Justificante",
@@ -902,11 +917,13 @@
         "due": "Fecha de vencimiento",
         "paid": "Pagado"
       }
-    }
+    },
+    "bulkDeleteTitle": "¿Eliminar {count, plural, one {# gasto} other {# gastos}}?",
+    "bulkDeleteBody": "Los gastos seleccionados se eliminarán de forma permanente.",
+    "needsReview": "Para revisar"
   },
   "bank": {
     "title": "Banco",
-    "description": "Suba un extracto bancario (camt.053, GPC o CSV) y concilie los cobros recibidos con las facturas emitidas.",
     "import": {
       "label": "Importar extracto",
       "selectFile": "Elegir archivo de extracto",
@@ -983,7 +1000,9 @@
       "reason": {
         "vs": "Coincide el SV",
         "amount": "Coincide el importe",
-        "name": "Coincide el nombre"
+        "name": "Coincide el nombre",
+        "email": "Mismo correo electrónico",
+        "date": "Fecha cercana"
       },
       "outgoingHint": "Pago saliente – si es un gasto, regístrelo en Gastos y después ignore este movimiento.",
       "ignoredHint": "Este movimiento está ignorado y excluido de la conciliación.",
@@ -994,7 +1013,17 @@
       "ignoredDone": "Movimiento ignorado.",
       "restoredDone": "El movimiento ha vuelto a la conciliación.",
       "actionFailed": "La acción ha fallado",
-      "message": "Mensaje para el destinatario"
+      "message": "Mensaje para el destinatario",
+      "paidOn": "pagada",
+      "paidHint": "Ya está pagada. El pago solo se vincula, la factura no cambia.",
+      "linkedDone": "Pago vinculado a la factura. La factura no se ha modificado.",
+      "alreadyLinked": "Ya hay otro pago vinculado a esta factura.",
+      "createDraft": "Crear factura a partir del pago",
+      "createDraftHint": "¿No hay factura para este pago? Lo convertimos en un borrador de factura para que lo revise. La emisión la hace usted.",
+      "draftDone": "Borrador de factura creado y vinculado al pago. Revíselo y emítalo.",
+      "ruleApplied": "La regla “{rule}” ha procesado este pago. Puede cambiar las reglas en Banco › Reglas.",
+      "expenseGone": "El gasto de este pago ya no existe o no tiene permiso para verlo.",
+      "expenseNeedsReview": "Gasto pendiente de revisión"
     },
     "connections": {
       "title": "Conexión bancaria",
@@ -1043,7 +1072,9 @@
         "paypal_reporting_disabled": "La aplicación de PayPal no tiene activada la función Transaction search. Actívela en los ajustes de la aplicación (puede tardar unas horas en aplicarse).",
         "two_factor_required": "Primero active la autenticación en dos pasos en Ajustes → Seguridad.",
         "plan_required": "Esta función forma parte de un plan de pago. Elija uno en Plan y facturación.",
-        "history_locked": "Fio solo libera los movimientos de más de 90 días tras una autorización reforzada en la banca en línea. La próxima vez empezaremos por los últimos 89 días."
+        "history_locked": "Fio solo libera los movimientos de más de 90 días tras una autorización reforzada en la banca en línea. La próxima vez empezaremos por los últimos 89 días.",
+        "backfill_range": "Elija un día del pasado.",
+        "backfill_unsupported": "De momento, los pagos más antiguos solo se pueden descargar de PayPal."
       },
       "psd2": {
         "hint": "Billanta descarga los nuevos cobros directamente de su banco o de PayPal y los concilia con las facturas por símbolo variable e importe. Fio se conecta con un token de API, PayPal con las credenciales de su aplicación REST y los demás bancos mediante PSD2: usted inicia sesión en su banco y concede acceso de solo lectura a la cuenta (hasta 180 días, 90 en muchos bancos). Los bancos solo permiten unas pocas consultas automáticas al día, por lo que las cuentas PSD2 se sincronizan aproximadamente cada 6 horas. Los pagos salientes no se descargan y a través de la conexión no se puede pagar nada.",
@@ -1059,7 +1090,6 @@
         "personal": "Personal (autónomo)",
         "continue": "Continuar al banco",
         "note": "Usted inicia sesión directamente en su banco; Billanta nunca ve sus credenciales bancarias. Puede retirar el consentimiento en cualquier momento desconectando la cuenta o desde su banca en línea.",
-        "otherBanksAvailable": "Conecte otro banco con Conectar un banco → Banco mediante PSD2.",
         "expired": "Consentimiento caducado",
         "consentUntil": "consentimiento hasta el {date}",
         "renew": "Renovar consentimiento",
@@ -1079,7 +1109,15 @@
         "sandbox": "Cuenta de prueba (sandbox)",
         "sandboxHint": "Márquelo solo para claves de sandbox de PayPal. Sus pagos no son reales.",
         "note": "Los pagos recibidos se concilian con las facturas por el número de factura o el símbolo variable indicado en la nota, y por el importe. La comisión retenida por PayPal se registra en la factura, de modo que los informes también muestran el ingreso neto. PayPal publica las transacciones con un retraso de hasta 3 horas.",
-        "connected": "PayPal conectado. Los pagos de los últimos 30 días llegarán con la próxima sincronización."
+        "connected": "PayPal conectado. Los pagos de los últimos 30 días llegarán con la próxima sincronización.",
+        "moreOptions": "Más opciones",
+        "backfill": "Sincronizar desde una fecha…",
+        "backfillFrom": "Desde",
+        "backfillHint": "PayPal ofrece pagos de hasta 3 años atrás. Los pagos más antiguos solo se concilian con facturas; nunca se convierten en borradores de factura. Lo que ya está en Billanta no se vuelve a descargar.",
+        "backfillRun": "Sincronizar",
+        "backfillDone": "{total, plural, one {Descargado # pago antiguo} other {Descargados # pagos antiguos}}, {matched} conciliados.",
+        "backfillNothing": "No hay pagos antiguos nuevos. Todo lo que PayPal tiene de ese periodo ya está en Billanta.",
+        "backfillNets": "Se ha completado el importe tras la conversión de divisa en {count, plural, one {# pago} other {# pagos}}."
       },
       "connectBank": "Conectar un banco",
       "chooseProvider": "¿Qué desea conectar?",
@@ -1099,7 +1137,45 @@
       },
       "syncPending": "Fio está listo. Los pagos llegarán con la próxima sincronización; vuelva a intentarlo dentro de 30 segundos."
     },
-    "fee": "comisión {amount}"
+    "fee": "comisión {amount}",
+    "netReceived": "abonado {amount}",
+    "rematch": {
+      "label": "Volver a conciliar",
+      "done": "{matched, plural, one {Conciliado # pago} other {Conciliados # pagos}} con facturas emitidas y {linked, plural, one {vinculado # pago} other {vinculados # pagos}} a facturas ya pagadas.",
+      "nothing": "{checked, plural, one {Revisado # pago sin conciliar} other {Revisados # pagos sin conciliar}}, sin coincidencias nuevas.",
+      "failed": "La conciliación ha fallado ({code})."
+    },
+    "filters": {
+      "source": "Cuenta",
+      "allSources": "Todas las cuentas",
+      "upload": "Extractos subidos",
+      "psd2": "Banco (PSD2)",
+      "period": "Periodo",
+      "custom": "Rango personalizado",
+      "direction": "Dirección",
+      "allDirections": "Entrantes y salientes",
+      "incoming": "Entrantes",
+      "outgoing": "Salientes"
+    },
+    "bulkDraft": "{count, plural, one {Crear un borrador de factura} other {Crear # borradores de factura}}",
+    "bulkDraftHint": "Crea un borrador de factura para revisar a partir de cada cobro seleccionado. No se emite nada.",
+    "bulkDraftDone": "Borradores creados: {ok} de {total}. Los encontrará en Facturas, pendientes de revisión.",
+    "rowMenu": {
+      "label": "Acciones del pago",
+      "open": "Abrir",
+      "openNewTab": "Abrir en una ventana nueva",
+      "openInvoice": "Abrir factura",
+      "findMatch": "Conciliar con una factura…",
+      "createRule": "Crear una regla a partir de este pago",
+      "openExpense": "Abrir gasto"
+    },
+    "rulesLink": "Reglas",
+    "rule": {
+      "ignoredBy": "Ignorado por la regla {rule}",
+      "expenseBy": "Gasto creado por la regla {rule}",
+      "draftBy": "Borrador de factura creado por la regla {rule}",
+      "expense": "Conciliado con un gasto"
+    }
   },
   "contacts": {
     "title": "Contactos",
@@ -1114,7 +1190,6 @@
     "unstarred": "Estrella quitada de {name}",
     "starFailed": "No se ha podido guardar la estrella",
     "invoice": "Facturar",
-    "aresVerified": "Verificado en ARES",
     "loadError": "No se han podido cargar los contactos.",
     "newContact": "Nuevo contacto",
     "editor": {
@@ -1175,7 +1250,8 @@
       "phone": "Teléfono",
       "vatSuggestYes": "El registro lo incluye como sujeto pasivo de IVA. ¿Cambiar a “Sí”?",
       "vatSuggestNo": "El registro no lo incluye como sujeto pasivo de IVA. ¿Cambiar a “No”?",
-      "contactPerson": "Persona de contacto"
+      "contactPerson": "Persona de contacto",
+      "moreDetails": "Más datos"
     },
     "detail": {
       "title": "Detalle del contacto",
@@ -1200,7 +1276,6 @@
       "no": "No",
       "aresCheck": "Verificado en ARES",
       "lastInvoice": "Último documento",
-      "documentCount": "Documentos",
       "openAres": "Abrir en ARES ↗",
       "newInvoice": "Nueva factura",
       "star": "Marcar con estrella",
@@ -1232,7 +1307,8 @@
         "renewed": "Nuevo enlace creado",
         "disable": "Desactivar",
         "disabled": "El portal está desactivado",
-        "failed": "Algo ha salido mal"
+        "failed": "Algo ha salido mal",
+        "manage": "Editar enlace"
       },
       "contactPerson": "Persona de contacto"
     },
@@ -1287,6 +1363,7 @@
       "unpaidTitle": "Facturas emitidas pendientes de pago"
     },
     "colorFilter": "Color",
+    "colorAll": "Todos los colores",
     "colors": {
       "red": "Rojo",
       "orange": "Naranja",
@@ -1306,7 +1383,6 @@
     "channels": {
       "title": "Canales vinculados",
       "description": "Vincule Telegram o WhatsApp para crear facturas directamente desde un mensaje de voz.",
-      "back": "Volver a ajustes",
       "telegram": "Telegram",
       "whatsapp": "WhatsApp",
       "statusLinked": "Vinculado",
@@ -1320,7 +1396,6 @@
       "openInTelegram": "Abrir en Telegram",
       "copy": "Copiar",
       "copied": "Copiado",
-      "expiresNote": "El código caduca en 10 minutos.",
       "expiresAt": "El código es válido hasta las {time}. Haga clic en Listo una vez vinculado.",
       "newCode": "Generar un código nuevo",
       "done": "Listo",
@@ -1367,7 +1442,8 @@
         "warning": "Copie esta clave ahora – no podrá volver a verla. Solo se guarda un prefijo corto para identificarla.",
         "copy": "Copiar",
         "copied": "Copiada",
-        "done": "Listo"
+        "done": "Listo",
+        "download": "Descargar"
       },
       "docsHint": "Úsela como token de portador: Authorization: Bearer <key>. Consulte apps/backend/README.md para ver la referencia completa de la API.",
       "loadError": "No se han podido cargar las claves de API.",
@@ -1391,13 +1467,11 @@
     "backup": {
       "title": "Destinos de copia de seguridad",
       "description": "Elija adónde se exportan periódicamente los datos de su empresa: su propio servidor por SFTP, Google Drive, un webhook propio o una descarga local.",
-      "back": "Volver a Ajustes",
       "empty": "Aún no hay destinos de copia de seguridad configurados.",
+      "addTitle": "Añadir un destino de copia de seguridad",
       "columns": {
-        "type": "Tipo",
         "schedule": "Programación",
-        "lastRun": "Última ejecución",
-        "status": "Estado"
+        "lastRun": "Última ejecución"
       },
       "typeGoogleDrive": "Google Drive",
       "typeWebhook": "Webhook",
@@ -1431,6 +1505,7 @@
       "addWebhook": {
         "button": "Añadir webhook",
         "title": "Añadir un destino webhook",
+        "description": "Envía los datos como JSON firmado a su URL.",
         "urlLabel": "URL del webhook",
         "urlPlaceholder": "https://example.com/faktur-webhook",
         "urlHint": "Los datos se envían por POST a esta dirección como JSON firmado (cabecera X-Faktur-Signature).",
@@ -1444,9 +1519,9 @@
         "warning": "Copie este secreto ahora: no podrá volver a verlo. Úselo para verificar la cabecera X-Faktur-Signature.",
         "copy": "Copiar",
         "copied": "Copiado",
-        "done": "Listo"
+        "done": "Listo",
+        "download": "Descargar"
       },
-      "docsHint": "Consulte apps/backend/README.md para conocer el formato de exportación y los detalles de verificación de la firma.",
       "runDone": "Copia de seguridad finalizada.",
       "runFailed": "No se ha podido completar la copia de seguridad.",
       "pause": "Pausar",
@@ -1544,7 +1619,9 @@
         "account": "Cuenta y empresa",
         "data": "Datos",
         "integrations": "Integraciones",
-        "personal": "Mi cuenta"
+        "personal": "Mi cuenta",
+        "company": "Empresa",
+        "invoicing": "Facturación"
       },
       "items": {
         "profile": {
@@ -1689,7 +1766,9 @@
         "confirm_mismatch": "El correo electrónico de confirmación no coincide.",
         "last_admin": "Es el último administrador de {company}. Primero ceda el rol de administrador a otro miembro.",
         "issued_in_shared": "Ha emitido documentos en la empresa compartida {company}, por lo que no se le puede eliminar. Póngase en contacto con los demás miembros.",
-        "delete_failed": "No se ha podido eliminar; inténtelo de nuevo."
+        "delete_failed": "No se ha podido eliminar; inténtelo de nuevo.",
+        "reauth_required": "Por su seguridad, vuelva a iniciar sesión antes de este cambio: cierre la sesión, inicie sesión de nuevo y vuelva a intentarlo en los 10 minutos siguientes.",
+        "too_long": "La contraseña es demasiado larga. Puede tener como máximo 72 bytes (algo menos si usa caracteres acentuados)."
       },
       "cancel": "Cancelar",
       "emailChange": {
@@ -1875,7 +1954,12 @@
       "dicKeepHint": "Mantenga el número fiscal aunque no sea sujeto pasivo o sea persona identificada. Se imprime en sus documentos.",
       "dataBoxId": "ID del buzón de datos",
       "dataBoxIdHint": "Siete caracteres, p. ej., ab12cd3. No es secreto. Se rellena en el resumen anual para la ČSSZ.",
-      "icoTrialHint": "Al indicar el IČO comienza su prueba gratuita de Plus de {days} días: sin tarjeta, una vez por IČO."
+      "icoTrialHint": "Al indicar el IČO comienza su prueba gratuita de Plus de {days} días: sin tarjeta, una vez por IČO.",
+      "taxCountry": "País fiscal",
+      "taxCountryValue": "{country} · contabilidad en {currency}",
+      "taxCountryHint": "Determina los tipos de IVA, la moneda de su contabilidad y las exportaciones. La dirección del domicilio social no lo cambia. Puede cambiarlo en la configuración inicial hasta que emita su primera factura.",
+      "taxCountryLocked": "El país fiscal no se puede cambiar después de emitir la primera factura.",
+      "taxCountryChange": "Cambiar"
     },
     "team": {
       "title": "Equipo",
@@ -1965,7 +2049,8 @@
         "empty": "Todavía no hay nadie en esta región.",
         "all": "Directorio completo de contables",
         "picked": "Se ha rellenado {email}. Compruebe el rol y envíe la invitación."
-      }
+      },
+      "copyLink": "Copiar enlace"
     },
     "exports": {
       "title": "Exportaciones para el contable",
@@ -2395,7 +2480,20 @@
       "brandCredit": "Mostrar “Hecho con {name}” bajo las facturas",
       "brandCreditHint": "Un pequeño enlace en el pie del PDF, del correo y de la factura en línea, que además invita a su cliente a probarlo. Los planes de pago pueden desactivarlo.",
       "brandCreditFree": "En el plan gratuito la línea se muestra siempre.",
-      "brandCreditUpgrade": "Pasar a un plan de pago"
+      "brandCreditUpgrade": "Pasar a un plan de pago",
+      "advancedTitle": "Avanzado",
+      "advancedSummary": "Tipos de cambio y formato del enlace de la factura",
+      "pdfQr": "Código QR en el PDF",
+      "pdfQrHint": "Por defecto imprimimos un código QR de pago, o un QR Faktura si no hay cuenta en CZK/EUR. El enlace a la factura en línea abre una página donde el cliente puede pagar por transferencia, con tarjeta o de otra forma.",
+      "pdfQrModes": {
+        "auto": "Automático (QR de pago o, si no, QR Faktura)",
+        "link": "Enlace a la factura en línea (todas las formas de pago)",
+        "payment_only": "Solo QR de pago",
+        "off": "Sin código QR"
+      },
+      "paymentDraftLine": "Descripción de la línea en borradores creados a partir de pagos",
+      "paymentDraftLineHint": "Se usa cuando un pago (de PayPal, por ejemplo) no indica conceptos. Por ejemplo, «Servicios de software» o «Consultoría».",
+      "paymentDraftLinePlaceholder": "Pago de PayPal"
     },
     "modules": {
       "title": "Módulos y tipo de negocio",
@@ -2582,7 +2680,8 @@
       "previewFromAddress": "fakturace@billanta.cz",
       "previewReplyTo": "Responder a",
       "previewNote": "Datos de ejemplo. El correo real puede verse algo distinto en un cliente de correo.",
-      "moreVars": "Más variables →"
+      "moreVars": "Más variables →",
+      "bccHintNoEmail": "La copia se envía al correo de la empresa, que todavía no está rellenado en Datos de la empresa."
     },
     "variables": {
       "title": "Variables",
@@ -3318,7 +3417,8 @@
         "already_enabled": "La autenticación en dos pasos ya está activada.",
         "not_enabled": "La autenticación en dos pasos no está activada.",
         "not_signed_in": "Su sesión ha caducado. Vuelva a iniciar sesión."
-      }
+      },
+      "download": "Descargar"
     },
     "emailNotifications": {
       "title": "Notificaciones por correo electrónico",
@@ -3617,6 +3717,409 @@
       }
     }
   },
+  "legal": {
+    "draftNotice": "Borrador de trabajo. Un abogado debe revisarlo antes del lanzamiento. Los datos entre corchetes se completarán.",
+    "updated": "Vigente desde: [fecha]",
+    "operator": "[Nombre del operador], número de identificación de empresa [00000000], domicilio social [dirección], inscrito en [registro], correo electrónico [contact@billanta.cz]",
+    "toc": "Índice",
+    "related": "Documentos relacionados",
+    "terms": {
+      "title": "Condiciones del servicio",
+      "intro": "Condiciones de uso del servicio de facturación Billanta. El servicio es solo para empresas y profesionales (B2B). La responsabilidad del operador está limitada, véase el apartado 10.",
+      "sections": [
+        {
+          "title": "Operador y ámbito",
+          "body": [
+            "Billanta está operada por {operator} (el “operador”).",
+            "Billanta es una aplicación web (SaaS) para emitir facturas y documentos relacionados, llevar el registro de clientes, pagos y gastos, y exportar datos. Estas condiciones regulan la relación entre el operador y cualquier persona que cree una cuenta (el “usuario”)."
+          ]
+        },
+        {
+          "title": "Solo para empresas y profesionales (B2B)",
+          "body": [
+            "El servicio está destinado exclusivamente a empresarios y personas jurídicas que lo utilicen en el ejercicio de su actividad empresarial o profesional (artículos 420 y siguientes del Código Civil checo, Ley n.º 89/2012 Sb.). No está destinado a consumidores.",
+            "Al crear una cuenta, el usuario declara que tiene al menos 18 años y que actúa como empresario. El servicio no está destinado a menores de 18 años y el operador no recopila conscientemente sus datos personales, salvo en el modo aula para centros educativos según el apartado 17. Por tanto, no se aplican las normas de protección de los consumidores, incluido el derecho de desistimiento de los contratos a distancia. Si el operador descubre que un usuario es consumidor, podrá cerrar la cuenta."
+          ]
+        },
+        {
+          "title": "Cuenta y seguridad",
+          "body": [
+            "El usuario es responsable de la exactitud de los datos de su cuenta y de mantener seguro el acceso: contraseñas, claves API, enlaces de Telegram o WhatsApp y tokens de conexión bancaria. El usuario responde de todo lo que se haga a través de su cuenta o de sus claves.",
+            "Cualquier sospecha de uso indebido de una cuenta debe comunicarse al operador sin demora."
+          ]
+        },
+        {
+          "title": "Licencia y usos prohibidos",
+          "body": [
+            "Durante la vigencia del contrato, el operador concede al usuario una licencia no exclusiva e intransferible para utilizar el servicio en su actividad. Sin el consentimiento del operador, el servicio no puede revenderse, alquilarse ni ponerse a disposición de nadie ajeno al equipo del usuario, ni copiarse, descompilarse o someterse a ingeniería inversa.",
+            "En particular, está prohibido: emitir documentos ficticios, falsos o fraudulentos; enviar comunicaciones comerciales no solicitadas a través del servicio; subir contenido que infrinja derechos de terceros o la ley; eludir los límites del plan o las restricciones técnicas; extraer contenido de forma automatizada fuera de la API; realizar pruebas de carga o buscar vulnerabilidades en el servicio sin el consentimiento por escrito del operador; utilizar el servicio para el blanqueo de capitales, la evasión de sanciones o cualquier otra actividad ilícita.",
+            "Si se incumple este apartado, el operador podrá restringir o bloquear el envío de correos, las claves API o toda la cuenta sin previo aviso."
+          ]
+        },
+        {
+          "title": "Servicio “tal cual” y disponibilidad",
+          "body": [
+            "El servicio se presta tal cual y según disponibilidad. El operador no garantiza una disponibilidad ininterrumpida ni libre de errores, no pacta ningún nivel de servicio (SLA) y no garantiza que el servicio sea adecuado para ningún fin concreto del usuario.",
+            "El servicio puede interrumpirse por mantenimiento, actualizaciones, caídas de proveedores (alojamiento, bancos, registros mercantiles, proveedores de IA, correo electrónico) u otros motivos. Una caída, un retraso o la pérdida de una función no dan derecho a un descuento ni a una indemnización, salvo que el operador indique expresamente lo contrario.",
+            "La falta de disponibilidad causada por fuerza mayor, cortes de internet, de electricidad o de proveedores, ataques de terceros o mantenimiento programado no constituye un incumplimiento del contrato. El operador realiza el mantenimiento fuera del horario laboral siempre que es posible y anuncia con antelación, en la aplicación o por correo electrónico, las interrupciones programadas más largas.",
+            "Este apartado no excluye la responsabilidad que no puede excluirse según el apartado 10.",
+            "El usuario debe descargar o hacer copias de seguridad de sus documentos con regularidad (PDF, ISDOC, exportaciones, copias en su propio almacenamiento). Billanta no sustituye el archivo legal de los registros contables, que es obligación del usuario."
+          ]
+        },
+        {
+          "title": "Sin asesoramiento fiscal, contable ni jurídico",
+          "body": [
+            "Billanta es una herramienta para crear documentos. Las indicaciones, los tipos de IVA predeterminados, los textos de inversión del sujeto pasivo, los formularios fiscales prerrellenados y cualquier otro contenido de la aplicación son meramente informativos y no constituyen asesoramiento fiscal, contable ni jurídico.",
+            "Lo mismo se aplica a las calculadoras, guías y estimaciones de impuestos y cotizaciones del sitio web y de la aplicación, así como a los archivos que generan. Los resultados son estimaciones aproximadas sin garantía, no tienen en cuenta todas las circunstancias del usuario y deben comprobarse antes de utilizarse. En la medida en que la ley lo permita, el operador no responde de los perjuicios derivados de decisiones basadas en ellos."
+          ]
+        },
+        {
+          "title": "Responsabilidad por el contenido de los documentos",
+          "body": [
+            "Solo el usuario es responsable de la exactitud y la integridad de cada documento que emita, envíe o exporte. Esto incluye los importes, los tipos y el tratamiento del IVA, los datos del cliente, las fechas de emisión, de devengo y de vencimiento, las series de numeración y todos los datos exigidos por la normativa de IVA y contable.",
+            "Lo mismo se aplica a las exportaciones para programas de contabilidad (ISDOC, UBL, Pohoda, Money S3, CSV), a las cifras para declaraciones de impuestos y declaraciones de control del IVA, y a los correos y recordatorios enviados desde el servicio. El usuario debe comprobarlos antes de utilizarlos."
+          ]
+        },
+        {
+          "title": "Borradores generados por IA",
+          "body": [
+            "Las facturas creadas a partir de un mensaje de voz, un texto o un documento escaneado son siempre solo borradores. La IA puede equivocarse, por ejemplo en el importe, el cliente o el tipo de IVA. Al hacer clic en “Emitir”, el usuario asume toda la responsabilidad por el contenido del documento, con independencia de cómo se haya creado el borrador."
+          ]
+        },
+        {
+          "title": "Datos de registros, bancos y otros servicios",
+          "body": [
+            "Los datos de las empresas se cargan de registros públicos (ARES, RPO, VIES) tal como figuran en ellos. Los tipos de cambio proceden del Banco Nacional Checo (ČNB). Los movimientos de cuenta se obtienen del banco a través de una interfaz que el usuario ha habilitado (p. ej., la API de Fio). El operador no garantiza la exactitud, integridad ni disponibilidad de estas fuentes, ni que un pago se concilie con la factura correcta.",
+            "Billanta nunca realiza pagos desde la cuenta del usuario. Las conexiones bancarias son de solo lectura.",
+            "Cuando el usuario conecta el servicio con plataformas de terceros (Telegram, WhatsApp, un banco, Google Drive, una pasarela de pago, sus propios webhooks), también se aplican las condiciones de estas. El operador no responde de los cambios, las restricciones o la interrupción de esos servicios, ni de que una conexión deje de funcionar por ese motivo."
+          ]
+        },
+        {
+          "title": "Limitación de responsabilidad",
+          "body": [
+            "En la medida en que la ley lo permita, el operador no responde de los daños indirectos o consecuentes. Esto incluye el lucro cesante, la pérdida de datos o de negocio, las multas, las sanciones, los intereses de demora y las liquidaciones tributarias adicionales, así como los daños causados por una caída o falta de disponibilidad del servicio, por errores de proveedores o por el contenido de los documentos según los apartados 7 a 9.",
+            "La responsabilidad total del operador por todos los daños surgidos en relación con el servicio se limita al importe que el usuario haya pagado efectivamente al operador por el servicio en los 3 meses anteriores al hecho que causó el daño. En caso de uso gratuito, se limita a 500 CZK.",
+            "La limitación no se aplica a los daños causados de forma intencionada o por negligencia grave, ni a los daños a los derechos de la personalidad de una persona física (artículo 2898 del Código Civil checo).",
+            "El usuario indemnizará al operador por los daños y los costes razonables (incluidos los honorarios de abogados) derivados de reclamaciones de terceros relacionadas con documentos, mensajes o datos que el usuario haya subido al servicio o enviado desde él, o con un incumplimiento del apartado 4, salvo que el daño lo haya causado el operador.",
+            "Las reclamaciones de daños y perjuicios contra el operador están sujetas a un plazo de prescripción de un año (artículo 630 del Código Civil checo).",
+            "El usuario declara que ha leído y comprendido este apartado y que lo acepta expresamente. Considera razonable el importe del límite teniendo en cuenta el precio del servicio."
+          ]
+        },
+        {
+          "title": "API, webhooks e integraciones",
+          "body": [
+            "La API está pensada para conectar los sistemas propios del usuario. El operador puede fijar límites de solicitudes por plan y restringir temporalmente o revocar una clave API cuyo uso ponga en peligro la estabilidad del servicio o incumpla estas condiciones.",
+            "El operador puede ampliar y modificar la API. La retirada de una versión de la API o un cambio incompatible con versiones anteriores se anunciará con al menos 30 días de antelación, salvo los cambios necesarios por motivos de seguridad.",
+            "El usuario es responsable de proteger las claves API, de las direcciones de destino de los webhooks y del tratamiento de los datos que salen del servicio a través de la API o de los webhooks."
+          ]
+        },
+        {
+          "title": "Suscripción y pagos",
+          "body": [
+            "Los planes de pago se abonan por adelantado para el periodo elegido a través de una pasarela de pago (Stripe o GoPay). Las suscripciones se renuevan automáticamente salvo que se cancelen. El usuario puede cancelarla en cualquier momento en los ajustes, con efecto al final del periodo pagado. Las partes no utilizadas de un periodo no se reembolsan.",
+            "El operador puede modificar el precio, en particular por la inflación o por cambios en los costes o en el alcance del servicio. El cambio se anuncia con al menos 30 días de antelación y se aplica a partir del siguiente periodo de facturación; el precio de un periodo ya pagado no cambia. El usuario que no esté de acuerdo puede cancelar la suscripción al final del periodo en curso.",
+            "Si un pago lleva más de 7 días de retraso, el operador puede pasar la cuenta al modo de solo lectura y exportación. Si lleva más de 60 días de retraso, el operador puede resolver el contrato. Los datos siguen disponibles para su exportación según el apartado 13.",
+            "El operador puede modificar el alcance y los límites del plan gratuito. El uso gratuito no da derecho a conservar ninguna función concreta."
+          ]
+        },
+        {
+          "title": "Datos del usuario y terminación",
+          "body": [
+            "Los datos que el usuario introduce en el servicio le pertenecen y puede exportarlos en cualquier momento. El operador trata los datos personales de los clientes del usuario como encargado del tratamiento según el Contrato de encargo del tratamiento (DPA), que forma parte de estas condiciones.",
+            "El usuario puede cerrar la cuenta en cualquier momento. El operador puede suspender o cerrar una cuenta por incumplimiento de estas condiciones, uso abusivo del servicio o impago según el apartado 12, y lo notificará por correo electrónico con antelación, salvo en casos urgentes. Tras el cierre, los datos siguen disponibles para su exportación durante 30 días y después se eliminan (de las copias de seguridad, como máximo en 90 días), salvo que la ley disponga otra cosa.",
+            "Antes de cerrar la cuenta, el usuario debe exportar los documentos que esté obligado a conservar (los documentos fiscales, normalmente durante 10 años). Una vez transcurrido el plazo de exportación, el operador no puede recuperarlos. No se garantiza la recuperación de datos que el propio usuario haya eliminado.",
+            "El operador puede cerrar una cuenta gratuita en la que nadie haya iniciado sesión durante más de 12 meses, tras un aviso por correo electrónico con al menos 30 días de antelación."
+          ]
+        },
+        {
+          "title": "Contenido de los usuarios y denuncia de contenido ilícito",
+          "body": [
+            "El punto único de contacto para los usuarios, para las autoridades de los Estados miembros de la UE y para la Comisión Europea según el Reglamento (UE) 2022/2065 (Reglamento de Servicios Digitales, DSA) es el correo electrónico del operador indicado en el apartado 1. Puede escribir en checo, eslovaco o inglés.",
+            "Los usuarios son responsables del contenido que publican a través del servicio (perfil público de la empresa, portal de clientes con facturas, adjuntos, logotipo). Cualquier persona puede denunciar un contenido que considere ilícito por correo electrónico o, en el caso de una factura pública, mediante el enlace “Denunciar un documento sospechoso”. La denuncia debe indicar el motivo, la dirección exacta (URL) del contenido, el nombre y el correo electrónico del denunciante y una declaración de que se hace de buena fe.",
+            "Revisamos las denuncias sin demora indebida, confirmamos su recepción al denunciante y le comunicamos el resultado. Si retiramos o bloqueamos un contenido, explicamos al usuario el motivo y cómo impugnar la decisión (respondiendo a nuestro correo). El contenido ilícito reiterado o manifiesto puede dar lugar a la suspensión de la cuenta según el apartado 4."
+          ]
+        },
+        {
+          "title": "Modificación de estas condiciones",
+          "body": [
+            "El operador puede modificar estas condiciones. Anunciará cualquier cambio sustancial por correo electrónico con al menos 30 días de antelación. El usuario puede resolver el contrato antes de que el cambio entre en vigor. Si sigue usando el servicio después de esa fecha, se entiende que acepta el cambio.",
+            "Las notificaciones previstas en estas condiciones se envían al correo electrónico de la cuenta y se consideran entregadas el día de su envío. El usuario es responsable de mantener actualizado el correo electrónico de la cuenta."
+          ]
+        },
+        {
+          "title": "Ley aplicable y litigios",
+          "body": [
+            "El contrato se rige por el derecho de la República Checa, con exclusión de las normas de conflicto de leyes y de la Convención de las Naciones Unidas sobre los Contratos de Compraventa Internacional de Mercaderías. Los litigios se resolverán ante los tribunales checos competentes según el domicilio social del operador.",
+            "El operador puede ceder el contrato a un sucesor que asuma la explotación del servicio; el usuario lo consiente por adelantado y será informado de ello.",
+            "Estas condiciones se publican en checo, eslovaco e inglés. En caso de discrepancia, prevalece la versión checa.",
+            "Si alguna disposición es inválida, las demás siguen en vigor."
+          ]
+        },
+        {
+          "title": "Modo aula (centros educativos)",
+          "body": [
+            "Como excepción al apartado 2, el operador ofrece a los centros educativos un modo aula educativo independiente. La clase la crea un profesor verificado por el operador, y pueden unirse a ella alumnos menores de 18 años. Los alumnos no son usuarios según estas condiciones y no crean una cuenta propia con correo electrónico y contraseña.",
+            "Los alumnos se unen a una clase solo con el código de la clase y un apodo, sin correo electrónico. Trabajan en empresas de prácticas con datos inventados, las funciones de IA están desactivadas en las clases y los documentos llevan una marca de agua de documento de prácticas. No son documentos fiscales y el modo aula no debe utilizarse para una actividad real.",
+            "Respecto a los datos personales de los alumnos, el centro educativo, a través del profesor, es el responsable del tratamiento y el operador es solo encargado según un contrato de tratamiento de datos independiente con el centro. El profesor confirma que puede actuar en nombre del centro e indica a los alumnos que no introduzcan datos personales reales.",
+            "Las empresas de prácticas de una clase quedan en modo de solo lectura durante 30 días tras finalizar la clase y después se eliminan. Un alumno al que el profesor retira de la clase se elimina de inmediato. El modo aula es gratuito."
+          ]
+        },
+        {
+          "title": "La línea “Made with Billanta”",
+          "body": [
+            "Los documentos emitidos en el servicio llevan en el pie una línea breve, “Made with Billanta” (“Vystaveno v aplikaci Billanta” en checo, “Vystavené v aplikácii Billanta” en eslovaco), con un enlace al sitio web de Billanta. Aparece en el PDF, en los correos con documentos y recordatorios y en la página en línea del documento.",
+            "El enlace incluye el código de recomendación del emisor, de modo que una empresa que se registre a través de él cuenta para el programa de recomendaciones según el apartado 19. No contiene ningún dato sobre el cliente ni sobre el documento.",
+            "En el plan gratuito, la línea se muestra siempre. En un plan de pago y durante una prueba, el usuario puede desactivarla en Ajustes, en el apartado de facturas. Cuando termina el plan de pago, la línea vuelve a mostrarse. Los documentos creados con herramientas públicas sin cuenta (como el generador de recordatorios) la llevan siempre."
+          ]
+        },
+        {
+          "title": "Programa de recomendaciones y de socios",
+          "body": [
+            "Los usuarios pueden invitar a otras empresas con su enlace de invitación. Una empresa nueva que se registre a través de él recibe créditos de bienvenida. Quien invita recibe tantos créditos como pague la nueva empresa, sin IVA, por el primer pago de su plan, hasta el importe indicado en la aplicación. Las recompensas vigentes se muestran siempre en la página de recomendaciones de la aplicación. 1 crédito equivale a 1 CZK.",
+            "La recompensa se abona tras el segundo pago mensual de la nueva empresa o, en un plan anual o prepagado, 30 días después del primer pago. Si la nueva empresa obtiene un reembolso o cancela el pago antes de esa fecha, no se genera ninguna recompensa.",
+            "El programa de socios para contables y despachos contables funciona del mismo modo. Es solo para contables cuya ficha en el directorio de contables haya aprobado el operador.",
+            "No se permite recomendarse a uno mismo. No se genera recompensa por una empresa propiedad de quien invita ni por una empresa que comparta un usuario con quien invita. Cada empresa cuenta como máximo una vez. Si se abusa del programa, el operador puede retirar la recompensa y poner fin a la participación del usuario.",
+            "Los créditos solo pueden utilizarse para pagar planes de Billanta. No tienen valor monetario y no pueden pagarse en efectivo ni transferirse a otra empresa. Los créditos no caducan mientras exista la cuenta de la empresa y se pierden cuando se cierra la cuenta.",
+            "El operador puede modificar o finalizar el programa. Anunciará el cambio con al menos 30 días de antelación en la aplicación o por correo electrónico. Los créditos concedidos hasta entonces podrán seguir utilizándose según este apartado."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Política de privacidad",
+      "intro": "Cómo trata Billanta los datos personales de los usuarios de cuentas, de los visitantes del sitio web y de los clientes que figuran en las facturas (RGPD).",
+      "sections": [
+        {
+          "title": "Responsable y encargado del tratamiento",
+          "body": [
+            "El responsable del tratamiento de los datos personales de los usuarios de cuentas y de los visitantes del sitio web es {operator}.",
+            "Respecto a los datos de clientes que los usuarios introducen en el servicio (contactos, facturas), el responsable es el usuario y Billanta es solo encargado del tratamiento según el Contrato de encargo del tratamiento (DPA).",
+            "Respecto a los alumnos en el modo aula, el responsable es el centro educativo, véase el apartado 15."
+          ]
+        },
+        {
+          "title": "Qué datos tratamos",
+          "body": [
+            "Datos de la cuenta: nombre, correo electrónico, hash de la contraseña o identidad de inicio de sesión con Google, función en el equipo, ajustes.",
+            "Datos de la empresa y de facturación: nombre comercial, número de identificación de empresa, número de IVA, dirección, cuenta bancaria, logotipo, documentos emitidos, pagos, gastos.",
+            "Datos de clientes en los documentos: nombres, números de identificación de empresa, números de IVA, direcciones, correos electrónicos y teléfonos de las personas de contacto.",
+            "Datos técnicos: dirección IP, tipo de navegador, registros de inicio de sesión y registros de seguridad. Analítica solo con consentimiento; véase el apartado 7.",
+            "Cuando se usan funciones de IA: los mensajes de voz, textos y fotos de documentos que el usuario envía para su procesamiento."
+          ]
+        },
+        {
+          "title": "Finalidades y bases jurídicas",
+          "body": [
+            "Prestación del servicio en virtud del contrato (art. 6.1.b del RGPD).",
+            "Obligaciones legales, en especial contables y fiscales. Los registros de pagos de suscripciones se conservan durante 10 años (art. 6.1.c).",
+            "Interés legítimo: seguridad del servicio, prevención de abusos y defensa de reclamaciones (art. 6.1.f).",
+            "Consentimiento: cookies de analítica en las regiones donde se exige (art. 6.1.a); el consentimiento puede retirarse en cualquier momento. En las demás, nuestro interés legítimo en mejorar el sitio (art. 6.1.f), al que puede oponerse en cualquier momento desactivando la analítica en la Configuración de cookies."
+          ]
+        },
+        {
+          "title": "Encargados y destinatarios",
+          "body": [
+            "Alojamiento y base de datos: OVHcloud (OVH Hosting Inc.), un servidor virtual en un centro de datos de Canadá. Canadá cuenta con una decisión de adecuación de la Comisión Europea, véase el apartado 5.",
+            "Resend: envío de correos electrónicos (facturas, recordatorios, verificación de la cuenta).",
+            "Stripe y GoPay: pagos de suscripciones. Los datos de la tarjeta solo los tratan estas pasarelas; Billanta nunca los ve.",
+            "Anthropic: borradores de factura con IA a partir de texto e imágenes. OpenAI: transcripción de mensajes de voz a texto. Ambos solo cuando el usuario utiliza una función de IA.",
+            "Google: inicio de sesión con Google y copias de seguridad en el propio Google Drive del usuario, solo si este las activa. También guardamos copias de seguridad nocturnas cifradas de toda la base de datos en el Google Drive del operador, véase el apartado 10.",
+            "Telegram y Meta (WhatsApp): solo si el usuario vincula su cuenta a una aplicación de chat.",
+            "Microsoft (Clarity): analítica en las páginas públicas (solo con consentimiento donde se exige).",
+            "Aparte de esto, los datos solo van donde el usuario los envía: a su banco o a PayPal mediante una conexión que haya habilitado (Fio, PSD2 a través de Enable Banking, PayPal), a sus propios webhooks y almacenamientos de copias de seguridad, y en correos a sus clientes. Las consultas en registros públicos (ARES, RPO, VIES) solo contienen un número de identificación de empresa o un número de IVA.",
+            "La lista actualizada de encargados, con la fecha de su último cambio, se mantiene siempre en este apartado."
+          ]
+        },
+        {
+          "title": "Transferencias fuera de la UE",
+          "body": [
+            "El servidor en el que funcionan la aplicación y la base de datos está en Canadá. Esa transferencia se basa en la decisión de adecuación de la Comisión Europea para Canadá (2002/2/CE, art. 45 del RGPD).",
+            "Algunos encargados (Anthropic, OpenAI, Stripe, Microsoft, Google, Resend) pueden tratar datos en EE. UU. Las transferencias se basan en el Marco de Privacidad de Datos UE-EE. UU. cuando el destinatario está certificado y, en otro caso, en las cláusulas contractuales tipo de la Comisión Europea (art. 46 del RGPD)."
+          ]
+        },
+        {
+          "title": "Conservación",
+          "body": [
+            "Los datos de la cuenta se conservan mientras exista la cuenta y durante 30 días después de su cierre. Después se eliminan, salvo los que debamos conservar por ley (p. ej., los registros de pagos de suscripciones durante 10 años). Se eliminan de las copias de seguridad como máximo en 90 días. Una cuenta gratuita en la que nadie haya iniciado sesión durante más de 12 meses puede cerrarse previo aviso.",
+            "Los documentos del usuario permanecen en la cuenta hasta que el usuario los elimine o cierre la cuenta. El usuario es responsable de conservarlos durante el plazo legal.",
+            "El operador no archiva los mensajes de voz ni las imágenes enviados al servicio de IA una vez procesados; solo se guarda el borrador de factura resultante. Los proveedores de IA pueden conservarlos brevemente según sus propias condiciones (p. ej., para detectar abusos) y no los utilizan para entrenar modelos.",
+            "Los registros de seguridad se conservan durante 12 meses como máximo."
+          ]
+        },
+        {
+          "title": "Cookies y analítica",
+          "body": [
+            "Las cookies necesarias (inicio de sesión, idioma, elección de cookies) se utilizan siempre. Las cookies de analítica (Microsoft Clarity) solo se utilizan en las páginas públicas, nunca dentro de la aplicación de facturación, y solo con consentimiento en la UE/EEE y en otras regiones donde la ley lo exige. Si el navegador envía una señal Global Privacy Control, la tratamos como rechazo de la analítica. Encontrará más detalles en la Política de cookies."
+          ]
+        },
+        {
+          "title": "Sus derechos",
+          "body": [
+            "Tiene derecho de acceso, rectificación, supresión, limitación del tratamiento y portabilidad de los datos, así como derecho a oponerse al tratamiento basado en el interés legítimo. Puede retirar su consentimiento en cualquier momento.",
+            "Envíe sus solicitudes a [contact@billanta.cz]. Le responderemos en el plazo de un mes. Puede presentar una reclamación ante la Oficina checa de Protección de Datos Personales (www.uoou.cz) o ante la autoridad de control de su país."
+          ]
+        },
+        {
+          "title": "Seguridad",
+          "body": [
+            "Los datos se cifran en tránsito (TLS). Los datos de cada empresa están aislados en la base de datos (seguridad a nivel de fila). Las claves sensibles (tokens bancarios, claves de IA, configuraciones de copias de seguridad) se guardan cifradas. El acceso a los datos de producción se limita a las personas que lo necesitan."
+          ]
+        },
+        {
+          "title": "Copias de seguridad",
+          "body": [
+            "Hacemos una copia de seguridad de toda la base de datos del servicio cada noche. La copia se cifra en el servidor con age, mediante una clave pública. La clave privada que abre una copia no está en el servidor; el operador la guarda sin conexión. Las copias cifradas se guardan en el servidor, con una copia en el Google Drive del operador. Sin la clave privada nadie puede leerlas, ni siquiera alguien con acceso al servidor o a la cuenta de Google. Las copias se eliminan como máximo a los 90 días (apartado 6).",
+            "Por otro lado, una empresa puede activar copias de seguridad de sus propios datos: en su propio Google Drive, en su propio servidor SFTP, mediante un webhook o como descarga. Estas copias solo van donde el usuario indica, y el usuario puede cifrarlas con su propia clave age o con una frase de contraseña. En Google Drive, Billanta solo puede acceder a los archivos que ha creado. El usuario es responsable del almacenamiento que elija."
+          ]
+        },
+        {
+          "title": "Boletín",
+          "body": [
+            "Solo enviamos el boletín a quienes se suscriben y lo confirman mediante un enlace en un correo electrónico (doble confirmación). Las suscripciones no confirmadas se eliminan en un plazo de 30 días.",
+            "Guardamos la dirección de correo electrónico, el idioma, el país, los temas elegidos, el lugar donde se suscribió, el texto del consentimiento y las horas de suscripción y de confirmación. La base jurídica es el consentimiento (art. 6.1.a del RGPD).",
+            "Puede darse de baja en cualquier momento con un clic en el pie de cada número. A partir de entonces no le enviamos nada más y solo conservamos un registro del consentimiento y de la baja, para poder demostrar que le escribimos de forma lícita."
+          ]
+        },
+        {
+          "title": "De dónde vienen los nuevos usuarios",
+          "body": [
+            "Cuando llega al sitio web desde un enlace con parámetros de campaña (utm) o desde otro sitio web, recordamos el origen de la visita en la cookie billanta_src durante 90 días: los parámetros utm, solo el dominio del sitio de procedencia (sin ruta ni parámetros de consulta), la primera página que visitó y la hora. Si después crea una cuenta, guardamos estos datos con ella para saber qué canales nos traen usuarios.",
+            "Solo establecemos esta cookie si ha permitido las cookies de analítica. La base jurídica es el consentimiento (art. 6.1.a del RGPD)."
+          ]
+        },
+        {
+          "title": "Programa de recomendaciones",
+          "body": [
+            "Cuando llega a través de un enlace de invitación, guardamos el código de quien le invita en la cookie billanta_ref durante 30 días para que la invitación cuente cuando se registre.",
+            "Para la empresa registramos después quién la invitó, cuándo se registró, cuándo y cuánto pagó por un plan, el estado de la recompensa y los movimientos de créditos. La finalidad es conceder las recompensas y evitar abusos del programa (contrato e interés legítimo, art. 6.1.b y 6.1.f del RGPD).",
+            "Quien invita no ve el nombre ni los datos de la empresa invitada, solo un número de orden, si paga y cuántos créditos ha recibido por ella."
+          ]
+        },
+        {
+          "title": "Directorios públicos",
+          "body": [
+            "Directorio de empresas: una empresa solo aparece en él si activa su perfil público y, dentro de este, la inclusión en el directorio (desactivada por defecto). La ficha muestra el nombre de la empresa, una breve descripción, el sector, la localidad, el país, el logotipo y, solo si la empresa muestra su dirección en el perfil, la ciudad. El directorio nunca muestra el número de identificación de empresa, el correo electrónico ni el teléfono.",
+            "Directorio de contables: el propio contable o despacho contable envía la ficha, que solo se publica después de que el operador la apruebe. Muestra el nombre, la descripción, las regiones, si trabaja a distancia, los servicios, los idiomas, un precio orientativo, un correo electrónico o sitio web de contacto y un enlace al perfil público si está activado.",
+            "Publicamos ambas fichas a petición de la empresa, que puede editarlas, desactivarlas o retirarlas en cualquier momento."
+          ]
+        },
+        {
+          "title": "Modo aula",
+          "body": [
+            "En el modo aula, el responsable del tratamiento de los datos personales de los alumnos es el centro educativo, a través del profesor que crea la clase. El operador es solo encargado del tratamiento según el contrato de tratamiento de datos con el centro educativo, que publicaremos en la página Contrato con el centro educativo.",
+            "Los alumnos se unen a una clase solo con el código de la clase y un apodo, sin correo electrónico ni contraseña. Guardamos el apodo, el contenido de la empresa de prácticas con datos inventados, el código personal para volver (cifrado y como hash) y los datos técnicos necesarios para el funcionamiento del servicio y la prevención de abusos. Las funciones de IA están desactivadas y las páginas de los alumnos no tienen analítica.",
+            "Las empresas de prácticas de una clase se eliminan 30 días después de que finalice la clase, y las de un alumno retirado por el profesor, de inmediato. Un aviso de privacidad simplificado, Privacidad en clase, está dirigido a alumnos y padres. Las solicitudes sobre los datos de los alumnos las gestiona el centro educativo.",
+            "Los datos de los profesores (nombre, correo electrónico, centro, asignatura) los trata el operador como responsable según esta política, para verificar a los profesores y gestionar sus cuentas."
+          ]
+        }
+      ]
+    },
+    "dpa": {
+      "title": "Contrato de encargo del tratamiento (DPA)",
+      "intro": "Contrato de tratamiento de datos personales según el art. 28 del RGPD entre el usuario (responsable) y el operador (encargado), que forma parte de las Condiciones del servicio.",
+      "sections": [
+        {
+          "title": "Partes y objeto",
+          "body": [
+            "El responsable del tratamiento es el usuario de Billanta. El encargado del tratamiento es {operator}.",
+            "El encargado trata los datos personales que el responsable introduce en el servicio solo en la medida necesaria para prestar el servicio según las Condiciones del servicio y mientras estas estén en vigor."
+          ]
+        },
+        {
+          "title": "Naturaleza, finalidad y alcance",
+          "body": [
+            "Finalidad: emitir y enviar documentos, llevar el registro de contactos, pagos y gastos, exportar datos y hacer copias de seguridad, y borradores de documentos con IA si el responsable los utiliza.",
+            "Interesados: clientes y proveedores del responsable y sus personas de contacto, y miembros del equipo del responsable.",
+            "Categorías de datos: datos de identificación y de contacto (nombre, empresa, número de identificación de empresa, número de IVA, dirección, correo electrónico, teléfono), datos de pago y facturación, incluidos números de cuenta bancaria y movimientos de cuenta, y, si el responsable utiliza funciones de IA, mensajes de voz, textos y fotos de documentos. No se tratan categorías especiales de datos (art. 9 del RGPD) y el responsable no debe subirlas."
+          ]
+        },
+        {
+          "title": "Obligaciones del encargado",
+          "body": [
+            "Tratar los datos solo siguiendo las instrucciones documentadas del responsable. La configuración y el uso del servicio por parte del responsable se consideran instrucciones.",
+            "Informar inmediatamente al responsable si, en su opinión, una instrucción infringe el RGPD u otra normativa de protección de datos.",
+            "Transferir datos a terceros países solo conforme a las instrucciones del responsable y al capítulo V del RGPD, como se describe en la Política de privacidad (apartado 5).",
+            "Garantizar que todas las personas con acceso a los datos estén sujetas a confidencialidad.",
+            "Aplicar medidas técnicas y organizativas adecuadas según el art. 32 del RGPD: cifrado en tránsito, aislamiento de los datos de cada responsable, almacenamiento cifrado de claves, control de acceso y copias de seguridad.",
+            "Ayudar al responsable a atender las solicitudes de los interesados y a cumplir sus obligaciones según los art. 32 a 36 del RGPD.",
+            "Notificar al responsable una violación de la seguridad de los datos personales sin demora indebida y, como máximo, en las 48 horas siguientes a tener conocimiento de ella."
+          ]
+        },
+        {
+          "title": "Subencargados",
+          "body": [
+            "El responsable otorga una autorización general para recurrir a los subencargados indicados en la Política de privacidad (apartado 4).",
+            "El encargado informará al responsable de cualquier cambio previsto por correo electrónico con al menos 14 días de antelación. El responsable puede oponerse por motivos razonables o resolver el contrato. El encargado impondrá a sus subencargados las mismas obligaciones de protección de datos.",
+            "En caso de un cambio urgente por motivos de seguridad u operativos, el encargado puede recurrir de inmediato a un nuevo subencargado e informar al responsable sin demora indebida. El encargado sigue siendo plenamente responsable ante el responsable del cumplimiento de las obligaciones de sus subencargados (art. 28.4 del RGPD)."
+          ]
+        },
+        {
+          "title": "Terminación, supresión y auditoría",
+          "body": [
+            "Tras la finalización del contrato, el encargado permite al responsable exportar los datos durante 30 días. Después, a elección del responsable, los elimina o se los devuelve como exportación, salvo que la ley exija conservarlos. Los datos se eliminan de las copias de seguridad como máximo en 90 días.",
+            "El encargado facilitará al responsable la información necesaria para demostrar el cumplimiento de este contrato. Es posible una auditoría presencial previo acuerdo, a cargo del responsable y como máximo una vez al año.",
+            "La limitación de responsabilidad de las Condiciones (apartado 10) se aplica a la responsabilidad de las partes según este contrato. No se aplica a las reclamaciones de los interesados según el art. 82 del RGPD en la medida en que no puedan limitarse contractualmente."
+          ]
+        }
+      ]
+    },
+    "classroomPrivacy": {
+      "title": "Privacidad en clase",
+      "intro": "Una explicación breve para alumnos, estudiantes y sus padres: qué guarda Billanta cuando te unes a una clase y quién puede verlo.",
+      "sections": [
+        {
+          "title": "Qué guardamos",
+          "body": [
+            "El apodo que elijas. No uses tu nombre completo; basta con un apodo que tu profesor reconozca.",
+            "Tu empresa de prácticas y todo lo que crees en ella: facturas, clientes, gastos y otros registros. Los datos son inventados, así que no introduzcas datos reales sobre ti ni sobre nadie más.",
+            "Tu código personal para volver a tu empresa. Lo guardamos cifrado.",
+            "Algunos datos técnicos que el servicio necesita para funcionar y para evitar abusos, como cuántos intentos de entrar han fallado."
+          ]
+        },
+        {
+          "title": "Qué no guardamos ni utilizamos",
+          "body": [
+            "No te pedimos correo electrónico, número de teléfono ni contraseña.",
+            "En clase no hay inteligencia artificial (IA), analítica ni publicidad. No te enviamos nada y no usamos tus datos para marketing."
+          ]
+        },
+        {
+          "title": "Quién puede ver tus datos",
+          "body": [
+            "Tu profesor, y los demás profesores de la misma clase, pueden ver tu empresa. Solo pueden mirarla; no cambian nada en ella. Tus compañeros de clase no pueden ver tu empresa.",
+            "Las personas de Billanta solo acceden a los datos cuando es necesario para dar soporte o por seguridad."
+          ]
+        },
+        {
+          "title": "Cuándo se eliminan tus datos",
+          "body": [
+            "Cuando termine la clase, podrás seguir viendo tu empresa durante 30 días. Después se elimina, junto con tu apodo y tu código personal. Desaparece de las copias de seguridad cifradas como máximo en 90 días.",
+            "Si tu profesor te retira de la clase, tu empresa se elimina de inmediato."
+          ]
+        },
+        {
+          "title": "A quién dirigirse",
+          "body": [
+            "Tu centro educativo decide sobre tus datos en clase. Billanta solo los trata por encargo del centro, según un contrato con él. Si tienes una pregunta o quieres que se eliminen tus datos, habla con tu profesor o con el centro.",
+            "Los padres pueden pedir más información al centro o escribir al operador de Billanta: {operator}."
+          ]
+        }
+      ]
+    },
+    "schoolContract": {
+      "title": "Contrato de tratamiento de datos con el centro educativo",
+      "intro": "Las condiciones para centros educativos y el contrato de tratamiento de los datos personales de los alumnos en el modo aula.",
+      "sections": [
+        {
+          "title": "Próximamente",
+          "body": [
+            "El contrato de tratamiento de datos con el centro educativo se publicará en esta página antes de que se lance el modo aula.",
+            "Mientras tanto, el aviso de privacidad en clase y el apartado 17 de las condiciones resumen cómo tratamos los datos de los alumnos. Para cualquier consulta, póngase en contacto con {operator}."
+          ]
+        }
+      ]
+    }
+  },
   "about": {
     "title": "Acerca de Billanta",
     "lead": "Billanta es una herramienta de facturación construida sobre los estándares abiertos que ya sostienen la facturación checa y eslovaca, no al margen de ellos.",
@@ -3655,14 +4158,73 @@
       "manualTitle": "Instalar la aplicación",
       "manualBody": "Abra el menú del navegador (⋮ o ⋯) y elija “Instalar aplicación” o “Añadir a pantalla de inicio”. En Chrome y Edge de escritorio también hay un icono de instalación a la derecha de la barra de direcciones.",
       "ok": "Entendido"
-    }
+    },
+    "close": "Cerrar",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "moreActions": "Más acciones"
+  },
+  "municipalityPages": {
+    "regionLabel": "Región",
+    "districtLabel": "Distrito",
+    "countryCz": "Chequia",
+    "countrySk": "Eslovaquia",
+    "breadcrumbBrowse": "Ciudades y municipios",
+    "heading": "Programa de facturación para {name}",
+    "lead": "Emita facturas, controle el IVA y exporte a ISDOC, tanto si trabaja en {name} como en cualquier otro lugar de Chequia y Eslovaquia.",
+    "body": "Billanta emite facturas en ISDOC, completa los datos del cliente desde ARES y mantiene correctos la numeración y los tipos de IVA. También puede dictar una factura por Telegram o WhatsApp: se convierte en un borrador y solo se emite cuando usted lo confirma.",
+    "localNote": "ISDOC, ARES y los tipos de IVA funcionan igual en toda Chequia y Eslovaquia, también en {district}. Billanta no necesita ninguna configuración local ni una cuenta aparte.",
+    "cta": "Crear una cuenta gratuita",
+    "browseCta": "Ver todas las ciudades y municipios de {region}",
+    "indexTitle": "Programa de facturación por ciudad y municipio",
+    "indexLead": "Elija una región para encontrar la página de su ciudad o municipio. Billanta funciona igual en cualquier lugar de Chequia y Eslovaquia.",
+    "indexCoverageNote": "Actualmente {count, plural, one {# municipio} other {# municipios}}.",
+    "otherCountry": "Los municipios eslovacos están en la versión eslovaca →",
+    "regionMunicipalityCount": "{count, plural, one {# ciudad o municipio} other {# ciudades y municipios}}",
+    "expandListLabel": "Mostrar lista",
+    "backToIndex": "Volver al directorio de ciudades y municipios",
+    "districtTitle": "Más municipios del distrito de {district}",
+    "districtCount": "El distrito de {district} tiene {count, plural, one {# municipio} other {# municipios}} en nuestro directorio.",
+    "metaDescription": "{name}, distrito de {district}: facturas con pago QR, ISDOC, comprobación del IVA y consulta de registros. Para autónomos y empresas, gratis para empezar.",
+    "whereTitle": "Dónde está {name}",
+    "seatPosition": "A {km, number} km {dir, select, n {al norte} ne {al nordeste} e {al este} se {al sudeste} s {al sur} sw {al sudoeste} w {al oeste} other {al noroeste}} de la capital del distrito",
+    "regionPosition": "A {km, number} km {dir, select, n {al norte} ne {al nordeste} e {al este} se {al sudeste} s {al sur} sw {al sudoeste} w {al oeste} other {al noroeste}} de la capital de la región",
+    "isDistrictSeat": "Capital del distrito de {district}.",
+    "isRegionSeat": "Capital de la región ({region}).",
+    "mapLink": "Ver en el mapa (OpenStreetMap) ↗",
+    "taxTitle": "Oficinas para autónomos",
+    "taxNoteCz": "Para los autónomos, según el domicilio permanente; para las empresas, según el domicilio social. Las declaraciones y el IVA se presentan en línea a través del portal MOJE daně; Billanta prepara las cifras.",
+    "taxNoteSk": "Para los autónomos, según el domicilio permanente; para las empresas, según el domicilio social. Las declaraciones y el IVA se presentan en línea a través del portal de la Finančná správa (administración tributaria eslovaca); Billanta prepara las cifras.",
+    "nearbyTitle": "Municipios más cercanos",
+    "km": "{km, number} km",
+    "countryLabel": "País",
+    "socialNote": "Los autónomos envían aquí los anticipos del seguro social y el resumen anual de ingresos y gastos, según su domicilio permanente.",
+    "healthNoteCz": "El seguro de salud se paga a la aseguradora de salud que usted elija. El lugar donde vive no importa.",
+    "healthNoteSk": "El seguro de salud se paga a la aseguradora de salud que usted elija. El lugar donde vive no importa.",
+    "tradeNoteCz": "Puede dar de alta una actividad en cualquier oficina de licencias comerciales o en línea. El mismo formulario le registra también a efectos fiscales, del seguro social y del seguro de salud.",
+    "tradeNoteSk": "Puede dar de alta una actividad en cualquier oficina de distrito (departamento de licencias comerciales) o en línea a través de slovensko.sk.",
+    "nearbyMajorTitle": "Ciudades más grandes cercanas",
+    "majorTowns": "Ciudades más grandes",
+    "nearbyMajorItem": "{km, number} km {dir, select, n {al norte} ne {al nordeste} e {al este} se {al sudeste} s {al sur} sw {al sudoeste} w {al oeste} other {al noroeste}}",
+    "accountantsTitle": "Contables – {region}",
+    "accountantsNote": "Contables del directorio de Billanta que indican que trabajan para clientes de esta región. Aprobamos cada ficha a mano; la elección es suya.",
+    "accountantsEmpty": "Todavía no se ha inscrito aquí ningún contable. Si busca uno, Billanta le da acceso a sus documentos sin tener que enviar archivos por correo.",
+    "accountantsJoin": "¿Es contable en {name} o cerca? Inscríbase gratis →",
+    "populationCz": "{count, plural, one {# habitante} other {# habitantes}} (Oficina Checa de Estadística, 1 de enero de 2025).",
+    "populationSk": "{count, plural, one {# habitante} other {# habitantes}} (Oficina de Estadística de la República Eslovaca, 30 de junio de 2025)."
   },
   "mobile": {
     "more": "Más",
     "explore": "Explorar",
     "language": "Idioma",
     "appearance": "Apariencia",
-    "create": "Crear"
+    "create": "Crear",
+    "groupWork": "Trabajo",
+    "groupAccount": "Cuenta",
+    "groupProduct": "Producto",
+    "groupResources": "Recursos",
+    "groupPartners": "Contables y socios",
+    "groupHelp": "Ayuda"
   },
   "pricing": {
     "title": "Precios",
@@ -3956,6 +4518,7 @@
     "lead": "Escríbala, elija entre las sugerencias o describa la factura en una frase y deje que se rellene sola.",
     "ai": {
       "title": "Rellenar con IA",
+      "short": "Con IA",
       "hint": "Escriba o dicte la factura con sus propias palabras, p. ej. “factura para 27604977, 3 horas de consultoría a 1500, vencimiento en 14 días”. La IA rellena el cliente (comprobado en ARES), los conceptos y la fecha de vencimiento. No se guarda nada hasta que revise y guarde el formulario.",
       "placeholder": "p. ej. factura a Dvořák & Partners, 2× formación a 4.500 CZK, vencimiento en 30 días",
       "run": "Rellenar",
@@ -4013,13 +4576,21 @@
       "unitPriceGross": "Precio unitario con IVA",
       "lineTotalGross": "Total con IVA"
     },
+    "preview": {
+      "title": "Vista previa",
+      "empty": "Todavía no hay conceptos",
+      "noCustomer": "Elija un cliente"
+    },
     "totals": {
       "base": "Base imponible",
       "vat": "IVA",
       "total": "Total",
       "alreadyPaid": "Ya pagado",
       "alreadyPaidHint": "Un anticipo o pago recibido por adelantado – como importe o como porcentaje del total. Si el importe está pagado por completo, la factura se marca como pagada al emitirla.",
-      "remaining": "Pendiente de pago"
+      "remaining": "Pendiente de pago",
+      "alreadyPaidAdd": "El cliente ya ha pagado (total o parcialmente)",
+      "paidInFull": "Importe total",
+      "paidFullNote": "Al emitirla, la factura se marcará como pagada."
     },
     "cancel": "Cancelar",
     "save": "Guardar borrador",
@@ -4045,6 +4616,7 @@
     },
     "copy": {
       "title": "Rellenar a partir de otra factura",
+      "short": "De una factura",
       "hint": "Copia el cliente, los conceptos, la moneda, el pago, la cuenta, el idioma, las notas y los campos personalizados. No se copian el número, las fechas ni los pagos, y la fecha de vencimiento sigue su plazo predeterminado.",
       "latest": "De la última factura",
       "other": "De otra factura…",
@@ -4325,6 +4897,7 @@
       "total": "Sin IVA"
     },
     "actions": {
+      "more": "Más",
       "open": "Abrir",
       "edit": "Editar",
       "issue": "Emitir",
@@ -4349,7 +4922,8 @@
       "ublHint": "También como archivo de factura electrónica UBL (Peppol BIS 3.0) para clientes eslovacos. Estamos trabajando en el envío a través de la red Peppol, que la normativa eslovaca exige a partir del 1 de enero de 2027.",
       "duplicateToFix": "Nueva factura con la corrección",
       "rotateLink": "Nuevo enlace para el cliente",
-      "editAnyway": "Editar de todos modos"
+      "editAnyway": "Editar de todos modos",
+      "markPaidShort": "Pagada"
     },
     "confirm": {
       "back": "Atrás",
@@ -4376,7 +4950,9 @@
       "editAnywayTitle": "¿Solo una pequeña corrección?",
       "editAnywayBody": "Una errata o un dato que falta se pueden corregir directamente. El número se mantiene y el cambio queda en el historial con su motivo. Si el cliente ya tiene el documento, vuelva a enviárselo.",
       "editAnywayPlaceholder": "Motivo, p. ej. una errata en la dirección",
-      "editAnywayNeedsReason": "Indique primero un motivo"
+      "editAnywayNeedsReason": "Indique primero un motivo",
+      "bulkDeleteTitle": "¿Eliminar {count, plural, one {# borrador} other {# borradores}}?",
+      "bulkDeleteBody": "Los borradores eliminados no se pueden recuperar."
     },
     "done": {
       "issued": "Documento emitido",
@@ -4398,12 +4974,9 @@
     "fxLabelManual": "Tipo de cambio",
     "fxHidden": "La conversión a {home} no se imprime en el documento (tipo {rate} {pair} solo para informes).",
     "views": {
-      "title": "Enlace compartido",
-      "count": "Visto",
       "times": "{count, plural, one {una vez} other {# veces}}",
-      "first": "Primera vez",
-      "last": "Última vez",
-      "none": "El cliente todavía no ha abierto el enlace de la factura."
+      "opened": "Abierto por el cliente",
+      "notYet": "todavía no"
     },
     "filters": {
       "title": "Filtros",
@@ -4441,7 +5014,6 @@
       "customRange": "Rango personalizado",
       "dateBy": "Por fecha",
       "quickRanges": "Rangos rápidos ({field})",
-      "anyDate": "Cualquier fecha",
       "item": "Concepto",
       "itemPlaceholder": "Texto o código del concepto",
       "paidState": "Pago",
@@ -4514,7 +5086,9 @@
         "communication": "Envío y respuesta del cliente",
         "content": "Contenido del documento",
         "origin": "Origen y vínculos"
-      }
+      },
+      "anyType": "Todos los documentos",
+      "statusLabel": "Estado"
     },
     "remindersSent": "{count, plural, one {# recordatorio enviado} other {# recordatorios enviados}}, el último el {date}.",
     "attachments": {
@@ -4541,7 +5115,8 @@
       "title": "Respuesta del cliente",
       "accepted": "Ha aceptado el presupuesto",
       "rejected": "Ha rechazado el presupuesto",
-      "waiting": "Todavía no hay respuesta. El cliente puede aceptar o rechazar el presupuesto en el portal (enlace para el cliente)."
+      "waiting": "Todavía no hay respuesta. El cliente puede aceptar o rechazar el presupuesto en el portal (enlace para el cliente).",
+      "waitingShort": "Todavía sin respuesta."
     },
     "partial": {
       "paid": "Pagado {amount}",
@@ -4727,7 +5302,6 @@
     "noEmail": "sin correo electrónico",
     "issueDate": "Fecha de emisión",
     "issueNow": "Emitir de inmediato (asignar números)",
-    "issueNowHint": "En caso contrario, se crean borradores para que los revise antes de emitirlos.",
     "summary": "Esto creará <b>{count, plural, one {# documento} other {# documentos}}</b> por un total de <b>{total}</b> sin IVA.",
     "submitDrafts": "Crear {count, plural, one {# borrador} other {# borradores}}",
     "submitIssue": "Emitir {count, plural, one {# documento} other {# documentos}}",
@@ -4770,7 +5344,8 @@
       "shortcuts": "Atajos de teclado"
     },
     "pages": {
-      "templates": "Plantillas de factura"
+      "templates": "Plantillas de factura",
+      "netIncome": "Después de impuestos (ingreso neto)"
     },
     "keywords": {
       "newInvoice": "emitir crear añadir documento factura",
@@ -4904,7 +5479,8 @@
     "flatRate": "Gastos a tanto alzado",
     "rate": "a tanto alzado {rate} %",
     "noFlat": "sin tanto alzado",
-    "hint": "Estimación aproximada para un autónomo checo: el importe sin IVA menos el impuesto sobre la renta (15 %) y las cotizaciones a la seguridad social y al seguro de salud sobre esta factura – unos {burden}. Usa el porcentaje a tanto alzado elegido y no tiene en cuenta los anticipos mínimos ni las deducciones fiscales. Consulte Exportaciones para ver el año completo."
+    "hint": "Estimación aproximada para un autónomo checo: el importe sin IVA menos el impuesto sobre la renta (15 %) y las cotizaciones a la seguridad social y al seguro de salud sobre esta factura – unos {burden}. Usa el porcentaje a tanto alzado elegido y no tiene en cuenta los anticipos mínimos ni las deducciones fiscales. Consulte Exportaciones para ver el año completo.",
+    "hintCosts": "También se descuentan las comisiones de pago y la pérdida por conversión ({costs}). Con gastos a tanto alzado no reducen el impuesto, porque el tanto alzado ya cubre todos los gastos."
   },
   "welcome": {
     "title": "Bienvenido a Billanta",
@@ -4918,7 +5494,6 @@
     "businessHint": "Activaremos los módulos adecuados.",
     "modulesTitle": "¿Qué quiere usar?",
     "modulesHint": "La facturación está siempre activada. Active o desactive el resto.",
-    "later": "Puede cambiarlo en cualquier momento en Ajustes → Módulos.",
     "skip": "Omitir",
     "finish": "Listo, a facturar",
     "saved": "Todo listo",
@@ -4940,7 +5515,12 @@
       "claim": "Traer a la cuenta",
       "dismiss": "Olvidarlas",
       "bannerHint": "Las creó en este navegador sin una cuenta. Las guardamos como documentos emitidos y a los clientes como contactos."
-    }
+    },
+    "countryQuestion": "¿Dónde está registrada su empresa?",
+    "countryHint": "El país determina los tipos de IVA, la moneda de su contabilidad y los registros en los que buscamos. No se puede cambiar después de emitir su primera factura.",
+    "countrySoon": "Próximamente",
+    "countryLocked": "El país está fijado porque ya ha emitido una factura.",
+    "countryNotSupported": "Todavía no admitimos este país."
   },
   "registry": {
     "label": "Registro mercantil",
@@ -5899,13 +6479,6 @@
     "seoDescription": "Cree una factura online gratis, sin necesidad de cuenta. Rellene proveedor, cliente y conceptos y descargue un PDF con código QR de pago. No guardamos nada.",
     "heading": "Factura online sin registro",
     "lead": "Rellene los datos y descargue la factura en PDF lista. Sin cuenta, sin correo electrónico y sin que guardemos la factura.",
-    "points": [
-      "PDF con pago por QR",
-      "Datos de la empresa desde ARES",
-      "Relleno con IA",
-      "Con y sin IVA",
-      "Checo, eslovaco, inglés"
-    ],
     "sections": {
       "document": "Documento",
       "supplier": "Proveedor (usted)",
@@ -5938,7 +6511,11 @@
       "unitPrice": "Precio unitario",
       "vatRate": "IVA",
       "note": "Nota en la factura",
-      "taxableSupplyDate": "Fecha de devengo"
+      "taxableSupplyDate": "Fecha de devengo",
+      "accountWithCode": "Número de cuenta / código de banco",
+      "paymentLabel": "Nombre del método de pago",
+      "paymentInstructions": "Dónde pagar",
+      "swift": "SWIFT (BIC)"
     },
     "hints": {
       "vatPayer": "Márquelo solo si está registrado a efectos del IVA. La factura mostrará entonces el IVA, la fecha de devengo y el desglose por tipos.",
@@ -5947,14 +6524,21 @@
       "number": "Con una cuenta, los números de factura siguen automáticamente su serie de numeración.",
       "duzp": "La fecha de devengo del IVA. Normalmente coincide con la fecha de emisión.",
       "qr": "Convertimos el número de cuenta en un pago por QR; su cliente solo tiene que escanearlo en la app de su banco.",
-      "foreign": "Consejo: para un cliente de la UE, añada su NIF-IVA. Con una cuenta lo verificamos en VIES y buscamos la empresa en registros extranjeros."
+      "foreign": "Consejo: para un cliente de la UE, añada su NIF-IVA. Con una cuenta lo verificamos en VIES y buscamos la empresa en registros extranjeros.",
+      "account": "Pegue la cuenta completa de una vez, p. ej. 19-123456789/0100 o un IBAN; la separamos en número y código de banco. La cuenta se convierte en un pago QR que el cliente solo tiene que escanear con la aplicación de su banco.",
+      "lookup": "Empiece a escribir el nombre de una empresa, el IČO o el número de IVA. Buscamos en el ARES checo, en el registro eslovaco de personas jurídicas (RPO) y en el VIES de la UE. Elija una y se rellenan la dirección, el IČO y el número de IVA.",
+      "paymentInstructions": "Se imprime en la factura junto al método de pago, para que el cliente sepa adónde enviar el dinero.",
+      "swift": "El identificador del banco para pagos desde el extranjero. Para los principales bancos checos y eslovacos lo rellenamos a partir del código de banco, así que puede dejarlo vacío."
     },
     "methods": {
       "bank_transfer": "Transferencia bancaria",
       "cash": "Efectivo",
       "card": "Tarjeta",
       "cash_on_delivery": "Contra reembolso",
-      "other": "Otro"
+      "other": "Otro",
+      "paypal": "PayPal",
+      "revolut": "Revolut",
+      "offset": "Compensación"
     },
     "addItem": "Añadir concepto",
     "removeItem": "Eliminar concepto",
@@ -6005,13 +6589,19 @@
     "placeholders": {
       "hours": "P. ej. Desarrollo web – septiembre",
       "goods": "P. ej. Taza de cerámica 0,3 l",
-      "project": "P. ej. Diseño de logotipo e identidad visual"
+      "project": "P. ej. Diseño de logotipo e identidad visual",
+      "paymentLabel": "p. ej. Stripe, vale, trueque",
+      "instructions": {
+        "paypal": "jan@example.com o paypal.me/jan",
+        "revolut": "@jan o revolut.me/jan",
+        "other": "Dónde y cómo pagar"
+      },
+      "iban": "CZ65 0800 0000 1920 0014 5399"
     },
     "dueIn": "{days} días",
     "ares": {
       "found": "Cargado desde ARES",
-      "notFound": "No se ha encontrado ninguna empresa con este número",
-      "unavailable": "No es posible conectar con el registro en este momento; rellene los datos a mano."
+      "notFound": "No se ha encontrado ninguna empresa con este número"
     },
     "ai": {
       "title": "Rellenar con IA",
@@ -6074,7 +6664,6 @@
     },
     "account": {
       "title": "¿Quiere guardar sus facturas y enviarlas por correo electrónico?",
-      "body": "Una cuenta gratuita le ofrece un resumen de facturas, contactos del registro mercantil, recordatorios y pagos por QR. Aun así, puede crear esta factura sin ella.",
       "signup": "Crear una cuenta gratuita",
       "login": "Iniciar sesión",
       "signedIn": "Ha iniciado sesión. Puede guardar la factura directamente en la aplicación.",
@@ -6132,7 +6721,16 @@
       "forget": "Olvidarlas",
       "signupNote": "Al registrarse, traspasamos las facturas que creó en este navegador sin cuenta: la numeración continúa y los clientes se guardan como contactos.",
       "where": "Solo este navegador las conserva y las borra a los 90 días – en un ordenador compartido, use Olvidarlas."
-    }
+    },
+    "lookup": {
+      "placeholder": "Nombre de la empresa o IČO: completamos el resto"
+    },
+    "requiredLegend": "Un asterisco * indica lo que este documento debe contener.",
+    "addIbanSwift": "Añadir IBAN y SWIFT",
+    "moreDoc": "Tipo de documento y método de pago",
+    "addNote": "Añadir una nota a la factura",
+    "quantityLess": "Uno menos",
+    "quantityMore": "Uno más"
   },
   "publicProfile": {
     "services": "Servicios",
@@ -6221,8 +6819,7 @@
       "week": "Esta semana",
       "unbilled": "Sin facturar",
       "unbilledHours": "{hours} h por facturar",
-      "projects": "Proyectos activos",
-      "projectsSub": "Tarifas y clientes"
+      "projects": "Proyectos activos"
     },
     "period": {
       "week": "Esta semana",
@@ -6319,7 +6916,7 @@
   },
   "clientPortal": {
     "title": "Documentos para {name}",
-    "lead": "Facturas y presupuestos de {company} en un solo lugar – abra un documento para ver su QR de pago y el PDF",
+    "lead": "Toque un documento para ver sus datos de pago.",
     "outstanding": "Pendiente de pago",
     "overdueOf": "{amount} de ello vencido",
     "allPaid": "Todo está pagado, gracias.",
@@ -6356,7 +6953,6 @@
   },
   "reports": {
     "pageTitle": "Informes",
-    "pageLead": "Ingresos, gastos y beneficio de cualquier periodo, comparados con el periodo anterior.",
     "exportsLink": "Exportaciones para asesores y administraciones →",
     "noTenant": "Primero configure una empresa o negocio.",
     "loadError": "No se ha podido cargar el informe.",
@@ -6465,13 +7061,13 @@
       "failed": "No se ha podido guardar: {reason}",
       "notUsed": "aún sin usar",
       "notVatPayer": "no es sujeto pasivo de IVA",
-      "orderHint": "El orden aquí es el orden de las tarjetas en el informe. Arrastre por el asa o use las flechas para cambiarlo.",
       "moveUp": "Mover antes",
       "moveDown": "Mover después",
       "dragToReorder": "Arrastre para reordenar"
     },
     "flatTaxLink": "¿Le compensa el impuesto de tarifa plana? →",
-    "taxReturnLink": "Resumen para la declaración de impuestos"
+    "taxReturnLink": "Resumen para la declaración de impuestos",
+    "netIncomeLink": "Después de impuestos"
   },
   "siteSearch": {
     "title": "Buscar en el sitio",
@@ -6953,13 +7549,11 @@
     "signupCta": "Empezar gratis",
     "notStated": "– = no se indica en la lista de precios (no significa que falte)",
     "verified": "Verificado con las listas de precios en {date}",
-    "sourcesTitle": "Fuentes",
     "brand": {
       "suitsUsTitle": "Cuándo es mejor Billanta",
       "suitsThemTitle": "Cuándo tiene más sentido {brand}",
       "priceTitle": "Precio",
       "tableTitle": "Billanta y {brand}, punto por punto",
-      "source": "Fuente: lista de precios de {brand}",
       "versus": "Billanta frente a {brand}",
       "importCta": "Cómo funciona la importación",
       "faqTitle": "Preguntas frecuentes",
@@ -7407,7 +8001,8 @@
       "czOnlyTextAlt": "«{name}» trata de la normativa checa. Para los autónomos eslovacos hay una calculadora aparte con la normativa eslovaca.",
       "noLiability": "El resultado se ofrece sin garantía y no nos hacemos responsables de las decisiones tomadas en función de él.",
       "noWarranty": "El resultado es meramente informativo y se ofrece sin garantía. Compruebe los detalles antes de utilizarlos.",
-      "invoiceCtaTemplates": "Plantillas de factura para rellenar en línea"
+      "invoiceCtaTemplates": "Plantillas de factura para rellenar en línea",
+      "toc": "Índice"
     },
     "calculators": {
       "indexTitle": "Calculadoras y herramientas para empresas",
@@ -7454,7 +8049,9 @@
             "flatRate": "Actividad principal",
             "children": "Número de hijos (deducción por hijos)",
             "spouse": "Deducción por cónyuge (la pareja gana hasta CZK 68.000, hijo menor de 3 años)",
-            "vatPayer": "Soy sujeto pasivo de IVA"
+            "vatPayer": "Soy sujeto pasivo de IVA",
+            "spouseInfo": "Solo si su pareja gana hasta 68.000 CZK al año y vive en su hogar un hijo menor de 3 años.",
+            "childrenInfo": "Deducción fiscal por hijos dependientes que viven en su hogar."
           },
           "rates": {
             "30": "Alquiler de bienes afectos a la actividad (30 %, hasta CZK {cap})",
@@ -8730,7 +9327,8 @@
     "profileLink": {
       "body": "¿Es usted asesor o contable? Su ficha en el directorio y la solicitud del programa de socios están en Perfil de asesor.",
       "cta": "Abrir Perfil de asesor"
-    }
+    },
+    "shareMore": "Código QR y distintivos para la web"
   },
   "partners": {
     "title": "Socios",
@@ -8772,6 +9370,10 @@
       "exports": {
         "title": "Exportaciones para la contabilidad",
         "body": "Declaraciones de IVA y declaraciones de control, ISDOC y CSV, sin volver a teclear nada."
+      },
+      "included": {
+        "title": "Incluido en el plan del cliente",
+        "body": "A partir del plan Start, el acceso del contable forma parte del plan del cliente. Usted no paga nada por ello."
       },
       "credits": {
         "title": "Créditos por clientes",
@@ -8888,7 +9490,8 @@
     "ctaBody": "Billanta controla los vencimientos, los pagos con QR y las exportaciones para su contable. Empiece gratis.",
     "ctaButton": "Crear una cuenta gratuita",
     "aiAuto": "Este artículo lo ha escrito una IA a partir de nuestros propios datos y solo se comprobó automáticamente antes de publicarse. Si detecta un error, <contact>avísenos</contact>.",
-    "aiReviewed": "Este artículo se redactó con ayuda de IA y una persona lo revisó antes de publicarse. Si detecta un error, <contact>avísenos</contact>."
+    "aiReviewed": "Este artículo se redactó con ayuda de IA y una persona lo revisó antes de publicarse. Si detecta un error, <contact>avísenos</contact>.",
+    "toc": "Índice"
   },
   "adminBlog": {
     "title": "Blog",
@@ -9311,7 +9914,8 @@
     "invalid": "Use letras, números o guiones.",
     "failed": "No se ha podido guardar",
     "copy": "Copiar",
-    "copied": "Enlace copiado"
+    "copied": "Enlace copiado",
+    "rename": "Cambiar el nombre del enlace"
   },
   "demo": {
     "cta": "Probar la demo",
@@ -9331,43 +9935,6 @@
         "empty": "¿Prefiere empezar de cero? Elija una empresa vacía y traslade su trabajo a su propia cuenta después de registrarse."
       },
       "pick": "Elija un tipo de empresa",
-      "rolesTitle": "Vea la aplicación con los ojos de todo el equipo",
-      "rolesLead": "En la demo cambia la vista con una sola opción en la barra superior. Cada rol ve exactamente lo que vería en una empresa real.",
-      "tryTitle": "Qué probar en la demo",
-      "try": {
-        "invoices": {
-          "title": "Factura con pago por QR",
-          "text": "Emita una factura, descargue el PDF y comparta un enlace con código QR."
-        },
-        "payments": {
-          "title": "Pagos y pagos parciales",
-          "text": "Marque una factura como pagada o registre un pago parcial."
-        },
-        "reminders": {
-          "title": "Facturas vencidas",
-          "text": "Vea qué está vencido y cómo es un recordatorio."
-        },
-        "expenses": {
-          "title": "Gastos",
-          "text": "Registre una factura recibida y siga el gasto por categorías."
-        },
-        "vat": {
-          "title": "IVA e informes",
-          "text": "La declaración de IVA y la declaración de control a partir de los mismos datos."
-        },
-        "accountant": {
-          "title": "La vista del contable",
-          "text": "Exportaciones para el contable y lo que un contable puede hacer en la empresa."
-        },
-        "team": {
-          "title": "Equipo y roles",
-          "text": "Cambie a un compañero de solo lectura e intente modificar algo."
-        },
-        "quotes": {
-          "title": "Presupuestos y facturas proforma",
-          "text": "Convierta un presupuesto en una factura proforma y luego en una factura definitiva."
-        }
-      },
       "allFeatures": "Todas las funciones",
       "faqTitle": "Preguntas frecuentes sobre la demo",
       "faq": [
@@ -9902,7 +10469,8 @@
     "suspendedDone": "Centro suspendido.",
     "unsuspended": "Centro restablecido.",
     "failed": "Error",
-    "rejectConfirm": "¿Rechazar a {name}? Sus clases terminan y quedan en solo lectura durante 30 días, y se le retira de otras clases."
+    "rejectConfirm": "¿Rechazar a {name}? Sus clases terminan y quedan en solo lectura durante 30 días, y se le retira de otras clases.",
+    "manage": "Gestionar"
   },
   "offline": {
     "offline": "Sin conexión",
@@ -10921,7 +11489,8 @@
       "businessPreset": "Tipo de negocio",
       "presetNone": "que elija el usuario",
       "defaultLocale": "Idioma de la página",
-      "localeVisitor": "el del visitante"
+      "localeVisitor": "el del visitante",
+      "moreDetails": "Más ajustes"
     },
     "errors": {
       "code_taken": "Ese código ya existe.",
@@ -11579,7 +12148,6 @@
     "title": "Resumen para la declaración de la renta {year}",
     "titleSk": "Resumen para la declaración de la renta {year} (Eslovaquia)",
     "back": "Informes",
-    "lead": "Ingresos, gastos y gastos a tanto alzado del ejercicio fiscal a partir de sus propios documentos, los plazos de presentación y una estimación aproximada del impuesto. Gratis en todos los planes.",
     "notAdvice": "Esto es un resumen de sus propios documentos para preparar la declaración del impuesto sobre la renta, no asesoramiento fiscal. Revise las cifras antes de presentarla, con un contable o asesor fiscal si es necesario.",
     "noTenant": "Primero complete los datos de facturación de su empresa.",
     "loadError": "No se ha podido cargar el resumen. Inténtelo de nuevo en un momento.",
@@ -11691,7 +12259,6 @@
     "noteEstimate": "La estimación solo tiene en cuenta la deducción básica del contribuyente, sin otras deducciones, reducciones ni otros ingresos (trabajo por cuenta ajena, alquileres).",
     "noteEstimateSk": "La estimación solo tiene en cuenta el mínimo personal básico, sin otras deducciones, la bonificación por hijos ni otros ingresos.",
     "noteData": "Las cifras proceden únicamente de los documentos de la aplicación. Añada usted mismo los ingresos y gastos que no figuren aquí (efectivo sin documento, otras actividades).",
-    "disclaimer": "Este resumen es meramente informativo, se ofrece sin garantía y no sustituye a un asesor fiscal ni a un contable. Usted es responsable de lo que presenta.",
     "nudge": {
       "title": "Declaración de la renta {year}",
       "body": "Sus ingresos de {year}, los gastos por categoría, los tantos alzados y los plazos ya están listos a partir de sus documentos. PDF y CSV para su contable, gratis.",
@@ -11756,8 +12323,6 @@
       },
       "calculatorsTitle": "Calculadoras fiscales",
       "calculatorsLead": "Sin registro: impuestos y cotizaciones para autónomos checos y eslovacos, la comparación con la paušální daň y los anticipos mínimos.",
-      "ctaTitle": "Un resumen a partir de sus propias facturas",
-      "ctaBody": "Si factura con Billanta, la base de su declaración está lista sin volver a teclear nada. Solo tiene que añadir lo que no está en la aplicación.",
       "faqTitle": "Preguntas frecuentes",
       "faq": [
         {
@@ -13139,5 +13704,268 @@
     "privacyTitle": "Datos personales",
     "privacyBody": "El operador indicado arriba es el responsable del tratamiento de sus datos personales. La política de privacidad explica qué datos tratamos y cómo ejercer sus derechos (acceso, rectificación, supresión y otros).",
     "legalTitle": "Documentos legales"
+  },
+  "netIncome": {
+    "title": "Después de impuestos",
+    "intro": "Lo que le queda de sus facturas pagadas después del impuesto sobre la renta, el seguro social y de salud y los gastos compartidos. También para varios socios que se reparten los ingresos.",
+    "back": "Informes",
+    "noTenant": "Primero cree una empresa.",
+    "loadError": "No se ha podido cargar el cálculo. Inténtelo de nuevo.",
+    "notSupported": "Por ahora, el cálculo después de impuestos solo sigue las normas checas (gastos a tanto alzado, ČSSZ, aseguradora de salud).",
+    "periodKindLabel": "Periodo",
+    "periodKind": {
+      "month": "Mes",
+      "quarter": "Trimestre",
+      "year": "Año"
+    },
+    "prev": "Periodo anterior",
+    "next": "Periodo siguiente",
+    "quarterLabel": "T{q} {year}",
+    "missingRates": "{count, plural, one {# factura no tiene tipo de cambio y queda excluida.} other {# facturas no tienen tipo de cambio y quedan excluidas.}}",
+    "cards": {
+      "income": "Ingresos totales",
+      "taxes": "Impuestos y seguros",
+      "afterTaxes": "Después de impuestos",
+      "net": "Ingreso neto"
+    },
+    "creditsHint": {
+      "month": "Un mes usa 1/12 de las deducciones fiscales anuales y 1/12 del límite de gastos a tanto alzado. El impuesto real se calcula para todo el año, así que la suma de los meses puede no coincidir con el año.",
+      "quarter": "Un trimestre usa 1/4 de las deducciones fiscales anuales y 1/4 del límite de gastos a tanto alzado. El impuesto real se calcula para todo el año.",
+      "year": "Un año usa las deducciones fiscales anuales completas y el límite completo de gastos a tanto alzado, como la declaración de la renta."
+    },
+    "table": {
+      "title": "Cálculo",
+      "titlePartners": "Cálculo por socio",
+      "metric": "Concepto",
+      "share": "participación {percent} %",
+      "total": "Total",
+      "income": "Ingresos",
+      "flatExpenses": "Gastos a tanto alzado",
+      "base": "Base imponible",
+      "taxBeforeCredits": "Impuesto antes de deducciones",
+      "credits": "Deducciones fiscales",
+      "incomeTax": "Impuesto sobre la renta",
+      "social": "Seguro social",
+      "health": "Seguro de salud",
+      "taxes": "Total de impuestos y seguros",
+      "sharedExpenses": "Gastos compartidos",
+      "net": "Ingreso neto"
+    },
+    "formula": "Base = ingresos − {flat} % de gastos a tanto alzado. Impuesto: {tax} % de la base; seguro social: {socialRate} % del {socialBase} % de la base; seguro de salud: {healthRate} % del {healthBase} % de la base.",
+    "estimateNote": "Una estimación aproximada: sin anticipos mínimos, sin el tramo del 23 % y sin redondeo de la base. No sustituye a la declaración de la renta ni a los resúmenes anuales.",
+    "partnerFallback": "Socio {n}",
+    "partnerMe": "Yo",
+    "months": {
+      "title": "Por meses",
+      "hint": "Cada mes se calcula por separado, con 1/12 de las deducciones fiscales. Útil para comparar meses.",
+      "month": "Mes",
+      "income": "Ingresos",
+      "taxes": "Impuestos y seguros",
+      "net": "Ingreso neto"
+    },
+    "list": {
+      "title": "Ingresos del periodo ({count})",
+      "hint": "Facturas pagadas según la fecha de pago, más otros ingresos de los ajustes. En una factura en moneda extranjera se toma lo que realmente llegó a la cuenta (p. ej., tras la conversión en PayPal); si no, el tipo de cambio.",
+      "hintVat": "Facturas pagadas según la fecha de pago, sin IVA, más otros ingresos de los ajustes. En una factura en moneda extranjera se toma lo que realmente llegó a la cuenta; si no, el tipo de cambio.",
+      "empty": "No hay facturas pagadas en este periodo.",
+      "show": "Mostrar todos los ingresos ({count})",
+      "paidOn": "pagada el {date}",
+      "source": {
+        "czk": "en CZK",
+        "received": "importe recibido",
+        "converted": "convertido al tipo de cambio"
+      },
+      "extra": "otros ingresos",
+      "splitLabel": "A quién corresponde la factura {number}",
+      "saved": "Reparto guardado.",
+      "failed": "No se ha podido guardar el reparto."
+    },
+    "shares": {
+      "default": "Participaciones predeterminadas",
+      "alone": "Solo {name}",
+      "custom": "Proporción propia…",
+      "apply": "Aplicar proporción"
+    },
+    "config": {
+      "title": "Ajustes del cálculo",
+      "readOnly": "Solo el propietario de la empresa o un administrador pueden cambiar los ajustes.",
+      "rates": "Tipos",
+      "fields": {
+        "flat_expense_percent": "Gastos a tanto alzado",
+        "flat_expense_cap": "Límite anual del tanto alzado por persona",
+        "income_tax_percent": "Impuesto sobre la renta",
+        "social_rate_percent": "Seguro social",
+        "social_base_percent": "Base de cotización – social",
+        "health_rate_percent": "Seguro de salud",
+        "health_base_percent": "Base de cotización – salud"
+      },
+      "ratesHintLabel": "¿Por qué un 55 % para el seguro social?",
+      "ratesHint": "Desde 2024, la base del seguro social checo es el 55 % del beneficio (antes, el 50 %); la base del seguro de salud se mantiene en el 50 %. El límite para los gastos a tanto alzado del 60 % es de 1.200.000 CZK al año; déjelo vacío para no aplicar límite.",
+      "partners": "Socios",
+      "partnersHint": "Cada socio tributa por separado por su participación. Una participación es una proporción: 1, 1, 1 da un tercio a cada uno; 1 y 2 da un tercio y dos tercios.",
+      "partnerName": "Nombre",
+      "partnerShare": "Participación",
+      "partnerCredits": "Deducciones fiscales anuales",
+      "partnerFallback": "Socio {n}",
+      "addPartner": "Añadir socio",
+      "remove": "Quitar",
+      "creditsHintLabel": "¿Qué cuenta como deducciones?",
+      "creditsHint": "La suma de las deducciones fiscales anuales: 30.840 CZK por contribuyente, más las de cónyuge, hijos y otras cuando correspondan. Las deducciones reducen el impuesto como máximo a cero.",
+      "sharedExpenses": "Gastos compartidos",
+      "sharedExpensesHint": "Costes de la actividad (alquiler, software…) que se descuentan del ingreso neto según la proporción. No cambian la base imponible, que se obtiene de los gastos a tanto alzado.",
+      "label": "Descripción",
+      "amount": "Importe",
+      "per": "Por",
+      "perMonth": "mes",
+      "perYear": "año",
+      "splitOf": "A quién corresponde {label}",
+      "addExpense": "Añadir gasto",
+      "extraIncome": "Otros ingresos",
+      "extraIncomeHint": "Ingresos que no son una factura, p. ej. de comisiones y ganancias por tipo de cambio. Tributan igual que las facturas.",
+      "date": "Fecha",
+      "addExtra": "Añadir ingreso",
+      "save": "Guardar ajustes",
+      "saved": "Ajustes guardados.",
+      "resetRates": "Tipos predeterminados"
+    },
+    "errors": {
+      "duplicate_partner": "Dos socios tienen el mismo id. Quite uno y vuelva a añadirlo.",
+      "shares_must_be_positive": "Al menos una participación debe ser mayor que cero.",
+      "generic": "No se han podido guardar los ajustes. Compruebe los números y vuelva a intentarlo."
+    },
+    "noAccess": {
+      "title": "Solo para propietarios y administradores",
+      "body": "El informe después de impuestos muestra los ingresos y los impuestos de cada socio, por lo que solo pueden verlo el propietario y los administradores de la empresa."
+    }
+  },
+  "bankRules": {
+    "title": "Reglas de pagos",
+    "intro": "Qué hacer con un pago que no se ha conciliado con ninguna factura. Las reglas se ejecutan tras cada importación y sincronización, solo sobre los pagos nuevos sin conciliar. La conciliación con una factura siempre va primero.",
+    "backToBank": "Volver al banco",
+    "noTenant": "Primero elija o cree una empresa.",
+    "loadError": "No se han podido cargar las reglas.",
+    "newRule": "Nueva regla",
+    "empty": "Todavía no hay reglas",
+    "emptyHint": "Por ejemplo: registrar como gastos los pagos a su operador de telefonía, ignorar las comisiones bancarias. También puede crear una regla desde el menú de un pago.",
+    "list": {
+      "order": "Las reglas se prueban de arriba abajo y se usa la primera que encaja con un pago.",
+      "enabled": "Regla activada",
+      "off": "Desactivada",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "enabledDone": "Regla activada.",
+      "disabledDone": "Regla desactivada."
+    },
+    "field": {
+      "counterparty_name": "Contraparte",
+      "counterparty_account": "Cuenta o correo electrónico del pagador",
+      "message": "Mensaje para el beneficiario",
+      "variable_symbol": "Símbolo variable",
+      "any": "Cualquier campo"
+    },
+    "operator": {
+      "contains": "contiene",
+      "equals": "es exactamente",
+      "regex": "coincide con la expresión regular"
+    },
+    "direction": {
+      "any": "Entrantes y salientes",
+      "in": "Entrantes",
+      "out": "Salientes"
+    },
+    "summary": {
+      "between": "importe {min}–{max}",
+      "atLeast": "importe desde {min}",
+      "atMost": "importe hasta {max}",
+      "and": " y ",
+      "or": " o "
+    },
+    "action": {
+      "ignore": "Ignorar",
+      "draft_expense": "Crear un gasto para revisar",
+      "draft_invoice": "Crear un borrador de factura"
+    },
+    "actionHint": {
+      "ignore": "El pago se marca como ignorado. Puede devolverlo a la conciliación en cualquier momento.",
+      "draft_expense": "Solo pagos salientes. Crea un gasto con la etiqueta Para revisar, vinculado al pago.",
+      "draft_invoice": "Solo cobros entrantes. Crea un borrador de factura para revisar. La emisión siempre depende de usted."
+    },
+    "form": {
+      "titleNew": "Nueva regla",
+      "titleEdit": "Editar regla",
+      "name": "Nombre",
+      "namePlaceholder": "P. ej. Vodafone – teléfono",
+      "conditions": "Condiciones",
+      "conditionsHint": "En “contiene” y “es exactamente” no importan las mayúsculas ni los acentos. La dirección, la moneda y el importe siempre tienen que coincidir.",
+      "field": "Campo",
+      "operator": "Comparación",
+      "value": "Valor",
+      "valuePlaceholder": "P. ej. Vodafone",
+      "addCondition": "Añadir condición",
+      "removeCondition": "Quitar condición",
+      "advanced": "Avanzado: expresiones regulares",
+      "regexHint": "Una expresión regular (JavaScript, sin distinguir mayúsculas y minúsculas), de 200 caracteres como máximo. P. ej. ^VODAFONE o factura \\d+/2026. No se pueden guardar patrones que podrían ejecutarse durante muchísimo tiempo (repeticiones anidadas como (a+)+, referencias inversas, lookaheads).",
+      "direction": "Dirección",
+      "currency": "Moneda",
+      "currencyAny": "Cualquiera",
+      "minAmount": "Importe desde",
+      "maxAmount": "Importe hasta",
+      "amountHint": "Los importes se comparan sin signo, así que un pago saliente de 500 cuenta como 500.",
+      "action": "Qué hacer",
+      "category": "Categoría del gasto",
+      "categoryNone": "Sin categoría",
+      "contact": "Cliente",
+      "contactNone": "Según el correo electrónico del pagador",
+      "enabled": "Regla activada",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saveAndApply": "Guardar y aplicar a los existentes",
+      "saved": "Regla guardada.",
+      "created": "Regla creada.",
+      "textMatch": "Cómo combinar las condiciones",
+      "textMatchAll": "Deben cumplirse todas las condiciones (Y)",
+      "textMatchAny": "Basta con que se cumpla una (O)"
+    },
+    "preview": {
+      "title": "Vista previa",
+      "count": "{count, plural, one {# pago sin conciliar encaja} other {# pagos sin conciliar encajan}} con esta regla.",
+      "loading": "Contando…",
+      "incomplete": "Añada al menos una condición para ver a qué pagos afectaría la regla.",
+      "more": "y {count} más",
+      "onlyUnmatched": "La vista previa solo muestra los pagos que ahora mismo están sin conciliar. Todavía no cambia nada."
+    },
+    "apply": {
+      "button": "Aplicar a los existentes",
+      "confirmTitle": "¿Aplicar la regla “{name}” a los pagos existentes?",
+      "what": {
+        "ignore": "Se marcarán como ignorados.",
+        "draft_expense": "Cada uno se convertirá en un gasto para revisar.",
+        "draft_invoice": "Cada uno se convertirá en un borrador de factura para revisar."
+      },
+      "rematchFirst": "Antes intentaremos una vez más conciliar los pagos con facturas.",
+      "done": "Regla aplicada a {applied, plural, one {# pago} other {# pagos}}.",
+      "doneMore": "Regla aplicada a {applied, plural, one {# pago} other {# pagos}}. Quedan {remaining}, vuelva a ejecutarla.",
+      "nothing": "Ahora mismo ningún pago sin conciliar encaja con esta regla."
+    },
+    "delete": {
+      "title": "¿Eliminar la regla?",
+      "body": "Se eliminará la regla “{name}”. Los pagos que ya ha procesado se quedan como están.",
+      "confirm": "Eliminar",
+      "done": "Regla eliminada."
+    },
+    "errors": {
+      "generic": "No ha funcionado",
+      "rule_needs_condition": "Añada al menos una condición de texto o de importe. Solo con la dirección, la regla abarcaría todos los pagos.",
+      "invalid_amount_range": "El importe desde tiene que ser menor o igual que el importe hasta.",
+      "invalid_regex": "La expresión regular no es válida o tiene más de 200 caracteres.",
+      "unsafe_regex": "Esta expresión regular podría ejecutarse durante demasiado tiempo. Simplifíquela (sin repeticiones anidadas, referencias inversas ni lookaheads, y como máximo dos * o +).",
+      "action_needs_outgoing": "Los gastos solo pueden crearse a partir de pagos salientes. Establezca la dirección en Salientes.",
+      "action_needs_incoming": "Los borradores de factura solo pueden crearse a partir de cobros entrantes. Establezca la dirección en Entrantes.",
+      "contact_not_found": "El cliente elegido ya no existe.",
+      "bank_rule_not_found": "La regla ya no existe.",
+      "forbidden": "No tiene permiso para cambiar las reglas."
+    }
   }
 }

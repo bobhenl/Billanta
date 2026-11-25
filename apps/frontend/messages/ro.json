@@ -36,7 +36,17 @@
     "label": "Limbă",
     "cs": "Čeština",
     "sk": "Slovenčina",
-    "en": "English"
+    "en": "English",
+    "de": "Deutsch",
+    "pl": "Polski",
+    "uk": "Українська",
+    "hu": "Magyar",
+    "ro": "Română",
+    "fr": "Français",
+    "es": "Español",
+    "it": "Italiano",
+    "nl": "Nederlands",
+    "pt": "Português"
   },
   "marketing": {
     "nav": {
@@ -69,26 +79,22 @@
       "title": "Facturare pentru firmele din Cehia și Slovacia, fără hârțogăraie",
       "subtitle": "Emiteți facturi prin mesaj vocal pe Telegram sau WhatsApp, exportați-le în ISDOC și fiți siguri că totul corespunde registrului ARES și reglementărilor în vigoare.",
       "cta": "Creați un cont gratuit",
-      "secondaryCta": "Vedeți cum funcționează",
-      "eyebrow": "Facturare pentru CZ și SK",
-      "points": {
-        "isdoc": "Export ISDOC",
-        "ares": "Căutare în ARES",
-        "qr": "Plăți QR"
-      },
-      "guestCta": "Factură fără înregistrare",
-      "dictateCta": "Sau dictați-o – fără înregistrare"
+      "note": "Fără card de credit. Sau săriți peste înregistrare: <write>completați o factură</write> · <voice>dictați una</voice>"
     },
-    "invoiceMockup": {
-      "status": "Plătită",
-      "issuedTo": "Facturat către",
-      "dueDate": "Scadență",
-      "subtotal": "Subtotal",
-      "vat": "TVA 21%",
-      "total": "Total de plată",
-      "isdocTag": "Export ISDOC",
-      "aresTag": "Verificat în ARES",
-      "credit": "Realizat cu Billanta"
+    "heroSlides": {
+      "voice": {
+        "step": "Dictați",
+        "reply": "Ciorna facturii este gata de verificat"
+      },
+      "send": {
+        "step": "Trimiteți",
+        "sent": "Trimisă cu cod QR de plată"
+      },
+      "paid": {
+        "step": "Încasați",
+        "title": "Plată primită",
+        "matched": "Potrivită cu factura 2026-0004"
+      }
     },
     "features": {
       "title": "Tot ce aveți nevoie pentru facturare, într-un singur loc",
@@ -293,7 +299,6 @@
   },
   "dashboard": {
     "title": "Panou de control",
-    "welcome": "Bine ați revenit. Iată o privire de ansamblu asupra facturilor și plăților.",
     "noTenant": "Finalizați mai întâi configurarea firmei, apoi aici va apărea prezentarea generală.",
     "loadError": "Prezentarea generală nu a putut fi încărcată. Încercați să reîmprospătați pagina.",
     "greeting": "Bună ziua, {name}",
@@ -437,8 +442,6 @@
       "title": "Cursuri de schimb ČNB",
       "hint": "Cursul Băncii Naționale Cehe pentru ziua aleasă, folosit la conversia facturilor în valută în CZK. Procentul reprezintă variația față de săptămâna anterioară acelei zile.",
       "customizeTitle": "Valute în cursurile ČNB",
-      "customizeHint": "Alegeți ce valute afișează panoul. Puteți alege orice valută publicată de ČNB.",
-      "source": "Sursa:",
       "weekChange": "Variație în 7 zile",
       "weekShort": "/ săptămână",
       "date": "Ziua",
@@ -454,7 +457,6 @@
     },
     "usage": {
       "title": "Recomandat pe baza utilizării",
-      "hint": "Tot ce lăsați neschimbat se adaptează în continuare. Alegerea dumneavoastră are întotdeauna prioritate.",
       "newAccount": "Încă nu există date, așa că vedeți aspectul de bază.",
       "currencies": "Facturați în {list}",
       "onlyHome": "Facturați doar în {currency}",
@@ -465,7 +467,6 @@
       "proformas": "emiteți proforme",
       "quotes": "trimiteți oferte"
     },
-    "customizeOrderHint": "Trageți de mâner sau folosiți săgețile pentru a schimba ordinea.",
     "dragToReorder": "Trageți pentru a reordona",
     "exportsCta": "Exporturi pentru contabil",
     "emptyHintReadOnly": "Nu există încă documente. După ce firma emite prima factură, aici veți vedea venituri, un grafic și clienți."
@@ -527,7 +528,6 @@
       "customizeTitle": "Filtre rapide",
       "customizeHint": "Alegeți ce etichete apar deasupra listei. O etichetă ascunsă apare totuși cât timp este activă. Se aplică acestui browser.",
       "presetChips": "Selecții rapide",
-      "typeChips": "Tipuri de documente",
       "statusChips": "Stări",
       "presets": {
         "thisMonth": "Luna aceasta",
@@ -703,13 +703,14 @@
       "title": "Nota mea",
       "hint": "O vedeți doar dumneavoastră – se păstrează numai în acest browser, furnizorul nu o vede niciodată.",
       "placeholder": "De ex. aprobată, de plătit până vineri",
-      "saved": "Salvată în acest browser."
+      "saved": "Salvată în acest browser.",
+      "add": "Adăugați o notă privată"
     },
     "paymentMethod": "Metodă de plată",
     "report": {
       "link": "Nu vă așteptați la acest document? Raportați-l",
       "title": "Raportați un document suspect",
-      "hint": "Raportul ajunge la operatorul Billanta, nu la emitent. Dacă mai mulți destinatari raportează un document, suspendăm trimiterea de e-mailuri a emitentului și îl verificăm.",
+      "hint": "Raportul ajunge la operatorul {name}, nu la emitent. Dacă mai mulți destinatari raportează un document, suspendăm trimiterea de e-mailuri a emitentului și îl verificăm.",
       "reason": "Motiv",
       "reasons": {
         "fraud": "Fraudă sau factură falsă",
@@ -734,7 +735,7 @@
     },
     "card": {
       "pay": "Plătiți {amount} cu cardul",
-      "note": "Plata se face prin pagina securizată de plată Stripe. Nici furnizorul, nici Billanta nu văd datele cardului dumneavoastră.",
+      "note": "Plata se face prin pagina securizată de plată Stripe. Nici furnizorul, nici {name} nu văd datele cardului dumneavoastră.",
       "success": "Vă mulțumim, plata cu cardul a fost primită. Factura este marcată ca plătită.",
       "processing": "Verificăm plata. Factura va fi marcată ca plătită imediat ce Stripe o confirmă, de obicei în câteva minute.",
       "cancelled": "Plata cu cardul a fost anulată. Puteți încerca din nou sau plăti prin transfer bancar.",
@@ -748,7 +749,25 @@
     "cta": {
       "question": "Trimiteți și dumneavoastră facturi?",
       "action": "Încercați {name} gratuit"
-    }
+    },
+    "amountDueLabel": "Sumă de plată",
+    "dueOn": "Scadentă la {date}",
+    "validUntilOn": "Valabilă până la {date}",
+    "overdue": "Restantă",
+    "quoteTotalLabel": "Preț total",
+    "totalShortLabel": "Total",
+    "issuedOn": "Emisă la {date}",
+    "pay": {
+      "account": "Număr de cont",
+      "iban": "IBAN",
+      "amount": "Sumă",
+      "copy": "Copiați",
+      "copied": "Copiat",
+      "copyLabel": "Copiați {label}"
+    },
+    "print": "Tipărire / PDF",
+    "downloadPdf": "Descărcați PDF",
+    "downloadPdfShort": "PDF"
   },
   "expenses": {
     "title": "Cheltuieli",
@@ -768,7 +787,6 @@
     "uncategorized": "Fără categorie",
     "form": {
       "title": "Cheltuială nouă",
-      "description": "O factură primită, un bon sau alt cost. Scanarea unei fotografii este calea cea mai rapidă.",
       "supplierNameLabel": "Furnizor",
       "supplierNamePlaceholder": "Numele furnizorului",
       "descriptionLabel": "Descriere",
@@ -778,10 +796,8 @@
       "currencyLabel": "Valută",
       "expenseDateLabel": "Data emiterii / data faptului generator",
       "categoryLabel": "Categorie",
-      "categoryPlaceholder": "de ex. Rechizite de birou",
       "receiptFileUrlLabel": "Link către document (opțional)",
       "receiptFileUrlPlaceholder": "https://…",
-      "receiptFileUrlHint": "Link către documentul din cloud (Google Drive, Dropbox…).",
       "cancel": "Anulați",
       "submit": "Salvați cheltuiala",
       "editTitle": "Editați cheltuiala",
@@ -810,14 +826,13 @@
       "vatBreakdownReverseCharge": "Bază {base}, TVA de autolichidat {vat}",
       "reverseChargeRequiredHint": "Secțiunea B.1 necesită codul de TVA al furnizorului și numărul documentului.",
       "datesSection": "Date și plată",
+      "moreDetails": "Mai multe detalii",
       "dueDateLabel": "Scadență",
       "paidLabel": "Deja plătită",
-      "otherSection": "Altele",
       "noteLabel": "Notă internă (opțional)",
       "saveChanges": "Salvați modificările",
       "saved": "Cheltuiala a fost salvată",
       "saveFailed": "Cheltuiala nu a putut fi salvată",
-      "supplierDicHint": "Pentru declarația de control TVA (secțiunea B.2)",
       "qrCamera": "Scanați QR cu camera",
       "qrHint": "Codurile QR Faktura și codurile QR de plată sunt citite direct din fotografie sau PDF, fără AI.",
       "qrFound": "Datele au fost încărcate din codul QR",
@@ -827,11 +842,9 @@
     },
     "noTenant": "Configurați mai întâi firma.",
     "loadError": "Cheltuielile nu au putut fi încărcate",
-    "fromPhoto": "Scanați un bon",
     "emptyFiltered": "Nicio cheltuială nu corespunde filtrului.",
     "searchPlaceholder": "Căutați furnizor, descriere, număr…",
     "allStates": "Toate",
-    "allCategories": "Toate categoriile",
     "selected": "Selectate: {count}",
     "selectAll": "Selectați tot",
     "clearSelection": "Anulați selecția",
@@ -866,7 +879,6 @@
       "title": "Detalii cheltuială",
       "loadError": "Cheltuiala nu a putut fi încărcată",
       "backToList": "Înapoi la cheltuieli",
-      "badge": "Document primit",
       "unknownSupplier": "Furnizor necunoscut",
       "total": "Total cu TVA",
       "base": "Bază",
@@ -890,7 +902,10 @@
         "paid": "Marcată ca plătită",
         "unpaid": "Marcată ca neplătită",
         "deleted": "Cheltuiala a fost ștearsă"
-      }
+      },
+      "back": "Înapoi",
+      "needsReview": "De verificat",
+      "needsReviewHint": "O regulă bancară a creat această cheltuială dintr-o plată ieșită. Verificați furnizorul, cota de TVA și categoria, apoi salvați-o, iar eticheta dispare."
     },
     "filters": {
       "receipt": "Document",
@@ -902,11 +917,13 @@
         "due": "Scadență",
         "paid": "Plătită"
       }
-    }
+    },
+    "bulkDeleteTitle": "Ștergeți {count, plural, one {# cheltuială} few {# cheltuieli} other {# de cheltuieli}}?",
+    "bulkDeleteBody": "Cheltuielile selectate vor fi șterse definitiv.",
+    "needsReview": "De verificat"
   },
   "bank": {
     "title": "Bancă",
-    "description": "Încărcați un extras de cont (camt.053, GPC sau CSV) și potriviți plățile primite cu facturile emise.",
     "import": {
       "label": "Importați extrasul",
       "selectFile": "Alegeți fișierul extrasului",
@@ -983,7 +1000,9 @@
       "reason": {
         "vs": "VS corespunde",
         "amount": "Suma corespunde",
-        "name": "Numele corespunde"
+        "name": "Numele corespunde",
+        "email": "Același e-mail",
+        "date": "Dată apropiată"
       },
       "outgoingHint": "Plată ieșită – dacă este o cheltuială, înregistrați-o la Cheltuieli și apoi ignorați această tranzacție.",
       "ignoredHint": "Această tranzacție este ignorată și exclusă din potrivire.",
@@ -994,7 +1013,17 @@
       "ignoredDone": "Tranzacția a fost ignorată.",
       "restoredDone": "Tranzacția a revenit la potrivire.",
       "actionFailed": "Acțiunea a eșuat",
-      "message": "Mesaj pentru beneficiar"
+      "message": "Mesaj pentru beneficiar",
+      "paidOn": "plătită",
+      "paidHint": "Deja plătită. Plata este doar asociată, factura nu se modifică.",
+      "linkedDone": "Plata a fost asociată facturii. Factura nu a fost modificată.",
+      "alreadyLinked": "O altă plată este deja asociată acestei facturi.",
+      "createDraft": "Creați o factură din plată",
+      "createDraftHint": "Nu există o factură pentru această plată? O transformăm într-o ciornă de factură pentru verificare. O emiteți dumneavoastră.",
+      "draftDone": "Ciorna facturii a fost creată și asociată plății. Verificați-o și emiteți-o.",
+      "ruleApplied": "Regula „{rule}” a procesat această plată. Puteți modifica regulile la Bancă › Reguli.",
+      "expenseGone": "Cheltuiala din această plată nu mai există sau nu aveți acces la ea.",
+      "expenseNeedsReview": "Cheltuială în așteptarea verificării"
     },
     "connections": {
       "title": "Conexiune bancară",
@@ -1043,7 +1072,9 @@
         "paypal_reporting_disabled": "Aplicația PayPal nu are activată funcția Transaction search. Activați-o în setările aplicației (intrarea în vigoare poate dura câteva ore).",
         "two_factor_required": "Activați mai întâi autentificarea în doi pași în Setări → Securitate.",
         "plan_required": "Această funcție face parte dintr-un plan plătit. Alegeți unul la Plan și facturare.",
-        "history_locked": "Fio oferă mișcările mai vechi de 90 de zile doar după o autorizare puternică în internet banking. Data viitoare pornim de la ultimele 89 de zile."
+        "history_locked": "Fio oferă mișcările mai vechi de 90 de zile doar după o autorizare puternică în internet banking. Data viitoare pornim de la ultimele 89 de zile.",
+        "backfill_range": "Alegeți o zi din trecut.",
+        "backfill_unsupported": "Deocamdată, plățile mai vechi se pot descărca doar din PayPal."
       },
       "psd2": {
         "hint": "Billanta descarcă plățile noi primite direct de la bancă sau din PayPal și le potrivește cu facturile după simbolul variabil și sumă. Fio se conectează cu un token API, PayPal cu datele de acces ale aplicației REST, iar celelalte bănci prin PSD2: vă autentificați la bancă și acordați acces doar pentru citire la cont (până la 180 de zile, la multe bănci 90). Băncile permit doar câteva citiri automate pe zi, de aceea conturile PSD2 se sincronizează aproximativ la fiecare 6 ore. Plățile ieșite nu se descarcă și prin conexiune nu se poate plăti nimic.",
@@ -1059,7 +1090,6 @@
         "personal": "Personal (liber-profesionist)",
         "continue": "Continuați către bancă",
         "note": "Vă autentificați direct la bancă; Billanta nu vede niciodată datele dumneavoastră de acces bancar. Puteți retrage oricând consimțământul deconectând contul sau din internet banking.",
-        "otherBanksAvailable": "Conectați o altă bancă prin Conectați o bancă → Bancă prin PSD2.",
         "expired": "Consimțământ expirat",
         "consentUntil": "consimțământ până la {date}",
         "renew": "Reînnoiți consimțământul",
@@ -1079,7 +1109,15 @@
         "sandbox": "Cont de test (sandbox)",
         "sandboxHint": "Bifați doar pentru cheile PayPal sandbox. Plățile din acesta nu sunt reale.",
         "note": "Plățile primite sunt potrivite cu facturile după numărul facturii sau simbolul variabil din mesaj și după sumă. Comisionul reținut de PayPal se înregistrează pe factură, astfel încât rapoartele arată și venitul net. PayPal publică tranzacțiile cu o întârziere de până la 3 ore.",
-        "connected": "PayPal a fost conectat. Plățile din ultimele 30 de zile sosesc la următoarea sincronizare."
+        "connected": "PayPal a fost conectat. Plățile din ultimele 30 de zile sosesc la următoarea sincronizare.",
+        "moreOptions": "Mai multe opțiuni",
+        "backfill": "Sincronizați de la o dată…",
+        "backfillFrom": "De la",
+        "backfillHint": "PayPal oferă plățile din ultimii 3 ani. Plățile mai vechi sunt doar potrivite cu facturile; nu devin niciodată ciorne de facturi. Ce este deja în Billanta nu se descarcă din nou.",
+        "backfillRun": "Sincronizați",
+        "backfillDone": "{total, plural, one {S-a descărcat # plată mai veche} few {S-au descărcat # plăți mai vechi} other {S-au descărcat # de plăți mai vechi}}, {matched} potrivite.",
+        "backfillNothing": "Nicio plată mai veche nouă. Tot ce are PayPal pentru acea perioadă este deja în Billanta.",
+        "backfillNets": "Am completat suma după conversia valutară pentru {count, plural, one {# plată} few {# plăți} other {# de plăți}}."
       },
       "connectBank": "Conectați o bancă",
       "chooseProvider": "Ce doriți să conectați?",
@@ -1099,7 +1137,45 @@
       },
       "syncPending": "Fio este pregătit. Plățile sosesc la următoarea sincronizare, încercați din nou peste 30 de secunde."
     },
-    "fee": "comision {amount}"
+    "fee": "comision {amount}",
+    "netReceived": "creditat {amount}",
+    "rematch": {
+      "label": "Potriviți din nou",
+      "done": "Am potrivit {matched, plural, one {# plată} few {# plăți} other {# de plăți}} cu facturi emise și am asociat {linked, plural, one {# plată} few {# plăți} other {# de plăți}} cu facturi deja plătite.",
+      "nothing": "Am verificat {checked, plural, one {# plată nepotrivită} few {# plăți nepotrivite} other {# de plăți nepotrivite}}, nicio potrivire nouă.",
+      "failed": "Potrivirea a eșuat ({code})."
+    },
+    "filters": {
+      "source": "Cont",
+      "allSources": "Toate conturile",
+      "upload": "Extrase încărcate",
+      "psd2": "Bancă (PSD2)",
+      "period": "Perioadă",
+      "custom": "Interval personalizat",
+      "direction": "Direcție",
+      "allDirections": "Primite și ieșite",
+      "incoming": "Primite",
+      "outgoing": "Ieșite"
+    },
+    "bulkDraft": "{count, plural, one {Creați o ciornă de factură} few {Creați # ciorne de facturi} other {Creați # de ciorne de facturi}}",
+    "bulkDraftHint": "Creează din fiecare plată primită selectată o ciornă de factură pentru verificare. Nu se emite nimic.",
+    "bulkDraftDone": "Ciorne create: {ok} din {total}. Le găsiți la Facturi, în așteptarea verificării.",
+    "rowMenu": {
+      "label": "Acțiuni pentru plată",
+      "open": "Deschideți",
+      "openNewTab": "Deschideți într-o fereastră nouă",
+      "openInvoice": "Deschideți factura",
+      "findMatch": "Potriviți cu o factură…",
+      "createRule": "Creați o regulă din această plată",
+      "openExpense": "Deschideți cheltuiala"
+    },
+    "rulesLink": "Reguli",
+    "rule": {
+      "ignoredBy": "Ignorată de regula {rule}",
+      "expenseBy": "Cheltuială din regula {rule}",
+      "draftBy": "Ciornă de factură din regula {rule}",
+      "expense": "Potrivită cu o cheltuială"
+    }
   },
   "contacts": {
     "title": "Contacte",
@@ -1114,7 +1190,6 @@
     "unstarred": "Steaua a fost eliminată pentru {name}",
     "starFailed": "Steaua nu a putut fi salvată",
     "invoice": "Factură",
-    "aresVerified": "Verificat în ARES",
     "loadError": "Contactele nu au putut fi încărcate.",
     "newContact": "Contact nou",
     "editor": {
@@ -1175,7 +1250,8 @@
       "phone": "Telefon",
       "vatSuggestYes": "Registrul îl indică drept plătitor de TVA. Setați „Da”?",
       "vatSuggestNo": "Registrul nu îl indică drept plătitor de TVA. Setați „Nu”?",
-      "contactPerson": "Persoană de contact"
+      "contactPerson": "Persoană de contact",
+      "moreDetails": "Mai multe detalii"
     },
     "detail": {
       "title": "Detalii contact",
@@ -1200,7 +1276,6 @@
       "no": "Nu",
       "aresCheck": "Verificat în ARES",
       "lastInvoice": "Ultimul document",
-      "documentCount": "Documente",
       "openAres": "Deschideți în ARES ↗",
       "newInvoice": "Factură nouă",
       "star": "Marcați cu stea",
@@ -1232,7 +1307,8 @@
         "renewed": "Linkul nou a fost creat",
         "disable": "Dezactivați",
         "disabled": "Portalul este dezactivat",
-        "failed": "A apărut o eroare"
+        "failed": "A apărut o eroare",
+        "manage": "Editați linkul"
       },
       "contactPerson": "Persoană de contact"
     },
@@ -1287,6 +1363,7 @@
       "unpaidTitle": "Facturi emise neîncasate"
     },
     "colorFilter": "Culoare",
+    "colorAll": "Toate culorile",
     "colors": {
       "red": "Roșu",
       "orange": "Portocaliu",
@@ -1306,7 +1383,6 @@
     "channels": {
       "title": "Canale conectate",
       "description": "Conectați Telegram sau WhatsApp pentru a crea facturi direct dintr-un mesaj vocal.",
-      "back": "Înapoi la setări",
       "telegram": "Telegram",
       "whatsapp": "WhatsApp",
       "statusLinked": "Conectat",
@@ -1320,7 +1396,6 @@
       "openInTelegram": "Deschideți în Telegram",
       "copy": "Copiați",
       "copied": "Copiat",
-      "expiresNote": "Codul expiră în 10 minute.",
       "expiresAt": "Codul este valabil până la {time}. După conectare, faceți clic pe Gata.",
       "newCode": "Generați un cod nou",
       "done": "Gata",
@@ -1367,7 +1442,8 @@
         "warning": "Copiați cheia acum – nu o veți mai putea vedea. Se stochează doar un prefix scurt pentru identificare.",
         "copy": "Copiați",
         "copied": "Copiat",
-        "done": "Gata"
+        "done": "Gata",
+        "download": "Descărcați"
       },
       "docsHint": "Folosiți-o ca bearer token: Authorization: Bearer <key>. Referința completă a API-ului este în apps/backend/README.md.",
       "loadError": "Cheile API nu au putut fi încărcate.",
@@ -1391,13 +1467,11 @@
     "backup": {
       "title": "Destinații de backup",
       "description": "Alegeți unde se exportă periodic datele firmei – pe propriul server prin SFTP, în Google Drive, printr-un webhook administrat de dumneavoastră sau ca descărcare locală.",
-      "back": "Înapoi la setări",
       "empty": "Nicio destinație de backup configurată încă.",
+      "addTitle": "Adăugați o destinație de backup",
       "columns": {
-        "type": "Tip",
         "schedule": "Programare",
-        "lastRun": "Ultima rulare",
-        "status": "Stare"
+        "lastRun": "Ultima rulare"
       },
       "typeGoogleDrive": "Google Drive",
       "typeWebhook": "Webhook",
@@ -1431,6 +1505,7 @@
       "addWebhook": {
         "button": "Adăugați webhook",
         "title": "Adăugați o destinație webhook",
+        "description": "Trimite datele ca JSON semnat la URL-ul dumneavoastră.",
         "urlLabel": "URL webhook",
         "urlPlaceholder": "https://example.com/faktur-webhook",
         "urlHint": "Datele sunt trimise prin POST la această adresă ca JSON semnat (antetul X-Faktur-Signature).",
@@ -1444,9 +1519,9 @@
         "warning": "Copiați acest secret acum – nu îl veți mai putea vedea. Folosiți-l pentru a verifica antetul X-Faktur-Signature.",
         "copy": "Copiați",
         "copied": "Copiat",
-        "done": "Gata"
+        "done": "Gata",
+        "download": "Descărcați"
       },
-      "docsHint": "Consultați apps/backend/README.md pentru formatul exportului și detaliile verificării semnăturii.",
       "runDone": "Backupul s-a încheiat.",
       "runFailed": "Backupul nu a putut fi finalizat.",
       "pause": "Întrerupeți",
@@ -1544,7 +1619,9 @@
         "account": "Cont și firmă",
         "data": "Date",
         "integrations": "Integrări",
-        "personal": "Contul meu"
+        "personal": "Contul meu",
+        "company": "Firmă",
+        "invoicing": "Facturare"
       },
       "items": {
         "profile": {
@@ -1689,7 +1766,9 @@
         "confirm_mismatch": "Adresa de e-mail de confirmare nu se potrivește.",
         "last_admin": "Sunteți ultimul administrator al {company}. Transferați mai întâi rolul de administrator altui membru.",
         "issued_in_shared": "Ați emis documente în compania comună {company}, așa că nu puteți fi eliminat. Contactați ceilalți membri.",
-        "delete_failed": "Ștergerea nu a reușit, încercați din nou."
+        "delete_failed": "Ștergerea nu a reușit, încercați din nou.",
+        "reauth_required": "Pentru siguranța dumneavoastră, autentificați-vă din nou înainte de această modificare: deconectați-vă, conectați-vă din nou și încercați în cel mult 10 minute.",
+        "too_long": "Parola este prea lungă. Poate avea cel mult 72 de octeți (puțin mai puțin cu caractere cu diacritice)."
       },
       "cancel": "Anulați",
       "emailChange": {
@@ -1875,7 +1954,12 @@
       "dicKeepHint": "Păstrați codul de TVA completat chiar dacă sunteți neplătitor sau persoană identificată. Apare pe documentele dumneavoastră.",
       "dataBoxId": "ID cutie de date (datová schránka)",
       "dataBoxIdHint": "Șapte caractere, de ex. ab12cd3. Nu este secret. Se completează în sinteza anuală pentru ČSSZ.",
-      "icoTrialHint": "Completarea IČO pornește perioada de probă gratuită Plus de {days} zile – fără card, o dată pentru fiecare IČO."
+      "icoTrialHint": "Completarea IČO pornește perioada de probă gratuită Plus de {days} zile – fără card, o dată pentru fiecare IČO.",
+      "taxCountry": "Țara fiscală",
+      "taxCountryValue": "{country} · contabilitate în {currency}",
+      "taxCountryHint": "Stabilește cotele de TVA, moneda contabilității și exporturile. Adresa sediului nu o schimbă. O puteți modifica în configurarea inițială până emiteți prima factură.",
+      "taxCountryLocked": "Țara fiscală nu se mai poate schimba după prima factură emisă.",
+      "taxCountryChange": "Schimbați"
     },
     "team": {
       "title": "Echipă",
@@ -1965,7 +2049,8 @@
         "empty": "Încă nu este nimeni în această regiune.",
         "all": "Catalogul complet de contabili",
         "picked": "{email} a fost completat. Verificați rolul și trimiteți invitația."
-      }
+      },
+      "copyLink": "Copiați linkul"
     },
     "exports": {
       "title": "Exporturi pentru contabil",
@@ -2088,7 +2173,8 @@
         "paidFromSettings": "Completat din avansurile lunare din Date despre afacere. Îl puteți modifica.",
         "uniformRate": "Monedele străine sunt convertite la cursul unic pentru {year} (media cursurilor ČNB de la sfârșitul lunilor). Puteți schimba acest lucru în Setări → Formularul facturii.",
         "titleSk": "Estimarea anuală a impozitului și asigurărilor (liber-profesionist slovac)",
-        "hintSk": "Estimează impozitul pe venit slovac, asigurările de sănătate și sociale din facturile și cheltuielile plătite în cursul anului, în euro."
+        "hintSk": "Estimează impozitul pe venit slovac, asigurările de sănătate și sociale din facturile și cheltuielile plătite în cursul anului, în euro.",
+        "modes": {}
       },
       "epo": {
         "title": "Cum depuneți decontul TVA, declarația de control și declarația recapitulativă",
@@ -2394,7 +2480,20 @@
       "brandCredit": "Afișați „Realizat cu {name}” sub facturi",
       "brandCreditHint": "Un mic link în subsolul PDF-ului, al e-mailului și al facturii online, care îl invită și pe client să încerce aplicația. Planurile plătite îl pot dezactiva.",
       "brandCreditFree": "În planul gratuit, rândul este afișat întotdeauna.",
-      "brandCreditUpgrade": "Treceți la un plan plătit"
+      "brandCreditUpgrade": "Treceți la un plan plătit",
+      "advancedTitle": "Avansat",
+      "advancedSummary": "Cursuri de schimb și formatul linkului facturii",
+      "pdfQr": "Cod QR pe PDF",
+      "pdfQrHint": "Implicit tipărim un cod QR de plată, iar când lipsește un cont în CZK/EUR, un cod QR Faktura. Linkul către factura online deschide o pagină unde clientul poate plăti prin bancă, cu cardul sau în alt mod.",
+      "pdfQrModes": {
+        "auto": "Automat (QR de plată, altfel QR Faktura)",
+        "link": "Link către factura online (toate metodele de plată)",
+        "payment_only": "Doar QR de plată",
+        "off": "Fără cod QR"
+      },
+      "paymentDraftLine": "Descrierea articolului pentru ciornele create din plăți",
+      "paymentDraftLineHint": "Se folosește când o plată (de exemplu din PayPal) nu conține denumiri de articole. De exemplu „Servicii software” sau „Consultanță”.",
+      "paymentDraftLinePlaceholder": "Plată PayPal"
     },
     "modules": {
       "title": "Module și tip de activitate",
@@ -2548,7 +2647,7 @@
       "textsHint": "Câmp gol = textul implicit (afișat cu gri). Variabilele dintre acolade sunt înlocuite cu date reale la trimitere.",
       "kinds": {
         "invoice": "Factură",
-        "reminder": "Reminder"
+        "reminder": "Reamintire"
       },
       "subject": "Subiect",
       "message": "Text introductiv",
@@ -2581,7 +2680,8 @@
       "previewFromAddress": "fakturace@billanta.cz",
       "previewReplyTo": "Răspuns către",
       "previewNote": "Date exemplificative. E-mailul real poate arăta ușor diferit într-un client de e-mail.",
-      "moreVars": "Mai multe variabile →"
+      "moreVars": "Mai multe variabile →",
+      "bccHintNoEmail": "Copia merge la e-mailul firmei – acesta nu este încă completat în Datele firmei."
     },
     "variables": {
       "title": "Variabile",
@@ -3317,7 +3417,8 @@
         "already_enabled": "Autentificarea în doi pași este deja activă.",
         "not_enabled": "Autentificarea în doi pași nu este activă.",
         "not_signed_in": "Sesiunea a expirat. Vă rugăm să vă conectați din nou."
-      }
+      },
+      "download": "Descărcați"
     },
     "emailNotifications": {
       "title": "Notificări prin e-mail",
@@ -4057,7 +4158,11 @@
       "manualTitle": "Instalați aplicația",
       "manualBody": "Deschideți meniul browserului (⋮ sau ⋯) și alegeți „Instalează aplicația” sau „Adaugă pe ecranul principal”. În Chrome și Edge pe desktop există și o pictogramă de instalare în dreapta barei de adrese.",
       "ok": "Am înțeles"
-    }
+    },
+    "close": "Închideți",
+    "showPassword": "Afișați parola",
+    "hidePassword": "Ascundeți parola",
+    "moreActions": "Mai multe acțiuni"
   },
   "municipalityPages": {
     "regionLabel": "Regiune",
@@ -4113,7 +4218,13 @@
     "explore": "Explorați",
     "language": "Limbă",
     "appearance": "Aspect",
-    "create": "Creați"
+    "create": "Creați",
+    "groupWork": "Lucru",
+    "groupAccount": "Cont",
+    "groupProduct": "Produs",
+    "groupResources": "Resurse",
+    "groupPartners": "Contabili și parteneri",
+    "groupHelp": "Ajutor"
   },
   "pricing": {
     "title": "Prețuri",
@@ -4407,6 +4518,7 @@
     "lead": "Scrieți, alegeți din sugestii sau descrieți factura într-o propoziție și lăsați-o să se completeze.",
     "ai": {
       "title": "Precompletare cu AI",
+      "short": "Cu AI",
       "hint": "Scrieți sau dictați factura cu propriile cuvinte, de ex. „factură pentru 27604977, 3 ore de consultanță la 1500, scadență în 14 zile”. AI completează clientul (verificat în ARES), articolele și scadența. Nu se salvează nimic până nu verificați și salvați formularul.",
       "placeholder": "de ex. factură Dvořák & Partners, 2× training la 4.500 CZK, scadență în 30 de zile",
       "run": "Precompletați",
@@ -4464,13 +4576,21 @@
       "unitPriceGross": "Preț unitar cu TVA",
       "lineTotalGross": "Total cu TVA"
     },
+    "preview": {
+      "title": "Previzualizare",
+      "empty": "Încă niciun articol",
+      "noCustomer": "Alegeți un client"
+    },
     "totals": {
       "base": "Subtotal",
       "vat": "TVA",
       "total": "Total",
       "alreadyPaid": "Deja plătit",
       "alreadyPaidHint": "Un avans sau o plată primită în prealabil – ca sumă sau ca procent din total. O sumă plătită integral marchează factura ca plătită după emitere.",
-      "remaining": "Rămas de plată"
+      "remaining": "Rămas de plată",
+      "alreadyPaidAdd": "Clientul a plătit deja (integral sau parțial)",
+      "paidInFull": "Suma integrală",
+      "paidFullNote": "După emitere, factura este marcată ca plătită."
     },
     "cancel": "Anulați",
     "save": "Salvați ciorna",
@@ -4496,6 +4616,7 @@
     },
     "copy": {
       "title": "Precompletați dintr-o altă factură",
+      "short": "Dintr-o factură",
       "hint": "Copiază clientul, articolele, valuta, plata, contul, limba, notele și câmpurile personalizate. Numărul, datele și plățile nu se copiază, iar scadența urmează termenul dumneavoastră implicit.",
       "latest": "Din ultima factură",
       "other": "Dintr-o altă factură…",
@@ -4776,6 +4897,7 @@
       "total": "Fără TVA"
     },
     "actions": {
+      "more": "Mai mult",
       "open": "Deschideți",
       "edit": "Editați",
       "issue": "Emiteți",
@@ -4800,7 +4922,8 @@
       "ublHint": "Și ca fișier de factură electronică UBL (Peppol BIS 3.0) pentru clienții din Slovacia. Trimiterea prin rețeaua Peppol, pe care legislația slovacă o impune de la 1 ianuarie 2027, este în pregătire.",
       "duplicateToFix": "Factură nouă cu corectura",
       "rotateLink": "Link nou pentru client",
-      "editAnyway": "Editați oricum"
+      "editAnyway": "Editați oricum",
+      "markPaidShort": "Plătită"
     },
     "confirm": {
       "back": "Înapoi",
@@ -4827,7 +4950,9 @@
       "editAnywayTitle": "Doar o mică corectură?",
       "editAnywayBody": "O greșeală de tastare sau un detaliu lipsă se pot corecta direct. Numărul rămâne, iar modificarea intră în istoric împreună cu motivul dumneavoastră. Dacă clientul are deja documentul, trimiteți-l din nou.",
       "editAnywayPlaceholder": "Motivul, de ex. o greșeală în adresă",
-      "editAnywayNeedsReason": "Introduceți mai întâi un motiv"
+      "editAnywayNeedsReason": "Introduceți mai întâi un motiv",
+      "bulkDeleteTitle": "Ștergeți {count, plural, one {# ciornă} few {# ciorne} other {# de ciorne}}?",
+      "bulkDeleteBody": "Ciornele șterse nu pot fi restaurate."
     },
     "done": {
       "issued": "Document emis",
@@ -4849,12 +4974,9 @@
     "fxLabelManual": "Curs de schimb",
     "fxHidden": "Conversia în {home} nu este tipărită pe document (curs {rate} {pair} doar pentru rapoarte).",
     "views": {
-      "title": "Link partajat",
-      "count": "Vizualizat",
       "times": "{count, plural, one {o dată} few {de # ori} other {de # de ori}}",
-      "first": "Prima dată",
-      "last": "Ultima dată",
-      "none": "Clientul nu a deschis încă linkul facturii."
+      "opened": "Deschisă de client",
+      "notYet": "încă nu"
     },
     "filters": {
       "title": "Filtre",
@@ -4892,7 +5014,6 @@
       "customRange": "Interval personalizat",
       "dateBy": "După dată",
       "quickRanges": "Intervale rapide ({field})",
-      "anyDate": "Orice dată",
       "item": "Articol",
       "itemPlaceholder": "Textul sau codul articolului",
       "paidState": "Plată",
@@ -4965,7 +5086,9 @@
         "communication": "Trimitere și răspunsul clientului",
         "content": "Conținutul documentului",
         "origin": "Proveniență și legături"
-      }
+      },
+      "anyType": "Toate documentele",
+      "statusLabel": "Stare"
     },
     "remindersSent": "{count, plural, one {# reminder trimis} few {# remindere trimise} other {# de remindere trimise}}, ultimul la {date}.",
     "attachments": {
@@ -4992,7 +5115,8 @@
       "title": "Răspunsul clientului",
       "accepted": "A acceptat oferta",
       "rejected": "A respins oferta",
-      "waiting": "Încă niciun răspuns. Clientul poate accepta sau respinge oferta în portal (linkul clientului)."
+      "waiting": "Încă niciun răspuns. Clientul poate accepta sau respinge oferta în portal (linkul clientului).",
+      "waitingShort": "Încă niciun răspuns."
     },
     "partial": {
       "paid": "Plătit {amount}",
@@ -5178,7 +5302,6 @@
     "noEmail": "fără e-mail",
     "issueDate": "Data emiterii",
     "issueNow": "Emiteți imediat (atribuiți numere)",
-    "issueNowHint": "Altfel se creează ciorne pe care le verificați înainte de emitere.",
     "summary": "Se vor crea <b>{count, plural, one {# document} few {# documente} other {# de documente}}</b> în valoare totală de <b>{total}</b> fără TVA.",
     "submitDrafts": "Creați {count, plural, one {# ciornă} few {# ciorne} other {# de ciorne}}",
     "submitIssue": "Emiteți {count, plural, one {# document} few {# documente} other {# de documente}}",
@@ -5221,7 +5344,8 @@
       "shortcuts": "Comenzi rapide de la tastatură"
     },
     "pages": {
-      "templates": "Șabloane de facturi"
+      "templates": "Șabloane de facturi",
+      "netIncome": "După impozite (venit net)"
     },
     "keywords": {
       "newInvoice": "emitere creare adăugare document",
@@ -5355,7 +5479,8 @@
     "flatRate": "Cheltuieli forfetare",
     "rate": "forfetar {rate} %",
     "noFlat": "fără cotă forfetară",
-    "hint": "Estimare aproximativă pentru un liber-profesionist ceh: suma fără TVA minus impozitul pe venit (15 %) și asigurările sociale și de sănătate pentru această factură – circa {burden}. Folosește cota forfetară aleasă și ignoră avansurile minime și reducerile de impozit. Pentru întregul an, consultați Exporturi."
+    "hint": "Estimare aproximativă pentru un liber-profesionist ceh: suma fără TVA minus impozitul pe venit (15 %) și asigurările sociale și de sănătate pentru această factură – circa {burden}. Folosește cota forfetară aleasă și ignoră avansurile minime și reducerile de impozit. Pentru întregul an, consultați Exporturi.",
+    "hintCosts": "Se scad și comisioanele de plată și pierderea din conversie ({costs}). Dacă aplicați cheltuieli forfetare, aceste costuri nu reduc impozitul, deoarece procentul forfetar acoperă deja toate cheltuielile."
   },
   "welcome": {
     "title": "Bun venit în Billanta",
@@ -5369,7 +5494,6 @@
     "businessHint": "Activăm modulele potrivite.",
     "modulesTitle": "Ce doriți să folosiți?",
     "modulesHint": "Facturarea este mereu activă. Restul îl puteți activa sau dezactiva.",
-    "later": "Puteți schimba oricând în Setări → Module.",
     "skip": "Săriți",
     "finish": "Gata, să facturăm",
     "saved": "Totul este pregătit",
@@ -5391,7 +5515,12 @@
       "claim": "Aduceți în cont",
       "dismiss": "Renunțați la ele",
       "bannerHint": "Le-ați creat în acest browser fără cont. Le salvăm ca documente emise, iar clienții drept contacte."
-    }
+    },
+    "countryQuestion": "Unde este înregistrată afacerea dumneavoastră?",
+    "countryHint": "Țara stabilește cotele de TVA, moneda contabilității și registrele în care căutăm. Nu se mai poate schimba după prima factură emisă.",
+    "countrySoon": "În curând",
+    "countryLocked": "Țara este fixată, deoarece ați emis deja o factură.",
+    "countryNotSupported": "Această țară nu este încă acceptată."
   },
   "registry": {
     "label": "Registrul firmelor",
@@ -6350,13 +6479,6 @@
     "seoDescription": "Creați gratuit o factură online, fără cont. Completați furnizorul, clientul și articolele și descărcați un PDF cu cod QR de plată. Nu stocăm nimic.",
     "heading": "Factură online fără înregistrare",
     "lead": "Completați datele și descărcați factura gata făcută în PDF. Fără cont, fără e-mail, iar factura nu o stocăm.",
-    "points": [
-      "PDF cu plată prin cod QR",
-      "Datele firmei din ARES",
-      "Completare cu AI",
-      "Plătitori și neplătitori de TVA",
-      "Cehă, slovacă, engleză"
-    ],
     "sections": {
       "document": "Document",
       "supplier": "Furnizor (dumneavoastră)",
@@ -6389,7 +6511,11 @@
       "unitPrice": "Preț unitar",
       "vatRate": "TVA",
       "note": "Notă pe factură",
-      "taxableSupplyDate": "Data faptului generator"
+      "taxableSupplyDate": "Data faptului generator",
+      "accountWithCode": "Număr de cont / cod bancă",
+      "paymentLabel": "Denumirea metodei de plată",
+      "paymentInstructions": "Unde se plătește",
+      "swift": "SWIFT (BIC)"
     },
     "hints": {
       "vatPayer": "Bifați doar dacă sunteți înregistrat în scopuri de TVA. Factura va afișa atunci TVA-ul, data faptului generator și defalcarea pe cote.",
@@ -6398,14 +6524,21 @@
       "number": "Cu un cont, numerele facturilor urmează automat seria dumneavoastră de numerotare.",
       "duzp": "Data livrării impozabile. De obicei coincide cu data emiterii.",
       "qr": "Transformăm numărul de cont într-o plată prin cod QR; clientul doar îl scanează în aplicația băncii.",
-      "foreign": "Sfat: pentru un client din UE adăugați codul său de TVA. Cu un cont îl verificăm în VIES și găsim firma în registrele străine."
+      "foreign": "Sfat: pentru un client din UE adăugați codul său de TVA. Cu un cont îl verificăm în VIES și găsim firma în registrele străine.",
+      "account": "Lipiți tot contul deodată, de ex. 19-123456789/0100 sau un IBAN – îl împărțim în număr și cod de bancă. Din cont rezultă o plată QR pe care clientul doar o scanează în aplicația bancară.",
+      "lookup": "Începeți să scrieți numele firmei, IČO sau codul de TVA. Căutăm în registrul ceh ARES, în registrul slovac al persoanelor juridice (RPO) și în VIES al UE. Alegeți un rezultat, iar adresa, IČO și codul de TVA se completează.",
+      "paymentInstructions": "Se tipărește pe factură lângă metoda de plată, ca clientul să știe unde să trimită banii.",
+      "swift": "Identificatorul băncii pentru plăți din străinătate. Pentru principalele bănci cehe și slovace îl completăm din codul băncii, așa că îl puteți lăsa gol."
     },
     "methods": {
       "bank_transfer": "Transfer bancar",
       "cash": "Numerar",
       "card": "Card",
       "cash_on_delivery": "Ramburs",
-      "other": "Altă metodă"
+      "other": "Altă metodă",
+      "paypal": "PayPal",
+      "revolut": "Revolut",
+      "offset": "Compensare"
     },
     "addItem": "Adăugați articol",
     "removeItem": "Eliminați articolul",
@@ -6456,13 +6589,19 @@
     "placeholders": {
       "hours": "De ex. Dezvoltare web – septembrie",
       "goods": "De ex. Cană ceramică 0,3 l",
-      "project": "De ex. Design logo și identitate vizuală"
+      "project": "De ex. Design logo și identitate vizuală",
+      "paymentLabel": "de ex. Stripe, voucher, barter",
+      "instructions": {
+        "paypal": "jan@example.com sau paypal.me/jan",
+        "revolut": "@jan sau revolut.me/jan",
+        "other": "Unde și cum se plătește"
+      },
+      "iban": "CZ65 0800 0000 1920 0014 5399"
     },
     "dueIn": "{days} zile",
     "ares": {
       "found": "Preluat din ARES",
-      "notFound": "Nu s-a găsit nicio firmă cu acest IČO",
-      "unavailable": "Registrul nu este disponibil momentan, completați datele manual."
+      "notFound": "Nu s-a găsit nicio firmă cu acest IČO"
     },
     "ai": {
       "title": "Completare cu AI",
@@ -6525,7 +6664,6 @@
     },
     "account": {
       "title": "Vreți să vă păstrați facturile și să le trimiteți prin e-mail?",
-      "body": "Un cont gratuit vă oferă o privire de ansamblu asupra facturilor, clienți din registrul comerțului, remindere și plăți prin cod QR. Această factură o puteți face și fără cont.",
       "signup": "Creați un cont gratuit",
       "login": "Conectare",
       "signedIn": "Sunteți conectat. Puteți salva factura direct în aplicație.",
@@ -6583,7 +6721,16 @@
       "forget": "Uitați-le",
       "signupNote": "După înregistrare, preluăm facturile create în acest browser fără cont: numerotarea continuă, iar clienții se salvează ca contacte.",
       "where": "Le păstrează doar acest browser și le șterge după 90 de zile – pe un calculator partajat folosiți Uitați-le."
-    }
+    },
+    "lookup": {
+      "placeholder": "Numele firmei sau IČO – restul îl completăm noi"
+    },
+    "requiredLegend": "Un asterisc * marchează ce trebuie să conțină acest document.",
+    "addIbanSwift": "Adăugați IBAN și SWIFT",
+    "moreDoc": "Tipul documentului și metoda de plată",
+    "addNote": "Adăugați o notă pe factură",
+    "quantityLess": "Cu unul mai puțin",
+    "quantityMore": "Cu unul mai mult"
   },
   "publicProfile": {
     "services": "Servicii",
@@ -6672,8 +6819,7 @@
       "week": "Săptămâna aceasta",
       "unbilled": "Nefacturat",
       "unbilledHours": "{hours} h de facturat",
-      "projects": "Proiecte active",
-      "projectsSub": "Tarife și clienți"
+      "projects": "Proiecte active"
     },
     "period": {
       "week": "Săptămâna aceasta",
@@ -6770,7 +6916,7 @@
   },
   "clientPortal": {
     "title": "Documente pentru {name}",
-    "lead": "Facturi și oferte de la {company} într-un singur loc – deschideți un document pentru codul QR de plată și PDF",
+    "lead": "Atingeți un document pentru a vedea detaliile de plată.",
     "outstanding": "Rest de plată",
     "overdueOf": "din care {amount} restant",
     "allPaid": "Totul este plătit, vă mulțumim.",
@@ -6807,7 +6953,6 @@
   },
   "reports": {
     "pageTitle": "Rapoarte",
-    "pageLead": "Venituri, costuri și profit pentru orice perioadă, comparate cu perioada anterioară.",
     "exportsLink": "Exporturi pentru contabil și autorități →",
     "noTenant": "Mai întâi configurați o firmă sau o activitate.",
     "loadError": "Raportul nu a putut fi încărcat.",
@@ -6916,13 +7061,13 @@
       "failed": "Nu s-a putut salva: {reason}",
       "notUsed": "încă nefolosit",
       "notVatPayer": "neplătitor de TVA",
-      "orderHint": "Ordinea de aici este ordinea cardurilor din raport. Trageți de mâner sau folosiți săgețile pentru a o schimba.",
       "moveUp": "Mutați mai devreme",
       "moveDown": "Mutați mai târziu",
       "dragToReorder": "Trageți pentru a reordona"
     },
     "flatTaxLink": "Merită impozitul forfetar? →",
-    "taxReturnLink": "Rezumatul declarației fiscale"
+    "taxReturnLink": "Rezumatul declarației fiscale",
+    "netIncomeLink": "După impozite"
   },
   "siteSearch": {
     "title": "Căutați pe site",
@@ -7404,13 +7549,11 @@
     "signupCta": "Începeți gratuit",
     "notStated": "– = nu este menționat în lista de prețuri (nu înseamnă că lipsește)",
     "verified": "Verificat după listele de prețuri din {date}",
-    "sourcesTitle": "Surse",
     "brand": {
       "suitsUsTitle": "Când Billanta este alegerea mai bună",
       "suitsThemTitle": "Când {brand} are mai mult sens",
       "priceTitle": "Preț",
       "tableTitle": "Billanta și {brand}, punct cu punct",
-      "source": "Sursa: lista de prețuri {brand}",
       "versus": "Billanta vs. {brand}",
       "importCta": "Cum funcționează importul",
       "faqTitle": "Întrebări frecvente",
@@ -7858,7 +8001,8 @@
       "czOnlyTextAlt": "„{name}” se referă la regulile din Cehia. Pentru liber-profesioniștii din Slovacia există un calculator separat, după regulile slovace.",
       "noLiability": "Rezultatul nu este însoțit de nicio garanție și nu răspundem pentru deciziile luate pe baza lui.",
       "noWarranty": "Rezultatul are caracter informativ și nu este însoțit de nicio garanție. Verificați detaliile înainte de a le folosi.",
-      "invoiceCtaTemplates": "Modele de facturi de completat online"
+      "invoiceCtaTemplates": "Modele de facturi de completat online",
+      "toc": "Cuprins"
     },
     "calculators": {
       "indexTitle": "Calculatoare și instrumente pentru firme",
@@ -7888,7 +8032,8 @@
             "tax": "Impozit pe venit după deducere",
             "social": "Asigurări sociale",
             "health": "Asigurări de sănătate"
-          }
+          },
+          "fields": {}
         },
         "flatTax": {
           "name": "Merită impozitul forfetar?",
@@ -7904,7 +8049,9 @@
             "flatRate": "Activitatea principală",
             "children": "Numărul de copii (bonificație pentru copii)",
             "spouse": "Deducere pentru soț/soție (partenerul câștigă până la 68 000 CZK, copil sub 3 ani)",
-            "vatPayer": "Sunt plătitor de TVA"
+            "vatPayer": "Sunt plătitor de TVA",
+            "spouseInfo": "Doar dacă partenerul câștigă cel mult 68 000 CZK pe an și în gospodărie locuiește un copil sub 3 ani.",
+            "childrenInfo": "Reducerea de impozit pentru copiii întreținuți care locuiesc în gospodăria dumneavoastră."
           },
           "rates": {
             "30": "Închirierea bunurilor din activitate (30 %, până la {cap} CZK)",
@@ -9180,7 +9327,8 @@
     "profileLink": {
       "body": "Sunteți contabil? Înscrierea în director și cererea pentru programul de parteneriat se află în Profilul de contabil.",
       "cta": "Deschideți Profilul de contabil"
-    }
+    },
+    "shareMore": "Cod QR și insigne pentru site"
   },
   "partners": {
     "title": "Parteneri",
@@ -9222,6 +9370,10 @@
       "exports": {
         "title": "Exporturi pentru contabilitate",
         "body": "Deconturi de TVA și declarații de control, ISDOC și CSV, fără să retranscrieți nimic."
+      },
+      "included": {
+        "title": "Inclus în planul clientului",
+        "body": "Începând cu planul Start, accesul contabilului face parte din planul clientului. Nu plătiți nimic pentru el."
       },
       "credits": {
         "title": "Credite pentru clienți",
@@ -9338,7 +9490,8 @@
     "ctaBody": "Billanta urmărește scadențele, plățile prin QR și exporturile pentru contabil. Începeți gratuit.",
     "ctaButton": "Creați un cont gratuit",
     "aiAuto": "Acest articol a fost scris de AI pe baza datelor noastre și a fost verificat doar automat înainte de publicare. Dacă observați o greșeală, <contact>anunțați-ne</contact>.",
-    "aiReviewed": "Acest articol a fost redactat cu ajutorul AI și verificat de o persoană înainte de publicare. Dacă observați o greșeală, <contact>anunțați-ne</contact>."
+    "aiReviewed": "Acest articol a fost redactat cu ajutorul AI și verificat de o persoană înainte de publicare. Dacă observați o greșeală, <contact>anunțați-ne</contact>.",
+    "toc": "Cuprins"
   },
   "adminBlog": {
     "title": "Blog",
@@ -9761,7 +9914,8 @@
     "invalid": "Folosiți litere, cifre sau cratime.",
     "failed": "Nu s-a putut salva",
     "copy": "Copiați",
-    "copied": "Linkul a fost copiat"
+    "copied": "Linkul a fost copiat",
+    "rename": "Redenumiți linkul"
   },
   "demo": {
     "cta": "Încercați demo-ul",
@@ -9781,43 +9935,6 @@
         "empty": "Doriți să începeți de la zero? Alegeți o firmă goală și mutați-vă munca în propriul cont după înregistrare."
       },
       "pick": "Alegeți un tip de firmă",
-      "rolesTitle": "Vedeți aplicația prin ochii întregii echipe",
-      "rolesLead": "În demo schimbați vizualizarea cu o singură alegere în bara de sus. Fiecare rol vede exact ce ar vedea într-o firmă reală.",
-      "tryTitle": "Ce să încercați în demo",
-      "try": {
-        "invoices": {
-          "title": "Factură cu plată prin QR",
-          "text": "Emiteți o factură, descărcați PDF-ul și distribuiți un link cu cod QR."
-        },
-        "payments": {
-          "title": "Plăți și plăți parțiale",
-          "text": "Marcați o factură ca plătită sau înregistrați o plată parțială."
-        },
-        "reminders": {
-          "title": "Facturi scadente",
-          "text": "Vedeți ce este după scadență și cum arată un reminder."
-        },
-        "expenses": {
-          "title": "Cheltuieli",
-          "text": "Înregistrați o factură primită și urmăriți cheltuielile pe categorii."
-        },
-        "vat": {
-          "title": "TVA și rapoarte",
-          "text": "Decontul TVA și declarația de control din aceleași date."
-        },
-        "accountant": {
-          "title": "Vizualizarea contabilului",
-          "text": "Exporturi pentru contabil și ce poate face un contabil în firmă."
-        },
-        "team": {
-          "title": "Echipă și roluri",
-          "text": "Treceți la un coleg cu acces doar la citire și încercați să modificați ceva."
-        },
-        "quotes": {
-          "title": "Oferte și facturi proforme",
-          "text": "Transformați o ofertă în proformă și apoi în factură finală."
-        }
-      },
       "allFeatures": "Toate funcțiile",
       "faqTitle": "Întrebări despre demo",
       "faq": [
@@ -10352,7 +10469,8 @@
     "suspendedDone": "Școala a fost suspendată.",
     "unsuspended": "Școala a fost restabilită.",
     "failed": "Eșuat",
-    "rejectConfirm": "Respingeți {name}? Clasele sale se încheie și rămân doar pentru citire timp de 30 de zile, iar persoana este eliminată din celelalte clase."
+    "rejectConfirm": "Respingeți {name}? Clasele sale se încheie și rămân doar pentru citire timp de 30 de zile, iar persoana este eliminată din celelalte clase.",
+    "manage": "Gestionați"
   },
   "offline": {
     "offline": "Offline",
@@ -11371,7 +11489,8 @@
       "businessPreset": "Tipul de afacere",
       "presetNone": "lăsați-i să aleagă",
       "defaultLocale": "Limba paginii",
-      "localeVisitor": "a vizitatorului"
+      "localeVisitor": "a vizitatorului",
+      "moreDetails": "Mai multe setări"
     },
     "errors": {
       "code_taken": "Acest cod există deja.",
@@ -12029,7 +12148,6 @@
     "title": "Rezumat pentru declarația de impozit {year}",
     "titleSk": "Rezumat pentru declarația de impozit {year} (Slovacia)",
     "back": "Rapoarte",
-    "lead": "Veniturile, cheltuielile și cheltuielile forfetare pentru anul fiscal din propriile documente, termenele de depunere și o estimare orientativă a impozitului. Gratuit în orice plan.",
     "notAdvice": "Acesta este un rezumat al propriilor documente pentru pregătirea declarației de impozit pe venit, nu consultanță fiscală. Verificați cifrele înainte de depunere, dacă este nevoie împreună cu un contabil sau un consultant fiscal.",
     "noTenant": "Completați mai întâi datele de facturare ale firmei.",
     "loadError": "Rezumatul nu a putut fi încărcat. Încercați din nou peste câteva momente.",
@@ -12141,7 +12259,6 @@
     "noteEstimate": "Estimarea folosește doar reducerea de bază pentru contribuabil, fără alte reduceri, deduceri sau alte venituri (salariu, chirie).",
     "noteEstimateSk": "Estimarea folosește doar deducerea personală de bază, fără alte deduceri, bonusul pentru copii sau alte venituri.",
     "noteData": "Cifrele provin doar din documentele din aplicație. Adăugați singur veniturile și cheltuielile care nu sunt aici (numerar fără document, alte activități).",
-    "disclaimer": "Acest rezumat are doar caracter informativ, este oferit fără garanție și nu înlocuiește un consultant fiscal sau un contabil. Răspunderea pentru ceea ce depuneți vă aparține.",
     "nudge": {
       "title": "Declarația de impozit pentru {year}",
       "body": "Veniturile din {year}, cheltuielile pe categorii, forfetele și termenele sunt pregătite din documentele dumneavoastră. PDF și CSV pentru contabil, gratuit.",
@@ -12206,8 +12323,6 @@
       },
       "calculatorsTitle": "Calculatoare fiscale",
       "calculatorsLead": "Fără înregistrare: impozitul și contribuțiile pentru liber-profesioniștii din Cehia și Slovacia, comparația cu impozitul forfetar și avansurile minime.",
-      "ctaTitle": "Un rezumat din propriile facturi",
-      "ctaBody": "Când facturați în Billanta, baza pentru declarație este gata fără să retastați nimic. Adăugați doar ce nu se află în aplicație.",
       "faqTitle": "Întrebări frecvente",
       "faq": [
         {
@@ -13589,5 +13704,268 @@
     "privacyTitle": "Date personale",
     "privacyBody": "Operatorul menționat mai sus este operatorul datelor dumneavoastră personale. Politica de confidențialitate explică ce date prelucrăm și cum vă puteți exercita drepturile (acces, rectificare, ștergere și altele).",
     "legalTitle": "Documente juridice"
+  },
+  "netIncome": {
+    "title": "După impozite",
+    "intro": "Ce rămâne din facturile plătite după impozitul pe venit, asigurările sociale și de sănătate și cheltuielile comune. Și pentru mai mulți parteneri care își împart venitul.",
+    "back": "Rapoarte",
+    "noTenant": "Creați mai întâi o firmă.",
+    "loadError": "Calculul nu a putut fi încărcat. Vă rugăm să încercați din nou.",
+    "notSupported": "Calculul după impozite urmează deocamdată doar regulile cehe (cheltuieli forfetare, ČSSZ, casa de asigurări de sănătate).",
+    "periodKindLabel": "Perioadă",
+    "periodKind": {
+      "month": "Lună",
+      "quarter": "Trimestru",
+      "year": "An"
+    },
+    "prev": "Perioada anterioară",
+    "next": "Perioada următoare",
+    "quarterLabel": "T{q} {year}",
+    "missingRates": "{count, plural, one {# factură nu are curs de schimb și este omisă.} few {# facturi nu au curs de schimb și sunt omise.} other {# de facturi nu au curs de schimb și sunt omise.}}",
+    "cards": {
+      "income": "Venit total",
+      "taxes": "Impozit și asigurări",
+      "afterTaxes": "După impozite",
+      "net": "Venit net"
+    },
+    "creditsHint": {
+      "month": "O lună folosește 1/12 din reducerile de impozit anuale și 1/12 din plafonul cheltuielilor forfetare. Impozitul real se stabilește pentru tot anul, așa că lunile adunate pot să nu dea anul.",
+      "quarter": "Un trimestru folosește 1/4 din reducerile de impozit anuale și 1/4 din plafonul cheltuielilor forfetare. Impozitul real se stabilește pentru tot anul.",
+      "year": "Un an folosește reducerile de impozit anuale întregi și plafonul întreg al cheltuielilor forfetare, ca în declarația fiscală."
+    },
+    "table": {
+      "title": "Calcul",
+      "titlePartners": "Calcul pe parteneri",
+      "metric": "Element",
+      "share": "cotă {percent} %",
+      "total": "Total",
+      "income": "Venit",
+      "flatExpenses": "Cheltuieli forfetare",
+      "base": "Baza de impozitare",
+      "taxBeforeCredits": "Impozit înainte de reduceri",
+      "credits": "Reduceri de impozit",
+      "incomeTax": "Impozit pe venit",
+      "social": "Asigurări sociale",
+      "health": "Asigurări de sănătate",
+      "taxes": "Impozit și asigurări în total",
+      "sharedExpenses": "Cheltuieli comune",
+      "net": "Venit net"
+    },
+    "formula": "Baza = venit − {flat} % cheltuieli forfetare. Impozit {tax} % din bază, asigurări sociale {socialRate} % din {socialBase} % din bază, asigurări de sănătate {healthRate} % din {healthBase} % din bază.",
+    "estimateNote": "O estimare aproximativă: fără avansuri minime, fără cota de impozit de 23 % și fără rotunjirea bazei. Nu înlocuiește declarația fiscală și nici declarațiile anuale.",
+    "partnerFallback": "Partener {n}",
+    "partnerMe": "Eu",
+    "months": {
+      "title": "Pe luni",
+      "hint": "Fiecare lună calculată separat, cu 1/12 din reducerile de impozit. Util pentru compararea lunilor.",
+      "month": "Lună",
+      "income": "Venit",
+      "taxes": "Impozit și asigurări",
+      "net": "Venit net"
+    },
+    "list": {
+      "title": "Venituri în perioadă ({count})",
+      "hint": "Facturi plătite după data plății, plus alte venituri din setări. Pentru o factură în valută se ia suma care a ajuns efectiv în cont (de ex. după conversia în PayPal), altfel cursul de schimb.",
+      "hintVat": "Facturi plătite după data plății, fără TVA, plus alte venituri din setări. Pentru o factură în valută se ia suma care a ajuns efectiv în cont, altfel cursul de schimb.",
+      "empty": "Nicio factură plătită în această perioadă.",
+      "show": "Afișați toate veniturile ({count})",
+      "paidOn": "plătită la {date}",
+      "source": {
+        "czk": "în CZK",
+        "received": "primit efectiv",
+        "converted": "convertit la curs"
+      },
+      "extra": "alt venit",
+      "splitLabel": "Cui aparține factura {number}",
+      "saved": "Împărțirea a fost salvată.",
+      "failed": "Împărțirea nu a putut fi salvată."
+    },
+    "shares": {
+      "default": "Cote implicite",
+      "alone": "Doar {name}",
+      "custom": "Raport propriu…",
+      "apply": "Aplicați raportul"
+    },
+    "config": {
+      "title": "Setările calculului",
+      "readOnly": "Doar proprietarul firmei sau un administrator poate modifica setările.",
+      "rates": "Cote",
+      "fields": {
+        "flat_expense_percent": "Cheltuieli forfetare",
+        "flat_expense_cap": "Plafon forfetar anual pe persoană",
+        "income_tax_percent": "Impozit pe venit",
+        "social_rate_percent": "Asigurări sociale",
+        "social_base_percent": "Baza de calcul – asigurări sociale",
+        "health_rate_percent": "Asigurări de sănătate",
+        "health_base_percent": "Baza de calcul – asigurări de sănătate"
+      },
+      "ratesHintLabel": "De ce 55 % la asigurările sociale?",
+      "ratesHint": "Din 2024, baza asigurărilor sociale cehe este 55 % din profit (înainte 50 %), iar baza asigurărilor de sănătate rămâne 50 %. Plafonul pentru cheltuielile forfetare de 60 % este de 1 200 000 CZK pe an; lăsați câmpul gol pentru niciun plafon.",
+      "partners": "Parteneri",
+      "partnersHint": "Fiecare partener este impozitat separat pentru cota sa. Cota este un raport: 1, 1, 1 înseamnă câte o treime fiecare, 1 și 2 înseamnă o treime și două treimi.",
+      "partnerName": "Nume",
+      "partnerShare": "Cotă",
+      "partnerCredits": "Reduceri de impozit anuale",
+      "partnerFallback": "Partener {n}",
+      "addPartner": "Adăugați partener",
+      "remove": "Eliminați",
+      "creditsHintLabel": "Ce intră la reduceri?",
+      "creditsHint": "Suma reducerilor de impozit anuale: 30 840 CZK pentru contribuabil, plus soț/soție, copii și altele, unde se aplică. Reducerile pot scădea impozitul cel mult până la zero.",
+      "sharedExpenses": "Cheltuieli comune",
+      "sharedExpensesHint": "Costuri ale afacerii (chirie, software…) scăzute din venitul net după raport. Nu modifică baza de impozitare, care rezultă din cheltuielile forfetare.",
+      "label": "Descriere",
+      "amount": "Sumă",
+      "per": "Pe",
+      "perMonth": "lună",
+      "perYear": "an",
+      "splitOf": "Cui aparține {label}",
+      "addExpense": "Adăugați cheltuială",
+      "extraIncome": "Alte venituri",
+      "extraIncomeHint": "Venituri care nu sunt facturi, de ex. din comisioane și câștiguri de curs valutar. Se impozitează la fel ca facturile.",
+      "date": "Dată",
+      "addExtra": "Adăugați venit",
+      "save": "Salvați setările",
+      "saved": "Setările au fost salvate.",
+      "resetRates": "Cote implicite"
+    },
+    "errors": {
+      "duplicate_partner": "Doi parteneri au același id. Eliminați unul și adăugați-l din nou.",
+      "shares_must_be_positive": "Cel puțin o cotă trebuie să fie peste zero.",
+      "generic": "Setările nu au putut fi salvate. Verificați numerele și încercați din nou."
+    },
+    "noAccess": {
+      "title": "Doar pentru proprietari și administratori",
+      "body": "Raportul după impozite arată venitul și impozitele fiecărui partener, așa că îl pot vedea doar proprietarul firmei și administratorii."
+    }
+  },
+  "bankRules": {
+    "title": "Reguli pentru plăți",
+    "intro": "Ce se întâmplă cu o plată care nu s-a potrivit cu nicio factură. Regulile rulează după fiecare import și sincronizare, doar pentru plățile noi nepotrivite. Potrivirea cu o factură are mereu prioritate.",
+    "backToBank": "Înapoi la bancă",
+    "noTenant": "Alegeți sau creați mai întâi o firmă.",
+    "loadError": "Regulile nu au putut fi încărcate.",
+    "newRule": "Regulă nouă",
+    "empty": "Încă nicio regulă",
+    "emptyHint": "De exemplu: înregistrați plățile către operatorul de telefonie ca cheltuieli, ignorați comisioanele bancare. Puteți porni o regulă și din meniul unei plăți.",
+    "list": {
+      "order": "Regulile se încearcă de sus în jos și se folosește prima care se potrivește unei plăți.",
+      "enabled": "Regulă activă",
+      "off": "Oprită",
+      "moveUp": "Mutați în sus",
+      "moveDown": "Mutați în jos",
+      "edit": "Editați",
+      "delete": "Ștergeți",
+      "enabledDone": "Regula a fost activată.",
+      "disabledDone": "Regula a fost dezactivată."
+    },
+    "field": {
+      "counterparty_name": "Contraparte",
+      "counterparty_account": "Contul sau e-mailul plătitorului",
+      "message": "Mesaj pentru beneficiar",
+      "variable_symbol": "Simbol variabil",
+      "any": "Orice câmp"
+    },
+    "operator": {
+      "contains": "conține",
+      "equals": "este exact",
+      "regex": "corespunde expresiei regulate"
+    },
+    "direction": {
+      "any": "Primite și ieșite",
+      "in": "Primite",
+      "out": "Ieșite"
+    },
+    "summary": {
+      "between": "sumă {min}–{max}",
+      "atLeast": "sumă de la {min}",
+      "atMost": "sumă până la {max}",
+      "and": " și ",
+      "or": " sau "
+    },
+    "action": {
+      "ignore": "Ignorați",
+      "draft_expense": "Creați o cheltuială de verificat",
+      "draft_invoice": "Creați o ciornă de factură"
+    },
+    "actionHint": {
+      "ignore": "Plata este marcată ca ignorată. O puteți readuce oricând la potrivire.",
+      "draft_expense": "Doar plăți ieșite. Creează o cheltuială cu eticheta De verificat, asociată plății.",
+      "draft_invoice": "Doar plăți primite. Creează o ciornă de factură de verificat. Emiterea rămâne mereu decizia dumneavoastră."
+    },
+    "form": {
+      "titleNew": "Regulă nouă",
+      "titleEdit": "Editați regula",
+      "name": "Nume",
+      "namePlaceholder": "De ex. Vodafone – telefon",
+      "conditions": "Condiții",
+      "conditionsHint": "La „conține” și „este exact” nu contează majusculele și diacriticele. Direcția, moneda și suma trebuie să corespundă întotdeauna.",
+      "field": "Câmp",
+      "operator": "Comparație",
+      "value": "Valoare",
+      "valuePlaceholder": "De ex. Vodafone",
+      "addCondition": "Adăugați o condiție",
+      "removeCondition": "Eliminați condiția",
+      "advanced": "Avansat: expresii regulate",
+      "regexHint": "O expresie regulată (JavaScript, fără diferență între majuscule și minuscule), de cel mult 200 de caractere. De ex. ^VODAFONE sau factura \\d+/2026. Tiparele care ar putea rula extrem de mult (repetări imbricate ca (a+)+, referințe înapoi, lookahead-uri) nu pot fi salvate.",
+      "direction": "Direcție",
+      "currency": "Monedă",
+      "currencyAny": "Oricare",
+      "minAmount": "Sumă de la",
+      "maxAmount": "Sumă până la",
+      "amountHint": "Sumele se compară fără semn, deci o plată ieșită de 500 contează ca 500.",
+      "action": "Ce să se facă",
+      "category": "Categoria cheltuielii",
+      "categoryNone": "Fără categorie",
+      "contact": "Client",
+      "contactNone": "După e-mailul plătitorului",
+      "enabled": "Regula este activă",
+      "cancel": "Anulați",
+      "save": "Salvați",
+      "saveAndApply": "Salvați și aplicați plăților existente",
+      "saved": "Regula a fost salvată.",
+      "created": "Regula a fost creată.",
+      "textMatch": "Cum se combină condițiile",
+      "textMatchAll": "Toate condițiile trebuie îndeplinite (ȘI)",
+      "textMatchAny": "Ajunge o singură condiție (SAU)"
+    },
+    "preview": {
+      "title": "Previzualizare",
+      "count": "{count, plural, one {# plată nepotrivită corespunde} few {# plăți nepotrivite corespund} other {# de plăți nepotrivite corespund}} acestei reguli.",
+      "loading": "Se numără…",
+      "incomplete": "Adăugați cel puțin o condiție ca să vedeți ce plăți ar afecta regula.",
+      "more": "și încă {count}",
+      "onlyUnmatched": "Previzualizarea arată doar plățile care sunt acum nepotrivite. Deocamdată nu se schimbă nimic."
+    },
+    "apply": {
+      "button": "Aplicați plăților existente",
+      "confirmTitle": "Aplicați regula „{name}” plăților existente?",
+      "what": {
+        "ignore": "Vor fi marcate ca ignorate.",
+        "draft_expense": "Fiecare devine o cheltuială de verificat.",
+        "draft_invoice": "Fiecare devine o ciornă de factură de verificat."
+      },
+      "rematchFirst": "Mai întâi vom încerca încă o dată să potrivim plățile cu facturile.",
+      "done": "Regula a fost aplicată la {applied, plural, one {# plată} few {# plăți} other {# de plăți}}.",
+      "doneMore": "Regula a fost aplicată la {applied, plural, one {# plată} few {# plăți} other {# de plăți}}. Au mai rămas {remaining}, rulați-o din nou.",
+      "nothing": "Momentan nicio plată nepotrivită nu corespunde acestei reguli."
+    },
+    "delete": {
+      "title": "Ștergeți regula?",
+      "body": "Regula „{name}” va fi ștearsă. Plățile pe care le-a procesat deja rămân neschimbate.",
+      "confirm": "Ștergeți",
+      "done": "Regula a fost ștearsă."
+    },
+    "errors": {
+      "generic": "Nu a funcționat",
+      "rule_needs_condition": "Adăugați cel puțin o condiție de text sau de sumă. Doar direcția ar acoperi toate plățile.",
+      "invalid_amount_range": "„Sumă de la” trebuie să fie mai mică sau egală cu „Sumă până la”.",
+      "invalid_regex": "Expresia regulată nu este validă sau are mai mult de 200 de caractere.",
+      "unsafe_regex": "Această expresie regulată ar putea rula prea mult. Simplificați-o (fără repetări imbricate, referințe înapoi sau lookahead-uri, cel mult două * sau +).",
+      "action_needs_outgoing": "Cheltuielile pot proveni doar din plăți ieșite. Setați direcția la Ieșite.",
+      "action_needs_incoming": "Ciornele de facturi pot proveni doar din plăți primite. Setați direcția la Primite.",
+      "contact_not_found": "Clientul ales nu mai există.",
+      "bank_rule_not_found": "Regula nu mai există.",
+      "forbidden": "Nu aveți permisiunea să modificați regulile."
+    }
   }
 }

@@ -36,7 +36,17 @@
     "label": "Nyelv",
     "cs": "Čeština",
     "sk": "Slovenčina",
-    "en": "English"
+    "en": "English",
+    "de": "Deutsch",
+    "pl": "Polski",
+    "uk": "Українська",
+    "hu": "Magyar",
+    "ro": "Română",
+    "fr": "Français",
+    "es": "Español",
+    "it": "Italiano",
+    "nl": "Nederlands",
+    "pt": "Português"
   },
   "marketing": {
     "nav": {
@@ -69,26 +79,22 @@
       "title": "Számlázás cseh és szlovák vállalkozásoknak, papírmunka nélkül",
       "subtitle": "Állítson ki számlát hangüzenettel Telegramon vagy WhatsAppon, exportálja ISDOC formátumba, és legyen nyugodt: minden egyezik az ARES adataival és a hatályos előírásokkal.",
       "cta": "Ingyenes fiók létrehozása",
-      "secondaryCta": "Nézze meg, hogyan működik",
-      "eyebrow": "Számlázás CZ és SK vállalkozásoknak",
-      "points": {
-        "isdoc": "ISDOC export",
-        "ares": "ARES-lekérdezés",
-        "qr": "QR-fizetés"
-      },
-      "guestCta": "Számla regisztráció nélkül",
-      "dictateCta": "Vagy mondja tollba – regisztráció nélkül"
+      "note": "Bankkártya nem kell. Vagy regisztráció nélkül: <write>töltsön ki egy számlát</write> · <voice>diktálja be</voice>"
     },
-    "invoiceMockup": {
-      "status": "Fizetve",
-      "issuedTo": "Vevő",
-      "dueDate": "Fizetési határidő",
-      "subtotal": "Részösszeg",
-      "vat": "ÁFA 21%",
-      "total": "Fizetendő összesen",
-      "isdocTag": "ISDOC export",
-      "aresTag": "ARES-ben ellenőrizve",
-      "credit": "Made with Billanta"
+    "heroSlides": {
+      "voice": {
+        "step": "Diktálás",
+        "reply": "A számlapiszkozat ellenőrzésre kész"
+      },
+      "send": {
+        "step": "Küldés",
+        "sent": "Elküldve QR-kódos fizetéssel"
+      },
+      "paid": {
+        "step": "Kifizetés",
+        "title": "Beérkező fizetés",
+        "matched": "Párosítva a 2026-0004 számlával"
+      }
     },
     "features": {
       "title": "Minden, ami a számlázáshoz kell, egy helyen",
@@ -293,7 +299,6 @@
   },
   "dashboard": {
     "title": "Áttekintés",
-    "welcome": "Üdvözöljük újra. Íme egy gyors áttekintés számláiról és befizetéseiről.",
     "noTenant": "Először fejezze be a cég beállítását, utána itt jelenik meg az áttekintés.",
     "loadError": "Az áttekintést nem sikerült betölteni. Próbálja frissíteni az oldalt.",
     "greeting": "Üdvözöljük, {name}",
@@ -437,8 +442,6 @@
       "title": "ČNB árfolyamok",
       "hint": "A Cseh Nemzeti Bank árfolyama a kiválasztott napra, a devizás számlák CZK-ra való átváltásához. A százalék az adott napot megelőző hét változása.",
       "customizeTitle": "Pénznemek a ČNB árfolyamokban",
-      "customizeHint": "Válassza ki, mely pénznemek jelenjenek meg az áttekintésben. Bármely, a ČNB által közzétett pénznemet választhat.",
-      "source": "Forrás:",
       "weekChange": "Változás 7 nap alatt",
       "weekShort": "/ hét",
       "date": "Nap",
@@ -454,7 +457,6 @@
     },
     "usage": {
       "title": "Ajánlás a használat alapján",
-      "hint": "Amit változatlanul hagy, az tovább alkalmazkodik. A saját választása mindig elsőbbséget élvez.",
       "newAccount": "Itt még nincs semmi, ezért az alapelrendezést látja.",
       "currencies": "Ezekben számláz: {list}",
       "onlyHome": "Csak {currency} pénznemben számláz",
@@ -465,7 +467,6 @@
       "proformas": "díjbekérőket állít ki",
       "quotes": "árajánlatokat küld"
     },
-    "customizeOrderHint": "A sorrend módosításához húzza a fogantyúnál fogva, vagy használja a nyilakat.",
     "dragToReorder": "Húzza az átrendezéshez",
     "exportsCta": "Exportok a könyvelőnek",
     "emptyHintReadOnly": "Még nincsenek dokumentumok. Amint a cég kiállítja első számláját, itt láthatja a bevételeket, a grafikont és a vevőket."
@@ -527,7 +528,6 @@
       "customizeTitle": "Gyorsszűrők",
       "customizeHint": "Válassza ki, mely címkék jelenjenek meg a lista felett. Az elrejtett címke aktív állapotban továbbra is látszik. Erre a böngészőre vonatkozik.",
       "presetChips": "Gyors választás",
-      "typeChips": "Dokumentumtípusok",
       "statusChips": "Állapotok",
       "presets": {
         "thisMonth": "Ez a hónap",
@@ -703,13 +703,14 @@
       "title": "Saját megjegyzés",
       "hint": "Csak Ön látja – kizárólag ebben a böngészőben tároljuk, a szállító soha nem látja.",
       "placeholder": "Pl. jóváhagyva, péntekig kifizetni",
-      "saved": "Elmentve ebben a böngészőben."
+      "saved": "Elmentve ebben a böngészőben.",
+      "add": "Saját megjegyzés hozzáadása"
     },
     "paymentMethod": "Fizetési mód",
     "report": {
       "link": "Nem várta ezt a bizonylatot? Jelentse",
       "title": "Gyanús bizonylat jelentése",
-      "hint": "A bejelentés a Billanta üzemeltetőjéhez kerül, nem a kiállítóhoz. Ha egy bizonylatot több címzett is jelent, felfüggesztjük a kiállító e-mail-küldését, és kivizsgáljuk.",
+      "hint": "A bejelentés a {name} üzemeltetőjéhez kerül, nem a kiállítóhoz. Ha egy bizonylatot több címzett is jelent, felfüggesztjük a kiállító e-mail-küldését, és kivizsgáljuk.",
       "reason": "Ok",
       "reasons": {
         "fraud": "Csalás vagy hamis számla",
@@ -734,7 +735,7 @@
     },
     "card": {
       "pay": "{amount} kifizetése kártyával",
-      "note": "A fizetés a Stripe biztonságos fizetési oldalán zajlik. Sem a szállító, sem a Billanta nem látja a kártyaadatait.",
+      "note": "A fizetés a Stripe biztonságos fizetési oldalán zajlik. Sem a szállító, sem a {name} nem látja a kártyaadatait.",
       "success": "Köszönjük, a kártyás fizetés megérkezett. A számla kifizetettként van megjelölve.",
       "processing": "Ellenőrizzük a fizetést. A számla kifizetettként jelölődik, amint a Stripe megerősíti, általában néhány percen belül.",
       "cancelled": "A kártyás fizetés megszakadt. Megpróbálhatja újra, vagy fizethet banki átutalással.",
@@ -748,7 +749,25 @@
     "cta": {
       "question": "Ön is küld számlákat?",
       "action": "Próbálja ki ingyen: {name}"
-    }
+    },
+    "amountDueLabel": "Fizetendő összeg",
+    "dueOn": "Esedékes: {date}",
+    "validUntilOn": "Érvényes: {date}",
+    "overdue": "Lejárt",
+    "quoteTotalLabel": "Teljes ár",
+    "totalShortLabel": "Összesen",
+    "issuedOn": "Kiállítva: {date}",
+    "pay": {
+      "account": "Számlaszám",
+      "iban": "IBAN",
+      "amount": "Összeg",
+      "copy": "Másolás",
+      "copied": "Kimásolva",
+      "copyLabel": "Másolás: {label}"
+    },
+    "print": "Nyomtatás / PDF",
+    "downloadPdf": "PDF letöltése",
+    "downloadPdfShort": "PDF"
   },
   "expenses": {
     "title": "Költségek",
@@ -768,7 +787,6 @@
     "uncategorized": "Kategória nélkül",
     "form": {
       "title": "Új költség",
-      "description": "Beérkezett számla, nyugta vagy egyéb költség. A leggyorsabb egy fénykép beolvasása.",
       "supplierNameLabel": "Szállító",
       "supplierNamePlaceholder": "Szállító neve",
       "descriptionLabel": "Leírás",
@@ -778,10 +796,8 @@
       "currencyLabel": "Pénznem",
       "expenseDateLabel": "Kiállítás / teljesítés dátuma",
       "categoryLabel": "Kategória",
-      "categoryPlaceholder": "pl. Irodaszer",
       "receiptFileUrlLabel": "Bizonylat linkje (nem kötelező)",
       "receiptFileUrlPlaceholder": "https://…",
-      "receiptFileUrlHint": "Link a felhőben tárolt dokumentumhoz (Google Drive, Dropbox…).",
       "cancel": "Mégse",
       "submit": "Költség mentése",
       "editTitle": "Költség szerkesztése",
@@ -810,14 +826,13 @@
       "vatBreakdownReverseCharge": "Alap {base}, önadózással megállapítandó ÁFA {vat}",
       "reverseChargeRequiredHint": "A B.1 szakaszhoz szükséges a szállító közösségi adószáma és a bizonylatszám.",
       "datesSection": "Dátumok és fizetés",
+      "moreDetails": "További adatok",
       "dueDateLabel": "Fizetési határidő",
       "paidLabel": "Már kifizetve",
-      "otherSection": "Egyéb",
       "noteLabel": "Belső megjegyzés (nem kötelező)",
       "saveChanges": "Módosítások mentése",
       "saved": "Költség elmentve",
       "saveFailed": "A költséget nem sikerült menteni",
-      "supplierDicHint": "Az ÁFA-összesítő jelentéshez (B.2 szakasz)",
       "qrCamera": "QR-kód beolvasása kamerával",
       "qrHint": "A QR-számlát (QR Faktura) és a QR fizetési kódokat közvetlenül a fényképből vagy PDF-ből olvassuk ki, AI nélkül.",
       "qrFound": "Adatok betöltve a QR-kódból",
@@ -827,11 +842,9 @@
     },
     "noTenant": "Először állítsa be a cégét.",
     "loadError": "A költségeket nem sikerült betölteni",
-    "fromPhoto": "Bizonylat beolvasása",
     "emptyFiltered": "Egyetlen költség sem felel meg a szűrőnek.",
     "searchPlaceholder": "Keresés szállító, leírás, szám szerint…",
     "allStates": "Mind",
-    "allCategories": "Minden kategória",
     "selected": "Kijelölve: {count}",
     "selectAll": "Összes kijelölése",
     "clearSelection": "Kijelölés törlése",
@@ -866,7 +879,6 @@
       "title": "Költség részletei",
       "loadError": "A költséget nem sikerült betölteni",
       "backToList": "Vissza a költségekhez",
-      "badge": "Beérkezett bizonylat",
       "unknownSupplier": "Ismeretlen szállító",
       "total": "Bruttó végösszeg",
       "base": "Adóalap",
@@ -890,7 +902,10 @@
         "paid": "Kifizetettként megjelölve",
         "unpaid": "Kifizetetlenként megjelölve",
         "deleted": "Költség törölve"
-      }
+      },
+      "back": "Vissza",
+      "needsReview": "Ellenőrizendő",
+      "needsReviewHint": "Ezt a költséget egy banki szabály hozta létre egy kimenő fizetésből. Ellenőrizze a szállítót, az ÁFA-kulcsot és a kategóriát, majd mentse el, és a címke eltűnik."
     },
     "filters": {
       "receipt": "Bizonylat",
@@ -902,11 +917,13 @@
         "due": "Fizetési határidő",
         "paid": "Kifizetve"
       }
-    }
+    },
+    "bulkDeleteTitle": "Törli a kijelölt {count, plural, one {# költséget} other {# költséget}}?",
+    "bulkDeleteBody": "A kijelölt költségek véglegesen törlődnek.",
+    "needsReview": "Ellenőrizendő"
   },
   "bank": {
     "title": "Bank",
-    "description": "Töltsön fel bankszámlakivonatot (camt.053, GPC vagy CSV), és párosítsa a beérkező befizetéseket a kiállított számlákkal.",
     "import": {
       "label": "Kivonat importálása",
       "selectFile": "Kivonatfájl kiválasztása",
@@ -983,7 +1000,9 @@
       "reason": {
         "vs": "VS egyezik",
         "amount": "Összeg egyezik",
-        "name": "Név egyezik"
+        "name": "Név egyezik",
+        "email": "Azonos e-mail",
+        "date": "Közeli dátum"
       },
       "outgoingHint": "Kimenő fizetés – ha költségről van szó, rögzítse a Költségek között, majd hagyja figyelmen kívül ezt a tranzakciót.",
       "ignoredHint": "Ez a tranzakció figyelmen kívül van hagyva, és kimarad a párosításból.",
@@ -994,7 +1013,17 @@
       "ignoredDone": "A tranzakció figyelmen kívül hagyva.",
       "restoredDone": "A tranzakció visszakerült a párosításhoz.",
       "actionFailed": "A művelet nem sikerült",
-      "message": "Közlemény a kedvezményezettnek"
+      "message": "Közlemény a kedvezményezettnek",
+      "paidOn": "kifizetve",
+      "paidHint": "Már ki van fizetve. A fizetést csak hozzákapcsoljuk, a számla nem változik.",
+      "linkedDone": "A fizetés hozzá van kapcsolva a számlához. A számla nem változott.",
+      "alreadyLinked": "Ehhez a számlához már egy másik fizetés kapcsolódik.",
+      "createDraft": "Számla létrehozása a fizetésből",
+      "createDraftHint": "Nincs számla ehhez a fizetéshez? Ellenőrzésre váró számlapiszkozatot készítünk belőle. A kiállítás mindig az Ön dolga.",
+      "draftDone": "A számlapiszkozat elkészült, és hozzá van kapcsolva a fizetéshez. Ellenőrizze, majd állítsa ki.",
+      "ruleApplied": "Ezt a fizetést a(z) „{rule}” szabály kezelte. A szabályokat a Bank › Szabályok menüben módosíthatja.",
+      "expenseGone": "A fizetésből készült költség már nem létezik, vagy nincs jogosultsága megtekinteni.",
+      "expenseNeedsReview": "Ellenőrzésre váró költség"
     },
     "connections": {
       "title": "Bankkapcsolat",
@@ -1043,7 +1072,9 @@
         "paypal_reporting_disabled": "A PayPal alkalmazásban nincs bekapcsolva a Transaction search. Kapcsolja be az alkalmazás beállításaiban (az érvénybe lépés néhány órát is igénybe vehet).",
         "two_factor_required": "Először kapcsolja be a kétlépcsős azonosítást a Beállítások → Biztonság menüben.",
         "plan_required": "Ez a funkció a fizetős csomag része. Válasszon egyet a Csomag és számlázás menüben.",
-        "history_locked": "A Fio a 90 napnál régebbi tételeket csak az internetbankban végzett erős hitelesítés után adja ki. Legközelebb az utolsó 89 nappal kezdünk."
+        "history_locked": "A Fio a 90 napnál régebbi tételeket csak az internetbankban végzett erős hitelesítés után adja ki. Legközelebb az utolsó 89 nappal kezdünk.",
+        "backfill_range": "Válasszon egy múltbeli napot.",
+        "backfill_unsupported": "Régebbi fizetéseket egyelőre csak a PayPalból lehet letölteni."
       },
       "psd2": {
         "hint": "A Billanta letölti az új beérkező befizetéseket közvetlenül a bankjából vagy a PayPalról, és változó szimbólum és összeg alapján párosítja őket a számlákkal. A Fio API-tokennel, a PayPal a REST-alkalmazása hitelesítő adataival, a többi bank PSD2-n keresztül csatlakozik: Ön bejelentkezik a bankjába, és csak olvasási hozzáférést ad a számlához (legfeljebb 180 napra, sok banknál 90-re). A bankok naponta csak néhány felügyelet nélküli lekérdezést engedélyeznek, ezért a PSD2-számlák kb. 6 óránként szinkronizálódnak. A kimenő fizetéseket nem töltjük le, és a kapcsolaton keresztül semmit sem lehet kifizetni.",
@@ -1059,7 +1090,6 @@
         "personal": "Magán (egyéni vállalkozó)",
         "continue": "Tovább a bankhoz",
         "note": "Közvetlenül a bankjánál jelentkezik be; a Billanta soha nem látja a banki belépési adatait. A hozzájárulást bármikor visszavonhatja a számla leválasztásával vagy az internetbankban.",
-        "otherBanksAvailable": "Másik bankot a Bank csatlakoztatása → Bank PSD2-n keresztül menüpontban kapcsolhat össze.",
         "expired": "A hozzájárulás lejárt",
         "consentUntil": "hozzájárulás érvényes: {date}",
         "renew": "Hozzájárulás megújítása",
@@ -1079,7 +1109,15 @@
         "sandbox": "Tesztfiók (sandbox)",
         "sandboxHint": "Csak PayPal sandbox kulcsok esetén jelölje be. Az ottani befizetések nem valódiak.",
         "note": "A beérkezett befizetéseket a közleményben szereplő számlaszám vagy változó szimbólum, valamint az összeg alapján párosítjuk a számlákkal. A PayPal által levont díjat a számlán könyveljük, így a kimutatások a nettó bevételt is mutatják. A PayPal legfeljebb 3 órás késéssel teszi közzé a tranzakciókat.",
-        "connected": "PayPal csatlakoztatva. Az utolsó 30 nap befizetései a következő szinkronizáláskor érkeznek meg."
+        "connected": "PayPal csatlakoztatva. Az utolsó 30 nap befizetései a következő szinkronizáláskor érkeznek meg.",
+        "moreOptions": "További lehetőségek",
+        "backfill": "Szinkronizálás egy dátumtól…",
+        "backfillFrom": "Ettől",
+        "backfillHint": "A PayPal legfeljebb 3 évre visszamenőleg adja ki a fizetéseket. A régebbi fizetéseket csak számlákkal párosítjuk, számlapiszkozat soha nem készül belőlük. Ami már szerepel a Billantában, azt nem töltjük le újra.",
+        "backfillRun": "Szinkronizálás",
+        "backfillDone": "{total, plural, one {# régebbi fizetés} other {# régebbi fizetés}} letöltve, ebből {matched} párosítva.",
+        "backfillNothing": "Nincs új régebbi fizetés. Minden, amit a PayPal erre az időszakra kínál, már a Billantában van.",
+        "backfillNets": "{count, plural, one {# fizetésnél} other {# fizetésnél}} kitöltöttük a pénzváltás utáni összeget."
       },
       "connectBank": "Bank csatlakoztatása",
       "chooseProvider": "Mit szeretne csatlakoztatni?",
@@ -1099,7 +1137,45 @@
       },
       "syncPending": "A Fio készen áll. A befizetések a következő szinkronizáláskor érkeznek, próbálja újra 30 másodperc múlva."
     },
-    "fee": "díj {amount}"
+    "fee": "díj {amount}",
+    "netReceived": "jóváírva: {amount}",
+    "rematch": {
+      "label": "Újrapárosítás",
+      "done": "{matched, plural, one {# fizetés} other {# fizetés}} párosítva kiállított számlákkal, {linked, plural, one {# fizetés} other {# fizetés}} hozzákapcsolva már kifizetett számlákhoz.",
+      "nothing": "{checked, plural, one {# párosítatlan fizetés} other {# párosítatlan fizetés}} ellenőrizve, új egyezés nincs.",
+      "failed": "A párosítás nem sikerült ({code})."
+    },
+    "filters": {
+      "source": "Számla",
+      "allSources": "Minden számla",
+      "upload": "Feltöltött kivonatok",
+      "psd2": "Bank (PSD2)",
+      "period": "Időszak",
+      "custom": "Egyéni időszak",
+      "direction": "Irány",
+      "allDirections": "Beérkező és kimenő",
+      "incoming": "Beérkező",
+      "outgoing": "Kimenő"
+    },
+    "bulkDraft": "{count, plural, one {Számlapiszkozat létrehozása} other {# számlapiszkozat létrehozása}}",
+    "bulkDraftHint": "Minden kijelölt beérkező fizetésből ellenőrzésre váró számlapiszkozatot készít. Semmit nem állít ki.",
+    "bulkDraftDone": "Létrehozott piszkozatok: {ok} / {total}. A Számlák között találja őket, ellenőrzésre várva.",
+    "rowMenu": {
+      "label": "Műveletek a fizetéssel",
+      "open": "Megnyitás",
+      "openNewTab": "Megnyitás új ablakban",
+      "openInvoice": "Számla megnyitása",
+      "findMatch": "Párosítás számlával…",
+      "createRule": "Szabály létrehozása ebből a fizetésből",
+      "openExpense": "Költség megnyitása"
+    },
+    "rulesLink": "Szabályok",
+    "rule": {
+      "ignoredBy": "Figyelmen kívül hagyva a(z) {rule} szabály alapján",
+      "expenseBy": "Költség a(z) {rule} szabály alapján",
+      "draftBy": "Számlapiszkozat a(z) {rule} szabály alapján",
+      "expense": "Költséggel párosítva"
+    }
   },
   "contacts": {
     "title": "Partnerek",
@@ -1114,7 +1190,6 @@
     "unstarred": "{name} csillaga eltávolítva",
     "starFailed": "A csillagot nem sikerült menteni",
     "invoice": "Számlázás",
-    "aresVerified": "ARES-ben ellenőrizve",
     "loadError": "A partnereket nem sikerült betölteni.",
     "newContact": "Új partner",
     "editor": {
@@ -1175,7 +1250,8 @@
       "phone": "Telefon",
       "vatSuggestYes": "A nyilvántartás szerint ÁFA-alany. Beállítja „Igen” értékre?",
       "vatSuggestNo": "A nyilvántartás szerint nem ÁFA-alany. Beállítja „Nem” értékre?",
-      "contactPerson": "Kapcsolattartó"
+      "contactPerson": "Kapcsolattartó",
+      "moreDetails": "További adatok"
     },
     "detail": {
       "title": "Partner adatai",
@@ -1200,7 +1276,6 @@
       "no": "Nem",
       "aresCheck": "ARES-ben ellenőrizve",
       "lastInvoice": "Utolsó dokumentum",
-      "documentCount": "Dokumentumok",
       "openAres": "Megnyitás az ARES-ben ↗",
       "newInvoice": "Új számla",
       "star": "Csillag",
@@ -1232,7 +1307,8 @@
         "renewed": "Új link létrehozva",
         "disable": "Kikapcsolás",
         "disabled": "A portál ki van kapcsolva",
-        "failed": "Hiba történt"
+        "failed": "Hiba történt",
+        "manage": "Link szerkesztése"
       },
       "contactPerson": "Kapcsolattartó"
     },
@@ -1287,6 +1363,7 @@
       "unpaidTitle": "Kifizetetlen kiállított számlák"
     },
     "colorFilter": "Szín",
+    "colorAll": "Minden szín",
     "colors": {
       "red": "Piros",
       "orange": "Narancs",
@@ -1306,7 +1383,6 @@
     "channels": {
       "title": "Összekapcsolt csatornák",
       "description": "Kapcsolja össze a Telegramot vagy a WhatsAppot, és hozzon létre számlát közvetlenül hangüzenetből.",
-      "back": "Vissza a beállításokhoz",
       "telegram": "Telegram",
       "whatsapp": "WhatsApp",
       "statusLinked": "Összekapcsolva",
@@ -1320,7 +1396,6 @@
       "openInTelegram": "Megnyitás Telegramban",
       "copy": "Másolás",
       "copied": "Másolva",
-      "expiresNote": "A kód 10 perc múlva lejár.",
       "expiresAt": "A kód érvényessége: {time}. Az összekapcsolás után kattintson a Kész gombra.",
       "newCode": "Új kód generálása",
       "done": "Kész",
@@ -1367,7 +1442,8 @@
         "warning": "Másolja ki a kulcsot most – később már nem láthatja. Azonosításhoz csak egy rövid előtagot tárolunk.",
         "copy": "Másolás",
         "copied": "Másolva",
-        "done": "Kész"
+        "done": "Kész",
+        "download": "Letöltés"
       },
       "docsHint": "Bearer tokenként használja: Authorization: Bearer <key>. A teljes API-leírást az apps/backend/README.md tartalmazza.",
       "loadError": "Nem sikerült betölteni az API-kulcsokat.",
@@ -1391,13 +1467,11 @@
     "backup": {
       "title": "Biztonsági mentés célhelyei",
       "description": "Válassza ki, hová exportáljuk ütemezetten a cége adatait – saját szerverére SFTP-n, a Google Drive-ra, saját webhookra vagy helyi letöltésként.",
-      "back": "Vissza a beállításokhoz",
       "empty": "Még nincs beállítva célhely a biztonsági mentéshez.",
+      "addTitle": "Mentési célhely hozzáadása",
       "columns": {
-        "type": "Típus",
         "schedule": "Ütemezés",
-        "lastRun": "Utolsó futás",
-        "status": "Állapot"
+        "lastRun": "Utolsó futás"
       },
       "typeGoogleDrive": "Google Drive",
       "typeWebhook": "Webhook",
@@ -1431,6 +1505,7 @@
       "addWebhook": {
         "button": "Webhook hozzáadása",
         "title": "Webhook célhely hozzáadása",
+        "description": "Az adatokat aláírt JSON-ként küldi el az Ön URL-címére.",
         "urlLabel": "Webhook URL",
         "urlPlaceholder": "https://example.com/faktur-webhook",
         "urlHint": "Az adatokat aláírt JSON-ként, POST kéréssel küldjük erre a címre (X-Faktur-Signature fejléc).",
@@ -1444,9 +1519,9 @@
         "warning": "Másolja ki ezt a titkos kulcsot most – később már nem láthatja. Ezzel ellenőrizheti az X-Faktur-Signature fejlécet.",
         "copy": "Másolás",
         "copied": "Másolva",
-        "done": "Kész"
+        "done": "Kész",
+        "download": "Letöltés"
       },
-      "docsHint": "Az exportformátum és az aláírás-ellenőrzés részleteit az apps/backend/README.md tartalmazza.",
       "runDone": "A biztonsági mentés elkészült.",
       "runFailed": "A biztonsági mentést nem sikerült befejezni.",
       "pause": "Szüneteltetés",
@@ -1544,7 +1619,9 @@
         "account": "Fiók és cég",
         "data": "Adatok",
         "integrations": "Integrációk",
-        "personal": "Saját fiók"
+        "personal": "Saját fiók",
+        "company": "Cég",
+        "invoicing": "Számlázás"
       },
       "items": {
         "profile": {
@@ -1689,7 +1766,9 @@
         "confirm_mismatch": "A megerősítő e-mail-cím nem egyezik.",
         "last_admin": "Ön a(z) {company} utolsó adminisztrátora. Előbb adja át az adminisztrátori szerepkört egy másik tagnak.",
         "issued_in_shared": "Bizonylatokat állított ki a közös {company} cégben, ezért nem távolítható el. Vegye fel a kapcsolatot a többi taggal.",
-        "delete_failed": "A törlés sikertelen, kérjük, próbálja újra."
+        "delete_failed": "A törlés sikertelen, kérjük, próbálja újra.",
+        "reauth_required": "Biztonsági okból jelentkezzen be újra a módosítás előtt: jelentkezzen ki, majd be, és 10 percen belül próbálja újra.",
+        "too_long": "A jelszó túl hosszú. Legfeljebb 72 bájt lehet (ékezetes karakterekkel valamivel kevesebb)."
       },
       "cancel": "Mégse",
       "emailChange": {
@@ -1875,7 +1954,12 @@
       "dicKeepHint": "Az adószámot nem ÁFA-alanyként vagy azonosított személyként is hagyja kitöltve. Megjelenik a bizonylatain.",
       "dataBoxId": "Adatfiók-azonosító",
       "dataBoxIdHint": "Hét karakter, pl. ab12cd3. Nem titkos. Előre kitöltjük vele a ČSSZ-nek szóló éves kimutatást.",
-      "icoTrialHint": "Az IČO megadásával elindul az ingyenes, {days} napos Plus próbaidőszak – kártya nélkül, IČO-nként egyszer."
+      "icoTrialHint": "Az IČO megadásával elindul az ingyenes, {days} napos Plus próbaidőszak – kártya nélkül, IČO-nként egyszer.",
+      "taxCountry": "Adózási ország",
+      "taxCountryValue": "{country} · könyvelés pénzneme: {currency}",
+      "taxCountryHint": "Ez határozza meg az ÁFA-kulcsokat, a könyvelés pénznemét és az exportokat. A székhely címe nem befolyásolja. Az első számla kiállításáig az üdvözlő beállításban módosíthatja.",
+      "taxCountryLocked": "Az első kiállított számla után az adózási ország már nem módosítható.",
+      "taxCountryChange": "Módosítás"
     },
     "team": {
       "title": "Csapat",
@@ -1965,7 +2049,8 @@
         "empty": "Ebben a régióban még nincs senki.",
         "all": "Teljes könyvelőjegyzék",
         "picked": "A(z) {email} ki van töltve. Ellenőrizze a szerepkört, és küldje el a meghívást."
-      }
+      },
+      "copyLink": "Link másolása"
     },
     "exports": {
       "title": "Exportok a könyvelőnek",
@@ -2395,7 +2480,20 @@
       "brandCredit": "„Készült a(z) {name} segítségével” megjelenítése a számlák alatt",
       "brandCreditHint": "Kis link a PDF, az e-mail és az online számla láblécében, amely a vevőjét is kipróbálásra hívja. Fizetős csomagokban kikapcsolható.",
       "brandCreditFree": "Az ingyenes csomagban a sor mindig megjelenik.",
-      "brandCreditUpgrade": "Váltás fizetős csomagra"
+      "brandCreditUpgrade": "Váltás fizetős csomagra",
+      "advancedTitle": "Haladó",
+      "advancedSummary": "Árfolyamok és a számlalink formátuma",
+      "pdfQr": "QR-kód a PDF-en",
+      "pdfQrHint": "Alapértelmezés szerint fizetési QR-kódot nyomtatunk, ha pedig nincs CZK/EUR számla, QR Faktura kódot. Az online számla linkje egy oldalt nyit meg, ahol a vevő átutalással, kártyával vagy más módon fizethet.",
+      "pdfQrModes": {
+        "auto": "Automatikus (fizetési QR, egyébként QR Faktura)",
+        "link": "Link az online számlához (minden fizetési mód)",
+        "payment_only": "Csak fizetési QR",
+        "off": "Nincs QR-kód"
+      },
+      "paymentDraftLine": "Tételleírás a fizetésekből készült piszkozatokhoz",
+      "paymentDraftLineHint": "Akkor használjuk, ha a fizetés (például PayPalból) nem tartalmaz tételneveket. Például „Szoftverszolgáltatás” vagy „Tanácsadás”.",
+      "paymentDraftLinePlaceholder": "PayPal-fizetés"
     },
     "modules": {
       "title": "Modulok és vállalkozástípus",
@@ -2582,7 +2680,8 @@
       "previewFromAddress": "fakturace@billanta.cz",
       "previewReplyTo": "Válaszcím",
       "previewNote": "Mintaadatok. A valódi e-mail a levelezőprogramban kissé eltérhet.",
-      "moreVars": "További változók →"
+      "moreVars": "További változók →",
+      "bccHintNoEmail": "A másolat a cég e-mail-címére megy – ez a Cégadatok között még nincs kitöltve."
     },
     "variables": {
       "title": "Változók",
@@ -3318,7 +3417,8 @@
         "already_enabled": "A kétlépcsős azonosítás már be van kapcsolva.",
         "not_enabled": "A kétlépcsős azonosítás nincs bekapcsolva.",
         "not_signed_in": "A bejelentkezése lejárt. Kérjük, jelentkezzen be újra."
-      }
+      },
+      "download": "Letöltés"
     },
     "emailNotifications": {
       "title": "E-mail-értesítések",
@@ -4058,7 +4158,11 @@
       "manualTitle": "Az alkalmazás telepítése",
       "manualBody": "Nyissa meg a böngésző menüjét (⋮ vagy ⋯), és válassza az „Alkalmazás telepítése” vagy a „Hozzáadás a kezdőképernyőhöz” lehetőséget. Asztali Chrome-ban és Edge-ben a címsor jobb oldalán telepítési ikon is található.",
       "ok": "Értem"
-    }
+    },
+    "close": "Bezárás",
+    "showPassword": "Jelszó megjelenítése",
+    "hidePassword": "Jelszó elrejtése",
+    "moreActions": "További műveletek"
   },
   "municipalityPages": {
     "regionLabel": "Kerület",
@@ -4114,7 +4218,13 @@
     "explore": "Felfedezés",
     "language": "Nyelv",
     "appearance": "Megjelenés",
-    "create": "Létrehozás"
+    "create": "Létrehozás",
+    "groupWork": "Munka",
+    "groupAccount": "Fiók",
+    "groupProduct": "Termék",
+    "groupResources": "Források",
+    "groupPartners": "Könyvelők és partnerek",
+    "groupHelp": "Súgó"
   },
   "pricing": {
     "title": "Árak",
@@ -4408,6 +4518,7 @@
     "lead": "Gépelje be, válasszon a javaslatokból, vagy írja le a számlát egy mondatban, és előre kitöltjük.",
     "ai": {
       "title": "Előkitöltés AI-jal",
+      "short": "MI-vel",
       "hint": "Írja le vagy diktálja a számlát a saját szavaival, pl. „számla a 27604977 részére, 3 óra tanácsadás 1500-ért, fizetési határidő 14 nap”. Az AI kitölti a vevőt (az ARES-ben ellenőrizve), a tételeket és a fizetési határidőt. Semmi sem mentődik, amíg át nem nézi és el nem menti az űrlapot.",
       "placeholder": "pl. számla Dvořák & Partners, 2× képzés 4 500 CZK-ért, fizetési határidő 30 nap",
       "run": "Előkitöltés",
@@ -4465,13 +4576,21 @@
       "unitPriceGross": "Bruttó egységár",
       "lineTotalGross": "Bruttó összesen"
     },
+    "preview": {
+      "title": "Előnézet",
+      "empty": "Még nincs tétel",
+      "noCustomer": "Válasszon vevőt"
+    },
     "totals": {
       "base": "Részösszeg",
       "vat": "ÁFA",
       "total": "Végösszeg",
       "alreadyPaid": "Már kifizetve",
       "alreadyPaidHint": "Előre kapott előleg vagy befizetés – összegként vagy a végösszeg százalékában. Teljes kifizetés esetén a számla a kiállításkor kifizetettként jelölődik.",
-      "remaining": "Fizetendő"
+      "remaining": "Fizetendő",
+      "alreadyPaidAdd": "A vevő már fizetett (teljesen vagy részben)",
+      "paidInFull": "Teljes összeg",
+      "paidFullNote": "Kiállítás után a számla kifizetettként lesz megjelölve."
     },
     "cancel": "Mégse",
     "save": "Piszkozat mentése",
@@ -4497,6 +4616,7 @@
     },
     "copy": {
       "title": "Előkitöltés másik számlából",
+      "short": "Számlából",
       "hint": "Átmásolja a vevőt, a tételeket, a pénznemet, a fizetést, a bankszámlát, a nyelvet, a megjegyzéseket és az egyéni mezőket. A sorszámot, a dátumokat és a befizetéseket nem másolja, a fizetési határidő pedig az alapértelmezett határidőt követi.",
       "latest": "Az utolsó számlából",
       "other": "Másik számlából…",
@@ -4777,6 +4897,7 @@
       "total": "Nettó"
     },
     "actions": {
+      "more": "Továbbiak",
       "open": "Megnyitás",
       "edit": "Szerkesztés",
       "issue": "Kiállítás",
@@ -4801,7 +4922,8 @@
       "ublHint": "UBL e-számlafájlként is (Peppol BIS 3.0) a szlovák vevők számára. A Peppol-hálózaton keresztüli küldés, amelyet a szlovák előírás 2027. január 1-jétől megkövetel, fejlesztés alatt áll.",
       "duplicateToFix": "Új számla a javítással",
       "rotateLink": "Új ügyfélhivatkozás",
-      "editAnyway": "Szerkesztés mégis"
+      "editAnyway": "Szerkesztés mégis",
+      "markPaidShort": "Kifizetve"
     },
     "confirm": {
       "back": "Vissza",
@@ -4828,7 +4950,9 @@
       "editAnywayTitle": "Csak egy apró javítás?",
       "editAnywayBody": "Egy elírás vagy hiányzó adat helyben javítható. A sorszám megmarad, a módosítás pedig az indoklással együtt bekerül az előzményekbe. Ha a vevő már megkapta a bizonylatot, küldje el neki újra.",
       "editAnywayPlaceholder": "Indoklás, pl. elírás a címben",
-      "editAnywayNeedsReason": "Előbb adja meg az indoklást"
+      "editAnywayNeedsReason": "Előbb adja meg az indoklást",
+      "bulkDeleteTitle": "Törli a kijelölt {count, plural, one {# piszkozatot} other {# piszkozatot}}?",
+      "bulkDeleteBody": "A törölt piszkozatok nem állíthatók vissza."
     },
     "done": {
       "issued": "Bizonylat kiállítva",
@@ -4850,12 +4974,9 @@
     "fxLabelManual": "Árfolyam",
     "fxHidden": "A(z) {home} átszámítás nem jelenik meg a bizonylaton (a {rate} {pair} árfolyam csak a kimutatásokhoz).",
     "views": {
-      "title": "Megosztott link",
-      "count": "Megtekintve",
       "times": "{count, plural, one {egyszer} other {# alkalommal}}",
-      "first": "Először",
-      "last": "Utoljára",
-      "none": "Az ügyfél még nem nyitotta meg a számla linkjét."
+      "opened": "Az ügyfél megnyitotta",
+      "notYet": "még nem"
     },
     "filters": {
       "title": "Szűrők",
@@ -4893,7 +5014,6 @@
       "customRange": "Egyéni időszak",
       "dateBy": "Dátum szerint",
       "quickRanges": "Gyors időszakok ({field})",
-      "anyDate": "Bármely dátum",
       "item": "Tétel",
       "itemPlaceholder": "Tétel szövege vagy kódja",
       "paidState": "Fizetés",
@@ -4966,7 +5086,9 @@
         "communication": "Küldés és vevői válasz",
         "content": "Bizonylat tartalma",
         "origin": "Eredet és kapcsolatok"
-      }
+      },
+      "anyType": "Minden bizonylat",
+      "statusLabel": "Állapot"
     },
     "remindersSent": "{count, plural, one {# emlékeztető elküldve} other {# emlékeztető elküldve}}, utoljára: {date}.",
     "attachments": {
@@ -4993,7 +5115,8 @@
       "title": "Az ügyfél válasza",
       "accepted": "Elfogadta az árajánlatot",
       "rejected": "Elutasította az árajánlatot",
-      "waiting": "Még nincs válasz. Az ügyfél a portálon (ügyfélhivatkozás) fogadhatja el vagy utasíthatja el az árajánlatot."
+      "waiting": "Még nincs válasz. Az ügyfél a portálon (ügyfélhivatkozás) fogadhatja el vagy utasíthatja el az árajánlatot.",
+      "waitingShort": "Még nincs válasz."
     },
     "partial": {
       "paid": "Fizetve: {amount}",
@@ -5179,7 +5302,6 @@
     "noEmail": "nincs e-mail",
     "issueDate": "Kiállítás dátuma",
     "issueNow": "Azonnali kiállítás (számok kiosztása)",
-    "issueNowHint": "Ellenkező esetben piszkozatok készülnek, amelyeket kiállítás előtt ellenőrizhet.",
     "summary": "Ezzel <b>{count, plural, one {# dokumentum} other {# dokumentum}}</b> készül, összesen <b>{total}</b> értékben ÁFA nélkül.",
     "submitDrafts": "{count, plural, one {# piszkozat} other {# piszkozat}} létrehozása",
     "submitIssue": "{count, plural, one {# dokumentum} other {# dokumentum}} kiállítása",
@@ -5222,7 +5344,8 @@
       "shortcuts": "Billentyűparancsok"
     },
     "pages": {
-      "templates": "Számlasablonok"
+      "templates": "Számlasablonok",
+      "netIncome": "Adózás után (nettó jövedelem)"
     },
     "keywords": {
       "newInvoice": "kiállítás létrehozás hozzáadás bizonylat számla",
@@ -5356,7 +5479,8 @@
     "flatRate": "Költségátalány",
     "rate": "átalány {rate} %",
     "noFlat": "átalány nélkül",
-    "hint": "Hozzávetőleges becslés cseh egyéni vállalkozóra: az ÁFA nélküli összeg mínusz a jövedelemadó (15 %), valamint a számlára eső társadalom- és egészségbiztosítási járulék – kb. {burden}. A választott átalánnyal számol, a minimális előlegeket és az adókedvezményeket nem veszi figyelembe. A teljes évet az Exportokban találja."
+    "hint": "Hozzávetőleges becslés cseh egyéni vállalkozóra: az ÁFA nélküli összeg mínusz a jövedelemadó (15 %), valamint a számlára eső társadalom- és egészségbiztosítási járulék – kb. {burden}. A választott átalánnyal számol, a minimális előlegeket és az adókedvezményeket nem veszi figyelembe. A teljes évet az Exportokban találja.",
+    "hintCosts": "A fizetési díjakat és az átváltási veszteséget ({costs}) is levonjuk. Költségátalánynál ezek nem csökkentik az adót, mert az átalány már minden költséget lefed."
   },
   "welcome": {
     "title": "Üdvözöljük a Billantában",
@@ -5370,7 +5494,6 @@
     "businessHint": "Bekapcsoljuk a megfelelő modulokat.",
     "modulesTitle": "Mit szeretne használni?",
     "modulesHint": "A számlázás mindig be van kapcsolva. A többit Ön választja.",
-    "later": "Bármikor módosíthatja: Beállítások → Modulok.",
     "skip": "Kihagyás",
     "finish": "Kész, számlázzunk",
     "saved": "Minden kész",
@@ -5392,7 +5515,12 @@
       "claim": "Áthozatal a fiókba",
       "dismiss": "Elvetés",
       "bannerHint": "Ezeket ebben a böngészőben, fiók nélkül készítette. Kiállított dokumentumként mentjük őket, a vevőket pedig partnerként."
-    }
+    },
+    "countryQuestion": "Hol van bejegyezve a vállalkozása?",
+    "countryHint": "Az ország határozza meg az ÁFA-kulcsokat, a könyvelés pénznemét és azt, hogy mely nyilvántartásokban keresünk. Az első kiállított számla után már nem módosítható.",
+    "countrySoon": "Hamarosan",
+    "countryLocked": "Az ország rögzítve van, mert már kiállított számlát.",
+    "countryNotSupported": "Ezt az országot még nem támogatjuk."
   },
   "registry": {
     "label": "Cégnyilvántartás",
@@ -6351,13 +6479,6 @@
     "seoDescription": "Készítsen számlát online, ingyen, fiók nélkül. Töltse ki a szállítót, a vevőt és a tételeket, és töltse le a PDF-et QR-kódos fizetéssel. Semmit nem tárolunk.",
     "heading": "Online számla regisztráció nélkül",
     "lead": "Töltse ki az adatokat, és töltse le a kész PDF-számlát. Fiók és e-mail nélkül, a számlát pedig nem tároljuk.",
-    "points": [
-      "PDF QR-kódos fizetéssel",
-      "Cégadatok az ARES-ből",
-      "AI-kitöltés",
-      "ÁFA-alanyoknak és nem ÁFA-alanyoknak",
-      "Cseh, szlovák, angol nyelven"
-    ],
     "sections": {
       "document": "Bizonylat",
       "supplier": "Szállító (Ön)",
@@ -6390,7 +6511,11 @@
       "unitPrice": "Egységár",
       "vatRate": "ÁFA",
       "note": "Megjegyzés a számlán",
-      "taxableSupplyDate": "Teljesítés dátuma"
+      "taxableSupplyDate": "Teljesítés dátuma",
+      "accountWithCode": "Számlaszám / bankkód",
+      "paymentLabel": "Fizetési mód neve",
+      "paymentInstructions": "Hová kell fizetni",
+      "swift": "SWIFT (BIC)"
     },
     "hints": {
       "vatPayer": "Csak akkor jelölje be, ha ÁFA-alany. A számlán ekkor megjelenik az ÁFA, a teljesítés dátuma és a kulcsonkénti bontás.",
@@ -6399,14 +6524,21 @@
       "number": "Fiókkal a számlaszámok automatikusan követik a számozási sorozatát.",
       "duzp": "Az adóköteles teljesítés dátuma. Általában megegyezik a kiállítás dátumával.",
       "qr": "A számlaszámból QR-kódos fizetést készítünk; vevője egyszerűen beolvassa a banki alkalmazásában.",
-      "foreign": "Tipp: uniós vevőnél adja meg a közösségi adószámát. Fiókkal ellenőrizzük a VIES-ben, és megkeressük a céget a külföldi nyilvántartásokban."
+      "foreign": "Tipp: uniós vevőnél adja meg a közösségi adószámát. Fiókkal ellenőrizzük a VIES-ben, és megkeressük a céget a külföldi nyilvántartásokban.",
+      "account": "Illessze be egyben a teljes számlát, pl. 19-123456789/0100 vagy egy IBAN-t – mi szétválasztjuk számlaszámra és bankkódra. A számlából QR-kódos fizetés lesz, amelyet a vevő egyszerűen beolvas a banki alkalmazásában.",
+      "lookup": "Kezdje el beírni a cégnevet, az IČO-t vagy az adószámot. Keresünk a cseh ARES-ben, a szlovák jogi személyek nyilvántartásában (RPO) és az uniós VIES-ben. Válasszon egyet, és a cím, az IČO és az adószám kitöltődik.",
+      "paymentInstructions": "A számlán a fizetési mód mellett jelenik meg, hogy a vevő tudja, hová küldje a pénzt.",
+      "swift": "Bankazonosító a külföldről érkező fizetésekhez. A fő cseh és szlovák bankoknál a bankkód alapján kitöltjük, így üresen hagyhatja."
     },
     "methods": {
       "bank_transfer": "Banki átutalás",
       "cash": "Készpénz",
       "card": "Kártya",
       "cash_on_delivery": "Utánvét",
-      "other": "Egyéb"
+      "other": "Egyéb",
+      "paypal": "PayPal",
+      "revolut": "Revolut",
+      "offset": "Beszámítás"
     },
     "addItem": "Tétel hozzáadása",
     "removeItem": "Tétel eltávolítása",
@@ -6457,13 +6589,19 @@
     "placeholders": {
       "hours": "Pl. Weboldal-fejlesztés – szeptember",
       "goods": "Pl. Kerámia bögre 0,3 l",
-      "project": "Pl. Logó és arculattervezés"
+      "project": "Pl. Logó és arculattervezés",
+      "paymentLabel": "pl. Stripe, utalvány, barter",
+      "instructions": {
+        "paypal": "jan@example.com vagy paypal.me/jan",
+        "revolut": "@jan vagy revolut.me/jan",
+        "other": "Hová és hogyan kell fizetni"
+      },
+      "iban": "CZ65 0800 0000 1920 0014 5399"
     },
     "dueIn": "{days} nap",
     "ares": {
       "found": "Betöltve az ARES-ből",
-      "notFound": "Ehhez az azonosítóhoz nem található cég",
-      "unavailable": "A nyilvántartás most nem érhető el, kérjük, töltse ki az adatokat kézzel."
+      "notFound": "Ehhez az azonosítóhoz nem található cég"
     },
     "ai": {
       "title": "Kitöltés AI-jal",
@@ -6526,7 +6664,6 @@
     },
     "account": {
       "title": "Szeretné megőrizni és e-mailben elküldeni a számláit?",
-      "body": "Az ingyenes fiókkal számlaáttekintést, partnereket a cégnyilvántartásból, fizetési emlékeztetőket és QR-kódos fizetést kap. Ezt a számlát fiók nélkül is elkészítheti.",
       "signup": "Ingyenes fiók létrehozása",
       "login": "Bejelentkezés",
       "signedIn": "Be van jelentkezve. A számlát közvetlenül az alkalmazásban mentheti.",
@@ -6584,7 +6721,16 @@
       "forget": "Elfelejtés",
       "signupNote": "Regisztráció után átvisszük azokat a számlákat, amelyeket ebben a böngészőben fiók nélkül készített: a számozás folytatódik, a vevők pedig partnerként mentődnek.",
       "where": "Csak ez a böngésző őrzi őket, és 90 nap után törli – közös számítógépen használja az Elfelejtés gombot."
-    }
+    },
+    "lookup": {
+      "placeholder": "Cégnév vagy IČO – a többit mi kitöltjük"
+    },
+    "requiredLegend": "A csillag * jelöli, mit kell tartalmaznia ennek a bizonylatnak.",
+    "addIbanSwift": "IBAN és SWIFT hozzáadása",
+    "moreDoc": "Bizonylattípus és fizetési mód",
+    "addNote": "Megjegyzés hozzáadása a számlához",
+    "quantityLess": "Eggyel kevesebb",
+    "quantityMore": "Eggyel több"
   },
   "publicProfile": {
     "services": "Szolgáltatások",
@@ -6673,8 +6819,7 @@
       "week": "Ez a hét",
       "unbilled": "Nem számlázott",
       "unbilledHours": "{hours} óra számlázandó",
-      "projects": "Aktív projektek",
-      "projectsSub": "Díjak és vevők"
+      "projects": "Aktív projektek"
     },
     "period": {
       "week": "Ez a hét",
@@ -6771,7 +6916,7 @@
   },
   "clientPortal": {
     "title": "Bizonylatok – {name}",
-    "lead": "{company} számlái és árajánlatai egy helyen – nyisson meg egy bizonylatot a fizetési QR-kódért és a PDF-ért",
+    "lead": "Koppintson egy bizonylatra a fizetési adatok megtekintéséhez.",
     "outstanding": "Fizetendő",
     "overdueOf": "ebből lejárt: {amount}",
     "allPaid": "Minden ki van fizetve, köszönjük.",
@@ -6808,7 +6953,6 @@
   },
   "reports": {
     "pageTitle": "Kimutatások",
-    "pageLead": "Bevétel, költségek és nyereség bármely időszakra, az előző időszakkal összevetve.",
     "exportsLink": "Exportok könyvelőknek és hatóságoknak →",
     "noTenant": "Először hozzon létre egy céget vagy vállalkozást.",
     "loadError": "A kimutatást nem sikerült betölteni.",
@@ -6917,13 +7061,13 @@
       "failed": "Nem sikerült menteni: {reason}",
       "notUsed": "még nincs használatban",
       "notVatPayer": "nem ÁFA-alany",
-      "orderHint": "Az itteni sorrend a kártyák sorrendje a kimutatásban. A fogantyúval húzva vagy a nyilakkal módosíthatja.",
       "moveUp": "Előrébb",
       "moveDown": "Hátrébb",
       "dragToReorder": "Húzza az átrendezéshez"
     },
     "flatTaxLink": "Megéri az átalányadó? →",
-    "taxReturnLink": "Adóbevallás összesítője"
+    "taxReturnLink": "Adóbevallás összesítője",
+    "netIncomeLink": "Adózás után"
   },
   "siteSearch": {
     "title": "Keresés a weboldalon",
@@ -7405,13 +7549,11 @@
     "signupCta": "Kezdje ingyen",
     "notStated": "– = az árlista nem tünteti fel (nem jelenti azt, hogy hiányzik)",
     "verified": "Az árlistákkal egyeztetve: {date}",
-    "sourcesTitle": "Források",
     "brand": {
       "suitsUsTitle": "Mikor jobb választás a Billanta",
       "suitsThemTitle": "Mikor érdemesebb ez: {brand}",
       "priceTitle": "Ár",
       "tableTitle": "Billanta és {brand} pontról pontra",
-      "source": "Forrás: {brand} árlista",
       "versus": "Billanta vs. {brand}",
       "importCta": "Hogyan működik az importálás",
       "faqTitle": "Gyakori kérdések",
@@ -7859,7 +8001,8 @@
       "czOnlyTextAlt": "A(z) „{name}” a cseh szabályokról szól. A szlovák egyéni vállalkozók számára külön kalkulátor érhető el a szlovák szabályoknál.",
       "noLiability": "Az eredményért nem vállalunk garanciát, és nem felelünk az annak alapján hozott döntésekért.",
       "noWarranty": "Az eredmény csak tájékoztató jellegű, és garancia nélkül érhető el. Használat előtt ellenőrizze a részleteket.",
-      "invoiceCtaTemplates": "Online kitölthető számlasablonok"
+      "invoiceCtaTemplates": "Online kitölthető számlasablonok",
+      "toc": "Tartalom"
     },
     "calculators": {
       "indexTitle": "Kalkulátorok és eszközök vállalkozásoknak",
@@ -7906,7 +8049,9 @@
             "flatRate": "Fő tevékenység",
             "children": "Gyermekek száma (gyermekek utáni adókedvezmény)",
             "spouse": "Házastárs utáni kedvezmény (a házastárs jövedelme legfeljebb 68 000 CZK, 3 év alatti gyermek)",
-            "vatPayer": "ÁFA-alany vagyok"
+            "vatPayer": "ÁFA-alany vagyok",
+            "spouseInfo": "Csak ha a társa évente legfeljebb 68 000 CZK-t keres, és egy 3 év alatti gyermek él a háztartásában.",
+            "childrenInfo": "Gyermekek utáni adókedvezmény a háztartásában élő eltartott gyermekekre."
           },
           "rates": {
             "30": "Üzleti célú ingatlan bérbeadása (30 %, legfeljebb {cap} CZK)",
@@ -9182,7 +9327,8 @@
     "profileLink": {
       "body": "Könyvelő? Katalógusbejegyzését és a partnerprogram iránti kérelmet a Könyvelői profilban találja.",
       "cta": "Könyvelői profil megnyitása"
-    }
+    },
+    "shareMore": "QR-kód és weboldal-jelvények"
   },
   "partners": {
     "title": "Partnerek",
@@ -9224,6 +9370,10 @@
       "exports": {
         "title": "Exportok a könyveléshez",
         "body": "ÁFA-bevallások és összesítő jelentések, ISDOC és CSV, újragépelés nélkül."
+      },
+      "included": {
+        "title": "Az ügyfél csomagjában benne van",
+        "body": "A Start csomagtól felfelé a könyvelői hozzáférés az ügyfél csomagjának része. Önnek semmibe sem kerül."
       },
       "credits": {
         "title": "Kredit az ügyfelekért",
@@ -9340,7 +9490,8 @@
     "ctaBody": "A Billanta figyeli a határidőket, a QR-kódos fizetéseket és a könyvelőnek szóló exportokat. Kezdje ingyen.",
     "ctaButton": "Ingyenes fiók létrehozása",
     "aiAuto": "Ezt a cikket AI írta saját adataink alapján, és közzététel előtt csak automatikusan ellenőriztük. Ha hibát talál, <contact>jelezze nekünk</contact>.",
-    "aiReviewed": "Ez a cikk AI segítségével készült, és közzététel előtt egy ember átnézte. Ha hibát talál, <contact>jelezze nekünk</contact>."
+    "aiReviewed": "Ez a cikk AI segítségével készült, és közzététel előtt egy ember átnézte. Ha hibát talál, <contact>jelezze nekünk</contact>.",
+    "toc": "Tartalom"
   },
   "adminBlog": {
     "title": "Blog",
@@ -9763,7 +9914,8 @@
     "invalid": "Használjon betűket, számjegyeket vagy kötőjelet.",
     "failed": "A mentés nem sikerült",
     "copy": "Másolás",
-    "copied": "Link másolva"
+    "copied": "Link másolva",
+    "rename": "Link átnevezése"
   },
   "demo": {
     "cta": "Demó kipróbálása",
@@ -9783,43 +9935,6 @@
         "empty": "Tiszta lappal kezdene? Válasszon üres céget, és regisztráció után vigye át munkáját saját fiókjába."
       },
       "pick": "Válasszon cégtípust",
-      "rolesTitle": "Nézze meg az alkalmazást az egész csapat szemével",
-      "rolesLead": "A demóban a felső sávban egyetlen választással vált nézetet. Minden szerepkör pontosan azt látja, amit egy valódi cégben látna.",
-      "tryTitle": "Mit érdemes kipróbálni a demóban",
-      "try": {
-        "invoices": {
-          "title": "Számla QR-kódos fizetéssel",
-          "text": "Állítson ki számlát, töltse le a PDF-et, és osszon meg egy QR-kódos linket."
-        },
-        "payments": {
-          "title": "Fizetések és részfizetések",
-          "text": "Jelöljön meg egy számlát kifizetettként, vagy rögzítsen részfizetést."
-        },
-        "reminders": {
-          "title": "Lejárt számlák",
-          "text": "Nézze meg, mi járt le, és hogyan néz ki egy emlékeztető."
-        },
-        "expenses": {
-          "title": "Költségek",
-          "text": "Rögzítsen egy beérkezett számlát, és kövesse a kiadásokat kategóriánként."
-        },
-        "vat": {
-          "title": "ÁFA és kimutatások",
-          "text": "Az ÁFA-bevallás és az összesítő jelentés ugyanazokból az adatokból."
-        },
-        "accountant": {
-          "title": "A könyvelő nézete",
-          "text": "Exportok a könyvelőnek, és hogy mit tehet a könyvelő a cégben."
-        },
-        "team": {
-          "title": "Csapat és szerepkörök",
-          "text": "Váltson egy csak olvasási joggal rendelkező kollégára, és próbáljon meg valamit módosítani."
-        },
-        "quotes": {
-          "title": "Árajánlatok és díjbekérők",
-          "text": "Alakítson egy árajánlatot díjbekérővé, majd végszámlává."
-        }
-      },
       "allFeatures": "Összes funkció",
       "faqTitle": "Gyakori kérdések a demóról",
       "faq": [
@@ -10354,7 +10469,8 @@
     "suspendedDone": "Iskola felfüggesztve.",
     "unsuspended": "Iskola visszaállítva.",
     "failed": "Sikertelen",
-    "rejectConfirm": "Elutasítja a következőt: {name}? Osztályai véget érnek, és 30 napig csak olvashatók maradnak, más osztályokból pedig eltávolítjuk."
+    "rejectConfirm": "Elutasítja a következőt: {name}? Osztályai véget érnek, és 30 napig csak olvashatók maradnak, más osztályokból pedig eltávolítjuk.",
+    "manage": "Kezelés"
   },
   "offline": {
     "offline": "Offline",
@@ -11373,7 +11489,8 @@
       "businessPreset": "Vállalkozás típusa",
       "presetNone": "választhassanak",
       "defaultLocale": "Az oldal nyelve",
-      "localeVisitor": "a látogató saját nyelve"
+      "localeVisitor": "a látogató saját nyelve",
+      "moreDetails": "További beállítások"
     },
     "errors": {
       "code_taken": "Ez a kód már létezik.",
@@ -12031,7 +12148,6 @@
     "title": "Adóbevallási összesítő {year}",
     "titleSk": "Adóbevallási összesítő {year} (Szlovákia)",
     "back": "Kimutatások",
-    "lead": "Az adóév bevételei, költségei és átalányköltsége a saját bizonylataiból, a benyújtási határidők és egy hozzávetőleges adóbecslés. Minden csomagban ingyenes.",
     "notAdvice": "Ez a saját bizonylatainak összesítése a jövedelemadó-bevallás előkészítéséhez, nem adótanácsadás. Benyújtás előtt ellenőrizze a számokat, szükség esetén könyvelővel vagy adótanácsadóval.",
     "noTenant": "Először adja meg cége számlázási adatait.",
     "loadError": "Az összesítőt nem sikerült betölteni. Kérjük, próbálja újra egy kis idő múlva.",
@@ -12143,7 +12259,6 @@
     "noteEstimate": "A becslés csak az adózói alapkedvezménnyel számol, egyéb kedvezmények, levonások és más jövedelmek (munkaviszony, bérbeadás) nélkül.",
     "noteEstimateSk": "A becslés csak az alapvető személyi kedvezménnyel számol, egyéb levonások, gyermekkedvezmény és más jövedelmek nélkül.",
     "noteData": "A számok kizárólag az alkalmazásban lévő bizonylatokból származnak. Az itt nem szereplő bevételeket és költségeket (bizonylat nélküli készpénz, egyéb tevékenységek) magának kell hozzáadnia.",
-    "disclaimer": "Ez az összesítő csak tájékoztató jellegű, garancia nélkül, és nem helyettesíti az adótanácsadót vagy a könyvelőt. A benyújtott adatokért Ön felel.",
     "nudge": {
       "title": "Adóbevallás {year}",
       "body": "A(z) {year}. évi bevételei, kategóriánkénti költségei, az átalányok és a határidők a bizonylataiból készen állnak. PDF és CSV a könyvelőjének, ingyen.",
@@ -12208,8 +12323,6 @@
       },
       "calculatorsTitle": "Adókalkulátorok",
       "calculatorsLead": "Regisztráció nélkül: adó és járulékok cseh és szlovák egyéni vállalkozóknak, átalányadó-összehasonlítás és a minimális előlegek.",
-      "ctaTitle": "Összesítő a saját számláiból",
-      "ctaBody": "Ha a Billantában számláz, a bevallás alapja újragépelés nélkül elkészül. Csak azt kell hozzáadnia, ami nincs az alkalmazásban.",
       "faqTitle": "GYIK",
       "faq": [
         {
@@ -13591,5 +13704,268 @@
     "privacyTitle": "Személyes adatok",
     "privacyBody": "A fent megnevezett üzemeltető az Ön személyes adatainak adatkezelője. Az adatvédelmi tájékoztató elmagyarázza, mit kezelünk, és hogyan gyakorolhatja jogait (hozzáférés, helyesbítés, törlés és egyebek).",
     "legalTitle": "Jogi dokumentumok"
+  },
+  "netIncome": {
+    "title": "Adózás után",
+    "intro": "Mennyi marad a kifizetett számlákból a jövedelemadó, a társadalom- és egészségbiztosítás és a közös költségek után. Több partnerre is, akik megosztják a bevételt.",
+    "back": "Kimutatások",
+    "noTenant": "Előbb hozzon létre egy céget.",
+    "loadError": "A számítást nem sikerült betölteni. Próbálja újra.",
+    "notSupported": "Az adózás utáni számítás egyelőre csak a cseh szabályokat követi (költségátalány, ČSSZ, egészségbiztosító).",
+    "periodKindLabel": "Időszak",
+    "periodKind": {
+      "month": "Hónap",
+      "quarter": "Negyedév",
+      "year": "Év"
+    },
+    "prev": "Előző időszak",
+    "next": "Következő időszak",
+    "quarterLabel": "{year}. Q{q}",
+    "missingRates": "{count, plural, one {# számlának nincs árfolyama, ezért kimarad.} other {# számlának nincs árfolyama, ezért kimaradnak.}}",
+    "cards": {
+      "income": "Teljes bevétel",
+      "taxes": "Adó és biztosítás",
+      "afterTaxes": "Adózás után",
+      "net": "Nettó jövedelem"
+    },
+    "creditsHint": {
+      "month": "Egy hónap az éves adókedvezmények 1/12-ét és a költségátalány-plafon 1/12-ét használja. A tényleges adót az egész évre állapítják meg, így a hónapok összege eltérhet az évtől.",
+      "quarter": "Egy negyedév az éves adókedvezmények 1/4-ét és a költségátalány-plafon 1/4-ét használja. A tényleges adót az egész évre állapítják meg.",
+      "year": "Egy év a teljes éves adókedvezményt és a teljes költségátalány-plafont használja, ahogy az adóbevallás."
+    },
+    "table": {
+      "title": "Számítás",
+      "titlePartners": "Számítás partnerenként",
+      "metric": "Tétel",
+      "share": "részesedés {percent} %",
+      "total": "Összesen",
+      "income": "Bevétel",
+      "flatExpenses": "Költségátalány",
+      "base": "Adóalap",
+      "taxBeforeCredits": "Adó a kedvezmények előtt",
+      "credits": "Adókedvezmények",
+      "incomeTax": "Jövedelemadó",
+      "social": "Társadalombiztosítás",
+      "health": "Egészségbiztosítás",
+      "taxes": "Adó és biztosítás összesen",
+      "sharedExpenses": "Közös költségek",
+      "net": "Nettó jövedelem"
+    },
+    "formula": "Alap = bevétel − {flat} % költségátalány. Adó: az alap {tax} %-a, társadalombiztosítás: az alap {socialBase} %-ának {socialRate} %-a, egészségbiztosítás: az alap {healthBase} %-ának {healthRate} %-a.",
+    "estimateNote": "Durva becslés: minimális előlegek, 23 %-os adósáv és az alap kerekítése nélkül. Nem helyettesíti az adóbevallást és az éves elszámolásokat.",
+    "partnerFallback": "{n}. partner",
+    "partnerMe": "Én",
+    "months": {
+      "title": "Havonta",
+      "hint": "Minden hónapot külön számolunk, az adókedvezmények 1/12-ével. A hónapok összehasonlítására hasznos.",
+      "month": "Hónap",
+      "income": "Bevétel",
+      "taxes": "Adó és biztosítás",
+      "net": "Nettó jövedelem"
+    },
+    "list": {
+      "title": "Bevételek az időszakban ({count})",
+      "hint": "Kifizetett számlák a kifizetés napja szerint, valamint a beállításokban megadott egyéb bevételek. Devizás számlánál azt vesszük, ami ténylegesen megérkezett a számlára (pl. PayPal-átváltás után), egyébként az árfolyamot.",
+      "hintVat": "Kifizetett számlák a kifizetés napja szerint, ÁFA nélkül, valamint a beállításokban megadott egyéb bevételek. Devizás számlánál azt vesszük, ami ténylegesen megérkezett a számlára, egyébként az árfolyamot.",
+      "empty": "Ebben az időszakban nincs kifizetett számla.",
+      "show": "Minden bevétel megjelenítése ({count})",
+      "paidOn": "kifizetve: {date}",
+      "source": {
+        "czk": "CZK-ban",
+        "received": "ténylegesen beérkezett",
+        "converted": "árfolyamon átszámítva"
+      },
+      "extra": "egyéb bevétel",
+      "splitLabel": "Kié a(z) {number} számla",
+      "saved": "A felosztás elmentve.",
+      "failed": "A felosztást nem sikerült menteni."
+    },
+    "shares": {
+      "default": "Alapértelmezett részesedések",
+      "alone": "Csak {name}",
+      "custom": "Saját arány…",
+      "apply": "Arány alkalmazása"
+    },
+    "config": {
+      "title": "A számítás beállításai",
+      "readOnly": "A beállításokat csak a cég tulajdonosa vagy egy adminisztrátor módosíthatja.",
+      "rates": "Kulcsok",
+      "fields": {
+        "flat_expense_percent": "Költségátalány",
+        "flat_expense_cap": "Éves átalányplafon személyenként",
+        "income_tax_percent": "Jövedelemadó",
+        "social_rate_percent": "Társadalombiztosítás",
+        "social_base_percent": "Járulékalap – társadalombiztosítás",
+        "health_rate_percent": "Egészségbiztosítás",
+        "health_base_percent": "Járulékalap – egészségbiztosítás"
+      },
+      "ratesHintLabel": "Miért 55 % a társadalombiztosításnál?",
+      "ratesHint": "2024 óta a cseh társadalombiztosítás alapja a nyereség 55 %-a (korábban 50 %), az egészségbiztosítás alapja maradt 50 %. A 60 %-os költségátalány plafonja évi 1 200 000 CZK; plafon nélkül hagyja üresen.",
+      "partners": "Partnerek",
+      "partnersHint": "Minden partner külön adózik a saját részesedése után. A részesedés arány: 1, 1, 1 mindenkinek egyharmadot ad, 1 és 2 egyharmadot és kétharmadot.",
+      "partnerName": "Név",
+      "partnerShare": "Részesedés",
+      "partnerCredits": "Éves adókedvezmények",
+      "partnerFallback": "{n}. partner",
+      "addPartner": "Partner hozzáadása",
+      "remove": "Eltávolítás",
+      "creditsHintLabel": "Mi számít kedvezménynek?",
+      "creditsHint": "Az éves adókedvezmények összege: adózónként 30 840 CZK, plusz a házastárs, a gyermekek és egyebek, ha vonatkoznak Önre. A kedvezmények legfeljebb nullára csökkentik az adót.",
+      "sharedExpenses": "Közös költségek",
+      "sharedExpensesHint": "Üzleti költségek (bérleti díj, szoftver…), amelyeket arányosan vonunk le a nettó jövedelemből. Az adóalapot nem változtatják, az a költségátalányból adódik.",
+      "label": "Leírás",
+      "amount": "Összeg",
+      "per": "Időszak",
+      "perMonth": "havonta",
+      "perYear": "évente",
+      "splitOf": "Kié a(z) {label}",
+      "addExpense": "Költség hozzáadása",
+      "extraIncome": "Egyéb bevételek",
+      "extraIncomeHint": "Nem számlából származó bevétel, pl. díjakból és árfolyamnyereségből. Ugyanúgy adózik, mint a számlák.",
+      "date": "Dátum",
+      "addExtra": "Bevétel hozzáadása",
+      "save": "Beállítások mentése",
+      "saved": "A beállítások elmentve.",
+      "resetRates": "Alapértelmezett kulcsok"
+    },
+    "errors": {
+      "duplicate_partner": "Két partnernek azonos az azonosítója. Távolítsa el az egyiket, és adja hozzá újra.",
+      "shares_must_be_positive": "Legalább egy részesedésnek nullánál nagyobbnak kell lennie.",
+      "generic": "A beállításokat nem sikerült menteni. Ellenőrizze a számokat, és próbálja újra."
+    },
+    "noAccess": {
+      "title": "Csak tulajdonosoknak és adminisztrátoroknak",
+      "body": "Az adózás utáni kimutatás az egyes partnerek bevételét és adóit mutatja, ezért csak a cég tulajdonosa és adminisztrátorai láthatják."
+    }
+  },
+  "bankRules": {
+    "title": "Fizetési szabályok",
+    "intro": "Mi történjen azzal a fizetéssel, amely nem párosult számlával. A szabályok minden import és szinkronizálás után lefutnak, csak az új, párosítatlan fizetéseken. A számlával való párosítás mindig elsőbbséget élvez.",
+    "backToBank": "Vissza a bankhoz",
+    "noTenant": "Előbb válasszon ki vagy hozzon létre egy céget.",
+    "loadError": "A szabályokat nem sikerült betölteni.",
+    "newRule": "Új szabály",
+    "empty": "Még nincs szabály",
+    "emptyHint": "Például: a telefonszolgáltatónak küldött fizetéseket rögzítse költségként, a banki díjakat hagyja figyelmen kívül. Szabályt egy fizetés menüjéből is indíthat.",
+    "list": {
+      "order": "A szabályokat fentről lefelé próbáljuk, és az első, amely illik a fizetésre, érvényesül.",
+      "enabled": "Szabály bekapcsolva",
+      "off": "Ki",
+      "moveUp": "Feljebb",
+      "moveDown": "Lejjebb",
+      "edit": "Szerkesztés",
+      "delete": "Törlés",
+      "enabledDone": "A szabály bekapcsolva.",
+      "disabledDone": "A szabály kikapcsolva."
+    },
+    "field": {
+      "counterparty_name": "Partner",
+      "counterparty_account": "Fizető számlája vagy e-mail-címe",
+      "message": "Közlemény a kedvezményezettnek",
+      "variable_symbol": "Változó szimbólum",
+      "any": "Bármely mező"
+    },
+    "operator": {
+      "contains": "tartalmazza",
+      "equals": "pontosan egyenlő",
+      "regex": "illeszkedik a reguláris kifejezésre"
+    },
+    "direction": {
+      "any": "Beérkező és kimenő",
+      "in": "Beérkező",
+      "out": "Kimenő"
+    },
+    "summary": {
+      "between": "összeg {min}–{max}",
+      "atLeast": "összeg legalább {min}",
+      "atMost": "összeg legfeljebb {max}",
+      "and": " és ",
+      "or": " vagy "
+    },
+    "action": {
+      "ignore": "Figyelmen kívül hagyás",
+      "draft_expense": "Ellenőrizendő költség létrehozása",
+      "draft_invoice": "Számlapiszkozat létrehozása"
+    },
+    "actionHint": {
+      "ignore": "A fizetés figyelmen kívül hagyottként lesz megjelölve. Bármikor visszateheti párosításra.",
+      "draft_expense": "Csak kimenő fizetésekre. Ellenőrizendő címkéjű költséget hoz létre, a fizetéshez kapcsolva.",
+      "draft_invoice": "Csak beérkező fizetésekre. Ellenőrzésre váró számlapiszkozatot hoz létre. A kiállítás mindig az Ön döntése."
+    },
+    "form": {
+      "titleNew": "Új szabály",
+      "titleEdit": "Szabály szerkesztése",
+      "name": "Név",
+      "namePlaceholder": "Pl. Vodafone – telefon",
+      "conditions": "Feltételek",
+      "conditionsHint": "A „tartalmazza” és a „pontosan egyenlő” esetén a kis- és nagybetű, valamint az ékezetek nem számítanak. Az iránynak, a pénznemnek és az összegnek mindig egyeznie kell.",
+      "field": "Mező",
+      "operator": "Összehasonlítás",
+      "value": "Érték",
+      "valuePlaceholder": "Pl. Vodafone",
+      "addCondition": "Feltétel hozzáadása",
+      "removeCondition": "Feltétel eltávolítása",
+      "advanced": "Haladó: reguláris kifejezések",
+      "regexHint": "Reguláris kifejezés (JavaScript, kis- és nagybetűre nem érzékeny), legfeljebb 200 karakter. Pl. ^VODAFONE vagy szamla \\d+/2026. A rendkívül sokáig futó minták (egymásba ágyazott ismétlések, mint az (a+)+, visszahivatkozások, előretekintések) nem menthetők.",
+      "direction": "Irány",
+      "currency": "Pénznem",
+      "currencyAny": "Bármely",
+      "minAmount": "Összeg ettől",
+      "maxAmount": "Összeg eddig",
+      "amountHint": "Az összegeket előjel nélkül hasonlítjuk össze, így egy kimenő 500 is 500-nak számít.",
+      "action": "Mi történjen",
+      "category": "Költségkategória",
+      "categoryNone": "Kategória nélkül",
+      "contact": "Vevő",
+      "contactNone": "A fizető e-mail-címe alapján",
+      "enabled": "A szabály be van kapcsolva",
+      "cancel": "Mégse",
+      "save": "Mentés",
+      "saveAndApply": "Mentés és alkalmazás a meglévőkre",
+      "saved": "A szabály elmentve.",
+      "created": "A szabály létrehozva.",
+      "textMatch": "A feltételek összekapcsolása",
+      "textMatchAll": "Minden feltételnek teljesülnie kell (ÉS)",
+      "textMatchAny": "Elég egy feltétel (VAGY)"
+    },
+    "preview": {
+      "title": "Előnézet",
+      "count": "{count, plural, one {# párosítatlan fizetés illik} other {# párosítatlan fizetés illik}} erre a szabályra.",
+      "loading": "Számolás…",
+      "incomplete": "Adjon meg legalább egy feltételt, hogy lássa, mely fizetéseket érintené a szabály.",
+      "more": "és még {count}",
+      "onlyUnmatched": "Az előnézet csak a jelenleg párosítatlan fizetéseket mutatja. Egyelőre semmi sem változik."
+    },
+    "apply": {
+      "button": "Alkalmazás a meglévőkre",
+      "confirmTitle": "Alkalmazza a(z) „{name}” szabályt a meglévő fizetésekre?",
+      "what": {
+        "ignore": "Figyelmen kívül hagyottként lesznek megjelölve.",
+        "draft_expense": "Mindegyikből ellenőrizendő költség lesz.",
+        "draft_invoice": "Mindegyikből ellenőrzésre váró számlapiszkozat lesz."
+      },
+      "rematchFirst": "Előbb még egyszer megpróbáljuk számlákkal párosítani a fizetéseket.",
+      "done": "A szabály alkalmazva {applied, plural, one {# fizetésre} other {# fizetésre}}.",
+      "doneMore": "A szabály alkalmazva {applied, plural, one {# fizetésre} other {# fizetésre}}. Még {remaining} maradt, futtassa újra.",
+      "nothing": "Jelenleg egyetlen párosítatlan fizetés sem illik erre a szabályra."
+    },
+    "delete": {
+      "title": "Törli a szabályt?",
+      "body": "A(z) „{name}” szabály törlődik. Az általa már kezelt fizetések változatlanok maradnak.",
+      "confirm": "Törlés",
+      "done": "A szabály törölve."
+    },
+    "errors": {
+      "generic": "Ez nem sikerült",
+      "rule_needs_condition": "Adjon meg legalább egy szöveges vagy összegfeltételt. Az irány önmagában minden fizetésre vonatkozna.",
+      "invalid_amount_range": "Az „Összeg ettől” nem lehet nagyobb, mint az „Összeg eddig”.",
+      "invalid_regex": "A reguláris kifejezés érvénytelen, vagy hosszabb 200 karakternél.",
+      "unsafe_regex": "Ez a reguláris kifejezés túl sokáig futhatna. Egyszerűsítse (egymásba ágyazott ismétlések, visszahivatkozások és előretekintések nélkül, legfeljebb két * vagy +).",
+      "action_needs_outgoing": "Költség csak kimenő fizetésből készülhet. Állítsa az irányt Kimenőre.",
+      "action_needs_incoming": "Számlapiszkozat csak beérkező fizetésből készülhet. Állítsa az irányt Beérkezőre.",
+      "contact_not_found": "A kiválasztott vevő már nem létezik.",
+      "bank_rule_not_found": "A szabály már nem létezik.",
+      "forbidden": "Nincs jogosultsága a szabályok módosításához."
+    }
   }
 }
