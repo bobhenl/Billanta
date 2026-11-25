@@ -2155,7 +2155,13 @@
           "reverse_charge_dic_missing": "Reverse-charge documents without the customer’s VAT ID, left out of section A.1: {documents}.",
           "received_reverse_charge_code_missing": "Received reverse-charge documents without a supply code: {documents}. Add the code on the expense and download the file again, otherwise EPO rejects it.",
           "received_reverse_charge_dic_missing": "Received reverse-charge documents without the supplier's VAT ID, left out of section B.1: {documents}.",
-          "received_reverse_charge_number_missing": "Received reverse-charge documents without a document number (shown by date), left out of section B.1: {documents}."
+          "received_reverse_charge_number_missing": "Received reverse-charge documents without a document number (shown by date), left out of section B.1: {documents}.",
+          "foreign_purchase_unmarked": "Expenses from foreign suppliers without reverse charge or without a VAT rate: {documents}. If it is a service (an ad, say), mark reverse charge and the rate on the expense and download the file again."
+        },
+        "identified": {
+          "dp3Hint": "DPHDP3 for the month – tax on services bought abroad (lines 5 and 6, outside the EU lines 12 and 13) and services to the EU (line 21), no deduction.",
+          "noControlStatement": "An identified person does not file a control statement, only the return and, if needed, the EC sales list.",
+          "nothingToReport": "No service bought abroad or sold to the EU this month, so no return is due."
         }
       },
       "annual": {

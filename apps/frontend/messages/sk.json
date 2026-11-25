@@ -2155,7 +2155,13 @@
           "reverse_charge_dic_missing": "Doklady s prenesením daňovej povinnosti bez DIČ odberateľa, v oddiele A.1 chýbajú: {documents}.",
           "received_reverse_charge_code_missing": "Prijaté doklady s prenesením daňovej povinnosti bez kódu predmetu plnenia: {documents}. Doplňte kód pri náklade a stiahnite súbor znova, inak ho EPO odmietne.",
           "received_reverse_charge_dic_missing": "Prijaté doklady s prenesením daňovej povinnosti bez DIČ dodávateľa, v oddiele B.1 chýbajú: {documents}.",
-          "received_reverse_charge_number_missing": "Prijaté doklady s prenesením daňovej povinnosti bez čísla dokladu (podľa dátumu), v oddiele B.1 chýbajú: {documents}."
+          "received_reverse_charge_number_missing": "Prijaté doklady s prenesením daňovej povinnosti bez čísla dokladu (podľa dátumu), v oddiele B.1 chýbajú: {documents}.",
+          "foreign_purchase_unmarked": "Náklady od zahraničných dodávateľov bez prenesenia daňovej povinnosti alebo bez sadzby DPH: {documents}. Ak ide o službu (napríklad reklamu), označte pri náklade prenesenie dane a sadzbu a stiahnite súbor znova."
+        },
+        "identified": {
+          "dp3Hint": "DPHDP3 za mesiac – daň zo služieb nakúpených v zahraničí (r. 5 a 6, mimo EÚ r. 12 a 13) a služby do EÚ (r. 21), bez odpočtu.",
+          "noControlStatement": "Identifikovaná osoba kontrolné hlásenie nepodáva, stačí priznanie a prípadne súhrnné hlásenie.",
+          "nothingToReport": "V tomto mesiaci ste nenakúpili službu zo zahraničia ani nepredali službu do EÚ, priznanie sa nepodáva."
         }
       },
       "annual": {

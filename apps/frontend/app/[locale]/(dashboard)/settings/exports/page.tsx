@@ -6,7 +6,7 @@ import czOffices from '@/data/cz-offices.json';
 import { Link } from '@/i18n/navigation';
 import { buttonClass } from '@/lib/ui-classes';
 import { checkedDate } from '@/lib/legislation-checked';
-import { fetchTenant, taxCountryOf } from '@/lib/tenant';
+import { fetchTenant, taxCountryOf, vatStatusOf } from '@/lib/tenant';
 import { SettingsHeader } from '@/components/settings-header';
 import { AnnualFilings } from './annual-filings';
 import { AnnualSummary } from './annual-summary';
@@ -37,7 +37,7 @@ export default async function ExportsPage() {
       <SettingsHeader title={t('title')} description={t('description')} />
       <ExportPicker home={homeCurrencyOf(country)} />
       <div className="mt-5">
-        <VatFilings country={sk ? 'SK' : 'CZ'} checked={await checkedDate('vat_forms')} />
+        <VatFilings country={sk ? 'SK' : 'CZ'} identified={!sk && vatStatusOf(tenant) === 'identified'} checked={await checkedDate('vat_forms')} />
       </div>
       {!sk && (
         <div className="mt-5">

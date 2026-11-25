@@ -42,8 +42,18 @@ function vatWarnings(header: string | null): Map<string, string[]> {
  * súhrnný výkaz). Fetched rather than linked so a "nothing to report" or
  * missing-DIČ answer shows as a toast instead of a downloaded error page.
  */
-export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { country?: 'CZ' | 'SK'; checked?: string }) {
+export function VatFilings({
+  country = 'CZ',
+  identified = false,
+  checked = VAT_INFO_CHECKED
+}: {
+  country?: 'CZ' | 'SK';
+  /** Czech identifikovaná osoba: monthly přiznání and souhrnné hlášení only, no kontrolní hlášení (§ 101c ZDPH). */
+  identified?: boolean;
+  checked?: string;
+}) {
   const sk = country === 'SK';
+  const files = sk ? FILES_SK : identified ? FILES.filter((f) => f.key !== 'kh1') : FILES;
   const t = useTranslations(sk ? 'settings.exports.vat.sk' : 'settings.exports.vat');
   const common = useTranslations('settings.exports.vat');
   const locale = useLocale();
@@ -57,7 +67,8 @@ export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { cou
   // Kept on screen (not a toast): the person needs the document numbers to go and fix them.
   const [warnings, setWarnings] = useState<string[]>([]);
   const years = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - i));
-  const query = mode === 'month' ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
+  // An identified person's tax period is always the calendar month.
+  const query = mode === 'month' || identified ? `year=${year}&month=${month}` : `year=${year}&quarter=${quarter}`;
 
   async function download(key: string, path: string) {
     setBusy(key);
@@ -67,7 +78,9 @@ export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { cou
       if (!res.ok) {
         const reason =
           res.status === 404
-            ? t('nothingToReport')
+            ? identified && key === 'dp3'
+              ? common('identified.nothingToReport')
+              : t('nothingToReport')
             : res.status === 400
               ? t('missingDic')
               : res.status === 503
@@ -107,16 +120,18 @@ export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { cou
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-3 text-sm">
-        <select className={cn(inputClass, 'w-auto')} value={mode} onChange={(e) => setMode(e.target.value as 'month' | 'quarter')}>
-          <option value="month">{common('monthly')}</option>
-          <option value="quarter">{common('quarterly')}</option>
-        </select>
+        {!identified && (
+          <select className={cn(inputClass, 'w-auto')} value={mode} onChange={(e) => setMode(e.target.value as 'month' | 'quarter')}>
+            <option value="month">{common('monthly')}</option>
+            <option value="quarter">{common('quarterly')}</option>
+          </select>
+        )}
         <select className={cn(inputClass, 'w-auto')} value={year} onChange={(e) => setYear(e.target.value)}>
           {years.map((y) => (
             <option key={y}>{y}</option>
           ))}
         </select>
-        {mode === 'month' ? (
+        {mode === 'month' || identified ? (
           <select className={cn(inputClass, 'w-auto')} value={month} onChange={(e) => setMonth(e.target.value)}>
             {Array.from({ length: 12 }, (_, i) => String(i + 1)).map((m) => (
               <option key={m} value={m}>
@@ -134,8 +149,9 @@ export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { cou
           </select>
         )}
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {(sk ? FILES_SK : FILES).map(({ key, path }) => (
+      {identified && <p className="mt-3 text-sm text-muted-foreground">{common('identified.noControlStatement')}</p>}
+      <div className={cn('mt-4 grid gap-3', identified ? 'sm:grid-cols-2' : 'sm:grid-cols-3')}>
+        {files.map(({ key, path }) => (
           <button
             key={key}
             type="button"
@@ -144,7 +160,9 @@ export function VatFilings({ country = 'CZ', checked = VAT_INFO_CHECKED }: { cou
             className="flex flex-col rounded-lg border border-border p-4 text-left transition-colors hover:border-primary disabled:opacity-60"
           >
             <span className="font-semibold">{t(`files.${key}.title`)}</span>
-            <span className="mt-1 flex-1 text-xs text-muted-foreground">{t(`files.${key}.hint`)}</span>
+            <span className="mt-1 flex-1 text-xs text-muted-foreground">
+              {identified && key === 'dp3' ? common('identified.dp3Hint') : t(`files.${key}.hint`)}
+            </span>
             <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
               {busy === key ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               {common('download')}
