@@ -298,6 +298,14 @@ const stacked = (label: string) => label.replace(BILINGUAL_SEPARATOR, "\n");
  * Uses `pdfkit`: pure JS, no headless Chromium, so the backend image stays
  * small on a VPS.
  */
+function countryName(code: string, lang: Lang): string {
+  try {
+    return new Intl.DisplayNames([lang], { type: "region" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 @Injectable()
 export class InvoicePdfService {
   private readonly logger = new Logger(InvoicePdfService.name);
@@ -439,10 +447,11 @@ export class InvoicePdfService {
         })
       : null;
 
-    if (payable && iban && invoice.paymentMethod === "bank_transfer") {
-      // After a partial payment the QR asks only for what is left.
-      const amount =
-        Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100) || totals.totalWithVat;
+    // After a partial payment the QR asks only for what is left; a paid document
+    // gets no payment code at all (it used to ask for the full amount again).
+    const amount =
+      invoice.status === "paid" ? 0 : Math.max(0, Math.round((totals.totalWithVat - Number(invoice.amountPaid ?? 0)) * 100) / 100);
+    if (payable && amount > 0 && iban && invoice.paymentMethod === "bank_transfer") {
       const scheme = paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: contact.addressCountry });
       const bysquare = scheme === "pay_by_square" ? this.payBySquare(invoice, tenant, iban, amount) : null;
       if (bysquare) {
@@ -552,6 +561,9 @@ export class InvoicePdfService {
     doc.font(BOLD).fontSize(10).fillColor("black").text(contact.legalName, right, doc.y + 2, { width: 240 });
     doc.font(REGULAR).fontSize(9);
     this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, contact.addressPostalCode, right);
+    // A buyer abroad gets the country, in the document language.
+    const buyerCountry = contact.addressCountry?.toUpperCase();
+    if (buyerCountry && buyerCountry !== tenantCountry(tenant)) doc.text(countryName(buyerCountry, invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs"), right);
     if (contact.ico) doc.text(`${t.ico}: ${contact.ico}`, right);
     if (contact.dic) doc.text(`${t.dic}: ${contact.dic}`, right);
     if (invoice.buyerContactPerson) doc.text(`${t.contactPerson}: ${invoice.buyerContactPerson}`, right, doc.y, { width: 240 });
@@ -725,7 +737,10 @@ export class InvoicePdfService {
     }
     y += 6;
     doc.rect(x, y - 4, 245, 26).fill(tintOf(accent));
-    const totalLabel = invoice.documentType === "quote" ? t.totalQuote : t.totalToPay;
+    // Paid or partly paid: "Celkem", then what was paid and what is left (0 once
+    // settled), so a paid invoice no longer reads "Celkem k úhradě" with the full sum.
+    const paid = invoice.documentType === "quote" ? 0 : invoice.status === "paid" ? totals.totalWithVat : Number(invoice.amountPaid ?? 0);
+    const totalLabel = invoice.documentType === "quote" ? t.totalQuote : paid > 0 ? t.total : t.totalToPay;
     const bilingual = totalLabel.includes(BILINGUAL_SEPARATOR);
     doc
       .font(BOLD)
@@ -735,9 +750,7 @@ export class InvoicePdfService {
     doc.fontSize(12).text(this.formatAmount(totals.totalWithVat, currency), x + 110, y + 3, { width: 127, align: "right" });
     doc.fillColor("black");
     y += 34;
-    // Partial payment (deposit received): state what is paid and what is left.
-    const paid = Number(invoice.amountPaid ?? 0);
-    if (paid > 0 && invoice.documentType !== "quote" && paid < totals.totalWithVat) {
+    if (paid > 0) {
       doc.font(REGULAR).fontSize(9).fillColor("black");
       doc.text(stacked(t.paidSoFar), x + 8, y, { width: 120 });
       doc.text(`−${this.formatAmount(paid, currency)}`, x + 110, y, { width: 127, align: "right" });

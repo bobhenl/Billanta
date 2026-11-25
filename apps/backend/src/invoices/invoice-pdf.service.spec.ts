@@ -299,3 +299,42 @@ describe("InvoicePdfService.generateLetter", () => {
     expect(pdf.subarray(-6).toString("latin1").trim()).toBe("%%EOF");
   });
 });
+
+describe("InvoicePdfService paid documents and foreign buyers", () => {
+  async function render(invoice: InvoiceRow, contact: ContactRow = makeContact()) {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const qr = vi.spyOn(QRCode, "toBuffer");
+    const lineItems = makeLineItems();
+    const totals = computeVatBreakdown(lineItems);
+    await new InvoicePdfService().generate(invoice, contact, makeTenant({ bankAccountIban: "CZ6508000000192000145399" }), lineItems, totals);
+    const out = { lines: text.mock.calls.map((c) => String(c[0])), qr: qr.mock.calls.map((c) => String(c[0])), total: totals.totalWithVat };
+    text.mockRestore();
+    qr.mockRestore();
+    return out;
+  }
+
+  it("asks a paid invoice for nothing: no payment QR, and zero left to pay", async () => {
+    const paid = await render(makeInvoice({ status: "paid" }));
+    expect(paid.qr.some((p) => p.startsWith("SPD*"))).toBe(false);
+    expect(paid.qr.some((p) => p.startsWith("SID*"))).toBe(true);
+    expect(paid.lines).toContain("Celkem");
+    expect(paid.lines).not.toContain("Celkem k úhradě");
+    expect(paid.lines).toContain("Zbývá uhradit");
+    expect(paid.lines.some((l) => /^0,00\s/.test(l))).toBe(true);
+  });
+
+  it("keeps the payment QR for the rest after a partial payment", async () => {
+    const partial = await render(makeInvoice({ amountPaid: "100.00" }));
+    expect(partial.qr.find((p) => p.startsWith("SPD*"))).toMatch(new RegExp(`AM:${(partial.total - 100).toFixed(2)}\*`));
+    expect(partial.lines).toContain("Zbývá uhradit");
+    const unpaid = await render(makeInvoice());
+    expect(unpaid.lines).toContain("Celkem k úhradě");
+    expect(unpaid.lines).not.toContain("Zbývá uhradit");
+  });
+
+  it("prints the country of a buyer abroad, not of a domestic one", async () => {
+    expect((await render(makeInvoice(), makeContact({ addressCountry: "US" }))).lines).toContain("Spojené státy");
+    expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "US" }))).lines).toContain("United States");
+    expect((await render(makeInvoice(), makeContact({ addressCountry: "CZ" }))).lines.some((l) => l === "Česko")).toBe(false);
+  });
+});
