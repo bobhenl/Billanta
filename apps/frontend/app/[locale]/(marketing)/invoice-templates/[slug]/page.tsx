@@ -69,7 +69,7 @@ export default async function InvoiceTemplatePage({ params }: { params: Promise<
         <div className="min-w-0 lg:sticky lg:top-24 lg:order-2">
           <InvoiceTemplateSample tpl={tpl} />
           <div className="mt-5">
-            <Link href={`/create-invoice?template=${slug}`} className={cn(buttonClass.primary, 'inline-flex w-full items-center gap-2 sm:w-auto')}>
+            <Link href={`/create-invoice?template=${slug}`} className={cn(buttonClass.primary, 'w-full px-5 py-2.5 sm:w-auto')}>
               {t('common.useButton')}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>

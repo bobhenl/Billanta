@@ -82,10 +82,10 @@ export default async function TeamRolesPage({ params }: { params: Promise<{ loca
         ])}
       />
       <PageIntro eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')}>
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {tc('signup')}
         </Link>
-        <Link href="/features/team-and-roles" className={buttonClass.secondary}>
+        <Link href="/features/team-and-roles" className={cn(buttonClass.secondary, 'px-6 py-3')}>
           {t('featureLink')}
         </Link>
       </PageIntro>

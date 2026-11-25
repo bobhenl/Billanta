@@ -140,7 +140,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       <div className="mt-10 rounded-2xl border border-primary/20 bg-primary/5 p-6">
         <h2 className="text-lg font-bold">{t('ctaTitle')}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t('ctaBody')}</p>
-        <Link href="/signup" className={cn(buttonClass.primary, 'mt-4 w-full sm:w-auto')}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'mt-4 w-full px-5 py-2.5 sm:w-auto')}>
           {t('ctaButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>

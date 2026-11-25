@@ -7,6 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const PATH = '/events';
 
@@ -52,15 +53,15 @@ export default async function EventsPage({ params }: { params: Promise<{ locale:
       <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
       <div className="mt-6 flex flex-wrap gap-2">
         {mailto && (
-          <a href={mailto} className={buttonClass.primary}>
+          <a href={mailto} className={cn(buttonClass.primary, 'px-6 py-3')}>
             <Mail className="h-4 w-4" aria-hidden="true" />
             {t('contact.cta')}
           </a>
         )}
-        <Link href="/demo" className={mailto ? buttonClass.secondary : buttonClass.primary}>
+        <Link href="/demo" className={cn(mailto ? buttonClass.secondary : buttonClass.primary, 'px-6 py-3')}>
           {t('demoCta')}
         </Link>
-        <ShareQr />
+        <ShareQr className="py-3" />
       </div>
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('offerTitle')}</h2>

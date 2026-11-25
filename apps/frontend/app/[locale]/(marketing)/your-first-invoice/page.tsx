@@ -54,14 +54,14 @@ export default async function FirstInvoicePage({ params }: { params: Promise<{ l
         ])}
       />
       <PageIntro eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')}>
-        <Link href="/create-invoice" className={buttonClass.primary}>
+        <Link href="/create-invoice" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {t('guestCta')}
         </Link>
-        <Link href={{ pathname: '/demo', query: { for: 'firstInvoice' } }} className={buttonClass.secondary}>
+        <Link href={{ pathname: '/demo', query: { for: 'firstInvoice' } }} className={cn(buttonClass.secondary, 'px-6 py-3')}>
           <PlayCircle className="h-4 w-4" aria-hidden="true" />
           {t('demoCta')}
         </Link>
-        <ShareQr />
+        <ShareQr className="py-3" />
       </PageIntro>
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('contentTitle')}</h2>
@@ -89,7 +89,7 @@ export default async function FirstInvoicePage({ params }: { params: Promise<{ l
         <h2 className="text-xl font-bold tracking-tight">{t('ctaBox.title')}</h2>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground sm:text-base">{t('ctaBox.body')}</p>
         {/* The hero already offers the guest editor; this box is the one signup ask. */}
-        <Link href="/signup" className={cn(buttonClass.primary, 'mt-4')}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'mt-4 w-full px-6 py-3 sm:w-auto')}>
           {tc('signup')}
         </Link>
       </div>

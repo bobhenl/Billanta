@@ -8,6 +8,7 @@ import { CALCULATORS, isPublishedIn } from '@/lib/public-tools';
 import { breadcrumbLd, jsonLd, publicPageMetadata, webPageLd } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const PATH = '/tax-return-basis';
 // The year in the title and the deadlines move on by themselves.
@@ -82,10 +83,10 @@ export default async function TaxReturnBasisLanding({ params }: { params: Promis
       <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title', { year })}</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground sm:text-lg">{t('lead')}</p>
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {t('cta')}
         </Link>
-        <Link href="/demo" className={buttonClass.secondary}>
+        <Link href="/demo" className={cn(buttonClass.secondary, 'px-6 py-3')}>
           {t('demo')}
         </Link>
       </div>

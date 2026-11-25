@@ -8,6 +8,7 @@ import { Link } from '@/i18n/navigation';
 import { breadcrumbLd, jsonLd, publicPageMetadata } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/site';
 import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 const PATH = '/invoicing-for-advanced';
 
@@ -51,14 +52,14 @@ export default async function AdvancedPage({ params }: { params: Promise<{ local
         ])}
       />
       <PageIntro eyebrow={t('eyebrow')} title={t('title')} lead={t('lead')}>
-        <Link href="/signup" className={buttonClass.primary}>
+        <Link href="/signup" className={cn(buttonClass.primary, 'px-6 py-3')}>
           {tc('signup')}
         </Link>
-        <Link href={{ pathname: '/demo', query: { for: 'advanced' } }} className={buttonClass.secondary}>
+        <Link href={{ pathname: '/demo', query: { for: 'advanced' } }} className={cn(buttonClass.secondary, 'px-6 py-3')}>
           <PlayCircle className="h-4 w-4" aria-hidden="true" />
           {tc('demo')}
         </Link>
-        <ShareQr />
+        <ShareQr className="py-3" />
       </PageIntro>
 
       <h2 className="mt-12 text-xl font-bold tracking-tight">{t('topicsTitle')}</h2>

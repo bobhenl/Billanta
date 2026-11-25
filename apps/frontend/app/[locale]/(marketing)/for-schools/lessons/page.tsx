@@ -97,7 +97,7 @@ export default async function SchoolLessonsIndex({ params }: { params: Promise<P
           ))}
         </ul>
         <p className="mt-4 text-sm text-muted-foreground">{t('rvpNote')}</p>
-        <Link href="/demo" className={`${buttonClass.primary} mt-6`}>
+        <Link href="/demo" className={`${buttonClass.primary} mt-6 px-5 py-2.5`}>
           {t('demoCta')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>

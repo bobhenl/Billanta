@@ -7,6 +7,8 @@ import { Link } from '@/i18n/navigation';
 import { useCreateInvoiceHref } from '@/components/marketing-account-links';
 import { MobileTabBar } from '@/components/mobile-tab-bar';
 import { GUIDES_HUB_LOCALES } from '@/lib/public-tools';
+import { buttonClass } from '@/lib/ui-classes';
+import { cn } from '@/lib/utils';
 
 /**
  * Phone tab bar for the public site, in VoxelRank's order: home, a
@@ -73,13 +75,13 @@ export function MarketingTabBar() {
           <div className="flex gap-2">
             <Link
               href="/signup"
-              className="inline-flex flex-1 items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+              className={cn(buttonClass.primary, 'flex-1 py-2.5')}
             >
               {t('signup')}
             </Link>
             <Link
               href="/login"
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold"
+              className={cn(buttonClass.secondary, 'flex-1 py-2.5')}
             >
               <LogIn className="h-4 w-4" aria-hidden="true" />
               {t('login')}

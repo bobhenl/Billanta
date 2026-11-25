@@ -88,7 +88,7 @@ export default async function InvoiceTemplatesHub({ params }: { params: Promise<
             </li>
           ))}
         </ol>
-        <Link href="/create-invoice" className={cn(buttonClass.primary, 'mt-6 inline-flex items-center gap-2')}>
+        <Link href="/create-invoice" className={cn(buttonClass.primary, 'mt-6 px-5 py-2.5')}>
           {t('common.useButton')}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
