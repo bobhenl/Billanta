@@ -1,3 +1,5 @@
+import { round2 } from "./invoice-total.util";
+
 /**
  * Pure predicate for "is this invoice due for an overdue-payment reminder
  * today?" — the same rule is expressed twice elsewhere as SQL, and this
@@ -22,10 +24,27 @@ export interface ReminderEligibilityInput {
   lastReminderSentAt: Date | null;
   /** Reminders already sent; the sweep stops at the tenant's maximum. */
   reminderCount?: number;
+  /** Omitted means an invoice. */
+  documentType?: string;
 }
 
 /** Default cooldown; tenants can change it in Settings → Invoices (`reminderPrefsOf`). */
 export const REMINDER_COOLDOWN_DAYS = 7;
+
+/**
+ * Only these ask the customer for money. A quote is an offer and a credit
+ * note gives money back, so neither may get a payment reminder.
+ */
+export const REMINDABLE_DOCUMENT_TYPES = ["invoice", "proforma"] as const;
+
+export function isRemindableDocument(documentType: string): boolean {
+  return (REMINDABLE_DOCUMENT_TYPES as readonly string[]).includes(documentType);
+}
+
+/** What the customer still owes after partial payments, never below zero. */
+export function amountLeftToPay(total: number, amountPaid: string | number | null | undefined): number {
+  return Math.max(0, round2(total - Number(amountPaid ?? 0)));
+}
 
 export function isDueForReminder(
   invoice: ReminderEligibilityInput,
@@ -36,6 +55,9 @@ export function isDueForReminder(
     return false;
   }
   if (invoice.status !== "issued") {
+    return false;
+  }
+  if (!isRemindableDocument(invoice.documentType ?? "invoice")) {
     return false;
   }
   if (!invoice.dueDate || invoice.dueDate.getTime() >= now.getTime()) {

@@ -3,7 +3,7 @@ import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EmailService } from "../email/email.service";
 import type { InvoicePdfService } from "./invoice-pdf.service";
-import { customerRequiredError, InvoicesService, rateAfterEdit, rateModeAfterEdit } from "./invoices.service";
+import { customerRequiredError, InvoicesService, isOverdue, proformaDeposit, rateAfterEdit, rateModeAfterEdit } from "./invoices.service";
 
 // The sending guard has its own spec; here it always allows the send.
 vi.mock("../abuse/sending-guard", () => ({ assertCanSendEmail: vi.fn(async () => undefined), recordEmailSent: vi.fn(async () => undefined) }));
@@ -173,6 +173,8 @@ describe("InvoicesService.sendInvoice", () => {
       // the readable links, never the bare key or uuid
       publicLink: "2026-0001-aZ09bY18cX27",
       clientPortalLink: "acme-s-r-o-Qw12Er34Ty56",
+      language: "cs",
+      documentType: "invoice",
       credit: {
         label: "Vystaveno v aplikaci Billanta",
         url: expect.stringMatching(/\/cs\?utm_source=invoice&utm_medium=footer&utm_content=email&ref=AbCd1234$/),
@@ -232,6 +234,64 @@ describe("InvoicesService.sendInvoice", () => {
 
     await expect(service.sendInvoice(db, "inv-1")).rejects.toThrow("Resend outage");
     expect(update).not.toHaveBeenCalled();
+  });
+
+  it("asks for the rest after a partial payment, in the invoice's language", async () => {
+    const invoice = makeInvoice({ amountPaid: "815.00", language: "sk" });
+    const select = vi
+      .fn()
+      .mockReturnValueOnce(makeSelectChain([invoice]))
+      .mockReturnValueOnce(makeSelectChain([makeContact()]))
+      .mockReturnValueOnce(makeSelectChain(lineItems))
+      .mockReturnValueOnce(makeSelectChain([{ companyName: "Vejtom", publicProfile: {}, invoiceFormPrefs: {} }]))
+      .mockReturnValueOnce(makeSelectChain([{ planEnforced: true, invoiceFormPrefs: {}, referralCode: null }]));
+    const update = vi.fn().mockReturnValue(makeUpdateChain([invoice]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = { select, update } as any;
+
+    await service.sendInvoice(db, "inv-1");
+
+    expect(emailService.sendInvoiceEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: "1000.00 CZK", // 1815 − 815
+        language: "sk",
+        credit: expect.objectContaining({ label: "Vystavené v aplikácii Billanta", url: expect.stringContaining("/sk?") }),
+      }),
+      expect.anything(),
+    );
+  });
+});
+
+describe("InvoicesService.sendReminder", () => {
+  it("refuses to chase a credit note or a quote for payment", async () => {
+    const emailService = { sendPaymentReminderEmail: vi.fn() };
+    const service = new InvoicesService(emailService as unknown as EmailService, { generate: vi.fn() } as unknown as InvoicePdfService);
+    for (const documentType of ["credit_note", "quote"]) {
+      const select = vi.fn().mockReturnValueOnce(makeSelectChain([makeInvoice({ documentType, dueDate: new Date("2020-01-01") })]));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await expect(service.sendReminder({ select } as any, "inv-1")).rejects.toThrow("not_remindable");
+    }
+    expect(emailService.sendPaymentReminderEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe("isOverdue", () => {
+  const past = new Date("2020-01-01");
+  it("is true for an issued invoice or proforma past due, never for a credit note or quote", () => {
+    expect(isOverdue({ status: "issued", documentType: "invoice", dueDate: past })).toBe(true);
+    expect(isOverdue({ status: "issued", documentType: "proforma", dueDate: past })).toBe(true);
+    expect(isOverdue({ status: "issued", documentType: "credit_note", dueDate: past })).toBe(false);
+    expect(isOverdue({ status: "issued", documentType: "quote", dueDate: past })).toBe(false);
+  });
+});
+
+describe("proformaDeposit", () => {
+  it("is what a paid proforma covered on its final invoice, and zero otherwise", () => {
+    expect(proformaDeposit({ documentType: "invoice", amountPaid: "1815.00" }, { documentType: "proforma", status: "paid" })).toBe(1815);
+    // an unpaid proforma, a payment on a plain invoice, a credit note
+    expect(proformaDeposit({ documentType: "invoice", amountPaid: "1815.00" }, { documentType: "proforma", status: "issued" })).toBe(0);
+    expect(proformaDeposit({ documentType: "invoice", amountPaid: "1815.00" }, null)).toBe(0);
+    expect(proformaDeposit({ documentType: "credit_note", amountPaid: "100" }, { documentType: "proforma", status: "paid" })).toBe(0);
   });
 });
 

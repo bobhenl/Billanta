@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { and, eq, isNull, lt, ne, or, sql as dsql } from "drizzle-orm";
+import { and, eq, inArray, isNull, lt, ne, or, sql as dsql } from "drizzle-orm";
+import { REMINDABLE_DOCUMENT_TYPES } from "./invoice-reminders.util";
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import type { EmailCustomization } from "../email/email.service";
 import { emailCustomizationOf, emailPrefsOf } from "../tenants/email-prefs";
@@ -10,7 +11,7 @@ import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
 import * as schema from "../../drizzle/schema";
 import { DbService } from "../db/db.service";
 import { drizzleTx } from "../db/drizzle-tx";
-import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, type BrandCredit } from "./brand-credit";
+import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf, type BrandCredit } from "./brand-credit";
 
 export interface OverdueInvoiceForReminder {
   invoice: typeof schema.invoices.$inferSelect;
@@ -133,6 +134,8 @@ export class InvoiceRemindersRepository {
         .where(
           and(
             eq(schema.invoices.status, "issued"),
+            // Quotes and credit notes ask for no money (isDueForReminder).
+            inArray(schema.invoices.documentType, [...REMINDABLE_DOCUMENT_TYPES]),
             // History brought in from another system: its old system already did the chasing.
             ne(schema.invoices.source, "import"),
             lt(schema.invoices.dueDate, new Date()),
@@ -144,7 +147,6 @@ export class InvoiceRemindersRepository {
           ),
         );
 
-      const credit = tenant ? brandCreditFor(tenant, "cs", "email") : null;
       const results: OverdueInvoiceForReminder[] = [];
       for (const row of rows) {
         const lineItems = await db
@@ -165,7 +167,8 @@ export class InvoiceRemindersRepository {
           clientPortalLink: buyer ? clientPortalLinkOf(docTenant, buyer) : null,
           lineItems,
           custom,
-          credit,
+          // In the reminder's language, which follows the invoice.
+          credit: tenant ? brandCreditFor(tenant, creditLangOf(row.invoice.language), "email") : null,
         });
       }
       return results;

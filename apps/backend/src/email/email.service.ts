@@ -23,6 +23,10 @@ export interface SendInvoiceEmailParams {
   corrected?: boolean;
   /** The "Vystaveno v Billantě" line under the card; null when the company switched it off (invoices/brand-credit.ts). */
   credit?: BrandCredit | null;
+  /** The document's language (`invoices.language`); the customer reads the e-mail in it. Defaults to Czech. */
+  language?: string | null;
+  /** `invoices.document_type`; a credit note gets its own wording, since it asks for no payment. */
+  documentType?: string | null;
 }
 
 export interface EmailAttachment {
@@ -134,24 +138,31 @@ export class EmailService {
   }
 
   async sendInvoiceEmail(params: SendInvoiceEmailParams, queue: EmailQueueOptions): Promise<void> {
+    const lang = emailLangOf(params.language);
+    const l = EMAIL_LABELS[lang];
+    const creditNote = params.documentType === "credit_note";
+    const n = params.invoiceNumber;
     const values = placeholderValues(params);
     const c = params.custom;
     const custom = c?.subject ? fillTemplate(c.subject, values) : null;
     const subject = params.corrected
       ? custom
-        ? `Oprava: ${custom}`
-        : `Opravená faktura ${params.invoiceNumber}`
-      : (custom ?? `Faktura ${params.invoiceNumber}`);
-    const correctedNote = "Posíláme opravenou verzi faktury, kterou jste od nás už dostali. Předchozí verzi prosím nahraďte touto.";
+        ? `${l.correctionPrefix} ${custom}`
+        : l.correctedSubject(n)
+      : (custom ?? (creditNote ? l.creditNoteSubject(n) : l.invoiceSubject(n)));
     const html = renderInvoiceEmailHtml({
-      heading: params.corrected ? `Opravená faktura ${params.invoiceNumber}` : `Nová faktura ${params.invoiceNumber}`,
+      lang,
+      creditNote,
+      heading: params.corrected ? l.correctedSubject(n) : creditNote ? l.creditNoteSubject(n) : l.invoiceHeading(n),
       intro: c?.message
-        ? (params.corrected ? `${correctedNote}
+        ? (params.corrected ? `${l.correctedNote}
 
 ` : "") + fillTemplate(c.message, values)
         : params.corrected
-          ? correctedNote
-          : "Byla vám vystavena nová faktura. Podrobnosti a možnosti úhrady najdete níže.",
+          ? l.correctedNote
+          : creditNote
+            ? l.creditNoteIntro
+            : l.invoiceIntro,
       invoiceNumber: params.invoiceNumber,
       amount: params.amount,
       dueDate: params.dueDate,
@@ -166,18 +177,20 @@ export class EmailService {
   }
 
   async sendPaymentReminderEmail(params: SendPaymentReminderEmailParams, queue: EmailQueueOptions): Promise<void> {
+    const lang = emailLangOf(params.language);
+    const l = EMAIL_LABELS[lang];
     const values = { ...placeholderValues(params), reminder_no: String(params.reminderCount) };
     const c = params.custom;
-    const subject = c?.subject
-      ? fillTemplate(c.subject, values)
-      : `Upomínka: faktura ${params.invoiceNumber} je po splatnosti`;
+    const subject = c?.subject ? fillTemplate(c.subject, values) : l.reminderSubject(params.invoiceNumber);
     const html = renderInvoiceEmailHtml({
-      heading: `Upomínka – faktura ${params.invoiceNumber} po splatnosti`,
+      lang,
+      creditNote: false,
+      heading: l.reminderHeading(params.invoiceNumber),
       intro: c?.message
         ? fillTemplate(c.message, values)
         : params.reminderCount > 1
-          ? `Toto je upomínka č. ${params.reminderCount} – faktura stále nebyla uhrazena.`
-          : "Tato faktura je po splatnosti a podle našich záznamů dosud nebyla uhrazena.",
+          ? l.reminderAgain(params.reminderCount)
+          : l.reminderFirst,
       invoiceNumber: params.invoiceNumber,
       amount: params.amount,
       dueDate: params.dueDate,
@@ -378,7 +391,126 @@ function simpleMessageHtml(params: { title: string; body?: string | null; url?: 
  * (that's a separate, concurrently-built module) — this is the URL contract
  * that page is expected to implement.
  */
+type EmailLang = "cs" | "sk" | "en";
+
+function emailLangOf(language: string | null | undefined): EmailLang {
+  return language === "sk" || language === "en" ? language : "cs";
+}
+
+/** Wording of the invoice and reminder e-mails per document language. */
+const EMAIL_LABELS: Record<
+  EmailLang,
+  {
+    invoiceSubject: (n: string) => string;
+    invoiceHeading: (n: string) => string;
+    invoiceIntro: string;
+    creditNoteSubject: (n: string) => string;
+    creditNoteIntro: string;
+    correctedSubject: (n: string) => string;
+    correctionPrefix: string;
+    correctedNote: string;
+    reminderSubject: (n: string) => string;
+    reminderHeading: (n: string) => string;
+    reminderFirst: string;
+    reminderAgain: (count: number) => string;
+    invoiceNumber: string;
+    documentNumber: string;
+    amount: string;
+    dueDate: string;
+    notStated: string;
+    viewInvoice: string;
+    viewDocument: string;
+    allDocuments: string;
+    attachments: string;
+    unexpected: string;
+    report: string;
+    dateLocale: string;
+  }
+> = {
+  cs: {
+    invoiceSubject: (n) => `Faktura ${n}`,
+    invoiceHeading: (n) => `Nová faktura ${n}`,
+    invoiceIntro: "Byla vám vystavena nová faktura. Podrobnosti a možnosti úhrady najdete níže.",
+    creditNoteSubject: (n) => `Opravný daňový doklad ${n}`,
+    creditNoteIntro: "Posíláme vám opravný daňový doklad, který snižuje částku původní faktury. Podrobnosti najdete níže.",
+    correctedSubject: (n) => `Opravená faktura ${n}`,
+    correctionPrefix: "Oprava:",
+    correctedNote: "Posíláme opravenou verzi faktury, kterou jste od nás už dostali. Předchozí verzi prosím nahraďte touto.",
+    reminderSubject: (n) => `Upomínka: faktura ${n} je po splatnosti`,
+    reminderHeading: (n) => `Upomínka – faktura ${n} po splatnosti`,
+    reminderFirst: "Tato faktura je po splatnosti a podle našich záznamů dosud nebyla uhrazena.",
+    reminderAgain: (count) => `Toto je upomínka č. ${count} – faktura stále nebyla uhrazena.`,
+    invoiceNumber: "Číslo faktury",
+    documentNumber: "Číslo dokladu",
+    amount: "Částka",
+    dueDate: "Splatnost",
+    notStated: "neuvedeno",
+    viewInvoice: "Zobrazit fakturu",
+    viewDocument: "Zobrazit doklad",
+    allDocuments: "Všechny vaše doklady na jednom místě",
+    attachments: "Přílohy",
+    unexpected: "Nečekali jste tento doklad?",
+    report: "Nahlaste ho",
+    dateLocale: "cs-CZ",
+  },
+  sk: {
+    invoiceSubject: (n) => `Faktúra ${n}`,
+    invoiceHeading: (n) => `Nová faktúra ${n}`,
+    invoiceIntro: "Bola vám vystavená nová faktúra. Podrobnosti a možnosti úhrady nájdete nižšie.",
+    creditNoteSubject: (n) => `Dobropis ${n}`,
+    creditNoteIntro: "Posielame vám dobropis, ktorý znižuje sumu pôvodnej faktúry. Podrobnosti nájdete nižšie.",
+    correctedSubject: (n) => `Opravená faktúra ${n}`,
+    correctionPrefix: "Oprava:",
+    correctedNote: "Posielame opravenú verziu faktúry, ktorú ste od nás už dostali. Predchádzajúcu verziu, prosím, nahraďte touto.",
+    reminderSubject: (n) => `Upomienka: faktúra ${n} je po splatnosti`,
+    reminderHeading: (n) => `Upomienka – faktúra ${n} po splatnosti`,
+    reminderFirst: "Táto faktúra je po splatnosti a podľa našich záznamov ešte nebola uhradená.",
+    reminderAgain: (count) => `Toto je upomienka č. ${count} – faktúra stále nebola uhradená.`,
+    invoiceNumber: "Číslo faktúry",
+    documentNumber: "Číslo dokladu",
+    amount: "Suma",
+    dueDate: "Splatnosť",
+    notStated: "neuvedená",
+    viewInvoice: "Zobraziť faktúru",
+    viewDocument: "Zobraziť doklad",
+    allDocuments: "Všetky vaše doklady na jednom mieste",
+    attachments: "Prílohy",
+    unexpected: "Nečakali ste tento doklad?",
+    report: "Nahláste ho",
+    dateLocale: "sk-SK",
+  },
+  en: {
+    invoiceSubject: (n) => `Invoice ${n}`,
+    invoiceHeading: (n) => `New invoice ${n}`,
+    invoiceIntro: "A new invoice has been issued to you. You will find the details and payment options below.",
+    creditNoteSubject: (n) => `Credit note ${n}`,
+    creditNoteIntro: "We are sending you a credit note that reduces the amount of the original invoice. You will find the details below.",
+    correctedSubject: (n) => `Corrected invoice ${n}`,
+    correctionPrefix: "Correction:",
+    correctedNote: "This is a corrected version of an invoice you already received from us. Please replace the earlier version with this one.",
+    reminderSubject: (n) => `Reminder: invoice ${n} is overdue`,
+    reminderHeading: (n) => `Reminder – invoice ${n} is overdue`,
+    reminderFirst: "This invoice is past its due date and according to our records has not been paid yet.",
+    reminderAgain: (count) => `This is reminder no. ${count} – the invoice has still not been paid.`,
+    invoiceNumber: "Invoice number",
+    documentNumber: "Document number",
+    amount: "Amount",
+    dueDate: "Due date",
+    notStated: "not stated",
+    viewInvoice: "View invoice",
+    viewDocument: "View document",
+    allDocuments: "All your documents in one place",
+    attachments: "Attachments",
+    unexpected: "Didn't expect this document?",
+    report: "Report it",
+    dateLocale: "en-GB",
+  },
+};
+
 function renderInvoiceEmailHtml(params: {
+  lang: EmailLang;
+  /** A credit note asks for no payment: no due date row, "document" instead of "invoice". */
+  creditNote: boolean;
   heading: string;
   intro: string;
   invoiceNumber: string;
@@ -394,12 +526,13 @@ function renderInvoiceEmailHtml(params: {
   const portalUrl = portalUrlOf(params.publicLink);
   const accent = params.accent && /^#[0-9a-fA-F]{6}$/.test(params.accent) ? params.accent : "#111827";
   const paragraphs = (text: string) => escapeHtml(text).replace(/\r?\n/g, "<br>");
+  const l = EMAIL_LABELS[params.lang];
   const dueDateFormatted = params.dueDate
-    ? params.dueDate.toLocaleDateString("cs-CZ", { year: "numeric", month: "2-digit", day: "2-digit" })
-    : "neuvedeno";
+    ? params.dueDate.toLocaleDateString(l.dateLocale, { year: "numeric", month: "2-digit", day: "2-digit" })
+    : l.notStated;
 
   return `<!doctype html>
-<html lang="cs">
+<html lang="${params.lang}">
   <body style="font-family: -apple-system, Helvetica, Arial, sans-serif; background:#f4f5f7; margin:0; padding:24px;">
     <table role="presentation" width="100%" style="max-width:560px; margin:0 auto; background:#ffffff; border-radius:8px; overflow:hidden;">
       <tr>
@@ -408,29 +541,33 @@ function renderInvoiceEmailHtml(params: {
           <p style="font-size:14px; color:#333; margin:0 0 24px; line-height:1.5;">${paragraphs(params.intro)}</p>
           <table role="presentation" width="100%" style="font-size:14px; color:#333; margin-bottom:24px; border-collapse:collapse;">
             <tr>
-              <td style="padding:6px 0; color:#666;">Číslo faktury</td>
+              <td style="padding:6px 0; color:#666;">${params.creditNote ? l.documentNumber : l.invoiceNumber}</td>
               <td style="padding:6px 0; text-align:right;"><strong>${escapeHtml(params.invoiceNumber)}</strong></td>
             </tr>
             <tr>
-              <td style="padding:6px 0; color:#666;">Částka</td>
+              <td style="padding:6px 0; color:#666;">${l.amount}</td>
               <td style="padding:6px 0; text-align:right;"><strong>${escapeHtml(params.amount)}</strong></td>
             </tr>
-            <tr>
-              <td style="padding:6px 0; color:#666;">Splatnost</td>
+            ${
+              params.creditNote
+                ? ""
+                : `<tr>
+              <td style="padding:6px 0; color:#666;">${l.dueDate}</td>
               <td style="padding:6px 0; text-align:right;">${escapeHtml(dueDateFormatted)}</td>
-            </tr>
+            </tr>`
+            }
           </table>
           <p style="text-align:center; margin:0 0 8px;">
-            <a href="${portalUrl}" style="display:inline-block; background:${accent}; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px;">Zobrazit fakturu</a>
+            <a href="${portalUrl}" style="display:inline-block; background:${accent}; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px;">${params.creditNote ? l.viewDocument : l.viewInvoice}</a>
           </p>
           ${
             params.clientPortalLink
-              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalLink)}" style="color:${accent};">Všechny vaše doklady na jednom místě</a></p>`
+              ? `<p style="text-align:center; font-size:13px; margin:12px 0 0;"><a href="${clientPortalUrlOf(params.clientPortalLink)}" style="color:${accent};">${l.allDocuments}</a></p>`
               : ""
           }
           ${
             params.attachmentNames?.length
-              ? `<p style="font-size:13px; color:#555; margin:20px 0 0;">Přílohy: ${params.attachmentNames.map(escapeHtml).join(", ")}</p>`
+              ? `<p style="font-size:13px; color:#555; margin:20px 0 0;">${l.attachments}: ${params.attachmentNames.map(escapeHtml).join(", ")}</p>`
               : ""
           }
           ${params.signature ? `<p style="font-size:14px; color:#333; margin:20px 0 0; line-height:1.5;">${paragraphs(params.signature)}</p>` : ""}
@@ -438,7 +575,7 @@ function renderInvoiceEmailHtml(params: {
             ${escapeHtml(portalUrl)}
           </p>
           <p style="font-size:11px; color:#aaa; text-align:center; margin-top:8px;">
-            Nečekali jste tento doklad? <a href="${portalUrl}?report=1" style="color:#888;">Nahlaste ho</a>.
+            ${l.unexpected} <a href="${portalUrl}?report=1" style="color:#888;">${l.report}</a>.
           </p>
         </td>
       </tr>
@@ -459,7 +596,7 @@ function placeholderValues(params: SendInvoiceEmailParams): Record<string, strin
     number: params.invoiceNumber,
     amount: params.amount,
     due_date: params.dueDate
-      ? params.dueDate.toLocaleDateString("cs-CZ", { year: "numeric", month: "2-digit", day: "2-digit" })
+      ? params.dueDate.toLocaleDateString(EMAIL_LABELS[emailLangOf(params.language)].dateLocale, { year: "numeric", month: "2-digit", day: "2-digit" })
       : "",
     company: params.custom?.companyName ?? "",
     customer: params.custom?.customerName ?? "",

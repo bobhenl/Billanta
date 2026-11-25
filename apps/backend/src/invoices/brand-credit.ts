@@ -10,6 +10,10 @@ import { planSummary, type TenantPlanFields } from "../billing/plan-access";
 export const BRAND_NAME = "Billanta";
 
 export type CreditLang = "cs" | "sk" | "en";
+/** A document's language as a credit language; anything unknown falls back to Czech. */
+export function creditLangOf(language: string | null | undefined): CreditLang {
+  return language === "sk" || language === "en" ? language : "cs";
+}
 /** Where the reader saw the line, sent as `utm_content`. */
 export type CreditPlacement = "pdf" | "email" | "page";
 
