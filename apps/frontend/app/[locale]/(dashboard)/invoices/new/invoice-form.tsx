@@ -167,7 +167,7 @@ const lineBase = (row: Row) => num(row.quantity) * num(row.unitPrice) * (1 - Mat
 /** `issued`: "Přesto upravit" on an issued or paid document – needs a reason, never re-issues. */
 export type InvoiceFormMode =
   | { kind: 'create'; templateId?: string | null }
-  | { kind: 'edit'; id: string; issued?: boolean; reason?: string };
+  | { kind: 'edit'; id: string; issued?: boolean; reason?: string; amountPaid?: number };
 
 /**
  * The invoice form – new drafts and editing an existing one. Three ways in,
@@ -293,7 +293,10 @@ export function InvoiceForm({
     return wanted && defaults.bankAccounts.some((a) => a.id === wanted) ? wanted : '';
   });
   const [loadingRate, setLoadingRate] = useState(false);
-  const [paidValue, setPaidValue] = useState('');
+  // A draft made from a bank or PayPal payment already carries what was paid; show it instead of hiding it.
+  const [paidValue, setPaidValue] = useState(() =>
+    mode.kind === 'edit' && !mode.issued && mode.amountPaid && mode.amountPaid > 0 ? String(mode.amountPaid) : ''
+  );
   const [paidUnit, setPaidUnit] = useState<'amount' | 'percent'>('amount');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(template?.paymentMethod ?? defaults.paymentMethod);
   const [paymentMethodLabel, setPaymentMethodLabel] = useState(template?.paymentMethodLabel ?? '');
@@ -409,7 +412,7 @@ export function InvoiceForm({
       }
       return !open;
     });
-  const [paidOpen, setPaidOpen] = useState(false);
+  const [paidOpen, setPaidOpen] = useState(() => paidValue !== '');
 
   const [prefilledByAi, setPrefilledByAi] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -694,7 +697,8 @@ export function InvoiceForm({
           issuedByName,
           customFields,
           // A paid document keeps its payment; the backend moves it to a changed total.
-          amountPaid: issuedEdit ? undefined : paidAmount,
+          // Editing a draft sends 0 when the field is cleared, so a wrong prepaid amount can be removed.
+          amountPaid: issuedEdit ? undefined : editing ? (paidAmount ?? 0) : paidAmount,
           items,
           prefilledByAi,
           templateId: mode.kind === 'create' ? mode.templateId : null
