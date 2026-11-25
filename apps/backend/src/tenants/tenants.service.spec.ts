@@ -19,6 +19,15 @@ describe("TenantsService.findById", () => {
     expect(tenant).toMatchObject({ companyName: "Firma", hasStripeKey: true, hasLogo: false });
   });
 
+  it("leaves out the tax model, which only owners and admins read", async () => {
+    const [tenant] = await new TenantsService().findById(
+      dbReturning([{ id: "t1", companyName: "Firma", logoData: null, taxModel: { partners: [{ name: "Partner A", credit: 30840 }] } }]),
+      "t1",
+    );
+    expect(tenant).not.toHaveProperty("taxModel");
+    expect(JSON.stringify(tenant)).not.toContain("Partner A");
+  });
+
   it("says no Stripe key when none is stored", async () => {
     const [tenant] = await new TenantsService().findById(dbReturning([{ id: "t1", stripeSecretKeyEncrypted: null, logoData: null }]), "t1");
     expect(tenant).toMatchObject({ hasStripeKey: false });

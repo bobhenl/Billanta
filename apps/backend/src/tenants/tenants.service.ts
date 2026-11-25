@@ -85,7 +85,9 @@ export class TenantsService {
       ? ((await db.execute<{ left: number }>(sql`SELECT demo_ai_calls_left(${id}, ${demoConfig().aiPerSession}) AS left`))[0]?.left ?? 0)
       : null;
     const countryLocked = rows[0] ? await isCountryLocked(db) : false;
-    return rows.map(({ aiApiKeyEncrypted: _aiKey, stripeSecretKeyEncrypted, logoData, ...tenant }) => ({
+    // The tax model (partners, their credits and shares) is owner/admin only and is read through
+    // GET /tenants/me/tax-model; this row goes to every member.
+    return rows.map(({ aiApiKeyEncrypted: _aiKey, stripeSecretKeyEncrypted, logoData, taxModel: _taxModel, ...tenant }) => ({
       ...tenant,
       hasStripeKey: Boolean(stripeSecretKeyEncrypted),
       taxAdvances: normalizeTaxAdvances(tenant.taxAdvances),
