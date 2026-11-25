@@ -40,7 +40,7 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
   const open = () => {
     const rect = button.current?.getBoundingClientRect();
     if (!rect) return;
-    setPos(menuPosition(rect, 260));
+    setPos(menuPosition(rect, items.length));
   };
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, done: string) => {

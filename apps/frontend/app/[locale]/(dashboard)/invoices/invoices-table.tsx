@@ -653,7 +653,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const open = () => {
     const rect = button.current?.getBoundingClientRect();
     if (!rect) return;
-    setPos(menuPosition(rect, 360));
+    setPos(menuPosition(rect, items.length));
   };
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) => {
