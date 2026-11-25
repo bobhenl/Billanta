@@ -763,7 +763,7 @@ export default async function InvoicesPage(props: { searchParams: Promise<Filter
         </FilterGroup>
       </FilterPanel>
 
-      <InvoicesTable rows={invoices} filtered={Boolean(query)} home={home} />
+      <InvoicesTable rows={invoices} filtered={Boolean(query)} home={home} newHref="/invoices/new" />
     </div>
   );
 }

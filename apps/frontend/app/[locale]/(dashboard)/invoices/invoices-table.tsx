@@ -16,13 +16,15 @@ import {
   ExternalLink,
   MoreHorizontal,
   Pencil,
+  Plus,
   Repeat2,
   Send,
   Stamp,
   Trash2
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { buttonClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { ColorDot } from '@/components/color-dot';
@@ -155,11 +157,14 @@ export function InvoicesTable({
   rows,
   filtered,
   home = 'CZK',
-  omit
+  omit,
+  newHref
 }: {
   rows: InvoiceRow[];
   filtered: boolean;
   home?: HomeCurrency;
+  /** Where the empty state's single call to action leads; no button without it. */
+  newHref?: string;
   /** Columns that say the same thing on every row here (the customer on a contact's page). */
   omit?: Column[];
 }) {
@@ -179,6 +184,17 @@ export function InvoicesTable({
   // Selecting only feeds the bulk mark-paid/delete bar, so a read-only member gets no checkboxes at all.
   const canEdit = useCanWrite('invoices');
   const span = columns.length + (canEdit ? 2 : 1);
+  const empty = (
+    <>
+      <p>{filtered ? t('emptyFiltered') : tList('empty')}</p>
+      {!filtered && canEdit && newHref && (
+        <Link href={newHref} className={cn(buttonClass.primary, 'mt-4')}>
+          <Plus className="h-4 w-4" aria-hidden />
+          {tList('newInvoice')}
+        </Link>
+      )}
+    </>
+  );
 
   useEffect(() => {
     // Re-read when a saved view is applied (invoice-view-bar.tsx).
@@ -335,7 +351,7 @@ export function InvoicesTable({
                       runBulk(t('actions.delete'), deletable.map((r) => r.id), deleteInvoice);
                     }
                   }}
-                  className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1.5 font-semibold text-destructive hover:bg-destructive/20"
+                  className="ml-2 inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1.5 font-semibold text-destructive hover:bg-destructive/20"
                 >
                   <Trash2 className="h-4 w-4" />
                   {t('actions.delete')} ({deletable.length})
@@ -424,7 +440,7 @@ export function InvoicesTable({
 
       {/* Below md the column table cannot fit: number and customer on the left, amount and status on the right. */}
       <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:hidden">
-        {rows.length === 0 && <li className="px-4 py-10 text-center text-sm text-muted-foreground">{filtered ? t('emptyFiltered') : tList('empty')}</li>}
+        {rows.length === 0 && <li className="px-4 py-10 text-center text-sm text-muted-foreground">{empty}</li>}
         {sortedRows.map((row) => (
           <li key={row.id} className={cn('flex items-center gap-2 px-3 py-3', selected.has(row.id) && 'bg-accent/40', row.status === 'cancelled' && 'opacity-60')}>
             {canEdit && (
@@ -513,7 +529,7 @@ export function InvoicesTable({
             {rows.length === 0 && (
               <tr>
                 <td colSpan={span} className="px-4 py-10 text-center text-muted-foreground">
-                  {filtered ? t('emptyFiltered') : tList('empty')}
+                  {empty}
                 </td>
               </tr>
             )}

@@ -110,6 +110,8 @@ export function InvoiceActions({
   const canEdit = useCanWrite('invoices');
   const isDraft = canEdit && (status === 'draft' || status === 'pending_review');
   const canPay = canEdit && status === 'issued' && documentType !== 'quote';
+  // Issued but not sent yet: sending is the next step, so it takes the one primary slot.
+  const sendFirst = canEdit && numbered && status === 'issued' && !sentAt && hasEmail;
   const conversions = !canEdit || status === 'cancelled' || (!numbered && documentType !== 'quote') ? [] : CONVERSIONS[documentType];
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) =>
@@ -125,9 +127,24 @@ export function InvoiceActions({
       else router.refresh();
     });
 
+  const sendButton = (
+    <button
+      type="button"
+      className={sendFirst ? buttonClass.primary : buttonClass.secondary}
+      disabled={pending || !hasEmail}
+      title={hasEmail ? t('actions.send') : t('noEmail')}
+      aria-label={t('actions.send')}
+      onClick={() => setDialog('send')}
+    >
+      <Send className="h-4 w-4" />
+      <span className={sendFirst ? undefined : 'hidden sm:inline'}>{t('actions.send')}</span>
+    </button>
+  );
+
   return (
     <>
       <div className="flex flex-wrap gap-2">
+        {sendFirst && sendButton}
         {isDraft && (
           <>
             <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => setDialog('issue')}>
@@ -149,7 +166,7 @@ export function InvoiceActions({
           </button>
         )}
         {canPay && (
-          <button type="button" className={buttonClass.primary} disabled={pending} title={t('actions.markPaid')} onClick={() => setDialog('paid')}>
+          <button type="button" className={sendFirst ? buttonClass.secondary : buttonClass.primary} disabled={pending} title={t('actions.markPaid')} onClick={() => setDialog('paid')}>
             <CheckCircle2 className="h-4 w-4" />
             <span className="sm:hidden">{t('actions.markPaidShort')}</span>
             <span className="hidden sm:inline">{t('actions.markPaid')}</span>
@@ -161,19 +178,7 @@ export function InvoiceActions({
             PDF
           </a>
         )}
-        {canEdit && numbered && status !== 'cancelled' && (
-          <button
-            type="button"
-            className={buttonClass.secondary}
-            disabled={pending || !hasEmail}
-            title={hasEmail ? t('actions.send') : t('noEmail')}
-            aria-label={t('actions.send')}
-            onClick={() => setDialog('send')}
-          >
-            <Send className="h-4 w-4" />
-            <span className="hidden sm:inline">{t('actions.send')}</span>
-          </button>
-        )}
+        {canEdit && numbered && status !== 'cancelled' && !sendFirst && sendButton}
         {canPay && overdue && (
           <button
             type="button"
@@ -251,6 +256,8 @@ export function InvoiceActions({
                 {t('actions.publicLink')}
               </a>
             )}
+            {/* Actions that break or throw something away sit apart from the everyday ones. */}
+            {canEdit && (numbered || isDraft) && <div role="separator" className="my-1 border-t border-border" />}
             {canEdit && numbered && (
               <button type="button" className={menuItem} onClick={() => setDialog('rotate')}>
                 <RotateCcw className="h-4 w-4" />
@@ -258,7 +265,7 @@ export function InvoiceActions({
               </button>
             )}
             {canEdit && status === 'issued' && (
-              <button type="button" className={menuItem} onClick={() => setDialog('cancel')}>
+              <button type="button" className={`${menuItem} hover:text-destructive`} onClick={() => setDialog('cancel')}>
                 <Ban className="h-4 w-4" />
                 {t('actions.cancel')}
               </button>
@@ -309,14 +316,19 @@ export function InvoiceActions({
         onClose={() => setDialog(null)}
         title={payMode === 'partial' ? t('partial.record') : t('confirm.paidTitle')}
         footer={
-          <button
-            type="button"
-            className={buttonClass.primary}
-            disabled={pending || payInvalid}
-            onClick={() => act(() => markInvoicePaid(id, paidAt, payAmount, net), payAmount && payAmount < remaining ? t('done.partial') : t('done.paid'))}
-          >
-            {payMode === 'full' ? t('actions.markPaid') : t('partial.record')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
+            <button
+              type="button"
+              className={buttonClass.primary}
+              disabled={pending || payInvalid}
+              onClick={() => act(() => markInvoicePaid(id, paidAt, payAmount, net), payAmount && payAmount < remaining ? t('done.partial') : t('done.paid'))}
+            >
+              {payMode === 'full' ? t('actions.markPaid') : t('partial.record')}
+            </button>
+          </>
         }
       >
         <div className="mb-3 grid grid-cols-2 gap-2 text-sm">
@@ -372,10 +384,15 @@ export function InvoiceActions({
         onClose={() => setDialog(null)}
         title={editedAfterSend ? t('correction.title') : t('confirm.sendTitle')}
         footer={
-          <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendInvoice(id), t('done.sent'))}>
-            <Send className="h-4 w-4" />
-            {editedAfterSend ? t('correction.send') : t('actions.send')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
+            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendInvoice(id), t('done.sent'))}>
+              <Send className="h-4 w-4" />
+              {editedAfterSend ? t('correction.send') : t('actions.send')}
+            </button>
+          </>
         }
       >
         <p className="text-muted-foreground">{editedAfterSend ? t('correction.sendBody') : t('confirm.sendBody')}</p>
@@ -386,10 +403,15 @@ export function InvoiceActions({
         onClose={() => setDialog(null)}
         title={t('confirm.remindTitle')}
         footer={
-          <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendReminder(id), t('done.reminded'))}>
-            <BellRing className="h-4 w-4" />
-            {t('actions.remind')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
+            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => sendReminder(id), t('done.reminded'))}>
+              <BellRing className="h-4 w-4" />
+              {t('actions.remind')}
+            </button>
+          </>
         }
       >
         <p className="text-muted-foreground">{t('confirm.remindBody', { count: reminderCount + 1 })}</p>
@@ -453,9 +475,14 @@ export function InvoiceActions({
         onClose={() => setDialog(null)}
         title={t('confirm.rotateTitle')}
         footer={
-          <button type="button" className={buttonClass.danger} disabled={pending} onClick={() => act(() => rotateInvoiceLink(id), t('done.rotated'))}>
-            {t('actions.rotateLink')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
+            <button type="button" className={buttonClass.danger} disabled={pending} onClick={() => act(() => rotateInvoiceLink(id), t('done.rotated'))}>
+              {t('actions.rotateLink')}
+            </button>
+          </>
         }
       >
         <p className="text-muted-foreground">{t('confirm.rotateBody')}</p>
@@ -467,6 +494,9 @@ export function InvoiceActions({
         title={t('confirm.cancelTitle')}
         footer={
           <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
             {(documentType === 'invoice' || documentType === 'credit_note') && (
               <button
                 type="button"
@@ -491,15 +521,20 @@ export function InvoiceActions({
         onClose={() => setDialog(null)}
         title={t('confirm.deleteTitle')}
         footer={
-          <button
-            type="button"
-            className={buttonClass.danger}
-            disabled={pending}
-            onClick={() => act(() => deleteInvoice(id), t('done.deleted'), () => router.push('/invoices'))}
-          >
-            <Trash2 className="h-4 w-4" />
-            {t('actions.delete')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
+            <button
+              type="button"
+              className={buttonClass.danger}
+              disabled={pending}
+              onClick={() => act(() => deleteInvoice(id), t('done.deleted'), () => router.push('/invoices'))}
+            >
+              <Trash2 className="h-4 w-4" />
+              {t('actions.delete')}
+            </button>
+          </>
         }
       >
         <p className="text-muted-foreground">{t('confirm.deleteBody')}</p>
@@ -510,15 +545,20 @@ export function InvoiceActions({
         onClose={() => setDialog(null)}
         title={t('actions.saveTemplate')}
         footer={
-          <button
-            type="button"
-            className={buttonClass.primary}
-            disabled={pending || !templateName.trim()}
-            onClick={() => act(() => saveInvoiceAsTemplate(id, templateName.trim()), t('done.templateSaved'), () => router.push('/invoices/templates'))}
-          >
-            <BookmarkPlus className="h-4 w-4" />
-            {t('confirm.save')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('confirm.back')}
+            </button>
+            <button
+              type="button"
+              className={buttonClass.primary}
+              disabled={pending || !templateName.trim()}
+              onClick={() => act(() => saveInvoiceAsTemplate(id, templateName.trim()), t('done.templateSaved'), () => router.push('/invoices/templates'))}
+            >
+              <BookmarkPlus className="h-4 w-4" />
+              {t('confirm.save')}
+            </button>
+          </>
         }
       >
         <p className="mb-3 text-muted-foreground">{t('confirm.templateBody')}</p>

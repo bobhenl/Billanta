@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import { CheckCircle2, Trash2 } from 'lucide-react';
+import { CheckCircle2, Plus, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { SortHeader, useListSort } from '@/components/sort-header';
@@ -10,6 +10,7 @@ import { useCanWrite } from '@/components/access-provider';
 import { formatDate, formatMoney } from '@/lib/invoice-ui';
 import { EXPENSE_STATE_CLASSES, expenseState, isKnownCategory, vatOfGross, type Expense } from '@/lib/expense-ui';
 import { cn } from '@/lib/utils';
+import { buttonClass } from '@/lib/ui-classes';
 import { deleteExpense, setExpensePaid } from './actions';
 
 const SORTABLE = ['date', 'supplier', 'description', 'category', 'dueDate', 'amount', 'state'] as const;
@@ -64,8 +65,9 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
       <div className="mt-6 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
         {filtered ? t('emptyFiltered') : t('empty')}
         {!filtered && canEdit && (
-          <div className="mt-3">
-            <Link href="/expenses/new" className="font-semibold text-primary hover:underline">
+          <div className="mt-4">
+            <Link href="/expenses/new" className={buttonClass.primary}>
+              <Plus className="h-4 w-4" aria-hidden />
               {t('newExpense')}
             </Link>
           </div>
@@ -105,7 +107,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
           <button
             type="button"
             disabled={pending}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1 rounded-full bg-primary px-3 text-xs font-bold text-primary-foreground disabled:opacity-50"
             onClick={() =>
               bulk(
                 (id) => setExpensePaid(id, today),
@@ -119,7 +121,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
           <button
             type="button"
             disabled={pending}
-            className="inline-flex items-center gap-1 rounded-full border border-destructive/40 px-3 py-1 text-xs font-bold text-destructive disabled:opacity-50"
+            className="ml-2 inline-flex h-9 items-center gap-1 rounded-full border border-destructive/40 px-3 text-xs font-bold text-destructive disabled:opacity-50"
             onClick={() => {
               if (window.confirm(t('bulkDeleteConfirm', { count: selected.size }))) bulk(deleteExpense, [...selected]);
             }}
@@ -127,7 +129,7 @@ export function ExpensesTable({ rows, filtered }: { rows: Expense[]; filtered: b
             <Trash2 className="h-3.5 w-3.5" />
             {t('detail.delete')}
           </button>
-          <button type="button" className="ml-auto text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
+          <button type="button" className="ml-auto h-9 px-2 text-xs text-muted-foreground hover:text-primary" onClick={() => setSelected(new Set())}>
             {t('clearSelection')}
           </button>
         </div>

@@ -56,9 +56,10 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
           <Copy className="h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">{t('duplicate')}</span>
         </Link>
+        {/* Kept apart from the everyday actions so it is not hit by mistake. */}
         <button
           type="button"
-          className={`${buttonClass.ghost} hover:text-destructive`}
+          className={`${buttonClass.ghost} ml-auto hover:text-destructive sm:ml-2`}
           title={t('delete')}
           aria-label={t('delete')}
           onClick={() => setDialog('delete')}
@@ -73,9 +74,14 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
         onClose={() => setDialog(null)}
         title={t('markPaid')}
         footer={
-          <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => setExpensePaid(id, paidAt), t('done.paid'))}>
-            {t('markPaid')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('back')}
+            </button>
+            <button type="button" className={buttonClass.primary} disabled={pending} onClick={() => act(() => setExpensePaid(id, paidAt), t('done.paid'))}>
+              {t('markPaid')}
+            </button>
+          </>
         }
       >
         <label className="block">
@@ -89,15 +95,20 @@ export function ExpenseActions({ id, paid }: { id: string; paid: boolean }) {
         onClose={() => setDialog(null)}
         title={t('deleteTitle')}
         footer={
-          <button
-            type="button"
-            className={buttonClass.danger}
-            disabled={pending}
-            onClick={() => act(() => deleteExpense(id), t('done.deleted'), () => router.push('/expenses'))}
-          >
-            <Trash2 className="h-4 w-4" />
-            {t('delete')}
-          </button>
+          <>
+            <button type="button" className={buttonClass.secondary} onClick={() => setDialog(null)}>
+              {t('back')}
+            </button>
+            <button
+              type="button"
+              className={buttonClass.danger}
+              disabled={pending}
+              onClick={() => act(() => deleteExpense(id), t('done.deleted'), () => router.push('/expenses'))}
+            >
+              <Trash2 className="h-4 w-4" />
+              {t('delete')}
+            </button>
+          </>
         }
       >
         <p className="text-muted-foreground">{t('deleteBody')}</p>

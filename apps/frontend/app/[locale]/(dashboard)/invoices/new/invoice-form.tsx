@@ -950,7 +950,8 @@ export function InvoiceForm({
                       type="button"
                       onClick={() => runAi()}
                       disabled={aiBusy || aiText.trim().length < 3 || !offline.online}
-                      className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                      // Tinted, not solid: "Save and issue" stays the one solid button on the form.
+                      className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-50"
                     >
                       {aiBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       {aiBusy ? t('ai.working') : t('ai.run')}

@@ -174,7 +174,11 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
             ) : confirmCancel ? (
               <div className="anim-fade rounded-lg border border-border p-3 text-sm">
                 <p>{sub.periodEnd ? t('sub.cancelConfirm', { date: day(sub.periodEnd) }) : t('sub.cancelConfirmNoDate')}</p>
+                {/* The safe choice first, as in every confirm dialog. */}
                 <div className="mt-3 flex flex-wrap gap-2">
+                  <button type="button" disabled={pending} onClick={() => setConfirmCancel(false)} className={buttonClass.secondary}>
+                    {t('sub.keep')}
+                  </button>
                   <button
                     type="button"
                     disabled={pending}
@@ -188,9 +192,6 @@ export function BillingPanel({ status, locale, readOnly }: { status: BillingStat
                   >
                     {busy === 'cancel' && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
                     {t('sub.cancelYes')}
-                  </button>
-                  <button type="button" disabled={pending} onClick={() => setConfirmCancel(false)} className={buttonClass.ghost}>
-                    {t('sub.keep')}
                   </button>
                 </div>
               </div>

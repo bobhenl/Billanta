@@ -65,7 +65,7 @@ export function ContactActions({ contact }: { contact: Contact }) {
 
   return (
     // Tighter on a phone so the invoice button and the four icons share one row.
-    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+    <div className="flex w-full flex-wrap gap-1.5 sm:w-auto sm:gap-2">
       {canInvoice && (
       <Link
         href={`/invoices/new?contact=${contact.id}`}
@@ -100,7 +100,8 @@ export function ContactActions({ contact }: { contact: Contact }) {
       )}
       <button
         type="button"
-        className={cn(icon, 'text-destructive hover:text-destructive')}
+        // Pushed away from star and ARES so a slip does not open the delete dialog.
+        className={cn(icon, 'ml-auto text-destructive hover:text-destructive sm:ml-2')}
         onClick={() => setConfirmDelete(true)}
         aria-label={t('delete')}
         title={t('delete')}

@@ -275,7 +275,7 @@ export function DashboardView({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h1 className="text-2xl font-extrabold tracking-tight">{firstName ? t('greeting', { name: firstName }) : t('title')}</h1>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => setCustomizing(true)} className={buttonClass.secondary} title={t('customize')} aria-label={t('customize')}>
+          <button type="button" onClick={() => setCustomizing(true)} className={buttonClass.ghost} title={t('customize')} aria-label={t('customize')}>
             <Settings2 className="h-4 w-4" />
             <span className="hidden sm:inline">{t('customize')}</span>
           </button>

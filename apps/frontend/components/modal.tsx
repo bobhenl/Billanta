@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 /**
@@ -24,6 +25,7 @@ export function Modal({
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const tCommon = useTranslations('common');
 
   useEffect(() => {
     const dialog = ref.current;
@@ -51,8 +53,8 @@ export function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              aria-label="Zavřít"
+              className="-mr-2 -mt-2 rounded-full p-2.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              aria-label={tCommon('close')}
             >
               <X className="h-4 w-4" />
             </button>
