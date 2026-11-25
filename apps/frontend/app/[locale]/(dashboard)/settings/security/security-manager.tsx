@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useState, useTransition } from 'react';
-import { Copy, ShieldCheck, ShieldOff } from 'lucide-react';
+import { Copy, Download, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Banner } from '@/components/banner';
@@ -9,7 +9,7 @@ import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/components/modal';
 import { toast } from '@/components/toaster';
 import { confirmTwoFactorSetup, disableTwoFactor, regenerateRecoveryCodes, startTwoFactorSetup } from './actions';
-import { copyText } from '@/lib/clipboard';
+import { copyText, downloadText } from '@/lib/clipboard';
 
 type Setup = { secret: string; qr: string };
 
@@ -137,6 +137,10 @@ export function SecurityManager({ enabled, recoveryCodesLeft }: { enabled: boole
             >
               <Copy className="h-4 w-4" />
               {t('copy')}
+            </button>
+            <button type="button" className={buttonClass.secondary} onClick={() => downloadText('2fa-recovery-codes.txt', codes.join('\n'))}>
+              <Download className="h-4 w-4" />
+              {t('download')}
             </button>
             <button type="button" className={buttonClass.ghost} onClick={() => setCodes(null)}>
               {t('codesSaved')}

@@ -1377,7 +1377,8 @@
         "warning": "Copy this key now – you won't be able to see it again. Only a short prefix is stored for identification.",
         "copy": "Copy",
         "copied": "Copied",
-        "done": "Done"
+        "done": "Done",
+        "download": "Download"
       },
       "docsHint": "Use it as a bearer token: Authorization: Bearer <key>. See apps/backend/README.md for the full API reference.",
       "loadError": "Could not load API keys.",
@@ -1453,7 +1454,8 @@
         "warning": "Copy this secret now – you won't be able to see it again. Use it to verify the X-Faktur-Signature header.",
         "copy": "Copy",
         "copied": "Copied",
-        "done": "Done"
+        "done": "Done",
+        "download": "Download"
       },
       "runDone": "Backup finished.",
       "runFailed": "The backup couldn't be completed.",
@@ -3339,7 +3341,8 @@
         "already_enabled": "Two-factor authentication is already on.",
         "not_enabled": "Two-factor authentication isn't on.",
         "not_signed_in": "Your sign-in expired. Please sign in again."
-      }
+      },
+      "download": "Download"
     },
     "emailNotifications": {
       "title": "Email notifications",

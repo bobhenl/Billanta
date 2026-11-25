@@ -1,14 +1,14 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
-import { Check, Copy, ExternalLink, KeyRound, Loader2, Plus } from 'lucide-react';
+import { Check, Copy, Download, ExternalLink, KeyRound, Loader2, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { InfoHint } from '@/components/info-hint';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import { toast } from '@/components/toaster';
 import { cn } from '@/lib/utils';
 import { createApiKey, revokeApiKey } from './actions';
-import { copyText } from '@/lib/clipboard';
+import { copyText, downloadText } from '@/lib/clipboard';
 
 export interface ApiKeyListItem {
   id: string;
@@ -105,6 +105,10 @@ export function ApiKeysManager({ initialKeys, apiBase, readOnly }: { initialKeys
             >
               {copied === 'key' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               <span className="hidden sm:inline">{copied === 'key' ? t('reveal.copied') : t('reveal.copy')}</span>
+            </button>
+            <button type="button" onClick={() => downloadText('api-key.txt', revealedKey)} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.download')} aria-label={t('reveal.download')}>
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('reveal.download')}</span>
             </button>
           </div>
           <button type="button" onClick={() => setRevealedKey(null)} className={cn(buttonClass.primary, 'mt-3')}>

@@ -1377,7 +1377,8 @@
         "warning": "Skopírujte si tento kľúč teraz – znova ho už neuvidíte. Ukladá sa iba krátky prefix na identifikáciu.",
         "copy": "Kopírovať",
         "copied": "Skopírované",
-        "done": "Hotovo"
+        "done": "Hotovo",
+        "download": "Stiahnuť"
       },
       "docsHint": "Použite ho ako bearer token: Authorization: Bearer <kľúč>. Úplnú dokumentáciu API nájdete v apps/backend/README.md.",
       "loadError": "API kľúče sa nepodarilo načítať.",
@@ -1453,7 +1454,8 @@
         "warning": "Skopírujte si tento kľúč teraz – znova ho už neuvidíte. Použite ho na overenie hlavičky X-Faktur-Signature.",
         "copy": "Kopírovať",
         "copied": "Skopírované",
-        "done": "Hotovo"
+        "done": "Hotovo",
+        "download": "Stiahnuť"
       },
       "runDone": "Záloha prebehla.",
       "runFailed": "Zálohu sa nepodarilo dokončiť.",
@@ -3339,7 +3341,8 @@
         "already_enabled": "Dvojfázové overenie už je zapnuté.",
         "not_enabled": "Dvojfázové overenie nie je zapnuté.",
         "not_signed_in": "Prihlásenie vypršalo. Prihláste sa znova."
-      }
+      },
+      "download": "Stiahnuť"
     },
     "emailNotifications": {
       "title": "E-mailové upozornenia",

@@ -1,12 +1,12 @@
 'use client';
 
 import { type FormEvent, type ReactNode, useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { toast } from '@/components/toaster';
 import { useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { InfoHint } from '@/components/info-hint';
-import { copyText } from '@/lib/clipboard';
+import { copyText, downloadText } from '@/lib/clipboard';
 import { buttonClass, inputClass } from '@/lib/ui-classes';
 import {
   createBackupDestination,
@@ -319,6 +319,10 @@ export function BackupDestinationsManager({
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               <span className="hidden sm:inline">{copied ? t('reveal.copied') : t('reveal.copy')}</span>
             </button>
+            <button type="button" onClick={() => downloadText('backup-secret.txt', revealedSecret)} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.download')} aria-label={t('reveal.download')}>
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('reveal.download')}</span>
+            </button>
           </div>
           <button type="button" onClick={() => setRevealedSecret(null)} className={cn(buttonClass.primary, 'mt-3')}>
             {t('reveal.done')}
@@ -337,6 +341,10 @@ export function BackupDestinationsManager({
             <button type="button" onClick={() => handleCopy(revealedPublicKey)} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.copy')} aria-label={t('reveal.copy')}>
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               <span className="hidden sm:inline">{copied ? t('reveal.copied') : t('reveal.copy')}</span>
+            </button>
+            <button type="button" onClick={() => downloadText('billanta-backup.pub', revealedPublicKey)} className={cn(buttonClass.secondary, 'shrink-0')} title={t('reveal.download')} aria-label={t('reveal.download')}>
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('reveal.download')}</span>
             </button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{t('sftpKey.later')}</p>
