@@ -48,6 +48,73 @@ describe("PublicInvoicesService.generatePdf", () => {
   });
 });
 
+describe("PublicInvoicesService.findByPublicToken totals", () => {
+  const header = {
+    invoice_number: "FV 2026/007",
+    variable_symbol: "2026007",
+    issue_date: "2026-11-01",
+    due_date: "2026-11-15",
+    currency: "CZK",
+    status: "issued",
+    amount_paid: "0",
+    payment_method: "bank_transfer",
+    payment_method_label: null,
+    payment_instructions: null,
+  };
+  // 2 × 1000 at 21 % with 10 % off: base 1800, VAT 378, total 2178 (2420 without the discount).
+  const lines = [{ description: "Práce", quantity: "2.000", unit_price: "1000.0000", vat_rate: "21.00", sort_order: 0, discount_percent: "10.00" }];
+  const qrRow = (reverseCharge: boolean) => ({
+    supplier_ico: "12345678",
+    supplier_dic: "CZ12345678",
+    supplier_vat_payer: true,
+    customer_ico: null,
+    customer_dic: null,
+    taxable_supply_date: "2026-11-01",
+    document_type: "invoice",
+    reverse_charge: reverseCharge,
+    exchange_rate: null,
+    order_number: null,
+    customer_country: "CZ",
+  });
+
+  function view(reverseCharge: boolean) {
+    const execute = vi.fn();
+    for (const rows of [
+      [{ blocked: false }],
+      [header],
+      lines,
+      [{ company_name: "Dodavatel s.r.o.", bank_account_iban: "CZ6508000000192000145399", bank_account_number: null, bank_account_bank_code: null }],
+      [],
+      [qrRow(reverseCharge)],
+      [],
+      [{ document_type: "invoice" }],
+      [{ demo: false }],
+      [],
+    ]) {
+      execute.mockResolvedValueOnce(rows);
+    }
+    const service = new PublicInvoicesService({ db: { execute } } as never);
+    return service.findByPublicToken(TOKEN);
+  }
+
+  it("takes the line discount off, like the PDF", async () => {
+    const v = await view(false);
+    expect(v.subtotal).toBe(1800);
+    expect(v.vatTotal).toBe(378);
+    expect(v.total).toBe(2178);
+    expect(v.lineItems[0].discountPercent).toBe(10);
+    expect(v.qrInvoice).toContain("*AM:2178.00*");
+    expect(v.cardPayment).toBe(true);
+  });
+
+  it("charges no VAT under reverse charge", async () => {
+    const v = await view(true);
+    expect(v.vatTotal).toBe(0);
+    expect(v.total).toBe(1800);
+    expect(v.qrInvoice).toContain("*AM:1800.00*");
+  });
+});
+
 describe("pdfFilename", () => {
   it("keeps a plain number and makes anything else header-safe", () => {
     expect(pdfFilename("2026001")).toBe("2026001.pdf");

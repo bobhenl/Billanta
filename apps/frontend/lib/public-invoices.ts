@@ -21,6 +21,8 @@ export interface PublicInvoiceLineItem {
   quantity: number;
   unitPrice: number;
   vatRate: number | null;
+  /** Line discount in percent; missing from a backend older than migration 0092. */
+  discountPercent?: number;
   sortOrder: number;
 }
 

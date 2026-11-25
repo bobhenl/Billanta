@@ -11,6 +11,7 @@ import { EmailService } from "../email/email.service";
 import { ABUSE_PAUSE_THRESHOLD } from "../abuse/sending-guard";
 import { resolveInvoiceToken } from "../public-links/resolve";
 import { showsBrandCredit } from "../invoices/brand-credit";
+import { computeVatBreakdown, type InvoiceVatBreakdown } from "../invoices/invoice-total.util";
 
 export type AbuseReason = "fraud" | "not_ordered" | "spam" | "other";
 
@@ -42,12 +43,13 @@ type PublicInvoiceHeaderRow = {
   payment_instructions: string | null;
 };
 
-type PublicInvoiceLineItemRow = {
+export type PublicInvoiceLineItemRow = {
   description: string;
   quantity: string;
   unit_price: string;
   vat_rate: string | null;
   sort_order: number;
+  discount_percent?: string | null;
 };
 
 type PublicInvoiceSupplierRow = {
@@ -76,6 +78,7 @@ export interface PublicInvoiceLineItemView {
   quantity: number;
   unitPrice: number;
   vatRate: number | null;
+  discountPercent: number;
   sortOrder: number;
 }
 
@@ -293,28 +296,16 @@ export class PublicInvoicesService {
       quantity: Number(row.quantity),
       unitPrice: Number(row.unit_price),
       vatRate: row.vat_rate != null ? Number(row.vat_rate) : null,
+      discountPercent: Number(row.discount_percent ?? 0),
       sortOrder: row.sort_order,
     }));
 
-    const subtotal = lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-    const vatTotal = lineItems.reduce(
-      (sum, item) => sum + (item.quantity * item.unitPrice * (item.vatRate ?? 0)) / 100,
-      0,
-    );
-
     const supplierRow = supplierRows[0];
     const qr = qrRows[0];
-    const total = roundMinor(subtotal + vatTotal);
+    const breakdown = publicInvoiceBreakdown(lineItemRows, qr?.reverse_charge === true);
+    const total = breakdown.totalWithVat;
     let qrInvoice: string | null = null;
     if (header.invoice_number && header.issue_date && qr) {
-      const byRate = new Map<number, { base: number; vat: number }>();
-      for (const item of lineItems) {
-        const rate = item.vatRate ?? 0;
-        const line = byRate.get(rate) ?? { base: 0, vat: 0 };
-        line.base += item.quantity * item.unitPrice;
-        line.vat += (item.quantity * item.unitPrice * rate) / 100;
-        byRate.set(rate, line);
-      }
       qrInvoice = generateQrInvoiceString({
         invoiceNumber: header.invoice_number,
         issueDate: new Date(header.issue_date),
@@ -329,7 +320,7 @@ export class PublicInvoicesService {
         customerIco: qr.customer_ico ?? undefined,
         customerDic: qr.customer_dic ?? undefined,
         vatLines: qr.supplier_vat_payer
-          ? [...byRate].map(([rate, v]) => ({ rate, base: roundMinor(v.base), vat: roundMinor(v.vat) }))
+          ? breakdown.byRate.map((r) => ({ rate: r.vatRatePercent, base: r.totalWithoutVat, vat: r.vatAmount }))
           : [],
         documentType: qr.document_type === "proforma" ? 0 : qr.document_type === "credit_note" ? 1 : undefined,
         advance: qr.document_type === "proforma",
@@ -352,8 +343,8 @@ export class PublicInvoicesService {
       currency: header.currency,
       status: header.status,
       lineItems,
-      subtotal: roundMinor(subtotal),
-      vatTotal: roundMinor(vatTotal),
+      subtotal: breakdown.totalWithoutVat,
+      vatTotal: breakdown.totalVat,
       total,
       amountPaid: Number(header.amount_paid ?? 0),
       paymentMethod: header.payment_method,
@@ -435,8 +426,15 @@ export function pdfFilename(invoiceNumber: string): string {
   return `${base || "invoice"}.pdf`;
 }
 
-function roundMinor(amount: number): number {
-  return Math.round(amount * 100) / 100;
+/**
+ * The /i/ page totals, computed exactly like the PDF (computeVatBreakdown):
+ * line discounts taken off, no VAT under reverse charge, rounded per rate.
+ */
+export function publicInvoiceBreakdown(rows: PublicInvoiceLineItemRow[], reverseCharge: boolean): InvoiceVatBreakdown {
+  return computeVatBreakdown(
+    rows.map((row) => ({ quantity: row.quantity, unitPrice: row.unit_price, vatRate: row.vat_rate, discountPercent: row.discount_percent ?? null })),
+    { reverseCharge },
+  );
 }
 
 /** Whether the /i/ page shows the "Vystaveno v Billantě" line, from `get_public_invoice_brand_credit`. */

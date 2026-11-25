@@ -664,7 +664,8 @@
       "quantity": "Qty",
       "unitPrice": "Unit price",
       "vatRate": "VAT",
-      "lineTotal": "Total"
+      "lineTotal": "Total",
+      "discount": "Discount"
     },
     "subtotalLabel": "Subtotal",
     "vatTotalLabel": "VAT total",
