@@ -302,6 +302,15 @@ const stacked = (label: string) => label.replace(BILINGUAL_SEPARATOR, "\n");
  * Uses `pdfkit`: pure JS, no headless Chromium, so the backend image stays
  * small on a VPS.
  */
+/**
+ * Whether the document asks the buyer for money. A quote is an offer, a
+ * cancelled document is void and a credit note (negative total) pays back,
+ * so none of them gets a payment QR or the "Celkem k úhradě" label.
+ */
+function asksForPayment(invoice: InvoiceRow, totals: InvoiceVatBreakdown): boolean {
+  return invoice.documentType !== "quote" && invoice.status !== "cancelled" && totals.totalWithVat > 0;
+}
+
 function countryName(code: string, lang: Lang): string {
   try {
     return new Intl.DisplayNames([lang], { type: "region" }).of(code) ?? code;
@@ -329,7 +338,7 @@ export class InvoicePdfService {
     const second = pdfSecondLanguageOf(tenant.invoiceFormPrefs);
     const t = second && second !== lang ? bilingualLabels(L[lang], L[second]) : L[lang];
 
-    const payable = invoice.documentType !== "quote" && totals.totalWithVat > 0;
+    const payable = asksForPayment(invoice, totals);
     // A demo's fictional bank account must not end up in anyone's banking app.
     const qrMode = pdfQrModeOf(tenant.invoiceFormPrefs);
     const qr =
@@ -573,6 +582,12 @@ export class InvoicePdfService {
     doc.font(BOLD).fontSize(10).fillColor("black").text(tenant.legalName, 50, doc.y + 2, { width: 240 });
     doc.font(REGULAR).fontSize(9);
     this.renderAddressLines(doc, tenant.addressStreet, tenant.addressCity, tenant.addressPostalCode, 50);
+    // Once the buyer's country is printed, the seller's is too, so a foreign reader sees both sides.
+    const buyerCountry = contact.addressCountry?.toUpperCase();
+    const sellerCountry = tenantCountry(tenant);
+    const docLang: Lang = invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs";
+    const foreignBuyer = !!buyerCountry && buyerCountry !== sellerCountry;
+    if (foreignBuyer) doc.text(countryName(sellerCountry, docLang), 50);
     if (tenant.ico) doc.text(`${t.ico}: ${tenant.ico}`, 50);
     if (tenant.dic) doc.text(`${t.dic}: ${tenant.dic}`, 50);
     if (!tenant.dicVatPayer) doc.text(t.nonVatPayer, 50);
@@ -585,8 +600,7 @@ export class InvoicePdfService {
     doc.font(REGULAR).fontSize(9);
     this.renderAddressLines(doc, contact.addressStreet, contact.addressCity, contact.addressPostalCode, right);
     // A buyer abroad gets the country, in the document language.
-    const buyerCountry = contact.addressCountry?.toUpperCase();
-    if (buyerCountry && buyerCountry !== tenantCountry(tenant)) doc.text(countryName(buyerCountry, invoice.language === "sk" || invoice.language === "en" ? invoice.language : "cs"), right);
+    if (foreignBuyer && buyerCountry) doc.text(countryName(buyerCountry, docLang), right);
     if (contact.ico) doc.text(`${t.ico}: ${contact.ico}`, right);
     if (contact.dic) doc.text(`${t.dic}: ${contact.dic}`, right);
     if (invoice.buyerContactPerson) doc.text(`${t.contactPerson}: ${invoice.buyerContactPerson}`, right, doc.y, { width: 240 });
@@ -763,7 +777,7 @@ export class InvoicePdfService {
     // Paid or partly paid: "Celkem", then what was paid and what is left (0 once
     // settled), so a paid invoice no longer reads "Celkem k úhradě" with the full sum.
     const paid = invoice.documentType === "quote" ? 0 : invoice.status === "paid" ? totals.totalWithVat : Number(invoice.amountPaid ?? 0);
-    const totalLabel = invoice.documentType === "quote" ? t.totalQuote : paid > 0 ? t.total : t.totalToPay;
+    const totalLabel = invoice.documentType === "quote" ? t.totalQuote : paid > 0 || !asksForPayment(invoice, totals) ? t.total : t.totalToPay;
     const bilingual = totalLabel.includes(BILINGUAL_SEPARATOR);
     doc
       .font(BOLD)

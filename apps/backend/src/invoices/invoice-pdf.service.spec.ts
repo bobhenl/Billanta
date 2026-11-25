@@ -360,4 +360,32 @@ describe("InvoicePdfService paid documents and foreign buyers", () => {
     expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "US" }))).lines).toContain("United States");
     expect((await render(makeInvoice(), makeContact({ addressCountry: "CZ" }))).lines.some((l) => l === "Česko")).toBe(false);
   });
+
+  it("prints the seller's country next to a foreign buyer's, in the document language", async () => {
+    const abroad = await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "DE" }));
+    expect(abroad.lines).toContain("Germany");
+    expect(abroad.lines).toContain("Czechia");
+    expect((await render(makeInvoice({ language: "en" }), makeContact({ addressCountry: "CZ" }))).lines).not.toContain("Czechia");
+  });
+
+  it("asks a cancelled invoice for nothing: no payment QR and no \"Celkem k úhradě\"", async () => {
+    const cancelled = await render(makeInvoice({ status: "cancelled" }));
+    expect(cancelled.qr.some((p) => p.startsWith("SPD*"))).toBe(false);
+    expect(cancelled.lines).not.toContain("Celkem k úhradě");
+    expect(cancelled.lines).toContain("Celkem");
+  });
+});
+
+describe("InvoicePdfService credit note", () => {
+  it("labels the negative total \"Celkem\", not as something to pay", async () => {
+    const text = vi.spyOn(PDFDocument.prototype, "text");
+    const lineItems = makeLineItems().map((li) => ({ ...li, quantity: `-${li.quantity}` }));
+    const totals = computeVatBreakdown(lineItems);
+    expect(totals.totalWithVat).toBeLessThan(0);
+    await new InvoicePdfService().generate(makeInvoice({ documentType: "credit_note" }), makeContact(), makeTenant(), lineItems, totals);
+    const lines = text.mock.calls.map((c) => String(c[0]));
+    text.mockRestore();
+    expect(lines).not.toContain("Celkem k úhradě");
+    expect(lines).toContain("Celkem");
+  });
 });
