@@ -664,7 +664,8 @@
       "quantity": "Množství",
       "unitPrice": "Cena za jednotku",
       "vatRate": "DPH",
-      "lineTotal": "Celkem"
+      "lineTotal": "Celkem",
+      "discount": "Sleva"
     },
     "subtotalLabel": "Mezisoučet",
     "vatTotalLabel": "DPH celkem",

@@ -50,7 +50,8 @@ import { buildIsdocInvoiceInput, contactToIsdocParty, tenantToIsdocParty } from 
 import { assertCanSendEmail, recordEmailSent } from "../abuse/sending-guard";
 import { buyerDetailsLinkOf, clientPortalLinkOf, invoiceLinkOf, newShortKey } from "../public-links/public-link";
 import { paymentDraftDescriptionOf } from "../tenants/invoice-form-prefs";
-import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor } from "./brand-credit";
+import { BRAND_CREDIT_TENANT_FIELDS, brandCreditFor, creditLangOf } from "./brand-credit";
+import { amountLeftToPay, isRemindableDocument } from "./invoice-reminders.util";
 import { appendNoteLine } from "../bank-reconciliation/payment-note";
 import { tenantHomeCurrencyOf } from "../tenants/home-currency";
 
@@ -192,11 +193,27 @@ function startOfToday(): Date {
   return d;
 }
 
-/** "overdue" is not stored: an issued invoice whose due date has passed. */
+/**
+ * What a paid proforma already covered on the final invoice made from it
+ * ("Uhrazeno zálohou"), for the e-invoice's prepaid / paid-deposits amount.
+ * Zero for anything else: a later payment on the invoice itself is not a deposit.
+ */
+export function proformaDeposit(
+  invoice: Pick<InvoiceRow, "documentType" | "amountPaid">,
+  related: { documentType: string; status?: string | null } | null | undefined,
+): number {
+  if (invoice.documentType !== "invoice" || related?.documentType !== "proforma" || related.status !== "paid") return 0;
+  return Math.max(0, round2(Number(invoice.amountPaid ?? 0)));
+}
+
+/**
+ * "overdue" is not stored: an issued invoice whose due date has passed.
+ * Only documents that ask for money can be late, so not a quote or a credit note.
+ */
 export function isOverdue(invoice: Pick<InvoiceRow, "status" | "dueDate" | "documentType">): boolean {
   return (
     invoice.status === "issued" &&
-    invoice.documentType !== "quote" &&
+    isRemindableDocument(invoice.documentType) &&
     invoice.dueDate != null &&
     new Date(invoice.dueDate) < startOfToday()
   );
@@ -1337,10 +1354,13 @@ export class InvoicesService {
         corrected,
         to: contact.email,
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-        amount: formatInvoiceAmount(total, invoice.currency),
+        // Once something is paid the e-mail asks for the rest, like the PDF's "Zbývá uhradit".
+        amount: formatInvoiceAmount(Number(invoice.amountPaid ?? 0) > 0 ? amountLeftToPay(total, invoice.amountPaid) : total, invoice.currency),
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
-        credit: await this.emailCredit(db, invoice.tenantId),
+        language: invoice.language,
+        documentType: invoice.documentType,
+        credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "invoice") } : {}),
       },
       // Collapses a double-click into one e-mail; a deliberate resend a minute later still goes out.
@@ -1365,9 +1385,9 @@ export class InvoicesService {
   }
 
   /** The "Vystaveno v Billantě" line for the company's e-mails (brand-credit.ts). */
-  private async emailCredit(db: TenantDb, tenantId: string) {
+  private async emailCredit(db: TenantDb, tenantId: string, language?: string | null) {
     const [tenant] = await db.select(BRAND_CREDIT_TENANT_FIELDS).from(schema.tenants).where(eq(schema.tenants.id, tenantId)).limit(1);
-    return tenant ? brandCreditFor(tenant, "cs", "email") : null;
+    return tenant ? brandCreditFor(tenant, creditLangOf(language), "email") : null;
   }
 
   /** Whether the issued invoice was edited in place after `since` (its last send). */
@@ -1396,23 +1416,28 @@ export class InvoicesService {
     const [invoice] = await db.select().from(schema.invoices).where(eq(schema.invoices.id, id)).limit(1);
     if (!invoice) throw new NotFoundException(`Invoice ${id} not found`);
     if (invoice.status !== "issued") throw new BadRequestException("Only an issued, unpaid invoice can be reminded");
+    // A quote is an offer and a credit note gives money back: neither is chased for payment.
+    if (!isRemindableDocument(invoice.documentType)) throw new BadRequestException("not_remindable");
     const [contact] = invoice.contactId
       ? await db.select().from(schema.contacts).where(eq(schema.contacts.id, invoice.contactId)).limit(1)
       : [];
     if (!contact?.email) throw new BadRequestException("This invoice's contact has no email address on file");
 
     const lineItems = await db.select().from(schema.invoiceLineItems).where(eq(schema.invoiceLineItems.invoiceId, id));
-    const total = computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge });
+    // After a partial payment the reminder asks only for what is left.
+    const left = amountLeftToPay(computeInvoiceTotal(lineItems, { reverseCharge: invoice.reverseCharge }), invoice.amountPaid);
     await assertCanSendEmail(db, invoice.tenantId);
     await this.emailService.sendPaymentReminderEmail(
       {
         to: contact.email,
         invoiceNumber: invoice.invoiceNumber ?? invoice.id,
-        amount: formatInvoiceAmount(total, invoice.currency),
+        amount: formatInvoiceAmount(left, invoice.currency),
         dueDate: invoice.dueDate,
         ...(await this.emailLinks(db, invoice, contact)),
         reminderCount: invoice.reminderCount + 1,
-        credit: await this.emailCredit(db, invoice.tenantId),
+        language: invoice.language,
+        documentType: invoice.documentType,
+        credit: await this.emailCredit(db, invoice.tenantId, invoice.language),
         ...(tenantId ? { custom: await this.emailCustomization(db, tenantId, invoice, contact, "reminder") } : {}),
       },
       { tenantId: invoice.tenantId, db, idempotencyKey: `reminder:${invoice.id}:${invoice.reminderCount + 1}` },
@@ -1803,6 +1828,7 @@ export class InvoicesService {
             invoiceNumber: schema.invoices.invoiceNumber,
             documentType: schema.invoices.documentType,
             issueDate: schema.invoices.issueDate,
+            status: schema.invoices.status,
           })
           .from(schema.invoices)
           .where(eq(schema.invoices.id, invoice.relatedInvoiceId))
@@ -1836,14 +1862,15 @@ export class InvoicesService {
    * as `generateInvoicePdf`, via `@faktur/cz-compliance`'s `generateIsdocXml`.
    */
   async generateInvoiceIsdoc(db: TenantDb, tenantId: string, invoiceId: string): Promise<string> {
-    const { invoice, contact, tenant, lineItems } = await this.loadIssuedInvoiceForDocument(
+    const { invoice, contact, tenant, lineItems, related } = await this.loadIssuedInvoiceForDocument(
       db,
       tenantId,
       invoiceId,
     );
     const totals = computeVatBreakdown(lineItems, { reverseCharge: invoice.reverseCharge });
     const input = buildIsdocInvoiceInput(invoice, contact, tenant, lineItems, totals);
-    return generateIsdocXml(input);
+    const deposit = proformaDeposit(invoice, related);
+    return generateIsdocXml(deposit ? { ...input, totals: { ...input.totals, paidDepositsAmount: deposit } } : input);
   }
 
   /**
@@ -1879,6 +1906,7 @@ export class InvoicesService {
       reverseCharge: invoice.reverseCharge,
       documentType: invoice.documentType,
       precedingInvoice: preceding,
+      prepaidAmount: proformaDeposit(invoice, related) || undefined,
     };
     return { input, options };
   }

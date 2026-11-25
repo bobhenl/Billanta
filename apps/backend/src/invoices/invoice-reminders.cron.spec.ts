@@ -36,6 +36,9 @@ function makeOverdueInvoice(overrides: Partial<OverdueInvoiceForReminder> = {}):
       sentAt: new Date("2026-08-01"),
       lastReminderSentAt: null,
       reminderCount: 0,
+      documentType: "invoice",
+      amountPaid: "0",
+      language: "cs",
       createdAt: new Date("2026-08-01"),
       updatedAt: new Date("2026-08-01"),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -120,6 +123,44 @@ describe("InvoiceRemindersCron", () => {
       { tenantId: "tenant-1", idempotencyKey: "reminder:inv-1:1" },
     );
     expect(repository.recordReminderSent).toHaveBeenCalledWith("tenant-1", "inv-1", expect.any(String));
+  });
+
+  it("never reminds a credit note or a quote", async () => {
+    const base = makeOverdueInvoice();
+    repository.listAllTenantIds.mockResolvedValue(["tenant-1"]);
+    repository.findOverdueInvoicesForTenant.mockResolvedValue(
+      ["credit_note", "quote"].map((documentType) => ({ ...base, invoice: { ...base.invoice, documentType } })),
+    );
+
+    await cron.sendOverdueReminders();
+
+    expect(emailService.sendPaymentReminderEmail).not.toHaveBeenCalled();
+    expect(repository.recordReminderSent).not.toHaveBeenCalled();
+  });
+
+  it("asks only for what is left after a partial payment, in the invoice's language", async () => {
+    const base = makeOverdueInvoice();
+    repository.listAllTenantIds.mockResolvedValue(["tenant-1"]);
+    repository.findOverdueInvoicesForTenant.mockResolvedValue([
+      { ...base, invoice: { ...base.invoice, amountPaid: "420.00", language: "sk", documentType: "proforma" } },
+    ]);
+
+    await cron.sendOverdueReminders();
+
+    expect(emailService.sendPaymentReminderEmail).toHaveBeenCalledWith(
+      expect.objectContaining({ amount: "2000.00 CZK", language: "sk", documentType: "proforma" }),
+      expect.anything(),
+    );
+  });
+
+  it("sends nothing once partial payments add up to the total", async () => {
+    const base = makeOverdueInvoice();
+    repository.listAllTenantIds.mockResolvedValue(["tenant-1"]);
+    repository.findOverdueInvoicesForTenant.mockResolvedValue([{ ...base, invoice: { ...base.invoice, amountPaid: "2420.00" } }]);
+
+    await cron.sendOverdueReminders();
+
+    expect(emailService.sendPaymentReminderEmail).not.toHaveBeenCalled();
   });
 
   it("skips (and never records) an overdue invoice whose contact has no email", async () => {

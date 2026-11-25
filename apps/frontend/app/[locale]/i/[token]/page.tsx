@@ -150,13 +150,16 @@ export default async function PublicInvoicePage({
       : null);
   // Same rule as the PDF: QR/account only for (custom methods behaving as) bank transfer.
   const isTransfer = !invoice.paymentMethod || invoice.paymentMethod === "bank_transfer";
-  // Only what is left after partial payments.
-  const amountToPay = remainingToPay > 0 ? remainingToPay : invoice.total;
+  // Only what is left after partial payments. A credit note (negative
+  // total), a paid or a cancelled document has nothing to pay, so no QR.
+  const amountToPay = remainingToPay;
+  const paid = invoice.status === "paid";
+  const showPayment = !invoice.quote && !paid && invoice.status !== "cancelled" && remainingToPay > 0;
   // Slovak payers get PAY by square, same rule as the PDF (paymentQrScheme).
   // It validates the IBAN; on failure we fall back to SPAYD like the PDF does.
   if (
     iban &&
-    !invoice.quote &&
+    showPayment &&
     isTransfer &&
     paymentQrScheme({ payeeIban: iban, currency: invoice.currency, buyerCountry: invoice.buyerCountry }) === "pay_by_square"
   ) {
@@ -177,7 +180,7 @@ export default async function PublicInvoicePage({
       qrCodeSvg = null;
     }
   }
-  if (iban && !invoice.quote && isTransfer && !qrCodeSvg) {
+  if (iban && showPayment && isTransfer && !qrCodeSvg) {
     const spayd = generateSpaydString({
       iban,
       amount: amountToPay,
@@ -211,12 +214,14 @@ export default async function PublicInvoicePage({
   }
 
 
-  const paid = invoice.status === "paid";
+  // Overdue only while something is still owed; a credit note never is.
   const overdue =
-    invoice.status === "issued" && !invoice.quote && Boolean(invoice.dueDate) && (invoice.dueDate ?? "") < new Date().toISOString().slice(0, 10);
-  // Nothing to pay on a paid or cancelled document: no QR that would pay it twice.
-  const showPayment = !invoice.quote && !paid && invoice.status !== "cancelled";
+    invoice.status === "issued" && showPayment && Boolean(invoice.dueDate) && (invoice.dueDate ?? "") < new Date().toISOString().slice(0, 10);
   const partlyPaid = invoice.status === "issued" && (invoice.amountPaid ?? 0) > 0;
+  // A paid document says what was paid and that nothing is left, like the PDF.
+  const showPaidLines = !invoice.quote && (partlyPaid || paid) && invoice.total > 0;
+  const paidShown = paid ? invoice.total : (invoice.amountPaid ?? 0);
+  const remainingShown = paid ? 0 : remainingToPay;
   const showVat = invoice.vatTotal > 0 || invoice.lineItems.some((i) => (i.vatRate ?? 0) > 0);
   // "Issued" says nothing to a payer: the amount block already reads "Amount due".
   const badge: { label: string; className: string } | null = overdue
@@ -416,6 +421,11 @@ export default async function PublicInvoicePage({
                         {item.quantity} × {currencyFormatter.format(item.unitPrice)}
                         {showVat && item.vatRate != null ? ` · ${t("columns.vatRate")} ${percentFormatter.format(item.vatRate)} %` : ""}
                       </span>
+                      {(item.discountPercent ?? 0) !== 0 && (
+                        <span className="mt-0.5 block text-xs text-muted-foreground tabular-nums">
+                          {t("columns.discount")} {percentFormatter.format(item.discountPercent ?? 0)} %
+                        </span>
+                      )}
                     </td>
                     <td className="hidden px-4 py-2.5 text-right tabular-nums sm:table-cell">{item.quantity}</td>
                     <td className="hidden whitespace-nowrap px-4 py-2.5 text-right tabular-nums sm:table-cell">
@@ -427,7 +437,7 @@ export default async function PublicInvoicePage({
                       </td>
                     )}
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums sm:px-4">
-                      {currencyFormatter.format(item.quantity * item.unitPrice)}
+                      {currencyFormatter.format(item.quantity * item.unitPrice * (1 - (item.discountPercent ?? 0) / 100))}
                     </td>
                   </tr>
                 ))}
@@ -452,15 +462,15 @@ export default async function PublicInvoicePage({
               <span>{t(invoice.quote ? "quoteTotalLabel" : "totalShortLabel")}</span>
               <span className="tabular-nums">{currencyFormatter.format(invoice.total)}</span>
             </div>
-            {partlyPaid && (
+            {showPaidLines && (
               <>
                 <div className="flex justify-between gap-4 text-success">
                   <span>{t("paidSoFarLabel")}</span>
-                  <span className="tabular-nums">{currencyFormatter.format(invoice.amountPaid ?? 0)}</span>
+                  <span className="tabular-nums">{currencyFormatter.format(paidShown)}</span>
                 </div>
                 <div className="flex justify-between gap-4 font-semibold">
                   <span>{t("remainingLabel")}</span>
-                  <span className="tabular-nums">{currencyFormatter.format(remainingToPay)}</span>
+                  <span className="tabular-nums">{currencyFormatter.format(remainingShown)}</span>
                 </div>
               </>
             )}

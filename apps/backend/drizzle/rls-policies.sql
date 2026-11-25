@@ -564,13 +564,17 @@ GRANT EXECUTE ON FUNCTION get_public_invoice_view(uuid) TO faktur_app;
 -- `get_public_invoice_view`'s job). None of `invoice_line_items`' columns
 -- are sensitive — they're exactly what already appears on the invoice
 -- PDF/ISDOC export the client would otherwise receive by email.
+-- discount_percent was added in migration 0092 so the page's total matches
+-- the PDF; the row type changed, hence the DROP.
+DROP FUNCTION IF EXISTS get_public_invoice_line_items(uuid);
 CREATE OR REPLACE FUNCTION get_public_invoice_line_items(p_public_token uuid)
 RETURNS TABLE (
   description text,
   quantity numeric(12,3),
   unit_price numeric(14,4),
   vat_rate numeric(5,2),
-  sort_order integer
+  sort_order integer,
+  discount_percent numeric(5,2)
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -581,7 +585,8 @@ AS $$
     ili.quantity,
     ili.unit_price,
     ili.vat_rate,
-    ili.sort_order
+    ili.sort_order,
+    ili.discount_percent
   FROM invoice_line_items ili
   JOIN invoices i ON i.id = ili.invoice_id
   WHERE i.public_token = p_public_token

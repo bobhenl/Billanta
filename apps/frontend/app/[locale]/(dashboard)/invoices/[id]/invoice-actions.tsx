@@ -186,8 +186,9 @@ export function InvoiceActions({
           </a>
         )}
         {canEdit && numbered && status !== 'cancelled' && !sendFirst && sendButton}
-        {/* The reminder email speaks of an overdue invoice, so it is offered only once the invoice is overdue. */}
-        {canPay && overdue && (
+        {/* The reminder email speaks of an overdue invoice, so it is offered only once the invoice is overdue,
+            and never for a credit note, which pays money back. */}
+        {canPay && overdue && (documentType === 'invoice' || documentType === 'proforma') && (
           <button
             type="button"
             className={buttonClass.secondary}

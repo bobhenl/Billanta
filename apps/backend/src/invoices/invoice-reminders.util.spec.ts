@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { reminderPrefsOf } from "../tenants/invoice-form-prefs";
-import { isDueForReminder } from "./invoice-reminders.util";
+import { amountLeftToPay, isDueForReminder } from "./invoice-reminders.util";
 
 const NOW = new Date("2026-09-09T09:00:00Z");
 
@@ -83,6 +83,23 @@ describe("isDueForReminder", () => {
     const invoice = { status: "issued", dueDate: daysAgo(40), lastReminderSentAt: daysAgo(10) };
     expect(isDueForReminder(invoice, NOW, { intervalDays: 14, max: 5 })).toBe(false);
     expect(isDueForReminder(invoice, NOW, { intervalDays: 3, max: 5 })).toBe(true);
+  });
+
+  it("reminds invoices and proformas, never credit notes or quotes", () => {
+    const invoice = { status: "issued", dueDate: daysAgo(3), lastReminderSentAt: null };
+    expect(isDueForReminder({ ...invoice, documentType: "invoice" }, NOW)).toBe(true);
+    expect(isDueForReminder({ ...invoice, documentType: "proforma" }, NOW)).toBe(true);
+    expect(isDueForReminder({ ...invoice, documentType: "credit_note" }, NOW)).toBe(false);
+    expect(isDueForReminder({ ...invoice, documentType: "quote" }, NOW)).toBe(false);
+  });
+});
+
+describe("amountLeftToPay", () => {
+  it("subtracts partial payments, rounds to cents and never goes below zero", () => {
+    expect(amountLeftToPay(2420, "420.00")).toBe(2000);
+    expect(amountLeftToPay(100.1, "0.2")).toBe(99.9);
+    expect(amountLeftToPay(2420, null)).toBe(2420);
+    expect(amountLeftToPay(2420, "2500")).toBe(0);
   });
 });
 

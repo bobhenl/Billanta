@@ -645,6 +645,13 @@
       "when": 1793248800000,
       "tag": "0092_stripe_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 93,
+      "version": "7",
+      "when": 1793248860000,
+      "tag": "0093_public_line_item_discount",
+      "breakpoints": true
     }
   ]
 }
