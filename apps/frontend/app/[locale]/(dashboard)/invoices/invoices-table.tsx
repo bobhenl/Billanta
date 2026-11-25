@@ -44,6 +44,7 @@ import {
 import { COLUMNS_KEY, INLINE_KEY, readJson, SORT_KEY, VIEW_EVENT, writeJson } from '@/lib/invoice-list-prefs';
 import { startNavProgress } from '@/components/nav-progress';
 import { cn } from '@/lib/utils';
+import { menuPosition, type MenuPosition } from '@/lib/menu-position';
 import { AmountHover, ContactHover } from './invoice-hover-cards';
 import {
   cancelInvoice,
@@ -633,7 +634,7 @@ export function InvoicesTable({
 function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const t = useTranslations('doc');
   const router = useRouter();
-  const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
+  const [pos, setPos] = useState<MenuPosition | null>(null);
   const [pending, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
   const canEdit = useCanWrite('invoices');
@@ -652,8 +653,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
   const open = () => {
     const rect = button.current?.getBoundingClientRect();
     if (!rect) return;
-    const top = rect.bottom + 4 + 360 > window.innerHeight ? Math.max(8, rect.top - 364) : rect.bottom + 4;
-    setPos({ top, right: window.innerWidth - rect.right });
+    setPos(menuPosition(rect, 360));
   };
 
   const act = <T,>(fn: () => Promise<ActionResult<T>>, okText: string, after?: (data: T) => void) => {
@@ -764,7 +764,7 @@ function RowMenu({ row, inline }: { row: InvoiceRow; inline: boolean }) {
       {pos && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setPos(null)} />
-          <div role="menu" style={{ top: pos.top, right: pos.right }} className="fixed z-50 w-56 rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
+          <div role="menu" style={pos} className="fixed z-50 overflow-y-auto w-56 rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
             {items.map(({ icon: Icon, label, onSelect, danger, href }) => {
               const className = cn(
                 'flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm hover:bg-accent',

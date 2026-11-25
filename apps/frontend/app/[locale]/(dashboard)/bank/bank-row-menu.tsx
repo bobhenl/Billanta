@@ -7,6 +7,7 @@ import { useRouter } from '@/i18n/navigation';
 import { toast } from '@/components/toaster';
 import { useCanWrite } from '@/components/access-provider';
 import { cn } from '@/lib/utils';
+import { menuPosition, type MenuPosition } from '@/lib/menu-position';
 import type { BankTransaction } from '@/lib/bank-ui';
 import { draftInvoiceFromTransaction, ignoreTransaction, restoreTransaction } from './actions';
 
@@ -21,7 +22,7 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
   const locale = useLocale();
   const router = useRouter();
   const canEdit = useCanWrite('bank');
-  const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
+  const [pos, setPos] = useState<MenuPosition | null>(null);
   const [pending, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
 
@@ -39,8 +40,7 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
   const open = () => {
     const rect = button.current?.getBoundingClientRect();
     if (!rect) return;
-    const top = rect.bottom + 4 + 260 > window.innerHeight ? Math.max(8, rect.top - 264) : rect.bottom + 4;
-    setPos({ top, right: window.innerWidth - rect.right });
+    setPos(menuPosition(rect, 260));
   };
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, done: string) => {
@@ -110,7 +110,7 @@ export function BankRowMenu({ tx }: { tx: BankTransaction }) {
       {pos && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setPos(null)} />
-          <div role="menu" style={{ top: pos.top, right: pos.right }} className="fixed z-50 w-60 rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
+          <div role="menu" style={pos} className="fixed z-50 overflow-y-auto w-60 rounded-xl border border-border bg-card p-1.5 text-left shadow-lg">
             {items.map(({ icon: Icon, label, onSelect }) => (
               <button
                 key={label}
