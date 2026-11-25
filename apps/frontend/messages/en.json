@@ -1151,7 +1151,14 @@
     },
     "bulkDraft": "{count, plural, one {Create a draft invoice} other {Create # draft invoices}}",
     "bulkDraftHint": "Creates a draft invoice for review from each selected incoming payment. Nothing is issued.",
-    "bulkDraftDone": "Drafts created: {ok} of {total}. You will find them in Invoices, waiting for review."
+    "bulkDraftDone": "Drafts created: {ok} of {total}. You will find them in Invoices, waiting for review.",
+    "rowMenu": {
+      "label": "Payment actions",
+      "open": "Open",
+      "openNewTab": "Open in new window",
+      "openInvoice": "Open invoice",
+      "findMatch": "Match to an invoice…"
+    }
   },
   "contacts": {
     "title": "Contacts",

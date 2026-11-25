@@ -10,6 +10,7 @@ import { TX_STATUS_CLASSES, type BankTransaction } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
 import { draftInvoiceFromTransaction, ignoreTransaction } from './actions';
 import { useCanWrite } from '@/components/access-provider';
+import { BankRowMenu, openInNewTab } from './bank-row-menu';
 
 export type BankRow = BankTransaction & { invoiceNumber: string | null; invoiceContact: string | null };
 
@@ -131,6 +132,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                   </p>
                 </div>
               </Link>
+              <BankRowMenu tx={tx} />
             </li>
           );
         })}
@@ -156,6 +158,7 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
               <th className="px-2 py-2.5 font-medium">{t('columns.variableSymbol')}</th>
               <th className="px-2 py-2.5 text-right font-medium">{t('columns.amount')}</th>
               <th className="px-3 py-2.5 font-medium">{t('columns.status')}</th>
+              <th className="w-10 px-2 py-2.5" />
             </tr>
           </thead>
           <tbody>
@@ -164,7 +167,9 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
               return (
                 <tr
                   key={tx.id}
-                  onClick={() => router.push(`/bank/${tx.id}`)}
+                  // Ctrl/Cmd-click and middle-click open the payment in a new tab, like a link would.
+                  onClick={(e) => (e.ctrlKey || e.metaKey ? openInNewTab(locale, `/bank/${tx.id}`) : router.push(`/bank/${tx.id}`))}
+                  onAuxClick={(e) => e.button === 1 && openInNewTab(locale, `/bank/${tx.id}`)}
                   className={cn('cursor-pointer border-b border-border/60 last:border-b-0 hover:bg-accent/60', selected.has(tx.id) && 'bg-primary/5')}
                 >
                   {canEdit && (
@@ -200,6 +205,9 @@ export function BankTable({ rows, empty }: { rows: BankRow[]; empty: boolean }) 
                     <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', TX_STATUS_CLASSES[tx.status])}>
                       {tx.status === 'matched' && tx.invoiceNumber ? t('matchedWithInvoice', { invoiceId: tx.invoiceNumber }) : t(`status.${tx.status}`)}
                     </span>
+                  </td>
+                  <td className="px-2 py-2.5 text-right">
+                    <BankRowMenu tx={tx} />
                   </td>
                 </tr>
               );

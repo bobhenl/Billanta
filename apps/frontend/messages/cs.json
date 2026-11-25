@@ -1151,7 +1151,14 @@
     },
     "bulkDraft": "{count, plural, one {Vytvořit koncept faktury} few {Vytvořit # koncepty faktur} other {Vytvořit # konceptů faktur}}",
     "bulkDraftHint": "Ke každé vybrané příchozí platbě vytvoří koncept faktury ke kontrole. Nic se nevystaví.",
-    "bulkDraftDone": "Koncepty vytvořeny: {ok} z {total}. Najdeš je ve Fakturách ke kontrole."
+    "bulkDraftDone": "Koncepty vytvořeny: {ok} z {total}. Najdeš je ve Fakturách ke kontrole.",
+    "rowMenu": {
+      "label": "Akce s platbou",
+      "open": "Otevřít",
+      "openNewTab": "Otevřít v novém okně",
+      "openInvoice": "Otevřít fakturu",
+      "findMatch": "Spárovat s fakturou…"
+    }
   },
   "contacts": {
     "title": "Kontakty",

@@ -1151,7 +1151,14 @@
     },
     "bulkDraft": "{count, plural, one {Vytvoriť koncept faktúry} few {Vytvoriť # koncepty faktúr} other {Vytvoriť # konceptov faktúr}}",
     "bulkDraftHint": "Ku každej vybranej prichádzajúcej platbe vytvorí koncept faktúry na kontrolu. Nič sa nevystaví.",
-    "bulkDraftDone": "Koncepty vytvorené: {ok} z {total}. Nájdeš ich vo Faktúrach na kontrolu."
+    "bulkDraftDone": "Koncepty vytvorené: {ok} z {total}. Nájdeš ich vo Faktúrach na kontrolu.",
+    "rowMenu": {
+      "label": "Akcie s platbou",
+      "open": "Otvoriť",
+      "openNewTab": "Otvoriť v novom okne",
+      "openInvoice": "Otvoriť faktúru",
+      "findMatch": "Spárovať s faktúrou…"
+    }
   },
   "contacts": {
     "title": "Kontakty",
