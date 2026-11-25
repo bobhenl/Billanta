@@ -1543,7 +1543,8 @@ export function InvoiceForm({
                 </button>
               ))}
             </div>
-            {/^\d{4}-\d{2}-\d{2}$/.test(dueDate) && !isWorkingDay(localDay(dueDate), sellerCountry) && (
+            {/* Already paid in full (e.g. a draft from a PayPal payment): a weekend due date does not matter. */}
+            {!paidInFull && /^\d{4}-\d{2}-\d{2}$/.test(dueDate) && !isWorkingDay(localDay(dueDate), sellerCountry) && (
               <p className="flex flex-wrap items-center gap-x-2 text-xs text-warning">
                 {dueHoliday
                   ? t('dates.dueOnHoliday', { name: tHoliday.has(dueHoliday.key) ? tHoliday(dueHoliday.key) : dueHoliday.name })
