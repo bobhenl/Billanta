@@ -214,6 +214,12 @@ export function BankConnections({
   const inputClass =
     'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus:border-primary focus:ring-2 focus:ring-primary/20';
   const softButton = 'rounded-full bg-muted px-3 py-1.5 text-xs font-semibold hover:bg-accent hover:text-primary disabled:opacity-60';
+  // Sync is one split button: the main part syncs now, the chevron (PayPal, owner/admin)
+  // opens the date picker for older history.
+  const syncPart = 'relative inline-flex items-center gap-1.5 py-1.5 text-xs font-bold focus-visible:z-10 disabled:opacity-60';
+  const syncSolid = 'bg-primary text-primary-foreground hover:opacity-90';
+  const syncSoft = 'bg-muted hover:bg-accent hover:text-primary';
+  const historyFor = (c: BankConnection) => canManage && c.provider === 'paypal';
   const primaryButton =
     'inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 disabled:opacity-60';
 
@@ -279,7 +285,8 @@ export function BankConnections({
             return (
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold">
+                  {/* Wraps instead of truncating, so "paused"/"expired" never get cut off on a phone. */}
+                  <div className="break-words text-sm font-semibold">
                     {c.label || c.bankName || (c.provider === 'paypal' ? 'PayPal' : 'Fio banka')}
                     {c.label && c.bankName && <span className="ml-2 text-xs font-normal text-muted-foreground">{c.bankName}</span>}
                     {c.accountNumber && <span className="ml-2 font-mono text-xs font-normal text-muted-foreground">{c.accountNumber}</span>}
@@ -308,26 +315,42 @@ export function BankConnections({
                     </button>
                   )}
                   {!expired && (
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => sync(c.id)}
-                      className={expiringSoon ? cn(softButton, 'inline-flex items-center gap-1.5') : primaryButton}
-                    >
-                      <RefreshCw className={cn('h-3.5 w-3.5', busyId === c.id && 'animate-spin')} />
-                      {t('sync')}
-                    </button>
-                  )}
-                  {canManage && c.provider === 'paypal' && !expired && backfillId !== c.id && (
-                    <button
-                      type="button"
-                      disabled={pending}
-                      onClick={() => setBackfillId(c.id)}
-                      className={cn(softButton, 'inline-flex items-center gap-1.5')}
-                    >
-                      <History className="h-3.5 w-3.5" />
-                      {t('paypal.backfill')}
-                    </button>
+                    <div className="inline-flex">
+                      <button
+                        type="button"
+                        disabled={pending}
+                        onClick={() => sync(c.id)}
+                        className={cn(
+                          syncPart,
+                          expiringSoon ? syncSoft : syncSolid,
+                          historyFor(c) ? 'rounded-l-full pl-3 pr-2.5' : 'rounded-full px-3'
+                        )}
+                      >
+                        <RefreshCw className={cn('h-3.5 w-3.5', busyId === c.id && 'animate-spin')} />
+                        {t('sync')}
+                      </button>
+                      {historyFor(c) && (
+                        <button
+                          type="button"
+                          disabled={pending}
+                          onClick={() => setBackfillId(backfillId === c.id ? null : c.id)}
+                          aria-label={t('paypal.backfill')}
+                          title={t('paypal.backfill')}
+                          aria-expanded={backfillId === c.id}
+                          aria-controls={`backfill-${c.id}`}
+                          className={cn(
+                            syncPart,
+                            expiringSoon ? cn(syncSoft, 'border-border') : cn(syncSolid, 'border-primary-foreground/30'),
+                            'rounded-r-full border-l px-2'
+                          )}
+                        >
+                          <ChevronDown
+                            className={cn('h-3.5 w-3.5 transition-transform motion-reduce:transition-none', backfillId === c.id && 'rotate-180')}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      )}
+                    </div>
                   )}
                   {!expired && (
                     <button type="button" disabled={pending} onClick={() => toggle(c)} className={softButton}>
@@ -346,34 +369,45 @@ export function BankConnections({
                   </button>
                 </div>
                 )}
-                {canManage && backfillId === c.id && (
+                {canEdit && historyFor(c) && backfillId === c.id && (
                   <form
-                    className="anim-fade flex w-full flex-wrap items-end gap-2 rounded-lg bg-muted/50 p-3"
+                    id={`backfill-${c.id}`}
+                    aria-label={t('paypal.backfill')}
+                    className="anim-fade min-w-0 basis-full rounded-lg border border-border bg-muted/40 p-4"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') setBackfillId(null);
+                    }}
                     onSubmit={(e) => {
                       e.preventDefault();
                       backfill(c.id);
                     }}
                   >
-                    <label className="text-xs font-semibold">
-                      {t('paypal.backfillFrom')}
-                      <input
-                        type="date"
-                        required
-                        min={oldest}
-                        max={today}
-                        value={backfillFrom}
-                        onChange={(e) => setBackfillFrom(e.target.value)}
-                        className={cn(inputClass, 'mt-1.5 w-44')}
-                      />
-                    </label>
-                    <button type="submit" disabled={pending || !backfillFrom} className={cn(primaryButton, 'h-10 px-4')}>
-                      {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <History className="h-3.5 w-3.5" />}
-                      {t('paypal.backfillRun')}
-                    </button>
-                    <button type="button" disabled={pending} onClick={() => setBackfillId(null)} className={cn(softButton, 'h-10 px-4')}>
-                      {t('cancel')}
-                    </button>
-                    <p className="w-full text-[11px] text-muted-foreground">{t('paypal.backfillHint')}</p>
+                    <div className="flex flex-wrap items-end gap-3">
+                      <label htmlFor={`backfill-from-${c.id}`} className="grid gap-1.5 text-xs font-semibold">
+                        {t('paypal.backfillFrom')}
+                        <input
+                          id={`backfill-from-${c.id}`}
+                          type="date"
+                          required
+                          autoFocus
+                          min={oldest}
+                          max={today}
+                          value={backfillFrom}
+                          onChange={(e) => setBackfillFrom(e.target.value)}
+                          className={cn(inputClass, 'w-44 max-w-full')}
+                        />
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        <button type="submit" disabled={pending || !backfillFrom} className={cn(primaryButton, 'h-10 px-4')}>
+                          {busyId === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <History className="h-3.5 w-3.5" />}
+                          {t('paypal.backfillRun')}
+                        </button>
+                        <button type="button" disabled={pending} onClick={() => setBackfillId(null)} className={cn(softButton, 'h-10 px-4')}>
+                          {t('cancel')}
+                        </button>
+                      </div>
+                    </div>
+                    <p className="mt-3 break-words text-xs leading-relaxed text-muted-foreground">{t('paypal.backfillHint')}</p>
                   </form>
                 )}
               </li>

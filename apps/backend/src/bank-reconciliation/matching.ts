@@ -98,3 +98,93 @@ export function findInvoiceMatch(
 function amountsEqual(a: number, b: number): boolean {
   return Math.round(a * 100) === Math.round(b * 100);
 }
+
+/**
+ * Second tier, run only when `findInvoiceMatch` found no candidate at all:
+ * link the payment to an invoice that is already `paid` (typically history
+ * imported from another invoicing system). Linking only records which
+ * invoice the money belongs to; the caller must never mark or change the
+ * invoice. PayPal's "VS" is PayPal's own number, so this tier ignores it and
+ * relies on who paid, when and how much.
+ */
+export const PAID_LINK_WINDOW_DAYS = 7;
+/** An imported invoice with a zero total says nothing about the amount, so the date has to be close instead. */
+export const PAID_LINK_ZERO_TOTAL_WINDOW_DAYS = 1;
+
+export interface PaidLinkCandidate {
+  id: string;
+  currency: string;
+  /** Full invoice total from its line items; 0 for some imported invoices. */
+  total: number;
+  issueDate: Date | null;
+  paidAt: Date | null;
+  contactEmail: string | null;
+  contactName: string | null;
+  /** Some bank transaction already points at this invoice. */
+  alreadyLinked: boolean;
+}
+
+export interface PaymentForLinking {
+  amount: number;
+  currency: string;
+  transactionDate: Date;
+  /** IBAN for bank rows, the payer's e-mail for PayPal. */
+  counterpartyAccount: string | null;
+  counterpartyName: string | null;
+}
+
+export type PaidLinkOutcome =
+  | { type: "linked"; invoiceId: string; matchedBy: "paid_invoice" }
+  | { type: "unmatched"; reason: "no_candidate" | "ambiguous" };
+
+const LEGAL_FORMS = new Set(["sro", "spol", "as", "vos", "ks", "zs", "ltd", "llc", "inc", "gmbh", "plc", "corp", "co"]);
+
+/** "Novák Jan s.r.o." and "jan NOVAK" give the same key: accents, case, order and the legal form don't count. */
+export function partyNameKey(name: string | null | undefined): string {
+  if (!name) return "";
+  const tokens = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\b(s\.\s?r\.\s?o|a\.\s?s|v\.\s?o\.\s?s|k\.\s?s|z\.\s?s)\.?/g, " ")
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token && !LEGAL_FORMS.has(token));
+  return tokens.sort().join(" ");
+}
+
+function emailKey(value: string | null | undefined): string {
+  const v = value?.trim().toLowerCase() ?? "";
+  return v.includes("@") ? v : "";
+}
+
+/** Whole UTC days between two moments, so a paid_at with a time of day still counts as that day. */
+function dayDistance(a: Date, b: Date): number {
+  const day = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  return Math.abs(day(a) - day(b)) / (24 * 60 * 60 * 1000);
+}
+
+export function findPaidInvoiceLink(payment: PaymentForLinking, candidates: PaidLinkCandidate[]): PaidLinkOutcome {
+  if (!(payment.amount > 0)) return { type: "unmatched", reason: "no_candidate" };
+  const email = emailKey(payment.counterpartyAccount);
+  const name = partyNameKey(payment.counterpartyName);
+
+  const hits = candidates.filter((c) => {
+    if (c.alreadyLinked) return false;
+    if (c.currency !== payment.currency) return false;
+    const emailMatch = email !== "" && emailKey(c.contactEmail) === email;
+    const nameMatch = name !== "" && partyNameKey(c.contactName) === name;
+    if (!emailMatch && !nameMatch) return false;
+    const distances = [c.paidAt, c.issueDate].filter((d): d is Date => d !== null).map((d) => dayDistance(d, payment.transactionDate));
+    if (distances.length === 0) return false;
+    const closest = Math.min(...distances);
+    if (closest > PAID_LINK_WINDOW_DAYS) return false;
+    // Any non-zero total (a credit note's negative one too) has to be paid exactly.
+    if (!amountsEqual(c.total, 0)) return amountsEqual(c.total, payment.amount);
+    // Zero total (import quirk): only the payer's own e-mail plus a near-same day is enough.
+    return emailMatch && closest <= PAID_LINK_ZERO_TOTAL_WINDOW_DAYS;
+  });
+
+  if (hits.length === 1) return { type: "linked", invoiceId: hits[0].id, matchedBy: "paid_invoice" };
+  if (hits.length > 1) return { type: "unmatched", reason: "ambiguous" };
+  return { type: "unmatched", reason: "no_candidate" };
+}

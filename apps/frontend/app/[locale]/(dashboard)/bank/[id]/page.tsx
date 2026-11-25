@@ -7,7 +7,7 @@ import { Banner } from '@/components/banner';
 import { InfoHint } from '@/components/info-hint';
 import { apiFetch, ApiError, NotSignedInError } from '@/lib/api-client';
 import { formatDate, formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
-import { rankCandidates, TX_STATUS_CLASSES, type BankTransactionDetail } from '@/lib/bank-ui';
+import { rankCandidates, TX_STATUS_CLASSES, type BankTransaction, type BankTransactionDetail } from '@/lib/bank-ui';
 import { cn } from '@/lib/utils';
 import { TransactionActions } from './transaction-actions';
 
@@ -37,10 +37,21 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
     );
   }
 
-  const invoices = await apiFetch<InvoiceRow[]>('/api/v1/invoices').catch(() => [] as InvoiceRow[]);
-  const matched = tx.matchedInvoiceId ? invoices.find((i) => i.id === tx.matchedInvoiceId) : undefined;
   const amount = Number(tx.amount);
-  const candidates = tx.status === 'unmatched' && amount > 0 ? rankCandidates(tx, invoices).slice(0, 8) : [];
+  const suggest = tx.status === 'unmatched' && amount > 0;
+  // Contacts (for the payer's e-mail) and matched rows (paid invoices already linked) only feed the suggestions.
+  const [invoices, contacts, matchedRows] = await Promise.all([
+    apiFetch<InvoiceRow[]>('/api/v1/invoices').catch(() => [] as InvoiceRow[]),
+    suggest ? apiFetch<{ id: string; email: string | null }[]>('/api/v1/contacts').catch(() => []) : Promise.resolve([]),
+    suggest ? apiFetch<BankTransaction[]>('/api/v1/bank-reconciliation/transactions?status=matched').catch(() => [] as BankTransaction[]) : Promise.resolve([])
+  ]);
+  const matched = tx.matchedInvoiceId ? invoices.find((i) => i.id === tx.matchedInvoiceId) : undefined;
+  const candidates = suggest
+    ? rankCandidates(tx, invoices, {
+        contactEmails: new Map(contacts.filter((c) => c.email).map((c) => [c.id, c.email!])),
+        linkedInvoiceIds: new Set(matchedRows.map((r) => r.matchedInvoiceId).filter((id): id is string => Boolean(id)))
+      }).slice(0, 8)
+    : [];
 
   const facts: [string, string | null][] = [
     [t('columns.date'), formatDate(tx.transactionDate, locale)],
@@ -113,25 +124,34 @@ export default async function BankTransactionPage(props: { params: Promise<{ id:
                 <p className="mt-4 text-sm text-muted-foreground">{t('detail.noCandidates')}</p>
               ) : (
                 <ul className="mt-3 divide-y divide-border">
-                  {candidates.map(({ invoice, reasons }) => (
+                  {candidates.map(({ invoice, reasons, paid }) => (
                     <li key={invoice.id} className="flex flex-wrap items-center gap-3 py-2.5">
                       <div className="min-w-0 flex-1">
                         <Link href={`/invoices/${invoice.id}`} className="font-semibold hover:text-primary">
                           {invoice.invoiceNumber}
                         </Link>
                         <div className="truncate text-xs text-muted-foreground">
-                          {invoice.contactName} · {t('detail.due')} {formatDate(invoice.dueDate, locale) ?? '–'}
+                          {invoice.contactName} ·{' '}
+                          {paid
+                            ? `${t('detail.paidOn')} ${formatDate(invoice.paidAt ?? invoice.issueDate, locale) ?? '–'}`
+                            : `${t('detail.due')} ${formatDate(invoice.dueDate, locale) ?? '–'}`}
                         </div>
                         {reasons.length > 0 && (
                           <div className="mt-0.5 text-xs font-semibold text-primary">{reasons.map((r) => t(`detail.reason.${r}`)).join(' · ')}</div>
                         )}
+                        {paid && <div className="mt-0.5 text-xs text-muted-foreground">{t('detail.paidHint')}</div>}
                       </div>
                       <span className="font-semibold tabular-nums">{formatMoney(invoice.total, invoice.currency, locale)}</span>
-                      <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} />
+                      <TransactionActions id={tx.id} status={tx.status} matchInvoiceId={invoice.id} matchPaid={paid} />
                     </li>
                   ))}
                 </ul>
               )}
+              {/* No invoice at all (a new sale): a draft to review, never issued from here. */}
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
+                <p className="min-w-0 flex-1 text-xs text-muted-foreground">{t('detail.createDraftHint')}</p>
+                <TransactionActions id={tx.id} status={tx.status} createDraft />
+              </div>
             </section>
           )}
 

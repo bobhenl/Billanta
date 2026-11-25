@@ -6,12 +6,27 @@ import { Banner } from '@/components/banner';
 import { TwoFactorNotice } from '@/components/two-factor-notice';
 import { apiFetch, ApiError, NoTenantError, NotSignedInError } from '@/lib/api-client';
 import { formatMoney, type InvoiceRow } from '@/lib/invoice-ui';
-import { TRANSACTION_STATUSES, homeCurrencyTotals, type BankTransaction, type TransactionStatus } from '@/lib/bank-ui';
+import {
+  BANK_PERIODS,
+  TRANSACTION_STATUSES,
+  connectionLabel,
+  filterTransactions,
+  homeCurrencyTotals,
+  transactionSourceKey,
+  type BankDirection,
+  type BankPeriod,
+  type BankListFilters,
+  type BankTransaction,
+  type TransactionStatus
+} from '@/lib/bank-ui';
+import { presetRange } from '@/lib/period-presets';
 import { canManage, fetchCanWrite, fetchHomeCurrency, fetchMyRole } from '@/lib/tenant';
 import { cn } from '@/lib/utils';
 import type { BankConnection } from './actions';
 import { BankConnections } from './bank-connections';
+import { BankFilters } from './bank-filters';
 import { BankImport } from './bank-import';
+import { RematchButton } from './rematch-button';
 import { BankTable, type BankRow } from './bank-reconciliation-panel';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,12 +39,29 @@ export async function generateMetadata(): Promise<Metadata> {
  * invoices by the backend (`apps/backend/src/bank-reconciliation/`). Rows
  * open `/bank/{id}`, where the leftovers get matched by hand.
  */
-export default async function BankReconciliationPage(props: { searchParams: Promise<{ status?: string; q?: string }> }) {
+export default async function BankReconciliationPage(props: {
+  searchParams: Promise<{ status?: string; q?: string; source?: string; period?: string; from?: string; to?: string; dir?: string }>;
+}) {
   const searchParams = await props.searchParams;
   const t = await getTranslations('bank');
   const locale = await getLocale();
   const status = TRANSACTION_STATUSES.includes(searchParams.status as TransactionStatus) ? (searchParams.status as TransactionStatus) : undefined;
   const q = searchParams.q?.trim().toLowerCase().slice(0, 100) || undefined;
+  const source = searchParams.source?.slice(0, 64) || undefined;
+  const direction: BankDirection | undefined = searchParams.dir === 'in' || searchParams.dir === 'out' ? searchParams.dir : undefined;
+  const day = (v?: string) => (v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : undefined);
+  const preset = BANK_PERIODS.includes(searchParams.period as BankPeriod) ? (searchParams.period as BankPeriod) : undefined;
+  const range = preset ? presetRange(preset) : { from: day(searchParams.from), to: day(searchParams.to) };
+  const period: BankPeriod | 'custom' | '' = preset ?? (range.from || range.to ? 'custom' : '');
+  // Status chips and cards keep the other filters in the link.
+  const kept = { q, source, period: preset, from: preset ? undefined : range.from, to: preset ? undefined : range.to, dir: direction };
+  const href = (s?: string) => {
+    const p = new URLSearchParams();
+    if (s) p.set('status', s);
+    for (const [key, value] of Object.entries(kept)) if (value) p.set(key, value);
+    const qs = p.toString();
+    return qs ? `/bank?${qs}` : '/bank';
+  };
 
   let transactions: BankTransaction[];
   let invoices: InvoiceRow[];
@@ -61,18 +93,31 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
     const inv = tx.matchedInvoiceId ? byId.get(tx.matchedInvoiceId) : undefined;
     return { ...tx, invoiceNumber: inv?.invoiceNumber ?? null, invoiceContact: inv?.contactName ?? null };
   });
-  const visible = rows.filter(
-    (r) =>
-      (!status || r.status === status) &&
-      (!q || [r.counterpartyName, r.variableSymbol, r.counterpartyAccount, r.invoiceNumber].some((v) => v?.toLowerCase().includes(q)))
-  );
+  const filters: BankListFilters = { status, q, source, from: range.from, to: range.to, direction };
+  const visible = filterTransactions(rows, filters, connections);
+  // The cards follow every filter but the status chip they themselves set.
+  const scoped = filterTransactions(rows, filters, connections, ['status']);
 
-  const { incoming, outgoing } = homeCurrencyTotals(transactions, home);
-  const unmatched = transactions.filter((tx) => tx.status === 'unmatched');
-  const matchedCount = transactions.filter((tx) => tx.status === 'matched').length;
+  // One option per connected account, plus uploads and orphaned syncs that actually have rows.
+  const present = new Set(rows.map((r) => transactionSourceKey(r, connections)));
+  const fallbacks: [string, string][] = [
+    ['upload', t('filters.upload')],
+    ['paypal', 'PayPal'],
+    ['fio', 'Fio'],
+    ['psd2', t('filters.psd2')]
+  ];
+  const sourceOptions = [
+    ...connections.filter((c) => c.status !== 'pending').map((c) => ({ value: `c:${c.id}`, label: connectionLabel(c) })),
+    ...fallbacks.filter(([key]) => present.has(key)).map(([value, label]) => ({ value, label }))
+  ];
+
+  const unmatchedTotal = transactions.filter((tx) => tx.status === 'unmatched').length;
+  const { incoming, outgoing } = homeCurrencyTotals(scoped, home);
+  const unmatched = scoped.filter((tx) => tx.status === 'unmatched');
+  const matchedCount = scoped.filter((tx) => tx.status === 'matched').length;
   const cards = [
-    { key: 'unmatched', label: t('kpi.toReview'), value: String(unmatched.length), href: '/bank?status=unmatched', tone: unmatched.length ? 'text-warning' : '' },
-    { key: 'matched', label: t('kpi.matched'), value: String(matchedCount), href: '/bank?status=matched', tone: 'text-success' },
+    { key: 'unmatched', label: t('kpi.toReview'), value: String(unmatched.length), href: href('unmatched'), tone: unmatched.length ? 'text-warning' : '' },
+    { key: 'matched', label: t('kpi.matched'), value: String(matchedCount), href: href('matched'), tone: 'text-success' },
     { key: 'in', label: t('kpi.incoming', { currency: home }), value: formatMoney(incoming, home, locale), href: null, tone: 'text-primary' },
     { key: 'out', label: t('kpi.outgoing', { currency: home }), value: formatMoney(outgoing, home, locale), href: null, tone: '' }
   ];
@@ -82,19 +127,17 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
       'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full px-3 text-sm font-semibold transition-colors',
       active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-accent hover:text-primary'
     );
-  const href = (s?: string) => {
-    const p = new URLSearchParams();
-    if (s) p.set('status', s);
-    if (q) p.set('q', q);
-    const qs = p.toString();
-    return qs ? `/bank?${qs}` : '/bank';
-  };
 
   return (
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <h1 className="text-2xl font-extrabold tracking-tight">{t('title')}</h1>
-        {canEdit && <BankImport />}
+        {canEdit && (
+          <div className="flex flex-wrap items-start gap-2">
+            {unmatchedTotal > 0 && <RematchButton />}
+            <BankImport />
+          </div>
+        )}
       </div>
 
       {/* Two compact rows on a phone; full-size cards filled the first screen. */}
@@ -126,6 +169,7 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <form action="" className="relative w-full sm:max-w-xs">
           {status && <input type="hidden" name="status" value={status} />}
+          {Object.entries(kept).map(([key, value]) => key !== 'q' && value && <input key={key} type="hidden" name={key} value={value} />)}
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
             name="q"
@@ -146,6 +190,9 @@ export default async function BankReconciliationPage(props: { searchParams: Prom
               {t(`status.${s}`)}
             </Link>
           ))}
+        </div>
+        <div className="w-full sm:w-auto">
+          <BankFilters sources={sourceOptions} period={period} from={range.from ?? ''} to={range.to ?? ''} />
         </div>
       </div>
 

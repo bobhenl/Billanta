@@ -53,7 +53,7 @@
       "features": "Funkce",
       "pricing": "Ceník",
       "login": "Přihlásit se",
-      "signup": "Registrace",
+      "signup": "Založit účet",
       "label": "Hlavní navigace",
       "home": "Domů",
       "start": "Začít",
@@ -78,7 +78,7 @@
     "hero": {
       "title": "Online fakturace, která pohlídá i platby",
       "subtitle": "Fakturu vystavíte za minutu, klidně hlasem. Platby z banky se k ní spárují samy.",
-      "cta": "Začít zdarma",
+      "cta": "Založit účet zdarma",
       "note": "Bez platební karty. Nebo bez registrace: <write>vyplnit fakturu</write> · <voice>nadiktovat ji</voice>"
     },
     "heroSlides": {
@@ -211,7 +211,7 @@
     "finalCta": {
       "title": "Začněte s první fakturou",
       "subtitle": "Zdarma a bez platební karty.",
-      "cta": "Vytvořit účet"
+      "cta": "Založit účet zdarma"
     },
     "footer": {
       "tagline": "Moderní fakturace pro české a slovenské firmy.",
@@ -250,7 +250,7 @@
       "account": {
         "title": "Účet",
         "login": "Přihlásit se",
-        "signup": "Registrovat se",
+        "signup": "Založit účet",
         "openApp": "Přejít do aplikace"
       },
       "partners": {
@@ -369,7 +369,7 @@
       "new_invoice": "Nová faktura",
       "new_proforma": "Zálohová faktura",
       "new_quote": "Nabídka",
-      "new_expense": "Nový náklad",
+      "new_expense": "Nový výdaj",
       "templates": "Šablony",
       "bulk": "Hromadná fakturace",
       "new_contact": "Kontakty",
@@ -902,7 +902,8 @@
         "paid": "Označeno jako uhrazené",
         "unpaid": "Vráceno na neuhrazené",
         "deleted": "Výdaj smazán"
-      }
+      },
+      "back": "Zpět"
     },
     "filters": {
       "receipt": "Účtenka",
@@ -988,13 +989,15 @@
       "draft": "Koncept",
       "invoiceGone": "Spárovaná faktura už neexistuje.",
       "suggestions": "Návrhy ke spárování",
-      "suggestionsHint": "Neuhrazené faktury ve stejné měně, nejlepší shoda nahoře. Spárováním se faktura označí jako uhrazená.",
-      "noCandidates": "Žádná vystavená neuhrazená faktura v této měně.",
+      "suggestionsHint": "Vystavené faktury ve stejné měně a už uhrazené faktury, ke kterým ještě žádná platba není, nejlepší shoda nahoře. Vystavená faktura se spárováním označí jako uhrazená, uhrazená se jen propojí a nezmění.",
+      "noCandidates": "Žádná vhodná faktura v této měně.",
       "due": "splatnost",
       "reason": {
         "vs": "Shoda VS",
         "amount": "Shoda částky",
-        "name": "Shoda jména"
+        "name": "Shoda jména",
+        "email": "Shoda e-mailu",
+        "date": "Blízké datum"
       },
       "outgoingHint": "Odchozí platba – pokud jde o náklad, zapište ho v Nákladech, a transakci pak ignorujte.",
       "ignoredHint": "Transakce je ignorovaná a nepočítá se do párování.",
@@ -1005,7 +1008,14 @@
       "ignoredDone": "Transakce ignorována.",
       "restoredDone": "Transakce vrácena ke spárování.",
       "actionFailed": "Akce selhala",
-      "message": "Zpráva pro příjemce"
+      "message": "Zpráva pro příjemce",
+      "paidOn": "uhrazeno",
+      "paidHint": "Už uhrazená faktura. Platbu jen propojíme, faktura se nezmění.",
+      "linkedDone": "Platba propojena s fakturou. Faktura zůstala beze změny.",
+      "alreadyLinked": "Tuto fakturu už propojuje jiná platba.",
+      "createDraft": "Vytvořit fakturu z platby",
+      "createDraftHint": "Platba nepatří k žádné faktuře? Vytvoříme z ní návrh faktury ke kontrole. Vystavíte ho sami.",
+      "draftDone": "Návrh faktury vytvořen a propojen s platbou. Zkontrolujte ho a vystavte."
     },
     "connections": {
       "title": "Napojení na banku",
@@ -1093,10 +1103,10 @@
         "note": "Platby se párují podle čísla faktury nebo VS v poznámce a částky. Poplatek PayPalu se zapíše k faktuře. PayPal ukazuje platby se zpožděním až 3 hodiny.",
         "connected": "PayPal připojen. Platby za posledních 30 dní stáhneme při nejbližší synchronizaci.",
         "moreOptions": "Další možnosti",
-        "backfill": "Stáhnout starší platby",
+        "backfill": "Synchronizovat od data…",
         "backfillFrom": "Od dne",
         "backfillHint": "PayPal vydá platby až 3 roky zpět. Starší platby jen spárujeme s fakturami, návrhy faktur z nich nevznikají. Co už v Billantě je, se znovu nestáhne.",
-        "backfillRun": "Stáhnout",
+        "backfillRun": "Synchronizovat",
         "backfillDone": "Staženo {total, plural, one {# starší platba} few {# starší platby} other {# starších plateb}}, {matched} spárováno.",
         "backfillNothing": "Žádné nové starší platby. Co PayPal za to období vydal, už v Billantě je.",
         "backfillNets": "U {count, plural, one {# platby} other {# plateb}} jsme doplnili částku po převodu měny."
@@ -1120,7 +1130,25 @@
       "syncPending": "Fio jsme připravili. Platby stáhneme při další synchronizaci, zkuste to za 30 sekund."
     },
     "fee": "poplatek {amount}",
-    "netReceived": "připsáno {amount}"
+    "netReceived": "připsáno {amount}",
+    "rematch": {
+      "label": "Spárovat znovu",
+      "done": "Spárováno {matched, plural, one {# platba} few {# platby} other {# plateb}} s vystavenou fakturou, {linked, plural, one {# platba propojena} few {# platby propojeny} other {# plateb propojeno}} s už uhrazenou.",
+      "nothing": "Prošli jsme {checked, plural, one {# nespárovanou platbu} few {# nespárované platby} other {# nespárovaných plateb}}, žádná nová shoda.",
+      "failed": "Párování se nepovedlo ({code})."
+    },
+    "filters": {
+      "source": "Účet",
+      "allSources": "Všechny účty",
+      "upload": "Nahrané výpisy",
+      "psd2": "Banka (PSD2)",
+      "period": "Období",
+      "custom": "Vlastní období",
+      "direction": "Směr",
+      "allDirections": "Příchozí i odchozí",
+      "incoming": "Příchozí",
+      "outgoing": "Odchozí"
+    }
   },
   "contacts": {
     "title": "Kontakty",
@@ -1222,7 +1250,7 @@
       "aresCheck": "Ověřeno v ARES",
       "lastInvoice": "Poslední doklad",
       "openAres": "Otevřít v ARES ↗",
-      "newInvoice": "Vystavit fakturu",
+      "newInvoice": "Nová faktura",
       "star": "Oblíbit",
       "unstar": "Odebrat z oblíbených",
       "refreshAres": "Aktualizovat z ARES",
@@ -5268,7 +5296,7 @@
       "newProforma": "Nová zálohová faktura",
       "newQuote": "Nová cenová nabídka",
       "newExpense": "Nový výdaj",
-      "newContact": "Nový zákazník",
+      "newContact": "Nový kontakt",
       "bulk": "Hromadná fakturace",
       "export": "Export pro účetní",
       "invite": "Pozvat člena týmu",
@@ -5369,7 +5397,7 @@
     "newInvoiceAnywhere": "Nová faktura (i z pole)",
     "newProforma": "Nová zálohová faktura",
     "newExpense": "Nový výdaj",
-    "newContact": "Nový zákazník",
+    "newContact": "Nový kontakt",
     "goDashboard": "Přehled",
     "goInvoices": "Faktury",
     "goExpenses": "Výdaje",
@@ -7476,7 +7504,7 @@
     "switchTitle": "Přecházíte odjinud?",
     "switchBody": "Začněte zdarma a kontakty i doklady si přeneste importem.",
     "pricingCta": "Ceník",
-    "signupCta": "Začít zdarma",
+    "signupCta": "Založit účet zdarma",
     "notStated": "– = v ceníku neuvádí (nemusí znamenat, že funkce chybí)",
     "verified": "Ověřeno v ceníku {date}",
     "brand": {
@@ -9943,7 +9971,7 @@
       "title": "Ukázková firma už neexistuje",
       "lead": "Demo trvá 24 hodin a potom se i se všemi daty smaže. Můžete si otevřít nové, nebo si založit vlastní účet.",
       "again": "Otevřít nové demo",
-      "register": "Založit účet"
+      "register": "Založit účet zdarma"
     },
     "publicNotice": "Ukázková faktura z dema Billanty. Firma i všechny údaje jsou smyšlené – nic neplaťte.",
     "watermark": "DEMO",
@@ -10574,7 +10602,7 @@
     "eyebrow": "Pro tvůrce obsahu",
     "title": "Fakturujte spolupráce se značkami bez nervů",
     "lead": "Kampaň pro značku, odměna od agentury, výplata od zahraniční platformy. Billanta vystaví fakturu v korunách i v eurech, ohlídá přenesení daňové povinnosti a připomene, když někdo neplatí.",
-    "cta": "Začít fakturovat zdarma",
+    "cta": "Založit účet zdarma",
     "demo": "Vyzkoušet bez registrace",
     "topicsTitle": "Co tvůrci řeší nejčastěji",
     "topics": {
@@ -11468,7 +11496,7 @@
       "toolsLead": "Zdarma a bez registrace. Spočítejte, ověřte a dočtěte se víc.",
       "nextTitle": "Kam dál",
       "faqTitle": "Časté otázky",
-      "signup": "Začít zdarma",
+      "signup": "Založit účet zdarma",
       "demo": "Vyzkoušet demo",
       "more": "Více",
       "allRoles": "Všechny role",
@@ -12200,7 +12228,7 @@
       "eyebrow": "Daňové přiznání",
       "title": "Podklady pro daňové přiznání {year}",
       "lead": "Billanta sečte příjmy z uhrazených faktur a výdaje podle kategorií, porovná je s výdajovými paušály a ukáže termíny podání. Pro Česko i Slovensko, ke stažení v PDF a CSV.",
-      "cta": "Začít zdarma",
+      "cta": "Založit účet zdarma",
       "demo": "Vyzkoušet demo",
       "free": "Podklady jsou součástí všech tarifů včetně bezplatného.",
       "featuresTitle": "Co v podkladech najdete",
@@ -12691,7 +12719,7 @@
     "howBody": "V katalogu jsou jen firmy, které mají v Billantě zveřejněný profil a samy si zapnuly zobrazení v katalogu. Nikoho nepřidáváme bez souhlasu a zápis jde kdykoli vypnout.",
     "joinTitle": "Chcete tu být taky?",
     "joinBody": "Založte si Billantu zdarma, zveřejněte firemní profil a zapněte si zobrazení v katalogu v Nastavení → Veřejný profil.",
-    "joinCta": "Začít zdarma",
+    "joinCta": "Založit účet zdarma",
     "profileListed": "V katalogu firem:",
     "trades": {
       "tradesman": "Řemeslníci",
@@ -13288,7 +13316,7 @@
     "auto": {
       "title": "Upomínky za vás pošle Billanta",
       "text": "Když faktura vystavená v Billantě přejde splatnost, odběratel automaticky dostane e-mailem zdvořilou upomínku s odkazem na fakturu a QR platbou. Interval i nejvyšší počet upomínek si nastavíte sami a jakmile je faktura zaplacená, upomínky přestanou chodit.",
-      "cta": "Vyzkoušet zdarma",
+      "cta": "Založit účet zdarma",
       "more": "Jak fungují automatické upomínky"
     },
     "fromInvoices": {

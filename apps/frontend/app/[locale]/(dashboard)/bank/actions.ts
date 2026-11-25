@@ -34,6 +34,32 @@ export async function matchTransaction(id: string, invoiceId: string) {
   return post(tx(id, 'match'), { invoiceId });
 }
 
+export type RematchResult = { ok: true; checked: number; matched: number; linked: number } | { ok: false; error: string };
+
+/** Runs auto-match again over unmatched payments; paid invoices are only linked, never changed. */
+export async function rematchTransactions(): Promise<RematchResult> {
+  try {
+    const result = await apiFetch<{ checked: number; matched: number; linked: number }>('/api/v1/bank-reconciliation/rematch', { method: 'POST' });
+    revalidatePath('/[locale]/(dashboard)', 'layout');
+    return { ok: true, ...result };
+  } catch (error) {
+    return { ok: false, error: errorCode(error) };
+  }
+}
+
+export type DraftFromPaymentResult = { ok: true; invoiceId: string } | { ok: false; error: string };
+
+/** A pending_review draft from an unmatched incoming payment, linked to it. Never issued here. */
+export async function draftInvoiceFromTransaction(id: string): Promise<DraftFromPaymentResult> {
+  try {
+    const result = await apiFetch<{ invoiceId: string }>(tx(id, 'draft-invoice'), { method: 'POST' });
+    revalidatePath('/[locale]/(dashboard)', 'layout');
+    return { ok: true, invoiceId: result.invoiceId };
+  } catch (error) {
+    return { ok: false, error: errorCode(error) };
+  }
+}
+
 export async function ignoreTransaction(id: string) {
   return post(tx(id, 'ignore'));
 }

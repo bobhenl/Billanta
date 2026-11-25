@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, Optional } from "@nestjs/common";
 import { normalizeVariableSymbol } from "@faktur/cz-compliance";
-import { and, desc, eq, gte, inArray, isNull, lt, ne } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, lt, ne, or } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "../../drizzle/schema";
 import { computeInvoiceTotal, round2 } from "../invoices/invoice-total.util";
@@ -8,7 +8,14 @@ import { InvoicesService } from "../invoices/invoices.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import type { ParsedBankTransactionRow } from "./csv-parser";
 import { splitDuplicates } from "./dedupe";
-import { findInvoiceMatch, type MatchCandidateInvoice } from "./matching";
+import {
+  findInvoiceMatch,
+  findPaidInvoiceLink,
+  PAID_LINK_WINDOW_DAYS,
+  type MatchCandidateInvoice,
+  type MatchOutcome,
+  type PaidLinkCandidate,
+} from "./matching";
 import { paypalPaymentNote } from "./payment-note";
 import { parseUploadedStatement } from "./statement-upload";
 
@@ -27,6 +34,13 @@ type IncomingRow = ParsedBankTransactionRow & {
   payerCountry?: string | null;
 };
 type StoredRow = typeof schema.bankTransactions.$inferSelect;
+interface MatchPools {
+  issued: MatchCandidateInvoice[];
+  paid: PaidLinkCandidate[];
+}
+type AppliedMatch =
+  | { type: "matched" | "linked"; invoiceId: string; updated: StoredRow }
+  | Extract<MatchOutcome, { type: "unmatched" }>;
 
 /** What a stored payment tells the invoice it pays: amount, fee, PayPal's conversion and the note line. */
 function receivedFrom(tx: StoredRow) {
@@ -141,7 +155,7 @@ export class BankReconciliationService {
             .onConflictDoNothing()
             .returning();
 
-    let matchCandidates = await this.loadMatchCandidates(db);
+    const pools = await this.loadPools(db, insertedTransactions);
 
     const finalTransactions: (typeof insertedTransactions)[number][] = [];
     let matchedCount = 0;
@@ -149,51 +163,18 @@ export class BankReconciliationService {
     const payerCountries = new Map(parsedRows.map((r) => [r.externalId ?? "", r.payerCountry ?? null]));
 
     for (const tx of insertedTransactions) {
-      const outcome = findInvoiceMatch(
-        {
-          variableSymbol: tx.variableSymbol,
-          amount: Number(tx.amount),
-          currency: tx.currency,
-          transactionDate: tx.transactionDate,
-        },
-        matchCandidates,
-      );
+      const outcome = await this.applyMatch(db, tenantId, tx, pools);
 
-      if (outcome.type === "matched") {
-        const [updated] = await db
-          .update(schema.bankTransactions)
-          .set({ matchedInvoiceId: outcome.invoiceId, status: "matched" })
-          .where(eq(schema.bankTransactions.id, tx.id))
-          .returning();
-        await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, receivedFrom(tx));
-        finalTransactions.push(updated);
+      if (outcome.type !== "unmatched") {
+        finalTransactions.push(outcome.updated);
         matchedCount++;
-        // Settled now: a second payment in the same batch must not pay it again.
-        matchCandidates = matchCandidates.filter((c) => c.id !== outcome.invoiceId);
       } else if (
         outcome.reason === "no_candidate" &&
         options.autoDraftFrom &&
         // Payment days are UTC midnights: a payment on the connection's first day counts.
         tx.transactionDate.getTime() >= startOfUtcDay(options.autoDraftFrom)
       ) {
-        const received = receivedFrom(tx);
-        const draft = await this.invoicesService.createPaymentDraft(db, tenantId, {
-          amount: received.amount,
-          currency: received.currency,
-          paidAt: received.paidAt,
-          payerName: tx.counterpartyName,
-          payerEmail: tx.counterpartyAccount,
-          payerCountry: payerCountries.get(tx.externalId ?? "") ?? null,
-          description: tx.message,
-          fee: received.fee ?? null,
-          net: received.net,
-          note: received.note ?? paypalPaymentNote(received),
-        });
-        const [updated] = await db
-          .update(schema.bankTransactions)
-          .set({ matchedInvoiceId: draft.id, status: "matched" })
-          .where(eq(schema.bankTransactions.id, tx.id))
-          .returning();
+        const { transaction: updated } = await this.draftAndLink(db, tenantId, tx, payerCountries.get(tx.externalId ?? "") ?? null);
         finalTransactions.push(updated);
         drafted++;
       } else {
@@ -249,15 +230,24 @@ export class BankReconciliationService {
       .where(and(gte(t.transactionDate, new Date(Math.min(...days))), lt(t.transactionDate, new Date(Math.max(...days) + DAY_MS))));
   }
 
-  list(db: TenantDb, status?: BankTransactionStatusFilter) {
+  async list(db: TenantDb, status?: BankTransactionStatusFilter) {
     // RLS on `bank_transactions` already restricts this to the current
     // tenant — no manual `WHERE tenant_id = ...` needed (same pattern as
     // ContactsService.list / InvoicesService.list).
+    // The import's source and filename let /bank filter by connection (an
+    // import has no connection id; the sync names it after the account).
     const order = [desc(schema.bankTransactions.transactionDate), desc(schema.bankTransactions.createdAt)];
-    if (status) {
-      return db.select().from(schema.bankTransactions).where(eq(schema.bankTransactions.status, status)).orderBy(...order);
-    }
-    return db.select().from(schema.bankTransactions).orderBy(...order);
+    const rows = await db
+      .select({
+        transaction: schema.bankTransactions,
+        importSource: schema.bankStatementImports.source,
+        importFilename: schema.bankStatementImports.filename,
+      })
+      .from(schema.bankTransactions)
+      .innerJoin(schema.bankStatementImports, eq(schema.bankStatementImports.id, schema.bankTransactions.importId))
+      .where(status ? eq(schema.bankTransactions.status, status) : undefined)
+      .orderBy(...order);
+    return rows.map((r) => ({ ...r.transaction, importSource: r.importSource, importFilename: r.importFilename }));
   }
 
   /** One transaction plus the statement import it came from. */
@@ -295,10 +285,174 @@ export class BankReconciliationService {
     return updated;
   }
 
+  /**
+   * "Spárovat znovu" and the tail of every bank sync: runs auto-match again
+   * over every unmatched transaction, since an invoice issued (or imported)
+   * after the payment arrived only shows up now. Issued invoices are marked
+   * paid as on import; paid ones are only linked. Never drafts invoices.
+   */
+  async rematchUnmatched(db: TenantDb, tenantId: string) {
+    const unmatched = await db.select().from(schema.bankTransactions).where(eq(schema.bankTransactions.status, "unmatched"));
+    if (unmatched.length === 0) return { checked: 0, matched: 0, linked: 0 };
+    const pools = await this.loadPools(db, unmatched);
+    let matched = 0;
+    let linked = 0;
+    for (const tx of unmatched) {
+      const outcome = await this.applyMatch(db, tenantId, tx, pools);
+      if (outcome.type === "matched") matched++;
+      else if (outcome.type === "linked") linked++;
+    }
+    return { checked: unmatched.length, matched, linked };
+  }
+
+  /**
+   * "Vytvořit fakturu z platby": an incoming payment no invoice covers
+   * becomes a pending_review draft (as the PayPal sync's auto-draft does),
+   * linked to the payment. A member still reviews and issues it.
+   */
+  async createDraftFromPayment(db: TenantDb, tenantId: string, transactionId: string) {
+    const [tx] = await db.select().from(schema.bankTransactions).where(eq(schema.bankTransactions.id, transactionId)).limit(1);
+    if (!tx) throw new NotFoundException("Bank transaction not found");
+    if (tx.status !== "unmatched") throw new BadRequestException("transaction_not_unmatched");
+    if (!(Number(tx.amount) > 0)) throw new BadRequestException("transaction_not_incoming");
+    const { transaction, invoice } = await this.draftAndLink(db, tenantId, tx, null);
+    return { transaction, invoiceId: invoice.id };
+  }
+
+  private async draftAndLink(db: TenantDb, tenantId: string, tx: StoredRow, payerCountry: string | null) {
+    const received = receivedFrom(tx);
+    const invoice = await this.invoicesService.createPaymentDraft(db, tenantId, {
+      amount: received.amount,
+      currency: received.currency,
+      paidAt: received.paidAt,
+      payerName: tx.counterpartyName,
+      // A bank row carries an IBAN here, not an e-mail.
+      payerEmail: tx.counterpartyAccount?.includes("@") ? tx.counterpartyAccount : null,
+      payerCountry,
+      description: tx.message,
+      fee: received.fee ?? null,
+      net: received.net,
+      note: received.note ?? paypalPaymentNote(received),
+    });
+    const [transaction] = await db
+      .update(schema.bankTransactions)
+      .set({ matchedInvoiceId: invoice.id, status: "matched" })
+      .where(eq(schema.bankTransactions.id, tx.id))
+      .returning();
+    return { transaction: transaction!, invoice };
+  }
+
+  /** Issued invoices to settle and paid ones to link, for a set of transactions. */
+  private async loadPools(db: TenantDb, transactions: StoredRow[]): Promise<MatchPools> {
+    if (transactions.length === 0) return { issued: [], paid: [] };
+    const times = transactions.map((t) => t.transactionDate.getTime());
+    const pad = (PAID_LINK_WINDOW_DAYS + 1) * DAY_MS;
+    const [issued, paid] = await Promise.all([
+      this.loadMatchCandidates(db),
+      this.loadPaidLinkCandidates(db, new Date(Math.min(...times) - pad), new Date(Math.max(...times) + pad)),
+    ]);
+    return { issued, paid };
+  }
+
+  /**
+   * One transaction against the pools. Issued invoices first (marked paid,
+   * as always); only when none fits at all, an already paid invoice is
+   * linked. Linking writes the bank row only: the invoice is never touched.
+   * The pools are updated so a later payment in the same run can't use the
+   * same invoice again.
+   */
+  private async applyMatch(db: TenantDb, tenantId: string, tx: StoredRow, pools: MatchPools): Promise<AppliedMatch> {
+    const outcome = findInvoiceMatch(
+      { variableSymbol: tx.variableSymbol, amount: Number(tx.amount), currency: tx.currency, transactionDate: tx.transactionDate },
+      pools.issued,
+    );
+    if (outcome.type === "matched") {
+      const [updated] = await db
+        .update(schema.bankTransactions)
+        .set({ matchedInvoiceId: outcome.invoiceId, status: "matched" })
+        .where(eq(schema.bankTransactions.id, tx.id))
+        .returning();
+      await this.invoicesService.markPaidFromReconciliation(db, outcome.invoiceId, tenantId, receivedFrom(tx));
+      pools.issued = pools.issued.filter((c) => c.id !== outcome.invoiceId);
+      return { type: "matched", invoiceId: outcome.invoiceId, updated: updated! };
+    }
+    if (outcome.reason !== "no_candidate") return outcome;
+
+    const link = findPaidInvoiceLink(
+      {
+        amount: Number(tx.amount),
+        currency: tx.currency,
+        transactionDate: tx.transactionDate,
+        counterpartyAccount: tx.counterpartyAccount,
+        counterpartyName: tx.counterpartyName,
+      },
+      pools.paid,
+    );
+    if (link.type === "unmatched") return link;
+    const [updated] = await db
+      .update(schema.bankTransactions)
+      .set({ matchedInvoiceId: link.invoiceId, status: "matched" })
+      .where(eq(schema.bankTransactions.id, tx.id))
+      .returning();
+    pools.paid = pools.paid.map((c) => (c.id === link.invoiceId ? { ...c, alreadyLinked: true } : c));
+    return { type: "linked", invoiceId: link.invoiceId, updated: updated! };
+  }
+
+  /**
+   * Paid invoices (not quotes) dated around the payments, by issue date or
+   * paid_at, with their contact's e-mail and name, the total from the line
+   * items and whether some bank transaction already points at them.
+   */
+  private async loadPaidLinkCandidates(db: TenantDb, from: Date, to: Date): Promise<PaidLinkCandidate[]> {
+    const inv = schema.invoices;
+    const rows = await db
+      .select({
+        id: inv.id,
+        currency: inv.currency,
+        issueDate: inv.issueDate,
+        paidAt: inv.paidAt,
+        reverseCharge: inv.reverseCharge,
+        contactEmail: schema.contacts.email,
+        contactName: schema.contacts.legalName,
+      })
+      .from(inv)
+      .leftJoin(schema.contacts, eq(schema.contacts.id, inv.contactId))
+      .where(
+        and(
+          eq(inv.status, "paid"),
+          ne(inv.documentType, "quote"),
+          or(and(gte(inv.issueDate, from), lt(inv.issueDate, to)), and(gte(inv.paidAt, from), lt(inv.paidAt, to))),
+        ),
+      );
+    if (rows.length === 0) return [];
+    const ids = rows.map((r) => r.id);
+    const [lineItems, links] = await Promise.all([
+      db.select().from(schema.invoiceLineItems).where(inArray(schema.invoiceLineItems.invoiceId, ids)),
+      db
+        .select({ invoiceId: schema.bankTransactions.matchedInvoiceId })
+        .from(schema.bankTransactions)
+        .where(inArray(schema.bankTransactions.matchedInvoiceId, ids)),
+    ]);
+    const linked = new Set(links.map((l) => l.invoiceId));
+    const itemsByInvoice = new Map<string, InvoiceLineItemRow[]>();
+    for (const item of lineItems) itemsByInvoice.set(item.invoiceId, [...(itemsByInvoice.get(item.invoiceId) ?? []), item]);
+    return rows.map((r) => ({
+      id: r.id,
+      currency: r.currency,
+      total: round2(computeInvoiceTotal(itemsByInvoice.get(r.id) ?? [], { reverseCharge: r.reverseCharge })),
+      issueDate: r.issueDate,
+      paidAt: r.paidAt,
+      contactEmail: r.contactEmail,
+      contactName: r.contactName,
+      alreadyLinked: linked.has(r.id),
+    }));
+  }
+
   /** Manual override for the leftovers auto-match couldn't (or shouldn't)
-   * resolve on its own. Requires the target invoice to be `status =
-   * 'issued'` — same rule the auto-match path follows — so this can't be
-   * used to "pay" a draft or an already-cancelled invoice. */
+   * resolve on its own. An issued invoice is marked paid, as auto-match
+   * does. A paid one (e.g. imported history) is only linked and stays as it
+   * is, and only while no other payment links to it. Drafts and cancelled
+   * invoices are refused. */
   async manualMatch(db: TenantDb, tenantId: string, transactionId: string, invoiceId: string) {
     const [transaction] = await db
       .select()
@@ -313,11 +467,19 @@ export class BankReconciliationService {
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
     }
-    if (invoice.status !== "issued") {
+    if (invoice.status !== "issued" && invoice.status !== "paid") {
       throw new BadRequestException(
-        `Invoice ${invoiceId} is not in "issued" status (currently "${invoice.status}") – only issued ` +
-          "invoices can be reconciled against a payment.",
+        `Invoice ${invoiceId} is not in "issued" or "paid" status (currently "${invoice.status}") – only those ` +
+          "can be reconciled against a payment.",
       );
+    }
+    if (invoice.status === "paid") {
+      const [other] = await db
+        .select({ id: schema.bankTransactions.id })
+        .from(schema.bankTransactions)
+        .where(and(eq(schema.bankTransactions.matchedInvoiceId, invoiceId), ne(schema.bankTransactions.id, transactionId)))
+        .limit(1);
+      if (other) throw new BadRequestException("invoice_already_linked");
     }
 
     const [updated] = await db
@@ -326,7 +488,10 @@ export class BankReconciliationService {
       .where(eq(schema.bankTransactions.id, transactionId))
       .returning();
 
-    await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, receivedFrom(transaction));
+    // A paid invoice already has its payment recorded; linking must not change it.
+    if (invoice.status === "issued") {
+      await this.invoicesService.markPaidFromReconciliation(db, invoiceId, tenantId, receivedFrom(transaction));
+    }
 
     return updated;
   }

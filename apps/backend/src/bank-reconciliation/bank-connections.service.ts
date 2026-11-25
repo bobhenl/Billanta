@@ -102,6 +102,8 @@ export interface BankSyncSummary {
   drafted?: number;
   /** Already stored PayPal payments that got their converted amount now. */
   netUpdated?: number;
+  /** Older unmatched payments that the re-run after the sync matched or linked. */
+  rematched?: number;
   /**
    * Fio only: this sync just positioned Fio's cursor (one request per 30 s),
    * the movements come with the next one.
@@ -691,6 +693,8 @@ export class BankConnectionsService {
       skipEmpty: true,
       autoDraftFrom,
     });
+    // Older unmatched payments get another chance against invoices issued or imported since.
+    const rematch = await this.reconciliation.rematchUnmatched(db, tenantId);
 
     if (result.summary.total > 0) {
       this.notifications?.notify(tenantId, "bank_import", {
@@ -702,6 +706,6 @@ export class BankConnectionsService {
         link: "/bank",
       });
     }
-    return { ...result.summary, netUpdated: nets.length };
+    return { ...result.summary, netUpdated: nets.length, rematched: rematch.matched + rematch.linked };
   }
 }

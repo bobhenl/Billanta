@@ -53,7 +53,7 @@
       "features": "Features",
       "pricing": "Pricing",
       "login": "Log in",
-      "signup": "Sign up",
+      "signup": "Create account",
       "label": "Main navigation",
       "home": "Home",
       "start": "Start",
@@ -78,7 +78,7 @@
     "hero": {
       "title": "Online invoicing that keeps an eye on payments",
       "subtitle": "Create an invoice in a minute, even by voice. Bank payments match it on their own.",
-      "cta": "Start for free",
+      "cta": "Create a free account",
       "note": "No credit card needed. Or skip sign-up: <write>fill in an invoice</write> · <voice>dictate one</voice>"
     },
     "heroSlides": {
@@ -211,7 +211,7 @@
     "finalCta": {
       "title": "Start with your first invoice",
       "subtitle": "Free, no credit card.",
-      "cta": "Create your account"
+      "cta": "Create a free account"
     },
     "footer": {
       "tagline": "Modern invoicing for Czech and Slovak businesses.",
@@ -250,7 +250,7 @@
       "account": {
         "title": "Account",
         "login": "Log in",
-        "signup": "Sign up",
+        "signup": "Create account",
         "openApp": "Go to the app"
       },
       "partners": {
@@ -902,7 +902,8 @@
         "paid": "Marked as paid",
         "unpaid": "Marked as unpaid",
         "deleted": "Expense deleted"
-      }
+      },
+      "back": "Back"
     },
     "filters": {
       "receipt": "Receipt",
@@ -988,13 +989,15 @@
       "draft": "Draft",
       "invoiceGone": "The matched invoice no longer exists.",
       "suggestions": "Match suggestions",
-      "suggestionsHint": "Unpaid invoices in the same currency, best match first. Matching marks the invoice paid.",
-      "noCandidates": "No issued unpaid invoice in this currency.",
+      "suggestionsHint": "Issued invoices in the same currency and paid invoices no payment is linked to yet, best match first. Matching an issued invoice marks it paid, a paid one is only linked and stays as it is.",
+      "noCandidates": "No suitable invoice in this currency.",
       "due": "due",
       "reason": {
         "vs": "VS match",
         "amount": "Amount match",
-        "name": "Name match"
+        "name": "Name match",
+        "email": "Same e-mail",
+        "date": "Close date"
       },
       "outgoingHint": "Outgoing payment – if it is an expense, record it under Expenses and then ignore this transaction.",
       "ignoredHint": "This transaction is ignored and excluded from matching.",
@@ -1005,7 +1008,14 @@
       "ignoredDone": "Transaction ignored.",
       "restoredDone": "Transaction returned to matching.",
       "actionFailed": "Action failed",
-      "message": "Message for the recipient"
+      "message": "Message for the recipient",
+      "paidOn": "paid",
+      "paidHint": "Already paid. The payment is only linked, the invoice does not change.",
+      "linkedDone": "Payment linked to the invoice. The invoice was not changed.",
+      "alreadyLinked": "Another payment is already linked to this invoice.",
+      "createDraft": "Create invoice from payment",
+      "createDraftHint": "No invoice for this payment? We turn it into an invoice draft for review. You issue it yourself.",
+      "draftDone": "Invoice draft created and linked to the payment. Review it and issue it."
     },
     "connections": {
       "title": "Bank connection",
@@ -1093,10 +1103,10 @@
         "note": "Payments match by the invoice number or variable symbol in the note, and by amount. The PayPal fee is booked on the invoice. PayPal shows payments with up to a 3-hour delay.",
         "connected": "PayPal connected. The last 30 days of payments arrive with the next sync.",
         "moreOptions": "More options",
-        "backfill": "Download older payments",
+        "backfill": "Sync from a date…",
         "backfillFrom": "From",
         "backfillHint": "PayPal serves payments up to 3 years back. Older payments are only matched to invoices; they never become invoice drafts. Anything already in Billanta is not downloaded again.",
-        "backfillRun": "Download",
+        "backfillRun": "Sync",
         "backfillDone": "Downloaded {total, plural, one {# older payment} other {# older payments}}, {matched} matched.",
         "backfillNothing": "No new older payments. Everything PayPal has for that period is already in Billanta.",
         "backfillNets": "Filled in the amount after currency conversion for {count, plural, one {# payment} other {# payments}}."
@@ -1120,7 +1130,25 @@
       "syncPending": "Fio is ready. Payments come with the next sync, try again in 30 seconds."
     },
     "fee": "fee {amount}",
-    "netReceived": "credited {amount}"
+    "netReceived": "credited {amount}",
+    "rematch": {
+      "label": "Match again",
+      "done": "Matched {matched, plural, one {# payment} other {# payments}} to issued invoices, linked {linked, plural, one {# payment} other {# payments}} to invoices already paid.",
+      "nothing": "Checked {checked, plural, one {# unmatched payment} other {# unmatched payments}}, no new match.",
+      "failed": "Matching failed ({code})."
+    },
+    "filters": {
+      "source": "Account",
+      "allSources": "All accounts",
+      "upload": "Uploaded statements",
+      "psd2": "Bank (PSD2)",
+      "period": "Period",
+      "custom": "Custom range",
+      "direction": "Direction",
+      "allDirections": "Incoming and outgoing",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing"
+    }
   },
   "contacts": {
     "title": "Contacts",
@@ -3589,7 +3617,7 @@
       "genericError": "Something went wrong. Please try again.",
       "rateLimitedError": "Too many attempts. Please try again in a moment.",
       "hasAccount": "Already have an account?",
-      "loginLink": "Sign in",
+      "loginLink": "Log in",
       "companyNameHint": "Self-employed? Your own name is enough. You add your IČO and billing details in the next step.",
       "aboutYouLegend": "About you (optional)",
       "managesClientsLabel": "I keep the books for clients",
@@ -5268,7 +5296,7 @@
       "newProforma": "New proforma invoice",
       "newQuote": "New quote",
       "newExpense": "New expense",
-      "newContact": "New customer",
+      "newContact": "New contact",
       "bulk": "Bulk invoicing",
       "export": "Accountant export",
       "invite": "Invite a team member",
@@ -5369,7 +5397,7 @@
     "newInvoiceAnywhere": "New invoice (even from a field)",
     "newProforma": "New proforma invoice",
     "newExpense": "New expense",
-    "newContact": "New customer",
+    "newContact": "New contact",
     "goDashboard": "Dashboard",
     "goInvoices": "Invoices",
     "goExpenses": "Expenses",
@@ -6595,7 +6623,7 @@
     "account": {
       "title": "Want to keep your invoices and email them?",
       "signup": "Create a free account",
-      "login": "Sign in",
+      "login": "Log in",
       "signedIn": "You are signed in. You can save the invoice straight in the app.",
       "openApp": "New invoice in the app"
     },
@@ -7476,7 +7504,7 @@
     "switchTitle": "Switching from another app?",
     "switchBody": "Start for free and bring your contacts and documents over with an import.",
     "pricingCta": "Pricing",
-    "signupCta": "Start for free",
+    "signupCta": "Create a free account",
     "notStated": "– = not stated in the price list (does not mean it is missing)",
     "verified": "Checked against the price lists in {date}",
     "brand": {
@@ -9943,7 +9971,7 @@
       "title": "The sample company no longer exists",
       "lead": "A demo lasts 24 hours and is then deleted with all its data. You can open a new one or create your own account.",
       "again": "Open a new demo",
-      "register": "Create an account"
+      "register": "Create a free account"
     },
     "publicNotice": "A sample invoice from the {site} demo. The company and every detail are made up – do not pay anything.",
     "watermark": "DEMO",
@@ -10574,7 +10602,7 @@
     "eyebrow": "For content creators",
     "title": "Invoice brand deals without the headache",
     "lead": "A campaign for a brand, a fee from an agency, a payout from a platform abroad. Billanta issues the invoice in crowns or euros, handles reverse charge and reminds clients who have not paid.",
-    "cta": "Start invoicing for free",
+    "cta": "Create a free account",
     "demo": "Try it without signing up",
     "topicsTitle": "What creators deal with most",
     "topics": {
@@ -11468,7 +11496,7 @@
       "toolsLead": "Free and without sign-up. Calculate, check and read more.",
       "nextTitle": "Where next",
       "faqTitle": "Frequently asked questions",
-      "signup": "Start for free",
+      "signup": "Create a free account",
       "demo": "Try the demo",
       "more": "More",
       "allRoles": "All roles",
@@ -11513,7 +11541,7 @@
       "eyebrow": "A guide for newcomers",
       "title": "Your first invoice",
       "lead": "What an invoice must contain in Czechia and Slovakia, how to issue one step by step, and which mistakes to avoid. No legal jargon.",
-      "guestCta": "Issue an invoice without sign-up",
+      "guestCta": "Create an invoice without sign-up",
       "demoCta": "Try it on an empty company",
       "contentTitle": "What must be on the invoice",
       "contentLead": "A business that is not a VAT payer needs fewer details than a payer. Billanta checks against your settings that nothing is missing.",
@@ -12200,7 +12228,7 @@
       "eyebrow": "Income tax return",
       "title": "Tax return summary {year}",
       "lead": "Billanta adds up the income from paid invoices and the expenses by category, compares them with the flat-rate expenses and shows the filing deadlines. For Czechia and Slovakia, as a PDF and CSV.",
-      "cta": "Start for free",
+      "cta": "Create a free account",
       "demo": "Try the demo",
       "free": "The summary is included in every plan, the free one too.",
       "featuresTitle": "What's in the summary",
@@ -12691,7 +12719,7 @@
     "howBody": "The directory only shows companies that published a profile in Billanta and switched on the directory listing themselves. Nobody is added without consent, and the listing can be switched off at any time.",
     "joinTitle": "Want to be here too?",
     "joinBody": "Sign up for Billanta for free, publish your company profile and switch on the directory listing in Settings → Public profile.",
-    "joinCta": "Start for free",
+    "joinCta": "Create a free account",
     "profileListed": "In the business directory:",
     "trades": {
       "tradesman": "Tradespeople",
@@ -13288,7 +13316,7 @@
     "auto": {
       "title": "Let Billanta send the reminders for you",
       "text": "When an invoice issued in Billanta goes overdue, your customer automatically gets a polite email reminder with a link to the invoice and its QR payment. You set the interval and the maximum number of reminders, and they stop as soon as the invoice is paid.",
-      "cta": "Try it free",
+      "cta": "Create a free account",
       "more": "How automatic reminders work"
     },
     "fromInvoices": {

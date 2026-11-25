@@ -105,6 +105,19 @@ export class BankReconciliationController {
     return this.bankReconciliationService.manualMatch(req.tenantDb!, req.user!.tenantId, id, dto.invoiceId);
   }
 
+  // Writes go through RoleAccessGuard's "bank" area like match/ignore: viewers are refused.
+  @Post("rematch")
+  @ApiOperation({ summary: "Run auto-match again over every unmatched transaction; paid invoices are only linked, never changed" })
+  rematch(@Req() req: TenantScopedRequest) {
+    return this.bankReconciliationService.rematchUnmatched(req.tenantDb!, req.user!.tenantId);
+  }
+
+  @Post("transactions/:id/draft-invoice")
+  @ApiOperation({ summary: "Create a pending_review invoice draft from an unmatched incoming payment and link it" })
+  draftInvoice(@Req() req: TenantScopedRequest, @Param("id", ParseUUIDPipe) id: string) {
+    return this.bankReconciliationService.createDraftFromPayment(req.tenantDb!, req.user!.tenantId, id);
+  }
+
   @Post("transactions/:id/ignore")
   @ApiOperation({ summary: "Mark a bank transaction as ignored (not an invoice payment)" })
   ignore(@Req() req: TenantScopedRequest, @Param("id") id: string) {
