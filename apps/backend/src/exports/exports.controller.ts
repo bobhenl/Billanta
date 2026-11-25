@@ -482,6 +482,12 @@ export class ExportsController {
   ) {
     const [tenant] = await req.tenantDb!.select().from(schema.tenants).where(eq(schema.tenants.id, req.user!.tenantId));
     if (!tenant?.dic) throw new BadRequestException("Company has no DIČ – VAT filings need it");
+    if (tenant.vatStatus === "identified") {
+      // Only payers file kontrolní hlášení (§ 101c ZDPH); an identified
+      // person's tax period is always the calendar month (§ 99a needs a payer).
+      if (kind === "kh1") throw new BadRequestException("identified_no_control_statement");
+      if (kind === "dp3" && !("month" in period.vat)) throw new BadRequestException("identified_monthly_only");
+    }
     let body: string | null;
     let warnings: VatExportWarning[];
     try {
@@ -490,7 +496,9 @@ export class ExportsController {
       if (err instanceof VatRateUnavailableError) throw new ServiceUnavailableException(err.message);
       throw err;
     }
-    if (body == null) throw new NotFoundException("No EU supplies to report in this period");
+    if (body == null) {
+      throw new NotFoundException(kind === "dp3" ? "No VAT due for an identified person in this month" : "No EU supplies to report in this period");
+    }
     const name = { dp3: "dphdp3", kh1: "dphkh1", shv: "dphshv" }[kind];
     // The file still downloads; the export box reads this header and names
     // the documents to fix (e.g. a reverse-charge invoice without kód

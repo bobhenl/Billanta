@@ -70,7 +70,8 @@ export interface VatExportWarning {
     | "reverse_charge_dic_missing"
     | "received_reverse_charge_code_missing"
     | "received_reverse_charge_dic_missing"
-    | "received_reverse_charge_number_missing";
+    | "received_reverse_charge_number_missing"
+    | "foreign_purchase_unmarked";
   /** Document number (a received one without a number: its date). */
   document: string;
 }
@@ -85,6 +86,8 @@ export interface VatReceivedDoc {
   reverseChargeCode: string | null;
   parts: VatRatePart[];
   totalCzk: number;
+  /** Supplier's country (ISO 3166-1 alpha-2) from its contact; the DIČ prefix wins when there is one. */
+  supplierCountry?: string | null;
 }
 
 export type VatPeriod = { year: number; month: number } | { year: number; quarter: number };
@@ -272,6 +275,86 @@ export function generateDphDp3(input: {
 </DPHDP3>
 </Pisemnost>
 `;
+}
+
+/** Where a received document's supplier sits, seen from a Czech company. */
+export function supplierOrigin(doc: Pick<VatReceivedDoc, "supplierDic" | "supplierCountry">): "domestic" | "eu" | "third_country" {
+  const country = dicCountry(doc.supplierDic) ?? (doc.supplierCountry || "CZ").toUpperCase();
+  if (country === "CZ") return "domestic";
+  return EU.has(country) ? "eu" : "third_country";
+}
+
+/**
+ * Přiznání k DPH (DPHDP3) of an identified person (§ 6g–6l ZDPH, typ_platce
+ * "I"). It is filed only for a month in which the person owes VAT, which for
+ * an OSVČ means a service bought from a supplier abroad (§ 9 odst. 1, § 108
+ * odst. 1 písm. c): an EU supplier goes to ř. 5/6 (Veta1 p_sl23_e /
+ * dan_psl23_e, p_sl5_e / dan_psl5_e), a supplier outside the EU to ř. 12/13
+ * (p_sl23_z / dan_psl23_z, p_sl5_z / dan_psl5_z). Services supplied to EU
+ * businesses go to ř. 21 (pln_sluzby). An identified person has no right to
+ * deduct (§ 72 needs a payer), so there is no Veta4 and the whole tax is
+ * due. It files no kontrolní hlášení either (§ 101c applies to payers).
+ *
+ * `received` should include expenses without a VAT rate: a foreign purchase
+ * that is not marked as reverse charge with a rate is listed as a warning,
+ * since its tax can't be computed and an ad invoice entered as a plain
+ * expense is the usual slip. Returns null xml when nothing is due.
+ */
+export function generateDphDp3Identified(input: {
+  issued: VatIssuedDoc[];
+  received: VatReceivedDoc[];
+  submitter: VatSubmitter;
+  period: { year: number; month: number };
+  today?: Date;
+}): { xml: string | null; warnings: VatExportWarning[] } {
+  const eu = { base1: 0, vat1: 0, base2: 0, vat2: 0 };
+  const third = { base1: 0, vat1: 0, base2: 0, vat2: 0 };
+  const warnings: VatExportWarning[] = [];
+  for (const doc of input.received) {
+    const origin = supplierOrigin(doc);
+    // A Czech supplier's invoice carries no tax for a non-payer to report.
+    if (origin === "domestic") continue;
+    const b = bands(doc.parts);
+    if (!doc.reverseCharge || (b.base1 === 0 && b.base2 === 0)) {
+      warnings.push({ code: "foreign_purchase_unmarked", document: doc.number || czDate(doc.taxableDate) });
+      continue;
+    }
+    const into = origin === "eu" ? eu : third;
+    into.base1 += b.base1;
+    into.vat1 += b.vat1;
+    into.base2 += b.base2;
+    into.vat2 += b.vat2;
+  }
+  let plnSluzby = 0;
+  for (const doc of input.issued) if (classifyIssued(doc) === "eu") plnSluzby += baseOf(doc.parts);
+
+  const nonZero = (pairs: [string, number][]) => pairs.filter(([, v]) => Math.round(v) !== 0);
+  const veta1 = nonZero([
+    ["p_sl23_e", eu.base1],
+    ["dan_psl23_e", eu.vat1],
+    ["p_sl5_e", eu.base2],
+    ["dan_psl5_e", eu.vat2],
+    ["p_sl23_z", third.base1],
+    ["dan_psl23_z", third.vat1],
+    ["p_sl5_z", third.base2],
+    ["dan_psl5_z", third.vat2],
+  ]);
+  const veta2 = nonZero([["pln_sluzby", plnSluzby]]);
+  if (veta1.length === 0 && veta2.length === 0) return { xml: null, warnings };
+  // ř. 62 sums the rounded tax lines; ř. 63 (odpočet) is always 0 here.
+  const danZocelk = [eu.vat1, eu.vat2, third.vat1, third.vat2].reduce((s, v) => s + Math.round(v), 0);
+  const line = (name: string, pairs: [string, number][]) =>
+    pairs.length ? `\n  <${name} ${pairs.map(([k, v]) => `${k}="${int(v)}"`).join(" ")} />` : "";
+
+  const xml = `${header("41.6.1")}
+<DPHDP3 verzePis="${VAT_FORM_VERSIONS.DPHDP3}">
+  <VetaD k_uladis="DPH" dokument="DP3" rok="${input.period.year}" ${periodAttr(input.period)} d_poddp="${czDate(input.today ?? new Date())}" dapdph_forma="B" typ_platce="I" trans="A" />
+  ${vetaP(input.submitter)}${line("Veta1", veta1)}${line("Veta2", veta2)}
+  <Veta6 dan_zocelk="${danZocelk}" odp_zocelk="0" dano_da="${danZocelk}" dano_no="0" />
+</DPHDP3>
+</Pisemnost>
+`;
+  return { xml, warnings };
 }
 
 /**
