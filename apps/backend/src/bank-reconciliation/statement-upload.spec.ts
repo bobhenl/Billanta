@@ -46,6 +46,8 @@ describe("statementToRows", () => {
         counterpartyAccount: "19-123457/0800",
         counterpartyName: "Odběratel s.r.o.",
         message: "Faktura 2026001",
+        constantSymbol: null,
+        specificSymbol: null,
         externalId: "gpc:19-2000145399/0800:REF-1",
       },
     ]);

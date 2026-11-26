@@ -1,4 +1,4 @@
-import type { ParsedBankTransactionRow } from "./csv-parser";
+import { paymentSymbol, type ParsedBankTransactionRow } from "./csv-parser";
 
 /**
  * Minimal client for the Fio banka read-only API
@@ -121,6 +121,9 @@ export function parseFioStatement(body: unknown): FioStatement {
       counterpartyName: columnText(tx, 10) ?? columnText(tx, 7),
       // column16 "Zpráva pro příjemce".
       message: columnText(tx, 16),
+      // column4 KS, column6 SS.
+      constantSymbol: paymentSymbol(columnText(tx, 4), 4),
+      specificSymbol: paymentSymbol(columnText(tx, 6), 10),
     });
   }
   return { accountNumber, rows, lastMovementId, idLastDownload: idNumber(info.idLastDownload) };

@@ -41,6 +41,8 @@ export interface DedupeResult<T> {
   duplicates: number;
   /** Stored rows without an id that should take over the id of the incoming row they absorbed. */
   claims: { id: string; externalId: string }[];
+  /** Every stored row an incoming one was a duplicate of by fingerprint, to fill what it lacks. */
+  absorbed: { id: string; row: T }[];
 }
 
 /** "fio:123" → "fio"; ids without a prefix and null have no source. */
@@ -71,6 +73,7 @@ export function splitDuplicates<T extends DedupeRow>(incoming: T[], stored: Stor
   const used = new Set<string>();
   const fresh: T[] = [];
   const claims: DedupeResult<T>["claims"] = [];
+  const absorbed: DedupeResult<T>["absorbed"] = [];
   let duplicates = 0;
 
   for (const row of incoming) {
@@ -94,6 +97,7 @@ export function splitDuplicates<T extends DedupeRow>(incoming: T[], stored: Stor
     }
 
     used.add(absorbedBy.id);
+    absorbed.push({ id: absorbedBy.id, row });
     duplicates++;
     if (id && absorbedBy.externalId === null) {
       claims.push({ id: absorbedBy.id, externalId: id });
@@ -101,7 +105,7 @@ export function splitDuplicates<T extends DedupeRow>(incoming: T[], stored: Stor
     }
   }
 
-  return { fresh, duplicates, claims };
+  return { fresh, duplicates, claims, absorbed };
 }
 
 /**

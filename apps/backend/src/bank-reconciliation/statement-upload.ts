@@ -6,7 +6,7 @@ import {
   parseGpc,
   type ParsedBankStatement,
 } from "@faktur/cz-compliance";
-import { decodeBankStatement, parseBankStatementCsv, type ParsedBankTransactionRow } from "./csv-parser";
+import { decodeBankStatement, parseBankStatementCsv, paymentSymbol, type ParsedBankTransactionRow } from "./csv-parser";
 
 export const STATEMENT_EXTENSIONS = [".csv", ".xml", ".gpc", ".abo"] as const;
 
@@ -43,6 +43,8 @@ export function statementToRows(statement: ParsedBankStatement): UploadedStateme
         counterpartyAccount: entry.counterpartyAccount,
         counterpartyName: entry.counterpartyName,
         message: entry.message,
+        constantSymbol: paymentSymbol(entry.constantSymbol, 4),
+        specificSymbol: paymentSymbol(entry.specificSymbol, 10),
         externalId: entry.bankReference
           ? `${statement.format}:${statement.accountNumber ?? ""}:${entry.bankReference}`.slice(0, EXTERNAL_ID_MAX)
           : null,

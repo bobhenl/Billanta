@@ -25,6 +25,9 @@ export interface ParsedBankTransactionRow {
   counterpartyName: string | null;
   /** The payer's note, when the source has one. */
   message?: string | null;
+  /** Constant and specific symbol, digits only, when the source has them. */
+  constantSymbol?: string | null;
+  specificSymbol?: string | null;
 }
 
 /** A CSV row; the Wise / Revolut / Stripe exports also carry an id and a fee. */
@@ -55,6 +58,8 @@ const COLUMN_ALIASES = {
   amount: ["amount", "objem", "castka", "suma", "zauctovana castka", "castka v mene uctu", "objem transakcie"],
   currency: ["currency", "mena"],
   variableSymbol: ["variable_symbol", "vs", "variabilni symbol", "variabilny symbol", "variable symbol"],
+  constantSymbol: ["constant_symbol", "ks", "konstantni symbol", "konstantny symbol", "constant symbol"],
+  specificSymbol: ["specific_symbol", "ss", "specificky symbol", "specific symbol"],
   counterpartyAccount: [
     "counterparty_account",
     "protiucet",
@@ -216,10 +221,18 @@ export function parseBankStatementCsv(content: string): ParsedCsvRow[] {
       counterpartyAccount,
       counterpartyName: nullIfEmpty(cell("counterpartyName")),
       message: nullIfEmpty(cell("message")),
+      constantSymbol: paymentSymbol(cell("constantSymbol"), 4),
+      specificSymbol: paymentSymbol(cell("specificSymbol"), 10),
     });
   }
 
   return finish(rows, errors);
+}
+
+/** KS (4 digits) or SS (10) as an invoice can carry it; anything else is dropped, not an error. */
+export function paymentSymbol(raw: string | null | undefined, maxDigits: number): string | null {
+  const value = raw?.trim() ?? "";
+  return /^\d+$/.test(value) && value.length <= maxDigits && !/^0+$/.test(value) ? value : null;
 }
 
 function finish(rows: ParsedCsvRow[], errors: string[], skipped = 0): ParsedCsvRow[] {

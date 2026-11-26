@@ -166,6 +166,30 @@ export class BankReconciliationService {
         AND (SELECT tn.invoice_form_prefs->>'paymentDraftDescriptionAlways' FROM tenants tn WHERE tn.id = i.tenant_id) IS DISTINCT FROM 'true'`);
   }
 
+  /**
+   * A payment stored before Billanta kept KS and SS gets them when the same
+   * statement is uploaded again, and so does a draft made from it that still
+   * waits for review. An issued invoice is not touched.
+   */
+  private async fillLateSymbols(db: TenantDb, absorbed: { id: string; row: IncomingRow }[]) {
+    const late = absorbed
+      .filter(({ row }) => row.constantSymbol || row.specificSymbol)
+      .map(({ id, row }) => ({ id, ks: row.constantSymbol ?? null, ss: row.specificSymbol ?? null }));
+    if (late.length === 0) return;
+    await db.execute(sql`
+      WITH filled AS (
+        UPDATE bank_transactions t
+        SET constant_symbol = COALESCE(t.constant_symbol, v.ks), specific_symbol = COALESCE(t.specific_symbol, v.ss)
+        FROM jsonb_to_recordset(${JSON.stringify(late)}::jsonb) AS v(id uuid, ks text, ss text)
+        WHERE t.id = v.id AND (t.constant_symbol IS NULL OR t.specific_symbol IS NULL)
+        RETURNING t.matched_invoice_id, t.constant_symbol, t.specific_symbol
+      )
+      UPDATE invoices i
+      SET constant_symbol = COALESCE(i.constant_symbol, f.constant_symbol), specific_symbol = COALESCE(i.specific_symbol, f.specific_symbol)
+      FROM filled f
+      WHERE i.id = f.matched_invoice_id AND i.status = 'pending_review' AND i.invoice_number IS NULL`);
+  }
+
   /** A payment stored before Billanta kept the time gets it from the next sync. */
   private async fillLateTimes(db: TenantDb, incomingRows: IncomingRow[]) {
     const timed = incomingRows
@@ -221,7 +245,8 @@ export class BankReconciliationService {
       ruleDrafts?: boolean;
     } = {},
   ) {
-    const { fresh: parsedRows, duplicates, claims } = splitDuplicates(incomingRows, await this.storedAround(db, incomingRows));
+    const { fresh: parsedRows, duplicates, claims, absorbed } = splitDuplicates(incomingRows, await this.storedAround(db, incomingRows));
+    await this.fillLateSymbols(db, absorbed);
     for (const claim of claims) {
       await db
         .update(schema.bankTransactions)
@@ -261,6 +286,8 @@ export class BankReconciliationService {
                 netAmount: row.netAmount ?? null,
                 netCurrency: row.netCurrency ?? null,
                 message: row.message ? row.message.slice(0, 500) : null,
+                constantSymbol: row.constantSymbol ?? null,
+                specificSymbol: row.specificSymbol ?? null,
                 status: "unmatched" as const,
               })),
             )
@@ -476,6 +503,8 @@ export class BankReconciliationService {
       // The symbol the payer sent ties the invoice to its payment. PayPal's
       // "variable symbol" is the number of its own invoice, so it stays out.
       variableSymbol: received.provider === "Banka" ? bankVariableSymbol(tx.variableSymbol) : null,
+      constantSymbol: received.provider === "Banka" ? tx.constantSymbol : null,
+      specificSymbol: received.provider === "Banka" ? tx.specificSymbol : null,
     });
     const [transaction] = await db
       .update(schema.bankTransactions)

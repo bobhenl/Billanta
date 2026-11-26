@@ -21,6 +21,13 @@ function stored(overrides: Partial<StoredDedupeRow> = {}): StoredDedupeRow {
 }
 
 describe("splitDuplicates", () => {
+  it("names the stored row each duplicate stands for, so it can fill what that row lacks", () => {
+    const known = stored();
+    const incoming = row({ amount: "1210.05" });
+    const result = splitDuplicates([incoming, row({ amount: "9.00" })], [known]);
+    expect(result.absorbed).toEqual([{ id: known.id, row: incoming }]);
+  });
+
   it("drops a row whose bank id is already stored", () => {
     const result = splitDuplicates([row({ externalId: "fio:1" }), row({ externalId: "fio:2", amount: "5.00" })], [
       stored({ externalId: "fio:1" }),

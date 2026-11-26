@@ -17,6 +17,8 @@ function tx(overrides: Partial<StoredRow> & { id: string }): StoredRow {
     amount: "-1290.00",
     currency: "CZK",
     variableSymbol: "0001234567",
+    constantSymbol: "0308",
+    specificSymbol: null,
     counterpartyAccount: "CZ6508000000192000145399",
     counterpartyName: "Vodafone",
     matchedInvoiceId: null,
@@ -112,7 +114,7 @@ describe("BankReconciliationService.applyRuleAction", () => {
     const row = tx({ id: "tx1", amount: "500.00" });
     const { db, updates } = fakeDb([row]);
     await service.applyRuleAction(db as never, "t1", row, storedRule("draft_invoice", {}, { contactId: "c-1" }));
-    expect(invoicesService.createPaymentDraft).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ amount: 500, contactId: "c-1", provider: "Banka", variableSymbol: "1234567" }));
+    expect(invoicesService.createPaymentDraft).toHaveBeenCalledWith(db, "t1", expect.objectContaining({ amount: 500, contactId: "c-1", provider: "Banka", variableSymbol: "1234567", constantSymbol: "0308", specificSymbol: null }));
     expect(updates).toEqual([
       { table: schema.bankTransactions, values: { matchedInvoiceId: "inv-draft", status: "matched", appliedRuleId: "rule-draft_invoice" } },
     ]);

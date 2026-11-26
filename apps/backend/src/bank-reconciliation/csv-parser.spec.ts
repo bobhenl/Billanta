@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeBankStatement, parseBankStatementCsv } from "./csv-parser";
+import { decodeBankStatement, parseBankStatementCsv, paymentSymbol } from "./csv-parser";
 
 const HEADER = "date,amount,currency,variable_symbol,counterparty_account,counterparty_name";
 
@@ -22,6 +22,8 @@ describe("parseBankStatementCsv", () => {
       counterpartyAccount: "19-2000145399/0800",
       counterpartyName: "Novak Consulting sro",
       message: null,
+      constantSymbol: null,
+      specificSymbol: null,
     });
     expect(rows[1]).toEqual({
       transactionDate: new Date("2026-08-03T00:00:00.000Z"),
@@ -31,6 +33,8 @@ describe("parseBankStatementCsv", () => {
       counterpartyAccount: null,
       counterpartyName: null,
       message: null,
+      constantSymbol: null,
+      specificSymbol: null,
     });
   });
 
@@ -109,6 +113,8 @@ describe("parseBankStatementCsv with bank export formats", () => {
         counterpartyAccount: "2000145399/0800",
         counterpartyName: "Novák s.r.o.",
         message: "faktura",
+        constantSymbol: null,
+        specificSymbol: null,
       },
       {
         transactionDate: new Date("2026-08-06T00:00:00.000Z"),
@@ -118,6 +124,8 @@ describe("parseBankStatementCsv with bank export formats", () => {
         counterpartyAccount: null,
         counterpartyName: null,
         message: null,
+        constantSymbol: null,
+        specificSymbol: null,
       },
     ]);
   });
@@ -139,6 +147,8 @@ describe("parseBankStatementCsv with bank export formats", () => {
         counterpartyAccount: "1000000001/0800",
         counterpartyName: "Příklad Platby s.r.o.",
         message: "/ROC/1///URI/Example Store",
+        constantSymbol: "0558",
+        specificSymbol: null,
       },
     ]);
   });
@@ -175,5 +185,23 @@ describe("parseBankStatementCsv with bank export formats", () => {
     const cp1250 = Buffer.from([0x4d, 0xec, 0x6e, 0x61]);
     expect(decodeBankStatement(cp1250)).toBe("Měna");
     expect(decodeBankStatement(Buffer.from("Měna", "utf-8"))).toBe("Měna");
+  });
+});
+
+describe("constant and specific symbol", () => {
+  it("reads KS and SS from a bank export, dropping what an invoice cannot carry", () => {
+    const rows = parseBankStatementCsv(
+      ["Datum;Částka;Měna;VS;KS;SS", "30.10.2026;1703,36;CZK;2610230279;0308;", "31.10.2026;10,00;CZK;;123456;0000"].join("\n"),
+    );
+    expect(rows.map((r) => [r.constantSymbol, r.specificSymbol])).toEqual([
+      ["0308", null],
+      [null, null],
+    ]);
+  });
+
+  it("keeps a symbol's leading zeros and its length limit", () => {
+    expect(paymentSymbol(" 0558 ", 4)).toBe("0558");
+    expect(paymentSymbol("12345", 4)).toBeNull();
+    expect(paymentSymbol("12a", 10)).toBeNull();
   });
 });

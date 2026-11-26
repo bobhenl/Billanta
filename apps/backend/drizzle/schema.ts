@@ -1154,6 +1154,9 @@ export const bankTransactions = pgTable("bank_transactions", {
   amount: numeric("amount", { precision: 14, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 3 }).notNull().default("CZK"),
   variableSymbol: text("variable_symbol"),
+  /** KS and SS as the bank sent them (migration 0096); a draft made from the payment takes them over. */
+  constantSymbol: text("constant_symbol"),
+  specificSymbol: text("specific_symbol"),
   counterpartyAccount: text("counterparty_account"),
   counterpartyName: text("counterparty_name"),
   // Nullable + "set null": an invoice being deleted/renumbered shouldn't

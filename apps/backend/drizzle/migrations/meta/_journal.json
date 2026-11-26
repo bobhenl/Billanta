@@ -666,6 +666,13 @@
       "when": 1793335320000,
       "tag": "0095_invoice_lock",
       "breakpoints": true
+    },
+    {
+      "idx": 96,
+      "version": "7",
+      "when": 1793421720000,
+      "tag": "0096_bank_transaction_symbols",
+      "breakpoints": true
     }
   ]
 }

@@ -1196,6 +1196,8 @@ export class InvoicesService {
       provider?: "PayPal" | "Stripe" | "Banka";
       /** Kept when issued, instead of one made from the number. */
       variableSymbol?: string | null;
+      constantSymbol?: string | null;
+      specificSymbol?: string | null;
     },
   ) {
     const email = payment.payerEmail?.trim().toLowerCase() || null;
@@ -1240,6 +1242,8 @@ export class InvoicesService {
         dueDate: payment.paidAt,
         ...paymentDraftMethod(payment.provider ?? "PayPal"),
         variableSymbol: payment.variableSymbol ?? null,
+        constantSymbol: payment.constantSymbol ?? null,
+        specificSymbol: payment.specificSymbol ?? null,
         amountPaid: round2(payment.amount).toFixed(2),
         paymentFees: payment.fee && payment.fee > 0 ? round2(payment.fee).toFixed(2) : "0",
         receivedCzk:
