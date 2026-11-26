@@ -69,8 +69,9 @@ type AppliedMatch =
 function receivedFrom(tx: StoredRow) {
   const fee = tx.fee ? Number(tx.fee) : undefined;
   const net = tx.netAmount && tx.netCurrency ? { amount: Number(tx.netAmount), currency: tx.netCurrency } : null;
-  const provider = tx.externalId?.startsWith("paypal:") ? "PayPal" : tx.externalId?.startsWith("stripe:") ? "Stripe" : null;
+  const provider = tx.externalId?.startsWith("paypal:") ? ("PayPal" as const) : tx.externalId?.startsWith("stripe:") ? ("Stripe" as const) : null;
   return {
+    provider: provider ?? ("Banka" as const),
     amount: Number(tx.amount),
     currency: tx.currency,
     fee,
@@ -465,6 +466,7 @@ export class BankReconciliationService {
       net: received.net,
       note: received.note ?? paypalPaymentNote(received, "Banka"),
       contactId: rule?.contactId ?? null,
+      provider: received.provider,
     });
     const [transaction] = await db
       .update(schema.bankTransactions)

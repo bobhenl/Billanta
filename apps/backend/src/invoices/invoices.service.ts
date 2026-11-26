@@ -236,6 +236,13 @@ function isAiSource(source: InvoiceRow["source"]): boolean {
   return (AI_SOURCES as readonly string[]).includes(source);
 }
 
+/** The payment method a draft made from a received payment shows: a bank row is a transfer, Stripe a card. */
+export function paymentDraftMethod(provider: "PayPal" | "Stripe" | "Banka") {
+  if (provider === "Banka") return { paymentMethod: "bank_transfer" as const, paymentMethodLabel: null };
+  if (provider === "Stripe") return { paymentMethod: "card" as const, paymentMethodLabel: null };
+  return { paymentMethod: "other" as const, paymentMethodLabel: "PayPal" };
+}
+
 @Injectable()
 export class InvoicesService {
   constructor(
@@ -1185,6 +1192,8 @@ export class InvoicesService {
       note: string;
       /** A bank rule chose the customer: bill this contact, no payer lookup. */
       contactId?: string | null;
+      /** Where the money came from; it sets the draft's payment method. */
+      provider?: "PayPal" | "Stripe" | "Banka";
     },
   ) {
     const email = payment.payerEmail?.trim().toLowerCase() || null;
@@ -1227,8 +1236,7 @@ export class InvoicesService {
         issueDate: payment.paidAt,
         taxableSupplyDate: payment.paidAt,
         dueDate: payment.paidAt,
-        paymentMethod: "other",
-        paymentMethodLabel: "PayPal",
+        ...paymentDraftMethod(payment.provider ?? "PayPal"),
         amountPaid: round2(payment.amount).toFixed(2),
         paymentFees: payment.fee && payment.fee > 0 ? round2(payment.fee).toFixed(2) : "0",
         receivedCzk:
